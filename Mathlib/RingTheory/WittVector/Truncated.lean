@@ -90,7 +90,7 @@ theorem coeff_mk (x : Fin n → R) (i : Fin n) : (mk p x).coeff i = x i :=
 theorem mk_coeff (x : TruncatedWittVector p n R) : (mk p fun i => x.coeff i) = x := by
   ext i; rw [coeff_mk]
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- We can turn a truncated Witt vector `x` into a Witt vector
 by setting all coefficients after `x` to be 0.
@@ -130,7 +130,7 @@ variable {n}
 theorem coeff_truncateFun (x : 𝕎 R) (i : Fin n) : (truncateFun n x).coeff i = x.coeff i := by
   rw [truncateFun, TruncatedWittVector.coeff_mk]
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 @[simp]
 theorem out_truncateFun (x : 𝕎 R) : (truncateFun n x).out = init n x := by
@@ -143,7 +143,7 @@ end WittVector
 
 namespace TruncatedWittVector
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 @[simp]
 theorem truncateFun_out (x : TruncatedWittVector p n R) : x.out.truncateFun n = x := by
@@ -212,7 +212,7 @@ local macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
 namespace WittVector
 
 variable (p n R)
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 theorem truncateFun_surjective : Surjective (@truncateFun p n R) :=
   Function.RightInverse.surjective TruncatedWittVector.truncateFun_out
@@ -264,7 +264,7 @@ namespace TruncatedWittVector
 open WittVector
 
 variable (p n R)
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 variable [Fact p.Prime]
 
 instance instCommRing : CommRing (TruncatedWittVector p n R) :=
@@ -280,7 +280,7 @@ namespace WittVector
 open TruncatedWittVector
 
 variable (n)
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 variable [Fact p.Prime]
 
 /-- `truncate n` is a ring homomorphism that truncates `x` to its first `n` entries
@@ -323,7 +323,7 @@ end WittVector
 
 namespace TruncatedWittVector
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 section
 variable [Fact p.Prime]
@@ -404,7 +404,7 @@ open TruncatedWittVector hiding truncate coeff
 
 section lift
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 variable [Fact p.Prime]
 variable {S : Type*} [Semiring S]
 variable (f : ∀ k : ℕ, S →+* TruncatedWittVector p k R)

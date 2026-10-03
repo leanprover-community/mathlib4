@@ -52,7 +52,7 @@ instance (priority := 100) toMulRightMono [NonUnitalNonAssocSemiring R]
   rw [add_mul]
   apply self_le_add_right
 
-variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
+variable [Semiring R] [IsMulCommutative R] [PartialOrder R] [CanonicallyOrderedAdd R]
 
 -- TODO: make it an instance
 lemma toIsOrderedMonoid : IsOrderedMonoid R where
@@ -132,7 +132,7 @@ end NonAssocSemiring
 
 section CommSemiring
 
-variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
+variable [Semiring R] [IsMulCommutative R] [PartialOrder R] [CanonicallyOrderedAdd R]
   [Sub R] [OrderedSub R] [@Std.Total R (· ≤ ·)] [AddLeftReflectLE R]
 
 /-- The `tsub` version of `mul_self_sub_mul_self`. Notably, this holds for `Nat` and `NNReal`. -/

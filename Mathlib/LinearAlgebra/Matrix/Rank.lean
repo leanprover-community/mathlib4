@@ -129,11 +129,11 @@ end Infinite
 variable [Fintype n] [Fintype o]
 
 /-- The rank of a matrix is the rank of its image. -/
-noncomputable def rank [CommSemiring R] (A : Matrix m n R) : ℕ :=
+noncomputable def rank [Semiring R] [IsMulCommutative R] (A : Matrix m n R) : ℕ :=
   finrank R <| LinearMap.range A.mulVecLin
 
 @[simp]
-theorem rank_subsingleton [CommSemiring R] [Subsingleton R] (A : Matrix m n R) : A.rank = 1 :=
+theorem rank_subsingleton [Semiring R] [IsMulCommutative R] [Subsingleton R] (A : Matrix m n R) : A.rank = 1 :=
   finrank_subsingleton
 
 @[simp]
@@ -149,12 +149,12 @@ theorem cRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankConditi
   rw [eRank, cRank_one, toENat_lift, ENat.card]
 
 @[simp]
-theorem rank_one [CommSemiring R] [DecidableEq n] [StrongRankCondition R] :
+theorem rank_one [Semiring R] [IsMulCommutative R] [DecidableEq n] [StrongRankCondition R] :
     rank (1 : Matrix n n R) = Fintype.card n := by
   rw [rank, mulVecLin_one, LinearMap.range_id, finrank_top, finrank_pi]
 
 @[simp]
-theorem rank_zero [CommSemiring R] [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
+theorem rank_zero [Semiring R] [IsMulCommutative R] [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
   rw [rank, mulVecLin_zero, LinearMap.range_zero, finrank_bot]
 
 @[simp]
@@ -168,60 +168,60 @@ theorem cRank_zero {m n : Type*} [Semiring R] [Nontrivial R] : cRank (0 : Matrix
 theorem eRank_zero {m n : Type*} [Semiring R] [Nontrivial R] : eRank (0 : Matrix m n R) = 0 := by
   simp [eRank]
 
-theorem rank_le_card_width [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R) :
+theorem rank_le_card_width [Semiring R] [IsMulCommutative R] [StrongRankCondition R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card n :=
   A.mulVecLin.finrank_range_le.trans_eq <| finrank_pi R
 
-theorem rank_le_width [CommSemiring R] [StrongRankCondition R] {m n : ℕ}
+theorem rank_le_width [Semiring R] [IsMulCommutative R] [StrongRankCondition R] {m n : ℕ}
     (A : Matrix (Fin m) (Fin n) R) : A.rank ≤ n :=
   A.rank_le_card_width.trans (Fintype.card_fin n).le
 
-theorem rank_mul_le_left [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
+theorem rank_mul_le_left [Semiring R] [IsMulCommutative R] [StrongRankCondition R] (A : Matrix m n R)
     (B : Matrix n o R) : (A * B).rank ≤ A.rank := by
   nontriviality R
   rw [rank, rank, mulVecLin_mul]
   exact Cardinal.toNat_le_toNat (LinearMap.rank_comp_le_left ..) (rank_lt_aleph0 R _)
 
-theorem rank_mul_le_right [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
+theorem rank_mul_le_right [Semiring R] [IsMulCommutative R] [StrongRankCondition R] (A : Matrix m n R)
     (B : Matrix n o R) : (A * B).rank ≤ B.rank := by
   nontriviality R
   rw [rank, rank, mulVecLin_mul]
   exact finrank_le_finrank_of_rank_le_rank (LinearMap.lift_rank_comp_le_right _ _)
     (rank_lt_aleph0 _ _)
 
-theorem rank_mul_le [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R) (B : Matrix n o R) :
+theorem rank_mul_le [Semiring R] [IsMulCommutative R] [StrongRankCondition R] (A : Matrix m n R) (B : Matrix n o R) :
     (A * B).rank ≤ min A.rank B.rank :=
   le_min (rank_mul_le_left _ _) (rank_mul_le_right _ _)
 
-theorem rank_vecMulVec_le [CommSemiring R] [StrongRankCondition R] (w : m → R) (v : n → R) :
+theorem rank_vecMulVec_le [Semiring R] [IsMulCommutative R] [StrongRankCondition R] (w : m → R) (v : n → R) :
     (Matrix.vecMulVec w v).rank ≤ 1 := by
   rw [Matrix.vecMulVec_eq Unit]
   refine le_trans (rank_mul_le_left _ _) ?_
   nontriviality R
   exact rank_le_card_width _
 
-theorem rank_unit [DecidableEq n] [CommSemiring R] [StrongRankCondition R] (A : (Matrix n n R)ˣ) :
+theorem rank_unit [DecidableEq n] [Semiring R] [IsMulCommutative R] [StrongRankCondition R] (A : (Matrix n n R)ˣ) :
     (A : Matrix n n R).rank = Fintype.card n := by
   apply le_antisymm (rank_le_card_width (A : Matrix n n R)) _
   have := rank_mul_le_left (A : Matrix n n R) (↑A⁻¹ : Matrix n n R)
   rwa [← Units.val_mul, mul_inv_cancel, Units.val_one, rank_one] at this
 
-theorem rank_of_isUnit [DecidableEq n] [CommSemiring R] [StrongRankCondition R] (A : Matrix n n R)
+theorem rank_of_isUnit [DecidableEq n] [Semiring R] [IsMulCommutative R] [StrongRankCondition R] (A : Matrix n n R)
     (h : IsUnit A) : A.rank = Fintype.card n := by
   obtain ⟨A, rfl⟩ := h
   exact rank_unit A
 
-theorem rank_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R] [Nontrivial R]
+theorem rank_of_det_mem_nonZeroDivisors {R : Type*} [Ring R] [IsMulCommutative R] [Nontrivial R]
     [Fintype m] [DecidableEq m] {A : Matrix m m R} (hA : A.det ∈ nonZeroDivisors R) :
     A.rank = Fintype.card m := by
   rw [rank, LinearMap.finrank_range_of_inj (mulVec_injective_of_det_mem_nonZeroDivisors hA),
     Module.finrank_eq_card_basis (Pi.basisFun R m)]
 
-theorem rank_of_det_ne_zero {R : Type*} [CommRing R] [IsDomain R] [Fintype m] [DecidableEq m]
+theorem rank_of_det_ne_zero {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [Fintype m] [DecidableEq m]
     {A : Matrix m m R} (h : A.det ≠ 0) : A.rank = Fintype.card m :=
   rank_of_det_mem_nonZeroDivisors (mem_nonZeroDivisors_of_ne_zero h)
 
-lemma rank_smul_of_mem_nonZeroDivisors {R : Type*} [CommRing R] {c : R} (B : Matrix m n R)
+lemma rank_smul_of_mem_nonZeroDivisors {R : Type*} [Ring R] [IsMulCommutative R] {c : R} (B : Matrix m n R)
     (hc : c ∈ nonZeroDivisors R) : (c • B).rank = B.rank := by
   have hc' : IsSMulRegular R c := isSMulRegular_iff_mem_nonZeroSMulDivisors.mpr hc.1
   have hreg : IsSMulRegular (m → R) c := IsSMulRegular.pi fun _ => hc'
@@ -230,7 +230,7 @@ lemma rank_smul_of_mem_nonZeroDivisors {R : Type*} [CommRing R] {c : R} (B : Mat
   rw [rank, rank, hcomp, LinearMap.range_comp]
   exact (Submodule.equivMapOfInjective f hreg _).finrank_eq.symm
 
-lemma rank_mul_eq_left_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R] [DecidableEq n]
+lemma rank_mul_eq_left_of_det_mem_nonZeroDivisors {R : Type*} [Ring R] [IsMulCommutative R] [DecidableEq n]
     (A : Matrix n n R) (B : Matrix m n R) (hA : A.det ∈ nonZeroDivisors R) :
     (B * A).rank = B.rank := by
   nontriviality R
@@ -241,48 +241,48 @@ lemma rank_mul_eq_left_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R] [Deci
     _ = ((B * A) * A.adjugate).rank := by rw [key]
     _ ≤ (B * A).rank := rank_mul_le_left _ _
 
-lemma rank_mul_eq_left_of_det_ne_zero {R : Type*} [CommRing R] [IsDomain R] [DecidableEq n]
+lemma rank_mul_eq_left_of_det_ne_zero {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [DecidableEq n]
     (A : Matrix n n R) (B : Matrix m n R) (h : A.det ≠ 0) : (B * A).rank = B.rank :=
   rank_mul_eq_left_of_det_mem_nonZeroDivisors A B (mem_nonZeroDivisors_of_ne_zero h)
 
 /-- Right multiplying by an invertible matrix does not change the rank -/
 @[simp]
-lemma rank_mul_eq_left_of_isUnit_det {R : Type*} [CommRing R] [DecidableEq n] (A : Matrix n n R)
+lemma rank_mul_eq_left_of_isUnit_det {R : Type*} [Ring R] [IsMulCommutative R] [DecidableEq n] (A : Matrix n n R)
     (B : Matrix m n R) (hA : IsUnit A.det) : (B * A).rank = B.rank :=
   rank_mul_eq_left_of_det_mem_nonZeroDivisors A B hA.mem_nonZeroDivisors
 
-lemma rank_mul_eq_right_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
+lemma rank_mul_eq_right_of_det_mem_nonZeroDivisors {R : Type*} [Ring R] [IsMulCommutative R]
     [Fintype m] [DecidableEq m] (A : Matrix m m R) (B : Matrix m n R)
     (hA : A.det ∈ nonZeroDivisors R) : (A * B).rank = B.rank := by
   rw [rank, rank, mulVecLin_mul, LinearMap.range_comp,
     ← (Submodule.equivMapOfInjective A.mulVecLin
       (mulVec_injective_of_det_mem_nonZeroDivisors hA) _).finrank_eq]
 
-lemma rank_mul_eq_right_of_det_ne_zero {R : Type*} [CommRing R] [IsDomain R]
+lemma rank_mul_eq_right_of_det_ne_zero {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
     [Fintype m] [DecidableEq m] (A : Matrix m m R) (B : Matrix m n R) (h : A.det ≠ 0) :
     (A * B).rank = B.rank :=
   rank_mul_eq_right_of_det_mem_nonZeroDivisors A B (mem_nonZeroDivisors_of_ne_zero h)
 
 /-- Left multiplying by an invertible matrix does not change the rank -/
 @[simp]
-lemma rank_mul_eq_right_of_isUnit_det {R : Type*} [CommRing R] [Fintype m] [DecidableEq m]
+lemma rank_mul_eq_right_of_isUnit_det {R : Type*} [Ring R] [IsMulCommutative R] [Fintype m] [DecidableEq m]
     (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) : (A * B).rank = B.rank :=
   rank_mul_eq_right_of_det_mem_nonZeroDivisors A B hA.mem_nonZeroDivisors
 
-lemma rank_mul_eq_right_of_isLowerTriangular {R : Type*} [CommRing R] [IsDomain R]
+lemma rank_mul_eq_right_of_isLowerTriangular {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
     [Fintype m] [LinearOrder m] (A : Matrix m m R) (B : Matrix m n R)
     (hA : A.IsLowerTriangular) (hd : ∀ i, A.diag i ≠ 0) : (A * B).rank = B.rank := by
   have hdet : A.det ≠ 0 := by simpa [det_of_isLowerTriangular A hA, Finset.prod_ne_zero_iff]
   exact rank_mul_eq_right_of_det_ne_zero A B hdet
 
-lemma rank_mul_eq_right_of_isUpperTriangular {R : Type*} [CommRing R] [IsDomain R]
+lemma rank_mul_eq_right_of_isUpperTriangular {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
     [Fintype m] [LinearOrder m] (A : Matrix m m R) (B : Matrix m n R)
     (hA : A.IsUpperTriangular) (hd : ∀ i, A.diag i ≠ 0) : (A * B).rank = B.rank := by
   have hdet : A.det ≠ 0 := by simpa [det_of_isUpperTriangular hA, Finset.prod_ne_zero_iff]
   exact rank_mul_eq_right_of_det_ne_zero A B hdet
 
 /-- Taking a subset of the rows and columns reduces the rank. -/
-theorem rank_submatrix_le [CommSemiring R] [StrongRankCondition R] [Fintype n₀] (A : Matrix m n R)
+theorem rank_submatrix_le [Semiring R] [IsMulCommutative R] [StrongRankCondition R] [Fintype n₀] (A : Matrix m n R)
     (r : m₀ → m) (c : n₀ → n) : (A.submatrix r c).rank ≤ A.rank := by
   nontriviality R
   have := Module.Finite.span_of_finite R (Set.finite_range (A.submatrix r id).col)
@@ -301,13 +301,13 @@ theorem rank_submatrix_le [CommSemiring R] [StrongRankCondition R] [Fintype n₀
       (Equiv.refl n).symm from rfl, LinearEquiv.range, Submodule.map_top]
   exact Submodule.finrank_map_le _ _
 
-theorem rank_reindex [Fintype n₀] [CommSemiring R] (em : m ≃ m₀) (en : n ≃ n₀) (A : Matrix m n R) :
+theorem rank_reindex [Fintype n₀] [Semiring R] [IsMulCommutative R] (em : m ≃ m₀) (en : n ≃ n₀) (A : Matrix m n R) :
     rank (A.reindex em en) = rank A := by
   rw [rank, rank, mulVecLin_reindex, LinearMap.range_comp, LinearMap.range_comp,
     LinearEquiv.range, Submodule.map_top, LinearEquiv.finrank_map_eq]
 
 @[simp]
-theorem rank_submatrix [Fintype n₀] [CommSemiring R] (A : Matrix m n R) (em : m₀ ≃ m)
+theorem rank_submatrix [Fintype n₀] [Semiring R] [IsMulCommutative R] (A : Matrix m n R) (em : m₀ ≃ m)
     (en : n₀ ≃ n) : rank (A.submatrix em en) = rank A := by
   simpa only [reindex_apply] using! rank_reindex em.symm en.symm A
 
@@ -343,8 +343,8 @@ theorem eRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m 
 
 /-- The rank of a matrix equals the dimension of the range of the corresponding linear map,
 and is therefore independent of the choice of bases. -/
-theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [CommSemiring R]
-    [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R)
+theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [Semiring R] [IsMulCommutative R]
+    [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R)
     (v₁ : Basis m R M₁) (v₂ : Basis n R M₂) :
     A.rank = finrank R (LinearMap.range (toLin v₂ v₁ A)) := by
   cases nonempty_fintype m
@@ -363,12 +363,12 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
   simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply,
     aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, map_smul, Basis.equiv_apply]
 
-theorem rank_le_card_height [Fintype m] [CommSemiring R] [StrongRankCondition R]
+theorem rank_le_card_height [Fintype m] [Semiring R] [IsMulCommutative R] [StrongRankCondition R]
     (A : Matrix m n R) : A.rank ≤ Fintype.card m :=
   (Submodule.finrank_le _).trans (finrank_pi R).le
 
 /-- The rank of a matrix is at most the size of any finset containing all its nonzero rows. -/
-theorem rank_le_card_of_support_subset [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
+theorem rank_le_card_of_support_subset [Semiring R] [IsMulCommutative R] [StrongRankCondition R] (A : Matrix m n R)
     (s : Finset m) (hz : Function.support A.row ⊆ s) : A.rank ≤ s.card := by
   rw [Function.support_subset_iff'] at hz
   classical
@@ -387,20 +387,20 @@ theorem rank_le_card_of_support_subset [CommSemiring R] [StrongRankCondition R] 
     _ ≤ Fintype.card {x // x ∈ s} := rank_le_card_height _
     _ = s.card := Fintype.card_coe s
 
-theorem rank_le_height [CommSemiring R] [StrongRankCondition R] {m n : ℕ}
+theorem rank_le_height [Semiring R] [IsMulCommutative R] [StrongRankCondition R] {m n : ℕ}
     (A : Matrix (Fin m) (Fin n) R) : A.rank ≤ m :=
   A.rank_le_card_height.trans (Fintype.card_fin m).le
 
 /-- The rank of a matrix is the rank of the space spanned by its columns. -/
-theorem rank_eq_finrank_span_cols [CommSemiring R] (A : Matrix m n R) :
+theorem rank_eq_finrank_span_cols [Semiring R] [IsMulCommutative R] (A : Matrix m n R) :
     A.rank = finrank R (Submodule.span R (Set.range A.col)) := by rw [rank, Matrix.range_mulVecLin]
 
 @[simp]
-theorem cRank_toNat_eq_rank [CommSemiring R] (A : Matrix m n R) : A.cRank.toNat = A.rank := by
+theorem cRank_toNat_eq_rank [Semiring R] [IsMulCommutative R] (A : Matrix m n R) : A.cRank.toNat = A.rank := by
   rw [cRank_toNat_eq_finrank, ← rank_eq_finrank_span_cols]
 
 @[simp]
-theorem eRank_toNat_eq_rank [CommSemiring R] (A : Matrix m n R) : A.eRank.toNat = A.rank := by
+theorem eRank_toNat_eq_rank [Semiring R] [IsMulCommutative R] (A : Matrix m n R) : A.eRank.toNat = A.rank := by
   rw [eRank_toNat_eq_finrank, ← rank_eq_finrank_span_cols]
 
 section Field
@@ -590,7 +590,7 @@ end Matrix
 
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to `cRank` then deprecate
-theorem Matrix.rank_vecMulVec.{u} {K m n : Type u} [CommRing K] [Fintype n]
+theorem Matrix.rank_vecMulVec.{u} {K m n : Type u} [Ring K] [IsMulCommutative K] [Fintype n]
     [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
   nontriviality K
   rw [Matrix.vecMulVec_eq (Fin 1), Matrix.toLin'_mul]

@@ -18,11 +18,11 @@ the same as being flat and a surjection on prime spectra.
 
 namespace RingHom
 
-variable {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S}
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {f : R →+* S}
 
 /-- A ring map `f : R →+* S` is faithfully flat if `S` is faithfully flat as an `R`-algebra. -/
 @[stacks 00HB "Part (4)", algebraize Module.FaithfullyFlat]
-def FaithfullyFlat {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
+def FaithfullyFlat {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) : Prop :=
   letI : Algebra R S := f.toAlgebra
   Module.FaithfullyFlat R S
 

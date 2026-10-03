@@ -23,7 +23,7 @@ variable [NormedField 𝕜]
 
 section Seminormed
 
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 variable {r : ℝ} {x : E} {c : 𝕜} {ε : ℝ}
 
 variable (𝕜 E)
@@ -88,7 +88,7 @@ end Seminormed
 
 section Normed
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 variable {r : ℝ} {x : E} {c : 𝕜} {ε : ℝ}
 
 lemma rescale_to_shell_zpow (hc : 1 < ‖c‖) (εpos : 0 < ε) (hx : x ≠ 0) :

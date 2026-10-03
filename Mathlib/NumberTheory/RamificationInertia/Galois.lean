@@ -56,8 +56,8 @@ open scoped Classical in
 /-- If `L / K` is a Galois extension, it can be seen from the theorem
   `Ideal.ramificationIdx_eq_of_isGaloisGroup` that all `Ideal.ramificationIdx` over a fixed
   maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`. -/
-noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
-    (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
+noncomputable def ramificationIdxIn {A : Type*} [Ring A] [IsMulCommutative A] (p : Ideal A)
+    (B : Type*) [Ring B] [IsMulCommutative B] [Algebra A B] : ℕ :=
   if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.ramificationIdx A
   else 0
 
@@ -65,13 +65,13 @@ open scoped Classical in
 /-- If `L / K` is a Galois extension, it can be seen from
   the theorem `Ideal.inertiaDeg_eq_of_isGaloisGroup` that all `Ideal.inertiaDeg` over a fixed
   maximal ideal `p` of `A` are the same, which we define as `Ideal.inertiaDegIn`. -/
-noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
-    (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
+noncomputable def inertiaDegIn {A : Type*} [Ring A] [IsMulCommutative A] (p : Ideal A)
+    (B : Type*) [Ring B] [IsMulCommutative B] [Algebra A B] : ℕ :=
   if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.inertiaDeg A else 0
 
 section MulAction
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] {p : Ideal A}
   {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 instance : MulAction G (primesOver p B) where
@@ -116,7 +116,7 @@ end MulAction
 
 section RamificationInertia
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A) (P Q : Ideal B)
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] (p : Ideal A) (P Q : Ideal B)
   [hPp : P.IsPrime] [hp : P.LiesOver p] [hQp : Q.IsPrime] [Q.LiesOver p]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [IsGaloisGroup G A B]
 
@@ -183,7 +183,7 @@ theorem inertiaDegIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Ideal A
 
 section tower
 
-variable (C : Type*) [CommRing C] [Algebra A C] [Algebra B C]
+variable (C : Type*) [Ring C] [IsMulCommutative C] [Algebra A C] [Algebra B C]
   [Nonempty (P.primesOver C)] [IsScalarTower A B C]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
   (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
@@ -214,8 +214,8 @@ end RamificationInertia
 
 section fundamental_identity
 
-variable {A : Type*} [CommRing A] [IsDomain A] (p : Ideal A) [p.IsPrime]
-  (B : Type*) [CommRing B] [IsDomain B] [Algebra A B] [Module.Finite A B] [Flat A B]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [IsDomain A] (p : Ideal A) [p.IsPrime]
+  (B : Type*) [Ring B] [IsMulCommutative B] [IsDomain B] [Algebra A B] [Module.Finite A B] [Flat A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [IsGaloisGroup G A B]
 
 /-- The form of the **fundamental identity** in the case of Galois extension. -/
@@ -232,10 +232,10 @@ end fundamental_identity
 
 section tower
 
-variable {A B : Type*} [CommRing A] [CommRing B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
   [Algebra A B] {p : Ideal A} (P : Ideal B)
   [P.IsPrime] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
-  [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDomain C] [Algebra A C]
+  [IsGaloisGroup G A B] (C : Type*) [Ring C] [IsMulCommutative C] [IsDomain C] [Algebra A C]
   [Algebra B C] [FaithfulSMul B C] [IsScalarTower A B C]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
 
@@ -274,7 +274,7 @@ end tower
 
 section inertia
 
-variable {R S G : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G]
+variable {R S G : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Group G]
   [MulSemiringAction G S] [IsGaloisGroup G R S] [Finite G]
 
 open scoped Pointwise
@@ -336,7 +336,7 @@ end inertia
 
 section galRestrict
 
-variable (R K L S : Type*) [CommRing R] [CommRing S] [Algebra R S] [Field K] [Field L]
+variable (R K L S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Field K] [Field L]
     [Algebra R K] [IsFractionRing R K] [Algebra S L]
     [Algebra K L] [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L]
     [IsIntegralClosure S R L] [FiniteDimensional K L]

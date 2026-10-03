@@ -53,7 +53,7 @@ open scoped Affine
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
 structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*) [Ring k]
-  [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
+  [AddGroup V1] [IsAddCommutative V1] [Module k V1] [AffineSpace V1 P1] [AddGroup V2] [IsAddCommutative V2] [Module k V2]
   [AffineSpace V2 P2] where
   /-- The underlying function between the affine spaces `P1` and `P2`. -/
   toFun : P1 → P2
@@ -68,7 +68,7 @@ notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
 @[macro_inline]
 instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
-    [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
+    [Ring k] [AddGroup V1] [IsAddCommutative V1] [Module k V1] [AffineSpace V1 P1] [AddGroup V2] [IsAddCommutative V2] [Module k V2]
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
   coe := AffineMap.toFun
   coe_injective := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
@@ -79,8 +79,8 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
 
 namespace LinearMap
 
-variable {k : Type*} {V₁ : Type*} {V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
-  [AddCommGroup V₂] [Module k V₂] (f : V₁ →ₗ[k] V₂)
+variable {k : Type*} {V₁ : Type*} {V₂ : Type*} [Ring k] [AddGroup V₁] [IsAddCommutative V₁] [Module k V₁]
+  [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] (f : V₁ →ₗ[k] V₂)
 
 /-- Reinterpret a linear map as an affine map. -/
 def toAffineMap : V₁ →ᵃ[k] V₂ where
@@ -101,9 +101,9 @@ end LinearMap
 namespace AffineMap
 
 variable {k : Type*} {V1 : Type*} {P1 : Type*} {V2 : Type*} {P2 : Type*} {V3 : Type*}
-  {P3 : Type*} {V4 : Type*} {P4 : Type*} [Ring k] [AddCommGroup V1] [Module k V1]
-  [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2] [AffineSpace V2 P2] [AddCommGroup V3]
-  [Module k V3] [AffineSpace V3 P3] [AddCommGroup V4] [Module k V4] [AffineSpace V4 P4]
+  {P3 : Type*} {V4 : Type*} {P4 : Type*} [Ring k] [AddGroup V1] [IsAddCommutative V1] [Module k V1]
+  [AffineSpace V1 P1] [AddGroup V2] [IsAddCommutative V2] [Module k V2] [AffineSpace V2 P2] [AddGroup V3] [IsAddCommutative V3]
+  [Module k V3] [AffineSpace V3 P3] [AddGroup V4] [IsAddCommutative V4] [Module k V4] [AffineSpace V4 P4]
 
 /-- Constructing an affine map and coercing back to a function
 produces the same map. -/
@@ -649,7 +649,7 @@ theorem image_uIcc {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
 
 section
 
-variable {ι : Type*} {V : ι → Type*} {P : ι → Type*} [∀ i, AddCommGroup (V i)]
+variable {ι : Type*} {V : ι → Type*} {P : ι → Type*} [∀ i, AddGroup (V i)] [∀ i, IsAddCommutative (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
 
 /-- Evaluation at a point as an affine map. -/
@@ -680,8 +680,8 @@ variable {R k V1 P1 V2 P2 V3 P3 : Type*}
 
 section Ring
 
-variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2] [AffineSpace V2 P2]
-variable [AddCommGroup V3] [AffineSpace V3 P3] [Module k V1] [Module k V2] [Module k V3]
+variable [Ring k] [AddGroup V1] [IsAddCommutative V1] [AffineSpace V1 P1] [AddGroup V2] [IsAddCommutative V2] [AffineSpace V2 P2]
+variable [AddGroup V3] [IsAddCommutative V3] [AffineSpace V3 P3] [Module k V1] [Module k V2] [Module k V3]
 
 section DistribMulAction
 
@@ -816,7 +816,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
+variable [Ring k] [IsMulCommutative k] [AddGroup V1] [IsAddCommutative V1] [AffineSpace V1 P1] [AddGroup V2] [IsAddCommutative V2]
 variable [Module k V1] [Module k V2]
 
 /-- `homothety c r` is the homothety (also known as dilation) about `c` with scale factor `r`. -/
@@ -911,7 +911,7 @@ end AffineMap
 
 section
 
-variable {𝕜 E F : Type*} [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+variable {𝕜 E F : Type*} [Ring 𝕜] [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F]
 
 /-- Applying an affine map to an affine combination of two points yields an affine combination of
 the images. -/

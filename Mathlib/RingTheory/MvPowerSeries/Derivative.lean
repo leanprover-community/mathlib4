@@ -72,7 +72,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 private theorem pderivFun_coe {i : σ} (f : MvPolynomial σ R) :
     (f : MvPowerSeries σ R).pderivFun i = f.pderiv i := by
@@ -167,7 +167,7 @@ end CommSemiring
 
 The `CommRing` assumption is needed because the proof uses `smul_right_inj`, which requires
 cancellation of addition in `R`; `IsAddTorsionFree` alone does not suffice. -/
-theorem pderiv.ext [CommRing R] [IsAddTorsionFree R] {f g : MvPowerSeries σ R}
+theorem pderiv.ext [Ring R] [IsMulCommutative R] [IsAddTorsionFree R] {f g : MvPowerSeries σ R}
     (hD : ∀ i, pderiv i f = pderiv i g) (hc : constantCoeff f = constantCoeff g) : f = g := by
   ext n
   by_cases h : n = 0
@@ -181,12 +181,12 @@ theorem pderiv.ext [CommRing R] [IsAddTorsionFree R] {f g : MvPowerSeries σ R}
     mul_comm, ← nsmul_eq_mul, mul_comm, ← nsmul_eq_mul, smul_right_inj hi] at e
 
 @[simp]
-theorem pderiv_inv {i : σ} [CommRing R] (f : (MvPowerSeries σ R)ˣ) :
+theorem pderiv_inv {i : σ} [Ring R] [IsMulCommutative R] (f : (MvPowerSeries σ R)ˣ) :
     pderiv i ↑f⁻¹ = -(↑f⁻¹ : MvPowerSeries σ R) ^ 2 * pderiv i f :=
   (pderiv i).leibniz_of_mul_eq_one f.inv_mul
 
 @[simp]
-theorem pderiv_invOf {i : σ} [CommRing R] (f : MvPowerSeries σ R) [Invertible f] :
+theorem pderiv_invOf {i : σ} [Ring R] [IsMulCommutative R] (f : MvPowerSeries σ R) [Invertible f] :
     pderiv i ⅟f = -⅟f ^ 2 * pderiv i f :=
   (pderiv i).leibniz_invOf f
 

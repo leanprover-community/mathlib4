@@ -42,7 +42,7 @@ namespace Mathlib.Tactic.CancelDenoms
 
 /-! ### Lemmas used in the procedure -/
 
-theorem mul_subst {α} [CommRing α] {n1 n2 k e1 e2 t1 t2 : α}
+theorem mul_subst {α} [Ring α] [IsMulCommutative α] {n1 n2 k e1 e2 t1 t2 : α}
     (h1 : n1 * e1 = t1) (h2 : n2 * e2 = t2) (h3 : n1 * n2 = k) : k * (e1 * e2) = t1 * t2 := by
   rw [← h3, mul_comm n1, mul_assoc n2, ← mul_assoc n1, h1,
       ← mul_assoc n2, mul_comm n2, mul_assoc, h2]
@@ -63,7 +63,7 @@ theorem sub_subst {α} [Ring α] {n e1 e2 t1 t2 : α} (h1 : n * e1 = t1) (h2 : n
 
 theorem neg_subst {α} [Ring α] {n e t : α} (h1 : n * e = t) : n * -e = -t := by simp [*]
 
-theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
+theorem pow_subst {α} [Ring α] [IsMulCommutative α] {n e1 t1 k l : α} {e2 : ℕ}
     (h1 : n * e1 = t1) (h2 : l * n ^ e2 = k) : k * (e1 ^ e2) = l * t1 ^ e2 := by
   rw [← h2, ← h1, mul_pow, mul_assoc]
 

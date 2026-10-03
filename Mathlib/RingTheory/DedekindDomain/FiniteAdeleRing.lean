@@ -32,7 +32,7 @@ finite adèle ring, dedekind domain
 
 @[expose] public section
 
-variable (R : Type*) [CommRing R] [IsDedekindDomain R] {K : Type*}
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsDedekindDomain R] {K : Type*}
     [Field K] [Algebra R K] [IsFractionRing R K]
 
 namespace IsDedekindDomain

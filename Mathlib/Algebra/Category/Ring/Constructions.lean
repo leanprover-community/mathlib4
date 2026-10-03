@@ -40,7 +40,7 @@ namespace CommRingCat
 
 section Pushout
 
-variable (R A B : Type u) [CommRing R] [CommRing A] [CommRing B]
+variable (R A B : Type u) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
 variable [Algebra R A] [Algebra R B]
 
 /-- The explicit cocone with tensor products as the fibered product in `CommRingCat`. -/
@@ -113,7 +113,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     rw [← h.hom.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
 
-lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRing B]
+lemma isPushout_tensorProduct (R A B : Type u) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
     [Algebra R A] [Algebra R B] :
     IsPushout (ofHom <| algebraMap R A) (ofHom <| algebraMap R B)
       (ofHom (S := A ⊗[R] B) Algebra.TensorProduct.includeLeftRingHom)
@@ -123,8 +123,8 @@ lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRi
     simp
   isColimit' := ⟨pushoutCoconeIsColimit R A B⟩
 
-lemma isPushout_of_isPushout (R S A B : Type u) [CommRing R] [CommRing S]
-    [CommRing A] [CommRing B] [Algebra R S] [Algebra S B] [Algebra R A] [Algebra A B] [Algebra R B]
+lemma isPushout_of_isPushout (R S A B : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
+    [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R S] [Algebra S B] [Algebra R A] [Algebra A B] [Algebra R B]
     [IsScalarTower R A B] [IsScalarTower R S B] [Algebra.IsPushout R S A B] :
     IsPushout (ofHom (algebraMap R S)) (ofHom (algebraMap R A))
       (ofHom (algebraMap S B)) (ofHom (algebraMap A B)) :=
@@ -134,8 +134,8 @@ lemma isPushout_of_isPushout (R S A B : Type u) [CommRing R] [CommRing S]
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
-    {R' S' : Type u} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
+lemma isPushout_iff_isPushout {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+    {R' S' : Type u} [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
     [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] :
     IsPushout (ofHom <| algebraMap R R') (ofHom <| algebraMap R S)
       (ofHom <| algebraMap R' S') (ofHom <| algebraMap S S') ↔ Algebra.IsPushout R R' S S' := by
@@ -160,7 +160,7 @@ lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra 
   simp [Iso.commRingCatIsoToRingEquiv, h1, e', e, h4]
 
 lemma isPushout_of_isLocalization {R S Rₘ Sₘ : Type u}
-    [CommRing R] [CommRing Rₘ] [Algebra R Rₘ] [CommRing S] [CommRing Sₘ] [Algebra S Sₘ]
+    [Ring R] [IsMulCommutative R] [Ring Rₘ] [IsMulCommutative Rₘ] [Algebra R Rₘ] [Ring S] [IsMulCommutative S] [Ring Sₘ] [IsMulCommutative Sₘ] [Algebra S Sₘ]
     (f : R →+* S) (fₘ : Rₘ →+* Sₘ) (H : fₘ.comp (algebraMap _ _) = (algebraMap _ _).comp f)
     (M : Submonoid R) [IsLocalization M Rₘ] [IsLocalization (M.map f) Sₘ] :
     IsPushout (CommRingCat.ofHom f) (CommRingCat.ofHom (algebraMap R Rₘ))
@@ -333,7 +333,7 @@ noncomputable def piIsoPi : ∏ᶜ R ≅ ↧((i : ι) → R i) :=
 /--
 The categorical product and the usual product agree
 -/
-noncomputable def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
+noncomputable def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, Ring (R i)] [∀ i, IsMulCommutative (R i)] :
     (∏ᶜ (fun i : ι ↦ ↧(R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
   (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
 

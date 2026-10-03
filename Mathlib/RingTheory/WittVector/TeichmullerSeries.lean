@@ -37,7 +37,7 @@ variable {p : ℕ} [hp : Fact (Nat.Prime p)]
 
 local notation "𝕎" => WittVector p
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 theorem sum_coeff_eq_coeff_sum {α : Type*} {S : Finset α} (x : α → 𝕎 R)
     (h : ∀ (n : ℕ), Subsingleton {r | r ∈ S ∧ (x r).coeff n ≠ 0}) (n : ℕ) :
@@ -115,7 +115,7 @@ and two ring maps `f g : 𝕎 R →+* S`, if they coincide on the teichmuller re
 then they are equal.
 -/
 theorem eq_of_apply_teichmuller_eq
-    {S : Type*} [CommRing S] (f g : 𝕎 R →+* S) (hp : IsNilpotent (p : S))
+    {S : Type*} [Ring S] [IsMulCommutative S] (f g : 𝕎 R →+* S) (hp : IsNilpotent (p : S))
     (h : ∀ (x : R), f (teichmuller p x) = g (teichmuller p x)) : f = g := by
   obtain ⟨n, hn⟩ := hp
   ext x

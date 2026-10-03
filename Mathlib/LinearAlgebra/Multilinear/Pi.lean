@@ -33,7 +33,7 @@ section Semiring
 
 variable {M : ∀ i, κ i → Type uM} {N : Type uN}
 variable [Semiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [AddCommMonoid N]
+variable [∀ i k, AddMonoid (M i k)] [∀ i k, IsAddCommutative (M i k)] [AddMonoid N] [IsAddCommutative N]
 variable [∀ i k, Module R (M i k)] [Module R N]
 
 /-- Two multilinear maps from finite families are equal if they agree on the generators.
@@ -64,7 +64,7 @@ variable {M : ∀ i, κ i → Type uM} {N : (Π i, κ i) → Type uN}
 section Semiring
 
 variable [Semiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
+variable [∀ i k, AddMonoid (M i k)] [∀ i k, IsAddCommutative (M i k)] [∀ p, AddMonoid (N p)] [∀ p, IsAddCommutative (N p)]
 variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
 /--
@@ -145,8 +145,8 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
+variable [Semiring R] [IsMulCommutative R]
+variable [∀ i k, AddMonoid (M i k)] [∀ i k, IsAddCommutative (M i k)] [∀ p, AddMonoid (N p)] [∀ p, IsAddCommutative (N p)]
 variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
 /-- `MultilinearMap.piFamily` as a linear map. -/

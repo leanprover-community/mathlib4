@@ -30,7 +30,7 @@ assert_not_exists Finset
 
 @[to_additive]
 instance SubmonoidClass.instMulArchimedean {M S : Type*} [SetLike S M]
-    [CommMonoid M] [PartialOrder M]
+    [Monoid M] [IsMulCommutative M] [PartialOrder M]
     [SubmonoidClass S M] [MulArchimedean M] (H : S) : MulArchimedean H := by
   constructor
   rintro x _

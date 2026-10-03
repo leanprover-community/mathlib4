@@ -28,8 +28,8 @@ noncomputable section
 
 section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
 
 variable {f f₀ f₁ : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}

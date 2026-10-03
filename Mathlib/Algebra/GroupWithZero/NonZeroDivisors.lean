@@ -73,7 +73,7 @@ lemma notMem_nonZeroDivisorsRight_iff :
     x ∉ nonZeroDivisorsRight M₀ ↔ {y | y * x = 0 ∧ y ≠ 0}.Nonempty := by
   simpa [mem_nonZeroDivisorsRight_iff] using! Set.nonempty_def.symm
 
-lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
+lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [MonoidWithZero M₀] [IsMulCommutative M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
   ext x; simp [mul_comm x]
 
@@ -290,7 +290,7 @@ theorem comap_nonZeroDivisors_le_of_injective [MonoidWithZeroHomClass F M₀ M�
 end MonoidWithZero
 
 section CommMonoidWithZero
-variable {M₀ : Type*} [CommMonoidWithZero M₀] {a b r x : M₀}
+variable {M₀ : Type*} [MonoidWithZero M₀] [IsMulCommutative M₀] {a b r x : M₀}
 
 lemma nonZeroDivisorsLeft_eq_nonZeroDivisors : nonZeroDivisorsLeft M₀ = nonZeroDivisors M₀ := by
   rw [nonZeroDivisors, nonZeroDivisorsLeft_eq_right, inf_idem]
@@ -387,7 +387,7 @@ def unitsNonZeroDivisorsEquiv : M₀⁰ˣ ≃* M₀ˣ where
 end MonoidWithZero
 
 section CommMonoidWithZero
-variable {M₀ : Type*} [CommMonoidWithZero M₀] {a : M₀}
+variable {M₀ : Type*} [MonoidWithZero M₀] [IsMulCommutative M₀] {a : M₀}
 
 theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀)⁰ ↔ a ∈ M₀⁰ := by
   rw [mem_nonZeroDivisors_iff_right, mem_nonZeroDivisors_iff_right]

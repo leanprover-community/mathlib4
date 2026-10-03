@@ -47,7 +47,7 @@ open CategoryTheory Finsupp
 
 namespace Representation.FiniteCyclicGroup
 
-variable {k G V : Type*} [CommRing k] [Group G] {V : Type*} [AddCommGroup V]
+variable {k G V : Type*} [Ring k] [IsMulCommutative k] [Group G] {V : Type*} [AddGroup V] [IsAddCommutative V]
   [Module k V] (ρ : Representation k G V) (g : G)
 
 variable [Finite G] in
@@ -92,7 +92,7 @@ end Representation.FiniteCyclicGroup
 
 namespace Rep.FiniteCyclicGroup
 
-variable (k : Type u) {G : Type u} [CommRing k] [CommGroup G] [Fintype G] (A : Rep k G) (g : G)
+variable (k : Type u) {G : Type u} [Ring k] [IsMulCommutative k] [Group G] [IsMulCommutative G] [Fintype G] (A : Rep k G) (g : G)
 
 namespace leftRegular
 

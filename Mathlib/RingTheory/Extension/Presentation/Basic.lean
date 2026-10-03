@@ -49,7 +49,7 @@ universe t w u v
 
 open TensorProduct MvPolynomial
 
-variable (R : Type u) (S : Type v) (ι : Type w) (σ : Type t) [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type v) (ι : Type w) (σ : Type t) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /--
 A presentation of an `R`-algebra `S` is a family of
@@ -160,7 +160,7 @@ section Construction
 
 /-- Transport a presentation along an algebra isomorphism. -/
 @[simps toGenerators relation]
-noncomputable def ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
+noncomputable def ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T]
     (e : S ≃ₐ[R] T) :
     Presentation R T ι σ where
   __ := Generators.ofAlgEquiv P.toGenerators e
@@ -168,7 +168,7 @@ noncomputable def ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing 
   span_range_relation_eq_ker := by simp [P.span_range_relation_eq_ker]
 
 @[simp]
-lemma dimension_ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
+lemma dimension_ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T]
     (e : S ≃ₐ[R] T) : (P.ofAlgEquiv e).dimension = P.dimension :=
   rfl
 
@@ -256,7 +256,7 @@ end Localization
 
 section BaseChange
 
-variable (T) [CommRing T] [Algebra R T] (P : Presentation R S ι σ)
+variable (T) [Ring T] [IsMulCommutative T] [Algebra R T] (P : Presentation R S ι σ)
 
 lemma span_range_relation_eq_ker_baseChange :
     Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) =
@@ -353,7 +353,7 @@ assumption this span is the kernel of the evaluation map of `P`. For this, we us
 
 -/
 
-variable {ι' σ' T : Type*} [CommRing T] [Algebra S T]
+variable {ι' σ' T : Type*} [Ring T] [IsMulCommutative T] [Algebra S T]
 variable (Q : Presentation S T ι' σ') (P : Presentation R S ι σ)
 
 /-- The evaluation map `MvPolynomial (ι' ⊕ ι) →ₐ[R] T` factors via this map. For more

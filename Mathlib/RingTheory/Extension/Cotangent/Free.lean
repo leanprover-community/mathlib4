@@ -32,7 +32,7 @@ universe t₂ t₁ u v
 
 open KaehlerDifferential MvPolynomial
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {ι σ κ : Type*}
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] {ι σ κ : Type*}
 
 namespace Algebra
 

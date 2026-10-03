@@ -34,7 +34,7 @@ variable {𝕜 V P : Type*}
 
 section AddTorsor
 variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
-  [AddCommGroup V] [Module 𝕜 V] [AddTorsor V P]
+  [AddGroup V] [IsAddCommutative V] [Module 𝕜 V] [AddTorsor V P]
   {s t : Set P} {x y z : P}
 
 omit [IsOrderedRing 𝕜] in
@@ -66,7 +66,7 @@ end AddTorsor
 
 section Module
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  [AddCommGroup V] [Module 𝕜 V] {s : Set V} {x y z : V}
+  [AddGroup V] [IsAddCommutative V] [Module 𝕜 V] {s : Set V} {x y z : V}
 
 /-- If a point `x` sees a convex combination of points of a set `s` through `convexHull ℝ s ∌ x`,
 then it sees all terms of that combination.
@@ -137,7 +137,7 @@ lemma IsOpen.eq_of_isVisible_of_left_mem (hs : IsOpen s) (hsxy : IsVisible 𝕜 
 end Module
 
 section Real
-variable [AddCommGroup V] [Module ℝ V] {s : Set V} {x y z : V}
+variable [AddGroup V] [IsAddCommutative V] [Module ℝ V] {s : Set V} {x y z : V}
 
 /-- All points of the convex hull of a set `s` visible from a point `x ∉ convexHull ℝ s` lie in the
 convex hull of such points that actually lie in `s`.

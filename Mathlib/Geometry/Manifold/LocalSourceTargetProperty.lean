@@ -45,8 +45,8 @@ open scoped Manifold Topology ContDiff
 open Set
 
 variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E']
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜 F']
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace G] [TopologicalSpace G']
   {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
   {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F' G'}

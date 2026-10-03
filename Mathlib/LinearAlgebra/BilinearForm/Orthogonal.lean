@@ -39,9 +39,9 @@ open Module
 
 universe u v w
 
-variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
+variable {R : Type*} {M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [IsMulCommutative R₁] [AddGroup M₁] [IsAddCommutative M₁] [Module R₁ M₁]
+variable {V : Type*} {K : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace LinearMap
@@ -97,8 +97,8 @@ theorem iIsOrtho_def {n : Type w} {B : BilinForm R M} {v : n → M} :
 
 section
 
-variable {R₄ M₄ : Type*} [CommRing R₄] [IsDomain R₄]
-variable [AddCommGroup M₄] [Module R₄ M₄] {G : BilinForm R₄ M₄}
+variable {R₄ M₄ : Type*} [Ring R₄] [IsMulCommutative R₄] [IsDomain R₄]
+variable [AddGroup M₄] [IsAddCommutative M₄] [Module R₄ M₄] {G : BilinForm R₄ M₄}
 
 @[deprecated "`BilinMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem isOrtho_smul_left {x y : M₄} {a : R₄} (ha : a ≠ 0) :

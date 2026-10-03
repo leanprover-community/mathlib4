@@ -22,7 +22,7 @@ open AffineSpace Bornology Filter
 open scoped Topology
 
 variable
-  {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+  {V P : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
 theorem AffineSpace.asymptoticNhds_le_cobounded {v : V} (hv : v ≠ 0) :
     asymptoticNhds ℝ P v ≤ cobounded P := by

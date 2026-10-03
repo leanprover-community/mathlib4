@@ -25,7 +25,7 @@ variable {R S M : Type*}
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] (r s : R) (x : M)
 
 theorem AddMonoid.End.natCast_def (n : ℕ) :
     (↑n : AddMonoid.End M) = DistribMulAction.toAddMonoidEnd ℕ M n :=
@@ -70,7 +70,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable (R M) [Semiring R] [AddCommGroup M]
+variable (R M) [Semiring R] [AddGroup M] [IsAddCommutative M]
 
 theorem AddMonoid.End.intCast_def (z : ℤ) :
     (↑z : AddMonoid.End M) = DistribMulAction.toAddMonoidEnd ℤ M z :=

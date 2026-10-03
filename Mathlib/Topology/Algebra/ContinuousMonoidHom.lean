@@ -224,7 +224,7 @@ def diag : A →ₜ* (A × A) := prod (id A) (id A)
 def swap : (A × B) →ₜ* (B × A) := prod (snd A B) (fst A B)
 
 section CommMonoid
-variable [CommMonoid E] [TopologicalSpace E] [ContinuousMul E]
+variable [Monoid E] [IsMulCommutative E] [TopologicalSpace E] [ContinuousMul E]
 
 /-- The continuous homomorphism given by multiplication. -/
 @[to_additive (attr := simps!) /-- The continuous homomorphism given by addition. -/]
@@ -260,7 +260,7 @@ end CommMonoid
 
 section CommGroup
 
-variable [CommGroup E] [TopologicalSpace E] [IsTopologicalGroup E]
+variable [Group E] [IsMulCommutative E] [TopologicalSpace E] [IsTopologicalGroup E]
 /-- The continuous homomorphism given by inversion. -/
 @[to_additive (attr := simps!) /-- The continuous homomorphism given by negation. -/]
 def inv : ContinuousMonoidHom E E :=

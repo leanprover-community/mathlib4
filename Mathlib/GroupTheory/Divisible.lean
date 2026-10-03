@@ -177,7 +177,7 @@ end Monoid
 
 namespace AddCommGroup
 
-variable (A : Type*) [AddCommGroup A]
+variable (A : Type*) [AddGroup A] [IsAddCommutative A]
 
 theorem smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n ≠ 0) :
     n • (⊤ : AddSubgroup A) = ⊤ :=
@@ -262,7 +262,7 @@ end Hom
 
 section Quotient
 
-variable {A : Type*} [CommGroup A] (B : Subgroup A)
+variable {A : Type*} [Group A] [IsMulCommutative A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
 @[to_additive /-- Any quotient group of a divisible group is divisible -/]

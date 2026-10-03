@@ -34,7 +34,7 @@ open Fintype Finset Set
 namespace Convex
 
 variable {ι 𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 /-- **Radon's theorem on convex sets**.
 

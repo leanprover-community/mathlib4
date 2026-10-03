@@ -49,9 +49,9 @@ universe t w w' u u' v v'
 
 namespace Representation
 
-variable {k G H : Type*} [CommRing k] [Group G] [Group H] (φ : G →* H) {A B : Type*}
-  [AddCommGroup A] [Module k A] (ρ : Representation k G A)
-  [AddCommGroup B] [Module k B]
+variable {k G H : Type*} [Ring k] [IsMulCommutative k] [Group G] [Group H] (φ : G →* H) {A B : Type*}
+  [AddGroup A] [IsAddCommutative A] [Module k A] (ρ : Representation k G A)
+  [AddGroup B] [IsAddCommutative B] [Module k B]
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is the
 `k`-module `(k[H] ⊗[k] A)_G` with the `G`-representation on `k[H]` defined by `φ`.
@@ -91,7 +91,7 @@ namespace Rep
 
 open CategoryTheory Finsupp
 
-variable {k : Type u} {G : Type v} {H : Type v'} [CommRing k] [Group G] [Group H] (φ : G →* H)
+variable {k : Type u} {G : Type v} {H : Type v'} [Ring k] [IsMulCommutative k] [Group G] [Group H] (φ : G →* H)
   (A : Rep.{w} k G)
 
 section Ind

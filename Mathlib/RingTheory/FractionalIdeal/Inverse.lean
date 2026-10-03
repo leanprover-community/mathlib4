@@ -40,7 +40,7 @@ open scoped nonZeroDivisors Polynomial
 
 namespace FractionalIdeal
 
-variable {R₁ : Type*} [CommRing R₁] [IsDomain R₁] [Algebra R₁ K] [IsFractionRing R₁ K]
+variable {R₁ : Type*} [Ring R₁] [IsMulCommutative R₁] [IsDomain R₁] [Algebra R₁ K] [IsFractionRing R₁ K]
 variable {I J : FractionalIdeal R₁⁰ K}
 
 noncomputable instance : Inv (FractionalIdeal R₁⁰ K) := ⟨fun I => 1 / I⟩
@@ -132,7 +132,7 @@ theorem coe_ideal_span_singleton_inv_mul {x : R₁} (hx : x ≠ 0) :
     (Ideal.span ({x} : Set R₁) : FractionalIdeal R₁⁰ K)⁻¹ * Ideal.span ({x} : Set R₁) = 1 := by
   rw [mul_comm, coe_ideal_span_singleton_mul_inv K hx]
 
-theorem mul_generator_self_inv {R₁ : Type*} [CommRing R₁] [Algebra R₁ K] [IsLocalization R₁⁰ K]
+theorem mul_generator_self_inv {R₁ : Type*} [Ring R₁] [IsMulCommutative R₁] [Algebra R₁ K] [IsLocalization R₁⁰ K]
     (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (I : Submodule R₁ K)] (h : I ≠ 0) :
     I * spanSingleton _ (generator (I : Submodule R₁ K))⁻¹ = 1 := by
   -- Rewrite only the `I` that appears alone.

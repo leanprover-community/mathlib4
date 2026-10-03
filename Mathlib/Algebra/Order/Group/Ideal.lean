@@ -24,7 +24,7 @@ public section
 
 namespace SemigroupIdeal
 
-variable {M : Type*} [CommMonoid M] [PartialOrder M] [WellQuasiOrderedLE M]
+variable {M : Type*} [Monoid M] [IsMulCommutative M] [PartialOrder M] [WellQuasiOrderedLE M]
   [CanonicallyOrderedMul M]
 
 /-- In a canonically ordered and well-quasi-ordered monoid, any semigroup ideal is finitely

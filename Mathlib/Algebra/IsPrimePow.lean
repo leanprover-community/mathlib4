@@ -19,7 +19,7 @@ This file deals with prime powers: numbers which are positive integer powers of 
 @[expose] public section
 assert_not_exists Nat.divisors
 
-variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
+variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] (n p : R) (k : ℕ)
 
 /-- `n` is a prime power if there is a prime `p` and a positive natural `k` such that `n` can be
 written as `p^k`. -/

@@ -66,7 +66,7 @@ end OrderedSemiring
 
 This version works for partially ordered commutative semirings,
 but explicitly assumes that `b ^ 2` and `(a + b) ^ 2` are nonnegative. -/
-lemma pow_add_mul_le_add_pow_of_sq_nonneg [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+lemma pow_add_mul_le_add_pow_of_sq_nonneg [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsOrderedRing R]
     {a b : R} (ha : 0 ≤ a) (Hsq : 0 ≤ b ^ 2) (Hsq' : 0 ≤ (a + b) ^ 2) (H : 0 ≤ 2 * a + b)
     (n : ℕ) : a ^ n + n * a ^ (n - 1) * b ≤ (a + b) ^ n :=
   (Commute.all a b).pow_add_mul_le_add_pow_of_sq_nonneg ha Hsq Hsq' H n
@@ -82,7 +82,7 @@ lemma Commute.pow_add_mul_le_add_pow [Semiring R] [LinearOrder R] [IsOrderedRing
 /-- Bernoulli's inequality for `b / a`, written after multiplication by the denominators.
 
 This is a version for a linear ordered semiring. -/
-lemma pow_add_mul_le_add_pow [CommSemiring R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R]
+lemma pow_add_mul_le_add_pow [Semiring R] [IsMulCommutative R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R]
     {a b : R} (ha : 0 ≤ a) (H : 0 ≤ 2 * a + b) (n : ℕ) :
     a ^ n + n * a ^ (n - 1) * b ≤ (a + b) ^ n :=
   (Commute.all a b).pow_add_mul_le_add_pow ha H n

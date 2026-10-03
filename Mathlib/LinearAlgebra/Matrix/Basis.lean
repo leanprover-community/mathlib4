@@ -41,8 +41,8 @@ noncomputable section
 open Function LinearMap Matrix Module Set Submodule
 
 variable {ι ι' κ κ' : Type*}
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-variable {R₂ M₂ : Type*} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
+variable {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {R₂ M₂ : Type*} [Ring R₂] [IsMulCommutative R₂] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 
 namespace Module.Basis
 
@@ -104,7 +104,7 @@ theorem toMatrix_smul_left {G} [Group G] [DistribMulAction G M] [SMulCommClass G
 theorem sum_toMatrix_smul_self [Fintype ι] : ∑ i : ι, e.toMatrix v i j • e i = v j := by
   simp_rw [e.toMatrix_apply, e.sum_repr]
 
-theorem toMatrix_smul {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S] [Fintype ι]
+theorem toMatrix_smul {R₁ S : Type*} [Semiring R₁] [IsMulCommutative R₁] [Semiring S] [Algebra R₁ S] [Fintype ι]
     [DecidableEq ι] (x : S) (b : Basis ι R₁ S) (w : ι → S) :
     (b.toMatrix (x • w)) = (Algebra.leftMulMatrix b x) * (b.toMatrix w) := by
   ext
@@ -147,7 +147,7 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
       LinearEquiv.apply_symm_apply]
 
 variable (R₂) in
-theorem restrictScalars_toMatrix [Fintype ι] [DecidableEq ι] {S : Type*} [CommRing S] [Nontrivial S]
+theorem restrictScalars_toMatrix [Fintype ι] [DecidableEq ι] {S : Type*} [Ring S] [IsMulCommutative S] [Nontrivial S]
     [Algebra R₂ S] [Module S M₂] [IsScalarTower R₂ S M₂] [IsDomain R₂] [IsTorsionFree R₂ S]
     (b : Basis ι S M₂) (v : ι → span R₂ (Set.range b)) :
     (algebraMap R₂ S).mapMatrix ((b.restrictScalars R₂).toMatrix v) =
@@ -160,7 +160,7 @@ end Module.Basis
 
 section MulLinearMapToMatrix
 
-variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 variable (b : Basis ι R M) (b' : Basis ι' R M) (c : Basis κ R N) (c' : Basis κ' R N)
 variable (f : M →ₗ[R] N)
 

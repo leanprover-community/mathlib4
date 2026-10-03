@@ -20,7 +20,7 @@ public section
 open Complex MeasureTheory Metric Real Set
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E]
   {f : ℂ → E} {R : ℝ} {w c : ℂ} {s : Set ℂ}
 
 /-!

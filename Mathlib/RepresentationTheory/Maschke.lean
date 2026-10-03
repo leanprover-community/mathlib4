@@ -54,11 +54,11 @@ $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 namespace LinearMap
 
 
--- At first we work with any `[CommRing k]`, and add the assumption that
+-- At first we work with any `[Ring k] [IsMulCommutative k]`, and add the assumption that
 -- `IsUnit (Fintype.card G : k)` when it is required.
-variable {k : Type*} [CommRing k] {G : Type*} [Group G]
-variable {V : Type*} [AddCommGroup V] [Module k V] [Module k[G] V] [IsScalarTower k k[G] V]
-variable {W : Type*} [AddCommGroup W] [Module k W] [Module k[G] W] [IsScalarTower k k[G] W]
+variable {k : Type*} [Ring k] [IsMulCommutative k] {G : Type*} [Group G]
+variable {V : Type*} [AddGroup V] [IsAddCommutative V] [Module k V] [Module k[G] V] [IsScalarTower k k[G] V]
+variable {W : Type*} [AddGroup W] [IsAddCommutative W] [Module k W] [Module k[G] W] [IsScalarTower k k[G] W]
 variable (π : W →ₗ[k] V)
 
 /-- We define the conjugate of `π` by `g`, as a `k`-linear map. -/
@@ -135,8 +135,8 @@ namespace MonoidAlgebra
 -- Now we work over a `[Field k]`.
 variable {k : Type*} [Field k] {G : Type*} [Finite G] [NeZero (Nat.card G : k)]
 variable [Group G]
-variable {V : Type*} [AddCommGroup V] [Module k[G] V]
-variable {W : Type*} [AddCommGroup W] [Module k[G] W]
+variable {V : Type*} [AddGroup V] [IsAddCommutative V] [Module k[G] V]
+variable {W : Type*} [AddGroup W] [IsAddCommutative W] [Module k[G] W]
 
 theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.ker f = ⊥) :
     ∃ g : W →ₗ[k[G]] V, g.comp f = .id := by
@@ -171,7 +171,7 @@ instance [AddGroup G] : IsSemisimpleRing (AddMonoidAlgebra k G) :=
 
 section
 
-variable {G k V : Type*} [Group G] [Field k] [Finite G] [NeZero (Nat.card G : k)] [AddCommGroup V]
+variable {G k V : Type*} [Group G] [Field k] [Finite G] [NeZero (Nat.card G : k)] [AddGroup V] [IsAddCommutative V]
   [Module k V] (ρ : Representation k G V)
 
 open Representation

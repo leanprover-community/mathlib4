@@ -29,7 +29,7 @@ open Submodule
 section
 
 variable {R A B S : Type*}
-variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [Ring S] [IsMulCommutative S]
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
 theorem Subalgebra.isIntegral_iff (S : Subalgebra R B) :
@@ -55,7 +55,7 @@ theorem AlgEquiv.isIntegral_iff (e : A ≃ₐ[R] B) : Algebra.IsIntegral R A ↔
 
 end
 
-instance Module.End.isIntegral {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M] :
+instance Module.End.isIntegral {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Finite R M] :
     Algebra.IsIntegral R (Module.End R M) :=
   ⟨LinearMap.exists_monic_and_aeval_eq_zero R⟩
 
@@ -89,7 +89,7 @@ theorem isIntegral_of_submodule_noetherian (S : Subalgebra R B)
 
 /-- Suppose `A` is an `R`-algebra, `M` is an `A`-module such that `a • m ≠ 0` for all non-zero `a`
 and `m`. If `x : A` fixes a nontrivial f.g. `R`-submodule `N` of `M`, then `x` is `R`-integral. -/
-theorem isIntegral_of_smul_mem_submodule [IsDomain A] {M : Type*} [AddCommGroup M] [Module R M]
+theorem isIntegral_of_smul_mem_submodule [IsDomain A] {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
     [Module A M] [IsScalarTower R A M] [Module.IsTorsionFree A M] (N : Submodule R M) (hN : N ≠ ⊥)
     (hN' : N.FG) (x : A) (hx : ∀ n ∈ N, x • n ∈ N) : IsIntegral R x := by
   let A' : Subalgebra R A :=
@@ -197,7 +197,7 @@ nonrec theorem IsIntegral.mul {x y : A} (hx : IsIntegral R x) (hy : IsIntegral R
     IsIntegral R (x * y) :=
   hx.mul (algebraMap R A) hy
 
-theorem IsIntegral.smul {R} [CommSemiring R] [Algebra R B] [Algebra S B] [Algebra R S]
+theorem IsIntegral.smul {R} [Semiring R] [IsMulCommutative R] [Algebra R B] [Algebra S B] [Algebra R S]
     [IsScalarTower R S B] {x : B} (r : R) (hx : IsIntegral S x) : IsIntegral S (r • x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
@@ -236,7 +236,7 @@ end
 
 section TensorProduct
 
-variable {R A B : Type*} [CommRing R] [CommRing A]
+variable {R A B : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A]
 
 open TensorProduct
 
@@ -249,7 +249,7 @@ theorem IsIntegral.tmul [Ring B] [Algebra R A] [Algebra R B]
 
 variable (R A B)
 
-instance Algebra.IsIntegral.tensorProduct [CommRing B]
+instance Algebra.IsIntegral.tensorProduct [Ring B] [IsMulCommutative B]
     [Algebra R A] [Algebra R B] [int : Algebra.IsIntegral R B] :
     Algebra.IsIntegral A (A ⊗[R] B) where
   isIntegral p := p.inductionOn (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
@@ -258,7 +258,7 @@ end TensorProduct
 
 section MulSemiringAction
 
-variable {G R K : Type*} [CommRing R] [CommRing K] [Algebra R K]
+variable {G R K : Type*} [Ring R] [IsMulCommutative R] [Ring K] [IsMulCommutative K] [Algebra R K]
   [Group G] [MulSemiringAction G K] [SMulCommClass G R K]
 
 instance : MulSemiringAction G (integralClosure R K) where

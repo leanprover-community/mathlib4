@@ -23,7 +23,7 @@ namespace Subalgebra
 
 section Semiring
 
-variable {ι : Sort*} {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {ι : Sort*} {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 /-- Pull a subalgebra back to an opposite subalgebra along `MulOpposite.unop` -/
 @[simps! coe toSubsemiring]
@@ -161,7 +161,7 @@ end Semiring
 
 section Ring
 
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 @[simp]
 theorem op_toSubring (S : Subalgebra R A) : S.op.toSubring = S.toSubring.op := rfl

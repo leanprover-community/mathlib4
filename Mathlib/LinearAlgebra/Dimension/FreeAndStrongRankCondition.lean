@@ -26,7 +26,7 @@ universe u v
 
 section Module
 
-variable {K : Type u} {V : Type v} [Ring K] [StrongRankCondition K] [AddCommGroup V] [Module K V]
+variable {K : Type u} {V : Type v} [Ring K] [StrongRankCondition K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 /-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
 
@@ -220,7 +220,7 @@ theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
     lift_lift, lift_umax] at this
 
 theorem cardinalMk_eq_cardinalMk_field_pow_rank (K V : Type u) [Ring K] [StrongRankCondition K]
-    [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
+    [AddGroup V] [IsAddCommutative V] [Module K V] [Module.Free K V] [Module.Finite K V] :
     #V = #K ^ Module.rank K V := by
   simpa using lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank K V
 
@@ -235,7 +235,7 @@ end Module
 
 namespace Subalgebra
 
-variable {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E] [Algebra F E]
+variable {F E : Type*} [Ring F] [IsMulCommutative F] [StrongRankCondition F] [Ring E] [Algebra F E]
   {S : Subalgebra F E}
 
 theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S = ⊥ := by

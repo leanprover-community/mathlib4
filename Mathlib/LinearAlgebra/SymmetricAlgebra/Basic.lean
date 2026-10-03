@@ -33,7 +33,7 @@ multiplication on `R` by $a \circ b = \frac{1}{2}(ab + ba)$.
 
 @[expose] public section
 
-variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable (R M : Type*) [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- Relation on the tensor algebra which will yield the symmetric algebra when
 quotiented out by. -/
@@ -88,11 +88,11 @@ instance : CommSemiring (SymmetricAlgebra R M) where
     | mul b c hb hc => exact hb.mul_right hc
     | add b c hb hc => exact hb.add_right hc
 
-instance (R M) [CommRing R] [AddCommMonoid M] [Module R M] : CommRing (SymmetricAlgebra R M) where
+instance (R M) [Ring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] : CommRing (SymmetricAlgebra R M) where
   __ := (inferInstance : CommSemiring (SymmetricAlgebra R M))
   __ := (inferInstance : Ring (SymmetricAlgebra R M))
 
-variable {R M} {A : Type*} [CommSemiring A] [Algebra R A]
+variable {R M} {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 /-- For any linear map `f : M →ₗ[R] A`, `SymmetricAlgebra.lift f` lifts the linear map to an
 R-algebra homomorphism from `SymmetricAlgebra R M` to `A`. -/
@@ -160,7 +160,7 @@ instance [Nontrivial R] : Nontrivial (SymmetricAlgebra R M) :=
 
 end SymmetricAlgebra
 
-variable {A : Type*} [CommSemiring A] [Algebra R A] (f : M →ₗ[R] A)
+variable {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A] (f : M →ₗ[R] A)
 variable {R} {M}
 
 /-- Given a morphism `f : M →ₗ[R] A`, `IsSymmetricAlgebra f` is a proposition saying that the
@@ -213,7 +213,7 @@ end equiv
 
 section UniversalProperty
 
-variable {A' : Type*} [CommSemiring A'] [Algebra R A'] (g : M →ₗ[R] A')
+variable {A' : Type*} [Semiring A'] [IsMulCommutative A'] [Algebra R A'] (g : M →ₗ[R] A')
 
 /-- Given a morphism `g : M →ₗ[R] A'`, lift this to a morphism of type `A →ₐ[R] A'` (where `A`
 satisfies the universal property of the symmetric algebra of `M`) -/

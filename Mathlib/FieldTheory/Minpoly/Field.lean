@@ -83,14 +83,14 @@ lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
 theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
   rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
 
-theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [Ring R]
+theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [Ring A] [IsMulCommutative A] [Field K] [Ring R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
   refine minpoly.dvd K x ?_
   rw [aeval_map_algebraMap, minpoly.aeval]
 
-theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRing R]
-    [CommRing S] [Field K] [Ring L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
+theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [Ring R] [IsMulCommutative R]
+    [Ring S] [IsMulCommutative S] [Field K] [Ring L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] (s : S) :
     minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (minpoly R s) := by
   apply minpoly.dvd K (algebraMap S L s)
@@ -98,8 +98,8 @@ theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRin
   rw [← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
 
 /-- If `y` is a conjugate of `x` over a field `K`, then it is a conjugate over a subring `R`. -/
-theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K] [CommRing T]
-    [Algebra R K] [Algebra K T] [Algebra R T] [IsScalarTower R K T] [CommSemiring U] [Algebra K U]
+theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [Ring R] [IsMulCommutative R] [Field K] [Ring T] [IsMulCommutative T]
+    [Algebra R K] [Algebra K T] [Algebra R T] [IsScalarTower R K T] [Semiring U] [IsMulCommutative U] [Algebra K U]
     [Algebra R U] [IsScalarTower R K U] (x : T) (y : U)
     (hy : Polynomial.aeval y (minpoly K x) = 0) : Polynomial.aeval y (minpoly R x) = 0 :=
   aeval_map_algebraMap K y (minpoly R x) ▸
@@ -108,7 +108,7 @@ theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K
 
 /-- If a subfield `F` of `E` contains all the coefficients of `minpoly E a`, then
 `minpoly F a` maps to `minpoly E a` via `algebraMap F E`. -/
-theorem map_algebraMap {F E A : Type*} [Field F] [Field E] [CommRing A]
+theorem map_algebraMap {F E A : Type*} [Field F] [Field E] [Ring A] [IsMulCommutative A]
     [Algebra F E] [Algebra E A] [Algebra F A] [IsScalarTower F E A]
     {a : A} (ha : IsIntegral F a) (h : minpoly E a ∈ lifts (algebraMap F E)) :
     (minpoly F a).map (algebraMap F E) = minpoly E a := by
@@ -171,7 +171,7 @@ theorem _root_.Irreducible.dvd_iff_aeval_eq_zero [Nontrivial B] {p q : A[X]} (hi
   · rintro ⟨g, rfl⟩
     simp [hfa]
 
-theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
+theorem add_algebraMap {B : Type*} [Ring B] [IsMulCommutative B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   by_cases hx : IsIntegral A x
   · refine (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) ?_ fun q qmo hq => ?_).symm
@@ -188,7 +188,7 @@ theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     refine fun h ↦ hx ?_
     simpa only [add_sub_cancel_right] using IsIntegral.sub h (isIntegral_algebraMap (x := a))
 
-theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
+theorem sub_algebraMap {B : Type*} [Ring B] [IsMulCommutative B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap x (-a)
 
@@ -206,7 +206,7 @@ theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
     · simp only [natDegree_zero, pow_zero, mul_zero]
     · exact IsIntegral.neg_iff.not.mpr hx
 
-theorem map_eq_of_equiv_equiv {R S T : Type*} [CommRing R] [IsDomain R] [Ring S] [Ring T]
+theorem map_eq_of_equiv_equiv {R S T : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [Ring S] [Ring T]
     [IsDomain S] [IsDomain T] [Algebra R S] [Algebra A T] [Algebra.IsIntegral R S]
     {f : R ≃+* A} {g : S ≃+* T}
     (hcomp : (algebraMap A T).comp f = (g : S →+* T).comp (algebraMap R S)) (x : S) :
@@ -226,7 +226,7 @@ noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L
     (F : E → Multiset L) : Fintype (∀ x : X, { l : L // l ∈ F x }) :=
   @Pi.instFintype _ _ _ (Finite.fintype hX) _
 
-variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
+variable (F E K : Type*) [Field F] [Ring E] [Ring K] [IsMulCommutative K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
 /-- Function from `Hom_K(E,L)` to pi type Π (x : basis), roots of min poly of x -/
@@ -324,7 +324,7 @@ end minpoly
 
 section AlgHom
 
-variable {K L} [Field K] [CommRing L] [IsDomain L] [Algebra K L]
+variable {K L} [Field K] [Ring L] [IsMulCommutative L] [IsDomain L] [Algebra K L]
 
 /-- The minimal polynomial (over `K`) of `σ : L ≃ₐ[K] L` is `X ^ (orderOf σ) - 1`. -/
 lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) :

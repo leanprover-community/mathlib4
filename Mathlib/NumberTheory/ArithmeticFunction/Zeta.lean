@@ -57,7 +57,7 @@ theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
 theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [pos_iff_ne_zero]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
+theorem coe_zeta_smul_apply {M} [Semiring R] [AddMonoid M] [IsAddCommutative M] [MulAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i ∈ divisors x, f i := by
   rw [smul_apply]
@@ -69,7 +69,7 @@ theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
 
 /-- `@[simp]`-normal form of `coe_zeta_smul_apply`. -/
 @[simp]
-theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
+theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddMonoid M] [IsAddCommutative M] [MulAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     (∑ x ∈ x.divisorsAntidiagonal, if x.1 = 0 then (0 : R) • f x.2 else f x.2) =
       ∑ i ∈ divisors x, f i := by
@@ -109,7 +109,7 @@ def pmul [MulZeroClass R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
 theorem pmul_apply [MulZeroClass R] {f g : ArithmeticFunction R} {x : ℕ} : f.pmul g x = f x * g x :=
   rfl
 
-theorem pmul_comm [CommMonoidWithZero R] (f g : ArithmeticFunction R) : f.pmul g = g.pmul f := by
+theorem pmul_comm [MonoidWithZero R] [IsMulCommutative R] (f g : ArithmeticFunction R) : f.pmul g = g.pmul f := by
   ext
   simp [mul_comm]
 
@@ -195,14 +195,14 @@ theorem isMultiplicative_zeta : IsMultiplicative ζ :=
 namespace IsMultiplicative
 
 @[arith_mult]
-theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
+theorem pmul [Semiring R] [IsMulCommutative R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f.pmul g) :=
   ⟨by simp [hf, hg], fun cop => by
     simp only [pmul_apply, hf.map_mul_of_coprime cop, hg.map_mul_of_coprime cop]
     ring⟩
 
 @[arith_mult]
-theorem pdiv [CommGroupWithZero R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f)
+theorem pdiv [GroupWithZero R] [IsMulCommutative R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f)
     (hg : IsMultiplicative g) : IsMultiplicative (pdiv f g) :=
   ⟨by simp [hf, hg], fun cop => by
     simp only [pdiv_apply, map_mul_of_coprime hf cop, map_mul_of_coprime hg cop, div_eq_mul_inv,
@@ -210,7 +210,7 @@ theorem pdiv [CommGroupWithZero R] {f g : ArithmeticFunction R} (hf : IsMultipli
     apply mul_mul_mul_comm ⟩
 
 @[arith_mult]
-theorem ppow [CommSemiring R] {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
+theorem ppow [Semiring R] [IsMulCommutative R] {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
     {k : ℕ} : IsMultiplicative (f.ppow k) := by
   induction k with
   | zero => exact isMultiplicative_zeta.natCast

@@ -159,7 +159,7 @@ noncomputable example (R : Type u) [Ring R] :
 
 section
 
-variable (R : Type w) [CommRing R] (M ι : Type u) [AddCommGroup M] [Module R M]
+variable (R : Type w) [Ring R] [IsMulCommutative R] (M ι : Type u) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- The coproduct cone induced by the concrete coproduct. -/
 noncomputable

@@ -32,7 +32,7 @@ namespace Algebra
 
 section
 
-variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
+variable {R A B : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra A B]
     [Algebra R B] [IsScalarTower R A B]
 
 variable (R) in
@@ -91,14 +91,14 @@ end
 
 section IsUnramifiedIn
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /-- A prime `𝔭` of `R` is unramified in `A` if every prime ideal `𝔓` of `A` lying over `𝔭` is
 unramified . -/
-def IsUnramifiedIn (A : Type*) [CommRing A] [Algebra R A] (𝔭 : Ideal R) : Prop :=
+def IsUnramifiedIn (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A] (𝔭 : Ideal R) : Prop :=
   ∀ (𝔓 : Ideal A) (_ : 𝔓.IsPrime), 𝔓.LiesOver 𝔭 → Algebra.IsUnramifiedAt R 𝔓
 
-variable (A : Type*) [CommRing A] [Algebra R A]
+variable (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A]
 
 theorem isUnramifiedIn_top : IsUnramifiedIn A (⊤ : Ideal R) :=
   fun P hP _ ↦ (hP.ne_top ((Ideal.eq_top_iff_of_liesOver P (⊤ : Ideal R)).mpr rfl)).elim
@@ -106,7 +106,7 @@ theorem isUnramifiedIn_top : IsUnramifiedIn A (⊤ : Ideal R) :=
 end IsUnramifiedIn
 section
 
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
 
 lemma unramifiedLocus_eq_compl_support :
     unramifiedLocus R A = (Module.support A Ω[A⁄R])ᶜ := by

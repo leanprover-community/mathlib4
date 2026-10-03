@@ -24,7 +24,7 @@ open CategoryTheory
 
 namespace ModuleCat
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 /-- The exterior power of an object in `ModuleCat R`. -/
 def exteriorPower (M : ModuleCat.{v} R) (n : ℕ) : ModuleCat.{max u v} R :=

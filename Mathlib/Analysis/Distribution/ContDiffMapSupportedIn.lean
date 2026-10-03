@@ -87,9 +87,9 @@ open TopologicalSpace Set Function UniformSpace WithSeminorms
 open scoped BoundedContinuousFunction Topology NNReal ContDiff
 
 variable (𝕜 E F F' : Type*) [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-  [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
   {n n₁ n₂ k : ℕ∞} {K K₁ K₂ : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
@@ -115,7 +115,7 @@ open scoped Distributions
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
 continuously differentiable functions with support in the compact set `K`. -/
 class ContDiffMapSupportedInClass (B : Type*) (E F : outParam Type*)
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     extends FunLike B E F where
   map_contDiff (f : B) : ContDiff ℝ n f
@@ -126,14 +126,14 @@ open ContDiffMapSupportedInClass
 namespace ContDiffMapSupportedInClass
 
 instance (B : Type*) (E F : outParam Type*)
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*) (E F : outParam Type*)
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
     BoundedContinuousMapClass B E F where
@@ -733,7 +733,7 @@ protected noncomputable def mkCLM (A : 𝓓^{n₁}_{K₁}(E, F) → E → F')
           simp [ContDiffMapSupportedIn.seminorm_eq_bot_of_gt 𝕜 (not_le.1 hi)]⟩ }
 
 /-- Define a continous `𝕜`-linear map fom `𝓓^{n}_{K}(E, F)` to a normed space. -/
-protected noncomputable def mkCLMtoNormedSpace {G : Type*} [NormedAddCommGroup G]
+protected noncomputable def mkCLMtoNormedSpace {G : Type*} [NormedAddGroup G] [IsAddCommutative G]
     [NormedSpace 𝕜 G] (A : 𝓓^{n}_{K}(E, F) → G)
     (hadd : ∀ f g, A (f + g) = A f + A g)
     (hsmul : ∀ (c : 𝕜) f, A (c • f) = c • A f)
@@ -911,9 +911,9 @@ section Integral
 open MeasureTheory
 
 variable {𝕜} {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
-  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
-  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+  [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂]
+  [NormedAddGroup F₃] [IsAddCommutative F₃] [NormedSpace 𝕜 F₃]
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : 𝓓^{n}_{K}(E, F)) :
@@ -1038,9 +1038,9 @@ section bilin
 open ContDiffMapSupportedIn
 
 variable {𝕜} {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
-  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
-  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
+  [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
+  [NormedAddGroup F₃] [IsAddCommutative F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
 
 open ContinuousLinearMap Finset
 

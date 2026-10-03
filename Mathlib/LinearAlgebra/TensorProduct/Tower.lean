@@ -61,16 +61,16 @@ open Algebra (lsmul)
 
 section Semiring
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-variable [AddCommMonoid M] [Module R M] [Module A M]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M]
 variable [IsScalarTower R A M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P] [Module A P]
+variable [AddMonoid N] [IsAddCommutative N] [Module R N]
+variable [AddMonoid P] [IsAddCommutative P] [Module R P] [Module A P]
 variable [IsScalarTower R A P]
-variable [AddCommMonoid Q] [Module R Q]
-variable [AddCommMonoid P'] [Module R P'] [Module A P']
+variable [AddMonoid Q] [IsAddCommutative Q] [Module R Q]
+variable [AddMonoid P'] [IsAddCommutative P'] [Module R P'] [Module A P']
 variable [IsScalarTower R A P']
-variable [AddCommMonoid Q'] [Module R Q']
+variable [AddMonoid Q'] [IsAddCommutative Q'] [Module R Q']
 
 theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M a).rTensor N x :=
   rfl
@@ -169,8 +169,8 @@ def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
 The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
 @[simps! apply]
 nonrec def mk (A M N : Type*) [Semiring A]
-    [AddCommMonoid M] [Module R M] [Module A M] [SMulCommClass R A M]
-    [AddCommMonoid N] [Module R N] : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
+    [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [SMulCommClass R A M]
+    [AddMonoid N] [IsAddCommutative N] [Module R N] : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
   { mk R M N with map_smul' := fun _ _ => rfl }
 
 variable {R A B M N P Q}
@@ -377,13 +377,13 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
-variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module A P]
-variable [AddCommMonoid P'] [Module A P']
-variable [AddCommMonoid Q] [Module R Q]
+variable [AddMonoid N] [IsAddCommutative N] [Module R N]
+variable [AddMonoid P] [IsAddCommutative P] [Module A P]
+variable [AddMonoid P'] [IsAddCommutative P'] [Module A P']
+variable [AddMonoid Q] [IsAddCommutative Q] [Module R Q]
 variable (R A B M N P P' Q)
 
 attribute [local ext high] TensorProduct.ext
@@ -513,7 +513,7 @@ end leftComm
 
 section rightComm
 
-variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
+variable [Semiring S] [IsMulCommutative S] [Module S M] [Module S P] [Algebra S B]
   [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
 
 variable (S) in
@@ -560,7 +560,7 @@ section tensorTensorTensorComm
 variable [Module R P] [IsScalarTower R A P]
 
 variable [Algebra A B] [IsScalarTower A B M]
-variable [CommSemiring S] [Algebra R S] [Algebra S B] [Module S M] [Module S N]
+variable [Semiring S] [IsMulCommutative S] [Algebra R S] [Algebra S B] [Module S M] [Module S N]
 variable [IsScalarTower R S M] [SMulCommClass A S M] [SMulCommClass S A M]
   [IsScalarTower S B M] [IsScalarTower R S N]
 
@@ -644,9 +644,9 @@ open TensorProduct
 
 section Semiring
 
-variable {R A B M N P : Type*} [CommSemiring R]
+variable {R A B M N P : Type*} [Semiring R] [IsMulCommutative R]
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P]
 variable [Module R M] [Module R N] [Module R P]
 variable (r : R) (f g : M →ₗ[R] N)
 
@@ -688,7 +688,7 @@ lemma baseChange_comp (g : N →ₗ[R] P) :
   ext; simp
 
 open AlgebraTensorModule in
-lemma baseChange_baseChange {A B : Type*} [CommSemiring A] [Algebra R A]
+lemma baseChange_baseChange {A B : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
     [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
     (f : M →ₗ[R] N) :
     ((f.baseChange A).baseChange B) =
@@ -794,9 +794,9 @@ end Semiring
 
 section Ring
 
-variable {R A M N : Type*} [CommRing R]
+variable {R A M N : Type*} [Ring R] [IsMulCommutative R]
 variable [Ring A] [Algebra R A]
-variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 variable (f g : M →ₗ[R] N)
 
 @[simp]
@@ -817,8 +817,8 @@ namespace Submodule
 
 open TensorProduct
 
-variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-  [AddCommMonoid M] [Module R M] (p q : Submodule R M)
+variable {R M : Type*} (A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] (p q : Submodule R M)
 
 /-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
 an `A`-submodule of `A ⊗ M`.
@@ -883,8 +883,8 @@ end Submodule
 
 namespace TensorProduct.AlgebraTensorModule
 
-variable {R A M N : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
-variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module A N]
+variable {R A M N : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module A N]
 
 lemma baseChange_comp_cancelBaseChange_symm_self (f : (A ⊗[R] M) →ₗ[A] N) :
     f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm = (TensorProduct.lid A N).symm ∘ₗ f := by

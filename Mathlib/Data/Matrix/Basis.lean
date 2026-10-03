@@ -145,34 +145,34 @@ lemma single_mulVec_eq [Fintype n] [NonAssocSemiring α] (i j : n) (b : α) (w :
   ext
   simp [Matrix.single_mulVec, Function.update_apply, Pi.single_apply]
 
-lemma sum_single_eq_diagonal [AddCommMonoid α] [Fintype m] (f : m → α) :
+lemma sum_single_eq_diagonal [AddMonoid α] [IsAddCommutative α] [Fintype m] (f : m → α) :
     ∑ i : m, single i i (f i) = Matrix.diagonal f := by
   ext j k
   rw [sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp +contextual [single]
 
-lemma sum_single_one [AddCommMonoid α] [One α] [Fintype m] :
+lemma sum_single_one [AddMonoid α] [IsAddCommutative α] [One α] [Fintype m] :
     ∑ i : m, single i i (1 : α) = 1 :=
   sum_single_eq_diagonal _
 
-lemma sum_single_natCast [AddCommMonoidWithOne α] [Fintype m] (n : ℕ) :
+lemma sum_single_natCast [AddMonoidWithOne α] [IsAddCommutative α] [Fintype m] (n : ℕ) :
     ∑ i : m, single i i (n : α) = n :=
   sum_single_eq_diagonal _
 
-lemma sum_single_ofNat [AddCommMonoidWithOne α] [Fintype m] (n : ℕ) [n.AtLeastTwo] :
+lemma sum_single_ofNat [AddMonoidWithOne α] [IsAddCommutative α] [Fintype m] (n : ℕ) [n.AtLeastTwo] :
     ∑ i : m, single i i (ofNat(n) : α) = ofNat(n) :=
   sum_single_eq_diagonal _
 
-lemma sum_single_intCast [AddCommGroupWithOne α] [Fintype m] (z : ℤ) :
+lemma sum_single_intCast [AddGroupWithOne α] [IsAddCommutative α] [Fintype m] (z : ℤ) :
     ∑ i : m, single i i (z : α) = z :=
   sum_single_eq_diagonal _
 
-theorem sum_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : m → n → α) :
+theorem sum_sum_single [AddMonoid α] [IsAddCommutative α] [Fintype m] [Fintype n] (x : m → n → α) :
     ∑ i : m, ∑ j : n, single i j (x i j) = of x := by
   ext i j
   rw [← Fintype.sum_prod_type']
   simp [single, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk_inj]
 
-theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
+theorem matrix_eq_sum_single [AddMonoid α] [IsAddCommutative α] [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, single i j (x i j) :=
   sum_sum_single _ |>.symm
 
@@ -183,7 +183,7 @@ theorem single_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
 -- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
 @[elab_as_elim]
 protected theorem induction_on'
-    [AddCommMonoid α] [Finite m] [Finite n] {P : Matrix m n α → Prop} (M : Matrix m n α)
+    [AddMonoid α] [IsAddCommutative α] [Finite m] [Finite n] {P : Matrix m n α → Prop} (M : Matrix m n α)
     (h_zero : P 0) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ (i : m) (j : n) (x : α), P (single i j x)) : P M := by
   cases nonempty_fintype m; cases nonempty_fintype n
@@ -194,7 +194,7 @@ protected theorem induction_on'
 
 @[elab_as_elim]
 protected theorem induction_on
-    [AddCommMonoid α] [Finite m] [Finite n] [Nonempty m] [Nonempty n]
+    [AddMonoid α] [IsAddCommutative α] [Finite m] [Finite n] [Nonempty m] [Nonempty n]
     {P : Matrix m n α → Prop} (M : Matrix m n α) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ i j x, P (single i j x)) : P M :=
   Matrix.induction_on' M
@@ -206,7 +206,7 @@ protected theorem induction_on
 
 /-- `Matrix.single` as a bundled additive map. -/
 @[simps]
-def singleAddMonoidHom [AddCommMonoid α] (i : m) (j : n) : α →+ Matrix m n α where
+def singleAddMonoidHom [AddMonoid α] [IsAddCommutative α] (i : m) (j : n) : α →+ Matrix m n α where
   toFun := single i j
   map_zero' := single_zero _ _
   map_add' _ _ := single_add _ _ _ _
@@ -214,7 +214,7 @@ def singleAddMonoidHom [AddCommMonoid α] (i : m) (j : n) : α →+ Matrix m n �
 variable (R)
 /-- `Matrix.single` as a bundled linear map. -/
 @[simps!]
-def singleLinearMap [Semiring R] [AddCommMonoid α] [Module R α] (i : m) (j : n) :
+def singleLinearMap [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α] (i : m) (j : n) :
     α →ₗ[R] Matrix m n α where
   __ := singleAddMonoidHom i j
   map_smul' _ _ := smul_single _ _ _ _ |>.symm
@@ -226,7 +226,7 @@ section ext
 See note [partially-applied ext lemmas]. -/
 @[local ext]
 theorem ext_addMonoidHom
-    [Finite m] [Finite n] [AddCommMonoid α] [AddCommMonoid β] ⦃f g : Matrix m n α →+ β⦄
+    [Finite m] [Finite n] [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] ⦃f g : Matrix m n α →+ β⦄
     (h : ∀ i j, f.comp (singleAddMonoidHom i j) = g.comp (singleAddMonoidHom i j)) :
     f = g := by
   cases nonempty_fintype m
@@ -242,7 +242,7 @@ theorem ext_addMonoidHom
 See note [partially-applied ext lemmas]. -/
 @[local ext]
 theorem ext_linearMap
-    [Finite m] [Finite n] [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
+    [Finite m] [Finite n] [Semiring R] [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] [Module R α] [Module R β]
     ⦃f g : Matrix m n α →ₗ[R] β⦄
     (h : ∀ i j, f ∘ₗ singleLinearMap R i j = g ∘ₗ singleLinearMap R i j) :
     f = g :=
@@ -251,7 +251,7 @@ theorem ext_linearMap
 
 section liftLinear
 variable {R} (S)
-variable [Fintype m] [Fintype n] [Semiring R] [Semiring S] [AddCommMonoid α] [AddCommMonoid β]
+variable [Fintype m] [Fintype n] [Semiring R] [Semiring S] [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β]
 variable [Module R α] [Module R β] [Module S β] [SMulCommClass R S β]
 
 /-- Families of linear maps acting on each element are equivalent to linear maps from a matrix.
@@ -432,7 +432,7 @@ theorem subringCenter_eq_scalar_map [Ring R] :
 
 /-- For a commutative semiring `R`, the center of `Matrix n n R` is the range of `scalar n`
 (i.e., the span of `{1}`). -/
-@[simp] theorem center_eq_range [CommSemiring R] :
+@[simp] theorem center_eq_range [Semiring R] [IsMulCommutative R] :
     Set.center (Matrix n n R) = Set.range (scalar n) := by
   rw [center_eq_scalar_image, Set.center_eq_univ, Set.image_univ]
 

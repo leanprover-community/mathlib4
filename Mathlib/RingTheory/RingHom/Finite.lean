@@ -56,8 +56,8 @@ open scoped Pointwise
 
 universe u
 
-variable {R S : Type*} [CommRing R] [CommRing S] (M : Submonoid R) (f : R →+* S)
-variable (R' S' : Type*) [CommRing R'] [CommRing S']
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (M : Submonoid R) (f : R →+* S)
+variable (R' S' : Type*) [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S']
 variable [Algebra R R'] [Algebra S S']
 
 /-- If `S` is a finite `R`-algebra, then `S' = M⁻¹S` is a finite `R' = M⁻¹R`-algebra. -/
@@ -75,8 +75,8 @@ theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @Ri
   have : Module.Finite R S := hf
   exact .of_isLocalization R S M
 
-theorem RingHom.localization_away_map_finite (R S R' S' : Type u) [CommRing R] [CommRing S]
-    [CommRing R'] [CommRing S'] [Algebra R R'] (f : R →+* S) [Algebra S S']
+theorem RingHom.localization_away_map_finite (R S R' S' : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
+    [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R R'] (f : R →+* S) [Algebra S S']
     (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.Finite) : (IsLocalization.Away.map R' S' f r).Finite :=
   finite_localizationPreserves.away f r _ _ hf

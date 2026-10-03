@@ -95,7 +95,7 @@ section Defs
 variable (A : ι → Type*)
 
 /-- A graded version of `NonUnitalNonAssocSemiring`. -/
-class GNonUnitalNonAssocSemiring [Add ι] [∀ i, AddCommMonoid (A i)] extends
+class GNonUnitalNonAssocSemiring [Add ι] [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] extends
   GradedMonoid.GMul A where
   /-- Multiplication from the right with any graded component's zero vanishes. -/
   mul_zero : ∀ {i j} (a : A i), mul a (0 : A j) = 0
@@ -115,7 +115,7 @@ section Defs
 variable (A : ι → Type*)
 
 /-- A graded version of `Semiring`. -/
-class GSemiring [AddMonoid ι] [∀ i, AddCommMonoid (A i)] extends GNonUnitalNonAssocSemiring A,
+class GSemiring [AddMonoid ι] [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] extends GNonUnitalNonAssocSemiring A,
   GradedMonoid.GMonoid A where
   /-- The canonical map from ℕ to the zeroth component of a graded semiring. -/
   natCast : ℕ → A 0
@@ -125,11 +125,11 @@ class GSemiring [AddMonoid ι] [∀ i, AddCommMonoid (A i)] extends GNonUnitalNo
   natCast_succ : ∀ n : ℕ, natCast (n + 1) = natCast n + GradedMonoid.GOne.one
 
 /-- A graded version of `CommSemiring`. -/
-class GCommSemiring [AddCommMonoid ι] [∀ i, AddCommMonoid (A i)] extends GSemiring A,
+class GCommSemiring [AddMonoid ι] [IsAddCommutative ι] [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] extends GSemiring A,
   GradedMonoid.GCommMonoid A
 
 /-- A graded version of `Ring`. -/
-class GRing [AddMonoid ι] [∀ i, AddCommGroup (A i)] extends GSemiring A where
+class GRing [AddMonoid ι] [∀ i, AddGroup (A i)] [∀ i, IsAddCommutative (A i)] extends GSemiring A where
   /-- The canonical map from ℤ to the zeroth component of a graded ring. -/
   intCast : ℤ → A 0
   /-- The canonical map from ℤ to a graded ring extends the canonical map from ℕ to the underlying
@@ -141,11 +141,11 @@ class GRing [AddMonoid ι] [∀ i, AddCommGroup (A i)] extends GSemiring A where
   intCast_negSucc_ofNat : ∀ n : ℕ, intCast (Int.negSucc n) = -natCast (n + 1 : ℕ)
 
 /-- A graded version of `CommRing`. -/
-class GCommRing [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] extends GRing A, GCommSemiring A
+class GCommRing [AddMonoid ι] [IsAddCommutative ι] [∀ i, AddGroup (A i)] [∀ i, IsAddCommutative (A i)] extends GRing A, GCommSemiring A
 
 end Defs
 
-theorem of_eq_of_gradedMonoid_eq {A : ι → Type*} [∀ i : ι, AddCommMonoid (A i)] {i j : ι} {a : A i}
+theorem of_eq_of_gradedMonoid_eq {A : ι → Type*} [∀ i : ι, AddMonoid (A i)] [∀ i : ι, IsAddCommutative (A i)] {i j : ι} {a : A i}
     {b : A j} (h : GradedMonoid.mk i a = GradedMonoid.mk j b) :
     DirectSum.of A i a = DirectSum.of A j b :=
   DFinsupp.single_eq_of_sigma_eq h
@@ -157,7 +157,7 @@ variable (A : ι → Type*)
 
 section One
 
-variable [Zero ι] [GradedMonoid.GOne A] [∀ i, AddCommMonoid (A i)]
+variable [Zero ι] [GradedMonoid.GOne A] [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)]
 
 instance : One (⨁ i, A i) where one := DirectSum.of A 0 GradedMonoid.GOne.one
 
@@ -167,7 +167,7 @@ end One
 
 section Mul
 
-variable [Add ι] [∀ i, AddCommMonoid (A i)] [GNonUnitalNonAssocSemiring A]
+variable [Add ι] [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] [GNonUnitalNonAssocSemiring A]
 
 open AddMonoidHom (flip_apply coe_comp compHom)
 
@@ -216,7 +216,7 @@ end Mul
 
 section Semiring
 
-variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
+variable [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [GSemiring A]
 
 open AddMonoidHom (flipHom coe_comp compHom flip_apply)
 
@@ -307,7 +307,7 @@ end Semiring
 
 section CommSemiring
 
-variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
+variable [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [IsAddCommutative ι] [GCommSemiring A]
 
 private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
   suffices mulHom A = (mulHom A).flip by
@@ -324,7 +324,7 @@ end CommSemiring
 
 section NonUnitalNonAssocRing
 
-variable [∀ i, AddCommGroup (A i)] [Add ι] [GNonUnitalNonAssocSemiring A]
+variable [∀ i, AddGroup (A i)] [∀ i, IsAddCommutative (A i)] [Add ι] [GNonUnitalNonAssocSemiring A]
 
 /-- The `Ring` derived from `GSemiring A`. -/
 instance nonAssocRing : NonUnitalNonAssocRing (⨁ i, A i) where
@@ -333,7 +333,7 @@ end NonUnitalNonAssocRing
 
 section Ring
 
-variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
+variable [∀ i, AddGroup (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [GRing A]
 
 -- Porting note: overspecified fields in ml4
 /-- The `Ring` derived from `GSemiring A`. -/
@@ -347,7 +347,7 @@ end Ring
 
 section CommRing
 
-variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
+variable [∀ i, AddGroup (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [IsAddCommutative ι] [GCommRing A]
 
 /-- The `CommRing` derived from `GCommSemiring A`. -/
 instance commRing : CommRing (⨁ i, A i) where
@@ -371,7 +371,7 @@ section GradeZero
 
 section One
 
-variable [Zero ι] [GradedMonoid.GOne A] [∀ i, AddCommMonoid (A i)]
+variable [Zero ι] [GradedMonoid.GOne A] [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)]
 
 @[simp]
 theorem of_zero_one : of _ 0 (1 : A 0) = 1 :=
@@ -381,7 +381,7 @@ end One
 
 section Mul
 
-variable [AddZeroClass ι] [∀ i, AddCommMonoid (A i)] [GNonUnitalNonAssocSemiring A]
+variable [AddZeroClass ι] [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] [GNonUnitalNonAssocSemiring A]
 
 @[simp]
 theorem of_zero_smul {i} (a : A 0) (b : A i) : of _ _ (a • b) = of _ _ a * of _ _ b :=
@@ -409,7 +409,7 @@ end Mul
 
 section Semiring
 
-variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
+variable [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [GSemiring A]
 
 @[simp]
 theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
@@ -455,7 +455,7 @@ end Semiring
 
 section CommSemiring
 
-variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
+variable [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [IsAddCommutative ι] [GCommSemiring A]
 
 /-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
 scoped instance (priority := 900) : CommSemiring (A 0) :=
@@ -467,7 +467,7 @@ end CommSemiring
 
 section Ring
 
-variable [∀ i, AddCommGroup (A i)] [AddZeroClass ι] [GNonUnitalNonAssocSemiring A]
+variable [∀ i, AddGroup (A i)] [∀ i, IsAddCommutative (A i)] [AddZeroClass ι] [GNonUnitalNonAssocSemiring A]
 
 /-- The `NonUnitalNonAssocRing` derived from `GNonUnitalNonAssocSemiring A`. -/
 scoped instance (priority := 900) : NonUnitalNonAssocRing (A 0) :=
@@ -479,7 +479,7 @@ end Ring
 
 section Ring
 
-variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
+variable [∀ i, AddGroup (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [GRing A]
 
 /-- The `IntCast` instance on `A 0`, given `GRing A`. -/
 scoped instance (priority := 900) : IntCast (A 0) :=
@@ -499,7 +499,7 @@ end Ring
 
 section CommRing
 
-variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
+variable [∀ i, AddGroup (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [IsAddCommutative ι] [GCommRing A]
 
 /-- The `CommRing` derived from `GCommSemiring A`. -/
 scoped instance (priority := 900) : CommRing (A 0) :=
@@ -513,7 +513,7 @@ end GradeZero
 
 section ToSemiring
 
-variable {R : Type*} [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A] [Semiring R]
+variable {R : Type*} [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [GSemiring A] [Semiring R]
 variable {A}
 
 /-- If two ring homomorphisms from `⨁ i, A i` are equal on each `of A i y`,
@@ -637,11 +637,11 @@ example {R : Type*} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
   rw [DirectSum.of_mul_of, Mul.gMul_mul]
 
 /-- A direct sum of copies of a `CommSemiring` inherits the commutative multiplication structure. -/
-instance CommSemiring.directSumGCommSemiring {R : Type*} [AddCommMonoid ι] [CommSemiring R] :
+instance CommSemiring.directSumGCommSemiring {R : Type*} [AddMonoid ι] [IsAddCommutative ι] [Semiring R] [IsMulCommutative R] :
     DirectSum.GCommSemiring fun _ : ι => R where
 
 /-- A direct sum of copies of a `CommRing` inherits the commutative multiplication structure. -/
-instance CommRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R] :
+instance CommRing.directSumGCommRing {R : Type*} [AddMonoid ι] [IsAddCommutative ι] [Ring R] [IsMulCommutative R] :
     DirectSum.GCommRing fun _ : ι => R where
 
 end Uniform

@@ -337,7 +337,7 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
 end StrictOrderedRing
 section CommStrictOrderedRing
 
-variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (P : Polynomial R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R] (P : Polynomial R)
 
 /-- **Descartes' Rule of Signs**: the number of positive roots is at most the number of sign
 variations. -/

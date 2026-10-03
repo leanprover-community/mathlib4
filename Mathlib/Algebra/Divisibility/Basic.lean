@@ -211,7 +211,7 @@ end Monoid
 
 section CommSemigroup
 
-variable [CommSemigroup α] {a b c : α}
+variable [Semigroup α] [IsMulCommutative α] {a b c : α}
 
 theorem Dvd.intro_left (c : α) (h : c * a = b) : a ∣ b :=
   Dvd.intro c (by rw [mul_comm] at h; apply h)
@@ -261,7 +261,7 @@ end CommSemigroup
 
 section CommMonoid
 
-variable [CommMonoid α] {a b : α}
+variable [Monoid α] [IsMulCommutative α] {a b : α}
 
 theorem mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c := by
   gcongr

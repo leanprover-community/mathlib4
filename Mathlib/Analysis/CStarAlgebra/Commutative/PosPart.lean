@@ -50,7 +50,7 @@ namespace CStarAlgebra
 
 section Comm
 
-variable (A : Type*) [NonUnitalCommCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable (A : Type*) [NonUnitalCStarAlgebra A] [IsMulCommutative A] [PartialOrder A] [StarOrderedRing A]
 
 open ContinuousMap WeakDual in
 /-- In a commutative C⋆-algebra, the positive part map `fun a ↦ a⁺` is monotone. -/

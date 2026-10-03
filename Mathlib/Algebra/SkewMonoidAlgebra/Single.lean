@@ -23,7 +23,7 @@ variable {k G H : Type*}
 
 section erase
 
-variable {M α : Type*} [AddCommMonoid M] (a a' : α) (b : M) (f : SkewMonoidAlgebra M α)
+variable {M α : Type*} [AddMonoid M] [IsAddCommutative M] (a a' : α) (b : M) (f : SkewMonoidAlgebra M α)
 
 /--
 Given an element `f` of a skew monoid algebra, `erase a f` is an element with the same coefficients
@@ -77,7 +77,7 @@ end erase
 
 section update
 
-variable {M α : Type*} [AddCommMonoid M] (f : SkewMonoidAlgebra M α) (a a' : α) (b : M)
+variable {M α : Type*} [AddMonoid M] [IsAddCommutative M] (f : SkewMonoidAlgebra M α) (a a' : α) (b : M)
 
 /-- Replace the coefficient of an element `f` of a skew monoid algebra at a given point `a : α` by
 a given value `b : M`.

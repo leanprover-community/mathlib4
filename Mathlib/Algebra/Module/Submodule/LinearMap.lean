@@ -41,7 +41,7 @@ variable {R : Type u} {M : Type v} {ι : Type w}
 
 namespace SMulMemClass
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] {A : Type*} [SetLike A M]
   [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
 
 /-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/
@@ -69,7 +69,7 @@ namespace Submodule
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M]
 
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
@@ -131,7 +131,7 @@ namespace LinearMap
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃)
@@ -182,7 +182,7 @@ theorem domRestrict_comp_codRestrict (g : M₂ →ₛₗ[σ₂₃] M₃) (f : M 
 
 section
 
-variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
+variable {M₂' : Type*} [AddMonoid M₂'] [IsAddCommutative M₂'] [Module R₂ M₂']
   (p : M₂' →ₗ[R₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p)
 
 /-- A linear map `f : M → M₂` whose values lie in the image of an injective linear map
@@ -226,7 +226,7 @@ theorem restrict_apply {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma restrict_sub {R R₂ M M₂ : Type*}
-    [Ring R] [Ring R₂] {σ₁₂ : R →+* R₂} [AddCommGroup M] [AddCommGroup M₂]
+    [Ring R] [Ring R₂] {σ₁₂ : R →+* R₂} [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂]
     [Module R M] [Module R₂ M₂] {p : Submodule R M} {q : Submodule R₂ M₂} {f g : M →ₛₗ[σ₁₂] M₂}
     (hf : MapsTo f p q) (hg : MapsTo g p q)
     (hfg : MapsTo (f - g) p q := fun _ hx ↦ q.sub_mem (hf hx) (hg hx)) :
@@ -241,7 +241,7 @@ lemma restrict_comp {p : Submodule R M} {p₂ : Submodule R₂ M₂} {p₃ : Sub
 
 -- TODO Consider defining `Algebra R (p.compatibleMaps p)`, `AlgHom` version of `LinearMap.restrict`
 lemma restrict_smul_one
-    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {p : Submodule R M}
+    {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] {p : Submodule R M}
     (μ : R) (h : ∀ x ∈ p, (μ • (1 : Module.End R M)) x ∈ p := fun _ ↦ p.smul_mem μ) :
     (μ • 1 : Module.End R M).restrict h = μ • (1 : Module.End R p) :=
   rfl
@@ -311,7 +311,7 @@ end AddCommMonoid
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R M₂]
 variable (f g : M →ₗ[R] M₂)
 
@@ -336,7 +336,7 @@ namespace Submodule
 
 section AddCommMonoid
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {p p' : Submodule R M}
+variable {R : Type*} {M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] {p p' : Submodule R M}
 
 /-- If two submodules `p` and `p'` satisfy `p ⊆ p'`, then `inclusion p p'` is the linear map version
 of this inclusion. -/

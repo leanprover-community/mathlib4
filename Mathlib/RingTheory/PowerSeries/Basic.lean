@@ -148,7 +148,7 @@ def C : R →+* R⟦X⟧ :=
 
 lemma C_apply {r : R} : C r = MvPowerSeries.C r := rfl
 
-@[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C := rfl
+@[simp] lemma algebraMap_eq {R : Type*} [Semiring R] [IsMulCommutative R] : algebraMap R R⟦X⟧ = C := rfl
 
 /-- The variable of the formal power series ring. -/
 def X : R⟦X⟧ :=
@@ -551,7 +551,7 @@ end toSubring
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 open Finset Nat
 
@@ -612,12 +612,12 @@ theorem rescale_mul (a b : R) : rescale (a * b) = (rescale b).comp (rescale a) :
   ext
   simp [← rescale_rescale]
 
-theorem rescale_map {S : Type*} [CommSemiring S] (φ : R →+* S) (r : R) (f : R⟦X⟧) :
+theorem rescale_map {S : Type*} [Semiring S] [IsMulCommutative S] (φ : R →+* S) (r : R) (f : R⟦X⟧) :
     rescale (φ r) (f.map φ) = (rescale r f).map (φ : R →+* S) := by
   ext n
   simp [coeff_rescale, coeff_map, map_mul, map_pow]
 
-theorem rescale_algebraMap_map {A S : Type*} [CommSemiring A] [Algebra A R] [CommSemiring S]
+theorem rescale_algebraMap_map {A S : Type*} [Semiring A] [IsMulCommutative A] [Algebra A R] [Semiring S] [IsMulCommutative S]
     [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
     rescale (algebraMap A S a) (f.map φ) = (rescale (algebraMap A R a) f).map φ := by
   convert! rescale_map (φ : R →+* S) _ _
@@ -629,7 +629,7 @@ section CommSemiring
 
 open Finset.HasAntidiagonal Finset
 
-variable {R : Type*} [CommSemiring R] {ι : Type*}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {ι : Type*}
 
 /-- Coefficients of a product of power series -/
 theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
@@ -698,7 +698,7 @@ end CommSemiring
 
 section CommRing
 
-variable {A : Type*} [CommRing A]
+variable {A : Type*} [Ring A] [IsMulCommutative A]
 
 theorem not_isField : ¬IsField A⟦X⟧ := by
   by_cases hA : Subsingleton A
@@ -734,7 +734,7 @@ end CommRing
 
 section Algebra
 
-variable {A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable {A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 theorem C_eq_algebraMap {r : R} : C r = (algebraMap R R⟦X⟧) r :=
   rfl
@@ -819,7 +819,7 @@ theorem coe_X : ((X : R[X]) : PowerSeries R) = PowerSeries.X :=
   coe_monomial _ _
 
 @[simp]
-lemma polynomial_map_coe {U V : Type*} [CommSemiring U] [CommSemiring V] {φ : U →+* V}
+lemma polynomial_map_coe {U V : Type*} [Semiring U] [IsMulCommutative U] [Semiring V] [IsMulCommutative V] {φ : U →+* V}
     {f : Polynomial U} : Polynomial.map φ f = PowerSeries.map φ f := by
   ext
   simp
@@ -876,7 +876,7 @@ end Semiring
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] (φ : R[X])
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (φ : R[X])
 
 theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
     (f.toMvPowerSeries : PowerSeries R) =
@@ -914,7 +914,7 @@ theorem coeToPowerSeries.algHom_apply :
 end CommSemiring
 
 section CommRing
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 @[simp, norm_cast]
 lemma coe_neg (p : R[X]) : ((-p : R[X]) : PowerSeries R) = -p :=
@@ -934,7 +934,7 @@ section Algebra
 
 open Polynomial
 
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : R⟦X⟧)
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A] (f : R⟦X⟧)
 
 instance algebraPolynomial : Algebra R[X] A⟦X⟧ :=
   RingHom.toAlgebra (Polynomial.coeToPowerSeries.algHom A).toRingHom
@@ -943,7 +943,7 @@ instance algebraPowerSeries : Algebra R⟦X⟧ A⟦X⟧ :=
   (map (algebraMap R A)).toAlgebra
 
 -- see Note [lower instance priority]
-instance (priority := 100) algebraPolynomial' {A : Type*} [CommSemiring A] [Algebra R A[X]] :
+instance (priority := 100) algebraPolynomial' {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A[X]] :
     Algebra R A⟦X⟧ :=
   RingHom.toAlgebra <| Polynomial.coeToPowerSeries.ringHom.comp (algebraMap R A[X])
 

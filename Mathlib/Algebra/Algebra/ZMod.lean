@@ -60,7 +60,7 @@ def algebraOfModule (n : ℕ) (R : Type*) [Ring R] [Module (ZMod n) R] : Algebra
     · obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
       simp [Nat.cast_smul_eq_nsmul, Nat.cast_comm]
 
-instance instIsScalarTower (n : ℕ) (R M : Type*) [Ring R] [AddCommGroup M]
+instance instIsScalarTower (n : ℕ) (R M : Type*) [Ring R] [AddGroup M] [IsAddCommutative M]
     [Module (ZMod n) R] [m₁ : Module (ZMod n) M] [Module R M] :
     IsScalarTower (ZMod n) R M := by
   let := ZMod.algebraOfModule n R

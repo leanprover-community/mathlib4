@@ -289,7 +289,7 @@ instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMem
 
 /-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
 @[to_additive /-- An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`. -/]
-instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
+instance toCommSemigroup {M} [Semigroup M] [IsMulCommutative M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : CommSemigroup S := fast_instance%
   Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
 

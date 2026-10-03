@@ -25,7 +25,7 @@ open Set LinearMap Submodule
 namespace Finsupp
 
 variable {α : Type*} {M : Type*} {R : Type*} {S : Type*}
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [Semiring S] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 @[simp]
 theorem ker_lsingle (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :=
@@ -102,7 +102,7 @@ namespace Submodule
 section Semiring
 
 variable {R : Type*} {M : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem exists_finset_of_mem_iSup {ι : Sort _} (p : ι → Submodule R M) {m : M}
     (hm : m ∈ ⨆ i, p i) : ∃ s : Finset ι, m ∈ ⨆ i ∈ s, p i := by
@@ -131,8 +131,8 @@ end Semiring
 
 section CommSemiring
 
-variable {R M N σ : Type*} [CommSemiring R] [AddCommMonoid M]
-variable [AddCommMonoid N] [Module R M] [Module R N]
+variable {R M N σ : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M]
+variable [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
 
 open scoped Pointwise in
 lemma range_lsum_smul (φ : M →ₗ[R] N) (f : σ → R) :

@@ -36,7 +36,7 @@ theorem Rat.denseRange_cast {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrde
 
 namespace Subgroup
 
-variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+variable {G : Type*} [Group G] [IsMulCommutative G] [LinearOrder G] [IsOrderedMonoid G]
   [TopologicalSpace G] [OrderTopology G]
   [MulArchimedean G]
 

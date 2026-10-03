@@ -19,7 +19,7 @@ In this file we define smooth ring homomorphisms and show their meta properties.
 
 universe u
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 open TensorProduct
 
@@ -41,7 +41,7 @@ lemma formallySmooth_algebraMap [Algebra R S] :
   rw [FormallySmooth, toAlgebra_algebraMap]
 
 /-- Composition of formally smooth ring homomorphisms is formally smooth. -/
-lemma FormallySmooth.comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
+lemma FormallySmooth.comp {T : Type*} [Ring T] [IsMulCommutative T] {f : R →+* S} {g : S →+* T}
     (hf : f.FormallySmooth) (hg : g.FormallySmooth) : (g.comp f).FormallySmooth := by
   algebraize [f, g, g.comp f]
   exact Algebra.FormallySmooth.comp R S T
@@ -89,7 +89,7 @@ lemma smooth_def {f : R →+* S} : f.Smooth ↔ f.FormallySmooth ∧ f.FinitePre
 
 namespace Smooth
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
 
 lemma formallySmooth {f : R →+* S} (hf : f.Smooth) : f.FormallySmooth := by
   rw [smooth_def] at hf

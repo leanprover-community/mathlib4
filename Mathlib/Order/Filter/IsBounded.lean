@@ -262,7 +262,7 @@ open Filter Set
 variable {α : Type*} {f : Filter α}
 variable {R : Type*}
 
-lemma isBoundedUnder_sum {κ : Type*} [AddCommMonoid R] {r : R → R → Prop}
+lemma isBoundedUnder_sum {κ : Type*} [AddMonoid R] [IsAddCommutative R] {r : R → R → Prop}
     (hr : ∀ (v₁ v₂ : α → R), f.IsBoundedUnder r v₁ → f.IsBoundedUnder r v₂
       → f.IsBoundedUnder r (v₁ + v₂)) (hr₀ : r 0 0)
     {u : κ → α → R} (s : Finset κ) (h : ∀ k ∈ s, f.IsBoundedUnder r (u k)) :
@@ -288,7 +288,7 @@ lemma isBoundedUnder_le_add [Add R] [AddLeftMono R] [AddRightMono R]
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
 
 @[to_dual isBoundedUnder_ge_sum]
-lemma isBoundedUnder_le_sum {κ : Type*} [AddCommMonoid R] [AddLeftMono R] [AddRightMono R]
+lemma isBoundedUnder_le_sum {κ : Type*} [AddMonoid R] [IsAddCommutative R] [AddLeftMono R] [AddRightMono R]
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) → f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) :=
   fun h ↦ isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_le_add) le_rfl s h
@@ -381,13 +381,13 @@ theorem _root_.OrderIso.isBoundedUnder_le_comp [LE α] [LE β] (e : α ≃o β) 
 
 -- TODO: use `to_dual` in combination with `to_additive`
 @[to_additive (attr := simp)]
-theorem isBoundedUnder_le_inv [CommGroup α] [Preorder α] [IsOrderedMonoid α]
+theorem isBoundedUnder_le_inv [Group α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α]
     {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≤ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≥ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_ge_comp
 
 @[to_additive (attr := simp)]
-theorem isBoundedUnder_ge_inv [CommGroup α] [Preorder α] [IsOrderedMonoid α]
+theorem isBoundedUnder_ge_inv [Group α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α]
     {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≥ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_le_comp
@@ -409,7 +409,7 @@ theorem isBoundedUnder_le_sup [SemilatticeSup α] {f : Filter β} {u v : β → 
       h.mono_le <| Eventually.of_forall fun _ => le_sup_right⟩,
     fun h => h.1.sup h.2⟩
 
-theorem isBoundedUnder_le_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+theorem isBoundedUnder_le_abs [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
     {f : Filter β} {u : β → α} :
     (f.IsBoundedUnder (· ≤ ·) fun a => |u a|) ↔
       f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (fun x1 x2 ↦ x2 ≤ x1) u :=

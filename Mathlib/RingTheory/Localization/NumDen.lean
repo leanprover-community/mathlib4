@@ -30,7 +30,7 @@ open IsLocalization
 
 section NumDen
 
-variable (A : Type*) [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A]
+variable (A : Type*) [Ring A] [IsMulCommutative A] [IsDomain A] [UniqueFactorizationMonoid A]
 variable {K : Type*} [Field K] [Algebra A K] [IsFractionRing A K]
 
 theorem exists_reduced_fraction (x : K) :

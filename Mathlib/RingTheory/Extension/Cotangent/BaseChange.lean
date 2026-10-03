@@ -36,16 +36,16 @@ open TensorProduct
 
 namespace Algebra
 
-variable (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+variable (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 namespace Extension
 
 variable {R S} (P : Extension.{u} R S)
-variable (T : Type*) [CommRing T] [Algebra R T]
+variable (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T]
 
 /-- The cotangent space of an extension commutes with base change. -/
 noncomputable
-def tensorCotangentSpace (P : Extension.{u} R S) (T : Type*) [CommRing T] [Algebra R T] :
+def tensorCotangentSpace (P : Extension.{u} R S) (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] :
     T ⊗[R] P.CotangentSpace ≃ₗ[T] (P.baseChange (T := T)).CotangentSpace :=
   letI := P.algebraBaseChange T
   letI : Algebra S (T ⊗[R] S) := TensorProduct.rightAlgebra
@@ -196,7 +196,7 @@ lemma tensorH1CotangentOfFlat_tmul [Module.Flat R T] (t : T) (x : P.H1Cotangent)
 end Extension
 
 /-- Flat base change commutes with `H1Cotangent`. -/
-noncomputable def tensorH1CotangentOfFlat (T : Type*) [CommRing T] [Algebra R T] [Module.Flat R T] :
+noncomputable def tensorH1CotangentOfFlat (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] [Module.Flat R T] :
     T ⊗[R] H1Cotangent R S ≃ₗ[T] H1Cotangent T (T ⊗[R] S) :=
   (Generators.self R S).toExtension.tensorH1CotangentOfFlat T ≪≫ₗ
     (Extension.H1Cotangent.equiv
@@ -205,7 +205,7 @@ noncomputable def tensorH1CotangentOfFlat (T : Type*) [CommRing T] [Algebra R T]
     ((Generators.self R S).baseChange (T := T)).equivH1Cotangent.restrictScalars T
 
 attribute [local instance] TensorProduct.rightAlgebra in
-lemma tensorH1CotangentOfFlat_tmul (T : Type*) [CommRing T] [Algebra R T] [Module.Flat R T]
+lemma tensorH1CotangentOfFlat_tmul (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] [Module.Flat R T]
     (t : T) (x : H1Cotangent R S) :
     tensorH1CotangentOfFlat R S T (t ⊗ₜ x) = t • H1Cotangent.map _ _ _ _ x := by
   simp only [tensorH1CotangentOfFlat, LinearEquiv.trans_apply,

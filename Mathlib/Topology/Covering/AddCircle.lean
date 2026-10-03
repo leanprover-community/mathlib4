@@ -22,7 +22,7 @@ section AddCommGroup
 
 open AddSubgroup
 
-variable {𝕜 : Type*} [AddCommGroup 𝕜] (p : 𝕜) [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜]
+variable {𝕜 : Type*} [AddGroup 𝕜] [IsAddCommutative 𝕜] (p : 𝕜) [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜]
   [DiscreteTopology (zmultiples p)]
 
 theorem isAddQuotientCoveringMap_coe :

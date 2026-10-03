@@ -40,8 +40,8 @@ public noncomputable section
 open Function Matrix Module Prod Set
 open Submodule (span subset_span)
 
-variable (n R M N : Type*) [Fintype n] [DecidableEq n] [CommRing R]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable (n R M N : Type*) [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace CartanMatrix
 
@@ -523,7 +523,7 @@ lemma isRootSystem_toRootPairing
     exact Submodule.subset_span ⟨⟨_, rl.sPair_mem_idx i⟩, by simp⟩
 
 lemma isIrreducible_toRootPairing [Nonempty n] {k V W : Type*} [Field k] [CharZero k]
-    [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W] (rl : Realisation n k V W)
+    [AddGroup V] [IsAddCommutative V] [Module k V] [AddGroup W] [IsAddCommutative W] [Module k W] (rl : Realisation n k V W)
     (hr : span k (range rl.sRoot) = ⊤)
     (hA' : rl.matrix.IsIndecomposable) :
     rl.toRootPairing.IsIrreducible := by

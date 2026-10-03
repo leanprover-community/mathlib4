@@ -43,7 +43,7 @@ we have `f J = ∑ Ji ∈ π.boxes, f Ji`. A function is called box additive on 
 if the same property holds for `J ≤ I`. We formalize these two notions in the same definition
 using `I : WithBot (Box ι)`: the value `I = ⊤` corresponds to functions box additive on the whole
 space. -/
-structure BoxAdditiveMap (ι M : Type*) [AddCommMonoid M] (I : WithTop (Box ι)) where
+structure BoxAdditiveMap (ι M : Type*) [AddMonoid M] [IsAddCommutative M] (I : WithTop (Box ι)) where
   /-- The function underlying this additive map. -/
   toFun : Box ι → M
   sum_partition_boxes' : ∀ J : Box ι, ↑J ≤ I → ∀ π : Prepartition J, π.IsPartition →
@@ -60,7 +60,7 @@ namespace BoxAdditiveMap
 
 open Box Prepartition Finset
 
-variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I : Box ι}
+variable {N : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] {I₀ : WithTop (Box ι)} {I : Box ι}
   {i : ι}
 
 /-! ### Coercion, extensionality, and the defining property -/
@@ -184,7 +184,7 @@ section AddCommGroup
 
 /-! ### Additive group structure -/
 
-variable {M : Type*} [AddCommGroup M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M]
 
 instance : Neg (ι →ᵇᵃ[I₀] M) where
   neg f := ⟨-(f : Box ι → M), fun I hI π hπ ↦ by
@@ -206,7 +206,7 @@ section ToSMul
 
 /-! ### Scalar multiplication on a normed space -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 /-- If `f` is a box-additive map, then so is the map sending `I` to the scalar multiplication
 by `f I` as a continuous linear map from `E` to itself. -/
@@ -225,7 +225,7 @@ end ToSMul
 `I₀`, then `fun J ↦ f (J.upper i) (J.face i) - f (J.lower i) (J.face i)` is box-additive on subboxes
 of `I₀`. -/
 @[simps!]
-def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (i : Fin (n + 1))
+def upperSubLower.{u} {G : Type u} [AddGroup G] [IsAddCommutative G] (I₀ : Box (Fin (n + 1))) (i : Fin (n + 1))
     (f : ℝ → Box (Fin n) → G) (fb : Icc (I₀.lower i) (I₀.upper i) → Fin n →ᵇᵃ[I₀.face i] G)
     (hf : ∀ (x) (hx : x ∈ Icc (I₀.lower i) (I₀.upper i)) (J), f x J = fb ⟨x, hx⟩ J) :
     Fin (n + 1) →ᵇᵃ[I₀] G :=

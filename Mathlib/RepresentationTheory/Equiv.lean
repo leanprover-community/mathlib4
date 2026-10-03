@@ -24,8 +24,8 @@ open scoped MonoidAlgebra
 
 universe u u' v v' w w'
 
-variable {k : Type u} [Semiring k] {G : Type v} [Monoid G] {V : Type v'} [AddCommMonoid V]
-  [Module k V] {W : Type w'} [AddCommMonoid W] [Module k W] (H : Type w) [Subsingleton H]
+variable {k : Type u} [Semiring k] {G : Type v} [Monoid G] {V : Type v'} [AddMonoid V] [IsAddCommutative V]
+  [Module k V] {W : Type w'} [AddMonoid W] [IsAddCommutative W] [Module k W] (H : Type w) [Subsingleton H]
   [MulOneClass H] [MulAction G H]
 
 namespace Representation
@@ -64,7 +64,7 @@ lemma diagonalOneEquivLeftRegular_symm_apply_single (g : G) (r : k) :
 
 section comm
 
-variable {k : Type u} [CommSemiring k] [Module k V] [Module k W] (σ : Representation k G V)
+variable {k : Type u} [Semiring k] [IsMulCommutative k] [Module k V] [Module k W] (σ : Representation k G V)
   (ρ : Representation k G W)
 
 section finsupp

@@ -30,12 +30,12 @@ variable {ι κ M R : Type*} {s s₁ s₂ : Finset ι} {i : ι}
 
 namespace Finset
 
-lemma prod_neg [CommMonoid M] [HasDistribNeg M] (f : ι → M) :
+lemma prod_neg [Monoid M] [IsMulCommutative M] [HasDistribNeg M] (f : ι → M) :
     ∏ x ∈ s, -f x = (-1) ^ #s * ∏ x ∈ s, f x := by
   simpa using (s.1.map f).prod_map_neg
 
 section AddCommMonoidWithOne
-variable [AddCommMonoidWithOne R]
+variable [AddMonoidWithOne R] [IsAddCommutative R]
 
 lemma natCast_card_filter (p) [DecidablePred p] (s : Finset ι) :
     (#{x ∈ s | p x} : R) = ∑ a ∈ s, if p a then (1 : R) else 0 := by
@@ -105,7 +105,7 @@ lemma sum_boole_mul (s : Finset ι) (f : ι → R) (i : ι) :
 end NonAssocSemiring
 
 section CommSemiring
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 /-- If `f = g = h` everywhere but at `i`, where `f i = g i + h i`, then the product of `f` over `s`
   is the sum of the products of `g` and `h`. -/
@@ -254,7 +254,7 @@ theorem prod_natCast (s : Finset ι) (f : ι → ℕ) : ↑(∏ i ∈ s, f i : �
 end CommSemiring
 
 section CommRing
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- The product of `f i - g i` over all of `s` is the sum over the powerset of `s` of the product of
 `g` over a subset `t` times the product of `f` over the complement of `t` times `(-1) ^ #t`. -/
@@ -294,7 +294,7 @@ end Finset
 open Finset
 
 namespace Fintype
-variable {ι κ R : Type*} [Fintype ι] [Fintype κ] [CommSemiring R]
+variable {ι κ R : Type*} [Fintype ι] [Fintype κ] [Semiring R] [IsMulCommutative R]
 
 lemma sum_pow (f : ι → R) (n : ℕ) : (∑ a, f a) ^ n = ∑ p : Fin n → ι, ∏ i, f (p i) := by
   simp [sum_pow']
@@ -329,21 +329,21 @@ lemma cast_list_prod [Semiring R] (s : List ℕ) : (↑s.prod : R) = (s.map (↑
   map_list_prod (castRingHom R) _
 
 @[simp, norm_cast]
-lemma cast_multiset_sum [AddCommMonoidWithOne R] (s : Multiset ℕ) :
+lemma cast_multiset_sum [AddMonoidWithOne R] [IsAddCommutative R] (s : Multiset ℕ) :
     (↑s.sum : R) = (s.map (↑)).sum :=
   map_multiset_sum (castAddMonoidHom R) _
 
 @[simp, norm_cast]
-lemma cast_multiset_prod [CommSemiring R] (s : Multiset ℕ) : (↑s.prod : R) = (s.map (↑)).prod :=
+lemma cast_multiset_prod [Semiring R] [IsMulCommutative R] (s : Multiset ℕ) : (↑s.prod : R) = (s.map (↑)).prod :=
   map_multiset_prod (castRingHom R) _
 
 @[simp, norm_cast]
-lemma cast_sum [AddCommMonoidWithOne R] (s : Finset ι) (f : ι → ℕ) :
+lemma cast_sum [AddMonoidWithOne R] [IsAddCommutative R] (s : Finset ι) (f : ι → ℕ) :
     ↑(∑ x ∈ s, f x : ℕ) = ∑ x ∈ s, (f x : R) :=
   map_sum (castAddMonoidHom R) _ _
 
 @[simp, norm_cast]
-lemma cast_prod [CommSemiring R] (f : ι → ℕ) (s : Finset ι) :
+lemma cast_prod [Semiring R] [IsMulCommutative R] (f : ι → ℕ) (s : Finset ι) :
     (↑(∏ i ∈ s, f i) : R) = ∏ i ∈ s, (f i : R) :=
   map_prod (castRingHom R) _ _
 
@@ -368,22 +368,22 @@ lemma cast_list_prod [Ring R] (s : List ℤ) : (↑s.prod : R) = (s.map (↑)).p
   map_list_prod (castRingHom R) _
 
 @[simp, norm_cast]
-lemma cast_multiset_sum [AddCommGroupWithOne R] (s : Multiset ℤ) :
+lemma cast_multiset_sum [AddGroupWithOne R] [IsAddCommutative R] (s : Multiset ℤ) :
     (↑s.sum : R) = (s.map (↑)).sum :=
   map_multiset_sum (castAddHom R) _
 
 @[simp, norm_cast]
-lemma cast_multiset_prod {R : Type*} [CommRing R] (s : Multiset ℤ) :
+lemma cast_multiset_prod {R : Type*} [Ring R] [IsMulCommutative R] (s : Multiset ℤ) :
     (↑s.prod : R) = (s.map (↑)).prod :=
   map_multiset_prod (castRingHom R) _
 
 @[simp, norm_cast]
-lemma cast_sum [AddCommGroupWithOne R] (s : Finset ι) (f : ι → ℤ) :
+lemma cast_sum [AddGroupWithOne R] [IsAddCommutative R] (s : Finset ι) (f : ι → ℤ) :
     ↑(∑ x ∈ s, f x : ℤ) = ∑ x ∈ s, (f x : R) :=
   map_sum (castAddHom R) _ _
 
 @[simp, norm_cast]
-lemma cast_prod {R : Type*} [CommRing R] (f : ι → ℤ) (s : Finset ι) :
+lemma cast_prod {R : Type*} [Ring R] [IsMulCommutative R] (f : ι → ℤ) (s : Finset ι) :
     (↑(∏ i ∈ s, f i) : R) = ∏ i ∈ s, (f i : R) :=
   map_prod (Int.castRingHom R) _ _
 

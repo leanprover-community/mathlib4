@@ -37,7 +37,7 @@ public section
 
 namespace Module
 
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- For a commutative semiring `R` and an `R`-module `M`, if `M` contains an
   element `x` that is not torsion, then the characteristic of `R` is equal to the

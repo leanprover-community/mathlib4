@@ -31,8 +31,8 @@ isometry, affine map, linear map
 @[expose] public section
 
 
-variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]
-  [NormedAddTorsor E PE] [NormedAddCommGroup F] [NormedSpace ℝ F] [MetricSpace PF]
+variable {E PE F PF : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [MetricSpace PE]
+  [NormedAddTorsor E PE] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [MetricSpace PF]
   [NormedAddTorsor F PF]
 
 open Set AffineIsometryEquiv

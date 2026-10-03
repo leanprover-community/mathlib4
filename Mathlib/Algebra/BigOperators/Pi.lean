@@ -34,30 +34,30 @@ theorem list_prod_apply {α : Type*} {M : α → Type*} [∀ a, Monoid (M a)] (a
   map_list_prod (evalMonoidHom M a) _
 
 @[to_additive]
-theorem multiset_prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M a)] (a : α)
+theorem multiset_prod_apply {α : Type*} {M : α → Type*} [∀ a, Monoid (M a)] [∀ a, IsMulCommutative (M a)] (a : α)
     (s : Multiset (∀ a, M a)) : s.prod a = (s.map fun f : ∀ a, M a ↦ f a).prod :=
   (evalMonoidHom M a).map_multiset_prod _
 
 end Pi
 
 @[to_additive (attr := simp)]
-theorem Finset.prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M a)] (a : α)
+theorem Finset.prod_apply {α : Type*} {M : α → Type*} [∀ a, Monoid (M a)] [∀ a, IsMulCommutative (M a)] (a : α)
     (s : Finset ι) (g : ι → ∀ a, M a) : (∏ c ∈ s, g c) a = ∏ c ∈ s, g c a :=
   map_prod (Pi.evalMonoidHom M a) _ _
 
 /-- An 'unapplied' analogue of `Finset.prod_apply`. -/
 @[to_additive (attr := push ←) /-- An 'unapplied' analogue of `Finset.sum_apply`. -/]
-theorem Finset.prod_fn {α : Type*} {M : α → Type*} {ι} [∀ a, CommMonoid (M a)] (s : Finset ι)
+theorem Finset.prod_fn {α : Type*} {M : α → Type*} {ι} [∀ a, Monoid (M a)] [∀ a, IsMulCommutative (M a)] (s : Finset ι)
     (g : ι → ∀ a, M a) : ∏ c ∈ s, g c = fun a ↦ ∏ c ∈ s, g c a :=
   funext fun _ ↦ Finset.prod_apply _ _ _
 
 @[to_additive]
-theorem Fintype.prod_apply {α : Type*} {M : α → Type*} [Fintype ι] [∀ a, CommMonoid (M a)] (a : α)
+theorem Fintype.prod_apply {α : Type*} {M : α → Type*} [Fintype ι] [∀ a, Monoid (M a)] [∀ a, IsMulCommutative (M a)] (a : α)
     (g : ι → ∀ a, M a) : (∏ c, g c) a = ∏ c, g c a :=
   Finset.prod_apply a Finset.univ g
 
 @[to_additive prod_mk_sum]
-theorem prod_mk_prod [CommMonoid M] [CommMonoid N] (s : Finset ι) (f : ι → M) (g : ι → N) :
+theorem prod_mk_prod [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] (s : Finset ι) (f : ι → M) (g : ι → N) :
     (∏ x ∈ s, f x, ∏ x ∈ s, g x) = ∏ x ∈ s, (f x, g x) :=
   haveI := Classical.decEq ι
   Finset.induction_on s rfl (by simp +contextual [Prod.ext_iff])
@@ -75,7 +75,7 @@ theorem pi_eq_sum_univ' {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [
   aesop
 
 section CommSemiring
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 lemma prod_indicator_apply (s : Finset ι) (f : ι → Set κ) (g : ι → κ → R) (j : κ) :
     ∏ i ∈ s, (f i).indicator (g i) j = (⋂ x ∈ s, f x).indicator (∏ i ∈ s, g i) j := by
@@ -104,7 +104,7 @@ end CommSemiring
 section MulSingle
 
 variable {I : Type*} [DecidableEq I] {M : I → Type*}
-variable [∀ i, CommMonoid (M i)]
+variable [∀ i, Monoid (M i)] [∀ i, IsMulCommutative (M i)]
 
 @[to_additive]
 theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, M i) :
@@ -113,7 +113,7 @@ theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, M i) :
   simp
 
 @[to_additive]
-theorem MonoidHom.functions_ext [Finite I] (N : Type*) [CommMonoid N] (g h : (∀ i, M i) →* N)
+theorem MonoidHom.functions_ext [Finite I] (N : Type*) [Monoid N] [IsMulCommutative N] (g h : (∀ i, M i) →* N)
     (H : ∀ i x, g (Pi.mulSingle i x) = h (Pi.mulSingle i x)) : g = h := by
   cases nonempty_fintype I
   ext k
@@ -125,7 +125,7 @@ note [partially-applied ext lemmas]. -/
 @[to_additive (attr := ext)
       /-- This is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons
       explained in note [partially-applied ext lemmas]. -/]
-theorem MonoidHom.functions_ext' [Finite I] (N : Type*) [CommMonoid N] (g h : (∀ i, M i) →* N)
+theorem MonoidHom.functions_ext' [Finite I] (N : Type*) [Monoid N] [IsMulCommutative N] (g h : (∀ i, M i) →* N)
     (H : ∀ i, g.comp (MonoidHom.mulSingle M i) = h.comp (MonoidHom.mulSingle M i)) : g = h :=
   g.functions_ext N h fun i => DFunLike.congr_fun (H i)
 
@@ -148,7 +148,7 @@ end RingHom
 
 namespace Prod
 
-variable [CommMonoid M] [CommMonoid N] {s : Finset ι} {f : ι → M × N}
+variable [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] {s : Finset ι} {f : ι → M × N}
 
 @[to_additive]
 theorem fst_prod : (∏ c ∈ s, f c).1 = ∏ c ∈ s, (f c).1 :=
@@ -168,7 +168,7 @@ commutative monoids to another commutative monoid and the product of the homomor
 a finite product of additive commutative monoids to another additive commutative monoid and
 the product of the homomorphism monoids. -/]
 def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → Type*)
-    [(i : ι) → CommMonoid (M i)] (M' : Type*) [CommMonoid M'] :
+    [(i : ι) → CommMonoid (M i)] (M' : Type*) [Monoid M'] [IsMulCommutative M'] :
     (((i : ι) → M i) →* M') ≃* ((i : ι) → (M i →* M')) where
   toFun φ i := φ.comp <| MonoidHom.mulSingle M i
   invFun φ := ∏ (i : ι), (φ i).comp (Pi.evalMonoidHom M i)
@@ -199,7 +199,7 @@ end MulEquiv
 variable [Finite ι] [DecidableEq ι] {M : ι → Type*}
 
 @[to_additive (attr := elab_as_elim)]
-lemma Pi.mulSingle_induction [∀ i, CommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
+lemma Pi.mulSingle_induction [∀ i, Monoid (M i)] [∀ i, IsMulCommutative (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
     (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
     (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by
   cases nonempty_fintype ι
@@ -209,13 +209,13 @@ lemma Pi.mulSingle_induction [∀ i, CommMonoid (M i)] (p : (Π i, M i) → Prop
 section EqOn
 
 @[to_additive]
-theorem eqOn_finsetProd {ι α β : Type*} [CommMonoid α]
+theorem eqOn_finsetProd {ι α β : Type*} [Monoid α] [IsMulCommutative α]
     {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
     Set.EqOn (∏ i ∈ v, f i) (∏ i ∈ v, f' i) s :=
   fun t ht => by simp [funext fun i ↦ h i ht]
 
 @[to_additive]
-theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
+theorem eqOn_fun_finsetProd {ι α β : Type*} [Monoid α] [IsMulCommutative α]
     {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
     Set.EqOn (fun b ↦ ∏ i ∈ v, f i b) (fun b ↦ ∏ i ∈ v, f' i b) s := by
   convert! eqOn_finsetProd h v <;> simp
@@ -224,7 +224,7 @@ end EqOn
 
 section FunLike
 
-variable {F α β ι : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
+variable {F α β ι : Type*} [FunLike F α β] [Monoid β] [IsMulCommutative β] [Monoid F] [IsMulCommutative F]
   [IsOneApply F α β] [IsMulApply F α β]
 
 @[to_additive (attr := simp, grind =)]

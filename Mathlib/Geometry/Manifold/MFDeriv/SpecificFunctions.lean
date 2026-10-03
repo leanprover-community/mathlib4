@@ -34,23 +34,23 @@ section SpecificFunctions
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
-  {E : Type*} [NormedAddCommGroup E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M]
   -- declare a charted space `M'` over the pair `(E', H')`.
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   -- declare a charted space `M''` over the pair `(E'', H'')`.
-  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {E'' : Type*} [NormedAddGroup E''] [IsAddCommutative E''] [NormedSpace 𝕜 E'']
   {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*}
   [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare a charted space `N` over the pair `(F, G)`.
   {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   -- declare a charted space `N'` over the pair `(F', G')`.
   {F' : Type*}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
 
 namespace ContinuousLinearMap
@@ -402,8 +402,8 @@ theorem mdifferentiableWithinAt_prod_iff (f : M → M' × N') :
 section prod_module
 
 -- `F₁` and `F₂` are normed spaces.
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
-  {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+variable {F₁ : Type*} [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁]
+  {F₂ : Type*} [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂]
   {s : Set M} {x : M}
 
 theorem mdifferentiableWithinAt_prod_module_iff (f : M → F₁ × F₂) :
@@ -982,7 +982,7 @@ end AlgebraOverRing
 
 section AlgebraOverCommRing
 
-variable {z : M} {F' : Type*} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {z : M} {F' : Type*} [NormedRing F'] [IsMulCommutative F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace% z →L[𝕜] F'}
 
 set_option backward.isDefEq.respectTransparency false in

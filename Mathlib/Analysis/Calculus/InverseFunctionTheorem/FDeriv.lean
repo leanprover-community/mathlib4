@@ -52,8 +52,8 @@ open scoped Topology NNReal
 noncomputable section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 open Asymptotics Filter Set
 

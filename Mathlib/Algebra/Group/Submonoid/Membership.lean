@@ -262,7 +262,7 @@ theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :
   rwa [← SetLike.mem_coe, closure_eq_image_prod, Set.mem_image] at hx
 
 @[to_additive]
-theorem exists_multiset_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x : M}
+theorem exists_multiset_of_mem_closure {M : Type*} [Monoid M] [IsMulCommutative M] {s : Set M} {x : M}
     (hx : x ∈ closure s) : ∃ l : Multiset M, (∀ y ∈ l, y ∈ s) ∧ l.prod = x := by
   obtain ⟨l, h1, h2⟩ := exists_list_of_mem_closure hx
   exact ⟨l, h1, (Multiset.prod_coe l).trans h2⟩
@@ -459,7 +459,7 @@ theorem SMulCommClass.of_mclosure_eq_top {N α} [Monoid M] [SMul N α] [MulActio
 
 namespace Submonoid
 
-variable {N : Type*} [CommMonoid N]
+variable {N : Type*} [Monoid N] [IsMulCommutative N]
 
 open MonoidHom
 
@@ -542,7 +542,7 @@ elements. -/
 @[to_additive
       /-- An element is in the closure of a two-element set if it is a linear combination of
       those two elements. -/]
-theorem mem_closure_pair {A : Type*} [CommMonoid A] (a b c : A) :
+theorem mem_closure_pair {A : Type*} [Monoid A] [IsMulCommutative A] (a b c : A) :
     c ∈ Submonoid.closure ({a, b} : Set A) ↔ ∃ m n : ℕ, a ^ m * b ^ n = c := by
   rw [← Set.singleton_union, Submonoid.closure_union, mem_sup]
   simp_rw [mem_closure_singleton, exists_exists_eq_and]

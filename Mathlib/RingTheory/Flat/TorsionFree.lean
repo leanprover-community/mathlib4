@@ -43,7 +43,7 @@ namespace Module.Flat
 
 section Semiring
 
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 open LinearMap in
 /-- Scalar multiplication `m ↦ r • m` by a regular `r` is injective on a flat module. -/
@@ -69,7 +69,7 @@ end Semiring
 
 section Ring
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 open scoped nonZeroDivisors
 

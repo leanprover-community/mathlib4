@@ -60,7 +60,7 @@ noncomputable section
 
 open CategoryTheory Limits Representation
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
+variable {k G : Type u} [Ring k] [IsMulCommutative k] [Group G] (A : Rep k G)
 
 namespace groupCohomology
 
@@ -486,7 +486,7 @@ section IsCocycle
 
 section
 
-variable {G A : Type*} [Mul G] [AddCommGroup A] [SMul G A]
+variable {G A : Type*} [Mul G] [AddGroup A] [IsAddCommutative A] [SMul G A]
 
 /-- A function `f : G → A` satisfies the 1-cocycle condition if
 `f(gh) = g • f(h) + f(g)` for all `g, h : G`. -/
@@ -501,7 +501,7 @@ end
 
 section
 
-variable {G A : Type*} [Monoid G] [AddCommGroup A] [MulAction G A]
+variable {G A : Type*} [Monoid G] [AddGroup A] [IsAddCommutative A] [MulAction G A]
 
 theorem map_one_of_isCocycle₁ {f : G → A} (hf : IsCocycle₁ f) :
     f 1 = 0 := by
@@ -519,7 +519,7 @@ end
 
 section
 
-variable {G A : Type*} [Group G] [AddCommGroup A] [MulAction G A]
+variable {G A : Type*} [Group G] [AddGroup A] [IsAddCommutative A] [MulAction G A]
 
 @[scoped simp] theorem map_inv_of_isCocycle₁ {f : G → A} (hf : IsCocycle₁ f) (g : G) :
     g • f g⁻¹ = -f g := by
@@ -537,7 +537,7 @@ end IsCocycle
 
 section IsCoboundary
 
-variable {G A : Type*} [Mul G] [AddCommGroup A] [SMul G A]
+variable {G A : Type*} [Mul G] [AddGroup A] [IsAddCommutative A] [SMul G A]
 
 /-- A function `f : G → A` satisfies the 1-coboundary condition if there's `x : A` such that
 `g • x - x = f(g)` for all `g : G`. -/
@@ -552,7 +552,7 @@ end IsCoboundary
 
 section ofDistribMulAction
 
-variable {k G A : Type u} [CommRing k] [Group G] [AddCommGroup A] [Module k A]
+variable {k G A : Type u} [Ring k] [IsMulCommutative k] [Group G] [AddGroup A] [IsAddCommutative A] [Module k A]
   [DistribMulAction G A] [SMulCommClass G k A]
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
@@ -618,7 +618,7 @@ section IsMulCocycle
 
 section
 
-variable {G M : Type*} [Mul G] [CommGroup M] [SMul G M]
+variable {G M : Type*} [Mul G] [Group M] [IsMulCommutative M] [SMul G M]
 
 /-- A function `f : G → M` satisfies the multiplicative 1-cocycle condition if
 `f(gh) = g • f(h) * f(g)` for all `g, h : G`. -/
@@ -633,7 +633,7 @@ end
 
 section
 
-variable {G M : Type*} [Monoid G] [CommGroup M] [MulAction G M]
+variable {G M : Type*} [Monoid G] [Group M] [IsMulCommutative M] [MulAction G M]
 
 theorem map_one_of_isMulCocycle₁ {f : G → M} (hf : IsMulCocycle₁ f) :
     f 1 = 1 := by
@@ -651,7 +651,7 @@ end
 
 section
 
-variable {G M : Type*} [Group G] [CommGroup M] [MulAction G M]
+variable {G M : Type*} [Group G] [Group M] [IsMulCommutative M] [MulAction G M]
 
 @[scoped simp] theorem map_inv_of_isMulCocycle₁ {f : G → M} (hf : IsMulCocycle₁ f) (g : G) :
     g • f g⁻¹ = (f g)⁻¹ := by
@@ -670,7 +670,7 @@ end IsMulCocycle
 
 section IsMulCoboundary
 
-variable {G M : Type*} [Mul G] [CommGroup M] [SMul G M]
+variable {G M : Type*} [Mul G] [Group M] [IsMulCommutative M] [SMul G M]
 
 /-- A function `f : G → M` satisfies the multiplicative 1-coboundary condition if there's `x : M`
 such that `g • x / x = f(g)` for all `g : G`. -/
@@ -685,7 +685,7 @@ end IsMulCoboundary
 
 section ofMulDistribMulAction
 
-variable {G M : Type} [Group G] [CommGroup M] [MulDistribMulAction G M]
+variable {G M : Type} [Group G] [Group M] [IsMulCommutative M] [MulDistribMulAction G M]
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G → M` satisfying the multiplicative 1-cocycle condition, produces a 1-cocycle for the

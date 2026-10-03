@@ -46,7 +46,7 @@ namespace Polynomial
 /-! ### Derivative of a polynomial -/
 
 
-variable {R : Type*} [CommSemiring R] [Algebra R 𝕜]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R 𝕜]
 variable (p : 𝕜[X]) (q : R[X])
 
 /-- The derivative (in the analysis sense) of a polynomial `p` is given by `p.derivative`. -/

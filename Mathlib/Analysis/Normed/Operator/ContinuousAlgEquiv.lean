@@ -26,8 +26,8 @@ The proof follows the same idea as the non-continuous version.
 open ContinuousLinearMap ContinuousLinearEquiv
 
 section
-variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V]
-  [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
+variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddGroup V] [IsAddCommutative V]
+  [SeminormedAddGroup W] [IsAddCommutative W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
   [SeparatingDual 𝕜 W]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -93,8 +93,8 @@ public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_surjective :
 
 end
 
-variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
-  [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
+variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
+  [NormedAddGroup W] [IsAddCommutative W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
 
 section auxiliaryDefs
 

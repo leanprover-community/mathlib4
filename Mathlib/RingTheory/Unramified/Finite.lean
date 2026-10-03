@@ -37,8 +37,8 @@ of formally unramified algebras which are essentially of finite type.
 open Algebra Module
 open scoped TensorProduct
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 namespace Algebra.FormallyUnramified
 

@@ -32,7 +32,7 @@ namespace LinearMap
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R₂ M₂]
 
 open Submodule
@@ -93,7 +93,7 @@ end AddCommMonoid
 section Ring
 
 variable [Ring R] [Ring R₂]
-variable [AddCommGroup M] [AddCommGroup M₂]
+variable [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂}
 

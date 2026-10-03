@@ -45,13 +45,13 @@ namespace FractionalIdeal
 
 open Set Submodule
 
-variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {S : Submonoid R} {P : Type*} [Ring P] [IsMulCommutative P]
 variable [Algebra R P]
 
 section
 
-variable {P' : Type*} [CommRing P'] [Algebra R P']
-variable {P'' : Type*} [CommRing P''] [Algebra R P'']
+variable {P' : Type*} [Ring P'] [IsMulCommutative P'] [Algebra R P']
+variable {P'' : Type*} [Ring P''] [IsMulCommutative P''] [Algebra R P'']
 
 theorem _root_.IsFractional.map (g : P →ₐ[R] P') {I : Submodule R P} :
     IsFractional S I → IsFractional S (Submodule.map g.toLinearMap I)
@@ -246,13 +246,13 @@ theorem canonicalEquiv_flip (I) : canonicalEquiv S P P' (canonicalEquiv S P' P I
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
+theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [Ring P''] [IsMulCommutative P''] [Algebra R P'']
     [IsLocalization S P''] (I : FractionalIdeal S P) :
     canonicalEquiv S P' P'' (canonicalEquiv S P P' I) = canonicalEquiv S P P'' I := by
   ext
   simp [IsLocalization.map_map]
 
-theorem canonicalEquiv_trans_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
+theorem canonicalEquiv_trans_canonicalEquiv (P'' : Type*) [Ring P''] [IsMulCommutative P''] [Algebra R P'']
     [IsLocalization S P''] :
     (canonicalEquiv S P P').trans (canonicalEquiv S P' P'') = canonicalEquiv S P P'' :=
   RingEquiv.ext (canonicalEquiv_canonicalEquiv S P P' P'')
@@ -348,7 +348,7 @@ assumption by taking `S = nonZeroDivisors R`, `R`'s localization at which
 is a field because `R` is a domain.
 -/
 
-variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
+variable {R₁ : Type*} [Ring R₁] [IsMulCommutative R₁] {K : Type*} [Field K]
 variable [Algebra R₁ K]
 
 instance : Nontrivial (FractionalIdeal R₁⁰ K) :=
@@ -491,7 +491,7 @@ end Quotient
 
 section Field
 
-variable {R₁ K L : Type*} [CommRing R₁] [Field K] [Field L]
+variable {R₁ K L : Type*} [Ring R₁] [IsMulCommutative R₁] [Field K] [Field L]
 variable [Algebra R₁ K] [IsFractionRing R₁ K] [Algebra K L] [IsFractionRing K L]
 
 theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
@@ -517,7 +517,7 @@ end Field
 
 section PrincipalIdeal
 
-variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
+variable {R₁ : Type*} [Ring R₁] [IsMulCommutative R₁] {K : Type*} [Field K]
 variable [Algebra R₁ K] [IsFractionRing R₁ K]
 
 variable (R₁)
@@ -668,7 +668,7 @@ theorem coeIdeal_span_singleton (x : R) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem canonicalEquiv_spanSingleton {P'} [CommRing P'] [Algebra R P'] [IsLocalization S P']
+theorem canonicalEquiv_spanSingleton {P'} [Ring P'] [IsMulCommutative P'] [Algebra R P'] [IsLocalization S P']
     (x : P) :
     canonicalEquiv S P P' (spanSingleton S x) =
       spanSingleton S
@@ -775,7 +775,7 @@ theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
 
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
 `I = a⁻¹J`, then `J` is nonzero. -/
-theorem ideal_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra R K]
+theorem ideal_factor_ne_zero {R} [Ring R] [IsMulCommutative R] {K : Type*} [Field K] [Algebra R K]
     [IsFractionRing R K] {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R} {J : Ideal R}
     (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) : J ≠ 0 := fun h ↦ by
   rw [h, Ideal.zero_eq_bot, coeIdeal_bot, mul_zero] at haJ
@@ -783,7 +783,7 @@ theorem ideal_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra R K
 
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
 `I = a⁻¹J`, then `a` is nonzero. -/
-theorem constant_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra R K]
+theorem constant_factor_ne_zero {R} [Ring R] [IsMulCommutative R] {K : Type*} [Field K] [Algebra R K]
     [IsFractionRing R K] {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R} {J : Ideal R}
     (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
     (Ideal.span {a} : Ideal R) ≠ 0 := fun h ↦ by
@@ -791,7 +791,7 @@ theorem constant_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra 
   rw [h, map_zero, inv_zero, spanSingleton_zero, zero_mul] at haJ
   exact hI haJ
 
-instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Algebra R K]
+instance isPrincipal {R} [Ring R] [IsMulCommutative R] [IsDomain R] [IsPrincipalIdealRing R] [Algebra R K]
     [IsFractionRing R K] (I : FractionalIdeal R⁰ K) : (I : Submodule R K).IsPrincipal := by
   obtain ⟨a, aI, -, ha⟩ := exists_eq_spanSingleton_mul I
   use (algebraMap R K a)⁻¹ * algebraMap R K (generator aI)
@@ -838,7 +838,7 @@ theorem isPrincipal_of_isPrincipal_num [IsDomain R]
 
 end PrincipalIdeal
 
-variable {R₁ : Type*} [CommRing R₁]
+variable {R₁ : Type*} [Ring R₁] [IsMulCommutative R₁]
 variable {K : Type*} [Field K] [Algebra R₁ K]
 
 theorem isNoetherian_zero : IsNoetherian R₁ (0 : FractionalIdeal R₁⁰ K) :=
@@ -917,8 +917,8 @@ section RingEquiv
 
 open IsFractionRing
 
-variable {R S : Type*} (K L : Type*) [CommRing R] [IsDomain R] [CommRing S] [IsDomain S]
-  [CommRing K] [CommRing L] [Algebra R K] [Algebra S L] [IsFractionRing R K] [IsFractionRing S L]
+variable {R S : Type*} (K L : Type*) [Ring R] [IsMulCommutative R] [IsDomain R] [Ring S] [IsMulCommutative S] [IsDomain S]
+  [Ring K] [IsMulCommutative K] [Ring L] [IsMulCommutative L] [Algebra R K] [Algebra S L] [IsFractionRing R K] [IsFractionRing S L]
   (f : R ≃+* S)
 
 local instance (f : R ≃+* S) : RingHomInvPair (f : R →+* S) f.symm :=
@@ -985,7 +985,7 @@ lemma ringEquivOfRingEquiv_apply_val (f : R ≃+* S) (I : FractionalIdeal R⁰ K
       I.val.map (semilinearEquivOfRingEquiv _ _ f).toLinearMap  := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma ringEquivOfRingEquiv_trans {T : Type*} [CommRing T] [IsDomain T] (M : Type*) [CommRing M]
+lemma ringEquivOfRingEquiv_trans {T : Type*} [Ring T] [IsMulCommutative T] [IsDomain T] (M : Type*) [Ring M] [IsMulCommutative M]
     [Algebra T M] [IsFractionRing T M] (f : R ≃+* S) (g : S ≃+* T) :
     ringEquivOfRingEquiv K M (f.trans g) =
       (ringEquivOfRingEquiv K L f).trans (ringEquivOfRingEquiv L M g) := by
@@ -995,8 +995,8 @@ lemma ringEquivOfRingEquiv_trans {T : Type*} [CommRing T] [IsDomain T] (M : Type
     semilinearEquivOfRingEquiv_comp K L f M, LinearEquiv.coe_trans,
     Submodule.map_comp, RingEquiv.coe_mk, Equiv.coe_fn_mk, RingEquiv.coe_trans]
 
-lemma ringEquivOfRingEquiv_trans_apply {T : Type*} [CommRing T] [IsDomain T] (M : Type*)
-    [CommRing M] [Algebra T M] [IsFractionRing T M]
+lemma ringEquivOfRingEquiv_trans_apply {T : Type*} [Ring T] [IsMulCommutative T] [IsDomain T] (M : Type*)
+    [Ring M] [IsMulCommutative M] [Algebra T M] [IsFractionRing T M]
     (f : R ≃+* S) (g : S ≃+* T) (I : FractionalIdeal R⁰ K) :
     ringEquivOfRingEquiv K M (f.trans g) I =
       ringEquivOfRingEquiv L M g (ringEquivOfRingEquiv K L f I) := by

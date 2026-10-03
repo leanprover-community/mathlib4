@@ -55,7 +55,7 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
 
 /-- **Sylvester's law of inertia**: A nondegenerate real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1, `SignType` version. -/
-theorem equivalent_sign_ne_zero_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
+theorem equivalent_sign_ne_zero_weighted_sum_squared {M : Type*} [AddGroup M] [IsAddCommutative M] [Module ℝ M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) (hQ : (associated (R := ℝ) Q).SeparatingLeft) :
     ∃ w : Fin (Module.finrank ℝ M) → SignType,
       (∀ i, w i ≠ 0) ∧ Equivalent Q (weightedSumSquares ℝ fun i ↦ (w i : ℝ)) :=
@@ -65,7 +65,7 @@ theorem equivalent_sign_ne_zero_weighted_sum_squared {M : Type*} [AddCommGroup M
 
 /-- **Sylvester's law of inertia**: A nondegenerate real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1. -/
-theorem equivalent_one_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
+theorem equivalent_one_neg_one_weighted_sum_squared {M : Type*} [AddGroup M] [IsAddCommutative M] [Module ℝ M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) (hQ : (associated (R := ℝ) Q).SeparatingLeft) :
     ∃ w : Fin (Module.finrank ℝ M) → ℝ,
       (∀ i, w i = -1 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=
@@ -74,7 +74,7 @@ theorem equivalent_one_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M]
 
 /-- **Sylvester's law of inertia**: A real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1 or 0, `SignType` version. -/
-theorem equivalent_signType_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
+theorem equivalent_signType_weighted_sum_squared {M : Type*} [AddGroup M] [IsAddCommutative M] [Module ℝ M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) :
     ∃ w : Fin (Module.finrank ℝ M) → SignType,
       Equivalent Q (weightedSumSquares ℝ fun i ↦ (w i : ℝ)) :=
@@ -83,7 +83,7 @@ theorem equivalent_signType_weighted_sum_squared {M : Type*} [AddCommGroup M] [M
 
 /-- **Sylvester's law of inertia**: A real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1 or 0. -/
-theorem equivalent_one_zero_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
+theorem equivalent_one_zero_neg_one_weighted_sum_squared {M : Type*} [AddGroup M] [IsAddCommutative M] [Module ℝ M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) :
     ∃ w : Fin (Module.finrank ℝ M) → ℝ,
       (∀ i, w i = -1 ∨ w i = 0 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=

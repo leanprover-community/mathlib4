@@ -145,7 +145,7 @@ end MulOneClass
 
 section CommSemigroup
 
-variable [CommSemigroup R] {a b : R}
+variable [Semigroup R] [IsMulCommutative R] {a b : R}
 
 /-- A product is regular if and only if the factors are. -/
 @[to_additive /-- A sum is add-regular if and only if the summands are. -/]

@@ -42,7 +42,7 @@ variable {M : Type*} {ι : Type*} {R : Type*}
 
 section
 
-variable (R) [CommSemiring R]
+variable (R) [Semiring R] [IsMulCommutative R]
 
 /-- The submodule corresponding to each grade given by the degree function `f`. -/
 abbrev gradeBy (f : M → ι) (i : ι) : Submodule R R[M] where
@@ -72,12 +72,12 @@ theorem mem_grade_iff' (m : M) (a : R[M]) :
 theorem grade_eq_lsingle_range (m : M) : grade R m = LinearMap.range (lsingle m) :=
   Submodule.ext (mem_grade_iff' R m)
 
-theorem single_mem_gradeBy {R} [CommSemiring R] (f : M → ι) (m : M) (r : R) :
+theorem single_mem_gradeBy {R} [Semiring R] [IsMulCommutative R] (f : M → ι) (m : M) (r : R) :
     single m r ∈ gradeBy R f (f m) := by
   intro x hx
   rw [Finset.mem_singleton.mp (Finsupp.support_single_subset hx)]
 
-theorem single_mem_grade {R} [CommSemiring R] (i : M) (r : R) :
+theorem single_mem_grade {R} [Semiring R] [IsMulCommutative R] (i : M) (r : R) :
     single i r ∈ grade R i :=
   single_mem_gradeBy _ _ _
 
@@ -85,7 +85,7 @@ end
 
 open DirectSum
 
-instance gradeBy.gradedMonoid [AddMonoid M] [AddMonoid ι] [CommSemiring R] (f : M →+ ι) :
+instance gradeBy.gradedMonoid [AddMonoid M] [AddMonoid ι] [Semiring R] [IsMulCommutative R] (f : M →+ ι) :
     SetLike.GradedMonoid (gradeBy R f : ι → Submodule R R[M]) where
   one_mem m h := by
     rw [one_def] at h
@@ -97,11 +97,11 @@ instance gradeBy.gradedMonoid [AddMonoid M] [AddMonoid ι] [CommSemiring R] (f :
       Finset.mem_add.1 <| support_coeff_mul_subset a b hc
     rw [map_add, ha ma hma, hb mb hmb]
 
-instance grade.gradedMonoid [AddMonoid M] [CommSemiring R] :
+instance grade.gradedMonoid [AddMonoid M] [Semiring R] [IsMulCommutative R] :
     SetLike.GradedMonoid (grade R : M → Submodule R R[M]) := by
   apply gradeBy.gradedMonoid (AddMonoidHom.id _)
 
-variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [CommSemiring R] (f : M →+ ι)
+variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [Semiring R] [IsMulCommutative R] (f : M →+ ι)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition; the canonical grade decomposition, used to provide

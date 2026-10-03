@@ -28,7 +28,7 @@ This file defines restrictions of affine maps.
 @[expose] public section
 
 
-variable {k V₁ P₁ V₂ P₂ : Type*} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
+variable {k V₁ P₁ V₂ P₂ : Type*} [Ring k] [AddGroup V₁] [IsAddCommutative V₁] [AddGroup V₂] [IsAddCommutative V₂] [Module k V₁]
   [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂]
 
 instance AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty E]

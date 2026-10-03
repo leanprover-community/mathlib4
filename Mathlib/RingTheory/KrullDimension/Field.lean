@@ -21,6 +21,6 @@ open Order
 theorem ringKrullDim_eq_zero_of_field (F : Type*) [Field F] : ringKrullDim F = 0 :=
   krullDim_eq_zero_of_unique
 
-theorem ringKrullDim_eq_zero_of_isField {F : Type*} [CommRing F] (hF : IsField F) :
+theorem ringKrullDim_eq_zero_of_isField {F : Type*} [Ring F] [IsMulCommutative F] (hF : IsField F) :
     ringKrullDim F = 0 :=
   @krullDim_eq_zero_of_unique _ _ <| @PrimeSpectrum.instUnique _ hF.toField

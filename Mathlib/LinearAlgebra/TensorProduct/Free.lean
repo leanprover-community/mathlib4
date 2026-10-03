@@ -19,8 +19,8 @@ This file contains lemmas about tensoring with free modules.
 open TensorProduct
 
 variable {R : Type*} (A : Type*) {V : Type*}
-    [CommSemiring A] [CommSemiring R] [Algebra R A]
-    [AddCommGroup V] [Module R V]
+    [Semiring A] [IsMulCommutative A] [Semiring R] [IsMulCommutative R] [Algebra R A]
+    [AddGroup V] [IsAddCommutative V] [Module R V]
     {ι : Type*} (b : Module.Basis ι R V)
 
 /--

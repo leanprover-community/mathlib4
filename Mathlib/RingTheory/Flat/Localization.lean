@@ -28,9 +28,9 @@ public section
 
 open IsLocalizedModule LocalizedModule LinearMap TensorProduct
 
-variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R : Type*} (S : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 variable (p : Submonoid R) [IsLocalization p S]
-variable (M : Type*) [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 set_option backward.isDefEq.respectTransparency.types false in
 include p in
@@ -79,7 +79,7 @@ theorem flat_of_localized_maximal
 
 variable (s : Set S) (spn : Ideal.span s = ⊤)
   (Mₛ : ∀ _ : s, Type*)
-  [∀ r : s, AddCommMonoid (Mₛ r)]
+  [∀ r : s, AddMonoid (Mₛ r)] [∀ r : s, IsAddCommutative (Mₛ r)]
   [∀ r : s, Module R (Mₛ r)]
   [∀ r : s, Module S (Mₛ r)]
   [∀ r : s, IsScalarTower R S (Mₛ r)]
@@ -104,7 +104,7 @@ theorem flat_of_localized_span
 
 end Module
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
 
 instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
@@ -116,7 +116,7 @@ instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
 section IsSMulRegular
 
 variable {M} in
-theorem IsSMulRegular.of_isLocalizedModule {K : Type*} [AddCommMonoid K] [Module R K]
+theorem IsSMulRegular.of_isLocalizedModule {K : Type*} [AddMonoid K] [IsAddCommutative K] [Module R K]
     (f : K →ₗ[R] M) [IsLocalizedModule p f] {x : R} (reg : IsSMulRegular K x) :
     IsSMulRegular M (algebraMap R S x) :=
   have : Module.Flat R S := IsLocalization.flat S p

@@ -42,7 +42,7 @@ open scoped Topology
 between the topological `R`-algebras `A` and `B` which are both homeomorphisms
 and `R`-algebra isomorphisms.
 -/
-structure ContinuousAlgEquiv (R A B : Type*) [CommSemiring R]
+structure ContinuousAlgEquiv (R A B : Type*) [Semiring R] [IsMulCommutative R]
     [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A]
     [Algebra R B] extends A ≃ₐ[R] B, A ≃ₜ B
 
@@ -56,7 +56,7 @@ attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
   structure-preserving equivalences. You should extend this class when you
   extend `ContinuousAlgEquiv`.
 -/
-class ContinuousAlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
+class ContinuousAlgEquivClass (F : Type*) (R A B : outParam Type*) [Semiring R] [IsMulCommutative R]
     [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B]
     [Algebra R A] [Algebra R B] [EquivLike F A B] : Prop
     extends AlgEquivClass F R A B, HomeomorphClass F A B
@@ -64,7 +64,7 @@ class ContinuousAlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring
 namespace ContinuousAlgEquiv
 
 variable {R A B C : Type*}
-  [CommSemiring R] [Semiring A] [TopologicalSpace A] [Semiring B]
+  [Semiring R] [IsMulCommutative R] [Semiring A] [TopologicalSpace A] [Semiring B]
   [TopologicalSpace B] [Semiring C] [TopologicalSpace C] [Algebra R A] [Algebra R B]
   [Algebra R C]
 

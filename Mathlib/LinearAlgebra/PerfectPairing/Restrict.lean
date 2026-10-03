@@ -34,12 +34,12 @@ namespace LinearMap
 
 section CommRing
 
-variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
 
 section Restrict
 
-variable {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
+variable {M' N' : Type*} [AddGroup M'] [IsAddCommutative M'] [Module R M'] [AddGroup N'] [IsAddCommutative N'] [Module R N']
   (i : M' →ₗ[R] M) (j : N' →ₗ[R] N) (hi : Injective i) (hj : Injective j)
   (hij : p.IsPerfectCompl (LinearMap.range i) (LinearMap.range j))
 
@@ -78,9 +78,9 @@ end Restrict
 section RestrictScalars
 
 variable {S M' N' : Type*}
-  [CommRing S] [IsDomain S] [Algebra S R] [Module S M] [Module S N] [IsScalarTower S R M]
+  [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra S R] [Module S M] [Module S N] [IsScalarTower S R M]
   [IsScalarTower S R N] [IsTorsionFree S R] [Nontrivial R]
-  [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
+  [AddGroup M'] [IsAddCommutative M'] [Module S M'] [AddGroup N'] [IsAddCommutative N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -145,7 +145,7 @@ end CommRing
 section Field
 
 variable {K L M N : Type*} [Field K] [Field L] [Algebra K L]
-  [AddCommGroup M] [AddCommGroup N] [Module L M] [Module L N]
+  [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module L M] [Module L N]
   [Module K M] [Module K N] [IsScalarTower K L M]
   (p : M →ₗ[L] N →ₗ[L] L) [p.IsPerfPair]
 
@@ -213,7 +213,7 @@ lemma finrank_eq_of_isPerfPair
   rw [finrank_eq_card_basis b, finrank_eq_card_basis b']
 
 variable {M' N' : Type*}
-  [AddCommGroup M'] [AddCommGroup N'] [Module K M'] [Module K N'] [IsScalarTower K L N]
+  [AddGroup M'] [IsAddCommutative M'] [AddGroup N'] [IsAddCommutative N'] [Module K M'] [Module K N'] [IsScalarTower K L N]
   (i : M' →ₗ[K] M) (j : N' →ₗ[K] N) (hi : Injective i) (hj : Injective j)
 
 include hi hj in

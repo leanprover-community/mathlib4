@@ -202,7 +202,7 @@ noncomputable instance : Module cR.pt (ModuleColimit hcR hcM) where
 
 /-- Auxiliary definition for `homEquiv`. This is the universal property
 of `PresheafOfModules.ModuleColimit`, as an abelian group. -/
-noncomputable def homEquiv' {N : Type w} [AddCommGroup N] :
+noncomputable def homEquiv' {N : Type w} [AddGroup N] [IsAddCommutative N] :
     (ModuleColimit hcR hcM →+ N) ≃+ (M.presheaf ⟶ (Functor.const _).obj ↧N) where
   toEquiv := (ConcreteCategory.homEquiv (X := AddCommGrpCat.of (ModuleColimit hcR hcM))
     (Y := ↧N)).symm.trans hcM.homEquiv

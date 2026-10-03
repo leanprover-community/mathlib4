@@ -34,8 +34,8 @@ universe u v
 
 namespace Algebra
 
-variable {R : Type u} {A : Type v} {B : Type*} [CommRing R] [CommRing A] [Algebra R A]
-  [CommRing B] [Algebra R B]
+variable {R : Type u} {A : Type v} {B : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
+  [Ring B] [IsMulCommutative B] [Algebra R B]
 
 section
 
@@ -83,7 +83,7 @@ every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exist
 a unique lift `A →ₐ[R] B`".
 -/
 theorem iff_comp_bijective :
-   FormallyEtale R A ↔ ∀ ⦃B : Type max u v⦄ [CommRing B] [Algebra R B] (I : Ideal B), I ^ 2 = ⊥ →
+   FormallyEtale R A ↔ ∀ ⦃B : Type max u v⦄ [Ring B] [IsMulCommutative B] [Algebra R B] (I : Ideal B), I ^ 2 = ⊥ →
       Function.Bijective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
   ⟨fun _ _ ↦ comp_bijective R A, fun H ↦
     have : FormallyUnramified R A := FormallyUnramified.iff_comp_injective_of_small.{max u v}.mpr
@@ -132,7 +132,7 @@ lemma _root_.Algebra.FormallySmooth.iff_restrictScalars [FormallyEtale R A] :
 end Comp
 
 lemma iff_of_surjective
-    {R S : Type*} [CommRing R] [CommRing S]
+    {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     [Algebra R S] (h : Function.Surjective (algebraMap R S)) :
     Algebra.FormallyEtale R S ↔ IsIdempotentElem (RingHom.ker (algebraMap R S)) := by
   rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, ← FormallySmooth.iff_of_surjective h,
@@ -165,7 +165,7 @@ subset `M` of `R`.
 -/
 
 /-! Let R, S, Rₘ, Sₘ be commutative rings -/
-variable {R S Rₘ Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
+variable {R S Rₘ Sₘ : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring Rₘ] [IsMulCommutative Rₘ] [Ring Sₘ] [IsMulCommutative Sₘ]
 /-! Let M be a multiplicatively closed subset of `R` -/
 variable (M : Submonoid R)
 /-! Assume that the rings are in a commutative diagram as above. -/
@@ -254,19 +254,19 @@ theorem of_isLocalizationAway (r : R) [IsLocalization.Away r A] : Etale R A wher
 
 instance (s : A) [Algebra.Etale R A] : Algebra.Etale R (Localization.Away s) where
 
-instance (R S : Type u) [CommRing R] [CommRing S] :
+instance (R S : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] :
     letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
     Algebra.Etale (R × S) S := by
   algebraize [RingHom.snd R S]
   exact Algebra.Etale.of_isLocalizationAway (0, 1)
 
-instance (S : Type*) [CommRing S] :
+instance (S : Type*) [Ring S] [IsMulCommutative S] :
     letI : Algebra (R × S) R := (RingHom.fst R S).toAlgebra
     Algebra.Etale (R × S) R := by
   algebraize [RingHom.fst R S]
   exact Algebra.Etale.of_isLocalizationAway (1, 0)
 
-instance (S : Type*) [CommRing S] :
+instance (S : Type*) [Ring S] [IsMulCommutative S] :
     letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
     Algebra.Etale (R × S) S := by
   algebraize [RingHom.snd R S]
@@ -278,7 +278,7 @@ end Algebra
 
 namespace RingHom
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 /--
 A ring homomorphism `R →+* A` is formally étale if it is formally unramified and formally smooth.
@@ -293,7 +293,7 @@ lemma formallyEtale_algebraMap [Algebra R S] :
     (algebraMap R S).FormallyEtale ↔ Algebra.FormallyEtale R S := by
   rw [FormallyEtale, toAlgebra_algebraMap]
 
-lemma FormallyEtale.comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T} (hf : f.FormallyEtale)
+lemma FormallyEtale.comp {T : Type*} [Ring T] [IsMulCommutative T] {f : R →+* S} {g : S →+* T} (hf : f.FormallyEtale)
     (hg : g.FormallyEtale) :
     (g.comp f).FormallyEtale := by
   algebraize [f, g, g.comp f]

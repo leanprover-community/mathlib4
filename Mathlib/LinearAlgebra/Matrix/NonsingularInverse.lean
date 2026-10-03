@@ -68,7 +68,7 @@ open scoped Ring
 
 section Invertible
 
-variable [Fintype n] [DecidableEq n] [CommRing α]
+variable [Fintype n] [DecidableEq n] [Ring α] [IsMulCommutative α]
 variable (A : Matrix n n α) (B : Matrix n n α)
 
 /-- If `A.det` has a constructive inverse, produce one for `A`. -/
@@ -152,7 +152,7 @@ end Invertible
 
 section Inv
 
-variable [Fintype n] [DecidableEq n] [CommRing α]
+variable [Fintype n] [DecidableEq n] [Ring α] [IsMulCommutative α]
 variable (A : Matrix n n α) (B : Matrix n n α)
 
 theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
@@ -297,7 +297,7 @@ lemma IsSymm.inv {A : Matrix n n α} (hA : A.IsSymm) : A⁻¹.IsSymm :=
 end Inv
 
 section InjectiveMul
-variable [Fintype n] [Fintype m] [DecidableEq m] [CommRing α]
+variable [Fintype n] [Fintype m] [DecidableEq m] [Ring α] [IsMulCommutative α]
 
 lemma mul_left_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
     Function.Injective (fun x : Matrix l m α => x * A) := fun _ _ g => by
@@ -337,7 +337,7 @@ theorem mulVec_surjective_iff_exists_right_inverse
 
 end Semiring
 
-variable [DecidableEq m] {R K : Type*} [CommRing R] [Field K] [Fintype m]
+variable [DecidableEq m] {R K : Type*} [Ring R] [IsMulCommutative R] [Field K] [Fintype m]
 
 theorem vecMul_surjective_iff_isUnit {A : Matrix m m R} :
     Function.Surjective A.vecMul ↔ IsUnit A := by
@@ -394,7 +394,7 @@ theorem linearIndependent_cols_of_invertible (A : Matrix m m K) [Invertible A] :
 
 end vecMul
 
-variable [Fintype n] [DecidableEq n] [CommRing α]
+variable [Fintype n] [DecidableEq n] [Ring α] [IsMulCommutative α]
 variable (A : Matrix n n α) (B : Matrix n n α)
 
 theorem nonsing_inv_cancel_or_zero : A⁻¹ * A = 1 ∧ A * A⁻¹ = 1 ∨ A⁻¹ = 0 := by

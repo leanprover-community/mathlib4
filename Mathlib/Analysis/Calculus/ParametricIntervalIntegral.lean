@@ -20,8 +20,8 @@ open TopologicalSpace MeasureTheory Filter Set
 
 open scoped Topology Filter Interval
 
-variable {𝕜 : Type*} [RCLike 𝕜] {μ : Measure ℝ} {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [NormedSpace 𝕜 E] {H : Type*} [NormedAddCommGroup H]
+variable {𝕜 : Type*} [RCLike 𝕜] {μ : Measure ℝ} {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
+  [NormedSpace ℝ E] [NormedSpace 𝕜 E] {H : Type*} [NormedAddGroup H] [IsAddCommutative H]
   [NormedSpace 𝕜 H] {s : Set H} {a b : ℝ} {bound : ℝ → ℝ}
 
 namespace intervalIntegral

@@ -26,7 +26,7 @@ public section
 variable {G : Type*}
 
 section LinearOrderedCommGroup
-variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] {a b c : G}
+variable [Group G] [IsMulCommutative G] [LinearOrder G] [IsOrderedMonoid G] {a b c : G}
 
 @[to_additive] lemma mabs_pow (n : ℕ) (a : G) : |a ^ n|ₘ = |a|ₘ ^ n := by
   obtain ha | ha := le_total a 1
@@ -243,7 +243,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] {a : G}
+variable [AddGroup G] [IsAddCommutative G] [LinearOrder G] [IsOrderedAddMonoid G] {a : G}
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le' {H : Type*} [MulOneClass H] [LE H]

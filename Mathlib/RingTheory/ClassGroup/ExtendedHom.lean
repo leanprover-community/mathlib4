@@ -33,7 +33,7 @@ public section
 
 open scoped nonZeroDivisors
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+variable (A B : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
   [Module.IsTorsionFree A B]
 
 namespace ClassGroup
@@ -75,7 +75,7 @@ abbrev extendedIdeal (I : (Ideal A)⁰) : (Ideal B)⁰ :=
       (mem_nonZeroDivisors_iff_ne_zero.mp I.2)⟩
 
 @[simp]
-theorem extendedIdeal_extendedIdeal (C : Type*) [CommRing C] [IsDomain C] [Algebra B C]
+theorem extendedIdeal_extendedIdeal (C : Type*) [Ring C] [IsMulCommutative C] [IsDomain C] [Algebra B C]
     [Algebra A C] [IsScalarTower A B C] [Module.IsTorsionFree B C]
     [Module.IsTorsionFree A C] (I : (Ideal A)⁰) :
     extendedIdeal B C (extendedIdeal A B I) = extendedIdeal A C I := by
@@ -85,7 +85,7 @@ end CommRing
 
 section DedekindDomain
 
-variable [IsDedekindDomain A] (C : Type*) [CommRing C] [Algebra B C] [Algebra A C]
+variable [IsDedekindDomain A] (C : Type*) [Ring C] [IsMulCommutative C] [Algebra B C] [Algebra A C]
   [IsScalarTower A B C] [Module.IsTorsionFree B C] [Module.IsTorsionFree A C]
   [IsDedekindDomain C]
 

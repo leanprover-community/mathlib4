@@ -142,7 +142,7 @@ variable {R : Type u} {S : Type v}
 
 section Semiring
 
-variable [CommSemiring R] [Semiring S] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
 
 variable (M N : Submodule R S)
 
@@ -301,7 +301,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 variable {M N : Submodule R S}
 
@@ -319,7 +319,7 @@ section Ring
 
 namespace LinearDisjoint
 
-variable [CommRing R] [Ring S] [Algebra R S]
+variable [Ring R] [IsMulCommutative R] [Ring S] [Algebra R S]
 
 variable (M N : Submodule R S)
 
@@ -575,7 +575,7 @@ section CommRing
 
 namespace LinearDisjoint
 
-variable [CommRing R] [CommRing S] [Algebra R S]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 variable (M N : Submodule R S)
 

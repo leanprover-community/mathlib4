@@ -71,7 +71,7 @@ open scoped IntermediateField
 universe u v w z
 
 variable {p n : ℕ} [NeZero n] (A : Type w) (B : Type z) (K : Type u) {L : Type v} (C : Type w)
-variable [CommRing A] [CommRing B] [Algebra A B] [IsCyclotomicExtension {n} A B]
+variable [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] [IsCyclotomicExtension {n} A B]
 
 section Zeta
 
@@ -109,7 +109,7 @@ end Zeta
 
 section NoOrder
 
-variable [Field K] [CommRing L] [IsDomain L] [Algebra K L] [IsCyclotomicExtension {n} K L] {ζ : L}
+variable [Field K] [Ring L] [IsMulCommutative L] [IsDomain L] [Algebra K L] [IsCyclotomicExtension {n} K L] {ζ : L}
   (hζ : IsPrimitiveRoot ζ n)
 
 namespace IsPrimitiveRoot
@@ -139,7 +139,7 @@ variable {K} (C)
 
 -- We are not using @[simps] to avoid a timeout.
 /-- The equivalence between `L →ₐ[K] C` and `primitiveRoots n C` given by a primitive root `ζ`. -/
-noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
+noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [Ring C] [IsMulCommutative C] [IsDomain C] [Algebra K C]
     (hirr : Irreducible (cyclotomic n K)) : (L →ₐ[K] C) ≃ primitiveRoots n C :=
   (hζ.powerBasis K).liftEquiv.trans
     { toFun := fun x => by
@@ -161,7 +161,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
 
 -- Porting note: renamed argument `φ`: "expected '_' or identifier"
 @[simp]
-theorem embeddingsEquivPrimitiveRoots_apply_coe (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
+theorem embeddingsEquivPrimitiveRoots_apply_coe (C : Type*) [Ring C] [IsMulCommutative C] [IsDomain C] [Algebra K C]
     (hirr : Irreducible (cyclotomic n K)) (φ' : L →ₐ[K] C) :
     (hζ.embeddingsEquivPrimitiveRoots C hirr φ' : C) = φ' ζ :=
   rfl
@@ -272,7 +272,7 @@ end Field
 
 section CommRing
 
-variable [CommRing L] {ζ : L}
+variable [Ring L] [IsMulCommutative L] {ζ : L}
 variable {K} [Field K] [Algebra K L]
 
 /-- This mathematically trivial result is complementary to `norm_eq_one` below. -/

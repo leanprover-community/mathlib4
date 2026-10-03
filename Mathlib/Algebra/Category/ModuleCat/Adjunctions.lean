@@ -108,7 +108,7 @@ section Free
 
 open MonoidalCategory
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 namespace FreeMonoidal
 
@@ -216,7 +216,7 @@ namespace CategoryTheory
 
 universe v u
 
-/-- `Free R C` is a type synonym for `C`, which, given `[CommRing R]` and `[Category* C]`,
+/-- `Free R C` is a type synonym for `C`, which, given `[Ring R] [IsMulCommutative R]` and `[Category* C]`,
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/
@@ -232,7 +232,7 @@ this functor can also be used to lift morphisms.
 def Free.of (R : Type*) {C : Type u} (X : C) : Free R C :=
   X
 
-variable (R : Type*) [CommRing R] (C : Type u) [Category.{v} C]
+variable (R : Type*) [Ring R] [IsMulCommutative R] (C : Type u) [Category.{v} C]
 
 open Finsupp
 

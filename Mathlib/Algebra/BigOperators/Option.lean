@@ -21,7 +21,7 @@ open Function
 
 namespace Finset
 
-variable {α M : Type*} [CommMonoid M]
+variable {α M : Type*} [Monoid M] [IsMulCommutative M]
 
 @[to_additive (attr := simp)]
 theorem prod_insertNone (f : Option α → M) (s : Finset α) :

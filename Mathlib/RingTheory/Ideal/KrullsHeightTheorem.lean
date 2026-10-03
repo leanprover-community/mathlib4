@@ -43,7 +43,7 @@ In this file, we prove **Krull's principal ideal theorem** (also known as
 
 public section
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsNoetherianRing R]
 
 lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
     [IsLocalRing R] (I : Ideal R) (hp : IsLocalRing.maximalIdeal R ∈ I.minimalPrimes) :
@@ -438,7 +438,7 @@ lemma ringKrullDim_le_ringKrullDim_quotient_add_card (s : Finset R)
 
 section Algebra
 
-variable {S : Type*} [CommRing S] [Algebra R S]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /--
 If `P` lies over `p`, the height of `P` is bounded by the height of `p` plus

@@ -22,7 +22,7 @@ open Function
 variable {α : Type*}
 
 namespace Finset
-variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
   [ExistsAddOfLE α] [LocallyFiniteOrder α]
 
 @[simp] lemma map_add_left_Icc (a b c : α) :

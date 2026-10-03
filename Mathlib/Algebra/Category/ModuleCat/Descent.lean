@@ -31,7 +31,7 @@ noncomputable section
 
 open CategoryTheory Comonad ModuleCat Limits MonoidalCategory
 
-variable {A B : Type u} [CommRing A] [CommRing B] {f : A →+* B}
+variable {A B : Type u} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] {f : A →+* B}
 
 lemma ModuleCat.preservesFiniteLimits_tensorLeft_of_ringHomFlat (hf : f.Flat) :
     PreservesFiniteLimits <| tensorLeft ((restrictScalars f).obj ↧B) := by

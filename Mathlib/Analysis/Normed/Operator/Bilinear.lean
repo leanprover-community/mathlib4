@@ -29,8 +29,8 @@ section SemiNormed
 
 open ContinuousLinearMap
 
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup Eₗ] [SeminormedAddCommGroup F]
-  [SeminormedAddCommGroup Fₗ] [SeminormedAddCommGroup G] [SeminormedAddCommGroup Gₗ]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [SeminormedAddGroup Eₗ] [IsAddCommutative Eₗ] [SeminormedAddGroup F] [IsAddCommutative F]
+  [SeminormedAddGroup Fₗ] [IsAddCommutative Fₗ] [SeminormedAddGroup G] [IsAddCommutative G] [SeminormedAddGroup Gₗ] [IsAddCommutative Gₗ]
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
@@ -337,7 +337,7 @@ end ContinuousLinearMap
 
 namespace ContinuousLinearMap
 
-variable {E' F' : Type*} [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F']
+variable {E' F' : Type*} [SeminormedAddGroup E'] [IsAddCommutative E'] [SeminormedAddGroup F'] [IsAddCommutative F']
 variable {𝕜₁' : Type*} {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₁'] [NontriviallyNormedField 𝕜₂']
   [NormedSpace 𝕜₁' E'] [NormedSpace 𝕜₂' F'] {σ₁' : 𝕜₁' →+* 𝕜} {σ₁₃' : 𝕜₁' →+* 𝕜₃} {σ₂' : 𝕜₂' →+* 𝕜₂}
   {σ₂₃' : 𝕜₂' →+* 𝕜₃} [RingHomCompTriple σ₁' σ₁₃ σ₁₃'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
@@ -444,9 +444,9 @@ section Restrict
 namespace ContinuousLinearMap
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedSpace 𝕜' G] [IsScalarTower 𝕜 𝕜' G]
+  [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
+  [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
+  [SeminormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G] [NormedSpace 𝕜' G] [IsScalarTower 𝕜 𝕜' G]
 
 variable (𝕜) in
 /-- Convenience function for restricting the linearity of a bilinear map. -/

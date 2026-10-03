@@ -48,7 +48,7 @@ variable {ι R A σ : Type*}
 
 section GradedRing
 
-variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
+variable [DecidableEq ι] [AddMonoid ι] [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
 
 open DirectSum
@@ -160,7 +160,7 @@ end AddCancelMonoid
 
 section GradedAlgebra
 
-variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
+variable [DecidableEq ι] [AddMonoid ι] [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 variable (𝒜 : ι → Submodule R A)
 
 /-- A special case of `GradedRing` with `σ = Submodule R A`. This is useful both because it
@@ -184,7 +184,7 @@ abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[
     ext i x : 2
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)
 
-instance (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R] [Algebra R₀ A] [IsScalarTower R₀ R A]
+instance (R₀ : Type*) [Semiring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ A] [IsScalarTower R₀ R A]
     [i : GradedAlgebra 𝒜] : GradedAlgebra (𝒜 · |>.restrictScalars R₀) := { i with }
 
 variable [GradedAlgebra 𝒜]
@@ -247,7 +247,7 @@ section CanonicalOrder
 open SetLike.GradedMonoid DirectSum
 
 variable [Semiring A] [DecidableEq ι]
-variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
+variable [AddMonoid ι] [IsAddCommutative ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 /-- If `A` is graded by a canonically ordered additive monoid, then the projection map `x ↦ x₀`
@@ -344,7 +344,7 @@ end CanonicalOrder
 
 namespace DirectSum.IsInternal
 
-variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {A : Type*} [Semiring A] [Algebra R A]
 variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
 variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
 

@@ -22,7 +22,7 @@ attribute [local ext] PiTensorProduct.ext
 
 open PiTensorProduct Module TensorProduct
 
-variable {ι R : Type*} {M : ι → Type*} {κ : ι → Type*} [CommSemiring R] [∀ i, AddCommMonoid (M i)]
+variable {ι R : Type*} {M : ι → Type*} {κ : ι → Type*} [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)]
   [∀ i, Module R (M i)]
 
 open scoped Classical in

@@ -24,12 +24,12 @@ noncomputable section
 
 open TensorProduct
 
-variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+variable {R : Type*} (S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 section Module
 
-variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
-variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable {N P : Type*} [AddGroup N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P] [Module R N] [Module R P]
   (f g : N →ₗ[R] P)
 
 lemma Module.Flat.ker_lTensor_eq [Module.Flat R M] :
@@ -195,7 +195,7 @@ then any `A ⊗ M → A ⊗ N` is injective.
 -/
 lemma LinearMap.lTensor_injective_of_exact_of_flat [Module.Flat R P]
     (f : N →ₗ[R] P) (hf : Function.Surjective f) (g : M →ₗ[R] N) (hg : Function.Injective g)
-    (H : Function.Exact g f) (A : Type*) [AddCommGroup A] [Module R A] :
+    (H : Function.Exact g f) (A : Type*) [AddGroup A] [IsAddCommutative A] [Module R A] :
     Function.Injective (g.lTensor A) := by
 /-
 The proof is taking a resolution `0 → K → Q → A → 0` with `Q` flat,
@@ -231,7 +231,7 @@ to get `0 → A ⊗ K → A ⊗ M` exact.
 /-- Given surjection `f : N → P` with `P` flat, then `A ⊗ ker f ≃ ker (A ⊗ f)`.
 Also see `LinearMap.tensorKerEquiv` for the version with `A` flat instead. -/
 def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
-    (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddCommGroup A] [Module R A] :
+    (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddGroup A] [IsAddCommutative A] [Module R A] :
     LinearMap.ker (f.lTensor A) ≃ₗ[R] A ⊗[R] LinearMap.ker f := by
   refine .ofEq _ _ ?_ ≪≫ₗ (LinearEquiv.ofInjective _ (LinearMap.lTensor_injective_of_exact_of_flat
     f hf _ (LinearMap.ker f).subtype_injective (LinearMap.exact_subtype_ker_map _) _)).symm
@@ -239,15 +239,15 @@ def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
 
 @[simp]
 lemma LinearMap.tensorKerEquivOfSurjective_symm_tmul [Module.Flat R P]
-    (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddCommGroup A] [Module R A] (a y) :
+    (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddGroup A] [IsAddCommutative A] [Module R A] (a y) :
     ((f.kerLTensorEquivOfSurjective hf A).symm (a ⊗ₜ y)).1 = a ⊗ₜ y.1 := rfl
 
 end Module
 
 section Algebra
 
-variable (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra R B]
   (f g : A →ₐ[R] B)
 
 /-- (Implementation): Use `AlgHom.tensorEqualizer` instead. -/
@@ -361,8 +361,8 @@ A property `P` of ring homomorphisms is said to have stable equalizers, if the e
 of algebra maps between algebras with structure morphisms satisfying `P`, is preserved by
 arbitrary base change.
 -/
-def HasStableEqualizers (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
-  ∀ {R S A B : Type u} [CommRing R] [CommRing S] [CommRing A] [CommRing B]
+def HasStableEqualizers (P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop) : Prop :=
+  ∀ {R S A B : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
     [Algebra R A] [Algebra R S] [Algebra R B]
     (f g : A →ₐ[R] B), P (algebraMap R A) → P (algebraMap R B) →
     Function.Bijective (f.tensorEqualizer R S g)

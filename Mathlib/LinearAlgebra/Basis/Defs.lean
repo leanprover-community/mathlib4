@@ -75,7 +75,7 @@ variable {M : Type*} {M' M'' : Type*}
 namespace Module
 
 variable [Semiring R]
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 variable (ι R M) in
 /-- A `Basis ι R M` for a module `M` is the type of `ι`-indexed `R`-bases of `M`.
@@ -299,7 +299,7 @@ end Fintype
 
 variable {ι R M : Type*}
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 namespace Basis
 
@@ -309,7 +309,7 @@ section Ext
 
 variable {R₁ : Type*} [Semiring R₁] {σ : R →+* R₁} {σ' : R₁ →+* R}
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
+variable {M₁ : Type*} [AddMonoid M₁] [IsAddCommutative M₁] [Module R₁ M₁]
 
 /-- Two linear maps are equal if they are equal on basis vectors. -/
 theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
@@ -569,7 +569,7 @@ section Equiv
 
 variable (i : ι)
 variable {M'' : Type*} (b' : Basis ι' R M') (e : ι ≃ ι')
-variable [AddCommMonoid M''] [Module R M'']
+variable [AddMonoid M''] [IsAddCommutative M''] [Module R M'']
 
 /-- If `b` is a basis for `M` and `b'` a basis for `M'`, and the index types are equivalent,
 `b.equiv b' e` is a linear equivalence `M ≃ₗ[R] M'`, mapping `b i` to `b' (e i)`. -/
@@ -600,8 +600,8 @@ theorem map_equiv (b : Basis ι R M) (b' : Basis ι' R M') (e : ι ≃ ι') :
 
 section CommSemiring
 
-variable {R M M' : Type*} [CommSemiring R]
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable {R M M' : Type*} [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 variable (b : Basis ι R M) (b' : Basis ι' R M')
 variable [SMulCommClass R R M']
 

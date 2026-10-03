@@ -62,7 +62,7 @@ section Normed
 namespace MontelSpace
 
 variable {𝕜 E : Type*}
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace 𝕜]
+variable [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [CompleteSpace 𝕜]
   [hM : MontelSpace 𝕜 E]
 
 theorem finiteDimensional_of_normedSpace : FiniteDimensional 𝕜 E :=
@@ -76,9 +76,9 @@ end Normed
 
 variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
 variable {E F : Type*}
-  [AddCommGroup E] [Module 𝕜₁ E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜₁ E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜₁ E]
-  [AddCommGroup F] [Module 𝕜₂ F]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
   [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F]
 
 open CompactConvergenceCLM

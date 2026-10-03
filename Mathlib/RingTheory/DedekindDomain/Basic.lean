@@ -49,7 +49,7 @@ dedekind domain, dedekind ring
 public section
 
 
-variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
+variable (R A K : Type*) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
 
@@ -59,11 +59,11 @@ class Ring.DimensionLEOne : Prop where
 
 open Ideal Ring
 
-theorem Ideal.IsPrime.isMaximal {R : Type*} [CommRing R] [DimensionLEOne R]
+theorem Ideal.IsPrime.isMaximal {R : Type*} [Ring R] [IsMulCommutative R] [DimensionLEOne R]
     {p : Ideal R} (h : p.IsPrime) (hp : p ≠ ⊥) : p.IsMaximal :=
   DimensionLEOne.maximalOfPrime hp h
 
-theorem Ideal.mem_minimalPrimes_of_ne_bot {R : Type*} [CommRing R] [Ring.DimensionLEOne R]
+theorem Ideal.mem_minimalPrimes_of_ne_bot {R : Type*} [Ring R] [IsMulCommutative R] [Ring.DimensionLEOne R]
     {p q : Ideal R} [q.IsPrime] (hp : p ≠ ⊥) (hpq : p ≤ q) : q ∈ p.minimalPrimes :=
   ⟨⟨‹_›, hpq⟩, fun r ⟨hr1, hr2⟩ h ↦
     ((hr1.isMaximal (ne_bot_of_le_ne_bot hp hr2)).eq_of_le Ideal.IsPrime.ne_top' h).ge⟩
@@ -75,7 +75,7 @@ instance principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
   maximalOfPrime := fun nonzero _ =>
     IsPrime.to_maximal_ideal nonzero
 
-theorem of_isIntegral (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
+theorem of_isIntegral (B : Type*) [Ring B] [IsMulCommutative B] [IsDomain B] [Nontrivial R]
     [Algebra R B] [Algebra.IsIntegral R B] [DimensionLEOne R] :
     DimensionLEOne B where
   maximalOfPrime := fun {p} ne_bot _ =>
@@ -107,7 +107,7 @@ theorem of_ringEquiv [hA : Ring.DimensionLEOne A] (e : R ≃+* A) : Ring.Dimensi
     simp [Ideal.map_eq_bot_iff_of_injective e.injective, hP_ne]
 
 -- TODO: replace `Ring.DimensionLEOne` with `Ring.KrullDimLE`.
-instance (priority := low) {R : Type*} [CommRing R] [Ring.DimensionLEOne R] : Ring.KrullDimLE 1 R :=
+instance (priority := low) {R : Type*} [Ring R] [IsMulCommutative R] [Ring.DimensionLEOne R] : Ring.KrullDimLE 1 R :=
   .mk₁' fun _ hI hI' ↦ hI'.isMaximal hI
 
 end Ring.DimensionLEOne
@@ -126,7 +126,7 @@ class IsDedekindRing : Prop
 /-- An integral domain is a Dedekind domain if and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
 In particular, this definition does not depend on the choice of this fraction field. -/
-theorem isDedekindRing_iff (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] :
+theorem isDedekindRing_iff (K : Type*) [Ring K] [IsMulCommutative K] [Algebra A K] [IsFractionRing A K] :
     IsDedekindRing A ↔
       IsNoetherianRing A ∧ DimensionLEOne A ∧
         ∀ {x : K}, IsIntegral A x → ∃ y, algebraMap A K y = x :=
@@ -163,7 +163,7 @@ instance [IsDomain A] [IsDedekindRing A] : IsDedekindDomain A where
 /-- An integral domain is a Dedekind domain iff and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
 In particular, this definition does not depend on the choice of this fraction field. -/
-theorem isDedekindDomain_iff (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] :
+theorem isDedekindDomain_iff (K : Type*) [Ring K] [IsMulCommutative K] [Algebra A K] [IsFractionRing A K] :
     IsDedekindDomain A ↔
       IsDomain A ∧ IsNoetherianRing A ∧ DimensionLEOne A ∧
         ∀ {x : K}, IsIntegral A x → ∃ y, algebraMap A K y = x :=

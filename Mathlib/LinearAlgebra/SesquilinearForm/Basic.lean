@@ -49,8 +49,8 @@ namespace LinearMap
 section CommRing
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable [CommSemiring R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ M₁] [CommSemiring R₂]
-  [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [Semiring R₁] [IsMulCommutative R₁] [AddMonoid M₁] [IsAddCommutative M₁] [Module R₁ M₁] [Semiring R₂] [IsMulCommutative R₂]
+  [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂] [AddMonoid M] [IsAddCommutative M] [Module R M]
   {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {I₁' : R₁ →+* R}
 
 /-- The proposition that two elements of a sesquilinear map space are orthogonal -/
@@ -94,8 +94,8 @@ end CommRing
 
 section Field
 
-variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁]
-  [Field K₂] [AddCommGroup V₂] [Module K₂ V₂]
+variable [Field K] [AddGroup V] [IsAddCommutative V] [Module K V] [Field K₁] [AddGroup V₁] [IsAddCommutative V₁] [Module K₁ V₁]
+  [Field K₂] [AddGroup V₂] [IsAddCommutative V₂] [Module K₂ V₂]
   {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K}
 
 @[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
@@ -136,7 +136,7 @@ end Field
 
 section Reflexive
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Semiring R₁] [IsMulCommutative R₁] [AddMonoid M₁] [IsAddCommutative M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
 /-- The proposition that a sesquilinear map is reflexive -/
@@ -185,7 +185,7 @@ end Reflexive
 
 section Symmetric
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I : R →+* R} {B : M →ₛₗ[I] M →ₗ[R] R}
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] {I : R →+* R} {B : M →ₛₗ[I] M →ₗ[R] R}
 
 /-- The proposition that a sesquilinear form is symmetric -/
 structure IsSymm (B : M →ₛₗ[I] M →ₗ[R] R) : Prop where
@@ -219,7 +219,7 @@ protected lemma IsSymm.add {C : M →ₛₗ[I] M →ₗ[R] R} (hB : B.IsSymm) (h
     (B + C).IsSymm where
   eq x y := by simp [hB.eq, hC.eq]
 
-theorem BilinMap.isSymm_iff_eq_flip {N : Type*} [AddCommMonoid N] [Module R N]
+theorem BilinMap.isSymm_iff_eq_flip {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
     {B : LinearMap.BilinMap R M N} : (∀ x y, B x y = B y x) ↔ B = B.flip := by
   simp [LinearMap.ext_iff₂]
 
@@ -232,7 +232,7 @@ end Symmetric
 
 section PositiveSemidefinite
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I₁ I₂ : R →+* R}
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] {I₁ I₂ : R →+* R}
 
 /-- A sesquilinear form `B` is **nonnegative** if for any `x` we have `0 ≤ B x x`. -/
 structure IsNonneg [LE R] (B : M →ₛₗ[I₁] M →ₛₗ[I₂] R) where
@@ -279,7 +279,7 @@ section CommSemiring
 
 section AddCommMonoid
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Semiring R₁] [IsMulCommutative R₁] [AddMonoid M₁] [IsAddCommutative M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
 /-- The proposition that a sesquilinear map is alternating -/
@@ -305,7 +305,7 @@ section AddCommGroup
 
 namespace IsAlt
 
-variable [CommSemiring R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+variable [Semiring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [Semiring R₁] [IsMulCommutative R₁] [AddMonoid M₁] [IsAddCommutative M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
 theorem neg (H : B.IsAlt) (x y : M₁) : -B x y = B y x := by
@@ -329,7 +329,7 @@ end CommSemiring
 
 section Semiring
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [Semiring R₁] [IsMulCommutative R₁] [AddMonoid M₁] [IsAddCommutative M₁]
   [Module R₁ M₁] {I : R₁ →+* R}
 
 theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛₗ[I] M₁ →ₛₗ[I] R} :
@@ -357,11 +357,11 @@ section AdjointPair
 
 section AddCommMonoid
 
-variable [CommSemiring R]
-variable [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid M₁] [Module R M₁]
-variable [AddCommMonoid M₂] [Module R M₂]
-variable [AddCommMonoid M₃] [Module R M₃]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁]
+variable [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
+variable [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃]
 variable {I : R →+* R}
 variable {B : M →ₗ[R] M →ₛₗ[I] M₃} {B' : M₁ →ₗ[R] M₁ →ₛₗ[I] M₃} {B'' : M₂ →ₗ[R] M₂ →ₛₗ[I] M₃}
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
@@ -409,10 +409,10 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [CommRing R]
-variable [AddCommGroup M] [Module R M]
-variable [AddCommGroup M₁] [Module R M₁]
-variable [AddCommGroup M₂] [Module R M₂]
+variable [Ring R] [IsMulCommutative R]
+variable [AddGroup M] [IsAddCommutative M] [Module R M]
+variable [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁]
+variable [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂]
 variable {B : M →ₗ[R] M →ₗ[R] M₂} {B' : M₁ →ₗ[R] M₁ →ₗ[R] M₂}
 variable {f f' : M → M₁} {g g' : M₁ → M}
 
@@ -428,7 +428,7 @@ end AddCommGroup
 
 section OrthogonalMap
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
   (B : LinearMap.BilinForm R M) (f : M → M)
 
 /-- A linear transformation `f` is orthogonal with respect to a bilinear form `B` if `B` is
@@ -465,9 +465,9 @@ section SelfadjointPair
 
 section AddCommMonoid
 
-variable [CommSemiring R]
-variable [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid M₁] [Module R M₁]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁]
 variable {I : R →+* R}
 variable (B F : M →ₗ[R] M →ₛₗ[I] M₁)
 
@@ -487,9 +487,9 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [CommRing R]
-variable [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁]
-variable [AddCommGroup M₂] [Module R M₂] (B F : M →ₗ[R] M →ₗ[R] M₂)
+variable [Ring R] [IsMulCommutative R]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁]
+variable [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] (B F : M →ₗ[R] M →ₗ[R] M₂)
 
 /-- The set of pair-self-adjoint endomorphisms are a submodule of the type of all endomorphisms. -/
 def isPairSelfAdjointSubmodule : Submodule R (Module.End R M) where
@@ -563,8 +563,8 @@ section Nondegenerate
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
-  [Module R₁ M₁] [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Semiring R₁] [IsMulCommutative R₁] [AddMonoid M₁] [IsAddCommutative M₁]
+  [Module R₁ M₁] [Semiring R₂] [IsMulCommutative R₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂]
   {I₁ : R₁ →+* R} {I₂ : R₂ →+* R}
 
 /-- A bilinear map is called left-separating if
@@ -597,7 +597,7 @@ def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
 
 section Linear
 
-variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
+variable [AddMonoid Mₗ₁] [IsAddCommutative Mₗ₁] [AddMonoid Mₗ₂] [IsAddCommutative Mₗ₂] [AddMonoid Mₗ₁'] [IsAddCommutative Mₗ₁'] [AddMonoid Mₗ₂'] [IsAddCommutative Mₗ₂']
 
 variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂']
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
@@ -693,7 +693,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁]
 
 theorem IsRefl.nondegenerate_iff_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl) :
     B.Nondegenerate ↔ B.SeparatingLeft := by
@@ -740,7 +740,7 @@ end CommRing
 
 section IsOrthoᵢ
 
-variable {R M M₁ : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₁]
+variable {R M M₁ : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁]
     [Module R M] [Module R M₁] {I I' : R →+* R} {B : M →ₛₗ[I] M →ₛₗ[I'] M₁}
 
 /-- An orthogonal basis with respect to a left-separating bilinear map has no self-orthogonal
@@ -816,7 +816,7 @@ end Nondegenerate
 
 namespace BilinForm
 
-lemma apply_smul_sub_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
+lemma apply_smul_sub_smul_sub_eq [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
     (B : LinearMap.BilinForm R M) (x y : M) :
     B ((B x y) • x - (B x x) • y) ((B x y) • x - (B x x) • y) =
       (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
@@ -824,8 +824,8 @@ lemma apply_smul_sub_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
     mul_comm (B x y) (B x x), mul_left_comm (B x y) (B x x)]
   abel
 
-variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
+variable [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddGroup M] [IsAddCommutative M] [Module R M] (B : LinearMap.BilinForm R M)
 
 /-- The **Cauchy-Schwarz inequality** for positive semidefinite forms. -/
 @[wikidata Q190546]

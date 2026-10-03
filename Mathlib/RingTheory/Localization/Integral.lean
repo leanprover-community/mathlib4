@@ -23,7 +23,7 @@ commutative ring, field of fractions
 @[expose] public section
 
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (M : Submonoid R) {S : Type*} [Ring S] [IsMulCommutative S]
 variable [Algebra R S]
 
 open Polynomial
@@ -71,7 +71,7 @@ theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisor
   rw [← _root_.map_eq_zero_iff (mapRingHom (algebraMap R S)) this, coe_mapRingHom, hb₂]
   exact smul_eq_zero_iff_right <| nonZeroDivisors.ne_zero (hM hb₁)
 
-variable {R' : Type*} [CommRing R']
+variable {R' : Type*} [Ring R'] [IsMulCommutative R']
 
 theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
@@ -91,8 +91,8 @@ namespace IsFractionRing
 
 open IsLocalization
 
-variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFractionRing A K]
-variable [CommRing C]
+variable {A K C : Type*} [Ring A] [IsMulCommutative A] [IsDomain A] [Field K] [Algebra A K] [IsFractionRing A K]
+variable [Ring C] [IsMulCommutative C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 :=
@@ -130,16 +130,16 @@ open IsLocalization
 
 section IsIntegral
 
-variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
+variable {Rₘ Sₘ : Type*} [Ring Rₘ] [IsMulCommutative Rₘ] [Ring Sₘ] [IsMulCommutative Sₘ]
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
 variable [Algebra S Sₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
 variable {M}
 
 open Polynomial
 
-theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommSemiring R]
-    [CommSemiring S] (f : R →+* S) (x : S) (p : R[X]) (hf : p.eval₂ f x = 0) (M : Submonoid R)
-    (hM : p.leadingCoeff ∈ M) {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ]
+theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [Semiring R] [IsMulCommutative R]
+    [Semiring S] [IsMulCommutative S] (f : R →+* S) (x : S) (p : R[X]) (hf : p.eval₂ f x = 0) (M : Submonoid R)
+    (hM : p.leadingCoeff ∈ M) {Rₘ Sₘ : Type*} [Ring Rₘ] [IsMulCommutative Rₘ] [Ring Sₘ] [IsMulCommutative Sₘ] [Algebra R Rₘ]
     [IsLocalization M Rₘ] [Algebra S Sₘ] [IsLocalization (M.map f : Submonoid S) Sₘ] :
     (map Sₘ f M.le_comap_map : Rₘ →+* _).IsIntegralElem (algebraMap S Sₘ x) := by
   by_cases triv : (1 : Rₘ) = 0
@@ -187,7 +187,7 @@ theorem isIntegral_localization [Algebra.IsIntegral R S] :
   · obtain ⟨p, hp⟩ := Algebra.IsIntegral.isIntegral (R := R) s
     exact hx.symm ▸ is_integral_localization_at_leadingCoeff p hp.2 (hp.1.symm ▸ M.one_mem)
 
-theorem isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S}
+theorem isIntegral_localization' {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {f : R →+* S}
     (hf : f.IsIntegral) (M : Submonoid R) :
     (map (Localization (M.map (f : R →* S))) f
           (M.le_comap_map : _ ≤ Submonoid.comap (f : R →* S) _) :
@@ -243,7 +243,7 @@ theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [
 /-- If `t` is `R`-integral in `S[M⁻¹]` where `M` is a submonoid of `R`,
 then `m • t` is integral in `S` for some `m ∈ M`. -/
 lemma IsLocalization.exists_isIntegral_smul_of_isIntegral_map
-    {R S Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Sₘ] [Algebra R S] [Algebra S Sₘ]
+    {R S Sₘ : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring Sₘ] [IsMulCommutative Sₘ] [Algebra R S] [Algebra S Sₘ]
     [Algebra R Sₘ] [IsScalarTower R S Sₘ] (M : Submonoid R)
     [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ] {x : S}
     (hx : IsIntegral R (algebraMap S Sₘ x)) : ∃ m ∈ M, IsIntegral R (m • x) := by
@@ -258,7 +258,7 @@ lemma IsLocalization.exists_isIntegral_smul_of_isIntegral_map
 /-- If `t` is `R`-integral in `S[1/r]` where `r : S` is integral over `R`,
 then `r ^ n • t` is integral in `S` for some `n`. -/
 lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap
-    {R S Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Sₘ] [Algebra R S] [Algebra S Sₘ]
+    {R S Sₘ : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring Sₘ] [IsMulCommutative Sₘ] [Algebra R S] [Algebra S Sₘ]
     [Algebra R Sₘ] [IsScalarTower R S Sₘ] {r : S} (hr : IsIntegral R r)
     [IsLocalization.Away r Sₘ] {x : S}
     (hx : IsIntegral R (algebraMap S Sₘ x)) : ∃ n, IsIntegral R (r ^ n * x) := by
@@ -274,7 +274,7 @@ lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap
   exact ⟨m, this⟩
 
 lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_mk'
-    {R S Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Sₘ] [Algebra R S] [Algebra S Sₘ]
+    {R S Sₘ : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring Sₘ] [IsMulCommutative Sₘ] [Algebra R S] [Algebra S Sₘ]
     [Algebra R Sₘ] [IsScalarTower R S Sₘ] {r : S} (hr : IsIntegral R r)
     [IsLocalization.Away r Sₘ] {x : S} {a : Submonoid.powers r}
     (hx : IsIntegral R (IsLocalization.mk' Sₘ x a)) : ∃ n, IsIntegral R (r ^ n * x) := by
@@ -326,7 +326,7 @@ lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
 
 /-- If `t` is integral in `S[1/t]`, then it is integral in `S`. -/
 lemma IsLocalization.Away.isIntegral_of_isIntegral_map
-    {R S Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Sₘ] [Algebra R S] [Algebra S Sₘ]
+    {R S Sₘ : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring Sₘ] [IsMulCommutative Sₘ] [Algebra R S] [Algebra S Sₘ]
     [Algebra R Sₘ] [IsScalarTower R S Sₘ] (x : S) [IsLocalization.Away x Sₘ]
     (hx : IsIntegral R (algebraMap S Sₘ x)) : IsIntegral R x := by
   obtain ⟨p, hpm, hp⟩ := hx
@@ -337,13 +337,13 @@ lemma IsLocalization.Away.isIntegral_of_isIntegral_map
 
 end IsIntegral
 
-variable {A K : Type*} [CommRing A]
+variable {A K : Type*} [Ring A] [IsMulCommutative A]
 
 namespace IsIntegralClosure
 
 variable (A)
 variable {L : Type*} [Field K] [Field L] [Algebra A K] [Algebra A L] [IsFractionRing A K]
-variable (C : Type*) [CommRing C] [IsDomain C] [Algebra C L] [IsIntegralClosure C A L]
+variable (C : Type*) [Ring C] [IsMulCommutative C] [IsDomain C] [Algebra C L] [IsIntegralClosure C A L]
 variable [Algebra A C] [IsScalarTower A C L]
 
 open Algebra
@@ -403,7 +403,7 @@ end integralClosure
 
 section
 
-variable {Rf Sf : Type*} [CommRing Rf] [CommRing Sf] [Algebra R Rf] [Algebra S Sf]
+variable {Rf Sf : Type*} [Ring Rf] [IsMulCommutative Rf] [Ring Sf] [IsMulCommutative Sf] [Algebra R Rf] [Algebra S Sf]
     [Algebra Rf Sf] [Algebra R Sf] [IsScalarTower R S Sf] [IsScalarTower R Rf Sf]
 
 /-- Taking integral closure commutes with localizations. -/
@@ -523,7 +523,7 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
 end IsFractionRing
 
 open nonZeroDivisors in
-lemma isAlgebraic_of_isFractionRing (R S K L) [CommRing R] [CommRing S] [Field K] [CommRing L]
+lemma isAlgebraic_of_isFractionRing (R S K L) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Field K] [Ring L] [IsMulCommutative L]
     [Algebra R S] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L] [IsScalarTower R S L]
     [IsScalarTower R K L] [IsFractionRing S L]
     [Algebra.IsIntegral R S] : Algebra.IsAlgebraic K L := by

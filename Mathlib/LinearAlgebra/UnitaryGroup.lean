@@ -50,7 +50,7 @@ open LinearMap Matrix
 section
 
 variable (n : Type u) [DecidableEq n] [Fintype n]
-variable (α : Type v) [CommRing α] [StarRing α]
+variable (α : Type v) [Ring α] [IsMulCommutative α] [StarRing α]
 
 /-- `Matrix.unitaryGroup n` is the group of `n` by `n` matrices where the star-transpose is the
 inverse.
@@ -65,7 +65,7 @@ example : StarMul (unitaryGroup n α) := inferInstance
 end
 
 variable {n : Type u} [DecidableEq n] [Fintype n]
-variable {α : Type v} [CommRing α] [StarRing α] {A : Matrix n n α}
+variable {α : Type v} [Ring α] [IsMulCommutative α] [StarRing α] {A : Matrix n n α}
 
 theorem mem_unitaryGroup_iff : A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1 := by
   refine ⟨And.right, fun hA => ⟨?_, hA⟩⟩
@@ -104,7 +104,7 @@ theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m
       Finset.sum_const_zero, ← ite_and, and_comm, Prod.eq_iff_fst_eq_snd_eq]
 
 section TensorProduct
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
   [StarRing A] [StarRing B] [StarRing R] [StarModule R A] [StarModule R B]
 
 open scoped TensorProduct Kronecker
@@ -281,7 +281,7 @@ end specialUnitaryGroup
 
 section OrthogonalGroup
 
-variable (n) (R : Type v) [CommRing R]
+variable (n) (R : Type v) [Ring R] [IsMulCommutative R]
 
 -- TODO: will lemmas about `Matrix.orthogonalGroup` work without making
 -- `starRingOfComm` a local instance? E.g., can we talk about unitary group and orthogonal group
@@ -304,7 +304,7 @@ end OrthogonalGroup
 
 section specialOrthogonalGroup
 
-variable (n) (R : Type v) [CommRing R]
+variable (n) (R : Type v) [Ring R] [IsMulCommutative R]
 
 attribute [local instance] starRingOfComm
 

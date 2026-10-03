@@ -35,8 +35,8 @@ different fiber.
 
 @[expose] public section
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S]
-  [CommRing T] [Algebra R T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+  [Ring T] [IsMulCommutative T] [Algebra R T]
 variable (p : Ideal R) (q : Ideal S) [q.IsPrime]
 
 variable (R) in
@@ -166,7 +166,7 @@ lemma eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
 open _root_.TensorProduct in
 /-- Use `Algebra.QuasiFiniteAt.baseChange` instead for `Algebra.QuasiFiniteAt R p`. -/
 lemma baseChange (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p]
-    {A : Type*} [CommRing A] [Algebra R A] (q : Ideal (A ⊗[R] S)) [q.IsPrime]
+    {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] (q : Ideal (A ⊗[R] S)) [q.IsPrime]
     (hq : p = q.comap TensorProduct.includeRight.toRingHom) :
     WeaklyQuasiFiniteAt A q := by
   delta WeaklyQuasiFiniteAt at *

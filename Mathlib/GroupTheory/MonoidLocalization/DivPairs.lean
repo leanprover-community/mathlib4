@@ -15,7 +15,7 @@ This file defines the submonoid of pairs whose quotient lies in a submonoid of t
 
 @[expose] public section
 
-variable {M G H : Type*} [CommMonoid M] [CommGroup G] [CommGroup H]
+variable {M G H : Type*} [Monoid M] [IsMulCommutative M] [Group G] [IsMulCommutative G] [Group H] [IsMulCommutative H]
   {f : (⊤ : Submonoid M).LocalizationMap G} {g : (⊤ : Submonoid M).LocalizationMap H}
   {s : Submonoid G} {x : M × M}
 

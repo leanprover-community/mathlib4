@@ -31,7 +31,7 @@ noncomputable section
 
 namespace AlgCat
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 variable {J : Type v} [Category.{t} J] (F : J ⥤ AlgCat.{w} R)
 
 instance semiringObj (j) : Semiring ((F ⋙ forget (AlgCat R)).obj j) :=

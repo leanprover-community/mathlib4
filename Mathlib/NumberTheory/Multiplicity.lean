@@ -34,7 +34,7 @@ variable {R : Type*} {n : ℕ}
 
 section CommRing
 
-variable [CommRing R] {a b x y : R}
+variable [Ring R] [IsMulCommutative R] {a b x y : R}
 
 theorem dvd_geom_sum₂_iff_of_dvd_sub {x y p : R} (h : p ∣ x - y) :
     (p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * y ^ (n - 1) := by
@@ -237,7 +237,7 @@ end LiftingTheExponent
 
 end CommRing
 
-theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
+theorem pow_two_pow_sub_pow_two_pow [Ring R] [IsMulCommutative R] {x y : R} (n : ℕ) :
     x ^ 2 ^ n - y ^ 2 ^ n = (∏ i ∈ Finset.range n, (x ^ 2 ^ i + y ^ 2 ^ i)) * (x - y) := by
   induction n with
   | zero => simp only [pow_zero, pow_one, range_zero, prod_empty, one_mul]

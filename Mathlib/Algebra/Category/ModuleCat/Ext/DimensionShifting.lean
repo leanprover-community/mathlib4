@@ -24,7 +24,7 @@ universe v u
 
 variable {R : Type u} [Ring R]
 
-variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N] [Module R N]
+variable {M : Type v} [AddGroup M] [IsAddCommutative M] [Module R M] {N : Type v} [AddGroup N] [IsAddCommutative N] [Module R N]
 
 open CategoryTheory Abelian
 

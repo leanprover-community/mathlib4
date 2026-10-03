@@ -39,7 +39,7 @@ degree            ramif. index   inertia deg.
 
 @[expose] public section
 
-variable (A K L : Type*) {B : Type*} [Field K] [Field L] [Algebra K L] [CommRing A] [CommRing B]
+variable (A K L : Type*) {B : Type*} [Field K] [Field L] [Algebra K L] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
   [Algebra A B] (p : Ideal A) (P : Ideal B) [P.LiesOver p]
 
 open MulAction Pointwise Ideal
@@ -238,7 +238,7 @@ variable [Algebra A K] [IsFractionRing A K] [Algebra A L] [IsScalarTower A K L] 
 
 namespace IsDecompositionField
 
-variable (D 𝓞D : Type*) [Field D] [Algebra D L] [IsDecompositionField K L P D] [CommRing 𝓞D]
+variable (D 𝓞D : Type*) [Field D] [Algebra D L] [IsDecompositionField K L P D] [Ring 𝓞D] [IsMulCommutative 𝓞D]
   [Algebra 𝓞D D] [IsFractionRing 𝓞D D] [Algebra 𝓞D B] [Algebra 𝓞D L] [IsScalarTower 𝓞D D L]
   [IsScalarTower 𝓞D B L] (𝓟D : Ideal 𝓞D) [hD : P.LiesOver 𝓟D]
 

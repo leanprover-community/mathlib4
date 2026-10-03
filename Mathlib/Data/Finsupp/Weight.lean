@@ -76,7 +76,7 @@ namespace Finsupp
 
 section AddCommMonoid
 
-variable [AddCommMonoid M] [Module R M]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M]
 /-- The `weight` of the finitely supported function `f : σ →₀ R`
 with respect to `w : σ → M` is the sum `∑ i, f i • w i`. -/
 noncomputable def weight : (σ →₀ R) →+ M :=
@@ -144,7 +144,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     rw [h]
     apply zero_le
 
-variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M)
+variable [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M)
 
 variable {w} in
 theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
@@ -163,7 +163,7 @@ end OrderedAddCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
 
-variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M]
   [CanonicallyOrderedAdd M] (w : σ → M)
 
 theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) : w s ≤ weight w f :=
@@ -210,7 +210,7 @@ theorem finite_of_nat_weight_eq [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x �
 
 end CanonicallyOrderedAddCommMonoid
 
-variable {R : Type*} [AddCommMonoid R]
+variable {R : Type*} [AddMonoid R] [IsAddCommutative R]
 
 /-- The degree of a finsupp function. -/
 def degree : (σ →₀ R) →+ R where
@@ -228,14 +228,14 @@ theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
   Finsupp.sum_single_index (h := fun _ => id) rfl
 
 lemma degree_eq_zero_iff {R : Type*}
-    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
+    [AddMonoid R] [IsAddCommutative R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
   simp only [degree_apply, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
 theorem le_degree {R : Type*}
-    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
+    [AddMonoid R] [IsAddCommutative R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
   by_cases h : s ∈ f.support
@@ -270,7 +270,7 @@ lemma range_single_one :
     use a
 
 @[simp]
-theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddCommMonoid M] (x : σ →₀ M) :
+theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddMonoid M] [IsAddCommutative M] (x : σ →₀ M) :
     degree (x.mapDomain f) = degree x := by
   simp [mapDomain, sum]
   dsimp [degree_apply]
@@ -279,14 +279,14 @@ theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddCommMonoid M] (x : σ 
 alias degree_mapDomain_eq_of_subsingletonAddUnits := degree_mapDomain
 
 set_option backward.isDefEq.respectTransparency false in
-theorem degree_comapDomain_le_of_canonicallyOrderedAdd {τ : Type*} {f : σ → τ} [AddCommMonoid M]
+theorem degree_comapDomain_le_of_canonicallyOrderedAdd {τ : Type*} {f : σ → τ} [AddMonoid M] [IsAddCommutative M]
     [PartialOrder M] [CanonicallyOrderedAdd M] {x : τ →₀ M} (hf : Set.InjOn f (f ⁻¹' x.support)) :
       degree (x.comapDomain f hf) ≤ degree x := by
   classical
   simpa [degree, comapDomain, Finset.sum_preimage' f x.support hf x] using
     Finset.sum_le_sum_of_subset (Finset.filter_subset ..)
 
-lemma degree_mono {R : Type*} [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R] :
+lemma degree_mono {R : Type*} [AddMonoid R] [IsAddCommutative R] [PartialOrder R] [CanonicallyOrderedAdd R] :
     Monotone (Finsupp.degree (σ := σ) (R := R)) :=
   fun _ _ e ↦
     (Finset.sum_le_sum_of_subset (support_mono e)).trans (Finset.sum_le_sum fun _ _ ↦ e _)
@@ -333,7 +333,7 @@ lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
 
 set_option backward.isDefEq.respectTransparency false in
 open scoped Pointwise in
-theorem image_pow_eq_finsuppProd_image {α β : Type*} [CommMonoid β] {f : α → β} {n} {s : Set α} :
+theorem image_pow_eq_finsuppProd_image {α β : Type*} [Monoid β] [IsMulCommutative β] {f : α → β} {n} {s : Set α} :
     (f '' s) ^ n = (·.prod (f · ^ ·)) '' {x : α →₀ ℕ | x.degree = n ∧ ↑x.support ⊆ s} := by
   classical
   suffices ∀ (s : Set (α →₀ ℕ)), ((·.prod (f · ^ ·)) '' s) ^ n = (·.prod (f · ^ ·)) '' (n • s) by

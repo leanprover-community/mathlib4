@@ -25,7 +25,7 @@ public section
 
 open Function Set
 
-variable {ι K M : Type*} [Field K] [AddCommGroup M] [Module K M]
+variable {ι K M : Type*} [Field K] [AddGroup M] [IsAddCommutative M] [Module K M]
 
 lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : ι → Submodule K M)
     (h₁ : ∀ i, p i ≠ ⊤) (h₂ : s.card < ENat.card K) :

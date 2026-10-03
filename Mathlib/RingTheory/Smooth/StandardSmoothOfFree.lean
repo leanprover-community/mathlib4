@@ -42,7 +42,7 @@ namespace Algebra
 
 open KaehlerDifferential
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `H¹(S/R) = 0` and `Ω[S⁄R]` is free on `{d sᵢ}ᵢ` for some `sᵢ : S`, then `S`

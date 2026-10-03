@@ -150,10 +150,10 @@ instance [Monoid β] : Monoid (α →ᵤ β) := inferInstanceAs <| Monoid (α �
 instance [Monoid β] : Monoid (α →ᵤ[𝔖] β) := inferInstanceAs <| Monoid (α → β)
 
 @[to_additive]
-instance [CommMonoid β] : CommMonoid (α →ᵤ β) := inferInstanceAs <| CommMonoid (α → β)
+instance [Monoid β] [IsMulCommutative β] : CommMonoid (α →ᵤ β) := inferInstanceAs <| CommMonoid (α → β)
 
 @[to_additive]
-instance [CommMonoid β] : CommMonoid (α →ᵤ[𝔖] β) := inferInstanceAs <| CommMonoid (α → β)
+instance [Monoid β] [IsMulCommutative β] : CommMonoid (α →ᵤ[𝔖] β) := inferInstanceAs <| CommMonoid (α → β)
 
 @[to_additive]
 instance [Group β] : Group (α →ᵤ β) := inferInstanceAs <| Group (α → β)
@@ -162,10 +162,10 @@ instance [Group β] : Group (α →ᵤ β) := inferInstanceAs <| Group (α → �
 instance [Group β] : Group (α →ᵤ[𝔖] β) := inferInstanceAs <| Group (α → β)
 
 @[to_additive]
-instance [CommGroup β] : CommGroup (α →ᵤ β) := inferInstanceAs <| CommGroup (α → β)
+instance [Group β] [IsMulCommutative β] : CommGroup (α →ᵤ β) := inferInstanceAs <| CommGroup (α → β)
 
 @[to_additive]
-instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) := inferInstanceAs <| CommGroup (α → β)
+instance [Group β] [IsMulCommutative β] : CommGroup (α →ᵤ[𝔖] β) := inferInstanceAs <| CommGroup (α → β)
 
 instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
     IsScalarTower M N (α →ᵤ β) :=
@@ -197,10 +197,10 @@ instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
     DistribMulAction M (α →ᵤ[𝔖] β) :=
   inferInstanceAs <| DistribMulAction M (α → β)
 
-instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
+instance [Semiring R] [AddMonoid β] [IsAddCommutative β] [Module R β] : Module R (α →ᵤ β) :=
   inferInstanceAs <| Module R (α → β)
 
-instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
+instance [Semiring R] [AddMonoid β] [IsAddCommutative β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
   inferInstanceAs <| Module R (α → β)
 
 end AlgebraicInstances
@@ -267,22 +267,22 @@ protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖�
   UniformOnFun.hasBasis_nhds_one_of_basis 𝔖 h𝔖₁ h𝔖₂ (basis_sets _)
 
 @[to_additive (attr := simp)]
-lemma UniformOnFun.ofFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+lemma UniformOnFun.ofFun_prod {β : Type*} [Monoid β] [IsMulCommutative β] {f : ι → α → β} (I : Finset ι) :
     ofFun 𝔖 (∏ i ∈ I, f i) = ∏ i ∈ I, ofFun 𝔖 (f i) :=
   rfl
 
 @[to_additive (attr := simp)]
-lemma UniformOnFun.toFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+lemma UniformOnFun.toFun_prod {β : Type*} [Monoid β] [IsMulCommutative β] {f : ι → α → β} (I : Finset ι) :
     toFun 𝔖 (∏ i ∈ I, f i) = ∏ i ∈ I, toFun 𝔖 (f i) :=
   rfl
 
 @[to_additive (attr := simp)]
-lemma UniformFun.ofFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+lemma UniformFun.ofFun_prod {β : Type*} [Monoid β] [IsMulCommutative β] {f : ι → α → β} (I : Finset ι) :
     ofFun (∏ i ∈ I, f i) = ∏ i ∈ I, ofFun (f i) :=
   rfl
 
 @[to_additive (attr := simp)]
-lemma UniformFun.toFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+lemma UniformFun.toFun_prod {β : Type*} [Monoid β] [IsMulCommutative β] {f : ι → α → β} (I : Finset ι) :
     toFun (∏ i ∈ I, f i) = ∏ i ∈ I, toFun (f i) :=
   rfl
 

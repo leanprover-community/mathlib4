@@ -69,7 +69,7 @@ end ring
 
 section commRing
 
-variable {R : Type*} [CommRing R] (I : TwoSidedIdeal R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : TwoSidedIdeal R)
 
 lemma multiSetProd_mem {ι : Type*} (s : Multiset ι) (f : ι → R) (hs : ∃ x ∈ s, f x ∈ I) :
     (s.map f).prod ∈ I := by

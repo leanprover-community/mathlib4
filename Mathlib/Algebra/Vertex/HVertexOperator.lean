@@ -39,13 +39,13 @@ assert_not_exists Cardinal
 
 noncomputable section
 
-variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R]
-  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [Ring R] [IsMulCommutative R]
+  [AddGroup V] [IsAddCommutative V] [Module R V] [AddGroup W] [IsAddCommutative W] [Module R W]
 
 /-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
 `R`-module `V` to `Γ`-Hahn series with coefficients in an `R`-module `W`. -/
-abbrev HVertexOperator (Γ : Type*) [PartialOrder Γ] (R : Type*) [CommRing R]
-    (V : Type*) (W : Type*) [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] :=
+abbrev HVertexOperator (Γ : Type*) [PartialOrder Γ] (R : Type*) [Ring R] [IsMulCommutative R]
+    (V : Type*) (W : Type*) [AddGroup V] [IsAddCommutative V] [Module R V] [AddGroup W] [IsAddCommutative W] [Module R W] :=
   V →ₗ[R] (HahnModule Γ R W)
 
 namespace HVertexOperator
@@ -106,8 +106,8 @@ end Coeff
 section Products
 
 variable {Γ Γ' : Type*} [PartialOrder Γ] [PartialOrder Γ'] {R : Type*}
-  [CommRing R] {U V W : Type*} [AddCommGroup U] [Module R U] [AddCommGroup V] [Module R V]
-  [AddCommGroup W] [Module R W] (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ' R U V)
+  [Ring R] [IsMulCommutative R] {U V W : Type*} [AddGroup U] [IsAddCommutative U] [Module R U] [AddGroup V] [IsAddCommutative V] [Module R V]
+  [AddGroup W] [IsAddCommutative W] [Module R W] (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ' R U V)
 
 open HahnModule
 

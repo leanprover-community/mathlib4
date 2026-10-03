@@ -31,7 +31,7 @@ public section
 
 open Polynomial UniqueFactorizationMonoid
 
-variable {k R : Type*} [Field k] [CommRing R] [IsDomain R] [NormalizationMonoid R]
+variable {k R : Type*} [Field k] [Ring R] [IsMulCommutative R] [IsDomain R] [NormalizationMonoid R]
   [UniqueFactorizationMonoid R]
 
 private lemma Ne.isUnit_C {u : k} (hu : u ≠ 0) : IsUnit (C u) :=

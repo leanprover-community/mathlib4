@@ -100,7 +100,7 @@ lemma measurePreserving_toLp_projectiveFamily (I : Finset ℝ≥0) :
     · simp [← MeasurableEquiv.coe_toLp]
     all_goals fun_prop
 
-lemma integral_projectiveFamily {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma integral_projectiveFamily {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
     (I : Finset ℝ≥0) (f : (I → ℝ) → E) :
     ∫ x, f x ∂projectiveFamily I =
       ∫ x, f (ofLp x) ∂multivariateGaussian 0 (covMatrix I) := by

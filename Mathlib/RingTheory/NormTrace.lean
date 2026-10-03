@@ -16,7 +16,7 @@ public section
 
 open Module
 
-lemma Algebra.norm_one_add_smul {A B} [CommRing A] [CommRing B] [Algebra A B]
+lemma Algebra.norm_one_add_smul {A B} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
     [Module.Free A B] [Module.Finite A B] (a : A) (x : B) :
     ∃ r : A, Algebra.norm A (1 + a • x) = 1 + Algebra.trace A B x * a + r * a ^ 2 := by
   classical

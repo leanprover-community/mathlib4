@@ -21,7 +21,7 @@ open TensorProduct PiTensorProduct
 
 namespace TensorPower
 
-variable (R : Type*) (M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable (R : Type*) (M : Type*) [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
   (n : ℕ)
 
 

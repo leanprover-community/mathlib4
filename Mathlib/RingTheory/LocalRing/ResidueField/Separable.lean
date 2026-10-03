@@ -50,7 +50,7 @@ namespace Algebra
 
 section Prime
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A) [p.IsPrime]
+variable (A B : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] (p : Ideal A) [p.IsPrime]
 
 /-- `Algebra.HasSeparableResidueFieldsAt A B p` states that for every prime `q` of `B` lying over
 `p`, the residue field extension `κ(q)/κ(p)` is separable. -/
@@ -82,7 +82,7 @@ end Prime
 
 section Maximal
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A) [p.IsMaximal]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] (p : Ideal A) [p.IsMaximal]
 
 /-- At a maximal prime `p`, `Algebra.HasSeparableResidueFieldsAt` also gives the separability of
 the extension of quotient rings `(B ⧸ q)/(A ⧸ p)` for every maximal ideal `q` of `B` lying over
@@ -98,7 +98,7 @@ end Maximal
 
 section Tower
 
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+variable {A B C : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C]
   [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
   (p : Ideal A) [p.IsPrime]
 

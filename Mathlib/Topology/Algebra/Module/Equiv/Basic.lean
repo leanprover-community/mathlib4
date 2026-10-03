@@ -46,7 +46,7 @@ for the definition, although in applications `M` and `M₂` will be topological 
 topological semiring `R`. -/
 structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
-    [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
+    [AddMonoid M] [IsAddCommutative M] (M₂ : Type*) [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M]
     [Module S M₂] extends M ≃ₛₗ[σ] M₂ where
   continuous_toFun : Continuous toFun := by first | fun_prop | eta_expand; dsimp; fun_prop | skip
   continuous_invFun : Continuous invFun := by first | fun_prop | eta_expand; dsimp; fun_prop | skip
@@ -68,7 +68,7 @@ and `f (c • x) = (σ c) • f x`. -/
 class ContinuousSemilinearEquivClass (F : Type*) {R : outParam Type*} {S : outParam Type*}
     [Semiring R] [Semiring S] (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R}
     [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : outParam Type*) [TopologicalSpace M]
-    [AddCommMonoid M] (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
+    [AddMonoid M] [IsAddCommutative M] (M₂ : outParam Type*) [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M]
     [Module S M₂] [EquivLike F M M₂] : Prop extends SemilinearEquivClass F σ M M₂ where
   map_continuous : ∀ f : F, Continuous f := by first | fun_prop | dsimp; fun_prop
   inv_continuous : ∀ f : F, Continuous (EquivLike.inv f) := by first | fun_prop | dsimp; fun_prop
@@ -81,16 +81,16 @@ ContinuousSemilinearEquivClass.inv_continuous
 `R`-linear equivs `M → M₂`. This is an abbreviation for
 `ContinuousSemilinearEquivClass F (RingHom.id R) M M₂`. -/
 abbrev ContinuousLinearEquivClass (F : Type*) (R : outParam Type*) [Semiring R]
-    (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
-    [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
+    (M : outParam Type*) [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] (M₂ : outParam Type*)
+    [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
   ContinuousSemilinearEquivClass F (RingHom.id R) M M₂
 
 namespace ContinuousSemilinearEquivClass
 
 variable (F : Type*) {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  (M : Type*) [TopologicalSpace M] [AddCommMonoid M]
-  (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂]
+  (M : Type*) [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M]
+  (M₂ : Type*) [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂]
   [Module R M] [Module S M₂]
 
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
@@ -113,9 +113,9 @@ variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} [Semiring R₁] [Semiring 
   {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
   {σ₁₃ : R₁ →+* R₃} {σ₃₁ : R₃ →+* R₁} [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁] {M₁ : Type*}
-  [TopologicalSpace M₁] [AddCommMonoid M₁]
-  {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] {M₃ : Type*} [TopologicalSpace M₃]
-  [AddCommMonoid M₃] {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R₁ M₁]
+  [TopologicalSpace M₁] [AddMonoid M₁] [IsAddCommutative M₁]
+  {M₂ : Type*} [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] {M₃ : Type*} [TopologicalSpace M₃]
+  [AddMonoid M₃] [IsAddCommutative M₃] {M₄ : Type*} [TopologicalSpace M₄] [AddMonoid M₄] [IsAddCommutative M₄] [Module R₁ M₁]
   [Module R₂ M₂] [Module R₃ M₃]
 
 /-- A continuous linear equivalence induces a continuous linear map. -/
@@ -254,7 +254,7 @@ theorem ext₁ [TopologicalSpace R₁] {f g : R₁ ≃L[R₁] M₁} (h : f 1 = g
 
 section
 
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R₁ M]
+variable {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R₁ M]
 
 /-- A continuous linear equivalence seen as a `ContinuousAddEquiv`. -/
 def toContinuousAddEquiv (e : M₁ ≃L[R₁] M) : M₁ ≃ₜ+ M :=
@@ -436,13 +436,13 @@ protected theorem preimage_symm_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Se
   e.symm.symm_preimage_preimage s
 
 lemma isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
-    [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [IsUniformAddGroup E₁]
+    [AddGroup E₁] [IsAddCommutative E₁] [AddGroup E₂] [IsAddCommutative E₂] [Module R₁ E₁] [Module R₂ E₂] [IsUniformAddGroup E₁]
     [IsUniformAddGroup E₂] (e : E₁ ≃SL[σ₁₂] E₂) : IsUniformEmbedding e :=
   e.toLinearEquiv.toEquiv.isUniformEmbedding e.toContinuousLinearMap.uniformContinuous
     e.symm.toContinuousLinearMap.uniformContinuous
 
 protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁]
-    [UniformSpace E₂] [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂]
+    [UniformSpace E₂] [AddGroup E₁] [IsAddCommutative E₁] [AddGroup E₂] [IsAddCommutative E₂] [Module R₁ E₁] [Module R₂ E₂]
     [IsUniformAddGroup E₁] [IsUniformAddGroup E₂] (e : E₁ ≃ₛₗ[σ₁₂] E₂)
     (h₁ : Continuous e) (h₂ : Continuous e.symm) : IsUniformEmbedding e :=
   ContinuousLinearEquiv.isUniformEmbedding
@@ -587,7 +587,7 @@ The next theorems cover the identification between `M ≃L[R] M` and the group o
 `M →L[R] M`.
 -/
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [TopologicalSpace M]
 
 /-- An invertible continuous linear map `f` determines a continuous equivalence from `M` to itself.
 -/
@@ -671,9 +671,9 @@ end AutRing
 
 section AddCommGroup
 
-variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] {M₂ : Type*}
-  [TopologicalSpace M₂] [AddCommGroup M₂] {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃]
-  {M₄ : Type*} [TopologicalSpace M₄] [AddCommGroup M₄] [Module R M] [Module R M₂] [Module R M₃]
+variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddGroup M] [IsAddCommutative M] {M₂ : Type*}
+  [TopologicalSpace M₂] [AddGroup M₂] [IsAddCommutative M₂] {M₃ : Type*} [TopologicalSpace M₃] [AddGroup M₃] [IsAddCommutative M₃]
+  {M₄ : Type*} [TopologicalSpace M₄] [AddGroup M₄] [IsAddCommutative M₄] [Module R M] [Module R M₂] [Module R M₃]
   [Module R M₄]
 
 variable [IsTopologicalAddGroup M₄]
@@ -716,7 +716,7 @@ end AddCommGroup
 section Ring
 
 variable {R : Type*} [Ring R] {R₂ : Type*} [Ring R₂] {M : Type*} [TopologicalSpace M]
-  [AddCommGroup M] [Module R M] {M₂ : Type*} [TopologicalSpace M₂] [AddCommGroup M₂] [Module R₂ M₂]
+  [AddGroup M] [IsAddCommutative M] [Module R M] {M₂ : Type*} [TopologicalSpace M₂] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 
@@ -763,7 +763,7 @@ set_option backward.defeqAttrib.useBackward true in
 equivalence. -/
 @[simps! toLinearEquiv apply symm_apply]
 def restrictScalars (R : Type*) {S : Type*} {M : Type*}
-    [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M] [TopologicalSpace M]
+    [Semiring R] [Semiring S] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M] [TopologicalSpace M]
     [LinearMap.CompatibleSMul M M R S] (f : M ≃L[S] M) : M ≃L[R] M where
   toLinearEquiv := f.toLinearEquiv.restrictScalars R
 
@@ -774,7 +774,7 @@ end ContinuousLinearEquiv
 namespace MulOpposite
 
 variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
-  {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [ContinuousSMul R M]
+  {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] [TopologicalSpace M] [ContinuousSMul R M]
 
 /-- The function `op` is a continuous linear equivalence. -/
 @[simps!]
@@ -785,9 +785,9 @@ end MulOpposite
 
 namespace ContinuousLinearEquiv
 variable {S R V W G : Type*} [Semiring R] [Semiring S]
-  [AddCommMonoid V] [Module R V] [TopologicalSpace V] [Module S V] [ContinuousConstSMul S V]
-  [AddCommMonoid W] [Module R W] [TopologicalSpace W] [Module S W] [ContinuousConstSMul S W]
-  [AddCommMonoid G] [Module R G] [TopologicalSpace G] [Module S G] [ContinuousConstSMul S G]
+  [AddMonoid V] [IsAddCommutative V] [Module R V] [TopologicalSpace V] [Module S V] [ContinuousConstSMul S V]
+  [AddMonoid W] [IsAddCommutative W] [Module R W] [TopologicalSpace W] [Module S W] [ContinuousConstSMul S W]
+  [AddMonoid G] [IsAddCommutative G] [Module R G] [TopologicalSpace G] [Module S G] [ContinuousConstSMul S G]
   [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
 
 /-- Left scalar multiplication of a unit and a continuous linear equivalence,
@@ -818,8 +818,8 @@ theorem trans_smul [IsScalarTower S R G] (α : Sˣ) (e : G ≃L[R] V) (f : V ≃
 section IsHomeomorph
 
 variable {S₁ M M₁ : Type*} [Semiring S₁] {σ : S →+* S₁} {σ' : S₁ →+* S}
-  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [TopologicalSpace M] [AddCommMonoid M] [Module S M]
-  [TopologicalSpace M₁] [AddCommMonoid M₁] [Module S₁ M₁]
+  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module S M]
+  [TopologicalSpace M₁] [AddMonoid M₁] [IsAddCommutative M₁] [Module S₁ M₁]
 
 /-- A linear equivalence that is a homeomorphism is a continuous linear equivalence. -/
 def ofIsHomeomorph (f : M ≃ₛₗ[σ] M₁) (hf : IsHomeomorph f) : M ≃SL[σ] M₁ where

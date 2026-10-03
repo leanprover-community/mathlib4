@@ -44,9 +44,9 @@ namespace QuadraticMap
 section Prod
 
 section Semiring
-variable [CommSemiring R]
-variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N₁] [AddCommMonoid N₂]
-variable [AddCommMonoid P]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid N₁] [IsAddCommutative N₁] [AddMonoid N₂] [IsAddCommutative N₂]
+variable [AddMonoid P] [IsAddCommutative P]
 variable [Module R M₁] [Module R M₂] [Module R N₁] [Module R N₂] [Module R P]
 
 /-- Construct a quadratic form on a product of two modules from the quadratic form on each module.
@@ -205,8 +205,8 @@ end Semiring
 
 section Ring
 
-variable [CommRing R]
-variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup P]
+variable [Ring R] [IsMulCommutative R]
+variable [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup P] [IsAddCommutative P]
 variable [Module R M₁] [Module R M₂] [Module R P]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -237,8 +237,8 @@ end Prod
 section Pi
 
 section Semiring
-variable [CommSemiring R]
-variable [∀ i, AddCommMonoid (Mᵢ i)] [∀ i, AddCommMonoid (Nᵢ i)] [AddCommMonoid P]
+variable [Semiring R] [IsMulCommutative R]
+variable [∀ i, AddMonoid (Mᵢ i)] [∀ i, IsAddCommutative (Mᵢ i)] [∀ i, AddMonoid (Nᵢ i)] [∀ i, IsAddCommutative (Nᵢ i)] [AddMonoid P] [IsAddCommutative P]
 variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)] [Module R P]
 
 /-- Construct a quadratic form on a family of modules from the quadratic form on each module. -/
@@ -318,7 +318,7 @@ theorem anisotropic_of_pi [Fintype ι]
   · subst hji; rw [Pi.single_eq_same, hx]
   · rw [Pi.single_eq_of_ne hji, map_zero]
 
-theorem nonneg_pi_iff {P} [Fintype ι] [AddCommMonoid P] [PartialOrder P] [IsOrderedAddMonoid P]
+theorem nonneg_pi_iff {P} [Fintype ι] [AddMonoid P] [IsAddCommutative P] [PartialOrder P] [IsOrderedAddMonoid P]
     [Module R P]
     {Q : ∀ i, QuadraticMap R (Mᵢ i) P} : (∀ x, 0 ≤ pi Q x) ↔ ∀ i x, 0 ≤ Q i x := by
   simp_rw [pi, sum_apply, comp_apply, LinearMap.proj_apply]
@@ -332,7 +332,7 @@ theorem nonneg_pi_iff {P} [Fintype ι] [AddCommMonoid P] [PartialOrder P] [IsOrd
   · rintro h x
     exact Finset.sum_nonneg fun i _ => h i (x i)
 
-theorem posDef_pi_iff {P} [Fintype ι] [AddCommMonoid P] [PartialOrder P] [IsOrderedAddMonoid P]
+theorem posDef_pi_iff {P} [Fintype ι] [AddMonoid P] [IsAddCommutative P] [PartialOrder P] [IsOrderedAddMonoid P]
     [Module R P]
     {Q : ∀ i, QuadraticMap R (Mᵢ i) P} : (pi Q).PosDef ↔ ∀ i, (Q i).PosDef := by
   simp_rw [posDef_iff_nonneg, nonneg_pi_iff]
@@ -350,8 +350,8 @@ end Semiring
 
 namespace Ring
 
-variable [CommRing R]
-variable [∀ i, AddCommGroup (Mᵢ i)] [AddCommGroup P] [∀ i, Module R (Mᵢ i)] [Module R P] [Fintype ι]
+variable [Ring R] [IsMulCommutative R]
+variable [∀ i, AddGroup (Mᵢ i)] [∀ i, IsAddCommutative (Mᵢ i)] [AddGroup P] [IsAddCommutative P] [∀ i, Module R (Mᵢ i)] [Module R P] [Fintype ι]
 
 @[simp] theorem polar_pi (Q : ∀ i, QuadraticMap R (Mᵢ i) P) (x y : ∀ i, Mᵢ i) :
     polar (pi Q) x y = ∑ i, polar (Q i) (x i) (y i) := by

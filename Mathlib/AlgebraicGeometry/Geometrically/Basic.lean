@@ -124,7 +124,7 @@ lemma self_of_isIntegral_of_geometrically [IsIntegral Y] [Subsingleton Y] (hf : 
   rw [geometrically_eq_universally] at hf
   exact MorphismProperty.universally_le _ _ hf ‹_› ‹_›
 
-variable {P : ObjectProperty Scheme.{u}} {R : Type u} [CommRing R] {f : X ⟶ Spec (.of R)}
+variable {P : ObjectProperty Scheme.{u}} {R : Type u} [Ring R] [IsMulCommutative R] {f : X ⟶ Spec (.of R)}
 
 lemma geometrically_iff_of_commRing :
     geometrically P f ↔ ∀ ⦃K : Type u⦄ [Field K] [Algebra R K] ⦃Y : Scheme.{u}⦄ (fst : Y ⟶ X)

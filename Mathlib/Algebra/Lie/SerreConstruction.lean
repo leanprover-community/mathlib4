@@ -62,7 +62,7 @@ universe u v w
 
 noncomputable section
 
-variable (R : Type u) {B : Type v} [CommRing R]
+variable (R : Type u) {B : Type v} [Ring R] [IsMulCommutative R]
 variable (CM : Matrix B B ℤ)
 
 namespace CartanMatrix
@@ -169,7 +169,7 @@ end
 
 namespace CartanMatrix
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
 /-- The Lie algebra of type Aₙ₋₁, isomorphic to sl(n). -/
 noncomputable abbrev aₙ (n : ℕ) := Matrix.ToLieAlgebra R (CartanMatrix.A n)

@@ -460,11 +460,11 @@ variable {G : Type*}
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 -- δ is a dense subgroup of γ, inclusion is denoted by f
-variable [TopologicalSpace α] [AddCommGroup α] [IsTopologicalAddGroup α]
-variable [TopologicalSpace β] [AddCommGroup β]
-variable [TopologicalSpace γ] [AddCommGroup γ] [IsTopologicalAddGroup γ]
-variable [TopologicalSpace δ] [AddCommGroup δ]
-variable [UniformSpace G] [AddCommGroup G]
+variable [TopologicalSpace α] [AddGroup α] [IsAddCommutative α] [IsTopologicalAddGroup α]
+variable [TopologicalSpace β] [AddGroup β] [IsAddCommutative β]
+variable [TopologicalSpace γ] [AddGroup γ] [IsAddCommutative γ] [IsTopologicalAddGroup γ]
+variable [TopologicalSpace δ] [AddGroup δ] [IsAddCommutative δ]
+variable [UniformSpace G] [AddGroup G] [IsAddCommutative G]
 variable {e : β →+ α} (de : IsDenseInducing e)
 variable {f : δ →+ γ} (df : IsDenseInducing f)
 variable {φ : β →+ δ →+ G}

@@ -22,7 +22,7 @@ multivariate polynomial, continuity
 
 public section
 
-variable {X σ : Type*} [TopologicalSpace X] [CommSemiring X] [IsTopologicalSemiring X]
+variable {X σ : Type*} [TopologicalSpace X] [Semiring X] [IsMulCommutative X] [IsTopologicalSemiring X]
   (p : MvPolynomial σ X)
 
 theorem MvPolynomial.continuous_eval : Continuous fun x ↦ eval x p := by

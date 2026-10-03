@@ -44,8 +44,8 @@ namespace Ideal
 
 universe u v
 
-variable {R : Type u} [CommRing R]
-variable {S : Type v} [CommRing S] [Algebra R S]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
+variable {S : Type v} [Ring S] [IsMulCommutative S] [Algebra R S]
 variable (p : Ideal R) (P : Ideal S)
 
 local notation "f" => algebraMap R S
@@ -162,7 +162,7 @@ theorem le_comap_of_ramificationIdx'_ne_zero (h : ramificationIdx' p P ≠ 0) : 
 @[deprecated (since := "2026-07-01")] alias le_comap_of_ramificationIdx_ne_zero :=
   le_comap_of_ramificationIdx'_ne_zero
 
-variable {S₁ : Type*} [CommRing S₁] [Algebra R S₁]
+variable {S₁ : Type*} [Ring S₁] [IsMulCommutative S₁] [Algebra R S₁]
 
 variable (p) in
 lemma ramificationIdx'_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
@@ -243,7 +243,7 @@ theorem ramificationIdx'_map_self_eq_one [IsDedekindDomain S]
   ramificationIdx'_map_self_eq_one
 
 variable (p P) in
-theorem ramificationIdx'_le_ramificationIdx' {T : Type*} [CommRing T] [Algebra R T]
+theorem ramificationIdx'_le_ramificationIdx' {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T]
     [Algebra S T] [IsScalarTower R S T] (Q : Ideal T) (hp : p = comap f P)
     (h : ramificationIdx' p Q ≠ 0) : ramificationIdx' P Q ≤ ramificationIdx' p Q := by
   simp_rw [ramificationIdx', Ne] at *
@@ -329,7 +329,7 @@ lemma ramificationIdx'_eq_one_iff
   ramificationIdx'_eq_one_iff
 
 theorem ramificationIdx'_le_ramificationIdx' [IsDomain R] [IsTorsionFree R S] {S₀ : Type*}
-    [CommRing S₀] [Algebra R S₀] [Algebra S₀ S] [IsScalarTower R S₀ S] (p : Ideal R)
+    [Ring S₀] [IsMulCommutative S₀] [Algebra R S₀] [Algebra S₀ S] [IsScalarTower R S₀ S] (p : Ideal R)
     (P : Ideal S₀) (Q : Ideal S) [Q.LiesOver p] [hP : P.LiesOver p] [Q.IsPrime] (hp : p ≠ ⊥) :
     Ideal.ramificationIdx' P Q ≤ Ideal.ramificationIdx' p Q :=
   p.ramificationIdx'_le_ramificationIdx' P Q ((liesOver_iff ..).mp hP) <|
@@ -388,7 +388,7 @@ end DecEq
 
 section tower
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, Q` be ideals in `R, S, T` respectively,

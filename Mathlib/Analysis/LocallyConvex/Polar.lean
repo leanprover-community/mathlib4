@@ -44,7 +44,7 @@ namespace LinearMap
 
 section NormedRing
 
-variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [NormedRing 𝕜] [IsMulCommutative 𝕜] [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 
@@ -134,7 +134,7 @@ end NormedRing
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [NontriviallyNormedField 𝕜] [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 
@@ -176,7 +176,7 @@ namespace StrongDual
 
 section
 
-variable (R M : Type*) [SeminormedCommRing R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [SeminormedRing R] [IsMulCommutative R] [TopologicalSpace M] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 theorem dualPairing_separatingLeft : (topDualPairing R M).SeparatingLeft := by
   rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]
@@ -189,19 +189,19 @@ section
 /-- Given a subset `s` in a monoid `M` (over a commutative ring `R`), the polar `polar R s` is the
 subset of `StrongDual R M` consisting of those functionals which evaluate to something of norm at
 most one at all points `z ∈ s`. -/
-def polar (R : Type*) [NormedCommRing R] {M : Type*} [AddCommMonoid M]
+def polar (R : Type*) [NormedRing R] [IsMulCommutative R] {M : Type*} [AddMonoid M] [IsAddCommutative M]
     [TopologicalSpace M] [Module R M] : Set M → Set (StrongDual R M) :=
   (topDualPairing R M).flip.polar
 
 /-- Given a subset `s` in a monoid `M` (over a field `𝕜`) closed under scalar multiplication,
 the polar `polarSubmodule 𝕜 s` is the submodule of `StrongDual 𝕜 M` consisting of those functionals
 which evaluate to zero at all points `z ∈ s`. -/
-def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {M : Type*} [AddCommMonoid M]
+def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {M : Type*} [AddMonoid M] [IsAddCommutative M]
     [TopologicalSpace M] [Module 𝕜 M] {S : Type*} [SetLike S M] [SMulMemClass S 𝕜 M] (m : S) :
     Submodule 𝕜 (StrongDual 𝕜 M) := (topDualPairing 𝕜 M).flip.polarSubmodule m
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
+variable {E : Type*} [AddMonoid E] [IsAddCommutative E] [TopologicalSpace E] [Module 𝕜 E]
 
 lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
     (polarSubmodule 𝕜 m : Set (StrongDual 𝕜 E)) = polar 𝕜 m := rfl
@@ -248,7 +248,7 @@ end
 section
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [Module 𝕜 E]
 
 open Set
 

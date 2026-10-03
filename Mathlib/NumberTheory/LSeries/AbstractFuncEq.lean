@@ -71,7 +71,7 @@ open Real Complex Filter Asymptotics Set MeasureTheory
 
 open scoped Topology
 
-variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable (E : Type*) [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E]
 
 /-!
 ## Definitions and symmetry

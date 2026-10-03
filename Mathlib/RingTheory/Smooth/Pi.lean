@@ -23,7 +23,7 @@ public section
 namespace Algebra.FormallySmooth
 
 variable {R : Type*} {I : Type*} (A : I → Type*)
-variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
+variable [Ring R] [IsMulCommutative R] [∀ i, Ring (A i)] [∀ i, IsMulCommutative (A i)] [∀ i, Algebra R (A i)]
 
 theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
     FormallySmooth R (A i) := by

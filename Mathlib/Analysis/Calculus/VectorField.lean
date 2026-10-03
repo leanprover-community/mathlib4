@@ -38,9 +38,9 @@ open scoped Topology ContDiff
 noncomputable section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
+  {G : Type*} [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
   {V W V₁ W₁ : E → E} {s t : Set E} {x : E}
 
 /-!

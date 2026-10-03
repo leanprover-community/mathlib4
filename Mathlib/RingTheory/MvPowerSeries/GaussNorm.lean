@@ -177,7 +177,7 @@ lemma gaussNorm_neg (vNeg : ∀ x, v (-x) = v x) (f : MvPowerSeries σ R) :
 
 section absoluteValue
 
-variable {α S : Type*} [LinearOrder S] [AddCommGroup α] (f : α → S)
+variable {α S : Type*} [LinearOrder S] [AddGroup α] [IsAddCommutative α] (f : α → S)
 
 lemma ultrametric_strict (na : IsNonarchimedean f)
     (Neg : ∀ a, f a = f (-a)) {a b : α} (hne : f a ≠ f b) : f (a + b) = max (f a) (f b) := by
@@ -191,7 +191,7 @@ lemma ultrametric_strict (na : IsNonarchimedean f)
 variable [Semiring S]
 
 lemma Finset.Nonempty.map_sum_le_sup'_map
-    {α S : Type*} [LinearOrder S] [AddCommMonoid α] (g : α → S)
+    {α S : Type*} [LinearOrder S] [AddMonoid α] [IsAddCommutative α] (g : α → S)
     {ι : Type*} {s : Finset ι} (hs : s.Nonempty) (f : ι → α)
     (na : ∀ a b, g (a + b) ≤ max (g a) (g b)) :
     g (∑ i ∈ s, f i) ≤ s.sup' hs fun x ↦ g (f x) := by

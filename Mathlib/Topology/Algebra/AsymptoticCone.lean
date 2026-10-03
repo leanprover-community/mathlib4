@@ -43,7 +43,7 @@ section General
 
 variable
   {k V P : Type*}
-  [Field k] [LinearOrder k] [AddCommGroup V] [Module k V] [AddTorsor V P] [TopologicalSpace V]
+  [Field k] [LinearOrder k] [AddGroup V] [IsAddCommutative V] [Module k V] [AddTorsor V P] [TopologicalSpace V]
 
 namespace AffineSpace
 
@@ -317,7 +317,7 @@ open AffineSpace
 variable
   {k V : Type*}
   [Field k] [LinearOrder k] [IsStrictOrderedRing k] [TopologicalSpace k] [OrderTopology k]
-  [AddCommGroup V] [Module k V] [TopologicalSpace V] [IsTopologicalAddGroup V] [ContinuousSMul k V]
+  [AddGroup V] [IsAddCommutative V] [Module k V] [TopologicalSpace V] [IsTopologicalAddGroup V] [ContinuousSMul k V]
   {s : Set V}
 
 /-- If a closed set `s` is star-convex at `p` and `v` is in the asymptotic cone of `s`, then the ray

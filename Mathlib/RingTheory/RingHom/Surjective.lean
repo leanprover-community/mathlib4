@@ -34,7 +34,7 @@ open TensorProduct Algebra.TensorProduct
 
 universe u
 
-local notation "surjective" => fun {X Y : Type _} [CommRing X] [CommRing Y] => fun f : X →+* Y =>
+local notation "surjective" => fun {X Y : Type _} [Ring X] [IsMulCommutative X] [Ring Y] [IsMulCommutative Y] => fun f : X →+* Y =>
   Function.Surjective f
 
 theorem surjective_stableUnderComposition : StableUnderComposition surjective := by
@@ -84,7 +84,7 @@ theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
 
 /-- A surjective ring homomorphism `R →+* S` induces a surjective homomorphism `R_{f⁻¹(P)} →+* S_P`
 for every prime ideal `P` of `S`. -/
-theorem surjective_localRingHom_of_surjective {R S : Type u} [CommRing R] [CommRing S]
+theorem surjective_localRingHom_of_surjective {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     (f : R →+* S) (h : Function.Surjective f) (P : Ideal S) [P.IsPrime] :
     Function.Surjective (Localization.localRingHom (P.comap f) P f rfl) :=
   have : IsLocalization (Submonoid.map f (Ideal.comap f P).primeCompl) (Localization.AtPrime P) :=

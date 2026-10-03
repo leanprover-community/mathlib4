@@ -31,7 +31,7 @@ open Finset
 
 section birkhoffAverage
 
-variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommMonoid M] [Module R M]
+variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The average value of `g` on the first `n` points of the orbit of `x` under `f`,
 i.e. the Birkhoff sum `∑ k ∈ Finset.range n, g (f^[k] x)` divided by `n`.
@@ -66,13 +66,13 @@ theorem birkhoffAverage_one (f : α → α) (g : α → M) : birkhoffAverage R f
 @[deprecated (since := "2026-08-19")] alias birkhoffAverage_one' := birkhoffAverage_one
 
 theorem map_birkhoffAverage (S : Type*) {F N : Type*}
-    [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
+    [DivisionSemiring S] [AddMonoid N] [IsAddCommutative N] [Module S N] [FunLike F M N]
     [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffAverage R f g n x) = birkhoffAverage S f (g' ∘ g) n x := by
   simp only [birkhoffAverage, map_inv_natCast_smul g' R S, map_birkhoffSum]
 
 theorem map_comp_birkhoffAverage (S : Type*) {F N : Type*}
-    [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
+    [DivisionSemiring S] [AddMonoid N] [IsAddCommutative N] [Module S N] [FunLike F M N]
     [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) :
     ⇑g' ∘ birkhoffAverage R f g n = birkhoffAverage S f (g' ∘ g) n :=
   funext <| map_birkhoffAverage R S g' f g n
@@ -128,7 +128,7 @@ end birkhoffAverage
 
 section AddCommGroup
 
-variable {R : Type*} {α M : Type*} [DivisionSemiring R] [AddCommGroup M] [Module R M]
+variable {R : Type*} {α M : Type*} [DivisionSemiring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 lemma birkhoffAverage_neg_apply {f : α → α} {g : α → M} (n : ℕ) (x : α) :
     birkhoffAverage R f (-g) n x = -birkhoffAverage R f g n x := by

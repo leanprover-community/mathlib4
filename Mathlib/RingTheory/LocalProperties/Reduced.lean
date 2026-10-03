@@ -43,7 +43,7 @@ theorem isReduced_localizationPreserves : LocalizationPreserves fun R _ => IsRed
     IsLocalization.map_eq_zero_iff M]
   exact ⟨m', by rw [← hm', mul_comm]⟩
 
-instance {R : Type*} [CommRing R] (M : Submonoid R) [IsReduced R] : IsReduced (Localization M) :=
+instance {R : Type*} [Ring R] [IsMulCommutative R] (M : Submonoid R) [IsReduced R] : IsReduced (Localization M) :=
   isReduced_localizationPreserves M _ inferInstance
 
 /-- `R` is reduced if `Rₘ` is reduced for all maximal ideal `m`. -/

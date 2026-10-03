@@ -26,7 +26,7 @@ This file provides embedding of any archimedean groups into reals.
 
 
 variable {M : Type*}
-variable [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M] [One M]
+variable [AddGroup M] [IsAddCommutative M] [LinearOrder M] [IsOrderedAddMonoid M] [One M]
 
 theorem mul_smul_one_lt_iff {num : ℤ} {n den : ℕ} (hn : 0 < n) {x : M} :
     (num * n) • 1 < (n * den : ℤ) • x ↔ num • 1 < den • x := by

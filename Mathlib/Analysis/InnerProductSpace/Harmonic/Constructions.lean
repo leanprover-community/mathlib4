@@ -25,7 +25,7 @@ open Complex InnerProductSpace
 open scoped ComplexConjugate Topology
 
 variable
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℂ F]
   {f : ℂ → F} {x : ℂ}
 
 /-!

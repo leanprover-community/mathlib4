@@ -72,7 +72,7 @@ section ComplexBanachAlgebra
 
 open Ideal
 
-variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A] (I : Ideal A)
+variable {A : Type*} [NormedRing A] [IsMulCommutative A] [NormedAlgebra ℂ A] [CompleteSpace A] (I : Ideal A)
   [Ideal.IsMaximal I]
 
 /-- Every maximal ideal in a commutative complex Banach algebra gives rise to a character on that
@@ -129,7 +129,7 @@ section ComplexCStarAlgebra
 
 section Commutative
 
-variable {A : Type*} [CommCStarAlgebra A]
+variable {A : Type*} [CStarAlgebra A] [IsMulCommutative A]
 
 theorem gelfandTransform_map_star (a : A) :
     gelfandTransform ℂ A (star a) = star (gelfandTransform ℂ A a) :=
@@ -196,7 +196,7 @@ end Commutative
 
 namespace CommCStarAlgebra
 
-variable {A : Type*} [NonUnitalCommCStarAlgebra A] {a b : A}
+variable {A : Type*} [NonUnitalCStarAlgebra A] [IsMulCommutative A] {a b : A}
 
 open scoped CStarAlgebra in
 open Unitization in
@@ -366,7 +366,7 @@ V                     V
 B  --- η B ---> C(characterSpace ℂ B, ℂ)
 ```
 -/
-theorem gelfandStarTransform_naturality {A B : Type*} [CommCStarAlgebra A] [CommCStarAlgebra B]
+theorem gelfandStarTransform_naturality {A B : Type*} [CStarAlgebra A] [IsMulCommutative A] [CStarAlgebra B] [IsMulCommutative B]
     (φ : A →⋆ₐ[ℂ] B) :
     (gelfandStarTransform B).toStarAlgHom.comp φ =
       (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A).toStarAlgHom := by

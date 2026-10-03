@@ -26,7 +26,7 @@ namespace Algebra.TensorProduct
 /-- If `A`, `B` are `R`-algebras, `R` injects into `A` and `B`, and `A` and `B` are domains
 (which implies `R` is also a domain), then `A ⊗[R] B` is nontrivial. -/
 theorem nontrivial_of_algebraMap_injective_of_isDomain
-    (R A B : Type*) [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+    (R A B : Type*) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra R B]
     (ha : Function.Injective (algebraMap R A)) (hb : Function.Injective (algebraMap R B))
     [IsDomain A] [IsDomain B] : Nontrivial (A ⊗[R] B) := by
   have := ha.isDomain _

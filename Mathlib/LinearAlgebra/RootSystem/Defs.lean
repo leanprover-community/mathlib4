@@ -69,7 +69,7 @@ open AddSubgroup (zmultiples)
 noncomputable section
 
 variable (ι R M N : Type*)
-  [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+  [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 /-- Given two perfectly-paired `R`-modules `M` and `N`, a root pairing with indexing set `ι`
 is the data of an `ι`-indexed subset of `M` ("the roots"), an `ι`-indexed subset of `N`
@@ -108,7 +108,7 @@ Finally note that if `[Module.Finite ℤ X₁] [Module.Finite ℤ X₂]` are sup
 assume freeness since it follows automatically. Moreover Mathlib knows this via
 `Module.IsReflexive.of_isPerfPair`, `Module.IsReflexive.to_isTorsionFree`,
 `Module.free_of_finite_type_torsion_free'`. -/
-abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
+abbrev RootDatum (X₁ X₂ : Type*) [AddGroup X₁] [IsAddCommutative X₁] [AddGroup X₂] [IsAddCommutative X₂] := RootPairing ι ℤ X₁ X₂
 
 namespace RootPairing
 
@@ -661,7 +661,7 @@ lemma isFixedPt_reflectionPerm_iff [NeZero (2 : R)] [IsDomain R] [Module.IsTorsi
 
 section Map
 
-variable {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+variable {ι₂ M₂ N₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
 
 /-- Push forward a root pairing along linear equivalences, also reindexing the (co)roots. -/
 protected def map (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :

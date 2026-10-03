@@ -46,8 +46,8 @@ open LinearMap (BilinMap BilinForm)
 
 universe u1 u2 u3
 
-variable {R : Type u1} [CommRing R]
-variable {M : Type u2} [AddCommGroup M] [Module R M]
+variable {R : Type u1} [Ring R] [IsMulCommutative R]
+variable {M : Type u2} [AddGroup M] [IsAddCommutative M] [Module R M]
 variable (Q : QuadraticForm R M)
 
 namespace CliffordAlgebra

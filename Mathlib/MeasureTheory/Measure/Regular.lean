@@ -1173,7 +1173,7 @@ theorem restrict_of_measure_ne_top [R1Space α] [BorelSpace α] [Regular μ]
 
 end Regular
 
-instance Regular.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
+instance Regular.domSMul {G A : Type*} [Group G] [AddGroup A] [IsAddCommutative A] [DistribMulAction G A]
     [MeasurableSpace A] [TopologicalSpace A] [BorelSpace A] [ContinuousConstSMul G A]
     {μ : Measure A} (g : Gᵈᵐᵃ) [Regular μ] : Regular (g • μ) :=
   .map <| .smul ((DomMulAct.mk.symm g : G)⁻¹)

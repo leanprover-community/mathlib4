@@ -40,7 +40,7 @@ namespace Module
 alias DirectedSystem.map_self := DirectedSystem.map_self'
 alias DirectedSystem.map_map := DirectedSystem.map_map'
 
-variable [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)] (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
+variable [∀ i, AddMonoid (G i)] [∀ i, IsAddCommutative (G i)] [∀ i, Module R (G i)] (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- The relation on the direct sum that generates the additive congruence that defines the
 colimit as a quotient. -/
@@ -68,7 +68,7 @@ instance addCommMonoid : AddCommMonoid (DirectLimit G f) :=
 
 instance module : Module R (DirectLimit G f) := inferInstanceAs (Module R (moduleCon f).Quotient)
 
-instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
+instance addCommGroup (G : ι → Type*) [∀ i, AddGroup (G i)] [∀ i, IsAddCommutative (G i)] [∀ i, Module R (G i)]
     (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) : AddCommGroup (DirectLimit G f) :=
   inferInstanceAs (AddCommGroup (moduleCon f).Quotient)
 
@@ -118,7 +118,7 @@ protected theorem induction_on [Nonempty ι] [IsDirectedOrder ι] {C : DirectLim
   let ⟨i, x, h⟩ := exists_of z
   h ▸ ih i x
 
-variable {P : Type*} [AddCommMonoid P] [Module R P]
+variable {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P]
 
 variable (R ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
@@ -163,9 +163,9 @@ lemma lift_injective [IsDirectedOrder ι]
 
 section functorial
 
-variable {G' : ι → Type*} [∀ i, AddCommMonoid (G' i)] [∀ i, Module R (G' i)]
+variable {G' : ι → Type*} [∀ i, AddMonoid (G' i)] [∀ i, IsAddCommutative (G' i)] [∀ i, Module R (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →ₗ[R] G' j}
-variable {G'' : ι → Type*} [∀ i, AddCommMonoid (G'' i)] [∀ i, Module R (G'' i)]
+variable {G'' : ι → Type*} [∀ i, AddMonoid (G'' i)] [∀ i, IsAddCommutative (G'' i)] [∀ i, Module R (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →ₗ[R] G'' j}
 
 /--
@@ -277,7 +277,7 @@ end Module
 
 namespace AddCommGroup
 
-variable (G) [∀ i, AddCommMonoid (G i)]
+variable (G) [∀ i, AddMonoid (G i)] [∀ i, IsAddCommutative (G i)]
 
 /-- The direct limit of a directed system is the abelian groups glued together along the maps. -/
 def DirectLimit [DecidableEq ι] (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
@@ -294,7 +294,7 @@ local instance directedSystem [h : DirectedSystem G fun i j h ↦ f i j h] :
 
 variable [DecidableEq ι]
 
-instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)]
+instance addCommGroup (G : ι → Type*) [∀ i, AddGroup (G i)] [∀ i, IsAddCommutative (G i)]
     (f : ∀ i j, i ≤ j → G i →+ G j) : AddCommGroup (DirectLimit G f) :=
   inferInstanceAs <| AddCommGroup (Module.DirectLimit G _)
 
@@ -322,7 +322,7 @@ theorem of.zero_exact [IsDirectedOrder ι] [DirectedSystem G fun i j h ↦ f i j
     (h : of G f i x = 0) : ∃ j hij, f i j hij x = 0 :=
   Module.DirectLimit.of.zero_exact h
 
-variable (P : Type*) [AddCommMonoid P]
+variable (P : Type*) [AddMonoid P] [IsAddCommutative P]
 variable (g : ∀ i, G i →+ P)
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 variable (G f)
@@ -366,9 +366,9 @@ lemma lift_injective [IsDirectedOrder ι]
 
 section functorial
 
-variable {G' : ι → Type*} [∀ i, AddCommMonoid (G' i)]
+variable {G' : ι → Type*} [∀ i, AddMonoid (G' i)] [∀ i, IsAddCommutative (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →+ G' j}
-variable {G'' : ι → Type*} [∀ i, AddCommMonoid (G'' i)]
+variable {G'' : ι → Type*} [∀ i, AddMonoid (G'' i)] [∀ i, IsAddCommutative (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →+ G'' j}
 
 /--

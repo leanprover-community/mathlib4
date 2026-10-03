@@ -31,7 +31,7 @@ open Coalgebra
 
 namespace MonoidAlgebra
 
-variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {A : Type*} [Semiring A]
   {X : Type*} [Module R A] [Coalgebra R A]
 
 variable (R A X) in
@@ -64,7 +64,7 @@ namespace LaurentPolynomial
 
 open AddMonoidAlgebra
 
-variable (R A : Type*) [CommSemiring R] [Semiring A] [Module R A] [Coalgebra R A]
+variable (R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Module R A] [Coalgebra R A]
 
 instance instCoalgebra : Coalgebra R A[T;T⁻¹] := inferInstanceAs <| Coalgebra R A[ℤ]
 

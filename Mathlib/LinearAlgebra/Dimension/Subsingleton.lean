@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Dimension.Basic
 
 public section
 
-variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R M : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 section
 

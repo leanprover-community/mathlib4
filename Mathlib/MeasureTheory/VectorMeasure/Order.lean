@@ -44,7 +44,7 @@ namespace VectorMeasure
 
 section
 
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
+variable {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [PartialOrder M]
 
 /-- Vector measures over a partially ordered monoid is partially ordered.
 
@@ -74,7 +74,7 @@ scoped[MeasureTheory]
 
 section
 
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
+variable {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [PartialOrder M]
 variable (v w : VectorMeasure α M)
 
 theorem restrict_le_restrict_iff {i : Set α} (hi : MeasurableSet i) :
@@ -112,7 +112,7 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M]
-  [AddCommGroup M] [PartialOrder M] [IsOrderedAddMonoid M] [IsTopologicalAddGroup M]
+  [AddGroup M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M] [IsTopologicalAddGroup M]
 variable (v w : VectorMeasure α M)
 
 nonrec theorem neg_le_neg {i : Set α} (hi : MeasurableSet i) (h : v ≤[i] w) : -w ≤[i] -v := by
@@ -130,7 +130,7 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M]
-  [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] [OrderClosedTopology M]
+  [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M] [OrderClosedTopology M]
 variable (v w : VectorMeasure α M) {i j : Set α}
 
 theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, MeasurableSet (f n))
@@ -178,7 +178,7 @@ end
 
 section
 
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
+variable {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [PartialOrder M]
 variable (v : VectorMeasure α M) {i j : Set α}
 
 theorem nonneg_of_zero_le_restrict (hi₂ : 0 ≤[i] v) : 0 ≤ v i := by
@@ -215,7 +215,7 @@ end
 
 section
 
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [LinearOrder M]
+variable {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [LinearOrder M]
 variable (v : VectorMeasure α M) {i j : Set α}
 
 theorem exists_pos_measure_of_not_restrict_le_zero (hi : ¬v ≤[i] 0) :
@@ -229,7 +229,7 @@ end
 
 section
 
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
+variable {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [PartialOrder M]
   [AddLeftMono M] [ContinuousAdd M]
 
 instance instAddLeftMono : AddLeftMono (VectorMeasure α M) :=

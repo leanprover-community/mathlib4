@@ -44,12 +44,12 @@ end Mul
 
 -- The left-hand side is not in simp normal form, see variant below.
 @[to_additive]
-theorem swap_mem_mulAntidiagonal [CommMagma α] {s t : Set α} {a : α} {x : α × α} :
+theorem swap_mem_mulAntidiagonal [Mul α] [IsMulCommutative α] {s t : Set α} {a : α} {x : α × α} :
     x.swap ∈ Set.mulAntidiagonal s t a ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
 
 @[to_additive (attr := simp)]
-theorem swap_mem_mulAntidiagonal_aux [CommMagma α] {s t : Set α} {a : α} {x : α × α} :
+theorem swap_mem_mulAntidiagonal_aux [Mul α] [IsMulCommutative α] {s t : Set α} {a : α} {x : α × α} :
     x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
       ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
@@ -59,7 +59,7 @@ namespace MulAntidiagonal
 
 section CancelCommMonoid
 
-variable [CommMonoid α] [IsCancelMul α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
+variable [Monoid α] [IsMulCommutative α] [IsCancelMul α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
 
 -- We have to translate the names manually because the namespace name `MulAntidiagonal`
 -- does not match the declaration `mulAntidiagonal` that has the `to_additive` attribute.
@@ -88,7 +88,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [CommMonoid α] [PartialOrder α] [IsCancelMul α] [MulLeftMono α] [MulRightStrictMono α]
+variable [Monoid α] [IsMulCommutative α] [PartialOrder α] [IsCancelMul α] [MulLeftMono α] [MulRightStrictMono α]
   (s t : Set α) (a : α) {x y : mulAntidiagonal s t a}
 
 @[to_additive Set.AddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]
@@ -116,7 +116,7 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t
 
 end OrderedCancelCommMonoid
 
-variable [CancelCommMonoid α] [LinearOrder α] [MulLeftMono α] [MulRightStrictMono α]
+variable [CancelMonoid α] [IsMulCommutative α] [LinearOrder α] [MulLeftMono α] [MulRightStrictMono α]
 
 @[to_additive Set.AddAntidiagonal.finite_of_isWF]
 theorem finite_of_isWF {s t : Set α} (hs : s.IsWF) (ht : t.IsWF)

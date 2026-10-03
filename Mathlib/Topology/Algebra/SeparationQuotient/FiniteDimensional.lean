@@ -18,7 +18,7 @@ public section
 
 /-- The separation quotient of a finite module is a finite module. -/
 instance SeparationQuotient.instModuleFinite
-    {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Module.Finite R M]
+    {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module.Finite R M]
     [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] :
     Module.Finite R (SeparationQuotient M) :=
   Module.Finite.of_surjective (mkCLM R M).toLinearMap Quotient.mk_surjective

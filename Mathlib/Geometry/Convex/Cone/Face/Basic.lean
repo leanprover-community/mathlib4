@@ -42,7 +42,7 @@ variable {R M N : Type*}
 section Semiring
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommGroup M] [Module R M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- A sub-cone `F` of a pointed cone `C` is a face of `C` if any two points of `C` with a strictly
 positive combination in `F` are also in `F`. -/
@@ -148,7 +148,7 @@ protected theorem trans (h₁ : F₂.IsFaceOf F₁) (h₂ : F₁.IsFaceOf C) : F
 
 section Map
 
-variable [AddCommGroup N] [Module R N]
+variable [AddGroup N] [IsAddCommutative N] [Module R N]
 
 /-- The image of a face of a cone under an injective linear map is a face of the
 image of the cone. -/
@@ -197,13 +197,13 @@ end IsFaceOf
 
 /-- The image of a cone `F` under an injective linear map is a face of the
 image of another cone `C` if and only if `F` is a face of `C`. -/
-theorem isFaceOf_map_iff [AddCommGroup N] [Module R N] {f : M →ₗ[R] N} (hf : Function.Injective f) :
+theorem isFaceOf_map_iff [AddGroup N] [IsAddCommutative N] [Module R N] {f : M →ₗ[R] N} (hf : Function.Injective f) :
     (F.map f).IsFaceOf (C.map f) ↔ F.IsFaceOf C :=
   ⟨IsFaceOf.of_map_injective hf, IsFaceOf.map _ hf⟩
 
 /-- The comap of a cone `F` under a surjective linear map is a face of the
 comap of another cone `F` if and only if `F` is a face of `C`. -/
-theorem isFaceOf_comap_iff [AddCommGroup N] [Module R N] {f : N →ₗ[R] M}
+theorem isFaceOf_comap_iff [AddGroup N] [IsAddCommutative N] [Module R N] {f : N →ₗ[R] M}
     (hf : Function.Surjective f) : (F.comap f).IsFaceOf (C.comap f) ↔ F.IsFaceOf C :=
   ⟨IsFaceOf.of_comap_surjective hf, IsFaceOf.comap _⟩
 
@@ -212,7 +212,7 @@ end Semiring
 section DivisionRing
 
 variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R]
-variable [AddCommGroup M] [Module R M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M]
 variable {C F F₁ F₂ : PointedCone R M}
 
 namespace IsFaceOf
@@ -243,7 +243,7 @@ lemma lineal_congr (hF : F.IsFaceOf C) : F.lineal = C.lineal := by
 
 section Prod
 
-variable [AddCommGroup N] [Module R N]
+variable [AddGroup N] [IsAddCommutative N] [Module R N]
 
 /-- The product of two faces of two cones is a face of the product of the cones. -/
 protected theorem prod {C₁ F₁ : PointedCone R M} {C₂ F₂ : PointedCone R N}

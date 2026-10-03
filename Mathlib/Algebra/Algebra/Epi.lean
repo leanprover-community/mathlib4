@@ -21,7 +21,7 @@ namespace Algebra
 
 section Semiring
 
-variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 /-- A commutative `R`-algebra `A` is epi, if the multiplication map `A ⊗[R] A → A` is injective. -/
 protected class IsEpi : Prop where
@@ -56,7 +56,7 @@ lemma isEpi_of_surjective_algebraMap (h : Surjective (algebraMap R A)) :
 end Semiring
 
 -- TODO Generalise to any localization
-instance (R A : Type*) [CommRing R] [IsDomain R] [Field A] [Algebra R A] [IsFractionRing R A] :
+instance (R A : Type*) [Ring R] [IsMulCommutative R] [IsDomain R] [Field A] [Algebra R A] [IsFractionRing R A] :
     Algebra.IsEpi R A := by
   refine (isEpi_iff_forall_one_tmul_eq R A).mpr fun x ↦ ?_
   obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective R x
@@ -71,7 +71,7 @@ instance (R A : Type*) [CommRing R] [IsDomain R] [Field A] [Algebra R A] [IsFrac
 
 section Ring
 
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
     Algebra.IsEpi R A ↔ Surjective (algebraMap R A) := by
@@ -99,7 +99,7 @@ end Ring
 
 section CommSemiring
 
-variable (R A : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] [Algebra.IsEpi R A]
+variable (R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A] [Algebra.IsEpi R A]
 
 variable {A} in
 lemma tmul_comm (a b : A) :
@@ -112,7 +112,7 @@ lemma tmul_comm (a b : A) :
 
 section Module
 
-variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 /-- If an `R`-algebra `A` is epi, then the scalar multiplication `A ⊗[R] M → M` is injective, for
 any `A`-module `M`. -/

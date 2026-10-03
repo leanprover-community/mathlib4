@@ -166,7 +166,7 @@ noncomputable section
 
 universe u
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type u} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E]
 
 namespace Complex
 

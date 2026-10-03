@@ -39,7 +39,7 @@ lie algebra, non-unital, non-associative
 
 universe u v w
 
-variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R : Type u) (L : Type v) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 
 /-- Type synonym for turning a `LieRing` into a `NonUnitalNonAssocRing`.
 

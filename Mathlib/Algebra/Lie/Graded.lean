@@ -47,8 +47,8 @@ class SetLike.GradedBracket [SetLike σ L] [SetLike τ M] [Bracket L M] [VAdd ι
   /-- Bracket is homogeneous -/
   bracket_mem : ∀ ⦃i j⦄ {gi hj}, gi ∈ ℒ i → hj ∈ ℳ j → ⁅gi, hj⁆ ∈ ℳ (i +ᵥ j)
 
-variable [DecidableEq ι] [AddCommMonoid ι] [CommRing R] [LieRing L] [LieAlgebra R L]
-  (ℒ : ι → Submodule R L) [DecidableEq κ] [VAdd ι κ] [AddCommGroup M] [Module R M]
+variable [DecidableEq ι] [AddMonoid ι] [IsAddCommutative ι] [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+  (ℒ : ι → Submodule R L) [DecidableEq κ] [VAdd ι κ] [AddGroup M] [IsAddCommutative M] [Module R M]
   [LieRingModule L M] [LieModule R L M] (ℳ : κ → Submodule R M)
 
 /-- A class that ensures a Lie algebra has a bracket that preserves a decomposition. -/
@@ -62,7 +62,7 @@ end SetLike
 
 namespace DirectSum
 
-variable [DecidableEq ι] [AddCommMonoid ι] [CommRing R] [LieRing L] [LieAlgebra R L]
+variable [DecidableEq ι] [AddMonoid ι] [IsAddCommutative ι] [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
   (ℒ : ι → Submodule R L) [GradedLieAlgebra ℒ]
 
 instance : LieRing (⨁ i, ℒ i) where
@@ -80,7 +80,7 @@ lemma bracket_apply_apply_self (x y : ⨁ i, ℒ i) :
 
 attribute [local simp] bracket_apply_apply_self
 
-variable [DecidableEq κ] [AddCommGroup M] [Module R M] [LieRingModule L M]
+variable [DecidableEq κ] [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
   (ℳ : κ → Submodule R M) [DirectSum.Decomposition ℳ]
 
 instance : LieRingModule (⨁ i, ℒ i) (⨁ k, ℳ k) where
@@ -127,7 +127,7 @@ end DirectSum
 
 namespace LieDerivation
 
-variable [DecidableEq ι] [AddCommMonoid ι] [CommRing R] [LieRing L] [LieAlgebra R L]
+variable [DecidableEq ι] [AddMonoid ι] [IsAddCommutative ι] [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
   (ℒ : ι → Submodule R L) [GradedLieAlgebra ℒ]
 
 /-- A derivation on the direct sum of graded pieces of a graded Lie algebra, induced by an additive

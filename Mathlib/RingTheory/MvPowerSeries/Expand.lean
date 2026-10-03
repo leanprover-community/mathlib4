@@ -25,7 +25,7 @@ This operation is called `MvPowerSeries.expand` and it is an algebra homomorphis
 
 namespace MvPowerSeries
 
-variable {σ τ R S : Type*} [CommRing R] [CommRing S] (p : ℕ) (hp : p ≠ 0)
+variable {σ τ R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (p : ℕ) (hp : p ≠ 0)
 
 /-- Expand the power series by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 

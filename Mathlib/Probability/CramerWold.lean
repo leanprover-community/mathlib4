@@ -26,7 +26,7 @@ open MeasureTheory Filter RealInnerProductSpace
 
 public section
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E]
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbabilityMeasure P]

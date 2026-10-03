@@ -58,7 +58,7 @@ lemma mul_of_commute (hab : Commute a b) (ha : IsIdempotentElem a) (hb : IsIdemp
 end Semigroup
 
 section CommSemigroup
-variable [CommSemigroup S] {a b : S}
+variable [Semigroup S] [IsMulCommutative S] {a b : S}
 
 lemma mul (ha : IsIdempotentElem a) (hb : IsIdempotentElem b) : IsIdempotentElem (a * b) :=
   ha.mul_of_commute (.all ..) hb

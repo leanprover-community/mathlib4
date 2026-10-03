@@ -29,8 +29,8 @@ open LinearMap (BilinMap BilinForm)
 open TensorProduct QuadraticMap
 
 section CommRing
-variable [CommRing R] [CommRing A]
-variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N₁] [AddCommGroup N₂]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A]
+variable [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup N₁] [IsAddCommutative N₁] [AddGroup N₂] [IsAddCommutative N₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
 variable [SMulCommClass R A M₁] [IsScalarTower R A M₁] [IsScalarTower R A N₁]
 variable [Module R M₂] [Module R N₂]

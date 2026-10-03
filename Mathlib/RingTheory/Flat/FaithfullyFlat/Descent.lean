@@ -25,8 +25,8 @@ open TensorProduct
 
 section
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    {T : Type*} [CommRing T] [Algebra R T]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+    {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T]
 
 lemma Module.FaithfullyFlat.injective_of_tensorProduct [Module.FaithfullyFlat R S]
     (H : Function.Injective (algebraMap S (S ⊗[R] T))) :

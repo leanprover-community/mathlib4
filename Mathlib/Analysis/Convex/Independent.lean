@@ -50,7 +50,7 @@ variable {𝕜 E ι : Type*}
 
 section OrderedSemiring
 
-variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 /-- An indexed family is said to be convex independent if every point only belongs to convex hulls
 of sets containing it. -/
@@ -165,7 +165,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {s : Set E}
 
 open scoped Classical in
 /-- To check convex independence, one only has to check finsets thanks to Carathéodory's theorem. -/

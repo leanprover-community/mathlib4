@@ -38,7 +38,7 @@ section
 
 namespace Ideal
 
-variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (p : Ideal R) [p.IsPrime] (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S]
 
 open IsLocalRing Module OrderIso PrimeSpectrum in
 theorem sum_ramification_inertia_eq_finrank_fiber

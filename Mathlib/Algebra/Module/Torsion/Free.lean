@@ -33,7 +33,7 @@ section Semiring
 variable [Semiring R] [Semiring S]
 
 section AddCommMonoid
-variable [AddCommMonoid M] [Module R M] [Module S M] [AddCommMonoid N] [Module R N]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M] [AddMonoid N] [IsAddCommutative N] [Module R N]
   {r : R} {m m₁ m₂ : M}
 
 variable (R M) in
@@ -138,7 +138,7 @@ lemma Module.isTorsionFree_nat_iff_isAddTorsionFree : IsTorsionFree ℕ M ↔ Is
 end AddCommMonoid
 
 section AddCommGroup
-variable [CharZero R] [IsDomain R] [AddCommGroup M] [Module R M]
+variable [CharZero R] [IsDomain R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 instance [IsAddTorsionFree M] : IsTorsionFree ℤ M where
   isSMulRegular n hn := zsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
@@ -170,7 +170,7 @@ theorem isRegular_natCast : IsRegular (n : R) ↔ IsSMulRegular R n := by
 end NonAssocSemiring
 
 section Ring
-variable [Ring R] [AddCommGroup M] [Module R M] {m : M} {r₁ r₂ : R}
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] {m : M} {r₁ r₂ : R}
 
 lemma Module.IsTorsionFree.of_smul_eq_zero [Nontrivial R]
     (h : ∀ (r : R) (m : M), r • m = 0 → r = 0 ∨ m = 0) :
@@ -197,7 +197,7 @@ lemma smul_left_injective (hm : m ≠ 0) : ((· • m) : R → M).Injective := b
 end Ring
 
 section Semiring
-variable (R M) [Semiring R] [AddCommGroup M] [Module R M]
+variable (R M) [Semiring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 -- TODO: Add a `ℤ`-specific version of `smul_left_injective` and move this lemma to an earlier file.
 /-- Only a ring of characteristic zero can have a non-trivial module without additive or

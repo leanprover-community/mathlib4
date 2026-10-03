@@ -125,7 +125,7 @@ protected theorem smul [∀ i, SMul ℝ (β i)] [∀ i, ContinuousConstSMul ℝ 
     StronglyAdapted f (c • u) := fun i => (hu i).const_smul c
 
 /-- The norm of a strongly adapted process is strongly adapted. -/
-protected lemma norm {β : ι → Type*} {u : (i : ι) → Ω → β i} [∀ i, SeminormedAddCommGroup (β i)]
+protected lemma norm {β : ι → Type*} {u : (i : ι) → Ω → β i} [∀ i, SeminormedAddGroup (β i)] [∀ i, IsAddCommutative (β i)]
     (hu : StronglyAdapted f u) :
     StronglyAdapted f (fun t ω ↦ ‖u t ω‖) := fun t ↦ (hu t).norm
 
@@ -225,7 +225,7 @@ protected theorem mul [Mul β] [MeasurableMul₂ β] (hu : IsProgressive f u)
   fun i ↦ Measurable.mul (hu i) (hv i)
 
 @[to_additive]
-protected theorem finsetProd {γ} [CommMonoid β] [MeasurableMul₂ β] {U : γ → ι → Ω → β}
+protected theorem finsetProd {γ} [Monoid β] [IsMulCommutative β] [MeasurableMul₂ β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, IsProgressive f (U c)) :
     IsProgressive f fun i ω ↦ ∏ c ∈ s, U c i ω :=
   fun i ↦ s.measurable_prod fun c hc ↦ h c hc i
@@ -240,7 +240,7 @@ protected theorem div [Group β] [MeasurableDiv₂ β] (hu : IsProgressive f u)
   fun i ↦ Measurable.div (hu i) (hv i)
 
 /-- The norm of a progressive process is progressive. -/
-protected lemma norm [NormedAddCommGroup β] [OpensMeasurableSpace β] (hu : IsProgressive f u) :
+protected lemma norm [NormedAddGroup β] [IsAddCommutative β] [OpensMeasurableSpace β] (hu : IsProgressive f u) :
     IsProgressive f fun t ω ↦ ‖u t ω‖ :=
   fun i ↦ by apply @(hu i).norm; infer_instance
 
@@ -294,7 +294,7 @@ protected theorem mul [Mul β] [ContinuousMul β] (hu : IsStronglyProgressive f 
   (hu i).mul (hv i)
 
 @[to_additive]
-protected theorem finsetProd' {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
+protected theorem finsetProd' {γ} [Monoid β] [IsMulCommutative β] [ContinuousMul β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, IsStronglyProgressive f (U c)) :
     IsStronglyProgressive f (∏ c ∈ s, U c) :=
   Finset.prod_induction U (IsStronglyProgressive f) (fun _ _ => .mul)
@@ -307,7 +307,7 @@ protected alias finset_sum' := MeasureTheory.IsStronglyProgressive.finsetSum'
 protected alias finset_prod' := MeasureTheory.IsStronglyProgressive.finsetProd'
 
 @[to_additive]
-protected theorem finsetProd {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
+protected theorem finsetProd {γ} [Monoid β] [IsMulCommutative β] [ContinuousMul β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, IsStronglyProgressive f (U c)) :
     IsStronglyProgressive f fun i a => ∏ c ∈ s, U c i a := by
   convert! IsStronglyProgressive.finsetProd' h using 1; ext (i a); simp only [Finset.prod_apply]
@@ -328,7 +328,7 @@ protected theorem div' [Group β] [ContinuousDiv β] (hu : IsStronglyProgressive
   (hu i).div' (hv i)
 
 /-- The norm of a strongly progressive process is strongly progressive. -/
-protected lemma norm {β : Type*} {u : ι → Ω → β} [SeminormedAddCommGroup β]
+protected lemma norm {β : Type*} {u : ι → Ω → β} [SeminormedAddGroup β] [IsAddCommutative β]
     (hu : IsStronglyProgressive f u) :
     IsStronglyProgressive f fun t ω ↦ ‖u t ω‖ := fun t ↦ (hu t).norm
 

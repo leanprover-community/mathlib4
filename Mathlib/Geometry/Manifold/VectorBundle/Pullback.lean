@@ -25,11 +25,11 @@ open Bundle Set
 open scoped Manifold
 
 variable {𝕜 B B' : Type*} (F : Type*) (E : B → Type*) {n : WithTop ℕ∞}
-variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace F E)]
-  [∀ x, TopologicalSpace (E x)] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
+variable [NontriviallyNormedField 𝕜] [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)] [∀ x, Module 𝕜 (E x)]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace F E)]
+  [∀ x, TopologicalSpace (E x)] {EB : Type*} [NormedAddGroup EB] [IsAddCommutative EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
-  [ChartedSpace HB B] {EB' : Type*} [NormedAddCommGroup EB']
+  [ChartedSpace HB B] {EB' : Type*} [NormedAddGroup EB'] [IsAddCommutative EB']
   [NormedSpace 𝕜 EB'] {HB' : Type*} [TopologicalSpace HB'] (IB' : ModelWithCorners 𝕜 EB' HB')
   [TopologicalSpace B'] [ChartedSpace HB' B'] [FiberBundle F E]
   [VectorBundle 𝕜 F E] [ContMDiffVectorBundle n F E IB] (f : ContMDiffMap IB' IB B' B n)

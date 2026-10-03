@@ -21,7 +21,7 @@ noncomputable section
 universe u v v' w
 
 variable {R : Type u} {M : Type v} {ι : Type w}
-variable [Semiring R] [AddCommMonoid M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M]
 variable [Module R M]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
@@ -52,7 +52,7 @@ theorem rank_le {n : ℕ}
 section RankZero
 
 /-- See `rank_zero_iff` for a stronger version with `IsTorsionFree R M`. -/
-lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
+lemma rank_eq_zero_iff {R M} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] :
     Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
   nontriviality R
   constructor
@@ -73,7 +73,7 @@ lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
     apply ha
     simpa using congr($(linearIndependent_iff.mp hs (.single i a) (by simpa)) i)
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 section
 variable [IsDomain R] [IsTorsionFree R M]
@@ -233,7 +233,7 @@ theorem Module.Finite.not_linearIndependent_of_infinite {ι : Type*} [Infinite �
     (v : ι → M) : ¬LinearIndependent R v := mt LinearIndependent.finite <| @not_finite _ _
 
 section
-variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M] [IsDomain R]
+variable {R : Type u} {M : Type v} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [IsDomain R]
   [IsTorsionFree R M]
 
 theorem iSupIndep.subtype_ne_bot_le_rank {V : ι → Submodule R M} (hV : iSupIndep V) :
@@ -283,7 +283,7 @@ theorem iSupIndep.subtype_ne_bot_le_finrank
 
 end
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [Module.Finite R M] [StrongRankCondition R]
 
 section
@@ -372,7 +372,7 @@ end
 
 section StrongRankCondition
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [StrongRankCondition R] [Module.Finite R M]
 
 /-- A finite rank torsion-free module has positive `finrank` iff it has a nonzero element. -/
@@ -425,7 +425,7 @@ theorem Module.finrank_eq_zero_of_not_faithfulSMul (h : ¬ FaithfulSMul R M) : f
 
 section
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [IsDomain R] [IsTorsionFree R M]
+variable {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [IsDomain R] [IsTorsionFree R M]
 
 lemma Submodule.bot_eq_top_of_rank_eq_zero (h : Module.rank R M = 0) : (⊥ : Submodule R M) = ⊤ := by
   nontriviality R
@@ -494,7 +494,7 @@ end FinrankZero
 
 section RankOne
 
-variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+variable {R : Type u} {M : Type v} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [IsDomain R] [IsTorsionFree R M] [StrongRankCondition R]
 
 /-- If there is a nonzero vector and every other vector is a multiple of it,

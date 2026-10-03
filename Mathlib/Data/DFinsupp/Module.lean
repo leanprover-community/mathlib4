@@ -65,7 +65,7 @@ instance distribMulAction [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribM
 
 /-- Dependent functions with finite support inherit a module structure from such a structure on
 each coordinate. -/
-instance module [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] :
+instance module [Semiring γ] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, Module γ (β i)] :
     Module γ (Π₀ i, β i) :=
   { (inferInstance : DistribMulAction γ (Π₀ i, β i)) with
     zero_smul := fun c => ext fun i => by simp only [smul_apply, zero_smul, zero_apply]
@@ -75,14 +75,14 @@ end Algebra
 
 variable (γ) in
 /-- Coercion from a `DFinsupp` to a pi type is a `LinearMap`. -/
-def coeFnLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] :
+def coeFnLinearMap [Semiring γ] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, Module γ (β i)] :
     (Π₀ i, β i) →ₗ[γ] ∀ i, β i where
   toFun := (⇑)
   map_add' := coe_add
   map_smul' := coe_smul
 
 @[simp]
-lemma coeFnLinearMap_apply [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)]
+lemma coeFnLinearMap_apply [Semiring γ] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, Module γ (β i)]
     (v : Π₀ i, β i) : coeFnLinearMap γ v = v :=
   rfl
 
@@ -98,7 +98,7 @@ variable (γ β)
 
 /-- `DFinsupp.filter` as a `LinearMap`. -/
 @[simps]
-def filterLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] (p : ι → Prop)
+def filterLinearMap [Semiring γ] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, Module γ (β i)] (p : ι → Prop)
     [DecidablePred p] : (Π₀ i, β i) →ₗ[γ] Π₀ i, β i where
   toFun := filter p
   map_add' := filter_add p
@@ -116,7 +116,7 @@ variable (γ β)
 
 /-- `DFinsupp.subtypeDomain` as a `LinearMap`. -/
 @[simps]
-def subtypeDomainLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)]
+def subtypeDomainLinearMap [Semiring γ] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, Module γ (β i)]
     (p : ι → Prop) [DecidablePred p] : (Π₀ i, β i) →ₗ[γ] Π₀ i : Subtype p, β i where
   toFun := subtypeDomain p
   map_add' := subtypeDomain_add

@@ -28,7 +28,7 @@ open Function Algebra
 section
 
 variable {ι R S A : Type*} {x : ι → A} (S)
-variable [CommRing R] [CommRing S] [CommRing A]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring A] [IsMulCommutative A]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 variable [NoZeroDivisors S] (hx : AlgebraicIndependent R x)
 include hx
@@ -108,7 +108,7 @@ namespace IntermediateField
 
 variable {ι F E R S : Type*} {s : Set E}
 variable [Field F] [Field E] [Algebra F E]
-variable [CommRing R] [Algebra R F] [Algebra R E] [IsScalarTower R F E]
+variable [Ring R] [IsMulCommutative R] [Algebra R F] [Algebra R E] [IsScalarTower R F E]
 
 open scoped algebraAdjoinAdjoin
 
@@ -134,7 +134,7 @@ theorem transcendental_adjoin_iff {x : S} :
 
 end Ring
 
-variable [CommRing S] [Algebra E S]
+variable [Ring S] [IsMulCommutative S] [Algebra E S]
 
 theorem algebraicIndependent_adjoin_iff {x : ι → S} :
     AlgebraicIndependent (adjoin F s) x ↔ AlgebraicIndependent (Algebra.adjoin F s) x :=

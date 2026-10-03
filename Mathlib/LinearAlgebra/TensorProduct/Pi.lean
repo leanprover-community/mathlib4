@@ -30,9 +30,9 @@ See `Mathlib/LinearAlgebra/TensorProduct/Prod.lean` for binary products.
 
 @[expose] public section
 
-variable (R : Type*) [CommSemiring R]
-variable (S : Type*) [CommSemiring S] [Algebra R S]
-variable (N : Type*) [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
+variable (R : Type*) [Semiring R] [IsMulCommutative R]
+variable (S : Type*) [Semiring S] [IsMulCommutative S] [Algebra R S]
+variable (N : Type*) [AddMonoid N] [IsAddCommutative N] [Module R N] [Module S N] [IsScalarTower R S N]
 variable (ι : Type*)
 
 open LinearMap
@@ -41,7 +41,7 @@ namespace TensorProduct
 
 section
 
-variable {ι} (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+variable {ι} (M : ι → Type*) [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
 
 /-- (Implementation): Bilinear map for defining `TensorProduct.piRightHom`. -/
 def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀ i, N ⊗[R] M i where

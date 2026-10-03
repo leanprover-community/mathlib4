@@ -53,7 +53,7 @@ variable {ι R M N : Type*}
 
 namespace RootPairing
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   (P : RootPairing ι R M N)
 
 section Fintype
@@ -179,7 +179,7 @@ end Fintype
 
 section IsValuedIn
 
-variable (S : Type*) [CommRing S] [Algebra S R] [FaithfulSMul S R] [Module S M]
+variable (S : Type*) [Ring S] [IsMulCommutative S] [Algebra S R] [FaithfulSMul S R] [Module S M]
   [IsScalarTower S R M] [Module S N] [IsScalarTower S R N] [P.IsValuedIn S] [Fintype ι] {i j : ι}
 
 /-- Polarization restricted to `S`-span of roots. -/
@@ -337,7 +337,7 @@ end MoreFintype
 
 section IsValuedInOrdered
 
-variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+variable (S : Type*) [Ring S] [IsMulCommutative S] [LinearOrder S] [IsStrictOrderedRing S]
   [Algebra S R] [FaithfulSMul S R] [Module S M]
   [IsScalarTower S R M] [P.IsValuedIn S] [Fintype ι] {i j : ι}
 

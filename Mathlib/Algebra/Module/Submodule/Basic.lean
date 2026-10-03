@@ -32,7 +32,7 @@ variable {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 
 namespace Submodule
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 variable {p q : Submodule R M}
 
@@ -61,7 +61,7 @@ namespace Submodule
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M]
 
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
@@ -117,7 +117,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Ring R] [AddCommGroup M]
+variable [Ring R] [AddGroup M] [IsAddCommutative M]
 variable {module_M : Module R M}
 variable (p p' : Submodule R M)
 
@@ -148,7 +148,7 @@ end AddCommGroup
 section IsDomain
 
 variable [Ring R] [IsDomain R]
-variable [AddCommGroup M] [Module R M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M]
 
 theorem notMem_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ∉ N := by
@@ -165,7 +165,7 @@ end Submodule
 
 namespace Submodule
 
-variable [DivisionSemiring S] [Semiring R] [AddCommMonoid M] [Module R M]
+variable [DivisionSemiring S] [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable [SMul S R] [Module S M] [IsScalarTower S R M]
 variable (p : Submodule R M) {s : S} {x : M}
 
@@ -175,5 +175,5 @@ theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
 end Submodule
 
 /-- Subspace of a vector space. Defined to equal `Submodule`. -/
-abbrev Subspace (R : Type u) (M : Type v) [DivisionRing R] [AddCommGroup M] [Module R M] :=
+abbrev Subspace (R : Type u) (M : Type v) [DivisionRing R] [AddGroup M] [IsAddCommutative M] [Module R M] :=
   Submodule R M

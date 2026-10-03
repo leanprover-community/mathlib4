@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 open IsLocalRing Set
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 variable {K : Type*} [Field K]
 
 instance [Nontrivial S] (f : R →+* S) (s : Subring R) [IsLocalRing s] : IsLocalRing (s.map f) :=

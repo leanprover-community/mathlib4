@@ -32,8 +32,8 @@ namespace Ideal
 
 section
 
-variable {R : Type*} [CommRing R]
-variable {S : Type*} [CommRing S] {f : R →+* S} {I : Ideal S}
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {S : Type*} [Ring S] [IsMulCommutative S] {f : R →+* S} {I : Ideal S}
 
 theorem coeff_zero_mem_comap_of_root_mem_of_eval_mem {r : S} (hr : r ∈ I) {p : R[X]}
     (hp : p.eval₂ f r ∈ I) : p.coeff 0 ∈ I.comap f := by
@@ -117,8 +117,8 @@ end
 
 section IsDomain
 
-variable {R : Type*} [CommRing R]
-variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {S : Type*} [Ring S] [IsMulCommutative S] {f : R →+* S} {I J : Ideal S}
 
 theorem exists_coeff_ne_zero_mem_comap_of_root_mem [IsDomain S] {r : S} (r_ne_zero : r ≠ 0)
     (hr : r ∈ I) {p : R[X]} :
@@ -221,7 +221,7 @@ theorem isMaximal_under_of_isIntegral_of_isMaximal [Algebra.IsIntegral R S] (I :
   exact isField_of_isIntegral_of_isField
     algebraMap_quotient_injective (by rwa [← Quotient.maximal_ideal_iff_isField_quotient])
 
-theorem isMaximal_comap_of_isIntegral_of_isMaximal {R S : Type*} [CommRing R] [CommRing S]
+theorem isMaximal_comap_of_isIntegral_of_isMaximal {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     (f : R →+* S) (hf : f.IsIntegral) (I : Ideal S) [I.IsMaximal] : IsMaximal (I.comap f) :=
   let _ : Algebra R S := f.toAlgebra
   have : Algebra.IsIntegral R S := ⟨hf⟩
@@ -232,7 +232,7 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal {R S : Type*} [CommRing R] [C
 
 section IsIntegral
 
-variable {A : Type*} [CommRing A] [Algebra R A] [Algebra.IsIntegral R A]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [Algebra.IsIntegral R A]
 
 theorem IsIntegral.under_lt_under {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :
     I.under R < J.under R :=
@@ -373,7 +373,7 @@ theorem exists_maximal_ideal_liesOver_of_isIntegral [Algebra.IsIntegral R S] [Fa
   exact exists_ideal_over_maximal_of_isIntegral P (by
     simp [(RingHom.injective_iff_ker_eq_bot _).mp (FaithfulSMul.algebraMap_injective R S)])
 
-lemma map_eq_top_iff_of_ker_le {R S} [CommRing R] [CommRing S]
+lemma map_eq_top_iff_of_ker_le {R S} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     (f : R →+* S) {I : Ideal R} (hf₁ : RingHom.ker f ≤ I) (hf₂ : f.IsIntegral) :
     I.map f = ⊤ ↔ I = ⊤ := by
   constructor; swap
@@ -387,7 +387,7 @@ lemma map_eq_top_iff_of_ker_le {R S} [CommRing R] [CommRing S]
   rw [← map_le_iff_le_comap] at hm
   exact (hm.trans_lt (lt_top_iff_ne_top.mpr (IsMaximal.ne_top ‹_›))).ne
 
-lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
+lemma map_eq_top_iff {R S} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     (f : R →+* S) {I : Ideal R} (hf₁ : Function.Injective f) (hf₂ : f.IsIntegral) :
     I.map f = ⊤ ↔ I = ⊤ :=
   map_eq_top_iff_of_ker_le f (by simp [(RingHom.injective_iff_ker_eq_bot f).mp hf₁]) hf₂
@@ -415,7 +415,7 @@ end IsDomain
 
 section IsIntegral
 
-variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B] [Algebra.IsIntegral A B]
+variable {A : Type*} [Ring A] [IsMulCommutative A] {B : Type*} [Ring B] [IsMulCommutative B] [Algebra A B] [Algebra.IsIntegral A B]
   (P : Ideal B) (p : Ideal A) [P.LiesOver p]
 
 variable (A) in
@@ -449,7 +449,7 @@ end IsIntegral
 
 section IsIntegral
 
-variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommRing B]
+variable {A : Type*} [Ring A] [IsMulCommutative A] {p : Ideal A} [p.IsMaximal] {B : Type*} [Ring B] [IsMulCommutative B]
   [Algebra A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
 
 instance primesOver.isMaximal : Q.1.IsMaximal :=

@@ -29,7 +29,7 @@ open LinearMap
 namespace Finsupp
 
 variable {α : Type*} {M : Type*} {R : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 section Sum
 
@@ -75,7 +75,7 @@ variable (R)
 `(Σ (j : η), ιs j) →₀ M` and `(j : η) → (ιs j →₀ M)`.
 
 This is the `LinearEquiv` version of `Finsupp.sigmaFinsuppAddEquivPiFinsupp`. -/
-noncomputable def sigmaFinsuppLEquivPiFinsupp {M : Type*} {ιs : η → Type*} [AddCommMonoid M]
+noncomputable def sigmaFinsuppLEquivPiFinsupp {M : Type*} {ιs : η → Type*} [AddMonoid M] [IsAddCommutative M]
     [Module R M] : ((Σ j, ιs j) →₀ M) ≃ₗ[R] (j : _) → (ιs j →₀ M) :=
   { sigmaFinsuppAddEquivPiFinsupp with
     map_smul' := fun c f => by
@@ -83,12 +83,12 @@ noncomputable def sigmaFinsuppLEquivPiFinsupp {M : Type*} {ιs : η → Type*} [
       simp }
 
 @[simp]
-theorem sigmaFinsuppLEquivPiFinsupp_apply {M : Type*} {ιs : η → Type*} [AddCommMonoid M]
+theorem sigmaFinsuppLEquivPiFinsupp_apply {M : Type*} {ιs : η → Type*} [AddMonoid M] [IsAddCommutative M]
     [Module R M] (f : (Σ j, ιs j) →₀ M) (j i) : sigmaFinsuppLEquivPiFinsupp R f j i = f ⟨j, i⟩ :=
   rfl
 
 @[simp]
-theorem sigmaFinsuppLEquivPiFinsupp_symm_apply {M : Type*} {ιs : η → Type*} [AddCommMonoid M]
+theorem sigmaFinsuppLEquivPiFinsupp_symm_apply {M : Type*} {ιs : η → Type*} [AddMonoid M] [IsAddCommutative M]
     [Module R M] (f : (j : _) → (ιs j →₀ M)) (ji) :
     (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm f ji = f ji.1 ji.2 :=
   rfl

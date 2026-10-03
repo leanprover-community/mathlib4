@@ -194,7 +194,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
   natCast_zero := by ext; simp
   natCast_succ n := by ext x; by_cases h : x = 1 <;> simp [h]
 
-instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) where
+instance instAddCommMonoid [AddMonoid R] [IsAddCommutative R] : AddCommMonoid (ArithmeticFunction R) where
   add_comm _ _ := ext fun _ ↦ add_comm _ _
 
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
@@ -208,12 +208,12 @@ instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
   neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
   zsmul := zsmulRec
 
-instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) where
+instance [AddGroup R] [IsAddCommutative R] : AddCommGroup (ArithmeticFunction R) where
   add_comm := fun _ _ ↦ add_comm _ _
 
 section SMul
 
-variable {M : Type*} [Zero R] [AddCommMonoid M] [SMul R M]
+variable {M : Type*} [Zero R] [AddMonoid M] [IsAddCommutative M] [SMul R M]
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
   such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
@@ -253,7 +253,7 @@ theorem intCoe_mul [Ring R] {f g : ArithmeticFunction ℤ} :
 
 section Module
 
-variable {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
     (f * g) • h = f • g • h := by
@@ -289,17 +289,17 @@ instance instSemiring : Semiring (ArithmeticFunction R) where
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) where
+instance [Semiring R] [IsMulCommutative R] : CommSemiring (ArithmeticFunction R) where
   mul_comm f g := by
     ext
     rw [mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
     simp [mul_comm]
 
-instance [CommRing R] : CommRing (ArithmeticFunction R) where
+instance [Ring R] [IsMulCommutative R] : CommRing (ArithmeticFunction R) where
   neg_add_cancel := neg_add_cancel
   mul_comm := mul_comm
 
-instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
+instance {S : Type*} [Semiring R] [AddMonoid S] [IsAddCommutative S] [Module R S] :
     Module R (ArithmeticFunction S) where
   smul x f := ⟨x • f, by simp⟩
   smul_zero x := ext fun n ↦ smul_zero x
@@ -312,23 +312,23 @@ instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
 -- note that `smul_apply` would be a more suitable name, but is already in use for the action of
 -- `ArithmeticFunction R` on `ArithmeticFunction S`
 @[simp]
-theorem smul_map {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
+theorem smul_map {S : Type*} [Semiring R] [AddMonoid S] [IsAddCommutative S] [Module R S]
     (x : R) (f : ArithmeticFunction S) (n : ℕ) : (x • f) n = x • f n := by
   rfl
 
 -- We can deduce the `Algebra` structure from the `Module` structure here due to the lack of
 -- a more natural definition of `algebraMap`.
-instance {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] :
+instance {S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] :
     Algebra R (ArithmeticFunction S) :=
   .ofModule (fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum])
     fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum]
 
 @[simp]
-theorem algebraMap_apply_one {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (x : R) :
+theorem algebraMap_apply_one {S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] (x : R) :
     algebraMap R (ArithmeticFunction S) x 1 = algebraMap R S x := by
   simp [Algebra.algebraMap_eq_smul_one]
 
-instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
+instance {M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
   one_smul := one_smul'
   mul_smul := mul_smul'
@@ -399,7 +399,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] (f : ArithmeticFunction R)
+variable [Ring R] [IsMulCommutative R] (f : ArithmeticFunction R)
 
 theorem dirichletInverse_mul_self (hf : Invertible (f 1)) : dirichletInverse f hf * f = 1 := by
   rw [mul_comm, self_mul_dirichletInverse]
@@ -440,7 +440,7 @@ theorem map_mul_of_coprime {f : ArithmeticFunction R} (hf : f.IsMultiplicative) 
 end MonoidWithZero
 
 open scoped Function in -- required for scoped `on` notation
-theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : ArithmeticFunction R}
+theorem map_prod {ι : Type*} [MonoidWithZero R] [IsMulCommutative R] (g : ι → ℕ) {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (Coprime on g)) :
     f (∏ i ∈ s, g i) = ∏ i ∈ s, f (g i) := by
   classical
@@ -451,19 +451,19 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
       rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
       exact Coprime.prod_right fun i hi => hs.2 _ hi (hi.ne_of_notMem has).symm
 
-theorem map_prod_of_prime [CommMonoidWithZero R] {f : ArithmeticFunction R}
+theorem map_prod_of_prime [MonoidWithZero R] [IsMulCommutative R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f)
     (t : Finset ℕ) (ht : ∀ p ∈ t, p.Prime) :
     f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod _ h_mult t fun x hx y hy hxy => (coprime_primes (ht x hx) (ht y hy)).mpr hxy
 
-theorem map_prod_of_subset_primeFactors [CommMonoidWithZero R] {f : ArithmeticFunction R}
+theorem map_prod_of_subset_primeFactors [MonoidWithZero R] [IsMulCommutative R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f) (l : ℕ)
     (t : Finset ℕ) (ht : t ⊆ l.primeFactors) :
     f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
-theorem prod_primeFactors [CommMonoidWithZero R] {f : ArithmeticFunction R}
+theorem prod_primeFactors [MonoidWithZero R] [IsMulCommutative R] {f : ArithmeticFunction R}
     (h_mult : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
     ∏ a ∈ l.primeFactors, f a = f l := by
   rw [← h_mult.map_prod_of_subset_primeFactors l _ Subset.rfl,
@@ -486,7 +486,7 @@ theorem intCast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
   ⟨by simp [h], fun cop => by simp [h.2 cop]⟩
 
 @[arith_mult]
-theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
+theorem mul [Semiring R] [IsMulCommutative R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f * g) := by
   refine ⟨by simp [hf.1, hg.1], ?_⟩
   simp only [mul_apply]
@@ -544,7 +544,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
 
 /-- For any multiplicative function `f` and any `n > 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
-theorem multiplicative_factorization [CommMonoidWithZero R] (f : ArithmeticFunction R)
+theorem multiplicative_factorization [MonoidWithZero R] [IsMulCommutative R] (f : ArithmeticFunction R)
     (hf : f.IsMultiplicative) {n : ℕ} (hn : n ≠ 0) :
     f n = n.factorization.prod fun p k => f (p ^ k) :=
   Nat.multiplicative_factorization f (fun _ _ => hf.2) hf.1 hn
@@ -562,7 +562,7 @@ theorem iff_ne_zero [MonoidWithZero R] {f : ArithmeticFunction R} :
 
 /-- Two multiplicative functions `f` and `g` are equal if and only if
 they agree on prime powers -/
-theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction R)
+theorem eq_iff_eq_on_prime_powers [MonoidWithZero R] [IsMulCommutative R] (f : ArithmeticFunction R)
     (hf : f.IsMultiplicative) (g : ArithmeticFunction R) (hg : g.IsMultiplicative) :
     f = g ↔ ∀ p i : ℕ, Nat.Prime p → f (p ^ i) = g (p ^ i) := by
   constructor <;> intro h
@@ -573,7 +573,7 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   rw [multiplicative_factorization f hf hn, multiplicative_factorization g hg hn]
   exact prod_congr rfl fun p hp ↦ h p _ (prime_of_mem_primeFactors hp)
 
-theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R}
+theorem lcm_apply_mul_gcd_apply [MonoidWithZero R] [IsMulCommutative R] {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) {x y : ℕ} :
     f (x.lcm y) * f (x.gcd y) = f x * f y := by
   by_cases hx : x = 0
@@ -600,12 +600,12 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
     apply inter_subset_union
   · simp [factorization_lcm hx hy]
 
-theorem map_gcd [CommGroupWithZero R] {f : ArithmeticFunction R}
+theorem map_gcd [GroupWithZero R] [IsMulCommutative R] {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) {x y : ℕ} (hf_lcm : f (x.lcm y) ≠ 0) :
     f (x.gcd y) = f x * f y / f (x.lcm y) := by
   rw [← hf.lcm_apply_mul_gcd_apply, mul_div_cancel_left₀ _ hf_lcm]
 
-theorem map_lcm [CommGroupWithZero R] {f : ArithmeticFunction R}
+theorem map_lcm [GroupWithZero R] [IsMulCommutative R] {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) {x y : ℕ} (hf_gcd : f (x.gcd y) ≠ 0) :
     f (x.lcm y) = f x * f y / f (x.gcd y) := by
   rw [← hf.lcm_apply_mul_gcd_apply, mul_div_cancel_right₀ _ hf_gcd]
@@ -626,7 +626,7 @@ theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : Arithmet
     by_cases h : m = 1 <;> aesop⟩
 
 @[arith_mult]
-theorem isMultiplicative_finsetProd [CommSemiring R] {ι : Type*}
+theorem isMultiplicative_finsetProd [Semiring R] [IsMulCommutative R] {ι : Type*}
     (f : ι → ArithmeticFunction R) (s : Finset ι) (hf : ∀ i ∈ s, IsMultiplicative (f i)) :
     IsMultiplicative (∏ i ∈ s, f i) := by
   induction s using Finset.cons_induction
@@ -636,7 +636,7 @@ theorem isMultiplicative_finsetProd [CommSemiring R] {ι : Type*}
     exact (hf a (by grind)).mul (by grind)
 
 @[arith_mult]
-theorem IsMultiplicative.pow [CommSemiring R] {f : ArithmeticFunction R}
+theorem IsMultiplicative.pow [Semiring R] [IsMulCommutative R] {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) {k : ℕ} : IsMultiplicative (f ^ k) := by
   induction k
   case zero => simp

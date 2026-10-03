@@ -48,7 +48,7 @@ variable {𝕜 E : Type*}
 
 section AbsolutelyConvex
 
-variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [AddCommMonoid E] [PartialOrder 𝕜]
+variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [AddMonoid E] [IsAddCommutative E] [PartialOrder 𝕜]
 
 /-- A set is absolutely convex if it is balanced and convex. -/
 def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex 𝕜 s
@@ -189,7 +189,7 @@ end AbsolutelyConvex
 section NormedField
 
 variable [NormedField 𝕜] [PartialOrder 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem AbsConvex.closure {s : Set E} (hs : AbsConvex 𝕜 s) : AbsConvex 𝕜 (closure s) :=
@@ -206,7 +206,7 @@ end NormedField
 section
 
 variable (𝕜) [NontriviallyNormedField 𝕜] [PartialOrder 𝕜]
-variable [AddCommGroup E] [Module 𝕜 E]
+variable [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 theorem absConvexHull_add_subset {s t : Set E} :
     absConvexHull 𝕜 (s + t) ⊆ absConvexHull 𝕜 s + absConvexHull 𝕜 t :=
@@ -242,7 +242,7 @@ end
 section NontriviallyNormedField
 
 variable (𝕜 E)
-variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 variable [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] [ContinuousSMul 𝕜 E]
 
 theorem nhds_hasBasis_absConvex :
@@ -315,7 +315,7 @@ end NontriviallyNormedField
 
 section
 
-variable [AddCommGroup E] [Module ℝ E]
+variable [AddGroup E] [IsAddCommutative E] [Module ℝ E]
 
 lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
     balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
@@ -350,12 +350,12 @@ protected alias ⟨_, TotallyBounded.absConvexHull⟩ := totallyBounded_absConve
 
 end
 
-lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [PartialOrder 𝕜] [AddCommGroup E]
+lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [PartialOrder 𝕜] [AddGroup E] [IsAddCommutative E]
     [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
   balanced_absConvexHull.zero_mem (Nonempty.mono subset_absConvexHull Set.Nonempty.of_subtype)
 
 /-- [Bourbaki, *Topological Vector Spaces*, III §1.6][bourbaki1987] -/
-theorem isCompact_closedAbsConvexHull_of_totallyBounded {E : Type*} [AddCommGroup E] [Module ℝ E]
+theorem isCompact_closedAbsConvexHull_of_totallyBounded {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E]
     [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
     [QuasiCompleteSpace ℝ E] {s : Set E} (ht : TotallyBounded s) :
     IsCompact (closedAbsConvexHull ℝ s) := by

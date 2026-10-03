@@ -74,7 +74,7 @@ end Field
 
 section CommRing
 
-variable [CommRing R] {T : Type*} [Field T] [Algebra R T] (w : AbsoluteValue T ℝ)
+variable [Ring R] [IsMulCommutative R] {T : Type*} [Field T] [Algebra R T] (w : AbsoluteValue T ℝ)
 
 instance : UniformContinuousConstSMul R (WithAbs w) where
   uniformContinuous_const_smul r := by

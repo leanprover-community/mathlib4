@@ -39,13 +39,13 @@ open TensorProduct
 /-- An `R`-algebra `S` is a local isomorphism if source locally (in the geometric sense),
 it is a standard open immersion. -/
 @[stacks 096E "(1) in the algebra formulation", mk_iff]
-class Algebra.IsLocalIso (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] : Prop where
+class Algebra.IsLocalIso (R S : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S] : Prop where
   exists_notMem_isStandardOpenImmersion (q : Ideal S) [q.IsPrime] :
     ∃ g ∉ q, IsStandardOpenImmersion R (Localization.Away g)
 
 namespace Algebra.IsLocalIso
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 variable (R S) in
 lemma span_isStandardOpenImmersion_eq_top [Algebra.IsLocalIso R S] :
@@ -68,7 +68,7 @@ instance (priority := 100) [IsStandardOpenImmersion R S] : IsLocalIso R S where
     exact IsStandardOpenImmersion.trans _ S _
 
 lemma of_span_range_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.range f) = ⊤)
-    (T : ι → Type*) [∀ i, CommSemiring (T i)] [∀ i, Algebra R (T i)] [∀ i, Algebra S (T i)]
+    (T : ι → Type*) [∀ i, Semiring (T i)] [∀ i, IsMulCommutative (T i)] [∀ i, Algebra R (T i)] [∀ i, Algebra S (T i)]
     [∀ i, IsScalarTower R S (T i)] [∀ i, IsLocalization.Away (f i) (T i)]
     [∀ i, IsLocalIso R (T i)] : IsLocalIso R S := by
   refine ⟨fun q hq ↦ ?_⟩
@@ -102,8 +102,8 @@ lemma of_span_eq_top {s : Set S} (h : Ideal.span s = ⊤)
   have (i : s) : IsLocalIso R (Localization.Away i.1) := h _ i.property
   exact .of_span_range_eq_top _ heq fun i ↦ Localization.Away i.1
 
-lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*) [CommSemiring R]
-    [∀ i, CommRing (S i)] [∀ i, Algebra R (S i)] [Finite ι] [∀ i, IsLocalIso R (S i)] :
+lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*) [Semiring R] [IsMulCommutative R]
+    [∀ i, Ring (S i)] [∀ i, IsMulCommutative (S i)] [∀ i, Algebra R (S i)] [Finite ι] [∀ i, IsLocalIso R (S i)] :
     IsLocalIso R (∀ i, S i)  := by
   classical
   let (i : ι) : Algebra (∀ i, S i) (S i) := (Pi.evalAlgHom R S i).toAlgebra
@@ -115,7 +115,7 @@ lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*) [CommSemiring R]
   apply of_span_range_eq_top (fun i ↦ Pi.single i (1 : S i)) _ fun i ↦ S i
   exact Ideal.span_single_eq_top _
 
-variable (T : Type*) [CommSemiring T]
+variable (T : Type*) [Semiring T] [IsMulCommutative T]
 
 attribute [local instance] isScalarTower_localizationAlgebra in
 variable (R S) in

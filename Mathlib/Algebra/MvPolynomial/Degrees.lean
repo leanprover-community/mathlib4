@@ -36,7 +36,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ τ : Type*` (indexing the variables)
 
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[Semiring R] [IsMulCommutative R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
@@ -66,7 +66,7 @@ variable {σ τ : Type*} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
 
-variable [CommSemiring R] {p q : MvPolynomial σ R}
+variable [Semiring R] [IsMulCommutative R] {p q : MvPolynomial σ R}
 
 section Degrees
 
@@ -174,7 +174,7 @@ theorem degrees_add_of_disjoint [DecidableEq σ] (h : Disjoint p.degrees q.degre
     (p + q).degrees = p.degrees ∪ q.degrees :=
   degrees_add_le.antisymm <| Multiset.union_le (le_degrees_add_left h) (le_degrees_add_right h)
 
-lemma degrees_map_le [CommSemiring S] {f : R →+* S} : (map f p).degrees ≤ p.degrees := by
+lemma degrees_map_le [Semiring S] [IsMulCommutative S] {f : R →+* S} : (map f p).degrees ≤ p.degrees := by
   classical exact Finset.sup_mono <| support_map_subset ..
 
 theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
@@ -193,7 +193,7 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
   specialize hi j ⟨x, hx, hj⟩
   rw [Finsupp.single_apply, ite_eq_right hi]
 
-theorem degrees_map_of_injective [CommSemiring S] (p : MvPolynomial σ R) {f : R →+* S}
+theorem degrees_map_of_injective [Semiring S] [IsMulCommutative S] (p : MvPolynomial σ R) {f : R →+* S}
     (hf : Injective f) : (map f p).degrees = p.degrees := by
   simp only [degrees, MvPolynomial.support_map_of_injective _ hf]
 
@@ -465,7 +465,7 @@ theorem totalDegree_one : (1 : MvPolynomial σ R).totalDegree = 0 :=
   totalDegree_C (1 : R)
 
 @[simp]
-theorem totalDegree_X {R} [CommSemiring R] [Nontrivial R] (s : σ) :
+theorem totalDegree_X {R} [Semiring R] [IsMulCommutative R] [Nontrivial R] (s : σ) :
     (X s : MvPolynomial σ R).totalDegree = 1 := by
   rw [totalDegree, support_X]
   simp only [Finset.sup, Finsupp.sum_single_index, Finset.fold_singleton, sup_bot_eq]
@@ -503,7 +503,7 @@ theorem totalDegree_mul (a b : MvPolynomial σ R) :
     (a * b).totalDegree ≤ a.totalDegree + b.totalDegree :=
   sup_support_coeff_mul_le (fun _ _ ↦ by simp [Finsupp.sum_add_index']) _ _
 
-theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f : MvPolynomial σ S) :
+theorem totalDegree_smul_le [Semiring S] [IsMulCommutative S] [DistribMulAction R S] (a : R) (f : MvPolynomial σ S) :
     (a • f).totalDegree ≤ f.totalDegree :=
   Finset.sup_mono support_smul
 

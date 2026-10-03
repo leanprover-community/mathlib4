@@ -36,7 +36,7 @@ Let `M` be a finitely presented `R`-module.
 
 universe uR uM
 
-variable (R : Type uR) (M : Type uM) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R : Type uR) (M : Type uM) [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 namespace Module
 
@@ -54,8 +54,8 @@ lemma mem_freeLocus {p} : p ∈ freeLocus R M ↔
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
-    (Rₚ Mₚ) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal]
-    [AddCommGroup Mₚ] [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule p.asIdeal.primeCompl f]
+    (Rₚ Mₚ) [Ring Rₚ] [IsMulCommutative Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal]
+    [AddGroup Mₚ] [IsAddCommutative Mₚ] [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule p.asIdeal.primeCompl f]
     [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] :
     p ∈ freeLocus R M ↔ Module.Free Rₚ Mₚ := by
   set e := (IsLocalization.algEquiv p.asIdeal.primeCompl
@@ -69,11 +69,11 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
-    (Rₚ) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal] :
+    (Rₚ) [Ring Rₚ] [IsMulCommutative Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal] :
     p ∈ freeLocus R M ↔ Module.Free Rₚ (Rₚ ⊗[R] M) := by
   exact mem_freeLocus_of_isLocalization p Rₚ (f := TensorProduct.mk R Rₚ M 1)
 
-lemma freeLocus_congr {M'} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
+lemma freeLocus_congr {M'} [AddGroup M'] [IsAddCommutative M'] [Module R M'] (e : M ≃ₗ[R] M') :
     freeLocus R M = freeLocus R M' := by
   ext p
   exact mem_freeLocus_of_isLocalization _ _ _
@@ -81,7 +81,7 @@ lemma freeLocus_congr {M'} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') 
 
 set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
-lemma comap_freeLocus_le {A} [CommRing A] [Algebra R A] :
+lemma comap_freeLocus_le {A} [Ring A] [IsMulCommutative A] [Algebra R A] :
     comap (algebraMap R A) ⁻¹' freeLocus R M ≤ freeLocus A (A ⊗[R] M) := by
   intro p hp
   let Rₚ := Localization.AtPrime (comap (algebraMap R A) p).asIdeal
@@ -235,7 +235,7 @@ lemma nontrivial_of_rankAtStalk_pos (h : 0 < rankAtStalk (R := R) M) :
   by_contra! hn
   simp at h
 
-lemma rankAtStalk_eq_of_equiv {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
+lemma rankAtStalk_eq_of_equiv {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N] (e : M ≃ₗ[R] N) :
     rankAtStalk (R := R) M = rankAtStalk N := by
   ext p
   exact IsLocalizedModule.mapEquiv p.asIdeal.primeCompl
@@ -257,7 +257,7 @@ open LocalizedModule Localization
 
 /-- The rank of `Π i, M i` at a prime `p` is the sum of the ranks of `M i` at `p`. -/
 lemma rankAtStalk_pi {ι : Type*} [Finite ι] (M : ι → Type*)
-    [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [∀ i, Module.Flat R (M i)]
+    [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)] [∀ i, Module.Flat R (M i)]
     [∀ i, Module.Finite R (M i)] (p : PrimeSpectrum R) :
     rankAtStalk (Π i, M i) p = ∑ᶠ i, rankAtStalk (M i) p := by
   cases nonempty_fintype ι
@@ -305,7 +305,7 @@ lemma rankAtStalk_eq_zero_iff_subsingleton :
 
 variable (M) in
 /-- The rank of `M × N` at `p` is equal to the sum of the ranks. -/
-lemma rankAtStalk_prod (N : Type*) [AddCommGroup N] [Module R N]
+lemma rankAtStalk_prod (N : Type*) [AddGroup N] [IsAddCommutative N] [Module R N]
     [Module.Flat R N] [Module.Finite R N] :
     rankAtStalk (R := R) (M × N) = rankAtStalk M + rankAtStalk N := by
   ext p
@@ -316,7 +316,7 @@ lemma rankAtStalk_prod (N : Type*) [AddCommGroup N] [Module R N]
       p.asIdeal.primeCompl _
   simp [rankAtStalk, e.finrank_eq]
 
-lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSpectrum S) :
+lemma rankAtStalk_baseChange {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] (p : PrimeSpectrum S) :
     rankAtStalk (S ⊗[R] M) p = rankAtStalk M (p.comap (algebraMap R S)) := by
   let q : PrimeSpectrum R := p.comap (algebraMap R S)
   let := Localization.AtPrime.algebraOfLiesOver q.asIdeal p.asIdeal
@@ -331,7 +331,7 @@ lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSp
   rw [rankAtStalk, e.finrank_eq]
   apply Module.finrank_baseChange
 
-lemma rankAtStalk_isBaseChange {S Mₛ : Type*} [CommRing S] [Algebra R S] [AddCommGroup Mₛ]
+lemma rankAtStalk_isBaseChange {S Mₛ : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] [AddGroup Mₛ] [IsAddCommutative Mₛ]
     [Module R Mₛ] [Module S Mₛ] [IsScalarTower R S Mₛ] {f : M →ₗ[R] Mₛ} (hf : IsBaseChange S f)
     (p : PrimeSpectrum S) : rankAtStalk Mₛ p = rankAtStalk M (p.comap (algebraMap R S)) := by
   simp [rankAtStalk_eq_of_equiv hf.equiv.symm, rankAtStalk_baseChange]
@@ -353,7 +353,7 @@ lemma rankAtStalk_eq_of_le_of_finite_of_flat' {p q : Ideal R} [hp : p.IsPrime] [
   rankAtStalk_eq_of_le_of_finite_of_flat M hpq
 
 /-- See `rankAtStalk_tensorProduct_of_isScalarTower` for a hetero-basic version. -/
-lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Module.Finite R N]
+lemma rankAtStalk_tensorProduct (N : Type*) [AddGroup N] [IsAddCommutative N] [Module R N] [Module.Finite R N]
     [Module.Flat R N] : rankAtStalk (M ⊗[R] N) = rankAtStalk M * rankAtStalk (R := R) N := by
   ext p
   let e : Localization.AtPrime p.asIdeal ⊗[R] (M ⊗[R] N) ≃ₗ[Localization.AtPrime p.asIdeal]
@@ -364,8 +364,8 @@ lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Modul
   rw [rankAtStalk_eq_finrank_tensorProduct, e.finrank_eq, finrank_tensorProduct,
     ← rankAtStalk_eq_finrank_tensorProduct, ← rankAtStalk_eq_finrank_tensorProduct, Pi.mul_apply]
 
-lemma rankAtStalk_tensorProduct_of_isScalarTower {S : Type*} [CommRing S] [Algebra R S]
-    (N : Type*) [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
+lemma rankAtStalk_tensorProduct_of_isScalarTower {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S]
+    (N : Type*) [AddGroup N] [IsAddCommutative N] [Module R N] [Module S N] [IsScalarTower R S N]
     [Module.Finite S N] [Module.Flat S N] (p : PrimeSpectrum S) :
     rankAtStalk (N ⊗[R] M) p = rankAtStalk N p * rankAtStalk M (p.comap (algebraMap R S)) := by
   simp [rankAtStalk_eq_of_equiv (AlgebraTensorModule.cancelBaseChange R S S N M).symm,

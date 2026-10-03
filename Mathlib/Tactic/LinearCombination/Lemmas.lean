@@ -30,19 +30,19 @@ variable {K : Type*} {t s : K}
 
 theorem add_eq_eq [Add α] (p₁ : (a₁ : α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
 
-theorem add_le_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
+theorem add_le_eq [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
     (p₁ : (a₁ : α) ≤ b₁) (p₂ : a₂ = b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
   p₂ ▸ add_le_add_left p₁ b₂
 
-theorem add_eq_le [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
+theorem add_eq_le [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
     (p₁ : (a₁ : α) = b₁) (p₂ : a₂ ≤ b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
   p₁ ▸ add_le_add_right p₂ b₁
 
-theorem add_lt_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+theorem add_lt_eq [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p₁ : (a₁ : α) < b₁) (p₂ : a₂ = b₂) : a₁ + a₂ < b₁ + b₂ :=
   p₂ ▸ add_lt_add_left p₁ b₂
 
-theorem add_eq_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] {a₁ b₁ a₂ b₂ : α}
+theorem add_eq_lt [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α] {a₁ b₁ a₂ b₂ : α}
     (p₁ : a₁ = b₁) (p₂ : a₂ < b₂) : a₁ + a₂ < b₁ + b₂ :=
   p₁ ▸ add_lt_add_right p₂ b₁
 
@@ -87,19 +87,19 @@ theorem mul_const_lt_weak [Semiring α] [PartialOrder α] [IsOrderedRing α]
 theorem smul_eq_const [SMul K α] (p : t = s) (c : α) : t • c = s • c := p ▸ rfl
 
 theorem smul_le_const [Ring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
+    [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
     [IsOrderedModule K α] (p : t ≤ s) {a : α} (ha : 0 ≤ a) :
     t • a ≤ s • a :=
   smul_le_smul_of_nonneg_right p ha
 
 theorem smul_lt_const [Ring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
+    [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
     [IsStrictOrderedModule K α] (p : t < s) {a : α} (ha : 0 < a) :
     t • a < s • a :=
   smul_lt_smul_of_pos_right p ha
 
 theorem smul_lt_const_weak [Ring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
+    [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
     [IsStrictOrderedModule K α] (p : t < s) {a : α} (ha : 0 ≤ a) :
     t • a ≤ s • a :=
   smul_le_smul_of_nonneg_right p.le ha
@@ -107,19 +107,19 @@ theorem smul_lt_const_weak [Ring K] [PartialOrder K] [IsOrderedRing K]
 theorem smul_const_eq [SMul K α] (p : b = c) (s : K) : s • b = s • c := p ▸ rfl
 
 theorem smul_const_le [Semiring K] [PartialOrder K]
-    [AddCommMonoid α] [PartialOrder α] [Module K α]
+    [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [Module K α]
     [PosSMulMono K α] (p : b ≤ c) {s : K} (hs : 0 ≤ s) :
     s • b ≤ s • c :=
   smul_le_smul_of_nonneg_left p hs
 
 theorem smul_const_lt [Semiring K] [PartialOrder K]
-    [AddCommMonoid α] [PartialOrder α] [Module K α]
+    [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [Module K α]
     [PosSMulStrictMono K α] (p : b < c) {s : K} (hs : 0 < s) :
     s • b < s • c :=
   smul_lt_smul_of_pos_left p hs
 
 theorem smul_const_lt_weak [Semiring K] [PartialOrder K]
-    [AddCommMonoid α] [PartialOrder α] [Module K α]
+    [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [Module K α]
     [PosSMulMono K α] (p : b < c) {s : K} (hs : 0 ≤ s) :
     s • b ≤ s • c :=
   smul_le_smul_of_nonneg_left p.le hs
@@ -148,32 +148,32 @@ theorem eq_of_eq [Add α] [IsRightCancelAdd α] (p : (a : α) = b) (H : a' + b =
   rw [p] at H
   exact add_right_cancel H
 
-theorem le_of_le [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+theorem le_of_le [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) ≤ b) (H : a' + b ≤ b' + a) :
     a' ≤ b' := by
   grw [← add_le_add_iff_right b, H, p]
 
-theorem le_of_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+theorem le_of_eq [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) = b) (H : a' + b ≤ b' + a) :
     a' ≤ b' := by
   rwa [p, add_le_add_iff_right] at H
 
-theorem le_of_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+theorem le_of_lt [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) < b) (H : a' + b ≤ b' + a) :
     a' ≤ b' :=
   le_of_le p.le H
 
-theorem lt_of_le [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+theorem lt_of_le [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) ≤ b) (H : a' + b < b' + a) :
     a' < b' := by
   grw [p] at H; simpa using H
 
-theorem lt_of_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+theorem lt_of_eq [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) = b) (H : a' + b < b' + a) :
     a' < b' := by
   rwa [p, add_lt_add_iff_right] at H
 
-theorem lt_of_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+theorem lt_of_lt [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) < b) (H : a' + b ≤ b' + a) :
     a' < b' := by
   grw [← add_lt_add_iff_right b, H]
@@ -181,11 +181,11 @@ theorem lt_of_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid 
 
 alias ⟨eq_rearrange, _⟩ := sub_eq_zero
 
-theorem le_rearrange {α : Type*} [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
+theorem le_rearrange {α : Type*} [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
     {a b : α} (h : a - b ≤ 0) : a ≤ b :=
   sub_nonpos.mp h
 
-theorem lt_rearrange {α : Type*} [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
+theorem lt_rearrange {α : Type*} [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
     {a b : α} (h : a - b < 0) : a < b :=
   sub_neg.mp h
 

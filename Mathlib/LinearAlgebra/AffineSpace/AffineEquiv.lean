@@ -44,7 +44,7 @@ such that both forward and inverse maps are affine.
 
 We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
 to allow affine equivalences with good definitional equalities. -/
-structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂]
+structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddGroup V₁] [IsAddCommutative V₁] [AddGroup V₂] [IsAddCommutative V₂]
   [Module k V₁] [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂] extends P₁ ≃ P₂ where
   /-- The underlying linear equiv of modules. -/
   linear : V₁ ≃ₗ[k] V₂
@@ -54,7 +54,7 @@ structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCom
 notation:25 P₁ " ≃ᵃ[" k:25 "] " P₂:0 => AffineEquiv k P₁ P₂
 
 variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k]
-  [AddCommGroup V₁] [AddCommGroup V₂] [AddCommGroup V₃] [AddCommGroup V₄]
+  [AddGroup V₁] [IsAddCommutative V₁] [AddGroup V₂] [IsAddCommutative V₂] [AddGroup V₃] [IsAddCommutative V₃] [AddGroup V₄] [IsAddCommutative V₄]
   [Module k V₁] [Module k V₂] [Module k V₃] [Module k V₄]
   [AddTorsor V₁ P₁] [AddTorsor V₂ P₂] [AddTorsor V₃ P₃] [AddTorsor V₄ P₄]
 
@@ -489,7 +489,7 @@ theorem constVAdd_zsmul (z : ℤ) (v : V₁) : constVAdd k P₁ (z • v) = cons
 
 section Homothety
 
-variable {R V P : Type*} [CommRing R] [AddCommGroup V] [Module R V] [AffineSpace V P]
+variable {R V P : Type*} [Ring R] [IsMulCommutative R] [AddGroup V] [IsAddCommutative V] [Module R V] [AffineSpace V P]
 
 /-- Fixing a point in affine space, homothety about this point gives a group homomorphism from (the
 centre of) the units of the scalars into the group of affine equivalences. -/
@@ -591,7 +591,7 @@ namespace AffineEquiv
 section ofLinearEquiv
 
 variable {k V P : Type*}
-variable [Ring k] [AddCommGroup V] [Module k V] [AddTorsor V P]
+variable [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V] [AddTorsor V P]
 
 /-- Construct an affine equivalence from a linear equivalence and two base points.
 
@@ -655,7 +655,7 @@ end arrowCongrEquiv
 
 section CommRing
 
-variable {R : Type*} [CommRing R] [Module R V₁] [Module R V₂] [Module R V₃] [Module R V₄]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [Module R V₁] [Module R V₂] [Module R V₃] [Module R V₄]
 
 section arrowCongrₗ
 
@@ -712,7 +712,7 @@ end CommRing
 
 section congrLeft
 
-variable (R W : Type*) [Ring R] [AddCommGroup W] [Module k W] [Module R W] [SMulCommClass k R W]
+variable (R W : Type*) [Ring R] [AddGroup W] [IsAddCommutative W] [Module k W] [Module R W] [SMulCommClass k R W]
   (e : P₁ ≃ᵃ[k] P₂)
 
 /-- An affine isomorphism between the domains of affine spaces induces a linear isomorphism over
@@ -771,7 +771,7 @@ theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
     v +ᵥ lineMap p₁ p₂ c = lineMap (v +ᵥ p₁) (v +ᵥ p₂) c :=
   (constVAdd k P₁ v).apply_lineMap p₁ p₂ c
 
-variable {R' : Type*} [CommRing R'] [Module R' V₁]
+variable {R' : Type*} [Ring R'] [IsMulCommutative R'] [Module R' V₁]
 
 theorem homothety_neg_one_apply (c p : P₁) : homothety c (-1 : R') p = pointReflection R' c p := by
   simp [homothety_apply, Equiv.pointReflection_apply]

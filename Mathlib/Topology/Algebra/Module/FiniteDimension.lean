@@ -22,7 +22,7 @@ public import Lean.Meta.Tactic.Rfl
 # Finite-dimensional topological vector spaces over complete fields
 
 Let `𝕜` be a complete nontrivially normed field, and `E` a topological vector space (TVS) over
-`𝕜` (i.e we have `[AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]`
+`𝕜` (i.e we have `[AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]`
 and `[ContinuousSMul 𝕜 E]`).
 
 If `E` is finite dimensional and Hausdorff, then all linear maps from `E` to any other TVS are
@@ -62,8 +62,8 @@ noncomputable section
 section FiniteDimensional
 
 variable {𝕜 E F : Type*}
-  [AddCommGroup E] [TopologicalSpace E]
-  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [AddGroup E] [IsAddCommutative E] [TopologicalSpace E]
+  [AddGroup F] [IsAddCommutative F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 -- Note: ideally this would be in `Mathlib.Topology.Algebra.Module.Basic`, but `CoFG` imports
 -- too much at the moment for this to be allowed.
@@ -72,7 +72,7 @@ instance Submodule.CoFG.topologicalClosure [Ring 𝕜] [Module 𝕜 E] [Continuo
   ‹s.CoFG›.of_le s.le_topologicalClosure
 
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
-instance ContinuousLinearMap.instModuleFinite [CommRing 𝕜] [Module 𝕜 E] [Module.Finite 𝕜 E]
+instance ContinuousLinearMap.instModuleFinite [Ring 𝕜] [IsMulCommutative 𝕜] [Module 𝕜 E] [Module.Finite 𝕜 E]
     [Module 𝕜 F] [IsNoetherian 𝕜 F] [ContinuousConstSMul 𝕜 F] :
     Module.Finite 𝕜 (E →L[𝕜] F) :=
   .of_injective (ContinuousLinearMap.coeLM 𝕜 : (E →L[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F)
@@ -91,10 +91,10 @@ end FiniteDimensional
 
 section NormedField
 
-variable {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [AddCommGroup E] [Module 𝕜 E]
-  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [AddCommGroup F]
+variable {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [AddGroup F] [IsAddCommutative F]
   [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] {F' : Type x}
-  [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [IsTopologicalAddGroup F']
+  [AddGroup F'] [IsAddCommutative F'] [Module 𝕜 F'] [TopologicalSpace F'] [IsTopologicalAddGroup F']
   [ContinuousSMul 𝕜 F']
 
 /-- If `𝕜` is a nontrivially normed field, any T2 topology on `𝕜` which makes it a topological
@@ -311,7 +311,7 @@ def toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F' whe
 
 /-- Algebra equivalence between the linear maps and continuous linear maps on a finite-dimensional
 space. -/
-def _root_.Module.End.toContinuousLinearMap (E : Type v) [NormedAddCommGroup E]
+def _root_.Module.End.toContinuousLinearMap (E : Type v) [NormedAddGroup E] [IsAddCommutative E]
     [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] : (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) :=
   { LinearMap.toContinuousLinearMap with
     map_mul' := fun _ _ ↦ rfl
@@ -500,7 +500,7 @@ end NormedField
 section IsUniformAddGroup
 
 variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
-  [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [IsUniformAddGroup E]
+  [CompleteSpace 𝕜] [AddGroup E] [IsAddCommutative E] [UniformSpace E] [T2Space E] [IsUniformAddGroup E]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 include 𝕜 in
@@ -520,9 +520,9 @@ theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDi
 end IsUniformAddGroup
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
+  [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
   [ContinuousSMul 𝕜 E]
-  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
+  [AddGroup F] [IsAddCommutative F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
   [ContinuousSMul 𝕜 F]
 
 /-- A finite-dimensional subspace is closed. -/
@@ -551,7 +551,7 @@ theorem Submodule.isClosed_sup_finiteDimensional
 /-- A sufficient condition for a linear map taking values in a TVS to have closed range is that
 there exists a finite-codimension subspace of the domain whose image is closed. -/
 theorem LinearMap.isClosed_range_of_isClosed_map_of_finiteDimensional_quotient
-    {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E →ₗ[𝕜] F} {s : Submodule 𝕜 E}
+    {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {f : E →ₗ[𝕜] F} {s : Submodule 𝕜 E}
     [s.CoFG] (h : IsClosed (s.map f : Set F)) :
     IsClosed (f.range : Set F) := by
   obtain ⟨t, s_compl_t⟩ := Submodule.exists_isCompl s
@@ -606,7 +606,7 @@ and `[ContinuousSMul K V]`), and `K` is locally compact, then `V` is locally com
 This is not an instance because `K` cannot be inferred. -/
 theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K V : Type*)
     [NontriviallyNormedField K] [CompleteSpace K] [LocallyCompactSpace K]
-    [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+    [AddGroup V] [IsAddCommutative V] [TopologicalSpace V] [IsTopologicalAddGroup V]
     [Module K V] [ContinuousSMul K V] [FiniteDimensional K V] :
     LocallyCompactSpace V :=
   -- Reduce to `SeparationQuotient V`, which is a `T2Space`.
@@ -620,7 +620,7 @@ theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K V : Type*)
 section Riesz
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  {E Eᵤ : Type*} [AddCommGroup E] [AddCommGroup Eᵤ] [Module 𝕜 E] [Module 𝕜 Eᵤ]
+  {E Eᵤ : Type*} [AddGroup E] [IsAddCommutative E] [AddGroup Eᵤ] [IsAddCommutative Eᵤ] [Module 𝕜 E] [Module 𝕜 Eᵤ]
   [TopologicalSpace E] [UniformSpace Eᵤ] [T2Space E] [T2Space Eᵤ]
   [IsTopologicalAddGroup E] [IsUniformAddGroup Eᵤ]
   [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 Eᵤ]

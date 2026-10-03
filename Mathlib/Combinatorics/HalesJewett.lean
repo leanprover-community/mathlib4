@@ -456,7 +456,7 @@ end Line
 
 /-- A generalization of Van der Waerden's theorem: if `M` is a finitely colored commutative
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
-theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
+theorem exists_mono_homothetic_copy {M κ : Type*} [AddMonoid M] [IsAddCommutative M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
   classical
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ

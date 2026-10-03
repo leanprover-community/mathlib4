@@ -27,7 +27,7 @@ variable (R M : Type*)
 
 namespace LinearMap
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The group of invertible linear maps from `M` to itself -/
 abbrev GeneralLinearGroup :=
@@ -97,7 +97,7 @@ section Functoriality
 
 variable {R₁ R₂ R₃ M₁ M₂ M₃ : Type*}
   [Semiring R₁] [Semiring R₂] [Semiring R₃]
-  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
   [Module R₁ M₁] [Module R₂ M₂] [Module R₃ M₃]
   {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃}
   {σ₂₁ : R₂ →+* R₁} {σ₃₂ : R₃ →+* R₂} {σ₃₁ : R₃ →+* R₁}
@@ -121,7 +121,7 @@ def congrLinearEquiv (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) :
 
 @[simp]
 lemma congrLinearEquiv_trans
-    {N₁ N₂ N₃ : Type*} [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+    {N₁ N₂ N₃ : Type*} [AddMonoid N₁] [IsAddCommutative N₁] [AddMonoid N₂] [IsAddCommutative N₂] [AddMonoid N₃] [IsAddCommutative N₃]
     [Module R N₁] [Module R N₂] [Module R N₃] (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
     (congrLinearEquiv e₁₂).trans (congrLinearEquiv e₂₃) = congrLinearEquiv (e₁₂.trans e₂₃) :=
   rfl

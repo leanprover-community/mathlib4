@@ -19,7 +19,7 @@ and `S` acting contravariantly ("on the right"). The compatibility condition is 
 This situation can be set up in Mathlib as:
 ```lean
 variable (R S M : Type*) [Ring R] [Ring S]
-variable [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
 ```
 The key fact is:
 ```lean
@@ -67,7 +67,7 @@ namespace Subbimodule
 section Algebra
 
 variable {R A B M : Type*}
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable [Semiring A] [Semiring B] [Module A M] [Module B M]
 variable [Algebra R A] [Algebra R B]
 variable [IsScalarTower R A M] [IsScalarTower R B M]
@@ -99,7 +99,7 @@ theorem smul_mem' (p : Submodule (A ⊗[R] B) M) (b : B) {m : M} (hm : m ∈ p) 
 /-- If `A` and `B` are also `Algebra`s over yet another set of scalars `S` then we may "base change"
 from `R` to `S`. -/
 @[simps!]
-def baseChange (S : Type*) [CommSemiring S] [Module S M] [Algebra S A] [Algebra S B]
+def baseChange (S : Type*) [Semiring S] [IsMulCommutative S] [Module S M] [Algebra S A] [Algebra S B]
     [IsScalarTower S A M] [IsScalarTower S B M] (p : Submodule (A ⊗[R] B) M) :
     Submodule (A ⊗[S] B) M :=
   mk p.toAddSubmonoid (smul_mem p) (smul_mem' p)
@@ -123,7 +123,7 @@ end Algebra
 section Ring
 
 variable (R S M : Type*) [Ring R] [Ring S]
-variable [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass R S M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [Module S M] [SMulCommClass R S M]
 
 /-- A `Submodule` over `R ⊗[ℕ] S` is naturally also a `Submodule` over the canonically-isomorphic
 ring `R ⊗[ℤ] S`. -/

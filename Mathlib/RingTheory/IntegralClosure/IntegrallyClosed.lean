@@ -63,7 +63,7 @@ open Polynomial
 
 /-- `R` is integrally closed in `A` if all integral elements of `A` are also elements of `R`.
 -/
-abbrev IsIntegrallyClosedIn (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :=
+abbrev IsIntegrallyClosedIn (R A : Type*) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] :=
   IsIntegralClosure R R A
 
 /-- `R` is integrally closed if all integral elements of `Frac(R)` are also elements of `R`.
@@ -71,12 +71,12 @@ abbrev IsIntegrallyClosedIn (R A : Type*) [CommRing R] [CommRing A] [Algebra R A
 This definition uses `FractionRing R` to denote `Frac(R)`. See `isIntegrallyClosed_iff`
 if you want to choose another field of fractions for `R`.
 -/
-abbrev IsIntegrallyClosed (R : Type*) [CommRing R] := IsIntegrallyClosedIn R (FractionRing R)
+abbrev IsIntegrallyClosed (R : Type*) [Ring R] [IsMulCommutative R] := IsIntegrallyClosedIn R (FractionRing R)
 
 section Iff
 
-variable {R : Type*} [CommRing R]
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra R B]
 
 /-- Being integrally closed is preserved under injective algebra homomorphisms. -/
 theorem AlgHom.isIntegrallyClosedIn (f : A →ₐ[R] B) (hf : Function.Injective f) :
@@ -96,7 +96,7 @@ theorem AlgEquiv.isIntegrallyClosedIn (e : A ≃ₐ[R] B) :
     IsIntegrallyClosedIn R A ↔ IsIntegrallyClosedIn R B :=
   ⟨AlgHom.isIntegrallyClosedIn e.symm e.symm.injective, AlgHom.isIntegrallyClosedIn e e.injective⟩
 
-variable (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
+variable (K : Type*) [Ring K] [IsMulCommutative K] [Algebra R K] [IsFractionRing R K]
 
 /-- `R` is integrally closed iff it is the integral closure of itself in its field of fractions. -/
 theorem isIntegrallyClosed_iff_isIntegrallyClosedIn :
@@ -165,7 +165,7 @@ end Iff
 
 namespace IsIntegrallyClosedIn
 
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
 
 instance : IsIntegrallyClosedIn R R :=
   ⟨Function.injective_id, by simp [Algebra.IsIntegral.isIntegral]⟩
@@ -183,7 +183,7 @@ theorem exists_algebraMap_eq_of_isIntegral_pow [IsIntegrallyClosedIn R A]
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R A y = x :=
   isIntegral_iff.mp <| hx.of_pow hn
 
-theorem exists_algebraMap_eq_of_pow_mem_subalgebra {A : Type*} [CommRing A] [Algebra R A]
+theorem exists_algebraMap_eq_of_pow_mem_subalgebra {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A]
     {S : Subalgebra R A} [IsIntegrallyClosedIn S A] {x : A} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S A y = x :=
   exists_algebraMap_eq_of_isIntegral_pow hn <| isIntegral_iff.mpr ⟨⟨x ^ n, hx⟩, rfl⟩
@@ -209,7 +209,7 @@ theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [IsDomain R] [Module.I
     [Nontrivial A] : integralClosure R A = ⊥ :=
   (integralClosure_eq_bot_iff A (FaithfulSMul.algebraMap_injective _ _)).mpr ‹_›
 
-variable {A} {B : Type*} [CommRing B]
+variable {A} {B : Type*} [Ring B] [IsMulCommutative B]
 
 /-- If `R` is the integral closure of `S` in `A`, then it is integrally closed in `A`. -/
 lemma of_isIntegralClosure [Algebra R B] [Algebra A B] [IsScalarTower R A B]
@@ -233,8 +233,8 @@ end IsIntegrallyClosedIn
 
 namespace IsIntegrallyClosed
 
-variable {R S : Type*} [CommRing R] [CommRing S]
-variable {K : Type*} [CommRing K] [Algebra R K] [ifr : IsFractionRing R K]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
+variable {K : Type*} [Ring K] [IsMulCommutative K] [Algebra R K] [ifr : IsFractionRing R K]
 
 /-- Note that this is not a duplicate instance, since `IsIntegrallyClosed R` is instead defined
 as `IsIntegrallyClosed R R (FractionRing R)`. -/
@@ -253,7 +253,7 @@ theorem exists_algebraMap_eq_of_isIntegral_pow [IsIntegrallyClosed R] {x : K} {n
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_isIntegral_pow hn hx
 
-theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Algebra R K]
+theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [Ring K] [IsMulCommutative K] [Algebra R K]
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_pow_mem_subalgebra hn hx
@@ -275,7 +275,7 @@ instance _root_.IsIntegralClosure.of_isIntegrallyClosed [IsIntegrallyClosed R]
   IsIntegralClosure.of_isIntegrallyClosedIn
 
 lemma of_isIntegrallyClosedIn
-    (R K : Type*) [CommRing R] [Field K] [Algebra R K] [FaithfulSMul R K]
+    (R K : Type*) [Ring R] [IsMulCommutative R] [Field K] [Algebra R K] [FaithfulSMul R K]
     [IsIntegrallyClosedIn R K] : IsIntegrallyClosed R := by
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R K).isDomain _
   let f : FractionRing R →ₐ[R] K := IsFractionRing.liftAlgHom (g := Algebra.ofId _ _)
@@ -286,7 +286,7 @@ lemma of_isIntegrallyClosedIn
   simp [← f.toRingHom.injective.eq_iff]
 
 lemma _root_.IsIntegralClosure.of_isIntegralClosure_of_isIntegrallyClosedIn
-    (R S T U : Type*) [CommRing R] [CommRing S] [CommRing T] [CommRing U]
+    (R S T U : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Ring U] [IsMulCommutative U]
     [Algebra R T] [Algebra S T] [Algebra R U] [Algebra S U] [Algebra T U]
     [IsScalarTower S T U] [IsScalarTower R T U]
     [IsIntegralClosure S R T] [IsIntegrallyClosedIn T U] : IsIntegralClosure S R U := by
@@ -359,7 +359,7 @@ namespace integralClosure
 
 open IsIntegrallyClosed
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 variable (K : Type*) [Field K] [Algebra R K]
 variable [IsFractionRing R K]
 variable {L : Type*} [Field L] [Algebra K L] [Algebra R L] [IsScalarTower R K L]
@@ -374,7 +374,7 @@ end integralClosure
 
 section localization
 
-variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+variable {R : Type*} (S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (M : Submonoid R)

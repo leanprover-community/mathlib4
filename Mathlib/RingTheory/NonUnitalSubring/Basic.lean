@@ -397,7 +397,7 @@ theorem map_center_eq (f : R ≃+* S) : map f (center R) = center S :=
   SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
-theorem center_eq_top (R) [NonUnitalCommRing R] : center R = ⊤ :=
+theorem center_eq_top (R) [NonUnitalRing R] [IsMulCommutative R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 end NonUnitalRing

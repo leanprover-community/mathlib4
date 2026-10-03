@@ -38,12 +38,12 @@ open TensorProduct
 
 section IsTensorProduct
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {M₁ M₂ M M' : Type*}
-variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M] [AddCommMonoid M']
+variable [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M']
 variable [Module R M₁] [Module R M₂] [Module R M] [Module R M']
 variable (f : M₁ →ₗ[R] M₂ →ₗ[R] M)
-variable {N₁ N₂ N : Type*} [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N]
+variable {N₁ N₂ N : Type*} [AddMonoid N₁] [IsAddCommutative N₁] [AddMonoid N₂] [IsAddCommutative N₂] [AddMonoid N] [IsAddCommutative N]
 variable [Module R N₁] [Module R N₂] [Module R N]
 variable {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
 
@@ -128,8 +128,8 @@ lemma of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) 
 
 section map
 
-variable {P₁ P₂ P : Type*} [AddCommMonoid P₁] [AddCommMonoid P₂]
-  [AddCommMonoid P] [Module R P₁] [Module R P₂] [Module R P] {p : P₁ →ₗ[R] P₂ →ₗ[R] P}
+variable {P₁ P₂ P : Type*} [AddMonoid P₁] [IsAddCommutative P₁] [AddMonoid P₂] [IsAddCommutative P₂]
+  [AddMonoid P] [IsAddCommutative P] [Module R P₁] [Module R P₂] [Module R P] {p : P₁ →ₗ[R] P₂ →ₗ[R] P}
   (hf : IsTensorProduct f) (hg : IsTensorProduct g) (hp : IsTensorProduct p)
   (i₁ : N₁ →ₗ[R] P₁) (j₁ : M₁ →ₗ[R] N₁) (i₂ : N₂ →ₗ[R] P₂) (j₂ : M₂ →ₗ[R] N₂)
 
@@ -164,9 +164,9 @@ end map
 
 section
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-  {M₁ M₂ M₃ M₁₂ M₂₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-  [AddCommMonoid M₁₂] [AddCommMonoid M₂₃]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
+  {M₁ M₂ M₃ M₁₂ M₂₃ : Type*} [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
+  [AddMonoid M₁₂] [IsAddCommutative M₁₂] [AddMonoid M₂₃] [IsAddCommutative M₂₃]
   [Module R M₁]
   [Module R M₂] [Module S M₂] [IsScalarTower R S M₂]
   [Module R M₃] [Module S M₃] [IsScalarTower R S M₃]
@@ -222,7 +222,7 @@ We state this for a general `M₁₂ = M₁ ⊗[R] M₂` and `M₂₃ = M₂ ⊗
 For the version where `R` and `S` are flipped, see `TensorProduct.AlgebraTensorModule.assoc`.
 -/
 @[no_expose]
-noncomputable def assoc {T : Type*} [CommSemiring T] [Algebra R T] [Module T M₁]
+noncomputable def assoc {T : Type*} [Semiring T] [IsMulCommutative T] [Algebra R T] [Module T M₁]
     [IsScalarTower R T M₁] [Module T M₁₂] [SMulCommClass S T M₁₂] [IsScalarTower R T M₁₂]
     (f : M₁ →ₗ[T] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
     (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g) :
@@ -242,7 +242,7 @@ noncomputable def assoc {T : Type*} [CommSemiring T] [Algebra R T] [Module T M�
         ← f.restrictScalars₁₂_apply_apply R S, IsTensorProduct.assocAux_tmul,
         IsTensorProduct.assocAux_tmul, TensorProduct.smul_tmul']
 
-variable {T : Type*} [CommSemiring T] [Algebra R T] [Module T M₁] [IsScalarTower R T M₁]
+variable {T : Type*} [Semiring T] [IsMulCommutative T] [Algebra R T] [Module T M₁] [IsScalarTower R T M₁]
   [Module T M₁₂] [SMulCommClass S T M₁₂] [IsScalarTower R T M₁₂]
   (f : M₁ →ₗ[T] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
   (g : M₂ →ₗ[S] M₃ →ₗ[S] M₂₃) (hg : IsTensorProduct g)
@@ -314,8 +314,8 @@ end IsTensorProduct
 section IsBaseChange
 
 variable {R : Type*} {M : Type v₁} {N : Type v₂} (S : Type v₃)
-variable [AddCommMonoid M] [AddCommMonoid N] [CommSemiring R]
-variable [CommSemiring S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Semiring R] [IsMulCommutative R]
+variable [Semiring S] [IsMulCommutative S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
 variable (f : M →ₗ[R] N)
 
 /-- Given an `R`-algebra `S` and an `R`-module `M`, an `S`-module `N` together with a map
@@ -326,7 +326,7 @@ def IsBaseChange : Prop :=
     (((Algebra.linearMap S <| Module.End S (M →ₗ[R] N)).flip f).restrictScalars R)
 
 variable {S f} (h : IsBaseChange S f)
-variable {P Q : Type*} [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module S Q]
+variable {P Q : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P] [AddMonoid Q] [IsAddCommutative Q] [Module S Q]
 
 section
 
@@ -446,7 +446,7 @@ lemma IsBaseChange.comp_equiv (e : M ≃ₗ[R] P) (f : P →ₗ[R] N) (isb : IsB
 
 section
 
-variable (A : Type*) [CommSemiring A]
+variable (A : Type*) [Semiring A] [IsMulCommutative A]
 variable [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 variable [Module S M] [IsScalarTower R S M]
 variable [Module A N] [IsScalarTower S A N] [IsScalarTower R A N]
@@ -467,7 +467,7 @@ end
 
 variable (f) in
 theorem IsBaseChange.of_lift_unique
-    (h : ∀ (Q : Type max v₁ v₂ v₃) [AddCommMonoid Q],
+    (h : ∀ (Q : Type max v₁ v₂ v₃) [AddMonoid Q] [IsAddCommutative Q],
       ∀ [Module R Q] [Module S Q], ∀ [IsScalarTower R S Q],
         ∀ g : M →ₗ[R] Q, ∃! g' : N →ₗ[S] Q, (g'.restrictScalars R).comp f = g) :
     IsBaseChange S f := by
@@ -500,7 +500,7 @@ theorem IsBaseChange.of_lift_unique
 
 theorem IsBaseChange.iff_lift_unique :
     IsBaseChange S f ↔
-      ∀ (Q : Type max v₁ v₂ v₃) [AddCommMonoid Q],
+      ∀ (Q : Type max v₁ v₂ v₃) [AddMonoid Q] [IsAddCommutative Q],
         ∀ [Module R Q] [Module S Q],
           ∀ [IsScalarTower R S Q],
             ∀ g : M →ₗ[R] Q, ∃! g' : N →ₗ[S] Q, (g'.restrictScalars R).comp f = g :=
@@ -526,8 +526,8 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
   ext
   simp
 
-variable {T O : Type*} [CommSemiring T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-variable [AddCommMonoid O] [Module R O] [Module S O] [Module T O] [IsScalarTower S T O]
+variable {T O : Type*} [Semiring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable [AddMonoid O] [IsAddCommutative O] [Module R O] [Module S O] [Module T O] [IsScalarTower S T O]
 variable [IsScalarTower R S O] [IsScalarTower R T O]
 
 theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →ₗ[S] O}
@@ -582,7 +582,7 @@ lemma IsBaseChange.comp_iff {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
   module, `N` be the base change of `M` to `S`, then `P ⊗[S] N` is isomorphic to `P ⊗[R] M`
   as `S`-modules. -/
 noncomputable def IsBaseChange.tensorEquiv {f : M →ₗ[R] N} (hf : IsBaseChange S f) (P : Type*)
-    [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P] : P ⊗[S] N ≃ₗ[S] P ⊗[R] M :=
+    [AddGroup P] [IsAddCommutative P] [Module R P] [Module S P] [IsScalarTower R S P] : P ⊗[S] N ≃ₗ[S] P ⊗[R] M :=
   LinearEquiv.lTensor P hf.equiv.symm ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S P M
 
 theorem IsBaseChange.map_id_lsmul_eq_lsmul_algebraMap
@@ -594,7 +594,7 @@ theorem IsBaseChange.map_id_lsmul_eq_lsmul_algebraMap
   rw [hf.map_eq hf]
   simpa using smul_comm x s (f m)
 
-variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
+variable {R' S' : Type*} [Semiring R'] [IsMulCommutative R'] [Semiring S'] [IsMulCommutative S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 variable [IsScalarTower R R' S'] [IsScalarTower R S S']
 
@@ -664,16 +664,16 @@ variable {R S R'}
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
-instance TensorProduct.isPushout {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+instance TensorProduct.isPushout {R S T : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring T] [IsMulCommutative T]
     [Algebra R S] [Algebra R T] : Algebra.IsPushout R S T (S ⊗[R] T) :=
   ⟨TensorProduct.isBaseChange R T S⟩
 
-instance TensorProduct.isPushout' {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+instance TensorProduct.isPushout' {R S T : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring T] [IsMulCommutative T]
     [Algebra R S] [Algebra R T] : Algebra.IsPushout R T S (S ⊗[R] T) :=
   Algebra.IsPushout.symm inferInstance
 
 lemma Algebra.IsPushout.tensorProduct_tensorProduct
-    (R S A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring A] [CommSemiring B]
+    (R S A B : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B]
     [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B] [Algebra R S]
     {_ : Algebra (A ⊗[R] S) (B ⊗[R] S)} {_ : IsScalarTower A (A ⊗[R] S) (B ⊗[R] S)}
     (H : (algebraMap (A ⊗[R] S) (B ⊗[R] S)).comp Algebra.TensorProduct.includeRight.toRingHom =
@@ -746,7 +746,7 @@ where the left-hand square is a pushout. Then the following are equivalent:
 
 Note that this is essentially the isomorphism `T ⊗[S] (S ⊗[R] R') ≃ₐ[T] T ⊗[R] R'`.
 -/
-lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
+lemma Algebra.IsPushout.comp_iff {T' : Type*} [Semiring T'] [IsMulCommutative T'] [Algebra R T']
     [Algebra S' T'] [Algebra S T'] [Algebra T T'] [Algebra R' T']
     [IsScalarTower R T T'] [IsScalarTower S T T'] [IsScalarTower S S' T']
     [IsScalarTower R R' T'] [IsScalarTower R S' T'] [IsScalarTower R' S' T']
@@ -764,7 +764,7 @@ lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
 
 variable {R R' S S'} in
 lemma Algebra.IsPushout.of_equiv [h : IsPushout R R' S S']
-    {T : Type*} [CommSemiring T] [Algebra R' T] [Algebra S T] [Algebra R T]
+    {T : Type*} [Semiring T] [IsMulCommutative T] [Algebra R' T] [Algebra S T] [Algebra R T]
     [IsScalarTower R S T] [IsScalarTower R R' T] (e : S' ≃ₐ[R'] T)
     (he : e.toRingHom.comp (algebraMap S S') = algebraMap S T) :
     IsPushout R R' S T := by
@@ -775,9 +775,9 @@ lemma Algebra.IsPushout.of_equiv [h : IsPushout R R' S S']
 namespace Algebra
 
 variable (A B : Type*)
-  [CommRing A] [CommRing B] [Algebra R A] [Algebra R B] [Algebra A B] [Algebra S B]
+  [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra R B] [Algebra A B] [Algebra S B]
   [IsScalarTower R A B] [IsScalarTower R S B] [Algebra.IsPushout R S A B]
-variable (M : Type*) [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 /-- (Implementation) If `B = S ⊗[R] A`, this is the canonical `R`-isomorphism:
 `B ⊗[A] M ≃ₗ[S] S ⊗[R] M`. See `IsPushout.cancelBaseChange` for the `S`-linear version. -/
@@ -818,7 +818,7 @@ lemma IsPushout.cancelBaseChange_symm_tmul (s : S) (m : M) :
     (IsPushout.cancelBaseChange R S A B M).symm (s ⊗ₜ m) = algebraMap S B s ⊗ₜ m :=
   IsPushout.cancelBaseChangeAux_symm_tmul R S A B M s m
 
-variable (C : Type*) [CommRing C] [Algebra R C] [Algebra A C] [IsScalarTower R A C]
+variable (C : Type*) [Ring C] [IsMulCommutative C] [Algebra R C] [Algebra A C] [IsScalarTower R A C]
 
 /-- Algebra version of `IsPushout.cancelBaseChange`. -/
 noncomputable def IsPushout.cancelBaseChangeAlg : B ⊗[A] C ≃ₐ[S] S ⊗[R] C := by
@@ -845,7 +845,7 @@ lemma IsPushout.cancelBaseChangeAlg_symm_tmul (s : S) (c : C) :
     (IsPushout.cancelBaseChangeAlg R S A B C).symm (s ⊗ₜ c) = algebraMap S B s ⊗ₜ c := by
   simp [cancelBaseChangeAlg]
 
-variable (S : Type*) [CommRing S] [Algebra R S] [Algebra S B] [IsScalarTower R S B]
+variable (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra S B] [IsScalarTower R S B]
   [Algebra.IsPushout R S A B]
 
 attribute [local instance] TensorProduct.rightAlgebra in

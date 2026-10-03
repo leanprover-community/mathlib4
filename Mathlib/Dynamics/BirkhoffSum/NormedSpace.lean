@@ -36,13 +36,13 @@ see `Function.IsFixedPt.birkhoffAverage_eq`.
 TODO: add a version for a periodic orbit. -/
 theorem Function.IsFixedPt.tendsto_birkhoffAverage
     (R : Type*) [DivisionSemiring R] [CharZero R]
-    [AddCommMonoid E] [TopologicalSpace E] [Module R E]
+    [AddMonoid E] [IsAddCommutative E] [TopologicalSpace E] [Module R E]
     {f : α → α} {x : α} (h : f.IsFixedPt x) (g : α → E) :
     Tendsto (birkhoffAverage R f g · x) atTop (𝓝 (g x)) :=
   tendsto_const_nhds.congr' <| (eventually_ne_atTop 0).mono fun _n hn ↦
     (h.birkhoffAverage_eq R g (Nat.cast_ne_zero.mpr hn)).symm
 
-variable [NormedAddCommGroup E]
+variable [NormedAddGroup E] [IsAddCommutative E]
 
 theorem dist_birkhoffSum_apply_birkhoffSum (f : α → α) (g : α → E) (n : ℕ) (x : α) :
     dist (birkhoffSum f g n (f x)) (birkhoffSum f g n x) = dist (g (f^[n] x)) (g x) := by
@@ -120,7 +120,7 @@ end
 end
 
 variable (𝕜 : Type*) {X E : Type*}
-  [PseudoEMetricSpace X] [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [PseudoEMetricSpace X] [RCLike 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {f : X → X} {g : X → E} {l : X → E}
 
 /-- If `f` is a non-strictly contracting map (i.e., it is Lipschitz with constant `1`)

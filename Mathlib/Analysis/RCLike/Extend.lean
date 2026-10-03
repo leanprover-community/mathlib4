@@ -39,7 +39,7 @@ open scoped ComplexConjugate
 variable {𝕜 : Type*} [RCLike 𝕜] {F : Type*}
 namespace Module.Dual
 
-variable [AddCommGroup F] [Module ℝ F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+variable [AddGroup F] [IsAddCommutative F] [Module ℝ F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F]
 
 /-- Extend `fr : Dual ℝ F` to `Dual 𝕜 F` in a way that will also be continuous and have its norm
 (as a continuous linear map) equal to `‖fr‖` when `fr` is itself continuous on a normed space. -/
@@ -96,7 +96,7 @@ end Module.Dual
 
 namespace StrongDual
 
-variable [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [ContinuousConstSMul 𝕜 F]
+variable [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [ContinuousConstSMul 𝕜 F]
 variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 /-- Extend `fr : StrongDual ℝ F` to `StrongDual 𝕜 F`.

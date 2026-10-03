@@ -61,7 +61,7 @@ open Module
 namespace WittVector
 
 variable (p : ℕ) [Fact p.Prime]
-variable (k : Type*) [CommRing k]
+variable (k : Type*) [Ring k] [IsMulCommutative k]
 
 /-- The fraction ring of the space of `p`-Witt vectors on `k` -/
 scoped[Isocrystal] notation "K(" p ", " k ")" => FractionRing (WittVector p k)
@@ -110,13 +110,13 @@ scoped[Isocrystal]
 /-- An isocrystal is a vector space over the field `K(p, k)` additionally equipped with a
 Frobenius-linear automorphism.
 -/
-class Isocrystal (V : Type*) [AddCommGroup V] extends Module K(p, k) V where
+class Isocrystal (V : Type*) [AddGroup V] [IsAddCommutative V] extends Module K(p, k) V where
   frob : V ≃ᶠˡ[p, k] V
 
 open WittVector
 
-variable (V : Type*) [AddCommGroup V] [Isocrystal p k V]
-variable (V₂ : Type*) [AddCommGroup V₂] [Isocrystal p k V₂]
+variable (V : Type*) [AddGroup V] [IsAddCommutative V] [Isocrystal p k V]
+variable (V₂ : Type*) [AddGroup V₂] [IsAddCommutative V₂] [Isocrystal p k V₂]
 
 variable {V} in
 /--
@@ -178,7 +178,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A one-dimensional isocrystal over an algebraically closed field
 admits an isomorphism to one of the standard (indexed by `m : ℤ`) one-dimensional isocrystals. -/
 theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k p] (V : Type*)
-    [AddCommGroup V] [Isocrystal p k V] (h_dim : finrank K(p, k) V = 1) :
+    [AddGroup V] [IsAddCommutative V] [Isocrystal p k V] (h_dim : finrank K(p, k) V = 1) :
     ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) := by
   have : Nontrivial V := Module.nontrivial_of_finrank_eq_succ h_dim
   obtain ⟨x, hx⟩ : ∃ x : V, x ≠ 0 := exists_ne 0

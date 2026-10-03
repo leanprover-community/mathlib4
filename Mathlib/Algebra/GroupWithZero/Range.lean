@@ -224,7 +224,7 @@ lemma ValueGroup₀.restrict₀_surjective : Surjective (ValueGroup₀.restrict�
 end GroupWithZero
 section CommGroupWithZero
 
-variable [MonoidWithZero A] [CommGroupWithZero B] (f : A →*₀ B)
+variable [MonoidWithZero A] [GroupWithZero B] [IsMulCommutative B] (f : A →*₀ B)
 
 /-- See also `mem_valueGroup_iff_of_comm'` for a version proving that `f x ≠ 0`. -/
 theorem mem_valueGroup_iff_of_comm {y : Bˣ} :

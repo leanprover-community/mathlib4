@@ -330,7 +330,7 @@ end Flow
 -/
 namespace Flow
 
-variable {τ : Type*} [TopologicalSpace τ] [AddCommGroup τ] {α : Type*}
+variable {τ : Type*} [TopologicalSpace τ] [AddGroup τ] [IsAddCommutative τ] {α : Type*}
   [TopologicalSpace α] (f : Filter τ) (ϕ : Flow τ α) (s : Set α)
 
 open omegaLimit

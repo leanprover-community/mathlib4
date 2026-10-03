@@ -72,7 +72,7 @@ open Topology ContinuousLinearMap Function Submodule
 namespace Submodule
 
 variable {R : Type*} [Ring R] {M N : Type*} [TopologicalSpace M] [TopologicalSpace N]
-  [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+  [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N]
 
 open ContinuousLinearMap
 
@@ -509,8 +509,8 @@ end Submodule
 namespace ContinuousLinearMap
 
 variable {R : Type*} [Ring R] {E F : Type*}
-  [TopologicalSpace E] [AddCommGroup E] [Module R E] [IsTopologicalAddGroup E]
-  [TopologicalSpace F] [AddCommGroup F] [Module R F] [ContinuousAdd F]
+  [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [Module R E] [IsTopologicalAddGroup E]
+  [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [Module R F] [ContinuousAdd F]
   {p q : Submodule R E}
 
 /-- Given continuous linear maps `φ : p →L[R] F` and `ψ : q →L[R] F` from topological complement

@@ -22,9 +22,9 @@ open Matrix Module Polynomial
 
 universe u v w
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 variable {n : Type v} [DecidableEq n] [Fintype n]
-variable {N : Type w} [AddCommGroup N] [Module R N]
+variable {N : Type w} [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace Matrix
 

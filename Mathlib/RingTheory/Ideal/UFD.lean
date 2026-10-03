@@ -23,7 +23,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
 
 public section
 
-variable {R : Type*} [CommRing R] [IsDomain R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
 
 namespace Ideal
 
@@ -32,7 +32,7 @@ variable [WfDvdMonoid R] {x : R} (hx : Prime x) {p : Ideal R} [p.IsPrime] (hxp :
 include hx hxp
 
 theorem isPrincipal_of_isPrincipal_isLocalizationAway_of_prime
-    (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S]
+    (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S] [IsLocalization.Away x S]
     (hp : (map (algebraMap R S) p).IsPrincipal) : p.IsPrincipal := by
   have := (disjoint_powers_iff_notMem_of_isPrime x).mpr hxp
   by_cases hpbot : p = ⊥
@@ -89,7 +89,7 @@ theorem iff_forall_isPrincipal_of_height_eq_one :
   ⟨fun _ _ _ ↦ isPrincipal_of_height_eq_one, of_forall_isPrincipal_of_height_eq_one⟩
 
 theorem iff_of_isLocalizationAway_of_prime {x : R} (hx : Prime x)
-    (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S] :
+    (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S] [IsLocalization.Away x S] :
     UniqueFactorizationMonoid R ↔ UniqueFactorizationMonoid S := by
   have : IsDomain S := IsLocalization.Away.isDomain S hx.ne_zero
   refine ⟨fun _ ↦ of_isLocalization (Submonoid.powers x) S, fun _ ↦ ?_⟩

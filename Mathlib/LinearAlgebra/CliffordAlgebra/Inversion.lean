@@ -16,7 +16,7 @@ $ι(m)^{-1} = \frac{ι(m)}{Q(m)}$.
 @[expose] public section
 
 variable {R M : Type*}
-variable [CommRing R] [AddCommGroup M] [Module R M] {Q : QuadraticForm R M}
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra
 

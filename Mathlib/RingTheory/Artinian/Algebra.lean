@@ -20,7 +20,7 @@ public section
 namespace IsArtinianRing
 
 variable {R A : Type*}
-variable [CommRing R] [IsArtinianRing R] [Ring A] [Algebra R A]
+variable [Ring R] [IsMulCommutative R] [IsArtinianRing R] [Ring A] [Algebra R A]
 
 open nonZeroDivisors
 

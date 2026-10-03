@@ -68,9 +68,9 @@ open Set MeasureTheory VectorMeasure ContinuousLinearMap Filter Topology
 open scoped ENNReal NNReal
 
 variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
+  [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G]
 
 namespace MeasureTheory
 
@@ -392,7 +392,7 @@ omit [NormedSpace ℝ E] [NormedSpace ℝ F] in
   MeasureTheory.Integrable.sub hf hg
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] in
-@[to_fun] lemma Integrable.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+@[to_fun] lemma Integrable.smul {𝕜 : Type*} [NormedAddGroup 𝕜] [IsAddCommutative 𝕜] [SMulZeroClass 𝕜 E]
     [IsBoundedSMul 𝕜 E] (c : 𝕜) (hf : μ.Integrable f) :
     μ.Integrable (c • f) :=
   MeasureTheory.Integrable.smul c hf

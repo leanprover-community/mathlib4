@@ -37,7 +37,7 @@ namespace QuaternionAlgebra
 
 Note that for definitional convenience, `k` is provided as a field even though `i_mul_j` fully
 determines it. -/
-structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c₁ c₂ c₃ : R) where
+structure Basis {R : Type*} (A : Type*) [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A] (c₁ c₂ c₃ : R) where
   /-- The first imaginary unit -/
   i : A
   /-- The second imaginary unit -/
@@ -52,7 +52,7 @@ structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c�
 initialize_simps_projections Basis
   (as_prefix i, as_prefix j, as_prefix k)
 
-variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+variable {R : Type*} {A B : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable {c₁ c₂ c₃ : R}
 
 namespace Basis
@@ -197,7 +197,7 @@ theorem hom_ext ⦃f g : ℍ[R,c₁,c₂,c₃] →ₐ[R] A⦄
 end QuaternionAlgebra
 
 namespace Quaternion
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 open QuaternionAlgebra (Basis)
 

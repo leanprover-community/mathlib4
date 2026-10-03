@@ -49,7 +49,7 @@ open scoped Cyclotomic
 
 namespace IsPrimitiveRoot
 
-variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
+variable [Ring L] [IsMulCommutative L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
   [IsCyclotomicExtension {n} K L]
 
 /-- `IsPrimitiveRoot.autToPow` is injective in the case that it's considered over a cyclotomic
@@ -66,7 +66,7 @@ end IsPrimitiveRoot
 
 namespace IsCyclotomicExtension
 
-variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
+variable [Ring L] [IsMulCommutative L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
   [IsCyclotomicExtension {n} K L]
 
 variable {K} (L)

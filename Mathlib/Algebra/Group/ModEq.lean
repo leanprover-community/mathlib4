@@ -40,7 +40,7 @@ assert_not_exists Module IsOrderedMonoid Function.support
 namespace AddCommGroup
 
 section AddCommMonoid
-variable {M : Type*} [AddCommMonoid M] {a b c d p : M}
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] {a b c d p : M}
 
 /-- `a ≡ b [PMOD p]` means that `b` is congruent to `a` modulo `p`.
 
@@ -134,7 +134,7 @@ protected theorem add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [
 protected theorem nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [PMOD p] :=
   (nsmul_add_modEq _).trans
 
-theorem map {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F M N]
+theorem map {N F : Type*} [AddMonoid N] [IsAddCommutative N] [FunLike F M N] [AddMonoidHomClass F M N]
     (f : F) (h : a ≡ b [PMOD p]) : f a ≡ f b [PMOD f p] := by
   rw [modEq_iff_nsmul] at *
   rcases h with ⟨m, n, h⟩
@@ -143,7 +143,7 @@ theorem map {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F
 
 end ModEq
 
-theorem map_modEq_iff {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F M N]
+theorem map_modEq_iff {N F : Type*} [AddMonoid N] [IsAddCommutative N] [FunLike F M N] [AddMonoidHomClass F M N]
     (f : F) (hf : Function.Injective f) : f a ≡ f b [PMOD f p] ↔ a ≡ b [PMOD p] := by
   simp only [modEq_iff_nsmul, ← map_nsmul, ← map_add, hf.eq_iff]
 
@@ -157,7 +157,7 @@ alias ⟨ModEq.nsmul_cancel, _⟩ := nsmul_modEq_nsmul
 end AddCommMonoid
 
 section AddCancelCommMonoid
-variable {M : Type*} [AddCancelCommMonoid M] {a b c d p : M}
+variable {M : Type*} [AddCancelMonoid M] [IsAddCommutative M] {a b c d p : M}
 
 namespace ModEq
 
@@ -200,7 +200,7 @@ theorem add_modEq_right : a + b ≡ b [PMOD p] ↔ a ≡ 0 [PMOD p] := by simp [
 end AddCancelCommMonoid
 
 section AddCommGroup
-variable {G : Type*} [AddCommGroup G] {p a a₁ a₂ b b₁ b₂ c : G} {n : ℕ} {z : ℤ}
+variable {G : Type*} [AddGroup G] [IsAddCommutative G] {p a a₁ a₂ b b₁ b₂ c : G} {n : ℕ} {z : ℤ}
 
 theorem modEq_iff_zsmul : a ≡ b [PMOD p] ↔ ∃ m : ℤ, m • p = b - a := by
   rw [modEq_iff_nsmul]

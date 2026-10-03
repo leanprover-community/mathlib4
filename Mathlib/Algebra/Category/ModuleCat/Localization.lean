@@ -23,11 +23,11 @@ see `ModuleCat.localizedModuleFunctor`.
 
 universe v u
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 open CategoryTheory
 
-local instance [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
+local instance [Small.{v} R] (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R M] (S : Submonoid R) :
     Small.{v} (LocalizedModule S M) :=
   small_of_surjective (IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M))
 

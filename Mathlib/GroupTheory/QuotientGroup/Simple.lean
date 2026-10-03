@@ -36,7 +36,7 @@ by it is simple. Group analogue of `isSimpleModule_iff_isCoatom`. -/
 @[to_additive /-- A subgroup of an additive commutative group is maximal (a coatom in the subgroup
 lattice) iff the quotient by it is simple. Additive group analogue of
 `isSimpleModule_iff_isCoatom`. -/]
-theorem CommGroup.isSimpleGroup_iff_isCoatom {G : Type*} [CommGroup G] {M : Subgroup G} :
+theorem CommGroup.isSimpleGroup_iff_isCoatom {G : Type*} [Group G] [IsMulCommutative G] {M : Subgroup G} :
     IsSimpleGroup (G ⧸ M) ↔ IsCoatom M := by
   rw [← Set.isSimpleOrder_Ici_iff_isCoatom,
     ← (QuotientGroup.comapMk'OrderIso M).isSimpleOrder_iff, isSimpleGroup_iff, isSimpleOrder_iff]

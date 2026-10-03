@@ -67,7 +67,7 @@ end DirectSum
 open TensorAlgebra DirectSum TensorPower
 
 variable {I : Type u} [DecidableEq I] {i : I} -- The type of the indexing set
-  (R : Type v) [CommSemiring R] -- The commutative semiring `R`
+  (R : Type v) [Semiring R] [IsMulCommutative R] -- The commutative semiring `R`
   (A : I → Type w) [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] -- The collection of `R`-algebras
   {B : Type w'} [Semiring B] [Algebra R B] -- Another `R`-algebra
   (maps : {i : I} → A i →ₐ[R] B) -- A family of `R`algebra homomorphisms

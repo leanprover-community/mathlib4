@@ -44,7 +44,7 @@ namespace groupHomology
 
 open CategoryTheory Rep
 
-variable {k G : Type u} [CommRing k] [Group G] (S : Subgroup G) (A : Rep k S)
+variable {k G : Type u} [Ring k] [IsMulCommutative k] [Group G] (S : Subgroup G) (A : Rep k S)
 
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a subgroup
 `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism of complexes

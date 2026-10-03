@@ -18,7 +18,7 @@ These results cannot go in `LinearAlgebra/LinearIndependent/Basic.lean` due to t
 
 public section
 
-variable {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
+variable {R S A : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A]
   [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
 
 @[simp]

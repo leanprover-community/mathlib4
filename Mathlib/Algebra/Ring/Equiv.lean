@@ -404,7 +404,7 @@ def opOp (R : Type*) [Add R] [Mul R] : R ≃+* Rᵐᵒᵖᵐᵒᵖ where
 
 section NonUnitalCommSemiring
 
-variable (R) [NonUnitalCommSemiring R]
+variable (R) [NonUnitalSemiring R] [IsMulCommutative R]
 
 /-- A non-unital commutative ring is isomorphic to its opposite. -/
 def toOpposite : R ≃+* Rᵐᵒᵖ :=

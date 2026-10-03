@@ -133,7 +133,7 @@ end LinearOrderedRing
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+variable [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
 
 theorem sign_sum {ι : Type*} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
     (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i ∈ s, f i) = t := by

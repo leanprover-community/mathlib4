@@ -38,8 +38,8 @@ section IsLocalizedModule
 
 open Submodule
 
-variable [CommSemiring R] (S : Submonoid R) [CommSemiring Rₛ] [Algebra R Rₛ] [IsLocalization S Rₛ]
-  {M Mₛ : Type*} [AddCommMonoid M] [Module R M] [AddCommMonoid Mₛ] [Module R Mₛ]
+variable [Semiring R] [IsMulCommutative R] (S : Submonoid R) [Semiring Rₛ] [IsMulCommutative Rₛ] [Algebra R Rₛ] [IsLocalization S Rₛ]
+  {M Mₛ : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid Mₛ] [IsAddCommutative Mₛ] [Module R Mₛ]
   [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (f : M →ₗ[R] Mₛ) [IsLocalizedModule S f]
 
 include S
@@ -139,10 +139,10 @@ end IsLocalizedModule
 
 section LocalizationLocalization
 
-variable [CommSemiring R] (S : Submonoid R) [CommSemiring Rₛ] [Algebra R Rₛ]
+variable [Semiring R] [IsMulCommutative R] (S : Submonoid R) [Semiring Rₛ] [IsMulCommutative Rₛ] [Algebra R Rₛ]
 variable [IsLocalization S Rₛ]
-variable {A : Type*} [CommSemiring A] [Algebra R A]
-variable (Aₛ : Type*) [CommSemiring Aₛ] [Algebra A Aₛ]
+variable {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
+variable (Aₛ : Type*) [Semiring Aₛ] [IsMulCommutative Aₛ] [Algebra A Aₛ]
 variable [Algebra Rₛ Aₛ] [Algebra R Aₛ] [IsScalarTower R Rₛ Aₛ] [IsScalarTower R A Aₛ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
 
@@ -188,8 +188,8 @@ end LocalizationLocalization
 
 section FractionRing
 
-variable (R K : Type*) [CommRing R] [CommRing K] [Algebra R K] [IsFractionRing R K]
-variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
+variable (R K : Type*) [Ring R] [IsMulCommutative R] [Ring K] [IsMulCommutative K] [Algebra R K] [IsFractionRing R K]
+variable {V : Type*} [AddGroup V] [IsAddCommutative V] [Module R V] [Module K V] [IsScalarTower R K V]
 
 theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :
     LinearIndependent R b ↔ LinearIndependent K b :=
@@ -200,11 +200,11 @@ end FractionRing
 
 section
 
-variable {R : Type*} [CommSemiring R] (S : Submonoid R)
-variable (A : Type*) [CommSemiring A] [Algebra R A] [IsLocalization S A]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (S : Submonoid R)
+variable (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A] [IsLocalization S A]
 variable {M N : Type*}
-  [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
-  [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower R A N]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M]
+  [AddMonoid N] [IsAddCommutative N] [Module R N] [Module A N] [IsScalarTower R A N]
 
 open IsLocalization
 
@@ -255,13 +255,13 @@ end Localization
 
 namespace IsLocalizedModule
 
-variable {R : Type*} [CommSemiring R] (S : Submonoid R)
-variable {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M']
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (S : Submonoid R)
+variable {M M' : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M']
 variable [Module R M] [Module R M']
 variable (f : M →ₗ[R] M') [IsLocalizedModule S f]
-variable {N N'} [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
+variable {N N'} [AddMonoid N] [IsAddCommutative N] [AddMonoid N'] [IsAddCommutative N'] [Module R N] [Module R N']
 variable (g : N →ₗ[R] N') [IsLocalizedModule S g]
-variable (Rₛ) [CommSemiring Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']
+variable (Rₛ) [Semiring Rₛ] [IsMulCommutative Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']
 variable [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S Rₛ]
 
 /-- A linear map `M →ₗ[R] N` gives a map between localized modules `Mₛ →ₗ[Rₛ] Nₛ`. -/
@@ -290,9 +290,9 @@ end IsLocalizedModule
 
 section LocalizedModule
 
-variable {R : Type*} [CommSemiring R] (S : Submonoid R)
-variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable {N} [AddCommMonoid N] [Module R N]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (S : Submonoid R)
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {N} [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 /-- A linear map `M →ₗ[R] N` gives a map between localized modules `Mₛ →ₗ[Rₛ] Nₛ`. -/
 noncomputable
@@ -320,7 +320,7 @@ lemma LocalizedModule.map_surjective (l : M →ₗ[R] N) (hl : Function.Surjecti
     Function.Surjective (map S l) :=
   IsLocalizedModule.map_surjective S (mkLinearMap S M) (mkLinearMap S N) l hl
 
-lemma LocalizedModule.restrictScalars_map_eq {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N']
+lemma LocalizedModule.restrictScalars_map_eq {M' N' : Type*} [AddMonoid M'] [IsAddCommutative M'] [AddMonoid N'] [IsAddCommutative N']
     [Module R M'] [Module R N'] (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
     [IsLocalizedModule S g₁] [IsLocalizedModule S g₂]
     (l : M →ₗ[R] N) :
@@ -333,7 +333,7 @@ lemma LocalizedModule.restrictScalars_map_eq {M' N' : Type*} [AddCommMonoid M'] 
   simp
 
 variable {S} in
-lemma LocalizedModule.coe_map_eq {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N']
+lemma LocalizedModule.coe_map_eq {M' N' : Type*} [AddMonoid M'] [IsAddCommutative M'] [AddMonoid N'] [IsAddCommutative N']
     [Module R M'] [Module R N'] (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
     [IsLocalizedModule S g₁] [IsLocalizedModule S g₂] (l : M →ₗ[R] N) :
     ⇑(map S l) = (IsLocalizedModule.iso S g₂).symm ∘
@@ -345,9 +345,9 @@ end LocalizedModule
 
 namespace IsLocalizedModule
 
-variable {R M N M' N' : Type*} [CommSemiring R] {S : Submonoid R}
-  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-  [AddCommMonoid M'] [Module R M'] [AddCommMonoid N'] [Module R N']
+variable {R M N M' N' : Type*} [Semiring R] [IsMulCommutative R] {S : Submonoid R}
+  [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
+  [AddMonoid M'] [IsAddCommutative M'] [Module R M'] [AddMonoid N'] [IsAddCommutative N'] [Module R N']
   (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
   [IsLocalizedModule S g₁] [IsLocalizedModule S g₂] {l : M →ₗ[R] N}
 

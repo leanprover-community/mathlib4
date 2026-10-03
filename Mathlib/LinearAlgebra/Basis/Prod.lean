@@ -27,7 +27,7 @@ variable {ι : Type*} {ι' : Type*} {R : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid M'] [IsAddCommutative M'] [Module R M']
   (b : Basis ι R M)
 
 section Prod
@@ -95,7 +95,7 @@ end Basis
 
 namespace Free
 
-variable (R M N : Type*) [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable (R M N : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 instance prod [Module.Free R M] [Module.Free R N] : Module.Free R (M × N) :=
   .of_basis <| (Module.Free.chooseBasis R M).prod (Module.Free.chooseBasis R N)
 

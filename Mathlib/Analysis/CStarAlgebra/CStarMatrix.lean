@@ -132,7 +132,7 @@ instance instAdd [Add A] : Add (CStarMatrix m n A) :=
 instance instAddSemigroup [AddSemigroup A] : AddSemigroup (CStarMatrix m n A) :=
   inferInstanceAs <| AddSemigroup (Matrix m n A)
 
-instance instAddCommSemigroup [AddCommSemigroup A] : AddCommSemigroup (CStarMatrix m n A) :=
+instance instAddCommSemigroup [AddSemigroup A] [IsAddCommutative A] : AddCommSemigroup (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommSemigroup (Matrix m n A)
 
 instance instZero [Zero A] : Zero (CStarMatrix m n A) :=
@@ -148,7 +148,7 @@ instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) where
   nsmul := letI := instSMul (R := ℕ) (A := A) (m := m) (n := n); (· • · )
   __ : AddMonoid (CStarMatrix m n A) := inferInstanceAs <| AddMonoid (Matrix m n A)
 
-instance instAddCommMonoid [AddCommMonoid A] : AddCommMonoid (CStarMatrix m n A) :=
+instance instAddCommMonoid [AddMonoid A] [IsAddCommutative A] : AddCommMonoid (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommMonoid (Matrix m n A)
 
 instance instNeg [Neg A] : Neg (CStarMatrix m n A) :=
@@ -161,7 +161,7 @@ instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) where
   zsmul := letI := instSMul (R := ℤ) (A := A) (m := m) (n := n); (· • · )
   __ : AddGroup (CStarMatrix m n A) := inferInstanceAs <| AddGroup (Matrix m n A)
 
-instance instAddCommGroup [AddCommGroup A] : AddCommGroup (CStarMatrix m n A) :=
+instance instAddCommGroup [AddGroup A] [IsAddCommutative A] : AddCommGroup (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommGroup (Matrix m n A)
 
 instance instUnique [Unique A] : Unique (CStarMatrix m n A) :=
@@ -192,7 +192,7 @@ instance instDistribMulAction [Monoid R] [AddMonoid A] [DistribMulAction R A] :
     DistribMulAction R (CStarMatrix m n A) :=
   inferInstanceAs <| DistribMulAction R (Matrix m n A)
 
-instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (CStarMatrix m n A) :=
+instance instModule [Semiring R] [AddMonoid A] [IsAddCommutative A] [Module R A] : Module R (CStarMatrix m n A) :=
   inferInstanceAs <| Module R (Matrix m n A)
 
 @[simp]
@@ -246,12 +246,12 @@ instance instStarModule [Star R] [Star A] [SMul R A] [StarModule R A] :
   star_smul r a := star_smul r (ofMatrix.symm a)
 
 /-- The equivalence to matrices, bundled as a linear equivalence. -/
-def ofMatrixₗ [AddCommMonoid A] [Semiring R] [Module R A] :
+def ofMatrixₗ [AddMonoid A] [IsAddCommutative A] [Semiring R] [Module R A] :
     (Matrix m n A) ≃ₗ[R] CStarMatrix m n A := LinearEquiv.refl _ _
 
 /-- The semilinear map constructed by applying a semilinear map to all the entries of the matrix. -/
 @[simps]
-def mapₗ [Semiring R] [Semiring S] {σ : R →+* S} [AddCommMonoid A] [AddCommMonoid B]
+def mapₗ [Semiring R] [Semiring S] {σ : R →+* S} [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B]
     [Module R A] [Module S B] (f : A →ₛₗ[σ] B) : CStarMatrix m n A →ₛₗ[σ] CStarMatrix m n B where
   toFun := fun M => M.map f
   map_add' M N := by ext; simp
@@ -284,37 +284,37 @@ instance instAddMonoidWithOne [AddMonoidWithOne A] : AddMonoidWithOne (CStarMatr
 instance instAddGroupWithOne [AddGroupWithOne A] : AddGroupWithOne (CStarMatrix n n A) :=
   inferInstanceAs <| AddGroupWithOne (Matrix n n A)
 
-instance instAddCommMonoidWithOne [AddCommMonoidWithOne A] :
+instance instAddCommMonoidWithOne [AddMonoidWithOne A] [IsAddCommutative A] :
     AddCommMonoidWithOne (CStarMatrix n n A) :=
   inferInstanceAs <| AddCommMonoidWithOne (Matrix n n A)
 
-instance instAddCommGroupWithOne [AddCommGroupWithOne A] :
+instance instAddCommGroupWithOne [AddGroupWithOne A] [IsAddCommutative A] :
     AddCommGroupWithOne (CStarMatrix n n A) :=
   inferInstanceAs <| AddCommGroupWithOne (Matrix n n A)
 
 -- We want to be lower priority than `instHMul`, but without this we can't have operands with
 -- implicit dimensions.
 @[default_instance 100]
-instance {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] :
+instance {l : Type*} [Fintype m] [Mul A] [AddMonoid A] [IsAddCommutative A] :
     HMul (CStarMatrix l m A) (CStarMatrix m n A) (CStarMatrix l n A) where
   hMul M N := ofMatrix (ofMatrix.symm M * ofMatrix.symm N)
 
-instance [Fintype n] [Mul A] [AddCommMonoid A] : Mul (CStarMatrix n n A) where mul M N := M * N
+instance [Fintype n] [Mul A] [AddMonoid A] [IsAddCommutative A] : Mul (CStarMatrix n n A) where mul M N := M * N
 
 end decidable
 
-theorem mul_apply {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMatrix l m A}
+theorem mul_apply {l : Type*} [Fintype m] [Mul A] [AddMonoid A] [IsAddCommutative A] {M : CStarMatrix l m A}
     {N : CStarMatrix m n A} {i k} : (M * N) i k = ∑ j, M i j * N j k := rfl
 
-theorem mul_apply' {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMatrix l m A}
+theorem mul_apply' {l : Type*} [Fintype m] [Mul A] [AddMonoid A] [IsAddCommutative A] {M : CStarMatrix l m A}
     {N : CStarMatrix m n A} {i k} : (M * N) i k = (fun j => M i j) ⬝ᵥ fun j => N j k := rfl
 
 @[simp]
-theorem smul_mul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [DistribMulAction R A]
+theorem smul_mul {l : Type*} [Fintype n] [Monoid R] [AddMonoid A] [IsAddCommutative A] [Mul A] [DistribMulAction R A]
     [IsScalarTower R A A] (a : R) (M : CStarMatrix m n A) (N : CStarMatrix n l A) :
     (a • M) * N = a • (M * N) := Matrix.smul_mul a M N
 
-theorem mul_smul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [DistribMulAction R A]
+theorem mul_smul {l : Type*} [Fintype n] [Monoid R] [AddMonoid A] [IsAddCommutative A] [Mul A] [DistribMulAction R A]
     [SMulCommClass R A A] (M : CStarMatrix m n A) (a : R) (N : CStarMatrix n l A) :
     M * (a • N) = a • (M * N) := Matrix.mul_smul M a N
 
@@ -375,7 +375,7 @@ def ofMatrixRingEquiv [Fintype n] [Semiring A] :
 instance instStarRing [Fintype n] [NonUnitalSemiring A] [StarRing A] :
     StarRing (CStarMatrix n n A) := inferInstanceAs <| StarRing (Matrix n n A)
 
-instance instAlgebra [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A] [Algebra R A] :
+instance instAlgebra [Fintype n] [DecidableEq n] [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] :
     Algebra R (CStarMatrix n n A) := inferInstanceAs <| Algebra R (Matrix n n A)
 
 /-- `ofMatrix` bundled as a star algebra equivalence. -/
@@ -393,21 +393,21 @@ set_option backward.isDefEq.respectTransparency.types false in
 variable (R) (A) in
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
-def reindexₗ {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
+def reindexₗ {l o : Type*} [Semiring R] [AddMonoid A] [IsAddCommutative A] [Module R A]
     (eₘ : m ≃ l) (eₙ : n ≃ o) : CStarMatrix m n A ≃ₗ[R] CStarMatrix l o A :=
   { Matrix.reindex eₘ eₙ with
     map_add' M N := by ext; simp
     map_smul' r M := by ext; simp }
 
 @[simp]
-lemma reindexₗ_apply {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
+lemma reindexₗ_apply {l o : Type*} [Semiring R] [AddMonoid A] [IsAddCommutative A] [Module R A]
     {eₘ : m ≃ l} {eₙ : n ≃ o} {M : CStarMatrix m n A} {i : l} {j : o} :
     reindexₗ R A eₘ eₙ M i j = Matrix.reindex eₘ eₙ M i j := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
-def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
+def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddMonoid A] [IsAddCommutative A] [Mul A] [Module R A]
     [Star A] (e : m ≃ n) : CStarMatrix m m A ≃⋆ₐ[R] CStarMatrix n n A :=
   { reindexₗ R A e e with
     map_mul' M N := by
@@ -425,17 +425,17 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
       simp [Matrix.submatrix_apply] }
 
 @[simp]
-lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A]
+lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddMonoid A] [IsAddCommutative A] [Mul A] [Star A]
     [Module R A] {e : m ≃ n} {M : CStarMatrix m m A}
     {i : n} {j : n} : reindexₐ R A e M i j = Matrix.reindex e e M i j := rfl
 
-lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
-    [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
+lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddMonoid A] [IsAddCommutative A] [Mul A] [Module R A]
+    [Star A] [AddMonoid B] [IsAddCommutative B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
     (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
+lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddMonoid A] [IsAddCommutative A] [Mul A] [Module R A]
     [Star A] {e : m ≃ n} : reindexₐ R A e.symm = (reindexₐ R A e).symm := by
   simp [reindexₐ, reindexₗ]
 
@@ -457,14 +457,14 @@ def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A
       ofMatrix_apply]
   map_star' M := by ext; simp [map, star_apply, map_star]
 
-theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A]
+theorem algebraMap_apply [Fintype n] [DecidableEq n] [Semiring R] [IsMulCommutative R] [Semiring A]
     [Algebra R A] {r : R} {i j : n} :
     (algebraMap R (CStarMatrix n n A) r) i j = if i = j then algebraMap R A r else 0 := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable (n) (R) (A) in
 /-- The ⋆-algebra equivalence between `A` and 1×1 matrices with its entry in `A`. -/
-def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Module R A] :
+def toOneByOne [Unique n] [Semiring R] [AddMonoid A] [IsAddCommutative A] [Mul A] [Star A] [Module R A] :
     A ≃⋆ₐ[R] CStarMatrix n n A where
   toFun a := fun x y => a
   invFun M := M default default

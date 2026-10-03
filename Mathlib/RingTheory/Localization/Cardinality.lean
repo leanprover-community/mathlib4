@@ -34,7 +34,7 @@ universe u v
 
 section CommSemiring
 
-variable {R : Type u} [CommSemiring R] {L : Type v} [CommSemiring L] [Algebra R L]
+variable {R : Type u} [Semiring R] [IsMulCommutative R] {L : Type v} [Semiring L] [IsMulCommutative L] [Algebra R L]
 
 namespace IsLocalization
 
@@ -44,7 +44,7 @@ theorem lift_cardinalMk_le (S : Submonoid R) [IsLocalization S L] :
   rwa [← lift_le.{v}, lift_mk_eq'.2 ⟨(Localization.algEquiv S L).toEquiv⟩] at this
 
 /-- A localization always has cardinality less than or equal to the base ring. -/
-theorem cardinalMk_le {L : Type u} [CommSemiring L] [Algebra R L]
+theorem cardinalMk_le {L : Type u} [Semiring L] [IsMulCommutative L] [Algebra R L]
     (S : Submonoid R) [IsLocalization S L] : #L ≤ #R := by
   simpa using lift_cardinalMk_le (L := L) S
 
@@ -54,7 +54,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type u} [CommRing R] {L : Type v} [CommRing L] [Algebra R L]
+variable {R : Type u} [Ring R] [IsMulCommutative R] {L : Type v} [Ring L] [IsMulCommutative L] [Algebra R L]
 
 namespace Localization
 
@@ -74,14 +74,14 @@ theorem lift_cardinalMk (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰)
   rwa [← lift_inj.{u, v}, lift_mk_eq'.2 ⟨(Localization.algEquiv S L).toEquiv⟩] at this
 
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
-theorem cardinalMk (L : Type u) [CommRing L] [Algebra R L]
+theorem cardinalMk (L : Type u) [Ring L] [IsMulCommutative L] [Algebra R L]
     (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #L = #R := by
   simpa using lift_cardinalMk L S hS
 
 end IsLocalization
 
 @[simp]
-theorem Cardinal.mk_fractionRing (R : Type u) [CommRing R] : #(FractionRing R) = #R :=
+theorem Cardinal.mk_fractionRing (R : Type u) [Ring R] [IsMulCommutative R] : #(FractionRing R) = #R :=
   IsLocalization.cardinalMk (FractionRing R) R⁰ le_rfl
 
 alias FractionRing.cardinalMk := Cardinal.mk_fractionRing
@@ -93,7 +93,7 @@ variable (R L)
 theorem lift_cardinalMk [IsFractionRing R L] : Cardinal.lift.{u} #L = Cardinal.lift.{v} #R :=
   IsLocalization.lift_cardinalMk L _ le_rfl
 
-theorem cardinalMk (L : Type u) [CommRing L] [Algebra R L] [IsFractionRing R L] : #L = #R :=
+theorem cardinalMk (L : Type u) [Ring L] [IsMulCommutative L] [Algebra R L] [IsFractionRing R L] : #L = #R :=
   IsLocalization.cardinalMk L _ le_rfl
 
 end IsFractionRing

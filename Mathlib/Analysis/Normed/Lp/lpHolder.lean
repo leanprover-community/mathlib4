@@ -34,8 +34,8 @@ namespace lp
 section NontriviallyNormedField
 
 variable {α 𝕜 : Type*} {E F : α → Type*} [NontriviallyNormedField 𝕜]
-variable [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-  [∀ i, NormedAddCommGroup (F i)] [∀ i, NormedSpace 𝕜 (F i)]
+variable [∀ i, NormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [∀ i, NormedAddGroup (F i)] [∀ i, IsAddCommutative (F i)] [∀ i, NormedSpace 𝕜 (F i)]
 variable {p : ℝ≥0∞}
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -66,16 +66,16 @@ lemma norm_mapCLM_le (p : ℝ≥0∞) [Fact (1 ≤ p)]
 end NontriviallyNormedField
 
 lemma norm_tsumCLM_le {α 𝕜 E : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] :
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [CompleteSpace E] :
     ‖tsumCLM 𝕜 α E‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ zero_le_one _
 
 end lp
 
 variable {ι 𝕜 : Type*} {E F G : ι → Type*} [RCLike 𝕜]
-variable [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-  [∀ i, NormedAddCommGroup (F i)] [∀ i, NormedSpace 𝕜 (F i)]
-  [∀ i, NormedAddCommGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
+variable [∀ i, NormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [∀ i, NormedAddGroup (F i)] [∀ i, IsAddCommutative (F i)] [∀ i, NormedSpace 𝕜 (F i)]
+  [∀ i, NormedAddGroup (G i)] [∀ i, IsAddCommutative (G i)] [∀ i, NormedSpace 𝕜 (G i)]
 
 open ENNReal
 
@@ -248,7 +248,7 @@ lemma norm_holderL_le [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
     ‖holderL (p := p) (q := q) r B hBK‖ ≤ K :=
   LinearMap.mkContinuous₂_norm_le _ K.2 _
 
-variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] [CompleteSpace H]
+variable {H : Type*} [NormedAddGroup H] [IsAddCommutative H] [NormedSpace 𝕜 H] [CompleteSpace H]
 
 variable (p q) in
 /-- The natural pairing between `lp E p` and `lp F q` (for Hölder conjugate `p q : ℝ≥0∞`) with

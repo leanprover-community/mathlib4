@@ -26,7 +26,7 @@ open scoped Topology NNReal
 
 section RealTVS
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set E} {x y : E}
 
 /-- If a subset of a real vector space contains an open segment, then the direction of this

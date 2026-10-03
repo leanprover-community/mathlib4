@@ -43,8 +43,8 @@ assert_not_exists Cardinal
 
 namespace TensorProduct
 
-variable {R M N : Type*} [CommRing R]
-variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R M N : Type*} [Ring R] [IsMulCommutative R]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 attribute [local ext high] ext LinearMap.prod_ext
 
@@ -230,7 +230,7 @@ lemma tensorQuotEquivQuotSMul_comp_mk (I : Ideal R) :
   Eq.symm <| (LinearEquiv.toLinearMap_symm_comp_eq _ _).mp <|
     tensorQuotEquivQuotSMul_symm_comp_mkQ I
 
-variable (S : Type*) [CommRing S] [Algebra R S]
+variable (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, then `S ⧸ IS` is
   isomorphic to `S ⊗[R] (R ⧸ I)` as `S` modules. -/
@@ -263,10 +263,10 @@ open TensorProduct
 
 namespace TensorProduct.AlgebraTensorModule
 
-variable {R : Type*} (A B : Type*) [CommRing R] [CommRing A] [Algebra R A]
-  [CommRing B] [Algebra R B]
-variable (M : Type*) [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
-variable {N : Type*} [AddCommGroup N] [Module R N] [Module B N] [IsScalarTower R B N]
+variable {R : Type*} (A B : Type*) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
+  [Ring B] [IsMulCommutative B] [Algebra R B]
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N] [Module B N] [IsScalarTower R B N]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- More linear version of `TensorProduct.tensorQuotientEquiv`. -/

@@ -96,7 +96,7 @@ theorem mem_wellApproximable_iff {A : Type*} [SeminormedGroup A] {δ : ℕ → �
 
 namespace approxOrderOf
 
-variable {A : Type*} [SeminormedCommGroup A] {a : A} {m n : ℕ} (δ : ℝ)
+variable {A : Type*} [SeminormedGroup A] [IsMulCommutative A] {a : A} {m n : ℕ} (δ : ℝ)
 
 @[to_additive]
 theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
@@ -320,7 +320,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
 
 See also `AddCircle.exists_norm_nsmul_le`. -/
 lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
-    [NormedAddCommGroup A] [CompactSpace A] [PreconnectedSpace A]
+    [NormedAddGroup A] [IsAddCommutative A] [CompactSpace A] [PreconnectedSpace A]
     [MeasurableSpace A] [BorelSpace A] {μ : Measure A} [μ.IsAddHaarMeasure]
     (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ / 2))) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by

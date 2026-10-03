@@ -24,12 +24,12 @@ open TensorProduct LinearMap
 namespace DirectSum
 
 variable {ι R M S : Type*}
-  [CommSemiring R] [AddCommMonoid M] [Module R M]
+  [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
   (ℳ : ι → Submodule R M)
 
 section BaseChange
 
-variable [DecidableEq ι] [Decomposition ℳ] [CommSemiring S] [Algebra R S]
+variable [DecidableEq ι] [Decomposition ℳ] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 instance Decomposition.baseChange : Decomposition fun i ↦ (ℳ i).baseChange S := by
   refine .ofLinearMap _ (lmap (ℳ · |>.toBaseChange S) ∘ₗ
@@ -58,7 +58,7 @@ end BaseChange
 
 section TensorModule
 
-variable (N : Type*) [AddCommMonoid N] [Module R N]
+variable (N : Type*) [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 /-- The submodule of a tensor product corresponding to a decomposition on the left. -/
 def decomposeTensor (i : ι) : Submodule R (M ⊗[R] N) :=
@@ -120,7 +120,7 @@ lemma coe_decomposeTensor_apply (x : (⨁ i, decomposeTensor ℳ N i)) :
 
 /-- The decomposition of a tensor product induced by a decomposition of the left module. -/
 @[reducible]
-noncomputable def tensorDecomposition (N : Type*) [AddCommGroup N] [Module R N] :
+noncomputable def tensorDecomposition (N : Type*) [AddGroup N] [IsAddCommutative N] [Module R N] :
     DirectSum.Decomposition (decomposeTensor ℳ N) where
   decompose' x := (DirectSum.congrLinearEquiv <| decomposeTensorEquiv ℳ N)
     (directSumLeft R R (fun i ↦ ℳ i) N <| (DirectSum.decomposeLinearEquiv ℳ).rTensor N x)
@@ -131,7 +131,7 @@ end TensorModule
 
 namespace IsInternal
 
-variable [DecidableEq ι] [CommSemiring S] [Algebra R S]
+variable [DecidableEq ι] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 theorem baseChange (hm : IsInternal ℳ) : IsInternal fun i ↦ (ℳ i).baseChange S :=
   haveI := hm.chooseDecomposition

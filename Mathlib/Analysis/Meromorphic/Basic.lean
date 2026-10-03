@@ -27,7 +27,7 @@ open Filter Metric Set
 open scoped Pointwise Topology
 
 variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
-  [NormedAlgebra 𝕜 𝕜'] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAlgebra 𝕜 𝕜'] {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 variable {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
 
 /-- Meromorphy of `f` at `x` (more precisely, on a punctured neighbourhood of `x`; the value at
@@ -434,7 +434,7 @@ section composition
 -/
 
 variable
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
   {x : 𝕜}
 
 /-- The composition of a meromorphic and an analytic function is meromorphic. -/
@@ -709,7 +709,7 @@ end arithmetic
 
 section composition
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F] {V : Set 𝕜'}
 
 /-- The composition of a meromorphic and an analytic function is meromorphic. -/
@@ -777,7 +777,7 @@ lemma meromorphicOn {s : Set 𝕜} (hf : Meromorphic f) : MeromorphicOn f s := f
 
 section composition
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F]
 
 /-- The composition of a meromorphic and an analytic function is meromorphic. Compared to

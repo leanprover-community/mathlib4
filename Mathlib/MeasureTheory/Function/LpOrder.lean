@@ -36,7 +36,7 @@ namespace Lp
 
 section Order
 
-variable [NormedAddCommGroup E]
+variable [NormedAddGroup E] [IsAddCommutative E]
 
 section PartialOrder
 

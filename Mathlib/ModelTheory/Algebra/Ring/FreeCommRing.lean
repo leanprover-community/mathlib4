@@ -52,7 +52,7 @@ set_option backward.privateInPublic.warn false in
 noncomputable def termOfFreeCommRing (p : FreeCommRing α) : Language.ring.Term α :=
   Classical.choose (exists_term_realize_eq_freeCommRing p)
 
-variable {R : Type*} [CommRing R] [CompatibleRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [CompatibleRing R]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

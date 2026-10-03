@@ -744,7 +744,7 @@ alias _root_.AddMonoidHom.restrict_mrange := _root_.AddMonoidHom.domRestrict_mra
 @[to_additive (attr := simps apply)
   /-- A version of `AddMonoidHom.domRestrict` as a homomorphism. -/]
 def domRestrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : Type*)
-    [CommMonoid A] : (M →* A) →* (M' →* A) where
+    [Monoid A] [IsMulCommutative A] : (M →* A) →* (M' →* A) where
   toFun f := f.domRestrict M'
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp

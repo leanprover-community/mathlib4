@@ -182,7 +182,7 @@ theorem card_le_of_surjective' [RankCondition R] {α β : Type*} [Fintype α] [F
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
   exact card_le_of_surjective R (P.toLinearMap ∘ₗ f ∘ₗ Q) (P.surjective.comp (i.comp Q.surjective))
 
-theorem Module.Finite.exists_nat_not_surjective [RankCondition R] (M) [AddCommMonoid M] [Module R M]
+theorem Module.Finite.exists_nat_not_surjective [RankCondition R] (M) [AddMonoid M] [IsAddCommutative M] [Module R M]
     [Module.Finite R M] : ∃ n : ℕ, ∀ f : M →ₗ[R] (Fin n → R), ¬Surjective f :=
   have ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
   ⟨n + 1, fun g hg ↦ by simpa using le_of_fin_surjective R (g ∘ₗ f) (hg.comp hf)⟩
@@ -266,7 +266,7 @@ end
 
 section
 
-variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι' : Type w}
+variable {R : Type u} [Ring R] [IsMulCommutative R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι' : Type w}
 
 /-- An `R`-linear map `R^n → R^m` induces a function `R^n/I^n → R^m/I^m`. -/
 private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
@@ -308,7 +308,7 @@ There are two stronger results in mathlib:
 
 We prove this instance here anyway to reduce the required imports.
 -/
-instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
+instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [Ring R] [IsMulCommutative R]
     [Nontrivial R] : InvariantBasisNumber R :=
   ⟨fun e =>
     let ⟨I, _hI⟩ := Ideal.exists_maximal R

@@ -721,7 +721,7 @@ protected def semigroup [Semigroup α] : Semigroup (Finset α) :=
 
 section CommSemigroup
 
-variable [CommSemigroup α] {s t : Finset α}
+variable [Semigroup α] [IsMulCommutative α] {s t : Finset α}
 
 /-- `Finset α` is a `CommSemigroup` under pointwise operations if `α` is. -/
 @[to_additive (attr := instance_reducible)
@@ -931,7 +931,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α]
+variable [Monoid α] [IsMulCommutative α]
 
 /-- `Finset α` is a `CommMonoid` under pointwise operations if `α` is. -/
 @[to_additive (attr := instance_reducible)
@@ -1015,7 +1015,7 @@ end DivisionMonoid
 /-- `Finset α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive (attr := instance_reducible) subtractionCommMonoid
   /-- `Finset α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
-protected def divisionCommMonoid [DivisionCommMonoid α] :
+protected def divisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] :
     DivisionCommMonoid (Finset α) :=
   coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 

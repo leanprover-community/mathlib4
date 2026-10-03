@@ -51,7 +51,7 @@ end Metric
 
 section Normed
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
 
 /-- A normed additive group is complete if any absolutely convergent series converges in the
 space. -/

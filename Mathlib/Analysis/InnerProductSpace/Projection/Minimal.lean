@@ -19,7 +19,7 @@ This is the key tool that is used to define `Submodule.orthogonalProjection` in
 public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y

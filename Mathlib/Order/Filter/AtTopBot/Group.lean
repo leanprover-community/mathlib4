@@ -23,7 +23,7 @@ namespace Filter
 
 section OrderedCommGroup
 
-variable [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] (l : Filter α) {f g : α → G}
+variable [Group G] [IsMulCommutative G] [PartialOrder G] [IsOrderedMonoid G] (l : Filter α) {f g : α → G}
 
 @[to_additive]
 theorem tendsto_atTop_mul_left_of_le' (C : G) (hf : ∀ᶠ x in l, C ≤ f x) (hg : Tendsto g l atTop) :
@@ -133,7 +133,7 @@ end OrderedCommGroup
 
 section LinearOrderedCommGroup
 
-variable [CommGroup G] [LinearOrder G]
+variable [Group G] [IsMulCommutative G] [LinearOrder G]
 
 /-- $\lim_{x\to+\infty}|x|_m=+\infty$ -/
 @[to_additive /-- $\lim_{x\to+\infty}|x|=+\infty$ -/]

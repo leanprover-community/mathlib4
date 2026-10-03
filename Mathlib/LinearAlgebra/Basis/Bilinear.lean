@@ -22,13 +22,13 @@ variable {ι₁ ι₂ : Type*}
 variable {R R₂ S S₂ M N P Rₗ : Type*}
 variable {Mₗ Nₗ Pₗ : Type*}
 
--- Could weaken [CommSemiring Rₗ] to [SMulCommClass Rₗ Rₗ Pₗ], but might impact performance
-variable [Semiring R] [Semiring S] [Semiring R₂] [Semiring S₂] [CommSemiring Rₗ]
+-- Could weaken [Semiring Rₗ] [IsMulCommutative Rₗ] to [SMulCommClass Rₗ Rₗ Pₗ], but might impact performance
+variable [Semiring R] [Semiring S] [Semiring R₂] [Semiring S₂] [Semiring Rₗ] [IsMulCommutative Rₗ]
 
 section AddCommMonoid
 
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P]
+variable [AddMonoid Mₗ] [IsAddCommutative Mₗ] [AddMonoid Nₗ] [IsAddCommutative Nₗ] [AddMonoid Pₗ] [IsAddCommutative Pₗ]
 variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
 variable [Module Rₗ Mₗ] [Module Rₗ Nₗ] [Module Rₗ Pₗ]
 variable [SMulCommClass S₂ R₂ P]

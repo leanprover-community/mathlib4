@@ -164,7 +164,7 @@ commutative additive monoid structure, then we can approximate `f` by finite sum
 functions of clopen sets.
 
 (Note no compatibility is assumed between the monoid structure on `V` and the topology.) -/]
-lemma exists_finite_sum_const_mulIndicator_approximation_of_mem_nhds_diagonal [CommMonoid V]
+lemma exists_finite_sum_const_mulIndicator_approximation_of_mem_nhds_diagonal [Monoid V] [IsMulCommutative V]
     (hS : S ∈ nhdsSet (diagonal V)) :
     ∃ (n : ℕ) (U : Fin n → Clopens X) (v : Fin n → V),
     ∀ x, (f x, ∏ n, mulIndicator (U n) (fun _ ↦ v n) x) ∈ S := by

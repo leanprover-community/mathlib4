@@ -27,7 +27,7 @@ public section
 
 open scoped MonoidAlgebra
 
-variable [Monoid G] [Field k] [AddCommGroup V] [Module k V]
+variable [Monoid G] [Field k] [AddGroup V] [IsAddCommutative V] [Module k V]
   (ρ : Representation k G V)
 
 /-- A representation is semisimple when every subrepresentation has a complement. -/
@@ -40,7 +40,7 @@ theorem isSemisimpleRepresentation_iff_isSemisimpleModule_asModule :
   exact OrderIso.complementedLattice_iff Subrepresentation.subrepresentationSubmoduleOrderIso
 
 set_option backward.isDefEq.respectTransparency false in
-theorem isSemisimpleModule_iff_isSemisimpleRepresentation_ofModule (M : Type*) [AddCommGroup M]
+theorem isSemisimpleModule_iff_isSemisimpleRepresentation_ofModule (M : Type*) [AddGroup M] [IsAddCommutative M]
     [Module k[G] M] :
     IsSemisimpleModule k[G] M ↔ IsSemisimpleRepresentation (ofModule (k := k) (G := G) M) := by
   rw [isSemisimpleModule_iff]

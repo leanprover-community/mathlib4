@@ -51,7 +51,7 @@ open Filter Nat Real
 
 open scoped Topology NNReal
 
-variable {R : Type*} [CommRing R] (μ : RingSeminorm R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (μ : RingSeminorm R)
 
 section smoothingSeminorm
 

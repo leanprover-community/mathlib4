@@ -80,7 +80,7 @@ lemma isSelfInv_iff_sq_eq_one [Group α] {a : α} : IsSelfInv a ↔ a ^ 2 = 1 :=
 
 section DivisionCommMonoid
 
-variable [DivisionCommMonoid α] {a b : α}
+variable [DivisionMonoid α] [IsMulCommutative α] {a b : α}
 
 @[to_additive]
 protected lemma IsSelfInv.mul (ha : IsSelfInv a) (hb : IsSelfInv b) : IsSelfInv (a * b) := by

@@ -100,7 +100,7 @@ namespace ContinuousLinearMap
 section TVS
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
-    [AddCommGroup E] [AddCommGroup F] [AddCommGroup G]
+    [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [AddGroup G] [IsAddCommutative G]
     [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
     [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 

@@ -20,7 +20,7 @@ section Basis
 
 open Module Submodule
 
-variable {R M : Type*} [Semiring R] [OrzechProperty R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [OrzechProperty R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem linearIndependent_of_top_le_span_of_card_le_finrank {ι : Type*} [Fintype ι] {b : ι → M}
     (spans : ⊤ ≤ span R (Set.range b)) (card_le : Fintype.card ι ≤ finrank R M) :

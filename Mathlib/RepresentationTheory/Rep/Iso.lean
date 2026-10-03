@@ -28,7 +28,7 @@ suppress_compilation
 
 section Group
 
-variable (k G : Type u) [Group G] [CommRing k] (n : ℕ)
+variable (k G : Type u) [Group G] [Ring k] [IsMulCommutative k] (n : ℕ)
 
 open MonoidalCategory Finsupp Representation.IntertwiningMap
 
@@ -65,13 +65,13 @@ end Group
 -/
 
 
-variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+variable {k : Type u} {G : Type v} [Ring k] [IsMulCommutative k] [Monoid G]
 
 open MonoidAlgebra
 
 /-- Auxiliary lemma for `toModuleMonoidAlgebra`. -/
-theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V W : Type*)
-    [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
+theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [Ring k] [IsMulCommutative k] [Monoid G] (V W : Type*)
+    [AddGroup V] [IsAddCommutative V] [AddGroup W] [IsAddCommutative W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
     (r : k[G]) (x : V) :
     f (MonoidAlgebra.lift k (V →ₗ[k] V) G ρ r x) =
@@ -170,7 +170,7 @@ instance : (ofModuleMonoidAlgebra (k := k) (G := G)).IsEquivalence :=
 
 -- TODO Verify that the equivalence with `ModuleCat k[G]` is a monoidal functor.
 
-variable {k G : Type u} [CommRing k] [Monoid G] in
+variable {k G : Type u} [Ring k] [IsMulCommutative k] [Monoid G] in
 instance : CategoryTheory.EnoughProjectives (Rep.{max w u} k G) :=
   equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives.{max w u}
 

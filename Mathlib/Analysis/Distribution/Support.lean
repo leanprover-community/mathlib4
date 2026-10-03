@@ -173,7 +173,7 @@ open SchwartzMap Distribution TemperedDistribution
 
 namespace TemperedDistribution
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 variable {f : 𝓢'(E, F)} {s : Set E}
 
@@ -264,8 +264,8 @@ open TopologicalSpace
 open scoped Distributions
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
-  {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] {Ω : Opens E}
+  {F : Type*} [AddGroup F] [IsAddCommutative F] [Module ℝ F] [TopologicalSpace F]
   [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
   {n : ℕ∞}
 

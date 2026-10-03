@@ -614,7 +614,7 @@ theorem codisjoint_subgroupOf_sup (H K : Subgroup G) :
   rw [codisjoint_iff, ← subgroupOf_sup, subgroupOf_self]
   exacts [le_sup_left, le_sup_right]
 
-variable {M : Type*} [CommGroup M]
+variable {M : Type*} [Group M] [IsMulCommutative M]
 
 @[to_additive]
 lemma subgroupOf_map_powMonoidHom_eq_range (S : Subgroup M) (n : ℕ) :
@@ -631,7 +631,7 @@ namespace MulEquiv
 lemma range_eq_top (e : G ≃* G') : (e : G →* G').range = ⊤ :=
   MonoidHom.range_eq_top.mpr e.surjective
 
-variable {M N : Type*} [CommGroup M] [CommGroup N]
+variable {M N : Type*} [Group M] [IsMulCommutative M] [Group N] [IsMulCommutative N]
 
 open MonoidHom in
 @[to_additive]

@@ -26,8 +26,8 @@ open MeasureTheory RCLike
 open scoped ENNReal NNReal
 
 variable {X Y E F Fₗ : Type*} [MeasurableSpace X] {μ : Measure X} {𝕜 𝕜' : Type*} [RCLike 𝕜]
-  [RCLike 𝕜'] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜' F]
-  [NormedAddCommGroup Fₗ] [NormedSpace 𝕜 Fₗ] {p : ℝ≥0∞}
+  [RCLike 𝕜'] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜' F]
+  [NormedAddGroup Fₗ] [IsAddCommutative Fₗ] [NormedSpace 𝕜 Fₗ] {p : ℝ≥0∞}
 
 namespace ContinuousLinearMap
 
@@ -70,7 +70,7 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
 theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] Fₗ) {φ : X → E} (φ_int : Integrable φ μ) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := integral_comp_commSL (by simp) L φ_int
 
-theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
+theorem integral_apply {H : Type*} [NormedAddGroup H] [IsAddCommutative H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
@@ -81,7 +81,7 @@ theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {
       simp [integral, hE, this]
 
 theorem _root_.ContinuousMultilinearMap.integral_apply {ι : Type*} [Fintype ι] {M : ι → Type*}
-    [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
+    [∀ i, NormedAddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, NormedSpace 𝕜 (M i)]
     {φ : X → ContinuousMultilinearMap 𝕜 M E} (φ_int : Integrable φ μ) (m : ∀ i, M i) :
     (∫ x, φ x ∂μ) m = ∫ x, φ x m ∂μ := by
   by_cases hE : CompleteSpace E
@@ -144,7 +144,7 @@ lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X 
     _ = _ := rfl
 
 open scoped ContinuousMapZero in
-theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
+theorem ContinuousMapZero.integral_apply {R : Type*} [NormedRing R] [IsMulCommutative R] [Zero Y]
     [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
     (hf : MeasureTheory.Integrable f μ) (y : Y) :
     (∫ (x : X), f x ∂μ) y = ∫ (x : X), (f x) y ∂μ := by

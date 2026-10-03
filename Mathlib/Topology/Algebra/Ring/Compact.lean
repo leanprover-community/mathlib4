@@ -39,7 +39,7 @@ public section
 attribute [local instance] Ideal.Quotient.field Fintype.ofFinite finite_of_compact_of_discrete
   DivisionRing.finite_of_compactSpace_of_t2Space
 
-variable {R : Type*} [CommRing R] [TopologicalSpace R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R]
 variable [IsTopologicalRing R] [CompactSpace R] [T2Space R]
 
 namespace IsArtinianRing

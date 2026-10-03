@@ -30,7 +30,7 @@ public section
 
 namespace Affine.Simplex
 variable {V P : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V]
 variable [MetricSpace P] [NormedAddTorsor V P] [MeasurableSpace P] [BorelSpace P]
 variable {n : ℕ}
 

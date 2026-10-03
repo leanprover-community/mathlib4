@@ -29,7 +29,7 @@ namespace MvPolynomial
 
 section Semiring
 
-variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B]
 variable [Algebra R A] [Algebra A B] [Algebra R B]
 variable [IsScalarTower R A B]
 variable {R B}
@@ -42,7 +42,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B]
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
 variable {R A}
 
@@ -76,7 +76,7 @@ open MvPolynomial
 
 section CommSemiring
 
-variable {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable {R A} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 @[simp]
 theorem mvPolynomial_aeval_coe (S : Subalgebra R A) (x : σ → S) (p : MvPolynomial σ R) :

@@ -38,7 +38,7 @@ open CategoryTheory
 
 namespace SemimoduleCat
 
-variable {R : Type u} [CommSemiring R]
+variable {R : Type u} [Semiring R] [IsMulCommutative R]
 
 namespace MonoidalCategory
 
@@ -293,7 +293,7 @@ end SemimoduleCat
 
 namespace ModuleCat
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 @[simps -isSimp]
 instance MonoidalCategory.instMonoidalCategoryStruct :

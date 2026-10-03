@@ -29,10 +29,10 @@ noncomputable section
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
+variable {G : Type*} [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
+variable {G' : Type*} [NormedAddGroup G'] [IsAddCommutative G'] [NormedSpace 𝕜 G']
 variable {f g : E → F} {f' g' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter (E × E)}
 
 section Composition

@@ -40,8 +40,8 @@ open scoped Topology
 
 open Finset Filter Metric
 
-variable {ι α E ε : Type*} [SeminormedAddCommGroup E]
-  [TopologicalSpace ε] [ESeminormedAddCommMonoid ε]
+variable {ι α E ε : Type*} [SeminormedAddGroup E] [IsAddCommutative E]
+  [TopologicalSpace ε] [ESeminormedAddMonoid ε] [IsAddCommutative ε]
 
 theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i ∈ s, f i) ↔

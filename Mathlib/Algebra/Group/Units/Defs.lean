@@ -263,7 +263,7 @@ instance instGroup : Group αˣ where
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive /-- Additive units of an additive commutative monoid form
 an additive commutative group. -/]
-instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ where
+instance instCommGroupUnits {α} [Monoid α] [IsMulCommutative α] : CommGroup αˣ where
   mul_comm := fun _ _ => ext <| mul_comm _ _
 
 @[to_additive (attr := simp, norm_cast)]
@@ -607,7 +607,7 @@ protected lemma mul_div_mul_right (h : IsUnit c) (a b : α) : a * c / (b * c) = 
 end DivisionMonoid
 
 section DivisionCommMonoid
-variable [DivisionCommMonoid α] {a c : α}
+variable [DivisionMonoid α] [IsMulCommutative α] {a c : α}
 
 @[to_additive]
 protected lemma div_mul_cancel_left (h : IsUnit a) (b : α) : a / (a * b) = b⁻¹ := by
@@ -651,7 +651,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
 
 /-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
 @[instance_reducible]
-noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
+noncomputable def commGroupOfIsUnit [hM : Monoid M] [IsMulCommutative M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     toInv := invOfIsUnit h,
     inv_mul_cancel := fun a => by

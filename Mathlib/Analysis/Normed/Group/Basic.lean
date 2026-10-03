@@ -290,7 +290,7 @@ lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedGroup E] (u v : E)
     using norm_mul₃_le' (a := (u / v)) (b := v) (c := v)
 
 @[to_additive norm_add_sub_norm_sub_le_two_mul_min]
-lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (u v : E) :
+lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedGroup E] [IsMulCommutative E] (u v : E) :
     ‖u * v‖ - ‖u / v‖ ≤ 2 * min ‖u‖ ‖v‖ := by
   rw [mul_min_of_nonneg _ _ (by positivity)]
   refine le_min ?_ (norm_mul_sub_norm_div_le_two_mul u v)
@@ -692,7 +692,7 @@ abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass �
 @[to_additive /-- A group homomorphism from an `AddCommGroup` to a
 `SeminormedAddGroup` induces a `SeminormedAddCommGroup` structure on the domain. -/]
 abbrev SeminormedCommGroup.induced
-    [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
+    [Group E] [IsMulCommutative E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedCommGroup E :=
   fast_instance% { SeminormedGroup.induced E F f with
     mul_comm := mul_comm }
@@ -712,7 +712,7 @@ abbrev NormedGroup.induced
 `NormedCommGroup` structure on the domain. -/
 @[to_additive /-- An injective group homomorphism from a `CommGroup` to a
 `NormedCommGroup` induces a `NormedCommGroup` structure on the domain. -/]
-abbrev NormedCommGroup.induced [CommGroup E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
+abbrev NormedCommGroup.induced [Group E] [IsMulCommutative E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
     (h : Injective f) : NormedCommGroup E :=
   fast_instance% { SeminormedCommGroup.induced E F f, MetricSpace.induced f h _ with }
 
@@ -720,8 +720,8 @@ end Induced
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε]
+variable [SeminormedGroup E] [IsMulCommutative E] [SeminormedGroup F] [IsMulCommutative F] {a b : E} {r : ℝ}
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedMonoid ε] [IsMulCommutative ε]
 
 @[to_additive]
 theorem dist_eq_norm_div (a b : E) : dist a b = ‖a / b‖ := by
@@ -769,11 +769,11 @@ theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
   simp_rw [dist_eq_norm_inv_mul, ← norm_inv' (x⁻¹ * y⁻¹), mul_inv, inv_inv]
 
-theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
+theorem norm_multiset_sum_le {E} [SeminormedAddGroup E] [IsAddCommutative E] (m : Multiset E) :
     ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.le_sum_of_subadditive norm norm_zero.le norm_add_le
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] [IsAddCommutative ε] in
 theorem enorm_multisetSum_le (m : Multiset ε) :
     ‖m.sum‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
   m.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le
@@ -782,20 +782,20 @@ theorem enorm_multisetSum_le (m : Multiset ε) :
 theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.apply_prod_le_sum_map _ norm_one'.le norm_mul_le'
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedMonoid ε] [IsMulCommutative ε] in
 @[to_additive existing]
 theorem enorm_multisetProd_le (m : Multiset ε) :
     ‖m.prod‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
   m.apply_prod_le_sum_map _ enorm_one'.le enorm_mul_le'
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] [IsAddCommutative ε] in
 @[bound]
 theorem enorm_sum_le (s : Finset ι) (f : ι → ε) :
     ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
   s.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le f
 
 @[bound]
-theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
+theorem norm_sum_le {E} [SeminormedAddGroup E] [IsAddCommutative E] (s : Finset ι) (f : ι → E) :
     ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
   s.le_sum_of_subadditive norm norm_zero.le norm_add_le f
 

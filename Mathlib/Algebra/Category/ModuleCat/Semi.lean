@@ -55,7 +55,7 @@ structure SemimoduleCat where
   _mkInternal ::
   /-- the underlying type of an object in `SemimoduleCat R` -/
   carrier : Type v
-  [isAddCommMonoid : AddCommMonoid carrier]
+  [isAddCommMonoid : AddMonoid carrier] [IsAddCommutative carrier]
   [isModule : Module R carrier]
 
 initialize_simps_projections SemimoduleCat (-isModule, -isAddCommMonoid)
@@ -70,7 +70,7 @@ attribute [coe] SemimoduleCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `SemimoduleCat R`. -/
-abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=
+abbrev of (X : Type v) [AddMonoid X] [IsAddCommutative X] [Module R X] : SemimoduleCat.{v} R :=
   ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
@@ -111,7 +111,7 @@ abbrev Hom.hom {A B : SemimoduleCat.{v} R} (f : Hom A B) :=
   ConcreteCategory.hom (C := SemimoduleCat R) f
 
 /-- Typecheck a `LinearMap` as a morphism in `SemimoduleCat`. -/
-abbrev ofHom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y] [Module R Y]
+abbrev ofHom {X Y : Type v} [AddMonoid X] [IsAddCommutative X] [Module R X] [AddMonoid Y] [IsAddCommutative Y] [Module R Y]
     (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom (C := SemimoduleCat R) f
 
@@ -160,7 +160,7 @@ lemma hom_surjective {M N : SemimoduleCat.{v} R} :
   hom_bijective.surjective
 
 @[simp]
-lemma hom_ofHom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y]
+lemma hom_ofHom {X Y : Type v} [AddMonoid X] [IsAddCommutative X] [Module R X] [AddMonoid Y] [IsAddCommutative Y]
     [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
 
 @[simp]
@@ -168,16 +168,16 @@ lemma ofHom_hom {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
     ofHom (Hom.hom f) = f := rfl
 
 @[simp]
-lemma ofHom_id {M : Type v} [AddCommMonoid M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
+lemma ofHom_id {M : Type v} [AddMonoid M] [IsAddCommutative M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
 
 @[simp]
-lemma ofHom_comp {M N O : Type v} [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid O] [Module R M]
+lemma ofHom_comp {M N O : Type v} [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid O] [IsAddCommutative O] [Module R M]
     [Module R N] [Module R O] (f : M →ₗ[R] N) (g : N →ₗ[R] O) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
 /- Doesn't need to be `@[simp]` since `simp only` can solve this. -/
-lemma ofHom_apply {M N : Type v} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+lemma ofHom_apply {M N : Type v} [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
     (f : M →ₗ[R] N) (x : M) : ofHom f x = f x := rfl
 
 lemma inv_hom_apply {M N : SemimoduleCat.{v} R} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
@@ -208,7 +208,7 @@ theorem forget₂_obj (X : SemimoduleCat R) :
     (forget₂ (SemimoduleCat R) AddCommMonCat).obj X = ↧X :=
   rfl
 
-theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommMonoid X] [Module R X] :
+theorem forget₂_obj_moduleCat_of (X : Type v) [AddMonoid X] [IsAddCommutative X] [Module R X] :
     (forget₂ (SemimoduleCat R) AddCommMonCat).obj (of R X) = ↧X :=
   rfl
 
@@ -268,7 +268,7 @@ end CategoryTheory.Iso
 /-- linear equivalences between `Module`s are the same as (isomorphic to) isomorphisms
 in `SemimoduleCat` -/
 @[simps]
-def linearEquivIsoModuleIsoₛ {X Y : Type u} [AddCommMonoid X] [AddCommMonoid Y] [Module R X]
+def linearEquivIsoModuleIsoₛ {X Y : Type u} [AddMonoid X] [IsAddCommutative X] [AddMonoid Y] [IsAddCommutative Y] [Module R X]
     [Module R Y] : (X ≃ₗ[R] Y) ≅
       ((SemimoduleCat.of R X) ≅ (SemimoduleCat.of R Y)) where
   hom := ↾fun e ↦ e.toModuleIsoₛ
@@ -327,7 +327,7 @@ lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
   mpr _ := isZero_of_subsingleton M
 
 @[simp]
-lemma isZero_of_iff_subsingleton {M : Type*} [AddCommMonoid M] [Module R M] :
+lemma isZero_of_iff_subsingleton {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] :
     IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
 
 end AddCommMonoid
@@ -368,7 +368,7 @@ universe u₀
 
 namespace Algebra
 
-variable {S₀ : Type u₀} [CommSemiring S₀] {S : Type u} [Semiring S] [Algebra S₀ S]
+variable {S₀ : Type u₀} [Semiring S₀] [IsMulCommutative S₀] {S : Type u} [Semiring S] [Algebra S₀ S]
 
 variable {M N : SemimoduleCat.{v} S}
 
@@ -394,7 +394,7 @@ end Algebra
 
 section
 
-variable {S : Type u} [CommSemiring S]
+variable {S : Type u} [Semiring S] [IsMulCommutative S]
 
 /- TODO: generalize `Functor.Linear`, see #28826.
 instance : Linear S (SemimoduleCat.{v} S) := SemimoduleCat.Algebra.instLinear -/
@@ -433,7 +433,7 @@ end SemimoduleCat
 
 section Bilinear
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 namespace SemimoduleCat
 
@@ -463,9 +463,9 @@ end Bilinear
 -/
 
 @[simp] theorem LinearMap.comp_id_semiModuleCat {R} [Semiring R]
-    {G : SemimoduleCat.{u} R} {H : Type u} [AddCommMonoid H] [Module R H] (f : G →ₗ[R] H) :
+    {G : SemimoduleCat.{u} R} {H : Type u} [AddMonoid H] [IsAddCommutative H] [Module R H] (f : G →ₗ[R] H) :
     f.comp (𝟙 G : G ⟶ G).hom = f := by simp
 
 @[simp] theorem LinearMap.id_semiModuleCat_comp {R} [Semiring R]
-    {G : Type u} [AddCommMonoid G] [Module R G] {H : SemimoduleCat.{u} R} (f : G →ₗ[R] H) :
+    {G : Type u} [AddMonoid G] [IsAddCommutative G] [Module R G] {H : SemimoduleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H : H ⟶ H).hom f = f := by simp

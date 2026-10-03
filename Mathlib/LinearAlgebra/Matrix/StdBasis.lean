@@ -22,7 +22,7 @@ open Module
 
 namespace Module.Basis
 variable {ι R M : Type*} (m n : Type*)
-variable [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Fintype m] [Fintype n] [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The standard basis of `Matrix m n M` given a basis on `M`. -/
 protected noncomputable def matrix (b : Basis ι R M) :
@@ -59,7 +59,7 @@ end Matrix
 
 namespace Module.Free
 
-variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
+variable (R M : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module.Free R M]
 
 /-- The module of finite matrices is free. -/
 instance matrix {m n : Type*} [Finite m] [Finite n] : Module.Free R (Matrix m n M) :=

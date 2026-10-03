@@ -668,7 +668,7 @@ instance [Zero X] [MulActionWithZero K X] (F : Subfield K) : MulActionWithZero F
   inferInstanceAs (MulActionWithZero F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/
-instance [AddCommMonoid X] [Module K X] (F : Subfield K) : Module F X :=
+instance [AddMonoid X] [IsAddCommutative X] [Module K X] (F : Subfield K) : Module F X :=
   inferInstanceAs (Module F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/

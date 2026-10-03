@@ -27,7 +27,7 @@ namespace QuadraticMap
 variable {ι R M N : Type*}
 
 section Finsupp
-variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N]
 
 open Finsupp
 
@@ -75,7 +75,7 @@ theorem sum_repr_sq_add_sum_repr_mul_polar (Q : QuadraticMap R M N) (bm : Basis 
 end Finsupp
 
 variable [LinearOrder ι]
-variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N]
 
 /-- Given an ordered basis, produce a bilinear form associated with the quadratic form.
 
@@ -128,7 +128,7 @@ lemma add_toBilin (bm : Basis ι R M) (Q₁ Q₂ : QuadraticMap R M N) :
   · simp [toBilin_apply]
   · simp [h.ne', h.not_gt, toBilin_apply]
 
-variable (S) [CommSemiring S] [Algebra S R]
+variable (S) [Semiring S] [IsMulCommutative S] [Algebra S R]
 variable [Module S N] [IsScalarTower S R N]
 
 @[simp]

@@ -26,7 +26,7 @@ open scoped UniformConvergence Filter
 namespace ContinuousAlternatingMap
 
 variable {𝕜 E F ι : Type*} [NormedField 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
 
 section IsClosedRange
 
@@ -78,7 +78,7 @@ instance instUniformContinuousConstSMul {M : Type*}
     UniformContinuousConstSMul M (E [⋀^ι]→L[𝕜] F) :=
   isUniformEmbedding_toContinuousMultilinearMap.uniformContinuousConstSMul fun _ _ ↦ rfl
 
-theorem isUniformInducing_postcomp {G : Type*} [AddCommGroup G] [UniformSpace G]
+theorem isUniformInducing_postcomp {G : Type*} [AddGroup G] [IsAddCommutative G] [UniformSpace G]
     [IsUniformAddGroup G] [Module 𝕜 G] (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
     IsUniformInducing (g.compContinuousAlternatingMap : (E [⋀^ι]→L[𝕜] F) → (E [⋀^ι]→L[𝕜] G)) := by
   rw [← isUniformEmbedding_toContinuousMultilinearMap.1.of_comp_iff]
@@ -226,7 +226,7 @@ end ContinuousSMul
 
 section ContinuousConstSMul
 
-variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [ContinuousConstSMul 𝕜 F]
+variable {G : Type*} [AddGroup G] [IsAddCommutative G] [Module 𝕜 G] [TopologicalSpace G] [ContinuousConstSMul 𝕜 F]
 
 /-- Given a continuous linear map taking values in the space of continuous multilinear maps
 such that all of its values are alternating maps,
@@ -246,7 +246,7 @@ lemma liftCLM_apply (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι 
 
 section CompContinuousLinearMap
 
-variable {E' : Type*} [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
+variable {E' : Type*} [AddGroup E'] [IsAddCommutative E'] [Module 𝕜 E'] [TopologicalSpace E']
 
 /-- Composition of a continuous alternating map and a continuous linear map
 as a bundled continuous linear map.
@@ -292,10 +292,10 @@ end ContinuousAlternatingMap
 
 namespace ContinuousLinearMap
 variable (𝕜 E F G ι : Type*) [NormedField 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousSMul 𝕜 E]
-  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousSMul 𝕜 E]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul 𝕜 F]
-  [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
   [ContinuousConstSMul 𝕜 G]
 
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous bilinear map.
@@ -331,11 +331,11 @@ end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
 variable {𝕜 E E' F G ι : Type*} [NormedField 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
-  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup E'] [IsAddCommutative E'] [Module 𝕜 E'] [TopologicalSpace E']
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul 𝕜 F]
-  [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
   [ContinuousConstSMul 𝕜 G]
 
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous linear equiv.

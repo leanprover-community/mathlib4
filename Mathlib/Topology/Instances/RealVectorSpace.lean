@@ -18,8 +18,8 @@ over `ℝ` is `ℝ`-linear
 @[expose] public section
 
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
-  {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] [ContinuousSMul ℝ F] [T2Space F]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
+  {F : Type*} [AddGroup F] [IsAddCommutative F] [Module ℝ F] [TopologicalSpace F] [ContinuousSMul ℝ F] [T2Space F]
 
 /-- A continuous additive map between two vector spaces over `ℝ` is `ℝ`-linear. -/
 theorem map_real_smul {G} [FunLike G E F] [AddMonoidHomClass G E F] (f : G) (hf : Continuous f)

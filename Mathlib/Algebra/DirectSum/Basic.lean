@@ -35,7 +35,7 @@ variable (ι : Type v) (β : ι → Type w)
 
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 @[implicit_reducible]
-def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
+def DirectSum [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] : Type _ :=
   Π₀ i, β i
 
 set_option backward.inferInstanceAs.wrap.data false in
@@ -61,29 +61,29 @@ namespace DirectSum
 variable {ι β}
 
 -- This instance exists to avoid nsmul and zsmul diamonds.
-instance {R : Type u} [Semiring R] [∀ i, AddCommMonoid (β i)] [∀ i, Module R (β i)] :
+instance {R : Type u} [Semiring R] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, Module R (β i)] :
     SMul R (⨁ i, β i) := inferInstanceAs <| SMul R (Π₀ (i : ι), β i)
 
 deriving instance AddCommMonoid, Inhabited, DFunLike for DirectSum
 
-instance [DecidableEq ι] [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] :
+instance [DecidableEq ι] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, DecidableEq (β i)] :
     DecidableEq (DirectSum ι β) :=
   inferInstanceAs <| DecidableEq (Π₀ i, β i)
 
 variable (β) in
 /-- Coercion from a `DirectSum` to a pi type is an `AddMonoidHom`. -/
-def coeFnAddMonoidHom [∀ i, AddCommMonoid (β i)] : (⨁ i, β i) →+ (Π i, β i) where
+def coeFnAddMonoidHom [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] : (⨁ i, β i) →+ (Π i, β i) where
   toFun x := x
   __ := DFinsupp.coeFnAddMonoidHom
 
 @[simp]
-lemma coeFnAddMonoidHom_apply [∀ i, AddCommMonoid (β i)] (v : ⨁ i, β i) :
+lemma coeFnAddMonoidHom_apply [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] (v : ⨁ i, β i) :
     coeFnAddMonoidHom β v = v :=
   rfl
 
 section AddCommGroup
 
-variable [∀ i, AddCommGroup (β i)]
+variable [∀ i, AddGroup (β i)] [∀ i, IsAddCommutative (β i)]
 
 instance : AddCommGroup (DirectSum ι β) :=
   inferInstanceAs (AddCommGroup (Π₀ i, β i))
@@ -94,7 +94,7 @@ theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i 
 
 end AddCommGroup
 
-variable [∀ i, AddCommMonoid (β i)]
+variable [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)]
 
 @[ext] theorem ext {x y : DirectSum ι β} (w : ∀ i, x i = y i) : x = y :=
   DFunLike.ext _ _ w
@@ -207,7 +207,7 @@ theorem addHom_ext' {γ : Type*} [AddZeroClass γ] ⦃f g : (⨁ i, β i) →+ �
     (H : ∀ i : ι, f.comp (of _ i) = g.comp (of _ i)) : f = g :=
   addHom_ext fun i => DFunLike.congr_fun <| H i
 
-variable {γ : Type u₁} [AddCommMonoid γ]
+variable {γ : Type u₁} [AddMonoid γ] [IsAddCommutative γ]
 
 section ToAddMonoid
 
@@ -279,7 +279,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
   DFinsupp.uniqueOfIsEmpty
 
 /-- The natural equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
-protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι] :
+protected def id (M : Type v) (ι : Type* := PUnit) [AddMonoid M] [IsAddCommutative M] [Unique ι] :
     (⨁ _ : ι, M) ≃+ M :=
   { DirectSum.toAddMonoid fun _ => AddMonoidHom.id M with
     toFun := DirectSum.toAddMonoid fun _ => AddMonoidHom.id M
@@ -291,11 +291,11 @@ protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι
         (fun x y ihx ihy => by grind)
     right_inv _ := toAddMonoid_of _ _ _ }
 
-@[simp] lemma id_symm_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Unique ι] (x : M) :
+@[simp] lemma id_symm_apply {M : Type v} {ι : Type*} [AddMonoid M] [IsAddCommutative M] [Unique ι] (x : M) :
     (DirectSum.id M ι).symm x = of _ default x :=
   rfl
 
-@[simp] lemma id_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Unique ι] (x : ⨁ _ : ι, M) :
+@[simp] lemma id_apply {M : Type v} {ι : Type*} [AddMonoid M] [IsAddCommutative M] [Unique ι] (x : ⨁ _ : ι, M) :
     DirectSum.id M ι x = x default := by
   rw [← AddEquiv.eq_symm_apply, id_symm_apply, eq_comm]
   induction x using DirectSum.induction_on <;> simp [Unique.eq_default, *]
@@ -323,7 +323,7 @@ end CongrLeft
 
 section Option
 
-variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)]
+variable {α : Option ι → Type w} [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)]
 
 /-- Isomorphism obtained by separating the term of index `none` of a direct sum over `Option ι`. -/
 @[simps!]
@@ -334,7 +334,7 @@ end Option
 
 section Sigma
 
-variable [DecidableEq ι] {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
+variable [DecidableEq ι] {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddMonoid (δ i j)] [∀ i j, IsAddCommutative (δ i j)]
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`. -/
 def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j where
@@ -406,24 +406,24 @@ end SigmaFiber
 indexed by `ι`.
 
 When `S = Submodule _ M`, this is available as a `LinearMap`, `DirectSum.coe_linearMap`. -/
-protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
+protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddMonoid M] [IsAddCommutative M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : (⨁ i, A i) →+ M :=
   toAddMonoid fun i => AddSubmonoidClass.subtype (A i)
 
 theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
-    {M S : Type*} [DecidableEq M] [AddCommMonoid M]
+    {M S : Type*} [DecidableEq M] [AddMonoid M] [IsAddCommutative M]
     [SetLike S M] [AddSubmonoidClass S M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
   simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk]
   exact DFinsupp.sumAddHom_apply _ x
 
 @[simp]
-theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
+theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddMonoid M] [IsAddCommutative M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) (i : ι) (x : A i) :
     DirectSum.coeAddMonoidHom A (of (fun i => A i) i x) = x :=
   toAddMonoid_of _ _ _
 
-theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
+theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddMonoid M] [IsAddCommutative M] [SetLike S M]
     [AddSubmonoidClass S M] {A : ι → S} (i j : ι) (x : A i) :
     (of (fun i ↦ {x // x ∈ A i}) i x j : M) = if i = j then x else 0 := by
   obtain rfl | h := Decidable.eq_or_ne j i
@@ -437,16 +437,16 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
 For the alternate statement in terms of independence and spanning, see
 `DirectSum.subgroup_isInternal_iff_iSupIndep_and_supr_eq_top` and
 `DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top`. -/
-def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
+def IsInternal {M S : Type*} [DecidableEq ι] [AddMonoid M] [IsAddCommutative M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : Prop :=
   Function.Bijective (DirectSum.coeAddMonoidHom A)
 
-theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCommMonoid M]
+theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddMonoid M] [IsAddCommutative M]
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
   rw [AddSubmonoid.iSup_eq_mrange_dfinsuppSumAddHom, AddMonoidHom.mrange_eq_top]
   exact Function.Bijective.surjective h
 
-variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]
+variable {M S : Type*} [AddMonoid M] [IsAddCommutative M] [SetLike S M] [AddSubmonoidClass S M]
 
 theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     (Function.support fun i => (x i : M)) ⊆ ↑(DFinsupp.support x) := by
@@ -463,8 +463,8 @@ theorem hasFiniteSupport (A : ι → S) (x : DirectSum ι fun i => A i) :
 
 section map
 
-variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
-variable [∀ i, AddCommMonoid (β i)] (f : ∀ (i : ι), α i →+ β i)
+variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)]
+variable [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] (f : ∀ (i : ι), α i →+ β i)
 
 /-- create a homomorphism from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
 def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
@@ -479,7 +479,7 @@ def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
     (map (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) :=
   DFinsupp.mapRange.addMonoidHom_id
 
-@[simp] lemma map_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)]
+@[simp] lemma map_comp {γ : ι → Type*} [∀ i, AddMonoid (γ i)] [∀ i, IsAddCommutative (γ i)]
     (g : ∀ (i : ι), β i →+ γ i) :
     (map (fun i ↦ (g i).comp (f i))) = (map g).comp (map f) :=
   DFinsupp.mapRange.addMonoidHom_comp _ _

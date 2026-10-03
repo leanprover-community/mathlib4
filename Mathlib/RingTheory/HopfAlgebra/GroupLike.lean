@@ -21,7 +21,7 @@ open HopfAlgebra
 variable {R A : Type*}
 
 section Semiring
-variable [CommSemiring R] [Semiring A] [HopfAlgebra R A] {a b : A}
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [HopfAlgebra R A] {a b : A}
 
 @[simp] lemma IsGroupLikeElem.antipode_mul_cancel (ha : IsGroupLikeElem R a) :
     antipode R a * a = 1 := by
@@ -67,7 +67,7 @@ instance : Group (GroupLike R A) where
 end GroupLike
 end Semiring
 
-variable [CommSemiring R] [CommSemiring A] [HopfAlgebra R A] {a b : A}
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [HopfAlgebra R A] {a b : A}
 
 instance GroupLike.instCommGroup : CommGroup (GroupLike R A) where
   __ := instCommMonoid

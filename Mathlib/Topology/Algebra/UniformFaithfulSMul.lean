@@ -18,7 +18,7 @@ is also faithful.
 
 public section
 
-instance UniformSpace.Completion.faithfulSMul {R K : Type*} [CommSemiring R] [Field K] [Algebra R K]
+instance UniformSpace.Completion.faithfulSMul {R K : Type*} [Semiring R] [IsMulCommutative R] [Field K] [Algebra R K]
     [UniformSpace K] [UniformContinuousConstSMul R K] [IsUniformAddGroup K]
     [IsTopologicalRing K] [Nontrivial (Completion K)] [FaithfulSMul R K] :
     FaithfulSMul R (Completion K) := by

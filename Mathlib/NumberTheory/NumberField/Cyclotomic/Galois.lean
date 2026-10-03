@@ -152,7 +152,7 @@ end stabilizer
 
 open MulChar DirichletCharacter IntermediateField
 
-variable (R : Type*) [CommRing R] [HasEnoughRootsOfUnity R (Monoid.exponent (ZMod n)ˣ)]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [HasEnoughRootsOfUnity R (Monoid.exponent (ZMod n)ˣ)]
 
 /--
 The bijection between the subgroups of `Gal(ℚ(ζₙ)/ℚ)` and the subgroups of the group

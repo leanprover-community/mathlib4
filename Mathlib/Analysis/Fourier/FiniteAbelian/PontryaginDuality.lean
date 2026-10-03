@@ -37,7 +37,7 @@ open Fintype (card)
 open Real hiding exp
 open scoped BigOperators DirectSum
 
-variable {α : Type*} [AddCommGroup α] {n : ℕ} {a b : α}
+variable {α : Type*} [AddGroup α] [IsAddCommutative α] {n : ℕ} {a b : α}
 
 namespace AddChar
 variable (n : ℕ) [NeZero n]

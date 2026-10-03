@@ -36,7 +36,7 @@ open CategoryTheory MonoidalCategory ShortComplex.ShortExact
 
 namespace Module.Flat
 
-variable {R : Type u} [CommRing R] (M : ModuleCat.{u} R)
+variable {R : Type u} [Ring R] [IsMulCommutative R] (M : ModuleCat.{u} R)
 
 lemma lTensor_shortComplex_exact [Flat R M] (C : ShortComplex <| ModuleCat R) (hC : C.Exact) :
     C.map (tensorLeft M) |>.Exact := by

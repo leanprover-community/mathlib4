@@ -55,7 +55,7 @@ namespace MvPolynomial
 open Finsupp
 
 variable {σ : Type*} {τ : Type*}
-variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+variable {R S T : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring T] [IsMulCommutative T]
 
 /--
 `bind₁` is the "left-hand side" bind operation on `MvPolynomial`, operating on the variable type.

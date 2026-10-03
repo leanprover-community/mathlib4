@@ -36,7 +36,7 @@ public section
 
 section
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] {I J : Ideal R}
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] {I J : Ideal R}
 
 theorem Ideal.iUnion_minimalPrimes :
     ⋃ p ∈ I.minimalPrimes, p = { x | ∃ y ∉ I.radical, x * y ∈ I.radical } := by
@@ -80,7 +80,7 @@ theorem Ideal.exists_mul_mem_of_mem_minimalPrimes
   exact Nat.find_spec H
 
 theorem IsSMulRegular.notMem_of_mem_minimalPrimes
-    {M : Type*} [AddCommMonoid M] [Module R M] {x : R} (reg : IsSMulRegular M x)
+    {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] {x : R} (reg : IsSMulRegular M x)
     {p : Ideal R} (hp : p ∈ (Module.annihilator R M).minimalPrimes) : x ∉ p := by
   intro hx
   rcases Ideal.exists_mul_mem_of_mem_minimalPrimes hp hx with ⟨y, hy, hxy⟩
@@ -130,7 +130,7 @@ end
 
 section
 
-variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {I J : Ideal R}
 
 theorem Ideal.minimalPrimes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
@@ -157,7 +157,7 @@ theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Functio
   · rintro ⟨J, hJ, rfl⟩
     exact Ideal.minimalPrimes_comap_of_surjective hf hJ
 
-lemma Ideal.minimalPrimes_map_of_surjective {S : Type*} [CommRing S] {f : R →+* S}
+lemma Ideal.minimalPrimes_map_of_surjective {S : Type*} [Ring S] [IsMulCommutative S] {f : R →+* S}
     (hf : Function.Surjective f) (I : Ideal R) :
     (I.map f).minimalPrimes = Ideal.map f '' (I ⊔ (RingHom.ker f)).minimalPrimes := by
   apply Set.image_injective.mpr (Ideal.comap_injective_of_surjective f hf)
@@ -175,7 +175,7 @@ end
 
 section
 
-variable {R : Type*} [CommSemiring R] (S : Submonoid R) (A : Type*) [CommSemiring A] [Algebra R A]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (S : Submonoid R) (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     (J.map (algebraMap R A)).minimalPrimes = Ideal.under R ⁻¹' J.minimalPrimes := by

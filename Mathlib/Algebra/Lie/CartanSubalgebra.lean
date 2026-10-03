@@ -30,14 +30,14 @@ lie subalgebra, normalizer, idealizer, cartan subalgebra
 universe u v w w₁ w₂
 
 variable {R : Type u} {L : Type v}
-variable [CommRing R] [LieRing L] [LieAlgebra R L] (H : LieSubalgebra R L)
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] (H : LieSubalgebra R L)
 
 /-- Given a Lie module `M` of a Lie algebra `L`, `LieSubmodule.IsUcsLimit` is the proposition
 that a Lie submodule `N ⊆ M` is the limiting value for the upper central series.
 
 This is a characteristic property of Cartan subalgebras with the roles of `L`, `M`, `N` played by
 `H`, `L`, `H`, respectively. See `LieSubalgebra.isCartanSubalgebra_iff_isUcsLimit`. -/
-def LieSubmodule.IsUcsLimit {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M]
+def LieSubmodule.IsUcsLimit {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
     [LieModule R L M] (N : LieSubmodule R L M) : Prop :=
   ∃ k, ∀ l, k ≤ l → (⊥ : LieSubmodule R L M).ucs l = N
 
@@ -110,7 +110,7 @@ instance (priority := 500) [Nontrivial L] (H : LieSubalgebra R L) [H.IsCartanSub
 end LieSubalgebra
 
 @[simp]
-theorem LieIdeal.normalizer_eq_top {R : Type u} {L : Type v} [CommRing R] [LieRing L]
+theorem LieIdeal.normalizer_eq_top {R : Type u} {L : Type v} [Ring R] [IsMulCommutative R] [LieRing L]
     [LieAlgebra R L] (I : LieIdeal R L) : (I : LieSubalgebra R L).normalizer = ⊤ := by
   ext x
   simpa only [LieSubalgebra.mem_normalizer_iff, LieSubalgebra.mem_top, iff_true] using!

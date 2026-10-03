@@ -29,7 +29,7 @@ namespace Polynomial
 
 section Semiring
 
-variable [CommSemiring R] [CommSemiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Semiring B]
 variable [Algebra R A] [Algebra A B] [Algebra R B]
 variable [IsScalarTower R A B]
 variable {R B}
@@ -42,7 +42,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Semiring B]
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
 variable {R A}
 
@@ -72,7 +72,7 @@ open Polynomial
 
 section CommSemiring
 
-variable {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable {R A} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 @[simp]
 theorem aeval_coe (S : Subalgebra R A) (x : S) (p : R[X]) : aeval (x : A) p = aeval x p :=
@@ -84,7 +84,7 @@ end Subalgebra
 
 namespace Polynomial
 
-variable {R A} [CommSemiring R] [CommRing A] [Algebra R A]
+variable {R A} [Semiring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
 
 theorem aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C (s : Multiset A) {x : A} (hx : x ∈ s)
     {p : R[X]} (hp : p.mapAlg R A = (s.map (X - C ·)).prod) : aeval x p = 0 := by

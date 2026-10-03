@@ -23,7 +23,7 @@ quotients and localizations.
 
 public section
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 open IsLocalRing Module Submodule IsLocalization.AtPrime
 
@@ -53,7 +53,7 @@ end IsLocalRing
 section IsDedekindDomain
 
 variable (p : Ideal R) [p.IsMaximal]
-variable (Rₚ Sₚ : Type*) [CommRing Rₚ] [CommRing Sₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
+variable (Rₚ Sₚ : Type*) [Ring Rₚ] [IsMulCommutative Rₚ] [Ring Sₚ] [IsMulCommutative Sₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
 variable [IsLocalRing Rₚ] [Algebra S Sₚ] [Algebra R Sₚ] [Algebra Rₚ Sₚ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
 variable [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]

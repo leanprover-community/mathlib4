@@ -19,8 +19,8 @@ to e.g. `ContinuousLinearMap`.
 
 public section
 
-variable {α β γ F : Type*} [TopologicalSpace β] [CommMonoid β]
-  [FunLike F α β] [TopologicalSpace F] [CommMonoid F] [ContinuousEvalConst F α β]
+variable {α β γ F : Type*} [TopologicalSpace β] [Monoid β] [IsMulCommutative β]
+  [FunLike F α β] [TopologicalSpace F] [Monoid F] [IsMulCommutative F] [ContinuousEvalConst F α β]
   [IsMulApply F α β] [IsOneApply F α β] {f : γ → F} {g : F} {L : SummationFilter γ}
 
 /-- See also `Pi.hasProd` for bare pi type. -/

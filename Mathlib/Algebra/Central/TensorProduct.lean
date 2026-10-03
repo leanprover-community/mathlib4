@@ -35,7 +35,7 @@ universe u v
 
 open TensorProduct
 
-variable (K B C : Type*) [CommSemiring K] [Semiring B] [Semiring C] [Algebra K B] [Algebra K C]
+variable (K B C : Type*) [Semiring K] [IsMulCommutative K] [Semiring B] [Semiring C] [Algebra K B] [Algebra K C]
 
 lemma Algebra.TensorProduct.includeLeft_map_center_le :
     (Subalgebra.center K B).map includeLeft ≤ Subalgebra.center K (B ⊗[K] C) := by

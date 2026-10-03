@@ -26,7 +26,7 @@ open Function (Surjective)
 
 namespace Submodule
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 open Set
 
@@ -69,10 +69,10 @@ instance : Inhabited {P : Submodule R M // P.FG} where
 
 section
 
-variable {S P : Type*} [Semiring S] [AddCommMonoid P] [Module S P]
+variable {S P : Type*} [Semiring S] [AddMonoid P] [IsAddCommutative P] [Module S P]
 variable {σ : R →+* S} [RingHomSurjective σ] (f : M →ₛₗ[σ] P)
 
-theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid (M i)]
+theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)]
     [∀ i, Module R (M i)] {p : ∀ i, Submodule R (M i)} (hsb : ∀ i, (p i).FG) :
     (pi Set.univ p).FG := by
   classical
@@ -109,10 +109,10 @@ theorem fg_map_iff (hf : Function.Injective f) {N : Submodule R M} :
 
 end
 
-variable {P : Type*} [AddCommMonoid P] [Module R P]
+variable {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P]
 variable {f : M →ₗ[R] P}
 
-theorem fg_of_fg_map {R M P : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup P]
+theorem fg_of_fg_map {R M P : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup P] [IsAddCommutative P]
     [Module R P] (f : M →ₗ[R] P) (hf : LinearMap.ker f = ⊥) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   fg_of_fg_map_injective f (LinearMap.ker_eq_bot.mp hf) hfn
@@ -127,7 +127,7 @@ protected theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG
 theorem fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (⊤ : Submodule R M).FG :=
   e.symm.range ▸ map_top (e.symm : P →ₗ[R] M) ▸ h.map _
 
-theorem fg_induction {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+theorem fg_induction {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
     {motive : ∀ N : Submodule R M, N.FG → Prop}
     (singleton : ∀ x : M, motive (R ∙ x) (fg_span_singleton _))
     (sup : ∀ (N₁ N₂ : Submodule R M) (hN₁ : N₁.FG) (hN₂ : N₂.FG),
@@ -140,7 +140,7 @@ theorem fg_induction {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     simpa [span_insert, sup_comm] using
       sup (span R s) (R ∙ x) _ (fg_span_singleton _) ih (singleton x)
 
-theorem fg_sup_span_induction {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+theorem fg_sup_span_induction {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
     {motive : ∀ N : Submodule R M, N.FG → Prop}
     (bot : motive ⊥ fg_bot)
     (sup : ∀ (N : Submodule R M) (x : M) (hN : N.FG),
@@ -153,10 +153,10 @@ theorem fg_sup_span_induction {R M : Type*} [Semiring R] [AddCommMonoid M] [Modu
 
 section RestrictScalars
 
-variable {R A M : Type*} [Semiring A] [AddCommMonoid M] [Module A M]
+variable {R A M : Type*} [Semiring A] [AddMonoid M] [IsAddCommutative M] [Module A M]
 variable {S : Submodule A M}
 
-theorem FG.restrictScalars_of_surjective [CommSemiring R] [Algebra R A] [Module R M]
+theorem FG.restrictScalars_of_surjective [Semiring R] [IsMulCommutative R] [Algebra R A] [Module R M]
     [IsScalarTower R A M] (hS : S.FG) (h : Function.Surjective (algebraMap R A)) :
     (restrictScalars R S).FG := by
   obtain ⟨s, rfl⟩ := hS
@@ -222,7 +222,7 @@ variable (R A M N : Type*)
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 namespace Finite
 
@@ -240,7 +240,7 @@ instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by
 
 section
 
-variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P] {σ : R →+* S}
+variable {S} {P : Type*} [Semiring S] [AddMonoid P] [IsAddCommutative P] [Module S P] {σ : R →+* S}
 
 @[stacks 0519 "(3)"]
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₛₗ[σ] P) (hf : Surjective f) :
@@ -257,7 +257,7 @@ theorem _root_.LinearMap.finite_iff_of_bijective [RingHomSurjective σ]
 
 end
 
-instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
+instance quotient (R) {A M} [Semiring R] [AddGroup M] [IsAddCommutative M] [Ring A] [Module A M] [Module R M]
     [SMul R A] [IsScalarTower R A M] [Module.Finite R M] (N : Submodule A M) :
     Module.Finite R (M ⧸ N) :=
   Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective
@@ -271,17 +271,17 @@ instance range [Module.Finite R M] (f : M →ₗ[R] N) : Module.Finite R f.range
 instance map (p : Submodule R M) [Module.Finite R p] (f : M →ₗ[R] N) : Module.Finite R (p.map f) :=
   of_surjective (f.restrict fun _ ↦ mem_map_of_mem) fun ⟨_, _, hy, hy'⟩ ↦ ⟨⟨_, hy⟩, Subtype.ext hy'⟩
 
-instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMonoid (M i)]
+instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)]
     [∀ i, Module R (M i)] [h : ∀ i, Module.Finite R (M i)] : Module.Finite R (∀ i, M i) :=
   ⟨by
     rw [← pi_top]
     exact fg_pi fun i => (h i).fg_top⟩
 
-theorem of_pi {ι : Type*} (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+theorem of_pi {ι : Type*} (M : ι → Type*) [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
     [Module.Finite R (∀ i, M i)] (i : ι) : Module.Finite R (M i) :=
   of_surjective _ <| LinearMap.proj_surjective i
 
-theorem pi_iff {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMonoid (M i)]
+theorem pi_iff {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)]
     [∀ i, Module R (M i)] : Module.Finite R (∀ i, M i) ↔ ∀ i, Module.Finite R (M i) :=
   ⟨fun _ i => of_pi M i, fun _ => inferInstance⟩
 
@@ -294,7 +294,7 @@ instance self : Module.Finite R R := ⟨Ideal.fg_top R⟩
 
 variable (M)
 
-theorem of_restrictScalars_finite (R A M : Type*) [Semiring R] [Semiring A] [AddCommMonoid M]
+theorem of_restrictScalars_finite (R A M : Type*) [Semiring R] [Semiring A] [AddMonoid M] [IsAddCommutative M]
     [Module R M] [Module A M] [SMul R A] [IsScalarTower R A M] [hM : Module.Finite R M] :
     Module.Finite A M := by
   rw [finite_def, fg_def] at hM ⊢
@@ -363,7 +363,7 @@ variable {R}
 section Algebra
 
 theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
-    [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M] :
+    [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M] :
     ∀ [Module.Finite R A] [Module.Finite A M], Module.Finite R M
   | ⟨⟨s, hs⟩⟩, ⟨⟨t, ht⟩⟩ =>
     ⟨fg_def.mpr
@@ -372,8 +372,8 @@ theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
         by rw [image2_smul, span_smul_of_span_eq_top hs (↑t : Set M), ht, restrictScalars_top]⟩⟩
 
 /-- See also `Module.Finite.of_surjective` and `LinearMap.finite_iff_of_bijective`. -/
-lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemiring B₁]
-    [CommSemiring A₂] [Semiring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂)
+lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Semiring A₁] [IsMulCommutative A₁] [Semiring B₁] [IsMulCommutative B₁]
+    [Semiring A₂] [IsMulCommutative A₂] [Semiring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂)
     (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
     [Module.Finite A₁ B₁] : Module.Finite A₂ B₂ := by
@@ -400,7 +400,7 @@ namespace Submodule
 
 open Module
 
-variable {R V} [Ring R] [AddCommGroup V] [Module R V]
+variable {R V} [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V]
 
 /-- The sup of two fg submodules is finite. Also see `Submodule.FG.sup`. -/
 instance finite_sup (S₁ S₂ : Submodule R V) [h₁ : Module.Finite R S₁]
@@ -423,7 +423,7 @@ instance finite_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule R 
 section RestrictScalars
 
 variable {R : Type*} [Semiring R]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable {A : Type*} [Semiring A] [Module R A] [Module A M] [IsScalarTower R A M]
 variable {S : Submodule A M}
 
@@ -448,7 +448,7 @@ end Submodule
 
 namespace RingHom
 
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+variable {A B C : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C]
 
 namespace Finite
 
@@ -480,8 +480,8 @@ end RingHom
 
 namespace AlgHom
 
-variable {R A B C : Type*} [CommRing R]
-variable [CommRing A] [CommRing B] [CommRing C]
+variable {R A B C : Type*} [Ring R] [IsMulCommutative R]
+variable [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C]
 variable [Algebra R A] [Algebra R B] [Algebra R C]
 
 namespace Finite
@@ -507,7 +507,7 @@ end Finite
 end AlgHom
 
 section Ring
-variable {R E : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
+variable {R E : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [AddMonoid E] [IsAddCommutative E] [Module R E]
 
 local notation3 "R≥0" => Nonneg R
 

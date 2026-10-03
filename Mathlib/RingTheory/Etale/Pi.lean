@@ -26,7 +26,7 @@ public section
 namespace Algebra.FormallyEtale
 
 variable {R : Type*} {I : Type*} (A : I → Type*)
-variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
+variable [Ring R] [IsMulCommutative R] [∀ i, Ring (A i)] [∀ i, IsMulCommutative (A i)] [∀ i, Algebra R (A i)]
 
 theorem pi_iff [Finite I] :
     FormallyEtale R (Π i, A i) ↔ ∀ i, FormallyEtale R (A i) := by

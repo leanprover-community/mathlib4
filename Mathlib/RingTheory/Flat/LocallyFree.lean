@@ -15,8 +15,8 @@ public section
 
 namespace Module
 
-variable {R : Type*} [CommRing R] {M N : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
-  [Module.Flat R M] [AddCommGroup N] [Module R N] [Module.Finite R N] [Module.Flat R N]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {M N : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Finite R M]
+  [Module.Flat R M] [AddGroup N] [IsAddCommutative N] [Module R N] [Module.Finite R N] [Module.Flat R N]
 
 open LocalizedModule
 

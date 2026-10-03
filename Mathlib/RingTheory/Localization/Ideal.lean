@@ -32,7 +32,7 @@ namespace IsLocalization
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (M : Submonoid R) (S : Type*) [Semiring S] [IsMulCommutative S]
 variable [Algebra R S] [IsLocalization M S]
 
 variable {M S} in
@@ -295,7 +295,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (M : Submonoid R) (S : Type*) [Ring S] [IsMulCommutative S]
 variable [Algebra R S] [IsLocalization M S]
 
 include M in
@@ -350,7 +350,7 @@ theorem bot_lt_under_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {Rₚ Sₚ : Type*}
-    [CommRing Rₚ] [IsDomain Rₚ] [CommRing Sₚ] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
+    [Ring Rₚ] [IsMulCommutative Rₚ] [IsDomain Rₚ] [Ring Sₚ] [IsMulCommutative Sₚ] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
     [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰)
     [IsLocalization M Rₚ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ]
     [Module.IsTorsionFree R S] : Module.IsTorsionFree Rₚ Sₚ := by
@@ -374,7 +374,7 @@ lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {R
     (injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
   exact ⟨a, ha, H⟩
 
-lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
+lemma of_surjective {R' S' : Type*} [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R' S']
     (f : R →+* R') (hf : Function.Surjective f) (g : S →+* S') (hg : Function.Surjective g)
     (H : g.comp (algebraMap R S) = (algebraMap _ _).comp f)
     (H' : RingHom.ker g ≤ (RingHom.ker f).map (algebraMap R S)) : IsLocalization (M.map f) S' where

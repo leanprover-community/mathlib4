@@ -285,7 +285,7 @@ instance [NumberField K] : IsIntegrallyClosed (𝓞 K) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension ℚ
 
 /-- The ring of integers of `K` are equivalent to any integral closure of `ℤ` in `K` -/
-protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra R K]
+protected noncomputable def equiv (R : Type*) [Ring R] [IsMulCommutative R] [Algebra R K]
     [IsIntegralClosure R ℤ K] : 𝓞 K ≃+* R :=
   (IsIntegralClosure.equiv ℤ R K _).symm.toRingEquiv
 
@@ -359,7 +359,7 @@ instance : IsIntegralClosure (𝓞 L) (𝓞 K) L :=
   IsIntegralClosure.tower_top (R := ℤ)
 
 /-- The ring of integers of `L` is isomorphic to any integral closure of `𝓞 K` in `L` -/
-protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) R] [Algebra R L]
+protected noncomputable def algEquiv (R : Type*) [Ring R] [IsMulCommutative R] [Algebra (𝓞 K) R] [Algebra R L]
     [IsScalarTower (𝓞 K) R L] [IsIntegralClosure R (𝓞 K) L] : 𝓞 L ≃ₐ[𝓞 K] R :=
   (IsIntegralClosure.equiv (𝓞 K) R L _).symm
 

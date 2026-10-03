@@ -41,10 +41,10 @@ instance [NonAssocSemiring α] : NonAssocSemiring (Shrink.{v} α) :=
 
 instance [Semiring α] : Semiring (Shrink.{v} α) := (equivShrink α).symm.semiring
 
-instance [NonUnitalCommSemiring α] : NonUnitalCommSemiring (Shrink.{v} α) :=
+instance [NonUnitalSemiring α] [IsMulCommutative α] : NonUnitalCommSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalCommSemiring
 
-instance [CommSemiring α] : CommSemiring (Shrink.{v} α) := (equivShrink α).symm.commSemiring
+instance [Semiring α] [IsMulCommutative α] : CommSemiring (Shrink.{v} α) := (equivShrink α).symm.commSemiring
 
 instance [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalNonAssocRing
@@ -53,10 +53,10 @@ instance [NonUnitalRing α] : NonUnitalRing (Shrink.{v} α) := (equivShrink α).
 instance [NonAssocRing α] : NonAssocRing (Shrink.{v} α) := (equivShrink α).symm.nonAssocRing
 instance [Ring α] : Ring (Shrink.{v} α) := (equivShrink α).symm.ring
 
-instance [NonUnitalCommRing α] : NonUnitalCommRing (Shrink.{v} α) :=
+instance [NonUnitalRing α] [IsMulCommutative α] : NonUnitalCommRing (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalCommRing
 
-instance [CommRing α] : CommRing (Shrink.{v} α) := (equivShrink α).symm.commRing
+instance [Ring α] [IsMulCommutative α] : CommRing (Shrink.{v} α) := (equivShrink α).symm.commRing
 instance [Semiring α] [IsDomain α] : IsDomain (Shrink.{v} α) := (Shrink.ringEquiv α).isDomain
 
 end Shrink

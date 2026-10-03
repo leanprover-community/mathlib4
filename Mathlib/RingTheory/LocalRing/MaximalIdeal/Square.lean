@@ -17,7 +17,7 @@ import Mathlib.RingTheory.Nakayama
 
 public section
 
-variable {R : Type*} [CommRing R] [IsLocalRing R] [IsNoetherianRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsLocalRing R] [IsNoetherianRing R]
 
 variable (R) in
 lemma IsLocalRing.maximalIdeal_sq_lt_maximalIdeal :

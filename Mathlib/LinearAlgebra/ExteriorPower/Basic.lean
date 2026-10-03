@@ -40,9 +40,9 @@ open scoped TensorProduct
 
 universe u
 
-variable (R : Type u) [CommRing R] (n : ℕ) {M N N' : Type*}
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-  [AddCommGroup N'] [Module R N']
+variable (R : Type u) [Ring R] [IsMulCommutative R] (n : ℕ) {M N N' : Type*}
+  [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
+  [AddGroup N'] [IsAddCommutative N'] [Module R N']
 
 namespace exteriorPower
 
@@ -132,7 +132,7 @@ inductive Rels (ι : Type*) (M : Type*)
 /-- The relations in the standard presentation of `⋀[R]^n M` with generators and relations. -/
 @[simps]
 noncomputable def relations (ι : Type*) [DecidableEq ι] (M : Type*)
-    [AddCommGroup M] [Module R M] :
+    [AddGroup M] [IsAddCommutative M] [Module R M] :
     Module.Relations R where
   G := ι → M
   R := Rels R ι M
@@ -151,7 +151,7 @@ variable {R} in
 given by `exteriorPower.relations R ι M` identify to alternating maps to `N`. -/
 @[simps!]
 noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
-    [AddCommGroup M] [Module R M] :
+    [AddGroup M] [IsAddCommutative M] [Module R M] :
     (relations R ι M).Solution N ≃ AlternatingMap R M N ι where
   toFun s :=
     { toFun := fun m ↦ s.var m

@@ -37,7 +37,7 @@ namespace Finset
 
 open Multiset
 
-variable [CommMonoidWithZero α] [NormalizedGCDMonoid α]
+variable [MonoidWithZero α] [IsMulCommutative α] [NormalizedGCDMonoid α]
 
 /-! ### lcm -/
 
@@ -208,7 +208,7 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
         split_ifs with h1 <;> simp [h, h1]
     simp only [gcd_zero_left, normalize_gcd]
 
-nonrec theorem gcd_mul_left {α} [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α]
+nonrec theorem gcd_mul_left {α} [MonoidWithZero α] [IsMulCommutative α] [StrongNormalizedGCDMonoid α]
     {s : Finset β} {f : β → α} {a : α} :
     (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
   classical
@@ -218,7 +218,7 @@ nonrec theorem gcd_mul_left {α} [CommMonoidWithZero α] [StrongNormalizedGCDMon
       rw [gcd_insert, gcd_insert, h, ← gcd_mul_left]
       apply ((normalize_associated a).mul_right _).gcd_eq_right
 
-nonrec theorem gcd_mul_right {α} [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α]
+nonrec theorem gcd_mul_right {α} [MonoidWithZero α] [IsMulCommutative α] [StrongNormalizedGCDMonoid α]
     {s : Finset β} {f : β → α} {a : α} :
     (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
   simp_rw [mul_comm]; exact gcd_mul_left
@@ -273,7 +273,7 @@ namespace Finset
 
 section IsDomain
 
-variable [CommRing α] [NormalizedGCDMonoid α]
+variable [Ring α] [IsMulCommutative α] [NormalizedGCDMonoid α]
 
 theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     (h : ∀ x : β, x ∈ s → a ∣ f x - g x) :

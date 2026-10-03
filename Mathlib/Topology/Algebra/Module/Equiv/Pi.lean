@@ -28,9 +28,9 @@ variable (R : Type*) [Semiring R]
 
 namespace ContinuousLinearMap
 
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
-  {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂] {ι : Type*} (φ : ι → Type*)
-  [∀ i, TopologicalSpace (φ i)] [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)]
+variable {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  {M₂ : Type*} [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂] {ι : Type*} (φ : ι → Type*)
+  [∀ i, TopologicalSpace (φ i)] [∀ i, AddMonoid (φ i)] [∀ i, IsAddCommutative (φ i)] [∀ i, Module R (φ i)]
 
 /-- If `I` and `J` are complementary index sets, the product of the kernels of the `J`th projections
 of `φ` is linearly equivalent to the product over `I`. -/
@@ -58,7 +58,7 @@ section Pi
 This is `Equiv.piCongrLeft` as a `ContinuousLinearEquiv`.
 -/
 def piCongrLeft {ι ι' : Type*}
-    (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)]
+    (φ : ι → Type*) [∀ i, AddMonoid (φ i)] [∀ i, IsAddCommutative (φ i)] [∀ i, Module R (φ i)]
     [∀ i, TopologicalSpace (φ i)]
     (e : ι' ≃ ι) : ((i' : ι') → φ (e i')) ≃L[R] (i : ι) → φ i where
   __ := Homeomorph.piCongrLeft e
@@ -71,7 +71,7 @@ is isomorphic (topologically and algebraically) to the product of
 This is `Equiv.sumPiEquivProdPi` as a `ContinuousLinearEquiv`.
 -/
 def sumPiEquivProdPi (S T : Type*)
-    (A : S ⊕ T → Type*) [∀ st, AddCommMonoid (A st)] [∀ st, Module R (A st)]
+    (A : S ⊕ T → Type*) [∀ st, AddMonoid (A st)] [∀ st, IsAddCommutative (A st)] [∀ st, Module R (A st)]
     [∀ st, TopologicalSpace (A st)] :
     ((st : S ⊕ T) → A st) ≃L[R] ((s : S) → A (Sum.inl s)) × ((t : T) → A (Sum.inr t)) where
   __ := LinearEquiv.sumPiEquivProdPi R S T A
@@ -84,7 +84,7 @@ This is `Equiv.piUnique` as a `ContinuousLinearEquiv`.
 -/
 @[simps! -fullyApplied]
 def piUnique {α : Type*} [Unique α] (f : α → Type*)
-    [∀ x, AddCommMonoid (f x)] [∀ x, Module R (f x)] [∀ x, TopologicalSpace (f x)] :
+    [∀ x, AddMonoid (f x)] [∀ x, IsAddCommutative (f x)] [∀ x, Module R (f x)] [∀ x, TopologicalSpace (f x)] :
     (Π t, f t) ≃L[R] f default where
   __ := LinearEquiv.piUnique R f
   __ := Homeomorph.piUnique f
@@ -93,8 +93,8 @@ end Pi
 
 section piCongrRight
 
-variable {R} {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)] [∀ i, AddCommMonoid (M i)]
-  [∀ i, Module R (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)] [∀ i, AddCommMonoid (N i)]
+variable {R} {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)]
+  [∀ i, Module R (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)] [∀ i, AddMonoid (N i)] [∀ i, IsAddCommutative (N i)]
   [∀ i, Module R (N i)] (f : (i : ι) → M i ≃L[R] N i)
 
 /-- Combine a family of continuous linear equivalences into a continuous linear equivalence of
@@ -114,7 +114,7 @@ end piCongrRight
 
 section Pi
 
-variable (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M]
+variable (ι R M : Type*) [Unique ι] [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
   [TopologicalSpace M]
 
 /-- If `ι` has a unique element, then `ι → M` is continuously linear equivalent to `M`. -/
@@ -136,7 +136,7 @@ variable (R M)
 /-- Continuous linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`.
 -/
 @[simps! -fullyApplied apply symm_apply]
-def piFinTwo (M : Fin 2 → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+def piFinTwo (M : Fin 2 → Type*) [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
     [∀ i, TopologicalSpace (M i)] : ((i : _) → M i) ≃L[R] M 0 × M 1 :=
   { Homeomorph.piFinTwo M with toLinearEquiv := LinearEquiv.piFinTwo R M }
 
@@ -147,7 +147,7 @@ def finTwoArrow : (Fin 2 → M) ≃L[R] M × M :=
 
 section
 variable {n : ℕ} {R} {M : Fin n.succ → Type*} {N : Type*}
-variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)]
+variable [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)]
 
 set_option backward.defeqAttrib.useBackward true in
 variable (R M) in
@@ -158,7 +158,7 @@ def _root_.Fin.consEquivL : (M 0 × Π i, M (Fin.succ i)) ≃L[R] (Π i, M i) wh
 
 /-- `Fin.cons` in the codomain of continuous linear maps. -/
 abbrev _root_.ContinuousLinearMap.finCons
-    [AddCommMonoid N] [Module R N] [TopologicalSpace N]
+    [AddMonoid N] [IsAddCommutative N] [Module R N] [TopologicalSpace N]
     (f : N →L[R] M 0) (fs : N →L[R] Π i, M (Fin.succ i)) :
     N →L[R] Π i, M i :=
   Fin.consEquivL R M ∘L f.prod fs

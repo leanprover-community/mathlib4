@@ -18,7 +18,7 @@ variable {ι M M₀ R : Type*}
 
 namespace Multiset
 section CommMonoid
-variable [CommMonoid M] [HasDistribNeg M]
+variable [Monoid M] [IsMulCommutative M] [HasDistribNeg M]
 
 @[simp] lemma prod_map_neg (s : Multiset M) : (s.map Neg.neg).prod = (-1) ^ card s * s.prod :=
   Quotient.inductionOn s (by simp)
@@ -26,7 +26,7 @@ variable [CommMonoid M] [HasDistribNeg M]
 end CommMonoid
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero M₀] {s : Multiset M₀}
+variable [MonoidWithZero M₀] [IsMulCommutative M₀] {s : Multiset M₀}
 
 lemma prod_eq_zero (h : (0 : M₀) ∈ s) : s.prod = 0 := by
   rcases Multiset.exists_cons_of_mem h with ⟨s', hs'⟩; simp [hs', Multiset.prod_cons]
@@ -62,7 +62,7 @@ lemma dvd_sum : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
 end NonUnitalSemiring
 
 section CommSemiring
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 lemma prod_map_sum {s : Multiset (Multiset R)} :
     prod (s.map sum) = sum ((Sections s).map prod) :=

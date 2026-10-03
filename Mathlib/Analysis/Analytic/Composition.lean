@@ -78,7 +78,7 @@ open scoped Topology NNReal ENNReal
 
 section Topological
 
-variable [CommRing 𝕜] [AddCommGroup E] [AddCommGroup F] [AddCommGroup G]
+variable [Ring 𝕜] [IsMulCommutative 𝕜] [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [AddGroup G] [IsAddCommutative G]
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
 variable [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
@@ -167,7 +167,7 @@ theorem compContinuousLinearMap_applyComposition {n : ℕ} (p : FormalMultilinea
   simp [applyComposition, Function.comp_def]
 
 @[simp]
-theorem applyComposition_apply_prod {H : Type*} [CommRing H] [Algebra 𝕜 H] [TopologicalSpace H]
+theorem applyComposition_apply_prod {H : Type*} [Ring H] [IsMulCommutative H] [Algebra 𝕜 H] [TopologicalSpace H]
     [IsTopologicalRing H] [ContinuousConstSMul 𝕜 H] (p : FormalMultilinearSeries 𝕜 E H) {n : ℕ}
     (c : Composition n) (v : Fin n → E) :
     ∏ i, p.applyComposition c v i = ∏ i, p (c.blocksFun i) (v ∘ c.embedding i) := by
@@ -288,8 +288,8 @@ end FormalMultilinearSeries
 
 end Topological
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
+variable [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [NormedAddGroup F] [IsAddCommutative F]
+  [NormedSpace 𝕜 F] [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G] [NormedAddGroup H] [IsAddCommutative H]
   [NormedSpace 𝕜 H]
 
 namespace FormalMultilinearSeries
@@ -609,7 +609,7 @@ and `compPartialSumTarget m M N`, yielding equal sums for functions that corresp
 other under the bijection. As `compChangeOfVariables m M N` is a dependent function, stating
 that it is a bijection is not directly possible, but the consequence on sums can be stated
 more easily. -/
-theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
+theorem compChangeOfVariables_sum {α : Type*} [AddMonoid α] [IsAddCommutative α] (m M N : ℕ)
     (f : (Σ n : ℕ, Fin n → ℕ) → α) (g : (Σ n, Composition n) → α)
     (h : ∀ (e) (he : e ∈ compPartialSumSource m M N), f e = g (compChangeOfVariables m M N e he)) :
     ∑ e ∈ compPartialSumSource m M N, f e = ∑ e ∈ compPartialSumTarget m M N, g e := by

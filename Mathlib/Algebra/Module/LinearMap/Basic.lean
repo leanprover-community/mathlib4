@@ -30,7 +30,7 @@ namespace LinearMap
 section toFunAsLinearMap
 
 variable {R M N A : Type*} [Semiring R] [Semiring A]
-  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module A N] [SMulCommClass R A N]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N] [Module A N] [SMulCommClass R A N]
 
 variable (R M N A) in
 /-- `A`-linearly coerce an `R`-linear map from `M` to `N` to a function, when `N` has
@@ -47,7 +47,7 @@ end toFunAsLinearMap
 section SMul
 
 variable [Semiring R] [Semiring R']
-variable [AddCommMonoid M] [AddCommMonoid M']
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M']
 variable [Module R M] [Module R' M']
 variable {σ₁₂ : R →+* R'}
 
@@ -83,7 +83,7 @@ end SMul
 section Actions
 
 variable [Semiring R] [Semiring R']
-variable [AddCommMonoid M] [AddCommMonoid M']
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M']
 variable [Module R M] [Module R' M']
 variable {σ₁₂ : R →+* R'}
 

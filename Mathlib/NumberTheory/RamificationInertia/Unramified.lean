@@ -24,7 +24,7 @@ We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate o
 
 public section
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 local notation3 "e(" P "|" R ")" =>

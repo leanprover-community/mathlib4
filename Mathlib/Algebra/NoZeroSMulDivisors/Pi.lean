@@ -24,7 +24,7 @@ variable {I : Type u}
 -- The indexing type
 variable {f : I → Type v}
 
-instance Pi.noZeroSMulDivisors (α) [Semiring α] [IsDomain α] [∀ i, AddCommGroup <| f i]
+instance Pi.noZeroSMulDivisors (α) [Semiring α] [IsDomain α] [∀ i, AddGroup <| f i] [∀ i, IsAddCommutative <| f i]
     [∀ i, Module α <| f i] [∀ i, NoZeroSMulDivisors α <| f i] :
     NoZeroSMulDivisors α (∀ i : I, f i) :=
   ⟨fun {_ _} h =>
@@ -34,5 +34,5 @@ instance Pi.noZeroSMulDivisors (α) [Semiring α] [IsDomain α] [∀ i, AddCommG
 /-- A special case of `Pi.noZeroSMulDivisors` for non-dependent types. Lean struggles to
 synthesize this instance by itself elsewhere in the library. -/
 instance _root_.Function.noZeroSMulDivisors {ι α β : Type*} [Semiring α] [IsDomain α]
-    [AddCommGroup β] [Module α β] [NoZeroSMulDivisors α β] : NoZeroSMulDivisors α (ι → β) :=
+    [AddGroup β] [IsAddCommutative β] [Module α β] [NoZeroSMulDivisors α β] : NoZeroSMulDivisors α (ι → β) :=
   Pi.noZeroSMulDivisors _

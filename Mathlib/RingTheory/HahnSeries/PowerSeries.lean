@@ -195,7 +195,7 @@ end Semiring
 
 section Algebra
 
-variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
+variable (R) [Semiring R] [IsMulCommutative R] {A : Type*} [Semiring A] [Algebra R A]
 
 /-- The `R`-algebra `A⟦ℕ⟧` is isomorphic to `PowerSeries A`. -/
 @[simps!]
@@ -214,12 +214,12 @@ def ofPowerSeriesAlg : PowerSeries A →ₐ[R] A⟦Γ⟧ :=
         Nat.cast_le).comp
     (AlgEquiv.toAlgHom (toPowerSeriesAlg R).symm)
 
-instance powerSeriesAlgebra {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)] :
+instance powerSeriesAlgebra {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra S (PowerSeries R)] :
     Algebra S R⟦Γ⟧ :=
   RingHom.toAlgebra <| (ofPowerSeries Γ R).comp (algebraMap S (PowerSeries R))
 
 variable {R}
-variable {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)]
+variable {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra S (PowerSeries R)]
 
 theorem algebraMap_apply' (x : S) :
     algebraMap S R⟦Γ⟧ x = ofPowerSeries Γ R (algebraMap S (PowerSeries R) x) :=

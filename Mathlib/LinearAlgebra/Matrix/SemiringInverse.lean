@@ -24,7 +24,7 @@ This file proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutativ
 
 open Equiv Equiv.Perm Finset
 
-variable {n m R : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommSemiring R]
+variable {n m R : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [Semiring R] [IsMulCommutative R]
 
 variable (s : ℤˣ) (A B : Matrix n n R) (i j : n)
 
@@ -85,7 +85,7 @@ lemma detp_submatrix_equiv_self (e : m ≃ n) : (A.submatrix e e).detp s = A.det
 lemma detp_smul (c : R) : (c • A).detp s = c ^ Fintype.card n * A.detp s := by
   simp [detp, Finset.mul_sum, Finset.prod_mul_distrib]
 
-lemma detp_map {S : Type*} [CommSemiring S] (f : R →+* S) :
+lemma detp_map {S : Type*} [Semiring S] [IsMulCommutative S] (f : R →+* S) :
     (A.map f).detp s = f (A.detp s) := by simp [detp]
 
 /-- A square matrix `A` over a commutative semiring `R` is "determinant balanced"

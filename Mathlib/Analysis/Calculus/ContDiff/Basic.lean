@@ -27,8 +27,8 @@ open scoped Topology ContDiff
 
 attribute [local instance 1001] NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
 
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
   {s t : Set E} {f : E → F} {x : E} {b : E × F → G} {m n : ℕ∞ω}
   {p : E → FormalMultilinearSeries 𝕜 E F}
 
@@ -655,8 +655,8 @@ theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n (Equiv.prodAsso
 
 /-- The iterated derivatives up to order `m` of a smooth compactly supported function are
 uniformly bounded. -/
-lemma HasCompactSupport.exists_bound_iteratedFDeriv {E F : Type*} [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F}
+lemma HasCompactSupport.exists_bound_iteratedFDeriv {E F : Type*} [NormedAddGroup E] [IsAddCommutative E]
+    [NormedSpace 𝕜 E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] {f : E → F}
     (hf : HasCompactSupport f) (hf' : ContDiff 𝕜 ∞ f) (m : ℕ) :
     ∃ C, 0 ≤ C ∧ ∀ i ≤ m, ∀ y, ‖_root_.iteratedFDeriv 𝕜 i f y‖ ≤ C := by
   have key i : ∃ C, ∀ y, ‖_root_.iteratedFDeriv 𝕜 i f y‖ ≤ C :=

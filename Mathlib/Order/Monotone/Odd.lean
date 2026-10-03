@@ -22,8 +22,8 @@ public section
 
 open Set
 
-variable {G H : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
-  [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
+variable {G H : Type*} [AddGroup G] [IsAddCommutative G] [LinearOrder G] [IsOrderedAddMonoid G]
+  [AddGroup H] [IsAddCommutative H] [PartialOrder H] [IsOrderedAddMonoid H]
 
 /-- An odd function on a linear ordered additive commutative group is strictly monotone on the whole
 group provided that it is strictly monotone on `Set.Ici 0`. -/

@@ -70,7 +70,7 @@ section WeightedSMul
 
 open ContinuousLinearMap
 
-variable [NormedAddCommGroup F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ : Measure α}
+variable [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ : Measure α}
 
 /-- Given a set `s`, return the continuous linear map `fun x => μ.real s • x`. The extension
 of that set function through `setToL1` gives the Bochner integral of L1 functions. -/
@@ -186,7 +186,7 @@ and prove basic properties of this integral.
 
 open Finset
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
   {m : MeasurableSpace α} {μ : Measure α}
 
 /-- Bochner integral of simple functions whose codomain is a real `NormedSpace`.
@@ -372,7 +372,7 @@ namespace L1
 
 open AEEqFun Lp.simpleFunc Lp
 
-variable [NormedAddCommGroup E] {m : MeasurableSpace α} {μ : Measure α}
+variable [NormedAddGroup E] [IsAddCommutative E] {m : MeasurableSpace α} {μ : Measure α}
 
 namespace SimpleFunc
 

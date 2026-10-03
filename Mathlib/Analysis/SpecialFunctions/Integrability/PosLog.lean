@@ -28,7 +28,7 @@ open Filter Interval MeasureTheory MeromorphicOn Metric Real
 section IntervalIntegrable
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
   {f : ℝ → E} {a b : ℝ}
 
 /--
@@ -54,7 +54,7 @@ end IntervalIntegrable
 section CircleIntegrable
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E]
   {c : ℂ} {R : ℝ} {f : ℂ → E}
 
 /--

@@ -37,15 +37,15 @@ More precisely, `Module.AEval R M a` has elements `Module.AEval.of R M a m` for 
 and the action of `f` is `f • (of R M a m) = of R M a ((aeval a f) • m)`.
 -/
 @[nolint unusedArguments]
-def AEval (R M : Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
+def AEval (R M : Type*) {A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
+    [AddMonoid M] [IsAddCommutative M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
   deriving AddCommMonoid, Module R
 
-instance AEval.instAddCommGroup {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A]
-    [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M] :
+instance AEval.instAddCommGroup {R A M} [Semiring R] [IsMulCommutative R] [Semiring A] (a : A) [Algebra R A]
+    [AddGroup M] [IsAddCommutative M] [Module A M] [Module R M] [IsScalarTower R A M] :
     AddCommGroup <| AEval R M a := inferInstanceAs (AddCommGroup M)
 
-variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
+variable {R A M} [Semiring R] [IsMulCommutative R] [Semiring A] (a : A) [Algebra R A] [AddMonoid M] [IsAddCommutative M] [Module A M]
   [Module R M] [IsScalarTower R A M]
 
 namespace AEval
@@ -92,7 +92,7 @@ instance instFinitePolynomial [Module.Finite R M] : Module.Finite R[X] <| AEval 
   Finite.of_restrictScalars_finite R _ _
 
 /-- Construct an `R[X]`-linear map out of `AEval R M a` from an `R`-linear map out of `M`. -/
-def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
+def _root_.LinearMap.ofAEval {N} [AddMonoid N] [IsAddCommutative N] [Module R N] [Module R[X] N]
     [IsScalarTower R R[X] N] (f : M →ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
     AEval R M a →ₗ[R[X]] N where
   __ := f ∘ₗ (of R M a).symm
@@ -104,7 +104,7 @@ def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
 
 /-- Construct an `R[X]`-linear equivalence out of `AEval R M a` from an `R`-linear map out of `M`.
 -/
-def _root_.LinearEquiv.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
+def _root_.LinearEquiv.ofAEval {N} [AddMonoid N] [IsAddCommutative N] [Module R N] [Module R[X] N]
     [IsScalarTower R R[X] N] (f : M ≃ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
     AEval R M a ≃ₗ[R[X]] N where
   __ := LinearMap.ofAEval a f hf

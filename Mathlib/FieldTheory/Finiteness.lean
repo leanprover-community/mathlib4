@@ -22,7 +22,7 @@ open Cardinal Submodule Module
 
 namespace IsNoetherian
 
-variable {K : Type u} {V : Type v} [DivisionRing K] [AddCommGroup V] [Module K V]
+variable {K : Type u} {V : Type v} [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 /-- A module over a division ring is Noetherian if and only if
 its dimension (as a cardinal) is strictly less than the first infinite cardinal `ℵ₀`.

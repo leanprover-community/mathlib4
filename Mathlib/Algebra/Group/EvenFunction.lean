@@ -75,7 +75,7 @@ lemma Even.add [Add β] {f g : α → β} (hf : f.Even) (hg : g.Even) : (f + g).
   intro a
   simp only [hf a, hg a, Pi.add_apply]
 
-lemma Odd.add [SubtractionCommMonoid β] {f g : α → β} (hf : f.Odd) (hg : g.Odd) : (f + g).Odd := by
+lemma Odd.add [SubtractionMonoid β] [IsAddCommutative β] {f g : α → β} (hf : f.Odd) (hg : g.Odd) : (f + g).Odd := by
   intro a
   simp only [hf a, hg a, Pi.add_apply, neg_add]
 
@@ -92,12 +92,12 @@ lemma Even.smul_odd [Monoid β] [AddGroup γ] [DistribMulAction β γ] (hf : f.E
   intro a
   simp only [Pi.smul_apply', hf a, hg a, smul_neg]
 
-lemma Odd.smul_even [Ring β] [AddCommGroup γ] [Module β γ] (hf : f.Odd) (hg : g.Even) :
+lemma Odd.smul_even [Ring β] [AddGroup γ] [IsAddCommutative γ] [Module β γ] (hf : f.Odd) (hg : g.Even) :
     (f • g).Odd := by
   intro a
   simp only [Pi.smul_apply', hf a, hg a, neg_smul]
 
-lemma Odd.smul_odd [Ring β] [AddCommGroup γ] [Module β γ] (hf : f.Odd) (hg : g.Odd) :
+lemma Odd.smul_odd [Ring β] [AddGroup γ] [IsAddCommutative γ] [Module β γ] (hf : f.Odd) (hg : g.Odd) :
     (f • g).Even := by
   intro a
   simp only [Pi.smul_apply', hf a, hg a, smul_neg, neg_smul, neg_neg]
@@ -138,7 +138,7 @@ end mul
 section torsionfree
 
 -- need to redeclare variables since `InvolutiveNeg α` conflicts with `Neg α`
-variable {α β : Type*} [AddCommGroup β] [IsAddTorsionFree β] {f : α → β}
+variable {α β : Type*} [AddGroup β] [IsAddCommutative β] [IsAddTorsionFree β] {f : α → β}
 
 /--
 If `f` is both even and odd, and its target is a torsion-free commutative additive group,

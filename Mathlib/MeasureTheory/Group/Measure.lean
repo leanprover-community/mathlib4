@@ -742,7 +742,7 @@ end IsTopologicalGroup
 
 section CommSemigroup
 
-variable [CommSemigroup G]
+variable [Semigroup G] [IsMulCommutative G]
 
 /-- In an abelian group every left invariant measure is also right-invariant.
   We don't declare the converse as an instance, since that would loop type-class inference, and
@@ -901,7 +901,7 @@ instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologic
 /-- A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     {E F R S : Type*} [Semiring R] [Semiring S]
-    [AddCommGroup E] [Module R E] [AddCommGroup F] [Module S F]
+    [AddGroup E] [IsAddCommutative E] [Module R E] [AddGroup F] [IsAddCommutative F] [Module S F]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [TopologicalSpace F]
     [IsTopologicalAddGroup F]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
@@ -954,7 +954,7 @@ instance (priority := 100) IsHaarMeasure.nullSingletonClass [IsTopologicalGroup 
 @[deprecated (since := "2026-06-09")]
 alias IsHaarMeasure.noAtoms := IsHaarMeasure.nullSingletonClass
 
-instance IsAddHaarMeasure.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
+instance IsAddHaarMeasure.domSMul {G A : Type*} [Group G] [AddGroup A] [IsAddCommutative A] [DistribMulAction G A]
     [MeasurableSpace A] [TopologicalSpace A] [BorelSpace A] [IsTopologicalAddGroup A]
     [ContinuousConstSMul G A] {μ : Measure A} [μ.IsAddHaarMeasure] (g : Gᵈᵐᵃ) :
     (g • μ).IsAddHaarMeasure :=

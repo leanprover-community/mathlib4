@@ -77,22 +77,22 @@ variable (R M)
 
 /-- `TrivSqZeroExt.fst` as a continuous linear map. -/
 @[simps]
-def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : StrongDual R (tsze R M) :=
+def fstCLM [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] : StrongDual R (tsze R M) :=
   { ContinuousLinearMap.fst R R M with toFun := fst }
 
 /-- `TrivSqZeroExt.snd` as a continuous linear map. -/
 @[simps]
-def sndCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] M :=
+def sndCLM [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] : tsze R M →L[R] M :=
   { ContinuousLinearMap.snd R R M with toFun := snd }
 
 /-- `TrivSqZeroExt.inl` as a continuous linear map. -/
 @[simps]
-def inlCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : R →L[R] tsze R M :=
+def inlCLM [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] : R →L[R] tsze R M :=
   { ContinuousLinearMap.inl R R M with toFun := inl }
 
 /-- `TrivSqZeroExt.inr` as a continuous linear map. -/
 @[simps]
-def inrCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : M →L[R] tsze R M :=
+def inrCLM [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] : M →L[R] tsze R M :=
   { ContinuousLinearMap.inr R R M with toFun := inr }
 
 variable {R M}
@@ -112,11 +112,11 @@ instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (ts
 
 /-- This is not an instance due to complaints by the `fails_quickly` linter. At any rate, we only
 really care about the `IsTopologicalRing` instance below. -/
-theorem topologicalSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+theorem topologicalSemiring [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M]
     [IsTopologicalSemiring R] [ContinuousAdd M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
     IsTopologicalSemiring (tsze R M) := { }
 
-instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsTopologicalRing R]
+instance [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] [IsTopologicalRing R]
     [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
     IsTopologicalRing (tsze R M) where
 
@@ -130,19 +130,19 @@ instance [TopologicalSpace S] [SMul S R] [SMul S M] [ContinuousSMul S R] [Contin
 
 variable (M)
 
-theorem hasSum_inl [AddCommMonoid R] [AddCommMonoid M] {f : α → R} {a : R} (h : HasSum f a) :
+theorem hasSum_inl [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] {f : α → R} {a : R} (h : HasSum f a) :
     HasSum (fun x ↦ inl (f x)) (inl a : tsze R M) :=
   h.map (⟨⟨inl, inl_zero _⟩, inl_add _⟩ : R →+ tsze R M) continuous_inl
 
-theorem hasSum_inr [AddCommMonoid R] [AddCommMonoid M] {f : α → M} {a : M} (h : HasSum f a) :
+theorem hasSum_inr [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] {f : α → M} {a : M} (h : HasSum f a) :
     HasSum (fun x ↦ inr (f x)) (inr a : tsze R M) :=
   h.map (⟨⟨inr, inr_zero _⟩, inr_add _⟩ : M →+ tsze R M) continuous_inr
 
-theorem hasSum_fst [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
+theorem hasSum_fst [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] {f : α → tsze R M} {a : tsze R M}
     (h : HasSum f a) : HasSum (fun x ↦ fst (f x)) (fst a) :=
   h.map (⟨⟨fst, fst_zero⟩, fst_add⟩ : tsze R M →+ R) continuous_fst
 
-theorem hasSum_snd [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
+theorem hasSum_snd [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] {f : α → tsze R M} {a : tsze R M}
     (h : HasSum f a) : HasSum (fun x ↦ snd (f x)) (snd a) :=
   h.map (⟨⟨snd, snd_zero⟩, snd_add⟩ : tsze R M →+ M) continuous_snd
 

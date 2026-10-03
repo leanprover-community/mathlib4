@@ -23,8 +23,8 @@ open Filter Set
 open scoped Topology
 
 variable {𝕜 E F : Type*} [Semiring 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousConstSMul 𝕜 E]
-  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousConstSMul 𝕜 F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousConstSMul 𝕜 E]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousConstSMul 𝕜 F]
   {x : E} {s : Set E} {y : F} {t : Set F}
 
 /-- The tangent cone of a product contains the tangent cone of its left factor. -/

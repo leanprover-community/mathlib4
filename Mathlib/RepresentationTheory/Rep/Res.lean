@@ -85,7 +85,7 @@ lemma full_res (hf : (⇑f).Surjective) : (resFunctor (k := k) f).Full where
 instance : (resFunctor (k := k) f).Additive where
   map_add {_ _} _ _ := by ext : 2; simp [add_hom]
 
-instance {k : Type u} [CommSemiring k] : (resFunctor (k := k) f).Linear k where
+instance {k : Type u} [Semiring k] [IsMulCommutative k] : (resFunctor (k := k) f).Linear k where
   map_smul {_ _} _ _ := by ext : 2; simp [smul_hom]
 
 section ShortComplex
@@ -113,12 +113,12 @@ lemma isZero_res_iff (M : Rep k G) :
 /--
 The instances above show that the restriction functor `res φ : Rep R G ⥤ Rep R H`
 preserves and reflects exactness. -/
-lemma res_map_exact {k : Type u} [CommRing k]
+lemma res_map_exact {k : Type u} [Ring k] [IsMulCommutative k]
     (S : ShortComplex (Rep.{w} k G)) :
     (S.map (resFunctor f)).Exact ↔ S.Exact := by
   rw [ShortComplex.exact_map_iff_of_faithful]
 
-lemma shortExact_res {k : Type u} [CommRing k] (φ : H →* G) {S : ShortComplex (Rep.{w} k G)} :
+lemma shortExact_res {k : Type u} [Ring k] [IsMulCommutative k] (φ : H →* G) {S : ShortComplex (Rep.{w} k G)} :
     (S.map (resFunctor φ)).ShortExact ↔ S.ShortExact := by
   constructor
   · intro h

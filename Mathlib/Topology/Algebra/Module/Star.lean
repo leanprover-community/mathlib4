@@ -25,7 +25,7 @@ notation:50 M " ≃L⋆[" R "] " M₂ => ContinuousLinearEquiv (starRingEnd R) M
 
 section starL
 
-variable (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid A]
+variable (R : Type*) {A : Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [AddMonoid A] [IsAddCommutative A]
     [StarAddMonoid A] [Module R A] [StarModule R A] [TopologicalSpace A] [ContinuousStar A]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -76,7 +76,7 @@ theorem starL'_symm_apply (x : A) : (starL' R).symm x = starAddEquiv.symm x := b
 
 end starL
 
-variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
+variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddGroup A] [IsAddCommutative A]
   [Module R A] [StarAddMonoid A] [StarModule R A] [Invertible (2 : R)] [TopologicalSpace A]
 
 @[fun_prop]

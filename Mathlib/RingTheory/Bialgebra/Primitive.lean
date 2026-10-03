@@ -33,7 +33,7 @@ public section
 
 open Coalgebra TensorProduct
 
-variable {R A : Type*} [CommSemiring R]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R]
 
 namespace Bialgebra
 

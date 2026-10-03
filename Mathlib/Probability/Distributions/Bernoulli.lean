@@ -171,7 +171,7 @@ lemma eq_bernoulliMeasure {μ : Measure X}
 
 section Integral
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
 
 lemma integrable_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) :
     Integrable f Ber(x, y, p) := by

@@ -44,7 +44,7 @@ open Set Finset
 universe u
 
 variable {𝕜 : Type*} {E : Type u} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 namespace Caratheodory
 

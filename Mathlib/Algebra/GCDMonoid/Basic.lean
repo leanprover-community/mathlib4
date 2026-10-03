@@ -111,7 +111,7 @@ instance (α) [MonoidWithZero α] [IsLeftCancelMulZero α] :
 
 /-- Strong normalization monoid: multiplying with `normUnit` gives a normal form for associated
 elements. It is stronger in that it ensures the normalization map is a monoid homomorphism. -/
-class StrongNormalizationMonoid (α) [CommMonoidWithZero α] extends NormalizationMonoid α where
+class StrongNormalizationMonoid (α) [MonoidWithZero α] [IsMulCommutative α] extends NormalizationMonoid α where
   /-- The proposition that `normUnit` respects multiplication of non-zero elements. -/
   normUnit_mul : ∀ {a b}, a ≠ 0 → b ≠ 0 → normUnit (a * b) = normUnit a * normUnit b
   /-- The proposition that `normUnit` maps units to their inverses. -/
@@ -258,7 +258,7 @@ theorem out_eq_zero_iff {a : Associates α} : a.out = 0 ↔ a = 0 :=
 theorem out_zero : (0 : Associates α).out = 0 := by
   simp
 
-variable {α : Type*} [CommMonoidWithZero α] [NormalizationMonoid α]
+variable {α : Type*} [MonoidWithZero α] [IsMulCommutative α] [NormalizationMonoid α]
 
 theorem out_mul' (a b : Associates α) : Associated (a * b).out (a.out * b.out) :=
   Quotient.inductionOn₂ a b fun _ _ ↦ normalize_associated_iff.mpr <|
@@ -276,7 +276,7 @@ end Associates
 
 section StrongNormalizationMonoid
 
-variable [CommMonoidWithZero α] [StrongNormalizationMonoid α]
+variable [MonoidWithZero α] [IsMulCommutative α] [StrongNormalizationMonoid α]
 
 @[simp] theorem normalize_mul (x y : α) : normalize (x * y) = normalize x * normalize y := by
   obtain rfl | hx := eq_or_ne x 0; · simp
@@ -304,7 +304,7 @@ end StrongNormalizationMonoid
 `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd`
 and we derive the corresponding `lcm` facts from `gcd`.
 -/
-class GCDMonoid (α : Type*) [CommMonoidWithZero α] extends IsCancelMulZero α where
+class GCDMonoid (α : Type*) [MonoidWithZero α] [IsMulCommutative α] extends IsCancelMulZero α where
   /-- The greatest common divisor between two elements. -/
   gcd : α → α → α
   /-- The least common multiple between two elements. -/
@@ -323,7 +323,7 @@ class GCDMonoid (α : Type*) [CommMonoidWithZero α] extends IsCancelMulZero α 
   lcm_zero_right : ∀ a, lcm a 0 = 0
 
 /-- Existence of a `GCDMonoid` structure on a `CommMonoidWithZero`. -/
-class inductive IsGCDMonoid (α : Type*) [CommMonoidWithZero α] : Prop
+class inductive IsGCDMonoid (α : Type*) [MonoidWithZero α] [IsMulCommutative α] : Prop
   | intro : GCDMonoid α → IsGCDMonoid α
 
 attribute [instance 100] GCDMonoid.toIsCancelMulZero
@@ -333,7 +333,7 @@ attribute [instance 100] GCDMonoid.toIsCancelMulZero
 `lcm` form a bounded lattice on the associated elements where `gcd` is the infimum, `lcm` is the
 supremum, `1` is bottom, and `0` is top. The type class focuses on `gcd` and we derive the
 corresponding `lcm` facts from `gcd`. -/
-class NormalizedGCDMonoid (α : Type*) [CommMonoidWithZero α] extends NormalizationMonoid α,
+class NormalizedGCDMonoid (α : Type*) [MonoidWithZero α] [IsMulCommutative α] extends NormalizationMonoid α,
   GCDMonoid α where
   /-- The GCD is normalized to itself. -/
   normalize_gcd : ∀ a b, normalize (gcd a b) = gcd a b
@@ -342,7 +342,7 @@ class NormalizedGCDMonoid (α : Type*) [CommMonoidWithZero α] extends Normaliza
 
 /-- Strong normalized GCD monoid: a `NormalizedGCDMonoid` whose `normalize` function is a
 monoid homomorphism. -/
-class StrongNormalizedGCDMonoid (α : Type*) [CommMonoidWithZero α] extends
+class StrongNormalizedGCDMonoid (α : Type*) [MonoidWithZero α] [IsMulCommutative α] extends
   StrongNormalizationMonoid α, GCDMonoid α where
   /-- The GCD is normalized to itself. -/
   normalize_gcd : ∀ a b, normalize (gcd a b) = gcd a b
@@ -354,13 +354,13 @@ export GCDMonoid (gcd lcm gcd_dvd_left gcd_dvd_right dvd_gcd
 
 attribute [simp] lcm_zero_left lcm_zero_right
 
-instance (α) [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α] : NormalizedGCDMonoid α where
+instance (α) [MonoidWithZero α] [IsMulCommutative α] [StrongNormalizedGCDMonoid α] : NormalizedGCDMonoid α where
   normalize_gcd := StrongNormalizedGCDMonoid.normalize_gcd
   normalize_lcm := StrongNormalizedGCDMonoid.normalize_lcm
 
 section GCDMonoid
 
-variable [CommMonoidWithZero α]
+variable [MonoidWithZero α] [IsMulCommutative α]
 
 instance [NormalizationMonoid α] : Nonempty (NormalizationMonoid α) := ⟨‹_›⟩
 instance [StrongNormalizationMonoid α] : Nonempty (StrongNormalizationMonoid α) := ⟨‹_›⟩
@@ -684,19 +684,19 @@ theorem exists_eq_pow_of_mul_eq_pow [GCDMonoid α] [Subsingleton αˣ]
   let ⟨d, hd⟩ := exists_associated_pow_of_mul_eq_pow hab h
   ⟨d, (associated_iff_eq.mp hd).symm⟩
 
-theorem gcd_greatest {α : Type*} [CommMonoidWithZero α] [NormalizedGCDMonoid α] {a b d : α}
+theorem gcd_greatest {α : Type*} [MonoidWithZero α] [IsMulCommutative α] [NormalizedGCDMonoid α] {a b d : α}
     (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : α, e ∣ a → e ∣ b → e ∣ d) :
     gcd a b = normalize d :=
   haveI h := hd _ (gcd_dvd_left a b) (gcd_dvd_right a b)
   gcd_eq_normalize h (GCDMonoid.dvd_gcd hda hdb)
 
-theorem gcd_greatest_associated {α : Type*} [CommMonoidWithZero α] [GCDMonoid α] {a b d : α}
+theorem gcd_greatest_associated {α : Type*} [MonoidWithZero α] [IsMulCommutative α] [GCDMonoid α] {a b d : α}
     (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : α, e ∣ a → e ∣ b → e ∣ d) :
     Associated d (gcd a b) :=
   haveI h := hd _ (gcd_dvd_left a b) (gcd_dvd_right a b)
   associated_of_dvd_dvd (GCDMonoid.dvd_gcd hda hdb) h
 
-theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CommMonoidWithZero α] [GCDMonoid α]
+theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [MonoidWithZero α] [IsMulCommutative α] [GCDMonoid α]
     {x y x' y' : α} (ex : x = gcd x y * x') (ey : y = gcd x y * y') (h : gcd x y ≠ 0) :
     IsUnit (gcd x' y') := by
   rw [← associated_one_iff_isUnit]
@@ -704,7 +704,7 @@ theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CommMonoidWithZero α] [GCDMonoid
   convert (gcd_mul_left' (gcd x y) x' y').symm
   rw [← ex, ← ey, mul_one]
 
-theorem extract_gcd {α : Type*} [CommMonoidWithZero α] [GCDMonoid α] (x y : α) :
+theorem extract_gcd {α : Type*} [MonoidWithZero α] [IsMulCommutative α] [GCDMonoid α] (x y : α) :
     ∃ x' y', x = gcd x y * x' ∧ y = gcd x y * y' ∧ IsUnit (gcd x' y') := by
   by_cases h : gcd x y = 0
   · obtain ⟨rfl, rfl⟩ := (gcd_eq_zero_iff x y).1 h
@@ -951,7 +951,7 @@ end GCDMonoid
 
 section UniqueUnit
 
-variable [CommMonoidWithZero α] [Subsingleton αˣ]
+variable [MonoidWithZero α] [IsMulCommutative α] [Subsingleton αˣ]
 
 -- see Note [lower instance priority]
 instance (priority := 100) : StrongNormalizationMonoid α where
@@ -1021,7 +1021,7 @@ end UniqueUnit
 
 section IsDomain
 
-variable [CommRing α] [NormalizedGCDMonoid α]
+variable [Ring α] [IsMulCommutative α] [NormalizedGCDMonoid α]
 
 theorem gcd_eq_of_dvd_sub_right {a b c : α} (h : a ∣ b - c) : gcd a b = gcd a c := by
   apply dvd_antisymm_of_normalize_eq (normalize_gcd _ _) (normalize_gcd _ _) <;>
@@ -1047,7 +1047,7 @@ noncomputable section Constructors
 
 open Associates
 
-variable [CommMonoidWithZero α]
+variable [MonoidWithZero α] [IsMulCommutative α]
 
 private theorem map_mk_unit_aux {f : Associates α →* α}
     (hinv : Function.RightInverse f Associates.mk) (a : α) :
@@ -1292,17 +1292,17 @@ abbrev strongNormalizedGCDMonoidOfExistsGCD [StrongNormalizationMonoid α] [Deci
   __ := normalizedGCDMonoidOfExistsGCD h
   __ := ‹StrongNormalizationMonoid α›
 
-theorem nonempty_normalizedGCDMonoid_iff_isGCDMonoid {α} [CommMonoidWithZero α] :
+theorem nonempty_normalizedGCDMonoid_iff_isGCDMonoid {α} [MonoidWithZero α] [IsMulCommutative α] :
     Nonempty (NormalizedGCDMonoid α) ↔ IsGCDMonoid α where
   mp := fun ⟨_⟩ ↦ inferInstance
   mpr := fun ⟨_⟩ ↦ by
     have := Classical.arbitrary (NormalizationMonoid α)
     classical exact ⟨normalizedGCDMonoidOfExistsGCD fun _ _ ↦ ⟨_, fun _ ↦ (dvd_gcd_iff ..).symm⟩⟩
 
-instance (α) [CommMonoidWithZero α] [IsGCDMonoid α] : Nonempty (NormalizedGCDMonoid α) :=
+instance (α) [MonoidWithZero α] [IsMulCommutative α] [IsGCDMonoid α] : Nonempty (NormalizedGCDMonoid α) :=
   nonempty_normalizedGCDMonoid_iff_isGCDMonoid.mpr ‹_›
 
-theorem nonempty_strongNormalizedGCDMonoid_iff {α} [CommMonoidWithZero α] :
+theorem nonempty_strongNormalizedGCDMonoid_iff {α} [MonoidWithZero α] [IsMulCommutative α] :
     Nonempty (StrongNormalizedGCDMonoid α) ↔
     IsGCDMonoid α ∧ Nonempty (StrongNormalizationMonoid α) :=
   ⟨fun ⟨_⟩ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨⟨_⟩, ⟨_⟩⟩ ↦ by classical exact
@@ -1336,12 +1336,12 @@ abbrev strongNormalizedGCDMonoidOfExistsLCM [StrongNormalizationMonoid α] [Deci
   __ := normalizedGCDMonoidOfExistsLCM h
   __ := ‹StrongNormalizationMonoid α›
 
-theorem isGCDMonoid_iff_exists_gcd {α} [CommMonoidWithZero α] :
+theorem isGCDMonoid_iff_exists_gcd {α} [MonoidWithZero α] [IsMulCommutative α] :
     IsGCDMonoid α ↔ IsCancelMulZero α ∧ ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c where
   mp := fun ⟨_⟩ ↦ ⟨inferInstance, fun _ _ ↦ ⟨_, fun _ ↦ (dvd_gcd_iff ..).symm⟩⟩
   mpr := fun ⟨_, h⟩ ↦ by classical exact ⟨gcdMonoidOfExistsGCD h⟩
 
-theorem isGCDMonoid_iff_exists_lcm {α} [CommMonoidWithZero α] :
+theorem isGCDMonoid_iff_exists_lcm {α} [MonoidWithZero α] [IsMulCommutative α] :
     IsGCDMonoid α ↔ IsCancelMulZero α ∧ ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d where
   mp := fun ⟨_⟩ ↦ ⟨inferInstance, fun _ _ ↦ ⟨_, fun _ ↦ (lcm_dvd_iff ..).symm⟩⟩
   mpr := fun ⟨_, h⟩ ↦ by classical exact ⟨gcdMonoidOfExistsLCM h⟩
@@ -1350,7 +1350,7 @@ end Constructors
 
 namespace CommGroupWithZero
 
-variable (G₀ : Type*) [CommGroupWithZero G₀] [DecidableEq G₀]
+variable (G₀ : Type*) [GroupWithZero G₀] [IsMulCommutative G₀] [DecidableEq G₀]
 
 -- see Note [lower instance priority]
 instance (priority := 100) : StrongNormalizedGCDMonoid G₀ where
@@ -1383,7 +1383,7 @@ end CommGroupWithZero
 
 namespace Associates
 
-variable [CommMonoidWithZero α] [GCDMonoid α]
+variable [MonoidWithZero α] [IsMulCommutative α] [GCDMonoid α]
 
 instance instGCDMonoid : GCDMonoid (Associates α) where
   gcd := Quotient.map₂ gcd fun _ _ (ha : Associated _ _) _ _ (hb : Associated _ _) => ha.gcd hb

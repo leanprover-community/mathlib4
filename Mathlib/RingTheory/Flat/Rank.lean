@@ -35,7 +35,7 @@ open TensorProduct
 
 attribute [local instance] Module.free_of_flat_of_isLocalRing
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 section
 
@@ -135,7 +135,7 @@ section
 /-- The rank of a ring homomorphism `f : R →+* S` at a prime `x` of `R` is the rank of
 `S` as an `R`-module at the stalk of `x`. -/
 @[expose]
-noncomputable def RingHom.finrank {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+noncomputable def RingHom.finrank {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
     (x : PrimeSpectrum R) : ℕ :=
   letI : Algebra R S := f.toAlgebra
   Module.rankAtStalk S x
@@ -146,8 +146,8 @@ lemma RingHom.finrank_algebraMap :
   ext
   rw [RingHom.finrank, toAlgebra_algebraMap]
 
-lemma Algebra.rankAtStalk_eq_of_isPushout (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    (R' S' : Type*) [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
+lemma Algebra.rankAtStalk_eq_of_isPushout (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+    (R' S' : Type*) [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
     [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
     [Algebra.IsPushout R S R' S'] [Module.Flat R S] [Module.Finite R S] (x : PrimeSpectrum R') :
     Module.rankAtStalk S' x = Module.rankAtStalk S (PrimeSpectrum.comap (algebraMap R R') x) := by
@@ -156,7 +156,7 @@ lemma Algebra.rankAtStalk_eq_of_isPushout (R S : Type*) [CommRing R] [CommRing S
   rw [Module.rankAtStalk_eq_of_equiv (Algebra.IsPushout.equiv R R' S S').symm.toLinearEquiv,
     Module.rankAtStalk_baseChange]
 
-lemma RingHom.finrank_comp_left_of_bijective {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+lemma RingHom.finrank_comp_left_of_bijective {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
     (f : R →+* S) (g : S →+* T) (hf : Function.Bijective g) (h1 : f.Finite) (h2 : f.Flat)
     (x : PrimeSpectrum R) : (g.comp f).finrank x = f.finrank x := by
   algebraize [f, g, (g.comp f)]
@@ -164,8 +164,8 @@ lemma RingHom.finrank_comp_left_of_bijective {R S T : Type*} [CommRing R] [CommR
   apply Algebra.rankAtStalk_eq_of_isPushout
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-lemma RingHom.finrank_comp_right_of_bijective {R S T : Type*} [CommRing R] [CommRing S]
-    [CommRing T] (f : R →+* S) (g : S →+* T) (hg : Function.Bijective f) (h1 : g.Finite)
+lemma RingHom.finrank_comp_right_of_bijective {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
+    [Ring T] [IsMulCommutative T] (f : R →+* S) (g : S →+* T) (hg : Function.Bijective f) (h1 : g.Finite)
     (h2 : g.Flat) (y : PrimeSpectrum R) (x : PrimeSpectrum S)
     (hy : y = PrimeSpectrum.comap f x) :
     (g.comp f).finrank y = g.finrank x := by

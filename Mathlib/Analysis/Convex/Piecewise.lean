@@ -32,8 +32,8 @@ public section
 
 
 variable {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
-  [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
-  [PosSMulMono 𝕜 E] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [AddMonoid E] [IsAddCommutative E] [LinearOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
+  [PosSMulMono 𝕜 E] [AddGroup β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β]
   [Module 𝕜 β] [PosSMulMono 𝕜 β] {e : E} {f g : E → β}
 
 /-- The piecewise function `(Set.Iic e).piecewise f g` of a function `f` decreasing and convex on

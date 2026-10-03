@@ -51,7 +51,7 @@ noncomputable section
 
 universe u v w w'
 
-variable {R : Type u} {S : Type*} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type u} {S : Type*} {M : Type v} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable {ι : Type w} {ι' : Type w'}
 
 open Cardinal Basis Submodule Function Set Module
@@ -393,7 +393,7 @@ theorem toENat_rank_span_set {v : ι → M} {s : Set ι} (hs : LinearIndepOn R v
 finite free module `M`. A property is true for all submodules of `M` if it satisfies the following
 "inductive step": the property is true for a submodule `N` if it's true for all submodules `N'`
 of `N` with the property that there exists `0 ≠ x ∈ N` such that the sum `N' + Rx` is direct. -/
-def Submodule.inductionOnRank {R M} [Ring R] [StrongRankCondition R] [AddCommGroup M] [Module R M]
+def Submodule.inductionOnRank {R M} [Ring R] [StrongRankCondition R] [AddGroup M] [IsAddCommutative M] [Module R M]
     [IsDomain R] [Finite ι] (b : Basis ι R M) (P : Submodule R M → Sort*)
     (ih : ∀ N : Submodule R M,
       (∀ N' ≤ N, ∀ x ∈ N, (∀ (c : R), ∀ y ∈ N', c • x + y = (0 : M) → c = 0) → P N') → P N)
@@ -404,7 +404,7 @@ def Submodule.inductionOnRank {R M} [Ring R] [StrongRankCondition R] [AddCommGro
 
 /-- If `S` a module-finite free `R`-algebra, then the `R`-rank of a nonzero `R`-free
 ideal `I` of `S` is the same as the rank of `S`. -/
-theorem Ideal.rank_eq {R S : Type*} [CommRing R] [StrongRankCondition R] [Ring S] [IsDomain S]
+theorem Ideal.rank_eq {R S : Type*} [Ring R] [IsMulCommutative R] [StrongRankCondition R] [Ring S] [IsDomain S]
     [Algebra R S] {n m : Type*} [Fintype n] [Fintype m] (b : Basis n R S) {I : Ideal S}
     (hI : I ≠ ⊥) (c : Basis m R I) : Fintype.card m = Fintype.card n := by
   obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr hI)
@@ -485,11 +485,11 @@ theorem rank_of_bijective_toSpanSingleton {x : M}
     (h : Bijective (LinearMap.toSpanSingleton R M x)) : Module.rank R M = 1 := by
   rw [rank_eq_one_iff_finrank_eq_one, finrank_of_bijective_toSpanSingleton h]
 
-theorem finrank_of_bijective_algebraMap {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+theorem finrank_of_bijective_algebraMap {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
     [StrongRankCondition R] (h : Bijective (algebraMap R S)) : finrank R S = 1 := by
   rw [← (AlgEquiv.ofBijective (Algebra.ofId R S) h).toLinearEquiv.finrank_eq, finrank_self]
 
-theorem rank_of_bijective_algebraMap {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+theorem rank_of_bijective_algebraMap {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
     [StrongRankCondition R] (h : Bijective (algebraMap R S)) : Module.rank R S = 1 := by
   rw [rank_eq_one_iff_finrank_eq_one, finrank_of_bijective_algebraMap h]
 
@@ -509,7 +509,7 @@ theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   exact (ciSup_le' fun i => linearIndependent_le_span_finset _ i.prop S hS).trans_lt
     natCast_lt_aleph0
 
-noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R M]
+noncomputable instance {R M : Type*} [DivisionRing R] [AddGroup M] [IsAddCommutative M] [Module R M]
     {s t : Set M} [Module.Finite R (span R t)]
     (hs : LinearIndepOn R id s) (hst : s ⊆ t) :
     Fintype (hs.extend hst) := by
@@ -547,7 +547,7 @@ protected theorem _root_.Submodule.finrank_eq_rank [Module.Finite R M] (N : Subm
 
 end Module
 
-variable {M'} [AddCommMonoid M'] [Module R M']
+variable {M'} [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
     (hf : Function.Injective f) : finrank R M ≤ finrank R M' :=
@@ -561,7 +561,7 @@ theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
     finrank R (LinearMap.range f) ≤ finrank R M :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_range_le f) (rank_lt_aleph0 _ _)
 
-theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R]
+theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra S R]
     [Module S M] [IsScalarTower S R M] (L L' : Submodule R M) [Module.Finite R L'] {s : S}
     (hr : IsSMulRegular M s) (h : ∀ x ∈ L, s • x ∈ L') :
     Module.finrank R L ≤ Module.finrank R L' := by
@@ -631,7 +631,7 @@ end StrongRankCondition
 
 namespace Submodule
 
-variable {K M : Type*} [DivisionRing K] [AddCommGroup M] [Module K M] {s : Set M} {x : M}
+variable {K M : Type*} [DivisionRing K] [AddGroup M] [IsAddCommutative M] [Module K M] {s : Set M} {x : M}
   [Module.Finite K (span K s)]
 
 variable (K s) in
@@ -674,11 +674,11 @@ namespace Algebra
 An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-algebra of rank `2`.
 -/
 -- TODO. use this in connection with `NumberTheory.Zsqrtd`
-class IsQuadraticExtension (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+class IsQuadraticExtension (R S : Type*) [Semiring R] [IsMulCommutative R] [StrongRankCondition R] [Semiring S]
     [Algebra R S] extends Module.Free R S where
   finrank_eq_two' : Module.finrank R S = 2
 
-theorem IsQuadraticExtension.finrank_eq_two (R S : Type*) [CommSemiring R] [StrongRankCondition R]
+theorem IsQuadraticExtension.finrank_eq_two (R S : Type*) [Semiring R] [IsMulCommutative R] [StrongRankCondition R]
     [Semiring S] [Algebra R S] [IsQuadraticExtension R S] :
     Module.finrank R S = 2 := finrank_eq_two'
 

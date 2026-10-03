@@ -24,7 +24,7 @@ open CategoryTheory
 
 universe v u
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 /-- The category of `R`-coalgebras. -/
 structure CoalgCat extends ModuleCat.{v} R where
@@ -47,7 +47,7 @@ instance : CoeSort (CoalgCat.{v} R) (Type v) :=
 
 variable (R) in
 /-- The object in the category of `R`-coalgebras associated to an `R`-coalgebra. -/
-abbrev of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
+abbrev of (X : Type v) [AddGroup X] [IsAddCommutative X] [Module R X] [Coalgebra R X] :
     CoalgCat R :=
   { ModuleCat.of R X with
     instCoalgebra := (inferInstance : Coalgebra R X) }
@@ -58,11 +58,11 @@ open Lean.PrettyPrinter.Delaborator in
 meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
-lemma of_comul {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
+lemma of_comul {X : Type v} [AddGroup X] [IsAddCommutative X] [Module R X] [Coalgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
 @[simp]
-lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
+lemma of_counit {X : Type v} [AddGroup X] [IsAddCommutative X] [Module R X] [Coalgebra R X] :
     Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
 
 /-- A type alias for `CoalgHom` to avoid confusion between the categorical and
@@ -86,7 +86,7 @@ abbrev Hom.toCoalgHom {X Y : CoalgCat.{v} R} (f : Hom X Y) : X →ₗc[R] Y :=
   ConcreteCategory.hom (C := CoalgCat.{v} R) f
 
 /-- Typecheck a `CoalgHom` as a morphism in `CoalgCat R`. -/
-abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+abbrev ofHom {X Y : Type v} [AddGroup X] [IsAddCommutative X] [Module R X] [AddGroup Y] [IsAddCommutative Y] [Module R Y]
     [Coalgebra R X] [Coalgebra R Y] (f : X →ₗc[R] Y) :
     of R X ⟶ of R Y :=
   ConcreteCategory.ofHom f
@@ -130,7 +130,7 @@ namespace CoalgEquiv
 open CoalgCat
 
 variable {X Y Z : Type v}
-variable [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] [AddCommGroup Z] [Module R Z]
+variable [AddGroup X] [IsAddCommutative X] [Module R X] [AddGroup Y] [IsAddCommutative Y] [Module R Y] [AddGroup Z] [IsAddCommutative Z] [Module R Z]
 variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 
 /-- Build an isomorphism in the category `CoalgCat R` from a

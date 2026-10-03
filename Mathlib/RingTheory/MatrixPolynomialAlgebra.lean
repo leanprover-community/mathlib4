@@ -33,7 +33,7 @@ open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 noncomputable section
 
 variable (R A : Type*)
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [Semiring A] [Algebra R A]
 
 open Matrix
@@ -154,12 +154,12 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
   intro hk
   rw [← matPolyEquiv_coeff_apply, hk, Matrix.zero_apply]
 
-theorem eval_det {R : Type*} [CommRing R] (M : Matrix n n R[X]) (r : R) :
+theorem eval_det {R : Type*} [Ring R] [IsMulCommutative R] (M : Matrix n n R[X]) (r : R) :
     Polynomial.eval r M.det = (Polynomial.eval (scalar n r) (matPolyEquiv M)).det := by
   rw [Polynomial.eval, ← coe_eval₂RingHom, RingHom.map_det]
   congrm det $(ext fun _ _ ↦ matPolyEquiv_eval _ _ _ _ |>.symm)
 
-lemma eval_det_add_X_smul {R : Type*} [CommRing R] (A : Matrix n n R[X]) (M : Matrix n n R) :
+lemma eval_det_add_X_smul {R : Type*} [Ring R] [IsMulCommutative R] (A : Matrix n n R[X]) (M : Matrix n n R) :
     (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by
   simp only [eval_det, map_zero, map_add, eval_add, Algebra.smul_def, map_mul]
   simp only [Algebra.algebraMap_eq_smul_one, matPolyEquiv_smul_one, map_X, X_mul, eval_mul_X,
@@ -170,7 +170,7 @@ variable {A}
 def RingHom.polyToMatrix (f : A →+* Matrix n n R) : A[X] →+* Matrix n n R[X] :=
   matPolyEquiv.symm.toRingHom.comp (mapRingHom f)
 
-variable {S : Type*} [CommSemiring S] (f : S →+* Matrix n n R)
+variable {S : Type*} [Semiring S] [IsMulCommutative S] (f : S →+* Matrix n n R)
 
 lemma evalRingHom_mapMatrix_comp_polyToMatrix :
     (evalRingHom 0).mapMatrix.comp f.polyToMatrix = f.comp (evalRingHom 0) := by

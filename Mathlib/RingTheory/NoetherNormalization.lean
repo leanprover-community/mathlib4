@@ -262,7 +262,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       exact ⟨s, by lia, ϕ.comp g, (ϕ.coe_comp g) ▸ (kerLiftAlg_injective _).comp injg,
         intg.trans g.toRingHom ϕ.toRingHom (hom2_isIntegral f I fne fi).kerLift⟩
 
-variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]
+variable (k R : Type*) [Field k] [Ring R] [IsMulCommutative R] [Nontrivial R] [a : Algebra k R]
   [fin : Algebra.FiniteType k R]
 
 /-- **Noether normalization lemma**

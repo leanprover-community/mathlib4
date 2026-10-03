@@ -48,12 +48,12 @@ open Qq
 namespace CoassocSimps
 
 variable {R A M N P M' N' P' Q M₁ M₂ M₃ N₁ N₂ N₃ : Type*}
-    [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
-    [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P]
-    [AddCommMonoid M'] [Module R M'] [AddCommMonoid N'] [Module R N']
-    [AddCommMonoid P'] [Module R P'] [AddCommMonoid Q] [Module R Q]
-    [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-    [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+    [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] [Coalgebra R A]
+    [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N] [AddMonoid P] [IsAddCommutative P] [Module R P]
+    [AddMonoid M'] [IsAddCommutative M'] [Module R M'] [AddMonoid N'] [IsAddCommutative N'] [Module R N']
+    [AddMonoid P'] [IsAddCommutative P'] [Module R P'] [AddMonoid Q] [IsAddCommutative Q] [Module R Q]
+    [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
+    [AddMonoid N₁] [IsAddCommutative N₁] [AddMonoid N₂] [IsAddCommutative N₂] [AddMonoid N₃] [IsAddCommutative N₃]
     [Module R M₁] [Module R M₂] [Module R M₃] [Module R N₁] [Module R N₂] [Module R N₃]
 
 local notation3 "α" => (TensorProduct.assoc R _ _ _).toLinearMap

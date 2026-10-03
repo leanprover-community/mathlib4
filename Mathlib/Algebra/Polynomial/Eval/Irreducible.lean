@@ -29,7 +29,7 @@ universe u v w y
 variable {R : Type u} {S : Type v} {a b : R}
 
 section
-variable [CommRing R] [IsDomain R] [CommRing S] [IsDomain S] (φ : R →+* S)
+variable [Ring R] [IsMulCommutative R] [IsDomain R] [Ring S] [IsMulCommutative S] [IsDomain S] (φ : R →+* S)
 
 /-- A polynomial over an integral domain `R` is irreducible if it is monic and
 irreducible after mapping into an integral domain `S`.

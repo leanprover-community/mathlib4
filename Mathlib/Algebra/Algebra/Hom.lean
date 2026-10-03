@@ -27,7 +27,7 @@ This file defines bundled homomorphisms of `R`-algebras.
 universe u v w u₁ v₁
 
 /-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
-structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
+structure AlgHom (R : Type u) (A : Type v) (B : Type w) [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 
@@ -43,7 +43,7 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`. -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
-    [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] : Prop
+    [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] : Prop
     extends RingHomClass F A B where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
@@ -54,7 +54,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 
 namespace AlgHomClass
 
-variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+variable {R A B F : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [FunLike F A B]
 
 -- see Note [lower instance priority]
@@ -82,7 +82,7 @@ variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁} {D : Type v₁}
 
 section Semiring
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 @[macro_inline]
@@ -100,7 +100,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_one f := f.map_one'
   commutes f := f.commutes'
 
-@[simp] lemma _root_.AlgHomClass.linearMapOfClass_ofClass {R A B F : Type*} [CommSemiring R]
+@[simp] lemma _root_.AlgHomClass.linearMapOfClass_ofClass {R A B F : Type*} [Semiring R] [IsMulCommutative R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
     (f : F) : (ofClass f : A →ₗ[R] B) = f := rfl
 
@@ -108,7 +108,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
 _root_.AlgHomClass.toLinearMap_toAlgHom := AlgHomClass.linearMapOfClass_ofClass
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
+def Simps.apply {R : Type u} {α : Type v} {β : Type w} [Semiring R] [IsMulCommutative R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
 
 initialize_simps_projections AlgHom (toFun → apply)
@@ -391,7 +391,7 @@ end AlgHom
 
 namespace IsScalarTower
 
-variable (R S A : Type*) [CommSemiring R] [CommSemiring S] [Semiring A]
+variable (R S A : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A]
   [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 /-- In a tower, the canonical map from the middle element to the top element is an
@@ -420,7 +420,7 @@ namespace AlgHomClass
 
 -- TODO: rename again when RingHomClass.toRingHom gets renamed
 @[simp]
-lemma toRingHom_ofClass {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+lemma toRingHom_ofClass {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A]
     [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     RingHomClass.toRingHom (AlgHom.ofClass f) = RingHomClass.toRingHom f := rfl
 
@@ -479,7 +479,7 @@ end RingHom
 namespace Algebra
 
 variable (R : Type u) (A : Type v) (B : Type w)
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
@@ -545,7 +545,7 @@ end Algebra
 
 namespace MulSemiringAction
 
-variable {M : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {M : Type*} (R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 /-- Each element of the monoid defines an algebra homomorphism.
@@ -566,7 +566,7 @@ end MulSemiringAction
 
 section
 
-variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+variable {R S T : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
   [Subsingleton T]
 
 instance uniqueOfRight : Unique (S →ₐ[R] T) where

@@ -35,12 +35,12 @@ open LinearMap
 
 namespace AdicCompletion
 
-variable {R : Type u} [CommRing R] {I : Ideal R}
+variable {R : Type u} [Ring R] [IsMulCommutative R] {I : Ideal R}
 
 section Surjectivity
 
-variable {M : Type v} [AddCommGroup M] [Module R M]
-variable {N : Type w} [AddCommGroup N] [Module R N]
+variable {M : Type v} [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {N : Type w} [AddGroup N] [IsAddCommutative N] [Module R N]
 
 variable {f : M →ₗ[R] N}
 
@@ -79,9 +79,9 @@ theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map I
 
 end Surjectivity
 
-variable {M : Type u} [AddCommGroup M] [Module R M]
-variable {N : Type u} [AddCommGroup N] [Module R N]
-variable {P : Type u} [AddCommGroup P] [Module R P]
+variable {M : Type u} [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {N : Type u} [AddGroup N] [IsAddCommutative N] [Module R N]
+variable {P : Type u} [AddGroup P] [IsAddCommutative P] [Module R P]
 
 section Injectivity
 

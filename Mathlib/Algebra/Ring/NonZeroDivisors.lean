@@ -133,7 +133,7 @@ lemma dvd_cancel_left_coe_nonZeroDivisors {c : R⁰} : c * x ∣ c * y ↔ x ∣
 end Ring
 
 section CommRing
-variable {R : Type*} [CommRing R] {r x y : R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {r x y : R}
 
 lemma dvd_cancel_right_mem_nonZeroDivisors (hr : r ∈ R⁰) : x * r ∣ y * r ↔ x ∣ y := by
   simp_rw [← mul_comm r, dvd_cancel_left_mem_nonZeroDivisors hr]

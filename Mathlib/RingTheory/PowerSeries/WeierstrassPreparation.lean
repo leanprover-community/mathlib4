@@ -95,7 +95,7 @@ open scoped Polynomial
 
 namespace PowerSeries
 
-variable {A : Type*} [CommRing A]
+variable {A : Type*} [Ring A] [IsMulCommutative A]
 
 /-!
 

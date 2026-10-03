@@ -22,7 +22,7 @@ public section
 
 namespace Algebra
 
-variable (A B G : Type*) [CommSemiring A] [Semiring B] [Algebra A B]
+variable (A B G : Type*) [Semiring A] [IsMulCommutative A] [Semiring B] [Algebra A B]
   [Group G] [MulSemiringAction G B]
 
 /-- An action of a group `G` on an extension of rings `B/A` is invariant if every fixed point of

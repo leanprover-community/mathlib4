@@ -50,7 +50,7 @@ open scoped ComplexConjugate Topology
 noncomputable section
 
 variable {𝕜 F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
+variable [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
 variable {f : F → 𝕜} {f' x y : F}
 
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if

@@ -45,7 +45,7 @@ instance instMonoidWithZero [MonoidWithZero M₀] [MonoidWithZero N₀] : Monoid
   zero_mul := by simp
   mul_zero := by simp
 
-instance instCommMonoidWithZero [CommMonoidWithZero M₀] [CommMonoidWithZero N₀] :
+instance instCommMonoidWithZero [MonoidWithZero M₀] [IsMulCommutative M₀] [MonoidWithZero N₀] [IsMulCommutative N₀] :
     CommMonoidWithZero (M₀ × N₀) where
   zero_mul := by simp
   mul_zero := by simp
@@ -67,13 +67,13 @@ section BundledMulDiv
 
 /-- Multiplication as a multiplicative homomorphism with zero. -/
 @[simps]
-def mulMonoidWithZeroHom [CommMonoidWithZero M₀] : M₀ × M₀ →*₀ M₀ where
+def mulMonoidWithZeroHom [MonoidWithZero M₀] [IsMulCommutative M₀] : M₀ × M₀ →*₀ M₀ where
   __ := mulMonoidHom
   map_zero' := mul_zero _
 
 /-- Division as a multiplicative homomorphism with zero. -/
 @[simps]
-def divMonoidWithZeroHom [CommGroupWithZero M₀] : M₀ × M₀ →*₀ M₀ where
+def divMonoidWithZeroHom [GroupWithZero M₀] [IsMulCommutative M₀] : M₀ × M₀ →*₀ M₀ where
   __ := divMonoidHom
   map_zero' := zero_div _
 

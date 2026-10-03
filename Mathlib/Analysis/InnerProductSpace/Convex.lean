@@ -30,7 +30,7 @@ open Real
 open LinearMap (BilinForm)
 
 variable {F : Type*}
-  [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+  [SeminormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
 
 -- See note [lower instance priority]
 instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConvexSpace F :=

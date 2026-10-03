@@ -33,7 +33,7 @@ namespace Pentagonal
 open Filter
 
 open scoped Topology
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /--
 We define an auxiliary sequence

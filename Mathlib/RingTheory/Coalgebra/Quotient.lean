@@ -26,7 +26,7 @@ public section
 
 open Coalgebra LinearMap TensorProduct
 
-variable {R C : Type*} [CommRing R] [AddCommGroup C] [Module R C]
+variable {R C : Type*} [Ring R] [IsMulCommutative R] [AddGroup C] [IsAddCommutative C] [Module R C]
 
 section CoalgebraStruct
 

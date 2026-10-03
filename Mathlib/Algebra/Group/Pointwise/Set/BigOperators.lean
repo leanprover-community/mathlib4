@@ -36,7 +36,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α] [CommMonoid β] [MonoidHomClass F α β]
+variable [Monoid α] [IsMulCommutative α] [Monoid β] [IsMulCommutative β] [MonoidHomClass F α β]
 
 @[to_additive]
 theorem image_multiset_prod (f : F) :
@@ -143,7 +143,7 @@ theorem multiset_prod_subset_multiset_prod (t : Multiset ι) (f₁ f₂ : ι →
   exact list_prod_subset_list_prod _ _ _ hf
 
 @[to_additive]
-theorem multiset_prod_singleton {M : Type*} [CommMonoid M] (s : Multiset M) :
+theorem multiset_prod_singleton {M : Type*} [Monoid M] [IsMulCommutative M] (s : Multiset M) :
     (s.map fun i ↦ ({i} : Set M)).prod = {s.prod} :=
   (map_multiset_prod (singletonMonoidHom : M →* Set M) _).symm
 
@@ -171,7 +171,7 @@ alias finset_sum_subset_finset_sum := finsetSum_subset_finsetSum
 alias finset_prod_subset_finset_prod := finsetProd_subset_finsetProd
 
 @[to_additive]
-theorem finsetProd_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I : ι → M) :
+theorem finsetProd_singleton {M ι : Type*} [Monoid M] [IsMulCommutative M] (s : Finset ι) (I : ι → M) :
     ∏ i ∈ s, ({I i} : Set M) = {∏ i ∈ s, I i} :=
   (map_prod (singletonMonoidHom : M →* Set M) _ _).symm
 

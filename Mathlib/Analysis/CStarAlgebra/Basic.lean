@@ -40,14 +40,14 @@ assert_not_exists ContinuousLinearMap.hasOpNorm
 local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
-class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
+class NormedStarGroup (E : Type*) [SeminormedAddGroup E] [IsAddCommutative E] [StarAddMonoid E] : Prop where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
 variable {𝕜 E : Type*}
 
 section NormedStarGroup
 
-variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [StarAddMonoid E] [NormedStarGroup E]
 
 @[simp]
 lemma norm_star (x : E) : ‖x⋆‖ = ‖x‖ :=
@@ -96,7 +96,7 @@ variable (x : E) (r : ℝ)
 
 end NormedStarGroup
 
-instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
+instance RingHomIsometric.starRingEnd [NormedRing E] [IsMulCommutative E] [StarRing E] [NormedStarGroup E] :
     RingHomIsometric (starRingEnd E) :=
   ⟨@norm_star _ _ _ _⟩
 
@@ -285,8 +285,8 @@ theorem IsStarProjection.norm_le [NonUnitalNormedRing E] [StarRing E] [CStarRing
 
 section starₗᵢ
 
-variable [CommSemiring 𝕜] [StarRing 𝕜]
-variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [StarRing 𝕜]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [StarAddMonoid E] [NormedStarGroup E]
 variable [Module 𝕜 E] [StarModule 𝕜 E]
 
 variable (𝕜) in
@@ -324,7 +324,7 @@ example {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) :
     NormedAlgebra 𝕜 S := by infer_instance
 
-instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CStarRing A]
+instance to_cstarRing {R A} [Ring R] [IsMulCommutative R] [StarRing R] [NormedRing A] [StarRing A] [CStarRing A]
     [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CStarRing S where
   norm_mul_self_le x := @CStarRing.norm_mul_self_le A _ _ _ x
 

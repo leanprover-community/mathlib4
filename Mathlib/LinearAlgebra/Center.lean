@@ -54,7 +54,7 @@ namespace LinearMap
 
 variable {R V : Type*}
 
-theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
+theorem mem_center_of_apply_eq_smul [Semiring R] [AddMonoid V] [IsAddCommutative V]
     [Module R V] {f : V →ₗ[R] V} {a : R}
     (hf : ∀ x, f x = a • x) :
     f ∈ center (End R V) := by
@@ -63,7 +63,7 @@ theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
 /-- A linear endomorphism of a free module of rank at least 2
 that commutes with transvections consists of homotheties with central ratio. -/
 theorem commute_transvections_iff_of_basis
-    [Ring R] [AddCommGroup V] [Module R V]
+    [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V]
     {ι : Type*} [Nontrivial ι] (b : Basis ι R V)
     {f : V →ₗ[R] V}
     (hcomm : ∀ i j (r : R) (_ : i ≠ j), Commute f (transvection (b.coord i) (r • b j))) :
@@ -109,7 +109,7 @@ When `finrank R V = 1`, up to a linear equivalence `V ≃ₗ[R] R`,
 then any `f` is *right*-multiplication by some `a : R`,
 but not necessarily *left*-multiplication by an element of the center of `R`. -/
 theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
-    [Ring R] [IsDomain R] [AddCommGroup V] [Module R V]
+    [Ring R] [IsDomain R] [AddGroup V] [IsAddCommutative V] [Module R V]
     {f : V →ₗ[R] V}
     {ι : Type*} [Nontrivial ι] (b : Basis ι R V)
     (h : ∀ v, ¬ LinearIndependent R ![v, f v]) :
@@ -195,7 +195,7 @@ then any `f` is *right*-multiplication by some `a : R`,
 but not necessarily *left*-multiplication by an element of the center of `R`. -/
 theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent
     [Ring R] [IsDomain R] [StrongRankCondition R]
-    [AddCommGroup V] [Module R V] [Free R V]
+    [AddGroup V] [IsAddCommutative V] [Module R V] [Free R V]
     {f : V →ₗ[R] V}
     (hV1 : finrank R V ≠ 1)
     (h : ∀ v, ¬ LinearIndependent R ![v, f v]) :
@@ -216,7 +216,7 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent
 such that `f v` and `v` are collinear, for all `v : V`,
 consists of homotheties. -/
 theorem exists_eq_smul_id_of_forall_notLinearIndependent
-    [CommRing R] [IsDomain R] [AddCommGroup V] [Module R V] [Free R V] {f : V →ₗ[R] V}
+    [Ring R] [IsMulCommutative R] [IsDomain R] [AddGroup V] [IsAddCommutative V] [Module R V] [Free R V] {f : V →ₗ[R] V}
     (h : ∀ v, ¬ LinearIndependent R ![v, f v]) :
     ∃ a : R, f = a • 1 := by
   by_cases hV1 : finrank R V = 1

@@ -60,8 +60,8 @@ attribute [local simp] Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply
 
 namespace RootPairing.GeckConstruction
 
-variable {ι R M N : Type*} [CommRing R]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   {P : RootPairing ι R M N} [P.IsCrystallographic] {b : P.Base}
 
 /-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/

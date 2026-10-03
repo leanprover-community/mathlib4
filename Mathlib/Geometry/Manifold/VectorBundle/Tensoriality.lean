@@ -46,24 +46,24 @@ open scoped Manifold ContDiff
 @[expose] public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 variable
-  (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  (F : Type*) [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
-  [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
+  [∀ x, AddGroup (V x)] [∀ x, IsAddCommutative (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)]
   [FiberBundle F V]
 
 variable
-  (F' : Type*) [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  (F' : Type*) [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜 F']
   {V' : M → Type*} [TopologicalSpace (TotalSpace F' V')]
-  [∀ x, AddCommGroup (V' x)] [∀ x, Module 𝕜 (V' x)] [∀ x : M, TopologicalSpace (V' x)]
+  [∀ x, AddGroup (V' x)] [∀ x, IsAddCommutative (V' x)] [∀ x, Module 𝕜 (V' x)] [∀ x : M, TopologicalSpace (V' x)]
   [FiberBundle F' V']
 
-variable {A : Type*} [AddCommGroup A] [Module 𝕜 A]
+variable {A : Type*} [AddGroup A] [IsAddCommutative A] [Module 𝕜 A]
 
 /-- An operation `Φ` on sections of a vector bundle `V` over `M` is *tensorial* at `x : M`, if it
 respects addition and scalar multiplication by germs of differentiable functions at `f`. -/

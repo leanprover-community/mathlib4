@@ -242,7 +242,7 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]
-protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder S]
+protected def _root_.RingHom.ENatMap {S : Type*} [Semiring S] [IsMulCommutative S] [PartialOrder S]
     [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
   { MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with }

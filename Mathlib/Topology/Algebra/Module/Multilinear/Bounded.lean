@@ -35,8 +35,8 @@ open scoped Topology
 namespace Bornology.IsVonNBounded
 
 variable {ι 𝕜 F : Type*} {E : ι → Type*} [NormedField 𝕜]
-  [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
-  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+  [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-- The image of a von Neumann bounded set under a continuous multilinear map
 is von Neumann bounded.

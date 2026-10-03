@@ -35,7 +35,7 @@ open scoped Polynomial TensorProduct
 
 open RingHomClass (toRingHom)
 
-variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+variable (R S T : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S] [Algebra R T]
 variable (n m k : ℕ) (hn : n = m + k)
 
 noncomputable section
@@ -620,7 +620,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
     simp
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma UniversalCoprimeFactorizationRing.homEquiv_comp_fst {T : Type*} [CommRing T] [Algebra R T]
+lemma UniversalCoprimeFactorizationRing.homEquiv_comp_fst {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T]
     (f : 𝓡' →ₐ[R] S) (g : S →ₐ[R] T) :
     (homEquiv T m k hn p (g.comp f)).1.1 = (homEquiv S m k hn p f).1.1.map g := by
   ext1
@@ -628,7 +628,7 @@ lemma UniversalCoprimeFactorizationRing.homEquiv_comp_fst {T : Type*} [CommRing 
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma UniversalCoprimeFactorizationRing.homEquiv_comp_snd {T : Type*} [CommRing T] [Algebra R T]
+lemma UniversalCoprimeFactorizationRing.homEquiv_comp_snd {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T]
     (f : 𝓡' →ₐ[R] S) (g : S →ₐ[R] T) :
     (homEquiv T m k hn p (g.comp f)).1.2 = (homEquiv S m k hn p f).1.2.map g := by
   ext1
@@ -686,7 +686,7 @@ then there exists an etale algebra `R'` of `R` and a prime `Q` of `R'` lying ove
 such that `κ(P) = κ(Q)` and that the factorization lifts to `R'`. -/
 @[stacks 00UH]
 lemma _root_.Algebra.exists_etale_bijective_residueFieldMap_and_map_eq_mul_and_isCoprime.{u}
-    {R : Type u} [CommRing R]
+    {R : Type u} [Ring R] [IsMulCommutative R]
     (P : Ideal R) [P.IsPrime] (p : R[X])
     (f g : P.ResidueField[X]) (hp : p.Monic) (hf : f.Monic) (hg : g.Monic)
     (H : p.map (algebraMap R _) = f * g) (Hpq : IsCoprime f g) :

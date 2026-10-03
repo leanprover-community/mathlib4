@@ -49,7 +49,7 @@ def SuccDiffBounded (C : ℕ) (u : ℕ → ℕ) : Prop :=
 
 namespace Finset
 
-variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M]
   {f : ℕ → M} {u : ℕ → ℕ}
 
 theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)

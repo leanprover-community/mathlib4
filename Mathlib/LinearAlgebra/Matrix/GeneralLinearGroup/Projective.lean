@@ -38,7 +38,7 @@ namespace Matrix
 
 /-- Projective general linear group $PGL(n, R)$
 defined as the quotient of the general linear group by its center. -/
-def ProjGenLinGroup (n : Type*) [Fintype n] [DecidableEq n] (R : Type*) [CommRing R] : Type _ :=
+def ProjGenLinGroup (n : Type*) [Fintype n] [DecidableEq n] (R : Type*) [Ring R] [IsMulCommutative R] : Type _ :=
   GL n R ⧸ Subgroup.center (GL n R)
   deriving Group
 
@@ -49,7 +49,7 @@ scoped[MatrixGroups] notation "PGL(" n ", " R ")" => Matrix.ProjGenLinGroup n R
 scoped[MatrixGroups] notation "PGL(" n ", " R ")" => Matrix.ProjGenLinGroup (Fin n) R
 
 namespace ProjGenLinGroup
-variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
+variable {n R : Type*} [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R]
 
 /-- The natural projection from `GL n R` to `PGL n R`. -/
 def mk : GL n R →* PGL(n, R) := QuotientGroup.mk' (Subgroup.center (GL n R))
@@ -89,7 +89,7 @@ end ProjGenLinGroup
 
 section isoPSL
 
-variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
+variable {n R : Type*} [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R]
 
 open Matrix.ProjGenLinGroup
 
@@ -179,7 +179,7 @@ end isoPSL
 
 namespace ProjGenLinGroup
 
-variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R] {M : Type*} [Monoid M]
+variable {n R : Type*} [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R] {M : Type*} [Monoid M]
 
 /-- Lift a monoid homomorphism `f : GL n R →* M` that vanishes on all scalar matrices
 to a homomorphism from `PGL(n, R)`. -/
@@ -214,17 +214,17 @@ theorem mk_smul {α : Type*} [MulAction (GL n R) α] (h) (g : GL n R) (a : α) :
 
 /-- The monoid hom between `PGL(n, R)` and `PGL(n, S)` induced by a
   ring homomorphism `f : R →+* S`. -/
-def map {S : Type*} [CommRing S] (f : R →+* S) : PGL(n, R) →* PGL(n, S) :=
+def map {S : Type*} [Ring S] [IsMulCommutative S] (f : R →+* S) : PGL(n, R) →* PGL(n, S) :=
   QuotientGroup.map _ _ (GeneralLinearGroup.map (n := n) f) <| GeneralLinearGroup.map_center_le f
 
 @[simp]
 lemma map_id : map (RingHom.id R) = MonoidHom.id (PGL(n, R)) := QuotientGroup.map_id _
 
 @[simp]
-lemma map_mk {S : Type*} [CommRing S] (f : R →+* S) (g : GL n R) :
+lemma map_mk {S : Type*} [Ring S] [IsMulCommutative S] (f : R →+* S) (g : GL n R) :
     map f (mk g) = mk (GeneralLinearGroup.map f g) := rfl
 
-lemma map_comp {S T : Type*} [CommRing S] [CommRing T] (f : R →+* S) (g : S →+* T) :
+lemma map_comp {S T : Type*} [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] (f : R →+* S) (g : S →+* T) :
     map (n := n) (g.comp f) = (map g).comp (map f) := by
   ext g
   induction g using Matrix.ProjGenLinGroup.induction_on with | mk g => simp

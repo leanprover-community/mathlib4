@@ -374,7 +374,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup E] [CommGroup F] (p q : GroupSeminorm E) (x : E)
+variable [Group E] [IsMulCommutative E] [Group F] [IsMulCommutative F] (p q : GroupSeminorm E) (x : E)
 
 @[to_additive]
 theorem comp_mul_le (f g : F →* E) : p.comp (f * g) ≤ p.comp f + p.comp g := fun _ =>
@@ -552,7 +552,7 @@ end AddGroup
 
 section AddCommGroup
 
-variable [AddCommGroup E]
+variable [AddGroup E] [IsAddCommutative E]
 
 theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x - y)) :=

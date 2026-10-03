@@ -19,7 +19,7 @@ variable {α β : Type*}
   rules relating them. -/
 
 section CommSemigroup
-variable [LinearOrder α] [CommSemigroup β]
+variable [LinearOrder α] [Semigroup β] [IsMulCommutative β]
 
 @[to_additive]
 lemma fn_min_mul_fn_max (f : α → β) (a b : α) : f (min a b) * f (max a b) = f a * f b := by
@@ -29,7 +29,7 @@ lemma fn_min_mul_fn_max (f : α → β) (a b : α) : f (min a b) * f (max a b) =
 lemma fn_max_mul_fn_min (f : α → β) (a b : α) : f (max a b) * f (min a b) = f a * f b := by
   grind
 
-variable [CommSemigroup α]
+variable [Semigroup α] [IsMulCommutative α]
 
 @[to_additive (attr := simp)]
 lemma min_mul_max (a b : α) : min a b * max a b = a * b := fn_min_mul_fn_max id _ _

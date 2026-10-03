@@ -32,7 +32,7 @@ open NNReal BoundedContinuousFunction Set Metric
 namespace ContinuousMap
 
 variable {α β E : Type*}
-variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [SeminormedAddCommGroup E]
+variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [SeminormedAddGroup E] [IsAddCommutative E]
 
 section
 
@@ -176,11 +176,11 @@ instance : SeminormedAddCommGroup C(α, E) where
   dist := dist
   norm := norm
 
-instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
+instance {E : Type*} [NormedAddGroup E] [IsAddCommutative E] : NormedAddCommGroup C(α, E) where
   __ : SeminormedAddCommGroup C(α, E) := inferInstance
   __ : MetricSpace C(α, E) := inferInstance
 
-instance [Nonempty α] {E : Type*} [NormedAddCommGroup E] [Nontrivial E] :
+instance [Nonempty α] {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [Nontrivial E] :
     NontrivialTopology C(α, E) := by
   simpa [nontrivialTopology_iff_exists_norm_ne_zero] using exists_ne (0 : C(α, E))
 
@@ -261,7 +261,7 @@ instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
   __ : NonUnitalRing C(α, R) := inferInstance
   norm_mul_le f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
 
-instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
+instance [NonUnitalSeminormedRing R] [IsMulCommutative R] : NonUnitalSeminormedCommRing C(α, R) where
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
   __ : NonUnitalCommRing C(α, R) := inferInstance
 
@@ -269,7 +269,7 @@ instance [SeminormedRing R] : SeminormedRing C(α, R) where
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
   __ : Ring C(α, R) := inferInstance
 
-instance [SeminormedCommRing R] : SeminormedCommRing C(α, R) where
+instance [SeminormedRing R] [IsMulCommutative R] : SeminormedCommRing C(α, R) where
   __ : SeminormedRing C(α, R) := inferInstance
   __ : CommRing C(α, R) := inferInstance
 
@@ -277,7 +277,7 @@ instance [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
   __ : NormedAddCommGroup C(α, R) := inferInstance
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
 
-instance [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
+instance [NonUnitalNormedRing R] [IsMulCommutative R] : NonUnitalNormedCommRing C(α, R) where
   __ : NonUnitalNormedRing C(α, R) := inferInstance
   __ : NonUnitalCommRing C(α, R) := inferInstance
 
@@ -285,7 +285,7 @@ instance [NormedRing R] : NormedRing C(α, R) where
   __ : NormedAddCommGroup C(α, R) := inferInstance
   __ : SeminormedRing C(α, R) := inferInstance
 
-instance [NormedCommRing R] : NormedCommRing C(α, R) where
+instance [NormedRing R] [IsMulCommutative R] : NormedCommRing C(α, R) where
   __ : NormedRing C(α, R) := inferInstance
   __ : CommRing C(α, R) := inferInstance
 
@@ -345,12 +345,12 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
-@[simp] lemma nnnorm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+@[simp] lemma nnnorm_smul_const {R β : Type*} [SeminormedAddGroup β] [IsAddCommutative β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
 
-@[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+@[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddGroup β] [IsAddCommutative β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
@@ -455,7 +455,7 @@ of `C(X, E)` (i.e. locally uniform convergence). -/
 open TopologicalSpace
 
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
-variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
@@ -483,7 +483,7 @@ Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C
 section NormedSpace
 
 variable {α : Type*} {β : Type*}
-variable [TopologicalSpace α] [SeminormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
+variable [TopologicalSpace α] [SeminormedAddGroup β] [IsAddCommutative β] [StarAddMonoid β] [NormedStarGroup β]
 
 theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f : C(α, β)) :
     mkOfCompact (star f) = star (mkOfCompact f) :=

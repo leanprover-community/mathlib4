@@ -43,7 +43,7 @@ namespace VectorMeasure
 
 section
 
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
 
 @[simp]
 theorem empty (v : VectorMeasure α M) : v ∅ = 0 :=
@@ -122,14 +122,14 @@ theorem of_add_of_sdiff {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSe
 
 @[deprecated (since := "2026-06-03")] alias of_add_of_diff := of_add_of_sdiff
 
-theorem of_sdiff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
+theorem of_sdiff {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [T2Space M]
     {v : VectorMeasure α M} {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)
     (h : A ⊆ B) : v (B \ A) = v B - v A := by
   rw [← of_add_of_sdiff hA hB h, add_sub_cancel_left]
 
 @[deprecated (since := "2026-06-03")] alias of_diff := of_sdiff
 
-theorem of_compl {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
+theorem of_compl {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [T2Space M]
     {v : VectorMeasure α M} {A : Set α} (hA : MeasurableSet A) :
     v Aᶜ = v univ - v A := by
   simpa [compl_eq_univ_sdiff] using of_sdiff hA .univ (v := v) (subset_univ _)
@@ -155,13 +155,13 @@ theorem of_sdiff_of_sdiff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : Me
 @[deprecated (since := "2026-06-03")] alias of_diff_of_diff_eq_zero := of_sdiff_of_sdiff_eq_zero
 
 theorem of_iUnion_nonneg {M : Type*} [TopologicalSpace M]
-    [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+    [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M]
     [OrderClosedTopology M] {v : VectorMeasure α M} (hf₁ : ∀ i, MeasurableSet (f i))
     (hf₂ : Pairwise (Disjoint on f)) (hf₃ : ∀ i, 0 ≤ v (f i)) : 0 ≤ v (⋃ i, f i) :=
   (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsum_nonneg hf₃
 
 theorem of_iUnion_nonpos {M : Type*} [TopologicalSpace M]
-    [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+    [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M]
     [OrderClosedTopology M] {v : VectorMeasure α M} (hf₁ : ∀ i, MeasurableSet (f i))
     (hf₂ : Pairwise (Disjoint on f)) (hf₃ : ∀ i, v (f i) ≤ 0) : v (⋃ i, f i) ≤ 0 :=
   (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsum_nonpos hf₃
@@ -194,7 +194,7 @@ theorem tendsto_vectorMeasure_iUnion_atTop_nat
   · exact fun b hb ↦ ht _
 
 theorem tendsto_vectorMeasure_iInter_atTop_nat
-    {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M] [ContinuousSub M]
+    {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [T2Space M] [ContinuousSub M]
     {v : VectorMeasure α M} {s : ℕ → Set α} (hm : Antitone s) (hs : ∀ i, MeasurableSet (s i)) :
     Tendsto (fun n ↦ v (s n)) atTop (𝓝 (v (⋂ n, s n))) := by
   have I n : v (s n) = v univ - v (s n)ᶜ := by simp [of_compl (hs n)]
@@ -208,7 +208,7 @@ theorem tendsto_vectorMeasure_iInter_atTop_nat
 
 /-- If two vector measures give the same mass to the whole space and coincide on a
 generating π-system, then they coincide. -/
-theorem ext_of_generateFrom {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
+theorem ext_of_generateFrom {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [T2Space M]
     {X : Type*} {mX : MeasurableSpace X} {μ ν : VectorMeasure X M}
     (C : Set (Set X)) (hμν : ∀ s ∈ C, μ s = ν s)
     (hA : mX = MeasurableSpace.generateFrom C) (hC : IsPiSystem C)
@@ -226,7 +226,7 @@ end
 
 section SMul
 
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
 /-- Given a scalar `r` and a vector measure `v`, `smul r v` is the vector measure corresponding to
@@ -251,7 +251,7 @@ end SMul
 
 section AddCommMonoid
 
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
 
 instance instZero : Zero (VectorMeasure α M) :=
   ⟨⟨0, rfl, fun _ _ => rfl, fun _ _ _ => hasSum_zero⟩⟩
@@ -307,7 +307,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [IsTopologicalAddGroup M]
 
 /-- The negative of a vector measure is a vector measure. -/
 def neg (v : VectorMeasure α M) : VectorMeasure α M where
@@ -347,7 +347,7 @@ end AddCommGroup
 
 section DistribMulAction
 
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
 instance instDistribMulAction [ContinuousAdd M] : DistribMulAction R (VectorMeasure α M) :=
@@ -357,7 +357,7 @@ end DistribMulAction
 
 section Module
 
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [Module R M] [ContinuousConstSMul R M]
 
 instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) :=
@@ -367,7 +367,7 @@ end Module
 
 section Dirac
 
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [MeasurableSpace β]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M] [MeasurableSpace β]
   {x : β} {v : M} {s : Set β}
 
 open scoped Classical in

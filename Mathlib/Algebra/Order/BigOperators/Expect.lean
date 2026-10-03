@@ -29,7 +29,7 @@ local notation a " /ℚ " q => (q : ℚ≥0)⁻¹ • a
 
 namespace Finset
 section OrderedAddCommMonoid
-variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α]
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α]
   {s : Finset ι} {f g : ι → α}
 
 lemma expect_eq_zero_iff_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
@@ -61,8 +61,8 @@ lemma expect_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ 𝔼 i ∈ s, f i :=
 end PosSMulMono
 
 section PosSMulMono
-variable {M N : Type*} [AddCommMonoid M] [Module ℚ≥0 M]
-  [AddCommMonoid N] [PartialOrder N] [IsOrderedAddMonoid N] [Module ℚ≥0 N]
+variable {M N : Type*} [AddMonoid M] [IsAddCommutative M] [Module ℚ≥0 M]
+  [AddMonoid N] [IsAddCommutative N] [PartialOrder N] [IsOrderedAddMonoid N] [Module ℚ≥0 N]
   [PosSMulMono ℚ≥0 N] {m : M → N} {p : M → Prop} {f : ι → M} {s : Finset ι}
 
 /-- Let `{a | p a}` be an additive subsemigroup of an additive commutative monoid `M`. If `m` is a
@@ -108,7 +108,7 @@ end PosSMulMono
 end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
-variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
   [PosSMulStrictMono ℚ≥0 α] {s : Finset ι} {f g : ι → α} {a : α}
 
 lemma expect_lt_expect (hfg : ∀ i ∈ s, f i ≤ g i) (hfg' : ∃ i ∈ s, f i < g i) :
@@ -135,7 +135,7 @@ lemma expect_pos (hf : ∀ i ∈ s, 0 < f i) (hs : s.Nonempty) : 0 < 𝔼 i ∈ 
 end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
-variable [AddCommMonoid α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α]
+variable [AddMonoid α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α]
   [PosSMulMono ℚ≥0 α] {s : Finset ι}
   {f g : ι → α} {a : α}
 
@@ -152,7 +152,7 @@ lemma exists_lt_of_expect_lt (hs : s.Nonempty) (h : 𝔼 i ∈ s, f i < a) : ∃
 end LinearOrderedAddCommMonoid
 
 section LinearOrderedCancelAddMonoid
-variable [AddCommMonoid α] [LinearOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
+variable [AddMonoid α] [IsAddCommutative α] [LinearOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
   {a : α} {s : Finset ι} {f g : ι → α}
 
 lemma exists_le_of_expect_le_expect (hs : s.Nonempty) (h : 𝔼 i ∈ s, g i ≤ 𝔼 i ∈ s, f i) :
@@ -168,7 +168,7 @@ lemma exists_le_of_expect_le (hs : s.Nonempty) (h : 𝔼 i ∈ s, f i ≤ a) : �
 end LinearOrderedCancelAddMonoid
 
 section LinearOrderedAddCommGroup
-variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α]
+variable [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α]
 
 lemma abs_expect_le (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ 𝔼 i ∈ s, |f i| :=
   le_expect_of_subadditive abs_zero abs_add_le (fun _ ↦ abs_nnqsmul _)
@@ -176,7 +176,7 @@ lemma abs_expect_le (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ �
 end LinearOrderedAddCommGroup
 
 section LinearOrderedCommSemiring
-variable [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R] [Module ℚ≥0 R]
+variable [Semiring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R] [Module ℚ≥0 R]
   [PosSMulMono ℚ≥0 R]
 
 /-- **Cauchy-Schwarz inequality** in terms of `Finset.expect`. -/
@@ -195,7 +195,7 @@ namespace Fintype
 variable [Fintype ι]
 
 section OrderedAddCommMonoid
-variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] {f : ι → α}
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] {f : ι → α}
 
 lemma expect_eq_zero_iff_of_nonneg (hf : 0 ≤ f) : 𝔼 i, f i = 0 ↔ f = 0 := by
   rw [Finset.expect_eq_zero_iff_of_nonneg (by aesop)]

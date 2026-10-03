@@ -70,13 +70,13 @@ variable {P Q : Cubic R} {a b c d : R} [Semiring R]
 def toPoly (P : Cubic R) : R[X] :=
   C P.a * X ^ 3 + C P.b * X ^ 2 + C P.c * X + C P.d
 
-theorem C_mul_prod_X_sub_C_eq [CommRing S] {w x y z : S} :
+theorem C_mul_prod_X_sub_C_eq [Ring S] [IsMulCommutative S] {w x y z : S} :
     C w * (X - C x) * (X - C y) * (X - C z) =
       toPoly ⟨w, w * -(x + y + z), w * (x * y + x * z + y * z), w * -(x * y * z)⟩ := by
   simp only [toPoly, C_neg, C_add, C_mul]
   ring1
 
-theorem prod_X_sub_C_eq [CommRing S] {x y z : S} :
+theorem prod_X_sub_C_eq [Ring S] [IsMulCommutative S] {x y z : S} :
     (X - C x) * (X - C y) * (X - C z) =
       toPoly ⟨1, -(x + y + z), x * y + x * z + y * z, -(x * y * z)⟩ := by
   rw [← one_mul <| X - C x, ← C_1, C_mul_prod_X_sub_C_eq, one_mul, one_mul, one_mul]
@@ -383,7 +383,7 @@ open Multiset
 
 section Extension
 
-variable {P : Cubic R} [CommRing R] [CommRing S] {φ : R →+* S}
+variable {P : Cubic R} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {φ : R →+* S}
 
 /-- The roots of a cubic polynomial. -/
 def roots [IsDomain R] (P : Cubic R) : Multiset R :=

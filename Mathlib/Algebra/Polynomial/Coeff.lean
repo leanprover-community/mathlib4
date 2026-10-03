@@ -65,7 +65,7 @@ theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
-def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
+def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddMonoid M] [IsAddCommutative M] [Module R A] [Module R M]
     (f : ℕ → A →ₗ[R] M) : A[X] →ₗ[R] M where
   toFun p := p.sum (f · ·)
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
@@ -305,7 +305,7 @@ theorem coeff_X_add_one_pow (R : Type*) [Semiring R] (n k : ℕ) :
 theorem coeff_one_add_X_pow (R : Type*) [Semiring R] (n k : ℕ) :
     ((1 + X) ^ n).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
 
-theorem one_add_X_pow_sub_X_pow {S : Type*} [CommRing S] (d : ℕ) :
+theorem one_add_X_pow_sub_X_pow {S : Type*} [Ring S] [IsMulCommutative S] (d : ℕ) :
     (1 + X : S[X]) ^ d - X ^ d = ∑ i ∈ range d, d.choose i • X ^ i := by
   ext i
   simp [Polynomial.coeff_one_add_X_pow]

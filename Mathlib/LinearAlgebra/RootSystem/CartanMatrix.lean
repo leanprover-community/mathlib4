@@ -39,11 +39,11 @@ open Matrix
 open Module.End (invtSubmodule mem_invtSubmodule)
 open Submodule (span subset_span)
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace RootPairing.Base
 
-variable (S : Type*) [CommRing S] [Algebra S R]
+variable (S : Type*) [Ring S] [IsMulCommutative S] [Algebra S R]
   {P : RootPairing ι R M N} [P.IsValuedIn S] (b : P.Base)
 
 /-- The Cartan matrix of a root pairing, taking values in `S`, with respect to a base `b`.
@@ -323,7 +323,7 @@ lemma exists_mem_span_pairingIn_ne_zero_and_pairwise_ne
 
 section Uniqueness
 
-variable {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+variable {ι₂ M₂ N₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
   {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCrystallographic] [P.IsReduced] (b : P.Base)
   {P₂ : RootPairing ι₂ R M₂ N₂} [P₂.IsCrystallographic] (b₂ : P₂.Base)
   (e : b.support ≃ b₂.support)
@@ -375,7 +375,7 @@ end Uniqueness
 
 omit [IsDomain R] [Finite ι] in
 lemma map_equiv_cartanMatrix {ι₂ M₂ N₂ : Type*} [DecidableEq ι₂]
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     {P₂ : RootPairing ι₂ R M₂ N₂} [P₂.IsCrystallographic]
     (e : P.Equiv P₂) :
     (b.map e).cartanMatrix =

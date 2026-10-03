@@ -49,8 +49,8 @@ have to be required separately. For example, to state that `G` is a Cⁿ additiv
 additive action on a Cⁿ manifold `M`, one can use the typeclasses
 `[LieAddGroup I n G] [IsManifold I' n M] [ContMDiffVAdd I I' n G M]`. -/
 class ContMDiffVAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
-    {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
+    {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E']
     (I' : ModelWithCorners 𝕜 E' H') (n : ℕ∞ω)
     (G : Type*) [TopologicalSpace G] [ChartedSpace H G]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H' M] [VAdd G M] : Prop where
@@ -66,8 +66,8 @@ a Cⁿ manifold `M`, one can use the typeclasses
 `[LieGroup I n G] [IsManifold I' n M] [ContMDiffSMul I I' n G M]`. -/
 @[to_additive]
 class ContMDiffSMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
-    {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
+    {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E']
     (I' : ModelWithCorners 𝕜 E' H') (n : ℕ∞ω)
     (G : Type*) [TopologicalSpace G] [ChartedSpace H G]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H' M] [SMul G M] : Prop where
@@ -78,7 +78,7 @@ Unlike `ContMDiffVAdd` (which requires the action to be Cⁿ jointly as a map `�
 topology or manifold structure on `Γ` is required, so this class also covers additive actions of
 discrete groups by Cⁿ maps. -/
 class ContMDiffConstVAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
+    {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
     (Γ : Type*) (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [VAdd Γ M] : Prop where
   /-- For each `γ : Γ`, the map `fun x : M ↦ γ +ᵥ x` is Cⁿ. -/
   contMDiff_const_vadd : ∀ γ : Γ, CMDiff n fun x : M ↦ γ +ᵥ x
@@ -89,7 +89,7 @@ topology or manifold structure on `Γ` is required, so this class also covers ac
 groups by Cⁿ maps, e.g. the properly discontinuous actions used to construct quotient manifolds. -/
 @[to_additive]
 class ContMDiffConstSMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
+    {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
     (Γ : Type*) (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [SMul Γ M] : Prop where
   /-- For each `γ : Γ`, the map `fun x : M ↦ γ • x` is Cⁿ. -/
   contMDiff_const_smul : ∀ γ : Γ, CMDiff n fun x : M ↦ γ • x
@@ -105,10 +105,10 @@ export ContMDiffConstSMul (contMDiff_const_smul)
 section ContMDiffSMul
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
-  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
+  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E']
   {I' : ModelWithCorners 𝕜 E' H'} {H'' : Type*} [TopologicalSpace H''] {E'' : Type*}
-  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {I'' : ModelWithCorners 𝕜 E'' H''}
+  [NormedAddGroup E''] [IsAddCommutative E''] [NormedSpace 𝕜 E''] {I'' : ModelWithCorners 𝕜 E'' H''}
   {G : Type*} [TopologicalSpace G] [ChartedSpace H G]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
   {N : Type*} [TopologicalSpace N] [ChartedSpace H'' N]
@@ -229,9 +229,9 @@ end ContMDiffSMul
 section ContMDiffConstSMul
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {I : ModelWithCorners 𝕜 E H}
-  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E']
   {I' : ModelWithCorners 𝕜 E' H'}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
@@ -327,9 +327,9 @@ section Diffeomorph
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H : Type*} [TopologicalSpace H]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
   {H' : Type*} [TopologicalSpace H']
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {I' : ModelWithCorners 𝕜 E' H'}
+  {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E'] {I' : ModelWithCorners 𝕜 E' H'}
   {G : Type*} [TopologicalSpace G] [ChartedSpace H G]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
   [Group G] [MulAction G M] {n : ℕ∞ω} [ContMDiffSMul I I' n G M] (g : G)

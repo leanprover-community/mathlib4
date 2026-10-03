@@ -200,7 +200,7 @@ instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [Continuous
 
 section Norm
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] (u : Circle) (v : E)
+variable {E : Type*} [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E] (u : Circle) (v : E)
 
 @[simp] protected lemma norm_smul : ‖u • v‖ = ‖v‖ := by simp [smul_def, norm_smul]
 @[simp] protected lemma nnnorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)

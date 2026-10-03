@@ -34,7 +34,7 @@ namespace Multiset
 
 section CommMonoid
 
-variable [CommMonoid M] [CommMonoid N] {s t : Multiset M} {a : M} {m : Multiset ι} {f g : ι → M}
+variable [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] {s t : Multiset M} {a : M} {m : Multiset ι} {f g : ι → M}
 
 @[to_additive (attr := simp)]
 theorem prod_erase [DecidableEq M] (h : a ∈ s) : a * (s.erase a).prod = s.prod := by
@@ -97,13 +97,13 @@ theorem prod_hom' (s : Multiset ι) {F : Type*} [FunLike F M N]
   exact (map_map _ _ _).symm
 
 @[to_additive]
-theorem prod_hom₂_ne_zero [CommMonoid O] {s : Multiset ι} (hs : s ≠ 0) (f : M → N → O)
+theorem prod_hom₂_ne_zero [Monoid O] [IsMulCommutative O] {s : Multiset ι} (hs : s ≠ 0) (f : M → N → O)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → M) (f₂ : ι → N) :
     (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod := by
   induction s using Quotient.inductionOn; aesop (add simp List.prod_hom₂_nonempty)
 
 @[to_additive]
-theorem prod_hom₂ [CommMonoid O] (s : Multiset ι) (f : M → N → O)
+theorem prod_hom₂ [Monoid O] [IsMulCommutative O] (s : Multiset ι) (f : M → N → O)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (hf' : f 1 1 = 1) (f₁ : ι → M)
     (f₂ : ι → N) : (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod :=
   Quotient.inductionOn s fun l => by
@@ -155,7 +155,7 @@ lemma dvd_prod : a ∈ s → a ∣ s.prod :=
 
 end CommMonoid
 
-theorem prod_dvd_prod_of_dvd [CommMonoid N] {S : Multiset M} (g1 g2 : M → N)
+theorem prod_dvd_prod_of_dvd [Monoid N] [IsMulCommutative N] {S : Multiset M} (g1 g2 : M → N)
     (h : ∀ a ∈ S, g1 a ∣ g2 a) : (Multiset.map g1 S).prod ∣ (Multiset.map g2 S).prod := by
   apply Multiset.induction_on' S
   · simp
@@ -164,7 +164,7 @@ theorem prod_dvd_prod_of_dvd [CommMonoid N] {S : Multiset M} (g1 g2 : M → N)
 
 section AddCommMonoid
 
-variable [AddCommMonoid M]
+variable [AddMonoid M] [IsAddCommutative M]
 
 /-- `Multiset.sum`, the sum of the elements of a multiset, promoted to a morphism of
 `AddCommMonoid`s. -/
@@ -181,7 +181,7 @@ end AddCommMonoid
 
 section DivisionCommMonoid
 
-variable [DivisionCommMonoid G] {m : Multiset ι} {f g : ι → G}
+variable [DivisionMonoid G] [IsMulCommutative G] {m : Multiset ι} {f g : ι → G}
 
 @[to_additive]
 theorem prod_map_inv' (m : Multiset G) : (m.map Inv.inv).prod = m.prod⁻¹ :=
@@ -220,7 +220,7 @@ theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)
 
 section OrderedSub
 
-theorem sum_map_tsub [AddCommMonoid M] [PartialOrder M] [ExistsAddOfLE M]
+theorem sum_map_tsub [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [ExistsAddOfLE M]
     [AddLeftMono M] [AddLeftReflectLE M] [Sub M]
     [OrderedSub M] (l : Multiset ι) {f g : ι → M} (hfg : ∀ x ∈ l, g x ≤ f x) :
     (l.map fun x ↦ f x - g x).sum = (l.map f).sum - (l.map g).sum :=

@@ -22,7 +22,7 @@ open List
 
 section CommMonoidWithZero
 
-variable {M : Type*} [CommMonoidWithZero M]
+variable {M : Type*} [MonoidWithZero M] [IsMulCommutative M]
 
 /-- Prime `p` divides the product of a list `L` iff it divides some `a ∈ L` -/
 theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod ↔ ∃ a ∈ L, p ∣ a := by
@@ -48,7 +48,7 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable {M : Type*} [CommMonoidWithZero M] [IsCancelMulZero M] [Subsingleton Mˣ]
+variable {M : Type*} [MonoidWithZero M] [IsMulCommutative M] [IsCancelMulZero M] [Subsingleton Mˣ]
 
 theorem mem_list_primes_of_dvd_prod {p : M} (hp : Prime p) {L : List M} (hL : ∀ q ∈ L, Prime q)
     (hpL : p ∣ L.prod) : p ∈ L := by

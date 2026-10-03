@@ -45,7 +45,7 @@ noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
       Subtype.ext ((Units.val_mul x.prop.unit⁻¹ _).trans x.prop.unit.inv_val) }
 
 @[to_additive]
-noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
+noncomputable instance [Monoid M] [IsMulCommutative M] : CommGroup (IsUnit.submonoid M) :=
   { (inferInstance : Group (IsUnit.submonoid M)) with
     mul_comm := fun a b ↦ by convert! mul_comm a b }
 
@@ -112,7 +112,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid M] (S : Submonoid M)
+variable [Monoid M] [IsMulCommutative M] (S : Submonoid M)
 
 @[to_additive (attr := simp)]
 theorem fromLeftInv_mul (x : S.leftInv) : (S.fromLeftInv x : M) * x = 1 := by
@@ -206,7 +206,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup M] (S : Submonoid M) (hS : S ≤ IsUnit.submonoid M)
+variable [Group M] [IsMulCommutative M] (S : Submonoid M) (hS : S ≤ IsUnit.submonoid M)
 
 @[to_additive (attr := simp)]
 theorem leftInvEquiv_symm_eq_inv (x : S) : ((S.leftInvEquiv hS).symm x : M) = (x : M)⁻¹ := by

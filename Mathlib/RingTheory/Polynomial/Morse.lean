@@ -41,7 +41,7 @@ public section
 
 namespace Polynomial
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsDomain S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [IsDomain S]
   {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S] {f : R[X]}
 
 set_option backward.isDefEq.respectTransparency false in

@@ -396,7 +396,7 @@ variable [Monoid α] [MulAction α β] {s : Set β} {a : α} {b : β}
 end Monoid
 
 section Group
-variable [Group α] [CommGroup β] [FunLike F α β] [MonoidHomClass F α β]
+variable [Group α] [Group β] [IsMulCommutative β] [FunLike F α β] [MonoidHomClass F α β]
 
 @[to_additive]
 lemma smul_graphOn (x : α × β) (s : Set α) (f : F) :
@@ -412,7 +412,7 @@ lemma smul_graphOn_univ (x : α × β) (f : F) :
 end Group
 
 section CommGroup
-variable [CommGroup α]
+variable [Group α] [IsMulCommutative α]
 
 @[to_additive] lemma smul_div_smul_comm (a : α) (s : Set α) (b : α) (t : Set α) :
     a • s / b • t = (a / b) • (s / t) := by

@@ -58,7 +58,7 @@ section Semiring
 
 
 variable {v : ι → M}
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M']
 variable [Module R M] [Module R M']
 variable (R) (v)
 
@@ -105,7 +105,7 @@ linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map_injOn`.
 TODO : `LinearIndepOn` version. -/
 theorem LinearIndependent.map_of_injective_injectiveₛ {R' M' : Type*}
-    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    [Semiring R'] [AddMonoid M'] [IsAddCommutative M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R' → R) (j : M →+ M') (hi : Injective i) (hj : Injective j)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) : LinearIndependent R' (j ∘ v) := by
   rw [linearIndependent_iff'ₛ] at hv ⊢
@@ -120,7 +120,7 @@ of vectors to linearly independent families of vectors. As a special case, takin
 it is `LinearIndependent.map_injOn`.
 TODO : `LinearIndepOn` version. -/
 theorem LinearIndependent.map_of_surjective_injectiveₛ {R' M' : Type*}
-    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    [Semiring R'] [AddMonoid M'] [IsAddCommutative M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R → R') (j : M →+ M') (hi : Surjective i) (hj : Injective j)
     (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) := by
   obtain ⟨i', hi'⟩ := hi.hasRightInverse
@@ -231,7 +231,7 @@ theorem linearIndepOn_of_finite (s : Set ι) (H : ∀ t ⊆ s, Set.Finite t → 
 end Indexed
 
 /-- Linear independent families are injective, even if you multiply either side. -/
-theorem LinearIndependent.eq_of_smul_apply_eq_smul_apply {M : Type*} [AddCommMonoid M] [Module R M]
+theorem LinearIndependent.eq_of_smul_apply_eq_smul_apply {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
     {v : ι → M} (li : LinearIndependent R v) (c d : R) (i j : ι) (hc : c ≠ 0)
     (h : c • v i = d • v j) : i = j := by
   have h_single_eq : Finsupp.single i c = Finsupp.single j d :=
@@ -329,7 +329,7 @@ end Semiring
 section Module
 
 variable {v : ι → M}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M']
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [AddGroup M'] [IsAddCommutative M']
 variable [Module R M] [Module R M']
 
 open Finset in
@@ -359,7 +359,7 @@ multiplications on `M` and `M'`, then `j` sends linearly independent families of
 linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_injective_injective {R' M' : Type*}
-    [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
+    [Ring R'] [AddGroup M'] [IsAddCommutative M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R' → R) (j : M →+ M') (hi : ∀ r, i r = 0 → r = 0) (hj : ∀ m, j m = 0 → m = 0)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) : LinearIndependent R' (j ∘ v) := by
   rw [linearIndependent_iff'] at hv ⊢
@@ -373,7 +373,7 @@ scalar multiplications on `M` and `M'` are compatible, then `j` sends linearly i
 of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_surjective_injective {R' M' : Type*}
-    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    [Semiring R'] [AddMonoid M'] [IsAddCommutative M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R → R') (j : M →+ M') (hi : Surjective i) (hj : ∀ m, j m = 0 → m = 0)
     (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) :=
   hv.map_of_surjective_injectiveₛ i _ hi ((injective_iff_map_eq_zero _).mpr hj) hc
@@ -415,7 +415,7 @@ end Module
 section Module
 
 variable {v : ι → M}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M']
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [AddGroup M'] [IsAddCommutative M']
 variable [Module R M] [Module R M']
 
 theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
@@ -499,7 +499,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 --  <https://kconrad.math.uconn.edu/blurbs/galoistheory/linearchar.pdf>
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
-theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
+theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Ring L] [IsMulCommutative L]
     [IsDomain L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   let := Classical.decEq (G →* L)
   let : MulAction L L := DistribMulAction.toMulAction
@@ -566,7 +566,7 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
 end Module
 
 section IsDomain
-variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.IsTorsionFree R M]
+variable [Ring R] [IsDomain R] [AddGroup M] [IsAddCommutative M] [Module R M] [Module.IsTorsionFree R M]
   {v : ι → M} {i : ι}
 
 lemma linearIndependent_unique_iff [Unique ι] : LinearIndependent R v ↔ v default ≠ 0 := by

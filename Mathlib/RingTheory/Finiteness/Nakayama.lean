@@ -25,8 +25,8 @@ namespace Submodule
 
 /-- **Nakayama's Lemma**. Atiyah-Macdonald 2.5, Eisenbud 4.7, Matsumura 2.2. -/
 @[stacks 00DV]
-theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRing R] {M : Type*}
-    [AddCommGroup M] [Module R M] (I : Ideal R) (N : Submodule R M) (hn : N.FG) (hin : N ≤ I • N) :
+theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [Ring R] [IsMulCommutative R] {M : Type*}
+    [AddGroup M] [IsAddCommutative M] [Module R M] (I : Ideal R) (N : Submodule R M) (hn : N.FG) (hin : N ≤ I • N) :
     ∃ r : R, r - 1 ∈ I ∧ ∀ n ∈ N, r • n = (0 : M) := by
   rw [fg_def] at hn
   rcases hn with ⟨s, hfs, hs⟩
@@ -80,8 +80,8 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
     rw [mul_smul, ← hyz, smul_add, smul_smul, mul_comm, mul_smul]
     exact add_mem (smul_mem _ _ hci) (smul_mem _ _ hz)
 
-theorem exists_mem_and_smul_eq_self_of_fg_of_le_smul {R : Type*} [CommRing R] {M : Type*}
-    [AddCommGroup M] [Module R M] (I : Ideal R) (N : Submodule R M) (hn : N.FG) (hin : N ≤ I • N) :
+theorem exists_mem_and_smul_eq_self_of_fg_of_le_smul {R : Type*} [Ring R] [IsMulCommutative R] {M : Type*}
+    [AddGroup M] [IsAddCommutative M] [Module R M] (I : Ideal R) (N : Submodule R M) (hn : N.FG) (hin : N ≤ I • N) :
     ∃ r ∈ I, ∀ n ∈ N, r • n = n := by
   obtain ⟨r, hr, hr'⟩ := exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I N hn hin
   exact ⟨-(r - 1), I.neg_mem hr, fun n hn => by simpa [sub_smul] using hr' n hn⟩

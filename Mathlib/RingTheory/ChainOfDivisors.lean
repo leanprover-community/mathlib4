@@ -39,7 +39,7 @@ and the set of factors of `a`.
 
 assert_not_exists Field
 
-variable {M : Type*} [CommMonoidWithZero M] [IsCancelMulZero M]
+variable {M : Type*} [MonoidWithZero M] [IsMulCommutative M] [IsCancelMulZero M]
 
 theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔ Irreducible p :=
   ⟨fun hp =>
@@ -212,7 +212,7 @@ theorem isPrimePow_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
 
 end DivisorChain
 
-variable {N : Type*} [CommMonoidWithZero N]
+variable {N : Type*} [MonoidWithZero N] [IsMulCommutative N]
 
 theorem factor_orderIso_map_one_eq_bot [IsCancelMulZero N] {m : Associates M} {n : Associates N}
     (d : { l : Associates M // l ≤ m } ≃o { l : Associates N // l ≤ n }) :

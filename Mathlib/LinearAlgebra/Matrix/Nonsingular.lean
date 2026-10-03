@@ -34,21 +34,21 @@ a matrix is nonsingular if and only if its determinant is not a zero divisor).
 
 public section
 
-variable {R m n : Type*} [CommSemiring R] [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
+variable {R m n : Type*} [Semiring R] [IsMulCommutative R] [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable {A : Matrix n n R}
 
 namespace Matrix
 
-lemma isDetpBalanced_iff_sub_mul_det_eq_zero {R : Type*} [CommRing R] {A : Matrix n n R} {a b : R} :
+lemma isDetpBalanced_iff_sub_mul_det_eq_zero {R : Type*} [Ring R] [IsMulCommutative R] {A : Matrix n n R} {a b : R} :
     A.IsDetpBalanced a b ↔ (a - b) * A.det = 0 := by
   grind [IsDetpBalanced, det_eq_detp_sub_detp]
 
-lemma nonsingular_iff_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
+lemma nonsingular_iff_det_mem_nonZeroDivisors {R : Type*} [Ring R] [IsMulCommutative R]
     {A : Matrix n n R} : A.Nonsingular ↔ A.det ∈ nonZeroDivisors R := by
   simp_rw [Nonsingular, isDetpBalanced_iff_sub_mul_det_eq_zero, mem_nonZeroDivisors_iff_right]
   exact ⟨fun h x eq ↦ h x 0 (by simpa), fun h a b eq ↦ sub_eq_zero.mp <| h _ (by simpa)⟩
 
-lemma nonsingular_iff_det_ne_zero {R : Type*} [CommRing R] [IsDomain R]
+lemma nonsingular_iff_det_ne_zero {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
     {A : Matrix n n R} : A.Nonsingular ↔ A.det ≠ 0 := by
   rw [nonsingular_iff_det_mem_nonZeroDivisors, mem_nonZeroDivisors_iff_ne_zero]
 

@@ -34,7 +34,7 @@ namespace Polynomial
 
 section CommSemiring
 
-variable (R : Type u) [CommSemiring R] {S : Type v} [CommSemiring S] (p q : ℕ)
+variable (R : Type u) [Semiring R] [IsMulCommutative R] {S : Type v} [Semiring S] [IsMulCommutative S] (p q : ℕ)
 
 /-- Expand the polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`. -/
 noncomputable def expand : R[X] →ₐ[R] R[X] :=
@@ -283,7 +283,7 @@ end CommSemiring
 
 section rootMultiplicity
 
-variable {R : Type u} [CommRing R] {p n : ℕ} [ExpChar R p] {f : R[X]} {r : R}
+variable {R : Type u} [Ring R] [IsMulCommutative R] {p n : ℕ} [ExpChar R p] {f : R[X]} {r : R}
 
 theorem rootMultiplicity_expand_pow :
     (expand R (p ^ n) f).rootMultiplicity r = p ^ n * f.rootMultiplicity (r ^ p ^ n) := by
@@ -302,7 +302,7 @@ end rootMultiplicity
 
 section IsDomain
 
-variable (R : Type u) [CommRing R] [IsDomain R]
+variable (R : Type u) [Ring R] [IsMulCommutative R] [IsDomain R]
 
 theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand R p) := by
   refine ⟨fun f hf1 => ?_⟩

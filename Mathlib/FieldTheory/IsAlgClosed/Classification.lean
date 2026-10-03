@@ -40,7 +40,7 @@ section Classification
 
 noncomputable section
 
-variable {R L K : Type*} [CommRing R]
+variable {R L K : Type*} [Ring R] [IsMulCommutative R]
 variable [Field K] [Algebra R K]
 variable [Field L] [Algebra R L]
 variable {ι : Type*} (v : ι → K)
@@ -77,7 +77,7 @@ end Classification
 
 section Cardinal
 
-variable {R : Type u} {K : Type v} [CommRing R] [Field K] [Algebra R K] [IsAlgClosed K]
+variable {R : Type u} {K : Type v} [Ring R] [IsMulCommutative R] [Field K] [Algebra R K] [IsAlgClosed K]
 variable {ι : Type w} (v : ι → K)
 
 variable {K' : Type u} [Field K'] [Algebra R K'] [IsAlgClosed K']

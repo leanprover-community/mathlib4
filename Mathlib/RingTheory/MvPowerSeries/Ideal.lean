@@ -26,11 +26,11 @@ import Mathlib.RingTheory.Ideal.BigOperators
 
 namespace MvPowerSeries
 
-variable {R S σ : Type*} [CommRing R] [CommRing S]
+variable {R S σ : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 open Ideal
 
-variable {S₁ S₂ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁] [Algebra R S₂]
+variable {S₁ S₂ : Type*} [Ring S₁] [IsMulCommutative S₁] [Ring S₂] [IsMulCommutative S₂] [Algebra R S₁] [Algebra R S₂]
   {I : Ideal R} {p : MvPowerSeries σ R}
 
 theorem coeff_mem_of_mem_map_C (h : p ∈ I.map C) : ∀ m : σ →₀ ℕ, p.coeff m ∈ I := by

@@ -31,7 +31,7 @@ public section
 
 variable {R 𝕜₁ 𝕜₂ E F : Type*}
 
-variable [AddCommGroup E] [TopologicalSpace E] [AddCommGroup F] [TopologicalSpace F]
+variable [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [AddGroup F] [IsAddCommutative F] [TopologicalSpace F]
   [IsTopologicalAddGroup F]
 
 section General

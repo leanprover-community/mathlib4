@@ -41,7 +41,7 @@ theorem modEq_iff_intModEq {a b z : ℤ} : a ≡ b [PMOD z] ↔ a ≡ b [ZMOD z]
   simp [modEq_iff_zsmul', dvd_iff_exists_eq_mul_left, Int.ModEq,
     Int.emod_eq_emod_iff_emod_sub_eq_zero, ← Int.dvd_iff_emod_eq_zero]
 
-variable {G : Type*} [AddCommGroupWithOne G] [CharZero G]
+variable {G : Type*} [AddGroupWithOne G] [IsAddCommutative G] [CharZero G]
 
 @[simp, norm_cast]
 theorem intCast_modEq_intCast {a b z : ℤ} : a ≡ b [PMOD (z : G)] ↔ a ≡ b [PMOD z] :=

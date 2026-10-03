@@ -390,7 +390,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring A]
+variable [Semiring A] [IsMulCommutative A]
 variable [DecidableEq ι] [AddMonoid ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 variable (I : Ideal A)
@@ -558,13 +558,13 @@ namespace HomogeneousIdeal
 
 variable [Semiring A]
 variable [DecidableEq ι]
-variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
+variable [AddMonoid ι] [IsAddCommutative ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 open GradedRing SetLike.GradedMonoid DirectSum
 
 /-- For a graded ring `⨁ᵢ 𝒜ᵢ` graded by
-`[AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]`, the irrelevant ideal refers to
+`[AddMonoid ι] [IsAddCommutative ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]`, the irrelevant ideal refers to
 `⨁_{i>0} 𝒜ᵢ`, or equivalently `{a | a₀ = 0}`. This definition is used in `Proj` construction where
 `ι` is always `ℕ` so the irrelevant ideal is simply elements with `0` as 0-th coordinate.
 -/

@@ -97,7 +97,7 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
-instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ where
+instance (priority := 95) instAlgebraOfReal [Semiring R] [IsMulCommutative R] [Algebra R ℝ] : Algebra R ℂ where
   algebraMap := Complex.ofRealHom.comp (algebraMap R ℝ)
   smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
   commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [Algebra.commutes]
@@ -165,7 +165,7 @@ end Complex
 
 /-- Register as an instance (with low priority) the fact that a complex vector space is also a real
 vector space. -/
-instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
+instance (priority := 900) Module.complexToReal (E : Type*) [AddGroup E] [IsAddCommutative E] [Module ℂ E] :
     Module ℝ E :=
   .restrictScalars ℝ ℂ E
 
@@ -190,26 +190,26 @@ example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
   with_reducible_and_instances rfl
 
 @[simp, norm_cast]
-theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
+theorem Complex.coe_smul {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℂ E] (x : ℝ) (y : E) :
     (x : ℂ) • y = x • y :=
   rfl
 
 /-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` commutes with
 another scalar action of `M` on `E` whenever the action of `ℂ` commutes with the action of `M`. -/
-instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGroup E] [Module ℂ E]
+instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℂ E]
     [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E where
   smul_comm r _ _ := smul_comm (r : ℂ) _ _
 
 /-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` associates with
 another scalar action of `M` on `E` whenever the action of `ℂ` associates with the action of `M`. -/
-instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
+instance IsScalarTower.complexToReal {M E : Type*} [AddGroup M] [IsAddCommutative M] [Module ℂ M] [AddGroup E] [IsAddCommutative E]
     [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E where
   smul_assoc r _ _ := smul_assoc (r : ℂ) _ _
 
 -- check that the following instance is implied by the one above.
-example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
+example (E : Type*) [AddGroup E] [IsAddCommutative E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
 
-instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E] [Star E]
+instance (priority := 900) StarModule.complexToReal {E : Type*} [AddGroup E] [IsAddCommutative E] [Star E]
     [Module ℂ E] [StarModule ℂ E] : StarModule ℝ E :=
   ⟨fun r a => by rw [← smul_one_smul ℂ r a, star_smul, star_smul, star_one, smul_one_smul]⟩
 
@@ -358,7 +358,7 @@ variable {A : Type*}
 
 section AddCommGroup
 
-variable [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarModule ℂ A]
+variable [AddGroup A] [IsAddCommutative A] [Module ℂ A] [StarAddMonoid A] [StarModule ℂ A]
 
 lemma Complex.I_mem_skewAdjoint : I ∈ skewAdjoint ℂ := by simp [skewAdjoint.mem_iff]
 
@@ -492,7 +492,7 @@ lemma ComplexStarModule.ext_iff {x y : A} : x = y ↔ ℜ x = ℜ y ∧ ℑ x = 
 
 section StarHomClass
 
-variable {B F : Type*} [AddCommGroup B] [Module ℂ B] [StarAddMonoid B] [StarModule ℂ B]
+variable {B F : Type*} [AddGroup B] [IsAddCommutative B] [Module ℂ B] [StarAddMonoid B] [StarModule ℂ B]
     [FunLike F A B] [StarHomClass F A B] [LinearMapClass F ℂ A B]
 
 lemma map_realPart (f : F) (x : A) : f (ℜ x) = ℜ (f x) := by
@@ -648,7 +648,7 @@ lemma mem_unitary_iff_isStarNormal_and_realPart_sq_add_imaginaryPart_sq_eq_one [
     exact ⟨this, by simp [sq, ← star_mul_self_eq_realPart_sq_add_imaginaryPart_sq x, h]⟩
   · simp [← hx.star_comm_self.eq, star_mul_self_eq_realPart_sq_add_imaginaryPart_sq, ← sq, h]
 
-instance {F E A : Type*} [AddCommGroup E] [PartialOrder E]
+instance {F E A : Type*} [AddGroup E] [IsAddCommutative E] [PartialOrder E]
     [StarAddMonoid E] [SelfAdjointDecompose E] [Module ℂ E] [StarModule ℂ E]
     [NonUnitalRing A] [PartialOrder A] [StarRing A]
     [StarOrderedRing A] [Module ℂ A] [StarModule ℂ A]

@@ -38,7 +38,7 @@ private lemma dvd_exponent {ι G : Type*} [Monoid G] {n : ι → ℕ}
       using (ZMod.addOrderOf_one (n i)).symm
   exact this ▸ Monoid.order_dvd_exponent _
 
-variable (G M : Type*) [CommGroup G] [Finite G] [CommMonoid M]
+variable (G M : Type*) [Group G] [IsMulCommutative G] [Finite G] [Monoid M] [IsMulCommutative M]
 
 private
 lemma exists_apply_ne_one_aux

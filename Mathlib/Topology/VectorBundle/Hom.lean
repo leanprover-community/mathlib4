@@ -41,11 +41,11 @@ variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [
   (σ : 𝕜₁ →+* 𝕜₂)
 
 variable {B : Type*}
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type*)
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜₁ (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
+variable {F₁ : Type*} [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type*)
+  [∀ x, AddGroup (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜₁ (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
 
-variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type*)
-  [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜₂ (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
+variable {F₂ : Type*} [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type*)
+  [∀ x, AddGroup (E₂ x)] [∀ x, IsAddCommutative (E₂ x)] [∀ x, Module 𝕜₂ (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
 variable {E₁ E₂}
 variable [TopologicalSpace B] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
@@ -309,9 +309,9 @@ over `B₁` and `B₂` (with model fibers `F₁` and `F₂`).
 Also a third space `M`, which will be the source of all our maps.
 -/
 variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
-  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
-  [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  [∀ x, AddGroup (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁]
+  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddGroup (E₂ x)] [∀ x, IsAddCommutative (E₂ x)]
+  [∀ x, Module 𝕜 (E₂ x)] [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂]
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
   [TopologicalSpace B₁] [TopologicalSpace B₂] [TopologicalSpace M]
   [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
@@ -392,13 +392,13 @@ Also a second space `M`, which will be the source of all our maps.
 -/
 variable {𝕜 B F₁ F₂ F₃ M : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {E₁ : B → Type*}
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [∀ x, AddGroup (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]
-  {E₂ : B → Type*} [∀ x, AddCommGroup (E₂ x)]
-  [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  {E₂ : B → Type*} [∀ x, AddGroup (E₂ x)] [∀ x, IsAddCommutative (E₂ x)]
+  [∀ x, Module 𝕜 (E₂ x)] [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂]
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
-  {E₃ : B → Type*} [∀ x, AddCommGroup (E₃ x)]
-  [∀ x, Module 𝕜 (E₃ x)] [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+  {E₃ : B → Type*} [∀ x, AddGroup (E₃ x)] [∀ x, IsAddCommutative (E₃ x)]
+  [∀ x, Module 𝕜 (E₃ x)] [NormedAddGroup F₃] [IsAddCommutative F₃] [NormedSpace 𝕜 F₃]
   [TopologicalSpace (TotalSpace F₃ E₃)] [∀ x, TopologicalSpace (E₃ x)]
   [TopologicalSpace B] [TopologicalSpace M]
   [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]

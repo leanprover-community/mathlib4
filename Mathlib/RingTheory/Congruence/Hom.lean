@@ -442,7 +442,7 @@ end
 
 section
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
   [Semiring M] [Algebra R M] [Semiring N] [Algebra R N] [Semiring P] [Algebra R P]
 
 variable {c d : RingCon M} {f : M →ₐ[R] P}

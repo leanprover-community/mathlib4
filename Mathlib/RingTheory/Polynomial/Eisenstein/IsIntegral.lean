@@ -122,7 +122,7 @@ end Cyclotomic
 
 section IsIntegral
 
-variable {K : Type v} {L : Type z} {p : R} [CommRing R] [Field K] [Field L]
+variable {K : Type v} {L : Type z} {p : R} [Ring R] [IsMulCommutative R] [Field K] [Field L]
 variable [Algebra K L] [Algebra R L] [Algebra R K] [IsScalarTower R K L]
 variable [IsDomain R] [IsFractionRing R K] [IsIntegrallyClosed R]
 
@@ -204,7 +204,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
       Finset.add_sum_erase (range (Q.natDegree + 1)) fun i => Q.coeff i • B.gen ^ i]
     simp
 
-theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [Ring B]
+theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [Semiring A] [IsMulCommutative A] [Ring B]
     [Algebra A B] [IsDomain A] [Module.IsTorsionFree A B] {Q : A[X]} {p : A} {x z : B} (hp : p ≠ 0)
     (hQ : ∀ i ∈ range (Q.natDegree + 1), p ∣ Q.coeff i) (hz : aeval x Q = p • z) :
     z ∈ adjoin A ({x} : Set B) := by

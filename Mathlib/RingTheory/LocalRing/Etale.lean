@@ -53,7 +53,7 @@ public section
 
 namespace IsLocalRing
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
     [IsLocalRing S] [IsLocalRing R] [Module.Finite R S] [FaithfulSMul R S]
 
 open Polynomial IsLocalRing Algebra

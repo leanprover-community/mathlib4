@@ -151,9 +151,9 @@ open Set TopologicalSpace
 open scoped Distributions CompactConvergenceCLM
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
-  {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
-  {F' : Type*} [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace F']
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] {Ω : Opens E}
+  {F : Type*} [AddGroup F] [IsAddCommutative F] [Module ℝ F] [TopologicalSpace F]
+  {F' : Type*} [AddGroup F'] [IsAddCommutative F'] [Module ℝ F'] [TopologicalSpace F']
   {n k : ℕ∞}
 
 -- TODO: def or abbrev?
@@ -293,7 +293,7 @@ section ofFun
 open MeasureTheory
 
 variable [MeasurableSpace E] [OpensMeasurableSpace E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
 
 variable (Ω) in
 /-- The distribution induced by a function `f : E → F` and a measure `μ`,

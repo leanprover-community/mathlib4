@@ -194,7 +194,7 @@ section Eval₂
 
 section
 
-variable [CommSemiring S] (f : R →+* S) (x : S)
+variable [Semiring S] [IsMulCommutative S] (f : R →+* S) (x : S)
 
 @[simp]
 theorem eval₂_mul : (p * q).eval₂ f x = p.eval₂ f x * q.eval₂ f x :=
@@ -364,7 +364,7 @@ theorem IsRoot.def : IsRoot p a ↔ p.eval a = 0 :=
 theorem IsRoot.eq_zero (h : IsRoot p x) : eval x p = 0 :=
   h
 
-theorem IsRoot.dvd {R : Type*} [CommSemiring R] {p q : R[X]} {x : R} (h : p.IsRoot x)
+theorem IsRoot.dvd {R : Type*} [Semiring R] [IsMulCommutative R] {p q : R[X]} {x : R} (h : p.IsRoot x)
     (hpq : p ∣ q) : q.IsRoot x := by
   rwa [IsRoot, eval, eval₂_eq_zero_of_dvd_of_eval₂_eq_zero _ _ hpq]
 
@@ -458,7 +458,7 @@ theorem mul_X_add_natCast_comp {n : ℕ} :
   rw [mul_add, add_comp, mul_X_comp, ← Nat.cast_comm, natCast_mul_comp, Nat.cast_comm, mul_add]
 
 @[simp]
-theorem mul_comp {R : Type*} [CommSemiring R] (p q r : R[X]) :
+theorem mul_comp {R : Type*} [Semiring R] [IsMulCommutative R] (p q r : R[X]) :
     (p * q).comp r = p.comp r * q.comp r :=
   eval₂_mul _ _
 
@@ -468,12 +468,12 @@ theorem mul_comp_neg_X {R : Type*} [Ring R] (p q : R[X]) :
   eval₂_mul_noncomm C (-X) fun _ ↦ Commute.symm (commute_X _).neg_left
 
 @[simp]
-theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
+theorem pow_comp {R : Type*} [Semiring R] [IsMulCommutative R] (p q : R[X]) (n : ℕ) :
     (p ^ n).comp q = p.comp q ^ n :=
   (MonoidHom.mk (OneHom.mk (fun r : R[X] => r.comp q) one_comp) fun r s => mul_comp r s q).map_pow
     p n
 
-theorem comp_assoc {R : Type*} [CommSemiring R] (φ ψ χ : R[X]) :
+theorem comp_assoc {R : Type*} [Semiring R] [IsMulCommutative R] (φ ψ χ : R[X]) :
     (φ.comp ψ).comp χ = φ.comp (ψ.comp χ) := by
   refine Polynomial.induction_on φ ?_ ?_ ?_ <;>
     · intros
@@ -605,7 +605,7 @@ section Eval
 
 section
 
-variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
+variable [Semiring R] [IsMulCommutative R] {p q : R[X]} {x : R} [Semiring S] [IsMulCommutative S] (f : R →+* S)
 
 @[simp]
 theorem eval_mul : (p * q).eval x = p.eval x * q.eval x :=
@@ -629,7 +629,7 @@ theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
   | add r s hr hs => simp [add_comp, hr, hs]
   | monomial n a => simp
 
-lemma isRoot_comp {R} [CommSemiring R] {p q : R[X]} {r : R} :
+lemma isRoot_comp {R} [Semiring R] [IsMulCommutative R] {p q : R[X]} {r : R} :
     (p.comp q).IsRoot r ↔ p.IsRoot (q.eval r) := by simp_rw [IsRoot, eval_comp]
 
 /-- `comp p`, regarded as a ring homomorphism from `R[X]` to itself. -/
@@ -687,7 +687,7 @@ theorem prod_comp {ι : Type*} (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
     (∏ j ∈ s, p j).comp q = ∏ j ∈ s, (p j).comp q :=
   map_prod (compRingHom q) _ _
 
-theorem isRoot_prod {R} [CommSemiring R] [IsDomain R] {ι : Type*} (s : Finset ι) (p : ι → R[X])
+theorem isRoot_prod {R} [Semiring R] [IsMulCommutative R] [IsDomain R] {ι : Type*} (s : Finset ι) (p : ι → R[X])
     (x : R) : IsRoot (∏ j ∈ s, p j) x ↔ ∃ i ∈ s, IsRoot (p i) x := by
   simp only [IsRoot, eval_prod, Finset.prod_eq_zero_iff]
 
@@ -699,7 +699,7 @@ theorem eval_eq_zero_of_dvd_of_eval_eq_zero : p ∣ q → eval x p = 0 → eval 
   eval₂_eq_zero_of_dvd_of_eval₂_eq_zero _ _
 
 @[simp]
-theorem eval_geom_sum {R} [CommSemiring R] {n : ℕ} {x : R} :
+theorem eval_geom_sum {R} [Semiring R] [IsMulCommutative R] {n : ℕ} {x : R} :
     eval x (∑ i ∈ range n, X ^ i) = ∑ i ∈ range n, x ^ i := by simp [eval_finsetSum]
 
 variable [NoZeroDivisors R]
@@ -716,7 +716,7 @@ end Eval
 
 section Map
 
-variable [CommSemiring R] [CommSemiring S] (f : R →+* S)
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (f : R →+* S)
 
 protected theorem map_multiset_prod (m : Multiset R[X]) : m.prod.map f = (m.map <| map f).prod :=
   Eq.symm <| Multiset.prod_hom _ (mapRingHom f).toMonoidHom

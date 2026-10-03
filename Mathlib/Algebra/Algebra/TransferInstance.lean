@@ -17,7 +17,7 @@ This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 @[expose] public section
 
 universe v
-variable {R α β : Type*} [CommSemiring R]
+variable {R α β : Type*} [Semiring R] [IsMulCommutative R]
 
 namespace Equiv
 variable (e : α ≃ β)

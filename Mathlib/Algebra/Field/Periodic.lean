@@ -41,7 +41,7 @@ namespace Function
 
 /-! ### Periodicity -/
 
-protected theorem Periodic.const_smul₀ [AddCommMonoid α] [DivisionSemiring γ] [Module γ α]
+protected theorem Periodic.const_smul₀ [AddMonoid α] [IsAddCommutative α] [DivisionSemiring γ] [Module γ α]
     (h : Periodic f c) (a : γ) : Periodic (fun x => f (a • x)) (a⁻¹ • c) := fun x => by
   by_cases ha : a = 0
   · simp only [ha, zero_smul]
@@ -51,7 +51,7 @@ protected theorem Periodic.const_mul [DivisionSemiring α] (h : Periodic f c) (a
     Periodic (fun x => f (a * x)) (a⁻¹ * c) :=
   Periodic.const_smul₀ h a
 
-theorem Periodic.const_inv_smul₀ [AddCommMonoid α] [DivisionSemiring γ] [Module γ α]
+theorem Periodic.const_inv_smul₀ [AddMonoid α] [IsAddCommutative α] [DivisionSemiring γ] [Module γ α]
     (h : Periodic f c) (a : γ) : Periodic (fun x => f (a⁻¹ • x)) (a • c) := by
   simpa only [inv_inv] using h.const_smul₀ a⁻¹
 
@@ -75,7 +75,7 @@ theorem Periodic.div_const [DivisionSemiring α] (h : Periodic f c) (a : α) :
 
 /-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ico 0 c` such that `f x = f y`. -/
-theorem Periodic.exists_mem_Ico₀ [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+theorem Periodic.exists_mem_Ico₀ [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x) : ∃ y ∈ Ico 0 c, f x = f y :=
   let ⟨n, H, _⟩ := existsUnique_zsmul_near_of_pos' hc x
@@ -83,7 +83,7 @@ theorem Periodic.exists_mem_Ico₀ [AddCommGroup α] [LinearOrder α] [IsOrdered
 
 /-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ico a (a + c)` such that `f x = f y`. -/
-theorem Periodic.exists_mem_Ico [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+theorem Periodic.exists_mem_Ico [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x a) : ∃ y ∈ Ico a (a + c), f x = f y :=
   let ⟨n, H, _⟩ := existsUnique_add_zsmul_mem_Ico hc x a
@@ -91,25 +91,25 @@ theorem Periodic.exists_mem_Ico [AddCommGroup α] [LinearOrder α] [IsOrderedAdd
 
 /-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ioc a (a + c)` such that `f x = f y`. -/
-theorem Periodic.exists_mem_Ioc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+theorem Periodic.exists_mem_Ioc [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x a) : ∃ y ∈ Ioc a (a + c), f x = f y :=
   let ⟨n, H, _⟩ := existsUnique_add_zsmul_mem_Ioc hc x a
   ⟨x + n • c, H, (h.zsmul n x).symm⟩
 
-theorem Periodic.image_Ioc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+theorem Periodic.image_Ioc [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (a : α) : f '' Ioc a (a + c) = range f :=
   (image_subset_range _ _).antisymm <| range_subset_iff.2 fun x =>
     let ⟨y, hy, hyx⟩ := h.exists_mem_Ioc hc x a
     ⟨y, hy, hyx.symm⟩
 
-theorem Periodic.image_Icc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+theorem Periodic.image_Icc [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (a : α) : f '' Icc a (a + c) = range f :=
   (image_subset_range _ _).antisymm <| h.image_Ioc hc a ▸ image_mono Ioc_subset_Icc_self
 
-theorem Periodic.image_uIcc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+theorem Periodic.image_uIcc [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : c ≠ 0) (a : α) : f '' uIcc a (a + c) = range f := by
   cases hc.lt_or_gt with

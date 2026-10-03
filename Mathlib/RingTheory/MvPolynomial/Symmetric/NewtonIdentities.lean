@@ -51,7 +51,7 @@ open Finset Nat
 
 namespace NewtonIdentities
 
-variable (σ : Type*) (R : Type*) [CommRing R]
+variable (σ : Type*) (R : Type*) [Ring R] [IsMulCommutative R]
 
 section DecidableEq
 
@@ -214,7 +214,7 @@ private theorem esymm_mul_psum_to_weight [DecidableEq σ] (k : ℕ) :
 
 end NewtonIdentities
 
-variable (σ : Type*) [Fintype σ] (R : Type*) [CommRing R]
+variable (σ : Type*) [Fintype σ] (R : Type*) [Ring R] [IsMulCommutative R]
 
 /-- **Newton's identities** give a recurrence relation for the kth elementary symmetric polynomial
 in terms of lower degree elementary symmetric polynomials and power sums. -/

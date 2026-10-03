@@ -68,9 +68,9 @@ open Topology Filter
 
 section Basic
 
-variable {α 𝕜 E F E' F' : Type*} [CommSemiring 𝕜] [TopologicalSpace 𝕜]
-    [AddCommMonoid E] [Module 𝕜 E]
-    [AddCommMonoid F] [Module 𝕜 F]
+variable {α 𝕜 E F E' F' : Type*} [Semiring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜]
+    [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E]
+    [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
 
 /-- Typeclass expressing that the topology on `E` is the weak topology induced
 by the bilinear form `B`. -/
@@ -123,8 +123,8 @@ theorem tendsto_iff_forall_eval_tendsto {α : Type*} {l : Filter α} {f : α →
 
 /-- Suppose `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜` and `B' : E' →ₗ[𝕜] F' →ₗ[𝕜] 𝕜` are bilinear maps such that
 `E ≃L[𝕜] E'` and `F ≃ₗ[𝕜] F'`. If `B.IsWeak`, then so also `B'.IsWeak`. -/
-protected theorem congr [AddCommMonoid E'] [Module 𝕜 E']
-    [AddCommMonoid F'] [Module 𝕜 F'] [TopologicalSpace E']
+protected theorem congr [AddMonoid E'] [IsAddCommutative E'] [Module 𝕜 E']
+    [AddMonoid F'] [IsAddCommutative F'] [Module 𝕜 F'] [TopologicalSpace E']
     (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) (B' : E' →ₗ[𝕜] F' →ₗ[𝕜] 𝕜) (e : E ≃L[𝕜] E') (f : F ≃ₗ[𝕜] F')
     (hBB' : e.toLinearEquiv.arrowCongr (f.arrowCongr (.refl ..)) B = B') [hB : B.IsWeak] :
     B'.IsWeak where
@@ -163,8 +163,8 @@ theorem continuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 E where
     fun_prop
 
 /-- `E` is a `IsTopologicalAddGroup` when `E` is equipped with a `LinearMap.IsWeak` topology. -/
-theorem isTopologicalAddGroup {𝕜 E F : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜]
-    [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace E]
+theorem isTopologicalAddGroup {𝕜 E F : Type*} [Ring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜]
+    [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace E]
     [ContinuousAdd 𝕜] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) [hB : B.IsWeak] : IsTopologicalAddGroup E where
   toContinuousAdd := continuousAdd B
   continuous_neg := by

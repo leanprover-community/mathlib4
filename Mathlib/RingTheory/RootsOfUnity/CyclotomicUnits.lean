@@ -37,7 +37,7 @@ open Polynomial Finset Nat
 
 variable {n i j p : ℕ} {A : Type*} {ζ : A}
 
-variable [CommRing A] [IsDomain A] {R : Type*} [CommRing R] [Algebra R A]
+variable [Ring A] [IsMulCommutative A] [IsDomain A] {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R A]
 
 /-- If `ζ ^ n = 1` and `ζ ≠ 1`, then `ζ - 1` divides `n`. This does not require `ζ` to be a
   primitive root of unity, only a root of unity different from `1`. -/

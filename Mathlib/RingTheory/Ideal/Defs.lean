@@ -91,7 +91,7 @@ end Ideal
 /-- For two elements `m` and `m'` in an `R`-module `M`, the set of elements `r : R` with
 equal scalar product with `m` and `m'` is an ideal of `R`. If `M` is a group, this coincides
 with the kernel of `LinearMap.toSpanSingleton R M (m - m')`. -/
-def Module.eqIdeal (R) {M} [Semiring R] [AddCommMonoid M] [Module R M] (m m' : M) : Ideal R where
+def Module.eqIdeal (R) {M} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] (m m' : M) : Ideal R where
   carrier := {r : R | r • m = r • m'}
   add_mem' h h' := by simpa [add_smul] using congr($h + $h')
   zero_mem' := by simp_rw [Set.mem_ofPred, zero_smul]
@@ -107,10 +107,10 @@ variable {a b : α}
 -- order.
 namespace Ideal
 
-variable [CommSemiring α] (I : Ideal α)
+variable [Semiring α] [IsMulCommutative α] (I : Ideal α)
 
 instance : I.IsTwoSided := ⟨fun b ha ↦ mul_comm b _ ▸ I.smul_mem _ ha⟩
-instance {α} [CommRing α] (I : Ideal α) : I.IsTwoSided := inferInstance
+instance {α} [Ring α] [IsMulCommutative α] (I : Ideal α) : I.IsTwoSided := inferInstance
 
 @[simp]
 theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ I :=

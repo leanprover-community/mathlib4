@@ -36,7 +36,7 @@ namespace Polynomial
 
 section Primitive
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- A polynomial is primitive when the only constant polynomials dividing it are units.
 Note: This has nothing to do with minimal polynomials of primitive elements in finite fields. -/
@@ -78,7 +78,7 @@ theorem isPrimitive_iff_ne_zero {F : Type*} [Field F] (p : F[X]) : p.IsPrimitive
 
 end Primitive
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 section NormalizedGCDMonoid
 
@@ -136,7 +136,7 @@ theorem content_X_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by
 @[simp]
 theorem content_X : content (X : R[X]) = 1 := by rw [← mul_one X, content_X_mul, content_one]
 
-theorem content_C_mul {R} [CommRing R] [StrongNormalizedGCDMonoid R] (r : R) (p : R[X]) :
+theorem content_C_mul {R} [Ring R] [IsMulCommutative R] [StrongNormalizedGCDMonoid R] (r : R) (p : R[X]) :
     (C r * p).content = normalize r * p.content := by
   by_cases h0 : r = 0; · simp [h0]
   rw [content, content, ← Finset.gcd_mul_left]
@@ -286,7 +286,7 @@ theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
   have : IsDomain R := { Module.nontrivial R S with }
   rwa [(FaithfulSMul.algebraMap_injective R S).ne_iff' (map_zero _), Ne, content_eq_zero_iff]
 
-theorem eval₂_primPart_eq_zero {S : Type*} [CommSemiring S] [IsDomain S] {f : R →+* S}
+theorem eval₂_primPart_eq_zero {S : Type*} [Semiring S] [IsMulCommutative S] [IsDomain S] {f : R →+* S}
     (hinj : Function.Injective f) {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : eval₂ f s p = 0) :
     eval₂ f s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, eval₂_mul, eval₂_C] at hp
@@ -364,7 +364,7 @@ theorem associated_content_mul (p q : R[X]) :
         apply p.primPart_ne_zero
 
 @[simp]
-theorem content_mul {R} [CommRing R] [StrongNormalizedGCDMonoid R] {p q : R[X]} :
+theorem content_mul {R} [Ring R] [IsMulCommutative R] [StrongNormalizedGCDMonoid R] {p q : R[X]} :
     (p * q).content = p.content * q.content :=
   (associated_content_mul ..).eq_of_normalized normalize_content <| by simp [normalize_content]
 
@@ -384,7 +384,7 @@ theorem associated_primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) :
   exact (associated_content_mul ..).symm.map _
 
 @[simp]
-theorem primPart_mul {R} [CommRing R] [StrongNormalizedGCDMonoid R] {p q : R[X]} (h0 : p * q ≠ 0) :
+theorem primPart_mul {R} [Ring R] [IsMulCommutative R] [StrongNormalizedGCDMonoid R] {p q : R[X]} (h0 : p * q ≠ 0) :
     (p * q).primPart = p.primPart * q.primPart := by
   rw [Ne, ← content_eq_zero_iff, ← C_eq_zero] at h0
   apply mul_left_cancel₀ h0

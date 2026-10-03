@@ -13,7 +13,7 @@ import Mathlib.Data.Fintype.Basic
 /-!
 # Products (respectively, sums) over a finset or a multiset.
 
-The regular `Finset.prod` and `Multiset.prod` require `[CommMonoid α]`.
+The regular `Finset.prod` and `Multiset.prod` require `[Monoid α] [IsMulCommutative α]`.
 Often, there are collections `s : Finset α` where `[Monoid α]` and we know,
 in a dependent fashion, that for all the terms `∀ (x ∈ s) (y ∈ s), Commute x y`.
 This allows to still have a well-defined product over `s`.
@@ -192,7 +192,7 @@ theorem noncommProd_eq_pow_card (s : Multiset α) (comm) (m : α) (h : ∀ x ∈
   exact List.prod_eq_pow_length _ m h
 
 @[to_additive]
-theorem noncommProd_eq_prod {α : Type*} [CommMonoid α] (s : Multiset α) :
+theorem noncommProd_eq_prod {α : Type*} [Monoid α] [IsMulCommutative α] (s : Multiset α) :
     (noncommProd s fun _ _ _ _ _ => Commute.all _ _) = prod s := by
   induction s using Quotient.inductionOn
   simp
@@ -355,7 +355,7 @@ theorem noncommProd_erase_mul [DecidableEq α] (s : Finset α) {a : α} (h : a �
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
-theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α → β) :
+theorem noncommProd_eq_prod {β : Type*} [Monoid β] [IsMulCommutative β] (s : Finset α) (f : α → β) :
     (noncommProd s f fun _ _ _ _ _ => Commute.all _ _) = s.prod f := by
   induction s using Finset.cons_induction_on with
   | empty => simp

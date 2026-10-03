@@ -45,8 +45,8 @@ open scoped Topology
 
 variable
   {B : Type*} [TopologicalSpace B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddGroup (E x)] [∀ x, IsAddCommutative (E x)]
   [∀ x, InnerProductSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
 
@@ -67,7 +67,7 @@ class IsContinuousRiemannianBundle : Prop where
 
 section Trivial
 
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
+variable {F₁ : Type*} [NormedAddGroup F₁] [IsAddCommutative F₁] [InnerProductSpace ℝ F₁]
 
 /-- A trivial vector bundle, in which the model fiber has an inner product,
 is a Riemannian bundle. -/
@@ -351,9 +351,9 @@ section Construction
 
 variable
   {B : Type*} [TopologicalSpace B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
-  [∀ b, TopologicalSpace (E b)] [∀ b, AddCommGroup (E b)] [∀ b, Module ℝ (E b)]
+  [∀ b, TopologicalSpace (E b)] [∀ b, AddGroup (E b)] [∀ b, IsAddCommutative (E b)] [∀ b, Module ℝ (E b)]
   [∀ b, IsTopologicalAddGroup (E b)] [∀ b, ContinuousConstSMul ℝ (E b)]
   [FiberBundle F E] [VectorBundle ℝ F E]
 
@@ -413,7 +413,7 @@ bundle, like for the tangent bundle. This should *not* be used to express theore
 bundles with a metric. Instead, use
 ```
 variable {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
-  [∀ x, NormedAddCommGroup (E x)] [∀ x, InnerProductSpace ℝ (E x)]
+  [∀ x, NormedAddGroup (E x)] [∀ x, IsAddCommutative (E x)] [∀ x, InnerProductSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E] [IsContinuousRiemannianBundle F E]
 ```
 -/

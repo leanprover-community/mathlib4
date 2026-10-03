@@ -41,7 +41,7 @@ variable {R A : Type*}
 
 namespace PowerSeries
 
-variable [CommRing R] [BinomialRing R]
+variable [Ring R] [IsMulCommutative R] [BinomialRing R]
 
 /-- The power series for `(1 + X) ^ r`. -/
 def binomialSeries (A) [One A] [SMul R A] (r : R) : PowerSeries A :=
@@ -80,7 +80,7 @@ lemma binomialSeries_zero [Ring A] [Algebra R A] :
     binomialSeries A (0 : R) = (1 : A⟦X⟧) := by
   simpa using binomialSeries_nat 0
 
-lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
+lemma rescale_neg_one_invOneSubPow [Ring A] [IsMulCommutative A] (d : ℕ) :
     rescale (-1 : A) (invOneSubPow A d) = binomialSeries A (-d : ℤ) := by
   ext n
   rw [coeff_rescale, binomialSeries_coeff, ← Int.cast_negOnePow_natCast, ← zsmul_eq_mul]

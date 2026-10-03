@@ -78,7 +78,7 @@ end MeasureTheory.StronglyMeasurable
 
 namespace MeasureTheory
 
-variable {X E ι : Type*} [MeasurableSpace X] [CommMonoid E] [TopologicalSpace E]
+variable {X E ι : Type*} [MeasurableSpace X] [Monoid E] [IsMulCommutative E] [TopologicalSpace E]
 
 section
 

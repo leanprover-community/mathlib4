@@ -41,7 +41,7 @@ open Finset
 section Def
 
 -- need `Fintype` instead of `Finite` to make `jacobiSum` computable.
-variable {R R' : Type*} [CommRing R] [Fintype R] [CommRing R']
+variable {R R' : Type*} [Ring R] [IsMulCommutative R] [Fintype R] [Ring R'] [IsMulCommutative R']
 
 /-- The *Jacobi sum* of two multiplicative characters on a finite commutative ring. -/
 def jacobiSum (χ ψ : MulChar R R') : R' :=
@@ -53,7 +53,7 @@ lemma jacobiSum_comm (χ ψ : MulChar R R') : jacobiSum χ ψ = jacobiSum ψ χ 
   simp only [Equiv.subLeft_apply, sub_sub_cancel]
 
 /-- The Jacobi sum is compatible with ring homomorphisms. -/
-lemma jacobiSum_ringHomComp {R'' : Type*} [CommRing R''] (χ ψ : MulChar R R') (f : R' →+* R'') :
+lemma jacobiSum_ringHomComp {R'' : Type*} [Ring R''] [IsMulCommutative R''] (χ ψ : MulChar R R') (f : R' →+* R'') :
     jacobiSum (χ.ringHomComp f) (ψ.ringHomComp f) = f (jacobiSum χ ψ) := by
   simp only [jacobiSum, MulChar.ringHomComp, MulChar.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     map_sum, map_mul]
@@ -66,7 +66,7 @@ end Def
 
 section CommRing
 
-variable {F R : Type*} [CommRing F] [Nontrivial F] [Fintype F] [DecidableEq F] [CommRing R]
+variable {F R : Type*} [Ring F] [IsMulCommutative F] [Nontrivial F] [Fintype F] [DecidableEq F] [Ring R] [IsMulCommutative R]
 
 /-- The Jacobi sum of two multiplicative characters on a nontrivial finite commutative ring `F`
 can be written as a sum over `F \ {0,1}`. -/
@@ -96,7 +96,7 @@ end CommRing
 
 section FiniteField
 
-variable {F R : Type*} [Field F] [Fintype F] [CommRing R]
+variable {F R : Type*} [Field F] [Fintype F] [Ring R] [IsMulCommutative R]
 
 /-- The Jacobi sum of twice the trivial multiplicative character on a finite field `F`
 equals `#F-2`. -/
@@ -238,7 +238,7 @@ end field_field
 
 section image
 
-variable {F R : Type*} [Field F] [CommRing R] [IsDomain R]
+variable {F R : Type*} [Field F] [Ring R] [IsMulCommutative R] [IsDomain R]
 
 open Algebra
 
@@ -319,7 +319,7 @@ end image
 
 section GaussSum
 
-variable {F R : Type*} [Fintype F] [Field F] [CommRing R] [IsDomain R]
+variable {F R : Type*} [Fintype F] [Field F] [Ring R] [IsMulCommutative R] [IsDomain R]
 
 lemma gaussSum_pow_eq_prod_jacobiSum_aux (χ : MulChar F R) (ψ : AddChar F R) {n : ℕ}
     (hn₁ : 0 < n) (hn₂ : n < orderOf χ) :

@@ -69,7 +69,7 @@ variable {α β γ : Type*}
 
 section HasProd
 
-variable [CommMonoid α] [TopologicalSpace α]
+variable [Monoid α] [IsMulCommutative α] [TopologicalSpace α]
 
 /-- `HasProd f a L` means that the (potentially infinite) product of the `f b` for `b : β` converges
 to `a` along the SummationFilter `L`.

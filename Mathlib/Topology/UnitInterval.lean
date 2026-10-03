@@ -252,7 +252,7 @@ section partition
 
 namespace Set.Icc
 
-variable {α} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+variable {α} [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
   {a b c d : α} (h : a ≤ b) {δ : α}
 
 -- TODO: Set.projIci, Set.projIic

@@ -38,7 +38,7 @@ open AffineSubspace Function
 open scoped RealInnerProductSpace
 
 variable {V P : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
 /-- The pole of an affine subspace is the inversion in the sphere of the point in that subspace
 closest to the center. -/

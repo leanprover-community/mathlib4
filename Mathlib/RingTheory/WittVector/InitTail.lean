@@ -37,7 +37,7 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 @[expose] public section
 
 
-variable {p : ℕ} (n : ℕ) {R : Type*} [CommRing R]
+variable {p : ℕ} (n : ℕ) {R : Type*} [Ring R] [IsMulCommutative R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
@@ -84,7 +84,7 @@ variable [hp : Fact p.Prime]
 theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
   -- Porting note: TC search was insufficient to find this instance, even though all required
   -- instances exist. See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WittVector.20saga/near/370073526]
-  have : IsPoly p fun {R} [CommRing R] x ↦ select P x + select (fun i ↦ ¬P i) x :=
+  have : IsPoly p fun {R} [Ring R] [IsMulCommutative R] x ↦ select P x + select (fun i ↦ ¬P i) x :=
     IsPoly₂.diag (hf := IsPoly₂.comp)
   ghost_calc x
   intro n

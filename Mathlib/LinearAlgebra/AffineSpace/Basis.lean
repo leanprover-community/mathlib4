@@ -53,7 +53,7 @@ open scoped Affine Pointwise
 
 section Coordinates
 
-variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {ι k V P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V] [AffineSpace V P]
 
 variable (ι k) in
 /-- The space of coordinates for affine combinations indexed by a `Fintype`. -/
@@ -84,7 +84,7 @@ end Coordinates
 universe u₁ u₂ u₃ u₄
 
 /-- An affine basis is a family of affine-independent points whose span is the top subspace. -/
-structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type u₄) [AddCommGroup V]
+structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type u₄) [AddGroup V] [IsAddCommutative V]
   [AffineSpace V P] [Ring k] [Module k V] where
   /-- The underlying family of points.
 
@@ -93,7 +93,7 @@ structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type
   protected ind' : AffineIndependent k toFun
   protected tot' : affineSpan k (range toFun) = ⊤
 
-variable {ι ι' G G' k V P : Type*} [AddCommGroup V] [AffineSpace V P]
+variable {ι ι' G G' k V P : Type*} [AddGroup V] [IsAddCommutative V] [AffineSpace V P]
 
 namespace AffineBasis
 

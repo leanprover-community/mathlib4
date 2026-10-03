@@ -78,8 +78,8 @@ abbrev Affine : Type r :=
 abbrev toAffine (W : WeierstrassCurve R) : Affine R :=
   W
 
-variable [CommRing R] {W : Affine R}
-  {S : Type s} [CommRing S] {A : Type u} [CommRing A] {B : Type v} [CommRing B]
+variable [Ring R] [IsMulCommutative R] {W : Affine R}
+  {S : Type s} [Ring S] [IsMulCommutative S] {A : Type u} [Ring A] [IsMulCommutative A] {B : Type v} [Ring B] [IsMulCommutative B]
 
 namespace Affine
 

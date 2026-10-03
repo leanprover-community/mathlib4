@@ -22,7 +22,7 @@ universe w v u
 
 namespace Module
 
-variable (A : Type u) [Ring A] (M : Type v) [AddCommGroup M] [Module A M]
+variable (A : Type u) [Ring A] (M : Type v) [AddGroup M] [IsAddCommutative M] [Module A M]
 
 namespace Presentation
 
@@ -43,7 +43,7 @@ noncomputable def tautologicalRelations : Relations A where
 set_option backward.isDefEq.respectTransparency false in
 variable {A M} in
 /-- Solutions of `tautologicalRelations A M` in an `A`-module `N` identify to `M →ₗ[A] N`. -/
-noncomputable def tautologicalRelationsSolutionEquiv {N : Type w} [AddCommGroup N] [Module A N] :
+noncomputable def tautologicalRelationsSolutionEquiv {N : Type w} [AddGroup N] [IsAddCommutative N] [Module A N] :
     (tautologicalRelations A M).Solution N ≃ (M →ₗ[A] N) where
   toFun s :=
     { toFun := s.var

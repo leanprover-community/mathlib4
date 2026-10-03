@@ -46,11 +46,11 @@ structure morphism `algebraMap R A r * x`.
 
 As a result, there are two ways to talk about an `R`-algebra `A` when `A` is a semiring:
 1. ```lean
-   variable [CommSemiring R] [Semiring A]
+   variable [Semiring R] [IsMulCommutative R] [Semiring A]
    variable [Algebra R A]
    ```
 2. ```lean
-   variable [CommSemiring R] [Semiring A]
+   variable [Semiring R] [IsMulCommutative R] [Semiring A]
    variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
    ```
 
@@ -58,7 +58,7 @@ The first approach implies the second via typeclass search; so any lemma stated 
 of arguments will automatically apply to the first set. Typeclass search does not know that the
 second approach implies the first, but this can be shown with:
 ```lean
-example {R A : Type*} [CommSemiring R] [Semiring A]
+example {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A]
   [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] : Algebra R A :=
 Algebra.ofModule smul_mul_assoc mul_smul_comm
 ```
@@ -92,7 +92,7 @@ universe u v w u₁ v₁
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
-class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A where
+class Algebra (R : Type u) (A : Type v) [Semiring R] [IsMulCommutative R] [Semiring A] extends SMul R A where
   /-- Embedding `R →+* A` given by `Algebra` structure. -/
   algebraMap (R) (A) : R →+* A
   commutes' : ∀ r x, algebraMap r * x = x * algebraMap r
@@ -100,24 +100,24 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
 
 export Algebra (algebraMap)
 
-theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A]
+theorem Algebra.subsingleton (R : Type u) (A : Type v) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     [Subsingleton R] : Subsingleton A :=
   (algebraMap R A).codomain_trivial
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
 @[coe, reducible]
-def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
+def Algebra.cast {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] : R → A :=
   algebraMap R A
 
 namespace algebraMap
 
-scoped instance coeHTCT (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+scoped instance coeHTCT (R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] :
     CoeHTCT R A :=
   ⟨Algebra.cast⟩
 
 section CommSemiringSemiring
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 @[norm_cast]
 theorem coe_zero : (↑(0 : R) : A) = 0 :=
@@ -147,7 +147,7 @@ end CommSemiringSemiring
 
 section CommRingRing
 
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 @[norm_cast]
 theorem coe_neg (x : R) : (↑(-x : R) : A) = -↑x :=
@@ -168,7 +168,7 @@ See note [reducible non-instances].
 *Warning:* In general this should not be used if `S` already has a `SMul R S`
 instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
 this will likely create a diamond. -/
-abbrev RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
+abbrev RingHom.toAlgebra' {R S} [Semiring R] [IsMulCommutative R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) : Algebra R S where
   smul c x := i c * x
   commutes' := h
@@ -177,13 +177,13 @@ abbrev RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
 
 -- just simple lemmas for a declaration that is itself primed, no need for docstrings
 set_option linter.docPrime false in
-theorem RingHom.smul_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
+theorem RingHom.smul_toAlgebra' {R S} [Semiring R] [IsMulCommutative R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) (r : R) (s : S) :
     let _ := RingHom.toAlgebra' i h
     r • s = i r * s := rfl
 
 set_option linter.docPrime false in
-theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
+theorem RingHom.algebraMap_toAlgebra' {R S} [Semiring R] [IsMulCommutative R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) :
     @algebraMap R S _ _ (i.toAlgebra' h) = i :=
   rfl
@@ -194,15 +194,15 @@ See note [reducible non-instances].
 *Warning:* In general this should not be used if `S` already has a `SMul R S`
 instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
 this will likely create a diamond. -/
-abbrev RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
+abbrev RingHom.toAlgebra {R S} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 
-theorem RingHom.smul_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S)
+theorem RingHom.smul_toAlgebra {R S} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (i : R →+* S)
     (r : R) (s : S) :
     let _ := RingHom.toAlgebra i
     r • s = i r * s := rfl
 
-theorem RingHom.algebraMap_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) :
+theorem RingHom.algebraMap_toAlgebra {R S} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (i : R →+* S) :
     @algebraMap R S _ _ i.toAlgebra = i :=
   rfl
 
@@ -215,7 +215,7 @@ If `(r • 1) * x = x * (r • 1) = r • x` for all `r : R` and `x : A`, then `
 over `R`.
 
 See note [reducible non-instances]. -/
-abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
+abbrev ofModule' [Semiring R] [IsMulCommutative R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x : A), r • (1 : A) * x = r • x)
     (h₂ : ∀ (r : R) (x : A), x * r • (1 : A) = r • x) : Algebra R A where
   algebraMap :=
@@ -232,22 +232,22 @@ If `(r • x) * y = x * (r • y) = r • (x * y)` for all `r : R` and `x y : A`
 is an `Algebra` over `R`.
 
 See note [reducible non-instances]. -/
-abbrev ofModule [CommSemiring R] [Semiring A] [Module R A]
+abbrev ofModule [Semiring R] [IsMulCommutative R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x y : A), r • x * y = r • (x * y))
     (h₂ : ∀ (r : R) (x y : A), x * r • y = r • (x * y)) : Algebra R A :=
   ofModule' (fun r x => by rw [h₁, one_mul]) fun r x => by rw [h₂, mul_one]
 
 section Semiring
 
-variable [CommSemiring R] [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 variable [Semiring A] [Algebra R A]
 
 -- We'll later use this to show `Algebra ℤ M` is a subsingleton.
-/-- To prove two algebra structures on a fixed `[CommSemiring R] [Semiring A]` agree,
+/-- To prove two algebra structures on a fixed `[Semiring R] [IsMulCommutative R] [Semiring A]` agree,
 it suffices to check the `algebraMap`s agree.
 -/
 @[ext]
-theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q : Algebra R A)
+theorem algebra_ext {R : Type*} [Semiring R] [IsMulCommutative R] {A : Type*} [Semiring A] (P Q : Algebra R A)
     (h : ∀ r : R, (haveI := P; algebraMap R A r) = haveI := Q; algebraMap R A r) :
     P = Q := by
   replace h : P.algebraMap = Q.algebraMap := DFunLike.ext _ _ h
@@ -403,7 +403,7 @@ end Algebra
 section algebraMap
 
 variable {A B : Type*} (a : A) (b : B) (C : Type*)
-  [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
+  [SMul A B] [Semiring B] [IsMulCommutative B] [Semiring C] [Algebra B C]
 
 @[norm_cast]
 theorem algebraMap.coe_smul [SMul A C] [IsScalarTower A B C] : (a • b : B) = a • (b : C) := by
@@ -427,6 +427,6 @@ attribute [local instance] IsUnital.toSemiring in
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
-noncomputable abbrev IsUnital.toAlgebra {R A : Type*} [CommSemiring R] [NonUnitalSemiring A]
+noncomputable abbrev IsUnital.toAlgebra {R A : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [IsUnital A] : Algebra R A :=
   .ofModule smul_mul_assoc mul_smul_comm

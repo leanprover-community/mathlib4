@@ -219,7 +219,7 @@ end MonoidSMul
 
 section CommSemigroup
 
-variable [CommSemigroup R] [SMul R M] [IsScalarTower R R M]
+variable [Semigroup R] [IsMulCommutative R] [SMul R M] [IsScalarTower R R M]
 
 /-- A product is `M`-regular if and only if the factors are. -/
 @[to_additive

@@ -32,8 +32,8 @@ namespace LinearMap
 
 section Semiring
 
-variable [Semiring K] [AddCommMonoid V] [Module K V] [AddCommMonoid V₁] [Module K V₁]
-variable [AddCommMonoid V'] [Module K V']
+variable [Semiring K] [AddMonoid V] [IsAddCommutative V] [Module K V] [AddMonoid V₁] [IsAddCommutative V₁] [Module K V₁]
+variable [AddMonoid V'] [IsAddCommutative V'] [Module K V']
 
 /-- `rank f` is the rank of a `LinearMap` `f`, defined as the dimension of `f.range`. -/
 abbrev rank (f : V →ₗ[K] V') : Cardinal :=
@@ -49,7 +49,7 @@ theorem rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V :=
 theorem rank_zero [Nontrivial K] : rank (0 : V →ₗ[K] V') = 0 := by
   rw [rank, LinearMap.range_zero, rank_bot]
 
-variable [AddCommMonoid V''] [Module K V'']
+variable [AddMonoid V''] [IsAddCommutative V''] [Module K V'']
 
 theorem rank_comp_le_left (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') : rank (f.comp g) ≤ rank f := by
   refine Submodule.rank_mono ?_
@@ -66,7 +66,7 @@ theorem lift_rank_comp_le (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') :
       min (Cardinal.lift.{v'} (rank f)) (Cardinal.lift.{v''} (rank g)) :=
   le_min (Cardinal.lift_le.mpr <| rank_comp_le_left _ _) (lift_rank_comp_le_right _ _)
 
-variable [AddCommGroup V'₁] [Module K V'₁]
+variable [AddGroup V'₁] [IsAddCommutative V'₁] [Module K V'₁]
 
 theorem rank_comp_le_right (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) : rank (f.comp g) ≤ rank g := by
   simpa only [Cardinal.lift_id] using lift_rank_comp_le_right g f
@@ -82,8 +82,8 @@ end Semiring
 
 section HasRankNullity
 
-variable [Ring K] [HasRankNullity.{v'} K] [AddCommGroup V] [Module K V] [AddCommGroup V₁]
-  [Module K V₁] [AddCommGroup V'] [Module K V']
+variable [Ring K] [HasRankNullity.{v'} K] [AddGroup V] [IsAddCommutative V] [Module K V] [AddGroup V₁] [IsAddCommutative V₁]
+  [Module K V₁] [AddGroup V'] [IsAddCommutative V'] [Module K V']
 
 theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
   calc
@@ -106,8 +106,8 @@ end HasRankNullity
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
-variable [AddCommGroup V'] [Module K V']
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] [AddGroup V₁] [IsAddCommutative V₁] [Module K V₁]
+variable [AddGroup V'] [IsAddCommutative V'] [Module K V']
 
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V,

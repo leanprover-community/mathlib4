@@ -71,20 +71,20 @@ variable [Semiring R] [TopologicalSpace F] [TopologicalSpace B]
 
 /-- A mixin class for `Pretrivialization`, stating that a pretrivialization is fiberwise linear with
 respect to given module structures on its fibers and the model fiber. -/
-protected class Bundle.Pretrivialization.IsLinear [AddCommMonoid F] [Module R F]
-  [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)] (e : Pretrivialization F (π F E)) : Prop where
+protected class Bundle.Pretrivialization.IsLinear [AddMonoid F] [IsAddCommutative F] [Module R F]
+  [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)] [∀ x, Module R (E x)] (e : Pretrivialization F (π F E)) : Prop where
   linear : ∀ b ∈ e.baseSet, IsLinearMap R fun x : E b => (e ⟨b, x⟩).2
 
 namespace Bundle.Pretrivialization
 
 variable (e : Pretrivialization F (π F E)) {x : TotalSpace F E} {b : B} {y : E b}
 
-theorem linear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
+theorem linear [AddMonoid F] [IsAddCommutative F] [Module R F] [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)] [∀ x, Module R (E x)]
     [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet) :
     IsLinearMap R fun x : E b => (e ⟨b, x⟩).2 :=
   IsLinear.linear b hb
 
-variable [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
+variable [AddMonoid F] [IsAddCommutative F] [Module R F] [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)] [∀ x, Module R (E x)]
 
 open scoped Classical in
 /-- A fiberwise linear inverse to `e`. -/
@@ -162,7 +162,7 @@ variable [TopologicalSpace (TotalSpace F E)]
 
 /-- A mixin class for `Bundle.Trivialization`, stating that a trivialization is fiberwise linear
 with respect to given module structures on its fibers and the model fiber. -/
-protected class Trivialization.IsLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
+protected class Trivialization.IsLinear [AddMonoid F] [IsAddCommutative F] [Module R F] [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)]
   [∀ x, Module R (E x)] (e : Trivialization F (π F E)) : Prop where
   linear : ∀ b ∈ e.baseSet, IsLinearMap R fun x : E b => (e ⟨b, x⟩).2
 
@@ -170,16 +170,16 @@ namespace Trivialization
 
 variable (e : Trivialization F (π F E)) {x : TotalSpace F E} {b : B} {y : E b}
 
-protected theorem linear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
+protected theorem linear [AddMonoid F] [IsAddCommutative F] [Module R F] [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)]
     [∀ x, Module R (E x)] [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet) :
     IsLinearMap R fun y : E b => (e ⟨b, y⟩).2 :=
   Trivialization.IsLinear.linear b hb
 
-instance toPretrivialization.isLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
+instance toPretrivialization.isLinear [AddMonoid F] [IsAddCommutative F] [Module R F] [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)]
     [∀ x, Module R (E x)] [e.IsLinear R] : e.toPretrivialization.IsLinear R :=
   { (‹_› : e.IsLinear R) with }
 
-variable [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
+variable [AddMonoid F] [IsAddCommutative F] [Module R F] [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)] [∀ x, Module R (E x)]
 
 /-- A trivialization for a vector bundle defines linear equivalences between the
 fibers and the model space. -/
@@ -364,8 +364,8 @@ end Bundle
 
 open Bundle
 
-variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
-  [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
+variable [NontriviallyNormedField R] [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)] [∀ x, Module R (E x)]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 
 /-- The space `Bundle.TotalSpace F E` (for `E : B → Type*` such that each `E x` is a topological
@@ -806,8 +806,8 @@ end
 
 section
 
-variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
-  [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [∀ x, TopologicalSpace (E x)]
+variable [NontriviallyNormedField R] [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)] [∀ x, Module R (E x)]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace R F] [TopologicalSpace B] [∀ x, TopologicalSpace (E x)]
 
 open TopologicalSpace
 
@@ -951,8 +951,8 @@ variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Nontrivial
 variable {σ : 𝕜₁ →+* 𝕜₂}
 variable {B' : Type*} [TopologicalSpace B']
 variable [NormedSpace 𝕜₁ F] [∀ x, Module 𝕜₁ (E x)] [TopologicalSpace (TotalSpace F E)]
-variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type*}
-  [∀ x, AddCommMonoid (E' x)] [∀ x, Module 𝕜₂ (E' x)] [TopologicalSpace (TotalSpace F' E')]
+variable {F' : Type*} [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type*}
+  [∀ x, AddMonoid (E' x)] [∀ x, IsAddCommutative (E' x)] [∀ x, Module 𝕜₂ (E' x)] [TopologicalSpace (TotalSpace F' E')]
 
 variable [FiberBundle F E] [VectorBundle 𝕜₁ F E]
 variable [∀ x, TopologicalSpace (E' x)] [FiberBundle F' E'] [VectorBundle 𝕜₂ F' E']

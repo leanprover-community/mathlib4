@@ -31,7 +31,7 @@ universe u v w u'
 section
 
 variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
-  [AddCommGroup M] [Module R M]
+  [AddGroup M] [IsAddCommutative M] [Module R M]
 
 theorem ContinuousSMul.of_nhds_zero [IsTopologicalRing R] [IsTopologicalAddGroup M]
     (hmul : Tendsto (fun p : R × M => p.1 • p.2) (𝓝 0 ×ˢ 𝓝 0) (𝓝 0))
@@ -55,7 +55,7 @@ end
 section
 
 variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
-  [AddCommGroup M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
+  [AddGroup M] [IsAddCommutative M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
 
 /-- If `M` is a topological module over `R` and `0` is a limit of invertible elements of `R`, then
 `⊤` is the only submodule of `M` with a nonempty interior.
@@ -115,7 +115,7 @@ theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) :=
 end LatticeOps
 
 /-- The span of a separable subset with respect to a separable scalar ring is again separable. -/
-lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semiring R] [Module R M]
+lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M]
     [TopologicalSpace M] [TopologicalSpace R] [SeparableSpace R]
     [ContinuousAdd M] [ContinuousSMul R M] {s : Set M} (hs : IsSeparable s) :
     IsSeparable (Submodule.span R s : Set M) := by
@@ -129,7 +129,7 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
 
 namespace Submodule
 
-instance isTopologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+instance isTopologicalAddGroup {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
     [TopologicalSpace M] [IsTopologicalAddGroup M] (S : Submodule R M) : IsTopologicalAddGroup S :=
   inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup)
 
@@ -139,7 +139,7 @@ end Submodule
 
 section closure
 
-variable {R : Type u} {M : Type v} [Semiring R] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+variable {R : Type u} {M : Type v} [Semiring R] [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M]
   [ContinuousConstSMul R M]
 
 theorem Submodule.mapsTo_smul_closure (s : Submodule R M) (c : R) :
@@ -195,7 +195,7 @@ theorem Submodule.dense_iff_topologicalClosure_eq_top {s : Submodule R M} :
   rw [← SetLike.coe_set_eq, dense_iff_closure_eq]
   simp
 
-instance Submodule.topologicalClosure.completeSpace {M' : Type*} [AddCommMonoid M'] [Module R M']
+instance Submodule.topologicalClosure.completeSpace {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M']
     [UniformSpace M'] [ContinuousAdd M'] [ContinuousConstSMul R M'] [CompleteSpace M']
     (U : Submodule R M') : CompleteSpace U.topologicalClosure :=
   isClosed_closure.completeSpace_coe
@@ -211,7 +211,7 @@ end closure
 
 section CompleteSpace
 
-instance {R M : Type*} [Semiring R] [AddCommMonoid M] [UniformSpace M] [Module R M]
+instance {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [UniformSpace M] [Module R M]
     [CompleteSpace M] (K : Submodule R M) [c : IsClosed (K : Set M)] : CompleteSpace K :=
   IsComplete.completeSpace_coe (c.isComplete)
 
@@ -219,7 +219,7 @@ end CompleteSpace
 
 namespace Submodule
 
-variable {ι R : Type*} {M : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+variable {ι R : Type*} {M : ι → Type*} [Semiring R] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
   [∀ i, TopologicalSpace (M i)] [DecidableEq ι]
 
 /-- If `s i` is a family of submodules, each is in its module,
@@ -263,7 +263,7 @@ end Submodule
 section Pi
 
 theorem LinearMap.continuous_on_pi {ι : Type*} {R : Type*} {M : Type*} [Finite ι] [Semiring R]
-    [TopologicalSpace R] [AddCommMonoid M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
+    [TopologicalSpace R] [AddMonoid M] [IsAddCommutative M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] (f : (ι → R) →ₗ[R] M) : Continuous f := by
   cases nonempty_fintype ι
   classical
@@ -280,7 +280,7 @@ end Pi
 section PointwiseLimits
 
 variable {M₁ M₂ α R S : Type*} [TopologicalSpace M₂] [T2Space M₂] [Semiring R] [Semiring S]
-  [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module S M₂] [ContinuousConstSMul S M₂]
+  [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₁] [Module S M₂] [ContinuousConstSMul S M₂]
 
 variable [ContinuousAdd M₂] {σ : R →+* S} {l : Filter α}
 
@@ -311,7 +311,7 @@ section Quotient
 
 namespace Submodule
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
+variable {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [TopologicalSpace M]
   (S : Submodule R M)
 
 instance _root_.QuotientModule.Quotient.topologicalSpace : TopologicalSpace (M ⧸ S) :=

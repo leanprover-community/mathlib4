@@ -51,7 +51,7 @@ noncomputable instance : CoeSort (TopModuleCat.{v} R) (Type v) := ⟨fun M ↦ M
 attribute [instance] topologicalSpace isTopologicalAddGroup continuousSMul
 
 /-- Make an object in `TopModuleCat R` from an unbundled topological module. -/
-abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
+abbrev of (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : TopModuleCat R :=
   have : ContinuousNeg M := ⟨by convert! continuous_const_smul (-1 : R) (T := M); ext; simp⟩
   have : IsTopologicalAddGroup M := ⟨⟩
@@ -62,7 +62,7 @@ open Lean.PrettyPrinter.Delaborator in
 @[app_delab TopModuleCat.of]
 meta def delabOf : Delab := CategoryTheory.delabOf
 
-lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
+lemma coe_of (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
 
 variable {R} in
@@ -95,14 +95,14 @@ abbrev Hom.hom {X Y : TopModuleCat R} (f : X.Hom Y) : X →L[R] Y :=
 variable {R} in
 /-- Construct a hom in `TopModuleCat` from a continuous linear map. -/
 abbrev ofHom {X Y : Type v}
-    [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
-    [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
+    [AddGroup X] [IsAddCommutative X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
+    [AddGroup Y] [IsAddCommutative Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
     (f : X →L[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom f
 
 @[simp] lemma hom_ofHom {X Y : Type v}
-    [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
-    [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
+    [AddGroup X] [IsAddCommutative X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
+    [AddGroup Y] [IsAddCommutative Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
     (f : X →L[R] Y) :
     (ofHom f).hom = f := rfl
 
@@ -159,7 +159,7 @@ end
 
 section CommRing
 
-variable {S : Type*} [CommRing S] [TopologicalSpace S]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [TopologicalSpace S]
 
 instance {X Y : TopModuleCat S} : SMul S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)

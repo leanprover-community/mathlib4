@@ -26,7 +26,7 @@ files forbidding to import algebra-related definitions (see `Mathlib/Algebra/Cha
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {S : Type*} [Semiring S] [IsMulCommutative S]
 variable (f : R →* S) (g : R →+* S) (p m n : ℕ) [ExpChar R p] [ExpChar S p] (x y : R)
 
 lemma frobenius_def : frobenius R p x = x ^ p := rfl

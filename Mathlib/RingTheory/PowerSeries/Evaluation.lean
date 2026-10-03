@@ -48,8 +48,8 @@ namespace PowerSeries
 
 open WithPiTopology
 
-variable {R : Type*} [CommRing R]
-variable {S : Type*} [CommRing S]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {S : Type*} [Ring S] [IsMulCommutative S]
 variable {φ : R →+* S}
 
 section
@@ -68,7 +68,7 @@ theorem hasEval_iff {a : S} :
 theorem hasEval {a : S} (ha : HasEval a) :
     MvPowerSeries.HasEval (fun (_ : Unit) ↦ a) := hasEval_iff.mp ha
 
-theorem HasEval.mono {S : Type*} [CommRing S] {a : S}
+theorem HasEval.mono {S : Type*} [Ring S] [IsMulCommutative S] {a : S}
     {t u : TopologicalSpace S} (h : t ≤ u) (ha : @HasEval _ _ t a) :
     @HasEval _ _ u a := by
   simp only [hasEval_iff] at ha ⊢
@@ -196,7 +196,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
-    [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [IsUniformAddGroup T]
+    [Ring T] [IsMulCommutative T] [IsTopologicalRing T] [IsLinearTopology T T] [IsUniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε a) := by
   refine eval₂_unique (by simp only [RingHom.coe_comp, hε.comp hφ]) (ha.map hε)
@@ -238,7 +238,7 @@ theorem aeval_eq_sum (ha : HasEval a) (f : PowerSeries R) :
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : HasEval a)
-    {T : Type*} [CommRing T] [UniformSpace T] [IsUniformAddGroup T]
+    {T : Type*} [Ring T] [IsMulCommutative T] [UniformSpace T] [IsUniformAddGroup T]
     [IsTopologicalRing T] [IsLinearTopology T T]
     [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :

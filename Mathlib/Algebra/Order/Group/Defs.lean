@@ -42,7 +42,7 @@ attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
 -- See note [lower instance priority]
 @[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid]
 instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
-    [CommGroup α] [Preorder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
+    [Group α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
   le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_right bc a⁻¹
   le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_right bc a⁻¹
 
@@ -58,7 +58,7 @@ https://github.com/leanprover-community/mathlib4/pull/32828. -/
   TODO: make it an `instance`. To avoid slowdown, it was not an instance when it was submitted. See
   https://github.com/leanprover-community/mathlib4/pull/32828. -/]
 theorem IsOrderedMonoid.toIsOrderedCancelMonoid'
-    [CancelCommMonoid α] [LinearOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
+    [CancelMonoid α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
   le_of_mul_le_mul_left _ _ _ h := le_of_mul_le_mul_left' h
 
 /-!
@@ -73,7 +73,7 @@ insert_to_additive_translation LinearOrderedCommGroup LinearOrderedAddCommGroup
 
 section LinearOrderedCommGroup
 
-variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
+variable [Group α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
 
 @[to_additive eq_zero_of_neg_eq]
 theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=
@@ -125,7 +125,7 @@ section NormNumLemmas
 
 /- The following lemmas are stated so that the `norm_num` tactic can use them with the
 expected signatures. -/
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {a b : α}
+variable [Group α] [IsMulCommutative α] [PartialOrder α] [IsOrderedMonoid α] {a b : α}
 
 @[to_additive (attr := gcongr) neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=

@@ -82,11 +82,11 @@ open scoped RealInnerProductSpace
 section
 
 variable
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {EB : Type*} [NormedAddGroup EB] [IsAddCommutative EB] [NormedSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddGroup (E x)] [∀ x, IsAddCommutative (E x)]
   [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E]
 
 variable (IB F E) in
@@ -120,7 +120,7 @@ end
 section -- and a specialisation to manifolds
 
 -- Let `M` be a `C²` manifold modeled on `(E, H)`, endowed with a Riemannian metric.
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
@@ -146,7 +146,7 @@ end ext
 
 -- Let `M` be a `C²` manifold modeled on `(E, H)`.
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 2 M]

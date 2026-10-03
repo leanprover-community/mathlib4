@@ -38,10 +38,10 @@ N₁ --g₁--> N₂ --g₂--> N₃
 
 public section
 
-variable {R : Type*} [CommRing R] (S : Type*) [CommRing S] [Algebra R S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S]
 
-variable {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
-  [AddCommGroup N₁] [AddCommGroup N₂] [AddCommGroup N₃] [Module R M₁] [Module R M₂] [Module R M₃]
+variable {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup M₃] [IsAddCommutative M₃]
+  [AddGroup N₁] [IsAddCommutative N₁] [AddGroup N₂] [IsAddCommutative N₂] [AddGroup N₃] [IsAddCommutative N₃] [Module R M₁] [Module R M₂] [Module R M₃]
   [Module R N₁] [Module R N₂] [Module R N₃] [Module S N₁] [Module S N₂] [Module S N₃]
   [IsScalarTower R S N₁] [IsScalarTower R S N₂] [IsScalarTower R S N₃]
   (h₁ : M₁ →ₗ[R] N₁) (h₂ : M₂ →ₗ[R] N₂) (h₃ : M₃ →ₗ[R] N₃)

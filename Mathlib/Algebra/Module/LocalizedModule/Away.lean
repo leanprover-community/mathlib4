@@ -17,7 +17,7 @@ public section
 
 namespace IsLocalizedModule.Away
 
-variable {R : Type*} [CommSemiring R] {M N : Type*} [AddCommMonoid M] [AddCommMonoid N]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {M N : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
   [Module R M] [Module R N] {f : M →ₗ[R] N} {r : R}
 
 lemma mk (h₁ : IsUnit (algebraMap R (Module.End R N) r))
@@ -32,7 +32,7 @@ lemma mk (h₁ : IsUnit (algebraMap R (Module.End R N) r))
     obtain ⟨n, hn⟩ := h₃ _ _ hxy
     use ⟨_, n, rfl⟩, hn
 
-lemma mk_of_addCommGroup {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+lemma mk_of_addCommGroup {M N : Type*} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N]
     {f : M →ₗ[R] N} {r : R} (h₁ : IsUnit (algebraMap R (Module.End R N) r))
     (h₂ : ∀ (x : N), ∃ (n : ℕ) (y : M), r ^ n • x = f y)
     (h₃ : ∀ (x : M), f x = 0 → ∃ (n : ℕ), r ^ n • x = 0) :

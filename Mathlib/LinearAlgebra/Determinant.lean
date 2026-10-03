@@ -49,19 +49,19 @@ open Matrix Module LinearMap Submodule Set Function
 
 universe u v w
 
-variable {R : Type*} [CommRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M]
-variable {M' : Type*} [AddCommGroup M'] [Module R M']
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {M' : Type*} [AddGroup M'] [IsAddCommutative M'] [Module R M']
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 variable (e : Basis ι R M)
 
 section Conjugate
 
-variable {A : Type*} [CommRing A]
+variable {A : Type*} [Ring A] [IsMulCommutative A]
 variable {m n : Type*}
 
 /-- If `R^m` and `R^n` are linearly equivalent, then `m` and `n` are also equivalent. -/
-def equivOfPiLEquivPi {R : Type*} [Finite m] [Finite n] [CommRing R] [Nontrivial R]
+def equivOfPiLEquivPi {R : Type*} [Finite m] [Finite n] [Ring R] [IsMulCommutative R] [Nontrivial R]
     (e : (m → R) ≃ₗ[R] n → R) : m ≃ n :=
   Basis.indexEquiv (Basis.ofEquivFun e.symm) (Pi.basisFun _ _)
 
@@ -106,7 +106,7 @@ namespace LinearMap
 /-! ### Determinant of a linear map -/
 
 
-variable {A : Type*} [CommRing A] [Module A M]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Module A M]
 variable {κ : Type*} [Fintype κ]
 
 /-- The determinant of `LinearMap.toMatrix` does not depend on the choice of basis. -/
@@ -283,7 +283,7 @@ theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
   rw [← f.det_toMatrix b]
   exact Matrix.det_isEmpty
 
-theorem det_eq_one_of_finrank_eq_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M]
+theorem det_eq_one_of_finrank_eq_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddGroup M] [IsAddCommutative M]
     [Module 𝕜 M] (h : Module.finrank 𝕜 M = 0) (f : M →ₗ[𝕜] M) :
     LinearMap.det (f : M →ₗ[𝕜] M) = 1 := by
   classical
@@ -296,7 +296,7 @@ theorem det_eq_one_of_finrank_eq_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [A
 
 /-- Conjugating a linear map by a linear equiv does not change its determinant. -/
 @[simp]
-theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (e : M ≃ₗ[A] N) :
+theorem det_conj {N : Type*} [AddGroup N] [IsAddCommutative N] [Module A N] (f : M →ₗ[A] M) (e : M ≃ₗ[A] N) :
     LinearMap.det ((e : M →ₗ[A] N) ∘ₗ f ∘ₗ (e.symm : N →ₗ[A] M)) = LinearMap.det f := by
   classical
     by_cases H : ∃ s : Finset M, Nonempty (Basis s A M)
@@ -314,7 +314,7 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
       simp only [coe_det, H, H', MonoidHom.one_apply, dite_eq_right, not_false_eq_true]
 
 /-- If a linear map is invertible, so is its determinant. -/
-theorem isUnit_det {A : Type*} [CommRing A] [Module A M] (f : M →ₗ[A] M) (hf : IsUnit f) :
+theorem isUnit_det {A : Type*} [Ring A] [IsMulCommutative A] [Module A M] (f : M →ₗ[A] M) (hf : IsUnit f) :
     IsUnit (LinearMap.det f) := IsUnit.map LinearMap.det hf
 
 lemma isUnit_iff_isUnit_det [Module.Finite R M] [Module.Free R M] (f : M →ₗ[R] M) :
@@ -406,7 +406,7 @@ end LinearMap
 
 namespace Algebra
 
-variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] [Free R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [Algebra R S] [Free R S]
 
 lemma det_lsmul (x : R) : LinearMap.det (lsmul R R S x) = x ^ finrank R S := by
   rw [lsmul_eq_smul_one, LinearMap.det_smul, map_one, mul_one]
@@ -451,8 +451,8 @@ attribute [irreducible] LinearEquiv.det
 
 end LinearEquiv
 
-@[simp] theorem LinearMap.det_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V]
-    [AddCommGroup W] [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)]
+@[simp] theorem LinearMap.det_map {K V W : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
+    [AddGroup W] [IsAddCommutative W] [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)]
     [AlgEquivClass F K _ _] (f : F) (x : End K V) : (f x).det = x.det :=
   have ⟨_, h⟩ := (AlgEquiv.ofClass f).eq_linearEquivConjAlgEquiv
   (by simpa using congr($h x)) ▸ det_conj _ _
@@ -473,13 +473,13 @@ end LinearEquiv
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
-theorem LinearEquiv.det_mul_det_symm {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
+theorem LinearEquiv.det_mul_det_symm {A : Type*} [Ring A] [IsMulCommutative A] [Module A M] (f : M ≃ₗ[A] M) :
     LinearMap.det (f : M →ₗ[A] M) * LinearMap.det (f.symm : M →ₗ[A] M) = 1 := by
   simp [← LinearMap.det_comp]
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
-theorem LinearEquiv.det_symm_mul_det {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
+theorem LinearEquiv.det_symm_mul_det {A : Type*} [Ring A] [IsMulCommutative A] [Module A M] (f : M ≃ₗ[A] M) :
     LinearMap.det (f.symm : M →ₗ[A] M) * LinearMap.det (f : M →ₗ[A] M) = 1 := by
   simp [← LinearMap.det_comp]
 
@@ -490,7 +490,7 @@ theorem LinearEquiv.isUnit_det (f : M ≃ₗ[R] M') (v : Basis ι R M) (v' : Bas
   simpa using (LinearMap.toMatrix_comp v v' v f.symm f).symm
 
 /-- Specialization of `LinearEquiv.isUnit_det` -/
-theorem LinearEquiv.isUnit_det' {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
+theorem LinearEquiv.isUnit_det' {A : Type*} [Ring A] [IsMulCommutative A] [Module A M] (f : M ≃ₗ[A] M) :
     IsUnit (LinearMap.det (f : M →ₗ[A] M)) :=
   .of_mul_eq_one _ f.det_mul_det_symm
 
@@ -558,7 +558,7 @@ theorem LinearMap.coe_equivOfIsUnitDet
 
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
-abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M]
+abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddGroup M] [IsAddCommutative M] [Module 𝕜 M]
     [FiniteDimensional 𝕜 M] (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) : M ≃ₗ[𝕜] M :=
   have : IsUnit (LinearMap.toMatrix (Module.finBasis 𝕜 M)
       (Module.finBasis 𝕜 M) f).det := by
@@ -575,7 +575,7 @@ theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ
   rw [← mul_one (LinearMap.det f'), LinearMap.det_comp]
   exact Associated.mul_left _ (associated_one_iff_isUnit.mpr e.isUnit_det')
 
-theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module R N]
+theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
     (f : N →ₗ[R] M) (e e' : M ≃ₗ[R] N) :
     Associated (LinearMap.det (f ∘ₗ ↑e)) (LinearMap.det (f ∘ₗ ↑e')) := by
   refine LinearMap.associated_det_of_eq_comp (e.trans e'.symm) _ _ ?_
@@ -666,7 +666,7 @@ theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis
     (f : M [⋀^ι]→ₗ[R] R) : f e ≠ 0 ↔ f ≠ 0 :=
   not_congr <| f.map_basis_eq_zero_iff e
 
-variable {A : Type*} [CommRing A] [Module A M]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Module A M]
 
 namespace Module.Basis
 
@@ -794,7 +794,7 @@ end Dual
 
 section
 
-variable {R V : Type*} [CommRing R] [AddCommGroup V]
+variable {R V : Type*} [Ring R] [IsMulCommutative R] [AddGroup V] [IsAddCommutative V]
     [Module R V] [Module.Finite R V]
     (W : Submodule R V) [Module.Free R W] [Module.Finite R W] [Module.Free R (V ⧸ W)]
 

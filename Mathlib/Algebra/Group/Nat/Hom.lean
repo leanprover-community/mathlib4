@@ -89,7 +89,7 @@ lemma MonoidHom.ext_mnat ⦃f g : Multiplicative ℕ →* M⦄
 end Monoid
 
 section AddCommMonoid
-variable [AddCommMonoid M]
+variable [AddMonoid M] [IsAddCommutative M]
 
 variable (M) in
 /-- If `M` is commutative, `multiplesHom` is an additive equivalence. -/
@@ -104,7 +104,7 @@ def multiplesAddHom : M ≃+ (ℕ →+ M) where
 end AddCommMonoid
 
 section CommMonoid
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 variable (M) in
 /-- If `M` is commutative, `powersHom` is a multiplicative equivalence. -/

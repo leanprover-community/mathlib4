@@ -26,11 +26,11 @@ variable [TopologicalSpace α]
 
 instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra (α →ᵇ A) where
 
-instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra (α →ᵇ A) where
+instance [NonUnitalCStarAlgebra A] [IsMulCommutative A] : NonUnitalCommCStarAlgebra (α →ᵇ A) where
 
 instance [CStarAlgebra A] : CStarAlgebra (α →ᵇ A) where
 
-instance [CommCStarAlgebra A] : CommCStarAlgebra (α →ᵇ A) where
+instance [CStarAlgebra A] [IsMulCommutative A] : CommCStarAlgebra (α →ᵇ A) where
 
 end BoundedContinuousFunction
 
@@ -40,11 +40,11 @@ variable [TopologicalSpace α] [CompactSpace α]
 
 instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C(α, A) where
 
-instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra C(α, A) where
+instance [NonUnitalCStarAlgebra A] [IsMulCommutative A] : NonUnitalCommCStarAlgebra C(α, A) where
 
 instance [CStarAlgebra A] : CStarAlgebra C(α, A) where
 
-instance [CommCStarAlgebra A] : CommCStarAlgebra C(α, A) where
+instance [CStarAlgebra A] [IsMulCommutative A] : CommCStarAlgebra C(α, A) where
 
 end ContinuousMap
 
@@ -54,7 +54,7 @@ open scoped ZeroAtInfty
 
 instance [TopologicalSpace α] [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C₀(α, A) where
 
-instance [TopologicalSpace α] [NonUnitalCommCStarAlgebra A] :
+instance [TopologicalSpace α] [NonUnitalCStarAlgebra A] [IsMulCommutative A] :
     NonUnitalCommCStarAlgebra C₀(α, A) where
 
 end ZeroAtInftyContinuousMap

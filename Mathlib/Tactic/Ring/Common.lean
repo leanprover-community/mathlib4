@@ -475,7 +475,7 @@ partial def ExSum.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiri
   | .add .., .zero => .gt
 end
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 section
 
@@ -694,10 +694,10 @@ def evalMul {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
 
 /-! ### Negation -/
 
-theorem neg_one_mul {R} [CommRing R] {a b : R} (_ : (-1 : R) * a = b) :
+theorem neg_one_mul {R} [Ring R] [IsMulCommutative R] {a b : R} (_ : (-1 : R) * a = b) :
     -a = b := by subst_vars; simp
 
-theorem neg_mul {R} [CommRing R] (a₁ : R) (a₂) {a₃ b : R}
+theorem neg_mul {R} [Ring R] [IsMulCommutative R] (a₁ : R) (a₂) {a₃ b : R}
     (_ : -a₃ = b) : -(a₁ ^ a₂ * a₃) = a₁ ^ a₂ * b := by subst_vars; simp
 
 /-- Negates a monomial `va` to get another monomial.
@@ -717,9 +717,9 @@ def evalNegProd {a : Q($α)} (rα : Q(CommRing $α)) (va : ExProd bt sα a) :
     assumeInstancesCommute
     return ⟨_, .mul va₁ va₂ vb, q(neg_mul $a₁ $a₂ $pb)⟩
 
-theorem neg_zero {R} [CommRing R] : -(0 : R) = 0 := by simp
+theorem neg_zero {R} [Ring R] [IsMulCommutative R] : -(0 : R) = 0 := by simp
 
-theorem neg_add {R} [CommRing R] {a₁ a₂ b₁ b₂ : R}
+theorem neg_add {R} [Ring R] [IsMulCommutative R] {a₁ a₂ b₁ b₂ : R}
     (_ : -a₁ = b₁) (_ : -a₂ = b₂) : -(a₁ + a₂) = b₁ + b₂ := by
   subst_vars; simp [add_comm]
 
@@ -742,7 +742,7 @@ def evalNeg {a : Q($α)} (rα : Q(CommRing $α)) (va : ExSum bt sα a) :
 
 /-! ### Subtraction -/
 
-theorem sub_pf {R} [CommRing R] {a b c d : R}
+theorem sub_pf {R} [Ring R] [IsMulCommutative R] {a b c d : R}
     (_ : -b = c) (_ : a + c = d) : a - b = d := by subst_vars; simp [sub_eq_add_neg]
 
 /-- Subtracts two polynomials `va, vb` to get a normalized result polynomial.
@@ -1195,7 +1195,7 @@ theorem nsmul_congr {a a' : ℕ} (_ : (a : ℕ) = a') (_ : b = b') (_ : a' • b
     (a • (b : R)) = c := by
   subst_vars; rfl
 
-theorem zsmul_congr {R} [CommRing R] {b b' c : R} {a a' : ℤ} (_ : (a : ℤ) = a') (_ : b = b')
+theorem zsmul_congr {R} [Ring R] [IsMulCommutative R] {b b' c : R} {a a' : ℤ} (_ : (a : ℤ) = a') (_ : b = b')
     (_ : a' • b' = c) :
     (a • (b : R)) = c := by
   subst_vars; rfl
@@ -1203,10 +1203,10 @@ theorem zsmul_congr {R} [CommRing R] {b b' c : R} {a a' : ℤ} (_ : (a : ℤ) = 
 theorem pow_congr {b b' : ℕ} (_ : a = a') (_ : b = b')
     (_ : a' ^ b' = c) : (a ^ b : R) = c := by subst_vars; rfl
 
-theorem neg_congr {R} [CommRing R] {a a' b : R} (_ : a = a')
+theorem neg_congr {R} [Ring R] [IsMulCommutative R] {a a' b : R} (_ : a = a')
     (_ : -a' = b) : (-a : R) = b := by subst_vars; rfl
 
-theorem sub_congr {R} [CommRing R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
+theorem sub_congr {R} [Ring R] [IsMulCommutative R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' - b' = c) : (a - b : R) = c := by subst_vars; rfl
 
 theorem inv_congr {R} [Semifield R] {a a' b : R} (_ : a = a')
@@ -1215,7 +1215,7 @@ theorem inv_congr {R} [Semifield R] {a a' b : R} (_ : a = a')
 theorem div_congr {R} [Semifield R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' / b' = c) : (a / b : R) = c := by subst_vars; rfl
 
-theorem smul_congr {R α : Type*} [CommSemiring α] [SMul R α]
+theorem smul_congr {R α : Type*} [Semiring α] [IsMulCommutative α] [SMul R α]
     {r : R} {a b t c : α}
     (_ : a = b) (_ : ∀ (x : α), r • x = t * x) (_ : t * b = c) :
     r • a = c := by

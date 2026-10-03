@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 public section
 
 variable (R R₂ M M₂ : Type*) [Ring R] [Ring R₂]
-variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 
 theorem IsSimpleModule.jacobson_eq_bot [IsSimpleModule R M] : Module.jacobson R M = ⊥ :=
@@ -47,7 +47,7 @@ theorem IsSemisimpleModule.jacobson_le_annihilator [IsSemisimpleModule R M] :
     have := Module.le_comap_jacobson (LinearMap.toSpanSingleton R M m) hr
     rwa [jacobson_eq_bot] at this
 
-instance (priority := low) (R) [CommRing R] [IsSemisimpleRing R] : IsReduced R where
+instance (priority := low) (R) [Ring R] [IsMulCommutative R] [IsSemisimpleRing R] : IsReduced R where
   eq_zero _ := fun ⟨n, eq⟩ ↦ (IsSemisimpleRing.jacobson_eq_bot R).le <| Ideal.mem_sInf.mpr
     fun I hI ↦ (Ideal.isMaximal_def.mpr hI).isPrime.mem_of_pow_mem n (eq ▸ I.zero_mem)
 

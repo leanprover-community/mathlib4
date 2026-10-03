@@ -18,7 +18,7 @@ variable {α : Type*}
 
 section CanonicallyOrderedAddCommMonoid
 
-variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [CanonicallyOrderedAdd α]
   [Sub α] [OrderedSub α] {a b c : α}
 
 theorem add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
@@ -108,7 +108,7 @@ end CanonicallyOrderedAddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
-variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
+variable [AddMonoid α] [IsAddCommutative α] [LinearOrder α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
   {a b c : α}
 
 @[simp]
@@ -205,7 +205,7 @@ end CanonicallyLinearOrderedAddCommMonoid
 
 namespace CanonicallyOrderedAdd
 
-variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
+variable [AddMonoid α] [IsAddCommutative α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
 -- See note [reducible non-instances]
 /-- `Sub` structure in linearly canonically ordered monoid using choice. -/

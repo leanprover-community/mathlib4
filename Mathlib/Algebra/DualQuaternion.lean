@@ -27,7 +27,7 @@ rigid motions in 3D space can be represented by dual quaternions of unit length.
 @[expose] public section
 
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace Quaternion
 

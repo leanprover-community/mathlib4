@@ -20,7 +20,7 @@ assert_not_exists TwoSidedIdeal
 
 namespace Matrix
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Let `M` be a `(n+1) × n` matrix whose row sums to zero. Then all the matrices obtained by

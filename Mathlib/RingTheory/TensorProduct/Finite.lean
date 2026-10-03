@@ -25,8 +25,8 @@ open Function (Surjective)
 
 namespace Submodule
 
-variable {R M N : Type*} [CommSemiring R] [AddCommMonoid M]
-  [AddCommMonoid N] [Module R M] [Module R N] {I : Submodule R N}
+variable {R M N : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M]
+  [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N] {I : Submodule R N}
 
 open TensorProduct LinearMap
 /-- Every `x : N ⊗ M` is the image of some `y : J ⊗ M`, where `J` is a finitely generated
@@ -76,7 +76,7 @@ section ModuleAndAlgebra
 
 variable (R A M N : Type*)
 
-instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
+instance Module.Finite.base_change [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [AddMonoid M] [IsAddCommutative M]
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
   classical
     obtain ⟨s, hs⟩ := h.fg_top
@@ -90,8 +90,8 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
       exact Submodule.smul_mem _ x (Submodule.subset_span <| Set.mem_range_self y)
     | add x y hx hy => exact Submodule.add_mem _ hx hy
 
-instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module R M]
-    [AddCommMonoid N] [Module R N] [hM : Module.Finite R M] [hN : Module.Finite R N] :
+instance Module.Finite.tensorProduct [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+    [AddMonoid N] [IsAddCommutative N] [Module R N] [hM : Module.Finite R M] [hN : Module.Finite R N] :
     Module.Finite R (TensorProduct R M N) where
   fg_top := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.fg_top.map₂ _ hN.fg_top)
 
@@ -99,7 +99,7 @@ end ModuleAndAlgebra
 
 section NontrivialTensorProduct
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M]
+variable (R M : Type*) [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Finite R M] [Nontrivial M]
 
 lemma Module.exists_isPrincipal_quotient_of_finite :
     ∃ N : Submodule R M, N ≠ ⊤ ∧ Submodule.IsPrincipal (⊤ : Submodule R (M ⧸ N)) := by
@@ -146,7 +146,7 @@ instance : Nontrivial (M ⊗[R] M) := by
 
 end NontrivialTensorProduct
 
-theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [Algebra K L]
+theorem Subalgebra.finite_sup {K L : Type*} [Semiring K] [IsMulCommutative K] [Semiring L] [IsMulCommutative L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
     Module.Finite K ↥(E1 ⊔ E2) := by
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
@@ -154,7 +154,7 @@ theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [A
 
 -- Subsumed by `RingHom.Finite.tensorProductMap`.
 private lemma RingHom.Finite.tensorProductMap_id
-    {R S S' T : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S']
+    {R S S' T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Ring S'] [IsMulCommutative S']
     [Algebra R S] [Algebra R T] [Algebra R S']
     {f : S →ₐ[R] S'} (Hf : f.Finite) :
     (Algebra.TensorProduct.map f (AlgHom.id R T)).toRingHom.Finite := by
@@ -169,7 +169,7 @@ private lemma RingHom.Finite.tensorProductMap_id
   exact (RingEquiv.finite _).comp (finite_algebraMap.mpr inferInstance)
 
 lemma RingHom.Finite.tensorProductMap
-    {R S S' T T' : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S'] [CommRing T']
+    {R S S' T T' : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Ring S'] [IsMulCommutative S'] [Ring T'] [IsMulCommutative T']
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
     (Algebra.TensorProduct.map f g).toRingHom.Finite := by

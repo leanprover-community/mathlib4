@@ -42,8 +42,8 @@ attribute [local ext high] TensorProduct.ext
 section Contraction
 section CommSemiring
 
-variable [CommSemiring R]
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
 
 variable (R M) in
@@ -318,8 +318,8 @@ section HomTensorHom
 
 section CommSemiring
 
-variable [CommSemiring R]
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
 variable [Projective R M] [Module.Finite R M]
 
@@ -398,7 +398,7 @@ end CommSemiring
 end HomTensorHom
 
 namespace TensorProduct
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
 
 section
 variable [Module.Finite R M] [Module.Finite R N] [Projective R M] [Projective R N]

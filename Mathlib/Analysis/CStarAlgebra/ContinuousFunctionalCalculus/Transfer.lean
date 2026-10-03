@@ -30,7 +30,7 @@ of the continuous functional calculus.
 section UnitalTransfer
 
 variable {R A B : Type*} {p : A → Prop} {q : B → Prop}
-  [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+  [Semiring R] [IsMulCommutative R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
   [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A]
   [Ring B] [StarRing B] [Algebra R B]
   [instCFC : ContinuousFunctionalCalculus R A p]
@@ -109,7 +109,7 @@ section NonUnitalTransfer
 open scoped ContinuousMapZero
 
 variable {R A B : Type*} {p : A → Prop} {q : B → Prop}
-  [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R]
+  [Semiring R] [IsMulCommutative R] [Nontrivial R] [StarRing R] [MetricSpace R]
   [IsTopologicalSemiring R] [ContinuousStar R]
   [NonUnitalRing A] [StarRing A] [TopologicalSpace A]
   [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]

@@ -63,9 +63,9 @@ open Set TopologicalSpace
 open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
+  {F' : Type*} [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜 F']
   {H₁ : Type*} [TopologicalSpace H₁]
   {H₂ : Type*} [TopologicalSpace H₂]
   {H₃ : Type*} [TopologicalSpace H₃]

@@ -21,7 +21,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[Semiring R] [IsMulCommutative R]` (the coefficients)
 
 -/
 
@@ -30,7 +30,7 @@ As in other polynomial files, we typically use the notation:
 
 namespace MvPolynomial
 
-variable {σ : Type*} {τ : Type*} {υ : Type*} {R : Type*} [CommSemiring R]
+variable {σ : Type*} {τ : Type*} {υ : Type*} {R : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- Given an algebra hom `f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R`
 and a variable evaluation `v : τ → R`,

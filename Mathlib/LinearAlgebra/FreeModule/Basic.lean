@@ -37,10 +37,10 @@ variable {ι : Type*} (R : Type u) (M : Type v) (N : Type z)
 namespace Module
 section Basic
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- `Module.Free R M` is the statement that the `R`-module `M` is free. -/
-class Free (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
+class Free (R : Type u) (M : Type v) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : Prop where
   exists_basis (R M) : Nonempty <| (I : Type v) × Basis I R M
 
 lemma Free.exists_set [Free R M] : ∃ S : Set M, Nonempty (Basis S R M) :=
@@ -71,8 +71,8 @@ namespace Free
 
 section Semiring
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
-variable [AddCommMonoid N] [Module R N]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module.Free R M]
+variable [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 /-- If `Module.Free R M` then `ChooseBasisIndex R M` is the `ι` which indexes the basis
   `ι → M`. Note that this is defined such that this type is finite if `R` is trivial. -/
@@ -115,8 +115,8 @@ instance [Nontrivial M] : FaithfulSMul R M :=
 
 variable {R M N}
 
-lemma of_equiv {R R' M M' : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [Semiring R'] [AddCommMonoid M'] [Module R' M']
+lemma of_equiv {R R' M M' : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+    [Semiring R'] [AddMonoid M'] [IsAddCommutative M'] [Module R' M']
     {σ : R →+* R'} {σ' : R' →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     (e₂ : M ≃ₛₗ[σ] M') [Module.Free R M] :
     Module.Free R' M' := by
@@ -132,12 +132,12 @@ lemma of_equiv {R R' M M' : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- A variation of `of_equiv`: the assumption `Module.Free R P` here is explicit rather than an
 instance. -/
-theorem of_equiv' {P : Type v} [AddCommMonoid P] [Module R P] (_ : Module.Free R P)
+theorem of_equiv' {P : Type v} [AddMonoid P] [IsAddCommutative P] [Module R P] (_ : Module.Free R P)
     (e : P ≃ₗ[R] N) : Module.Free R N :=
   of_equiv e
 
-lemma iff_of_equiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
-    [Semiring R'] [AddCommMonoid M'] [Module R' M']
+lemma iff_of_equiv {R R' M M'} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+    [Semiring R'] [AddMonoid M'] [IsAddCommutative M'] [Module R' M']
     {σ : R →+* R'} {σ' : R' →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     (e₂ : M ≃ₛₗ[σ] M') :
     Module.Free R M ↔ Module.Free R' M' :=
@@ -172,7 +172,7 @@ end Free
 
 namespace Basis
 
-variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
+variable {S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [Algebra R S]
 
 variable {R} in
 /-- If `B` is a basis of the `R`-algebra `S` such that `B i = 1` for some index `i`, then
@@ -184,7 +184,7 @@ theorem repr_algebraMap {ι : Type*} {B : Basis ι R S} {i : ι} (hBi : B i = 1)
 end Basis
 
 namespace End
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Free R M]
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Free R M]
 
 theorem mem_center_iff {f : End R M} :
     f ∈ Set.center (End R M) ↔ ∃ (α : R) (hα : α ∈ Set.center R), f = smulLeft α hα := by

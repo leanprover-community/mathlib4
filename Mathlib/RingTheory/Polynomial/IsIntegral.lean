@@ -28,7 +28,7 @@ import Mathlib.Algebra.MvPolynomial.Variables
 
 public section
 
-variable {R S ι : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S ι : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 namespace Polynomial
 
@@ -163,7 +163,7 @@ theorem Polynomial.isIntegral_iff_isIntegral_coeff {f : S[X]} :
   simp only [← C_mul_X_pow_eq_monomial, ← map_X (algebraMap R S)]
   exact .sum _ fun i _ ↦ ((H i).map (CAlgHom (R := R))).tower_top.mul (.pow isIntegral_algebraMap _)
 
-lemma IsIntegral.of_aeval_monic_of_isIntegral_coeff {R A : Type*} [CommRing R] [CommRing A]
+lemma IsIntegral.of_aeval_monic_of_isIntegral_coeff {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A]
     [Algebra R A] {x : A} {p : A[X]} (monic : p.Monic) (deg : p.natDegree ≠ 0)
     (hx : IsIntegral R (eval x p)) (hp : ∀ i, IsIntegral R (p.coeff i)) : IsIntegral R x := by
   obtain ⟨q, hqp, hdeg, hq⟩ :=
@@ -173,7 +173,7 @@ lemma IsIntegral.of_aeval_monic_of_isIntegral_coeff {R A : Type*} [CommRing R] [
     (by simpa [← eval_map_algebraMap, hqp] using hx.tower_top))
 
 @[stacks 030A]
-instance {R : Type*} [CommRing R] [IsDomain R] [IsIntegrallyClosed R] :
+instance {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [IsIntegrallyClosed R] :
     IsIntegrallyClosed R[X] := by
   let K := FractionRing R
   have : IsIntegrallyClosed K[X] := UniqueFactorizationMonoid.instIsIntegrallyClosed

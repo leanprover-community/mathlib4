@@ -33,7 +33,7 @@ open Cardinal Function Set Module
 section Tower
 
 variable (F : Type u) (K : Type v) (A : Type w)
-variable [Semiring F] [Semiring K] [AddCommMonoid A]
+variable [Semiring F] [Semiring K] [AddMonoid A] [IsAddCommutative A]
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
 
@@ -55,7 +55,7 @@ $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$
 
 This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
 @[stacks 09G9]
-theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
+theorem rank_mul_rank (A : Type v) [AddMonoid A] [IsAddCommutative A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
   convert! lift_rank_mul_lift_rank F K A <;> rw [lift_id]
@@ -98,14 +98,14 @@ end Tower
 
 variable {R : Type u} {S : Type*} {M M₁ : Type v} {M' : Type v'}
 variable [Semiring R]
-variable [AddCommMonoid M] [Module R M] [Module.Free R M]
-variable [AddCommMonoid M'] [Module R M'] [Module.Free R M']
-variable [AddCommMonoid M₁] [Module R M₁] [Module.Free R M₁]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [Module.Free R M]
+variable [AddMonoid M'] [IsAddCommutative M'] [Module R M'] [Module.Free R M']
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁] [Module.Free R M₁]
 
 namespace Module.Free
 
-variable {N : Type v} [AddCommMonoid N] [Module R N]
-variable {N' : Type v'} [AddCommMonoid N'] [Module R N']
+variable {N : Type v} [AddMonoid N] [IsAddCommutative N] [Module R N]
+variable {N' : Type v'} [AddMonoid N'] [IsAddCommutative N'] [Module R N']
 
 theorem exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
     {ι : Type w} {v : ι → N'} (hv : LinearIndependent R v)
@@ -276,7 +276,7 @@ theorem finite_of_finrank_pos (h : 0 < finrank R M) : Module.Finite R M := by
 theorem finite_of_finrank_eq_succ {n : ℕ} (hn : finrank R M = n.succ) : Module.Finite R M :=
   finite_of_finrank_pos <| by rw [hn]; exact n.succ_pos
 
-theorem finite_iff_of_rank_eq_nsmul {W} [AddCommMonoid W] [Module R W] [Module.Free R W] {n : ℕ}
+theorem finite_iff_of_rank_eq_nsmul {W} [AddMonoid W] [IsAddCommutative W] [Module R W] [Module.Free R W] {n : ℕ}
     (hn : n ≠ 0) (hVW : Module.rank R M = n • Module.rank R W) :
     Module.Finite R M ↔ Module.Finite R W := by
   simp only [← rank_lt_aleph0_iff, hVW, nsmul_lt_aleph0_iff_of_ne_zero hn]
@@ -322,7 +322,7 @@ theorem nonempty_linearEquiv_iff_finrank_eq_one :
 alias ⟨_, nonempty_linearEquiv_of_finrank_eq_one⟩ := nonempty_linearEquiv_iff_finrank_eq_one
 
 theorem nonempty_algEquiv_iff_finrank_eq_one
-    {R S : Type*} [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
+    {R S : Type*} [Semiring R] [IsMulCommutative R] [StrongRankCondition R] [Semiring S] [Algebra R S]
     [Free R S] : Nonempty (R ≃ₐ[R] S) ↔ finrank R S = 1 := by
   rw [← nonempty_linearEquiv_iff_finrank_eq_one]
   exact ⟨fun ⟨e⟩ ↦ ⟨e⟩, fun ⟨e⟩ ↦
@@ -382,8 +382,8 @@ theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
   rcases finrank_le_iff_exists_linearMap.mp h with ⟨_, hi⟩
   exact OrzechProperty.bijective_of_surjective_of_injective _ _ hi hf
 
-variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
-    {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [StrongRankCondition R]
+    {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] [Module.Free R M]
 
 theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
     (d1 : Module.finrank R M = 1) (u : M →ₗ[R] M) :
@@ -420,7 +420,7 @@ end StrongRankCondition
 
 namespace Algebra
 
-instance (priority := 100) (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+instance (priority := 100) (R S : Type*) [Semiring R] [IsMulCommutative R] [StrongRankCondition R] [Semiring S]
     [Algebra R S] [IsQuadraticExtension R S] :
     Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticExtension.finrank_eq_two R S
 

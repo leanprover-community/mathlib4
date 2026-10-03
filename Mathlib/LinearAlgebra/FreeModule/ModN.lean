@@ -17,7 +17,7 @@ If `G` is a rank `d` free `ℤ`-module, then `G/nG` is a finite group of cardina
 
 open Finsupp Function Module
 
-variable {G H M : Type*} [AddCommGroup G] {n : ℕ}
+variable {G H M : Type*} [AddGroup G] [IsAddCommutative G] {n : ℕ}
 
 variable (G n) in
 /-- `ModN G n` denotes the quotient of `G` by multiples of `n` -/
@@ -47,7 +47,7 @@ protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // 
 
 /-- The universal property of `ModN G n` in terms of `ZMod n`-modules: `ZMod n`-linear maps from
 `ModN G n` are the same as monoid homomorphisms from `G` whose values are `n`-torsion. -/
-protected def liftEquiv' [AddCommGroup H] [Module (ZMod n) H] :
+protected def liftEquiv' [AddGroup H] [IsAddCommutative H] [Module (ZMod n) H] :
     (ModN G n →ₗ[ZMod n] H) ≃ {φ : G →+ H // ∀ g, n • φ g = 0} :=
   (AddMonoidHom.toZModLinearMapEquiv n).symm.toEquiv.trans ModN.liftEquiv
 

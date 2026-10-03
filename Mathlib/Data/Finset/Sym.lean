@@ -287,7 +287,7 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σ i : Fin (n + 1), s.
     exacts [rfl, h ∘ mem_sym_iff.1 hm a]
 
 @[to_additive]
-theorem val_prod_eq_prod_count_pow [CommMonoid α] {n : ℕ} {k : Sym α n}
+theorem val_prod_eq_prod_count_pow [Monoid α] [IsMulCommutative α] {n : ℕ} {k : Sym α n}
     {s : Finset α} (hk : k ∈ s.sym n) :
     k.val.prod = ∏ d ∈ s, d ^ Multiset.count d k := by
   rw [Finset.prod_multiset_count_of_subset _ s]

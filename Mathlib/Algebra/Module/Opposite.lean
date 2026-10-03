@@ -37,7 +37,7 @@ namespace MulOpposite
 
 universe u v
 
-variable (R : Type u) {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R : Type u) {M : Type v} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- `MulOpposite.distribMulAction` extends to a `Module` -/
 instance instModule : Module R Mᵐᵒᵖ where

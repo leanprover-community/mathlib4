@@ -21,7 +21,7 @@ namespace Set
 
 section OrderedCommGroup
 
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {a c d : α}
+variable [Group α] [IsMulCommutative α] [PartialOrder α] [IsOrderedMonoid α] {a c d : α}
 
 /-! `inv_mem_Ixx_iff`, `sub_mem_Ixx_iff` -/
 
@@ -46,7 +46,7 @@ end OrderedCommGroup
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] {a b c d : α}
+variable [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] {a b c d : α}
 
 /-! `add_mem_Ixx_iff_left` -/
 
@@ -107,7 +107,7 @@ theorem sub_mem_Ioo_iff_right : a - b ∈ Set.Ioo c d ↔ b ∈ Set.Ioo (a - d) 
 -- I think that symmetric intervals deserve attention and API: they arise all the time,
 -- for instance when considering metric balls in `ℝ`.
 theorem mem_Icc_iff_abs_le {R : Type*}
-    [AddCommGroup R] [LinearOrder R] [IsOrderedAddMonoid R] {x y z : R} :
+    [AddGroup R] [IsAddCommutative R] [LinearOrder R] [IsOrderedAddMonoid R] {x y z : R} :
     |x - y| ≤ z ↔ y ∈ Icc (x - z) (x + z) :=
   abs_le.trans <| and_comm.trans <| and_congr sub_le_comm neg_le_sub_iff_le_add
 
@@ -130,7 +130,7 @@ end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+variable [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
 
 /-- If we remove a smaller interval from a larger, the result is nonempty -/
 theorem nonempty_Ico_sdiff {x dx y dy : α} (h : dy < dx) (hx : 0 < dx) :
@@ -150,7 +150,7 @@ section PairwiseDisjoint
 
 section OrderedCommGroup
 
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] (a b : α)
+variable [Group α] [IsMulCommutative α] [PartialOrder α] [IsOrderedMonoid α] (a b : α)
 
 @[to_additive]
 theorem pairwise_disjoint_Ioc_mul_zpow :

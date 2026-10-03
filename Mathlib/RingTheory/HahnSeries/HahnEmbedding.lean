@@ -29,7 +29,7 @@ public section
 
 open ArchimedeanClass HahnSeries
 
-variable (M : Type*) [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [LinearOrder M] [IsOrderedAddMonoid M]
 
 section Module
 variable [Module ℚ M] [IsOrderedModule ℚ M]

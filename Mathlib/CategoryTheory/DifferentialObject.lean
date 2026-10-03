@@ -248,7 +248,7 @@ end DifferentialObject
 
 namespace DifferentialObject
 
-variable {S : Type*} [AddCommGroupWithOne S] (C : Type u) [Category.{v} C]
+variable {S : Type*} [AddGroupWithOne S] [IsAddCommutative S] (C : Type u) [Category.{v} C]
 variable [HasZeroMorphisms C] [HasShift C S]
 
 noncomputable section

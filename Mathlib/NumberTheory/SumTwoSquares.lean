@@ -48,7 +48,7 @@ section General
 
 /-- The set of sums of two squares is closed under multiplication in any commutative ring.
 See also `sq_add_sq_mul_sq_add_sq`. -/
-theorem sq_add_sq_mul {R} [CommRing R] {a b x y u v : R} (ha : a = x ^ 2 + y ^ 2)
+theorem sq_add_sq_mul {R} [Ring R] [IsMulCommutative R] {a b x y u v : R} (ha : a = x ^ 2 + y ^ 2)
     (hb : b = u ^ 2 + v ^ 2) : ∃ r s : R, a * b = r ^ 2 + s ^ 2 :=
   ⟨x * u - y * v, x * v + y * u, by rw [ha, hb]; ring⟩
 

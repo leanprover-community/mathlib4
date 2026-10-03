@@ -40,11 +40,11 @@ variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
-variable [AddCommMonoid E] [AddCommMonoid F]
+variable [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F]
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid α] [PartialOrder α] [AddCommMonoid β] [PartialOrder β]
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [AddMonoid β] [IsAddCommutative β] [PartialOrder β]
 
 section SMul
 
@@ -506,7 +506,7 @@ end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
+variable [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
 
 section DistribMulAction
 
@@ -545,12 +545,12 @@ theorem StrictConcaveOn.add (hf : StrictConcaveOn 𝕜 s f) (hg : StrictConcaveO
   hf.dual.add hg
 
 theorem StrictConvexOn.add_const {γ : Type*} {f : E → γ}
-    [AddCommMonoid γ] [PartialOrder γ] [IsOrderedCancelAddMonoid γ]
+    [AddMonoid γ] [IsAddCommutative γ] [PartialOrder γ] [IsOrderedCancelAddMonoid γ]
     [Module 𝕜 γ] (hf : StrictConvexOn 𝕜 s f) (b : γ) : StrictConvexOn 𝕜 s (f + fun _ => b) :=
   hf.add_convexOn (convexOn_const _ hf.1)
 
 theorem StrictConcaveOn.add_const {γ : Type*} {f : E → γ}
-    [AddCommMonoid γ] [PartialOrder γ] [IsOrderedCancelAddMonoid γ]
+    [AddMonoid γ] [IsAddCommutative γ] [PartialOrder γ] [IsOrderedCancelAddMonoid γ]
     [Module 𝕜 γ] (hf : StrictConcaveOn 𝕜 s f) (b : γ) : StrictConcaveOn 𝕜 s (f + fun _ => b) :=
   hf.add_concaveOn (concaveOn_const _ hf.1)
 
@@ -603,7 +603,7 @@ end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β]
+variable [AddMonoid β] [IsAddCommutative β] [LinearOrder β] [IsOrderedAddMonoid β]
   [SMul 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E}
   {f g : E → β}
 
@@ -702,7 +702,7 @@ end LinearOrderedAddCommMonoid
 
 section LinearOrderedCancelAddCommMonoid
 
-variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
+variable [AddMonoid β] [IsAddCommutative β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
 
 section PosSMulStrictMono
 
@@ -812,7 +812,7 @@ end LinearOrderedCancelAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β]
+variable [AddGroup β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β]
   {s : Set E} {f g : E → β}
 
 /-- A function `-f` is convex iff `f` is concave. -/
@@ -897,7 +897,7 @@ end AddCommMonoid
 
 section AddCancelCommMonoid
 
-variable [AddCancelCommMonoid E] [AddCommMonoid β] [PartialOrder β] [Module 𝕜 E] [SMul 𝕜 β]
+variable [AddCancelMonoid E] [IsAddCommutative E] [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [Module 𝕜 E] [SMul 𝕜 β]
   {s : Set E}
   {f : E → β}
 
@@ -931,11 +931,11 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [CommSemiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E]
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid β] [PartialOrder β]
+variable [AddMonoid β] [IsAddCommutative β] [PartialOrder β]
 
 section Module
 
@@ -960,11 +960,11 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [Field 𝕜] [LinearOrder 𝕜] [AddCommGroup E] [AddCommGroup F]
+variable [Field 𝕜] [LinearOrder 𝕜] [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F]
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid β] [PartialOrder β]
+variable [AddMonoid β] [IsAddCommutative β] [PartialOrder β]
 
 section Module
 
@@ -992,11 +992,11 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommMonoid E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddMonoid E] [IsAddCommutative E]
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid β] [PartialOrder β]
+variable [AddMonoid β] [IsAddCommutative β] [PartialOrder β]
 
 section SMul
 
@@ -1046,8 +1046,8 @@ end LinearOrderedField
 section OrderIso
 
 variable [Semiring 𝕜] [PartialOrder 𝕜]
-  [AddCommMonoid α] [PartialOrder α] [SMul 𝕜 α]
-  [AddCommMonoid β] [PartialOrder β] [SMul 𝕜 β]
+  [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [SMul 𝕜 α]
+  [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [SMul 𝕜 β]
 
 theorem OrderIso.strictConvexOn_symm (f : α ≃o β) (hf : StrictConcaveOn 𝕜 univ f) :
     StrictConvexOn 𝕜 univ f.symm := by
@@ -1094,8 +1094,8 @@ section LinearOrderedField
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 section OrderedAddCommMonoid
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
-  [AddCommMonoid E] [SMul 𝕜 E] [Module 𝕜 β] [PosSMulMono 𝕜 β]
+variable [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [AddMonoid E] [IsAddCommutative E] [SMul 𝕜 E] [Module 𝕜 β] [PosSMulMono 𝕜 β]
   {f : E → β} {s : Set E} {x y : E}
 
 /-- A strictly convex function admits at most one global minimum. -/
@@ -1118,7 +1118,7 @@ lemma StrictConcaveOn.eq_of_isMaxOn (hf : StrictConcaveOn 𝕜 s f) (hfx : IsMax
 end OrderedAddCommMonoid
 
 section LinearOrderedCancelAddCommMonoid
-variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
+variable [AddMonoid β] [IsAddCommutative β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
   [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
   {x y z : 𝕜} {s : Set 𝕜} {f : 𝕜 → β}
 

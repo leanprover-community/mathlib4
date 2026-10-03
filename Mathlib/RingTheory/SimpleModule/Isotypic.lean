@@ -46,9 +46,9 @@ isotypic component, fully invariant submodule
 
 universe u
 
-variable (R₀ R : Type*) (M : Type u) (N S : Type*) [CommSemiring R₀]
-  [Ring R] [Algebra R₀ R] [AddCommGroup M] [AddCommGroup N]
-  [AddCommGroup S] [Module R M] [Module R N] [Module R S]
+variable (R₀ R : Type*) (M : Type u) (N S : Type*) [Semiring R₀] [IsMulCommutative R₀]
+  [Ring R] [Algebra R₀ R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
+  [AddGroup S] [IsAddCommutative S] [Module R M] [Module R N] [Module R S]
 
 /-- An `R`-module `M` is isotypic of type `S` if all simple submodules of `M` are isomorphic
 to `S`. If `M` is semisimple, it is equivalent to requiring that all simple quotients of `M` are
@@ -324,7 +324,7 @@ theorem LinearMap.le_comap_isotypicComponent (f : M →ₗ[R] N) :
 
 section IsFullyInvariant
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- A submodule `N` an `R`-module `M` is fully invariant if `N` is mapped into itself by all
 `R`-linear endomorphisms of `M`.

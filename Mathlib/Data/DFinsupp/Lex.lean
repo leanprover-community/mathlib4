@@ -264,47 +264,47 @@ section OrderedAddMonoid
 
 variable [LinearOrder ι]
 
-instance Lex.orderBot [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+instance Lex.orderBot [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsBotZeroClass (α i)] :
     OrderBot (Lex (Π₀ i, α i)) where
   bot := 0
   bot_le _ := DFinsupp.toLex_monotone bot_le
 
-instance Lex.isBotZeroClass [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+instance Lex.isBotZeroClass [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsBotZeroClass (α i)] :
     IsBotZeroClass (Lex (Π₀ i, α i)) where
   isBot_zero := isBot_bot
 
-instance Colex.orderBot [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+instance Colex.orderBot [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsBotZeroClass (α i)] :
     OrderBot (Colex (Π₀ i, α i)) where
   bot := 0
   bot_le _ := DFinsupp.toColex_monotone bot_le
 
-instance Colex.isBotZeroClass [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+instance Colex.isBotZeroClass [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsBotZeroClass (α i)] :
     IsBotZeroClass (Colex (Π₀ i, α i)) where
   isBot_zero := isBot_bot
 
-instance Lex.isOrderedCancelAddMonoid [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+instance Lex.isOrderedCancelAddMonoid [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedCancelAddMonoid (α i)] :
     IsOrderedCancelAddMonoid (Lex (Π₀ i, α i)) where
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
 
 set_option backward.isDefEq.respectTransparency false in
-instance Colex.isOrderedCancelAddMonoid [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+instance Colex.isOrderedCancelAddMonoid [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedCancelAddMonoid (α i)] :
     IsOrderedCancelAddMonoid (Colex (Π₀ i, α i)) :=
   Lex.isOrderedCancelAddMonoid (ι := ιᵒᵈ)
 
-instance Lex.isOrderedAddMonoid [∀ i, AddCommGroup (α i)] [∀ i, PartialOrder (α i)]
+instance Lex.isOrderedAddMonoid [∀ i, AddGroup (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedAddMonoid (α i)] :
     IsOrderedAddMonoid (Lex (Π₀ i, α i)) where
   add_le_add_left _ _ := add_le_add_left
 
 set_option backward.isDefEq.respectTransparency false in
-instance Colex.isOrderedAddMonoid [∀ i, AddCommGroup (α i)] [∀ i, PartialOrder (α i)]
+instance Colex.isOrderedAddMonoid [∀ i, AddGroup (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedAddMonoid (α i)] :
     IsOrderedAddMonoid (Colex (Π₀ i, α i)) :=
   Lex.isOrderedAddMonoid (ι := ιᵒᵈ)

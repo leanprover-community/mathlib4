@@ -109,7 +109,7 @@ protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum �
   list_sum_mem
 
 /-- Product of a multiset of elements in a subring of a `CommRing` is in the subring. -/
-protected theorem multiset_prod_mem {R} [CommRing R] (s : Subring R) (m : Multiset R) :
+protected theorem multiset_prod_mem {R} [Ring R] [IsMulCommutative R] (s : Subring R) (m : Multiset R) :
     (∀ a ∈ m, a ∈ s) → m.prod ∈ s :=
   multiset_prod_mem _
 
@@ -121,7 +121,7 @@ protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R)
 
 /-- Product of elements of a subring of a `CommRing` indexed by a `Finset` is in the
 subring. -/
-protected theorem prod_mem {R : Type*} [CommRing R] (s : Subring R) {ι : Type*} {t : Finset ι}
+protected theorem prod_mem {R : Type*} [Ring R] [IsMulCommutative R] (s : Subring R) {ι : Type*} {t : Finset ι}
     {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i ∈ t, f i) ∈ s :=
   prod_mem h
 
@@ -390,7 +390,7 @@ theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
   SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
-theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
+theorem center_eq_top (R) [Ring R] [IsMulCommutative R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 /-- The center is commutative. -/
@@ -1113,7 +1113,7 @@ example {R} [Ring R] [Zero α] [MulActionWithZero R α] (S : Subring R) :
     MulActionWithZero S α := by infer_instance
 
 /-- The action by a subring is the action by the underlying ring. -/
-example {R} [Ring R] [AddCommMonoid α] [Module R α] (S : Subring R) :
+example {R} [Ring R] [AddMonoid α] [IsAddCommutative α] [Module R α] (S : Subring R) :
     Module S α := by infer_instance
 
 /-- The action by a subsemiring is the action by the underlying ring. -/

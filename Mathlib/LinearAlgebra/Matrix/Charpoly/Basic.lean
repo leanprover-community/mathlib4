@@ -36,7 +36,7 @@ namespace Matrix
 
 open Finset Matrix Polynomial
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 variable {m n : Type*} [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n]
 variable (M₁₁ : Matrix m m R) (M₁₂ : Matrix m n R) (M₂₁ : Matrix n m R) (M₂₂ M : Matrix n n R)
 variable (i j : n)
@@ -302,7 +302,7 @@ end Matrix
 open Matrix Polynomial in
 /-- Cayley–Hamilton: an algebra element is a root of the characteristic polynomial of its
 matrix of left multiplication in any basis. -/
-theorem Algebra.aeval_charpoly_leftMulMatrix {R S : Type*} [CommRing R] [Semiring S] [Algebra R S]
+theorem Algebra.aeval_charpoly_leftMulMatrix {R S : Type*} [Ring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
     {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R S) (a : S) :
     aeval a (leftMulMatrix b a).charpoly = 0 := by
   apply leftMulMatrix_injective b

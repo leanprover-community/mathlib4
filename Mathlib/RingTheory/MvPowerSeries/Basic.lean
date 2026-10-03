@@ -104,19 +104,19 @@ instance [AddMonoid R] : AddMonoid (MvPowerSeries σ R) :=
 instance [AddGroup R] : AddGroup (MvPowerSeries σ R) :=
   inferInstanceAs <| AddGroup ((σ →₀ ℕ) → R)
 
-instance [AddCommMonoid R] : AddCommMonoid (MvPowerSeries σ R) :=
+instance [AddMonoid R] [IsAddCommutative R] : AddCommMonoid (MvPowerSeries σ R) :=
   inferInstanceAs <| AddCommMonoid ((σ →₀ ℕ) → R)
 
-instance [AddCommGroup R] : AddCommGroup (MvPowerSeries σ R) :=
+instance [AddGroup R] [IsAddCommutative R] : AddCommGroup (MvPowerSeries σ R) :=
   inferInstanceAs <| AddCommGroup ((σ →₀ ℕ) → R)
 
 instance [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
   inferInstanceAs <| Nontrivial ((σ →₀ ℕ) → R)
 
-instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R (MvPowerSeries σ A) :=
+instance {A} [Semiring R] [AddMonoid A] [IsAddCommutative A] [Module R A] : Module R (MvPowerSeries σ A) :=
   inferInstanceAs <| Module R ((σ →₀ ℕ) → A)
 
-instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
+instance {A S} [Semiring R] [Semiring S] [AddMonoid A] [IsAddCommutative A] [Module R A] [Module S A] [SMul R S]
     [IsScalarTower R S A] : IsScalarTower R S (MvPowerSeries σ A) :=
   inferInstanceAs <| IsScalarTower R S ((σ →₀ ℕ) → A)
 
@@ -301,7 +301,7 @@ instance : Semiring (MvPowerSeries σ R) where
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) where
+instance [Semiring R] [IsMulCommutative R] : CommSemiring (MvPowerSeries σ R) where
   mul_comm := fun φ ψ =>
     ext fun n => by
       classical
@@ -310,7 +310,7 @@ instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) where
 
 instance [Ring R] : Ring (MvPowerSeries σ R) where
 
-instance [CommRing R] : CommRing (MvPowerSeries σ R) where
+instance [Ring R] [IsMulCommutative R] : CommRing (MvPowerSeries σ R) where
 
 section Semiring
 
@@ -561,7 +561,7 @@ theorem map_C (a : R) : map (σ := σ) f (C a) = C (f a) :=
 theorem map_X (s : σ) : map f (X s) = X s := by simp [MvPowerSeries.X]
 
 @[simp]
-theorem map_map {S₁ S₂ : Type*} [CommSemiring S₁] [CommSemiring S₂]
+theorem map_map {S₁ S₂ : Type*} [Semiring S₁] [IsMulCommutative S₁] [Semiring S₂] [IsMulCommutative S₂]
     (f : R →+* S₁) (g : S₁ →+* S₂) (p : MvPowerSeries σ R) :
     map g (map f p) = map (g.comp f) p := by
   ext n
@@ -668,7 +668,7 @@ section CommSemiring
 
 open Finset.HasAntidiagonal Finset
 
-variable {R : Type*} [CommSemiring R] {ι : Type*}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {ι : Type*}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Coefficients of a product of power series -/
@@ -771,7 +771,7 @@ end CommSemiring
 
 section Algebra
 
-variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
   {B : Type*} [Semiring B] [Algebra R B]
 
 instance : Algebra R (MvPowerSeries σ A) where
@@ -824,7 +824,7 @@ namespace MvPolynomial
 
 open Finsupp
 
-variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
+variable {σ : Type*} {R : Type*} [Semiring R] [IsMulCommutative R] (φ ψ : MvPolynomial σ R)
 
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 @[coe]
@@ -947,7 +947,7 @@ theorem _root_.MvPowerSeries.monomial_mapDomain_apply_one {τ : Type*} (d : σ �
 
 section Algebra
 
-variable (A : Type*) [CommSemiring A] [Algebra R A]
+variable (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 /-- The coercion from multivariate polynomials to multivariate power series
 as an algebra homomorphism.
@@ -962,7 +962,7 @@ theorem coeToMvPowerSeries.algHom_apply :
   rfl
 
 theorem _root_.MvPowerSeries.prod_smul_X_eq_smul_monomial_one
-    {A : Type*} [CommSemiring A] [Algebra A R] (e : σ →₀ ℕ) (a : σ → A) :
+    {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra A R] (e : σ →₀ ℕ) (a : σ → A) :
     e.prod (fun s n ↦ ((a s • MvPowerSeries.X s) ^ n))
       = (e.prod fun s n ↦ (a s) ^ n) • MvPowerSeries.monomial (R := R) e 1 := by
   rw [Finsupp.prod_congr
@@ -981,7 +981,7 @@ theorem _root_.MvPowerSeries.monomial_eq (e : σ →₀ ℕ) (r : σ → R) :
   rw [MvPowerSeries.prod_smul_X_eq_smul_monomial_one, ← map_smul, smul_eq_mul, mul_one]
 
 theorem _root_.MvPowerSeries.monomial_smul_const
-    {σ : Type*} {R : Type*} [CommSemiring R]
+    {σ : Type*} {R : Type*} [Semiring R] [IsMulCommutative R]
     (e : σ →₀ ℕ) (r : R) :
     MvPowerSeries.monomial e (r ^ (e.sum fun _ n => n))
       = (e.prod fun s e => (r • MvPowerSeries.X s) ^ e) := by
@@ -994,7 +994,7 @@ end MvPolynomial
 
 namespace MvPowerSeries
 
-variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : MvPowerSeries σ R)
+variable {σ R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A] (f : MvPowerSeries σ R)
 
 instance algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPowerSeries σ A) :=
   RingHom.toAlgebra (MvPolynomial.coeToMvPowerSeries.algHom A).toRingHom

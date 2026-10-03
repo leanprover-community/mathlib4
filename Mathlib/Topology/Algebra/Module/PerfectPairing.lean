@@ -33,8 +33,8 @@ open Function
 
 namespace LinearMap
 variable {R M N : Type*}
-  [CommRing R] [TopologicalSpace R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
-  [AddCommGroup N] [Module R N] [TopologicalSpace N] (p : M →ₗ[R] N →ₗ[R] R) {x : M} {y : N}
+  [Ring R] [IsMulCommutative R] [TopologicalSpace R] [AddGroup M] [IsAddCommutative M] [Module R M] [TopologicalSpace M]
+  [AddGroup N] [IsAddCommutative N] [Module R N] [TopologicalSpace N] (p : M →ₗ[R] N →ₗ[R] R) {x : M} {y : N}
 
 /-- For a topological ring `R` and two topological modules `M` and `N`, a continuous perfect pairing
 is a continuous bilinear map `M × N → R` that is bijective in both arguments.

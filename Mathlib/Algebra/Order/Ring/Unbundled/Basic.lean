@@ -672,7 +672,7 @@ end LinearOrderedSemiring
 
 section LinearOrderedCommSemiring
 
-variable [CommSemiring R] [LinearOrder R] {a d : R}
+variable [Semiring R] [IsMulCommutative R] [LinearOrder R] {a d : R}
 
 lemma max_mul_mul_le_max_mul_max [PosMulMono R] [MulPosMono R] (b c : R) (ha : 0 ≤ a) (hd : 0 ≤ d) :
     max (a * b) (d * c) ≤ max a c * max d b :=

@@ -23,7 +23,7 @@ namespace Pi.Lex
 variable {ι : Type*} {α : ι → Type*} [LinearOrder ι]
 
 @[to_additive]
-instance isOrderedCancelMonoid [∀ i, CommMonoid (α i)] [∀ i, PartialOrder (α i)]
+instance isOrderedCancelMonoid [∀ i, Monoid (α i)] [∀ i, IsMulCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedCancelMonoid (α i)] :
     IsOrderedCancelMonoid (Lex (∀ i, α i)) where
   mul_le_mul_left _ _ hxy z :=

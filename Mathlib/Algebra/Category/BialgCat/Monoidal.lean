@@ -30,7 +30,7 @@ universe u
 namespace BialgCat
 open CategoryTheory TensorProduct
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 @[simps]
 noncomputable instance instMonoidalCategoryStruct :

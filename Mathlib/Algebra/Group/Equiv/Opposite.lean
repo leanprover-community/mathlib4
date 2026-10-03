@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Group.Opposite
 variable {M α : Type*}
 
 namespace MulOpposite
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 /-- `MulOpposite.op` on a commutative monoid is an isomorphism. -/
 @[to_additive (attr := simps!)

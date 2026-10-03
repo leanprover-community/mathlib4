@@ -96,7 +96,7 @@ namespace WittVector
 
 universe u
 
-variable {p : ℕ} {R S : Type u} {idx : Type*} [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type u} {idx : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -147,10 +147,10 @@ The `ghost_calc` tactic makes use of the `IsPoly` and `IsPoly₂` typeclass and 
 because typeclass resolution did not play well with function composition.
 This no longer seems to be an issue, so that such instances can be defined directly.)
 -/
-class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop where mk' ::
+class IsPoly (f : ∀ ⦃R⦄ [Ring R] [IsMulCommutative R], WittVector p R → 𝕎 R) : Prop where mk' ::
   poly :
     ∃ φ : ℕ → MvPolynomial ℕ ℤ,
-      ∀ ⦃R⦄ [CommRing R] (x : 𝕎 R), (f x).coeff = fun n => aeval x.coeff (φ n)
+      ∀ ⦃R⦄ [Ring R] [IsMulCommutative R] (x : 𝕎 R), (f x).coeff = fun n => aeval x.coeff (φ n)
 
 /-- The identity function on Witt vectors is a polynomial function. -/
 instance idIsPoly : IsPoly p fun _ _ => id :=
@@ -167,9 +167,9 @@ instance : Inhabited (IsPoly p fun _ _ => id) :=
 variable {p}
 
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
-    (h : ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R) (n : ℕ),
+    (h : ∀ (R : Type u) [_Rcr : Ring R] [IsMulCommutative R] (x : 𝕎 R) (n : ℕ),
         ghostComponent n (f x) = ghostComponent n (g x)) :
-    ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R), f x = g x := by
+    ∀ (R : Type u) [_Rcr : Ring R] [IsMulCommutative R] (x : 𝕎 R), f x = g x := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   intros
@@ -213,10 +213,10 @@ The `ghost_calc` tactic makes use of the `IsPoly` and `IsPoly₂` typeclass and 
 because typeclass resolution did not play well with function composition.
 This no longer seems to be an issue, so that such instances can be defined directly.)
 -/
-class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → 𝕎 R) : Prop where mk' ::
+class IsPoly₂ (f : ∀ ⦃R⦄ [Ring R] [IsMulCommutative R], WittVector p R → 𝕎 R → 𝕎 R) : Prop where mk' ::
   poly :
     ∃ φ : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ,
-      ∀ ⦃R⦄ [CommRing R] (x y : 𝕎 R), (f x y).coeff = fun n => peval (φ n) ![x.coeff, y.coeff]
+      ∀ ⦃R⦄ [Ring R] [IsMulCommutative R] (x y : 𝕎 R), (f x y).coeff = fun n => peval (φ n) ![x.coeff, y.coeff]
 
 variable {p}
 
@@ -327,9 +327,9 @@ instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
   ⟨addIsPoly₂⟩
 
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
-    (h : ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R) (n : ℕ),
+    (h : ∀ (R : Type u) [_Rcr : Ring R] [IsMulCommutative R] (x y : 𝕎 R) (n : ℕ),
         ghostComponent n (f x y) = ghostComponent n (g x y)) :
-    ∀ (R) [_Rcr : CommRing R] (x y : 𝕎 R), f x y = g x y := by
+    ∀ (R) [_Rcr : Ring R] [IsMulCommutative R] (x y : 𝕎 R), f x y = g x y := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   intros

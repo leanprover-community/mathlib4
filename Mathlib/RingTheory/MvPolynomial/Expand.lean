@@ -19,7 +19,7 @@ public section
 
 namespace MvPolynomial
 
-variable {σ R : Type*} [CommSemiring R] (p : ℕ) [ExpChar R p]
+variable {σ R : Type*} [Semiring R] [IsMulCommutative R] (p : ℕ) [ExpChar R p]
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem map_frobenius_expand {f : MvPolynomial σ R} :

@@ -35,12 +35,12 @@ open LinearMap
 
 attribute [local ext] TensorProduct.ext
 
-variable (R : Type u) [CommSemiring R] (S) [Semiring S] [Algebra R S]
+variable (R : Type u) [Semiring R] [IsMulCommutative R] (S) [Semiring S] [Algebra R S]
 variable {ι₁ : Type v₁} {ι₂ : Type v₂}
 variable [DecidableEq ι₁] [DecidableEq ι₂]
 variable (M₁ : ι₁ → Type w₁) (M₁' : Type w₁') (M₂ : ι₂ → Type w₂) (M₂' : Type w₂')
-variable [∀ i₁, AddCommMonoid (M₁ i₁)] [AddCommMonoid M₁']
-variable [∀ i₂, AddCommMonoid (M₂ i₂)] [AddCommMonoid M₂']
+variable [∀ i₁, AddMonoid (M₁ i₁)] [∀ i₁, IsAddCommutative (M₁ i₁)] [AddMonoid M₁'] [IsAddCommutative M₁']
+variable [∀ i₂, AddMonoid (M₂ i₂)] [∀ i₂, IsAddCommutative (M₂ i₂)] [AddMonoid M₂'] [IsAddCommutative M₂']
 variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (M₂ i₂)] [Module R M₂']
 variable [∀ i₁, Module S (M₁ i₁)] [∀ i₁, IsScalarTower R S (M₁ i₁)]
 variable [Module S M₁'] [IsScalarTower R S M₁']
@@ -155,7 +155,7 @@ lemma directSumRight_tmul (m : M₁') (n : ⨁ i, M₂ i) (i : ι₂) :
   · subst hj; simp
   · simp [DirectSum.component.of, hj]
 
-variable (S₀ : Type*) [CommSemiring S₀] [Algebra R S₀] [Algebra S₀ S]
+variable (S₀ : Type*) [Semiring S₀] [IsMulCommutative S₀] [Algebra R S₀] [Algebra S₀ S]
   [Module S₀ M₁'] [IsScalarTower R S₀ M₁'] [IsScalarTower S₀ S M₁']
 
 lemma restrictScalar_directSumRight :

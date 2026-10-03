@@ -63,8 +63,8 @@ namespace Algebra
 -- order does not affect performance
 universe w₁ w₂ w₃ w₄ w₅ u₁ u₂ u₃
 
-variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] [Algebra R S]
-variable {T : Type u₃} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {R : Type u₁} {S : Type u₂} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+variable {T : Type u₃} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable {ι : Type w₁} {ι' : Type w₃} {σ : Type w₂} {σ' : Type w₄} {τ : Type w₅}
 variable (Q : Generators S T ι) (P : Generators R S σ)
 variable (Q' : Generators S T ι') (P' : Generators R S σ') (W : Generators R T τ)
@@ -528,7 +528,7 @@ end H1Cotangent
 
 end Generators
 
-variable {T : Type u₃} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T : Type u₃} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 variable (R S T)
 

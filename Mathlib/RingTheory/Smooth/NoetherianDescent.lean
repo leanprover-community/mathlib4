@@ -24,8 +24,8 @@ open TensorProduct MvPolynomial
 
 namespace Algebra.Smooth
 
-variable {R : Type*} [CommRing R]
-variable {A : Type u} {B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra A B]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {A : Type u} {B : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [Ring B] [IsMulCommutative B] [Algebra A B]
 
 variable (A B) in
 /-- (Implementation detail): If `S` is an `R`-algebra with presentation `P`

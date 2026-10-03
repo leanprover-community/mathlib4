@@ -49,7 +49,7 @@ instance. Then it is now possible to define generic lemmas as follows:
 ```
 section FunLike
 
-variable {F α β : Type*} [CommMonoid β] [CommMonoid F]
+variable {F α β : Type*} [Monoid β] [IsMulCommutative β] [Monoid F] [IsMulCommutative F]
   [FunLike F α β] [IsOneApply F α β] [IsMulApply F α β]
 
 open Classical in

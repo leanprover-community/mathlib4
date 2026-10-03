@@ -231,14 +231,14 @@ end MonCat
 structure AddCommMonCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
-  [str : AddCommMonoid carrier]
+  [str : AddMonoid carrier] [IsAddCommutative carrier]
 
 /-- The category of commutative monoids and monoid morphisms. -/
 @[to_additive AddCommMonCat]
 structure CommMonCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
-  [str : CommMonoid carrier]
+  [str : Monoid carrier] [IsMulCommutative carrier]
 
 attribute [instance] AddCommMonCat.str CommMonCat.str
 
@@ -255,7 +255,7 @@ attribute [coe] AddCommMonCat.carrier CommMonCat.carrier
 
 /-- Construct a bundled `CommMonCat` from the underlying type and typeclass. -/
 @[to_additive /-- Construct a bundled `AddCommMonCat` from the underlying type and typeclass. -/]
-abbrev of (M : Type u) [CommMonoid M] : CommMonCat := ⟨M⟩
+abbrev of (M : Type u) [Monoid M] [IsMulCommutative M] : CommMonCat := ⟨M⟩
 
 end CommMonCat
 
@@ -307,7 +307,7 @@ abbrev Hom.hom {X Y : CommMonCat.{u}} (f : Hom X Y) :=
 
 /-- Typecheck a `MonoidHom` as a morphism in `CommMonCat`. -/
 @[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommMonCat`. -/]
-abbrev ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y :=
+abbrev ofHom {X Y : Type u} [Monoid X] [IsMulCommutative X] [Monoid Y] [IsMulCommutative Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := CommMonCat) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
@@ -354,23 +354,23 @@ lemma hom_ext {M N : CommMonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [CommMonoid M] [CommMonoid N] (f : M →* N) : (ofHom f).hom = f := rfl
+lemma hom_ofHom {M N : Type u} [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] (f : M →* N) : (ofHom f).hom = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {M N : CommMonCat} (f : M ⟶ N) :
     ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
-lemma ofHom_id {M : Type u} [CommMonoid M] : ofHom (MonoidHom.id M) = 𝟙 (of M) := rfl
+lemma ofHom_id {M : Type u} [Monoid M] [IsMulCommutative M] : ofHom (MonoidHom.id M) = 𝟙 (of M) := rfl
 
 @[to_additive (attr := simp)]
-lemma ofHom_comp {M N P : Type u} [CommMonoid M] [CommMonoid N] [CommMonoid P]
+lemma ofHom_comp {M N P : Type u} [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] [Monoid P] [IsMulCommutative P]
     (f : M →* N) (g : N →* P) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
 @[to_additive]
-lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
+lemma ofHom_apply {X Y : Type u} [Monoid X] [IsMulCommutative X] [Monoid Y] [IsMulCommutative Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
 @[to_additive]
@@ -387,7 +387,7 @@ instance : Inhabited CommMonCat :=
   ⟨@of PUnit (@CommGroup.toCommMonoid _ PUnit.commGroup)⟩
 
 @[to_additive]
-theorem coe_of (R : Type u) [CommMonoid R] : (CommMonCat.of R : Type u) = R :=
+theorem coe_of (R : Type u) [Monoid R] [IsMulCommutative R] : (CommMonCat.of R : Type u) = R :=
   rfl
 
 @[to_additive hasForgetToAddMonCat]
@@ -403,7 +403,7 @@ instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat where
     (f : X ⟶ Y) :
     ((forget₂ CommMonCat MonCat).map f).hom = f.hom := rfl
 
-@[to_additive (attr := simp)] lemma forget₂_map_ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y]
+@[to_additive (attr := simp)] lemma forget₂_map_ofHom {X Y : Type u} [Monoid X] [IsMulCommutative X] [Monoid Y] [IsMulCommutative Y]
     (f : X →* Y) :
     (forget₂ CommMonCat MonCat).map (ofHom f) = MonCat.ofHom f := rfl
 
@@ -450,7 +450,7 @@ end
 
 section
 
-variable [CommMonoid X] [CommMonoid Y]
+variable [Monoid X] [IsMulCommutative X] [Monoid Y] [IsMulCommutative Y]
 
 /-- Build an isomorphism in the category `CommMonCat` from a `MulEquiv` between `CommMonoid`s. -/
 @[to_additive (attr := simps) AddEquiv.toAddCommMonCatIso]
@@ -496,7 +496,7 @@ add_decl_doc addEquivIsoAddMonCatIso
 /-- multiplicative equivalences between `CommMonoid`s are the same as (isomorphic to) isomorphisms
 in `CommMonCat` -/
 @[to_additive addEquivIsoAddCommMonCatIso]
-def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
+def mulEquivIsoCommMonCatIso {X Y : Type u} [Monoid X] [IsMulCommutative X] [Monoid Y] [IsMulCommutative Y] :
     (X ≃* Y) ≅ (CommMonCat.of X ≅ CommMonCat.of Y) where
   hom := ↾fun e ↦ e.toCommMonCatIso
   inv := ↾fun i ↦ i.commMonCatIsoToMulEquiv

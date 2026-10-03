@@ -56,7 +56,7 @@ noncomputable def equivSmallSheafificationIso
     (sheafificationAdjunction _ _)).comp (equivSmall C).toAdjunction)).symm <|
   NatIso.ofComponents (fun X ↦ ((equivSmallModel LightProfinite).op.invFunIdAssoc _).symm)
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] LightCondensed.forget in

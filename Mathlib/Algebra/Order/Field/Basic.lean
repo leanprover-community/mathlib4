@@ -653,7 +653,7 @@ lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
 
   -- surely there is an easier proof of this, or we already have something like it somewhere.
   -- It doesn't even need `α` to be a field, so it doesn't belong in this file.
-theorem mul_self_inj_of_nonneg {α : Type*} [CommRing α] [NoZeroDivisors α] [PartialOrder α]
+theorem mul_self_inj_of_nonneg {α : Type*} [Ring α] [IsMulCommutative α] [NoZeroDivisors α] [PartialOrder α]
     [IsStrictOrderedRing α] {a b : α} (a0 : 0 ≤ a) (b0 : 0 ≤ b) :
     a * a = b * b ↔ a = b := by
   have := fun h ↦ le_antisymm (neg_nonneg.mp h) b0

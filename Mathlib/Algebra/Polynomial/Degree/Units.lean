@@ -73,7 +73,7 @@ theorem coeff_coe_units_zero_ne_zero [Nontrivial R] (u : R[X]ˣ) : coeff (u : R[
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] {a p : R[X]} (hp : p.Monic)
+variable [Semiring R] [IsMulCommutative R] {a p : R[X]} (hp : p.Monic)
 include hp
 
 lemma Monic.C_dvd_iff_isUnit {a : R} : C a ∣ p ↔ IsUnit a where

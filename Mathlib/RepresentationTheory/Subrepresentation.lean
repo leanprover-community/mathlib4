@@ -21,8 +21,8 @@ open scoped MonoidAlgebra
 
 variable {A G W M : Type*}
 
-variable [Semiring A] [Monoid G] [AddCommMonoid W] [Module A W]
-  (ρ : Representation A G W) [AddCommMonoid M] [Module A[G] M] in
+variable [Semiring A] [Monoid G] [AddMonoid W] [IsAddCommutative W] [Module A W]
+  (ρ : Representation A G W) [AddMonoid M] [IsAddCommutative M] [Module A[G] M] in
 /-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W`
 which is stable under the `G`-action.
 -/
@@ -36,8 +36,8 @@ namespace Subrepresentation
 
 section non_comm
 
-variable [Semiring A] [Monoid G] [AddCommMonoid W] [Module A W] {ρ : Representation A G W}
-  [AddCommMonoid M] [Module A[G] M]
+variable [Semiring A] [Monoid G] [AddMonoid W] [IsAddCommutative W] [Module A W] {ρ : Representation A G W}
+  [AddMonoid M] [IsAddCommutative M] [Module A[G] M]
 
 lemma toSubmodule_injective :
     Function.Injective (toSubmodule : Subrepresentation ρ → Submodule A W) := by
@@ -108,7 +108,7 @@ end non_comm
 
 section quotient
 
-variable {A G W : Type*} [Ring A] [Monoid G] [AddCommGroup W] [Module A W]
+variable {A G W : Type*} [Ring A] [Monoid G] [AddGroup W] [IsAddCommutative W] [Module A W]
 
 /-- The quotient representation associated to a subrepresentation. -/
 def quotient {ρ : Representation A G W} (ρ' : Subrepresentation ρ) :
@@ -122,8 +122,8 @@ lemma quotient_apply_mk {ρ : Representation A G W} (ρ' : Subrepresentation ρ)
 
 end quotient
 
-variable [CommSemiring A] [Monoid G] [AddCommMonoid W] [Module A W]
-  {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
+variable [Semiring A] [IsMulCommutative A] [Monoid G] [AddMonoid W] [IsAddCommutative W] [Module A W]
+  {ρ : Representation A G W} [AddMonoid M] [IsAddCommutative M] [Module A[G] M]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A subrepresentation of `ρ` can be thought of as an `A[G]` submodule of `ρ.asModule`.

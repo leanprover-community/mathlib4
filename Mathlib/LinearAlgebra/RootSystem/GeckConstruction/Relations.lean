@@ -34,8 +34,8 @@ namespace RootPairing.GeckConstruction
 open Function Module.End
 open Set hiding diagonal
 
-variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Finite ι] [Ring R] [IsMulCommutative R] [IsDomain R] [CharZero R]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   {P : RootPairing ι R M N} [P.IsCrystallographic] {b : P.Base} [Fintype ι]
   (i j : b.support)
 

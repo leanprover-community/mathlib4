@@ -22,8 +22,8 @@ universe u v
 
 namespace Algebra.FormallySmooth
 
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-  {S : Type*} [CommRing S] [Algebra R S] (I : Ideal S) (f : A →ₐ[R] S ⧸ I)
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
+  {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] (I : Ideal S) (f : A →ₐ[R] S ⧸ I)
 
 open RingHom
 

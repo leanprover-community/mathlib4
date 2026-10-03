@@ -63,7 +63,7 @@ open LinearMap
 
 section
 
-variable (n : Type u) [DecidableEq n] [Fintype n] (R : Type v) [CommRing R]
+variable (n : Type u) [DecidableEq n] [Fintype n] (R : Type v) [Ring R] [IsMulCommutative R]
 
 /-- `SpecialLinearGroup n R` is the group of `n` by `n` `R`-matrices with determinant equal to 1.
 -/
@@ -77,7 +77,7 @@ scoped[MatrixGroups] notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (F
 
 namespace SpecialLinearGroup
 
-variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
+variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [Ring R] [IsMulCommutative R]
 
 /-- If `R` and `n` have decidable equality then so does `SL(n, R)`. -/
 instance [DecidableEq R] : DecidableEq (SpecialLinearGroup n R) := Subtype.instDecidableEq
@@ -217,7 +217,7 @@ theorem toLin'_injective :
     Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
   Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
 
-variable {S : Type*} [CommRing S]
+variable {S : Type*} [Ring S] [IsMulCommutative S]
 
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from
 `SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
@@ -427,7 +427,7 @@ open Matrix SpecialLinearGroup
 
 open scoped MatrixGroups
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
 entries as its left or right column. -/
@@ -471,7 +471,7 @@ namespace Matrix
 
 section Action
 
-variable {F : Type*} [CommRing F] {ι : Type*} [DecidableEq ι] [Fintype ι]
+variable {F : Type*} [Ring F] [IsMulCommutative F] {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 instance : DistribMulAction (Matrix.SpecialLinearGroup ι F) (ι → F) where
   smul m v := m.1 • v
@@ -491,7 +491,7 @@ end Action
 
 section transvection
 
-variable {ι F : Type*} [DecidableEq ι] [Fintype ι] [CommRing F]
+variable {ι F : Type*} [DecidableEq ι] [Fintype ι] [Ring F] [IsMulCommutative F]
 
 /-- The transvection `1 + b · E_{i,j}` (the identity plus `b` in position `(i, j)`)
 as an element of `SL ι F`, when `i ≠ j`. -/
@@ -635,7 +635,7 @@ lemma diag2_inv (a : F) (ha : a ≠ 0) :
 
 section induction
 
-variable {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R]
+variable {ι R : Type*} [Fintype ι] [DecidableEq ι] [Ring R] [IsMulCommutative R]
 
 /-- the coercion to `Matrix ι ι R` as a monoid homomorphism -/
 def coeMonoidHom : SpecialLinearGroup ι R →* Matrix ι ι R where

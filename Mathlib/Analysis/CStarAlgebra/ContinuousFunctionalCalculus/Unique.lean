@@ -394,8 +394,8 @@ section NonUnitalStarAlgHom
 open scoped ContinuousMapZero NonUnitalContinuousFunctionalCalculus
 
 variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
-  [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
-  [ContinuousStar R] [CommRing S] [Algebra R S]
+  [Semiring R] [IsMulCommutative R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
+  [ContinuousStar R] [Ring S] [IsMulCommutative S] [Algebra R S]
   [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [Module R A]
   [IsScalarTower R A A] [SMulCommClass R A A]
   [NonUnitalRing B] [StarRing B] [TopologicalSpace B] [Module R B]
@@ -448,10 +448,10 @@ section StarAlgHom
 open scoped ContinuousFunctionalCalculus
 
 variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
-  [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+  [Semiring R] [IsMulCommutative R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
   [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A]
   [Ring B] [StarRing B] [TopologicalSpace B] [Algebra R B]
-  [CommSemiring S] [Algebra R S] [Algebra S A] [Algebra S B] [IsScalarTower R S A]
+  [Semiring S] [IsMulCommutative S] [Algebra R S] [Algebra S A] [Algebra S B] [IsScalarTower R S A]
   [IsScalarTower R S B] [ContinuousFunctionalCalculus R A p] [ContinuousFunctionalCalculus R B q]
   [ContinuousMap.UniqueHom R B] [FunLike F A B] [AlgHomClass F S A B]
   [StarHomClass F A B]

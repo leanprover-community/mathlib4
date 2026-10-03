@@ -66,7 +66,7 @@ instance monoidWithZero [∀ i, MonoidWithZero (α i)] : MonoidWithZero (∀ i, 
   __ := monoid
   __ := mulZeroClass
 
-instance commMonoidWithZero [∀ i, CommMonoidWithZero (α i)] : CommMonoidWithZero (∀ i, α i) where
+instance commMonoidWithZero [∀ i, MonoidWithZero (α i)] [∀ i, IsMulCommutative (α i)] : CommMonoidWithZero (∀ i, α i) where
   __ := monoidWithZero
   __ := commMonoid
 

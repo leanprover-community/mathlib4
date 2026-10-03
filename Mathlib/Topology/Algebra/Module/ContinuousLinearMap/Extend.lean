@@ -16,9 +16,9 @@ subspace to the entire space.
   `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map that is `IsUniformInducing`. -/
 
 namespace ContinuousLinearMap
-variable {𝕜 𝕜₂ E F Eₗ : Type*} [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E]
-  [AddCommGroup F] [UniformSpace F] [IsUniformAddGroup F] [T0Space F]
-  [AddCommMonoid Eₗ] [UniformSpace Eₗ] [ContinuousAdd Eₗ]
+variable {𝕜 𝕜₂ E F Eₗ : Type*} [AddGroup E] [IsAddCommutative E] [UniformSpace E] [IsUniformAddGroup E]
+  [AddGroup F] [IsAddCommutative F] [UniformSpace F] [IsUniformAddGroup F] [T0Space F]
+  [AddMonoid Eₗ] [IsAddCommutative Eₗ] [UniformSpace Eₗ] [ContinuousAdd Eₗ]
   [Semiring 𝕜] [Semiring 𝕜₂] [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
   [ContinuousConstSMul 𝕜 Eₗ] [ContinuousConstSMul 𝕜₂ F]
   {σ₁₂ : 𝕜 →+* 𝕜₂} (f : E →SL[σ₁₂] F) [CompleteSpace F] (e : E →L[𝕜] Eₗ)

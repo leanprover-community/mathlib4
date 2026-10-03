@@ -37,8 +37,8 @@ namespace VectorMeasure
 section
 
 variable {L M N : Type*}
-variable [AddCommMonoid L] [TopologicalSpace L] [AddCommMonoid M] [TopologicalSpace M]
-  [AddCommMonoid N] [TopologicalSpace N]
+variable [AddMonoid L] [IsAddCommutative L] [TopologicalSpace L] [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
+  [AddMonoid N] [IsAddCommutative N] [TopologicalSpace N]
 
 /-- A vector measure `v` is absolutely continuous with respect to a measure `μ` if for all sets
 `s`, `μ s = 0`, we have `v s = 0`. -/
@@ -75,12 +75,12 @@ theorem trans {u : VectorMeasure α L} {v : VectorMeasure α M} {w : VectorMeasu
 theorem zero (v : VectorMeasure α N) : (0 : VectorMeasure α M) ≪ᵥ v :=
   fun s _ => zero_apply s
 
-theorem neg_left {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+theorem neg_left {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [IsTopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ≪ᵥ w) : -v ≪ᵥ w := by
   intro s hs
   rw [neg_apply, h hs, neg_zero]
 
-theorem neg_right {N : Type*} [AddCommGroup N] [TopologicalSpace N] [IsTopologicalAddGroup N]
+theorem neg_right {N : Type*} [AddGroup N] [IsAddCommutative N] [TopologicalSpace N] [IsTopologicalAddGroup N]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ≪ᵥ w) : v ≪ᵥ -w := by
   intro s hs
   rw [neg_apply, neg_eq_zero] at hs
@@ -91,7 +91,7 @@ theorem add [ContinuousAdd M] {v₁ v₂ : VectorMeasure α M} {w : VectorMeasur
   intro s hs
   rw [_root_.add_apply, hv₁ hs, hv₂ hs, zero_add]
 
-theorem sub {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+theorem sub {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [IsTopologicalAddGroup M]
     {v₁ v₂ : VectorMeasure α M} {w : VectorMeasure α N} (hv₁ : v₁ ≪ᵥ w) (hv₂ : v₂ ≪ᵥ w) :
     v₁ - v₂ ≪ᵥ w := by
   intro s hs
@@ -190,24 +190,24 @@ theorem smul_left {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousCon
     (h : v ⟂ᵥ w) : r • v ⟂ᵥ w :=
   (smul_right r h.symm).symm
 
-theorem neg_left {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+theorem neg_left {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [IsTopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ⟂ᵥ w) : -v ⟂ᵥ w := by
   obtain ⟨u, hmu, hu₁, hu₂⟩ := h
   refine ⟨u, hmu, fun s hs => ?_, hu₂⟩
   rw [neg_apply v s, neg_eq_zero]
   exact hu₁ s hs
 
-theorem neg_right {N : Type*} [AddCommGroup N] [TopologicalSpace N] [IsTopologicalAddGroup N]
+theorem neg_right {N : Type*} [AddGroup N] [IsAddCommutative N] [TopologicalSpace N] [IsTopologicalAddGroup N]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ⟂ᵥ w) : v ⟂ᵥ -w :=
   h.symm.neg_left.symm
 
 @[simp]
-theorem neg_left_iff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+theorem neg_left_iff {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [IsTopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} : -v ⟂ᵥ w ↔ v ⟂ᵥ w :=
   ⟨fun h => neg_neg v ▸ h.neg_left, neg_left⟩
 
 @[simp]
-theorem neg_right_iff {N : Type*} [AddCommGroup N] [TopologicalSpace N] [IsTopologicalAddGroup N]
+theorem neg_right_iff {N : Type*} [AddGroup N] [IsAddCommutative N] [TopologicalSpace N] [IsTopologicalAddGroup N]
     {v : VectorMeasure α M} {w : VectorMeasure α N} : v ⟂ᵥ -w ↔ v ⟂ᵥ w :=
   ⟨fun h => neg_neg w ▸ h.neg_right, neg_right⟩
 

@@ -74,7 +74,7 @@ end AddMonoidWithOne
 /-- A version of `Nat.cast_sub` that works for `ℝ≥0` and `ℚ≥0`. Note that this proof doesn't work
 for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -/
 @[simp, norm_cast]
-theorem cast_tsub [CommSemiring α] [PartialOrder α] [IsOrderedRing α] [CanonicallyOrderedAdd α]
+theorem cast_tsub [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsOrderedRing α] [CanonicallyOrderedAdd α]
     [Sub α] [OrderedSub α] [AddLeftReflectLE α] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
   rcases le_total m n with h | h
   · rw [Nat.sub_eq_zero_of_le h, cast_zero, tsub_eq_zero_of_le]

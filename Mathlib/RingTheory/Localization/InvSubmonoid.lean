@@ -29,7 +29,7 @@ commutative ring, field of fractions
 @[expose] public section
 
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (M : Submonoid R) (S : Type*) [Ring S] [IsMulCommutative S]
 variable [Algebra R S]
 
 open Function
@@ -115,7 +115,7 @@ theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   rw [Algebra.adjoin_eq_span, hs, span_invSubmonoid]
   trivial
 
-instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+instance {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra.FiniteType R S]
     (M : Submonoid S) [Monoid.FG M] : Algebra.FiniteType R (Localization M) :=
   .trans ‹_› (IsLocalization.finiteType_of_monoid_fg M _)
 

@@ -26,8 +26,8 @@ section isLocalized_maximal
 
 open IsLocalizedModule
 
-variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L]
+variable {R M N L : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [AddMonoid N] [IsAddCommutative N] [Module R N] [AddMonoid L] [IsAddCommutative L] [Module R L]
 
 -- For every maximal ideal `p` of `R`, let `Mₚ` (resp. `Nₚ`, resp. `Lₚ`) the localizations
 -- of `M` (resp. `N`, resp. `L`) at `p`.
@@ -96,8 +96,8 @@ end isLocalized_maximal
 
 section localized_maximal
 
-variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L] (f : M →ₗ[R] N) (g : N →ₗ[R] L)
+variable {R M N L : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [AddMonoid N] [IsAddCommutative N] [Module R N] [AddMonoid L] [IsAddCommutative L] [Module R L] (f : M →ₗ[R] N) (g : N →ₗ[R] L)
 
 theorem injective_of_localized_maximal
     (h : ∀ (J : Ideal R) [J.IsMaximal], Function.Injective (map J.primeCompl f)) :
@@ -127,25 +127,25 @@ section isLocalized_span
 
 open IsLocalizedModule
 
-variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L] (s : Set R) (spn : Ideal.span s = ⊤)
+variable {R M N L : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [AddMonoid N] [IsAddCommutative N] [Module R N] [AddMonoid L] [IsAddCommutative L] [Module R L] (s : Set R) (spn : Ideal.span s = ⊤)
 include spn
 
 -- For every element `r ∈ s`, let `Mᵣ` (resp. `Nᵣ`, resp. `Lᵣ`) the localizations
 -- of `M` (resp. `N`, resp. `L`) away from `r`.
 variable
   (Mₚ : ∀ _ : s, Type*)
-  [∀ r : s, AddCommMonoid (Mₚ r)]
+  [∀ r : s, AddMonoid (Mₚ r)] [∀ r : s, IsAddCommutative (Mₚ r)]
   [∀ r : s, Module R (Mₚ r)]
   (f : ∀ r : s, M →ₗ[R] Mₚ r)
   [∀ r : s, IsLocalizedModule.Away r.1 (f r)]
   (Nₚ : ∀ _ : s, Type*)
-  [∀ r : s, AddCommMonoid (Nₚ r)]
+  [∀ r : s, AddMonoid (Nₚ r)] [∀ r : s, IsAddCommutative (Nₚ r)]
   [∀ r : s, Module R (Nₚ r)]
   (g : ∀ r : s, N →ₗ[R] Nₚ r)
   [∀ r : s, IsLocalizedModule.Away r.1 (g r)]
   (Lₚ : ∀ _ : s, Type*)
-  [∀ r : s, AddCommMonoid (Lₚ r)]
+  [∀ r : s, AddMonoid (Lₚ r)] [∀ r : s, IsAddCommutative (Lₚ r)]
   [∀ r : s, Module R (Lₚ r)]
   (h : ∀ r : s, L →ₗ[R] Lₚ r)
   [∀ r : s, IsLocalizedModule.Away r.1 (h r)]
@@ -185,8 +185,8 @@ end isLocalized_span
 
 section localized_span
 
-variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L]
+variable {R M N L : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [AddMonoid N] [IsAddCommutative N] [Module R N] [AddMonoid L] [IsAddCommutative L] [Module R L]
   (s : Set R) (spn : span s = ⊤) (f : M →ₗ[R] N) (g : N →ₗ[R] L)
 include spn
 
@@ -216,7 +216,7 @@ end localized_span
 
 section Algebra
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 -- For every maximal ideal `p` of `R`, let `Rₚ` be the localization of `R` at `p`
 -- and `Sₚ` the localization of `S` at `p`.
@@ -235,8 +235,8 @@ variable
   [∀ (p : Ideal R) [p.IsMaximal],
     IsLocalizedModule.AtPrime p (IsScalarTower.toAlgHom R S (Sₚ p) : S →ₗ[R] (Sₚ p))]
 
-lemma IsLocalizedModule.map_linearMap_of_isLocalization (Rₚ Sₚ : Type*) [CommSemiring Rₚ]
-    [Algebra R Rₚ] [CommSemiring Sₚ] [Algebra S Sₚ] [Algebra R Sₚ] [IsScalarTower R S Sₚ]
+lemma IsLocalizedModule.map_linearMap_of_isLocalization (Rₚ Sₚ : Type*) [Semiring Rₚ] [IsMulCommutative Rₚ]
+    [Algebra R Rₚ] [Semiring Sₚ] [IsMulCommutative Sₚ] [Algebra S Sₚ] [Algebra R Sₚ] [IsScalarTower R S Sₚ]
     [Algebra Rₚ Sₚ] [IsScalarTower R Rₚ Sₚ] (p : Ideal R) [p.IsPrime]
     [IsLocalization.AtPrime Rₚ p]
     [IsLocalizedModule.AtPrime p (IsScalarTower.toAlgHom R S Sₚ : S →ₗ[R] Sₚ)] :
@@ -283,11 +283,11 @@ end Algebra
 
 section IsLocalization
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] {s : Set R} (hs : span s = ⊤)
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] {s : Set R} (hs : span s = ⊤)
 -- For every element `r ∈ s`, let `Rᵣ` be the localization of `R` away from `r`
 -- and `Sᵣ` the localization of `S` away from `f r`.
-variable (Rᵣ : s → Type*) [∀ r, CommSemiring (Rᵣ r)] [∀ r, Algebra R (Rᵣ r)]
-  (Sᵣ : s → Type*) [∀ r, CommSemiring (Sᵣ r)] [∀ r, Algebra S (Sᵣ r)]
+variable (Rᵣ : s → Type*) [∀ r, Semiring (Rᵣ r)] [∀ r, IsMulCommutative (Rᵣ r)] [∀ r, Algebra R (Rᵣ r)]
+  (Sᵣ : s → Type*) [∀ r, Semiring (Sᵣ r)] [∀ r, IsMulCommutative (Sᵣ r)] [∀ r, Algebra S (Sᵣ r)]
 variable (f : R →+* S) [∀ r, IsLocalization.Away r.val (Rᵣ r)]
     [∀ r, IsLocalization.Away (f r.val) (Sᵣ r)]
 include hs

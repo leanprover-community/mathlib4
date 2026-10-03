@@ -38,7 +38,7 @@ elliptic curve, weierstrass equation, j invariant
 
 namespace WeierstrassCurve
 
-variable (R : Type*) [CommRing R] (W : WeierstrassCurve R)
+variable (R : Type*) [Ring R] [IsMulCommutative R] (W : WeierstrassCurve R)
 
 /-- The Weierstrass curve `Y² + Y = X³`. It is of j-invariant 0 if it is an elliptic curve. -/
 def ofJ0 : WeierstrassCurve R :=

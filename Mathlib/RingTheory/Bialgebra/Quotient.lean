@@ -30,7 +30,7 @@ coideal, then the quotient `A ⧸ I` inherits a bialgebra structure.
 
 open Bialgebra Coalgebra LinearMap TensorProduct
 
-variable {R A : Type*} [CommRing R] [Ring A] [Bialgebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Bialgebra R A]
 variable (I : Ideal A) [I.IsTwoSided] [(I.restrictScalars R).IsCoideal]
 
 namespace Bialgebra.Quotient

@@ -146,7 +146,7 @@ lemma Even.isSquare_pow (hn : Even n) : ∀ a : α, IsSquare (a ^ n) := by aesop
 end Monoid
 
 @[to_additive (attr := aesop unsafe 90%)]
-lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) :=
+lemma IsSquare.mul [Semigroup α] [IsMulCommutative α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) :=
   fun ⟨r, _⟩ ⟨s, _⟩ => ⟨r * s, by simp_all [mul_mul_mul_comm]⟩
 
 section DivisionMonoid
@@ -164,15 +164,15 @@ lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
 end DivisionMonoid
 
 @[to_additive (attr := aesop unsafe 90%)]
-lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
+lemma IsSquare.div [DivisionMonoid α] [IsMulCommutative α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
     IsSquare (a / b) := by aesop (add simp div_eq_mul_inv)
 
 @[to_additive (attr := simp, aesop unsafe 90%) Even.zsmul_left]
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   aesop (add simp zpow_add)
 
-example {G : Type*} [CommGroup G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
+example {G : Type*} [Group G] [IsMulCommutative G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
     IsSquare <| a * (b * b) / (c ^ 2) * (d ^ k) * (e ^ (n + n)) := by aesop
 
-example {G : Type*} [AddCommGroup G] {a b c d e : G} (ha : Even a) {n : ℕ} {k : ℤ} (hk : Even k) :
+example {G : Type*} [AddGroup G] [IsAddCommutative G] {a b c d e : G} (ha : Even a) {n : ℕ} {k : ℤ} (hk : Even k) :
     Even <| a + (b + b) - 2 • c + k • d + (n + n) • e := by aesop

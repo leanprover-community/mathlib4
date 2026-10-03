@@ -50,8 +50,8 @@ section Prod
 namespace LinearMap
 
 variable (S : Type*) [Semiring R] [Semiring S]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-variable [AddCommMonoid M₅] [AddCommMonoid M₆]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃] [AddMonoid M₄] [IsAddCommutative M₄]
+variable [AddMonoid M₅] [IsAddCommutative M₅] [AddMonoid M₆] [IsAddCommutative M₆]
 variable [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
 variable [Module R M₅] [Module R M₆]
 variable (f : M →ₗ[R] M₂)
@@ -388,8 +388,8 @@ end Prod
 namespace LinearMap
 
 variable (R M M₂)
-variable [CommSemiring R]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R M₂]
 
 /-- `LinearMap.prodMap` as an `AlgHom` -/
@@ -403,7 +403,7 @@ namespace LinearMap
 
 open Submodule
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃] [AddMonoid M₄] [IsAddCommutative M₄]
   [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
 
 theorem range_coprod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) : range (f.coprod g) = range f ⊔ range g :=
@@ -457,14 +457,14 @@ theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
   rintro _ x rfl
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 
-theorem ker_prod_ker_le_ker_coprod {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂] {M₃ : Type*}
-    [AddCommMonoid M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) :
+theorem ker_prod_ker_le_ker_coprod {M₂ : Type*} [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂] {M₃ : Type*}
+    [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) :
     (ker f).prod (ker g) ≤ ker (f.coprod g) := by
   rintro ⟨y, z⟩
   simp +contextual
 
-theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] {M₃ : Type*}
-    [AddCommGroup M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃)
+theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] {M₃ : Type*}
+    [AddGroup M₃] [IsAddCommutative M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃)
     (hd : Disjoint (range f) (range g)) : ker (f.coprod g) = (ker f).prod (ker g) := by
   apply le_antisymm _ (ker_prod_ker_le_ker_coprod f g)
   rintro ⟨y, z⟩ h
@@ -480,8 +480,8 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
 /-- Given a linear map `f : E →ₗ[R] F` and a complement `C` of its kernel, we get a linear
 equivalence between `C` and `range f`. -/
 @[simps!]
-noncomputable def kerComplementEquivRange {R M M₂ : Type*} [Ring R] [AddCommGroup M]
-    [AddCommGroup M₂] [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) {C : Submodule R M}
+noncomputable def kerComplementEquivRange {R M M₂ : Type*} [Ring R] [AddGroup M] [IsAddCommutative M]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) {C : Submodule R M}
     (h : IsCompl C (LinearMap.ker f)) : C ≃ₗ[R] range f :=
   .ofBijective (codRestrict (range f) f (mem_range_self f) ∘ₗ C.subtype)
   ⟨by simpa [← ker_eq_bot, ker_codRestrict, ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint,
@@ -498,7 +498,7 @@ namespace Submodule
 open LinearMap
 
 variable [Semiring R]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R M₂]
 
 theorem sup_eq_range (p q : Submodule R M) : p ⊔ q = range (p.subtype.coprod q.subtype) :=
@@ -653,7 +653,7 @@ namespace LinearEquiv
 
 /-- Product of modules is commutative up to linear isomorphism. -/
 @[simps apply]
-def prodComm (R M N : Type*) [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+def prodComm (R M N : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M]
     [Module R N] : (M × N) ≃ₗ[R] N × M :=
   { AddEquiv.prodComm with
     toFun := Prod.swap
@@ -661,7 +661,7 @@ def prodComm (R M N : Type*) [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [M
 
 section prodComm
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R M₂]
 
 theorem fst_comp_prodComm :
     (LinearMap.fst R M₂ M).comp (prodComm R M M₂).toLinearMap = (LinearMap.snd R M M₂) := by
@@ -679,7 +679,7 @@ end prodComm
 /-- Product of modules is associative up to linear isomorphism. -/
 @[simps apply]
 def prodAssoc (R M₁ M₂ M₃ : Type*) [Semiring R]
-    [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+    [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
     [Module R M₁] [Module R M₂] [Module R M₃] : ((M₁ × M₂) × M₃) ≃ₗ[R] (M₁ × (M₂ × M₃)) :=
   { AddEquiv.prodAssoc with
     map_smul' := fun _r ⟨_m, _n⟩ => rfl }
@@ -687,7 +687,7 @@ def prodAssoc (R M₁ M₂ M₃ : Type*) [Semiring R]
 section prodAssoc
 
 variable {M₁ : Type*}
-variable [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Semiring R] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M₁] [Module R M₂] [Module R M₃]
 
 theorem fst_comp_prodAssoc :
@@ -706,7 +706,7 @@ section SkewSwap
 
 variable (R M N)
 variable [Semiring R]
-variable [AddCommGroup M] [AddCommGroup N]
+variable [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
 variable [Module R M] [Module R N]
 
 /-- The map `(x, y) ↦ (-y, x)` as a linear equivalence. -/
@@ -736,7 +736,7 @@ section
 
 variable (R M M₂ M₃ M₄)
 variable [Semiring R]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃] [AddMonoid M₄] [IsAddCommutative M₄]
 variable [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
 
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
@@ -762,7 +762,7 @@ end
 section
 
 variable [Semiring R]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃] [AddMonoid M₄] [IsAddCommutative M₄]
 variable {module_M : Module R M} {module_M₂ : Module R M₂}
 variable {module_M₃ : Module R M₃} {module_M₄ : Module R M₄}
 variable (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄)
@@ -790,7 +790,7 @@ end
 section
 
 variable [Semiring R]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommGroup M₄]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃] [AddGroup M₄] [IsAddCommutative M₄]
 variable {module_M : Module R M} {module_M₂ : Module R M₂}
 variable {module_M₃ : Module R M₃} {module_M₄ : Module R M₄}
 variable (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄)
@@ -819,7 +819,7 @@ end
 section Unique
 
 variable [Semiring R]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R M₂] [Unique M₂]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -851,7 +851,7 @@ namespace LinearMap
 open Submodule
 
 variable [Ring R]
-variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 /-- If the union of the kernels `ker f` and `ker g` spans the domain, then the range of
@@ -876,7 +876,7 @@ namespace LinearMap
 
 section Graph
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommGroup M₃] [AddCommGroup M₄]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddGroup M₃] [IsAddCommutative M₃] [AddGroup M₄] [IsAddCommutative M₄]
   [Module R M] [Module R M₂] [Module R M₃] [Module R M₄] (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄)
 
 /-- Graph of a linear map. -/
@@ -913,9 +913,9 @@ open Set Function
 
 variable {R S G H I : Type*}
   [Semiring R] [Semiring S] {σ : R →+* S} [RingHomSurjective σ]
-  [AddCommMonoid G] [Module R G]
-  [AddCommMonoid H] [Module S H]
-  [AddCommMonoid I] [Module S I]
+  [AddMonoid G] [IsAddCommutative G] [Module R G]
+  [AddMonoid H] [IsAddCommutative H] [Module S H]
+  [AddMonoid I] [IsAddCommutative I] [Module S I]
 
 /-- **Vertical line test** for linear maps.
 

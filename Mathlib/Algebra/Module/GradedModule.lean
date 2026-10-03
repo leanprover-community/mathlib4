@@ -47,7 +47,7 @@ class Gmodule [AddMonoid ιA] [VAdd ιA ιB] [∀ i, AddMonoid (A i)] [∀ i, Ad
   zero_smul {i j} (b : M j) : smul (0 : A i) b = 0
 
 /-- A graded version of `Semiring.toModule`. -/
-instance GSemiring.toGmodule [AddMonoid ιA] [∀ i : ιA, AddCommMonoid (A i)]
+instance GSemiring.toGmodule [AddMonoid ιA] [∀ i : ιA, AddMonoid (A i)] [∀ i : ιA, IsAddCommutative (A i)]
     [h : GSemiring A] : Gmodule A A :=
   { GMonoid.toGMulAction A with
     smul_add := fun _ _ _ => h.mul_add _ _ _
@@ -55,7 +55,7 @@ instance GSemiring.toGmodule [AddMonoid ιA] [∀ i : ιA, AddCommMonoid (A i)]
     add_smul := fun _ _ => h.add_mul _ _
     zero_smul := fun _ => h.zero_mul _ }
 
-variable [AddMonoid ιA] [VAdd ιA ιB] [∀ i : ιA, AddCommMonoid (A i)] [∀ i, AddCommMonoid (M i)]
+variable [AddMonoid ιA] [VAdd ιA ιB] [∀ i : ιA, AddMonoid (A i)] [∀ i : ιA, IsAddCommutative (A i)] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)]
 
 /-- The piecewise multiplication from the `Mul` instance, as a bundled homomorphism. -/
 @[simps]
@@ -175,7 +175,7 @@ instance gdistribMulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M]
     smul_add := fun _a _b _c => Subtype.ext <| smul_add _ _ _
     smul_zero := fun _a => Subtype.ext <| smul_zero _ }
 
-variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
+variable [AddMonoid M] [IsAddCommutative M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]
 
 /-- `[SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]` is the internal version of graded
@@ -190,7 +190,7 @@ end SetLike
 
 namespace GradedModule
 
-variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
+variable [AddMonoid M] [IsAddCommutative M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   [AddSubmonoidClass σ M] [SetLike.GradedSMul 𝓐 𝓜]
   [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐]
 

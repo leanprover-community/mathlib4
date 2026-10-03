@@ -28,7 +28,7 @@ variable {σ : Type*} {a a' : R} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 variable {p q : MvPolynomial σ R}
 
@@ -132,7 +132,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [NoZeroDivisors R] {p r : MvPolynomial σ R}
+variable [Ring R] [IsMulCommutative R] [NoZeroDivisors R] {p r : MvPolynomial σ R}
 
 theorem dvd_monomial_iff_exists {n : σ →₀ ℕ} {a : R} (ha : a ≠ 0) :
     p ∣ monomial n a ↔ ∃ m b, m ≤ n ∧ b ∣ a ∧ p = monomial m b := by

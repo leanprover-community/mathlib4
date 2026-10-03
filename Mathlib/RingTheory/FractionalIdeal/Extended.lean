@@ -48,9 +48,9 @@ namespace FractionalIdeal
 
 section RingHom
 
-variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] {f : A →+* B}
-variable {K : Type*} {M : Submonoid A} [CommRing K] [Algebra A K] [IsLocalization M K]
-variable (L : Type*) {N : Submonoid B} [CommRing L] [Algebra B L] [IsLocalization N L]
+variable {A : Type*} [Ring A] [IsMulCommutative A] {B : Type*} [Ring B] [IsMulCommutative B] {f : A →+* B}
+variable {K : Type*} {M : Submonoid A} [Ring K] [IsMulCommutative K] [Algebra A K] [IsLocalization M K]
+variable (L : Type*) {N : Submonoid B} [Ring L] [IsMulCommutative L] [Algebra B L] [IsLocalization N L]
 variable (hf : M ≤ Submonoid.comap f N)
 variable (I : FractionalIdeal M K) (J : FractionalIdeal M K)
 
@@ -162,7 +162,7 @@ theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L
 /-- Pointwise compatibility of extension of fractional ideals with composition of ring
 homomorphisms. See `FractionalIdeal.extendedHom'_comp` for the corresponding statement as an
 equality of homomorphisms. -/
-theorem extended_extended {C W : Type*} [CommRing C] [CommRing W] [Algebra C W]
+theorem extended_extended {C W : Type*} [Ring C] [IsMulCommutative C] [Ring W] [IsMulCommutative W] [Algebra C W]
     {P : Submonoid C} [IsLocalization P W] {g : B →+* C} (hg : N ≤ Submonoid.comap g P) :
       (I.extended L hf).extended W hg =
         I.extended W (f := g.comp f) (hf.trans (Submonoid.monotone_comap hg)) := by
@@ -222,7 +222,7 @@ def extendedHom' : FractionalIdeal M K →+* FractionalIdeal N L where
   map_add' := extended_add L hf
 
 /-- The homomorphisms induced by extension of fractional ideals compose in towers. -/
-theorem extendedHom'_comp {C W : Type*} [CommRing C] [CommRing W] [Algebra C W]
+theorem extendedHom'_comp {C W : Type*} [Ring C] [IsMulCommutative C] [Ring W] [IsMulCommutative W] [Algebra C W]
     {P : Submonoid C} [IsLocalization P W] {g : B →+* C} (hg : N ≤ Submonoid.comap g P) :
     (extendedHom' (A := B) (K := L) W hg).comp
       (extendedHom' (A := A) (K := K) L hf) =
@@ -239,7 +239,7 @@ section Algebra
 
 open scoped nonZeroDivisors
 
-variable {A K : Type*} (L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
+variable {A K : Type*} (L B : Type*) [Ring A] [IsMulCommutative A] [IsDomain A] [Ring B] [IsMulCommutative B] [IsDomain B]
   [Algebra A B] [IsTorsionFree A B] [Field K] [Field L] [Algebra A K] [Algebra B L]
   [IsFractionRing A K] [IsFractionRing B L] {I : FractionalIdeal A⁰ K}
 

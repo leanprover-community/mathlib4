@@ -49,7 +49,7 @@ are modules over `R` with a topological structure. In applications, there will b
 conditions between the algebraic and the topological structures, but this is not needed for the
 definition. -/
 structure ContinuousMultilinearMap (R : Type u) {ι : Type v} (M₁ : ι → Type w₁) (M₂ : Type w₂)
-  [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)] [Module R M₂]
+  [Semiring R] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddMonoid M₂] [IsAddCommutative M₂] [∀ i, Module R (M₁ i)] [Module R M₂]
   [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] extends MultilinearMap R M₁ M₂ where
   cont : Continuous toFun
 
@@ -62,8 +62,8 @@ namespace ContinuousMultilinearMap
 
 section Semiring
 
-variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i)]
-  [∀ i, AddCommMonoid (M₁' i)] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+variable [Semiring R] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)]
+  [∀ i, AddMonoid (M₁' i)] [∀ i, IsAddCommutative (M₁' i)] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃] [AddMonoid M₄] [IsAddCommutative M₄]
   [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [∀ i, Module R (M₁' i)] [Module R M₂] [Module R M₃]
   [Module R M₄] [∀ i, TopologicalSpace (M i)] [∀ i, TopologicalSpace (M₁ i)]
   [∀ i, TopologicalSpace (M₁' i)] [TopologicalSpace M₂] [TopologicalSpace M₃] [TopologicalSpace M₄]
@@ -226,19 +226,19 @@ theorem prod_apply (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMul
 
 /-- Combine a family of continuous multilinear maps with the same domain and codomains `M' i` into a
 continuous multilinear map taking values in the space of functions `∀ i, M' i`. -/
-def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, TopologicalSpace (M' i)]
+def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)] [∀ i, TopologicalSpace (M' i)]
     [∀ i, Module R (M' i)] (f : ∀ i, ContinuousMultilinearMap R M₁ (M' i)) :
     ContinuousMultilinearMap R M₁ (∀ i, M' i) where
   cont := continuous_pi fun i => (f i).coe_continuous
   toMultilinearMap := MultilinearMap.pi fun i => (f i).toMultilinearMap
 
 @[simp]
-theorem coe_pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
+theorem coe_pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)]
     (f : ∀ i, ContinuousMultilinearMap R M₁ (M' i)) : ⇑(pi f) = fun m j => f j m :=
   rfl
 
-theorem pi_apply {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
+theorem pi_apply {ι' : Type*} {M' : ι' → Type*} [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)]
     (f : ∀ i, ContinuousMultilinearMap R M₁ (M' i)) (m : ∀ i, M₁ i) (j : ι') : pi f m j = f j m :=
   rfl
@@ -352,7 +352,7 @@ theorem zero_prod_zero :
 
 /-- `ContinuousMultilinearMap.pi` as an `Equiv`. -/
 @[simps]
-def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
+def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)] :
     (∀ i, ContinuousMultilinearMap R M₁ (M' i)) ≃ ContinuousMultilinearMap R M₁ (∀ i, M' i) where
   toFun := ContinuousMultilinearMap.pi
@@ -462,7 +462,7 @@ end Semiring
 
 section Ring
 
-variable [Ring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i, Module R (M₁ i)] [Module R M₂]
+variable [Ring R] [∀ i, AddGroup (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddGroup M₂] [IsAddCommutative M₂] [∀ i, Module R (M₁ i)] [Module R M₂]
   [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] (f : ContinuousMultilinearMap R M₁ M₂)
 
 @[simp]
@@ -492,12 +492,12 @@ instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
   toMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-theorem neg_prod_neg [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃]
+theorem neg_prod_neg [AddGroup M₃] [IsAddCommutative M₃] [Module R M₃] [TopologicalSpace M₃]
     [IsTopologicalAddGroup M₃] (f : ContinuousMultilinearMap R M₁ M₂)
     (g : ContinuousMultilinearMap R M₁ M₃) : (-f).prod (-g) = - f.prod g :=
   rfl
 
-theorem sub_prod_sub [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃]
+theorem sub_prod_sub [AddGroup M₃] [IsAddCommutative M₃] [Module R M₃] [TopologicalSpace M₃]
     [IsTopologicalAddGroup M₃] (f₁ f₂ : ContinuousMultilinearMap R M₁ M₂)
     (g₁ g₂ : ContinuousMultilinearMap R M₁ M₃) :
     (f₁ - f₂).prod (g₁ - g₂) = f₁.prod g₁ - f₂.prod g₂ :=
@@ -509,7 +509,7 @@ end Ring
 
 section CommSemiring
 
-variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddMonoid M₂] [IsAddCommutative M₂] [∀ i, Module R (M₁ i)]
   [Module R M₂] [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂]
   (f : ContinuousMultilinearMap R M₁ M₂)
 
@@ -536,8 +536,8 @@ end CommSemiring
 
 section DistribMulAction
 
-variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, AddCommMonoid (M₁ i)]
-  [AddCommMonoid M₂] [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] [∀ i, Module A (M₁ i)]
+variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)]
+  [AddMonoid M₂] [IsAddCommutative M₂] [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] [∀ i, Module A (M₁ i)]
   [Module A M₂] [DistribMulAction R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
 
 instance [ContinuousAdd M₂] : DistribMulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
@@ -553,7 +553,7 @@ end DistribMulAction
 
 section Module
 
-variable {R' A : Type*} [Semiring R'] [Semiring A] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂]
+variable {R' A : Type*} [Semiring R'] [Semiring A] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddMonoid M₂] [IsAddCommutative M₂]
   [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] [ContinuousAdd M₂] [∀ i, Module A (M₁ i)]
   [Module A M₂] [Module R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
 
@@ -576,7 +576,7 @@ def toMultilinearMapLinear : ContinuousMultilinearMap A M₁ M₂ →ₗ[R'] Mul
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearEquiv`. -/
 @[simps +simpRhs]
-def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
+def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R' (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R' (M' i)] [∀ i, ContinuousConstSMul R' (M' i)] :
     (∀ i, ContinuousMultilinearMap A M₁ (M' i)) ≃ₗ[R'] ContinuousMultilinearMap A M₁ (∀ i, M' i) :=
@@ -589,7 +589,7 @@ end Module
 
 section Algebra
 
-variable (R n) (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
+variable (R n) (A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [TopologicalSpace A]
   [ContinuousMul A]
 
 /-- The continuous multilinear map on `A^n`, where `A` is a normed algebra over `𝕜`, associating to
@@ -614,7 +614,7 @@ end Algebra
 
 section CommAlgebra
 
-variable (R ι) (A : Type*) [Fintype ι] [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable (R ι) (A : Type*) [Fintype ι] [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
   [TopologicalSpace A] [ContinuousMul A]
 
 /-- The continuous multilinear map on `A^ι`, where `A` is a normed commutative algebra
@@ -638,7 +638,7 @@ end CommAlgebra
 
 section SMulRight
 
-variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddMonoid M₂] [IsAddCommutative M₂] [∀ i, Module R (M₁ i)]
   [Module R M₂] [TopologicalSpace R] [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂]
   [ContinuousSMul R M₂] (f : ContinuousMultilinearMap R M₁ R) (z : M₂)
 
@@ -653,7 +653,7 @@ end SMulRight
 
 section CommRing
 variable {M : Type*}
-variable [Fintype ι] [CommRing R] [AddCommMonoid M] [Module R M]
+variable [Fintype ι] [Ring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable [TopologicalSpace R] [TopologicalSpace M]
 variable [ContinuousMul R] [ContinuousSMul R M]
 

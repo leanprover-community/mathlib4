@@ -49,7 +49,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id (hm : m �
       (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) Function.diag μ) :=
   hf.comp_snd_map_prodMk (@Measurable.aemeasurable Ω Ω mΩ m id μ (measurable_id'' hm))
 
-theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id (hm : m ≤ mΩ) [NormedAddCommGroup F]
+theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id (hm : m ≤ mΩ) [NormedAddGroup F] [IsAddCommutative F]
     (hf : Integrable f μ) : Integrable (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) Function.diag μ) :=
   hf.comp_snd_map_prodMk (@Measurable.aemeasurable Ω Ω mΩ m id μ (measurable_id'' hm))
@@ -108,7 +108,7 @@ lemma condExpKernel_comp_trim (hm : m ≤ mΩ) : condExpKernel μ m ∘ₘ μ.tr
 
 section Measurability
 
-variable [NormedAddCommGroup F] {f : Ω → F}
+variable [NormedAddGroup F] [IsAddCommutative F] {f : Ω → F}
 
 theorem measurable_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
     Measurable[m] fun ω => condExpKernel μ m ω s :=
@@ -160,7 +160,7 @@ end Measurability
 
 section Integrability
 
-variable [NormedAddCommGroup F] {f : Ω → F}
+variable [NormedAddGroup F] [IsAddCommutative F] {f : Ω → F}
 
 theorem _root_.MeasureTheory.Integrable.condExpKernel_ae (hf_int : Integrable f μ) :
     ∀ᵐ ω ∂μ, Integrable f (condExpKernel μ m ω) := by
@@ -238,7 +238,7 @@ lemma condDistrib_apply_ae_eq_condExpKernel_map {β γ : Type*} {mβ : Measurabl
     condExpKernel_ae_eq_condExp hY.comap_le (μ := μ) (hX hs)] with a ha₁ ha₂
   rw [← measureReal_eq_measureReal_iff, ha₁, ha₂]
 
-theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω → F}
+theorem condExp_ae_eq_integral_condExpKernel' [NormedAddGroup F] [IsAddCommutative F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hf_int : Integrable f μ) :
     μ[f | m ⊓ mΩ] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω := by
   rcases isEmpty_or_nonempty Ω with h | h
@@ -251,14 +251,14 @@ theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω →
 
 /-- The conditional expectation of `f` with respect to a σ-algebra `m` is almost everywhere equal to
 the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
-theorem condExp_ae_eq_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → F}
+theorem condExp_ae_eq_integral_condExpKernel [NormedAddGroup F] [IsAddCommutative F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
     μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω :=
   ((condExp_ae_eq_integral_condExpKernel' hf_int).symm.trans (by rw [inf_of_le_left hm])).symm
 
 /-- Auxiliary lemma for `condExp_ae_eq_trim_integral_condExpKernel`. -/
 theorem condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable
-    [NormedAddCommGroup F] {f : Ω → F} [NormedSpace ℝ F] [CompleteSpace F]
+    [NormedAddGroup F] [IsAddCommutative F] {f : Ω → F} [NormedSpace ℝ F] [CompleteSpace F]
     (hm : m ≤ mΩ) (hf : StronglyMeasurable f) (hf_int : Integrable f μ) :
     μ[f | m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
   refine StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm ?_ ?_ ?_
@@ -268,7 +268,7 @@ theorem condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable
 
 /-- The conditional expectation of `f` with respect to a σ-algebra `m` is
 (`μ.trim hm`)-almost everywhere equal to the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
-theorem condExp_ae_eq_trim_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → F}
+theorem condExp_ae_eq_trim_integral_condExpKernel [NormedAddGroup F] [IsAddCommutative F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
     μ[f | m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
   refine (condExp_congr_ae_trim hm hf_int.1.ae_eq_mk).trans ?_
@@ -284,7 +284,7 @@ section Cond
 
 open MeasurableSpace
 
-variable {s t : Set Ω} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable {s t : Set Ω} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [CompleteSpace F]
 
 omit [StandardBorelSpace Ω]
 

@@ -26,7 +26,7 @@ namespace LieAlgebra
 
 open Algebra
 
-variable {K V : Type*} [Field K] [PerfectField K] [AddCommGroup V] [Module K V]
+variable {K V : Type*} [Field K] [PerfectField K] [AddGroup V] [IsAddCommutative V] [Module K V]
 variable [FiniteDimensional K V] {n s : Module.End K V}
 
 attribute [local instance 100] LieRing.ofAssociativeRing

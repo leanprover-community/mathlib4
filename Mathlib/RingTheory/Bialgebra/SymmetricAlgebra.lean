@@ -20,7 +20,7 @@ public noncomputable section
 
 namespace SymmetricAlgebra
 
-variable (R : Type*) [CommSemiring R] (M : Type*) [AddCommMonoid M] [Module R M]
+variable (R : Type*) [Semiring R] [IsMulCommutative R] (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 open scoped TensorProduct
 

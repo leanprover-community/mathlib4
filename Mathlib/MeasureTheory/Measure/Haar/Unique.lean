@@ -81,7 +81,7 @@ is finite on compact sets. -/]
 lemma continuous_integral_apply_inv_mul
     {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [IsTopologicalGroup G]
     [MeasurableSpace G] [BorelSpace G]
-    {μ : Measure G} [IsFiniteMeasureOnCompacts μ] {E : Type*} [NormedAddCommGroup E]
+    {μ : Measure G} [IsFiniteMeasureOnCompacts μ] {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
     [NormedSpace ℝ E] {g : G → E}
     (hg : Continuous g) (h'g : HasCompactSupport g) :
     Continuous (fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂μ) := by
@@ -970,7 +970,7 @@ end Group
 
 section CommGroup
 
-variable {G : Type*} [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
+variable {G : Type*} [Group G] [IsMulCommutative G] [TopologicalSpace G] [IsTopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 /-- Any regular Haar measure is invariant under inversion in an abelian group. -/
@@ -1041,7 +1041,7 @@ theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
 end CommGroup
 
 section DistribMulAction
-variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
+variable {G A : Type*} [Group G] [AddGroup A] [IsAddCommutative A] [DistribMulAction G A] [MeasurableSpace A]
   [TopologicalSpace A] [BorelSpace A] [IsTopologicalAddGroup A] [LocallyCompactSpace A]
   [ContinuousConstSMul G A] {μ ν : Measure A} [μ.IsAddHaarMeasure] [ν.IsAddHaarMeasure] {g : G}
 

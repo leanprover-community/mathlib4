@@ -47,7 +47,7 @@ the roots of the minimal polynomial of `s` over `R`.
 
 universe u v w z
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 variable [Algebra R S]
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 variable {ι κ : Type w}
@@ -168,14 +168,14 @@ theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegra
     exact minpoly.aeval_of_isScalarTower R x y hy
   · apply IsAlgClosed.splits
 
-lemma Algebra.trace_eq_of_algEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+lemma Algebra.trace_eq_of_algEquiv {A B C : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C]
     [Algebra A B] [Algebra A C] (e : B ≃ₐ[A] C) (x) :
     Algebra.trace A C (e x) = Algebra.trace A B x := by
   simp_rw [Algebra.trace_apply, ← LinearMap.trace_conj' _ e.toLinearEquiv]
   congr; ext; simp
 
 set_option backward.isDefEq.respectTransparency false in
-lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C]
     [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C) (x) :
     e (Algebra.trace A C x) = Algebra.trace B C x := by
   classical
@@ -194,8 +194,8 @@ lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [C
   intro ⟨s, ⟨b⟩⟩
   exact h ⟨s, ⟨b.mapCoeffs e (by simp [Algebra.smul_def, ← he])⟩⟩
 
-lemma Algebra.trace_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [CommRing B₁]
-    [CommRing A₂] [CommRing B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+lemma Algebra.trace_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Ring A₁] [IsMulCommutative A₁] [Ring B₁] [IsMulCommutative B₁]
+    [Ring A₂] [IsMulCommutative A₂] [Ring B₂] [IsMulCommutative B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.trace A₁ B₁ x = e₁.symm (Algebra.trace A₂ B₂ (e₂ x)) := by
   let := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra
@@ -329,7 +329,7 @@ section DetNeZero
 namespace Algebra
 
 variable (A : Type u) {B : Type v} (C : Type z)
-variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
+variable [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] [Ring C] [IsMulCommutative C] [Algebra A C]
 
 open Finset
 
@@ -529,7 +529,7 @@ section isNilpotent
 namespace Algebra
 
 /-- The trace of a nilpotent element is nilpotent. -/
-lemma isNilpotent_trace_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
+lemma isNilpotent_trace_of_isNilpotent {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (trace R S x) :=
   LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
 
@@ -629,7 +629,7 @@ namespace Algebra
 
 section IsQuadraticExtension
 
-variable {R A : Type*} [CommRing R] [StrongRankCondition R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [StrongRankCondition R] [Ring A] [IsMulCommutative A] [Algebra R A]
   [IsQuadraticExtension R A]
 
 variable (R) in

@@ -35,8 +35,8 @@ open Set Function Pointwise
 universe u u'
 
 section
-variable {R R' E F ι ι' α : Type*} [Field R] [Field R'] [AddCommGroup E] [AddCommGroup F]
-  [AddCommGroup α] [LinearOrder α] [Module R E] [Module R F] [Module R α] {s : Set E}
+variable {R R' E F ι ι' α : Type*} [Field R] [Field R'] [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F]
+  [AddGroup α] [IsAddCommutative α] [LinearOrder α] [Module R E] [Module R F] [Module R α] {s : Set E}
 
 /-- Center of mass of a finite collection of points with prescribed weights.
 Note that we require neither `0 ≤ w i` nor `∑ w = 1`. -/
@@ -613,7 +613,7 @@ namespace Affine.Simplex
 
 /-- The closed interior of a simplex is the convex hull of all vertices. -/
 @[simp] theorem convexHull_eq_closedInterior {𝕜 V : Type*} [Field 𝕜] [LinearOrder 𝕜]
-    [IsOrderedRing 𝕜] [AddCommGroup V] [Module 𝕜 V] {n : ℕ} (s : Simplex 𝕜 V n) :
+    [IsOrderedRing 𝕜] [AddGroup V] [IsAddCommutative V] [Module 𝕜 V] {n : ℕ} (s : Simplex 𝕜 V n) :
     convexHull 𝕜 (Set.range s.points) = s.closedInterior := by
   ext p
   rw [convexHull_range_eq_exists_affineCombination, Set.mem_ofPred]

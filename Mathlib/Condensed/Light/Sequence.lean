@@ -17,7 +17,7 @@ import Mathlib.Topology.Category.LightProfinite.Injective
 open CategoryTheory Category Functor LightProfinite OnePoint LightCondensed
   MonoidalCategory CartesianMonoidalCategory CompHausLike
 
-variable (R : Type) [CommRing R]
+variable (R : Type) [Ring R] [IsMulCommutative R]
 -- `R` is in `Type` because `ℕ∪∞` currently only exists in `LightProfinite.{0}`.
 -- TODO: make a universe polymorphic `ℕ∪∞` and generalize this result.
 

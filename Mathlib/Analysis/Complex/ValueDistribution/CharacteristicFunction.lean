@@ -38,7 +38,7 @@ open Filter Real Set
 namespace ValueDistribution
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E]
   {f g : ℂ → E} {a : WithTop E}
 
 variable (f a) in

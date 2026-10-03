@@ -473,7 +473,7 @@ end MulActionGroup
 
 section Module
 
-variable [Semiring R] [AddCommMonoid M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M]
 variable [Module R M]
 variable (p : SubMulAction R M)
 
@@ -490,7 +490,7 @@ end Module
 
 section AddCommGroup
 
-variable [Ring R] [AddCommGroup M]
+variable [Ring R] [AddGroup M] [IsAddCommutative M]
 variable [Module R M]
 variable (p : SubMulAction R M)
 variable {x : M}
@@ -564,7 +564,7 @@ end SubMulAction
 
 namespace Units
 
-variable (R M : Type*) [Monoid R] [AddCommMonoid M] [DistribMulAction R M]
+variable (R M : Type*) [Monoid R] [AddMonoid M] [IsAddCommutative M] [DistribMulAction R M]
 
 /-- The non-zero elements of `M` are invariant under the action by the units of `R`. -/
 def nonZeroSubMul : SubMulAction Rˣ M where

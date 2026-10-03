@@ -41,7 +41,7 @@ it.
 
 @[expose] public section
 
-variable {M : Type*} [AddCommMonoid M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M]
 
 local notation "↑ⁿ" => PNat.equivNonZeroDivisorsNat
 
@@ -169,7 +169,7 @@ theorem coe_inj {m m' : M} : (m : DivisibleHull M) = ↑m' ↔ m = m' :=
 end TorsionFree
 
 section Group
-variable {M : Type*} [AddCommGroup M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M]
 
 theorem neg_mk (m : M) (s : ℕ+) : -mk m s = mk (-m) s :=
   (eq_neg_of_add_eq_zero_left (by simp [mk_add_mk_left])).symm
@@ -248,7 +248,7 @@ theorem zsmul_mk (a : ℤ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s :=
 end Group
 
 section LinearOrder
-variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
 
 set_option backward.privateInPublic true in
 private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
@@ -336,7 +336,7 @@ instance : IsStrictOrderedModule ℚ≥0 (DivisibleHull M) where
 end LinearOrder
 
 section OrderedGroup
-variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [LinearOrder M] [IsOrderedAddMonoid M]
 
 set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedModule ℚ (DivisibleHull M) where

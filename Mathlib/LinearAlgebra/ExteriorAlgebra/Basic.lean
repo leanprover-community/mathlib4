@@ -52,8 +52,8 @@ as this avoids us having to duplicate API.
 
 universe u1 u2 u3 u4 u5
 
-variable (R : Type u1) [CommRing R]
-variable (M : Type u2) [AddCommGroup M] [Module R M]
+variable (R : Type u1) [Ring R] [IsMulCommutative R]
+variable (M : Type u2) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- The exterior algebra of an `R`-module `M`.
 -/
@@ -72,7 +72,7 @@ abbrev ι : M →ₗ[R] ExteriorAlgebra R M :=
 section exteriorPower
 
 -- New variables `n` and `M`, to get the correct order of variables in the notation.
-variable (n : ℕ) (M : Type u2) [AddCommGroup M] [Module R M]
+variable (n : ℕ) (M : Type u2) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- Definition of the `n`th exterior power of an `R`-module `M`. We introduce the notation
 `⋀[R]^n M` for `exteriorPower R n M`. -/
@@ -423,7 +423,7 @@ instance [Nontrivial R] : Nontrivial (ExteriorAlgebra R M) :=
 
 /-! Functoriality of the exterior algebra. -/
 
-variable {N : Type u4} {N' : Type u5} [AddCommGroup N] [Module R N] [AddCommGroup N'] [Module R N']
+variable {N : Type u4} {N' : Type u5} [AddGroup N] [IsAddCommutative N] [Module R N] [AddGroup N'] [IsAddCommutative N'] [Module R N']
 
 /-- The morphism of exterior algebras induced by a linear map. -/
 def map (f : M →ₗ[R] N) : ExteriorAlgebra R M →ₐ[R] ExteriorAlgebra R N :=
@@ -512,8 +512,8 @@ lemma map_surjective_iff {f : M →ₗ[R] N} :
   rw [← LinearMap.comp_apply, ← ιInv_comp_map, LinearMap.comp_apply]
   simp [hx, ιInv]
 
-variable {K E F : Type*} [Field K] [AddCommGroup E]
-  [Module K E] [AddCommGroup F] [Module K F]
+variable {K E F : Type*} [Field K] [AddGroup E] [IsAddCommutative E]
+  [Module K E] [AddGroup F] [IsAddCommutative F] [Module K F]
 
 /-- An injective morphism of vector spaces induces an injective morphism of exterior algebras. -/
 lemma map_injective_field {f : E →ₗ[K] F} (hf : LinearMap.ker f = ⊥) :

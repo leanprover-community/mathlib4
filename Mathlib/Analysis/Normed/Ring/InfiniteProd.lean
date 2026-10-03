@@ -26,7 +26,7 @@ open Filter
 
 open scoped Topology
 
-variable {α R β : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] {g : β → R}
+variable {α R β : Type*} [NormedRing R] [IsMulCommutative R] [NormOneClass R] [CompleteSpace R] {g : β → R}
   {bound : β → ℝ}
 
 /-- Dominated convergence for infinite products: if `f n k → g k` for all `k` and

@@ -76,7 +76,7 @@ end Add
 
 section Mul
 
-variable [Fintype m] [Fintype n] [Fintype o] [Mul R] [AddCommMonoid R]
+variable [Fintype m] [Fintype n] [Fintype o] [Mul R] [AddMonoid R] [IsAddCommutative R]
 
 /-- `Matrix.reindex` as a `RingEquiv` between `R`-matrices. -/
 def reindexRingEquiv (e : m ≃ n) : Matrix m m R ≃+* Matrix n n R where
@@ -114,7 +114,7 @@ end Mul
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid A] [Module R A]
+variable [Semiring R] [AddMonoid A] [IsAddCommutative A] [Module R A]
 
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types,
 `Matrix.reindex`, is a linear equivalence. -/
@@ -202,7 +202,7 @@ end Semiring
 
 section Algebra
 
-variable [CommSemiring R] [Fintype n] [Fintype m] [Fintype o] [DecidableEq m] [DecidableEq n]
+variable [Semiring R] [IsMulCommutative R] [Fintype n] [Fintype m] [Fintype o] [DecidableEq m] [DecidableEq n]
   [DecidableEq o] [Semiring A] [Algebra R A]
 
 /-- For square matrices with coefficients in an algebra over a commutative semiring, the natural
@@ -266,7 +266,7 @@ end Algebra
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`.
 -/
-theorem det_reindexLinearEquiv_self [CommRing R] [Fintype m] [DecidableEq m] [Fintype n]
+theorem det_reindexLinearEquiv_self [Ring R] [IsMulCommutative R] [Fintype m] [DecidableEq m] [Fintype n]
     [DecidableEq n] (e : m ≃ n) (M : Matrix m m R) : det (reindexLinearEquiv R R e e M) = det M :=
   det_reindex_self e M
 
@@ -274,7 +274,7 @@ theorem det_reindexLinearEquiv_self [CommRing R] [Fintype m] [DecidableEq m] [Fi
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`.
 -/
-theorem det_reindexAlgEquiv (B : Type*) [CommSemiring R] [CommRing B] [Algebra R B] [Fintype m]
+theorem det_reindexAlgEquiv (B : Type*) [Semiring R] [IsMulCommutative R] [Ring B] [IsMulCommutative B] [Algebra R B] [Fintype m]
     [DecidableEq m] [Fintype n] [DecidableEq n] (e : m ≃ n) (A : Matrix m m B) :
     det (reindexAlgEquiv R B e A) = det A :=
   det_reindex_self e A

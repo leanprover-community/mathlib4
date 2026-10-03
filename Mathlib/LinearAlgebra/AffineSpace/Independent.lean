@@ -42,7 +42,7 @@ open scoped Affine
 
 section AffineIndependent
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
 variable [AffineSpace V P] {ι : Type*}
 
 /-- An indexed family is said to be affinely independent if no nontrivial weighted subtractions
@@ -545,7 +545,7 @@ theorem affineIndepOn_iff_linearIndepOn_vsub {p : ι → P} {s : Set ι} {i : ι
 
 section Composition
 
-variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+variable {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AffineSpace V₂ P₂]
 
 /-- If the image of a family of points in affine space under an affine transformation is affine-
 independent, then the original family of points is also affine-independent. -/
@@ -892,7 +892,7 @@ end AffineIndependent
 
 section DivisionRing
 
-variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddGroup V] [IsAddCommutative V] [Module k V]
 variable [AffineSpace V P] {ι : Type*}
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1101,7 +1101,7 @@ end DivisionRing
 section Ordered
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
-  [AddCommGroup V]
+  [AddGroup V] [IsAddCommutative V]
 variable [Module k V] [AffineSpace V P] {ι : Type*}
 
 /-- Given an affinely independent family of points, suppose that an affine combination lies in

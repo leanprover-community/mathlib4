@@ -26,7 +26,7 @@ open scoped NNReal
 variable {𝕜 𝕜₁ 𝕜₂ 𝕜₃ E F Fₗ G : Type*}
 
 section SeminormedAddCommGroup
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [SeminormedAddGroup F] [IsAddCommutative F] [SeminormedAddGroup G] [IsAddCommutative G]
   [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f : E →SL[σ₁₂] F)
@@ -86,8 +86,8 @@ end SeminormedAddCommGroup
 
 section Normed
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
-  [NormedAddCommGroup Fₗ]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedAddGroup G] [IsAddCommutative G]
+  [NormedAddGroup Fₗ] [IsAddCommutative Fₗ]
 
 open Metric ContinuousLinearMap
 
@@ -315,13 +315,13 @@ end Normed
 /-- A bounded bilinear form `B` in a real normed space is *coercive*
 if there is some positive constant C such that `C * ‖u‖ * ‖u‖ ≤ B u u`.
 -/
-def IsCoercive [SeminormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
+def IsCoercive [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
   ∃ C, 0 < C ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u
 
 section Equicontinuous
 
 variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [RingHomIsometric σ₁₂] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+  [RingHomIsometric σ₁₂] [SeminormedAddGroup E] [IsAddCommutative E] [SeminormedAddGroup F] [IsAddCommutative F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
 /-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
@@ -382,16 +382,16 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι]
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : ι → Type*)
 
 /-- The injection `x ↦ Pi.single i x` as a linear isometry. -/
-protected def LinearIsometry.single [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+protected def LinearIsometry.single [∀ i, SeminormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     (i : ι) : E i →ₗᵢ[𝕜] Π j, E j :=
   (LinearMap.single 𝕜 E i).toLinearIsometry (.single i)
 
-lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddCommGroup (E i)]
+lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
     ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 :=
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_single [∀ i, SeminormedAddCommGroup (E i)]
+lemma ContinuousLinearMap.norm_single [∀ i, SeminormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (i : ι) [NontrivialTopology (E i)] :
     ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 :=
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap
@@ -403,42 +403,42 @@ section inl_inr
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E F : Type*)
 
 /-- The injection `x ↦ LinearMap.inl E F x` as a linear isometry. -/
-protected def LinearIsometry.inl [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] : E →ₗᵢ[𝕜] E × F :=
+protected def LinearIsometry.inl [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+    [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] : E →ₗᵢ[𝕜] E × F :=
   (LinearMap.inl 𝕜 E F).toLinearIsometry .inl
 
 @[simp]
-lemma LinearIsometry.inl_apply [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (x : E) :
+lemma LinearIsometry.inl_apply [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+    [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] (x : E) :
     LinearIsometry.inl 𝕜 E F x = (x, 0) := rfl
 
 /-- The injection `x ↦ LinearMap.inr E F x` as a linear isometry. -/
-protected def LinearIsometry.inr [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] : F →ₗᵢ[𝕜] E × F :=
+protected def LinearIsometry.inr [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+    [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] : F →ₗᵢ[𝕜] E × F :=
   (LinearMap.inr 𝕜 E F).toLinearIsometry .inr
 
 @[simp]
-lemma LinearIsometry.inr_apply [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (y : F) :
+lemma LinearIsometry.inr_apply [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+    [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] (y : F) :
     LinearIsometry.inr 𝕜 E F y = (0, y) := rfl
 
-lemma ContinuousLinearMap.norm_inl_le_one [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
+lemma ContinuousLinearMap.norm_inl_le_one [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+    [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inl 𝕜 E F‖ ≤ 1 :=
   (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_inr_le_one [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
+lemma ContinuousLinearMap.norm_inr_le_one [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+    [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inr 𝕜 E F‖ ≤ 1 :=
   (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_inl [SeminormedAddCommGroup E] [NontrivialTopology E]
-    [NormedSpace 𝕜 E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
+lemma ContinuousLinearMap.norm_inl [SeminormedAddGroup E] [IsAddCommutative E] [NontrivialTopology E]
+    [NormedSpace 𝕜 E] [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inl 𝕜 E F‖ = 1 :=
   (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap
 
-lemma ContinuousLinearMap.norm_inr [SeminormedAddCommGroup E]
-    [NormedSpace 𝕜 E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NontrivialTopology F] :
+lemma ContinuousLinearMap.norm_inr [SeminormedAddGroup E] [IsAddCommutative E]
+    [NormedSpace 𝕜 E] [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [NontrivialTopology F] :
     ‖ContinuousLinearMap.inr 𝕜 E F‖ = 1 :=
   (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap
 

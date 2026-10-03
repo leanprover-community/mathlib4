@@ -27,7 +27,7 @@ file, but the category-theoretic adjunction statement is in
 
 ## Main definitions
 
-Here we use the following variables: `(α β : Type*) (A : Type*) [AddCommGroup A]`
+Here we use the following variables: `(α β : Type*) (A : Type*) [AddGroup A] [IsAddCommutative A]`
 
 * `FreeAbelianGroup α` : the free abelian group on a type `α`. As an abelian
   group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
@@ -41,7 +41,7 @@ Here we use the following variables: `(α β : Type*) (A : Type*) [AddCommGroup 
 
 * `instance [Monoid α] : Semigroup (FreeAbelianGroup α)`
 
-* `instance [CommMonoid α] : CommRing (FreeAbelianGroup α)`
+* `instance [Monoid α] [IsMulCommutative α] : CommRing (FreeAbelianGroup α)`
 
 It has been suggested that we would be better off refactoring this file
 and using `Finsupp` instead.
@@ -109,13 +109,13 @@ def of (x : α) : FreeAbelianGroup α :=
   Additive.ofMul <| Abelianization.of <| FreeGroup.of x
 
 /-- The map `FreeAbelianGroup α →+ A` induced by a map of types `α → A`. -/
-def lift {β : Type v} [AddCommGroup β] : (α → β) ≃ (FreeAbelianGroup α →+ β) :=
+def lift {β : Type v} [AddGroup β] [IsAddCommutative β] : (α → β) ≃ (FreeAbelianGroup α →+ β) :=
   (@FreeGroup.lift _ (Multiplicative β) _).trans <|
     (@Abelianization.lift _ _ (Multiplicative β) _).trans MonoidHom.toAdditive
 
 section lift
 
-variable {β : Type v} [AddCommGroup β] (f : α → β)
+variable {β : Type v} [AddGroup β] [IsAddCommutative β] (f : α → β)
 
 open FreeAbelianGroup
 
@@ -134,7 +134,7 @@ theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f 
 theorem lift_ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) = h (of x)) : g = h :=
   lift.symm.injective <| funext H
 
-theorem lift_comp_apply {α β γ} [AddCommGroup β] [AddCommGroup γ]
+theorem lift_comp_apply {α β γ} [AddGroup β] [IsAddCommutative β] [AddGroup γ] [IsAddCommutative γ]
     (a : FreeAbelianGroup α) (f : α → β) (g : β →+ γ) : lift (g ∘ f) a = g (lift f a) := by
   rw [← AddMonoidHom.comp_apply g (lift f)]
   refine (lift_unique _ _ ?_).symm
@@ -179,7 +179,7 @@ protected theorem induction_on
   Quotient.inductionOn' z fun x ↦ Quot.inductionOn x fun L ↦
     List.recOn L zero fun ⟨x, b⟩ _ ih ↦ Bool.recOn b (add _ _ (neg _ (of x)) ih) (add _ _ (of x) ih)
 
-theorem lift_add_apply [AddCommGroup G] (f g : α → G) (a : FreeAbelianGroup α) :
+theorem lift_add_apply [AddGroup G] [IsAddCommutative G] (f g : α → G) (a : FreeAbelianGroup α) :
     lift (f + g) a = lift f a + lift g a := by
   induction a using FreeAbelianGroup.induction_on with
   | zero => simp only [(lift _).map_zero, zero_add]
@@ -187,7 +187,7 @@ theorem lift_add_apply [AddCommGroup G] (f g : α → G) (a : FreeAbelianGroup �
   | neg x => simp only [map_neg, lift_apply_of, Pi.add_apply, neg_add]
   | add x y hx hy => simp only [(lift _).map_add, hx, hy, add_add_add_comm]
 
-@[simp] lemma lift_add [AddCommGroup G] (f g : α → G) : lift (f + g) = lift f + lift g :=
+@[simp] lemma lift_add [AddGroup G] [IsAddCommutative G] (f g : α → G) : lift (f + g) = lift f + lift g :=
   AddMonoidHom.ext <| lift_add_apply _ _
 
 #adaptation_note
@@ -195,18 +195,18 @@ theorem lift_add_apply [AddCommGroup G] (f g : α → G) (a : FreeAbelianGroup �
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `FreeAbelianGroup.lift` as an equivalence of groups. -/
 @[simps!]
-def liftAddEquiv [AddCommGroup G] : (α → G) ≃+ (FreeAbelianGroup α →+ G) := ⟨lift, lift_add⟩
+def liftAddEquiv [AddGroup G] [IsAddCommutative G] : (α → G) ≃+ (FreeAbelianGroup α →+ G) := ⟨lift, lift_add⟩
 
 /-- If `g : FreeAbelianGroup X` and `A` is an abelian group then `liftAddGroupHom g`
 is the additive group homomorphism sending a function `X → A` to the term of type `A`
 corresponding to the evaluation of the induced map `FreeAbelianGroup X → A` at `g`. -/
 @[simps!]
-def liftAddGroupHom {α} (β) [AddCommGroup β] (a : FreeAbelianGroup α) : (α → β) →+ β :=
+def liftAddGroupHom {α} (β) [AddGroup β] [IsAddCommutative β] (a : FreeAbelianGroup α) : (α → β) →+ β :=
   AddMonoidHom.mk' (fun f ↦ lift f a) (lift_add_apply · · _)
 
-@[simp] lemma lift_neg [AddCommGroup G] (f : α → G) : lift (-f) = -lift f := liftAddEquiv.map_neg f
+@[simp] lemma lift_neg [AddGroup G] [IsAddCommutative G] (f : α → G) : lift (-f) = -lift f := liftAddEquiv.map_neg f
 
-lemma lift_neg_apply [AddCommGroup G] (f : α → G) (a : FreeAbelianGroup α) :
+lemma lift_neg_apply [AddGroup G] [IsAddCommutative G] (f : α → G) (a : FreeAbelianGroup α) :
     lift (-f) a = -lift f a := congr($(lift_neg f) a)
 
 section Monad
@@ -353,7 +353,7 @@ variable {β : Type v} {γ : Type w}
 def map (f : α → β) : FreeAbelianGroup α →+ FreeAbelianGroup β :=
   lift (of ∘ f)
 
-theorem lift_comp {α} {β} {γ} [AddCommGroup γ] (f : α → β) (g : β → γ) (x : FreeAbelianGroup α) :
+theorem lift_comp {α} {β} {γ} [AddGroup γ] [IsAddCommutative γ] (f : α → β) (g : β → γ) (x : FreeAbelianGroup α) :
     lift (g ∘ f) x = lift g (map f x) := by
   induction x using FreeAbelianGroup.induction_on with
   | zero => simp only [map_zero]
@@ -527,7 +527,7 @@ theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
 
 end Monoid
 
-instance [CommMonoid α] : CommRing (FreeAbelianGroup α) where
+instance [Monoid α] [IsMulCommutative α] : CommRing (FreeAbelianGroup α) where
   mul_comm x y := by
     induction x using FreeAbelianGroup.induction_on with
     | zero => exact zero_mul y

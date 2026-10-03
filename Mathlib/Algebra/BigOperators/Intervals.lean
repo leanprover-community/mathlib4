@@ -25,24 +25,24 @@ variable {α G M : Type*}
 namespace Finset
 
 section Generic
-variable [CommMonoid M] {s : Finset α} {a : α} {f : α → M}
+variable [Monoid M] [IsMulCommutative M] {s : Finset α} {a : α} {f : α → M}
 
 @[to_additive]
-theorem prod_Ico_add' [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+theorem prod_Ico_add' [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     [ExistsAddOfLE α] [LocallyFiniteOrder α]
     (f : α → M) (a b c : α) : (∏ x ∈ Ico a b, f (x + c)) = ∏ x ∈ Ico (a + c) (b + c), f x := by
   rw [← map_add_right_Ico, prod_map]
   rfl
 
 @[to_additive]
-theorem prod_Ico_add [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+theorem prod_Ico_add [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     [ExistsAddOfLE α] [LocallyFiniteOrder α]
     (f : α → M) (a b c : α) : (∏ x ∈ Ico a b, f (c + x)) = ∏ x ∈ Ico (a + c) (b + c), f x := by
   convert! prod_Ico_add' f a b c using 2
   rw [add_comm]
 
 @[to_additive (attr := simp)]
-theorem prod_Ico_add_right_sub_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+theorem prod_Ico_add_right_sub_eq [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     [ExistsAddOfLE α] [LocallyFiniteOrder α] [Sub α] [OrderedSub α] (a b c : α) :
     ∏ x ∈ Ico (a + c) (b + c), f (x - c) = ∏ x ∈ Ico a b, f x := by
   simp only [← map_add_right_Ico, prod_map, addRightEmbedding_apply, add_tsub_cancel_right]
@@ -86,17 +86,17 @@ theorem prod_range_eq_mul_Ico (f : ℕ → M) {n : ℕ} (hn : 0 < n) :
   Finset.range_eq_Ico n ▸ Finset.prod_eq_prod_Ico_succ_bot hn f
 
 @[to_additive]
-theorem prod_Ico_eq_mul_inv {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
+theorem prod_Ico_eq_mul_inv {δ : Type*} [Group δ] [IsMulCommutative δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
     ∏ k ∈ Ico m n, f k = (∏ k ∈ range n, f k) * (∏ k ∈ range m, f k)⁻¹ :=
   eq_mul_inv_iff_mul_eq.2 <| by (rw [mul_comm]; exact prod_range_mul_prod_Ico f h)
 
 @[to_additive]
-theorem prod_Ico_eq_div {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
+theorem prod_Ico_eq_div {δ : Type*} [Group δ] [IsMulCommutative δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
     ∏ k ∈ Ico m n, f k = (∏ k ∈ range n, f k) / ∏ k ∈ range m, f k := by
   simpa only [div_eq_mul_inv] using prod_Ico_eq_mul_inv f h
 
 @[to_additive]
-theorem prod_range_div_prod_range {G : Type*} [CommGroup G] {f : ℕ → G} {n m : ℕ} (hnm : n ≤ m) :
+theorem prod_range_div_prod_range {G : Type*} [Group G] [IsMulCommutative G] {f : ℕ → G} {n m : ℕ} (hnm : n ≤ m) :
     ((∏ k ∈ range m, f k) / ∏ k ∈ range n, f k) = ∏ k ∈ range m with n ≤ k, f k := by
   rw [← prod_Ico_eq_div f hnm]
   congr
@@ -105,7 +105,7 @@ theorem prod_range_div_prod_range {G : Type*} [CommGroup G] {f : ℕ → G} {n m
   tauto
 
 /-- The two ways of summing over `(i, j)` in the range `a ≤ i ≤ j < b` are equal. -/
-theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
+theorem sum_Ico_Ico_comm {M : Type*} [AddMonoid M] [IsAddCommutative M] (a b : ℕ) (f : ℕ → ℕ → M) :
     (∑ i ∈ Finset.Ico a b, ∑ j ∈ Finset.Ico i b, f i j) =
       ∑ j ∈ Finset.Ico a b, ∑ i ∈ Finset.Ico a (j + 1), f i j := by
   rw [Finset.sum_sigma', Finset.sum_sigma']
@@ -115,7 +115,7 @@ theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → 
   lia
 
 /-- The two ways of summing over `(i, j)` in the range `a ≤ i < j < b` are equal. -/
-theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
+theorem sum_Ico_Ico_comm' {M : Type*} [AddMonoid M] [IsAddCommutative M] (a b : ℕ) (f : ℕ → ℕ → M) :
     (∑ i ∈ Finset.Ico a b, ∑ j ∈ Finset.Ico (i + 1) b, f i j) =
       ∑ j ∈ Finset.Ico a b, ∑ i ∈ Finset.Ico a j, f i j := by
   rw [Finset.sum_sigma', Finset.sum_sigma']
@@ -203,7 +203,7 @@ variable (f : ℕ → M) {m n : ℕ}
 
 section Group
 
-variable [CommGroup M]
+variable [Group M] [IsMulCommutative M]
 
 @[to_additive]
 theorem prod_range_succ_div_prod : ((∏ i ∈ range (n + 1), f i) / ∏ i ∈ range n, f i) = f n :=
@@ -240,14 +240,14 @@ end Finset
 section Fin
 
 @[to_additive]
-lemma Finset.prod_fin_Icc_eq_prod_nat_Icc [CommMonoid α] {n : ℕ} (a b : Fin n) (f : Fin n → α) :
+lemma Finset.prod_fin_Icc_eq_prod_nat_Icc [Monoid α] [IsMulCommutative α] {n : ℕ} (a b : Fin n) (f : Fin n → α) :
     ∏ i ∈ Icc a b, f i = ∏ i ∈ Icc (a : ℕ) b, if h : i < n then f ⟨i, h⟩ else 1 := by
   rw [← prod_ite_mem_eq, prod_fin_eq_prod_range]
   apply prod_congr_of_eq_on_inter <;> grind
 
 /-- Telescopic product over `Fin`. -/
 @[to_additive /-- Telescopic sum over `Fin`. -/]
-lemma Fin.prod_Iic_div [CommGroup M] {n : ℕ} (a : Fin n) (f : Fin (n + 1) → M) :
+lemma Fin.prod_Iic_div [Group M] [IsMulCommutative M] {n : ℕ} (a : Fin n) (f : Fin (n + 1) → M) :
     ∏ i ∈ Iic a, (f i.succ / f i.castSucc) = f a.succ / f 0 := by
   rw [← prod_ite_mem_eq, prod_fin_eq_prod_range]
   convert! prod_range_div (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1) (a + 1) using 1 with k
@@ -257,7 +257,7 @@ lemma Fin.prod_Iic_div [CommGroup M] {n : ℕ} (a : Fin n) (f : Fin (n + 1) → 
 
 /-- Telescopic product over `Fin`. -/
 @[to_additive /-- Telescopic sum over `Fin`. -/]
-lemma Fin.prod_Icc_div [CommGroup M] {n : ℕ} {a b : Fin n} (hab : a ≤ b)
+lemma Fin.prod_Icc_div [Group M] [IsMulCommutative M] {n : ℕ} {a b : Fin n} (hab : a ≤ b)
     (f : Fin (n + 1) → M) :
     ∏ i ∈ Icc a b, (f i.succ / f i.castSucc) = f b.succ / f a.castSucc := by
   rw [prod_fin_Icc_eq_prod_nat_Icc]

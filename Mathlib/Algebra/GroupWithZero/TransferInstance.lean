@@ -52,7 +52,7 @@ protected abbrev monoidWithZero [MonoidWithZero β] : MonoidWithZero α := by
   apply e.injective.monoidWithZero _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `CommMonoidWithZero` across an `Equiv` -/
-protected abbrev commMonoidWithZero [CommMonoidWithZero β] : CommMonoidWithZero α := by
+protected abbrev commMonoidWithZero [MonoidWithZero β] [IsMulCommutative β] : CommMonoidWithZero α := by
   let _ := e.monoidWithZero
   apply e.injective.commMonoidWithZero _ <;> intros <;> exact e.apply_symm_apply _
 

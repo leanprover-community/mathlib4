@@ -43,10 +43,10 @@ public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 variable {α ι : Type*} [TopologicalSpace α]
 variable {𝕜 𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃]
 variable {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ]
-variable {E F Fᵤ G : Type*} [AddCommGroup E] [TopologicalSpace E]
-  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
-  [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
-  [AddCommGroup Fᵤ] [UniformSpace Fᵤ] [IsUniformAddGroup Fᵤ]
+variable {E F Fᵤ G : Type*} [AddGroup E] [IsAddCommutative E] [TopologicalSpace E]
+  [AddGroup F] [IsAddCommutative F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [AddGroup G] [IsAddCommutative G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [AddGroup Fᵤ] [IsAddCommutative Fᵤ] [UniformSpace Fᵤ] [IsUniformAddGroup Fᵤ]
   [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 Fᵤ] [Module 𝕜₁ E] [Module 𝕜₂ F] [Module 𝕜₂ Fᵤ] [Module 𝕜₃ G]
 
 open Set Topology
@@ -170,7 +170,7 @@ def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
 section Pi
 
 variable {ι : Type*} (F : ι → Type*)
-  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
+  [∀ i, AddGroup (F i)] [∀ i, IsAddCommutative (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
 
 variable (𝕜 E) in

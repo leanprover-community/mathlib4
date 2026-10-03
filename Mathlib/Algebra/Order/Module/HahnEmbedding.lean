@@ -60,9 +60,9 @@ following steps.
 open FiniteArchimedeanClass DirectSum HahnSeries
 
 variable {K : Type*} [DivisionRing K] [LinearOrder K] [IsOrderedRing K] [Archimedean K]
-variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [LinearOrder M] [IsOrderedAddMonoid M]
 variable [Module K M] [IsOrderedModule K M]
-variable {R : Type*} [AddCommGroup R] [LinearOrder R]
+variable {R : Type*} [AddGroup R] [IsAddCommutative R] [LinearOrder R]
 variable [Module K R]
 
 namespace HahnEmbedding

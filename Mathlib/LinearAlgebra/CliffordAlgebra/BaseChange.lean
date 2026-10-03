@@ -34,7 +34,7 @@ We show the additional results:
 @[expose] public section
 
 variable {R A V : Type*}
-variable [CommRing R] [CommRing A] [AddCommGroup V]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [AddGroup V] [IsAddCommutative V]
 variable [Algebra R A] [Module R V]
 variable [Invertible (2 : R)]
 

@@ -30,7 +30,7 @@ namespace Associates
 
 open UniqueFactorizationMonoid Associated Multiset
 
-variable [CommMonoidWithZero α]
+variable [MonoidWithZero α] [IsMulCommutative α]
 
 /-- `FactorSet α` representation elements of unique factorization domain as multisets.
 `Multiset α` produced by `normalizedFactors` are only unique up to associated elements, while the
@@ -39,7 +39,7 @@ gives us a representation of each element as a unique multisets (or the added �
 complete lattice structure. Infimum is the greatest common divisor and supremum is the least common
 multiple.
 -/
-abbrev FactorSet.{u} (α : Type u) [CommMonoidWithZero α] : Type u :=
+abbrev FactorSet.{u} (α : Type u) [MonoidWithZero α] [IsMulCommutative α] : Type u :=
   WithTop (Multiset { a : Associates α // Irreducible a })
 
 attribute [local instance] Associated.setoid

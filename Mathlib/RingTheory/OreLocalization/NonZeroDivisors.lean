@@ -92,7 +92,7 @@ end MonoidWithZero
 
 section CommMonoidWithZero
 
-variable {R : Type*} [CommMonoidWithZero R] [Nontrivial R] [OreSet R⁰] [NoZeroDivisors R]
+variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] [Nontrivial R] [OreSet R⁰] [NoZeroDivisors R]
 
 noncomputable instance : CommGroupWithZero R[R⁰⁻¹] where
 

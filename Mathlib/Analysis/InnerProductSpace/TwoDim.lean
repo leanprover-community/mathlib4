@@ -79,7 +79,7 @@ open Module
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
   (o : Orientation ℝ E (Fin 2))
 
 namespace Orientation
@@ -143,7 +143,7 @@ theorem abs_areaForm_of_orthogonal {x y : E} (h : ⟪x, y⟫ = 0) : |ω x y| = �
   · simpa [real_inner_comm] using h
   · simp_all
 
-theorem areaForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+theorem areaForm_map {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
     [hF : Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x y : F) :
     (Orientation.map (Fin 2) φ.toLinearEquiv o).areaForm x y =
     o.areaForm (φ.symm x) (φ.symm y) := by
@@ -290,7 +290,7 @@ theorem rightAngleRotation_trans_neg_orientation :
     (-o).rightAngleRotation = o.rightAngleRotation.trans (LinearIsometryEquiv.neg ℝ) :=
   LinearIsometryEquiv.ext o.rightAngleRotation_neg_orientation
 
-theorem rightAngleRotation_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+theorem rightAngleRotation_map {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
     [hF : Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x : F) :
     (Orientation.map (Fin 2) φ.toLinearEquiv o).rightAngleRotation x =
       φ (o.rightAngleRotation (φ.symm x)) := by
@@ -312,7 +312,7 @@ theorem linearIsometryEquiv_comp_rightAngleRotation (φ : E ≃ₗᵢ[ℝ] E)
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
     rw [@Fact.out (finrank ℝ E = 2), Fintype.card_fin]
 
-theorem rightAngleRotation_map' {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+theorem rightAngleRotation_map' {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
     [Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) :
     (Orientation.map (Fin 2) φ.toLinearEquiv o).rightAngleRotation =
       (φ.symm.trans o.rightAngleRotation).trans φ :=
@@ -488,7 +488,7 @@ theorem kahler_ne_zero_iff (x y : E) : o.kahler x y ≠ 0 ↔ x ≠ 0 ∧ y ≠ 
   simp only [not_and_or, Classical.not_not, kahler_apply_apply, Complex.real_smul]
   rintro (rfl | rfl) <;> simp
 
-theorem kahler_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+theorem kahler_map {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
     [hF : Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x y : F) :
     (Orientation.map (Fin 2) φ.toLinearEquiv o).kahler x y = o.kahler (φ.symm x) (φ.symm y) := by
   simp [kahler_apply_apply, areaForm_map]

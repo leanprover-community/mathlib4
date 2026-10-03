@@ -34,7 +34,7 @@ variable {ι : Type*}
 
 section SemiRing
 
-variable {R : Type*} {M : ι → Type*} [CommSemiring R] [Π i, AddCommMonoid (M i)]
+variable {R : Type*} {M : ι → Type*} [Semiring R] [IsMulCommutative R] [Π i, AddCommMonoid (M i)]
   [Π i, Module R (M i)]
 
 /-- The canonical linear map from `⨂[R] i, Dual R (M i)` to `Dual R (⨂[R] i, M i)`,
@@ -54,7 +54,7 @@ end SemiRing
 
 section Ring
 
-variable {R : Type*} {κ : ι → Type*} {M : ι → Type*} [CommRing R] [Π i, AddCommGroup (M i)]
+variable {R : Type*} {κ : ι → Type*} {M : ι → Type*} [Ring R] [IsMulCommutative R] [Π i, AddCommGroup (M i)]
   [Π i, Module R (M i)]
 
 open scoped Classical in

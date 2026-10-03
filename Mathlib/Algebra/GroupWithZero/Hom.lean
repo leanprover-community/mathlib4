@@ -208,7 +208,7 @@ instance : Inhabited (α →*₀ α) := ⟨id α⟩
 
 /-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid with zero, `f * g` is the
 monoid with zero morphism sending `x` to `f x * g x`. -/
-instance {β} [CommMonoidWithZero β] : Mul (α →*₀ β) where
+instance {β} [MonoidWithZero β] [IsMulCommutative β] : Mul (α →*₀ β) where
   mul f g :=
     { (f * g : α →* β) with
       map_zero' := by dsimp; rw [map_zero, zero_mul] }
@@ -256,7 +256,7 @@ lemma one_apply_eq_one_iff {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOn
 end MonoidWithZeroHom
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero M₀] {n : ℕ} (hn : n ≠ 0)
+variable [MonoidWithZero M₀] [IsMulCommutative M₀] {n : ℕ} (hn : n ≠ 0)
 
 /-- We define `x ↦ x^n` (for positive `n : ℕ`) as a `MonoidWithZeroHom` -/
 def powMonoidWithZeroHom : M₀ →*₀ M₀ :=

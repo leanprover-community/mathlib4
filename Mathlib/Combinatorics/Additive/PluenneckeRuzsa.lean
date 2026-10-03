@@ -154,7 +154,7 @@ theorem pluennecke_petridis_inequality_mul (C : Finset G)
 end Group
 
 section CommGroup
-variable [CommGroup G] {A B C : Finset G}
+variable [Group G] [IsMulCommutative G] {A B C : Finset G}
 
 /-! ### Commutative Ruzsa triangle inequality -/
 

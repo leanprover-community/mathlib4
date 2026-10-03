@@ -29,7 +29,7 @@ namespace OreLocalization
 section Module
 
 variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
-variable {X : Type*} [AddCommMonoid X] [Module R X]
+variable {X : Type*} [AddMonoid X] [IsAddCommutative X] [Module R X]
 
 protected theorem zero_smul (x : X[S⁻¹]) : (0 : R[S⁻¹]) • x = 0 := by
   induction x with | _ r s
@@ -83,7 +83,7 @@ instance : Semiring R[S⁻¹] where
   left_distrib := OreLocalization.left_distrib
   right_distrib := right_distrib
 
-variable {X : Type*} [AddCommMonoid X] [Module R X]
+variable {X : Type*} [AddMonoid X] [IsAddCommutative X] [Module R X]
 
 instance : Module R[S⁻¹] X[S⁻¹] where
   add_smul := OreLocalization.add_smul
@@ -109,7 +109,7 @@ abbrev numeratorRingHom : R →+* R[S⁻¹] where
   map_zero' := by with_unfolding_all exact OreLocalization.zero_def
   map_add' _ _ := add_oreDiv.symm
 
-instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
+instance {R₀} [Semiring R₀] [IsMulCommutative R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
   __ := (inferInstance : Module R₀ R[S⁻¹])
   algebraMap := numeratorRingHom.comp (algebraMap R₀ R)
   commutes' r x := by
@@ -176,7 +176,7 @@ end Semiring
 section Ring
 
 variable {R : Type*} [Ring R] {S : Submonoid R} [OreSet S]
-variable {X : Type*} [AddCommGroup X] [Module R X]
+variable {X : Type*} [AddGroup X] [IsAddCommutative X] [Module R X]
 
 instance : Ring R[S⁻¹] where
   __ := (inferInstance : Semiring R[S⁻¹])
@@ -220,7 +220,7 @@ end DivisionRing
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {S : Submonoid R} [OreSet S]
 
 instance : CommSemiring R[S⁻¹] where
   __ := (inferInstance : Semiring R[S⁻¹])
@@ -230,7 +230,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {S : Submonoid R} [OreSet S]
 
 instance : CommRing R[S⁻¹] where
   __ := (inferInstance : Ring R[S⁻¹])
@@ -242,7 +242,7 @@ section Field
 
 open nonZeroDivisors
 
-variable {R : Type*} [CommRing R] [Nontrivial R] [NoZeroDivisors R] [OreSet R⁰]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [Nontrivial R] [NoZeroDivisors R] [OreSet R⁰]
 
 noncomputable
 instance : Field R[R⁰⁻¹] where

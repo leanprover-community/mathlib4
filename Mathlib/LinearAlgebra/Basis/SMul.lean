@@ -28,7 +28,7 @@ open Function Set Submodule Finsupp
 variable {ι R R₂ M : Type*}
 
 namespace Module.Basis
-variable [Semiring R] [AddCommMonoid M] [Module R M] (b : Basis ι R M)
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] (b : Basis ι R M)
 
 section SMul
 variable {G G'}
@@ -108,7 +108,7 @@ theorem unitsSMul_apply {v : Basis ι R M} {w : ι → Rˣ} (i : ι) : unitsSMul
   mk_apply (LinearIndependent.units_smul v.linearIndependent w)
     (units_smul_span_eq_top v.span_eq).ge i
 
-variable [CommSemiring R₂] [Module R₂ M]
+variable [Semiring R₂] [IsMulCommutative R₂] [Module R₂ M]
 
 @[simp]
 theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :

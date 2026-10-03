@@ -22,12 +22,12 @@ public section
 
 open IsNoetherian
 
-theorem IsNoetherianRing.isNilpotent_nilradical (R : Type*) [CommSemiring R] [IsNoetherianRing R] :
+theorem IsNoetherianRing.isNilpotent_nilradical (R : Type*) [Semiring R] [IsMulCommutative R] [IsNoetherianRing R] :
     IsNilpotent (nilradical R) := by
   obtain ⟨n, hn⟩ := Ideal.exists_radical_pow_le_of_fg (⊥ : Ideal R) (IsNoetherian.noetherian _)
   exact ⟨n, eq_bot_iff.mpr hn⟩
 
-lemma Ideal.FG.isNilpotent_iff_le_nilradical {R : Type*} [CommSemiring R] {I : Ideal R}
+lemma Ideal.FG.isNilpotent_iff_le_nilradical {R : Type*} [Semiring R] [IsMulCommutative R] {I : Ideal R}
     (hI : I.FG) : IsNilpotent I ↔ I ≤ nilradical R :=
   ⟨fun ⟨n, hn⟩ _ hx ↦ ⟨n, hn ▸ Ideal.pow_mem_pow hx n⟩,
     fun h ↦ let ⟨n, hn⟩ := exists_pow_le_of_le_radical_of_fg h hI; ⟨n, le_bot_iff.mp hn⟩⟩

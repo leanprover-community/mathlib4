@@ -58,7 +58,7 @@ open Fin Finset Fintype
 local notation:70 s:70 " ^^ " n:71 => piFinset fun i : Fin n ↦ s i
 
 namespace MvPolynomial
-variable {R : Type*} [CommRing R] [IsDomain R] [DecidableEq R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [DecidableEq R]
 
 -- A user should be able to provide `hp` as a named argument
 -- regardless of whether one has used pattern-matching or induction to prove the lemma.

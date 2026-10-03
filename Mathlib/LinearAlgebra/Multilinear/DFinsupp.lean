@@ -43,7 +43,7 @@ section Semiring
 variable {M : ∀ i, κ i → Type uM} {N : Type uN}
 
 variable [Finite ι] [Semiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [AddCommMonoid N]
+variable [∀ i k, AddMonoid (M i k)] [∀ i k, IsAddCommutative (M i k)] [AddMonoid N] [IsAddCommutative N]
 variable [∀ i k, Module R (M i k)] [Module R N]
 
 /-- Two multilinear maps from finitely supported functions are equal if they agree on the
@@ -74,7 +74,7 @@ variable {M : ∀ i, κ i → Type uM} {N : (Π i, κ i) → Type uN}
 section Semiring
 
 variable [DecidableEq ι] [Fintype ι] [Semiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
+variable [∀ i k, AddMonoid (M i k)] [∀ i k, IsAddCommutative (M i k)] [∀ p, AddMonoid (N p)] [∀ p, IsAddCommutative (N p)]
 variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
 /--
@@ -185,8 +185,8 @@ end Semiring
 
 section CommSemiring
 
-variable [DecidableEq ι] [Fintype ι] [CommSemiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
+variable [DecidableEq ι] [Fintype ι] [Semiring R] [IsMulCommutative R]
+variable [∀ i k, AddMonoid (M i k)] [∀ i k, IsAddCommutative (M i k)] [∀ p, AddMonoid (N p)] [∀ p, IsAddCommutative (N p)]
 variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
 /-- `MultilinearMap.dfinsuppFamily` as a linear map. -/
@@ -198,7 +198,7 @@ def dfinsuppFamilyₗ :
   map_add' := dfinsuppFamily_add
   map_smul' := dfinsuppFamily_smul
 
-variable {N : Type*} [AddCommMonoid N] [Module R N] [(i : ι) → DecidableEq (κ i)]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N] [(i : ι) → DecidableEq (κ i)]
 
 variable (R κ) in
 /-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
@@ -242,7 +242,7 @@ end dfinsuppFamily
 
 section freeDFinsuppEquiv
 
-variable {ι' : Type*} [DecidableEq ι] [Fintype ι] [CommSemiring R]
+variable {ι' : Type*} [DecidableEq ι] [Fintype ι] [Semiring R] [IsMulCommutative R]
   [∀ i, Fintype (κ i)] [∀ i, DecidableEq (κ i)]
 
 /--

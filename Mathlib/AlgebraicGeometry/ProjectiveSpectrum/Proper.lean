@@ -25,7 +25,7 @@ public section
 namespace AlgebraicGeometry.Proj
 
 variable {σ A : Type*}
-variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable [Ring A] [IsMulCommutative A] [SetLike σ A] [AddSubgroupClass σ A]
 variable (𝒜 : ℕ → σ)
 variable [GradedRing 𝒜]
 
@@ -198,7 +198,7 @@ This is the underlying algebraic statement of the valuative criterion for `Proj 
 -/
 @[stacks 01MF "algebraic part"]
 theorem valuativeCriterion_existence_aux
-    {O : Type*} [CommRing O] [IsDomain O] [ValuationRing O]
+    {O : Type*} [Ring O] [IsMulCommutative O] [IsDomain O] [ValuationRing O]
     {K : Type*} [Field K] [Algebra O K] [IsFractionRing O K]
     (φ₀ : (𝒜 0) →+* O)
     (ι : Type*) [Finite ι] (x : ι → A) (h2 : Algebra.adjoin (𝒜 0) (Set.range x) = ⊤)

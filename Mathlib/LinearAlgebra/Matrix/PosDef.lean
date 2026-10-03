@@ -51,7 +51,7 @@ namespace Matrix
 
 variable {m n R R' : Type*}
 variable [Ring R] [PartialOrder R] [StarRing R]
-variable [CommRing R'] [PartialOrder R'] [StarRing R']
+variable [Ring R'] [IsMulCommutative R'] [PartialOrder R'] [StarRing R']
 
 /-!
 ## Positive semidefinite matrices
@@ -107,7 +107,7 @@ protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
   ⟨hA.isHermitian.add hB.isHermitian, fun x => by
     simpa [mul_add, add_mul] using add_nonneg (hA.2 x) (hB.2 x)⟩
 
-protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
+protected theorem smul {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [StarRing α]
     [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulMono α R] {x : Matrix n n R}
     (hx : x.PosSemidef) {a : α} (ha : 0 ≤ a) : (a • x).PosSemidef := by
   refine ⟨IsSelfAdjoint.smul (.of_nonneg ha) hx.1, fun y => ?_⟩
@@ -272,7 +272,7 @@ theorem _root_.Matrix.posDef_sum {ι : Type*} [AddLeftMono R] {A : ι → Matrix
       · exact PosDef.add (hA _ <| Finset.mem_insert_self i hi) <|
           H (not_not.mp h) fun _ _hi => hA _ (Finset.mem_insert_of_mem _hi)
 
-protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
+protected theorem smul {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [StarRing α]
     [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulStrictMono α R]
     {x : Matrix n n R} (hx : x.PosDef) {a : α} (ha : 0 < a) : (a • x).PosDef := by
   refine ⟨IsSelfAdjoint.smul (IsSelfAdjoint.of_nonneg ha.le) hx.1, fun y hy => ?_⟩
@@ -515,13 +515,13 @@ lemma _root_.Matrix.PosSemidef.posDef_iff_mulVec_injective [StarOrderedRing R']
     PosDef A ↔ Function.Injective A.mulVec := by
   simp [posDef_iff_posSemidef_and_mulVec_injective, hA]
 
-theorem of_toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
+theorem of_toQuadraticForm' {R : Type*} [Ring R] [IsMulCommutative R] [PartialOrder R] [StarRing R] [TrivialStar R]
     [DecidableEq n] {M : Matrix n n R} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
   refine of_dotProduct_mulVec_pos (by simpa) fun x hx ↦ ?_
   simpa [toQuadraticForm', toLinearMap₂'_apply'] using hMq x hx
 
-theorem toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
+theorem toQuadraticForm' {R : Type*} [Ring R] [IsMulCommutative R] [PartialOrder R] [StarRing R] [TrivialStar R]
     [DecidableEq n] {M : Matrix n n R} (hM : M.PosDef) :
     M.toQuadraticForm'.PosDef := by
   intro x hx
@@ -529,8 +529,8 @@ theorem toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] 
 
 /-- See also `LinearMap.isPosSemidef_iff_posSemidef_toMatrix` for the semi-definite case. -/
 theorem _root_.LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix
-    {R M : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
-    [AddCommGroup M] [Module R M] [DecidableEq n]
+    {R M : Type*} [Ring R] [IsMulCommutative R] [PartialOrder R] [StarRing R] [TrivialStar R]
+    [AddGroup M] [IsAddCommutative M] [Module R M] [DecidableEq n]
     (b : Module.Basis n R M) (B : LinearMap.BilinForm R M) (hB_symm : B.IsSymm) :
     B.toQuadraticMap.PosDef ↔ (B.toMatrix b).PosDef := by
   have aux (i j : n) (s t : R) : t * B (b i) (b j) * s = t * (s * B (b j) (b i)) := by
@@ -665,7 +665,7 @@ end SchurComplement
 
 /-- The **Cauchy-Schwarz inequality** for a positive definite matrix. -/
 lemma star_dotProduct_mulVec_mul_le {R : Type*}
-    [CommRing R] [PartialOrder R] [StarRing R] [IsOrderedRing R] [PosMulReflectLE R]
+    [Ring R] [IsMulCommutative R] [PartialOrder R] [StarRing R] [IsOrderedRing R] [PosMulReflectLE R]
     {A : Matrix n n R} (hA : A.PosDef) (x y : n → R) :
     letI xAy := star x ⬝ᵥ A *ᵥ y
     letI xAa := star x ⬝ᵥ A *ᵥ x

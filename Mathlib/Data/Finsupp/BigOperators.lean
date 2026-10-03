@@ -46,13 +46,13 @@ theorem List.support_sum_subset [AddZeroClass M] (l : List (ι →₀ M)) :
     simp only [List.sum_cons]
     exact Finsupp.support_add.trans (Finset.union_subset_union Finset.Subset.rfl IH)
 
-theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M)) :
+theorem Multiset.support_sum_subset [AddMonoid M] [IsAddCommutative M] (s : Multiset (ι →₀ M)) :
     s.sum.support ⊆ (s.map Finsupp.support).sup := by
   induction s using Quot.inductionOn
   simpa only [Multiset.quot_mk_to_coe'', Multiset.sum_coe, Multiset.map_coe, Multiset.sup_coe,
     List.foldr_map] using! List.support_sum_subset _
 
-theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
+theorem Finset.support_sum_subset [AddMonoid M] [IsAddCommutative M] (s : Finset (ι →₀ M)) :
     (s.sum id).support ⊆ Finset.sup s Finsupp.support := by
   convert! Multiset.support_sum_subset s.1; simp
 
@@ -95,7 +95,7 @@ theorem List.support_sum_eq [AddZeroClass M] (l : List (ι →₀ M))
     obtain ⟨f, hf, rfl⟩ := hf
     exact hl.left _ hf
 
-theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
+theorem Multiset.support_sum_eq [AddMonoid M] [IsAddCommutative M] (s : Multiset (ι →₀ M))
     (hs : s.Pairwise (_root_.Disjoint on Finsupp.support)) :
     s.sum.support = (s.map Finsupp.support).sup := by
   induction s using Quot.inductionOn with | _ a
@@ -107,7 +107,7 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
   simp only [Multiset.quot_mk_to_coe'', Multiset.coe_eq_coe] at hl
   exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h
 
-theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))
+theorem Finset.support_sum_eq [AddMonoid M] [IsAddCommutative M] (s : Finset (ι →₀ M))
     (hs : (s : Set (ι →₀ M)).PairwiseDisjoint Finsupp.support) :
     (s.sum id).support = Finset.sup s Finsupp.support := by
   classical

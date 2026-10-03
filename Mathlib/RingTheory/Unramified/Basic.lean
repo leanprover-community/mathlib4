@@ -44,7 +44,7 @@ namespace Algebra
 
 section
 
-variable (R : Type v) (A : Type u) [CommRing R] [CommRing A] [Algebra R A]
+variable (R : Type v) (A : Type u) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
 
 /--
 An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.
@@ -64,9 +64,9 @@ namespace FormallyUnramified
 
 section
 
-variable {R : Type v} [CommRing R]
-variable {A : Type u} [CommRing A] [Algebra R A]
-variable {B : Type w} [CommRing B] [Algebra R B] (I : Ideal B)
+variable {R : Type v} [Ring R] [IsMulCommutative R]
+variable {A : Type u} [Ring A] [IsMulCommutative A] [Algebra R A]
+variable {B : Type w} [Ring B] [IsMulCommutative B] [Algebra R B] (I : Ideal B)
 
 theorem comp_injective [FormallyUnramified R A] (hI : I ^ 2 = ⊥) :
     Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
@@ -81,13 +81,13 @@ theorem comp_injective [FormallyUnramified R A] (hI : I ^ 2 = ⊥) :
 set_option backward.isDefEq.respectTransparency false in
 theorem iff_comp_injective_of_small [Small.{w} A] :
     FormallyUnramified R A ↔
-      ∀ ⦃B : Type w⦄ [CommRing B],
+      ∀ ⦃B : Type w⦄ [Ring B] [IsMulCommutative B],
         ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
           Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
   constructor
   · intros; exact comp_injective _ ‹_›
   · intro H
-    replace H : ∀ ⦃B : Type u⦄ [CommRing B] [Small.{w} B],
+    replace H : ∀ ⦃B : Type u⦄ [Ring B] [IsMulCommutative B] [Small.{w} B],
         ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
           Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
       intro B _ _ _ I hI f g e
@@ -113,7 +113,7 @@ theorem iff_comp_injective_of_small [Small.{w} A] :
 /-- A version without stray universes that is more easy to rewrite with. -/
 theorem iff_comp_injective :
     FormallyUnramified R A ↔
-      ∀ ⦃B : Type u⦄ [CommRing B],
+      ∀ ⦃B : Type u⦄ [Ring B] [IsMulCommutative B],
         ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
           Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
   iff_comp_injective_of_small
@@ -184,15 +184,15 @@ theorem ext_of_iInf [FormallyUnramified R A] (hI : ⨅ i, I ^ i = ⊥) {g₁ g�
 
 end
 
-instance {R : Type u} [CommRing R] : FormallyUnramified R R := by
+instance {R : Type u} [Ring R] [IsMulCommutative R] : FormallyUnramified R R := by
   rw [iff_comp_injective]
   intro B _ _ _ _ f₁ f₂ _
   exact Subsingleton.elim _ _
 
 section OfEquiv
 
-variable {R : Type*} [CommRing R]
-variable {A B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [Ring B] [IsMulCommutative B] [Algebra R B]
 
 theorem of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
     FormallyUnramified R B := by
@@ -207,9 +207,9 @@ end OfEquiv
 
 section Comp
 
-variable (R : Type*) [CommRing R]
-variable (A : Type*) [CommRing A] [Algebra R A]
-variable (B : Type*) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
+variable (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A]
+variable (B : Type*) [Ring B] [IsMulCommutative B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
 theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
     FormallyUnramified R B := by
@@ -240,8 +240,8 @@ end Comp
 
 section of_surjective
 
-variable {R : Type*} [CommRing R]
-variable {A B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [Ring B] [IsMulCommutative B] [Algebra R B]
 
 /-- This holds in general for epimorphisms. -/
 theorem of_surjective [FormallyUnramified R A] (f : A →ₐ[R] B) (H : Function.Surjective f) :
@@ -255,7 +255,7 @@ theorem of_surjective [FormallyUnramified R A] (f : A →ₐ[R] B) (H : Function
   apply FormallyUnramified.comp_injective I hI
   ext x; congrm $e (f x)
 
-instance quotient {A} [CommRing A] [Algebra R A] [FormallyUnramified R A] (I : Ideal A) :
+instance quotient {A} [Ring A] [IsMulCommutative A] [Algebra R A] [FormallyUnramified R A] (I : Ideal A) :
     FormallyUnramified R (A ⧸ I) :=
   FormallyUnramified.of_surjective (IsScalarTower.toAlgHom R A (A ⧸ I)) Ideal.Quotient.mk_surjective
 
@@ -267,9 +267,9 @@ end of_surjective
 section BaseChange
 
 
-variable {R : Type*} [CommRing R]
-variable {A : Type*} [CommRing A] [Algebra R A]
-variable (B : Type*) [CommRing B] [Algebra R B]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A]
+variable (B : Type*) [Ring B] [IsMulCommutative B] [Algebra R B]
 
 instance base_change [FormallyUnramified R A] :
     FormallyUnramified B (B ⊗[R] A) := by
@@ -288,7 +288,7 @@ end BaseChange
 
 section Localization
 
-variable {R S Rₘ Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
+variable {R S Rₘ Sₘ : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring Rₘ] [IsMulCommutative Rₘ] [Ring Sₘ] [IsMulCommutative Sₘ]
 variable (M : Submonoid R)
 variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
@@ -329,7 +329,7 @@ end Localization
 
 /-- If `S` is an unramified `R`-algebra, `S ⊗[R] S` splits as `S × T` for some `R`-algebra `T`.
 In particular, the diagonal is an open and closed immersion. -/
-lemma exists_algEquiv_prod (R S : Type u) [CommRing R] [CommRing S]
+lemma exists_algEquiv_prod (R S : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     [Algebra R S] [Algebra.EssFiniteType R S] [Algebra.FormallyUnramified R S] :
     ∃ (T : Type u) (_ : CommRing T) (_ : Algebra S T), Nonempty (S ⊗[R] S ≃ₐ[S] S × T) := by
   obtain ⟨e, he, hsp⟩ : ∃ e, IsIdempotentElem e ∧ KaehlerDifferential.ideal R S = S ⊗[R] S ∙ e :=
@@ -347,8 +347,8 @@ end FormallyUnramified
 
 section
 
-variable (R : Type*) [CommRing R]
-variable (A : Type*) [CommRing A] [Algebra R A]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
+variable (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A]
 
 /-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type. -/
 @[stacks 00UT "Note that the Stacks project has a different definition of unramified, and tag
@@ -363,8 +363,8 @@ namespace Unramified
 
 attribute [instance] formallyUnramified finiteType
 
-variable {R : Type*} [CommRing R]
-variable {A B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [Ring B] [IsMulCommutative B] [Algebra R B]
 
 /-- Being unramified is transported via algebra isomorphisms. -/
 theorem of_equiv [Unramified R A] (e : A ≃ₐ[R] B) : Unramified R B where

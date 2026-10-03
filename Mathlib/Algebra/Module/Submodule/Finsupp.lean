@@ -28,7 +28,7 @@ open scoped Pointwise
 
 namespace Submodule
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 section DistribMulAction
 

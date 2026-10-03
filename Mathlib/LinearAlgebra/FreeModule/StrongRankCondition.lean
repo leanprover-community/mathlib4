@@ -39,4 +39,4 @@ is injective.
 /-- Shortcut instance for the fact that any nontrivial commutative ring satisfies
 the strong rank condition. -/
 public instance (priority := 200) commRing_strongRankCondition
-    (R : Type*) [CommRing R] [Nontrivial R] : StrongRankCondition R := inferInstance
+    (R : Type*) [Ring R] [IsMulCommutative R] [Nontrivial R] : StrongRankCondition R := inferInstance

@@ -22,7 +22,7 @@ variable {n : ℕ} {M M₁ : Type*}
 /-- The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.
 Also implies a group structure via `Module.addCommMonoidToAddCommGroup`.
 See note [reducible non-instances]. -/
-abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
+abbrev AddCommMonoid.zmodModule [NeZero n] [AddMonoid M] [IsAddCommutative M] (h : ∀ (x : M), n • x = 0) :
     Module (ZMod n) M := by
   have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
     suffices (c % n + c / n * n) • x = c • x by rwa [add_nsmul, mul_nsmul, h, add_zero] at this
@@ -41,7 +41,7 @@ abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n
 
 /-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
 See note [reducible non-instances]. -/
-abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
+abbrev AddCommGroup.zmodModule {G : Type*} [AddGroup G] [IsAddCommutative G] (h : ∀ (x : G), n • x = 0) :
     Module (ZMod n) G :=
   match n with
   | 0 => AddCommGroup.toIntModule G
@@ -50,11 +50,11 @@ abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n 
 /-- The quotient of an abelian group by a subgroup containing all multiples of `n` is a
 `n`-torsion group. -/
 -- See note [reducible non-instances]
-abbrev QuotientAddGroup.zmodModule {G : Type*} [AddCommGroup G] {H : AddSubgroup G}
+abbrev QuotientAddGroup.zmodModule {G : Type*} [AddGroup G] [IsAddCommutative G] {H : AddSubgroup G}
     (hH : ∀ x, n • x ∈ H) : Module (ZMod n) (G ⧸ H) :=
   AddCommGroup.zmodModule <| by simpa [QuotientAddGroup.forall_mk, ← QuotientAddGroup.mk_nsmul]
 
-variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
+variable {F S : Type*} [AddGroup M] [IsAddCommutative M] [AddGroup M₁] [IsAddCommutative M₁] [FunLike F M M₁]
   [AddMonoidHomClass F M M₁] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
   [AddSubgroupClass S M] {x : M} {K : S}
 
@@ -125,7 +125,7 @@ theorem _root_.Submodule.toAddSubgroup_toZModSubmodule (S : Submodule (ZMod n) M
 end AddSubgroup
 
 namespace ZModModule
-variable {p : ℕ} {G : Type*} [AddCommGroup G]
+variable {p : ℕ} {G : Type*} [AddGroup G] [IsAddCommutative G]
 
 /-- In an elementary abelian `p`-group, every finite subgroup `H` contains a further subgroup of
 cardinality between `k` and `p * k`, if `k ≤ |H|`. -/

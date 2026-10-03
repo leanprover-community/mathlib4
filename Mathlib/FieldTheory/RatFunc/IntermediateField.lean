@@ -40,13 +40,13 @@ noncomputable def IntermediateField.adjoinXEquiv (E : IntermediateField K K⟮X�
 
 /-- The minimal polynomial of `X` over `K⟮f⟯`. It is defined as `f.num - f * f.denom`, viewed
 as a polynomial with coefficients in `A`, where `A` is a `K[f]`-algebra. -/
-noncomputable abbrev minpolyX (A : Type*) [CommRing A] [Algebra K A] [Algebra K[f] A] : A[X] :=
+noncomputable abbrev minpolyX (A : Type*) [Ring A] [IsMulCommutative A] [Algebra K A] [Algebra K[f] A] : A[X] :=
   f.num.map (algebraMap K A) -
   Polynomial.C (algebraMap K[f] A (⟨f, self_mem_adjoin_singleton K f⟩ : K[f])) *
     f.denom.map (algebraMap K A)
 
-theorem minpolyX_map (A : Type*) [CommRing A] [Algebra K A] [Algebra (Algebra.adjoin K {f}) A]
-    (B : Type*) [CommRing B] [Algebra K B] [Algebra K[f] B] [Algebra A B] [IsScalarTower K A B]
+theorem minpolyX_map (A : Type*) [Ring A] [IsMulCommutative A] [Algebra K A] [Algebra (Algebra.adjoin K {f}) A]
+    (B : Type*) [Ring B] [IsMulCommutative B] [Algebra K B] [Algebra K[f] B] [Algebra A B] [IsScalarTower K A B]
     [IsScalarTower K[f] A B] : (f.minpolyX A).map (algebraMap A B) = f.minpolyX B := by
   simp [minpolyX, Polynomial.map_map, ← IsScalarTower.algebraMap_eq,
     ← IsScalarTower.algebraMap_apply]

@@ -37,11 +37,11 @@ variable {α : Type*}
 
 namespace Nonneg
 
-instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
+instance isOrderedAddMonoid [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] :
     IsOrderedAddMonoid (Nonneg α) :=
   Function.Injective.isOrderedAddMonoid Subtype.val Nonneg.coe_add .rfl
 
-instance isOrderedCancelAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
+instance isOrderedCancelAddMonoid [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
     IsOrderedCancelAddMonoid (Nonneg α) :=
   Function.Injective.isOrderedCancelAddMonoid _ Nonneg.coe_add .rfl
 
@@ -75,7 +75,7 @@ instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
   · exact ⟨0, ⟨-a, neg_nonneg.mpr lt.le⟩, Subtype.coe_ne_coe.mp (neg_ne_zero.mpr ha).symm⟩
   · exact ⟨0, ⟨a, lt.le⟩, Subtype.coe_ne_coe.mp ha.symm⟩
 
-instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
+instance linearOrderedCommMonoidWithZero [Semiring α] [IsMulCommutative α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommMonoidWithZero (Nonneg α) where
   isBot_zero a := a.2
 

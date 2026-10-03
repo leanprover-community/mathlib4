@@ -33,7 +33,7 @@ universe u v
 
 section CommSemiring
 
-variable {R : Type u} [CommSemiring R] (x y z w : R)
+variable {R : Type u} [Semiring R] [IsMulCommutative R] (x y z w : R)
 
 /-- The proposition that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
 that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,
@@ -71,7 +71,7 @@ theorem isCoprime_zero_right : IsCoprime x 0 ↔ IsUnit x :=
 theorem not_isCoprime_zero_zero [Nontrivial R] : ¬IsCoprime (0 : R) 0 :=
   mt isCoprime_zero_right.mp not_isUnit_zero
 
-lemma IsCoprime.intCast {R : Type*} [CommRing R] {a b : ℤ} (h : IsCoprime a b) :
+lemma IsCoprime.intCast {R : Type*} [Ring R] [IsMulCommutative R] {a b : ℤ} (h : IsCoprime a b) :
     IsCoprime (a : R) (b : R) := by
   rcases h with ⟨u, v, H⟩
   use u, v
@@ -180,7 +180,7 @@ theorem IsCoprime.isUnit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) 
 theorem IsCoprime.isRelPrime {a b : R} (h : IsCoprime a b) : IsRelPrime a b :=
   fun _ ↦ h.isUnit_of_dvd'
 
-theorem IsCoprime.map (H : IsCoprime x y) {S : Type v} [CommSemiring S] (f : R →+* S) :
+theorem IsCoprime.map (H : IsCoprime x y) {S : Type v} [Semiring S] [IsMulCommutative S] (f : R →+* S) :
     IsCoprime (f x) (f y) :=
   let ⟨a, b, h⟩ := H
   ⟨f a, f b, by rw [← f.map_mul, ← f.map_mul, ← f.map_add, h, f.map_one]⟩
@@ -248,7 +248,7 @@ end CommSemiring
 
 section ScalarTower
 
-variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass G R R]
+variable {R G : Type*} [Semiring R] [IsMulCommutative R] [Group G] [MulAction G R] [SMulCommClass G R R]
   [IsScalarTower G R R] (x : G) (y z : R)
 
 theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=
@@ -265,7 +265,7 @@ end ScalarTower
 
 section CommSemiringUnit
 
-variable {R : Type*} [CommSemiring R] {x u v : R}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {x u v : R}
 
 theorem isCoprime_mul_unit_left_left (hu : IsUnit x) (y z : R) :
     IsCoprime (x * y) z ↔ IsCoprime y z :=
@@ -311,7 +311,7 @@ namespace IsCoprime
 
 section CommRing
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 theorem add_mul_left_left {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime (x + y * z) y :=
   @of_add_mul_left_left R _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h
@@ -459,7 +459,7 @@ end abs
 
 end CommRing
 
-theorem sq_add_sq_ne_zero {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem sq_add_sq_ne_zero {R : Type*} [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
     {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
@@ -495,7 +495,7 @@ lemma Semifield.isCoprime_iff {R : Type*} [Semifield R] {m n : R} :
 
 namespace IsRelPrime
 
-variable {R} [CommRing R] {x y : R}
+variable {R} [Ring R] [IsMulCommutative R] {x y : R}
 
 theorem add_mul_left_left (h : IsRelPrime x y) (z : R) : IsRelPrime (x + y * z) y :=
   @of_add_mul_left_left R _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h

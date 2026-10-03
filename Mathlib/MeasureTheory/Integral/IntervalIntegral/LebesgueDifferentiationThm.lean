@@ -30,7 +30,7 @@ open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 
 open scoped Topology
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- The (global) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → E` is
 locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of

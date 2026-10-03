@@ -71,7 +71,7 @@ open Finset Nat Ideal
 section DividedPowersDefinition
 /- ## Definition of divided powers -/
 
-variable {A : Type*} [CommSemiring A] (I : Ideal A)
+variable {A : Type*} [Semiring A] [IsMulCommutative A] (I : Ideal A)
 
 /-- The divided power structure on an ideal `I` of a commutative ring `A`. -/
 structure DividedPowers where
@@ -168,7 +168,7 @@ section BasicLemmas
 
 /- ## Basic lemmas for divided powers -/
 
-variable {A : Type*} [CommSemiring A] {I : Ideal A} {a b : A}
+variable {A : Type*} [Semiring A] [IsMulCommutative A] {I : Ideal A} {a b : A}
 
 /-- Variant of `DividedPowers.dpow_add` with a sum on `range (n + 1)` -/
 theorem dpow_add' (hI : DividedPowers I) {n : ℕ} (ha : a ∈ I) (hb : b ∈ I) :
@@ -271,7 +271,7 @@ theorem prod_dpow {ι : Type*} {s : Finset ι} {n : ι → ℕ} (ha : a ∈ I) :
 -- TODO : can probably be simplified using `DividedPowers.exp`
 
 /-- Lemma towards `dpow_sum` when we only have partial information on a divided power ideal -/
-theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ → M → A)
+theorem dpow_sum' {M : Type*} [AddMonoid M] [IsAddCommutative M] {I : AddSubmonoid M} (dpow : ℕ → M → A)
     (dpow_zero : ∀ {x}, x ∈ I → dpow 0 x = 1)
     (dpow_add : ∀ {n x y}, x ∈ I → y ∈ I →
       dpow n (x + y) = (antidiagonal n).sum fun k ↦ dpow k.1 x * dpow k.2 y)
@@ -337,7 +337,7 @@ theorem dpow_finsupp_sum {x : ι →₀ A} (hx : ∀ i, x i ∈ I) {n : ℕ} :
       ∑ k ∈ (x.support.sym n), x.prod fun i r ↦ hI.dpow (Multiset.count i k) r := by
   simp [Finsupp.sum, hI.dpow_sum (fun i _ ↦ hx i), Finsupp.prod]
 
-theorem dpow_linearCombination {S : Type*} [CommSemiring S] [Algebra A S] {J : Ideal S}
+theorem dpow_linearCombination {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra A S] {J : Ideal S}
     (hJ : DividedPowers J) {b : ι → S} {x : ι →₀ A} (hx : ∀ i ∈ x.support, b i ∈ J) {n : ℕ} :
     hJ.dpow n (x.sum fun i r ↦ r • (b i)) =
       ∑ k ∈ x.support.sym n,
@@ -380,7 +380,7 @@ end BasicLemmas
 section Equiv
 /- ## Relation of divided powers with ring equivalences -/
 
-variable {A B : Type*} [CommSemiring A] {I : Ideal A} [CommSemiring B] {J : Ideal B}
+variable {A B : Type*} [Semiring A] [IsMulCommutative A] {I : Ideal A} [Semiring B] [IsMulCommutative B] {J : Ideal B}
   {e : A ≃+* B} (h : I.map e = J)
 
 /-- Transfer divided powers under an equivalence -/

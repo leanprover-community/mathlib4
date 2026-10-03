@@ -38,7 +38,7 @@ lie algebra, derived series, derived length, solvable, radical
 universe u v w w₁ w₂
 
 variable (R : Type u) (L : Type v) (M : Type w) {L' : Type w₁}
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 variable (I J : LieIdeal R L) {f : L' →ₗ⁅R⁆ L}
 
 namespace LieAlgebra
@@ -134,7 +134,7 @@ theorem abelian_iff_derived_succ_eq_bot (I : LieIdeal R L) (k : ℕ) :
   rw [add_comm, derivedSeriesOfIdeal_add I 1 k, abelian_iff_derived_one_eq_bot]
 
 open TensorProduct in
-@[simp] theorem derivedSeriesOfIdeal_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
+@[simp] theorem derivedSeriesOfIdeal_baseChange {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] (k : ℕ) :
     derivedSeriesOfIdeal A (A ⊗[R] L) k (I.baseChange A) =
       (derivedSeriesOfIdeal R L k I).baseChange A := by
   induction k with
@@ -142,7 +142,7 @@ open TensorProduct in
   | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih, LieSubmodule.lie_baseChange]
 
 open TensorProduct in
-@[simp] theorem derivedSeries_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
+@[simp] theorem derivedSeries_baseChange {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] (k : ℕ) :
     derivedSeries A (A ⊗[R] L) k = (derivedSeries R L k).baseChange A := by
   rw [derivedSeries_def, derivedSeries_def, ← derivedSeriesOfIdeal_baseChange,
     LieSubmodule.baseChange_top]
@@ -216,7 +216,7 @@ theorem derivedSeries_eq_top (n : ℕ) (h : derivedSeries R L 1 = ⊤) :
   · rfl
   · rwa [derivedSeries_succ_eq_top_iff]
 
-private theorem coe_derivedSeries_eq_int_aux (R₁ R₂ L : Type*) [CommRing R₁] [CommRing R₂]
+private theorem coe_derivedSeries_eq_int_aux (R₁ R₂ L : Type*) [Ring R₁] [IsMulCommutative R₁] [Ring R₂] [IsMulCommutative R₂]
     [LieRing L] [LieAlgebra R₁ L] [LieAlgebra R₂ L] (k : ℕ)
     (ih : ∀ (x : L), x ∈ derivedSeriesOfIdeal R₁ L k ⊤ ↔ x ∈ derivedSeriesOfIdeal R₂ L k ⊤) :
     let I := derivedSeriesOfIdeal R₂ L k ⊤; let S : Set L := {⁅a, b⁆ | (a ∈ I) (b ∈ I)}
@@ -287,14 +287,14 @@ theorem derivedSeries_lt_top_of_solvable [IsSolvable L] [Nontrivial L] :
   exact top_ne_bot hn
 
 open TensorProduct in
-instance {A : Type*} [CommRing A] [Algebra R A] [IsSolvable L] : IsSolvable (A ⊗[R] L) := by
+instance {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [IsSolvable L] : IsSolvable (A ⊗[R] L) := by
   obtain ⟨k, hk⟩ := IsSolvable.solvable R L
   rw [isSolvable_iff A]
   use k
   rw [derivedSeries_baseChange, hk, LieSubmodule.baseChange_bot]
 
 open TensorProduct in
-variable {A : Type*} [CommRing A] [Algebra R A] [Module.FaithfullyFlat R A] in
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [Module.FaithfullyFlat R A] in
 theorem isSolvable_tensorProduct_iff : IsSolvable (A ⊗[R] L) ↔ IsSolvable L := by
   refine ⟨?_, fun _ ↦ inferInstance⟩
   rw [isSolvable_iff A, isSolvable_iff R]

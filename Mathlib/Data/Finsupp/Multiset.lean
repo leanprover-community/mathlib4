@@ -77,7 +77,7 @@ theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     rfl
 
 @[to_additive (attr := simp)]
-theorem prod_toMultiset [CommMonoid α] (f : α →₀ ℕ) :
+theorem prod_toMultiset [Monoid α] [IsMulCommutative α] (f : α →₀ ℕ) :
     f.toMultiset.prod = f.prod fun a n => a ^ n := by
   refine f.induction ?_ ?_
   · rw [toMultiset_zero, Multiset.prod_zero, Finsupp.prod_zero_index]

@@ -44,7 +44,7 @@ open Matrix
 
 open scoped RealInnerProductSpace
 
-variable {n : ℕ} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {n : ℕ} {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E]
 
 /-- The inner product on `⋀[ℝ]^n E` as a bilinear map. This is an implementation detail
 for constructing the `InnerProductSpace` instance and should not be used directly.
@@ -136,7 +136,7 @@ end exteriorPower
 
 section OrthonormalBasis
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 variable {I : Type*} [Fintype I] [LinearOrder I]
 
 /-- An orthonormal basis of a finite-dimensional real inner product space `E` induces an

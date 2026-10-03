@@ -27,7 +27,7 @@ open Polynomial Module
 
 namespace Derivation
 
-variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
+variable {R A M : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] [AddGroup M] [IsAddCommutative M]
   [Module A M] [Module R M] (d : Derivation R A M)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -64,8 +64,8 @@ lemma mapCoeffs_X : d.mapCoeffs (X : A[X]) = 0 := by
 lemma mapCoeffs_C (x : A) :
     d.mapCoeffs (C x) = .single A 0 (d x) := by simp [← monomial_zero_left]
 
-variable {B M' : Type*} [CommRing B] [Algebra R B] [Algebra A B]
-    [AddCommGroup M'] [Module B M'] [Module R M'] [Module A M']
+variable {B M' : Type*} [Ring B] [IsMulCommutative B] [Algebra R B] [Algebra A B]
+    [AddGroup M'] [IsAddCommutative M'] [Module B M'] [Module R M'] [Module A M']
 
 theorem apply_aeval_eq' (d' : Derivation R B M') (f : M →ₗ[A] M')
     (h : ∀ a, f (d a) = d' (algebraMap A B a)) (x : B) (p : A[X]) :
@@ -95,7 +95,7 @@ end Derivation
 
 namespace Differential
 
-variable {A : Type*} [CommRing A] [Differential A]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Differential A]
 
 /--
 A specialization of `Derivation.mapCoeffs` for the case of a differential ring.
@@ -120,7 +120,7 @@ lemma mapCoeffs_X :
 lemma mapCoeffs_C (x : A) :
     mapCoeffs (C x) = C x′ := by simp [← monomial_zero_left]
 
-variable {R : Type*} [CommRing R] [Differential R] [Algebra A R] [DifferentialAlgebra A R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [Differential R] [Algebra A R] [DifferentialAlgebra A R]
 
 theorem deriv_aeval_eq (x : R) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) + aeval x (derivative p) * x′ := by
@@ -150,7 +150,7 @@ lemma deriv_aeval_eq_implicitDeriv (x : R) (v : A[X]) (h : x′ = aeval x v) (p 
     (aeval x p)′ = aeval x (implicitDeriv v p) := by
   simp [deriv_aeval_eq, implicitDeriv, h, mul_comm]
 
-variable {R' : Type*} [CommRing R'] [Differential R'] [Algebra A R'] [DifferentialAlgebra A R']
+variable {R' : Type*} [Ring R'] [IsMulCommutative R'] [Differential R'] [Algebra A R'] [DifferentialAlgebra A R']
 variable [IsDomain R'] [Nontrivial R]
 
 lemma algHom_deriv (f : R →ₐ[A] R') (hf : Function.Injective f) (x : R) (h : IsSeparable A x) :

@@ -70,7 +70,7 @@ protected abbrev distribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [Distr
     DistribMulAction M F :=
   DFunLike.coe_injective.distribMulAction (coeAddMonoidHom F α β) FunLike.coe_smul
 
-variable [Semiring M] [AddCommMonoid β] [Module M β] [AddCommMonoid F]
+variable [Semiring M] [AddMonoid β] [IsAddCommutative β] [Module M β] [AddMonoid F] [IsAddCommutative F]
 
 /-- A `FunLike` type is a `Module` if `β` is a `Module`. -/
 protected abbrev module [IsZeroApply F α β] [IsAddApply F α β] [SMul M F] [IsSMulApply M F α β] :

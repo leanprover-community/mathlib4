@@ -68,7 +68,7 @@ In this section we consider multiplicative (on coprime arguments) functions `f :
 where `R` is a complete normed commutative ring. The main result is `EulerProduct.eulerProduct`.
 -/
 
-variable {R : Type*} [NormedCommRing R] {f : ℕ → R}
+variable {R : Type*} [NormedRing R] [IsMulCommutative R] {f : ℕ → R}
 
 -- local instance to speed up typeclass search
 @[local instance] private lemma instT0Space : T0Space R := MetricSpace.instT0Space
@@ -386,7 +386,7 @@ section PrimePow
 
 open Nat.Primes
 
-variable {α : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α] [CompleteSpace α] [T0Space α]
+variable {α : Type*} [Group α] [IsMulCommutative α] [UniformSpace α] [IsUniformGroup α] [CompleteSpace α] [T0Space α]
 variable {f : ℕ → α}
 
 @[to_additive tsum_primes_pow_eq]

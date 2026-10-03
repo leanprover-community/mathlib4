@@ -103,7 +103,7 @@ end
 
 end Group
 
-variable [Lattice α] [CommGroup α]
+variable [Lattice α] [Group α] [IsMulCommutative α]
 
 -- Fuchs p67
 -- Bourbaki A.VI.10 Prop 7
@@ -119,7 +119,7 @@ lemma inf_mul_sup [MulLeftMono α] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
 -- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
 @[to_additive (attr := instance_reducible)
   /-- Every lattice ordered commutative additive group is a distributive lattice -/]
-def CommGroup.toDistribLattice (α : Type*) [Lattice α] [CommGroup α]
+def CommGroup.toDistribLattice (α : Type*) [Lattice α] [Group α] [IsMulCommutative α]
     [MulLeftMono α] : DistribLattice α where
   le_sup_inf x y z := by
     rw [← mul_le_mul_iff_left (x ⊓ (y ⊓ z)), inf_mul_sup x (y ⊓ z), ← inv_mul_le_iff_le_mul,

@@ -36,7 +36,7 @@ The semi-direct sum of two Lie algebras `K` and `L` over `R`, relative to a Lie 
 `ψ: L → LieDerivation R K K`. As a set, it is just `K × L`, however the Lie bracket is twisted by
 `ψ`.
 -/
-@[ext] structure SemiDirectSum {R : Type*} [CommRing R] (K : Type*) [LieRing K] [LieAlgebra R K]
+@[ext] structure SemiDirectSum {R : Type*} [Ring R] [IsMulCommutative R] (K : Type*) [LieRing K] [LieAlgebra R K]
     (L : Type*) [LieRing L] [LieAlgebra R L] (_ : L →ₗ⁅R⁆ LieDerivation R K K) where
   /-- The element of K -/
   left : K
@@ -49,7 +49,7 @@ notation:35 K " ⋊⁅" ψ:35 "⁆ " L:35 => SemiDirectSum K L ψ
 
 namespace SemiDirectSum
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 variable {K : Type*} [LieRing K] [LieAlgebra R K]
 variable {L : Type*} [LieRing L] [LieAlgebra R L]
 

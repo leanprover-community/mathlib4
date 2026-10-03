@@ -56,7 +56,7 @@ open scoped Topology Filter ENNReal NNReal
 open Filter Asymptotics Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 section Module
 /-!
@@ -64,7 +64,7 @@ Results that do not rely on a topological structure on `E`
 -/
 
 variable (𝕜)
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 /-- `f` has the derivative `f'` at the point `x` along the direction `v` in the set `s`.
 That is, `f (x + t v) = f x + t • f' + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
@@ -238,7 +238,7 @@ section NormedSpace
 Results that need a normed space structure on `E`
 -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {f f₀ f₁ : E → F} {f' : F} {s t : Set E} {x v : E} {L : E →L[𝕜] F}
 
 theorem HasLineDerivWithinAt.mono_of_mem_nhdsWithin
@@ -492,7 +492,7 @@ end NormedSpace
 
 section Zero
 
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E → F} {s : Set E} {x : E}
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {f : E → F} {s : Set E} {x : E}
 
 theorem hasLineDerivWithinAt_zero : HasLineDerivWithinAt 𝕜 f 0 s x 0 := by
   simp [HasLineDerivWithinAt, hasDerivWithinAt_const]
@@ -513,8 +513,8 @@ end Zero
 
 section CompRight
 
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
-  {E' : Type*} [AddCommGroup E'] [Module 𝕜 E']
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
+  {E' : Type*} [AddGroup E'] [IsAddCommutative E'] [Module 𝕜 E']
   {f : E → F} {f' : F} {x : E'} {L : E' →ₗ[𝕜] E}
 
 theorem HasLineDerivAt.of_comp {v : E'} (hf : HasLineDerivAt 𝕜 (f ∘ L) f' x v) :
@@ -529,7 +529,7 @@ end CompRight
 
 section SMul
 
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E → F} {s : Set E} {x v : E} {f' : F}
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {f : E → F} {s : Set E} {x v : E} {f' : F}
 
 theorem HasLineDerivWithinAt.smul (h : HasLineDerivWithinAt 𝕜 f f' s x v) (c : 𝕜) :
     HasLineDerivWithinAt 𝕜 f (c • f') s x (c • v) := by

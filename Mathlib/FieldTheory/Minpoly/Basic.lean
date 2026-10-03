@@ -25,7 +25,7 @@ variable {A B B' : Type*}
 
 section MinPolyDef
 
-variable (A) [CommRing A] [Ring B] [Algebra A B]
+variable (A) [Ring A] [IsMulCommutative A] [Ring B] [Algebra A B]
 
 open scoped Classical in
 /-- Suppose `x : B`, where `B` is an `A`-algebra.
@@ -47,7 +47,7 @@ namespace minpoly
 
 section CommRing
 
-variable [CommRing A] [Ring B] [Ring B'] [Algebra A B] [Algebra A B']
+variable [Ring A] [IsMulCommutative A] [Ring B] [Ring B'] [Algebra A B] [Algebra A B']
 variable {x : B}
 
 /-- A minimal polynomial is monic. -/
@@ -72,7 +72,7 @@ theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
   simp_rw [minpoly, isIntegral_algHom_iff _ hf, ← Polynomial.aeval_def, aeval_algHom,
     AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
 
-theorem algebraMap_eq {B} [CommRing B] [Algebra A B] [Algebra B B'] [IsScalarTower A B B']
+theorem algebraMap_eq {B} [Ring B] [IsMulCommutative B] [Algebra A B] [Algebra B B'] [IsScalarTower A B B']
     (h : Function.Injective (algebraMap B B')) (x : B) :
     minpoly A (algebraMap B B' x) = minpoly A x :=
   algHom_eq (IsScalarTower.toAlgHom A B B') h x
@@ -227,7 +227,7 @@ theorem two_le_natDegree_iff (int : IsIntegral A x) :
   rw [iff_not_comm, ← natDegree_eq_one_iff, not_le]
   exact ⟨fun h ↦ h.trans_lt one_lt_two, fun h ↦ by linarith only [minpoly.natDegree_pos int, h]⟩
 
-theorem two_le_natDegree_subalgebra {B} [CommRing B] [Algebra A B] [Nontrivial B]
+theorem two_le_natDegree_subalgebra {B} [Ring B] [IsMulCommutative B] [Algebra A B] [Nontrivial B]
     {S : Subalgebra A B} {x : B} (int : IsIntegral S x) : 2 ≤ (minpoly S x).natDegree ↔ x ∉ S := by
   rw [two_le_natDegree_iff int, Iff.not]
   apply Set.ext_iff.mp Subtype.range_val_subtype

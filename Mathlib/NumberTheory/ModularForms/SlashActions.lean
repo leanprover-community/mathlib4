@@ -50,7 +50,7 @@ theorem SlashAction.neg_slash {β G α : Type*} [Monoid G] [AddGroup α]
 
 attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_slash
 
-@[simp] lemma SlashAction.sum_slash {β G α ι : Type*} [Monoid G] [AddCommGroup α]
+@[simp] lemma SlashAction.sum_slash {β G α ι : Type*} [Monoid G] [AddGroup α] [IsAddCommutative α]
     [SlashAction β G α] (k : β) (g : G) {a : ι → α} {s : Finset ι} :
     (∑ i ∈ s, a i) ∣[k] g = ∑ i ∈ s, a i ∣[k] g := by
   classical

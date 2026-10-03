@@ -138,8 +138,8 @@ theorem restrictScalars.smul_def' {R : Type u₁} {S : Type u₂} [Ring R] [Ring
   rfl
 
 
-instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Ring R] [CommRing S]
-    (f : R →+* S) (M : Type v) [I : AddCommGroup M] [Module S M] :
+instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] [IsMulCommutative S]
+    (f : R →+* S) (M : Type v) [I : AddGroup M] [IsAddCommutative M] [Module S M] :
     haveI : SMul R M := (RestrictScalars.obj' f ↧M).isModule.toSMul
     SMulCommClass R S M :=
   @SMulCommClass.mk R S M (_) _
@@ -332,12 +332,12 @@ instance restrictScalarsEquivalenceOfRingEquiv_additive {R S : Type*} [Ring R] [
 
 namespace Algebra
 
-instance {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
+instance {R₀ R S : Type*} [Semiring R₀] [IsMulCommutative R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
     (f : R →ₐ[R₀] S) : (restrictScalars f.toRingHom).Linear R₀ where
   map_smul {M N} g r₀ := by ext m; congrm $((f.commutes r₀).symm) • g.hom m
 
 instance restrictScalarsEquivalenceOfRingEquiv_linear
-    {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
+    {R₀ R S : Type*} [Semiring R₀] [IsMulCommutative R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
     (e : R ≃ₐ[R₀] S) :
     (restrictScalarsEquivalenceOfRingEquiv e.toRingEquiv).functor.Linear R₀ :=
   inferInstanceAs ((restrictScalars e.toAlgHom.toRingHom).Linear R₀)
@@ -346,11 +346,11 @@ end Algebra
 
 open TensorProduct
 
-variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S)
+variable {R : Type u₁} {S : Type u₂} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
 
 section ModuleCat.Unbundled
 
-variable (M : Type v) [AddCommMonoid M] [Module R M]
+variable (M : Type v) [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- Tensor product of elements along a base change.
 
@@ -396,7 +396,7 @@ end ExtendScalars
 /-- Extension of scalars is a functor where an `R`-module `M` is sent to `S ⊗ M` and
 `l : M1 ⟶ M2` is sent to `s ⊗ m ↦ s ⊗ l m`
 -/
-def extendScalars {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+def extendScalars {R : Type u₁} {S : Type u₂} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) :
     ModuleCat R ⥤ ModuleCat S where
   obj M := ExtendScalars.obj' f M
   map l := ExtendScalars.map' f l
@@ -405,7 +405,7 @@ def extendScalars {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f :
 
 namespace ExtendScalars
 
-variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S)
+variable {R : Type u₁} {S : Type u₂} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -443,7 +443,7 @@ variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
 section Unbundled
 
-variable (M : Type v) [AddCommMonoid M] [Module R M]
+variable (M : Type v) [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 -- We use `S'` to denote `S` viewed as `R`-module, via the map `f`.
 -- Porting note: this seems to cause problems related to lack of reducibility
@@ -682,7 +682,7 @@ namespace ExtendRestrictScalarsAdj
 
 open TensorProduct
 
-variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S)
+variable {R : Type u₁} {S : Type u₂} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -877,7 +877,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given commutative rings `R, S` and a ring hom `f : R →+* S`, the extension and restriction of
 scalars by `f` are adjoint to each other.
 -/
-def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) :
     extendScalars.{u₁, u₂, max v u₂} f ⊣ restrictScalars.{max v u₂, u₁, u₂} f :=
   Adjunction.mk' {
     homEquiv := fun _ _ ↦ ExtendRestrictScalarsAdj.homEquiv.{v, u₁, u₂} f
@@ -897,14 +897,14 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
         | add => rw [map_add, map_add]; congr 1 }
 
 lemma extendRestrictScalarsAdj_homEquiv_apply
-    {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
+    {R : Type u₁} {S : Type u₂} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     {f : R →+* S} {M : ModuleCat.{max v u₂} R} {N : ModuleCat S}
     (φ : (extendScalars f).obj M ⟶ N) (m : M) :
     (extendRestrictScalarsAdj f).homEquiv _ _ φ m = φ ((1 : S) ⊗ₜ m) :=
   rfl
 
 lemma extendRestrictScalarsAdj_unit_app_apply
-    {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
+    {R : Type u₁} {S : Type u₂} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M) :
     (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
@@ -915,11 +915,11 @@ lemma extendRestrictScalarsAdj_counit_app_apply_one_tmul (M : ModuleCat S) (m : 
     dsimp% (extendRestrictScalarsAdj f).counit.app M ((1 : S) ⊗ₜ[R] m) = m := by
   apply ExtendRestrictScalarsAdj.Counit.map_apply_one_tmul
 
-instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+instance {R : Type u₁} {S : Type u₂} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) :
     (extendScalars.{u₁, u₂, max u₂ w} f).IsLeftAdjoint :=
   (extendRestrictScalarsAdj f).isLeftAdjoint
 
-instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+instance {R : Type u₁} {S : Type u₂} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) :
     (restrictScalars.{max u₂ w, u₁, u₂} f).IsRightAdjoint :=
   (extendRestrictScalarsAdj f).isRightAdjoint
 
@@ -969,7 +969,7 @@ lemma extendScalarsId_hom_app_one_tmul (M : ModuleCat R) (m : M) :
 
 section
 
-variable {R₁ R₂ R₃ R₄ : Type u₁} [CommRing R₁] [CommRing R₂] [CommRing R₃] [CommRing R₄]
+variable {R₁ R₂ R₃ R₄ : Type u₁} [Ring R₁] [IsMulCommutative R₁] [Ring R₂] [IsMulCommutative R₂] [Ring R₃] [IsMulCommutative R₃] [Ring R₄] [IsMulCommutative R₄]
   (f₁₂ : R₁ →+* R₂) (f₂₃ : R₂ →+* R₃) (f₃₄ : R₃ →+* R₄)
 
 /-- The extension of scalars by a composition of commutative ring morphisms

@@ -40,8 +40,8 @@ open TensorProduct
 
 namespace Algebra
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-variable (T : Type*) [CommRing T] [Algebra R T] [Module.FaithfullyFlat R T]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+variable (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] [Module.FaithfullyFlat R T]
 
 lemma FormallyUnramified.of_formallyUnramified_tensorProduct_of_faithfullyFlat
     [FormallyUnramified T (T ⊗[R] S)] :

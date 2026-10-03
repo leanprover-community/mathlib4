@@ -28,7 +28,7 @@ open Set
 variable {G H : Type*}
 
 section AddCommMonoid
-variable [AddCommMonoid G] [AddCommMonoid H] {A B : Set (G × G)} {s : Set G} {t : Set H} {f : G → H}
+variable [AddMonoid G] [IsAddCommutative G] [AddMonoid H] [IsAddCommutative H] {A B : Set (G × G)} {s : Set G} {t : Set H} {f : G → H}
   {x₁ y₁ x₂ y₂ : G}
 
 /-- A **corner** of a set `A` in an abelian group is a triple of points of the form

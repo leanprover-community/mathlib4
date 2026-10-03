@@ -23,7 +23,7 @@ open Filter
 open scoped Topology
 
 variable {E F 𝓕 : Type*}
-variable [SeminormedAddGroup E] [SeminormedAddCommGroup F]
+variable [SeminormedAddGroup E] [SeminormedAddGroup F] [IsAddCommutative F]
 variable [FunLike 𝓕 E F] [ZeroAtInftyContinuousMapClass 𝓕 E F]
 
 theorem ZeroAtInftyContinuousMapClass.norm_le (f : 𝓕) (ε : ℝ) (hε : 0 < ε) :

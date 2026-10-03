@@ -28,7 +28,7 @@ section AddCommMonoid
 
 namespace LinearEquiv
 
-variable [Semiring R] [Semiring S] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Semiring R] [Semiring S] [Semiring R₂] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 
 section RestrictScalars
 
@@ -181,7 +181,7 @@ end Module
 
 namespace DistribMulAction
 
-variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R M) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable [Group S] [DistribMulAction S M] [SMulCommClass S R M]
 
 /-- Each element of the group defines a linear equivalence.
@@ -202,7 +202,7 @@ def toModuleAut : S →* M ≃ₗ[R] M where
 
 end DistribMulAction
 
-theorem LinearEquiv.smul_refl [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
+theorem LinearEquiv.smul_refl [Semiring R] [Semiring S] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M]
     [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M] (α : Sˣ) :
     letI := SMulCommClass.symm R Sˣ M
     α • refl R M = DistribMulAction.toLinearEquiv R M α := rfl
@@ -211,7 +211,7 @@ namespace AddEquiv
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R M₂]
 variable (e : M ≃+ M₂)
 
@@ -267,7 +267,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup M₃] [IsAddCommutative M₃]
 -- See note [implicit instance arguments]
 variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} {modM₃ : Module ℤ M₃} (e : M ≃+ M₂)
 
@@ -318,7 +318,7 @@ end AddEquiv
 namespace LinearMap
 
 /-- Pointwise application of a family of linear forms to a family of vectors -/
-def piApply {V : M → Type*} [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)] :
+def piApply {V : M → Type*} [Semiring R] [IsMulCommutative R] [∀ x, AddMonoid (V x)] [∀ x, IsAddCommutative (V x)] [∀ x, Module R (V x)] :
     (Π x : M, V x →ₗ[R] R) →ₗ[R] (Π x : M, V x) →ₗ[R] M → R where
   toFun e :=
     { toFun s x := e x (s x)
@@ -329,20 +329,20 @@ def piApply {V : M → Type*} [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀
 
 @[simp]
 theorem piApply_apply {V : M → Type*}
-    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)]
+    [Semiring R] [IsMulCommutative R] [∀ x, AddMonoid (V x)] [∀ x, IsAddCommutative (V x)] [∀ x, Module R (V x)]
     (e : Π x : M, V x →ₗ[R] R) (s : Π x : M, V x) :
     piApply e s = fun x ↦ e x (s x) :=
   rfl
 
 @[simp]
 theorem piApply_apply_apply {V : M → Type*}
-    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)]
+    [Semiring R] [IsMulCommutative R] [∀ x, AddMonoid (V x)] [∀ x, IsAddCommutative (V x)] [∀ x, Module R (V x)]
     (e : Π x : M, V x →ₗ[R] R) (s : Π x : M, V x) (x : M) :
     piApply e s x = e x (s x) :=
   rfl
 
 variable (R S M)
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [Semiring S] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The equivalence between R-linear maps from `R` to `M`, and points of `M` itself.
 This says that the forgetful functor from `R`-modules to types is representable, by `R`.
@@ -368,8 +368,8 @@ end LinearMap
 The `R`-linear equivalence between additive morphisms `A →+ B` and `ℕ`-linear morphisms `A →ₗ[ℕ] B`.
 -/
 @[simps]
-def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddCommMonoid A]
-    [AddCommMonoid B] [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℕ] B where
+def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddMonoid A] [IsAddCommutative A]
+    [AddMonoid B] [IsAddCommutative B] [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℕ] B where
   toFun := AddMonoidHom.toNatLinearMap
   invFun := LinearMap.toAddMonoidHom
   map_add' _ _ := rfl
@@ -379,7 +379,7 @@ def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddCommMonoid 
 The `R`-linear equivalence between additive morphisms `A →+ B` and `ℤ`-linear morphisms `A →ₗ[ℤ] B`.
 -/
 @[simps]
-def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A] [AddCommGroup B]
+def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddGroup A] [IsAddCommutative A] [AddGroup B] [IsAddCommutative B]
     [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℤ] B where
   toFun := AddMonoidHom.toIntLinearMap
   invFun := LinearMap.toAddMonoidHom
@@ -388,7 +388,7 @@ def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A
 
 /-- Ring equivalence between additive group endomorphisms of an `AddCommGroup` `A` and
 `ℤ`-module endomorphisms of `A.` -/
-@[simps] def addMonoidEndRingEquivInt (A : Type*) [AddCommGroup A] :
+@[simps] def addMonoidEndRingEquivInt (A : Type*) [AddGroup A] [IsAddCommutative A] :
     AddMonoid.End A ≃+* Module.End ℤ A :=
   { addMonoidHomLequivInt (B := A) ℤ with
     map_mul' := fun _ _ ↦ rfl }
@@ -400,7 +400,7 @@ section AddCommMonoid
 section Subsingleton
 
 variable [Semiring R] [Semiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
@@ -447,7 +447,7 @@ end Subsingleton
 section Uncurry
 
 variable [Semiring R]
-variable [AddCommMonoid M] [Module R M]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable (V V₂ R M)
 
 /-- Linear equivalence between a curried and uncurried function.
@@ -470,7 +470,7 @@ end Uncurry
 section
 
 variable [Semiring R] [Semiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable {module_M : Module R M} {module_M₂ : Module R₂ M₂}
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
@@ -521,7 +521,7 @@ end AddCommMonoid
 
 section Neg
 
-variable (R) [Semiring R] [AddCommGroup M] [Module R M]
+variable (R) [Semiring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- `x ↦ -x` as a `LinearEquiv` -/
 def neg : M ≃ₗ[R] M :=
@@ -549,7 +549,7 @@ section Semilinear
 
 variable {R₁ R₂ R₁' R₂' : Type*} {M₁ M₂ M₁' M₂' : Type*}
 variable [Semiring R₁] [Semiring R₂] [Semiring R₁'] [Semiring R₂']
-variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₁'] [AddCommMonoid M₂']
+variable [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₁'] [IsAddCommutative M₁'] [AddMonoid M₂'] [IsAddCommutative M₂']
 variable [Module R₁ M₁] [Module R₂ M₂] [Module R₁' M₁'] [Module R₂' M₂']
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} {σ₁'₂' : R₁' →+* R₂'} {σ₂'₁' : R₂' →+* R₁'}
 variable {σ₁₁' : R₁ →+* R₁'} {σ₂₂' : R₂ →+* R₂'}
@@ -600,7 +600,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 open LinearMap
@@ -632,11 +632,11 @@ while the vertical direction corresponds to the `→ₛₗ`s, and is needed `arr
 -/
 variable {R₁ R₂ R₃ R₁' R₂' R₃' R₁'' R₂'' : Type*} {M₁ M₂ M₃ M₁' M₂' M₃' M₁'' M₂'' : Type*}
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
-variable [CommSemiring R₁'] [CommSemiring R₂'] [CommSemiring R₃']
-variable [CommSemiring R₁''] [CommSemiring R₂'']
-variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [AddCommMonoid M₁'] [AddCommMonoid M₂'] [AddCommMonoid M₃']
-variable [AddCommMonoid M₁''] [AddCommMonoid M₂'']
+variable [Semiring R₁'] [IsMulCommutative R₁'] [Semiring R₂'] [IsMulCommutative R₂'] [Semiring R₃'] [IsMulCommutative R₃']
+variable [Semiring R₁''] [IsMulCommutative R₁''] [Semiring R₂''] [IsMulCommutative R₂'']
+variable [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
+variable [AddMonoid M₁'] [IsAddCommutative M₁'] [AddMonoid M₂'] [IsAddCommutative M₂'] [AddMonoid M₃'] [IsAddCommutative M₃']
+variable [AddMonoid M₁''] [IsAddCommutative M₁''] [AddMonoid M₂''] [IsAddCommutative M₂'']
 variable [Module R₁ M₁] [Module R₂ M₂] [Module R₃ M₃]
 variable [Module R₁' M₁'] [Module R₂' M₂'] [Module R₃' M₃']
 variable [Module R₁'' M₁''] [Module R₂'' M₂'']
@@ -779,7 +779,7 @@ end CommSemiring
 
 section Field
 
-variable [Field K] [AddCommGroup M] [Module K M]
+variable [Field K] [AddGroup M] [IsAddCommutative M] [Module K M]
 variable (K) (M)
 
 /-- Multiplying by a nonzero element `a` of the field `K` is a linear equivalence. -/
@@ -793,7 +793,7 @@ end LinearEquiv
 
 namespace Equiv
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂] [Module R M₂]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
 
 /-- An equivalence whose underlying function is linear is a linear equivalence. -/
 def toLinearEquiv (e : M ≃ M₂) (h : IsLinearMap R (e : M → M₂)) : M ≃ₗ[R] M₂ :=
@@ -803,7 +803,7 @@ end Equiv
 
 section FunLeft
 
-variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R M) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable {m n p : Type*}
 
 namespace LinearMap
@@ -883,7 +883,7 @@ This is `Equiv.sumPiEquivProdPi` as a `LinearEquiv`.
 -/
 @[simps -fullyApplied +simpRhs]
 def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Type*)
-    [∀ st, AddCommMonoid (A st)] [∀ st, Module R (A st)] :
+    [∀ st, AddMonoid (A st)] [∀ st, IsAddCommutative (A st)] [∀ st, Module R (A st)] :
     (Π (st : S ⊕ T), A st) ≃ₗ[R] (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
   __ := Equiv.sumPiEquivProdPi _
   map_add' _ _ := rfl
@@ -896,7 +896,7 @@ This is `Equiv.piUnique` as a `LinearEquiv`.
 -/
 @[simps -fullyApplied]
 def piUnique {α : Type*} [Unique α] (R : Type*) [Semiring R] (f : α → Type*)
-    [∀ x, AddCommMonoid (f x)] [∀ x, Module R (f x)] : (Π t : α, f t) ≃ₗ[R] f default where
+    [∀ x, AddMonoid (f x)] [∀ x, IsAddCommutative (f x)] [∀ x, Module R (f x)] : (Π t : α, f t) ≃ₗ[R] f default where
   __ := Equiv.piUnique _
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

@@ -35,7 +35,7 @@ universe v u
 namespace groupCohomology
 open Rep CategoryTheory Representation
 
-variable {k G H : Type u} [CommRing k] [Group G] [Group H]
+variable {k G H : Type u} [Ring k] [IsMulCommutative k] [Group G] [Group H]
   {A : Rep k H} {B : Rep k G} (f : G →* H) (φ : res f A ⟶ B) (n : ℕ)
 
 section

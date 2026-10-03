@@ -31,9 +31,9 @@ namespace Add'
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {X : Type*}
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
-variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
-variable (H' : Type*) [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H']
+variable {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace 𝕜 V]
+variable (H : Type*) [NormedAddGroup H] [IsAddCommutative H] [InnerProductSpace 𝕜 H]
+variable (H' : Type*) [NormedAddGroup H'] [IsAddCommutative H'] [InnerProductSpace 𝕜 H']
 variable [RKHS 𝕜 H X V] [RKHS 𝕜 H' X V]
 
 /-- The operator `(f, g) ↦ ⇑f + ⇑g`, where addition is in `X → V`. -/

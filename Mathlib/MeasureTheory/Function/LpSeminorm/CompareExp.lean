@@ -192,7 +192,7 @@ are given in the two versions, with the main one assuming measurability, and the
 (suffixed with `of_pos`) assume `0 < r`. -/
 
 variable {α E F G : Type*} {m : MeasurableSpace α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] {μ : Measure α}
+  [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedAddGroup G] [IsAddCommutative G] {μ : Measure α}
   {f : α → E} {g : α → F}
 
 open NNReal
@@ -478,7 +478,7 @@ end Bilinear
 section IsBoundedSMul
 
 variable {𝕜 α E : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedRing 𝕜]
-  [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
+  [NormedAddGroup E] [IsAddCommutative E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
   {f : α → E} {φ : α → 𝕜}
 
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm_of_pos (p : ℝ≥0∞) (hp : 0 < p) :
@@ -544,7 +544,7 @@ theorem MemLp.mul (hφ : MemLp φ p μ) (hf : MemLp f q μ) [hpqr : HolderTriple
 end Mul
 
 section Prod
-variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormedCommRing 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
+variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormedRing 𝕜] [IsMulCommutative 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
   {p : ι → ℝ≥0∞} {s : Finset ι}
 
 open Finset in

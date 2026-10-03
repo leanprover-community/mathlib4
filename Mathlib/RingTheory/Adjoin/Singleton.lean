@@ -20,7 +20,7 @@ adjoin, algebra, ringhom
 
 @[expose] public section
 
-variable {A B C : Type*} [CommSemiring A] [CommSemiring B] [CommSemiring C]
+variable {A B C : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Semiring C] [IsMulCommutative C]
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C] (b : B)
 
 namespace Algebra

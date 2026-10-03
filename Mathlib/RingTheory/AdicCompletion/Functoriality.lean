@@ -29,11 +29,11 @@ In this file we establish functorial properties of the adic completion.
 
 suppress_compilation
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
-variable {M : Type*} [AddCommGroup M] [Module R M]
-variable {N : Type*} [AddCommGroup N] [Module R N]
-variable {P : Type*} [AddCommGroup P] [Module R P]
-variable {T : Type*} [AddCommGroup T] [Module (AdicCompletion I R) T]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R)
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
+variable {P : Type*} [AddGroup P] [IsAddCommutative P] [Module R P]
+variable {T : Type*} [AddGroup T] [IsAddCommutative T] [Module (AdicCompletion I R) T]
 
 namespace LinearMap
 
@@ -217,7 +217,7 @@ inverse to each other.
 
 -/
 
-variable {ι : Type*} (M : ι → Type*) [∀ i, AddCommGroup (M i)]
+variable {ι : Type*} (M : ι → Type*) [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)]
   [∀ i, Module R (M i)]
 
 section Pi
@@ -342,7 +342,7 @@ def piEquivFin (n : ℕ) :
 /-
 import Mathlib.RingTheory.AdicCompletion.Algebra
 
-variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
 
 -- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
 -- diamonds if `X = Y`.
@@ -451,7 +451,7 @@ theorem surjective_of_mkQ_comp_surjective [IsPrecomplete I M] [IsHausdorff I N]
   use x
   rwa [← of_inj (I := I), ← map_of, hx]
 
-variable {S : Type*} [CommRing S] (f : R →+* S)
+variable {S : Type*} [Ring S] [IsMulCommutative S] (f : R →+* S)
 
 theorem surjective_of_mk_map_comp_surjective [IsPrecomplete I R] [haus : IsHausdorff (I.map f) S]
     (h : Function.Surjective ((Ideal.Quotient.mk (I.map f)).comp f)) :

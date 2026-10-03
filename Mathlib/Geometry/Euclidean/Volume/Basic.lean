@@ -26,9 +26,9 @@ open MeasureTheory Measure
 namespace Affine.Simplex
 
 variable {V P : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 variable {V₂ P₂ : Type*}
-variable [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
+variable [NormedAddGroup V₂] [IsAddCommutative V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
 
 @[simp]
 theorem volume_eq_one (s : Simplex ℝ P 0) : s.volume = 1 := rfl

@@ -116,9 +116,9 @@ noncomputable section
 section
 section DerivativeUniqueness
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
-variable {F : Type*} [AddCommGroup F] [Module 𝕜 F]
+variable {F : Type*} [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
   [TopologicalSpace F] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 
 variable {f : E → F}
@@ -178,8 +178,8 @@ theorem HasFDerivAt.unique (h₀ : HasFDerivAt f f' x) (h₁ : HasFDerivAt f f�
 end DerivativeUniqueness
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
 
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
@@ -731,8 +731,8 @@ end
 
 section NormedCodomain
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
@@ -785,8 +785,8 @@ end NormedCodomain
 -- statement.
 section not_TVS
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
@@ -957,8 +957,8 @@ section Semilinear
 ## Results involving semilinear maps
 -/
 variable {𝕜 V V' W W' : Type*} [NontriviallyNormedField 𝕜] {σ σ' : RingHom 𝕜 𝕜}
-  [NormedAddCommGroup V] [NormedSpace 𝕜 V] [NormedAddCommGroup V'] [NormedSpace 𝕜 V']
-  [NormedAddCommGroup W] [NormedSpace 𝕜 W] [NormedAddCommGroup W'] [NormedSpace 𝕜 W']
+  [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V] [NormedAddGroup V'] [IsAddCommutative V'] [NormedSpace 𝕜 V']
+  [NormedAddGroup W] [IsAddCommutative W] [NormedSpace 𝕜 W] [NormedAddGroup W'] [IsAddCommutative W'] [NormedSpace 𝕜 W']
   [RingHomIsometric σ] [RingHomInvPair σ σ'] (L : W →SL[σ] W') (R : V' →SL[σ'] V)
 
 /-- If `L` and `R` are semilinear maps whose composite is linear, and `f` has Fréchet derivative

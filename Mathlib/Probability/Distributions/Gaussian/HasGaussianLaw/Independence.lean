@@ -50,7 +50,7 @@ namespace ContinuousLinearMap
 section Pi
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
-  {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)]
+  {E : ι → Type*} [∀ i, NormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, NormedSpace ℝ (E i)]
   {L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ}
 
 /-- Given `L i : (E i)' × (E i)' → ℝ` a family of continuous bilinear forms,
@@ -96,7 +96,7 @@ end Pi
 section Prod
 
 variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
   {L₁ : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ}
   {L₂ : StrongDual ℝ F →L[ℝ] StrongDual ℝ F →L[ℝ] ℝ}
 
@@ -159,7 +159,7 @@ namespace ProbabilityTheory
 section iIndepFun
 
 variable {ι : Type*} [Finite ι] {E : ι → Type*}
-  [∀ i, NormedAddCommGroup (E i)] [∀ i, MeasurableSpace (E i)]
+  [∀ i, NormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, MeasurableSpace (E i)]
   [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)]
 
 section NormedSpace
@@ -271,9 +271,9 @@ end iIndepFun
 section IndepFun
 
 variable {E F : Type*}
-    [NormedAddCommGroup E] [MeasurableSpace E]
+    [NormedAddGroup E] [IsAddCommutative E] [MeasurableSpace E]
     [CompleteSpace E] [BorelSpace E] [SecondCountableTopology E]
-    [NormedAddCommGroup F] [MeasurableSpace F]
+    [NormedAddGroup F] [IsAddCommutative F] [MeasurableSpace F]
     [CompleteSpace F] [BorelSpace F] [SecondCountableTopology F]
 
 /-- Independent Gaussian random variables are jointly Gaussian. -/
@@ -376,7 +376,7 @@ end IndepFun
 
 section AddSub
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [SecondCountableTopology E]
 
 lemma iIndepFun.hasGaussianLaw_sum [CompleteSpace E] {ι : Type*} [Fintype ι] {X : ι → Ω → E}

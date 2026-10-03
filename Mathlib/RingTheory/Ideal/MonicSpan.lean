@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.Polynomial.Basic
 
 public section
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
 open Ideal
 

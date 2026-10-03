@@ -36,7 +36,7 @@ variable {R S M : Type*}
 
 section AddCommMonoid
 
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
+variable [Semiring R] [Semiring S] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M]
 variable [SMul S R] [IsScalarTower S R M]
 variable {p q : Submodule R M}
 
@@ -64,7 +64,7 @@ theorem bot_toAddSubmonoid : (⊥ : Submodule R M).toAddSubmonoid = ⊥ :=
   rfl
 
 @[simp]
-lemma bot_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
+lemma bot_toAddSubgroup {R M} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] :
     (⊥ : Submodule R M).toAddSubgroup = ⊥ := rfl
 
 variable (R) in
@@ -145,11 +145,11 @@ theorem top_toAddSubmonoid : (⊤ : Submodule R M).toAddSubmonoid = ⊤ :=
   rfl
 
 @[simp]
-lemma top_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
+lemma top_toAddSubgroup {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] :
     (⊤ : Submodule R M).toAddSubgroup = ⊤ := rfl
 
 @[simp]
-lemma toAddSubgroup_eq_top {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+lemma toAddSubgroup_eq_top {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
     {p : Submodule R M} : p.toAddSubgroup = ⊤ ↔ p = ⊤ := by simp [← toAddSubgroup_inj]
 
 @[simp] lemma mk_eq_top (carrier : AddSubmonoid M) (smul_mem') :
@@ -260,7 +260,7 @@ theorem mem_sup_right {S T : Submodule R M} : ∀ {x : M}, x ∈ T → x ∈ S �
 theorem add_mem_sup {S T : Submodule R M} {s t : M} (hs : s ∈ S) (ht : t ∈ T) : s + t ∈ S ⊔ T :=
   add_mem (mem_sup_left hs) (mem_sup_right ht)
 
-theorem sub_mem_sup {R' M' : Type*} [Ring R'] [AddCommGroup M'] [Module R' M']
+theorem sub_mem_sup {R' M' : Type*} [Ring R'] [AddGroup M'] [IsAddCommutative M'] [Module R' M']
     {S T : Submodule R' M'} {s t : M'} (hs : s ∈ S) (ht : t ∈ T) : s - t ∈ S ⊔ T := by
   rw [sub_eq_add_neg]
   exact add_mem_sup hs (neg_mem ht)
@@ -357,7 +357,7 @@ theorem mem_left_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p 
   ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h => h.symm ▸ p.zero_mem⟩
 
 /-- Version of `AddSubgroup.disjoint_iff_add_eq_zero` for submodules. -/
-theorem disjoint_iff_add_eq_zero {M R : Type*} [Ring R] [AddCommGroup M] [Module R M]
+theorem disjoint_iff_add_eq_zero {M R : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
     {N₁ N₂ : Submodule R M} :
     Disjoint N₁ N₂ ↔ ∀ {x y : M}, x ∈ N₁ → y ∈ N₂ → x + y = 0 → x = 0 ∧ y = 0 := by
   simp only [← Submodule.mem_toAddSubgroup, ← AddSubgroup.disjoint_iff_add_eq_zero]
@@ -407,7 +407,7 @@ section IntSubmodule
 ## ℤ-submodules
 -/
 
-variable [AddCommGroup M]
+variable [AddGroup M] [IsAddCommutative M]
 
 /-- An additive subgroup is equivalent to a ℤ-submodule. -/
 def AddSubgroup.toIntSubmodule : AddSubgroup M ≃o Submodule ℤ M where

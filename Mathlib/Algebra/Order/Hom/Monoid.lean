@@ -218,8 +218,8 @@ end OrderedZero
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
-  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [i : FunLike F α β]
+variable [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
+  [AddGroup β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β] [i : FunLike F α β]
 variable (f : F)
 
 theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :
@@ -435,9 +435,9 @@ end Preorder
 
 section Mul
 
-variable [CommMonoid α] [Preorder α]
-  [CommMonoid β] [Preorder β]
-  [CommMonoid γ] [Preorder γ]
+variable [Monoid α] [IsMulCommutative α] [Preorder α]
+  [Monoid β] [IsMulCommutative β] [Preorder β]
+  [Monoid γ] [IsMulCommutative γ] [Preorder γ]
 
 /-- For two ordered monoid morphisms `f` and `g`, their product is the ordered monoid morphism
 sending `a` to `f a * g a`. -/

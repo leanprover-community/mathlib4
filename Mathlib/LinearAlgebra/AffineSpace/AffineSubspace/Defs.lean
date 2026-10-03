@@ -56,7 +56,7 @@ open scoped Pointwise
 
 section
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
 variable [AffineSpace V P]
 
 /-- The submodule spanning the differences of a (possibly empty) set of points. -/
@@ -146,7 +146,7 @@ end
 
 /-- An `AffineSubspace k P` is a subset of an `AffineSpace V P` that, if not empty, has an affine
 space structure induced by a corresponding subspace of the `Module k V`. -/
-structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V]
+structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddGroup V] [IsAddCommutative V]
   [Module k V] [AffineSpace V P] where
   /-- The affine subspace seen as a subset. -/
   carrier : Set P
@@ -155,7 +155,7 @@ structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGr
 
 namespace AffineSubspace
 
-variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {k V P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V] [AffineSpace V P]
 
 instance : SetLike (AffineSubspace k P) P where
   coe := carrier
@@ -211,7 +211,7 @@ end AffineSubspace
 
 namespace Submodule
 
-variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k V : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
 
 /-- Reinterprets `p : Submodule k V` as an `AffineSubspace k V`. -/
 @[coe] def toAffineSubspace (p : Submodule k V) : AffineSubspace k V where
@@ -228,7 +228,7 @@ end Submodule
 
 namespace AffineSubspace
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
   [AffineSpace V P]
 
 lemma vsub_self_of_zero_mem {s : AffineSubspace k V} (hs : 0 ∈ s) :
@@ -476,7 +476,7 @@ end AffineSubspace
 
 namespace Submodule
 
-variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k V : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
 
 @[simp]
 theorem toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.direction = s := by
@@ -486,7 +486,7 @@ end Submodule
 
 section affineSpan
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
   [AffineSpace V P]
 
 /-- The affine span of a set of points is the smallest affine subspace containing those points.
@@ -554,7 +554,7 @@ end affineSpan
 
 namespace AffineSubspace
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
   [S : AffineSpace V P] {ι : Sort*}
 
 instance : CompleteLattice (AffineSubspace k P) where
@@ -985,7 +985,7 @@ end AffineSubspace
 
 section AffineSpace'
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
   [AffineSpace V P]
 
 open AffineSubspace

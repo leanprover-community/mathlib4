@@ -45,8 +45,8 @@ However, continuity in the pair (map, vector) needs the domain to be a locally b
 We have no typeclass for a locally bounded TVS,
 so we require it to be a seminormed space instead. -/
 instance ContinuousAlternatingMap.instContinuousEval {𝕜 ι E F : Type*}
-    [NormedField 𝕜] [Finite ι] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [TopologicalSpace F] [AddCommGroup F] [IsTopologicalAddGroup F] [Module 𝕜 F] :
+    [NormedField 𝕜] [Finite ι] [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+    [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [IsTopologicalAddGroup F] [Module 𝕜 F] :
     ContinuousEval (E [⋀^ι]→L[𝕜] F) (ι → E) F :=
   .of_continuous_forget continuous_toContinuousMultilinearMap
 
@@ -55,9 +55,9 @@ section Seminorm
 universe u wE wF wG v
 variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {G : Type wG} {ι : Type v}
   [NontriviallyNormedField 𝕜]
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+  [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
+  [SeminormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
 
 /-!
 ### Continuity properties of alternating maps
@@ -267,11 +267,11 @@ theorem opNNNorm_prod (f : E [⋀^ι]→L[𝕜] F) (g : E [⋀^ι]→L[𝕜] G) 
 theorem opNorm_prod (f : E [⋀^ι]→L[𝕜] F) (g : E [⋀^ι]→L[𝕜] G) : ‖f.prod g‖ = max (‖f‖) (‖g‖) :=
   f.1.opNorm_prod g.1
 
-theorem opNNNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddCommGroup (F i')]
+theorem opNNNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddGroup (F i')] [∀ i', IsAddCommutative (F i')]
     [∀ i', NormedSpace 𝕜 (F i')] (f : ∀ i', E [⋀^ι]→L[𝕜] F i') : ‖pi f‖₊ = ‖f‖₊ :=
   ContinuousMultilinearMap.opNNNorm_pi fun i ↦ (f i).1
 
-theorem opNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddCommGroup (F i')]
+theorem opNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddGroup (F i')] [∀ i', IsAddCommutative (F i')]
     [∀ i', NormedSpace 𝕜 (F i')] (f : ∀ i', E [⋀^ι]→L[𝕜] F i') : ‖pi f‖ = ‖f‖ :=
   ContinuousMultilinearMap.opNorm_pi fun i ↦ (f i).1
 
@@ -341,7 +341,7 @@ def prodLIE : (E [⋀^ι]→L[𝕜] F) × (E [⋀^ι]→L[𝕜] G) ≃ₗᵢ[�
 variable (𝕜 E) in
 /-- `ContinuousAlternatingMap.pi` as a `LinearIsometryEquiv`. -/
 @[simps!]
-def piLIE {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddCommGroup (F i')]
+def piLIE {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddGroup (F i')] [∀ i', IsAddCommutative (F i')]
     [∀ i', NormedSpace 𝕜 (F i')] :
     (∀ i', E [⋀^ι]→L[𝕜] F i') ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] (∀ i, F i)) where
   toLinearEquiv := piLinearEquiv
@@ -618,8 +618,8 @@ universe u wE wF v
 variable {𝕜 : Type u} {E : Type wE} {F : Type wF} {ι : Type v}
   [Fintype ι]
   [NontriviallyNormedField 𝕜]
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 namespace ContinuousAlternatingMap
 

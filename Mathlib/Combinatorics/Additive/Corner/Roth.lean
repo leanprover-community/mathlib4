@@ -27,7 +27,7 @@ open Finset SimpleGraph TripartiteFromTriangles
 open Function hiding graph
 open Fintype (card)
 
-variable {G : Type*} [AddCommGroup G] {A : Finset (G × G)} {a b c : G} {n : ℕ} {ε : ℝ}
+variable {G : Type*} [AddGroup G] [IsAddCommutative G] {A : Finset (G × G)} {a b c : G} {n : ℕ} {ε : ℝ}
 
 namespace Corners
 

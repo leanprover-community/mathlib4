@@ -46,14 +46,14 @@ namespace Polynomial
 /-- Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]`
 is *weakly Eisenstein at `𝓟`* if `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟`. -/
 @[mk_iff]
-structure IsWeaklyEisensteinAt [CommSemiring R] (f : R[X]) (𝓟 : Ideal R) : Prop where
+structure IsWeaklyEisensteinAt [Semiring R] [IsMulCommutative R] (f : R[X]) (𝓟 : Ideal R) : Prop where
   mem : ∀ {n}, n < f.natDegree → f.coeff n ∈ 𝓟
 
 /-- Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]`
 is *Eisenstein at `𝓟`* if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟` and
 `f.coeff 0 ∉ 𝓟 ^ 2`. -/
 @[mk_iff]
-structure IsEisensteinAt [CommSemiring R] (f : R[X]) (𝓟 : Ideal R) : Prop where
+structure IsEisensteinAt [Semiring R] [IsMulCommutative R] (f : R[X]) (𝓟 : Ideal R) : Prop where
   leading : f.leadingCoeff ∉ 𝓟
   mem : ∀ {n}, n < f.natDegree → f.coeff n ∈ 𝓟
   notMem : f.coeff 0 ∉ 𝓟 ^ 2
@@ -62,9 +62,9 @@ namespace IsWeaklyEisensteinAt
 
 section CommSemiring
 
-variable [CommSemiring R] {𝓟 : Ideal R} {f f' : R[X]}
+variable [Semiring R] [IsMulCommutative R] {𝓟 : Ideal R} {f f' : R[X]}
 
-theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [CommSemiring A] (φ : R →+* A) :
+theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [Semiring A] [IsMulCommutative A] (φ : R →+* A) :
     (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
   refine (isWeaklyEisensteinAt_iff _ _).2 fun hn => ?_
   rw [coeff_map]
@@ -89,8 +89,8 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] {𝓟 : Ideal R} {f : R[X]}
-variable {S : Type v} [CommRing S] [Algebra R S]
+variable [Ring R] [IsMulCommutative R] {𝓟 : Ideal R} {f : R[X]}
+variable {S : Type v} [Ring S] [IsMulCommutative S] [Algebra R S]
 
 section Principal
 
@@ -166,7 +166,7 @@ end IsWeaklyEisensteinAt
 
 section ScaleRoots
 
-variable {A : Type*} [CommRing R] [CommRing A]
+variable {A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A]
 
 theorem scaleRoots.isWeaklyEisensteinAt (p : R[X]) {x : R} {P : Ideal R} (hP : x ∈ P) :
     (scaleRoots p x).IsWeaklyEisensteinAt P := by
@@ -199,7 +199,7 @@ namespace IsEisensteinAt
 
 section CommSemiring
 
-variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
+variable [Semiring R] [IsMulCommutative R] {𝓟 : Ideal R} {f : R[X]}
 
 theorem _root_.Polynomial.Monic.leadingCoeff_notMem (hf : f.Monic) (h : 𝓟 ≠ ⊤) :
     f.leadingCoeff ∉ 𝓟 := hf.leadingCoeff.symm ▸ (Ideal.ne_top_iff_one _).1 h
@@ -224,7 +224,7 @@ end CommSemiring
 
 section IsDomain
 
-variable [CommRing R] [IsDomain R] {𝓟 : Ideal R} {f : R[X]}
+variable [Ring R] [IsMulCommutative R] [IsDomain R] {𝓟 : Ideal R} {f : R[X]}
 
 /-- If a primitive `f` satisfies `f.IsEisensteinAt 𝓟`, where `𝓟.IsPrime`,
 then `f` is irreducible. -/

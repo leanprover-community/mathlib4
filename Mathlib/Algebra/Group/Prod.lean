@@ -70,7 +70,7 @@ instance isMulCommutative [Mul M] [Mul N] [IsMulCommutative M] [IsMulCommutative
   is_comm.comm _ _ := by ext <;> apply mul_comm'
 
 @[to_additive]
-instance commMagma [CommMagma M] [CommMagma N] : CommMagma (M × N) where
+instance commMagma [Mul M] [IsMulCommutative M] [Mul N] [IsMulCommutative N] : CommMagma (M × N) where
   mul_comm _ _ := by ext <;> apply mul_comm
 
 @[to_additive]
@@ -78,7 +78,7 @@ instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) where
   mul_assoc _ _ _ := by ext <;> exact mul_assoc ..
 
 @[to_additive]
-instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) where
+instance instCommSemigroup [Semigroup G] [IsMulCommutative G] [Semigroup H] [IsMulCommutative H] : CommSemigroup (G × H) where
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) where
@@ -121,7 +121,7 @@ instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
     inv_inv := by simp }
 
 @[to_additive SubtractionCommMonoid]
-instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G × H) :=
+instance [DivisionMonoid G] [IsMulCommutative G] [DivisionMonoid H] [IsMulCommutative H] : DivisionCommMonoid (G × H) :=
   { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
 
 @[to_additive]
@@ -162,15 +162,15 @@ instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
   { mul_right_cancel _ _ := by simp only [mul_left_inj, imp_self, forall_const] }
 
 @[to_additive]
-instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
+instance instCommMonoid [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] : CommMonoid (M × N) :=
   { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
 
 @[to_additive]
-instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
+instance [CancelMonoid M] [IsMulCommutative M] [CancelMonoid N] [IsMulCommutative N] : CancelCommMonoid (M × N) :=
   { mul_left_cancel _ _ := by simp }
 
 @[to_additive]
-instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
+instance instCommGroup [Group G] [IsMulCommutative G] [Group H] [IsMulCommutative H] : CommGroup (G × H) :=
   { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
 
 end Prod
@@ -286,7 +286,7 @@ end prodMap
 
 section Coprod
 
-variable [Mul M] [Mul N] [CommSemigroup P] (f : M →ₙ* P) (g : N →ₙ* P)
+variable [Mul M] [Mul N] [Semigroup P] [IsMulCommutative P] (f : M →ₙ* P) (g : N →ₙ* P)
 
 /-- Coproduct of two `MulHom`s with the same codomain:
   `f.coprod g (p : M × N) = f p.1 * g p.2`.
@@ -303,7 +303,7 @@ theorem coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
   rfl
 
 @[to_additive]
-theorem comp_coprod {Q : Type*} [CommSemigroup Q] (h : P →ₙ* Q) (f : M →ₙ* P) (g : N →ₙ* P) :
+theorem comp_coprod {Q : Type*} [Semigroup Q] [IsMulCommutative Q] (h : P →ₙ* Q) (f : M →ₙ* P) (g : N →ₙ* P) :
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
   ext fun x => by simp
 
@@ -453,7 +453,7 @@ end prodMap
 
 section Coprod
 
-variable [CommMonoid P] (f : M →* P) (g : N →* P)
+variable [Monoid P] [IsMulCommutative P] (f : M →* P) (g : N →* P)
 
 /-- Coproduct of two `MonoidHom`s with the same codomain:
   `f.coprod g (p : M × N) = f p.1 * g p.2`.
@@ -482,12 +482,12 @@ theorem coprod_unique (f : M × N →* P) : (f.comp (inl M N)).coprod (f.comp (i
   ext fun x => by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
 
 @[to_additive (attr := simp)]
-theorem coprod_inl_inr {M N : Type*} [CommMonoid M] [CommMonoid N] :
+theorem coprod_inl_inr {M N : Type*} [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] :
     (inl M N).coprod (inr M N) = id (M × N) :=
   coprod_unique (id <| M × N)
 
 @[to_additive]
-theorem comp_coprod {Q : Type*} [CommMonoid Q] (h : P →* Q) (f : M →* P) (g : N →* P) :
+theorem comp_coprod {Q : Type*} [Monoid Q] [IsMulCommutative Q] (h : P →* Q) (f : M →* P) (g : N →* P) :
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
   ext fun x => by simp
 
@@ -655,19 +655,19 @@ variable {α : Type*}
 
 /-- Multiplication as a multiplicative homomorphism. -/
 @[to_additive (attr := simps) /-- Addition as an additive homomorphism. -/]
-def mulMulHom [CommSemigroup α] :
+def mulMulHom [Semigroup α] [IsMulCommutative α] :
     α × α →ₙ* α where
   toFun a := a.1 * a.2
   map_mul' _ _ := mul_mul_mul_comm _ _ _ _
 
 /-- Multiplication as a monoid homomorphism. -/
 @[to_additive (attr := simps) /-- Addition as an additive monoid homomorphism. -/]
-def mulMonoidHom [CommMonoid α] : α × α →* α :=
+def mulMonoidHom [Monoid α] [IsMulCommutative α] : α × α →* α :=
   { mulMulHom with map_one' := mul_one _ }
 
 /-- Division as a monoid homomorphism. -/
 @[to_additive (attr := simps) /-- Subtraction as an additive monoid homomorphism. -/]
-def divMonoidHom [DivisionCommMonoid α] : α × α →* α where
+def divMonoidHom [DivisionMonoid α] [IsMulCommutative α] : α × α →* α where
   toFun a := a.1 / a.2
   map_one' := div_one _
   map_mul' _ _ := mul_div_mul_comm _ _ _ _

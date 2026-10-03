@@ -50,7 +50,7 @@ end RCLike
 end AddGroup
 
 section AddCommGroup
-variable [AddCommGroup G]
+variable [AddGroup G] [IsAddCommutative G]
 
 section RCLike
 variable [RCLike R] {ψ₁ ψ₂ : AddChar G R}

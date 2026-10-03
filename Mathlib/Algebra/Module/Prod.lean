@@ -21,7 +21,7 @@ variable {R : Type*} {M : Type*} {N : Type*}
 
 namespace Prod
 
-instance instModule [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] :
+instance instModule [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N] :
     Module R (M × N) where
   add_smul _ _ _ := by ext <;> exact add_smul ..
   zero_smul _ := by ext <;> exact zero_smul ..

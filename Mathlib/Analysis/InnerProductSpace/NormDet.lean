@@ -52,8 +52,8 @@ open Module
 
 namespace LinearMap
 
-variable {𝕜 U V W : Type*} [RCLike 𝕜] [NormedAddCommGroup U] [InnerProductSpace 𝕜 U]
-  [FiniteDimensional 𝕜 U] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [NormedAddCommGroup W]
+variable {𝕜 U V W : Type*} [RCLike 𝕜] [NormedAddGroup U] [IsAddCommutative U] [InnerProductSpace 𝕜 U]
+  [FiniteDimensional 𝕜 U] [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace 𝕜 V] [NormedAddGroup W] [IsAddCommutative W]
   [InnerProductSpace 𝕜 W]
 
 open Classical in
@@ -383,8 +383,8 @@ section Real
 
 open MeasureTheory Measure
 
-variable {U V : Type*} [NormedAddCommGroup U] [InnerProductSpace ℝ U] [FiniteDimensional ℝ U]
-  [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {U V : Type*} [NormedAddGroup U] [IsAddCommutative U] [InnerProductSpace ℝ U] [FiniteDimensional ℝ U]
+  [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V]
 
 theorem normDet_eq_abs_det (f : U →ₗ[ℝ] U) : f.normDet = |f.det| := by
   simpa using f.normDet_eq_norm_det

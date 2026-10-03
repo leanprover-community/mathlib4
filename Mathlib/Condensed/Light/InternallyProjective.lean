@@ -41,7 +41,7 @@ universe u
 
 open CategoryTheory Category MonoidalCategory Functor Monoidal LaxMonoidal OplaxMonoidal
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 namespace LightCondensed
 

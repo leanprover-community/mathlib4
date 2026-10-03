@@ -35,7 +35,7 @@ open nonZeroDivisors IsLocalization Algebra Module IsFractionRing IsScalarTower
 
 attribute [local instance] FractionRing.liftAlgebra
 
-variable {R : Type*} (S : Type*) (T : Type*) [CommRing R] [CommRing S] [CommRing T] [IsDomain R]
+variable {R : Type*} (S : Type*) (T : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [IsDomain R]
   [IsDomain S] [IsDomain T] [Algebra R S]
 
 local notation3 "K" => FractionRing R
@@ -45,11 +45,11 @@ local notation3 "F" => FractionRing T
 section
 
 theorem algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul {A : Type*} (B : Type*)
-    [CommSemiring A] [CommSemiring B] [Algebra A B] [NoZeroDivisors B] [FaithfulSMul A B]
+    [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Algebra A B] [NoZeroDivisors B] [FaithfulSMul A B]
     {S : Submonoid A} (hS : S ≤ A⁰) : algebraMapSubmonoid B S ≤ B⁰ :=
   map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective A B) hS
 
-variable (Rₘ Sₘ : Type*) [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ] [IsTorsionFree R S]
+variable (Rₘ Sₘ : Type*) [Ring Rₘ] [IsMulCommutative Rₘ] [Ring Sₘ] [IsMulCommutative Sₘ] [Algebra R Rₘ] [IsTorsionFree R S]
     [Algebra.IsSeparable (FractionRing R) (FractionRing S)] {M : Submonoid R} [IsLocalization M Rₘ]
     [Algebra Rₘ Sₘ] [Algebra S Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ]
     [IsScalarTower R S Sₘ] [IsLocalization (algebraMapSubmonoid S M) Sₘ]

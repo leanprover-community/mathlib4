@@ -53,7 +53,7 @@ open Function
 
 noncomputable section
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace RootPairing
 
@@ -61,7 +61,7 @@ namespace RootPairing
 that preserves roots and coroots.  We make the map of indexing sets explicit. -/
 @[ext]
 structure Hom {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) where
   /-- A linear map on weight space. -/
   weightMap : M →ₗ[R] M₂
@@ -77,7 +77,7 @@ structure Hom {ι₂ M₂ N₂ : Type*}
 namespace Hom
 
 @[simp] lemma pairing {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     {P : RootPairing ι R M N} {Q : RootPairing ι₂ R M₂ N₂} (f : Hom P Q) {i j : ι} :
     Q.pairing (f.indexEquiv i) (f.indexEquiv j) = P.pairing i j := by
   have hi : f.weightMap (P.root i) = Q.root (f.indexEquiv i) := by
@@ -88,19 +88,19 @@ namespace Hom
     congr($f.weight_coweight_transpose (Q.coroot (f.indexEquiv j)) (P.root i))
 
 lemma weight_coweight_transpose_apply {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (x : N₂) (f : Hom P Q) :
     f.weightMap.dualMap (Q.flip.toPerfPair x) = P.flip.toPerfPair (f.coweightMap x) :=
   Eq.mp (propext LinearMap.ext_iff) f.weight_coweight_transpose x
 
 lemma root_weightMap_apply {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (i : ι) (f : Hom P Q) :
     f.weightMap (P.root i) = Q.root (f.indexEquiv i) :=
   Eq.mp (propext funext_iff) f.root_weightMap i
 
 lemma coroot_coweightMap_apply {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (i : ι₂) (f : Hom P Q) :
     f.coweightMap (Q.coroot i) = P.coroot (f.indexEquiv.symm i) :=
   Eq.mp (propext funext_iff) f.coroot_coweightMap i
@@ -117,8 +117,8 @@ def id (P : RootPairing ι R M N) : Hom P P where
 
 /-- Composition of morphisms -/
 @[simps!]
-def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R M₁] [AddCommGroup N₁]
-    [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁] [AddGroup N₁] [IsAddCommutative N₁]
+    [Module R N₁] [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     {P : RootPairing ι R M N} {P₁ : RootPairing ι₁ R M₁ N₁} {P₂ : RootPairing ι₂ R M₂ N₂}
     (g : Hom P₁ P₂) (f : Hom P P₁) : Hom P P₂ where
   weightMap := g.weightMap ∘ₗ f.weightMap
@@ -141,22 +141,22 @@ def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R
 
 @[simp]
 lemma id_comp {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (f : Hom P Q) :
     comp f (id P) = f := by
   ext x <;> simp
 
 @[simp]
 lemma comp_id {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (f : Hom P Q) :
     comp (id Q) f = f := by
   ext x <;> simp
 
 @[simp]
-lemma comp_assoc {ι₁ M₁ N₁ ι₂ M₂ N₂ ι₃ M₃ N₃ : Type*} [AddCommGroup M₁] [Module R M₁]
-    [AddCommGroup N₁] [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
-    [AddCommGroup M₃] [Module R M₃] [AddCommGroup N₃] [Module R N₃] {P : RootPairing ι R M N}
+lemma comp_assoc {ι₁ M₁ N₁ ι₂ M₂ N₂ ι₃ M₃ N₃ : Type*} [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁]
+    [AddGroup N₁] [IsAddCommutative N₁] [Module R N₁] [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
+    [AddGroup M₃] [IsAddCommutative M₃] [Module R M₃] [AddGroup N₃] [IsAddCommutative N₃] [Module R N₃] {P : RootPairing ι R M N}
     {P₁ : RootPairing ι₁ R M₁ N₁} {P₂ : RootPairing ι₂ R M₂ N₂} {P₃ : RootPairing ι₃ R M₃ N₃}
     (h : Hom P₂ P₃) (g : Hom P₁ P₂) (f : Hom P P₁) :
     comp (comp h g) f = comp h (comp g f) := by
@@ -260,7 +260,7 @@ def indexHom (P : RootPairing ι R M N) : End P →* (ι ≃ ι) where
 end Hom
 
 variable {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂)
 
 /-- An equivalence of root pairings is a morphism where the maps of weight and coweight spaces are
@@ -329,8 +329,8 @@ def id (P : RootPairing ι R M N) : RootPairing.Equiv P P :=
     bijective_coweightMap := _root_.id bijective_id }
 
 /-- Composition of equivalences -/
-def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R M₁] [AddCommGroup N₁]
-    [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁] [AddGroup N₁] [IsAddCommutative N₁]
+    [Module R N₁] [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     {P : RootPairing ι R M N} {P₁ : RootPairing ι₁ R M₁ N₁} {P₂ : RootPairing ι₂ R M₂ N₂}
     (g : RootPairing.Equiv P₁ P₂) (f : RootPairing.Equiv P P₁) : RootPairing.Equiv P P₂ :=
   { Hom.comp g.toHom f.toHom with
@@ -342,8 +342,8 @@ def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R
       exact Bijective.comp f.bijective_coweightMap g.bijective_coweightMap }
 
 @[simp]
-lemma toHom_comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R M₁] [AddCommGroup N₁]
-    [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+lemma toHom_comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁] [AddGroup N₁] [IsAddCommutative N₁]
+    [Module R N₁] [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     {P : RootPairing ι R M N} {P₁ : RootPairing ι₁ R M₁ N₁} {P₂ : RootPairing ι₂ R M₂ N₂}
     (g : RootPairing.Equiv P₁ P₂) (f : RootPairing.Equiv P P₁) :
     (Equiv.comp g f).toHom = Hom.comp g.toHom f.toHom := by
@@ -351,22 +351,22 @@ lemma toHom_comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [
 
 @[simp]
 lemma id_comp {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (f : RootPairing.Equiv P Q) :
     comp f (id P) = f := by
   ext x <;> simp
 
 @[simp]
 lemma comp_id {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (f : RootPairing.Equiv P Q) :
     comp (id Q) f = f := by
   ext x <;> simp
 
 @[simp]
-lemma comp_assoc {ι₁ M₁ N₁ ι₂ M₂ N₂ ι₃ M₃ N₃ : Type*} [AddCommGroup M₁] [Module R M₁]
-    [AddCommGroup N₁] [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
-    [AddCommGroup M₃] [Module R M₃] [AddCommGroup N₃] [Module R N₃] {P : RootPairing ι R M N}
+lemma comp_assoc {ι₁ M₁ N₁ ι₂ M₂ N₂ ι₃ M₃ N₃ : Type*} [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁]
+    [AddGroup N₁] [IsAddCommutative N₁] [Module R N₁] [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
+    [AddGroup M₃] [IsAddCommutative M₃] [Module R M₃] [AddGroup N₃] [IsAddCommutative N₃] [Module R N₃] {P : RootPairing ι R M N}
     {P₁ : RootPairing ι₁ R M₁ N₁} {P₂ : RootPairing ι₂ R M₂ N₂} {P₃ : RootPairing ι₃ R M₃ N₃}
     (h : RootPairing.Equiv P₂ P₃) (g : RootPairing.Equiv P₁ P₂) (f : RootPairing.Equiv P P₁) :
     comp (comp h g) f = comp h (comp g f) := by
@@ -421,7 +421,7 @@ lemma coweightEquiv_mul {P : RootPairing ι R M N} (x y : RootPairing.Equiv P P)
   rfl
 
 /-- The inverse of a root pairing equivalence. -/
-def symm {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+def symm {ι₂ M₂ N₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (f : RootPairing.Equiv P Q) :
     RootPairing.Equiv Q P where
   weightMap := f.weightEquiv.symm
@@ -460,19 +460,19 @@ def symm {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommG
     exact LinearEquiv.bijective f.coweightEquiv.symm
 
 @[simp]
-lemma inv_weightMap {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂]
+lemma inv_weightMap {ι₂ M₂ N₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂]
     [Module R N₂] (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂)
     (f : RootPairing.Equiv P Q) : (symm P Q f).weightMap = f.weightEquiv.symm :=
   rfl
 
 @[simp]
-lemma inv_coweightMap {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂]
+lemma inv_coweightMap {ι₂ M₂ N₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂]
     [Module R N₂] (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂)
     (f : RootPairing.Equiv P Q) : (symm P Q f).coweightMap = f.coweightEquiv.symm :=
   rfl
 
 @[simp]
-lemma inv_indexEquiv {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂]
+lemma inv_indexEquiv {ι₂ M₂ N₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂]
     [Module R N₂] (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂)
     (f : RootPairing.Equiv P Q) : (symm P Q f).indexEquiv = (Hom.indexEquiv f.toHom).symm :=
   rfl

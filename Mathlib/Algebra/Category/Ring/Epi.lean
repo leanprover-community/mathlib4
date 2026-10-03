@@ -22,7 +22,7 @@ open CategoryTheory TensorProduct
 
 universe u
 
-lemma CommRingCat.epi_iff_epi {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] :
+lemma CommRingCat.epi_iff_epi {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] :
     Epi (CommRingCat.ofHom (algebraMap R S)) ↔ Algebra.IsEpi R S := by
   simp_rw [Algebra.isEpi_iff_forall_one_tmul_eq, eq_comm]
   constructor

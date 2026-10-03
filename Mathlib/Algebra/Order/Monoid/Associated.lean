@@ -16,7 +16,7 @@ This file shows that divisibility makes associates into a canonically ordered mo
 
 public section
 
-variable {M : Type*} [CommMonoidWithZero M]
+variable {M : Type*} [MonoidWithZero M] [IsMulCommutative M]
 
 namespace Associates
 

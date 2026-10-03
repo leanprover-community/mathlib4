@@ -29,7 +29,7 @@ namespace Module
 open LinearMap
 
 variable {v : ι → M}
-variable [Ring R] [CommRing R₂] [AddCommGroup M]
+variable [Ring R] [Ring R₂] [IsMulCommutative R₂] [AddGroup M] [IsAddCommutative M]
 variable [Module R M] [Module R₂ M]
 variable {x y : M}
 variable (b : Basis ι R M)

@@ -44,11 +44,11 @@ open Set LinearMap Module Submodule
 
 universe u v
 
-variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
+variable (σ : Type u) (R : Type v) [Semiring R] [IsMulCommutative R] (p m : ℕ)
 
 namespace MvPolynomial
 
-instance {σ R : Type*} [CommSemiring R] [Small.{u} R] [Small.{u} σ] :
+instance {σ R : Type*} [Semiring R] [IsMulCommutative R] [Small.{u} R] [Small.{u} σ] :
     Small.{u} (MvPolynomial σ R) := small_map AddMonoidAlgebra.coeffEquiv
 
 section CharP
@@ -76,7 +76,7 @@ end ExpChar
 
 section Homomorphism
 
-theorem map_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
+theorem map_eq_map {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (p : MvPolynomial σ R)
     (f : R →+* S) : AddMonoidAlgebra.map f p = map f p := rfl
 
 @[deprecated (since := "2026-06-18")] alias mapRange_eq_map := map_eq_map

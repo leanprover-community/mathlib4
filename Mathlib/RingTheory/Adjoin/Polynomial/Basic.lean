@@ -38,7 +38,7 @@ section aeval
 
 open Algebra
 
-variable [CommSemiring R] [Semiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B]
 variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
@@ -57,7 +57,7 @@ theorem adjoin_singleton_eq_range_aeval (x : A) : R[x] = (aeval x).range := by
 theorem _root_.Polynomial.aeval_mem_adjoin_singleton : aeval x p ∈ R[x] := by
   simp [adjoin_singleton_eq_range_aeval]
 
-instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] (x : B) (p : Polynomial A) :
+instance {A B : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [Algebra A B] (x : B) (p : Polynomial A) :
     CoeDep B (p.aeval x) A[x] where
   coe := ⟨p.aeval x, aeval_mem_adjoin_singleton A x⟩
 
@@ -78,7 +78,7 @@ theorem adjoin_eq_exists_aeval (a : R[x]) :
   simp_all
 
 lemma exists_mvPolynomial_aeval_eq_of_mem_adjoin {R A σ : Type*}
-    [CommSemiring R] [CommSemiring A] [Algebra R A]
+    [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
     {S : Set A} {a : A} {f : σ → A} (hS : S ⊆ Set.range f)
     (ha : a ∈ adjoin R S) : ∃ p : MvPolynomial σ R, p.aeval f = a := by
   have ha : a ∈ adjoin R (Set.range f) := adjoin_mono hS ha
@@ -86,7 +86,7 @@ lemma exists_mvPolynomial_aeval_eq_of_mem_adjoin {R A σ : Type*}
   simp_all
 
 lemma exists_mvPolynomial_eq_of_adjoin {R A σ : Type*}
-    [CommSemiring R] [CommSemiring A] [Algebra R A]
+    [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
     {S : Set A} {f : σ → A} (hS : S ⊆ Set.range f)
     (a : adjoin R S) : ∃ p : MvPolynomial σ R, p.aeval f = a :=
   exists_mvPolynomial_aeval_eq_of_mem_adjoin hS a.2
@@ -108,7 +108,7 @@ instance instCommSemiringAdjoinSingleton :
       simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, MulMemClass.mk_mul_mk, ← map_mul,
         mul_comm p' q']
 
-instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
+instance instCommRingAdjoinSingleton {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A] (x : A) :
     CommRing R[x] where
 
 end aeval

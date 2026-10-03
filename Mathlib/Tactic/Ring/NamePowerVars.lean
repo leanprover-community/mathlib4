@@ -16,7 +16,7 @@ The notation introduced by this command is local.
 Usage:
 
 ```lean
-variable (R : Type) [CommRing R]
+variable (R : Type) [Ring R] [IsMulCommutative R]
 
 name_power_vars X, Y, Z over R
 
@@ -38,7 +38,7 @@ The notation introduced by this command is local.
 Usage:
 
 ```lean
-variable (R : Type) [CommRing R]
+variable (R : Type) [Ring R] [IsMulCommutative R]
 
 name_power_vars X, Y, Z over R
 

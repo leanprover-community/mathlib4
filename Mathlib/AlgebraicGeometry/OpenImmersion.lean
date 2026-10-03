@@ -326,7 +326,7 @@ instance isOpenImmersion_SpecMap_localizationAway {R : CommRingCat.{u}} (f : R) 
   · intro x
     exact isIso_specMap_stalkMap_localization R (Submonoid.powers f) x
 
-instance {R} [CommRing R] (f : R) :
+instance {R} [Ring R] [IsMulCommutative R] (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
   isOpenImmersion_SpecMap_localizationAway (R := ↧R) f
 
@@ -338,7 +338,7 @@ lemma Hom.opensRange_localizationAway {R : CommRingCat.{u}} (g : R) :
   rw [SetLike.ext'_iff]
   exact PrimeSpectrum.localization_away_comap_range _ g
 
-lemma _root_.AlgebraicGeometry.IsOpenImmersion.of_isLocalization {R S} [CommRing R] [CommRing S]
+lemma _root_.AlgebraicGeometry.IsOpenImmersion.of_isLocalization {R S} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     [Algebra R S] (f : R) [IsLocalization.Away f S] :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R S))) := by
   have e := (IsLocalization.algEquiv (.powers f) S

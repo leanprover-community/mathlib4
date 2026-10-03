@@ -62,16 +62,16 @@ instance instSemiring [Semiring R] [Semiring S] : Semiring (R × S) :=
     (inferInstance : MonoidWithZero (R × S)) with }
 
 /-- Product of two `NonUnitalCommSemiring`s is a `NonUnitalCommSemiring`. -/
-instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [NonUnitalCommSemiring S] :
+instance instNonUnitalCommSemiring [NonUnitalSemiring R] [IsMulCommutative R] [NonUnitalSemiring S] [IsMulCommutative S] :
     NonUnitalCommSemiring (R × S) :=
   { (inferInstance : NonUnitalSemiring (R × S)), (inferInstance : CommSemigroup (R × S)) with }
 
 /-- Product of two commutative semirings is a commutative semiring. -/
-instance instCommSemiring [CommSemiring R] [CommSemiring S] : CommSemiring (R × S) :=
+instance instCommSemiring [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] : CommSemiring (R × S) :=
   { (inferInstance : Semiring (R × S)), (inferInstance : CommMonoid (R × S)) with }
 
 /-- Product of two `AddCommGroupWithOne`s is an `AddCommGroupWithOne`. -/
-instance instAddCommGroupWithOne [AddCommGroupWithOne R] [AddCommGroupWithOne S] :
+instance instAddCommGroupWithOne [AddGroupWithOne R] [IsAddCommutative R] [AddGroupWithOne S] [IsAddCommutative S] :
     AddCommGroupWithOne (R × S) :=
   { (inferInstance : AddGroupWithOne (R × S)), (inferInstance : AddCommGroup (R × S)) with }
 
@@ -96,12 +96,12 @@ instance instRing [Ring R] [Ring S] : Ring (R × S) :=
     (inferInstance : AddGroupWithOne (R × S)) with }
 
 /-- Product of two `NonUnitalCommRing`s is a `NonUnitalCommRing`. -/
-instance instNonUnitalCommRing [NonUnitalCommRing R] [NonUnitalCommRing S] :
+instance instNonUnitalCommRing [NonUnitalRing R] [IsMulCommutative R] [NonUnitalRing S] [IsMulCommutative S] :
     NonUnitalCommRing (R × S) :=
   { (inferInstance : NonUnitalRing (R × S)), (inferInstance : CommSemigroup (R × S)) with }
 
 /-- Product of two commutative rings is a commutative ring. -/
-instance instCommRing [CommRing R] [CommRing S] : CommRing (R × S) :=
+instance instCommRing [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] : CommRing (R × S) :=
   { (inferInstance : Ring (R × S)), (inferInstance : CommMonoid (R × S)) with }
 
 end Prod

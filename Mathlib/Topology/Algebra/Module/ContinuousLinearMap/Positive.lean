@@ -29,8 +29,8 @@ algebra. One can achieve the same effect by using a combination of `ContinuousLi
 /-- A `PositiveContinuousLinearMap` is a linear map which is both an order homomorphism and
 continuous. This comes equipped with the notation `E₁ →P[R] E₂`. -/
 structure PositiveContinuousLinearMap (R E₁ E₂ : Type*) [Semiring R]
-    [AddCommMonoid E₁] [PartialOrder E₁] [TopologicalSpace E₁]
-    [AddCommMonoid E₂] [PartialOrder E₂] [TopologicalSpace E₂]
+    [AddMonoid E₁] [IsAddCommutative E₁] [PartialOrder E₁] [TopologicalSpace E₁]
+    [AddMonoid E₂] [IsAddCommutative E₂] [PartialOrder E₂] [TopologicalSpace E₂]
     [Module R E₁] [Module R E₂] extends E₁ →ₚ[R] E₂, E₁ →L[R] E₂
 
 /-- Notation for a `PositiveContinuousLinearMap`. -/
@@ -46,7 +46,7 @@ namespace PositiveContinuousLinearMap
 section General
 
 variable {R E₁ E₂ E₃ E₄ : Type*} [Semiring R]
-  [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
+  [AddMonoid E₁] [IsAddCommutative E₁] [PartialOrder E₁] [AddMonoid E₂] [IsAddCommutative E₂] [PartialOrder E₂]
   [Module R E₁] [Module R E₂] [TopologicalSpace E₁] [TopologicalSpace E₂]
 
 @[macro_inline]
@@ -149,8 +149,8 @@ variable (R E₁) in
 
 section Comp
 
-variable [AddCommMonoid E₃] [PartialOrder E₃] [Module R E₃] [TopologicalSpace E₃]
-variable [AddCommMonoid E₄] [PartialOrder E₄] [Module R E₄] [TopologicalSpace E₄]
+variable [AddMonoid E₃] [IsAddCommutative E₃] [PartialOrder E₃] [Module R E₃] [TopologicalSpace E₃]
+variable [AddMonoid E₄] [IsAddCommutative E₄] [PartialOrder E₄] [Module R E₄] [TopologicalSpace E₄]
 
 /-- Composition of positive continuous linear maps. -/
 @[simps! apply toPositiveLinearMap]
@@ -215,8 +215,8 @@ end General
 section AddGroup
 
 variable {R E₁ E₂ : Type*} [Semiring R]
-  [AddCommGroup E₁] [PartialOrder E₁] [IsOrderedAddMonoid E₁] [TopologicalSpace E₁]
-  [AddCommGroup E₂] [PartialOrder E₂] [IsOrderedAddMonoid E₂] [TopologicalSpace E₂]
+  [AddGroup E₁] [IsAddCommutative E₁] [PartialOrder E₁] [IsOrderedAddMonoid E₁] [TopologicalSpace E₁]
+  [AddGroup E₂] [IsAddCommutative E₂] [PartialOrder E₂] [IsOrderedAddMonoid E₂] [TopologicalSpace E₂]
   [Module R E₁] [Module R E₂]
 
 /-- Define a positive continuous linear map from a continuous linear map that maps

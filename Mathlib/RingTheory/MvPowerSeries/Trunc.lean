@@ -65,11 +65,11 @@ variable {σ R S : Type*}
 
 section TruncFinset
 
-variable [CommSemiring R] {s : Finset (σ →₀ ℕ)}
+variable [Semiring R] [IsMulCommutative R] {s : Finset (σ →₀ ℕ)}
 
 /-- Restrict the support of a multivariate power series to a finite set of monomials and
 obtain a multivariate polynomial. -/
-def truncFinset (R : Type*) [CommSemiring R] (s : Finset (σ →₀ ℕ)) :
+def truncFinset (R : Type*) [Semiring R] [IsMulCommutative R] (s : Finset (σ →₀ ℕ)) :
     MvPowerSeries σ R →ₗ[R] MvPolynomial σ R where
   toFun p := ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x)
   map_add' _ _ := by simp [sum_add_distrib]
@@ -119,7 +119,7 @@ theorem truncFinset_truncFinset {t : Finset (σ →₀ ℕ)} (h : s ⊆ t) (p : 
   ext x
   by_cases x ∈ s <;> grind [MvPolynomial.coeff_coe]
 
-theorem truncFinset_map [CommSemiring S] (f : R →+* S) (p : MvPowerSeries σ R) :
+theorem truncFinset_map [Semiring S] [IsMulCommutative S] (f : R →+* S) (p : MvPowerSeries σ R) :
     truncFinset S s (map f p) = MvPolynomial.map f (truncFinset R s p) := by
   ext x
   by_cases x ∈ s <;> grind [coeff_map, MvPolynomial.coeff_map]
@@ -174,7 +174,7 @@ end TruncFinset
 
 section TruncLT
 
-variable [DecidableEq σ] [CommSemiring R]
+variable [DecidableEq σ] [Semiring R] [IsMulCommutative R]
 
 /-- The `n`th truncation of a multivariate formal power series to a multivariate polynomial
 
@@ -182,7 +182,7 @@ If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) fu
 to the naturals, then `trunc R n f` is the multivariable polynomial obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`
 and `a i < n i` for some `i`. -/
-def trunc (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
+def trunc (R : Type*) [Semiring R] [IsMulCommutative R] (n : σ →₀ ℕ) :
     MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Iio n)
 
 theorem coeff_trunc (m n : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
@@ -203,7 +203,7 @@ theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
   ext m; simp [coeff_trunc]
 
 @[simp]
-theorem trunc_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
+theorem trunc_map [Semiring S] [IsMulCommutative S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
     trunc S n (map f p) = MvPolynomial.map f (trunc R n p) := truncFinset_map f p
 
 /-- A coefficient of a product of truncated power series equals the coefficient of the untruncated
@@ -225,7 +225,7 @@ end TruncLT
 
 section TruncLE
 
-variable [DecidableEq σ] [CommSemiring R]
+variable [DecidableEq σ] [Semiring R] [IsMulCommutative R]
 
 /--
 The `n`th truncation of a multivariate formal power series to a multivariate polynomial.
@@ -233,7 +233,7 @@ The `n`th truncation of a multivariate formal power series to a multivariate pol
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
 to the naturals, then `trunc' R n f` is the multivariable polynomial obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`. -/
-def trunc' (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
+def trunc' (R : Type*) [Semiring R] [IsMulCommutative R] (n : σ →₀ ℕ) :
     MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Iic n)
 
 /-- Coefficients of the truncation of a multivariate power series. -/
@@ -278,7 +278,7 @@ theorem trunc'_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
   ext m; simp [coeff_trunc']
 
 @[simp]
-theorem trunc'_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
+theorem trunc'_map [Semiring S] [IsMulCommutative S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
     trunc' S n (map f p) = MvPolynomial.map f (trunc' R n p) := truncFinset_map f p
 
 section
@@ -311,11 +311,11 @@ end TruncLE
 
 section TruncTotal
 
-variable {n m : ℕ} [Finite σ] [CommSemiring R] (p q : MvPowerSeries σ R) {x : σ →₀ ℕ}
+variable {n m : ℕ} [Finite σ] [Semiring R] [IsMulCommutative R] (p q : MvPowerSeries σ R) {x : σ →₀ ℕ}
 
 /-- The truncation of a multivariate formal power series at a total degree `n`
 when the index `σ` is finite. -/
-def truncTotal {R : Type*} [CommSemiring R] (n : ℕ) : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R :=
+def truncTotal {R : Type*} [Semiring R] [IsMulCommutative R] (n : ℕ) : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R :=
   truncFinset R (finite_of_degree_lt n).toFinset
 
 theorem coeff_truncTotal (h : degree x < n) :

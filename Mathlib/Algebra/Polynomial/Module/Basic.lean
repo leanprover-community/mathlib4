@@ -39,14 +39,14 @@ See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.231
 for the full discussion.
 -/
 @[nolint unusedArguments]
-structure PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] where
+structure PolynomialModule (R M : Type*) [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] where
   /-- Construct an element of the polynomial module `M[[]]` from its coefficients `ℕ →₀ M`. -/
   ofCoeff (R) ::
   /-- The coefficients `ℕ →₀ M` of an element of the additive monoid algebra `M[X]`. -/
   coeff : ℕ →₀ M
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
 variable {x y : PolynomialModule R M} {r : R} {m m₁ m₂ : M}
@@ -118,11 +118,11 @@ lemma ofCoeff_sum (s : Finset ι) (f : ι → ℕ →₀ M) :
     ofCoeff R (∑ i ∈ s, f i) = ∑ i ∈ s, ofCoeff R (f i) := map_sum coeffAddEquiv.symm ..
 
 @[simp]
-lemma coeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → PolynomialModule R M) :
+lemma coeff_finsuppSum [AddMonoid N] [IsAddCommutative N] (f : ι →₀ N) (g : ι → N → PolynomialModule R M) :
     coeff (f.sum g) = f.sum (fun i n ↦ coeff (g i n)) := map_finsuppSum coeffAddEquiv ..
 
 @[simp]
-lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → ℕ →₀ M) :
+lemma ofCoeff_finsuppSum [AddMonoid N] [IsAddCommutative N] (f : ι →₀ N) (g : ι → N → ℕ →₀ M) :
     ofCoeff R (f.sum g) = f.sum (fun i n ↦ ofCoeff R (g i n)) :=
   map_finsuppSum coeffAddEquiv.symm ..
 
@@ -144,7 +144,7 @@ lemma single_add (n : ℕ) (m₁ m₂ : M) :
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
 instance : Module S (PolynomialModule R M) := coeffAddEquiv.module _
 
-instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
+instance (M : Type u) [AddGroup M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower S R M] :
     IsScalarTower S R (PolynomialModule R M) := coeffAddEquiv.isScalarTower _ _
 
 variable (R S) in
@@ -179,7 +179,7 @@ lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
     (Finsupp.lmapDomain M R Nat.succ).comp (coeffLinearEquiv R R).toLinearMap) f m := by
   rfl
 
-instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
+instance isScalarTower' (M : Type u) [AddGroup M] [IsAddCommutative M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
   have : IsScalarTower R R[X] (PolynomialModule R M) :=
     inferInstanceAs <| IsScalarTower R R[X] <| Module.AEval' <| (coeffLinearEquiv R R).symm.comp <|
@@ -256,7 +256,7 @@ def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
       lia
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
-def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] : PolynomialModule R S ≃ₗ[R] S[X] where
+def equivPolynomial {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] : PolynomialModule R S ≃ₗ[R] S[X] where
   toAddEquiv := coeffAddEquiv.trans <| AddMonoidAlgebra.coeffAddEquiv.symm.trans
     (toFinsuppIso _).symm.toAddEquiv
   map_smul' _ _ := rfl
@@ -266,18 +266,18 @@ lemma equivPolynomialSelf_apply_eq (p : PolynomialModule R R) :
     equivPolynomialSelf p = equivPolynomial p := rfl
 
 @[simp]
-lemma equivPolynomial_single {S : Type*} [CommRing S] [Algebra R S] (n : ℕ) (x : S) :
+lemma equivPolynomial_single {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] (n : ℕ) (x : S) :
     equivPolynomial (single R n x) = monomial n x := rfl
 
 @[simp]
-lemma equivPolynomial_symm_monomial {S : Type*} [CommRing S] [Algebra R S] (n : ℕ) (x : S) :
+lemma equivPolynomial_symm_monomial {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] (n : ℕ) (x : S) :
     equivPolynomial.symm (monomial n x) = single R n x := rfl
 
 @[simp]
-lemma equivPolynomial_symm_one {S : Type*} [CommRing S] [Algebra R S] :
+lemma equivPolynomial_symm_one {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] :
     equivPolynomial.symm (1 : S[X]) = single R 0 1 := rfl
 
-variable (R' : Type*) {M' : Type*} [CommRing R'] [AddCommGroup M'] [Module R' M']
+variable (R' : Type*) {M' : Type*} [Ring R'] [IsMulCommutative R'] [AddGroup M'] [IsAddCommutative M'] [Module R' M']
 variable [Module R M']
 
 /-- Two `R`-linear maps from `PolynomialModule R M` which are equal
@@ -362,7 +362,7 @@ theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :
   eval_map R f q r
 
 @[simp]
-lemma aeval_equivPolynomial {S : Type*} [CommRing S] [Algebra S R]
+lemma aeval_equivPolynomial {S : Type*} [Ring S] [IsMulCommutative S] [Algebra S R]
     (f : PolynomialModule S S) (x : R) :
     aeval x (equivPolynomial f) = eval x (map R (Algebra.linearMap S R) f) := by
   induction f using induction_linear with

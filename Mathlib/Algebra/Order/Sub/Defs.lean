@@ -84,7 +84,7 @@ variable [Preorder α]
 
 section AddCommSemigroup
 
-variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [AddSemigroup α] [IsAddCommutative α] [Sub α] [OrderedSub α] {a b c d : α}
 
 -- TODO: Most results can be generalized to `[Add α] [IsAddCommutative α]`
 
@@ -206,7 +206,7 @@ end Contra
 
 end AddCommSemigroup
 
-variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b : α}
+variable [AddMonoid α] [IsAddCommutative α] [Sub α] [OrderedSub α] {a b : α}
 
 theorem tsub_nonpos : a - b ≤ 0 ↔ a ≤ b := by rw [tsub_le_iff_left, add_zero]
 
@@ -217,7 +217,7 @@ end Preorder
 /-! ### Partial order -/
 
 
-variable [PartialOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [PartialOrder α] [AddSemigroup α] [IsAddCommutative α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem tsub_tsub (b a c : α) : b - a - c = b - (a + c) := by
   apply le_antisymm
@@ -371,7 +371,7 @@ end OrderedAddCommSemigroup
 
 section LinearOrder
 
-variable {a b c : α} [LinearOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α]
+variable {a b c : α} [LinearOrder α] [AddSemigroup α] [IsAddCommutative α] [Sub α] [OrderedSub α]
 
 /-- See `lt_of_tsub_lt_tsub_right_of_le` for a weaker statement in a partial order. -/
 theorem lt_of_tsub_lt_tsub_right (h : a - c < b - c) : a < b :=
@@ -402,7 +402,7 @@ end LinearOrder
 
 section OrderedAddCommMonoid
 
-variable [PartialOrder α] [AddCommMonoid α] [Sub α] [OrderedSub α]
+variable [PartialOrder α] [AddMonoid α] [IsAddCommutative α] [Sub α] [OrderedSub α]
 
 @[simp]
 theorem tsub_zero (a : α) : a - 0 = a :=

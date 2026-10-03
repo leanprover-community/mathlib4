@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.Unramified.Locus
 
 namespace RingHom
 
-variable {R : Type*} {S : Type*} [CommRing R] [CommRing S]
+variable {R : Type*} {S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 /--
 A ring homomorphism `R →+* A` is formally unramified if `Ω[A⁄R]` is trivial.
@@ -38,13 +38,13 @@ lemma of_surjective {f : R →+* S} (hf : Function.Surjective f) : f.FormallyUnr
   algebraize [f]
   exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) hf
 
-lemma of_comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
+lemma of_comp {T : Type*} [Ring T] [IsMulCommutative T] {f : R →+* S} {g : S →+* T}
     (h : (g.comp f).FormallyUnramified) :
     g.FormallyUnramified := by
   algebraize [f, g, g.comp f]
   exact Algebra.FormallyUnramified.of_restrictScalars R _ _
 
-lemma comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T} (hf : f.FormallyUnramified)
+lemma comp {T : Type*} [Ring T] [IsMulCommutative T] {f : R →+* S} {g : S →+* T} (hf : f.FormallyUnramified)
     (hg : g.FormallyUnramified) :
     (g.comp f).FormallyUnramified := by
   algebraize [f, g, g.comp f]
@@ -118,7 +118,7 @@ lemma propertyIsLocal :
 
 end FormallyUnramified
 
-lemma FormallyEtale.of_comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
+lemma FormallyEtale.of_comp {T : Type*} [Ring T] [IsMulCommutative T] {f : R →+* S} {g : S →+* T}
     (hf : f.FormallyUnramified) (h : (g.comp f).FormallyEtale) :
     g.FormallyEtale := by
   algebraize [f, g, g.comp f]

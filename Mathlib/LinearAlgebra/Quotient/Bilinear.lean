@@ -19,7 +19,7 @@ namespace LinearMap
 section Asymmetric -- "asymmetric" case of a form `M × N → P`
 
 variable {R R₂ S S₂ M N P : Type*} [Ring R] [Ring R₂] [Ring S] [Ring S₂]
-    [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module S N] [Module R₂ P]
+    [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P] [Module R M] [Module S N] [Module R₂ P]
     [Module S₂ P] [SMulCommClass R₂ S₂ P] {ρ : R →+* R₂} {σ : S →+* S₂}
 
 attribute [local instance] SMulCommClass.symm
@@ -44,8 +44,8 @@ end Asymmetric
 
 section Symmetric -- "symmetric" case of a form `M × M → P`
 
-variable {R S M P : Type*} [AddCommGroup M] [CommRing R] [CommRing S]
-    [Module R M] [AddCommGroup P] [Module S P] {I₁ I₂ : R →+* S}
+variable {R S M P : Type*} [AddGroup M] [IsAddCommutative M] [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
+    [Module R M] [AddGroup P] [IsAddCommutative P] [Module S P] {I₁ I₂ : R →+* S}
 
 /-- Special case of `LinearMap.liftQ₂` with left and right spaces the same. Reducible so
 that simp lemmas about `LinearMap.liftQ₂` apply to it. -/

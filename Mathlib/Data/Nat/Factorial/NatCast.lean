@@ -70,7 +70,7 @@ end CharP
 
 section Nilpotent
 
-variable {A : Type*} [CommRing A] {n p : ℕ} (hp : IsNilpotent (p : A))
+variable {A : Type*} [Ring A] [IsMulCommutative A] {n p : ℕ} (hp : IsNilpotent (p : A))
 include hp
 
 lemma natCast_of_isNilpotent_of_coprime (h : p.Coprime n) :
@@ -100,7 +100,7 @@ end IsUnit
 
 open Nat Ring
 
-lemma Nat.castChoose_eq {A : Type*} [CommSemiring A] {m : ℕ} {k : ℕ × ℕ}
+lemma Nat.castChoose_eq {A : Type*} [Semiring A] [IsMulCommutative A] {m : ℕ} {k : ℕ × ℕ}
     (hm : IsUnit (m ! : A)) (hk : k ∈ Finset.antidiagonal m) :
     (choose m k.1 : A) = ↑m ! * inverse ↑k.1! * inverse ↑k.2! := by
   rw [Finset.mem_antidiagonal] at hk

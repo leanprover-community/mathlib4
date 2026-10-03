@@ -34,7 +34,7 @@ universe u v w w₁ w₂
 section LieSubmodule
 
 variable (R : Type u) (L : Type v) (M : Type w)
-variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [LieRingModule L M]
 
 /-- A Lie submodule of a Lie module is a submodule that is closed under the Lie bracket.
@@ -249,7 +249,7 @@ end LieSubmodule
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [LieRingModule L M]
 variable (N N' : LieSubmodule R L M)
 
@@ -714,9 +714,9 @@ end LieSubmodule
 section LieSubmoduleMapAndComap
 
 variable {R : Type u} {L : Type v} {M : Type w} {M' : Type w₁}
-variable [CommRing R] [LieRing L]
-variable [AddCommGroup M] [Module R M] [LieRingModule L M]
-variable [AddCommGroup M'] [Module R M'] [LieRingModule L M']
+variable [Ring R] [IsMulCommutative R] [LieRing L]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
+variable [AddGroup M'] [IsAddCommutative M'] [Module R M'] [LieRingModule L M']
 
 namespace LieSubmodule
 
@@ -804,7 +804,7 @@ theorem map_mono (h : N ≤ N₂) : N.map f ≤ N₂.map f :=
   Set.image_mono h
 
 theorem map_comp
-    {M'' : Type*} [AddCommGroup M''] [Module R M''] [LieRingModule L M''] {g : M' →ₗ⁅R,L⁆ M''} :
+    {M'' : Type*} [AddGroup M''] [IsAddCommutative M''] [Module R M''] [LieRingModule L M''] {g : M' →ₗ⁅R,L⁆ M''} :
     N.map (g.comp f) = (N.map f).map g :=
   SetLike.coe_injective <| by
     simp only [← Set.image_comp, coe_map, LieModuleHom.coe_comp]
@@ -859,9 +859,9 @@ end LieSubmoduleMapAndComap
 namespace LieModuleHom
 
 variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
-variable [CommRing R] [LieRing L]
-variable [AddCommGroup M] [Module R M] [LieRingModule L M]
-variable [AddCommGroup N] [Module R N] [LieRingModule L N]
+variable [Ring R] [IsMulCommutative R] [LieRing L]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
+variable [AddGroup N] [IsAddCommutative N] [Module R N] [LieRingModule L N]
 variable (f : M →ₗ⁅R,L⁆ N)
 
 /-- The kernel of a morphism of Lie algebras, as an ideal in the domain. -/
@@ -935,8 +935,8 @@ end LieModuleHom
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-variable [CommRing R] [LieRing L]
-variable [AddCommGroup M] [Module R M] [LieRingModule L M]
+variable [Ring R] [IsMulCommutative R] [LieRing L]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
 variable (N : LieSubmodule R L M)
 
 @[simp]
@@ -962,7 +962,7 @@ variable {N}
 
 @[simp]
 lemma map_le_range {M' : Type*}
-    [AddCommGroup M'] [Module R M'] [LieRingModule L M'] (f : M →ₗ⁅R,L⁆ M') :
+    [AddGroup M'] [IsAddCommutative M'] [Module R M'] [LieRingModule L M'] (f : M →ₗ⁅R,L⁆ M') :
     N.map f ≤ f.range := by
   rw [← LieModuleHom.map_top]
   exact LieSubmodule.map_mono le_top
@@ -985,9 +985,9 @@ end LieSubmodule
 section TopEquiv
 
 variable (R : Type u) (L : Type v)
-variable [CommRing R] [LieRing L]
+variable [Ring R] [IsMulCommutative R] [LieRing L]
 
-variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M]
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
 
 /-- The natural equivalence between the 'top' Lie submodule and the enclosing Lie module. -/
 def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
@@ -1001,7 +1001,7 @@ lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
   rfl
 
 @[simp] lemma LieModuleEquiv.range_coe {M' : Type*}
-    [AddCommGroup M'] [Module R M'] [LieRingModule L M'] (e : M ≃ₗ⁅R,L⁆ M') :
+    [AddGroup M'] [IsAddCommutative M'] [Module R M'] [LieRingModule L M'] (e : M ≃ₗ⁅R,L⁆ M') :
     LieModuleHom.range (e : M →ₗ⁅R,L⁆ M') = ⊤ := by
   rw [LieModuleHom.range_eq_top]
   exact e.surjective

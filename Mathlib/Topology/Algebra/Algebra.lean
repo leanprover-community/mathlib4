@@ -42,7 +42,7 @@ universe u v w
 section TopologicalAlgebra
 
 variable (R : Type*) (A : Type u)
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 variable [TopologicalSpace R] [TopologicalSpace A]
 
 @[continuity, fun_prop]
@@ -116,13 +116,13 @@ section TopologicalAlgebra
 
 section
 
-variable (R : Type*) [CommSemiring R]
+variable (R : Type*) [Semiring R] [IsMulCommutative R]
   (A : Type*) [Semiring A]
 
 /-- Continuous algebra homomorphisms between algebras. We only put the type classes that are
 necessary for the definition, although in applications `M` and `B` will be topological algebras
 over the topological ring `R`. -/
-structure ContinuousAlgHom (R : Type*) [CommSemiring R] (A : Type*) [Semiring A]
+structure ContinuousAlgHom (R : Type*) [Semiring R] [IsMulCommutative R] (A : Type*) [Semiring A]
     [TopologicalSpace A] (B : Type*) [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
     extends A →ₐ[R] B where
   cont : Continuous toFun := by fun_prop
@@ -222,7 +222,7 @@ protected theorem map_smul (f : A →A[R] B) (c : R) (x : A) :
     f (c • x) = c • f x :=
   map_smul ..
 
-theorem map_smul_of_tower {R S : Type*} [CommSemiring S] [SMul R A] [Algebra S A] [SMul R B]
+theorem map_smul_of_tower {R S : Type*} [Semiring S] [IsMulCommutative S] [SMul R A] [Algebra S A] [SMul R B]
     [Algebra S B] [MulActionHomClass (A →A[S] B) R A B] (f : A →A[S] B) (c : R) (x : A) :
     f (c • x) = c • f x :=
   map_smul f c x
@@ -562,7 +562,7 @@ end Ring
 
 section RestrictScalars
 
-variable {S : Type*} [CommSemiring S] [Algebra R S] {B : Type*} [Ring B] [TopologicalSpace B]
+variable {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra R S] {B : Type*} [Ring B] [TopologicalSpace B]
   [Algebra R B] [Algebra S B] [IsScalarTower R S B] {C : Type*} [Ring C] [TopologicalSpace C]
   [Algebra R C] [Algebra S C] [IsScalarTower R S C]
 
@@ -588,7 +588,7 @@ end ContinuousAlgHom
 
 end
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {A : Type u} [TopologicalSpace A]
 variable [Semiring A] [Algebra R A]
 
@@ -701,7 +701,7 @@ end TopologicalAlgebra
 
 section Ring
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 variable {A : Type u} [TopologicalSpace A]
 variable [Ring A]
 variable [Algebra R A] [IsSemitopologicalRing A]

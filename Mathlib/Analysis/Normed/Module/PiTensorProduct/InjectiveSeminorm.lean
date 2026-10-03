@@ -39,8 +39,8 @@ universe uι u𝕜 uE
 
 variable {ι : Type uι} [Fintype ι]
 variable {𝕜 : Type u𝕜} [NontriviallyNormedField 𝕜]
-variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : ι → Type uE} [∀ i, SeminormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+variable {F : Type*} [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 open scoped TensorProduct
 

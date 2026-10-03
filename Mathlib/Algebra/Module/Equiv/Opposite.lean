@@ -19,7 +19,7 @@ This file contains definitions that build on top of the group action definitions
 
 section
 
-variable {R S M : Type*} [Semiring R] [Semiring S] [AddCommMonoid M] [Module S M]
+variable {R S M : Type*} [Semiring R] [Semiring S] [AddMonoid M] [IsAddCommutative M] [Module S M]
 
 @[ext high]
 theorem LinearMap.ext_ring_op
@@ -34,7 +34,7 @@ namespace MulOpposite
 
 universe u v
 
-variable (R : Type u) {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R : Type u) {M : Type v} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The function `op` is a linear equivalence. -/
 def opLinearEquiv : M ≃ₗ[R] Mᵐᵒᵖ :=

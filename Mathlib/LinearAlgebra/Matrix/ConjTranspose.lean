@@ -305,43 +305,43 @@ theorem conjTranspose_zsmul [AddGroup α] [StarAddMonoid α] (c : ℤ) (M : Matr
   simp
 
 @[simp]
-theorem conjTranspose_natCast_smul [Semiring R] [AddCommMonoid α] [StarAddMonoid α] [Module R α]
+theorem conjTranspose_natCast_smul [Semiring R] [AddMonoid α] [IsAddCommutative α] [StarAddMonoid α] [Module R α]
     (c : ℕ) (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
   Matrix.ext <| by simp
 
 @[simp]
-theorem conjTranspose_ofNat_smul [Semiring R] [AddCommMonoid α] [StarAddMonoid α] [Module R α]
+theorem conjTranspose_ofNat_smul [Semiring R] [AddMonoid α] [IsAddCommutative α] [StarAddMonoid α] [Module R α]
     (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
     ((ofNat(c) : R) • M)ᴴ = (OfNat.ofNat c : R) • Mᴴ :=
   conjTranspose_natCast_smul c M
 
 @[simp]
-theorem conjTranspose_intCast_smul [Ring R] [AddCommGroup α] [StarAddMonoid α] [Module R α] (c : ℤ)
+theorem conjTranspose_intCast_smul [Ring R] [AddGroup α] [IsAddCommutative α] [StarAddMonoid α] [Module R α] (c : ℤ)
     (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
   Matrix.ext <| by simp
 
 @[simp]
-theorem conjTranspose_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid α] [StarAddMonoid α]
+theorem conjTranspose_inv_natCast_smul [DivisionSemiring R] [AddMonoid α] [IsAddCommutative α] [StarAddMonoid α]
     [Module R α] (c : ℕ) (M : Matrix m n α) : ((c : R)⁻¹ • M)ᴴ = (c : R)⁻¹ • Mᴴ :=
   Matrix.ext <| by simp
 
 @[simp]
-theorem conjTranspose_inv_ofNat_smul [DivisionSemiring R] [AddCommMonoid α] [StarAddMonoid α]
+theorem conjTranspose_inv_ofNat_smul [DivisionSemiring R] [AddMonoid α] [IsAddCommutative α] [StarAddMonoid α]
     [Module R α] (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
     ((ofNat(c) : R)⁻¹ • M)ᴴ = (OfNat.ofNat c : R)⁻¹ • Mᴴ :=
   conjTranspose_inv_natCast_smul c M
 
 @[simp]
-theorem conjTranspose_inv_intCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMonoid α]
+theorem conjTranspose_inv_intCast_smul [DivisionRing R] [AddGroup α] [IsAddCommutative α] [StarAddMonoid α]
     [Module R α] (c : ℤ) (M : Matrix m n α) : ((c : R)⁻¹ • M)ᴴ = (c : R)⁻¹ • Mᴴ :=
   Matrix.ext <| by simp
 
 @[simp]
-theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMonoid α] [Module R α]
+theorem conjTranspose_ratCast_smul [DivisionRing R] [AddGroup α] [IsAddCommutative α] [StarAddMonoid α] [Module R α]
     (c : ℚ) (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
   Matrix.ext <| by simp
 
-theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
+theorem conjTranspose_rat_smul [AddGroup α] [IsAddCommutative α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp
 
@@ -386,11 +386,11 @@ theorem conjTranspose_list_sum [AddMonoid α] [StarAddMonoid α] (l : List (Matr
     l.sumᴴ = (l.map conjTranspose).sum :=
   map_list_sum (conjTransposeAddEquiv m n α) l
 
-theorem conjTranspose_multiset_sum [AddCommMonoid α] [StarAddMonoid α]
+theorem conjTranspose_multiset_sum [AddMonoid α] [IsAddCommutative α] [StarAddMonoid α]
     (s : Multiset (Matrix m n α)) : s.sumᴴ = (s.map conjTranspose).sum :=
   (conjTransposeAddEquiv m n α).toAddMonoidHom.map_multiset_sum s
 
-theorem conjTranspose_sum [AddCommMonoid α] [StarAddMonoid α] {ι : Type*} (s : Finset ι)
+theorem conjTranspose_sum [AddMonoid α] [IsAddCommutative α] [StarAddMonoid α] {ι : Type*} (s : Finset ι)
     (M : ι → Matrix m n α) : (∑ i ∈ s, M i)ᴴ = ∑ i ∈ s, (M i)ᴴ :=
   map_sum (conjTransposeAddEquiv m n α) _ s
 
@@ -398,13 +398,13 @@ variable (m n R α)
 
 /-- `Matrix.conjTranspose` as a `LinearMap` -/
 @[simps apply]
-def conjTransposeLinearEquiv [CommSemiring R] [StarRing R] [AddCommMonoid α] [StarAddMonoid α]
+def conjTransposeLinearEquiv [Semiring R] [IsMulCommutative R] [StarRing R] [AddMonoid α] [IsAddCommutative α] [StarAddMonoid α]
     [Module R α] [StarModule R α] : Matrix m n α ≃ₗ⋆[R] Matrix n m α where
   __ := conjTransposeAddEquiv m n α
   map_smul' := conjTranspose_smul
 
 @[simp]
-theorem conjTransposeLinearEquiv_symm [CommSemiring R] [StarRing R] [AddCommMonoid α]
+theorem conjTransposeLinearEquiv_symm [Semiring R] [IsMulCommutative R] [StarRing R] [AddMonoid α] [IsAddCommutative α]
     [StarAddMonoid α] [Module R α] [StarModule R α] :
     (conjTransposeLinearEquiv m n R α).symm = conjTransposeLinearEquiv n m R α :=
   rfl
@@ -473,7 +473,7 @@ theorem conjTranspose_list_prod [Semiring α] [StarRing α] [Fintype m] [Decidab
 variable (n α) in
 /-- `Matrix.conjTranspose` as a `StarAlgEquiv` to the opposite ring -/
 @[simps!]
-def conjTransposeAlgEquiv [Fintype n] [CommSemiring R] [StarRing R] [TrivialStar R] [Semiring α]
+def conjTransposeAlgEquiv [Fintype n] [Semiring R] [IsMulCommutative R] [StarRing R] [TrivialStar R] [Semiring α]
     [StarRing α] [Algebra R α] [StarModule R α] : Matrix n n α ≃⋆ₐ[R] (Matrix n n α)ᵐᵒᵖ where
   __ := conjTransposeRingEquiv n α
   map_smul' r M := by

@@ -69,7 +69,7 @@ theorem ofLists_apply [Zero α] (m n : ℕ) (rows : List (List α)) (i : Fin m) 
   | succ m ih => cases rows <;> exact Fin.cases rfl (ih _) i
 
 @[simp]
-theorem ListMatrix.dotProduct_eq [Mul α] [AddCommMonoid α] (n : ℕ) (l₁ l₂ : List α) :
+theorem ListMatrix.dotProduct_eq [Mul α] [AddMonoid α] [IsAddCommutative α] (n : ℕ) (l₁ l₂ : List α) :
     ListMatrix.dotProduct n l₁ l₂ = ofList n l₁ ⬝ᵥ ofList n l₂ := by
   induction n generalizing l₁ l₂ with
   | zero => simp [ListMatrix.dotProduct_zero]
@@ -81,7 +81,7 @@ theorem ofLists_transpose [Zero α] (m n : ℕ) (rows : List (List α)) :
   ext j i
   simpa using ListMatrix.getD_transpose rows i j.isLt
 
-theorem ofLists_mul [Mul α] [AddCommMonoid α] {l m n : ℕ} {A B C : List (List α)}
+theorem ofLists_mul [Mul α] [AddMonoid α] [IsAddCommutative α] {l m n : ℕ} {A B C : List (List α)}
     (h : ListMatrix.mul l m n A B = C) : ofLists l m A * ofLists m n B = ofLists l n C := by
   subst h
   ext i j

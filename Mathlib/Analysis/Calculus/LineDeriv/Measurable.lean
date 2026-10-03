@@ -26,8 +26,8 @@ public section
 open MeasureTheory
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [LocallyCompactSpace 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E] [OpensMeasurableSpace E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [MeasurableSpace E] [OpensMeasurableSpace E]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [CompleteSpace F]
   {f : E → F} {v : E}
 
 /-!

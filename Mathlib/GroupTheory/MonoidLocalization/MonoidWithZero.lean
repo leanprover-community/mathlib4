@@ -18,8 +18,8 @@ import Mathlib.RingTheory.OreLocalization.Basic
 
 section CommMonoidWithZero
 
-variable {M : Type*} [CommMonoidWithZero M] (S : Submonoid M) (N : Type*) [CommMonoidWithZero N]
-  {P : Type*} [CommMonoidWithZero P]
+variable {M : Type*} [MonoidWithZero M] [IsMulCommutative M] (S : Submonoid M) (N : Type*) [MonoidWithZero N] [IsMulCommutative N]
+  {P : Type*} [MonoidWithZero P] [IsMulCommutative P]
 
 namespace Submonoid
 

@@ -27,7 +27,7 @@ open LinearMap Module
 
 section LinearIndependent
 
-variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
+variable {K V : Type*} [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 variable [Fintype K] [Finite V]
 
 local notation "q" => Fintype.card K
@@ -64,7 +64,7 @@ namespace Matrix
 
 section SpecialLinearGroup
 
-variable {n : Type*} [Fintype n] [DecidableEq n] [Nonempty n] {R : Type*} [CommRing R]
+variable {n : Type*} [Fintype n] [DecidableEq n] [Nonempty n] {R : Type*} [Ring R] [IsMulCommutative R]
 
 /-- The cardinal of the special linear group times the cardinal of the unit group is the
 cardinal of the general linear group. -/

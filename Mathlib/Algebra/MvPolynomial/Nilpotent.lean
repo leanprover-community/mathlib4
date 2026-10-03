@@ -23,7 +23,7 @@ public section
 
 namespace MvPolynomial
 
-variable {σ R : Type*} [CommRing R] {P : MvPolynomial σ R}
+variable {σ R : Type*} [Ring R] [IsMulCommutative R] {P : MvPolynomial σ R}
 
 -- Subsumed by `isNilpotent_iff` below.
 private theorem isNilpotent_iff_of_fintype [Finite σ] :

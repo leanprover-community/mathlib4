@@ -99,9 +99,9 @@ universe u
 -- We manually name the universe of `E` as `IsSubmersionAt` will use it.
 
 variable {𝕜 E' E'' E''' F F' H H' G G' : Type*} {E : Type u} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [NormedAddCommGroup E'''] [NormedSpace 𝕜 E''']
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E']
+  [NormedAddGroup E''] [IsAddCommutative E''] [NormedSpace 𝕜 E''] [NormedAddGroup E'''] [IsAddCommutative E'''] [NormedSpace 𝕜 E''']
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜 F']
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace G] [TopologicalSpace G']
   {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
   {J : ModelWithCorners 𝕜 E'' G} {J' : ModelWithCorners 𝕜 E''' G'}

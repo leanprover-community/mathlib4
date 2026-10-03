@@ -32,7 +32,7 @@ open Function Set
 
 namespace Module.End
 
-variable {ι R K M : Type*} [CommRing R] [Field K] [AddCommGroup M] [Module R M] [Module K M]
+variable {ι R K M : Type*} [Ring R] [IsMulCommutative R] [Field K] [AddGroup M] [IsAddCommutative M] [Module R M] [Module K M]
   (f : ι → End R M)
 
 theorem mem_iInf_maxGenEigenspace_iff (χ : ι → R) (m : M) :

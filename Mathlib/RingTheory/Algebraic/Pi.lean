@@ -34,7 +34,7 @@ def Polynomial.hasSMulPi [Semiring R] [SMul R S] : SMul R[X] (R → S) :=
 
 See the `instance_diamonds` test for details. -/
 @[instance_reducible]
-noncomputable def Polynomial.hasSMulPi' [CommSemiring R] [Semiring S] [Algebra R S]
+noncomputable def Polynomial.hasSMulPi' [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
     [SMul S T] : SMul R[X] (S → T) :=
   ⟨fun p f x => aeval x p • f x⟩
 
@@ -46,11 +46,11 @@ theorem polynomial_smul_apply [Semiring R] [SMul R S] (p : R[X]) (f : R → S) (
   rfl
 
 @[simp]
-theorem polynomial_smul_apply' [CommSemiring R] [Semiring S] [Algebra R S] [SMul S T]
+theorem polynomial_smul_apply' [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] [SMul S T]
     (p : R[X]) (f : S → T) (x : S) : (p • f) x = aeval x p • f x :=
   rfl
 
-variable [CommSemiring R] [CommSemiring S] [CommSemiring T] [Algebra R S] [Algebra S T]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring T] [IsMulCommutative T] [Algebra R S] [Algebra S T]
 
 /-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
 @[instance_reducible]

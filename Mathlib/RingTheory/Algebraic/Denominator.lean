@@ -36,8 +36,8 @@ denominator is `0`. See the `example` below, taking `x` to be the variable in `â
 
 public section
 
-variable (R : Type*) {S : Type*} [CommRing R]
-variable [IsPrincipalIdealRing R] [CommRing S] [Algebra R S]
+variable (R : Type*) {S : Type*} [Ring R] [IsMulCommutative R]
+variable [IsPrincipalIdealRing R] [Ring S] [IsMulCommutative S] [Algebra R S]
 namespace Algebra
 
 /-- The denominator of an element `x` of an `R`-algebra: a generator of the ideal of scalars

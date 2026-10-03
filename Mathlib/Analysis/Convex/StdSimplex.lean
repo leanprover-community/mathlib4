@@ -169,7 +169,7 @@ theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
 variable {ι R}
 
 lemma Convexity.ConvexSpace.AffineMap.convex_range {X : Type*}
-    [ConvexSpace R X] {E : Type*} [AddCommGroup E] [Module R E]
+    [ConvexSpace R X] {E : Type*} [AddGroup E] [IsAddCommutative E] [Module R E]
     [ConvexSpace R E] [IsModuleConvexSpace R E] (f : ConvexSpace.AffineMap R X E) :
     Convex R (range f) := by
   rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ a b ha hb h
@@ -178,7 +178,7 @@ lemma Convexity.ConvexSpace.AffineMap.convex_range {X : Type*}
 /-- The convex hull of a set `s` is the range of the affine map
 `StdSimplex R s → E` which sends `x : s` to `x : E`. -/
 theorem Set.convexHull_eq_range_iConvexComb
-    {E : Type*} [AddCommGroup E] [Module R E]
+    {E : Type*} [AddGroup E] [IsAddCommutative E] [Module R E]
     [ConvexSpace R E] [IsModuleConvexSpace R E] (s : Set E) :
     convexHull R s =
       Set.range (StdSimplex.affineMapMk (R := R) (fun (x : s) ↦ x.val)) := by

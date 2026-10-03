@@ -28,7 +28,7 @@ public section
 
 open TensorProduct
 
-variable (k K R S : Type*) [Field k] [Field K] [Algebra k K] [CommRing R] [Algebra k R] [CommRing S]
+variable (k K R S : Type*) [Field k] [Field K] [Algebra k K] [Ring R] [IsMulCommutative R] [Algebra k R] [Ring S] [IsMulCommutative S]
 
 variable {R S} in
 /-- If the kernel of `f : R →+* S` consists of nilpotent elements and for every `x : S`,

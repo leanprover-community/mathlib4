@@ -22,7 +22,7 @@ noncomputable section
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /-- For a commutative ring $R$, evaluating a polynomial at an element $x \in R$ induces an
 isomorphism of $R$-algebras $R[X] / \langle X - x \rangle \cong R$. -/
@@ -71,7 +71,7 @@ namespace Ideal
 
 open Polynomial
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 theorem quotient_map_C_eq_zero {I : Ideal R} :
     ∀ a ∈ I, ((Quotient.mk (map (C : R →+* R[X]) I : Ideal R[X])).comp C) a = 0 := by
@@ -187,7 +187,7 @@ end Ideal
 
 namespace MvPolynomial
 
-variable {R : Type*} {σ : Type*} [CommRing R] {r : R}
+variable {R : Type*} {σ : Type*} [Ring R] [IsMulCommutative R] {r : R}
 
 theorem quotient_map_C_eq_zero {I : Ideal R} {i : R} (hi : i ∈ I) :
     (Ideal.Quotient.mk (Ideal.map (C : R →+* MvPolynomial σ R) I :

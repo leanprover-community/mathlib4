@@ -29,7 +29,7 @@ open TensorProduct
 
 section BijectiveResidueField
 
-variable {R R' S : Type*} [CommRing R] [CommRing R'] [CommRing S] [Algebra R R'] [Algebra R S]
+variable {R R' S : Type*} [Ring R] [IsMulCommutative R] [Ring R'] [IsMulCommutative R'] [Ring S] [IsMulCommutative S] [Algebra R R'] [Algebra R S]
     {p : Ideal R} {q : Ideal R'} [p.IsPrime] [q.IsPrime] [q.LiesOver p]
 
 /-- If `q` is a prime of `R'` lying over `p`, a prime of `R`, such that `κ(q) = κ(p)`, then
@@ -81,7 +81,7 @@ open Polynomial
 universe u v
 
 variable {R : Type u} {S : Type v} {T : Type*}
-  [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+  [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S] [Algebra R T]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f : S →ₐ[R] T` is an `R`-algebra homomorphism with `S` integral and `T` of finite type,
@@ -145,7 +145,7 @@ attribute [local instance high] Algebra.TensorProduct.leftAlgebra IsScalarTower.
 /-- A variant of `Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver` that also gives you
 control on the primes in the integral closure. -/
 lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
     [Algebra.FiniteType R S]
     [Algebra.QuasiFiniteAt R q] :
@@ -199,7 +199,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
   · rw [map_pow]; exact Ideal.notMem_of_isUnit _ (.pow _ (IsLocalization.Away.algebraMap_isUnit _))
 
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
-    {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+    {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra.FiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q] :
     ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
       (_ : P.IsPrime) (_ : P.LiesOver p) (e : R' ⊗[R] S) (_ : IsIdempotentElem e)
@@ -295,8 +295,8 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
-    {R S R' R'' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
-    [CommRing R'] [Algebra R R'] [CommRing R''] [Algebra R R''] [Algebra R'' S]
+    {R S R' R'' : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra.FiniteType R S]
+    [Ring R'] [IsMulCommutative R'] [Algebra R R'] [Ring R''] [IsMulCommutative R''] [Algebra R R''] [Algebra R'' S]
     [Algebra.IsIntegral R R''] [IsScalarTower R R'' S] (q : Ideal S) (P : Ideal R') [P.IsPrime]
     (e : R' ⊗[R] S) (e₀ : R' ⊗[R] R'') (he₀ : IsIdempotentElem e₀)
     (he₀e : Algebra.TensorProduct.map (.id R' R') (IsScalarTower.toAlgHom R R'' S) e₀ = e)
@@ -375,7 +375,7 @@ The actual lemma is stated in terms of the idempotent element `e = (1, 0)`.
 -/
 @[stacks 00UJ]
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
-    {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+    {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra.FiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q] :
     ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
       (_ : P.IsPrime) (_ : P.LiesOver p) (e : R' ⊗[R] S) (_ : IsIdempotentElem e)
@@ -445,16 +445,16 @@ attribute [local instance] Localization.AtPrime.algebraOfLiesOver
 
 /-- A key induction step of `exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq`. -/
 private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux
-    {R : Type u} {S : Type (max u v)} [CommRing R] [CommRing S] [Algebra R S]
+    {R : Type u} {S : Type (max u v)} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S)
-    (R' : Type u) [CommRing R'] [Algebra R R'] [Algebra.Etale R R'] (P : Ideal R')
+    (R' : Type u) [Ring R'] [IsMulCommutative R'] [Algebra R R'] [Algebra.Etale R R'] (P : Ideal R')
     [P.IsPrime] [P.LiesOver p] (e : R' ⊗[R] S) (P' : Ideal (R' ⊗[R] S))
     [P'.IsPrime] [P'.LiesOver P]
     (hP'q : Ideal.comap Algebra.TensorProduct.includeRight.toRingHom P' = q)
     (heP' : e ∉ P') (hpP : Function.Bijective
       (Ideal.ResidueField.mapₐ p P (Algebra.ofId _ _) (P.over_def p)))
     (H : ∀ (P'' : Ideal (R' ⊗[R] S)), P''.IsPrime → P''.LiesOver P → e ∉ P'' → P'' = P')
-    (R'' : Type u) [CommRing R''] [Algebra R' R''] [Algebra R R''] [IsScalarTower R R' R'']
+    (R'' : Type u) [Ring R''] [IsMulCommutative R''] [Algebra R' R''] [Algebra R R''] [IsScalarTower R R' R'']
     [Algebra.Etale R' R''] (Q : Ideal R'')
     [Q.IsPrime] [Q.LiesOver P] (n : ℕ)
     (e' : Fin ((n + 1) + 1) → R'' ⊗[R] S)
@@ -516,7 +516,7 @@ private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOv
 /-- A less universe polymorphic version of
 `exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq`. Use that instead. -/
 private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq'
-    {R : Type u} {S : Type max u v} [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
+    {R : Type u} {S : Type max u v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Module.Finite R S]
     (p : Ideal R) [p.IsPrime] :
     ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
       (_ : P.IsPrime) (_ : P.LiesOver p) (n : ℕ) (e : Fin (n + 1) → R' ⊗[R] S)
@@ -608,7 +608,7 @@ the corresponding stronger statement is even harder to state and even more annoy
 -/
 @[stacks 00UL]
 lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq
-    {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
+    {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Module.Finite R S]
     (p : Ideal R) [p.IsPrime] :
     ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
       (_ : P.IsPrime) (_ : P.LiesOver p) (n : ℕ) (e : Fin (n + 1) → R' ⊗[R] S)

@@ -43,8 +43,8 @@ namespace Algebra
 local notation "𝓀[" R "]" => ResidueField R
 local notation "𝓂[" R "]" => maximalIdeal R
 
-variable {R S P : Type*} [CommRing R] [CommRing S] [Algebra R S] [Module.Flat R S]
-variable [CommRing P] [Algebra R P] [Algebra P S] [IsScalarTower R P S]
+variable {R S P : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Module.Flat R S]
+variable [Ring P] [IsMulCommutative P] [Algebra R P] [Algebra P S] [IsScalarTower R P S]
 
 section IsLocalRing
 
@@ -242,7 +242,7 @@ lemma Smooth.of_formallySmooth_fiber [Algebra.FinitePresentation R S]
 
 attribute [local instance] FormallyEtale.of_formallyUnramified_of_field in
 @[stacks 08WD "(3) => (1)"]
-lemma Etale.of_formallyUnramified_of_flat {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+lemma Etale.of_formallyUnramified_of_flat {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
     [Algebra.FinitePresentation R S] [Module.Flat R S] [FormallyUnramified R S] :
     Etale R S :=
   have : Smooth R S := .of_formallySmooth_fiber inferInstance

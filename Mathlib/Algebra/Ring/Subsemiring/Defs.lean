@@ -79,7 +79,7 @@ instance (priority := 75) toNonAssocSemiring : NonAssocSemiring s := fast_instan
     (fun _ _ => rfl) fun _ => rfl
 
 /-- A subsemiring of a `NonAssocCommSemiring` inherits a `NonAssocCommSemiring` structure -/
-instance (priority := 75) toNonAssocCommSemiring {R} [NonAssocCommSemiring R] [SetLike S R]
+instance (priority := 75) toNonAssocCommSemiring {R} [NonAssocSemiring R] [IsMulCommutative R] [SetLike S R]
     [SubsemiringClass S R] : NonAssocCommSemiring s := fast_instance%
   Subtype.coe_injective.nonAssocCommSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
@@ -115,7 +115,7 @@ instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [Subsemiring
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
-instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
+instance toCommSemiring {R} [Semiring R] [IsMulCommutative R] [SetLike S R] [SubsemiringClass S R] :
     CommSemiring s := fast_instance%
   Subtype.coe_injective.commSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
@@ -320,7 +320,7 @@ theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := rfl
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
-instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
+instance toCommSemiring {R} [Semiring R] [IsMulCommutative R] (s : Subsemiring R) : CommSemiring s :=
   { s.toSemiring with mul_comm := fun _ _ => Subtype.ext <| mul_comm _ _ }
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/

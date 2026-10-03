@@ -43,7 +43,7 @@ The following isDefEq checks are the root causes of the failure:
 ### Command mode
 ```
 #defeq_abuse in
-instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
+instance {V : Type} [AddGroup V] [IsAddCommutative V] [Module ℝ V] {l : Submodule ℝ V} :
     Module.Free ℝ l := Module.Free.of_divisionRing ℝ l
 ```
 

@@ -142,7 +142,7 @@ instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
   IsLinearTopology.mk_of_hasBasis' _ hasBasis_nhds_zero (fun J _ _ hg ↦ J.mul_mem_right _ _ hg)
 
 theorem isTopologicallyNilpotent_of_constantCoeff
-    {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R]
+    {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R] [IsLinearTopology R R]
     {f : MvPowerSeries σ R} (hf : IsTopologicallyNilpotent (constantCoeff f)) :
     IsTopologicallyNilpotent f := by
   simp_rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto, coeff_zero,
@@ -161,7 +161,7 @@ iff its constant coefficient is topologically nilpotent.
 
 See also `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent`. -/
 theorem isTopologicallyNilpotent_iff_constantCoeff
-    {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R] (f : MvPowerSeries σ R) :
+    {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R] [IsLinearTopology R R] (f : MvPowerSeries σ R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsTopologicallyNilpotent (constantCoeff f) := by
   refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff⟩

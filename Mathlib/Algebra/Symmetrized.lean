@@ -204,7 +204,7 @@ theorem unsym_ne_one_iff [One α] (a : αˢʸᵐ) : unsym a ≠ (1 : α) ↔ a �
 theorem sym_ne_one_iff [One α] (a : α) : sym a ≠ (1 : αˢʸᵐ) ↔ a ≠ (1 : α) :=
   not_congr <| sym_eq_one_iff a
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αˢʸᵐ :=
+instance addCommSemigroup [AddSemigroup α] [IsAddCommutative α] : AddCommSemigroup αˢʸᵐ :=
   unsym_injective.addCommSemigroup _ unsym_add
 
 instance addMonoid [AddMonoid α] : AddMonoid αˢʸᵐ :=
@@ -214,13 +214,13 @@ instance addGroup [AddGroup α] : AddGroup αˢʸᵐ :=
   unsym_injective.addGroup _ unsym_zero unsym_add unsym_neg unsym_sub (fun _ _ => rfl) fun _ _ =>
     rfl
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αˢʸᵐ :=
+instance addCommMonoid [AddMonoid α] [IsAddCommutative α] : AddCommMonoid αˢʸᵐ :=
   { SymAlg.addCommSemigroup, SymAlg.addMonoid with }
 
-instance addCommGroup [AddCommGroup α] : AddCommGroup αˢʸᵐ :=
+instance addCommGroup [AddGroup α] [IsAddCommutative α] : AddCommGroup αˢʸᵐ :=
   { SymAlg.addCommMonoid, SymAlg.addGroup with }
 
-instance {R : Type*} [Semiring R] [AddCommMonoid α] [Module R α] : Module R αˢʸᵐ :=
+instance {R : Type*} [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α] : Module R αˢʸᵐ :=
   Function.Injective.module R ⟨⟨unsym, unsym_zero⟩, unsym_add⟩ unsym_injective unsym_smul
 
 instance [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertible a] :
@@ -274,7 +274,7 @@ theorem unsym_mul_self [Semiring α] [Invertible (2 : α)] (a : αˢʸᵐ) :
 theorem sym_mul_self [Semiring α] [Invertible (2 : α)] (a : α) : sym (a * a) = sym a * sym a := by
   rw [sym_mul_sym, ← two_mul, invOf_mul_cancel_left]
 
-theorem mul_comm [Mul α] [AddCommSemigroup α] [One α] [OfNat α 2] [Invertible (2 : α)]
+theorem mul_comm [Mul α] [AddSemigroup α] [IsAddCommutative α] [One α] [OfNat α 2] [Invertible (2 : α)]
     (a b : αˢʸᵐ) :
     a * b = b * a := by rw [mul_def, mul_def, add_comm]
 

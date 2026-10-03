@@ -29,7 +29,7 @@ open DFinsupp
 
 open scoped DirectSum
 
-variable {R : Type u} {ι : Type v} [CommRing R]
+variable {R : Type u} {ι : Type v} [Ring R] [IsMulCommutative R]
 
 section Modules
 
@@ -39,7 +39,7 @@ structure. -/
 
 variable {L : Type w₁} {M : ι → Type w}
 variable [LieRing L] [LieAlgebra R L]
-variable [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+variable [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
 variable [∀ i, LieRingModule L (M i)] [∀ i, LieModule R L (M i)]
 
 instance : LieRingModule L (⨁ i, M i) where

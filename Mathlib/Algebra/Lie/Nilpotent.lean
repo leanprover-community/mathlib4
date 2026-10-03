@@ -35,7 +35,7 @@ universe u v w w₁ w₂
 section NilpotentModules
 
 variable {R : Type u} {L : Type v} {M : Type w}
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [LieRingModule L M]
 variable (k : ℕ) (N : LieSubmodule R L M)
 
@@ -90,7 +90,7 @@ theorem lowerCentralSeries_succ :
   (⊤ : LieSubmodule R L M).lcs_succ k
 
 private theorem coe_lowerCentralSeries_eq_int_aux (R₁ R₂ L M : Type*)
-    [CommRing R₁] [CommRing R₂] [AddCommGroup M]
+    [Ring R₁] [IsMulCommutative R₁] [Ring R₂] [IsMulCommutative R₂] [AddGroup M] [IsAddCommutative M]
     [LieRing L] [LieAlgebra R₁ L] [LieAlgebra R₂ L] [Module R₁ M] [Module R₂ M] [LieRingModule L M]
     [LieModule R₁ L M] (k : ℕ) :
     let I := lowerCentralSeries R₂ L M k; let S : Set M := {⁅a, b⁆ | (a : L) (b ∈ I)}
@@ -162,7 +162,7 @@ end LieSubmodule
 
 namespace LieModule
 
-variable {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
+variable {M₂ : Type w₁} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
 variable (R L M)
 
 theorem antitone_lowerCentralSeries : Antitone <| lowerCentralSeries R L M := by
@@ -608,7 +608,7 @@ open LieModule Function
 
 variable [LieModule R L M]
 variable {L₂ M₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
-variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂]
+variable [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [LieRingModule L₂ M₂]
 variable {f : L →ₗ⁅R⁆ L₂} {g : M →ₗ[R] M₂}
 variable (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆)
 
@@ -741,7 +741,7 @@ instance (priority := 100) LieAlgebra.isSolvable_of_isNilpotent (L : Type v)
 section NilpotentAlgebras
 
 variable (R : Type u) (L : Type v) (L' : Type w)
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 
 /-- We say a Lie ring is nilpotent when it is nilpotent as a Lie module over itself via the
 adjoint representation. -/
@@ -875,8 +875,8 @@ namespace LieIdeal
 
 open LieModule
 
-variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
-variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M]
+variable {R L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
 variable (k : ℕ)
 
 /-- Given a Lie module `M` over a Lie algebra `L` together with an ideal `I` of `L`, this is the
@@ -923,9 +923,9 @@ section ExtendScalars
 
 open LieModule TensorProduct
 
-variable (R A L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-  [CommRing A] [Algebra R A]
+variable (R A L M : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
+  [Ring A] [IsMulCommutative A] [Algebra R A]
 
 @[simp]
 lemma LieSubmodule.lowerCentralSeries_tensor_eq_baseChange (k : ℕ) :
@@ -948,7 +948,7 @@ namespace LieAlgebra
 open LieModule
 
 variable (R : Type u) (L : Type v)
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 
 /-- The max nilpotent ideal of a Lie algebra. It is defined as the max nilpotent Lie submodule of
 `L` under the adjoint action. -/

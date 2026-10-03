@@ -26,13 +26,13 @@ that it is locally convex in the topological sense
 
 variable {α R 𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃]
   {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₃ →+* 𝕜₂} {D E F G : Type*}
-  [AddCommGroup E] [TopologicalSpace E] [Module 𝕜₁ E]
+  [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [Module 𝕜₁ E]
 
 namespace PointwiseConvergenceCLM
 
 section NormedSpace
 
-variable [NormedAddCommGroup F] [NormedSpace 𝕜₂ F]
+variable [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜₂ F]
 
 /-- The family of seminorms that induce the topology of pointwise convergence, namely `‖A x‖` for
 all `x : E`. -/
@@ -86,8 +86,8 @@ end Tendsto
 
 section ContinuousLinearMap
 
-variable [AddCommGroup D] [TopologicalSpace D] [Module 𝕜₃ D]
-  [NormedAddCommGroup G] [NormedSpace 𝕜₂ G]
+variable [AddGroup D] [IsAddCommutative D] [TopologicalSpace D] [Module 𝕜₃ D]
+  [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜₂ G]
 
 open NNReal ContinuousLinearMap
 
@@ -118,7 +118,7 @@ end NormedSpace
 
 section IsTopologicalAddGroup
 
-variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜₂ F]
+variable [AddGroup F] [IsAddCommutative F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜₂ F]
   [Semiring R] [PartialOrder R]
   [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
 

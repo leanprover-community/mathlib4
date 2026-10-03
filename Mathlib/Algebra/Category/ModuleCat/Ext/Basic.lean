@@ -22,9 +22,9 @@ universe v u
 
 open LinearMap CategoryTheory
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
-variable {M N : Type v} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {M N : Type v} [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace CategoryTheory.Abelian
 

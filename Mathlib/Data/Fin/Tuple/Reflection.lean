@@ -146,25 +146,25 @@ def prod [Mul α] [One α] : ∀ {m} (_ : Fin m → α), α
 
 /-- This can be used to prove
 ```lean
-example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
+example [Monoid α] [IsMulCommutative α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
   (prod_eq _).symm
 ```
 -/
 @[to_additive (attr := simp)
 /-- This can be used to prove
 ```lean
-example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
+example [AddMonoid α] [IsAddCommutative α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
 ``` -/]
-theorem prod_eq [CommMonoid α] : ∀ {m} (a : Fin m → α), prod a = ∏ i, a i
+theorem prod_eq [Monoid α] [IsMulCommutative α] : ∀ {m} (a : Fin m → α), prod a = ∏ i, a i
   | 0, _ => rfl
   | 1, a => (Fintype.prod_unique a).symm
   | n + 2, a => by rw [Fin.prod_univ_castSucc, prod, prod_eq]
 
-example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
+example [Monoid α] [IsMulCommutative α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
   (prod_eq _).symm
 
-example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
+example [AddMonoid α] [IsAddCommutative α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
 
 section Meta

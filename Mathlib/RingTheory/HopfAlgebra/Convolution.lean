@@ -32,7 +32,7 @@ suppress_compilation
 open Algebra Coalgebra Bialgebra HopfAlgebra TensorProduct WithConv
 open scoped RingTheory.LinearMap
 
-variable {R A C : Type*} [CommSemiring R]
+variable {R A C : Type*} [Semiring R] [IsMulCommutative R]
 
 namespace HopfAlgebra
 section Semiring
@@ -69,7 +69,7 @@ def antipodeAlgHomOp : A →ₐ[R] Aᵐᵒᵖ := .ofLinearMap
 
 end Semiring
 
-variable [CommSemiring A] [HopfAlgebra R A]
+variable [Semiring A] [IsMulCommutative A] [HopfAlgebra R A]
 
 lemma antipode_mul_distrib (a b : A) : antipode R (a * b) = antipode R a * antipode R b := by
   rw [antipode_mul_antidistrib, mul_comm]
@@ -138,7 +138,7 @@ lemma comul_right_inv : toConv δ * toConv 𝑭 = 1 := by
 end LinearMap
 
 namespace AlgHom
-variable [CommSemiring A] [CommSemiring C] [Bialgebra R C] [HopfAlgebra R A]
+variable [Semiring A] [IsMulCommutative A] [Semiring C] [IsMulCommutative C] [Bialgebra R C] [HopfAlgebra R A]
 
 instance convInv : Inv (WithConv <| A →ₐ[R] C) where
   inv f := toConv <| f.ofConv.comp (HopfAlgebra.antipodeAlgHom R A)

@@ -36,7 +36,7 @@ open AbsoluteValue.Completion InfinitePlace.Completion IsDedekindDomain
 
 /-! ## The adele ring  -/
 
-variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
+variable (R K : Type*) [Ring R] [IsMulCommutative R] [IsDedekindDomain R] [Field K]
   [Algebra R K] [IsFractionRing R K]
 
 /-- `AdeleRing (𝓞 K) K` is the adele ring of a number field `K`.

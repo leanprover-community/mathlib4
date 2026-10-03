@@ -161,7 +161,7 @@ instance descendsAlong_isOpenImmersion_surjective_inf_flat_inf_quasicompact' :
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma HasRingHomProperty.descendsAlong_flat {P : MorphismProperty Scheme.{u}}
-    [P.IsStableUnderBaseChange] {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    [P.IsStableUnderBaseChange] {Q : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
     [HasRingHomProperty P Q] (h : RingHom.CodescendsAlong Q RingHom.FaithfullyFlat) :
     P.DescendsAlong (@Surjective ⊓ @Flat ⊓ @QuasiCompact) := by
   refine HasRingHomProperty.descendsAlong _ _ _ _ ?_ ?_ h

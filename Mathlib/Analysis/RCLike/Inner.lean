@@ -34,7 +34,7 @@ namespace RCLike
 variable [RCLike 𝕜]
 
 section Pi
-variable [∀ i, SeminormedAddCommGroup (E i)] [∀ i, InnerProductSpace 𝕜 (E i)] {w : ι → ℝ}
+variable [∀ i, SeminormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, InnerProductSpace 𝕜 (E i)] {w : ι → ℝ}
 
 /-- Weighted inner product giving rise to the L2 norm, denoted as `⟪g, f⟫_[𝕜, w]`. -/
 def wInner (w : ι → ℝ) (f g : ∀ i, E i) : 𝕜 := ∑ i, w i • ⟪f i, g i⟫_𝕜
@@ -86,13 +86,13 @@ lemma wInner_sub_right (w : ι → ℝ) (f g₁ g₂ : ∀ i, E i) :
 @[simp] lemma wInner_of_isEmpty [IsEmpty ι] (w : ι → ℝ) (f g : ∀ i, E i) : ⟪f, g⟫_[𝕜, w] = 0 := by
   simp [Subsingleton.elim f 0]
 
-lemma wInner_smul_left {𝕝 : Type*} [CommSemiring 𝕝] [StarRing 𝕝] [Algebra 𝕝 𝕜] [StarModule 𝕝 𝕜]
+lemma wInner_smul_left {𝕝 : Type*} [Semiring 𝕝] [IsMulCommutative 𝕝] [StarRing 𝕝] [Algebra 𝕝 𝕜] [StarModule 𝕝 𝕜]
     [SMulCommClass ℝ 𝕝 𝕜] [∀ i, Module 𝕝 (E i)] [∀ i, IsScalarTower 𝕝 𝕜 (E i)] (c : 𝕝)
     (w : ι → ℝ) (f g : ∀ i, E i) : ⟪c • f, g⟫_[𝕜, w] = star c • ⟪f, g⟫_[𝕜, w] := by
   simp_rw [wInner, Pi.smul_apply, inner_smul_left_eq_star_smul, starRingEnd_apply, smul_sum,
     smul_comm (w _)]
 
-lemma wInner_smul_right {𝕝 : Type*} [CommSemiring 𝕝] [StarRing 𝕝] [Algebra 𝕝 𝕜] [StarModule 𝕝 𝕜]
+lemma wInner_smul_right {𝕝 : Type*} [Semiring 𝕝] [IsMulCommutative 𝕝] [StarRing 𝕝] [Algebra 𝕝 𝕜] [StarModule 𝕝 𝕜]
     [∀ i, Module 𝕝 (E i)] [∀ i, IsScalarTower 𝕝 𝕜 (E i)] (c : 𝕝)
     (w : ι → ℝ) (f g : ∀ i, E i) : ⟪f, c • g⟫_[𝕜, w] = c • ⟪f, g⟫_[𝕜, w] := by
   simp_rw [wInner, Pi.smul_apply, inner_smul_right_eq_smul, smul_sum, smul_comm c]

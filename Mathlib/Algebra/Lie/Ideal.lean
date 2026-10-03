@@ -36,7 +36,7 @@ universe u v w w₁ w₂
 section LieSubmodule
 
 variable (R : Type u) (L : Type v) (M : Type w)
-variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [LieRingModule L M]
 
 section LieIdeal
@@ -72,7 +72,7 @@ theorem LieIdeal.toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
   rfl
 
-instance LieIdeal.bracket {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+instance LieIdeal.bracket {R L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) [Bracket L M] : Bracket I M where
   bracket x m := ⁅(x : L), m⁆
 
@@ -87,12 +87,12 @@ instance LieIdeal.lieAlgebra (I : LieIdeal R L) : LieAlgebra R I :=
   inferInstanceAs <| LieAlgebra R I.toLieSubalgebra
 
 /-- Transfer the `LieRingModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
-instance LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+instance LieIdeal.lieRingModule {R L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) [LieRingModule L M] : LieRingModule I M :=
   inferInstanceAs <| LieRingModule I.toLieSubalgebra M
 
 @[simp]
-theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+theorem LieIdeal.coe_bracket_of_module {R L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) [LieRingModule L M] (x : I) (m : M) :
     ⁅x, m⁆ = ⁅(↑x : L), m⁆ :=
   LieSubalgebra.coe_bracket_of_module (I : LieSubalgebra R L) x m
@@ -134,8 +134,8 @@ end LieSubmodule
 section LieSubmoduleMapAndComap
 
 variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w}
-variable [CommRing R] [LieRing L] [LieRing L'] [LieAlgebra R L']
-variable [AddCommGroup M] [Module R M] [LieRingModule L M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieRing L'] [LieAlgebra R L']
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
 
 namespace LieIdeal
 
@@ -491,7 +491,7 @@ end LieSubmoduleMapAndComap
 section TopEquiv
 
 variable (R : Type u) (L : Type v)
-variable [CommRing R] [LieRing L]
+variable [Ring R] [IsMulCommutative R] [LieRing L]
 variable {R L}
 variable [LieAlgebra R L]
 

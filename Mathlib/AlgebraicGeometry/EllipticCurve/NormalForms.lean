@@ -95,7 +95,7 @@ elliptic curve, weierstrass equation, normal form
 
 @[expose] public section
 
-variable {R : Type*} [CommRing R] {F : Type*} [Field F] (W : WeierstrassCurve R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] {F : Type*} [Field F] (W : WeierstrassCurve R)
 
 namespace WeierstrassCurve
 

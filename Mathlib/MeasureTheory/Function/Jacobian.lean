@@ -97,8 +97,8 @@ open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
 
 open scoped NNReal ENNReal Topology Pointwise
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] {s : Set E} {f : E → E} {f' : E → E →L[ℝ] E}
+variable {E F : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] {s : Set E} {f : E → E} {f' : E → E →L[ℝ] E}
 
 /-!
 ### Decomposition lemmas

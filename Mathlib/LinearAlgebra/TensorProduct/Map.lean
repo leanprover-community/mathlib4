@@ -28,13 +28,13 @@ bilinear, tensor, tensor product
 section Semiring
 
 variable {R R₂ R₃ : Type*}
-variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃]
+variable [Semiring R] [IsMulCommutative R] [Semiring R₂] [IsMulCommutative R₂] [Semiring R₃] [IsMulCommutative R₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
 variable {M N P Q S : Type*}
 variable {M₂ M₃ N₂ N₃ P₃ : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [AddCommMonoid M₂] [AddCommMonoid N₂]
-variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q] [AddMonoid S] [IsAddCommutative S]
+variable [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid N₂] [IsAddCommutative N₂]
+variable [AddMonoid M₃] [IsAddCommutative M₃] [AddMonoid N₃] [IsAddCommutative N₃] [AddMonoid P₃] [IsAddCommutative P₃]
 variable [Module R M] [Module R N] [Module R S]
 variable [Module R₂ M₂] [Module R₂ N₂]
 variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃]
@@ -233,7 +233,7 @@ theorem map_zero_left (g : N →ₛₗ[σ₁₂] N₂) : map (0 : M →ₛₗ[σ
 theorem map_zero_right (f : M →ₛₗ[σ₁₂] M₂) : map f (0 : N →ₛₗ[σ₁₂] N₂) = 0 :=
   (mapBilinear _ M N M₂ N₂ f).map_zero
 
-variable {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N'] [Module R M'] [Module R N']
+variable {M' N' : Type*} [AddMonoid M'] [IsAddCommutative M'] [AddMonoid N'] [IsAddCommutative N'] [Module R M'] [Module R N']
 
 /-- `homTensorHomMap` is natural with respect to precomposition:
 
@@ -318,7 +318,7 @@ lemma map_bijective {f : M →ₗ[R] N} {g : P →ₗ[R] Q}
   (TensorProduct.congr (.ofBijective f hf) (.ofBijective g hg)).bijective
 
 universe u in
-instance {R M N : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
+instance {R M N : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
     [Module R M] [Module R N] [Small.{u} M] [Small.{u} N] : Small.{u} (M ⊗[R] N) :=
   ⟨_, ⟨(TensorProduct.congr
     (Shrink.linearEquiv R M) (Shrink.linearEquiv R N)).symm.toEquiv⟩⟩
@@ -393,7 +393,7 @@ theorem lTensor_bij_iff_rTensor_bij :
   simp [← comm_comp_rTensor_comp_comm_eq]
 
 variable {M} in
-theorem smul_lTensor {S : Type*} [CommSemiring S] [SMul R S] [Module S M] [IsScalarTower R S M]
+theorem smul_lTensor {S : Type*} [Semiring S] [IsMulCommutative S] [SMul R S] [Module S M] [IsScalarTower R S M]
     [SMulCommClass R S M] (s : S) (m : M ⊗[R] N) : s • (f.lTensor M) m = (f.lTensor M) (s • m) :=
   have h : s • (f.lTensor M) = f.lTensor M ∘ₗ (LinearMap.lsmul S (M ⊗[R] N) s).restrictScalars R :=
     TensorProduct.ext rfl
@@ -713,9 +713,9 @@ end Semiring
 
 section Ring
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-variable [AddCommGroup M] [AddCommMonoid N] [AddCommGroup P] [AddCommMonoid Q]
+variable [AddGroup M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
 
 namespace LinearMap
@@ -745,8 +745,8 @@ end LinearMap
 end Ring
 
 namespace LinearEquiv
-variable {R A A' B B' : Type*} [CommSemiring R]
-  [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid A'] [AddCommMonoid B']
+variable {R A A' B B' : Type*} [Semiring R] [IsMulCommutative R]
+  [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [AddMonoid A'] [IsAddCommutative A'] [AddMonoid B'] [IsAddCommutative B']
   [Module R A] [Module R B] [Module R A'] [Module R B']
 
 variable (R) in

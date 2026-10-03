@@ -57,7 +57,7 @@ open Filter
 
 /-- `f` has superpolynomial decay in parameter `k` along filter `l` if
   `k ^ n * f` tends to zero at `l` for all naturals `n` -/
-def SuperpolynomialDecay {α β : Type*} [TopologicalSpace β] [CommSemiring β] (l : Filter α)
+def SuperpolynomialDecay {α β : Type*} [TopologicalSpace β] [Semiring β] [IsMulCommutative β] (l : Filter α)
     (k : α → β) (f : α → β) :=
   ∀ n : ℕ, Tendsto (fun a : α => k a ^ n * f a) l (𝓝 0)
 
@@ -65,7 +65,7 @@ variable {α β : Type*} {l : Filter α} {k : α → β} {f g g' : α → β}
 
 section CommSemiring
 
-variable [TopologicalSpace β] [CommSemiring β]
+variable [TopologicalSpace β] [Semiring β] [IsMulCommutative β]
 
 theorem SuperpolynomialDecay.congr' (hf : SuperpolynomialDecay l k f) (hfg : f =ᶠ[l] g) :
     SuperpolynomialDecay l k g := fun z =>
@@ -130,7 +130,7 @@ end CommSemiring
 
 section OrderedCommSemiring
 
-variable [TopologicalSpace β] [CommSemiring β] [PartialOrder β] [IsOrderedRing β] [OrderTopology β]
+variable [TopologicalSpace β] [Semiring β] [IsMulCommutative β] [PartialOrder β] [IsOrderedRing β] [OrderTopology β]
 
 theorem SuperpolynomialDecay.trans_eventuallyLE (hk : 0 ≤ᶠ[l] k) (hg : SuperpolynomialDecay l k g)
     (hg' : SuperpolynomialDecay l k g') (hfg : g ≤ᶠ[l] f) (hfg' : f ≤ᶠ[l] g') :
@@ -143,7 +143,7 @@ end OrderedCommSemiring
 
 section LinearOrderedCommRing
 
-variable [TopologicalSpace β] [CommRing β] [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
+variable [TopologicalSpace β] [Ring β] [IsMulCommutative β] [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
 variable (l k f)
 
 theorem superpolynomialDecay_iff_abs_tendsto_zero :

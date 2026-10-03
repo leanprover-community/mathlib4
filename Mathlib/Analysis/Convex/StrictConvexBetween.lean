@@ -22,7 +22,7 @@ space.
 
 open scoped Convex
 
-variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable {V P : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace ℝ V]
 variable [StrictConvexSpace ℝ V]
 
 section PseudoMetricSpace
@@ -106,7 +106,7 @@ theorem dist_lt_dist_add_dist_iff {a b c : P} :
 
 end MetricSpace
 
-variable {E F PE PF : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E]
+variable {E F PE PF : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ E]
   [NormedSpace ℝ F] [StrictConvexSpace ℝ E] [MetricSpace PE] [MetricSpace PF] [NormedAddTorsor E PE]
   [NormedAddTorsor F PF] {r : ℝ} {f : PF → PE} {x y z : PE}
 

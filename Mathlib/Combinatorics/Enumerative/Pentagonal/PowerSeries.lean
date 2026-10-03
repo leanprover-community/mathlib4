@@ -37,7 +37,7 @@ defined using pentagonal numbers. We then show that this series is equal to both
 open Filter PowerSeries WithPiTopology
 
 open scoped Topology
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
 namespace Pentagonal
 -- private auxiliary lemma

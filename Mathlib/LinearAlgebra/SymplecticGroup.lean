@@ -50,7 +50,7 @@ variable {l R : Type*}
 
 namespace Matrix
 
-variable (l) [DecidableEq l] (R) [CommRing R]
+variable (l) [DecidableEq l] (R) [Ring R] [IsMulCommutative R]
 
 section JMatrixLemmas
 
@@ -60,7 +60,7 @@ def J : Matrix (l ⊕ l) (l ⊕ l) R :=
 
 variable {R} in
 @[simp]
-theorem map_J {F S : Type*} [CommRing S] [FunLike F R S]
+theorem map_J {F S : Type*} [Ring S] [IsMulCommutative S] [FunLike F R S]
     [AddMonoidHomClass F R S] [OneHomClass F R S] (f : F) :
     (J l R).map f = J l S := by
   simp [J, fromBlocks_map, Matrix.map_neg]
@@ -110,7 +110,7 @@ end Matrix
 
 namespace SymplecticGroup
 
-variable [DecidableEq l] [Fintype l] [CommRing R]
+variable [DecidableEq l] [Fintype l] [Ring R] [IsMulCommutative R]
 
 open Matrix
 
@@ -156,7 +156,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   rw [mul_comm A.det, mul_assoc] at hA
   exact hA
 
-theorem map_mem {F S : Type*} [CommRing S] [FunLike F R S] [RingHomClass F R S]
+theorem map_mem {F S : Type*} [Ring S] [IsMulCommutative S] [FunLike F R S] [RingHomClass F R S]
     (hA : A ∈ symplecticGroup l R) (f : F) : A.map f ∈ symplecticGroup l S := by
   simp_rw [mem_iff, ← transpose_map, ← map_J _ f, ← Matrix.map_mul, mem_iff.mp hA]
 

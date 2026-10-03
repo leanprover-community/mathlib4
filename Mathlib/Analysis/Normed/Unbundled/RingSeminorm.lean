@@ -160,7 +160,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] (p : RingSeminorm R)
+variable [Ring R] [IsMulCommutative R] (p : RingSeminorm R)
 
 theorem exists_index_pow_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
     ∃ (m : ℕ), m < n + 1 ∧ p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤

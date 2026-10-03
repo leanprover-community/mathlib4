@@ -412,8 +412,8 @@ end IsometryEquiv
 
 namespace ContinuousLinearEquiv
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 @[simp]
 theorem dimH_image (e : E ≃L[𝕜] F) (s : Set E) : dimH (e '' s) = dimH s :=
@@ -436,7 +436,7 @@ end ContinuousLinearEquiv
 
 namespace Real
 
-variable {E : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [Fintype ι] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
 theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     dimH (Metric.ball x r) = Fintype.card ι := by
@@ -522,7 +522,7 @@ theorem dimH_segment {x y : E} (h : x ≠ y) :
 
 end Real
 
-theorem dense_compl_of_dimH_lt_finrank {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem dense_compl_of_dimH_lt_finrank {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
     {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
   have : FiniteDimensional ℝ E := .of_finrank_pos <| by simpa using zero_le.trans_lt hs
   refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_ge ?_
@@ -541,8 +541,8 @@ they satisfy the Luzin N property with respect to the Hausdorff measure `μH[d]`
 
 section Differentiable
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {t : Set E}
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] {f : E → F} {t : Set E}
 
 /-- If `f` is differentiable on a set `t` with `μH[d] t = 0` for some `0 ≤ d`, then
 `μH[d] (f '' t) = 0`. -/
@@ -643,7 +643,7 @@ The Hausdorff dimension of the orthogonal projection of a set `s` onto a subspac
 is less than or equal to the Hausdorff dimension of `s`.
 -/
 theorem dimH_orthogonalProjectionOnto_le {𝕜 E : Type*} [RCLike 𝕜]
-    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
     (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (s : Set E) :
     dimH (K.orthogonalProjectionOnto '' s) ≤ dimH s :=
   K.lipschitzWith_orthogonalProjectionOnto.dimH_image_le s

@@ -33,7 +33,7 @@ Where possible, the results in this file should be first proved in the generalit
 @[expose] public section
 
 
-variable {σ R : Type*} [CommSemiring R]
+variable {σ R : Type*} [Semiring R] [IsMulCommutative R]
 
 namespace MvPolynomial
 
@@ -248,7 +248,7 @@ theorem eq_modMonomial_single [IsLeftCancelAdd R]
 
 section CommRing
 
-variable {R : Type*} [CommRing R] {i : σ} {p q r : MvPolynomial σ R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {i : σ} {p q r : MvPolynomial σ R}
 
 theorem eq_modMonomial_single_iff (h : X i ∣ p - r) :
     r = p.modMonomial (Finsupp.single i 1) ↔

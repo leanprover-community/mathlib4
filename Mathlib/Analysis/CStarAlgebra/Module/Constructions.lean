@@ -99,8 +99,8 @@ section Prod
 open scoped InnerProductSpace
 
 variable {E F : Type*}
-variable [NormedAddCommGroup E] [Module ℂ E] [SMul A E]
-variable [NormedAddCommGroup F] [Module ℂ F] [SMul A F]
+variable [NormedAddGroup E] [IsAddCommutative E] [Module ℂ E] [SMul A E]
+variable [NormedAddGroup F] [IsAddCommutative F] [Module ℂ F] [SMul A F]
 variable [CStarModule A E] [CStarModule A F]
 
 noncomputable instance : Norm C⋆ᵐᵒᵈ(A, E × F) where
@@ -211,7 +211,7 @@ section Pi
 open scoped InnerProductSpace
 
 variable {ι : Type*} {E : ι → Type*} [Fintype ι]
-variable [∀ i, NormedAddCommGroup (E i)] [∀ i, Module ℂ (E i)] [∀ i, SMul A (E i)]
+variable [∀ i, NormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module ℂ (E i)] [∀ i, SMul A (E i)]
 variable [∀ i, CStarModule A (E i)]
 
 noncomputable instance : Norm C⋆ᵐᵒᵈ(A, Π i, E i) where
@@ -340,7 +340,7 @@ section InnerProductSpace
 open ComplexOrder
 
 variable {E : Type*}
-variable [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℂ E]
 
 open scoped InnerProductSpace in
 /-- Reinterpret an inner product space `E` over `ℂ` as a `CStarModule` over `ℂ`.

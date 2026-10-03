@@ -35,7 +35,7 @@ variable {ι α β R : Type*}
 
 section LiminfLimsupAdd
 
-variable [AddCommGroup α] [ConditionallyCompleteLinearOrder α] [DenselyOrdered α]
+variable [AddGroup α] [IsAddCommutative α] [ConditionallyCompleteLinearOrder α] [DenselyOrdered α]
   [AddLeftMono α]
   {f : Filter ι} [f.NeBot] {u v : ι → α}
 
@@ -192,7 +192,7 @@ lemma liminf_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     (fun _ _ h ↦ by dsimp; gcongr) (continuous_add_const c).continuousAt cobdd bdd_below).symm
 
 /-- `limsup (c - xᵢ) = c - liminf xᵢ`. -/
-lemma limsup_const_sub (F : Filter ι) [AddCommSemigroup R] [Sub R] [ContinuousSub R] [OrderedSub R]
+lemma limsup_const_sub (F : Filter ι) [AddSemigroup R] [IsAddCommutative R] [Sub R] [ContinuousSub R] [OrderedSub R]
     [AddLeftMono R] (f : ι → R) (c : R)
     (cobdd : F.IsCoboundedUnder (· ≥ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F := by
@@ -211,7 +211,7 @@ lemma limsup_const_sub (F : Filter ι) [AddCommSemigroup R] [Sub R] [ContinuousS
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c).continuousAt cobdd bdd_below).symm
 
 /-- `limsup (xᵢ - c) = (limsup xᵢ) - c`. -/
-lemma limsup_sub_const (F : Filter ι) [AddCommSemigroup R] [Sub R] [ContinuousSub R] [OrderedSub R]
+lemma limsup_sub_const (F : Filter ι) [AddSemigroup R] [IsAddCommutative R] [Sub R] [ContinuousSub R] [OrderedSub R]
     (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (cobdd : F.IsCoboundedUnder (· ≤ ·) f) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c := by
@@ -229,7 +229,7 @@ lemma limsup_sub_const (F : Filter ι) [AddCommSemigroup R] [Sub R] [ContinuousS
     · exact (continuous_sub_right c).continuousAt
 
 /-- `liminf (c - xᵢ) = c - limsup xᵢ`. -/
-lemma liminf_const_sub (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
+lemma liminf_const_sub (F : Filter ι) [NeBot F] [AddSemigroup R] [IsAddCommutative R] [Sub R] [ContinuousSub R]
     [OrderedSub R] [AddLeftMono R] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (cobdd : F.IsCoboundedUnder (· ≤ ·) f) :
     Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F :=
@@ -237,7 +237,7 @@ lemma liminf_const_sub (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [C
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c).continuousAt bdd_above cobdd).symm
 
 /-- `liminf (xᵢ - c) = (liminf xᵢ) - c`. -/
-lemma liminf_sub_const (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
+lemma liminf_sub_const (F : Filter ι) [NeBot F] [AddSemigroup R] [IsAddCommutative R] [Sub R] [ContinuousSub R]
     [OrderedSub R] (f : ι → R) (c : R)
     (cobdd : F.IsCoboundedUnder (· ≥ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ f i - c) F = Filter.liminf f F - c :=

@@ -33,7 +33,7 @@ open scoped Polynomial
 
 section ScaleRoots
 
-variable {A K S : Type*} [CommRing A] [Field K] [CommRing S]
+variable {A K S : Type*} [Ring A] [IsMulCommutative A] [Field K] [Ring S] [IsMulCommutative S]
 variable {M : Submonoid A} [Algebra A S] [IsLocalization M S] [Algebra A K] [IsFractionRing A K]
 
 open IsFractionRing IsLocalization Polynomial
@@ -57,7 +57,7 @@ end ScaleRoots
 
 section RationalRootTheorem
 
-variable {A K : Type*} [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A] [Field K]
+variable {A K : Type*} [Ring A] [IsMulCommutative A] [IsDomain A] [UniqueFactorizationMonoid A] [Field K]
 variable [Algebra A K] [IsFractionRing A K]
 
 open IsFractionRing IsLocalization Polynomial UniqueFactorizationMonoid

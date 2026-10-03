@@ -25,13 +25,13 @@ open Function Module Set
 
 variable {R S : Type*} {x y : R}
 
-theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [Semiring S]
+theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [Semiring R] [IsMulCommutative R] [Semiring S]
     [FunLike F R S] [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
     (RingHom.ker f).IsRadical ↔ IsReduced S := by
   simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker]
   rfl
 
-theorem isRadical_iff_span_singleton [CommSemiring R] :
+theorem isRadical_iff_span_singleton [Semiring R] [IsMulCommutative R] :
     IsRadical y ↔ (Ideal.span ({y} : Set R)).IsRadical := by
   simp_rw [IsRadical, ← Ideal.mem_span_singleton]
   exact forall_comm.trans (forall_congr' fun r => exists_imp.symm)
@@ -41,16 +41,16 @@ theorem isNilpotent_iff_zero_mem_powers [Monoid R] [Zero R] :
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 /-- The nilradical of a commutative semiring is the ideal of nilpotent elements. -/
-def nilradical (R : Type*) [CommSemiring R] : Ideal R :=
+def nilradical (R : Type*) [Semiring R] [IsMulCommutative R] : Ideal R :=
   (0 : Ideal R).radical
 
 theorem mem_nilradical : x ∈ nilradical R ↔ IsNilpotent x :=
   Iff.rfl
 
-theorem nilradical_eq_sInf (R : Type*) [CommSemiring R] :
+theorem nilradical_eq_sInf (R : Type*) [Semiring R] [IsMulCommutative R] :
     nilradical R = sInf { J : Ideal R | J.IsPrime } :=
   (Ideal.radical_eq_sInf ⊥).trans <| by simp_rw [and_iff_right bot_le]
 
@@ -62,7 +62,7 @@ theorem nilradical_le_prime (J : Ideal R) [H : J.IsPrime] : nilradical R ≤ J :
   (nilradical_eq_sInf R).symm ▸ sInf_le H
 
 @[simp]
-theorem nilradical_eq_zero (R : Type*) [CommSemiring R] [IsReduced R] : nilradical R = 0 :=
+theorem nilradical_eq_zero (R : Type*) [Semiring R] [IsMulCommutative R] [IsReduced R] : nilradical R = 0 :=
   Ideal.ext fun _ => isNilpotent_iff_eq_zero
 
 theorem nilradical_eq_bot_iff : nilradical R = ⊥ ↔ IsReduced R := by
@@ -85,7 +85,7 @@ end CommSemiring
 
 namespace LinearMap
 
-variable (R) {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R) {A : Type v} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 @[simp]
 theorem isNilpotent_mulLeft_iff (a : A) : IsNilpotent (mulLeft R a) ↔ IsNilpotent a := by
@@ -100,7 +100,7 @@ theorem isNilpotent_mulRight_iff (a : A) : IsNilpotent (mulRight R a) ↔ IsNilp
     exact hn
 
 variable {R}
-variable {ι M : Type*} [Fintype ι] [DecidableEq ι] [AddCommMonoid M] [Module R M]
+variable {ι M : Type*} [Fintype ι] [DecidableEq ι] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 @[simp]
 lemma isNilpotent_toMatrix_iff (b : Basis ι R M) (f : M →ₗ[R] M) :
@@ -112,7 +112,7 @@ lemma isNilpotent_toMatrix_iff (b : Basis ι R M) (f : M →ₗ[R] M) :
 end LinearMap
 
 @[simp]
-lemma Matrix.isNilpotent_toLin'_iff {ι : Type*} [DecidableEq ι] [Fintype ι] [CommSemiring R]
+lemma Matrix.isNilpotent_toLin'_iff {ι : Type*} [DecidableEq ι] [Fintype ι] [Semiring R] [IsMulCommutative R]
     (A : Matrix ι ι R) :
     IsNilpotent A.toLin' ↔ IsNilpotent A := by
   have : A.toLin'.toMatrix (Pi.basisFun R ι) (Pi.basisFun R ι) = A := LinearMap.toMatrix'_toLin' A
@@ -123,7 +123,7 @@ namespace Module.End
 
 section
 
-variable {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
@@ -148,7 +148,7 @@ lemma isNilpotent.restrict
 
 end
 
-variable {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+variable {M : Type v} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable {f : Module.End R M} {p : Submodule R M} (hp : p ≤ p.comap f)
 
 theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := by

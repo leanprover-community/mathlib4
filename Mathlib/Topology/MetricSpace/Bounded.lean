@@ -378,7 +378,7 @@ end CompactIccSpace
 
 section CompactIccSpace_abs
 
-variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [PseudoMetricSpace α]
+variable {α : Type*} [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α] [PseudoMetricSpace α]
   [CompactIccSpace α]
 
 lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} := by

@@ -28,9 +28,9 @@ variable {M k V P V₁ P₁ V₂ P₂ : Type*}
 namespace AffineSubspace
 section Ring
 variable [Ring k]
-variable [AddCommGroup V] [Module k V] [AffineSpace V P]
-variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
-variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+variable [AddGroup V] [IsAddCommutative V] [Module k V] [AffineSpace V P]
+variable [AddGroup V₁] [IsAddCommutative V₁] [Module k V₁] [AddTorsor V₁ P₁]
+variable [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AddTorsor V₂ P₂]
 
 /-- The additive action on an affine subspace corresponding to applying the action to every element.
 
@@ -147,7 +147,7 @@ end MulAction
 end Ring
 
 section Field
-variable [Field k] [AddCommGroup V] [Module k V] {a : k}
+variable [Field k] [AddGroup V] [IsAddCommutative V] [Module k V] {a : k}
 
 @[simp]
 lemma direction_smul (ha : a ≠ 0) (s : AffineSubspace k V) : (a • s).direction = s.direction := by

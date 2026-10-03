@@ -34,14 +34,14 @@ open TensorProduct
 
 /-- `S` is a finite, totally split `R`-algebra if `S` is isomorphic to `Fin n → R` for some `n`.
 Geometrically, this is a trivial cover of degree `n`. -/
-class Algebra.IsFiniteSplit (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] : Prop where
+class Algebra.IsFiniteSplit (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] : Prop where
   nonempty_algEquiv_fun (R S) : ∃ n : ℕ, Nonempty (S ≃ₐ[R] Fin n → R)
 
 namespace Algebra.IsFiniteSplit
 
-variable {k R S : Type*} [Field k] [CommRing R] [CommRing S] [Algebra k R] [Algebra R S]
+variable {k R S : Type*} [Field k] [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra k R] [Algebra R S]
 
-instance {T : Type*} [CommRing T] [Algebra R T] [IsFiniteSplit R S] :
+instance {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] [IsFiniteSplit R S] :
     IsFiniteSplit T (T ⊗[R] S) := by
   obtain ⟨n, ⟨e⟩⟩ := Algebra.IsFiniteSplit.nonempty_algEquiv_fun R S
   refine ⟨n, ⟨?_⟩⟩
@@ -54,7 +54,7 @@ instance {ι : Type*} [Finite ι] : IsFiniteSplit R (ι → R) where
     cases nonempty_fintype ι
     exact ⟨_, ⟨AlgEquiv.piCongrLeft' _ _ (Fintype.equivFin ι)⟩⟩
 
-lemma of_algEquiv {S' : Type*} [CommRing S'] [Algebra R S'] (e : S ≃ₐ[R] S') [IsFiniteSplit R S] :
+lemma of_algEquiv {S' : Type*} [Ring S'] [IsMulCommutative S'] [Algebra R S'] (e : S ≃ₐ[R] S') [IsFiniteSplit R S] :
     IsFiniteSplit R S' := by
   obtain ⟨n, ⟨f⟩⟩ := nonempty_algEquiv_fun R S
   exact ⟨n, ⟨e.symm.trans f⟩⟩
@@ -133,7 +133,7 @@ instance [IsSepClosed k] [EssFiniteType k R] [FormallyEtale k R] : IsFiniteSplit
   have : IsArtinianRing R := isArtinian_of_tower k inferInstance
   exact .of_algEquiv (Algebra.FormallyEtale.equivPiOfIsSepClosed k R).symm
 
-variable {n : ℕ} {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+variable {n : ℕ} {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /--
 If `S` is finite étale over `R` of (constant) rank `n`, there exists

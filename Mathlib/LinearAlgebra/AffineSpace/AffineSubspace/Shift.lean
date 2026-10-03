@@ -35,7 +35,7 @@ variable {k V P : Type*}
 namespace AffineSubspace
 
 section Ring
-variable [Ring k] [AddCommGroup V] [AddTorsor V P] [Module k V]
+variable [Ring k] [AddGroup V] [IsAddCommutative V] [AddTorsor V P] [Module k V]
 
 open scoped Classical in
 /-- `AffineSubspace.shift s c r` is an affine subspace parallel to `s`, where an arbitrary point on
@@ -154,7 +154,7 @@ theorem _root_.AffineIndependent.affineCombination_mem_shift_iff
 end Ring
 
 section CommRing
-variable [CommRing k] [AddCommGroup V] [AddTorsor V P] [Module k V]
+variable [Ring k] [IsMulCommutative k] [AddGroup V] [IsAddCommutative V] [AddTorsor V P] [Module k V]
 
 /-- For a unit parameter, shifting is the same as mapping by homothety. -/
 theorem shift_eq_map_homothety (s : AffineSubspace k P) (c : P) {r : k} (hr : IsUnit r) :
@@ -188,7 +188,7 @@ end AffineSubspace
 namespace Affine.Simplex
 
 section Ring
-variable [Ring k] [PartialOrder k] [IsOrderedAddMonoid k] [AddCommGroup V] [AddTorsor V P]
+variable [Ring k] [PartialOrder k] [IsOrderedAddMonoid k] [AddGroup V] [IsAddCommutative V] [AddTorsor V P]
   [Module k V] {n : ℕ} [NeZero n] (s : Affine.Simplex k P n) (i : Fin (n + 1))
 
 /-- The base of a simplex shifted with parameter 0 intersects the closed interior only at the
@@ -223,7 +223,7 @@ theorem disjoint_closedInterior_shift {x : k} (hx : x < 0 ∨ 1 < x) :
 end Ring
 
 section Field
-variable [Field k] [LinearOrder k] [IsOrderedRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
+variable [Field k] [LinearOrder k] [IsOrderedRing k] [AddGroup V] [IsAddCommutative V] [Module k V] [AddTorsor V P]
 
 private theorem closedInterior_inter_shift_aux {n : ℕ} (i : Fin n) {x : k} (hxpos : 0 < x)
     (hx1 : x ≤ 1) {w : Fin n → k} (hw : ∑ i, w i = 1) :

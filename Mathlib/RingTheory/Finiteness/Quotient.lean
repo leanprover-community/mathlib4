@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Ideal.Over
 
 public section
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
 variable (P : Ideal B) (p : Ideal A) [P.LiesOver p]
 
 /-- `B ⧸ P` is a finite `A ⧸ p`-module if `B` is a finite `A`-module. -/

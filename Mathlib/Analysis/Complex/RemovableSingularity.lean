@@ -26,7 +26,7 @@ open scoped Topology Filter NNReal Real
 
 universe u
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+variable {E : Type u} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E] [CompleteSpace E]
 
 namespace Complex
 

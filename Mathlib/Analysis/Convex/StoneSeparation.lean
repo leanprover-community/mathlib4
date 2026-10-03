@@ -25,7 +25,7 @@ public section
 open Set
 
 variable {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {s t : Set E}
 
 /-- In a tetrahedron with vertices `x`, `y`, `p`, `q`, any segment `[u, v]` joining the opposite
 edges `[x, p]` and `[y, q]` passes through any triangle of vertices `p`, `q`, `z` where

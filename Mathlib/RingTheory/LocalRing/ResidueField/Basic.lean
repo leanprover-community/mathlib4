@@ -26,7 +26,7 @@ namespace IsLocalRing
 
 section
 
-variable [CommRing R] [IsLocalRing R] [CommRing S] [IsLocalRing S] [CommRing T] [IsLocalRing T]
+variable [Ring R] [IsMulCommutative R] [IsLocalRing R] [Ring S] [IsMulCommutative S] [IsLocalRing S] [Ring T] [IsMulCommutative T] [IsLocalRing T]
 
 lemma residue_def (x) : residue R x = Ideal.Quotient.mk (maximalIdeal R) x := rfl
 
@@ -46,11 +46,11 @@ lemma residue_surjective :
 
 variable (R)
 
-instance ResidueField.algebra {R₀} [CommRing R₀] [Algebra R₀ R] :
+instance ResidueField.algebra {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] :
     Algebra R₀ (ResidueField R) :=
   inferInstanceAs <| Algebra R₀ (_ ⧸ _)
 
-instance {R₁ R₂} [CommRing R₁] [CommRing R₂]
+instance {R₁ R₂} [Ring R₁] [IsMulCommutative R₁] [Ring R₂] [IsMulCommutative R₂]
     [Algebra R₁ R₂] [Algebra R₁ R] [Algebra R₂ R] [IsScalarTower R₁ R₂ R] :
     IsScalarTower R₁ R₂ (ResidueField R) :=
   inferInstanceAs <| IsScalarTower R₁ R₂ (_ ⧸ _)
@@ -64,10 +64,10 @@ instance : IsLocalHom (IsLocalRing.residue R) :=
     Classical.not_not.mp (Ideal.Quotient.eq_zero_iff_mem.not.mp (isUnit_iff_ne_zero.mp ha))⟩
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
-noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] : Module R₀ (ResidueField R) :=
+noncomputable instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] : Module R₀ (ResidueField R) :=
   inferInstanceAs <| Module R₀ (R ⧸ maximalIdeal R)
 
-instance {R₀} [CommRing R₀] [Algebra R₀ R] [Module.Finite R₀ R] :
+instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Module.Finite R₀ R] :
     Module.Finite R₀ (ResidueField R) :=
   .of_surjective (IsScalarTower.toAlgHom R₀ R _).toLinearMap Ideal.Quotient.mk_surjective
 
@@ -76,17 +76,17 @@ variable {R}
 namespace ResidueField
 
 /-- A local ring homomorphism into a field can be descended onto the residue field. -/
-def lift {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] (f : R →+* S) [IsLocalHom f] :
+def lift {R S : Type*} [Ring R] [IsMulCommutative R] [IsLocalRing R] [Field S] (f : R →+* S) [IsLocalHom f] :
     IsLocalRing.ResidueField R →+* S :=
   Ideal.Quotient.lift _ f fun a ha =>
     by_contradiction fun h => ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
 
-theorem lift_comp_residue {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] (f : R →+* S)
+theorem lift_comp_residue {R S : Type*} [Ring R] [IsMulCommutative R] [IsLocalRing R] [Field S] (f : R →+* S)
     [IsLocalHom f] : (lift f).comp (residue R) = f :=
   RingHom.ext fun _ => rfl
 
 @[simp]
-theorem lift_residue_apply {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] (f : R →+* S)
+theorem lift_residue_apply {R S : Type*} [Ring R] [IsMulCommutative R] [IsLocalRing R] [Field S] (f : R →+* S)
     [IsLocalHom f] (x) : lift f (residue R x) = f x :=
   rfl
 
@@ -190,11 +190,11 @@ instance : Algebra (ResidueField R) (ResidueField S) :=
     algebraMap (ResidueField R) (ResidueField S) (residue R x) =
       residue S (algebraMap R S x) := rfl
 
-instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+instance {R₀ : Type*} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ (ResidueField R) (ResidueField S) :=
   Ideal.Quotient.isScalarTower_of_liesOver ..
 
-instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+instance {R₀ : Type*} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
     [IsLocalRing R₀] [IsLocalHom (algebraMap R₀ R)] [IsLocalHom (algebraMap R₀ S)] :
     IsScalarTower (ResidueField R₀) (ResidueField R) (ResidueField S) := by
   refine .of_algebraMap_eq fun x ↦ ?_

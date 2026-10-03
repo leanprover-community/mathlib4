@@ -23,10 +23,10 @@ public section
 namespace DirichletCharacter
 
 -- This is needed to be able to write down sums over characters.
-noncomputable instance fintype {R : Type*} [CommRing R] [IsDomain R] {n : ℕ} :
+noncomputable instance fintype {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] {n : ℕ} :
     Fintype (DirichletCharacter R n) := .ofFinite _
 
-variable (R : Type*) [CommRing R] (n : ℕ) [NeZero n]
+variable (R : Type*) [Ring R] [IsMulCommutative R] (n : ℕ) [NeZero n]
   [HasEnoughRootsOfUnity R (Monoid.exponent (ZMod n)ˣ)]
 
 /-- The group of Dirichlet characters mod `n` with values in a ring `R` that has enough

@@ -24,8 +24,8 @@ public section
 namespace ContinuousAffineMap
 
 variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-variable [NormedAddCommGroup W] [NormedSpace 𝕜 W]
+variable [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V]
+variable [NormedAddGroup W] [IsAddCommutative W] [NormedSpace 𝕜 W]
 
 /-- A continuous affine map between normed vector spaces is smooth. -/
 theorem contDiff {n : WithTop ℕ∞} (f : V →ᴬ[𝕜] W) : ContDiff 𝕜 n f := by
@@ -38,7 +38,7 @@ end ContinuousAffineMap
 namespace AffineMap
 
 variable {𝕜 V : Type*} [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V]
 
 /-- `AffineMap.lineMap` is smooth in all three arguments. -/
 @[fun_prop]
@@ -57,8 +57,8 @@ end AffineMap
 section LineMapComp
 
 variable {𝕜 V E : Type*} [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 variable {f₁ f₂ : E → V} {g : E → 𝕜} {s : Set E} {x : E} {n : WithTop ℕ∞}
 
 @[fun_prop]

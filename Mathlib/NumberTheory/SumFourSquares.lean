@@ -24,7 +24,7 @@ public section
 open Finset Polynomial FiniteField Equiv
 
 /-- **Euler's four-square identity**. -/
-theorem euler_four_squares {R : Type*} [CommRing R] (a b c d x y z w : R) :
+theorem euler_four_squares {R : Type*} [Ring R] [IsMulCommutative R] (a b c d x y z w : R) :
     (a * x - b * y - c * z - d * w) ^ 2 + (a * y + b * x + c * w - d * z) ^ 2 +
       (a * z - b * w + c * x + d * y) ^ 2 + (a * w + b * z - c * y + d * x) ^ 2 =
       (a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) * (x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := by ring

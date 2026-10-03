@@ -39,7 +39,7 @@ local infixl:50 " ~ᵤ " => Associated
 
 namespace WfDvdMonoid
 
-variable [CommMonoidWithZero α]
+variable [MonoidWithZero α] [IsMulCommutative α]
 
 open Associates
 
@@ -56,7 +56,7 @@ theorem wellFoundedLT_associates : WellFoundedLT (Associates α) :=
 
 end WfDvdMonoid
 
-theorem WfDvdMonoid.of_wellFoundedLT_associates [CommMonoidWithZero α] [IsCancelMulZero α]
+theorem WfDvdMonoid.of_wellFoundedLT_associates [MonoidWithZero α] [IsMulCommutative α] [IsCancelMulZero α]
     (h : WellFoundedLT (Associates α)) : WfDvdMonoid α :=
   WfDvdMonoid.of_wfDvdMonoid_associates <| by
     unfold WellFoundedLT WfDvdMonoid at *
@@ -64,17 +64,17 @@ theorem WfDvdMonoid.of_wellFoundedLT_associates [CommMonoidWithZero α] [IsCance
     ext
     exact Associates.dvdNotUnit_iff_lt
 
-theorem WfDvdMonoid.iff_wellFounded_associates [CommMonoidWithZero α] [IsCancelMulZero α] :
+theorem WfDvdMonoid.iff_wellFounded_associates [MonoidWithZero α] [IsMulCommutative α] [IsCancelMulZero α] :
     WfDvdMonoid α ↔ WellFoundedLT (Associates α) :=
   ⟨by apply WfDvdMonoid.wellFoundedLT_associates, WfDvdMonoid.of_wellFoundedLT_associates⟩
 
-instance Associates.ufm [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
+instance Associates.ufm [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α] :
     UniqueFactorizationMonoid (Associates α) where
   irreducible_iff_prime := by
     rw [← Associates.irreducible_iff_prime_iff]
     apply UniqueFactorizationMonoid.irreducible_iff_prime
 
-theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
+theorem prime_factors_unique [MonoidWithZero α] [IsMulCommutative α] [IsCancelMulZero α] :
     ∀ {f g : Multiset α},
       (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g := by
   intro f
@@ -103,7 +103,7 @@ theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
 
 namespace UniqueFactorizationMonoid
 
-variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α]
 
 theorem factors_unique {f g : Multiset α} (hf : ∀ x ∈ f, Irreducible x)
     (hg : ∀ x ∈ g, Irreducible x) (h : f.prod ~ᵤ g.prod) : Multiset.Rel Associated f g :=
@@ -123,7 +123,7 @@ end UniqueFactorizationMonoid
 
 /-- If an irreducible has a prime factorization,
   then it is an associate of one of its prime factors. -/
-theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset α}
+theorem prime_factors_irreducible [MonoidWithZero α] [IsMulCommutative α] {a : α} {f : Multiset α}
     (ha : Irreducible a) (pfa : (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a) : ∃ p, a ~ᵤ p ∧ f = {p} := by
   have := Classical.decEq α
   refine @Multiset.induction_on _
@@ -144,7 +144,7 @@ theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset
     simp only [mul_one, Multiset.prod_cons, Multiset.prod_zero, hs0] at *
     exact ⟨Associated.symm ⟨u, hu⟩, rfl⟩
 
-theorem irreducible_iff_prime_of_existsUnique_irreducible_factors [CommMonoidWithZero α]
+theorem irreducible_iff_prime_of_existsUnique_irreducible_factors [MonoidWithZero α] [IsMulCommutative α]
     [IsCancelMulZero α]
     (eif : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ f.prod ~ᵤ a)
     (uif :
@@ -187,7 +187,7 @@ namespace UniqueFactorizationMonoid
 
 open Multiset
 
-variable [CommMonoidWithZero α]
+variable [MonoidWithZero α] [IsMulCommutative α]
 variable [UniqueFactorizationMonoid α]
 
 @[simp]
@@ -282,7 +282,7 @@ attribute [local instance] Associated.setoid
 
 open Multiset UniqueFactorizationMonoid
 
-variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem unique' {p q : Multiset (Associates α)} :
@@ -314,7 +314,7 @@ end Associates
 
 section ExistsPrimeFactors
 
-variable [CommMonoidWithZero α] [IsCancelMulZero α]
+variable [MonoidWithZero α] [IsMulCommutative α] [IsCancelMulZero α]
 variable (pf : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a)
 include pf
 
@@ -370,7 +370,7 @@ theorem UniqueFactorizationMonoid.of_exists_prime_factors : UniqueFactorizationM
 
 end ExistsPrimeFactors
 
-theorem UniqueFactorizationMonoid.iff_exists_prime_factors [CommMonoidWithZero α]
+theorem UniqueFactorizationMonoid.iff_exists_prime_factors [MonoidWithZero α] [IsMulCommutative α]
     [IsCancelMulZero α] :
     UniqueFactorizationMonoid α ↔
       ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a :=
@@ -379,7 +379,7 @@ theorem UniqueFactorizationMonoid.iff_exists_prime_factors [CommMonoidWithZero �
 
 section
 
-variable {β : Type*} [CommMonoidWithZero α] [CommMonoidWithZero β]
+variable {β : Type*} [MonoidWithZero α] [IsMulCommutative α] [MonoidWithZero β] [IsMulCommutative β]
 
 theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactorizationMonoid α) :
     UniqueFactorizationMonoid β := by
@@ -408,7 +408,7 @@ end
 
 namespace UniqueFactorizationMonoid
 
-theorem of_existsUnique_irreducible_factors [CommMonoidWithZero α] [IsCancelMulZero α]
+theorem of_existsUnique_irreducible_factors [MonoidWithZero α] [IsMulCommutative α] [IsCancelMulZero α]
     (eif : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ f.prod ~ᵤ a)
     (uif :
       ∀ f g : Multiset α,
@@ -420,7 +420,7 @@ theorem of_existsUnique_irreducible_factors [CommMonoidWithZero α] [IsCancelMul
       convert! eif using 7
       simp_rw [irreducible_iff_prime_of_existsUnique_irreducible_factors eif uif])
 
-variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
+variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] [UniqueFactorizationMonoid R]
 
 theorem isRelPrime_iff_no_prime_factors {a b : R} (ha : a ≠ 0) :
     IsRelPrime a b ↔ ∀ ⦃d⦄, d ∣ a → d ∣ b → ¬Prime d :=

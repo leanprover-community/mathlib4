@@ -32,10 +32,10 @@ def nonunits (α : Type*) [Monoid α] : Set α :=
 theorem mem_nonunits_iff [Monoid α] : a ∈ nonunits α ↔ ¬IsUnit a :=
   Iff.rfl
 
-theorem mul_mem_nonunits_right [CommMonoid α] : b ∈ nonunits α → a * b ∈ nonunits α :=
+theorem mul_mem_nonunits_right [Monoid α] [IsMulCommutative α] : b ∈ nonunits α → a * b ∈ nonunits α :=
   mt isUnit_of_mul_isUnit_right
 
-theorem mul_mem_nonunits_left [CommMonoid α] : a ∈ nonunits α → a * b ∈ nonunits α :=
+theorem mul_mem_nonunits_left [Monoid α] [IsMulCommutative α] : a ∈ nonunits α → a * b ∈ nonunits α :=
   mt isUnit_of_mul_isUnit_left
 
 theorem zero_mem_nonunits [MonoidWithZero α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :=
@@ -53,7 +53,7 @@ theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHo
 theorem coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=
   fun _x hx hu => h <| I.eq_top_of_isUnit_mem hx hu
 
-theorem exists_max_ideal_of_mem_nonunits [CommSemiring α] (h : a ∈ nonunits α) :
+theorem exists_max_ideal_of_mem_nonunits [Semiring α] [IsMulCommutative α] (h : a ∈ nonunits α) :
     ∃ I : Ideal α, I.IsMaximal ∧ a ∈ I := by
   have : Ideal.span ({a} : Set α) ≠ ⊤ := by
     intro H

@@ -26,7 +26,7 @@ open TensorProduct Algebra.TensorProduct Matrix
 variable {l m n p : Type*} {R S A B M N : Type*}
 section Module
 
-variable [CommSemiring R] [Semiring S] [Semiring A] [Semiring B] [AddCommMonoid M] [AddCommMonoid N]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [Semiring A] [Semiring B] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
 variable [Algebra R S] [Algebra R A] [Algebra R B] [Module R M] [Module S M] [Module R N]
 variable [IsScalarTower R S M]
 variable [Fintype l] [Fintype m] [Fintype n] [Fintype p]
@@ -99,7 +99,7 @@ variable {l m n p R}
 end Module
 
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable (n R A)
 
@@ -227,7 +227,7 @@ namespace Matrix
 open scoped Kronecker
 
 variable (m) (S B)
-variable [CommSemiring S] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
+variable [Semiring S] [IsMulCommutative S] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
 variable [Fintype m] [DecidableEq m]
 
 /-- `Matrix.kroneckerTMul` as an algebra equivalence, when the two arguments are tensored. -/

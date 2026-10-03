@@ -34,7 +34,7 @@ namespace IsDiscreteValuationRing
 open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum IsDiscreteValuationRing
   IsLocalRing MonoidWithZeroHom Multiplicative Subring Valuation
 
-variable (A K : Type*) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A] [Field K]
+variable (A K : Type*) [Ring A] [IsMulCommutative A] [IsDomain A] [IsDiscreteValuationRing A] [Field K]
   [Algebra A K] [IsFractionRing A K]
 
 /-- The maximal ideal of a discrete valuation ring. -/

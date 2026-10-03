@@ -125,7 +125,7 @@ theorem Fin.circulant_mul [NonUnitalNonAssocSemiring α] :
   | _ + 1 => Matrix.circulant_mul
 
 /-- Multiplication of circulant matrices commutes when the elements do. -/
-theorem circulant_mul_comm [CommMagma α] [AddCommMonoid α] [Fintype n] [AddCommGroup n]
+theorem circulant_mul_comm [Mul α] [IsMulCommutative α] [AddMonoid α] [IsAddCommutative α] [Fintype n] [AddGroup n] [IsAddCommutative n]
     (v w : n → α) : circulant v * circulant w = circulant w * circulant v := by
   ext i j
   simp only [mul_apply, circulant_apply]
@@ -136,7 +136,7 @@ theorem circulant_mul_comm [CommMagma α] [AddCommMonoid α] [Fintype n] [AddCom
   congr 2
   abel
 
-theorem Fin.circulant_mul_comm [CommMagma α] [AddCommMonoid α] :
+theorem Fin.circulant_mul_comm [Mul α] [IsMulCommutative α] [AddMonoid α] [IsAddCommutative α] :
     ∀ {n} (v w : Fin n → α), circulant v * circulant w = circulant w * circulant v
   | 0 => by simp
   | _ + 1 => Matrix.circulant_mul_comm

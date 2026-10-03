@@ -31,7 +31,7 @@ open Representation
 
 namespace GroupAlgebra
 
-variable (k G : Type*) [CommSemiring k] [Group G]
+variable (k G : Type*) [Semiring k] [IsMulCommutative k] [Group G]
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 /-- The average of all elements of the group `G`, considered as an element of `k[G]`. -/
@@ -64,7 +64,7 @@ section Invariants
 
 open GroupAlgebra
 
-variable {k G V W : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V] [AddCommGroup W]
+variable {k G V W : Type*} [Ring k] [IsMulCommutative k] [Group G] [AddGroup V] [IsAddCommutative V] [Module k V] [AddGroup W] [IsAddCommutative W]
   [Module k W]
 variable (ρ : Representation k G V) (σ : Representation k G W)
 
@@ -144,7 +144,7 @@ theorem isProj_averageMap : LinearMap.IsProj ρ.invariants ρ.averageMap :=
 end
 section Subgroup
 
-variable {V : Type*} [AddCommGroup V] [Module k V]
+variable {V : Type*} [AddGroup V] [IsAddCommutative V] [Module k V]
 variable (ρ : Representation k G V) (S : Subgroup G) [S.Normal]
 
 lemma le_comap_invariants (g : G) :
@@ -182,7 +182,7 @@ open CategoryTheory Action
 
 section Rep
 
-variable {k : Type u} [CommRing k] {G : Type v} [Group G] {X Y : Rep.{w} k G}
+variable {k : Type u} [Ring k] [IsMulCommutative k] {G : Type v} [Group G] {X Y : Rep.{w} k G}
 
 theorem mem_invariants_iff_comm (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
@@ -231,7 +231,7 @@ namespace Rep
 
 open CategoryTheory
 
-variable {k : Type u} {G : Type v} [CommRing k] [Group G] (A : Rep.{w} k G)
+variable {k : Type u} {G : Type v} [Ring k] [IsMulCommutative k] [Group G] (A : Rep.{w} k G)
   (S : Subgroup G) [S.Normal]
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on

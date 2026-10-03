@@ -23,7 +23,7 @@ This file proves some results on linear functionals on division semirings.
 public section
 
 namespace LinearMap
-variable {R M M₁ : Type*} [AddCommMonoid M] [AddCommMonoid M₁]
+variable {R M M₁ : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁]
 
 theorem surjective_iff_ne_zero [DivisionSemiring R] [Module R M] {f : M →ₗ[R] R} :
     Function.Surjective f ↔ f ≠ 0 := by

@@ -67,7 +67,7 @@ section Semiring
 
 
 variable {v : ι → M}
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M']
 variable [Module R M] [Module R M']
 variable (R) (v)
 
@@ -236,7 +236,7 @@ end Semiring
 section Module
 
 variable {v : ι → M}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M']
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [AddGroup M'] [IsAddCommutative M']
 variable [Module R M] [Module R M']
 
 /-- A finite family of vectors `v i` is linear independent iff the linear map that sends
@@ -288,7 +288,7 @@ lemma LinearIndependent.pair_symm_iff :
     LinearIndependent R ![x, -y] ↔ LinearIndependent R ![x, y] := by
   rw [pair_symm_iff, pair_neg_left_iff, pair_symm_iff]
 
-variable {S : Type*} [CommRing S] [IsDomain S] [Module S R] [Module S M]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [IsDomain S] [Module S R] [Module S M]
   [SMulCommClass S R M] [IsScalarTower S R M] [IsTorsionFree S R]
   (a b c d : S)
 
@@ -396,7 +396,7 @@ end Module
 section Module
 
 variable {v : ι → M}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M']
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [AddGroup M'] [IsAddCommutative M']
 variable [Module R M] [Module R M']
 
 theorem linearIndepOn_id_iUnion_finite {f : ι → Set M} (hl : ∀ i, LinearIndepOn R id (f i))
@@ -477,19 +477,19 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
 
 @[stacks 0CKM]
 lemma linearIndependent_algHom_toLinearMap
-    (K M L) [CommSemiring K] [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] :
+    (K M L) [Semiring K] [IsMulCommutative K] [Semiring M] [Algebra K M] [Ring L] [IsMulCommutative L] [IsDomain L] [Algebra K L] :
     LinearIndependent L (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
   apply LinearIndependent.of_comp (LinearMap.ltoFun K M L L)
   exact (linearIndependent_monoidHom M L).comp
     (RingHom.toMonoidHom ∘ AlgHom.toRingHom)
     (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e :))
 
-lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K] [IsDomain K]
-    [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [IsTorsionFree K L] :
+lemma linearIndependent_algHom_toLinearMap' (K M L) [Ring K] [IsMulCommutative K] [IsDomain K]
+    [Semiring M] [Algebra K M] [Ring L] [IsMulCommutative L] [IsDomain L] [Algebra K L] [IsTorsionFree K L] :
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).restrict_scalars' K
 
-lemma LinearMap.injective_of_linearIndependent {N : Type*} [AddCommGroup N] [Module R N]
+lemma LinearMap.injective_of_linearIndependent {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
     {f : M →ₗ[R] N} {ι : Type*} {v : ι → M}
     (hv : Submodule.span R (.range v) = ⊤) (hli : LinearIndependent R (f ∘ v)) :
     Function.Injective f := by
@@ -500,7 +500,7 @@ lemma LinearMap.injective_of_linearIndependent {N : Type*} [AddCommGroup N] [Mod
   obtain rfl := linearIndependent_iff.mp hli c hx
   simp
 
-lemma LinearMap.bijective_of_linearIndependent_of_span_eq_top {N : Type*} [AddCommGroup N]
+lemma LinearMap.bijective_of_linearIndependent_of_span_eq_top {N : Type*} [AddGroup N] [IsAddCommutative N]
     [Module R N] {f : M →ₗ[R] N} {ι : Type*} {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤)
     (hli : LinearIndependent R (f ∘ v)) (hsp : Submodule.span R (Set.range <| f ∘ v) = ⊤) :
     Function.Bijective f := by
@@ -538,7 +538,7 @@ open Finsupp in
 /-- A linearly independent family of vectors `f` remains linearly independent when we substitute one
 of the terms with a vector `m` provided there exists a non-zero divisor `r`, such that `r • m`
 belongs to the span of `f` with non-zero-divisor coefficients. -/
-lemma LinearIndependent.update [DecidableEq ι] [CommRing R] [AddCommGroup M] [Module R M]
+lemma LinearIndependent.update [DecidableEq ι] [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
     {f : ι → M} (hf : LinearIndependent R f) (i : ι) (m : M)
     (hg : ∃ r ∈ nonZeroDivisors R, ∃ l : ι →₀ R,
       l i ∈ nonZeroDivisors R ∧ r • m = linearCombination R f l) :
@@ -564,7 +564,7 @@ These can be considered generalizations of properties of linear independence in 
 
 section Module
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 variable {v : ι → V} {s t : Set V} {x y : V}
 
 open Submodule
@@ -716,7 +716,7 @@ This is useful when proving `ℤ`-linear independence using the fact that an ele
 `ℝ`-span, which arises naturally in lattice theory and geometry of numbers. -/
 theorem LinearIndependent.finSnoc_of_not_mem_span_over
     {R : Type*} {K : Type*} {M : Type*}
-    [CommRing R] [DivisionRing K] [AddCommGroup M]
+    [Ring R] [IsMulCommutative R] [DivisionRing K] [AddGroup M] [IsAddCommutative M]
     [Algebra R K] [Module K M] [Module R M] [IsScalarTower R K M] [FaithfulSMul R K]
     {n : ℕ} {v : Fin n → M} (hv : LinearIndependent R v) {x : M}
     (hx : x ∉ Submodule.span K (Set.range v)) :

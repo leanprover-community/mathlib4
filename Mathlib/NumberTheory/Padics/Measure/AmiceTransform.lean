@@ -49,7 +49,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 section Preliminaries
 
-variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [IsMulCommutative R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
   [IsBoundedSMul ℤ_[p] R]
 
 /-- Reformulation of `PadicInt.ext_mahler` in terms of the type synonym `D(ℤ_[p], R)`. -/
@@ -64,7 +64,7 @@ namespace AbstractMeasure
 
 section Definitions
 
-variable {R : Type*} [CommRing R] [TopologicalSpace R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R]
   [Algebra ℤ_[p] R] [ContinuousSMul ℤ_[p] R] [IsTopologicalRing R]
 
 /--
@@ -86,7 +86,7 @@ end Definitions
 
 section Injectivity
 
-variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [IsMulCommutative R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
   [IsBoundedSMul ℤ_[p] R]
 
 lemma injective_amiceTransform : Function.Injective (amiceTransform : D(ℤ_[p], R) → _) := by

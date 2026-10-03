@@ -25,10 +25,10 @@ variable {R M M₁ M₂ M₃ M₄ N : Type*}
 
 namespace QuadraticMap
 
-variable [CommSemiring R]
-variable [AddCommMonoid M]
-variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-variable [AddCommMonoid N]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃] [AddMonoid M₄] [IsAddCommutative M₄]
+variable [AddMonoid N] [IsAddCommutative N]
 variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄] [Module R N]
 
 /-- An isometry between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,

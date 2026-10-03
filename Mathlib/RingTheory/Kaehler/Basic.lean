@@ -56,7 +56,7 @@ open Algebra Finsupp
 
 universe u v
 
-variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type v) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- The kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`. -/
 abbrev KaehlerDifferential.ideal : Ideal (S ⊗[R] S) :=
@@ -68,7 +68,7 @@ theorem KaehlerDifferential.one_smul_sub_smul_one_mem_ideal (a : S) :
     (1 : S) ⊗ₜ[R] a - a ⊗ₜ[R] (1 : S) ∈ KaehlerDifferential.ideal R S := by simp [RingHom.mem_ker]
 
 variable {R}
-variable {M : Type*} [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 /-- For an `R`-derivation `S → M`, this is the map `S ⊗[R] S →ₗ[S] M` sending `s ⊗ₜ t ↦ s • D t`. -/
 def Derivation.tensorProductTo (D : Derivation R S M) : S ⊗[R] S →ₗ[S] M :=
@@ -150,14 +150,14 @@ def KaehlerDifferential : Type v :=
 deriving Inhabited
 
 -- The `SMul R'` instance exists to avoid a zsmul diamond.
-variable {R' : Type*} [CommRing R'] [Algebra R' S] [SMulCommClass R R' S] in
+variable {R' : Type*} [Ring R'] [IsMulCommutative R'] [Algebra R' S] [SMulCommClass R R' S] in
 deriving instance SMul R', AddCommGroup, Module R', Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S)
   for KaehlerDifferential R S
 
 @[inherit_doc KaehlerDifferential]
 notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
-instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
+instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [Ring R₁] [IsMulCommutative R₁] [Ring R₂] [IsMulCommutative R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
     [SMulCommClass R R₁ S] [SMulCommClass R R₂ S] [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ Ω[S⁄R] :=
@@ -615,7 +615,7 @@ A --→ B
 R --→ S
 ```
 -/
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A]
+variable (A B : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A]
 variable [Algebra A B] [Algebra S B]
 
 unsuppress_compilation in

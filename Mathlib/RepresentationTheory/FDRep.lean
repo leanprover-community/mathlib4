@@ -65,7 +65,7 @@ abbrev FDRep (R : Type u) (G : Type v) [Ring R] [Monoid G] :=
 
 namespace FDRep
 
-variable {R k : Type u} {G : Type v} [CommRing R] [Field k] [Monoid G]
+variable {R k : Type u} {G : Type v} [Ring R] [IsMulCommutative R] [Field k] [Monoid G]
 
 example {G : Type u} [Monoid G] : LargeCategory (FDRep R G) := by infer_instance
 example : ConcreteCategory (FDRep R G) (Action.HomSubtype _ _) := by infer_instance
@@ -117,14 +117,14 @@ theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
 
 /-- Lift an unbundled representation to `FDRep`. -/
 @[simps ρ]
-abbrev of {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
+abbrev of {V : Type u} [AddGroup V] [IsAddCommutative V] [Module R V] [Module.Finite R V]
     (ρ : Representation R G V) : FDRep R G :=
   ⟨↧V, (MulEquiv.toMonoidHom (MulEquiv.symm InducedCategory.endEquiv)).comp
     ((ModuleCat.endRingEquiv ↧V).symm.toMonoidHom.comp ρ)⟩
 
 /-- This lemma is about `FDRep.ρ`, instead of `Action.ρ` for `of_ρ`. -/
 @[simp]
-theorem of_ρ' {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V] (ρ : G →* V →ₗ[R] V) :
+theorem of_ρ' {V : Type u} [AddGroup V] [IsAddCommutative V] [Module R V] [Module.Finite R V] (ρ : G →* V →ₗ[R] V) :
     (of ρ).ρ = ρ := rfl
 
 instance : HasForget₂ (FDRep R G) (Rep R G) where
@@ -193,7 +193,7 @@ namespace FDRep
 open Representation
 
 variable {k : Type u} {G : Type v} {V : Type u} [Field k] [Group G]
-variable [AddCommGroup V] [Module k V]
+variable [AddGroup V] [IsAddCommutative V] [Module k V]
 variable [FiniteDimensional k V]
 variable (ρV : Representation k G V) (W : FDRep k G)
 

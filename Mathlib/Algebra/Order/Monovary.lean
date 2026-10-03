@@ -31,7 +31,7 @@ variable {ι α β : Type*}
 section OrderedCommGroup
 
 section
-variable [CommGroup α] [Preorder α] [IsOrderedMonoid α] [PartialOrder β]
+variable [Group α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α] [PartialOrder β]
   {s : Set ι} {f f₁ f₂ : ι → α} {g : ι → β}
 
 @[to_additive (attr := simp)]
@@ -91,7 +91,7 @@ lemma Antivary.div_left (h₁ : Antivary f₁ g) (h₂ : Monovary f₂ g) : Anti
 end
 
 section
-variable [PartialOrder α] [CommGroup β] [PartialOrder β] [IsOrderedMonoid β]
+variable [PartialOrder α] [Group β] [IsMulCommutative β] [PartialOrder β] [IsOrderedMonoid β]
   {s : Set ι} {f : ι → α} {g : ι → β}
 
 @[to_additive (attr := simp)]
@@ -110,8 +110,8 @@ lemma antivaryOn_inv_right : AntivaryOn f g⁻¹ s ↔ MonovaryOn f g s := by
 end
 
 section
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
-  [CommGroup β] [PartialOrder β] [IsOrderedMonoid β]
+variable [Group α] [IsMulCommutative α] [PartialOrder α] [IsOrderedMonoid α]
+  [Group β] [IsMulCommutative β] [PartialOrder β] [IsOrderedMonoid β]
   {s : Set ι} {f : ι → α} {g : ι → β}
 
 @[to_additive] lemma monovaryOn_inv : MonovaryOn f⁻¹ g⁻¹ s ↔ MonovaryOn f g s := by simp
@@ -138,7 +138,7 @@ end
 end OrderedCommGroup
 
 section LinearOrderedCommGroup
-variable [Preorder α] [CommGroup β] [LinearOrder β] [IsOrderedMonoid β] {s : Set ι} {f : ι → α}
+variable [Preorder α] [Group β] [IsMulCommutative β] [LinearOrder β] [IsOrderedMonoid β] {s : Set ι} {f : ι → α}
   {g g₁ g₂ : ι → β}
 
 @[to_additive] lemma MonovaryOn.mul_right (h₁ : MonovaryOn f g₁ s) (h₂ : MonovaryOn f g₂ s) :
@@ -363,7 +363,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedAddCommGroup
 variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
-  [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β]
+  [AddGroup β] [IsAddCommutative β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β]
   [IsStrictOrderedModule α β] {f : ι → α} {g : ι → β} {s : Set ι}
 
 lemma monovaryOn_iff_forall_smul_nonneg :

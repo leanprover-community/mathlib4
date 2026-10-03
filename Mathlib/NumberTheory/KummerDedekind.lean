@@ -59,7 +59,7 @@ kummer, dedekind, kummer dedekind, dedekind-kummer, dedekind kummer
 @[expose] public section
 
 
-variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S} {I : Ideal R}
+variable {R : Type*} {S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] {x : S} {I : Ideal R}
 
 open Ideal Polynomial UniqueFactorizationMonoid Algebra RingHom
 

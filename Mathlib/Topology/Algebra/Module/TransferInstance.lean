@@ -31,7 +31,7 @@ namespace AddEquiv
 
 variable (e : α ≃ β)
 
-variable [AddCommMonoid α] [TopologicalSpace β] [AddCommMonoid β] [Semiring R] [Module R β]
+variable [AddMonoid α] [IsAddCommutative α] [TopologicalSpace β] [AddMonoid β] [IsAddCommutative β] [Semiring R] [Module R β]
 
 variable (R) in
 /-- An additive equivalence `e : α ≃+ β` gives a continuous linear equivalence `α ≃L[R] β`
@@ -88,8 +88,8 @@ lemma ContinuousMulEquiv.isTopologicalGroup
 /-- Given a continuous linear equivalence `e : α ≃L[R] β`, if scalar multiplication on `β` is
 continuous, then so is it for `α`. -/
 lemma ContinuousLinearEquiv.continuousSMul
-    [TopologicalSpace β] [AddCommGroup β] [Module R β] [TopologicalSpace R] [ContinuousSMul R β]
-    [TopologicalSpace α] [AddCommGroup α] [Module R α]
+    [TopologicalSpace β] [AddGroup β] [IsAddCommutative β] [Module R β] [TopologicalSpace R] [ContinuousSMul R β]
+    [TopologicalSpace α] [AddGroup α] [IsAddCommutative α] [Module R α]
     (e : α ≃L[R] β) :
     ContinuousSMul R α where
   continuous_smul := by
@@ -105,6 +105,6 @@ variable (R α) in
 /-- Shrinking `α` to a smaller universe preserves the continuous module structure. -/
 @[simps!]
 noncomputable def Shrink.continuousLinearEquiv
-    [Small.{v} α] [AddCommMonoid α] [TopologicalSpace α] [Semiring R] [Module R α] :
+    [Small.{v} α] [AddMonoid α] [IsAddCommutative α] [TopologicalSpace α] [Semiring R] [Module R α] :
     Shrink.{v} α ≃L[R] α :=
   (Shrink.addEquiv (α := α)).continuousLinearEquiv R

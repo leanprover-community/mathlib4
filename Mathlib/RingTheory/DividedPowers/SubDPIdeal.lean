@@ -78,7 +78,7 @@ namespace DividedPowers
 
 /-- A sub-ideal `J` of a divided power ideal `(I, hI)` is a sub-dp-ideal if for all `n > 0` and
   all `x ∈ J`, `hI.dpow n j ∈ J`. -/
-structure IsSubDPIdeal {A : Type*} [CommSemiring A] {I : Ideal A} (hI : DividedPowers I)
+structure IsSubDPIdeal {A : Type*} [Semiring A] [IsMulCommutative A] {I : Ideal A} (hI : DividedPowers I)
     (J : Ideal A) : Prop where
   isSubideal : J ≤ I
   dpow_mem : ∀ (n : ℕ) (_ : n ≠ 0) {j : A} (_ : j ∈ J), hI.dpow n j ∈ J
@@ -87,7 +87,7 @@ section IsSubDPIdeal
 
 namespace IsSubDPIdeal
 
-variable {A : Type*} [CommSemiring A] {I : Ideal A} (hI : DividedPowers I)
+variable {A : Type*} [Semiring A] [IsMulCommutative A] {I : Ideal A} (hI : DividedPowers I)
 
 open Ideal
 
@@ -132,7 +132,7 @@ open Finset Ideal
 
 /-- The ideal `J ⊓ I` is a sub-dp-ideal of `I` if and only if the divided powers have
   some compatibility mod `J`. (The necessity was proved as a sanity check.) -/
-theorem isSubDPIdeal_inf_iff {A : Type*} [CommRing A] {I : Ideal A} (hI : DividedPowers I)
+theorem isSubDPIdeal_inf_iff {A : Type*} [Ring A] [IsMulCommutative A] {I : Ideal A} (hI : DividedPowers I)
     {J : Ideal A} : IsSubDPIdeal hI (J ⊓ I) ↔
     ∀ {n : ℕ} {a b : A} (_ : a ∈ I) (_ : b ∈ I) (_ : a - b ∈ J), hI.dpow n a - hI.dpow n b ∈ J := by
   refine ⟨fun hIJ n a b ha hb hab ↦ ?_, fun hIJ ↦ ?_⟩
@@ -145,7 +145,7 @@ theorem isSubDPIdeal_inf_iff {A : Type*} [CommRing A] {I : Ideal A} (hI : Divide
     rw [← sub_zero (hI.dpow n a), ← hI.dpow_eval_zero hn]
     exact hIJ ha.right I.zero_mem (J.sub_mem ha.left J.zero_mem)
 
-variable {A B : Type*} [CommSemiring A] {I : Ideal A} {hI : DividedPowers I} [CommSemiring B]
+variable {A B : Type*} [Semiring A] [IsMulCommutative A] {I : Ideal A} {hI : DividedPowers I} [Semiring B] [IsMulCommutative B]
   {J : Ideal B} {hJ : DividedPowers J}
 
 /-- [P. Berthelot and A. Ogus, *Notes on crystalline cohomology* (Lemma 3.6)][BerthelotOgus-1978] -/
@@ -218,7 +218,7 @@ end IsSubDPIdeal
 /-- A `SubDPIdeal` of `I` is a sub-ideal `J` of `I` such that for all `n > 0` `x ∈ J`,
   `hI.dpow n j ∈ J`. The unbundled version of this definition is called `IsSubDPIdeal`. -/
 @[ext]
-structure SubDPIdeal {A : Type*} [CommSemiring A] {I : Ideal A} (hI : DividedPowers I) where
+structure SubDPIdeal {A : Type*} [Semiring A] [IsMulCommutative A] {I : Ideal A} (hI : DividedPowers I) where
   /-- The underlying ideal. -/
   carrier : Ideal A
   isSubideal : carrier ≤ I
@@ -226,7 +226,7 @@ structure SubDPIdeal {A : Type*} [CommSemiring A] {I : Ideal A} (hI : DividedPow
 
 namespace SubDPIdeal
 
-variable {A : Type*} [CommSemiring A] {I : Ideal A} {hI : DividedPowers I}
+variable {A : Type*} [Semiring A] [IsMulCommutative A] {I : Ideal A} {hI : DividedPowers I}
 
 /-- Constructs a `SubPDIdeal` given an ideal `J` satisfying `hI.IsSubDPIdeal J`. -/
 def mk' {J : Ideal A} (hJ : hI.IsSubDPIdeal J) : hI.SubDPIdeal := ⟨J, hJ.1, hJ.2⟩
@@ -444,8 +444,8 @@ end SubDPIdeal
 
 section Ker
 
-variable {A : Type*} [CommRing A] {I : Ideal A} (hI : DividedPowers I)
-  {B : Type*} [CommRing B] {J : Ideal B} (hJ : DividedPowers J)
+variable {A : Type*} [Ring A] [IsMulCommutative A] {I : Ideal A} (hI : DividedPowers I)
+  {B : Type*} [Ring B] [IsMulCommutative B] {J : Ideal B} (hJ : DividedPowers J)
 
 /-- The kernel of a divided power morphism from `I` to `J` is a sub-dp-ideal of `I`. -/
 theorem isSubDPIdeal_ker {f : A →+* B} (hf : IsDPMorphism hI hJ f) :
@@ -472,7 +472,7 @@ end Ker
 
 section Equalizer
 
-variable {A : Type*} [CommSemiring A] {I : Ideal A} (hI hI' : DividedPowers I)
+variable {A : Type*} [Semiring A] [IsMulCommutative A] {I : Ideal A} (hI hI' : DividedPowers I)
 
 /-- The ideal of `A` in which the two divided power structures `hI` and `hI'` coincide. -/
 --  TODO : prove that this is the largest ideal which is a sub-dp-ideal in both `hI` and `hI'`.
@@ -508,7 +508,7 @@ theorem dpEqualizer_is_dp_ideal_right :
 
 open Ideal
 
-theorem le_equalizer_of_isDPMorphism {B : Type*} [CommSemiring B] (f : A →+* B)
+theorem le_equalizer_of_isDPMorphism {B : Type*} [Semiring B] [IsMulCommutative B] (f : A →+* B)
     {K : Ideal B} (hI_le_K : Ideal.map f I ≤ K)
     (hK hK' : DividedPowers K) (hIK : IsDPMorphism hI hK f) (hIK' : IsDPMorphism hI hK' f) :
     Ideal.map f I ≤ dpEqualizer hK hK' := by
@@ -519,7 +519,7 @@ theorem le_equalizer_of_isDPMorphism {B : Type*} [CommSemiring B] (f : A →+* B
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If there is a divided power structure on `I⬝(A/J)` such that the quotient map is
 a dp-morphism, then `J ⊓ I` is a sub-dp-ideal of `I`. -/
-def subDPIdeal_inf_of_quot {A : Type*} [CommRing A] {I : Ideal A} {hI : DividedPowers I}
+def subDPIdeal_inf_of_quot {A : Type*} [Ring A] [IsMulCommutative A] {I : Ideal A} {hI : DividedPowers I}
     {J : Ideal A} {hJ : DividedPowers (I.map (Ideal.Quotient.mk J))} {φ : DPMorphism hI hJ}
     (hφ : φ.toRingHom = Ideal.Quotient.mk J) :
     SubDPIdeal hI where
@@ -542,11 +542,11 @@ section Quotient
 * The specific case for `Ideal.Quotient.mk`. -/
 namespace Quotient
 
-variable {A : Type*} [CommRing A] {I : Ideal A} (hI : DividedPowers I)
+variable {A : Type*} [Ring A] [IsMulCommutative A] {I : Ideal A} (hI : DividedPowers I)
 
 namespace OfSurjective
 
-variable {B : Type*} [CommRing B] (f : A →+* B) (J : Ideal B)
+variable {B : Type*} [Ring B] [IsMulCommutative B] (f : A →+* B) (J : Ideal B)
 
 /-- The definition of divided powers on the codomain `B` of a surjective ring homomorphism
   from a ring `A` with divided powers `hI`. This definition is tagged as noncomputable

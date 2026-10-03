@@ -161,11 +161,11 @@ exponent, allowing nonzero solutions of units and their common multiples.
    variant `FermatLastTheoremWith' R` is true. This polynomial variant of Fermat's Last Theorem
    can be shown elementarily using Mason--Stothers theorem.
 -/
-def FermatLastTheoremWith' (R : Type*) [CommSemiring R] (n : ℕ) : Prop :=
+def FermatLastTheoremWith' (R : Type*) [Semiring R] [IsMulCommutative R] (n : ℕ) : Prop :=
   ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n = c ^ n →
     ∃ d a' b' c', (a = a' * d ∧ b = b' * d ∧ c = c' * d) ∧ (IsUnit a' ∧ IsUnit b' ∧ IsUnit c')
 
-lemma FermatLastTheoremWith.fermatLastTheoremWith' {R : Type*} [CommSemiring R] {n : ℕ}
+lemma FermatLastTheoremWith.fermatLastTheoremWith' {R : Type*} [Semiring R] [IsMulCommutative R] {n : ℕ}
     (h : FermatLastTheoremWith R n) : FermatLastTheoremWith' R n :=
   fun a b c _ _ _ _ ↦ by exfalso; apply h a b c <;> assumption
 
@@ -175,7 +175,7 @@ lemma fermatLastTheoremWith'_of_semifield (𝕜 : Type*) [Semifield 𝕜] (n : �
     ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
     ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
 
-lemma FermatLastTheoremWith'.fermatLastTheoremWith {R : Type*} [CommSemiring R] [IsDomain R]
+lemma FermatLastTheoremWith'.fermatLastTheoremWith {R : Type*} [Semiring R] [IsMulCommutative R] [IsDomain R]
     {n : ℕ} (h : FermatLastTheoremWith' R n)
     (hn : ∀ a b c : R, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith R n := by
@@ -184,7 +184,7 @@ lemma FermatLastTheoremWith'.fermatLastTheoremWith {R : Type*} [CommSemiring R] 
   rw [mul_pow, mul_pow, mul_pow, ← add_mul] at heq
   exact hn _ _ _ ua ub uc <| mul_right_cancel₀ (pow_ne_zero _ (right_ne_zero_of_mul ha)) heq
 
-lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {R : Type*} [CommSemiring R] [IsDomain R]
+lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {R : Type*} [Semiring R] [IsMulCommutative R] [IsDomain R]
     {n : ℕ} (hn : ∀ a b c : R, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith' R n ↔ FermatLastTheoremWith R n :=
   Iff.intro (fun h ↦ h.fermatLastTheoremWith hn) (fun h ↦ h.fermatLastTheoremWith')
@@ -213,7 +213,7 @@ lemma fermatLastTheoremWith'_nat_int_tfae (n : ℕ) :
 open Finset in
 /-- To prove Fermat Last Theorem in any semiring that is a `NormalizedGCDMonoid` one can assume
 that the `gcd` of `{a, b, c}` is `1`. -/
-lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type*} [CommSemiring R]
+lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type*} [Semiring R] [IsMulCommutative R]
     [IsDomain R] [DecidableEq R] [NormalizedGCDMonoid R]
     (hn : ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset R).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :

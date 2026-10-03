@@ -30,12 +30,12 @@ namespace Matrix
 variable (m n R)
 
 /-- The matrix with variable `X (i,j)` at location `(i,j)`. -/
-noncomputable def mvPolynomialX [CommSemiring R] : Matrix m n (MvPolynomial (m × n) R) :=
+noncomputable def mvPolynomialX [Semiring R] [IsMulCommutative R] : Matrix m n (MvPolynomial (m × n) R) :=
   of fun i j => MvPolynomial.X (i, j)
 
 -- TODO: set as an equation lemma for `mvPolynomialX`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
-theorem mvPolynomialX_apply [CommSemiring R] (i j) :
+theorem mvPolynomialX_apply [Semiring R] [IsMulCommutative R] (i j) :
     mvPolynomialX m n R i j = MvPolynomial.X (i, j) :=
   rfl
 
@@ -46,12 +46,12 @@ variable {m n R}
 This is of particular use when `MvPolynomial (m × n) R` is an integral domain but `S` is
 not, as if the `MvPolynomial.eval₂` can be pulled to the outside of a goal, it can be solved in
 under cancellative assumptions. -/
-theorem mvPolynomialX_map_eval₂ [CommSemiring R] [CommSemiring S] (f : R →+* S) (A : Matrix m n S) :
+theorem mvPolynomialX_map_eval₂ [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (f : R →+* S) (A : Matrix m n S) :
     (mvPolynomialX m n R).map (MvPolynomial.eval₂ f fun p : m × n => A p.1 p.2) = A :=
   ext fun i j => MvPolynomial.eval₂_X _ (fun p : m × n => A p.1 p.2) (i, j)
 
 /-- A variant of `Matrix.mvPolynomialX_map_eval₂` with a bundled `RingHom` on the LHS. -/
-theorem mvPolynomialX_mapMatrix_eval [Fintype m] [DecidableEq m] [CommSemiring R]
+theorem mvPolynomialX_mapMatrix_eval [Fintype m] [DecidableEq m] [Semiring R] [IsMulCommutative R]
     (A : Matrix m m R) :
     (MvPolynomial.eval fun p : m × m => A p.1 p.2).mapMatrix (mvPolynomialX m m R) = A :=
   mvPolynomialX_map_eval₂ _ A
@@ -59,7 +59,7 @@ theorem mvPolynomialX_mapMatrix_eval [Fintype m] [DecidableEq m] [CommSemiring R
 variable (R)
 
 /-- A variant of `Matrix.mvPolynomialX_map_eval₂` with a bundled `AlgHom` on the LHS. -/
-theorem mvPolynomialX_mapMatrix_aeval [Fintype m] [DecidableEq m] [CommSemiring R] [CommSemiring S]
+theorem mvPolynomialX_mapMatrix_aeval [Fintype m] [DecidableEq m] [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
     [Algebra R S] (A : Matrix m m S) :
     (MvPolynomial.aeval fun p : m × m => A p.1 p.2).mapMatrix (mvPolynomialX m m R) = A :=
   mvPolynomialX_map_eval₂ _ A
@@ -67,7 +67,7 @@ theorem mvPolynomialX_mapMatrix_aeval [Fintype m] [DecidableEq m] [CommSemiring 
 variable (m)
 
 /-- In a nontrivial ring, `Matrix.mvPolynomialX m m R` has non-zero determinant. -/
-theorem det_mvPolynomialX_ne_zero [DecidableEq m] [Fintype m] [CommRing R] [Nontrivial R] :
+theorem det_mvPolynomialX_ne_zero [DecidableEq m] [Fintype m] [Ring R] [IsMulCommutative R] [Nontrivial R] :
     det (mvPolynomialX m m R) ≠ 0 := by
   intro h_det
   have := congr($(mvPolynomialX_mapMatrix_eval (1 : Matrix m m R)).det)
@@ -76,7 +76,7 @@ theorem det_mvPolynomialX_ne_zero [DecidableEq m] [Fintype m] [CommRing R] [Nont
 
 /-- Evaluating the generic determinant polynomial `det (mvPolynomialX m m R)` at a point `s`
 gives the determinant of the matrix obtained by substituting `s`. -/
-theorem eval_det_mvPolynomialX [DecidableEq m] [Fintype m] [CommRing R] (s : m × m → R) :
+theorem eval_det_mvPolynomialX [DecidableEq m] [Fintype m] [Ring R] [IsMulCommutative R] (s : m × m → R) :
     MvPolynomial.eval s (det (mvPolynomialX m m R)) = det (Matrix.of fun i j : m => s (i, j)) := by
   rw [(MvPolynomial.eval s).map_det]
   congr 1

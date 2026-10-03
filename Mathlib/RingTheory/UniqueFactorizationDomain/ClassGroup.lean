@@ -29,7 +29,7 @@ open FractionalIdeal Ideal
 
 public section
 
-variable {R : Type*} [CommRing R] [IsDomain R] [IsGCDMonoid R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [IsGCDMonoid R]
 namespace IsGCDMonoid
 
 lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal

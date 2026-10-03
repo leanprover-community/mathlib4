@@ -25,7 +25,7 @@ section ToSquareZero
 
 universe u v w
 
-variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [CommSemiring A] [CommRing B]
+variable {R : Type u} {A : Type v} {B : Type w} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
 variable [Algebra R A] [Algebra R B] (I : Ideal B)
 
 /-- If `f₁ f₂ : A →ₐ[R] B` are two lifts of the same `A →ₐ[R] B ⧸ I`,

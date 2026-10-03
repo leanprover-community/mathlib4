@@ -126,7 +126,7 @@ instance [SemigroupWithZero Y] : SemigroupWithZero (LocallyConstant X Y) :=
   Function.Injective.semigroupWithZero DFunLike.coe DFunLike.coe_injective rfl fun _ _ => rfl
 
 @[to_additive]
-instance [CommSemigroup Y] : CommSemigroup (LocallyConstant X Y) :=
+instance [Semigroup Y] [IsMulCommutative Y] : CommSemigroup (LocallyConstant X Y) :=
   Function.Injective.commSemigroup DFunLike.coe DFunLike.coe_injective fun _ _ => rfl
 
 variable {α R : Type*}
@@ -158,7 +158,7 @@ instance [AddMonoidWithOne Y] : AddMonoidWithOne (LocallyConstant X Y) :=
     (fun _ _ => rfl) fun _ => rfl
 
 @[to_additive]
-instance [CommMonoid Y] : CommMonoid (LocallyConstant X Y) :=
+instance [Monoid Y] [IsMulCommutative Y] : CommMonoid (LocallyConstant X Y) :=
   Function.Injective.commMonoid DFunLike.coe DFunLike.coe_injective rfl (fun _ _ => rfl)
     fun _ _ => rfl
 
@@ -168,7 +168,7 @@ instance [Group Y] : Group (LocallyConstant X Y) :=
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[to_additive]
-instance [CommGroup Y] : CommGroup (LocallyConstant X Y) :=
+instance [Group Y] [IsMulCommutative Y] : CommGroup (LocallyConstant X Y) :=
   Function.Injective.commGroup DFunLike.coe DFunLike.coe_injective rfl (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
@@ -196,11 +196,11 @@ instance [Semiring Y] : Semiring (LocallyConstant X Y) :=
   Function.Injective.semiring DFunLike.coe DFunLike.coe_injective rfl rfl
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-instance [NonUnitalCommSemiring Y] : NonUnitalCommSemiring (LocallyConstant X Y) :=
+instance [NonUnitalSemiring Y] [IsMulCommutative Y] : NonUnitalCommSemiring (LocallyConstant X Y) :=
   Function.Injective.nonUnitalCommSemiring DFunLike.coe DFunLike.coe_injective rfl
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance [CommSemiring Y] : CommSemiring (LocallyConstant X Y) :=
+instance [Semiring Y] [IsMulCommutative Y] : CommSemiring (LocallyConstant X Y) :=
   Function.Injective.commSemiring DFunLike.coe DFunLike.coe_injective rfl rfl
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
@@ -222,11 +222,11 @@ instance [Ring Y] : Ring (LocallyConstant X Y) :=
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
-instance [NonUnitalCommRing Y] : NonUnitalCommRing (LocallyConstant X Y) :=
+instance [NonUnitalRing Y] [IsMulCommutative Y] : NonUnitalCommRing (LocallyConstant X Y) :=
   Function.Injective.nonUnitalCommRing DFunLike.coe DFunLike.coe_injective rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance [CommRing Y] : CommRing (LocallyConstant X Y) :=
+instance [Ring Y] [IsMulCommutative Y] : CommRing (LocallyConstant X Y) :=
   Function.Injective.commRing DFunLike.coe DFunLike.coe_injective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
@@ -240,12 +240,12 @@ instance [Monoid R] [AddMonoid Y] [DistribMulAction R Y] :
     DistribMulAction R (LocallyConstant X Y) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective fun _ _ => rfl
 
-instance [Semiring R] [AddCommMonoid Y] [Module R Y] : Module R (LocallyConstant X Y) :=
+instance [Semiring R] [AddMonoid Y] [IsAddCommutative Y] [Module R Y] : Module R (LocallyConstant X Y) :=
   Function.Injective.module R coeFnAddMonoidHom coe_injective fun _ _ => rfl
 
 section Algebra
 
-variable [CommSemiring R] [Semiring Y] [Algebra R Y]
+variable [Semiring R] [IsMulCommutative R] [Semiring Y] [Algebra R Y]
 
 instance : Algebra R (LocallyConstant X Y) where
   algebraMap := constRingHom.comp <| algebraMap R Y
@@ -272,13 +272,13 @@ section coeFn
   __ := coeFnAddMonoidHom
 
 /-- `DFunLike.coe` as a linear map. -/
-@[simps!] def coeFnₗ (R : Type*) [Semiring R] [AddCommMonoid Y]
+@[simps!] def coeFnₗ (R : Type*) [Semiring R] [AddMonoid Y] [IsAddCommutative Y]
     [Module R Y] : LocallyConstant X Y →ₗ[R] X → Y where
   toAddHom := coeFnAddMonoidHom.toAddHom
   map_smul' _ _ := rfl
 
 /-- `DFunLike.coe` as an `AlgHom`. -/
-@[simps!] def coeFnAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] :
+@[simps!] def coeFnAlgHom (R : Type*) [Semiring R] [IsMulCommutative R] [Semiring Y] [Algebra R Y] :
     LocallyConstant X Y →ₐ[R] X → Y where
   toRingHom := coeFnRingHom
   commutes' _ := rfl
@@ -293,7 +293,7 @@ def evalMonoidHom [MulOneClass Y] (x : X) : LocallyConstant X Y →* Y :=
   (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
 
 /-- Evaluation as a linear map -/
-@[simps!] def evalₗ (R : Type*) [Semiring R] [AddCommMonoid Y]
+@[simps!] def evalₗ (R : Type*) [Semiring R] [AddMonoid Y] [IsAddCommutative Y]
     [Module R Y] (x : X) : LocallyConstant X Y →ₗ[R] Y :=
   (LinearMap.proj x).comp (coeFnₗ R)
 
@@ -303,7 +303,7 @@ def evalMonoidHom [MulOneClass Y] (x : X) : LocallyConstant X Y →* Y :=
 
 /-- Evaluation as an `AlgHom` -/
 @[simps!]
-def evalₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] (x : X) :
+def evalₐ (R : Type*) [Semiring R] [IsMulCommutative R] [Semiring Y] [Algebra R Y] (x : X) :
     LocallyConstant X Y →ₐ[R] Y :=
   (Pi.evalAlgHom _ _ x).comp (coeFnAlgHom R)
 
@@ -323,7 +323,7 @@ def comapMonoidHom [MulOneClass Z] (f : C(X, Y)) :
 
 /-- `LocallyConstant.comap` as a linear map. -/
 @[simps!]
-def comapₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (f : C(X, Y)) :
+def comapₗ (R : Type*) [Semiring R] [AddMonoid Z] [IsAddCommutative Z] [Module R Z] (f : C(X, Y)) :
     LocallyConstant Y Z →ₗ[R] LocallyConstant X Z where
   toFun := comap f
   map_add' := map_add (comapAddMonoidHom f)
@@ -338,19 +338,19 @@ def comapRingHom [Semiring Z] (f : C(X, Y)) :
 
 /-- `LocallyConstant.comap` as an `AlgHom` -/
 @[simps!]
-def comapₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z]
+def comapₐ (R : Type*) [Semiring R] [IsMulCommutative R] [Semiring Z] [Algebra R Z]
     (f : C(X, Y)) : LocallyConstant Y Z →ₐ[R] LocallyConstant X Z where
   toRingHom := comapRingHom f
   commutes' _ := rfl
 
-lemma ker_comapₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (f : C(X, Y))
+lemma ker_comapₗ [Semiring R] [AddMonoid Z] [IsAddCommutative Z] [Module R Z] (f : C(X, Y))
     (hfs : Function.Surjective f) :
     LinearMap.ker (comapₗ R f : LocallyConstant Y Z →ₗ[R] LocallyConstant X Z) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective <| comap_injective _ hfs
 
 /-- `LocallyConstant.congrLeft` as a linear equivalence. -/
 @[simps!]
-def congrLeftₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
+def congrLeftₗ (R : Type*) [Semiring R] [AddMonoid Z] [IsAddCommutative Z] [Module R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₗ[R] LocallyConstant Y Z where
   toLinearMap := comapₗ R ⟨_, e.symm.continuous⟩
   __ := congrLeft e
@@ -365,7 +365,7 @@ def congrLeftRingEquiv [Semiring Z] (e : X ≃ₜ Y) :
 
 /-- `LocallyConstant.congrLeft` as an `AlgEquiv`. -/
 @[simps!]
-def congrLeftₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X ≃ₜ Y) :
+def congrLeftₐ (R : Type*) [Semiring R] [IsMulCommutative R] [Semiring Z] [Algebra R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₐ[R] LocallyConstant Y Z where
   toEquiv := congrLeft e
   __ := comapₐ R ⟨_, e.symm.continuous⟩
@@ -386,8 +386,8 @@ def mapMonoidHom [MulOneClass Y] [MulOneClass Z] (f : Y →* Z) :
 
 /-- `LocallyConstant.map` as a linear map. -/
 @[simps!]
-def mapₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y]
-    [AddCommMonoid Z] [Module R Z] (f : Y →ₗ[R] Z) :
+def mapₗ (R : Type*) [Semiring R] [AddMonoid Y] [IsAddCommutative Y] [Module R Y]
+    [AddMonoid Z] [IsAddCommutative Z] [Module R Z] (f : Y →ₗ[R] Z) :
     LocallyConstant X Y →ₗ[R] LocallyConstant X Z where
   toFun := map f
   map_add' := by aesop
@@ -402,15 +402,15 @@ def mapRingHom [Semiring Y] [Semiring Z] (f : Y →+* Z) :
 
 /-- `LocallyConstant.map` as an `AlgHom` -/
 @[simps!]
-def mapₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semiring Z] [Algebra R Z]
+def mapₐ (R : Type*) [Semiring R] [IsMulCommutative R] [Semiring Y] [Algebra R Y] [Semiring Z] [Algebra R Z]
     (f : Y →ₐ[R] Z) : LocallyConstant X Y →ₐ[R] LocallyConstant X Z where
   toRingHom := mapRingHom f
   commutes' _ := by aesop
 
 /-- `LocallyConstant.congrRight` as a linear equivalence. -/
 @[simps!]
-def congrRightₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y]
-    [AddCommMonoid Z] [Module R Z] (e : Y ≃ₗ[R] Z) :
+def congrRightₗ (R : Type*) [Semiring R] [AddMonoid Y] [IsAddCommutative Y] [Module R Y]
+    [AddMonoid Z] [IsAddCommutative Z] [Module R Z] (e : Y ≃ₗ[R] Z) :
     LocallyConstant X Y ≃ₗ[R] LocallyConstant X Z where
   toLinearMap := mapₗ R e
   __ := congrRight e.toEquiv
@@ -425,7 +425,7 @@ def congrRightRingEquiv [Semiring Y] [Semiring Z] (e : Y ≃+* Z) :
 
 /-- `LocallyConstant.congrRight` as an `AlgEquiv`. -/
 @[simps!]
-def congrRightₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semiring Z] [Algebra R Z]
+def congrRightₐ (R : Type*) [Semiring R] [IsMulCommutative R] [Semiring Y] [Algebra R Y] [Semiring Z] [Algebra R Z]
     (e : Y ≃ₐ[R] Z) : LocallyConstant X Y ≃ₐ[R] LocallyConstant X Z where
   toEquiv := congrRight e
   __ := mapₐ R e.toAlgHom
@@ -436,7 +436,7 @@ section Const
 
 /-- `LocallyConstant.const` as a linear map. -/
 @[simps!]
-def constₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y] :
+def constₗ (R : Type*) [Semiring R] [AddMonoid Y] [IsAddCommutative Y] [Module R Y] :
     Y →ₗ[R] LocallyConstant X Y where
   toFun := const X
   map_add' _ _ := rfl
@@ -444,7 +444,7 @@ def constₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y] :
 
 /-- `LocallyConstant.const` as an `AlgHom` -/
 @[simps!]
-def constₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] :
+def constₐ (R : Type*) [Semiring R] [IsMulCommutative R] [Semiring Y] [Algebra R Y] :
     Y →ₐ[R] LocallyConstant X Y where
   toRingHom := constRingHom
   commutes' _ := rfl

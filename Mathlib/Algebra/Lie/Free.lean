@@ -57,7 +57,7 @@ universe u v w
 
 noncomputable section
 
-variable (R : Type u) (X : Type v) [CommRing R]
+variable (R : Type u) (X : Type v) [Ring R] [IsMulCommutative R]
 
 /- We save characters by using Bourbaki's name `lib` (as in «libre») for
 `FreeNonUnitalNonAssocAlgebra` in this file. -/

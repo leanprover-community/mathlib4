@@ -45,7 +45,7 @@ variable {R : Type uR} {M : Type uM} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [DecidableEq ι]
 variable (b : Basis ι R M)
 
 /-- The linear map from a vector space equipped with basis to its dual vector space,
@@ -207,7 +207,7 @@ end Module.Basis
 section DualBases
 
 variable {R M ι : Type*}
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 open Lean.Elab.Tactic in
 /-- Try using `Set.toFinite` to dispatch a `Set.Finite` goal. -/
@@ -231,7 +231,7 @@ namespace Module.DualBases
 open LinearMap
 
 variable {R M ι : Type*}
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable {e : ι → M} {ε : ι → Dual R M}
 
 /-- The coefficients of `v` on the basis `e` -/

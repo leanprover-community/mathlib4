@@ -623,7 +623,7 @@ end SMul
 
 section CommMonoid
 
-variable {R : Type*} [CommMonoid R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [Monoid R] [IsMulCommutative R] {S : Submonoid R} [OreSet S]
 
 @[to_additive]
 theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :

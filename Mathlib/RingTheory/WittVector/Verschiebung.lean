@@ -24,7 +24,7 @@ namespace WittVector
 
 open MvPolynomial
 
-variable {p : ℕ} {R S : Type*} [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -93,7 +93,7 @@ instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _R
 
 -- We add this example as a verification that Lean 4's instance resolution can handle the `IsPoly`
 -- typeclass, whereas Lean 3 needed a bespoke `@[is_poly]` attribute.
-example (p : ℕ) (f : ⦃R : Type _⦄ → [CommRing R] → WittVector p R → WittVector p R) [IsPoly p f] :
+example (p : ℕ) (f : ⦃R : Type _⦄ → [Ring R] [IsMulCommutative R] → WittVector p R → WittVector p R) [IsPoly p f] :
     IsPoly p (fun (R : Type*) (I : CommRing R) ↦ verschiebungFun ∘ (@f R I)) :=
   inferInstance
 

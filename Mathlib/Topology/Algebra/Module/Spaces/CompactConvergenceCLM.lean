@@ -45,9 +45,9 @@ section CompactSets
 
 variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
   {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*}
-  [AddCommGroup E] [Module 𝕜₁ E]
-  [AddCommGroup F] [Module 𝕜₂ F]
-  [AddCommGroup G] [Module 𝕜₃ G]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜₁ E]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜₃ G]
 
 variable (E F σ) in
 /-- The topology of compact convergence on `E →L[𝕜] F`. -/
@@ -129,7 +129,7 @@ section Pi
 open scoped CompactConvergenceCLM
 
 variable [TopologicalSpace E] {ι : Type*} (F : ι → Type*)
-  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜₁ (F i)] [∀ i, TopologicalSpace (F i)]
+  [∀ i, AddGroup (F i)] [∀ i, IsAddCommutative (F i)] [∀ i, Module 𝕜₁ (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜₁ (F i)]
 
 variable (𝕜₁ E) in
@@ -162,7 +162,7 @@ open scoped CompactConvergenceCLM
 section Semilinear
 
 variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
-  {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  {G : Type*} {H : Type*} [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [AddGroup G] [IsAddCommutative G] [AddGroup H] [IsAddCommutative H]
   [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
@@ -199,7 +199,7 @@ end Semilinear
 section Linear
 
 variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*}
-  [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [AddGroup G] [IsAddCommutative G] [AddGroup H] [IsAddCommutative H]
   [NormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]

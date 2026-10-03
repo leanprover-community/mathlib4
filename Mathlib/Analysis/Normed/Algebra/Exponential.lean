@@ -428,7 +428,7 @@ end AnyFieldDivisionAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [IsMulCommutative 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero,
@@ -657,7 +657,7 @@ end DivisionAlgebra
 
 section CommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [NormedRing 𝔸] [IsMulCommutative 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`,
 `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`. -/

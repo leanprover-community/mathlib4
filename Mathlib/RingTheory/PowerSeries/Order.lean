@@ -203,7 +203,7 @@ theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • order φ ≤ order (φ ^ 
   | zero => simp
   | succ n ih => grw [add_smul, one_smul, pow_succ, ih, le_order_mul]
 
-theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R⟦X⟧) (s : Finset ι) :
+theorem le_order_prod {R : Type*} [Semiring R] [IsMulCommutative R] {ι : Type*} (φ : ι → R⟦X⟧) (s : Finset ι) :
     ∑ i ∈ s, (φ i).order ≤ (∏ i ∈ s, φ i).order := by
   induction s using Finset.cons_induction with
   | empty => simp
@@ -254,7 +254,7 @@ theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n
     (h : ↑n < ψ.order) : coeff n (φ * (1 - ψ)) = coeff n φ := by
   simp [coeff_mul_of_lt_order h, mul_sub]
 
-theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ) (s : Finset ι)
+theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [Ring R] [IsMulCommutative R] (k : ℕ) (s : Finset ι)
     (φ : R⟦X⟧) (f : ι → R⟦X⟧) :
     (∀ i ∈ s, ↑k < (f i).order) → coeff k (φ * ∏ i ∈ s, (1 - f i)) = coeff k φ := by
   classical
@@ -433,7 +433,7 @@ lemma coe_orderHom : (orderHom : R⟦X⟧ → ℕ∞) = order := rfl
 theorem order_pow (φ : R⟦X⟧) (n : ℕ) : order (φ ^ n) = n • order φ :=
   map_pow orderHom φ n
 
-theorem order_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R] {ι : Type*}
+theorem order_prod {R : Type*} [Semiring R] [IsMulCommutative R] [NoZeroDivisors R] [Nontrivial R] {ι : Type*}
     (φ : ι → R⟦X⟧) (s : Finset ι) : (∏ i ∈ s, φ i).order = ∑ i ∈ s, (φ i).order :=
   map_prod orderHom φ s
 
@@ -449,7 +449,7 @@ lemma coe_divXPowOrderHom : (divXPowOrderHom : R⟦X⟧ → R⟦X⟧) = divXPowO
 theorem divXPowOrder_pow (φ : R⟦X⟧) (n : ℕ) : divXPowOrder (φ ^ n) = (divXPowOrder φ) ^ n :=
   map_pow divXPowOrderHom φ n
 
-theorem divXPowOrder_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R] {ι : Type*}
+theorem divXPowOrder_prod {R : Type*} [Semiring R] [IsMulCommutative R] [NoZeroDivisors R] [Nontrivial R] {ι : Type*}
     (φ : ι → R⟦X⟧) (s : Finset ι) : (∏ i ∈ s, φ i).divXPowOrder = ∏ i ∈ s, (φ i).divXPowOrder :=
   map_prod divXPowOrderHom φ s
 

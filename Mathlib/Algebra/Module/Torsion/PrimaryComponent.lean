@@ -25,7 +25,7 @@ For `P : HeightOneSpectrum A`, the main result of this file is that
 
 @[expose] public section
 
-variable {A M M₁ M₂ : Type*} [CommRing A]
+variable {A M M₁ M₂ : Type*} [Ring A] [IsMulCommutative A]
 
 open IsDedekindDomain Submodule Module HeightOneSpectrum Set Function
 
@@ -37,7 +37,7 @@ section CommRing
 
 section AddCommMonoid
 
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module A M] [Module A M₁]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module A M] [Module A M₁]
     [Module A M₂]
 
 open Set Function Submodule Module
@@ -103,7 +103,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup M] [Module A M]
+variable [AddGroup M] [IsAddCommutative M] [Module A M]
 
 open Submodule in
 theorem primaryComponent_sup (N₁ N₂ : Submodule A M) (hD : Disjoint N₁ N₂) :
@@ -186,7 +186,7 @@ theorem iSupIndep_primaryComponent :
   exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (Finset.le_sup hP) _ (hmem P hP)
 
 theorem primaryComponent.map_surjective {M₁ M₂ : Type*}
-    [AddCommGroup M₁] [AddCommGroup M₂] [Module A M₁] [Module A M₂] (hM₁ : IsTorsion A M₁)
+    [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [Module A M₁] [Module A M₂] (hM₁ : IsTorsion A M₁)
     (P : HeightOneSpectrum A) (φ : M₁ →ₗ[A] M₂) (hf : Surjective φ) :
     Surjective (primaryComponent.map P.asIdeal φ) := by
   classical

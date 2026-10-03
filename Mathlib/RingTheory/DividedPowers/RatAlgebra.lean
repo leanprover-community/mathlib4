@@ -56,7 +56,7 @@ namespace DividedPowers
 
 namespace OfInvertibleFactorial
 
-variable {A : Type*} [CommSemiring A] (I : Ideal A) [DecidablePred (fun x ↦ x ∈ I)]
+variable {A : Type*} [Semiring A] [IsMulCommutative A] (I : Ideal A) [DecidablePred (fun x ↦ x ∈ I)]
 
 /-- The family of functions `ℕ → A → A` given by `x^n/n!`. -/
 noncomputable def dpow : ℕ → A → A := fun m x => if x ∈ I then inverse (m ! : A) * x ^ m else 0
@@ -193,7 +193,7 @@ end OfInvertibleFactorial
 
 namespace OfSquareZero
 
-variable {A : Type*} [CommSemiring A] {I : Ideal A} [DecidablePred (fun x ↦ x ∈ I)]
+variable {A : Type*} [Semiring A] [IsMulCommutative A] {I : Ideal A} [DecidablePred (fun x ↦ x ∈ I)]
   (hI2 : I ^ 2 = 0)
 
 /-- If `I^2 = 0`, then `I` admits a divided power structure. -/
@@ -210,7 +210,7 @@ end OfSquareZero
 
 namespace IsNilpotent
 
-variable {A : Type*} [CommRing A] {p : ℕ} [Fact (Nat.Prime p)] (hp : IsNilpotent (p : A))
+variable {A : Type*} [Ring A] [IsMulCommutative A] {p : ℕ} [Fact (Nat.Prime p)] (hp : IsNilpotent (p : A))
   {I : Ideal A} [DecidablePred (fun x ↦ x ∈ I)] (hIp : I ^ p = 0)
 
 /-- If `A` is a commutative ring of prime characteristic `p` and `I` is an ideal such that
@@ -228,7 +228,7 @@ end IsNilpotent
 
 namespace CharP
 
-variable (A : Type*) [CommRing A] (p : ℕ) [CharP A p] [Fact (Nat.Prime p)]
+variable (A : Type*) [Ring A] [IsMulCommutative A] (p : ℕ) [CharP A p] [Fact (Nat.Prime p)]
   {I : Ideal A} [DecidablePred (fun x ↦ x ∈ I)] (hIp : I ^ p = 0)
 
 /-- If `A` is a commutative ring of prime characteristic `p` and `I` is an ideal such that
@@ -247,7 +247,7 @@ end CharP
 -- We formalize example 2 from [BO], Section 3.
 namespace RatAlgebra
 
-variable {R : Type*} [CommSemiring R] (I : Ideal R) [DecidablePred (fun x ↦ x ∈ I)]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (I : Ideal R) [DecidablePred (fun x ↦ x ∈ I)]
 
 /-- The family `ℕ → R → R` given by `dpow n x = x ^ n / n!`. -/
 noncomputable def dpow : ℕ → R → R := OfInvertibleFactorial.dpow I

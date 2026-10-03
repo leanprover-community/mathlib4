@@ -31,7 +31,7 @@ multiset, gcd
 
 namespace Multiset
 
-variable {α : Type*} [CommMonoidWithZero α] [NormalizedGCDMonoid α]
+variable {α : Type*} [MonoidWithZero α] [IsMulCommutative α] [NormalizedGCDMonoid α]
 
 /-! ### LCM -/
 
@@ -162,7 +162,7 @@ theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x ∈ s, x = 0 := 
 theorem gcd_ne_zero_iff (s : Multiset α) : s.gcd ≠ 0 ↔ ∃ x ∈ s, x ≠ 0 := by
   simp [gcd_eq_zero_iff]
 
-theorem gcd_map_mul {α} [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α]
+theorem gcd_map_mul {α} [MonoidWithZero α] [IsMulCommutative α] [StrongNormalizedGCDMonoid α]
     (a : α) (s : Multiset α) : (s.map (a * ·)).gcd = normalize a * s.gcd := by
   refine s.induction_on ?_ fun b s ih ↦ ?_
   · simp_rw [map_zero, gcd_zero, mul_zero]

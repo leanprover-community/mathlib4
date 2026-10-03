@@ -187,13 +187,13 @@ set_option backward.defeqAttrib.useBackward true in
 induces a cocone on `F` as long as the universes work out.
 -/
 @[simps]
-def toCocone [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A) : Cocone F where
+def toCocone [DecidableEq J] {A : Type w} [AddGroup A] [IsAddCommutative A] (f : Quot F →+ A) : Cocone F where
   pt := ↧A
   ι.app j := ofHom <| f.comp (Quot.ι F j)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A)
+lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddGroup A] [IsAddCommutative A] (f : Quot F →+ A)
     (hc : IsColimit c) : (hc.desc (toCocone F f)).hom.comp (Quot.desc F c) = f := by
   refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
   rw [AddMonoidHom.comp_apply, ι_desc]
@@ -203,7 +203,7 @@ lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-lemma Quot.desc_toCocone_desc_app [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A)
+lemma Quot.desc_toCocone_desc_app [DecidableEq J] {A : Type w} [AddGroup A] [IsAddCommutative A] (f : Quot F →+ A)
     (hc : IsColimit c) (x : Quot F) : hc.desc (toCocone F f) (Quot.desc F c x) = f x := by
   conv_rhs => rw [← Quot.desc_toCocone_desc F c f hc]
   dsimp

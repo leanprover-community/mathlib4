@@ -221,7 +221,7 @@ end Pow
 namespace NonemptyInterval
 
 @[to_additive]
-instance commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
+instance commMonoid [Monoid α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (NonemptyInterval α) :=
   fast_instance% NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul toProd_pow
 
@@ -229,7 +229,7 @@ end NonemptyInterval
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
-instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
+instance Interval.mulOneClass [Monoid α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where
   one_mul s :=
     (WithBot.map₂_coe_left _ _ _).trans <| by
@@ -239,7 +239,7 @@ instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
       simp_rw [mul_one, ← Function.id_def, WithBot.map_id, id]
 
 @[to_additive]
-instance Interval.commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
+instance Interval.commMonoid [Monoid α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (Interval α) where
   mul_comm := fun _ _ => Option.map₂_comm mul_comm
   mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc
@@ -247,7 +247,7 @@ instance Interval.commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] 
 namespace NonemptyInterval
 
 @[to_additive]
-theorem coe_pow_interval [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
+theorem coe_pow_interval [Monoid α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α]
     (s : NonemptyInterval α) (n : ℕ) :
     ↑(s ^ n) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
@@ -259,7 +259,7 @@ end NonemptyInterval
 
 namespace Interval
 
-variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α] {n : ℕ}
+variable [Monoid α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α] {n : ℕ}
 
 @[to_additive]
 theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
@@ -296,7 +296,7 @@ end NatCast
 
 namespace NonemptyInterval
 
-instance [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] :
+instance [Semiring α] [IsMulCommutative α] [PartialOrder α] [CanonicallyOrderedAdd α] :
     CommSemiring (NonemptyInterval α) :=
   fast_instance% NonemptyInterval.toProd_injective.commSemiring _
     toProd_zero toProd_one toProd_add toProd_mul (swap toProd_nsmul) toProd_pow (fun _ => rfl)
@@ -315,7 +315,7 @@ However, this means that we can't use `to_additive` in this section.
 
 section Sub
 
-variable [Preorder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] [AddLeftMono α]
+variable [Preorder α] [AddSemigroup α] [IsAddCommutative α] [Sub α] [OrderedSub α] [AddLeftMono α]
 
 instance : Sub (NonemptyInterval α) :=
   ⟨fun s t => ⟨(s.fst - t.snd, s.snd - t.fst), tsub_le_tsub s.fst_le_snd t.fst_le_snd⟩⟩
@@ -373,7 +373,7 @@ Note that this division does not apply to `ℚ` or `ℝ`.
 
 section Div
 
-variable [Preorder α] [CommGroup α] [MulLeftMono α]
+variable [Preorder α] [Group α] [IsMulCommutative α] [MulLeftMono α]
 
 instance : Div (NonemptyInterval α) :=
   ⟨fun s t => ⟨(s.fst / t.snd, s.snd / t.fst), div_le_div'' s.fst_le_snd t.fst_le_snd⟩⟩
@@ -427,7 +427,7 @@ end Div
 
 section Inv
 
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+variable [Group α] [IsMulCommutative α] [PartialOrder α] [IsOrderedMonoid α]
 
 @[to_additive]
 instance : Inv (NonemptyInterval α) :=
@@ -471,7 +471,7 @@ end Inv
 
 namespace NonemptyInterval
 
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s t : NonemptyInterval α}
+variable [Group α] [IsMulCommutative α] [PartialOrder α] [IsOrderedMonoid α] {s t : NonemptyInterval α}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
@@ -485,7 +485,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
     rw [pure_mul_pure, h, pure_one]
 
 instance subtractionCommMonoid {α : Type u}
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
+    [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (NonemptyInterval α) where
   sub_eq_add_neg := fun s t => by
     refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
@@ -517,7 +517,7 @@ end NonemptyInterval
 
 namespace Interval
 
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s t : Interval α}
+variable [Group α] [IsMulCommutative α] [PartialOrder α] [IsOrderedMonoid α] {s t : Interval α}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
@@ -530,7 +530,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
     exact NonemptyInterval.mul_eq_one_iff
 
 instance subtractionCommMonoid {α : Type u}
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
+    [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (Interval α) where
   sub_eq_add_neg := by
     rintro (_ | s) (_ | t) <;> first | rfl | congrm WithBot.some $(sub_eq_add_neg ..)
@@ -562,7 +562,7 @@ end Interval
 
 section Length
 
-variable [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
+variable [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
 
 namespace NonemptyInterval
 

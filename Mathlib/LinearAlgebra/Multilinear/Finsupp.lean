@@ -25,7 +25,7 @@ namespace MultilinearMap
 
 section freeFinsuppEquiv
 
-variable [DecidableEq ι] [Fintype ι] [CommSemiring R] [DecidableEq R]
+variable [DecidableEq ι] [Fintype ι] [Semiring R] [IsMulCommutative R] [DecidableEq R]
   [DecidableEq ι'] [∀ i, Fintype (κ i)] [∀ i, DecidableEq (κ i)]
 
 /--

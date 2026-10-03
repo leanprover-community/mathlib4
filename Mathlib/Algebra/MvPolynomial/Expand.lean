@@ -28,7 +28,7 @@ namespace MvPolynomial
 
 section CommSemiring
 
-variable {σ τ R S : Type*} [CommSemiring R] [CommSemiring S] (p : ℕ)
+variable {σ τ R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (p : ℕ)
 
 /-- Expand the polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 
@@ -145,12 +145,12 @@ lemma eval₂_expand (f : R →+* S) (g : σ → S) (φ : MvPolynomial σ R) :
   congr($(eval₂Hom_comp_expand p f g) φ)
 
 @[simp]
-lemma aeval_comp_expand {A : Type*} [CommSemiring A] [Algebra R A] (f : σ → A) :
+lemma aeval_comp_expand {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A] (f : σ → A) :
     (aeval f).comp (expand p) = aeval (R := R) (f ^ p) := by
   ext; simp
 
 @[simp]
-lemma aeval_expand {A : Type*} [CommSemiring A] [Algebra R A]
+lemma aeval_expand {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
     (f : σ → A) (φ : MvPolynomial σ R) :
     aeval f (expand p φ) = aeval (f ^ p) φ :=
   eval₂_expand ..
@@ -203,7 +203,7 @@ end CommSemiring
 
 section CommRing
 
-variable (R σ : Type*) [CommRing R]
+variable (R σ : Type*) [Ring R] [IsMulCommutative R]
 
 theorem isLocalHom_expand {p : ℕ} (hp : p ≠ 0) : IsLocalHom (expand p (R := R) (σ := σ)) := by
   refine ⟨fun f hf => ?_⟩

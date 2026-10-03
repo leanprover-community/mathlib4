@@ -74,16 +74,16 @@ open scoped ContDiff
 universe u
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
+  {EM : Type*} [NormedAddGroup EM] [IsAddCommutative EM] [NormedSpace 𝕜 EM]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E H')
   (M : Type u) [TopologicalSpace M] [ChartedSpace HM M]
   (N G A A' R : Type u) [TopologicalSpace N] [ChartedSpace H N]
   [TopologicalSpace G] [ChartedSpace H G] [TopologicalSpace A] [ChartedSpace H A]
   [TopologicalSpace A'] [ChartedSpace H' A'] [TopologicalSpace R] [ChartedSpace H R]
-variable {EP : Type*} [NormedAddCommGroup EP] [NormedSpace 𝕜 EP]
+variable {EP : Type*} [NormedAddGroup EP] [IsAddCommutative EP] [NormedSpace 𝕜 EP]
   {HP : Type*} [TopologicalSpace HP] (IP : ModelWithCorners 𝕜 EP HP)
   (P : Type u) [TopologicalSpace P] [ChartedSpace HP P]
 
@@ -205,7 +205,7 @@ noncomputable def smoothSheafGroup : TopCat.Sheaf GrpCat.{u} ↧M :=
 end LieGroup
 
 section CommLieGroup
-variable [CommGroup A] [CommGroup A'] [LieGroup I ∞ A] [LieGroup I' ∞ A']
+variable [Group A] [IsMulCommutative A] [Group A'] [IsMulCommutative A'] [LieGroup I ∞ A] [LieGroup I' ∞ A']
 
 open Manifold in
 @[to_additive] noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) :
@@ -276,7 +276,7 @@ def smoothSheafRing : TopCat.Sheaf RingCat.{u} ↧M where
 end ContMDiffRing
 
 section SmoothCommRing
-variable [CommRing R] [ContMDiffRing I ∞ R]
+variable [Ring R] [IsMulCommutative R] [ContMDiffRing I ∞ R]
 
 open Manifold in
 instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).presheaf.obj U) :=

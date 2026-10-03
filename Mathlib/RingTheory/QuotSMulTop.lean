@@ -27,9 +27,9 @@ module, commutative algebra
 
 open scoped Pointwise
 
-variable {R} [CommRing R] (r : R) (M : Type*) {M' M''}
-    [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
-    [AddCommGroup M''] [Module R M'']
+variable {R} [Ring R] [IsMulCommutative R] (r : R) (M : Type*) {M' M''}
+    [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup M'] [IsAddCommutative M'] [Module R M']
+    [AddGroup M''] [IsAddCommutative M''] [Module R M'']
 
 /-- An abbreviation for `M⧸rM` that keeps us from having to write
 `(⊤ : Submodule R M)` over and over to satisfy the typechecker. -/
@@ -138,7 +138,7 @@ noncomputable def quotSMulTopTensorEquivQuotSMulTop :
 
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be an `R`-algebra, then
   `S ⊗[R] (M/rM)` is isomorphic to `(S ⊗[R] M)⧸r(S ⊗[R] M)` as `S`-modules. -/
-noncomputable def algebraMapTensorEquivTensorQuotSMulTop (S : Type*) [CommRing S] [Algebra R S] :
+noncomputable def algebraMapTensorEquivTensorQuotSMulTop (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S] :
     QuotSMulTop ((algebraMap R S) r) (S ⊗[R] M) ≃ₗ[S] S ⊗[R] QuotSMulTop r M :=
   Submodule.quotEquivOfEq _ _ (by simp [Ideal.map_span, ideal_span_singleton_smul]) ≪≫ₗ
     tensorQuotMapSMulEquivTensorQuot M S (Ideal.span {r}) ≪≫ₗ

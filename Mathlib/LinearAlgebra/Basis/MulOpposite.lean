@@ -22,7 +22,7 @@ variable {R H : Type*}
 
 namespace Module.Basis
 
-variable {ι : Type*} [Semiring R] [AddCommMonoid H] [Module R H]
+variable {ι : Type*} [Semiring R] [AddMonoid H] [IsAddCommutative H] [Module R H]
 
 /-- The multiplicative opposite of a basis: `b.mulOpposite i ↦ op (b i)`. -/
 noncomputable def mulOpposite (b : Basis ι R H) : Basis ι R Hᵐᵒᵖ :=
@@ -47,20 +47,20 @@ end Module.Basis
 
 namespace MulOpposite
 
-instance [DivisionRing R] [AddCommGroup H] [Module R H]
+instance [DivisionRing R] [AddGroup H] [IsAddCommutative H] [Module R H]
     [FiniteDimensional R H] : FiniteDimensional R Hᵐᵒᵖ := FiniteDimensional.of_finite_basis
   (Basis.ofVectorSpace R H).mulOpposite (Basis.ofVectorSpaceIndex R H).toFinite
 
-instance [Semiring R] [AddCommMonoid H] [Module R H]
+instance [Semiring R] [AddMonoid H] [IsAddCommutative H] [Module R H]
     [Module.Free R H] : Module.Free R Hᵐᵒᵖ :=
   let ⟨b⟩ := Module.Free.exists_basis (R := R) (M := H)
   Module.Free.of_basis b.2.mulOpposite
 
-theorem rank [Semiring R] [StrongRankCondition R] [AddCommMonoid H] [Module R H]
+theorem rank [Semiring R] [StrongRankCondition R] [AddMonoid H] [IsAddCommutative H] [Module R H]
     [Module.Free R H] : Module.rank R Hᵐᵒᵖ = Module.rank R H :=
   Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨(opLinearEquiv R).symm⟩
 
-theorem finrank [DivisionRing R] [AddCommGroup H] [Module R H] :
+theorem finrank [DivisionRing R] [AddGroup H] [IsAddCommutative H] [Module R H] :
     Module.finrank R Hᵐᵒᵖ = Module.finrank R H := by
   let b := Basis.ofVectorSpace R H
   rw [Module.finrank_eq_nat_card_basis b, Module.finrank_eq_nat_card_basis b.mulOpposite]

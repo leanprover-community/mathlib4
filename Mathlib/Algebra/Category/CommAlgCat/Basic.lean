@@ -23,7 +23,7 @@ open CategoryTheory Limits
 
 universe w v u
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 variable (R) in
 /-- The category of R-algebras and their morphisms. -/
@@ -31,12 +31,12 @@ structure CommAlgCat where
   _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
-  [commRing : CommRing carrier]
+  [commRing : Ring carrier] [IsMulCommutative carrier]
   [algebra : Algebra R carrier]
 
 namespace CommAlgCat
-variable {A B C : CommAlgCat.{v} R} {X Y Z : Type v} [CommRing X] [Algebra R X]
-  [CommRing Y] [Algebra R Y] [CommRing Z] [Algebra R Z]
+variable {A B C : CommAlgCat.{v} R} {X Y Z : Type v} [Ring X] [IsMulCommutative X] [Algebra R X]
+  [Ring Y] [IsMulCommutative Y] [Algebra R Y] [Ring Z] [IsMulCommutative Z] [Algebra R Z]
 
 attribute [instance] commRing algebra
 
@@ -49,7 +49,7 @@ attribute [coe] carrier
 variable (R) in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `CommAlgCat R`. -/
-abbrev of (X : Type v) [CommRing X] [Algebra R X] : CommAlgCat.{v} R := ⟨X⟩
+abbrev of (X : Type v) [Ring X] [IsMulCommutative X] [Algebra R X] : CommAlgCat.{v} R := ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
 /-- This prints `CommAlgCat.of R X` as `↧X`. -/
@@ -57,7 +57,7 @@ open Lean.PrettyPrinter.Delaborator in
 meta def delabOf : Delab := CategoryTheory.delabOf
 
 variable (R) in
-lemma coe_of (X : Type v) [CommRing X] [Algebra R X] : (of R X : Type v) = X := rfl
+lemma coe_of (X : Type v) [Ring X] [IsMulCommutative X] [Algebra R X] : (of R X : Type v) = X := rfl
 
 /-- The type of morphisms in `CommAlgCat R`. -/
 @[ext]

@@ -88,7 +88,7 @@ namespace ProbabilityTheory
 
 /-- `incrementsToRestrict I` is a continuous linear map `f` such that if `t₁ < ... < tₙ` are
 then elements of `I`, then `f (xₜ₁, xₜ₂ - xₜ₁, ..., xₜₙ - xₜₙ₋₁) = (xₜ₁, ..., xₜₙ)`. -/
-noncomputable def incrementsToRestrict (R : Type*) [Semiring R] [AddCommMonoid E]
+noncomputable def incrementsToRestrict (R : Type*) [Semiring R] [AddMonoid E] [IsAddCommutative E]
     [Module R E] [TopologicalSpace E] [ContinuousAdd E] (I : Finset T) :
     (Fin #I → E) →L[R] (I → E) :=
   { toFun x i := ∑ j ≤ (I.orderIsoOfFin rfl).symm i, x j
@@ -97,7 +97,7 @@ noncomputable def incrementsToRestrict (R : Type*) [Semiring R] [AddCommMonoid E
     cont := by fun_prop }
 
 lemma incrementsToRestrict_increments_orderEmbOfFinWithBot_ae_eq_restrict [Bot T] (R : Type*)
-    [Semiring R] [AddCommGroup E] [Module R E] [TopologicalSpace E] [ContinuousAdd E]
+    [Semiring R] [AddGroup E] [IsAddCommutative E] [Module R E] [TopologicalSpace E] [ContinuousAdd E]
     {X : T → Ω → E} (h : ∀ᵐ ω ∂P, X ⊥ ω = 0) (I : Finset T) :
     (fun ω ↦ I.restrict (X · ω)) =ᵐ[P]
       (incrementsToRestrict R I) ∘
@@ -113,7 +113,7 @@ lemma incrementsToRestrict_increments_orderEmbOfFinWithBot_ae_eq_restrict [Bot T
 /-- A stochastic process `X` with independent increments, such that `X t` is Gaussian for
 all `t` and such that `X ⊥ = 0` almost surely is a Gaussian process. -/
 public lemma HasIndepIncrements.isGaussianProcess [OrderBot T]
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
     [SecondCountableTopology E] [CompleteSpace E]
     {X : T → Ω → E} (law : ∀ t, HasGaussianLaw (X t) P) (h_bot : ∀ᵐ ω ∂P, X ⊥ ω = 0)
     (incr : HasIndepIncrements X P) :

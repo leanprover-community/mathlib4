@@ -30,9 +30,9 @@ namespace MeasureTheory.VectorMeasure
 local infixr:25 " →ₛ " => SimpleFunc
 
 variable {X E F G : Type*} {mX : MeasurableSpace X}
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
+  [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G]
   {μ : VectorMeasure X F} {f g : X → E} {B : E →L[ℝ] F →L[ℝ] G} {s : Set X}
 
 open scoped Classical in

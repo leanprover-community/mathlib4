@@ -41,7 +41,7 @@ section Basic
 
 /-! ### Basic facts -/
 
-variable [MeasurableSpace E] [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
+variable [MeasurableSpace E] [TopologicalSpace E] [AddMonoid E] [IsAddCommutative E] [Module ℝ E]
 
 lemma isProbabilityMeasure (hX : IsGaussianProcess X P) :
     IsProbabilityMeasure P :=
@@ -59,7 +59,7 @@ lemma congr (hX : IsGaussianProcess X P) (hXY : ∀ t, X t =ᵐ[P] Y t) :
 
 end Basic
 
-variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+variable [NormedAddGroup E] [IsAddCommutative E] [MeasurableSpace E] [BorelSpace E]
 
 section Maps
 
@@ -117,7 +117,7 @@ section Transformations
 /-! ### Operations that preserve Gaussianity -/
 
 variable [NormedSpace ℝ E] [SecondCountableTopology E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [MeasurableSpace F]
   [BorelSpace F] [SecondCountableTopology F] {Y : S → Ω → F}
 
 /-- If a stochastic process `Y` is such that for each `s`, `Y s` can be written as a linear

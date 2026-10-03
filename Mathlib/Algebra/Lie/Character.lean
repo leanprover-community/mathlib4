@@ -31,7 +31,7 @@ universe u v w w₁
 
 namespace LieAlgebra
 
-variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R : Type u) (L : Type v) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- A character of a Lie algebra is a morphism to the scalars. -/

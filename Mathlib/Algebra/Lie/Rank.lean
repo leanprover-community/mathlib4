@@ -36,9 +36,9 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 open Module
 
 variable {R L M ι ιₘ : Type*}
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 variable [LieRing L] [LieAlgebra R L] [Module.Finite R L] [Module.Free R L]
-variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [Module.Finite R M] [Module.Free R M]
 variable [Fintype ι]
 variable [Fintype ιₘ]

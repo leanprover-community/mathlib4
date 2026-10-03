@@ -23,7 +23,7 @@ about the roots of the minimal polynomial of `s` over `R`.
 
 @[expose] public section
 
-variable {R S A n m : Type*} [CommRing R] [CommRing S]
+variable {R S A n m : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 variable (M : Matrix m m S) [DecidableEq m] [DecidableEq n] (k : m)
 open Matrix Polynomial
 
@@ -175,7 +175,7 @@ theorem Matrix.det_det [Fintype m] [Fintype n] (f : S →+* Matrix n n R) :
 
 variable [Algebra R S] [Module.Free R S]
 
-theorem LinearMap.det_restrictScalars [AddCommGroup A] [Module R A] [Module S A]
+theorem LinearMap.det_restrictScalars [AddGroup A] [IsAddCommutative A] [Module R A] [Module S A]
     [IsScalarTower R S A] [Module.Free S A] {f : A →ₗ[S] A} :
     (f.restrictScalars R).det = Algebra.norm R f.det := by
   classical

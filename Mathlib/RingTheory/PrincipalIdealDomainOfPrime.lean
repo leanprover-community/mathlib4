@@ -19,7 +19,7 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 
 public section
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 namespace Ideal
 

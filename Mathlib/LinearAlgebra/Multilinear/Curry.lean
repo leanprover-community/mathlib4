@@ -49,7 +49,7 @@ We also register linear equiv versions of these correspondences, in
 
 open MultilinearMap
 
-variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M'] [AddCommMonoid M₂]
+variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [AddMonoid M'] [IsAddCommutative M'] [AddMonoid M₂] [IsAddCommutative M₂]
   [∀ i, Module R (M i)] [Module R M'] [Module R M₂]
 
 /-! #### Left currying -/
@@ -230,7 +230,7 @@ def MultilinearMap.curryMidLinearEquiv (p : Fin (n + 1)) :
 namespace MultilinearMap
 
 variable {R M₂} {N : (ι ⊕ ι') → Type*}
-  [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+  [∀ i, AddMonoid (N i)] [∀ i, IsAddCommutative (N i)] [∀ i, Module R (N i)]
 
 /-- Given a family of modules `N : (ι ⊕ ι') → Type*`, a multilinear map
 on `(fun _ : ι ⊕ ι' => M')` induces a multilinear map on
@@ -253,7 +253,7 @@ theorem currySum_apply (f : MultilinearMap R N M₂)
     currySum f u v = f (Sum.rec u v) := rfl
 
 @[simp]
-theorem currySum_apply' {N : Type*} [AddCommMonoid N] [Module R N]
+theorem currySum_apply' {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
     (f : MultilinearMap R (fun _ : ι ⊕ ι' ↦ N) M₂)
     (u : ι → N) (v : ι' → N) :
     currySum f u v = f (Sum.elim u v) := rfl

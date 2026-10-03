@@ -31,7 +31,7 @@ public section
 open Metric AffineMap Set AffineSubspace
 open scoped Topology
 
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] {c x y : P} {R : ℝ}
 
 namespace EuclideanGeometry

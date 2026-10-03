@@ -39,7 +39,7 @@ public section
 
 namespace Module
 
-variable (R : Type*) [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
+variable (R : Type*) [Semiring R] {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- An element `v` of an `R`-module is *unimodular* if some linear functional takes the value
 `1` at `v`. -/
@@ -57,7 +57,7 @@ namespace Module.Basis
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The coordinates of `v` in a basis `b` generate the ideal of values taken at `v` by the linear
 functionals on `M`. In particular this ideal does not depend on `b`. -/
@@ -82,7 +82,7 @@ end CommSemiring
 
 section Algebra
 
-variable {R : Type*} [CommRing R] {A : Type*} [Ring A] [Nontrivial A] [Algebra R A]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {A : Type*} [Ring A] [Nontrivial A] [Algebra R A]
 
 /-- In a nonzero algebra that is free as a module, `1` is *unimodular*. -/
 theorem _root_.Module.Free.isUnimodular_one [Module.Free R A] : IsUnimodular R (1 : A) :=
@@ -94,7 +94,7 @@ end Module.Basis
 
 namespace Module.IsUnimodular
 
-variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] [Module.Free R M]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Free R M]
 
 /-- A unimodular vector of a rank-two module can be completed to a basis: it is the first
 vector of a basis. -/

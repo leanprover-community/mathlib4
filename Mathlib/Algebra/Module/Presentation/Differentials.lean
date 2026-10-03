@@ -40,7 +40,7 @@ namespace Algebra.Presentation
 
 open KaehlerDifferential
 
-variable {R : Type u} {S : Type v} {ι : Type w} {σ : Type t} [CommRing R] [CommRing S] [Algebra R S]
+variable {R : Type u} {S : Type v} {ι : Type w} {σ : Type t} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
   (pres : Algebra.Presentation R S ι σ)
 
 /-- The shape of the presentation by generators and relations of the `S`-module `Ω[S⁄R]`

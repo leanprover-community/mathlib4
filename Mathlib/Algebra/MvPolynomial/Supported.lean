@@ -33,7 +33,7 @@ variable {σ : Type*} {R : Type u}
 
 section CommSemiring
 
-variable [CommSemiring R] {p : MvPolynomial σ R}
+variable [Semiring R] [IsMulCommutative R] {p : MvPolynomial σ R}
 
 variable (R) in
 /-- The set of polynomials whose variables are contained in `s` as a `Subalgebra` over `R`. -/
@@ -114,7 +114,7 @@ theorem supported_strictMono [Nontrivial R] :
     StrictMono (supported R : Set σ → Subalgebra R (MvPolynomial σ R)) :=
   strictMono_of_le_iff_le fun _ _ ↦ supported_le_supported_iff.symm
 
-theorem exists_restrict_to_vars (R : Type*) [CommRing R] {F : MvPolynomial σ ℤ}
+theorem exists_restrict_to_vars (R : Type*) [Ring R] [IsMulCommutative R] {F : MvPolynomial σ ℤ}
     (hF : ↑F.vars ⊆ s) : ∃ f : (s → R) → R, ∀ x : σ → R, f (x ∘ (↑) : s → R) = aeval x F := by
   rw [← mem_supported, supported_eq_range_rename, AlgHom.mem_range] at hF
   obtain ⟨F', hF'⟩ := hF

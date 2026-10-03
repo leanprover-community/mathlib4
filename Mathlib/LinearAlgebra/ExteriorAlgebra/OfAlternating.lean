@@ -28,7 +28,7 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 
 variable {R M N N' : Type*}
-variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup N']
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N']
 variable [Module R M] [Module R N] [Module R N']
 
 -- This instance can't be found where it's needed if we don't remind lean that it exists.

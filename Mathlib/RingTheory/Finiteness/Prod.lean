@@ -19,11 +19,11 @@ open Function (Surjective)
 
 namespace Submodule
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 open Set
 
-variable {P : Type*} [AddCommMonoid P] [Module R P]
+variable {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P]
 
 theorem FG.prod {sb : Submodule R M} {sc : Submodule R P} (hsb : sb.FG) (hsc : sc.FG) :
     (sb.prod sc).FG :=
@@ -40,7 +40,7 @@ namespace Module
 namespace Finite
 
 variable {R M N : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 instance prod [hM : Module.Finite R M] [hN : Module.Finite R N] : Module.Finite R (M × N) :=
   ⟨by

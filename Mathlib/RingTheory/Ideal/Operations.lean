@@ -31,7 +31,7 @@ open scoped Pointwise
 
 namespace Submodule
 
-lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module R' M']
+lemma coe_span_smul {R' M' : Type*} [Semiring R'] [IsMulCommutative R'] [AddMonoid M'] [IsAddCommutative M'] [Module R' M']
     (s : Set R') (N : Submodule R' M') :
     (Ideal.span s : Set R') • N = s • N :=
   set_smul_eq_of_le _ _ _
@@ -49,7 +49,7 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
           exact mem_set_smul_of_mem_mem (hc hi) <| Submodule.smul_mem _ _ hn) <|
     set_smul_mono_left _ Submodule.subset_span
 
-lemma span_singleton_toAddSubgroup_eq_zmultiples {M : Type*} [AddCommGroup M] (a : M) :
+lemma span_singleton_toAddSubgroup_eq_zmultiples {M : Type*} [AddGroup M] [IsAddCommutative M] (a : M) :
     (span ℤ ({a} : Set M)).toAddSubgroup = AddSubgroup.zmultiples a := by
   ext i
   simp [Submodule.mem_span_singleton, AddSubgroup.mem_zmultiples_iff]
@@ -62,7 +62,7 @@ variable {R : Type u} {M : Type v} {M' F G : Type*}
 
 section Semiring
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- This duplicates the global `smul_eq_mul`, but doesn't have to unfold anywhere near as much to
 apply. -/
@@ -97,7 +97,7 @@ theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal
   rw [LinearMap.range_eq_map, ← hs, map_le_iff_le_comap, Ideal.span, span_le]
   exact fun r hr ↦ H ⟨r, hr⟩
 
-variable {M' : Type w} [AddCommMonoid M'] [Module R M']
+variable {M' : Type w} [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 @[simp]
 theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
@@ -206,7 +206,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 open scoped Pointwise
 
@@ -401,7 +401,7 @@ theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ := S
 theorem pow_eq_bot [IsReduced R] {n : ℕ} (hn : n ≠ 0) : I ^ n = ⊥ ↔ I = ⊥ :=
   Submodule.pow_eq_bot hn
 
-instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
+instance {S A : Type*} [Semiring S] [SMul R S] [AddMonoid A] [IsAddCommutative A] [Module R A] [Module S A]
     [IsScalarTower R S A] [IsTorsionFree R A] {I : Submodule S A} : IsTorsionFree R I :=
   (I.restrictScalars R).instIsTorsionFree
 
@@ -548,7 +548,7 @@ end Semiring
 
 section MulAndRadical
 
-variable {R : Type u} {ι : Type*} [CommSemiring R]
+variable {R : Type u} {ι : Type*} [Semiring R] [IsMulCommutative R]
 variable {I J K L : Ideal R}
 
 theorem mul_mem_mul_rev {r s} (hr : r ∈ I) (hs : s ∈ J) : s * r ∈ I * J :=
@@ -581,7 +581,7 @@ theorem mem_span_singleton_mul {x y : R} {I : Ideal R} : x ∈ span {y} * I ↔ 
   simp only [mul_comm, mem_mul_span_singleton]
 
 @[simp]
-lemma range_mul (A : Type*) [CommSemiring A] [Module R A]
+lemma range_mul (A : Type*) [Semiring A] [IsMulCommutative A] [Module R A]
     [SMulCommClass R A A] [IsScalarTower R A A] (a : A) : LinearMap.range (LinearMap.mul R A a) =
     (Ideal.span {a}).restrictScalars R := by
   aesop (add simp Ideal.mem_span_singleton) (add simp dvd_def)
@@ -655,13 +655,13 @@ theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
   rw [← Finset.inf_univ_eq_iInf, finset_inf_span_singleton]
   rwa [Finset.coe_univ, Set.pairwise_univ]
 
-theorem iInf_span_singleton_natCast {R : Type*} [CommRing R] {ι : Type*} [Fintype ι]
+theorem iInf_span_singleton_natCast {R : Type*} [Ring R] [IsMulCommutative R] {ι : Type*} [Fintype ι]
     {I : ι → ℕ} (hI : Pairwise fun i j => (I i).Coprime (I j)) :
     ⨅ (i : ι), span {(I i : R)} = span {((∏ i : ι, I i : ℕ) : R)} := by
   rw [iInf_span_singleton, Nat.cast_prod]
   exact fun i j h ↦ (hI h).cast
 
-theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
+theorem sup_eq_top_iff_isCoprime {R : Type*} [Semiring R] [IsMulCommutative R] (x y : R) :
     span ({x} : Set R) ⊔ span {y} = ⊤ ↔ IsCoprime x y := by
   rw [eq_top_iff_one, Submodule.mem_sup]
   constructor
@@ -706,7 +706,7 @@ theorem prod_sup_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
 @[simp]
-lemma multiset_prod_eq_bot {R : Type*} [CommSemiring R] [IsDomain R] {s : Multiset (Ideal R)} :
+lemma multiset_prod_eq_bot {R : Type*} [Semiring R] [IsMulCommutative R] [IsDomain R] {s : Multiset (Ideal R)} :
     s.prod = ⊥ ↔ ⊥ ∈ s :=
   Multiset.prod_eq_zero_iff
 
@@ -967,11 +967,11 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
       this.radical.symm ▸ (sInf_le ⟨hIm, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 
 @[deprecated isRadical_bot +typeChanged (since := "2026-08-03")]
-theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
+theorem isRadical_bot_of_noZeroDivisors {R} [Semiring R] [IsMulCommutative R] [NoZeroDivisors R] :
     (⊥ : Ideal R).IsRadical := isRadical_bot
 
 @[simp]
-theorem radical_bot_of_isReduced {R : Type u} [CommSemiring R] [IsReduced R] :
+theorem radical_bot_of_isReduced {R : Type u} [Semiring R] [IsMulCommutative R] [IsReduced R] :
     radical (⊥ : Ideal R) = ⊥ :=
   eq_bot_iff.2 isRadical_bot
 
@@ -1054,7 +1054,7 @@ theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   AddSubgroupClass.subset_union
 
-theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} {a b : ι}
+theorem subset_union_prime' {R : Type u} [Ring R] [IsMulCommutative R] {s : Finset ι} {f : ι → Ideal R} {a b : ι}
     (hp : ∀ i ∈ s, IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) ↔ I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i := by
   suffices
@@ -1160,7 +1160,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
 
 /-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Matsumura Ex.1.6. -/
 @[stacks 00DS]
-theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} (a b : ι)
+theorem subset_union_prime {R : Type u} [Ring R] [IsMulCommutative R] {s : Finset ι} {f : ι → Ideal R} (a b : ι)
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i :=
   suffices ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) → ∃ i, i ∈ s ∧ I ≤ f i by
@@ -1216,7 +1216,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rwa [Finset.exists_mem_insert]
 
 /-- Another version of prime avoidance using `Set.Finite` instead of `Finset`. -/
-lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
+lemma subset_union_prime_finite {R ι : Type*} [Ring R] [IsMulCommutative R] {s : Set ι}
     (hs : s.Finite) {f : ι → Ideal R} (a b : ι)
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → (f i).IsPrime) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
@@ -1230,7 +1230,7 @@ lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
   exact exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
 
 lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
-    {R : Type*} [CommRing R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
+    {R : Type*} [Ring R] [IsMulCommutative R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
     (hs : S.Finite) (a b : Ideal R) (hp : ∀ I ∈ S, I ≠ a → I ≠ b → I.IsPrime)
     (ha : a ≠ ⊤) (hb : b ≠ ⊤) : ((M : Set R) ⊆ ⋃ I ∈ S, I) ↔ M ∈ S := by
   refine (subset_union_prime_finite hs a b hp).trans ⟨fun ⟨I, mem, le⟩ ↦ ?_, (⟨M, ·, le_rfl⟩)⟩
@@ -1267,7 +1267,7 @@ theorem IsMaximal.mul_mem_pow (I : Ideal R) [I.IsMaximal]
   exact add_mem (mul_mem_left _ _ h) (mul_mem_right _ _ hi)
 
 /-- See also `Ideal.IsPrime.mem_pow_mul` for prime ideal in Dedekind domain. -/
-theorem IsMaximal.mem_pow_mul {R : Type*} [CommSemiring R] (I : Ideal R) [I.IsMaximal]
+theorem IsMaximal.mem_pow_mul {R : Type*} [Semiring R] [IsMulCommutative R] (I : Ideal R) [I.IsMaximal]
     {a b : R} {n : ℕ} (h : a * b ∈ I ^ n) : a ∈ I ^ n ∨ b ∈ I := by
   rw [mul_comm] at h
   rw [or_comm]
@@ -1320,7 +1320,7 @@ end MulAndRadical
 section Total
 
 variable (ι : Type*)
-variable (M : Type*) [AddCommGroup M] {R : Type*} [CommRing R] [Module R M] (I : Ideal R)
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] {R : Type*} [Ring R] [IsMulCommutative R] [Module R M] (I : Ideal R)
 variable (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤)
 
 /-- A variant of `Finsupp.linearCombination` that takes in vectors valued in `I`. -/
@@ -1364,7 +1364,7 @@ end Total
 We add a global instance that `Associates (Ideal R)` has decidable
 equality, coming from the choice axiom, so that we don't have to provide
 `[DecidableEq (Associates (Ideal R))]` arguments in lemma statements. -/
-noncomputable instance {R : Type*} [CommSemiring R] :
+noncomputable instance {R : Type*} [Semiring R] [IsMulCommutative R] :
     DecidableEq (Associates (Ideal R)) :=
   Classical.typeDecidableEq _
 
@@ -1372,7 +1372,7 @@ noncomputable instance {R : Type*} [CommSemiring R] :
 We add a global instance that members of `Associates (Ideal R)` have decidable
 reducibility, coming from the choice axiom, so that we don't have to provide
 this as an arguments in lemma statements. -/
-noncomputable instance {R : Type*} [CommSemiring R] (I : Associates (Ideal R)) :
+noncomputable instance {R : Type*} [Semiring R] [IsMulCommutative R] (I : Associates (Ideal R)) :
     Decidable (Irreducible I) :=
   Classical.propDecidable _
 
@@ -1393,12 +1393,12 @@ theorem Ideal.mem_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} 
 
 end span_range
 
-theorem Associates.mk_ne_zero' {R : Type*} [CommSemiring R] {r : R} :
+theorem Associates.mk_ne_zero' {R : Type*} [Semiring R] [IsMulCommutative R] {r : R} :
     Associates.mk (Ideal.span {r} : Ideal R) ≠ 0 ↔ r ≠ 0 := by
   rw [Associates.mk_ne_zero, Ideal.zero_eq_bot, Ne, Ideal.span_singleton_eq_bot]
 
 open scoped nonZeroDivisors in
-theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZeroDivisors R]
+theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [Semiring R] [IsMulCommutative R] [NoZeroDivisors R]
     {r : R} : span {r} ∈ (Ideal R)⁰ ↔ r ∈ R⁰ := by
   cases subsingleton_or_nontrivial R
   · simp_rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
@@ -1406,7 +1406,7 @@ theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZer
   · rw [mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero, ne_eq, zero_eq_bot,
       span_singleton_eq_bot]
 
-theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZeroDivisors R]
+theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [Semiring R] [IsMulCommutative R] [NoZeroDivisors R]
     (P : Ideal R) [P.IsPrime] : P.primeCompl ≤ nonZeroDivisors R :=
   le_nonZeroDivisors_of_noZeroDivisors <| not_not_intro P.zero_mem
 
@@ -1416,7 +1416,7 @@ variable {R : Type*}
 
 section
 
-variable [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
@@ -1477,12 +1477,12 @@ end
 
 variable [Semiring R] {M N : Type*}
 
-lemma smul_top_le_comap_smul_top [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+lemma smul_top_le_comap_smul_top [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
     (I : Ideal R) (f : M →ₗ[R] N) : I • ⊤ ≤ comap f (I • ⊤) :=
   map_le_iff_le_comap.mp <| le_of_eq_of_le (map_smul'' _ _ _) <|
     smul_mono_right _ le_top
 
-lemma comap_smul_top_of_surjective [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+lemma comap_smul_top_of_surjective [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N]
     (I : Ideal R) (f : M →ₗ[R] N) (h : Function.Surjective f) :
     comap f (I • ⊤) = I • ⊤ ⊔ (LinearMap.ker f) := by
   rw [← Submodule.comap_map_eq f, Submodule.map_smul'', map_top, LinearMap.range_eq_top.mpr h]
@@ -1493,7 +1493,7 @@ instance {R} [Semiring R] : NonUnitalSubsemiringClass (Ideal R) R where
   mul_mem _ hb := Ideal.mul_mem_left _ _ hb
 instance {R} [Ring R] : NonUnitalSubringClass (Ideal R) R where
 
-lemma Ideal.exists_subset_radical_span_sup_of_subset_radical_sup {R : Type*} [CommSemiring R]
+lemma Ideal.exists_subset_radical_span_sup_of_subset_radical_sup {R : Type*} [Semiring R] [IsMulCommutative R]
     (s : Set R) (I J : Ideal R) (hs : s ⊆ (I ⊔ J).radical) :
     ∃ (t : s → R), Set.range t ⊆ I ∧ s ⊆ (span (Set.range t) ⊔ J).radical := by
   replace hs : ∀ z : s, ∃ (m : ℕ) (a b : R) (ha : a ∈ I) (hb : b ∈ J), a + b = z ^ m := by

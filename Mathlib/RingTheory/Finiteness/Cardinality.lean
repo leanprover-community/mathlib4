@@ -24,7 +24,7 @@ open Function (Surjective)
 
 section ModuleAndAlgebra
 
-variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R M : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 open Module in
 theorem Submodule.fg_iff_exists_fin_linearMap {N : Submodule R M} :
@@ -32,7 +32,7 @@ theorem Submodule.fg_iff_exists_fin_linearMap {N : Submodule R M} :
   simp_rw [fg_iff_exists_fin_generating_family, ← ((Pi.basisFun R _).constr ℕ).exists_congr_right]
   simp [Basis.constr_range]
 
-theorem AddSubmonoid.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddCommMonoid M]
+theorem AddSubmonoid.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddMonoid M] [IsAddCommutative M]
     {S : AddSubmonoid M} : S.FG ↔ ∃ (n : ℕ) (f : (Fin n → ℕ) →+ M), AddMonoidHom.mrange f = S := by
   rw [← S.toNatSubmodule_toAddSubmonoid, ← Submodule.fg_iff_addSubmonoid_fg,
     Submodule.fg_iff_exists_fin_linearMap]
@@ -40,7 +40,7 @@ theorem AddSubmonoid.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddCommMonoid M
     fun ⟨f, hf⟩ => ⟨f.toNatLinearMap, Submodule.toAddSubmonoid_inj.mp <|
       hf ▸ LinearMap.range_toAddSubmonoid _⟩⟩
 
-theorem AddSubgroup.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddCommGroup M]
+theorem AddSubgroup.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddGroup M] [IsAddCommutative M]
     {H : AddSubgroup M} : H.FG ↔ ∃ (n : ℕ) (f : (Fin n → ℤ) →+ M), AddMonoidHom.range f = H := by
   rw [← H.toIntSubmodule_toAddSubgroup, ← Submodule.fg_iff_addSubgroup_fg,
     Submodule.fg_iff_exists_fin_linearMap]
@@ -60,7 +60,7 @@ lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[
   ⟨n, f, by rw [← LinearMap.range_eq_top, hf]⟩
 
 /-- A finite module can be realised as a quotient of `Fin n → R` (i.e. `R^n`). -/
-theorem exists_fin_quot_equiv (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
+theorem exists_fin_quot_equiv (R M : Type*) [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
       [Module.Finite R M] :
     ∃ (n : ℕ) (S : Submodule R (Fin n → R)), Nonempty ((_ ⧸ S) ≃ₗ[R] M) :=
   let ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
@@ -110,7 +110,7 @@ variable (R : Type u) (M : Type*)
 
 section Ring
 
-variable [Ring R] [AddCommGroup M] [Module R M] [Module.Finite R M]
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Finite R M]
 
 /-- The kernel of a random surjective linear map from a finite free module
 to a given finite module. -/
@@ -127,7 +127,7 @@ end Ring
 
 section Semiring
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Finite R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module.Finite R M]
 
 /-- The kernel (as a congruence relation) of a random surjective linear map
 from a finite free module to a given finite module. -/

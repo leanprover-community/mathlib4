@@ -115,7 +115,7 @@ def mulRight : R →+ AddMonoid.End R := (.mul : R →+ AddMonoid.End R).flip
 end NonUnitalNonAssocSemiring
 
 section NonUnitalNonAssocCommSemiring
-variable [NonUnitalNonAssocCommSemiring R]
+variable [NonUnitalNonAssocSemiring R] [IsMulCommutative R]
 
 lemma mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) :=
   AddMonoidHom.ext fun _ =>
@@ -142,7 +142,7 @@ end HasDistribNeg
 
 section NonUnitalCommRing
 
-variable {α : Type*} [NonUnitalCommRing α]
+variable {α : Type*} [NonUnitalRing α] [IsMulCommutative α]
 
 attribute [local simp] add_assoc add_comm add_left_comm mul_comm
 

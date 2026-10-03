@@ -79,7 +79,7 @@ instance AddCommGrpCat.forget_isCorepresentable :
     (forget AddCommGrpCat.{u}).IsCorepresentable :=
   Functor.IsCorepresentable.mk' AddCommGrpCat.coyonedaObjIsoForget
 
-theorem uliftZMultiplesHom_apply_add (G : Type u) [AddCommGroup G] (x y : G) :
+theorem uliftZMultiplesHom_apply_add (G : Type u) [AddGroup G] [IsAddCommutative G] (x y : G) :
     uliftZMultiplesHom G (x + y) = uliftZMultiplesHom G x + uliftZMultiplesHom G y := by
   ext
   simp_all only [uliftZMultiplesHom_apply_apply, smul_add, AddMonoidHom.add_apply]

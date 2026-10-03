@@ -38,7 +38,7 @@ protected lemma noZeroSMulDivisors [Zero α] [Zero β] [SMul R β] [NoZeroSMulDi
 
 end Equiv
 
-variable [AddCommMonoid α] [AddCommMonoid β] [Module R β]
+variable [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] [Module R β]
 
 namespace AddEquiv
 

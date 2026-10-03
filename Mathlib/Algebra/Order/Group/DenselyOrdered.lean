@@ -51,7 +51,7 @@ private lemma exists_lt_mul_left [Group α] [LT α] [DenselyOrdered α]
   exact ⟨a', ha', div_lt_iff_lt_mul.1 hc'⟩
 
 @[to_additive]
-private lemma exists_lt_mul_right [CommGroup α] [LT α] [DenselyOrdered α]
+private lemma exists_lt_mul_right [Group α] [IsMulCommutative α] [LT α] [DenselyOrdered α]
     [MulLeftStrictMono α] {a b c : α} (hc : c < a * b) :
     ∃ b' < b, c < a * b' := by
   obtain ⟨a', hc', ha'⟩ := exists_between (div_lt_iff_lt_mul'.2 hc)
@@ -65,14 +65,14 @@ private lemma exists_mul_left_lt [Group α] [LT α] [DenselyOrdered α]
   exact ⟨a', ha', lt_div_iff_mul_lt.1 hc'⟩
 
 @[to_additive]
-private lemma exists_mul_right_lt [CommGroup α] [LT α] [DenselyOrdered α]
+private lemma exists_mul_right_lt [Group α] [IsMulCommutative α] [LT α] [DenselyOrdered α]
     [MulLeftStrictMono α] {a b c : α} (hc : a * b < c) :
     ∃ b' > b, a * b' < c := by
   obtain ⟨a', ha', hc'⟩ := exists_between (lt_div_iff_mul_lt'.2 hc)
   exact ⟨a', ha', lt_div_iff_mul_lt'.1 hc'⟩
 
 @[to_additive]
-lemma le_mul_of_forall_lt [CommGroup α] [LinearOrder α] [MulLeftMono α]
+lemma le_mul_of_forall_lt [Group α] [IsMulCommutative α] [LinearOrder α] [MulLeftMono α]
     [DenselyOrdered α] {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') :
     c ≤ a * b := by
   refine le_of_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
@@ -81,7 +81,7 @@ lemma le_mul_of_forall_lt [CommGroup α] [LinearOrder α] [MulLeftMono α]
   exact (h a' ha' b' hb').trans hd.le
 
 @[to_additive]
-lemma mul_le_of_forall_lt [CommGroup α] [LinearOrder α] [MulLeftMono α]
+lemma mul_le_of_forall_lt [Group α] [IsMulCommutative α] [LinearOrder α] [MulLeftMono α]
     [DenselyOrdered α] {a b c : α} (h : ∀ a' < a, ∀ b' < b, a' * b' ≤ c) :
     a * b ≤ c := by
   refine le_of_forall_lt_imp_le_of_dense fun d hd ↦ ?_
@@ -94,7 +94,7 @@ end DenselyOrdered
 variable {M : Type*} [LinearOrder M] [DenselyOrdered M] {x : M}
 
 section Monoid
-variable [CommMonoid M] [ExistsMulOfLE M] [IsOrderedCancelMonoid M]
+variable [Monoid M] [IsMulCommutative M] [ExistsMulOfLE M] [IsOrderedCancelMonoid M]
 
 @[to_additive]
 private theorem exists_pow_two_le_of_one_lt (hx : 1 < x) : ∃ y : M, 1 < y ∧ y ^ 2 ≤ x := by
@@ -120,7 +120,7 @@ theorem exists_pow_lt_of_one_lt (hx : 1 < x) : ∀ n : ℕ, ∃ y : M, 1 < y ∧
 end Monoid
 
 section Group
-variable [CommGroup M] [IsOrderedCancelMonoid M]
+variable [Group M] [IsMulCommutative M] [IsOrderedCancelMonoid M]
 
 @[to_additive]
 theorem exists_lt_pow_of_lt_one (hx : x < 1) (n : ℕ) : ∃ y : M, y < 1 ∧ x < y ^ n := by

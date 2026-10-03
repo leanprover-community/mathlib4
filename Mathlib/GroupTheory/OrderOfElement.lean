@@ -905,7 +905,7 @@ end Group
 
 section CommMonoid
 
-variable [CommMonoid G] {x y : G}
+variable [Monoid G] [IsMulCommutative G] {x y : G}
 
 /-- Elements of finite order are closed under multiplication. -/
 @[to_additive /-- Elements of finite additive order are closed under addition. -/]
@@ -915,7 +915,7 @@ theorem IsOfFinOrder.mul (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : IsOfFinOr
 end CommMonoid
 
 section CommGroup
-variable [CommGroup G]
+variable [Group G] [IsMulCommutative G]
 
 @[to_additive]
 lemma isMulTorsionFree_iff_not_isOfFinOrder :

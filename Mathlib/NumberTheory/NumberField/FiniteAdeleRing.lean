@@ -31,7 +31,7 @@ namespace NumberField
 
 open IsDedekindDomain FiniteAdeleRing
 
-variable {R K : Type*} [CommRing R] [IsDedekindDomain R] [Ring.HasFiniteQuotients R] [Infinite R]
+variable {R K : Type*} [Ring R] [IsMulCommutative R] [IsDedekindDomain R] [Ring.HasFiniteQuotients R] [Infinite R]
   [Field K] [Algebra R K] [IsFractionRing R K]
 
 namespace AdeleRing

@@ -15,7 +15,7 @@ import Mathlib.Basic.Complex.Basic
 
 This file defines inner product spaces.
 Hilbert spaces can be obtained using the set of assumptions
-`[RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
+`[RCLike 𝕜] [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
 For convenience, a variable alias `HilbertSpace` is provided so that one can write
 `variable? [HilbertSpace 𝕜 E]` and get this as a suggestion.
 
@@ -106,7 +106,7 @@ Note that `NormedSpace` does not assume that `‖x‖=0` implies `x=0` (it is ra
 To construct a seminorm from an inner product, see `PreInnerProductSpace.ofCore`.
 -/
 @[wikidata Q214159]
-class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] extends
+class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] extends
     NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
   norm_sq_eq_re_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
@@ -136,7 +136,7 @@ instance defined on it, otherwise this will create a second non-defeq norm insta
 -/
 
 /-- A structure requiring that a scalar product is positive semidefinite and symmetric. -/
-structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
+structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddGroup F] [IsAddCommutative F]
     [Module 𝕜 F] extends Inner 𝕜 F where
   /-- The inner product is *Hermitian*, taking the `conj` swaps the arguments. -/
   conj_inner_symm x y : conj (inner y x) = inner x y
@@ -151,7 +151,7 @@ attribute [class] PreInnerProductSpace.Core
 
 /-- A structure requiring that a scalar product is positive definite. Some theorems that
 require these assumptions are put under section `InnerProductSpace.Core`. -/
-structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
+structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddGroup F] [IsAddCommutative F]
   [Module 𝕜 F] extends PreInnerProductSpace.Core 𝕜 F where
   /-- The inner product is positive definite. -/
   definite : ∀ x, inner x x = 0 → x = 0
@@ -161,7 +161,7 @@ of the normed space structure that it produces. However, all the instances we wi
 local to this proof. -/
 attribute [class] InnerProductSpace.Core
 
-instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
+instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddGroup F] [IsAddCommutative F]
     [Module 𝕜 F] [cd : InnerProductSpace.Core 𝕜 F] : PreInnerProductSpace.Core 𝕜 F where
   inner := cd.inner
   conj_inner_symm := cd.conj_inner_symm
@@ -174,7 +174,7 @@ instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
 by `PreInnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
 @[instance_reducible]
-def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def PreInnerProductSpace.toCore [SeminormedAddGroup E] [IsAddCommutative E] [c : InnerProductSpace 𝕜 E] :
     PreInnerProductSpace.Core 𝕜 E where
   __ := c
   re_inner_nonneg x := by rw [← InnerProductSpace.norm_sq_eq_re_inner]; apply sq_nonneg
@@ -184,7 +184,7 @@ def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpac
 `InnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
 @[instance_reducible]
-def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def InnerProductSpace.toCore [NormedAddGroup E] [IsAddCommutative E] [c : InnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
     re_inner_nonneg := fun x => by
@@ -198,7 +198,7 @@ namespace InnerProductSpace.Core
 
 section PreInnerProductSpace.Core
 
-variable [AddCommGroup F] [Module 𝕜 F] [c : PreInnerProductSpace.Core 𝕜 F]
+variable [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [c : PreInnerProductSpace.Core 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -437,7 +437,7 @@ end PreInnerProductSpace.Core
 
 section InnerProductSpace.Core
 
-variable [AddCommGroup F] [Module 𝕜 F] [cd : InnerProductSpace.Core 𝕜 F]
+variable [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [cd : InnerProductSpace.Core 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -568,7 +568,7 @@ the space into a pre-inner product space (i.e., `SeminormedAddCommGroup` and `In
 The `SeminormedAddCommGroup` structure is expected to already be defined with
 `InnerProductSpace.ofCore.toSeminormedAddCommGroup`. -/
 @[instance_reducible]
-def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : PreInnerProductSpace.Core 𝕜 F) :
+def InnerProductSpace.ofCore [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] (cd : PreInnerProductSpace.Core 𝕜 F) :
     InnerProductSpace 𝕜 F :=
   letI : NormedSpace 𝕜 F := InnerProductSpace.Core.toNormedSpace
   { cd with
@@ -583,7 +583,7 @@ end
 the space into an inner product space. The `NormedAddCommGroup` structure is expected
 to already be defined with `InnerProductSpace.ofCore.toNormedAddCommGroupOfTopology`. -/
 @[instance_reducible]
-def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [TopologicalSpace F]
+def InnerProductSpace.ofCoreOfTopology [AddGroup F] [IsAddCommutative F] [hF : Module 𝕜 F] [TopologicalSpace F]
     [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (cd : InnerProductSpace.Core 𝕜 F)
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
@@ -601,7 +601,7 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
 /-- A Hilbert space is a complete normed inner product space. -/
 @[variable_alias]
 structure HilbertSpace (𝕜 E : Type*) [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+  [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 namespace PUnit
 

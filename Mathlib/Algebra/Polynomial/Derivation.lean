@@ -25,7 +25,7 @@ namespace Polynomial
 
 section CommSemiring
 
-variable {R A : Type*} [CommSemiring R]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- `Polynomial.derivative` as a derivation. -/
 @[simps]
@@ -36,7 +36,7 @@ def derivative' : Derivation R R[X] R[X] where
   map_one_eq_zero' := derivative_one
   leibniz' f g := by simp [mul_comm, add_comm, derivative_mul]
 
-variable [AddCommMonoid A] [Module R A] [Module (Polynomial R) A]
+variable [AddMonoid A] [IsAddCommutative A] [Module R A] [Module (Polynomial R) A]
 
 @[simp]
 theorem derivation_C (D : Derivation R R[X] A) (a : R) : D (C a) = 0 :=
@@ -99,7 +99,7 @@ end Polynomial
 
 namespace Derivation
 
-variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
+variable {R A M : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A] [AddMonoid M] [IsAddCommutative M]
   [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
 
 open Polynomial Module

@@ -268,7 +268,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] [CommRing S] {I : Ideal R}
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {I : Ideal R}
 
 theorem radical_le_jacobson : radical I ≤ jacobson I :=
   le_sInf fun _ hJ => (radical_eq_sInf I).symm ▸ sInf_le ⟨hJ.left, IsMaximal.isPrime hJ.right⟩
@@ -339,7 +339,7 @@ end Jacobson
 
 section IsLocal
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- An ideal `I` is local iff its Jacobson radical is maximal. -/
 class IsLocal (I : Ideal R) : Prop where

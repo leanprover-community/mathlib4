@@ -327,7 +327,7 @@ end Topology.IsQuotientMap
   isQuotientMap_quotient_mk'.isQuotientCoveringMap_of_subgroupOp S hS <|
     Quotient.eq''.trans QuotientGroup.leftRel_apply
 
-@[to_additive] lemma Subgroup.isQuotientCoveringMap_of_comm {G} [CommGroup G] [TopologicalSpace G]
+@[to_additive] lemma Subgroup.isQuotientCoveringMap_of_comm {G} [Group G] [IsMulCommutative G] [TopologicalSpace G]
     [IsTopologicalGroup G] (S : Subgroup G) (hS : IsDiscrete (S : Set G)) :
     IsQuotientCoveringMap (QuotientGroup.mk (s := S)) S :=
   isQuotientMap_quotient_mk'.isQuotientCoveringMap_of_subgroup S hS <| Quotient.eq''.trans <|

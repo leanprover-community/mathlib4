@@ -61,33 +61,33 @@ section WeakTopology
 
 /-- The space `E` equipped with the weak topology induced by the bilinear form `B`. -/
 @[nolint unusedArguments]
-def WeakBilin [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
+def WeakBilin [Semiring 𝕜] [IsMulCommutative 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
     (_ : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) := E
 
 namespace WeakBilin
 
-variable [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
-  (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) [CommSemiring 𝕝] [Module 𝕝 E] in
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
+  (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) [Semiring 𝕝] [IsMulCommutative 𝕝] [Module 𝕝 E] in
 deriving instance SMul 𝕝, AddCommMonoid, Module 𝕝 for WeakBilin B
 
-instance instAddCommGroup [CommSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommMonoid F]
+instance instAddCommGroup [Semiring 𝕜] [IsMulCommutative 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [AddMonoid F] [IsAddCommutative F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommGroup (WeakBilin B) :=
   inferInstanceAs <| AddCommGroup E
 
-instance [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
+instance [Semiring 𝕜] [IsMulCommutative 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
     (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : Module 𝕜 (WeakBilin B) :=
   inferInstance
 
-instance instIsScalarTower [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommMonoid E] [Module 𝕜 E]
-    [AddCommMonoid F] [Module 𝕜 F] [SMul 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E]
+instance instIsScalarTower [Semiring 𝕜] [IsMulCommutative 𝕜] [Semiring 𝕝] [IsMulCommutative 𝕝] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E]
+    [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F] [SMul 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E]
     (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : IsScalarTower 𝕝 𝕜 (WeakBilin B) :=
   inferInstanceAs <| IsScalarTower 𝕝 𝕜 E
 
 section Semiring
 
-variable [TopologicalSpace 𝕜] [CommSemiring 𝕜]
-variable [AddCommMonoid E] [Module 𝕜 E]
-variable [AddCommMonoid F] [Module 𝕜 F]
+variable [TopologicalSpace 𝕜] [Semiring 𝕜] [IsMulCommutative 𝕜]
+variable [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E]
+variable [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
@@ -148,9 +148,9 @@ end Semiring
 
 section Ring
 
-variable [TopologicalSpace 𝕜] [CommRing 𝕜]
-variable [AddCommGroup E] [Module 𝕜 E]
-variable [AddCommGroup F] [Module 𝕜 F]
+variable [TopologicalSpace 𝕜] [Ring 𝕜] [IsMulCommutative 𝕜]
+variable [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
+variable [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
 
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)

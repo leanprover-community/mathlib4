@@ -125,7 +125,7 @@ lemma stabilizer_finite (hs₀ : s.Nonempty) (hs : s.Finite) : (stabilizer G s :
 end Group
 
 section CommGroup
-variable [CommGroup G] {s : Set G} {a : G}
+variable [Group G] [IsMulCommutative G] {s : Set G} {a : G}
 
 @[to_additive]
 lemma smul_set_stabilizer_subset (ha : a ∈ s) : a • (stabilizer G s : Set G) ⊆ s := by
@@ -238,7 +238,7 @@ end MulAction
 /-! ### Stabilizer in a commutative group -/
 
 namespace MulAction
-variable {G : Type*} [CommGroup G] (s : Set G)
+variable {G : Type*} [Group G] [IsMulCommutative G] (s : Set G)
 
 @[to_additive (attr := simp)]
 lemma mul_stabilizer_self : s * stabilizer G s = s := by rw [mul_comm, stabilizer_mul_self]

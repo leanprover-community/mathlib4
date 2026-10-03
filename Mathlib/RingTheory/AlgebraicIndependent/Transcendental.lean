@@ -31,7 +31,7 @@ open Function Set Subalgebra MvPolynomial Algebra
 universe u v
 
 variable {ι ι' R : Type*} {S : Type u} {A : Type v} {x : ι → A}
-variable [CommRing R] [CommRing S] [CommRing A]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring A] [IsMulCommutative A]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
 /-- A one-element family `x` is algebraically independent if and only if
@@ -253,7 +253,7 @@ theorem lift_trdeg_add_le [Nontrivial R] [FaithfulSMul R S] [FaithfulSMul S A] :
   refine le_ciSup_of_le bddAbove_of_small ⟨_, this.to_subtype_range⟩ ?_
   rw [← lift_umax, mk_range_eq_of_injective this.injective, lift_id']
 
-theorem trdeg_add_le [Nontrivial R] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A]
+theorem trdeg_add_le [Nontrivial R] {A : Type u} [Ring A] [IsMulCommutative A] [Algebra R A] [Algebra S A]
     [FaithfulSMul R S] [FaithfulSMul S A] [IsScalarTower R S A] :
     trdeg R S + trdeg S A ≤ trdeg R A := by
   rw [← (trdeg R S).lift_id, ← (trdeg S A).lift_id, ← (trdeg R A).lift_id]

@@ -33,8 +33,8 @@ open QuadraticMap
 
 namespace QuadraticForm
 
-variable [CommRing R]
-variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃] [AddCommGroup M₄]
+variable [Ring R] [IsMulCommutative R]
+variable [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup M₃] [IsAddCommutative M₃] [AddGroup M₄] [IsAddCommutative M₄]
 variable [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄] [Invertible (2 : R)]
 
 @[simp]

@@ -45,7 +45,7 @@ instance (M : Π i, Submonoid (R i)) [∀ i, IsLocalization (M i) (S i)] :
     choose c hc using fun i ↦ exists_of_eq (M := M i) congr($eq i)
     exact ⟨⟨_, fun i _ ↦ (c i).2⟩, funext hc⟩
 
-variable (S' : Type*) [CommSemiring S'] [Algebra (Π i, R i) S'] (M : Submonoid (Π i, R i))
+variable (S' : Type*) [Semiring S'] [IsMulCommutative S'] [Algebra (Π i, R i) S'] (M : Submonoid (Π i, R i))
 
 theorem iff_map_piEvalRingHom [Finite ι] :
     IsLocalization M S' ↔ IsLocalization (.pi .univ fun i ↦ M.map (Pi.evalRingHom R i)) S' :=

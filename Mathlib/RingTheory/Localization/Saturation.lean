@@ -20,7 +20,7 @@ Crucially, the saturation of `S` is precisely the elements that become a unit in
 @[expose] public section
 
 namespace IsLocalization
-variable {R : Type*} [CommRing R] {S T : Submonoid R} {A : Type*} [CommRing A] [Algebra R A]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {S T : Submonoid R} {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A]
 
 open Submonoid
 

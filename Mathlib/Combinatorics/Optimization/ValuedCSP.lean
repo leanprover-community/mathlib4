@@ -38,10 +38,10 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 Regarding `C` we want to support `Bool`, `Nat`, `ENat`, `Int`, `Rat`, `NNRat`,
 `Real`, `NNReal`, `EReal`, `ENNReal`, and tuples made of any of those types. -/
 @[nolint unusedArguments]
-abbrev ValuedCSP (D C : Type*) [AddCommMonoid C] [PartialOrder C] [IsOrderedAddMonoid C] :=
+abbrev ValuedCSP (D C : Type*) [AddMonoid C] [IsAddCommutative C] [PartialOrder C] [IsOrderedAddMonoid C] :=
   Set (Σ (n : ℕ), (Fin n → D) → C) -- Cost functions `D^n → C` for any `n`
 
-variable {D C : Type*} [AddCommMonoid C] [PartialOrder C] [IsOrderedAddMonoid C]
+variable {D C : Type*} [AddMonoid C] [IsAddCommutative C] [PartialOrder C] [IsOrderedAddMonoid C]
 
 /-- A term in a valued CSP instance over the template `Γ`. -/
 structure ValuedCSP.Term (Γ : ValuedCSP D C) (ι : Type*) where
@@ -147,7 +147,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux {C : Type*} [PartialOrder C]
   convert! symmega ![a, b] ![b, a] (by simp [List.Perm.swap]) o in_omega using 2 <;>
     simp [Matrix.const_fin1_eq]
 
-variable {C : Type*} [AddCommMonoid C] [PartialOrder C] [IsOrderedCancelAddMonoid C]
+variable {C : Type*} [AddMonoid C] [IsAddCommutative C] [PartialOrder C] [IsOrderedCancelAddMonoid C]
 
 lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
     {f : (Fin 2 → D) → C} (mcf : f.HasMaxCutProperty)

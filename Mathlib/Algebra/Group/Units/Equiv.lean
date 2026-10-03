@@ -167,7 +167,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup G]
+variable [Group G] [IsMulCommutative G]
 
 @[to_additive]
 lemma symm_divLeft (a : G) : (Equiv.divLeft a).symm = Equiv.divLeft a :=
@@ -192,11 +192,11 @@ def unitsEquivProdSubtype [Monoid α] : αˣ ≃ {p : α × α // p.1 * p.2 = 1 
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
 @[to_additive (attr := simps apply)
   /-- When the `AddGroup` is commutative, `Equiv.neg` is an `AddEquiv`. -/]
-def MulEquiv.inv (G : Type*) [DivisionCommMonoid G] : G ≃* G :=
+def MulEquiv.inv (G : Type*) [DivisionMonoid G] [IsMulCommutative G] : G ≃* G :=
   { Equiv.inv G with toFun := Inv.inv, invFun := Inv.inv, map_mul' := mul_inv }
 
 @[to_additive (attr := simp)]
-theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
+theorem MulEquiv.inv_symm (G : Type*) [DivisionMonoid G] [IsMulCommutative G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 

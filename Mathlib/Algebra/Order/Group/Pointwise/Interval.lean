@@ -124,7 +124,7 @@ theorem Ici_mul_Ioi_subset' (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
 end ContravariantLT
 
 section LinearOrderedCommMonoid
-variable [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] [MulLeftReflectLE α] [ExistsMulOfLE α]
+variable [Monoid α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α] [MulLeftReflectLE α] [ExistsMulOfLE α]
   {a b c d : α}
 
 -- TODO: Generalise to arbitrary actions using a `smul` version of `MulLeftMono`
@@ -154,7 +154,7 @@ lemma Icc_mul_Icc (hab : a ≤ b) (hcd : c ≤ d) : Icc a b * Icc c d = Icc (a *
 end LinearOrderedCommMonoid
 
 section OrderedCommGroup
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] (a b c : α)
+variable [Group α] [IsMulCommutative α] [PartialOrder α] [IsOrderedMonoid α] (a b c : α)
 
 @[to_additive (attr := simp)] lemma inv_Ici (a : α) : (Ici a)⁻¹ = Iic a⁻¹ := ext fun _x ↦ le_inv'
 @[to_additive (attr := simp)] lemma inv_Iic (a : α) : (Iic a)⁻¹ = Ici a⁻¹ := ext fun _x ↦ inv_le'
@@ -467,7 +467,7 @@ theorem Iio_mul_bij : BijOn (· * a) (Iio b) (Iio (b * a)) :=
 end OrderedCommGroup
 
 section LinearOrderedCommGroup
-variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
+variable [Group α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α]
 
 @[to_additive (attr := simp)]
 lemma inv_uIcc (a b : α) : [[a, b]]⁻¹ = [[a⁻¹, b⁻¹]] := by
@@ -482,7 +482,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] (a b c d : α)
+variable [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α] (a b c d : α)
 
 @[simp]
 theorem preimage_const_add_uIcc : (fun x => a + x) ⁻¹' [[b, c]] = [[b - a, c - a]] := by
@@ -670,7 +670,7 @@ instead of depending on commutativity.
 
 section CommGroupWithZero
 
-variable {G₀ : Type*} [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] {a b c : G₀}
+variable {G₀ : Type*} [GroupWithZero G₀] [IsMulCommutative G₀] [PartialOrder G₀] [PosMulReflectLT G₀] {a b c : G₀}
 
 @[simp]
 theorem preimage_const_mul_Iic₀ (a : G₀) (h : 0 < c) : (c * ·) ⁻¹' Iic a = Iic (a / c) :=

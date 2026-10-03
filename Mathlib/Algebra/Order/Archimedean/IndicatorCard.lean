@@ -28,7 +28,7 @@ namespace Set
 
 open Filter Finset
 
-lemma sum_indicator_eventually_eq_card {α : Type*} [AddCommMonoid α] (a : α) {s : Set ℕ}
+lemma sum_indicator_eventually_eq_card {α : Type*} [AddMonoid α] [IsAddCommutative α] (a : α) {s : Set ℕ}
     (hs : s.Finite) :
     ∀ᶠ n in atTop, ∑ k ∈ Finset.range n, s.indicator (fun _ ↦ a) k = (Nat.card s) • a := by
   have key : ∀ x ∈ hs.toFinset, s.indicator (fun _ ↦ a) x = a := by
@@ -42,7 +42,7 @@ lemma sum_indicator_eventually_eq_card {α : Type*} [AddCommMonoid α] (a : α) 
   · exact fun _ x_s ↦ indicator_of_notMem x_s (fun _ ↦ a)
 
 lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*}
-    [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R]
+    [AddMonoid R] [IsAddCommutative R] [PartialOrder R] [IsOrderedAddMonoid R]
     [AddLeftStrictMono R] [Archimedean R] {r : R} (h : 0 < r) {s : Set ℕ} :
     s.Infinite ↔ atTop.Tendsto (fun n ↦ ∑ k ∈ Finset.range n, s.indicator (fun _ ↦ r) k) atTop := by
   constructor
@@ -69,7 +69,7 @@ lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*}
     exact ⟨m • r, fun n ↦ ⟨n, le_refl n, not_le_of_gt hm⟩⟩
 
 lemma limsup_eq_tendsto_sum_indicator_atTop {α R : Type*}
-    [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R]
+    [AddMonoid R] [IsAddCommutative R] [PartialOrder R] [IsOrderedAddMonoid R]
     [AddLeftStrictMono R] [Archimedean R] {r : R} (h : 0 < r) (s : ℕ → Set α) :
     atTop.limsup s = { ω | atTop.Tendsto
       (fun n ↦ ∑ k ∈ Finset.range n, (s k).indicator (fun _ ↦ r) ω) atTop } := by

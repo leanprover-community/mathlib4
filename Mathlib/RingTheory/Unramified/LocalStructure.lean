@@ -43,7 +43,7 @@ open Polynomial TensorProduct Algebra
 
 open scoped nonZeroDivisors
 
-variable {R A S : Type*} [CommRing R] [CommRing A] [CommRing S] [Algebra R S] [Algebra R A]
+variable {R A S : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra R A]
 
 variable (R) in
 /-- The predicate "there exists a standard etale algebra `A` over `R` that surjects onto `S[1/f]`".
@@ -52,7 +52,7 @@ def HasStandardEtaleSurjectionOn (f : S) : Prop :=
   ∃ (P : StandardEtalePair R) (φ : P.Ring →ₐ[R] Localization.Away f), Function.Surjective φ
 
 lemma HasStandardEtaleSurjectionOn.mk [IsStandardEtale R A]
-    {Sf : Type*} [CommRing Sf] [Algebra R Sf] [Algebra S Sf] [IsScalarTower R S Sf]
+    {Sf : Type*} [Ring Sf] [IsMulCommutative Sf] [Algebra R Sf] [Algebra S Sf] [IsScalarTower R S Sf]
     {f : S} [IsLocalization.Away f Sf] (φ : A →ₐ[R] Sf) (H : Function.Surjective φ) :
     HasStandardEtaleSurjectionOn R f :=
   let P : StandardEtalePresentation R A := Nonempty.some inferInstance

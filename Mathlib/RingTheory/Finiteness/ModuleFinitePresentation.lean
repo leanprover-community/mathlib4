@@ -30,7 +30,7 @@ public section
 
 universe u
 
-variable (R : Type u) (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- EGA IV₁, 1.4.7.1 -/
 lemma Module.Finite.exists_free_surjective [Module.Finite R S] :

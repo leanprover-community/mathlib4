@@ -18,7 +18,7 @@ open CategoryTheory
 
 universe v u
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 /-- The category of quadratic modules; modules with an associated quadratic form -/
 structure QuadraticModuleCat extends ModuleCat.{v} R where
@@ -39,7 +39,7 @@ instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   rfl
 
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/
-abbrev of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
+abbrev of {X : Type v} [AddGroup X] [IsAddCommutative X] [Module R X] (Q : QuadraticForm R X) :
     QuadraticModuleCat R :=
   { ModuleCat.of R X with
     form := Q }
@@ -66,7 +66,7 @@ abbrev Hom.toIsometry {X Y : QuadraticModuleCat R} (f : Hom X Y) :=
   ConcreteCategory.hom (C := QuadraticModuleCat R) f
 
 /-- Typecheck a `QuadraticForm.Isometry` as a morphism in `Module R`. -/
-abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+abbrev ofHom {X Y : Type v} [AddGroup X] [IsAddCommutative X] [Module R X] [AddGroup Y] [IsAddCommutative Y] [Module R Y]
     {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R Y} (f : Q₁ →qᵢ Q₂) :
     of Q₁ ⟶ of Q₂ :=
   ConcreteCategory.ofHom f
@@ -105,7 +105,7 @@ theorem forget₂_map (X Y : QuadraticModuleCat R) (f : X ⟶ Y) :
   rfl
 
 variable {X Y Z : Type v}
-variable [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] [AddCommGroup Z] [Module R Z]
+variable [AddGroup X] [IsAddCommutative X] [Module R X] [AddGroup Y] [IsAddCommutative Y] [Module R Y] [AddGroup Z] [IsAddCommutative Z] [Module R Z]
 variable {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R Y} {Q₃ : QuadraticForm R Z}
 
 /-- Build an isomorphism in the category `QuadraticModuleCat R` from a

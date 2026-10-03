@@ -122,7 +122,7 @@ end sylvester
 
 section resultant
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 /-- The resultant of two polynomials `f` and `g` is the determinant of the Sylvester matrix of `f`
 and `g`. The size arguments `m` and `n` are implemented as `optParam`, meaning that the default
@@ -527,12 +527,12 @@ If `R → S` injective implies `(∀ p : S[X], P p) → (∀ p : R[X], P p)`,
 and if `R → S` surjective implies `(∀ p : R[X], P p) → (∀ p : S[X], P p)`,
 then we may reduce to the case where `R` is a field and `p` splits. -/
 nonrec lemma induction_of_Splits_of_injective_of_surjective.{u}
-    {R : Type u} [CommRing R] (p : R[X])
-    (P : ∀ {R : Type u} [CommRing R], R[X] → Prop)
+    {R : Type u} [Ring R] [IsMulCommutative R] (p : R[X])
+    (P : ∀ {R : Type u} [Ring R] [IsMulCommutative R], R[X] → Prop)
     (Splits : ∀ (R : Type u) [Field R] (p : R[X]) (hp : p.Splits), P p)
-    (injective : ∀ (R S : Type u) [CommRing R] [CommRing S]
+    (injective : ∀ (R S : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
       (φ : R →+* S) (hφ : Function.Injective φ) (p : R[X]) (IH : P (p.map φ)), P p)
-    (surjective : ∀ (R S : Type u) [CommRing R] [CommRing S]
+    (surjective : ∀ (R S : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
       (φ : R →+* S) (hφ : Function.Surjective φ) (p : S[X]) (IH : ∀ q : R[X], P q), P p) : P p := by
   wlog hR : IsDomain R generalizing R
   · exact surjective _ _ (MvPolynomial.eval₂Hom (algebraMap ℤ R) id)
@@ -795,7 +795,7 @@ end resultant
 
 section sylvesterMap
 
-variable {m n} {R : Type*} [CommRing R]
+variable {m n} {R : Type*} [Ring R] [IsMulCommutative R]
 
 attribute [local simp] Polynomial.mem_degreeLT
 
@@ -927,7 +927,7 @@ end sylvesterMap
 
 section disc
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /-- The discriminant of a polynomial, defined as the determinant of `f.sylvesterDeriv` modified
 by a sign. The sign is chosen so polynomials over `ℝ` with all roots real have non-negative

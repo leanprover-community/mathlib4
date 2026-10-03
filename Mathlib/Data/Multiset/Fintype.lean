@@ -112,7 +112,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
   ext a; simp [count_map, ← Finset.filter_val, eq_comm (a := a)]
 
 @[to_additive]
-theorem prod_map_eq_prod_toEnumFinset {M : Type*} [CommMonoid M] (m : Multiset α) (f : α → M) :
+theorem prod_map_eq_prod_toEnumFinset {M : Type*} [Monoid M] [IsMulCommutative M] (m : Multiset α) (f : α → M) :
     (m.map f).prod = ∏ i ∈ m.toEnumFinset, f i.1 := by
   grind [m.map_toEnumFinset_fst, map_map, Finset.prod_map_val]
 
@@ -219,18 +219,18 @@ theorem card_coe (m : Multiset α) : Fintype.card m = Multiset.card m := by
   simp only [Fintype.card_coe, card_toEnumFinset]
 
 @[to_additive]
-theorem prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = ∏ x : m, (x : α) := by
+theorem prod_eq_prod_coe [Monoid α] [IsMulCommutative α] (m : Multiset α) : m.prod = ∏ x : m, (x : α) := by
   congr
   simp
 
 @[to_additive]
-theorem prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
+theorem prod_eq_prod_toEnumFinset [Monoid α] [IsMulCommutative α] (m : Multiset α) :
     m.prod = ∏ x ∈ m.toEnumFinset, x.1 := by
   congr
   simp
 
 @[to_additive]
-theorem prod_toEnumFinset {β : Type*} [CommMonoid β] (m : Multiset α) (f : α → ℕ → β) :
+theorem prod_toEnumFinset {β : Type*} [Monoid β] [IsMulCommutative β] (m : Multiset α) (f : α → ℕ → β) :
     ∏ x ∈ m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
   rw [Fintype.prod_equiv m.coeEquiv (fun x ↦ f x x.2) fun x ↦ f x.1.1 x.1.2]
   · rw [← m.toEnumFinset.prod_coe_sort fun x ↦ f x.1 x.2]

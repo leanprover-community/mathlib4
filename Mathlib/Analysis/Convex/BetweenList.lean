@@ -31,8 +31,8 @@ namespace List
 
 section OrderedRing
 
-variable [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
+variable [Ring R] [PartialOrder R] [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
+variable [AddGroup V'] [IsAddCommutative V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points in a list are weakly in that order on a line. -/
 protected def Wbtw (l : List P) : Prop :=
@@ -176,7 +176,7 @@ end OrderedRing
 section LinearOrderedField
 
 variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup V] [Module R V] [AddTorsor V P] {x : P}
+  [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P] {x : P}
 variable {R}
 
 lemma SortedLE.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by

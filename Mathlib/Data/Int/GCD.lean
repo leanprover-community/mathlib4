@@ -311,7 +311,7 @@ protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.C
 end GroupWithZero
 
 section CommGroupWithZero
-variable [CommGroupWithZero α] {a b : α} {m n : ℕ}
+variable [GroupWithZero α] [IsMulCommutative α] {a b : α} {m n : ℕ}
 
 lemma pow_eq_pow_iff_of_coprime (hmn : m.Coprime n) : a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m :=
   (Commute.all _ _).pow_eq_pow_iff_of_coprime hmn

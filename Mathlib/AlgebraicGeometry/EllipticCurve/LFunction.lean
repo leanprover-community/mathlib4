@@ -32,7 +32,7 @@ namespace WeierstrassCurve
 
 section LocalField
 
-variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] {K : Type*}
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsDomain R] [IsDiscreteValuationRing R] {K : Type*}
   [Field K] [Algebra R K] [IsFractionRing R K] (W : WeierstrassCurve K)
 
 open Classical Polynomial in

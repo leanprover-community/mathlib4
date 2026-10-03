@@ -166,11 +166,11 @@ end MonoidHom
 
 namespace LinearMap
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 variable {M₁ M₂ M₃ M₄ M₅ N₁ N₂ N₃ N₄ N₅ : Type*}
-variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃] [AddCommGroup M₄] [AddCommGroup M₅]
+variable [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup M₃] [IsAddCommutative M₃] [AddGroup M₄] [IsAddCommutative M₄] [AddGroup M₅] [IsAddCommutative M₅]
 variable [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄] [Module R M₅]
-variable [AddCommGroup N₁] [AddCommGroup N₂] [AddCommGroup N₃] [AddCommGroup N₄] [AddCommGroup N₅]
+variable [AddGroup N₁] [IsAddCommutative N₁] [AddGroup N₂] [IsAddCommutative N₂] [AddGroup N₃] [IsAddCommutative N₃] [AddGroup N₄] [IsAddCommutative N₄] [AddGroup N₅] [IsAddCommutative N₅]
 variable [Module R N₁] [Module R N₂] [Module R N₃] [Module R N₄] [Module R N₅]
 variable (f₁ : M₁ →ₗ[R] M₂) (f₂ : M₂ →ₗ[R] M₃) (f₃ : M₃ →ₗ[R] M₄) (f₄ : M₄ →ₗ[R] M₅)
 variable (g₁ : N₁ →ₗ[R] N₂) (g₂ : N₂ →ₗ[R] N₃) (g₃ : N₃ →ₗ[R] N₄) (g₄ : N₄ →ₗ[R] N₅)

@@ -64,16 +64,16 @@ of the finite set `s`.
 
 When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for
 `∑ x ∈ Finset.univ, f x`. -/]
-protected def prod [CommMonoid M] (s : Finset ι) (f : ι → M) : M :=
+protected def prod [Monoid M] [IsMulCommutative M] (s : Finset ι) (f : ι → M) : M :=
   (s.1.map f).prod
 
 @[to_additive (attr := simp)]
-theorem prod_mk [CommMonoid M] (s : Multiset ι) (hs : s.Nodup) (f : ι → M) :
+theorem prod_mk [Monoid M] [IsMulCommutative M] (s : Multiset ι) (hs : s.Nodup) (f : ι → M) :
     (⟨s, hs⟩ : Finset ι).prod f = (s.map f).prod :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem prod_val [CommMonoid M] (s : Finset M) : s.1.prod = s.prod id := by
+theorem prod_val [Monoid M] [IsMulCommutative M] (s : Finset M) : s.1.prod = s.prod id := by
   rw [Finset.prod, Multiset.map_id]
 
 end Finset
@@ -347,12 +347,12 @@ namespace Finset
 variable {s : Finset ι} {a : ι} {f : ι → M}
 
 @[to_additive]
-theorem prod_eq_multiset_prod [CommMonoid M] (s : Finset ι) (f : ι → M) :
+theorem prod_eq_multiset_prod [Monoid M] [IsMulCommutative M] (s : Finset ι) (f : ι → M) :
     ∏ x ∈ s, f x = (s.1.map f).prod :=
   rfl
 
 @[to_additive (attr := simp)]
-lemma prod_map_val [CommMonoid M] (s : Finset ι) (f : ι → M) : (s.1.map f).prod = ∏ a ∈ s, f a :=
+lemma prod_map_val [Monoid M] [IsMulCommutative M] (s : Finset ι) (f : ι → M) : (s.1.map f).prod = ∏ a ∈ s, f a :=
   rfl
 
 @[simp]
@@ -362,7 +362,7 @@ theorem sum_multiset_singleton (s : Finset ι) : ∑ a ∈ s, {a} = s.val := by
 end Finset
 
 @[to_additive (attr := simp)]
-theorem map_prod [CommMonoid M] [CommMonoid N] {G : Type*} [FunLike G M N] [MonoidHomClass G M N]
+theorem map_prod [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] {G : Type*} [FunLike G M N] [MonoidHomClass G M N]
     (g : G) (f : ι → M) (s : Finset ι) : g (∏ x ∈ s, f x) = ∏ x ∈ s, g (f x) := by
   simp only [Finset.prod_eq_multiset_prod, map_multiset_prod, Multiset.map_map]; rfl
 
@@ -372,7 +372,7 @@ namespace Finset
 
 section CommMonoid
 
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 @[to_additive (attr := simp)]
 theorem prod_empty : ∏ x ∈ ∅, f x = 1 :=
@@ -410,7 +410,7 @@ theorem prod_map_toList (s : Finset ι) (f : ι → M) : (s.toList.map f).prod =
   rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
 
 @[to_additive (attr := simp, grind =)]
-theorem prod_toList {M : Type*} [CommMonoid M] (s : Finset M) :
+theorem prod_toList {M : Type*} [Monoid M] [IsMulCommutative M] (s : Finset M) :
     s.toList.prod = ∏ x ∈ s, x := by
   simpa using! s.prod_map_toList id
 
@@ -436,7 +436,7 @@ namespace Finset
 
 section CommMonoid
 
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 section bij
 variable {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ → M}
@@ -550,7 +550,7 @@ lemma prod_bijective (e : ι → κ) (he : e.Bijective) (hst : ∀ i, i ∈ s �
 end bij
 
 @[to_additive]
-theorem prod_hom_rel [CommMonoid N] {r : M → N → Prop} {f : ι → M} {g : ι → N} {s : Finset ι}
+theorem prod_hom_rel [Monoid N] [IsMulCommutative N] {r : M → N → Prop} {f : ι → M} {g : ι → N} {s : Finset ι}
     (h₁ : r 1 1) (h₂ : ∀ a b c, r b c → r (f a * b) (g a * c)) :
     r (∏ x ∈ s, f x) (∏ x ∈ s, g x) := by
   delta Finset.prod
@@ -616,7 +616,7 @@ theorem prod_mem_multiset [DecidableEq ι] (m : Multiset ι) (f : { x // x ∈ m
 the property is multiplicative and holds on factors. -/
 @[to_additive /-- To prove a property of a sum, it suffices to prove that
 the property is additive and holds on summands. -/]
-theorem prod_induction {M : Type*} [CommMonoid M] (f : ι → M) (p : M → Prop)
+theorem prod_induction {M : Type*} [Monoid M] [IsMulCommutative M] (f : ι → M) (p : M → Prop)
     (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ s, p <| f x) :
     p <| ∏ x ∈ s, f x :=
   Multiset.prod_induction _ _ hom unit (Multiset.forall_mem_map_iff.mpr base)
@@ -625,7 +625,7 @@ theorem prod_induction {M : Type*} [CommMonoid M] (f : ι → M) (p : M → Prop
 the property is multiplicative and holds on factors. -/
 @[to_additive /-- To prove a property of a sum, it suffices to prove that
 the property is additive and holds on summands. -/]
-theorem prod_induction_nonempty {M : Type*} [CommMonoid M] (f : ι → M) (p : M → Prop)
+theorem prod_induction_nonempty {M : Type*} [Monoid M] [IsMulCommutative M] (f : ι → M) (p : M → Prop)
     (hom : ∀ a b, p a → p b → p (a * b)) (nonempty : s.Nonempty) (base : ∀ x ∈ s, p <| f x) :
     p <| ∏ x ∈ s, f x :=
   Multiset.prod_induction_nonempty p hom (by simp [nonempty_iff_ne_empty.mp nonempty])
@@ -635,14 +635,14 @@ theorem prod_induction_nonempty {M : Type*} [CommMonoid M] (f : ι → M) (p : M
 theorem prod_pow (s : Finset ι) (n : ℕ) (f : ι → M) : ∏ x ∈ s, f x ^ n = (∏ x ∈ s, f x) ^ n :=
   Multiset.prod_map_pow
 
-theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) (f : ι → M)
+theorem prod_dvd_prod_of_subset {ι M : Type*} [Monoid M] [IsMulCommutative M] (s t : Finset ι) (f : ι → M)
     (h : s ⊆ t) : (∏ i ∈ s, f i) ∣ ∏ i ∈ t, f i :=
   Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| by simpa
 
 end CommMonoid
 
 section MulOpposite
-variable [AddCommMonoid M] (s : Finset ι)
+variable [AddMonoid M] [IsAddCommutative M] (s : Finset ι)
 
 open MulOpposite
 
@@ -655,7 +655,7 @@ open MulOpposite
 end MulOpposite
 
 section AddOpposite
-variable [CommMonoid M] (s : Finset ι)
+variable [Monoid M] [IsMulCommutative M] (s : Finset ι)
 
 open AddOpposite
 
@@ -668,7 +668,7 @@ end AddOpposite
 
 section DivisionCommMonoid
 
-variable [DivisionCommMonoid G]
+variable [DivisionMonoid G] [IsMulCommutative G]
 
 @[to_additive (attr := simp)]
 theorem prod_inv_distrib (f : ι → G) : (∏ x ∈ s, (f x)⁻¹) = (∏ x ∈ s, f x)⁻¹ :=
@@ -708,7 +708,7 @@ variable [Fintype ι] [Fintype κ]
 open Finset
 
 section CommMonoid
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 /-- `Fintype.prod_bijective` is a variant of `Finset.prod_bij` that accepts `Function.Bijective`.
 
@@ -756,7 +756,7 @@ end CommMonoid
 end Fintype
 
 namespace Finset
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 @[to_additive (attr := simp)]
 lemma prod_attach_univ [Fintype ι] (f : {i // i ∈ @univ ι _} → M) :
@@ -819,7 +819,7 @@ theorem count_sum' {s : Finset ι} {a : α} {f : ι → Multiset α} :
   dsimp only [Finset.sum]
   rw [count_sum]
 
-theorem toFinset_prod_dvd_prod [DecidableEq M] [CommMonoid M] (S : Multiset M) :
+theorem toFinset_prod_dvd_prod [DecidableEq M] [Monoid M] [IsMulCommutative M] (S : Multiset M) :
     S.toFinset.prod id ∣ S.prod := by
   rw [Finset.prod_eq_multiset_prod]
   refine Multiset.prod_dvd_prod_of_le ?_
@@ -828,7 +828,7 @@ theorem toFinset_prod_dvd_prod [DecidableEq M] [CommMonoid M] (S : Multiset M) :
 end Multiset
 
 @[simp, norm_cast]
-theorem Units.coe_prod [CommMonoid M] (f : α → Mˣ) (s : Finset α) :
+theorem Units.coe_prod [Monoid M] [IsMulCommutative M] (f : α → Mˣ) (s : Finset α) :
     (↑(∏ i ∈ s, f i) : M) = ∏ i ∈ s, (f i : M) :=
   map_prod (Units.coeHom M) _ _
 
@@ -870,7 +870,7 @@ end AddMonoid
 
 section CommMonoid
 
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -895,7 +895,7 @@ end CommMonoid
 
 section AddCommMonoid
 
-variable [AddCommMonoid M]
+variable [AddMonoid M] [IsAddCommutative M]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

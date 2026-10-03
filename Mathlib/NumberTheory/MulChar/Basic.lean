@@ -61,10 +61,10 @@ have a natural structure as a commutative group.
 section Defi
 
 -- The domain of our multiplicative characters
-variable (R : Type*) [CommMonoid R]
+variable (R : Type*) [Monoid R] [IsMulCommutative R]
 
 -- The target
-variable (R' : Type*) [CommMonoidWithZero R']
+variable (R' : Type*) [MonoidWithZero R'] [IsMulCommutative R']
 
 /-- Define a structure for multiplicative characters.
 A multiplicative character from a commutative monoid `R` to a commutative monoid with zero `R'`
@@ -78,8 +78,8 @@ instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
     fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr($h _))⟩
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
-class MulCharClass (F : Type*) (R R' : outParam Type*) [CommMonoid R]
-    [CommMonoidWithZero R'] [FunLike F R R'] : Prop extends MonoidHomClass F R R' where
+class MulCharClass (F : Type*) (R R' : outParam Type*) [Monoid R] [IsMulCommutative R]
+    [MonoidWithZero R'] [IsMulCommutative R'] [FunLike F R R'] : Prop extends MonoidHomClass F R R' where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 
 initialize_simps_projections MulChar (toFun → apply, -toMonoidHom)
@@ -93,10 +93,10 @@ attribute [scoped simp] MulCharClass.map_nonunit
 section Group
 
 -- The domain of our multiplicative characters
-variable {R : Type*} [CommMonoid R]
+variable {R : Type*} [Monoid R] [IsMulCommutative R]
 
 -- The target
-variable {R' : Type*} [CommMonoidWithZero R']
+variable {R' : Type*} [MonoidWithZero R'] [IsMulCommutative R']
 
 variable (R R') in
 /-- The trivial multiplicative character. It takes the value `0` on non-units and
@@ -230,13 +230,13 @@ protected theorem map_one (χ : MulChar R R') : χ (1 : R) = 1 :=
   χ.map_one'
 
 /-- If the domain has a zero (and is nontrivial), then `χ 0 = 0`. -/
-protected theorem map_zero {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
+protected theorem map_zero {R : Type*} [MonoidWithZero R] [IsMulCommutative R] [Nontrivial R] (χ : MulChar R R') :
     χ (0 : R) = 0 := by rw [map_nonunit χ not_isUnit_zero]
 
 /-- We can convert a multiplicative character into a homomorphism of monoids with zero when
 the source has a zero and another element. -/
 @[coe, simps]
-def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
+def toMonoidWithZeroHom {R : Type*} [MonoidWithZero R] [IsMulCommutative R] [Nontrivial R] (χ : MulChar R R') :
     R →*₀ R' where
   toFun := χ.toFun
   map_zero' := χ.map_zero
@@ -244,7 +244,7 @@ def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : 
   map_mul' := χ.map_mul'
 
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
-theorem map_ringChar {R : Type*} [CommSemiring R] [Nontrivial R] (χ : MulChar R R') :
+theorem map_ringChar {R : Type*} [Semiring R] [IsMulCommutative R] [Nontrivial R] (χ : MulChar R R') :
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
 
 noncomputable instance hasOne : One (MulChar R R') :=
@@ -299,13 +299,13 @@ theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = (χ a)⁻¹ʳ
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`.
 Variant when the target is a field -/
-theorem inv_apply_eq_inv' {R' : Type*} [CommGroupWithZero R'] (χ : MulChar R R') (a : R) :
+theorem inv_apply_eq_inv' {R' : Type*} [GroupWithZero R'] [IsMulCommutative R'] (χ : MulChar R R') (a : R) :
     χ⁻¹ a = (χ a)⁻¹ :=
   (inv_apply_eq_inv χ a).trans <| Ring.inverse_eq_inv (χ a)
 
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
-theorem inv_apply {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (a : R) :
+theorem inv_apply {R : Type*} [MonoidWithZero R] [IsMulCommutative R] (χ : MulChar R R') (a : R) :
     χ⁻¹ a = χ a⁻¹ʳ := by
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
@@ -321,7 +321,7 @@ theorem inv_apply {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (a : R)
 
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
-theorem inv_apply' {R : Type*} [CommGroupWithZero R] (χ : MulChar R R') (a : R) : χ⁻¹ a = χ a⁻¹ :=
+theorem inv_apply' {R : Type*} [GroupWithZero R] [IsMulCommutative R] (χ : MulChar R R') (a : R) : χ⁻¹ a = χ a⁻¹ :=
   (inv_apply χ a).trans <| congr_arg _ (Ring.inverse_eq_inv a)
 
 /-- The product of a character with its inverse is the trivial character. -/
@@ -391,7 +391,7 @@ The restriction of a `MulChar` to a submonoid as an homomorphism.
 -/
 @[simps]
 noncomputable def domRestrictHom {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
-    (R'' : Type*) [CommMonoidWithZero R''] :
+    (R'' : Type*) [MonoidWithZero R''] [IsMulCommutative R''] :
     (MulChar R R'') →* MulChar T R'' where
   toFun := domRestrict T
   map_one' := by
@@ -418,7 +418,7 @@ section Properties
 
 section nontrivial
 
-variable {R : Type*} [CommMonoid R] {R' : Type*} [CommMonoidWithZero R']
+variable {R : Type*} [Monoid R] [IsMulCommutative R] {R' : Type*} [MonoidWithZero R'] [IsMulCommutative R']
 
 lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
   simp only [MulChar.ext_iff, one_apply_coe]
@@ -436,7 +436,7 @@ end nontrivial
 
 section quadratic_and_comp
 
-variable {R : Type*} [CommMonoid R] {R' : Type*} [CommRing R'] {R'' : Type*} [CommRing R'']
+variable {R : Type*} [Monoid R] [IsMulCommutative R] {R' : Type*} [Ring R'] [IsMulCommutative R'] {R'' : Type*} [Ring R''] [IsMulCommutative R'']
 
 /-- A multiplicative character is *quadratic* if it takes only the values `0`, `1`, `-1`. -/
 def IsQuadratic (χ : MulChar R R') : Prop :=
@@ -461,7 +461,7 @@ lemma ringHomComp_one (f : R' →+* R'') : (1 : MulChar R R').ringHomComp f = 1 
   ext1
   simp only [MulChar.ringHomComp_apply, MulChar.one_apply_coe, map_one]
 
-lemma ringHomComp_inv {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (f : R' →+* R'') :
+lemma ringHomComp_inv {R : Type*} [MonoidWithZero R] [IsMulCommutative R] (χ : MulChar R R') (f : R' →+* R'') :
     (χ.ringHomComp f)⁻¹ = χ⁻¹.ringHomComp f := by
   ext1
   simp only [inv_apply, Ring.inverse_unit, ringHomComp_apply]
@@ -489,7 +489,7 @@ lemma ringHomComp_zpow (χ : MulChar R R') (f : R' →+* R'') (n : ℤ) :
   ((ringHomCompHom f).map_zpow χ n).symm
 
 /-- If `a` is a unit and `n : ℤ`, then `(χ ^ n) a = χ (a ^ n)`. -/
-theorem zpow_apply_coe {R : Type*} [CommGroupWithZero R] {R' : Type*} [CommRing R']
+theorem zpow_apply_coe {R : Type*} [GroupWithZero R] [IsMulCommutative R] {R' : Type*} [Ring R'] [IsMulCommutative R']
     (χ : MulChar R R') (n : ℤ) (a : Rˣ) : (χ ^ n) a = χ (a ^ n : Rˣ) := by
   obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg n
   · simp [pow_apply_coe]
@@ -556,7 +556,7 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
 
 /-- A multiplicative character `χ` into an integral domain is quadratic
 if and only if `χ^2 = 1`. -/
-lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZeroDivisors R]
+lemma isQuadratic_iff_sq_eq_one {M R : Type*} [Monoid M] [IsMulCommutative M] [Ring R] [IsMulCommutative R] [NoZeroDivisors R]
     [Nontrivial R] {χ : MulChar M R} :
     IsQuadratic χ ↔ χ ^ 2 = 1 := by
   refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
@@ -580,8 +580,8 @@ end Properties
 
 section Finite
 
-variable {M : Type*} [CommMonoid M]
-variable {R : Type*} [CommMonoidWithZero R]
+variable {M : Type*} [Monoid M] [IsMulCommutative M]
+variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R]
 
 /-- If `χ` is a multiplicative character on a commutative monoid `M` with finitely many units,
 then `χ ^ #Mˣ = 1`. -/
@@ -601,7 +601,7 @@ end Finite
 
 section sum
 
-variable {R : Type*} [CommMonoid R] [Fintype R] {R' : Type*} [CommRing R']
+variable {R : Type*} [Monoid R] [IsMulCommutative R] [Fintype R] {R' : Type*} [Ring R'] [IsMulCommutative R']
 
 /-- The sum over all values of a nontrivial multiplicative character on a finite ring is zero
 (when the target is a domain). -/
@@ -635,7 +635,7 @@ end sum
 
 section Ring
 
-variable {R R' : Type*} [CommRing R] [CommMonoidWithZero R']
+variable {R R' : Type*} [Ring R] [IsMulCommutative R] [MonoidWithZero R'] [IsMulCommutative R']
 
 /-- If `χ` is of odd order, then `χ(-1) = 1` -/
 lemma val_neg_one_eq_one_of_odd_order {χ : MulChar R R'} {n : ℕ} (hn : Odd n) (hχ : χ ^ n = 1) :

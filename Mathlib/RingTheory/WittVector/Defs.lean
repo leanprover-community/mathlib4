@@ -101,7 +101,7 @@ instance : LawfulFunctor (WittVector p) where
   id_map _ := rfl
   comp_map _ _ _ := rfl
 
-variable [hp : Fact p.Prime] [CommRing R]
+variable [hp : Fact p.Prime] [Ring R] [IsMulCommutative R]
 
 open MvPolynomial
 

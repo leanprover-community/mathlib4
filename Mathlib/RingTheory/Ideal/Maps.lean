@@ -89,7 +89,7 @@ variable (f)
 theorem comap_ne_top [RingHomClass F R S] (hK : K ≠ ⊤) : comap f K ≠ ⊤ :=
   (ne_top_iff_one _).2 <| by rw [mem_comap, map_one]; exact (ne_top_iff_one _).1 hK
 
-lemma exists_ideal_comap_le_prime {S} [CommSemiring S] [FunLike F R S] [RingHomClass F R S]
+lemma exists_ideal_comap_le_prime {S} [Semiring S] [IsMulCommutative S] [FunLike F R S] [RingHomClass F R S]
     {f : F} (P : Ideal R) [P.IsPrime] (I : Ideal S) (le : I.comap f ≤ P) :
     ∃ Q ≥ I, Q.IsPrime ∧ Q.comap f ≤ P :=
   have ⟨Q, hQ, hIQ, disj⟩ := I.exists_le_prime_disjoint (P.primeCompl.map f) <|
@@ -150,7 +150,7 @@ theorem comap_id : I.comap (RingHom.id R) = I :=
   Ideal.ext fun _ => Iff.rfl
 
 @[simp]
-lemma comap_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
+lemma comap_idₐ {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] (I : Ideal S) :
     Ideal.comap (AlgHom.id R S) I = I :=
   I.comap_id
 
@@ -159,7 +159,7 @@ theorem map_id : I.map (RingHom.id R) = I :=
   (gc_map_comap (RingHom.id R)).l_unique GaloisConnection.id comap_id
 
 @[simp]
-lemma map_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
+lemma map_idₐ {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] (I : Ideal S) :
     Ideal.map (AlgHom.id R S) I = I :=
   I.map_id
 
@@ -167,7 +167,7 @@ theorem comap_comap {T : Type*} [Semiring T] {I : Ideal T} (f : R →+* S) (g : 
     (I.comap g).comap f = I.comap (g.comp f) :=
   rfl
 
-lemma comap_comapₐ {R A B C : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
+lemma comap_comapₐ {R A B C : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B]
     [Algebra R B] [Semiring C] [Algebra R C] {I : Ideal C} (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
     (I.comap g).comap f = I.comap (g.comp f) :=
   I.comap_comap f.toRingHom g.toRingHom
@@ -177,7 +177,7 @@ theorem map_map {T : Type*} [Semiring T] {I : Ideal R} (f : R →+* S) (g : S �
   ((gc_map_comap f).compose (gc_map_comap g)).l_unique (gc_map_comap (g.comp f)) fun _ =>
     comap_comap _ _
 
-lemma map_mapₐ {R A B C : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
+lemma map_mapₐ {R A B C : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B]
     [Algebra R B] [Semiring C] [Algebra R C] {I : Ideal A} (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
     (I.map f).map g = I.map (g.comp f) :=
   I.map_map f.toRingHom g.toRingHom
@@ -273,13 +273,13 @@ theorem le_comap_sup : comap f K ⊔ comap f L ≤ comap f (K ⊔ L) :=
 
 -- TODO: Should these be simp lemmas?
 theorem _root_.element_smul_restrictScalars {R S M}
-    [CommSemiring R] [CommSemiring S] [Algebra R S] [AddCommMonoid M]
+    [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S] [AddMonoid M] [IsAddCommutative M]
     [Module R M] [Module S M] [IsScalarTower R S M] (r : R) (N : Submodule S M) :
     (algebraMap R S r • N).restrictScalars R = r • N.restrictScalars R :=
   SetLike.coe_injective (congrArg (· '' _) (funext (algebraMap_smul S r)))
 
-theorem smul_restrictScalars {R S M} [CommSemiring R] [CommSemiring S]
-    [Algebra R S] [AddCommMonoid M] [Module R M] [Module S M]
+theorem smul_restrictScalars {R S M} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
+    [Algebra R S] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M]
     [IsScalarTower R S M] (I : Ideal R) (N : Submodule S M) :
     (I.map (algebraMap R S) • N).restrictScalars R = I • N.restrictScalars R := by
   simp_rw [map, Submodule.span_smul_eq, ← Submodule.coe_set_smul,
@@ -287,7 +287,7 @@ theorem smul_restrictScalars {R S M} [CommSemiring R] [CommSemiring S]
   exact map_iSup₂ (Submodule.restrictScalarsLatticeHom R S M) _
 
 @[simp]
-theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+theorem smul_top_eq_map {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
     (I : Ideal R) : I • (⊤ : Submodule R S) = (I.map (algebraMap R S)).restrictScalars R :=
   Eq.trans (smul_restrictScalars I (⊤ : Ideal S)).symm <|
     congrArg _ <| Eq.trans (Ideal.smul_eq_mul _ _) (Ideal.mul_top _)
@@ -646,7 +646,7 @@ end Ring
 
 section CommRing
 
-variable {F : Type*} [CommSemiring R] [CommSemiring S]
+variable {F : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 variable [FunLike F R S] [rc : RingHomClass F R S]
 variable (f : F)
 variable (I J : Ideal R) (K L : Ideal S)
@@ -711,7 +711,7 @@ lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+*
 
 /-- For a prime ideal `p` of `R`, `p` extended to `S` and
 restricted back to `R` is `p` if and only if `p` is the restriction of a prime in `S`. -/
-lemma comap_map_eq_self_iff_of_isPrime {S : Type*} [CommSemiring S] {f : R →+* S}
+lemma comap_map_eq_self_iff_of_isPrime {S : Type*} [Semiring S] [IsMulCommutative S] {f : R →+* S}
     (p : Ideal R) [p.IsPrime] :
     (p.map f).comap f = p ↔ (∃ (q : Ideal S), q.IsPrime ∧ q.comap f = p) := by
   refine ⟨fun hp ↦ ?_, ?_⟩
@@ -822,7 +822,7 @@ lemma ker_comp_of_injective [Semiring T] (g : T →+* R) {f : R →+* S} (hf : F
   rw [← RingHom.comap_ker, (injective_iff_ker_eq_bot f).mp hf, RingHom.ker]
 
 /-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
-@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Semiring A]
+@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
     RingHom.ker (e : A →+* B) = ⊥ :=
   RingHom.ker_coe_equiv (e.toRingEquiv)
@@ -861,7 +861,7 @@ section annihilator
 section Semiring
 
 variable {R M M' : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 variable (R M) in
 /-- `Module.annihilator R M` is the ideal of all elements `r : R` such that `r • M = 0`. -/
@@ -870,7 +870,7 @@ def Module.annihilator : Ideal R := RingHom.ker (Module.toAddMonoidEnd R M)
 theorem Module.mem_annihilator {r} : r ∈ Module.annihilator R M ↔ ∀ m : M, r • m = 0 :=
   ⟨fun h ↦ (congr($h ·)), (AddMonoidHom.ext ·)⟩
 
-lemma Module.mem_annihilator_iff_lsmul_eq_zero {R : Type*} [CommSemiring R]
+lemma Module.mem_annihilator_iff_lsmul_eq_zero {R : Type*} [Semiring R] [IsMulCommutative R]
     [Module R M] {r : R} : r ∈ Module.annihilator R M ↔ LinearMap.lsmul R M r = 0 := by
   simp [Module.mem_annihilator, LinearMap.ext_iff]
 
@@ -891,13 +891,13 @@ theorem LinearEquiv.annihilator_eq (e : M ≃ₗ[R] M') :
     Module.annihilator R M = Module.annihilator R M' :=
   (e.annihilator_le_of_surjective e.surjective).antisymm (e.annihilator_le_of_injective e.injective)
 
-theorem Module.comap_annihilator {R₀} [CommSemiring R₀] [Module R₀ M]
+theorem Module.comap_annihilator {R₀} [Semiring R₀] [IsMulCommutative R₀] [Module R₀ M]
     [Algebra R₀ R] [IsScalarTower R₀ R M] :
     (Module.annihilator R M).comap (algebraMap R₀ R) = Module.annihilator R₀ M := by
   ext x
   simp [mem_annihilator]
 
-lemma Module.annihilator_eq_bot {R M} [Ring R] [AddCommGroup M] [Module R M] :
+lemma Module.annihilator_eq_bot {R M} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] :
     Module.annihilator R M = ⊥ ↔ FaithfulSMul R M := by
   rw [← le_bot_iff]
   refine ⟨fun H ↦ ⟨fun {r s} H' ↦ ?_⟩, fun ⟨H⟩ {a} ha ↦ ?_⟩
@@ -927,7 +927,7 @@ theorem Module.annihilator_finsupp {ι : Type*} [Nonempty ι] :
 
 section
 
-variable {ι : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+variable {ι : Type*} {M : ι → Type*} [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
 
 theorem Module.annihilator_dfinsupp : annihilator R (Π₀ i, M i) = ⨅ i, annihilator R (M i) := by
   ext r; simp only [mem_annihilator, Ideal.mem_iInf]
@@ -996,7 +996,7 @@ end Semiring
 
 namespace Submodule
 
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {N : Submodule R M}
+variable {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] {N : Submodule R M}
 
 theorem mem_annihilator' {r} : r ∈ N.annihilator ↔ N ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) ⊥ :=
   mem_annihilator.trans ⟨fun H n hn => (mem_bot R).2 <| H n hn, fun H _ hn => (mem_bot R).1 <| H hn⟩
@@ -1034,8 +1034,8 @@ theorem annihilator_span_singleton (g : M) :
 theorem mul_annihilator (I : Ideal R) : I * annihilator I = ⊥ := by rw [mul_comm, annihilator_mul]
 
 theorem restrictScalars_map_smul_eq {S M : Type*}
-    [CommSemiring S] [Algebra S R]
-    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower S R M]
+    [Semiring S] [IsMulCommutative S] [Algebra S R]
+    [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower S R M]
     (I : Ideal S) (N : Submodule R M) :
     ((I.map (algebraMap S R)) • N).restrictScalars S = I • N.restrictScalars S := by
   have := N.restrictScalars_image_smul_eq (I : Set S)
@@ -1074,7 +1074,7 @@ theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injecti
 end Semiring
 
 open scoped Pointwise in
-lemma map_pointwise_smul {R S : Type*} [CommSemiring R] [CommSemiring S]
+lemma map_pointwise_smul {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
     (r : R) (I : Ideal R) (f : R →+* S) :
     Ideal.map f (r • I) = f r • I.map f := by
   rw [← Submodule.ideal_span_singleton_smul, smul_eq_mul, Ideal.map_mul, Ideal.map_span,
@@ -1135,9 +1135,9 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] [CommRing S]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
-theorem map_ne_bot_of_ne_bot {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+theorem map_ne_bot_of_ne_bot {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
     [FaithfulSMul R S] {I : Ideal R} (h : I ≠ ⊥) : map (algebraMap R S) I ≠ ⊥ :=
   (map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)).mp.mt h
 
@@ -1282,7 +1282,7 @@ lemma RingEquiv.idealComapOrderIso_symm_apply
 
 namespace AlgHom
 
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
 lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
@@ -1298,7 +1298,7 @@ end AlgHom
 
 namespace Algebra
 
-variable {R : Type*} [CommSemiring R] (S : Type*) [Semiring S] [Algebra R S]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (S : Type*) [Semiring S] [Algebra R S]
 
 /-- The induced linear map from `I` to the span of `I` in an `R`-algebra `S`. -/
 @[simps!]
@@ -1315,7 +1315,7 @@ lemma idealMap_mul (I : Ideal R) (x y : I) :
 end Algebra
 
 @[simp]
-theorem FaithfulSMul.ker_algebraMap_eq_bot (R A : Type*) [CommSemiring R] [Semiring A]
+theorem FaithfulSMul.ker_algebraMap_eq_bot (R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A]
     [Algebra R A] [FaithfulSMul R A] : RingHom.ker (algebraMap R A) = ⊥ := by
   ext; simp
 
@@ -1331,7 +1331,7 @@ instance {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) (I : Ideal R) [
 end PrincipalIdeal
 
 lemma RingHom.ker_evalRingHom {ι : Type*} [DecidableEq ι] (R : ι → Type*)
-    [∀ i, CommRing (R i)] (i : ι) :
+    [∀ i, Ring (R i)] [∀ i, IsMulCommutative (R i)] (i : ι) :
     RingHom.ker (Pi.evalRingHom R i) = Ideal.span {1 - Pi.single i 1} := by
   refine le_antisymm (fun x hx ↦ ?_) (by simp [Ideal.span_le])
   simp only [RingHom.mem_ker, Pi.evalRingHom_apply] at hx
@@ -1348,7 +1348,7 @@ lemma Ideal.exists_of_comap_eq_ker_sup {A B : Type*} [Ring A] [Ring B] (f : A �
   use z, hz
   simpa [← hx', ← hyz, ← RingHom.mem_ker] using hy
 
-lemma Ideal.eq_map_of_comap_eq_ker_sup {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
+lemma Ideal.eq_map_of_comap_eq_ker_sup {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] (f : A →+* B)
     (surj : Function.Surjective f) {I : Ideal B} {J : Ideal A}
     (eq : I.comap f = RingHom.ker f ⊔ J) : I = J.map f := by
   refine le_antisymm (fun x hx ↦ ?_)

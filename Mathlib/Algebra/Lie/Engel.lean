@@ -72,8 +72,8 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
 universe u₁ u₂ u₃ u₄
 
 variable {R : Type u₁} {L : Type u₂} {L₂ : Type u₃} {M : Type u₄}
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L₂] [LieAlgebra R L₂]
-variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [LieRing L₂] [LieAlgebra R L₂]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieSubmodule
 
@@ -157,7 +157,7 @@ be nilpotent is that the image of the map `L → End(M)` consists of nilpotent e
 Engel's theorem `LieAlgebra.isEngelian_of_isNoetherian` states that any Noetherian Lie algebra is
 Engelian. -/
 def LieAlgebra.IsEngelian : Prop :=
-  ∀ (M : Type u₄) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M],
+  ∀ (M : Type u₄) [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M],
     (∀ x : L, IsNilpotent (toEnd R L M x)) → LieModule.IsNilpotent L M
 
 variable {R L}

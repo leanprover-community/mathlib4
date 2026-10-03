@@ -32,9 +32,9 @@ In this case, V- and H-cones are known as polyhedral cones.
 namespace PointedCone
 
 variable {R M N : Type*}
-variable [CommRing R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommGroup M] [Module R M]
-variable [AddCommGroup N] [Module R N]
+variable [Ring R] [IsMulCommutative R] [PartialOrder R] [IsOrderedRing R]
+variable [AddGroup M] [IsAddCommutative M] [Module R M]
+variable [AddGroup N] [IsAddCommutative N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
 
 variable (p) in

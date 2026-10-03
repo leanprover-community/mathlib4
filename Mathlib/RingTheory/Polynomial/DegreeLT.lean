@@ -151,7 +151,7 @@ end degreeLT
 
 section taylor
 
-variable {R : Type*} [CommRing R] {r : R} {n : ℕ} {f : R[X]}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {r : R} {n : ℕ} {f : R[X]}
 
 @[simp]
 lemma taylor_mem_degreeLT : taylor r f ∈ R[X]_n ↔ f ∈ R[X]_n := by simp [mem_degreeLT]

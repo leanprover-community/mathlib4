@@ -72,7 +72,7 @@ open Polynomial
 suitable factorials. We define this notion as a mixin for additive commutative monoids with natural
 number powers, but retain the ring name. We introduce `Ring.multichoose` as the uniquely defined
 quotient. -/
-class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] where
+class BinomialRing (R : Type*) [AddMonoid R] [IsAddCommutative R] [Pow R ℕ] where
   -- This base class has been demoted to a field, to avoid creating
   -- an expensive global instance.
   [toIsAddTorsionFree : IsAddTorsionFree R]
@@ -91,7 +91,7 @@ section Multichoose
 
 namespace Ring
 
-variable {R : Type*} [AddCommMonoid R] [Pow R ℕ] [BinomialRing R]
+variable {R : Type*} [AddMonoid R] [IsAddCommutative R] [Pow R ℕ] [BinomialRing R]
 
 /-- The multichoose function is the quotient of ascending Pochhammer evaluation by the corresponding
 factorial. When applied to natural numbers, `multichoose k n` describes choosing a multiset of `n`
@@ -273,7 +273,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
 
 attribute [local instance] IsAddTorsionFree.of_module_nnrat
 
-noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
+noncomputable instance {R : Type*} [AddMonoid R] [IsAddCommutative R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
     match_scalars
@@ -376,7 +376,7 @@ section
 
 /-- The binomial coefficient `choose r n` generalizes the natural number `Nat.choose` function,
   interpreted in terms of choosing without replacement. -/
-def choose [AddCommGroupWithOne R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ) : R :=
+def choose [AddGroupWithOne R] [IsAddCommutative R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ) : R :=
   multichoose (r - n + 1) n
 
 variable [NonAssocRing R] [Pow R ℕ] [BinomialRing R]

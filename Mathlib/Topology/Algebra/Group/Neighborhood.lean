@@ -119,7 +119,7 @@ theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [Topologi
   continuous_of_tendsto_nhds_one f <| by simpa using hf.tendsto
 
 @[to_additive continuous_of_continuousAt_zero₂]
-theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [TopologicalSpace M]
+theorem continuous_of_continuousAt_one₂ {H M : Type*} [Monoid M] [IsMulCommutative M] [TopologicalSpace M]
     [ContinuousMul M] [Group H] [TopologicalSpace H] [IsTopologicalGroup H] (f : G →* H →* M)
     (hf : ContinuousAt (fun x : G × H ↦ f x.1 x.2) (1, 1))
     (hl : ∀ x, ContinuousAt (f x) 1) (hr : ∀ y, ContinuousAt (f · y) 1) :
@@ -248,7 +248,7 @@ theorem IsTopologicalGroup.of_nhds_one {G : Type*} [Group G] [TopologicalSpace G
   simpa [Function.comp_def] using hleft _
 
 @[to_additive]
-theorem IsTopologicalGroup.of_comm_of_nhds_one {G : Type*} [CommGroup G] [TopologicalSpace G]
+theorem IsTopologicalGroup.of_comm_of_nhds_one {G : Type*} [Group G] [IsMulCommutative G] [TopologicalSpace G]
     (hmul : Tendsto (uncurry ((· * ·) : G → G → G)) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1))
     (hinv : Tendsto (fun x : G => x⁻¹) (𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (x₀ * ·) (𝓝 1)) : IsTopologicalGroup G :=

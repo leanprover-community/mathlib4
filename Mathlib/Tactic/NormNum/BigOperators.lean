@@ -321,11 +321,11 @@ def Result.eq_trans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b
   | .isNNRat inst q n d proof => Result.isNNRat inst q n d q($eq ▸ $proof)
   | .isNegNNRat inst q n d proof => Result.isNegNNRat inst q n d q($eq ▸ $proof)
 
-protected lemma Finset.sum_empty {β α : Type*} [CommSemiring β] (f : α → β) :
+protected lemma Finset.sum_empty {β α : Type*} [Semiring β] [IsMulCommutative β] (f : α → β) :
     IsNat (Finset.sum ∅ f) 0 :=
   ⟨by simp⟩
 
-protected lemma Finset.prod_empty {β α : Type*} [CommSemiring β] (f : α → β) :
+protected lemma Finset.prod_empty {β α : Type*} [Semiring β] [IsMulCommutative β] (f : α → β) :
     IsNat (Finset.prod ∅ f) 1 :=
   ⟨by simp⟩
 

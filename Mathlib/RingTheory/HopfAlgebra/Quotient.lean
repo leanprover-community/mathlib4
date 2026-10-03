@@ -34,7 +34,7 @@ namespace HopfAlgebra
 
 section ofSurjective
 
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B]
   [HopfAlgebra R A] [HopfAlgebraStruct R B]
 
 /-- Post-composition by an algebra homomorphism preserves the convolution unit. -/
@@ -76,7 +76,7 @@ end ofSurjective
 
 end HopfAlgebra
 
-variable {R A : Type*} [CommRing R] [Ring A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A]
 
 section HopfAlgebraStruct
 

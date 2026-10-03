@@ -39,7 +39,7 @@ variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [AddCommGroup V'] [Module K V] [Module K V']
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [AddGroup V'] [IsAddCommutative V'] [Module K V] [Module K V']
 variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule
@@ -338,7 +338,7 @@ section Field
 
 open Submodule LinearMap Module
 
-variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
+variable {K : Type*} {V : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 variable {f : V →ₗ[K] K} {v : V}
 

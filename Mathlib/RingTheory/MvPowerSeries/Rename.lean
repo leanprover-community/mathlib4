@@ -105,7 +105,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 /-- Rename all the variables in a multivariable power series by a map with finite fibers. -/
 @[no_expose]
@@ -287,7 +287,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] (p : MvPowerSeries σ R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (p : MvPowerSeries σ R)
 
 lemma HasSubst.X_comp : HasSubst (X ∘ f : σ → MvPowerSeries τ R) where
   const_coeff := by simp

@@ -67,7 +67,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 /-- A semiring is local if it has a unique maximal ideal. -/
 theorem of_unique_max_ideal (h : ∃! I : Ideal R, I.IsMaximal) : IsLocalRing R :=

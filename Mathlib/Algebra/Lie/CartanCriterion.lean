@@ -44,7 +44,7 @@ via its vanishing on `L × ⁅L, L⁆`, semisimplicity via its non-degeneracy.
 * [J. Humphreys, *Introduction to Lie Algebras and ...*](humphreys1972) Chapter II 4.3
 -/
 
-variable {R L M : Type*} [CommRing R] [CharZero R] [IsDomain R] [LieRing L] [LieAlgebra R L]
+variable {R L M : Type*} [Ring R] [IsMulCommutative R] [CharZero R] [IsDomain R] [LieRing L] [LieAlgebra R L]
 
 namespace LieModule
 
@@ -52,7 +52,7 @@ open Algebra Function LieAlgebra LinearMap Module Module.End Polynomial
 open scoped TensorProduct
 
 lemma exists_polynomial_eval_sub_aux
-    {ι R K : Type*} [Finite ι] [CommRing R] [Field K] [Algebra R K]
+    {ι R K : Type*} [Finite ι] [Ring R] [IsMulCommutative R] [Field K] [Algebra R K]
     {E : Submodule R K} (a : ι → K) (ha : ∀ i, a i ∈ E) (f : E →+ R) :
     ∃ r : K[X], ∀ i j, r.eval (a i - a j) =
       algebraMap R K (f ⟨a i, ha i⟩) - algebraMap R K (f ⟨a j, ha j⟩) := by
@@ -65,7 +65,7 @@ lemma exists_polynomial_eval_sub_aux
   have heq : (⟨a i, ha i⟩ - ⟨a j, ha j⟩ : E) = ⟨a k, ha k⟩ - ⟨a l, ha l⟩ := Subtype.ext hij
   rw [← (algebraMap R K).map_sub, ← (algebraMap R K).map_sub, ← map_sub, ← map_sub, heq]
 
-variable [AddCommGroup M] [LieRingModule L M]
+variable [AddGroup M] [IsAddCommutative M] [LieRingModule L M]
 attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- An auxiliary lemma used to prove `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`

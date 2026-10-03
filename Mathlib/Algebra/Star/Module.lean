@@ -38,27 +38,27 @@ section SMulLemmas
 variable {R M : Type*}
 
 @[simp]
-theorem star_natCast_smul [Semiring R] [AddCommMonoid M] [Module R M] [StarAddMonoid M] (n : ℕ)
+theorem star_natCast_smul [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [StarAddMonoid M] (n : ℕ)
     (x : M) : star ((n : R) • x) = (n : R) • star x :=
   map_natCast_smul (starAddEquiv : M ≃+ M) R R n x
 
 @[simp]
-theorem star_intCast_smul [Ring R] [AddCommGroup M] [Module R M] [StarAddMonoid M] (n : ℤ)
+theorem star_intCast_smul [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [StarAddMonoid M] (n : ℤ)
     (x : M) : star ((n : R) • x) = (n : R) • star x :=
   map_intCast_smul (starAddEquiv : M ≃+ M) R R n x
 
 @[simp]
-theorem star_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid M] [Module R M] [StarAddMonoid M]
+theorem star_inv_natCast_smul [DivisionSemiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [StarAddMonoid M]
     (n : ℕ) (x : M) : star ((n⁻¹ : R) • x) = (n⁻¹ : R) • star x :=
   map_inv_natCast_smul (starAddEquiv : M ≃+ M) R R n x
 
 @[simp]
-theorem star_inv_intCast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAddMonoid M]
+theorem star_inv_intCast_smul [DivisionRing R] [AddGroup M] [IsAddCommutative M] [Module R M] [StarAddMonoid M]
     (n : ℤ) (x : M) : star ((n⁻¹ : R) • x) = (n⁻¹ : R) • star x :=
   map_inv_intCast_smul (starAddEquiv : M ≃+ M) R R n x
 
 @[simp]
-theorem star_ratCast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAddMonoid M] (n : ℚ)
+theorem star_ratCast_smul [DivisionRing R] [AddGroup M] [IsAddCommutative M] [Module R M] [StarAddMonoid M] (n : ℚ)
     (x : M) : star ((n : R) • x) = (n : R) • star x :=
   map_ratCast_smul (starAddEquiv : M ≃+ M) _ _ _ x
 
@@ -73,13 +73,13 @@ discoverability.
 `DivisionSemiring`. We keep both the `nnqsmul` and `nnrat_smul` naming conventions for
 discoverability. See `star_nnqsmul`. -/
 @[simp high]
-lemma star_nnrat_smul [AddCommMonoid R] [StarAddMonoid R] [Module ℚ≥0 R] (q : ℚ≥0) (x : R) :
+lemma star_nnrat_smul [AddMonoid R] [IsAddCommutative R] [StarAddMonoid R] [Module ℚ≥0 R] (q : ℚ≥0) (x : R) :
     star (q • x) = q • star x := map_nnrat_smul (starAddEquiv : R ≃+ R) _ _
 
 /-- Note that this lemma holds for an arbitrary `ℚ`-action, rather than merely one coming from a
 `DivisionRing`. We keep both the `qsmul` and `rat_smul` naming conventions for discoverability.
 See `star_qsmul`. -/
-@[simp high] lemma star_rat_smul [AddCommGroup R] [StarAddMonoid R] [Module ℚ R] (q : ℚ) (x : R) :
+@[simp high] lemma star_rat_smul [AddGroup R] [IsAddCommutative R] [StarAddMonoid R] [Module ℚ R] (q : ℚ) (x : R) :
     star (q • x) = q • star x :=
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
 
@@ -93,10 +93,10 @@ alias star_nnqsmul := star_nnrat_smul
 discoverability. See `star_rat_smul`. -/
 alias star_qsmul := star_rat_smul
 
-instance StarAddMonoid.toStarModuleNNRat [AddCommMonoid R] [Module ℚ≥0 R] [StarAddMonoid R] :
+instance StarAddMonoid.toStarModuleNNRat [AddMonoid R] [IsAddCommutative R] [Module ℚ≥0 R] [StarAddMonoid R] :
     StarModule ℚ≥0 R where star_smul := star_nnrat_smul
 
-instance StarAddMonoid.toStarModuleRat [AddCommGroup R] [Module ℚ R] [StarAddMonoid R] :
+instance StarAddMonoid.toStarModuleRat [AddGroup R] [IsAddCommutative R] [Module ℚ R] [StarAddMonoid R] :
     StarModule ℚ R where star_smul := star_rat_smul
 
 end SMulLemmas
@@ -104,7 +104,7 @@ end SMulLemmas
 section starLinearEquiv
 
 variable (R : Type*) {A : Type*}
-  [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAddMonoid A] [Module R A] [StarModule R A]
+  [Semiring R] [IsMulCommutative R] [StarRing R] [AddMonoid A] [IsAddCommutative A] [StarAddMonoid A] [Module R A] [StarModule R A]
 
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
@@ -132,7 +132,7 @@ end starLinearEquiv
 
 section SelfSkewAdjoint
 
-variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
+variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddGroup A] [IsAddCommutative A]
   [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The self-adjoint elements of a star module, as a submodule. -/
@@ -229,7 +229,7 @@ end SelfSkewAdjoint
 
 section algebraMap
 
-variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [Semiring A]
 variable [StarMul A] [Algebra R A] [StarModule R A]
 
 @[simp]

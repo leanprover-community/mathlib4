@@ -52,7 +52,7 @@ of sets in form `{ x | ∃ y, p x y }`.
 
 @[expose] public section
 
-variable {M N ι κ F : Type*} [AddCommMonoid M] [AddCommMonoid N]
+variable {M N ι κ F : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
   [FunLike F M N] [AddMonoidHomClass F M N] {a : M} {s s₁ s₂ : Set M}
 
 open Set Pointwise AddSubmonoid

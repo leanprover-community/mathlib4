@@ -37,7 +37,7 @@ public section
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] {n : ℕ}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {n : ℕ}
 
 theorem isRoot_of_unity_of_root_cyclotomic {ζ : R} {i : ℕ} (hi : i ∈ n.divisors)
     (h : (cyclotomic i R).IsRoot ζ) : ζ ^ n = 1 := by
@@ -54,7 +54,7 @@ section IsDomain
 
 variable [IsDomain R]
 
-theorem _root_.isRoot_of_unity_iff (h : 0 < n) (R : Type*) [CommRing R] [IsDomain R] {ζ : R} :
+theorem _root_.isRoot_of_unity_iff (h : 0 < n) (R : Type*) [Ring R] [IsMulCommutative R] [IsDomain R] {ζ : R} :
     ζ ^ n = 1 ↔ ∃ i ∈ n.divisors, (cyclotomic i R).IsRoot ζ := by
   rw [← mem_nthRoots h, nthRoots, mem_roots <| X_pow_sub_C_ne_zero h _, C_1, ←
       prod_cyclotomic_eq_X_pow_sub_one h, isRoot_prod]
@@ -122,7 +122,7 @@ theorem cyclotomic.roots_eq_primitiveRoots_val [NeZero (n : R)] :
 
 /-- If `R` is of characteristic zero, then `ζ` is a root of `cyclotomic n R` if and only if it is a
 primitive `n`-th root of unity. -/
-theorem isRoot_cyclotomic_iff_charZero {n : ℕ} {R : Type*} [CommRing R] [IsDomain R] [CharZero R]
+theorem isRoot_cyclotomic_iff_charZero {n : ℕ} {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [CharZero R]
     {μ : R} (hn : 0 < n) : (Polynomial.cyclotomic n R).IsRoot μ ↔ IsPrimitiveRoot μ n :=
   letI := NeZero.of_gt hn
   isRoot_cyclotomic_iff
@@ -161,7 +161,7 @@ section minpoly
 open IsPrimitiveRoot Complex
 
 theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} [Field K]
-    {R : Type*} [CommRing R] [IsDomain R] {μ : R} {n : ℕ} [Algebra K R] (hμ : IsPrimitiveRoot μ n)
+    {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] {μ : R} {n : ℕ} [Algebra K R] (hμ : IsPrimitiveRoot μ n)
     (h : Irreducible <| cyclotomic n K) [NeZero (n : K)] : cyclotomic n K = minpoly K μ := by
   have := NeZero.of_faithfulSMul K R n
   refine minpoly.eq_of_irreducible_of_monic h ?_ (cyclotomic.monic n K)

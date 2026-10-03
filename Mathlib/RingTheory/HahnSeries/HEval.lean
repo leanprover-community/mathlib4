@@ -41,9 +41,9 @@ namespace SummableFamily
 
 section PowerSeriesFamily
 
-variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
+variable [AddMonoid Γ] [IsAddCommutative Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsMulCommutative R]
 
-variable [CommRing V] [Algebra R V]
+variable [Ring V] [IsMulCommutative V] [Algebra R V]
 
 /-- A summable family given by scalar multiples of powers of a positive order Hahn series.
 
@@ -158,8 +158,8 @@ namespace PowerSeries
 
 open HahnSeries SummableFamily
 
-variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
-  [CommRing R] (x : R⟦Γ⟧)
+variable [AddMonoid Γ] [IsAddCommutative Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
+  [Ring R] [IsMulCommutative R] (x : R⟦Γ⟧)
 
 /-- The `R`-algebra homomorphism from `R⟦X⟧` to `R⟦Γ⟧` given by sending the power series
 variable `X` to a positive order element `x` and extending to infinite sums. -/

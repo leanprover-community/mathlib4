@@ -32,7 +32,7 @@ universe u v w
 namespace DFinsupp
 
 variable {ι : Type*} {R : Type*} {M : ι → Type*}
-variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+variable [Semiring R] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
 
 /-- The direct sum of free modules is free.
 
@@ -70,7 +70,7 @@ namespace Finsupp
 section Semiring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem linearIndependent_single {φ : ι → Type*} (f : ∀ i, φ i → M)
     (hf : ∀ i, LinearIndependent R (f i)) :
@@ -138,7 +138,7 @@ lemma isCompl_range_lmapDomain_span {α β : Type*}
 end Semiring
 
 section Ring
-variable {R M ι : Type*} [Ring R] [AddCommGroup M]
+variable {R M ι : Type*} [Ring R] [AddGroup M] [IsAddCommutative M]
 
 lemma linearIndependent_single_of_ne_zero [IsDomain R] [Module R M] [IsTorsionFree R M] {v : ι → M}
     (hv : ∀ i, v i ≠ 0) : LinearIndependent R fun i : ι ↦ single i (v i) := by
@@ -169,8 +169,8 @@ end Ring
 
 end Finsupp
 
-lemma Module.Free.trans {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
-    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] [Module.Free S M]
+lemma Module.Free.trans {R S M : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
+    [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower R S M] [Module.Free S M]
     [Module.Free R S] : Module.Free R M :=
   let e : (ChooseBasisIndex S M →₀ S) ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
     Finsupp.mapRange.linearEquiv (chooseBasis R S).repr
@@ -185,7 +185,7 @@ namespace Basis
 
 variable {R M n : Type*}
 variable [DecidableEq n]
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :
     (∑ x : n, Finsupp.single x (if i = x then a else 0)) = Finsupp.single i a := by
@@ -202,7 +202,7 @@ end Basis
 
 section Algebra
 
-variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*} (B : Basis ι R S)
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [Algebra R S] {ι : Type*} (B : Basis ι R S)
 
 /-- For any `r : R`, `s : S`, we have
   `B.repr ((algebra_map R S r) * s) i = r * (B.repr s i) `. -/

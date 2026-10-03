@@ -107,7 +107,7 @@ theorem contentIdeal_mul_le_mul_contentIdeal (q : R[X]) :
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] {p q : R[X]}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {p q : R[X]}
 
 theorem contentIdeal_le_contentIdeal_of_dvd (hpq : p ∣ q) : q.contentIdeal ≤ p.contentIdeal := by
   obtain ⟨p', rfl⟩ := hpq
@@ -168,7 +168,7 @@ end CommSemiring
 
 section Ring
 
-variable {R : Type*} [CommRing R] {p q : R[X]}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {p q : R[X]}
 
 theorem mul_contentIdeal_le_radical_contentIdeal_mul :
     p.contentIdeal * q.contentIdeal ≤ ((p * q).contentIdeal).radical := by
@@ -190,7 +190,7 @@ theorem contentIdeal_mul_eq_top_of_contentIdeal_eq_top (hp : p.contentIdeal = �
 end Ring
 section NormalizedGCDMonoid
 
-variable {R : Type*} [CommRing R] [NormalizedGCDMonoid R] {p : R[X]}
+variable {R : Type*} [Ring R] [IsMulCommutative R] [NormalizedGCDMonoid R] {p : R[X]}
 
 theorem contentIdeal_le_span_content : p.contentIdeal ≤ span {p.content} := by
   rw [contentIdeal_def, span_le]
@@ -211,7 +211,7 @@ end NormalizedGCDMonoid
 
 section IsBezout
 
-variable {R : Type*} [CommSemiring R] [IsBezout R] (p : R[X])
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [IsBezout R] (p : R[X])
 
 /-- The polynomial `p` is primitive if and only if the coefficients of `p` generate the whole ring.
 -/

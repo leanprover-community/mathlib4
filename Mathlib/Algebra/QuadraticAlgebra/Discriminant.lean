@@ -48,25 +48,25 @@ section discr
 
 /-- The discriminant of the quadratic algebra `QuadraticAlgebra R a b`, that is, the
 discriminant `b ^ 2 + 4 * a` of the polynomial `X ^ 2 - b * X - a`. -/
-def discr [CommSemiring R] (a b : R) : R := b ^ 2 + 4 * a
+def discr [Semiring R] [IsMulCommutative R] (a b : R) : R := b ^ 2 + 4 * a
 
-theorem discr_def [CommSemiring R] (a b : R) : discr a b = b ^ 2 + 4 * a := by rfl
+theorem discr_def [Semiring R] [IsMulCommutative R] (a b : R) : discr a b = b ^ 2 + 4 * a := by rfl
 
 /-- `z.im ^ 2` times the discriminant of the algebra equals `trace z ^ 2 - 4 * norm z`. -/
-theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
+theorem im_sq_mul_discr [Ring R] [IsMulCommutative R] {a b : R} (z : QuadraticAlgebra R a b) :
     z.im ^ 2 * discr a b = trace z ^ 2 - 4 * norm z := by
   rw [trace_def, norm_def, discr_def]; ring
 
 /-- Under the change of generator `ω ↦ u • ω + k` (see `QuadraticAlgebra.changeGenerator`), the
 discriminant is multiplied by `u ^ 2`. -/
-theorem discr_changeGenerator [CommRing R] (a b u k : R) :
+theorem discr_changeGenerator [Ring R] [IsMulCommutative R] (a b u k : R) :
     discr (u ^ 2 * a - u * b * k - k ^ 2) (u * b + 2 * k) = u ^ 2 * discr a b := by
   rw [discr_def, discr_def]; ring
 
 @[deprecated (since := "2026-08-14")] alias discr_map := discr_changeGenerator
 
 /-- The discriminant is the square of the different `ω - star ω`. -/
-theorem algebraMap_discr [CommRing R] (a b : R) :
+theorem algebraMap_discr [Ring R] [IsMulCommutative R] (a b : R) :
     algebraMap R (QuadraticAlgebra R a b) (discr a b) = (ω - star ω) ^ 2 := by
   rw [discr_def]; ext <;> simp [sq] <;> ring
 
@@ -74,7 +74,7 @@ theorem algebraMap_discr [CommRing R] (a b : R) :
 -- transitive import of `Mathlib.Order.Filter.AtTopBot.Field`.
 /-- If `2` is invertible, the polynomial `X ^ 2 - b * X - a` has a root if and only if the
 discriminant is a square. -/
-theorem exists_sq_eq_iff_isSquare_discr [CommRing R] [Invertible (2 : R)] {a b : R} :
+theorem exists_sq_eq_iff_isSquare_discr [Ring R] [IsMulCommutative R] [Invertible (2 : R)] {a b : R} :
     (∃ r : R, r ^ 2 = a + b * r) ↔ IsSquare (discr a b) := by
   rw [isSquare_iff_exists_sq, discr_def]
   exact ⟨fun ⟨r, hr⟩ ↦ ⟨2 * r - b, by grind⟩,
@@ -84,7 +84,7 @@ end discr
 
 section classification
 
-variable [CommRing R] {a b a' b' : R}
+variable [Ring R] [IsMulCommutative R] {a b a' b' : R}
   (f : QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra R a' b')
 
 /-- The transformation law for an injective algebra map. -/

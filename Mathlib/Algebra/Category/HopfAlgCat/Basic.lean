@@ -24,7 +24,7 @@ open CategoryTheory
 
 universe v u
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 /-- The category of `R`-Hopf algebras. -/
 structure HopfAlgCat where

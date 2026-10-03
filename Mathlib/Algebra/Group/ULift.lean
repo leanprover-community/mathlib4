@@ -79,7 +79,7 @@ instance semigroup [Semigroup α] : Semigroup (ULift α) :=
   (MulEquiv.ulift.injective.semigroup _) fun _ _ => rfl
 
 @[to_additive]
-instance commSemigroup [CommSemigroup α] : CommSemigroup (ULift α) :=
+instance commSemigroup [Semigroup α] [IsMulCommutative α] : CommSemigroup (ULift α) :=
   (Equiv.ulift.injective.commSemigroup _) fun _ _ => rfl
 
 @[to_additive]
@@ -91,7 +91,7 @@ instance monoid [Monoid α] : Monoid (ULift α) :=
   Equiv.ulift.injective.monoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
-instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
+instance commMonoid [Monoid α] [IsMulCommutative α] : CommMonoid (ULift α) :=
   Equiv.ulift.injective.commMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
@@ -105,7 +105,7 @@ instance group [Group α] : Group (ULift α) :=
     (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
-instance commGroup [CommGroup α] : CommGroup (ULift α) :=
+instance commGroup [Group α] [IsMulCommutative α] : CommGroup (ULift α) :=
   Equiv.ulift.injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -130,7 +130,7 @@ instance cancelMonoid [CancelMonoid α] : CancelMonoid (ULift α) :=
   Equiv.ulift.injective.cancelMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
-instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid (ULift α) :=
+instance cancelCommMonoid [CancelMonoid α] [IsMulCommutative α] : CancelCommMonoid (ULift α) :=
   Equiv.ulift.injective.cancelCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=

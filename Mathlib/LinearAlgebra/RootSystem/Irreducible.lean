@@ -31,7 +31,7 @@ open MulAction (orbit mem_orbit_self mem_orbit_iff)
 open Module.End (invtSubmodule)
 open scoped MonoidAlgebra
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   (P : RootPairing ι R M N)
 
 namespace RootPairing
@@ -170,7 +170,7 @@ lemma not_isIrreducible_of_subsingleton [Subsingleton M] :
 
 variable {P} in
 lemma Equiv.isIrreducible {ι₂ M₂ N₂ : Type*}
-    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
     {P₂ : RootPairing ι₂ R M₂ N₂} (e : P.Equiv P₂) [P.IsIrreducible] :
     P₂.IsIrreducible where
   nontrivial := by

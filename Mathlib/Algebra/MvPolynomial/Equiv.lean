@@ -21,7 +21,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[Semiring R] [IsMulCommutative R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
@@ -55,7 +55,7 @@ variable {σ : Type*} {a : R} {e : ℕ} {s : σ →₀ ℕ}
 
 section Equiv
 
-variable (R) [CommSemiring R]
+variable (R) [Semiring R] [IsMulCommutative R]
 
 /-- The algebra isomorphism between multivariable polynomials indexed by a type with a unique
 element and polynomials over the ground ring. -/
@@ -135,12 +135,12 @@ section Map
 variable {R} (σ)
 
 /-- If `e : A ≃+* B` is an isomorphism of rings, then so is `map e`. -/
-def mapEquiv [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S₂) :
+def mapEquiv [Semiring S₁] [IsMulCommutative S₁] [Semiring S₂] [IsMulCommutative S₂] (e : S₁ ≃+* S₂) :
     MvPolynomial σ S₁ ≃+* MvPolynomial σ S₂ :=
   AddMonoidAlgebra.mapRingEquiv _ e
 
 @[simp]
-lemma mapEquiv_apply [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S₂)
+lemma mapEquiv_apply [Semiring S₁] [IsMulCommutative S₁] [Semiring S₂] [IsMulCommutative S₂] (e : S₁ ≃+* S₂)
     (x : MvPolynomial σ S₁) :
     mapEquiv σ e x = map e x := rfl
 
@@ -149,16 +149,16 @@ theorem mapEquiv_refl : mapEquiv σ (RingEquiv.refl R) = RingEquiv.refl _ :=
   RingEquiv.ext map_id
 
 @[simp]
-theorem mapEquiv_symm [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S₂) :
+theorem mapEquiv_symm [Semiring S₁] [IsMulCommutative S₁] [Semiring S₂] [IsMulCommutative S₂] (e : S₁ ≃+* S₂) :
     (mapEquiv σ e).symm = mapEquiv σ e.symm :=
   rfl
 
 @[simp]
-theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S₃] (e : S₁ ≃+* S₂)
+theorem mapEquiv_trans [Semiring S₁] [IsMulCommutative S₁] [Semiring S₂] [IsMulCommutative S₂] [Semiring S₃] [IsMulCommutative S₃] (e : S₁ ≃+* S₂)
     (f : S₂ ≃+* S₃) : (mapEquiv σ e).trans (mapEquiv σ f) = mapEquiv σ (e.trans f) :=
   (AddMonoidAlgebra.mapRingEquiv_trans _ _).symm
 
-variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
+variable {A₁ A₂ A₃ : Type*} [Semiring A₁] [IsMulCommutative A₁] [Semiring A₂] [IsMulCommutative A₂] [Semiring A₃] [IsMulCommutative A₃]
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
@@ -187,7 +187,7 @@ end Map
 
 section Eval
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 theorem eval₂_uniqueAlgEquiv [Unique σ] {f : MvPolynomial σ R} {φ : R →+* S}
     {a : σ → S} :
@@ -262,7 +262,7 @@ def isEmptyAlgEquiv : MvPolynomial σ R ≃ₐ[R] R := AddMonoidAlgebra.uniqueAl
 
 variable {R S₁} in
 @[simp]
-lemma aeval_injective_iff_of_isEmpty [CommSemiring S₁] [Algebra R S₁] {f : σ → S₁} :
+lemma aeval_injective_iff_of_isEmpty [Semiring S₁] [IsMulCommutative S₁] [Algebra R S₁] {f : σ → S₁} :
     Function.Injective (aeval f : MvPolynomial σ R →ₐ[R] S₁) ↔
       Function.Injective (algebraMap R S₁) := by
   have : aeval f = (Algebra.ofId R S₁).comp (@isEmptyAlgEquiv R σ _ _).toAlgHom := by
@@ -296,7 +296,7 @@ end isEmptyRingEquiv
 
 /-- A helper function for `sumRingEquiv`. -/
 @[simps]
-def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R →+* MvPolynomial S₂ S₃)
+def mvPolynomialEquivMvPolynomial [Semiring S₃] [IsMulCommutative S₃] (f : MvPolynomial S₁ R →+* MvPolynomial S₂ S₃)
     (g : MvPolynomial S₂ S₃ →+* MvPolynomial S₁ R) (hfgC : (f.comp g).comp C = C)
     (hfgX : ∀ n, f (g (X n)) = X n) (hgfC : (g.comp f).comp C = C) (hgfX : ∀ n, g (f (X n)) = X n) :
     MvPolynomial S₁ R ≃+* MvPolynomial S₂ S₃ where
@@ -428,7 +428,7 @@ lemma sumAlgEquiv_comp_rename_inl :
   ext; simp
 
 section commAlgEquiv
-variable {R S₁ S₂ : Type*} [CommSemiring R]
+variable {R S₁ S₂ : Type*} [Semiring R] [IsMulCommutative R]
 
 variable (R S₁ S₂) in
 /-- The algebra isomorphism between multivariable polynomials in variables `S₁` of multivariable
@@ -661,7 +661,7 @@ theorem finSuccEquiv_apply (p : MvPolynomial (Fin (n + 1)) R) :
         (fun i : Fin (n + 1) => Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i) p := by
   rw [← finSuccEquiv_eq, RingHom.coe_coe]
 
-theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
+theorem finSuccEquiv_comp_C_eq_C {R : Type u} [Semiring R] [IsMulCommutative R] (n : ℕ) :
     (↑(MvPolynomial.finSuccEquiv R n).symm : Polynomial (MvPolynomial (Fin n) R) →+* _).comp
         (Polynomial.C.comp MvPolynomial.C) =
       (MvPolynomial.C : R →+* MvPolynomial (Fin n.succ) R) := by
@@ -870,7 +870,7 @@ end MvPolynomial
 
 section toMvPolynomial
 
-variable {R S σ τ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R S σ τ : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 /-- The embedding of `R[X]` into `R[Xᵢ]` as an `R`-algebra homomorphism. -/
 noncomputable def Polynomial.toMvPolynomial (i : σ) : R[X] →ₐ[R] MvPolynomial σ R :=

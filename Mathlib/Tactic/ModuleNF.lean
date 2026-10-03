@@ -23,18 +23,18 @@ on scalar types).
 
 Examples:
 ```
-example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M) :
+example [AddMonoid M] [IsAddCommutative M] [Semiring R] [IsMulCommutative R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (a + b) • x := by
   module_nf
 
-example [AddCommMonoid V] (x y : V) : x + (y + x) = x + x + y := by
+example [AddMonoid V] [IsAddCommutative V] (x y : V) : x + (y + x) = x + x + y := by
   module_nf  -- both sides normalize to `2 • x + y`
 
-example [AddCommMonoid M] [CommSemiring R] [Module R M] (f : M → M) (a b : R) (x : M) :
+example [AddMonoid M] [IsAddCommutative M] [Semiring R] [IsMulCommutative R] [Module R M] (f : M → M) (a b : R) (x : M) :
     f (a • x + b • x) = f ((a + b) • x) := by
   module_nf  -- rewrites under `f`
 
-example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M)
+example [AddMonoid M] [IsAddCommutative M] [Semiring R] [IsMulCommutative R] [Module R M] (a b : R) (x : M)
     (h : a • x + b • x = 0) : (b + a) • x = 0 := by
   module_nf at h ⊢
   exact h
@@ -44,7 +44,7 @@ The scalar ring is inferred once per invocation by examining the locations targe
 so that the scalar rings of independently rewritten locations agree:
 
 ```
-example [AddCommGroup M] (x : M) : x + x = (2 : ℤ) • x := by
+example [AddGroup M] [IsAddCommutative M] (x : M) : x + x = (2 : ℤ) • x := by
   module_nf  -- mixed scalars: the ring is inferred jointly, so both sides normalize over ℤ
 ```
 
@@ -52,7 +52,7 @@ The common scalar ring can also be specified explicitly with `module_nf with R`,
 every location's scalars over `R`. For example:
 
 ```
-example [AddCommGroup M] [Field K] [Module K M] (x y : M) (h : x + x = y) :
+example [AddGroup M] [IsAddCommutative M] [Field K] [Module K M] (x y : M) (h : x + x = y) :
     (2 : K) • x = y := by
   module_nf with K at h
   exact h
@@ -61,7 +61,7 @@ example [AddCommGroup M] [Field K] [Module K M] (x y : M) (h : x + x = y) :
 Locations whose scalar ring is not comparable with `R` keep their own ring. For example:
 
 ```
-example [CommRing S] [CommRing T] [AddCommGroup M] [Module S M] [Module T M]
+example [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [AddGroup M] [IsAddCommutative M] [Module S M] [Module T M]
     (s : S) (x y : M) (h : s • x + s • x = y) : (s * 2) • x = y := by
   module_nf with T at h  -- `h`'s scalars are not comparable with `T` and keep their ring `S`
   exact h
@@ -71,7 +71,7 @@ Scalar actions collected through an algebra tower are lowered back to the smalle
 expresses them:
 
 ```
-example [CommRing R] [CommRing S] [Algebra R S] [AddCommGroup M]
+example [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [AddGroup M] [IsAddCommutative M]
     [Module R M] [Module S M] [IsScalarTower R S M]
     (a b : R) (u : S) (x y : M) (P : M → Prop)
     (h : P (b • x + y)) : P (a • x + u • y + (1 - u) • y - (a - b) • x) := by
@@ -85,7 +85,7 @@ conjunctions, applications, `≤`. So if there are several subexpressions at a l
 separated by such a context then normalization may result in mixed scalar rings. For example:
 
 ```
-example [AddCommGroup M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
+example [AddGroup M] [IsAddCommutative M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
     P (x + x) ∧ P ((2 : ℤ) • x) := by
   module_nf
   -- `⊢ P (2 • x) ∧ P ((2 : ℤ) • x)`: the first conjunct normalized over `ℕ`, not `ℤ`,
@@ -95,7 +95,7 @@ example [AddCommGroup M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
 The scalar rings can be aligned by specifying `ℤ` explicitly:
 
 ```
-example [AddCommGroup M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
+example [AddGroup M] [IsAddCommutative M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
     P (x + x) ∧ P ((2 : ℤ) • x) := by
   module_nf with ℤ
   exact ⟨h, h⟩
@@ -186,16 +186,16 @@ on scalar types).
 Examples:
 
 ```lean
-example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M) :
+example [AddMonoid M] [IsAddCommutative M] [Semiring R] [IsMulCommutative R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (a + b) • x := by
   module_nf
 
-example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M)
+example [AddMonoid M] [IsAddCommutative M] [Semiring R] [IsMulCommutative R] [Module R M] (a b : R) (x : M)
     (h : a • x + b • x = 0) : (b + a) • x = 0 := by
   module_nf at h ⊢
   exact h
 
-example [AddCommGroup M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
+example [AddGroup M] [IsAddCommutative M] (x : M) (P : M → Prop) (h : P ((2 : ℤ) • x)) :
     P (x + x) ∧ P ((2 : ℤ) • x) := by
   module_nf with ℤ
   exact ⟨h, h⟩

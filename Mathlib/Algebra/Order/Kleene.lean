@@ -260,7 +260,7 @@ namespace Prod
 instance instIdemSemiring [IdemSemiring α] [IdemSemiring β] : IdemSemiring (α × β) where
   add_eq_sup _ _ := Prod.ext (add_eq_sup _ _) (add_eq_sup _ _)
 
-instance [IdemCommSemiring α] [IdemCommSemiring β] : IdemCommSemiring (α × β) where
+instance [IdemSemiring α] [IsMulCommutative α] [IdemSemiring β] [IsMulCommutative β] : IdemCommSemiring (α × β) where
   __ := Prod.instCommSemiring
   __ := Prod.instIdemSemiring
 
@@ -292,7 +292,7 @@ namespace Pi
 instance instIdemSemiring [∀ i, IdemSemiring (π i)] : IdemSemiring (∀ i, π i) where
   add_eq_sup _ _ := funext fun _ ↦ add_eq_sup _ _
 
-instance [∀ i, IdemCommSemiring (π i)] : IdemCommSemiring (∀ i, π i) where
+instance [∀ i, IdemSemiring (π i)] [∀ i, IsMulCommutative (π i)] : IdemCommSemiring (∀ i, π i) where
   __ := Pi.commSemiring
   __ := Pi.instIdemSemiring
 
@@ -335,7 +335,7 @@ protected abbrev idemSemiring [IdemSemiring α] [LE β] [LT β] [Zero β] [One �
 
 -- See note [reducible non-instances]
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/
-protected abbrev idemCommSemiring [IdemCommSemiring α] [LE β] [LT β] [Zero β] [One β]
+protected abbrev idemCommSemiring [IdemSemiring α] [IsMulCommutative α] [LE β] [LT β] [Zero β] [One β]
     [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α)
     (hf : Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (zero : f 0 = 0) (one : f 1 = 1)

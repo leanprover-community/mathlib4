@@ -77,7 +77,7 @@ end Commute
 
 section CommSemiring
 
-variable [CommSemiring R] {p : ℕ} (hp : p.Prime) (x y : R) (n : ℕ)
+variable [Semiring R] [IsMulCommutative R] {p : ℕ} (hp : p.Prime) (x y : R) (n : ℕ)
 include hp
 
 lemma add_pow_prime_pow_eq' :
@@ -154,7 +154,7 @@ end CharP
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] (x y : R) (p n : ℕ)
+variable [Semiring R] [IsMulCommutative R] (x y : R) (p n : ℕ)
 
 section ExpChar
 variable [hR : ExpChar R p]
@@ -240,7 +240,7 @@ end CharP
 end Ring
 
 section CommRing
-variable [CommRing R] (x y : R) (n : ℕ) {p : ℕ}
+variable [Ring R] [IsMulCommutative R] (x y : R) (n : ℕ) {p : ℕ}
 
 section ExpChar
 variable [hR : ExpChar R p]
@@ -314,7 +314,7 @@ to import algebra-related definitions.
 -/
 section Frobenius
 
-variable (R : Type*) [CommSemiring R]
+variable (R : Type*) [Semiring R] [IsMulCommutative R]
 variable (p n : ℕ) [ExpChar R p]
 
 /-- The Frobenius map `x ↦ x ^ p`. -/

@@ -35,11 +35,11 @@ The condition only asks for `<` which is easier to prove, use
 `Ideal.exists_ideal_ge_liesOver_of_le` for applying it. -/
 @[stacks 00HV "(1)"]
 class Algebra.HasGoingUp
-    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] : Prop where
+    (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] : Prop where
   exists_ideal_ge_liesOver_of_lt {q : Ideal R} [q.IsPrime] (P : Ideal S) [P.IsPrime] :
     P.under R < q → ∃ Q, P ≤ Q ∧ Q.IsPrime ∧ Q.LiesOver q
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 namespace Ideal
 
@@ -89,7 +89,7 @@ end Ideal
 
 namespace Algebra.HasGoingUp
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- An `R`-algebra `S` has the going up property if and only if specializations lift
 along `Spec S → Spec R`. -/
@@ -114,7 +114,7 @@ lemma iff_specializingMap_primeSpectrumComap :
 
 variable (R S) in
 @[stacks 00HX]
-lemma trans (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+lemma trans (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [Algebra.HasGoingUp R S] [Algebra.HasGoingUp S T] :
     Algebra.HasGoingUp R T := by
   rw [iff_specializingMap_primeSpectrumComap, IsScalarTower.algebraMap_eq R S T]

@@ -18,7 +18,7 @@ public section
 
 namespace Finset
 
-variable {ι κ α β : Type*} [CommMonoid β]
+variable {ι κ α β : Type*} [Monoid β] [IsMulCommutative β]
 
 open Set
 

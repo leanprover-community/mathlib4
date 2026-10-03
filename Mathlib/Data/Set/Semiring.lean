@@ -181,22 +181,22 @@ noncomputable instance [Monoid α] : IdemSemiring (SetSemiring α) :=
     (inferInstance : NonUnitalSemiring (SetSemiring α)),
     (inferInstance : CompleteBooleanAlgebra (SetSemiring α)) with }
 
-instance [CommSemigroup α] : CommSemigroup (SetSemiring α) :=
+instance [Semigroup α] [IsMulCommutative α] : CommSemigroup (SetSemiring α) :=
   inferInstanceAs <| CommSemigroup (Set α)
 
-instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
+instance [Semigroup α] [IsMulCommutative α] : NonUnitalCommSemiring (SetSemiring α) where
 
-noncomputable instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
+noncomputable instance [Monoid α] [IsMulCommutative α] : CommMonoid (SetSemiring α) :=
   inferInstanceAs <| CommMonoid (Set α)
 
-noncomputable instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) where
+noncomputable instance [Monoid α] [IsMulCommutative α] : IdemCommSemiring (SetSemiring α) where
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
   le_add_self _ _ := subset_union_right
   le_self_add _ _ := subset_union_left
 
-noncomputable instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=
+noncomputable instance [Monoid α] [IsMulCommutative α] : IsOrderedRing (SetSemiring α) :=
   CanonicallyOrderedAdd.toIsOrderedRing
 
 /-- If `α` is a monoid, the map that sends `a : α` to

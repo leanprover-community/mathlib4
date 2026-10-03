@@ -45,7 +45,7 @@ universe u v w z
 open Finset Matrix Polynomial
 open scoped Ring
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 variable {n : Type v} [DecidableEq n] [Fintype n]
 variable {α : Type v} [DecidableEq α]
 variable {M : Matrix n n R}
@@ -231,7 +231,7 @@ lemma charpoly_fin_two [Nontrivial R] (M : Matrix (Fin 2) (Fin 2) R) :
 
 end Matrix
 
-theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [CommRing K] (M : Matrix n n K) :
+theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [Ring K] [IsMulCommutative K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
   ext m i j

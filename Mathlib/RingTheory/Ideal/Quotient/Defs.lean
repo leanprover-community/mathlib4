@@ -43,7 +43,7 @@ defined to equal the quotient of `I` as an `R`-submodule of `R`. -/
 instance instHasQuotient : HasQuotient R (Ideal R) := Submodule.hasQuotient
 
 /-- Shortcut instance for commutative rings. -/
-instance {R} [CommRing R] : HasQuotient R (Ideal R) := inferInstance
+instance {R} [Ring R] [IsMulCommutative R] : HasQuotient R (Ideal R) := inferInstance
 
 namespace Quotient
 
@@ -65,12 +65,12 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
 instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
   inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
 
-instance semiring {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := (ring I).toSemiring
-instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) where
+instance semiring {R} [Ring R] [IsMulCommutative R] (I : Ideal R) : Semiring (R ⧸ I) := (ring I).toSemiring
+instance commSemiring {R} [Ring R] [IsMulCommutative R] (I : Ideal R) : CommSemiring (R ⧸ I) where
   mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
 
-instance {R} [CommRing R] (I : Ideal R) : Ring (R ⧸ I) := ring I
-instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
+instance {R} [Ring R] [IsMulCommutative R] (I : Ideal R) : Ring (R ⧸ I) := ring I
+instance commRing {R} [Ring R] [IsMulCommutative R] (I : Ideal R) : CommRing (R ⧸ I) where
 
 variable [I.IsTwoSided]
 

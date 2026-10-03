@@ -42,7 +42,7 @@ variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
-variable [AddCommMonoid E] [AddCommMonoid F]
+variable [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F]
 
 section SMul
 
@@ -104,7 +104,7 @@ theorem convex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → κ i
 theorem Convex.prod {s : Set E} {t : Set F} (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
     Convex 𝕜 (s ×ˢ t) := fun _ hx => (hs hx.1).prod (ht hx.2)
 
-theorem convex_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
+theorem convex_pi {ι : Type*} {E : ι → Type*} [∀ i, AddMonoid (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, SMul 𝕜 (E i)]
     {s : Set ι} {t : ∀ i, Set (E i)} (ht : ∀ ⦃i⦄, i ∈ s → Convex 𝕜 (t i)) : Convex 𝕜 (s.pi t) :=
   fun _ hx => starConvex_pi fun _ hi => ht hi <| hx _ hi
 
@@ -242,7 +242,7 @@ theorem Convex.translate_preimage_left (hs : Convex 𝕜 s) (z : E) :
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
+variable [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
 
 theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab =>
   calc
@@ -268,7 +268,7 @@ end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
+variable [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
   [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
 
 theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
@@ -302,7 +302,7 @@ end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
+variable [AddMonoid β] [IsAddCommutative β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
 
 theorem convex_uIcc (r s : β) : Convex 𝕜 (uIcc r s) :=
   convex_Icc _ _
@@ -330,7 +330,7 @@ end AddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E]
+variable [AddMonoid E] [IsAddCommutative E] [LinearOrder E] [IsOrderedAddMonoid E]
   [PartialOrder β] [Module 𝕜 E] [PosSMulMono 𝕜 E]
   {s : Set E} {f : E → β}
 
@@ -402,11 +402,11 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [CommSemiring 𝕜] [PartialOrder 𝕜]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
-variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F] {s : Set E}
+variable [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F] {s : Set E}
 
 theorem Convex.smul (hs : Convex 𝕜 s) (c : 𝕜) : Convex 𝕜 (c • s) :=
   hs.linear_image (LinearMap.lsmul _ _ c)
@@ -424,7 +424,7 @@ end OrderedCommSemiring
 
 section StrictOrderedCommSemiring
 
-variable [CommSemiring 𝕜] [PartialOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 theorem convex_openSegment (a b : E) : Convex 𝕜 (openSegment 𝕜 a b) := by
   rw [convex_iff_openSegment_subset]
@@ -441,7 +441,7 @@ variable [Ring 𝕜] [PartialOrder 𝕜]
 
 section AddCommGroup
 
-variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {s t : Set E}
+variable [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F] {s t : Set E}
 
 @[simp]
 theorem convex_vadd (a : E) : Convex 𝕜 (a +ᵥ s) ↔ Convex 𝕜 s :=
@@ -498,13 +498,13 @@ end OrderedRing
 
 section LinearOrder
 
-variable [Semiring 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [AddMonoid E] [IsAddCommutative E]
 section SemilinearMap
 
 variable [PartialOrder 𝕜]
 variable {𝕜' : Type*} [Semiring 𝕜'] [PartialOrder 𝕜']
 variable {σ : 𝕜 →+* 𝕜'} [RingHomSurjective σ]
-variable {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F'] [Module 𝕜 E]
+variable {F' : Type*} [AddMonoid F'] [IsAddCommutative F'] [Module 𝕜' F'] [Module 𝕜 E]
 
 theorem Convex.semilinear_image {s : Set E} (hs : Convex 𝕜 s) (hσ : ∀ {s t}, σ s ≤ σ t ↔ s ≤ t)
     (f : E →ₛₗ[σ] F') : Convex 𝕜' (f '' s) := by
@@ -533,7 +533,7 @@ theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (
 end LinearOrder
 
 theorem Convex.midpoint_mem [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-    [AddCommGroup E] [Module 𝕜 E] [Invertible (2 : 𝕜)] {s : Set E} {x y : E}
+    [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [Invertible (2 : 𝕜)] {s : Set E} {x y : E}
     (h : Convex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s) : midpoint 𝕜 x y ∈ s :=
   h.segment_subset hx hy <| midpoint_mem_segment x y
 
@@ -543,7 +543,7 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 section AddCommGroup
 
-variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {s : Set E}
+variable [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F] {s : Set E}
 
 /-- Alternative definition of set convexity, using division. -/
 theorem convex_iff_div :
@@ -589,7 +589,7 @@ Relates `Convex` and `OrdConnected`.
 
 section
 
-theorem Set.OrdConnected.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+theorem Set.OrdConnected.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E]
     [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E}
     (hs : s.OrdConnected) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s := by
   refine convex_iff_segment_subset.mpr fun x hx y hy => ?_
@@ -598,7 +598,7 @@ theorem Set.OrdConnected.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜] [Ad
   · rw [segment_symm]
     exact (segment_subset_Icc hyx).trans (hs.out hy hx)
 
-theorem Set.OrdConnected.convex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [LinearOrder E]
+theorem Set.OrdConnected.convex [Semiring 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E] [LinearOrder E]
     [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E} (hs : s.OrdConnected) :
     Convex 𝕜 s :=
   hs.convex_of_chain <| isChain_of_trichotomous s
@@ -616,7 +616,7 @@ end
 
 namespace Submodule
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E]
 
 protected theorem convex (K : Submodule 𝕜 E) : Convex 𝕜 (↑K : Set E) := by
   repeat' intro
@@ -626,16 +626,16 @@ protected theorem starConvex (K : Submodule 𝕜 E) : StarConvex 𝕜 (0 : E) K 
   K.convex K.zero_mem
 
 theorem Convex.semilinear_range {𝕜' : Type*} [Semiring 𝕜'] {σ : 𝕜' →+* 𝕜}
-    [RingHomSurjective σ] {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F']
+    [RingHomSurjective σ] {F' : Type*} [AddMonoid F'] [IsAddCommutative F'] [Module 𝕜' F']
     (f : F' →ₛₗ[σ] E) : Convex 𝕜 (LinearMap.range f : Set E) := Submodule.convex ..
 
 end Submodule
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable (A : Type*) [Semiring A] [Algebra R A]
-variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module A M] [Module R M] [IsScalarTower R A M]
 variable [PartialOrder R] [PartialOrder A]
 
 lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}

@@ -32,7 +32,7 @@ open Asymptotics Filter Function Real Set
 namespace Function.locallyFinsuppWithin
 
 variable
-  {E : Type*} [NormedAddCommGroup E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
 
 /-!
 ## Logarithmic Counting Functions for Functions with Locally Finite Support
@@ -172,7 +172,7 @@ namespace ValueDistribution
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 
 /-!
 ## Logarithmic Counting Functions for the Poles of a Meromorphic Function

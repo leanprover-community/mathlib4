@@ -33,14 +33,14 @@ namespace Completion
 
 variable (𝕜 E : Type*)
 
-instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+instance [NormedField 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] :
     NormedSpace 𝕜 (Completion E) where
   norm_smul_le := norm_smul_le
 
 section Module
 
 variable {𝕜 E}
-variable [Semiring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [UniformContinuousConstSMul 𝕜 E]
+variable [Semiring 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [Module 𝕜 E] [UniformContinuousConstSMul 𝕜 E]
 
 /-- Embedding of a normed space to its completion as a linear isometry. -/
 def toComplₗᵢ : E →ₗᵢ[𝕜] Completion E :=
@@ -54,7 +54,7 @@ theorem coe_toComplₗᵢ : ⇑(toComplₗᵢ : E →ₗᵢ[𝕜] Completion E) 
     (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).toContinuousLinearMap = toComplL := rfl
 
 @[simp]
-theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E]
     [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
   (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
 
@@ -72,11 +72,11 @@ instance [SeminormedRing A] : NormedRing (Completion A) where
     | hp => apply isClosed_le <;> fun_prop
     | ih x y => simpa only [← coe_mul, norm_coe] using norm_mul_le x y
 
-instance [SeminormedCommRing A] : NormedCommRing (Completion A) where
+instance [SeminormedRing A] [IsMulCommutative A] : NormedCommRing (Completion A) where
   __ : CommRing (Completion A) := inferInstance
   __ : NormedRing (Completion A) := inferInstance
 
-instance [NormedField 𝕜] [SeminormedCommRing A] [NormedAlgebra 𝕜 A] :
+instance [NormedField 𝕜] [SeminormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) where
   norm_smul_le := norm_smul_le
 

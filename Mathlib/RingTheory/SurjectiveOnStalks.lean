@@ -22,8 +22,8 @@ that surjections and localizations satisfy this.
 
 @[expose] public section
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-variable {T : Type*} [CommRing T]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (M : Submonoid R) {S : Type*} [Ring S] [IsMulCommutative S]
+variable {T : Type*} [Ring T] [IsMulCommutative T]
 variable {g : S →+* T} {f : R →+* S}
 
 namespace RingHom
@@ -194,7 +194,7 @@ lemma SurjectiveOnStalks.baseChange' [Algebra R T] [Algebra R S]
 
 -- Subsumed by `RingHom.SurjectiveOnStalks.tensorProductMap`.
 private lemma SurjectiveOnStalks.tensorProductMap_id
-    {S' : Type*} [CommRing S'] [Algebra R S] [Algebra R T] [Algebra R S']
+    {S' : Type*} [Ring S'] [IsMulCommutative S'] [Algebra R S] [Algebra R T] [Algebra R S']
     {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) :
     (Algebra.TensorProduct.map f (AlgHom.id R T)).SurjectiveOnStalks := by
   let := f.toRingHom.toAlgebra
@@ -207,7 +207,7 @@ private lemma SurjectiveOnStalks.tensorProductMap_id
     Hf.baseChange'
 
 lemma SurjectiveOnStalks.tensorProductMap
-    {S' T' : Type*} [CommRing S'] [CommRing T']
+    {S' T' : Type*} [Ring S'] [IsMulCommutative S'] [Ring T'] [IsMulCommutative T']
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) {g : T →ₐ[R] T'} (Hg : g.SurjectiveOnStalks) :
     (Algebra.TensorProduct.map f g).SurjectiveOnStalks := by

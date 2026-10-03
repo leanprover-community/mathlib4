@@ -22,7 +22,7 @@ open Polynomial TensorProduct LinearMap
 
 noncomputable section
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 namespace PolynomialModule
 

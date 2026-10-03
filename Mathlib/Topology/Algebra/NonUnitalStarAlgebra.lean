@@ -30,7 +30,7 @@ namespace NonUnitalStarSubalgebra
 
 section Semiring
 
-variable {R A B : Type*} [CommSemiring R] [TopologicalSpace A] [Star A]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [TopologicalSpace A] [Star A]
 variable [NonUnitalSemiring A] [Module R A] [ContinuousStar A]
 variable [ContinuousConstSMul R A]
 
@@ -102,7 +102,7 @@ lemma topologicalClosure_map (hφ : IsClosedMap φ) (hφ' : Continuous φ) :
 open NonUnitalStarAlgebra in
 -- we have to shadow the variables because some things currently require `StarRing`
 lemma topologicalClosure_adjoin_le_centralizer_centralizer (R : Type*) {A : Type*}
-    [CommSemiring R] [StarRing R] [TopologicalSpace A] [NonUnitalSemiring A] [StarRing A]
+    [Semiring R] [IsMulCommutative R] [StarRing R] [TopologicalSpace A] [NonUnitalSemiring A] [StarRing A]
     [Module R A] [IsSemitopologicalSemiring A] [ContinuousStar A] [ContinuousConstSMul R A]
     [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] [T2Space A] (s : Set A) :
     (adjoin R s).topologicalClosure ≤ centralizer R (centralizer R s) :=
@@ -112,7 +112,7 @@ end Semiring
 
 section Ring
 
-variable {R A : Type*} [CommRing R] [TopologicalSpace A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace A]
 variable [NonUnitalRing A] [Module R A] [Star A] [ContinuousStar A]
 variable [ContinuousConstSMul R A]
 
@@ -145,7 +145,7 @@ namespace NonUnitalStarAlgebra
 
 open NonUnitalStarSubalgebra
 
-variable (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
+variable (R : Type*) {A : Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
 variable [TopologicalSpace A] [IsSemitopologicalSemiring A] [ContinuousConstSMul R A]
 variable [ContinuousStar A]

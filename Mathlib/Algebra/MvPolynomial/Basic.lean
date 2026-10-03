@@ -33,7 +33,7 @@ corresponding to the terms in `σ`, and coefficients in `R`.
 In the definitions below, we use the following notation:
 
 + `σ : Type*` (indexing the variables)
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[Semiring R] [IsMulCommutative R]` (the coefficients)
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
 + `a : R`
@@ -76,7 +76,7 @@ variable {R : Type u} {S₁ : Type v} {S₂ : Type w}
 
 /-- Multivariate polynomial, where `σ` is the index set of the variables and
   `R` is the coefficient ring -/
-abbrev MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
+abbrev MvPolynomial (σ : Type*) (R : Type*) [Semiring R] [IsMulCommutative R] :=
   AddMonoidAlgebra R (σ →₀ ℕ)
 
 namespace MvPolynomial
@@ -84,7 +84,7 @@ namespace MvPolynomial
 variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
-variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
+variable [Semiring R] [IsMulCommutative R] [Semiring S₁] [IsMulCommutative S₁] {p q : MvPolynomial σ R}
 
 /-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s` -/
 def monomial (s : σ →₀ ℕ) : R →ₗ[R] MvPolynomial σ R :=
@@ -159,16 +159,16 @@ theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
   map_pow _ _ _
 
 @[grind inj]
-theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
+theorem C_injective (σ : Type*) (R : Type*) [Semiring R] [IsMulCommutative R] :
     Function.Injective (C : R → MvPolynomial σ R) :=
   single_right_injective
 
-theorem C_surjective {R : Type*} [CommSemiring R] (σ : Type*) [IsEmpty σ] :
+theorem C_surjective {R : Type*} [Semiring R] [IsMulCommutative R] (σ : Type*) [IsEmpty σ] :
     Function.Surjective (C : R → MvPolynomial σ R) :=
   fun p ↦ ⟨p.coeff 0, by apply AddMonoidAlgebra.ext; ext; simp [C_apply, ← single_eq_monomial]⟩
 
 @[simp]
-theorem C_inj {σ : Type*} (R : Type*) [CommSemiring R] (r s : R) :
+theorem C_inj {σ : Type*} (R : Type*) [Semiring R] [IsMulCommutative R] (r s : R) :
     (C r : MvPolynomial σ R) = C s ↔ r = s :=
   (C_injective σ R).eq_iff
 
@@ -177,15 +177,15 @@ theorem C_inj {σ : Type*} (R : Type*) [CommSemiring R] (r s : R) :
 lemma C_ne_zero : (C a : MvPolynomial σ R) ≠ 0 ↔ a ≠ 0 :=
   C_eq_zero.ne
 
-instance nontrivial_of_nontrivial (σ : Type*) (R : Type*) [CommSemiring R] [Nontrivial R] :
+instance nontrivial_of_nontrivial (σ : Type*) (R : Type*) [Semiring R] [IsMulCommutative R] [Nontrivial R] :
     Nontrivial (MvPolynomial σ R) :=
   inferInstanceAs (Nontrivial <| AddMonoidAlgebra R (σ →₀ ℕ))
 
-instance infinite_of_infinite (σ : Type*) (R : Type*) [CommSemiring R] [Infinite R] :
+instance infinite_of_infinite (σ : Type*) (R : Type*) [Semiring R] [IsMulCommutative R] [Infinite R] :
     Infinite (MvPolynomial σ R) :=
   Infinite.of_injective C (C_injective _ _)
 
-instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiring R]
+instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [Semiring R] [IsMulCommutative R]
     [Nontrivial R] : Infinite (MvPolynomial σ R) :=
   Infinite.of_injective ((fun s : σ →₀ ℕ => monomial s 1) ∘ Finsupp.single (Classical.arbitrary σ))
     <| (monomial_left_injective one_ne_zero).comp (Finsupp.single_injective _)
@@ -270,12 +270,12 @@ theorem monomial_zero' : (monomial (0 : σ →₀ ℕ) : R → MvPolynomial σ R
 theorem monomial_eq_zero {s : σ →₀ ℕ} {b : R} : monomial s b = 0 ↔ b = 0 := single_eq_zero
 
 @[simp]
-theorem sum_monomial_eq {A : Type*} [AddCommMonoid A] {u : σ →₀ ℕ} {r : R} {b : (σ →₀ ℕ) → R → A}
+theorem sum_monomial_eq {A : Type*} [AddMonoid A] [IsAddCommutative A] {u : σ →₀ ℕ} {r : R} {b : (σ →₀ ℕ) → R → A}
     (w : b u 0 = 0) : sum (monomial u r).coeff b = b u r :=
   Finsupp.sum_single_index w
 
 @[simp]
-theorem sum_C {A : Type*} [AddCommMonoid A] {b : (σ →₀ ℕ) → R → A} (w : b 0 0 = 0) :
+theorem sum_C {A : Type*} [AddMonoid A] [IsAddCommutative A] {b : (σ →₀ ℕ) → R → A} (w : b 0 0 = 0) :
     sum (C a).coeff b = b 0 a :=
   sum_monomial_eq w
 
@@ -418,7 +418,7 @@ theorem is_id (f : MvPolynomial σ R →+* MvPolynomial σ R) (hC : f.comp C = C
 
 We set the priority higher than that of `AddMonoidAlgebra.algHom_ext`. -/
 @[ext high + 1]
-theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
+theorem algHom_ext' {A B : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Algebra R A] [Algebra R B]
     {f g : MvPolynomial σ A →ₐ[R] B}
     (h₁ :
       f.comp (IsScalarTower.toAlgHom R A (MvPolynomial σ A)) =
@@ -449,7 +449,7 @@ theorem adjoin_range_X : Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
   | mul_X p i hp => exact S.mul_mem hp (Algebra.subset_adjoin <| mem_range_self _)
 
 @[ext]
-theorem linearMap_ext {M : Type*} [AddCommMonoid M] [Module R M] {f g : MvPolynomial σ R →ₗ[R] M}
+theorem linearMap_ext {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] {f g : MvPolynomial σ R →ₗ[R] M}
     (h : ∀ s, f ∘ₗ monomial s = g ∘ₗ monomial s) : f = g :=
   lhom_ext' h
 
@@ -513,7 +513,7 @@ theorem mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∈ p.su
 theorem notMem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∉ p.support ↔ p.coeff m = 0 := by
   simp
 
-theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ ℕ) → R → A} :
+theorem sum_def {A} [AddMonoid A] [IsAddCommutative A] {p : MvPolynomial σ R} {b : (σ →₀ ℕ) → R → A} :
     (AddMonoidAlgebra.coeff p).sum b = ∑ m ∈ p.support, b m (p.coeff m) := by
   simp [support, Finsupp.sum]
 
@@ -967,7 +967,7 @@ theorem as_sum (p : MvPolynomial σ R) : p = ∑ v ∈ p.support, monomial v (p.
 end AsSum
 
 section coeffsIn
-variable {R S σ : Type*} [CommSemiring R] [CommSemiring S]
+variable {R S σ : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 section Module
 variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i : σ →₀ ℕ} {x : S}

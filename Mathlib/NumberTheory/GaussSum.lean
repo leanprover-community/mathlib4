@@ -59,10 +59,10 @@ open AddChar MulChar
 section GaussSumDef
 
 -- `R` is the domain of the characters
-variable {R : Type u} [CommRing R] [Fintype R]
+variable {R : Type u} [Ring R] [IsMulCommutative R] [Fintype R]
 
 -- `R'` is the target of the characters
-variable {R' : Type v} [CommRing R']
+variable {R' : Type v} [Ring R'] [IsMulCommutative R']
 
 /-!
 ### Definition and first properties
@@ -101,7 +101,7 @@ end GaussSumDef
 
 section GaussSumTrivial
 
-variable {R R' : Type*} [CommRing R] [Fintype R] [CommRing R']
+variable {R R' : Type*} [Ring R] [IsMulCommutative R] [Fintype R] [Ring R'] [IsMulCommutative R']
 
 /-- The Gauss sum of the two trivial characters is the cardinality of the unit group of `R`. -/
 @[simp]
@@ -119,7 +119,7 @@ end GaussSumTrivial
 
 section GaussSumTrivialField
 
-variable {R R' : Type*} [Field R] [Fintype R] [CommRing R'] [IsDomain R']
+variable {R R' : Type*} [Field R] [Fintype R] [Ring R'] [IsMulCommutative R'] [IsDomain R']
 
 /-- The Gauss sum of the trivial multiplicative character and a nontrivial additive character,
 over a finite field, is `-1`. -/
@@ -146,7 +146,7 @@ section GaussSumProd
 
 open Finset in
 /-- A formula for the product of two Gauss sums with the same additive character. -/
-lemma gaussSum_mul {R : Type u} [CommRing R] [Fintype R] {R' : Type v} [CommRing R']
+lemma gaussSum_mul {R : Type u} [Ring R] [IsMulCommutative R] [Fintype R] {R' : Type v} [Ring R'] [IsMulCommutative R']
     (χ φ : MulChar R R') (ψ : AddChar R R') :
     gaussSum χ ψ * gaussSum φ ψ = ∑ t : R, ∑ x : R, χ x * φ (t - x) * ψ t := by
   rw [gaussSum, gaussSum, sum_mul_sum]
@@ -161,7 +161,7 @@ lemma gaussSum_mul {R : Type u} [CommRing R] [Fintype R] {R' : Type v} [CommRing
   rw [sum_congr rfl fun x _ ↦ sum_eq x, sum_comm]
 
 -- In the following, we need `R` to be a finite field.
-variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R']
+variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [Ring R'] [IsMulCommutative R']
 
 lemma mul_gaussSum_inv_eq_gaussSum (χ : MulChar R R') (ψ : AddChar R R') :
     χ (-1) * gaussSum χ ψ⁻¹ = gaussSum χ ψ := by
@@ -235,7 +235,7 @@ end GaussSumProd
 
 section gaussSum_frob
 
-variable {R : Type u} [CommRing R] [Fintype R] {R' : Type v} [CommRing R']
+variable {R : Type u} [Ring R] [IsMulCommutative R] [Fintype R] {R' : Type v} [Ring R'] [IsMulCommutative R']
 
 -- We assume that the target ring `R'` has prime characteristic `p`.
 variable (p : ℕ) [fp : Fact p.Prime] [hch : CharP R' p]
@@ -278,7 +278,7 @@ end gaussSum_frob
 
 section GaussSumValues
 
-variable {R : Type u} [CommRing R] [Fintype R] {R' : Type v} [CommRing R'] [IsDomain R']
+variable {R : Type u} [Ring R] [IsMulCommutative R] [Fintype R] {R' : Type v} [Ring R'] [IsMulCommutative R'] [IsDomain R']
 
 /-- If the square of the Gauss sum of a quadratic character is `χ(-1) * #R`,
 then we get, for all `n : ℕ`, the relation `(χ(-1) * #R) ^ (p^n/2) = χ(p^n)`,

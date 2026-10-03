@@ -33,8 +33,8 @@ noncomputable section
 
 open FaithfulSMul Function Set
 
-variable {ι R M N : Type*} [Finite ι] [CommRing R] [CharZero R] [IsDomain R]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Finite ι] [Ring R] [IsMulCommutative R] [CharZero R] [IsDomain R]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace RootPairing
 

@@ -27,7 +27,7 @@ namespace Asymptotics
 variable {α β E F E' F' G' : Type*}
 
 variable [Norm E] [Norm F]
-variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
+variable [SeminormedAddGroup E'] [IsAddCommutative E'] [SeminormedAddGroup F'] [IsAddCommutative F'] [SeminormedAddGroup G'] [IsAddCommutative G']
 variable {c c' : ℝ} {f : α → E} {g : α → F}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
 variable {l : Filter α}

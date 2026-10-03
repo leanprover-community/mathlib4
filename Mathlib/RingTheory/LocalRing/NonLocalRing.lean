@@ -65,7 +65,7 @@ theorem not_isLocalRing_of_prod_of_nontrivial (R₁ R₂ : Type*) [Semiring R₁
 * the maximal spectrum of `R` is nontrivial,
 * `R` has two distinct maximal ideals.
 -/
-theorem not_isLocalRing_tfae {R : Type*} [CommSemiring R] [Nontrivial R] :
+theorem not_isLocalRing_tfae {R : Type*} [Semiring R] [IsMulCommutative R] [Nontrivial R] :
     List.TFAE [
       ¬IsLocalRing R,
       Nontrivial (MaximalSpectrum R),
@@ -80,7 +80,7 @@ theorem not_isLocalRing_tfae {R : Type*} [CommSemiring R] [Nontrivial R] :
 
 /-- There exists a surjective ring homomorphism from a non-local commutative ring onto a product
 of two fields. -/
-theorem exists_surjective_of_not_isLocalRing.{u} {R : Type u} [CommRing R] [Nontrivial R]
+theorem exists_surjective_of_not_isLocalRing.{u} {R : Type u} [Ring R] [IsMulCommutative R] [Nontrivial R]
     (h : ¬IsLocalRing R) :
     ∃ (K₁ K₂ : Type u) (_ : Field K₁) (_ : Field K₂) (f : R →+* K₁ × K₂),
       Function.Surjective f := by

@@ -96,7 +96,7 @@ end Ring
 end Commute
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 lemma dvd_mul_sub_mul_mul_left_of_dvd {p a b c d x y : R}
     (h1 : p ∣ a * x + b * y) (h2 : p ∣ c * x + d * y) : p ∣ (a * d - b * c) * x := by

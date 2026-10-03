@@ -27,7 +27,7 @@ open scoped DirectSum
 
 namespace Submodule
 
-variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {ι R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [IsDomain R] [IsPrincipalIdealRing R] [Finite ι]
 
 /--
@@ -112,7 +112,7 @@ theorem finiteQuotient_iff [Module.Free ℤ M] [Module.Finite ℤ M] (N : Submod
     exact Int.ofNat_ne_zero.mpr <| Nat.card_ne_zero.mpr
       ⟨Set.nonempty_iff_univ_nonempty.mpr Set.univ_nonempty, h⟩
 
-variable (F : Type*) [CommRing F] [Algebra F R] [Module F M] [IsScalarTower F R M]
+variable (F : Type*) [Ring F] [IsMulCommutative F] [Algebra F R] [Module F M] [IsScalarTower F R M]
   (b : Basis ι R M) {N : Submodule R M}
 
 /-- Decompose `M⧸N` as a direct sum of cyclic `R`-modules

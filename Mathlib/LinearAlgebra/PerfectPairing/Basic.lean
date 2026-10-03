@@ -29,8 +29,8 @@ open Function Module
 namespace LinearMap
 
 section CommSemiring
-variable {R M M' N N' : Type*} [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid M']
-  [AddCommMonoid N'] [CommSemiring R] [Module R M] [Module R M'] [Module R N] [Module R N']
+variable {R M M' N N' : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid M'] [IsAddCommutative M']
+  [AddMonoid N'] [IsAddCommutative N'] [Semiring R] [IsMulCommutative R] [Module R M] [Module R M'] [Module R N] [Module R N']
   {p : M →ₗ[R] N →ₗ[R] R} {x : M} {y : N}
 
 /-- For a ring `R` and two modules `M` and `N`, a perfect pairing is a bilinear map `M × N → R`
@@ -128,7 +128,7 @@ lemma IsPerfPair.nondegenerate {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPai
 end CommSemiring
 
 section Field
-variable {K M N : Type*} [Field K] [AddCommGroup M] [AddCommGroup N]
+variable {K M N : Type*} [Field K] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
   [Module K M] [Module K N] {p : M →ₗ[K] N →ₗ[K] K}
 
 /-- If the coefficients are a field, and one of the spaces is finite-dimensional, it is sufficient
@@ -150,8 +150,8 @@ end LinearMap
 
 noncomputable section
 
-variable {R M N : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N]
+variable {R M N : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 namespace LinearMap
 variable {p : M →ₗ[R] N →ₗ[R] R} [p.IsPerfPair]

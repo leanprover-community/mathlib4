@@ -27,8 +27,8 @@ lie algebra, extension of scalars, base change, derivation
 namespace Lie.Derivation
 
 open TensorProduct
-variable {R : Type*} [CommRing R]
-variable {A : Type*} [CommRing A] [Algebra R A]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A]
 variable {L : Type*} [LieRing L] [LieAlgebra R L]
 attribute [local instance 100] LieRing.ofAssociativeRing
 

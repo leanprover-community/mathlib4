@@ -151,7 +151,7 @@ section SeminormedAddCommGroup
 ### Bounded operations in seminormed additive commutative groups
 -/
 
-variable {R : Type*} [SeminormedAddCommGroup R]
+variable {R : Type*} [SeminormedAddGroup R] [IsAddCommutative R]
 
 lemma SeminormedAddCommGroup.lipschitzWith_sub :
     LipschitzWith 2 (fun (p : R × R) ↦ p.1 - p.2) := by

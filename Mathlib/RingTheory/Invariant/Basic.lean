@@ -49,7 +49,7 @@ open scoped Pointwise
 
 section Quotient
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
 variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -86,7 +86,7 @@ end Quotient
 
 section transitivity
 
-variable (A B G : Type*) [CommRing A] [CommRing B] [Algebra A B] [Group G] [MulSemiringAction G B]
+variable (A B G : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] [Group G] [MulSemiringAction G B]
 
 namespace MulSemiringAction
 
@@ -178,7 +178,7 @@ section surjectivity
 
 open FaithfulSMul IsScalarTower Polynomial
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
   (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
 
@@ -397,10 +397,10 @@ end surjectivity
 
 section normal
 
-variable {A B k : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B k : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
   (G : Type*) [Finite G] [Group G] [MulSemiringAction G B] [Algebra.IsInvariant A B G]
   (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
-  [CommRing k] [Algebra (A ⧸ P) k] [Algebra (B ⧸ Q) k] [IsScalarTower (A ⧸ P) (B ⧸ Q) k]
+  [Ring k] [IsMulCommutative k] [Algebra (A ⧸ P) k] [Algebra (B ⧸ Q) k] [IsScalarTower (A ⧸ P) (B ⧸ Q) k]
   [IsDomain k] [FaithfulSMul (B ⧸ Q) k]
 
 include G in
@@ -478,7 +478,7 @@ namespace Ideal
 
 open MulAction
 
-variable {R S G G' : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S G G' : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
   [Group G] [Group G'] [MulSemiringAction G S] [MulSemiringAction G' R]
   (f : G →* G') (H : Subgroup G) [Finite H] [Algebra.IsInvariant R S H]
   (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime]
@@ -545,7 +545,7 @@ end Ideal
 
 namespace IsFractionRing
 
-variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [Algebra A B] [Field K] [Field L]
+variable (G A B K L : Type*) [Group G] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] [Field K] [Field L]
   [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L] [IsFractionRing A K] [IsFractionRing B L]
   [IsScalarTower A K L] [IsScalarTower A B L] [MulSemiringAction G B] [MulSemiringAction G L]
   [SMulDistribClass G B L] [hAB : Algebra.IsInvariant A B G] [SMulCommClass G A B]

@@ -45,8 +45,8 @@ section BasicProperties_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -83,7 +83,7 @@ theorem inner_re_symm (x y : E) : re ⟪x, y⟫ = re ⟪y, x⟫ := by rw [← in
 theorem inner_im_symm (x y : E) : im ⟪x, y⟫ = -im ⟪y, x⟫ := by rw [← inner_conj_symm, conj_im]
 
 section Algebra
-variable {𝕝 : Type*} [CommSemiring 𝕝] [StarRing 𝕝] [Algebra 𝕝 𝕜] [Module 𝕝 E]
+variable {𝕝 : Type*} [Semiring 𝕝] [IsMulCommutative 𝕝] [StarRing 𝕝] [Algebra 𝕝 𝕜] [Module 𝕝 E]
   [IsScalarTower 𝕝 𝕜 E] [StarModule 𝕝 𝕜]
 
 /-- See `inner_smul_left` for the common special when `𝕜 = 𝕝`. -/
@@ -306,8 +306,8 @@ end BasicProperties_Seminormed
 
 section BasicProperties
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
+variable [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -369,8 +369,8 @@ section Norm_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -654,8 +654,8 @@ section Norm
 
 open scoped InnerProductSpace
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
+variable [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
 variable {ι : Type*}
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -883,7 +883,7 @@ end Norm
 
 section Induced
 
-variable {G : Type*} [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [AddCommGroup G]
+variable {G : Type*} [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E] [AddGroup G] [IsAddCommutative G]
     [Module 𝕜 G]
 
 /-- A linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
@@ -934,7 +934,7 @@ open scoped InnerProductSpace
 
 variable {G : Type*}
 variable (𝕜 E)
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -980,7 +980,7 @@ theorem real_inner_I_smul_self (x : E) :
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
 @[instance_reducible]
-def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
+def InnerProductSpace.complexToReal [SeminormedAddGroup G] [IsAddCommutative G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
 
@@ -1014,7 +1014,7 @@ theorem Real.inner_apply (x y : ℝ) : inner ℝ x y = x * y := by rw [mul_comm]
 
 section IsPosSemidef
 
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E]
 
 lemma isSymm_inner : LinearMap.IsSymm (innerₗ E) where
   eq x y := by simp [real_inner_comm]

@@ -55,7 +55,7 @@ Warning: use this type synonym judiciously! Consider an example where we want to
 `R`-linear map from `M` to `S`, given:
 ```lean
 variable (R S M : Type*)
-variable [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module S M]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] [AddMonoid M] [IsAddCommutative M] [Module S M]
 ```
 With the assumptions above we can't directly state our map as we have no `Module R M` structure, but
 `RestrictScalars` permits it to be written as:
@@ -83,21 +83,21 @@ def RestrictScalars (_R _S M : Type*) : Type _ := M
 
 instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) := I
 
-instance [I : AddCommMonoid M] : AddCommMonoid (RestrictScalars R S M) := I
+instance [I : AddMonoid M] [IsAddCommutative M] : AddCommMonoid (RestrictScalars R S M) := I
 
-instance [I : AddCommGroup M] : AddCommGroup (RestrictScalars R S M) := I
+instance [I : AddGroup M] [IsAddCommutative M] : AddCommGroup (RestrictScalars R S M) := I
 
 section Module
 
 section
 
-variable [Semiring S] [AddCommMonoid M]
+variable [Semiring S] [AddMonoid M] [IsAddCommutative M]
 
 /-- We temporarily install an action of the original ring on `RestrictScalars R S M`. -/
 @[instance_reducible]
 def RestrictScalars.moduleOrig [I : Module S M] : Module S (RestrictScalars R S M) := I
 
-variable [CommSemiring R] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Algebra R S]
 
 section
 
@@ -156,13 +156,13 @@ def RestrictScalars.lsmul [Module S M] : S →ₐ[R] Module.End R (RestrictScala
 
 end
 
-variable [AddCommMonoid M]
+variable [AddMonoid M] [IsAddCommutative M]
 
 /-- `RestrictScalars.addEquiv` is the additive equivalence with the original module. -/
 def RestrictScalars.addEquiv : RestrictScalars R S M ≃+ M :=
   AddEquiv.refl M
 
-variable [CommSemiring R] [Semiring S] [Algebra R S] [Module S M]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] [Module S M]
 
 theorem RestrictScalars.smul_def (c : R) (x : RestrictScalars R S M) :
     c • x = (RestrictScalars.addEquiv R S M).symm
@@ -198,9 +198,9 @@ instance [I : Semiring A] : Semiring (RestrictScalars R S A) := I
 
 instance [I : Ring A] : Ring (RestrictScalars R S A) := I
 
-instance [I : CommSemiring A] : CommSemiring (RestrictScalars R S A) := I
+instance [I : Semiring A] [IsMulCommutative A] : CommSemiring (RestrictScalars R S A) := I
 
-instance [I : CommRing A] : CommRing (RestrictScalars R S A) := I
+instance [I : Ring A] [IsMulCommutative A] : CommRing (RestrictScalars R S A) := I
 
 variable [Semiring A]
 
@@ -208,7 +208,7 @@ variable [Semiring A]
 def RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A :=
   RingEquiv.refl _
 
-variable [CommSemiring S] [Algebra S A] [CommSemiring R] [Algebra R S]
+variable [Semiring S] [IsMulCommutative S] [Algebra S A] [Semiring R] [IsMulCommutative R] [Algebra R S]
 
 @[simp]
 theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :

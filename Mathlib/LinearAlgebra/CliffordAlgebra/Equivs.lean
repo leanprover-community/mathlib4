@@ -70,7 +70,7 @@ namespace CliffordAlgebraRing
 
 open scoped ComplexConjugate
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 @[simp]
 theorem ι_eq_zero : ι (0 : QuadraticForm R Unit) = 0 :=
@@ -225,7 +225,7 @@ open scoped Quaternion
 
 open QuaternionAlgebra
 
-variable {R : Type*} [CommRing R] (c₁ c₂ : R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (c₁ c₂ : R)
 
 /-- `Q c₁ c₂` is a quadratic form over `R × R` such that `CliffordAlgebra (Q c₁ c₂)` is isomorphic
 as an `R`-algebra to `ℍ[R,c₁,c₂]`. -/
@@ -336,7 +336,7 @@ open scoped DualNumber
 
 open DualNumber TrivSqZeroExt
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul r₁, ← smul_eq_mul r₂, map_smul, map_smul,

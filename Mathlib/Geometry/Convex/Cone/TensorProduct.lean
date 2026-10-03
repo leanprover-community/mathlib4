@@ -47,9 +47,9 @@ We define the minimal and maximal tensor products of pointed cones:
 
 open TensorProduct Module
 
-variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
-variable {G : Type*} [AddCommGroup G] [Module R G]
-variable {H : Type*} [AddCommGroup H] [Module R H]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
+variable {G : Type*} [AddGroup G] [IsAddCommutative G] [Module R G]
+variable {H : Type*} [AddGroup H] [IsAddCommutative H] [Module R H]
 
 namespace PointedCone
 
@@ -137,7 +137,7 @@ theorem maxTensorProduct_mono (h₁ : C₁ ≤ C₁') (h₂ : C₂ ≤ C₂') :
   fun _ hz => mem_maxTensorProduct.mpr fun φ hφ ψ hψ =>
     mem_maxTensorProduct.mp hz φ (dual_le_dual h₁ hφ) ψ (dual_le_dual h₂ hψ)
 
-variable {G' H' : Type*} [AddCommGroup G'] [Module R G'] [AddCommGroup H'] [Module R H']
+variable {G' H' : Type*} [AddGroup G'] [IsAddCommutative G'] [Module R G'] [AddGroup H'] [IsAddCommutative H'] [Module R H']
 
 /-- `minTensorProduct` is functorial: the image of a minimal tensor product under
 `TensorProduct.map f g` is contained in the minimal tensor product of the images. -/

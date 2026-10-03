@@ -31,8 +31,8 @@ variable {R A B C : Type*}
 open Coalgebra
 
 /-- An equivalence of coalgebras is an invertible coalgebra homomorphism. -/
-structure CoalgEquiv (R : Type*) [CommSemiring R] (A B : Type*)
-    [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+structure CoalgEquiv (R : Type*) [Semiring R] [IsMulCommutative R] (A B : Type*)
+    [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗc[R] B, A ≃ₗ[R] B where
 
 attribute [nolint docBlame] CoalgEquiv.toCoalgHom
@@ -43,14 +43,14 @@ notation:50 A " ≃ₗc[" R "] " B => CoalgEquiv R A B
 
 /-- `CoalgEquivClass F R A B` asserts `F` is a type of bundled coalgebra equivalences
 from `A` to `B`. -/
-class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
-    [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [Semiring R] [IsMulCommutative R]
+    [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B] : Prop
     extends CoalgHomClass F R A B, SemilinearEquivClass F (RingHom.id R) A B
 
 namespace CoalgEquivClass
 
-variable {F R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
+variable {F R A B : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B]
   [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
@@ -69,11 +69,11 @@ end CoalgEquivClass
 
 namespace CoalgEquiv
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 section
 
-variable [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+variable [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [Module R A] [Module R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B]
 
 /-- The equivalence of types underlying a coalgebra equivalence. -/
@@ -124,7 +124,7 @@ end
 
 section
 
-variable [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [Module R A] [Module R B]
+variable [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [AddMonoid C] [IsAddCommutative C] [Module R A] [Module R B]
   [Module R C] [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C]
 
 variable (e e' : A ≃ₗc[R] B)
@@ -187,14 +187,14 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
       rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right] }
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
-    [AddCommMonoid α] [AddCommMonoid β] [Module R α]
+def Simps.apply {R : Type*} [Semiring R] [IsMulCommutative R] {α β : Type*}
+    [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] [Module R α]
     [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α ≃ₗc[R] β) : α → β := f
 
 /-- See Note [custom simps projection] -/
-def Simps.symm_apply {R : Type*} [CommSemiring R]
-    {A : Type*} {B : Type*} [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+def Simps.symm_apply {R : Type*} [Semiring R] [IsMulCommutative R]
+    {A : Type*} {B : Type*} [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B]
     (e : A ≃ₗc[R] B) : B → A :=
   e.symm
@@ -307,8 +307,8 @@ theorem coe_ofBijective : (CoalgEquiv.ofBijective hf : A → B) = f :=
 
 end
 variable
-  [AddCommMonoid A] [Module R A] [Coalgebra R A]
-  [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
+  [AddMonoid A] [IsAddCommutative A] [Module R A] [Coalgebra R A]
+  [AddMonoid B] [IsAddCommutative B] [Module R B] [CoalgebraStruct R B]
 
 /-- Let `A` be an `R`-coalgebra and let `B` be an `R`-module with a `CoalgebraStruct`.
 A linear equivalence `A ≃ₗ[R] B` that respects the `CoalgebraStruct`s defines an `R`-coalgebra

@@ -25,10 +25,10 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 assert_not_exists TrivialStar
 
 variable {R : Type*} [Semiring R]
-  {M₁ : Type*} [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R M₁]
-  {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
-  {M₃ : Type*} [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R M₃]
-  {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R M₄]
+  {M₁ : Type*} [TopologicalSpace M₁] [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁]
+  {M₂ : Type*} [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
+  {M₃ : Type*} [TopologicalSpace M₃] [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃]
+  {M₄ : Type*} [TopologicalSpace M₄] [AddMonoid M₄] [IsAddCommutative M₄] [Module R M₄]
 
 namespace ContinuousLinearEquiv
 

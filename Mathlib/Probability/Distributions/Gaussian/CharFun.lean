@@ -47,7 +47,7 @@ open scoped Matrix NNReal Real RealInnerProductSpace ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [SecondCountableTopology E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [SecondCountableTopology E]
   [CompleteSpace E] [MeasurableSpace E] [BorelSpace E] {μ ν : Measure E}
 
 section NormedSpace

@@ -45,22 +45,22 @@ theorem trivial_lie_zero (L : Type v) (M : Type w) [Bracket L M] [Zero M] [LieMo
   LieModule.IsTrivial.trivial x m
 
 instance LieModule.instIsTrivialOfSubsingleton {L M : Type*}
-    [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton L] : LieModule.IsTrivial L M :=
+    [LieRing L] [AddGroup M] [IsAddCommutative M] [LieRingModule L M] [Subsingleton L] : LieModule.IsTrivial L M :=
   ⟨fun x m ↦ by rw [Subsingleton.eq_zero x, zero_lie]⟩
 
 instance LieModule.instIsTrivialOfSubsingleton' {L M : Type*}
-    [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton M] : LieModule.IsTrivial L M :=
+    [LieRing L] [AddGroup M] [IsAddCommutative M] [LieRingModule L M] [Subsingleton M] : LieModule.IsTrivial L M :=
   ⟨fun x m ↦ by simp_rw [Subsingleton.eq_zero m, lie_zero]⟩
 
 /-- A Lie algebra is Abelian iff it is trivial as a Lie module over itself. -/
 abbrev IsLieAbelian (L : Type v) [Bracket L L] [Zero L] : Prop :=
   LieModule.IsTrivial L L
 
-instance LieIdeal.isLieAbelian_of_trivial (R : Type u) (L : Type v) [CommRing R] [LieRing L]
+instance LieIdeal.isLieAbelian_of_trivial (R : Type u) (L : Type v) [Ring R] [IsMulCommutative R] [LieRing L]
     [LieAlgebra R L] (I : LieIdeal R L) [h : LieModule.IsTrivial L I] : IsLieAbelian I where
   trivial x y := by apply h.trivial
 
-theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
+theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [Ring R] [IsMulCommutative R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
     (h₁ : Function.Injective f) (_ : IsLieAbelian L₂) : IsLieAbelian L₁ :=
   { trivial := fun x y => h₁ <|
@@ -69,7 +69,7 @@ theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Typ
         _ = 0 := trivial_lie_zero _ _ _ _
         _ = f 0 := (map_zero _).symm }
 
-theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
+theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [Ring R] [IsMulCommutative R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
     (h₁ : Function.Surjective f) (h₂ : IsLieAbelian L₁) : IsLieAbelian L₂ :=
   { trivial := fun x y => by
@@ -77,7 +77,7 @@ theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Ty
       obtain ⟨v, rfl⟩ := h₁ y
       rw [← LieHom.map_lie, trivial_lie_zero, map_zero] }
 
-theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
+theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [Ring R] [IsMulCommutative R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] (e : L₁ ≃ₗ⁅R⁆ L₂) :
     IsLieAbelian L₁ ↔ IsLieAbelian L₂ :=
   ⟨e.symm.injective.isLieAbelian, e.injective.isLieAbelian⟩
@@ -91,7 +91,7 @@ theorem isMulCommutative_iff_isLieAbelian {A : Type v} [Ring A] :
 alias commutative_ring_iff_abelian_lie_ring := isMulCommutative_iff_isLieAbelian
 
 @[simp] theorem LieSubalgebra.isLieAbelian_lieSpan_iff
-    {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] {s : Set L} :
+    {R L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] {s : Set L} :
     IsLieAbelian (lieSpan R L s) ↔ ∀ᵉ (x ∈ s) (y ∈ s), ⁅x, y⁆ = 0 := by
   refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
   · let x' : lieSpan R L s := ⟨x, subset_lieSpan hx⟩
@@ -127,9 +127,9 @@ alias commutative_ring_iff_abelian_lie_ring := isMulCommutative_iff_isLieAbelian
 section Center
 
 variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁)
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
-variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable [AddGroup N] [IsAddCommutative N] [Module R N] [LieRingModule L N] [LieModule R L N]
 
 namespace LieModule
 
@@ -341,7 +341,7 @@ section IdealOperations
 open LieSubmodule LieSubalgebra
 
 variable {R : Type u} {L : Type v} {M : Type w}
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [LieRingModule L M] (N : LieSubmodule R L M) (I : LieIdeal R L)
 
 @[simp]
@@ -365,7 +365,7 @@ lemma lie_eq_self_of_isAtom_of_ne_bot (hN : IsAtom N) (h : ⁅I, N⁆ ≠ ⊥) :
   (hN.le_iff_eq h).mp <| LieSubmodule.lie_le_right N I
 
 -- TODO: introduce typeclass for perfect Lie algebras and use it here in the conclusion
-lemma lie_eq_self_of_isAtom_of_nonabelian {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+lemma lie_eq_self_of_isAtom_of_nonabelian {R L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) (hI : IsAtom I) (h : ¬IsLieAbelian I) :
     ⁅I, I⁆ = I :=
   lie_eq_self_of_isAtom_of_ne_bot hI <| not_imp_not.mpr (lie_abelian_iff_lie_self_eq_bot I).mpr h
@@ -381,7 +381,7 @@ def TrivialLieModule (R L M : Type*) := M
 
 namespace TrivialLieModule
 
-variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
+variable (R L M : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 instance : AddCommGroup (TrivialLieModule R L M) := inferInstanceAs (AddCommGroup M)
 

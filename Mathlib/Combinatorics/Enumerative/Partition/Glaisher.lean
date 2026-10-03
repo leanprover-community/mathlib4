@@ -40,7 +40,7 @@ namespace Nat.Partition
 open PowerSeries PowerSeries.WithPiTopology Finset
 
 section Semiring
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 /-- The generating function of `Nat.Partition.restricted n p` is
 $$
@@ -108,7 +108,7 @@ theorem powerSeriesMk_card_countRestricted_eq_tprod {m : ℕ} (hm : 0 < m) :
 end Semiring
 
 section Ring
-variable [CommRing R] [NoZeroDivisors R]
+variable [Ring R] [IsMulCommutative R] [NoZeroDivisors R]
 
 private theorem aux_mul_one_sub_X_pow [IsTopologicalRing R] {m : ℕ} (hm : 0 < m) :
     (∏' i, if ¬m ∣ i + 1 then ∑' j, (X : R⟦X⟧) ^ ((i + 1) * j) else 1) * ∏' i, (1 - X ^ (i + 1)) =

@@ -36,7 +36,7 @@ homeomorphism, ball
 @[expose] public section
 
 open Set Metric
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 noncomputable section
 

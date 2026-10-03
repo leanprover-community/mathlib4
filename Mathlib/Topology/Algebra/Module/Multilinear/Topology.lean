@@ -29,8 +29,8 @@ namespace ContinuousMultilinearMap
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
   [NormedField 𝕜]
-  [∀ i, TopologicalSpace (E i)] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
-  [AddCommGroup F] [Module 𝕜 F]
+  [∀ i, TopologicalSpace (E i)] [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module 𝕜 (E i)]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
 
 /-- An auxiliary definition used to define topology on `ContinuousMultilinearMap 𝕜 E F`. -/
 def toUniformOnFun [TopologicalSpace F] (f : ContinuousMultilinearMap 𝕜 E F) :
@@ -109,7 +109,7 @@ instance instUniformContinuousConstSMul {M : Type*}
 
 @[fun_prop]
 theorem isUniformInducing_postcomp
-    {G : Type*} [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G] [Module 𝕜 G]
+    {G : Type*} [AddGroup G] [IsAddCommutative G] [UniformSpace G] [IsUniformAddGroup G] [Module 𝕜 G]
     (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
     IsUniformInducing (g.compContinuousMultilinearMap :
       ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜 E G) := by
@@ -235,7 +235,7 @@ theorem isVonNBounded_image2_apply [ContinuousConstSMul 𝕜 F]
 
 section CompContinuousLinearMap
 variable {E₁ : ι → Type*} [∀ i, TopologicalSpace (E₁ i)] [ContinuousConstSMul 𝕜 F]
-  [∀ i, AddCommGroup (E₁ i)] [∀ i, Module 𝕜 (E₁ i)]
+  [∀ i, AddGroup (E₁ i)] [∀ i, IsAddCommutative (E₁ i)] [∀ i, Module 𝕜 (E₁ i)]
 
 /-- `ContinuousMultilinearMap.compContinuousLinearMap` as a bundled continuous linear map.
 Given a family of continuous linear maps `f : Π i, E i →L[𝕜] E₁ i`,
@@ -340,10 +340,10 @@ end ContinuousMultilinearMap
 namespace ContinuousLinearMap
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {F G : Type*} [NormedField 𝕜] [∀ i, TopologicalSpace (E i)]
-  [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
-  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module 𝕜 (E i)]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul 𝕜 F]
-  [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
   [ContinuousConstSMul 𝕜 G]
 
 variable (𝕜 E F G) in
@@ -404,11 +404,11 @@ end ContinuousLinearMap
 namespace ContinuousLinearEquiv
 
 variable {𝕜 ι : Type*} {E E₁ : ι → Type*} {F G : Type*} [NormedField 𝕜]
-  [∀ i, TopologicalSpace (E i)] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
-  [∀ i, TopologicalSpace (E₁ i)] [∀ i, AddCommGroup (E₁ i)] [∀ i, Module 𝕜 (E₁ i)]
-  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [∀ i, TopologicalSpace (E i)] [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module 𝕜 (E i)]
+  [∀ i, TopologicalSpace (E₁ i)] [∀ i, AddGroup (E₁ i)] [∀ i, IsAddCommutative (E₁ i)] [∀ i, Module 𝕜 (E₁ i)]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul 𝕜 F]
-  [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
   [ContinuousConstSMul 𝕜 G]
 
 variable (F) in

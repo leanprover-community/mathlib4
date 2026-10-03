@@ -41,9 +41,9 @@ namespace Finsupp
 
 variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R R₂ R₃ : Type*}
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R₂ N]
-variable [AddCommMonoid P] [Module R₃ P]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable [AddMonoid N] [IsAddCommutative N] [Module R₂ N]
+variable [AddMonoid P] [IsAddCommutative P] [Module R₃ P]
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂}
 variable {σ₁₃ : R →+* R₃} {σ₃₁ : R₃ →+* R}
@@ -52,7 +52,7 @@ variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃
 section LinearEquivFunOnFinite
 
 variable (R : Type*) (M : Type*) (α : Type*)
-variable [Finite α] [AddCommMonoid M] [Semiring R] [Module R M]
+variable [Finite α] [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M]
 
 /-- Given `Finite α`, `linearEquivFunOnFinite R` is the natural `R`-linear equivalence between
 `α →₀ β` and `α → β`. -/
@@ -274,7 +274,7 @@ end Equiv
 
 section Prod
 
-variable {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {α β R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 variable (R) in
 /-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
@@ -294,7 +294,7 @@ end Prod
 end Finsupp
 
 variable {R : Type*} {M : Type*} {N : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 open Finsupp
 
@@ -304,7 +304,7 @@ variable (R)
 
 /-- If `Subsingleton R`, then `M ≃ₗ[R] ι →₀ R` for any type `ι`. -/
 @[simps]
-def Module.subsingletonEquiv (R M ι : Type*) [Semiring R] [Subsingleton R] [AddCommMonoid M]
+def Module.subsingletonEquiv (R M ι : Type*) [Semiring R] [Subsingleton R] [AddMonoid M] [IsAddCommutative M]
     [Module R M] : M ≃ₗ[R] ι →₀ R where
   toFun _ := 0
   invFun _ := 0
@@ -319,7 +319,7 @@ end
 
 namespace Module.End
 
-variable (ι : Type*) {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable (ι : Type*) {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- If `M` is an `R`-module and `ι` is a type, then an additive endomorphism of `M` that
 commutes with all `R`-endomorphisms of `M` gives rise to an additive endomorphism of `ι →₀ M`

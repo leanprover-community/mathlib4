@@ -88,7 +88,7 @@ lemma mk_SpecMap {R S : CommRingCat.{u}} {f : R ⟶ S}
     IsPreimmersion (Spec.map f) :=
   (SpecMap_iff f).mpr ⟨h₁, h₂⟩
 
-lemma of_isLocalization {R S : Type u} [CommRing R] (M : Submonoid R) [CommRing S]
+lemma of_isLocalization {R S : Type u} [Ring R] [IsMulCommutative R] (M : Submonoid R) [Ring S] [IsMulCommutative S]
     [Algebra R S] [IsLocalization M S] :
     IsPreimmersion (Spec.map (CommRingCat.ofHom <| algebraMap R S)) :=
   IsPreimmersion.mk_SpecMap

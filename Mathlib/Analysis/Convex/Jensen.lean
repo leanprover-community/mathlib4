@@ -43,7 +43,7 @@ variable {𝕜 E β ι : Type*}
 
 section Jensen
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [AddCommGroup β]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup E] [IsAddCommutative E] [AddGroup β] [IsAddCommutative β]
   [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E] [Module 𝕜 β] [IsStrictOrderedModule 𝕜 β]
   {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E} {v : 𝕜} {q : E}
 
@@ -332,8 +332,8 @@ end Jensen
 
 section MaximumPrinciple
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E]
-  [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup E] [IsAddCommutative E]
+  [AddGroup β] [IsAddCommutative β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E]
   [Module 𝕜 β] [IsStrictOrderedModule 𝕜 β] {s : Set E} {f : E → β} {w : ι → 𝕜} {p : ι → E}
   {x y z : E}
 

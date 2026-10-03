@@ -34,11 +34,11 @@ open scoped TensorProduct
 
 /-- Homogeneous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
 `⨂[R] (i : Fin n), M`. -/
-abbrev TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
+abbrev TensorPower (R : Type*) (n : ℕ) (M : Type*) [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M]
     [Module R M] : Type _ :=
   ⨂[R] _ : Fin n, M
 
-variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 @[inherit_doc] scoped[TensorProduct] notation:max "⨂[" R "]^" n:arg => TensorPower R n
 

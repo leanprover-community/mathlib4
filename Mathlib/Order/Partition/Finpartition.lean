@@ -119,7 +119,7 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
 
 lemma sum_ofSubset_eq_sum {a b : α} (P : Finpartition a) {parts : Finset α}
     (subset : parts ⊆ P.parts) (sup_parts : parts.sup id = b)
-    {X : Type*} [AddCommMonoid X] (f : α → X) (hf : ∀ p ∈ P.parts, p ∉ parts → f p = 0) :
+    {X : Type*} [AddMonoid X] [IsAddCommutative X] (f : α → X) (hf : ∀ p ∈ P.parts, p ∉ parts → f p = 0) :
     ∑ p ∈ (P.ofSubset subset sup_parts).parts, f p = ∑ p ∈ P.parts, f p :=
   Finset.sum_subset subset hf
 
@@ -373,7 +373,7 @@ lemma mem_toSubtype_iff (p : Subtype Pr) :
     letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
     p ∈ (toSubtype P Prsup Prinf Prbot hs hP).parts ↔ p.val ∈ P.parts := by simp [toSubtype]
 
-lemma sum_eq_sum_finpartition_subtype {X : Type*} [AddCommMonoid X] (f : α → X) :
+lemma sum_eq_sum_finpartition_subtype {X : Type*} [AddMonoid X] [IsAddCommutative X] (f : α → X) :
     letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
     letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
     ∑ p ∈ P.parts, f p = ∑ p ∈ (Finpartition.toSubtype P Prsup Prinf Prbot hs hP).parts, f p := by
@@ -482,7 +482,7 @@ theorem restrict_inf (P Q : Finpartition a) (hb : b ≤ a) :
 
 /-- The sum of a set-valued function over restricted partition parts equals the sum over original
 parts with `f (· ⊓ b)`, provided `f ⊥ = 0` (so bottom terms don't contribute). -/
-lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoid M]
+lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddMonoid M] [IsAddCommutative M]
     (f : α → M) (hf : f ⊥ = 0) :
     ∑ p ∈ (P.restrict hb).parts, f p = ∑ q ∈ P.parts, f (q ⊓ b) := by
   have hinj : ∀ x ∈ P.parts.filter (· ⊓ b ≠ ⊥), ∀ y ∈ P.parts.filter (· ⊓ b ≠ ⊥),
@@ -512,7 +512,7 @@ def ofPairwiseDisjoint (parts : Finset α) (hdisjoint : (parts : Set α).Pairwis
 
 lemma sum_ofPairwiseDisjoint_eq_sum {parts : Finset α}
     (hdisjoint : (parts : Set α).PairwiseDisjoint id)
-    {X : Type*} [AddCommMonoid X] {f : α → X} (hf : f ⊥ = 0) :
+    {X : Type*} [AddMonoid X] [IsAddCommutative X] {f : α → X} (hf : f ⊥ = 0) :
     ∑ p ∈ (ofPairwiseDisjoint parts hdisjoint).parts, f p = ∑ p ∈ parts, f p := by
   by_cases hbot : ⊥ ∈ parts
   · simp only [Finpartition.ofPairwiseDisjoint]
@@ -543,7 +543,7 @@ def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartitio
 /-- The sum of a set-valued function over a combined partition equals the sum of sums over component
 partitions. -/
 lemma sum_combine {ι : Type*} {I : Finset ι} {s : ι → α} (P : ∀ i, Finpartition (s i))
-    (ha : I.SupIndep s) {M : Type*} [AddCommMonoid M] (f : α → M) :
+    (ha : I.SupIndep s) {M : Type*} [AddMonoid M] [IsAddCommutative M] (f : α → M) :
     ∑ p ∈ (Finpartition.combine P ha).parts, f p = ∑ i ∈ I, ∑ p ∈ (P i).parts, f p := by
   simp_rw [combine]
   refine Finset.sum_biUnion fun i hi j hj hij => ?_

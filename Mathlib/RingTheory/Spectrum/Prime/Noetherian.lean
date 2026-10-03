@@ -26,7 +26,7 @@ open TopologicalSpace
 
 section IsNoetherianRing
 
-variable (R : Type u) [CommSemiring R] [IsNoetherianRing R]
+variable (R : Type u) [Semiring R] [IsMulCommutative R] [IsNoetherianRing R]
 
 instance : NoetherianSpace (PrimeSpectrum R) :=
   ((noetherianSpace_TFAE <| PrimeSpectrum R).out 1 2).mpr (closedsEmbedding R).dual.wellFoundedLT
@@ -48,7 +48,7 @@ namespace IsArtinianRing
 
 open PrimeSpectrum
 
-variable (R : Type*) [CommRing R] [IsArtinianRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsArtinianRing R]
 
 instance : Ring.KrullDimLE 0 R := .mk₀ fun _ _ ↦ inferInstance
 

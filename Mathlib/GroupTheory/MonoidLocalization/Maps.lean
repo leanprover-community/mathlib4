@@ -30,8 +30,8 @@ open Function
 
 section CommMonoid
 
-variable {M : Type*} [CommMonoid M] (S : Submonoid M) (N : Type*) [CommMonoid N] {P : Type*}
-  [CommMonoid P]
+variable {M : Type*} [Monoid M] [IsMulCommutative M] (S : Submonoid M) (N : Type*) [Monoid N] [IsMulCommutative N] {P : Type*}
+  [Monoid P] [IsMulCommutative P]
 
 variable {S N}
 
@@ -62,7 +62,7 @@ theorem eq_of_eq (hg : ∀ y : S, IsUnit (g y)) {x y} (h : f x = f y) : g x = g 
 /-- Given `AddCommMonoid`s `M, P`, Localization maps `f : M →+ N, k : P →+ Q` for AddSubmonoids
 `S, T` respectively, and `g : M →+ P` such that `g(S) ⊆ T`, `f x = f y`
 implies `k (g x) = k (g y)`. -/]
-theorem comp_eq_of_eq {T : Submonoid P} {Q : Type*} [CommMonoid Q] (hg : ∀ y : S, g y ∈ T)
+theorem comp_eq_of_eq {T : Submonoid P} {Q : Type*} [Monoid Q] [IsMulCommutative Q] (hg : ∀ y : S, g y ∈ T)
     (k : LocalizationMap T Q) {x y} (h : f x = f y) : k (g x) = k (g y) :=
   f.eq_of_eq (fun y : S ↦ show IsUnit (k.toMonoidHom.comp g y) from k.map_units ⟨g y, hg y⟩) h
 
@@ -201,8 +201,8 @@ the induced map `k.lift` for `l` is equal to the induced map `f.lift` for `l`. -
 `k : M →+ Q` for a Submonoid `T ⊆ M`, such that `S ≤ T`, and we have
 `l : M →+ A`, the composition of the induced map `f.lift` for `k` with
 the induced map `k.lift` for `l` is equal to the induced map `f.lift` for `l` -/]
-theorem lift_comp_lift {T : Submonoid M} (hST : S ≤ T) {Q : Type*} [CommMonoid Q]
-    (k : LocalizationMap T Q) {A : Type*} [CommMonoid A] {l : M →* A}
+theorem lift_comp_lift {T : Submonoid M} (hST : S ≤ T) {Q : Type*} [Monoid Q] [IsMulCommutative Q]
+    (k : LocalizationMap T Q) {A : Type*} [Monoid A] [IsMulCommutative A] {l : M →* A}
     (hl : ∀ w : T, IsUnit (l w)) :
     (k.lift hl).comp (f.lift (map_units k ⟨_, hST ·.2⟩)) =
     f.lift (hl ⟨_, hST ·.2⟩) := .symm <|
@@ -210,8 +210,8 @@ theorem lift_comp_lift {T : Submonoid M} (hST : S ≤ T) {Q : Type*} [CommMonoid
     MonoidHom.comp_assoc, lift_comp, lift_comp]
 
 @[to_additive]
-theorem lift_comp_lift_eq {Q : Type*} [CommMonoid Q] (k : LocalizationMap S Q)
-    {A : Type*} [CommMonoid A] {l : M →* A} (hl : ∀ w : S, IsUnit (l w)) :
+theorem lift_comp_lift_eq {Q : Type*} [Monoid Q] [IsMulCommutative Q] (k : LocalizationMap S Q)
+    {A : Type*} [Monoid A] [IsMulCommutative A] {l : M →* A} (hl : ∀ w : S, IsUnit (l w)) :
     (k.lift hl).comp (f.lift k.map_units) = f.lift hl :=
   lift_comp_lift f le_rfl k hl
 
@@ -255,7 +255,7 @@ theorem lift_injective_iff :
     rw [← f.mk'_sec z, ← f.mk'_sec w]
     exact (mul_inv f.map_units).2 ((H _ _).2 <| (mul_inv hg).1 h)
 
-variable {T : Submonoid P} (hy : ∀ y : S, g y ∈ T) {Q : Type*} [CommMonoid Q]
+variable {T : Submonoid P} (hy : ∀ y : S, g y ∈ T) {Q : Type*} [Monoid Q] [IsMulCommutative Q]
   (k : LocalizationMap T Q)
 
 /-- Given a `CommMonoid` homomorphism `g : M →* P` where for Submonoids `S ⊆ M, T ⊆ P` we have
@@ -334,7 +334,7 @@ of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 @[to_additive
 /-- If `AddCommMonoid` homs `g : M →+ P, l : P →+ A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/]
-theorem map_comp_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
+theorem map_comp_map {A : Type*} [Monoid A] [IsMulCommutative A] {U : Submonoid A} {R} [Monoid R] [IsMulCommutative R]
     (j : LocalizationMap U R) {l : P →* A} (hl : ∀ w : T, l w ∈ U) :
     (k.map hl j).comp (f.map hy k) =
     f.map (fun x ↦ show l.comp g x ∈ U from hl ⟨g x, hy x⟩) j := by
@@ -351,7 +351,7 @@ of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 @[to_additive
 /-- If `AddCommMonoid` homs `g : M →+ P, l : P →+ A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/]
-theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
+theorem map_map {A : Type*} [Monoid A] [IsMulCommutative A] {U : Submonoid A} {R} [Monoid R] [IsMulCommutative R]
     (j : LocalizationMap U R) {l : P →* A} (hl : ∀ w : T, l w ∈ U) (x) :
     k.map hl j (f.map hy k x) = f.map (fun x ↦ show l.comp g x ∈ U from hl ⟨g x, hy x⟩) j x := by
   -- Porting note: need to specify `k` explicitly
@@ -413,7 +413,7 @@ namespace Submonoid
 namespace LocalizationMap
 
 variable (f : S.LocalizationMap N) {g : M →* P} (hg : ∀ y : S, IsUnit (g y)) {T : Submonoid P}
-  {Q : Type*} [CommMonoid Q]
+  {Q : Type*} [Monoid Q] [IsMulCommutative Q]
 
 /-- If `f : M →* N` and `k : M →* P` are Localization maps for a Submonoid `S`, we get an
 isomorphism of `N` and `P`. -/

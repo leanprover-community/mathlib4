@@ -41,7 +41,7 @@ variable {K : Type*} [Field K] [CharZero K]
 section LeftInverse
 
 variable {ι M N : Type*} [Fintype ι] [DecidableEq ι]
-  [AddCommGroup M] [Module K M] [AddCommGroup N] [Module K N]
+  [AddGroup M] [IsAddCommutative M] [Module K M] [AddGroup N] [IsAddCommutative N] [Module K N]
   {P : RootPairing ι K M N} [P.IsReduced] [P.IsCrystallographic] [P.IsIrreducible] [P.IsRootSystem]
   (b : P.Base)
 

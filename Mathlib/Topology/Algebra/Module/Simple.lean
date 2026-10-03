@@ -22,7 +22,7 @@ public section
 universe u v w
 
 variable {R : Type u} {M : Type v} {N : Type w} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
-  [AddCommGroup M] [AddCommGroup N] [Module R M] [ContinuousSMul R M] [Module R N] [ContinuousAdd M]
+  [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [ContinuousSMul R M] [Module R N] [ContinuousAdd M]
   [IsSimpleModule R N]
 
 /-- The kernel of a linear map taking values in a simple module over the base ring is closed or

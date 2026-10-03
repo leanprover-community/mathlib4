@@ -33,9 +33,9 @@ open scoped Topology Filter ENNReal
 open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {F : Type v} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
+variable {E : Type w} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+variable {G : Type*} [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
 variable {f : 𝕜 → F}
 variable {f' : F}
 variable {x : 𝕜}
@@ -392,7 +392,7 @@ section Prod
 
 section HasDeriv
 
-variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedRing 𝔸'] [IsMulCommutative 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
 
 theorem HasDerivAt.fun_finsetProd (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
@@ -466,7 +466,7 @@ theorem derivWithin_finsetProd (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f
 
 end HasDeriv
 
-variable {ι : Type*} {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+variable {ι : Type*} {𝔸' : Type*} [NormedRing 𝔸'] [IsMulCommutative 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'}
 
 @[fun_prop]
@@ -589,7 +589,7 @@ section CLMCompApply
 
 open ContinuousLinearMap
 
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {c : 𝕜 → F →L[𝕜] G} {c' : F →L[𝕜] G}
+variable {G : Type*} [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G] {c : 𝕜 → F →L[𝕜] G} {c' : F →L[𝕜] G}
   {d : 𝕜 → E →L[𝕜] F} {d' : E →L[𝕜] F} {u : 𝕜 → F} {u' : F}
 
 theorem HasStrictDerivAt.clm_comp (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x) :

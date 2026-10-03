@@ -30,7 +30,7 @@ public section
 open scoped Pointwise
 
 namespace Finset
-variable {M : Type*} [DecidableEq M] [AddCommMonoid M] {A : Finset M} {a : M}
+variable {M : Type*} [DecidableEq M] [AddMonoid M] [IsAddCommutative M] {A : Finset M} {a : M}
 
 /-- The subset-sum of a finite set `A` in a commutative monoid is the set of all sums
 of subsets of `A`. -/

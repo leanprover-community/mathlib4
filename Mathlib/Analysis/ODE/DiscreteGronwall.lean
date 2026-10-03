@@ -43,7 +43,7 @@ section General
 
 /-! ### Generalized product form -/
 
-variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R] {u b c : ℕ → R}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsOrderedRing R] {u b c : ℕ → R}
 
 /-- Discrete Grönwall inequality, product form: if `u (n+1) ≤ c n * u n + b n` and `0 ≤ c n`
 then `u n ≤ u n₀ * ∏ c i + ∑ b k * ∏ c i` over the appropriate ranges. -/

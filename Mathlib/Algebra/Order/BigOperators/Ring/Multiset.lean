@@ -21,7 +21,7 @@ open Multiset
 
 @[simp]
 lemma CanonicallyOrderedAdd.multiset_prod_pos {R : Type*}
-    [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Nontrivial R]
+    [Semiring R] [IsMulCommutative R] [PartialOrder R] [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Nontrivial R]
     {m : Multiset R} : 0 < m.prod ↔ ∀ x ∈ m, 0 < x := by
   rcases m with ⟨l⟩
   rw [Multiset.quot_mk_to_coe'', Multiset.prod_coe]
@@ -29,7 +29,7 @@ lemma CanonicallyOrderedAdd.multiset_prod_pos {R : Type*}
 
 section OrderedCommSemiring
 
-variable {α β : Type*} [CommMonoid α] [CommMonoidWithZero β] [PartialOrder β] [PosMulMono β]
+variable {α β : Type*} [Monoid α] [IsMulCommutative α] [MonoidWithZero β] [IsMulCommutative β] [PartialOrder β] [PosMulMono β]
 
 theorem Multiset.le_prod_of_submultiplicative_on_pred_of_nonneg (f : α → β) (p : α → Prop)
     (h0 : ∀ a, 0 ≤ f a) (h_one : f 1 ≤ 1) (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b)
@@ -52,7 +52,7 @@ theorem Multiset.le_prod_of_submultiplicative_of_nonneg (f : α → β) (h0 : �
   le_prod_of_submultiplicative_on_pred_of_nonneg f (fun _ ↦ True) h0 h_one
     (fun x y _ _ ↦ h_mul x y) (by simp) s (by simp)
 
-omit [CommMonoid α] in
+omit [Monoid α] [IsMulCommutative α] in
 lemma Multiset.mem_le_prod_of_one_le [ZeroLEOneClass β] {f : α → β} (h1 : ∀ a : α, 1 ≤ f a)
     {s : Multiset α} {a : α} (ha : a ∈ s) : f a ≤ (s.map f).prod := by
   obtain ⟨s', rfl⟩ := exists_cons_of_mem ha

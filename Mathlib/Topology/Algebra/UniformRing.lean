@@ -185,7 +185,7 @@ def mapRingEquiv (f : α ≃+* β) (hf : Continuous f) (hf' : Continuous f.symm)
 section Algebra
 
 variable (A : Type*) [Ring A] [UniformSpace A] [IsUniformAddGroup A] [IsTopologicalRing A]
-  (R : Type*) [CommSemiring R] [Algebra R A] [UniformContinuousConstSMul R A]
+  (R : Type*) [Semiring R] [IsMulCommutative R] [Algebra R A] [UniformContinuousConstSMul R A]
 
 @[simp]
 theorem map_smul_eq_mul_coe (r : R) :
@@ -211,7 +211,7 @@ end Algebra
 
 section CommRing
 
-variable (R : Type*) [CommRing R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalRing R]
 
 instance commRing : CommRing (Completion R) :=
   { Completion.ring with
@@ -251,7 +251,7 @@ def sepQuotHomeomorphRingQuot (α) [Ring α] [TopologicalSpace α] [IsTopologica
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get an equivalence between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
-def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
+def sepQuotRingEquivRingQuot (α) [Ring α] [IsMulCommutative α] [TopologicalSpace α] [IsTopologicalRing α] :
     SeparationQuotient α ≃+* α ⧸ (⊥ : Ideal α).closure where
   __ := sepQuotHomeomorphRingQuot α
   map_mul' := SeparationQuotient.surjective_mk.forall₂.2 (fun _ _ ↦ rfl)

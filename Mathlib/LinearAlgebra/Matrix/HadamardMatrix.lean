@@ -143,7 +143,7 @@ theorem IsHadamard.card_eq_star_mul_of_const_row_sum {s : R}
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] [StarRing R] {A : Matrix n n R}
+variable [Semiring R] [IsMulCommutative R] [StarRing R] {A : Matrix n n R}
 
 /-- The transpose of a Hadamard matrix is Hadamard.
 
@@ -179,7 +179,7 @@ theorem IsHadamard.neg_iff : (-A).IsHadamard ↔ A.IsHadamard :=
 end Ring
 
 section CommRing
-variable [CommRing R] [StarRing R] {A : Matrix n n R}
+variable [Ring R] [IsMulCommutative R] [StarRing R] {A : Matrix n n R}
 
 /-- The Hadamard determinant identity: `det A * star (det A) = (card n)^(card n)`. -/
 theorem IsHadamard.det_mul_star_det (hA : A.IsHadamard) :

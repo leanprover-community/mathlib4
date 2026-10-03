@@ -146,9 +146,9 @@ section Prod
 
 variable
   {V W P Q : Type*}
-  [CommGroup V] [TopologicalSpace V]
+  [Group V] [IsMulCommutative V] [TopologicalSpace V]
   [Torsor V P] [TopologicalSpace P] [IsTopologicalTorsor P]
-  [CommGroup W] [TopologicalSpace W]
+  [Group W] [IsMulCommutative W] [TopologicalSpace W]
   [Torsor W Q] [TopologicalSpace Q] [IsTopologicalTorsor Q]
 
 @[to_additive instIsTopologicalAddTorsorProd]
@@ -162,7 +162,7 @@ section Pi
 
 variable
   {ι : Type*} {V P : ι → Type*}
-  [∀ i, CommGroup (V i)] [∀ i, TopologicalSpace (V i)]
+  [∀ i, Group (V i)] [∀ i, IsMulCommutative (V i)] [∀ i, TopologicalSpace (V i)]
   [∀ i, Torsor (V i) (P i)] [∀ i, TopologicalSpace (P i)] [∀ i, IsTopologicalTorsor (P i)]
 
 @[to_additive]

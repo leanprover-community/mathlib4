@@ -39,7 +39,7 @@ variable {ι : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid M'] [IsAddCommutative M'] [Module R M']
   (b : Basis ι R M)
 
 section Properties
@@ -131,7 +131,7 @@ end Mk
 section Coord
 
 @[simp]
-theorem linearIndependent_coord {R : Type*} [CommSemiring R] [Module R M] (b : Basis ι R M) :
+theorem linearIndependent_coord {R : Type*} [Semiring R] [IsMulCommutative R] [Module R M] (b : Basis ι R M) :
     LinearIndependent R b.coord := by
   classical
   refine linearIndependent_iff'ₛ.mpr fun s l₁ l₂ h j hj ↦ ?_
@@ -202,7 +202,7 @@ protected theorem span_repr_eq_single (i : ι)
   rw [← LinearEquiv.eq_symm_apply]
   simp [Basis.span]
 
-lemma span_neg {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+lemma span_neg {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
     {v : ι → M} (hli : LinearIndependent R v)
     (h : span R (range v) = span R (range (-v)) := by simp [← neg_range']) :
     Basis.span hli.neg = ((Basis.span hli).map <| (LinearEquiv.neg _).trans (.ofEq _ _ h)) := by
@@ -296,7 +296,7 @@ end Module.IsTorsionFree
 
 section Singleton
 
-theorem basis_singleton_iff {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+theorem basis_singleton_iff {R M : Type*} [Ring R] [IsDomain R] [AddGroup M] [IsAddCommutative M] [Module R M]
     [IsTorsionFree R M] (ι : Type*) [Unique ι] :
     Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
@@ -324,7 +324,7 @@ end Singleton
 end Basis
 
 open Fintype in
-lemma card_fintype [Semiring R] [AddCommMonoid M] [Module R M] [Fintype ι] (b : Basis ι R M)
+lemma card_fintype [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Fintype ι] (b : Basis ι R M)
     [Fintype R] [Fintype M] :
     card M = card R ^ card ι := by
   classical

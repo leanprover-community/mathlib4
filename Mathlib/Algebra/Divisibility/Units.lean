@@ -48,7 +48,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α] {a b : α} {u : αˣ}
+variable [Monoid α] [IsMulCommutative α] {a b : α} {u : αˣ}
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff `a` divides all left
 associates of `b`. -/
@@ -96,7 +96,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α] {a b u : α}
+variable [Monoid α] [IsMulCommutative α] {a b u : α}
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff `a` divides all left
 associates of `b`. -/
@@ -118,7 +118,7 @@ end IsUnit
 
 section CommMonoid
 
-variable [CommMonoid α]
+variable [Monoid α] [IsMulCommutative α]
 
 theorem isUnit_iff_dvd_one {x : α} : IsUnit x ↔ x ∣ 1 :=
   ⟨IsUnit.dvd, fun ⟨y, h⟩ => ⟨⟨x, y, h.symm, by rw [h, mul_comm]⟩, rfl⟩⟩
@@ -149,7 +149,7 @@ section RelPrime
 /-- `x` and `y` are relatively prime if every common divisor is a unit. -/
 def IsRelPrime [Monoid α] (x y : α) : Prop := ∀ ⦃d⦄, d ∣ x → d ∣ y → IsUnit d
 
-variable [CommMonoid α] {x y z : α}
+variable [Monoid α] [IsMulCommutative α] {x y z : α}
 
 @[symm] theorem IsRelPrime.symm (H : IsRelPrime x y) : IsRelPrime y x := fun _ hx hy ↦ H hy hx
 

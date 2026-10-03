@@ -148,7 +148,7 @@ lemma map_cast_binomial_eq_sum_dirac [MeasurableSingletonClass R] (n : ℕ) (p :
 
 section Integral
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
 
 lemma integrable_map_cast_binomial [MeasurableSingletonClass R] (f : R → E) :
     Integrable f Bin(R, n, p) := by

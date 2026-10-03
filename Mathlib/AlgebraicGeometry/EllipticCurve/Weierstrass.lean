@@ -90,7 +90,7 @@ namespace WeierstrassCurve
 instance {R : Type u} [Inhabited R] : Inhabited <| WeierstrassCurve R :=
   ⟨⟨default, default, default, default, default⟩⟩
 
-variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
+variable {R : Type u} [Ring R] [IsMulCommutative R] (W : WeierstrassCurve R)
 
 section Quantity
 
@@ -223,7 +223,7 @@ section BaseChange
 
 /-! ### Maps and base changes -/
 
-variable {A : Type v} [CommRing A] (f : R →+* A)
+variable {A : Type v} [Ring A] [IsMulCommutative A] (f : R →+* A)
 
 /-- The Weierstrass curve mapped over a ring homomorphism `f : R →+* A`. -/
 @[simps]
@@ -277,12 +277,12 @@ lemma map_Δ : (W.map f).Δ = f W.Δ := by
 lemma map_id : W.map (RingHom.id R) = W :=
   rfl
 
-lemma map_map {B : Type w} [CommRing B] (g : A →+* B) : (W.map f).map g = W.map (g.comp f) :=
+lemma map_map {B : Type w} [Ring B] [IsMulCommutative B] (g : A →+* B) : (W.map f).map g = W.map (g.comp f) :=
   rfl
 
 @[simp]
-lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
-    [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
+lemma map_baseChange {S : Type s} [Ring S] [IsMulCommutative S] [Algebra R S] {A : Type v} [Ring A] [IsMulCommutative A] [Algebra R A]
+    [Algebra S A] [IsScalarTower R S A] {B : Type w} [Ring B] [IsMulCommutative B] [Algebra R B] [Algebra S B]
     [IsScalarTower R S B] (g : A →ₐ[S] B) : (W⁄A).map g = W⁄B :=
   congrArg W.map <| g.comp_algebraMap_of_tower R
 
@@ -450,7 +450,7 @@ section BaseChange
 
 /-! ### Maps and base changes -/
 
-variable {A : Type v} [CommRing A] (f : R →+* A)
+variable {A : Type v} [Ring A] [IsMulCommutative A] (f : R →+* A)
 
 instance : (W.map f).IsElliptic := by
   simp only [isElliptic_iff, map_Δ, W.isUnit_Δ.map]

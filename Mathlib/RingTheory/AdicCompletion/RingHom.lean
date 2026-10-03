@@ -29,7 +29,7 @@ lifted to a ring homomorphism `R →+* S`.
 
 open Ideal Quotient
 
-variable {R S : Type*} [NonAssocSemiring R] [CommRing S] (I : Ideal S)
+variable {R S : Type*} [NonAssocSemiring R] [Ring S] [IsMulCommutative S] (I : Ideal S)
 
 namespace IsAdicComplete
 
@@ -100,8 +100,8 @@ theorem eq_liftRingHom (F : R →+* S)
 
 section
 
-variable {R S A : Type*} [CommRing R] [CommRing S] [Algebra R S] (I : Ideal S)
-  [IsAdicComplete I S] [CommRing A] [Algebra R A]
+variable {R S A : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] (I : Ideal S)
+  [IsAdicComplete I S] [Ring A] [IsMulCommutative A] [Algebra R A]
 
 /-- `AlgHom` version of `IsAdicCompletion.liftRingHom`. -/
 noncomputable

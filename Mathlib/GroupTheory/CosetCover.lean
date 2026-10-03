@@ -369,7 +369,7 @@ end Subgroup
 
 section Submodule
 
-variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M ι : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
     {p : ι → Submodule R M} {s : Finset ι}
 
 theorem Submodule.exists_finiteIndex_of_cover (hcovers : ⋃ i ∈ s, (p i : Set M) = Set.univ) :
@@ -382,7 +382,7 @@ end Submodule
 
 section Subspace
 
-variable {k E : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
+variable {k E : Type*} [DivisionRing k] [Infinite k] [AddGroup E] [IsAddCommutative E] [Module k E]
     {s : Finset (Subspace k E)}
 
 /-- A vector space over an infinite field cannot be a finite union of proper subspaces. -/

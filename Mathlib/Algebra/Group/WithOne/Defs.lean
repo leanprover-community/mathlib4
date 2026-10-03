@@ -179,7 +179,7 @@ instance instMonoid [Semigroup α] : Monoid (WithOne α) where
     | (a : α), (b : α), (c : α) => by simp_rw [← coe_mul, mul_assoc]
 
 @[to_additive]
-instance instCommMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
+instance instCommMonoid [Semigroup α] [IsMulCommutative α] : CommMonoid (WithOne α) where
   mul_comm
     | (a : α), (b : α) => congr(some $(mul_comm a b))
     | (_ : α), 1 => rfl

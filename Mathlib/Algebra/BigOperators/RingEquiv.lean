@@ -31,7 +31,7 @@ protected theorem unop_map_list_prod [Semiring R] [Semiring S] (f : R ≃+* Sᵐ
     MulOpposite.unop (f l.prod) = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
   unop_map_list_prod f l
 
-protected theorem map_multiset_prod [CommSemiring R] [CommSemiring S] (f : R ≃+* S)
+protected theorem map_multiset_prod [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (f : R ≃+* S)
     (s : Multiset R) : f s.prod = (s.map f).prod :=
   map_multiset_prod f s
 
@@ -39,7 +39,7 @@ protected theorem map_multiset_sum [NonUnitalNonAssocSemiring R] [NonUnitalNonAs
     (f : R ≃+* S) (s : Multiset R) : f s.sum = (s.map f).sum :=
   map_multiset_sum f s
 
-protected theorem map_prod [CommSemiring R] [CommSemiring S] (g : R ≃+* S) (f : α → R)
+protected theorem map_prod [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (g : R ≃+* S) (f : α → R)
     (s : Finset α) : g (∏ x ∈ s, f x) = ∏ x ∈ s, g (f x) :=
   map_prod g f s
 

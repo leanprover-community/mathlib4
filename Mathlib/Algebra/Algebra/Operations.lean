@@ -56,7 +56,7 @@ open scoped Pointwise
 
 namespace SubMulAction
 
-variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R : Type u} {A : Type v} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : SubMulAction R A) :=
   ⟨r, (algebraMap_eq_smul_one r).symm⟩
@@ -102,7 +102,7 @@ theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P
 instance : AddCommMonoidWithOne (Submodule R A) where
   add_comm := sup_comm
 
-variable {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 instance : SMul (Submodule R A) (Submodule R M) where
   smul A' M' :=
@@ -380,7 +380,7 @@ theorem pow_eq_bot [IsReduced A] {M : Submodule R A} {n : ℕ} (hn : n ≠ 0) :
 end Module
 
 variable {ι : Sort uι}
-variable {R : Type u} [CommSemiring R]
+variable {R : Type u} [Semiring R] [IsMulCommutative R]
 
 section AlgebraSemiring
 
@@ -543,7 +543,7 @@ end
 
 section DecidableEq
 
-theorem mem_span_mul_finite_of_mem_span_mul {R A} [Semiring R] [AddCommMonoid A] [Mul A]
+theorem mem_span_mul_finite_of_mem_span_mul {R A} [Semiring R] [AddMonoid A] [IsAddCommutative A] [Mul A]
     [Module R A] {S : Set A} {S' : Set A} {x : A} (hx : x ∈ span R (S * S')) :
     ∃ T T' : Finset A, ↑T ⊆ S ∧ ↑T' ⊆ S' ∧ x ∈ span R (T * T' : Set A) := by
   classical
@@ -789,7 +789,7 @@ end AlgebraSemiring
 
 section AlgebraCommSemiring
 
-variable {A : Type v} [CommSemiring A] [Algebra R A]
+variable {A : Type v} [Semiring A] [IsMulCommutative A] [Algebra R A]
 variable {M N : Submodule R A} {m n : A}
 
 theorem mul_mem_mul_rev (hm : m ∈ M) (hn : n ∈ N) : n * m ∈ M * N :=
@@ -903,7 +903,7 @@ theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
   exact hn m hm
 
 @[simp]
-protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Submodule R A)
+protected theorem map_div {B : Type*} [Semiring B] [IsMulCommutative B] [Algebra R B] (I J : Submodule R A)
     (h : A ≃ₐ[R] B) : (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap := by
   ext x
   simp only [mem_map, mem_div_iff_forall_mul_mem, AlgEquiv.toLinearMap_apply]
@@ -922,8 +922,8 @@ end Quotient
 end AlgebraCommSemiring
 
 theorem restrictScalars_image_smul_eq {S M : Type*}
-    [CommSemiring S] [Algebra S R]
-    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower S R M]
+    [Semiring S] [IsMulCommutative S] [Algebra S R]
+    [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower S R M]
     (s : Set S) (N : Submodule R M) :
     (algebraMap S R '' s • N).restrictScalars S = s • N.restrictScalars S := by
   refine le_antisymm (fun x x_in ↦ ?_) (set_smul_le _ _ _ fun r x r_in x_in ↦ ?_)

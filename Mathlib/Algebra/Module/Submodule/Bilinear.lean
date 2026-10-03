@@ -39,7 +39,7 @@ open scoped Pointwise
 namespace Submodule
 
 variable {ι : Sort uι} {R M N P : Type*}
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P]
 variable [Module R M] [Module R N] [Module R P]
 
 /-- Map a pair of submodules under a bilinear map.
@@ -156,7 +156,7 @@ theorem map₂_span_singleton_eq_map_flip (f : M →ₗ[R] N →ₗ[R] P) (s : S
 
 section comp
 variable {M₂ N₂ P₂ : Type*}
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂]
+variable [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid N₂] [IsAddCommutative N₂] [AddMonoid P₂] [IsAddCommutative P₂]
 variable [Module R M₂] [Module R N₂] [Module R P₂]
 
 theorem map_map₂ (f : P →ₗ[R] P₂) (g : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :

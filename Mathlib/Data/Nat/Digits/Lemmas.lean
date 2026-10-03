@@ -229,7 +229,7 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
 
 
 -- This is really a theorem about polynomials.
-theorem dvd_ofDigits_sub_ofDigits {α : Type*} [CommRing α] {a b k : α} (h : k ∣ a - b)
+theorem dvd_ofDigits_sub_ofDigits {α : Type*} [Ring α] [IsMulCommutative α] {a b k : α} (h : k ∣ a - b)
     (L : List ℕ) : k ∣ ofDigits a L - ofDigits b L := by
   induction L with
   | nil => change k ∣ 0 - 0; simp

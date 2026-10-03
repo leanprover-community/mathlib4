@@ -28,10 +28,10 @@ universe u v w
 
 open TensorProduct
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-  (T : Type*) [CommRing T] [Algebra R T]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+  (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T]
 
-lemma Module.Finite.of_finite_tensorProduct_of_faithfullyFlat {M : Type*} [AddCommGroup M]
+lemma Module.Finite.of_finite_tensorProduct_of_faithfullyFlat {M : Type*} [AddGroup M] [IsAddCommutative M]
     [Module R M] [Module.FaithfullyFlat R T] [Module.Finite T (T ⊗[R] M)] :
     Module.Finite R M := by
   obtain ⟨n, s, hs⟩ := Module.Finite.exists_fin (R := T) (M := T ⊗[R] M)

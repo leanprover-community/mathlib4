@@ -28,8 +28,8 @@ open Set Filter ENNReal
 
 namespace MeasureTheory
 
-variable {α E F 𝕜 : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ : Measure α}
+variable {α E F 𝕜 : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ : Measure α}
 
 section Function
 
@@ -266,8 +266,8 @@ section Order
 
 -- Naming chosen to match the corresponding declarations in `L1.lean`.
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
-  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
+  [NormedAddGroup G'] [IsAddCommutative G'] [PartialOrder G'] [NormedSpace ℝ G']
+  [NormedAddGroup G''] [IsAddCommutative G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
   [NormedSpace ℝ G'']
 
 theorem setToFun_mono_left' [OrderClosedTopology G''] {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}

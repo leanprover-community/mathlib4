@@ -52,7 +52,7 @@ instance : Module (ZMod 2) (Additive ℤˣ) where
   zero_smul au := Additive.toMul.injective <| pow_zero au.toMul
 
 section CommSemiring
-variable {R : Type*} [CommSemiring R] [Module R (Additive ℤˣ)]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [Module R (Additive ℤˣ)]
 
 /-- There is a canonical power operation on `ℤˣ` by `R` if `Additive ℤˣ` is an `R`-module.
 
@@ -99,7 +99,7 @@ lemma uzpow_add (s : ℤˣ) (x y : R) : s ^ (x + y) = s ^ x * s ^ y :=
 end CommSemiring
 
 section CommRing
-variable {R : Type*} [CommRing R] [Module R (Additive ℤˣ)]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [Module R (Additive ℤˣ)]
 
 lemma uzpow_sub (s : ℤˣ) (x y : R) : s ^ (x - y) = s ^ x / s ^ y :=
   Additive.ofMul.injective <| sub_smul x y (Additive.ofMul s)

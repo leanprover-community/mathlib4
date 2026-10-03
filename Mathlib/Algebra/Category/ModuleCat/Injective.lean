@@ -18,7 +18,7 @@ public section
 open CategoryTheory
 
 universe u v
-variable (R : Type u) (M : Type v) [Ring R] [AddCommGroup M] [Module R M]
+variable (R : Type u) (M : Type v) [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 namespace Module
 
 theorem injective_object_of_injective_module [inj : Injective R M] :

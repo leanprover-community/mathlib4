@@ -49,7 +49,7 @@ instance isMulCommutative [∀ i, Mul (f i)] [∀ i, IsMulCommutative (f i)] :
   is_comm.comm _ _ := by ext; apply mul_comm'
 
 @[to_additive]
-instance commMagma [∀ i, CommMagma (f i)] : CommMagma (∀ i, f i) where
+instance commMagma [∀ i, Mul (f i)] [∀ i, IsMulCommutative (f i)] : CommMagma (∀ i, f i) where
   mul_comm _ _ := by ext; apply mul_comm
 
 @[to_additive]
@@ -57,7 +57,7 @@ instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
   mul_assoc := by intros; ext; exact mul_assoc _ _ _
 
 @[to_additive]
-instance commSemigroup [∀ i, CommSemigroup (f i)] : CommSemigroup (∀ i, f i) where
+instance commSemigroup [∀ i, Semigroup (f i)] [∀ i, IsMulCommutative (f i)] : CommSemigroup (∀ i, f i) where
 
 @[to_additive]
 instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
@@ -82,7 +82,7 @@ instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   npow_succ := by intros; ext; exact Monoid.npow_succ _ _
 
 @[to_additive]
-instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) where
+instance commMonoid [∀ i, Monoid (f i)] [∀ i, IsMulCommutative (f i)] : CommMonoid (∀ i, f i) where
 
 @[to_additive Pi.subNegMonoid]
 instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) where
@@ -108,7 +108,7 @@ instance divisionMonoid [∀ i, DivisionMonoid (f i)] : DivisionMonoid (∀ i, f
   inv_eq_of_mul := by intro _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
 
 @[to_additive instSubtractionCommMonoid]
-instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMonoid (∀ i, f i) :=
+instance divisionCommMonoid [∀ i, DivisionMonoid (f i)] [∀ i, IsMulCommutative (f i)] : DivisionCommMonoid (∀ i, f i) :=
   { divisionMonoid, commSemigroup with }
 
 @[to_additive]
@@ -116,7 +116,7 @@ instance group [∀ i, Group (f i)] : Group (∀ i, f i) where
   inv_mul_cancel := by intros; ext; exact inv_mul_cancel _
 
 @[to_additive]
-instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group, commMonoid with }
+instance commGroup [∀ i, Group (f i)] [∀ i, IsMulCommutative (f i)] : CommGroup (∀ i, f i) := { group, commMonoid with }
 
 @[to_additive] instance instIsLeftCancelMul [∀ i, Mul (f i)] [∀ i, IsLeftCancelMul (f i)] :
     IsLeftCancelMul (∀ i, f i) where
@@ -150,7 +150,7 @@ instance cancelMonoid [∀ i, CancelMonoid (f i)] : CancelMonoid (∀ i, f i) :=
   { leftCancelMonoid, rightCancelMonoid with }
 
 @[to_additive]
-instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (∀ i, f i) :=
+instance cancelCommMonoid [∀ i, CancelMonoid (f i)] [∀ i, IsMulCommutative (f i)] : CancelCommMonoid (∀ i, f i) :=
   { leftCancelMonoid, commMonoid with }
 
 end Pi

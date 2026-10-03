@@ -24,7 +24,7 @@ variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
 
 section SemiNormed
 
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 
 namespace ContinuousLinearMap
 
@@ -139,7 +139,7 @@ theorem coe_mulₗᵢ : ⇑(mulₗᵢ 𝕜 R) = mul 𝕜 R :=
 end NonUnital
 
 section NonUnitalSeminormedCommRing
-variable {R : Type*} [NonUnitalSeminormedCommRing R] [NormedSpace 𝕜 R] [IsScalarTower 𝕜 R R]
+variable {R : Type*} [NonUnitalSeminormedRing R] [IsMulCommutative R] [NormedSpace 𝕜 R] [IsScalarTower 𝕜 R R]
   [SMulCommClass 𝕜 R R]
 
 @[simp] lemma flip_mul : (ContinuousLinearMap.mul 𝕜 R).flip = .mul 𝕜 R := by ext; simp [mul_comm]
@@ -233,7 +233,7 @@ section Normed
 
 namespace ContinuousLinearMap
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 variable (𝕜) (R : Type*)
 
 section

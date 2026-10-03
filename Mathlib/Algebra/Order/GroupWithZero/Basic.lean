@@ -1383,7 +1383,7 @@ end GroupWithZero.LinearOrder
 section CommGroupWithZero
 
 section Preorder
-variable [CommGroupWithZero G₀] [Preorder G₀] {a b c : G₀}
+variable [GroupWithZero G₀] [IsMulCommutative G₀] [Preorder G₀] {a b c : G₀}
 
 /-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
 lemma mul_div_mul_left_le (h : 0 ≤ a / b) : c * a / (c * b) ≤ a / b := by
@@ -1399,7 +1399,7 @@ lemma le_mul_div_mul_left (h : a / b ≤ 0) : a / b ≤ c * a / (c * b) := by
 
 end Preorder
 
-variable [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] {a b c d : G₀}
+variable [GroupWithZero G₀] [IsMulCommutative G₀] [PartialOrder G₀] [PosMulReflectLT G₀] {a b c d : G₀}
 
 attribute [local instance] PosMulReflectLT.toPosMulStrictMono PosMulMono.toMulPosMono
   PosMulStrictMono.toMulPosStrictMono PosMulReflectLT.toMulPosReflectLT

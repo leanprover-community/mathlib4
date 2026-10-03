@@ -26,13 +26,13 @@ as `R`-modules.
 
 open TensorProduct Module Module.DirectLimit
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {ι : Type*}
 variable [DecidableEq ι] [Preorder ι]
 variable {G : ι → Type*}
-variable [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)]
+variable [∀ i, AddMonoid (G i)] [∀ i, IsAddCommutative (G i)] [∀ i, Module R (G i)]
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
-variable (M : Type*) [AddCommMonoid M] [Module R M]
+variable (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 -- alluding to the notation in `CategoryTheory.Monoidal`
 local notation M " ◁ " f => fun i j h ↦ LinearMap.lTensor M (f _ _ h)

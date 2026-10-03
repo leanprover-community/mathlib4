@@ -30,7 +30,7 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 
 public section
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable (I : Ideal R) {N : Submodule R M}
 
 open TensorProduct in

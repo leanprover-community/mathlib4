@@ -35,7 +35,7 @@ related to pentagonal numbers. We then show that this function is equal to both 
 
 open Filter Finset
 
-variable {R : Type*} [NormedCommRing R] [NormOneClass R]
+variable {R : Type*} [NormedRing R] [IsMulCommutative R] [NormOneClass R]
 
 namespace Pentagonal
 -- Private section to supply lemma for using `Pentagonal.tprod_one_sub_pow`

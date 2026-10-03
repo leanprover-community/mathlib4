@@ -753,7 +753,7 @@ end Mul
 instance instAddMonoid [AddMonoid γ] [ContinuousAdd γ] : AddMonoid (α →ₘ[μ] γ) :=
   toGerm_injective.addMonoid toGerm zero_toGerm add_toGerm fun _ _ => smul_toGerm _ _
 
-instance instAddCommMonoid [AddCommMonoid γ] [ContinuousAdd γ] : AddCommMonoid (α →ₘ[μ] γ) :=
+instance instAddCommMonoid [AddMonoid γ] [IsAddCommutative γ] [ContinuousAdd γ] : AddCommMonoid (α →ₘ[μ] γ) :=
   toGerm_injective.addCommMonoid toGerm zero_toGerm add_toGerm fun _ _ => smul_toGerm _ _
 
 section Monoid
@@ -790,11 +790,11 @@ def toGermMonoidHom : (α →ₘ[μ] γ) →* (ae μ).Germ γ where
 end Monoid
 
 @[to_additive existing]
-instance instCommMonoid [CommMonoid γ] [ContinuousMul γ] : CommMonoid (α →ₘ[μ] γ) :=
+instance instCommMonoid [Monoid γ] [IsMulCommutative γ] [ContinuousMul γ] : CommMonoid (α →ₘ[μ] γ) :=
   toGerm_injective.commMonoid toGerm one_toGerm mul_toGerm pow_toGerm
 
 @[to_additive]
-theorem coeFn_finsetProd [CommMonoid γ] [ContinuousMul γ]
+theorem coeFn_finsetProd [Monoid γ] [IsMulCommutative γ] [ContinuousMul γ]
     {ι : Type*} (s : Finset ι) (f : ι → α →ₘ[μ] γ) :
     ⇑(∏ i ∈ s, f i) =ᵐ[μ] ∏ i ∈ s, ⇑(f i) := by
   classical
@@ -805,7 +805,7 @@ theorem coeFn_finsetProd [CommMonoid γ] [ContinuousMul γ]
     grw [coeFn_mul, ih]
 
 @[to_additive]
-theorem coeFn_fun_finsetProd [CommMonoid γ] [ContinuousMul γ]
+theorem coeFn_fun_finsetProd [Monoid γ] [IsMulCommutative γ] [ContinuousMul γ]
     {ι : Type*} (s : Finset ι) (f : ι → α →ₘ[μ] γ) :
     ⇑(∏ i ∈ s, f i) =ᵐ[μ] fun x ↦ ∏ i ∈ s, f i x := by
   grw [coeFn_finsetProd]
@@ -881,7 +881,7 @@ instance instAddGroup [AddGroup γ] [IsTopologicalAddGroup γ] : AddGroup (α �
   toGerm_injective.addGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
     (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
 
-instance instAddCommGroup [AddCommGroup γ] [IsTopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
+instance instAddCommGroup [AddGroup γ] [IsAddCommutative γ] [IsTopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
   { add_comm := add_comm }
 
 @[to_additive existing]
@@ -889,7 +889,7 @@ instance instGroup [Group γ] [IsTopologicalGroup γ] : Group (α →ₘ[μ] γ)
   toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
 
 @[to_additive existing]
-instance instCommGroup [CommGroup γ] [IsTopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
+instance instCommGroup [Group γ] [IsMulCommutative γ] [IsTopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
   { mul_comm := mul_comm }
 
 section Module
@@ -905,7 +905,7 @@ instance instDistribMulAction [Monoid 𝕜] [AddMonoid γ] [ContinuousAdd γ] [D
   toGerm_injective.distribMulAction (toGermAddMonoidHom : (α →ₘ[μ] γ) →+ _) fun c : 𝕜 =>
     smul_toGerm c
 
-instance instModule [Semiring 𝕜] [AddCommMonoid γ] [ContinuousAdd γ] [Module 𝕜 γ]
+instance instModule [Semiring 𝕜] [AddMonoid γ] [IsAddCommutative γ] [ContinuousAdd γ] [Module 𝕜 γ]
     [ContinuousConstSMul 𝕜 γ] : Module 𝕜 (α →ₘ[μ] γ) :=
   toGerm_injective.module 𝕜 (toGermAddMonoidHom : (α →ₘ[μ] γ) →+ _) smul_toGerm
 
@@ -1027,7 +1027,7 @@ def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
     AEEqFun.mk_mul_mk _ _ f.continuous.aestronglyMeasurable g.continuous.aestronglyMeasurable
 
 variable {𝕜 : Type*} [Semiring 𝕜]
-variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddCommGroup γ] [Module 𝕜 γ]
+variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddGroup γ] [IsAddCommutative γ] [Module 𝕜 γ]
   [IsTopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
 
 /-- The linear map from the group of continuous maps from `α` to `β` to the group of equivalence

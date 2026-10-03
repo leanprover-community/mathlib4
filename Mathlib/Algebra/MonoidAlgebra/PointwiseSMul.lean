@@ -38,7 +38,7 @@ theorem mem_smulAntidiagonal_of_group [Group G] [MulAction G P] [Semiring R] [Ze
 functions. -/
 @[to_additive (dont_translate := R) /-- A convolution-type scalar multiplication of the additive
 monoid algebra on the set of formal functions. -/]
-scoped instance [SMul G P] [IsLeftCancelSMul G P] [Semiring R] [AddCommMonoid V]
+scoped instance [SMul G P] [IsLeftCancelSMul G P] [Semiring R] [AddMonoid V] [IsAddCommutative V]
     [SMulWithZero R V] :
     SMul (R[G]) (P → V) where
   smul f x p := ∑ gh ∈ Finset.SMulAntidiagonal p
@@ -46,7 +46,7 @@ scoped instance [SMul G P] [IsLeftCancelSMul G P] [Semiring R] [AddCommMonoid V]
       f.coeff gh.1 • x gh.2
 
 @[to_additive (dont_translate := R) smul_eq]
-theorem smul_eq [SMul G P] [IsLeftCancelSMul G P] [Semiring R] [AddCommMonoid V] [SMulWithZero R V]
+theorem smul_eq [SMul G P] [IsLeftCancelSMul G P] [Semiring R] [AddMonoid V] [IsAddCommutative V] [SMulWithZero R V]
     (f : R[G]) (x : P → V) (p : P)
     (hp : ((f.coeff.support : Set G).smulAntidiagonal (Function.support x) p).Finite :=
       Set.SMulAntidiagonal.finite_of_finite_fst f.coeff.support.finite_toSet x.support p) :
@@ -54,7 +54,7 @@ theorem smul_eq [SMul G P] [IsLeftCancelSMul G P] [Semiring R] [AddCommMonoid V]
   rfl
 
 @[to_additive (dont_translate := R) smul_apply_addAction]
-theorem smul_apply_mulAction [Group G] [MulAction G P] [Semiring R] [AddCommMonoid V]
+theorem smul_apply_mulAction [Group G] [MulAction G P] [Semiring R] [AddMonoid V] [IsAddCommutative V]
     [SMulWithZero R V] (f : MonoidAlgebra R G) (x : P → V) (p : P) :
     (f • x) p = ∑ i ∈ f.coeff.support, (f.coeff i) • x (i⁻¹ • p) := by
   have hp : ((f.coeff.support : Set G).smulAntidiagonal (Function.support x) p).Finite :=

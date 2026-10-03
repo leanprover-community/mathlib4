@@ -38,7 +38,7 @@ associated with a finite basis of `V`.
 
 @[expose] public section
 
-variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [Ring R] [IsMulCommutative R] [AddGroup V] [IsAddCommutative V] [Module R V]
 
 variable (R V) in
 /-- The special linear group of a module.
@@ -241,7 +241,7 @@ section baseChange
 
 open TensorProduct
 
-variable {S : Type*} [CommRing S] [Algebra R S]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S]
   [Module.Free R V] [Module.Finite R V]
 
 /-- By base change, an `R`-algebra `S` induces a group homomorphism from
@@ -255,7 +255,7 @@ def baseChange : SpecialLinearGroup R V →* SpecialLinearGroup S (S ⊗[R] V) w
 
 end baseChange
 
-variable {W X : Type*} [AddCommGroup W] [Module R W] [AddCommGroup X] [Module R X]
+variable {W X : Type*} [AddGroup W] [IsAddCommutative W] [Module R W] [AddGroup X] [IsAddCommutative X] [Module R X]
 
 /-- The isomorphism between special linear groups of isomorphic modules. -/
 def congr_linearEquiv (e : V ≃ₗ[R] W) :
@@ -530,9 +530,9 @@ section
 
 open Subgroup Matrix Matrix.SpecialLinearGroup
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
-variable {V : Type*} [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
+variable {V : Type*} [AddGroup V] [IsAddCommutative V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)
 
 -- compare with `Matrix.SpecialLinearGroup.centerEquivRootsOfUnity`

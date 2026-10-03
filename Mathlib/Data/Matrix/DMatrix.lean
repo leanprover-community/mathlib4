@@ -80,7 +80,7 @@ instance [∀ i j, Add (α i j)] : Add (DMatrix m n α) :=
 instance [∀ i j, AddSemigroup (α i j)] : AddSemigroup (DMatrix m n α) :=
   inferInstanceAs <| AddSemigroup <| ∀ i j, α i j
 
-instance [∀ i j, AddCommSemigroup (α i j)] : AddCommSemigroup (DMatrix m n α) :=
+instance [∀ i j, AddSemigroup (α i j)] [∀ i j, IsAddCommutative (α i j)] : AddCommSemigroup (DMatrix m n α) :=
   inferInstanceAs <| AddCommSemigroup <| ∀ i j, α i j
 
 instance [∀ i j, Zero (α i j)] : Zero (DMatrix m n α) :=
@@ -89,7 +89,7 @@ instance [∀ i j, Zero (α i j)] : Zero (DMatrix m n α) :=
 instance [∀ i j, AddMonoid (α i j)] : AddMonoid (DMatrix m n α) :=
   inferInstanceAs <| AddMonoid <| ∀ i j, α i j
 
-instance [∀ i j, AddCommMonoid (α i j)] : AddCommMonoid (DMatrix m n α) :=
+instance [∀ i j, AddMonoid (α i j)] [∀ i j, IsAddCommutative (α i j)] : AddCommMonoid (DMatrix m n α) :=
   inferInstanceAs <| AddCommMonoid <| ∀ i j, α i j
 
 instance [∀ i j, Neg (α i j)] : Neg (DMatrix m n α) :=
@@ -101,7 +101,7 @@ instance [∀ i j, Sub (α i j)] : Sub (DMatrix m n α) :=
 instance [∀ i j, AddGroup (α i j)] : AddGroup (DMatrix m n α) :=
   inferInstanceAs <| AddGroup <| ∀ i j, α i j
 
-instance [∀ i j, AddCommGroup (α i j)] : AddCommGroup (DMatrix m n α) :=
+instance [∀ i j, AddGroup (α i j)] [∀ i j, IsAddCommutative (α i j)] : AddCommGroup (DMatrix m n α) :=
   inferInstanceAs <| AddCommGroup <| ∀ i j, α i j
 
 instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=

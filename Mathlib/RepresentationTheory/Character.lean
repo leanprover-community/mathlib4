@@ -46,8 +46,8 @@ namespace Representation
 
 section Monoid
 
-variable {G k V W : Type*} [Monoid G] [Field k] [AddCommGroup V] [Module k V]
-  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+variable {G k V W : Type*} [Monoid G] [Field k] [AddGroup V] [IsAddCommutative V] [Module k V]
+  [FiniteDimensional k V] [AddGroup W] [IsAddCommutative W] [Module k W] [FiniteDimensional k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
 /-- The character of a representation `ρ : Representation k G V` is the function associating to
@@ -79,8 +79,8 @@ end Monoid
 
 section Group
 
-variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
-  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+variable {G k V W : Type*} [Group G] [Field k] [AddGroup V] [IsAddCommutative V] [Module k V]
+  [FiniteDimensional k V] [AddGroup W] [IsAddCommutative W] [Module k W] [FiniteDimensional k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
 omit [FiniteDimensional k V] in
@@ -131,8 +131,8 @@ end Group
 
 section Orthogonality
 
-variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
-  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+variable {G k V W : Type*} [Group G] [Field k] [AddGroup V] [IsAddCommutative V] [Module k V]
+  [FiniteDimensional k V] [AddGroup W] [IsAddCommutative W] [Module k W] [FiniteDimensional k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
 variable [Fintype G] [Invertible (Nat.card G : k)] [IsAlgClosed k]

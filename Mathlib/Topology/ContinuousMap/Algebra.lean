@@ -247,7 +247,7 @@ instance [Semigroup β] [ContinuousMul β] : Semigroup C(α, β) := fast_instanc
   coe_injective.semigroup _ coe_mul
 
 @[to_additive]
-instance [CommSemigroup β] [ContinuousMul β] : CommSemigroup C(α, β) := fast_instance%
+instance [Semigroup β] [IsMulCommutative β] [ContinuousMul β] : CommSemigroup C(α, β) := fast_instance%
   coe_injective.commSemigroup _ coe_mul
 
 @[to_additive]
@@ -268,10 +268,10 @@ instance [MonoidWithZero β] [ContinuousMul β] : MonoidWithZero C(α, β) := fa
   coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
-instance [CommMonoid β] [ContinuousMul β] : CommMonoid C(α, β) := fast_instance%
+instance [Monoid β] [IsMulCommutative β] [ContinuousMul β] : CommMonoid C(α, β) := fast_instance%
   coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
-instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, β) := fast_instance%
+instance [MonoidWithZero β] [IsMulCommutative β] [ContinuousMul β] : CommMonoidWithZero C(α, β) := fast_instance%
   coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
@@ -315,12 +315,12 @@ def compMonoidHom' {γ : Type*} [TopologicalSpace γ] [MulOneClass γ] [Continuo
   map_mul' f₁ f₂ := mul_comp f₁ f₂ g
 
 @[to_additive (attr := simp)]
-theorem coe_prod [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β)) :
+theorem coe_prod [Monoid β] [IsMulCommutative β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β)) :
     ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) :=
   map_prod coeFnMonoidHom f s
 
 @[to_additive]
-theorem prod_apply [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β))
+theorem prod_apply [Monoid β] [IsMulCommutative β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β))
     (a : α) : (∏ i ∈ s, f i) a = ∏ i ∈ s, f i a := by simp
 
 @[to_additive]
@@ -328,12 +328,12 @@ instance [Group β] [IsTopologicalGroup β] : Group C(α, β) := fast_instance%
   coe_injective.group _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
-instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] :
+instance instCommGroupContinuousMap [Group β] [IsMulCommutative β] [IsTopologicalGroup β] :
     CommGroup C(α, β) := fast_instance%
   coe_injective.commGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
-instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
+instance [Group β] [IsMulCommutative β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
     let : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
@@ -359,19 +359,19 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
 @[to_additive
   /-- If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
 then the pointwise sum converges to `g x` for all `x ∈ α`. -/]
-theorem hasProd_apply {γ : Type*} [CommMonoid β] [ContinuousMul β]
+theorem hasProd_apply {γ : Type*} [Monoid β] [IsMulCommutative β] [ContinuousMul β]
     {f : γ → C(α, β)} {g : C(α, β)} {L : SummationFilter γ} (hf : HasProd f g L) (x : α) :
     HasProd (fun i : γ => f i x) (g x) L := by
   let ev : C(α, β) →* β := (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
   exact hf.map ev (continuous_eval_const x)
 
 @[to_additive]
-theorem multipliable_apply [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
+theorem multipliable_apply [Monoid β] [IsMulCommutative β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
     {L : SummationFilter γ} (hf : Multipliable f L) (x : α) : Multipliable (fun i : γ ↦ f i x) L :=
   (hasProd_apply hf.hasProd x).multipliable
 
 @[to_additive]
-theorem tprod_apply [T2Space β] [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
+theorem tprod_apply [T2Space β] [Monoid β] [IsMulCommutative β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
     {L : SummationFilter γ} (hf : Multipliable f L) [L.NeBot] (x : α) :
     ∏'[L] i : γ, f i x = (∏'[L] i : γ, f i) x :=
   (hasProd_apply hf.hasProd x).tprod_eq
@@ -447,19 +447,19 @@ instance instRing {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSp
     coe_natCast coe_intCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    [NonUnitalCommSemiring β] [IsTopologicalSemiring β] : NonUnitalCommSemiring C(α, β) :=
+    [NonUnitalSemiring β] [IsMulCommutative β] [IsTopologicalSemiring β] : NonUnitalCommSemiring C(α, β) :=
   fast_instance%
   coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommSemiring β]
+instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β] [IsMulCommutative β]
     [IsTopologicalSemiring β] : CommSemiring C(α, β) := fast_instance%
   coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
+instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalRing β] [IsMulCommutative β]
     [IsTopologicalRing β] : NonUnitalCommRing C(α, β) := fast_instance%
   coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommRing β]
+instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Ring β] [IsMulCommutative β]
     [IsTopologicalRing β] : CommRing C(α, β) := fast_instance%
   coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_pow coe_natCast coe_intCast
@@ -504,7 +504,7 @@ section Subtype
 
 variable (α : Type*) [TopologicalSpace α]
 variable (R : Type*) [Semiring R]
-variable (M : Type*) [TopologicalSpace M] [AddCommGroup M]
+variable (M : Type*) [TopologicalSpace M] [AddGroup M] [IsAddCommutative M]
 variable [Module R M] [ContinuousConstSMul R M] [IsTopologicalAddGroup M]
 
 /-- The `R`-submodule of continuous maps `α → M`. -/
@@ -578,7 +578,7 @@ instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [ContinuousAdd M]
     [ContinuousConstSMul R M] : DistribMulAction R C(α, M) := fast_instance%
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [ContinuousAdd M] [Module R M] [ContinuousConstSMul R M]
 variable [ContinuousAdd M₂] [Module R M₂] [ContinuousConstSMul R M₂]
 
@@ -648,7 +648,7 @@ is obtained by requiring that `A` be both a `ContinuousSMul` and a `IsTopologica
 
 section Subtype
 
-variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Type*}
+variable {α : Type*} [TopologicalSpace α] {R : Type*} [Semiring R] [IsMulCommutative R] {A : Type*}
   [TopologicalSpace A] [Semiring A] [Algebra R A] [IsTopologicalSemiring A]
 
 /-- The `R`-subalgebra of continuous maps `α → A`. -/
@@ -661,7 +661,7 @@ end Subtype
 
 section ContinuousMap
 
-variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Type*}
+variable {α : Type*} [TopologicalSpace α] {R : Type*} [Semiring R] [IsMulCommutative R] {A : Type*}
   [TopologicalSpace A] [Semiring A] [Algebra R A] [IsTopologicalSemiring A] {A₂ : Type*}
   [TopologicalSpace A₂] [Semiring A₂] [Algebra R A₂] [IsTopologicalSemiring A₂]
 
@@ -781,7 +781,7 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
 end ContinuousMap
 
 instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α] (R : Type*)
-    [CommSemiring R] [TopologicalSpace R] [IsTopologicalSemiring R] [Subsingleton α] :
+    [Semiring R] [IsMulCommutative R] [TopologicalSpace R] [IsTopologicalSemiring R] [Subsingleton α] :
     Subsingleton (Subalgebra R C(α, R)) :=
   ⟨fun s₁ s₂ => by
     cases isEmpty_or_nonempty α
@@ -812,7 +812,7 @@ namespace ContinuousMap
 variable
   {α : Type*} [TopologicalSpace α]
   {R : Type*} [Semiring R] [TopologicalSpace R]
-  {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousSMul R M]
+  {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M] [ContinuousSMul R M]
 
 instance instSMul' : SMul C(α, R) C(α, M) :=
   ⟨fun f g => ⟨fun x => f x • g x, Continuous.smul f.2 g.2⟩⟩
@@ -845,7 +845,7 @@ end ModuleOverContinuousFunctions
 
 /-! ### Evaluation as a bundled map -/
 
-variable {X : Type*} (S R : Type*) [TopologicalSpace X] [CommSemiring S] [CommSemiring R]
+variable {X : Type*} (S R : Type*) [TopologicalSpace X] [Semiring S] [IsMulCommutative S] [Semiring R] [IsMulCommutative R]
 variable [Algebra S R] [TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-- Evaluation of continuous maps at a point, bundled as an algebra homomorphism. -/

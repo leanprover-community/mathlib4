@@ -24,7 +24,7 @@ public section
 
 universe v u
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 namespace ModuleCat
 

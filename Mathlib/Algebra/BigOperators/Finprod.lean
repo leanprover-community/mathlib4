@@ -86,7 +86,7 @@ open Function Set
 
 section sort
 
-variable {G M N : Type*} {α ι : Sort*} [CommMonoid M] [CommMonoid N]
+variable {G M N : Type*} {α ι : Sort*} [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N]
 
 section
 
@@ -96,7 +96,7 @@ with `Classical.dec` in their statement. -/
 open scoped Classical in
 /-- Sum of `f x` as `x` ranges over the elements of the support of `f`, if it's finite. Zero
 otherwise. -/
-noncomputable irreducible_def finsum (lemma := finsum_def') [AddCommMonoid M] (f : α → M) : M :=
+noncomputable irreducible_def finsum (lemma := finsum_def') [AddMonoid M] [IsAddCommutative M] (f : α → M) : M :=
   if h : HasFiniteSupport (f ∘ PLift.down) then ∑ i ∈ h.toFinset, f i.down else 0
 
 open scoped Classical in
@@ -252,19 +252,19 @@ theorem finprod_induction {f : α → M} (p : M → Prop) (hp₀ : p 1)
   split_ifs
   exacts [Finset.prod_induction _ _ hp₁ hp₀ fun i _ => hp₂ _, hp₀]
 
-theorem finprod_nonneg {R : Type*} [CommMonoidWithZero R] [Preorder R] [ZeroLEOneClass R]
+theorem finprod_nonneg {R : Type*} [MonoidWithZero R] [IsMulCommutative R] [Preorder R] [ZeroLEOneClass R]
     [PosMulMono R] {f : α → R} (hf : ∀ x, 0 ≤ f x) :
     0 ≤ ∏ᶠ x, f x :=
   finprod_induction (fun x => 0 ≤ x) zero_le_one (fun _ _ => mul_nonneg) hf
 
 @[to_additive finsum_nonneg]
-theorem one_le_finprod' {M : Type*} [CommMonoid M] [Preorder M] [IsOrderedMonoid M]
+theorem one_le_finprod' {M : Type*} [Monoid M] [IsMulCommutative M] [Preorder M] [IsOrderedMonoid M]
     {f : α → M} (hf : ∀ i, 1 ≤ f i) :
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ => one_le_mul) hf
 
 /-- A version of `one_le_finprod'` for `PosMulMono` in place of `MulLeftMono`. -/
-lemma one_le_finprod {M : Type*} [CommMonoidWithZero M] [Preorder M] [ZeroLEOneClass M]
+lemma one_le_finprod {M : Type*} [MonoidWithZero M] [IsMulCommutative M] [Preorder M] [ZeroLEOneClass M]
     [PosMulMono M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ ↦ one_le_mul_of_one_le_of_one_le) hf
@@ -305,7 +305,7 @@ theorem MulEquivClass.map_finprod {F : Type*} [EquivLike F M N] [MulEquivClass F
 
 /-- The torsion-free assumption makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `HasFiniteSupport f` instead, see `finsum_smul'`. -/
-theorem finsum_smul {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+theorem finsum_smul {R M : Type*} [Ring R] [IsDomain R] [AddGroup M] [IsAddCommutative M] [Module R M]
     [Module.IsTorsionFree R M] (f : ι → R) (x : M) : (∑ᶠ i, f i) • x = ∑ᶠ i, f i • x := by
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
@@ -313,21 +313,21 @@ theorem finsum_smul {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M] [Module
 
 /-- The torsion-free assumption makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `HasFiniteSupport f` instead, see `smul_finsum'`. -/
-theorem smul_finsum {R M : Type*} [Semiring R] [IsDomain R] [AddCommGroup M] [Module R M]
+theorem smul_finsum {R M : Type*} [Semiring R] [IsDomain R] [AddGroup M] [IsAddCommutative M] [Module R M]
     [Module.IsTorsionFree R M] (c : R) (f : ι → M) : c • ∑ᶠ i, f i = ∑ᶠ i, c • f i := by
   rcases eq_or_ne c 0 with (rfl | hc)
   · simp
   · exact (smulAddHom R M c).map_finsum_of_injective (smul_right_injective M hc) _
 
 @[to_additive]
-theorem finprod_inv_distrib [DivisionCommMonoid G] (f : α → G) : (∏ᶠ x, (f x)⁻¹) = (∏ᶠ x, f x)⁻¹ :=
+theorem finprod_inv_distrib [DivisionMonoid G] [IsMulCommutative G] (f : α → G) : (∏ᶠ x, (f x)⁻¹) = (∏ᶠ x, f x)⁻¹ :=
   ((MulEquiv.inv G).map_finprod f).symm
 
 end sort
 
 section type
 
-variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
+variable {α β ι G M N : Type*} [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N]
 
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
@@ -435,14 +435,14 @@ theorem finprod_eq_prod (f : α → M) (hf : HasFiniteMulSupport f) :
 theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, f i = ∏ i, f i :=
   finprod_eq_prod_of_mulSupport_toFinset_subset _ (Set.toFinite _) <| Finset.subset_univ _
 
-theorem finprod_ne_zero {M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+theorem finprod_ne_zero {M₀ : Type*} [MonoidWithZero M₀] [IsMulCommutative M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
     {f : α → M₀} (h : ∀ i, f i ≠ 0) :
     ∏ᶠ i, f i ≠ 0 := by
   by_cases h₂ : Set.Finite f.mulSupport
   · grind [finprod_eq_prod f h₂, Finset.prod_ne_zero_iff]
   · simp [finprod_of_infinite_mulSupport h₂]
 
-theorem finprod_apply_ne_zero {ι : Type*} {N₀ M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M₀]
+theorem finprod_apply_ne_zero {ι : Type*} {N₀ M₀ : Type*} [MonoidWithZero M₀] [IsMulCommutative M₀] [Nontrivial M₀]
     [NoZeroDivisors M₀] {n : N₀} {f : ι → N₀ → M₀} (h : ∀ i, f i n ≠ 0) :
     (∏ᶠ i, f i) n ≠ 0 := by
   by_cases h₂ : f.mulSupport.Finite
@@ -579,7 +579,7 @@ theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : �
   simp +contextual [h]
 
 @[to_additive finsum_cond_pos]
-theorem one_lt_finprod_cond {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+theorem one_lt_finprod_cond {M : Type*} [Monoid M] [IsMulCommutative M] [PartialOrder M] [IsOrderedCancelMonoid M]
     {f : ι → M} {p : ι → Prop} (h : ∀ i, p i → 1 ≤ f i) (h' : ∃ i, p i ∧ 1 < f i)
     (hf : (mulSupport f ∩ {i | p i}).Finite) : 1 < ∏ᶠ (i) (_ : p i), f i := by
   rw [finprod_cond_eq_prod_of_cond_iff (t := hf.toFinset)]
@@ -589,7 +589,7 @@ theorem one_lt_finprod_cond {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrder
   · simp +contextual
 
 @[to_additive finsum_pos]
-theorem one_lt_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+theorem one_lt_finprod {M : Type*} [Monoid M] [IsMulCommutative M] [PartialOrder M] [IsOrderedCancelMonoid M]
     {f : ι → M}
     (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : HasFiniteMulSupport f) : 1 < ∏ᶠ i, f i := by
   rw [← finprod_mem_univ]
@@ -613,7 +613,7 @@ lemma finprod_le_finprod [PartialOrder M] [MulLeftMono M] (hf : HasFiniteMulSupp
 
 /-- Monotonicity of `finprod`. See `finprod_le_finprod` for a variant where
 `M` is an ordered `CommMonoid`. -/
-lemma finprod_le_finprod₀ {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [ZeroLEOneClass M]
+lemma finprod_le_finprod₀ {M : Type*} [MonoidWithZero M] [IsMulCommutative M] [PartialOrder M] [ZeroLEOneClass M]
     [PosMulMono M] {f g : α → M} (hf : HasFiniteMulSupport f) (hf₀ : ∀ a, 0 ≤ f a)
     (hg : HasFiniteMulSupport g) (h : f ≤ g) :
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by
@@ -623,7 +623,7 @@ lemma finprod_le_finprod₀ {M : Type*} [CommMonoidWithZero M] [PartialOrder M] 
     finprod_eq_finsetProd_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
   exact Finset.prod_le_prod₀ (fun i _ ↦ hf₀ i) fun i _ ↦ h i
 
-lemma finprod_zero_le_one {M α : Type*} [CommMonoidWithZero M] [PartialOrder M]
+lemma finprod_zero_le_one {M α : Type*} [MonoidWithZero M] [IsMulCommutative M] [PartialOrder M]
     [ZeroLEOneClass M] [PosMulMono M] :
     ∏ᶠ _ : α, (0 : M) ≤ 1 := by
   rw [← finprod_one (α := α)]
@@ -662,7 +662,7 @@ equals the product of `f i` divided by the product of `g i`. -/
 @[to_additive
       /-- If the additive supports of `f` and `g` are finite, then the sum of `f i - g i`
       equals the sum of `f i` minus the sum of `g i`. -/]
-theorem finprod_div_distrib [DivisionCommMonoid G] {f g : α → G} (hf : HasFiniteMulSupport f)
+theorem finprod_div_distrib [DivisionMonoid G] [IsMulCommutative G] {f g : α → G} (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) : ∏ᶠ i, f i / g i = (∏ᶠ i, f i) / ∏ᶠ i, g i := by
   simp only [div_eq_mul_inv, finprod_mul_distrib hf hg.fun_inv, finprod_inv_distrib]
 
@@ -723,13 +723,13 @@ theorem finprod_pow (hf : HasFiniteMulSupport f) (n : ℕ) : (∏ᶠ i, f i) ^ n
 
 /-- See also `finsum_smul` for a version that works even when the support of `f` is not finite,
 but with slightly stronger typeclass requirements. -/
-theorem finsum_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {f : ι → R}
+theorem finsum_smul' {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] {f : ι → R}
     (hf : HasFiniteSupport f) (x : M) : (∑ᶠ i, f i) • x = ∑ᶠ i, f i • x :=
   ((smulAddHom R M).flip x).map_finsum hf
 
 /-- See also `smul_finsum` for a version that works even when the support of `f` is not finite,
 but with slightly stronger typeclass requirements. -/
-theorem smul_finsum' {R M : Type*} [AddCommMonoid M] [DistribSMul R M] (c : R)
+theorem smul_finsum' {R M : Type*} [AddMonoid M] [IsAddCommutative M] [DistribSMul R M] (c : R)
     {f : ι → M} (hf : HasFiniteSupport f) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i :=
   (DistribSMul.toAddMonoidHom M c).map_finsum hf
 
@@ -759,7 +759,7 @@ theorem MulEquiv.map_finprod_mem (g : M ≃* N) (f : α → M) {s : Set α} (hs 
   g.toMonoidHom.map_finprod_mem f hs
 
 @[to_additive]
-theorem finprod_mem_inv_distrib [DivisionCommMonoid G] (f : α → G) (hs : s.Finite) :
+theorem finprod_mem_inv_distrib [DivisionMonoid G] [IsMulCommutative G] (f : α → G) (hs : s.Finite) :
     (∏ᶠ x ∈ s, (f x)⁻¹) = (∏ᶠ x ∈ s, f x)⁻¹ :=
   ((MulEquiv.inv G).map_finprod_mem f hs).symm
 
@@ -768,7 +768,7 @@ over `i ∈ s` divided by the product of `g i` over `i ∈ s`. -/
 @[to_additive
       /-- Given a finite set `s`, the sum of `f i / g i` over `i ∈ s` equals the sum of `f i`
       over `i ∈ s` minus the sum of `g i` over `i ∈ s`. -/]
-theorem finprod_mem_div_distrib [DivisionCommMonoid G] (f g : α → G) (hs : s.Finite) :
+theorem finprod_mem_div_distrib [DivisionMonoid G] [IsMulCommutative G] (f g : α → G) (hs : s.Finite) :
     ∏ᶠ i ∈ s, f i / g i = (∏ᶠ i ∈ s, f i) / ∏ᶠ i ∈ s, g i := by
   simp only [div_eq_mul_inv, finprod_mem_mul_distrib hs, finprod_mem_inv_distrib g hs]
 
@@ -1139,13 +1139,13 @@ theorem finprod_mem_induction (p : M → Prop) (hp₀ : p 1) (hp₁ : ∀ x y, p
     (hp₂ : ∀ x ∈ s, p <| f x) : p (∏ᶠ i ∈ s, f i) :=
   finprod_induction _ hp₀ hp₁ fun x => finprod_induction _ hp₀ hp₁ <| hp₂ x
 
-theorem finprod_cond_nonneg {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+theorem finprod_cond_nonneg {R : Type*} [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsOrderedRing R]
     {p : α → Prop} {f : α → R}
     (hf : ∀ x, p x → 0 ≤ f x) : 0 ≤ ∏ᶠ (x) (_ : p x), f x :=
   finprod_nonneg fun x => finprod_nonneg <| hf x
 
 @[to_additive]
-theorem single_le_finprod {M : Type*} [CommMonoid M] [Preorder M] [IsOrderedMonoid M]
+theorem single_le_finprod {M : Type*} [Monoid M] [IsMulCommutative M] [Preorder M] [IsOrderedMonoid M]
     (i : α) {f : α → M}
     (hf : HasFiniteMulSupport f) (h : ∀ j, 1 ≤ f j) : f i ≤ ∏ᶠ j, f j := by
   classical calc
@@ -1154,7 +1154,7 @@ theorem single_le_finprod {M : Type*} [CommMonoid M] [Preorder M] [IsOrderedMono
       _ = ∏ᶠ j, f j :=
         (finprod_eq_prod_of_mulSupport_toFinset_subset _ hf (Finset.subset_insert _ _)).symm
 
-theorem finprod_eq_zero {M₀ : Type*} [CommMonoidWithZero M₀] (f : α → M₀) (x : α) (hx : f x = 0)
+theorem finprod_eq_zero {M₀ : Type*} [MonoidWithZero M₀] [IsMulCommutative M₀] (f : α → M₀) (x : α) (hx : f x = 0)
     (hf : HasFiniteMulSupport f) : ∏ᶠ x, f x = 0 := by
   nontriviality
   rw [finprod_eq_prod f hf]
@@ -1376,14 +1376,14 @@ theorem finprod_emb_domain (f : α ↪ β) [DecidablePred (· ∈ Set.range f)] 
   finprod_emb_domain' f.injective g
 
 @[simp, norm_cast]
-lemma Nat.cast_finprod [Finite ι] {R : Type*} [CommSemiring R] (f : ι → ℕ) :
+lemma Nat.cast_finprod [Finite ι] {R : Type*} [Semiring R] [IsMulCommutative R] (f : ι → ℕ) :
     ↑(∏ᶠ x, f x : ℕ) = ∏ᶠ x, (f x : R) :=
   (Nat.castRingHom R).map_finprod f.mulSupport.toFinite
 
 /-- This version does not assume that `ι` is finite (compare `Nat.cast_finprod`), but instead needs
 to assume characteristic zero to deal with the infinite case. -/
 @[simp, norm_cast]
-lemma Nat.cast_finprod' {R : Type*} [CommSemiring R] [CharZero R] (f : ι → ℕ) :
+lemma Nat.cast_finprod' {R : Type*} [Semiring R] [IsMulCommutative R] [CharZero R] (f : ι → ℕ) :
     (∏ᶠ (x : ι), f x : ℕ) = ∏ᶠ (x : ι), (f x : R) := by
   by_cases hf : f.HasFiniteMulSupport
   · exact map_finprod (Nat.castRingHom R) hf
@@ -1392,18 +1392,18 @@ lemma Nat.cast_finprod' {R : Type*} [CommSemiring R] [CharZero R] (f : ι → �
     rw [finprod_of_not_hasFiniteMulSupport hf, finprod_of_not_hasFiniteMulSupport H, cast_one]
 
 @[simp, norm_cast]
-lemma Nat.cast_finprod_mem {s : Set ι} (hs : s.Finite) {R : Type*} [CommSemiring R] (f : ι → ℕ) :
+lemma Nat.cast_finprod_mem {s : Set ι} (hs : s.Finite) {R : Type*} [Semiring R] [IsMulCommutative R] (f : ι → ℕ) :
     ↑(∏ᶠ x ∈ s, f x : ℕ) = ∏ᶠ x ∈ s, (f x : R) :=
   (Nat.castRingHom R).map_finprod_mem _ hs
 
 @[simp, norm_cast]
-lemma Nat.cast_finsum [Finite ι] {M : Type*} [AddCommMonoidWithOne M]
+lemma Nat.cast_finsum [Finite ι] {M : Type*} [AddMonoidWithOne M] [IsAddCommutative M]
     (f : ι → ℕ) : ↑(∑ᶠ x, f x : ℕ) = ∑ᶠ x, (f x : M) :=
   (Nat.castAddMonoidHom M).map_finsum f.support.toFinite
 
 @[simp, norm_cast]
 lemma Nat.cast_finsum_mem {s : Set ι} (hs : s.Finite) {M : Type*}
-    [AddCommMonoidWithOne M] (f : ι → ℕ) : ↑(∑ᶠ x ∈ s, f x : ℕ) = ∑ᶠ x ∈ s, (f x : M) :=
+    [AddMonoidWithOne M] [IsAddCommutative M] (f : ι → ℕ) : ↑(∑ᶠ x ∈ s, f x : ℕ) = ∑ᶠ x ∈ s, (f x : M) :=
   (Nat.castAddMonoidHom M).map_finsum_mem _ hs
 
 end type
@@ -1414,7 +1414,7 @@ end type
 
 namespace Multiset
 
-variable {α M : Type*} [DecidableEq α] [CommMonoid M]
+variable {α M : Type*} [DecidableEq α] [Monoid M] [IsMulCommutative M]
 
 @[to_additive]
 lemma mulSupport_fun_pow_count_subset (s : Multiset α) (f : α → M) :

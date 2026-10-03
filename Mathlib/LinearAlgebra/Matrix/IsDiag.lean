@@ -168,11 +168,11 @@ theorem IsDiag.fromBlocks_of_isSymm [Zero α] {A : Matrix m m α} {C : Matrix n 
   rw [← (isSymm_fromBlocks_iff.1 h).2.1]
   exact ha.fromBlocks hd
 
-theorem mul_transpose_self_isDiag_iff_hasOrthogonalRows [Fintype n] [Mul α] [AddCommMonoid α]
+theorem mul_transpose_self_isDiag_iff_hasOrthogonalRows [Fintype n] [Mul α] [AddMonoid α] [IsAddCommutative α]
     {A : Matrix m n α} : (A * Aᵀ).IsDiag ↔ A.HasOrthogonalRows :=
   Iff.rfl
 
-theorem transpose_mul_self_isDiag_iff_hasOrthogonalCols [Fintype m] [Mul α] [AddCommMonoid α]
+theorem transpose_mul_self_isDiag_iff_hasOrthogonalCols [Fintype m] [Mul α] [AddMonoid α] [IsAddCommutative α]
     {A : Matrix m n α} : (Aᵀ * A).IsDiag ↔ A.HasOrthogonalCols :=
   Iff.rfl
 

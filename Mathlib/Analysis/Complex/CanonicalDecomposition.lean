@@ -220,7 +220,7 @@ the conclusions of the decomposition theorem.
 -/
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E]
   {R : ℝ} {c w : ℂ}
   {f g : ℂ → E}
 

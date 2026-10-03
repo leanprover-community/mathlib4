@@ -132,8 +132,8 @@ section SplitExact
 open ModuleCat
 section universe_monomorphic
 
-variable {R : Type u} {A M B : Type v} [Ring R] [AddCommGroup A] [Module R A] [AddCommGroup B]
-  [Module R B] [AddCommGroup M] [Module R M]
+variable {R : Type u} {A M B : Type v} [Ring R] [AddGroup A] [IsAddCommutative A] [Module R A] [AddGroup B] [IsAddCommutative B]
+  [Module R B] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}
 
@@ -162,7 +162,7 @@ section universe_polymorphic
 
 universe uA uM uB
 variable {R : Type u} {A : Type uA} {M : Type uM} {B : Type uB}
-variable [Ring R] [AddCommGroup A] [AddCommGroup B] [AddCommGroup M]
+variable [Ring R] [AddGroup A] [IsAddCommutative A] [AddGroup B] [IsAddCommutative B] [AddGroup M] [IsAddCommutative M]
 variable [Module R A] [Module R B] [Module R M]
 
 variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}

@@ -223,7 +223,7 @@ theorem Interval.add_lb [AddZero α] (I J : Interval α) : (I.add J).lb = I.lb +
 theorem Interval.add_ub [AddZero α] (I J : Interval α) : (I.add J).ub = I.ub + J.ub := by
   rcases I with ⟨il, _ | iu⟩ <;> rcases J with ⟨jl, _ | ju⟩ <;> rfl
 
-theorem Interval.add_mem [AddZero α] [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β]
+theorem Interval.add_mem [AddZero α] [AddMonoid β] [IsAddCommutative β] [Preorder β] [IsOrderedAddMonoid β]
     (f : α →+ β) {x y : β} {I J : Interval α} (hx : x ∈ I.map f) (hy : y ∈ J.map f) :
     x + y ∈ (I.add J).map f := by
   grind [Interval.add, add_le_add]
@@ -237,7 +237,7 @@ def Interval.neg [Neg α] (I : Interval α) : Interval α where
     | some a => some (-a)
     | ⊥ => ⊤
 
-theorem Interval.neg_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrderedAddMonoid β]
+theorem Interval.neg_mem [AddGroup α] [AddGroup β] [IsAddCommutative β] [Preorder β] [IsOrderedAddMonoid β]
     (f : α →+ β) {x : β} {I : Interval α} (hx : x ∈ I.map f) : -x ∈ I.neg.map f := by
   grind [Interval.neg, neg_le_neg_iff]
 
@@ -257,7 +257,7 @@ def Interval.abs [Zero α] [Neg α] [LinearOrder α] (I : Interval α) : Interva
       | ⊤ => 0
     Interval.Ici lb
 
-theorem Interval.abs_mem [Zero α] [Neg α] [LinearOrder α] [AddCommGroup β]
+theorem Interval.abs_mem [Zero α] [Neg α] [LinearOrder α] [AddGroup β] [IsAddCommutative β]
     [LinearOrder β] [IsOrderedAddMonoid β] (f : α ↪o β) (map_zero : f 0 = 0)
     (map_neg : ∀ a, f (-a) = -f a) {x : β} {I : Interval α} (hx : x ∈ I.map f) :
     |x| ∈ I.abs.map f := by
@@ -275,7 +275,7 @@ def Interval.sub [Sub α] (I J : Interval α) : Interval α where
 theorem Interval.sub_eq_add_neg [AddGroup α] (I J : Interval α) : I.sub J = I.add J.neg := by
   grind [Interval.sub, Interval.add, Interval.neg, _root_.sub_eq_add_neg]
 
-theorem Interval.sub_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrderedAddMonoid β]
+theorem Interval.sub_mem [AddGroup α] [AddGroup β] [IsAddCommutative β] [Preorder β] [IsOrderedAddMonoid β]
     (f : α →+ β) {x y : β} {I J : Interval α}
     (hx : x ∈ I.map f) (hy : y ∈ J.map f) : x - y ∈ (I.sub J).map f := by
   rw [_root_.sub_eq_add_neg, Interval.sub_eq_add_neg]

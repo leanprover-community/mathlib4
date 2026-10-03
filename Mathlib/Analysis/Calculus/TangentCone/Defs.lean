@@ -43,7 +43,7 @@ variable (R : Type u) {E : Type v}
 
 section TangentConeAt
 
-variable [AddCommGroup E] [SMul R E] [TopologicalSpace E] {s : Set E} {x y : E}
+variable [AddGroup E] [IsAddCommutative E] [SMul R E] [TopologicalSpace E] {s : Set E} {x y : E}
 
 /-- The set of all tangent directions to the set `s` at the point `x`.
 
@@ -128,11 +128,11 @@ theorem exists_fun_of_mem_tangentConeAt (h : y ∈ tangentConeAt R s x) :
 end TangentConeAt
 
 /-- "Positive" tangent cone to `s` at `x`. -/
-abbrev posTangentConeAt [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] (s : Set E) (x : E) :
+abbrev posTangentConeAt [AddGroup E] [IsAddCommutative E] [Module ℝ E] [TopologicalSpace E] (s : Set E) (x : E) :
     Set E :=
   tangentConeAt NNReal s x
 
-variable [Semiring R] [AddCommGroup E] [Module R E] [TopologicalSpace E]
+variable [Semiring R] [AddGroup E] [IsAddCommutative E] [Module R E] [TopologicalSpace E]
 
 /-- A property ensuring that the tangent cone to `s` at `x` spans a dense subset of the whole space.
 The main role of this property is to ensure that the differential within `s` at `x` is unique,

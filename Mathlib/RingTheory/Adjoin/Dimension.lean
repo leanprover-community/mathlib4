@@ -23,7 +23,7 @@ universe u v
 
 namespace Subalgebra
 
-variable {R : Type u} {S : Type v} [CommRing R] [StrongRankCondition R] [CommRing S] [Algebra R S]
+variable {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [StrongRankCondition R] [Ring S] [IsMulCommutative S] [Algebra R S]
   (A B : Subalgebra R S) [Free R A] [Free R B]
 
 /-- If `A` and `B` are subalgebras of a commutative `R`-algebra `S`, both of them are

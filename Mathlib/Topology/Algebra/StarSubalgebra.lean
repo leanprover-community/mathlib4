@@ -31,7 +31,7 @@ namespace StarSubalgebra
 
 section TopologicalStarAlgebra
 
-variable {R A B : Type*} [CommSemiring R] [StarRing R]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [StarRing R]
 variable [TopologicalSpace A] [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
 instance [IsTopologicalSemiring A] (s : StarSubalgebra R A) : IsTopologicalSemiring s :=
@@ -144,7 +144,7 @@ open scoped IsMulCommutative in
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A]
+abbrev commRingTopologicalClosure {R A} [Ring R] [IsMulCommutative R] [StarRing R] [TopologicalSpace A] [Ring A]
     [Algebra R A] [StarRing A] [StarModule R A] [IsSemitopologicalRing A] [ContinuousStar A]
     [T2Space A] (s : StarSubalgebra R A) (hs : ∀ x y : s, x * y = y * x) :
     CommRing s.topologicalClosure :=
@@ -188,7 +188,7 @@ namespace StarAlgebra
 
 open StarSubalgebra
 
-variable (R : Type*) {A B : Type*} [CommSemiring R] [StarRing R]
+variable (R : Type*) {A B : Type*} [Semiring R] [IsMulCommutative R] [StarRing R]
 variable [TopologicalSpace A] [Semiring A] [StarRing A] [IsSemitopologicalSemiring A]
 variable [ContinuousStar A] [Algebra R A] [StarModule R A]
 variable [TopologicalSpace B] [Semiring B] [StarRing B] [Algebra R B]

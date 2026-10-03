@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 public section
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsNoetherianRing R]
 
 local notation "𝔪" => IsLocalRing.maximalIdeal R
 

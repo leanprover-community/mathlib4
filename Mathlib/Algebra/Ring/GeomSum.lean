@@ -130,7 +130,7 @@ lemma RingHom.map_geom_sum₂ (x y : R) (n : ℕ) (f : R →+* S) :
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
 lemma geom_sum₂_mul_add (x y : R) (n : ℕ) :
@@ -297,7 +297,7 @@ lemma geom_sum_Ico_mul_neg (x : R) {m n : ℕ} (hmn : m ≤ n) :
 end Ring
 
 section CommRing
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum {x : R} {m n : ℕ} :
     (x ^ m - 1) * ∑ k ∈ range n, x ^ k = (x ^ n - 1) * ∑ k ∈ range m, x ^ k := by

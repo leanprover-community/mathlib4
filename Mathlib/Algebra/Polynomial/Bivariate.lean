@@ -118,7 +118,7 @@ end Ring
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 @[simp]
 lemma evalEval_mul (x y : R) (p q : R[X][Y]) :
@@ -181,7 +181,7 @@ lemma map_mapRingHom_evalEval (x y : R) :
 
 end
 
-variable [CommSemiring R] [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 /-- Two equivalent ways to express the evaluation of a bivariate polynomial over `R`
 at a point in the affine plane over an `R`-algebra `S`. -/
@@ -212,7 +212,7 @@ section aevalAeval
 
 noncomputable section
 
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 variable (R A) in
 /-- Given valuations `x` and `y` of the variables in an `R`-algebra `A`, the bijection induced by
@@ -311,7 +311,7 @@ end aevalAeval
 namespace Bivariate
 section MvPolynomial
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 variable (R) in
 /-- The equiv between `R[X][Y]` and `R[X, Y]`. -/
@@ -344,7 +344,7 @@ lemma equivMvPolynomial_symm_X_1 : (equivMvPolynomial R).symm (.X 1) = X := by
 lemma equivMvPolynomial_symm_C (a : R) : (equivMvPolynomial R).symm (.C a) = C (C a) := by
   simp [equivMvPolynomial]
 
-lemma pderiv_zero_equivMvPolynomial {R : Type*} [CommRing R] (p : R[X][Y]) :
+lemma pderiv_zero_equivMvPolynomial {R : Type*} [Ring R] [IsMulCommutative R] (p : R[X][Y]) :
     (equivMvPolynomial R p).pderiv 0 = equivMvPolynomial R
       (PolynomialModule.equivPolynomialSelf (derivative'.mapCoeffs p)) := by
   induction p using Polynomial.induction_on' with
@@ -377,7 +377,7 @@ open Polynomial
 
 namespace AdjoinRoot
 
-variable {R : Type*} [CommRing R] {x y : R} {p : R[X][Y]} (h : p.evalEval x y = 0)
+variable {R : Type*} [Ring R] [IsMulCommutative R] {x y : R} {p : R[X][Y]} (h : p.evalEval x y = 0)
 
 /-- If the evaluation (`evalEval`) of a bivariate polynomial `p : R[X][Y]` at a point (x,y)
 is zero, then `Polynomial.evalEval x y` factors through `AdjoinRoot.evalEval`, a ring homomorphism

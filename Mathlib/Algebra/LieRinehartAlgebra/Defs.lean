@@ -27,7 +27,7 @@ terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
 
 /-- A Lie-Rinehart ring is a pair consisting of a commutative ring `A` and a Lie ring `L` such that
 `A` and `L` are each a module over the other, satisfying compatibility conditions. -/
-class LieRinehartRing (A L : Type*) [CommRing A] [LieRing L]
+class LieRinehartRing (A L : Type*) [Ring A] [IsMulCommutative A] [LieRing L]
     [Module A L] [LieRingModule L A] : Prop where
   lie_smul_eq_mul' (a b : A) (x : L) : ⁅a • x, b⁆ = a * ⁅x, b⁆
   leibniz_mul_right' (x : L) (a b : A) : ⁅x, a * b⁆ = a • ⁅x, b⁆ + ⁅x, a⁆ * b
@@ -40,15 +40,15 @@ are each a module over the other, satisfying compatibility conditions.
 As shown below, this data determines a linear map `L → Derivation R A A` satisfying a Leibniz-like
 compatibility condition. This could even be taken as a definition, however the definition here has
 the advantage of being `Prop`-valued, thus mitigating potential diamonds. -/
-class LieRinehartAlgebra (R A L : Type*) [CommRing A] [LieRing L]
+class LieRinehartAlgebra (R A L : Type*) [Ring A] [IsMulCommutative A] [LieRing L]
     [Module A L] [LieRingModule L A] [LieRinehartRing A L]
-    [CommRing R] [Algebra R A] [LieAlgebra R L] : Prop extends
+    [Ring R] [IsMulCommutative R] [Algebra R A] [LieAlgebra R L] : Prop extends
     IsScalarTower R A L, LieModule R L A
 
-variable {R A₁ L₁ A₂ L₂ A₃ L₃ : Type*} [CommRing R]
-  [CommRing A₁] [LieRing L₁] [Module A₁ L₁] [LieRingModule L₁ A₁]
-  [CommRing A₂] [LieRing L₂] [Module A₂ L₂] [LieRingModule L₂ A₂]
-  [CommRing A₃] [LieRing L₃] [Module A₃ L₃] [LieRingModule L₃ A₃]
+variable {R A₁ L₁ A₂ L₂ A₃ L₃ : Type*} [Ring R] [IsMulCommutative R]
+  [Ring A₁] [IsMulCommutative A₁] [LieRing L₁] [Module A₁ L₁] [LieRingModule L₁ A₁]
+  [Ring A₂] [IsMulCommutative A₂] [LieRing L₂] [Module A₂ L₂] [LieRingModule L₂ A₂]
+  [Ring A₃] [IsMulCommutative A₃] [LieRing L₃] [Module A₃ L₃] [LieRingModule L₃ A₃]
   [Algebra R A₁] [LieAlgebra R L₁] [Algebra R A₂] [LieAlgebra R L₂]
   [Algebra R A₃] [LieAlgebra R L₃]
   {σ₁₂ : A₁ →ₐ[R] A₂} {σ₂₃ : A₂ →ₐ[R] A₃}

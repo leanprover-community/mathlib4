@@ -25,8 +25,8 @@ namespace Integers
 
 section CommRing
 
-variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
-variable {v : Valuation R Γ₀} {O : Type w} [CommRing O] [Algebra O R] (hv : Integers v O)
+variable {R : Type u} {Γ₀ : Type v} [Ring R] [IsMulCommutative R] [LinearOrderedCommGroupWithZero Γ₀]
+variable {v : Valuation R Γ₀} {O : Type w} [Ring O] [IsMulCommutative O] [Algebra O R] (hv : Integers v O)
 include hv
 
 open Polynomial
@@ -68,7 +68,7 @@ end CommRing
 section FractionField
 
 variable {K : Type u} {Γ₀ : Type v} [Field K] [LinearOrderedCommGroupWithZero Γ₀]
-variable {v : Valuation K Γ₀} {O : Type w} [CommRing O]
+variable {v : Valuation K Γ₀} {O : Type w} [Ring O] [IsMulCommutative O]
 variable [Algebra O K]
 variable (hv : Integers v O)
 

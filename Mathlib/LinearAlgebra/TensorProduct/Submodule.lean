@@ -51,7 +51,7 @@ variable {R : Type u} {S : Type v}
 
 section Semiring
 
-variable [CommSemiring R] [Semiring S] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
 
 variable (M N : Submodule R S)
 
@@ -270,7 +270,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 variable (M N : Submodule R S)
 

@@ -29,7 +29,7 @@ variable {R : Type*}
 
 /-- An ordered additive commutative monoid is called `Archimedean` if for any two elements `x`, `y`
 such that `0 < y`, there exists a natural number `n` such that `x ≤ n • y`. -/
-class Archimedean (R) [AddCommMonoid R] [PartialOrder R] : Prop where
+class Archimedean (R) [AddMonoid R] [IsAddCommutative R] [PartialOrder R] : Prop where
   /-- For any two elements `x`, `y` such that `0 < y`, there exists a natural number `n`
   such that `x ≤ n • y`. -/
   arch : ∀ (x : R) {y : R}, 0 < y → ∃ n : ℕ, x ≤ n • y
@@ -37,13 +37,13 @@ class Archimedean (R) [AddCommMonoid R] [PartialOrder R] : Prop where
 /-- An ordered commutative monoid is called `MulArchimedean` if for any two elements `x`, `y`
 such that `1 < y`, there exists a natural number `n` such that `x ≤ y ^ n`. -/
 @[to_additive Archimedean]
-class MulArchimedean (R) [CommMonoid R] [PartialOrder R] : Prop where
+class MulArchimedean (R) [Monoid R] [IsMulCommutative R] [PartialOrder R] : Prop where
   /-- For any two elements `x`, `y` such that `1 < y`, there exists a natural number `n`
   such that `x ≤ y ^ n`. -/
   arch : ∀ (x : R) {y : R}, 1 < y → ∃ n : ℕ, x ≤ y ^ n
 
 section OrderedMonoid
-variable [CommMonoid R] [PartialOrder R] [MulLeftStrictMono R] [MulArchimedean R]
+variable [Monoid R] [IsMulCommutative R] [PartialOrder R] [MulLeftStrictMono R] [MulArchimedean R]
 
 @[to_additive]
 theorem exists_lt_pow {a : R} (ha : 1 < a) (b : R) : ∃ n : ℕ, b < a ^ n :=
@@ -53,7 +53,7 @@ theorem exists_lt_pow {a : R} (ha : 1 < a) (b : R) : ∃ n : ℕ, b < a ^ n :=
 end OrderedMonoid
 
 section OrderedGroup
-variable [CommGroup R] [LinearOrder R] [IsOrderedMonoid R] [MulArchimedean R]
+variable [Group R] [IsMulCommutative R] [LinearOrder R] [IsOrderedMonoid R] [MulArchimedean R]
 
 @[to_additive]
 theorem exists_pow_lt {a : R} (ha : a < 1) (b : R) : ∃ n : ℕ, a ^ n < b :=

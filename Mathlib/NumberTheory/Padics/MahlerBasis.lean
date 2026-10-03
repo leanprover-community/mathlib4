@@ -117,7 +117,7 @@ variable {M G : Type*}
 /-- Bound for iterated forward differences of a continuous function from a compact space to a
 nonarchimedean seminormed group. -/
 lemma IsUltrametricDist.norm_fwdDiff_iter_apply_le [TopologicalSpace M] [CompactSpace M]
-    [AddCommMonoid M] [SeminormedAddCommGroup G] [IsUltrametricDist G]
+    [AddMonoid M] [IsAddCommutative M] [SeminormedAddGroup G] [IsAddCommutative G] [IsUltrametricDist G]
     (h : M) (f : C(M, G)) (m : M) (n : ℕ) : ‖Δ_[h]^[n] f m‖ ≤ ‖f‖ := by
   -- A proof by induction on `n` would be possible but would involve some messing around to
   -- define `Δ_[h]` as an operator on continuous maps (not just on bare functions). So instead we
@@ -128,7 +128,7 @@ lemma IsUltrametricDist.norm_fwdDiff_iter_apply_le [TopologicalSpace M] [Compact
 
 /-- First step in Bojanić's proof of Mahler's theorem (equation (10) of [bojanic74]): rewrite
 `Δ^[n + R] f 0` in a shape that makes it easy to bound `p`-adically. -/
-private lemma bojanic_mahler_step1 [AddCommMonoidWithOne M] [AddCommGroup G] (f : M → G)
+private lemma bojanic_mahler_step1 [AddMonoidWithOne M] [IsAddCommutative M] [AddGroup G] [IsAddCommutative G] (f : M → G)
     (n : ℕ) {R : ℕ} (hR : 1 ≤ R) :
     Δ_[1]^[n + R] f 0 = -∑ j ∈ range (R - 1), R.choose (j + 1) • Δ_[1]^[n + (j + 1)] f 0 +
       ∑ k ∈ range (n + 1), ((-1 : ℤ) ^ (n - k) * n.choose k) • (f (k + R) - f k) := by
@@ -151,7 +151,7 @@ namespace PadicInt
 section norm_fwdDiff
 
 variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
-  [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E] [IsUltrametricDist E]
+  [NormedAddGroup E] [IsAddCommutative E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E] [IsUltrametricDist E]
 
 /--
 Second step in Bojanić's proof of Mahler's theorem (equation (11) of [bojanic74]): show that values
@@ -244,7 +244,7 @@ end norm_fwdDiff
 
 section mahler_coeff
 
-variable {E : Type*} [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E]
   (a : E) (n : ℕ) (x : ℤ_[p])
 
 /--
@@ -392,7 +392,7 @@ open Submodule
 /-!
 ### Continuous linear functionals are determined by their values on the Mahler basis
 -/
-variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [IsMulCommutative R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
   [IsBoundedSMul ℤ_[p] R]
 
 theorem dense_span_mahler : Dense (span R

@@ -24,7 +24,7 @@ open Set
 
 variable {𝕜 α β : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [PartialOrder β]
     [TopologicalSpace β] [OrderClosedTopology β]
-    [AddCommMonoid α] [AddCommMonoid β]
+    [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β]
     [SMul 𝕜 α] [SMul 𝕜 β]
     [ContinuousConstSMul 𝕜 β] [ContinuousAdd β]
 

@@ -30,7 +30,7 @@ section CommRing
 universe uR uS uT uM uN uP
 
 variable {R : Type uR} (S : Type uS) {M : Type uM} {N : Type uN}
-variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (hp : p ≤ R⁰)
@@ -58,7 +58,7 @@ lemma IsLocalizedModule.finrank_eq : finrank R N = finrank R M := by
 
 end
 
-lemma IsLocalizedModule.rank_eq {N : Type uM} [AddCommGroup N] [Module R N] (f : M →ₗ[R] N)
+lemma IsLocalizedModule.rank_eq {N : Type uM} [AddGroup N] [IsAddCommutative N] [Module R N] (f : M →ₗ[R] N)
     [IsLocalizedModule p f] : Module.rank R N = Module.rank R M := by
   simpa using lift_rank_eq p f hp
 
@@ -78,7 +78,7 @@ theorem IsLocalization.finrank_eq : finrank S N = finrank R N := by
 end
 
 variable {S} in
-theorem IsLocalization.linearIndepOn_finsetIntegerMultiple {A : Type*} [CommRing A] [Algebra S A]
+theorem IsLocalization.linearIndepOn_finsetIntegerMultiple {A : Type*} [Ring A] [IsMulCommutative A] [Algebra S A]
     [Algebra R A] [IsScalarTower R S A] (M : Submonoid S) [IsLocalization M A] [FaithfulSMul S A]
     {s : Finset A} (hs : LinearIndepOn R id (s : Set A)) [DecidableEq S] :
     LinearIndepOn R id (finsetIntegerMultiple M s : Set S) := by
@@ -122,7 +122,7 @@ of the left part of the tower equals the finrank `finrank R A` of the whole towe
 
 See `IsFractionRing.finrank_right_eq` for the right version.
 See `IsFractionRing.finrank_eq` for the simultaneous version. -/
-theorem IsFractionRing.finrank_left_eq (A : Type*) [CommRing A] [Algebra S A] [Algebra R A]
+theorem IsFractionRing.finrank_left_eq (A : Type*) [Ring A] [IsMulCommutative A] [Algebra S A] [Algebra R A]
     [IsScalarTower R S A] [IsFractionRing S A] : Module.finrank R S = Module.finrank R A := by
   nontriviality R
   classical
@@ -144,7 +144,7 @@ theorem IsFractionRing.finrank_left_eq (A : Type*) [CommRing A] [Algebra S A] [A
 See `IsFractionRing.finrank_left_eq` and `IsFractionRing.finrank_right_eq` for one-sided versions.
 See `Algebra.IsAlgebraic.rank_of_isFractionRing` for a rank version with additional assumptions. -/
 protected theorem IsFractionRing.finrank_eq (A K B L : Type*)
-    [CommRing A] [CommRing K] [CommRing B] [CommRing L] [Algebra A B] [Module K L]
+    [Ring A] [IsMulCommutative A] [Ring K] [IsMulCommutative K] [Ring B] [IsMulCommutative B] [Ring L] [IsMulCommutative L] [Algebra A B] [Module K L]
     [Algebra A K] [Algebra B L] [Algebra A L] [IsScalarTower A K L] [IsScalarTower A B L]
     [IsFractionRing A K] [IsFractionRing B L] : Module.finrank K L = Module.finrank A B :=
   (finrank_right_eq A K L).trans (finrank_left_eq A B L).symm
@@ -183,9 +183,9 @@ open Cardinal TensorProduct
 
 section
 
-variable {p} [Free S N] [StrongRankCondition S] {T : Type uT} [CommRing T] [Algebra R T]
+variable {p} [Free S N] [StrongRankCondition S] {T : Type uT} [Ring T] [IsMulCommutative T] [Algebra R T]
   (hpT : Algebra.algebraMapSubmonoid T p ≤ T⁰) [StrongRankCondition (S ⊗[R] T)]
-  {P : Type uP} [AddCommGroup P] [Module R P] [Module T P] [IsScalarTower R T P]
+  {P : Type uP} [AddGroup P] [IsAddCommutative P] [Module R P] [Module T P] [IsScalarTower R T P]
   {g : M →ₗ[R] P} (bc : IsBaseChange T g)
 
 include S hp hpT f bc
@@ -213,15 +213,15 @@ theorem finrank_eq_of_le_nonZeroDivisors : finrank T P = finrank R M := by
   simpa using! congr(toNat $(lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc))
 
 omit bc
-theorem rank_eq_of_le_nonZeroDivisors {P : Type uM} [AddCommGroup P] [Module R P] [Module T P]
+theorem rank_eq_of_le_nonZeroDivisors {P : Type uM} [AddGroup P] [IsAddCommutative P] [Module R P] [Module T P]
     [IsScalarTower R T P] {g : M →ₗ[R] P} (bc : IsBaseChange T g) :
     Module.rank T P = Module.rank R M := by
   simpa using lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc
 
 end
 
-variable {p} {T : Type uT} [CommRing T] [NoZeroDivisors T] [Algebra R T] [FaithfulSMul R T]
-  {P : Type uP} [AddCommGroup P] [Module R P] [Module T P] [IsScalarTower R T P]
+variable {p} {T : Type uT} [Ring T] [IsMulCommutative T] [NoZeroDivisors T] [Algebra R T] [FaithfulSMul R T]
+  {P : Type uP} [AddGroup P] [IsAddCommutative P] [Module R P] [Module T P] [IsScalarTower R T P]
   {g : M →ₗ[R] P} (bc : IsBaseChange T g)
 
 include bc
@@ -253,7 +253,7 @@ theorem lift_rank_eq :
 theorem finrank_eq : finrank T P = finrank R M := by simpa using! congr(toNat $bc.lift_rank_eq)
 
 omit bc
-theorem rank_eq {P : Type uM} [AddCommGroup P] [Module R P] [Module T P] [IsScalarTower R T P]
+theorem rank_eq {P : Type uM} [AddGroup P] [IsAddCommutative P] [Module R P] [Module T P] [IsScalarTower R T P]
     {g : M →ₗ[R] P} (bc : IsBaseChange T g) : Module.rank T P = Module.rank R M := by
   simpa using bc.lift_rank_eq
 

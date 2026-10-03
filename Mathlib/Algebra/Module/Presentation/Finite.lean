@@ -22,7 +22,7 @@ universe w₀ w₁ v u
 
 namespace Module
 
-variable {A : Type u} [Ring A] {M : Type v} [AddCommGroup M] [Module A M]
+variable {A : Type u} [Ring A] {M : Type v} [AddGroup M] [IsAddCommutative M] [Module A M]
 
 namespace Presentation
 

@@ -15,7 +15,7 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public section
 
 namespace Submodule.Quotient
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {p : Submodule R M}
+variable {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] {p : Submodule R M}
 
 instance [MeasurableSpace M] : MeasurableSpace (M ⧸ p) := Quotient.instMeasurableSpace
 instance [MeasurableSpace M] [DiscreteMeasurableSpace M] : DiscreteMeasurableSpace (M ⧸ p) :=

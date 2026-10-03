@@ -32,7 +32,7 @@ variable (F : Type*) [Field F]
 
 open AdjoinRoot in
 /-- If `p` is the minimal polynomial of `a` over `F` then `F[a] ≃ₐ[F] F[x]/(p)` -/
-def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Algebra F R] (x : R) :
+def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [Ring R] [IsMulCommutative R] [Algebra F R] (x : R) :
     Algebra.adjoin F ({x} : Set R) ≃ₐ[F] AdjoinRoot (minpoly F x) :=
   AlgEquiv.symm <| AlgEquiv.ofBijective (Minpoly.toAdjoin F x) <| by
     refine ⟨(injective_iff_map_eq_zero _).2 fun P₁ hP₁ ↦ ?_, Minpoly.toAdjoin.surjective F x⟩
@@ -41,19 +41,19 @@ def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Alg
     simpa [← Subalgebra.coe_eq_zero, ← aeval_def] using hP₁
 
 @[simp]
-theorem AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly_symm_toAlgHom {R : Type*} [CommRing R]
+theorem AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly_symm_toAlgHom {R : Type*} [Ring R] [IsMulCommutative R]
     [Algebra F R] (x : R) :
     (adjoinSingletonEquivAdjoinRootMinpoly F x).symm = AdjoinRoot.Minpoly.toAdjoin F x := rfl
 
 @[simp]
-theorem AlgEquiv.coe_adjoinSingletonEquivAdjoinRootMinpoly_symm {R : Type*} [CommRing R]
+theorem AlgEquiv.coe_adjoinSingletonEquivAdjoinRootMinpoly_symm {R : Type*} [Ring R] [IsMulCommutative R]
     [Algebra F R] (x : R) :
     ⇑(adjoinSingletonEquivAdjoinRootMinpoly F x).symm = AdjoinRoot.Minpoly.toAdjoin F x := rfl
 
 /-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
 a root of `x`'s minimal polynomial in `T`. -/
 noncomputable def Algebra.adjoin.liftSingleton {S T : Type*}
-    [CommRing S] [CommRing T] [Algebra F S] [Algebra F T]
+    [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra F S] [Algebra F T]
     (x : S) (y : T) (h : aeval y (minpoly F x) = 0) :
     Algebra.adjoin F {x} →ₐ[F] T :=
   (AdjoinRoot.liftAlgHom _ _ y h).comp (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly F x).toAlgHom
@@ -92,7 +92,7 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
 
 end Embeddings
 
-variable {R K L M : Type*} [CommRing R] [Field K] [Field L] [CommRing M] [Algebra R K]
+variable {R K L M : Type*} [Ring R] [IsMulCommutative R] [Field K] [Field L] [Ring M] [IsMulCommutative M] [Algebra R K]
   [Algebra R M] {x : L}
 
 section
@@ -157,7 +157,7 @@ theorem IsIntegral.minpoly_splits_tower_top [Algebra K L] [Algebra R L] [IsScala
 /-- If `K / E / F` is a ring extension tower, `L` is a subalgebra of `K / F`,
 then `[E[L] : E] ≤ [L : F]`. -/
 lemma Subalgebra.adjoin_rank_le {F : Type*} (E : Type*) {K : Type*}
-    [CommSemiring F] [StrongRankCondition F] [CommSemiring E] [StrongRankCondition E] [Semiring K]
+    [Semiring F] [IsMulCommutative F] [StrongRankCondition F] [Semiring E] [IsMulCommutative E] [StrongRankCondition E] [Semiring K]
     [SMul F E] [Algebra E K] [Algebra F K] [IsScalarTower F E K]
     (L : Subalgebra F K) [Module.Free F L] :
     Module.rank E (Algebra.adjoin E (L : Set K)) ≤ Module.rank F L := by

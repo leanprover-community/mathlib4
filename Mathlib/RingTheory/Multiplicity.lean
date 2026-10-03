@@ -325,7 +325,7 @@ theorem emultiplicity_eq_zero :
     simp
   · simpa [emultiplicity_eq_top.2 hf] using FiniteMultiplicity.not_iff_forall.1 hf 1
 
-theorem emultiplicity_eq_zero_of_irreducible_ne {R : Type*} [CommMonoidWithZero R]
+theorem emultiplicity_eq_zero_of_irreducible_ne {R : Type*} [MonoidWithZero R] [IsMulCommutative R]
     [Subsingleton Rˣ] {a b : R} (ha : Irreducible a) (hb : Irreducible b) (h : a ≠ b) :
     emultiplicity a b = 0 :=
   emultiplicity_eq_zero.2 ((ha.dvd_irreducible_iff_associated hb).not.2 fun ⟨u, _⟩ ↦ by
@@ -449,7 +449,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α]
+variable [Monoid α] [IsMulCommutative α]
 
 theorem FiniteMultiplicity.mul_right {a b c : α} (hf : FiniteMultiplicity a (b * c)) :
     FiniteMultiplicity a c := (mul_comm b c ▸ hf).mul_left
@@ -634,7 +634,7 @@ end Ring
 
 section CancelCommMonoidWithZero
 
-variable [CommMonoidWithZero α] [IsCancelMulZero α]
+variable [MonoidWithZero α] [IsMulCommutative α] [IsCancelMulZero α]
 
 theorem finiteMultiplicity_mul_aux {p : α} (hp : Prime p) {a b : α} :
     ∀ {n m : ℕ}, ¬p ^ (n + 1) ∣ a → ¬p ^ (m + 1) ∣ b → ¬p ^ (n + m + 1) ∣ a * b

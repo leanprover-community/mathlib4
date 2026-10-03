@@ -89,7 +89,7 @@ end EasyCases
 
 section Divisibility
 
-variable {R : Type*} [CommSemiring R] {u v : R} {p : ℕ}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {u v : R} {p : ℕ}
 
 lemma exists_one_add_mul_pow_prime_eq
     (hp : p.Prime) (hvu : v ∣ u) (hpuv : p * u * v ∣ u ^ p) (x : R) :

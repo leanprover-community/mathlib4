@@ -58,13 +58,13 @@ open Matrix Module Fintype Polynomial Finset
 namespace Algebra
 
 variable (A : Type u) {B : Type v} (C : Type z) {ι : Type w} [DecidableEq ι]
-variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
+variable [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] [Ring C] [IsMulCommutative C] [Algebra A C]
 
 section Discr
 
 /-- Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we define
 `discr A ι b` as the determinant of `traceMatrix A ι b`. -/
-noncomputable def discr (A : Type u) {B : Type v} [CommRing A] [CommRing B] [Algebra A B]
+noncomputable def discr (A : Type u) {B : Type v} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
     [Fintype ι] (b : ι → B) := (traceMatrix A b).det
 
 theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).det := rfl
@@ -237,7 +237,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
 
 section Integral
 
-variable {R : Type z} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
+variable {R : Type z} [Ring R] [IsMulCommutative R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
 
 /-- If `K` and `L` are fields and `IsScalarTower R K L`, and `b : ι → L` satisfies
 ` ∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`. -/

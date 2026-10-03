@@ -60,7 +60,7 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
 
 @[expose] public section
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Ring T] [IsMulCommutative T] [Algebra R T]
 
 open scoped TensorProduct nonZeroDivisors
 
@@ -346,7 +346,7 @@ Use `not_isStronglyTranscendental_of_quasiFiniteAt` below instead. -/
 private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_aux
     (K L : Type*) [Field K] [Field L] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L]
     [IsScalarTower R K L] [IsScalarTower R S L] [IsFractionRing R K] [IsFractionRing S L]
-    {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra R' S'] [Algebra R S']
+    {R' S' : Type*} [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R R'] [Algebra R' S'] [Algebra R S']
     [Algebra S' L] [Algebra R' L] [IsScalarTower R' S' L] [Algebra R' K] [IsScalarTower R' K L]
     [IsScalarTower R R' S'] [FaithfulSMul S' L] [IsIntegralClosure R' R K]
     [IsScalarTower R R' K]
@@ -456,7 +456,7 @@ section FixedUniverse
 
 universe u
 
-variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 -- Subsumed by `ZariskisMainProperty.of_finiteType`.
 private lemma ZariskisMainProperty.of_adjoin_eq_top
@@ -632,8 +632,8 @@ end FixedUniverse
 
 @[stacks 00Q9]
 lemma ZariskisMainProperty.of_finiteType_of_weaklyQuasiFiniteAt.{u, v}
-    {R : Type u} {S : Type v} [CommRing R]
-    [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+    {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R]
+    [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra.FiniteType R S]
     (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p] : ZariskisMainProperty R p := by
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp ‹_›
   have : Small.{u} S := small_of_surjective hf
@@ -654,8 +654,8 @@ there exists a `f ∉ p` such that `S[1/f]` is isomorphic to `R'[1/f]` where `R'
 closure of `R` in `S`.
 -/
 @[stacks 00Q9]
-lemma ZariskisMainProperty.of_finiteType.{u, v} {R : Type u} {S : Type v} [CommRing R]
-    [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+lemma ZariskisMainProperty.of_finiteType.{u, v} {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R]
+    [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra.FiniteType R S]
     (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p] : ZariskisMainProperty R p :=
   .of_finiteType_of_weaklyQuasiFiniteAt _
 

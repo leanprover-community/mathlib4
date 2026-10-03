@@ -22,7 +22,7 @@ A valuation ring is a domain such that for every pair of elements `a b`, either 
 
 Any valuation ring induces a natural valuation on its fraction field, as we show in this file.
 Namely, given the following instances:
-`[CommRing A] [IsDomain A] [ValuationRing A] [Field K] [Algebra A K] [IsFractionRing A K]`,
+`[Ring A] [IsMulCommutative A] [IsDomain A] [ValuationRing A] [Field K] [Algebra A K] [IsFractionRing A K]`,
 there is a natural valuation `Valuation A K` on `K` with values in `value_group A K` where
 the image of `A` under `algebraMap A K` agrees with `(Valuation A K).integer`.
 
@@ -61,7 +61,7 @@ lemma PreValuationRing.cond {A : Type u} [Mul A] [PreValuationRing A] (a b : A) 
 
 /-- An integral domain is called a `ValuationRing` provided that for any pair
 of elements `a b : A`, either `a` divides `b` or vice versa. -/
-class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop extends PreValuationRing A
+class ValuationRing (A : Type u) [Ring A] [IsMulCommutative A] [IsDomain A] : Prop extends PreValuationRing A
 
 /-- An abbreviation for `PreValuationRing.cond` which should save some writing. -/
 alias ValuationRing.cond := PreValuationRing.cond
@@ -70,7 +70,7 @@ namespace ValuationRing
 
 section
 
-variable (A : Type u) [CommRing A]
+variable (A : Type u) [Ring A] [IsMulCommutative A]
 variable (K : Type v) [Field K] [Algebra A K]
 
 /-- The value group of the valuation ring `A`. Note: this is actually a group with zero. -/
@@ -266,7 +266,7 @@ end
 
 section
 
-variable (A : Type u) [CommRing A] [Nontrivial A] [PreValuationRing A]
+variable (A : Type u) [Ring A] [IsMulCommutative A] [Nontrivial A] [PreValuationRing A]
 
 instance (priority := 100) isLocalRing : IsLocalRing A :=
   IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a ↦ by
@@ -313,7 +313,7 @@ theorem _root_.PreValuationRing.iff_dvd_total [Semigroup R] :
   · obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b <;> simp
   · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := H.total a b <;> use c <;> simp
 
-theorem _root_.PreValuationRing.iff_ideal_total [CommRing R] :
+theorem _root_.PreValuationRing.iff_ideal_total [Ring R] [IsMulCommutative R] :
     PreValuationRing R ↔ @Std.Total (Ideal R) (· ≤ ·) := by
   classical
   refine ⟨fun _ => ⟨le_total⟩, fun H => PreValuationRing.iff_dvd_total.mpr ⟨fun a b => ?_⟩⟩
@@ -326,7 +326,7 @@ theorem dvd_total [Semigroup R] [h : PreValuationRing R] (x y : R) : x ∣ y ∨
 
 end dvd
 
-variable {R : Type*} [CommRing R] [IsDomain R] (K : Type*)
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] (K : Type*)
 variable [Field K] [Algebra R K] [IsFractionRing R K]
 
 theorem iff_dvd_total : ValuationRing R ↔ @Std.Total R (· ∣ ·) :=
@@ -406,7 +406,7 @@ instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
 theorem iff_local_bezout_domain : ValuationRing R ↔ IsLocalRing R ∧ IsBezout R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ inferInstance⟩
 
-protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
+protected theorem TFAE (R : Type u) [Ring R] [IsMulCommutative R] [IsDomain R] :
     List.TFAE
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
@@ -428,14 +428,14 @@ theorem _root_.Function.Surjective.preValuationRing {R S : Type*} [Mul R] [PreVa
     exacts [⟨f c, Or.inl (map_mul _ _ _).symm⟩, ⟨f c, Or.inr (map_mul _ _ _).symm⟩]⟩
 
 theorem _root_.Function.Surjective.valuationRing {R S : Type*} [NonAssocSemiring R]
-    [PreValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
+    [PreValuationRing R] [Ring S] [IsMulCommutative S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
     ValuationRing S :=
   have : PreValuationRing S := Function.Surjective.preValuationRing (R := R) f hf
   .mk
 
 section
 
-variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [Field K] [Algebra 𝒪 K]
+variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [Ring 𝒪] [IsMulCommutative 𝒪] [Field K] [Algebra 𝒪 K]
   [LinearOrderedCommGroupWithZero Γ]
 
 lemma _root_.isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_injective

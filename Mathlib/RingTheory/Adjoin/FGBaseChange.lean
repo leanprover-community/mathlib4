@@ -23,8 +23,8 @@ public section
 
 open TensorProduct
 
-lemma exists_fg_and_mem_baseChange {R A B : Type*} [CommSemiring R]
-    [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B] (x : A ⊗[R] B) :
+lemma exists_fg_and_mem_baseChange {R A B : Type*} [Semiring R] [IsMulCommutative R]
+    [Semiring A] [IsMulCommutative A] [Semiring B] [Algebra R A] [Algebra R B] (x : A ⊗[R] B) :
     ∃ C : Subalgebra R B, C.FG ∧ x ∈ C.baseChange A := by
   obtain ⟨S, hS⟩ := TensorProduct.exists_finset x
   classical

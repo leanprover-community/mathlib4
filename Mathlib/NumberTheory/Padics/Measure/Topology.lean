@@ -30,7 +30,7 @@ section Topology
 
 section Weak
 
-variable [NormedAddCommGroup E] [CommRing R] [Module R E] [TopologicalSpace R]
+variable [NormedAddGroup E] [IsAddCommutative E] [Ring R] [IsMulCommutative R] [Module R E] [TopologicalSpace R]
   [IsTopologicalRing R] [ContinuousSMul R E]
 
 /--
@@ -42,7 +42,7 @@ continuous for all `f`).
 
 end Weak
 
-variable [CompactSpace X] [NontriviallyNormedField R] [NormedAddCommGroup E] [NormedSpace R E]
+variable [CompactSpace X] [NontriviallyNormedField R] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace R E]
 
 /-- The strong topology on `AbstractMeasure G R E` (the topology induced by the norm). -/
 @[reducible] def StrongTopology : TopologicalSpace (AbstractMeasure X R E) :=

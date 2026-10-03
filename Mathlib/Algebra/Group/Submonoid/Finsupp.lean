@@ -15,7 +15,7 @@ assert_not_exists Field
 
 namespace Submonoid
 
-variable {M : Type*} [CommMonoid M] {ι : Type*} (f : ι → M) (x : M)
+variable {M : Type*} [Monoid M] [IsMulCommutative M] {ι : Type*} (f : ι → M) (x : M)
 
 @[to_additive]
 theorem exists_finsupp_of_mem_closure_range (hx : x ∈ closure (Set.range f)) :

@@ -29,7 +29,7 @@ variable {K : Type*} [Field K] [DecidableEq K]
 
 /-- The modular group `SL(2, A)` acts transitively on `OnePoint K`, if `A` is a PID whose fraction
 field is `K`. (This includes the case `A = ℤ`, `K = ℚ`.) -/
-lemma exists_mem_SL2 (A : Type*) [CommRing A] [IsDomain A] [Algebra A K] [IsFractionRing A K]
+lemma exists_mem_SL2 (A : Type*) [Ring A] [IsMulCommutative A] [IsDomain A] [Algebra A K] [IsFractionRing A K]
     [IsPrincipalIdealRing A] (c : OnePoint K) :
     ∃ g : SL(2, A), (mapGL K g) • ∞ = c := by
   cases c with

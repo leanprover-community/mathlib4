@@ -33,7 +33,7 @@ variable {𝕜 E : Type*} [RCLike 𝕜]
 
 section Continuous
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -98,7 +98,7 @@ open Submodule
 
 variable {E ι : Type*}
 variable (𝕜 : Type*) [RCLike 𝕜]
-variable [NormedAddCommGroup E]
+variable [NormedAddGroup E] [IsAddCommutative E]
 variable [InnerProductSpace 𝕜 E]
 variable {x y : E} {S : Set E} {f : ι → E}
 

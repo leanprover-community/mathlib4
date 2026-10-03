@@ -51,9 +51,9 @@ variable {A : Type uA} {B : Type uB} {C : Type uC} {F : Type uF}
 
 section AddCommMonoidWithOne
 
-variable [CommSemiring R]
-variable [AddCommMonoidWithOne A] [Module R A]
-variable [AddCommMonoidWithOne B] [Module R B]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoidWithOne A] [IsAddCommutative A] [Module R A]
+variable [AddMonoidWithOne B] [IsAddCommutative B] [Module R B]
 
 instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
 
@@ -75,7 +75,7 @@ end AddCommMonoidWithOne
 
 section NonUnitalNonAssocSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
@@ -147,8 +147,8 @@ instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
     | add x y hx hy => simp [smul_add, mul_add _, *]
 
 open scoped RingTheory.LinearMap in
-lemma _root_.LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddCommMonoid M] [Module R M]
-    [AddCommMonoid N] [Module R N] (f : M →ₗ[R] R ⊗[R] A) (g : N →ₗ[R] A) :
+lemma _root_.LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+    [AddMonoid N] [IsAddCommutative N] [Module R N] (f : M →ₗ[R] R ⊗[R] A) (g : N →ₗ[R] A) :
     μ[R] ∘ₗ ((TensorProduct.lid R A ∘ₗ f) ⊗ₘ g) =
       TensorProduct.lid R A ∘ₗ LinearMap.lTensor R μ ∘ₗ
         (TensorProduct.assoc R R A A).toLinearMap ∘ₗ (f ⊗ₘ g) := by
@@ -161,7 +161,7 @@ end NonUnitalNonAssocSemiring
 
 section NonAssocSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [NonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
@@ -180,7 +180,7 @@ instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
 end NonAssocSemiring
 
 section NonUnitalSemiring
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
@@ -200,7 +200,7 @@ instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
 end NonUnitalSemiring
 
 section Semiring
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [Semiring A] [Algebra R A]
 variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra R C]
@@ -229,7 +229,7 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
   map_one' := rfl
   map_mul' := by simp
 
-variable [CommSemiring S] [Algebra S A]
+variable [Semiring S] [IsMulCommutative S] [Algebra S A]
 
 set_option backward.defeqAttrib.useBackward true in
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
@@ -331,9 +331,9 @@ end ext
 end Semiring
 
 section AddCommGroupWithOne
-variable [CommSemiring R]
-variable [AddCommGroupWithOne A] [Module R A]
-variable [AddCommMonoidWithOne B] [Module R B]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddGroupWithOne A] [IsAddCommutative A] [Module R A]
+variable [AddMonoidWithOne B] [IsAddCommutative B] [Module R B]
 
 instance instAddCommGroupWithOne : AddCommGroupWithOne (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
@@ -347,7 +347,7 @@ theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
 end AddCommGroupWithOne
 
 section NonUnitalNonAssocRing
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [NonUnitalNonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
@@ -358,7 +358,7 @@ instance instNonUnitalNonAssocRing : NonUnitalNonAssocRing (A ⊗[R] B) where
 end NonUnitalNonAssocRing
 
 section NonAssocRing
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [NonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
@@ -370,7 +370,7 @@ instance instNonAssocRing : NonAssocRing (A ⊗[R] B) where
 end NonAssocRing
 
 section NonUnitalRing
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [NonUnitalRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
@@ -381,9 +381,9 @@ instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
 end NonUnitalRing
 
 section CommSemiring
-variable [CommSemiring R]
-variable [CommSemiring A] [Algebra R A]
-variable [CommSemiring B] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R]
+variable [Semiring A] [IsMulCommutative A] [Algebra R A]
+variable [Semiring B] [IsMulCommutative B] [Algebra R B]
 
 instance instCommSemiring : CommSemiring (A ⊗[R] B) where
   toSemiring := inferInstance
@@ -401,7 +401,7 @@ instance instCommSemiring : CommSemiring (A ⊗[R] B) where
 end CommSemiring
 
 section Ring
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [Ring A] [Algebra R A]
 variable [Semiring B] [Algebra R B]
 
@@ -422,9 +422,9 @@ example : (Ring.toIntAlgebra _ : Algebra ℤ (ℤ ⊗[ℤ] A)) = leftAlgebra := 
 end Ring
 
 section CommRing
-variable [CommSemiring R]
-variable [CommRing A] [Algebra R A]
-variable [CommSemiring B] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R]
+variable [Ring A] [IsMulCommutative A] [Algebra R A]
+variable [Semiring B] [IsMulCommutative B] [Algebra R B]
 
 instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
@@ -434,9 +434,9 @@ end CommRing
 
 section RightAlgebra
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 variable [Semiring A] [Algebra R A]
-variable [CommSemiring B] [Algebra R B]
+variable [Semiring B] [IsMulCommutative B] [Algebra R B]
 
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
@@ -475,10 +475,10 @@ example [Ring A] [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
 /-- Verify that typeclass search finds the CommRing structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely `CommRing`s, by treating both as `ℤ`-algebras.
 -/
-example [CommRing A] [CommRing B] : CommRing (A ⊗[ℤ] B) := by infer_instance
+example [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] : CommRing (A ⊗[ℤ] B) := by infer_instance
 
 variable (R A B) in
-lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
+lemma closure_range_union_range_eq_top [Ring R] [IsMulCommutative R] [Ring A] [Ring B]
     [Algebra R A] [Algebra R B] :
     Subring.closure (Set.range (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B) ∪
       Set.range Algebra.TensorProduct.includeRight) = ⊤ := by
@@ -496,7 +496,7 @@ lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
 set_option backward.isDefEq.respectTransparency false in
 /-- If `s` generates `T` as an `R`-algebra,
 then `{ 1 ⊗ x | x ∈ s }` generates `A ⊗[R] T` as an `A`-algebra. -/
-lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]
+lemma adjoin_one_tmul_image_eq_top [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A]
     [Semiring B] [Algebra R A] [Algebra R B]
     (s : Set B) (hs : adjoin R s = ⊤) : adjoin A (((1 : A) ⊗ₜ[R] ·) '' s) = ⊤ := by
   suffices h : adjoin A ((⊤ : Subalgebra R B).map (includeRight (A := A)) : Set (A ⊗[R] B)) = ⊤ by
@@ -505,11 +505,11 @@ lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]
     Submodule.baseChange_eq_span, Submodule.map_top]
   exact span_le_adjoin _ _
 
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 /-- If `M` is a `B`-module that is also an `A`-module, the canonical map
 `M →ₗ[A] B ⊗[A] M` is injective. -/
-lemma mk_one_injective_of_isScalarTower (M : Type*) [AddCommMonoid M]
+lemma mk_one_injective_of_isScalarTower (M : Type*) [AddMonoid M] [IsAddCommutative M]
     [Module R M] [Module S M] [IsScalarTower R S M] :
     Function.Injective (TensorProduct.mk R S M 1) := by
   apply Function.RightInverse.injective (g := LinearMap.liftBaseChange S LinearMap.id)
@@ -520,8 +520,8 @@ end TensorProduct
 
 end Algebra
 
-lemma Algebra.baseChange_lmul {R B : Type*} [CommSemiring R] [Semiring B] [Algebra R B]
-    {A : Type*} [CommSemiring A] [Algebra R A] (f : B) :
+lemma Algebra.baseChange_lmul {R B : Type*} [Semiring R] [IsMulCommutative R] [Semiring B] [Algebra R B]
+    {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A] (f : B) :
     (Algebra.lmul R B f).baseChange A = Algebra.lmul A (A ⊗[R] B) (1 ⊗ₜ f) := by
   ext i
   simp
@@ -529,7 +529,7 @@ lemma Algebra.baseChange_lmul {R B : Type*} [CommSemiring R] [Semiring B] [Algeb
 namespace TensorProduct.Algebra
 
 variable {R A B M : Type*}
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable [Semiring A] [Semiring B] [Module A M] [Module B M]
 variable [Algebra R A] [Algebra R B]
 variable [IsScalarTower R A M] [IsScalarTower R B M]
@@ -614,7 +614,7 @@ end Lemmas
 end TensorProduct.Algebra
 
 open LinearMap in
-lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMonoid Q]
+lemma Submodule.map_range_rTensor_subtype_lid {R Q} [Semiring R] [IsMulCommutative R] [AddMonoid Q] [IsAddCommutative Q]
     [Module R Q] {I : Submodule R R} :
     (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q : R ⊗[R] Q →ₗ[R] Q) = I • ⊤ := by
   rw [← map_top, ← Submodule.map_comp, map_top]
@@ -626,7 +626,7 @@ lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMon
 
 section
 
-variable {R M S T : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M S T : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
   [Semiring S] [Algebra R S] [Ring T] [Algebra R T]
 
 variable (R S M) in
@@ -653,14 +653,14 @@ lemma Algebra.TensorProduct.includeRight_surjective (h : Function.Surjective (al
   TensorProduct.mk_surjective _ _ _ h
 
 lemma Algebra.TensorProduct.includeLeft_surjective
-    (S A : Type*) [CommSemiring S] [Semiring A] [Algebra S A] [Algebra R A]
+    (S A : Type*) [Semiring S] [IsMulCommutative S] [Semiring A] [Algebra S A] [Algebra R A]
     [SMulCommClass R S A] (h : Function.Surjective (algebraMap R T)) :
     Function.Surjective (includeLeft : A →ₐ[S] A ⊗[R] T) :=
   TensorProduct.flip_mk_surjective _ h
 
 end
 
-variable {R A B : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalNonAssocSemiring A]
   [NonUnitalNonAssocSemiring B] [Module R A] [Module R B] [SMulCommClass R A A]
   [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
 
@@ -702,7 +702,7 @@ end TensorProduct
 namespace AlgHom
 
 variable (R S A B : Type*)
-variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
 variable [Algebra R S] [Algebra R B] [IsScalarTower R S B]
 
 /-- Universal property of the base change of algebra.

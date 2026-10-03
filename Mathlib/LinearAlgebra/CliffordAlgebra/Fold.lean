@@ -36,7 +36,7 @@ For convenience, this file also provides `CliffordAlgebra.foldl`, implemented vi
 universe u1 u2 u3
 
 variable {R M N : Type*}
-variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
 variable [Module R M] [Module R N]
 variable (Q : QuadraticForm R M)
 

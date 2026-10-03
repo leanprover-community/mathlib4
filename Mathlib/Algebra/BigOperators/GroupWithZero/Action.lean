@@ -47,7 +47,7 @@ end
 
 section
 
-variable [AddCommMonoid N] [DistribSMul M N] {r : M}
+variable [AddMonoid N] [IsAddCommutative N] [DistribSMul M N] {r : M}
 
 theorem Multiset.smul_sum {s : Multiset N} : r • s.sum = (s.map (r • ·)).sum :=
   (DistribSMul.toAddMonoidHom N r).map_multiset_sum s
@@ -64,7 +64,7 @@ end
 
 section
 
-variable [Monoid M] [CommMonoid N] [MulDistribMulAction M N]
+variable [Monoid M] [Monoid N] [IsMulCommutative N] [MulDistribMulAction M N]
 
 theorem Multiset.smul_prod' {r : M} {s : Multiset N} : r • s.prod = (s.map (r • ·)).prod :=
   (MulDistribMulAction.toMonoidHom N r).map_multiset_prod s
@@ -108,7 +108,7 @@ end List
 namespace Multiset
 
 @[to_additive]
-theorem smul_prod [Monoid M] [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
+theorem smul_prod [Monoid M] [Monoid N] [IsMulCommutative N] [MulAction M N] [IsScalarTower M N N]
     [SMulCommClass M N N] (s : Multiset N) (b : M) :
     b ^ card s • s.prod = (s.map (b • ·)).prod :=
   Quot.induction_on s <| by simp [List.smul_prod]
@@ -120,7 +120,7 @@ namespace Finset
 variable {ι : Type*}
 
 theorem smul_prod
-    [CommMonoid N] [Monoid M] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
+    [Monoid N] [IsMulCommutative N] [Monoid M] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
     (s : Finset ι) (b : M) (f : ι → N) :
     b ^ s.card • ∏ x ∈ s, f x = ∏ x ∈ s, b • f x := by
   have : Multiset.map (fun (x : ι) ↦ b • f x) s.val =
@@ -129,7 +129,7 @@ theorem smul_prod
   simp_rw [prod_eq_multiset_prod, card_def, this, ← Multiset.smul_prod _ b, Multiset.card_map]
 
 theorem prod_smul
-    [CommMonoid N] [CommMonoid M] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
+    [Monoid N] [IsMulCommutative N] [Monoid M] [IsMulCommutative M] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
     (s : Finset ι) (b : ι → M) (f : ι → N) :
     ∏ i ∈ s, b i • f i = (∏ i ∈ s, b i) • ∏ i ∈ s, f i := by
   induction s using Finset.cons_induction_on with

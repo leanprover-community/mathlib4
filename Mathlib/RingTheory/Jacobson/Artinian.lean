@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.HopkinsLevitzki
 
 public section
 
-variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] [Algebra.FiniteType R A]
+variable (R A : Type*) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] [Algebra.FiniteType R A]
 
 attribute [local instance] IsArtinianRing.fieldOfSubtypeIsMaximal in
 lemma Module.finite_of_isSemisimpleRing [IsJacobsonRing R] [IsSemisimpleRing A] :

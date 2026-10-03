@@ -530,7 +530,7 @@ class CommMonoid (M : Type*) extends Monoid M, CommSemigroup M
 This is assigned default rather than low priority because it gives the most common examples
 of Dedekind-finite monoids and is used the most often. Benchmark results indicate default
 priority performs better than low or high priority. -/
-@[to_additive] instance (M) [CommMonoid M] : IsDedekindFiniteMonoid M := inferInstance
+@[to_additive] instance (M) [Monoid M] [IsMulCommutative M] : IsDedekindFiniteMonoid M := inferInstance
 
 section LeftCancelMonoid
 
@@ -590,7 +590,7 @@ attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel 
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type*) [CancelCommMonoid M] :
+instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type*) [CancelMonoid M] [IsMulCommutative M] :
     CancelMonoid M :=
   { CommMagma.IsLeftCancelMul.toIsRightCancelMul M with }
 

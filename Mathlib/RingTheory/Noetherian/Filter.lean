@@ -38,7 +38,7 @@ open IsNoetherian Submodule
 
 section Semiring
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem eventuallyConst_of_isNoetherian [IsNoetherian R M] (f : ℕ →o Submodule R M) :
     atTop.EventuallyConst f := by

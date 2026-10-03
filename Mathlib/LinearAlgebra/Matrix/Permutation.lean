@@ -60,22 +60,22 @@ variable [Fintype n]
 
 /-- The determinant of a permutation matrix equals its sign. -/
 @[simp]
-theorem det_permutation [CommRing R] : det (σ.permMatrix R) = Perm.sign σ := by
+theorem det_permutation [Ring R] [IsMulCommutative R] : det (σ.permMatrix R) = Perm.sign σ := by
   rw [← Matrix.mul_one (σ.permMatrix R), PEquiv.toMatrix_toPEquiv_mul,
     det_permute, det_one, mul_one]
 
 /-- The trace of a permutation matrix equals the number of fixed points. -/
-theorem trace_permutation [AddCommMonoidWithOne R] :
+theorem trace_permutation [AddMonoidWithOne R] [IsAddCommutative R] :
     trace (σ.permMatrix R) = (Function.fixedPoints σ).ncard := by
   delta trace
   simp [toPEquiv_apply, ← Set.ncard_coe_finset, Function.fixedPoints, Function.IsFixedPt]
 
-lemma permMatrix_mulVec {v : n → R} [CommRing R] :
+lemma permMatrix_mulVec {v : n → R} [Ring R] [IsMulCommutative R] :
     σ.permMatrix R *ᵥ v = v ∘ σ := by
   ext j
   simp [mulVec_eq_sum, Pi.single, Function.update, Equiv.eq_symm_apply]
 
-lemma vecMul_permMatrix {v : n → R} [CommRing R] :
+lemma vecMul_permMatrix {v : n → R} [Ring R] [IsMulCommutative R] :
     v ᵥ* σ.permMatrix R = v ∘ σ.symm := by
   ext j
   simp [vecMul_eq_sum, Pi.single, Function.update, ← Equiv.symm_apply_eq σ]

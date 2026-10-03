@@ -40,7 +40,7 @@ lie algebra, universal enveloping algebra, tensor algebra
 universe u₁ u₂ u₃
 
 variable (R : Type u₁) (L : Type u₂)
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 
 local notation "ιₜ" => TensorAlgebra.ι R
 

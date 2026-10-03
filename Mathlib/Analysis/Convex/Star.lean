@@ -58,7 +58,7 @@ variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
-variable [AddCommMonoid E] [AddCommMonoid F]
+variable [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F]
 
 section SMul
 
@@ -67,7 +67,7 @@ variable (𝕜) [SMul 𝕜 E] [SMul 𝕜 F] (x : E) (s : Set E)
 /-- Star-convexity of sets. `s` is star-convex at `x` if every segment from `x` to a point in `s` is
 contained in `s`. -/
 def StarConvex (𝕜 : Type*) {E : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
-    [AddCommMonoid E] [SMul 𝕜 E] (x : E) (s : Set E) : Prop :=
+    [AddMonoid E] [IsAddCommutative E] [SMul 𝕜 E] (x : E) (s : Set E) : Prop :=
   ∀ ⦃y : E⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • x + b • y ∈ s
 
 variable {𝕜 x s} {t : Set E}
@@ -139,7 +139,7 @@ theorem StarConvex.prod {y : F} {s : Set E} {t : Set F} (hs : StarConvex 𝕜 x 
     (ht : StarConvex 𝕜 y t) : StarConvex 𝕜 (x, y) (s ×ˢ t) := fun _ hy _ _ ha hb hab =>
   ⟨hs hy.1 ha hb hab, ht hy.2 ha hb hab⟩
 
-theorem starConvex_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
+theorem starConvex_pi {ι : Type*} {E : ι → Type*} [∀ i, AddMonoid (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, SMul 𝕜 (E i)]
     {x : ∀ i, E i} {s : Set ι} {t : ∀ i, Set (E i)} (ht : ∀ ⦃i⦄, i ∈ s → StarConvex 𝕜 (x i) (t i)) :
     StarConvex 𝕜 x (s.pi t) := fun _ hy _ _ ha hb hab i hi => ht hi (hy i hi) ha hb hab
 
@@ -247,7 +247,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup E] [Module 𝕜 E] {x y : E}
+variable [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {x y : E}
 
 theorem StarConvex.sub' {s : Set (E × E)} (hs : StarConvex 𝕜 (x, y) s) :
     StarConvex 𝕜 (x - y) ((fun x : E × E => x.1 - x.2) '' s) :=
@@ -259,11 +259,11 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [CommSemiring 𝕜] [PartialOrder 𝕜]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
-variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F] {x : E} {s : Set E}
+variable [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F] {x : E} {s : Set E}
 
 theorem StarConvex.smul (hs : StarConvex 𝕜 x s) (c : 𝕜) : StarConvex 𝕜 (c • x) (c • s) :=
   hs.linear_image <| LinearMap.lsmul _ _ c
@@ -290,7 +290,7 @@ variable [Ring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
-variable [AddRightMono 𝕜] [AddCommMonoid E] [SMulWithZero 𝕜 E] {s : Set E}
+variable [AddRightMono 𝕜] [AddMonoid E] [IsAddCommutative E] [SMulWithZero 𝕜 E] {s : Set E}
 
 theorem starConvex_zero_iff :
     StarConvex 𝕜 0 s ↔ ∀ ⦃x : E⦄, x ∈ s → ∀ ⦃a : 𝕜⦄, 0 ≤ a → a ≤ 1 → a • x ∈ s := by
@@ -307,7 +307,7 @@ section AddCommGroup
 
 section AddRightMono
 
-variable [AddRightMono 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+variable [AddRightMono 𝕜] [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F]
   {x y : E} {s t : Set E}
 
 theorem StarConvex.add_smul_mem (hs : StarConvex 𝕜 x s) (hy : x + y ∈ s) {t : 𝕜} (ht₀ : 0 ≤ t)
@@ -328,7 +328,7 @@ theorem StarConvex.add_smul_sub_mem (hs : StarConvex 𝕜 x s) (hy : y ∈ s) {t
 
 end AddRightMono
 
-variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {x y : E} {s t : Set E}
+variable [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F] {x y : E} {s t : Set E}
 
 /-- The preimage of a star-convex set under an affine map is star-convex. -/
 theorem StarConvex.affine_preimage (f : E →ᵃ[𝕜] F) {s : Set F} (hs : StarConvex 𝕜 (f x) s) :
@@ -357,7 +357,7 @@ end AddCommGroup
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
+variable [AddGroup E] [IsAddCommutative E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
   [IsStrictOrderedModule 𝕜 E] [PosSMulReflectLT 𝕜 E] {x y : E}
 
 /-- If `x < y`, then `(Set.Iic x)ᶜ` is star convex at `y`. -/
@@ -386,7 +386,7 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 section AddCommGroup
 
-variable [AddCommGroup E] [Module 𝕜 E] {x : E} {s : Set E}
+variable [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {x : E} {s : Set E}
 
 /-- Alternative definition of star-convexity, using division. -/
 theorem starConvex_iff_div : StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s →
@@ -421,7 +421,7 @@ section OrdConnected
 
 /-- If `s` is an order-connected set in an ordered module over an ordered semiring
 and all elements of `s` are comparable with `x ∈ s`, then `s` is `StarConvex` at `x`. -/
-theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [PartialOrder E]
+theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E] [PartialOrder E]
     [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected)
     (hx : x ∈ s) (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
   intro y hy a b ha hb hab

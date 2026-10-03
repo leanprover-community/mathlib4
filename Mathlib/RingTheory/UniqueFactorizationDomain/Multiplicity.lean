@@ -29,7 +29,7 @@ variable {α : Type*}
 
 local infixl:50 " ~ᵤ " => Associated
 
-theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
+theorem WfDvdMonoid.max_power_factor' [MonoidWithZero α] [IsMulCommutative α] [WfDvdMonoid α] {a₀ x : α}
     (h : a₀ ≠ 0) (hx : ¬IsUnit x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
   obtain ⟨a, ⟨n, rfl⟩, hm⟩ := wellFounded_dvdNotUnit.has_min
     {a | ∃ n, x ^ n * a = a₀} ⟨a₀, 0, by rw [pow_zero, one_mul]⟩
@@ -37,22 +37,22 @@ theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {
   exact hm d ⟨n + 1, by rw [pow_succ, mul_assoc]⟩
     ⟨(right_ne_zero_of_mul <| right_ne_zero_of_mul h), x, hx, mul_comm _ _⟩
 
-theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
+theorem WfDvdMonoid.max_power_factor [MonoidWithZero α] [IsMulCommutative α] [WfDvdMonoid α] {a₀ x : α}
     (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
   max_power_factor' h hx.not_isUnit
 
-theorem FiniteMultiplicity.of_not_isUnit [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
+theorem FiniteMultiplicity.of_not_isUnit [MonoidWithZero α] [IsMulCommutative α] [IsCancelMulZero α] [WfDvdMonoid α]
     {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : FiniteMultiplicity a b := by
   obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
   exact ⟨n, by rwa [pow_succ, mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
 
-theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
+theorem FiniteMultiplicity.of_prime_left [MonoidWithZero α] [IsMulCommutative α] [IsCancelMulZero α] [WfDvdMonoid α]
     {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
   .of_not_isUnit ha.not_isUnit hb
 
 namespace UniqueFactorizationMonoid
 
-variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
+variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] [UniqueFactorizationMonoid R]
 
 section multiplicity
 
@@ -179,7 +179,7 @@ lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n �
     ENat.mul_le_mul_left_iff (by exact_mod_cast hn) (ENat.natCast_ne_top _)] at this
 
 @[fun_prop]
-lemma hasFiniteMulSupport_fun_pow_multiplicity {α M : Type*} [CommMonoid M] [Subsingleton Rˣ]
+lemma hasFiniteMulSupport_fun_pow_multiplicity {α M : Type*} [Monoid M] [IsMulCommutative M] [Subsingleton Rˣ]
     (f : α → M) {g : α → R} (hgi : g.Injective) (hg : ∀ s, Irreducible (g s)) {r : R} (hr : r ≠ 0) :
     (fun s : α ↦ f s ^ multiplicity (g s) r).HasFiniteMulSupport := by
   classical

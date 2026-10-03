@@ -29,7 +29,7 @@ variable {ι κ G M : Type*} {s s₁ s₂ : Finset ι} {a : ι}
 namespace Finset
 
 section CommMonoid
-variable [CommMonoid M] {f g : ι → M}
+variable [Monoid M] [IsMulCommutative M] {f g : ι → M}
 
 @[to_additive]
 lemma prod_eq_fold (s : Finset ι) (f : ι → M) : ∏ i ∈ s, f i = s.fold (β := M) (· * ·) 1 f := rfl
@@ -389,7 +389,7 @@ set differences. -/
 @[to_additive /-- The sum of two functions `f g : ι → M` over finite sets `s₁ s₂ : Finset ι`
 are equal if the functions agree on `s₁ ∩ s₂`, `f = 0` and `g = 0` on the respective
 set differences. -/]
-lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι → M} [CommMonoid M]
+lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι → M} [Monoid M] [IsMulCommutative M]
     (h₁ : ∀ a ∈ s₁, a ∉ s₂ → f a = 1) (h₂ : ∀ a ∈ s₂, a ∉ s₁ → g a = 1)
     (h : ∀ a ∈ s₁, a ∈ s₂ → f a = g a) :
     ∏ a ∈ s₁, f a = ∏ a ∈ s₂, g a := by
@@ -596,7 +596,7 @@ theorem prod_list_count_of_subset [DecidableEq M] (m : List M) (s : Finset M)
 open Multiset
 
 @[to_additive]
-theorem prod_multiset_map_count [DecidableEq ι] (s : Multiset ι) {M : Type*} [CommMonoid M]
+theorem prod_multiset_map_count [DecidableEq ι] (s : Multiset ι) {M : Type*} [Monoid M] [IsMulCommutative M]
     (f : ι → M) : (s.map f).prod = ∏ m ∈ s.toFinset, f m ^ s.count m := by
   refine Quot.induction_on s fun l => ?_
   simp [prod_list_map_count l f]
@@ -766,7 +766,7 @@ theorem prod_erase [DecidableEq ι] (s : Finset ι) {f : ι → M} {a : ι} (h :
   grind
 
 @[to_additive]
-theorem prod_erase_lt_of_one_lt {κ : Type*} [DecidableEq ι] [CommMonoid κ] [LT κ]
+theorem prod_erase_lt_of_one_lt {κ : Type*} [DecidableEq ι] [Monoid κ] [IsMulCommutative κ] [LT κ]
     [MulLeftStrictMono κ] {s : Finset ι} {d : ι} (hd : d ∈ s) {f : ι → κ}
     (hdf : 1 < f d) : ∏ m ∈ s.erase d, f m < ∏ m ∈ s, f m := by
   conv in ∏ m ∈ s, f m => rw [← Finset.insert_erase hd]
@@ -870,7 +870,7 @@ theorem prod_comp_equiv {f : κ → M} (e : ι ≃ κ) : s.prod (f ∘ e) = (s.m
 end CommMonoid
 
 section CancelCommMonoid
-variable [DecidableEq ι] [CancelCommMonoid M] {s t : Finset ι} {f : ι → M}
+variable [DecidableEq ι] [CancelMonoid M] [IsMulCommutative M] {s t : Finset ι} {f : ι → M}
 
 @[to_additive]
 lemma prod_sdiff_eq_prod_sdiff_iff :
@@ -887,7 +887,7 @@ lemma prod_sdiff_ne_prod_sdiff_iff :
 end CancelCommMonoid
 
 section CommGroup
-variable [CommGroup G] [DecidableEq ι] {f : ι → G}
+variable [Group G] [IsMulCommutative G] [DecidableEq ι] {f : ι → G}
 
 @[to_additive]
 lemma prod_insert_div (ha : a ∉ s) (f : ι → G) :
@@ -941,7 +941,7 @@ theorem prod_sdiff_div_prod_sdiff :
 end CommGroup
 
 section OrderedSub
-variable [AddCommMonoid M] [PartialOrder M] [Sub M] [OrderedSub M] [AddLeftMono M]
+variable [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [Sub M] [OrderedSub M] [AddLeftMono M]
   [AddLeftReflectLE M] [ExistsAddOfLE M]
 
 /-- A telescoping sum along `{0, ..., n-1}` of an `ℕ`-valued function reduces to the difference of
@@ -1007,7 +1007,7 @@ variable {ι κ ι : Type*} [Fintype ι] [Fintype κ]
 open Finset
 
 section CommMonoid
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 @[to_additive]
 lemma prod_of_injective (e : ι → κ) (he : Injective e) (f : ι → M) (g : κ → M)
@@ -1059,7 +1059,7 @@ end Fintype
 namespace List
 
 @[to_additive]
-theorem prod_toFinset {M : Type*} [DecidableEq ι] [CommMonoid M] (f : ι → M) :
+theorem prod_toFinset {M : Type*} [DecidableEq ι] [Monoid M] [IsMulCommutative M] (f : ι → M) :
     ∀ {l : List ι} (_hl : l.Nodup), l.toFinset.prod f = (l.map f).prod
   | [], _ => by simp
   | a :: l, hl => by
@@ -1081,7 +1081,7 @@ lemma mem_sum {a : M} {s : Finset ι} {m : ι → Multiset M} :
   induction s using Finset.cons_induction with grind
 
 @[to_additive]
-lemma prod_map_prod {α : Type*} [CommMonoid M] {m : Multiset ι} {s : Finset α} {f : ι → α → M} :
+lemma prod_map_prod {α : Type*} [Monoid M] [IsMulCommutative M] {m : Multiset ι} {s : Finset α} {f : ι → α → M} :
     (m.map fun i ↦ ∏ a ∈ s, f i a).prod = ∏ a ∈ s, (m.map fun i ↦ f i a).prod := by
   classical
   induction s using Finset.induction with
@@ -1116,26 +1116,26 @@ theorem exists_smul_of_dvd_count (s : Multiset ι) {k : ℕ}
   rw [← Finset.sum_nsmul, h₂, toFinset_sum_count_nsmul_eq]
 
 @[to_additive]
-theorem prod_sum {ι : Type*} [CommMonoid M] (f : ι → Multiset M) (s : Finset ι) :
+theorem prod_sum {ι : Type*} [Monoid M] [IsMulCommutative M] (f : ι → Multiset M) (s : Finset ι) :
     (∑ x ∈ s, f x).prod = ∏ x ∈ s, (f x).prod := by
   induction s using Finset.cons_induction with grind
 
 end Multiset
 
 @[to_additive (attr := simp)]
-lemma IsUnit.multisetProd_iff [CommMonoid M] {s : Multiset M} :
+lemma IsUnit.multisetProd_iff [Monoid M] [IsMulCommutative M] {s : Multiset M} :
     IsUnit s.prod ↔ ∀ a ∈ s, IsUnit a := by
   induction s using Multiset.induction with
   | empty => simp
   | cons a s ih => simpa using fun _ ↦ ih
 
 @[to_additive (attr := simp)]
-lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
+lemma IsUnit.prod_iff [Monoid M] [IsMulCommutative M] {f : ι → M} :
     IsUnit (∏ a ∈ s, f a) ↔ ∀ a ∈ s, IsUnit (f a) := by
   induction s using Finset.cons_induction with grind
 
 @[to_additive]
-lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
+lemma IsUnit.prod_univ_iff [Fintype ι] [Monoid M] [IsMulCommutative M] {f : ι → M} :
     IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by simp
 
 theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :

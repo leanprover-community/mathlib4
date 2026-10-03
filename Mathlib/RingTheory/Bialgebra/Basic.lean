@@ -54,7 +54,7 @@ open scoped TensorProduct
 
 /-- A bialgebra over a commutative (semi)ring `R` is both an algebra and a coalgebra over `R`, such
 that the counit and comultiplication are algebra morphisms. -/
-class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
+class Bialgebra (R : Type u) (A : Type v) [Semiring R] [IsMulCommutative R] [Semiring A] extends
     Algebra R A, Coalgebra R A where
   -- The counit is an algebra morphism
   /-- The counit on a bialgebra preserves 1. -/
@@ -88,7 +88,7 @@ namespace Bialgebra
 open Coalgebra
 
 variable {R : Type u} {A : Type v}
-variable [CommSemiring R] [Semiring A] [Bialgebra R A]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Bialgebra R A]
 
 lemma counit_mul (a b : A) : counit (R := R) (a * b) = counit a * counit b :=
   congr($mul_compr₂_counit a b)
@@ -104,7 +104,7 @@ consumes proofs that the counit and comultiplication preserve
 the identity and multiplication, and produces a bialgebra
 structure on `A`. -/
 @[instance_reducible]
-def mk' (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
+def mk' (R : Type u) (A : Type v) [Semiring R] [IsMulCommutative R] [Semiring A]
     [Algebra R A] [C : Coalgebra R A] (counit_one : C.counit 1 = 1)
     (counit_mul : ∀ {a b}, C.counit (a * b) = C.counit a * C.counit b)
     (comul_one : C.comul 1 = 1)
@@ -154,7 +154,7 @@ variable {R A}
 end Bialgebra
 
 namespace CommSemiring
-variable (R : Type u) [CommSemiring R]
+variable (R : Type u) [Semiring R] [IsMulCommutative R]
 
 open Bialgebra
 
@@ -169,7 +169,7 @@ end CommSemiring
 
 namespace Bialgebra
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 @[simp] lemma counitAlgHom_self : counitAlgHom R R = .id R R := rfl
 
@@ -198,7 +198,7 @@ abbrev ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
 end Bialgebra
 
 namespace Bialgebra
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Bialgebra R A]
 
 variable (A) in
 lemma algebraMap_injective : Injective (algebraMap R A) := RightInverse.injective counit_algebraMap

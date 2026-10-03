@@ -38,7 +38,7 @@ variable {𝕜 E β : Type*}
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E]
 
 section LE_β
 
@@ -90,7 +90,7 @@ end LE_β
 
 section Composition
 
-variable {𝕜 E : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
+variable {𝕜 E : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E] [SMul 𝕜 E]
 variable {β γ : Type*} [LinearOrder β] [Preorder γ]
 variable {s : Set E} {f : E → β} {g : β → γ}
 
@@ -131,7 +131,7 @@ end Composition
 section Restriction
 
 variable {𝕜 E : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
-  [AddCommMonoid E] [SMul 𝕜 E]
+  [AddMonoid E] [IsAddCommutative E] [SMul 𝕜 E]
 variable {β : Type*} [Preorder β]
 variable {s : Set E} {f : E → β}
 
@@ -151,7 +151,7 @@ end Restriction
 
 section Preconnected
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 variable {β : Type*} [Preorder β] {f : E → β}
@@ -233,7 +233,7 @@ end LinearOrder_β
 
 section PosSMulMono
 
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+variable [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β]
   [Module 𝕜 E] [Module 𝕜 β] [PosSMulMono 𝕜 β]
   {s : Set E} {f : E → β}
 

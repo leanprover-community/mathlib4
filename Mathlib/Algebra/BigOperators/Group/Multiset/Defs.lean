@@ -33,7 +33,7 @@ namespace Multiset
 
 section CommMonoid
 
-variable [CommMonoid M] [CommMonoid N] {s : Multiset M} {a : M} {m : Multiset ι} {f g : ι → M}
+variable [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] {s : Multiset M} {a : M} {m : Multiset ι} {f g : ι → M}
 
 /-- Product of a multiset given a commutative monoid structure on `M`.
   `prod {a, b, c} = a * b * c` -/

@@ -16,7 +16,7 @@ This file contains theorems relevant to big operators over `Finset.NatAntidiagon
 
 public section
 
-variable {M : Type*} [CommMonoid M]
+variable {M : Type*} [Monoid M] [IsMulCommutative M]
 
 namespace Finset
 
@@ -48,7 +48,7 @@ theorem prod_antidiagonal_subst {n : ℕ} {f : ℕ × ℕ → ℕ → M} :
   prod_congr rfl fun p hp ↦ by rw [mem_antidiagonal.mp hp]
 
 @[to_additive]
-theorem prod_antidiagonal_eq_prod_range_succ_mk {M : Type*} [CommMonoid M] (f : ℕ × ℕ → M)
+theorem prod_antidiagonal_eq_prod_range_succ_mk {M : Type*} [Monoid M] [IsMulCommutative M] (f : ℕ × ℕ → M)
     (n : ℕ) : ∏ ij ∈ antidiagonal n, f ij = ∏ k ∈ range n.succ, f (k, n - k) :=
   Finset.prod_map (range n.succ) ⟨fun i ↦ (i, n - i), fun _ _ h ↦ (Prod.mk.inj h).1⟩ f
 
@@ -56,7 +56,7 @@ theorem prod_antidiagonal_eq_prod_range_succ_mk {M : Type*} [CommMonoid M] (f : 
 using `rw ← `. -/
 @[to_additive /-- This lemma matches more generally than
 `Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk` when using `rw ← `. -/]
-theorem prod_antidiagonal_eq_prod_range_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
+theorem prod_antidiagonal_eq_prod_range_succ {M : Type*} [Monoid M] [IsMulCommutative M] (f : ℕ → ℕ → M) (n : ℕ) :
     ∏ ij ∈ antidiagonal n, f ij.1 ij.2 = ∏ k ∈ range n.succ, f k (n - k) :=
   prod_antidiagonal_eq_prod_range_succ_mk _ _
 end Nat

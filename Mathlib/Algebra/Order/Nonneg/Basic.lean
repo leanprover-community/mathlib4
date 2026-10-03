@@ -161,7 +161,7 @@ end AddMonoid
 
 section AddCommMonoid
 
-variable [AddCommMonoid α] [Preorder α] [AddLeftMono α]
+variable [AddMonoid α] [IsAddCommutative α] [Preorder α] [AddLeftMono α]
 
 instance addCommMonoid : AddCommMonoid (Nonneg α) :=
   fast_instance%
@@ -170,7 +170,7 @@ instance addCommMonoid : AddCommMonoid (Nonneg α) :=
 end AddCommMonoid
 
 section AddCancelCommMonoid
-variable [AddCancelCommMonoid α] [Preorder α] [AddLeftMono α]
+variable [AddCancelMonoid α] [IsAddCommutative α] [Preorder α] [AddLeftMono α]
 
 instance addCancelCommMonoid : AddCancelCommMonoid (Nonneg α) :=
   fast_instance%
@@ -244,7 +244,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]
+variable [Semiring α] [IsMulCommutative α] [PartialOrder α] [ZeroLEOneClass α]
   [AddLeftMono α] [PosMulMono α]
 
 instance commSemiring : CommSemiring (Nonneg α) :=

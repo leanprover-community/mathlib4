@@ -27,13 +27,13 @@ bilinear, tensor, tensor product
 section Semiring
 
 variable {R R₂ R₃ R' : Type*}
-variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R']
+variable [Semiring R] [IsMulCommutative R] [Semiring R₂] [IsMulCommutative R₂] [Semiring R₃] [IsMulCommutative R₃] [Monoid R']
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
 variable {A M N P Q S : Type*}
 variable {P₂ P₃ : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [AddCommMonoid P₂]
-variable [AddCommMonoid P₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q] [AddMonoid S] [IsAddCommutative S]
+variable [AddMonoid P₂] [IsAddCommutative P₂]
+variable [AddMonoid P₃] [IsAddCommutative P₃]
 variable [DistribMulAction R' M]
 variable [Module R M] [Module R N] [Module R S]
 variable [Module R₂ P₂]
@@ -302,9 +302,9 @@ end
 
 section CompatibleSMul
 
-variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
-  [Module R N] [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M]
-  [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
+variable (R) (A S M N : Type*) [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M]
+  [Module R N] [Semiring A] [IsMulCommutative A] [Module A M] [Module A N] [SMulCommClass R A M]
+  [Semiring S] [IsMulCommutative S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
   [CompatibleSMul R A M N]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -355,9 +355,9 @@ end Semiring
 
 section Ring
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {M : Type*} {N : Type*} {P : Type*} {S : Type*}
-variable [AddCommGroup M] [AddCommMonoid N] [AddCommGroup P]
+variable [AddGroup M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P]
 variable [Module R M] [Module R N] [Module R P]
 
 namespace TensorProduct

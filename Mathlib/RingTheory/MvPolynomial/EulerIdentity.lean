@@ -26,9 +26,9 @@ namespace MvPolynomial
 
 open Finsupp
 
-variable {R σ M : Type*} [CommSemiring R] {φ : MvPolynomial σ R}
+variable {R σ M : Type*} [Semiring R] [IsMulCommutative R] {φ : MvPolynomial σ R}
 
-protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ → M} {n n' : M} {i : σ}
+protected lemma IsWeightedHomogeneous.pderiv [AddCancelMonoid M] [IsAddCommutative M] {w : σ → M} {n n' : M} {i : σ}
     (h : φ.IsWeightedHomogeneous w n) (h' : n' + w i = n) :
     (pderiv i φ).IsWeightedHomogeneous w n' := by
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,

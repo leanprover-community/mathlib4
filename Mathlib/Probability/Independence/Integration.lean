@@ -176,9 +176,9 @@ theorem IndepFun.integrable_op
 /-- A continuous bilinear map applied to two independent and integrable random variables
 is integrable. -/
 theorem IndepFun.integrable_bilin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E] [OpensMeasurableSpace E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [MeasurableSpace F] [OpensMeasurableSpace F]
-    [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+    [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [MeasurableSpace E] [OpensMeasurableSpace E]
+    [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [MeasurableSpace F] [OpensMeasurableSpace F]
+    [SeminormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
     (B : E →L[𝕜] F →L[𝕜] G) :
     Integrable (fun ω ↦ B (X ω) (Y ω)) μ := by
@@ -241,9 +241,9 @@ theorem IndepFun.integrable_right_of_integrable_op
 and `B` is a continuous bilinear map, then
 `∫ ω, B (f (X ω)) (g (Y ω)) ∂μ = B (∫ ω, f (X ω) ∂μ) (∫ ω, g (Y ω) ∂μ).` -/
 theorem IndepFun.integral_bilin_comp_comp
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → E} {g : 𝓨 → F} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : Integrable f (μ.map X)) (hg : Integrable g (μ.map Y)) (B : E →L[𝕜] F →L[𝕜] G) :
@@ -272,9 +272,9 @@ The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin_comp_comp`, which is useful for the versions where `B` is the scalar
 multiplication or the multiplication. -/
 theorem IndepFun.integral_bilin_comp_comp'
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → E} {g : 𝓨 → F} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map X)) (hg : AEStronglyMeasurable g (μ.map Y))
@@ -312,11 +312,11 @@ theorem IndepFun.integral_bilin_comp_comp'
 /-- If `X` and `Y` are independent and integrable random variables and `B`
 is a continuous bilinear map, then `∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y].` -/
 theorem IndepFun.integral_bilin
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [CompleteSpace F]
     [MeasurableSpace F] [BorelSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
+    [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G] [CompleteSpace G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
     (B : E →L[ℝ] F →L[ℝ] G) :
     ∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y] :=
@@ -333,11 +333,11 @@ The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin'`, which is useful for the versions where `B` is the scalar
 multiplication or the multiplication. -/
 theorem IndepFun.integral_bilin'
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [CompleteSpace F]
     [MeasurableSpace F] [BorelSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
+    [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G] [CompleteSpace G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ)
     (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ≥0) (hc : c ≠ 0) (hB : ∀ x y, c * ‖x‖ * ‖y‖ ≤ ‖B x y‖) :
@@ -368,7 +368,7 @@ theorem IndepFun.integrable_mul
   IndepFun.integrable_right_of_integrable_op
 
 lemma IndepFun.integral_fun_comp_smul_comp
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → E}
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map X)) (hg : AEStronglyMeasurable g (μ.map Y)) :
@@ -385,7 +385,7 @@ lemma IndepFun.integral_fun_comp_mul_comp
   hXY.integral_fun_comp_smul_comp hX hY hf hg
 
 lemma IndepFun.integral_comp_smul_comp
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → E}
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map X)) (hg : AEStronglyMeasurable g (μ.map Y)) :
@@ -400,7 +400,7 @@ lemma IndepFun.integral_comp_mul_comp
   hXY.integral_fun_comp_mul_comp hX hY hf hg
 
 lemma IndepFun.integral_smul_eq_smul_integral
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     {X : Ω → 𝕜} {Y : Ω → E} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     μ[X • Y] = μ[X] • μ[Y] := by
@@ -414,7 +414,7 @@ lemma IndepFun.integral_mul_eq_mul_integral
   hXY.integral_smul_eq_smul_integral hX hY
 
 lemma IndepFun.integral_fun_smul_eq_smul_integral
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     {X : Ω → 𝕜} {Y : Ω → E} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     ∫ ω, X ω • Y ω ∂μ = (∫ ω, X ω ∂μ) • ∫ ω, Y ω ∂μ :=
@@ -490,7 +490,7 @@ variable {Ω 𝓧 : Type*} {m mΩ : MeasurableSpace Ω} {P : Measure Ω} [m𝓧 
 
 /-- If a random variable `X` is independent of a sigma-algebra `m` and `A` is a set in `m`
 then `∫ ω in A, f (X ω) ∂P = P.real A • ∫ ω, f (X ω) ∂P` for a measurable function `f : 𝓧 → E`. -/
-lemma Indep.setIntegral_eq_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma Indep.setIntegral_eq_smul {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
     (hm : m ≤ mΩ) {f : 𝓧 → E} (hA1 : Indep m (m𝓧.comap X) P)
     (hX : AEMeasurable X P) (hA2 : MeasurableSet[m] A)
     (hf : AEStronglyMeasurable f (P.map X)) :

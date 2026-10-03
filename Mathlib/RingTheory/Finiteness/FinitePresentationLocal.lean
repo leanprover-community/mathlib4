@@ -27,7 +27,7 @@ open scoped Pointwise TensorProduct
 
 namespace Algebra.FinitePresentation
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /--
 If `S` is an `R`-algebra with a surjection from a finitely-presented `R`-algebra `A`, such that
@@ -37,7 +37,7 @@ This is almost `finitePresentation_ofLocalizationSpanTarget`. The difference is,
 that here the set `t` generates the unit ideal of `A`, while in the general version,
 it only generates a quotient of `A`.
 -/
-lemma of_span_eq_top_target_aux {A : Type*} [CommRing A] [Algebra R A]
+lemma of_span_eq_top_target_aux {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A]
     [Algebra.FinitePresentation R A] (f : A →ₐ[R] S) (hf : Function.Surjective f)
     (t : Finset A) (ht : Ideal.span (t : Set A) = ⊤)
     (H : ∀ g : t, Algebra.FinitePresentation R (Localization.Away (f g))) :
@@ -125,7 +125,7 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
 
 /-- Finite-presentation can be checked on a standard covering of the target. -/
 lemma of_span_eq_top_target_of_isLocalizationAway {ι : Type*} (s : ι → S)
-    (hs : Ideal.span (Set.range s) = ⊤) (T : ι → Type*) [∀ i, CommRing (T i)] [∀ i, Algebra R (T i)]
+    (hs : Ideal.span (Set.range s) = ⊤) (T : ι → Type*) [∀ i, Ring (T i)] [∀ i, IsMulCommutative (T i)] [∀ i, Algebra R (T i)]
     [∀ i, Algebra S (T i)] [∀ i, IsScalarTower R S (T i)] [∀ i, IsLocalization.Away (s i) (T i)]
     [∀ i, Algebra.FinitePresentation R (T i)] :
     Algebra.FinitePresentation R S := by
@@ -133,7 +133,7 @@ lemma of_span_eq_top_target_of_isLocalizationAway {ι : Type*} (s : ι → S)
   rintro - ⟨i, rfl⟩
   exact .equiv <| (IsLocalization.algEquiv (.powers <| s i) _ (T i)).symm |>.restrictScalars R
 
-instance pi {ι : Type*} [Finite ι] (S : ι → Type*) [∀ i, CommRing (S i)] [∀ i, Algebra R (S i)]
+instance pi {ι : Type*} [Finite ι] (S : ι → Type*) [∀ i, Ring (S i)] [∀ i, IsMulCommutative (S i)] [∀ i, Algebra R (S i)]
     [∀ i, Algebra.FinitePresentation R (S i)] :
     Algebra.FinitePresentation R (∀ a, S a) := by
   classical

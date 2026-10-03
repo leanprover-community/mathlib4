@@ -585,7 +585,7 @@ end AddGroup
 
 section AddCommMonoid
 
-variable [AddCommMonoid A] [HasShift C A]
+variable [AddMonoid A] [IsAddCommutative A] [HasShift C A]
 variable (C)
 
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/

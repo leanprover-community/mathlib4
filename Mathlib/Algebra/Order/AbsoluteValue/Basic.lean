@@ -218,7 +218,7 @@ end OrderedRing
 
 section OrderedCommRing
 
-variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [Ring R]
+variable [Ring S] [IsMulCommutative S] [PartialOrder S] [IsOrderedRing S] [Ring R]
   (abv : AbsoluteValue R S) [NoZeroDivisors S]
 
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
@@ -284,7 +284,7 @@ end LinearOrderedRing
 
 section LinearOrderedCommRing
 
-variable {R S : Type*} [Ring R] [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+variable {R S : Type*} [Ring R] [Ring S] [IsMulCommutative S] [LinearOrder S] [IsStrictOrderedRing S]
   (abv : AbsoluteValue R S)
 
 @[bound]
@@ -503,7 +503,7 @@ end Ring
 end OrderedRing
 
 section OrderedCommRing
-variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [NoZeroDivisors S] [Ring R]
+variable [Ring S] [IsMulCommutative S] [PartialOrder S] [IsOrderedRing S] [NoZeroDivisors S] [Ring R]
   (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_neg (a : R) : abv (-a) = abv a :=
@@ -516,7 +516,7 @@ end OrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {S : Type*} [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [LinearOrder S] [IsStrictOrderedRing S]
 
 section Ring
 

@@ -33,8 +33,8 @@ open AlgebraicGeometry
 
 /-- If `S` is a formally unramified `R`-algebra, essentially of finite type, the diagonal is an
 open immersion. -/
-instance Algebra.FormallyUnramified.isOpenImmersion_SpecMap_lmul {R S : Type u} [CommRing R]
-    [CommRing S] [Algebra R S] [Algebra.FormallyUnramified R S] [Algebra.EssFiniteType R S] :
+instance Algebra.FormallyUnramified.isOpenImmersion_SpecMap_lmul {R S : Type u} [Ring R] [IsMulCommutative R]
+    [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra.FormallyUnramified R S] [Algebra.EssFiniteType R S] :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (TensorProduct.lmul' R (S := S)).toRingHom)) := by
   rw [isOpenImmersion_SpecMap_iff_of_surjective _ (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)]
   apply (Ideal.isIdempotentElem_iff_of_fg _ (KaehlerDifferential.ideal_fg R S)).mp

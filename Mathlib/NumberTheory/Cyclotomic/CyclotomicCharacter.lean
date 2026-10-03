@@ -68,7 +68,7 @@ cyclotomic character
 @[expose] public section
 
 universe u
-variable {L : Type u} [CommRing L] [IsDomain L]
+variable {L : Type u} [Ring L] [IsMulCommutative L] [IsDomain L]
 
 /-
 
@@ -240,7 +240,7 @@ variable {L}
 `modularCyclotomicCharacter`. Note that `IsPrimitiveRoot.autToPow`
 needs an explicit root of unity, and also an auxiliary "base ring" `R`. -/
 lemma IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter (n : ℕ) [NeZero n]
-    (R : Type*) [CommRing R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : Gal(L/R)) :
+    (R : Type*) [Ring R] [IsMulCommutative R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : Gal(L/R)) :
     hμ.autToPow R g = modularCyclotomicCharacter L hμ.card_rootsOfUnity g := by
   ext
   apply ZMod.val_injective

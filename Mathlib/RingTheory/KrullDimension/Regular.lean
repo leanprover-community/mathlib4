@@ -25,8 +25,8 @@ public section
 
 namespace Module
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R]
-  {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsNoetherianRing R]
+  {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Finite R M]
 
 open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 

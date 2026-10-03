@@ -26,7 +26,7 @@ public section
 
 open scoped nonZeroDivisors
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by

@@ -41,8 +41,8 @@ namespace InvariantForm
 section ring
 
 variable {R L M : Type*}
-variable [CommRing R] [LieRing L]
-variable [AddCommGroup M] [Module R M] [LieRingModule L M]
+variable [Ring R] [IsMulCommutative R] [LieRing L]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
 
 variable (Φ : LinearMap.BilinForm R M) (hΦ_nondeg : Φ.Nondegenerate)
 

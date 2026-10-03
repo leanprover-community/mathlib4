@@ -21,9 +21,9 @@ basis for multilinear maps given bases on the domain and codomain.
 
 open MultilinearMap
 
-variable {ι R : Type*} [CommSemiring R]
-  {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-  {N : Type*} [AddCommMonoid N] [Module R N]
+variable {ι R : Type*} [Semiring R] [IsMulCommutative R]
+  {M : ι → Type*} [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
+  {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 /-- Two multilinear maps indexed by a `Fintype` are equal if they are equal when all arguments
 are basis vectors. -/
@@ -43,7 +43,7 @@ namespace Basis
 open Module
 
 variable {κ : ι → Type*} (b : (i : ι) → Basis (κ i) R (M i))
-  {ι' N : Type*} [AddCommMonoid N] [Module R N] (b' : Basis ι' R N)
+  {ι' N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N] (b' : Basis ι' R N)
 
 open scoped Classical in
 /-- A basis for multilinear maps given a finite basis on each domain and a basis on the codomain. -/

@@ -40,7 +40,7 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁)
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 variable {A}
 
 theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R R A x :=
@@ -52,7 +52,7 @@ namespace IsScalarTower
 
 section Semiring
 
-variable [CommSemiring R] [CommSemiring S] [Semiring A]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A]
 variable [Algebra R S] [Algebra S A]
 
 instance subalgebra (S₀ : Subalgebra R S) : IsScalarTower S₀ S A :=
@@ -74,7 +74,7 @@ open IsScalarTower
 
 section Semiring
 
-variable {S A B} [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable {S A B} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra S A] [Algebra R A] [Algebra S B] [Algebra R B]
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
@@ -120,7 +120,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring A] [Algebra R A] (S : Subalgebra R A)
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A] (S : Subalgebra R A)
 
 @[simp]
 theorem restrictScalars_one :
@@ -151,7 +151,7 @@ namespace IsScalarTower
 
 open Subalgebra
 
-variable [CommSemiring R] [CommSemiring S] [CommSemiring A]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [IsMulCommutative A]
 variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 theorem adjoin_range_toAlgHom (t : Set A) :

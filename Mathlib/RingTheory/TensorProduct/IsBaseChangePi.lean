@@ -27,7 +27,7 @@ In particular, localization of modules commutes with binary and finite products.
 
 public section
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 namespace IsBaseChange
 
@@ -35,8 +35,8 @@ open TensorProduct
 
 /-- Base change commutes with binary products. -/
 lemma prodMap {M N M' N' : Type*}
-    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
-    [AddCommMonoid M'] [AddCommMonoid N'] [Module R M'] [Module R N']
+    [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
+    [AddMonoid M'] [IsAddCommutative M'] [AddMonoid N'] [IsAddCommutative N'] [Module R M'] [Module R N']
     [Module S M'] [Module S N'] [IsScalarTower R S M'] [IsScalarTower R S N']
     (f : M →ₗ[R] M') (g : N →ₗ[R] N') (hf : IsBaseChange S f) (hg : IsBaseChange S g) :
     IsBaseChange S (f.prodMap g) := by
@@ -46,7 +46,7 @@ lemma prodMap {M N M' N' : Type*}
 
 /-- Base change commutes with finite products. -/
 lemma pi {ι : Type*} [Finite ι]
-    {M M' : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M' i)]
+    {M M' : ι → Type*} [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)]
     [∀ i, Module R (M i)] [∀ i, Module R (M' i)] [∀ i, Module S (M' i)]
     [∀ i, IsScalarTower R S (M' i)]
     (f : ∀ i, M i →ₗ[R] M' i) (hf : ∀ i, IsBaseChange S (f i)) :
@@ -59,7 +59,7 @@ lemma pi {ι : Type*} [Finite ι]
   simp [equiv_tmul]
 
 theorem finitePow (ι : Type*) [Finite ι]
-    {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M']
+    {M M' : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M']
     [Module R M] [Module R M'] [Module S M'] [IsScalarTower R S M']
     {f : M →ₗ[R] M'} (hf : IsBaseChange S f) :
     IsBaseChange S (f.compLeft ι) :=
@@ -75,8 +75,8 @@ attribute [local instance] IsLocalizedModule.isScalarTower_module
 
 /-- Localization of modules commutes with binary products. -/
 instance prodMap {M N M' N' : Type*}
-    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
-    [AddCommMonoid M'] [AddCommMonoid N'] [Module R M'] [Module R N']
+    [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
+    [AddMonoid M'] [IsAddCommutative M'] [AddMonoid N'] [IsAddCommutative N'] [Module R M'] [Module R N']
     (f : M →ₗ[R] M') (g : N →ₗ[R] N')
     [IsLocalizedModule S f] [IsLocalizedModule S g] :
     IsLocalizedModule S (f.prodMap g) := by
@@ -91,7 +91,7 @@ instance prodMap {M N M' N' : Type*}
 
 /-- Localization of modules commutes with finite products. -/
 instance pi {ι : Type*} [Finite ι]
-    {M M' : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M' i)]
+    {M M' : ι → Type*} [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)]
     [∀ i, Module R (M i)] [∀ i, Module R (M' i)]
     (f : ∀ i, M i →ₗ[R] M' i) [∀ i, IsLocalizedModule S (f i)] :
     IsLocalizedModule S (.pi fun i ↦ f i ∘ₗ .proj i) := by
@@ -112,7 +112,7 @@ open TensorProduct LinearMap DirectSum
 
 variable {ι : Type*}
     {N : ι → Type*} [(i : ι) → AddCommMonoid (N i)] [(i : ι) → Module R (N i)]
-    {P : ι → Type*} [∀ i, AddCommMonoid (P i)] [∀ i, Module R (P i)]
+    {P : ι → Type*} [∀ i, AddMonoid (P i)] [∀ i, IsAddCommutative (P i)] [∀ i, Module R (P i)]
     [∀ i, Module S (P i)] [∀ i, IsScalarTower R S (P i)]
     {ε : (i : ι) → N i →ₗ[R] P i}
 
@@ -125,7 +125,7 @@ theorem directSum (ibc : ∀ i, IsBaseChange S (ε i)) :
   simp [coe_directSumRight, coe_congrLinearEquiv, equiv_tmul]
 
 variable (ι)
-    {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M']
+    {M M' : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M']
     [Module R M] [Module R M'] [Module S M'] [IsScalarTower R S M']
     {ε : M →ₗ[R] M'}
 

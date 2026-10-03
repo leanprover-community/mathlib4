@@ -49,11 +49,11 @@ open MeasureTheory Filter Complex Set Module
 
 open scoped Filter Topology Real ENNReal FourierTransform RealInnerProductSpace NNReal
 
-variable {E V : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
+variable {E V : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E] {f : V → E}
 
 section InnerProductSpace
 
-variable [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V] [InnerProductSpace ℝ V]
+variable [NormedAddGroup V] [IsAddCommutative V] [MeasurableSpace V] [BorelSpace V] [InnerProductSpace ℝ V]
   [FiniteDimensional ℝ V]
 
 local notation3 "i" => fun (w : V) => (1 / (2 * ‖w‖ ^ 2) : ℝ) • w
@@ -237,7 +237,7 @@ end InnerProductSpace
 
 section NoInnerProduct
 
-variable (f) [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V] [T2Space V]
+variable (f) [AddGroup V] [IsAddCommutative V] [TopologicalSpace V] [IsTopologicalAddGroup V] [T2Space V]
   [MeasurableSpace V] [BorelSpace V] [Module ℝ V] [ContinuousSMul ℝ V] [FiniteDimensional ℝ V]
 
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional real vector space, formulated via

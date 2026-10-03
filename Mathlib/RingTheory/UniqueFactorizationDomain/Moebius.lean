@@ -26,7 +26,7 @@ We define the Moebius function on a unique factorization monoid.
 
 namespace UniqueFactorizationMonoid
 
-variable {α : Type*} [CommMonoidWithZero α] [UniqueFactorizationMonoid α] {a b : α}
+variable {α : Type*} [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α] {a b : α}
 
 /-- The Moebius function on a unique factorization monoid, defined to be
   `((-1) ^ (factors a).card)` if `a` is squarefree and `0` otherwise. -/

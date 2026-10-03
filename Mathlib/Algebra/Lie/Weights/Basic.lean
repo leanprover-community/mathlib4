@@ -47,8 +47,8 @@ lie character, eigenvalue, eigenspace, weight, weight vector, root, root vector
 
 @[expose] public section
 
-variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable {K R L M : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieModule
 
@@ -72,8 +72,8 @@ local notation3 "𝕎("M", " χ", " x")" => (toEnd R L M x).maxGenEigenspace χ
 
 /-- See also `bourbaki1975b` Chapter VII §1.1, Proposition 2 (ii). -/
 protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
-    [AddCommGroup M₁] [Module R M₁] [LieRingModule L M₁] [LieModule R L M₁] [AddCommGroup M₂]
-    [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂] [AddCommGroup M₃] [Module R M₃]
+    [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁] [LieRingModule L M₁] [LieModule R L M₁] [AddGroup M₂] [IsAddCommutative M₂]
+    [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂] [AddGroup M₃] [IsAddCommutative M₃] [Module R M₃]
     [LieRingModule L M₃] [LieModule R L M₃] (g : M₁ ⊗[R] M₂ →ₗ⁅R,L⁆ M₃) (χ₁ χ₂ : R) (x : L) :
     LinearMap.range ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (mapIncl 𝕎(M₁, χ₁, x) 𝕎(M₂, χ₂, x))) ≤
       𝕎(M₃, χ₁ + χ₂, x) := by
@@ -489,7 +489,7 @@ section map_comap
 
 variable {R L M}
 variable
-  {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
+  {M₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
   {χ : L → R} (f : M →ₗ⁅R,L⁆ M₂)
 
 lemma map_posFittingComp_le :

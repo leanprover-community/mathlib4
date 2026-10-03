@@ -37,7 +37,7 @@ open AddSubgroup (zmultiples)
 noncomputable section
 
 variable {ι R M N : Type*}
-  [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+  [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace RootPairing
 

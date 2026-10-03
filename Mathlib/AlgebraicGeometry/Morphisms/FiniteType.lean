@@ -102,7 +102,7 @@ lemma LocallyOfFiniteType.stalkMap [LocallyOfFiniteType f] (x : X) :
       RingHom.EssFiniteType.isStableUnderBaseChange.localizationPreserves _
       (RingHom.FiniteType.essFiniteType hf)) ‹_› x
 
-instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
+instance {R} [Ring R] [IsMulCommutative R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
 instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=

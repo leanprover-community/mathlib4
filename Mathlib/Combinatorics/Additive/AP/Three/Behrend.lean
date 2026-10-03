@@ -58,7 +58,7 @@ The idea is that an arithmetic progression is contained on a line and the fronti
 convex set does not contain lines. -/
 lemma threeAPFree_frontier {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     [TopologicalSpace E]
-    [AddCommMonoid E] [Module 𝕜 E] {s : Set E} (hs₀ : IsClosed s) (hs₁ : StrictConvex 𝕜 s) :
+    [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] {s : Set E} (hs₀ : IsClosed s) (hs₁ : StrictConvex 𝕜 s) :
     ThreeAPFree (frontier s) := by
   intro a ha b hb c hc habc
   obtain rfl : (1 / 2 : 𝕜) • a + (1 / 2 : 𝕜) • c = b := by
@@ -70,7 +70,7 @@ lemma threeAPFree_frontier {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsS
   ring_nf
   simp
 
-lemma threeAPFree_sphere {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma threeAPFree_sphere {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
     [StrictConvexSpace ℝ E] (x : E) (r : ℝ) : ThreeAPFree (sphere x r) := by
   obtain rfl | hr := eq_or_ne r 0
   · rw [sphere_zero]

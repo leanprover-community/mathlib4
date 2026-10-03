@@ -32,7 +32,7 @@ section Ring
 
 namespace Submodule
 
-variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable (p p' : Submodule R M)
 
 open QuotientAddGroup
@@ -209,7 +209,7 @@ theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
   exact ⟨x, rfl⟩
 
 universe u in
-instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {N : Submodule R M} [Small.{u} M] :
+instance {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] {N : Submodule R M} [Small.{u} M] :
     Small.{u} (M ⧸ N) :=
   small_of_surjective (Submodule.Quotient.mk_surjective _)
 
@@ -217,7 +217,7 @@ end Quotient
 
 section
 
-variable {M₂ : Type*} [AddCommGroup M₂] [Module R M₂]
+variable {M₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂]
 
 theorem quot_hom_ext (f g : (M ⧸ p) →ₗ[R] M₂) (h : ∀ x : M, f (Quotient.mk x) = g (Quotient.mk x)) :
     f = g :=
@@ -238,7 +238,7 @@ theorem mkQ_surjective : Function.Surjective p.mkQ := by
 
 end
 
-variable {R₂ M₂ : Type*} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
+variable {R₂ M₂ : Type*} [Ring R₂] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
 
 /-- Two `LinearMap`s from a quotient module are equal if their compositions with
 `submodule.mkQ` are equal.

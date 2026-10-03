@@ -27,7 +27,7 @@ open scoped Affine
 
 variable {R V P I : Type*}
 variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
-variable [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
 
 namespace AddTorsor
 
@@ -196,8 +196,8 @@ section
 open AddTorsor Convexity
 
 variable {V₁ V₂ P₁ P₂ : Type*}
-  [AddCommGroup V₁] [Module R V₁]
-  [AddCommGroup V₂] [Module R V₂]
+  [AddGroup V₁] [IsAddCommutative V₁] [Module R V₁]
+  [AddGroup V₂] [IsAddCommutative V₂] [Module R V₂]
   [ConvexSpace R P₁] [AffineSpace V₁ P₁] [IsAffineConvexSpace R V₁ P₁]
   [ConvexSpace R P₂] [AffineSpace V₂ P₂] [IsAffineConvexSpace R V₂ P₂]
 

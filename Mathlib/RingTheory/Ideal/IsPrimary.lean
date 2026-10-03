@@ -26,7 +26,7 @@ public section
 
 namespace Ideal
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 /-- A proper ideal `I` is primary as a submodule. -/
 abbrev IsPrimary (I : Ideal R) : Prop :=

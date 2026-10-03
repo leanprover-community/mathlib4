@@ -40,13 +40,13 @@ namespace ContinuousAlternatingMap
 
 variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜]
 
-variable {B₁ : Type*} (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
-  {E₁ : B₁ → Type*} [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
+variable {B₁ : Type*} (F₁ : Type*) [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁]
+  {E₁ : B₁ → Type*} [∀ x, AddGroup (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
   [TopologicalSpace B₁] [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]
   [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
 
-variable {B₂ : Type*} (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
-  {E₂ : B₂ → Type*} [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜 (E₂ x)]
+variable {B₂ : Type*} (F₂ : Type*) [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂]
+  {E₂ : B₂ → Type*} [∀ x, AddGroup (E₂ x)] [∀ x, IsAddCommutative (E₂ x)] [∀ x, Module 𝕜 (E₂ x)]
   [TopologicalSpace B₂] [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
 
@@ -103,11 +103,11 @@ variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜]
 
 variable {B : Type*} [TopologicalSpace B]
 
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {E₁ : B → Type*}
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
+variable {F₁ : Type*} [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] {E₁ : B → Type*}
+  [∀ x, AddGroup (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
 
-variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*}
-  [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
+variable {F₂ : Type*} [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*}
+  [∀ x, AddGroup (E₂ x)] [∀ x, IsAddCommutative (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
 variable (𝕜 ι) in
 /-- Assume `eᵢ` and `eᵢ'` are trivializations of the bundles `Eᵢ` over base `B` with fiber `Fᵢ`
@@ -232,12 +232,12 @@ variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜] [Fintype ι]
 
 variable {B : Type*} [TopologicalSpace B]
 
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {E₁ : B → Type*}
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
+variable {F₁ : Type*} [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] {E₁ : B → Type*}
+  [∀ x, AddGroup (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
   [∀ x, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
 
-variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*}
-  [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
+variable {F₂ : Type*} [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*}
+  [∀ x, AddGroup (E₂ x)] [∀ x, IsAddCommutative (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
   [∀ x, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
@@ -307,12 +307,12 @@ variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜] [Fintype ι]
 
 variable {B : Type*} [TopologicalSpace B]
 
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {E₁ : B → Type*}
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
+variable {F₁ : Type*} [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] {E₁ : B → Type*}
+  [∀ x, AddGroup (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
   [∀ x, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
 
-variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*}
-  [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
+variable {F₂ : Type*} [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*}
+  [∀ x, AddGroup (E₂ x)] [∀ x, IsAddCommutative (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
   [∀ x, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
@@ -358,12 +358,12 @@ variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜] [Fintype ι]
 
 variable {B : Type*} [TopologicalSpace B]
 
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {E₁ : B → Type*}
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
+variable {F₁ : Type*} [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] {E₁ : B → Type*}
+  [∀ x, AddGroup (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
   [∀ x, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
 
-variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*}
-  [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
+variable {F₂ : Type*} [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*}
+  [∀ x, AddGroup (E₂ x)] [∀ x, IsAddCommutative (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
   [∀ x, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
@@ -409,12 +409,12 @@ variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜] [Fintype ι]
 
 variable {B : Type*} [TopologicalSpace B]
 
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {E₁ : B → Type*}
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
+variable {F₁ : Type*} [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] {E₁ : B → Type*}
+  [∀ x, AddGroup (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
   [∀ x, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
 
-variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*}
-  [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
+variable {F₂ : Type*} [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*}
+  [∀ x, AddGroup (E₂ x)] [∀ x, IsAddCommutative (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
   [∀ x, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]

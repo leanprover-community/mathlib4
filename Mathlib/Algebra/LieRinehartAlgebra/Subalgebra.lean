@@ -29,7 +29,7 @@ public section
 
 open scoped LieRinehartAlgebra
 
-variable (A L : Type*) [CommRing A] [LieRing L] [Module A L]
+variable (A L : Type*) [Ring A] [IsMulCommutative A] [LieRing L] [Module A L]
 
 /-- A Lie-Rinehart subalgebra of a Lie-Rinehart algebra `(R A L)` is an `A`-submodule of `L`, which
 is stable under the Lie bracket. (This can be defined independently of `R` and most
@@ -149,7 +149,7 @@ theorem coe_toSubmodule : (L'.toSubmodule : Set L) = L' :=
 
 section LieModule
 
-variable {M : Type*} [AddCommGroup M] [LieRingModule L M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [LieRingModule L M]
 
 instance : Bracket L' M where
   bracket x m := ⁅(x : L), m⁆
@@ -178,7 +178,7 @@ instance : LieRinehartRing A L' where
   leibniz_mul_right' x a b := LieRinehartRing.leibniz_mul_right (x : L) a b
   leibniz_smul_right' _ _ _ := by simp [ext_iff]
 
-variable (R : Type*) [CommRing R] [Algebra R A] [LieAlgebra R L] [LieRinehartAlgebra R A L]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [Algebra R A] [LieAlgebra R L] [LieRinehartAlgebra R A L]
 
 /-- A Lie-Rinehart subalgebra of a Lie-Rinehart algebra forms a Lie algebra. -/
 instance lieAlgebra : LieAlgebra R L' where
@@ -204,7 +204,7 @@ theorem coe_toLieSubalgebra : ((L'.toLieSubalgebra R) : Set L) = L' := rfl
 
 section LieModule
 
-variable {M : Type*} [AddCommGroup M] [LieRingModule L M] [Module R M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [LieRingModule L M] [Module R M]
 
 /-- Given a Lie-Rinehart algebra  `L` containing a LieRinehart subalgebra `L' ⊆ L`, together with a
 Lie module `M` of `L`, we may regard `M` as a Lie module of `L'` by restriction. -/

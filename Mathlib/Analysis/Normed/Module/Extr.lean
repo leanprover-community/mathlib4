@@ -25,7 +25,7 @@ local maximum, normed space
 public section
 
 
-variable {α X E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace X]
+variable {α X E : Type*} [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [TopologicalSpace X]
 
 section
 

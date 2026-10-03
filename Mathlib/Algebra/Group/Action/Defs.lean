@@ -194,7 +194,7 @@ lemma Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMu
   smul_comm c₁ c₂ := hf.forall.2 fun x ↦ by simp only [← h₁, ← h₂, smul_comm c₁ c₂ x]
 
 @[to_additive]
-instance smulCommClass_self (M α : Type*) [CommMonoid M] [MulAction M α] : SMulCommClass M M α where
+instance smulCommClass_self (M α : Type*) [Monoid M] [IsMulCommutative M] [MulAction M α] : SMulCommClass M M α where
   smul_comm a a' b := by rw [← mul_smul, mul_comm, mul_smul]
 
 /-- An instance of `VAddAssocClass M N α` states that the additive action of `M` on `α` is
@@ -476,7 +476,7 @@ instance IsScalarTower.left : IsScalarTower M M α where
   smul_assoc x y z := mul_smul x y z
 
 @[to_additive]
-instance {R M : Type*} [CommMonoid M] [SMul R M] [IsScalarTower R M M] : SMulCommClass R M M where
+instance {R M : Type*} [Monoid M] [IsMulCommutative M] [SMul R M] [IsScalarTower R M M] : SMulCommClass R M M where
   smul_comm r s x := by
     rw [← one_smul M (s • x), ← smul_assoc, smul_comm, smul_assoc, one_smul]
 
@@ -541,7 +541,7 @@ end Group
 end
 
 lemma SMulCommClass.of_commMonoid
-    (A B G : Type*) [CommMonoid G] [SMul A G] [SMul B G]
+    (A B G : Type*) [Monoid G] [IsMulCommutative G] [SMul A G] [SMul B G]
     [IsScalarTower A G G] [IsScalarTower B G G] :
     SMulCommClass A B G where
   smul_comm r s x := by
@@ -549,12 +549,12 @@ lemma SMulCommClass.of_commMonoid
       smul_comm, smul_assoc, one_smul, smul_assoc, one_smul]
 
 lemma IsScalarTower.of_commMonoid (R₁ R : Type*)
-    [Monoid R₁] [CommMonoid R] [MulAction R₁ R] [SMulCommClass R₁ R R] : IsScalarTower R₁ R R where
+    [Monoid R₁] [Monoid R] [IsMulCommutative R] [MulAction R₁ R] [SMulCommClass R₁ R R] : IsScalarTower R₁ R R where
   smul_assoc x₁ y z := by rw [smul_eq_mul, mul_comm, ← smul_eq_mul, ← smul_comm, smul_eq_mul,
     mul_comm, ← smul_eq_mul]
 
 lemma isScalarTower_iff_smulCommClass_of_commMonoid (R₁ R : Type*)
-    [Monoid R₁] [CommMonoid R] [MulAction R₁ R] :
+    [Monoid R₁] [Monoid R] [IsMulCommutative R] [MulAction R₁ R] :
     SMulCommClass R₁ R R ↔ IsScalarTower R₁ R R :=
   ⟨fun _ ↦ IsScalarTower.of_commMonoid R₁ R, fun _ ↦ SMulCommClass.of_commMonoid R₁ R R⟩
 

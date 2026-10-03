@@ -51,7 +51,7 @@ open Submodule LinearMap
 section Semiring
 
 universe u v
-variable {R : Type u} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
+variable {R : Type u} [Semiring R] {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The directed system of finitely generated submodules of `M` -/
@@ -84,13 +84,13 @@ open TensorProduct
 universe u v
 
 variable (R : Type u) (M N : Type*)
-  [CommSemiring R]
-  [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N]
+  [Semiring R] [IsMulCommutative R]
+  [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 /-- Given a directed system of `R`-modules, tensoring it on the right gives a directed system -/
 theorem DirectedSystem.rTensor {ι : Type*} [Preorder ι] {F : ι → Type*}
-    [∀ i, AddCommMonoid (F i)] [∀ i, Module R (F i)] {f : ⦃i j : ι⦄ → i ≤ j → F i →ₗ[R] F j}
+    [∀ i, AddMonoid (F i)] [∀ i, IsAddCommutative (F i)] [∀ i, Module R (F i)] {f : ⦃i j : ι⦄ → i ≤ j → F i →ₗ[R] F j}
     (D : DirectedSystem F (fun _ _ h ↦ f h)) :
     DirectedSystem (fun i ↦ (F i) ⊗[R] N) (fun _ _ h ↦ rTensor N (f h)) where
   map_self i t := by
@@ -144,7 +144,7 @@ theorem Submodule.FG.rTensor.directLimit_apply' [DecidableEq {P : Submodule R M 
 
 /-- Given a directed system of `R`-modules, tensoring it on the left gives a directed system -/
 theorem DirectedSystem.lTensor {ι : Type*} [Preorder ι] {F : ι → Type*}
-    [∀ i, AddCommMonoid (F i)] [∀ i, Module R (F i)] {f : ⦃i j : ι⦄ → i ≤ j → F i →ₗ[R] F j}
+    [∀ i, AddMonoid (F i)] [∀ i, IsAddCommutative (F i)] [∀ i, Module R (F i)] {f : ⦃i j : ι⦄ → i ≤ j → F i →ₗ[R] F j}
     (D : DirectedSystem F (fun _ _ h ↦ f h)) :
     DirectedSystem (fun i ↦ M ⊗[R] (F i)) (fun _ _ h ↦ lTensor M (f h)) where
   map_self i t := by
@@ -238,9 +238,9 @@ section Algebra
 
 open TensorProduct
 
-variable {R S M N : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
-  [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N]
+variable {R S M N : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
+  [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [AddMonoid N] [IsAddCommutative N] [Module R N]
   (u : S ⊗[R] N)
   {A : Subalgebra R S} (hA : A.FG) {t t' : A ⊗[R] N}
   {A' : Subalgebra R S} (hA' : A'.FG)

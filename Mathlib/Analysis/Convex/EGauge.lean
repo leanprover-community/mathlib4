@@ -105,7 +105,7 @@ end SMulZero
 
 section NormedDivisionRing
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
     {c : 𝕜} {s : Set E} {x : E}
 
 /-- If `c • x ∈ s` and `c ≠ 0`, then `egauge 𝕜 s x` is at most `(‖c‖₊⁻¹ : ℝ≥0)`.
@@ -215,7 +215,7 @@ lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
 is equal to the maximum of the extended gauges of `a` with respect to `U`
 and `b` with respect to `V`.
 -/
-theorem egauge_prod_mk {F : Type*} [AddCommGroup F] [Module 𝕜 F] {U : Set E} {V : Set F}
+theorem egauge_prod_mk {F : Type*} [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] {U : Set E} {V : Set F}
     (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a : E) (b : F) :
     egauge 𝕜 (U ×ˢ V) (a, b) = max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
   refine le_antisymm (le_of_forall_gt fun r hr ↦ ?_) (le_egauge_prod _ _ _ _)
@@ -235,7 +235,7 @@ end NormedDivisionRing
 section Pi
 
 variable {𝕜 : Type*} {ι : Type*} {E : ι → Type*}
-variable [NormedDivisionRing 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+variable [NormedDivisionRing 𝕜] [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module 𝕜 (E i)]
 
 /-- The extended gauge of a point `x` in an indexed product
 with respect to a product of finitely many balanced sets `U i`, `i ∈ I`,
@@ -310,7 +310,7 @@ end Pi
 
 namespace Seminorm
 
-variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E)
+variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] (p : Seminorm 𝕜 E)
 
 lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) :
     (p x).toNNReal / r ≤ egauge 𝕜 (p.closedBall 0 r) x := by
@@ -369,7 +369,7 @@ end Seminorm
 
 section SeminormedAddCommGroup
 
-variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 
 lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 (closedBall 0 r) x := by
   simpa [enorm_eq_nnnorm] using (normSeminorm 𝕜 E).div_le_egauge_closedBall r x

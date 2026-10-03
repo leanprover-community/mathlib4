@@ -33,7 +33,7 @@ open scoped Pointwise
 
 section
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
 variable [AffineSpace V P]
 
 @[simp] lemma vectorSpan_vadd (s : Set P) (v : V) : vectorSpan k (v +ᵥ s) = vectorSpan k s := by
@@ -44,7 +44,7 @@ end
 
 namespace AffineSubspace
 
-variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
   [AffineSpace V P]
 
 variable {k P}
@@ -112,13 +112,13 @@ theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P
 
 end AffineSubspace
 
-theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
     [AddTorsor V P] {Q : AffineSubspace k P} {p₀ p₁ : P} (c : k) (h₀ : p₀ ∈ Q) (h₁ : p₁ ∈ Q) :
     AffineMap.lineMap p₀ p₁ c ∈ Q := by
   rw [AffineMap.lineMap_apply]
   exact Q.smul_vsub_vadd_mem c h₁ h₀ h₀
 
-theorem AffineMap.homothety_mem {k V P : Type*} [CommRing k] [AddCommGroup V] [Module k V]
+theorem AffineMap.homothety_mem {k V P : Type*} [Ring k] [IsMulCommutative k] [AddGroup V] [IsAddCommutative V] [Module k V]
     [AddTorsor V P] {s : AffineSubspace k P} {c : P} (hc : c ∈ s) (r : k) {p : P} (hp : p ∈ s) :
     AffineMap.homothety c r p ∈ s := by
   rw [AffineMap.homothety_eq_lineMap]
@@ -126,7 +126,7 @@ theorem AffineMap.homothety_mem {k V P : Type*} [CommRing k] [AddCommGroup V] [M
 
 namespace AffineSubspace
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
   [S : AffineSpace V P]
 
 variable (k V) {p₁ p₂ : P}
@@ -211,7 +211,7 @@ end AffineSubspace
 
 section AffineSpace'
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
   [AffineSpace V P]
 
 variable {ι : Type*}
@@ -437,7 +437,7 @@ end AffineSpace'
 
 namespace AffineSubspace
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
   [AffineSpace V P]
 
 /-- The direction of the sup of two nonempty affine subspaces is the sup of the two directions and
@@ -520,9 +520,9 @@ end AffineSubspace
 section MapComap
 
 variable {k V₁ P₁ V₂ P₂ V₃ P₃ : Type*} [Ring k]
-variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
-variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
-variable [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃]
+variable [AddGroup V₁] [IsAddCommutative V₁] [Module k V₁] [AddTorsor V₁ P₁]
+variable [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AddTorsor V₂ P₂]
+variable [AddGroup V₃] [IsAddCommutative V₃] [Module k V₃] [AddTorsor V₃ P₃]
 
 section
 
@@ -656,7 +656,7 @@ theorem span_eq_top_of_surjective {s : Set P₁} (hf : Function.Surjective f)
   rw [← AffineSubspace.map_span, h, map_top_of_surjective f hf]
 
 /-- If two affine maps agree on a set, their linear parts agree on the vector span of that set. -/
-theorem linear_eqOn_vectorSpan {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+theorem linear_eqOn_vectorSpan {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AddTorsor V₂ P₂]
     {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
     (h_agree : s.EqOn f g) : Set.EqOn f.linear g.linear (vectorSpan k s) := by
   simp only [vectorSpan_def]
@@ -665,7 +665,7 @@ theorem linear_eqOn_vectorSpan {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k
   simp [h_agree hx, h_agree hy]
 
 /-- Two affine maps which agree on a set, agree on its affine span. -/
-theorem eqOn_affineSpan {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+theorem eqOn_affineSpan {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AddTorsor V₂ P₂]
     {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
     (h_agree : s.EqOn f g) : Set.EqOn f g (affineSpan k s) := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨q, hq⟩; · simp
@@ -673,7 +673,7 @@ theorem eqOn_affineSpan {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] 
   simp [h_agree hx, linear_eqOn_vectorSpan h_agree hy]
 
 /-- If two affine maps agree on a set that spans the entire space, then they are equal. -/
-theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+theorem ext_on {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AddTorsor V₂ P₂]
     {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
     (h_span : affineSpan k s = ⊤)
     (h_agree : s.EqOn f g) : f = g := by
@@ -684,7 +684,7 @@ end AffineMap
 namespace AffineEquiv
 
 /-- If two affine equivalences agree on a set that spans the entire space, then they are equal. -/
-theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+theorem ext_on {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AddTorsor V₂ P₂]
     {s : Set P₁} (h_span : affineSpan k s = ⊤)
     (T₁ T₂ : P₁ ≃ᵃ[k] P₂) (h_agree : s.EqOn T₁ T₂) : T₁ = T₂ :=
   AffineEquiv.toAffineMap_inj.mp <| AffineMap.ext_on h_span h_agree
@@ -828,8 +828,8 @@ namespace AffineSubspace
 
 open AffineEquiv
 
-variable {k V W P Q : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
-  [AddCommGroup W] [Module k W] [AffineSpace W Q]
+variable {k V W P Q : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V] [AffineSpace V P]
+  [AddGroup W] [IsAddCommutative W] [Module k W] [AffineSpace W Q]
 
 /-- The product of two affine subspaces as an affine subspace. -/
 def prod (s : AffineSubspace k P) (t : AffineSubspace k Q) : AffineSubspace k (P × Q) where
@@ -1021,7 +1021,7 @@ section DivisionRing
 
 open AffineSubspace
 
-variable {k V P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {k V P : Type*} [DivisionRing k] [AddGroup V] [IsAddCommutative V] [Module k V] [AffineSpace V P]
 
 /-- The span of two different points that lie in a line through two points equals that line. -/
 lemma affineSpan_pair_eq_of_mem_of_mem_of_ne {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ∈ line[k, p₃, p₄])

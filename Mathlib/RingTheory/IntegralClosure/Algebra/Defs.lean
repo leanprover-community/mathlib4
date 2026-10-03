@@ -23,7 +23,7 @@ public section
 section Ring
 
 variable {R A : Type*}
-variable [CommRing R] [Ring A]
+variable [Ring R] [IsMulCommutative R] [Ring A]
 
 variable [Algebra R A] (R)
 

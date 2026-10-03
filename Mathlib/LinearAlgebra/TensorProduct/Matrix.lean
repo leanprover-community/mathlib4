@@ -26,9 +26,9 @@ open scoped Kronecker
 variable {R : Type*} {M N P M' N' : Type*} {ι κ τ ι' κ' : Type*}
 variable [DecidableEq ι] [DecidableEq κ] [DecidableEq τ]
 variable [Fintype ι] [Fintype κ] [Fintype τ] [Finite ι'] [Finite κ']
-variable [CommRing R]
-variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
-variable [AddCommGroup M'] [AddCommGroup N']
+variable [Ring R] [IsMulCommutative R]
+variable [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P]
+variable [AddGroup M'] [IsAddCommutative M'] [AddGroup N'] [IsAddCommutative N']
 variable [Module R M] [Module R N] [Module R P] [Module R M'] [Module R N']
 variable (bM : Basis ι R M) (bN : Basis κ R N) (bP : Basis τ R P)
 variable (bM' : Basis ι' R M') (bN' : Basis κ' R N')

@@ -51,8 +51,8 @@ so the middle map is injective by `S`-flatness of `M`.
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)
-  [CommSemiring R] [CommSemiring S] [Algebra R S]
-  [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
+  [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 open AlgebraTensorModule in
 /-- If `S` is a flat `R`-algebra, then any flat `S`-Module is also `R`-flat. -/
@@ -90,14 +90,14 @@ Let `R` be a ring, `M` a flat `R`-module and `S` an `R`-algebra, then
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)
-  [CommSemiring R] [CommSemiring S] [Algebra R S]
-  [AddCommMonoid M] [Module R M]
+  [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
+  [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- If `M` is a flat `R`-module and `S` is any `R`-algebra, `S ⊗[R] M` is `S`-flat. -/
 instance baseChange [Flat R M] : Flat S (S ⊗[R] M) := inferInstance
 
 /-- A base change of a flat module is flat. -/
-theorem isBaseChange [Flat R M] (N : Type t) [AddCommMonoid N] [Module R N] [Module S N]
+theorem isBaseChange [Flat R M] (N : Type t) [AddMonoid N] [IsAddCommutative N] [Module R N] [Module S N]
     [IsScalarTower R S N] {f : M →ₗ[R] N} (h : IsBaseChange S f) :
     Flat S N :=
   of_linearEquiv (IsBaseChange.equiv h).symm
@@ -107,8 +107,8 @@ end BaseChange
 section Localization
 
 variable {R : Type u} {M Mp : Type*} (Rp : Type v)
-  [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring Rp] [Algebra R Rp]
-  [AddCommMonoid Mp] [Module R Mp] [Module Rp Mp] [IsScalarTower R Rp Mp]
+  [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Semiring Rp] [IsMulCommutative Rp] [Algebra R Rp]
+  [AddMonoid Mp] [IsAddCommutative Mp] [Module R Mp] [Module Rp Mp] [IsScalarTower R Rp Mp]
 
 instance localizedModule [Flat R M] (S : Submonoid R) :
     Flat (Localization S) (LocalizedModule S M) := by
@@ -122,7 +122,7 @@ theorem of_isLocalizedModule [Flat R M] (S : Submonoid R) [IsLocalization S Rp]
   fapply Flat.isBaseChange (R := R) (M := M) (S := Rp) (N := Mp)
   exact (isLocalizedModule_iff_isBaseChange S Rp f).mp h
 
-instance {A : Type*} [CommSemiring A] [Algebra R A] [Flat R A] (S : Submonoid R) :
+instance {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A] [Flat R A] (S : Submonoid R) :
     Flat (Localization S) (Localization (Algebra.algebraMapSubmonoid A S)) :=
   of_isLocalizedModule _ S (IsScalarTower.toAlgHom R A _).toLinearMap
 

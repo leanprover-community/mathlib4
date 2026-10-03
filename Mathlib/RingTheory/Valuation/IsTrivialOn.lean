@@ -33,7 +33,7 @@ variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
 section Ring
 
-variable {A : Type*} [CommSemiring A]
+variable {A : Type*} [Semiring A] [IsMulCommutative A]
 variable {B : Type*} [Ring B] [Algebra A B] {v : Valuation B Γ} [hv : v.IsTrivialOn A]
 
 namespace Polynomial
@@ -63,7 +63,7 @@ end Ring
 
 section Field
 
-variable (A : Type*) [CommRing A]
+variable (A : Type*) [Ring A] [IsMulCommutative A]
 variable {K : Type*} [Field K] [Algebra A K] {v : Valuation K Γ} [hv : v.IsTrivialOn A]
 
 open Polynomial

@@ -31,7 +31,7 @@ namespace Polynomial
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- Given a polynomial `p` and a number `n ≥ natDegree p`,
 returns a homogeneous bivariate polynomial `q` of degree `n` such that `q(x, 1) = p(x)`.
@@ -66,7 +66,7 @@ lemma homogenize_finsetSum {ι : Type*} (s : Finset ι) (p : ι → R[X]) (n : �
     homogenize (∑ i ∈ s, p i) n = ∑ i ∈ s, homogenize (p i) n :=
   _root_.map_sum (homogenizeLM n) p s
 
-lemma homogenize_map {S : Type*} [CommSemiring S] (f : R →+* S) (p : R[X]) (n : ℕ) :
+lemma homogenize_map {S : Type*} [Semiring S] [IsMulCommutative S] (f : R →+* S) (p : R[X]) (n : ℕ) :
     homogenize (p.map f) n = MvPolynomial.map f (homogenize p n) := by
   simp [homogenize]
 
@@ -135,7 +135,7 @@ lemma homogenize_eq_zero_iff {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
     p.homogenize n = 0 ↔ p = 0 :=
   ⟨eq_zero_of_homogenize_eq_zero hn, by simp +contextual⟩
 
-lemma eval₂_homogenize_of_eq_one {S : Type*} [CommSemiring S] {p : R[X]} {n : ℕ}
+lemma eval₂_homogenize_of_eq_one {S : Type*} [Semiring S] [IsMulCommutative S] {p : R[X]} {n : ℕ}
     (hn : natDegree p ≤ n) (f : R →+* S) (g : Fin 2 → S) (hg : g 1 = 1) :
     MvPolynomial.eval₂ f g (p.homogenize n) = p.eval₂ f (g 0) := by
   apply Polynomial.induction_with_natDegree_le
@@ -145,7 +145,7 @@ lemma eval₂_homogenize_of_eq_one {S : Type*} [CommSemiring S] {p : R[X]} {n : 
   · simp +contextual
   · assumption
 
-lemma aeval_homogenize_of_eq_one {A : Type*} [CommSemiring A] [Algebra R A] {p : R[X]} {n : ℕ}
+lemma aeval_homogenize_of_eq_one {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A] {p : R[X]} {n : ℕ}
     (hn : natDegree p ≤ n) (g : Fin 2 → A) (hg : g 1 = 1) :
     MvPolynomial.aeval g (p.homogenize n) = aeval (g 0) p := by
   apply eval₂_homogenize_of_eq_one <;> assumption
@@ -207,7 +207,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 @[simp]
 lemma homogenize_neg (p : R[X]) (n : ℕ) : (-p).homogenize n = -p.homogenize n :=
@@ -238,7 +238,7 @@ end Semifield
 
 section projectivize
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- Given a polynomial `p : R[X]`, this is the vector `![p₀, p₁]` of homogeneous bivariate
 polynomials of degree `p.natDegree` such that `p(x) = p₀(x,1)/p₁(x,1)` and `p₁` is a monomial. -/
@@ -281,7 +281,7 @@ lemma sum_eq_natDegree_of_mem_support_homogenize (p : R[X]) {s : Fin 2 →₀ �
 
 /-- Summing a function over the coefficients of the homogenization of a polynomial `p`
 (of degree `p.natDegree`) gives the same result as summing over the coefficients of `p`. -/
-lemma finsuppSum_homogenize_eq {M : Type*} [AddCommMonoid M] (p : R[X]) {f : R → M} :
+lemma finsuppSum_homogenize_eq {M : Type*} [AddMonoid M] [IsAddCommutative M] (p : R[X]) {f : R → M} :
     (AddMonoidAlgebra.coeff <| p.homogenize p.natDegree).sum (fun _ c ↦ f c) =
       p.sum fun _ c ↦ f c := by
   rw [MvPolynomial.sum_def, sum_def p]

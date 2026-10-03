@@ -1202,7 +1202,7 @@ future.
 -/
 
 section Module
-variable {n : ℕ} {S G : Type*} [AddCommGroup G] [SetLike S G] [AddSubgroupClass S G] {K : S} {x : G}
+variable {n : ℕ} {S G : Type*} [AddGroup G] [IsAddCommutative G] [SetLike S G] [AddSubgroupClass S G] {K : S} {x : G}
 
 section general
 variable [Module (ZMod n) G] {x : G}
@@ -1309,7 +1309,7 @@ def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
         (Nat.div_eq_zero_iff).2 <| .inr p.1.val_lt, add_zero]
 
 -- there is a faster proof with Module.toAddMonoidEnd
-instance ZMod.instSubsingletonModule (n : ℕ) (M : Type*) [AddCommMonoid M] :
+instance ZMod.instSubsingletonModule (n : ℕ) (M : Type*) [AddMonoid M] [IsAddCommutative M] :
     Subsingleton (Module (ZMod n) M) := by
   obtain _ | n := n
   · exact inferInstanceAs (Subsingleton (Module ℤ M))

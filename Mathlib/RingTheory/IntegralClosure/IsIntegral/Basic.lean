@@ -24,7 +24,7 @@ open Polynomial Submodule
 section Ring
 
 variable {R S A T : Type*}
-variable [CommRing R] [Ring A] [Ring S] [Ring T] (f : R →+* S) (g : S →+* T)
+variable [Ring R] [IsMulCommutative R] [Ring A] [Ring S] [Ring T] (f : R →+* S) (g : S →+* T)
 variable [Algebra R A]
 
 theorem RingHom.isIntegralElem_map {x : R} : f.IsIntegralElem (f x) :=
@@ -56,7 +56,7 @@ end Ring
 section
 
 variable {R A B S T : Type*}
-variable [CommRing R] [CommRing A] [Ring B] [CommRing S] [Ring T]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [Ring S] [IsMulCommutative S] [Ring T]
 variable [Algebra R A] (f : R →+* S)
 
 variable {f} in
@@ -83,7 +83,7 @@ theorem isIntegral_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f) {x
 end
 
 open scoped Classical in
-theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A] [Algebra R A]
+theorem Submodule.span_range_natDegree_eq_adjoin {R A} [Ring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     {x : A} {f : R[X]} (hf : f.Monic) (hfx : aeval x f = 0) :
     span R (Finset.image (x ^ ·) (Finset.range (natDegree f))) =
       Subalgebra.toSubmodule (Algebra.adjoin R {x}) := by
@@ -137,11 +137,11 @@ end
 section
 
 variable {R A B S : Type*}
-variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [Ring S] [IsMulCommutative S]
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
-theorem IsIntegral.map_of_comp_eq {R S T U : Type*} [CommRing R] [Ring S]
-    [CommRing T] [Ring U] [Algebra R S] [Algebra T U] (φ : R →+* T) (ψ : S →+* U)
+theorem IsIntegral.map_of_comp_eq {R S T U : Type*} [Ring R] [IsMulCommutative R] [Ring S]
+    [Ring T] [IsMulCommutative T] [Ring U] [Algebra R S] [Algebra T U] (φ : R →+* T) (ψ : S →+* U)
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) {a : S} (ha : IsIntegral R a) :
     IsIntegral T (ψ a) :=
   let ⟨p, hp⟩ := ha
@@ -163,7 +163,7 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
 /-- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
 a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
 over `T`. -/
-theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing T]
+theorem RingEquiv.isIntegral_iff {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [Ring T] [IsMulCommutative T]
     [Algebra R S] [Algebra T S] (φ : R ≃+* T)
     (h : (algebraMap T S).comp φ.toRingHom = algebraMap R S) (a : S) :
     IsIntegral R a ↔ IsIntegral T a := by
@@ -237,7 +237,7 @@ end
 section Prod
 
 variable {R A B : Type*}
-variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+variable [Ring R] [IsMulCommutative R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 
 /-- An element of a product algebra is integral if each component is integral. -/
 theorem IsIntegral.pair {x : A × B} (hx₁ : IsIntegral R x.1) (hx₂ : IsIntegral R x.2) :

@@ -74,13 +74,13 @@ open LinearMap TensorProduct AlgHom RingCon
 
 For universe reasons, `S` has to be restricted to the same universe as `R`. -/
 @[ext]
-structure PolynomialLaw (R : Type u) [CommSemiring R]
-    (M : Type*) [AddCommMonoid M] [Module R M] (N : Type*) [AddCommMonoid N] [Module R N] where
+structure PolynomialLaw (R : Type u) [Semiring R] [IsMulCommutative R]
+    (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M] (N : Type*) [AddMonoid N] [IsAddCommutative N] [Module R N] where
   /-- The functions `S ⊗[R] M → S ⊗[R] N` underlying a polynomial law -/
-  toFun' (S : Type u) [CommSemiring S] [Algebra R S] : S ⊗[R] M → S ⊗[R] N
+  toFun' (S : Type u) [Semiring S] [IsMulCommutative S] [Algebra R S] : S ⊗[R] M → S ⊗[R] N
   /-- The compatibility relations between the functions underlying a polynomial law -/
-  isCompat' {S : Type u} [CommSemiring S] [Algebra R S]
-    {S' : Type u} [CommSemiring S'] [Algebra R S'] (φ : S →ₐ[R] S') :
+  isCompat' {S : Type u} [Semiring S] [IsMulCommutative S] [Algebra R S]
+    {S' : Type u} [Semiring S'] [IsMulCommutative S'] [Algebra R S'] (φ : S →ₐ[R] S') :
     φ.toLinearMap.rTensor N ∘ toFun' S = toFun' S' ∘ φ.toLinearMap.rTensor M := by aesop
 
 /-- `M →ₚₗ[R] N` is the type of `R`-polynomial laws from `M` to `N`. -/
@@ -88,9 +88,9 @@ notation:25 M " →ₚₗ[" R:25 "] " N:0 => PolynomialLaw R M N
 
 @[local simp]
 theorem PolynomialLaw.isCompat_apply'
-    {R : Type u} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
-    {N : Type*} [AddCommMonoid N] [Module R N] {f : M →ₚₗ[R] N}
-    {S : Type u} [CommSemiring S] [Algebra R S] {S' : Type u} [CommSemiring S'] [Algebra R S']
+    {R : Type u} [Semiring R] [IsMulCommutative R] {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+    {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N] {f : M →ₚₗ[R] N}
+    {S : Type u} [Semiring S] [IsMulCommutative S] [Algebra R S] {S' : Type u} [Semiring S'] [IsMulCommutative S'] [Algebra R S']
     (φ : S →ₐ[R] S') (x : S ⊗[R] M) :
     (φ.toLinearMap.rTensor N) ((f.toFun' S) x) = (f.toFun' S') (φ.toLinearMap.rTensor M x) := by
   simpa only using! congr($(f.isCompat' φ) x)
@@ -103,13 +103,13 @@ section Module
 
 section CommSemiring
 
-variable {R : Type u} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
-  {N : Type*} [AddCommMonoid N] [Module R N] (r a b : R) (f g : M →ₚₗ[R] N)
+variable {R : Type u} [Semiring R] [IsMulCommutative R] {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+  {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N] (r a b : R) (f g : M →ₚₗ[R] N)
 
 instance : Zero (M →ₚₗ[R] N) := ⟨{ toFun' _ := 0 }⟩
 
 @[simp]
-theorem zero_def (S : Type u) [CommSemiring S] [Algebra R S] :
+theorem zero_def (S : Type u) [Semiring S] [IsMulCommutative S] [Algebra R S] :
     (0 : PolynomialLaw R M N).toFun' S = 0 := rfl
 
 instance : Inhabited (PolynomialLaw R M N) := ⟨Zero.zero⟩
@@ -118,7 +118,7 @@ instance : Inhabited (PolynomialLaw R M N) := ⟨Zero.zero⟩
 def id : M →ₚₗ[R] M where
   toFun' S _ _ := _root_.id
 
-theorem id_apply' {S : Type u} [CommSemiring S] [Algebra R S] :
+theorem id_apply' {S : Type u} [Semiring S] [IsMulCommutative S] [Algebra R S] :
     (id : M →ₚₗ[R] M).toFun' S = _root_.id := rfl
 
 /-- The sum of two polynomial laws -/
@@ -128,10 +128,10 @@ noncomputable def add : M →ₚₗ[R] N where
 instance : Add (PolynomialLaw R M N) := ⟨add⟩
 
 @[simp]
-theorem add_def (S : Type u) [CommSemiring S] [Algebra R S] :
+theorem add_def (S : Type u) [Semiring S] [IsMulCommutative S] [Algebra R S] :
     (f + g).toFun' S = f.toFun' S + g.toFun' S := rfl
 
-theorem add_def_apply (S : Type u) [CommSemiring S] [Algebra R S] (m : S ⊗[R] M) :
+theorem add_def_apply (S : Type u) [Semiring S] [IsMulCommutative S] [Algebra R S] (m : S ⊗[R] M) :
     (f + g).toFun' S m = f.toFun' S m + g.toFun' S m := rfl
 
 /-- External multiplication of a `f : M →ₚₗ[R] N` by `r : R` -/
@@ -141,10 +141,10 @@ def smul : M →ₚₗ[R] N where
 instance : SMul R (M →ₚₗ[R] N) := ⟨smul⟩
 
 @[simp]
-theorem smul_def (S : Type u) [CommSemiring S] [Algebra R S] :
+theorem smul_def (S : Type u) [Semiring S] [IsMulCommutative S] [Algebra R S] :
     (r • f).toFun' S = r • f.toFun' S := rfl
 
-theorem smul_def_apply (S : Type u) [CommSemiring S] [Algebra R S] (m : S ⊗[R] M) :
+theorem smul_def_apply (S : Type u) [Semiring S] [IsMulCommutative S] [Algebra R S] (m : S ⊗[R] M) :
     (r • f).toFun' S m = r • f.toFun' S m := rfl
 
 theorem add_smul : (a + b) • f = a • f + b • f := by
@@ -181,8 +181,8 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type u} [CommRing R]
-  {M : Type*} [AddCommGroup M] [Module R M] {N : Type*} [AddCommGroup N] [Module R N]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
+  {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
   (f : M →ₚₗ[R] N)
 
 /-- The opposite of a polynomial law -/
@@ -192,7 +192,7 @@ noncomputable def neg : M →ₚₗ[R] N where
 instance : Neg (M →ₚₗ[R] N) := ⟨neg⟩
 
 @[simp]
-theorem neg_def (S : Type u) [CommSemiring S] [Algebra R S] :
+theorem neg_def (S : Type u) [Semiring S] [IsMulCommutative S] [Algebra R S] :
     (-f).toFun' S = (-1 : R) • f.toFun' S := rfl
 
 instance : AddCommGroup (M →ₚₗ[R] N) where
@@ -224,8 +224,8 @@ end Module
 
 section ground
 
-variable {R : Type u} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
-  {N : Type*} [AddCommMonoid N] [Module R N]
+variable {R : Type u} [Semiring R] [IsMulCommutative R] {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+  {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 variable (f : M →ₚₗ[R] N)
 
 /-- The map `M → N` associated with a `f : M →ₚₗ[R] N` (essentially, `f.toFun' R`) -/
@@ -236,7 +236,7 @@ theorem ground_apply (m : M) : f.ground m = TensorProduct.lid R N (f.toFun' R (1
 instance : CoeFun (M →ₚₗ[R] N) (fun _ ↦ M → N) where
   coe := ground
 
-theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
+theorem one_tmul_ground_apply' {S : Type u} [Semiring S] [IsMulCommutative S] [Algebra R S] (x : M) :
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   rw [ground_apply]
   convert! f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
@@ -260,11 +260,11 @@ end ground
 
 section Composition
 
-variable {R : Type u} [CommSemiring R]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N]
-variable {P : Type*} [AddCommMonoid P] [Module R P]
-variable {Q : Type*} [AddCommMonoid Q] [Module R Q]
+variable {R : Type u} [Semiring R] [IsMulCommutative R]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
+variable {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P]
+variable {Q : Type*} [AddMonoid Q] [IsAddCommutative Q] [Module R Q]
 variable (f : M →ₚₗ[R] N) (g : N →ₚₗ[R] P) (h : P →ₚₗ[R] Q)
 
 /-- Composition of polynomial maps. -/
@@ -272,7 +272,7 @@ def comp (g : N →ₚₗ[R] P) (f : M →ₚₗ[R] N) : M →ₚₗ[R] P where
   toFun' S _ _ := (g.toFun' S).comp (f.toFun' S)
   isCompat' φ := by ext; simp only [Function.comp_apply, isCompat_apply']
 
-theorem comp_toFun' (S : Type u) [CommSemiring S] [Algebra R S] :
+theorem comp_toFun' (S : Type u) [Semiring S] [IsMulCommutative S] [Algebra R S] :
     (g.comp f).toFun' S = (g.toFun' S).comp (f.toFun' S) := rfl
 
 theorem comp_assoc : h.comp (g.comp f) = (h.comp g).comp f := rfl
@@ -289,10 +289,10 @@ open scoped TensorProduct
 
 open MvPolynomial
 
-variable (R : Type u) [CommSemiring R]
-  (M : Type*) [AddCommMonoid M] [Module R M]
-  (N : Type*) [AddCommMonoid N] [Module R N]
-  (S : Type v) [CommSemiring S] [Algebra R S]
+variable (R : Type u) [Semiring R] [IsMulCommutative R]
+  (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M]
+  (N : Type*) [AddMonoid N] [IsAddCommutative N] [Module R N]
+  (S : Type v) [Semiring S] [IsMulCommutative S] [Algebra R S]
   (f : M →ₚₗ[R] N)
 
 section Lift
@@ -340,9 +340,9 @@ theorem exists_range_φ_eq_of_fg {B : Subalgebra R S} (hB : Subalgebra.FG B) :
 section diagrams
 
 variable
-    {A : Type u} [CommSemiring A] [Algebra R A] {φ : A →ₐ[R] S} (p : A ⊗[R] M)
-    {T : Type w} [CommSemiring T] [Algebra R T]
-    {B : Type u} [CommSemiring B] [Algebra R B] {ψ : B →ₐ[R] T} (q : B ⊗[R] M)
+    {A : Type u} [Semiring A] [IsMulCommutative A] [Algebra R A] {φ : A →ₐ[R] S} (p : A ⊗[R] M)
+    {T : Type w} [Semiring T] [IsMulCommutative T] [Algebra R T]
+    {B : Type u} [Semiring B] [IsMulCommutative B] [Algebra R B] {ψ : B →ₐ[R] T} (q : B ⊗[R] M)
     (g : A →ₐ[R] B) (h : S →ₐ[R] T)
 
 /-- Compare the values of `PolynomialLaw.toFun'` in a square diagram -/
@@ -426,7 +426,7 @@ theorem toFun_eq_rTensor_φ_toFun' {t : S ⊗[R] M} {s : Finset S}
   rw [PolynomialLaw.toFun, ← ha, (factorsThrough_toFunLifted_π f).extend_apply, toFunLifted]
 
 theorem exists_lift_of_mem_range_rTensor
-    {T : Type*} [CommSemiring T] [Algebra R T]
+    {T : Type*} [Semiring T] [IsMulCommutative T] [Algebra R T]
     (A : Subalgebra R T) {φ : S →ₐ[R] T} (hφ : A ≤ φ.range) {t : T ⊗[R] M}
     (ht : t ∈ range ((Subalgebra.val A).toLinearMap.rTensor M)) :
     ∃ s : S ⊗[R] M, φ.toLinearMap.rTensor M s = t := by
@@ -475,7 +475,7 @@ theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial
 /-- For semirings in the universe `u`, `PolynomialLaw.toFun` coincides
 with `PolynomialLaw.toFun'`. -/
 @[simp]
-theorem toFun'_eq_toFun (S : Type u) [CommSemiring S] [Algebra R S] :
+theorem toFun'_eq_toFun (S : Type u) [Semiring S] [IsMulCommutative S] [Algebra R S] :
     f.toFun' S = f.toFun S := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
@@ -483,7 +483,7 @@ theorem toFun'_eq_toFun (S : Type u) [CommSemiring S] [Algebra R S] :
   exact congr_arg _ ha.symm
 
 /-- Extends `PolynomialLaw.isCompat_apply'` to all universes. -/
-theorem isCompat_apply {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ[R] T) (t : S ⊗[R] M) :
+theorem isCompat_apply {T : Type w} [Semiring T] [IsMulCommutative T] [Algebra R T] (h : S →ₐ[R] T) (t : S ⊗[R] M) :
     rTensor N h.toLinearMap (f.toFun S t) = f.toFun T (rTensor M h.toLinearMap t) := by
   classical
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
@@ -518,7 +518,7 @@ theorem isCompat_apply {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ
     simp only [φ, aeval_X, Equiv.symm_apply_apply]
 
 /-- Extends `PolynomialLaw.isCompat` to all universes -/
-theorem isCompat {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ[R] T) :
+theorem isCompat {T : Type w} [Semiring T] [IsMulCommutative T] [Algebra R T] (h : S →ₐ[R] T) :
     h.toLinearMap.rTensor N ∘ f.toFun S = f.toFun T ∘ h.toLinearMap.rTensor M := by
   ext t
   simp only [Function.comp_apply, PolynomialLaw.isCompat_apply]
@@ -528,11 +528,11 @@ end Lift
 section Module
 
 variable
-  {R : Type u} [CommSemiring R]
-  {M : Type*} [AddCommMonoid M] [Module R M]
-  {N : Type*} [AddCommMonoid N] [Module R N]
+  {R : Type u} [Semiring R] [IsMulCommutative R]
+  {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+  {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
   (r a b : R) (f g : M →ₚₗ[R] N)
-  {S : Type*} [CommSemiring S] [Algebra R S]
+  {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 /-- Extension of `PolynomialLaw.zero_def` -/
 @[simp]
@@ -556,11 +556,11 @@ theorem toFun_add :
   simp only [Pi.add_apply, toFun_add_apply]
 
 @[simp]
-theorem toFun_neg {R : Type u} [CommRing R]
-    {M : Type*} [AddCommGroup M] [Module R M]
-    {N : Type*} [AddCommGroup N] [Module R N]
+theorem toFun_neg {R : Type u} [Ring R] [IsMulCommutative R]
+    {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
+    {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
     (f : M →ₚₗ[R] N)
-    (S : Type*) [CommSemiring S] [Algebra R S] :
+    (S : Type*) [Semiring S] [IsMulCommutative S] [Algebra R S] :
     (-f).toFun S = (-1 : R) • (f.toFun S) := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
@@ -578,11 +578,11 @@ end Module
 
 section ground
 
-variable {R : Type u} [CommSemiring R]
-    {M : Type*} [AddCommMonoid M] [Module R M]
-    {N : Type*} [AddCommMonoid N] [Module R N]
+variable {R : Type u} [Semiring R] [IsMulCommutative R]
+    {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+    {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
     (f : M →ₚₗ[R] N)
-    (S : Type*) [CommSemiring S] [Algebra R S]
+    (S : Type*) [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 theorem one_tmul_ground (x : M) :
     1 ⊗ₜ f.ground x = f.toFun S (1 ⊗ₜ x) := by
@@ -596,16 +596,16 @@ end ground
 
 section Comp
 
-variable {R : Type u} [CommSemiring R]
-  {M : Type*} [AddCommMonoid M] [Module R M]
-  {N : Type*} [AddCommMonoid N] [Module R N]
-  {P : Type*} [AddCommMonoid P] [Module R P]
-  {Q : Type*} [AddCommMonoid Q] [Module R Q]
+variable {R : Type u} [Semiring R] [IsMulCommutative R]
+  {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+  {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
+  {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P]
+  {Q : Type*} [AddMonoid Q] [IsAddCommutative Q] [Module R Q]
   (f : M →ₚₗ[R] N) (g : N →ₚₗ[R] P) (h : P →ₚₗ[R] Q)
 
 /-- Extension of `MvPolynomial.comp_toFun'` -/
 @[simp]
-theorem toFun_comp (S : Type*) [CommSemiring S] [Algebra R S] :
+theorem toFun_comp (S : Type*) [Semiring S] [IsMulCommutative S] [Algebra R S] :
     (g.comp f).toFun S = (g.toFun S).comp (f.toFun S) := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
@@ -614,7 +614,7 @@ theorem toFun_comp (S : Type*) [CommSemiring S] [Algebra R S] :
   rw [Function.comp_apply, toFun_eq_rTensor_φ_toFun' _ hb, toFun_eq_rTensor_φ_toFun' _ ha,
     comp_toFun', Function.comp_apply]
 
-theorem toFun_comp_apply (S : Type*) [CommSemiring S] [Algebra R S] (m : S ⊗[R] M) :
+theorem toFun_comp_apply (S : Type*) [Semiring S] [IsMulCommutative S] [Algebra R S] (m : S ⊗[R] M) :
     (g.comp f).toFun S m = (g.toFun S) (f.toFun S m) := by
   simp only [toFun_comp, Function.comp_apply]
 

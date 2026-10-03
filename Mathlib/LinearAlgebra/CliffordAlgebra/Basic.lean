@@ -45,8 +45,8 @@ This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.le
 @[expose] public section
 
 
-variable {R : Type*} [CommRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 variable (Q : QuadraticForm R M)
 
 namespace CliffordAlgebra
@@ -74,14 +74,14 @@ deriving Inhabited
 namespace CliffordAlgebra
 
 -- This instance exists to avoid nsmul and zsmul diamonds.
-instance {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
+instance {R A M} [Semiring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Ring A] [IsMulCommutative A]
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] : SMul R (CliffordAlgebra Q) :=
   inferInstanceAs <| SMul R (RingCon.Quotient _)
 
 deriving instance Ring for CliffordAlgebra
 
-instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
+instance (priority := 900) instAlgebra' {R A M} [Semiring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Ring A] [IsMulCommutative A]
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] :
     Algebra R (CliffordAlgebra Q) :=
@@ -95,13 +95,13 @@ example : (Semiring.toNatAlgebra : Algebra ℕ (CliffordAlgebra Q)) = instAlgebr
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Ring.toIntAlgebra _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
-instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
+instance {R S A M} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [AddGroup M] [IsAddCommutative M] [Ring A] [IsMulCommutative A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (CliffordAlgebra Q) :=
   RingCon.instSMulCommClassQuotient _
 
-instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
+instance {R S A M} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [AddGroup M] [IsAddCommutative M] [Ring A] [IsMulCommutative A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] (Q : QuadraticForm A M) :
     IsScalarTower R S (CliffordAlgebra Q) :=
@@ -315,7 +315,7 @@ theorem ι_range_map_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebra
 section Map
 
 variable {M₁ M₂ M₃ : Type*}
-variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup M₃] [IsAddCommutative M₃]
 variable [Module R M₁] [Module R M₂] [Module R M₃]
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} {Q₃ : QuadraticForm R M₃}
 

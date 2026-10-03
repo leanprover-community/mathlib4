@@ -670,13 +670,13 @@ variable [LinearOrderedCommMonoidWithZero Γ₀]
 
   This is true, for example, when `A` is a finite field.
   See `Valuation.FiniteField.instIsTrivialOn`. -/
-class IsTrivialOn {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
+class IsTrivialOn {B : Type*} (A : Type*) [Semiring A] [IsMulCommutative A] [Ring B] [Algebra A B]
     (v : Valuation B Γ₀) where
   eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
 
 attribute [grind =>] Valuation.IsTrivialOn.eq_one
 
-variable {B : Type*} {A : Type*} [CommSemiring A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
+variable {B : Type*} {A : Type*} [Semiring A] [IsMulCommutative A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
   [v.IsTrivialOn A]
 
 @[simp]
@@ -756,11 +756,11 @@ lemma one_lt_iff_one_lt (h : v₁.IsEquiv v₂) {x : R} :
     1 < v₁ x ↔ 1 < v₂ x := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
 
-theorem isTrivialOn {A : Type*} [CommSemiring A] [Algebra A R] (h : v₁.IsEquiv v₂)
+theorem isTrivialOn {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra A R] (h : v₁.IsEquiv v₂)
     (h₁ : IsTrivialOn A v₁) : IsTrivialOn A v₂ where
   eq_one _ ha := h.eq_one_iff_eq_one.mp (IsTrivialOn.eq_one _ ha)
 
-theorem isTrivialOn_iff {A : Type*} [CommSemiring A] [Algebra A R] (h : v₁.IsEquiv v₂) :
+theorem isTrivialOn_iff {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra A R] (h : v₁.IsEquiv v₂) :
     IsTrivialOn A v₁ ↔ IsTrivialOn A v₂ :=
   ⟨fun h₁ ↦ h.isTrivialOn h₁, fun h₂ ↦ h.symm.isTrivialOn h₂⟩
 
@@ -999,7 +999,7 @@ end LinearOrderedCommGroupWithZero
 
 section Supp
 
-variable [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀)
+variable [Ring R] [IsMulCommutative R] [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀)
 
 /-- The support of a valuation `v : R → Γ₀` is the ideal of `R` where `v` vanishes. -/
 def supp : Ideal R where
@@ -1041,7 +1041,7 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
     v a = v (a + s + -s) := by simp
     _ ≤ v (a + s) := aux (a + s) (-s) (by rwa [← Ideal.neg_mem_iff] at h)
 
-theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
+theorem comap_supp {S : Type*} [Ring S] [IsMulCommutative S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Ideal.ext fun x => by rw [mem_supp_iff, Ideal.mem_comap, mem_supp_iff, comap_apply]
 
@@ -1324,7 +1324,7 @@ end IsEquiv
 
 section Supp
 
-variable [LinearOrderedAddCommMonoidWithTop Γ₀] [CommRing R] (v : AddValuation R Γ₀)
+variable [LinearOrderedAddCommMonoidWithTop Γ₀] [Ring R] [IsMulCommutative R] (v : AddValuation R Γ₀)
 
 /-- The support of an additive valuation `v : R → Γ₀` is the ideal of `R` where `v x = ⊤` -/
 def supp : Ideal R :=

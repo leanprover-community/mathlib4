@@ -26,11 +26,11 @@ open Bundle Filter Function
 
 open scoped Bundle Manifold ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable (F : Type*) [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
   -- `F` model fiber
   (n : ℕ∞ω)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
@@ -41,7 +41,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 section operations
 
 -- Let V be a vector bundle
-variable [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
+variable [∀ x, AddGroup (V x)] [∀ x, IsAddCommutative (V x)] [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
 
 variable {I F n V}
 
@@ -318,7 +318,7 @@ theorem coe_injective : Injective ((↑) : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :
 theorem ext (h : ∀ x, s x = t x) : s = t := DFunLike.ext _ _ h
 
 section
-variable [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
+variable [∀ x, AddGroup (V x)] [∀ x, IsAddCommutative (V x)] [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
 
 instance instAdd : Add Cₛ^n⟮I; F, V⟯ :=
   ⟨fun s t ↦ ⟨s + t, s.contMDiff.add_section t.contMDiff⟩⟩

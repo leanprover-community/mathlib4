@@ -47,7 +47,7 @@ variable {α : Type*} {m : MeasurableSpace α}
 
 /-- A vector measure on a measurable space `α` is a σ-additive `M`-valued function (for some `M`
 an additive monoid) such that the empty set and non-measurable sets are mapped to zero. -/
-structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMonoid M]
+structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddMonoid M] [IsAddCommutative M]
     [TopologicalSpace M] where
   /-- The measure of sets -/
   measureOf' : Set α → M
@@ -67,7 +67,7 @@ namespace VectorMeasure
 
 section
 
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
 
 @[macro_inline]
 instance : FunLike (VectorMeasure α M) (Set α) M where

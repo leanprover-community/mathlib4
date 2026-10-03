@@ -437,7 +437,7 @@ end GroupWithZero
 section CommGroupWithZero
 
 -- comm
-variable [CommGroupWithZero G₀] {a b c d : G₀}
+variable [GroupWithZero G₀] [IsMulCommutative G₀] {a b c d : G₀}
 
 -- See note [lower instance priority]
 instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
@@ -523,7 +523,7 @@ noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
 /-- Constructs a `CommGroupWithZero` structure on a `CommMonoidWithZero`
   consisting only of units and 0. -/
 @[instance_reducible]
-noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
+noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M] [IsMulCommutative M]
     (h : ∀ a : M, IsUnit a ∨ a = 0) : CommGroupWithZero M :=
   { groupWithZeroOfIsUnitOrEqZero h, hM with }
 

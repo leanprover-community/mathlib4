@@ -143,7 +143,7 @@ theorem Continuous.matrix_diagonal [Zero R] [DecidableEq n] {A : X → n → R} 
   continuous_matrix fun i _ => ((continuous_apply i).comp hA).if_const _ continuous_zero
 
 @[continuity, fun_prop]
-protected theorem Continuous.dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
+protected theorem Continuous.dotProduct [Fintype n] [Mul R] [AddMonoid R] [IsAddCommutative R] [ContinuousAdd R]
     [ContinuousMul R] {A : X → n → R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
     Continuous fun x => A x ⬝ᵥ B x := by
   dsimp only [dotProduct]
@@ -151,13 +151,13 @@ protected theorem Continuous.dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [C
 
 /-- For square matrices the usual `continuous_mul` can be used. -/
 @[continuity, fun_prop]
-theorem Continuous.matrix_mul [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
+theorem Continuous.matrix_mul [Fintype n] [Mul R] [AddMonoid R] [IsAddCommutative R] [ContinuousAdd R]
     [ContinuousMul R] {A : X → Matrix m n R} {B : X → Matrix n p R} (hA : Continuous A)
     (hB : Continuous B) : Continuous fun x => A x * B x :=
   continuous_matrix fun _ _ =>
     continuous_finsetSum _ fun _ _ => (hA.matrix_elem _ _).mul (hB.matrix_elem _ _)
 
-instance [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R] [ContinuousMul R] :
+instance [Fintype n] [Mul R] [AddMonoid R] [IsAddCommutative R] [ContinuousAdd R] [ContinuousMul R] :
     ContinuousMul (Matrix n n R) :=
   ⟨continuous_fst.matrix_mul continuous_snd⟩
 
@@ -204,12 +204,12 @@ theorem continuous_matrix_diag : Continuous (Matrix.diag : Matrix n n R → n �
   show Continuous fun x : Matrix n n R => Matrix.diag x from continuous_id.matrix_diag
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_trace [Fintype n] [AddCommMonoid R] [ContinuousAdd R]
+theorem Continuous.matrix_trace [Fintype n] [AddMonoid R] [IsAddCommutative R] [ContinuousAdd R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => trace (A x) :=
   continuous_finsetSum _ fun _ _ => hA.matrix_elem _ _
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
+theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R] [IsTopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
   simp_rw [Matrix.det_apply]
   refine continuous_finsetSum _ fun l _ => Continuous.const_smul ?_ _
@@ -229,20 +229,20 @@ theorem Continuous.matrix_updateRow [DecidableEq m] (i : m) {A : X → Matrix m 
   hA.update i hB
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_cramer [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
+theorem Continuous.matrix_cramer [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R] [IsTopologicalRing R]
     {A : X → Matrix n n R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
     Continuous fun x => cramer (A x) (B x) :=
   continuous_pi fun _ => (hA.matrix_updateCol _ hB).matrix_det
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_adjugate [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
+theorem Continuous.matrix_adjugate [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R] [IsTopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).adjugate :=
   continuous_matrix fun _j k =>
     (hA.matrix_transpose.matrix_updateCol k continuous_const).matrix_det
 
 /-- When `Ring.inverse` is continuous at the determinant (such as in a `NormedRing`, or a
 topological field), so is `Matrix.inv`. -/
-theorem continuousAt_matrix_inv [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
+theorem continuousAt_matrix_inv [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R] [IsTopologicalRing R]
     (A : Matrix n n R) (h : ContinuousAt Ring.inverse A.det) : ContinuousAt Inv.inv A :=
   (h.comp continuous_id.matrix_det.continuousAt).smul continuous_id.matrix_adjugate.continuousAt
 
@@ -325,7 +325,7 @@ end Continuity
 
 section tsum
 
-variable [AddCommMonoid R] [TopologicalSpace R] {L : SummationFilter X}
+variable [AddMonoid R] [IsAddCommutative R] [TopologicalSpace R] {L : SummationFilter X}
 
 theorem HasSum.matrix_transpose {f : X → Matrix m n R} {a : Matrix m n R} (hf : HasSum f a L) :
     HasSum (fun x => (f x)ᵀ) aᵀ L :=

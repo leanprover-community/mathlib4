@@ -259,7 +259,7 @@ end Basic
 
 section toCommMonoid
 
-variable {ι A M : Type*} [AddMonoid A] [CommMonoid M]
+variable {ι A M : Type*} [AddMonoid A] [Monoid M] [IsMulCommutative M]
 
 /-- When `M` is commutative, `AddChar A M` is a commutative monoid. -/
 instance instCommMonoid : CommMonoid (AddChar A M) :=
@@ -324,7 +324,7 @@ def doubleDualEmb : A →+ AddChar (AddChar A M) M where
 end toCommMonoid
 
 section CommSemiring
-variable {A R : Type*} [AddGroup A] [Fintype A] [CommSemiring R] [IsDomain R]
+variable {A R : Type*} [AddGroup A] [Fintype A] [Semiring R] [IsMulCommutative R] [IsDomain R]
   {ψ : AddChar A R}
 
 lemma sum_eq_ite (ψ : AddChar A R) [Decidable (ψ = 0)] :
@@ -350,7 +350,7 @@ end CommSemiring
 -/
 section fromAddCommGroup
 
-variable {A M : Type*} [AddCommGroup A] [CommMonoid M]
+variable {A M : Type*} [AddGroup A] [IsAddCommutative A] [Monoid M] [IsMulCommutative M]
 
 /-- The additive characters on a commutative additive group form a commutative group.
 
@@ -394,7 +394,7 @@ lemma map_zsmul_eq_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (�
 end fromAddGrouptoDivisionMonoid
 
 section fromAddCommGrouptoDivisionCommMonoid
-variable {A M : Type*} [AddCommGroup A] [DivisionCommMonoid M]
+variable {A M : Type*} [AddGroup A] [IsAddCommutative A] [DivisionMonoid M] [IsMulCommutative M]
 
 lemma inv_apply' (ψ : AddChar A M) (a : A) : ψ⁻¹ a = (ψ a)⁻¹ := by rw [inv_apply, map_neg_eq_inv]
 lemma neg_apply' (ψ : AddChar A M) (a : A) : (-ψ) a = (ψ a)⁻¹ := map_neg_eq_inv _ _
@@ -432,7 +432,7 @@ end MonoidWithZero
 section Ring
 
 -- The domain and target of our additive characters. Now we restrict to a ring in the domain.
-variable {R M : Type*} [Ring R] [CommMonoid M]
+variable {R M : Type*} [Ring R] [Monoid M] [IsMulCommutative M]
 
 /-- Define the multiplicative shift of an additive character.
 This satisfies `mulShift ψ a x = ψ (a * x)`. -/

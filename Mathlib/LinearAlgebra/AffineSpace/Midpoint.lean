@@ -39,8 +39,8 @@ open AffineMap AffineEquiv
 
 section
 
-variable (R : Type*) {V V' P P' : Type*} [Ring R] [Invertible (2 : R)] [AddCommGroup V]
-  [Module R V] [AddTorsor V P] [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
+variable (R : Type*) {V V' P P' : Type*} [Ring R] [Invertible (2 : R)] [AddGroup V] [IsAddCommutative V]
+  [Module R V] [AddTorsor V P] [AddGroup V'] [IsAddCommutative V'] [Module R V'] [AddTorsor V' P']
 
 /-- `midpoint x y` is the midpoint of the segment `[x, y]`. -/
 def midpoint (x y : P) : P :=
@@ -230,8 +230,8 @@ end
 
 namespace AddMonoidHom
 
-variable (R R' : Type*) {E F : Type*} [Ring R] [Invertible (2 : R)] [AddCommGroup E] [Module R E]
-  [Ring R'] [Invertible (2 : R')] [AddCommGroup F] [Module R' F]
+variable (R R' : Type*) {E F : Type*} [Ring R] [Invertible (2 : R)] [AddGroup E] [IsAddCommutative E] [Module R E]
+  [Ring R'] [Invertible (2 : R')] [AddGroup F] [IsAddCommutative F] [Module R' F]
 
 /-- A map `f : E → F` sending zero to zero and midpoints to midpoints is an `AddMonoidHom`. -/
 def ofMapMidpoint (f : E → F) (h0 : f 0 = 0)

@@ -46,7 +46,7 @@ universe u₀ u₁ u₂ u₃
 
 open CategoryTheory
 
-variable (R : Type u₀) [CommSemiring R]
+variable (R : Type u₀) [Semiring R] [IsMulCommutative R]
 
 open scoped ModuleCat.Algebra
 

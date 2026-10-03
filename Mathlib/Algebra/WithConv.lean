@@ -76,9 +76,9 @@ instance [Nontrivial A] : Nontrivial (WithConv A) := (WithConv.equiv A).nontrivi
 instance [Unique A] : Unique (WithConv A) := (WithConv.equiv A).unique
 instance [DecidableEq A] : DecidableEq (WithConv A) := (WithConv.equiv A).decidableEq
 instance [AddMonoid A] : AddMonoid (WithConv A) := (WithConv.equiv A).addMonoid
-instance [AddCommMonoid A] : AddCommMonoid (WithConv A) := (WithConv.equiv A).addCommMonoid
+instance [AddMonoid A] [IsAddCommutative A] : AddCommMonoid (WithConv A) := (WithConv.equiv A).addCommMonoid
 instance [AddGroup A] : AddGroup (WithConv A) := (WithConv.equiv A).addGroup
-instance [AddCommGroup A] : AddCommGroup (WithConv A) := (WithConv.equiv A).addCommGroup
+instance [AddGroup A] [IsAddCommutative A] : AddCommGroup (WithConv A) := (WithConv.equiv A).addCommGroup
 @[to_additive] instance [Monoid R] [MulAction R A] : MulAction R (WithConv A) :=
   fast_instance% (WithConv.equiv A).mulAction R
 
@@ -127,12 +127,12 @@ variable (A) in
 
 end
 
-instance [Monoid R] [AddCommMonoid A] [DistribMulAction R A] : DistribMulAction R (WithConv A) :=
+instance [Monoid R] [AddMonoid A] [IsAddCommutative A] [DistribMulAction R A] : DistribMulAction R (WithConv A) :=
   fast_instance% (WithConv.addEquiv A).distribMulAction R
-instance [Semiring R] [AddCommMonoid A] [Module R A] : Module R (WithConv A) :=
+instance [Semiring R] [AddMonoid A] [IsAddCommutative A] [Module R A] : Module R (WithConv A) :=
   fast_instance% (WithConv.addEquiv A).module R
 
-variable [AddCommMonoid A]
+variable [AddMonoid A] [IsAddCommutative A]
 
 variable (R A) in
 /-- The linear equivalence between `WithConv A` and `A`. -/
@@ -161,7 +161,7 @@ protected def linearEquiv [Semiring R] [Module R A] : WithConv A ≃ₗ[R] A whe
     toConv s.sum = (s.map toConv).sum := map_multiset_sum (WithConv.addEquiv _).symm _
 
 section
-variable [Semiring R] [Module R A] [AddCommMonoid B] [Module R B]
+variable [Semiring R] [Module R A] [AddMonoid B] [IsAddCommutative B] [Module R B]
 
 /-- Lift a linear equivalence between `A` and `B` to `WithConv A` and `WithConv B`. -/
 def congrLinearEquiv (f : A ≃ₗ[R] B) : WithConv A ≃ₗ[R] WithConv B :=

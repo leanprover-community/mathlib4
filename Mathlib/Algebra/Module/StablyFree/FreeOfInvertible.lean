@@ -19,8 +19,8 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 This file proves that a finite stably free module `M` is free if it is invertible.
 -/
 
-variable {R : Type*} [CommRing R] {M N : Type*} [AddCommGroup M] [Module R M]
-  [AddCommGroup N] [Module R N] {n : ℕ}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {M N : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
+  [AddGroup N] [IsAddCommutative N] [Module R N] {n : ℕ}
 
 /-- The map linear in the first argument and alternating in the remaining arguments that
 underlies the cofactor expansion along the `M`-summand of `M × N`. -/

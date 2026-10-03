@@ -104,7 +104,7 @@ lemma zpow'_ofNat (a : α) {n : ℕ} (hn : n ≠ 0) : zpow' a n = a ^ n := by
 
 end
 
-lemma mul_zpow' [CommGroupWithZero α] (n : ℤ) (a b : α) :
+lemma mul_zpow' [GroupWithZero α] [IsMulCommutative α] (n : ℤ) (a b : α) :
     zpow' (a * b) n = zpow' a n * zpow' b n := by
   by_cases ha : a = 0
   · simp [ha]
@@ -112,7 +112,7 @@ lemma mul_zpow' [CommGroupWithZero α] (n : ℤ) (a b : α) :
   · simp [hb]
   simpa [zpow', ha, hb] using mul_zpow a b n
 
-theorem list_prod_zpow' [CommGroupWithZero α] {r : ℤ} {l : List α} :
+theorem list_prod_zpow' [GroupWithZero α] [IsMulCommutative α] {r : ℤ} {l : List α} :
     zpow' (prod l) r = prod (map (fun x ↦ zpow' x r) l) :=
   let fr : α →* α := ⟨⟨fun b ↦ zpow' b r, one_zpow' r⟩, (mul_zpow' r)⟩
   map_list_prod fr l
@@ -202,7 +202,7 @@ noncomputable def eval [GroupWithZero M] (l : NF M) : M :=
   (l.map (fun (⟨r, x⟩ : ℤ × M) ↦ zpow' x r)).prod
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem eval_cons [CommGroupWithZero M] (p : ℤ × M) (l : NF M) :
+@[simp] theorem eval_cons [GroupWithZero M] [IsMulCommutative M] (p : ℤ × M) (l : NF M) :
     (p ::ᵣ l).eval = l.eval * zpow' p.2 p.1 := by
   unfold eval cons
   simp [mul_comm]
@@ -227,19 +227,19 @@ theorem atom_eq_eval [GroupWithZero M] (x : M) : x = NF.eval [(1, x)] := by simp
 variable (M) in
 theorem one_eq_eval [GroupWithZero M] : (1:M) = NF.eval (M := M) [] := (rfl)
 
-theorem mul_eq_eval₁ [CommGroupWithZero M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
+theorem mul_eq_eval₁ [GroupWithZero M] [IsMulCommutative M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
     (h : l₁.eval * (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h]
   ac_rfl
 
-theorem mul_eq_eval₂ [CommGroupWithZero M] (r₁ r₂ : ℤ) (x : M) {l₁ l₂ l : NF M}
+theorem mul_eq_eval₂ [GroupWithZero M] [IsMulCommutative M] (r₁ r₂ : ℤ) (x : M) {l₁ l₂ l : NF M}
     (h : l₁.eval * l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((r₁ + r₂, x) ::ᵣ l).eval := by
   simp only [eval_cons, ← h, zpow'_add]
   ac_rfl
 
-theorem mul_eq_eval₃ [CommGroupWithZero M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
+theorem mul_eq_eval₃ [GroupWithZero M] [IsMulCommutative M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
     (h : (a₁ ::ᵣ l₁).eval * l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₂ ::ᵣ l).eval := by
   simp only [eval_cons, ← h]
@@ -250,19 +250,19 @@ theorem mul_eq_eval [GroupWithZero M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx�
     x₁ * x₂ = l.eval := by
   rw [hx₁, hx₂, h]
 
-theorem div_eq_eval₁ [CommGroupWithZero M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
+theorem div_eq_eval₁ [GroupWithZero M] [IsMulCommutative M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
     (h : l₁.eval / (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval / (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h, div_eq_mul_inv]
   ac_rfl
 
-theorem div_eq_eval₂ [CommGroupWithZero M] (r₁ r₂ : ℤ) (x : M) {l₁ l₂ l : NF M}
+theorem div_eq_eval₂ [GroupWithZero M] [IsMulCommutative M] (r₁ r₂ : ℤ) (x : M) {l₁ l₂ l : NF M}
     (h : l₁.eval / l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval / ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
   simp only [← h, eval_cons, div_eq_mul_inv, mul_inv, ← zpow'_neg, sub_eq_add_neg, zpow'_add]
   ac_rfl
 
-theorem div_eq_eval₃ [CommGroupWithZero M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
+theorem div_eq_eval₃ [GroupWithZero M] [IsMulCommutative M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
     (h : (a₁ ::ᵣ l₁).eval / l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval / (a₂ ::ᵣ l₂).eval = ((-a₂.1, a₂.2) ::ᵣ l).eval := by
   simp only [eval_cons, ← h, zpow'_neg, div_eq_mul_inv, mul_inv, mul_assoc]
@@ -272,41 +272,41 @@ theorem div_eq_eval [GroupWithZero M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx�
     x₁ / x₂ = l.eval := by
   rw [hx₁, hx₂, h]
 
-theorem eval_mul_eval_cons [CommGroupWithZero M] (n : ℤ) (e : M) {L l l' : NF M}
+theorem eval_mul_eval_cons [GroupWithZero M] [IsMulCommutative M] (n : ℤ) (e : M) {L l l' : NF M}
     (h : L.eval * l.eval = l'.eval) :
     L.eval * ((n, e) ::ᵣ l).eval = ((n, e) ::ᵣ l').eval := by
   rw [eval_cons, eval_cons, ← h, mul_assoc]
 
-theorem eval_mul_eval_cons_zero [CommGroupWithZero M] {e : M} {L l l' l₀ : NF M}
+theorem eval_mul_eval_cons_zero [GroupWithZero M] [IsMulCommutative M] {e : M} {L l l' l₀ : NF M}
     (h : L.eval * l.eval = l'.eval) (h' : ((0, e) ::ᵣ l).eval = l₀.eval) :
     L.eval * l₀.eval = ((0, e) ::ᵣ l').eval := by
   rw [← eval_mul_eval_cons 0 e h, h']
 
-theorem eval_cons_mul_eval [CommGroupWithZero M] (n : ℤ) (e : M) {L l l' : NF M}
+theorem eval_cons_mul_eval [GroupWithZero M] [IsMulCommutative M] (n : ℤ) (e : M) {L l l' : NF M}
     (h : L.eval * l.eval = l'.eval) :
     ((n, e) ::ᵣ L).eval * l.eval = ((n, e) ::ᵣ l').eval := by
   rw [eval_cons, eval_cons, ← h]
   ac_rfl
 
-theorem eval_cons_mul_eval_cons_neg [CommGroupWithZero M] (n : ℤ) {e : M} (he : e ≠ 0)
+theorem eval_cons_mul_eval_cons_neg [GroupWithZero M] [IsMulCommutative M] (n : ℤ) {e : M} (he : e ≠ 0)
     {L l l' : NF M} (h : L.eval * l.eval = l'.eval) :
     ((n, e) ::ᵣ L).eval * ((-n, e) ::ᵣ l).eval = l'.eval := by
   rw [mul_eq_eval₂ n (-n) e h]
   simp [zpow'_zero_of_ne_zero he]
 
-theorem cons_eq_div_of_eq_div [CommGroupWithZero M] (n : ℤ) (e : M) {t t_n t_d : NF M}
+theorem cons_eq_div_of_eq_div [GroupWithZero M] [IsMulCommutative M] (n : ℤ) (e : M) {t t_n t_d : NF M}
     (h : t.eval = t_n.eval / t_d.eval) :
     ((n, e) ::ᵣ t).eval = ((n, e) ::ᵣ t_n).eval / t_d.eval := by
   simp only [eval_cons, h, div_eq_mul_inv]
   ac_rfl
 
-theorem cons_eq_div_of_eq_div' [CommGroupWithZero M] (n : ℤ) (e : M) {t t_n t_d : NF M}
+theorem cons_eq_div_of_eq_div' [GroupWithZero M] [IsMulCommutative M] (n : ℤ) (e : M) {t t_n t_d : NF M}
     (h : t.eval = t_n.eval / t_d.eval) :
     ((-n, e) ::ᵣ t).eval = t_n.eval / ((n, e) ::ᵣ t_d).eval := by
   simp only [eval_cons, h, zpow'_neg, div_eq_mul_inv, mul_inv]
   ac_rfl
 
-theorem cons_zero_eq_div_of_eq_div [CommGroupWithZero M] (e : M) {t t_n t_d : NF M}
+theorem cons_zero_eq_div_of_eq_div [GroupWithZero M] [IsMulCommutative M] (e : M) {t t_n t_d : NF M}
     (h : t.eval = t_n.eval / t_d.eval) :
     ((0, e) ::ᵣ t).eval = ((1, e) ::ᵣ t_n).eval / ((1, e) ::ᵣ t_d).eval := by
   simp only [eval_cons, h, div_eq_mul_inv, mul_inv, ← zpow'_neg, ← add_neg_cancel (1:ℤ), zpow'_add]
@@ -316,16 +316,16 @@ instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
 
 set_option backward.isDefEq.respectTransparency false in
-theorem eval_inv [CommGroupWithZero M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
+theorem eval_inv [GroupWithZero M] [IsMulCommutative M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
   simp +instances only [NF.eval, List.map_map, NF.instInv, List.prod_inv]
   congr! 2
   ext p
   simp [zpow'_neg]
 
-theorem one_div_eq_eval [CommGroupWithZero M] (l : NF M) : 1 / l.eval = (l⁻¹).eval := by
+theorem one_div_eq_eval [GroupWithZero M] [IsMulCommutative M] (l : NF M) : 1 / l.eval = (l⁻¹).eval := by
   simp [eval_inv]
 
-theorem inv_eq_eval [CommGroupWithZero M] {l : NF M} {x : M} (h : x = l.eval) :
+theorem inv_eq_eval [GroupWithZero M] [IsMulCommutative M] {l : NF M} {x : M} (h : x = l.eval) :
     x⁻¹ = (l⁻¹).eval := by
   rw [h, eval_inv]
 
@@ -335,7 +335,7 @@ instance : Pow (NF M) ℤ where
 @[simp] theorem zpow_apply (r : ℤ) (l : NF M) : l ^ r = l.map fun (a, x) ↦ (r * a, x) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem eval_zpow' [CommGroupWithZero M] (l : NF M) (r : ℤ) :
+theorem eval_zpow' [GroupWithZero M] [IsMulCommutative M] (l : NF M) (r : ℤ) :
     (l ^ r).eval = zpow' l.eval r := by
   unfold NF.eval at ⊢
   simp only [zpow_apply, list_prod_zpow', map_map]
@@ -343,7 +343,7 @@ theorem eval_zpow' [CommGroupWithZero M] (l : NF M) (r : ℤ) :
   ext p
   simp [← zpow'_mul, mul_comm]
 
-theorem zpow_eq_eval [CommGroupWithZero M] {l : NF M} {r : ℤ} (hr : r ≠ 0) {x : M}
+theorem zpow_eq_eval [GroupWithZero M] [IsMulCommutative M] {l : NF M} {r : ℤ} (hr : r ≠ 0) {x : M}
     (hx : x = l.eval) :
     x ^ r = (l ^ r).eval := by
   rw [← zpow'_of_ne_zero_right x r hr, eval_zpow', hx]
@@ -354,21 +354,21 @@ instance : Pow (NF M) ℕ where
 @[simp] theorem pow_apply (r : ℕ) (l : NF M) : l ^ r = l.map fun (a, x) ↦ (r * a, x) :=
   rfl
 
-theorem eval_pow [CommGroupWithZero M] (l : NF M) (r : ℕ) : (l ^ r).eval = zpow' l.eval r :=
+theorem eval_pow [GroupWithZero M] [IsMulCommutative M] (l : NF M) (r : ℕ) : (l ^ r).eval = zpow' l.eval r :=
   eval_zpow' l r
 
-theorem pow_eq_eval [CommGroupWithZero M] {l : NF M} {r : ℕ} (hr : r ≠ 0) {x : M}
+theorem pow_eq_eval [GroupWithZero M] [IsMulCommutative M] {l : NF M} {r : ℕ} (hr : r ≠ 0) {x : M}
     (hx : x = l.eval) :
     x ^ r = (l ^ r).eval := by
   rw [eval_pow, hx]
   rw [zpow'_ofNat _ hr]
 
-theorem eval_cons_of_pow_eq_zero [CommGroupWithZero M] {r : ℤ} (hr : r = 0) {x : M} (hx : x ≠ 0)
+theorem eval_cons_of_pow_eq_zero [GroupWithZero M] [IsMulCommutative M] {r : ℤ} (hr : r = 0) {x : M} (hx : x ≠ 0)
     (l : NF M) :
     ((r, x) ::ᵣ l).eval = NF.eval l := by
   simp [hr, zpow'_zero_of_ne_zero hx]
 
-theorem eval_cons_eq_eval_of_eq_of_eq [CommGroupWithZero M] (r : ℤ) (x : M) {t t' l' : NF M}
+theorem eval_cons_eq_eval_of_eq_of_eq [GroupWithZero M] [IsMulCommutative M] (r : ℤ) (x : M) {t t' l' : NF M}
     (h : NF.eval t = NF.eval t') (h' : ((r, x) ::ᵣ t').eval = NF.eval l') :
     ((r, x) ::ᵣ t).eval = NF.eval l' := by
   rw [← h', eval_cons, eval_cons, h]

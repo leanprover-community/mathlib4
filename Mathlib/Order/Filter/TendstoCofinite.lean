@@ -36,7 +36,7 @@ are precisely the valid index transformations for renaming variables in multivar
 
 @[expose] public section
 
-variable {α β ι R M : Type*} (f : α → β) (g : β → ι) [AddCommMonoid M]
+variable {α β ι R M : Type*} (f : α → β) (g : β → ι) [AddMonoid M] [IsAddCommutative M]
 
 open Set Filter
 

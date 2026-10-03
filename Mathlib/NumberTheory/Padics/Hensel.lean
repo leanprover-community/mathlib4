@@ -41,7 +41,7 @@ noncomputable section
 open scoped Topology
 
 -- We begin with some general lemmas that are used below in the computation.
-theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
+theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R ℤ_[p]]
     (F : Polynomial R) (x y : ℤ_[p]) :
     ‖F.aeval x - F.aeval y‖ ≤ ‖x - y‖ := by
   let ⟨z, hz⟩ := (F.map (algebraMap R ℤ_[p])).evalSubFactor x y
@@ -59,7 +59,7 @@ private theorem comp_tendsto_lim {p : ℕ} [Fact p.Prime] {F : Polynomial ℤ_[p
 
 section
 
-variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
+variable {p : ℕ} [Fact p.Prime] {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R ℤ_[p]]
   {ncs : CauSeq ℤ_[p] norm} {F : Polynomial R}
   {a : ℤ_[p]} (ncs_der_val : ∀ n, ‖F.derivative.aeval (ncs n)‖ = ‖F.derivative.aeval a‖)
 
@@ -84,7 +84,7 @@ end
 section
 
 
-variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
+variable {p : ℕ} [Fact p.Prime] {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R ℤ_[p]]
   {ncs : CauSeq ℤ_[p] norm} {F : Polynomial R}
   (hnorm : Tendsto (fun i => ‖F.aeval (ncs i)‖) atTop (𝓝 0))
 include hnorm
@@ -101,7 +101,7 @@ theorem limit_zero_of_norm_tendsto_zero : F.aeval ncs.lim = 0 := by
 
 end
 
-private theorem a_soln_is_unique {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R]
+private theorem a_soln_is_unique {p : ℕ} [Fact p.Prime] {R : Type*} [Semiring R] [IsMulCommutative R]
     [Algebra R ℤ_[p]] {F : Polynomial R} {a : ℤ_[p]} (ha : F.aeval a = 0) (z' : ℤ_[p])
     (hz' : F.aeval z' = 0) (hnormz' : ‖z' - a‖ < ‖F.derivative.aeval a‖) : z' = a := by
   let h := z' - a
@@ -125,7 +125,7 @@ section Hensel
 
 open Nat
 
-variable (p : ℕ) [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
+variable (p : ℕ) [Fact p.Prime] {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R ℤ_[p]]
   (F : Polynomial R) (a : ℤ_[p])
 
 /-- `T` is an auxiliary value that is used to control the behavior of the polynomial `F`. -/
@@ -446,7 +446,7 @@ private theorem soln_unique (z : ℤ_[p]) (hev : F.aeval z = 0)
 
 end Hensel
 
-variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
+variable {p : ℕ} [Fact p.Prime] {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R ℤ_[p]]
   {F : Polynomial R} {a : ℤ_[p]}
 
 variable (hnorm : ‖F.aeval a‖ < ‖F.derivative.aeval a‖ ^ 2)

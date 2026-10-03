@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 
 public section
 
-theorem isSimpleModule_iff_finrank_eq_one {R M} [DivisionRing R] [AddCommGroup M] [Module R M] :
+theorem isSimpleModule_iff_finrank_eq_one {R M} [DivisionRing R] [AddGroup M] [IsAddCommutative M] [Module R M] :
     IsSimpleModule R M ↔ Module.finrank R M = 1 :=
   ⟨fun h ↦ have := h.nontrivial; have ⟨v, hv⟩ := exists_ne (0 : M)
     (finrank_eq_one_iff_of_nonzero' v hv).mpr (IsSimpleModule.toSpanSingleton_surjective R hv),

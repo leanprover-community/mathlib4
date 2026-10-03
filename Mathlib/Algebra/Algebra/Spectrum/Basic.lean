@@ -53,7 +53,7 @@ universe u v
 section Defs
 
 variable (R : Type u) {A : Type v}
-variable [CommSemiring R] [Ring A] [Algebra R A]
+variable [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 local notation "↑ₐ" => algebraMap R A
 
@@ -94,7 +94,7 @@ namespace spectrum
 section ScalarSemiring
 
 variable {R : Type u} {A : Type v}
-variable [CommSemiring R] [Ring A] [Algebra R A]
+variable [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
 
@@ -144,7 +144,7 @@ theorem mem_resolventSet_iff {r : R} {a : A} : r ∈ resolventSet R a ↔ IsUnit
   Iff.rfl
 
 @[simp]
-theorem algebraMap_mem_iff (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
+theorem algebraMap_mem_iff (S : Type*) {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
     [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} {r : R} :
     algebraMap R S r ∈ spectrum S a ↔ r ∈ spectrum R a := by
   simp only [spectrum.mem_iff, Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
@@ -152,7 +152,7 @@ theorem algebraMap_mem_iff (S : Type*) {R A : Type*} [CommSemiring R] [CommSemir
 protected alias ⟨of_algebraMap_mem, algebraMap_mem⟩ := spectrum.algebraMap_mem_iff
 
 @[simp]
-theorem preimage_algebraMap (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
+theorem preimage_algebraMap (S : Type*) {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
     [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} :
     algebraMap R S ⁻¹' spectrum S a = spectrum R a :=
   Set.ext fun _ => spectrum.algebraMap_mem_iff _
@@ -293,13 +293,13 @@ end ScalarSemiring
 section ScalarRing
 
 variable {R : Type u} {A : Type v}
-variable [CommRing R] [Ring A] [Algebra R A]
+variable [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
 
 local notation "↑ₐ" => algebraMap R A
 
-theorem subset_subalgebra {S R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
+theorem subset_subalgebra {S R A : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A]
     [SetLike S A] [SubringClass S A] [SMulMemClass S R A] {s : S} (a : s) :
     spectrum R (a : A) ⊆ spectrum R a :=
   Set.compl_subset_compl.mpr fun _ ↦ IsUnit.map (SubalgebraClass.val s)
@@ -402,7 +402,7 @@ namespace AlgHom
 
 section CommSemiring
 
-variable {F R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A B : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 variable [FunLike F A B] [AlgHomClass F R A B]
 
 local notation "σ" => spectrum R
@@ -420,7 +420,7 @@ end CommSemiring
 
 section CommRing
 
-variable {F R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {F R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R
@@ -439,7 +439,7 @@ end CommRing
 end AlgHom
 
 @[simp]
-theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B] [Algebra R A]
+theorem AlgEquiv.spectrum_eq {F R A B : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [Ring B] [Algebra R A]
     [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) (a : A) :
     spectrum R (f a) = spectrum R a :=
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
@@ -448,7 +448,7 @@ theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B
 
 section ConjugateUnits
 
-variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 /-- Conjugation by a unit preserves the spectrum, inverse on right. -/
 @[simp]

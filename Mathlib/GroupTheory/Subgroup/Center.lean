@@ -86,7 +86,7 @@ instance centerCharacteristic : (center G).Characteristic := by
   exact (hg.comm (ϕ h)).symm
 
 @[to_additive]
-theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ := by
+theorem _root_.CommGroup.center_eq_top {G : Type*} [Group G] [IsMulCommutative G] : center G = ⊤ := by
   rw [eq_top_iff']
   intro x
   rw [Subgroup.mem_center_iff]

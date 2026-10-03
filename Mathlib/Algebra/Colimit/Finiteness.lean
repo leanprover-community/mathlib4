@@ -25,7 +25,7 @@ We show that every module is the direct limit of its finitely generated submodul
 
 namespace Module
 
-variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R M : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The directed system of finitely generated submodules of a module. -/
 def fgSystem (N₁ N₂ : {N : Submodule R M // N.FG}) (le : N₁ ≤ N₂) : N₁ →ₗ[R] N₂ :=

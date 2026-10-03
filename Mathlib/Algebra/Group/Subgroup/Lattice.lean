@@ -599,7 +599,7 @@ instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsD
     IsMulCommutative (⨆ i, S i : Subgroup G) :=
   isMulCommutative_iSup S.monotone.directed_le
 
-variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
+variable {C : Type*} [Group C] [IsMulCommutative C] {s t : Subgroup C} {x : C}
 
 @[to_additive]
 theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=

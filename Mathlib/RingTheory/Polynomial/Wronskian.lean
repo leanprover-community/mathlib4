@@ -37,7 +37,7 @@ open scoped Polynomial
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /-- Wronskian of a pair of polynomials, `W(a, b) = ab' - a'b`. -/
 def wronskian (a b : R[X]) : R[X] :=

@@ -71,7 +71,7 @@ open scoped Matrix
 namespace Matrix
 
 variable {m n o R S : Type*}
-variable [Fintype n] [Fintype o] [CommSemiring R] [CommSemiring S]
+variable [Fintype n] [Fintype o] [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 /-- Let `M` be an `(m × n)`-matrix over `R`.
 Then `Matrix.toMvPolynomial M` is the family (indexed by `i : m`)
@@ -143,7 +143,7 @@ open MvPolynomial
 section
 
 variable {R M₁ M₂ ι₁ ι₂ : Type*}
-variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂]
+variable [Ring R] [IsMulCommutative R] [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂]
 variable [Module R M₁] [Module R M₂]
 variable [Fintype ι₁] [Finite ι₂]
 variable [DecidableEq ι₁]
@@ -165,7 +165,7 @@ lemma toMvPolynomial_eval_eq_apply (f : M₁ →ₗ[R] M₂) (i : ι₂) (c : ι
     ← LinearMap.toMatrix_mulVec_repr b₁ b₂, LinearEquiv.apply_symm_apply]
 
 open Algebra.TensorProduct in
-lemma toMvPolynomial_baseChange (f : M₁ →ₗ[R] M₂) (i : ι₂) (A : Type*) [CommRing A] [Algebra R A] :
+lemma toMvPolynomial_baseChange (f : M₁ →ₗ[R] M₂) (i : ι₂) (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A] :
     (f.baseChange A).toMvPolynomial (basis A b₁) (basis A b₂) i =
       MvPolynomial.map (algebraMap R A) (f.toMvPolynomial b₁ b₂ i) := by
   simp only [toMvPolynomial, toMatrix_baseChange, Matrix.toMvPolynomial_map]
@@ -198,7 +198,7 @@ lemma toMvPolynomial_add (f g : M₁ →ₗ[R] M₂) :
 end
 
 variable {R M₁ M₂ M₃ ι₁ ι₂ ι₃ : Type*}
-variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Ring R] [IsMulCommutative R] [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup M₃] [IsAddCommutative M₃]
 variable [Module R M₁] [Module R M₂] [Module R M₃]
 variable [Fintype ι₁] [Fintype ι₂] [Finite ι₃]
 variable [DecidableEq ι₁] [DecidableEq ι₂]
@@ -213,7 +213,7 @@ lemma toMvPolynomial_comp (g : M₂ →ₗ[R] M₃) (f : M₁ →ₗ[R] M₂) (i
 end LinearMap
 
 variable {R L M n ι ι' ιM : Type*}
-variable [CommRing R] [AddCommGroup L] [Module R L] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [AddGroup L] [IsAddCommutative L] [Module R L] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable (φ : L →ₗ[R] Module.End R M)
 variable [Fintype ι] [Fintype ι'] [Fintype ιM] [DecidableEq ι] [DecidableEq ι']
 
@@ -241,7 +241,7 @@ def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
 
 set_option backward.defeqAttrib.useBackward true in
 open Algebra.TensorProduct MvPolynomial in
-lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
+lemma polyCharpolyAux_baseChange (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A] :
     polyCharpolyAux (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
       (polyCharpolyAux φ b bₘ).map (MvPolynomial.map (algebraMap R A)) := by
   simp only [polyCharpolyAux]
@@ -312,7 +312,7 @@ lemma polyCharpolyAux_map_eval [Module.Finite R M] [Module.Free R M]
 
 open Algebra.TensorProduct TensorProduct in
 lemma polyCharpolyAux_map_aeval
-    (A : Type*) [CommRing A] [Algebra R A] [Module.Finite A (A ⊗[R] M)] [Module.Free A (A ⊗[R] M)]
+    (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A] [Module.Finite A (A ⊗[R] M)] [Module.Free A (A ⊗[R] M)]
     (x : ι → A) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.aeval x).toRingHom =
       LinearMap.charpoly ((tensorProduct R A M M).comp (baseChange A φ)
@@ -389,7 +389,7 @@ lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = finrank R M) [
   · exact LinearMap.toMvPolynomial_isHomogeneous _ _ _
 
 open Algebra.TensorProduct MvPolynomial in
-lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
+lemma polyCharpoly_baseChange (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A] :
     polyCharpoly (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) =
       (polyCharpoly φ b).map (MvPolynomial.map (algebraMap R A)) := by
   unfold polyCharpoly

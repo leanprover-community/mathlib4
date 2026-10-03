@@ -23,8 +23,8 @@ public section
 
 open TensorProduct
 
-variable {R M P : Type*} [CommSemiring R]
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid P] [Module R P]
+variable {R M P : Type*} [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid P] [IsAddCommutative P] [Module R P]
 
 theorem Submodule.FG.exists_rTensor_fg_inclusion_eq {N : Submodule R P} (hN : N.FG)
     {x y : N ⊗[R] M} (eq : N.subtype.rTensor M x = N.subtype.rTensor M y) :

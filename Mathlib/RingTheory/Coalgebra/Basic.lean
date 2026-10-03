@@ -34,7 +34,7 @@ open scoped TensorProduct
 
 See `Coalgebra` for documentation. -/
 class CoalgebraStruct (R : Type u) (A : Type v)
-    [CommSemiring R] [AddCommMonoid A] [Module R A] where
+    [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
   comul : A →ₗ[R] A ⊗[R] A
   /-- The counit of the coalgebra -/
@@ -48,7 +48,7 @@ A representation of an element `a` of a coalgebra `A` is a finite sum of pure te
 that is equal to `comul a`.
 -/
 structure Coalgebra.Repr (R : Type u) {A : Type v}
-    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) (ι : Type*) where
+    [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] [CoalgebraStruct R A] (a : A) (ι : Type*) where
   /-- the finite indexing set of a representation of `comul a` -/
   (index : Finset ι)
   /-- the first coordinate of a representation of `comul a` -/
@@ -60,7 +60,7 @@ structure Coalgebra.Repr (R : Type u) {A : Type v}
 
 /-- An arbitrarily chosen representation. -/
 noncomputable def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
-    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) :
+    [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] [CoalgebraStruct R A] (a : A) :
     Coalgebra.Repr R a (A × A) where
   left := Prod.fst
   right := Prod.snd
@@ -77,7 +77,7 @@ end Coalgebra
 /-- A coalgebra over a commutative (semi)ring `R` is an `R`-module equipped with a coassociative
 comultiplication `Δ` and a counit `ε` obeying the left and right counitality laws. -/
 class Coalgebra (R : Type u) (A : Type v)
-    [CommSemiring R] [AddCommMonoid A] [Module R A] extends CoalgebraStruct R A where
+    [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] extends CoalgebraStruct R A where
   /-- The comultiplication is coassociative -/
   coassoc : TensorProduct.assoc R A A A ∘ₗ comul.rTensor A ∘ₗ comul = comul.lTensor A ∘ₗ comul
   /-- The counit satisfies the left counitality law -/
@@ -87,7 +87,7 @@ class Coalgebra (R : Type u) (A : Type v)
 
 namespace Coalgebra
 variable {R : Type u} {A : Type v} {ι : Type*} {κ Λ : ι → Type*}
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A] {a : A}
+variable [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] [Coalgebra R A] {a : A}
 
 /-- The indexing type of a representation of `comul a` -/
 @[nolint unusedArguments, deprecated "The indexing type is now unbundled" (since := "2026-05-31")]
@@ -138,7 +138,7 @@ lemma sum_tmul_tmul_eq (repr : Repr R a ι)
     TensorProduct.sum_tmul, ← repr.eq] using congr($(coassoc (R := R)) a)
 
 @[simp]
-theorem sum_counit_tmul_map_eq {B : Type*} [AddCommMonoid B] [Module R B]
+theorem sum_counit_tmul_map_eq {B : Type*} [AddMonoid B] [IsAddCommutative B] [Module R B]
     {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f : F) (a : A) {repr : Repr R a ι} :
     ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ f (repr.right i) = 1 ⊗ₜ[R] f a := by
   have := sum_counit_tmul_eq repr
@@ -146,7 +146,7 @@ theorem sum_counit_tmul_map_eq {B : Type*} [AddCommMonoid B] [Module R B]
   simp_all only [map_sum, LinearMap.lTensor_tmul, LinearMap.coe_ofClass]
 
 @[simp]
-theorem sum_map_tmul_counit_eq {B : Type*} [AddCommMonoid B] [Module R B]
+theorem sum_map_tmul_counit_eq {B : Type*} [AddMonoid B] [IsAddCommutative B] [Module R B]
     {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f : F) (a : A) {repr : Repr R a ι} :
     ∑ i ∈ repr.index, f (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = f a ⊗ₜ[R] 1 := by
   have := sum_tmul_counit_eq repr
@@ -154,7 +154,7 @@ theorem sum_map_tmul_counit_eq {B : Type*} [AddCommMonoid B] [Module R B]
   simp_all only [map_sum, LinearMap.rTensor_tmul, LinearMap.coe_ofClass]
 
 -- Cannot be @[simp] because `a₁` cannot be inferred by `simp`.
-theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
+theorem sum_map_tmul_tmul_eq {B : Type*} [AddMonoid B] [IsAddCommutative B] [Module R B]
     {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f g h : F) (a : A) {repr : Repr R a ι}
     {a₁ : (i : ι) → Repr R (repr.left i) (κ i)} {a₂ : (i : ι) → Repr R (repr.right i) (Λ i)} :
     ∑ i ∈ repr.index, ∑ j ∈ (a₂ i).index,
@@ -201,7 +201,7 @@ end Coalgebra
 open Coalgebra
 
 namespace CommSemiring
-variable (R : Type u) [CommSemiring R]
+variable (R : Type u) [Semiring R] [IsMulCommutative R]
 
 /-- Every commutative (semi)ring is a coalgebra over itself, with `Δ r = 1 ⊗ₜ r`. -/
 instance toCoalgebra : Coalgebra R R where
@@ -223,7 +223,7 @@ end CommSemiring
 
 namespace Prod
 variable (R : Type u) (A : Type v) (B : Type w)
-variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [Module R A] [Module R B]
 variable [Coalgebra R A] [Coalgebra R B]
 
 open LinearMap
@@ -304,7 +304,7 @@ end Prod
 namespace DFinsupp
 variable (R : Type u) (ι : Type v) (A : ι → Type w)
 variable [DecidableEq ι]
-variable [CommSemiring R] [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] [∀ i, Module R (A i)]
 
 open LinearMap
 
@@ -372,7 +372,7 @@ end DFinsupp
 
 namespace Finsupp
 variable (R : Type u) (ι : Type v) (A : Type w)
-variable [CommSemiring R] [AddCommMonoid A] [Module R A]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A]
 
 open LinearMap
 
@@ -436,7 +436,7 @@ instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
 end Finsupp
 
 namespace Pi
-variable {R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
+variable {R n : Type*} [Semiring R] [IsMulCommutative R] [Fintype n] [DecidableEq n]
   {A : n → Type*} [Π i, AddCommMonoid (A i)] [Π i, Module R (A i)]
 
 open TensorProduct LinearMap
@@ -490,7 +490,7 @@ open DFinsupp in
     comul (R := R) ⇑x = map (coeFnLinearMap _) (coeFnLinearMap _) (comul x) :=
   congr($comul_comp_dFinsuppCoeFnLinearMap x)
 
-variable {M : Type*} [AddCommMonoid M] [Module R M] [CoalgebraStruct R M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] [CoalgebraStruct R M]
 
 theorem counit_comp_finsuppLcoeFun :
     counit (R := R) (A := n → M) ∘ₗ Finsupp.lcoeFun = counit := by
@@ -543,8 +543,8 @@ instance instIsCocomm [∀ i, IsCocomm R (A i)] : IsCocomm R (Π i, A i) where
 end Pi
 
 namespace LinearEquiv
-variable {R A B : Type*} [CommSemiring R]
-  [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R]
+  [AddMonoid A] [IsAddCommutative A] [Module R A] [AddMonoid B] [IsAddCommutative B] [Module R B]
 
 variable (R) in
 /-- Transfer `CoalgebraStruct` across a `LinearEquiv`. -/

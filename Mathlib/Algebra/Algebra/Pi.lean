@@ -32,7 +32,7 @@ variable {R : Type*}
 
 -- The family of types already equipped with instances
 variable (A : ι → Type*)
-variable [CommSemiring R] [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
 
 instance algebra : Algebra R (Π i, A i) where
   algebraMap := RingHom.pi fun i ↦ algebraMap R (A i)
@@ -99,7 +99,7 @@ theorem _root_.AlgHom.pi_evalAlgHom : AlgHom.pi (evalAlgHom R A) = AlgHom.id R (
 @[deprecated (since := "2026-06-03")]
 alias algHom_evalAlgHom := _root_.AlgHom.pi_evalAlgHom
 
-variable (S : ι → Type*) [∀ i, CommSemiring (S i)]
+variable (S : ι → Type*) [∀ i, Semiring (S i)] [∀ i, IsMulCommutative (S i)]
 
 instance [∀ i, Algebra (S i) (A i)] : Algebra (Π i, S i) (Π i, A i) where
   algebraMap := RingHom.pi fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom S _)
@@ -132,14 +132,14 @@ end Pi
 
 /-- A special case of `Pi.algebra` for non-dependent types. Lean struggles to elaborate
 definitions elsewhere in the library without this. -/
-instance Function.algebra {R : Type*} (ι : Type*) (A : Type*) [CommSemiring R] [Semiring A]
+instance Function.algebra {R : Type*} (ι : Type*) (A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A]
     [Algebra R A] : Algebra R (ι → A) :=
   Pi.algebra _ _
 
 namespace AlgHom
 
 variable {R A B : Type*}
-variable [CommSemiring R] [Semiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B]
 variable [Algebra R A] [Algebra R B]
 
 /-- `R`-algebra homomorphism between the function spaces `ι → A` and `ι → B`, induced by an
@@ -157,7 +157,7 @@ end AlgHom
 namespace AlgEquiv
 
 variable {α β R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
-variable [CommSemiring R] [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Semiring (A₃ i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Semiring (A₃ i)]
 variable [∀ i, Algebra R (A₁ i)] [∀ i, Algebra R (A₂ i)] [∀ i, Algebra R (A₃ i)]
 
 /-- A family of algebra equivalences `∀ i, (A₁ i ≃ₐ A₂ i)` generates a
@@ -276,7 +276,7 @@ end
 end AlgEquiv
 
 /-- Apply an algebra map component-wise along a vector. -/
-protected def Pi.algebraMap (ι R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+protected def Pi.algebraMap (ι R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] :
     (ι → R) →ₗ[R] (ι → A) where
   toFun v := algebraMap R A ∘ v
   map_add' v w := by simp

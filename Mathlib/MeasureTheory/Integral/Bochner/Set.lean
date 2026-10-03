@@ -55,7 +55,7 @@ variable {mX : MeasurableSpace X}
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
   {f g : X → E} {s t : Set X} {μ : Measure X}
 
 theorem setIntegral_congr_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
@@ -730,7 +730,7 @@ end NormedAddCommGroup
 
 section Mono
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [PartialOrder E]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [PartialOrder E]
     [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
     {μ : Measure X} {f g : X → E} {s t : Set X}
 
@@ -903,7 +903,7 @@ end Nonneg
 
 section IntegrableUnion
 
-variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddCommGroup E]
+variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddGroup E] [IsAddCommutative E]
 
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → Set X}
     (hi : ∀ i : ι, IntegrableOn f (s i) μ)
@@ -950,8 +950,8 @@ We prove that for any set `s`, the function
 
 section ContinuousSetIntegral
 
-variable [NormedAddCommGroup E]
-  {𝕜 : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
+variable [NormedAddGroup E] [IsAddCommutative E]
+  {𝕜 : Type*} [NormedRing 𝕜] [NormedAddGroup F] [IsAddCommutative F] [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
   {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
@@ -1038,7 +1038,7 @@ end OpenPos
 
 section Support
 
-variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {mX : MeasurableSpace X}
+variable {M : Type*} [NormedAddGroup M] [IsAddCommutative M] [NormedSpace ℝ M] {mX : MeasurableSpace X}
   {ν : Measure X} {F : X → M}
 
 theorem MeasureTheory.setIntegral_support : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
@@ -1117,8 +1117,8 @@ section ParametricIntegral
 
 variable {G 𝕜 : Type*} [TopologicalSpace X]
   [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] {μ : Measure Y}
-  [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
 
 open Metric ContinuousLinearMap
 

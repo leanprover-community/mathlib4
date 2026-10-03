@@ -21,7 +21,7 @@ namespace Subalgebra
 
 open Submodule
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 theorem fg_bot_toSubmodule : (⊥ : Subalgebra R A).toSubmodule.FG :=
   ⟨{1}, by simp [Algebra.toSubmodule_bot, one_eq_span]⟩
@@ -33,7 +33,7 @@ end Subalgebra
 
 namespace Submodule
 
-theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (Submodule R A)ˣ) :
+theorem fg_unit {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] (I : (Submodule R A)ˣ) :
     (I : Submodule R A).FG := by
   obtain ⟨T, T', hT, hT', one_mem⟩ := mem_span_mul_finite_of_mem_mul (I.mul_inv ▸ one_le.mp le_rfl)
   refine ⟨T, span_eq_of_le _ hT ?_⟩
@@ -41,13 +41,13 @@ theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (
   conv_rhs => rw [← I.inv_mul, ← mul_assoc]
   grw [← span_le.mpr hT', Units.val_mul, Units.val_one, span_mul_span, one_le.2 one_mem]
 
-theorem fg_of_isUnit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] {I : Submodule R A}
+theorem fg_of_isUnit {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] {I : Submodule R A}
     (hI : IsUnit I) : I.FG :=
   fg_unit hI.unit
 
 section Mul
 
-variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R : Type*} {A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 variable {M N : Submodule R A}
 
 theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG := by

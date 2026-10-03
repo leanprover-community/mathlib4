@@ -106,14 +106,14 @@ theorem Polynomial.toLaurent_apply [Semiring R] (p : R[X]) :
 
 /-- The `R`-algebra map, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
-def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] :=
+def Polynomial.toLaurentAlg [Semiring R] [IsMulCommutative R] : R[X] →ₐ[R] R[T;T⁻¹] :=
   (mapDomainAlgHom R R Int.ofNatHom).comp (toFinsuppIsoAlg R).toAlgHom
 
-@[simp] lemma Polynomial.coe_toLaurentAlg [CommSemiring R] :
+@[simp] lemma Polynomial.coe_toLaurentAlg [Semiring R] [IsMulCommutative R] :
     (toLaurentAlg : R[X] → R[T;T⁻¹]) = toLaurent :=
   rfl
 
-theorem Polynomial.toLaurentAlg_apply [CommSemiring R] (f : R[X]) : toLaurentAlg f = toLaurent f :=
+theorem Polynomial.toLaurentAlg_apply [Semiring R] [IsMulCommutative R] (f : R[X]) : toLaurentAlg f = toLaurent f :=
   rfl
 
 namespace LaurentPolynomial
@@ -131,15 +131,15 @@ the constant Laurent polynomials. -/
 def C : R →+* R[T;T⁻¹] :=
   singleZeroRingHom
 
-theorem algebraMap_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (r : R) :
+theorem algebraMap_apply {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] (r : R) :
     algebraMap R (LaurentPolynomial A) r = C (algebraMap R A r) :=
   rfl
 
-/-- When we have `[CommSemiring R]`, the function `C` is the same as `algebraMap R R[T;T⁻¹]`.
+/-- When we have `[Semiring R] [IsMulCommutative R]`, the function `C` is the same as `algebraMap R R[T;T⁻¹]`.
 (But note that `C` is defined when `R` is not necessarily commutative, in which case
 `algebraMap` is not available.)
 -/
-theorem C_eq_algebraMap {R : Type*} [CommSemiring R] (r : R) : C r = algebraMap R R[T;T⁻¹] r :=
+theorem C_eq_algebraMap {R : Type*} [Semiring R] [IsMulCommutative R] (r : R) : C r = algebraMap R R[T;T⁻¹] r :=
   rfl
 
 theorem single_eq_C (r : R) : .single 0 r = C r := rfl
@@ -472,9 +472,9 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →+* S) (x : Sˣ)
+variable [Semiring R] [IsMulCommutative R] {S : Type*} [Semiring S] [IsMulCommutative S] (f : R →+* S) (x : Sˣ)
 
-instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] where
+instance algebraPolynomial (R : Type*) [Semiring R] [IsMulCommutative R] : Algebra R[X] R[T;T⁻¹] where
   algebraMap := Polynomial.toLaurent
   commutes' := fun f l => by simp [mul_comm]
   smul_def' := fun _ _ => rfl
@@ -573,7 +573,7 @@ end CommSemiring
 
 section Inversion
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- The map which substitutes `T ↦ T⁻¹` into a Laurent polynomial. -/
 def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.domCongr R R <| AddEquiv.neg _
@@ -606,7 +606,7 @@ section Smeval
 
 section SMulWithZero
 
-variable [Semiring R] [AddCommMonoid S] [SMulWithZero R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
+variable [Semiring R] [AddMonoid S] [IsAddCommutative S] [SMulWithZero R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
 
 /-- Evaluate a Laurent polynomial at a unit, using scalar multiplication. -/
 def smeval : S := f.coeff.sum fun n r => r • (x ^ n).val
@@ -632,7 +632,7 @@ end SMulWithZero
 
 section MulActionWithZero
 
-variable [Semiring R] [AddCommMonoid S] [MulActionWithZero R S] [Monoid S] (f g : R[T;T⁻¹])
+variable [Semiring R] [AddMonoid S] [IsAddCommutative S] [MulActionWithZero R S] [Monoid S] (f g : R[T;T⁻¹])
   (x y : Sˣ)
 
 @[simp]
@@ -647,7 +647,7 @@ end MulActionWithZero
 
 section Module
 
-variable [Semiring R] [AddCommMonoid S] [Module R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
+variable [Semiring R] [AddMonoid S] [IsAddCommutative S] [Module R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
 
 @[simp]
 theorem smeval_add : (f + g).smeval x = f.smeval x + g.smeval x := by

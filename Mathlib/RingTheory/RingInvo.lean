@@ -108,7 +108,7 @@ open RingInvo
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- The identity function of a `CommRing` is a ring involution. -/
 protected def RingInvo.id : RingInvo R :=

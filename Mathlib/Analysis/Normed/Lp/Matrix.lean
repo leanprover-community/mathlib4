@@ -22,7 +22,7 @@ open Matrix ENNReal
 variable {m n o R : Type*}
 
 namespace Matrix
-variable [Fintype n] [DecidableEq n] [CommRing R] (p q r : ℝ≥0∞)
+variable [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R] (p q r : ℝ≥0∞)
 
 open WithLp (toLp ofLp)
 
@@ -90,6 +90,6 @@ theorem toLpLin_symm_pow (A : Module.End R (WithLp p (n → R))) (k : ℕ) :
 end Matrix
 
 @[simp]
-theorem LinearMap.det_toLpLin {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R] (p : ℝ≥0∞)
+theorem LinearMap.det_toLpLin {ι R : Type*} [Fintype ι] [DecidableEq ι] [Ring R] [IsMulCommutative R] (p : ℝ≥0∞)
     (m : Matrix ι ι R) : (m.toLpLin p p).det = m.det := by
   simp [Matrix.toLpLin_eq_toLin]

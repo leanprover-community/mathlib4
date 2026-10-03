@@ -41,7 +41,7 @@ namespace Submodule
 
 section Semiring
 
-variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- `Submodule.subtype` as a `ContinuousLinearMap`. -/
 def subtypeL (p : Submodule R M) : p →L[R] M where
@@ -85,9 +85,9 @@ section Restrict
 variable {R₁ R₂ R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃]
   {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
   {M₁ M₂ M₃ : Type*}
-  [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R₁ M₁]
-  [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R₂ M₂]
-  [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R₃ M₃]
+  [TopologicalSpace M₁] [AddMonoid M₁] [IsAddCommutative M₁] [Module R₁ M₁]
+  [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂]
+  [TopologicalSpace M₃] [AddMonoid M₃] [IsAddCommutative M₃] [Module R₃ M₃]
 
 /-- The restriction of a linear map `f : M → M₂` to a submodule `p ⊆ M` gives a linear map
 `p → M₂`. -/
@@ -198,8 +198,8 @@ section
 variable {R₁ R₂ : Type*} [Ring R₁] [Ring R₂]
   {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁]
   {M₁ M₂ : Type*}
-  [TopologicalSpace M₁] [AddCommGroup M₁] [Module R₁ M₁]
-  [TopologicalSpace M₂] [AddCommGroup M₂] [Module R₂ M₂]
+  [TopologicalSpace M₁] [AddGroup M₁] [IsAddCommutative M₁] [Module R₁ M₁]
+  [TopologicalSpace M₂] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 
 /-- Given a right inverse `f₂ : M₂ →L[R] M₁` to `f₁ : M₁ →L[R] M₂`,
 `projKerOfRightInverse f₁ f₂ h` is the projection `M₁ →L[R] LinearMap.ker f₁` along

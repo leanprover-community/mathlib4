@@ -140,7 +140,7 @@ lemma Additive.addMonoidHom_ext [MulOneClass α] [AddZeroClass β]
   AddMonoidHom.toMultiplicativeRight.injective h
 
 section AddCommMonoid
-variable [AddMonoid M] [AddCommMonoid N]
+variable [AddMonoid M] [AddMonoid N] [IsAddCommutative N]
 
 @[simp]
 lemma AddMonoidHom.toMultiplicative_add (f g : M →+ N) :
@@ -149,25 +149,25 @@ lemma AddMonoidHom.toMultiplicative_add (f g : M →+ N) :
 end AddCommMonoid
 
 /-- `AddMonoidHom.toMultiplicativeLeft` as an `AddEquiv`. -/
-def AddMonoidHom.toMultiplicativeLeftAddEquiv [AddMonoid M] [CommMonoid N] :
+def AddMonoidHom.toMultiplicativeLeftAddEquiv [AddMonoid M] [Monoid N] [IsMulCommutative N] :
     (M →+ Additive N) ≃+ Additive (Multiplicative M →* N) where
   toEquiv := AddMonoidHom.toMultiplicativeLeft.trans Additive.ofMul
   map_add' _ _ := rfl
 
 /-- `AddMonoidHom.toMultiplicativeRight` as an `AddEquiv`. -/
-def AddMonoidHom.toMultiplicativeRightAddEquiv [Monoid M] [AddCommMonoid N] :
+def AddMonoidHom.toMultiplicativeRightAddEquiv [Monoid M] [AddMonoid N] [IsAddCommutative N] :
     (Additive M →+ N) ≃+ Additive (M →* Multiplicative N) where
   toEquiv := AddMonoidHom.toMultiplicativeRight.trans Additive.ofMul
   map_add' _ _ := rfl
 
 /-- `MonoidHom.toAdditiveLeft` as a `MulEquiv`. -/
-def MonoidHom.toAdditiveLeftMulEquiv [Monoid M] [AddCommMonoid N] :
+def MonoidHom.toAdditiveLeftMulEquiv [Monoid M] [AddMonoid N] [IsAddCommutative N] :
     (M →* Multiplicative N) ≃* Multiplicative (Additive M →+ N) where
   toEquiv := MonoidHom.toAdditiveLeft.trans Multiplicative.ofAdd
   map_mul' _ _ := rfl
 
 /-- `MonoidHom.toAdditiveRight` as a `MulEquiv`. -/
-def MonoidHom.toAdditiveRightMulEquiv [AddMonoid M] [CommMonoid N] :
+def MonoidHom.toAdditiveRightMulEquiv [AddMonoid M] [Monoid N] [IsMulCommutative N] :
     (Multiplicative M →* N) ≃* Multiplicative (M →+ Additive N) where
   toEquiv := MonoidHom.toAdditiveRight.trans Multiplicative.ofAdd
   map_mul' _ _ := rfl

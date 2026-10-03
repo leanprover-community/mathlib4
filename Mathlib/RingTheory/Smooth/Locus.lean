@@ -27,7 +27,7 @@ Some of them are true for arbitrary algebras but the proof is substantially hard
 
 universe u
 
-variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A]
+variable (R A : Type*) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
 
 namespace Algebra
 
@@ -107,7 +107,7 @@ lemma smoothLocus_eq_univ [Smooth R A] : smoothLocus R A = Set.univ := by
   rw [smoothLocus_eq_univ_iff]
   infer_instance
 
-lemma smoothLocus_comap_of_isLocalization {Af : Type*} [CommRing Af] [Algebra A Af] [Algebra R Af]
+lemma smoothLocus_comap_of_isLocalization {Af : Type*} [Ring Af] [IsMulCommutative Af] [Algebra A Af] [Algebra R Af]
     [IsScalarTower R A Af] (f : A) [IsLocalization.Away f Af] :
     PrimeSpectrum.comap (algebraMap A Af) ⁻¹' smoothLocus R A = smoothLocus R Af := by
   ext p

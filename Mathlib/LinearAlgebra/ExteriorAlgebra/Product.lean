@@ -21,9 +21,9 @@ graded tensor product of the two exterior algebras.
 
 universe u
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
-variable (M N : Type*) [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable (M N : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 open TensorProduct
 

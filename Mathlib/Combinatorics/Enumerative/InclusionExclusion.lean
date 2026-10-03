@@ -48,7 +48,7 @@ public section
 assert_not_exists Field
 
 namespace Finset
-variable {ι α G : Type*} [AddCommGroup G] {s : Finset ι}
+variable {ι α G : Type*} [AddGroup G] [IsAddCommutative G] {s : Finset ι}
 
 lemma prod_indicator_biUnion_sub_indicator (hs : s.Nonempty) (S : ι → Set α) (a : α) :
     ∏ i ∈ s, (Set.indicator (⋃ i ∈ s, S i) 1 a - Set.indicator (S i) 1 a) = (0 : ℤ) := by

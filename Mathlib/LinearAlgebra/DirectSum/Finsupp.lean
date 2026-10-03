@@ -43,9 +43,9 @@ open LinearMap
 
 section TensorProduct
 
-variable (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S]
-  (M : Type*) [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
-  (N : Type*) [AddCommMonoid N] [Module R N]
+variable (R S : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
+  (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower R S M]
+  (N : Type*) [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 namespace TensorProduct
 
@@ -189,7 +189,7 @@ end TensorProduct
 end TensorProduct
 
 variable (R S M N ι κ : Type*)
-  [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+  [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
   [Semiring S] [Algebra R S]
 
 theorem Finsupp.linearCombination_one_tmul [DecidableEq ι] {v : ι → M} :

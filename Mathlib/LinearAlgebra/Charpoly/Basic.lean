@@ -35,8 +35,8 @@ open Module.Free Polynomial Matrix
 
 namespace LinearMap
 
-variable {R : Type u} {M : Type v} [CommRing R]
-variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
+variable {R : Type u} {M : Type v} [Ring R] [IsMulCommutative R]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
 
 section Basic
 
@@ -95,7 +95,7 @@ theorem aeval_self_charpoly : aeval f f.charpoly = 0 := by
 theorem isIntegral : IsIntegral R f :=
   ⟨f.charpoly, ⟨charpoly_monic f, aeval_self_charpoly f⟩⟩
 
-theorem minpoly_dvd_charpoly {K : Type u} {M : Type v} [Field K] [AddCommGroup M] [Module K M]
+theorem minpoly_dvd_charpoly {K : Type u} {M : Type v} [Field K] [AddGroup M] [IsAddCommutative M] [Module K M]
     [FiniteDimensional K M] (f : M →ₗ[K] M) : minpoly K f ∣ f.charpoly :=
   minpoly.dvd _ _ (aeval_self_charpoly f)
 
@@ -134,7 +134,7 @@ end CayleyHamilton
 end LinearMap
 
 section Algebra
-variable {R M} [CommRing R] [Ring M] [Algebra R M]
+variable {R M} [Ring R] [IsMulCommutative R] [Ring M] [Algebra R M]
   [Module.Finite R M] [Module.Free R M]
 
 theorem Algebra.aeval_self_charpoly_lmul (α : M) :

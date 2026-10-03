@@ -29,7 +29,7 @@ In this file we construct the transfer homomorphism.
 @[expose] public noncomputable section
 
 
-variable {G : Type*} [Group G] {H : Subgroup G} {A : Type*} [CommGroup A] (ϕ : H →* A)
+variable {G : Type*} [Group G] {H : Subgroup G} {A : Type*} [Group A] [IsMulCommutative A] (ϕ : H →* A)
 
 namespace Subgroup
 

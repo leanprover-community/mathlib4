@@ -15,7 +15,7 @@ import Mathlib.Algebra.Ring.GeomSum
 public section
 
 namespace SModEq
-variable {R : Type*} [CommRing R] {I J : Ideal R} {p : ℕ} (hpI : (p : R) ∈ I)
+variable {R : Type*} [Ring R] [IsMulCommutative R] {I J : Ideal R} {p : ℕ} (hpI : (p : R) ∈ I)
 include hpI
 
 theorem pow_mul_of_le {x y : R} (h : x ≡ y [SMOD J]) (hJI : J ≤ I) :

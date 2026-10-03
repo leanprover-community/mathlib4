@@ -15,7 +15,7 @@ public section
 
 section
 
-variable (R : Type*) [CommRing R] [IsReduced R] (p n : ℕ) [ExpChar R p]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsReduced R] (p n : ℕ) [ExpChar R p]
 
 theorem iterateFrobenius_inj : Function.Injective (iterateFrobenius R p n) := fun x y H ↦ by
   rw [← sub_eq_zero] at H ⊢
@@ -29,14 +29,14 @@ end
 
 /-- If `ringChar R = 2`, where `R` is a finite reduced commutative ring,
 then every `a : R` is a square. -/
-theorem isSquare_of_charTwo' {R : Type*} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
+theorem isSquare_of_charTwo' {R : Type*} [Finite R] [Ring R] [IsMulCommutative R] [IsReduced R] [CharP R 2]
     (a : R) : IsSquare a := by
   cases nonempty_fintype R
   exact
     Exists.imp (fun b h => pow_two b ▸ Eq.symm h)
       (((Fintype.bijective_iff_injective_and_card _).mpr ⟨frobenius_inj R 2, rfl⟩).surjective a)
 
-variable {R : Type*} [CommRing R] [IsReduced R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsReduced R]
 
 @[simp]
 theorem ExpChar.pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R) :

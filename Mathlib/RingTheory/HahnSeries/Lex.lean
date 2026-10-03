@@ -115,7 +115,7 @@ theorem leadingCoeff_nonpos_iff {x : Lex R⟦Γ⟧} : (ofLex x).leadingCoeff ≤
 end LinearOrder
 
 section OrderedMonoid
-variable [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R] [IsOrderedAddMonoid R]
+variable [PartialOrder R] [AddMonoid R] [IsAddCommutative R] [AddLeftStrictMono R] [IsOrderedAddMonoid R]
 
 instance : IsOrderedAddMonoid (Lex R⟦Γ⟧) where
   add_le_add_left a b hab c := by
@@ -130,7 +130,7 @@ instance : IsOrderedAddMonoid (Lex R⟦Γ⟧) where
 end OrderedMonoid
 
 section OrderedGroup
-variable [LinearOrder R] [AddCommGroup R] [IsOrderedAddMonoid R]
+variable [LinearOrder R] [AddGroup R] [IsAddCommutative R] [IsOrderedAddMonoid R]
 
 @[simp]
 theorem support_abs (x : Lex R⟦Γ⟧) : (ofLex |x|).support = (ofLex x).support := by
@@ -359,7 +359,7 @@ end Archimedean
 end OrderedGroup
 
 section OrderedRing
-variable [LinearOrder R] [Ring R] [AddCommMonoid Γ]
+variable [LinearOrder R] [Ring R] [AddMonoid Γ] [IsAddCommutative Γ]
   [IsOrderedCancelAddMonoid Γ]
 
 instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) where

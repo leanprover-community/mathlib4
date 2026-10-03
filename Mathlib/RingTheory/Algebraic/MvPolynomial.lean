@@ -23,7 +23,7 @@ open Polynomial
 
 namespace MvPolynomial
 
-variable {σ : Type*} (R : Type*) [CommRing R]
+variable {σ : Type*} (R : Type*) [Ring R] [IsMulCommutative R]
 
 theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i ∉ s)
     {f : R[X]} (hf : Transcendental R f) :

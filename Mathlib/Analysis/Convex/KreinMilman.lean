@@ -56,9 +56,9 @@ public section
 
 open Set
 
-variable {E F : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [T2Space E]
+variable {E F : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E] [TopologicalSpace E] [T2Space E]
   [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] {s : Set E}
-  [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] [T1Space F]
+  [AddGroup F] [IsAddCommutative F] [Module ℝ F] [TopologicalSpace F] [T1Space F]
 
 /-- **Krein-Milman lemma**: In an LCTVS, any nonempty compact set has an extreme point. -/
 theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.Nonempty) :

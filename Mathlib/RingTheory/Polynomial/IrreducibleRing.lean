@@ -37,7 +37,7 @@ noncomputable section
 mapping into an integral domain `S` (https://math.stackexchange.com/a/4843432/235999).
 A generalization to `Polynomial.Monic.irreducible_of_irreducible_map`. -/
 theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
-    {R S : Type*} [CommRing R] [(nilradical R).IsPrime] [CommRing S] [IsDomain S]
+    {R S : Type*} [Ring R] [IsMulCommutative R] [(nilradical R).IsPrime] [Ring S] [IsMulCommutative S] [IsDomain S]
     (φ : R →+* S) (f : R[X]) (hm : f.Monic) (hi : Irreducible (f.map φ)) : Irreducible f := by
   let R' := R ⧸ nilradical R
   let ψ : R' →+* S := Ideal.Quotient.lift (nilradical R) φ

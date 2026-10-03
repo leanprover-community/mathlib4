@@ -59,7 +59,7 @@ open Set
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
 -/
 -- TODO: should this be renamed to `Noetherian`?
-class IsNoetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
+class IsNoetherian (R M) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : Prop where
   noetherian : ∀ s : Submodule R M, s.FG
 
 attribute [inherit_doc IsNoetherian] IsNoetherian.noetherian
@@ -67,7 +67,7 @@ attribute [inherit_doc IsNoetherian] IsNoetherian.noetherian
 section
 
 variable {R : Type*} {M : Type*}
-variable [Semiring R] [AddCommMonoid M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M]
 variable [Module R M]
 
 open IsNoetherian
@@ -108,7 +108,7 @@ section
 
 universe w
 
-variable {R M : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
+variable {R M : Type*} {N : Type w} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N]
   [Module R N]
 
 theorem isNoetherian_iff : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by

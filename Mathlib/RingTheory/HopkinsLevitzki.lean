@@ -37,23 +37,23 @@ public section
 universe u
 
 variable (R₀ R : Type*) (M : Type u) [Ring R₀] [Ring R] [Module R₀ R]
-  [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
+  [AddGroup M] [IsAddCommutative M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
 
 namespace IsSemiprimaryRing
 
 variable [IsSemiprimaryRing R]
 
 @[elab_as_elim] protected theorem induction
-    {P : ∀ (M : Type u) [AddCommGroup M] [Module R₀ M] [Module R M], Prop}
-    (h0 : ∀ (M) [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
+    {P : ∀ (M : Type u) [AddGroup M] [IsAddCommutative M] [Module R₀ M] [Module R M], Prop}
+    (h0 : ∀ (M) [AddGroup M] [IsAddCommutative M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
       [IsSemisimpleModule R M], Module.IsTorsionBySet R M (Ring.jacobson R) → P M)
-    (h1 : ∀ (M) [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M],
+    (h1 : ∀ (M) [AddGroup M] [IsAddCommutative M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M],
       let N := Ring.jacobson R • (⊤ : Submodule R M); P N → P (M ⧸ N) → P M) :
     P M := by
   have ⟨ss, n, hn⟩ := (isSemiprimaryRing_iff R).mp ‹_›
   set Jac := Ring.jacobson R
   replace hn : Jac ^ n ≤ Module.annihilator R M := hn ▸ bot_le
-  have {M} [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M] :
+  have {M} [AddGroup M] [IsAddCommutative M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M] :
       Jac ≤ Module.annihilator R M → P M := by
     rw [← SetLike.coe_subset_coe, ← Module.isTorsionBySet_iff_subset_annihilator]
     intro h
@@ -142,7 +142,7 @@ instance [IsArtinianRing R] : IsNoetherianRing R := ((IsArtinianRing.tfae R R).o
 
 /-- A finitely generated Artinian module over a commutative ring is Noetherian. This is not
 necessarily the case over a noncommutative ring, see https://mathoverflow.net/a/61700. -/
-theorem isNoetherian_of_finite_isArtinian {R} [CommRing R] [Module R M]
+theorem isNoetherian_of_finite_isArtinian {R} [Ring R] [IsMulCommutative R] [Module R M]
     [Module.Finite R M] [IsArtinian R M] : IsNoetherian R M := by
   obtain ⟨s, fin, span⟩ := Submodule.fg_def.mp (Module.finite_def.mp ‹_›)
   rw [← s.iUnion_of_singleton_coe, Submodule.span_iUnion] at span
@@ -158,7 +158,7 @@ theorem isNoetherian_of_finite_isArtinian {R} [CommRing R] [Module R M]
     infer_instance
   infer_instance
 
-theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [CommRing R]
+theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [Ring R] [IsMulCommutative R]
     [IsNoetherianRing R] [Ring.KrullDimLE 0 R] : IsArtinianRing R :=
   have eq := Ring.jacobson_eq_nilradical_of_krullDimLE_zero R
   let Spec := {I : Ideal R | I.IsPrime}
@@ -173,15 +173,15 @@ theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [CommRing R]
   have : IsSemiprimaryRing R := ⟨this, eq ▸ IsNoetherianRing.isNilpotent_nilradical R⟩
   IsSemiprimaryRing.isNoetherian_iff_isArtinian.mp ‹_›
 
-@[stacks 00KH] theorem isArtinianRing_iff_isNoetherianRing_krullDimLE_zero {R} [CommRing R] :
+@[stacks 00KH] theorem isArtinianRing_iff_isNoetherianRing_krullDimLE_zero {R} [Ring R] [IsMulCommutative R] :
     IsArtinianRing R ↔ IsNoetherianRing R ∧ Ring.KrullDimLE 0 R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨h, _⟩ ↦ h.isArtinianRing_of_krullDimLE_zero⟩
 
-theorem isArtinianRing_iff_krullDimLE_zero {R : Type*} [CommRing R] [IsNoetherianRing R] :
+theorem isArtinianRing_iff_krullDimLE_zero {R : Type*} [Ring R] [IsMulCommutative R] [IsNoetherianRing R] :
     IsArtinianRing R ↔ Ring.KrullDimLE 0 R := by
   rwa [isArtinianRing_iff_isNoetherianRing_krullDimLE_zero, and_iff_right]
 
-lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [CommRing R] [IsNoetherianRing R]
+lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [Ring R] [IsMulCommutative R] [IsNoetherianRing R]
     [IsLocalRing R] : IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
   rw [isArtinianRing_iff_krullDimLE_zero,
     Ideal.FG.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _),

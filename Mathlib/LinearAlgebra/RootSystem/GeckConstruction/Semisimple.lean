@@ -41,8 +41,8 @@ attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.dia
 
 section IsDomain
 
-variable {ι R M N : Type*} [CommRing R] [IsDomain R] [CharZero R]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [CharZero R]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   {P : RootPairing ι R M N} [P.IsCrystallographic] [P.IsReduced] {b : P.Base}
   [Fintype ι] [DecidableEq ι] (i : b.support)
 
@@ -179,7 +179,7 @@ end IsDomain
 section Field
 
 variable {ι K M N : Type*} [Field K] [CharZero K] [DecidableEq ι] [Fintype ι]
-  [AddCommGroup M] [Module K M] [AddCommGroup N] [Module K N]
+  [AddGroup M] [IsAddCommutative M] [Module K M] [AddGroup N] [IsAddCommutative N] [Module K N]
   {P : RootPairing ι K M N} [P.IsRootSystem] [P.IsCrystallographic] {b : P.Base}
 
 open LieModule Matrix

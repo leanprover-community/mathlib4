@@ -22,7 +22,7 @@ variable {σ : Type*} {R : Type*}
 
 section CommSemiring
 
-variable [CommSemiring R] {f g : MvPolynomial σ R}
+variable [Semiring R] [IsMulCommutative R] {f g : MvPolynomial σ R}
 
 section LinearOrder
 

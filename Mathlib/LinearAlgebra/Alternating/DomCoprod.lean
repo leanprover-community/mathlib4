@@ -25,8 +25,8 @@ taking values in the tensor product of the codomains of the original maps.
 open TensorProduct
 
 variable {ιa ιb : Type*} [Fintype ιa] [Fintype ιb]
-variable {R' : Type*} {Mᵢ N₁ N₂ : Type*} [CommSemiring R'] [AddCommGroup N₁] [Module R' N₁]
-  [AddCommGroup N₂] [Module R' N₂] [AddCommMonoid Mᵢ] [Module R' Mᵢ]
+variable {R' : Type*} {Mᵢ N₁ N₂ : Type*} [Semiring R'] [IsMulCommutative R'] [AddGroup N₁] [IsAddCommutative N₁] [Module R' N₁]
+  [AddGroup N₂] [IsAddCommutative N₂] [Module R' N₂] [AddMonoid Mᵢ] [IsAddCommutative Mᵢ] [Module R' Mᵢ]
 
 namespace Equiv.Perm
 

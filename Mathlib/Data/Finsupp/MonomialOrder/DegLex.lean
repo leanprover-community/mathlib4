@@ -62,13 +62,13 @@ protected def DegLex.rec {β : DegLex α → Sort*} (h : ∀ a, β (toDegLex a))
 @[simp] lemma DegLex.forall_iff {p : DegLex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toDegLex a) := Iff.rfl
 @[simp] lemma DegLex.exists_iff {p : DegLex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toDegLex a) := Iff.rfl
 
-noncomputable instance [AddCommMonoid α] :
+noncomputable instance [AddMonoid α] [IsAddCommutative α] :
     AddCommMonoid (DegLex α) := ofDegLex.addCommMonoid
 
-theorem toDegLex_add [AddCommMonoid α] (a b : α) :
+theorem toDegLex_add [AddMonoid α] [IsAddCommutative α] (a b : α) :
     toDegLex (a + b) = toDegLex a + toDegLex b := rfl
 
-theorem ofDegLex_add [AddCommMonoid α] (a b : DegLex α) :
+theorem ofDegLex_add [AddMonoid α] [IsAddCommutative α] (a b : DegLex α) :
     ofDegLex (a + b) = ofDegLex a + ofDegLex b := rfl
 
 namespace Finsupp

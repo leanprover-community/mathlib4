@@ -78,7 +78,7 @@ end Complex
 
 namespace Summable
 
-variable {R : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] [TopologicalSpace α]
+variable {R : Type*} [NormedRing R] [IsMulCommutative R] [NormOneClass R] [CompleteSpace R] [TopologicalSpace α]
   {f : ι → α → R}
 
 /-- If a sequence of continuous functions `f i x` on an open compact `K` have norms eventually

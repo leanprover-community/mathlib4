@@ -42,7 +42,7 @@ this side condition for convenience.
 
 public section
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 open Ideal Quotient
 
@@ -56,7 +56,7 @@ open IsLocalRing
 
 namespace AdicCompletion
 
-variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+variable (I : Ideal R) (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 lemma isAdicComplete_self (fg : I.FG) :
     IsAdicComplete (I.map (algebraMap R (AdicCompletion I R))) (AdicCompletion I R) :=

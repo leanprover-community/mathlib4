@@ -17,7 +17,7 @@ This file contains lemmas on localization away from an element requiring more im
 
 @[expose] public section
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace IsLocalization.Away
 
@@ -26,13 +26,13 @@ a localization of `R` at `t`, this is the function sending a pair `(t, y)`, with
 `t : s` and `y : t a`, to `t` multiplied with a numerator of `y`. The range
 of this function spans the unit ideal, if `s` and every `p t` do. -/
 noncomputable def mulNumerator (s : Set R)
-    {Rₜ : s → Type*} [∀ t, CommRing (Rₜ t)] [∀ t, Algebra R (Rₜ t)]
+    {Rₜ : s → Type*} [∀ t, Ring (Rₜ t)] [∀ t, IsMulCommutative (Rₜ t)] [∀ t, Algebra R (Rₜ t)]
     [∀ t, IsLocalization.Away t.val (Rₜ t)]
     (p : (t : s) → Set (Rₜ t)) (x : (t : s) × p t) : R :=
   x.1 * (IsLocalization.Away.sec x.1.1 x.2.1).1
 
 lemma span_range_mulNumerator_eq_top {s : Set R}
-    (hsone : Ideal.span s = ⊤) {Rₜ : s → Type*} [∀ t, CommRing (Rₜ t)] [∀ t, Algebra R (Rₜ t)]
+    (hsone : Ideal.span s = ⊤) {Rₜ : s → Type*} [∀ t, Ring (Rₜ t)] [∀ t, IsMulCommutative (Rₜ t)] [∀ t, Algebra R (Rₜ t)]
     [∀ t, IsLocalization.Away t.val (Rₜ t)]
     {p : (t : s) → Set (Rₜ t)} (htone : ∀ (r : s), Ideal.span (p r) = ⊤) :
     Ideal.span (Set.range (IsLocalization.Away.mulNumerator s p)) = ⊤ := by
@@ -71,7 +71,7 @@ end IsLocalization.Away
 
 section saturated
 
-variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S]
+variable {R : Type*} (S : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
   [Algebra R S] (x : R) [IsLocalization.Away x S] {I J : Ideal R}
 
 lemma Ideal.le_of_map_algebraMap_le (hle : I.map (algebraMap R S) ≤ J.map (algebraMap R S))

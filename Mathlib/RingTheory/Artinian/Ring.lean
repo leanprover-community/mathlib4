@@ -55,7 +55,7 @@ theorem isNilpotent_jacobson_bot {R} [Ring R] [IsArtinianRing R] :
     IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) :=
   Ideal.jacobson_bot (R := R) ▸ IsSemiprimaryRing.isNilpotent
 
-variable {R : Type*} [CommRing R] [IsArtinianRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsArtinianRing R]
 
 lemma jacobson_eq_radical (I : Ideal R) : I.jacobson = I.radical := by
   simp_rw [Ideal.jacobson, Ideal.radical_eq_sInf, IsArtinianRing.isPrime_iff_isMaximal]
@@ -72,7 +72,7 @@ theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsFi
 
 section Localization
 
-variable (S : Submonoid R) (L : Type*) [CommSemiring L] [Algebra R L] [IsLocalization S L]
+variable (S : Submonoid R) (L : Type*) [Semiring L] [IsMulCommutative L] [Algebra R L] [IsLocalization S L]
 include S
 
 /-- Localizing an Artinian ring can only reduce the amount of elements. -/

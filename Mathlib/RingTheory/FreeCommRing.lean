@@ -127,7 +127,7 @@ protected theorem induction_on {motive : FreeCommRing α → Prop} (z : FreeComm
 
 section lift
 
-variable {R : Type v} [CommRing R] (f : α → R)
+variable {R : Type v} [Ring R] [IsMulCommutative R] (f : α → R)
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in

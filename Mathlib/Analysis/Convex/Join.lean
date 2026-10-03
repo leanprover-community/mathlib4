@@ -24,7 +24,7 @@ variable {ι : Sort*} {𝕜 E : Type*}
 
 section OrderedSemiring
 
-variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E]
   {s t s₁ s₂ t₁ t₂ u : Set E}
   {x y : E}
 
@@ -115,7 +115,7 @@ end OrderedSemiring
 section LinearOrderedField
 
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] {s t : Set E} {x : E}
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {s t : Set E} {x : E}
 
 theorem convexJoin_assoc_aux (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u ⊆ convexJoin 𝕜 s (convexJoin 𝕜 t u) := by

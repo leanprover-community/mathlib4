@@ -25,7 +25,7 @@ namespace Subalgebra
 
 open Algebra
 
-variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable {R A B C D : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
          [Semiring C] [Algebra R C] [Semiring D] [Algebra R D]
 
 variable (S : Subalgebra R A) (S₁ : Subalgebra R B)

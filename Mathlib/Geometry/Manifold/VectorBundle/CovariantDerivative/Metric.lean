@@ -46,13 +46,13 @@ open scoped Manifold ContDiff
 
 variable
   -- Let `M` be a real manifold modeled on `(E, H)`
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- Let `V` be a bundle over `M` with standard fiber `F`.
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
-  [∀ x, NormedAddCommGroup (V x)] [∀ x, InnerProductSpace ℝ (V x)] [FiberBundle F V]
+  [∀ x, NormedAddGroup (V x)] [∀ x, IsAddCommutative (V x)] [∀ x, InnerProductSpace ℝ (V x)] [FiberBundle F V]
 
 /-! # Compatible connections
 

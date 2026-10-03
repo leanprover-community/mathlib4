@@ -19,7 +19,7 @@ open Filter Set
 
 variable
   {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 
 /--
 If `f` is meromorphic function on `ℝ` or `ℂ`, then there exists a point where a meromorphic function

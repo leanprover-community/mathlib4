@@ -41,7 +41,7 @@ open SetLike DirectSum Set
 
 variable {ιA ιM σA σM A M : Type*}
 
-variable [Semiring A] [AddCommMonoid M] [Module A M]
+variable [Semiring A] [AddMonoid M] [IsAddCommutative M] [Module A M]
 
 section HomogeneousDef
 

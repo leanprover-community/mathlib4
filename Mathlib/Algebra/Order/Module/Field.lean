@@ -20,7 +20,7 @@ open OrderDual
 variable {𝕜 G : Type*}
 
 section LinearOrderedSemifield
-variable [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup G] [PartialOrder G]
+variable [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup G] [IsAddCommutative G] [PartialOrder G]
 
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MulAction 𝕜 G] [PosSMulMono 𝕜 G] :
@@ -37,7 +37,7 @@ end LinearOrderedSemifield
 
 section Field
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G] [Module 𝕜 G] {a : 𝕜} {b₁ b₂ : G}
+  [AddGroup G] [IsAddCommutative G] [PartialOrder G] [IsOrderedAddMonoid G] [Module 𝕜 G] {a : 𝕜} {b₁ b₂ : G}
 
 section PosSMulMono
 variable [PosSMulMono 𝕜 G]
@@ -89,7 +89,7 @@ theorem smul_nonneg_of_pos_of_pos (ha : 0 < a) (hb : 0 < b) : 0 ≤ a • b :=
 end PosSMulMono
 
 section Module.IsTorsionFree
-variable [Semiring α] [IsDomain α] [AddCommMonoid β] [Module α β] [Module.IsTorsionFree α β]
+variable [Semiring α] [IsDomain α] [AddMonoid β] [IsAddCommutative β] [Module α β] [Module.IsTorsionFree α β]
   {a : α} {b : β}
 
 theorem smul_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 :=

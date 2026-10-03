@@ -56,14 +56,14 @@ lemma isUltrametricDist_of_isNonarchimedean_norm {S' : Type*} [SeminormedAddGrou
     (h : IsNonarchimedean (norm : S' → ℝ)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_norm_add_le_max_norm h
 
-lemma isNonarchimedean_norm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
+lemma isNonarchimedean_norm {R} [SeminormedAddGroup R] [IsAddCommutative R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖ : R → ℝ) := by
   intro x y
   convert! dist_triangle_max 0 x (x + y) using 1
   · simp
   · congr <;> simp [SeminormedAddGroup.dist_eq]
 
-lemma isUltrametricDist_iff_isNonarchimedean_norm {R} [SeminormedAddCommGroup R] :
+lemma isUltrametricDist_iff_isNonarchimedean_norm {R} [SeminormedAddGroup R] [IsAddCommutative R] :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖ : R → ℝ) :=
   ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 
@@ -81,11 +81,11 @@ lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGr
     (h : IsNonarchimedean (nnnorm : S' → ℝ≥0)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
 
-lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
+lemma isNonarchimedean_nnnorm {R} [SeminormedAddGroup R] [IsAddCommutative R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖₊ : R → ℝ) := by
   simpa using isNonarchimedean_norm
 
-lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] :
+lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddGroup R] [IsAddCommutative R] :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
   ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 
@@ -186,7 +186,7 @@ end Group
 
 section CommGroup
 
-variable {M ι : Type*} [SeminormedCommGroup M] [IsUltrametricDist M]
+variable {M ι : Type*} [SeminormedGroup M] [IsMulCommutative M] [IsUltrametricDist M]
 
 /-- A commutative group with an ultrametric group seminorm is nonarchimedean (as a topological
 group, i.e. every neighborhood of 1 contains an open subgroup). -/

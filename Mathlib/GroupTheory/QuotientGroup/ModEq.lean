@@ -21,7 +21,7 @@ public section
 
 namespace AddCommGroup
 
-variable {G : Type*} [AddCommGroup G] {a b p : G}
+variable {G : Type*} [AddGroup G] [IsAddCommutative G] {a b p : G}
 
 theorem modEq_iff_eq_mod_zmultiples : a ≡ b [PMOD p] ↔ (a : G ⧸ AddSubgroup.zmultiples p) = b := by
   rw [modEq_comm]

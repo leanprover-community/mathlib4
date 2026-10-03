@@ -26,11 +26,11 @@ instance.
 
 variable
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
     [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E] [T2Space E]
-    {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+    {F : Type*} [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
     [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] [FiniteDimensional 𝕜 F] [T2Space F]
-    {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+    {G : Type*} [AddGroup G] [IsAddCommutative G] [Module 𝕜 G] [TopologicalSpace G]
     [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 G]
 
 /-- Building continuous bilinear maps from bilinear maps between finite dimensional topological

@@ -24,7 +24,7 @@ namespace AlgebraicGeometry
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] {f : R[X]}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {f : R[X]}
 
 
 /-- Given a polynomial `f ∈ R[x]`, `imageOfDf` is the subset of `Spec R` where at least one

@@ -140,7 +140,7 @@ end Add
 
 section AddCommMonoid
 
-variable [AddCommMonoid R] [Mul R] [Fintype I] [Fintype J]
+variable [AddMonoid R] [IsAddCommutative R] [Mul R] [Fintype I] [Fintype J]
 
 /-- `Matrix.comp` as `RingEquiv` -/
 def compRingEquiv : Matrix I I (Matrix J J R) ≃+* Matrix (I × J) (I × J) R where
@@ -155,7 +155,7 @@ theorem compRingEquiv_apply (M : Matrix I I (Matrix J J R)) :
 theorem compRingEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
     (compRingEquiv I J R).symm M = (comp I I J J R).symm M := rfl
 
-instance (R) [MulOne R] [AddCommMonoid R] [DecidableEq I] [IsStablyFiniteRing R] :
+instance (R) [MulOne R] [AddMonoid R] [IsAddCommutative R] [DecidableEq I] [IsStablyFiniteRing R] :
     IsStablyFiniteRing (Matrix I I R) :=
   ⟨fun n ↦ .of_injective (MonoidHom.mk ⟨_, comp_one⟩ (compRingEquiv (Fin n) I R).map_mul)
     (RingEquiv.injective _)⟩
@@ -164,7 +164,7 @@ end AddCommMonoid
 
 section LinearMap
 
-variable (R₀ : Type*) [Semiring R₀] [AddCommMonoid R] [Module R₀ R]
+variable (R₀ : Type*) [Semiring R₀] [AddMonoid R] [IsAddCommutative R] [Module R₀ R]
 
 /-- `Matrix.comp` as `LinearEquiv` -/
 @[simps!]
@@ -176,7 +176,7 @@ end LinearMap
 
 section Algebra
 
-variable (K : Type*) [CommSemiring K] [Semiring R] [Fintype I] [Fintype J] [Algebra K R]
+variable (K : Type*) [Semiring K] [IsMulCommutative K] [Semiring R] [Fintype I] [Fintype J] [Algebra K R]
 
 variable [DecidableEq I] [DecidableEq J]
 

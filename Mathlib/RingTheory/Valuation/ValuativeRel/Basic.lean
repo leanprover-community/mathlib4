@@ -815,7 +815,7 @@ instance : (supp R).IsTwoSided where
 @[simp]
 lemma supp_def (x : R) : x ∈ supp R ↔ x ≤ᵥ 0 := Iff.refl _
 
-lemma supp_eq_valuation_supp {R : Type*} [CommRing R] [ValuativeRel R] :
+lemma supp_eq_valuation_supp {R : Type*} [Ring R] [IsMulCommutative R] [ValuativeRel R] :
     supp R = (valuation R).supp := by
   ext
   simpa using valuation_eq_zero_iff.symm
@@ -1240,7 +1240,7 @@ end ValuativeRel
 /-- If `B` is an `A` algebra and both `A` and `B` have valuative relations,
 we say that `B|A` is a valuative extension if the valuative relation on `A` is
 induced by the one on `B`. -/
-class ValuativeExtension (A B : Type*) [CommSemiring A] [Semiring B] [ValuativeRel A]
+class ValuativeExtension (A B : Type*) [Semiring A] [IsMulCommutative A] [Semiring B] [ValuativeRel A]
     [ValuativeRel B] [Algebra A B] where
   vle_iff_vle (a b : A) : algebraMap A B a ≤ᵥ algebraMap A B b ↔ a ≤ᵥ b
 
@@ -1252,7 +1252,7 @@ variable {A B : Type*}
 
 section Semiring
 
-variable [CommSemiring A] [Semiring B] [ValuativeRel A] [ValuativeRel B]
+variable [Semiring A] [IsMulCommutative A] [Semiring B] [ValuativeRel A] [ValuativeRel B]
   [Algebra A B] [ValuativeExtension A B]
 
 lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b := by
@@ -1272,7 +1272,7 @@ end Semiring
 
 section Ring
 
-variable [CommRing A] [Ring B] [ValuativeRel A] [ValuativeRel B]
+variable [Ring A] [IsMulCommutative A] [Ring B] [ValuativeRel A] [ValuativeRel B]
   [Algebra A B] [ValuativeExtension A B]
 
 variable (A) in

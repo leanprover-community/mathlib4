@@ -39,7 +39,7 @@ depending on the Zariski topology.
 -- See `Mathlib/RingTheory/Spectrum/Prime/Module.lean`
 assert_not_exists TopologicalSpace
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {p : PrimeSpectrum R}
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] {p : PrimeSpectrum R}
 
 variable (R M) in
 /-- The support of a module, defined as the set of primes `p` such that `Mₚ ≠ 0`. -/
@@ -150,7 +150,7 @@ lemma Module.support_of_isTorsionFree [IsDomain R] [IsTorsionFree R M] [Nontrivi
 @[deprecated (since := "2026-07-27")]
 alias Module.support_of_noZeroSMulDivisors := Module.support_of_isTorsionFree
 
-variable {N P : Type*} [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
+variable {N P : Type*} [AddGroup N] [IsAddCommutative N] [Module R N] [AddGroup P] [IsAddCommutative P] [Module R P]
 variable (f : M →ₗ[R] N) (g : N →ₗ[R] P)
 
 @[stacks 00L3 "(2)"]
@@ -230,7 +230,7 @@ lemma LocalizedModule.exists_subsingleton_away (p : Ideal R) [p.IsPrime]
   exact ⟨f, by simpa using hf', subsingleton_iff.mpr
     fun m ↦ ⟨f, Submonoid.mem_powers f, Module.mem_annihilator.mp hf _⟩⟩
 
-lemma IsLocalizedModule.exists_subsingleton_away {M' : Type*} [AddCommMonoid M'] [Module R M']
+lemma IsLocalizedModule.exists_subsingleton_away {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M']
     (l : M →ₗ[R] M') (p : Ideal R) [p.IsPrime] [IsLocalizedModule p.primeCompl l]
     [Subsingleton M'] :
     ∃ f ∉ p, Subsingleton (LocalizedModule.Away f M) := by

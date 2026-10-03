@@ -36,7 +36,7 @@ open LieModule LieSubmodule Module Set
 
 variable (k L M : Type*) [Field k] [CharZero k]
   [LieRing L] [LieAlgebra k L] [Module.Finite k L]
-  [AddCommGroup M] [Module k M] [LieRingModule L M] [LieModule k L M] [Module.Finite k M]
+  [AddGroup M] [IsAddCommutative M] [Module k M] [LieRingModule L M] [LieModule k L M] [Module.Finite k M]
   [IsIrreducible k L M] [IsFaithful k L M] [IsTriangularizable k L M]
 
 lemma hasCentralRadical_and_of_isIrreducible_of_isFaithful :
@@ -77,7 +77,7 @@ theorem hasTrivialRadical_of_isIrreducible_of_isFaithful
   simpa [this, ← ht] using h
 
 variable {k L M}
-variable {R : Type*} [CommRing R] [LieAlgebra R L] [Module R M] [LieModule R L M]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [LieAlgebra R L] [Module R M] [LieModule R L M]
 
 open LinearMap in
 lemma trace_toEnd_eq_zero {s : Set L} (hs : ∀ x ∈ s, LinearMap.trace R _ (toEnd R _ M x) = 0)

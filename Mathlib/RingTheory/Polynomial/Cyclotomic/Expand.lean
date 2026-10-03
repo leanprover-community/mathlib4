@@ -36,7 +36,7 @@ namespace Polynomial
 `expand R p (cyclotomic n R) = (cyclotomic (n * p) R) * (cyclotomic n R)`. -/
 @[simp]
 theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv : ¬p ∣ n)
-    (R : Type*) [CommRing R] :
+    (R : Type*) [Ring R] [IsMulCommutative R] :
     expand R p (cyclotomic n R) = cyclotomic (n * p) R * cyclotomic n R := by
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · simp
@@ -85,7 +85,7 @@ lemma cyclotomic_six (R : Type*) [Ring R] : cyclotomic 6 R = X ^ 2 - X + 1 := by
 `expand R p (cyclotomic n R) = cyclotomic (p * n) R`. -/
 @[simp]
 theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p ∣ n) (R : Type*)
-    [CommRing R] : expand R p (cyclotomic n R) = cyclotomic (n * p) R := by
+    [Ring R] [IsMulCommutative R] : expand R p (cyclotomic n R) = cyclotomic (n * p) R := by
   rcases n.eq_zero_or_pos with (rfl | hzero)
   · simp
   have := NeZero.of_pos hzero
@@ -105,7 +105,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
       Nat.totient_mul_of_prime_of_dvd hp hdiv, mul_comm]
 
 /-- If the `p ^ n`th cyclotomic polynomial is irreducible, so is the `p ^ m`th, for `m ≤ n`. -/
-theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]
+theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [Ring R] [IsMulCommutative R]
     [IsDomain R] {n m : ℕ} (hmn : m ≤ n) (h : Irreducible (cyclotomic (p ^ n) R)) :
     Irreducible (cyclotomic (p ^ m) R) := by
   rcases m.eq_zero_or_pos with (rfl | hm)
@@ -119,7 +119,7 @@ theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime 
     exact hk (by lia) (of_irreducible_expand hp.ne_zero h)
 
 /-- If `Irreducible (cyclotomic (p ^ n) R)` then `Irreducible (cyclotomic p R).` -/
-theorem cyclotomic_irreducible_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]
+theorem cyclotomic_irreducible_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [Ring R] [IsMulCommutative R]
     [IsDomain R] {n : ℕ} (hn : n ≠ 0) (h : Irreducible (cyclotomic (p ^ n) R)) :
     Irreducible (cyclotomic p R) :=
   pow_one p ▸ cyclotomic_irreducible_pow_of_irreducible_pow hp hn.bot_lt h
@@ -167,7 +167,7 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type*) {p m : ℕ} [Fact (Nat.Prime p)]
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then `ζ` is a root of `cyclotomic (p ^ k * m) R`
 if and only if it is a primitive `m`-th root of unity. -/
-theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [CommRing R]
+theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [Ring R] [IsMulCommutative R]
     [IsDomain R] [hp : Fact (Nat.Prime p)] [hchar : CharP R p] {μ : R} [NeZero (m : R)] :
     (Polynomial.cyclotomic (p ^ k * m) R).IsRoot μ ↔ IsPrimitiveRoot μ m := by
   rcases k.eq_zero_or_pos with (rfl | hk)

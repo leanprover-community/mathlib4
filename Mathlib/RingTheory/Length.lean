@@ -23,7 +23,7 @@ public import Mathlib.LinearAlgebra.Dimension.Free
 
 @[expose] public section
 
-variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- The length of a module, defined as the krull dimension of its submodule lattice. -/
 noncomputable
@@ -125,13 +125,13 @@ lemma Module.length_quotient {N : Submodule R M} :
   rw [Order.coheight_eq_krullDim_Ici, coe_length,
     Order.krullDim_eq_of_orderIso (Submodule.comapMkQRelIso N)]
 
-lemma LinearEquiv.length_eq {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
+lemma LinearEquiv.length_eq {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N] (e : M ≃ₗ[R] N) :
     Module.length R M = Module.length R N := by
   apply WithBot.coe_injective
   rw [Module.coe_length, Module.coe_length,
     Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComap e)]
 
-theorem Module.length_eq_of_surjective {S : Type*} [CommRing S] [Algebra S R] [Module S M]
+theorem Module.length_eq_of_surjective {S : Type*} [Ring S] [IsMulCommutative S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (h : Function.Surjective (algebraMap S R)) :
     Module.length S M = Module.length R M := by
   have : RingHomSurjective (algebraMap S R) := ⟨h⟩
@@ -159,7 +159,7 @@ lemma Submodule.length_lt [IsArtinian R M] [IsNoetherian R M] {N : Submodule R M
     Module.length R N < Module.length R M := by
   simpa [← Module.length_top (M := M), Module.length_submodule] using height_strictMono h.lt_top
 
-variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
+variable {N P : Type*} [AddGroup N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P] [Module R N] [Module R P]
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
 variable (H : Function.Exact f g)
 
@@ -212,7 +212,7 @@ lemma Module.length_prod :
 variable (R) in
 @[simp]
 lemma Module.length_pi_of_fintype : ∀ {ι : Type*} [Fintype ι]
-    (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)],
+    (M : ι → Type*) [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)],
     Module.length R (Π i, M i) = ∑ i, Module.length R (M i) := by
   apply Fintype.induction_empty_option
   · intro α β _ e IH M _ _
@@ -285,12 +285,12 @@ lemma Module.length_eq_one [IsSimpleModule R M] :
   Module.length_eq_one_iff.mpr ‹_›
 
 lemma Module.length_eq_rank
-    (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] :
+    (K M : Type*) [DivisionRing K] [AddGroup M] [IsAddCommutative M] [Module K M] :
     Module.length K M = (Module.rank K M).toENat := by
   simp [Module.length_of_free]
 
 lemma Module.length_eq_finrank
-    (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] [Module.Finite K M] :
+    (K M : Type*) [DivisionRing K] [AddGroup M] [IsAddCommutative M] [Module K M] [Module.Finite K M] :
     Module.length K M = Module.finrank K M := by
   simp [Module.length_of_free]
 

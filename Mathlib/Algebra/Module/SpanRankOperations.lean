@@ -29,8 +29,8 @@ public section
 
 open IsLocalRing TensorProduct Submodule
 
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-  {M : Type*} [AddCommGroup M] [Module R M] (N : Submodule R M)
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
+  {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] (N : Submodule R M)
 
 lemma Submodule.spanRank_baseChange_le : (N.baseChange A).spanRank ≤ N.spanRank.lift := by
   obtain ⟨s, hs₁, hs₂⟩ := N.exists_span_set_card_eq_spanRank

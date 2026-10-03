@@ -416,7 +416,7 @@ end EuclideanDomain
 
 section RingEquiv
 
-variable {R S : Type*} [EuclideanDomain R] [CommRing S]
+variable {R S : Type*} [EuclideanDomain R] [Ring S] [IsMulCommutative S]
 
 /-- If `S` is a nontrivial commutative ring isomorphic to a Euclidean domain
 `R` then it is also a Euclidean domain. -/

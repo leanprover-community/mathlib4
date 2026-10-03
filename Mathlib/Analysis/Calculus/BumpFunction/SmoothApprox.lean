@@ -23,8 +23,8 @@ Here we wrap these results removing measure-related arguments from the assumptio
 
 public section
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {f : E → F} {ε : ℝ}
+variable {E F : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [CompleteSpace F] {f : E → F} {ε : ℝ}
 
 open scoped ContDiff unitInterval Topology
 open Set Metric MeasureTheory

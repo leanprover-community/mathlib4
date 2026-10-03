@@ -88,7 +88,7 @@ theorem absNorm_under_eq_sInf :
     rw [← cast_natCast, cast_mem_ideal_iff, natCast_dvd_natCast] at h₂
     exact lt_iff_not_ge.mp h₀ <| Nat.le_of_dvd (Nat.sInf_mem (Set.nonempty_of_mem h₁)).1 h₂
 
-theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] [Infinite S]
+theorem absNorm_under_dvd_absNorm {S : Type*} [Ring S] [IsMulCommutative S] [IsDedekindDomain S] [Infinite S]
     (I : Ideal S) :
     absNorm (under ℤ I) ∣ absNorm I := by
   cases finite_or_infinite (S ⧸ I)
@@ -102,7 +102,7 @@ theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] 
   · rw [absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_zero_of_infinite]
     exact Nat.dvd_zero _
 
-theorem _root_.Ideal.ringChar_quot {S : Type*} [CommRing S] (I : Ideal S) :
+theorem _root_.Ideal.ringChar_quot {S : Type*} [Ring S] [IsMulCommutative S] (I : Ideal S) :
     ringChar (S ⧸ I) = absNorm (under ℤ I) := by
   refine ringChar.eq_iff.mpr <| (charP_iff _ _).mpr fun x ↦ ?_
   change Ideal.Quotient.mk I x = 0 ↔ _
@@ -114,7 +114,7 @@ end Int
 
 section CommRing
 
-variable [CommRing R] [IsDomain R] [Algebra.IsIntegral ℤ R]
+variable [Ring R] [IsMulCommutative R] [IsDomain R] [Algebra.IsIntegral ℤ R]
 
 theorem Nat.absNorm_under_prime (P : Ideal R) [P.IsPrime] [NeZero P] :
     (absNorm (under ℤ P)).Prime := by

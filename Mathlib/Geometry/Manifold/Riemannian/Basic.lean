@@ -30,7 +30,7 @@ The following code block is the standard way to say "Let `M` be a `C^∞` Rieman
 ```
 open scoped Bundle
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
@@ -57,7 +57,7 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 noncomputable section
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
@@ -92,7 +92,7 @@ satisfies the `IsRiemannianManifold 𝓘(ℝ, E) E` predicate, i.e., the extende
 two points is the infimum of the length of paths between these points.
 -/
 
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (F) in

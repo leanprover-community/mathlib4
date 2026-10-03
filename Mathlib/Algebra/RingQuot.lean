@@ -28,7 +28,7 @@ assert_not_exists TrivialStar
 universe uR uS uT uA u₄
 
 variable {R : Type uR} [Semiring R]
-variable {S : Type uS} [CommSemiring S]
+variable {S : Type uS} [Semiring S] [IsMulCommutative S]
 variable {T : Type uT}
 variable {A : Type uA} [Semiring A] [Algebra S A]
 
@@ -201,11 +201,11 @@ theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ :=
   (rfl)
 
-instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
+instance instIsScalarTower [Semiring T] [IsMulCommutative T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
 
-instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
+instance instSMulCommClass [Semiring T] [IsMulCommutative T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm s t]⟩
 
@@ -292,13 +292,13 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
   intCast_negSucc := fun n => congrArg RingQuot.mk <| by
     exact congrArg (Quot.mk _) (Int.cast_negSucc n)
 
-instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
+instance instCommSemiring {R : Type uR} [Semiring R] [IsMulCommutative R] (r : R → R → Prop) :
     CommSemiring (RingQuot r) where
   mul_comm := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp [mul_quot, mul_comm]
 
-instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
+instance {R : Type uR} [Ring R] [IsMulCommutative R] (r : R → R → Prop) : CommRing (RingQuot r) :=
   { RingQuot.instCommSemiring r, RingQuot.instRing r with }
 
 instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
@@ -405,7 +405,7 @@ agrees with the quotient by the appropriate ideal.
 -/
 
 
-variable {B : Type uR} [CommRing B]
+variable {B : Type uR} [Ring B] [IsMulCommutative B]
 
 /-- The universal ring homomorphism from `RingQuot r` to `B ⧸ Ideal.ofRel r`. -/
 def ringQuotToIdealQuotient (r : B → B → Prop) : RingQuot r →+* B ⧸ Ideal.ofRel r :=

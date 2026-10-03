@@ -35,9 +35,9 @@ general theory of Lie algebra cohomology.
 
 namespace LieModule.Cohomology
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 variable (L : Type*) [LieRing L] [LieAlgebra R L]
-variable (M : Type*) [AddCommGroup M] [Module R M]
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- Lie algebra 1-cochains over `L` with coefficients in the module `M`. -/
 abbrev oneCochain := L →ₗ[R] M

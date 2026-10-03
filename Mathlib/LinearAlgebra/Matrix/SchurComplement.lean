@@ -42,7 +42,7 @@ section CommRing
 
 variable [Fintype l] [Fintype m] [Fintype n]
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
-variable [CommRing α]
+variable [Ring α] [IsMulCommutative α]
 
 /-- LDU decomposition of a block matrix with an invertible top-left corner, using the
 Schur complement. -/

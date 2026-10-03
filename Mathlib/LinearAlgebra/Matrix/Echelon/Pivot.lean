@@ -136,7 +136,7 @@ end Zero
 
 section Rank
 
-variable [Fintype m] [Fintype n] [LinearOrder m] [LinearOrder n] [CommRing R] [IsDomain R]
+variable [Fintype m] [Fintype n] [LinearOrder m] [LinearOrder n] [Ring R] [IsMulCommutative R] [IsDomain R]
   {A : Matrix m n R} {l : m → WithTop n}
 
 namespace IsPivotedBy

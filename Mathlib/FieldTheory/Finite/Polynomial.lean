@@ -58,12 +58,12 @@ section Indicator
 variable [Fintype K] [Fintype σ]
 
 /-- Over a field, this is the indicator function as an `MvPolynomial`. -/
-def indicator [CommRing K] (a : σ → K) : MvPolynomial σ K :=
+def indicator [Ring K] [IsMulCommutative K] (a : σ → K) : MvPolynomial σ K :=
   ∏ n, (1 - (X n - C (a n)) ^ (Fintype.card K - 1))
 
 section CommRing
 
-variable [CommRing K]
+variable [Ring K] [IsMulCommutative K]
 
 theorem eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 := by
   nontriviality
@@ -117,7 +117,7 @@ variable (K σ)
 
 /-- `MvPolynomial.eval` as a `K`-linear map. -/
 @[simps]
-def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K where
+def evalₗ [Semiring K] [IsMulCommutative K] : MvPolynomial σ K →ₗ[K] (σ → K) → K where
   toFun p e := eval e p
   map_add' p q := by ext x; simp
   map_smul' a p := by ext e; simp
@@ -152,21 +152,21 @@ variable (σ : Type u) (K : Type u) [Fintype K]
 
 /-- The submodule of multivariate polynomials whose degree of each variable is strictly less
 than the cardinality of K. -/
-def R [CommRing K] : Type u :=
+def R [Ring K] [IsMulCommutative K] : Type u :=
   restrictDegree σ K (Fintype.card K - 1)
 -- The `AddCommGroup, Module K, Inhabited` instances should be constructed by a deriving handler.
 
-noncomputable instance [CommRing K] : AddCommGroup (R σ K) :=
+noncomputable instance [Ring K] [IsMulCommutative K] : AddCommGroup (R σ K) :=
   inferInstanceAs (AddCommGroup (restrictDegree σ K (Fintype.card K - 1)))
 
-noncomputable instance [CommRing K] : Module K (R σ K) :=
+noncomputable instance [Ring K] [IsMulCommutative K] : Module K (R σ K) :=
   inferInstanceAs (Module K (restrictDegree σ K (Fintype.card K - 1)))
 
-noncomputable instance [CommRing K] : Inhabited (R σ K) :=
+noncomputable instance [Ring K] [IsMulCommutative K] : Inhabited (R σ K) :=
   inferInstanceAs (Inhabited (restrictDegree σ K (Fintype.card K - 1)))
 
 /-- Evaluation in the `MvPolynomial.R` subtype. -/
-noncomputable def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
+noncomputable def evalᵢ [Ring K] [IsMulCommutative K] : R σ K →ₗ[K] (σ → K) → K :=
   (evalₗ K σ).comp (restrictDegree σ K (Fintype.card K - 1)).subtype
 
 -- TODO: would be nice to replace this by suitable decidability assumptions

@@ -126,9 +126,9 @@ variable {α β 𝕜 E F G : Type*}
 section TopologicalSpace
 
 variable [NontriviallyNormedField 𝕜]
-  [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
-  [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
-  [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G]
+  [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [Module 𝕜 E]
+  [AddGroup F] [IsAddCommutative F] [TopologicalSpace F] [Module 𝕜 F]
+  [AddGroup G] [IsAddCommutative G] [TopologicalSpace G] [Module 𝕜 G]
 
 section congr
 
@@ -612,7 +612,7 @@ theorem isLittleOTVS_fun_neg_right : f =o[𝕜; l] (-g ·) ↔ f =o[𝕜; l] g :
 
 end NegRight
 
-protected theorem IsLittleOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+protected theorem IsLittleOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
     {f : ∀ i, α → E i} (h : ∀ i, f i =o[𝕜; l] g) : (fun x i ↦ f i x) =o[𝕜; l] g := by
   have := hasBasis_pi fun i ↦ nhds_basis_balanced 𝕜 (E i)
@@ -625,17 +625,17 @@ protected theorem IsLittleOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCom
   refine (hIf.eventually_all.mpr (hV · · ε hε)).mono fun x hx ↦ ?_
   simpa only [id, egauge_pi hIf Ub, iSup₂_le_iff]
 
-theorem IsLittleOTVS.proj {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+theorem IsLittleOTVS.proj {ι : Type*} {E : ι → Type*} [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] {f : α → ∀ i, E i}
     (h : f =o[𝕜; l] g) (i : ι) : (f · i) =o[𝕜; l] g :=
   ContinuousLinearMap.proj i |>.isBigOTVS_fun_comp |>.trans_isLittleOTVS h
 
-theorem isLittleOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+theorem isLittleOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
     {f : α → ∀ i, E i} : f =o[𝕜; l] g ↔ ∀ i, (f · i) =o[𝕜; l] g :=
   ⟨.proj, .pi⟩
 
-protected theorem IsBigOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+protected theorem IsBigOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
     {f : ∀ i, α → E i} (h : ∀ i, f i =O[𝕜; l] g) : (fun x i ↦ f i x) =O[𝕜; l] g := by
   have := hasBasis_pi fun i ↦ nhds_basis_balanced 𝕜 (E i)
@@ -648,12 +648,12 @@ protected theorem IsBigOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGr
   refine (hIf.eventually_all.mpr hV).mono fun x hx ↦ ?_
   simpa only [id, egauge_pi hIf Ub, iSup₂_le_iff]
 
-theorem IsBigOTVS.proj {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+theorem IsBigOTVS.proj {ι : Type*} {E : ι → Type*} [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] {f : α → ∀ i, E i}
     (h : f =O[𝕜; l] g) (i : ι) : (f · i) =O[𝕜; l] g :=
   ContinuousLinearMap.proj i |>.isBigOTVS_fun_comp |>.trans h
 
-theorem isBigOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+theorem isBigOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
     {f : α → ∀ i, E i} : f =O[𝕜; l] g ↔ ∀ i, (f · i) =O[𝕜; l] g :=
   ⟨.proj, .pi⟩
@@ -747,7 +747,7 @@ end TopologicalSpace
 section NormedSpace
 
 variable [NontriviallyNormedField 𝕜]
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 variable {f : α → E} {g : α → F} {l : Filter α}
 
 lemma isLittleOTVS_iff_isLittleO : f =o[𝕜; l] g ↔ f =o[l] g := by

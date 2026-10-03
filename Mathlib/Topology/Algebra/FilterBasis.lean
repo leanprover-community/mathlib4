@@ -71,7 +71,7 @@ attribute [to_additive] GroupFilterBasis
 /-- `GroupFilterBasis` constructor in the commutative group case. -/
 @[to_additive (attr := instance_reducible)
   /-- `AddGroupFilterBasis` constructor in the additive commutative group case. -/]
-def groupFilterBasisOfComm {G : Type*} [CommGroup G] (sets : Set (Set G))
+def groupFilterBasisOfComm {G : Type*} [Group G] [IsMulCommutative G] (sets : Set (Set G))
     (nonempty : sets.Nonempty) (inter_sets : ∀ x y, x ∈ sets → y ∈ sets → ∃ z ∈ sets, z ⊆ x ∩ y)
     (one : ∀ U ∈ sets, (1 : G) ∈ U) (mul : ∀ U ∈ sets, ∃ V ∈ sets, V * V ⊆ U)
     (inv : ∀ U ∈ sets, ∃ V ∈ sets, V ⊆ (fun x ↦ x⁻¹) ⁻¹' U) : GroupFilterBasis G :=
@@ -293,7 +293,7 @@ end RingFilterBasis
   Example : if `M` is a topological module then the neighbourhoods of zero are a
   `ModuleFilterBasis`. Conversely given a `ModuleFilterBasis` one can define a topology
   compatible with the module structure on `M`. -/
-structure ModuleFilterBasis (R M : Type*) [Semiring R] [TopologicalSpace R] [AddCommGroup M]
+structure ModuleFilterBasis (R M : Type*) [Semiring R] [TopologicalSpace R] [AddGroup M] [IsAddCommutative M]
   [Module R M] extends AddGroupFilterBasis M where
   smul' : ∀ {U}, U ∈ sets → ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ sets, V • W ⊆ U
   smul_left' : ∀ (x₀ : R) {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U
@@ -303,7 +303,7 @@ namespace ModuleFilterBasis
 
 section Semiring
 
-variable {R M : Type*} [Semiring R] [TopologicalSpace R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Semiring R] [TopologicalSpace R] [AddGroup M] [IsAddCommutative M] [Module R M]
   (B : ModuleFilterBasis R M)
 
 instance GroupFilterBasis.hasMem : Membership (Set M) (ModuleFilterBasis R M) :=
@@ -349,7 +349,7 @@ def topology : TopologicalSpace M :=
 It has the given basis as a basis of neighborhoods of zero. This version gets the ring
 topology by unification instead of type class inference. -/
 @[instance_reducible]
-def topology' {R M : Type*} [Semiring R] {_ : TopologicalSpace R} [AddCommGroup M] [Module R M]
+def topology' {R M : Type*} [Semiring R] {_ : TopologicalSpace R} [AddGroup M] [IsAddCommutative M] [Module R M]
     (B : ModuleFilterBasis R M) : TopologicalSpace M :=
   B.toAddGroupFilterBasis.topology
 
@@ -357,7 +357,7 @@ end Semiring
 
 section Ring
 
-variable {R M : Type*} [Ring R] [TopologicalSpace R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [TopologicalSpace R] [AddGroup M] [IsAddCommutative M] [Module R M]
   (B : ModuleFilterBasis R M)
 
 /-- A topological additive group with a basis of `𝓝 0` satisfying the axioms of `ModuleFilterBasis`

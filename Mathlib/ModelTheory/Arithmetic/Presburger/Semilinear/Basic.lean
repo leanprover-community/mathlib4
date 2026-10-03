@@ -64,7 +64,7 @@ private theorem sep_apply_eq {ι : Type*} {M : ι → Type*} [∀ i, Add (M i)] 
   simp only [Pi.add_apply] at *
   rw [hxyi, ← hxi, hxzi, hxi]
 
-variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [WellQuasiOrderedLE M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [WellQuasiOrderedLE M]
   [IsOrderedCancelAddMonoid M] [CanonicallyOrderedAdd M]
 
 private theorem exists_isSemilinearSet_setOfPred_le {s : Set M} (hs : IsSlice s)
@@ -160,7 +160,7 @@ private theorem Nat.isSemilinearSet_of_isSlice {ι : Type*} [Finite ι] {s : Set
 
 /-! ### Semilinearity of linear equations and preimages -/
 
-variable {M N ι κ : Type*} [AddCommMonoid M] [AddCommMonoid N] {s s₁ s₂ : Set M}
+variable {M N ι κ : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] {s s₁ s₂ : Set M}
 
 private theorem Nat.isSemilinearSet_setOfPred_eq [Finite ι] {F G : Type*}
     [FunLike F (ι → ℕ) M] [AddMonoidHomClass F (ι → ℕ) M] [FunLike G (ι → ℕ) M]

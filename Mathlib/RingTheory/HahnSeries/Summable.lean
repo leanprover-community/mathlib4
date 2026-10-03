@@ -64,7 +64,7 @@ section
 coefficient of the sum to be well-defined, we require that only finitely many series are nonzero at
 any given coefficient.  For the formal sum to be a Hahn series, we require that the union of the
 supports of the constituent series is partially well-ordered. -/
-structure SummableFamily (Γ R) [PartialOrder Γ] [AddCommMonoid R] (α : Type*) where
+structure SummableFamily (Γ R) [PartialOrder Γ] [AddMonoid R] [IsAddCommutative R] (α : Type*) where
   /-- A parametrized family of Hahn series. -/
   toFun : α → R⟦Γ⟧
   isPWO_iUnion_support' : Set.IsPWO (⋃ a : α, (toFun a).support)
@@ -76,7 +76,7 @@ namespace SummableFamily
 
 section AddCommMonoid
 
-variable [PartialOrder Γ] [AddCommMonoid R]
+variable [PartialOrder Γ] [AddMonoid R] [IsAddCommutative R]
 
 @[macro_inline]
 instance : FunLike (SummableFamily Γ R α) α R⟦Γ⟧ where
@@ -277,7 +277,7 @@ theorem hsum_equiv (e : α ≃ β) (s : SummableFamily Γ R α) : (Equiv e s).hs
 
 /-- The summable family given by multiplying every series in a summable family by a scalar. -/
 @[simps]
-def smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R) (s : SummableFamily Γ V α) :
+def smulFamily [AddMonoid V] [IsAddCommutative V] [SMulWithZero R V] (f : α → R) (s : SummableFamily Γ V α) :
     SummableFamily Γ V α where
   toFun a := (f a) • s a
   isPWO_iUnion_support' := by
@@ -290,7 +290,7 @@ def smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R) (s : Summable
     simp_all only [coeff_smul, ne_eq, Set.mem_ofPred_eq, Function.mem_support]
     exact right_ne_zero_of_smul hi
 
-theorem hsum_smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R)
+theorem hsum_smulFamily [AddMonoid V] [IsAddCommutative V] [SMulWithZero R V] (f : α → R)
     (s : SummableFamily Γ V α) (g : Γ) :
     (smulFamily f s).hsum.coeff g = ∑ᶠ i, (f i) • ((s i).coeff g) :=
   rfl
@@ -323,7 +323,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [PartialOrder Γ] [AddCommGroup R] {s t : SummableFamily Γ R α} {a : α}
+variable [PartialOrder Γ] [AddGroup R] [IsAddCommutative R] {s t : SummableFamily Γ R α} {a : α}
 
 instance : Neg (SummableFamily Γ R α) where
   neg s :=
@@ -368,9 +368,9 @@ end AddCommGroup
 
 section SMul
 
-variable [PartialOrder Γ] [PartialOrder Γ'] [AddCommMonoid V]
+variable [PartialOrder Γ] [PartialOrder Γ'] [AddMonoid V] [IsAddCommutative V]
 
-variable [AddCommMonoid R] [SMulWithZero R V]
+variable [AddMonoid R] [IsAddCommutative R] [SMulWithZero R V]
 
 theorem smul_support_subset_prod (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
@@ -449,7 +449,7 @@ theorem sum_vAddAntidiagonal_eq (s : SummableFamily Γ R α) (t : SummableFamily
     · simp_all
 
 set_option backward.isDefEq.respectTransparency false in
-theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
+theorem coeff_smul {R} {V} [Semiring R] [AddMonoid V] [IsAddCommutative V] [Module R V]
     (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) (g : Γ') :
     (smul s t).hsum.coeff g =
     ∑ gh ∈ VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO s.isPWO_iUnion_support
@@ -468,7 +468,7 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
   exact hsupp ab.1 ab.2 hab
 
 set_option backward.isDefEq.respectTransparency false in
-theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
+theorem smul_hsum {R} {V} [Semiring R] [AddMonoid V] [IsAddCommutative V] [Module R V]
     (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) :
     (smul s t).hsum = (of R).symm (s.hsum • (of R) (t.hsum)) := by
   ext g
@@ -500,7 +500,7 @@ theorem smul_apply {x : R⟦Γ⟧} {s : SummableFamily Γ' V α} {a : α} :
   rfl
 
 @[simp]
-theorem hsum_smul_module {R} {V} [Semiring R] [AddCommMonoid V] [Module R V] {x : R⟦Γ⟧}
+theorem hsum_smul_module {R} {V} [Semiring R] [AddMonoid V] [IsAddCommutative V] [Module R V] {x : R⟦Γ⟧}
     {s : SummableFamily Γ' V α} :
     (x • s).hsum = (of R).symm (x • of R s.hsum) := by
   rw [smul_eq, hsum_equiv, smul_hsum, hsum_unique, const_toFun]
@@ -509,10 +509,10 @@ end SMul
 
 section Semiring
 
-variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+variable [AddMonoid Γ] [IsAddCommutative Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
   [PartialOrder Γ'] [AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Semiring R]
 
-instance [AddCommMonoid V] [Module R V] : Module R⟦Γ⟧ (SummableFamily Γ' V α) where
+instance [AddMonoid V] [IsAddCommutative V] [Module R V] : Module R⟦Γ⟧ (SummableFamily Γ' V α) where
   smul_zero _ := ext fun _ => by simp
   zero_smul _ := ext fun _ => by simp
   one_smul _ := ext fun _ => by rw [smul_apply, HahnModule.one_smul', Equiv.symm_apply_apply]
@@ -574,7 +574,7 @@ end Semiring
 
 section OfFinsupp
 
-variable [PartialOrder Γ] [AddCommMonoid R]
+variable [PartialOrder Γ] [AddMonoid R] [IsAddCommutative R]
 
 /-- A family with only finitely many nonzero elements is summable. -/
 def ofFinsupp (f : α →₀ R⟦Γ⟧) : SummableFamily Γ R α where
@@ -611,7 +611,7 @@ end OfFinsupp
 
 section EmbDomain
 
-variable [PartialOrder Γ] [AddCommMonoid R]
+variable [PartialOrder Γ] [AddMonoid R] [IsAddCommutative R]
 
 open scoped Classical in
 /-- A summable family can be reindexed by an embedding without changing its sum. -/
@@ -661,7 +661,7 @@ end EmbDomain
 
 section powers
 
-theorem support_pow_subset_closure [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+theorem support_pow_subset_closure [AddMonoid Γ] [IsAddCommutative Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Semiring R] (x : R⟦Γ⟧)
     (n : ℕ) : support (x ^ n) ⊆ AddSubmonoid.closure (support x) := by
   intro g hn
@@ -674,7 +674,7 @@ theorem support_pow_subset_closure [AddCommMonoid Γ] [PartialOrder Γ] [IsOrder
     obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset hn
     exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 
-theorem isPWO_iUnion_support_powers [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
+theorem isPWO_iUnion_support_powers [AddMonoid Γ] [IsAddCommutative Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Semiring R]
     {x : R⟦Γ⟧} (hx : 0 ≤ x.order) :
     (⋃ n : ℕ, (x ^ n).support).IsPWO :=
@@ -682,7 +682,7 @@ theorem isPWO_iUnion_support_powers [AddCommMonoid Γ] [LinearOrder Γ] [IsOrder
     fun _ hg => le_trans hx (order_le_of_coeff_ne_zero (Function.mem_support.mp hg))).mono
     (Set.iUnion_subset fun n => support_pow_subset_closure x n)
 
-theorem co_support_zero [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+theorem co_support_zero [AddMonoid Γ] [IsAddCommutative Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Semiring R] (g : Γ) :
     {a | ¬((0 : R⟦Γ⟧) ^ a).coeff g = 0} ⊆ {0} := by
   simp only [Set.subset_singleton_iff, Set.mem_ofPred_eq]
@@ -690,7 +690,7 @@ theorem co_support_zero [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAdd
   by_contra h'
   simp_all only [ne_eq, not_false_eq_true, zero_pow, coeff_zero, not_true_eq_false]
 
-variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
+variable [AddMonoid Γ] [IsAddCommutative Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsMulCommutative R]
 
 theorem pow_finite_co_support {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (g : Γ) :
     Set.Finite {a | ((fun n ↦ x ^ n) a).coeff g ≠ 0} := by
@@ -781,7 +781,7 @@ section Inversion
 
 section CommRing
 
-variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
+variable [AddMonoid Γ] [IsAddCommutative Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsMulCommutative R]
 
 theorem one_minus_single_neg_mul {x y : R⟦Γ⟧} {r : R} (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + single x.order x.leadingCoeff) (oinv : Γ) (hxo : oinv + x.order = 0) :
@@ -841,7 +841,7 @@ end CommRing
 
 section IsDomain
 
-variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [CommRing R] [IsDomain R]
+variable [AddGroup Γ] [IsAddCommutative Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Ring R] [IsMulCommutative R] [IsDomain R]
 
 theorem isUnit_iff {x : R⟦Γ⟧} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
   constructor
@@ -863,7 +863,7 @@ end IsDomain
 
 section Field
 
-variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
+variable [AddGroup Γ] [IsAddCommutative Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
 
 @[simps -isSimp inv]
 instance : DivInvMonoid R⟦Γ⟧ where

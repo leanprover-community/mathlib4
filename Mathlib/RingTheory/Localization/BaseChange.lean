@@ -23,10 +23,10 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 @[expose] public section
 
-variable {R : Type*} [CommSemiring R] (S : Submonoid R)
-  (A : Type*) [CommSemiring A] [Algebra R A] [IsLocalization S A]
-  {M : Type*} [AddCommMonoid M] [Module R M]
-  {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module A M'] [IsScalarTower R A M']
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (S : Submonoid R)
+  (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A] [IsLocalization S A]
+  {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+  {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] [Module A M'] [IsScalarTower R A M']
   (f : M →ₗ[R] M')
 
 /-- The forward direction of `isLocalizedModule_iff_isBaseChange`. It is also used to prove the
@@ -86,7 +86,7 @@ lemma LocalizedModule.equivTensorProduct_apply_mk (x : M) (s : S) :
   simp
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-instance {T : Type*} [CommSemiring T] [Algebra R T] :
+instance {T : Type*} [Semiring T] [IsMulCommutative T] [Algebra R T] :
     IsLocalizedModule S (IsScalarTower.toAlgHom R T (A ⊗[R] T) : T →ₗ[R] A ⊗[R] T) := by
   rw [isLocalizedModule_iff_isBaseChange (S := S) (A := A)]
   exact TensorProduct.isBaseChange _ _ _
@@ -98,7 +98,7 @@ open TensorProduct Algebra.TensorProduct
 instance tensorProduct_isLocalizedModule : IsLocalizedModule S (TensorProduct.mk R A M 1) :=
   (isLocalizedModule_iff_isBaseChange _ A _).mpr (TensorProduct.isBaseChange _ _ _)
 
-variable (M₁ M₂ B C) [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+variable (M₁ M₂ B C) [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₁] [Module R M₂]
   [Module A M₁] [Module A M₂] [IsScalarTower R A M₁] [IsScalarTower R A M₂]
   [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
   [Semiring C] [Algebra R C] [Algebra A C] [IsScalarTower R A C]
@@ -116,7 +116,7 @@ instance [Module (Localization S) M₁] [Module (Localization S) M₂]
     CompatibleSMul R (Localization S) M₁ M₂ :=
   tensorProduct_compatibleSMul S ..
 
-instance (N N') [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] (g : N →ₗ[R] N')
+instance (N N') [AddMonoid N] [IsAddCommutative N] [Module R N] [AddMonoid N'] [IsAddCommutative N'] [Module R N'] (g : N →ₗ[R] N')
     [IsLocalizedModule S f] [IsLocalizedModule S g] :
     IsLocalizedModule S (TensorProduct.map f g) := by
   let eM := IsLocalizedModule.linearEquiv S f (TensorProduct.mk R (Localization S) M 1)
@@ -156,7 +156,7 @@ theorem bijective_linearMap_mul' : Function.Bijective (LinearMap.mul' R A) :=
 
 end IsLocalization
 
-variable (T B : Type*) [CommSemiring T] [CommSemiring B]
+variable (T B : Type*) [Semiring T] [IsMulCommutative T] [Semiring B] [IsMulCommutative B]
   [Algebra R T] [Algebra T B] [Algebra R B] [Algebra A B] [IsScalarTower R T B]
   [IsScalarTower R A B]
 
@@ -176,13 +176,13 @@ lemma Submonoid.map_isUnit_le_isUnit {M N : Type*} [Monoid M] [Monoid N]
   rintro x ⟨y, hy, rfl⟩
   exact hy.map _
 
-lemma Algebra.algebraMapSubmonoid_isUnit_le_isUnit {R S : Type*} [CommSemiring R] [Semiring S]
+lemma Algebra.algebraMapSubmonoid_isUnit_le_isUnit {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S]
     [Algebra R S] :
     Algebra.algebraMapSubmonoid S (IsUnit.submonoid R) ≤ IsUnit.submonoid S := by
   rintro x ⟨y, hy, rfl⟩
   exact hy.map _
 
-instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] :
+instance {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S] :
     IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S :=
   IsLocalization.of_le_isUnit Algebra.algebraMapSubmonoid_isUnit_le_isUnit
 
@@ -235,7 +235,7 @@ theorem IsLocalizedModule.map_linearCombination {α : Type*} {v : α → M} [IsL
 
 section
 
-variable (S : Submonoid A) {N : Type*} [AddCommMonoid N] [Module R N]
+variable (S : Submonoid A) {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 variable [Module A M] [IsScalarTower R A M]
 
 open TensorProduct
@@ -251,7 +251,7 @@ instance IsLocalizedModule.rTensor (g : M →ₗ[A] M') [h : IsLocalizedModule S
   rw [isLocalizedModule_iff_isBaseChange (S := S) (A := Aₚ)] at h ⊢
   exact isBaseChange_tensorProduct_map _ h
 
-variable {P : Type*} [AddCommMonoid P] [Module R P] (f : N →ₗ[R] P)
+variable {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P] (f : N →ₗ[R] P)
 
 lemma IsLocalizedModule.map_lTensor (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
     IsLocalizedModule.map S (AlgebraTensorModule.rTensor R N g) (AlgebraTensorModule.rTensor R P g)
@@ -265,8 +265,8 @@ end
 
 section
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-    (r : R) (A : Type*) [CommSemiring A] [Algebra R A]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
+    (r : R) (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 instance IsLocalization.tensor (M : Submonoid R) [IsLocalization M A] :
     IsLocalization (Algebra.algebraMapSubmonoid S M) (S ⊗[R] A) := by
@@ -301,8 +301,8 @@ lemma IsLocalization.mk'_tmul (M : Submonoid R) [IsLocalization M A] (s : S) (x 
 
 namespace Localization
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) (Rₘ : Type*) [CommRing Rₘ] [Algebra R Rₘ]
-  (S : Type*) [CommRing S] [Algebra R S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (M : Submonoid R) (Rₘ : Type*) [Ring Rₘ] [IsMulCommutative Rₘ] [Algebra R Rₘ]
+  (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- The isomorphism `S ⊗[R] Rₘ ≃ₐ[S] Sₘ`. This is a specialization of `IsLocalization.algEquiv`,
 but with additional properties since now `Sₘ` is automatically an `Rₘ`-algebra. -/
@@ -356,7 +356,7 @@ end Localization
 variable (R S) {A} in
 /-- `A[M⁻¹] ⊗[R] S` is the localization of `A ⊗[R] S` at `M`. -/
 lemma IsLocalization.tensorProduct_tensorProduct (M : Submonoid A)
-    (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (B : Type*) [Semiring B] [IsMulCommutative B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
     [IsLocalization M B]
     [Algebra (A ⊗[R] S) (B ⊗[R] S)] [IsScalarTower A (A ⊗[R] S) (B ⊗[R] S)]
     (H : (algebraMap (A ⊗[R] S) (B ⊗[R] S)).comp Algebra.TensorProduct.includeRight.toRingHom =
@@ -369,7 +369,7 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 variable (R S) {A} in
 /-- `S ⊗[R] A[M⁻¹]` is the localization of `S ⊗[R] A` at `M`. -/
 lemma IsLocalization.tensorProduct_tensorProduct_right (M : Submonoid A)
-    (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (B : Type*) [Semiring B] [IsMulCommutative B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
     [IsLocalization M B]
     [Algebra (S ⊗[R] A) (S ⊗[R] B)] [IsScalarTower S (S ⊗[R] A) (S ⊗[R] B)]
     (H : (algebraMap (S ⊗[R] A) (S ⊗[R] B)).comp Algebra.TensorProduct.includeRight.toRingHom =
@@ -392,9 +392,9 @@ variable (R S) {A} in
 /-- The natural isomorphism `S ⊗[R] A[M⁻¹] ≃ (S ⊗[R] A)[M⁻¹]`. -/
 noncomputable
 def IsLocalization.tensorProductEquivOfMapIncludeRight (M : Submonoid A)
-    (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (B : Type*) [Semiring B] [IsMulCommutative B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
     [IsLocalization M B]
-    (C : Type*) [CommSemiring C] [Algebra S C] [Algebra (S ⊗[R] A) C] [IsScalarTower S (S ⊗[R] A) C]
+    (C : Type*) [Semiring C] [IsMulCommutative C] [Algebra S C] [Algebra (S ⊗[R] A) C] [IsScalarTower S (S ⊗[R] A) C]
     [IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))) C] :
     S ⊗[R] B ≃ₐ[S] C :=
   letI M' : Submonoid (S ⊗[R] A) := M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))
@@ -409,9 +409,9 @@ def IsLocalization.tensorProductEquivOfMapIncludeRight (M : Submonoid A)
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma IsLocalization.tensorProductEquivOfMapIncludeRight_tmul (M : Submonoid A)
-    (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B]
+    (B : Type*) [Semiring B] [IsMulCommutative B] [Algebra R B] [Algebra A B]
     [IsScalarTower R A B] [IsLocalization M B]
-    (C : Type*) [CommSemiring C] [Algebra S C] [Algebra (S ⊗[R] A) C] [IsScalarTower S (S ⊗[R] A) C]
+    (C : Type*) [Semiring C] [IsMulCommutative C] [Algebra S C] [Algebra (S ⊗[R] A) C] [IsScalarTower S (S ⊗[R] A) C]
     [IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))) C]
     (x : S) (a : A) :
     IsLocalization.tensorProductEquivOfMapIncludeRight R S M B C (x ⊗ₜ algebraMap A B a) =
@@ -424,7 +424,7 @@ lemma IsLocalization.tensorProductEquivOfMapIncludeRight_tmul (M : Submonoid A)
 variable (R S) {A} in
 /-- The natural isomorphism `S ⊗[R] A[1/g] ≃ (S ⊗[R] A)[1/g]`. -/
 noncomputable
-def IsLocalization.Away.tensorProductEquivTMulRight (g : A) (B : Type*) [CommSemiring B]
+def IsLocalization.Away.tensorProductEquivTMulRight (g : A) (B : Type*) [Semiring B] [IsMulCommutative B]
     [Algebra R B] [Algebra A B] [IsScalarTower R A B] [IsLocalization.Away g B] :
     S ⊗[R] B ≃ₐ[S] Localization.Away ((1 : S) ⊗ₜ[R] g) :=
   haveI : IsLocalization
@@ -435,7 +435,7 @@ def IsLocalization.Away.tensorProductEquivTMulRight (g : A) (B : Type*) [CommSem
   IsLocalization.tensorProductEquivOfMapIncludeRight _ _ (.powers g) _ _
 
 @[simp]
-lemma IsLocalization.Away.tensorProductEquivTMulRight_tmul (g : A) (B : Type*) [CommSemiring B]
+lemma IsLocalization.Away.tensorProductEquivTMulRight_tmul (g : A) (B : Type*) [Semiring B] [IsMulCommutative B]
     [Algebra R B] [Algebra A B] [IsScalarTower R A B] [IsLocalization.Away g B]
     (x : S) (a : A) :
     IsLocalization.Away.tensorProductEquivTMulRight R S g B (x ⊗ₜ algebraMap _ _ a) =

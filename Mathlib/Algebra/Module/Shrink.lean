@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Module.TransferInstance
 @[expose] public noncomputable section
 
 universe v
-variable {R α : Type*} [Small.{v} α] [Semiring R] [AddCommMonoid α] [Module R α]
+variable {R α : Type*} [Small.{v} α] [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α]
 
 namespace Shrink
 

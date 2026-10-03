@@ -47,7 +47,7 @@ namespace AddChar
 section Additive
 
 -- The domain and target of our additive characters. Now we restrict to a ring in the domain.
-variable {R : Type u} [CommRing R] {R' : Type v} [CommMonoid R']
+variable {R : Type u} [Ring R] [IsMulCommutative R] {R' : Type v} [Monoid R'] [IsMulCommutative R']
 
 /-- The values of an additive character on a ring of positive characteristic are roots of unity. -/
 lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
@@ -61,7 +61,7 @@ def IsPrimitive (ψ : AddChar R R') : Prop := ∀ ⦃a : R⦄, a ≠ 0 → mulSh
 
 /-- The composition of a primitive additive character with an injective monoid homomorphism
 is also primitive. -/
-lemma IsPrimitive.compMulHom_of_isPrimitive {R'' : Type*} [CommMonoid R''] {φ : AddChar R R'}
+lemma IsPrimitive.compMulHom_of_isPrimitive {R'' : Type*} [Monoid R''] [IsMulCommutative R''] {φ : AddChar R R'}
     {f : R' →* R''} (hφ : φ.IsPrimitive) (hf : Function.Injective f) :
     (f.compAddChar φ).IsPrimitive := fun a ha ↦ by
   simpa [DFunLike.ext_iff] using (MonoidHom.compAddChar_injective_right f hf).ne (hφ ha)
@@ -96,7 +96,7 @@ lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
 fact that the character is primitive. -/
-structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] where
+structure PrimitiveAddChar (R : Type u) [Ring R] [IsMulCommutative R] (R' : Type v) [Field R'] where
   /-- The first projection from `PrimitiveAddChar`, giving the cyclotomic field. -/
   n : ℕ+
   /-- The second projection from `PrimitiveAddChar`, giving the character. -/
@@ -110,7 +110,7 @@ structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] wh
 
 section ZMod
 
-variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
+variable {N : ℕ} [NeZero N] {R : Type*} [Ring R] [IsMulCommutative R] (e : AddChar (ZMod N) R)
 
 /-- If `e` is not primitive, then `e.mulShift d = 1` for some proper divisor `d` of `N`. -/
 lemma exists_divisor_of_not_isPrimitive (he : ¬e.IsPrimitive) :
@@ -129,7 +129,7 @@ end ZMod
 
 section ZModChar
 
-variable {C : Type v} [CommMonoid C]
+variable {C : Type v} [Monoid C] [IsMulCommutative C]
 
 section ZModCharDef
 
@@ -233,7 +233,7 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
 
 section sum
 
-variable {R : Type*} [AddGroup R] [Fintype R] {R' : Type*} [CommRing R']
+variable {R : Type*} [AddGroup R] [Fintype R] {R' : Type*} [Ring R'] [IsMulCommutative R']
 
 /-- The sum over the values of a nontrivial additive character vanishes if the target ring
 is a domain. -/
@@ -254,8 +254,8 @@ end sum
 
 /-- The sum over the values of `mulShift ψ b` for `ψ` primitive is zero when `b ≠ 0`
 and `#R` otherwise. -/
-theorem sum_mulShift {R : Type*} [CommRing R] [Fintype R] [DecidableEq R]
-    {R' : Type*} [CommRing R'] [IsDomain R'] {ψ : AddChar R R'} (b : R)
+theorem sum_mulShift {R : Type*} [Ring R] [IsMulCommutative R] [Fintype R] [DecidableEq R]
+    {R' : Type*} [Ring R'] [IsMulCommutative R'] [IsDomain R'] {ψ : AddChar R R'} (b : R)
     (hψ : IsPrimitive ψ) : ∑ x : R, ψ (x * b) = if b = 0 then Fintype.card R else 0 := by
   split_ifs with h
   · -- case `b = 0`
@@ -271,7 +271,7 @@ theorem sum_mulShift {R : Type*} [CommRing R] [Fintype R] [DecidableEq R]
 
 section Ring
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /-- Post-composing an additive character to `ℂ` with complex conjugation gives the inverse
 character. -/

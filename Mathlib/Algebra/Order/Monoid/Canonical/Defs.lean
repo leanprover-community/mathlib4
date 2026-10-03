@@ -110,7 +110,7 @@ end Preorder
 end Mul
 
 section CommMagma
-variable [CommMagma α] [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
+variable [Mul α] [IsMulCommutative α] [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
 theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
@@ -181,7 +181,7 @@ end Semigroup
 -- TODO: make it an instance
 @[to_additive]
 lemma CanonicallyOrderedMul.toIsOrderedMonoid
-    [CommMonoid α] [Preorder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
+    [Monoid α] [IsMulCommutative α] [Preorder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
   mul_le_mul_left _ _ := mul_le_mul_left
 
 section Monoid
@@ -198,7 +198,7 @@ end PartialOrder
 end Monoid
 
 section CommMonoid
-variable [CommMonoid α]
+variable [Monoid α] [IsMulCommutative α]
 
 section PartialOrder
 variable [PartialOrder α] [CanonicallyOrderedMul α] {a b : α}

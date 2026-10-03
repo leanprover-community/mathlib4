@@ -111,7 +111,7 @@ private lemma neg_one_pow_div_natCast_eq_inv_intCast (T : Type*) [DivisionRing T
 
 /-- If `E` is a module over two division rings `R` and `S`, then scalar multiplication by the
 coefficients `(-1) ^ k / n` of the logarithm series agree in `R` and `S`. -/
-private lemma neg_one_pow_div_natCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E]
+private lemma neg_one_pow_div_natCast_smul_eq {E : Type*} (R S : Type*) [AddGroup E] [IsAddCommutative E]
     [DivisionRing R] [DivisionRing S] [Module R E] [Module S E] (k n : ℕ) (x : E) :
     ((-1) ^ k / n : R) • x = ((-1) ^ k / n : S) • x := by
   rw [neg_one_pow_div_natCast_eq_inv_intCast R, neg_one_pow_div_natCast_eq_inv_intCast S,

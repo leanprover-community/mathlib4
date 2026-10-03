@@ -26,7 +26,7 @@ variable {ι α β : Type*}
 
 namespace Multiset
 section OrderedCommMonoid
-variable [CommMonoid α] [Preorder α] {s t : Multiset α} {a : α}
+variable [Monoid α] [IsMulCommutative α] [Preorder α] {s t : Multiset α} {a : α}
 
 @[to_additive sum_nonneg]
 lemma one_le_prod_of_one_le [MulLeftMono α] : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
@@ -43,7 +43,7 @@ lemma prod_le_pow_card [MulLeftMono α] (s : Multiset α) (n : α) (h : ∀ x �
   simpa using List.prod_le_pow_length _ _ h
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
-lemma all_one_of_le_one_le_of_prod_eq_one {α : Type*} [CommMonoid α]
+lemma all_one_of_le_one_le_of_prod_eq_one {α : Type*} [Monoid α] [IsMulCommutative α]
   [PartialOrder α] [IsOrderedMonoid α] {s : Multiset α} :
     (∀ x ∈ s, (1 : α) ≤ x) → s.prod = 1 → ∀ x ∈ s, x = (1 : α) :=
   Quotient.inductionOn s (by
@@ -81,7 +81,7 @@ lemma pow_card_le_prod [MulLeftMono α] (h : ∀ x ∈ s, a ≤ x) : a ^ card s 
 end OrderedCommMonoid
 
 section
-variable [CommMonoid α] [CommMonoid β] [Preorder β] [IsOrderedMonoid β]
+variable [Monoid α] [IsMulCommutative α] [Monoid β] [IsMulCommutative β] [Preorder β] [IsOrderedMonoid β]
 
 @[to_additive le_sum_of_subadditive_on_pred]
 lemma le_prod_of_submultiplicative_on_pred (f : α → β)
@@ -115,7 +115,7 @@ lemma le_prod_nonempty_of_submultiplicative (f : α → β) (h_mul : ∀ a b, f 
 end
 
 section OrderedCancelCommMonoid
-variable [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] [MulLeftStrictMono α]
+variable [Monoid α] [IsMulCommutative α] [Preorder α] [IsOrderedCancelMonoid α] [MulLeftStrictMono α]
   {s : Multiset ι} {f g : ι → α}
 
 @[to_additive]
@@ -138,7 +138,7 @@ lemma prod_lt_prod_of_nonempty (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) :
 end OrderedCancelCommMonoid
 
 section CanonicallyOrderedMul
-variable [CommMonoid α] {m : Multiset α} {a : α}
+variable [Monoid α] [IsMulCommutative α] {m : Multiset α} {a : α}
 
 @[to_additive] lemma prod_eq_one_iff [PartialOrder α] [CanonicallyOrderedMul α]
     [IsOrderedMonoid α] : m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
@@ -158,7 +158,7 @@ lemma max_le_of_forall_le {α : Type*} [LinearOrder α] [OrderBot α] (l : Multi
   simpa using List.max_le_of_forall_le _ _ h
 
 @[to_additive]
-lemma max_prod_le [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
+lemma max_prod_le [Monoid α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α]
     {s : Multiset ι} {f g : ι → α} :
     max (s.map f).prod (s.map g).prod ≤ (s.map fun i ↦ max (f i) (g i)).prod := by
   obtain ⟨l⟩ := s
@@ -166,20 +166,20 @@ lemma max_prod_le [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
   apply List.max_prod_le
 
 @[to_additive]
-lemma prod_min_le [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
+lemma prod_min_le [Monoid α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α]
     {s : Multiset ι} {f g : ι → α} :
     (s.map fun i ↦ min (f i) (g i)).prod ≤ min (s.map f).prod (s.map g).prod := by
   obtain ⟨l⟩ := s
   simp_rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
   apply List.prod_min_le
 
-lemma abs_sum_le_sum_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] {s : Multiset α} :
+lemma abs_sum_le_sum_abs [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero.le abs_add_le s
 
 section ProdSum
 
-variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β] (m : Multiset α) (f : α → β)
+variable [Monoid α] [IsMulCommutative α] [AddMonoid β] [IsAddCommutative β] [Preorder β] [AddLeftMono β] (m : Multiset α) (f : α → β)
 
 lemma apply_prod_le_sum_map (h_one : f 1 ≤ 0) (h_mul : ∀ (a b : α), f (a * b) ≤ f a + f b) :
     f m.prod ≤ (m.map f).sum := by

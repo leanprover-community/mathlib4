@@ -40,7 +40,7 @@ namespace WeakDual
 
 /-- The character space of a topological algebra is the subset of elements of the weak dual that
 are also algebra homomorphisms. -/
-def characterSpace (𝕜 : Type*) (A : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+def characterSpace (𝕜 : Type*) (A : Type*) [Semiring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [NonUnitalNonAssocSemiring A] [TopologicalSpace A] [Module 𝕜 A] :=
   {φ : WeakDual 𝕜 A | φ ≠ 0 ∧ ∀ x y : A, φ (x * y) = φ x * φ y}
 
@@ -52,7 +52,7 @@ namespace CharacterSpace
 
 section NonUnitalNonAssocSemiring
 
-variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
   [NonUnitalNonAssocSemiring A] [TopologicalSpace A] [Module 𝕜 A]
 
 @[macro_inline]
@@ -132,7 +132,7 @@ end NonUnitalNonAssocSemiring
 
 section Unital
 
-variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [Ring 𝕜] [IsMulCommutative 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
   [ContinuousConstSMul 𝕜 𝕜] [TopologicalSpace A] [Semiring A] [Algebra 𝕜 A]
 
 /-- In a unital algebra, elements of the character space are algebra homomorphisms. -/
@@ -180,7 +180,7 @@ end Unital
 
 section Ring
 
-variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [Ring 𝕜] [IsMulCommutative 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
   [ContinuousConstSMul 𝕜 𝕜] [TopologicalSpace A] [Ring A] [Algebra 𝕜 A]
 
 theorem apply_mem_spectrum [Nontrivial 𝕜] (φ : characterSpace 𝕜 A) (a : A) : φ a ∈ spectrum 𝕜 a :=
@@ -211,7 +211,7 @@ section GelfandTransform
 
 open ContinuousMap
 
-variable (𝕜 A) [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
+variable (𝕜 A) [Ring 𝕜] [IsMulCommutative 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
   [TopologicalSpace A] [Semiring A] [Algebra 𝕜 A]
 
 /-- The **Gelfand transform** is an algebra homomorphism (over `𝕜`) from a topological `𝕜`-algebra

@@ -50,49 +50,49 @@ universe u
 
 section Properties
 
-variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
-variable (R' S' : Type u) [CommRing R'] [CommRing S']
+variable {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
+variable (R' S' : Type u) [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S']
 variable [Algebra R R'] [Algebra S S']
 
 section CommRing
 
-variable (P : ∀ (R : Type u) [CommRing R], Prop)
+variable (P : ∀ (R : Type u) [Ring R] [IsMulCommutative R], Prop)
 
 /-- A property `P` of comm rings is said to be preserved by localization
   if `P` holds for `M⁻¹R` whenever `P` holds for `R`. -/
 def LocalizationPreserves : Prop :=
-  ∀ {R : Type u} [hR : CommRing R] (M : Submonoid R) (S : Type u) [hS : CommRing S] [Algebra R S]
+  ∀ {R : Type u} [hR : Ring R] [IsMulCommutative R] (M : Submonoid R) (S : Type u) [hS : Ring S] [IsMulCommutative S] [Algebra R S]
     [IsLocalization M S], @P R hR → @P S hS
 
 /-- A property `P` of comm rings satisfies `OfLocalizationMaximal`
   if `P` holds for `R` whenever `P` holds for `Rₘ` for all maximal ideal `m`. -/
 def OfLocalizationMaximal : Prop :=
-  ∀ (R : Type u) [CommRing R],
+  ∀ (R : Type u) [Ring R] [IsMulCommutative R],
     (∀ (J : Ideal R) (_ : J.IsMaximal), P (Localization.AtPrime J)) → P R
 
 end CommRing
 
 section RingHom
 
-variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
+variable (P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (_ : R →+* S), Prop)
 
 /-- A property `P` of ring homs is said to contain identities if `P` holds
 for the identity homomorphism of every ring. -/
-def RingHom.ContainsIdentities := ∀ (R : Type u) [CommRing R], P (RingHom.id R)
+def RingHom.ContainsIdentities := ∀ (R : Type u) [Ring R] [IsMulCommutative R], P (RingHom.id R)
 
 /-- A property `P` of ring homs is said to be preserved by localization
 if `P` holds for `M⁻¹R →+* M⁻¹S` whenever `P` holds for `R →+* S`. -/
 def RingHom.LocalizationPreserves :=
-  ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (M : Submonoid R) (R' S' : Type u)
-    [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [IsLocalization M R']
+  ∀ ⦃R S : Type u⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (M : Submonoid R) (R' S' : Type u)
+    [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R R'] [Algebra S S'] [IsLocalization M R']
     [IsLocalization (M.map f) S'],
     P f → P (IsLocalization.map S' f (Submonoid.le_comap_map M) : R' →+* S')
 
 /-- A property `P` of ring homs is said to be preserved by localization away
 if `P` holds for `Rᵣ →+* Sᵣ` whenever `P` holds for `R →+* S`. -/
 def RingHom.LocalizationAwayPreserves :=
-  ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (r : R) (R' S' : Type u)
-    [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [IsLocalization.Away r R']
+  ∀ ⦃R S : Type u⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (r : R) (R' S' : Type u)
+    [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R R'] [Algebra S S'] [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'],
     P f → P (IsLocalization.Away.map R' S' f r : R' →+* S')
 
@@ -103,7 +103,7 @@ if `P` holds for `R →+* S` whenever there exists a finite set `{ r }` that spa
 Note that this is equivalent to `RingHom.OfLocalizationSpan` via
 `RingHom.ofLocalizationSpan_iff_finite`, but this is easier to prove. -/
 def RingHom.OfLocalizationFiniteSpan :=
-  ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (s : Finset R)
+  ∀ ⦃R S : Type u⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (s : Finset R)
     (_ : Ideal.span (s : Set R) = ⊤) (_ : ∀ r : s, P (Localization.awayMap f r)), P f
 
 /-- A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpan`
@@ -113,33 +113,33 @@ if `P` holds for `R →+* S` whenever there exists a set `{ r }` that spans `R` 
 Note that this is equivalent to `RingHom.OfLocalizationFiniteSpan` via
 `RingHom.ofLocalizationSpan_iff_finite`, but this has less restrictions when applying. -/
 def RingHom.OfLocalizationSpan :=
-  ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (s : Set R) (_ : Ideal.span s = ⊤)
+  ∀ ⦃R S : Type u⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (s : Set R) (_ : Ideal.span s = ⊤)
     (_ : ∀ r : s, P (Localization.awayMap f r)), P f
 
 /-- A property `P` of ring homs satisfies `RingHom.HoldsForLocalization`
 if `P` holds for each localization map `R →+* M⁻¹R`. -/
 def RingHom.HoldsForLocalization : Prop :=
-  ∀ ⦃R : Type u⦄ (S : Type u) [CommRing R] [CommRing S] [Algebra R S] (M : Submonoid R)
+  ∀ ⦃R : Type u⦄ (S : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] (M : Submonoid R)
     [IsLocalization M S], P (algebraMap R S)
 
 /-- A property `P` of ring homs satisfies `RingHom.HoldsForLocalizationAway`
 if `P` holds for each localization map `R →+* Rᵣ`. -/
 def RingHom.HoldsForLocalizationAway : Prop :=
-  ∀ ⦃R : Type u⦄ (S : Type u) [CommRing R] [CommRing S] [Algebra R S] (r : R)
+  ∀ ⦃R : Type u⦄ (S : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] (r : R)
     [IsLocalization.Away r S], P (algebraMap R S)
 
 /-- A property `P` of ring homs satisfies `RingHom.StableUnderCompositionWithLocalizationAwaySource`
 if whenever `P` holds for `f` it also holds for the composition with
 localization maps on the source. -/
 def RingHom.StableUnderCompositionWithLocalizationAwaySource : Prop :=
-  ∀ ⦃R : Type u⦄ (S : Type u) ⦃T : Type u⦄ [CommRing R] [CommRing S] [CommRing T] [Algebra R S]
+  ∀ ⦃R : Type u⦄ (S : Type u) ⦃T : Type u⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S]
     (r : R) [IsLocalization.Away r S] (f : S →+* T), P f → P (f.comp (algebraMap R S))
 
 /-- A property `P` of ring homs satisfies `RingHom.StableUnderCompositionWithLocalizationAway`
 if whenever `P` holds for `f` it also holds for the composition with
 localization maps on the target. -/
 def RingHom.StableUnderCompositionWithLocalizationAwayTarget : Prop :=
-  ∀ ⦃R S : Type u⦄ (T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra S T] (s : S)
+  ∀ ⦃R S : Type u⦄ (T : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra S T] (s : S)
     [IsLocalization.Away s T] (f : R →+* S), P f → P ((algebraMap S T).comp f)
 
 /-- A property `P` of ring homs satisfies `RingHom.StableUnderCompositionWithLocalizationAway`
@@ -156,7 +156,7 @@ if `P` holds for `R →+* S` whenever there exists a finite set `{ r }` that spa
 Note that this is equivalent to `RingHom.OfLocalizationSpanTarget` via
 `RingHom.ofLocalizationSpanTarget_iff_finite`, but this is easier to prove. -/
 def RingHom.OfLocalizationFiniteSpanTarget : Prop :=
-  ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (s : Finset S)
+  ∀ ⦃R S : Type u⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (s : Finset S)
     (_ : Ideal.span (s : Set S) = ⊤)
     (_ : ∀ r : s, P ((algebraMap S (Localization.Away (r : S))).comp f)), P f
 
@@ -167,13 +167,13 @@ if `P` holds for `R →+* S` whenever there exists a set `{ r }` that spans `S` 
 Note that this is equivalent to `RingHom.OfLocalizationFiniteSpanTarget` via
 `RingHom.ofLocalizationSpanTarget_iff_finite`, but this has less restrictions when applying. -/
 def RingHom.OfLocalizationSpanTarget : Prop :=
-  ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (s : Set S) (_ : Ideal.span s = ⊤)
+  ∀ ⦃R S : Type u⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (s : Set S) (_ : Ideal.span s = ⊤)
     (_ : ∀ r : s, P ((algebraMap S (Localization.Away (r : S))).comp f)), P f
 
 /-- A property `P` of ring homs satisfies `RingHom.OfLocalizationPrime`
 if `P` holds for `R` whenever `P` holds for `Rₘ` for all prime ideals `p`. -/
 def RingHom.OfLocalizationPrime : Prop :=
-  ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S),
+  ∀ ⦃R S : Type u⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S),
     (∀ (J : Ideal S) (_ : J.IsPrime), P (Localization.localRingHom _ J f rfl)) → P f
 
 /-- A property of ring homs is local if it is preserved by localizations and compositions, and for
@@ -213,7 +213,7 @@ open TensorProduct
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma RingHom.OfLocalizationSpan.mk (hP : RingHom.RespectsIso P)
-    (H : ∀ {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] (s : Set R),
+    (H : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] (s : Set R),
       Ideal.span s = ⊤ →
       (∀ r ∈ s, P (algebraMap (Localization.Away r) (Localization.Away r ⊗[R] S))) →
       P (algebraMap R S)) :
@@ -237,7 +237,7 @@ section HoldsForLocalization
 variable {P}
 
 lemma RingHom.HoldsForLocalization.mk (hP : RespectsIso P)
-    (H : ∀ {R : Type u} [CommRing R] (M : Submonoid R), P (algebraMap R (Localization M))) :
+    (H : ∀ {R : Type u} [Ring R] [IsMulCommutative R] (M : Submonoid R), P (algebraMap R (Localization M))) :
     HoldsForLocalization P := by
   introv R _
   rw [← (IsLocalization.algEquiv M (Localization M) S).toAlgHom.comp_algebraMap]
@@ -251,8 +251,8 @@ lemma RingHom.HoldsForLocalization.isLocalizationMap
     (hPc : StableUnderComposition P) (hPp : LocalizationPreserves P)
     (hPl : HoldsForLocalization P)
     {M : Submonoid R} {T : Submonoid S}
-    {R' : Type u} [CommRing R'] [Algebra R R'] [IsLocalization M R']
-    (S' : Type u) [CommRing S'] [Algebra S S'] [IsLocalization T S']
+    {R' : Type u} [Ring R'] [IsMulCommutative R'] [Algebra R R'] [IsLocalization M R']
+    (S' : Type u) [Ring S'] [IsMulCommutative S'] [Algebra S S'] [IsLocalization T S']
     {f : R →+* S} (hy : M ≤ Submonoid.comap f T) (hf : P f) :
     P (IsLocalization.map (S := R') S' f hy) := by
   have hle : Submonoid.map f M ≤ T := by simpa [Submonoid.map_le_iff_le_comap]
@@ -274,7 +274,7 @@ lemma RingHom.HoldsForLocalization.isLocalizationMap
 
 lemma RingHom.HoldsForLocalization.localRingHom (hPc : StableUnderComposition P)
     (hPp : LocalizationPreserves P) (hPl : HoldsForLocalization P)
-    {R S : Type u} [CommRing R] [CommRing S] {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime]
+    {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime]
     {f : R →+* S} (h : p = q.comap f) (hf : P f) :
     P (Localization.localRingHom p q f h) :=
   hPl.isLocalizationMap hPc hPp _ _ hf
@@ -382,7 +382,7 @@ theorem RingHom.OfLocalizationSpanTarget.ofLocalizationSpan
 
 lemma RingHom.OfLocalizationSpan.ofIsLocalization
     (hP : RingHom.OfLocalizationSpan P) (hPi : RingHom.RespectsIso P)
-    {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set R) (hs : Ideal.span s = ⊤)
+    {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (s : Set R) (hs : Ideal.span s = ⊤)
     (hT : ∀ r : s, ∃ (Rᵣ Sᵣ : Type u) (_ : CommRing Rᵣ) (_ : CommRing Sᵣ)
       (_ : Algebra R Rᵣ) (_ : Algebra S Sᵣ) (_ : IsLocalization.Away r.val Rᵣ)
       (_ : IsLocalization.Away (f r.val) Sᵣ) (fᵣ : Rᵣ →+* Sᵣ)
@@ -410,7 +410,7 @@ lemma RingHom.OfLocalizationSpan.ofIsLocalization
 `fᵣ = IsLocalization.Away.map`. -/
 lemma RingHom.OfLocalizationSpan.ofIsLocalization'
     (hP : RingHom.OfLocalizationSpan P) (hPi : RingHom.RespectsIso P)
-    {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set R) (hs : Ideal.span s = ⊤)
+    {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (s : Set R) (hs : Ideal.span s = ⊤)
     (hT : ∀ r : s, ∃ (Rᵣ Sᵣ : Type u) (_ : CommRing Rᵣ) (_ : CommRing Sᵣ)
       (_ : Algebra R Rᵣ) (_ : Algebra S Sᵣ) (_ : IsLocalization.Away r.val Rᵣ)
       (_ : IsLocalization.Away (f r.val) Sᵣ),
@@ -424,7 +424,7 @@ lemma RingHom.OfLocalizationSpan.ofIsLocalization'
 set_option backward.isDefEq.respectTransparency.types false in
 lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     (hP : RingHom.OfLocalizationSpanTarget P) (hP' : RingHom.RespectsIso P)
-    {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set S) (hs : Ideal.span s = ⊤)
+    {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (s : Set S) (hs : Ideal.span s = ⊤)
     (hT : ∀ r : s, ∃ (T : Type u) (_ : CommRing T) (_ : Algebra S T)
       (_ : IsLocalization.Away (r : S) T), P ((algebraMap S T).comp f)) : P f := by
   apply hP _ s hs
@@ -437,7 +437,7 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
 
 section
 
-variable {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+variable {Q : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
 
 lemma RingHom.OfLocalizationSpanTarget.and (hP : OfLocalizationSpanTarget P)
     (hQ : OfLocalizationSpanTarget Q) :
@@ -477,7 +477,7 @@ end
 section
 
 variable (hP : RingHom.IsStableUnderBaseChange @P)
-variable {R S Rᵣ Sᵣ : Type u} [CommRing R] [CommRing S] [CommRing Rᵣ] [CommRing Sᵣ] [Algebra R Rᵣ]
+variable {R S Rᵣ Sᵣ : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring Rᵣ] [IsMulCommutative Rᵣ] [Ring Sᵣ] [IsMulCommutative Sᵣ] [Algebra R Rᵣ]
   [Algebra S Sᵣ]
 
 include hP
@@ -517,7 +517,7 @@ end Properties
 
 section Ideal
 
-variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R : Type*} (S : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 variable (p : Submonoid R) [IsLocalization p S]
 
 theorem Ideal.localized'_eq_map (I : Ideal R) :

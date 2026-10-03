@@ -104,7 +104,7 @@ open Metric Set NNReal
 open scoped Topology
 
 namespace QuotientGroup
-variable {M : Type*} [SeminormedCommGroup M] {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
+variable {M : Type*} [SeminormedGroup M] [IsMulCommutative M] {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
 
 @[to_additive add_norm_aux]
 private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Quot.exists_rep x
@@ -263,7 +263,7 @@ end QuotientGroup
 
 open QuotientAddGroup Metric Set NNReal
 
-variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+variable {M N : Type*} [SeminormedAddGroup M] [IsAddCommutative M] [SeminormedAddGroup N] [IsAddCommutative N]
 
 /-- The norm of the image under the natural morphism to the quotient. -/
 theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :
@@ -346,17 +346,17 @@ structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
 
 /-- Given `f : NormedAddGroupHom M N` such that `f s = 0` for all `s ∈ S`, where,
 `S : AddSubgroup M` is closed, the induced morphism `NormedAddGroupHom (M ⧸ S) N`. -/
-noncomputable def lift {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+noncomputable def lift {N : Type*} [SeminormedAddGroup N] [IsAddCommutative N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) : NormedAddGroupHom (M ⧸ S) N :=
   { QuotientAddGroup.lift S f.toAddMonoidHom hf with
     bound' := ⟨‖f‖, norm_lift_apply_le f hf⟩ }
 
-theorem lift_mk {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+theorem lift_mk {N : Type*} [SeminormedAddGroup N] [IsAddCommutative N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) (m : M) :
     lift S f hf (S.normedMk m) = f m :=
   rfl
 
-theorem lift_unique {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+theorem lift_unique {N : Type*} [SeminormedAddGroup N] [IsAddCommutative N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) (g : NormedAddGroupHom (M ⧸ S) N)
     (h : g.comp S.normedMk = f) : g = lift S f hf := by
   ext x
@@ -389,18 +389,18 @@ theorem IsQuotient.norm_le {f : NormedAddGroupHom M N} (hquot : IsQuotient f) (m
     apply norm_nonneg
   · exact ⟨0, f.ker.zero_mem, by simp⟩
 
-theorem norm_lift_le {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+theorem norm_lift_le {N : Type*} [SeminormedAddGroup N] [IsAddCommutative N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) :
     ‖lift S f hf‖ ≤ ‖f‖ :=
   opNorm_le_bound _ (norm_nonneg f) (norm_lift_apply_le f hf)
 
 -- TODO: deprecate?
-theorem lift_norm_le {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+theorem lift_norm_le {N : Type*} [SeminormedAddGroup N] [IsAddCommutative N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) {c : ℝ≥0} (fb : ‖f‖ ≤ c) :
     ‖lift S f hf‖ ≤ c :=
   (norm_lift_le S f hf).trans fb
 
-theorem lift_normNoninc {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+theorem lift_normNoninc {N : Type*} [SeminormedAddGroup N] [IsAddCommutative N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) (fb : f.NormNoninc) :
     (lift S f hf).NormNoninc := fun x => by
   have fb' : ‖f‖ ≤ (1 : ℝ≥0) := NormNoninc.normNoninc_iff_norm_le_one.mp fb
@@ -446,7 +446,7 @@ theorem Submodule.Quotient.norm_mk_le (m : M) : ‖(Submodule.Quotient.mk m : M 
   norm_mk_le_norm
 
 instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
-    [SeminormedCommRing 𝕜] [Module 𝕜 M] [IsBoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
+    [SeminormedRing 𝕜] [IsMulCommutative 𝕜] [Module 𝕜 M] [IsBoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
     IsBoundedSMul 𝕜 (M ⧸ S) :=
   .of_norm_smul_le fun k x =>
     -- this is `QuotientAddGroup.norm_lift_apply_le` for `f : M → M ⧸ S` given by
@@ -487,7 +487,7 @@ end Submodule
 
 section Ideal
 
-variable {R : Type*} [SeminormedCommRing R] (I : Ideal R)
+variable {R : Type*} [SeminormedRing R] [IsMulCommutative R] (I : Ideal R)
 
 nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} (hε : 0 < ε) :
     ∃ r : R, Ideal.Quotient.mk I r = x ∧ ‖r‖ < ‖x‖ + ε :=

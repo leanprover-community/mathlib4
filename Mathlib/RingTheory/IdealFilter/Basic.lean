@@ -83,12 +83,12 @@ class IsUniform (F : IdealFilter A) : Prop where
 /-- We say that an element `m : M` is `F`-torsion if it is annihilated by some ideal belonging to
 the filter `F`. -/
 def IsTorsionElem (F : IdealFilter A)
-    {M : Type*} [AddCommMonoid M] [Module A M] (m : M) : Prop :=
+    {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module A M] (m : M) : Prop :=
   ∃ L ∈ F, ∀ a ∈ L, a • m = 0
 
 /-- Module-level `F`-torsion: every element is `F`-torsion. -/
 def IsTorsion (F : IdealFilter A)
-    (M : Type*) [AddCommMonoid M] [Module A M] : Prop :=
+    (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module A M] : Prop :=
   ∀ m : M, IsTorsionElem F m
 
 /-- We say that the quotient `K/L` is `F`-torsion if every element `k ∈ K` is annihilated
@@ -110,7 +110,7 @@ lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
     exact ⟨I, hI, (by simpa [hcol] using hI_le)⟩
 
 
-@[simp] lemma isTorsion_def (F : IdealFilter A) (M : Type*) [AddCommMonoid M] [Module A M] :
+@[simp] lemma isTorsion_def (F : IdealFilter A) (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module A M] :
     IsTorsion F M ↔ ∀ m : M, IsTorsionElem F m :=
   Iff.rfl
 

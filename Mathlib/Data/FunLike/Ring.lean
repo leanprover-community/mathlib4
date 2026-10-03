@@ -39,7 +39,7 @@ end MonoidWithZero
 
 section Semiring
 
-variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [AddCommMonoid α]
+variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [AddMonoid α] [IsAddCommutative α]
   [IsZeroApply F α α] [IsAddApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
   [SMul ℕ F] [IsSMulApply ℕ F α α] [AddMonoidHomClass F α α] [NatCast F] [IsNatCastApply F α]
 
@@ -58,7 +58,7 @@ end Semiring
 section Ring
 
 variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F]
-  [AddCommGroup α]
+  [AddGroup α] [IsAddCommutative α]
   [IsZeroApply F α α] [IsAddApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
   [IsNegApply F α α] [IsSubApply F α α]
   [SMul ℕ F] [IsSMulApply ℕ F α α]

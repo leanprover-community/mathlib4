@@ -46,7 +46,7 @@ variable (F K L : Type*)
 
 section Ring
 
-variable [CommRing K] [Ring L] [Algebra K L]
+variable [Ring K] [IsMulCommutative K] [Ring L] [Algebra K L]
 
 /-- A predicate class on a ring extension saying that there is a natural number `e`
 such that `a ^ ringExpChar K ^ e ∈ K` for all `a ∈ L`. -/

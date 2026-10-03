@@ -32,7 +32,7 @@ open WithZero Ideal.IsDedekindDomain Valuation.IsRankOneDiscrete
 section AKLB
 
 variable {A K : Type*} (L : Type*) {B : Type*}
-variable [CommRing A] [IsDedekindDomain A] [CommRing B] [IsDedekindDomain B] [Algebra A B]
+variable [Ring A] [IsMulCommutative A] [IsDedekindDomain A] [Ring B] [IsMulCommutative B] [IsDedekindDomain B] [Algebra A B]
   [Module.IsTorsionFree A B]
 variable [Field K] [Field L] [Algebra K L]
 variable [Algebra A K] [IsFractionRing A K] [Algebra A L] [IsScalarTower A K L]

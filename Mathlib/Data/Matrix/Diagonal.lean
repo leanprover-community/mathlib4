@@ -271,12 +271,12 @@ instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n 
   __ := addGroup
   __ := instAddMonoidWithOne
 
-instance instAddCommMonoidWithOne [AddCommMonoidWithOne α] :
+instance instAddCommMonoidWithOne [AddMonoidWithOne α] [IsAddCommutative α] :
     AddCommMonoidWithOne (Matrix n n α) where
   __ := addCommMonoid
   __ := instAddMonoidWithOne
 
-instance instAddCommGroupWithOne [AddCommGroupWithOne α] :
+instance instAddCommGroupWithOne [AddGroupWithOne α] [IsAddCommutative α] :
     AddCommGroupWithOne (Matrix n n α) where
   __ := addCommGroup
   __ := instAddGroupWithOne

@@ -23,8 +23,8 @@ delaborator `CategoryTheory.delabOf` that must be manually registered for every 
 ## Implementation notes
 
 A typeclass cannot mediate this notation while keeping the elaborated term syntactically
-`FooCat.of`: the typeclass assumptions of `of` vary between categories (`[CommRing R]` for
-`CommRingCat`, but `[AddCommGroup M] [Module R M]` for `ModuleCat R`, etc...), so they cannot be
+`FooCat.of`: the typeclass assumptions of `of` vary between categories (`[Ring R] [IsMulCommutative R]` for
+`CommRingCat`, but `[AddGroup M] [IsAddCommutative M] [Module R M]` for `ModuleCat R`, etc...), so they cannot be
 abstracted away. Instead, `↧` guesses the relevant `of` function from the expected type `FooCat ..`,
 and in particular assumes it is named `FooCat.of`.
 

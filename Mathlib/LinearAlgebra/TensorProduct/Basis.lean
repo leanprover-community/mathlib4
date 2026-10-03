@@ -28,8 +28,8 @@ open scoped TensorProduct
 section CommSemiring
 
 variable {R : Type*} {S : Type*} {M : Type*} {N : Type*} {ι : Type*} {κ : Type*}
-  [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M] [Module S M]
-  [IsScalarTower R S M] [AddCommMonoid N] [Module R N]
+  [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M]
+  [IsScalarTower R S M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 namespace Module.Basis
 
@@ -202,8 +202,8 @@ end CommSemiring
 
 namespace LinearMap
 
-variable {R A M N ι : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module A N]
+variable {R A M N ι : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N] [Module A N]
   [IsScalarTower R A N]
 
 lemma liftBaseChange_injective_iff (l : M →ₗ[R] N) (b : Module.Basis ι R M) :

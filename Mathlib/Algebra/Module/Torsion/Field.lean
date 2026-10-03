@@ -21,7 +21,7 @@ public section
 
 open Module
 
-variable {𝕜 M : Type*} [DivisionSemiring 𝕜] [AddCommMonoid M] [Module 𝕜 M]
+variable {𝕜 M : Type*} [DivisionSemiring 𝕜] [AddMonoid M] [IsAddCommutative M] [Module 𝕜 M]
 
 /-- Any (semi)vector space is torsion-free. -/
 instance (priority := 100) DivisionSemiring.to_moduleIsTorsionFree : IsTorsionFree 𝕜 M where

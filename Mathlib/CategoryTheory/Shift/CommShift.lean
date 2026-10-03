@@ -38,7 +38,7 @@ open Category
 namespace Functor
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
-  (F : C ⥤ D) (G : D ⥤ E) (A B : Type*) [AddMonoid A] [AddCommMonoid B]
+  (F : C ⥤ D) (G : D ⥤ E) (A B : Type*) [AddMonoid A] [AddMonoid B] [IsAddCommutative B]
   [HasShift C A] [HasShift D A] [HasShift E A]
   [HasShift C B] [HasShift D B]
 
@@ -523,7 +523,7 @@ end hasShiftOfFullyFaithful
 
 @[reassoc]
 lemma map_shiftFunctorComm
-    [AddCommMonoid A] [HasShift C A] [HasShift D A]
+    [AddMonoid A] [IsAddCommutative A] [HasShift C A] [HasShift D A]
     (F : C ⥤ D) [F.CommShift A] (X : C) (a b : A) :
     F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫
       ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫

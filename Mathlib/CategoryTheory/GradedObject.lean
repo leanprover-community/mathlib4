@@ -53,7 +53,7 @@ instance inhabitedGradedObject (β : Type w) (C : Type u) [Inhabited C] :
 with a shift functor given by translation by `s`.
 -/
 @[nolint unusedArguments]
-abbrev GradedObjectWithShift {β : Type w} [AddCommGroup β] (_ : β) (C : Type u) : Type max w u :=
+abbrev GradedObjectWithShift {β : Type w} [AddGroup β] [IsAddCommutative β] (_ : β) (C : Type u) : Type max w u :=
   GradedObject β C
 
 namespace GradedObject
@@ -196,7 +196,7 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
 end
 
 set_option backward.defeqAttrib.useBackward true in
-instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
+instance hasShift {β : Type*} [AddGroup β] [IsAddCommutative β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
       zero := comapEq C (by cat_disch) ≪≫ Pi.comapId β fun _ => C
@@ -204,12 +204,12 @@ instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObje
           (Pi.comapComp _ _ _).symm }
 
 @[simp]
-theorem shiftFunctor_obj_apply {β : Type*} [AddCommGroup β] (s : β) (X : β → C) (t : β) (n : ℤ) :
+theorem shiftFunctor_obj_apply {β : Type*} [AddGroup β] [IsAddCommutative β] (s : β) (X : β → C) (t : β) (n : ℤ) :
     (shiftFunctor (GradedObjectWithShift s C) n).obj X t = X (t + n • s) :=
   rfl
 
 @[simp]
-theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
+theorem shiftFunctor_map_apply {β : Type*} [AddGroup β] [IsAddCommutative β] (s : β)
     {X Y : GradedObjectWithShift s C} (f : X ⟶ Y) (t : β) (n : ℤ) :
     (shiftFunctor (GradedObjectWithShift s C) n).map f t = f (t + n • s) :=
   rfl

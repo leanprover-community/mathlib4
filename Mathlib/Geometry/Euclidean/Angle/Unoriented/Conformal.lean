@@ -21,7 +21,7 @@ public section
 namespace InnerProductGeometry
 
 variable {E F : Type*}
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F]
 variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 
 theorem IsConformalMap.preserves_angle {f' : E →L[ℝ] F} (h : IsConformalMap f') (u v : E) :

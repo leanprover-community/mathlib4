@@ -174,7 +174,7 @@ theorem tail_val' (B : Fin m.succ → n' → α) (j : n') :
 
 section DotProduct
 
-variable [AddCommMonoid α] [Mul α]
+variable [AddMonoid α] [IsAddCommutative α] [Mul α]
 
 @[simp]
 theorem dotProduct_of_isEmpty [Fintype n'] [IsEmpty n'] (v w : n' → α) : v ⬝ᵥ w = 0 :=
@@ -353,7 +353,7 @@ theorem cons_mulVec [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (w : 
   refine Fin.cases ?_ ?_ i <;> simp [mulVec]
 
 @[simp]
-theorem mulVec_cons {α} [NonUnitalCommSemiring α] (A : m' → Fin n.succ → α) (x : α)
+theorem mulVec_cons {α} [NonUnitalSemiring α] [IsMulCommutative α] (A : m' → Fin n.succ → α) (x : α)
     (v : Fin n → α) : (of A) *ᵥ (vecCons x v) = x • vecHead ∘ A + (of (vecTail ∘ A)) *ᵥ v := by
   ext i
   simp [mulVec, mul_comm]
@@ -473,7 +473,7 @@ theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
-theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
+theorem mul_fin_two [AddMonoid α] [IsAddCommutative α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
     !![a₁₁, a₁₂;
        a₂₁, a₂₂] * !![b₁₁, b₁₂;
                       b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
@@ -482,7 +482,7 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
 set_option linter.style.whitespace false in -- Preserve the formatting of the matrices.
-theorem mul_fin_three [AddCommMonoid α] [Mul α]
+theorem mul_fin_three [AddMonoid α] [IsAddCommutative α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :
     !![a₁₁, a₁₂, a₁₃;
        a₂₁, a₂₂, a₂₃;
@@ -518,7 +518,7 @@ theorem smul_vec3 {R : Type*} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
     x • ![a₀, a₁, a₂] = ![x • a₀, x • a₁, x • a₂] := by
   simp
 
-variable [AddCommMonoid α] [Mul α]
+variable [AddMonoid α] [IsAddCommutative α] [Mul α]
 
 theorem vec2_dotProduct' {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] ⬝ᵥ ![b₀, b₁] = a₀ * b₀ + a₁ * b₁ := by
   simp

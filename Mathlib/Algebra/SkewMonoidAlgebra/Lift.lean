@@ -23,7 +23,7 @@ variable {k G H : Type*}
 
 section lift
 
-variable [CommSemiring k] [Monoid G] [Monoid H]
+variable [Semiring k] [IsMulCommutative k] [Monoid G] [Monoid H]
 variable {A B : Type*} [Semiring A] [Algebra k A] [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
@@ -91,7 +91,7 @@ theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
 /-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
 `mapDomain f` is an algebra homomorphism between their monoid algebras. -/
 @[simps!]
-def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H F : Type*}
+def mapDomainAlgHom (k A : Type*) [Semiring k] [IsMulCommutative k] [Semiring A] [Algebra k A] {H F : Type*}
     [Monoid H] [FunLike F G H] [MonoidHomClass F G H] [MulSemiringAction G A]
     [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A] {f : F}
     (hf : ∀ (a : G) (x : A), a • x = (f a) • x) :
@@ -106,7 +106,7 @@ end lift
 
 section equivMapDomain
 
-variable [AddCommMonoid k]
+variable [AddMonoid k] [IsAddCommutative k]
 
 /-- Given `f : G ≃ H`, we can map `l : SkewMonoidAlgebra k G` to
 `equivMapDomain f l : SkewMonoidAlgebra k H` (computably) by mapping the support forwards
@@ -145,7 +145,7 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 /-- Given `AddCommMonoid A` and `e : G ≃ H`, `domCongr e` is the corresponding `Equiv` between
 `SkewMonoidAlgebra A G` and `SkewMonoidAlgebra A H`. -/
 @[simps apply]
-def domCongr [AddCommMonoid A] (e : G ≃ H) : SkewMonoidAlgebra A G ≃+ SkewMonoidAlgebra A H where
+def domCongr [AddMonoid A] [IsAddCommutative A] (e : G ≃ H) : SkewMonoidAlgebra A G ≃+ SkewMonoidAlgebra A H where
   toFun        := equivMapDomain e
   invFun       := equivMapDomain e.symm
   left_inv v   := by simp [← equivMapDomain_trans]
@@ -155,7 +155,7 @@ def domCongr [AddCommMonoid A] (e : G ≃ H) : SkewMonoidAlgebra A G ≃+ SkewMo
 /-- An equivalence of domains induces a linear equivalence of finitely supported functions.
 
 This is `domCongr` as a `LinearEquiv`. -/
-def domLCongr [Semiring k] [AddCommMonoid A] [Module k A] (e : G ≃ H) :
+def domLCongr [Semiring k] [AddMonoid A] [IsAddCommutative A] [Module k A] (e : G ≃ H) :
     SkewMonoidAlgebra A G ≃ₗ[k] SkewMonoidAlgebra A H :=
   (domCongr e : SkewMonoidAlgebra A G ≃+ SkewMonoidAlgebra A H).toLinearEquiv <| by
     simp only [domCongr_apply]
@@ -164,7 +164,7 @@ def domLCongr [Semiring k] [AddCommMonoid A] [Module k A] (e : G ≃ H) :
 
 variable (k A)
 
-variable [Monoid G] [Monoid H] [Semiring A] [CommSemiring k] [Algebra k A] [MulSemiringAction G A]
+variable [Monoid G] [Monoid H] [Semiring A] [Semiring k] [IsMulCommutative k] [Algebra k A] [MulSemiringAction G A]
   [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A]
 
 /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids and
@@ -210,7 +210,7 @@ section Submodule
 
 variable [Semiring k] [Monoid G] [MulSemiringAction G k]
 
-variable {V : Type*} [AddCommMonoid V] [Module k V] [Module (SkewMonoidAlgebra k G) V]
+variable {V : Type*} [AddMonoid V] [IsAddCommutative V] [Module k V] [Module (SkewMonoidAlgebra k G) V]
   [IsScalarTower k (SkewMonoidAlgebra k G) V]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised

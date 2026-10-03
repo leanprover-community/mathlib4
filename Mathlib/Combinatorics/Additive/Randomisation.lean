@@ -24,7 +24,7 @@ public section
 open Finset
 open scoped BigOperators ComplexConjugate
 
-variable {G : Type*} [Fintype G] [AddCommGroup G]
+variable {G : Type*} [Fintype G] [AddGroup G] [IsAddCommutative G]
 
 /-- One can randomise by a function of dissociated support. -/
 lemma AddDissociated.randomisation (c : AddChar G ℂ → ℝ) (d : AddChar G ℂ → ℂ)

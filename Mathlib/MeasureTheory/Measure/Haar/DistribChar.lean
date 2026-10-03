@@ -32,7 +32,7 @@ open MeasureTheory.Measure
 open scoped NNReal Pointwise ENNReal
 
 namespace MeasureTheory
-variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [TopologicalSpace A]
+variable {G A : Type*} [Group G] [AddGroup A] [IsAddCommutative A] [DistribMulAction G A] [TopologicalSpace A]
   [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {g : G}
 
 variable (A) in

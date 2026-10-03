@@ -104,19 +104,19 @@ instance [Neg α] : Neg (Holor α ds) :=
 instance [AddSemigroup α] : AddSemigroup (Holor α ds) :=
   inferInstanceAs <| AddSemigroup (HolorIndex ds → α)
 
-instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) :=
+instance [AddSemigroup α] [IsAddCommutative α] : AddCommSemigroup (Holor α ds) :=
   inferInstanceAs <| AddCommSemigroup (HolorIndex ds → α)
 
 instance [AddMonoid α] : AddMonoid (Holor α ds) :=
   inferInstanceAs <| AddMonoid (HolorIndex ds → α)
 
-instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) :=
+instance [AddMonoid α] [IsAddCommutative α] : AddCommMonoid (Holor α ds) :=
   inferInstanceAs <| AddCommMonoid (HolorIndex ds → α)
 
 instance [AddGroup α] : AddGroup (Holor α ds) :=
   inferInstanceAs <| AddGroup (HolorIndex ds → α)
 
-instance [AddCommGroup α] : AddCommGroup (Holor α ds) :=
+instance [AddGroup α] [IsAddCommutative α] : AddCommGroup (Holor α ds) :=
   inferInstanceAs <| AddCommGroup (HolorIndex ds → α)
 
 -- scalar product
@@ -219,7 +219,7 @@ theorem slice_add [Add α] (i : ℕ) (hid : i < d) (x : Holor α (d :: ds)) (y :
 theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d :: ds)) i hid = 0 :=
   rfl
 
-theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Finset β)
+theorem slice_sum [AddMonoid α] [IsAddCommutative α] {β : Type} (i : ℕ) (hid : i < d) (s : Finset β)
     (f : β → Holor α (d :: ds)) : (∑ x ∈ s, slice (f x) i hid) = slice (∑ x ∈ s, f x) i hid := by
   let := Classical.decEq β
   refine Finset.induction_on s ?_ ?_

@@ -19,9 +19,9 @@ polynomial, i.e., they admit a finite power series.
 
 @[expose] public section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] {G : Type*}
+  [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
 
 open scoped Topology NNReal ENNReal
 open Set

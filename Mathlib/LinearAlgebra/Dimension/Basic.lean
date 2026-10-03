@@ -47,7 +47,7 @@ section Module
 
 section
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable (R M)
 
 /-- The rank of a module, defined as a term of type `Cardinal`.
@@ -77,7 +77,7 @@ instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R
 end
 
 namespace LinearIndependent
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 variable [Nontrivial R]
 
@@ -108,7 +108,7 @@ end LinearIndependent
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem exists_set_linearIndependent_of_lt_lift_rank {c : Cardinal.{w}}
     (h : Cardinal.lift.{v} c < Cardinal.lift.{w} (Module.rank R M)) :
@@ -159,7 +159,7 @@ end Module
 section SurjectiveInjective
 
 section Semiring
-variable [Semiring R] [AddCommMonoid M] [Module R M] [Semiring R']
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Semiring R']
 
 variable (R M) in
 @[nontriviality, simp]
@@ -182,7 +182,7 @@ theorem Module.rank_eq_zero_of_not_faithfulSMul (h : ¬ FaithfulSMul R M) : Modu
   exact ⟨fun {x y} hxy ↦ hf (by simpa [← map_smul] using hxy (f 1))⟩
 
 section
-variable [AddCommMonoid M'] [Module R' M']
+variable [AddMonoid M'] [IsAddCommutative M'] [Module R' M']
 
 /-- If `M / R` and `M' / R'` are modules, `i : R' → R` is an injective map
 non-zero elements, `j : M →+ M'` is an injective monoid homomorphism, such that the scalar
@@ -224,7 +224,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R → R') (j : M ≃+ M')
 end
 
 section
-variable [AddCommMonoid M₁] [Module R' M₁]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R' M₁]
 
 /-- The same-universe version of `lift_rank_le_of_injective_injective`. -/
 theorem rank_le_of_injective_injectiveₛ (i : R' → R) (j : M →+ M₁)
@@ -254,7 +254,7 @@ following *Free sets and free subsemimodules in a semimodule* by Yi-Jia Tan, The
 
 Rings `R` that fail the strong rank condition but satisfy `rank R R = 1` are expected to exist, see
 https://mathoverflow.net/questions/317422/rings-that-fail-to-satisfy-the-strong-rank-condition. -/
-theorem CommSemiring.rank_self (R) [CommSemiring R] : Module.rank R R = 1 := by
+theorem CommSemiring.rank_self (R) [Semiring R] [IsMulCommutative R] : Module.rank R R = 1 := by
   nontriviality R
   rw [le_antisymm_iff, ← not_lt, ← two_le_iff_one_lt, ← Nat.cast_two,
     Module.le_rank_iff_exists_linearMap, Module.one_le_rank_iff]
@@ -266,14 +266,14 @@ theorem CommSemiring.rank_self (R) [CommSemiring R] : Module.rank R R = 1 := by
   exact zero_ne_one (α := R) (by simpa using congr($(inj (h₁.trans h₂)) 1))
 
 section Ring
-variable [Ring R] [AddCommGroup M] [Module R M] [Ring R']
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [Ring R']
 
 /-- If `M / R` and `M' / R'` are modules, `i : R' → R` is a map which sends non-zero elements to
 non-zero elements, `j : M →+ M'` is an injective group homomorphism, such that the scalar
 multiplications on `M` and `M'` are compatible, then the rank of `M / R` is smaller than or equal to
 the rank of `M' / R'`. As a special case, taking `R = R'` it is
 `LinearMap.lift_rank_le_of_injective`. -/
-theorem lift_rank_le_of_injective_injective [AddCommGroup M'] [Module R' M']
+theorem lift_rank_le_of_injective_injective [AddGroup M'] [IsAddCommutative M'] [Module R' M']
     (i : R' → R) (j : M →+ M') (hi : ∀ r, i r = 0 → r = 0) (hj : Injective j)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
@@ -284,7 +284,7 @@ theorem lift_rank_le_of_injective_injective [AddCommGroup M'] [Module R' M']
     lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
 
 /-- The same-universe version of `lift_rank_le_of_injective_injective`. -/
-theorem rank_le_of_injective_injective [AddCommGroup M₁] [Module R' M₁]
+theorem rank_le_of_injective_injective [AddGroup M₁] [IsAddCommutative M₁] [Module R' M₁]
     (i : R' → R) (j : M →+ M₁) (hi : ∀ r, i r = 0 → r = 0) (hj : Injective j)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     Module.rank R M ≤ Module.rank R' M₁ := by
@@ -294,8 +294,8 @@ end Ring
 
 namespace Algebra
 
-variable {R : Type w} {S : Type v} [CommSemiring R] [Semiring S] [Algebra R S]
-  {R' : Type w'} {S' : Type v'} [CommSemiring R'] [Semiring S'] [Algebra R' S']
+variable {R : Type w} {S : Type v} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
+  {R' : Type w'} {S' : Type v'} [Semiring R'] [IsMulCommutative R'] [Semiring S'] [Algebra R' S']
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R' →+* R` and `j : S →+* S'` are injective ring
 homomorphisms, such that `R' → R → S → S'` and `R' → S'` commute, then the rank of `S / R` is
@@ -358,8 +358,8 @@ end Algebra
 
 end SurjectiveInjective
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
-  [Semiring R'] [AddCommMonoid M'] [AddCommMonoid M₁]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [Semiring R'] [AddMonoid M'] [IsAddCommutative M'] [AddMonoid M₁] [IsAddCommutative M₁]
   [Module R M'] [Module R M₁] [Module R' M'] [Module R' M₁]
 
 section
@@ -464,7 +464,7 @@ theorem LinearMap.rank_le_of_surjective (f : M →ₗ[R] M₁) (h : Surjective f
   rw [← rank_range_of_surjective f h]
   apply rank_range_le
 
-lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
+lemma rank_le_of_isSMulRegular {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)
     (h : ∀ x ∈ L, s • x ∈ L') :
     Module.rank R L ≤ Module.rank R L' :=

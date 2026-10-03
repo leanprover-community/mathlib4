@@ -16,7 +16,7 @@ universe u
 
 namespace Submodule
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 instance small_sup {P Q : Submodule R M} [smallP : Small.{u} P] [smallQ : Small.{u} Q] :
     Small.{u} (P ⊔ Q : Submodule R M) := by
@@ -65,7 +65,7 @@ theorem small_span [Small.{u} R] (s : Set M) [Small.{u} s] :
 
 end Submodule
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 namespace Algebra
 

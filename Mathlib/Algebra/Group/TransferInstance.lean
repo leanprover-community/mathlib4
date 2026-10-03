@@ -122,7 +122,7 @@ protected abbrev semigroup [Semigroup β] : Semigroup α := by
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
 @[to_additive /-- Transfer `AddCommSemigroup` across an `Equiv` -/]
-protected abbrev commSemigroup [CommSemigroup β] : CommSemigroup α := by
+protected abbrev commSemigroup [Semigroup β] [IsMulCommutative β] : CommSemigroup α := by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
 
@@ -164,7 +164,7 @@ protected abbrev monoid [Monoid β] : Monoid α := by
 
 /-- Transfer `CommMonoid` across an `Equiv` -/
 @[to_additive /-- Transfer `AddCommMonoid` across an `Equiv` -/]
-protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
+protected abbrev commMonoid [Monoid β] [IsMulCommutative β] : CommMonoid α := by
   let one := e.one
   let mul := e.mul
   let pow := e.pow ℕ
@@ -183,7 +183,7 @@ protected abbrev group [Group β] : Group α := by
 
 /-- Transfer `CommGroup` across an `Equiv` -/
 @[to_additive /-- Transfer `AddCommGroup` across an `Equiv` -/]
-protected abbrev commGroup [CommGroup β] : CommGroup α := by
+protected abbrev commGroup [Group β] [IsMulCommutative β] : CommGroup α := by
   let one := e.one
   let mul := e.mul
   let inv := e.Inv

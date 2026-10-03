@@ -98,7 +98,7 @@ elliptic net, elliptic divisibility sequence
 
 @[expose] public section
 
-variable {R S : Type*} [CommRing R] [CommRing S] (W : ℤ → R) {F : Type*} [FunLike F R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (W : ℤ → R) {F : Type*} [FunLike F R S]
   [RingHomClass F R S] (f : F)
 
 namespace IsEllipticNet

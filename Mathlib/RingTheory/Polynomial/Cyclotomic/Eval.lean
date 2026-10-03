@@ -29,25 +29,25 @@ namespace Polynomial
 open Finset Nat
 
 @[simp]
-theorem eval_one_cyclotomic_prime {R : Type*} [CommRing R] {p : ℕ} [hn : Fact p.Prime] :
+theorem eval_one_cyclotomic_prime {R : Type*} [Ring R] [IsMulCommutative R] {p : ℕ} [hn : Fact p.Prime] :
     eval 1 (cyclotomic p R) = p := by
   simp only [cyclotomic_prime, eval_X, one_pow, Finset.sum_const, eval_pow, eval_finsetSum,
     Finset.card_range, smul_one_eq_cast]
 
-theorem eval₂_one_cyclotomic_prime {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S) {p : ℕ}
+theorem eval₂_one_cyclotomic_prime {R S : Type*} [Ring R] [IsMulCommutative R] [Semiring S] (f : R →+* S) {p : ℕ}
     [Fact p.Prime] : eval₂ f 1 (cyclotomic p R) = p := by simp
 
 @[simp]
-theorem eval_one_cyclotomic_prime_pow {R : Type*} [CommRing R] {p : ℕ} (k : ℕ)
+theorem eval_one_cyclotomic_prime_pow {R : Type*} [Ring R] [IsMulCommutative R] {p : ℕ} (k : ℕ)
     [hn : Fact p.Prime] : eval 1 (cyclotomic (p ^ (k + 1)) R) = p := by
   simp only [cyclotomic_prime_pow_eq_geom_sum hn.out, eval_X, one_pow, Finset.sum_const, eval_pow,
     eval_finsetSum, Finset.card_range, smul_one_eq_cast]
 
-theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S)
+theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [Ring R] [IsMulCommutative R] [Semiring S] (f : R →+* S)
     {p : ℕ} (k : ℕ) [Fact p.Prime] : eval₂ f 1 (cyclotomic (p ^ (k + 1)) R) = p := by simp
 
 private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
-    [CommRing R] [PartialOrder R] [IsStrictOrderedRing R] :
+    [Ring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R] :
     0 < eval (-1 : R) (cyclotomic n R) := by
   have := NeZero.of_gt hn
   rw [← map_cyclotomic_int, ← Int.cast_one, ← Int.cast_neg, eval_intCast_map, Int.coe_castRingHom,
@@ -66,7 +66,7 @@ private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
   exact hn.not_ge LinearOrderedRing.orderOf_le_two
 
 theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
-    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
+    [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
     0 < eval x (cyclotomic n R) := by
   induction n using Nat.strong_induction_on with | _ n ih
   have hn' : 0 < n := pos_of_gt hn
@@ -110,7 +110,7 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
     · simpa only [eval_X, eval_one, cyclotomic_two, eval_add] using h.right.le
 
 theorem cyclotomic_pos_and_nonneg (n : ℕ) {R}
-    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
+    [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
     (1 < x → 0 < eval x (cyclotomic n R)) ∧ (1 ≤ x → 0 ≤ eval x (cyclotomic n R)) := by
   rcases n with (_ | _ | _ | n)
   · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one, and_self]
@@ -123,13 +123,13 @@ theorem cyclotomic_pos_and_nonneg (n : ℕ) {R}
 Similar to `cyclotomic_pos` but with the condition on the input rather than index of the
 cyclotomic polynomial. -/
 theorem cyclotomic_pos' (n : ℕ) {R}
-    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {x : R} (hx : 1 < x) :
+    [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R] {x : R} (hx : 1 < x) :
     0 < eval x (cyclotomic n R) :=
   (cyclotomic_pos_and_nonneg n x).1 hx
 
 /-- Cyclotomic polynomials are always nonnegative on inputs one or more. -/
 theorem cyclotomic_nonneg (n : ℕ) {R}
-    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {x : R} (hx : 1 ≤ x) :
+    [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R] {x : R} (hx : 1 ≤ x) :
     0 ≤ eval x (cyclotomic n R) :=
   (cyclotomic_pos_and_nonneg n x).2 hx
 

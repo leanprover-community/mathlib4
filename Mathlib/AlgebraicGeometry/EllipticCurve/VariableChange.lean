@@ -42,7 +42,7 @@ universe s u v w
 
 namespace WeierstrassCurve
 
-variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
+variable {R : Type u} [Ring R] [IsMulCommutative R] (W : WeierstrassCurve R)
 
 section VariableChange
 
@@ -54,7 +54,7 @@ $$\begin{pmatrix} u^2 & 0 & r \cr u^2s & u^3 & t \cr 0 & 0 & 1 \end{pmatrix}.$$
 In other words, this is the change of variables `(X, Y) ↦ (u²X + r, u³Y + u²sX + t)`.
 When `R` is a field, any two isomorphic Weierstrass equations are related by this. -/
 @[ext]
-structure VariableChange (R : Type u) [CommRing R] where
+structure VariableChange (R : Type u) [Ring R] [IsMulCommutative R] where
   /-- The `u` coefficient of an admissible linear change of variables, which must be a unit. -/
   u : Rˣ
   /-- The `r` coefficient of an admissible linear change of variables. -/
@@ -253,7 +253,7 @@ section BaseChange
 
 /-! ## Maps and base changes -/
 
-variable (C : VariableChange R) {A : Type v} [CommRing A] (φ : R →+* A)
+variable (C : VariableChange R) {A : Type v} [Ring A] [IsMulCommutative A] (φ : R →+* A)
 
 namespace VariableChange
 
@@ -274,13 +274,13 @@ scoped notation:max (priority := low) C:max "⁄" A:max => baseChange C A
 lemma map_id : C.map (RingHom.id R) = C :=
   rfl
 
-lemma map_map {A : Type v} [CommRing A] (φ : R →+* A) {B : Type w} [CommRing B] (ψ : A →+* B) :
+lemma map_map {A : Type v} [Ring A] [IsMulCommutative A] (φ : R →+* A) {B : Type w} [Ring B] [IsMulCommutative B] (ψ : A →+* B) :
     (C.map φ).map ψ = C.map (ψ.comp φ) :=
   rfl
 
 @[simp]
-lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
-    [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
+lemma map_baseChange {S : Type s} [Ring S] [IsMulCommutative S] [Algebra R S] {A : Type v} [Ring A] [IsMulCommutative A] [Algebra R A]
+    [Algebra S A] [IsScalarTower R S A] {B : Type w} [Ring B] [IsMulCommutative B] [Algebra R B] [Algebra S B]
     [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (C⁄A).map ψ = C⁄B :=
   congr(C.map $(ψ.comp_algebraMap_of_tower R))
 

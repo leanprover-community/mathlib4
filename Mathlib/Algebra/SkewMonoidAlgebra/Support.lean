@@ -26,7 +26,7 @@ variable {k G : Type*}
 
 section AddCommMonoid
 
-variable [AddCommMonoid k] {a : G} {b : k}
+variable [AddMonoid k] [IsAddCommutative k] {a : G} {b : k}
 
 @[simp] lemma support_single (a : G) (h : b ≠ 0) : (single a b).support = {a} :=
   Finsupp.support_single _ h
@@ -35,7 +35,7 @@ variable [AddCommMonoid k] {a : G} {b : k}
 
 theorem support_single_subset : (single a b).support ⊆ {a} := Finsupp.support_single_subset
 
-theorem support_sum {k' G' : Type*} [DecidableEq G'] [AddCommMonoid k'] {f : G →₀ k}
+theorem support_sum {k' G' : Type*} [DecidableEq G'] [AddMonoid k'] [IsAddCommutative k'] {f : G →₀ k}
     {g : G → k → SkewMonoidAlgebra k' G'} :
     (f.sum g).support ⊆ f.support.biUnion fun a ↦ (g a (f a)).support := by
   simpa [support, coeff_finsuppSum] using Finsupp.support_sum
@@ -44,7 +44,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup k]
+variable [AddGroup k] [IsAddCommutative k]
 
 theorem support_neg (p : SkewMonoidAlgebra k G) : (-p).support = p.support := by
   rw [support, coeff_neg, Finsupp.support_neg, support_coeff]
@@ -53,7 +53,7 @@ end AddCommGroup
 
 section AddCommMonoidWithOne
 
-variable [One G] [AddCommMonoidWithOne k]
+variable [One G] [AddMonoidWithOne k] [IsAddCommutative k]
 
 lemma support_one_subset : (1 : SkewMonoidAlgebra k G).support ⊆ 1 :=
   Finsupp.support_single_subset

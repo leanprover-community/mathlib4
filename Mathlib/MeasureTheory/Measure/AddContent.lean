@@ -67,7 +67,7 @@ open scoped ENNReal Topology Function
 namespace MeasureTheory
 
 variable {α : Type*} {C : Set (Set α)} {s t : Set α} {I : Finset (Set α)}
-  {G : Type*} [AddCommMonoid G]
+  {G : Type*} [AddMonoid G] [IsAddCommutative G]
 
 variable (G) in
 /-- An additive content is a set function with value 0 at the empty set which is finitely additive
@@ -361,7 +361,7 @@ end IsSetSemiring
 
 section OnIoc
 
-variable [LinearOrder α] {G : Type*} [AddCommGroup G]
+variable [LinearOrder α] {G : Type*} [AddGroup G] [IsAddCommutative G]
 
 open scoped Classical in
 /-- The function associating to an interval `Ioc u v` the difference `f v - f u`.

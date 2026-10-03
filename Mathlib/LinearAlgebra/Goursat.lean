@@ -26,7 +26,7 @@ respectively.
 open Function LinearMap
 
 namespace Submodule
-variable {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R M N : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   {L : Submodule R (M × N)}
   (hL₁ : Surjective (Prod.fst ∘ L.subtype)) (hL₂ : Surjective (Prod.snd ∘ L.subtype))
 

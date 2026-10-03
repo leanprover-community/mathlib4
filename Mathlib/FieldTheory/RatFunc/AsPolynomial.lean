@@ -44,7 +44,7 @@ open RatFunc
 
 section Domain
 
-variable [CommRing K] [IsDomain K]
+variable [Ring K] [IsMulCommutative K] [IsDomain K]
 
 /-- `RatFunc.C a` is the constant rational function `a`. -/
 def C : K →+* K⟮X⟯ := algebraMap _ _
@@ -168,7 +168,7 @@ theorem eval_zero : eval f a 0 = 0 := by simp [eval]
 theorem eval_one : eval f a 1 = 1 := by simp [eval]
 
 @[simp]
-theorem eval_algebraMap {S : Type*} [CommSemiring S] [Algebra S K[X]] (p : S) :
+theorem eval_algebraMap {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra S K[X]] (p : S) :
     eval f a (algebraMap _ _ p) = (algebraMap _ K[X] p).eval₂ f a := by
   simp [eval, IsScalarTower.algebraMap_apply S K[X] K⟮X⟯]
 
@@ -257,7 +257,7 @@ end algEquivOfTranscendental
 
 section Algebra
 
-variable [CommRing K] [IsDomain K]
+variable [Ring K] [IsMulCommutative K] [IsDomain K]
 
 lemma transcendental_X : Transcendental K (X : K⟮X⟯) := by
   rw [← RatFunc.algebraMap_X, transcendental_algebraMap_iff (algebraMap_injective K)]

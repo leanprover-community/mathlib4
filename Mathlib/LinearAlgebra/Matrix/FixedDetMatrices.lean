@@ -22,7 +22,7 @@ kbb (https://github.com/kim-em/kbb/tree/master) repository, so credit to those a
 
 @[expose] public section
 
-variable (n : Type*) [DecidableEq n] [Fintype n] (R : Type*) [CommRing R]
+variable (n : Type*) [DecidableEq n] [Fintype n] (R : Type*) [Ring R] [IsMulCommutative R]
 
 /-- The subtype of matrices with fixed determinant `m` -/
 def FixedDetMatrix (m : R) := { A : Matrix n n R // A.det = m }

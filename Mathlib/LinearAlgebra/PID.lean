@@ -26,7 +26,7 @@ public section
 
 namespace LinearMap
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
   [Module.Finite R M] [Module.Free R M]
 
 /-- If a linear endomorphism of a (finite, free) module `M` takes values in a submodule `p ⊆ M`,

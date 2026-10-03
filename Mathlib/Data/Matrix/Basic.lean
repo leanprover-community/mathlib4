@@ -55,18 +55,18 @@ section
 variable (R)
 
 /-- This is `Matrix.of` bundled as a linear equivalence. -/
-def ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : (m → n → α) ≃ₗ[R] Matrix m n α where
+def ofLinearEquiv [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α] : (m → n → α) ≃ₗ[R] Matrix m n α where
   __ := ofAddEquiv
   map_smul' _ _ := rfl
 
-@[simp] lemma coe_ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+@[simp] lemma coe_ofLinearEquiv [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α] :
     ⇑(ofLinearEquiv _ : (m → n → α) ≃ₗ[R] Matrix m n α) = of := rfl
-@[simp] lemma coe_ofLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] :
+@[simp] lemma coe_ofLinearEquiv_symm [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α] :
     ⇑((ofLinearEquiv _).symm : Matrix m n α ≃ₗ[R] (m → n → α)) = of.symm := rfl
 
 end
 
-theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
+theorem sum_apply [AddMonoid α] [IsAddCommutative α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
     (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
   congr($(s.sum_apply i g) j).trans (s.sum_apply j _)
 
@@ -93,7 +93,7 @@ variable (R)
 
 /-- `Matrix.diagonal` as a `LinearMap`. -/
 @[simps]
-def diagonalLinearMap [Semiring R] [AddCommMonoid α] [Module R α] : (n → α) →ₗ[R] Matrix n n α :=
+def diagonalLinearMap [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α] : (n → α) →ₗ[R] Matrix n n α :=
   { diagonalAddMonoidHom n α with map_smul' := diagonal_smul }
 
 variable {n α R}
@@ -132,7 +132,7 @@ variable (R)
 
 /-- `Matrix.diag` as a `LinearMap`. -/
 @[simps]
-def diagLinearMap [Semiring R] [AddCommMonoid α] [Module R α] : Matrix n n α →ₗ[R] n → α :=
+def diagLinearMap [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α] : Matrix n n α →ₗ[R] n → α :=
   { diagAddMonoidHom n α with map_smul' := diag_smul }
 
 variable {n α R}
@@ -142,12 +142,12 @@ theorem diag_list_sum [AddMonoid α] (l : List (Matrix n n α)) : diag l.sum = (
   map_list_sum (diagAddMonoidHom n α) l
 
 @[simp]
-theorem diag_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix n n α)) :
+theorem diag_multiset_sum [AddMonoid α] [IsAddCommutative α] (s : Multiset (Matrix n n α)) :
     diag s.sum = (s.map diag).sum :=
   map_multiset_sum (diagAddMonoidHom n α) s
 
 @[simp]
-theorem diag_sum {ι} [AddCommMonoid α] (s : Finset ι) (f : ι → Matrix n n α) :
+theorem diag_sum {ι} [AddMonoid α] [IsAddCommutative α] (s : Finset ι) (f : ι → Matrix n n α) :
     diag (∑ i ∈ s, f i) = ∑ i ∈ s, diag (f i) :=
   map_sum (diagAddMonoidHom n α) f s
 
@@ -224,7 +224,7 @@ end Semiring
 section Algebra
 
 variable [Fintype n] [DecidableEq n]
-variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
+variable [Semiring R] [IsMulCommutative R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
 instance instAlgebra : Algebra R (Matrix n n α) where
   algebraMap := (Matrix.scalar n).comp (algebraMap R α)
@@ -326,7 +326,7 @@ end AddMonoidHom
 
 section LinearMap
 
-variable [Semiring R] [AddCommMonoid α] [Module R α]
+variable [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α]
 
 variable (R α) in
 /--
@@ -424,15 +424,15 @@ theorem mapMatrix_zero : (0 : α →+ β).mapMatrix = (0 : Matrix m n α →+ _)
 end AddZeroClass
 
 @[simp]
-theorem mapMatrix_add [AddZeroClass α] [AddCommMonoid β] (f g : α →+ β) :
+theorem mapMatrix_add [AddZeroClass α] [AddMonoid β] [IsAddCommutative β] (f g : α →+ β) :
     (f + g).mapMatrix = (f.mapMatrix + g.mapMatrix : Matrix m n α →+ _) := rfl
 
 @[simp]
-theorem mapMatrix_sub [AddZeroClass α] [AddCommGroup β] (f g : α →+ β) :
+theorem mapMatrix_sub [AddZeroClass α] [AddGroup β] [IsAddCommutative β] (f g : α →+ β) :
     (f - g).mapMatrix = (f.mapMatrix - g.mapMatrix : Matrix m n α →+ _) := rfl
 
 @[simp]
-theorem mapMatrix_neg [AddZeroClass α] [AddCommGroup β] (f : α →+ β) :
+theorem mapMatrix_neg [AddZeroClass α] [AddGroup β] [IsAddCommutative β] (f : α →+ β) :
     (-f).mapMatrix = (-f.mapMatrix : Matrix m n α →+ _) := rfl
 
 @[simp]
@@ -480,7 +480,7 @@ variable [Semiring R] [Semiring S] [Semiring T]
 variable {σᵣₛ : R →+* S} {σₛₜ : S →+* T} {σᵣₜ : R →+* T} [RingHomCompTriple σᵣₛ σₛₜ σᵣₜ]
 
 section AddCommMonoid
-variable [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
+variable [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] [AddMonoid γ] [IsAddCommutative γ]
 variable [Module R α] [Module S β] [Module T γ]
 
 /-- The `LinearMap` between spaces of matrices induced by a `LinearMap` between their
@@ -529,7 +529,7 @@ def mapMatrixLinear [Semiring A] [Module A β] [SMulCommClass S A β] :
 end AddCommMonoid
 
 section
-variable [AddCommMonoid α] [AddCommGroup β]
+variable [AddMonoid α] [IsAddCommutative α] [AddGroup β] [IsAddCommutative β]
 variable [Module R α] [Module S β]
 
 @[simp]
@@ -547,7 +547,7 @@ end LinearMap
 namespace LinearEquiv
 
 variable [Semiring R] [Semiring S] [Semiring T]
-variable [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
+variable [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] [AddMonoid γ] [IsAddCommutative γ]
 variable [Module R α] [Module S β] [Module T γ]
 variable {σᵣₛ : R →+* S} {σₛₜ : S →+* T} {σᵣₜ : R →+* T} [RingHomCompTriple σᵣₛ σₛₜ σᵣₜ]
 variable {σₛᵣ : S →+* R} {σₜₛ : T →+* S} {σₜᵣ : T →+* R} [RingHomCompTriple σₜₛ σₛᵣ σₜᵣ]
@@ -651,7 +651,7 @@ open MulOpposite in
 See also `Matrix.transposeRingEquiv` for a version that doesn't take the opposite of `α`,
 given that its multiplication is commutative. -/
 @[simps apply symm_apply]
-def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
+def mopMatrix {α} [Mul α] [AddMonoid α] [IsAddCommutative α] : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   toFun M := op (M.transpose.map unop)
   invFun M := M.unop.transpose.map op
   map_mul' _ _ := unop_injective <| by ext; simp [mul_apply]
@@ -659,12 +659,12 @@ def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (M
 
 end RingEquiv
 
-instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
+instance (α) [MulOne α] [AddMonoid α] [IsAddCommutative α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
   isDedekindFiniteMonoid n := .of_injective (MonoidHom.mk
     ⟨RingEquiv.mopMatrix, by simp⟩ RingEquiv.mopMatrix.map_mul) (RingEquiv.injective _)
 
 open MulOpposite in
-theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
+theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddMonoid α] [IsAddCommutative α] :
     IsStablyFiniteRing αᵐᵒᵖ ↔ IsStablyFiniteRing α where
   mp _ :=
   ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
@@ -675,7 +675,7 @@ theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
 namespace AlgHom
 
 variable [Fintype m] [DecidableEq m]
-variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
+variable [Semiring R] [IsMulCommutative R] [Semiring α] [Semiring β] [Semiring γ]
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
 /-- The `AlgHom` between spaces of square matrices induced by an `AlgHom` between their
@@ -700,7 +700,7 @@ end AlgHom
 namespace AlgEquiv
 
 variable [Fintype m] [DecidableEq m]
-variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
+variable [Semiring R] [IsMulCommutative R] [Semiring α] [Semiring β] [Semiring γ]
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
 /-- The `AlgEquiv` between spaces of square matrices induced by an `AlgEquiv` between their
@@ -800,7 +800,7 @@ end Subring
 
 namespace Submodule
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- A version of `Set.matrix` for `Submodule`s.
 Given a `Submodule` `S`, `S.matrix` is the `Submodule` of matrices `m`
@@ -840,19 +840,19 @@ This is available in bundled forms as:
   map_add' _ _ := rfl
 
 /-- `piEquiv` as a `LinearEquiv`. -/
-@[simps] def piLinearEquiv (R) [Semiring R] [∀ i, AddCommMonoid (β i)] [∀ i, Module R (β i)] :
+@[simps] def piLinearEquiv (R) [Semiring R] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, Module R (β i)] :
     Matrix m n (Π i, β i) ≃ₗ[R] Π i, Matrix m n (β i) where
   __ := piAddEquiv
   map_smul' _ _ := rfl
 
 /-- `piEquiv` as a `RingEquiv`. -/
-@[simps!] def piRingEquiv [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [Fintype n] :
+@[simps!] def piRingEquiv [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, Mul (β i)] [Fintype n] :
     Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i) where
   __ := piAddEquiv
   map_mul' _ _ := by ext; simp [Matrix.mul_apply]
 
 /-- `piEquiv` as an `AlgEquiv`. -/
-@[simps!] def piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
+@[simps!] def piAlgEquiv (R) [Semiring R] [IsMulCommutative R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
     [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
   commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
@@ -884,11 +884,11 @@ theorem transpose_list_sum [AddMonoid α] (l : List (Matrix m n α)) :
     l.sumᵀ = (l.map transpose).sum :=
   map_list_sum (transposeAddEquiv m n α) l
 
-theorem transpose_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix m n α)) :
+theorem transpose_multiset_sum [AddMonoid α] [IsAddCommutative α] (s : Multiset (Matrix m n α)) :
     s.sumᵀ = (s.map transpose).sum :=
   (transposeAddEquiv m n α).toAddMonoidHom.map_multiset_sum s
 
-theorem transpose_sum [AddCommMonoid α] {ι : Type*} (s : Finset ι) (M : ι → Matrix m n α) :
+theorem transpose_sum [AddMonoid α] [IsAddCommutative α] {ι : Type*} (s : Finset ι) (M : ι → Matrix m n α) :
     (∑ i ∈ s, M i)ᵀ = ∑ i ∈ s, (M i)ᵀ :=
   map_sum (transposeAddEquiv m n α) _ s
 
@@ -896,13 +896,13 @@ variable (m n R α)
 
 /-- `Matrix.transpose` as a `LinearMap` -/
 @[simps apply]
-def transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+def transposeLinearEquiv [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α] :
     Matrix m n α ≃ₗ[R] Matrix n m α where
   __ := transposeAddEquiv m n α
   map_smul' := transpose_smul
 
 @[simp]
-theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] :
+theorem transposeLinearEquiv_symm [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α] :
     (transposeLinearEquiv m n R α).symm = transposeLinearEquiv n m R α :=
   rfl
 
@@ -914,7 +914,7 @@ variable (m α)
 See also `RingEquiv.mopMatrix` for a version that doesn't require `α` to have commutative
 multiplication, by taking its opposite. -/
 @[simps!]
-def transposeRingEquiv [AddCommMonoid α] [CommMagma α] [Fintype m] :
+def transposeRingEquiv [AddMonoid α] [IsAddCommutative α] [Mul α] [IsMulCommutative α] [Fintype m] :
     Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ where
   __ := transposeAddEquiv m m α |>.trans MulOpposite.opAddEquiv
   map_mul' M N := (congrArg MulOpposite.op <| transpose_mul M N).trans <| MulOpposite.op_mul ..
@@ -922,11 +922,11 @@ def transposeRingEquiv [AddCommMonoid α] [CommMagma α] [Fintype m] :
 variable {m α}
 
 @[simp]
-theorem transpose_pow [CommSemiring α] [Fintype m] [DecidableEq m] (M : Matrix m m α) (k : ℕ) :
+theorem transpose_pow [Semiring α] [IsMulCommutative α] [Fintype m] [DecidableEq m] (M : Matrix m m α) (k : ℕ) :
     (M ^ k)ᵀ = Mᵀ ^ k :=
   MulOpposite.op_injective <| map_pow (transposeRingEquiv m α) M k
 
-theorem transpose_list_prod [CommSemiring α] [Fintype m] [DecidableEq m] (l : List (Matrix m m α)) :
+theorem transpose_list_prod [Semiring α] [IsMulCommutative α] [Fintype m] [DecidableEq m] (l : List (Matrix m m α)) :
     l.prodᵀ = (l.map transpose).reverse.prod :=
   (transposeRingEquiv m α).unop_map_list_prod l
 
@@ -937,7 +937,7 @@ variable (R m α)
 See also `AlgEquiv.mopMatrix` for a version that doesn't require `α` to have commutative
 multiplication, by taking its opposite. -/
 @[simps!]
-def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
+def transposeAlgEquiv [Semiring R] [IsMulCommutative R] [Semiring α] [IsMulCommutative α] [Fintype m] [DecidableEq m] [Algebra R α] :
     Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := transposeRingEquiv m α
   commutes' r := by simp [algebraMap_eq_diagonal]

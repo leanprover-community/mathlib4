@@ -31,7 +31,7 @@ the base change `S ⊗[R] B` as an `S`-coalgebra.
 
 open TensorProduct
 
-variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [AddCommMonoid B]
+variable {R S A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B]
     [Algebra R S] [Module R A] [Module S A] [Module R B] [IsScalarTower R S A]
 
 namespace TensorProduct
@@ -169,8 +169,8 @@ end TensorProduct
 namespace Coalgebra
 namespace TensorProduct
 
-variable {R S M N P Q : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-  [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [Module R M] [Module R N]
+variable {R S M N P Q : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
+  [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q] [Module R M] [Module R N]
   [Module R P] [Module R Q] [Module S M] [IsScalarTower R S M] [Coalgebra S M] [Module S N]
   [IsScalarTower R S N] [Coalgebra S N] [Coalgebra R P] [Coalgebra R Q]
 
@@ -288,8 +288,8 @@ end TensorProduct
 end Coalgebra
 namespace CoalgHom
 
-variable {R M N P : Type*} [CommRing R]
-  [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N]
+variable {R M N P : Type*} [Ring R] [IsMulCommutative R]
+  [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P] [Module R M] [Module R N]
   [Module R P] [Coalgebra R M] [Coalgebra R N] [Coalgebra R P]
 
 variable (M)
@@ -305,7 +305,7 @@ noncomputable abbrev rTensor (f : N →ₗc[R] P) : N ⊗[R] M →ₗc[R] P ⊗[
 end CoalgHom
 
 namespace Coalgebra
-variable {R C : Type*} [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
+variable {R C : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid C] [IsAddCommutative C] [Module R C] [Coalgebra R C]
   [IsCocomm R C]
 
 local notation3 "ε" => counit (R := R) (A := C)

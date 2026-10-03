@@ -41,8 +41,8 @@ or `R` has characteristic zero.
 
 @[expose] public section
 
-variable (k R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable (k R L M : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieModule
 

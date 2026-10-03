@@ -102,7 +102,7 @@ theorem MeasureTheory.Measure.addHaarScalarFactor_volume_hausdorffMeasure_ne_zer
 
 set_option backward.isDefEq.respectTransparency false in -- needed by `ENNReal.smul_def`
 instance MeasureTheory.isAddHaarMeasure_euclideanHausdorffMeasure {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
     [BorelSpace E] : (μHE[Module.finrank ℝ E] : Measure E).IsAddHaarMeasure := by
   rw [euclideanHausdorffMeasure_def, ENNReal.smul_def]
   exact IsAddHaarMeasure.smul _
@@ -150,7 +150,7 @@ theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Iso
 
 open scoped Pointwise in
 theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {E : Type*}
-    [NormedAddCommGroup E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [MeasurableSpace E] [BorelSpace E] (d : ℕ) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
     μHE[d] (r • s) = ‖r‖₊ ^ d • μHE[d] s := by
   rw [euclideanHausdorffMeasure_def, Measure.smul_apply, hausdorffMeasure_smul₀ (by simp) hr,
@@ -158,7 +158,7 @@ theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {
   simp
 
 section Homothety
-variable {𝕜 V P : Type*} [NormedField 𝕜] [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable {𝕜 V P : Type*} [NormedField 𝕜] [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V]
   [MeasurableSpace P] [MetricSpace P] [NormedAddTorsor V P] [BorelSpace P]
 
 theorem MeasureTheory.euclideanHausdorffMeasure_homothety_image (d : ℕ) (x : P) {c : 𝕜}
@@ -176,7 +176,7 @@ theorem MeasureTheory.euclideanHausdorffMeasure_homothety_preimage (d : ℕ) (x 
 end Homothety
 
 variable {V P : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
+variable [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
 variable [FiniteDimensional ℝ V]
 variable [MetricSpace P] [MeasurableSpace P] [BorelSpace P] [NormedAddTorsor V P]
 

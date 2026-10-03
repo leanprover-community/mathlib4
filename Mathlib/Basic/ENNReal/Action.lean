@@ -55,7 +55,7 @@ noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M]
   fast_instance% DistribMulAction.compHom M ofNNRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ≥0∞` restricts to a `Module` over `ℝ≥0`. -/
-noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
+noncomputable instance {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
   fast_instance% Module.compHom M ofNNRealHom
 
 set_option backward.isDefEq.respectTransparency false in

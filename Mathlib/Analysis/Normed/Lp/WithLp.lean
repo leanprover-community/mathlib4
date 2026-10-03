@@ -84,7 +84,7 @@ instance instUnique [Unique V] : Unique (WithLp p V) := (WithLp.equiv p V).uniqu
 instance instDecidableEq [DecidableEq V] : DecidableEq (WithLp p V) :=
   (WithLp.equiv p V).decidableEq
 
-instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) :=
+instance instAddCommGroup [AddGroup V] [IsAddCommutative V] : AddCommGroup (WithLp p V) :=
   (WithLp.equiv p V).addCommGroup
 @[to_additive] instance instSMul [SMul K V] : SMul K (WithLp p V) :=
   (WithLp.equiv p V).smul K
@@ -151,7 +151,7 @@ theorem congr_trans (f : V ≃ V') (g : V' ≃ V'') :
   rfl
 
 section AddCommGroup
-variable [AddCommGroup V]
+variable [AddGroup V] [IsAddCommutative V]
 
 @[simp] lemma toLp_zero : toLp p (0 : V) = 0 := rfl
 @[simp] lemma ofLp_zero : ofLp (0 : WithLp p V) = 0 := rfl
@@ -187,68 +187,68 @@ variable (K V)
 
 /-- `WithLp.equiv` as a group isomorphism. -/
 @[simps apply symm_apply]
-protected def addEquiv [AddCommGroup V] : WithLp p V ≃+ V where
+protected def addEquiv [AddGroup V] [IsAddCommutative V] : WithLp p V ≃+ V where
   toFun := ofLp
   invFun := toLp p
   map_add' := ofLp_add p
 
-lemma coe_addEquiv [AddCommGroup V] : ⇑(WithLp.addEquiv p V) = ofLp := rfl
+lemma coe_addEquiv [AddGroup V] [IsAddCommutative V] : ⇑(WithLp.addEquiv p V) = ofLp := rfl
 
-lemma coe_symm_addEquiv [AddCommGroup V] : ⇑(WithLp.addEquiv p V).symm = toLp p := rfl
+lemma coe_symm_addEquiv [AddGroup V] [IsAddCommutative V] : ⇑(WithLp.addEquiv p V).symm = toLp p := rfl
 
 @[simp]
-lemma ofLp_sum [AddCommGroup V] {ι : Type*} (s : Finset ι) (f : ι → WithLp p V) :
+lemma ofLp_sum [AddGroup V] [IsAddCommutative V] {ι : Type*} (s : Finset ι) (f : ι → WithLp p V) :
     (∑ i ∈ s, f i).ofLp = ∑ i ∈ s, (f i).ofLp :=
   map_sum (WithLp.addEquiv _ _) _ _
 
 @[simp]
-lemma toLp_sum [AddCommGroup V] {ι : Type*} (s : Finset ι) (f : ι → V) :
+lemma toLp_sum [AddGroup V] [IsAddCommutative V] {ι : Type*} (s : Finset ι) (f : ι → V) :
     toLp p (∑ i ∈ s, f i) = ∑ i ∈ s, toLp p (f i) :=
   map_sum (WithLp.addEquiv _ _).symm _ _
 
 @[simp]
-lemma ofLp_listSum [AddCommGroup V] (l : List (WithLp p V)) :
+lemma ofLp_listSum [AddGroup V] [IsAddCommutative V] (l : List (WithLp p V)) :
     l.sum.ofLp = (l.map ofLp).sum :=
   map_list_sum (WithLp.addEquiv _ _) _
 
 @[simp]
-lemma toLp_listSum [AddCommGroup V] (l : List V) :
+lemma toLp_listSum [AddGroup V] [IsAddCommutative V] (l : List V) :
     toLp p l.sum = (l.map (toLp p)).sum :=
   map_list_sum (WithLp.addEquiv _ _).symm _
 
 @[simp]
-lemma ofLp_multisetSum [AddCommGroup V] (s : Multiset (WithLp p V)) :
+lemma ofLp_multisetSum [AddGroup V] [IsAddCommutative V] (s : Multiset (WithLp p V)) :
     s.sum.ofLp = (s.map ofLp).sum :=
   map_multiset_sum (WithLp.addEquiv _ _) _
 
 @[simp]
-lemma toLp_multisetSum [AddCommGroup V] (s : Multiset V) :
+lemma toLp_multisetSum [AddGroup V] [IsAddCommutative V] (s : Multiset V) :
     toLp p s.sum = (s.map (toLp p)).sum :=
   map_multiset_sum (WithLp.addEquiv _ _).symm _
 
-instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V] :
+instance instDistribMulAction [Monoid K] [AddGroup V] [IsAddCommutative V] [DistribMulAction K V] :
     DistribMulAction K (WithLp p V) := fast_instance% (WithLp.addEquiv p V).distribMulAction K
-instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
+instance instModule [Semiring K] [AddGroup V] [IsAddCommutative V] [Module K V] : Module K (WithLp p V) :=
   fast_instance% (WithLp.addEquiv p V).module K
 
 /-- `WithLp.equiv` as a linear equivalence. -/
 @[simps apply symm_apply]
-protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V where
+protected def linearEquiv [Semiring K] [AddGroup V] [IsAddCommutative V] [Module K V] : WithLp p V ≃ₗ[K] V where
   __ := WithLp.addEquiv p V
   map_smul' _ _ := rfl
 
-lemma coe_linearEquiv [Semiring K] [AddCommGroup V] [Module K V] :
+lemma coe_linearEquiv [Semiring K] [AddGroup V] [IsAddCommutative V] [Module K V] :
     ⇑(WithLp.linearEquiv p K V) = ofLp := rfl
 
-lemma coe_symm_linearEquiv [Semiring K] [AddCommGroup V] [Module K V] :
+lemma coe_symm_linearEquiv [Semiring K] [AddGroup V] [IsAddCommutative V] [Module K V] :
     ⇑(WithLp.linearEquiv p K V).symm = toLp p := rfl
 
 @[simp]
-lemma toAddEquiv_linearEquiv [Semiring K] [AddCommGroup V] [Module K V] :
+lemma toAddEquiv_linearEquiv [Semiring K] [AddGroup V] [IsAddCommutative V] [Module K V] :
     (WithLp.linearEquiv p K V).toAddEquiv = WithLp.addEquiv p V := rfl
 
 instance instModuleFinite
-    [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :
+    [Semiring K] [AddGroup V] [IsAddCommutative V] [Module K V] [Module.Finite K V] :
     Module.Finite K (WithLp p V) :=
   Module.Finite.equiv (WithLp.linearEquiv p K V).symm
 
@@ -261,7 +261,7 @@ variable {K K' V} [Semiring K] [Semiring K'] [Semiring K'']
   {τ : K' →+* K''} {τ' : K'' →+* K'} [RingHomInvPair τ τ'] [RingHomInvPair τ' τ]
   {ρ : K →+* K''} {ρ' : K'' →+* K} [RingHomInvPair ρ ρ'] [RingHomInvPair ρ' ρ]
   [RingHomCompTriple σ τ ρ] [RingHomCompTriple τ' σ' ρ']
-  [AddCommGroup V] [Module K V] [AddCommGroup V'] [Module K' V'] [AddCommGroup V''] [Module K'' V'']
+  [AddGroup V] [IsAddCommutative V] [Module K V] [AddGroup V'] [IsAddCommutative V'] [Module K' V'] [AddGroup V''] [IsAddCommutative V''] [Module K'' V'']
 
 namespace LinearMap
 

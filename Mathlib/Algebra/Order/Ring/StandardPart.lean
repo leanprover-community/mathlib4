@@ -39,7 +39,7 @@ part function on `Hyperreal`.
 namespace ArchimedeanClass
 variable
   {K : Type*} [LinearOrder K] [Field K] [IsOrderedRing K] {x y : K}
-  {R : Type*} [LinearOrder R] [CommRing R] [IsStrictOrderedRing R] [Archimedean R]
+  {R : Type*} [LinearOrder R] [Ring R] [IsMulCommutative R] [IsStrictOrderedRing R] [Archimedean R]
 
 /-! ### Finite residue field -/
 

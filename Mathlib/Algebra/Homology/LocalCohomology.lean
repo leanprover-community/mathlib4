@@ -58,7 +58,7 @@ namespace localCohomology
 -- We define local cohomology, implemented as a direct limit of `Ext(R/J, -)`.
 section
 
-variable {R : Type u} [CommRing R] {D : Type u₁} [Category.{v₁} D]
+variable {R : Type u} [Ring R] [IsMulCommutative R] {D : Type u₁} [Category.{v₁} D]
 
 /-- The directed system of `R`-modules of the form `R/J`, where `J` is an ideal of `R`,
 determined by the functor `I` -/
@@ -75,7 +75,7 @@ abbrev diagram (I : D ⥤ Ideal R) (i : ℕ) : Dᵒᵖ ⥤ ModuleCat.{u} R ⥤ M
 end
 section
 
-variable {R : Type u} [CommRing R] {D : Type u₁} [Category.{v₁} D]
+variable {R : Type u} [Ring R] [IsMulCommutative R] {D : Type u₁} [Category.{v₁} D]
 variable {E : Type u₂} [Category.{v₂} E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
 /-- The diagram `ringModIdeals (I' ⋙ I)` is isomorphism (in fact, definitionally equal)
@@ -89,7 +89,7 @@ section
 
 -- We momentarily need to work with a type inequality, as later we will take colimits
 -- along diagrams either in Type, or in the same universe as the ring, and we need to cover both.
-variable {R : Type u} [CommRing R] {D : Type u₁} [Category.{v₁} D]
+variable {R : Type u} [Ring R] [IsMulCommutative R] {D : Type u₁} [Category.{v₁} D]
 
 /-
 In this definition we do not assume any special property of the diagram `I`, but the relevant case
@@ -109,7 +109,7 @@ end
 
 section
 
-variable {R : Type u} [CommRing R] {D : Type u₁} [Category.{v₁} D]
+variable {R : Type u} [Ring R] [IsMulCommutative R] {D : Type u₁} [Category.{v₁} D]
 variable {E : Type u₂} [Category.{v₂} E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
 /-- Local cohomology along a composition of diagrams. -/
@@ -132,7 +132,7 @@ end
 
 section Diagrams
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 /-- The functor sending a natural number `i` to the `i`-th power of the ideal `J` -/
 def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
@@ -165,7 +165,7 @@ section ModelsForLocalCohomology
 
 open localCohomology
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 /-- `localCohomology J i` is `i`-th the local cohomology module of a module `M` over
 a commutative ring `R` with support in the ideal `J` of `R`, defined as the direct limit
@@ -192,7 +192,7 @@ Showing equivalence of different definitions of local cohomology.
 
 section LocalCohomologyEquiv
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 /-- Lifting `idealPowersDiagram J` from a diagram valued in `ideals R` to a diagram
 valued in `SelfLERadical J`. -/

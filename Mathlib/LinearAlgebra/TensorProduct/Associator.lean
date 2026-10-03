@@ -15,11 +15,11 @@ public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 @[expose] public section
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {R' : Type*} [Monoid R']
 variable {A M N P Q S T : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P]
+variable [AddMonoid Q] [IsAddCommutative Q] [AddMonoid S] [IsAddCommutative S] [AddMonoid T] [IsAddCommutative T]
 variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
 variable (M N)
@@ -112,7 +112,7 @@ theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
 
 section CompatibleSMul
 
-variable (R A M N) [CommSemiring A] [Module A M] [Module A N]
+variable (R A M N) [Semiring A] [IsMulCommutative A] [Module A M] [Module A N]
   [CompatibleSMul R A M N] [Module R A] [SMulCommClass R A A] [CompatibleSMul R A A M]
   [CompatibleSMul A R A M]
 
@@ -124,7 +124,7 @@ def lidOfCompatibleSMul : A ⊗[R] M ≃ₗ[A] M :=
 theorem lidOfCompatibleSMul_tmul (a m) : lidOfCompatibleSMul R A M (a ⊗ₜ[R] m) = a • m := rfl
 
 variable {R} in
-lemma CompatibleSMul.of_algebraMap_surjective {A : Type*} [CommSemiring A] [Algebra R A]
+lemma CompatibleSMul.of_algebraMap_surjective {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
     [Module A M] [IsScalarTower R A M] [Module A N] [IsScalarTower R A N]
     (h : Function.Surjective (algebraMap R A)) :
     CompatibleSMul R A M N where
@@ -296,7 +296,7 @@ theorem tensorTensorTensorComm_symm :
   exact LinearEquiv.symm_trans_self _
 
 theorem tensorTensorTensorComm_comp_map {V W : Type*}
-    [AddCommMonoid V] [AddCommMonoid W] [Module R V] [Module R W]
+    [AddMonoid V] [IsAddCommutative V] [AddMonoid W] [IsAddCommutative W] [Module R V] [Module R W]
     (f : M →ₗ[R] S) (g : N →ₗ[R] T) (h : P →ₗ[R] V) (j : Q →ₗ[R] W) :
     tensorTensorTensorComm R S T V W ∘ₗ map (map f g) (map h j) =
       map (map f h) (map g j) ∘ₗ tensorTensorTensorComm R M N P Q :=
@@ -374,8 +374,8 @@ end LinearMap
 
 namespace LinearEquiv
 variable {R A A' B B' C C' : Type*}
-variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C]
-variable [AddCommMonoid A'] [AddCommMonoid B'] [AddCommMonoid C']
+variable [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [AddMonoid C] [IsAddCommutative C]
+variable [AddMonoid A'] [IsAddCommutative A'] [AddMonoid B'] [IsAddCommutative B'] [AddMonoid C'] [IsAddCommutative C']
 variable [Module R A] [Module R B] [Module R C] [Module R A'] [Module R B'] [Module R C']
 
 variable (R) in

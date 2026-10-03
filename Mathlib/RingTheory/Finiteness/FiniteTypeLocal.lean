@@ -27,8 +27,8 @@ section Algebra
 
 open scoped Pointwise TensorProduct
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (M : Submonoid R)
-variable (S' : Type*) [CommRing S']
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] (M : Submonoid R)
+variable (S' : Type*) [Ring S'] [IsMulCommutative S']
 variable [Algebra S S']
 
 variable {S'} in

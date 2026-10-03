@@ -35,7 +35,7 @@ open Polynomial
 
 open scoped nonZeroDivisors
 
-variable {R : Type u} [CommRing R] (r s : R) (p q : R[X]) (f : R⟮X⟯)
+variable {R : Type u} [Ring R] [IsMulCommutative R] (r s : R) (p q : R[X]) (f : R⟮X⟯)
 
 theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
   rw [mem_nonZeroDivisors_iff_right]

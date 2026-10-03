@@ -285,7 +285,7 @@ instance isLocalHom_stalkClosedPointTo :
 
 Useful for use in combination with `CommRingCat.of K` for a field `K`.
 -/
-instance isLocalHom_stalkClosedPointTo' {R : Type u} [CommRing R] [IsLocalRing R]
+instance isLocalHom_stalkClosedPointTo' {R : Type u} [Ring R] [IsMulCommutative R] [IsLocalRing R]
     (f : Spec (.of R) ⟶ X) :
     IsLocalHom (stalkClosedPointTo f).hom :=
   isLocalHom_stalkClosedPointTo f

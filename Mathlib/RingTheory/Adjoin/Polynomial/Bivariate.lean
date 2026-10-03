@@ -24,7 +24,7 @@ namespace Polynomial.Bivariate
 
 open Polynomial Bivariate Algebra Transcendental
 
-variable {R A : Type*} [CommRing R]
+variable {R A : Type*} [Ring R] [IsMulCommutative R]
 
 section Ring
 
@@ -48,9 +48,9 @@ end Ring
 
 section CommRing
 
-variable [CommRing A] [Algebra R A]
+variable [Ring A] [IsMulCommutative A] [Algebra R A]
 
-variable {B : Type*} [CommRing B] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
+variable {B : Type*} [Ring B] [IsMulCommutative B] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
 
 attribute [local instance] Polynomial.algebra in
 theorem aeval_aeval_eq_aeval_algEquivAdjoin {x : A} (y : B)

@@ -24,8 +24,8 @@ as the translation is currently tedious and can be unified easily after the loca
 
 @[expose] public section
 
-variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
-  [CommSemiring Q]
+variable {R S P : Type*} (Q : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring P] [IsMulCommutative P]
+  [Semiring Q] [IsMulCommutative Q]
   {M : Submonoid R} {T : Submonoid P}
   [Algebra R S] [Algebra P Q] [IsLocalization M S] [IsLocalization T Q]
   (g : R →+* P)
@@ -83,13 +83,13 @@ section Algebra
 
 open Algebra
 
-variable {R : Type*} [CommSemiring R] (M : Submonoid R)
-variable {A : Type*} [CommSemiring A] [Algebra R A]
-variable {B : Type*} [CommSemiring B] [Algebra R B]
-variable (Rₚ : Type*) [CommSemiring Rₚ] [Algebra R Rₚ] [IsLocalization M Rₚ]
-variable (Aₚ : Type*) [CommSemiring Aₚ] [Algebra R Aₚ] [Algebra A Aₚ] [IsScalarTower R A Aₚ]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (M : Submonoid R)
+variable {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
+variable {B : Type*} [Semiring B] [IsMulCommutative B] [Algebra R B]
+variable (Rₚ : Type*) [Semiring Rₚ] [IsMulCommutative Rₚ] [Algebra R Rₚ] [IsLocalization M Rₚ]
+variable (Aₚ : Type*) [Semiring Aₚ] [IsMulCommutative Aₚ] [Algebra R Aₚ] [Algebra A Aₚ] [IsScalarTower R A Aₚ]
   [IsLocalization (Algebra.algebraMapSubmonoid A M) Aₚ]
-variable (Bₚ : Type*) [CommSemiring Bₚ] [Algebra R Bₚ] [Algebra B Bₚ] [IsScalarTower R B Bₚ]
+variable (Bₚ : Type*) [Semiring Bₚ] [IsMulCommutative Bₚ] [Algebra R Bₚ] [Algebra B Bₚ] [IsScalarTower R B Bₚ]
   [IsLocalization (Algebra.algebraMapSubmonoid B M) Bₚ]
 variable [Algebra Rₚ Aₚ] [Algebra Rₚ Bₚ] [IsScalarTower R Rₚ Aₚ] [IsScalarTower R Rₚ Bₚ]
 
@@ -186,7 +186,7 @@ attribute [local instance] Polynomial.algebra in
 `R[X]` at `S.map Polynomial.C`.
 
 See also `MvPolynomial.isLocalization` for the multivariate case. -/
-lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
+lemma isLocalization {R} [Semiring R] [IsMulCommutative R] (S : Submonoid R) (A) [Semiring A] [IsMulCommutative A] [Algebra R A]
     [IsLocalization S A] : IsLocalization (S.map C) A[X] :=
   isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange S A _).mpr <|
     .of_equiv (polyEquivTensor' R A).symm.toLinearEquiv fun _ ↦ by simp

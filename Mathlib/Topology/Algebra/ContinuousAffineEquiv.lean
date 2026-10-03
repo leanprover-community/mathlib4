@@ -40,8 +40,8 @@ open Function
 /-- A continuous affine equivalence, denoted `P₁ ≃ᴬ[k] P₂`, between two affine topological spaces
 is an affine equivalence such that forward and inverse maps are continuous. -/
 structure ContinuousAffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k]
-    [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
-    [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
+    [AddGroup V₁] [IsAddCommutative V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
+    [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
     extends P₁ ≃ᵃ[k] P₂ where
   continuous_toFun : Continuous toFun := by fun_prop
   continuous_invFun : Continuous invFun := by fun_prop
@@ -50,10 +50,10 @@ structure ContinuousAffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring 
 notation:25 P₁ " ≃ᴬ[" k:25 "] " P₂:0 => ContinuousAffineEquiv k P₁ P₂
 
 variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k]
-  [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
-  [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
-  [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃] [TopologicalSpace P₃]
-  [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄] [TopologicalSpace P₄]
+  [AddGroup V₁] [IsAddCommutative V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
+  [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
+  [AddGroup V₃] [IsAddCommutative V₃] [Module k V₃] [AddTorsor V₃ P₃] [TopologicalSpace P₃]
+  [AddGroup V₄] [IsAddCommutative V₄] [Module k V₄] [AddTorsor V₄ P₄] [TopologicalSpace P₄]
 
 namespace ContinuousAffineEquiv
 
@@ -365,8 +365,8 @@ end
 
 section
 
-variable {E F : Type*} [AddCommGroup E] [Module k E] [TopologicalSpace E]
-  [AddCommGroup F] [Module k F] [TopologicalSpace F]
+variable {E F : Type*} [AddGroup E] [IsAddCommutative E] [Module k E] [TopologicalSpace E]
+  [AddGroup F] [IsAddCommutative F] [Module k F] [TopologicalSpace F]
 
 /-- Reinterpret a continuous linear equivalence between modules
 as a continuous affine equivalence. -/

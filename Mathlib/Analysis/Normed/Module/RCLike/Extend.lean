@@ -23,7 +23,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 /-- If a real-linear functional is bounded by a `𝕜`-seminorm, then its `𝕜`-linear extension
 is bounded by the same seminorm. -/
-theorem Module.Dual.norm_extendRCLike_le_seminorm [AddCommGroup E] [Module 𝕜 E] [Module ℝ E]
+theorem Module.Dual.norm_extendRCLike_le_seminorm [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [Module ℝ E]
     [IsScalarTower ℝ 𝕜 E] (fr : Dual ℝ E) {p : Seminorm 𝕜 E} (hp : ∀ x, |fr x| ≤ p x) (x : E) :
     ‖(fr.extendRCLike x : 𝕜)‖ ≤ p x := by
   by_cases hx : fr.extendRCLike (𝕜 := 𝕜) x = 0
@@ -42,7 +42,7 @@ namespace StrongDual
 the strong duals when scalar multiplication (by `𝕜`) is jointly continuous. -/
 @[expose, simps! -isSimp apply symm_apply]
 noncomputable def extendRCLikeL {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace F]
-    [AddCommGroup F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F] :
+    [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F] :
     StrongDual ℝ F ≃L[ℝ] StrongDual 𝕜 F where
   toLinearEquiv := extendRCLikeₗ
   continuous_toFun := by
@@ -56,19 +56,19 @@ noncomputable def extendRCLikeL {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace
 
 @[simp]
 lemma toLinearEquiv_extendRCLikeL {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace F]
-    [AddCommGroup F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F] :
+    [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F] :
     (extendRCLikeL (𝕜 := 𝕜) (F := F)).toLinearEquiv = extendRCLikeₗ :=
   rfl
 
 /-- If a continuous real-linear functional is bounded by a `𝕜`-seminorm, then its `𝕜`-linear
 extension is bounded by the same seminorm. -/
-theorem norm_extendRCLike_le_seminorm [AddCommGroup E] [Module 𝕜 E] [Module ℝ E]
+theorem norm_extendRCLike_le_seminorm [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [Module ℝ E]
     [IsScalarTower ℝ 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] (fr : StrongDual ℝ E)
     {p : Seminorm 𝕜 E} (hp : ∀ x, |fr x| ≤ p x) (x : E) :
     ‖(fr.extendRCLike x : 𝕜)‖ ≤ p x :=
   Dual.norm_extendRCLike_le_seminorm fr hp x
 
-variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
+variable [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 /-- The norm of the extension is bounded by `‖fr‖`. -/
 theorem norm_extendRCLike_bound (fr : StrongDual ℝ F) (x : F) :

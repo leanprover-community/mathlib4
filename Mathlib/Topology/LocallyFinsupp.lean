@@ -364,11 +364,11 @@ instance [AddMonoid Y] : AddMonoid (locallyFinsuppWithin U Y) :=
   Injective.addMonoid (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_nsmul
 
-instance [AddCommMonoid Y] : AddCommMonoid (locallyFinsuppWithin U Y) :=
+instance [AddMonoid Y] [IsAddCommutative Y] : AddCommMonoid (locallyFinsuppWithin U Y) :=
   Injective.addCommMonoid (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_nsmul
 
-@[simp] lemma coe_sum [AddCommMonoid Y] {ι : Type*} {s : Finset ι}
+@[simp] lemma coe_sum [AddMonoid Y] [IsAddCommutative Y] {ι : Type*} {s : Finset ι}
     {F : ι → locallyFinsuppWithin U Y} :
     (↑(∑ n ∈ s, F n) : X → Y) = ∑ n ∈ s, (F n : X → Y) := by
   classical
@@ -397,7 +397,7 @@ its negative.
 @[simp] lemma support_neg [AddGroup Y] (D : locallyFinsuppWithin U Y) :
     (-D).support = D.support := by rw [support, coe_neg, Function.support_neg]
 
-instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
+instance [AddGroup Y] [IsAddCommutative Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
@@ -513,7 +513,7 @@ instance [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
   inf_le_right D₁ D₂ := fun x ↦ by simp
   le_inf D₁ D₂ D₃ h₁₃ h₂₃ := fun x ↦ by simp [h₁₃ x, h₂₃ x]
 
-variable [AddCommGroup Y]
+variable [AddGroup Y] [IsAddCommutative Y]
 
 @[simp] lemma posPart_apply (a : locallyFinsuppWithin U Y) (x : X) : a⁺ x = (a x)⁺ := rfl
 @[simp] lemma negPart_apply (a : locallyFinsuppWithin U Y) (x : X) : a⁻ x = (a x)⁻ := rfl
@@ -521,7 +521,7 @@ variable [AddCommGroup Y]
 end Lattice
 
 section LinearOrder
-variable [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
+variable [AddGroup Y] [IsAddCommutative Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
 
 /--
 Functions with locally finite support within `U` form an ordered commutative group.
@@ -652,7 +652,7 @@ lemma restrict_mono [Zero Y] [LinearOrder Y] {A B : locallyFinsuppWithin U Y} {V
   · simp_all
 
 /-- Restriction as a group morphism -/
-noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
+noncomputable def restrictMonoidHom [AddGroup Y] [IsAddCommutative Y] {V : Set X} (h : V ⊆ U) :
     locallyFinsuppWithin U Y →+ locallyFinsuppWithin V Y where
   toFun D := D.restrict h
   map_zero' := by
@@ -664,12 +664,12 @@ noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
     <;> simp [restrict_apply, hx]
 
 @[simp]
-lemma restrictMonoidHom_apply [AddCommGroup Y] {V : Set X} (D : locallyFinsuppWithin U Y)
+lemma restrictMonoidHom_apply [AddGroup Y] [IsAddCommutative Y] {V : Set X} (D : locallyFinsuppWithin U Y)
     (h : V ⊆ U) :
     restrictMonoidHom h D = D.restrict h := by rfl
 
 /-- Restriction as an ordered group morphism -/
-noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] {V : Set X} (h : V ⊆ U) :
+noncomputable def restrictOrderMonoidHom [AddGroup Y] [IsAddCommutative Y] [LinearOrder Y] {V : Set X} (h : V ⊆ U) :
     locallyFinsuppWithin U Y →+o locallyFinsuppWithin V Y where
   toFun D := D.restrict h
   map_zero' := by
@@ -683,14 +683,14 @@ noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] {V : S
     apply restrict_mono h hAB
 
 @[simp]
-lemma restrictOrderMonoidHom_apply [AddCommGroup Y] [LinearOrder Y] {V : Set X}
+lemma restrictOrderMonoidHom_apply [AddGroup Y] [IsAddCommutative Y] [LinearOrder Y] {V : Set X}
     (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     restrictOrderMonoidHom h D = D.restrict h := by rfl
 
 /--
 Present a function with with finite support as a finsum of singleton indicator functions.
 -/
-@[simp] lemma sum_apply_smul_single_eq_self [DecidableEq X] [AddCommMonoid Y] {U : Set X}
+@[simp] lemma sum_apply_smul_single_eq_self [DecidableEq X] [AddMonoid Y] [IsAddCommutative Y] {U : Set X}
     {F : Function.locallyFinsuppWithin U Y} (h : F.support.Finite) :
     ∑ᶠ x, ((single x (F x)).restrict (subset_univ U)) = F := by
   have : (fun x ↦ (single x (F x)).restrict (subset_univ U)).support ⊆ h.toFinset := by
@@ -723,7 +723,7 @@ singleton indicator functions.
     exact (notMem_support.mp this).symm
 
 /-- Restriction as a lattice morphism -/
-noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h : V ⊆ U) :
+noncomputable def restrictLatticeHom [AddGroup Y] [IsAddCommutative Y] [Lattice Y] {V : Set X} (h : V ⊆ U) :
     LatticeHom (locallyFinsuppWithin U Y) (locallyFinsuppWithin V Y) where
   toFun D := D.restrict h
   map_sup' D₁ D₂ := by
@@ -736,7 +736,7 @@ noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h
     <;> simp [locallyFinsuppWithin.restrict_apply, hx]
 
 @[simp]
-lemma restrictLatticeHom_apply [AddCommGroup Y] [Lattice Y] {V : Set X}
+lemma restrictLatticeHom_apply [AddGroup Y] [IsAddCommutative Y] [Lattice Y] {V : Set X}
     (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     restrictLatticeHom h D = D.restrict h := by rfl
 /--

@@ -18,8 +18,8 @@ namespace ExteriorAlgebra
 
 open Module Set Set.powersetCard exteriorPower
 
-variable {R M : Type*} {m n : ℕ} {I : Type*} [LinearOrder I] [CommRing R]
-  [AddCommGroup M] [Module R M] (b : Module.Basis I R M)
+variable {R M : Type*} {m n : ℕ} {I : Type*} [LinearOrder I] [Ring R] [IsMulCommutative R]
+  [AddGroup M] [IsAddCommutative M] [Module R M] (b : Module.Basis I R M)
 
 /-- The direct sum decomposition of the exterior algebra from the graded algebra structure. -/
 instance : DirectSum.Decomposition (fun n ↦ ⋀[R]^n M) :=

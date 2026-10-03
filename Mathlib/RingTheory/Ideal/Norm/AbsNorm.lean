@@ -51,7 +51,7 @@ section abs_norm
 
 namespace Submodule
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 section
 
@@ -86,7 +86,7 @@ end Submodule
 
 section RingOfIntegers
 
-variable {S : Type*} [CommRing S]
+variable {S : Type*} [Ring S] [IsMulCommutative S]
 
 open Submodule
 

@@ -60,7 +60,7 @@ theorem as_sum_support_C_mul_X_pow (p : R[X]) : p = ∑ i ∈ p.support, C (p.co
 /-- We can reexpress a sum over `p.support` as a sum over `range n`,
 for any `n` satisfying `p.natDegree < n`.
 -/
-theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) (n : ℕ)
+theorem sum_over_range' [AddMonoid S] [IsAddCommutative S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) (n : ℕ)
     (hn : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
   have := supp_subset_range hn
   simp only [Polynomial.sum, support, coeff] at this ⊢
@@ -68,12 +68,12 @@ theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : 
 
 /-- We can reexpress a sum over `p.support` as a sum over `range (p.natDegree + 1)`.
 -/
-theorem sum_over_range [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) :
+theorem sum_over_range [AddMonoid S] [IsAddCommutative S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) :
     p.sum f = ∑ a ∈ range (p.natDegree + 1), f a (coeff p a) :=
   sum_over_range' p h (p.natDegree + 1) (lt_add_one _)
 
 -- TODO this is essentially a duplicate of `sum_over_range`, and should be removed.
-theorem sum_fin [AddCommMonoid S] (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) {n : ℕ} {p : R[X]}
+theorem sum_fin [AddMonoid S] [IsAddCommutative S] (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) {n : ℕ} {p : R[X]}
     (hn : p.degree < n) : (∑ i : Fin n, f i (p.coeff i)) = p.sum f := by
   by_cases hp : p = 0
   · rw [hp, sum_zero_index, Finset.sum_eq_zero]

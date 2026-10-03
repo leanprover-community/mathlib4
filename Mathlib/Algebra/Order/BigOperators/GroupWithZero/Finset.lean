@@ -23,7 +23,7 @@ variable {ι R : Type*}
 namespace Finset
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero R]
+variable [MonoidWithZero R] [IsMulCommutative R]
 
 section PosMulMono
 variable [Preorder R] [ZeroLEOneClass R] [PosMulMono R] {f g : ι → R} {s t : Finset ι}
@@ -83,7 +83,7 @@ lemma prod_le_one₀ (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1)
 lemma one_le_prod₀ (hf : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i := by
   simpa using prod_le_prod₀ (by simp) hf
 
-lemma le_prod_max_one {M : Type*} [CommMonoidWithZero M] [LinearOrder M] [ZeroLEOneClass M]
+lemma le_prod_max_one {M : Type*} [MonoidWithZero M] [IsMulCommutative M] [LinearOrder M] [ZeroLEOneClass M]
     [PosMulMono M] {i : ι} (hi : i ∈ s) (f : ι → M) :
     f i ≤ ∏ i ∈ s, max (f i) 1 := by
   classical

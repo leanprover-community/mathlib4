@@ -31,16 +31,16 @@ local infixl:50 " ~ᵤ " => Associated
 condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
 -/
-abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
+abbrev WfDvdMonoid (α : Type*) [MonoidWithZero α] [IsMulCommutative α] : Prop :=
   @WellFounded α DvdNotUnit
 
-theorem wellFounded_dvdNotUnit {α : Type*} [CommMonoidWithZero α] [h : WfDvdMonoid α] :
+theorem wellFounded_dvdNotUnit {α : Type*} [MonoidWithZero α] [IsMulCommutative α] [h : WfDvdMonoid α] :
     @WellFounded α DvdNotUnit :=
   h
 
 namespace WfDvdMonoid
 
-variable [CommMonoidWithZero α]
+variable [MonoidWithZero α] [IsMulCommutative α]
 
 variable [WfDvdMonoid α]
 
@@ -128,7 +128,7 @@ of prime factors, use the definition `of_exists_prime_factors`
 -/
 @[wikidata Q1052579 "This Mathlib declaration captures 'unique factorization'.
 Use in conjunction with `IsDomain` to capture unique factorization domain."]
-class UniqueFactorizationMonoid (α : Type*) [CommMonoidWithZero α] : Prop
+class UniqueFactorizationMonoid (α : Type*) [MonoidWithZero α] [IsMulCommutative α] : Prop
     extends IsCancelMulZero α where
   [toWellFounded : @WellFounded α DvdNotUnit]
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
@@ -137,7 +137,7 @@ attribute [instance 100] UniqueFactorizationMonoid.toIsCancelMulZero
 attribute [instance] UniqueFactorizationMonoid.toWellFounded
 
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
-    [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
+    [MonoidWithZero α] [IsMulCommutative α] [IsCancelMulZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
     UniqueFactorizationMonoid α where
   irreducible_iff_prime := irreducible_iff_prime
 
@@ -145,7 +145,7 @@ end Prio
 
 namespace UniqueFactorizationMonoid
 
-variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α]
 
 theorem exists_prime_factors (a : α) :
     a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a := by
@@ -174,7 +174,7 @@ end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
 
-variable [CommMonoidWithZero α]
+variable [MonoidWithZero α] [IsMulCommutative α]
 
 instance [Subsingleton α] : WfDvdMonoid α :=
   ⟨fun a ↦ Acc.intro a fun b ⟨hb, _⟩ ↦ (hb (Subsingleton.elim b 0)).elim⟩

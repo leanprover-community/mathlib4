@@ -47,7 +47,7 @@ namespace IsPicardLindelof
 
 open ODE
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [CompleteSpace E]
   {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a r L K : ℝ≥0}
 
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
@@ -135,7 +135,7 @@ end IsPicardLindelof
 
 namespace ContDiffAt
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [CompleteSpace E]
   {f : E → E} {x₀ : E}
 
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits an
@@ -182,7 +182,7 @@ end ContDiffAt
 
 /-! ## Uniqueness of solutions to ODEs -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
   {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g : ℝ → E} {a b t₀ : ℝ}
 
 /-- There exists only one solution of an ODE $\dot x=v(t, x)$ in a set `s ⊆ ℝ × E` with

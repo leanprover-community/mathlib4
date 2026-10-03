@@ -30,7 +30,7 @@ some properties of such ideals.
 
 public section
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 open TensorProduct PrimeSpectrum
 

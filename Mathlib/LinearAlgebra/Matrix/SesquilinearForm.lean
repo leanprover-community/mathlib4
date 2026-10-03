@@ -42,7 +42,7 @@ variable {R R₁ S₁ R₂ S₂ M₁ M₂ M₁' M₂' N₂ n m n' m' ι : Type*}
 
 section AuxToLinearMap
 
-variable [Semiring R₁] [Semiring S₁] [Semiring R₂] [Semiring S₂] [AddCommMonoid N₂]
+variable [Semiring R₁] [Semiring S₁] [Semiring R₂] [Semiring S₂] [AddMonoid N₂] [IsAddCommutative N₂]
   [Module S₁ N₂] [Module S₂ N₂] [SMulCommClass S₂ S₁ N₂]
 variable [Fintype n] [Fintype m]
 variable (σ₁ : R₁ →+* S₁) (σ₂ : R₂ →+* S₂)
@@ -78,8 +78,8 @@ section AuxToMatrix
 
 section CommSemiring
 
-variable [CommSemiring R] [Semiring R₁] [Semiring S₁] [Semiring R₂] [Semiring S₂]
-variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid N₂]
+variable [Semiring R] [IsMulCommutative R] [Semiring R₁] [Semiring S₁] [Semiring R₂] [Semiring S₂]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R₁ M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂] [AddMonoid N₂] [IsAddCommutative N₂]
   [Module R N₂] [Module S₁ N₂] [Module S₂ N₂] [SMulCommClass S₁ R N₂] [SMulCommClass S₂ R N₂]
   [SMulCommClass S₂ S₁ N₂]
 variable {σ₁ : R₁ →+* S₁} {σ₂ : R₂ →+* S₂}
@@ -128,7 +128,7 @@ section ToMatrix'
 This section deals with the conversion between matrices and sesquilinear maps on `n → R`.
 -/
 
-variable [CommSemiring R] [AddCommMonoid N₂] [Module R N₂] [Semiring R₁] [Semiring R₂]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid N₂] [IsAddCommutative N₂] [Module R N₂] [Semiring R₁] [Semiring R₂]
   [Semiring S₁] [Semiring S₂] [Module S₁ N₂] [Module S₂ N₂]
   [SMulCommClass S₁ R N₂] [SMulCommClass S₂ R N₂] [SMulCommClass S₂ S₁ N₂]
 variable {σ₁ : R₁ →+* S₁} {σ₂ : R₂ →+* S₂}
@@ -178,7 +178,7 @@ theorem Matrix.toLinearMap₂'_apply (M : Matrix n m N₂) (x : n → S₁) (y :
   Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by
     rw [RingHom.id_apply, RingHom.id_apply, smul_comm]
 
-theorem Matrix.toLinearMap₂'_apply' {T : Type*} [CommSemiring T] (M : Matrix n m T) (v : n → T)
+theorem Matrix.toLinearMap₂'_apply' {T : Type*} [Semiring T] [IsMulCommutative T] (M : Matrix n m T) (v : n → T)
     (w : m → T) : Matrix.toLinearMap₂' T M v w = v ⬝ᵥ (M *ᵥ w) := by
   simp_rw [Matrix.toLinearMap₂'_apply, dotProduct, Matrix.mulVec, dotProduct]
   refine Finset.sum_congr rfl fun _ _ => ?_
@@ -242,7 +242,7 @@ section CommToMatrix'
 
 -- TODO: Introduce matrix multiplication by matrices of scalars
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable [Fintype n] [Fintype m]
 variable [DecidableEq n] [DecidableEq m]
 variable [Fintype n'] [Fintype m']
@@ -309,8 +309,8 @@ a module with a fixed basis.
 -/
 
 
-variable [CommSemiring R]
-variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid N₂]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂] [AddMonoid N₂] [IsAddCommutative N₂]
   [Module R N₂]
 variable {σ₁ : R →+* R} {σ₂ : R →+* R} [Fintype n] [Fintype m] [DecidableEq m] [DecidableEq n]
 
@@ -448,8 +448,8 @@ theorem LinearMap.toMatrix₂_toLinearMap₂ (M : Matrix n m N₂) :
   (LinearMap.toMatrix₂ b₁ b₂).apply_symm_apply M
 
 variable (b₁ : Basis n R M₁) (b₂ : Basis m R M₂)
-variable [AddCommMonoid M₁'] [Module R M₁']
-variable [AddCommMonoid M₂'] [Module R M₂']
+variable [AddMonoid M₁'] [IsAddCommutative M₁'] [Module R M₁']
+variable [AddMonoid M₂'] [IsAddCommutative M₂'] [Module R M₂']
 variable (b₁' : Basis n' R M₁')
 variable (b₂' : Basis m' R M₂')
 variable [Fintype n'] [Fintype m']
@@ -533,8 +533,8 @@ section MatrixAdjoints
 
 open Matrix
 
-variable [CommRing R]
-variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
+variable [Ring R] [IsMulCommutative R]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
 variable [Fintype n] [Fintype n']
 variable (b₁ : Basis n R M₁) (b₂ : Basis n' R M₂)
 variable (J J₂ : Matrix n n R) (J' : Matrix n' n' R)
@@ -657,7 +657,7 @@ namespace LinearMap
 
 open Matrix
 
-variable [CommRing R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
+variable [Ring R] [IsMulCommutative R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
   {M : Matrix m n R}
 
 section StandardBasis
@@ -733,7 +733,7 @@ Lemmas transferring nondegeneracy (or left/right separating) between a matrix an
 bilinear form (for an arbitrary basis of a free module)
 -/
 
-variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
   (b₁ : Basis m R M₁) (b₂ : Basis n R M₂) {B : M₁ →ₗ[R] M₂ →ₗ[R] R}
 
 theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂ :
@@ -848,7 +848,7 @@ theorem nondegenerate_toLinearMap₂'_of_det_ne_zero' (h : M.det ≠ 0) :
 
 end DecidableEq
 
-variable [AddCommMonoid M₁] [Module R M₁]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁]
   (b : Basis m R M₁) {B : M₁ →ₗ[R] M₁ →ₗ[R] R}
 
 theorem separatingLeft_iff_det_ne_zero :

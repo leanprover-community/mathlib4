@@ -19,7 +19,7 @@ namespace Polynomial
 
 section IsDomain
 
-variable {R : Type*} [CommRing R] [IsDomain R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
 
 /-- A polynomial of degree 2 or 3 is irreducible iff it doesn't have roots. -/
 theorem Monic.irreducible_iff_roots_eq_zero_of_degree_le_three {p : R[X]} (hp : p.Monic)

@@ -172,7 +172,7 @@ end Embedding
 
 section
 
-variable {A : Type*} [AddCommSemigroup A] [IsRightCancelAdd A] [One A]
+variable {A : Type*} [AddSemigroup A] [IsAddCommutative A] [IsRightCancelAdd A] [One A]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The embedding from `up' a` to itself via (· + b). -/

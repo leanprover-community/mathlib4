@@ -92,7 +92,7 @@ instance [DistribSMul M B] [DistribSMul Mᵐᵒᵖ B] [IsCentralScalar M B] :
 
 end
 
-variable [AddZeroClass A] [AddCommMonoid B]
+variable [AddZeroClass A] [AddMonoid B] [IsAddCommutative B]
 
 instance [DistribSMul M B] : DistribSMul M (A →+ B) where
   smul_add _ _ _ := ext fun _ => smul_add _ _ _

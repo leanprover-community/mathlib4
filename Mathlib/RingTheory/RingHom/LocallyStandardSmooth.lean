@@ -21,10 +21,10 @@ public section
 
 namespace RingHom
 
-variable {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}
+variable {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {f : R →+* S}
 
 /-- Any standard smooth ring homomorphism is smooth. -/
-lemma IsStandardSmooth.smooth {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S}
+lemma IsStandardSmooth.smooth {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {f : R →+* S}
     (hf : IsStandardSmooth f) : Smooth f := by
   algebraize [f]
   rw [RingHom.Smooth]

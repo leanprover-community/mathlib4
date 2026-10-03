@@ -36,7 +36,7 @@ variable {Γ R : Type*}
 namespace HahnSeries
 
 section Valuation
-variable [AddCancelCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsDomain R]
+variable [AddCancelMonoid Γ] [IsAddCommutative Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsDomain R]
 
 variable (Γ R) in
 /-- The additive valuation on `R⟦Γ⟧` returning the smallest index at which

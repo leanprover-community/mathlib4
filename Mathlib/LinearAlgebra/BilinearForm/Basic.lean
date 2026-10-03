@@ -52,9 +52,9 @@ open LinearMap (BilinForm)
 
 universe u v w
 
-variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
-variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
+variable {R : Type*} {M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [IsMulCommutative R₁] [AddGroup M₁] [IsAddCommutative M₁] [Module R₁ M₁]
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace LinearMap

@@ -279,17 +279,17 @@ end PGLAction
 
 section SLAction
 
-noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+noncomputable instance SLAction {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
 
-theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
+theorem coe_specialLinearGroup_apply {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     ↑(g • z) =
       (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
       ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ))) := by
   rw [MulAction.compHom_smul_def, coe_smul_of_det_pos (by simp)]
   rfl
 
-theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
+theorem specialLinearGroup_apply {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     g • z = mk
       (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
       ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ)))

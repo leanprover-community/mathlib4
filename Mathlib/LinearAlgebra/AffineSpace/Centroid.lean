@@ -33,7 +33,7 @@ open scoped Affine
 
 namespace Finset
 
-variable (k : Type*) {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [DivisionRing k] [AddGroup V] [IsAddCommutative V] [Module k V]
 variable [AffineSpace V P] {ι : Type*} (s : Finset ι) {ι₂ : Type*} (s₂ : Finset ι₂)
 
 /-- The weights for the centroid of some points. -/
@@ -221,7 +221,7 @@ end Finset
 
 section DivisionRing
 
-variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddGroup V] [IsAddCommutative V] [Module k V]
 variable [AffineSpace V P] {ι : Type*}
 
 open Set Finset

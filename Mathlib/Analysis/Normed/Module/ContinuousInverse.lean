@@ -75,10 +75,10 @@ public section
 open Function Set
 
 variable {R : Type*} [Semiring R] {E E' F F' G : Type*}
-  [TopologicalSpace E] [AddCommMonoid E] [Module R E]
-  [TopologicalSpace E'] [AddCommMonoid E'] [Module R E']
-  [TopologicalSpace F] [AddCommMonoid F] [Module R F]
-  [TopologicalSpace F'] [AddCommMonoid F'] [Module R F']
+  [TopologicalSpace E] [AddMonoid E] [IsAddCommutative E] [Module R E]
+  [TopologicalSpace E'] [AddMonoid E'] [IsAddCommutative E'] [Module R E']
+  [TopologicalSpace F] [AddMonoid F] [IsAddCommutative F] [Module R F]
+  [TopologicalSpace F'] [AddMonoid F'] [IsAddCommutative F'] [Module R F']
 
 noncomputable section
 
@@ -137,7 +137,7 @@ lemma prodMap {g : E' →L[R] F'} (hf : f.HasLeftInverse) (hg : g.HasLeftInverse
   use finv.prodMap ginv
   simp [hfinv, hginv]
 
-variable [TopologicalSpace G] [AddCommMonoid G] [Module R G]
+variable [TopologicalSpace G] [AddMonoid G] [IsAddCommutative G] [Module R G]
 
 lemma comp {g : F →L[R] G} (hg : g.HasLeftInverse) (hf : f.HasLeftInverse) :
     (g.comp f).HasLeftInverse := by
@@ -177,8 +177,8 @@ protected lemma inr : (ContinuousLinearMap.inr R F G).HasLeftInverse := by
 section NontriviallyNormedField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
-  [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-  [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
+  [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+  [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
   [T2Space F] {f : E →L[𝕜] F}
 
 /-- If `f : E → F` is injective and `F` is finite-dimensional,
@@ -199,8 +199,8 @@ section Ring
 
 -- The next lemmas assume we are working over a ring.
 variable {R E F : Type*} [Ring R]
-  [TopologicalSpace E] [AddCommGroup E] [Module R E]
-  [TopologicalSpace F] [AddCommGroup F] [Module R F] {f : E →L[R] F}
+  [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [Module R E]
+  [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [Module R F] {f : E →L[R] F}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has a continuous left inverse, its range admits a closed complement. -/
@@ -245,8 +245,8 @@ end Ring
 section
 
 variable {R E F : Type*} [NontriviallyNormedField R]
-  [NormedAddCommGroup E] [NormedSpace R E] [CompleteSpace E]
-  [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace R E] [CompleteSpace E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace R F] [CompleteSpace F]
 
 /-- A continuous linear map between Banach spaces has a continuous left inverse if it is injective,
 has closed range and its range has a closed complement. -/
@@ -304,7 +304,7 @@ lemma prodMap {g : E' →L[R] F'} (hf : f.HasRightInverse) (hg : g.HasRightInver
   use finv.prodMap ginv
   simp [hfinv, hginv]
 
-variable [TopologicalSpace G] [AddCommMonoid G] [Module R G]
+variable [TopologicalSpace G] [AddMonoid G] [IsAddCommutative G] [Module R G]
 
 lemma comp {g : F →L[R] G} (hg : g.HasRightInverse) (hf : f.HasRightInverse) :
     (g.comp f).HasRightInverse := by
@@ -342,8 +342,8 @@ protected lemma snd : (ContinuousLinearMap.snd R F G).HasRightInverse := by
 section NontriviallyNormedField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
-  [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-  [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
+  [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+  [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
   [T2Space F] {f : E →L[𝕜] F}
 
 /-- If `f : E → F` is surjective and `F` is finite-dimensional,

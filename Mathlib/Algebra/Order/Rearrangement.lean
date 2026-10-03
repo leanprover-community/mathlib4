@@ -54,7 +54,7 @@ public section
 open Equiv Equiv.Perm Finset Function OrderDual
 
 variable {ι α β : Type*} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
-  [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β] [Module α β]
+  [AddMonoid β] [IsAddCommutative β] [LinearOrder β] [IsOrderedCancelAddMonoid β] [Module α β]
 
 /-! ### Scalar multiplication versions -/
 

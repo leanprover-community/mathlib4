@@ -41,9 +41,9 @@ open Module
 
 section OrderedCommSemiring
 
-variable (R : Type*) [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
-variable (M : Type*) [AddCommMonoid M] [Module R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable (R : Type*) [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R]
+variable (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 variable (ι ι' : Type*)
 
 /-- An orientation of a module, intended to be used when `ι` is a `Fintype` with the same
@@ -127,8 +127,8 @@ end OrderedCommSemiring
 
 section OrderedCommRing
 
-variable {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
-variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R]
+variable {M N : Type*} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N]
 
 @[simp]
 protected theorem Orientation.map_neg {ι : Type*} (f : M ≃ₗ[R] N) (x : Orientation R M ι) :
@@ -204,8 +204,8 @@ end OrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 variable {ι : Type*}
 
 namespace Orientation
@@ -334,7 +334,7 @@ end LinearOrderedCommRing
 section LinearOrderedField
 
 variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 variable {ι : Type*}
 
 namespace Orientation

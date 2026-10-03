@@ -118,7 +118,7 @@ end Lattice
 
 section IsBotZeroClass
 
-variable [AddCommMonoid α] [PartialOrder α] [IsBotZeroClass α]
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsBotZeroClass α]
   [OrderBot α] [LocallyFiniteOrder α]
 variable [DecidableEq ι] [DecidableEq α] (f : ι →₀ α)
 

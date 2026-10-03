@@ -28,8 +28,8 @@ open scoped DirectSum
 TODO: Here's a more general approach to dropping trivial factors from a direct sum:
 
 def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*} [DecidableEq ι] [DecidableEq κ]
-    [∀ i, DecidableEq (α i)] [∀ j, DecidableEq (β j)] [∀ i, AddCommMonoid (α i)]
-    [∀ j, AddCommMonoid (β j)] (f : ∀ i, Nontrivial (α i) → κ) (g : ∀ j, Nontrivial (β j) → ι)
+    [∀ i, DecidableEq (α i)] [∀ j, DecidableEq (β j)] [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)]
+    [∀ j, AddMonoid (β j)] [∀ j, IsAddCommutative (β j)] (f : ∀ i, Nontrivial (α i) → κ) (g : ∀ j, Nontrivial (β j) → ι)
     (F : ∀ i hi, α i →+ β (f i hi)) (G : ∀ j hj, β j →+ α (g j hj))
     (hfg : ∀ i hi hj, g (f i hi) hj = i) (hgf : ∀ j hj hi, f (g j hj) hi = j)
     (hFG : ∀ i hi hj a, hfg i hi hj ▸ G _ hj (F i hi a) = a)
@@ -93,7 +93,7 @@ namespace Module
 
 variable (M : Type u)
 
-theorem finite_of_fg_torsion [AddCommGroup M] [Module ℤ M] [Module.Finite ℤ M]
+theorem finite_of_fg_torsion [AddGroup M] [IsAddCommutative M] [Module ℤ M] [Module.Finite ℤ M]
     (hM : Module.IsTorsion ℤ M) : _root_.Finite M := by
   rcases Module.equiv_directSum_of_isTorsion hM with ⟨ι, _, p, h, e, ⟨l⟩⟩
   have : ∀ i : ι, NeZero (p i ^ e i).natAbs := fun i =>
@@ -110,7 +110,7 @@ variable (G : Type u)
 
 namespace AddCommGroup
 
-variable [AddCommGroup G]
+variable [AddGroup G] [IsAddCommutative G]
 
 /-- **Structure theorem of finitely generated abelian groups** : Any finitely generated abelian
 group is the product of a power of `ℤ` and a direct sum of some `ZMod (p i ^ e i)` for some
@@ -147,7 +147,7 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
 
 /-- **Structure theorem of finite abelian groups** : Any finite abelian group is a direct sum of
 some `ZMod (n i)` for some natural numbers `n i > 1`. -/
-lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddCommGroup G] [Finite G] :
+lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddGroup G] [IsAddCommutative G] [Finite G] :
     ∃ (ι : Type) (_ : Fintype ι) (n : ι → ℕ),
       (∀ i, 1 < n i) ∧ Nonempty (G ≃+ ⨁ i, ZMod (n i)) := by
   classical
@@ -168,14 +168,14 @@ end AddCommGroup
 namespace CommGroup
 
 @[to_additive existing]
-theorem finite_of_fg_isMulTorsion [CommGroup G] [Group.FG G] (hG : IsMulTorsion G) : Finite G :=
+theorem finite_of_fg_isMulTorsion [Group G] [IsMulCommutative G] [Group.FG G] (hG : IsMulTorsion G) : Finite G :=
   @Finite.of_equiv _ _ (AddCommGroup.finite_of_fg_isAddTorsion (Additive G) hG) Multiplicative.ofAdd
 
 @[deprecated (since := "2026-07-01")] alias finite_of_fg_torsion := finite_of_fg_isMulTorsion
 
 /-- The **Structure Theorem For Finite Abelian Groups** in a multiplicative version:
 A finite abelian group `G` is isomorphic to a finite product of finite cyclic groups. -/
-theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [CommGroup G] [Finite G] :
+theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [Group G] [IsMulCommutative G] [Finite G] :
     ∃ (ι : Type) (_ : Fintype ι) (n : ι → ℕ),
        (∀ (i : ι), 1 < n i) ∧ Nonempty (G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) := by
   obtain ⟨ι, inst, n, h₁, h₂⟩ := AddCommGroup.equiv_directSum_zmod_of_finite' (Additive G)
@@ -185,7 +185,7 @@ theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [CommGroup G] [Fini
 /-- The **Structure theorem of finitely generated abelian groups** in a multiplicative version:
 Any finitely generated abelian group is the product of a power of `ℤ`
 and a direct product of some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`. -/
-theorem equiv_free_prod_prod_multiplicative_zmod (G : Type*) [CommGroup G] [hG : Group.FG G] :
+theorem equiv_free_prod_prod_multiplicative_zmod (G : Type*) [Group G] [IsMulCommutative G] [hG : Group.FG G] :
     ∃ (ι j : Type) (_ : Fintype ι) (_ : Fintype j) (p : ι → ℕ)
     (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
       Nonempty <| G ≃* (j → Multiplicative ℤ) × ((i : ι) → Multiplicative (ZMod (p i ^ e i))) := by
@@ -200,14 +200,14 @@ end CommGroup
 namespace Subgroup
 
 @[to_additive]
-lemma finiteIndex_range_powMonoidHom_of_fg (A : Type*) [CommGroup A] [Group.FG A] {n : ℕ}
+lemma finiteIndex_range_powMonoidHom_of_fg (A : Type*) [Group A] [IsMulCommutative A] [Group.FG A] {n : ℕ}
     (hn : n ≠ 0) :
     (powMonoidHom (α := A) n).range.FiniteIndex :=
   finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_isMulTorsion _ <|
     CommGroup.isMulTorsion_quotient_range_powMonoidHom A hn
 
 @[to_additive]
-lemma isFiniteRelIndex_map_powMonoidHom_of_fg {A : Type*} [CommGroup A] {B : Subgroup A}
+lemma isFiniteRelIndex_map_powMonoidHom_of_fg {A : Type*} [Group A] [IsMulCommutative A] {B : Subgroup A}
     (hB : B.FG) {n : ℕ} (hn : n ≠ 0) :
     B.map (powMonoidHom (α := A) n) |>.IsFiniteRelIndex B := by
   rw [isFiniteRelIndex_iff_finiteIndex]
@@ -222,8 +222,8 @@ end Subgroup
 
 namespace Submodule
 
-variable {R K M : Type*} [CommRing R] [CommRing K] [Algebra R K] [Module.Finite ℤ R]
-  [AddCommGroup M] [Module R M]
+variable {R K M : Type*} [Ring R] [IsMulCommutative R] [Ring K] [IsMulCommutative K] [Algebra R K] [Module.Finite ℤ R]
+  [AddGroup M] [IsAddCommutative M] [Module R M]
 
 lemma fg_toAddSubgroup {A : Submodule R M} (hfg : A.FG) : A.toAddSubgroup.FG := by
   rw [← AddSubgroup.toIntSubmodule_toAddSubgroup A.toAddSubgroup, ← fg_iff_addSubgroup_fg]

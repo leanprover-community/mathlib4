@@ -21,7 +21,7 @@ This is proved without reference to `PrimeSpectrum` to avoid heavy imports.
 
 public section
 
-variable (R : Type*) [CommSemiring R] [hR : IsNoetherianRing R]
+variable (R : Type*) [Semiring R] [IsMulCommutative R] [hR : IsNoetherianRing R]
 
 lemma Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
     I.minimalPrimes.Finite := by

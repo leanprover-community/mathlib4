@@ -21,7 +21,7 @@ public section
 
 section Generic
 
-variable {R A : Type*} {p : A → Prop} [CommRing R] [StarRing R] [MetricSpace R]
+variable {R A : Type*} {p : A → Prop} [Ring R] [IsMulCommutative R] [StarRing R] [MetricSpace R]
 variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
 variable [Algebra R A] [ContinuousFunctionalCalculus R A p]
 

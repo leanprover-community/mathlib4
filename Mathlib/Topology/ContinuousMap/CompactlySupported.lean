@@ -261,15 +261,15 @@ instance [AddMonoid β] [ContinuousAdd β] : AddMonoid C_c(α, β) := fast_insta
 
 end AddMonoid
 
-instance [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) := fast_instance%
+instance [AddMonoid β] [IsAddCommutative β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) := fast_instance%
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
 @[simp]
-theorem coe_sum [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
+theorem coe_sum [AddMonoid β] [IsAddCommutative β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, (f i : α → β) :=
   map_sum coeFnMonoidHom f s
 
-theorem sum_apply [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β))
+theorem sum_apply [AddMonoid β] [IsAddCommutative β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β))
     (a : α) : (∑ i ∈ s, f i) a = ∑ i ∈ s, f i a := by simp
 
 section AddGroup
@@ -306,7 +306,7 @@ instance : AddGroup C_c(α, β) := fast_instance%
 
 end AddGroup
 
-instance [AddCommGroup β] [IsTopologicalAddGroup β] : AddCommGroup C_c(α, β) := fast_instance%
+instance [AddGroup β] [IsAddCommutative β] [IsTopologicalAddGroup β] : AddCommGroup C_c(α, β) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
     rfl
 
@@ -322,7 +322,7 @@ instance [Zero β] {R : Type*} [MonoidWithZero R] [MulActionWithZero R β]
     [ContinuousConstSMul R β] : MulActionWithZero R C_c(α, β) := fast_instance%
   Function.Injective.mulActionWithZero ⟨_, coe_zero⟩ DFunLike.coe_injective coe_smul
 
-instance [AddCommMonoid β] [ContinuousAdd β] {R : Type*} [Semiring R] [Module R β]
+instance [AddMonoid β] [IsAddCommutative β] [ContinuousAdd β] {R : Type*} [Semiring R] [Module R β]
     [ContinuousConstSMul R β] : Module R C_c(α, β) := fast_instance%
   Function.Injective.module R ⟨⟨_, coe_zero⟩, coe_add⟩ DFunLike.coe_injective coe_smul
 
@@ -334,7 +334,7 @@ instance [NonUnitalSemiring β] [IsTopologicalSemiring β] :
     NonUnitalSemiring C_c(α, β) := fast_instance%
   DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
-instance [NonUnitalCommSemiring β] [IsTopologicalSemiring β] :
+instance [NonUnitalSemiring β] [IsMulCommutative β] [IsTopologicalSemiring β] :
     NonUnitalCommSemiring C_c(α, β) := fast_instance%
   DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
@@ -347,7 +347,7 @@ instance [NonUnitalRing β] [IsTopologicalRing β] : NonUnitalRing C_c(α, β) :
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
     fun _ _ => rfl
 
-instance [NonUnitalCommRing β] [IsTopologicalRing β] :
+instance [NonUnitalRing β] [IsMulCommutative β] [IsTopologicalRing β] :
     NonUnitalCommRing C_c(α, β) := fast_instance%
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
@@ -530,7 +530,7 @@ end Lattice
 
 section IsOrderedAddMonoid
 
-variable [TopologicalSpace β] [AddCommMonoid β] [ContinuousAdd β]
+variable [TopologicalSpace β] [AddMonoid β] [IsAddCommutative β] [ContinuousAdd β]
 variable [PartialOrder β] [IsOrderedAddMonoid β]
 
 instance : IsOrderedAddMonoid C_c(α, β) where
@@ -598,7 +598,7 @@ def compMulHom [MulZeroClass δ] [ContinuousMul δ] (g : β →co γ) : C_c(γ, 
   map_mul' _ _ := rfl
 
 /-- Composition as a linear map. -/
-def compLinearMap [AddCommMonoid δ] [ContinuousAdd δ] {R : Type*} [Semiring R] [Module R δ]
+def compLinearMap [AddMonoid δ] [IsAddCommutative δ] [ContinuousAdd δ] {R : Type*} [Semiring R] [Module R δ]
     [ContinuousConstSMul R δ] (g : β →co γ) : C_c(γ, δ) →ₗ[R] C_c(β, δ) where
   toFun f := f.comp g
   map_add' _ _ := rfl
@@ -837,7 +837,7 @@ end toRealPositiveLinear
 section pullback
 
 variable [R1Space α] [Group α] [TopologicalSpace β] [R1Space β] [Group β] [ContinuousMul β]
-  [NormedAddCommGroup γ] {φ : α →* β} (hφ : Topology.IsClosedEmbedding φ)
+  [NormedAddGroup γ] [IsAddCommutative γ] {φ : α →* β} (hφ : Topology.IsClosedEmbedding φ)
 
 open scoped Pointwise in
 /-- Pull back a continuous compactly supported function `f` on `β` along a closed embedding

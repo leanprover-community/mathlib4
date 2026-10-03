@@ -18,7 +18,7 @@ open Function
 
 section ConstSMul
 
-variable [TopologicalSpace α] [AddCommMonoid α] [DistribSMul γ α]
+variable [TopologicalSpace α] [AddMonoid α] [IsAddCommutative α] [DistribSMul γ α]
   [ContinuousConstSMul γ α] {f : β → α} {L : SummationFilter β}
 
 theorem HasSum.const_smul {a : α} (b : γ) (hf : HasSum f a L) :
@@ -62,7 +62,7 @@ variable {ι κ R R₂ M M₂ : Type*}
 
 section SMulConst
 
-variable [Semiring R] [TopologicalSpace R] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [TopologicalSpace R] [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M]
   [ContinuousSMul R M] {f : ι → R} {L : SummationFilter ι}
 
 theorem HasSum.smul_const {r : R} (hf : HasSum f r L) (a : M) :
@@ -84,7 +84,7 @@ require associativity, but `Module` does.
 -/
 section tsum_smul_tsum
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable [TopologicalSpace R] [TopologicalSpace M] [T3Space M]
 variable [ContinuousAdd M] [ContinuousSMul R M]
 variable {f : ι → R} {g : κ → M} {s : R} {t u : M}
@@ -114,7 +114,7 @@ section HasSum
 
 -- Results in this section hold for continuous additive monoid homomorphisms or equivalences but we
 -- don't have bundled continuous additive homomorphisms.
-variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂] [Module R₂ M₂]
+variable [Semiring R] [Semiring R₂] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂]
   [TopologicalSpace M] [TopologicalSpace M₂] {σ : R →+* R₂} {σ' : R₂ →+* R} [RingHomInvPair σ σ']
   [RingHomInvPair σ' σ] {L : SummationFilter ι}
 
@@ -178,7 +178,7 @@ end HasSum
 
 section automorphize
 
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Type*}
+variable {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [T2Space M] {R : Type*}
   [DivisionRing R] [Module R M] [ContinuousConstSMul R M]
 
 /-- Given a group `α` acting on a type `β`, and a function `f : β → M`, we "automorphize" `f` to a

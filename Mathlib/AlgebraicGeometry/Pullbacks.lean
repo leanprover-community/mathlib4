@@ -713,7 +713,7 @@ end CartesianMonoidalCategory
 
 section Spec
 
-variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+variable (R S T : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S] [Algebra R T]
 
 open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 

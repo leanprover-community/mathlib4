@@ -32,7 +32,7 @@ public section
 
 universe v u
 
-variable {R : Type u} [CommRing R] [Small.{v} R]
+variable {R : Type u} [Ring R] [IsMulCommutative R] [Small.{v} R]
 
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
 

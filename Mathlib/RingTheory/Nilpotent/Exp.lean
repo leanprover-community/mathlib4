@@ -62,7 +62,7 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
   exact sum_eq_zero fun _ h₂ => by
     rw [pow_eq_zero_of_le (mem_Ico.1 h₂).1 (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
 
-theorem exp_smul_eq_sum {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M] {a : A} {m : M}
+theorem exp_smul_eq_sum {M : Type*} [AddGroup M] [IsAddCommutative M] [Module A M] [Module ℚ M] {a : A} {m : M}
     {k : ℕ} (h : (a ^ k) • m = 0) (hn : IsNilpotent a) :
     exp a • m = ∑ i ∈ range k, (i.factorial : ℚ)⁻¹ • (a ^ i) • m := by
   rcases le_or_gt (nilpotencyClass a) k with h₀ | h₀
@@ -206,7 +206,7 @@ end IsNilpotent
 
 namespace Module.End
 
-variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   [Module ℚ M] [Module ℚ N]
 
 open IsNilpotent TensorProduct
@@ -227,7 +227,7 @@ theorem commute_exp_left_of_commute
     simpa using congr($(Module.End.commute_pow_left_of_commute h i) m)
   simp [exp_eq_sum hfM, exp_eq_sum hfN, this, map_rat_smul]
 
-theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing B]
+theorem exp_mul_of_derivation (R B : Type*) [Ring R] [IsMulCommutative R] [NonUnitalNonAssocRing B]
     [Module R B] [SMulCommClass R B B] [IsScalarTower R B B] [Module ℚ B]
     (D : B →ₗ[R] B) (h_der : ∀ x y, D (x * y) = x * D y + (D x) * y)
     (h_nil : IsNilpotent D) (x y : B) :

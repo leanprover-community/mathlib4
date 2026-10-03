@@ -34,7 +34,7 @@ where `n` is the exponent of `M`. Then the main results of this file are as foll
 
 namespace MulChar
 
-variable {M R : Type*} [CommMonoid M] [CommRing R]
+variable {M R : Type*} [Monoid M] [IsMulCommutative M] [Ring R] [IsMulCommutative R]
 
 instance finite [Finite Mˣ] [IsDomain R] : Finite (MulChar M R) := .of_equiv _ equivToUnitHom.symm
 

@@ -21,11 +21,11 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 @[expose] public section
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [TopologicalSpace M]
 
 namespace ContinuousLinearEquiv
 
-variable {R₂ M₂ : Type*} [Semiring R₂] [AddCommMonoid M₂] [TopologicalSpace M₂] [Module R₂ M₂]
+variable {R₂ M₂ : Type*} [Semiring R₂] [AddMonoid M₂] [IsAddCommutative M₂] [TopologicalSpace M₂] [Module R₂ M₂]
   {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
   {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 

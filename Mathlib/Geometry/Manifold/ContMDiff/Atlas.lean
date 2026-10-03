@@ -34,7 +34,7 @@ open scoped Manifold ContDiff
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a `C^n` manifold `M` over the pair `(E, H)`.
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : ℕ∞ω}
   -- declare a topological space `M'`.
   {M' : Type*} [TopologicalSpace M']
@@ -354,7 +354,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
 
 end IsLocalStructomorph
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   {n : ℕ∞ω} {f : M → N} {s : Set M}
   {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G}

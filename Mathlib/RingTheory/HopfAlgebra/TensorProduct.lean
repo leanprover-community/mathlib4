@@ -21,7 +21,7 @@ open Coalgebra HopfAlgebra
 
 namespace TensorProduct
 
-variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable {R S A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B]
     [Algebra R S] [HopfAlgebra R A] [HopfAlgebra S B] [Algebra R B]
     [IsScalarTower R S B]
 

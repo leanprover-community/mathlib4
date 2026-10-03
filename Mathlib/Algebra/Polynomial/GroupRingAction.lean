@@ -49,7 +49,7 @@ variable [MulSemiringAction M R]
 theorem smul_X (m : M) : (m • X : R[X]) = X :=
   (smul_eq_map R m).symm ▸ map_X _
 
-variable (S : Type*) [CommSemiring S] [MulSemiringAction M S]
+variable (S : Type*) [Semiring S] [IsMulCommutative S] [MulSemiringAction M S]
 
 theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m • f.eval x :=
   Polynomial.induction_on f (fun r ↦ by rw [smul_C, eval_C, eval_C])
@@ -72,7 +72,7 @@ end Polynomial
 section CommRing
 
 variable (G : Type*) [Group G] [Fintype G]
-variable (R : Type*) [CommRing R] [MulSemiringAction G R]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [MulSemiringAction G R]
 
 open MulAction
 
@@ -105,8 +105,8 @@ end CommRing
 namespace MulSemiringActionHom
 
 variable {M}
-variable {P : Type*} [CommSemiring P] [MulSemiringAction M P]
-variable {Q : Type*} [CommSemiring Q] [MulSemiringAction M Q]
+variable {P : Type*} [Semiring P] [IsMulCommutative P] [MulSemiringAction M P]
+variable {Q : Type*} [Semiring Q] [IsMulCommutative Q] [MulSemiringAction M Q]
 
 open Polynomial
 

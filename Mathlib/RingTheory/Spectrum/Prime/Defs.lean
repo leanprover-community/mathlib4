@@ -31,7 +31,7 @@ It is naturally endowed with a topology (the Zariski topology),
 and a sheaf of commutative rings (see `Mathlib/AlgebraicGeometry/StructureSheaf.lean`).
 It is a fundamental building block in algebraic geometry. -/
 @[ext]
-structure PrimeSpectrum (R : Type*) [CommSemiring R] where
+structure PrimeSpectrum (R : Type*) [Semiring R] [IsMulCommutative R] where
   asIdeal : Ideal R
   isPrime : asIdeal.IsPrime
 
@@ -47,7 +47,7 @@ This is exactly the specialization order.
 See the corresponding section at `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 -/
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 instance : Coe (PrimeSpectrum R) (Ideal R) where
   coe P := P.asIdeal

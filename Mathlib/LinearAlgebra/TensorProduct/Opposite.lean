@@ -19,7 +19,7 @@ The main result in this file is:
 open scoped TensorProduct
 
 variable (R S A B : Type*)
-variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra R B] [Algebra S A]
 variable [IsScalarTower R S A]
 

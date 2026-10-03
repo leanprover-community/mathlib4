@@ -40,7 +40,7 @@ open scoped EuclideanGeometry Real RealInnerProductSpace
 
 namespace InnerProductGeometry
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V]
 
 /-- The identity underlying the British flag theorem, for the parallelogram with vertices `0`,
 `u`, `u + v` and `v` and any point `x`, vector form. -/
@@ -62,7 +62,7 @@ namespace EuclideanGeometry
 
 open InnerProductGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The British flag identity for a parallelogram, with the correction term written as an inner

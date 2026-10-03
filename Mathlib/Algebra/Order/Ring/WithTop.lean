@@ -215,7 +215,7 @@ lemma pow_lt_top [Preorder α] (hx : x < ⊤) : x ^ n < ⊤ := pow_lt_top_iff.2 
 end MonoidWithZero
 
 @[to_dual]
-instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
+instance instCommMonoidWithZero [MonoidWithZero α] [IsMulCommutative α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithTop α) where
   mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)
 
@@ -262,10 +262,10 @@ instance instSemiring [Semiring α] [Subsingleton (AddUnits α)]
     [NoZeroDivisors α] [Nontrivial α] : Semiring (WithTop α) where
 
 @[to_dual]
-instance instCommSemiring [CommSemiring α] [Subsingleton (AddUnits α)]
+instance instCommSemiring [Semiring α] [IsMulCommutative α] [Subsingleton (AddUnits α)]
     [NoZeroDivisors α] [Nontrivial α] : CommSemiring (WithTop α) where
 
-instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+instance instIsOrderedRing [Semiring α] [IsMulCommutative α] [PartialOrder α] [CanonicallyOrderedAdd α]
     [NoZeroDivisors α] [Nontrivial α] : IsOrderedRing (WithTop α) :=
   CanonicallyOrderedAdd.toIsOrderedRing
 
@@ -280,7 +280,7 @@ protected def _root_.RingHom.withTopMap {R S : Type*}
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   { MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with }
 
-variable [CommSemiring α] [PartialOrder α] [OrderBot α]
+variable [Semiring α] [IsMulCommutative α] [PartialOrder α] [OrderBot α]
   [CanonicallyOrderedAdd α] [PosMulStrictMono α]
   {a a₁ a₂ b₁ b₂ : WithTop α}
 
@@ -434,7 +434,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
     norm_cast at x0
     exact le_of_mul_le_mul_right h x0
 
-instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+instance instIsOrderedRing [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsOrderedRing α]
     [CanonicallyOrderedAdd α] [NoZeroDivisors α] [Nontrivial α] :
     IsOrderedRing (WithBot α) where
 

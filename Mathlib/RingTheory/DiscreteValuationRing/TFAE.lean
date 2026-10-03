@@ -30,7 +30,7 @@ Also see `tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain` for a version wit
 public section
 
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
 open scoped Multiplicative
 

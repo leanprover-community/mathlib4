@@ -65,7 +65,7 @@ instance (f : X → X) (x : X) (n : ℕ) : IsProbabilityMeasure (empiricalMeasur
 section NormedAddCommGroup
 
 variable (f : X → X) (x : X) (n : ℕ)
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] (g : X → E)
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [CompleteSpace E] (g : X → E)
   [MeasurableSingletonClass X]
 
 lemma integral_empiricalMeasure_eq_birkhoffaverage (n : ℕ) :

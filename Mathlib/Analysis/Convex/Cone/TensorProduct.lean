@@ -56,8 +56,8 @@ namespace PointedCone
 
 section BasisCoordDual
 
-variable {R M : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [PartialOrder R] [IsOrderedRing R]
+variable [AddGroup M] [IsAddCommutative M] [Module R M]
 
 open Module
 
@@ -74,7 +74,7 @@ end BasisCoordDual
 
 section MainTheorems
 
-variable {E F : Type*} [AddCommGroup E] [Module ℝ E] [AddCommGroup F] [Module ℝ F]
+variable {E F : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E] [AddGroup F] [IsAddCommutative F] [Module ℝ F]
 
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 variable [FiniteDimensional ℝ F] [ContinuousSMul ℝ F] [LocallyConvexSpace ℝ F]

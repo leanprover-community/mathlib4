@@ -104,7 +104,7 @@ We can do all these variations independently, so we have eight versions of the t
 
 section
 
-variable [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
+variable [AddMonoid M] [IsAddCommutative M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
 
 /-!
 #### Strict inequality versions
@@ -197,7 +197,7 @@ theorem exists_sum_fiber_le_of_sum_fiber_nonneg_of_sum_le_nsmul
 
 end
 
-variable [CommSemiring M] [LinearOrder M] [IsStrictOrderedRing M]
+variable [Semiring M] [IsMulCommutative M] [LinearOrder M] [IsStrictOrderedRing M]
 
 /-!
 ### The pigeonhole principles on `Finset`s, pigeons counted by heads
@@ -325,7 +325,7 @@ variable [Fintype α] [Fintype β] (f : α → β) {w : α → M} {b : M} {n : �
 
 section
 
-variable [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
+variable [AddMonoid M] [IsAddCommutative M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
 
 /-!
 ### The pigeonhole principles on `Fintypes`s, pigeons counted by weight
@@ -370,7 +370,7 @@ theorem exists_sum_fiber_le_of_sum_le_nsmul [Nonempty β] (hb : ∑ x, w x ≤ c
 
 end
 
-variable [CommSemiring M] [LinearOrder M] [IsStrictOrderedRing M]
+variable [Semiring M] [IsMulCommutative M] [LinearOrder M] [IsStrictOrderedRing M]
 
 /-- The strong pigeonhole principle for finitely many pigeons and pigeonholes. There is a pigeonhole
 with at least as many pigeons as the ceiling of the average number of pigeons across all

@@ -33,7 +33,7 @@ open MulOpposite
 
 section Semiring
 
-variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra R B] [Algebra S A] [SMulCommClass R S A]
 variable [IsScalarTower R S A]
 
@@ -191,7 +191,7 @@ end AlgEquiv
 end Semiring
 
 section CommSemiring
-variable (R A) [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable (R A) [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 namespace AlgEquiv
 

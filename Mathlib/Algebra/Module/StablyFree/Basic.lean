@@ -30,12 +30,12 @@ The underlying constructor is marked as private. The intended constructor of `Is
 `IsStablyFree.of_free_prod`, and use `IsStablyFree.exist_free_prod` to extract the property from
 `IsStablyFree`. -/
 @[stacks 0BC3 "(2)"]
-class IsStablyFree (R : Type u) [Ring R] (M : Type*) [AddCommGroup M] [Module R M] : Prop where
+class IsStablyFree (R : Type u) [Ring R] (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] : Prop where
   private exist_free_prod' : ∃ (N : Type u) (_ : AddCommGroup N) (_ : Module R N)
     (_ : Module.Finite R N) (_ : Free R N), Free R (M × N)
 
-variable (R : Type u) [Ring R] (M : Type v) [AddCommGroup M] [Module R M]
-  (N : Type w) [AddCommGroup N] [Module R N]
+variable (R : Type u) [Ring R] (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R M]
+  (N : Type w) [AddGroup N] [IsAddCommutative N] [Module R N]
 
 theorem IsStablyFree.exist_free_prod [IsStablyFree R M] :
     ∃ (N : Type u) (_ : AddCommGroup N) (_ : Module R N) (_ : Module.Finite R N) (_ : Free R N),

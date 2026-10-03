@@ -328,7 +328,7 @@ end AddGroup
 
 section SubtractionCommMonoid
 
-variable [SubtractionCommMonoid τ] [ContinuousNeg τ] (ϕ : Flow τ α)
+variable [SubtractionMonoid τ] [IsAddCommutative τ] [ContinuousNeg τ] (ϕ : Flow τ α)
 
 /-- The time-reversal of a flow `ϕ` by a (commutative, additive) group
 is defined `ϕ.reverse t x = ϕ (-t) x`. -/

@@ -22,8 +22,8 @@ spaces. This is the coarsest topology satisfying the following two properties:
 namespace ContinuousAffineMap
 
 variable {R V W P Q : Type*} [NormedField R]
-  [AddCommGroup V] [Module R V] [TopologicalSpace V] [AddTorsor V P] [TopologicalSpace P]
-  [AddCommGroup W] [Module R W] [TopologicalSpace W] [AddTorsor W Q] [TopologicalSpace Q]
+  [AddGroup V] [IsAddCommutative V] [Module R V] [TopologicalSpace V] [AddTorsor V P] [TopologicalSpace P]
+  [AddGroup W] [IsAddCommutative W] [Module R W] [TopologicalSpace W] [AddTorsor W Q] [TopologicalSpace Q]
 
 section Affine
 

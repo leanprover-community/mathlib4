@@ -36,7 +36,7 @@ open Function Set
 open Submodule (span)
 open FaithfulSMul (algebraMap_injective)
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace RootPairing
 
@@ -47,7 +47,7 @@ local notation "α" => P.root
 
 /-- SGA3 XXI Prop. 2.3.1 -/
 lemma coxeterWeightIn_le_four (S : Type*)
-    [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
+    [Ring S] [IsMulCommutative S] [LinearOrder S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
     [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] (i j : ι) :
     P.coxeterWeightIn S i j ≤ 4 := by
   have : Fintype ι := Fintype.ofFinite ι

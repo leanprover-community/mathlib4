@@ -164,7 +164,7 @@ end StarMul
 
 /-- In a commutative ring, make `simp` prefer leaving the order unchanged. -/
 @[simp]
-theorem star_mul' [CommMagma R] [StarMul R] (x y : R) : star (x * y) = star x * star y :=
+theorem star_mul' [Mul R] [IsMulCommutative R] [StarMul R] (x y : R) : star (x * y) = star x * star y :=
   (star_mul x y).trans (mul_comm _ _)
 
 /-- `star` as a `MulEquiv` from `R` to `Rᵐᵒᵖ` -/
@@ -176,7 +176,7 @@ def starMulEquiv [Mul R] [StarMul R] : R ≃* Rᵐᵒᵖ :=
 
 /-- `star` as a `MulAut` for commutative `R`. -/
 @[simps apply]
-def starMulAut [CommSemigroup R] [StarMul R] : MulAut R :=
+def starMulAut [Semigroup R] [IsMulCommutative R] [StarMul R] : MulAut R :=
   { InvolutiveStar.star_involutive.toPerm star with
     toFun := star
     map_mul' := star_mul' }
@@ -207,14 +207,14 @@ theorem star_zpow [Group R] [StarMul R] (x : R) (z : ℤ) : star (x ^ z) = star 
 
 /-- When multiplication is commutative, `star` preserves division. -/
 @[simp]
-theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / star y :=
+theorem star_div [Group R] [IsMulCommutative R] [StarMul R] (x y : R) : star (x / y) = star x / star y :=
   map_div (starMulAut : R ≃* R) _ _
 
 /-- Any commutative monoid admits the trivial \*-structure.
 
 See note [reducible non-instances].
 -/
-abbrev starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
+abbrev starMulOfComm {R : Type*} [Monoid R] [IsMulCommutative R] : StarMul R where
   star x := x
   star_involutive _ := rfl
   star_mul := mul_comm
@@ -224,7 +224,7 @@ section
 attribute [local instance] starMulOfComm
 
 /-- Note that since `starMulOfComm` is reducible, `simp` can already prove this. -/
-theorem star_id_of_comm {R : Type*} [CommMonoid R] {x : R} : star x = x :=
+theorem star_id_of_comm {R : Type*} [Monoid R] [IsMulCommutative R] {x : R} : star x = x :=
   rfl
 
 end
@@ -324,7 +324,7 @@ end
 
 section CommSemiring
 
-variable [CommSemiring R] [StarRing R]
+variable [Semiring R] [IsMulCommutative R] [StarRing R]
 
 /-- `star` as a ring automorphism, for commutative `R`. -/
 @[simps apply]
@@ -389,7 +389,7 @@ theorem star_zpow₀ [GroupWithZero R] [StarMul R] (x : R) (z : ℤ) : star (x ^
 
 /-- When multiplication is commutative, `star` preserves division. -/
 @[simp]
-theorem star_div₀ [CommGroupWithZero R] [StarMul R] (x y : R) : star (x / y) = star x / star y := by
+theorem star_div₀ [GroupWithZero R] [IsMulCommutative R] [StarMul R] (x y : R) : star (x / y) = star x / star y := by
   apply op_injective
   rw [division_def, op_div, mul_comm, star_mul, star_inv₀, op_mul, op_inv]
 
@@ -397,7 +397,7 @@ theorem star_div₀ [CommGroupWithZero R] [StarMul R] (x y : R) : star (x / y) =
 
 See note [reducible non-instances].
 -/
-abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
+abbrev starRingOfComm {R : Type*} [Semiring R] [IsMulCommutative R] : StarRing R :=
   { starMulOfComm with
     star_add := fun _ _ => rfl }
 
@@ -411,10 +411,10 @@ and the two star structures are compatible in the sense
 `star (r • a) = star r • star a`.
 
 Note that it is up to the user of this typeclass to enforce
-`[Semiring R] [StarRing R] [AddCommMonoid A] [StarAddMonoid A] [Module R A]`, and that
+`[Semiring R] [StarRing R] [AddMonoid A] [IsAddCommutative A] [StarAddMonoid A] [Module R A]`, and that
 the statement only requires `[Star R] [Star A] [SMul R A]`.
 
-If used as `[CommRing R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]`, this represents a
+If used as `[Ring R] [IsMulCommutative R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]`, this represents a
 star algebra.
 -/
 class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop where
@@ -426,7 +426,7 @@ export StarModule (star_smul)
 attribute [simp, grind =] star_smul
 
 /-- A commutative star monoid is a star module over itself via `Monoid.toMulAction`. -/
-instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
+instance StarMul.toStarModule [Monoid R] [IsMulCommutative R] [StarMul R] : StarModule R R :=
   ⟨star_mul'⟩
 
 instance StarAddMonoid.toStarModuleNat {α} [AddMonoid α] [StarAddMonoid α] : StarModule ℕ α where
@@ -439,7 +439,7 @@ namespace RingHomInvPair
 
 /-- Instance needed to define star-linear maps over a commutative star ring
 (ex: conjugate-linear maps when R = ℂ). -/
-instance [CommSemiring R] [StarRing R] : RingHomInvPair (starRingEnd R) (starRingEnd R) :=
+instance [Semiring R] [IsMulCommutative R] [StarRing R] : RingHomInvPair (starRingEnd R) (starRingEnd R) :=
   ⟨RingHom.ext star_star, RingHom.ext star_star⟩
 
 end RingHomInvPair
@@ -619,6 +619,6 @@ end MulOpposite
 
 /-- A commutative star monoid is a star module over its opposite via
 `Monoid.toOppositeMulAction`. -/
-instance StarSemigroup.toOpposite_starModule [CommMonoid R] [StarMul R] :
+instance StarSemigroup.toOpposite_starModule [Monoid R] [IsMulCommutative R] [StarMul R] :
     StarModule Rᵐᵒᵖ R :=
   ⟨fun r s => star_mul' s r.unop⟩

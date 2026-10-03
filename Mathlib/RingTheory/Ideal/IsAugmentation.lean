@@ -22,7 +22,7 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 namespace Ideal
 
-variable (R : Type*) [CommSemiring R] {A : Type*}
+variable (R : Type*) [Semiring R] [IsMulCommutative R] {A : Type*}
 
 open Submodule Subalgebra
 
@@ -37,7 +37,7 @@ lemma isAugmentation_iff [Semiring A] [Algebra R A] (I : Ideal A) :
 /-- If `S` is a subalgebra of an `R`-algebra `A`, then an ideal `I`of `A` is an augmentation ideal
 for the `R`-algebra structure
 if and only if it is an augmentation ideal for the `S`-algebra structure. -/
-theorem isAugmentation_subalgebra_iff [CommSemiring A] [Algebra R A]
+theorem isAugmentation_subalgebra_iff [Semiring A] [IsMulCommutative A] [Algebra R A]
     {S : Subalgebra R A} {I : Ideal A} :
     I.IsAugmentation S ↔ IsCompl S.toSubmodule (I.restrictScalars R) := by
   simp [Ideal.IsAugmentation, ← Submodule.isCompl_restrictScalars_iff R]

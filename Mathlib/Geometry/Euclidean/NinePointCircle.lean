@@ -37,7 +37,7 @@ noncomputable section
 
 open AffineSubspace EuclideanGeometry
 
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 namespace Affine.Simplex
@@ -73,7 +73,7 @@ theorem ninePointCircle_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 
   · simp [ninePointCircle_center, centroid_reindex, h]
   · simp [ninePointCircle_radius, h]
 
-theorem ninePointCircle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+theorem ninePointCircle_map {V₂ P₂ : Type*} [NormedAddGroup V₂] [IsAddCommutative V₂] [InnerProductSpace ℝ V₂]
     [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
     {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
     (s.map f.toAffineMap f.injective).ninePointCircle =
@@ -127,7 +127,7 @@ theorem eulerPoint_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) �
   simp [eulerPoint, h]
 
 @[simp]
-theorem eulerPoint_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+theorem eulerPoint_map {V₂ P₂ : Type*} [NormedAddGroup V₂] [IsAddCommutative V₂] [InnerProductSpace ℝ V₂]
     [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
     {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (i : Fin (n + 1)) :
     (s.map f.toAffineMap f.injective).eulerPoint i = f (s.eulerPoint i) := by

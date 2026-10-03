@@ -24,7 +24,7 @@ In this file we define the product of subalgebras as a subalgebra of the product
 open Algebra
 
 namespace Subalgebra
-variable {ι R : Type*} {S : ι → Type*} [CommSemiring R] [∀ i, Semiring (S i)] [∀ i, Algebra R (S i)]
+variable {ι R : Type*} {S : ι → Type*} [Semiring R] [IsMulCommutative R] [∀ i, Semiring (S i)] [∀ i, Algebra R (S i)]
   {s : Set ι} {t t₁ t₂ : ∀ i, Subalgebra R (S i)} {x : ∀ i, S i}
 
 /-- The product of subalgebras as a subalgebra. -/

@@ -28,7 +28,7 @@ section
 
 universe w
 
-variable {R M : Type*} {N : Type w} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+variable {R M : Type*} {N : Type w} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N]
   [Module R N] [IsNoetherian R M]
 
 /-- **Orzech's theorem** for Noetherian modules: if `R` is a ring (not necessarily commutative),

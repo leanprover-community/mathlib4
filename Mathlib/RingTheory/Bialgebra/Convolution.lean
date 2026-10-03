@@ -32,10 +32,10 @@ suppress_compilation
 
 open Algebra Coalgebra Bialgebra TensorProduct WithConv
 
-variable {R A B C : Type*} [CommSemiring R]
+variable {R A B C : Type*} [Semiring R] [IsMulCommutative R]
 
 namespace AlgHom
-variable [CommSemiring A] [CommSemiring B] [Semiring C] [Bialgebra R C] [Algebra R A]
+variable [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Semiring C] [Bialgebra R C] [Algebra R A]
 
 instance : One (WithConv <| C →ₐ[R] A) where
   one := toConv <| (Algebra.ofId R A).comp <| counitAlgHom R C
@@ -101,7 +101,7 @@ instance : CommMonoid (WithConv <| C →ₐ[R] A) := fast_instance%
 end AlgHom
 
 namespace BialgHom
-variable [CommSemiring A] [Semiring C] [Bialgebra R A] [Bialgebra R C]
+variable [Semiring A] [IsMulCommutative A] [Semiring C] [Bialgebra R A] [Bialgebra R C]
 
 instance : One (WithConv <| C →ₐc[R] A) where
   one := toConv <| (unitBialgHom R A).comp <| counitBialgHom R C

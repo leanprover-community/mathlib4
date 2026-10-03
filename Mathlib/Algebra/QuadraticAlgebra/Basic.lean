@@ -71,7 +71,7 @@ theorem im_omega : (ω : QuadraticAlgebra R a b).im = 1 :=
 
 end
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 theorem omega_mul_omega_eq_mk : (ω : QuadraticAlgebra R a b) * ω = ⟨a, b⟩ := by
   ext <;> simp
@@ -188,7 +188,7 @@ end omega
 
 section lift
 
-variable [CommRing R] {A : Type*} [Ring A] [Algebra R A]
+variable [Ring R] [IsMulCommutative R] {A : Type*} [Ring A] [Algebra R A]
 
 /-- `lift ⟨u, h⟩` is injective iff `1` and `u` are `R`-linearly independent. -/
 theorem lift_injective_iff {u : A} (h : u * u = a • 1 + b • u) :
@@ -201,7 +201,7 @@ end lift
 
 section star
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- Conjugation in `QuadraticAlgebra R a b`.
 The conjugate of `x + y ω` is `x + y ω' = (x + b * y) - y ω`. -/
@@ -245,7 +245,7 @@ end star
 
 section norm
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- the norm in a quadratic algebra, as a `MonoidHom`. -/
 def norm : QuadraticAlgebra R a b →* R where
@@ -365,7 +365,7 @@ end norm
 
 section trace
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 attribute [local grind =] re_add im_add im_star re_star re_smul im_smul RingHom.id_apply
   algebraMap_re algebraMap_im
@@ -428,7 +428,7 @@ end trace
 
 section changeGenerator
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 -- The quadratic relation satisfied by the new generator `u • ω + k`; this is what makes
 -- `changeGenerator` well defined. Stated with `x * x` rather than `x ^ 2` to match the shape of

@@ -78,7 +78,7 @@ assert_not_exists MonoidWithZero Ring
 open Function
 namespace AddSubmonoid
 
-variable {M : Type*} [AddCommMonoid M] (S : AddSubmonoid M) (N : Type*) [AddCommMonoid N]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] (S : AddSubmonoid M) (N : Type*) [AddMonoid N] [IsAddCommutative N]
 
 variable {N} in
 /-- A predicate characterizing homomorphisms between additive monoids `M` and `N` that form a
@@ -101,8 +101,8 @@ end AddSubmonoid
 
 section CommMonoid
 
-variable {M : Type*} [CommMonoid M] (S : Submonoid M) (N : Type*) [CommMonoid N] {P : Type*}
-  [CommMonoid P]
+variable {M : Type*} [Monoid M] [IsMulCommutative M] (S : Submonoid M) (N : Type*) [Monoid N] [IsMulCommutative N] {P : Type*}
+  [Monoid P] [IsMulCommutative P]
 
 namespace Submonoid
 
@@ -771,7 +771,7 @@ end CommMonoid
 
 namespace Localization
 
-variable {α : Type*} [CommMonoid α] [IsCancelMul α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
+variable {α : Type*} [Monoid α] [IsMulCommutative α] [IsCancelMul α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
 theorem mk_left_injective (b : s) : Injective fun a => mk a b := fun c d h => by
@@ -789,7 +789,7 @@ end Localization
 
 namespace OreLocalization
 
-variable (R) [CommMonoid R] (S : Submonoid R)
+variable (R) [Monoid R] [IsMulCommutative R] (S : Submonoid R)
 
 /-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
 protected def localizationMap : S.LocalizationMap R[S⁻¹] := Localization.monoidOf S
@@ -801,7 +801,7 @@ end OreLocalization
 
 section Group
 
-variable {M G F : Type*} [CommMonoid M] [CommGroup G]
+variable {M G F : Type*} [Monoid M] [IsMulCommutative M] [Group G] [IsMulCommutative G]
 
 @[to_additive] theorem Submonoid.isLocalizationMap_iff_bijective {S : Submonoid G}
     [FunLike F G M] [MulHomClass F G M] {f : F} :
@@ -847,7 +847,7 @@ end Group
 
 namespace Submonoid.LocalizationMap
 
-variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
+variable {M N : Type*} [Monoid M] [IsMulCommutative M] {S : Submonoid M} [Monoid N] [IsMulCommutative N]
 
 @[to_additive] theorem injective_iff (f : LocalizationMap S N) :
     Injective f ↔ ∀ ⦃x⦄, x ∈ S → IsRegular x := by
@@ -888,11 +888,11 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
 /-- Any localization of a cancellative commutative monoid is cancellative. -/
 @[to_additive
 /-- Any localization of a cancellative commutative additive monoid is cancellative. -/]
-abbrev cancelCommMonoid {M N} [CancelCommMonoid M] {S : Submonoid M}
-    [CommMonoid N] (f : S.LocalizationMap N) : CancelCommMonoid N where
+abbrev cancelCommMonoid {M N} [CancelMonoid M] [IsMulCommutative M] {S : Submonoid M}
+    [Monoid N] [IsMulCommutative N] (f : S.LocalizationMap N) : CancelCommMonoid N where
   mul_left_cancel := f.isCancelMul.mul_left_cancel
 
-@[to_additive] instance {M} [CancelCommMonoid M] (S : Submonoid M) :
+@[to_additive] instance {M} [CancelMonoid M] [IsMulCommutative M] (S : Submonoid M) :
     CancelCommMonoid (Localization S) :=
   (Localization.monoidOf S).cancelCommMonoid
 

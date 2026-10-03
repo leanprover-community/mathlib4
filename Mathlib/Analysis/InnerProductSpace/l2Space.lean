@@ -95,8 +95,8 @@ open scoped NNReal ENNReal ComplexConjugate Topology lp
 noncomputable section
 
 variable {ι 𝕜 : Type*} [RCLike 𝕜] {E : Type*}
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
+variable {G : ι → Type*} [∀ i, NormedAddGroup (G i)] [∀ i, IsAddCommutative (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

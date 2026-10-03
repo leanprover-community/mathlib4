@@ -19,7 +19,7 @@ that is finite as a module.
 
 public section
 
-variable {A B : Type*} [CommRing A] [Ring B] [Algebra A B] [Module.Finite A B] (x : B)
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [Algebra A B] [Module.Finite A B] (x : B)
 
 open Polynomial
 

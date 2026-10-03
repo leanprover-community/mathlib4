@@ -37,7 +37,7 @@ open TensorProduct
 
 namespace RingHom
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
+variable {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 /-- A ring homomorphism `R →+* S` is standard smooth if `S` is standard smooth as `R`-algebra. -/
 @[algebraize RingHom.IsStandardSmooth.toAlgebra]
@@ -86,7 +86,7 @@ lemma IsStandardSmoothOfRelativeDimension.equiv (e : R ≃+* S) :
   algebraize [e.toRingHom]
   exact Algebra.IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective e.bijective
 
-variable {T : Type*} [CommRing T]
+variable {T : Type*} [Ring T] [IsMulCommutative T]
 
 lemma IsStandardSmooth.comp {g : S →+* T} {f : R →+* S}
     (hg : IsStandardSmooth g) (hf : IsStandardSmooth f) :
@@ -147,7 +147,7 @@ lemma isStandardSmoothOfRelativeDimension_isStableUnderBaseChange :
       convert! this; ext; simp_rw [Algebra.smul_def]; rfl
     infer_instance
 
-lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway {Rᵣ : Type*} [CommRing Rᵣ]
+lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway {Rᵣ : Type*} [Ring Rᵣ] [IsMulCommutative Rᵣ]
     [Algebra R Rᵣ] (r : R) [IsLocalization.Away r Rᵣ] :
     IsStandardSmoothOfRelativeDimension 0 (algebraMap R Rᵣ) := by
   have : (algebraMap R Rᵣ).toAlgebra = ‹Algebra R Rᵣ› := by

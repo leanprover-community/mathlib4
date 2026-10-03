@@ -38,7 +38,7 @@ section LieSubalgebra
 
 open Set
 
-variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R : Type u) (L : Type v) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 
 /-- A Lie subalgebra of a Lie algebra is submodule that is closed under the Lie bracket.
 This is a sufficient condition for the subset itself to form a Lie algebra. -/
@@ -215,8 +215,8 @@ theorem coe_toSubmodule : ((L' : Submodule R L) : Set L) = L' :=
 
 section LieModule
 
-variable {M : Type w} [AddCommGroup M] [LieRingModule L M]
-variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N]
+variable {M : Type w} [AddGroup M] [IsAddCommutative M] [LieRingModule L M]
+variable {N : Type w₁} [AddGroup N] [IsAddCommutative N] [LieRingModule L N] [Module R N]
 
 instance : Bracket L' M where
   bracket x m := ⁅(x : L), m⁆
@@ -787,7 +787,7 @@ end LieSubalgebra
 namespace LieEquiv
 
 variable {R : Type u} {L₁ : Type v} {L₂ : Type w}
-variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂]
+variable [Ring R] [IsMulCommutative R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂]
 
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/
 noncomputable def ofInjective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Injective f) : L₁ ≃ₗ⁅R⁆ f.range :=

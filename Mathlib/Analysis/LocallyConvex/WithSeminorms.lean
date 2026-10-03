@@ -67,7 +67,7 @@ variable {R 𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type*}
 
 section FilterBasis
 
-variable [SeminormedRing R] [AddCommGroup E] [Module R E]
+variable [SeminormedRing R] [AddGroup E] [IsAddCommutative E] [Module R E]
 variable (R E ι)
 
 /-- An abbreviation for indexed families of seminorms. This is mainly to allow for dot-notation. -/
@@ -162,7 +162,7 @@ theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :
   refine Set.Subset.trans (ball_smul_ball (s.sup p) √r √r) ?_
   rw [hU, Real.mul_self_sqrt (le_of_lt hr)]
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup F] [Module 𝕜 F] (p : SeminormFamily 𝕜 F ι)
+variable [NormedDivisionRing 𝕜] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] (p : SeminormFamily 𝕜 F ι)
 
 theorem basisSets_smul_left (x : 𝕜) (U : Set F) (hU : U ∈ p.basisSets) :
     ∃ V ∈ p.addGroupFilterBasis.sets, V ⊆ (fun y : F => x • y) ⁻¹' U := by
@@ -204,7 +204,7 @@ theorem filter_eq_iInf (p : SeminormFamily 𝕜 F ι) :
 
 /-- If a family of seminorms is continuous, then their basis sets are neighborhoods of zero. -/
 lemma basisSets_mem_nhds {𝕜 E ι : Type*} [NormedField 𝕜]
-    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] (p : SeminormFamily 𝕜 E ι)
+    [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] (p : SeminormFamily 𝕜 E ι)
     (hp : ∀ i, Continuous (p i)) (U : Set E) (hU : U ∈ p.basisSets) : U ∈ 𝓝 (0 : E) := by
   obtain ⟨s, r, hr, rfl⟩ := p.basisSets_iff.mp hU
   clear hU
@@ -224,8 +224,8 @@ section Bounded
 
 namespace Seminorm
 
-variable [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
+variable [SeminormedRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
+variable [SeminormedRing 𝕜₂] [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- The proposition that a linear map is bounded between spaces with families of seminorms. -/
@@ -277,7 +277,7 @@ end Bounded
 
 section Topology
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 /-- The proposition that the topology of `E` is induced by a family of seminorms `p`. -/
 structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [topology : TopologicalSpace E] : Prop where
@@ -416,7 +416,7 @@ end Topology
 
 section Tendsto
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
 variable {p : SeminormFamily 𝕜 E ι}
 
 /-- Convergence along filters for `WithSeminorms`.
@@ -448,7 +448,7 @@ end Tendsto
 
 section IsTopologicalAddGroup
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 section TopologicalSpace
 
@@ -525,13 +525,13 @@ end IsTopologicalAddGroup
 section NormedSpace
 
 /-- The topology of a `NormedSpace 𝕜 E` is induced by the seminorm `normSeminorm 𝕜 E`. -/
-theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] :
     WithSeminorms fun _ : Unit => normSeminorm 𝕜 E := by
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, iInf_const, coe_normSeminorm,
     comap_norm_nhds_zero]
 
 /-- A (semi-)normed space is polynormable. -/
-instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+instance [NormedField 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] :
     PolynormableSpace 𝕜 E :=
   norm_withSeminorms 𝕜 E |>.toPolynormableSpace
 
@@ -539,7 +539,7 @@ end NormedSpace
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 variable {p : SeminormFamily 𝕜 E ι}
 variable [TopologicalSpace E]
 
@@ -671,9 +671,9 @@ section continuous_of_bounded
 
 namespace WithSeminorms
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 variable [NormedField 𝕝] [Module 𝕝 E]
-variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
+variable [NormedField 𝕜₂] [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
 variable [NormedField 𝕝₂] [Module 𝕝₂ F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable {τ₁₂ : 𝕝 →+* 𝕝₂} [RingHomIsometric τ₁₂]
@@ -713,7 +713,7 @@ theorem continuous_of_isBounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.continuous_from_bounded := continuous_of_isBounded
 
-theorem continuous_normedSpace_rng (F) [SeminormedAddCommGroup F] [NormedSpace 𝕝₂ F]
+theorem continuous_normedSpace_rng (F) [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕝₂ F]
     [TopologicalSpace E] {p : ι → Seminorm 𝕝 E} (hp : WithSeminorms p)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∃ (s : Finset ι) (C : ℝ≥0), (normSeminorm 𝕝₂ F).comp f ≤ C • s.sup p) :
     Continuous f := by
@@ -735,7 +735,7 @@ theorem continuous_real_rng [Module ℝ E] [TopologicalSpace E] {p : ι → Semi
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.cont_withSeminorms_normedSpace := continuous_normedSpace_rng
 
-theorem continuous_normedSpace_dom (E) [SeminormedAddCommGroup E] [NormedSpace 𝕝 E]
+theorem continuous_normedSpace_dom (E) [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕝 E]
     [TopologicalSpace F] {q : ι → Seminorm 𝕝₂ F} (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∀ i : ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • normSeminorm 𝕝 E) :
     Continuous f := by
@@ -821,8 +821,8 @@ section Congr
 
 namespace WithSeminorms
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
+variable [SeminormedRing 𝕜₂] [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
 
 /-- Two families of seminorms `p` and `q` on the same space generate the same topology
 if each `p i` is bounded by some `C • Finset.sup s q` and vice-versa.
@@ -883,8 +883,8 @@ section bounded_of_continuous
 
 namespace Seminorm
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NontriviallyNormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
+  [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
   {p : SeminormFamily 𝕜 E ι}
 
 /-- In a semi-`NormedSpace`, a continuous seminorm is zero on elements of norm `0`. -/
@@ -993,7 +993,7 @@ section LocallyConvexSpace
 
 open LocallyConvexSpace
 
-variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommGroup E] [Module 𝕜 E] [Module ℝ E]
+variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [Module ℝ E]
   [IsScalarTower ℝ 𝕜 E] [TopologicalSpace E]
 
 theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
@@ -1018,7 +1018,7 @@ end LocallyConvexSpace
 
 section NormedSpace
 
-variable (𝕜) [NormedField 𝕜] [NormedSpace ℝ 𝕜] [SeminormedAddCommGroup E]
+variable (𝕜) [NormedField 𝕜] [NormedSpace ℝ 𝕜] [SeminormedAddGroup E] [IsAddCommutative E]
 
 /-- Not an instance since `𝕜` can't be inferred. See `NormedSpace.toLocallyConvexSpace` for a
 slightly weaker instance version. -/
@@ -1035,8 +1035,8 @@ end NormedSpace
 
 section TopologicalConstructions
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
+variable [NormedField 𝕜₂] [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- The family of seminorms obtained by composing each seminorm by a linear map. -/
@@ -1150,18 +1150,18 @@ theorem PolynormableSpace.inf {t₁ t₂ : TopologicalSpace E}
   exact .sInf (by simp [ht₁, ht₂])
 
 theorem withSeminorms_pi {κ : ι → Type*} {E : ι → Type*}
-    [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
+    [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
     {p : (i : ι) → SeminormFamily 𝕜 (E i) (κ i)}
     (hp : ∀ i, WithSeminorms (p i)) :
     WithSeminorms (SeminormFamily.sigma (fun i ↦ (p i).comp (LinearMap.proj i))) :=
   withSeminorms_iInf fun i ↦ (LinearMap.proj i).withSeminorms_induced (hp i)
 
-instance {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+instance {E : ι → Type*} [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module 𝕜 (E i)]
     [∀ i, TopologicalSpace (E i)] [∀ i, PolynormableSpace 𝕜 (E i)] :
     PolynormableSpace 𝕜 (Π i, E i) :=
   .iInf fun i ↦ .induced (LinearMap.proj (R := 𝕜) (φ := E) i)
 
-instance {E₁ E₂ : Type*} [AddCommGroup E₁] [AddCommGroup E₂] [Module 𝕜 E₁] [Module 𝕜 E₂]
+instance {E₁ E₂ : Type*} [AddGroup E₁] [IsAddCommutative E₁] [AddGroup E₂] [IsAddCommutative E₂] [Module 𝕜 E₁] [Module 𝕜 E₂]
     [TopologicalSpace E₁] [TopologicalSpace E₂] [PolynormableSpace 𝕜 E₁] [PolynormableSpace 𝕜 E₂] :
     PolynormableSpace 𝕜 (E₁ × E₂) :=
   .inf (.induced <| LinearMap.fst 𝕜 E₁ E₂) (.induced <| LinearMap.snd 𝕜 E₁ E₂)
@@ -1170,7 +1170,7 @@ end TopologicalConstructions
 
 section TopologicalProperties
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Countable ι]
+variable [NontriviallyNormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [Countable ι]
 variable {p : SeminormFamily 𝕜 E ι}
 variable [TopologicalSpace E]
 

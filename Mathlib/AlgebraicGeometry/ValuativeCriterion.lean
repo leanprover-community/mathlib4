@@ -53,7 +53,7 @@ We are interested in finding lifts `Spec R ⟶ Y` of this diagram.
 structure ValuativeCommSq {X Y : Scheme.{u}} (f : X ⟶ Y) where
   /-- The valuation ring of a valuative commutative square. -/
   R : Type u
-  [commRing : CommRing R]
+  [commRing : Ring R] [IsMulCommutative R]
   [domain : IsDomain R]
   [valuationRing : ValuationRing R]
   /-- The field of fractions of a valuative commutative square. -/

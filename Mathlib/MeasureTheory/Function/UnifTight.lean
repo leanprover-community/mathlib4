@@ -45,7 +45,7 @@ open Set Filter ENNReal
 
 open scoped Topology
 
-variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
+variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddGroup β] [IsAddCommutative β]
 
 section UnifTight
 

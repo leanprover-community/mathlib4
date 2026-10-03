@@ -124,7 +124,7 @@ theorem le_def {a b : MulArchimedeanOrder M} : a ≤ b ↔ ∃ n, |b.val|ₘ ≤
 theorem lt_def {a b : MulArchimedeanOrder M} : a < b ↔ ∀ n, |b.val|ₘ ^ n < |a.val|ₘ := .rfl
 
 variable {M : Type*}
-variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
+variable [Group M] [IsMulCommutative M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 @[to_additive]
 instance : Preorder (MulArchimedeanOrder M) where
@@ -149,7 +149,7 @@ instance : @Std.Total (MulArchimedeanOrder M) (· ≤ ·) where
     · exact .inr ⟨1, by simpa using hab⟩
     · exact .inl ⟨1, by simpa using hab⟩
 
-variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
+variable {N : Type*} [Group N] [IsMulCommutative N] [LinearOrder N] [IsOrderedMonoid N]
 
 /-- An `OrderMonoidHom` can be made to an `OrderHom` between their `MulArchimedeanOrder`. -/
 @[to_additive /-- An `OrderAddMonoidHom` can be made to an `OrderHom` between their
@@ -166,7 +166,7 @@ end MulArchimedeanOrder
 end ArchimedeanOrder
 
 variable {M : Type*}
-variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
+variable [Group M] [IsMulCommutative M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 variable (M) in
 /-- `MulArchimedeanClass M` is the quotient of the group `M` by multiplicative archimedean
@@ -517,7 +517,7 @@ theorem mk_eq_mk_of_mulArchimedean [MulArchimedean M] (ha : a ≠ 1) (hb : b ≠
   exact mk_eq_mk.mpr ⟨hm, hn⟩
 
 section Hom
-variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
+variable {N : Type*} [Group N] [IsMulCommutative N] [LinearOrder N] [IsOrderedMonoid N]
 
 /-- An `OrderMonoidHom` can be lifted to an `OrderHom` over archimedean classes. -/
 @[to_additive
@@ -816,7 +816,7 @@ theorem withTopOrderIso_symm_apply {a : M} (h : a ≠ 1) :
     (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk a h :=
   WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
 
-variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
+variable {N : Type*} [Group N] [IsMulCommutative N] [LinearOrder N] [IsOrderedMonoid N]
 
 /-- An `OrderIso` on `MulArchimedeanClass` induces an `OrderIso` on `FiniteMulArchimedeanClass`. -/
 @[to_additive

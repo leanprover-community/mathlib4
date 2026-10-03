@@ -70,7 +70,7 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] :
 end Semigroup
 
 section CommSemigroup
-variable [CommSemigroup M]
+variable [Semigroup M] [IsMulCommutative M]
 
 @[to_additive (attr := simp)]
 theorem center_eq_top : center M = ⊤ :=

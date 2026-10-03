@@ -19,7 +19,7 @@ where `x` is an integral element over `R`.
 
 open Module Polynomial PowerBasis
 
-variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
+variable {K S : Type*} [Field K] [Ring S] [IsMulCommutative S] [Algebra K S]
 
 namespace Algebra
 
@@ -83,8 +83,8 @@ namespace PowerBasis
 
 open Polynomial
 
-variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
-variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [Algebra S A]
 variable [IsScalarTower R S A] {B : PowerBasis S A}
 
 /-- If `B : PowerBasis S A` is such that `IsIntegral R B.gen`, then

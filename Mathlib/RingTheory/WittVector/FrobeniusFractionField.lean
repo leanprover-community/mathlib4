@@ -63,7 +63,7 @@ whose variable represents the `n`th coefficient of `x` in `x * a`.
 
 section CommRing
 
-variable {k : Type*} [CommRing k] [CharP k p]
+variable {k : Type*} [Ring k] [IsMulCommutative k] [CharP k p]
 
 open Polynomial
 

@@ -64,7 +64,7 @@ open Module.End Module MulAction Submodule LinearMap
 open scoped Pointwise
 
 variable {K : Type*} [DivisionRing K]
-    {V : Type*} [AddCommGroup V] [Module K V] [Module.Finite K V]
+    {V : Type*} [AddGroup V] [IsAddCommutative V] [Module K V] [Module.Finite K V]
 
 variable (e f : V ≃ₗ[K] V)
 

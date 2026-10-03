@@ -90,7 +90,7 @@ open Function Multiplicative SkewMonoidAlgebra
 
 /-- The skew polynomials over `R` is the type of univariate polynomials over `R`
 endowed with a skewed convolution product. -/
-abbrev SkewPolynomial (R : Type*) [AddCommMonoid R] := SkewMonoidAlgebra R (Multiplicative ℕ)
+abbrev SkewPolynomial (R : Type*) [AddMonoid R] [IsAddCommutative R] := SkewMonoidAlgebra R (Multiplicative ℕ)
 
 namespace SkewPolynomial
 
@@ -137,20 +137,20 @@ lemma notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
 /-- `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
   to coefficients of the polynomial `p`. -/
-def sum {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) : S :=
+def sum {S : Type*} [AddMonoid S] [IsAddCommutative S] (p : SkewPolynomial R) (f : ℕ → R → S) : S :=
   (SkewMonoidAlgebra.coeff p).sum fun n r ↦ f (toAdd n : ℕ) r
 
 /-- For a skew polynomial `p`, `p.sum f` can be written in terms of `Finsupp.sum`. -/
-lemma sum_def' {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
+lemma sum_def' {S : Type*} [AddMonoid S] [IsAddCommutative S] (p : SkewPolynomial R) (f : ℕ → R → S) :
     p.sum f = (SkewMonoidAlgebra.coeff p).sum fun n r ↦ f (toAdd n : ℕ) r := rfl
 
-lemma sum_def {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
+lemma sum_def {S : Type*} [AddMonoid S] [IsAddCommutative S] (p : SkewPolynomial R) (f : ℕ → R → S) :
     p.sum f = ∑ n ∈ p.support, f n (p.coeff n) := by
   simp only [sum_def', Finsupp.sum]
   apply Finset.sum_of_injOn (toAdd) (Injective.injOn fun ⦃a₁ a₂⦄ a ↦ a) (fun _ ↦ ?_) <;>
   simp +contextual [coeff]
 
-lemma sum_sum_index {R' P : Type*} [AddCommMonoid P] [Semiring R']
+lemma sum_sum_index {R' P : Type*} [AddMonoid P] [IsAddCommutative P] [Semiring R']
     {f : SkewPolynomial R} {g : ℕ → R → SkewPolynomial R'} {h : ℕ → R' → P}
     (h_zero : ∀ (a : ℕ), h a 0 = 0)
     (h_add : ∀ (a : ℕ) (b₁ b₂ : R'), h a (b₁ + b₂) = h a b₁ + h a b₂) :
@@ -158,7 +158,7 @@ lemma sum_sum_index {R' P : Type*} [AddCommMonoid P] [Semiring R']
   simp [sum_def', Finsupp.sum_sum_index, h_zero, h_add]
 
 @[simp]
-lemma sum_zero {N : Type*} [AddCommMonoid N] {f : SkewPolynomial R} :
+lemma sum_zero {N : Type*} [AddMonoid N] [IsAddCommutative N] {f : SkewPolynomial R} :
     (f.sum fun (_ : ℕ) _ ↦ (0 : N)) = 0 :=
   Finsupp.sum_fun_zero _
 
@@ -187,7 +187,7 @@ lemma sum_monomial (f : SkewPolynomial R) : f.sum (fun (a : ℕ) ↦ monomial a)
   sum_coeff_single _
 
 @[simp]
-lemma sum_monomial_index {N} [AddCommMonoid N] {n : ℕ} {b : R} {h : ℕ → R → N}
+lemma sum_monomial_index {N} [AddMonoid N] [IsAddCommutative N] {n : ℕ} {b : R} {h : ℕ → R → N}
     (h_zero : h n 0 = 0) : (monomial n b).sum h = h n b := by simp [sum, monomial, lsingle, *]
 
 lemma monomial_injective : Function.Injective (monomial n : R → SkewPolynomial R) :=
@@ -255,7 +255,7 @@ lemma C_add : C (a + b) = C a + C b := C.map_add a b
 lemma C_1 : C (1 : R) = 1 := rfl
 
 @[simp]
-lemma sum_C_index {β} [AddCommMonoid β] {f : ℕ → R → β} (h : f 0 0 = 0) : (C a).sum f = f 0 a := by
+lemma sum_C_index {β} [AddMonoid β] [IsAddCommutative β] {f : ℕ → R → β} (h : f 0 0 = 0) : (C a).sum f = f 0 a := by
   simp [C, sum, h]
 
 section RingHom
@@ -427,7 +427,7 @@ lemma ext_iff {p q : SkewPolynomial R} : p = q ↔ ∀ n, coeff p n = coeff q n 
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
   SkewMonoidAlgebra.addHom_ext h
 
-@[ext] lemma linearMap_ext' {M : Type*} [AddCommMonoid M] [Module R M]
+@[ext] lemma linearMap_ext' {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
     {f g : SkewPolynomial R →ₗ[R] M} (h : ∀ n, f.comp (monomial n) = g.comp (monomial n)) :
     f = g :=
   SkewMonoidAlgebra.lhom_ext' h
@@ -531,7 +531,7 @@ lemma nat_cast_mul {R : Type*} [Semiring R] (n : ℕ) (p : SkewPolynomial R)
   (nsmul_eq_mul _ _).symm
 section Sum
 
-variable {S : Type*} [AddCommMonoid S]
+variable {S : Type*} [AddMonoid S] [IsAddCommutative S]
 
 lemma sum_eq_of_subset {p : SkewPolynomial R} (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) {s : Finset ℕ}
     (hs : p.support ⊆ s) : p.sum f = ∑ n ∈ s, f n (p.coeff n) := by

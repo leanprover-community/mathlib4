@@ -72,7 +72,7 @@ open scoped MonoidAlgebra
 
 universe u v w
 
-variable {k G : Type u} [CommRing k] {n : ℕ}
+variable {k G : Type u} [Ring k] [IsMulCommutative k] {n : ℕ}
 
 local notation "Gⁿ" => Fin n → G
 

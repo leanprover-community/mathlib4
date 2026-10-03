@@ -57,7 +57,7 @@ structure ModuleCat where
   _mkInternal ::
   /-- the underlying type of an object in `ModuleCat R` -/
   carrier : Type v
-  [isAddCommGroup : AddCommGroup carrier]
+  [isAddCommGroup : AddGroup carrier] [IsAddCommutative carrier]
   [isModule : Module R carrier]
 
 initialize_simps_projections ModuleCat (-isModule, -isAddCommGroup)
@@ -73,7 +73,7 @@ attribute [coe] ModuleCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `ModuleCat R`. -/
-abbrev of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat.{v} R :=
+abbrev of (X : Type v) [AddGroup X] [IsAddCommutative X] [Module R X] : ModuleCat.{v} R :=
   ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
@@ -114,7 +114,7 @@ abbrev Hom.hom {A B : ModuleCat.{v} R} (f : Hom A B) :=
   ConcreteCategory.hom (C := ModuleCat R) f
 
 /-- Typecheck a `LinearMap` as a morphism in `ModuleCat`. -/
-abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+abbrev ofHom {X Y : Type v} [AddGroup X] [IsAddCommutative X] [Module R X] [AddGroup Y] [IsAddCommutative Y] [Module R Y]
     (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom (C := ModuleCat R) f
 
@@ -163,7 +163,7 @@ lemma hom_surjective {M N : ModuleCat.{v} R} :
   hom_bijective.surjective
 
 @[simp]
-lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
+lemma hom_ofHom {X Y : Type v} [AddGroup X] [IsAddCommutative X] [Module R X] [AddGroup Y] [IsAddCommutative Y]
     [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
 
 @[simp]
@@ -171,16 +171,16 @@ lemma ofHom_hom {M N : ModuleCat.{v} R} (f : M ⟶ N) :
     ofHom (Hom.hom f) = f := rfl
 
 @[simp]
-lemma ofHom_id {M : Type v} [AddCommGroup M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
+lemma ofHom_id {M : Type v} [AddGroup M] [IsAddCommutative M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
 
 @[simp]
-lemma ofHom_comp {M N O : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGroup O] [Module R M]
+lemma ofHom_comp {M N O : Type v} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddGroup O] [IsAddCommutative O] [Module R M]
     [Module R N] [Module R O] (f : M →ₗ[R] N) (g : N →ₗ[R] O) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
 /- Doesn't need to be `@[simp]` since `simp only` can solve this. -/
-lemma ofHom_apply {M N : Type v} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+lemma ofHom_apply {M N : Type v} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N]
     (f : M →ₗ[R] N) (x : M) : ofHom f x = f x := rfl
 
 lemma inv_hom_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
@@ -229,7 +229,7 @@ theorem forget₂_obj (X : ModuleCat R) :
     (forget₂ (ModuleCat R) AddCommGrpCat).obj X = ↧X :=
   rfl
 
-theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
+theorem forget₂_obj_moduleCat_of (X : Type v) [AddGroup X] [IsAddCommutative X] [Module R X] :
     (forget₂ (ModuleCat R) AddCommGrpCat).obj (of R X) = ↧X :=
   rfl
 
@@ -294,7 +294,7 @@ end CategoryTheory.Iso
 /-- linear equivalences between `Module`s are the same as (isomorphic to) isomorphisms
 in `ModuleCat` -/
 @[simps]
-def linearEquivIsoModuleIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y] [Module R X]
+def linearEquivIsoModuleIso {X Y : Type u} [AddGroup X] [IsAddCommutative X] [AddGroup Y] [IsAddCommutative Y] [Module R X]
     [Module R Y] : (X ≃ₗ[R] Y) ≅ (ModuleCat.of R X ≅ ModuleCat.of R Y) where
   hom := ↾fun e ↦ e.toModuleIso
   inv := ↾fun i ↦ i.toLinearEquiv
@@ -367,16 +367,16 @@ lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
   mpr _ := isZero_of_subsingleton M
 
 @[simp]
-lemma isZero_of_iff_subsingleton {M : Type*} [AddCommGroup M] [Module R M] :
+lemma isZero_of_iff_subsingleton {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] :
     IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
 
 @[simp]
-lemma ofHom_zero {M N : Type v} [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] : ModuleCat.ofHom (0 : M →ₗ[R] N) = 0 := rfl
+lemma ofHom_zero {M N : Type v} [AddGroup M] [IsAddCommutative M] [Module R M]
+    [AddGroup N] [IsAddCommutative N] [Module R N] : ModuleCat.ofHom (0 : M →ₗ[R] N) = 0 := rfl
 
 @[simp]
-lemma ofHom_add {M N : Type v} [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] (f g : M →ₗ[R] N) :
+lemma ofHom_add {M N : Type v} [AddGroup M] [IsAddCommutative M] [Module R M]
+    [AddGroup N] [IsAddCommutative N] [Module R N] (f g : M →ₗ[R] N) :
     ModuleCat.ofHom (f + g) = ModuleCat.ofHom f + ModuleCat.ofHom g := rfl
 
 end AddCommGroup
@@ -416,7 +416,7 @@ universe u₀
 
 namespace Algebra
 
-variable {S₀ : Type u₀} [CommSemiring S₀] {S : Type u} [Ring S] [Algebra S₀ S]
+variable {S₀ : Type u₀} [Semiring S₀] [IsMulCommutative S₀] {S : Type u} [Ring S] [Algebra S₀ S]
 
 variable {M N : ModuleCat.{v} S}
 
@@ -443,7 +443,7 @@ end Algebra
 
 section
 
-variable {S : Type u} [CommRing S]
+variable {S : Type u} [Ring S] [IsMulCommutative S]
 
 instance : Linear S (ModuleCat.{v} S) := ModuleCat.Algebra.instLinear
 
@@ -605,7 +605,7 @@ end ModuleCat
 
 section Bilinear
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace ModuleCat
 
@@ -635,11 +635,11 @@ end Bilinear
 -/
 
 @[simp] theorem LinearMap.comp_id_moduleCat
-    {R} [Ring R] {G : ModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H] (f : G →ₗ[R] H) :
+    {R} [Ring R] {G : ModuleCat.{u} R} {H : Type u} [AddGroup H] [IsAddCommutative H] [Module R H] (f : G →ₗ[R] H) :
     f.comp (𝟙 G : G ⟶ G).hom = f := by simp
 
 @[simp] theorem LinearMap.id_moduleCat_comp
-    {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
+    {R} [Ring R] {G : Type u} [AddGroup G] [IsAddCommutative G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H : H ⟶ H).hom f = f := by simp
 
 instance {R S : Type*} [Ring R] [Ring S] (F : ModuleCat R ⥤ ModuleCat S) [F.Full] [F.Faithful]

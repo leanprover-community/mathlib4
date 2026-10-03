@@ -28,7 +28,7 @@ open Function Module Set
 
 namespace exteriorPower
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (k l : ℕ)
+variable (R M : Type*) [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] (k l : ℕ)
 
 /-- The wedge product as an operation on exterior powers. -/
 abbrev wedge :
@@ -44,7 +44,7 @@ abbrev wedgePairing :
   (wedge R M k l).compr₂ (hkl ▸ vol)
 
 /-- An auxiliary lemma for `exteriorPower.wedgePairing_eq_apply_topVector_smul`. -/
-private lemma apply_eqRec {N : Type*} [AddCommGroup N] [Module R N]
+private lemma apply_eqRec {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
     (h : k = l) (f : ⋀[R]^l M →ₗ[R] N)
     {x : ⋀[R]^k M} {y : ⋀[R]^l M} (hxy : (x : ExteriorAlgebra R M) = y) :
     (h ▸ f) x = f y := by

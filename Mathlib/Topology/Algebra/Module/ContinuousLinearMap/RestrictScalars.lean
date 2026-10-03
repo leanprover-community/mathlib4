@@ -24,8 +24,8 @@ namespace ContinuousLinearMap
 section Semiring
 
 variable {A M₁ M₂ R S : Type*} [Semiring A] [Semiring R] [Semiring S]
-  [AddCommMonoid M₁] [Module A M₁] [Module R M₁] [TopologicalSpace M₁]
-  [AddCommMonoid M₂] [Module A M₂] [Module R M₂] [TopologicalSpace M₂]
+  [AddMonoid M₁] [IsAddCommutative M₁] [Module A M₁] [Module R M₁] [TopologicalSpace M₁]
+  [AddMonoid M₂] [IsAddCommutative M₂] [Module A M₂] [Module R M₂] [TopologicalSpace M₂]
   [LinearMap.CompatibleSMul M₁ M₂ R A]
 
 variable (R) in
@@ -76,8 +76,8 @@ end Semiring
 
 section Ring
 variable {A R M₁ M₂ : Type*} [Ring A] [Ring R]
-  [AddCommGroup M₁] [Module A M₁] [Module R M₁] [TopologicalSpace M₁]
-  [AddCommGroup M₂] [Module A M₂] [Module R M₂] [TopologicalSpace M₂]
+  [AddGroup M₁] [IsAddCommutative M₁] [Module A M₁] [Module R M₁] [TopologicalSpace M₁]
+  [AddGroup M₂] [IsAddCommutative M₂] [Module A M₂] [Module R M₂] [TopologicalSpace M₂]
   [LinearMap.CompatibleSMul M₁ M₂ R A] [IsTopologicalAddGroup M₂]
 
 @[simp]

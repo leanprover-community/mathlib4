@@ -390,7 +390,7 @@ instance [Zero X] [MulActionWithZero L X] (F : IntermediateField K L) : MulActio
   inferInstanceAs (MulActionWithZero F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/
-instance [AddCommMonoid X] [Module L X] (F : IntermediateField K L) : Module F X :=
+instance [AddMonoid X] [IsAddCommutative X] [Module L X] (F : IntermediateField K L) : Module F X :=
   inferInstanceAs (Module F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/
@@ -406,7 +406,7 @@ instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
   inferInstanceAs (Module R S.toSubalgebra)
 
 instance algebra' {R' K L : Type*} [Field K] [Field L] [Algebra K L] (S : IntermediateField K L)
-    [CommSemiring R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
+    [Semiring R'] [IsMulCommutative R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
   inferInstanceAs (Algebra R' S.toSubalgebra)
 
 -- Over `ℚ`, the algebra structure inherited from the ambient field and the one coming from the
@@ -592,7 +592,7 @@ theorem fieldRange_val : S.val.fieldRange = S :=
 instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
   ⟨S.val⟩
 
-theorem aeval_coe {R : Type*} [CommSemiring R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
+theorem aeval_coe {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
     (x : S) (P : R[X]) : aeval (x : L) P = aeval x P :=
   aeval_algHom_apply (S.val.restrictScalars R) x P
 

@@ -167,7 +167,7 @@ theorem isMulTorsion_of_finite [Finite G] : IsMulTorsion G :=
 end Group
 
 section CommGroup
-variable [CommGroup G]
+variable [Group G] [IsMulCommutative G]
 
 /-- A nontrivial torsion abelian group is not torsion-free. -/
 @[to_additive /-- A nontrivial torsion additive abelian group is not torsion-free. -/]
@@ -195,7 +195,7 @@ end CommGroup
 section Module
 
 -- A (semi/)ring of scalars and a commutative monoid of elements
-variable (R M : Type*) [AddCommMonoid M]
+variable (R M : Type*) [AddMonoid M] [IsAddCommutative M]
 
 /-- A module whose scalars are torsion is torsion. -/
 theorem IsAddTorsion.module_of_torsion [Semiring R] [Module R M] (tR : IsAddTorsion R) :
@@ -218,7 +218,7 @@ end Module
 
 section CommMonoid
 
-variable (G) [CommMonoid G] [CommMonoid H]
+variable (G) [Monoid G] [IsMulCommutative G] [Monoid H] [IsMulCommutative H]
 
 namespace CommMonoid
 
@@ -362,7 +362,7 @@ end CommMonoid
 
 section CommGroup
 
-variable (G) [CommGroup G] [CommGroup H]
+variable (G) [Group G] [IsMulCommutative G] [Group H] [IsMulCommutative H]
 
 namespace CommGroup
 
@@ -527,7 +527,7 @@ end CommGroup
 
 section AddCommGroup
 
-instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
+instance {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] :
     Module R (M ⧸ AddCommGroup.torsion M) :=
   -- Upgrade the torsion subgroup to a submodule.
   letI S : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦
@@ -545,7 +545,7 @@ end AddCommGroup
 
 section
 
-variable {M : Type*} [CommMonoid M] [HasDistribNeg M]
+variable {M : Type*} [Monoid M] [IsMulCommutative M] [HasDistribNeg M]
 
 theorem neg_one_mem_torsion : -1 ∈ CommMonoid.torsion M :=
   ⟨2, zero_lt_two, (isPeriodicPt_mul_iff_pow_eq_one _).mpr (by simp)⟩

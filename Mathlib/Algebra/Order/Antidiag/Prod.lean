@@ -109,18 +109,18 @@ lemma congr (A : Type*) [Mul A] [H1 : HasMulAntidiagonal A] [H2 : HasMulAntidiag
     H1.mulAntidiagonal = H2.mulAntidiagonal := by congr!; subsingleton
 
 @[to_additive]
-theorem swap_mem_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} {xy : A × A} :
+theorem swap_mem_mulAntidiagonal [Mul A] [IsMulCommutative A] [HasMulAntidiagonal A] {n : A} {xy : A × A} :
     xy.swap ∈ mulAntidiagonal n ↔ xy ∈ mulAntidiagonal n := by
   simp [mul_comm]
 
 @[to_additive (attr := simp) map_prodComm_antidiagonal]
-theorem map_prodComm_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} :
+theorem map_prodComm_mulAntidiagonal [Mul A] [IsMulCommutative A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map (Equiv.prodComm A A) = mulAntidiagonal n :=
   Finset.ext fun ⟨a, b⟩ => by simp [mul_comm]
 
 /-- See also `Finset.map_prodComm_mulAntidiagonal`. -/
 @[to_additive (attr := simp)]
-theorem map_swap_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} :
+theorem map_swap_mulAntidiagonal [Mul A] [IsMulCommutative A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = mulAntidiagonal n :=
   map_prodComm_mulAntidiagonal
 
@@ -152,7 +152,7 @@ theorem mulAntidiagonal_subtype_ext {p q : mulAntidiagonal n} (h : p.val.1 = q.v
 end CancelMonoid
 
 section CancelCommMonoid
-variable [CancelCommMonoid A] [HasMulAntidiagonal A] {p q : A × A} {n : A}
+variable [CancelMonoid A] [IsMulCommutative A] [HasMulAntidiagonal A] {p q : A × A} {n : A}
 
 /-- A point in the mulAntidiagonal is determined by its second coordinate.
 
@@ -169,7 +169,7 @@ end CancelCommMonoid
 
 section CanonicallyOrderedMul
 
-variable [CommMonoid A] [PartialOrder A] [CanonicallyOrderedMul A] [HasMulAntidiagonal A]
+variable [Monoid A] [IsMulCommutative A] [PartialOrder A] [CanonicallyOrderedMul A] [HasMulAntidiagonal A]
 
 @[to_additive (attr := simp)]
 theorem mulAntidiagonal_one : mulAntidiagonal (1 : A) = {(1, 1)} := by
@@ -195,7 +195,7 @@ end HasMulAntidiagonal
 namespace HasAntidiagonal
 section OrderedSub
 
-variable [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A] [Sub A] [OrderedSub A]
+variable [AddMonoid A] [IsAddCommutative A] [PartialOrder A] [CanonicallyOrderedAdd A] [Sub A] [OrderedSub A]
 variable [AddLeftReflectLE A]
 variable [HasAntidiagonal A]
 
@@ -241,7 +241,7 @@ def sigmaMulAntidiagonalEquivProd [Mul A] [HasMulAntidiagonal A] :
 section
 
 variable {A : Type*}
-  [CommMagma A] [PartialOrder A] [CanonicallyOrderedMul A]
+  [Mul A] [IsMulCommutative A] [PartialOrder A] [CanonicallyOrderedMul A]
   [LocallyFiniteOrderBot A] [DecidableEq A]
 
 /-- In a canonically ordered multiplicative type, the mulAntidiagonal can be constructed by

@@ -59,12 +59,12 @@ namespace DividedPowers
 
 /-- Given divided power structures on the `A`-ideal `I` and the `B`-ideal `J`, a ring morphism
   `A → B` is a divided power morphism if it is compatible with these divided power structures. -/
-structure IsDPMorphism {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
+structure IsDPMorphism {A B : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] {I : Ideal A} {J : Ideal B}
     (hI : DividedPowers I) (hJ : DividedPowers J) (f : A →+* B) : Prop where
   ideal_comp : I.map f ≤ J
   dpow_comp : ∀ {n : ℕ}, ∀ a ∈ I, hJ.dpow n (f a) = f (hI.dpow n a)
 
-variable {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
+variable {A B : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] {I : Ideal A} {J : Ideal B}
   (hI : DividedPowers I) (hJ : DividedPowers J)
 
 lemma isDPMorphism_def (f : A →+* B) :
@@ -82,7 +82,7 @@ lemma isDPMorphism_iff (f : A →+* B) :
 
 namespace IsDPMorphism
 
-variable {hI hJ} {C : Type*} [CommSemiring C] {K : Ideal C} (hK : DividedPowers K)
+variable {hI hJ} {C : Type*} [Semiring C] [IsMulCommutative C] {K : Ideal C} (hK : DividedPowers K)
 
 theorem map_dpow {f : A →+* B} (hf : IsDPMorphism hI hJ f) {n : ℕ} {a : A} (ha : a ∈ I) :
     f (hI.dpow n a) = hJ.dpow n (f a) := (hf.2 a ha).symm
@@ -98,14 +98,14 @@ end IsDPMorphism
 
 /-- A bundled divided power morphism between rings endowed with divided power structures. -/
 @[ext]
-structure DPMorphism {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
+structure DPMorphism {A B : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] {I : Ideal A} {J : Ideal B}
     (hI : DividedPowers I) (hJ : DividedPowers J) extends RingHom A B where
   ideal_comp : I.map toRingHom ≤ J
   dpow_comp : ∀ {n : ℕ}, ∀ a ∈ I, hJ.dpow n (toRingHom a) = toRingHom (hI.dpow n a)
 
 namespace DPMorphism
 
-variable {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
+variable {A B : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] {I : Ideal A} {J : Ideal B}
   (hI : DividedPowers I) (hJ : DividedPowers J)
 
 @[macro_inline]
@@ -190,7 +190,7 @@ end DPMorphism
 
 namespace IsDPMorphism
 
-variable {A B C : Type*} [CommSemiring A] [CommSemiring B] [CommSemiring C] {I : Ideal A}
+variable {A B C : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Semiring C] [IsMulCommutative C] {I : Ideal A}
   {J : Ideal B} {K : Ideal C} (hI : DividedPowers I) (hJ : DividedPowers J) (hK : DividedPowers K)
 
 open DPMorphism
@@ -217,7 +217,7 @@ end IsDPMorphism
 
 namespace DPMorphism
 
-variable {A B C : Type*} [CommSemiring A] [CommSemiring B] [CommSemiring C] {I : Ideal A}
+variable {A B C : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Semiring C] [IsMulCommutative C] {I : Ideal A}
   {J : Ideal B} {K : Ideal C} {hI : DividedPowers I} {hJ : DividedPowers J} {hK : DividedPowers K}
 
 /-- The composition of two divided power morphisms as a `DPMorphism`. -/
@@ -232,7 +232,7 @@ end DPMorphism
 
 section Uniqueness
 
-variable {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
+variable {A B : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] {I : Ideal A} {J : Ideal B}
     (hI hI' : DividedPowers I) (hJ : DividedPowers J) {f : A →+* B}
 
 theorem dpow_comp_from_gens {S : Set A} (hS : I = span S) (hS' : ∀ s ∈ S, f s ∈ J)

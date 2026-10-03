@@ -46,7 +46,7 @@ namespace LinearMap
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 
 open Submodule
@@ -145,7 +145,7 @@ theorem exists_ne_zero_of_sSup_eq_top {f : M →ₛₗ[τ₁₂] M₂} (h : f �
   exact h
 
 @[simp]
-theorem _root_.AddMonoidHom.coe_toIntLinearMap_ker {M M₂ : Type*} [AddCommGroup M] [AddCommGroup M₂]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_ker {M M₂ : Type*} [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂]
     (f : M →+ M₂) : LinearMap.ker f.toIntLinearMap = AddSubgroup.toIntSubmodule f.ker := rfl
 
 theorem ker_eq_bot_of_injective {f : M →ₛₗ[τ₁₂] M₂} (hf : Injective f) : ker f = ⊥ := by
@@ -173,7 +173,7 @@ end AddCommMonoid
 section Ring
 
 variable [Ring R] [Ring R₂]
-variable [AddCommGroup M] [AddCommGroup M₂]
+variable [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂}
 variable {f : M →ₛₗ[τ₁₂] M₂}
@@ -219,8 +219,8 @@ end Ring
 
 section CommSemiring
 
-variable [Semiring R] [CommSemiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable [Semiring R] [Semiring R₂] [IsMulCommutative R₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂}
 
 theorem ker_le_ker_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : ker f ≤ ker (c • f) := by
@@ -231,8 +231,8 @@ end CommSemiring
 section Semifield
 
 variable [Semifield K]
-variable [AddCommMonoid V] [Module K V]
-variable [AddCommMonoid V₂] [Module K V₂]
+variable [AddMonoid V] [IsAddCommutative V] [Module K V]
+variable [AddMonoid V₂] [IsAddCommutative V₂] [Module K V₂]
 
 theorem ker_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : ker (a • f) = ker f :=
   Submodule.comap_smul f _ a h
@@ -248,7 +248,7 @@ namespace Submodule
 
 section AddCommMonoid
 
-variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Semiring R] [Semiring R₂] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R₂ M₂]
 variable (p : Submodule R M)
 variable {τ₁₂ : R →+* R₂}
@@ -276,7 +276,7 @@ namespace LinearMap
 section Semiring
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
@@ -289,8 +289,8 @@ end Semiring
 section RestrictScalars
 
 variable (R : Type*) {S M N : Type*} [Semiring R] [Semiring S] [SMul R S]
-variable [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
-variable [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable [AddMonoid N] [IsAddCommutative N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 @[simp]
 theorem ker_restrictScalars (f : M →ₗ[S] N) :
@@ -311,7 +311,7 @@ section AddCommMonoid
 section
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable {module_M : Module R M} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]

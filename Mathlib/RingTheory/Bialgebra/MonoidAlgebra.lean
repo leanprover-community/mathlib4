@@ -35,7 +35,7 @@ variable {R S A B G H I M N O : Type*}
 
 namespace MonoidAlgebra
 section CommSemiring
-variable [CommSemiring R] [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 section Semiring
 variable [Semiring A] [Semiring B] [Bialgebra R A] [Bialgebra R B]
@@ -179,7 +179,7 @@ lemma toAdditiveBialgEquiv_single (m : M) (a : A) :
 end Semiring
 
 section CommSemiring
-variable [CommSemiring A]
+variable [Semiring A] [IsMulCommutative A]
 
 section Algebra
 variable [Algebra R A] [Monoid M]
@@ -200,7 +200,7 @@ end Algebra
 variable [Bialgebra R A]
 
 @[to_additive (dont_translate := R A) (attr := simp) convMul_bialgHom_single_one]
-lemma convMul_bialgHom_single_one [CommMonoid M] (f g : WithConv <| R[M] →ₐc[R] A) (x : M) :
+lemma convMul_bialgHom_single_one [Monoid M] [IsMulCommutative M] (f g : WithConv <| R[M] →ₐc[R] A) (x : M) :
     (f * g) (single x 1) = f (single x 1) * g (single x 1) := by
   simp only [BialgHom.convMul_def, BialgHom.coe_comp, Function.comp_apply]
   change mulBialgHom R A (Bialgebra.TensorProduct.map f.ofConv g.ofConv (comul (single x 1))) = _
@@ -209,7 +209,7 @@ lemma convMul_bialgHom_single_one [CommMonoid M] (f g : WithConv <| R[M] →ₐc
 end CommSemiring
 
 section CommMonoid
-variable [CommMonoid M] [CommMonoid N]
+variable [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N]
 
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainBialgHom_mul (f g : M →* N) :
@@ -229,7 +229,7 @@ end CommMonoid
 end CommSemiring
 
 section CommRing
-variable [CommRing R] [IsDomain R]
+variable [Ring R] [IsMulCommutative R] [IsDomain R]
 
 open Submodule in
 @[to_additive (dont_translate := R) isGroupLikeElem_iff_mem_range_single_one]
@@ -329,7 +329,7 @@ def mapDomainBialgHomEquiv : (G →* H) ≃ (R[G] →ₐc[R] R[H]) where
 end Group
 
 section CommGroup
-variable [CommGroup G] [CommGroup H]
+variable [Group G] [IsMulCommutative G] [Group H] [IsMulCommutative H]
 
 /-- The group isomorphism between group homs `G → H` and bialgebra homs `R[G] → R[H]` of group
 algebras over a domain. -/
@@ -344,7 +344,7 @@ end MonoidAlgebra
 
 namespace AddMonoidAlgebra
 section CommSemiring
-variable [CommSemiring R] [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 section Semiring
 variable [Semiring A] [Semiring B] [Bialgebra R A] [Bialgebra R B] [AddMonoid M] [AddMonoid N]
@@ -377,7 +377,7 @@ lemma toMultiplicativeBialgEquiv_single (m : M) (a : A) :
 end Semiring
 
 section CommSemiring
-variable [CommSemiring A] [Algebra R A] [AddMonoid M]
+variable [Semiring A] [IsMulCommutative A] [Algebra R A] [AddMonoid M]
 
 variable (R M A) in
 /-- `AddMonoidAlgebra.lift` as a `MulEquiv`. -/
@@ -389,7 +389,7 @@ def liftMulEquiv : (Multiplicative M →* A) ≃* WithConv (R[M] →ₐ[R] A) wh
 end CommSemiring
 
 section AddCommMonoid
-variable [AddCommMonoid M] [AddCommMonoid N]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
 
 lemma comulAlgHom_comp_mapRingHom (f : R →+* S) :
     (comulAlgHom S S[M]).toRingHom.comp (mapRingHom M f) =
@@ -405,7 +405,7 @@ end AddCommMonoid
 end CommSemiring
 
 section CommRing
-variable [CommRing R] [IsDomain R]
+variable [Ring R] [IsMulCommutative R] [IsDomain R]
 
 section AddZeroClass
 variable [AddZeroClass M] {x : R[M]}
@@ -416,7 +416,7 @@ lemma isGroupLikeElem_iff_mem_range_of : IsGroupLikeElem R x ↔ x ∈ Set.range
 end AddZeroClass
 
 section AddCommGroup
-variable [AddCommGroup G] [AddCommGroup H]
+variable [AddGroup G] [IsAddCommutative G] [AddGroup H] [IsAddCommutative H]
 
 /-- The group isomorphism between group homs `G → H` and bialgebra homs `R[G] → R[H]` of group
 algebras over a domain. -/
@@ -432,7 +432,7 @@ namespace LaurentPolynomial
 
 open AddMonoidAlgebra
 
-variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Bialgebra R A]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {A : Type*} [Semiring A] [Bialgebra R A]
 
 instance instBialgebra : Bialgebra R A[T;T⁻¹] :=
   inferInstanceAs <| Bialgebra R A[ℤ]

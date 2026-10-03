@@ -34,20 +34,20 @@ open scoped Topology Manifold Bundle
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- declare a charted space `M'` over the pair `(E', H')`.
   {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   -- declare a `C^n` manifold `N` over the pair `(F, G)`.
   {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   [Js : IsManifold J 1 N]
   -- declare a charted space `N'` over the pair `(F', G')`.
   {F' : Type*}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   -- declare functions, sets
   {f : M → M'} {s : Set M}
@@ -526,7 +526,7 @@ variable (I) in
 /-- A version of `VectorField.injective_eval_mdifferentiableAt_sec`
 specialized to vector fields on a `C¹` manifold `M` -/
 lemma injective_eval_mdifferentiableAt_vectorField [IsManifold I 1 M]
-    (V : Type*) [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
+    (V : Type*) [AddGroup V] [IsAddCommutative V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
     Function.Injective
       (fun A : TangentSpace% x →L[𝕜] V ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=
@@ -536,7 +536,7 @@ variable (I) in
 /-- A version of `VectorField.injective_eval_contMDiffAt_sec`
 specialized to vector fields on a `C¹` manifold `M` -/
 lemma injective_eval_contMDiffAt_vectorField [IsManifold I 1 M]
-    (V : Type*) [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
+    (V : Type*) [AddGroup V] [IsAddCommutative V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
     Function.Injective
       (fun A : TangentSpace% x →L[𝕜] V ↦
         fun (Z : Π x, TangentSpace I x) (_ : CMDiffAt n (T% Z) x) ↦ A (Z x)) :=

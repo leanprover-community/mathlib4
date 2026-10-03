@@ -48,12 +48,12 @@ theorem List.trop_sum [AddMonoid R] (l : List R) : trop l.sum = List.prod (l.map
   | cons hd tl IH => simp [← IH]
 
 @[to_dual]
-theorem Multiset.trop_sum [AddCommMonoid R] (s : Multiset R) :
+theorem Multiset.trop_sum [AddMonoid R] [IsAddCommutative R] (s : Multiset R) :
     trop s.sum = Multiset.prod (s.map trop) :=
   Quotient.inductionOn s (by simpa using List.trop_sum)
 
 @[to_dual]
-theorem trop_sum [AddCommMonoid R] (s : Finset S) (f : S → R) :
+theorem trop_sum [AddMonoid R] [IsAddCommutative R] (s : Finset S) (f : S → R) :
     trop (∑ i ∈ s, f i) = ∏ i ∈ s, trop (f i) := by
   convert! Multiset.trop_sum (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
@@ -67,12 +67,12 @@ theorem List.untrop_prod [AddMonoid R] (l : List (MinTropical R)) :
   | cons hd tl IH => simp [← IH]
 
 @[to_dual]
-theorem Multiset.untrop_prod [AddCommMonoid R] (s : Multiset (MinTropical R)) :
+theorem Multiset.untrop_prod [AddMonoid R] [IsAddCommutative R] (s : Multiset (MinTropical R)) :
     untrop s.prod = Multiset.sum (s.map untrop) :=
   Quotient.inductionOn s (by simpa using List.untrop_prod)
 
 @[to_dual]
-theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → MinTropical R) :
+theorem untrop_prod [AddMonoid R] [IsAddCommutative R] (s : Finset S) (f : S → MinTropical R) :
     untrop (∏ i ∈ s, f i) = ∑ i ∈ s, untrop (f i) := by
   convert! Multiset.untrop_prod (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]

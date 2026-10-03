@@ -25,7 +25,7 @@ open scoped TensorProduct nonZeroDivisors
 
 open Polynomial
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Ring T] [IsMulCommutative T] [Algebra R T]
 
 variable (R) in
 /-- We say that `x : S` is strongly transcendental over `R` if

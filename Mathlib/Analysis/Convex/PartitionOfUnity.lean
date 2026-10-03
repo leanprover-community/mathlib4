@@ -33,7 +33,7 @@ open Set Function
 
 open scoped Topology
 
-variable {ι X E : Type*} [TopologicalSpace X] [AddCommGroup E] [Module ℝ E]
+variable {ι X E : Type*} [TopologicalSpace X] [AddGroup E] [IsAddCommutative E] [Module ℝ E]
 
 theorem PartitionOfUnity.finsum_smul_mem_convex {s : Set X} (f : PartitionOfUnity ι X s)
     {g : ι → X → E} {t : Set E} {x : X} (hx : x ∈ s) (hg : ∀ i, f i x ≠ 0 → g i x ∈ t)

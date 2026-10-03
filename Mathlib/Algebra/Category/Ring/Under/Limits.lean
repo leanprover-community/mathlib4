@@ -124,13 +124,13 @@ lemma equalizerFork_ι {A B : Under R} (f g : A ⟶ B) :
 
 /-- Variant of `Under.equalizerFork'` for algebra maps. This is definitionally equal to
 `Under.equalizerFork` but this is costly in applications. -/
-def equalizerFork' {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+def equalizerFork' {A B : Type u} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra R B]
     (f g : A →ₐ[R] B) :
     Fork f.toUnder g.toUnder :=
   Fork.ofι ((AlgHom.equalizer f g).val.toUnder) <| by ext a; exact a.property
 
 @[simp]
-lemma equalizerFork'_ι {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+lemma equalizerFork'_ι {A B : Type u} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra R B]
     (f g : A →ₐ[R] B) :
     (Under.equalizerFork' f g).ι = (AlgHom.equalizer f g).val.toUnder := rfl
 
@@ -143,7 +143,7 @@ noncomputable def equalizerForkIsLimit {A B : Under R} (f g : A ⟶ B) :
       CommRingCat.equalizerForkIsLimit f.right g.right
 
 /-- Variant of `Under.equalizerForkIsLimit` for algebra maps. -/
-def equalizerFork'IsLimit {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
+def equalizerFork'IsLimit {A B : Type u} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A]
     [Algebra R B] (f g : A →ₐ[R] B) :
     IsLimit (Under.equalizerFork' f g) :=
   Under.equalizerForkIsLimit f.toUnder g.toUnder

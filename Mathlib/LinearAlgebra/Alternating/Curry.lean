@@ -18,8 +18,8 @@ as a linear map in the 0th variable taking values in the alternating maps in `n`
 
 @[expose] public section
 
-variable {R : Type*} {M M₂ N N₂ : Type*} [CommSemiring R] [AddCommMonoid M]
-  [AddCommMonoid M₂] [AddCommMonoid N] [AddCommMonoid N₂] [Module R M] [Module R M₂]
+variable {R : Type*} {M M₂ N N₂ : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M]
+  [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid N] [IsAddCommutative N] [AddMonoid N₂] [IsAddCommutative N₂] [Module R M] [Module R M₂]
   [Module R N] [Module R N₂] {n : ℕ}
 
 namespace AlternatingMap

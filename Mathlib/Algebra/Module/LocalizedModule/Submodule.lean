@@ -31,7 +31,7 @@ Results about localizations of submodules and quotient modules are provided in t
 @[expose] public section
 
 variable {R S M N : Type*}
-variable (S) [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid N]
+variable (S) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (M' M'' : Submodule R M)
@@ -260,7 +260,7 @@ end Submodule
 section Quotient
 
 variable {R S M N : Type*}
-variable (S) [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
+variable (S) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (M' : Submodule R M)
@@ -315,8 +315,8 @@ end Quotient
 
 namespace LinearMap
 
-variable {P : Type*} [AddCommMonoid P] [Module R P]
-variable {Q : Type*} [AddCommMonoid Q] [Module R Q] [Module S Q] [IsScalarTower R S Q]
+variable {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P]
+variable {Q : Type*} [AddMonoid Q] [IsAddCommutative Q] [Module R Q] [Module S Q] [IsScalarTower R S Q]
 variable (f' : P →ₗ[R] Q) [IsLocalizedModule p f']
 
 open Submodule IsLocalizedModule
@@ -371,8 +371,8 @@ lemma localized'_range_eq_range_localizedMap (g : M →ₗ[R] P) :
     (range g).localized' S p f' = range ((map p f f' g).extendScalarsOfIsLocalization p S) :=
   SetLike.ext (by apply SetLike.ext_iff.mp (f.range_localizedMap_eq_localized₀_range p f' g).symm)
 
-lemma localizedMap_surjective_iff_subsingleton_localized_coker {R M N : Type*} [CommRing R]
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (S : Submonoid R) (φ : M →ₗ[R] N) :
+lemma localizedMap_surjective_iff_subsingleton_localized_coker {R M N : Type*} [Ring R] [IsMulCommutative R]
+    [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N] (S : Submonoid R) (φ : M →ₗ[R] N) :
     Function.Surjective (LocalizedModule.map S φ) ↔
       Subsingleton (LocalizedModule S (N ⧸ φ.range)) := by
   simp [(localizedQuotientEquiv S φ.range).symm.subsingleton_congr,

@@ -69,7 +69,7 @@ instance (r : ℝ≥0) : IsProbabilityMeasure Po(r) :=
 
 section Integral
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
 variable {R : Type*} [NatCast R] [MeasurableSpace R]
 
 lemma integrable_poissonMeasure_iff {r : ℝ≥0} {f : ℕ → E} :

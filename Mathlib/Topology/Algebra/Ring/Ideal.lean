@@ -63,7 +63,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type*} [TopologicalSpace R] [CommRing R] (N : Ideal R)
+variable {R : Type*} [TopologicalSpace R] [Ring R] [IsMulCommutative R] (N : Ideal R)
 
 open Ideal.Quotient
 

@@ -192,7 +192,7 @@ theorem eq_option_embedding_update_none_iff {n : Option α →₀ M} {m : α →
 end Zero
 
 @[to_additive]
-theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
+theorem prod_option_index [AddZeroClass M] [Monoid N] [IsMulCommutative N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
     (h_add : ∀ o m₁ m₂, b o (m₁ + m₂) = b o m₁ * b o m₂) :
     f.prod b = b none (f none) * f.some.prod fun a => b (Option.some a) := by
@@ -206,7 +206,7 @@ theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ 
       all_goals simp [h_zero, h_add]
     | single a m => cases a <;> simp [h_zero]
 
-theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : Option α →₀ R)
+theorem sum_option_index_smul [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] (f : Option α →₀ R)
     (b : Option α → M) :
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _

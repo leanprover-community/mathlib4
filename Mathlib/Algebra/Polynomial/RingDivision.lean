@@ -33,7 +33,7 @@ variable {R : Type u} {S : Type v} {a b : R} {n : ℕ}
 
 section CommRing
 
-variable [CommRing R] {p q : R[X]}
+variable [Ring R] [IsMulCommutative R] {p q : R[X]}
 
 section
 
@@ -118,7 +118,7 @@ end NoZeroDivisors
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
     p.rootMultiplicity t = (p.comp (X + C t)).rootMultiplicity 0 := by
@@ -283,14 +283,14 @@ theorem irreducible_C_mul_X_add_C {a b : R} (ha : a ≠ 0) (hab : IsRelPrime a b
   · compute_degree!
   · simpa using hab.symm
 
-lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
+lemma aeval_ne_zero_of_isCoprime {R} [Semiring R] [IsMulCommutative R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
   by_contra! ⟨hp, hq⟩
   rcases h with ⟨_, _, h⟩
   apply_fun aeval s at h
   simp only [map_add, map_mul, map_one, hp, hq, mul_zero, add_zero, zero_ne_one] at h
 
-theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
+theorem isCoprime_X_sub_C_of_isUnit_sub {R} [Ring R] [IsMulCommutative R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=
   ⟨-C h.unit⁻¹.val, C h.unit⁻¹.val, by
     rw [neg_mul_comm, ← left_distrib, neg_add_eq_sub, sub_sub_sub_cancel_left, ← C_sub, ← C_mul]

@@ -50,7 +50,7 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
 
 /-- If `f` is locally integrable on `[c, ∞)` and `f x = O(exp (a * x))` at `∞`, then
 `exp (-b * x) • f x` is integrable on `[c, ∞)` for every `a < b`. -/
-theorem integrableOn_exp_neg_smul_of_isBigO_exp {E : Type*} [NormedAddCommGroup E]
+theorem integrableOn_exp_neg_smul_of_isBigO_exp {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
     [NormedSpace ℝ E] {a b c : ℝ} {f : ℝ → E} (hfc : LocallyIntegrableOn f (Ici c))
     (hf : f =O[atTop] fun x : ℝ => exp (a * x)) (hab : a < b) :
     IntegrableOn (fun x : ℝ => exp (-b * x) • f x) (Ici c) := by

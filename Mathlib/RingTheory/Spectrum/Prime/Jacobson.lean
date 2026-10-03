@@ -27,7 +27,7 @@ public section
 
 open Ideal
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace PrimeSpectrum
 

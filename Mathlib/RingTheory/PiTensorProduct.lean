@@ -27,7 +27,7 @@ namespace PiTensorProduct
 
 noncomputable section AddCommMonoidWithOne
 
-variable [CommSemiring R] [∀ i, AddCommMonoidWithOne (A i)] [∀ i, Module R (A i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoidWithOne (A i)] [∀ i, IsAddCommutative (A i)] [∀ i, Module R (A i)]
 
 instance instOne : One (⨂[R] i, A i) where
   one := tprod R 1
@@ -42,7 +42,7 @@ end AddCommMonoidWithOne
 
 noncomputable section NonUnitalNonAssocSemiring
 
-variable [CommSemiring R] [∀ i, NonUnitalNonAssocSemiring (A i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, NonUnitalNonAssocSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
 
 attribute [aesop safe] mul_add mul_smul_comm smul_mul_assoc add_mul in
@@ -90,7 +90,7 @@ end NonUnitalNonAssocSemiring
 
 noncomputable section NonAssocSemiring
 
-variable [CommSemiring R] [∀ i, NonAssocSemiring (A i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, NonAssocSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
 
 protected lemma one_mul (x : ⨂[R] i, A i) : mul (tprod R 1) x = x := by
@@ -120,7 +120,7 @@ end NonAssocSemiring
 
 noncomputable section NonUnitalSemiring
 
-variable [CommSemiring R] [∀ i, NonUnitalSemiring (A i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, NonUnitalSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
 
 protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul y z) := by
@@ -141,7 +141,7 @@ end NonUnitalSemiring
 
 noncomputable section Semiring
 
-variable [CommSemiring R'] [CommSemiring R] [∀ i, Semiring (A i)]
+variable [Semiring R'] [IsMulCommutative R'] [Semiring R] [IsMulCommutative R] [∀ i, Semiring (A i)]
 variable [Algebra R' R] [∀ i, Algebra R (A i)] [∀ i, Algebra R' (A i)]
 variable [∀ i, IsScalarTower R' R (A i)]
 
@@ -228,7 +228,7 @@ end Semiring
 
 noncomputable section Ring
 
-variable [CommRing R] [∀ i, Ring (A i)] [∀ i, Algebra R (A i)]
+variable [Ring R] [IsMulCommutative R] [∀ i, Ring (A i)] [∀ i, Algebra R (A i)]
 
 instance instRing : Ring (⨂[R] i, A i) where
   __ := instSemiring
@@ -238,7 +238,7 @@ end Ring
 
 noncomputable section CommSemiring
 
-variable [CommSemiring R] [∀ i, CommSemiring (A i)] [∀ i, Algebra R (A i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, Semiring (A i)] [∀ i, IsMulCommutative (A i)] [∀ i, Algebra R (A i)]
 
 protected lemma mul_comm (x y : ⨂[R] i, A i) : mul x y = mul y x := by
   suffices mul (R := R) (A := A) = mul.flip from
@@ -304,7 +304,7 @@ end CommSemiring
 
 noncomputable section CommRing
 
-variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
+variable [Ring R] [IsMulCommutative R] [∀ i, Ring (A i)] [∀ i, IsMulCommutative (A i)] [∀ i, Algebra R (A i)]
 instance instCommRing : CommRing (⨂[R] i, A i) where
   __ := instCommSemiring
   __ := (inferInstance : AddCommGroup (⨂[R] i, A i))

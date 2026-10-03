@@ -35,7 +35,7 @@ noncomputable section
 namespace WittVector
 
 variable (p : ℕ) [hp : Fact p.Prime]
-variable {k : Type*} [CommRing k]
+variable {k : Type*} [Ring k] [IsMulCommutative k]
 
 local notation "𝕎" => WittVector p
 

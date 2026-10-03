@@ -34,7 +34,7 @@ variable {R S M : Type*}
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] (r s : R) (x : M)
 
 variable (R)
 
@@ -42,7 +42,7 @@ variable (R)
 
 See also `Function.Surjective.mulActionLeft` and `Function.Surjective.distribMulActionLeft`.
 -/
-abbrev Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+abbrev Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
     [Semiring S] [SMul S M] (f : R →+* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : Module S M :=
   { hf.distribMulActionLeft f.toMonoidHom hsmul with

@@ -65,7 +65,7 @@ def RingHom.Finite (f : A →+* B) : Prop :=
 An example with a constructor as parameter (as the two properties are not definitionally the same):
 ```
 @[algebraize Algebra.Flat.out]
-class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
+class RingHom.Flat {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) : Prop where
   out : f.toAlgebra.Flat := by infer_instance
 ```
 

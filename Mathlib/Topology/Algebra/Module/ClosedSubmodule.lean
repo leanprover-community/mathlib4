@@ -26,9 +26,9 @@ Actually provide the `Order.Frame (ClosedSubmodule R M)` instance.
 open Function TopologicalSpace
 
 variable {ι : Sort*} {R M N O : Type*} [Semiring R]
-  [AddCommMonoid M] [TopologicalSpace M] [Module R M]
-  [AddCommMonoid N] [TopologicalSpace N] [Module R N]
-  [AddCommMonoid O] [TopologicalSpace O] [Module R O]
+  [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M] [Module R M]
+  [AddMonoid N] [IsAddCommutative N] [TopologicalSpace N] [Module R N]
+  [AddMonoid O] [IsAddCommutative O] [TopologicalSpace O] [Module R O]
 
 variable (R M) in
 /-- The type of closed submodules of a topological module. -/
@@ -374,7 +374,7 @@ end ClosedSubmodule
 
 section CompleteSpace
 
-instance {𝕜 H : Type*} [Semiring 𝕜] [AddCommMonoid H] [UniformSpace H] [Module 𝕜 H]
+instance {𝕜 H : Type*} [Semiring 𝕜] [AddMonoid H] [IsAddCommutative H] [UniformSpace H] [Module 𝕜 H]
     [CompleteSpace H] (K : ClosedSubmodule 𝕜 H) : CompleteSpace K := by
   apply IsComplete.completeSpace_coe
   rw [← ClosedSubmodule.carrier_eq_coe]

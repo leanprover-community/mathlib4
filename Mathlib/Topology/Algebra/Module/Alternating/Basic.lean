@@ -36,8 +36,8 @@ is a continuous map that is
   `f (update m i (x + y)) = f (update m i x) + f (update m i y)`;
 - alternating : `f v = 0` whenever `v` has two equal coordinates.
 -/
-structure ContinuousAlternatingMap (R M N ι : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [AddCommMonoid N] [Module R N] [TopologicalSpace N] extends
+structure ContinuousAlternatingMap (R M N ι : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+    [TopologicalSpace M] [AddMonoid N] [IsAddCommutative N] [Module R N] [TopologicalSpace N] extends
     ContinuousMultilinearMap R (fun _ : ι => M) N, M [⋀^ι]→ₗ[R] N where
 
 /-- Projection to `ContinuousMultilinearMap`s. -/
@@ -53,9 +53,9 @@ namespace ContinuousAlternatingMap
 
 section Semiring
 
-variable {R M M' N N' ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-  [AddCommMonoid M'] [Module R M'] [TopologicalSpace M'] [AddCommMonoid N] [Module R N]
-  [TopologicalSpace N] [AddCommMonoid N'] [Module R N'] [TopologicalSpace N'] {n : ℕ}
+variable {R M M' N N' ι : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [TopologicalSpace M]
+  [AddMonoid M'] [IsAddCommutative M'] [Module R M'] [TopologicalSpace M'] [AddMonoid N] [IsAddCommutative N] [Module R N]
+  [TopologicalSpace N] [AddMonoid N'] [IsAddCommutative N'] [Module R N'] [TopologicalSpace N'] {n : ℕ}
   (f g : M [⋀^ι]→L[R] N)
 
 theorem toContinuousMultilinearMap_injective :
@@ -256,18 +256,18 @@ def prod (f : M [⋀^ι]→L[R] N) (g : M [⋀^ι]→L[R] N') : M [⋀^ι]→L[R
 
 /-- Combine a family of continuous alternating maps with the same domain and codomains `M' i` into a
 continuous alternating map taking values in the space of functions `Π i, M' i`. -/
-def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, TopologicalSpace (M' i)]
+def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)] [∀ i, TopologicalSpace (M' i)]
     [∀ i, Module R (M' i)] (f : ∀ i, M [⋀^ι]→L[R] M' i) : M [⋀^ι]→L[R] ∀ i, M' i :=
   ⟨ContinuousMultilinearMap.pi fun i => (f i).1,
     (AlternatingMap.pi fun i => (f i).toAlternatingMap).map_eq_zero_of_eq⟩
 
 @[simp]
-theorem coe_pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
+theorem coe_pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)] (f : ∀ i, M [⋀^ι]→L[R] M' i) :
     ⇑(pi f) = fun m j => f j m :=
   rfl
 
-theorem pi_apply {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
+theorem pi_apply {ι' : Type*} {M' : ι' → Type*} [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)] (f : ∀ i, M [⋀^ι]→L[R] M' i) (m : ι → M)
     (j : ι') : pi f m j = f j m :=
   rfl
@@ -370,7 +370,7 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
 
 /-- `ContinuousAlternatingMap.pi` as an `Equiv`. -/
 @[simps]
-def piEquiv {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, TopologicalSpace (N i)]
+def piEquiv {ι' : Type*} {N : ι' → Type*} [∀ i, AddMonoid (N i)] [∀ i, IsAddCommutative (N i)] [∀ i, TopologicalSpace (N i)]
     [∀ i, Module R (N i)] : (∀ i, M [⋀^ι]→L[R] N i) ≃ M [⋀^ι]→L[R] ∀ i, N i where
   toFun := pi
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] N i).compContinuousAlternatingMap f
@@ -457,8 +457,8 @@ end Semiring
 
 section Ring
 
-variable {R M N ι : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
-  [AddCommGroup N] [Module R N] [TopologicalSpace N]
+variable {R M N ι : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [TopologicalSpace M]
+  [AddGroup N] [IsAddCommutative N] [Module R N] [TopologicalSpace N]
   (f g : M [⋀^ι]→L[R] N)
 
 @[simp]
@@ -504,8 +504,8 @@ end Ring
 
 section CommSemiring
 
-variable {R M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [TopologicalSpace M] [AddCommMonoid N] [Module R N] [TopologicalSpace N]
+variable {R M N ι : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [TopologicalSpace M] [AddMonoid N] [IsAddCommutative N] [Module R N] [TopologicalSpace N]
   (f : M [⋀^ι]→L[R] N)
 
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ι → M) (s : Finset ι) :
@@ -535,7 +535,7 @@ end CommSemiring
 
 section DistribMulAction
 
-variable {R A M N ι : Type*} [Monoid R] [Semiring A] [AddCommMonoid M] [AddCommMonoid N]
+variable {R A M N ι : Type*} [Monoid R] [Semiring A] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
   [TopologicalSpace M] [TopologicalSpace N] [Module A M] [Module A N] [DistribMulAction R N]
   [ContinuousConstSMul R N] [SMulCommClass A R N]
 
@@ -547,7 +547,7 @@ end DistribMulAction
 
 section Module
 
-variable {R A M N ι : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [AddCommMonoid N]
+variable {R A M N ι : Type*} [Semiring R] [Semiring A] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
   [TopologicalSpace M] [TopologicalSpace N] [ContinuousAdd N] [Module A M] [Module A N] [Module R N]
   [ContinuousConstSMul R N] [SMulCommClass A R N]
 
@@ -576,7 +576,7 @@ def toAlternatingMapLinear : (M [⋀^ι]→L[A] N) →ₗ[R] (M [⋀^ι]→ₗ[A
 
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
 @[simps +simpRhs]
-def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
+def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R (M' i)] [∀ i, ContinuousConstSMul R (M' i)] :
     (∀ i, M [⋀^ι]→L[A] M' i) ≃ₗ[R] M [⋀^ι]→L[A] ∀ i, M' i :=
@@ -588,7 +588,7 @@ end Module
 
 section SMulRight
 
-variable {R M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+variable {R M N ι : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M]
   [Module R N] [TopologicalSpace R] [TopologicalSpace M] [TopologicalSpace N] [ContinuousSMul R N]
   (f : M [⋀^ι]→L[R] R) (z : N)
 
@@ -602,9 +602,9 @@ end SMulRight
 
 section Semiring
 
-variable {R M M' N N' ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [TopologicalSpace M] [AddCommMonoid M'] [Module R M'] [TopologicalSpace M'] [AddCommMonoid N]
-  [Module R N] [TopologicalSpace N] [ContinuousAdd N] [ContinuousConstSMul R N] [AddCommMonoid N']
+variable {R M M' N N' ι : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [TopologicalSpace M] [AddMonoid M'] [IsAddCommutative M'] [Module R M'] [TopologicalSpace M'] [AddMonoid N] [IsAddCommutative N]
+  [Module R N] [TopologicalSpace N] [ContinuousAdd N] [ContinuousConstSMul R N] [AddMonoid N'] [IsAddCommutative N']
   [Module R N'] [TopologicalSpace N'] [ContinuousAdd N'] [ContinuousConstSMul R N']
 
 /-- `ContinuousAlternatingMap.compContinuousLinearMap` as a bundled `LinearMap`. -/
@@ -628,8 +628,8 @@ end ContinuousAlternatingMap
 
 namespace ContinuousMultilinearMap
 
-variable {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-  [AddCommGroup N] [Module R N] [TopologicalSpace N] [IsTopologicalAddGroup N] [Fintype ι]
+variable {R M N ι : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [TopologicalSpace M]
+  [AddGroup N] [IsAddCommutative N] [Module R N] [TopologicalSpace N] [IsTopologicalAddGroup N] [Fintype ι]
   [DecidableEq ι] (f : ContinuousMultilinearMap R (fun _ : ι => M) N)
 
 /-- Alternatization of a continuous multilinear map. -/

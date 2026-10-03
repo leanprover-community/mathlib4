@@ -119,7 +119,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type*} [TopologicalSpace R] [CommRing R] [IsLinearTopology R R]
+variable {R : Type*} [TopologicalSpace R] [Ring R] [IsMulCommutative R] [IsLinearTopology R R]
 
 /-- If `a` is topologically nilpotent, then `a * b` is topologically nilpotent. -/
 theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :

@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.IsTensorProduct
 /-!
 # Base change of polynomial algebras
 
-Given `[CommSemiring R] [Semiring A] [Algebra R A]` we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
+Given `[Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]` we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
 -/
 
 @[expose] public section
@@ -28,7 +28,7 @@ open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 noncomputable section
 
 variable (R S A : Type*)
-variable [CommSemiring R] [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 variable [Semiring A] [Algebra R A] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
 
 namespace PolyEquivTensor
@@ -184,7 +184,7 @@ theorem polyEquivTensor_symm_apply_tmul (a : A) (p : R[X]) :
 
 section
 
-variable (A : Type*) [CommSemiring A] [Algebra R A]
+variable (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 /-- The `A`-algebra isomorphism `A[X] ≃ₐ[A] A ⊗[R] R[X]` (when `A` is commutative). -/
 def polyEquivTensor' : A[X] ≃ₐ[A] A ⊗[R] R[X] where
@@ -221,7 +221,7 @@ instance [FaithfulSMul R A] : FaithfulSMul R[X] A[X] :=
   (faithfulSMul_iff_algebraMap_injective ..).mpr
     (map_injective _ <| FaithfulSMul.algebraMap_injective ..)
 
-variable {S : Type*} [CommSemiring S] [Algebra R S]
+variable {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 instance : Algebra.IsPushout R S R[X] S[X] where
   out := .of_equiv (polyEquivTensor' R S).symm fun _ ↦

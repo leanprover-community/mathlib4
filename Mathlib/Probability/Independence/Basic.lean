@@ -986,7 +986,7 @@ lemma iIndepFun.indepFun_div_div₀ (hf_indep : iIndepFun f μ)
 end Div
 
 section CommMonoid
-variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
+variable {β : Type*} {m : MeasurableSpace β} [Monoid β] [IsMulCommutative β] [MeasurableMul₂ β] {f : ι → Ω → β}
 
 @[to_additive]
 lemma iIndepFun.indepFun_finsetProd_of_notMem (hf_Indep : iIndepFun f μ)

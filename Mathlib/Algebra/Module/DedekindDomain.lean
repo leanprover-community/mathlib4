@@ -22,7 +22,7 @@ public section
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDedekindDomain R] {M : Type v} [AddCommGroup M] [Module R M]
+variable {R : Type u} [Ring R] [IsMulCommutative R] [IsDedekindDomain R] {M : Type v} [AddGroup M] [IsAddCommutative M] [Module R M]
 
 open scoped DirectSum
 

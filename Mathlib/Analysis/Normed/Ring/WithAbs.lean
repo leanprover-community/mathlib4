@@ -161,7 +161,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] (v : AbsoluteValue R S)
+variable [Semiring R] [IsMulCommutative R] (v : AbsoluteValue R S)
 
 instance : CommSemiring (WithAbs v) := fast_instance% (equiv v).commSemiring
 
@@ -195,7 +195,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] (v : AbsoluteValue R S)
+variable [Ring R] [IsMulCommutative R] (v : AbsoluteValue R S)
 
 instance : CommRing (WithAbs v) := fast_instance% (equiv v).commRing
 
@@ -235,7 +235,7 @@ instance {P : Type*} [SMul P R] [SMul P T] [SMul R T]
     [IsScalarTower P R T] : IsScalarTower P (WithAbs v) T where
   smul_assoc := by simp [smul_right_def, smul_left_def]
 
-instance moduleLeft [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
+instance moduleLeft [AddMonoid T] [IsAddCommutative T] [Module R T] : Module (WithAbs v) T :=
   fast_instance% .compHom T (equiv v).toRingHom
 
 @[deprecated (since := "2026-03-02")] alias instModule_left := moduleLeft
@@ -261,7 +261,7 @@ end Module
 
 section algebra
 
-variable {R T : Type*} [CommSemiring R] [Semiring T] [Algebra R T]
+variable {R T : Type*} [Semiring R] [IsMulCommutative R] [Semiring T] [Algebra R T]
 
 variable (T) in
 instance algebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
@@ -307,7 +307,7 @@ end WithAbs
 
 namespace AbsoluteValue
 
-variable {L K S : Type*} [CommSemiring K] [Semiring L] [Algebra K L] [FaithfulSMul K L]
+variable {L K S : Type*} [Semiring K] [IsMulCommutative K] [Semiring L] [Algebra K L] [FaithfulSMul K L]
   [PartialOrder S] [Semiring S]
 
 variable (K)

@@ -56,7 +56,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] {δ : ℝ} {s : Set E} {x y : E}
+variable [SeminormedGroup E] [IsMulCommutative E] {δ : ℝ} {s : Set E} {x y : E}
 
 section EMetric
 

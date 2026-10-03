@@ -38,8 +38,8 @@ open Function Submodule
 
 namespace LinearMap
 
-variable {R N M : Type*} [Semiring R] [AddCommMonoid N] [Module R N]
-  [AddCommMonoid M] [Module R M] (f i : N →ₗ[R] M)
+variable {R N M : Type*} [Semiring R] [AddMonoid N] [IsAddCommutative N] [Module R N]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] (f i : N →ₗ[R] M)
 
 /-- The `LinearMap.iterateMapComap f i n K : Submodule R N` is
 `f⁻¹(i(⋯(f⁻¹(i(K)))))` (`n` times). -/

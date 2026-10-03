@@ -48,7 +48,7 @@ end Finite
 
 section CommSemiring
 
-variable {m n R : Type*} [CommSemiring R] {M : Matrix m n R}
+variable {m n R : Type*} [Semiring R] [IsMulCommutative R] {M : Matrix m n R}
 
 lemma separatingRight_def [Fintype m] [Fintype n] :
     M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
@@ -143,7 +143,7 @@ theorem Nondegenerate.exists_not_ortho_of_ne_zero' (hM : Nondegenerate M) {w : n
 end CommSemiring
 
 section Determinant
-variable {m R : Type*} [CommRing R] [Fintype m] [DecidableEq m] {M : Matrix m m R}
+variable {m R : Type*} [Ring R] [IsMulCommutative R] [Fintype m] [DecidableEq m] {M : Matrix m m R}
 
 open scoped nonZeroDivisors
 
@@ -195,7 +195,7 @@ end Matrix
 
 open scoped Matrix in
 lemma LinearIndependent.sum_smul_of_nondegenerate
-    {ι κ R M : Type*} [Fintype ι] [Finite κ] [CommRing R] [AddCommGroup M] [Module R M]
+    {ι κ R M : Type*} [Fintype ι] [Finite κ] [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
     {v : ι → M} (hv : LinearIndependent R v)
     {A : Matrix κ ι R} (hA : A.Nondegenerate) :
     LinearIndependent R fun i ↦ ∑ j, A i j • v j := by

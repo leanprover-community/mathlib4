@@ -20,7 +20,7 @@ torsion-free.
 
 public section
 
-variable {M : Type*} [CommMonoidWithZero M]
+variable {M : Type*} [MonoidWithZero M] [IsMulCommutative M]
 
 theorem IsMulTorsionFree.mk' [IsReduced M]
     (ih : ∀ x ≠ 0, ∀ y ≠ 0, ∀ n ≠ 0, (x ^ n : M) = y ^ n → x = y) :

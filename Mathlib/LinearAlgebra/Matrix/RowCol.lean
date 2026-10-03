@@ -173,24 +173,24 @@ theorem replicateRow_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] 
 theorem mulVec_replicateCol_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
     v ᵥ* replicateCol ι w = Function.const _ (v ⬝ᵥ w) := rfl
 
-theorem replicateRow_mul_replicateCol [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
+theorem replicateRow_mul_replicateCol [Fintype m] [Mul α] [AddMonoid α] [IsAddCommutative α] (v w : m → α) :
     replicateRow ι v * replicateCol ι w = of fun _ _ => v ⬝ᵥ w :=
   rfl
 
 @[simp]
-theorem replicateRow_mul_replicateCol_apply [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α)
+theorem replicateRow_mul_replicateCol_apply [Fintype m] [Mul α] [AddMonoid α] [IsAddCommutative α] (v w : m → α)
     (i j) : (replicateRow ι v * replicateCol ι w) i j = v ⬝ᵥ w :=
   rfl
 
 @[simp]
-theorem diag_replicateCol_mul_replicateRow [Mul α] [AddCommMonoid α] [Unique ι] (a b : n → α) :
+theorem diag_replicateCol_mul_replicateRow [Mul α] [AddMonoid α] [IsAddCommutative α] [Unique ι] (a b : n → α) :
     diag (replicateCol ι a * replicateRow ι b) = a * b := by
   ext
   simp [Matrix.mul_apply, replicateCol, replicateRow]
 
 variable (ι)
 
-theorem vecMulVec_eq [Mul α] [AddCommMonoid α] [Unique ι] (w : m → α) (v : n → α) :
+theorem vecMulVec_eq [Mul α] [AddMonoid α] [IsAddCommutative α] [Unique ι] (w : m → α) (v : n → α) :
     vecMulVec w v = replicateCol ι w * replicateRow ι v := by
   ext
   simp [vecMulVec, mul_apply]

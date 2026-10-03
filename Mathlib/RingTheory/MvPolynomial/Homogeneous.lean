@@ -43,10 +43,10 @@ open Finsupp
 
 /-- A multivariate polynomial `φ` is homogeneous of degree `n`
 if all monomials occurring in `φ` have degree `n`. -/
-def IsHomogeneous [CommSemiring R] (φ : MvPolynomial σ R) (n : ℕ) :=
+def IsHomogeneous [Semiring R] [IsMulCommutative R] (φ : MvPolynomial σ R) (n : ℕ) :=
   IsWeightedHomogeneous 1 φ n
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 /-- The `degrees` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p` where
   the weights are singletons containing each variable. -/
@@ -206,7 +206,7 @@ end
 
 namespace IsHomogeneous
 
-variable [CommSemiring S] {φ ψ : MvPolynomial σ R} {m n : ℕ}
+variable [Semiring S] [IsMulCommutative S] {φ ψ : MvPolynomial σ R} {m n : ℕ}
 
 theorem coeff_eq_zero (hφ : IsHomogeneous φ n) {d : σ →₀ ℕ} (hd : d.degree ≠ n) :
     φ.coeff d = 0 := by
@@ -290,7 +290,7 @@ lemma aeval [Algebra R S] (hφ : φ.IsHomogeneous m)
 section CommRing
 
 -- In this section we shadow the semiring `R` with a ring `R`.
-variable {R σ : Type*} [CommRing R] {φ ψ : MvPolynomial σ R} {n : ℕ}
+variable {R σ : Type*} [Ring R] [IsMulCommutative R] {φ ψ : MvPolynomial σ R} {n : ℕ}
 
 theorem neg (hφ : IsHomogeneous φ n) : IsHomogeneous (-φ) n :=
   (homogeneousSubmodule σ R n).neg_mem hφ
@@ -408,7 +408,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
 section IsDomain
 
 -- In this section we shadow the semiring `R` with a domain `R`.
-variable {R σ : Type*} [CommRing R] [IsDomain R] {F G : MvPolynomial σ R} {n : ℕ}
+variable {R σ : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] {F G : MvPolynomial σ R} {n : ℕ}
 
 open Cardinal Polynomial
 
@@ -642,7 +642,7 @@ end MvPolynomial
 
 /-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
 this. -/
-lemma Ideal.span_eq_map_homogeneousSubmodule {ι R : Type*} [CommSemiring R]
+lemma Ideal.span_eq_map_homogeneousSubmodule {ι R : Type*} [Semiring R] [IsMulCommutative R]
     (x : ι → R) :
     Ideal.span (Set.range x) =
       Submodule.map (MvPolynomial.aeval x).toLinearMap
@@ -652,7 +652,7 @@ lemma Ideal.span_eq_map_homogeneousSubmodule {ι R : Type*} [CommSemiring R]
 
 /-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
 this. -/
-lemma Ideal.span_pow_eq_map_homogeneousSubmodule {ι R : Type*} [CommSemiring R]
+lemma Ideal.span_pow_eq_map_homogeneousSubmodule {ι R : Type*} [Semiring R] [IsMulCommutative R]
     (x : ι → R) (n : ℕ) :
     Ideal.span (Set.range x) ^ n =
       Submodule.map (MvPolynomial.aeval x).toLinearMap
@@ -662,7 +662,7 @@ lemma Ideal.span_pow_eq_map_homogeneousSubmodule {ι R : Type*} [CommSemiring R]
 
 /-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
 this. -/
-lemma Ideal.mem_span_pow_iff_exists_isHomogeneous {ι R : Type*} [CommSemiring R] {n : ℕ} (x : ι → R)
+lemma Ideal.mem_span_pow_iff_exists_isHomogeneous {ι R : Type*} [Semiring R] [IsMulCommutative R] {n : ℕ} (x : ι → R)
     (y : R) :
     y ∈ (Ideal.span <| Set.range x) ^ n ↔
       ∃ (p : MvPolynomial ι R), p.IsHomogeneous n ∧ p.eval x = y := by
@@ -670,7 +670,7 @@ lemma Ideal.mem_span_pow_iff_exists_isHomogeneous {ι R : Type*} [CommSemiring R
 
 /-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
 this. -/
-lemma Ideal.mem_span_iff_exists_isHomogeneous {ι R : Type*} [CommSemiring R] (x : ι → R) (y : R) :
+lemma Ideal.mem_span_iff_exists_isHomogeneous {ι R : Type*} [Semiring R] [IsMulCommutative R] (x : ι → R) (y : R) :
     y ∈ Ideal.span (.range x) ↔
       ∃ (p : MvPolynomial ι R), p.IsHomogeneous 1 ∧ p.eval x = y := by
   simp [Ideal.span_eq_map_homogeneousSubmodule]

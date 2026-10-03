@@ -25,7 +25,7 @@ namespace Finset
 
 section CommMonoid
 
-variable [CommMonoid β]
+variable [Monoid β] [IsMulCommutative β]
 
 /-- The product over a sigma type equals the product of the fiberwise products.
 For rewriting in the reverse direction, use `Finset.prod_sigma'`.

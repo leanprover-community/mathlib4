@@ -25,7 +25,7 @@ We gather results about the quotients of local rings.
 
 open Submodule Module
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R] [Module.Finite R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [IsLocalRing R] [Module.Finite R S]
 
 namespace IsLocalRing
 

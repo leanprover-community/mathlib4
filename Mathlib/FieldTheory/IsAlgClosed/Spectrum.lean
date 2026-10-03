@@ -48,7 +48,7 @@ universe u v
 section ScalarRing
 
 variable {R : Type u} {A : Type v}
-variable [CommRing R] [Ring A] [Algebra R A]
+variable [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
 local notation "↑ₐ" => algebraMap R A

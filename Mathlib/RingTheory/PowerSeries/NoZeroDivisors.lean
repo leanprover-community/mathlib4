@@ -45,7 +45,7 @@ section IsDomain
 instance [Ring R] [IsDomain R] : IsDomain R⟦X⟧ :=
   NoZeroDivisors.to_isDomain _
 
-variable [CommRing R] [IsDomain R]
+variable [Ring R] [IsMulCommutative R] [IsDomain R]
 
 /-- The ideal spanned by the variable in the power series ring
 over an integral domain is a prime ideal. -/

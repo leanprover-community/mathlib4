@@ -39,8 +39,8 @@ section StrictOrderedCommSemiring
 are equal (in the typical case over a field, this means one of them is a nonnegative multiple of
 the other). -/
 @[nolint unusedArguments]
-def SameRay (R : Type*) [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
-    {M : Type*} [AddCommMonoid M] [Module R M] (v₁ v₂ : M) : Prop :=
+def SameRay (R : Type*) [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R]
+    {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] (v₁ v₂ : M) : Prop :=
   v₁ = 0 ∨ v₂ = 0 ∨ ∃ r₁ r₂ : R, 0 < r₁ ∧ 0 < r₂ ∧ r₁ • v₁ = r₂ • v₂
 
 set_option linter.unusedVariables false in
@@ -68,9 +68,9 @@ theorem RayVector.ext {R M : Type*} [Zero M] {x y : RayVector R M} (h : (x : M) 
 instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
   ⟨Classical.indefiniteDescription _ <| exists_ne (0 : M)⟩
 
-variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 namespace SameRay
 
@@ -129,7 +129,7 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   refine Or.inr (Or.inr ⟨r₃ * r₁, r₂ * r₄, mul_pos hr₃ hr₁, mul_pos hr₂ hr₄, ?_⟩)
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
 
-variable {S : Type*} [CommSemiring S] [PartialOrder S]
+variable {S : Type*} [Semiring S] [IsMulCommutative S] [PartialOrder S]
   [Algebra S R] [Module S M] [SMulPosMono S R]
   [IsScalarTower S R M] {a : S}
 
@@ -353,8 +353,8 @@ end StrictOrderedCommSemiring
 
 section StrictOrderedCommRing
 
-variable {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
-variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] {x y : M}
+variable {R : Type*} [Ring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R]
+variable {M N : Type*} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N] {x y : M}
 
 /-- `SameRay.neg` as an `iff`. -/
 @[simp]
@@ -448,8 +448,8 @@ end StrictOrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- `SameRay` follows from membership of `MulAction.orbit` for the `Units.posSubgroup`. -/
 theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit (Units.posSubgroup R) v₂) :
@@ -588,7 +588,7 @@ end LinearOrderedCommRing
 namespace SameRay
 
 variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] {x y v₁ v₂ : M}
 
 theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ r : R, 0 < r ∧ r • x = y :=
@@ -638,7 +638,7 @@ end SameRay
 section LinearOrderedField
 
 variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :
     (∃ r : R, 0 < r ∧ r • x = y) ↔ SameRay R x y := by

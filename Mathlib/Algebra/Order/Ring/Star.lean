@@ -35,7 +35,7 @@ example {R : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
     IsSelfAdjoint.of_nonneg hy]
 
 /-- A commutative star-ordered semiring is an ordered semiring. -/
-instance toIsOrderedRing (R : Type*) [CommSemiring R] [PartialOrder R]
+instance toIsOrderedRing (R : Type*) [Semiring R] [IsMulCommutative R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : IsOrderedRing R where
   mul_le_mul_of_nonneg_left _a ha _b _c hbc := smul_le_smul_of_nonneg_left hbc ha
   mul_le_mul_of_nonneg_right _a ha _b _c hbc := smul_le_smul_of_nonneg_right hbc ha

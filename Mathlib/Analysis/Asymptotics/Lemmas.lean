@@ -31,8 +31,8 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
   {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
-variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [SeminormedRing R]
+variable [SeminormedAddGroup E'] [IsAddCommutative E'] [SeminormedAddGroup F'] [IsAddCommutative F'] [SeminormedAddGroup G'] [IsAddCommutative G']
+  [NormedAddGroup E''] [IsAddCommutative E''] [NormedAddGroup F''] [IsAddCommutative F''] [SeminormedRing R]
   [SeminormedAddGroup E''']
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
@@ -194,24 +194,24 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
 lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
   isLittleO_id_const one_ne_zero
 
-theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedAddCommGroup E] [One F]
+theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [One F]
     [NormOneClass F] [TopologicalSpace α] {f : α → E} {x : α} :
     (ContinuousAt f x) ↔ (f · - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : F)) := by
   simp [ContinuousAt, ← tendsto_sub_nhds_zero_iff]
 
-theorem _root_.ContinuousAt.isLittleO {α : Type*} {E : Type*} [NormedAddCommGroup E] [One F]
+theorem _root_.ContinuousAt.isLittleO {α : Type*} {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [One F]
     [NormOneClass F] [TopologicalSpace α] {f : α → E} {x : α} (hcont : ContinuousAt f x) :
     (f · - f x) =o[𝓝 x] (fun _ ↦ (1 : F)) :=
   continuousAt_iff_isLittleO.mp hcont
 
-theorem _root_.ContinuousAt.isBigO {α : Type*} {E : Type*} [NormedAddCommGroup E]
+theorem _root_.ContinuousAt.isBigO {α : Type*} {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
     [One F] [NormOneClass F] [TopologicalSpace α] {f : α → E} {x : α}
     (hcont : ContinuousAt f x) :
     f =O[𝓝 x] (fun _ ↦ (1 : F)) :=
   hcont.isLittleO.isBigO.congr_of_sub.mpr (isBigO_const_one ..)
 
-theorem _root_.ContinuousAt.isTheta {α F : Type*} {E : Type*} [NormedAddCommGroup E]
-    [NormedAddCommGroup F] [One F] [NormOneClass F] [TopologicalSpace α]
+theorem _root_.ContinuousAt.isTheta {α F : Type*} {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
+    [NormedAddGroup F] [IsAddCommutative F] [One F] [NormOneClass F] [TopologicalSpace α]
     {f : α → E} {x : α} (hcont : ContinuousAt f x) (hne : f x ≠ 0) :
     f =Θ[𝓝 x] (fun _ ↦ (1 : F)) := by
   refine ⟨hcont.isBigO, ?_⟩
@@ -341,13 +341,13 @@ theorem IsBigO.listProd {L : List ι} {f : ι → α → R} {g : ι → α → �
     simp only [List.map_cons, List.prod_cons, List.forall_mem_cons] at hf ⊢
     exact hf.1.mul (ihL hf.2)
 
-theorem IsBigO.multisetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsBigO.multisetProd {R 𝕜 : Type*} [SeminormedRing R] [IsMulCommutative R] [NormedField 𝕜]
     {s : Multiset ι} {f : ι → α → R} {g : ι → α → 𝕜} (hf : ∀ i ∈ s, f i =O[l] g i) :
     (fun x ↦ (s.map (f · x)).prod) =O[l] (fun x ↦ (s.map (g · x)).prod) := by
   obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
   exact mod_cast IsBigO.listProd hf
 
-theorem IsBigO.finsetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsBigO.finsetProd {R 𝕜 : Type*} [SeminormedRing R] [IsMulCommutative R] [NormedField 𝕜]
     {s : Finset ι} {f : ι → α → R} {g : ι → α → 𝕜}
     (hf : ∀ i ∈ s, f i =O[l] g i) : (∏ i ∈ s, f i ·) =O[l] (∏ i ∈ s, g i ·) :=
   .multisetProd hf
@@ -364,14 +364,14 @@ theorem IsLittleO.listProd {L : List ι} {f : ι → α → R} {g : ι → α �
     | inl hi => exact hi.mul_isBigO <| .listProd h₁.2
     | inr hL => exact h₁.1.mul_isLittleO <| ihL h₁.2 hL
 
-theorem IsLittleO.multisetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsLittleO.multisetProd {R 𝕜 : Type*} [SeminormedRing R] [IsMulCommutative R] [NormedField 𝕜]
     {s : Multiset ι} {f : ι → α → R} {g : ι → α → 𝕜} (h₁ : ∀ i ∈ s, f i =O[l] g i)
     (h₂ : ∃ i ∈ s, f i =o[l] g i) :
     (fun x ↦ (s.map (f · x)).prod) =o[l] (fun x ↦ (s.map (g · x)).prod) := by
   obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
   exact mod_cast IsLittleO.listProd h₁ h₂
 
-theorem IsLittleO.finsetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsLittleO.finsetProd {R 𝕜 : Type*} [SeminormedRing R] [IsMulCommutative R] [NormedField 𝕜]
     {s : Finset ι} {f : ι → α → R} {g : ι → α → 𝕜} (h₁ : ∀ i ∈ s, f i =O[l] g i)
     (h₂ : ∃ i ∈ s, f i =o[l] g i) : (∏ i ∈ s, f i ·) =o[l] (∏ i ∈ s, g i ·) :=
   .multisetProd h₁ h₂
@@ -685,20 +685,20 @@ theorem IsBigO.nat_of_atTop {f : ℕ → E''} {g : ℕ → F''} (hfg : f =O[atTo
   · simp [hf, hC_pos]
   exact hC fun a ↦ hf (h a)
 
-theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddCommGroup (E' i)]
+theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddGroup (E' i)] [∀ i, IsAddCommutative (E' i)]
     {f : α → ∀ i, E' i} {C : ℝ} (hC : 0 ≤ C) :
     IsBigOWith C l f g' ↔ ∀ i, IsBigOWith C l (fun x => f x i) g' := by
   have this (x) : 0 ≤ C * ‖g' x‖ := by positivity
   simp only [isBigOWith_iff, pi_norm_le_iff_of_nonneg (this _), eventually_all]
 
 @[simp]
-theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddCommGroup (E' i)]
+theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddGroup (E' i)] [∀ i, IsAddCommutative (E' i)]
     {f : α → ∀ i, E' i} : f =O[l] g' ↔ ∀ i, (fun x => f x i) =O[l] g' := by
   simp only [isBigO_iff_eventually_isBigOWith, ← eventually_all]
   exact eventually_congr (eventually_atTop.2 ⟨0, fun c => isBigOWith_pi⟩)
 
 @[simp]
-theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddCommGroup (E' i)]
+theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddGroup (E' i)] [∀ i, IsAddCommutative (E' i)]
     {f : α → ∀ i, E' i} : f =o[l] g' ↔ ∀ i, (fun x => f x i) =o[l] g' := by
   simp +contextual only [IsLittleO_def, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
@@ -791,17 +791,17 @@ end Asymptotics
 
 open Asymptotics
 
-theorem summable_of_isBigO {ι E} [SeminormedAddCommGroup E] [CompleteSpace E]
+theorem summable_of_isBigO {ι E} [SeminormedAddGroup E] [IsAddCommutative E] [CompleteSpace E]
     {f : ι → E} {g : ι → ℝ} (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
   let ⟨_, hC⟩ := h.isBigOWith
   .of_norm_bounded_eventually (hg.abs.mul_left _) hC.bound
 
-theorem summable_of_isBigO_nat {E} [SeminormedAddCommGroup E] [CompleteSpace E]
+theorem summable_of_isBigO_nat {E} [SeminormedAddGroup E] [IsAddCommutative E] [CompleteSpace E]
     {f : ℕ → E} {g : ℕ → ℝ} (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO hg <| Nat.cofinite_eq_atTop.symm ▸ h
 
 lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
-    [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] {f : E → F} {g : ι → E}
+    [SeminormedAddGroup E] [IsAddCommutative E] [SeminormedAddGroup F] [IsAddCommutative F] {f : E → F} {g : ι → E}
     (hf : f =O[𝓝 0] id) (hg : Summable (‖g ·‖)) : Summable (‖f <| g ·‖) :=
   summable_of_isBigO hg <| hf.norm_norm.comp_tendsto <|
     tendsto_zero_iff_norm_tendsto_zero.2 hg.tendsto_cofinite_zero
@@ -918,7 +918,7 @@ end ContinuousOn
 
 /-- The (scalar) product of a sequence that tends to zero with a bounded one also tends to zero. -/
 lemma NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 E : Type*}
-    [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+    [NormedDivisionRing 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
     {l : Filter ι} {ε : ι → 𝕜} {f : ι → E} (hε : Tendsto ε l (𝓝 0))
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
     Tendsto (ε • f) l (𝓝 0) := by

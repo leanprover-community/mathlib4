@@ -18,7 +18,7 @@ import Mathlib.RingTheory.Finiteness.Subalgebra
 open Function
 
 variable {R K M E : Type*} {n : ℕ}
-  [CommRing R] [Field K] [AddCommGroup M] [Module R M] [AddCommGroup E] [Module K E]
+  [Ring R] [IsMulCommutative R] [Field K] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup E] [IsAddCommutative E] [Module K E]
 
 namespace exteriorPower
 

@@ -105,7 +105,7 @@ variable {σ : Type*} {m : MonomialOrder σ}
 
 section Semiring
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 variable (m) in
 /-- the degree of a multivariate polynomial with respect to a monomial ordering, where the
@@ -1138,7 +1138,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 variable (m) in
 /-- The S-polynomial of two polynomials.
@@ -1428,7 +1428,7 @@ end Field
 
 section Binomial
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 open Finsupp MvPolynomial
 

@@ -27,7 +27,7 @@ public section
 
 namespace MvPolynomial
 
-variable {R : Type*} [CommRing R] [IsDomain R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
 
 private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     (s : Fin n → Set R) (hs : ∀ i, (s i).Infinite)

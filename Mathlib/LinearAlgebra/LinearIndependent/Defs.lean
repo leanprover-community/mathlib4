@@ -91,7 +91,7 @@ section Semiring
 
 
 variable {v : ι → M}
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M']
 variable [Module R M] [Module R M']
 variable (R) (v)
 /-- `LinearIndependent R v` states the family of vectors `v` is linearly independent over `R`. -/
@@ -547,7 +547,7 @@ universe v w
 A linearly independent family is maximal if there is no strictly larger linearly independent family.
 -/
 @[nolint unusedArguments]
-def LinearIndependent.Maximal {ι : Type w} {R : Type u} [Semiring R] {M : Type v} [AddCommMonoid M]
+def LinearIndependent.Maximal {ι : Type w} {R : Type u} [Semiring R] {M : Type v} [AddMonoid M] [IsAddCommutative M]
     [Module R M] {v : ι → M} (_i : LinearIndependent R v) : Prop :=
   ∀ (s : Set M) (_i' : LinearIndependent R ((↑) : s → M)) (_h : range v ≤ s), range v = s
 
@@ -555,7 +555,7 @@ def LinearIndependent.Maximal {ι : Type w} {R : Type u} [Semiring R] {M : Type 
 quantifying over types (in the same universe as `M`) into which the indexing family injects.
 -/
 theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [Nontrivial R]
-    {M : Type v} [AddCommMonoid M] [Module R M] {v : ι → M} (i : LinearIndependent R v) :
+    {M : Type v} [AddMonoid M] [IsAddCommutative M] [Module R M] {v : ι → M} (i : LinearIndependent R v) :
     i.Maximal ↔
       ∀ (κ : Type v) (w : κ → M) (_i' : LinearIndependent R w) (j : ι → κ) (_h : w ∘ j = v),
         Surjective j := by
@@ -702,7 +702,7 @@ end Semiring
 
 section Module
 
-variable [Ring R] [AddCommGroup M] [AddCommGroup M']
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [AddGroup M'] [IsAddCommutative M']
 variable [Module R M] [Module R M']
 variable {v : ι → M} {i : ι}
 
@@ -905,7 +905,7 @@ These can be considered generalizations of properties of linear independence in 
 
 section Module
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 variable {v : ι → V} {s : Set ι}
 
 open Submodule

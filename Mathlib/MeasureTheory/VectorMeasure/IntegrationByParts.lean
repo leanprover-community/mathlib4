@@ -47,7 +47,7 @@ namespace BoundedVariationOn
 
 variable {α E F G M : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
   [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedAddGroup G] [IsAddCommutative G]
   [PseudoEMetricSpace M]
   {μ : Measure α} {f : α → E}
 

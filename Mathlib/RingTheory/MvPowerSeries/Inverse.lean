@@ -144,7 +144,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- Multivariate formal power series over a local ring form a local ring. -/
 instance [IsLocalRing R] : IsLocalRing (MvPowerSeries σ R) :=
@@ -160,7 +160,7 @@ end CommRing
 
 section IsLocalRing
 
-variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
+variable {S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) [IsLocalHom f]
 
 -- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!

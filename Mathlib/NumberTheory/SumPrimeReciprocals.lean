@@ -32,7 +32,7 @@ open scoped Topology
 
 section PrimeSums
 
-variable {M : Type*} [CommMonoid M] [TopologicalSpace M] (f : ℕ → M)
+variable {M : Type*} [Monoid M] [IsMulCommutative M] [TopologicalSpace M] (f : ℕ → M)
 
 omit [TopologicalSpace M] in
 @[to_additive]

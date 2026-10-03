@@ -22,7 +22,7 @@ public section
 
 section CancelCommMonoidWithZero
 
-variable {R : Type*} [CommMonoidWithZero R] [IsCancelMulZero R]
+variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] [IsCancelMulZero R]
 
 open Finset
 
@@ -63,7 +63,7 @@ end CancelCommMonoidWithZero
 
 section CommRing
 
-variable {α : Type*} [CommRing α]
+variable {α : Type*} [Ring α] [IsMulCommutative α]
 
 theorem Prime.neg {p : α} (hp : Prime p) : Prime (-p) := by
   obtain ⟨h1, h2, h3⟩ := hp

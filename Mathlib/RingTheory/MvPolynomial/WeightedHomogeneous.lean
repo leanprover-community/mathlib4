@@ -48,7 +48,7 @@ noncomputable section
 
 open Set Function Finset Finsupp AddMonoidAlgebra
 
-variable {R M : Type*} [CommSemiring R]
+variable {R M : Type*} [Semiring R] [IsMulCommutative R]
 
 namespace MvPolynomial
 
@@ -56,7 +56,7 @@ variable {σ : Type*}
 
 section AddCommMonoid
 
-variable [AddCommMonoid M]
+variable [AddMonoid M] [IsAddCommutative M]
 
 /-! ### `weight` -/
 
@@ -252,7 +252,7 @@ theorem add {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeighte
 section CommRing
 
 -- In this section we shadow the semiring `R` with a ring `R`.
-variable {R : Type*} [CommRing R] {w : σ → M} {φ ψ : MvPolynomial σ R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {w : σ → M} {φ ψ : MvPolynomial σ R}
 
 /-- The negation of a weighted homogeneous polynomial of degree `n` is weighted homogeneous
   of weighted degree `n`. -/
@@ -558,7 +558,7 @@ end AddCommMonoid
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid M] [PartialOrder M]
+variable [AddMonoid M] [IsAddCommutative M] [PartialOrder M]
   {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- If `M` is canonically ordered, then the `weightedHomogeneousComponent` of weighted degree `0`
@@ -609,7 +609,7 @@ end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid M] [LinearOrder M] [OrderBot M] [CanonicallyOrderedAdd M]
+variable [AddMonoid M] [IsAddCommutative M] [LinearOrder M] [OrderBot M] [CanonicallyOrderedAdd M]
   {w : σ → M}
 
 /-- A multivariate polynomial is weighted homogeneous of weighted degree zero if and only if
@@ -639,7 +639,7 @@ section GradedAlgebra
 
 /- Here, given a weight `w : σ → M`, where `M` is an additive and commutative monoid, we endow the
   ring of multivariate polynomials `MvPolynomial σ R` with the structure of a graded algebra -/
-variable (w : σ → M) [AddCommMonoid M]
+variable (w : σ → M) [AddMonoid M] [IsAddCommutative M]
 
 theorem weightedHomogeneousComponent_eq_zero_of_notMem [DecidableEq M]
     (φ : MvPolynomial σ R) (i : M) (hi : i ∉ Finset.image (weight w) φ.support) :

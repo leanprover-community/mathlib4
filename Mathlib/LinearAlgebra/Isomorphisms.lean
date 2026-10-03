@@ -22,7 +22,7 @@ public import Mathlib.LinearAlgebra.Quotient.Card
 universe u v
 
 variable {R M M₂ M₃ : Type*}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R M₂] [Module R M₃]
 variable (f : M →ₗ[R] M₂)
 

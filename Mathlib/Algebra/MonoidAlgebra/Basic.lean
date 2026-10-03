@@ -72,7 +72,7 @@ end NonUnitalNonAssocAlgebra
 /-! #### Algebra structure -/
 
 section Algebra
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Monoid M] [Monoid N]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Monoid M] [Monoid N]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The instance `Algebra R A[M]` whenever we have `Algebra R A`.
@@ -173,7 +173,7 @@ is a non-unital algebra homomorphism between their magma algebras. -/
 /-- If `f : M → N` is a homomorphism between two additive magmas,
 then `AddMonoidAlgebra.mapDomain f` is a non-unital algebra homomorphism
 between their additive magma algebras. -/]
-def mapDomainNonUnitalAlgHom [CommSemiring R] [Semiring A] [Algebra R A]
+def mapDomainNonUnitalAlgHom [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     [Mul M] [Mul N] (f : M →ₙ* N) : A[M] →ₙₐ[R] A[N] where
   __ := mapDomainNonUnitalRingHom A f
   map_mul' := mapDomain_mul f
@@ -181,13 +181,13 @@ def mapDomainNonUnitalAlgHom [CommSemiring R] [Semiring A] [Algebra R A]
 
 variable (A) in
 @[to_additive]
-theorem mapDomain_algebraMap {F : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+theorem mapDomain_algebraMap {F : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     [Monoid M] [Monoid N] [FunLike F M N] [MonoidHomClass F M N] (f : F) (r : R) :
     mapDomain f (algebraMap R A[M] r) = algebraMap R A[N] r := by
   simp only [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
 
 section lift
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
   [Monoid M] [Monoid N] [Monoid O]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
@@ -264,7 +264,7 @@ theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
     rw [lift_unique' F]
     simp [lift_apply]
 
-theorem lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A]
+theorem lift_mapRingHom_algebraMap [Semiring S] [IsMulCommutative S] [Algebra S A]
     [Algebra R S] [IsScalarTower R S A]
     (f : M →* A) (x : R[M]) :
     lift _ _ _ f (mapRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
@@ -371,7 +371,7 @@ lemma commAlgEquiv_single_one_single (m : M) :
 end lift
 
 section mapRange
-variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B] [Semiring C]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B] [Semiring C]
   [Algebra R A] [Algebra R B] [Algebra R C] [Monoid M] [Monoid N]
 
 @[to_additive (attr := simp)]
@@ -462,7 +462,7 @@ section
 
 variable (R) in
 /-- When `V` is a `R[M]`-module, multiplication by a group element `g` is a `R`-linear map. -/
-def GroupSMul.linearMap [Monoid M] [CommSemiring R] (V : Type*) [AddCommMonoid V] [Module R V]
+def GroupSMul.linearMap [Monoid M] [Semiring R] [IsMulCommutative R] (V : Type*) [AddMonoid V] [IsAddCommutative V] [Module R V]
     [Module R[M] V] [IsScalarTower R R[M] V] (g : M) : V →ₗ[R] V where
   toFun v := single g (1 : R) • v
   map_add' x y := smul_add (single g (1 : R)) x y
@@ -470,13 +470,13 @@ def GroupSMul.linearMap [Monoid M] [CommSemiring R] (V : Type*) [AddCommMonoid V
 
 variable (R) in
 @[simp]
-theorem GroupSMul.linearMap_apply [Monoid M] [CommSemiring R] (V : Type*) [AddCommMonoid V]
+theorem GroupSMul.linearMap_apply [Monoid M] [Semiring R] [IsMulCommutative R] (V : Type*) [AddMonoid V] [IsAddCommutative V]
     [Module R V] [Module R[M] V] [IsScalarTower R R[M] V] (g : M) (v : V) :
     (GroupSMul.linearMap R V g) v = single g (1 : R) • v :=
   rfl
 
-variable [Monoid M] [CommSemiring R] {V W : Type*} [AddCommMonoid V] [Module R V]
-  [Module R[M] V] [IsScalarTower R R[M] V] [AddCommMonoid W]
+variable [Monoid M] [Semiring R] [IsMulCommutative R] {V W : Type*} [AddMonoid V] [IsAddCommutative V] [Module R V]
+  [Module R[M] V] [IsScalarTower R R[M] V] [AddMonoid W] [IsAddCommutative W]
   [Module R W] [Module R[M] W] [IsScalarTower R R[M] W]
   (f : V →ₗ[R] W)
 
@@ -502,7 +502,7 @@ theorem equivariantOfLinearOfComm_apply (v : V) : (equivariantOfLinearOfComm f h
 
 end
 
-variable [CommMonoid M] [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Monoid M] [IsMulCommutative M] [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 /-- If `S` is an `R`-algebra, then `S[M]` is a `R[M]` algebra.
 
@@ -525,7 +525,7 @@ open scoped AlgebraMonoidAlgebra
 lemma algebraMap_def : algebraMap R[M] S[M] = mapRingHom M (algebraMap R S) := rfl
 
 @[to_additive (dont_translate := R)]
-lemma isScalarTower_monoidAlgebra [CommSemiring T] [Algebra R T] [Algebra S T]
+lemma isScalarTower_monoidAlgebra [Semiring T] [IsMulCommutative T] [Algebra R T] [Algebra S T]
     [IsScalarTower R S T] : IsScalarTower R S[M] T[M] :=
   .of_algebraMap_eq' (mapAlgHom _ (IsScalarTower.toAlgHom R S T)).comp_algebraMap.symm
 
@@ -573,7 +573,7 @@ end NonUnitalNonAssocAlgebra
 
 section lift
 
-variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[R] B) (g : Multiplicative M →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
@@ -640,7 +640,7 @@ theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
     rw [lift_unique' F]
     simp [lift_apply]
 
-lemma lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A] [Algebra R S] [IsScalarTower R S A]
+lemma lift_mapRingHom_algebraMap [Semiring S] [IsMulCommutative S] [Algebra S A] [Algebra R S] [IsScalarTower R S A]
     (f : Multiplicative M →* A) (x : R[M]) :
     lift _ _ _ f (mapRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
   induction x using induction with
@@ -660,7 +660,7 @@ def domCongrAut : AddAut M →+ Additive (A[M] ≃ₐ[R] A[M]) where
 
 end lift
 
-variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [Semiring A] [Algebra R A]
 
 variable (R M) in
 /-- `AddMonoidAlgebra.mapAlgEquiv` as an `AddMonoidHom` from `R ≃ₐ[k] R`. -/
@@ -672,7 +672,7 @@ def mapAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
 
 end AddMonoidAlgebra
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 namespace AddMonoidAlgebra
 variable [AddMonoid M]

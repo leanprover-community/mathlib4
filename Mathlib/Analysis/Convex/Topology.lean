@@ -52,7 +52,7 @@ section TopologicalSpace
 
 variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [DenselyOrdered 𝕜]
   [TopologicalSpace 𝕜] [OrderTopology 𝕜]
-  [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+  [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
   {x y : E}
 
 theorem segment_subset_closure_openSegment : [x -[𝕜] y] ⊆ closure (openSegment 𝕜 x y) := by
@@ -65,7 +65,7 @@ section PseudoMetricSpace
 
 variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [DenselyOrdered 𝕜]
   [PseudoMetricSpace 𝕜] [OrderTopology 𝕜]
-  [ProperSpace 𝕜] [CompactIccSpace 𝕜] [AddCommGroup E] [TopologicalSpace E] [T2Space E]
+  [ProperSpace 𝕜] [CompactIccSpace 𝕜] [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [T2Space E]
   [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 @[simp]
@@ -79,7 +79,7 @@ end PseudoMetricSpace
 section ContinuousConstSMul
 
 variable [Field 𝕜] [PartialOrder 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
@@ -214,7 +214,7 @@ end ContinuousConstSMul
 section ContinuousConstSMul
 
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 open AffineMap
@@ -254,7 +254,7 @@ end ContinuousConstSMul
 section ContinuousSMul
 
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [TopologicalSpace 𝕜] [OrderTopology 𝕜] [ContinuousSMul 𝕜 E]
 
 theorem Convex.closure_interior_eq_closure_of_nonempty_interior {s : Set E} (hs : Convex 𝕜 s)
@@ -280,7 +280,7 @@ end ContinuousSMul
 section TopologicalSpace
 
 variable [Semiring 𝕜] [PartialOrder 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s ∧ IsClosed s) :
     Convex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
@@ -325,7 +325,7 @@ end TopologicalSpace
 section ContinuousConstSMul
 
 variable [Field 𝕜] [PartialOrder 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem closedConvexHull_eq_closure_convexHull {s : Set E} :
@@ -339,7 +339,7 @@ end ContinuousConstSMul
 section Compact
 variable (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
   [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [IsTopologicalRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 open Convexity in
@@ -359,7 +359,7 @@ theorem Set.Finite.isClosed_convexHull [T2Space E] {s : Set E} (hs : s.Finite) :
 end Compact
 
 section ContinuousSMul
-variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+variable [AddGroup E] [IsAddCommutative E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [ContinuousSMul ℝ E]
 
 open AffineMap
@@ -511,7 +511,7 @@ namespace Affine.Simplex
 variable {𝕜 V P : Type*}
   [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
   [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [IsTopologicalRing 𝕜]
-  [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+  [AddGroup V] [IsAddCommutative V] [TopologicalSpace V] [IsTopologicalAddGroup V]
   [Module 𝕜 V] [ContinuousSMul 𝕜 V] [AddTorsor V P]
   [TopologicalSpace P] [IsTopologicalAddTorsor P]
 

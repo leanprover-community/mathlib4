@@ -47,7 +47,7 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
       rw [← AddMonoidWithOne.natCast_succ]
     nsmul_eq_natCast_mul n a := nsmul_eq_mul n a }
 
-instance (priority := 100) CommSemiring.toGrindCommSemiring [s : CommSemiring α] :
+instance (priority := 100) CommSemiring.toGrindCommSemiring [s : Semiring α] [IsMulCommutative α] :
     Grind.CommSemiring α :=
   { Semiring.toGrindSemiring α with
     mul_comm := s.mul_comm }
@@ -69,7 +69,7 @@ instance (priority := 100) Ring.toGrindRing [s : Ring α] :
     intCast_neg := Int.cast_neg
     zsmul_natCast_eq_nsmul n a := natCast_zsmul a n }
 
-instance (priority := 100) CommRing.toGrindCommRing [s : CommRing α] :
+instance (priority := 100) CommRing.toGrindCommRing [s : Ring α] [IsMulCommutative α] :
     Grind.CommRing α :=
   { Ring.toGrindRing α with
     mul_comm := s.mul_comm }

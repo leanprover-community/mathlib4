@@ -30,7 +30,7 @@ open scoped Function -- required for scoped `on` notation
 
 section IsCoprime
 
-variable {R : Type u} {I : Type v} [CommSemiring R] {x y z : R} {s : I → R} {t : Finset I}
+variable {R : Type u} {I : Type v} [Semiring R] [IsMulCommutative R] {x y z : R} {s : I → R} {t : Finset I}
 
 section
 
@@ -52,7 +52,7 @@ theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Co
 
 alias ⟨IsCoprime.natCoprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
 
-theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
+theorem Nat.Coprime.cast {R : Type*} [Ring R] [IsMulCommutative R] {a b : ℕ} (h : Nat.Coprime a b) :
     IsCoprime (a : R) (b : R) :=
   mod_cast h.isCoprime.intCast
 
@@ -67,7 +67,7 @@ theorem Int.isCoprime_gcdB {x y : ℤ} (h : IsCoprime x y) : IsCoprime (x.gcdB y
   use y, x.gcdA y
   rwa [add_comm, mul_comm, ← Int.gcd_eq_gcd_ab, Nat.cast_eq_one, ← Int.isCoprime_iff_gcd_eq_one]
 
-theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
+theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [Ring A] [IsMulCommutative A] [Nontrivial A] {a b : ℕ}
     (h : Nat.Coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=
   IsCoprime.ne_zero_or_ne_zero (R := A) <| by
     simpa only [map_natCast] using IsCoprime.map (Nat.Coprime.isCoprime h) (Int.castRingHom A)
@@ -218,7 +218,7 @@ end IsCoprime
 
 section RelPrime
 
-variable {α I} [CommMonoid α] [DecompositionMonoid α] {x y z : α} {s : I → α} {t : Finset I}
+variable {α I} [Monoid α] [IsMulCommutative α] [DecompositionMonoid α] {x y z : α} {s : I → α} {t : Finset I}
 
 theorem IsRelPrime.prod_left : (∀ i ∈ t, IsRelPrime (s i) x) → IsRelPrime (∏ i ∈ t, s i) x := by
   classical

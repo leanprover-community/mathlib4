@@ -45,7 +45,7 @@ open Finset PowerSeries
 open scoped PowerSeries.WithPiTopology
 
 namespace Nat.Partition
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- Generating function associated with character $f(i, c)$ for partition functions, where $i$ is a
 part of the partition, and $c$ is the count of that part in the partition. The character function is

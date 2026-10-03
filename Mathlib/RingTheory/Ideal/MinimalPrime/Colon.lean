@@ -23,7 +23,7 @@ public section
 
 namespace Submodule
 
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {N : Submodule R M}
+variable {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] {N : Submodule R M}
   {I : Ideal R} {x : M}
 
 /-- A minimal prime over an ideal of the form `N.colon {x}` in a Noetherian ring is

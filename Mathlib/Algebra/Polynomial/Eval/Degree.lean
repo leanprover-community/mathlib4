@@ -71,7 +71,7 @@ theorem eval_eq_sum_range' {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : R) :
 /-- A reformulation of the expansion of (1 + y)^d:
 $$(d + 1) (1 + y)^d - (d + 1)y^d = \sum_{i = 0}^d {d + 1 \choose i} \cdot i \cdot y^{i - 1}.$$
 -/
-theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
+theorem eval_monomial_one_add_sub [Ring S] [IsMulCommutative S] (d : ℕ) (y : S) :
     eval (1 + y) (monomial d (d + 1 : S)) - eval y (monomial d (d + 1 : S)) =
       ∑ x_1 ∈ range (d + 1), ↑((d + 1).choose x_1) * (↑x_1 * y ^ (x_1 - 1)) := by
   have cast_succ : (d + 1 : S) = ((d.succ : ℕ) : S) := by simp only [Nat.cast_succ]
@@ -200,7 +200,7 @@ section Eval
 
 section
 
-variable [Semiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
+variable [Semiring R] {p q : R[X]} {x : R} [Semiring S] [IsMulCommutative S] (f : R →+* S)
 
 theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q) p := by
   rw [comp, p.as_sum_range]; simp [eval₂_finsetSum, eval₂_pow]
@@ -216,7 +216,7 @@ end
 
 section
 
-variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] {p q : R[X]} {x : R} [Semiring S] [IsMulCommutative S]
 
 @[simp]
 theorem iterate_comp_eval :
@@ -230,7 +230,7 @@ end Eval
 end CommSemiring
 
 section
-variable [Semiring R] [CommRing S] [IsDomain S] (φ : R →+* S) {f : R[X]}
+variable [Semiring R] [Ring S] [IsMulCommutative S] [IsDomain S] (φ : R →+* S) {f : R[X]}
 
 lemma isUnit_of_isUnit_leadingCoeff_of_isUnit_map (hf : IsUnit f.leadingCoeff)
     (H : IsUnit (map φ f)) : IsUnit f := by

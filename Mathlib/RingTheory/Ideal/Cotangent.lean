@@ -33,8 +33,8 @@ namespace Ideal
 -- Universes need to be explicit to avoid bad universe levels in `quotCotangent`
 universe u v w
 
-variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
-variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
+variable {R : Type u} {S : Type v} {S' : Type w} [Ring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra S R]
+variable [Semiring S'] [IsMulCommutative S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
@@ -166,7 +166,7 @@ theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
       I.toCotangent ⟨x, hx⟩ := by
   simp [I.cotangentEquivIdeal.symm_apply_eq, Subtype.ext_iff]
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra R B]
 
 /-- The lift of `f : A →ₐ[R] B` to `A ⧸ J ^ 2 →ₐ[R] B` with `J` being the kernel of `f`. -/
 abbrev _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B :=
@@ -225,8 +225,8 @@ namespace Cotangent
 
 section Lift
 
-variable {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S}
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] {I : Ideal S}
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- Lift a linear map `f : I →ₗ[R] M` that vanishes on products to a linear map on the
 cotangent space `I ⧸ I ^ 2`. -/
@@ -291,7 +291,7 @@ end Ideal.Cotangent
 
 namespace IsLocalRing
 
-variable (R : Type*) [CommRing R] [IsLocalRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsLocalRing R]
 
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
 abbrev CotangentSpace : Type _ := (maximalIdeal R).Cotangent
@@ -396,7 +396,7 @@ theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
 
 end IsLocalRing
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
 
 lemma Ideal.mapCotangent_surjective_of_comap_eq (surj : Function.Surjective (algebraMap A B))
     {I : Ideal B} {J : Ideal A} (eq : I.comap (algebraMap A B) = RingHom.ker (algebraMap A B) ⊔ J) :

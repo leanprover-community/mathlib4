@@ -17,7 +17,7 @@ public import Mathlib.Algebra.GroupWithZero.Divisibility
 assert_not_exists RelIso Ring
 
 /-- The submonoid of primal elements in a cancellative commutative monoid with zero. -/
-def Submonoid.isPrimal (M₀ : Type*) [CommMonoidWithZero M₀] [IsCancelMulZero M₀] :
+def Submonoid.isPrimal (M₀ : Type*) [MonoidWithZero M₀] [IsMulCommutative M₀] [IsCancelMulZero M₀] :
     Submonoid M₀ where
   carrier := {a | IsPrimal a}
   mul_mem' := .mul

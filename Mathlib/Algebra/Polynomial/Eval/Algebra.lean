@@ -34,7 +34,7 @@ section Eval
 
 section Algebra
 
-variable [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (p q : R[X])
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] (x : S) (p q : R[X])
 
 @[simp]
 theorem eval₂_mul' :

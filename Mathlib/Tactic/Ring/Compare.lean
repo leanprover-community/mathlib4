@@ -54,7 +54,7 @@ runtime is devoted to type class inference. -/
 section Typeclass
 
 /-- `CommSemiring` implies `AddMonoidWithOne`. -/
-abbrev addMonoidWithOneOfCommSemiring (α : Type*) [CommSemiring α] : AddMonoidWithOne α :=
+abbrev addMonoidWithOneOfCommSemiring (α : Type*) [Semiring α] [IsMulCommutative α] : AddMonoidWithOne α :=
   inferInstance
 
 /-- `PartialOrder` implies `LE`. -/
@@ -84,32 +84,32 @@ generality simply to require `OrderedCommSemiring`/`StrictOrderedCommSemiring`. 
 
 section Lemma
 
-theorem add_le_add_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+theorem add_le_add_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsOrderedRing α]
     {b c : α} (bc : b ≤ c) (a : α) :
     b + a ≤ c + a :=
   _root_.add_le_add_left bc a
 
-theorem add_le_of_nonpos_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+theorem add_le_of_nonpos_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsOrderedRing α]
     (a : α) {b : α} (h : b ≤ 0) :
     b + a ≤ a :=
   _root_.add_le_of_nonpos_left h
 
-theorem le_add_of_nonneg_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+theorem le_add_of_nonneg_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsOrderedRing α]
     (a : α) {b : α} (h : 0 ≤ b) :
     a ≤ b + a :=
   _root_.le_add_of_nonneg_left h
 
-theorem add_lt_add_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
+theorem add_lt_add_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsStrictOrderedRing α]
     {b c : α} (bc : b < c) (a : α) :
     b + a < c + a :=
   _root_.add_lt_add_left bc a
 
-theorem add_lt_of_neg_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
+theorem add_lt_of_neg_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsStrictOrderedRing α]
     (a : α) {b : α} (h : b < 0) :
     b + a < a :=
   _root_.add_lt_of_neg_left a h
 
-theorem lt_add_of_pos_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
+theorem lt_add_of_pos_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsStrictOrderedRing α]
     (a : α) {b : α} (h : 0 < b) :
     a < b + a :=
   _root_.lt_add_of_pos_left a h
@@ -159,7 +159,7 @@ def evalLE {v : Level} {α : Q(Type v)}
   | _, _ =>
     unless va.eq rcℕ ringCompare vb do return .error notComparable
     pure <| .ok (q(le_refl $a):)
---[CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
+--[Semiring α] [IsMulCommutative α] [PartialOrder α] [IsStrictOrderedRing α]
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
 (additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the
 semiring to which `va` (resp. `vb`) evaluates. -/

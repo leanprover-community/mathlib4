@@ -29,10 +29,10 @@ namespace Submodule
 
 /-! ### The orthogonal complement -/
 
-variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
-variable [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid M₁] [Module R₁ M₁]
-variable [AddCommMonoid M₂] [Module R₂ M₂]
+variable [Semiring R] [IsMulCommutative R] [Semiring R₁] [IsMulCommutative R₁] [Semiring R₂] [IsMulCommutative R₂]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R₁ M₁]
+variable [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 variable {I₁ : R₁ →+* R} {I₂ : R₂ →+* R}
 variable {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 variable {S T : Submodule R₁ M₁}
@@ -153,8 +153,8 @@ theorem orthogonalBilin_sup_orthogonalBilin_le_orthogonalBilin_inf (S T) :
 @[simp] theorem orthogonalBilin_id_eq_dualCoannihilator (S : Submodule R₁ (Dual R₁ M₁)) :
     orthogonalBilin .id S = S.dualCoannihilator := by ext; simp
 
-variable {R₃ : Type*} [CommSemiring R₃]
-variable {M₃ : Type*} [AddCommMonoid M₃] [Module R₃ M₃]
+variable {R₃ : Type*} [Semiring R₃] [IsMulCommutative R₃]
+variable {M₃ : Type*} [AddMonoid M₃] [IsAddCommutative M₃] [Module R₃ M₃]
 variable {J₃ : R₃ →+* R₁} {J : R₃ →+* R} [RingHomCompTriple J₃ I₁ J]
 
 variable [RingHomSurjective J₃] in
@@ -191,7 +191,7 @@ theorem dualCoannihilator_map_eq_orthogonalBilin {I₁ : R₁ →+* R₂} {B : M
 
 section Map
 
-variable {M₁' : Type*} [AddCommMonoid M₁'] [Module R₁ M₁']
+variable {M₁' : Type*} [AddMonoid M₁'] [IsAddCommutative M₁'] [Module R₁ M₁']
 
 theorem orthogonalBilin_eval_map (q : M₁ →ₗ[R₁] M₁') (S : Submodule R₁ M₁) :
     orthogonalBilin (Dual.eval R₁ M₁') (S.map q) =
@@ -211,8 +211,8 @@ namespace LinearMap
 section Orthogonal
 
 variable {K K₁ V V₁ V₂ : Type*}
-variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁]
-  [AddCommGroup V₂] [Module K V₂] {J : K →+* K} {J₁ : K₁ →+* K} {J₁' : K₁ →+* K}
+variable [Field K] [AddGroup V] [IsAddCommutative V] [Module K V] [Field K₁] [AddGroup V₁] [IsAddCommutative V₁] [Module K₁ V₁]
+  [AddGroup V₂] [IsAddCommutative V₂] [Module K V₂] {J : K →+* K} {J₁ : K₁ →+* K} {J₁' : K₁ →+* K}
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] V₂) (x : V₁)
@@ -245,7 +245,7 @@ end Orthogonal
 
 section CommRing
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁]
 
 /-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,

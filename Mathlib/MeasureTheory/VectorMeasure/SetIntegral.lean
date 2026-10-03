@@ -25,7 +25,7 @@ open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology Continuo
 open scoped ENNReal NNReal Finset
 
 variable {ι X E F G H : Type*} {mX : MeasurableSpace X}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [NormedAddCommGroup H]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedAddGroup G] [IsAddCommutative G] [NormedAddGroup H] [IsAddCommutative H]
   {μ : VectorMeasure X F} {f g : X → E} {s t : Set X}
 
 namespace MeasureTheory.VectorMeasure

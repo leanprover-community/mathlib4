@@ -18,7 +18,7 @@ public section
 
 open Module LinearMap
 
-variable {R M n : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid M] [Module R M]
+variable {R M n : Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [AddMonoid M] [IsAddCommutative M] [Module R M]
   [Fintype n] [DecidableEq n]
   {B : M →ₗ⋆[R] M →ₗ[R] R} (b : Basis n R M)
 
@@ -53,7 +53,7 @@ lemma apply_eq_star_dotProduct_toMatrix₂_mulVec (x y : M) :
     B x y = star (b.repr x) ⬝ᵥ (toMatrix₂ b b B).mulVec (b.repr y) :=
   apply_eq_dotProduct_toMatrix₂_mulVec b b B x y
 
-variable {R : Type*} [CommRing R] [StarRing R] [PartialOrder R] [Module R M]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [StarRing R] [PartialOrder R] [Module R M]
   {B : M →ₗ⋆[R] M →ₗ[R] R} (b : Basis n R M)
 
 lemma LinearMap.isPosSemidef_iff_posSemidef_toMatrix :

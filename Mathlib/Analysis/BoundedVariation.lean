@@ -36,16 +36,16 @@ public section
 open scoped NNReal Topology ENNReal
 open Set MeasureTheory Filter
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
+variable {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
 
 section
 
 open Finset
 
 variable {α : Type*} [LinearOrder α] {E F G : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
+  [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G]
   {s : Set α} {f : α → E} {g : α → F} {C D : ℝ≥0∞} {B : E →L[ℝ] F →L[ℝ] G}
 
 lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg : ∀ x ∈ s, ‖g x‖ₑ ≤ D)
@@ -153,7 +153,7 @@ namespace BoundedVariationOn
 variable {α E M : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
   [PseudoEMetricSpace M]
   [SecondCountableTopologyEither α M] [MeasurableSpace α] [BorelSpace α]
-  [NormedAddCommGroup E] [SecondCountableTopologyEither α E]
+  [NormedAddGroup E] [IsAddCommutative E] [SecondCountableTopologyEither α E]
 
 theorem stronglyMeasurable {f : α → M} (hf : BoundedVariationOn f univ) :
     StronglyMeasurable f :=

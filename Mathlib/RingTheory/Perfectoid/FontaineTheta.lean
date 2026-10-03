@@ -50,7 +50,7 @@ open Ideal Quotient PreTilt WittVector
 
 noncomputable section
 
-variable {R : Type u} [CommRing R] {p : ℕ} [Fact p.Prime]
+variable {R : Type u} [Ring R] [IsMulCommutative R] {p : ℕ} [Fact p.Prime]
 
 local notation "𝕎 " A:100 => WittVector p A
 local notation A "♭" => PreTilt A p

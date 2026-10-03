@@ -26,7 +26,7 @@ variable {R : Type u} {M : Type v}
 
 section Semiring
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 lemma finite_of_span_finite_eq_top_finsupp [Nontrivial M] {ι : Type*} {s : Set (ι →₀ M)}
     (hs : s.Finite) (hsspan : span R s = ⊤) : Finite ι :=
@@ -61,7 +61,7 @@ end Semiring
 
 section Ring
 
-variable [Semiring R] [AddCommMonoid M] [Nontrivial R] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Nontrivial R] [Module R M]
 
 -- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 /-- Over any ring `R`, if `b` is a basis for a module `M`,

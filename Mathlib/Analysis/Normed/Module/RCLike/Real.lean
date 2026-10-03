@@ -29,13 +29,13 @@ open scoped NNReal Topology
 
 /-- If `E` is a nontrivial topological module over `ℝ`, then `E` has no isolated points.
 This is a particular case of `Module.punctured_nhds_neBot`. -/
-instance Real.punctured_nhds_module_neBot {E : Type*} [AddCommGroup E] [TopologicalSpace E]
+instance Real.punctured_nhds_module_neBot {E : Type*} [AddGroup E] [IsAddCommutative E] [TopologicalSpace E]
     [ContinuousAdd E] [Nontrivial E] [Module ℝ E] [ContinuousSMul ℝ E] (x : E) : NeBot (𝓝[≠] x) :=
   Module.punctured_nhds_neBot ℝ E x
 
 section Seminormed
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 theorem inv_norm_smul_mem_unitClosedBall (x : E) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : E) 1 := by
@@ -136,7 +136,7 @@ end Seminormed
 
 section Normed
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [Nontrivial E]
 
 theorem interior_closedBall' (x : E) (r : ℝ) : interior (closedBall x r) = ball x r := by
   rcases eq_or_ne r 0 with (rfl | hr)

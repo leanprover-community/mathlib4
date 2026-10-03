@@ -24,9 +24,9 @@ public section
 
 section nonunital_pi
 
-variable {ι R S : Type*} {A : ι → Type*} [CommSemiring R] [Nontrivial R] [StarRing R]
+variable {ι R S : Type*} {A : ι → Type*} [Semiring R] [IsMulCommutative R] [Nontrivial R] [StarRing R]
   [MetricSpace R]
-  [IsTopologicalSemiring R] [ContinuousStar R] [CommRing S] [Algebra R S]
+  [IsTopologicalSemiring R] [ContinuousStar R] [Ring S] [IsMulCommutative S] [Algebra R S]
   [∀ i, NonUnitalRing (A i)] [∀ i, Module S (A i)] [∀ i, Module R (A i)]
   [∀ i, IsScalarTower R S (A i)] [∀ i, SMulCommClass R (A i) (A i)]
   [∀ i, IsScalarTower R (A i) (A i)]
@@ -52,7 +52,7 @@ end nonunital_pi
 
 section nonunital_prod
 
-variable {A B R S : Type*} [CommSemiring R] [CommRing S] [Nontrivial R] [StarRing R]
+variable {A B R S : Type*} [Semiring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Nontrivial R] [StarRing R]
   [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Algebra R S] [NonUnitalRing A]
   [NonUnitalRing B] [Module S A] [Module R A] [Module R B] [Module S B]
   [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
@@ -85,8 +85,8 @@ end nonunital_prod
 
 section unital_pi
 
-variable {ι R S : Type*} {A : ι → Type*} [CommSemiring R] [StarRing R] [MetricSpace R]
-  [IsTopologicalSemiring R] [ContinuousStar R] [CommRing S] [Algebra R S]
+variable {ι R S : Type*} {A : ι → Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [MetricSpace R]
+  [IsTopologicalSemiring R] [ContinuousStar R] [Ring S] [IsMulCommutative S] [Algebra R S]
   [∀ i, Ring (A i)] [∀ i, Algebra S (A i)] [∀ i, Algebra R (A i)] [∀ i, IsScalarTower R S (A i)]
   [hinst : IsScalarTower R S (∀ i, A i)]
   [∀ i, StarRing (A i)] [∀ i, TopologicalSpace (A i)] {p : (∀ i, A i) → Prop}
@@ -108,8 +108,8 @@ end unital_pi
 
 section unital_prod
 
-variable {A B R S : Type*} [CommSemiring R] [StarRing R] [MetricSpace R]
-  [IsTopologicalSemiring R] [ContinuousStar R] [CommRing S] [Algebra R S]
+variable {A B R S : Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [MetricSpace R]
+  [IsTopologicalSemiring R] [ContinuousStar R] [Ring S] [IsMulCommutative S] [Algebra R S]
   [Ring A] [Ring B] [Algebra S A] [Algebra S B] [Algebra R A] [Algebra R B]
   [IsScalarTower R S A] [IsScalarTower R S B]
   [StarRing A] [StarRing B] [TopologicalSpace A] [TopologicalSpace B] {pab : A × B → Prop}

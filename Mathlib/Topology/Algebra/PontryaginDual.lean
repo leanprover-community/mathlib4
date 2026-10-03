@@ -27,7 +27,7 @@ isomorphic to its double dual.
 open scoped Pointwise
 open Real
 
-variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
+variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [Group G] [IsMulCommutative G] [Group H]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalGroup G] [IsTopologicalGroup H]
 

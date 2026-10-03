@@ -137,7 +137,7 @@ end SMul
 
 section Module
 
-variable [AddCommGroup E] [Module 𝕜 E] {s : Set E} {x : E}
+variable [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {s : Set E} {x : E}
 
 theorem balancedCore_zero_mem (hs : (0 : E) ∈ s) : (0 : E) ∈ balancedCore 𝕜 s :=
   mem_balancedCore_iff.2 ⟨0, balanced_zero, zero_subset.2 hs, Set.zero_mem_zero⟩
@@ -180,7 +180,7 @@ end SeminormedRing
 
 section NormedField
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable [NormedDivisionRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {s t : Set E}
 
 @[deprecated "Use balancedCore_empty directly" (since := "2026-09-16")]
 theorem balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ := by
@@ -268,7 +268,7 @@ end balancedHull
 
 section Topology
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] {U : Set E}
+variable [NormedDivisionRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] {U : Set E}
 
 protected theorem IsOpen.balancedHull [ContinuousConstSMul 𝕜 E] {s : Set E} (hs : IsOpen s)
     (hzero : 0 ∈ s) : IsOpen (balancedHull 𝕜 s) := by

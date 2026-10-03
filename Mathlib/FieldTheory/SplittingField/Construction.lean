@@ -74,7 +74,7 @@ theorem factor_dvd_of_degree_ne_zero {f : K[X]} (hf : f.degree ≠ 0) : factor f
 theorem factor_dvd_of_natDegree_ne_zero {f : K[X]} (hf : f.natDegree ≠ 0) : factor f ∣ f :=
   factor_dvd_of_degree_ne_zero (mt natDegree_eq_of_degree_eq_some hf)
 
-lemma isCoprime_iff_aeval_ne_zero (f g : K[X]) : IsCoprime f g ↔ ∀ {A : Type v} [CommRing A]
+lemma isCoprime_iff_aeval_ne_zero (f g : K[X]) : IsCoprime f g ↔ ∀ {A : Type v} [Ring A] [IsMulCommutative A]
     [IsDomain A] [Algebra K A] (a : A), aeval a f ≠ 0 ∨ aeval a g ≠ 0 := by
   refine ⟨fun h => aeval_ne_zero_of_isCoprime h, fun h => isCoprime_of_dvd _ _ ?_ fun x hx _ => ?_⟩
   · replace h := @h K _ _ _ 0
@@ -224,7 +224,7 @@ deriving instance SMul S for SplittingField f
 
 instance : CommRing (SplittingField f) := inferInstanceAs <| CommRing (_ ⧸ _)
 
-variable {R : Type*} [CommSemiring R] [Algebra R K] in
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R K] in
 deriving instance Algebra R, IsScalarTower R K for SplittingField f
 
 instance : Algebra K f.SplittingField := inferInstance

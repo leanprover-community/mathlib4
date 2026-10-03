@@ -35,7 +35,7 @@ open scoped Uniformity
 namespace AbsoluteValue
 
 variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-variable {R : Type*} [CommRing R] (abv : AbsoluteValue R 𝕜)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (abv : AbsoluteValue R 𝕜)
 
 /-- The uniform structure coming from an absolute value. -/
 @[instance_reducible]

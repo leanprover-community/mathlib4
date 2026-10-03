@@ -38,7 +38,7 @@ open AlgebraicIndependent
 open Cardinal
 
 theorem IsTranscendenceBasis.lift_cardinalMk_eq_max_lift
-    {F : Type u} {E : Type v} [CommRing F] [Nontrivial F] [CommRing E] [IsDomain E] [Algebra F E]
+    {F : Type u} {E : Type v} [Ring F] [IsMulCommutative F] [Nontrivial F] [Ring E] [IsMulCommutative E] [IsDomain E] [Algebra F E]
     {ι : Type w} {x : ι → E} [Nonempty ι] (hx : IsTranscendenceBasis F x) :
     lift.{max u w} #E = lift.{max v w} #F ⊔ lift.{max u v} #ι ⊔ ℵ₀ := by
   let K := Algebra.adjoin F (Set.range x)

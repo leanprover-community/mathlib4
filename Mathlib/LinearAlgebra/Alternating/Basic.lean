@@ -48,14 +48,14 @@ open Module
 -- semiring / add_comm_monoid
 
 variable {R : Type*} [Semiring R]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N]
-variable {P : Type*} [AddCommMonoid P] [Module R P]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
+variable {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P]
 
 -- semiring / add_comm_group
 
-variable {M' : Type*} [AddCommGroup M'] [Module R M']
-variable {N' : Type*} [AddCommGroup N'] [Module R N']
+variable {M' : Type*} [AddGroup M'] [IsAddCommutative M'] [Module R M']
+variable {N' : Type*} [AddGroup N'] [IsAddCommutative N'] [Module R N']
 variable {ι ι' ι'' : Type*}
 
 section
@@ -247,13 +247,13 @@ theorem coe_prod (f : M [⋀^ι]→ₗ[R] N) (g : M [⋀^ι]→ₗ[R] P) :
 /-- Combine a family of alternating maps with the same domain and codomains `N i` into an
 alternating map taking values in the space of functions `Π i, N i`. -/
 @[simps!]
-def pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+def pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddMonoid (N i)] [∀ i, IsAddCommutative (N i)] [∀ i, Module R (N i)]
     (f : ∀ i, M [⋀^ι]→ₗ[R] N i) : M [⋀^ι]→ₗ[R] (∀ i, N i) :=
   { MultilinearMap.pi fun a => (f a).toMultilinearMap with
     map_eq_zero_of_eq' := fun _ _ _ h hne => funext fun a => (f a).map_eq_zero_of_eq _ h hne }
 
 @[simp]
-theorem coe_pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+theorem coe_pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddMonoid (N i)] [∀ i, IsAddCommutative (N i)] [∀ i, Module R (N i)]
     (f : ∀ i, M [⋀^ι]→ₗ[R] N i) :
     (pi f : MultilinearMap R (fun _ : ι => M) (∀ i, N i)) = MultilinearMap.pi fun a => f a :=
   rfl
@@ -261,13 +261,13 @@ theorem coe_pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [�
 /-- Given an alternating `R`-multilinear map `f` taking values in `R`, `f.smul_right z` is the map
 sending `m` to `f m • z`. -/
 @[simps!]
-def smulRight {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
+def smulRight {R M₁ M₂ ι : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂]
     [Module R M₁] [Module R M₂] (f : M₁ [⋀^ι]→ₗ[R] R) (z : M₂) : M₁ [⋀^ι]→ₗ[R] M₂ :=
   { f.toMultilinearMap.smulRight z with
     map_eq_zero_of_eq' := fun v i j h hne => by simp [f.map_eq_zero_of_eq v h hne] }
 
 @[simp]
-theorem coe_smulRight {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
+theorem coe_smulRight {R M₁ M₂ ι : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂]
     [Module R M₁] [Module R M₂] (f : M₁ [⋀^ι]→ₗ[R] R) (z : M₂) :
     (f.smulRight z : MultilinearMap R (fun _ : ι => M₁) M₂) = MultilinearMap.smulRight f z :=
   rfl
@@ -415,7 +415,7 @@ end AlternatingMap
 
 namespace LinearMap
 
-variable {S : Type*} {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
+variable {S : Type*} {N₂ : Type*} [AddMonoid N₂] [IsAddCommutative N₂] [Module R N₂]
 
 /-- Composing an alternating map with a linear map on the left gives again an alternating map. -/
 def compAlternatingMap (g : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) : M [⋀^ι]→ₗ[R] N₂ where
@@ -474,8 +474,8 @@ def compAlternatingMapₗ [Semiring S] [Module S N] [Module S N₂]
   map_smul' := g.compAlternatingMap_smul
 
 theorem _root_.AlternatingMap.smulRight_eq_comp
-    {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
-    [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (f : M₁ [⋀^ι]→ₗ[R] R) (z : M₂) :
+    {R M₁ M₂ ι : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M₁] [IsAddCommutative M₁]
+    [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₁] [Module R M₂] (f : M₁ [⋀^ι]→ₗ[R] R) (z : M₂) :
     f.smulRight z = (LinearMap.id.smulRight z).compAlternatingMap f :=
   rfl
 
@@ -498,8 +498,8 @@ end LinearMap
 
 namespace AlternatingMap
 
-variable {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
-variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃]
+variable {M₂ : Type*} [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
+variable {M₃ : Type*} [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃]
 
 /-- Composing an alternating map with the same linear map on each argument gives again an
 alternating map. -/
@@ -558,12 +558,12 @@ theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
 
 This is the alternating version of `LinearMap.ext_ring`. -/
 @[ext]
-theorem ext_ring {R} [CommSemiring R] [Module R N] [Finite ι] ⦃f g : R [⋀^ι]→ₗ[R] N⦄
+theorem ext_ring {R} [Semiring R] [IsMulCommutative R] [Module R N] [Finite ι] ⦃f g : R [⋀^ι]→ₗ[R] N⦄
     (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
   coe_multilinearMap_injective <| MultilinearMap.ext_ring h
 
 /-- The only `R`-alternating map from two or more copies of `R` is the zero map. -/
-instance uniqueOfCommRing {R} [CommSemiring R] [Module R N] [Finite ι] [Nontrivial ι] :
+instance uniqueOfCommRing {R} [Semiring R] [IsMulCommutative R] [Module R N] [Finite ι] [Nontrivial ι] :
     Unique (R [⋀^ι]→ₗ[R] N) where
   uniq f := let ⟨_, _, hij⟩ := exists_pair_ne ι; ext_ring <| f.map_eq_zero_of_eq _ rfl hij
 
@@ -629,8 +629,8 @@ theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : ι → M) :
     f (m + m') = ∑ s : Finset ι, f (s.piecewise m m') :=
   f.toMultilinearMap.map_add_univ m m'
 
-theorem map_smul_univ {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M]
-    [Module R M] {N : Type*} [AddCommMonoid N] [Module R N] [Fintype ι]
+theorem map_smul_univ {R : Type*} [Semiring R] [IsMulCommutative R] {M : Type*} [AddMonoid M] [IsAddCommutative M]
+    [Module R M] {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N] [Fintype ι]
     (f : M [⋀^ι]→ₗ[R] N) (c : ι → R) (m : ι → M) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ c m
@@ -781,8 +781,8 @@ theorem coe_domDomCongr (σ : ι ≃ ι') :
 end DomDomCongr
 
 /-- If the arguments are linearly dependent then the result is `0`. -/
-theorem map_linearDependent {K M N : Type*} [Ring K] [IsDomain K] [AddCommGroup M] [Module K M]
-    [AddCommGroup N] [Module K N] [IsTorsionFree K N] (f : M [⋀^ι]→ₗ[K] N)
+theorem map_linearDependent {K M N : Type*} [Ring K] [IsDomain K] [AddGroup M] [IsAddCommutative M] [Module K M]
+    [AddGroup N] [IsAddCommutative N] [Module K N] [IsTorsionFree K N] (f : M [⋀^ι]→ₗ[K] N)
     (v : ι → M) (h : ¬LinearIndependent K v) : f v = 0 := by
   obtain ⟨s, g, h, i, hi, hz⟩ := not_linearIndependent_iff.mp h
   let := Classical.decEq ι
@@ -882,7 +882,7 @@ end AlternatingMap
 
 namespace LinearMap
 
-variable {N'₂ : Type*} [AddCommGroup N'₂] [Module R N'₂] [DecidableEq ι] [Fintype ι]
+variable {N'₂ : Type*} [AddGroup N'₂] [IsAddCommutative N'₂] [Module R N'₂] [DecidableEq ι] [Fintype ι]
 
 /-- Composition with a linear map before and after alternatization are equivalent. -/
 theorem compMultilinearMap_alternatization (g : N' →ₗ[R] N'₂)
@@ -899,7 +899,7 @@ section Basis
 open AlternatingMap
 
 variable {ι₁ : Type*} [Finite ι]
-variable {R' : Type*} {N₁ N₂ : Type*} [CommSemiring R'] [AddCommMonoid N₁] [AddCommMonoid N₂]
+variable {R' : Type*} {N₁ N₂ : Type*} [Semiring R'] [IsMulCommutative R'] [AddMonoid N₁] [IsAddCommutative N₁] [AddMonoid N₂] [IsAddCommutative N₂]
 variable [Module R' N₁] [Module R' N₂]
 
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments
@@ -916,8 +916,8 @@ theorem Module.Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : B
 
 end Basis
 
-variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddCommMonoid M'']
-  [AddCommMonoid M₂''] [AddCommMonoid N''] [AddCommMonoid N₂''] [Module R' M''] [Module R' M₂'']
+variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [Semiring R'] [IsMulCommutative R'] [AddMonoid M''] [IsAddCommutative M'']
+  [AddMonoid M₂''] [IsAddCommutative M₂''] [AddMonoid N''] [IsAddCommutative N''] [AddMonoid N₂''] [IsAddCommutative N₂''] [Module R' M''] [Module R' M₂'']
   [Module R' N''] [Module R' N₂'']
 
 /-- An isomorphism of multilinear maps given an isomorphism between their codomains.

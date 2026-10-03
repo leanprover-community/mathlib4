@@ -62,7 +62,7 @@ equivalent conditions.
 
 public section
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
 /-!
 ### Mixed characteristic

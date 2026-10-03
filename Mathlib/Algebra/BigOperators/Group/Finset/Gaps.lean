@@ -31,7 +31,7 @@ public section
 
 open Fin Fin.NatCast
 
-variable {α β : Type*} [LinearOrder α] [CommGroup β]
+variable {α β : Type*} [LinearOrder α] [Group β] [IsMulCommutative β]
   (F : Finset (α × α)) {k : ℕ} (h : F.card = k) {a b : α}
   (g : α → β)
 

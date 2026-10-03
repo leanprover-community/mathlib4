@@ -46,7 +46,7 @@ open Submodule
 
 variable {R M N : Type*}
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
 
 variable {M₁ : Submodule R M} {N₁ : Submodule R N}
 

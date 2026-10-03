@@ -417,7 +417,7 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
+variable {ι : Type*} {γ : Type*} [AddMonoid γ] [IsAddCommutative γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
   [TopologicalSpace γ] [OrderTopology γ]
 
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
@@ -919,7 +919,7 @@ theorem upperSemicontinuousOn_iff_preimage_Ici [LinearOrder β] :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ v : Set α, IsClosed v ∧ s ∩ f ⁻¹' Set.Ici b = s ∩ v :=
   lowerSemicontinuousOn_iff_preimage_Iic (γ := βᵒᵈ)
 
-variable [PartialOrder β] [CommGroup β] [IsOrderedMonoid β]
+variable [PartialOrder β] [Group β] [IsMulCommutative β] [IsOrderedMonoid β]
 
 @[to_additive (attr := simp)]
 theorem lowerSemicontinuousWithinAt_inv_iff :
@@ -1037,7 +1037,7 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
+variable {ι : Type*} {γ : Type*} [AddMonoid γ] [IsAddCommutative γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
   [TopologicalSpace γ] [OrderTopology γ]
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an

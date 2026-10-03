@@ -21,21 +21,21 @@ public noncomputable section
 open CategoryTheory Coalgebra HopfAlgebra Limits
 
 universe v u
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 /-- The category of commutative `R`-Hopf algebras and their morphisms. -/
-structure CommHopfAlgCat (R : Type u) [CommRing R] where
+structure CommHopfAlgCat (R : Type u) [Ring R] [IsMulCommutative R] where
   /-- Turn an unbundled `R`-Hopf algebra into the corresponding object in the category of
   `R`-Hopf algebras. -/
   of (R) ::
   /-- The underlying type. -/
   protected X : Type v
-  [commRing : CommRing X]
+  [commRing : Ring X] [IsMulCommutative X]
   [hopfAlgebra : HopfAlgebra R X]
 
 namespace CommHopfAlgCat
-variable {A B C : CommHopfAlgCat.{v} R} {X Y Z : Type v} [CommRing X] [HopfAlgebra R X]
-  [CommRing Y] [HopfAlgebra R Y] [CommRing Z] [HopfAlgebra R Z]
+variable {A B C : CommHopfAlgCat.{v} R} {X Y Z : Type v} [Ring X] [IsMulCommutative X] [HopfAlgebra R X]
+  [Ring Y] [IsMulCommutative Y] [HopfAlgebra R Y] [Ring Z] [IsMulCommutative Z] [HopfAlgebra R Z]
 
 attribute [instance] commRing hopfAlgebra
 
@@ -46,7 +46,7 @@ instance : CoeSort (CommHopfAlgCat R) (Type v) := ⟨CommHopfAlgCat.X⟩
 attribute [coe] CommHopfAlgCat.X
 
 variable (R) in
-lemma coe_of (X : Type v) [CommRing X] [HopfAlgebra R X] : (of R X : Type v) = X := rfl
+lemma coe_of (X : Type v) [Ring X] [IsMulCommutative X] [HopfAlgebra R X] : (of R X : Type v) = X := rfl
 
 /-- The type of morphisms in `CommHopfAlgCat R`. -/
 @[ext]
@@ -167,7 +167,7 @@ end CommHopfAlgCat
 
 attribute [local ext] Quiver.Hom.unop_inj
 
-instance CommAlgCat.grpObjOpOf {A : Type u} [CommRing A] [HopfAlgebra R A] :
+instance CommAlgCat.grpObjOpOf {A : Type u} [Ring A] [IsMulCommutative A] [HopfAlgebra R A] :
     GrpObj (Opposite.op <| CommAlgCat.of R A) where
   inv := (CommAlgCat.ofHom <| antipodeAlgHom R A).op
   left_inv := by
@@ -192,7 +192,7 @@ instance CommAlgCat.grpObjOpOf {A : Type u} [CommRing A] [HopfAlgebra R A] :
 open Opposite MonObj
 
 @[simp]
-lemma CommAlgCat.inv_op_of_unop_hom {A : Type u} [CommRing A] [HopfAlgebra R A] :
+lemma CommAlgCat.inv_op_of_unop_hom {A : Type u} [Ring A] [IsMulCommutative A] [HopfAlgebra R A] :
     ι[op <| CommAlgCat.of R A].unop.hom = antipodeAlgHom R A := rfl
 
 instance (A : (CommAlgCat R)ᵒᵖ) [GrpObj A] : HopfAlgebra R A.unop :=

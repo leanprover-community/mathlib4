@@ -33,7 +33,7 @@ namespace Convexity
 variable {F R M N I : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
 section AddCommMonoid
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [SetLike F M]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N] [SetLike F M]
   [AddSubmonoidClass F M] [SMulMemClass F R M] {f g : M → N}
 
 /-- Any semimodule over an ordered semiring is a convex space.
@@ -136,7 +136,7 @@ instance (S : F) : IsModuleConvexSpace R S where sConvexComb_eq_sum w := by ext;
 instance : IsModuleConvexSpace R (M × N) where
   sConvexComb_eq_sum w := by ext <;> simp [Finsupp.sum, Prod.fst_sum, Prod.snd_sum]
 
-instance {ι : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+instance {ι : Type*} {M : ι → Type*} [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
     [∀ i, ConvexSpace R (M i)] [∀ i, IsModuleConvexSpace R (M i)] :
     IsModuleConvexSpace R (∀ i, M i) where
   sConvexComb_eq_sum w := by ext; simp [Finsupp.sum]
@@ -205,7 +205,7 @@ lemma StdSimplex.isAffineMap_weights : IsAffineMap R (weights (R := R) (X := I))
 end AddCommMonoid
 
 section AddCommGroup
-variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   [ConvexSpace R M] [IsModuleConvexSpace R M] [ConvexSpace R N] [IsModuleConvexSpace R N]
   {x y : M} {s t : Set M} {f g : M → N}
 

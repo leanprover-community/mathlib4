@@ -24,7 +24,7 @@ universe v u
 
 namespace ModuleCat
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 open CategoryTheory Limits
 

@@ -17,7 +17,7 @@ We prove that a domain finite and unramified over a Dedekind domain is a Dedekin
 
 public section
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
+variable (A B : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] [Module.Finite A B]
     [IsDedekindDomain A] [IsDomain B] [Algebra.FormallyUnramified A B]
 
 include A in

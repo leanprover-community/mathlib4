@@ -30,8 +30,8 @@ public section
 open Function Set
 open scoped Topology RealInnerProductSpace
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {E F : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
 
 open EuclideanGeometry
 

@@ -36,7 +36,7 @@ namespace GeneralLinearGroup
 
 section Center
 
-variable {R n : Type*} [Fintype n] [DecidableEq n] [CommRing R]
+variable {R n : Type*} [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R]
 
 /-- The center of `GL n R` consists of scalar matrices. -/
 lemma mem_center_iff_val_mem_range_scalar {g : GL n R} :
@@ -68,7 +68,7 @@ lemma center_eq_range_scalar :
   · rintro ⟨a, rfl⟩
     exact mem_center_iff_val_mem_range_scalar.mpr ⟨a, rfl⟩
 
-lemma map_center_le {S : Type*} [CommRing S] (f : R →+* S) :
+lemma map_center_le {S : Type*} [Ring S] [IsMulCommutative S] (f : R →+* S) :
     Subgroup.center (GL n R) ≤ (Subgroup.center (GL n S)).comap (map f) := fun u hu ↦ by
   simp only [GeneralLinearGroup.center_eq_range_scalar, MonoidHom.mem_range,
     Subgroup.mem_comap] at hu ⊢
@@ -79,7 +79,7 @@ end Center
 
 end GeneralLinearGroup
 
-lemma SpecialLinearGroup.toGL_mem_center_iff {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
+lemma SpecialLinearGroup.toGL_mem_center_iff {n R : Type*} [Fintype n] [DecidableEq n] [Ring R] [IsMulCommutative R]
     (g : SpecialLinearGroup n R) :
     toGL g ∈ Subgroup.center (GL n R) ↔ g ∈ Subgroup.center (SpecialLinearGroup n R) := by
   if hn : IsEmpty n then simp [Subgroup.center_eq_top] else

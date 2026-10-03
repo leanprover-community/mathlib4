@@ -91,25 +91,25 @@ instance [SMul S M] [Add M] (c : ModuleCon S M) : Add c.Quotient :=
 instance [SMul S M] [AddZeroClass M] (c : ModuleCon S M) : AddZeroClass c.Quotient :=
   inferInstanceAs (AddZeroClass c.toAddCon.Quotient)
 
-instance [SMul S M] [AddCommMagma M] (c : ModuleCon S M) : AddCommMagma c.Quotient :=
+instance [SMul S M] [Add M] [IsAddCommutative M] (c : ModuleCon S M) : AddCommMagma c.Quotient :=
   inferInstanceAs (AddCommMagma c.toAddCon.Quotient)
 
 instance [SMul S M] [AddSemigroup M] (c : ModuleCon S M) : AddSemigroup c.Quotient :=
   inferInstanceAs (AddSemigroup c.toAddCon.Quotient)
 
-instance [SMul S M] [AddCommSemigroup M] (c : ModuleCon S M) : AddCommSemigroup c.Quotient :=
+instance [SMul S M] [AddSemigroup M] [IsAddCommutative M] (c : ModuleCon S M) : AddCommSemigroup c.Quotient :=
   inferInstanceAs (AddCommSemigroup c.toAddCon.Quotient)
 
 instance [SMul S M] [AddMonoid M] (c : ModuleCon S M) : AddMonoid c.Quotient :=
   inferInstanceAs (AddMonoid c.toAddCon.Quotient)
 
-instance [SMul S M] [AddCommMonoid M] (c : ModuleCon S M) : AddCommMonoid c.Quotient :=
+instance [SMul S M] [AddMonoid M] [IsAddCommutative M] (c : ModuleCon S M) : AddCommMonoid c.Quotient :=
   inferInstanceAs (AddCommMonoid c.toAddCon.Quotient)
 
 instance [SMul S M] [AddGroup M] (c : ModuleCon S M) : AddGroup c.Quotient :=
   inferInstanceAs (AddGroup c.toAddCon.Quotient)
 
-instance [SMul S M] [AddCommGroup M] (c : ModuleCon S M) : AddCommGroup c.Quotient :=
+instance [SMul S M] [AddGroup M] [IsAddCommutative M] (c : ModuleCon S M) : AddCommGroup c.Quotient :=
   inferInstanceAs (AddCommGroup c.toAddCon.Quotient)
 
 instance [Zero M] [Add M] [SMulZeroClass S M] (c : ModuleCon S M) : SMulZeroClass S c.Quotient :=
@@ -129,7 +129,7 @@ instance [Monoid S] [AddMonoid M] [DistribMulAction S M] (c : ModuleCon S M) :
     DistribMulAction S c.Quotient := fast_instance%
   Quotient.mk''_surjective.distribMulAction c.mk' fun _ _ ↦ rfl
 
-instance [Semiring S] [AddCommMonoid M] [Module S M] (c : ModuleCon S M) : Module S c.Quotient :=
+instance [Semiring S] [AddMonoid M] [IsAddCommutative M] [Module S M] (c : ModuleCon S M) : Module S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.module _ c.mk' fun _ _ ↦ rfl
 
 end ModuleCon
@@ -151,8 +151,8 @@ def ModuleCon.ker [Monoid R] [Monoid S] [AddMonoid M] [AddMonoid N] [DistribMulA
   __ := AddCon.ker f
 
 /-- The first isomorphism theorem for semimodules in the case of a surjective homomorphism. -/
-noncomputable def ModuleCon.quotientKerEquivOfSurjective [Semiring S] [AddCommMonoid M]
-    [AddCommMonoid N] [Module S M] [Module S N] (f : M →ₗ[S] N) (hf : Function.Surjective f) :
+noncomputable def ModuleCon.quotientKerEquivOfSurjective [Semiring S] [AddMonoid M] [IsAddCommutative M]
+    [AddMonoid N] [IsAddCommutative N] [Module S M] [Module S N] (f : M →ₗ[S] N) (hf : Function.Surjective f) :
     (ker f.toDistribMulActionHom).Quotient ≃ₗ[S] N where
   __ := AddCon.quotientKerEquivOfSurjective f.toAddMonoidHom hf
   map_smul' s := by rintro ⟨⟩; apply map_smul f

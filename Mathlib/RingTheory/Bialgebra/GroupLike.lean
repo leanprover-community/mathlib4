@@ -21,7 +21,7 @@ open Coalgebra Bialgebra
 variable {R A : Type*}
 
 section Semiring
-variable [CommSemiring R] [Semiring A] [Bialgebra R A] {a b : A}
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Bialgebra R A] {a b : A}
 
 /-- In a bialgebra, `1` is a group-like element. -/
 lemma IsGroupLikeElem.one : IsGroupLikeElem R (1 : A) where
@@ -85,7 +85,7 @@ variable (R A) in
 end GroupLike
 end Semiring
 
-variable [CommSemiring R] [CommSemiring A] [Bialgebra R A] {a b : A}
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Bialgebra R A] {a b : A}
 
 instance GroupLike.instCommMonoid : CommMonoid (GroupLike R A) :=
   val_injective.commMonoid val val_one val_mul val_pow

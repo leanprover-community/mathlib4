@@ -47,11 +47,11 @@ section Semiring
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {R R₂ S S₂ : Type*} [Semiring R] [Semiring R₂] [Semiring S] [Semiring S₂]
-variable {M M₂ N N₂ P P₂ Pₗ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid N]
-variable [AddCommMonoid N₂] [AddCommMonoid P] [AddCommMonoid P₂] [AddCommMonoid Pₗ]
+variable {M M₂ N N₂ P P₂ Pₗ : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid N] [IsAddCommutative N]
+variable [AddMonoid N₂] [IsAddCommutative N₂] [AddMonoid P] [IsAddCommutative P] [AddMonoid P₂] [IsAddCommutative P₂] [AddMonoid Pₗ] [IsAddCommutative Pₗ]
 variable [Module R M] [Module R M₂] [Module S N] [Module S N₂] [Module R₂ P] [Module S₂ P]
 variable [Module R P₂] [Module S₂ P₂] [Module R Pₗ] [Module S Pₗ]
-variable {M' P' : Type*} [AddCommGroup M'] [AddCommGroup P']
+variable {M' P' : Type*} [AddGroup M'] [IsAddCommutative M'] [AddGroup P'] [IsAddCommutative P']
 variable [Module R M'] [Module R₂ P'] [Module S₂ P']
 variable [SMulCommClass S₂ R₂ P] [SMulCommClass S R Pₗ] [SMulCommClass S₂ R₂ P']
 variable [SMulCommClass S₂ R P₂]
@@ -128,7 +128,7 @@ variable {R R₂ R₃ R₄ R₅ : Type*}
 variable {M N P Q : Type*}
 variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄] [Semiring R₅]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q]
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q] [Module R₅ P]
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
 variable [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
@@ -166,7 +166,7 @@ theorem compl₂_id (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) : h.comp
   ext
   rw [compl₂_apply, id_coe, _root_.id]
 
-theorem compl₂_comp {R₆ Q' : Type*} [Semiring R₆] [AddCommMonoid Q'] [Module R₆ Q']
+theorem compl₂_comp {R₆ Q' : Type*} [Semiring R₆] [AddMonoid Q'] [IsAddCommutative Q'] [Module R₆ Q']
     {σ₆₂ : R₆ →+* R₂} {σ₆₃ : R₆ →+* R₃} {σ₆₄ : R₆ →+* R₄}
     [RingHomCompTriple σ₆₂ σ₂₃ σ₆₃] [RingHomCompTriple σ₆₄ σ₄₂ σ₆₂] [RingHomCompTriple σ₆₄ σ₄₃ σ₆₃]
     (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (f : Q' →ₛₗ[σ₆₄] Q) :
@@ -301,12 +301,12 @@ end Semiring
 section CommSemiring
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {A R R₁ R₂ : Type*} [Semiring A] [CommSemiring R] [Semiring R₁] [Semiring R₂]
-variable {M Mₗ N Nₗ Pₗ Qₗ Qₗ' : Type*} [AddCommMonoid M] [AddCommMonoid Mₗ] [AddCommMonoid N]
-variable [AddCommMonoid Nₗ] [AddCommMonoid Pₗ] [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
+variable {A R R₁ R₂ : Type*} [Semiring A] [Semiring R] [IsMulCommutative R] [Semiring R₁] [Semiring R₂]
+variable {M Mₗ N Nₗ Pₗ Qₗ Qₗ' : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid Mₗ] [IsAddCommutative Mₗ] [AddMonoid N] [IsAddCommutative N]
+variable [AddMonoid Nₗ] [IsAddCommutative Nₗ] [AddMonoid Pₗ] [IsAddCommutative Pₗ] [AddMonoid Qₗ] [IsAddCommutative Qₗ] [AddMonoid Qₗ'] [IsAddCommutative Qₗ']
 variable [Module R M] [Module R Mₗ] [Module R₁ Mₗ] [Module R₂ N] [Module R Nₗ] [Module R Pₗ]
 variable [Module R₂ Pₗ] [Module R₁ Pₗ] [Module R Qₗ] [Module R₁ Qₗ] [Module R Qₗ'] [Module R₂ Qₗ']
-variable {Tₗ Tₗ' : Type*} [AddCommMonoid Tₗ] [AddCommMonoid Tₗ'] [Module R₁ Tₗ] [Module R₂ Tₗ']
+variable {Tₗ Tₗ' : Type*} [AddMonoid Tₗ] [IsAddCommutative Tₗ] [AddMonoid Tₗ'] [IsAddCommutative Tₗ'] [Module R₁ Tₗ] [Module R₂ Tₗ']
 
 variable (R)
 
@@ -393,7 +393,7 @@ theorem compr₂_id [Module R A] [Module A M] [IsScalarTower R A Pₗ] (f : M �
     f.compr₂ LinearMap.id = f := rfl
 
 omit [Module R M] in
-theorem compr₂_comp {Tₗ : Type*} [AddCommMonoid Tₗ] [Module R Tₗ] [Module A Tₗ] [Module R A]
+theorem compr₂_comp {Tₗ : Type*} [AddMonoid Tₗ] [IsAddCommutative Tₗ] [Module R Tₗ] [Module A Tₗ] [Module R A]
     [Module A M] [Module A Qₗ] [SMulCommClass R A Qₗ] [SMulCommClass R A Tₗ]
     [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ] [IsScalarTower R A Tₗ]
     (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) (h : Qₗ →ₗ[A] Tₗ) :
@@ -423,8 +423,8 @@ theorem bijective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : P
 section CommSemiringSemilinear
 
 variable {R₂ R₃ R₄ M N P Q : Type*}
-variable [CommSemiring R₂] [CommSemiring R₃] [CommSemiring R₄]
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable [Semiring R₂] [IsMulCommutative R₂] [Semiring R₃] [IsMulCommutative R₃] [Semiring R₄] [IsMulCommutative R₄]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q]
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
 variable {σ₁₂ : R →+* R₂} {σ₁₃ : R →+* R₃} {σ₁₄ : R →+* R₄} {σ₂₃ : R₂ →+* R₃}
 variable {σ₂₄ : R₂ →+* R₄} {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
@@ -467,7 +467,7 @@ theorem compr₂ₛₗ_apply (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P)
 @[simp]
 theorem compr₂ₛₗ_id (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) : f.compr₂ₛₗ LinearMap.id = f := rfl
 
-theorem compr₂ₛₗ_comp {Q' R₅ : Type*} [CommSemiring R₅] [AddCommMonoid Q'] [Module R₅ Q']
+theorem compr₂ₛₗ_comp {Q' R₅ : Type*} [Semiring R₅] [IsMulCommutative R₅] [AddMonoid Q'] [IsAddCommutative Q'] [Module R₅ Q']
     {σ₁₅ : R →+* R₅} {σ₂₅ : R₂ →+* R₅} {σ₃₅ : R₃ →+* R₅} {σ₄₅ : R₄ →+* R₅}
     [RingHomCompTriple σ₁₃ σ₃₅ σ₁₅] [RingHomCompTriple σ₁₄ σ₄₅ σ₁₅] [RingHomCompTriple σ₂₃ σ₃₅ σ₂₅]
     [RingHomCompTriple σ₂₄ σ₄₅ σ₂₅] [RingHomCompTriple σ₃₄ σ₄₅ σ₃₅] (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P)
@@ -532,11 +532,11 @@ end CommSemiring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R] [IsDomain R]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
 
 section AddCommGroup
 
-variable [AddCommGroup M] [Module R M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M]
 
 theorem lsmul_injective [IsTorsionFree R M] {x : R} (hx : x ≠ 0) :
     Function.Injective (lsmul R M x) :=
@@ -556,10 +556,10 @@ section restrictScalarsRange
 
 variable {R S M P M' P' : Type*}
   [Semiring R] [Semiring S] [SMul S R]
-  [AddCommMonoid M] [Module R M] [AddCommMonoid P] [Module R P]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid P] [IsAddCommutative P] [Module R P]
   [Module S M] [Module S P]
   [IsScalarTower S R M] [IsScalarTower S R P]
-  [AddCommMonoid M'] [Module S M'] [AddCommMonoid P'] [Module S P']
+  [AddMonoid M'] [IsAddCommutative M'] [Module S M'] [AddMonoid P'] [IsAddCommutative P'] [Module S P']
 
 variable (i : M' →ₗ[S] M) (k : P' →ₗ[S] P) (hk : Injective k)
   (f : M →ₗ[R] P) (hf : ∀ m, f (i m) ∈ LinearMap.range k)
@@ -593,11 +593,11 @@ end restrictScalarsRange
 section restrictScalarsRange₂
 
 variable {R S M N P M' N' P' : Type*}
-  [CommSemiring R] [CommSemiring S] [SMul S R]
-  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P]
+  [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [SMul S R]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N] [AddMonoid P] [IsAddCommutative P] [Module R P]
   [Module S M] [Module S N] [Module S P]
   [IsScalarTower S R M] [IsScalarTower S R N] [IsScalarTower S R P]
-  [AddCommMonoid M'] [Module S M'] [AddCommMonoid N'] [Module S N'] [AddCommMonoid P'] [Module S P']
+  [AddMonoid M'] [IsAddCommutative M'] [Module S M'] [AddMonoid N'] [IsAddCommutative N'] [Module S N'] [AddMonoid P'] [IsAddCommutative P'] [Module S P']
   [SMulCommClass R S P]
 
 variable (i : M' →ₗ[S] M) (j : N' →ₗ[S] N) (k : P' →ₗ[S] P) (hk : Injective k)
@@ -631,10 +631,10 @@ end LinearMap
 section IsBilinearMap
 
 variable
-  (R : Type*) [CommSemiring R]
-  {E : Type*} [AddCommMonoid E] [Module R E]
-  {F : Type*} [AddCommMonoid F] [Module R F]
-  {G : Type*} [AddCommMonoid G] [Module R G]
+  (R : Type*) [Semiring R] [IsMulCommutative R]
+  {E : Type*} [AddMonoid E] [IsAddCommutative E] [Module R E]
+  {F : Type*} [AddMonoid F] [IsAddCommutative F] [Module R F]
+  {G : Type*} [AddMonoid G] [IsAddCommutative G] [Module R G]
 
 -- TODO Also make a semi-linear version.
 /-- Bundled statement of bilinearity for a function.

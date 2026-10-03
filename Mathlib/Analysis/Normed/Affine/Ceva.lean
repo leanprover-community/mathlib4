@@ -24,7 +24,7 @@ public section
 
 open scoped Affine
 
-variable {𝕜 V P : Type*} [SeminormedAddCommGroup V] [NormedField 𝕜] [NormedSpace 𝕜 V]
+variable {𝕜 V P : Type*} [SeminormedAddGroup V] [IsAddCommutative V] [NormedField 𝕜] [NormedSpace 𝕜 V]
 
 namespace Affine.Triangle
 

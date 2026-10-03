@@ -34,7 +34,7 @@ variable {k : Type*} [DivisionRing k]
 
 /-- The Euler characteristic of a finite exact sequence is zero. -/
 public lemma sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} (V : Fin (n + 2) → Type*)
-    [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)] [∀ i, FiniteDimensional k (V i)]
+    [∀ i, AddGroup (V i)] [∀ i, IsAddCommutative (V i)] [∀ i, Module k (V i)] [∀ i, FiniteDimensional k (V i)]
     (f : (i : Fin (n + 1)) → V i.castSucc →ₗ[k] V i.succ)
     (inj : Injective (f 0))
     (h_exact : ∀ i : Fin n, Exact (f i.castSucc) (f i.succ))
@@ -66,12 +66,12 @@ public lemma sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} (V : Fin (n + 2)
 /- An unrolled version of `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. This is an auxiliary
 lemma en route to `Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six`. -/
 private lemma sum_neg_one_pow_finrank_eq_zero_of_exact_six_aux {V₀ V₁ V₂ V₃ V₄ V₅ : Type u₀}
-    [AddCommGroup V₀] [Module k V₀] [FiniteDimensional k V₀]
-    [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]
-    [AddCommGroup V₂] [Module k V₂] [FiniteDimensional k V₂]
-    [AddCommGroup V₃] [Module k V₃] [FiniteDimensional k V₃]
-    [AddCommGroup V₄] [Module k V₄] [FiniteDimensional k V₄]
-    [AddCommGroup V₅] [Module k V₅] [FiniteDimensional k V₅]
+    [AddGroup V₀] [IsAddCommutative V₀] [Module k V₀] [FiniteDimensional k V₀]
+    [AddGroup V₁] [IsAddCommutative V₁] [Module k V₁] [FiniteDimensional k V₁]
+    [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [FiniteDimensional k V₂]
+    [AddGroup V₃] [IsAddCommutative V₃] [Module k V₃] [FiniteDimensional k V₃]
+    [AddGroup V₄] [IsAddCommutative V₄] [Module k V₄] [FiniteDimensional k V₄]
+    [AddGroup V₅] [IsAddCommutative V₅] [Module k V₅] [FiniteDimensional k V₅]
     (f₀ : V₀ →ₗ[k] V₁) (f₁ : V₁ →ₗ[k] V₂) (f₂ : V₂ →ₗ[k] V₃) (f₃ : V₃ →ₗ[k] V₄) (f₄ : V₄ →ₗ[k] V₅)
     (inj : Injective f₀)
     (exact₁ : Exact f₀ f₁)
@@ -100,12 +100,12 @@ this lemma plays in the proof of `LinearMap.index_comp`.
 In theory one could write a `simproc` which conjured up this lemma for a sequence of any length and
 then one would not need to have this special-case lemma at all. -/
 public lemma sum_neg_one_pow_finrank_eq_zero_of_exact_six
-    {V₀ : Type u₀} [AddCommGroup V₀] [Module k V₀] [FiniteDimensional k V₀]
-    {V₁ : Type u₁} [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]
-    {V₂ : Type u₂} [AddCommGroup V₂] [Module k V₂] [FiniteDimensional k V₂]
-    {V₃ : Type u₃} [AddCommGroup V₃] [Module k V₃] [FiniteDimensional k V₃]
-    {V₄ : Type u₄} [AddCommGroup V₄] [Module k V₄] [FiniteDimensional k V₄]
-    {V₅ : Type u₅} [AddCommGroup V₅] [Module k V₅] [FiniteDimensional k V₅]
+    {V₀ : Type u₀} [AddGroup V₀] [IsAddCommutative V₀] [Module k V₀] [FiniteDimensional k V₀]
+    {V₁ : Type u₁} [AddGroup V₁] [IsAddCommutative V₁] [Module k V₁] [FiniteDimensional k V₁]
+    {V₂ : Type u₂} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [FiniteDimensional k V₂]
+    {V₃ : Type u₃} [AddGroup V₃] [IsAddCommutative V₃] [Module k V₃] [FiniteDimensional k V₃]
+    {V₄ : Type u₄} [AddGroup V₄] [IsAddCommutative V₄] [Module k V₄] [FiniteDimensional k V₄]
+    {V₅ : Type u₅} [AddGroup V₅] [IsAddCommutative V₅] [Module k V₅] [FiniteDimensional k V₅]
     (f₀ : V₀ →ₗ[k] V₁) (f₁ : V₁ →ₗ[k] V₂) (f₂ : V₂ →ₗ[k] V₃) (f₃ : V₃ →ₗ[k] V₄) (f₄ : V₄ →ₗ[k] V₅)
     (inj : Injective f₀)
     (exact₁ : Exact f₀ f₁)

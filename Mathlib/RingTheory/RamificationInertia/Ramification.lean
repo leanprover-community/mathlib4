@@ -38,7 +38,7 @@ namespace Ideal
 
 section
 
-variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
+variable {S : Type*} [Ring S] [IsMulCommutative S] (q : Ideal S) (R : Type*) [Ring R] [IsMulCommutative R] [Algebra R S]
 
 open scoped Classical in
 /-- Let `S/R` be an extension of rings, and let `q` be a prime ideal of `S` lying over a prime ideal
@@ -106,7 +106,7 @@ end
 
 section
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   (p : Ideal R) (q : Ideal S) (r : Ideal T)
 

@@ -19,9 +19,9 @@ public section
 
 namespace TensorProduct
 variable {R A B : Type*}
-  [CommSemiring R] [StarRing R]
-  [AddCommMonoid A] [StarAddMonoid A] [Module R A] [StarModule R A]
-  [AddCommMonoid B] [StarAddMonoid B] [Module R B] [StarModule R B]
+  [Semiring R] [IsMulCommutative R] [StarRing R]
+  [AddMonoid A] [IsAddCommutative A] [StarAddMonoid A] [Module R A] [StarModule R A]
+  [AddMonoid B] [IsAddCommutative B] [StarAddMonoid B] [Module R B] [StarModule R B]
 
 open scoped TensorProduct
 

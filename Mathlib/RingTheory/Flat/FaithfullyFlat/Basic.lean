@@ -54,7 +54,7 @@ open TensorProduct DirectSum
 
 namespace Module
 
-variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R : Type u) (M : Type v) [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /--
 A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,
@@ -89,7 +89,7 @@ end proper_ideal
 section faithful
 
 instance rTensor_nontrivial
-    [fl : FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
+    [fl : FaithfullyFlat R M] (N : Type*) [AddGroup N] [IsAddCommutative N] [Module R N] [Nontrivial N] :
     Nontrivial (N ⊗[R] M) := by
   obtain ⟨n, hn⟩ := nontrivial_iff_exists_ne (0 : N) |>.1 inferInstance
   let I := (Submodule.span R {n}).annihilator
@@ -112,19 +112,19 @@ instance rTensor_nontrivial
     (quotTensorEquivQuotSMul M I).symm.injective |>.subsingleton
 
 instance lTensor_nontrivial
-    [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
+    [FaithfullyFlat R M] (N : Type*) [AddGroup N] [IsAddCommutative N] [Module R N] [Nontrivial N] :
     Nontrivial (M ⊗[R] N) :=
   TensorProduct.comm R M N |>.toEquiv.nontrivial
 
 lemma rTensor_reflects_triviality
-    [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
+    [FaithfullyFlat R M] (N : Type*) [AddGroup N] [IsAddCommutative N] [Module R N]
     [h : Subsingleton (N ⊗[R] M)] : Subsingleton N := by
   revert h; change _ → _; contrapose!
   intro h
   infer_instance
 
 lemma lTensor_reflects_triviality
-    [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
+    [FaithfullyFlat R M] (N : Type*) [AddGroup N] [IsAddCommutative N] [Module R N]
     [Subsingleton (M ⊗[R] N)] :
     Subsingleton N := by
   have : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
@@ -134,7 +134,7 @@ attribute [-simp] Ideal.Quotient.mk_eq_mk in
 lemma iff_flat_and_rTensor_faithful :
     FaithfullyFlat R M ↔
     (Flat R M ∧
-      ∀ (N : Type max u v) [AddCommGroup N] [Module R N],
+      ∀ (N : Type max u v) [AddGroup N] [IsAddCommutative N] [Module R N],
         Nontrivial N → Nontrivial (N ⊗[R] M)) := by
   refine ⟨fun fl => ⟨inferInstance, rTensor_nontrivial R M⟩, fun ⟨flat, faithful⟩ => ⟨?_⟩⟩
   intro m hm rid
@@ -149,7 +149,7 @@ lemma iff_flat_and_rTensor_faithful :
 lemma iff_flat_and_rTensor_reflects_triviality :
     FaithfullyFlat R M ↔
     (Flat R M ∧
-      ∀ (N : Type max u v) [AddCommGroup N] [Module R N],
+      ∀ (N : Type max u v) [AddGroup N] [IsAddCommutative N] [Module R N],
         Subsingleton (N ⊗[R] M) → Subsingleton N) :=
   iff_flat_and_rTensor_faithful R M |>.trans <| and_congr_right_iff.2 fun _ => iff_of_eq <|
     forall_congr fun N => forall_congr fun _ => forall_congr fun _ => iff_iff_eq.1 <| by
@@ -158,7 +158,7 @@ lemma iff_flat_and_rTensor_reflects_triviality :
 lemma iff_flat_and_lTensor_faithful :
     FaithfullyFlat R M ↔
     (Flat R M ∧
-      ∀ (N : Type max u v) [AddCommGroup N] [Module R N],
+      ∀ (N : Type max u v) [AddGroup N] [IsAddCommutative N] [Module R N],
         Nontrivial N → Nontrivial (M ⊗[R] N)) :=
   iff_flat_and_rTensor_faithful R M |>.trans
   ⟨fun ⟨flat, faithful⟩ => ⟨flat, fun N _ _ _ =>
@@ -169,7 +169,7 @@ lemma iff_flat_and_lTensor_faithful :
 lemma iff_flat_and_lTensor_reflects_triviality :
     FaithfullyFlat R M ↔
     (Flat R M ∧
-      ∀ (N : Type max u v) [AddCommGroup N] [Module R N],
+      ∀ (N : Type max u v) [AddGroup N] [IsAddCommutative N] [Module R N],
         Subsingleton (M ⊗[R] N) → Subsingleton N) :=
   iff_flat_and_lTensor_faithful R M |>.trans <| and_congr_right_iff.2 fun _ => iff_of_eq <|
     forall_congr fun N => forall_congr fun _ => forall_congr fun _ => iff_iff_eq.1 <| by
@@ -179,7 +179,7 @@ end faithful
 
 /-- If `M` is a faithfully flat `R`-module and `N` is `R`-linearly isomorphic to `M`, then
 `N` is faithfully flat. -/
-lemma of_linearEquiv {N : Type*} [AddCommGroup N] [Module R N] [FaithfullyFlat R M]
+lemma of_linearEquiv {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N] [FaithfullyFlat R M]
     (e : N ≃ₗ[R] M) : FaithfullyFlat R N := by
   rw [iff_flat_and_lTensor_faithful]
   exact ⟨Flat.of_linearEquiv e,
@@ -188,7 +188,7 @@ lemma of_linearEquiv {N : Type*} [AddCommGroup N] [Module R N] [FaithfullyFlat R
 section
 
 /-- A direct sum of faithfully flat `R`-modules is faithfully flat. -/
-instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
+instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)]
     [∀ i, Module R (M i)] [∀ i, FaithfullyFlat R (M i)] : FaithfullyFlat R (⨁ i, M i) := by
   classical
   rw [iff_flat_and_lTensor_faithful]
@@ -211,7 +211,7 @@ instance [Nontrivial M] [Module.Free R M] : FaithfullyFlat R M :=
 
 section
 
-variable {N : Type*} [AddCommGroup N] [Module R N]
+variable {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
 
 @[simp]
 lemma subsingleton_tensorProduct_iff_right [Module.FaithfullyFlat R M] :
@@ -262,9 +262,9 @@ On the other hand, if `- ⊗ M` preserves and reflects exact sequences, then `M`
 
 section arbitrary_universe
 
-variable {N1 : Type*} [AddCommGroup N1] [Module R N1]
-variable {N2 : Type*} [AddCommGroup N2] [Module R N2]
-variable {N3 : Type*} [AddCommGroup N3] [Module R N3]
+variable {N1 : Type*} [AddGroup N1] [IsAddCommutative N1] [Module R N1]
+variable {N2 : Type*} [AddGroup N2] [IsAddCommutative N2] [Module R N2]
+variable {N3 : Type*} [AddGroup N3] [IsAddCommutative N3] [Module R N3]
 variable (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
 
 /--
@@ -377,7 +377,7 @@ lemma lTensor_exact_iff_exact [FaithfullyFlat R M] :
 
 section
 
-variable {N N' : Type*} [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+variable {N N' : Type*} [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [Module R N] [Module R N']
   (f : N →ₗ[R] N')
 
 @[simp]
@@ -408,9 +408,9 @@ section fixed_universe
 
 lemma iff_exact_iff_rTensor_exact :
     FaithfullyFlat R M ↔
-    (∀ {N1 : Type max u v} [AddCommGroup N1] [Module R N1]
-      {N2 : Type max u v} [AddCommGroup N2] [Module R N2]
-      {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
+    (∀ {N1 : Type max u v} [AddGroup N1] [IsAddCommutative N1] [Module R N1]
+      {N2 : Type max u v} [AddGroup N2] [IsAddCommutative N2] [Module R N2]
+      {N3 : Type max u v} [AddGroup N3] [IsAddCommutative N3] [Module R N3]
       (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
         Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M)) :=
   ⟨fun fl _ _ _ _ _ _ _ _ _ l12 l23 => (rTensor_exact_iff_exact R M l12 l23).symm, fun iff_exact =>
@@ -422,9 +422,9 @@ lemma iff_exact_iff_rTensor_exact :
 
 lemma iff_exact_iff_lTensor_exact :
     FaithfullyFlat R M ↔
-    (∀ {N1 : Type max u v} [AddCommGroup N1] [Module R N1]
-      {N2 : Type max u v} [AddCommGroup N2] [Module R N2]
-      {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
+    (∀ {N1 : Type max u v} [AddGroup N1] [IsAddCommutative N1] [Module R N1]
+      {N2 : Type max u v} [AddGroup N2] [IsAddCommutative N2] [Module R N2]
+      {N3 : Type max u v} [AddGroup N3] [IsAddCommutative N3] [Module R N3]
       (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
         Function.Exact l12 l23 ↔ Function.Exact (l12.lTensor M) (l23.lTensor M)) := by
   simp only [iff_exact_iff_rTensor_exact, LinearMap.rTensor_exact_iff_lTensor_exact]
@@ -451,8 +451,8 @@ section arbitrary_universe
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `id ⊗ f = 0`, if and only
 if `f = 0`. -/
 lemma zero_iff_lTensor_zero [h : FaithfullyFlat R M]
-    {N : Type*} [AddCommGroup N] [Module R N]
-    {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N') :
+    {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
+    {N' : Type*} [AddGroup N'] [IsAddCommutative N'] [Module R N'] (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.lTensor M f = 0 :=
   ⟨fun hf => hf.symm ▸ LinearMap.lTensor_zero M, fun hf => by
     have := lTensor_reflects_exact R M f LinearMap.id (by
@@ -466,8 +466,8 @@ lemma zero_iff_lTensor_zero [h : FaithfullyFlat R M]
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `f ⊗ id = 0`, if and only
 if `f = 0`. -/
 lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
-    {N : Type*} [AddCommGroup N] [Module R N]
-    {N' : Type*} [AddCommGroup N'] [Module R N']
+    {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
+    {N' : Type*} [AddGroup N'] [IsAddCommutative N'] [Module R N']
     (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.rTensor M f = 0 :=
   zero_iff_lTensor_zero R M f |>.trans
@@ -502,8 +502,8 @@ An `R`-module `M` is faithfully flat iff it is flat and for all linear maps `f`,
 lemma iff_zero_iff_lTensor_zero :
     FaithfullyFlat R M ↔
     (Module.Flat R M ∧
-      (∀ {N : Type max u v} [AddCommGroup N] [Module R N]
-        {N' : Type max u v} [AddCommGroup N'] [Module R N']
+      (∀ {N : Type max u v} [AddGroup N] [IsAddCommutative N] [Module R N]
+        {N' : Type max u v} [AddGroup N'] [IsAddCommutative N'] [Module R N']
         (f : N →ₗ[R] N'), f.lTensor M = 0 ↔ f = 0)) :=
   ⟨fun fl => ⟨inferInstance, fun f => zero_iff_lTensor_zero R M f |>.symm⟩,
     fun ⟨flat, Z⟩ => iff_flat_and_lTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
@@ -517,8 +517,8 @@ An `R`-module `M` is faithfully flat iff it is flat and for all linear maps `f`,
 lemma iff_zero_iff_rTensor_zero :
     FaithfullyFlat R M ↔
     (Module.Flat R M ∧
-      (∀ {N : Type max u v} [AddCommGroup N] [Module R N]
-        {N' : Type max u v} [AddCommGroup N'] [Module R N']
+      (∀ {N : Type max u v} [AddGroup N] [IsAddCommutative N] [Module R N]
+        {N' : Type max u v} [AddGroup N'] [IsAddCommutative N'] [Module R N']
         (f : N →ₗ[R] N'), f.rTensor M = 0 ↔ (f = 0))) :=
   ⟨fun fl => ⟨inferInstance, fun f => zero_iff_rTensor_zero R M f |>.symm⟩,
     fun ⟨flat, Z⟩ => iff_flat_and_rTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
@@ -534,9 +534,9 @@ section trans
 
 open TensorProduct LinearMap
 
-variable (R : Type*) [CommRing R]
-variable (S : Type*) [CommRing S] [Algebra R S]
-variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
+variable (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S]
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] [Module S M] [IsScalarTower R S M]
 variable [FaithfullyFlat R S] [FaithfullyFlat S M]
 
 include S in
@@ -556,7 +556,7 @@ theorem trans : FaithfullyFlat R M := by
 end trans
 
 /-- Faithful flatness is preserved by arbitrary base change. -/
-instance (S : Type*) [CommRing S] [Algebra R S] [Module.FaithfullyFlat R M] :
+instance (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S] [Module.FaithfullyFlat R M] :
     Module.FaithfullyFlat S (S ⊗[R] M) := by
   rw [Module.FaithfullyFlat.iff_flat_and_rTensor_reflects_triviality]
   refine ⟨inferInstance, fun N _ _ hN ↦ ?_⟩
@@ -567,8 +567,8 @@ instance (S : Type*) [CommRing S] [Algebra R S] [Module.FaithfullyFlat R M] :
 
 section IsBaseChange
 
-variable {S N : Type*} [CommRing S] [Algebra R S] [FaithfullyFlat R S]
-  [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N] {f : M →ₗ[R] N}
+variable {S N : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] [FaithfullyFlat R S]
+  [AddGroup N] [IsAddCommutative N] [Module R N] [Module S N] [IsScalarTower R S N] {f : M →ₗ[R] N}
 
 theorem _root_.IsBaseChange.map_smul_top_ne_top_iff_of_faithfullyFlat (hf : IsBaseChange S f)
     (I : Ideal R) :
@@ -585,7 +585,7 @@ end IsBaseChange
 end FaithfullyFlat
 
 /-- Flat descends along faithfully flat ring maps. -/
-lemma Flat.of_flat_tensorProduct (S : Type*) [CommRing S] [Algebra R S]
+lemma Flat.of_flat_tensorProduct (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S]
     [Module.FaithfullyFlat R S] [Module.Flat S (S ⊗[R] M)] : Module.Flat R M := by
   rw [Module.Flat.iff_lTensor_preserves_injective_linearMap]
   intro N P _ _ _ _ f hf
@@ -598,7 +598,7 @@ lemma Flat.of_flat_tensorProduct (S : Type*) [CommRing S] [Algebra R S]
     simp
   simpa [this] using Flat.lTensor_preserves_injective_linearMap f hf
 
-lemma Flat.iff_flat_tensorProduct (S : Type*) [CommRing S] [Algebra R S]
+lemma Flat.iff_flat_tensorProduct (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S]
     [Module.FaithfullyFlat R S] : Module.Flat S (S ⊗[R] M) ↔ Module.Flat R M :=
   ⟨fun _ ↦ .of_flat_tensorProduct R M S, fun _ ↦ inferInstance⟩
 
@@ -608,8 +608,8 @@ namespace Submodule
 
 open LinearMap Module
 
-variable {R M A : Type*} [CommRing R] [Ring A] [Algebra R A] [FaithfullyFlat R A]
-  [AddCommGroup M] [Module R M] {p q : Submodule R M}
+variable {R M A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A] [FaithfullyFlat R A]
+  [AddGroup M] [IsAddCommutative M] [Module R M] {p q : Submodule R M}
 
 @[simp]
 theorem baseChange_le_iff : p.baseChange A ≤ q.baseChange A ↔ p ≤ q := by
@@ -644,7 +644,7 @@ end Submodule
 
 /-- In a nonzero algebra that is free as a module, the coordinates of `1` in any basis generate
 the unit ideal. Equivalently, `1` is unimodular: see `Module.Free.isUnimodular_one`. -/
-theorem Module.Basis.span_repr_one_eq_top {R : Type*} [CommRing R] {A ι : Type*} [Ring A]
+theorem Module.Basis.span_repr_one_eq_top {R : Type*} [Ring R] [IsMulCommutative R] {A ι : Type*} [Ring A]
     [Nontrivial A] [Algebra R A] (e : Basis ι R A) :
     Ideal.span (Set.range (e.repr 1)) = ⊤ := by
   nontriviality R

@@ -19,13 +19,13 @@ some API for computing the order of vanishing in discrete valuation rings.
 
 @[expose] public section
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace Ring
 
 section NoetherianDimLEOne
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 variable [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
 
 open scoped nonZeroDivisors
@@ -135,7 +135,7 @@ lemma ordFrac_ge_one_of_ne_zero {x : R} (hx : x ≠ 0) :
   simp_rw [ordFrac_eq_ord R hx, ordMonoidWithZeroHom_eq_coe _ (by simpa) hm.symm,
     WithZero.one_le_coe, ← ofAdd_zero, Multiplicative.ofAdd_le, Nat.cast_nonneg _]
 
-lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
+lemma ordFrac_le_smul {S : Type*} [Ring S] [IsMulCommutative S] [Algebra S R] [Algebra S K]
     [IsScalarTower S R K] (a : S) (ha : algebraMap S R a ≠ 0) (f : K) :
     Ring.ordFrac R f ≤ Ring.ordFrac R (a • f) := by
   by_cases j : f = 0

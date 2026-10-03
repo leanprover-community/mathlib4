@@ -32,7 +32,7 @@ public section
 
 namespace WittVector
 
-variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
+variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [Ring R] [IsMulCommutative R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
@@ -42,9 +42,9 @@ noncomputable section
 -- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
 theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
-  have : IsPoly p fun {R} [CommRing R] x ↦ frobenius (verschiebung x) :=
+  have : IsPoly p fun {R} [Ring R] [IsMulCommutative R] x ↦ frobenius (verschiebung x) :=
     IsPoly.comp (hg := frobenius_isPoly p) (hf := verschiebung_isPoly)
-  have : IsPoly p fun {R} [CommRing R] x ↦ x * p := mulN_isPoly p p
+  have : IsPoly p fun {R} [Ring R] [IsMulCommutative R] x ↦ x * p := mulN_isPoly p p
   ghost_calc x
   ghost_simp [mul_comm]
 
@@ -98,10 +98,10 @@ variable {p R}
 /-- The “projection formula” for Frobenius and Verschiebung. -/
 theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
     verschiebung (x * frobenius y) = verschiebung x * y := by
-  have : IsPoly₂ p fun {R} [Rcr : CommRing R] x y ↦ verschiebung (x * frobenius y) :=
+  have : IsPoly₂ p fun {R} [Rcr : Ring R] [IsMulCommutative R] x y ↦ verschiebung (x * frobenius y) :=
     IsPoly.comp₂ (hg := verschiebung_isPoly)
       (hf := IsPoly₂.comp (hh := mulIsPoly₂) (hf := idIsPolyI' p) (hg := frobenius_isPoly p))
-  have : IsPoly₂ p fun {R} [CommRing R] x y ↦ verschiebung x * y :=
+  have : IsPoly₂ p fun {R} [Ring R] [IsMulCommutative R] x y ↦ verschiebung x * y :=
     IsPoly₂.comp (hh := mulIsPoly₂) (hf := verschiebung_isPoly) (hg := idIsPolyI' p)
   ghost_calc x y
   rintro ⟨⟩ <;> ghost_simp [mul_assoc]

@@ -58,14 +58,14 @@ theorem isHermitian_adjMatrix [NonAssocSemiring R] [StarRing R] : (G.adjMatrix R
   G.isAdjMatrix_adjMatrix R |>.isHermitian
 
 theorem IsRegularOfDegree.mem_spectrum_adjMatrix [DecidableEq V] [Nonempty V] [Nontrivial R]
-    [CommRing R] {d : ℕ} (hd : G.IsRegularOfDegree d) : (d : R) ∈ spectrum R (G.adjMatrix R) := by
+    [Ring R] [IsMulCommutative R] {d : ℕ} (hd : G.IsRegularOfDegree d) : (d : R) ∈ spectrum R (G.adjMatrix R) := by
   rw [← Matrix.spectrum_toLin']
   apply End.HasEigenvalue.mem_spectrum
   refine End.hasEigenvalue_of_hasEigenvector (x := 1) ⟨End.mem_genEigenspace_one.mpr ?_, by simp⟩
   ext v
   simp [hd.degree_eq v]
 
-theorem degree_eq_sum_if_adj {R : Type*} [AddCommMonoidWithOne R] (i : V) :
+theorem degree_eq_sum_if_adj {R : Type*} [AddMonoidWithOne R] [IsAddCommutative R] (i : V) :
     (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
   unfold degree neighborFinset neighborSet
   rw [sum_boole, Set.toFinset_ofPred]
@@ -114,7 +114,7 @@ theorem degMatrix_top [AddMonoidWithOne R] :
   IsRegularOfDegree.top.degMatrix_eq R
 
 variable (R) in
-theorem IsIsolated.not_isUnit_degMatrix [Nontrivial R] [CommRing R] {v : V} (h : G.IsIsolated v) :
+theorem IsIsolated.not_isUnit_degMatrix [Nontrivial R] [Ring R] [IsMulCommutative R] {v : V} (h : G.IsIsolated v) :
     ¬IsUnit (G.degMatrix R) :=
   (isUnit_diagonal.mp · |>.apply v |>.ne_zero <| by simp [h])
 
@@ -133,20 +133,20 @@ theorem lapMatrix_mulVec_one_eq_zero [NonAssocRing R] : G.lapMatrix R *ᵥ 1 = 0
 
 variable (R) in
 @[simp]
-theorem det_lapMatrix_eq_zero [Nonempty V] [CommRing R] : (G.lapMatrix R).det = 0 := by
+theorem det_lapMatrix_eq_zero [Nonempty V] [Ring R] [IsMulCommutative R] : (G.lapMatrix R).det = 0 := by
   have ⟨v⟩ := ‹Nonempty V›
   apply det_eq_zero_of_mulVec_eq_zero_of_mem_nonZeroDivisors (i := v) <|
     G.lapMatrix_mulVec_one_eq_zero R
   simp
 
 variable (R) in
-theorem not_isUnit_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
+theorem not_isUnit_lapMatrix [Nonempty V] [Nontrivial R] [Ring R] [IsMulCommutative R] :
     ¬IsUnit (G.lapMatrix R) := by
   simp [isUnit_iff_isUnit_det]
 
 variable (R) in
 /-- `0` is an eigenvalue of the Laplacian matrix of any graph. -/
-theorem zero_mem_spectrum_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
+theorem zero_mem_spectrum_lapMatrix [Nonempty V] [Nontrivial R] [Ring R] [IsMulCommutative R] :
     0 ∈ spectrum R (G.lapMatrix R) :=
   spectrum.zero_mem R <| G.not_isUnit_lapMatrix R
 
@@ -164,7 +164,7 @@ theorem lapMatrix_top [AddGroupWithOne R] :
   · simp [lapMatrix, Nat.cast_pred <| Fintype.card_pos_iff.mpr ⟨i⟩, sub_eq_add_neg]
   · simp [lapMatrix, Matrix.natCast_apply, h]
 
-theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
+theorem dotProduct_mulVec_degMatrix [Semiring R] [IsMulCommutative R] (x : V → R) :
     x ⬝ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
   simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]
 

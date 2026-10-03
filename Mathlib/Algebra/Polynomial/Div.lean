@@ -595,7 +595,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] {p p₁ p₂ q : R[X]}
+variable [Ring R] [IsMulCommutative R] {p p₁ p₂ q : R[X]}
 
 @[simp]
 theorem modByMonic_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p %ₘ (X - C a) = C (p.eval a) := by
@@ -633,7 +633,7 @@ theorem X_sub_C_dvd_sub_C_eval : X - C a ∣ p - C (p.eval a) := by
 theorem modByMonic_X (p : R[X]) : p %ₘ X = C (p.eval 0) := by
   rw [← modByMonic_X_sub_C_eq_C_eval, C_0, sub_zero]
 
-theorem eval₂_modByMonic_eq_self_of_root [CommRing S] {f : R →+* S} {p q : R[X]}
+theorem eval₂_modByMonic_eq_self_of_root [Ring S] [IsMulCommutative S] {f : R →+* S} {p q : R[X]}
     {x : S} (hx : q.eval₂ f x = 0) : (p %ₘ q).eval₂ f x = p.eval₂ f x := by
   rw [modByMonic_eq_sub_mul_div, eval₂_sub, eval₂_mul, hx, zero_mul, sub_zero]
 
@@ -843,7 +843,7 @@ lemma associated_of_dvd_of_degree_eq {K} [Field K] {p q : K[X]} (hpq : p ∣ q)
   (Classical.em (q = 0)).elim (fun hq ↦ (show p = q by simpa [hq] using h₁) ▸ Associated.refl p)
     (associated_of_dvd_of_natDegree_le hpq · (natDegree_le_natDegree h₁.ge))
 
-lemma eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le {R} [CommSemiring R] {p q : R[X]}
+lemma eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le {R} [Semiring R] [IsMulCommutative R] {p q : R[X]}
     (hp : p.Monic) (hdvd : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
     q = C q.leadingCoeff * p := by
   rw [mul_comm, ← eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le hp hdvd hdeg]

@@ -47,9 +47,9 @@ open Module
 
 universe u v w
 
-variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
+variable {R : Type*} {M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [IsMulCommutative R₁] [AddGroup M₁] [IsAddCommutative M₁] [Module R₁ M₁]
+variable {V : Type*} {K : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace LinearMap
@@ -94,7 +94,7 @@ end LinearMap
 
 namespace LinearMap
 
-variable {R' : Type*} [CommSemiring R'] [Algebra R' R] [Module R' M] [IsScalarTower R' R M]
+variable {R' : Type*} [Semiring R'] [IsMulCommutative R'] [Algebra R' R] [Module R' M] [IsScalarTower R' R M]
 
 /-- Apply a linear map on the output of a bilinear form. -/
 @[simps!]
@@ -109,7 +109,7 @@ namespace BilinForm
 
 section Comp
 
-variable {M' : Type w} [AddCommMonoid M'] [Module R M']
+variable {M' : Type w} [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 /-- Apply a linear map on the left and right argument of a bilinear form. -/
 def comp (B : BilinForm R M') (l r : M →ₗ[R] M') : BilinForm R M := B.compl₁₂ l r
@@ -122,7 +122,7 @@ def compLeft (B : BilinForm R M) (f : M →ₗ[R] M) : BilinForm R M :=
 def compRight (B : BilinForm R M) (f : M →ₗ[R] M) : BilinForm R M :=
   B.comp LinearMap.id f
 
-theorem comp_comp {M'' : Type*} [AddCommMonoid M''] [Module R M''] (B : BilinForm R M'')
+theorem comp_comp {M'' : Type*} [AddMonoid M''] [IsAddCommutative M''] [Module R M''] (B : BilinForm R M'')
     (l r : M →ₗ[R] M') (l' r' : M' →ₗ[R] M'') :
     (B.comp l' r').comp l r = B.comp (l'.comp l) (r'.comp r) :=
   rfl
@@ -192,7 +192,7 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
 end Comp
 
 variable {M' M'' : Type*}
-variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
+variable [AddMonoid M'] [IsAddCommutative M'] [AddMonoid M''] [IsAddCommutative M''] [Module R M'] [Module R M'']
 
 section congr
 
@@ -237,7 +237,7 @@ end congr
 section congrRight₂
 
 variable {N₁ N₂ N₃ : Type*}
-variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+variable [AddMonoid N₁] [IsAddCommutative N₁] [AddMonoid N₂] [IsAddCommutative N₂] [AddMonoid N₃] [IsAddCommutative N₃]
 variable [Module R N₁] [Module R N₂] [Module R N₃]
 
 /-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear

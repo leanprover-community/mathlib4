@@ -19,7 +19,7 @@ groups with zeros.
 public section
 
 namespace List
-variable {R : Type*} [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R]
+variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R]
 
 lemma prod_nonneg {s : List R} (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := by
   induction s with

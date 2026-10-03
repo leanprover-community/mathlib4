@@ -40,7 +40,7 @@ forms.
 
 @[expose] public section
 
-variable (R K L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L] [Field K] [LieAlgebra K L]
+variable (R K L : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [Field K] [LieAlgebra K L]
 
 namespace LieAlgebra
 

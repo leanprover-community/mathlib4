@@ -51,7 +51,7 @@ def discrim [Ring R] (a b c : R) : R :=
 @[simp] lemma discrim_neg [Ring R] (a b c : R) : discrim (-a) (-b) (-c) = discrim a b c := by
   simp [discrim]
 
-variable [CommRing R] {a b c : R}
+variable [Ring R] [IsMulCommutative R] {a b c : R}
 
 lemma discrim_eq_sq_of_quadratic_eq_zero {x : R} (h : a * (x * x) + b * x + c = 0) :
     discrim a b c = (2 * a * x + b) ^ 2 := by

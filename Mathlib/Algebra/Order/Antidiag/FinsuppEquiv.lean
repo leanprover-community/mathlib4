@@ -33,7 +33,7 @@ open Finsupp Function
 variable {ι μ : Type*}
 
 namespace Finset
-variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι}
+variable [DecidableEq ι] [AddMonoid μ] [IsAddCommutative μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι}
   {n : μ}
 
 variable (s n) in

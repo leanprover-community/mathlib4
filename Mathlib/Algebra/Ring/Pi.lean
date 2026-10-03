@@ -51,7 +51,7 @@ instance addGroupWithOne [∀ i, AddGroupWithOne (f i)] : AddGroupWithOne (∀ i
   intCast_negSucc n := funext fun _ ↦ AddGroupWithOne.intCast_negSucc n
 
 /-- A product of `AddCommGroupWithOne`s is an `AddCommGroupWithOne`. -/
-instance addCommGroupWithOne [∀ i, AddCommGroupWithOne (f i)] : AddCommGroupWithOne (∀ i, f i) :=
+instance addCommGroupWithOne [∀ i, AddGroupWithOne (f i)] [∀ i, IsAddCommutative (f i)] : AddCommGroupWithOne (∀ i, f i) :=
   { Pi.addGroupWithOne, Pi.addCommGroup with }
 
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
@@ -67,11 +67,11 @@ instance nonAssocSemiring [∀ i, NonAssocSemiring <| f i] : NonAssocSemiring (�
 instance semiring [∀ i, Semiring <| f i] : Semiring (∀ i : I, f i) :=
   { Pi.nonUnitalSemiring, Pi.nonAssocSemiring, Pi.monoidWithZero with }
 
-instance nonUnitalCommSemiring [∀ i, NonUnitalCommSemiring <| f i] :
+instance nonUnitalCommSemiring [∀ i, NonUnitalSemiring <| f i] [∀ i, IsMulCommutative <| f i] :
     NonUnitalCommSemiring (∀ i : I, f i) :=
   { Pi.nonUnitalSemiring, Pi.commSemigroup with }
 
-instance commSemiring [∀ i, CommSemiring <| f i] : CommSemiring (∀ i : I, f i) :=
+instance commSemiring [∀ i, Semiring <| f i] [∀ i, IsMulCommutative <| f i] : CommSemiring (∀ i : I, f i) :=
   { Pi.semiring, Pi.commMonoid with }
 
 instance nonUnitalNonAssocRing [∀ i, NonUnitalNonAssocRing <| f i] :
@@ -87,10 +87,10 @@ instance nonAssocRing [∀ i, NonAssocRing <| f i] : NonAssocRing (∀ i : I, f 
 instance ring [∀ i, Ring <| f i] : Ring (∀ i : I, f i) :=
   { Pi.semiring, Pi.addCommGroup, Pi.addGroupWithOne with }
 
-instance nonUnitalCommRing [∀ i, NonUnitalCommRing <| f i] : NonUnitalCommRing (∀ i : I, f i) :=
+instance nonUnitalCommRing [∀ i, NonUnitalRing <| f i] [∀ i, IsMulCommutative <| f i] : NonUnitalCommRing (∀ i : I, f i) :=
   { Pi.nonUnitalRing, Pi.commSemigroup with }
 
-instance commRing [∀ i, CommRing <| f i] : CommRing (∀ i : I, f i) :=
+instance commRing [∀ i, Ring <| f i] [∀ i, IsMulCommutative <| f i] : CommRing (∀ i : I, f i) :=
   { Pi.ring, Pi.commSemiring with }
 
 end Pi

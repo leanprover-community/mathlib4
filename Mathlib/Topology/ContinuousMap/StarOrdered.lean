@@ -76,7 +76,7 @@ namespace ContinuousMapZero
 variable {α : Type*} [TopologicalSpace α] [Zero α]
 
 instance instStarOrderedRing {R : Type*}
-    [TopologicalSpace R] [CommSemiring R] [PartialOrder R] [NoZeroDivisors R] [StarRing R]
+    [TopologicalSpace R] [Semiring R] [IsMulCommutative R] [PartialOrder R] [NoZeroDivisors R] [StarRing R]
     [StarOrderedRing R] [IsTopologicalSemiring R] [ContinuousStar R] [StarOrderedRing C(α, R)] :
     StarOrderedRing C(α, R)₀ where
   le_iff f g := by

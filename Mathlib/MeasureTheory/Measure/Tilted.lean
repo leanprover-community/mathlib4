@@ -191,7 +191,7 @@ end lintegral
 
 section integral
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 lemma setIntegral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
@@ -290,7 +290,7 @@ lemma absolutelyContinuous_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) : �
       simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
 
-lemma integrable_tilted_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma integrable_tilted_iff {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
     {f : α → ℝ} (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → E) :
     Integrable g (μ.tilted f) ↔ Integrable (fun x ↦ exp (f x) • g x) μ := by
   by_cases hμ : μ = 0

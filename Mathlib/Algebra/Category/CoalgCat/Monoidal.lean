@@ -28,7 +28,7 @@ using `Monoidal.induced`.
 universe v u
 
 namespace CoalgCat
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 open CategoryTheory Coalgebra
 open scoped TensorProduct MonoidalCategory

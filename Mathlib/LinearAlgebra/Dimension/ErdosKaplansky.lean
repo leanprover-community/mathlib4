@@ -100,7 +100,7 @@ theorem rank_fun_infinite {ι : Type v} [hι : Infinite ι] : Module.rank K (ι 
 
 /-- The **Erdős-Kaplansky Theorem**: the dual of an infinite-dimensional vector space
   over a division ring has dimension equal to its cardinality. -/
-theorem rank_dual_eq_card_dual_of_aleph0_le_rank' {V : Type*} [AddCommGroup V] [Module K V]
+theorem rank_dual_eq_card_dual_of_aleph0_le_rank' {V : Type*} [AddGroup V] [IsAddCommutative V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank Kᵐᵒᵖ (V →ₗ[K] K) = #(V →ₗ[K] K) := by
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
   rw [← b.mk_eq_rank'', aleph0_le_mk_iff] at h
@@ -110,7 +110,7 @@ theorem rank_dual_eq_card_dual_of_aleph0_le_rank' {V : Type*} [AddCommGroup V] [
   apply rank_fun_infinite
 
 /-- The **Erdős-Kaplansky Theorem** over a field. -/
-theorem rank_dual_eq_card_dual_of_aleph0_le_rank {K V} [Field K] [AddCommGroup V] [Module K V]
+theorem rank_dual_eq_card_dual_of_aleph0_le_rank {K V} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank K (V →ₗ[K] K) = #(V →ₗ[K] K) := by
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
   rw [← b.mk_eq_rank'', aleph0_le_mk_iff] at h
@@ -118,7 +118,7 @@ theorem rank_dual_eq_card_dual_of_aleph0_le_rank {K V} [Field K] [AddCommGroup V
   rw [e.rank_eq, e.toEquiv.cardinal_eq]
   apply rank_fun_infinite
 
-theorem lift_rank_lt_rank_dual' {V : Type v} [AddCommGroup V] [Module K V]
+theorem lift_rank_lt_rank_dual' {V : Type v} [AddGroup V] [IsAddCommutative V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) :
     Cardinal.lift.{u} (Module.rank K V) < Module.rank Kᵐᵒᵖ (V →ₗ[K] K) := by
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
@@ -128,17 +128,17 @@ theorem lift_rank_lt_rank_dual' {V : Type v} [AddCommGroup V] [Module K V]
   rw [one_lt_lift_iff, one_lt_iff_nontrivial]
   infer_instance
 
-theorem lift_rank_lt_rank_dual {K : Type u} {V : Type v} [Field K] [AddCommGroup V] [Module K V]
+theorem lift_rank_lt_rank_dual {K : Type u} {V : Type v} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) :
     Cardinal.lift.{u} (Module.rank K V) < Module.rank K (V →ₗ[K] K) := by
   rw [rank_dual_eq_card_dual_of_aleph0_le_rank h, ← rank_dual_eq_card_dual_of_aleph0_le_rank' h]
   exact lift_rank_lt_rank_dual' h
 
-theorem rank_lt_rank_dual' {V : Type u} [AddCommGroup V] [Module K V] (h : ℵ₀ ≤ Module.rank K V) :
+theorem rank_lt_rank_dual' {V : Type u} [AddGroup V] [IsAddCommutative V] [Module K V] (h : ℵ₀ ≤ Module.rank K V) :
     Module.rank K V < Module.rank Kᵐᵒᵖ (V →ₗ[K] K) := by
   convert! lift_rank_lt_rank_dual' h; rw [lift_id]
 
-theorem rank_lt_rank_dual {K V : Type u} [Field K] [AddCommGroup V] [Module K V]
+theorem rank_lt_rank_dual {K V : Type u} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank K V < Module.rank K (V →ₗ[K] K) := by
   convert! lift_rank_lt_rank_dual h; rw [lift_id]
 

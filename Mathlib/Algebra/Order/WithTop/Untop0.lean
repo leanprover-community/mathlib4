@@ -82,7 +82,7 @@ lemma untop₀_ofNat [AddMonoidWithOne α] (n : ℕ) [n.AtLeastTwo] :
     untop₀ (ofNat(n) : WithTop α) = ofNat(n) := rfl
 
 @[simp]
-lemma untop₀_neg [AddCommGroup α] : ∀ a : WithTop α, (-a).untop₀ = -a.untop₀
+lemma untop₀_neg [AddGroup α] [IsAddCommutative α] : ∀ a : WithTop α, (-a).untop₀ = -a.untop₀
   | ⊤ => by simp
   | (a : α) => rfl
 
@@ -92,7 +92,7 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup α] [PartialOrder α] {a b : WithTop α}
+variable [AddGroup α] [IsAddCommutative α] [PartialOrder α] {a b : WithTop α}
 
 /--
 Elements of ordered additive commutative groups are nonnegative iff their untop₀ is nonnegative.
@@ -126,7 +126,7 @@ end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup α] [LinearOrder α] {a b : WithTop α}
+variable [AddGroup α] [IsAddCommutative α] [LinearOrder α] {a b : WithTop α}
 
 @[simp] theorem untop₀_max (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (max a b).untop₀ = max a.untop₀ b.untop₀ := by

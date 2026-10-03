@@ -30,7 +30,7 @@ We also prove some auxiliary results about iterated forward differences of the f
 
 open Finset Nat Function Polynomial
 
-variable {M G : Type*} [AddCommMonoid M] [AddCommGroup G] (h : M)
+variable {M G : Type*} [AddMonoid M] [IsAddCommutative M] [AddGroup G] [IsAddCommutative G] (h : M)
 
 /--
 Forward difference operator, `fwdDiff h f n = f (n + h) - f n`. The notation `Δ_[h]` for this
@@ -176,7 +176,7 @@ end newton_formulae
 
 section choose
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 lemma fwdDiff_choose (j : ℕ) : Δ_[1] (fun x ↦ x.choose (j + 1) : ℕ → R) = fun x ↦ x.choose j := by
   ext n
@@ -202,7 +202,7 @@ lemma fwdDiff_iter_choose_zero (m n : ℕ) :
 
 end choose
 
-lemma fwdDiff_addChar_eq {M R : Type*} [AddCommMonoid M] [Ring R]
+lemma fwdDiff_addChar_eq {M R : Type*} [AddMonoid M] [IsAddCommutative M] [Ring R]
     (φ : AddChar M R) (x h : M) (n : ℕ) : Δ_[h]^[n] φ x = (φ h - 1) ^ n * φ x := by
   induction n generalizing x with
   | zero => simp
@@ -226,7 +226,7 @@ We prove formulae about the forward difference operator applied to polynomials:
   A summation formula expressing `∑ k < n, f (y + k • h)` in terms of iterated forward differences.
 -/
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /--
 The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`.

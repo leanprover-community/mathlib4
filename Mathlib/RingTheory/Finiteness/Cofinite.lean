@@ -27,7 +27,7 @@ namespace Submodule
 section Ring
 
 variable {R : Type*} [Ring R]
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- A submodule `S` of a module `M` is co-finitely generated (CoFG) if the quotient
   space `M ⧸ S` is finitely generated. -/
@@ -76,7 +76,7 @@ section LinearMap
 
 open LinearMap
 
-variable {N : Type*} [AddCommGroup N] [Module R N]
+variable {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
 
 /-- The range of a linear map is FG if and only if the kernel is CoFG. -/
 theorem range_fg_iff_ker_cofg {f : M →ₗ[R] N} : (range f).FG ↔ (ker f).CoFG := by

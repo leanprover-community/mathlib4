@@ -20,7 +20,7 @@ open NormedSpace
 
 open scoped Real NNReal RealInnerProductSpace
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V]
 
 namespace InnerProductGeometry
 
@@ -279,7 +279,7 @@ end InnerProductGeometry
 
 namespace EuclideanGeometry
 
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- **Triangle inequality** for angles in Euclidean geometry. -/

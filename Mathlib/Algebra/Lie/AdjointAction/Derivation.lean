@@ -35,7 +35,7 @@ namespace LieDerivation
 
 section AdjointAction
 
-variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R L : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 
 /-- The adjoint action of a Lie algebra `L` on itself, seen as a morphism of Lie algebras from
 `L` to its derivations.

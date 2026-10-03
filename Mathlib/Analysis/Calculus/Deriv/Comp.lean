@@ -43,8 +43,8 @@ open scoped Topology Filter ENNReal
 open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type v} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
+variable {E : Type w} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 variable {f : 𝕜 → F}
 variable {f' : F}
 variable {x : 𝕜}

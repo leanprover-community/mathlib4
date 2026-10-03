@@ -25,7 +25,7 @@ We prove basic properties of (pre)orderings on rings and their supports.
 
 @[expose] public section
 
-variable {R : Type*} [CommRing R] {P : RingPreordering R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {P : RingPreordering R}
 
 /-!
 ### Preorderings
@@ -67,10 +67,10 @@ theorem mem_of_isSumSq {x : R} (hx : IsSumSq x) : x ∈ P := by
 
 section mk'
 
-variable {R : Type*} [CommRing R] {P : Set R} {add} {mul} {sq} {neg_one}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {P : Set R} {add} {mul} {sq} {neg_one}
 
 /-- Construct a preordering from a minimal set of axioms. -/
-def mk' {R : Type*} [CommRing R] (P : Set R)
+def mk' {R : Type*} [Ring R] [IsMulCommutative R] (P : Set R)
     (add : ∀ {x y : R}, x ∈ P → y ∈ P → x + y ∈ P)
     (mul : ∀ {x y : R}, x ∈ P → y ∈ P → x * y ∈ P)
     (sq : ∀ x : R, x * x ∈ P)

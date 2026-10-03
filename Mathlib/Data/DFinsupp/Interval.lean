@@ -185,7 +185,7 @@ end Lattice
 section IsBotZeroClass
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
-variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
+variable [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
   [∀ i, OrderBot (α i)] [∀ i, LocallyFiniteOrder (α i)]
 variable (f : Π₀ i, α i)
 

@@ -53,7 +53,7 @@ variable (𝕜) in
 /-- `zeroAtFilterSubmodule l` is the submodule of `f : α → β` which
 tend to zero along `l`. -/
 def zeroAtFilterSubmodule
-    [TopologicalSpace β] [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β]
+    [TopologicalSpace β] [Semiring 𝕜] [AddMonoid β] [IsAddCommutative β] [Module 𝕜 β]
     [ContinuousAdd β] [ContinuousConstSMul 𝕜 β]
     (l : Filter α) : Submodule 𝕜 (α → β) where
   carrier := {f | ZeroAtFilter l f}
@@ -84,16 +84,16 @@ theorem const_boundedAtFilter [Norm β] (l : Filter α) (c : β) :
 
 -- TODO(https://github.com/leanprover-community/mathlib4/issues/19288): Remove all Comm in the next
 -- three lemmas. This would require modifying the corresponding general asymptotics lemma.
-nonrec theorem BoundedAtFilter.add [SeminormedAddCommGroup β] {l : Filter α} {f g : α → β}
+nonrec theorem BoundedAtFilter.add [SeminormedAddGroup β] [IsAddCommutative β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f + g) := by
   simpa using! hf.add hg
 
-theorem BoundedAtFilter.neg [SeminormedAddCommGroup β] {l : Filter α} {f : α → β}
+theorem BoundedAtFilter.neg [SeminormedAddGroup β] [IsAddCommutative β] {l : Filter α} {f : α → β}
     (hf : BoundedAtFilter l f) : BoundedAtFilter l (-f) :=
   hf.neg_left
 
 theorem BoundedAtFilter.smul
-    [SeminormedRing 𝕜] [SeminormedAddCommGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
+    [SeminormedRing 𝕜] [SeminormedAddGroup β] [IsAddCommutative β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
     {l : Filter α} {f : α → β} (c : 𝕜) (hf : BoundedAtFilter l f) : BoundedAtFilter l (c • f) :=
   hf.const_smul_left c
 
@@ -116,7 +116,7 @@ theorem BoundedAtFilter.mul_zeroAtFilter [SeminormedRing β] {l : Filter α}
 variable (𝕜) in
 /-- The submodule of functions that are bounded along a filter `l`. -/
 def boundedFilterSubmodule
-    [SeminormedRing 𝕜] [SeminormedAddCommGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
+    [SeminormedRing 𝕜] [SeminormedAddGroup β] [IsAddCommutative β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
     Submodule 𝕜 (α → β) where
   carrier := {f | BoundedAtFilter l f}
   zero_mem' := const_boundedAtFilter l 0
@@ -126,14 +126,14 @@ def boundedFilterSubmodule
 variable (𝕜) in
 /-- The subalgebra of functions that are bounded along a filter `l`. -/
 def boundedFilterSubalgebra
-    [SeminormedCommRing 𝕜] [SeminormedRing β] [Algebra 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
+    [SeminormedRing 𝕜] [IsMulCommutative 𝕜] [SeminormedRing β] [Algebra 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
     Subalgebra 𝕜 (α → β) :=
   Submodule.toSubalgebra
     (boundedFilterSubmodule 𝕜 l)
     (const_boundedAtFilter l (1 : β))
     (fun f g hf hg ↦ by simpa only [Pi.one_apply, mul_one, norm_mul] using! hf.mul hg)
 
-theorem BoundedAtFilter.prod {ι : Type*} (s : Finset ι) [SeminormedCommRing β]
+theorem BoundedAtFilter.prod {ι : Type*} (s : Finset ι) [SeminormedRing β] [IsMulCommutative β]
     {l : Filter α} {f : ι → α → β} (h : ∀ i ∈ s, BoundedAtFilter l (f i)) :
     BoundedAtFilter l (∏ i ∈ s, f i) :=
   (boundedFilterSubalgebra β l).prod_mem (f := f) h

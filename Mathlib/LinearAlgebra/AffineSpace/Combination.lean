@@ -48,7 +48,7 @@ open scoped Affine
 
 namespace Finset
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V]
 variable [S : AffineSpace V P]
 variable {ι : Type*} (s : Finset ι)
 variable {ι₂ : Type*} (s₂ : Finset ι₂)
@@ -569,7 +569,7 @@ theorem eq_affineCombination_subset_iff_eq_affineCombination_subtype {p0 : P} {s
 variable {k V}
 
 /-- Affine maps commute with affine combinations. -/
-theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+theorem map_affineCombination {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AffineSpace V₂ P₂]
     (p : ι → P) (w : ι → k) (hw : s.sum w = 1) (f : P →ᵃ[k] P₂) :
     f (s.affineCombination k p w) = s.affineCombination k (f ∘ p) w := by
   have b := Classical.choice (inferInstance : AffineSpace V P).nonempty
@@ -718,8 +718,8 @@ theorem affineCombination_affineCombinationLineMapWeights [DecidableEq ι] (p : 
 
 /-- Applying `AffineMap.homothety` on `Finset.affineCombination` towards one of the weighted points
   is equivalent to moving the weights towards `Finset.affineCombinationSingleWeights`. -/
--- Redeclaring all variables because `AffineMap.homothety` requires `[CommRing k]`
-theorem homothety_affineCombination {k V P : Type*} [CommRing k] [AddCommGroup V] [Module k V]
+-- Redeclaring all variables because `AffineMap.homothety` requires `[Ring k] [IsMulCommutative k]`
+theorem homothety_affineCombination {k V P : Type*} [Ring k] [IsMulCommutative k] [AddGroup V] [IsAddCommutative V] [Module k V]
     [AffineSpace V P] {ι : Type*} [DecidableEq ι] (s : Finset ι) (p : ι → P) (w : ι → k) {i : ι}
     (hi : i ∈ s) (r : k) :
     AffineMap.homothety (p i) r (s.affineCombination k p w) = s.affineCombination k p
@@ -731,7 +731,7 @@ end Finset
 
 section AffineSpace'
 
-variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {ι k V P : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V] [AffineSpace V P]
 
 /-- A `weightedVSub` with sum of weights 0 is in the `vectorSpan` of
 an indexed family. -/
@@ -970,7 +970,7 @@ end AffineSpace'
 
 namespace AffineMap
 
-variable {k : Type*} {V : Type*} (P : Type*) [CommRing k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} (P : Type*) [Ring k] [IsMulCommutative k] [AddGroup V] [IsAddCommutative V] [Module k V]
 variable [AffineSpace V P] {ι : Type*} (s : Finset ι)
 
 -- TODO: define `affineMap.proj`, `affineMap.fst`, `affineMap.snd`

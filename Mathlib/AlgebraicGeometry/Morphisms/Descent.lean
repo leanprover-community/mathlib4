@@ -87,7 +87,7 @@ lemma IsZariskiLocalAtTarget.descendsAlong [IsZariskiLocalAtTarget P] [P'.IsStab
   obtain ⟨R, rfl⟩ := hZ
   exact H f g h hf
 
-variable (Q Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
+variable (Q Q' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop)
 
 variable {Q Q'} in
 lemma of_pullback_fst_Spec_of_codescendsAlong [P.RespectsIso]

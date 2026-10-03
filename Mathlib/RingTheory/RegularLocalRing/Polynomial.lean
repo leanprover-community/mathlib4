@@ -27,7 +27,7 @@ In this file we prove that the polynomial ring over a regular ring is regular.
 
 public section
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
 open IsLocalRing Polynomial Ideal
 

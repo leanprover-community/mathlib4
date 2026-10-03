@@ -42,7 +42,7 @@ open scoped Manifold Topology
 noncomputable section
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : WithTop ℕ∞}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 

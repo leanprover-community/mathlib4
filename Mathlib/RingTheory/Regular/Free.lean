@@ -24,7 +24,7 @@ Jacobson radical of `R` and `x` is `M`-regular, then `M/xM` is free over `R/(x)`
 
 public section
 
-variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
+variable (R : Type*) [Ring R] [IsMulCommutative R] (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 instance [Module.Free R M] (x : R) : Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
   Module.Free.of_equiv ((QuotSMulTop.equivQuotTensor x M).extendScalarsOfSurjective

@@ -18,7 +18,7 @@ This file proves lemmas about `∏ x ∈ Ixx a b, f x` and `∑ x ∈ Ixx a b, f
 
 public section
 
-variable {α M : Type*} [CommMonoid M] {f : α → M} {a b : α}
+variable {α M : Type*} [Monoid M] [IsMulCommutative M] {f : α → M} {a b : α}
 
 namespace Finset
 section PartialOrder
@@ -157,7 +157,7 @@ to `∏_{i ∈ s₀} gᵢ` * `∏_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`. -/
 @[to_additive /-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the sum of `gᵢ` over `i ∈ sₙ` is
 equal to `∑_{i ∈ s₀} gᵢ` + `∑_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`.-/]
 lemma prod_eq_prod_range_sdiff
-    {α β : Type*} [DecidableEq α] [CommMonoid β] (s : ℕ → Finset α) (hs : Monotone s)
+    {α β : Type*} [DecidableEq α] [Monoid β] [IsMulCommutative β] (s : ℕ → Finset α) (hs : Monotone s)
     (g : α → β) (n : ℕ) :
     ∏ i ∈ s n, g i = (∏ i ∈ s 0, g i) * ∏ i ∈ range n, ∏ j ∈ s (i + 1) \ s i, g j := by
   conv_lhs => rw [← hs.partialSups_eq, ← disjiUnion_Iic_disjointed, Iic_eq_Icc,

@@ -39,7 +39,7 @@ theorem IsIntegral.isUnit [Field R] [Ring S] [IsDomain S] [Algebra R S] {x : S}
     (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (R[x]).val
 
 /-- A commutative domain that is an integral algebra over a field is a field. -/
-theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
+theorem isField_of_isIntegral_of_isField' [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [IsDomain S]
     [Algebra R S] [Algebra.IsIntegral R S] (hR : IsField R) : IsField S where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   mul_comm := mul_comm
@@ -80,7 +80,7 @@ end inv
 section
 
 variable {R A B S : Type*}
-variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [Ring S] [IsMulCommutative S]
 variable [Algebra R A] [Algebra R B] {f : R →+* S}
 
 /-- The [Kurosh problem](https://en.wikipedia.org/wiki/Kurosh_problem) asks to show that
@@ -212,7 +212,7 @@ theorem IsIntegral.of_mem_closure' (G : Set A) (hG : ∀ x ∈ G, IsIntegral R x
   Subring.closure_induction hG isIntegral_zero isIntegral_one (fun _ _ _ _ ↦ IsIntegral.add)
     (fun _ _ ↦ IsIntegral.neg) (fun _ _ _ _ ↦ IsIntegral.mul) hx
 
-theorem IsIntegral.of_mem_closure'' {S : Type*} [CommRing S] {f : R →+* S} (G : Set S)
+theorem IsIntegral.of_mem_closure'' {S : Type*} [Ring S] [IsMulCommutative S] {f : R →+* S} (G : Set S)
     (hG : ∀ x ∈ G, f.IsIntegralElem x) : ∀ x ∈ Subring.closure G, f.IsIntegralElem x := fun x hx =>
   @IsIntegral.of_mem_closure' R S _ _ f.toAlgebra G hG x hx
 
@@ -254,7 +254,7 @@ theorem IsIntegral.pow_iff {x : A} {n : ℕ} (hn : 0 < n) : IsIntegral R (x ^ n)
 section Pushout
 
 variable (R S A) [Algebra R S] [int : Algebra.IsIntegral R S]
-variable (SA : Type*) [CommRing SA] [Algebra R SA] [Algebra S SA] [Algebra A SA]
+variable (SA : Type*) [Ring SA] [IsMulCommutative SA] [Algebra R SA] [Algebra S SA] [Algebra A SA]
   [IsScalarTower R S SA] [IsScalarTower R A SA]
 
 theorem Algebra.IsPushout.isIntegral' [IsPushout R A S SA] : Algebra.IsIntegral A SA :=
@@ -337,14 +337,14 @@ end
 
 section IsIntegralClosure
 
-instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :
+instance integralClosure.isIntegralClosure (R A : Type*) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] :
     IsIntegralClosure (integralClosure R A) R A where
   algebraMap_injective := Subtype.coe_injective
   isIntegral_iff {x} := ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
 
 namespace IsIntegralClosure
 
-variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
+variable {R A B : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
 variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
 variable (R B)
 
@@ -402,7 +402,7 @@ theorem isField [Algebra R A] [IsScalarTower R A B] [IsDomain A] (hR : IsField R
   have := IsIntegralClosure.isIntegral_algebra R (A := A) B
   isField_of_isIntegral_of_isField' hR
 
-theorem of_algEquiv {S : Type*} [CommRing S] [Algebra A S] [Algebra R S]
+theorem of_algEquiv {S : Type*} [Ring S] [IsMulCommutative S] [Algebra A S] [Algebra R S]
     (f : B ≃ₐ[R] S) (h : ∀ x, algebraMap A S x = f (algebraMap A B x)) :
     IsIntegralClosure A R S where
   algebraMap_injective :=
@@ -412,7 +412,7 @@ theorem of_algEquiv {S : Type*} [CommRing S] [Algebra A S] [Algebra R S]
 
 section lift
 
-variable (B) {S : Type*} [CommRing S] [Algebra R S]
+variable (B) {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S]
 -- split from above, since otherwise it does not synthesize `Semiring S`
 variable [Algebra S B] [IsScalarTower R S B]
 variable [Algebra R A] [IsScalarTower R A B] [isIntegral : Algebra.IsIntegral R S]
@@ -438,7 +438,7 @@ end lift
 
 section Equiv
 
-variable (R B) (A' : Type*) [CommRing A']
+variable (R B) (A' : Type*) [Ring A'] [IsMulCommutative A']
 variable [Algebra A' B] [IsIntegralClosure A' R B]
 variable [Algebra R A] [Algebra R A'] [IsScalarTower R A B] [IsScalarTower R A' B]
 
@@ -465,7 +465,7 @@ section Algebra
 open Algebra
 
 variable {R A B S T : Type*}
-variable [CommRing R] [CommRing A] [Ring B] [CommRing S] [CommRing T]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
 variable [Algebra A B] [Algebra R B] (f : R →+* S) (g : S →+* T)
 variable [Algebra R A] [IsScalarTower R A B]
 
@@ -512,7 +512,7 @@ protected theorem RingHom.IsIntegral.trans
 
 /-- If `R → A → B` is an algebra tower, `C` is the integral closure of `R` in `B`
 and `A` is integral over `R`, then `C` is the integral closure of `A` in `B`. -/
-lemma IsIntegralClosure.tower_top {B C : Type*} [CommSemiring C] [CommRing B]
+lemma IsIntegralClosure.tower_top {B C : Type*} [Semiring C] [IsMulCommutative C] [Ring B] [IsMulCommutative B]
     [Algebra R B] [Algebra A B] [Algebra C B] [IsScalarTower R A B]
     [IsIntegralClosure C R B] [Algebra.IsIntegral R A] :
     IsIntegralClosure C A B :=
@@ -547,7 +547,7 @@ theorem Algebra.IsIntegral.tower_bot [IsDomain S] [Algebra R S] [Algebra R T] [A
     rw [← IsScalarTower.algebraMap_eq R S T]
     exact h.isIntegral
 
-theorem IsIntegral.tower_bot_of_field {R A B : Type*} [CommRing R] [Field A]
+theorem IsIntegral.tower_bot_of_field {R A B : Type*} [Ring R] [IsMulCommutative R] [Field A]
     [Ring B] [Nontrivial B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
     {x : A} (h : IsIntegral R (algebraMap A B x)) : IsIntegral R x :=
   h.tower_bot (algebraMap A B).injective
@@ -644,7 +644,7 @@ theorem Algebra.ker_algebraMap_isMaximal_of_isIntegral (k : Type*) [Field k] [Al
 
 end Algebra
 
-theorem integralClosure_idem {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
+theorem integralClosure_idem {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] :
     integralClosure (integralClosure R A) A = ⊥ :=
   letI := (integralClosure R A).algebra
   eq_bot_iff.2 fun x hx ↦ Algebra.mem_bot.2
@@ -652,7 +652,7 @@ theorem integralClosure_idem {R A : Type*} [CommRing R] [CommRing A] [Algebra R 
 
 section IsDomain
 
-variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra R S]
 
 instance : IsDomain (integralClosure R S) :=
   inferInstance

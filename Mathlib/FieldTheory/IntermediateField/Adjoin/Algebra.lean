@@ -189,7 +189,7 @@ lemma _root_.Algebra.finite_of_essFiniteType_of_isAlgebraic
 
 section RingHom
 
-variable {A B C : Type*} [Field A] [CommSemiring B] [Field C] [Algebra A B]
+variable {A B C : Type*} [Field A] [Semiring B] [IsMulCommutative B] [Field C] [Algebra A B]
   [Algebra B C] [Algebra A C] [IsScalarTower A B C] (b : B)
 
 /-- Ring homomorphism between `A[b]` and `A⟮↑b⟯`. -/
@@ -310,7 +310,7 @@ end IntermediateField
 
 namespace IsFractionRing
 
-variable {F A K L : Type*} [Field F] [CommRing A] [Algebra F A]
+variable {F A K L : Type*} [Field F] [Ring A] [IsMulCommutative A] [Algebra F A]
   [Field K] [Algebra F K] [Algebra A K] [IsFractionRing A K] [Field L] [Algebra F L]
   {g : A →ₐ[F] L} {f : K →ₐ[F] L}
 

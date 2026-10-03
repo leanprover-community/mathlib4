@@ -19,7 +19,7 @@ This file lifts functions `α →₀ M₀` to functions `Sym2 α →₀ M₀` by
 
 open Sym2
 
-variable {α M₀ : Type*} [CommMonoidWithZero M₀] {f : α →₀ M₀}
+variable {α M₀ : Type*} [MonoidWithZero M₀] [IsMulCommutative M₀] {f : α →₀ M₀}
 
 namespace Finsupp
 

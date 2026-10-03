@@ -33,8 +33,8 @@ universe w w₁ w₂₀ w₂₁ v₁ v₂ v₃ u
 namespace Module
 
 variable {A : Type u} [Ring A] {M₁ : Type v₁} {M₂ : Type v₂} {M₃ : Type v₃}
-  [AddCommGroup M₁] [Module A M₁] [AddCommGroup M₂] [Module A M₂]
-  [AddCommGroup M₃] [Module A M₃]
+  [AddGroup M₁] [IsAddCommutative M₁] [Module A M₁] [AddGroup M₂] [IsAddCommutative M₂] [Module A M₂]
+  [AddGroup M₃] [IsAddCommutative M₃] [Module A M₃]
 
 namespace Presentation
 

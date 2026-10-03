@@ -84,7 +84,7 @@ def evalExpr (e : Expr) : AtomM Simp.Result := do
   let some r ← evalExpr? e | failure
   pure r
 
-variable {R : Type*} [CommSemiring R] {n d : ℕ}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {n d : ℕ}
 
 theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
 theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm

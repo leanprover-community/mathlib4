@@ -46,14 +46,14 @@ open Polynomial
 open Finset
 
 variable {M N G R S F : Type*}
-variable [CommMonoid M] [CommMonoid N] [DivisionCommMonoid G]
+variable [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] [DivisionMonoid G] [IsMulCommutative G]
 
 section rootsOfUnity
 
 variable {k l : ℕ}
 
 /-- `rootsOfUnity k M` is the subgroup of elements `m : Mˣ` that satisfy `m ^ k = 1`. -/
-def rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
+def rootsOfUnity (k : ℕ) (M : Type*) [Monoid M] [IsMulCommutative M] : Subgroup Mˣ where
   carrier := {ζ | ζ ^ k = 1}
   one_mem' := one_pow _
   mul_mem' _ _ := by simp_all only [Set.mem_ofPred_eq, mul_pow, one_mul]
@@ -75,12 +75,12 @@ theorem mem_rootsOfUnity' (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ
   rw [mem_rootsOfUnity]; norm_cast
 
 @[simp]
-theorem rootsOfUnity_one (M : Type*) [CommMonoid M] : rootsOfUnity 1 M = ⊥ := by
+theorem rootsOfUnity_one (M : Type*) [Monoid M] [IsMulCommutative M] : rootsOfUnity 1 M = ⊥ := by
   ext1
   simp only [mem_rootsOfUnity, pow_one, Subgroup.mem_bot]
 
 @[simp]
-lemma rootsOfUnity_zero (M : Type*) [CommMonoid M] : rootsOfUnity 0 M = ⊤ := by
+lemma rootsOfUnity_zero (M : Type*) [Monoid M] [IsMulCommutative M] : rootsOfUnity 0 M = ⊤ := by
   ext1
   simp only [mem_rootsOfUnity, pow_zero, Subgroup.mem_top]
 
@@ -120,13 +120,13 @@ lemma disjoint_rootsOfUnity_of_coprime {m n : ℕ} (h : m.Coprime n) :
   simp [disjoint_iff_inf_le, rootsOfUnity_inf_rootsOfUnity, Nat.coprime_iff_gcd_eq_one.mp h]
 
 @[norm_cast]
-theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
+theorem rootsOfUnity.coe_pow [Monoid R] [IsMulCommutative R] (ζ : rootsOfUnity k R) (m : ℕ) :
     (((ζ ^ m :) : Rˣ) : R) = ((ζ : Rˣ) : R) ^ m := by
   rw [Subgroup.coe_pow, Units.val_pow_eq_pow_val]
 
 /-- The canonical isomorphism from the `n`th roots of unity in `Mˣ`
 to the `n`th roots of unity in `M`. -/
-def rootsOfUnityUnitsMulEquiv (M : Type*) [CommMonoid M] (n : ℕ) :
+def rootsOfUnityUnitsMulEquiv (M : Type*) [Monoid M] [IsMulCommutative M] (n : ℕ) :
     rootsOfUnity n Mˣ ≃* rootsOfUnity n M where
   toFun ζ := ⟨ζ.val, (mem_rootsOfUnity ..).mpr <| (mem_rootsOfUnity' ..).mp ζ.prop⟩
   invFun ζ := ⟨toUnits ζ.val, by
@@ -138,7 +138,7 @@ def rootsOfUnityUnitsMulEquiv (M : Type*) [CommMonoid M] (n : ℕ) :
 
 section CommMonoid
 
-variable [CommMonoid R] [CommMonoid S] [FunLike F R S]
+variable [Monoid R] [IsMulCommutative R] [Monoid S] [IsMulCommutative S] [FunLike F R S]
 
 /-- Restrict a ring homomorphism to the nth roots of unity. -/
 def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ) :
@@ -188,7 +188,7 @@ end CommMonoid
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 open Set in
 theorem Units.val_set_image_rootsOfUnity_two [NoZeroDivisors R] :
@@ -205,7 +205,7 @@ end CommRing
 section IsDomain
 
 -- The following results need `k` to be nonzero.
-variable [NeZero k] [CommRing R] [IsDomain R]
+variable [NeZero k] [Ring R] [IsMulCommutative R] [IsDomain R]
 
 theorem mem_rootsOfUnity_iff_mem_nthRoots {ζ : Rˣ} :
     ζ ∈ rootsOfUnity k R ↔ (ζ : R) ∈ nthRoots k (1 : R) := by
@@ -283,7 +283,7 @@ end IsDomain
 
 section Reduced
 
-variable (R) [CommRing R] [IsReduced R]
+variable (R) [Ring R] [IsMulCommutative R] [IsReduced R]
 
 -- simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ) [ExpChar R p] {ζ : Rˣ} :
@@ -308,8 +308,8 @@ namespace IsCyclic
 `n` into another group `G'` to the group of `n`th roots of unity in `G'` determined by a generator
 `g` of `G`. It sends `φ : G →* G'` to `φ g`. -/
 noncomputable
-def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] {g : G}
-    (hg : ∀ (x : G), x ∈ Subgroup.zpowers g) (G' : Type*) [CommGroup G'] :
+def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [Group G] [IsMulCommutative G] {g : G}
+    (hg : ∀ (x : G), x ∈ Subgroup.zpowers g) (G' : Type*) [Group G'] [IsMulCommutative G'] :
     (G →* G') ≃* rootsOfUnity (Nat.card G) G' where
   toFun φ := ⟨(IsUnit.map φ <| Group.isUnit g).unit, by
     simp only [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec,
@@ -327,8 +327,8 @@ def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] {g : G}
 
 /-- The group of group homomorphisms from a finite cyclic group `G` of order `n` into another
 group `G'` is (noncanonically) isomorphic to the group of `n`th roots of unity in `G'`. -/
-lemma monoidHom_mulEquiv_rootsOfUnity (G : Type*) [CommGroup G] [IsCyclic G]
-    (G' : Type*) [CommGroup G'] :
+lemma monoidHom_mulEquiv_rootsOfUnity (G : Type*) [Group G] [IsMulCommutative G] [IsCyclic G]
+    (G' : Type*) [Group G'] [IsMulCommutative G'] :
     Nonempty <| (G →* G') ≃* rootsOfUnity (Nat.card G) G' := by
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
   exact ⟨monoidHomMulEquivRootsOfUnityOfGenerator hg G'⟩

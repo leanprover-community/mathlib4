@@ -61,7 +61,7 @@ open Complex
 
 open scoped Topology
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E]
 
 theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E}
     (h₁ : HasStrictFDerivAt f f' x) (h₂ : f x ∈ slitPlane) :

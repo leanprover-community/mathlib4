@@ -25,7 +25,7 @@ public section
 
 namespace AddSubgroup
 
-variable {M : Type*} [AddCommGroup M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M]
 
 open Module
 

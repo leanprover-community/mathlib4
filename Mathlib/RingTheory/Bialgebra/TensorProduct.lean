@@ -26,7 +26,7 @@ namespace Bialgebra.TensorProduct
 
 open Coalgebra.TensorProduct
 
-variable {R S A B C D : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable {R S A B C D : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B]
 
 section Heterogeneous
 variable (R S A B) [Bialgebra S A] [Bialgebra R B] [Algebra R A] [Algebra R S] [IsScalarTower R S A]
@@ -177,7 +177,7 @@ end Bialgebra.TensorProduct
 
 namespace BialgHom
 
-variable {R A B C : Type*} [CommRing R] [Ring A] [Ring B] [Ring C]
+variable {R A B C : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Ring B] [Ring C]
     [Bialgebra R A] [Bialgebra R B] [Bialgebra R C]
 
 variable (A)
@@ -193,7 +193,7 @@ abbrev rTensor (f : B →ₐc[R] C) : B ⊗[R] A →ₐc[R] C ⊗[R] A :=
 end BialgHom
 
 namespace Bialgebra
-variable {R A B ι κ : Type*} [CommSemiring R]
+variable {R A B ι κ : Type*} [Semiring R] [IsMulCommutative R]
 
 section Semiring
 variable [Semiring A] [Bialgebra R A] [Semiring B] [Bialgebra R B] {a : A} {b : B}
@@ -244,12 +244,12 @@ def _root_.Coalgebra.Repr.mul {b : A} (ℛ₁ : Coalgebra.Repr R a ι) (ℛ₂ :
 end Semiring
 
 @[simp]
-lemma counitAlgHom_comp_includeRight [CommSemiring A] [Semiring B] [Algebra R A] [Bialgebra R B] :
+lemma counitAlgHom_comp_includeRight [Semiring A] [IsMulCommutative A] [Semiring B] [Algebra R A] [Bialgebra R B] :
     ((counitAlgHom A (A ⊗[R] B)).restrictScalars R).comp Algebra.TensorProduct.includeRight =
       (Algebra.ofId R A).comp (counitAlgHom R B) := by
   ext; simp [Algebra.algebraMap_eq_smul_one]
 
-lemma comul_includeRight [CommSemiring A] [CommSemiring B] [Bialgebra R B] [Algebra R A] :
+lemma comul_includeRight [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Bialgebra R B] [Algebra R A] :
     (RingHomClass.toRingHom (Bialgebra.comulAlgHom A (A ⊗[R] B))).comp
       (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) =
       (Algebra.TensorProduct.mapRingHom (algebraMap R A)
@@ -261,7 +261,7 @@ lemma comul_includeRight [CommSemiring A] [CommSemiring B] [Bialgebra R B] [Alge
   ext x; simp [← (ℛ R x).eq, TensorProduct.tmul_sum]
 
 section CommSemiring
-variable [CommSemiring A] [Bialgebra R A]
+variable [Semiring A] [IsMulCommutative A] [Bialgebra R A]
 
 variable (R A) in
 /-- Multiplication on a commutative bialgebra as a bialgebra hom. -/

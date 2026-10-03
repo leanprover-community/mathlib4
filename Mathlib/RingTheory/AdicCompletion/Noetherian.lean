@@ -17,7 +17,7 @@ public section
 
 open IsLocalRing Module
 
-variable {R : Type*} [CommRing R] (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R) (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [IsNoetherianRing R] [Module.Finite R M]
 
 lemma IsHausdorff.of_le_jacobson (h : I ≤ Ideal.jacobson ⊥) : IsHausdorff I M :=
@@ -35,7 +35,7 @@ lemma IsHausdorff.of_isTorsionFree [IsDomain R] [IsTorsionFree R M] (h : I ≠ �
 theorem IsHausdorff.of_isDomain [IsDomain R] (h : I ≠ ⊤) : IsHausdorff I R :=
   .of_isTorsionFree I R h
 
-instance (priority := 100) {A : Type*} [CommRing A] [IsArtinianRing A] [IsLocalRing A] :
+instance (priority := 100) {A : Type*} [Ring A] [IsMulCommutative A] [IsArtinianRing A] [IsLocalRing A] :
     IsAdicComplete (IsLocalRing.maximalIdeal A) A where
   prec' f hf := by
     obtain ⟨n, hn⟩ := (isArtinianRing_iff_isNilpotent_maximalIdeal A).mp ‹_›

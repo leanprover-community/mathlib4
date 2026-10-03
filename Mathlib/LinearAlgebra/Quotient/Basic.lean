@@ -34,7 +34,7 @@ section Ring
 
 namespace Submodule
 
-variable {R M : Type*} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} {x y : M} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable (p p' p'' : Submodule R M)
 
 open LinearMap QuotientAddGroup
@@ -109,7 +109,7 @@ theorem strictMono_comap_prod_map :
 
 end
 
-variable {R₂ M₂ : Type*} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
+variable {R₂ M₂ : Type*} [Ring R₂] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
 
 /-- The map from the quotient of `M` by a submodule `p` to `M₂` induced by a linear map `f : M → M₂`
 vanishing on `p`, as a linear map. -/
@@ -125,7 +125,7 @@ theorem liftQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h (
 theorem liftQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftQ f h).comp p.mkQ = f := by ext; rfl
 
 theorem pi_liftQ_eq_liftQ_pi {ι : Type*} {N : ι → Type*}
-    [∀ i, AddCommGroup (N i)] [∀ i, Module R (N i)]
+    [∀ i, AddGroup (N i)] [∀ i, IsAddCommutative (N i)] [∀ i, Module R (N i)]
     (f : (i : ι) → M →ₗ[R] (N i)) {p : Submodule R M} (h : ∀ i, p ≤ ker (f i)) :
     LinearMap.pi (fun i ↦ p.liftQ (f i) (h i)) =
       p.liftQ (LinearMap.pi f) (LinearMap.ker_pi f ▸ le_iInf h) := by
@@ -187,7 +187,7 @@ theorem mapQ_zero (h : p ≤ q.comap (0 : M →ₛₗ[τ₁₂] M₂) := (by sim
 /-- Given submodules `p ⊆ M`, `p₂ ⊆ M₂`, `p₃ ⊆ M₃` and maps `f : M → M₂`, `g : M₂ → M₃` inducing
 `mapQ f : M ⧸ p → M₂ ⧸ p₂` and `mapQ g : M₂ ⧸ p₂ → M₃ ⧸ p₃` then
 `mapQ (g ∘ f) = (mapQ g) ∘ (mapQ f)`. -/
-theorem mapQ_comp {R₃ M₃ : Type*} [Ring R₃] [AddCommGroup M₃] [Module R₃ M₃] (p₂ : Submodule R₂ M₂)
+theorem mapQ_comp {R₃ M₃ : Type*} [Ring R₃] [AddGroup M₃] [IsAddCommutative M₃] [Module R₃ M₃] (p₂ : Submodule R₂ M₂)
     (p₃ : Submodule R₃ M₃) {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃} [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
     (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ₂₃] M₃) (hf : p ≤ p₂.comap f) (hg : p₂ ≤ p₃.comap g)
     (h := hf.trans (comap_mono hg)) :
@@ -317,7 +317,7 @@ theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂]
 
 variable {R₂ : Type*} [Ring R₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
   [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R₂ N]
+variable {M N : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R₂ N]
   (P : Submodule R M) (Q : Submodule R₂ N)
 
 /-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
@@ -340,7 +340,7 @@ lemma Quotient.equiv_symm (f : M ≃ₛₗ[σ₁₂] N) (hf : P.map (f : M →�
   rfl
 
 @[simp]
-theorem Quotient.equiv_trans {R₃ : Type*} {O : Type*} [Ring R₃] [AddCommGroup O] [Module R₃ O]
+theorem Quotient.equiv_trans {R₃ : Type*} {O : Type*} [Ring R₃] [AddGroup O] [IsAddCommutative O] [Module R₃ O]
     {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} {σ₁₃ : R →+* R₃} {σ₃₁ : R₃ →+* R}
     [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
     [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
@@ -366,7 +366,7 @@ section Ring
 
 variable {R M R₂ M₂ R₃ M₃ : Type*}
 variable [Ring R] [Ring R₂] [Ring R₃]
-variable [AddCommMonoid M] [AddCommGroup M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃}
 variable [RingHomSurjective τ₁₂]
@@ -393,7 +393,7 @@ open LinearMap
 
 namespace Submodule
 
-variable {R M : Type*} {x : M} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} {x : M} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable (p : Submodule R M)
 
 /-- If `p = ⊥`, then `M / p ≃ₗ[R] M`. -/
@@ -428,8 +428,8 @@ end Ring
 
 section CommRing
 
-variable {R M M₂ : Type*} {x y : M} [CommRing R] [AddCommGroup M] [Module R M]
-  [AddCommGroup M₂] [Module R M₂] (p : Submodule R M) (q : Submodule R M₂)
+variable {R M M₂ : Type*} {x y : M} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
+  [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] (p : Submodule R M) (q : Submodule R M₂)
 
 namespace Submodule
 

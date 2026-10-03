@@ -801,7 +801,7 @@ theorem stoppedValue_const (u : ι → Ω → β) (i : ι) : (stoppedValue u fun
 @[simp] lemma stoppedValue_comp {γ : Type*} (f : β → γ) :
     stoppedValue (fun t ω ↦ f (u t ω)) τ = fun ω ↦ f (stoppedValue u τ ω) := rfl
 
-lemma stoppedValue_norm [SeminormedAddCommGroup β] :
+lemma stoppedValue_norm [SeminormedAddGroup β] [IsAddCommutative β] :
     stoppedValue (fun t ω ↦ ‖u t ω‖) τ = fun ω ↦ ‖stoppedValue u τ ω‖ := rfl
 
 @[to_additive (attr := simp)]
@@ -844,7 +844,7 @@ theorem stoppedProcess_eq_stoppedValue_apply (i : ι) (ω : Ω) :
 @[simp] lemma stoppedProcess_comp {γ : Type*} (f : β → γ) :
     stoppedProcess (fun t ω ↦ f (u t ω)) τ = fun i ω ↦ f (stoppedProcess u τ i ω) := rfl
 
-lemma stoppedProcess_norm [SeminormedAddCommGroup β] :
+lemma stoppedProcess_norm [SeminormedAddGroup β] [IsAddCommutative β] :
     stoppedProcess (fun t ω ↦ ‖u t ω‖) τ = fun i ω ↦ ‖stoppedProcess u τ i ω‖ := rfl
 
 @[to_additive (attr := simp)]
@@ -1086,7 +1086,7 @@ section StoppedValueOfMemFinset
 
 variable [Nonempty ι] {μ : Measure Ω} {τ : Ω → WithTop ι} {E : Type*} {p : ℝ≥0∞} {u : ι → Ω → E}
 
-theorem stoppedValue_eq_of_mem_finset [AddCommMonoid E] {s : Finset ι}
+theorem stoppedValue_eq_of_mem_finset [AddMonoid E] [IsAddCommutative E] {s : Finset ι}
    (hbdd : ∀ ω, τ ω ∈ (WithTop.some '' s)) :
     stoppedValue u τ = ∑ i ∈ s, Set.indicator {ω | τ ω = i} (u i) := by
   ext y
@@ -1104,7 +1104,7 @@ theorem stoppedValue_eq_of_mem_finset [AddCommMonoid E] {s : Finset ι}
     lift τ y to ι using this with i hi
     simpa using hbdd
 
-theorem stoppedValue_eq' [Preorder ι] [LocallyFiniteOrderBot ι] [AddCommMonoid E] {N : ι}
+theorem stoppedValue_eq' [Preorder ι] [LocallyFiniteOrderBot ι] [AddMonoid E] [IsAddCommutative E] {N : ι}
     (hbdd : ∀ ω, τ ω ≤ N) :
     stoppedValue u τ = ∑ i ∈ Finset.Iic N, Set.indicator {ω | τ ω = i} (u i) := by
   refine stoppedValue_eq_of_mem_finset fun ω ↦ ?_
@@ -1114,7 +1114,7 @@ theorem stoppedValue_eq' [Preorder ι] [LocallyFiniteOrderBot ι] [AddCommMonoid
   lift τ ω to ι using h_top with i hi
   exact ⟨i, mod_cast hbdd, rfl⟩
 
-theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : Finset ι} (n : ι)
+theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddMonoid E] [IsAddCommutative E] {s : Finset ι} (n : ι)
     (hbdd : ∀ ω, τ ω < n → τ ω ∈ WithTop.some '' s) :
     stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
       ∑ i ∈ s with i < n, Set.indicator {ω | τ ω = i} (u i) := by
@@ -1147,7 +1147,7 @@ theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : 
       rw [Set.mem_ofPred, ← hi]
       exact mod_cast hneq.symm
 
-theorem stoppedProcess_eq'' [LinearOrder ι] [LocallyFiniteOrderBot ι] [AddCommMonoid E] (n : ι) :
+theorem stoppedProcess_eq'' [LinearOrder ι] [LocallyFiniteOrderBot ι] [AddMonoid E] [IsAddCommutative E] (n : ι) :
     stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
       ∑ i ∈ Finset.Iio n, Set.indicator {ω | τ ω = i} (u i) := by
   have h_mem : ∀ ω, τ ω < n → τ ω ∈ WithTop.some '' (Finset.Iio n) := by
@@ -1162,7 +1162,7 @@ theorem stoppedProcess_eq'' [LinearOrder ι] [LocallyFiniteOrderBot ι] [AddComm
 
 section StoppedValue
 
-variable [PartialOrder ι] {ℱ : Filtration ι m} [NormedAddCommGroup E]
+variable [PartialOrder ι] {ℱ : Filtration ι m} [NormedAddGroup E] [IsAddCommutative E]
 
 theorem memLp_stoppedValue_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀ n, MemLp (u n) p μ)
     {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ WithTop.some '' s) :
@@ -1208,7 +1208,7 @@ end StoppedValue
 section StoppedProcess
 
 variable [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι] [FirstCountableTopology ι]
-  {ℱ : Filtration ι m} [NormedAddCommGroup E]
+  {ℱ : Filtration ι m} [NormedAddGroup E] [IsAddCommutative E]
 
 theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀ n, MemLp (u n) p μ)
     (n : ι) {s : Finset ι} (hbdd : ∀ ω, τ ω < n → τ ω ∈ WithTop.some '' s) :
@@ -1286,7 +1286,7 @@ section Nat
 
 variable {u : ℕ → Ω → β} {τ π : Ω → WithTop ℕ}
 
-theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ⊤) :
+theorem stoppedValue_sub_eq_sum [AddGroup β] [IsAddCommutative β] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ⊤) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.Ico (τ ω).untopA (π ω).untopA, (u (i + 1) - u i)) ω := by
   ext ω
@@ -1294,7 +1294,7 @@ theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ �
   rw [Finset.sum_Ico_eq_sub _ h_le', Finset.sum_range_sub, Finset.sum_range_sub]
   simp [stoppedValue]
 
-theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) :
+theorem stoppedValue_sub_eq_sum' [AddGroup β] [IsAddCommutative β] (hle : τ ≤ π) {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω ≤ i ∧ i < π ω} (u (i + 1) - u i)) ω := by
   have hπ_top ω : π ω ≠ ⊤ := fun h ↦ by specialize hbdd ω; simp [h] at hbdd
@@ -1314,7 +1314,7 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
 
 section AddCommMonoid
 
-variable [AddCommMonoid β]
+variable [AddMonoid β] [IsAddCommutative β]
 
 theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u τ = fun x =>
     (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω = i} (u i)) x := by
@@ -1390,7 +1390,7 @@ theorem stoppedValue_piecewise_const {ι' α : Type*} [Nonempty ι'] {i j : ι'}
     stoppedValue f (s.piecewise (fun _ => i) fun _ => j) = s.piecewise (f i) (f j) := by
   ext ω; rw [stoppedValue]; by_cases hx : ω ∈ s <;> simp [hx]
 
-theorem stoppedValue_piecewise_const' {ι' α : Type*} [AddCommGroup α]
+theorem stoppedValue_piecewise_const' {ι' α : Type*} [AddGroup α] [IsAddCommutative α]
     [Nonempty ι'] {i j : ι'} {f : ι' → Ω → α} :
     stoppedValue f (s.piecewise (fun _ => i) fun _ => j) =
     s.indicator (f i) + sᶜ.indicator (f j) := by
@@ -1404,7 +1404,7 @@ section Condexp
 
 
 variable [LinearOrder ι] {μ : Measure Ω} {ℱ : Filtration ι m} {τ σ : Ω → WithTop ι} {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {f : Ω → E}
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [CompleteSpace E] {f : Ω → E}
 
 theorem condExp_stopping_time_ae_eq_restrict_eq_of_countable_range [SigmaFiniteFiltration μ ℱ]
     (hτ : IsStoppingTime ℱ τ) (h_countable : (Set.range τ).Countable)

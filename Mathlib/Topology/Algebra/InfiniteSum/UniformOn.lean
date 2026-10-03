@@ -27,7 +27,7 @@ open Filter Function
 
 open scoped Topology
 
-variable {α β ι : Type*} [CommMonoid α] {f : ι → β → α} {g : β → α}
+variable {α β ι : Type*} [Monoid α] [IsMulCommutative α] {f : ι → β → α} {g : β → α}
   {x : β} {s : Set β} {I : Finset ι} [UniformSpace α]
 
 /-!

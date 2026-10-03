@@ -40,7 +40,7 @@ open Submodule
 
 namespace Ring
 
-variable [∀ i, CommRing (G i)]
+variable [∀ i, Ring (G i)] [∀ i, IsMulCommutative (G i)]
 
 section
 
@@ -119,7 +119,7 @@ theorem induction_on [Nonempty ι] [IsDirectedOrder ι] {C : DirectLimit G f →
   let ⟨i, x, hx⟩ := exists_of z
   hx ▸ ih i x
 
-variable (P : Type*) [CommRing P]
+variable (P : Type*) [Ring P] [IsMulCommutative P]
 
 open FreeCommRing
 
@@ -217,9 +217,9 @@ theorem of_injective [IsDirectedOrder ι] [DirectedSystem G fun i j h ↦ f' i j
 section functorial
 
 variable {f : ∀ i j, i ≤ j → G i →+* G j}
-variable {G' : ι → Type*} [∀ i, CommRing (G' i)]
+variable {G' : ι → Type*} [∀ i, Ring (G' i)] [∀ i, IsMulCommutative (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →+* G' j}
-variable {G'' : ι → Type*} [∀ i, CommRing (G'' i)]
+variable {G'' : ι → Type*} [∀ i, Ring (G'' i)] [∀ i, IsMulCommutative (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →+* G'' j}
 
 /--

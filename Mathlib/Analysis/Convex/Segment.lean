@@ -40,7 +40,7 @@ open scoped Pointwise Convex
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E]
 
 section SMul
 
@@ -169,7 +169,7 @@ open scoped Convex
 section OrderedRing
 
 variable (𝕜) [Ring 𝕜] [PartialOrder 𝕜] [AddRightMono 𝕜]
-  [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [Module 𝕜 E] [Module 𝕜 F]
+  [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [AddGroup G] [IsAddCommutative G] [Module 𝕜 E] [Module 𝕜 F]
 
 section DenselyOrdered
 
@@ -306,8 +306,8 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_sub [ZeroLEOneClass 𝕜]
 
 end OrderedRing
 
-theorem sameRay_of_mem_segment [CommRing 𝕜] [PartialOrder 𝕜] [IsStrictOrderedRing 𝕜]
-    [AddCommGroup E] [Module 𝕜 E] {x y z : E}
+theorem sameRay_of_mem_segment [Ring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {x y z : E}
     (h : x ∈ [y -[𝕜] z]) : SameRay 𝕜 (x - y) (z - x) := by
   rw [segment_eq_image'] at h
   rcases h with ⟨θ, ⟨hθ₀, hθ₁⟩, rfl⟩
@@ -315,7 +315,7 @@ theorem sameRay_of_mem_segment [CommRing 𝕜] [PartialOrder 𝕜] [IsStrictOrde
     (SameRay.sameRay_nonneg_smul_left (z - y) hθ₀).nonneg_smul_right (sub_nonneg.2 hθ₁)
 
 lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
-    [CommRing 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [IsDomain 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [Ring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [IsDomain 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
     {x y : E} (h : LinearIndependent 𝕜 ![x, y]) {s t : 𝕜} (hs : s ≠ t) (c : E) :
     [c + x -[𝕜] c + t • y] ∩ [c + x -[𝕜] c + s • y] = {c + x} := by
   apply segment_inter_eq_endpoint_of_linearIndependent_sub
@@ -328,7 +328,7 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
 
 section LinearOrderedRing
 
-variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y : E}
+variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {x y : E}
 
 theorem midpoint_mem_openSegment [Invertible (2 : 𝕜)] (x y : E) :
     midpoint 𝕜 x y ∈ openSegment 𝕜 x y := by
@@ -373,7 +373,7 @@ end LinearOrderedRing
 
 section LinearOrderedSemifield
 
-variable [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
   {x y z : E}
 
 theorem mem_segment_iff_div :
@@ -402,7 +402,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {x y z : E}
 
 theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (z - x) := by
   refine ⟨sameRay_of_mem_segment, fun h => ?_⟩
@@ -455,7 +455,7 @@ variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E]
+variable [AddMonoid E] [IsAddCommutative E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E]
   {x y : E}
 
 theorem segment_subset_Icc (h : x ≤ y) : [x -[𝕜] y] ⊆ Icc x y := by
@@ -472,7 +472,7 @@ end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 
-variable [AddCommMonoid E] [PartialOrder E] [IsOrderedCancelAddMonoid E]
+variable [AddMonoid E] [IsAddCommutative E] [PartialOrder E] [IsOrderedCancelAddMonoid E]
   [Module 𝕜 E] [PosSMulStrictMono 𝕜 E] {x y : E}
 
 theorem openSegment_subset_Ioo (h : x < y) : openSegment 𝕜 x y ⊆ Ioo x y := by
@@ -489,7 +489,7 @@ end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E]
+variable [AddMonoid E] [IsAddCommutative E] [LinearOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E]
   {a b : 𝕜}
 
 theorem segment_subset_uIcc (x y : E) : [x -[𝕜] y] ⊆ uIcc x y := by
@@ -624,7 +624,7 @@ end Nonneg
 
 namespace Prod
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F]
 
 theorem segment_subset (x y : E × F) : segment 𝕜 x y ⊆ segment 𝕜 x.1 y.1 ×ˢ segment 𝕜 x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
@@ -664,7 +664,7 @@ end Prod
 
 namespace Pi
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [∀ i, AddCommMonoid (M i)] [∀ i, Module 𝕜 (M i)] {s : Set ι}
+variable [Semiring 𝕜] [PartialOrder 𝕜] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module 𝕜 (M i)] {s : Set ι}
 
 theorem segment_subset (x y : ∀ i, M i) : segment 𝕜 x y ⊆ s.pi fun i => segment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -

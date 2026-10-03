@@ -44,7 +44,7 @@ variable {R S : Type*} [LinearOrder R] [LinearOrder S]
 
 namespace ArchimedeanClass
 section Ring
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 section IsOrderedRing
 variable [IsStrictOrderedRing R]
@@ -130,7 +130,7 @@ noncomputable def addValuation : AddValuation R (ArchimedeanClass R) := AddValua
 
 @[simp] theorem addValuation_apply (a : R) : addValuation R a = mk a := rfl
 
-variable {S : Type*} [LinearOrder S] [CommRing S] [IsStrictOrderedRing S]
+variable {S : Type*} [LinearOrder S] [Ring S] [IsMulCommutative S] [IsStrictOrderedRing S]
 
 @[simp]
 theorem orderHom_zero (f : S →+o R) : orderHom f 0 = mk (f 1) := by

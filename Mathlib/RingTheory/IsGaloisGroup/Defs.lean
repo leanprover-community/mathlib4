@@ -39,7 +39,7 @@ extensions of rings `B/A` seems to outweigh these terminological issues.
 
 assert_not_exists IsFractionRing
 
-variable (G A A' B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
+variable (G A A' B : Type*) [Group G] [Semiring A] [IsMulCommutative A] [Semiring B] [Algebra A B]
   [MulSemiringAction G B]
 
 /-- `G` is a Galois group for `L/K` if the action of `G` on `L` is faithful with fixed field `K`.
@@ -96,7 +96,7 @@ theorem of_algEquiv [hG : IsGaloisGroup G A B] (B' : Type*) [Semiring B']
       simp [he, hx'])
     exact ⟨a, by rw [← e.commutes, ha, AlgEquiv.apply_symm_apply]⟩⟩
 
-theorem of_ringHom_surjective [hG : IsGaloisGroup G A B] [CommSemiring A']
+theorem of_ringHom_surjective [hG : IsGaloisGroup G A B] [Semiring A'] [IsMulCommutative A']
     [Algebra A' B] (e : A →+* A') (he : ∀ a, algebraMap A' B (e a) = algebraMap A B a)
     (he' : Function.Surjective e) : IsGaloisGroup G A' B where
   faithful := hG.faithful
@@ -110,7 +110,7 @@ theorem of_ringHom_surjective [hG : IsGaloisGroup G A B] [CommSemiring A']
     obtain ⟨a, ha⟩ := hG.isInvariant.isInvariant b h
     exact ⟨e a, by rw [he, ha]⟩⟩
 
-theorem of_ringEquiv [hG : IsGaloisGroup G A B] [CommSemiring A'] [Algebra A' B]
+theorem of_ringEquiv [hG : IsGaloisGroup G A B] [Semiring A'] [IsMulCommutative A'] [Algebra A' B]
     (e : A ≃+* A') (he : ∀ a, algebraMap A' B (e a) = algebraMap A B a) :
     IsGaloisGroup G A' B :=
   .of_ringHom_surjective G A A' B e he e.surjective
@@ -136,7 +136,7 @@ theorem algebraMap_ringEquivFixedPoints_symm_apply (x : FixedPoints.subsemiring 
     algebraMap A B ((ringEquivFixedPoints G A B).symm x) = x :=
  (hA.isInvariant.isInvariant x x.prop).choose_spec
 
-variable [CommSemiring A'] [Algebra A' B] [FaithfulSMul A' B] [hA' : IsGaloisGroup G A' B]
+variable [Semiring A'] [IsMulCommutative A'] [Algebra A' B] [FaithfulSMul A' B] [hA' : IsGaloisGroup G A' B]
 
 /-- If `B/A` and `B/A'` are Galois with the same Galois group, then `A ≃+* A'`. -/
 noncomputable def ringEquiv : A ≃+* A' :=

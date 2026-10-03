@@ -28,7 +28,7 @@ Jordan algebras arising this way are said to be special.
 
 A real Jordan algebra `A` can be introduced by
 ```lean
-variable {A : Type*} [NonUnitalNonAssocCommRing A] [Module ℝ A] [SMulCommClass ℝ A A]
+variable {A : Type*} [NonUnitalNonAssocRing A] [IsMulCommutative A] [Module ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [IsCommJordan A]
 ```
 
@@ -87,12 +87,12 @@ class IsJordan [Mul A] : Prop where
   rmul_comm_rmul_rmul : ∀ a b : A, b * a * (a * a) = b * (a * a) * a
 
 /-- A commutative Jordan multiplication -/
-class IsCommJordan [CommMagma A] : Prop where
+class IsCommJordan [Mul A] [IsMulCommutative A] : Prop where
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
 
 -- see Note [lower instance priority]
 /-- A (commutative) Jordan multiplication is also a Jordan multiplication -/
-instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A] : IsJordan A where
+instance (priority := 100) IsCommJordan.toIsJordan [Mul A] [IsMulCommutative A] [IsCommJordan A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_comm, mul_comm a b]
   lmul_lmul_comm_lmul a b := by
     rw [mul_comm (a * a) (a * b), IsCommJordan.lmul_comm_rmul_rmul,
@@ -114,7 +114,7 @@ instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A where
   rmul_comm_rmul_rmul a b := by rw [← mul_assoc, ← mul_assoc]
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommSemigroup.isCommJordan [CommSemigroup A] : IsCommJordan A where
+instance (priority := 100) CommSemigroup.isCommJordan [Semigroup A] [IsMulCommutative A] : IsCommJordan A where
   lmul_comm_rmul_rmul _ _ := mul_assoc _ _ _
 
 local notation "L" => AddMonoid.End.mulLeft
@@ -152,7 +152,7 @@ theorem commute_rmul_rmul_sq (a : A) : Commute (R a) (R (a * a)) :=
 
 end Commute
 
-variable {A} [NonUnitalNonAssocCommRing A]
+variable {A} [NonUnitalNonAssocRing A] [IsMulCommutative A]
 
 attribute [local instance 100] LieRing.ofAssociativeRing
 

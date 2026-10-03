@@ -23,7 +23,7 @@ variable {H : Type*}
 
 section OrderedCommGroup
 
-variable [TopologicalSpace H] [CommGroup H] [PartialOrder H] [IsOrderedMonoid H]
+variable [TopologicalSpace H] [Group H] [IsMulCommutative H] [PartialOrder H] [IsOrderedMonoid H]
 
 section mul
 
@@ -105,7 +105,7 @@ end OrderedCommGroup
 
 section OrderedDiv
 
-variable [TopologicalSpace H] [CommGroup H] [IsTopologicalGroup H]
+variable [TopologicalSpace H] [Group H] [IsMulCommutative H] [IsTopologicalGroup H]
   [PartialOrder H] [IsOrderedMonoid H]
 
 @[to_additive (attr := simp)]

@@ -115,7 +115,7 @@ In an additive commutative monoid with multiplication, a finite sum of sums of s
 is a sum of squares.
 -/
 @[aesop unsafe 90% apply]
-theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {s : ι → R}
+theorem IsSumSq.sum [AddMonoid R] [IsAddCommutative R] [Mul R] {ι : Type*} {I : Finset ι} {s : ι → R}
     (hs : ∀ i ∈ I, IsSumSq <| s i) : IsSumSq (∑ i ∈ I, s i) := by
   simpa using sum_mem (S := AddSubmonoid.sumSq _) hs
 
@@ -123,7 +123,7 @@ theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {s : 
 In an additive commutative monoid with multiplication,
 `∑ i ∈ I, x i`, where each `x i` is a square, is a sum of squares.
 -/
-theorem IsSumSq.sum_isSquare [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) {x : ι → R}
+theorem IsSumSq.sum_isSquare [AddMonoid R] [IsAddCommutative R] [Mul R] {ι : Type*} (I : Finset ι) {x : ι → R}
     (hx : ∀ i ∈ I, IsSquare <| x i) : IsSumSq (∑ i ∈ I, x i) := by aesop
 
 /--
@@ -131,15 +131,15 @@ In an additive commutative monoid with multiplication,
 `∑ i ∈ I, a i * a i` is a sum of squares.
 -/
 @[simp↓]
-theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
+theorem IsSumSq.sum_mul_self [AddMonoid R] [IsAddCommutative R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
     IsSumSq (∑ i ∈ I, a i * a i) := by aesop
 
 @[simp↓]
-theorem IsSumSq.sum_sq [CommSemiring R] {ι : Type*} (I : Finset ι) (a : ι → R) :
+theorem IsSumSq.sum_sq [Semiring R] [IsMulCommutative R] {ι : Type*} (I : Finset ι) (a : ι → R) :
     IsSumSq (∑ i ∈ I, a i ^ 2) := by aesop
 
 namespace NonUnitalSubsemiring
-variable {T : Type*} [NonUnitalCommSemiring T]
+variable {T : Type*} [NonUnitalSemiring T] [IsMulCommutative T]
 
 variable (T) in
 /--
@@ -175,16 +175,16 @@ In a commutative (possibly non-unital) semiring,
 if `s₁` and `s₂` are sums of squares, then `s₁ * s₂` is a sum of squares.
 -/
 @[aesop unsafe 90% apply]
-theorem IsSumSq.mul [NonUnitalCommSemiring R] {s₁ s₂ : R}
+theorem IsSumSq.mul [NonUnitalSemiring R] [IsMulCommutative R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ * s₂) := by
   simpa using mul_mem (by simpa : _ ∈ NonUnitalSubsemiring.sumSq R) (by simpa)
 
-private theorem Submonoid.square_subsemiringClosure {T : Type*} [CommSemiring T] :
+private theorem Submonoid.square_subsemiringClosure {T : Type*} [Semiring T] [IsMulCommutative T] :
     (Submonoid.square T).subsemiringClosure = .closure {x : T | IsSquare x} := by
   simp [Submonoid.subsemiringClosure_eq_closure]
 
 namespace Subsemiring
-variable {T : Type*} [CommSemiring T]
+variable {T : Type*} [Semiring T] [IsMulCommutative T]
 
 variable (T) in
 /--
@@ -211,7 +211,7 @@ end Subsemiring
 
 /-- In a commutative semiring, a finite product of sums of squares is a sum of squares. -/
 @[aesop unsafe 50% apply]
-theorem IsSumSq.prod [CommSemiring R] {ι : Type*} {I : Finset ι} {x : ι → R}
+theorem IsSumSq.prod [Semiring R] [IsMulCommutative R] {ι : Type*} {I : Finset ι} {x : ι → R}
     (hx : ∀ i ∈ I, IsSumSq <| x i) : IsSumSq (∏ i ∈ I, x i) := by
   simpa using prod_mem (S := Subsemiring.sumSq R) (by simpa)
 

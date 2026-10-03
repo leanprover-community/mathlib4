@@ -66,7 +66,7 @@ variable {𝕜 B : Type*}
 
 section Continuity
 
-variable [AddCommGroup 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archimedean 𝕜]
+variable [AddGroup 𝕜] [IsAddCommutative 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archimedean 𝕜]
   [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {p : 𝕜} (hp : 0 < p) (a x : 𝕜)
 
@@ -186,14 +186,14 @@ theorem continuousAt_toIocMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIocMod
 end Continuity
 
 /-- The "additive circle": `𝕜 ⧸ ℤ ∙ p`. See also `Circle` and `Real.Angle`. -/
-abbrev AddCircle [AddCommGroup 𝕜] (p : 𝕜) :=
+abbrev AddCircle [AddGroup 𝕜] [IsAddCommutative 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 
 namespace AddCircle
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup 𝕜] (p : 𝕜)
+variable [AddGroup 𝕜] [IsAddCommutative 𝕜] (p : 𝕜)
 
 theorem coe_nsmul {n : ℕ} {x : 𝕜} : (↑(n • x) : AddCircle p) = n • (x : AddCircle p) :=
   rfl
@@ -715,7 +715,7 @@ by the equivalence relation identifying the endpoints. -/
 
 namespace AddCircle
 
-variable [AddCommGroup 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] (p a : 𝕜)
+variable [AddGroup 𝕜] [IsAddCommutative 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] (p a : 𝕜)
   [hp : Fact (0 < p)]
 
 local notation "𝕋" => AddCircle p

@@ -18,7 +18,7 @@ public section
 section Field
 
 variable {F Γ₀ O : Type*} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
-  [CommRing O] [Algebra O F] {v : Valuation F Γ₀}
+  [Ring O] [IsMulCommutative O] [Algebra O F] {v : Valuation F Γ₀}
 
 instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*₀ Γ₀) :
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where

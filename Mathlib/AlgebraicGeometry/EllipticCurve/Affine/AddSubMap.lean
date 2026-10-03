@@ -35,7 +35,7 @@ namespace WeierstrassCurve
 ### The addition-and-subtraction map on x-coordinates
 -/
 
-variable {R : Type*} [CommRing R] (W : WeierstrassCurve R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (W : WeierstrassCurve R)
 
 open MvPolynomial
 
@@ -139,7 +139,7 @@ affine coordinates on a Weierstrass curve to a triple projectively equal to
 
 namespace WeierstrassCurve.Affine.Point
 
-variable {R : Type*} [CommRing R] {W' : Affine R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {W' : Affine R}
 
 /-- This map sends a pair `P`, `Q` of nonsingular points in affine coordinates on `W`
 to a triple projectively equivalent to `![x(P) * x(Q), x(P) + x(Q), 1]`.

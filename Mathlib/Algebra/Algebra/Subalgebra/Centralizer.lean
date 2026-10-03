@@ -32,7 +32,7 @@ open Algebra.TensorProduct
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {A : Type*} [Semiring A] [Algebra R A]
 
 lemma le_centralizer_iff (S T : Subalgebra R A) : S ≤ centralizer R T ↔ T ≤ centralizer R S :=
@@ -52,7 +52,7 @@ end CommSemiring
 
 section Free
 
-variable (R : Type*) [CommSemiring R]
+variable (R : Type*) [Semiring R] [IsMulCommutative R]
 variable (A : Type*) [Semiring A] [Algebra R A]
 variable (B : Type*) [Semiring B] [Algebra R B]
 

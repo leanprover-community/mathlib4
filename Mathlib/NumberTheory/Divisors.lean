@@ -465,11 +465,11 @@ theorem sum_properDivisors_dvd (h : (∑ x ∈ n.properDivisors, x) ∣ n) :
       exact ⟨one_dvd _, Nat.succ_lt_succ (Nat.succ_pos _)⟩
 
 @[to_additive (attr := simp)]
-theorem Prime.prod_properDivisors {α : Type*} [CommMonoid α] {p : ℕ} {f : ℕ → α} (h : p.Prime) :
+theorem Prime.prod_properDivisors {α : Type*} [Monoid α] [IsMulCommutative α] {p : ℕ} {f : ℕ → α} (h : p.Prime) :
     ∏ x ∈ p.properDivisors, f x = f 1 := by simp [h.properDivisors]
 
 @[to_additive (attr := simp)]
-theorem Prime.prod_divisors {α : Type*} [CommMonoid α] {p : ℕ} {f : ℕ → α} (h : p.Prime) :
+theorem Prime.prod_divisors {α : Type*} [Monoid α] [IsMulCommutative α] {p : ℕ} {f : ℕ → α} (h : p.Prime) :
     ∏ x ∈ p.divisors, f x = f p * f 1 := by
   rw [← cons_self_properDivisors h.ne_zero, prod_cons, h.prod_properDivisors]
 
@@ -509,23 +509,23 @@ theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
   simp [mem_properDivisors_prime_pow pp, eq_comm]
 
 @[to_additive (attr := simp)]
-theorem prod_properDivisors_prime_pow {α : Type*} [CommMonoid α] {k p : ℕ} {f : ℕ → α}
+theorem prod_properDivisors_prime_pow {α : Type*} [Monoid α] [IsMulCommutative α] {k p : ℕ} {f : ℕ → α}
     (h : p.Prime) : (∏ x ∈ (p ^ k).properDivisors, f x) = ∏ x ∈ range k, f (p ^ x) := by
   simp [h, properDivisors_prime_pow]
 
 @[to_additive (attr := simp) sum_divisors_prime_pow]
-theorem prod_divisors_prime_pow {α : Type*} [CommMonoid α] {k p : ℕ} {f : ℕ → α} (h : p.Prime) :
+theorem prod_divisors_prime_pow {α : Type*} [Monoid α] [IsMulCommutative α] {k p : ℕ} {f : ℕ → α} (h : p.Prime) :
     (∏ x ∈ (p ^ k).divisors, f x) = ∏ x ∈ range (k + 1), f (p ^ x) := by
   simp [h, divisors_prime_pow]
 
 @[to_additive]
-theorem prod_divisorsAntidiagonal {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) {n : ℕ} :
+theorem prod_divisorsAntidiagonal {M : Type*} [Monoid M] [IsMulCommutative M] (f : ℕ → ℕ → M) {n : ℕ} :
     ∏ i ∈ n.divisorsAntidiagonal, f i.1 i.2 = ∏ i ∈ n.divisors, f i (n / i) := by
   rw [← map_div_right_divisors, Finset.prod_map]
   rfl
 
 @[to_additive]
-theorem prod_divisorsAntidiagonal' {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) {n : ℕ} :
+theorem prod_divisorsAntidiagonal' {M : Type*} [Monoid M] [IsMulCommutative M] (f : ℕ → ℕ → M) {n : ℕ} :
     ∏ i ∈ n.divisorsAntidiagonal, f i.1 i.2 = ∏ i ∈ n.divisors, f (n / i) i := by
   rw [← map_swap_divisorsAntidiagonal, Finset.prod_map]
   exact prod_divisorsAntidiagonal fun i j => f j i
@@ -548,7 +548,7 @@ theorem image_div_divisors_eq_divisors (n : ℕ) :
   rfl
 
 @[to_additive (attr := simp) sum_div_divisors]
-theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α) :
+theorem prod_div_divisors {α : Type*} [Monoid α] [IsMulCommutative α] (n : ℕ) (f : ℕ → α) :
     (∏ d ∈ n.divisors, f (n / d)) = n.divisors.prod f := by
   by_cases hn : n = 0; · simp [hn]
   rw [← prod_image]

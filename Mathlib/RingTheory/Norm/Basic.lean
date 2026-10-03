@@ -40,7 +40,7 @@ public section
 
 universe u v w
 
-variable {R S T : Type*} [CommRing R] [Ring S]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S]
 variable [Algebra R S]
 variable {K L F : Type*} [Field K] [Field L] [Field F]
 variable [Algebra K L] [Algebra K F]
@@ -211,7 +211,7 @@ lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
   simp_rw [Algebra.norm_apply, ← LinearMap.det_conj _ e.toLinearEquiv]; congr; ext; simp
 
 set_option backward.isDefEq.respectTransparency false in
-lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
+lemma norm_eq_of_ringEquiv {A B C : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C]
     [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C)
     (x : C) :
     e (Algebra.norm A x) = Algebra.norm B x := by
@@ -230,8 +230,8 @@ lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
   intro ⟨s, ⟨b⟩⟩
   exact h ⟨s, ⟨b.mapCoeffs e (by simp [Algebra.smul_def, ← he])⟩⟩
 
-lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring B₁]
-    [CommRing A₂] [Ring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Ring A₁] [IsMulCommutative A₁] [Ring B₁]
+    [Ring A₂] [IsMulCommutative A₂] [Ring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.norm A₁ x = e₁.symm (Algebra.norm A₂ (e₂ x)) := by
   let := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' ?_

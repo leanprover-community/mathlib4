@@ -145,8 +145,8 @@ vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
 `Mathlib/Algebra/Homology/ShortComplex/Exact.lean` for the categorical version of this result. -/]
 lemma mulExact_iff_of_surjective_of_bijective_of_injective
-    {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [CommMonoid M₁] [CommMonoid M₂] [CommMonoid M₃]
-    [CommMonoid N₁] [CommMonoid N₂] [CommMonoid N₃]
+    {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [Monoid M₁] [IsMulCommutative M₁] [Monoid M₂] [IsMulCommutative M₂] [Monoid M₃] [IsMulCommutative M₃]
+    [Monoid N₁] [IsMulCommutative N₁] [Monoid N₂] [IsMulCommutative N₂] [Monoid N₃] [IsMulCommutative N₃]
     (f : M₁ →* M₂) (g : M₂ →* M₃) (f' : N₁ →* N₂) (g' : N₂ →* N₃)
     (τ₁ : M₁ →* N₁) (τ₂ : M₂ →* N₂) (τ₃ : M₃ →* N₃)
     (comm₁₂ : f'.comp τ₁ = τ₂.comp f)
@@ -194,8 +194,8 @@ lemma monoidHom_comp_eq_zero (h : MulExact f g) : g.comp f = 1 :=
 
 section
 
-variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Type*} [CommMonoid X₁] [CommMonoid X₂] [CommMonoid X₃]
-  [CommMonoid Y₁] [CommMonoid Y₂] [CommMonoid Y₃]
+variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Type*} [Monoid X₁] [IsMulCommutative X₁] [Monoid X₂] [IsMulCommutative X₂] [Monoid X₃] [IsMulCommutative X₃]
+  [Monoid Y₁] [IsMulCommutative Y₁] [Monoid Y₂] [IsMulCommutative Y₂] [Monoid Y₃] [IsMulCommutative Y₃]
   (e₁ : X₁ ≃* Y₁) (e₂ : X₂ ≃* Y₂) (e₃ : X₃ ≃* Y₃)
   {f₁₂ : X₁ →* X₂} {f₂₃ : X₂ →* X₃} {g₁₂ : Y₁ →* Y₂} {g₂₃ : Y₂ →* Y₃}
 
@@ -236,8 +236,8 @@ section LinearMap
 
 open Function
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid N]
-  [AddCommMonoid N'] [AddCommMonoid P] [AddCommMonoid P'] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M'] [AddMonoid N] [IsAddCommutative N]
+  [AddMonoid N'] [IsAddCommutative N'] [AddMonoid P] [IsAddCommutative P] [AddMonoid P'] [IsAddCommutative P'] [Module R M]
   [Module R M'] [Module R N] [Module R N'] [Module R P] [Module R P']
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
@@ -259,7 +259,7 @@ lemma exact_of_comp_of_mem_range
 section Ring
 
 variable {R M N P : Type*} [Ring R]
-  [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N] [Module R P]
+  [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P] [Module R M] [Module R N] [Module R P]
 
 lemma exact_subtype_mkQ (Q : Submodule R N) :
     Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
@@ -275,7 +275,7 @@ lemma exact_subtype_ker_map (g : N →ₗ[R] P) :
 
 @[simp]
 lemma exact_zero_iff_injective {M N : Type*} (P : Type*)
-    [AddCommGroup M] [AddCommGroup N] [AddCommMonoid P] [Module R N] [Module R M]
+    [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [Module R N] [Module R M]
     [Module R P] (f : M →ₗ[R] N) :
     Function.Exact (0 : P →ₗ[R] M) f ↔ Function.Injective f := by
   simp [← ker_eq_bot, exact_iff]
@@ -284,7 +284,7 @@ end Ring
 
 @[simp]
 lemma exact_zero_iff_surjective {M N : Type*} (P : Type*)
-    [AddCommGroup M] [AddCommGroup N] [AddCommMonoid P] [Module R N] [Module R M]
+    [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [Module R N] [Module R M]
     [Module R P] (f : M →ₗ[R] N) :
     Function.Exact f (0 : N →ₗ[R] P) ↔ Function.Surjective f := by
   simp [range_eq_top, exact_iff, eqComm]
@@ -367,7 +367,7 @@ namespace Function
 section split
 
 variable [Semiring R]
-variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N] [Module R P]
+variable [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P] [Module R M] [Module R N] [Module R P]
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
 open LinearMap
@@ -414,8 +414,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 splitting `N ≃ M × P`. -/
 noncomputable
 def Exact.splitInjectiveEquiv
-    {R M N P} [Semiring R] [AddCommGroup M] [AddCommGroup N]
-    [AddCommGroup P] [Module R M] [Module R N] [Module R P] {f : M →ₗ[R] N} {g : N →ₗ[R] P}
+    {R M N P} [Semiring R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
+    [AddGroup P] [IsAddCommutative P] [Module R M] [Module R N] [Module R P] {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     (h : Function.Exact f g) (hg : Function.Surjective g) :
     { l // l ∘ₗ f = .id } ≃
       { e : N ≃ₗ[R] M × P // f = e.symm ∘ₗ inl R M P ∧ g = snd R M P ∘ₗ e } := by
@@ -466,8 +466,8 @@ theorem Exact.split_tfae' (h : Function.Exact f g) :
 
 /-- Equivalent characterizations of split exact sequences. Also known as the **Splitting lemma**. -/
 theorem Exact.split_tfae
-    {R M N P} [Semiring R] [AddCommGroup M] [AddCommGroup N]
-    [AddCommGroup P] [Module R M] [Module R N] [Module R P] {f : M →ₗ[R] N} {g : N →ₗ[R] P}
+    {R M N P} [Semiring R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
+    [AddGroup P] [IsAddCommutative P] [Module R M] [Module R N] [Module R P] {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     (h : Function.Exact f g) (hf : Function.Injective f) (hg : Function.Surjective g) :
     List.TFAE [
       ∃ l, g ∘ₗ l = LinearMap.id,
@@ -483,7 +483,7 @@ end split
 
 section Prod
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
 
 lemma Exact.inr_fst : Function.Exact (LinearMap.inr R M N) (LinearMap.fst R M N) := by
   rintro ⟨x, y⟩
@@ -503,7 +503,7 @@ section Ring
 
 open LinearMap Submodule
 
-variable [Ring R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P]
     [Module R M] [Module R N] [Module R P]
     {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
@@ -530,8 +530,8 @@ vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
 `Mathlib/Algebra/Homology/ShortComplex/Exact.lean` for the categorical version of this result. -/
 lemma exact_iff_of_surjective_of_bijective_of_injective
-    {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-    [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+    {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
+    [AddMonoid N₁] [IsAddCommutative N₁] [AddMonoid N₂] [IsAddCommutative N₂] [AddMonoid N₃] [IsAddCommutative N₃]
     [Module R M₁] [Module R M₂] [Module R M₃]
     [Module R N₁] [Module R N₂] [Module R N₃]
     (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) (f' : N₁ →ₗ[R] N₂) (g' : N₂ →ₗ[R] N₃)

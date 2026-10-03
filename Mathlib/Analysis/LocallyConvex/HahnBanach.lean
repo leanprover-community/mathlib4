@@ -33,7 +33,7 @@ open Module Topology RCLike
 
 open scoped ComplexConjugate
 
-variable {𝕜 E : Type*} [AddCommGroup E]
+variable {𝕜 E : Type*} [AddGroup E] [IsAddCommutative E]
 
 theorem Module.Dual.exists_extension_of_le_seminorm_real [Module ℝ E]
     (S : Subspace ℝ E) (f : Dual ℝ S)
@@ -96,7 +96,7 @@ theorem StrongDual.exists_extension {𝕜} [NontriviallyNormedField 𝕜] [IsRCL
   obtain ⟨g, hg, _⟩ := Dual.exists_continuous_extension_of_le_seminorm S f.toLinearMap hq_cont hq
   exact ⟨g, hg⟩
 
-variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
+variable {F : Type*} [AddGroup F] [IsAddCommutative F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
   [ContinuousSMul 𝕜 F] [T2Space F]
 
 set_option backward.isDefEq.respectTransparency.types false in

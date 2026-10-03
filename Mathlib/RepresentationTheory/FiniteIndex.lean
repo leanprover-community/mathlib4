@@ -35,7 +35,7 @@ namespace Rep
 
 open CategoryTheory Finsupp TensorProduct Representation
 
-variable {k : Type u} {G : Type v} [CommRing k] [Group G] {S : Subgroup G}
+variable {k : Type u} {G : Type v} [Ring k] [IsMulCommutative k] [Group G] {S : Subgroup G}
   [DecidableRel (QuotientGroup.rightRel S)] (A : Rep.{w} k S)
 
 /-- Let `S ≤ G` be a subgroup and `(A, ρ)` a `k`-linear `S`-representation. Then given `g : G` and

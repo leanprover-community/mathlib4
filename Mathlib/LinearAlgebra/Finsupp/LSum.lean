@@ -37,20 +37,20 @@ section SMul
 
 variable {α : Type*} {β : Type*} {R R₂ : Type*} {M M₂ : Type*}
 
-theorem smul_sum [Zero β] [AddCommMonoid M] [DistribSMul R M] {v : α →₀ β} {c : R} {h : α → β → M} :
+theorem smul_sum [Zero β] [AddMonoid M] [IsAddCommutative M] [DistribSMul R M] {v : α →₀ β} {c : R} {h : α → β → M} :
     c • v.sum h = v.sum fun a b => c • h a b :=
   Finset.smul_sum
 
 @[simp]
-theorem sum_smul_index_semilinearMap' [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M]
-    [AddCommMonoid M₂] [Module R₂ M₂] {σ : R →+* R₂} {v : α →₀ M} {c : R} {h : α → M →ₛₗ[σ] M₂} :
+theorem sum_smul_index_semilinearMap' [Semiring R] [Semiring R₂] [AddMonoid M] [IsAddCommutative M] [Module R M]
+    [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂] {σ : R →+* R₂} {v : α →₀ M} {c : R} {h : α → M →ₛₗ[σ] M₂} :
     ((c • v).sum fun a => h a) = σ c • v.sum fun a => h a := by
   rw [Finsupp.sum_smul_index', Finsupp.smul_sum]
   · simp only [map_smulₛₗ]
   · intro i
     exact (h i).map_zero
 
-theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
+theorem sum_smul_index_linearMap' [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid M₂] [IsAddCommutative M₂]
     [Module R M₂] {v : α →₀ M} {c : R} {h : α → M →ₗ[R] M₂} :
     ((c • v).sum fun a => h a) = c • v.sum fun a => h a :=
   sum_smul_index_semilinearMap'
@@ -59,15 +59,15 @@ end SMul
 
 variable {α : Type*} {M N : Type*} {R R₂ : Type*} {S : Type*}
 variable [Semiring R] [Semiring R₂] [Semiring S]
-variable [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R₂ N]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable [AddMonoid N] [IsAddCommutative N] [Module R₂ N]
 
 variable {σ : R →+* R₂} {σ_inv : R₂ →+* R}
 
 section CompatibleSMul
 
 variable (R S M N ι : Type*)
-variable [Semiring S] [AddCommMonoid M] [AddCommMonoid N] [Module S M] [Module S N]
+variable [Semiring S] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module S M] [Module S N]
 
 instance _root_.LinearMap.CompatibleSMul.finsupp_dom [SMulZeroClass R M] [DistribSMul R N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul (ι →₀ M) N R S where
@@ -240,7 +240,7 @@ end Equiv
 end Finsupp
 
 variable {R : Type*} {M : Type*} {N : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 open Finsupp
 
@@ -289,7 +289,7 @@ namespace LinearMap
 section AddCommMonoid
 
 variable {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} {ι : Type*}
-variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂] {σ₁₂ : R →+* R₂}
+variable [Semiring R] [Semiring R₂] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] {σ₁₂ : R →+* R₂}
 variable [Module R M] [Module R₂ M₂]
 variable {γ : Type*} [Zero γ]
 
@@ -353,7 +353,7 @@ theorem mulLeftMap_eq_mulRightMap_of_commute [SMulCommClass R S S]
     (hc : ∀ (i : ι) (n : N), Commute (m i).1 n.1) : mulLeftMap N m = mulRightMap N m := by
   ext i n; simp [(hc i n).eq]
 
-theorem mulLeftMap_eq_mulRightMap {S : Type*} [CommSemiring S] [Module R S] [SMulCommClass R R S]
+theorem mulLeftMap_eq_mulRightMap {S : Type*} [Semiring S] [IsMulCommutative S] [Module R S] [SMulCommClass R R S]
     [SMulCommClass R S S] [IsScalarTower R S S] {M : Submodule R S} (N : Submodule R S)
     {ι : Type*} (m : ι → M) : mulLeftMap N m = mulRightMap N m :=
   mulLeftMap_eq_mulRightMap_of_commute N m fun _ _ ↦ mul_comm _ _

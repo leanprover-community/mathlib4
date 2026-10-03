@@ -23,7 +23,7 @@ public section
 open Matrix Topology
 
 variable {n R S : Type*} [Fintype n] [DecidableEq n]
-  [CommRing R] [TopologicalSpace R] [CommRing S] [TopologicalSpace S] {f : R →+* S}
+  [Ring R] [IsMulCommutative R] [TopologicalSpace R] [Ring S] [IsMulCommutative S] [TopologicalSpace S] {f : R →+* S}
 
 /-!
 ### Topology of the general linear group
@@ -151,7 +151,7 @@ lemma isEmbedding_toGL : IsEmbedding (toGL : SL n R → GL n R) :=
   ⟨isInducing_toGL, toGL_injective⟩
 
 @[deprecated "Use range_toGL_eq_ker_det instead" (since := "2026-09-14")]
-theorem range_toGL {A : Type*} [CommRing A] :
+theorem range_toGL {A : Type*} [Ring A] [IsMulCommutative A] :
     Set.range (toGL : SL n A → GL n A) = GeneralLinearGroup.det ⁻¹' {1} := by
   ext x
   simpa [Units.ext_iff] using ⟨fun ⟨y, hy⟩ ↦ by simp [← hy], fun hx ↦ ⟨⟨x, hx⟩, rfl⟩⟩

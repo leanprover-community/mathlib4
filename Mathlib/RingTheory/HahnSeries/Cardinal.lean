@@ -90,28 +90,28 @@ theorem cardSupp_neg [AddGroup R] (x : R⟦Γ⟧) : (-x).cardSupp = x.cardSupp :
 theorem cardSupp_sub_le [AddGroup R] (x y : R⟦Γ⟧) : (x - y).cardSupp ≤ x.cardSupp + y.cardSupp :=
   (mk_le_mk_of_subset (support_sub_subset ..)).trans (mk_union_le ..)
 
-theorem cardSupp_mul_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [NonUnitalNonAssocSemiring R]
+theorem cardSupp_mul_le [AddMonoid Γ] [IsAddCommutative Γ] [IsOrderedCancelAddMonoid Γ] [NonUnitalNonAssocSemiring R]
     (x y : R⟦Γ⟧) : (x * y).cardSupp ≤ x.cardSupp * y.cardSupp :=
   (mk_le_mk_of_subset (support_mul_subset ..)).trans mk_add_le
 
-theorem cardSupp_single_mul_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+theorem cardSupp_single_mul_le [AddMonoid Γ] [IsAddCommutative Γ] [IsOrderedCancelAddMonoid Γ]
     [NonUnitalNonAssocSemiring R] (x : R⟦Γ⟧) (a : Γ) (r : R) :
     (single a r * x).cardSupp ≤ x.cardSupp := by
   simpa using (cardSupp_mul_le ..).trans (mul_le_mul_left (cardSupp_single_le ..) _)
 
-theorem cardSupp_mul_single_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+theorem cardSupp_mul_single_le [AddMonoid Γ] [IsAddCommutative Γ] [IsOrderedCancelAddMonoid Γ]
     [NonUnitalNonAssocSemiring R] (x : R⟦Γ⟧) (a : Γ) (r : R) :
     (x * single a r).cardSupp ≤ x.cardSupp := by
   simpa using (cardSupp_mul_le ..).trans (mul_le_mul_right (cardSupp_single_le ..) _)
 
-theorem cardSupp_pow_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Semiring R]
+theorem cardSupp_pow_le [AddMonoid Γ] [IsAddCommutative Γ] [IsOrderedCancelAddMonoid Γ] [Semiring R]
     (x : R⟦Γ⟧) (n : ℕ) : (x ^ n).cardSupp ≤ x.cardSupp ^ n := by
   induction n with
   | zero => simp
   | succ n IH =>
     simpa [pow_succ] using (cardSupp_mul_le ..).trans <| mul_le_mul_left IH _
 
-theorem cardSupp_hsum_le [AddCommMonoid R] (s : SummableFamily Γ R α) :
+theorem cardSupp_hsum_le [AddMonoid R] [IsAddCommutative R] (s : SummableFamily Γ R α) :
     lift s.hsum.cardSupp ≤ sum fun a ↦ (s a).cardSupp :=
   (lift_le.2 <| mk_le_mk_of_subset (SummableFamily.support_hsum_subset ..)).trans
     mk_iUnion_le_sum_mk_lift
@@ -121,7 +121,7 @@ end PartialOrder
 section LinearOrder
 variable [LinearOrder Γ]
 
-theorem cardSupp_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
+theorem cardSupp_hsum_powers_le [AddMonoid Γ] [IsAddCommutative Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsMulCommutative R]
     (x : R⟦Γ⟧) : (SummableFamily.powers x).hsum.cardSupp ≤ max ℵ₀ x.cardSupp := by
   grw [← lift_uzero (cardSupp _), ← sum_pow_le_max_aleph0, cardSupp_hsum_le, sum_le_sum]
   intro i
@@ -130,7 +130,7 @@ theorem cardSupp_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
   · exact cardSupp_pow_le ..
   · cases i <;> simp
 
-theorem cardSupp_inv_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x : R⟦Γ⟧) :
+theorem cardSupp_inv_le [AddGroup Γ] [IsAddCommutative Γ] [IsOrderedAddMonoid Γ] [Field R] (x : R⟦Γ⟧) :
     x⁻¹.cardSupp ≤ max ℵ₀ x.cardSupp := by
   obtain rfl | hx := eq_or_ne x 0; · simp
   apply (cardSupp_single_mul_le ..).trans (cardSupp_hsum_powers_le ..) |>.trans
@@ -138,7 +138,7 @@ theorem cardSupp_inv_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x :
   refine (cardSupp_single_mul_le _ (-x.order) x.leadingCoeff⁻¹).trans' <| cardSupp_mono fun _ ↦ ?_
   aesop (add simp [coeff_single_mul])
 
-theorem cardSupp_div_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x y : R⟦Γ⟧) :
+theorem cardSupp_div_le [AddGroup Γ] [IsAddCommutative Γ] [IsOrderedAddMonoid Γ] [Field R] (x y : R⟦Γ⟧) :
     (x / y).cardSupp ≤ x.cardSupp * max ℵ₀ y.cardSupp :=
   (cardSupp_mul_le ..).trans <| mul_le_mul_right (cardSupp_inv_le y) _
 
@@ -182,7 +182,7 @@ theorem mem_cardSuppLTAddSubgroup {x : R⟦Γ⟧} : x ∈ cardSuppLTAddSubgroup 
 end AddGroup
 
 section Subring
-variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Ring R]
+variable [PartialOrder Γ] [AddMonoid Γ] [IsAddCommutative Γ] [IsOrderedCancelAddMonoid Γ] [Ring R]
   [hκ : Fact (ℵ₀ ≤ κ)]
 
 variable (Γ R) in
@@ -199,7 +199,7 @@ theorem mem_cardSuppLTSubring {x : R⟦Γ⟧} : x ∈ cardSuppLTSubring Γ R κ 
 end Subring
 
 section Subfield
-variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] [hκ : Fact (ℵ₀ < κ)]
+variable [LinearOrder Γ] [AddGroup Γ] [IsAddCommutative Γ] [IsOrderedAddMonoid Γ] [Field R] [hκ : Fact (ℵ₀ < κ)]
 
 variable (Γ R) in
 /-- The `κ`-bounded subfield of Hahn series with less than `κ` terms. -/

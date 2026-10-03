@@ -22,7 +22,7 @@ universe w v u
 
 open CategoryTheory
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 /-- The category of finitely generated `R`-algebras. -/
 abbrev FGAlgCat := ObjectProperty.FullSubcategory
@@ -41,13 +41,13 @@ structure FGAlgCatSkeleton : Type u where
 noncomputable def FGAlgCatSkeleton.eval (A : FGAlgCatSkeleton R) : FGAlgCat.{u} R :=
   ⟨↧(MvPolynomial (Fin A.n) R ⧸ A.I), inferInstanceAs <| Algebra.FiniteType _ _⟩
 
-lemma Algebra.FiniteType.exists_fgAlgCatSkeleton (A : Type v) [CommRing A] [Algebra R A]
+lemma Algebra.FiniteType.exists_fgAlgCatSkeleton (A : Type v) [Ring A] [IsMulCommutative A] [Algebra R A]
     [h : Algebra.FiniteType R A] :
     ∃ (P : FGAlgCatSkeleton R), Nonempty (A ≃ₐ[R] P.eval.obj) := by
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp h
   exact ⟨⟨n, RingHom.ker f⟩, ⟨(Ideal.quotientKerAlgEquivOfSurjective hf).symm⟩⟩
 
-lemma RingHom.FiniteType.exists_smallRepr {S : Type v} [CommRing S] {f : R →+* S}
+lemma RingHom.FiniteType.exists_smallRepr {S : Type v} [Ring S] [IsMulCommutative S] {f : R →+* S}
     (hf : f.FiniteType) :
     ∃ (T : FGAlgCatSkeleton R) (e : T.eval.obj ≃+* S), f = e.toRingHom.comp (algebraMap _ _) := by
   algebraize [f]

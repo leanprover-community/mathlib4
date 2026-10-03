@@ -22,7 +22,7 @@ public section
 
 open Polynomial
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 lemma Polynomial.coeff_mem_radical_span_coeff_of_dvd
     (p : R[X]) (q : R[X]) (hp : p.Monic) (hq : q.Monic)

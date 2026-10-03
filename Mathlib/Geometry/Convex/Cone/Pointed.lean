@@ -31,7 +31,7 @@ local notation3 "R≥0" => Nonneg R
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
 abbrev PointedCone (R E)
-    [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E] :=
+    [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddMonoid E] [IsAddCommutative E] [Module R E] :=
   Submodule (Nonneg R) E
 
 namespace PointedCone
@@ -42,7 +42,7 @@ open scoped Pointwise
 
 section Submodule
 
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddMonoid E] [IsAddCommutative E] [Module R E]
 
 /-- A submodule is a pointed cone. -/
 @[coe] abbrev ofSubmodule (S : Submodule R E) : PointedCone R E := S.restrictScalars _
@@ -89,7 +89,7 @@ lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s,
   rw [← sSup_eq_iSup, ofSubmodule_sSup, sSup_eq_iSup, iSup_image]
 
 variable {R E : Type*}
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddGroup E] [IsAddCommutative E] [Module R E]
 
 lemma neg_ofSubmodule (S : Submodule R E) : -(ofSubmodule S) = ofSubmodule (-S) :=
   neg_restrictScalars S
@@ -98,7 +98,7 @@ end Submodule
 
 section ConvexCone
 
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddMonoid E] [IsAddCommutative E] [Module R E]
 variable {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
 
 /-- Every pointed cone is a convex cone. -/
@@ -129,7 +129,7 @@ nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r �
   C.smul_mem ⟨r, hr⟩ hx
 
 lemma smul_mem_iff {𝕜 M : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-    [AddCommMonoid M] [Module 𝕜 M] (C : PointedCone 𝕜 M)
+    [AddMonoid M] [IsAddCommutative M] [Module 𝕜 M] (C : PointedCone 𝕜 M)
     {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
   ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc).le h, C.smul_mem hc.le⟩
 
@@ -168,7 +168,7 @@ end ConvexCone
 
 section Definitions
 
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddMonoid E] [IsAddCommutative E] [Module R E]
 variable {C : PointedCone R E} {x : E}
 
 /-- Construct a pointed cone from closure under two-element conical combinations.
@@ -235,9 +235,9 @@ end Definitions
 section Maps
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommMonoid E] [Module R E]
-variable [AddCommMonoid F] [Module R F]
-variable [AddCommMonoid G] [Module R G]
+variable [AddMonoid E] [IsAddCommutative E] [Module R E]
+variable [AddMonoid F] [IsAddCommutative F] [Module R F]
+variable [AddMonoid G] [IsAddCommutative G] [Module R G]
 
 /-!
 
@@ -302,7 +302,7 @@ section PositiveCone
 
 variable (R E)
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module R E] [PosSMulMono R E]
+variable [AddMonoid E] [IsAddCommutative E] [PartialOrder E] [IsOrderedAddMonoid E] [Module R E] [PosSMulMono R E]
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
@@ -323,7 +323,7 @@ end PositiveCone
 
 section AddCommGroup
 
-variable {R M : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+variable {R M : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] [AddGroup E] [IsAddCommutative E] [Module R E]
 
 lemma sup_inf_assoc_of_le_submodule {C : PointedCone R E} (D : PointedCone R E)
     {S : Submodule R E} (hCS : C ≤ S) : (C ⊔ D) ⊓ S = C ⊔ (D ⊓ S) :=
@@ -337,7 +337,7 @@ end AddCommGroup
 
 section OrderedAddCommGroup
 
-variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [PartialOrder E]
+variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddGroup E] [IsAddCommutative E] [PartialOrder E]
   [IsOrderedAddMonoid E] [Module R E]
 
 /-- Constructs an ordered module given an ordered group, a cone, and a proof that
@@ -349,7 +349,7 @@ end OrderedAddCommGroup
 
 section Lineal
 
-variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddGroup E] [IsAddCommutative E] [Module R E]
 
 /-- The lineality space of a cone `C` is the submodule given by `C ⊓ -C`. -/
 @[simps!]
@@ -381,7 +381,7 @@ end Lineal
 
 section Salient
 
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddGroup E] [IsAddCommutative E] [Module R E]
 
 /-- A pointed cone is salient iff the intersection of the cone with its negative
 is the set `{0}`. -/
@@ -394,7 +394,7 @@ end Salient
 section DirectedOrderRing
 
 variable {R : Type*} [Ring R] [PartialOrder R] [IsDirectedOrder R] [IsOrderedRing R]
-variable {E : Type*} [AddCommGroup E] [Module R E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module R E]
 variable {C : PointedCone R E} {x : E}
 
 /-- A cone that is closed under negation forms a submodule. -/

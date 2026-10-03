@@ -27,12 +27,12 @@ open TensorProduct
 
 namespace Algebra
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- `S` is a weakly-étale `R`-algebra if both `R → S` and `S ⊗[R] S → R` are flat.
 This is also called absolutely flat. -/
 @[stacks 092B, mk_iff]
-class WeaklyEtale (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] where
+class WeaklyEtale (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] where
   flat : Module.Flat R S := by infer_instance
   flat_lmul' (R S) : (Algebra.TensorProduct.lmul' R (S := S)).Flat
 
@@ -58,7 +58,7 @@ instance (priority := low) [Etale R S] : WeaklyEtale R S where
     exact Smooth.flat (S ⊗[R] S) S
 
 @[stacks 092H "(2)"]
-instance {T : Type*} [CommRing T] [Algebra R T] [WeaklyEtale R S] :
+instance {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] [WeaklyEtale R S] :
     WeaklyEtale T (T ⊗[R] S) where
   flat_lmul' := by
     let e : T ⊗[R] S ⊗[T] (T ⊗[R] S) ≃ₐ[T] T ⊗[R] (S ⊗[R] S) :=
@@ -75,8 +75,8 @@ instance {T : Type*} [CommRing T] [Algebra R T] [WeaklyEtale R S] :
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] TensorProduct.rightAlgebra ULift.algebra' in
 @[stacks 092J "(2)"]
-lemma trans (R : Type u₁) (S : Type u₂) [CommRing R] [CommRing S] [Algebra R S]
-    (T : Type u₃) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+lemma trans (R : Type u₁) (S : Type u₂) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+    (T : Type u₃) [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [WeaklyEtale R S] [WeaklyEtale S T] : WeaklyEtale R T := by
   rw [← ulift_iff.{max u₁ u₂ u₃, max u₁ u₂ u₃}] at *
   refine ⟨.trans _ (ULift.{max u₁ u₂ u₃} S) _, ?_⟩

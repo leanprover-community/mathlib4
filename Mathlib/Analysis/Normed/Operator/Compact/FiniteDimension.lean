@@ -20,7 +20,7 @@ is that `Mathlib.Topology.Algebra.Module.FiniteDimension` is quite a heavy impor
 public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+  {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
   [TopologicalSpace E] [T2Space E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem isCompactOperator_id_iff_finiteDimensional [LocallyCompactSpace 𝕜] :

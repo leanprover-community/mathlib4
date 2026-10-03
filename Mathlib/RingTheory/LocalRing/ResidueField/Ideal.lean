@@ -22,7 +22,7 @@ and provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
 
 open scoped nonZeroDivisors
 
-variable {R S A B : Type*} [CommRing R] [CommRing S] [CommRing A] [CommRing B]
+variable {R S A B : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
 variable [Algebra R A] [Algebra R B] (I : Ideal R) [I.IsPrime]
 
 /--

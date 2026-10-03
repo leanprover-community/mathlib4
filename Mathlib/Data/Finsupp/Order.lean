@@ -32,7 +32,7 @@ variable {ι κ α β M : Type*}
 
 namespace Finsupp
 
-@[simp] lemma support_mapDomain_of_nonneg [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+@[simp] lemma support_mapDomain_of_nonneg [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M]
     [DecidableEq β] {x : α →₀ M} (hx : 0 ≤ x) (f : α → β) :
     (mapDomain f x).support = x.support.image f := by
   ext b
@@ -47,7 +47,7 @@ section Zero
 variable [Zero α]
 
 section OrderedAddCommMonoid
-variable [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
+variable [AddMonoid β] [IsAddCommutative β] [Preorder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
 
 @[gcongr only]
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
@@ -63,7 +63,7 @@ end OrderedAddCommMonoid
 
 section IsOrderedCancelAddMonoid
 
-variable [AddCommMonoid β] [Preorder β] [IsOrderedCancelAddMonoid β] [AddLeftStrictMono β]
+variable [AddMonoid β] [IsAddCommutative β] [Preorder β] [IsOrderedCancelAddMonoid β] [AddLeftStrictMono β]
 variable {f : ι →₀ α} {g : ι → α → β}
 
 theorem sum_pos (h : ∀ i ∈ f.support, 0 < g i (f i)) (hf : f ≠ 0) : 0 < f.sum g :=
@@ -85,7 +85,7 @@ lemma single_mono : Monotone (single i : α → ι →₀ α) := fun _ _ ↦ sin
 @[simp] lemma single_nonneg : 0 ≤ single i a ↔ 0 ≤ a := by classical exact Pi.single_nonneg
 @[simp] lemma single_nonpos : single i a ≤ 0 ↔ a ≤ 0 := by classical exact Pi.single_nonpos
 
-variable [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β]
+variable [AddMonoid β] [IsAddCommutative β] [Preorder β] [IsOrderedAddMonoid β]
 
 lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → α → β} (hf : f₁ ≤ f₂)
     (hh : ∀ i ∈ f₁.support ∪ f₂.support, Monotone (h i))
@@ -123,7 +123,7 @@ end Zero
 
 section MapDomain
 
-variable [AddCommMonoid α]
+variable [AddMonoid α] [IsAddCommutative α]
 
 lemma mapDomain_le_mapDomain_iff_le [LE α] [@Std.Refl α (· ≤ ·)] {f : ι → κ} (h : f.Injective)
     (g₁ g₂ : ι →₀ α) : g₁.mapDomain f ≤ g₂.mapDomain f ↔ g₁ ≤ g₂ := by
@@ -138,7 +138,7 @@ end MapDomain
 /-! ### Algebraic order structures -/
 
 section OrderedAddCommMonoid
-variable [AddCommMonoid α] [Preorder α] [IsOrderedAddMonoid α]
+variable [AddMonoid α] [IsAddCommutative α] [Preorder α] [IsOrderedAddMonoid α]
   {i : ι} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
 
 instance isOrderedAddMonoid : IsOrderedAddMonoid (ι →₀ α) :=
@@ -151,7 +151,7 @@ lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)
 lemma mapDomain_nonneg (hg : 0 ≤ g) : 0 ≤ g.mapDomain f := by simpa using mapDomain_mono hg
 lemma mapDomain_nonpos (hg : g ≤ 0) : g.mapDomain f ≤ 0 := by simpa using mapDomain_mono hg
 
-theorem single_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N]
+theorem single_le_sum {α M N : Type*} [Zero M] [AddMonoid N] [IsAddCommutative N]
     [PartialOrder N] [IsOrderedAddMonoid N] (f : α →₀ M) {g : α → M → N}
     (h : 0 ≤ (g · ·)) (a : α) :
     ((single a (f a)).sum g) ≤ f.sum g := by
@@ -162,7 +162,7 @@ theorem single_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N]
     apply Finset.single_le_sum (fun i hi ↦ h i (f i))
     simpa [mem_support_iff, ne_eq] using H
 
-lemma single_eval_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N] [PartialOrder N]
+lemma single_eval_le_sum {α M N : Type*} [Zero M] [AddMonoid N] [IsAddCommutative N] [PartialOrder N]
     [IsOrderedAddMonoid N] (f : α →₀ M) {g : M → N} (hg : g 0 = 0) (h : 0 ≤ (g ·)) (a : α) :
     g (f a) ≤ f.sum fun _ m ↦ g m := by
   simp only [← sum_single_index (h := fun (_ : α) m ↦ g m) (a := a) (b := f a) hg]
@@ -170,11 +170,11 @@ lemma single_eval_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N] [PartialOrd
 
 end OrderedAddCommMonoid
 
-instance isOrderedCancelAddMonoid [AddCommMonoid α] [Preorder α] [IsOrderedCancelAddMonoid α] :
+instance isOrderedCancelAddMonoid [AddMonoid α] [IsAddCommutative α] [Preorder α] [IsOrderedCancelAddMonoid α] :
     IsOrderedCancelAddMonoid (ι →₀ α) :=
   { le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
-instance addLeftReflectLE [AddCommMonoid α] [Preorder α] [AddLeftReflectLE α] :
+instance addLeftReflectLE [AddMonoid α] [IsAddCommutative α] [Preorder α] [AddLeftReflectLE α] :
     AddLeftReflectLE (ι →₀ α) where
   le_of_add_le_add_left H x := le_of_add_le_add_left <| H x
 
@@ -213,7 +213,7 @@ end SMulWithZero
 
 section PartialOrder
 
-variable [AddCommMonoid α] [PartialOrder α] {f g : ι →₀ α}
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α] {f g : ι →₀ α}
 
 instance orderBot [IsBotZeroClass α] : OrderBot (ι →₀ α) where
   bot := 0
@@ -318,7 +318,7 @@ end PartialOrder
 
 section LinearOrder
 
-variable [AddCommMonoid α] [LinearOrder α] [IsBotZeroClass α]
+variable [AddMonoid α] [IsAddCommutative α] [LinearOrder α] [IsBotZeroClass α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by

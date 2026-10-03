@@ -70,7 +70,7 @@ open scoped ComplexOrder RightActions
 (where `A` is typically a C⋆-algebra) and an inner product `⟪x, y⟫_A` which satisfies the
 following properties. -/
 class CStarModule (A E : Type*) [NonUnitalSemiring A] [StarRing A]
-    [Module ℂ A] [AddCommGroup E] [Module ℂ E] [PartialOrder A] [SMul A E] [Norm A] [Norm E]
+    [Module ℂ A] [AddGroup E] [IsAddCommutative E] [Module ℂ E] [PartialOrder A] [SMul A E] [Norm A] [Norm E]
     extends Inner A E where
   inner_add_right {x} {y} {z} : inner x (y + z) = inner x y + inner x z
   inner_self_nonneg {x} : 0 ≤ inner x x
@@ -87,7 +87,7 @@ namespace CStarModule
 
 section general
 
-variable {A E : Type*} [NonUnitalRing A] [StarRing A] [AddCommGroup E] [Module ℂ A]
+variable {A E : Type*} [NonUnitalRing A] [StarRing A] [AddGroup E] [IsAddCommutative E] [Module ℂ A]
   [Module ℂ E] [PartialOrder A] [SMul A E] [Norm A] [Norm E] [CStarModule A E]
 
 local notation "⟪" x ", " y "⟫" => inner A x y
@@ -160,7 +160,7 @@ end general
 
 section norm
 
-variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [AddCommGroup E]
+variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [AddGroup E] [IsAddCommutative E]
   [Module ℂ E] [SMul A E] [Norm E] [CStarModule A E]
 
 local notation "⟪" x ", " y "⟫" => inner A x y
@@ -299,7 +299,7 @@ open scoped InnerProductSpace
 using `NormedAddCommGroup.ofCoreReplaceAll` and `NormedSpace.ofCore`. See
 `Analysis.CStarAlgebra.Module.Constructions` for examples. -/
 variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] [SMul A E]
-  [NormedAddCommGroup E] [NormedSpace ℂ E] [CStarModule A E]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E] [CStarModule A E]
 
 /-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a continuous sesquilinear map. -/
 noncomputable def innerSL : E →L⋆[ℂ] E →L[ℂ] A :=

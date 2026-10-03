@@ -37,9 +37,9 @@ namespace PointedCone
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsOrderedRing R]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R} {s t : Set M} {y : N}
 
 local notation3 "R≥0" => Nonneg R
@@ -114,7 +114,7 @@ alias dual_span := dual_hull
 @[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
   := by simp [← dual_hull]
 
-variable {M' : Type*} [AddCommMonoid M'] [Module R M']
+variable {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 @[simp] lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s := by
   ext; simp
@@ -137,9 +137,9 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [PartialOrder R] [IsOrderedRing R]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
 
 lemma dual_univ (hp : Injective p.flip) : dual p univ = 0 := by
@@ -147,7 +147,7 @@ lemma dual_univ (hp : Injective p.flip) : dual p univ = 0 := by
   ext x
   exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
 
-variable {N : Type*} [AddCommGroup N] [Module R N]
+variable {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
 
 @[simp] lemma dual_neg {s : Set M} : dual p (-s) = -dual p s := by ext; simp

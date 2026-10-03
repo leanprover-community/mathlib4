@@ -23,7 +23,7 @@ is an Azumaya algebra where `R` is a commutative ring.
 public section
 open scoped TensorProduct
 
-variable (R n : Type*) [CommSemiring R] [Fintype n] [DecidableEq n]
+variable (R n : Type*) [Semiring R] [IsMulCommutative R] [Fintype n] [DecidableEq n]
 
 noncomputable section
 

@@ -55,7 +55,7 @@ section Neg
 
 section Semiring
 
-variable [Semiring R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- The submodule with every element negated. Note if `R` is a ring and not just a semiring, this
 is a no-op, as shown by `Submodule.neg_eq_self`.
@@ -139,12 +139,12 @@ variable {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
 end Semiring
 
 @[simp]
-theorem neg_eq_self [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M) : -p = p :=
+theorem neg_eq_self [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] (p : Submodule R M) : -p = p :=
   ext fun _ => p.neg_mem_iff
 
 end Neg
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 instance pointwiseZero : Zero (Submodule R M) where
   zero := ⊥
@@ -208,7 +208,7 @@ theorem pointwise_smul_toAddSubmonoid (a : α) (S : Submodule R M) :
   rfl
 
 @[simp]
-theorem pointwise_smul_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [DistribMulAction α M]
+theorem pointwise_smul_toAddSubgroup {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [DistribMulAction α M]
     [Module R M] [SMulCommClass α R M] (a : α) (S : Submodule R M) :
     (a • S).toAddSubgroup = a • S.toAddSubgroup :=
   rfl
@@ -465,7 +465,7 @@ end DistribMulAction
 
 section Group
 
-variable {R G M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R G M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
     [Group G] [DistribMulAction G M] [SMulCommClass G R M]
     {S : Submodule R M}
 

@@ -17,7 +17,7 @@ public section
 
 open Ideal Module Polynomial
 
-variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
+variable {R S ι : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [IsPrincipalIdealRing R] [Ring S] [IsMulCommutative S]
   [IsDomain S] [Algebra R S]
 
 section CommRing

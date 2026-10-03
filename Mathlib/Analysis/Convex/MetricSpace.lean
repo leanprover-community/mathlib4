@@ -256,7 +256,7 @@ lemma continuous_convexCombPair' [BoundedSpace X]
 alias continuous_convexComboPair' := continuous_convexCombPair'
 
 instance (priority := low) {V P : Type*}
-    [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+    [NormedAddGroup V] [IsAddCommutative V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
     [ConvexSpace ℝ P] [IsAffineConvexSpace ℝ V P] :
     IsConvexDist P where
   dist_iConvexComb_fst_snd_le f := by
@@ -277,7 +277,7 @@ instance IsConvexDist.subtype (s : Set X) (hs : IsConvexSet ℝ s) :
   convert dist_iConvexComb_fst_snd_le (X := X) (f.map fun x ↦ (x.1, x.2)) <;>
     simp [Subtype.dist_eq, Finsupp.sum_mapDomain_index, add_mul]
 
-instance IsConvexDist.submodule {F M : Type*} [AddCommGroup M] [MetricSpace M]
+instance IsConvexDist.submodule {F M : Type*} [AddGroup M] [IsAddCommutative M] [MetricSpace M]
     [Module ℝ M] [ConvexSpace ℝ M] [IsModuleConvexSpace ℝ M] [IsConvexDist M]
     [SetLike F M] [AddSubmonoidClass F M] [SMulMemClass F ℝ M] {S : F} :
     IsConvexDist S := .subtype _ _

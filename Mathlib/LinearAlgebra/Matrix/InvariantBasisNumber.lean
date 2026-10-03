@@ -97,4 +97,4 @@ open Function in
 If `R` is moreover a ring, then it satisfies the strong rank condition, see
 `commRing_strongRankCondition`. It is unclear whether this generalizes to semirings. -/
 instance (priority := 100) rankCondition_of_nontrivial_of_commSemiring {R : Type*}
-    [CommSemiring R] [Nontrivial R] : RankCondition R := inferInstance
+    [Semiring R] [IsMulCommutative R] [Nontrivial R] : RankCondition R := inferInstance

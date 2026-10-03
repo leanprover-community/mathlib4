@@ -51,7 +51,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a set `s` which is a convex neighbourhood of `0` and a point `x₀` outside of it, there is
 a continuous linear functional `f` separating `x₀` and `s`, in the sense that it sends `x₀` to 1 and
 all of `s` to values strictly below `1`. -/
-theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGroup E]
+theorem separate_convex_open_set [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [IsTopologicalAddGroup E]
     [Module ℝ E] [ContinuousSMul ℝ E] {s : Set E} (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
     (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :
     ∃ f : StrongDual ℝ E, f x₀ = 1 ∧ ∀ x ∈ s, f x < 1 := by
@@ -83,7 +83,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
       one_le_gauge_of_notMem (hs₁.starConvex hs₀)
         (absorbent_nhds_zero <| hs₂.mem_nhds hs₀).absorbs hx₀
 
-variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
+variable [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [Module ℝ E]
   {s t : Set E} {x y : E}
 section
 

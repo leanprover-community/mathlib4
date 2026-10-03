@@ -126,7 +126,7 @@ instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
 
 section OrderBot
 
-variable [AddCommMonoid R] [LinearOrder R] [AddLeftStrictMono R]
+variable [AddMonoid R] [IsAddCommutative R] [LinearOrder R] [AddLeftStrictMono R]
 
 protected lemma nonneg (d : PseudoMetric X R) (x y : X) : 0 ≤ d x y := by
   by_contra! H
@@ -178,7 +178,7 @@ instance IsUltra.sup [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRig
   calc d x z ⊔ d' x z ≤ d x y ⊔ d y z ⊔ (d' x y ⊔ d' y z) := sup_le_sup le_sup le_sup
   _ ≤ d x y ⊔ d' x y ⊔ (d y z ⊔ d' y z) := by simp [sup_comm, sup_left_comm]
 
-lemma IsUltra.finsetSup {Y : Type*} [AddCommMonoid R] [LinearOrder R] [AddLeftStrictMono R]
+lemma IsUltra.finsetSup {Y : Type*} [AddMonoid R] [IsAddCommutative R] [LinearOrder R] [AddLeftStrictMono R]
     [IsOrderedAddMonoid R] {f : Y → PseudoMetric X R} {s : Finset Y} (h : ∀ d ∈ s, IsUltra (f d)) :
     IsUltra (s.sup f) := by
   constructor

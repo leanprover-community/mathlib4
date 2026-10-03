@@ -37,17 +37,17 @@ variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x
 section
 
 variable [Semiring 𝕜]
-  [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousConstSMul 𝕜 E]
-  [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousConstSMul 𝕜 F]
-  [AddCommMonoid G] [Module 𝕜 G] [TopologicalSpace G] [ContinuousAdd G] [ContinuousConstSMul 𝕜 G]
-  [AddCommMonoid H] [Module 𝕜 H] [TopologicalSpace H] [ContinuousAdd H] [ContinuousConstSMul 𝕜 H]
+  [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousConstSMul 𝕜 E]
+  [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousConstSMul 𝕜 F]
+  [AddMonoid G] [IsAddCommutative G] [Module 𝕜 G] [TopologicalSpace G] [ContinuousAdd G] [ContinuousConstSMul 𝕜 G]
+  [AddMonoid H] [IsAddCommutative H] [Module 𝕜 H] [TopologicalSpace H] [ContinuousAdd H] [ContinuousConstSMul 𝕜 H]
 
 /-- A formal multilinear series over a field `𝕜`, from `E` to `F`, is given by a family of
 multilinear maps from `E^n` to `F` for all `n`. -/
 @[nolint unusedArguments]
-def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring 𝕜] [AddCommMonoid E]
+def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring 𝕜] [AddMonoid E] [IsAddCommutative E]
     [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousConstSMul 𝕜 E]
-    [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
+    [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
     [ContinuousConstSMul 𝕜 F] :=
   ∀ n : ℕ, E [×n]→L[𝕜] F
 deriving Inhabited
@@ -103,7 +103,7 @@ def prod (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries �
 /-- Product of formal multilinear series (with the same field `𝕜` and the same source
 space, but possibly different target spaces). -/
 @[simp] def pi {ι : Type*} {F : ι → Type*}
-    [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
+    [∀ i, AddGroup (F i)] [∀ i, IsAddCommutative (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
     [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
     (p : Π i, FormalMultilinearSeries 𝕜 E (F i)) :
     FormalMultilinearSeries 𝕜 E (Π i, F i)
@@ -176,8 +176,8 @@ end FormalMultilinearSeries
 end
 
 namespace FormalMultilinearSeries
-variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-  [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable [Ring 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+  [ContinuousConstSMul 𝕜 E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
   [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 instance : AddCommGroup (FormalMultilinearSeries 𝕜 E F) :=
@@ -193,7 +193,7 @@ end FormalMultilinearSeries
 
 namespace FormalMultilinearSeries
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
+variable [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [NormedAddGroup F] [IsAddCommutative F]
   [NormedSpace 𝕜 F]
 
 variable (p : FormalMultilinearSeries 𝕜 E F)
@@ -222,9 +222,9 @@ end FormalMultilinearSeries
 
 section
 
-variable [Semiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E]
-  [ContinuousConstSMul 𝕜 E] [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
-  [ContinuousAdd F] [ContinuousConstSMul 𝕜 F] [AddCommMonoid G] [Module 𝕜 G]
+variable [Semiring 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E]
+  [ContinuousConstSMul 𝕜 E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
+  [ContinuousAdd F] [ContinuousConstSMul 𝕜 F] [AddMonoid G] [IsAddCommutative G] [Module 𝕜 G]
   [TopologicalSpace G] [ContinuousAdd G] [ContinuousConstSMul 𝕜 G]
 
 namespace ContinuousLinearMap
@@ -248,7 +248,7 @@ end ContinuousLinearMap
 
 namespace ContinuousMultilinearMap
 
-variable {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+variable {ι : Type*} {E : ι → Type*} [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module 𝕜 (E i)]
   [∀ i, TopologicalSpace (E i)] [∀ i, IsTopologicalAddGroup (E i)]
   [∀ i, ContinuousConstSMul 𝕜 (E i)] [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F)
 
@@ -267,8 +267,8 @@ namespace FormalMultilinearSeries
 
 section Order
 
-variable [Semiring 𝕜] {n : ℕ} [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
-  [ContinuousAdd E] [ContinuousConstSMul 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
+variable [Semiring 𝕜] {n : ℕ} [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
+  [ContinuousAdd E] [ContinuousConstSMul 𝕜 E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
   [TopologicalSpace F] [ContinuousAdd F] [ContinuousConstSMul 𝕜 F]
   {p : FormalMultilinearSeries 𝕜 E F}
 
@@ -310,7 +310,7 @@ end Order
 
 section Coef
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {p : FormalMultilinearSeries 𝕜 𝕜 E} {n : ℕ} {z : 𝕜} {y : Fin n → 𝕜}
 
 /-- The `n`th coefficient of `p` when seen as a power series. -/
@@ -339,7 +339,7 @@ end Coef
 
 section Fslope
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {p : FormalMultilinearSeries 𝕜 𝕜 E} {n : ℕ}
 
 /-- The formal counterpart of `dslope`, corresponding to the expansion of `(f z - f 0) / z`. If `f`
@@ -369,41 +369,41 @@ section Const
 of degree zero is `c`. It is the power series expansion of the constant function equal to `c`
 everywhere. -/
 def constFormalMultilinearSeries (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ContinuousConstSMul 𝕜 E] [IsTopologicalAddGroup E]
-    {F : Type*} [NormedAddCommGroup F] [IsTopologicalAddGroup F] [NormedSpace 𝕜 F]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [ContinuousConstSMul 𝕜 E] [IsTopologicalAddGroup E]
+    {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [IsTopologicalAddGroup F] [NormedSpace 𝕜 F]
     [ContinuousConstSMul 𝕜 F] (c : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => ContinuousMultilinearMap.uncurry0 _ _ c
   | _ => 0
 
 @[simp]
-theorem constFormalMultilinearSeries_apply_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F} :
+theorem constFormalMultilinearSeries_apply_zero [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E]
+    [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F} :
     constFormalMultilinearSeries 𝕜 E c 0 = ContinuousMultilinearMap.uncurry0 _ _ c :=
   rfl
 
 @[simp]
-theorem constFormalMultilinearSeries_apply_succ [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F} {n : ℕ} :
+theorem constFormalMultilinearSeries_apply_succ [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E]
+    [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F} {n : ℕ} :
     constFormalMultilinearSeries 𝕜 E c (n + 1) = 0 :=
   rfl
 
 theorem constFormalMultilinearSeries_apply_of_nonzero [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F}
+    [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F}
     {n : ℕ} (hn : n ≠ 0) : constFormalMultilinearSeries 𝕜 E c n = 0 :=
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
 
 @[simp]
-lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
+lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E]
+    [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
     constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
   ext n
   induction n <;> simp
 
 @[simp]
 lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+    [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
+    [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
     (p : FormalMultilinearSeries 𝕜 F G) :
     p.compContinuousLinearMap (0 : E →L[𝕜] F) = constFormalMultilinearSeries 𝕜 E (p 0 0) := by
   ext n v
@@ -421,8 +421,8 @@ end Const
 section Linear
 
 variable [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 namespace ContinuousLinearMap
 

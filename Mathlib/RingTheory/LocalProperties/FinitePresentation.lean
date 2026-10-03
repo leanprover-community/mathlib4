@@ -21,11 +21,11 @@ In this file, we prove that `Module.FinitePresentation` is a local property.
 
 public section
 
-variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] (s : Set R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] (s : Set R)
 
 theorem Module.FinitePresentation.of_localizationSpan' (hs : Ideal.span s = ⊤)
-    {Mₚ : ∀ (_ : s), Type*} [∀ (g : s), AddCommGroup (Mₚ g)] [∀ (g : s), Module R (Mₚ g)]
-    {Rₚ : ∀ (_ : s), Type*} [∀ (g : s), CommRing (Rₚ g)] [∀ (g : s), Algebra R (Rₚ g)]
+    {Mₚ : ∀ (_ : s), Type*} [∀ (g : s), AddGroup (Mₚ g)] [∀ (g : s), IsAddCommutative (Mₚ g)] [∀ (g : s), Module R (Mₚ g)]
+    {Rₚ : ∀ (_ : s), Type*} [∀ (g : s), Ring (Rₚ g)] [∀ (g : s), IsMulCommutative (Rₚ g)] [∀ (g : s), Algebra R (Rₚ g)]
     [∀ (g : s), IsLocalization.Away g.val (Rₚ g)]
     [∀ (g : s), Module (Rₚ g) (Mₚ g)] [∀ (g : s), IsScalarTower R (Rₚ g) (Mₚ g)]
     (ϕ : ∀ (g : s), M →ₗ[R] Mₚ g) [∀ (g : s), IsLocalizedModule (Submonoid.powers g.val) (ϕ g)]

@@ -33,13 +33,13 @@ This file defines `(g, h)`-skew-primitive elements in a coalgebra, i.e. elements
 
 open TensorProduct
 
-variable {F R A B : Type*} [CommSemiring R]
+variable {F R A B : Type*} [Semiring R] [IsMulCommutative R]
 
 namespace Coalgebra
 
 section AddCommMonoid
-variable [AddCommMonoid A] [Module R A] [Coalgebra R A]
-  [AddCommMonoid B] [Module R B] [Coalgebra R B] {g h a b : A}
+variable [AddMonoid A] [IsAddCommutative A] [Module R A] [Coalgebra R A]
+  [AddMonoid B] [IsAddCommutative B] [Module R B] [Coalgebra R B] {g h a b : A}
 
 variable (R) in
 /-- An element `a` of a coalgebra is `(g, h)`-skew-primitive if `ε a = 0` and
@@ -119,7 +119,7 @@ lemma isSkewPrimitiveElem_iff_comul_eq_tmul_add_tmul (hg : counit (R := R) g = 1
 end AddCommMonoid
 
 section AddCommGroup
-variable [AddCommGroup A] [Module R A] [Coalgebra R A] {g h a b : A}
+variable [AddGroup A] [IsAddCommutative A] [Module R A] [Coalgebra R A] {g h a b : A}
 
 namespace IsSkewPrimitiveElem
 

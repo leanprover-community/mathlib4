@@ -45,7 +45,7 @@ open Cardinal DirectSum Function Module Set Submodule
 
 section Quotient
 
-variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
+variable [Ring R] [Ring S] [IsMulCommutative S] [AddGroup M] [IsAddCommutative M] [AddGroup M'] [IsAddCommutative M'] [AddGroup M₁] [IsAddCommutative M₁]
 variable [Module R M]
 
 theorem LinearIndependent.sumElim_of_quotient
@@ -106,7 +106,7 @@ theorem Submodule.finrank_quotient_le [StrongRankCondition R] [Module.Finite R M
 
 end Quotient
 
-variable [Semiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M₁]
+variable [Semiring R] [Semiring S] [IsMulCommutative S] [AddMonoid M] [IsAddCommutative M] [AddMonoid M'] [IsAddCommutative M'] [AddMonoid M₁] [IsAddCommutative M₁]
 variable [Module R M]
 
 section ULift
@@ -190,7 +190,7 @@ theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = #ι := 
 
 /-- The rank of the direct sum is the sum of the ranks. -/
 @[simp]
-theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommMonoid (M i)]
+theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddMonoid (M i)] [∀ i : ι, IsAddCommutative (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] :
     Module.rank R (⨁ i, M i) = Cardinal.sum fun i => Module.rank R (M i) := by
   let B i := chooseBasis R (M i)
@@ -251,7 +251,7 @@ theorem finrank_finsupp_self {ι : Type v} [Fintype ι] : finrank R (ι →₀ R
 
 /-- The `finrank` of the direct sum is the sum of the `finrank`s. -/
 @[simp]
-theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i : ι, AddCommMonoid (M i)]
+theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i : ι, AddMonoid (M i)] [∀ i : ι, IsAddCommutative (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (⨁ i, M i) = ∑ i, finrank R (M i) := by
   simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
@@ -269,7 +269,7 @@ end Finsupp
 section Pi
 
 variable [StrongRankCondition R] [Module.Free R M]
-variable [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.Free R (φ i)]
+variable [∀ i, AddMonoid (φ i)] [∀ i, IsAddCommutative (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.Free R (φ i)]
 
 open Module.Free
 
@@ -293,7 +293,7 @@ theorem Module.finrank_pi {ι : Type v} [Fintype ι] :
 --TODO: this should follow from `LinearEquiv.finrank_eq`, that is over a field.
 /-- The `finrank` of a finite product is the sum of the `finrank`s. -/
 theorem Module.finrank_pi_fintype
-    {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddCommMonoid (M i)]
+    {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddMonoid (M i)] [∀ i : ι, IsAddCommutative (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
   simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_pi, ← mk_sigma,
@@ -302,7 +302,7 @@ theorem Module.finrank_pi_fintype
 variable {R}
 variable [Fintype η]
 
-theorem rank_fun {M η : Type u} [Fintype η] [AddCommMonoid M] [Module R M] [Module.Free R M] :
+theorem rank_fun {M η : Type u} [Fintype η] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module.Free R M] :
     Module.rank R (η → M) = Fintype.card η * Module.rank R M := by
   rw [rank_pi, Cardinal.sum_const', Cardinal.mk_fintype]
 
@@ -509,7 +509,7 @@ open Module
 
 section Semiring
 
-variable {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E]
+variable {F E : Type*} [Semiring F] [IsMulCommutative F] [Semiring E] [Algebra F E]
 
 @[simp]
 theorem Subalgebra.rank_toSubmodule (S : Subalgebra F E) :
@@ -539,7 +539,7 @@ end Semiring
 
 section Ring
 
-variable {F E : Type*} [CommRing F] [IsDomain F] [Ring E] [Algebra F E]
+variable {F E : Type*} [Ring F] [IsMulCommutative F] [IsDomain F] [Ring E] [Algebra F E]
 variable [StrongRankCondition F] [IsTorsionFree F E] [Nontrivial E]
 
 @[simp]
@@ -561,7 +561,7 @@ section Extend
 
 namespace Module.Basis
 
-variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [Ring R] [IsMulCommutative R] [AddGroup V] [IsAddCommutative V] [Module R V]
     {W : Submodule R V} {m n : Type*}
     (bW : Basis m R W) (bQ : Basis n R (V ⧸ W))
 

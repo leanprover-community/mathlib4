@@ -47,7 +47,7 @@ variable {R : Type u} {S : Type v} {T : Type w} {a b : R} {n : ℕ}
 
 section CommRing
 
-variable [CommRing R] [IsDomain R] {p q : R[X]}
+variable [Ring R] [IsMulCommutative R] [IsDomain R] {p q : R[X]}
 
 section Roots
 
@@ -168,7 +168,7 @@ theorem eq_of_infinite_eval_eq (p q : R[X]) (h : Set.Infinite { x | eval x p = e
   simpa only [IsRoot, eval_sub, sub_eq_zero]
 
 /-- Non-constant polynomials have finite fibres, provided the coefficients are a domain. -/
-lemma tendstoCofinite_of_natDegree_ne_zero {R : Type} [CommRing R] [IsDomain R] (p : R[X])
+lemma tendstoCofinite_of_natDegree_ne_zero {R : Type} [Ring R] [IsMulCommutative R] [IsDomain R] (p : R[X])
     (hp : p.natDegree ≠ 0) : Filter.TendstoCofinite p.eval := by
   rw [Filter.tendstoCofinite_iff_finite_preimage_singleton]
   intro x
@@ -370,7 +370,7 @@ theorem nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
   simp only [pow_zero, nthRoots, ← C_1, ← C_sub, roots_C]
 
 @[simp]
-theorem nthRoots_zero_right {R} [CommRing R] [IsDomain R] (n : ℕ) :
+theorem nthRoots_zero_right {R} [Ring R] [IsMulCommutative R] [IsDomain R] (n : ℕ) :
     nthRoots n (0 : R) = Multiset.replicate n 0 := by
   rw [nthRoots, C.map_zero, sub_zero, roots_pow, roots_X, Multiset.nsmul_singleton]
 
@@ -397,11 +397,11 @@ theorem nthRoots_two_eq_zero_iff {r : R} : nthRoots 2 r = 0 ↔ ¬IsSquare r := 
 
 /-- The multiset `nthRoots ↑n a` as a Finset. Previously `nthRootsFinset n` was defined to be
 `nthRoots n (1 : R)` as a Finset. That situation can be recovered by setting `a` to be `(1 : R)` -/
-def nthRootsFinset (n : ℕ) {R : Type*} (a : R) [CommRing R] [IsDomain R] : Finset R :=
+def nthRootsFinset (n : ℕ) {R : Type*} (a : R) [Ring R] [IsMulCommutative R] [IsDomain R] : Finset R :=
   haveI := Classical.decEq R
   Multiset.toFinset (nthRoots n a)
 
-lemma nthRootsFinset_def (n : ℕ) {R : Type*} (a : R) [CommRing R] [IsDomain R] [DecidableEq R] :
+lemma nthRootsFinset_def (n : ℕ) {R : Type*} (a : R) [Ring R] [IsMulCommutative R] [IsDomain R] [DecidableEq R] :
     nthRootsFinset n a = Multiset.toFinset (nthRoots n a) := by
   unfold nthRootsFinset
   convert! rfl
@@ -416,7 +416,7 @@ theorem mem_nthRootsFinset {n : ℕ} (h : 0 < n) (a : R) {x : R} :
 theorem nthRootsFinset_zero (a : R) : nthRootsFinset 0 a = ∅ := by
   classical simp [nthRootsFinset_def]
 
-theorem map_mem_nthRootsFinset {S F : Type*} [CommRing S] [IsDomain S] [FunLike F R S]
+theorem map_mem_nthRootsFinset {S F : Type*} [Ring S] [IsMulCommutative S] [IsDomain S] [FunLike F R S]
     [MonoidHomClass F R S] {a : R} {x : R} (hx : x ∈ nthRootsFinset n a) (f : F) :
     f x ∈ nthRootsFinset n (f a) := by
   by_cases hn : n = 0
@@ -424,7 +424,7 @@ theorem map_mem_nthRootsFinset {S F : Type*} [CommRing S] [IsDomain S] [FunLike 
   · rw [mem_nthRootsFinset <| Nat.pos_of_ne_zero hn, ← map_pow, (mem_nthRootsFinset
       (Nat.pos_of_ne_zero hn) a).1 hx]
 
-theorem map_mem_nthRootsFinset_one {S F : Type*} [CommRing S] [IsDomain S] [FunLike F R S]
+theorem map_mem_nthRootsFinset_one {S F : Type*} [Ring S] [IsMulCommutative S] [IsDomain S] [FunLike F R S]
     [RingHomClass F R S] {x : R} (hx : x ∈ nthRootsFinset n 1) (f : F) :
     f x ∈ nthRootsFinset n 1 := by
   rw [← (map_one f)]
@@ -472,27 +472,27 @@ theorem funext [Infinite R] {p q : R[X]} (ext : ∀ r : R, p.eval r = q.eval r) 
   intro x
   rw [eval_sub, sub_eq_zero, ext]
 
-variable [CommRing T]
+variable [Ring T] [IsMulCommutative T]
 
 /-- Given a polynomial `p` with coefficients in a ring `T` and a `T`-algebra `S`, `aroots p S` is
 the multiset of roots of `p` regarded as a polynomial over `S`. -/
-noncomputable abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
+noncomputable abbrev aroots (p : T[X]) (S) [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] : Multiset S :=
   (p.map (algebraMap T S)).roots
 
-theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
+theorem aroots_def (p : T[X]) (S) [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] :
     p.aroots S = (p.map (algebraMap T S)).roots :=
   rfl
 
-theorem mem_aroots' [CommRing S] [IsDomain S] [Algebra T S] {p : T[X]} {a : S} :
+theorem mem_aroots' [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] {p : T[X]} {a : S} :
     a ∈ p.aroots S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   rw [mem_roots', IsRoot.def, ← eval₂_eq_eval_map, aeval_def]
 
-theorem mem_aroots [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
+theorem mem_aroots [IsDomain T] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] {p : T[X]} {a : S} : a ∈ p.aroots S ↔ p ≠ 0 ∧ aeval a p = 0 := by
   rw [mem_aroots', Polynomial.map_ne_zero_iff]
   exact FaithfulSMul.algebraMap_injective T S
 
-theorem aroots_mul [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
+theorem aroots_mul [IsDomain T] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] {p q : T[X]} (hpq : p * q ≠ 0) :
     (p * q).aroots S = p.aroots S + q.aroots S := by
   suffices map (algebraMap T S) p * map (algebraMap T S) q ≠ 0 by
@@ -501,35 +501,35 @@ theorem aroots_mul [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
     (FaithfulSMul.algebraMap_injective T S)]
 
 @[simp]
-theorem aroots_X_sub_C [CommRing S] [IsDomain S] [Algebra T S]
+theorem aroots_X_sub_C [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
     (r : T) : aroots (X - C r) S = {algebraMap T S r} := by
   rw [aroots_def, Polynomial.map_sub, map_X, map_C, roots_X_sub_C]
 
 @[simp]
-theorem aroots_X [CommRing S] [IsDomain S] [Algebra T S] :
+theorem aroots_X [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] :
     aroots (X : T[X]) S = {0} := by
   rw [aroots_def, map_X, roots_X]
 
 @[simp]
-theorem aroots_C [CommRing S] [IsDomain S] [Algebra T S] (a : T) : (C a).aroots S = 0 := by
+theorem aroots_C [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] (a : T) : (C a).aroots S = 0 := by
   rw [aroots_def, map_C, roots_C]
 
 @[simp]
-theorem aroots_zero (S) [CommRing S] [IsDomain S] [Algebra T S] : (0 : T[X]).aroots S = 0 := by
+theorem aroots_zero (S) [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] : (0 : T[X]).aroots S = 0 := by
   rw [← C_0, aroots_C]
 
 @[simp]
-theorem aroots_one [CommRing S] [IsDomain S] [Algebra T S] :
+theorem aroots_one [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] :
     (1 : T[X]).aroots S = 0 :=
   aroots_C 1
 
 @[simp]
-theorem aroots_neg [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) :
+theorem aroots_neg [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] (p : T[X]) :
     (-p).aroots S = p.aroots S := by
   rw [aroots, Polynomial.map_neg, roots_neg]
 
 @[simp]
-theorem aroots_C_mul [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
+theorem aroots_C_mul [IsDomain T] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] {a : T} (p : T[X]) (ha : a ≠ 0) :
     (C a * p).aroots S = p.aroots S := by
   rw [aroots_def, Polynomial.map_mul, map_C, roots_C_mul]
@@ -537,34 +537,34 @@ theorem aroots_C_mul [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
   exact FaithfulSMul.algebraMap_injective T S
 
 @[simp]
-theorem aroots_smul_nonzero [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
+theorem aroots_smul_nonzero [IsDomain T] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] {a : T} (p : T[X]) (ha : a ≠ 0) :
     (a • p).aroots S = p.aroots S := by
   rw [smul_eq_C_mul, aroots_C_mul _ ha]
 
 @[simp]
-theorem aroots_pow [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) (n : ℕ) :
+theorem aroots_pow [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] (p : T[X]) (n : ℕ) :
     (p ^ n).aroots S = n • p.aroots S := by
   rw [aroots_def, Polynomial.map_pow, roots_pow]
 
-theorem aroots_X_pow [CommRing S] [IsDomain S] [Algebra T S] (n : ℕ) :
+theorem aroots_X_pow [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] (n : ℕ) :
     (X ^ n : T[X]).aroots S = n • ({0} : Multiset S) := by
   rw [aroots_pow, aroots_X]
 
-theorem aroots_C_mul_X_pow [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
+theorem aroots_C_mul_X_pow [IsDomain T] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] {a : T} (ha : a ≠ 0) (n : ℕ) :
     (C a * X ^ n : T[X]).aroots S = n • ({0} : Multiset S) := by
   rw [aroots_C_mul _ ha, aroots_X_pow]
 
 @[simp]
-theorem aroots_monomial [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
+theorem aroots_monomial [IsDomain T] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] {a : T} (ha : a ≠ 0) (n : ℕ) :
     (monomial n a).aroots S = n • ({0} : Multiset S) := by
   rw [← C_mul_X_pow_eq_monomial, aroots_C_mul_X_pow ha]
 
 variable (R S) in
 @[simp]
-theorem aroots_map (p : T[X]) [CommRing S] [Algebra T S] [Algebra S R] [Algebra T R]
+theorem aroots_map (p : T[X]) [Ring S] [IsMulCommutative S] [Algebra T S] [Algebra S R] [Algebra T R]
     [IsScalarTower T S R] :
     (p.map (algebraMap T S)).aroots R = p.aroots R := by
   rw [aroots_def, aroots_def, map_map, IsScalarTower.algebraMap_eq T S R]
@@ -573,51 +573,51 @@ theorem aroots_map (p : T[X]) [CommRing S] [Algebra T S] [Algebra S R] [Algebra 
 
 If you have a non-separable polynomial, use `Polynomial.aroots` for the multiset
 where multiple roots have the appropriate multiplicity. -/
-def rootSet (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Set S :=
+def rootSet (p : T[X]) (S) [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] : Set S :=
   haveI := Classical.decEq S
   (p.aroots S).toFinset
 
-theorem rootSet_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] [DecidableEq S] :
+theorem rootSet_def (p : T[X]) (S) [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] [DecidableEq S] :
     p.rootSet S = (p.aroots S).toFinset := by
   rw [rootSet]
   convert! rfl
 
 @[simp]
-theorem rootSet_C [CommRing S] [IsDomain S] [Algebra T S] (a : T) : (C a).rootSet S = ∅ := by
+theorem rootSet_C [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] (a : T) : (C a).rootSet S = ∅ := by
   classical
   rw [rootSet_def, aroots_C, Multiset.toFinset_zero, Finset.coe_empty]
 
 @[simp]
-theorem rootSet_zero (S) [CommRing S] [IsDomain S] [Algebra T S] : (0 : T[X]).rootSet S = ∅ := by
+theorem rootSet_zero (S) [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] : (0 : T[X]).rootSet S = ∅ := by
   rw [← C_0, rootSet_C]
 
 @[simp]
-theorem rootSet_one (S) [CommRing S] [IsDomain S] [Algebra T S] : (1 : T[X]).rootSet S = ∅ := by
+theorem rootSet_one (S) [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] : (1 : T[X]).rootSet S = ∅ := by
   rw [← C_1, rootSet_C]
 
 @[simp]
-theorem rootSet_neg (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
+theorem rootSet_neg (p : T[X]) (S) [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] :
     (-p).rootSet S = p.rootSet S := by
   rw [rootSet, aroots_neg, rootSet]
 
-instance rootSetFintype (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
+instance rootSetFintype (p : T[X]) (S : Type*) [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] :
     Fintype (p.rootSet S) :=
   FinsetCoe.fintype _
 
-theorem rootSet_finite (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
+theorem rootSet_finite (p : T[X]) (S : Type*) [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] :
     (p.rootSet S).Finite :=
   Set.toFinite _
 
 variable (T R) in
 @[simp]
-theorem rootSet_map [CommRing S] (p : S[X]) [Algebra S T] [Algebra T R] [Algebra S R]
+theorem rootSet_map [Ring S] [IsMulCommutative S] (p : S[X]) [Algebra S T] [Algebra T R] [Algebra S R]
     [IsScalarTower S T R] : (p.map (algebraMap S T)).rootSet R = p.rootSet R := by
   classical
   rw [rootSet_def, rootSet_def, aroots_map]
 
 /-- The set of roots of all polynomials of bounded degree and having coefficients in a finite set
 is finite. -/
-theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S] [DecidableEq S]
+theorem bUnion_roots_finite {R S : Type*} [Semiring R] [Ring S] [IsMulCommutative S] [IsDomain S] [DecidableEq S]
     (m : R →+* S) (d : ℕ) {U : Set R} (h : U.Finite) :
     (⋃ (f : R[X]) (_ : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
         ((f.map m).roots.toFinset : Set S)).Finite :=
@@ -634,51 +634,51 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
 
 /-- A version of `mem_rootSet` that requires the polynomial to be non-zero after mapping
 instead of requiring it to be non-zero and `Module.IsTorsionFree`. -/
-theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
+theorem mem_rootSet' {p : T[X]} {S : Type*} [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical
   rw [rootSet_def, Finset.mem_coe, mem_toFinset, mem_aroots']
 
 /-- A version of `mem_rootSet'` that requires `Module.IsTorsionFree` and for the polynomial to be
 non-zero instead of requiring it to be non-zero after mapping. -/
-theorem mem_rootSet {p : T[X]} {S : Type*} [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
+theorem mem_rootSet {p : T[X]} {S : Type*} [IsDomain T] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] {a : S} : a ∈ p.rootSet S ↔ p ≠ 0 ∧ aeval a p = 0 := by
   rw [mem_rootSet', Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective T S)]
 
-lemma mem_rootSet_of_ne {p : T[X]} {S : Type*} [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
+lemma mem_rootSet_of_ne {p : T[X]} {S : Type*} [IsDomain T] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] (hp : p ≠ 0) {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 :=
   mem_rootSet.trans <| and_iff_right hp
 
 theorem preimage_eval_singleton (hp : p ≠ C a) : p.eval ⁻¹' {a} = (p - C a).rootSet R := by
   ext; simp [mem_rootSet_of_ne (sub_ne_zero.mpr hp), sub_eq_zero]
 
-theorem Monic.mem_rootSet {p : T[X]} (hp : Monic p) {S : Type*} [CommRing S] [IsDomain S]
+theorem Monic.mem_rootSet {p : T[X]} (hp : Monic p) {S : Type*} [Ring S] [IsMulCommutative S] [IsDomain S]
     [Algebra T S] {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 := by
   simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
 
-theorem rootSet_maps_to' {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S] [CommRing S']
+theorem rootSet_maps_to' {p : T[X]} {S S'} [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] [Ring S'] [IsMulCommutative S']
     [IsDomain S'] [Algebra T S'] (hp : p.map (algebraMap T S') = 0 → p.map (algebraMap T S) = 0)
     (f : S →ₐ[T] S') : (p.rootSet S).MapsTo f (p.rootSet S') := fun x hx => by
   rw [mem_rootSet'] at hx ⊢
   rw [aeval_algHom, AlgHom.comp_apply, hx.2, _root_.map_zero]
   exact ⟨mt hp hx.1, rfl⟩
 
-theorem ne_zero_of_mem_rootSet {p : T[X]} [CommRing S] [IsDomain S] [Algebra T S] {a : S}
+theorem ne_zero_of_mem_rootSet {p : T[X]} [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] {a : S}
     (h : a ∈ p.rootSet S) : p ≠ 0 := fun hf => by rwa [hf, rootSet_zero] at h
 
-theorem aeval_eq_zero_of_mem_rootSet {p : T[X]} [CommRing S] [IsDomain S] [Algebra T S] {a : S}
+theorem aeval_eq_zero_of_mem_rootSet {p : T[X]} [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] {a : S}
     (hx : a ∈ p.rootSet S) : aeval a p = 0 :=
   (mem_rootSet'.1 hx).2
 
-lemma rootSet_mapsTo {p : T[X]} [IsDomain T] {S S' : Type*} [CommRing S] [IsDomain S] [Algebra T S]
-    [CommRing S'] [IsDomain S'] [Algebra T S'] [Module.IsTorsionFree T S'] (f : S →ₐ[T] S') :
+lemma rootSet_mapsTo {p : T[X]} [IsDomain T] {S S' : Type*} [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
+    [Ring S'] [IsMulCommutative S'] [IsDomain S'] [Algebra T S'] [Module.IsTorsionFree T S'] (f : S →ₐ[T] S') :
     (p.rootSet S).MapsTo f (p.rootSet S') := by
   refine rootSet_maps_to' (fun h₀ => ?_) f
   obtain rfl : p = 0 :=
     map_injective _ (FaithfulSMul.algebraMap_injective T S') (by rwa [Polynomial.map_zero])
   exact Polynomial.map_zero _
 
-theorem mem_rootSet_of_injective [CommRing S] {p : S[X]} [Algebra S R]
+theorem mem_rootSet_of_injective [Ring S] [IsMulCommutative S] {p : S[X]} [Algebra S R]
     (h : Function.Injective (algebraMap S R)) {x : R} (hp : p ≠ 0) :
     x ∈ p.rootSet R ↔ aeval x p = 0 := by
   classical
@@ -690,24 +690,24 @@ theorem nthRootsFinset_toSet {n : ℕ} (h : 0 < n) (a : R) :
   ext x
   simp_all
 
-theorem smul_mem_rootSet [CommRing S] [Algebra S R] {G : Type*}
+theorem smul_mem_rootSet [Ring S] [IsMulCommutative S] [Algebra S R] {G : Type*}
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] {f : S[X]}
     (g : G) {x : R} (hx : x ∈ f.rootSet R) : g • x ∈ f.rootSet R := by
   simp [mem_rootSet', aeval_smul, aeval_eq_zero_of_mem_rootSet hx, (mem_rootSet'.mp hx).1]
 
-theorem smul_mem_rootSet_iff_of_isUnit [CommRing S] [Algebra S R] {G : Type*}
+theorem smul_mem_rootSet_iff_of_isUnit [Ring S] [IsMulCommutative S] [Algebra S R] {G : Type*}
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] {f : S[X]}
     {g : G} (hg : IsUnit g) {x : R} : g • x ∈ f.rootSet R ↔ x ∈ f.rootSet R := by
   refine ⟨?_, smul_mem_rootSet g⟩
   obtain ⟨g, rfl⟩ := hg
   exact fun hx ↦ inv_smul_smul g x ▸ smul_mem_rootSet _ hx
 
-theorem smul_mem_rootSet_iff [CommRing S] [Algebra S R] {G : Type*}
+theorem smul_mem_rootSet_iff [Ring S] [IsMulCommutative S] [Algebra S R] {G : Type*}
     [Group G] [MulSemiringAction G R] [SMulCommClass G S R] {f : S[X]}
     {g : G} {x : R} : g • x ∈ f.rootSet R ↔ x ∈ f.rootSet R :=
   smul_mem_rootSet_iff_of_isUnit (Group.isUnit g)
 
-instance [CommRing S] [Algebra S R] (G : Type*)
+instance [Ring S] [IsMulCommutative S] [Algebra S R] (G : Type*)
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] (f : S[X]) :
     MulAction G (f.rootSet R) where
   smul g x := ⟨g • x.1, smul_mem_rootSet g x.2⟩
@@ -715,18 +715,18 @@ instance [CommRing S] [Algebra S R] (G : Type*)
   mul_smul g h x := Subtype.ext (mul_smul g h x.1)
 
 @[simp]
-theorem rootSet.coe_smul [CommRing S] [Algebra S R] {G : Type*}
+theorem rootSet.coe_smul [Ring S] [IsMulCommutative S] [Algebra S R] {G : Type*}
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] {f : S[X]}
     (g : G) (x : f.rootSet R) : (g • x : f.rootSet R) = g • (x : R) :=
   rfl
 
-instance [CommRing S] [Algebra S R] (G H : Type*)
+instance [Ring S] [IsMulCommutative S] [Algebra S R] (G H : Type*)
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R]
     [Monoid H] [MulSemiringAction H R] [SMulCommClass H S R]
     [SMulCommClass G H R] (f : S[X]) : SMulCommClass G H (f.rootSet R) where
   smul_comm _ _ _ := Subtype.ext <| smul_comm _ _ _
 
-instance [CommRing S] [Algebra S R] (G H : Type*)
+instance [Ring S] [IsMulCommutative S] [Algebra S R] (G H : Type*)
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R]
     [Monoid H] [MulSemiringAction H R] [SMulCommClass H S R]
     [SMul G H] [IsScalarTower G H R] (f : S[X]) : IsScalarTower G H (f.rootSet R) where
@@ -734,7 +734,7 @@ instance [CommRing S] [Algebra S R] (G H : Type*)
 
 end Roots
 
-lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
+lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [Ring R] [IsMulCommutative R] [IsDomain R]
     (p : R[X]) {ι} [Fintype ι] {f : ι → R} (hf : Function.Injective f)
     (heval : ∀ i, p.eval (f i) = 0) (hcard : natDegree p < Fintype.card ι) : p = 0 := by
   classical
@@ -753,7 +753,7 @@ lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
   rintro x rfl
   exact heval _
 
-lemma eq_of_natDegree_lt_card_of_eval_eq {R} [CommRing R] [IsDomain R]
+lemma eq_of_natDegree_lt_card_of_eval_eq {R} [Ring R] [IsMulCommutative R] [IsDomain R]
     (p q : R[X]) {ι} [Fintype ι] {f : ι → R} (hf : Function.Injective f)
     (heval : ∀ i : ι, eval (f i) p = eval (f i) q)
     (hcard : max p.natDegree q.natDegree < Fintype.card ι) : p = q := by
@@ -762,13 +762,13 @@ lemma eq_of_natDegree_lt_card_of_eval_eq {R} [CommRing R] [IsDomain R]
   · simpa [sub_eq_zero]
   · grind [natDegree_sub_le]
 
-lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero' {R} [CommRing R] [IsDomain R]
+lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero' {R} [Ring R] [IsMulCommutative R] [IsDomain R]
     (p : R[X]) (s : Finset R) (heval : ∀ i ∈ s, p.eval i = 0) (hcard : natDegree p < #s) :
     p = 0 :=
   eq_zero_of_natDegree_lt_card_of_eval_eq_zero p Subtype.val_injective
     (fun i : s ↦ heval i i.prop) (hcard.trans_eq (Fintype.card_coe s).symm)
 
-lemma eq_of_natDegree_lt_card_of_eval_eq' {R} [CommRing R] [IsDomain R]
+lemma eq_of_natDegree_lt_card_of_eval_eq' {R} [Ring R] [IsMulCommutative R] [IsDomain R]
     (p q : R[X]) (s : Finset R) (heval : ∀ i ∈ s, p.eval i = q.eval i)
     (hcard : max p.natDegree q.natDegree < #s) : p = q :=
   eq_of_natDegree_lt_card_of_eval_eq p q Subtype.val_injective
@@ -909,7 +909,7 @@ end CommRing
 
 section
 
-variable {A B : Type*} [CommRing A] [CommRing B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
 
 theorem le_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hmap : map f p ≠ 0) (a : A) :
     rootMultiplicity a p ≤ rootMultiplicity (f a) (p.map f) := by
@@ -958,17 +958,17 @@ theorem map_roots_le_of_injective [IsDomain A] [IsDomain B] (p : A[X]) {f : A �
   · simp only [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero, le_rfl]
   exact map_roots_le ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 
-theorem card_roots_map_le_degree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
+theorem card_roots_map_le_degree {A B : Type*} [Semiring A] [Ring B] [IsMulCommutative B] [IsDomain B]
     {f : A →+* B} (p : A[X]) (hp0 : p ≠ 0) : (p.map f).roots.card ≤ p.degree := by
   by_cases hpm0 : p.map f = 0
   · simp [hp0, hpm0, zero_le_degree_iff]
   exact card_roots hpm0 |>.trans degree_map_le
 
-theorem card_roots_map_le_natDegree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
+theorem card_roots_map_le_natDegree {A B : Type*} [Semiring A] [Ring B] [IsMulCommutative B] [IsDomain B]
     {f : A →+* B} (p : A[X]) : (p.map f).roots.card ≤ p.natDegree :=
   card_roots' _ |>.trans natDegree_map_le
 
-theorem ncard_rootSet_le (p : A[X]) (B : Type*) [CommRing B] [IsDomain B] [Algebra A B] :
+theorem ncard_rootSet_le (p : A[X]) (B : Type*) [Ring B] [IsMulCommutative B] [IsDomain B] [Algebra A B] :
     Set.ncard (p.rootSet B) ≤ p.natDegree := by
   classical
   grw [rootSet, Set.ncard_coe_finset, Multiset.toFinset_card_le]

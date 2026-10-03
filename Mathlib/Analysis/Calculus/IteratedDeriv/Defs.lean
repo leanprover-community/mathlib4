@@ -49,7 +49,7 @@ open scoped Topology ContDiff
 open Filter Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 /-- The `n`-th iterated derivative of a function from `𝕜` to `F`, as a function from `𝕜` to `F`. -/
 def iteratedDeriv (n : ℕ) (f : 𝕜 → F) (x : 𝕜) : F :=

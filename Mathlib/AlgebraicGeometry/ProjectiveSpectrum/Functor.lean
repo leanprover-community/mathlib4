@@ -22,9 +22,9 @@ namespace AlgebraicGeometry
 
 section universe_polymorphic
 
-variable {A B C σ τ : Type*} [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
-  [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
-  [CommRing C] {𝒜 : ℕ → σ} {ℬ : ℕ → τ} [GradedRing 𝒜] [GradedRing ℬ]
+variable {A B C σ τ : Type*} [Ring A] [IsMulCommutative A] [SetLike σ A] [AddSubgroupClass σ A]
+  [Ring B] [IsMulCommutative B] [SetLike τ B] [AddSubgroupClass τ B]
+  [Ring C] [IsMulCommutative C] {𝒜 : ℕ → σ} {ℬ : ℕ → τ} [GradedRing 𝒜] [GradedRing ℬ]
   (f : 𝒜 →+*ᵍ ℬ) (hf : ℬ₊ ≤ 𝒜₊.map f)
 
 namespace ProjectiveSpectrum
@@ -88,9 +88,9 @@ section universe_monomorphic
 
 namespace Proj
 
-variable {A B C σ τ ψ : Type u} [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
-  [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
-  [CommRing C] [SetLike ψ C] [AddSubgroupClass ψ C]
+variable {A B C σ τ ψ : Type u} [Ring A] [IsMulCommutative A] [SetLike σ A] [AddSubgroupClass σ A]
+  [Ring B] [IsMulCommutative B] [SetLike τ B] [AddSubgroupClass τ B]
+  [Ring C] [IsMulCommutative C] [SetLike ψ C] [AddSubgroupClass ψ C]
   {𝒜 : ℕ → σ} {ℬ : ℕ → τ} {𝒞 : ℕ → ψ} [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
   (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) (hf : ℬ₊ ≤ 𝒜₊.map f) (hg : 𝒞₊ ≤ ℬ₊.map g)
 

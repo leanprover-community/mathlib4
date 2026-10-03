@@ -23,8 +23,8 @@ public import Mathlib.Algebra.Lie.Prod
 
 namespace Derivation
 
-variable {R : Type*} [CommRing R]
-variable {A : Type*} [CommRing A] [Algebra R A]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A]
 variable {D1 D2 : Derivation R A A} (a : A)
 
 section LieStructures
@@ -72,7 +72,7 @@ instance : LieModule R (Derivation R A A) A where
 lemma bracket_eq_fun (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
 
 section CompatibleDerivations
-variable {A' : Type*} [CommRing A'] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A']
+variable {A' : Type*} [Ring A'] [IsMulCommutative A'] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A']
 attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (R A A') in

@@ -64,7 +64,7 @@ open Submodule MeasureTheory Module MeasureTheory Module ZSpan
 
 section General
 
-variable {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] (L : Submodule ℤ E)
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [MeasurableSpace E] (L : Submodule ℤ E)
 
 /-- The covolume of a `ℤ`-lattice is the volume of some fundamental domain; see
 `ZLattice.covolume_eq_volume` for the proof that the volume does not depend on the choice of
@@ -75,7 +75,7 @@ end General
 
 section Basic
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 variable [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
 variable (μ : Measure E := by volume_tac) [Measure.IsAddHaarMeasure μ]
@@ -99,7 +99,7 @@ theorem covolume_pos : 0 < covolume L μ :=
   lt_of_le_of_ne ENNReal.toReal_nonneg (covolume_ne_zero L μ).symm
 
 set_option backward.privateInPublic true in
-theorem covolume_comap {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
+theorem covolume_comap {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
     [MeasurableSpace F] [BorelSpace F] (ν : Measure F := by volume_tac) [Measure.IsAddHaarMeasure ν]
     {e : F ≃L[ℝ] E} (he : MeasurePreserving e ν μ) :
     covolume (ZLattice.comap ℝ L e.toLinearMap) ν = covolume L μ := by
@@ -167,7 +167,7 @@ theorem covolume_div_covolume_eq_relIndex {ι : Type*} [Fintype ι] (L₁ L₂ :
 A more general version of `covolume_div_covolume_eq_relIndex`;
 see the `Naming conventions` section in the introduction.
 -/
-theorem covolume_div_covolume_eq_relIndex' {E : Type*} [NormedAddCommGroup E]
+theorem covolume_div_covolume_eq_relIndex' {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     (L₁ L₂ : Submodule ℤ E) [DiscreteTopology L₁] [IsZLattice ℝ L₁] [DiscreteTopology L₂]
     [IsZLattice ℝ L₂] (h : L₁ ≤ L₂) :
@@ -192,7 +192,7 @@ theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] (L : Submo
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A more general version of `ZLattice.volume_image_eq_volume_div_covolume`;
 see the `Naming conventions` section in the introduction. -/
-theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
+theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] {ι : Type*} [Fintype ι]
     (b : Basis ι ℤ L) {s : Set E} (hs : NullMeasurableSet s) :
@@ -220,7 +220,7 @@ open Filter Fintype Pointwise BoxIntegral Bornology
 
 open scoped Topology
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 variable {L : Submodule ℤ E} [DiscreteTopology L] [IsZLattice ℝ L]
 variable {ι : Type*} [Fintype ι] (b : Basis ι ℤ L)
 
@@ -304,7 +304,7 @@ open Filter Fintype Pointwise Bornology
 
 open scoped Topology
 
-private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {ι : Type*} [Finite ι]
+private theorem frontier_equivFun {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E] {ι : Type*} [Finite ι]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
     (b : Basis ι ℝ E) (s : Set E) :
     frontier (b.equivFun '' s) = b.equivFun '' (frontier s) := by
@@ -349,7 +349,7 @@ open Filter Pointwise Bornology
 
 open scoped Topology
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
 

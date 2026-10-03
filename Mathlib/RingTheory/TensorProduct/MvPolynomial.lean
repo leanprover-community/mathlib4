@@ -49,15 +49,15 @@ open TensorProduct
 
 open LinearMap
 
-variable {R : Type u} {N : Type v} [CommSemiring R]
+variable {R : Type u} {N : Type v} [Semiring R] [IsMulCommutative R]
 
 variable {σ ι : Type*}
 
-variable {S : Type*} [CommSemiring S] [Algebra R S]
+variable {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 section Algebra
 
-variable [CommSemiring N] [Algebra R N]
+variable [Semiring N] [IsMulCommutative N] [Algebra R N]
 
 /-- The algebra morphism from a tensor product of a polynomial algebra
   by an algebra to a polynomial algebra -/
@@ -87,7 +87,7 @@ noncomputable def scalarRTensorAlgEquiv : N ⊗[R] MvPolynomial σ R ≃ₐ[N] M
   AddMonoidAlgebra.scalarTensorEquiv R N
 
 variable (R)
-variable (A : Type*) [CommSemiring A] [Algebra R A]
+variable (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 /-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
 equivalent to `MvPolynomial σ A`. -/

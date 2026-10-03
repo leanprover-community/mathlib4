@@ -51,8 +51,8 @@ open Filter MvPolynomial RingHom Set TopologicalSpace UniformSpace
 section
 
 variable {σ : Type*}
-variable {R : Type*} [CommRing R] [TopologicalSpace R]
-variable {S : Type*} [CommRing S] [TopologicalSpace S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [TopologicalSpace S]
 variable {φ : R →+* S}
 
 -- We endow MvPowerSeries σ R with the Pi topology
@@ -64,7 +64,7 @@ structure HasEval (a : σ → S) : Prop where
   hpow : ∀ s, IsTopologicallyNilpotent (a s)
   tendsto_zero : Tendsto a cofinite (𝓝 0)
 
-theorem HasEval.mono {S : Type*} [CommRing S] {a : σ → S}
+theorem HasEval.mono {S : Type*} [Ring S] [IsMulCommutative S] {a : σ → S}
     {t u : TopologicalSpace S} (h : t ≤ u) (ha : @HasEval _ _ _ t a) :
     @HasEval _ _ _ u a :=
   ⟨fun s ↦ Filter.Tendsto.mono_right (@HasEval.hpow _ _ _ t a ha s) (nhds_mono h),
@@ -126,8 +126,8 @@ section Evaluation
 open WithPiTopology
 
 variable {σ : Type*}
-variable {R : Type*} [CommRing R] [UniformSpace R]
-variable {S : Type*} [CommRing S] [UniformSpace S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [UniformSpace R]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [UniformSpace S]
 variable {φ : R →+* S}
 
 -- We endow MvPowerSeries σ R with the product uniform structure
@@ -284,7 +284,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
-    [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [IsUniformAddGroup T]
+    [Ring T] [IsMulCommutative T] [IsTopologicalRing T] [IsLinearTopology T T] [IsUniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
   apply eval₂_unique _ (ha.map hε)
@@ -342,7 +342,7 @@ theorem aeval_eq_sum (ha : HasEval a) (f : MvPowerSeries σ R) :
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : HasEval a)
-    {T : Type*} [CommRing T] [UniformSpace T] [IsUniformAddGroup T]
+    {T : Type*} [Ring T] [IsMulCommutative T] [UniformSpace T] [IsUniformAddGroup T]
     [IsTopologicalRing T] [IsLinearTopology T T]
     [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :

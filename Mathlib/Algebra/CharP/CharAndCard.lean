@@ -24,7 +24,7 @@ public section
 
 /-- A prime `p` is a unit in a commutative ring `R` of nonzero characteristic iff it does not divide
 the characteristic. -/
-theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime]
+theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [Ring R] [IsMulCommutative R] (p : ℕ) [Fact p.Prime]
     (hR : ringChar R ≠ 0) : IsUnit (p : R) ↔ ¬p ∣ ringChar R := by
   have hch := CharP.cast_eq_zero R (ringChar R)
   have hp : p.Prime := Fact.out
@@ -47,13 +47,13 @@ theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p 
 
 /-- A prime `p` is a unit in a finite commutative ring `R`
 iff it does not divide the characteristic. -/
-theorem isUnit_iff_not_dvd_char (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [Finite R] :
+theorem isUnit_iff_not_dvd_char (R : Type*) [Ring R] [IsMulCommutative R] (p : ℕ) [Fact p.Prime] [Finite R] :
     IsUnit (p : R) ↔ ¬p ∣ ringChar R :=
   isUnit_iff_not_dvd_char_of_ringChar_ne_zero R p <| CharP.char_ne_zero_of_finite R (ringChar R)
 
 /-- The prime divisors of the characteristic of a finite commutative ring are exactly
 the prime divisors of its cardinality. -/
-theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime] :
+theorem prime_dvd_char_iff_dvd_card {R : Type*} [Ring R] [IsMulCommutative R] [Fintype R] (p : ℕ) [Fact p.Prime] :
     p ∣ ringChar R ↔ p ∣ Fintype.card R := by
   refine
     ⟨fun h =>
@@ -73,7 +73,7 @@ theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : �
 
 /-- A prime that divides the cardinality of a finite commutative ring `R`
 isn't a unit in `R`. -/
-theorem not_isUnit_prime_of_dvd_card {R : Type*} [CommRing R] [Fintype R] {p : ℕ} [Fact p.Prime]
+theorem not_isUnit_prime_of_dvd_card {R : Type*} [Ring R] [IsMulCommutative R] [Fintype R] {p : ℕ} [Fact p.Prime]
     (hp : p ∣ Fintype.card R) : ¬IsUnit (p : R) :=
   mt (isUnit_iff_not_dvd_char R p).mp
     (Classical.not_not.mpr ((prime_dvd_char_iff_dvd_card p).mpr hp))
@@ -83,7 +83,7 @@ lemma charP_of_card_eq_prime {R : Type*} [NonAssocRing R] [Fintype R] {p : ℕ} 
   have := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.1.one_lt)
   (CharP.charP_iff_prime_eq_zero hp.1).2 (hR ▸ Nat.cast_card_eq_zero R)
 
-lemma charP_of_card_eq_prime_pow {R : Type*} [CommRing R] [IsDomain R] [Fintype R] {p f : ℕ}
+lemma charP_of_card_eq_prime_pow {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [Fintype R] {p f : ℕ}
     [hp : Fact p.Prime] (hR : Fintype.card R = p ^ f) : CharP R p :=
   have hf : f ≠ 0 := fun h0 ↦ not_subsingleton R <|
     Fintype.card_le_one_iff_subsingleton.mp <| by simpa [h0] using hR.le

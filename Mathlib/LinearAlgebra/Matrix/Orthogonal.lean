@@ -31,7 +31,7 @@ assert_not_exists Field
 namespace Matrix
 
 variable {α n m : Type*}
-variable [Mul α] [AddCommMonoid α]
+variable [Mul α] [AddMonoid α] [IsAddCommutative α]
 variable (A : Matrix m n α)
 
 open Matrix

@@ -30,8 +30,8 @@ namespace IsLocalization
 
 section LocalizationLocalization
 
-variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S]
-variable (N : Submonoid S) (T : Type*) [CommSemiring T] [Algebra R T]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (M : Submonoid R) {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra R S]
+variable (N : Submonoid S) (T : Type*) [Semiring T] [IsMulCommutative T] [Algebra R T]
 
 
 section
@@ -184,7 +184,7 @@ noncomputable instance instAlgebraLocalizationAtPrime (x : Ideal R) [H : x.IsPri
       rw [mem_nonZeroDivisors_iff_ne_zero]
       exact fun h => ha (h.symm ▸ x.zero_mem))
 
-instance {R : Type*} [CommRing R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
+instance {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
     IsScalarTower R (Localization.AtPrime p) (FractionRing R) :=
   localization_isScalarTower_of_submonoid_le (Localization.AtPrime p) (FractionRing R)
     p.primeCompl (nonZeroDivisors R) p.primeCompl_le_nonZeroDivisors
@@ -251,12 +251,12 @@ end IsLocalization
 
 namespace IsFractionRing
 
-variable {R : Type*} [CommRing R] (M : Submonoid R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (M : Submonoid R)
 
 open IsLocalization
 
 set_option backward.isDefEq.respectTransparency false in
-theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T] [Algebra R S]
+theorem isFractionRing_of_isLocalization (S T : Type*) [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] [IsLocalization M S] [IsFractionRing R T]
     (hM : M ≤ nonZeroDivisors R) : IsFractionRing S T := by
   have := isLocalization_of_submonoid_le S T M (nonZeroDivisors R) hM
@@ -274,8 +274,8 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
     rw [← (map_units S s).mul_left_inj, mul_assoc, e, ← map_mul, hz, map_zero,
       zero_mul]
 
-theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) [CommRing S]
-    [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) [Ring S] [IsMulCommutative S]
+    [Ring T] [IsMulCommutative T] [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [IsLocalization M S] [IsFractionRing R T] : IsFractionRing S T := by
   have := IsFractionRing.nontrivial R T
   have := (algebraMap S T).domain_nontrivial
@@ -287,7 +287,7 @@ theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) 
   rw [← (algebraMap R S).map_one, ← @mk'_one R _ M, @comm _ Eq, mk'_eq_zero_iff]
   exact ⟨⟨x, hx⟩, by simp [hx']⟩
 
-instance {R : Type*} [CommRing R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
+instance {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
     IsFractionRing (Localization.AtPrime p) (FractionRing R) :=
   IsFractionRing.isFractionRing_of_isDomain_of_isLocalization p.primeCompl
     (Localization.AtPrime p) (FractionRing R)

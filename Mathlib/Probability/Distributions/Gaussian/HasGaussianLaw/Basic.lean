@@ -37,7 +37,7 @@ variable {Ω E F ι : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
 section Basic
 
-variable [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E] [mE : MeasurableSpace E]
+variable [TopologicalSpace E] [AddMonoid E] [IsAddCommutative E] [Module ℝ E] [mE : MeasurableSpace E]
   {X Y : Ω → E}
 
 lemma HasGaussianLaw.congr {Y : Ω → E} (hX : HasGaussianLaw X P) (h : X =ᵐ[P] Y) :
@@ -64,7 +64,7 @@ lemma HasLaw.hasGaussianLaw {μ : Measure E} (hX : HasLaw X μ P) [IsGaussian μ
     HasGaussianLaw X P where
   isGaussian_map := by rwa [hX.map_eq]
 
-lemma HasGaussianLaw.map_of_measurable {F : Type*} [TopologicalSpace F] [AddCommMonoid F]
+lemma HasGaussianLaw.map_of_measurable {F : Type*} [TopologicalSpace F] [AddMonoid F] [IsAddCommutative F]
     [Module ℝ F] [MeasurableSpace F] [OpensMeasurableSpace F]
     (L : E →L[ℝ] F) (hX : HasGaussianLaw X P) (hL : Measurable L) :
     HasGaussianLaw (L ∘ X) P where
@@ -84,7 +84,7 @@ end Basic
 
 namespace HasGaussianLaw
 
-variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
+variable [NormedAddGroup E] [IsAddCommutative E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
 
 lemma of_subsingleton [NormedSpace ℝ E] [Subsingleton E] [IsProbabilityMeasure P] :
     HasGaussianLaw X P where
@@ -141,7 +141,7 @@ lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussian
     Integrable X P :=
   memLp_one_iff_integrable.1 <| hX.memLp (by simp)
 
-variable [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
+variable [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
 
 lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ X) P :=
   hX.map_of_measurable L (by fun_prop)
@@ -205,7 +205,7 @@ end Prod
 
 section Pi
 
-variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
+variable {E : ι → Type*} [∀ i, NormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)]
   [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)] [∀ i, BorelSpace (E i)]
   {X : (i : ι) → Ω → E i}
 
@@ -226,14 +226,14 @@ lemma toLp_pi [Finite ι] (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw
 
 variable [Fintype ι]
 
-lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+lemma sum {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (∑ i, X i) P := by
   convert! hX.map (∑ i, .proj i)
   ext; simp
 
-lemma fun_sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+lemma fun_sum {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ ∑ i, X i ω) P := by

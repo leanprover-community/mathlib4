@@ -175,7 +175,7 @@ end AddGroup
 
 section AddCommMonoid
 
-variable [AddCommMonoid R] [StarAddMonoid R]
+variable [AddMonoid R] [IsAddCommutative R] [StarAddMonoid R]
 
 @[simp]
 theorem add_star_self (x : R) : IsSelfAdjoint (x + star x) := by
@@ -268,7 +268,7 @@ end Semiring
 
 section CommSemigroup
 
-variable [CommSemigroup R] [StarMul R]
+variable [Semigroup R] [IsMulCommutative R] [StarMul R]
 
 theorem mul {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x * y) := by
   simp only [isSelfAdjoint_iff, star_mul', hx.star_eq, hy.star_eq]
@@ -276,7 +276,7 @@ theorem mul {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjo
 end CommSemigroup
 
 section CommSemiring
-variable {α : Type*} [CommSemiring α] [StarRing α] {a : α}
+variable {α : Type*} [Semiring α] [IsMulCommutative α] [StarRing α] {a : α}
 
 open scoped ComplexConjugate
 
@@ -385,7 +385,7 @@ def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
   neg_mem' hx := hx.neg
 
 /-- The skew-adjoint elements of a star additive group, as an additive subgroup. -/
-def skewAdjoint [AddCommGroup R] [StarAddMonoid R] : AddSubgroup R where
+def skewAdjoint [AddGroup R] [IsAddCommutative R] [StarAddMonoid R] : AddSubgroup R where
   carrier := { x | star x = -x }
   zero_mem' := show star (0 : R) = -0 by simp only [star_zero, neg_zero]
   add_mem' := @fun x y (hx : star x = -x) (hy : star y = -y) =>
@@ -451,7 +451,7 @@ end Ring
 
 section NonUnitalCommRing
 
-variable [NonUnitalCommRing R] [StarRing R]
+variable [NonUnitalRing R] [IsMulCommutative R] [StarRing R]
 
 instance : Mul (selfAdjoint R) where
   mul x y := ⟨(x : R) * y, x.prop.mul y.prop⟩
@@ -464,7 +464,7 @@ end NonUnitalCommRing
 
 section CommRing
 
-variable [CommRing R] [StarRing R]
+variable [Ring R] [IsMulCommutative R] [StarRing R]
 
 instance : CommRing (selfAdjoint R) :=
   Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
@@ -546,7 +546,7 @@ end SMul
 
 section Module
 
-variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
+variable [Star R] [TrivialStar R] [AddGroup A] [IsAddCommutative A] [StarAddMonoid A]
 
 instance [Semiring R] [Module R A] [StarModule R A] : Module R (selfAdjoint A) :=
   Function.Injective.module R (selfAdjoint A).subtype Subtype.coe_injective val_smul
@@ -559,7 +559,7 @@ namespace skewAdjoint
 
 section AddGroup
 
-variable [AddCommGroup R] [StarAddMonoid R]
+variable [AddGroup R] [IsAddCommutative R] [StarAddMonoid R]
 
 theorem mem_iff {x : R} : x ∈ skewAdjoint R ↔ star x = -x := by
   rw [← AddSubgroup.mem_carrier]
@@ -596,7 +596,7 @@ end Ring
 
 section SMul
 
-variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
+variable [Star R] [TrivialStar R] [AddGroup A] [IsAddCommutative A] [StarAddMonoid A]
 
 @[aesop 90% (rule_sets := [SetLike])]
 theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x : A}
@@ -623,14 +623,14 @@ end skewAdjoint
 
 /-- Scalar multiplication of a self-adjoint element by a skew-adjoint element produces a
 skew-adjoint element. -/
-theorem IsSelfAdjoint.smul_mem_skewAdjoint [Ring R] [AddCommGroup A] [Module R A] [StarAddMonoid R]
+theorem IsSelfAdjoint.smul_mem_skewAdjoint [Ring R] [AddGroup A] [IsAddCommutative A] [Module R A] [StarAddMonoid R]
     [StarAddMonoid A] [StarModule R A] {r : R} (hr : r ∈ skewAdjoint R) {a : A}
     (ha : IsSelfAdjoint a) : r • a ∈ skewAdjoint A :=
   (star_smul _ _).trans <| (congr_arg₂ _ hr ha).trans <| neg_smul _ _
 
 /-- Scalar multiplication of a skew-adjoint element by a skew-adjoint element produces a
 self-adjoint element. -/
-theorem isSelfAdjoint_smul_of_mem_skewAdjoint [Ring R] [AddCommGroup A] [Module R A]
+theorem isSelfAdjoint_smul_of_mem_skewAdjoint [Ring R] [AddGroup A] [IsAddCommutative A] [Module R A]
     [StarAddMonoid R] [StarAddMonoid A] [StarModule R A] {r : R} (hr : r ∈ skewAdjoint R) {a : A}
     (ha : a ∈ skewAdjoint A) : IsSelfAdjoint (r • a) :=
   (star_smul _ _).trans <| (congr_arg₂ _ hr ha).trans <| neg_smul_neg _ _
@@ -690,7 +690,7 @@ instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [Trivial
   ⟨by rw [star_trivial]⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommMonoid.isStarNormal [CommMonoid R] [StarMul R] {x : R} :
+instance (priority := 100) CommMonoid.isStarNormal [Monoid R] [IsMulCommutative R] [StarMul R] {x : R} :
     IsStarNormal x :=
   ⟨mul_comm _ _⟩
 

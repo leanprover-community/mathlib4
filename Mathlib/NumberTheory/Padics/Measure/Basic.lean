@@ -20,8 +20,8 @@ public section
 open ContinuousMap
 
 variable {X Y R E : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-    [CommRing R] [TopologicalSpace R] [IsTopologicalRing R] [Module R E]
+    [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [Ring R] [IsMulCommutative R] [TopologicalSpace R] [IsTopologicalRing R] [Module R E]
 
 section Defs
 

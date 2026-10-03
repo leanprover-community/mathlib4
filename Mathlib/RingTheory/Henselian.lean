@@ -64,7 +64,7 @@ universe u v
 open Polynomial IsLocalRing Function List
 open scoped Ring
 
-theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
+theorem isLocalHom_of_le_jacobson_bot {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
   constructor
   intro a h
@@ -91,7 +91,7 @@ there exists a lift `a : R` of `a₀` that is a root of `f`.
 unit. Warning: if `R/I` is not a field then it is not enough to assume that `g` has a factorization
 into monic linear factors in which `X - b` shows up only once; for example `1` is not a simple root
 of `X^2-1` over `ℤ/4ℤ`.) -/
-class HenselianRing (R : Type*) [CommRing R] (I : Ideal R) : Prop where
+class HenselianRing (R : Type*) [Ring R] [IsMulCommutative R] (I : Ideal R) : Prop where
   jac : I ≤ Ideal.jacobson ⊥
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ I)
@@ -105,7 +105,7 @@ there exists a lift `a : R` of `a₀` that is a root of `f`.
 
 In other words, `R` is local Henselian if it is Henselian at the ideal `I`,
 in the sense of `HenselianRing`. -/
-class HenselianLocalRing (R : Type*) [CommRing R] : Prop extends IsLocalRing R where
+class HenselianLocalRing (R : Type*) [Ring R] [IsMulCommutative R] : Prop extends IsLocalRing R where
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ maximalIdeal R)
       (_ : IsUnit (f.derivative.eval a₀)), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ maximalIdeal R
@@ -116,7 +116,7 @@ instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLoca
     simp only [(maximalIdeal K).eq_bot_of_prime, Ideal.mem_bot] at h₁ ⊢
     exact ⟨a₀, h₁, sub_self _⟩
 
-theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
+theorem HenselianLocalRing.TFAE (R : Type u) [Ring R] [IsMulCommutative R] [IsLocalRing R] :
     TFAE
       [HenselianLocalRing R,
         ∀ f : R[X], f.Monic → ∀ a₀ : ResidueField R, aeval a₀ f = 0 →
@@ -151,7 +151,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
     rwa [φ.map_sub, sub_eq_zero] at ha₂
   tfae_finish
 
-instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
+instance (R : Type*) [Ring R] [IsMulCommutative R] [hR : HenselianLocalRing R] :
     HenselianRing R (maximalIdeal R) where
   jac := by
     rw [Ideal.jacobson, le_sInf_iff]
@@ -167,7 +167,7 @@ instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
 
 -- see Note [lower instance priority]
 /-- A ring `R` that is `I`-adically complete is Henselian at `I`. -/
-instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R] (I : Ideal R)
+instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [Ring R] [IsMulCommutative R] (I : Ideal R)
     [IsAdicComplete I R] : HenselianRing R I where
   jac := IsAdicComplete.le_jacobson_bot _
   is_henselian := by
@@ -263,7 +263,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
 
 open Polynomial in
 @[stacks 06RR]
-theorem IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub {R : Type*} [CommRing R] [IsLocalRing R]
+theorem IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub {R : Type*} [Ring R] [IsMulCommutative R] [IsLocalRing R]
     {f : Polynomial R} {a b : R} (ha : f.eval a = 0) (hb : f.eval b = 0) (h : ¬ IsUnit (a - b))
     (h' : IsUnit (f.derivative.eval a)) : a = b := by
   obtain ⟨c, _⟩ := exists_mul_sq_add_linear_part_eq_eval_add f a (b - a)

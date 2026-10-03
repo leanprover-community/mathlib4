@@ -43,7 +43,7 @@ namespace LinearMap
 
 universe i
 
-variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃]
+variable [Semiring R] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂] [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃]
   {φ : ι → Type i} [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
 
 /-- `pi` construction for linear functions. From a family of linear functions it produces a linear
@@ -125,7 +125,7 @@ theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i
       exact (mem_bot _).2 (funext fun i => h i)
 
 instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
-    [AddCommMonoid M] [AddCommMonoid N] [SMul R M] [SMul R N] [Module S M] [Module S N]
+    [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [SMul R M] [SMul R N] [Module S M] [Module S N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι → N) R S where
   map_smul f r m := by ext i; apply ((LinearMap.proj i).comp f).map_smul_of_tower
 
@@ -135,12 +135,12 @@ A bundled version of `Pi.map`.
 
 If the index type is finite, then this map can be seen as a “block diagonal” map
 between indexed products of modules. -/
-def piMap {ψ : ι → Type*} [∀ i, AddCommMonoid (ψ i)] [∀ i, Module R (ψ i)]
+def piMap {ψ : ι → Type*} [∀ i, AddMonoid (ψ i)] [∀ i, IsAddCommutative (ψ i)] [∀ i, Module R (ψ i)]
     (f : ∀ i, φ i →ₗ[R] ψ i) : (∀ i, φ i) →ₗ[R] (∀ i, ψ i) :=
   .pi fun i ↦ f i ∘ₗ proj i
 
 @[simp]
-theorem coe_piMap {ψ : ι → Type*} [∀ i, AddCommMonoid (ψ i)] [∀ i, Module R (ψ i)]
+theorem coe_piMap {ψ : ι → Type*} [∀ i, AddMonoid (ψ i)] [∀ i, IsAddCommutative (ψ i)] [∀ i, Module R (ψ i)]
     (f : ∀ i, φ i →ₗ[R] ψ i) : ⇑(piMap f) = Pi.map fun i ↦ f i :=
   rfl
 
@@ -154,7 +154,7 @@ protected def compLeft (f : M₂ →ₗ[R] M₃) (I : Type*) : (I → M₂) →�
       ext x
       exact f.map_smul' c (h x) }
 
-theorem apply_single [AddCommMonoid M] [Module R M] [DecidableEq ι] (f : (i : ι) → φ i →ₗ[R] M)
+theorem apply_single [AddMonoid M] [IsAddCommutative M] [Module R M] [DecidableEq ι] (f : (i : ι) → φ i →ₗ[R] M)
     (i j : ι) (x : φ i) : f j (Pi.single i x j) = (Pi.single i (f i x) : ι → M) j :=
   Pi.apply_single (fun i => f i) (fun i => (f i).map_zero) _ _ _
 
@@ -236,7 +236,7 @@ theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
 /-- The linear equivalence between linear functions on a finite product of modules and
 families of functions on these modules. See note [bundled maps over different rings]. -/
 @[simps symm_apply]
-def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S] [Module S M]
+def lsum (S) [AddMonoid M] [IsAddCommutative M] [Module R M] [Fintype ι] [Semiring S] [Module S M]
     [SMulCommClass R S M] : ((i : ι) → φ i →ₗ[R] M) ≃ₗ[S] ((i : ι) → φ i) →ₗ[R] M where
   toFun f := ∑ i : ι, (f i).comp (proj i)
   invFun f i := f.comp (single R φ i)
@@ -251,11 +251,11 @@ def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S] [Module S 
     rw [Finset.univ_sum_single]
 
 @[simp]
-theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
+theorem lsum_apply (S) [AddMonoid M] [IsAddCommutative M] [Module R M] [Fintype ι] [Semiring S]
     [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) :
     lsum R φ S f = ∑ i : ι, (f i).comp (proj i) := rfl
 
-theorem lsum_piSingle (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
+theorem lsum_piSingle (S) [AddMonoid M] [IsAddCommutative M] [Module R M] [Fintype ι] [Semiring S]
     [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) (i : ι) (x : φ i) :
     lsum R φ S f (Pi.single i x) = f i x := by
   simp_rw [lsum_apply, sum_apply, comp_apply, proj_apply, apply_single, Fintype.sum_pi_single']
@@ -270,7 +270,7 @@ variable {R φ}
 
 section Ext
 
-variable [Finite ι] [AddCommMonoid M] [Module R M] {f g : ((i : ι) → φ i) →ₗ[R] M}
+variable [Finite ι] [AddMonoid M] [IsAddCommutative M] [Module R M] {f g : ((i : ι) → φ i) →ₗ[R] M}
 
 theorem pi_ext (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) : f = g :=
   toAddMonoidHom_injective <| AddMonoidHom.functions_ext _ _ _ h
@@ -433,13 +433,13 @@ namespace LinearMap
 
 variable [Semiring R]
 
-lemma ker_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
+lemma ker_compLeft [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
     [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
     LinearMap.ker (f.compLeft I) = Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.ker f) :=
   Submodule.ext fun _ => ⟨fun (hx : _ = _) i _ => congr($hx i),
     fun hx => funext fun i => hx i trivial⟩
 
-lemma range_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
+lemma range_compLeft [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
     [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
     LinearMap.range (f.compLeft I) =
       Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.range f) :=
@@ -503,20 +503,20 @@ def piCongrLeft (e : ι' ≃ ι) : ((i' : ι') → φ (e i')) ≃ₗ[R] (i : ι)
 
 /-- `Equiv.piCurry` as a `LinearEquiv`. -/
 def piCurry {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
-    [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module R (α i k)] :
+    [∀ i k, AddMonoid (α i k)] [∀ i k, IsAddCommutative (α i k)] [∀ i k, Module R (α i k)] :
     (Π i : Sigma κ, α i.1 i.2) ≃ₗ[R] Π i j, α i j where
   __ := Equiv.piCurry α
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 @[simp] theorem piCurry_apply {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
-    [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module R (α i k)]
+    [∀ i k, AddMonoid (α i k)] [∀ i k, IsAddCommutative (α i k)] [∀ i k, Module R (α i k)]
     (f : ∀ x : Σ i, κ i, α x.1 x.2) :
     piCurry R α f = Sigma.curry f :=
   rfl
 
 @[simp] theorem piCurry_symm_apply {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
-    [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module R (α i k)]
+    [∀ i k, AddMonoid (α i k)] [∀ i k, IsAddCommutative (α i k)] [∀ i k, Module R (α i k)]
     (f : ∀ a b, α a b) :
     (piCurry R α).symm f = Sigma.uncurry f :=
   rfl
@@ -529,7 +529,7 @@ def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) �
     map_add' := by simp [funext_iff]
     map_smul' := by simp [funext_iff] }
 
-variable (ι M) (S : Type*) [Fintype ι] [DecidableEq ι] [Semiring S] [AddCommMonoid M]
+variable (ι M) (S : Type*) [Fintype ι] [DecidableEq ι] [Semiring S] [AddMonoid M] [IsAddCommutative M]
   [Module R M] [Module S M] [SMulCommClass R S M]
 
 /-- Linear equivalence between linear functions `Rⁿ → M` and `Mⁿ`. The spaces `Rⁿ` and `Mⁿ`
@@ -556,7 +556,7 @@ theorem piRing_symm_apply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm
 -- TODO additive version?
 /-- `Equiv.sumArrowEquivProdArrow` as a linear equivalence.
 -/
-def sumArrowLequivProdArrow (α β R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :
+def sumArrowLequivProdArrow (α β R M : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] :
     (α ⊕ β → M) ≃ₗ[R] (α → M) × (β → M) :=
   { Equiv.sumArrowEquivProdArrow α β
       M with
@@ -589,13 +589,13 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
 
 /-- If `ι` has a unique element, then `ι → M` is linearly equivalent to `M`. -/
 @[simps +simpRhs -fullyApplied symm_apply]
-def funUnique (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
+def funUnique (ι R M : Type*) [Unique ι] [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] :
     (ι → M) ≃ₗ[R] M where
   toAddEquiv := .funUnique ι M
   map_smul' _ _ := rfl
 
 @[simp]
-theorem funUnique_apply (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
+theorem funUnique_apply (ι R M : Type*) [Unique ι] [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] :
     (funUnique ι R M : (ι → M) → M) = eval default := rfl
 
 variable (R M)
@@ -655,7 +655,7 @@ variable (R) in
 /-- `Fin.consEquiv` as a continuous linear equivalence. -/
 @[simps]
 def Fin.consLinearEquiv
-    {n : ℕ} (M : Fin n.succ → Type*) [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] :
+    {n : ℕ} (M : Fin n.succ → Type*) [Semiring R] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)] :
     (M 0 × Π i, M (Fin.succ i)) ≃ₗ[R] (Π i, M i) where
   __ := Fin.consEquiv M
   map_add' x y := funext <| Fin.cases rfl (by simp)
@@ -680,7 +680,7 @@ section Fin
 
 section Semiring
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 /-- The linear map defeq to `Matrix.vecEmpty` -/
@@ -718,15 +718,15 @@ See `Module.pi_induction'` for a version where `motive` assumes `AddCommGroup` i
 -/
 @[elab_as_elim]
 lemma Module.pi_induction {ι : Type v} [Finite ι]
-    (motive : ∀ (N : Type u) [AddCommMonoid N] [Module R N], Prop)
-    (motive' : ∀ (N : Type (max u v)) [AddCommMonoid N] [Module R N], Prop)
-    (equiv : ∀ {N : Type u} {N' : Type (max u v)} [AddCommMonoid N] [AddCommMonoid N']
+    (motive : ∀ (N : Type u) [AddMonoid N] [IsAddCommutative N] [Module R N], Prop)
+    (motive' : ∀ (N : Type (max u v)) [AddMonoid N] [IsAddCommutative N] [Module R N], Prop)
+    (equiv : ∀ {N : Type u} {N' : Type (max u v)} [AddMonoid N] [IsAddCommutative N] [AddMonoid N'] [IsAddCommutative N']
       [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive N → motive' N')
-    (equiv' : ∀ {N N' : Type (max u v)} [AddCommMonoid N] [AddCommMonoid N']
+    (equiv' : ∀ {N N' : Type (max u v)} [AddMonoid N] [IsAddCommutative N] [AddMonoid N'] [IsAddCommutative N']
       [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive' N → motive' N')
-    (unit : motive PUnit) (prod : ∀ {N : Type u} {N' : Type (max u v)} [AddCommMonoid N]
-      [AddCommMonoid N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
-    (M : ι → Type u) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+    (unit : motive PUnit) (prod : ∀ {N : Type u} {N' : Type (max u v)} [AddMonoid N] [IsAddCommutative N]
+      [AddMonoid N'] [IsAddCommutative N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
+    (M : ι → Type u) [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
     (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
   cases nonempty_fintype ι
   revert M
@@ -739,7 +739,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 /-- The empty bilinear map defeq to `Matrix.vecEmpty` -/
@@ -766,15 +766,15 @@ end CommSemiring
 /-- A variant of `Module.pi_induction` that assumes `AddCommGroup` instead of `AddCommMonoid`. -/
 @[elab_as_elim]
 lemma Module.pi_induction' {ι : Type v} [Finite ι] (R : Type*) [Ring R]
-    (motive : ∀ (N : Type u) [AddCommGroup N] [Module R N], Prop)
-    (motive' : ∀ (N : Type (max u v)) [AddCommGroup N] [Module R N], Prop)
-    (equiv : ∀ {N : Type u} {N' : Type (max u v)} [AddCommGroup N] [AddCommGroup N']
+    (motive : ∀ (N : Type u) [AddGroup N] [IsAddCommutative N] [Module R N], Prop)
+    (motive' : ∀ (N : Type (max u v)) [AddGroup N] [IsAddCommutative N] [Module R N], Prop)
+    (equiv : ∀ {N : Type u} {N' : Type (max u v)} [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N']
       [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive N → motive' N')
-    (equiv' : ∀ {N N' : Type (max u v)} [AddCommGroup N] [AddCommGroup N']
+    (equiv' : ∀ {N N' : Type (max u v)} [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N']
       [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive' N → motive' N')
-    (unit : motive PUnit) (prod : ∀ {N : Type u} {N' : Type (max u v)} [AddCommGroup N]
-      [AddCommGroup N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
-    (M : ι → Type u) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    (unit : motive PUnit) (prod : ∀ {N : Type u} {N' : Type (max u v)} [AddGroup N] [IsAddCommutative N]
+      [AddGroup N'] [IsAddCommutative N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
+    (M : ι → Type u) [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
     (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
   cases nonempty_fintype ι
   revert M

@@ -30,7 +30,7 @@ public section
 variable
   {m : Type*} [Fintype m] [LinearOrder m]
   {n : Type*} [Fintype n] [LinearOrder n]
-  {R : Type*} [CommRing R] [IsDomain R]
+  {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
 
 namespace Echelon
 

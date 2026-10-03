@@ -26,7 +26,7 @@ namespace FreeAlgebra
 variable (R : Type u) (X : Type v)
 
 section
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 /-- The `FreeMonoid X` basis on the `FreeAlgebra R X`,
 mapping `[x₁, x₂, ..., xₙ]` to the "monomial" `1 • x₁ * x₂ * ⋯ * xₙ` -/
@@ -40,7 +40,7 @@ instance : Module.Free R (FreeAlgebra R X) :=
 
 end
 
-theorem rank_eq [CommRing R] [Nontrivial R] :
+theorem rank_eq [Ring R] [IsMulCommutative R] [Nontrivial R] :
     Module.rank R (FreeAlgebra R X) = Cardinal.lift.{u} (Cardinal.mk (List X)) := by
   rw [← (Basis.mk_eq_rank'.{_, _, _, u} (basisFreeMonoid R X)).trans (Cardinal.lift_id _),
     Cardinal.lift_umax.{v, u}, FreeMonoid]
@@ -49,7 +49,7 @@ end FreeAlgebra
 
 open Cardinal
 
-theorem Algebra.rank_adjoin_le {R : Type u} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
+theorem Algebra.rank_adjoin_le {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [Algebra R S]
     (s : Set S) : Module.rank R (adjoin R s) ≤ max #s ℵ₀ := by
   rw [adjoin_eq_range_freeAlgebra_lift]
   cases subsingleton_or_nontrivial R

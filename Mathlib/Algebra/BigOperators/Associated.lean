@@ -28,7 +28,7 @@ local infixl:50 " ~ᵤ " => Associated
 
 namespace Prime
 
-variable [CommMonoidWithZero M₀] {p : M₀}
+variable [MonoidWithZero M₀] [IsMulCommutative M₀] {p : M₀}
 
 theorem exists_mem_multiset_dvd (hp : Prime p) {s : Multiset M₀} : p ∣ s.prod → ∃ a ∈ s, p ∣ a :=
   Multiset.induction_on s (fun h => (hp.not_dvd_one h).elim) fun a s ih h =>
@@ -59,7 +59,7 @@ theorem Prod.associated_iff {M N : Type*} [Monoid M] [Monoid N] {x z : M × N} :
 
 -- TODO: this seems to trigger a bug in the mergeWithGrind linter
 set_option linter.tacticAnalysis.mergeWithGrind false in
-theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
+theorem Associated.prod {M : Type*} [Monoid M] [IsMulCommutative M] {ι : Type*} (s : Finset ι) (f : ι → M)
     (g : ι → M) (h : ∀ i, i ∈ s → (f i) ~ᵤ (g i)) : (∏ i ∈ s, f i) ~ᵤ (∏ i ∈ s, g i) := by
   induction s using Finset.induction with
   | empty =>
@@ -70,7 +70,7 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
     convert_to (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
     grind [Associated.mul_mul]
 
-theorem exists_associated_mem_of_dvd_prod [CommMonoidWithZero M₀] [IsCancelMulZero M₀]
+theorem exists_associated_mem_of_dvd_prod [MonoidWithZero M₀] [IsMulCommutative M₀] [IsCancelMulZero M₀]
     {p : M₀} (hp : Prime p)
     {s : Multiset M₀} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
   Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_isUnit]) fun a s ih hs hps => by
@@ -84,7 +84,7 @@ theorem exists_associated_mem_of_dvd_prod [CommMonoidWithZero M₀] [IsCancelMul
 open Submonoid in
 /-- Let x, y ∈ M₀. If x * y can be written as a product of units and prime elements, then x can be
 written as a product of units and prime elements. -/
-theorem divisor_closure_eq_closure [CommMonoidWithZero M₀] [IsCancelMulZero M₀]
+theorem divisor_closure_eq_closure [MonoidWithZero M₀] [IsMulCommutative M₀] [IsCancelMulZero M₀]
     (x y : M₀) (hxy : x * y ∈ closure { r : M₀ | IsUnit r ∨ Prime r}) :
     x ∈ closure { r : M₀ | IsUnit r ∨ Prime r} := by
   obtain ⟨m, hm, hprod⟩ := exists_multiset_of_mem_closure hxy
@@ -120,7 +120,7 @@ theorem divisor_closure_eq_closure [CommMonoidWithZero M₀] [IsCancelMulZero M�
       rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
       exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
 
-theorem Multiset.prod_primes_dvd [CommMonoidWithZero M₀] [IsCancelMulZero M₀]
+theorem Multiset.prod_primes_dvd [MonoidWithZero M₀] [IsMulCommutative M₀] [IsCancelMulZero M₀]
     [∀ a : M₀, DecidablePred (Associated a)] {s : Multiset M₀} (n : M₀) (h : ∀ a ∈ s, Prime a)
     (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
   induction s using Multiset.induction_on generalizing n with
@@ -141,7 +141,7 @@ theorem Multiset.prod_primes_dvd [CommMonoidWithZero M₀] [IsCancelMulZero M₀
       Multiset.countP_pos] at this
     exact this ⟨b, b_in_s, assoc.symm⟩
 
-theorem Finset.prod_primes_dvd [CommMonoidWithZero M₀] [IsCancelMulZero M₀] [Subsingleton M₀ˣ]
+theorem Finset.prod_primes_dvd [MonoidWithZero M₀] [IsMulCommutative M₀] [IsCancelMulZero M₀] [Subsingleton M₀ˣ]
     {s : Finset M₀} (n : M₀) (h : ∀ a ∈ s, Prime a) (div : ∀ a ∈ s, a ∣ n) : ∏ p ∈ s, p ∣ n := by
   classical
     exact
@@ -155,7 +155,7 @@ namespace Associates
 
 section CommMonoid
 
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 theorem prod_mk {p : Multiset M} : (p.map Associates.mk).prod = Associates.mk p.prod :=
   Multiset.induction_on p (by simp) fun a s ih => by simp [ih, Associates.mk_mul_mk]
@@ -187,7 +187,7 @@ end CommMonoid
 
 section CancelCommMonoidWithZero
 
-variable [CommMonoidWithZero M₀]
+variable [MonoidWithZero M₀] [IsMulCommutative M₀]
 
 theorem exists_mem_multiset_le_of_prime {s : Multiset (Associates M₀)} {p : Associates M₀}
     (hp : Prime p) : p ≤ s.prod → ∃ a ∈ s, p ≤ a :=
@@ -206,7 +206,7 @@ end Associates
 
 namespace Multiset
 
-theorem prod_ne_zero_of_prime [CommMonoidWithZero M₀] [NoZeroDivisors M₀] [Nontrivial M₀]
+theorem prod_ne_zero_of_prime [MonoidWithZero M₀] [IsMulCommutative M₀] [NoZeroDivisors M₀] [Nontrivial M₀]
     (s : Multiset M₀) (h : ∀ x ∈ s, Prime x) : s.prod ≠ 0 :=
   Multiset.prod_ne_zero fun h0 => Prime.ne_zero (h 0 h0) rfl
 
@@ -216,7 +216,7 @@ open Finset Finsupp
 
 section CommMonoidWithZero
 
-variable {M : Type*} [CommMonoidWithZero M]
+variable {M : Type*} [MonoidWithZero M] [IsMulCommutative M]
 
 theorem Prime.dvd_finsetProd_iff {S : Finset M₀} {p : M} (pp : Prime p) (g : M₀ → M) :
     p ∣ S.prod g ↔ ∃ a ∈ S, p ∣ g a :=

@@ -128,7 +128,7 @@ open Fin
 
 section CommSemiring
 
-variable [CommSemiring R] [Fintype σ] [Fintype τ]
+variable [Semiring R] [IsMulCommutative R] [Fintype σ] [Fintype τ]
 
 variable (σ R n) in
 /-- The `R`-algebra homomorphism from $R[x_1,\dots,x_n]$ to the symmetric subalgebra of
@@ -266,7 +266,7 @@ end CommSemiring
 section CommRing
 
 variable (R)
-variable [Fintype σ] [CommRing R]
+variable [Fintype σ] [Ring R] [IsMulCommutative R]
 
 /- Also holds for a cancellative CommSemiring. -/
 lemma esymmAlgHom_fin_injective (h : n ≤ m) :

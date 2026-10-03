@@ -56,7 +56,7 @@ section BasicProperties
 variable (A : Matrix m n α) (B : Matrix m n α) (C : Matrix m n α)
 
 -- commutativity
-theorem hadamard_comm [CommMagma α] : A ⊙ B = B ⊙ A :=
+theorem hadamard_comm [Mul α] [IsMulCommutative α] : A ⊙ B = B ⊙ A :=
   ext fun _ _ => mul_comm _ _
 
 -- associativity

@@ -19,7 +19,7 @@ public section
 variable {α : Type*}
 
 namespace Multiset
-variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
   [ExistsAddOfLE α] [LocallyFiniteOrder α]
 
 lemma map_add_left_Icc (a b c : α) : (Icc a b).map (c + ·) = Icc (c + a) (c + b) := by

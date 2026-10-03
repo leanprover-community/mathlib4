@@ -139,7 +139,7 @@ end SMul
 
 section Module
 
-variable [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {s t : Set E}
 
 theorem Balanced.neg : Balanced 𝕜 s → Balanced 𝕜 (-s) :=
   forall₂_imp fun _ _ h => (smul_set_neg _ _).subset.trans <| neg_subset_neg.2 h
@@ -170,7 +170,7 @@ end SeminormedRing
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable [NormedDivisionRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {s t : Set E}
 
 theorem absorbs_iff_eventually_nhdsNE_zero :
     Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝[≠] 0, MapsTo (c • ·) t s := by
@@ -237,7 +237,7 @@ end NormedDivisionRing
 
 section NormedField
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s A : Set E} {x : E} {a b : 𝕜}
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {s A : Set E} {x : E} {a b : 𝕜}
 
 theorem Balanced.smul_mem_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s :=
   ⟨(hs.smul_mem_mono · h.ge), (hs.smul_mem_mono · h.le)⟩
@@ -269,7 +269,7 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+variable [NontriviallyNormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {s : Set E}
 
 variable [PartialOrder 𝕜] in
 protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull 𝕜 s) := by
@@ -297,7 +297,7 @@ theorem Absorbent.submodule_eq_top {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (
   hV.eq_univ_of_smulMemClass
 
 variable {F 𝕜₂ : Type*} [Semiring 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
-variable [AddCommGroup F] [Module 𝕜₂ F]
+variable [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
 
 theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : F →ₛₗ[σ] E} {s : Set E}
     (hs_abs : Absorbent 𝕜 s) : s ⊆ f.range ↔ (⇑f).Surjective :=
@@ -307,7 +307,7 @@ end NontriviallyNormedField
 
 section Real
 
-variable [AddCommGroup E] [Module ℝ E] {s : Set E}
+variable [AddGroup E] [IsAddCommutative E] [Module ℝ E] {s : Set E}
 
 theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x⦄, x ∈ s → -x ∈ s := by
   refine ⟨fun h x => h.neg_mem_iff.2, fun h a ha => smul_set_subset_iff.2 fun x hx => ?_⟩

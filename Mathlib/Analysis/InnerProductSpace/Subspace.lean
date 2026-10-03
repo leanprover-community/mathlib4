@@ -28,7 +28,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 section Submodule
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
 
 /-! ### Inner product space structure on subspaces -/
 
@@ -55,7 +55,7 @@ end Submodule
 
 section ClosedSubmodule
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
 
 /-- Induced inner product on a closed submodule. -/
 instance ClosedSubmodule.innerProductSpace (W : ClosedSubmodule 𝕜 E) : InnerProductSpace 𝕜 W :=
@@ -72,7 +72,7 @@ end ClosedSubmodule
 
 section OrthogonalFamily_Seminormed
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -92,12 +92,12 @@ product space structure on each of the submodules is important -- for example, w
 their Hilbert sum (`PiLp V 2`).  For example, given an orthonormal set of vectors `v : ι → E`,
 we have an associated orthogonal family of one-dimensional subspaces of `E`, which it is convenient
 to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`. -/
-def OrthogonalFamily (G : ι → Type*) [∀ i, SeminormedAddCommGroup (G i)]
+def OrthogonalFamily (G : ι → Type*) [∀ i, SeminormedAddGroup (G i)] [∀ i, IsAddCommutative (G i)]
     [∀ i, InnerProductSpace 𝕜 (G i)] (V : ∀ i, G i →ₗᵢ[𝕜] E) : Prop :=
   Pairwise fun i j => ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0
 
 variable {𝕜}
-variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
+variable {G : ι → Type*} [∀ i, NormedAddGroup (G i)] [∀ i, IsAddCommutative (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
   {V : ∀ i, G i →ₗᵢ[𝕜] E}
 
 theorem Orthonormal.orthogonalFamily {v : ι → E} (hv : Orthonormal 𝕜 v) :
@@ -252,7 +252,7 @@ end OrthogonalFamily_Seminormed
 
 section OrthogonalFamily
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

@@ -216,7 +216,7 @@ lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) [∀ i, (I i).IsTwoSided]
     Injective (quotientInfToPiQuotient I) := by
   rw [quotientInfToPiQuotient, injective_lift_iff, ker_Pi_Quotient_mk]
 
-variable {R : Type*} [CommRing R] {ι : Type*} [Finite ι]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {ι : Type*} [Finite ι]
 
 lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
     (hI : Pairwise (IsCoprime on I)) : Surjective (quotientInfToPiQuotient I) := by
@@ -358,7 +358,7 @@ end ChineseRemainder
 section QuotientAlgebra
 
 variable (R₁ R₂ : Type*) {A B : Type*}
-variable [CommSemiring R₁] [CommSemiring R₂] [Ring A]
+variable [Semiring R₁] [IsMulCommutative R₁] [Semiring R₂] [IsMulCommutative R₂] [Ring A]
 variable [Algebra R₁ A] [Algebra R₂ A]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
@@ -369,7 +369,7 @@ instance Quotient.algebra {I : Ideal A} [I.IsTwoSided] : Algebra R₁ (A ⧸ I) 
       ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (map_mul _ _ _)
   commutes' := by rintro r ⟨x⟩; congrm ⟦$(Algebra.commutes r x)⟧
 
-instance {A} [CommRing A] [Algebra R₁ A] (I : Ideal A) : Algebra R₁ (A ⧸ I) := inferInstance
+instance {A} [Ring A] [IsMulCommutative A] [Algebra R₁ A] (I : Ideal A) : Algebra R₁ (A ⧸ I) := inferInstance
 
 -- This instance can be inferred, but is kept around as a useful shortcut.
 instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
@@ -385,7 +385,7 @@ theorem Quotient.algHom_ext {I : Ideal A} [I.IsTwoSided]
     (h : f.comp (Quotient.mkₐ R₁ I) = g.comp (Quotient.mkₐ R₁ I)) : f = g :=
   AlgHom.ext fun x => Quotient.inductionOn' x <| AlgHom.congr_fun h
 
-theorem Quotient.alg_map_eq {A} [CommRing A] [Algebra R₁ A] (I : Ideal A) :
+theorem Quotient.alg_map_eq {A} [Ring A] [IsMulCommutative A] [Algebra R₁ A] (I : Ideal A) :
     algebraMap R₁ (A ⧸ I) = (algebraMap A (A ⧸ I)).comp (algebraMap R₁ A) :=
   rfl
 
@@ -398,7 +398,7 @@ theorem Quotient.mkₐ_eq_mk (I : Ideal A) [I.IsTwoSided] : ⇑(Quotient.mkₐ R
   rfl
 
 @[simp]
-theorem Quotient.algebraMap_eq {R} [CommRing R] (I : Ideal R) :
+theorem Quotient.algebraMap_eq {R} [Ring R] [IsMulCommutative R] (I : Ideal R) :
     algebraMap R (R ⧸ I) = Quotient.mk I :=
   rfl
 
@@ -458,7 +458,7 @@ theorem Quotient.factorₐ_apply (x : A ⧸ I) :
     Quotient.factorₐ R₁ hIJ x = Quotient.factor hIJ x := rfl
 
 @[simp]
-lemma Quotient.factorₐ_refl {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] (I : Ideal A) :
+lemma Quotient.factorₐ_refl {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] (I : Ideal A) :
     Ideal.Quotient.factorₐ R (le_refl I) = AlgHom.id R _ := by
   ext
   simp
@@ -508,7 +508,7 @@ theorem Quotient.span_singleton_one (I : Ideal A) [I.IsTwoSided] :
     Ideal.span, Submodule.map_span, Set.image_singleton, Submodule.mkQ_apply, Quotient.mk_eq_mk]
 
 open scoped Pointwise in
-lemma Quotient.smul_top {R : Type*} [CommRing R] (a : R) (I : Ideal R) :
+lemma Quotient.smul_top {R : Type*} [Ring R] [IsMulCommutative R] (a : R) (I : Ideal R) :
     (a • ⊤ : Submodule R (R ⧸ I)) = Submodule.span R {Submodule.Quotient.mk a} := by
   simp [← Ideal.Quotient.span_singleton_one, Algebra.smul_def, Submodule.smul_span]
 
@@ -565,7 +565,7 @@ lemma quotientKerAlgEquivOfSurjective_symm_apply {f : A →ₐ[R₁] B} (hf : Fu
 
 section liftOfSurjective
 
-variable {R A B C : Type*} [CommRing R] [CommRing A] [CommRing B] [CommRing C]
+variable {R A B C : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C]
     [Algebra R A] [Algebra R B] [Algebra R C]
 
 /-- `AlgHom` version of `RingHom.liftOfSurjective` that descends an algebra homomorphism
@@ -745,7 +745,7 @@ lemma quotientEquivAlg_mk (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B
 end
 
 /-- If `P` lies over `p`, then `R / p` has a canonical map to `A / P`. -/
-abbrev Quotient.algebraQuotientOfLEComap {R} [CommRing R] [Algebra R A] {p : Ideal R}
+abbrev Quotient.algebraQuotientOfLEComap {R} [Ring R] [IsMulCommutative R] [Algebra R A] {p : Ideal R}
     {P : Ideal A} [P.IsTwoSided] (h : p ≤ comap (algebraMap R A) P) :
     Algebra (R ⧸ p) (A ⧸ P) where
   algebraMap := quotientMap P (algebraMap R A) h
@@ -757,14 +757,14 @@ abbrev Quotient.algebraQuotientOfLEComap {R} [CommRing R] [Algebra R A] {p : Ide
   smul_def' := by rintro ⟨_⟩ ⟨_⟩; congrm ⟦$(Algebra.smul_def ..)⟧
   commutes' := by rintro ⟨_⟩ ⟨_⟩; congrm ⟦$(Algebra.commutes ..)⟧
 
-instance (priority := 100) quotientAlgebra {R} [CommRing R] {I : Ideal A} [I.IsTwoSided]
+instance (priority := 100) quotientAlgebra {R} [Ring R] [IsMulCommutative R] {I : Ideal A} [I.IsTwoSided]
     [Algebra R A] : Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) :=
   Quotient.algebraQuotientOfLEComap le_rfl
 
-instance (R) {A} [CommRing R] [CommRing A] (I : Ideal A) [Algebra R A] :
+instance (R) {A} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] (I : Ideal A) [Algebra R A] :
     Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) := inferInstance
 
-theorem algebraMap_quotient_injective {R} [CommRing R] {I : Ideal A} [I.IsTwoSided] [Algebra R A] :
+theorem algebraMap_quotient_injective {R} [Ring R] [IsMulCommutative R] {I : Ideal A} [I.IsTwoSided] [Algebra R A] :
     Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   replace hab := Quotient.eq.mp hab
@@ -817,7 +817,7 @@ lemma isPrime_map_quotientMk_of_isPrime {I : Ideal R} [I.IsTwoSided] {p : Ideal 
 
 /-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
 noncomputable def quotientKerEquivRange
-    {R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Semiring B] [Algebra R B]
+    {R A B : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A] [Semiring B] [Algebra R B]
     (f : A →ₐ[R] B) :
     (A ⧸ RingHom.ker f) ≃ₐ[R] f.range :=
   (Ideal.quotientEquivAlgOfEq R (AlgHom.ker_rangeRestrict f).symm).trans <|
@@ -849,18 +849,18 @@ lemma RingEquiv.quotientBot_symm_mk [Ring R] (r : R) :
 
 variable (R S) in
 /-- `RingEquiv.quotientBot` as an algebra isomorphism. -/
-def AlgEquiv.quotientBot [CommSemiring R] [Ring S] [Algebra R S] :
+def AlgEquiv.quotientBot [Semiring R] [IsMulCommutative R] [Ring S] [Algebra R S] :
     (S ⧸ (⊥ : Ideal S)) ≃ₐ[R] S where
   __ := RingEquiv.quotientBot S
   commutes' x := by simp [← Ideal.Quotient.mk_algebraMap]
 
 @[simp]
-lemma AlgEquiv.quotientBot_mk [CommSemiring R] [CommRing S] [Algebra R S] (s : S) :
+lemma AlgEquiv.quotientBot_mk [Semiring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] (s : S) :
     AlgEquiv.quotientBot R S (Ideal.Quotient.mk ⊥ s) = s :=
   rfl
 
 @[simp]
-lemma AlgEquiv.quotientBot_symm_mk [CommSemiring R] [CommRing S] [Algebra R S]
+lemma AlgEquiv.quotientBot_symm_mk [Semiring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
     (s : S) : (AlgEquiv.quotientBot R S).symm s = s :=
   rfl
 
@@ -874,7 +874,7 @@ variable {R : Type u}
 
 section
 
-variable [CommRing R] (I J : Ideal R)
+variable [Ring R] [IsMulCommutative R] (I J : Ideal R)
 
 /-- The obvious ring hom `R/I → R/(I ⊔ J)` -/
 def quotLeftToQuotSup : R ⧸ I →+* R ⧸ I ⊔ J :=
@@ -980,11 +980,11 @@ end
 section Algebra
 
 @[simp]
-theorem quotQuotEquivComm_mk_mk [CommRing R] (I J : Ideal R) (x : R) :
+theorem quotQuotEquivComm_mk_mk [Ring R] [IsMulCommutative R] (I J : Ideal R) (x : R) :
     quotQuotEquivComm I J (Ideal.Quotient.mk _ (Ideal.Quotient.mk _ x)) = algebraMap R _ x :=
   rfl
 
-variable [CommSemiring R] {A : Type v} [CommRing A] [Algebra R A] (I J : Ideal A)
+variable [Semiring R] [IsMulCommutative R] {A : Type v} [Ring A] [IsMulCommutative A] [Algebra R A] (I J : Ideal A)
 
 @[simp]
 theorem quotQuotEquivQuotSup_quot_quot_algebraMap (x : R) :
@@ -1000,7 +1000,7 @@ end Algebra
 
 section AlgebraQuotient
 
-variable (R) {A : Type*} [CommSemiring R] [CommRing A] [Algebra R A] (I J : Ideal A)
+variable (R) {A : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] (I J : Ideal A)
 
 /-- The natural algebra homomorphism `A / I → A / (I ⊔ J)`. -/
 def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J :=
@@ -1160,7 +1160,7 @@ namespace Ideal
 
 section PowQuot
 
-variable {R : Type*} [CommRing R] (I : Ideal R) (n : ℕ)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R) (n : ℕ)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.

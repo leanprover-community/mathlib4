@@ -36,11 +36,11 @@ dirichlet character, multiplicative character
 
 /-- The type of Dirichlet characters of level `n`. -/
 @[wikidata Q1063579]
-abbrev DirichletCharacter (R : Type*) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
+abbrev DirichletCharacter (R : Type*) [MonoidWithZero R] [IsMulCommutative R] (n : ℕ) := MulChar (ZMod n) R
 
 open MulChar
 
-variable {R : Type*} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
+variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] {n : ℕ} (χ : DirichletCharacter R n)
 
 namespace DirichletCharacter
 
@@ -526,7 +526,7 @@ theorem mem_subgroupOfPrimitiveMapToOne_iff [NeZero n] [Nontrivial R] (p : ℕ) 
 
 section CommRing
 
-variable {S : Type*} [CommRing S] {m : ℕ} (ψ : DirichletCharacter S m)
+variable {S : Type*} [Ring S] [IsMulCommutative S] {m : ℕ} (ψ : DirichletCharacter S m)
 
 /-- A Dirichlet character is odd if its value at -1 is -1. -/
 def Odd : Prop := ψ (-1) = -1

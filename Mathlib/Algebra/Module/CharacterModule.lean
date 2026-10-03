@@ -32,10 +32,10 @@ For commutative ring `R` and an `R`-module `M` and an injective module `D`, its 
 
 universe uR uA uB
 
-variable (R : Type uR) [CommRing R]
-variable (A : Type uA) [AddCommGroup A]
-variable (A' : Type*) [AddCommGroup A']
-variable (B : Type uB) [AddCommGroup B]
+variable (R : Type uR) [Ring R] [IsMulCommutative R]
+variable (A : Type uA) [AddGroup A] [IsAddCommutative A]
+variable (A' : Type*) [AddGroup A'] [IsAddCommutative A']
+variable (B : Type uB) [AddGroup B] [IsAddCommutative B]
 
 /--
 The character module of an abelian group `A` in the unit rational circle is `A⋆ := Hom_ℤ(A, ℚ ⧸ ℤ)`.
@@ -85,7 +85,7 @@ lemma dual_zero : dual (0 : A →ₗ[R] B) = 0 := by
   ext f
   exact map_zero f
 
-lemma dual_comp {C : Type*} [AddCommGroup C] [Module R C] (f : A →ₗ[R] B) (g : B →ₗ[R] C) :
+lemma dual_comp {C : Type*} [AddGroup C] [IsAddCommutative C] [Module R C] (f : A →ₗ[R] B) (g : B →ₗ[R] C) :
     dual (g.comp f) = (dual f).comp (dual g) := by
   ext
   rfl

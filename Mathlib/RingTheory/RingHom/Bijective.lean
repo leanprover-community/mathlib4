@@ -21,7 +21,7 @@ the ring hom property.
 
 public section
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 namespace RingHom.Bijective
 

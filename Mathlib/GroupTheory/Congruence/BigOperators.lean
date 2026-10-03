@@ -38,33 +38,33 @@ protected theorem coe_listProd {ι M : Type*} [MulOneClass M] (c : Con M)
 
 /-- Multiplicative congruence relations preserve product indexed by a multiset. -/
 @[to_additive /-- Additive congruence relations preserve sum indexed by a multiset. -/]
-protected theorem multiset_prod {ι M : Type*} [CommMonoid M] (c : Con M) {s : Multiset ι}
+protected theorem multiset_prod {ι M : Type*} [Monoid M] [IsMulCommutative M] (c : Con M) {s : Multiset ι}
     {f g : ι → M} (h : ∀ x ∈ s, c (f x) (g x)) :
     c (s.map f).prod (s.map g).prod := by
   rcases s; simpa using c.list_prod h
 
 @[to_additive (attr := simp, norm_cast)]
-protected theorem coe_multisetProd {ι M : Type*} [CommMonoid M] (c : Con M)
+protected theorem coe_multisetProd {ι M : Type*} [Monoid M] [IsMulCommutative M] (c : Con M)
     (s : Multiset ι) (f : ι → M) :
     (↑(s.map f).prod : c.Quotient) = (s.map fun i => (f i : c.Quotient)).prod := by
   simpa using map_multiset_prod c.mk' (s.map f)
 
 /-- Multiplicative congruence relations preserve finite product. -/
 @[to_additive /-- Additive congruence relations preserve finite sum. -/]
-protected theorem finsetProd {ι M : Type*} [CommMonoid M] (c : Con M) (s : Finset ι)
+protected theorem finsetProd {ι M : Type*} [Monoid M] [IsMulCommutative M] (c : Con M) (s : Finset ι)
     {f g : ι → M} (h : ∀ i ∈ s, c (f i) (g i)) :
     c (s.prod f) (s.prod g) :=
   c.multiset_prod h
 
 @[to_additive (attr := simp, norm_cast)]
-protected theorem coe_finsetProd {ι M : Type*} [CommMonoid M] (c : Con M) (s : Finset ι)
+protected theorem coe_finsetProd {ι M : Type*} [Monoid M] [IsMulCommutative M] (c : Con M) (s : Finset ι)
     (f : ι → M) :
     (↑(s.prod f) : c.Quotient) = s.prod fun i => (f i : c.Quotient) :=
   map_prod c.mk' f s
 
 @[to_additive]
 protected theorem finsuppProd {ι : Type*} {β : Type*} {M : Type*}
-    [CommMonoid M] [Zero β]
+    [Monoid M] [IsMulCommutative M] [Zero β]
     (c : Con M) (h : ι → β → M) (h' : ι → β → M)
     {f g : ι →₀ β} (hf : ∀ i, c (h i 0) 1) (hf' : ∀ i, c (h' i 0) 1)
     (H : ∀ i, c (h i (f i)) (h' i (g i))) :
@@ -78,13 +78,13 @@ protected theorem finsuppProd {ι : Type*} {β : Type*} {M : Type*}
 
 @[to_additive (attr := simp, norm_cast)]
 protected theorem coe_finsuppProd {ι : Type*} {β : Type*} {M : Type*}
-    [CommMonoid M] [Zero β] (c : Con M) (h : ι → β → M) (f : ι →₀ β) :
+    [Monoid M] [IsMulCommutative M] [Zero β] (c : Con M) (h : ι → β → M) (f : ι →₀ β) :
     (↑(f.prod h) : c.Quotient) = f.prod fun i b => (h i b : c.Quotient) :=
   map_finsuppProd c.mk' f h
 
 @[to_additive]
 protected theorem dfinsuppProd {ι : Type*} {β : ι → Type*} {M : Type*}
-    [DecidableEq ι] [CommMonoid M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    [DecidableEq ι] [Monoid M] [IsMulCommutative M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
     (c : Con M) (h : (i : ι) → β i → M) (h' : (i : ι) → β i → M)
     {f g : Π₀ i, β i} (hf : ∀ i, c (h i 0) 1) (hf' : ∀ i, c (h' i 0) 1)
     (H : ∀ i, c (h i (f i)) (h' i (g i))) :
@@ -97,13 +97,13 @@ protected theorem dfinsuppProd {ι : Type*} {β : ι → Type*} {M : Type*}
 
 @[to_additive (attr := simp, norm_cast)]
 protected theorem coe_dfinsuppProd {ι : Type*} {β : ι → Type*} {M : Type*}
-    [DecidableEq ι] [CommMonoid M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    [DecidableEq ι] [Monoid M] [IsMulCommutative M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
     (c : Con M) (h : (i : ι) → β i → M) (f : Π₀ i, β i) :
     (↑(f.prod h) : c.Quotient) = f.prod fun i b => (h i b : c.Quotient) :=
   map_dfinsuppProd c.mk' f h
 
 protected theorem _root_.AddCon.dfinsuppSumAddHom {ι : Type*} {β : ι → Type*} {M : Type*}
-    [DecidableEq ι] [AddCommMonoid M] [∀ i, AddCommMonoid (β i)]
+    [DecidableEq ι] [AddMonoid M] [IsAddCommutative M] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)]
     (c : AddCon M) (h : (i : ι) → β i →+ M) (h' : (i : ι) → β i →+ M) {f g : Π₀ i, β i}
     (H : ∀ i, c (h i (f i)) (h' i (g i))) :
     c (f.sumAddHom h) (g.sumAddHom h') := by
@@ -114,7 +114,7 @@ protected theorem _root_.AddCon.dfinsuppSumAddHom {ι : Type*} {β : ι → Type
 
 @[simp, norm_cast]
 protected theorem _root_.AddCon.coe_dfinsuppSumAddHom {ι : Type*} {β : ι → Type*} {M : Type*}
-    [DecidableEq ι] [AddCommMonoid M] [∀ i, AddCommMonoid (β i)]
+    [DecidableEq ι] [AddMonoid M] [IsAddCommutative M] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)]
     (c : AddCon M) (h : (i : ι) → β i →+ M) (f : Π₀ i, β i) :
     (↑(f.sumAddHom h) : c.Quotient) = f.sumAddHom fun i => (AddCon.mk' c).comp (h i) := by
   classical

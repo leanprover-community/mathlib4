@@ -48,7 +48,7 @@ section
 /-- A linear equivalence is an invertible linear map. -/
 structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
-  [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
+  [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
 
 attribute [coe] LinearEquiv.toLinearMap
 
@@ -85,7 +85,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+  (M M₂ : outParam Type*) [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module S M₂]
   [EquivLike F M M₂] : Prop
   extends AddEquivClass F M M₂ where
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
@@ -96,8 +96,8 @@ class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semi
 /-- `LinearEquivClass F R M M₂` asserts `F` is a type of bundled `R`-linear equivs `M → M₂`.
 This is an abbreviation for `SemilinearEquivClass F (RingHom.id R) M M₂`.
 -/
-abbrev LinearEquivClass (F : Type*) (R M M₂ : outParam Type*) [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
+abbrev LinearEquivClass (F : Type*) (R M M₂ : outParam Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M]
+    [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
   SemilinearEquivClass F (RingHom.id R) M M₂
 
 end
@@ -105,7 +105,7 @@ end
 namespace SemilinearEquivClass
 
 variable (F : Type*) [Semiring R] [Semiring S]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
@@ -130,7 +130,7 @@ variable [Semiring R] [Semiring S]
 
 section
 
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂]
 -- See note [implicit instance arguments]
 variable {modM : Module R M} {modM₂ : Module S M₂} {σ : R →+* S} {σ' : S →+* R}
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
@@ -194,9 +194,9 @@ end
 section
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [AddCommMonoid M₄]
-variable [AddCommMonoid N₁] [AddCommMonoid N₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
+variable [AddMonoid M₄] [IsAddCommutative M₄]
+variable [AddMonoid N₁] [IsAddCommutative N₁] [AddMonoid N₂] [IsAddCommutative N₂]
 variable {module_M : Module R M} {module_S_M₂ : Module S M₂} {σ : R →+* S} {σ' : S →+* R}
 variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
 variable (e e' : M ≃ₛₗ[σ] M₂)
@@ -258,14 +258,14 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M : Type*} {M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    {M : Type*} {M₂ : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
   e
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply {R S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    {M M₂ : Type*} [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M₂ → M :=
   e.symm
 
@@ -570,7 +570,7 @@ Note that unlike `Equiv.cast`, this takes an equality of indices rather than an 
 to avoid having to deal with an equality of the algebraic structure itself. -/
 @[simps!]
 protected def cast {ι : Type*} {M : ι → Type*}
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] {i j : ι} (h : i = j) :
+    [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)] {i j : ι} (h : i = j) :
     M i ≃ₗ[R] M j where
   toAddEquiv := AddEquiv.cast h
   map_smul' _ _ := by cases h; rfl
@@ -614,7 +614,7 @@ set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 lemma _root_.RingEquiv.symm_toSemilinearEquiv_symm_apply (f : R ≃+* S) (x : R) :
   f.symm.toSemilinearEquiv.symm (σ' := RingHomClass.toRingHom f) x = f x := rfl
 
-variable [AddCommMonoid M]
+variable [AddMonoid M] [IsAddCommutative M]
 
 /-- An involutive linear map is a linear equivalence. -/
 def ofInvolutive {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
@@ -630,9 +630,9 @@ end AddCommMonoid
 
 section smul
 variable {S R V W G : Type*} [Semiring R] [Semiring S]
-  [AddCommMonoid V] [Module R V] [Module S V]
-  [AddCommMonoid W] [Module R W] [Module S W]
-  [AddCommMonoid G] [Module R G] [Module S G]
+  [AddMonoid V] [IsAddCommutative V] [Module R V] [Module S V]
+  [AddMonoid W] [IsAddCommutative W] [Module R W] [Module S W]
+  [AddMonoid G] [IsAddCommutative G] [Module R G] [Module S G]
   [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
 
 /-- Left scalar multiplication of a unit and a linear equivalence, as a linear equivalence. -/

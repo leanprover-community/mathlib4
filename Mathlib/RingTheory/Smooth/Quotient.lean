@@ -19,11 +19,11 @@ In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism
 
 public section
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /-- For any surjection `f : M →ₗ[R] N`, with `N` a flat `R`-module,
 we have `K ⊓ IM = IK` for any `I : Ideal R`. -/
-lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
     [Module R M] [Module R N] (I : Ideal R) (f : M →ₗ[R] N) (surj : Function.Surjective f)
     [Module.Flat R N] : f.ker ⊓ (I • (⊤ : Submodule R M)) = I • f.ker := by
   refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
@@ -53,7 +53,7 @@ lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] 
       simpa [LinearMap.mem_ker.mp hm] using Submodule.smul_mem_smul hr Submodule.mem_top
     | add y ymem z zmem hy hz => exact add_mem hy hz
 
-variable {S : Type*} [CommRing S] {R' S' : Type*} [CommRing R'] [CommRing S']
+variable {S : Type*} [Ring S] [IsMulCommutative S] {R' S' : Type*} [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S']
 
 section
 

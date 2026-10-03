@@ -43,8 +43,8 @@ open BoundedContinuousFunction Complex
 
 namespace BoundedContinuousFunction
 
-variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
-    [AddCommGroup W] [Module ℝ W] [TopologicalSpace W]
+variable {V W : Type*} [AddGroup V] [IsAddCommutative V] [Module ℝ V] [TopologicalSpace V]
+    [AddGroup W] [IsAddCommutative W] [Module ℝ W] [TopologicalSpace W]
     {e : AddChar ℝ Circle} {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 

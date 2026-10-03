@@ -58,9 +58,9 @@ is injective for every submodule $M' \subseteq M$.
 
 public section
 
-variable (R : Type*) [CommRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M]
-variable {N : Type*} [AddCommGroup N] [Module R N]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
 
 open LinearMap Function Submodule Finsupp
 

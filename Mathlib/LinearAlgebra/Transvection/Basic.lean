@@ -47,7 +47,7 @@ namespace LinearMap
 
 open Module
 
-variable {R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V]
+variable {R V : Type*} [Semiring R] [AddMonoid V] [IsAddCommutative V] [Module R V]
 
 /-- The transvection associated with a linear form `f` and a vector `v`.
 
@@ -102,7 +102,7 @@ theorem comp_smul_smul {f : Dual R V} {v : V} {r s : R} :
   simp only [smul_add, ← mul_smul, ← add_smul, ← mul_add (f x), mul_assoc]
 
 theorem eq_id_of_finrank_le_one
-    {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
+    {R V : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid V] [IsAddCommutative V] [Module R V]
     [Free R V] [Module.Finite R V] [StrongRankCondition R]
     {f : Dual R V} {v : V} (hfv : f v = 0) (h1 : finrank R V ≤ 1) :
     transvection f v = id := by
@@ -121,14 +121,14 @@ theorem eq_id_of_finrank_le_one
     have : x = ∑ i, b.repr x i • b i := (b.sum_equivFun x).symm
     rwa [Finset.sum_eq_single_of_mem i (Finset.mem_univ i) (by grind)] at this
 
-theorem congr {W : Type*} [AddCommMonoid W] [Module R W]
+theorem congr {W : Type*} [AddMonoid W] [IsAddCommutative W] [Module R W]
     (f : Dual R V) (v : V) (e : V ≃ₗ[R] W) :
     e ∘ₗ (transvection f v) ∘ₗ e.symm = transvection (f ∘ₗ e.symm) (e v) := by
   ext; simp [transvection.apply]
 
 end LinearMap.transvection
 
-variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V]
 
 namespace LinearEquiv
 
@@ -496,14 +496,14 @@ open scoped TensorProduct
 section
 
 variable
-    {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
-    (A : Type*) [CommSemiring A] [Algebra R A]
+    {R V : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid V] [IsAddCommutative V] [Module R V]
+    (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 theorem LinearMap.transvection.baseChange (f : Dual R V) (v : V) :
     (transvection f v).baseChange A = transvection (f.baseChange A) (1 ⊗ₜ[R] v) := by
   ext; simp [transvection, TensorProduct.tmul_add]
 
-variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
+variable {W : Type*} [AddMonoid W] [IsAddCommutative W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
 
 theorem IsBaseChange.transvection (f : Dual R V) (v : V) :
@@ -518,10 +518,10 @@ end
 
 section
 
-variable {R V A : Type*} [CommRing R] [AddCommGroup V]
-    [Module R V] [CommRing A] [Algebra R A]
+variable {R V A : Type*} [Ring R] [IsMulCommutative R] [AddGroup V] [IsAddCommutative V]
+    [Module R V] [Ring A] [IsMulCommutative A] [Algebra R A]
     {f : Module.Dual R V} {v : V} (h : f v = 0)
-    {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
+    {W : Type*} [AddMonoid W] [IsAddCommutative W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
 
 theorem LinearEquiv.transvection.baseChange
@@ -551,7 +551,7 @@ open scoped TensorProduct
 
 section Field
 
-variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
+variable {K : Type*} {V : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 /-- Determinant of transvections, over a field.
 
@@ -613,7 +613,7 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
 
 end Field
 
-variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [Ring R] [IsMulCommutative R] [AddGroup V] [IsAddCommutative V] [Module R V]
 
 /-- Determinant of a transvection, over a domain.
 

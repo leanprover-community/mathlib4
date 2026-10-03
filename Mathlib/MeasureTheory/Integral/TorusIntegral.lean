@@ -59,7 +59,7 @@ integral, torus
 
 
 variable {n : ℕ}
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
 
 noncomputable section
 

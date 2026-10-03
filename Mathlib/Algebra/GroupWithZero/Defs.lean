@@ -161,7 +161,7 @@ end MulZeroClass
 
 section CommMagma
 
-variable [CommMagma M₀] [Zero M₀]
+variable [Mul M₀] [IsMulCommutative M₀] [Zero M₀]
 
 lemma IsLeftCancelMulZero.to_isRightCancelMulZero [IsLeftCancelMulZero M₀] :
     IsRightCancelMulZero M₀ where
@@ -199,7 +199,7 @@ variable [MonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀]
 end MulDivCancelClass
 
 section MulDivCancelClass
-variable [CommMonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀]
+variable [MonoidWithZero M₀] [IsMulCommutative M₀] [Div M₀] [MulDivCancelClass M₀]
 
 @[simp] lemma mul_div_cancel_left₀ (b : M₀) {a : M₀} (ha : a ≠ 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_right₀ _ ha]

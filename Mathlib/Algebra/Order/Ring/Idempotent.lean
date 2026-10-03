@@ -23,7 +23,7 @@ is uniquely determined by either `a` or `b`).
 
 variable {R : Type*}
 
-instance [CommMonoid R] [AddCommMonoid R] :
+instance [Monoid R] [IsMulCommutative R] [AddMonoid R] [IsAddCommutative R] :
     Compl {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
   compl a := ⟨(a.1.2, a.1.1), (mul_comm ..).trans a.2.1, (add_comm ..).trans a.2.2⟩
 
@@ -36,7 +36,7 @@ lemma eq_of_mul_eq_add_eq_one [NonAssocSemiring R] (a : R) {b c : R}
 
 section CommSemiring
 
-variable [CommSemiring R] {a b : {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1}}
+variable [Semiring R] [IsMulCommutative R] {a b : {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1}}
 
 lemma mul_eq_zero_add_eq_one_ext_left (eq : a.1.1 = b.1.1) : a = b := by
   refine Subtype.ext <| Prod.ext_iff.mpr ⟨eq, eq_of_mul_eq_add_eq_one a.1.1 ?_ a.2.2 ?_⟩
@@ -93,7 +93,7 @@ instance : BooleanAlgebra {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
 
 end CommSemiring
 
-instance {S : Type*} [CommSemigroup S] : SemilatticeInf {a : S // IsIdempotentElem a} where
+instance {S : Type*} [Semigroup S] [IsMulCommutative S] : SemilatticeInf {a : S // IsIdempotentElem a} where
   le a b := a.1 * b = a
   le_refl a := a.2
   le_trans a b c hab hbc := show _ = _ by rw [← hab, mul_assoc, hbc]
@@ -103,17 +103,17 @@ instance {S : Type*} [CommSemigroup S] : SemilatticeInf {a : S // IsIdempotentEl
   inf_le_right a b := show _ = _ by simp_rw [mul_assoc]; rw [b.2]
   le_inf a b c hab hac := by simp_rw [← mul_assoc]; rw [hab, hac]
 
-instance {M : Type*} [CommMonoid M] : OrderTop {a : M // IsIdempotentElem a} where
+instance {M : Type*} [Monoid M] [IsMulCommutative M] : OrderTop {a : M // IsIdempotentElem a} where
   top := ⟨1, .one⟩
   le_top _ := mul_one _
 
-instance {M₀ : Type*} [CommMonoidWithZero M₀] : OrderBot {a : M₀ // IsIdempotentElem a} where
+instance {M₀ : Type*} [MonoidWithZero M₀] [IsMulCommutative M₀] : OrderBot {a : M₀ // IsIdempotentElem a} where
   bot := ⟨0, .zero⟩
   bot_le _ := zero_mul _
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 instance : Lattice {a : R // IsIdempotentElem a} where
   __ : SemilatticeInf _ := inferInstance

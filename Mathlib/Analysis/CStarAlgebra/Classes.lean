@@ -45,7 +45,7 @@ noncomputable instance (priority := 100) CStarAlgebra.toNonUnitalCStarAlgebra (A
     [CStarAlgebra A] : NonUnitalCStarAlgebra A where
 
 noncomputable instance (priority := 100) CommCStarAlgebra.toNonUnitalCommCStarAlgebra (A : Type*)
-    [CommCStarAlgebra A] : NonUnitalCommCStarAlgebra A where
+    [CStarAlgebra A] [IsMulCommutative A] : NonUnitalCommCStarAlgebra A where
 
 noncomputable instance StarSubalgebra.cstarAlgebra {S A : Type*} [CStarAlgebra A]
     [SetLike S A] [SubringClass S A] [SMulMemClass S ℂ A] [StarMemClass S A]
@@ -53,7 +53,7 @@ noncomputable instance StarSubalgebra.cstarAlgebra {S A : Type*} [CStarAlgebra A
   toCompleteSpace := h_closed.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
 
-noncomputable instance StarSubalgebra.commCStarAlgebra {S A : Type*} [CommCStarAlgebra A]
+noncomputable instance StarSubalgebra.commCStarAlgebra {S A : Type*} [CStarAlgebra A] [IsMulCommutative A]
     [SetLike S A] [SubringClass S A] [SMulMemClass S ℂ A] [StarMemClass S A]
     (s : S) [h_closed : IsClosed (s : Set A)] : CommCStarAlgebra s where
   toCompleteSpace := h_closed.completeSpace_coe
@@ -67,7 +67,7 @@ noncomputable instance NonUnitalStarSubalgebra.nonUnitalCStarAlgebra {S A : Type
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
 
 noncomputable instance NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : Type*}
-    [NonUnitalCommCStarAlgebra A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S ℂ A]
+    [NonUnitalCStarAlgebra A] [IsMulCommutative A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S ℂ A]
     [StarMemClass S A] (s : S) [h_closed : IsClosed (s : Set A)] : NonUnitalCommCStarAlgebra s where
   toCompleteSpace := h_closed.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
@@ -147,12 +147,12 @@ variable {A B : Type*}
 noncomputable instance [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] :
     NonUnitalCStarAlgebra (A × B) where
 
-noncomputable instance [NonUnitalCommCStarAlgebra A] [NonUnitalCommCStarAlgebra B] :
+noncomputable instance [NonUnitalCStarAlgebra A] [IsMulCommutative A] [NonUnitalCStarAlgebra B] [IsMulCommutative B] :
     NonUnitalCommCStarAlgebra (A × B) where
 
 noncomputable instance [CStarAlgebra A] [CStarAlgebra B] : CStarAlgebra (A × B) where
 
-noncomputable instance [CommCStarAlgebra A] [CommCStarAlgebra B] : CommCStarAlgebra (A × B) where
+noncomputable instance [CStarAlgebra A] [IsMulCommutative A] [CStarAlgebra B] [IsMulCommutative B] : CommCStarAlgebra (A × B) where
 
 end Prod
 
@@ -162,11 +162,11 @@ variable {A : Type*}
 
 noncomputable instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra Aᵐᵒᵖ where
 
-noncomputable instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra Aᵐᵒᵖ where
+noncomputable instance [NonUnitalCStarAlgebra A] [IsMulCommutative A] : NonUnitalCommCStarAlgebra Aᵐᵒᵖ where
 
 noncomputable instance [CStarAlgebra A] : CStarAlgebra Aᵐᵒᵖ where
 
-noncomputable instance [CommCStarAlgebra A] : CommCStarAlgebra Aᵐᵒᵖ where
+noncomputable instance [CStarAlgebra A] [IsMulCommutative A] : CommCStarAlgebra Aᵐᵒᵖ where
 
 end MulOpposite
 
@@ -186,5 +186,5 @@ attribute [local instance] IsUnital.toCStarAlgebra in
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
-noncomputable abbrev IsUnital.toCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A]
+noncomputable abbrev IsUnital.toCommCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] [IsMulCommutative A]
     [IsUnital A] : CommCStarAlgebra A where

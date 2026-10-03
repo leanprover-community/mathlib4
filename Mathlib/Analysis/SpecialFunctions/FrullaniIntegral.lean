@@ -28,7 +28,7 @@ open scoped Topology
 
 namespace Frullani
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E}
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] {f : ℝ → E}
          {a b c : ℝ} {L R : E}
 
 lemma intervalIntegrable_inv_smul (hf : LocallyIntegrableOn f (Ioi 0)) (ha : 0 < a)

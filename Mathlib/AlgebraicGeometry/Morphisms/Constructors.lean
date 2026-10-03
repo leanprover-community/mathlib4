@@ -350,13 +350,13 @@ lemma topologically_isZariskiLocalAtSource' [(topologically P).RespectsIso]
 end Topologically
 
 /-- `stalkwise P` holds for a morphism if all stalks satisfy `P`. -/
-def stalkwise (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) :
+def stalkwise (P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop) :
     MorphismProperty Scheme.{u} :=
   fun _ _ f => ∀ x, P (f.stalkMap x).hom
 
 section Stalkwise
 
-variable {P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+variable {P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
 
 /-- If `P` respects isos, then `stalkwise P` respects isos. -/
 lemma stalkwise_respectsIso (hP : RingHom.RespectsIso P) :

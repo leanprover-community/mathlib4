@@ -35,11 +35,11 @@ open Finset QuadraticMap
 
 public noncomputable section
 
-variable {R M M' : Type*} [AddCommGroup M] [AddCommGroup M']
+variable {R M M' : Type*} [AddGroup M] [IsAddCommutative M] [AddGroup M'] [IsAddCommutative M']
 
 section LinearOrder
 
-variable [CommRing R] [LinearOrder R] [Module R M] (Q : QuadraticForm R M)
+variable [Ring R] [IsMulCommutative R] [LinearOrder R] [Module R M] (Q : QuadraticForm R M)
   [Module R M'] {Q' : QuadraticForm R M'} {V : Submodule R M}
 
 section Equiv

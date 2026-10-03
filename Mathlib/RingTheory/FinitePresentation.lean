@@ -40,12 +40,12 @@ variable (R : Type w₁) (A : Type w₂) (B : Type w₃)
 
 /-- An algebra over a commutative semiring is `Algebra.FinitePresentation` if it is the quotient of
 a polynomial ring in `n` variables by a finitely generated ideal. -/
-class Algebra.FinitePresentation [CommSemiring R] [Semiring A] [Algebra R A] : Prop where
+class Algebra.FinitePresentation [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] : Prop where
   out : ∃ (n : ℕ) (f : MvPolynomial (Fin n) R →ₐ[R] A), Surjective f ∧ (RingHom.ker f.toRingHom).FG
 
 namespace Algebra
 
-variable [CommRing R] [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] [Ring B] [IsMulCommutative B] [Algebra R B]
 
 namespace FiniteType
 
@@ -383,7 +383,7 @@ end ModuleAndAlgebra
 
 namespace RingHom
 
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+variable {A B C : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C]
 
 /-- A ring morphism `A →+* B` is of `RingHom.FinitePresentation` if `B` is finitely presented as
 `A`-algebra. -/
@@ -464,14 +464,14 @@ around two predicates `P` and `Q`, which should be "the same" apart from univers
 * `Q`, for ring homs `(R : Type u) → (S : Type v)`.
 -/
 lemma polynomial_induction
-    (P : ∀ (R : Type u) [CommRing R] (S : Type u) [CommRing S], (R →+* S) → Prop)
-    (Q : ∀ (R : Type u) [CommRing R] (S : Type v) [CommRing S], (R →+* S) → Prop)
-    (polynomial : ∀ (R) [CommRing R], P R R[X] C)
-    (fg_ker : ∀ (R : Type u) [CommRing R] (S : Type v) [CommRing S] (f : R →+* S),
+    (P : ∀ (R : Type u) [Ring R] [IsMulCommutative R] (S : Type u) [Ring S] [IsMulCommutative S], (R →+* S) → Prop)
+    (Q : ∀ (R : Type u) [Ring R] [IsMulCommutative R] (S : Type v) [Ring S] [IsMulCommutative S], (R →+* S) → Prop)
+    (polynomial : ∀ (R) [Ring R] [IsMulCommutative R], P R R[X] C)
+    (fg_ker : ∀ (R : Type u) [Ring R] [IsMulCommutative R] (S : Type v) [Ring S] [IsMulCommutative S] (f : R →+* S),
       Surjective f → (ker f).FG → Q R S f)
-    (comp : ∀ (R) [CommRing R] (S) [CommRing S] (T) [CommRing T] (f : R →+* S) (g : S →+* T),
+    (comp : ∀ (R) [Ring R] [IsMulCommutative R] (S) [Ring S] [IsMulCommutative S] (T) [Ring T] [IsMulCommutative T] (f : R →+* S) (g : S →+* T),
       P R S f → Q S T g → Q R T (g.comp f))
-    {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) (hf : f.FinitePresentation) :
+    {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (hf : f.FinitePresentation) :
     Q R S f := by
   let := f.toAlgebra
   obtain ⟨n, g, hg, hg'⟩ := hf
@@ -506,8 +506,8 @@ end RingHom.FinitePresentation
 
 namespace AlgHom
 
-variable {R A B C : Type*} [CommRing R]
-variable [CommRing A] [CommRing B] [CommRing C]
+variable {R A B C : Type*} [Ring R] [IsMulCommutative R]
+variable [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C]
 variable [Algebra R A] [Algebra R B] [Algebra R C]
 
 /-- An algebra morphism `A →ₐ[R] B` is of `AlgHom.FinitePresentation` if it is of finite

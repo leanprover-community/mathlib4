@@ -282,27 +282,27 @@ instance (priority := 100) MulPosReflectLE.toSMulPosReflectLE [MulPosReflectLE �
 
 end Mul
 
-instance {M : Type*} [PartialOrder M] [AddCommMonoid M] [IsOrderedAddMonoid M] :
+instance {M : Type*} [PartialOrder M] [AddMonoid M] [IsAddCommutative M] [IsOrderedAddMonoid M] :
     PosSMulMono ℕ M where
   smul_le_smul_of_nonneg_left _n _ _a _b hab := nsmul_le_nsmul_right hab _
 
-instance {M : Type*} [PartialOrder M] [AddCommMonoid M] [IsOrderedAddMonoid M] :
+instance {M : Type*} [PartialOrder M] [AddMonoid M] [IsAddCommutative M] [IsOrderedAddMonoid M] :
     SMulPosMono ℕ M where
   smul_le_smul_of_nonneg_right _a ha _m _n hmn := nsmul_le_nsmul_left ha hmn
 
-instance {M : Type*} [PartialOrder M] [AddCancelCommMonoid M] [IsOrderedAddMonoid M] :
+instance {M : Type*} [PartialOrder M] [AddCancelMonoid M] [IsAddCommutative M] [IsOrderedAddMonoid M] :
     PosSMulStrictMono ℕ M where
   smul_lt_smul_of_pos_left _n hn _m₁ _m₂ := nsmul_lt_nsmul_right hn.ne'
 
-instance {M : Type*} [PartialOrder M] [AddCommMonoid M] [IsOrderedCancelAddMonoid M] :
+instance {M : Type*} [PartialOrder M] [AddMonoid M] [IsAddCommutative M] [IsOrderedCancelAddMonoid M] :
     SMulPosStrictMono ℕ M where
   smul_lt_smul_of_pos_right _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
 
-instance {G : Type*} [PartialOrder G] [AddCommGroup G] [IsOrderedAddMonoid G] :
+instance {G : Type*} [PartialOrder G] [AddGroup G] [IsAddCommutative G] [IsOrderedAddMonoid G] :
     PosSMulStrictMono ℤ G where
   smul_lt_smul_of_pos_left _n hn _m₁ _m₂ := zsmul_lt_zsmul_right hn
 
-instance {G : Type*} [PartialOrder G] [AddCommGroup G] [IsOrderedAddMonoid G] :
+instance {G : Type*} [PartialOrder G] [AddGroup G] [IsAddCommutative G] [IsOrderedAddMonoid G] :
     SMulPosStrictMono ℤ G where
   smul_lt_smul_of_pos_right _a ha _m _n hmn := zsmul_lt_zsmul_left ha hmn
 
@@ -856,7 +856,7 @@ end Preorder
 end MulAction
 
 section Semiring
-variable [Semiring α] [AddCommGroup β] [Module α β]
+variable [Semiring α] [AddGroup β] [IsAddCommutative β] [Module α β]
 
 /-- Constructor for `PosSMulMono` when the semimodule is in fact a group. -/
 lemma PosSMulMono.of_smul_nonneg [PartialOrder α] [PartialOrder β] [IsOrderedAddMonoid β]
@@ -892,7 +892,7 @@ end PartialOrder
 end Semiring
 
 section Ring
-variable [Ring α] [AddCommGroup β] [Module α β] [PartialOrder α] [PartialOrder β]
+variable [Ring α] [AddGroup β] [IsAddCommutative β] [Module α β] [PartialOrder α] [PartialOrder β]
 
 /-- Constructor for `IsOrderedModule` when the semimodule is in fact a module. -/
 lemma IsOrderedModule.of_smul_nonneg [IsOrderedAddMonoid α] [IsOrderedAddMonoid β]
@@ -959,7 +959,7 @@ instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α β�
 end Left
 
 section Right
-variable [Preorder α] [Monoid α] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+variable [Preorder α] [Monoid α] [AddGroup β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β]
   [DistribMulAction α β]
 
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α βᵒᵈ where
@@ -985,7 +985,7 @@ instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α β�
 end Right
 
 section LeftRight
-variable [Preorder α] [MonoidWithZero α] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+variable [Preorder α] [MonoidWithZero α] [AddGroup β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β]
   [DistribMulAction α β]
 
 instance instIsOrderedModule [IsOrderedModule α β] : IsOrderedModule α βᵒᵈ where
@@ -996,7 +996,7 @@ end OrderDual
 
 section OrderedAddCommMonoid
 variable [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
-  [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β] [Module α β]
+  [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [IsOrderedCancelAddMonoid β] [Module α β]
 
 section PosSMulMono
 variable [PosSMulMono α β] {a₁ a₂ : α} {b₁ b₂ : β}
@@ -1037,7 +1037,7 @@ section OrderedRing
 variable [Ring α] [PartialOrder α] [IsOrderedRing α]
 
 section OrderedAddCommGroup
-variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module α β]
+variable [AddGroup β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β] [Module α β]
 
 section PosSMulMono
 variable [PosSMulMono α β]
@@ -1109,7 +1109,7 @@ end PosSMulStrictMono
 end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
-variable [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β] [PosSMulMono α β]
+variable [AddGroup β] [IsAddCommutative β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β] [PosSMulMono α β]
   {a : α} {b₁ b₂ : β}
 
 lemma smul_max_of_nonpos (ha : a ≤ 0) (b₁ b₂ : β) : a • max b₁ b₂ = min (a • b₁) (a • b₂) :=
@@ -1123,7 +1123,7 @@ end OrderedRing
 
 section LinearOrderedRing
 variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
-  [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β] [PosSMulStrictMono α β]
+  [AddGroup β] [IsAddCommutative β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β] [PosSMulStrictMono α β]
   {a : α} {b : β}
 
 lemma nonneg_and_nonneg_or_nonpos_and_nonpos_of_smul_nonneg (hab : 0 ≤ a • b) :

@@ -130,17 +130,17 @@ theorem card_roots_map_eq_natDegree_from_simpleRing {A B : Type*} [Ring A] [IsSi
     [Field B] [IsAlgClosed B] (f : A →+* B) (p : A[X]) : (p.map f).roots.card = p.natDegree :=
   natDegree_map f ▸ card_roots_eq_natDegree
 
-theorem card_aroots_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [CommRing A] [Field B]
+theorem card_aroots_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [Ring A] [IsMulCommutative A] [Field B]
     [IsAlgClosed B] [Algebra A B] {p : A[X]} (hf : algebraMap A B p.leadingCoeff ≠ 0) :
     (p.aroots B).card = p.natDegree :=
   card_roots_map_eq_natDegree_of_leadingCoeff_ne_zero hf
 
-theorem card_aroots_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRing A] [Field B]
+theorem card_aroots_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [Ring A] [IsMulCommutative A] [Field B]
     [IsAlgClosed B] [Algebra A B] {p : A[X]} (h : IsUnit p.leadingCoeff) :
     (p.aroots B).card = p.natDegree :=
   card_roots_map_eq_natDegree_of_isUnit_leadingCoeff _ h
 
-theorem card_aroots_eq_natDegree {A B : Type*} [CommRing A] [Field B] [IsAlgClosed B] [Algebra A B]
+theorem card_aroots_eq_natDegree {A B : Type*} [Ring A] [IsMulCommutative A] [Field B] [IsAlgClosed B] [Algebra A B]
     [FaithfulSMul A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
   card_roots_map_eq_natDegree_of_injective _ <| FaithfulSMul.algebraMap_injective _ _
 
@@ -165,12 +165,12 @@ theorem exists_eval₂_eq_zero {R : Type*} [Ring R] [IsSimpleRing R] [IsAlgClose
 
 variable (k)
 
-theorem exists_aeval_eq_zero_of_injective {R : Type*} [CommSemiring R] [IsAlgClosed k] [Algebra R k]
+theorem exists_aeval_eq_zero_of_injective {R : Type*} [Semiring R] [IsMulCommutative R] [IsAlgClosed k] [Algebra R k]
     (hinj : Function.Injective (algebraMap R k)) (p : R[X]) (hp : p.degree ≠ 0) :
     ∃ x : k, aeval x p = 0 :=
   exists_eval₂_eq_zero_of_injective (algebraMap R k) hinj p hp
 
-theorem exists_aeval_eq_zero {R : Type*} [CommSemiring R] [IsAlgClosed k] [Algebra R k]
+theorem exists_aeval_eq_zero {R : Type*} [Semiring R] [IsMulCommutative R] [IsAlgClosed k] [Algebra R k]
     [FaithfulSMul R k] (p : R[X]) (hp : p.degree ≠ 0) : ∃ x : k, p.aeval x = 0 :=
   exists_aeval_eq_zero_of_injective _ (FaithfulSMul.algebraMap_injective ..) _ hp
 
@@ -229,7 +229,7 @@ theorem algebraMap_bijective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsD
     add_eq_zero_iff_eq_neg] at this
   exact (map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
-theorem ringHom_bijective_of_isIntegral {k K : Type*} [Field k] [CommRing K] [IsDomain K]
+theorem ringHom_bijective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsMulCommutative K] [IsDomain K]
     [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Bijective f :=
   let _ : Algebra k K := f.toAlgebra
   have : Algebra.IsIntegral k K := ⟨hf⟩
@@ -261,7 +261,7 @@ lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field 
 
 /-- Typeclass for an extension being an algebraic closure. -/
 @[stacks 09GS]
-class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
+class IsAlgClosure (R : Type u) (K : Type v) [Ring R] [IsMulCommutative R] [Field K] [Algebra R K]
     [IsTorsionFree R K] : Prop where
   isAlgClosed : IsAlgClosed K
   isAlgebraic : Algebra.IsAlgebraic R K
@@ -285,7 +285,7 @@ instance IsAlgClosed.instIsAlgClosure (F : Type*) [Field F] [IsAlgClosed F] : Is
   isAlgClosed := ‹_›
   isAlgebraic := .of_finite F F
 
-theorem IsAlgClosure.of_splits {R K} [CommRing R] [IsDomain R] [Field K] [Algebra R K]
+theorem IsAlgClosure.of_splits {R K} [Ring R] [IsMulCommutative R] [IsDomain R] [Field K] [Algebra R K]
     [Algebra.IsIntegral R K] [IsTorsionFree R K]
     (h : ∀ p : R[X], p.Monic → Irreducible p → (p.map (algebraMap R K)).Splits) :
     IsAlgClosure R K where
@@ -327,8 +327,8 @@ private noncomputable def liftAux : L →ₐ[K] M :=
     (fun x _ ↦ ⟨Algebra.IsIntegral.isIntegral x, splits _⟩)
     (IntermediateField.adjoin_univ K L)
 
-variable {R : Type u} [CommRing R] [IsDomain R]
-variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M]
+variable {R : Type u} [Ring R] [IsMulCommutative R] [IsDomain R]
+variable {S : Type v} [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra R S] [Algebra R M]
   [IsTorsionFree R S] [IsTorsionFree R M] [Algebra.IsAlgebraic R S]
 
 variable {M}
@@ -395,7 +395,7 @@ namespace IsAlgClosure
 
 section
 
-variable (R : Type u) [CommRing R] [IsDomain R] (L : Type v) (M : Type w) [Field L] [Field M]
+variable (R : Type u) [Ring R] [IsMulCommutative R] [IsDomain R] (L : Type v) (M : Type w) [Field L] [Field M]
 variable [Algebra R M] [IsTorsionFree R M] [IsAlgClosure R M]
 variable [Algebra R L] [IsTorsionFree R L] [IsAlgClosure R L]
 
@@ -410,7 +410,7 @@ noncomputable def equiv : L ≃ₐ[R] M :=
 end
 
 variable (K : Type*) (J : Type*) (R : Type u) (S : Type*) (L : Type v) (M : Type w)
-  [Field K] [Field J] [CommRing R] [CommRing S] [Field L] [Field M]
+  [Field K] [Field J] [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Field L] [Field M]
   [Algebra R M] [IsTorsionFree R M] [IsAlgClosure R M] [Algebra K M] [IsAlgClosure K M]
   [Algebra S L] [IsTorsionFree S L] [IsAlgClosure S L]
 

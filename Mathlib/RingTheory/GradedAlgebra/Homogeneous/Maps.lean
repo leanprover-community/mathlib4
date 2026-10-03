@@ -96,7 +96,7 @@ variable {A B C σ τ ω ι : Type*}
   [Semiring A] [Semiring B] [Semiring C]
   [SetLike σ A] [SetLike τ B] [SetLike ω C]
   [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [AddSubmonoidClass ω C]
-  [DecidableEq ι] [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
+  [DecidableEq ι] [AddMonoid ι] [IsAddCommutative ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
   {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ω}
   [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
   {f : 𝒜 →+*ᵍ ℬ} {g : ℬ →+*ᵍ 𝒞}

@@ -30,7 +30,7 @@ section CommRing
 variable (G B : Type*) [Group G] [Semiring B]
   [MulSemiringAction G B]
 
-variable {C : Type*} [CommSemiring C] [Algebra C B]
+variable {C : Type*} [Semiring C] [IsMulCommutative C] [Algebra C B]
 
 variable {G} in
 protected theorem Subgroup.smul_algebraMap {H : Subgroup G} [SMulCommClass H C B] {g : G}
@@ -53,12 +53,12 @@ end CommRing
 
 section Field
 
-variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAction G B]
+variable (G A B K L : Type*) [Group G] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [MulSemiringAction G B]
   [Algebra A B] [Field K] [Field L] [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L]
   [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
   [MulSemiringAction G L] [SMulDistribClass G B L]
 
-instance (C : Type*) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
+instance (C : Type*) [Ring C] [IsMulCommutative C] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
     [MulSemiringAction G C] [IsGaloisGroup G A C] : IsGaloisGroup G (algebraMap A B).range C :=
   .of_ringHom_surjective G A (algebraMap A B).range C (algebraMap A B).rangeRestrict
     (fun x ↦ (IsScalarTower.algebraMap_apply A B C x).symm)
@@ -128,7 +128,7 @@ namespace IsGaloisGroup
 
 section IsDomain
 
-variable (A B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
+variable (A B : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [IsDomain B] [Algebra A B]
   [MulSemiringAction G B] [IsGaloisGroup G A B] [Finite G]
 
 attribute [local instance] FractionRing.liftAlgebra in
@@ -152,7 +152,7 @@ end IsDomain
 
 variable (H : Subgroup G)
 
-instance (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+instance (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
     [MulSemiringAction G S] [hGKL : IsGaloisGroup G R S] :
     IsGaloisGroup H (FixedPoints.subalgebra R S H) S where
   faithful := have := hGKL.faithful; inferInstance
@@ -163,8 +163,8 @@ section Quotient
 
 section Semiring
 
-variable (A B C : Type*) [CommSemiring A] [Semiring C] [Algebra A C] [MulSemiringAction G C]
-variable (N : Subgroup G) [CommSemiring B] [Algebra B C]
+variable (A B C : Type*) [Semiring A] [IsMulCommutative A] [Semiring C] [Algebra A C] [MulSemiringAction G C]
+variable (N : Subgroup G) [Semiring B] [IsMulCommutative B] [Algebra B C]
 
 /-- If `N` is a normal subgroup of `G` and `IsGaloisGroup N B C`, then `G` acts on `B`.
 For `g : G` and `x : B`, `g • x` is the unique element of `B` whose image in `C` is

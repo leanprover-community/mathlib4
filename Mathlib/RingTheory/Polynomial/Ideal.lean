@@ -25,7 +25,7 @@ universe u v w
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] {a : R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {a : R}
 
 theorem mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero {b : R[X]} {P : R[X][X]} :
     P ∈ Ideal.span {C (X - C a), X - C b} ↔ (P.eval b).eval a = 0 := by
@@ -58,7 +58,7 @@ namespace Algebra
 
 variable {R S : Type*}
 
-lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (I : Ideal R)
+lemma mem_ideal_map_adjoin [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] (x : S) (I : Ideal R)
     {y : R[x]} :
     y ∈ I.map (algebraMap R (R[x])) ↔
       ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := by
@@ -89,7 +89,7 @@ lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (
     simp_rw [this, Algebra.smul_def]
     exact sum_mem fun i _ ↦ Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ (hp i))
 
-lemma exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top [CommRing R] [CommRing S]
+lemma exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     [Algebra R S] (x : S) (I : Ideal R) (hI : I ≠ ⊤) [Invertible x]
     (h : I.map (algebraMap R (R[x])) ⊔ .span {⟨x, subset_adjoin rfl⟩} = ⊤) :
     ∃ p : R[X], p.leadingCoeff - 1 ∈ I ∧ p.aeval ⅟x = 0 := by

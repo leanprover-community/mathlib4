@@ -25,7 +25,7 @@ variable {ι κ α : Type*} {L : SummationFilter ι}
 
 section Preorder
 
-variable [Preorder α] [CommMonoid α] [TopologicalSpace α] {a c : α} {f : ι → α}
+variable [Preorder α] [Monoid α] [IsMulCommutative α] [TopologicalSpace α] {a c : α} {f : ι → α}
 
 @[to_additive]
 lemma hasProd_le_of_prod_le [ClosedIicTopology α] [L.NeBot]
@@ -46,7 +46,7 @@ end Preorder
 
 section OrderedCommMonoid
 
-variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
+variable [Monoid α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α]
   [TopologicalSpace α] [OrderClosedTopology α] {f g : ι → α}
   {a a₁ a₂ : α}
 
@@ -78,7 +78,7 @@ protected theorem Multipliable.tprod_le_tprod_of_inj {g : κ → α} (e : ι →
   hasProd_le_inj _ he hs h hf.hasProd hg.hasProd
 
 @[to_additive]
-protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [PartialOrder γ]
+protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [Group γ] [IsMulCommutative γ] [PartialOrder γ]
     [IsOrderedMonoid γ] [UniformSpace γ] [IsUniformGroup γ] [OrderClosedTopology γ]
     [CompleteSpace γ] (f : κ → γ) (β : Set κ) (h : ∀ a : κ, 1 ≤ f a) (hf : Multipliable f) :
     (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
@@ -182,7 +182,7 @@ theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏'[L] i, f i ≤ 1 := by
   · rw [tprod_eq_one_of_not_multipliable hf]
 
 @[to_additive]
-theorem hasProd_one_iff_of_one_le {ι α : Type*} {L : SummationFilter ι} [CommMonoid α]
+theorem hasProd_one_iff_of_one_le {ι α : Type*} {L : SummationFilter ι} [Monoid α] [IsMulCommutative α]
   [PartialOrder α] [IsOrderedMonoid α] [TopologicalSpace α] [OrderClosedTopology α]
   {f : ι → α} [L.LeAtTop] [L.NeBot] (hf : ∀ i, 1 ≤ f i) :
     HasProd f 1 L ↔ f = 1 := by
@@ -196,7 +196,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+variable [Group α] [IsMulCommutative α] [PartialOrder α] [IsOrderedMonoid α]
   [TopologicalSpace α] [IsTopologicalGroup α]
   [OrderClosedTopology α] {f g : ι → α} {a₁ a₂ : α} {i : ι}
 
@@ -236,7 +236,7 @@ end OrderedCommGroup
 
 section WithZero
 
-variable [CommMonoidWithZero α] [TopologicalSpace α] [Preorder α] [ZeroLEOneClass α]
+variable [MonoidWithZero α] [IsMulCommutative α] [TopologicalSpace α] [Preorder α] [ZeroLEOneClass α]
   [PosMulMono α] [ClosedIciTopology α]
 
 theorem HasProd.nonneg [L.NeBot] {f : ι → α} (hf : ∀ i, 0 ≤ f i) {a : α} (h : HasProd f a L) :
@@ -266,7 +266,7 @@ end WithZero
 
 section CanonicallyOrderedMul
 
-variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
+variable [Monoid α] [IsMulCommutative α] [PartialOrder α] [IsOrderedMonoid α]
   [CanonicallyOrderedMul α] [TopologicalSpace α]
   [OrderClosedTopology α] {f : ι → α} {a : α}
 
@@ -311,28 +311,28 @@ the existence of a least upper bound.
 -/
 
 @[to_additive]
-theorem hasProd_of_isLUB_of_one_le [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
+theorem hasProd_of_isLUB_of_one_le [Monoid α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α]
     [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (i : α) (h : ∀ i, 1 ≤ f i)
     (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) i) : HasProd f i :=
   tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le h) hf
 
 @[to_additive]
-theorem hasProd_of_isGLB_of_le_one [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
+theorem hasProd_of_isGLB_of_le_one [Monoid α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α]
     [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (i : α) (h₀ : ∀ i, f i ≤ 1)
     (hf : IsGLB (Set.range fun s ↦ ∏ i ∈ s, f i) i) : HasProd f i :=
   tendsto_atTop_isGLB (Finset.prod_anti_set_of_le_one h₀) hf
 
 @[to_additive]
-theorem hasProd_of_isLUB [CommMonoid α] [LinearOrder α]
+theorem hasProd_of_isLUB [Monoid α] [IsMulCommutative α] [LinearOrder α]
     [CanonicallyOrderedMul α] [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) b) :
     HasProd f b :=
   tendsto_atTop_isLUB (Finset.prod_mono_set f) hf
 
 @[to_additive]
-theorem multipliable_mabs_iff [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
+theorem multipliable_mabs_iff [Group α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α]
     [UniformSpace α] [IsUniformGroup α]
     [CompleteSpace α] {f : ι → α} : (Multipliable fun x ↦ mabs (f x)) ↔ Multipliable f :=
   let s := { x | 1 ≤ f x }
@@ -346,7 +346,7 @@ theorem multipliable_mabs_iff [CommGroup α] [LinearOrder α] [IsOrderedMonoid �
 
 alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 
-theorem Finite.of_summable_const [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+theorem Finite.of_summable_const [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
     [TopologicalSpace α] [Archimedean α]
     [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι ↦ b) :
     Finite ι := by
@@ -358,7 +358,7 @@ theorem Finite.of_summable_const [AddCommGroup α] [LinearOrder α] [IsOrderedAd
   have : Fintype ι := fintypeOfFinsetCardLe n this
   infer_instance
 
-theorem Set.Finite.of_summable_const [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+theorem Set.Finite.of_summable_const [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
     [TopologicalSpace α]
     [Archimedean α] [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι ↦ b) :
     (Set.univ : Set ι).Finite :=
@@ -368,7 +368,7 @@ end LinearOrder
 
 section LinearOrderedCommRing
 
-variable [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
+variable [Ring α] [IsMulCommutative α] [LinearOrder α] [IsStrictOrderedRing α]
   [TopologicalSpace α] [OrderTopology α] {f : ι → α} {x : α}
 
 nonrec theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by

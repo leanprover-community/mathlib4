@@ -103,7 +103,7 @@ universe r s u v
 
 namespace WeierstrassCurve
 
-variable {R : Type r} {S : Type s} [CommRing R] [CommRing S] (W : WeierstrassCurve R)
+variable {R : Type r} {S : Type s} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (W : WeierstrassCurve R)
 
 section Ψ₂Sq
 
@@ -547,8 +547,8 @@ section BaseChange
 
 /-! ### Base changes across algebra homomorphisms -/
 
-variable [Algebra R S] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
+variable [Algebra R S] {A : Type u} [Ring A] [IsMulCommutative A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+  {B : Type v} [Ring B] [IsMulCommutative B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
 
 lemma baseChange_ψ₂ : (W⁄B).ψ₂ = (W⁄A).ψ₂.map (mapRingHom f) := by
   rw [← map_ψ₂, map_baseChange]

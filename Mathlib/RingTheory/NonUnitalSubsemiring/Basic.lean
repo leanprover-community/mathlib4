@@ -294,7 +294,7 @@ theorem map_center_eq [NonUnitalNonAssocSemiring S] (f : R ≃+* S) :
   SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
-theorem center_eq_top (R) [NonUnitalCommSemiring R] : center R = ⊤ :=
+theorem center_eq_top (R) [NonUnitalSemiring R] [IsMulCommutative R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 end NonUnitalSemiring

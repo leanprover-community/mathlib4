@@ -230,7 +230,7 @@ one from being `ℤ`-modules, and one from being abelian groups.
 
 library_note «lower instance priority» /--
 Certain instances always apply during type-class resolution. For example, the instance
-`AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α` applies to all type-class
+`AddCommGroup.toAddGroup {α} [AddGroup α] [IsAddCommutative α] : AddGroup α` applies to all type-class
 resolution problems of the form `AddGroup _`, and type-class inference will then do an
 exhaustive search to find a commutative group. These instances take a long time to fail.
 Other instances will only apply if the goal has a certain shape. For example

@@ -109,14 +109,14 @@ namespace DirichletCharacter
 
 open ArithmeticFunction in
 /-- The arithmetic function associated to a Dirichlet character is multiplicative. -/
-lemma isMultiplicative_toArithmeticFunction {N : ℕ} {R : Type*} [CommMonoidWithZero R]
+lemma isMultiplicative_toArithmeticFunction {N : ℕ} {R : Type*} [MonoidWithZero R] [IsMulCommutative R]
     (χ : DirichletCharacter R N) :
     (toArithmeticFunction (χ ·)).IsMultiplicative := by
   refine IsMultiplicative.iff_ne_zero.mpr ⟨?_, fun {m} {n} hm hn _ ↦ ?_⟩
   · simp [toArithmeticFunction]
   · simp [toArithmeticFunction, hm, hn]
 
-lemma apply_eq_toArithmeticFunction_apply {N : ℕ} {R : Type*} [CommMonoidWithZero R]
+lemma apply_eq_toArithmeticFunction_apply {N : ℕ} {R : Type*} [MonoidWithZero R] [IsMulCommutative R]
     (χ : DirichletCharacter R N) {n : ℕ} (hn : n ≠ 0) :
     χ n = toArithmeticFunction (χ ·) n := by
   simp [toArithmeticFunction, hn]
@@ -124,7 +124,7 @@ lemma apply_eq_toArithmeticFunction_apply {N : ℕ} {R : Type*} [CommMonoidWithZ
 open LSeries Nat Complex
 
 /-- Twisting by a Dirichlet character `χ` distributes over convolution. -/
-lemma mul_convolution_distrib {R : Type*} [CommSemiring R] {n : ℕ} (χ : DirichletCharacter R n)
+lemma mul_convolution_distrib {R : Type*} [Semiring R] [IsMulCommutative R] {n : ℕ} (χ : DirichletCharacter R n)
     (f g : ℕ → R) :
     (((χ ·) : ℕ → R) * f) ⍟ (((χ ·) : ℕ → R) * g) = ((χ ·) : ℕ → R) * (f ⍟ g) := by
   ext n
@@ -161,7 +161,7 @@ lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   simp_all [χ.map_nonunit this, delta]
 
 /-- The Dirichlet character mod `1` corresponds to the constant function `1`. -/
-lemma modOne_eq_one {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter R 1} :
+lemma modOne_eq_one {R : Type*} [MonoidWithZero R] [IsMulCommutative R] {χ : DirichletCharacter R 1} :
     ((χ ·) : ℕ → R) = 1 := by
   ext
   rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _), Pi.one_apply]

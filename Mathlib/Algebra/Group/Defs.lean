@@ -117,7 +117,7 @@ class CommGroup (G : Type*) extends Group G, CommMonoid G
 
 section CommGroup
 
-variable [CommGroup G]
+variable [Group G] [IsMulCommutative G]
 
 -- see Note [lower instance priority]
 @[to_additive]

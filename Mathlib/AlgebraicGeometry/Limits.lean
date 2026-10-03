@@ -487,7 +487,7 @@ lemma Scheme.coprodPresheafObjIso_hom_snd (U : (X ⨿ Y).Opens) :
     (coprodPresheafObjIso U).hom ≫ prod.snd = (coprod.inr (C := Scheme)).app U := by
   simp [coprodPresheafObjIso, Hom.appIso_hom, ← Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
 
-variable (R S : Type u) [CommRing R] [CommRing S]
+variable (R S : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 /-- The map `Spec R ⨿ Spec S ⟶ Spec (R × S)`.
 This is an isomorphism as witnessed by an `IsIso` instance provided below. -/
@@ -594,7 +594,7 @@ lemma ι_sigmaSpec (R : ι → CommRingCat) (i) :
     Sigma.ι _ i ≫ sigmaSpec R = Spec.map (CommRingCat.ofHom (Pi.evalRingHom _ i)) :=
   Sigma.ι_comp_desc _ _
 
-instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
+instance (i) (R : ι → Type _) [∀ i, Ring (R i)] [∀ i, IsMulCommutative (R i)] :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i))) := by
   classical
   let := (Pi.evalRingHom R i).toAlgebra

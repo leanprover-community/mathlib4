@@ -71,7 +71,7 @@ instance smulCommClass' {α} [SMul α R] [IsScalarTower α R R] [SMulCommClass R
     SMulCommClass (R ⧸ I) α (R ⧸ I) :=
   (Quotient.ringCon I).smulCommClass'
 
-theorem eq_zero_iff_dvd {R} [CommRing R] (x y : R) :
+theorem eq_zero_iff_dvd {R} [Ring R] [IsMulCommutative R] (x y : R) :
     Ideal.Quotient.mk (Ideal.span ({x} : Set R)) y = 0 ↔ x ∣ y := by
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
 
@@ -141,13 +141,13 @@ This is a `def` rather than `instance`, since users
 will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
 See note [reducible non-instances]. -/
-protected noncomputable abbrev field {R} [CommRing R] (I : Ideal R) [I.IsMaximal] :
+protected noncomputable abbrev field {R} [Ring R] [IsMulCommutative R] (I : Ideal R) [I.IsMaximal] :
     Field (R ⧸ I) := fast_instance%
   { __ := commRing _
     __ := Quotient.divisionRing I }
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
-theorem maximal_of_isField {R} [CommRing R] (I : Ideal R) (hqf : IsField (R ⧸ I)) :
+theorem maximal_of_isField {R} [Ring R] [IsMulCommutative R] (I : Ideal R) (hqf : IsField (R ⧸ I)) :
     I.IsMaximal := by
   apply Ideal.isMaximal_iff.2
   constructor
@@ -160,7 +160,7 @@ theorem maximal_of_isField {R} [CommRing R] (I : Ideal R) (hqf : IsField (R ⧸ 
     exact J.sub_mem (J.mul_mem_right _ hxJ) (hIJ (Ideal.Quotient.eq.1 hy))
 
 /-- The quotient of a ring by an ideal is a field iff the ideal is maximal. -/
-theorem maximal_ideal_iff_isField_quotient {R} [CommRing R] (I : Ideal R) :
+theorem maximal_ideal_iff_isField_quotient {R} [Ring R] [IsMulCommutative R] (I : Ideal R) :
     I.IsMaximal ↔ IsField (R ⧸ I) :=
   ⟨fun h =>
     let _i := @Quotient.field _ _ I h

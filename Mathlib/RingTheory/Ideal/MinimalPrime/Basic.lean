@@ -33,7 +33,7 @@ assert_not_exists Localization -- See `Mathlib/RingTheory/Ideal/MinimalPrime/Loc
 
 section
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] (I J : Ideal R)
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (I J : Ideal R)
 
 /-- `IsMinimalPrime I p` says that `p` is a minimal prime over `I`. -/
 protected def Ideal.IsMinimalPrime (p : Ideal R) : Prop := Minimal (fun q ↦ q.IsPrime ∧ I ≤ q) p
@@ -128,7 +128,7 @@ end
 
 section
 
-variable {R : Type*} [CommSemiring R] {I J : Ideal R}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {I J : Ideal R}
 
 theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
   ext J
@@ -154,7 +154,7 @@ end
 
 section
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 theorem Ideal.minimalPrimes_top : (⊤ : Ideal R).minimalPrimes = ∅ := by
   ext p
@@ -174,7 +174,7 @@ theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
   · rintro rfl
     exact Ideal.minimalPrimes_top
 
-lemma Ideal.mem_minimalPrimes_sup {R : Type*} [CommRing R] {p I J : Ideal R} [p.IsPrime]
+lemma Ideal.mem_minimalPrimes_sup {R : Type*} [Ring R] [IsMulCommutative R] {p I J : Ideal R} [p.IsPrime]
     (hle : I ≤ p) (h : p.map (Ideal.Quotient.mk I) ∈ (J.map (Ideal.Quotient.mk I)).minimalPrimes) :
     p ∈ (I ⊔ J).minimalPrimes := by
   refine ⟨⟨‹_›, ?_⟩, fun q ⟨_, hq⟩ hqp ↦ ?_⟩
@@ -185,7 +185,7 @@ lemma Ideal.mem_minimalPrimes_sup {R : Type*} [CommRing R] {p I J : Ideal R} [p.
       h.2 ⟨isPrime_map_quotientMk_of_isPrime hq.1, map_mono hq.2⟩ (map_mono hqp)
     simpa [comap_map_quotientMk, hq.1, sup_le_iff] using comap_mono (f := Ideal.Quotient.mk I) h2
 
-variable {S : Type*} [CommRing S] [Algebra R S]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- If `P` lies over `p`, `p` is a minimal prime over `I` and the image of `P` is
 a minimal prime over the image of `J` in `S ⧸ p S`, then `P` is a minimal prime

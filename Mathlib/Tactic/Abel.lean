@@ -33,14 +33,14 @@ assert_not_exists IsOrderedMonoid TopologicalSpace PseudoMetricSpace
 namespace Mathlib.Tactic.Abel
 
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative monoid. -/
-@[expose] def term {α} [AddCommMonoid α] (n : ℕ) (x a : α) : α := n • x + a
+@[expose] def term {α} [AddMonoid α] [IsAddCommutative α] (n : ℕ) (x a : α) : α := n • x + a
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-@[expose] def termg {α} [AddCommGroup α] (n : ℤ) (x a : α) : α := n • x + a
+@[expose] def termg {α} [AddGroup α] [IsAddCommutative α] (n : ℤ) (x a : α) : α := n • x + a
 
 /-- A synonym for `•`, used internally in `abel`. -/
-@[expose] def smul {α} [AddCommMonoid α] (n : ℕ) (x : α) : α := n • x
+@[expose] def smul {α} [AddMonoid α] [IsAddCommutative α] (n : ℕ) (x : α) : α := n • x
 /-- A synonym for `•`, used internally in `abel`. -/
-@[expose] def smulg {α} [AddCommGroup α] (n : ℤ) (x : α) : α := n • x
+@[expose] def smulg {α} [AddGroup α] [IsAddCommutative α] (n : ℤ) (x : α) : α := n • x
 
 meta section
 
@@ -66,8 +66,8 @@ initialize registerTraceClass `abel.detail
 
 Examples:
 ```
-example [AddCommMonoid α] (a b : α) : a + (b + a) = a + a + b := by abel
-example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
+example [AddMonoid α] [IsAddCommutative α] (a b : α) : a + (b + a) = a + a + b := by abel
+example [AddGroup α] [IsAddCommutative α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
 ```
 -/
 syntax (name := abel) "abel" "!"? : tactic
@@ -170,36 +170,36 @@ def NormalExpr.zero' : M NormalExpr := return NormalExpr.zero (← read).α0
 
 open NormalExpr
 
-theorem const_add_term {α} [AddCommMonoid α] (k n x a a') (h : k + a = a') :
+theorem const_add_term {α} [AddMonoid α] [IsAddCommutative α] (k n x a a') (h : k + a = a') :
     k + @term α _ n x a = term n x a' := by
   simp [h.symm, term, add_comm, add_assoc]
 
-theorem const_add_termg {α} [AddCommGroup α] (k n x a a') (h : k + a = a') :
+theorem const_add_termg {α} [AddGroup α] [IsAddCommutative α] (k n x a a') (h : k + a = a') :
     k + @termg α _ n x a = termg n x a' := by
   simp [h.symm, termg, add_comm, add_assoc]
 
-theorem term_add_const {α} [AddCommMonoid α] (n x a k a') (h : a + k = a') :
+theorem term_add_const {α} [AddMonoid α] [IsAddCommutative α] (n x a k a') (h : a + k = a') :
     @term α _ n x a + k = term n x a' := by
   simp [h.symm, term, add_assoc]
 
-theorem term_add_constg {α} [AddCommGroup α] (n x a k a') (h : a + k = a') :
+theorem term_add_constg {α} [AddGroup α] [IsAddCommutative α] (n x a k a') (h : a + k = a') :
     @termg α _ n x a + k = termg n x a' := by
   simp [h.symm, termg, add_assoc]
 
-theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h₁ : n₁ + n₂ = n')
+theorem term_add_term {α} [AddMonoid α] [IsAddCommutative α] (n₁ x a₁ n₂ a₂ n' a') (h₁ : n₁ + n₂ = n')
     (h₂ : a₁ + a₂ = a') : @term α _ n₁ x a₁ + @term α _ n₂ x a₂ = term n' x a' := by
   simp [h₁.symm, h₂.symm, term, add_nsmul, add_assoc, add_left_comm]
 
-theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
+theorem term_add_termg {α} [AddGroup α] [IsAddCommutative α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
     @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
   simp only [termg, h₁.symm, add_zsmul, h₂.symm]
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
-theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
+theorem zero_term {α} [AddMonoid α] [IsAddCommutative α] (x a) : @term α _ 0 x a = a := by
   simp [term, zero_nsmul]
 
-theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
+theorem zero_termg {α} [AddGroup α] [IsAddCommutative α] (x a) : @termg α _ 0 x a = a := by
   simp [termg, zero_zsmul]
 
 /--
@@ -230,7 +230,7 @@ partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
       let (a', h) ← evalAdd he₁ a₂
       return (← term' n₂ x₂ a', ← iapp ``const_add_term #[e₁, n₂.1, x₂.2, a₂, a', h])
 
-theorem term_neg {α} [AddCommGroup α] (n x a n' a')
+theorem term_neg {α} [AddGroup α] [IsAddCommutative α] (n x a n' a')
     (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
   simpa [h₂.symm, h₁.symm, termg] using add_comm _ _
 
@@ -247,18 +247,18 @@ def evalNeg : NormalExpr → M (NormalExpr × Expr)
     return (← term' (n'.expr, -n.2) x a',
       (← read).app ``term_neg (← read).inst #[n.1, x.2, a, n'.expr, a', ← n'.getProof, h₂])
 
-theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
+theorem zero_smul {α} [AddMonoid α] [IsAddCommutative α] (c) : smul c (0 : α) = 0 := by
   simp [smul, nsmul_zero]
 
-theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
+theorem zero_smulg {α} [AddGroup α] [IsAddCommutative α] (c) : smulg c (0 : α) = 0 := by
   simp [smulg, zsmul_zero]
 
-theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
+theorem term_smul {α} [AddMonoid α] [IsAddCommutative α] (c n x a n' a')
     (h₁ : c * n = n') (h₂ : smul c a = a') :
     smul c (@term α _ n x a) = term n' x a' := by
   simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
-theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
+theorem term_smulg {α} [AddGroup α] [IsAddCommutative α] (c n x a n' a')
     (h₁ : c * n = n') (h₂ : smulg c a = a') :
     smulg c (@termg α _ n x a) = termg n' x a' := by
   simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
@@ -274,11 +274,11 @@ def evalSMul (k : Expr × ℤ) : NormalExpr → M (NormalExpr × Expr)
     return (← term' (n'.expr, k.2 * n.2) x a',
       ← iapp ``term_smul #[k.1, n.1, x.2, a, n'.expr, a', ← n'.getProof, h₂])
 
-theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by simp [term, one_nsmul]
-theorem term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by simp [termg]
-theorem term_atom_pf {α} [AddCommMonoid α] (x x' : α) (h : x = x') : x = term 1 x' 0 := by
+theorem term_atom {α} [AddMonoid α] [IsAddCommutative α] (x : α) : x = term 1 x 0 := by simp [term, one_nsmul]
+theorem term_atomg {α} [AddGroup α] [IsAddCommutative α] (x : α) : x = termg 1 x 0 := by simp [termg]
+theorem term_atom_pf {α} [AddMonoid α] [IsAddCommutative α] (x x' : α) (h : x = x') : x = term 1 x' 0 := by
   simp [term, h, one_nsmul]
-theorem term_atom_pfg {α} [AddCommGroup α] (x x' : α) (h : x = x') : x = termg 1 x' 0 := by
+theorem term_atom_pfg {α} [AddGroup α] [IsAddCommutative α] (x x' : α) (h : x = x') : x = termg 1 x' 0 := by
   simp [termg, h]
 
 /-- Interpret an expression as an atom for `abel`'s normal form. -/
@@ -293,37 +293,37 @@ def evalAtom (e : Expr) : M (NormalExpr × Expr) := do
 theorem unfold_sub {α} [SubtractionMonoid α] (a b c : α) (h : a + -b = c) : a - b = c := by
   rw [sub_eq_add_neg, h]
 
-theorem unfold_smul {α} [AddCommMonoid α] (n) (x y : α)
+theorem unfold_smul {α} [AddMonoid α] [IsAddCommutative α] (n) (x y : α)
     (h : smul n x = y) : n • x = y := h
 
-theorem unfold_smulg {α} [AddCommGroup α] (n : ℕ) (x y : α)
+theorem unfold_smulg {α} [AddGroup α] [IsAddCommutative α] (n : ℕ) (x y : α)
     (h : smulg (Int.ofNat n) x = y) : (n : ℤ) • x = y := h
 
-theorem unfold_zsmul {α} [AddCommGroup α] (n : ℤ) (x y : α)
+theorem unfold_zsmul {α} [AddGroup α] [IsAddCommutative α] (n : ℤ) (x y : α)
     (h : smulg n x = y) : n • x = y := h
 
-lemma subst_into_smul {α} [AddCommMonoid α]
+lemma subst_into_smul {α} [AddMonoid α] [IsAddCommutative α]
     (l r tl tr t) (prl : l = tl) (prr : r = tr)
     (prt : @smul α _ tl tr = t) : smul l r = t := by simp [prl, prr, prt]
 
-lemma subst_into_smulg {α} [AddCommGroup α]
+lemma subst_into_smulg {α} [AddGroup α] [IsAddCommutative α]
     (l r tl tr t) (prl : l = tl) (prr : r = tr)
     (prt : @smulg α _ tl tr = t) : smulg l r = t := by simp [prl, prr, prt]
 
-lemma subst_into_smul_upcast {α} [AddCommGroup α]
+lemma subst_into_smul_upcast {α} [AddGroup α] [IsAddCommutative α]
     (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
     (prt : @smulg α _ zl tr = t) : smul l r = t := by
   simp [← prt, prl₁, ← prl₂, prr, smul, smulg, natCast_zsmul]
 
-lemma subst_into_add {α} [AddCommMonoid α] (l r tl tr t)
+lemma subst_into_add {α} [AddMonoid α] [IsAddCommutative α] (l r tl tr t)
     (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t := by
   rw [prl, prr, prt]
 
-lemma subst_into_addg {α} [AddCommGroup α] (l r tl tr t)
+lemma subst_into_addg {α} [AddGroup α] [IsAddCommutative α] (l r tl tr t)
     (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t := by
   rw [prl, prr, prt]
 
-lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
+lemma subst_into_negg {α} [AddGroup α] [IsAddCommutative α] (a ta t : α)
     (pra : a = ta) (prt : -ta = t) : -a = t := by
   simp [pra, prt]
 
@@ -449,9 +449,9 @@ elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
 @[tactic_alt abel]
 macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
 
-theorem term_eq {α : Type*} [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := (rfl)
+theorem term_eq {α : Type*} [AddMonoid α] [IsAddCommutative α] (n : ℕ) (x a : α) : term n x a = n • x + a := (rfl)
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-theorem termg_eq {α : Type*} [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := (rfl)
+theorem termg_eq {α : Type*} [AddGroup α] [IsAddCommutative α] (n : ℤ) (x a : α) : termg n x a = n • x + a := (rfl)
 
 /-- True if this represents an atomic expression. -/
 def NormalExpr.isAtom : NormalExpr → Bool

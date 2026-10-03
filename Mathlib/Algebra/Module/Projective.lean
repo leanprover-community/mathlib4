@@ -67,7 +67,7 @@ from the free `R`-module on `P` to `P` splits. -/
 if maps from the module lift along surjections. There are several other equivalent
 definitions. -/
 @[wikidata Q942423]
-class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddCommMonoid P] [Module R P] :
+class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddMonoid P] [IsAddCommutative P] [Module R P] :
     Prop where
   out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.linearCombination R id) s
 
@@ -75,8 +75,8 @@ namespace Module
 
 section Semiring
 
-variable {R : Type*} [Semiring R] {P : Type*} [AddCommMonoid P] [Module R P] {M : Type*}
-  [AddCommMonoid M] [Module R M] {N : Type*} [AddCommMonoid N] [Module R N]
+variable {R : Type*} [Semiring R] {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P] {M : Type*}
+  [AddMonoid M] [IsAddCommutative M] [Module R M] {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 theorem projective_def :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (linearCombination R id) s :=
@@ -120,14 +120,14 @@ theorem _root_.Function.Surjective.surjective_linearMapComp_left [Projective R P
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
 projective. -/
-theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P]
+theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} [AddMonoid P] [IsAddCommutative P]
     [Module R P] (huniv : ∀ (f : (P →₀ R) →ₗ[R] P), Function.Surjective f →
       ∃ h : P →ₗ[R] (P →₀ R), f.comp h = .id) :
     Projective R P :=
   projective_def'.2 <| huniv (Finsupp.linearCombination R (id : P → P))
     (linearCombination_surjective _ Function.surjective_id)
 
-variable {Q : Type*} [AddCommMonoid Q] [Module R Q]
+variable {Q : Type*} [AddMonoid Q] [IsAddCommutative Q] [Module R Q]
 
 instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
   refine .of_lifting_property'' fun f hf ↦ ?_
@@ -136,7 +136,7 @@ instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
   refine ⟨coprod g₁ g₂, ?_⟩
   rw [LinearMap.comp_coprod, hg₁, hg₂, LinearMap.coprod_inl_inr]
 
-variable {ι : Type*} (A : ι → Type*) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
+variable {ι : Type*} (A : ι → Type*) [∀ i : ι, AddMonoid (A i)] [∀ i : ι, IsAddCommutative (A i)] [∀ i : ι, Module R (A i)]
 
 instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
   .of_lifting_property'' fun f hf ↦ by
@@ -170,7 +170,7 @@ theorem Projective.of_split [Module.Projective R M]
     ← LinearMap.comp_apply, H, LinearMap.id_apply]
 
 theorem Projective.of_equiv {R S} [Semiring R] [Semiring S] {M N}
-    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N]
+    [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module S N]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     (e₂ : M ≃ₛₗ[σ] N)
     [Projective R M] : Projective S N := by
@@ -210,9 +210,9 @@ end Semiring
 
 section Ring
 
-variable {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P] [Module R P]
-variable {R₀ M N} [CommSemiring R₀] [Algebra R₀ R] [AddCommMonoid M] [Module R₀ M] [Module R M]
-variable [IsScalarTower R₀ R M] [AddCommMonoid N] [Module R₀ N]
+variable {R : Type u} [Semiring R] {P : Type v} [AddMonoid P] [IsAddCommutative P] [Module R P]
+variable {R₀ M N} [Semiring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [AddMonoid M] [IsAddCommutative M] [Module R₀ M] [Module R M]
+variable [IsScalarTower R₀ R M] [AddMonoid N] [IsAddCommutative N] [Module R₀ N]
 
 /-- A variant of `Projective.iff_split` allowing for a more flexible selection of the universe
   for the free module `M`. -/
@@ -257,9 +257,9 @@ section OfLiftingProperty
 
 /-- A module which satisfies the universal property is projective. -/
 theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type v}
-    [AddCommMonoid P] [Module R P] [Small.{v} R]
+    [AddMonoid P] [IsAddCommutative P] [Module R P] [Small.{v} R]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
-    (h : ∀ {M : Type v} {N : Type v} [AddCommMonoid M] [AddCommMonoid N]
+    (h : ∀ {M : Type v} {N : Type v} [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
       [Module R M] [Module R N] (f : M →ₗ[R] N) (g : P →ₗ[R] N),
         Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :
     -- then `P` is projective.
@@ -271,10 +271,10 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type v}
 
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
   which only requires quantifying over modules with an `AddCommGroup` instance. -/
-theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type v} [AddCommGroup P]
+theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type v} [AddGroup P] [IsAddCommutative P]
     [Module R P] [Small.{v} R]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
-    (h : ∀ {M : Type v} {N : Type v} [AddCommGroup M] [AddCommGroup N]
+    (h : ∀ {M : Type v} {N : Type v} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
       [Module R M] [Module R N] (f : M →ₗ[R] N) (g : P →ₗ[R] N),
         Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :
     -- then `P` is projective.

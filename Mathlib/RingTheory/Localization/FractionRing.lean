@@ -41,22 +41,22 @@ assert_not_exists Ideal
 
 open nonZeroDivisors
 
-variable (R : Type*) [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
-variable {A : Type*} [CommRing A] (K : Type*)
+variable (R : Type*) [Ring R] [IsMulCommutative R] {M : Submonoid R} (S : Type*) [Ring S] [IsMulCommutative S]
+variable [Algebra R S] {P : Type*} [Ring P] [IsMulCommutative P]
+variable {A : Type*} [Ring A] [IsMulCommutative A] (K : Type*)
 
 -- TODO: should this extend `Algebra` instead of assuming it?
 -- TODO: this was recently generalized from `CommRing` to `CommSemiring`, but all lemmas below are
 -- still stated for `CommRing`. Generalize these lemmas where it is appropriate.
 /-- `IsFractionRing R K` states `K` is the ring of fractions of a commutative ring `R`. -/
-abbrev IsFractionRing (R : Type*) [CommSemiring R] (K : Type*) [CommSemiring K] [Algebra R K] :=
+abbrev IsFractionRing (R : Type*) [Semiring R] [IsMulCommutative R] (K : Type*) [Semiring K] [IsMulCommutative K] [Algebra R K] :=
   IsLocalization (nonZeroDivisors R) K
 
 instance {R : Type*} [Field R] : IsFractionRing R R :=
   IsLocalization.of_le_isUnit fun _ ↦ isUnit_of_mem_nonZeroDivisors
 
-theorem IsFractionRing.of_algEquiv {R : Type*} [CommSemiring R] {K L : Type*}
-    [CommSemiring K] [Algebra R K] [CommSemiring L] [Algebra R L] [h : IsFractionRing R K]
+theorem IsFractionRing.of_algEquiv {R : Type*} [Semiring R] [IsMulCommutative R] {K L : Type*}
+    [Semiring K] [IsMulCommutative K] [Algebra R K] [Semiring L] [IsMulCommutative L] [Algebra R L] [h : IsFractionRing R K]
     (e : K ≃ₐ[R] L) :
     IsFractionRing R L := IsLocalization.isLocalization_of_algEquiv _ e
 
@@ -117,8 +117,8 @@ variable {R K}
 
 section CommSemiring
 
-theorem of_ringEquiv_left {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
-    {K : Type*} [CommSemiring K] [Algebra R K] (e : R ≃+* S) [Algebra S K]
+theorem of_ringEquiv_left {R : Type*} [Semiring R] [IsMulCommutative R] {S : Type*} [Semiring S] [IsMulCommutative S]
+    {K : Type*} [Semiring K] [IsMulCommutative K] [Algebra R K] (e : R ≃+* S) [Algebra S K]
     (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsFractionRing S K] :
     IsFractionRing R K := IsLocalization.of_ringEquiv_left e (MulEquivClass.map_nonZeroDivisors e) h
 
@@ -126,7 +126,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing K] [Algebra R K] [IsFractionRing R K] [Algebra A K] [IsFractionRing A K]
+variable [Ring K] [IsMulCommutative K] [Algebra R K] [IsFractionRing R K] [Algebra A K] [IsFractionRing A K]
 
 theorem to_map_eq_zero_iff {x : R} : algebraMap R K x = 0 ↔ x = 0 :=
   IsLocalization.to_map_eq_zero_iff _ le_rfl
@@ -147,7 +147,7 @@ theorem nonZeroDivisors_eq_isUnit : K⁰ = IsUnit.submonoid K := by
 include R in
 /-- If `L` is a fraction ring of `K` which is a fraction ring of `R`,
 the `K`-algebra homomorphism from `K` to `L` is an isomorphism. -/
-noncomputable def algEquiv (L) [CommRing L] [Algebra K L] [IsFractionRing K L] : K ≃ₐ[K] L :=
+noncomputable def algEquiv (L) [Ring L] [IsMulCommutative L] [Algebra K L] [IsFractionRing K L] : K ≃ₐ[K] L :=
   atUnits K _ (nonZeroDivisors_eq_isUnit R K).le
 
 include R in
@@ -155,7 +155,7 @@ theorem idem : IsFractionRing K K := IsLocalization.self (nonZeroDivisors_eq_isU
 
 /-- Taking fraction ring is idempotent: a fraction ring of a fraction ring of `R` is
 itself a fraction ring of `R`. -/
-theorem trans (L) [CommRing L] [Algebra K L] [IsFractionRing K L] [Algebra R L]
+theorem trans (L) [Ring L] [IsMulCommutative L] [Algebra K L] [IsFractionRing K L] [Algebra R L]
     [IsScalarTower R K L] : IsFractionRing R L :=
   isLocalization_of_algEquiv _ <| (algEquiv R K L).restrictScalars R
 
@@ -243,7 +243,7 @@ lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K)
 
 end CommRing
 
-variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]
+variable {B : Type*} [Ring B] [IsMulCommutative B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]
   [IsFractionRing A K] {g : A →+* L}
 
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
@@ -414,8 +414,8 @@ theorem lift_mk' (hg : Injective g) (x) (y : nonZeroDivisors A) :
 and an injective ring hom `j : A →+* B`, we get a ring hom
 sending `z : K` to `g (j x) * (g (j y))⁻¹`, where `(x, y) : A × (NonZeroDivisors A)` are
 such that `z = f x * (f y)⁻¹`. -/
-noncomputable def map {A B K L : Type*} [CommRing A] [CommRing B] [IsDomain B] [CommRing K]
-    [Algebra A K] [IsFractionRing A K] [CommRing L] [Algebra B L] [IsFractionRing B L] {j : A →+* B}
+noncomputable def map {A B K L : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [IsDomain B] [Ring K] [IsMulCommutative K]
+    [Algebra A K] [IsFractionRing A K] [Ring L] [IsMulCommutative L] [Algebra B L] [IsFractionRing B L] {j : A →+* B}
     (hj : Injective j) : K →+* L :=
   IsLocalization.map L j
     (show nonZeroDivisors A ≤ (nonZeroDivisors B).comap j from
@@ -423,7 +423,7 @@ noncomputable def map {A B K L : Type*} [CommRing A] [CommRing B] [IsDomain B] [
 
 section ringEquivOfRingEquiv
 
-variable {A K B L : Type*} [CommRing A] [CommRing B] [CommRing K] [CommRing L]
+variable {A K B L : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring K] [IsMulCommutative K] [Ring L] [IsMulCommutative L]
   [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L]
   (h : A ≃+* B)
 
@@ -447,8 +447,8 @@ lemma ringEquivOfRingEquiv_symm :
     (ringEquivOfRingEquiv h : K ≃+* L).symm = ringEquivOfRingEquiv h.symm := rfl
 
 variable (K L) in
-theorem ringEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C]
-  [CommRing M] [Algebra C M] [IsFractionRing C M] (f : A ≃+* B) (g : B ≃+* C) :
+theorem ringEquivOfRingEquiv_comp {C : Type*} (M : Type*) [Ring C] [IsMulCommutative C]
+  [Ring M] [IsMulCommutative M] [Algebra C M] [IsFractionRing C M] (f : A ≃+* B) (g : B ≃+* C) :
   (ringEquivOfRingEquiv (f.trans g)) =
     (ringEquivOfRingEquiv (K := K) f).trans (ringEquivOfRingEquiv (K := L) (L := M) g) := by
   ext a
@@ -478,7 +478,7 @@ end ringEquivOfRingEquiv
 
 section semilinearEquivOfRingEquiv
 
-variable {A B : Type*} (K L : Type*) [CommRing A] [CommRing B] [CommRing K] [CommRing L]
+variable {A B : Type*} (K L : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring K] [IsMulCommutative K] [Ring L] [IsMulCommutative L]
     [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L] (f : A ≃+* B)
 
 local instance : RingHomInvPair (f : A →+* B) f.symm :=
@@ -504,7 +504,7 @@ lemma semilinearEquivOfRingEquiv_symm_apply (x : L) :
     (semilinearEquivOfRingEquiv K L f).symm x = (ringEquivOfRingEquiv f).symm x := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C] [CommRing M]
+lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [Ring C] [IsMulCommutative C] [Ring M] [IsMulCommutative M]
     [Algebra C M] [IsFractionRing C M] (g : B ≃+* C) :
     let : RingHomCompTriple f (g : B →+* C) (f.trans g : A →+* C) := ⟨rfl⟩
     let : RingHomCompTriple g.symm (f.symm : B →+* A) ((f.trans g).symm : C →+* A) := ⟨rfl⟩
@@ -520,7 +520,7 @@ end semilinearEquivOfRingEquiv
 
 section algEquivOfAlgEquiv
 
-variable {R A K B L : Type*} [CommSemiring R] [CommRing A] [CommRing B] [CommRing K] [CommRing L]
+variable {R A K B L : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring K] [IsMulCommutative K] [Ring L] [IsMulCommutative L]
   [Algebra R A] [Algebra R K] [Algebra A K] [IsFractionRing A K] [IsScalarTower R A K]
   [Algebra R B] [Algebra R L] [Algebra B L] [IsFractionRing B L] [IsScalarTower R B L]
   (h : A ≃ₐ[R] B)
@@ -546,7 +546,7 @@ end algEquivOfAlgEquiv
 section fieldEquivOfAlgEquiv
 
 variable {A B C D : Type*}
-  [CommRing A] [CommRing B] [CommRing C] [CommRing D]
+  [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C] [Ring D] [IsMulCommutative D]
   [Algebra A B] [Algebra A C] [Algebra A D]
   (FA FB FC FD : Type*) [Field FA] [Field FB] [Field FC] [Field FD]
   [Algebra A FA] [Algebra B FB] [Algebra C FC] [Algebra D FD]
@@ -596,7 +596,7 @@ end fieldEquivOfAlgEquiv
 
 section fieldEquivOfAlgEquivHom
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
   (K L : Type*) [Field K] [Field L]
   [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
   [Algebra A L] [IsScalarTower A B L] [Algebra K L] [IsScalarTower A K L]
@@ -631,7 +631,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
   convert! isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   exact (MulEquivClass.map_nonZeroDivisors h).symm
 
-variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
+variable (R S : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S] [h : IsFractionRing R S]
 
 theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
   by_contra! ⟨_, _⟩ | ⟨_, _⟩
@@ -645,7 +645,7 @@ protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
 
 section MulAction
 
-variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAction G B]
+variable (G A B K L : Type*) [Group G] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [MulSemiringAction G B]
   [Algebra A B] [Field K] [Field L] [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L]
   [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
 
@@ -786,7 +786,7 @@ end liftAlgebra
 /-- Given a ring `A` and a localization map to a fraction ring
 `f : A →+* K`, we get an `A`-isomorphism between the fraction ring of `A` as a quotient
 type and `K`. -/
-noncomputable def algEquiv (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] :
+noncomputable def algEquiv (K : Type*) [Ring K] [IsMulCommutative K] [Algebra A K] [IsFractionRing A K] :
     FractionRing A ≃ₐ[A] K :=
   Localization.algEquiv (nonZeroDivisors A) K
 

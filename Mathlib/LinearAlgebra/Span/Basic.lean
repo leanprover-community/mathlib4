@@ -42,10 +42,10 @@ open scoped Pointwise
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable {x : M} (p p' : Submodule R M)
 variable [Semiring R₂] {σ₁₂ : R →+* R₂}
-variable [AddCommMonoid M₂] [Module R₂ M₂]
+variable [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 
 variable {s t : Set M}
 
@@ -98,7 +98,7 @@ alias _root_.Set.MapsTo.submoduleSpan := mapsTo_span
 
 section
 
-variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 lemma linearMap_eq_iff_of_eq_span {V : Submodule R M} (f g : V →ₗ[R] N)
     {S : Set M} (hV : V = span R S) :
@@ -234,7 +234,7 @@ theorem span_range_inclusion_restrictScalars_eq_top :
 
 end IsScalarTower
 
-theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M]
+theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [IsDomain R] [AddGroup M] [IsAddCommutative M]
     [Module R M] [Module.IsTorsionFree R M] {x y : M} :
     (R ∙ x) = (R ∙ y) ↔ ∃ z : Rˣ, z • x = y := by
   constructor
@@ -373,7 +373,7 @@ instance : IsCompactlyGenerated (Submodule R M) where
       apply singleton_span_isCompactElement
     · rw [isLUB_iff_sSup_eq, sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, span_eq]
 
-variable {M' : Type*} [AddCommMonoid M'] [Module R M'] (q₁ q₁' : Submodule R M')
+variable {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] (q₁ q₁' : Submodule R M')
 
 /-- The product of two submodules is a submodule. -/
 def prod : Submodule R (M × M') :=
@@ -427,8 +427,8 @@ def prodEquiv (p : Submodule R M) (q : Submodule R M') : p.prod q ≃ₗ[R] p ×
 
 /-- If a bilinear map takes values in a submodule along two sets, then the same is true along
 the span of these sets. -/
-lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [CommSemiring R]
-    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [Module R M] [Module R N] [Module R P]
+lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [Semiring R] [IsMulCommutative R]
+    [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [Module R M] [Module R N] [Module R P]
     (P' : Submodule R P) (s : Set M) (t : Set N)
     (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ x ∈ s, ∀ y ∈ t, B x y ∈ P')
     (x : M) (y : N) (hx : x ∈ span R s) (hy : y ∈ span R t) :
@@ -487,7 +487,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 lemma sup_inf_assoc_of_le_of_neg_le {s : Submodule R M} (t : Submodule R M)
     {p : Submodule R M} (hsp : s ≤ p) (hnsp : -s ≤ p) :
@@ -514,7 +514,7 @@ theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
   · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
     exact subset_span
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
     (AddSubgroup.closure s).toIntSubmodule = .span ℤ s :=
@@ -539,7 +539,7 @@ section AddCommGroup
 -- TODO: Multiple lemmas in this section should be in earlier files
 
 variable [Semiring R] [Semiring R₂]
-variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 
 theorem comap_map_eq (f : M →ₛₗ[τ₁₂] M₂) (p : Submodule R M) :
@@ -646,7 +646,7 @@ end AddCommGroup
 section Ring
 
 variable [Ring R] [Semiring R₂]
-variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 variable {p p' : Submodule R M}
 
@@ -674,7 +674,7 @@ end Ring
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {s : Submodule K V} {x : V}
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] {s : Submodule K V} {x : V}
 
 /-- There is no vector subspace between `s` and `K ∙ x ⊔ s`, `WCovBy` version. -/
 theorem wcovBy_span_singleton_sup (x : V) (s : Submodule K V) : WCovBy s (K ∙ x ⊔ s) := by
@@ -719,7 +719,7 @@ open Submodule Function
 section AddCommGroup
 
 variable [Semiring R] [Semiring R₂]
-variable [AddCommGroup M] [AddCommGroup M₂]
+variable [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 
@@ -742,7 +742,7 @@ end AddCommGroup
 
 section
 
-variable (R) (M) [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R) (M) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- Given an element `x` of a module `M` over `R`, the natural map from
 `R` to scalar multiples of `x`. See also `LinearMap.ringLmapEquivSelf`. -/
@@ -800,7 +800,7 @@ theorem span_singleton_eq_range (x : M) :
     R ∙ x = range (toSpanSingleton R M x) :=
   range_toSpanSingleton x |>.symm
 
-theorem comp_toSpanSingleton [AddCommMonoid M₂] [Module R M₂] (f : M →ₗ[R] M₂) (x : M) :
+theorem comp_toSpanSingleton [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂] (f : M →ₗ[R] M₂) (x : M) :
     f ∘ₗ toSpanSingleton R M x = toSpanSingleton R M₂ (f x) := by
   ext; simp
 
@@ -817,8 +817,8 @@ end
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
-variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable [Semiring R₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 variable {σ₁₂ : R →+* R₂}
 include σ₁₂
 
@@ -857,7 +857,7 @@ end AddCommMonoid
 
 section IsDomain
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [IsDomain R] [Module.IsTorsionFree R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [IsDomain R] [Module.IsTorsionFree R M]
 
 variable (R) in
 theorem ker_toSpanSingleton {x : M} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton R M x) = ⊥ :=
@@ -867,7 +867,7 @@ end IsDomain
 
 section Field
 
-variable [Field K] [AddCommGroup V] [Module K V]
+variable [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem span_singleton_sup_ker_eq_top (f : V →ₗ[K] K) {x : V} (hx : f x ≠ 0) :
     K ∙ x ⊔ ker f = ⊤ :=
@@ -885,7 +885,7 @@ open LinearMap
 namespace LinearEquiv
 
 variable (R M)
-variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.IsTorsionFree R M] (x : M)
+variable [Ring R] [IsDomain R] [AddGroup M] [IsAddCommutative M] [Module R M] [Module.IsTorsionFree R M] (x : M)
   (h : x ≠ 0)
 
 /-- Given a nonzero element `x` of a torsion-free module `M` over a ring `R`, the natural

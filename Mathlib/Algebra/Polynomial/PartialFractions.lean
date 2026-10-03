@@ -87,7 +87,7 @@ and in order we have
 public section
 
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace Polynomial
 
@@ -328,7 +328,7 @@ end ManyDenominators
 end Mul
 
 section Div
-variable {K : Type*} [CommRing K] [Algebra R[X] K]
+variable {K : Type*} [Ring K] [IsMulCommutative K] [Algebra R[X] K]
 
 /-- Let `R` be a commutative ring and `f : R[X]`. Let `s` be a finite index set.
 Let `g i` be a collection of monic and pairwise coprime polynomials indexed by `s`,

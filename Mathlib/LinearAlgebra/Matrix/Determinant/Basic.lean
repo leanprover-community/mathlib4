@@ -45,7 +45,7 @@ open Equiv Equiv.Perm Finset Function
 namespace Matrix
 
 variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
-variable {R : Type v} [CommRing R]
+variable {R : Type v} [Ring R] [IsMulCommutative R]
 
 local notation "ε " σ:arg => ((sign σ : ℤ) : R)
 
@@ -239,7 +239,7 @@ theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
 determinant. -/
 @[simp]
 theorem abs_det_submatrix_equiv_equiv {R : Type*}
-    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+    [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
     (e₁ e₂ : n ≃ m) (A : Matrix m m R) :
     |(A.submatrix e₁ e₂).det| = |A.det| := by
   have hee : e₂ = e₁.trans (e₁.symm.trans e₂) := by ext; simp
@@ -267,7 +267,7 @@ lemma det_reindex (e e' : m ≃ n) (M : Matrix m m R) :
 For the `simp` version of this lemma, see `abs_det_submatrix_equiv_equiv`;
 this one is unsuitable because `Matrix.reindex_apply` unfolds `reindex` first.
 -/
-theorem abs_det_reindex {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem abs_det_reindex {R : Type*} [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
     (e₁ e₂ : m ≃ n) (A : Matrix m m R) :
     |det (reindex e₁ e₂ A)| = |det A| :=
   abs_det_submatrix_equiv_equiv e₁.symm e₂.symm A
@@ -316,7 +316,7 @@ theorem det_pow (M : Matrix m m R) (n : ℕ) : det (M ^ n) = det M ^ n :=
 
 section HomMap
 
-variable {S : Type w} [CommRing S]
+variable {S : Type w} [Ring S] [IsMulCommutative S]
 
 theorem _root_.RingHom.map_det (f : R →+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) := by
@@ -326,11 +326,11 @@ theorem _root_.RingEquiv.map_det (f : R ≃+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) :=
   f.toRingHom.map_det _
 
-theorem _root_.AlgHom.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R T] (f : S →ₐ[R] T)
+theorem _root_.AlgHom.map_det [Algebra R S] {T : Type z} [Ring T] [IsMulCommutative T] [Algebra R T] (f : S →ₐ[R] T)
     (M : Matrix n n S) : f M.det = Matrix.det (f.mapMatrix M) :=
   f.toRingHom.map_det _
 
-theorem _root_.AlgEquiv.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R T]
+theorem _root_.AlgEquiv.map_det [Algebra R S] {T : Type z} [Ring T] [IsMulCommutative T] [Algebra R T]
     (f : S ≃ₐ[R] T) (M : Matrix n n S) : f M.det = Matrix.det (f.mapMatrix M) :=
   f.toAlgHom.map_det _
 

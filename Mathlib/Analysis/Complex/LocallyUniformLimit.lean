@@ -29,7 +29,7 @@ open Set Metric Filter Complex
 
 open scoped Real Topology
 
-variable {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {U K : Set ℂ}
+variable {E ι : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E] {U K : Set ℂ}
   {z : ℂ} {M r δ : ℝ} {φ : Filter ι} {F : ι → ℂ → E} {f g : ℂ → E}
 
 namespace Complex

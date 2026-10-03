@@ -29,8 +29,8 @@ open TensorProduct
 
 namespace Ideal
 
-variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-variable (T : Type*) [CommRing T] [Algebra R T] (I : Ideal S)
+variable (R : Type*) {S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+variable (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] (I : Ideal S)
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in

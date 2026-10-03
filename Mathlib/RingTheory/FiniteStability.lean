@@ -24,9 +24,9 @@ open scoped TensorProduct
 
 universe w₁ w₂ w₃
 
-variable {R : Type w₁} [CommRing R]
-variable {A : Type w₂} [CommRing A] [Algebra R A]
-variable (B : Type w₃) [CommRing B] [Algebra R B]
+variable {R : Type w₁} [Ring R] [IsMulCommutative R]
+variable {A : Type w₂} [Ring A] [IsMulCommutative A] [Algebra R A]
+variable (B : Type w₃) [Ring B] [IsMulCommutative B] [Algebra R B]
 
 namespace Algebra
 

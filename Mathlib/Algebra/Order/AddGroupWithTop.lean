@@ -230,13 +230,13 @@ end LinearOrderedAddCommGroupWithTop
 
 namespace WithTop
 
-instance linearOrderedAddCommMonoidWithTop [AddCancelCommMonoid α] [LinearOrder α]
+instance linearOrderedAddCommMonoidWithTop [AddCancelMonoid α] [IsAddCommutative α] [LinearOrder α]
     [IsOrderedAddMonoid α] : LinearOrderedAddCommMonoidWithTop (WithTop α) where
   top_add' := WithTop.top_add
   isAddLeftRegular_of_ne_top _a ha _b _c := WithTop.add_left_cancel ha
 
 namespace LinearOrderedAddCommGroup
-variable [AddCommGroup G] {x y : WithTop G}
+variable [AddGroup G] [IsAddCommutative G] {x y : WithTop G}
 
 instance instNeg : Neg (WithTop G) where
   neg := .map fun a ↦ -a

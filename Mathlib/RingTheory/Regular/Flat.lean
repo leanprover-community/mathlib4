@@ -25,8 +25,8 @@ namespace RingTheory.Sequence
 
 open Module
 
-variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
+variable {R S M N : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a flat `R`-algebra, `N` be the base
   change of `M` to `S`. If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is

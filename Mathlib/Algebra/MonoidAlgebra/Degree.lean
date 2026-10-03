@@ -171,8 +171,8 @@ end Semiring
 
 section CommutativeLemmas
 
-variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [AddLeftMono B] [AddRightMono B]
-  [AddCommMonoid T] [AddLeftMono T] [AddRightMono T]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [AddLeftMono B] [AddRightMono B]
+  [AddMonoid T] [IsAddCommutative T] [AddLeftMono T] [AddRightMono T]
   {degb : A → B} {degt : A → T}
 
 theorem sup_support_coeff_multisetProd_le (degb0 : degb 0 ≤ 0)
@@ -322,7 +322,7 @@ theorem supDegree_mul_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     (p * q).supDegree D ≤ p.supDegree D + q.supDegree D :=
   sup_support_coeff_mul_le (fun {_ _} => (hadd _ _).le) p q
 
-theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
+theorem supDegree_prod_le {R A B : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B]
     [SemilatticeSup B] [OrderBot B]
     [AddLeftMono B] [AddRightMono B]
     {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)

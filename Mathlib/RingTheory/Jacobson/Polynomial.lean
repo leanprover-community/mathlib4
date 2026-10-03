@@ -20,7 +20,7 @@ section Polynomial
 
 open Polynomial
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 theorem jacobson_bot_polynomial_le_sInf_map_maximal :
     jacobson (⊥ : Ideal R[X]) ≤ sInf (map (C : R →+* R[X]) '' { J : Ideal R | J.IsMaximal }) := by

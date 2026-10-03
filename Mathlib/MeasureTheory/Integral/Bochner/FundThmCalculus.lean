@@ -27,7 +27,7 @@ open Filter MeasureTheory Asymptotics Metric
 
 open scoped Topology
 
-variable {X E ι : Type*} [MeasurableSpace X] [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {X E ι : Type*} [MeasurableSpace X] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
   [CompleteSpace E]
 
 /-- Fundamental theorem of calculus for set integrals:

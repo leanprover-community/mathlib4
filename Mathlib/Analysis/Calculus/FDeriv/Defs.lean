@@ -93,8 +93,8 @@ noncomputable section TVS
 ## Definitions valid in an arbitrary topological vector space
 -/
 
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-- A function `f` has the continuous linear map `f'` as derivative along the filter `L` if
 `f x₁ = f x₂ + f' (x₁ - x₂) + o (x₁ - x₂)` when `x = (x₁, x₂)` converges along the filter `L`.
@@ -212,8 +212,8 @@ section Normed
 ## Reformulations for seminormed spaces
 -/
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+variable {F : Type*} [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 variable {f : E → F} {f' : E →L[𝕜] F} {s : Set E} {x : E}
 
 theorem hasFDerivAtFilter_iff_isLittleO {L : Filter (E × E)} :

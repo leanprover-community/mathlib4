@@ -52,10 +52,10 @@ variable {R ι : Type*}
 
 namespace TensorProduct
 
-variable [CommSemiring ι] [Module ι (Additive ℤˣ)] [DecidableEq ι]
+variable [Semiring ι] [IsMulCommutative ι] [Module ι (Additive ℤˣ)] [DecidableEq ι]
 variable (𝒜 : ι → Type*) (ℬ : ι → Type*)
-variable [CommRing R]
-variable [∀ i, AddCommGroup (𝒜 i)] [∀ i, AddCommGroup (ℬ i)]
+variable [Ring R] [IsMulCommutative R]
+variable [∀ i, AddGroup (𝒜 i)] [∀ i, IsAddCommutative (𝒜 i)] [∀ i, AddGroup (ℬ i)] [∀ i, IsAddCommutative (ℬ i)]
 variable [∀ i, Module R (𝒜 i)] [∀ i, Module R (ℬ i)]
 
 -- this helps with performance

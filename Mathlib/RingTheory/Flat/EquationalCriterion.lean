@@ -56,7 +56,7 @@ every finitely presented flat module is projective (`Module.Flat.projective_of_f
 
 public section
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 open LinearMap TensorProduct Finsupp
 
@@ -218,7 +218,7 @@ let $f \in N$, and let $x \colon N \to M$ be a linear map such that $x(f) = 0$. 
 finite free module $R^k$ and linear maps $a \colon N \to R^k$ and
 $y \colon R^k \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
 @[stacks 058D "(1) → (2)"]
-theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [AddCommGroup N]
+theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [AddGroup N] [IsAddCommutative N]
     [Module R N] [Free R N] [Module.Finite R N] {f : N} {x : N →ₗ[R] M} (h : x f = 0) :
     ∃ (k : ℕ) (a : N →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M), x = y ∘ₗ a ∧ a f = 0 :=
   have e := ((Module.Free.chooseBasis R N).reindex (Fintype.equivFin _)).repr.symm
@@ -227,7 +227,7 @@ theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [Ad
   ⟨k, a ∘ₗ e.symm, y, by rwa [← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm], haf⟩
 
 private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K : Type*} {n : ℕ}
-    [AddCommGroup K] [Module R K] [Module.Finite R K] {f : K →ₗ[R] Fin n →₀ R}
+    [AddGroup K] [IsAddCommutative K] [Module R K] [Module.Finite R K] {f : K →ₗ[R] Fin n →₀ R}
     {x : (Fin n →₀ R) →ₗ[R] M} (h : x ∘ₗ f = 0) :
     ∃ (k : ℕ) (a : (Fin n →₀ R) →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
       x = y ∘ₗ a ∧ a ∘ₗ f = 0 := by
@@ -253,8 +253,8 @@ $x \circ f = 0$. Then there exist a finite free module $R^k$ and linear maps
 $a \colon N \to R^k$ and $y \colon R^k \to M$ such that $x = y \circ a$ and
 $a \circ f = 0$. -/
 @[stacks 058D "(1) → (4)"]
-theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [AddCommGroup K]
-    [Module R K] [Module.Finite R K] [AddCommGroup N] [Module R N] [Free R N] [Module.Finite R N]
+theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [AddGroup K] [IsAddCommutative K]
+    [Module R K] [Module.Finite R K] [AddGroup N] [IsAddCommutative N] [Module R N] [Free R N] [Module.Finite R N]
     {f : K →ₗ[R] N} {x : N →ₗ[R] M} (h : x ∘ₗ f = 0) :
     ∃ (k : ℕ) (a : N →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
       x = y ∘ₗ a ∧ a ∘ₗ f = 0 :=
@@ -267,7 +267,7 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [A
 /-- Every homomorphism from a finitely presented module to a flat module factors through a finite
 free module. -/
 @[stacks 058E "only if"]
-theorem exists_factorization_of_finitePresentation [Flat R M] {P : Type*} [AddCommGroup P]
+theorem exists_factorization_of_finitePresentation [Flat R M] {P : Type*} [AddGroup P] [IsAddCommutative P]
     [Module R P] [FinitePresentation R P] (h₁ : P →ₗ[R] M) :
     ∃ (k : ℕ) (h₂ : P →ₗ[R] (Fin k →₀ R)) (h₃ : (Fin k →₀ R) →ₗ[R] M), h₁ = h₃ ∘ₗ h₂ := by
   have ⟨_, K, ϕ, hK⟩ := FinitePresentation.exists_fin R P

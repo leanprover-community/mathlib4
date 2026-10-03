@@ -109,7 +109,7 @@ theorem IsUnit.sub_iff [Ring α] {x y : α} : IsUnit (x - y) ↔ IsUnit (y - x) 
 
 namespace Units
 
-theorem divp_add_divp [CommSemiring α] (a b : α) (u₁ u₂ : αˣ) :
+theorem divp_add_divp [Semiring α] [IsMulCommutative α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ + b /ₚ u₂ = (a * u₂ + u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [divp, add_mul, mul_inv_rev, val_mul]
   rw [mul_comm (↑u₁ * b), mul_comm b]
@@ -117,7 +117,7 @@ theorem divp_add_divp [CommSemiring α] (a b : α) (u₁ u₂ : αˣ) :
     mul_one]
   -- Porting note: `assoc_rw` not ported: `assoc_rw [mul_inv, mul_inv, mul_one, mul_one]`
 
-theorem divp_sub_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
+theorem divp_sub_divp [Ring α] [IsMulCommutative α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ - b /ₚ u₂ = (a * u₂ - u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [sub_eq_add_neg, neg_divp, divp_add_divp, mul_neg]
 

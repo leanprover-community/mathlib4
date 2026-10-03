@@ -53,13 +53,13 @@ open Ideal IsLocalRing
 
 /-- An integral domain is a *discrete valuation ring* (DVR) if it's a local PID which
   is not a field. -/
-class IsDiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R] : Prop
+class IsDiscreteValuationRing (R : Type u) [Ring R] [IsMulCommutative R] [IsDomain R] : Prop
     extends IsPrincipalIdealRing R, IsLocalRing R where
   not_a_field' : maximalIdeal R ≠ ⊥
 
 namespace IsDiscreteValuationRing
 
-variable (R : Type u) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R] [IsDomain R] [IsDiscreteValuationRing R]
 
 theorem not_a_field : maximalIdeal R ≠ ⊥ :=
   not_a_field'
@@ -72,7 +72,7 @@ variable {R}
 
 open PrincipalIdealRing
 
-theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommSemiring R] [IsLocalRing R]
+theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [Semiring R] [IsMulCommutative R] [IsLocalRing R]
     [IsDomain R] (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine ⟨h2, ?_⟩
@@ -109,7 +109,7 @@ theorem exists_prime : ∃ ϖ : R, Prime ϖ :=
   (exists_irreducible R).imp fun _ => irreducible_iff_prime.1
 
 /-- An integral domain is a DVR iff it's a PID with a unique non-zero prime ideal. -/
-theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
+theorem iff_pid_with_one_nonzero_prime (R : Type u) [Ring R] [IsMulCommutative R] [IsDomain R] :
     IsDiscreteValuationRing R ↔ IsPrincipalIdealRing R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ IsPrime P := by
   constructor
   · intro RDVR
@@ -144,12 +144,12 @@ theorem associated_of_irreducible {a b : R} (ha : Irreducible a) (hb : Irreducib
 variable (R : Type*)
 
 /-- Alternative characterisation of discrete valuation rings. -/
-def HasUnitMulPowIrreducibleFactorization [CommRing R] : Prop :=
+def HasUnitMulPowIrreducibleFactorization [Ring R] [IsMulCommutative R] : Prop :=
   ∃ p : R, Irreducible p ∧ ∀ {x : R}, x ≠ 0 → ∃ n : ℕ, Associated (p ^ n) x
 
 namespace HasUnitMulPowIrreducibleFactorization
 
-variable {R} [CommRing R]
+variable {R} [Ring R] [IsMulCommutative R]
 
 theorem unique_irreducible (hR : HasUnitMulPowIrreducibleFactorization R)
     ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
@@ -229,7 +229,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
 
 end HasUnitMulPowIrreducibleFactorization
 
-theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R]
+theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [Ring R] [IsMulCommutative R]
     [UniqueFactorizationMonoid R] (h₁ : ∃ p : R, Irreducible p)
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     IsPrincipalIdealRing R := by
@@ -265,7 +265,7 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R]
 in which all irreducible elements are associated
 is a discrete valuation ring.
 -/
-theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
+theorem of_ufd_of_unique_irreducible {R : Type u} [Ring R] [IsMulCommutative R] [IsDomain R]
     [UniqueFactorizationMonoid R] (h₁ : ∃ p : R, Irreducible p)
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     IsDiscreteValuationRing R := by
@@ -288,7 +288,7 @@ theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
 such that every nonzero element is associated to a power of `p`
 is a discrete valuation ring.
 -/
-theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDomain R]
+theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [Ring R] [IsMulCommutative R] [IsDomain R]
     (hR : HasUnitMulPowIrreducibleFactorization R) : IsDiscreteValuationRing R := by
   let : UniqueFactorizationMonoid R := hR.toUniqueFactorizationMonoid
   apply of_ufd_of_unique_irreducible _ hR.unique_irreducible
@@ -296,8 +296,8 @@ theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDom
   exact ⟨p, hp⟩
 
 /-- If a ring is equivalent to a DVR, it is itself a DVR. -/
-theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsDomain A]
-    [CommRing B] [IsDomain B] [IsDiscreteValuationRing A] [EquivLike E A B] [RingEquivClass E A B]
+theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [Ring A] [IsMulCommutative A] [IsDomain A]
+    [Ring B] [IsMulCommutative B] [IsDomain B] [IsDiscreteValuationRing A] [EquivLike E A B] [RingEquivClass E A B]
     (e : E) : IsDiscreteValuationRing B where
   principal := (isPrincipalIdealRing_iff _).1 <|
     .of_surjective _ (EquivLike.surjective e)
@@ -313,7 +313,7 @@ theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsD
 
 section
 
-variable [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+variable [Ring R] [IsMulCommutative R] [IsDomain R] [IsDiscreteValuationRing R]
 variable {R}
 
 theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :
@@ -399,7 +399,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
 -/
 
 /-- The `ℕ∞`-valued additive valuation on a DVR. -/
-noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
+noncomputable def addVal (R : Type u) [Ring R] [IsMulCommutative R] [IsDomain R] [IsDiscreteValuationRing R] :
     AddValuation R ℕ∞ :=
   multiplicity_addValuation (Classical.choose_spec (exists_prime R))
 
@@ -553,7 +553,7 @@ theorem length_quotient_pow_maximalIdeal (n : ℕ) :
 
 end
 
-instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
+instance (R : Type*) [Ring R] [IsMulCommutative R] [IsDomain R] [IsDiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
@@ -562,7 +562,7 @@ instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     rwa [← addVal_eq_top_iff, ENat.eq_top_iff_forall_ge]
 
 noncomputable section toEuclideanDomain
-variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [IsDiscreteValuationRing R]
 
 /-- A noncomputable quotient to define the Euclidean domain structure. The GCD algorithm only takes
 two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
@@ -646,7 +646,7 @@ end IsDiscreteValuationRing
 
 section
 
-variable (A : Type u) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
+variable (A : Type u) [Ring A] [IsMulCommutative A] [IsDomain A] [IsDiscreteValuationRing A]
 
 /-- A DVR is a valuation ring. -/
 instance (priority := 100) of_isDiscreteValuationRing : ValuationRing A := inferInstance
@@ -655,7 +655,7 @@ end
 
 namespace Valuation.Integers
 
-variable {K Γ₀ O : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [CommRing O]
+variable {K Γ₀ O : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Ring O] [IsMulCommutative O]
     [Algebra O K] {v : Valuation K Γ₀} (hv : v.Integers O)
 include hv
 

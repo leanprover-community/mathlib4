@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Finiteness.Quotient
 
 public section
 
-variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
+variable {R A B : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra A B]
     [Algebra R B] [IsScalarTower R A B]
 
 variable (p : Ideal A) (q : Ideal B) [q.LiesOver p]
@@ -83,7 +83,7 @@ end prime
 
 namespace IsLocalRing
 
-variable {R k : Type*} [CommRing R] [IsLocalRing R] [Field k] [Algebra R k]
+variable {R k : Type*} [Ring R] [IsMulCommutative R] [IsLocalRing R] [Field k] [Algebra R k]
 
 instance ResidueField.algebraOfIsIntegral [Algebra.IsIntegral R k] : Algebra (ResidueField R) k :=
   fast_instance% (Ideal.Quotient.lift (maximalIdeal R) (algebraMap R k)

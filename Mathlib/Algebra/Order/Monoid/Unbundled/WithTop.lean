@@ -244,7 +244,7 @@ instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
   { WithTop.add with
     add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc }
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
+instance addCommSemigroup [AddSemigroup α] [IsAddCommutative α] : AddCommSemigroup (WithTop α) :=
   { WithTop.addSemigroup with
     add_comm := fun _ _ => Option.map₂_comm add_comm }
 
@@ -280,7 +280,7 @@ def addHom : α →+ WithTop α where
 
 end AddMonoid
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
+instance addCommMonoid [AddMonoid α] [IsAddCommutative α] : AddCommMonoid (WithTop α) :=
   { WithTop.addMonoid, WithTop.addCommSemigroup with }
 
 instance natCast [NatCast α] : NatCast (WithTop α) :=
@@ -336,7 +336,7 @@ instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
   { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
       (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective }
 
-instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
+instance addCommMonoidWithOne [AddMonoidWithOne α] [IsAddCommutative α] : AddCommMonoidWithOne (WithTop α) :=
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
 
 -- instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
@@ -607,7 +607,7 @@ end Add
 instance addSemigroup [AddSemigroup α] : AddSemigroup (WithBot α) :=
   inferInstanceAs <| AddSemigroup (WithTop α)
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithBot α) :=
+instance addCommSemigroup [AddSemigroup α] [IsAddCommutative α] : AddCommSemigroup (WithBot α) :=
   inferInstanceAs <| AddCommSemigroup (WithTop α)
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (WithBot α) :=
@@ -633,7 +633,7 @@ lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithBot α) :=
 
 end AddMonoid
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
+instance addCommMonoid [AddMonoid α] [IsAddCommutative α] : AddCommMonoid (WithBot α) :=
   inferInstanceAs <| AddCommMonoid (WithTop α)
 
 section NatCast
@@ -699,7 +699,7 @@ end AddMonoidWithOne
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
   inferInstanceAs <| CharZero (WithTop α)
 
-instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
+instance addCommMonoidWithOne [AddMonoidWithOne α] [IsAddCommutative α] : AddCommMonoidWithOne (WithBot α) :=
   inferInstanceAs <| AddCommMonoidWithOne (WithTop α)
 
 /-- A version of `WithBot.map` for `OneHom`s. -/

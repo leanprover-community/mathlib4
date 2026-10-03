@@ -24,7 +24,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ τ α : Type*` (indexing the variables)
 
-+ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
++ `R S : Type*` `[Semiring R] [IsMulCommutative R]` `[Semiring S] [IsMulCommutative S]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
@@ -44,7 +44,7 @@ noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
 
-variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
+variable {σ τ α R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 namespace MvPolynomial
 

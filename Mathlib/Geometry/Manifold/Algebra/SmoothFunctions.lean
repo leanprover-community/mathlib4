@@ -23,11 +23,11 @@ open scoped Manifold ContDiff
 
 open TopologicalSpace
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E'] {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {N : Type*} [TopologicalSpace N] [ChartedSpace H N]
-  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
+  {E'' : Type*} [NormedAddGroup E''] [IsAddCommutative E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {N' : Type*} [TopologicalSpace N'] [ChartedSpace H'' N']
   {n : ℕ∞ω}
 
@@ -129,7 +129,7 @@ def restrictMonoidHom (G : Type*) [Monoid G] [TopologicalSpace G] [ChartedSpace 
 variable {I I'}
 
 @[to_additive]
-instance commMonoid {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
+instance commMonoid {G : Type*} [Monoid G] [IsMulCommutative G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : CommMonoid C^n⟮I, N; I', G⟯ :=
   DFunLike.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
@@ -153,7 +153,7 @@ theorem coe_div {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [
   rfl
 
 @[to_additive]
-instance commGroup {G : Type*} [CommGroup G] [TopologicalSpace G] [ChartedSpace H' G]
+instance commGroup {G : Type*} [Group G] [IsMulCommutative G] [TopologicalSpace G] [ChartedSpace H' G]
     [LieGroup I' n G] : CommGroup C^n⟮I, N; I', G⟯ :=
   { ContMDiffMap.group, ContMDiffMap.commMonoid with }
 
@@ -182,7 +182,7 @@ instance ring {R : Type*} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [Con
     Ring C^n⟮I, N; I', R⟯ :=
   { ContMDiffMap.semiring, ContMDiffMap.addCommGroup with }
 
-instance commRing {R : Type*} [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
+instance commRing {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R] [ChartedSpace H' R]
     [ContMDiffRing I' n R] : CommRing C^n⟮I, N; I', R⟯ :=
   { ContMDiffMap.semiring, ContMDiffMap.addCommGroup, ContMDiffMap.commMonoid with }
 
@@ -212,13 +212,13 @@ variable {I I'}
 
 /-- Coercion to a function as a `RingHom`. -/
 @[simps]
-def coeFnRingHom {R : Type*} [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
+def coeFnRingHom {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R] [ChartedSpace H' R]
     [ContMDiffRing I' n R] : C^n⟮I, N; I', R⟯ →+* N → R :=
   { (coeFnMonoidHom : C^n⟮I, N; I', R⟯ →* _), (coeFnAddMonoidHom : C^n⟮I, N; I', R⟯ →+ _) with
     toFun := (↑) }
 
 /-- `Function.eval` as a `RingHom` on the ring of `C^n` functions. -/
-def evalRingHom {R : Type*} [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
+def evalRingHom {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R] [ChartedSpace H' R]
     [ContMDiffRing I' n R] (m : N) : C^n⟮I, N; I', R⟯ →+* R :=
   (Pi.evalRingHom _ m : (N → R) →+* R).comp ContMDiffMap.coeFnRingHom
 
@@ -234,27 +234,27 @@ field `𝕜` inherit a vector space structure.
 -/
 
 
-instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance instSMul {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun r f ↦ ⟨r • ⇑f, contMDiff_const.smul (I := 𝓘(𝕜)) f.contMDiff⟩⟩
 
 @[simp]
-theorem coe_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
+theorem coe_smul {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V] (r : 𝕜)
     (f : C^n⟮I, N; 𝓘(𝕜, V), V⟯) : ⇑(r • f) = r • ⇑f :=
   rfl
 
 @[simp]
-theorem smul_comp {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
+theorem smul_comp {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V] (r : 𝕜)
     (g : C^n⟮I'', N'; 𝓘(𝕜, V), V⟯) (h : C^n⟮I, N; I'', N'⟯) : (r • g).comp h = r • g.comp h :=
   rfl
 
-instance module {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance module {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V] :
     Module 𝕜 C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
   Function.Injective.module 𝕜 coeFnAddMonoidHom ContMDiffMap.coe_injective coe_smul
 
 /-- Coercion to a function as a `LinearMap`. -/
 @[simps]
-def coeFnLinearMap {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+def coeFnLinearMap {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V] :
     C^n⟮I, N; 𝓘(𝕜, V), V⟯ →ₗ[𝕜] N → V :=
   { (coeFnAddMonoidHom : C^n⟮I, N; 𝓘(𝕜, V), V⟯ →+ _) with
     toFun := (↑)
@@ -310,20 +310,20 @@ If `V` is a module over `𝕜`, then we show that the space of `C^n` functions f
 is naturally a vector space over the ring of `C^n` functions from `N` to `𝕜`. -/
 
 /-- `C^n` scalar-valued functions act by left-multiplication on `C^n` functions. -/
-instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance instSMul' {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V] :
     SMul C^n⟮I, N; 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun f g => ⟨fun x => f x • g x, ContMDiff.smul f.2 g.2⟩⟩
 
 /-- The left multiplication with a `C^n` scalar function commutes with composition. -/
 @[simp]
-theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : C^n⟮I'', N'; 𝕜⟯)
+theorem smul_comp' {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V] (f : C^n⟮I'', N'; 𝕜⟯)
     (g : C^n⟮I'', N'; 𝓘(𝕜, V), V⟯) (h : C^n⟮I, N; I'', N'⟯) :
     (f • g).comp h = f.comp h • g.comp h :=
   rfl
 
 /-- The space of `C^n` functions with values in a space `V` is a module over the space of `C^n`
 functions with values in `𝕜`. -/
-instance module' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance module' {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V] :
     Module C^n⟮I, N; 𝓘(𝕜), 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ where
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)

@@ -434,7 +434,7 @@ end LeftCancelMonoid
 
 section CommMonoid
 
-variable [CommMonoid G]
+variable [Monoid G] [IsMulCommutative G]
 
 @[to_additive]
 theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf g = exponent G := by
@@ -507,7 +507,7 @@ end CommMonoid
 
 section CancelCommMonoid
 
-variable [CancelCommMonoid G]
+variable [CancelMonoid G] [IsMulCommutative G]
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]

@@ -54,7 +54,7 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 @[expose] public section
 
 
-variable {ι : Type*} (R S : Type*) [Ring R] [Ring S] (M : Type*) [AddCommGroup M] [Module R M]
+variable {ι : Type*} (R S : Type*) [Ring R] [Ring S] (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- A module is simple when it has only two submodules, `⊥` and `⊤`. -/
 @[mk_iff] class IsSimpleModule extends
@@ -91,14 +91,14 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
       ext x
       simp [Submodule.mem_bot, Submodule.mem_top, h x]⟩⟩
 
-variable {m : Submodule R M} {N : Type*} [AddCommGroup N] {R S M}
+variable {m : Submodule R M} {N : Type*} [AddGroup N] [IsAddCommutative N] {R S M}
 
 theorem LinearMap.isSimpleModule_iff_of_bijective [Module S N] {σ : R →+* S} [RingHomSurjective σ]
     (l : M →ₛₗ[σ] N) (hl : Function.Bijective l) : IsSimpleModule R M ↔ IsSimpleModule S N := by
   simp_rw [isSimpleModule_iff, (Submodule.orderIsoMapComapOfBijective l hl).isSimpleOrder_iff]
 
 lemma isSimpleModule_iff_isSimpleModule_of_algebraMap_surjective
-    {R : Type*} [CommRing R] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
     (h : Function.Surjective (algebraMap R S)) : IsSimpleModule R M ↔ IsSimpleModule S M := by
   rw [isSimpleModule_iff, isSimpleModule_iff,
     (Submodule.orderIsoOfAlgebraMapSurjective h).isSimpleOrder_iff]
@@ -174,7 +174,7 @@ theorem isSimpleModule_iff_quot_maximal :
 /-- In general, the annihilator of a simple module is called a primitive ideal, and it is
 always a two-sided prime ideal, but mathlib's `Ideal.IsPrime` is not the correct definition
 for noncommutative rings. -/
-theorem IsSimpleModule.annihilator_isMaximal {R} [CommRing R] [Module R M]
+theorem IsSimpleModule.annihilator_isMaximal {R} [Ring R] [IsMulCommutative R] [Module R M]
     [simple : IsSimpleModule R M] : (Module.annihilator R M).IsMaximal := by
   have ⟨I, max, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp simple
   rwa [e.annihilator_eq, I.annihilator_quotient]
@@ -203,7 +203,7 @@ theorem IsSemisimpleModule.of_sSup_simples_eq_top
 
 namespace Module.Finite
 
-variable (R₀ P : Type*) [Semiring R₀] [AddCommMonoid P] [Module R P]
+variable (R₀ P : Type*) [Semiring R₀] [AddMonoid P] [IsAddCommutative P] [Module R P]
 
 section
 
@@ -251,13 +251,13 @@ theorem exists_quotient_linearEquiv_submodule (N : Submodule R M) :
     ∃ (P : Submodule R M), Nonempty (N ≃ₗ[R] M ⧸ P) :=
   have ⟨P, compl⟩ := exists_isCompl N; ⟨P, ⟨(P.quotientEquivOfIsCompl N compl.symm).symm⟩⟩
 
-theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
+theorem extension_property {P} [AddGroup P] [IsAddCommutative P] [Module R P] (f : N →ₗ[R] M)
     (hf : Function.Injective f) (g : N →ₗ[R] P) :
     ∃ h : M →ₗ[R] P, h ∘ₗ f = g :=
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.range f)
   ⟨g ∘ₗ f.linearProjOfIsCompl _ hf compl, by ext; simp⟩
 
-theorem lifting_property {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N)
+theorem lifting_property {P} [AddGroup P] [IsAddCommutative P] [Module R P] (f : M →ₗ[R] N)
     (hf : Function.Surjective f) (g : P →ₗ[R] N) :
     ∃ h : P →ₗ[R] M, f ∘ₗ h = g := by
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.ker f)
@@ -286,7 +286,7 @@ theorem exists_sSupIndep_sSup_simples_eq_top :
   exact exists_sSupIndep_of_sSup_atoms_eq_top this
 
 /-- The annihilator of a semisimple module over a commutative ring is a radical ideal. -/
-theorem annihilator_isRadical (R) [CommRing R] [Module R M] [IsSemisimpleModule R M] :
+theorem annihilator_isRadical (R) [Ring R] [IsMulCommutative R] [Module R M] [IsSemisimpleModule R M] :
     (Module.annihilator R M).IsRadical := by
   rw [← Submodule.annihilator_top, ← sSup_simples_eq_top, sSup_eq_iSup', Submodule.annihilator_iSup]
   exact Ideal.isRadical_iInf _ fun i ↦ (i.2.annihilator_isMaximal).isPrime.isRadical
@@ -322,7 +322,7 @@ theorem of_surjective (f : M →ₗ[R] N) (hf : Function.Surjective f) : IsSemis
 
 section
 
-variable {M' : Type*} [AddCommGroup M'] [Module R M'] {N'} [AddCommGroup N'] [Module S N']
+variable {M' : Type*} [AddGroup M'] [IsAddCommutative M'] [Module R M'] {N'} [AddGroup N'] [IsAddCommutative N'] [Module S N']
   {σ : R →+* S} (l : M' →ₛₗ[σ] N')
 
 theorem _root_.LinearMap.isSemisimpleModule_iff_of_bijective
@@ -366,7 +366,7 @@ lemma isSemisimpleModule_of_isSemisimpleModule_submodule' {p : ι → Submodule 
     IsSemisimpleModule R M :=
   isSemisimpleModule_of_isSemisimpleModule_submodule (s := Set.univ) (fun i _ ↦ hp i) (by simpa)
 
-instance {ι} (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+instance {ι} (M : ι → Type*) [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
     [∀ i, IsSemisimpleModule R (M i)] : IsSemisimpleModule R (Π₀ i, M i) := by
   classical
   exact isSemisimpleModule_of_isSemisimpleModule_submodule'
@@ -398,7 +398,7 @@ theorem IsSemisimpleModule.exists_linearEquiv_fin_dfinsupp [IsSemisimpleModule R
   ⟨_, _, e.trans <| DirectSum.lequivCongrLeft R (Finite.equivFin s), fun _ ↦ simple _⟩
 
 open LinearMap in
-instance {ι} [Finite ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+instance {ι} [Finite ι] (M : ι → Type*) [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
     [∀ i, IsSemisimpleModule R (M i)] : IsSemisimpleModule R (Π i, M i) := by
   classical
   exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single _ _ ·))

@@ -19,7 +19,7 @@ public import Mathlib.Algebra.Module.Submodule.Defs
 
 @[expose] public section
 
-variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [LinearOrder M] [IsOrderedAddMonoid M]
 variable {K : Type*} [Ring K] [LinearOrder K] [IsOrderedRing K] [Archimedean K]
 variable [Module K M] [PosSMulMono K M]
 

@@ -73,7 +73,7 @@ that there is an `n`-th primitive root of unity in `B` for all nonzero `n ∈ S`
 @[mk_iff]
 class IsCyclotomicExtension
     (S : Set ℕ) (A : Type u) (B : Type v)
-    [CommRing A] [CommRing B] [Algebra A B] : Prop where
+    [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] : Prop where
   /-- For all nonzero `n ∈ S`, there exists a primitive `n`-th root of unity in `B`. -/
   exists_isPrimitiveRoot {S} (A B) {n : ℕ} (ha : n ∈ S) (ha' : n ≠ 0) :
     ∃ r : B, IsPrimitiveRoot r n
@@ -81,7 +81,7 @@ class IsCyclotomicExtension
   adjoin_roots : ∀ x : B, x ∈ adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ n = 1}
 
 variable (n : ℕ) [NeZero n] (S T : Set ℕ) (A : Type u) (B : Type v) (K : Type w) (L : Type z)
-variable [CommRing A] [CommRing B] [Algebra A B]
+variable [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
 variable [Field K] [Field L] [Algebra K L]
 
 namespace IsCyclotomicExtension
@@ -131,7 +131,7 @@ theorem isCyclotomicExtension_zero_iff :
 variable (A B)
 
 /-- Transitivity of cyclotomic extensions. -/
-theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
+theorem trans (C : Type w) [Ring C] [IsMulCommutative C] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
     [hS : IsCyclotomicExtension S A B] [hT : IsCyclotomicExtension T B C]
     (h : Function.Injective (algebraMap B C)) : IsCyclotomicExtension (S ∪ T) A C := by
   refine ⟨fun hn => ?_, fun x => ?_⟩
@@ -287,7 +287,7 @@ variable (A B)
 /-- Given `(f : B ≃ₐ[A] C)`, if `IsCyclotomicExtension S A B` then
 `IsCyclotomicExtension S A C`. -/
 protected
-theorem equiv {C : Type*} [CommRing C] [Algebra A C] [h : IsCyclotomicExtension S A B]
+theorem equiv {C : Type*} [Ring C] [IsMulCommutative C] [Algebra A C] [h : IsCyclotomicExtension S A B]
     (f : B ≃ₐ[A] C) : IsCyclotomicExtension S A C := by
   let : Algebra B C := f.toAlgHom.toRingHom.toAlgebra
   have : IsCyclotomicExtension {1} B C := singleton_one_of_algebraMap_bijective f.surjective
@@ -413,7 +413,7 @@ theorem numberField [h : NumberField K] [Finite S] [IsCyclotomicExtension S K L]
       exact Module.Finite.trans K _ }
 
 /-- If `S` is finite and `IsCyclotomicExtension S K A`, then `finiteDimensional K A`. -/
-theorem finiteDimensional (C : Type z) [Finite S] [CommRing C] [Algebra K C] [IsDomain C]
+theorem finiteDimensional (C : Type z) [Finite S] [Ring C] [IsMulCommutative C] [Algebra K C] [IsDomain C]
     [IsCyclotomicExtension S K C] : FiniteDimensional K C :=
   IsCyclotomicExtension.finite S K C
 

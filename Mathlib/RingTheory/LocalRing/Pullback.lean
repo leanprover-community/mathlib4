@@ -105,7 +105,7 @@ end RingHom
 
 namespace AlgHom
 
-variable {R A B C : Type*} [CommSemiring R]
+variable {R A B C : Type*} [Semiring R] [IsMulCommutative R]
 
 section Semiring
 

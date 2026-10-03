@@ -107,7 +107,7 @@ theorem ofReal_alg (x : ℝ) : (x : K) = x • (1 : K) :=
 theorem real_smul_eq_coe_mul (r : ℝ) (z : K) : r • z = (r : K) * z :=
   Algebra.smul_def r z
 
-theorem real_smul_eq_coe_smul [AddCommGroup E] [Module K E] [Module ℝ E] [IsScalarTower ℝ K E]
+theorem real_smul_eq_coe_smul [AddGroup E] [IsAddCommutative E] [Module K E] [Module ℝ E] [IsScalarTower ℝ K E]
     (r : ℝ) (x : E) : r • x = (r : K) • x := by rw [RCLike.ofReal_alg, smul_one_smul]
 
 theorem algebraMap_eq_ofReal : ⇑(algebraMap ℝ K) = ofReal :=
@@ -676,11 +676,11 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]; rfl
 
 variable (K) in
-lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
+lemma norm_nsmul [NormedAddGroup E] [IsAddCommutative E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
   simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
 
 variable (K) in
-lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+lemma nnnorm_nsmul [NormedAddGroup E] [IsAddCommutative E] [NormedSpace K E] (n : ℕ) (x : E) :
     ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
@@ -769,7 +769,7 @@ lemma I_mem_skewAdjoint : I ∈ skewAdjoint K := by simp [skewAdjoint.mem_iff]
 end RCLike
 
 section
-variable {A : Type*} [AddCommGroup A] [StarAddMonoid A] [Module K A] [StarModule K A] {a : A}
+variable {A : Type*} [AddGroup A] [IsAddCommutative A] [StarAddMonoid A] [Module K A] [StarModule K A] {a : A}
 
 open RCLike
 
@@ -1282,7 +1282,7 @@ variable {G : Type*} [Finite G]
 lemma inv_apply_eq_conj [AddLeftCancelMonoid G] (ψ : AddChar G K) (x : G) : (ψ x)⁻¹ = conj (ψ x) :=
   RCLike.inv_eq_conj <| norm_apply _ _
 
-lemma map_neg_eq_conj [AddCommGroup G] (ψ : AddChar G K) (x : G) : ψ (-x) = conj (ψ x) := by
+lemma map_neg_eq_conj [AddGroup G] [IsAddCommutative G] (ψ : AddChar G K) (x : G) : ψ (-x) = conj (ψ x) := by
   rw [map_neg_eq_inv, inv_apply_eq_conj]
 
 end AddChar
@@ -1352,8 +1352,8 @@ noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
 end
 
 namespace LinearIsometryEquiv
-variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup V] [Module 𝕜 V]
-  [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddGroup V] [IsAddCommutative V] [Module 𝕜 V]
+  [SeminormedAddGroup W] [IsAddCommutative W] [NormedSpace 𝕜 W] [SeminormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
 
 /-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
 as a linear isometric equivalence. -/

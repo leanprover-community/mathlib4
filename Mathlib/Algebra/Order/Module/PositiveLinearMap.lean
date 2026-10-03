@@ -30,7 +30,7 @@ the `Analysis/CStarAlgebra` folder.
 
 /-- A positive linear map is a linear map that is also an order homomorphism. -/
 structure PositiveLinearMap (R E₁ E₂ : Type*) [Semiring R]
-    [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
+    [AddMonoid E₁] [IsAddCommutative E₁] [PartialOrder E₁] [AddMonoid E₂] [IsAddCommutative E₂] [PartialOrder E₂]
     [Module R E₁] [Module R E₂] extends E₁ →ₗ[R] E₂, E₁ →o E₂
 
 /-- The `OrderHom` underlying a `PositiveLinearMap`. -/
@@ -42,7 +42,7 @@ notation:25 E " →ₚ[" R:25 "] " F:0 => PositiveLinearMap R E F
 section PositiveLinearMapClass
 
 variable {F R E₁ E₂ : Type*} [Semiring R]
-  [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
+  [AddMonoid E₁] [IsAddCommutative E₁] [PartialOrder E₁] [AddMonoid E₂] [IsAddCommutative E₂] [PartialOrder E₂]
   [Module R E₁] [Module R E₂] [FunLike F E₁ E₂] [LinearMapClass F R E₁ E₂]
   [OrderHomClass F E₁ E₂]
 
@@ -68,10 +68,10 @@ namespace PositiveLinearMap
 section general
 
 variable {R E₁ E₂ E₃ E₄ : Type*} [Semiring R]
-    [AddCommMonoid E₁] [PartialOrder E₁]
-    [AddCommMonoid E₂] [PartialOrder E₂]
-    [AddCommMonoid E₃] [PartialOrder E₃]
-    [AddCommMonoid E₄] [PartialOrder E₄]
+    [AddMonoid E₁] [IsAddCommutative E₁] [PartialOrder E₁]
+    [AddMonoid E₂] [IsAddCommutative E₂] [PartialOrder E₂]
+    [AddMonoid E₃] [IsAddCommutative E₃] [PartialOrder E₃]
+    [AddMonoid E₄] [IsAddCommutative E₄] [PartialOrder E₄]
     [Module R E₁] [Module R E₂] [Module R E₃] [Module R E₄]
 
 @[macro_inline]
@@ -197,8 +197,8 @@ end general
 section addgroup
 
 variable {R E₁ E₂ : Type*} [Semiring R]
-  [AddCommGroup E₁] [PartialOrder E₁] [IsOrderedAddMonoid E₁]
-  [AddCommGroup E₂] [PartialOrder E₂] [IsOrderedAddMonoid E₂]
+  [AddGroup E₁] [IsAddCommutative E₁] [PartialOrder E₁] [IsOrderedAddMonoid E₁]
+  [AddGroup E₂] [IsAddCommutative E₂] [PartialOrder E₂] [IsOrderedAddMonoid E₂]
   [Module R E₁] [Module R E₂]
 
 /-- Define a positive map from a linear map that maps nonnegative elements to nonnegative

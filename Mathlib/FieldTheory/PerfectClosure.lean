@@ -56,7 +56,7 @@ open Function
 
 section
 
-variable (K : Type u) [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
+variable (K : Type u) [Ring K] [IsMulCommutative K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
 /-- `PerfectClosure.R` is the relation `(n, x) ∼ (n + 1, x ^ p)` for `n : ℕ` and `x : K`.
 `PerfectClosure K p` is the quotient by this relation. -/
@@ -76,7 +76,7 @@ variable (K : Type u)
 
 section Ring
 
-variable [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
+variable [Ring K] [IsMulCommutative K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
 /-- `PerfectClosure.mk K p (n, x)` for `n : ℕ` and `x : K` is an element of `PerfectClosure K p`,
 viewed as `x ^ (p ^ -n)`. Every element of `PerfectClosure K p` is of this form
@@ -423,7 +423,7 @@ theorem iterate_frobenius_mk (n : ℕ) (x : K) :
 
 /-- Given a ring `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
 any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`. -/
-noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L p] :
+noncomputable def lift (L : Type v) [Semiring L] [IsMulCommutative L] [CharP L p] [PerfectRing L p] :
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
   toFun f :=
     { toFun := by
@@ -455,13 +455,13 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
 
 end Ring
 
-theorem eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
+theorem eq_iff [Ring K] [IsMulCommutative K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
     mk K p x = mk K p y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
   (mk_eq_iff K p x y).trans
     ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using! H,
       fun H => ⟨0, H⟩⟩
 
-instance [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] [Nontrivial K] :
+instance [Ring K] [IsMulCommutative K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] [Nontrivial K] :
     Nontrivial (PerfectClosure K p) where
   exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
 

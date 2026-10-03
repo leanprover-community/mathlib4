@@ -139,10 +139,10 @@ instance : CommRing (AlgebraicClosure k) where
   zsmul := letI := AlgebraicClosure.instSMulOfIsScalarTower k (S := ℤ); (· • · )
   __ : CommRing (AlgebraicClosure k) := inferInstanceAs <| CommRing (_ ⧸ _)
 
-instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
+instance instAlgebra {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
   inferInstanceAs <| Algebra R (_ ⧸ _)
 
-instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
+instance {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S] [Algebra S k] [Algebra R k]
     [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
   inferInstanceAs <| IsScalarTower R S (_ ⧸ _)
 

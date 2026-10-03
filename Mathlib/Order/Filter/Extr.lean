@@ -428,7 +428,7 @@ end Preorder
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+variable [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β]
   {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
 theorem IsMinFilter.add (hf : IsMinFilter f l a) (hg : IsMinFilter g l a) :
@@ -454,7 +454,7 @@ end OrderedAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+variable [AddGroup β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β]
   {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
 theorem IsMinFilter.neg (hf : IsMinFilter f l a) : IsMaxFilter (fun x => -f x) l a :=

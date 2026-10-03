@@ -27,7 +27,7 @@ open Associates UniqueFactorizationMonoid
 
 /-- `toGCDMonoid` constructs a GCD monoid out of a unique factorization domain. -/
 @[instance_reducible]
-noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CommMonoidWithZero α]
+noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [MonoidWithZero α] [IsMulCommutative α]
     [UniqueFactorizationMonoid α] : GCDMonoid α where
   gcd a b := Quot.out (Associates.mk a ⊓ Associates.mk b : Associates α)
   lcm a b := Quot.out (Associates.mk a ⊔ Associates.mk b : Associates α)
@@ -47,14 +47,14 @@ noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CommMonoid
     rw [← mk_eq_mk_iff_associated, ← Associates.mk_mul_mk, ← associated_iff_eq, Associates.quot_out,
       Associates.quot_out, mul_comm, sup_mul_inf, Associates.mk_mul_mk]
 
-instance (priority := 100) (α) [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
+instance (priority := 100) (α) [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α] :
     IsGCDMonoid α := ⟨toGCDMonoid α⟩
 
 /-- `toNormalizedGCDMonoid` constructs a GCD monoid out of a normalization on a
   unique factorization domain. -/
 @[instance_reducible]
 noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
-    [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [NormalizationMonoid α] :
+    [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α] [NormalizationMonoid α] :
     NormalizedGCDMonoid α :=
   { ‹NormalizationMonoid α› with
     gcd := fun a b => (Associates.mk a ⊓ Associates.mk b).out
@@ -77,7 +77,7 @@ noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
 /-- `toStrongNormalizedGCDMonoid` constructs a GCD monoid out of a strong normalization on a
   unique factorization domain. -/
 noncomputable abbrev UniqueFactorizationMonoid.toStrongNormalizedGCDMonoid (α : Type*)
-    [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [StrongNormalizationMonoid α] :
+    [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α] [StrongNormalizationMonoid α] :
     StrongNormalizedGCDMonoid α where
   __ := toNormalizedGCDMonoid α
   __ := ‹StrongNormalizationMonoid α›

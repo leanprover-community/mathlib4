@@ -58,8 +58,8 @@ It should be possible to unify some of the definitions here such as `LieModule.c
 
 open Module Function Set
 
-variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-  (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable {R L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+  (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieModule
 

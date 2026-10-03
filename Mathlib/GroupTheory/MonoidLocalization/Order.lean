@@ -23,7 +23,7 @@ variable {α : Type*}
 
 section OrderedCancelCommMonoid
 
-variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α}
+variable [Monoid α] [IsMulCommutative α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α}
   {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
@@ -109,7 +109,7 @@ def mkOrderEmbedding (b : s) : α ↪o Localization s where
 end OrderedCancelCommMonoid
 
 @[to_additive]
-instance [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α} :
+instance [Monoid α] [IsMulCommutative α] [LinearOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α} :
     LinearOrder (Localization s) :=
   { le_total := fun a b =>
       Localization.induction_on₂ a b fun _ _ => by

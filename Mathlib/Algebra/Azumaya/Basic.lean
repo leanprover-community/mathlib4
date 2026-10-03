@@ -35,7 +35,7 @@ open MulOpposite
 
 namespace IsAzumaya
 
-variable (R A B : Type*) [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+variable (R A B : Type*) [Semiring R] [IsMulCommutative R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 
 lemma AlgHom.mulLeftRight_bij [h : IsAzumaya R A] :
     Function.Bijective (AlgHom.mulLeftRight R A) := h.bij
@@ -82,7 +82,7 @@ theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=
 end IsAzumaya
 
 /-- An Azumaya algebra is a central algebra. -/
-instance Algebra.IsCentral.instIsAzumaya {R A : Type*} [CommSemiring R] [Semiring A]
+instance Algebra.IsCentral.instIsAzumaya {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A]
     [Algebra R A] [Module.Free R A] [IsAzumaya R A] : IsCentral R A :=
   have := of_algEquiv R _ _ (AlgEquiv.ofBijective (.mulLeftRight R A) IsAzumaya.bij).symm
   left_of_tensor R A Aᵐᵒᵖ <| FaithfulSMul.algebraMap_injective _ _

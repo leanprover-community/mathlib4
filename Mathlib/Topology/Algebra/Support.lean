@@ -416,7 +416,7 @@ end Monoid
 
 section CommMonoid
 
-variable [TopologicalSpace α] [CommMonoid β]
+variable [TopologicalSpace α] [Monoid β] [IsMulCommutative β]
 
 @[to_additive]
 theorem HasCompactMulSupport.multiset_prod

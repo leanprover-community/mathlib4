@@ -854,7 +854,7 @@ theorem hom_ext [NonAssocRing R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd 
   ext ⟨re_x, im_x⟩
   simp [decompose, h]
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- The unique `RingHom` from `ℤ√d` to a ring `R`, constructed by replacing `√d` with the provided
 root. Conversely, this associates to every mapping `ℤ√d →+* R` a value of `√d` in `R`. -/

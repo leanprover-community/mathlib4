@@ -29,7 +29,7 @@ section SpectrumDiagonal
 
 section NontrivialCommRing
 
-variable [CommRing R] [Nontrivial R] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [Nontrivial R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- Basis vectors are eigenvectors of associated diagonal linear operator. -/
 lemma hasEigenvector_toLin_diagonal (d : n → R) (i : n) (b : Basis n R M) :
@@ -76,7 +76,7 @@ end NontrivialCommRing
 
 namespace Matrix
 
-variable [CommRing R] [AddCommGroup M] [Module R M] (d : n → R) {μ : R} (b : Basis n R M)
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] (d : n → R) {μ : R} (b : Basis n R M)
 
 lemma _root_.Module.End.HasEigenvalue.nonempty
     {A : Matrix n n R} {μ : R} (hμ : HasEigenvalue A.toLin' μ) :

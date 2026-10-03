@@ -54,7 +54,7 @@ open Submodule (span)
 
 noncomputable section
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (x : M) (f : Dual R M) (y : M)
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] (x : M) (f : Dual R M) (y : M)
 
 namespace Module
 

@@ -129,7 +129,7 @@ open bernstein
 
 local postfix:1024 "/ₙ" => z
 
-variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [Module ℝ E] [ContinuousSMul ℝ E]
 
 /-- The `n`-th approximation of a continuous function on `[0,1]` by Bernstein polynomials,

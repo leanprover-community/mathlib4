@@ -24,7 +24,7 @@ open Function
 variable {ι κ G₀ M₀ : Type*} {α : ι → Type*}
 
 namespace Finset
-variable [CommMonoidWithZero M₀] {p : ι → Prop} [DecidablePred p] {f : ι → M₀} {s : Finset ι}
+variable [MonoidWithZero M₀] [IsMulCommutative M₀] {p : ι → Prop} [DecidablePred p] {f : ι → M₀} {s : Finset ι}
   {i : ι}
 
 lemma prod_eq_zero (hi : i ∈ s) (h : f i = 0) : ∏ j ∈ s, f j = 0 := by
@@ -68,7 +68,7 @@ lemma support_prod (s : Finset ι) (f : ι → κ → M₀) :
 end Finset
 
 namespace Fintype
-variable [Fintype ι] [CommMonoidWithZero M₀] {p : ι → Prop} [DecidablePred p] {f : ι → M₀}
+variable [Fintype ι] [MonoidWithZero M₀] [IsMulCommutative M₀] {p : ι → Prop} [DecidablePred p] {f : ι → M₀}
 
 lemma prod_ite_zero : (∏ i, if p i then f i else 0) = if ∀ i, p i then ∏ i, f i else 0 := by
   simp [Finset.prod_ite_zero]
@@ -78,7 +78,7 @@ lemma prod_boole : ∏ i, (ite (p i) 1 0 : M₀) = ite (∀ i, p i) 1 0 := by si
 end Fintype
 
 set_option backward.isDefEq.respectTransparency false in
-lemma Units.mk0_prod [CommGroupWithZero G₀] (s : Finset ι) (f : ι → G₀) (h) :
+lemma Units.mk0_prod [GroupWithZero G₀] [IsMulCommutative G₀] (s : Finset ι) (f : ι → G₀) (h) :
     Units.mk0 (∏ i ∈ s, f i) h =
       ∏ i ∈ s.attach, Units.mk0 (f i) fun hh ↦ h (Finset.prod_eq_zero i.2 hh) := by
   induction s using Finset.cons_induction_on <;> simp [*]

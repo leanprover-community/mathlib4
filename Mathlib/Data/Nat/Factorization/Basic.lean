@@ -55,11 +55,11 @@ theorem factorization_prod_apply {α : Type*} {p : ℕ}
   rw [factorization_prod hS, finsetSum_apply]
 
 /-- A product over `n.factorization` can be written as a product over `n.primeFactors`; -/
-lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : ℕ → ℕ → β) :
+lemma prod_factorization_eq_prod_primeFactors {β : Type*} [Monoid β] [IsMulCommutative β] (f : ℕ → ℕ → β) :
     n.factorization.prod f = ∏ p ∈ n.primeFactors, f p (n.factorization p) := rfl
 
 /-- A product over `n.primeFactors` can be written as a product over `n.factorization`; -/
-lemma prod_primeFactors_prod_factorization {β : Type*} [CommMonoid β] (f : ℕ → β) :
+lemma prod_primeFactors_prod_factorization {β : Type*} [Monoid β] [IsMulCommutative β] (f : ℕ → β) :
     ∏ p ∈ n.primeFactors, f p = n.factorization.prod (fun p _ ↦ f p) := rfl
 
 /-! ## Lemmas about factorizations of primes and prime powers -/
@@ -381,7 +381,7 @@ theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   exact (min_add_max _ _).symm
 
 @[to_additive sum_primeFactors_gcd_add_sum_primeFactors_mul]
-theorem prod_primeFactors_gcd_mul_prod_primeFactors_mul {β : Type*} [CommMonoid β] (m n : ℕ)
+theorem prod_primeFactors_gcd_mul_prod_primeFactors_mul {β : Type*} [Monoid β] [IsMulCommutative β] (m n : ℕ)
     (f : ℕ → β) :
     (m.gcd n).primeFactors.prod f * (m * n).primeFactors.prod f =
       m.primeFactors.prod f * n.primeFactors.prod f := by

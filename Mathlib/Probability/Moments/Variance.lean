@@ -216,7 +216,7 @@ theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     variance (c • X) μ = c ^ 2 * variance X μ :=
   variance_const_mul c X μ
 
-theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
+theorem variance_smul' {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
     (μ : Measure Ω) : variance (c • X) μ = c ^ 2 • variance X μ := by
   convert! variance_smul (algebraMap A ℝ c) X μ using 1
   · simp only [algebraMap_smul]
@@ -522,8 +522,8 @@ end Prod
 
 section NormedSpace
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
-  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
+variable {E F : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
 
 lemma variance_dual_prod' {L : StrongDual ℝ (E × F)}

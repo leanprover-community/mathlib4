@@ -43,9 +43,9 @@ bijection and that the residual degree and ramification index are preserved by t
 
 open Algebra Module IsLocalRing Ideal Localization.AtPrime
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-  (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p] [IsLocalRing Rₚ]
-  (Sₚ : Type*) [CommRing Sₚ] [Algebra S Sₚ] [IsLocalization (algebraMapSubmonoid S p.primeCompl) Sₚ]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] (p : Ideal R) [p.IsPrime]
+  (Rₚ : Type*) [Ring Rₚ] [IsMulCommutative Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p] [IsLocalRing Rₚ]
+  (Sₚ : Type*) [Ring Sₚ] [IsMulCommutative Sₚ] [Algebra S Sₚ] [IsLocalization (algebraMapSubmonoid S p.primeCompl) Sₚ]
   [Algebra Rₚ Sₚ] (P : Ideal S) [hPp : P.LiesOver p]
 
 namespace IsLocalization.AtPrime
@@ -61,7 +61,7 @@ theorem mem_primesOver_of_isPrime {Q : Ideal Sₚ} [Q.IsMaximal] [Algebra.IsInte
   rw [liesOver_iff, ← eq_maximalIdeal]
   exact IsMaximal.under Rₚ Q
 
-theorem liesOver_comap_of_liesOver {T : Type*} [CommRing T] [Algebra R T] [Algebra Rₚ T]
+theorem liesOver_comap_of_liesOver {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra Rₚ T]
     [Algebra S T] [IsScalarTower R S T] [IsScalarTower R Rₚ T] (Q : Ideal T)
     [Q.LiesOver (maximalIdeal Rₚ)] : (comap (algebraMap S T) Q).LiesOver p := by
   have : Q.LiesOver p := by

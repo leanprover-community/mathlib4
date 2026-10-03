@@ -82,7 +82,7 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
 /-- `Units.mulAction' : MulAction G Mˣ` creates a diamond when `G = Mˣ` and `M` is commutative.
 
 Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
-example {M} [CommMonoid M] :
+example {M} [Monoid M] [IsMulCommutative M] :
     (mulAction'.toSMul : SMul Mˣ Mˣ) = instSMulOfMul := by
   fail_if_success rfl -- there is an instance diamond here
   ext
@@ -92,7 +92,7 @@ example {M} [CommMonoid M] :
 
 Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
 @[simp]
-lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
+lemma smul_eq_mul {M} [Monoid M] [IsMulCommutative M] (u₁ u₂ : Mˣ) :
     u₁ • u₂ = u₁ * u₂ := by
   ext
   rfl

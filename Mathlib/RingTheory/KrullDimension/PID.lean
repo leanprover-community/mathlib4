@@ -16,7 +16,7 @@ In this file, we proved some results about the dimension of a principal ideal do
 
 public section
 
-instance IsPrincipalIdealRing.krullDimLE_one (R : Type*) [CommRing R]
+instance IsPrincipalIdealRing.krullDimLE_one (R : Type*) [Ring R] [IsMulCommutative R]
     [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by
   refine Ring.krullDimLE_one_iff.2 fun I hI ↦ or_iff_not_imp_left.2 fun hI' ↦ ?_
   rw [minimalPrimes_eq_minimals, Set.notMem_ofPred_iff, not_minimal_iff_exists_lt hI] at hI'
@@ -33,7 +33,7 @@ instance IsPrincipalIdealRing.krullDimLE_one (R : Type*) [CommRing R]
   simpa [Ideal.comap_map_of_surjective' (Ideal.Quotient.mk P) Ideal.Quotient.mk_surjective,
     hlt.le] using this
 
-theorem IsPrincipalIdealRing.ringKrullDim_eq_one (R : Type*) [CommRing R] [IsDomain R]
+theorem IsPrincipalIdealRing.ringKrullDim_eq_one (R : Type*) [Ring R] [IsMulCommutative R] [IsDomain R]
     [IsPrincipalIdealRing R] (h : ¬ IsField R) : ringKrullDim R = 1 := by
   apply eq_of_le_of_not_lt ?_ fun h' ↦ h ?_
   · rw [← Nat.cast_one, ← Ring.krullDimLE_iff]
@@ -43,7 +43,7 @@ theorem IsPrincipalIdealRing.ringKrullDim_eq_one (R : Type*) [CommRing R] [IsDom
     exact Ring.KrullDimLE.isField_of_isDomain
 
 /-- In a PID that is not a field, every maximal ideal has height one. -/
-lemma IsPrincipalIdealRing.height_eq_one_of_isMaximal {R : Type*} [CommRing R] [IsDomain R]
+lemma IsPrincipalIdealRing.height_eq_one_of_isMaximal {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
     [IsPrincipalIdealRing R] (m : Ideal R) [m.IsMaximal] (h : ¬ IsField R) :
     m.height = 1 := by
   refine le_antisymm ?_ ?_

@@ -16,18 +16,18 @@ universe u
 
 namespace RingHom
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
 
 /-- A ring hom `R →+* S` is quasi-finite if `S` is a quasi-finite `R`-algebra. -/
 @[algebraize RingHom.QuasiFinite.toAlgebra]
-def QuasiFinite {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
+def QuasiFinite {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) : Prop :=
   @Algebra.QuasiFinite R S _ _ f.toAlgebra
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma QuasiFinite.toAlgebra {f : R →+* S} (hf : QuasiFinite f) :
     @Algebra.QuasiFinite R S _ _ f.toAlgebra := hf
 
-variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
 
 lemma quasiFinite_algebraMap [Algebra R S] :
     (algebraMap R S).QuasiFinite ↔ Algebra.QuasiFinite R S := by
@@ -116,7 +116,7 @@ open TensorProduct in
 /-- If `T` is both a finite type `R`-algebra, and the localization of an integral `R`-algebra,
 then `T` is quasi-finite over `R` -/
 lemma QuasiFinite.of_isIntegral_of_finiteType
-    {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] {f : R →+* S} (hf : f.IsIntegral)
+    {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] {f : R →+* S} (hf : f.IsIntegral)
     {g : S →+* T} (hg : g.IsStandardOpenImmersion) (hg : (g.comp f).FiniteType) :
     (g.comp f).QuasiFinite := by
   algebraize [f, g, g.comp f]
@@ -124,7 +124,7 @@ lemma QuasiFinite.of_isIntegral_of_finiteType
   exact Algebra.QuasiFinite.of_isIntegral_of_finiteType s
 
 /-- The predicate for a ring hom being quasi-finite at a prime. -/
-abbrev QuasiFiniteAt {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) (p : Ideal S)
+abbrev QuasiFiniteAt {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (p : Ideal S)
     [p.IsPrime] : Prop := letI := f.toAlgebra; Algebra.QuasiFiniteAt R p
 
 end RingHom

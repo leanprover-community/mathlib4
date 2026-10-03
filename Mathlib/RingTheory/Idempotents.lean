@@ -142,7 +142,7 @@ lemma CompleteOrthogonalIdempotents.pair_iff'ₛ {x y : R} :
     CompleteOrthogonalIdempotents ![x, y] ↔ x * y = 0 ∧ y * x = 0 ∧ x + y = 1 := by
   simp [iff_ortho_complete, Pairwise, Fin.forall_fin_two, and_assoc]
 
-lemma CompleteOrthogonalIdempotents.pair_iffₛ {R} [CommSemiring R] {x y : R} :
+lemma CompleteOrthogonalIdempotents.pair_iffₛ {R} [Semiring R] [IsMulCommutative R] {x y : R} :
     CompleteOrthogonalIdempotents ![x, y] ↔ x * y = 0 ∧ x + y = 1 := by
   rw [pair_iff'ₛ, and_left_comm, and_iff_right_of_imp]; exact (mul_comm x y ▸ ·.1)
 
@@ -363,7 +363,7 @@ end Ring
 
 section CommRing
 
-variable {R S : Type*} [CommRing R] [Ring S] (f : R →+* S)
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] (f : R →+* S)
 
 theorem eq_of_isNilpotent_sub_of_isIdempotentElem {e₁ e₂ : R}
     (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) (H : IsNilpotent (e₁ - e₂)) :
@@ -473,7 +473,7 @@ variable (R) in
 `S` is isomorphic as an `R`-algebra to `S ⧸ (e) × S ⧸ (f)`. -/
 @[simps! -isSimp apply, simps! apply_fst apply_snd]
 noncomputable def AlgEquiv.prodQuotientOfIsIdempotentElem
-    {S : Type*} [CommRing S] [Algebra R S] {e f : S} (he : IsIdempotentElem e)
+    {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] {e f : S} (he : IsIdempotentElem e)
     (hf : IsIdempotentElem f) (hef₁ : e + f = 1) (hef₂ : e * f = 0) :
     S ≃ₐ[R] (S ⧸ Ideal.span {e}) × S ⧸ Ideal.span {f} :=
   AlgEquiv.ofBijective ((Ideal.Quotient.mkₐ _ _).prod (Ideal.Quotient.mkₐ _ _)) <|
@@ -573,7 +573,7 @@ instance [NonUnitalSemiring R] (idem : IsIdempotentElem e) : Semiring idem.Corne
   one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).1
   mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).2
 
-instance [NonUnitalCommSemiring R] (idem : IsIdempotentElem e) : CommSemiring idem.Corner where
+instance [NonUnitalSemiring R] [IsMulCommutative R] (idem : IsIdempotentElem e) : CommSemiring idem.Corner where
   __ : Semiring idem.Corner := inferInstance
   __ : NonUnitalCommSemiring idem.Corner :=
     inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.corner e)
@@ -582,7 +582,7 @@ instance [NonUnitalRing R] (idem : IsIdempotentElem e) : Ring idem.Corner where
   __ : Semiring idem.Corner := inferInstance
   __ : NonUnitalRing idem.Corner := inferInstanceAs <| NonUnitalRing (NonUnitalRing.corner e)
 
-instance [NonUnitalCommRing R] (idem : IsIdempotentElem e) : CommRing idem.Corner where
+instance [NonUnitalRing R] [IsMulCommutative R] (idem : IsIdempotentElem e) : CommRing idem.Corner where
   __ : Ring idem.Corner := inferInstance
   __ : NonUnitalCommRing idem.Corner :=
     inferInstanceAs <| NonUnitalCommRing (NonUnitalRing.corner e)
@@ -616,12 +616,12 @@ def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
 
 /-- A complete orthogonal family of idempotents in a commutative semiring
 give rise to a direct product decomposition. -/
-def CompleteOrthogonalIdempotents.ringEquivOfComm [CommSemiring R]
+def CompleteOrthogonalIdempotents.ringEquivOfComm [Semiring R] [IsMulCommutative R]
     (he : CompleteOrthogonalIdempotents e) : R ≃+* Π i, (he.idem i).Corner :=
   he.ringEquivOfIsMulCentral fun _ ↦ Semigroup.mem_center_iff.mpr fun _ ↦ mul_comm ..
 
 lemma Ideal.mem_map_span_singleton_iff_of_isIdempotentElem
-    [CommRing R] {e r : R} (he : IsIdempotentElem e) {I : Ideal R} :
+    [Ring R] [IsMulCommutative R] {e r : R} (he : IsIdempotentElem e) {I : Ideal R} :
     Ideal.Quotient.mk _ r ∈ I.map (Ideal.Quotient.mk (Ideal.span {e})) ↔ (1 - e) * r ∈ I := by
   simp only [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective,
     Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton]

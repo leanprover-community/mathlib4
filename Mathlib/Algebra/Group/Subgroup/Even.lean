@@ -19,7 +19,7 @@ This file defines the subgroup of squares / even elements in an abelian group.
 assert_not_exists RelIso MonoidWithZero
 
 namespace Subsemigroup
-variable {S : Type*} [CommSemigroup S]
+variable {S : Type*} [Semigroup S] [IsMulCommutative S]
 
 variable (S) in
 /--
@@ -41,7 +41,7 @@ theorem coe_square : square S = {s : S | IsSquare s} := rfl
 end Subsemigroup
 
 namespace Submonoid
-variable {M : Type*} [CommMonoid M]
+variable {M : Type*} [Monoid M] [IsMulCommutative M]
 
 variable (M) in
 /--
@@ -66,7 +66,7 @@ theorem coe_square : square M = {s : M | IsSquare s} := rfl
 end Submonoid
 
 namespace Subgroup
-variable {G : Type*} [CommGroup G]
+variable {G : Type*} [Group G] [IsMulCommutative G]
 
 variable (G) in
 /--

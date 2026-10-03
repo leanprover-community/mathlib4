@@ -54,7 +54,7 @@ universe u v
 
 section Ring
 
-variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+variable {R : Type u} {M : Type v} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable {ι : Type*} (b : Basis ι R M)
 
 open Submodule.IsPrincipal Submodule
@@ -85,7 +85,7 @@ theorem eq_bot_of_generator_maximal_submoduleImage_eq_zero {N O : Submodule R M}
 end Ring
 
 open Submodule.IsPrincipal in
-theorem dvd_generator_iff {R : Type*} [CommSemiring R] {I : Ideal R} [I.IsPrincipal] {x : R}
+theorem dvd_generator_iff {R : Type*} [Semiring R] [IsMulCommutative R] {I : Ideal R} [I.IsPrincipal] {x : R}
     (hx : x ∈ I) : x ∣ generator I ↔ I = Ideal.span {x} := by
   simp_rw [le_antisymm_iff, I.span_singleton_le_iff_mem.2 hx, and_true, ← Ideal.mem_span_singleton]
   conv_rhs => rw [← span_singleton_generator I, Submodule.span_singleton_le_iff_mem]
@@ -94,8 +94,8 @@ section PrincipalIdealDomain
 
 open Submodule.IsPrincipal Set Submodule
 
-variable {ι : Type*} {R : Type*} [CommRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
+variable {ι : Type*} {R : Type*} [Ring R] [IsMulCommutative R]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] {b : ι → M}
 
 section StrongRankCondition
 
@@ -148,7 +148,7 @@ For `basis_of_pid` we only need the first half and can fix `M = ⊤`,
 for `smith_normal_form` we need the full statement,
 but must also feed in a basis for `M` using `basis_of_pid` to keep the induction going.
 -/
-theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Module R O]
+theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddGroup O] [IsAddCommutative O] [Module R O]
     (M N : Submodule R O) (b'M : Basis ι R M) (N_bot : N ≠ ⊥) (N_le_M : N ≤ M) :
     ∃ y ∈ M, ∃ a : R, a • y ∈ N ∧ ∃ M' ≤ M, ∃ N' ≤ N,
       N' ≤ M' ∧ (∀ (c : R) (z : O), z ∈ M' → c • y + z = 0 → c = 0) ∧
@@ -387,7 +387,7 @@ instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [IsTorsion
   obtain ⟨n, b⟩ : Σ n, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
   exact Module.Free.of_basis b
 
-instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
+instance {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
     [hI₂ : IsTorsionFree R I] : Free R I := by
   have : Module.Finite R (restrictScalars R I) := hI₁
   have : IsTorsionFree R (restrictScalars R I) := hI₂
@@ -645,7 +645,7 @@ end full_rank
 
 section Ideal
 
-variable {S : Type*} [CommRing S] [IsDomain S] [Algebra R S]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra R S]
 
 theorem Ideal.finrank_eq_finrank [Finite ι] (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     Module.finrank R (restrictScalars R I) = Module.finrank R S := by

@@ -60,8 +60,8 @@ namespace End
 
 open Module Set
 
-variable {K R : Type v} {V M : Type w} [CommRing R] [AddCommGroup M] [Module R M] [Field K]
-  [AddCommGroup V] [Module K V]
+variable {K R : Type v} {V M : Type w} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [Field K]
+  [AddGroup V] [IsAddCommutative V] [Module K V]
 
 /-- The submodule `genEigenspace f μ k` for a linear map `f`, a scalar `μ`,
 and a number `k : ℕ∞` is the kernel of `(f - μ • id) ^ k` if `k` is a natural number,
@@ -97,7 +97,7 @@ lemma mem_genEigenspace_nat {f : End R M} {μ : R} {k : ℕ} {x : M} :
     exact ⟨k, le_rfl, hx⟩
 
 /-- `(f.genEigenspace μ k).map φ ≤ g.genEigenspace μ k` if `g ∘ₗ φ = φ ∘ₗ f`. -/
-lemma map_genEigenspace_le {N : Type*} [AddCommGroup N] [Module R N]
+lemma map_genEigenspace_le {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
     {f : End R M} {g : End R N} (φ : M →ₗ[R] N) (hφ : g.comp φ = φ.comp f)
     (μ : R) (k : ℕ∞) :
     (f.genEigenspace μ k).map φ ≤ g.genEigenspace μ k := by
@@ -109,7 +109,7 @@ lemma map_genEigenspace_le {N : Type*} [AddCommGroup N] [Module R N]
   intro; simpa using congr($hφ _).symm
 
 /-- `map_genEigenspace_le` as `MapsTo`. -/
-lemma mapsTo_genEigenspace_of_comp {N : Type*} [AddCommGroup N] [Module R N]
+lemma mapsTo_genEigenspace_of_comp {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
     {f : End R M} {g : End R N} (φ : M →ₗ[R] N) (hφ : g.comp φ = φ.comp f) (μ : R) (k : ℕ∞) :
     MapsTo φ (f.genEigenspace μ k) (g.genEigenspace μ k) := by
   intro x hx

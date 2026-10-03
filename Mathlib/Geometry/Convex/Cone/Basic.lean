@@ -56,7 +56,7 @@ variable (R M) in
 /-- A convex cone is a subset `s` of an `R`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
 @[wikidata Q2256541]
-structure ConvexCone [AddCommMonoid M] [SMul R M] where
+structure ConvexCone [AddMonoid M] [IsAddCommutative M] [SMul R M] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
   carrier : Set M
   smul_mem' : ∀ ⦃c : R⦄, 0 < c → ∀ ⦃x : M⦄, x ∈ carrier → c • x ∈ carrier
@@ -68,7 +68,7 @@ namespace ConvexCone
 
 section OrderedSemiring
 
-variable [Semiring R] [PartialOrder R] [AddCommMonoid M]
+variable [Semiring R] [PartialOrder R] [AddMonoid M] [IsAddCommutative M]
 
 section SMul
 
@@ -191,7 +191,7 @@ end Module
 
 section Maps
 
-variable [AddCommMonoid N] [AddCommMonoid O]
+variable [AddMonoid N] [IsAddCommutative N] [AddMonoid O] [IsAddCommutative O]
 variable [Module R M] [Module R N] [Module R O]
 
 /-- The image of a convex cone under an `R`-linear map is a convex cone. -/
@@ -253,7 +253,7 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 section MulAction
 
-variable [AddCommMonoid M]
+variable [AddMonoid M] [IsAddCommutative M]
 variable [MulAction 𝕜 M] (C : ConvexCone 𝕜 M)
 
 theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
@@ -271,7 +271,7 @@ variable [Semiring R] [PartialOrder R]
 
 section AddCommMonoid
 
-variable [AddCommMonoid M] [SMul R M] {C C₁ C₂ : ConvexCone R M}
+variable [AddMonoid M] [IsAddCommutative M] [SMul R M] {C C₁ C₂ : ConvexCone R M}
 
 /-- A convex cone is pointed if it includes `0`. -/
 def Pointed (C : ConvexCone R M) : Prop := (0 : M) ∈ C
@@ -289,7 +289,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup G] [SMul R G] {C C₁ C₂ : ConvexCone R G}
+variable [AddGroup G] [IsAddCommutative G] [SMul R G] {C C₁ C₂ : ConvexCone R G}
 
 /-- A convex cone is flat if it contains some nonzero vector `x` and its opposite `-x`. -/
 def Flat (C : ConvexCone R G) : Prop := ∃ x ∈ C, x ≠ (0 : G) ∧ -x ∈ C
@@ -348,7 +348,7 @@ section Module
 
 section Monoid
 
-variable [AddCommMonoid M] [Module R M] {C₁ C₂ : ConvexCone R M} {x : M}
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] {C₁ C₂ : ConvexCone R M} {x : M}
 
 instance : Zero (ConvexCone R M) :=
   ⟨⟨0, fun _ _ => by simp, fun _ => by simp⟩⟩
@@ -386,7 +386,7 @@ end Monoid
 
 section Reproducing
 
-variable [AddCommGroup M] [Module R M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- A convex cone is reproducing if its set of element differences equals the entire module,
 i.e., every element of `M` can be written as a difference of two elements of `C`. -/
@@ -408,7 +408,7 @@ end Reproducing
 
 section Generating
 
-variable [AddCommMonoid M] [Module R M]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- A convex cone `C` is generating if its linear span is the entire `R`-module `M`.
 
@@ -461,7 +461,7 @@ theorem IsGenerating.mono {C₁ C₂ : ConvexCone R M} (h : C₁ ≤ C₂) (hgen
   exact hgen.trans (Submodule.span_mono h)
 
 theorem IsReproducing.span_eq_top {R : Type*} {M : Type*} [Ring R] [PartialOrder R]
-    [AddCommGroup M] [Module R M] {C : ConvexCone R M} (h : C.IsReproducing) :
+    [AddGroup M] [IsAddCommutative M] [Module R M] {C : ConvexCone R M} (h : C.IsReproducing) :
     Submodule.span R (C : Set M) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
@@ -472,7 +472,7 @@ theorem IsReproducing.span_eq_top {R : Type*} {M : Type*} [Ring R] [PartialOrder
 @[deprecated (since := "2026-03-30")] alias IsReproducing.isGenerating := IsReproducing.span_eq_top
 
 theorem IsReproducing.of_span_eq_top {R : Type*} {M : Type*} [Ring R] [LinearOrder R]
-    [AddLeftStrictMono R] [AddCommGroup M] [Nontrivial M] [Module R M] {C : ConvexCone R M}
+    [AddLeftStrictMono R] [AddGroup M] [IsAddCommutative M] [Nontrivial M] [Module R M] {C : ConvexCone R M}
     (h : Submodule.span R (C : Set M) = ⊤) :
     C.IsReproducing := by
   rw [IsReproducing, Set.eq_univ_iff_forall]
@@ -510,7 +510,7 @@ theorem IsReproducing.of_span_eq_top {R : Type*} {M : Type*} [Ring R] [LinearOrd
 alias IsGenerating.isReproducing := IsReproducing.of_span_eq_top
 
 theorem span_eq_top_iff_isReproducing {R : Type*} {M : Type*} [Ring R] [LinearOrder R]
-    [AddLeftStrictMono R] [AddCommGroup M] [Nontrivial M] [Module R M] {C : ConvexCone R M} :
+    [AddLeftStrictMono R] [AddGroup M] [IsAddCommutative M] [Nontrivial M] [Module R M] {C : ConvexCone R M} :
     Submodule.span R (C : Set M) = ⊤ ↔ C.IsReproducing :=
   ⟨.of_span_eq_top, IsReproducing.span_eq_top⟩
 
@@ -524,7 +524,7 @@ end Module
 end OrderedSemiring
 
 section Field
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup M] [Module 𝕜 M]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup M] [IsAddCommutative M] [Module 𝕜 M]
   {C : ConvexCone 𝕜 M} {s : Set M} {x : M}
 
 /-- The cone hull of a convex set is simply the union of the open halflines through that set. -/
@@ -572,7 +572,7 @@ variable [Semiring R] [PartialOrder R]
 
 section AddCommMonoid
 
-variable [AddCommMonoid M] [Module R M] {C C₁ C₂ : Submodule R M} {x : M}
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] {C C₁ C₂ : Submodule R M} {x : M}
 
 /-- Every submodule is trivially a convex cone. -/
 def toConvexCone (C : Submodule R M) : ConvexCone R M where
@@ -608,7 +608,7 @@ end Submodule
 namespace ConvexCone
 
 section PositiveCone
-variable [Semiring R] [PartialOrder R] [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+variable [Semiring R] [PartialOrder R] [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M]
   [Module R M] [PosSMulMono R M] {x : M}
 
 variable (R M) in
@@ -627,7 +627,7 @@ theorem coe_positive : ↑(positive R M) = Set.Ici (0 : M) :=
   rfl
 
 /-- The positive cone of an ordered module is always salient. -/
-lemma salient_positive {G : Type*} [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G]
+lemma salient_positive {G : Type*} [AddGroup G] [IsAddCommutative G] [PartialOrder G] [IsOrderedAddMonoid G]
     [Module R G] [PosSMulMono R G] : Salient (positive R G) :=
   fun x hx_nonneg hx_ne_zero hx_nonpos ↦ lt_irrefl (0 : G) <| by
     simpa using add_pos_of_nonneg_of_pos hx_nonpos <| hx_nonneg.lt_of_ne' hx_ne_zero
@@ -639,7 +639,7 @@ theorem pointed_positive : Pointed (positive R M) :=
 end PositiveCone
 
 section StrictlyPositiveCone
-variable [Semiring R] [PartialOrder R] [AddCommGroup M] [PartialOrder M] [IsOrderedAddMonoid M]
+variable [Semiring R] [PartialOrder R] [AddGroup M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M]
   [Module R M] [PosSMulStrictMono R M] {x : M}
 
 variable (R M) in
@@ -679,7 +679,7 @@ end ConvexCone
 
 section ConeFromConvex
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup M] [Module 𝕜 M]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup M] [IsAddCommutative M] [Module 𝕜 M]
 
 namespace Convex
 

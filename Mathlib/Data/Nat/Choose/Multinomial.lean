@@ -345,7 +345,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] {f : α → R} {s : Finset α}
+variable [Semiring R] [IsMulCommutative R] {f : α → R} {s : Finset α}
 
 lemma sum_pow_eq_sum_piAntidiag (s : Finset α) (f : α → R) (n : ℕ) :
     (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k * ∏ i ∈ s, f i ^ k i := by
@@ -412,7 +412,7 @@ theorem Finsupp.multinomial_of_support_subset {σ : Type*} {d : σ →₀ ℕ} {
 namespace List
 
 
-lemma toFinsupp_sum {α : Type*} [AddCommMonoid α] [DecidableEq α] (l : List α) :
+lemma toFinsupp_sum {α : Type*} [AddMonoid α] [IsAddCommutative α] [DecidableEq α] (l : List α) :
     l.toFinsupp.sum (fun _ a ↦ a) = l.sum := by
   match l with
   | nil => simp

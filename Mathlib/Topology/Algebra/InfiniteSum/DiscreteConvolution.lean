@@ -98,7 +98,7 @@ end Fiber
 
 section Definition
 
-variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Monoid M] [Semiring S] [IsMulCommutative S] [AddMonoid E] [IsAddCommutative E] [AddMonoid E'] [IsAddCommutative E'] [AddMonoid F] [IsAddCommutative F]
 variable [Module S E] [Module S E'] [Module S F]
 variable [TopologicalSpace F]
 
@@ -122,7 +122,7 @@ end Definition
 
 section BasicProperties
 
-variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Monoid M] [Semiring S] [IsMulCommutative S] [AddMonoid E] [IsAddCommutative E] [AddMonoid E'] [IsAddCommutative E'] [AddMonoid F] [IsAddCommutative F]
 variable [Module S E] [Module S E'] [Module S F]
 variable [TopologicalSpace F]
 
@@ -156,7 +156,7 @@ end BasicProperties
 
 section ExistenceProperties
 
-variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Monoid M] [Semiring S] [IsMulCommutative S] [AddMonoid E] [IsAddCommutative E] [AddMonoid E'] [IsAddCommutative E'] [AddMonoid F] [IsAddCommutative F]
 variable [Module S E] [Module S E'] [Module S F]
 variable [TopologicalSpace F]
 
@@ -209,7 +209,7 @@ lemma ConvolutionExists.add_distrib {f f' : M → E} {g : M → E'} (L : E →�
   ext x; exact (hfg x).add_distrib L (hfg' x)
 
 variable {F : Type*}
-variable [AddCommMonoid F] [Module S F] [TopologicalSpace F] [ContinuousConstSMul S F] [T2Space F]
+variable [AddMonoid F] [IsAddCommutative F] [Module S F] [TopologicalSpace F] [ContinuousConstSMul S F] [T2Space F]
 
 @[to_additive (dont_translate := S E E' F)]
 lemma ConvolutionExistsAt.smul_convolution {c : S} {f : M → E} {g : M → E'} {x : M}
@@ -244,7 +244,7 @@ lemma mulFiber_finite (x : M) : (mulFiber x).Finite := by
   rw [mulFiber_eq_mulAntidiagonal]
   exact Finset.finite_toSet _
 
-variable [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Semiring S] [IsMulCommutative S] [AddMonoid E] [IsAddCommutative E] [AddMonoid E'] [IsAddCommutative E'] [AddMonoid F] [IsAddCommutative F]
 variable [Module S E] [Module S E'] [Module S F] [TopologicalSpace F]
 
 /-- Convolution is a finite sum when the index monoid has `Finset.HasMulAntidiagonal`. -/
@@ -275,7 +275,7 @@ end HasMulAntidiagonal
 
 section CommMonoid
 
-variable [CommMonoid M] [CommSemiring S] [AddCommMonoid E] [Module S E] [TopologicalSpace E]
+variable [Monoid M] [IsMulCommutative M] [Semiring S] [IsMulCommutative S] [AddMonoid E] [IsAddCommutative E] [Module S E] [TopologicalSpace E]
 
 @[to_additive]
 private def mulFiber_swapEquiv (x : M) : mulFiber x ≃ mulFiber x where
@@ -387,7 +387,7 @@ end RingConvolutionScalar
 
 section RingConvolutionCommutativity
 
-variable [CommMonoid M] [NonUnitalNonAssocCommSemiring R] [TopologicalSpace R]
+variable [Monoid M] [IsMulCommutative M] [NonUnitalNonAssocSemiring R] [IsMulCommutative R] [TopologicalSpace R]
 
 @[to_additive (dont_translate := R) addRingConvolution_comm]
 lemma ringConvolution_comm (f g : M → R) :

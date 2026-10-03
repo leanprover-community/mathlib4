@@ -35,7 +35,7 @@ public section
 
 section Irreducible
 
-variable (R L M : Type*) [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
+variable (R L M : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
 
 lemma LieModule.nontrivial_of_isIrreducible [LieModule.IsIrreducible R L M] : Nontrivial M where
   exists_pair_ne := by
@@ -48,7 +48,7 @@ end Irreducible
 
 namespace LieAlgebra
 
-variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R L : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 
 variable {R L} in
 theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]

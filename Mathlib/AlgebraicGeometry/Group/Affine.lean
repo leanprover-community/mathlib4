@@ -259,14 +259,14 @@ instance instGrpObjSpecAsOverSpec [HopfAlgebra R A] : GrpObj ((Spec A).asOver (S
 instance instCommGrpObjSpecAsOverSpec [HopfAlgebra R A] [IsCocomm R A] :
     CommGrpObj ((Spec A).asOver (Spec R)) where
 
-instance {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+instance {R S T : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S] [Algebra R T]
     (f : S →ₐ[R] T) : (Spec.map (CommRingCat.ofHom f.toRingHom)).IsOver (Spec ↧R) where
   comp_over := by simp [specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Spec.map` as a `MulEquiv` on hom-sets. -/
-def Spec.mapMulEquiv {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Bialgebra R S]
+def Spec.mapMulEquiv {R S T : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Bialgebra R S]
     [Algebra R T] :
     WithConv (S →ₐ[R] T) ≃*
       ((Spec ↧T).asOver (Spec ↧R) ⟶ (Spec ↧S).asOver (Spec ↧R)) where
@@ -341,7 +341,7 @@ instance [G.Over (Spec R)] [GrpObj (G.asOver (Spec R))] [IsAffine G] :
   exact ((commHopfAlgCatEquivCogrpCommAlgCat R).inverse.obj <|
     .op <| .mk <| .op <| .of R Γ(G, ⊤)).hopfAlgebra
 
-variable {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S]
+variable {R S T : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S]
 
 open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 

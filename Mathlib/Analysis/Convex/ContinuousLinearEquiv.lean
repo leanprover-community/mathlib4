@@ -19,8 +19,8 @@ public section
 
 variable {𝕜 E F : Type*}
   [Field 𝕜] [PartialOrder 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
 
 namespace ContinuousLinearEquiv
 

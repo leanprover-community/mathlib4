@@ -27,7 +27,7 @@ absolutely continuous, fundamental theorem of calculus, integration by parts
 
 public section
 
-variable {X F : Type*} [PseudoMetricSpace X] [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {X F : Type*} [PseudoMetricSpace X] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
 
 open Filter Fin.NatCast Function MeasureTheory Set
 

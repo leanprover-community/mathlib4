@@ -39,7 +39,7 @@ open scoped Affine
 namespace Affine
 
 variable (k : Type*) {V V₂ V₃ : Type*} (P P₂ P₃ : Type*)
-variable [Ring k] [AddCommGroup V] [AddCommGroup V₂] [AddCommGroup V₃]
+variable [Ring k] [AddGroup V] [IsAddCommutative V] [AddGroup V₂] [IsAddCommutative V₂] [AddGroup V₃] [IsAddCommutative V₃]
 variable [Module k V] [Module k V₂] [Module k V₃]
 variable [AffineSpace V P] [AffineSpace V₂ P₂] [AffineSpace V₃ P₃]
 
@@ -377,8 +377,8 @@ namespace Affine
 
 namespace Simplex
 
-variable {k V V₂ P P₂ : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
-variable [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+variable {k V V₂ P P₂ : Type*} [Ring k] [AddGroup V] [IsAddCommutative V] [Module k V] [AffineSpace V P]
+variable [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AffineSpace V₂ P₂]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
 of the vertices with weights in a set `I`. -/

@@ -42,14 +42,14 @@ variable {R : Type*}
 def Squarefree [Monoid R] (r : R) : Prop :=
   ∀ x : R, x * x ∣ r → IsUnit x
 
-theorem IsRelPrime.of_squarefree_mul [CommMonoid R] {m n : R} (h : Squarefree (m * n)) :
+theorem IsRelPrime.of_squarefree_mul [Monoid R] [IsMulCommutative R] {m n : R} (h : Squarefree (m * n)) :
     IsRelPrime m n := fun c hca hcb ↦ h c (mul_dvd_mul hca hcb)
 
 @[simp]
-theorem IsUnit.squarefree [CommMonoid R] {x : R} (h : IsUnit x) : Squarefree x := fun _ hdvd =>
+theorem IsUnit.squarefree [Monoid R] [IsMulCommutative R] {x : R} (h : IsUnit x) : Squarefree x := fun _ hdvd =>
   isUnit_of_mul_isUnit_left (isUnit_of_dvd_unit hdvd h)
 
-theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
+theorem squarefree_one [Monoid R] [IsMulCommutative R] : Squarefree (1 : R) :=
   isUnit_one.squarefree
 
 @[simp]
@@ -63,7 +63,7 @@ theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squar
   exact not_squarefree_zero hm
 
 @[simp]
-theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squarefree x := by
+theorem Irreducible.squarefree [Monoid R] [IsMulCommutative R] {x : R} (h : Irreducible x) : Squarefree x := by
   rintro y ⟨z, hz⟩
   rw [mul_assoc] at hz
   rcases h.isUnit_or_isUnit hz with (hu | hu)
@@ -71,14 +71,14 @@ theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squa
   · apply isUnit_of_mul_isUnit_left hu
 
 @[simp]
-theorem Prime.squarefree [CommMonoidWithZero R] [IsCancelMulZero R] {x : R} (h : Prime x) :
+theorem Prime.squarefree [MonoidWithZero R] [IsMulCommutative R] [IsCancelMulZero R] {x : R} (h : Prime x) :
     Squarefree x :=
   h.irreducible.squarefree
 
 theorem Squarefree.of_mul_left [Monoid R] {m n : R} (hmn : Squarefree (m * n)) : Squarefree m :=
   fun p hp => hmn p (dvd_mul_of_dvd_left hp n)
 
-theorem Squarefree.of_mul_right [CommMonoid R] {m n : R} (hmn : Squarefree (m * n)) :
+theorem Squarefree.of_mul_right [Monoid R] [IsMulCommutative R] {m n : R} (hmn : Squarefree (m * n)) :
     Squarefree n := fun p hp => hmn p (dvd_mul_of_dvd_right hp m)
 
 theorem Squarefree.squarefree_of_dvd [Monoid R] {x y : R} (hdvd : x ∣ y) (hsq : Squarefree y) :
@@ -104,7 +104,7 @@ theorem Squarefree.pow_dvd_of_pow_dvd [Monoid R] {x y : R} {n : ℕ}
 
 section SquarefreeGcdOfSquarefree
 
-variable {α : Type*} [CommMonoidWithZero α] [GCDMonoid α]
+variable {α : Type*} [MonoidWithZero α] [IsMulCommutative α] [GCDMonoid α]
 
 theorem Squarefree.gcd_right (a : α) {b : α} (hb : Squarefree b) : Squarefree (gcd a b) :=
   hb.squarefree_of_dvd (gcd_dvd_right _ _)
@@ -114,7 +114,7 @@ theorem Squarefree.gcd_left {a : α} (b : α) (ha : Squarefree a) : Squarefree (
 
 end SquarefreeGcdOfSquarefree
 
-theorem squarefree_iff_emultiplicity_le_one [CommMonoid R] (r : R) :
+theorem squarefree_iff_emultiplicity_le_one [Monoid R] [IsMulCommutative R] (r : R) :
     Squarefree r ↔ ∀ x : R, emultiplicity x r ≤ 1 ∨ IsUnit x := by
   refine forall_congr' fun a => ?_
   rw [← sq, pow_dvd_iff_le_emultiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
@@ -124,7 +124,7 @@ theorem squarefree_iff_emultiplicity_le_one [CommMonoid R] (r : R) :
 
 section Irreducible
 
-variable [CommMonoidWithZero R] [WfDvdMonoid R]
+variable [MonoidWithZero R] [IsMulCommutative R] [WfDvdMonoid R]
 
 theorem squarefree_iff_no_irreducibles {x : R} (hx₀ : x ≠ 0) :
     Squarefree x ↔ ∀ p, Irreducible p → ¬ (p * p ∣ x) := by
@@ -158,7 +158,7 @@ end Irreducible
 section IsRadical
 
 section
-variable [CommMonoidWithZero R] [DecompositionMonoid R]
+variable [MonoidWithZero R] [IsMulCommutative R] [DecompositionMonoid R]
 
 theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
   (isRadical_iff_pow_one_lt 2 one_lt_two).2 fun y hy ↦ by
@@ -170,7 +170,7 @@ theorem Squarefree.dvd_pow_iff_dvd {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 
 
 end
 
-variable [CommMonoidWithZero R] [IsCancelMulZero R] {x y p d : R}
+variable [MonoidWithZero R] [IsMulCommutative R] [IsCancelMulZero R] {x y p d : R}
 
 theorem IsRadical.squarefree (h0 : x ≠ 0) (h : IsRadical x) : Squarefree x := by
   rintro z ⟨w, rfl⟩
@@ -261,7 +261,7 @@ end IsRadical
 
 namespace UniqueFactorizationMonoid
 
-variable [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
+variable [MonoidWithZero R] [IsMulCommutative R] [UniqueFactorizationMonoid R]
 
 lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
     ∃ (y : R) (n : ℕ), Squarefree y ∧ y ∣ x ∧ x ∣ y ^ n := by

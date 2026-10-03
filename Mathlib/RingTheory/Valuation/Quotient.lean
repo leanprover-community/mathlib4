@@ -22,7 +22,7 @@ on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
 
 namespace Valuation
 
-variable {R Γ₀ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀]
+variable {R Γ₀ : Type*} [Ring R] [IsMulCommutative R] [LinearOrderedCommMonoidWithZero Γ₀]
 variable (v : Valuation R Γ₀)
 
 /-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
@@ -79,7 +79,7 @@ end Valuation
 namespace AddValuation
 
 variable {R Γ₀ : Type*}
-variable [CommRing R] [LinearOrderedAddCommMonoidWithTop Γ₀]
+variable [Ring R] [IsMulCommutative R] [LinearOrderedAddCommMonoidWithTop Γ₀]
 variable (v : AddValuation R Γ₀)
 
 /-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
@@ -96,7 +96,7 @@ theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
     (v.onQuot hJ).comap (Ideal.Quotient.mk J) = v :=
   Valuation.onQuot_comap_eq v hJ
 
-theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
+theorem comap_supp {S : Type*} [Ring S] [IsMulCommutative S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Valuation.comap_supp v f
 

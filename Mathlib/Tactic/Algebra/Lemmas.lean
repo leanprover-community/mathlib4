@@ -21,7 +21,7 @@ namespace Mathlib.Tactic.Algebra
 
 section ring
 
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
 
 /- evalCast -/
 theorem isInt_negOfNat_eq {a : A} {lit : ℕ} (h : IsInt a (Int.negOfNat lit)) :
@@ -52,7 +52,7 @@ theorem isRat_eq_rawCast {a : A} {n d : ℕ} (h : IsRat a (.negOfNat n) d) :
 
 end field
 
-variable {R A : Type*} [sR : CommSemiring R] [sA : CommSemiring A] [sAlg : Algebra R A]
+variable {R A : Type*} [sR : Semiring R] [IsMulCommutative R] [sA : Semiring A] [IsMulCommutative A] [sAlg : Algebra R A]
 
 /- evalCast -/
 theorem isNat_zero_eq {a : A} (h : IsNat a 0) : a = 0 := by
@@ -86,17 +86,17 @@ theorem rat_rawCast_neg {R} [DivisionRing R] :
 end cleanupSMul
 section cleanupConsts
 
-theorem ofNat_smul {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
+theorem ofNat_smul {R A} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
     [n.AtLeastTwo] {a : A} :
     (ofNat(n) : R) • a = ofNat(n) * a := by
   simp_rw [← nat_rawCast_2]
   simp [Nat.cast_smul_eq_nsmul]
 
-theorem neg_ofNat_smul {R A} [CommRing R] [CommRing A] [Algebra R A] {a : A} [n.AtLeastTwo] :
+theorem neg_ofNat_smul {R A} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] {a : A} [n.AtLeastTwo] :
     (- ofNat(n) : R) • a = - (ofNat(n)) * a := by
   simpa [← nat_rawCast_2] using! ofNat_smul
 
-theorem neg_1_smul {R A} [CommRing R] [CommRing A] [Algebra R A] {a : A} :
+theorem neg_1_smul {R A} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] {a : A} :
     (-1 : R) • a = - a := by
   simp
 
@@ -204,7 +204,7 @@ theorem cast_smul_eq_mul {R' : Type*} [HSMul R' A A] {r' : R'} {r r'' : R}
   simp [← h_smul, ← hr, Algebra.smul_def r a]
 
 /- RingCompute.neg -/
-theorem neg_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+theorem neg_algebraMap {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
     {r t : R} (h : -r = t) :
     -(algebraMap R A r) = algebraMap R A t := by
   rw [← map_neg, h]

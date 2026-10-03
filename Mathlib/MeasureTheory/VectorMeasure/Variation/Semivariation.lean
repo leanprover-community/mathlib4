@@ -45,7 +45,7 @@ open Set Filter
 
 namespace MeasureTheory.VectorMeasure
 
-variable {X E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mX : MeasurableSpace X}
+variable {X E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] {mX : MeasurableSpace X}
   {μ : VectorMeasure X E} {s t : Set X}
 
 /-- The semivariation of a vector measure, defined as the supremum of the variations

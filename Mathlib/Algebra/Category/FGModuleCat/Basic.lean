@@ -89,7 +89,7 @@ instance : Inhabited (FGModuleCat.{v} R) :=
   ⟨⟨↧PUnit, by unfold ModuleCat.isFG; infer_instance⟩⟩
 
 /-- Lift an unbundled finitely generated module to `FGModuleCat R`. -/
-abbrev of (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModuleCat R :=
+abbrev of (V : Type v) [AddGroup V] [IsAddCommutative V] [Module R V] [Module.Finite R V] : FGModuleCat R :=
   ⟨↧V, inferInstanceAs <| Module.Finite R V⟩
 
 open Lean.PrettyPrinter.Delaborator in
@@ -98,13 +98,13 @@ open Lean.PrettyPrinter.Delaborator in
 meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
-lemma of_carrier (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] :
+lemma of_carrier (V : Type v) [AddGroup V] [IsAddCommutative V] [Module R V] [Module.Finite R V] :
     of R V = V := rfl
 
 variable {R} in
 /-- Lift a linear map between finitely generated modules to `FGModuleCat R`. -/
-abbrev ofHom {V W : Type v} [AddCommGroup V] [Module R V] [Module.Finite R V]
-    [AddCommGroup W] [Module R W] [Module.Finite R W]
+abbrev ofHom {V W : Type v} [AddGroup V] [IsAddCommutative V] [Module R V] [Module.Finite R V]
+    [AddGroup W] [IsAddCommutative W] [Module R W] [Module.Finite R W]
     (f : V →ₗ[R] W) : of R V ⟶ of R W :=
   ConcreteCategory.ofHom f
 
@@ -128,8 +128,8 @@ variable {R} in
 /-- Converts a `LinearEquiv` to an isomorphism in the category `FGModuleCat R`. -/
 @[simps]
 def _root_.LinearEquiv.toFGModuleCatIso
-    {V W : Type v} [AddCommGroup V] [Module R V] [Module.Finite R V]
-    [AddCommGroup W] [Module R W] [Module.Finite R W] (e : V ≃ₗ[R] W) :
+    {V W : Type v} [AddGroup V] [IsAddCommutative V] [Module R V] [Module.Finite R V]
+    [AddGroup W] [IsAddCommutative W] [Module R W] [Module.Finite R W] (e : V ≃ₗ[R] W) :
     FGModuleCat.of R V ≅ FGModuleCat.of R W where
   hom := ConcreteCategory.ofHom e.toLinearMap
   inv := ConcreteCategory.ofHom e.symm.toLinearMap
@@ -156,7 +156,7 @@ end Ring
 
 section CommRing
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 instance : (ModuleCat.isFG R).IsMonoidal where
   prop_unit := Module.Finite.self R
@@ -273,12 +273,12 @@ end FGModuleCat
 
 @[simp]
 theorem LinearMap.comp_id_fgModuleCat
-    {R} [Ring R] {G : FGModuleCat.{v} R} {H : Type v} [AddCommGroup H] [Module R H]
+    {R} [Ring R] {G : FGModuleCat.{v} R} {H : Type v} [AddGroup H] [IsAddCommutative H] [Module R H]
     (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f :=
   ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.ofHom f)
 
 @[simp]
 theorem LinearMap.id_fgModuleCat_comp
-    {R} [Ring R] {G : Type v} [AddCommGroup G] [Module R G] {H : FGModuleCat.{v} R}
+    {R} [Ring R] {G : Type v} [AddGroup G] [IsAddCommutative G] [Module R G] {H : FGModuleCat.{v} R}
     (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f :=
   ModuleCat.hom_ext_iff.mp <| Category.comp_id (ModuleCat.ofHom f)

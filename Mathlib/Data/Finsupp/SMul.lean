@@ -42,7 +42,7 @@ end
 
 section
 
-variable [Monoid G] [MulAction G α] [AddCommMonoid M]
+variable [Monoid G] [MulAction G α] [AddMonoid M] [IsAddCommutative M]
 
 /-- Scalar multiplication acting on the domain.
 
@@ -85,7 +85,7 @@ end
 
 section
 
-variable [Group G] [MulAction G α] [AddCommMonoid M]
+variable [Group G] [MulAction G α] [AddMonoid M] [IsAddCommutative M]
 
 attribute [local instance] comapSMul comapMulAction comapDistribMulAction
 
@@ -123,7 +123,7 @@ instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     one_smul := fun x => ext fun y => one_smul R (x y)
     mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
 
-instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
+instance module [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : Module R (α →₀ M) :=
   { toDistribMulAction := Finsupp.distribMulAction α M
     zero_smul := fun _ => ext fun _ => zero_smul _ _
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
@@ -131,7 +131,7 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →�
 variable {α M}
 
 @[simp]
-theorem support_smul_eq [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
+theorem support_smul_eq [Semiring R] [IsDomain R] [AddMonoid M] [IsAddCommutative M] [Module R M]
     [Module.IsTorsionFree R M] {b : R} (hb : b ≠ 0) {g : α →₀ M} : (b • g).support = g.support :=
   Finset.ext fun a => by simp [Finsupp.smul_apply, hb]
 
@@ -148,7 +148,7 @@ theorem filter_smul [Zero M] [SMulZeroClass R M] {b : R} {v : α →₀ M} :
 
 end
 
-theorem mapDomain_smul [AddCommMonoid M] [DistribSMul R M] {f : α → β} (b : R)
+theorem mapDomain_smul [AddMonoid M] [IsAddCommutative M] [DistribSMul R M] {f : α → β} (b : R)
     (v : α →₀ M) : mapDomain f (b • v) = b • mapDomain f v :=
   mapDomain_mapRange _ _ _ _ (smul_add b)
 
@@ -175,21 +175,21 @@ theorem comapDomain_smul_of_injective [Zero M] [SMulZeroClass R M] {f : α → �
 
 end
 
-theorem sum_smul_index [MulZeroClass R] [AddCommMonoid M] {g : α →₀ R} {b : R} {h : α → R → M}
+theorem sum_smul_index [MulZeroClass R] [AddMonoid M] [IsAddCommutative M] {g : α →₀ R} {b : R} {h : α → R → M}
     (h0 : ∀ i, h i 0 = 0) : (b • g).sum h = g.sum fun i a => h i (b * a) :=
   Finsupp.sum_mapRange_index h0
 
-theorem sum_smul_index' [Zero M] [SMulZeroClass R M] [AddCommMonoid N] {g : α →₀ M} {b : R}
+theorem sum_smul_index' [Zero M] [SMulZeroClass R M] [AddMonoid N] [IsAddCommutative N] {g : α →₀ M} {b : R}
     {h : α → M → N} (h0 : ∀ i, h i 0 = 0) : (b • g).sum h = g.sum fun i c => h i (b • c) :=
   Finsupp.sum_mapRange_index h0
 
 /-- A version of `Finsupp.sum_smul_index'` for bundled additive maps. -/
-theorem sum_smul_index_addMonoidHom [AddZeroClass M] [AddCommMonoid N] [SMulZeroClass R M]
+theorem sum_smul_index_addMonoidHom [AddZeroClass M] [AddMonoid N] [IsAddCommutative N] [SMulZeroClass R M]
     {g : α →₀ M} {b : R} {h : α → M →+ N} :
     ((b • g).sum fun a => h a) = g.sum fun i c => h i (b • c) :=
   sum_mapRange_index fun i => (h i).map_zero
 
-instance moduleIsTorsionFree [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type*}
+instance moduleIsTorsionFree [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] {ι : Type*}
     [Module.IsTorsionFree R M] : Module.IsTorsionFree R (ι →₀ M) where
   isSMulRegular r hr f g hfg := by ext i; exact hr.isSMulRegular congr($hfg i)
 

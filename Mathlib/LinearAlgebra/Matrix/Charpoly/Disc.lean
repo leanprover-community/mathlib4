@@ -18,7 +18,7 @@ open Polynomial
 
 namespace Matrix
 
-variable {R n : Type*} [CommRing R] [Fintype n] [DecidableEq n]
+variable {R n : Type*} [Ring R] [IsMulCommutative R] [Fintype n] [DecidableEq n]
 
 /-- The discriminant of a matrix is defined to be the discriminant of its characteristic
 polynomial. -/

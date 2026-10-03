@@ -817,7 +817,7 @@ for sums of two elements from it.
 
 namespace Finset
 
-variable {R S : Type*} [Semiring R] [CommSemiring S] [LinearOrder S] [IsOrderedRing S]
+variable {R S : Type*} [Semiring R] [Semiring S] [IsMulCommutative S] [LinearOrder S] [IsOrderedRing S]
 
 /-- The "local" version of the height bound for arbitrary sums for general (possibly archimedean)
 absolute values. -/

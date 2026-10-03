@@ -39,7 +39,7 @@ open Int Set
 variable {G M R K : Type*}
 
 @[to_additive]
-lemma MulArchimedean.comap [CommMonoid G] [LinearOrder G] [CommMonoid M] [PartialOrder M]
+lemma MulArchimedean.comap [Monoid G] [IsMulCommutative G] [LinearOrder G] [Monoid M] [IsMulCommutative M] [PartialOrder M]
     [MulArchimedean M] (f : G →* M) (hf : StrictMono f) :
     MulArchimedean G where
   arch x _ h := by
@@ -47,7 +47,7 @@ lemma MulArchimedean.comap [CommMonoid G] [LinearOrder G] [CommMonoid M] [Partia
     simp [← map_pow, hf.le_iff_le]
 
 @[to_additive]
-instance OrderDual.instMulArchimedean [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
+instance OrderDual.instMulArchimedean [Group G] [IsMulCommutative G] [PartialOrder G] [IsOrderedMonoid G]
     [MulArchimedean G] :
     MulArchimedean Gᵒᵈ :=
   ⟨fun x y hy =>
@@ -55,17 +55,17 @@ instance OrderDual.instMulArchimedean [CommGroup G] [PartialOrder G] [IsOrderedM
     let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (one_lt_inv'.2 hy)
     ⟨n, by rwa [inv_pow, inv_le_inv_iff] at hn⟩⟩
 
-instance Additive.instArchimedean [CommGroup G] [PartialOrder G] [MulArchimedean G] :
+instance Additive.instArchimedean [Group G] [IsMulCommutative G] [PartialOrder G] [MulArchimedean G] :
     Archimedean (Additive G) :=
   ⟨fun x _ hy ↦ MulArchimedean.arch x.toMul hy⟩
 
-instance Multiplicative.instMulArchimedean [AddCommGroup G] [PartialOrder G] [Archimedean G] :
+instance Multiplicative.instMulArchimedean [AddGroup G] [IsAddCommutative G] [PartialOrder G] [Archimedean G] :
     MulArchimedean (Multiplicative G) :=
   ⟨fun x _ hy ↦ Archimedean.arch x.toAdd hy⟩
 
 section IsOrderedMonoid
 
-variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
+variable [Group G] [IsMulCommutative G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
 
 /-- An archimedean decidable linearly ordered `CommGroup` has a version of the floor: for
 `a > 1`, any `g` in the group lies between some two consecutive powers of `a`. -/
@@ -456,14 +456,14 @@ instance : Archimedean ℤ :=
         simpa only [nsmul_eq_mul, zero_add, mul_one] using
           mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.natCast_nonneg n.toNat)⟩⟩
 
-instance Nonneg.instArchimedean [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+instance Nonneg.instArchimedean [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M]
     [Archimedean M] :
     Archimedean (Nonneg M) :=
   ⟨fun x y hy =>
     let ⟨n, hr⟩ := Archimedean.arch (x : M) (hy : (0 : M) < y)
     ⟨n, mod_cast hr⟩⟩
 
-instance Nonneg.instMulArchimedean [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
+instance Nonneg.instMulArchimedean [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R]
     [Archimedean R] [ExistsAddOfLE R] :
     MulArchimedean (Nonneg R) :=
   ⟨fun x _ hy ↦ (pow_unbounded_of_one_lt x hy).imp fun _ h ↦ h.le⟩
@@ -487,11 +487,11 @@ instance (priority := 100) FloorRing.archimedean (K) [Field K] [LinearOrder K]
   exact fun x => ⟨⌈x⌉, Int.le_ceil x⟩
 
 @[to_additive]
-instance Units.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArchimedean M] :
+instance Units.instMulArchimedean (M) [Monoid M] [IsMulCommutative M] [PartialOrder M] [MulArchimedean M] :
     MulArchimedean Mˣ :=
   ⟨fun x {_} h ↦ MulArchimedean.arch x.val h⟩
 
-instance WithBot.instArchimedean (M) [AddCommMonoid M] [PartialOrder M] [Archimedean M] :
+instance WithBot.instArchimedean (M) [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [Archimedean M] :
     Archimedean (WithBot M) := by
   constructor
   intro x y hxy
@@ -502,7 +502,7 @@ instance WithBot.instArchimedean (M) [AddCommMonoid M] [PartialOrder M] [Archime
     | bot => refine ⟨0, bot_le⟩
     | coe x => simpa [← WithBot.coe_nsmul] using (Archimedean.arch x (by simpa using hxy))
 
-instance WithZero.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArchimedean M] :
+instance WithZero.instMulArchimedean (M) [Monoid M] [IsMulCommutative M] [PartialOrder M] [MulArchimedean M] :
     MulArchimedean (WithZero M) := by
   constructor
   intro x y hxy

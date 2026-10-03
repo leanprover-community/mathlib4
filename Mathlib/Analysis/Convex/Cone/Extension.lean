@@ -50,7 +50,7 @@ but in Lean `⊤ : Submodule E` is isomorphic but is not equal to `E`. In `riesz
 we use this isomorphism to prove the theorem.
 -/
 
-variable [AddCommGroup E] [Module ℝ E]
+variable [AddGroup E] [IsAddCommutative E] [Module ℝ E]
 
 namespace RieszExtension
 

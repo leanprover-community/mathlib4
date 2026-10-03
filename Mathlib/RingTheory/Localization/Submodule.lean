@@ -24,7 +24,7 @@ commutative ring, field of fractions
 @[expose] public section
 
 
-variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (M : Submonoid R) (S : Type*) [Semiring S] [IsMulCommutative S]
 variable [Algebra R S]
 
 namespace IsLocalization
@@ -82,19 +82,19 @@ theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
   rw [isNoetherianRing_iff, isNoetherian_iff] at h ⊢
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
 
-instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
+instance {R} [Ring R] [IsMulCommutative R] [IsNoetherianRing R] (S : Submonoid R) :
     IsNoetherianRing (Localization S) :=
   IsLocalization.isNoetherianRing S _ ‹_›
 
 lemma _root_.Algebra.EssFiniteType.isNoetherianRing
-    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
     [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
   exact IsLocalization.isNoetherianRing (Algebra.EssFiniteType.submonoid R S) _
     (Algebra.FiniteType.isNoetherianRing R _)
 section NonZeroDivisors
 
-variable {R : Type*} [CommRing R] {M : Submonoid R}
-  {S : Type*} [CommRing S] [Algebra R S] [IsLocalization M S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {M : Submonoid R}
+  {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] [IsLocalization M S]
 
 @[gcongr, mono]
 theorem coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal R} :
@@ -128,7 +128,7 @@ end NonZeroDivisors
 
 variable {S}
 
-theorem mem_span_iff {N : Type*} [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
+theorem mem_span_iff {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N] [Module S N] [IsScalarTower R S N]
     {x : N} {a : Set N} :
     x ∈ Submodule.span S a ↔ ∃ y ∈ Submodule.span R a, ∃ z : M, x = mk' S 1 z • y := by
   constructor
@@ -176,7 +176,7 @@ variable {R K : Type*}
 
 section CommRing
 
-variable [CommRing R] [CommRing K] [Algebra R K] [IsFractionRing R K]
+variable [Ring R] [IsMulCommutative R] [Ring K] [IsMulCommutative K] [Algebra R K] [IsFractionRing R K]
 
 @[simp, mono, gcongr]
 theorem coeSubmodule_le_coeSubmodule {I J : Ideal R} :

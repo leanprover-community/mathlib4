@@ -35,14 +35,14 @@ section OrderedSemiring
 /-- A set is strictly convex if the open segment between any two distinct points lies is in its
 interior. This basically means "convex and not flat on the boundary". -/
 def StrictConvex (𝕜 : Type*) {E : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E]
-    [AddCommMonoid E] [SMul 𝕜 E] (s : Set E) : Prop :=
+    [AddMonoid E] [IsAddCommutative E] [SMul 𝕜 E] (s : Set E) : Prop :=
   s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ interior s
 
 variable [Semiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E] [TopologicalSpace F]
 
 section AddCommMonoid
 
-variable [AddCommMonoid E] [AddCommMonoid F]
+variable [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F]
 
 section SMul
 
@@ -140,7 +140,7 @@ theorem StrictConvex.is_linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {
 
 section LinearOrderedCancelAddCommMonoid
 
-variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
+variable [TopologicalSpace β] [AddMonoid β] [IsAddCommutative β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
   [OrderTopology β] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
@@ -189,7 +189,7 @@ end AddCommMonoid
 
 section AddCancelCommMonoid
 
-variable [AddCancelCommMonoid E] [ContinuousAdd E] [Module 𝕜 E] {s : Set E}
+variable [AddCancelMonoid E] [IsAddCommutative E] [ContinuousAdd E] [Module 𝕜 E] {s : Set E}
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.preimage_add_right (hs : StrictConvex 𝕜 s) (z : E) :
@@ -208,7 +208,7 @@ end AddCancelCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+variable [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F]
 
 section continuous_add
 
@@ -262,7 +262,7 @@ end AddCommGroup
 end OrderedSemiring
 
 section CommSemiring
-variable [CommSemiring 𝕜] [IsDomain 𝕜] [PartialOrder 𝕜] [TopologicalSpace E] [AddCommGroup E]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [IsDomain 𝕜] [PartialOrder 𝕜] [TopologicalSpace E] [AddGroup E] [IsAddCommutative E]
   [Module 𝕜 E] [Module.IsTorsionFree 𝕜 E] [ContinuousConstSMul 𝕜 E] {s : Set E}
 
 theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
@@ -285,7 +285,7 @@ variable [Ring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E] [TopologicalSpace 
 
 section AddCommGroup
 
-variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {s t : Set E} {x y : E}
+variable [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F] {s t : Set E} {x y : E}
 
 theorem StrictConvex.eq_of_openSegment_subset_frontier
     [IsOrderedRing 𝕜] [Nontrivial 𝕜] [DenselyOrdered 𝕜]
@@ -352,7 +352,7 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Topological
 
 section AddCommGroup
 
-variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {s : Set E} {x : E}
+variable [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F] {s : Set E} {x : E}
 
 /-- Alternative definition of set strict convexity, using division. -/
 theorem strictConvex_iff_div :

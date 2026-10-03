@@ -35,8 +35,8 @@ namespace LieAlgebra
 
 namespace ExtendScalars
 
-variable [CommRing R] [CommRing A] [Algebra R A] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] [LieRing L] [LieAlgebra R L]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 set_option backward.privateInPublic true in
 /-- The Lie bracket on the extension of a Lie algebra `L` over `R` by an algebra `A` over `R`. -/
@@ -119,7 +119,7 @@ instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
   lie_smul _ _ _ := map_smul _ _ _
 
 /-- The Lie algebra homomorphism induced by an algebra map. -/
-def map {R A B L L' : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+def map {R A B L L' : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] [Ring B] [IsMulCommutative B] [Algebra R B]
     [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L'] (f : A →ₐ[R] B) (g : L →ₗ⁅R⁆ L') :
     A ⊗[R] L →ₗ⁅R⁆ B ⊗[R] L' :=
   { TensorProduct.map f.toLinearMap g with
@@ -132,7 +132,7 @@ def map {R A B L L' : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B
         refine y.inductionOn (fun _ _ h ↦ by simp [h]) (by simp_all) }
 
 @[simp]
-lemma map_apply_tmul {R A B L L' : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B]
+lemma map_apply_tmul {R A B L L' : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] [Ring B] [IsMulCommutative B]
     [Algebra R B] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L'] {f : A →ₐ[R] B}
     {g : L →ₗ⁅R⁆ L'} (a : A) (x : L) :
     map f g (a ⊗ₜ x) = (f a) ⊗ₜ (g x) :=
@@ -148,10 +148,10 @@ variable [h : LieRing L]
 instance : LieRing (RestrictScalars R A L) :=
   h
 
-variable [CommRing A] [LieAlgebra A L]
+variable [Ring A] [IsMulCommutative A] [LieAlgebra A L]
 
 set_option backward.isDefEq.respectTransparency false in
-instance lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
+instance lieAlgebra [Ring R] [IsMulCommutative R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
   lie_smul t x y := (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
     (RestrictScalars.addEquiv R A L y) :)
 
@@ -161,9 +161,9 @@ end LieAlgebra
 
 section ExtendScalars
 
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-  [CommRing A] [Algebra R A]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
+  [Ring A] [IsMulCommutative A] [Algebra R A]
 
 @[simp]
 lemma LieModule.toEnd_baseChange (x : L) :

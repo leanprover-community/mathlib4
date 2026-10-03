@@ -30,7 +30,7 @@ open CategoryTheory Monoidal Sheaf MonoidalCategory MonoidalClosed MonoidalClose
 
 namespace LightCondensed
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 instance : (coherentTopology LightProfinite.{u}).W (A := ModuleCat.{u} R) |>.IsMonoidal :=
   GrothendieckTopology.W.transport_isMonoidal _ _

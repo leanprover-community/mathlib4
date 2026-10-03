@@ -27,7 +27,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type*` `[CommRing R]` (the coefficients)
++ `R : Type*` `[Ring R] [IsMulCommutative R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
@@ -55,7 +55,7 @@ variable {R : Type u} {σ : Type v} {a : R} {s : σ →₀ ℕ}
 
 section PDeriv
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 /-- `pderiv i p` is the partial derivative of `p` with respect to `i` -/
 def pderiv (i : σ) : Derivation R (MvPolynomial σ R) (MvPolynomial σ R) :=
@@ -133,7 +133,7 @@ theorem coeff_pderiv {i : σ} (p : MvPolynomial σ R) (m : σ →₀ ℕ) :
     apply ite_eq_right
     rwa [tsub_eq_iff_eq_add_of_le (fun _ ↦ by grind)]
 
-theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
+theorem pderiv_map {S} [Semiring S] [IsMulCommutative S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
     pderiv i (map φ f) = map φ (pderiv i f) := by
   apply induction_on f (fun r ↦ by simp) (fun p q hp hq ↦ by simp [hp, hq]) fun p j eq ↦ ?_
   obtain rfl | h := eq_or_ne j i
@@ -152,7 +152,7 @@ lemma pderiv_rename {τ : Type*} {f : σ → τ} (hf : Function.Injective f)
       Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add]
     split_ifs <;> simp
 
-lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
+lemma aeval_sumElim_pderiv_inl {S τ : Type*} [Ring S] [IsMulCommutative S] [Algebra R S]
     (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (j : σ) :
     aeval (Sum.elim X (C ∘ f)) ((pderiv (Sum.inl j)) p) =
       (pderiv j) ((aeval (Sum.elim X (C ∘ f))) p) := by
@@ -176,7 +176,7 @@ lemma pderiv_sumRingEquiv {σ ι} (p i) :
 @[deprecated (since := "2026-06-18")] alias pderiv_sumToIter := pderiv_sumRingEquiv
 
 @[simp]
-lemma pderiv_sumAlgEquiv {R S₁ S₂ : Type*} [CommSemiring R]
+lemma pderiv_sumAlgEquiv {R S₁ S₂ : Type*} [Semiring R] [IsMulCommutative R]
     (b : S₁) (p : MvPolynomial (S₁ ⊕ S₂) R) :
     pderiv b (sumAlgEquiv R S₁ S₂ p) = sumAlgEquiv R S₁ S₂ (pderiv (Sum.inl b) p) :=
   pderiv_sumRingEquiv ..

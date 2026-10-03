@@ -187,7 +187,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] [NoZeroDivisors R] {f : R[X]}
+variable {R : Type*} [Ring R] [IsMulCommutative R] [NoZeroDivisors R] {f : R[X]}
 
 theorem irreducible_of_mirror (h1 : ¬IsUnit f)
     (h2 : ∀ k, f * f.mirror = k * k.mirror → k = f ∨ k = -f ∨ k = f.mirror ∨ k = -f.mirror)

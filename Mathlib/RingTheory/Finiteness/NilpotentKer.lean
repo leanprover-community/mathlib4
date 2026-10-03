@@ -20,7 +20,7 @@ open TensorProduct
 /-- If `I` is a finitely generated nilpotent ideal of an `R`-algebra `S`, and `T = S / I` is
 `R`-finite, then `S` is also `R`-finite. -/
 lemma Module.finite_of_surjective_of_ker_le_nilradical
-    {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+    {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
     [Algebra R S] [Algebra R T]
     [Module.Finite R T] (f : S →ₐ[R] T)
     (hf₁ : Function.Surjective f) (hf₂ : RingHom.ker f ≤ nilradical S)

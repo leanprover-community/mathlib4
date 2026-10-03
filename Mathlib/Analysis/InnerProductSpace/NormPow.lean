@@ -27,8 +27,8 @@ open Asymptotics Real
 
 open scoped Topology NNReal
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
 
 theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
     HasFDerivAt (fun x : E ↦ ‖x‖ ^ p) ((p * ‖x‖ ^ (p - 2)) • innerSL ℝ x) x := by

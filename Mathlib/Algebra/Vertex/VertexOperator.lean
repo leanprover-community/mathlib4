@@ -32,12 +32,12 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 
 noncomputable section
 
-variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [Ring R] [IsMulCommutative R] [AddGroup V] [IsAddCommutative V] [Module R V]
 
 /-- A vertex operator over a commutative ring `R` is an `R`-linear map from an `R`-module `V` to
 Laurent series with coefficients in `V`.  We write this as a specialization of the heterogeneous
 case. -/
-abbrev VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V]
+abbrev VertexOperator (R : Type*) (V : Type*) [Ring R] [IsMulCommutative R] [AddGroup V] [IsAddCommutative V]
     [Module R V] := HVertexOperator ℤ R V V
 
 namespace VertexOperator

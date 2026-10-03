@@ -41,8 +41,8 @@ modulo the additional relations making the inclusion of `M` into an `R`-linear m
 @[expose] public section
 
 
-variable (R : Type*) [CommSemiring R]
-variable (M : Type*) [AddCommMonoid M] [Module R M]
+variable (R : Type*) [Semiring R] [IsMulCommutative R]
+variable (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 namespace TensorAlgebra
 
@@ -68,7 +68,7 @@ deriving Inhabited
 namespace TensorAlgebra
 
 -- This instance exists to avoid an nsmul diamond.
-instance {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
+instance {R A M} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Semiring A] [IsMulCommutative A]
     [Algebra R A] [Module A M] :
     SMul R (TensorAlgebra A M) :=
   inferInstanceAs <| SMul R (RingCon.Quotient _)
@@ -77,7 +77,7 @@ deriving instance Semiring for TensorAlgebra
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]
-instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
+instance instAlgebra {R A M} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Semiring A] [IsMulCommutative A]
     [Algebra R A] [Module R M] [Module A M]
     [IsScalarTower R A M] :
     Algebra R (TensorAlgebra A M) :=
@@ -87,22 +87,22 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Semiring.toNatAlgebra : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
-instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
+instance {R S A M} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [AddMonoid M] [IsAddCommutative M] [Semiring A] [IsMulCommutative A]
     [Algebra R A] [Algebra S A] [Module A M] :
     SMulCommClass R S (TensorAlgebra A M) :=
   inferInstanceAs <| SMulCommClass R S (RingCon.Quotient _)
 
-instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
+instance {R S A M} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [AddMonoid M] [IsAddCommutative M] [Semiring A] [IsMulCommutative A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module A M] [IsScalarTower R S A] :
     IsScalarTower R S (TensorAlgebra A M) :=
   inferInstanceAs <| IsScalarTower R S (RingCon.Quotient _)
 
-instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
+instance {S : Type*} [Ring S] [IsMulCommutative S] [Module S M] : Ring (TensorAlgebra S M) :=
   inferInstanceAs <| Ring (RingCon.Quotient _)
 
 -- verify there is no diamond
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
-variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
+variable (S M : Type) [Ring S] [IsMulCommutative S] [AddGroup M] [IsAddCommutative M] [Module S M] in
 example : (Ring.toIntAlgebra _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
 
 variable {M}

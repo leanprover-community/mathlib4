@@ -33,7 +33,7 @@ However, when the cone is also generating, its generators linearly span the modu
 
 variable {R M : Type*}
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommMonoid M] [Module R M]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable (C : PointedCone R M)
 
 namespace PointedCone

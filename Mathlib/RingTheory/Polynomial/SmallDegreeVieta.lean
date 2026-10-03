@@ -26,7 +26,7 @@ lemma eq_quadratic_of_degree_le_two [Semiring R] {p : R[X]} (hp : p.degree ≤ 2
   abel
 
 /-- **Vieta's formula** for quadratics. -/
-lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 x2 : R}
+lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [Ring R] [IsMulCommutative R] [IsDomain R] {a b c x1 x2 : R}
     (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
     b = -a * (x1 + x2) := by
   let p : R[X] := C a * X ^ 2 + C b * X + C c
@@ -38,7 +38,7 @@ lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c
     coeff_eq_esymm_roots_of_card hp_roots_card (k := 1) (by simp [hp_natDegree])
 
 /-- **Vieta's formula** for quadratics. -/
-lemma eq_mul_mul_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 x2 : R}
+lemma eq_mul_mul_of_roots_quadratic_eq_pair [Ring R] [IsMulCommutative R] [IsDomain R] {a b c x1 x2 : R}
     (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
     c = a * x1 * x2 := by
   let p : R[X] := C a * X ^ 2 + C b * X + C c
@@ -51,7 +51,7 @@ lemma eq_mul_mul_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 
 
 /-- **Vieta's formula** for quadratics (`aroots` version). -/
 lemma eq_neg_mul_add_of_aroots_quadratic_eq_pair
-    [CommRing T] [CommRing S] [IsDomain S] [Algebra T S] {a b c : T} {x1 x2 : S}
+    [Ring T] [IsMulCommutative T] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S] {a b c : T} {x1 x2 : S}
     (haroots : (C a * X ^ 2 + C b * X + C c).aroots S = {x1, x2}) :
     algebraMap T S b = -algebraMap T S a * (x1 + x2) := by
   rw [aroots_def, show map (algebraMap T S) (C a * X ^ 2 + C b * X + C c) = C ((algebraMap T S) a) *
@@ -59,7 +59,7 @@ lemma eq_neg_mul_add_of_aroots_quadratic_eq_pair
   exact eq_neg_mul_add_of_roots_quadratic_eq_pair haroots
 
 /-- **Vieta's formula** for quadratics (`aroots` version). -/
-lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain S] [Algebra T S]
+lemma eq_mul_mul_of_aroots_quadratic_eq_pair [Ring T] [IsMulCommutative T] [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra T S]
     {a b c : T} {x1 x2 : S} (haroots : (C a * X ^ 2 + C b * X + C c).aroots S = {x1, x2}) :
     algebraMap T S c = algebraMap T S a * x1 * x2 := by
   rw [aroots_def, show map (algebraMap T S) (C a * X ^ 2 + C b * X + C c) = C ((algebraMap T S) a) *
@@ -67,7 +67,7 @@ lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain
   exact eq_mul_mul_of_roots_quadratic_eq_pair haroots
 
 /-- **Vieta's formula** for quadratics as an iff. -/
-lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {a b c x1 x2 : R}
+lemma roots_quadratic_eq_pair_iff_of_ne_zero [Ring R] [IsMulCommutative R] [IsDomain R] {a b c x1 x2 : R}
     (ha : a ≠ 0) :
     (C a * X ^ 2 + C b * X + C c).roots = {x1, x2} ↔
       b = -a * (x1 + x2) ∧ c = a * x1 * x2 :=
@@ -83,7 +83,7 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {a b c x1
     roots_of_ne_zero_of_vieta⟩
 
 /-- **Vieta's formula** for quadratics as an iff (`aroots` version). -/
-lemma aroots_quadratic_eq_pair_iff_of_ne_zero [CommRing T] [CommRing S] [IsDomain S]
+lemma aroots_quadratic_eq_pair_iff_of_ne_zero [Ring T] [IsMulCommutative T] [Ring S] [IsMulCommutative S] [IsDomain S]
     [Algebra T S] {a b c : T} {x1 x2 : S} (ha : algebraMap T S a ≠ 0) :
     (C a * X ^ 2 + C b * X + C c).aroots S = {x1, x2} ↔
       algebraMap T S b = -algebraMap T S a * (x1 + x2) ∧
@@ -100,7 +100,7 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero' [Field R] {a b c x1 x2 : R} (ha : 
   grind
 
 /-- **Vieta's formula** for quadratics as an iff (`aroots, Field` version). -/
-lemma aroots_quadratic_eq_pair_iff_of_ne_zero' [CommRing T] [Field S] [Algebra T S] {a b c : T}
+lemma aroots_quadratic_eq_pair_iff_of_ne_zero' [Ring T] [IsMulCommutative T] [Field S] [Algebra T S] {a b c : T}
     {x1 x2 : S} (ha : algebraMap T S a ≠ 0) :
     (C a * X ^ 2 + C b * X + C c).aroots S = {x1, x2} ↔
       x1 + x2 = -algebraMap T S b / algebraMap T S a ∧

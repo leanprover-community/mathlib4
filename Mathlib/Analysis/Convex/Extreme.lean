@@ -51,7 +51,7 @@ variable {𝕜 E F ι : Type*} {M : ι → Type*}
 
 section SMul
 
-variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
+variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E] [SMul 𝕜 E]
 
 /-- A set `B` is an extreme subset of `A` if `B ⊆ A` and all points of `B` only belong to open
 segments whose ends are in `B`.
@@ -184,7 +184,7 @@ end SMul
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [AddCommGroup F] [∀ i, AddCommGroup (M i)]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)]
   [Module 𝕜 E] [Module 𝕜 F] [∀ i, Module 𝕜 (M i)] {A B : Set E}
 
 theorem IsExtreme.convex_sdiff [IsOrderedRing 𝕜] (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) :
@@ -235,7 +235,7 @@ end OrderedSemiring
 
 section OrderedRing
 variable {L : Type*} [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
   [EquivLike L E F] [LinearEquivClass L 𝕜 E F]
 
 lemma image_extremePoints (f : L) (s : Set E) :
@@ -251,7 +251,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 variable [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] {A : Set E} {x : E}
 
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
@@ -301,7 +301,7 @@ end LinearOrderedRing
 
 section star
 variable {𝕜 E : Type*} [Semiring 𝕜] [StarRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
-  [AddCommMonoid E] [StarAddMonoid E] [SMul 𝕜 E] [StarModule 𝕜 E]
+  [AddMonoid E] [IsAddCommutative E] [StarAddMonoid E] [SMul 𝕜 E] [StarModule 𝕜 E]
 
 @[simp] lemma star_segment (x y : E) : star (segment 𝕜 x y) = segment 𝕜 (star x) (star y) := by
   suffices ∀ x y : E, segment 𝕜 x y ⊆ star (segment 𝕜 (star x) (star y)) from

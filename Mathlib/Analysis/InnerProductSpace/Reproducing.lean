@@ -54,8 +54,8 @@ A reproducing kernel Hilbert space is a Hilbert space with an
 injection to functions mapping into another Hilbert space, such that point evaluation is continuous.
 -/
 class RKHS (𝕜 : outParam Type*) (H : Type*) (X V : outParam Type*) [RCLike 𝕜]
-    [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
-    [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] where
+    [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace 𝕜 V]
+    [NormedAddGroup H] [IsAddCommutative H] [InnerProductSpace 𝕜 H] where
   /-- Continuous injection to functions from the reproducing kernel Hilbert space `H` to functions
   from the domain `X` to the Hilbert space `V` -/
   coeCLM (𝕜) : H →L[𝕜] X → V
@@ -65,8 +65,8 @@ namespace RKHS
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {X : Type*}
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+variable {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace 𝕜 V]
+variable {H : Type*} [NormedAddGroup H] [IsAddCommutative H] [InnerProductSpace 𝕜 H]
 variable [RKHS 𝕜 H X V]
 
 /--
@@ -372,7 +372,7 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
 
 section Equiv
 
-variable {H' : Type*} [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [CompleteSpace H']
+variable {H' : Type*} [NormedAddGroup H'] [IsAddCommutative H'] [InnerProductSpace 𝕜 H'] [CompleteSpace H']
 variable [RKHS 𝕜 H' X V]
 
 variable (H) in
@@ -406,7 +406,7 @@ end OfKernel
 
 section Equiv
 
-variable {H' : Type*} [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [CompleteSpace H']
+variable {H' : Type*} [NormedAddGroup H'] [IsAddCommutative H'] [InnerProductSpace 𝕜 H'] [CompleteSpace H']
 variable [RKHS 𝕜 H' X V]
 
 private lemma toH'_apply_single (h : kernel H = kernel H') (x : X) (v : V) :

@@ -43,9 +43,9 @@ suppress_compilation
 
 universe u v
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
-variable (M : Type*) [AddCommGroup M] [Module R M]
-variable {N : Type*} [AddCommGroup N] [Module R N]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R)
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
 
 open TensorProduct
 
@@ -100,7 +100,7 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
 /-
 import Mathlib.RingTheory.AdicCompletion.Algebra
 
-variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
 
 -- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
 -- diamonds if `X = Y`.
@@ -131,7 +131,7 @@ def ofTensorProductInvOfPiFintype :
 /-
 import Mathlib.RingTheory.AdicCompletion.Algebra
 
-variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
 
 -- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
 -- diamonds if `X = Y`.
@@ -154,7 +154,7 @@ lemma ofTensorProductInvOfPiFintype_comp_ofTensorProduct :
 /-
 import Mathlib.RingTheory.AdicCompletion.Algebra
 
-variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
 
 -- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
 -- diamonds if `X = Y`.
@@ -214,8 +214,8 @@ lemma ofTensorProduct_surjective_of_finite [Module.Finite R M] :
 
 section Noetherian
 
-variable {R : Type u} [CommRing R] (I : Ideal R)
-variable (M : Type u) [AddCommGroup M] [Module R M]
+variable {R : Type u} [Ring R] [IsMulCommutative R] (I : Ideal R)
+variable (M : Type u) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-!
 
@@ -349,8 +349,8 @@ lemma ofTensorProductEquivOfFiniteNoetherian_symm_of
 
 section
 
-variable {M : Type u} [AddCommGroup M] [Module R M]
-variable {N : Type u} [AddCommGroup N] [Module R N] (f : M →ₗ[R] N)
+variable {M : Type u} [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {N : Type u} [AddGroup N] [IsAddCommutative N] [Module R N] (f : M →ₗ[R] N)
 variable [Module.Finite R M] [Module.Finite R N]
 
 lemma tensor_map_id_left_eq_map :

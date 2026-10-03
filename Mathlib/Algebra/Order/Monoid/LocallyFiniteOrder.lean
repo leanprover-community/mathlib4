@@ -37,7 +37,7 @@ open Finset
 
 section Multiplicative
 
-variable {M : Type*} [CancelCommMonoid M] [LinearOrder M] [IsOrderedMonoid M] [LocallyFiniteOrder M]
+variable {M : Type*} [CancelMonoid M] [IsMulCommutative M] [LinearOrder M] [IsOrderedMonoid M] [LocallyFiniteOrder M]
 
 @[to_additive]
 lemma Finset.card_Ico_mul_right [ExistsMulOfLE M] (a b c : M) :
@@ -64,8 +64,8 @@ lemma card_Ico_one_mul [ExistsMulOfLE M] (a b : M)
 
 end Multiplicative
 
-variable {M G : Type*} [AddCancelCommMonoid M] [LinearOrder M] [IsOrderedAddMonoid M]
-    [LocallyFiniteOrder M] [AddCommGroup G] [LinearOrder G]
+variable {M G : Type*} [AddCancelMonoid M] [IsAddCommutative M] [LinearOrder M] [IsOrderedAddMonoid M]
+    [LocallyFiniteOrder M] [AddGroup G] [IsAddCommutative G] [LinearOrder G]
     [IsOrderedAddMonoid G] [LocallyFiniteOrder G]
 
 variable (G) in
@@ -165,7 +165,7 @@ lemma LocallyFiniteOrder.orderAddMonoidEquiv_apply [Nontrivial G] (x : G) :
 
 /-- Any linearly ordered abelian group that is locally finite embeds to `Multiplicative ℤ`. -/
 noncomputable
-def LocallyFiniteOrder.orderMonoidEquiv (G : Type*) [CommGroup G] [LinearOrder G]
+def LocallyFiniteOrder.orderMonoidEquiv (G : Type*) [Group G] [IsMulCommutative G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] [Nontrivial G] :
     G ≃*o Multiplicative ℤ :=
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
@@ -173,13 +173,13 @@ def LocallyFiniteOrder.orderMonoidEquiv (G : Type*) [CommGroup G] [LinearOrder G
 
 /-- Any linearly ordered abelian group that is locally finite embeds into `Multiplicative ℤ`. -/
 noncomputable
-def LocallyFiniteOrder.orderMonoidHom (G : Type*) [CommGroup G] [LinearOrder G]
+def LocallyFiniteOrder.orderMonoidHom (G : Type*) [Group G] [IsMulCommutative G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
     G →*o Multiplicative ℤ :=
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
   ⟨(orderAddMonoidHom (Additive G)).toMultiplicative, (orderAddMonoidHom (Additive G)).2⟩
 
-lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [CommGroup G] [LinearOrder G]
+lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [Group G] [IsMulCommutative G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
     StrictMono (orderMonoidHom G) :=
   let : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›

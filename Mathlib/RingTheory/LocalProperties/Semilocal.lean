@@ -28,8 +28,8 @@ public section
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] [Finite (MaximalSpectrum R)]
-variable (M : Type*) [AddCommMonoid M] [Module R M]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [Finite (MaximalSpectrum R)]
+variable (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
@@ -108,7 +108,7 @@ section CommRing
 
 section IsLocalization
 
-variable {R : Type*} [CommRing R] [Finite (MaximalSpectrum R)]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [Finite (MaximalSpectrum R)]
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]

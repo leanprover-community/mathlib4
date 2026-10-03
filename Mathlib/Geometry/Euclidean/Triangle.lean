@@ -52,7 +52,7 @@ most conveniently be developed in terms of vectors and then used to
 deduce corresponding results for Euclidean affine spaces.
 -/
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V]
 
 /-- **Law of cosines** (cosine rule), vector angle form. -/
 theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle (x y : V) :
@@ -197,7 +197,7 @@ namespace Orientation
 
 open Module InnerProductGeometry
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [Fact (finrank ℝ V = 2)]
+variable {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [Fact (finrank ℝ V = 2)]
 variable (o : Orientation ℝ V (Fin 2))
 
 /-- **Converse of pons asinorum**, oriented vector angle form (given equality of angles mod `π`). -/
@@ -233,7 +233,7 @@ This section develops some geometrical definitions and results on
 open InnerProductGeometry
 open scoped EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- **Law of cosines** (cosine rule), angle-at-point form. -/

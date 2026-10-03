@@ -22,7 +22,7 @@ of `q`.
 public section
 
 namespace Polynomial
-variable {ι R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+variable {ι R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [Algebra R S]
 
 local notation3 "deg("p")" => natDegree p
 local notation3 "coeffs("p")" => Set.range (coeff p)

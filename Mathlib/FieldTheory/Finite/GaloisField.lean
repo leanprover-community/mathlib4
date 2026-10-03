@@ -54,7 +54,7 @@ instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     · simp only [rootSet, aroots, Polynomial.map_pow, map_X, Polynomial.map_sub]
     · rw [FiniteField.roots_X_pow_card_sub_X, val_toFinset, coe_univ, Algebra.adjoin_univ]
 
-theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
+theorem galois_poly_separable {K : Type*} [Ring K] [IsMulCommutative K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
     Separable (X ^ q - X : K[X]) := by
   use 1, X ^ q - X - 1
   rw [← CharP.cast_eq_zero_iff K[X] p] at h
@@ -289,12 +289,12 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
   exact ↑(algEquivOfCardEq p hKK')
 
 theorem pow_finrank_eq_natCard (p : ℕ) [Fact p.Prime]
-    (k : Type*) [AddCommGroup k] [Finite k] [Module (ZMod p) k] :
+    (k : Type*) [AddGroup k] [IsAddCommutative k] [Finite k] [Module (ZMod p) k] :
     p ^ Module.finrank (ZMod p) k = Nat.card k := by
   rw [Module.natCard_eq_pow_finrank (K := ZMod p), Nat.card_zmod]
 
 theorem pow_finrank_eq_card (p : ℕ) [Fact p.Prime]
-    (k : Type*) [AddCommGroup k] [Fintype k] [Module (ZMod p) k] :
+    (k : Type*) [AddGroup k] [IsAddCommutative k] [Fintype k] [Module (ZMod p) k] :
     p ^ Module.finrank (ZMod p) k = Fintype.card k := by
   rw [pow_finrank_eq_natCard, Fintype.card_eq_nat_card]
 

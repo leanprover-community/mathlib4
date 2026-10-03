@@ -48,7 +48,7 @@ obtained by pulling back the addition map `M × M →+ M`, with two axioms `z_ze
 and `z_zero₂`. We also require an additional data of `ε m n : (CatCenter D)ˣ`
 for `m` and `n`: even though this is determined by the `z` field of `TwistShiftData`,
 we make it a separate field so as to have control on its definitional properties. -/
-structure CommShift₂Setup (M : Type*) [AddCommMonoid M] [HasShift D M] extends
+structure CommShift₂Setup (M : Type*) [AddMonoid M] [IsAddCommutative M] [HasShift D M] extends
     TwistShiftData (PullbackShift D (AddMonoidHom.fst M M + AddMonoidHom.snd _ _)) (M × M) where
   z_zero₁ (m₁ m₂ : M) : z (0, m₁) (0, m₂) = 1 := by aesop
   z_zero₂ (m₁ m₂ : M) : z (m₁, 0) (m₂, 0) = 1 := by aesop
@@ -81,7 +81,7 @@ that is natural in `X₁` and `X₂`, and that these isomorphisms commute up to
 the multiplication with an element in `(CatCenter D)ˣ` which is determined by
 a `CommShift₂Setup D M` structure. (In most cases, one should use the
 abbreviation `CommShift₂Int`.) -/
-class CommShift₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
+class CommShift₂ {M : Type*} [AddMonoid M] [IsAddCommutative M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) where
   commShiftObj (X₁ : C₁) : (G.obj X₁).CommShift M := by infer_instance
   commShift_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) : NatTrans.CommShift (G.map f) M := by infer_instance
@@ -115,7 +115,7 @@ attribute [instance_reducible] commShiftObj commShiftFlipObj
 attribute [instance] commShiftObj commShiftFlipObj commShift_map commShift_flip_map
 
 set_option backward.defeqAttrib.useBackward true in
-instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₁' M]
+instance precomp₁ {M : Type*} [AddMonoid M] [IsAddCommutative M] [HasShift C₁ M] [HasShift C₁' M]
     [HasShift C₂ M] [HasShift D M] (F : C₁' ⥤ C₁) [F.CommShift M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) [G.CommShift₂ h] :
     (F ⋙ G).CommShift₂ h where
@@ -132,7 +132,7 @@ instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
     simp [this]
 
 set_option backward.defeqAttrib.useBackward true in
-instance precomp₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂' M]
+instance precomp₂ {M : Type*} [AddMonoid M] [IsAddCommutative M] [HasShift C₁ M] [HasShift C₂' M]
     [HasShift C₂ M] [HasShift D M] (F : C₂' ⥤ C₂) [F.CommShift M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) [G.CommShift₂ h] :
     (G ⋙ (whiskeringLeft C₂' C₂ D).obj F).CommShift₂ h where
@@ -161,7 +161,7 @@ namespace NatTrans
 
 section
 
-variable {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
   {G₁ G₂ G₃ : C₁ ⥤ C₂ ⥤ D} (τ : G₁ ⟶ G₂) (τ' : G₂ ⟶ G₃) (h : CommShift₂Setup D M)
   [G₁.CommShift₂ h] [G₂.CommShift₂ h] [G₃.CommShift₂ h]
 

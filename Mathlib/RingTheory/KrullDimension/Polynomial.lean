@@ -28,7 +28,7 @@ For noetherian rings:
 
 public section
 
-theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
+theorem Polynomial.ringKrullDim_le {R : Type*} [Ring R] [IsMulCommutative R] :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1 := by
   rw [ringKrullDim, ringKrullDim]
   apply Order.krullDim_le_of_krullDim_preimage_le' (PrimeSpectrum.comap C) ?_ (fun p ↦ ?_)
@@ -39,7 +39,7 @@ theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
       ← Ring.krullDimLE_iff]
     infer_instance
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsNoetherianRing R]
 
 namespace Polynomial
 

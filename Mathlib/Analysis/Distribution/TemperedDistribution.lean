@@ -44,8 +44,8 @@ variable {ι 𝕜 E F : Type*}
 
 section definition
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [TopologicalSpace F] [AddCommGroup F] [Module ℂ F]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [Module ℂ F]
 
 variable (E F) in
 /-- The space of tempered distribution is the space of continuous linear maps from the Schwartz to
@@ -66,8 +66,8 @@ end definition
 
 section Embeddings
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℂ F]
 
 namespace MeasureTheory.Measure
 
@@ -236,11 +236,11 @@ namespace TemperedDistribution
 
 section Multiplication
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 section TVS
 
-variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+variable [AddGroup F] [IsAddCommutative F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul ℂ F]
 
 variable (F) in
@@ -300,7 +300,7 @@ end TVS
 
 open ENNReal MeasureTheory
 
-variable [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F]
+variable [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℂ F] [CompleteSpace F]
   [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
 /-- Coercion of the product of two `Lp` functions to a tempered distribution is equal to the left
@@ -323,7 +323,7 @@ section deriv
 
 section TVS
 
-variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+variable [AddGroup F] [IsAddCommutative F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul ℂ F]
 
 variable (F) in
@@ -337,7 +337,7 @@ theorem derivCLM_apply_apply (f : 𝓢'(ℝ, F)) (g : 𝓢(ℝ, ℂ)) :
 
 end TVS
 
-variable [RCLike 𝕜] [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F]
+variable [RCLike 𝕜] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℂ F] [NormedSpace 𝕜 F]
 
 variable (𝕜) in
 theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
@@ -351,11 +351,11 @@ section lineDeriv
 
 open LineDeriv
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 section TVS
 
-variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+variable [AddGroup F] [IsAddCommutative F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul ℂ F]
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
@@ -389,7 +389,7 @@ theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
 
 end TVS
 
-variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℂ F]
 
 set_option backward.isDefEq.respectTransparency false in
 instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
@@ -415,11 +415,11 @@ section Laplacian
 open Laplacian LineDeriv
 open scoped SchwartzMap
 
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 
 section TVS
 
-variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+variable [AddGroup F] [IsAddCommutative F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul ℂ F]
 
 instance : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
@@ -431,7 +431,7 @@ theorem laplacianCLM_apply (f : 𝓢'(E, F)) : laplacianCLM ℂ E 𝓢'(E, F) f 
 
 end TVS
 
-variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℂ F]
 
 theorem laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢'(E, F)) :
     Δ f = ∑ i, ∂_{b i} (∂_{b i} f) := LineDeriv.laplacianCLM_eq_sum b f
@@ -458,12 +458,12 @@ section Fourier
 
 open FourierTransform
 
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
 section TVS
 
-variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+variable [AddGroup F] [IsAddCommutative F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul ℂ F]
 
 instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
@@ -506,7 +506,7 @@ end TVS
 
 section embedding
 
-variable [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F]
+variable [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℂ F] [CompleteSpace F]
 
 /-- The distributional Fourier transform and the classical Fourier transform coincide on
 `𝓢(E, F)`. -/
@@ -529,7 +529,7 @@ end embedding
 
 open LineDeriv Real
 
-variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℂ F]
 
 /-- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
 of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`. -/
@@ -567,7 +567,7 @@ end Fourier
 
 section DiracDelta
 
-variable [NormedAddCommGroup E]
+variable [NormedAddGroup E] [IsAddCommutative E]
 
 section definition
 

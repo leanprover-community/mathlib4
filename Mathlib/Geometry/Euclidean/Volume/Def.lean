@@ -18,7 +18,7 @@ and `Mathlib.Geometry.Euclidean.Volume.Basic` (for lemmas outside of measure the
 @[expose] public section
 
 variable {V P : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
 /-- The volume of a `n`-dimensional simplex, internally defined using base-and-height formula
 from the 0-th vertex.

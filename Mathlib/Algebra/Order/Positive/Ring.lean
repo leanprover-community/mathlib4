@@ -39,7 +39,7 @@ theorem coe_add (x y : { x : M // 0 < x }) : ↑(x + y) = (x + y : M) :=
 instance addSemigroup : AddSemigroup { x : M // 0 < x } := fast_instance%
   Subtype.coe_injective.addSemigroup _ coe_add
 
-instance addCommSemigroup {M : Type*} [AddCommMonoid M] [Preorder M]
+instance addCommSemigroup {M : Type*} [AddMonoid M] [IsAddCommutative M] [Preorder M]
     [AddLeftStrictMono M] : AddCommSemigroup { x : M // 0 < x } := fast_instance%
   Subtype.coe_injective.addCommSemigroup _ coe_add
 
@@ -114,17 +114,17 @@ end Mul
 
 section mul_comm
 
-instance commMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
+instance commMonoid [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R] :
     CommMonoid { x : R // 0 < x } := fast_instance%
   Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
 
-instance isOrderedMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
+instance isOrderedMonoid [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R] :
     IsOrderedMonoid { x : R // 0 < x } where
   mul_le_mul_left _ _ hxy c := Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_right hxy c.2.le
 
 /-- If `R` is a nontrivial linear ordered commutative semiring, then `{x : R // 0 < x}` is a linear
 ordered cancellative commutative monoid. -/
-instance isOrderedCancelMonoid [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R] :
+instance isOrderedCancelMonoid [Semiring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R] :
     IsOrderedCancelMonoid { x : R // 0 < x } where
   le_of_mul_le_mul_left a _ _ := (mul_le_mul_iff_right₀ a.2).1
 

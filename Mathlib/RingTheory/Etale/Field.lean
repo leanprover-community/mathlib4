@@ -39,7 +39,7 @@ public section
 
 universe u
 
-variable (K L : Type*) (A : Type u) [Field K] [Field L] [CommRing A] [Algebra K L] [Algebra K A]
+variable (K L : Type*) (A : Type u) [Field K] [Field L] [Ring A] [IsMulCommutative A] [Algebra K L] [Algebra K A]
 
 open Algebra Polynomial
 
@@ -243,7 +243,7 @@ variable {K A} in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma equivPiOfIsSepClosed_comap {B : Type*} [CommRing B] [EssFiniteType K A] [FormallyEtale K A]
+lemma equivPiOfIsSepClosed_comap {B : Type*} [Ring B] [IsMulCommutative B] [EssFiniteType K A] [FormallyEtale K A]
     [Algebra K B] [EssFiniteType K B] [FormallyEtale K B] [IsSepClosed K]
     (f : A →ₐ[K] B) (x : A) (p : PrimeSpectrum B) :
     equivPiOfIsSepClosed K A x (p.comap f) = equivPiOfIsSepClosed K B (f x) p := by

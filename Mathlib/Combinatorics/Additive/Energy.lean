@@ -162,7 +162,7 @@ open scoped Combinatorics.Additive
 
 section CommMonoid
 
-variable [CommMonoid α]
+variable [Monoid α] [IsMulCommutative α]
 
 @[to_additive] lemma mulEnergy_comm (s t : Finset α) : Eₘ[s, t] = Eₘ[t, s] := by
   rw [mulEnergy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
@@ -172,7 +172,7 @@ end CommMonoid
 
 section CommGroup
 
-variable [CommGroup α] [Fintype α] (s t : Finset α)
+variable [Group α] [IsMulCommutative α] [Fintype α] (s t : Finset α)
 
 @[to_additive (attr := simp)]
 lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by

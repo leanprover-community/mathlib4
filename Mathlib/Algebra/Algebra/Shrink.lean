@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Ring.Shrink
 noncomputable section
 
 universe v
-variable {R α : Type*} [Small.{v} α] [CommSemiring R]
+variable {R α : Type*} [Small.{v} α] [Semiring R] [IsMulCommutative R]
 
 namespace Shrink
 

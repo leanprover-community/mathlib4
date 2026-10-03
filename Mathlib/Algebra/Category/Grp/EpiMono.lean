@@ -45,7 +45,7 @@ end
 
 section
 
-variable [CommGroup A] [CommGroup B]
+variable [Group A] [IsMulCommutative A] [Group B] [IsMulCommutative B]
 
 @[to_additive]
 theorem range_eq_top_of_cancel {f : A →* B}

@@ -336,13 +336,13 @@ theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [Metr
     hf.ae_eq_mk.div hg.ae_eq_mk⟩
 
 @[to_additive]
-theorem mul_iff_right [CommGroup β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
+theorem mul_iff_right [Group β] [IsMulCommutative β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] (f * g) μ ↔ AEStronglyMeasurable[m] g μ :=
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
     fun h ↦ hf.mul h⟩
 
 @[to_additive]
-theorem mul_iff_left [CommGroup β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
+theorem mul_iff_left [Group β] [IsMulCommutative β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] (g * f) μ ↔ AEStronglyMeasurable[m] g μ :=
   mul_comm g f ▸ AEStronglyMeasurable.mul_iff_right hf
 
@@ -447,7 +447,7 @@ end Monoid
 
 section CommMonoid
 
-variable {M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+variable {M : Type*} [Monoid M] [IsMulCommutative M] [TopologicalSpace M] [ContinuousMul M]
 
 @[to_additive (attr := fun_prop)]
 theorem _root_.Multiset.aestronglyMeasurable_prod (l : Multiset (α → M))
@@ -506,12 +506,12 @@ protected theorem dist {β : Type*} [PseudoMetricSpace β] {f g : α → β}
   continuous_dist.comp_aestronglyMeasurable (hf.prodMk hg)
 
 @[fun_prop]
-protected theorem norm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem norm {β : Type*} [SeminormedAddGroup β] [IsAddCommutative β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖) μ :=
   continuous_norm.comp_aestronglyMeasurable hf
 
 @[fun_prop]
-protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem nnnorm {β : Type*} [SeminormedAddGroup β] [IsAddCommutative β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖₊) μ :=
   continuous_nnnorm.comp_aestronglyMeasurable hf
 
@@ -996,7 +996,7 @@ end AEFinStronglyMeasurable
 
 section SecondCountableTopology
 
-variable {G : Type*} [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G]
+variable {G : Type*} [SeminormedAddGroup G] [IsAddCommutative G] [MeasurableSpace G] [BorelSpace G]
   [SecondCountableTopology G] {f : α → G}
 
 /-- In a space with second countable topology and a sigma-finite measure,

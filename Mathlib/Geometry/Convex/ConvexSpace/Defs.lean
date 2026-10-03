@@ -55,7 +55,7 @@ being the map `weights : StdSimplex R X → R^⊕X`.
 Note in particular that, in the common case where `X := M` is a `R`-module, `StdSimplex R M` is NOT
 the standard simplex in `M`. Indeed, the notion of a standard simplex depends on a choice of basis,
 and `M` isn't given one. -/
-structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) where
+structure StdSimplex (R : Type u) [LE R] [AddMonoid R] [IsAddCommutative R] [One R] (X : Type v) where
   /-- The weights of the `StdSimplex` as a `Finsupp`. -/
   weights : X →₀ R
   /-- All weights are non-negative. -/
@@ -616,7 +616,7 @@ protected lemma IsConvexCombComm.symm [IsConvexCombComm R S X] : IsConvexCombCom
 
 end IsConvexCombComm
 
-variable {R X I J : Type*} [PartialOrder R] [CommSemiring R] [IsStrictOrderedRing R]
+variable {R X I J : Type*} [PartialOrder R] [Semiring R] [IsMulCommutative R] [IsStrictOrderedRing R]
   [ConvexSpace R X] in
 /-- When `R` is commutative, so are its convex combinations. -/
 instance IsConvexCombComm.instSelf : IsConvexCombComm R R X where
@@ -771,7 +771,7 @@ lemma convexCombPair_convexCombPair_assoc_right (H : s * t'' = t * s' * s'') (m�
 
 section CommSemiring
 
-variable {R X I : Type*} [PartialOrder R] [CommSemiring R] [IsStrictOrderedRing R]
+variable {R X I : Type*} [PartialOrder R] [Semiring R] [IsMulCommutative R] [IsStrictOrderedRing R]
   [ConvexSpace R X] {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1)
 
 lemma iConvexComb_convexCombPair_comm (f : StdSimplex R I) (e₁ e₂ : I → X) :

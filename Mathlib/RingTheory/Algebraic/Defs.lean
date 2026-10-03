@@ -37,7 +37,7 @@ open Polynomial
 
 section
 
-variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+variable (R : Type u) {A : Type v} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 /-- An element of an R-algebra is algebraic over R if it is a root of a nonzero polynomial
 with coefficients in R. -/

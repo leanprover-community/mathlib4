@@ -32,7 +32,7 @@ variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁}
 open TensorProduct Coalgebra Bialgebra Function
 
 /-- An equivalence of bialgebras is an invertible bialgebra homomorphism. -/
-structure BialgEquiv (R : Type u) [CommSemiring R] (A : Type v) (B : Type w)
+structure BialgEquiv (R : Type u) [Semiring R] [IsMulCommutative R] (A : Type v) (B : Type w)
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A ≃ₗc[R] B, A ≃* B where
 
@@ -44,14 +44,14 @@ notation:50 A " ≃ₐc[" R "] " B => BialgEquiv R A B
 
 /-- `BialgEquivClass F R A B` asserts `F` is a type of bundled bialgebra equivalences
 from `A` to `B`. -/
-class BialgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
+class BialgEquivClass (F : Type*) (R A B : outParam Type*) [Semiring R] [IsMulCommutative R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B] : Prop
     extends CoalgEquivClass F R A B, MulEquivClass F A B
 
 namespace BialgEquivClass
 
-variable {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+variable {F R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
   [EquivLike F A B] [BialgEquivClass F R A B]
 
@@ -81,7 +81,7 @@ end BialgEquivClass
 
 namespace BialgEquiv
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 section
 
@@ -203,13 +203,13 @@ protected theorem congr_fun (h : e = e') (x : A) : e x = e' x :=
 end
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R : Type u} [CommSemiring R] {α : Type v} {β : Type w}
+def Simps.apply {R : Type u} [Semiring R] [IsMulCommutative R] {α : Type v} {β : Type w}
     [Semiring α] [Semiring β] [Algebra R α]
     [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α ≃ₐc[R] β) : α → β := f
 
 /-- See Note [custom simps projection] -/
-def Simps.symm_apply {R : Type*} [CommSemiring R]
+def Simps.symm_apply {R : Type*} [Semiring R] [IsMulCommutative R]
     {A : Type*} {B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B]
     (e : A ≃ₐc[R] B) : B → A :=

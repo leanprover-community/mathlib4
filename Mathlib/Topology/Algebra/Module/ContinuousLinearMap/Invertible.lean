@@ -25,9 +25,9 @@ variable {R : Type*} {M M₂ M₃ : Type*}
   [TopologicalSpace M] [TopologicalSpace M₂] [TopologicalSpace M₃]
 
 variable [Semiring R]
-  [AddCommMonoid M] [Module R M]
-  [AddCommMonoid M₂] [Module R M₂]
-  [AddCommMonoid M₃] [Module R M₃]
+  [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
+  [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃]
 
 /-- A continuous linear map is invertible if it is the forward direction of a continuous linear
 equivalence. -/

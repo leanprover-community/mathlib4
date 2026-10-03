@@ -77,7 +77,7 @@ instance : (symmetricIoo G).NeBot where
 
 section LeAtTop
 
-variable {G : Type*} [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G] [LocallyFiniteOrder G]
+variable {G : Type*} [AddGroup G] [IsAddCommutative G] [PartialOrder G] [IsOrderedAddMonoid G] [LocallyFiniteOrder G]
 
 lemma symmetricIcc_le_Conditional :
     (symmetricIcc G).filter ≤ (conditional G).filter :=
@@ -108,7 +108,7 @@ end LeAtTop
 end IntervalFilters
 section Int
 
-variable {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α] [ContinuousMul α]
+variable {α : Type*} {f : ℤ → α} [Group α] [IsMulCommutative α] [TopologicalSpace α] [ContinuousMul α]
 
 lemma symmetricIcc_eq_map_Icc_nat :
     (symmetricIcc ℤ).filter = atTop.map (fun N : ℕ ↦ Icc (-(N : ℤ)) N) := by
@@ -146,24 +146,24 @@ lemma tprod_symmetricIcc_eq_tprod_symmetricIco [T2Space α]
   (hf.hasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc hf2).tprod_eq
 
 @[to_additive]
-lemma hasProd_symmetricIcc_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+lemma hasProd_symmetricIcc_iff {α : Type*} [Monoid α] [IsMulCommutative α] [TopologicalSpace α]
     {f : ℤ → α} {a : α} : HasProd f a (symmetricIcc ℤ) ↔
     Tendsto (fun N : ℕ ↦ ∏ n ∈ Icc (-(N : ℤ)) N, f n) atTop (𝓝 a) := by
   simp [HasProd, symmetricIcc, ← Nat.map_cast_int_atTop, comp_def]
 
 @[to_additive]
-lemma hasProd_symmetricIco_int_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+lemma hasProd_symmetricIco_int_iff {α : Type*} [Monoid α] [IsMulCommutative α] [TopologicalSpace α]
     {f : ℤ → α} {a : α} : HasProd f a (symmetricIco ℤ) ↔
     Tendsto (fun N : ℕ ↦ ∏ n ∈ Ico (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
   simp [HasProd, symmetricIco, ← Nat.map_cast_int_atTop, comp_def]
 
 @[to_additive]
-lemma hasProd_symmetricIoc_int_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+lemma hasProd_symmetricIoc_int_iff {α : Type*} [Monoid α] [IsMulCommutative α] [TopologicalSpace α]
     {f : ℤ → α} {a : α} : HasProd f a (symmetricIoc ℤ) ↔
     Tendsto (fun N : ℕ ↦ ∏ n ∈ Ioc (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
   simp [HasProd, symmetricIoc, ← Nat.map_cast_int_atTop, comp_def]
 
-lemma _root_.Summable.tendsto_zero_of_even_summable_symmetricIcc {F : Type*} [NormedAddCommGroup F]
+lemma _root_.Summable.tendsto_zero_of_even_summable_symmetricIcc {F : Type*} [NormedAddGroup F] [IsAddCommutative F]
     [NormSMulClass ℤ F] {f : ℤ → F} (hf : Summable f (symmetricIcc ℤ)) (hs : f.Even) :
     Tendsto f atTop (𝓝 0) := by
   rw [tendsto_zero_iff_norm_tendsto_zero]

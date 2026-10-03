@@ -69,7 +69,7 @@ noncomputable section
 
 open WithZero Multiplicative IsDedekindDomain
 
-variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K S : Type*} [Field K] [CommSemiring S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDedekindDomain R] {K S : Type*} [Field K] [Semiring S] [IsMulCommutative S]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 namespace IsDedekindDomain.HeightOneSpectrum
@@ -857,13 +857,13 @@ theorem algebraMap_adicCompletion_toCompletion (r : S) :
     (algebraMap S (v.adicCompletion K) r).toCompletion =
       algebraMap S ((v.valuation K).Completion) r := rfl
 
-instance {S₀ : Type*} [CommSemiring S₀] [Algebra S₀ S] [Algebra S₀ K] [IsScalarTower S₀ S K] :
+instance {S₀ : Type*} [Semiring S₀] [IsMulCommutative S₀] [Algebra S₀ S] [Algebra S₀ K] [IsScalarTower S₀ S K] :
     IsScalarTower S₀ S ((v.valuation K).Completion) :=
   .of_algebraMap_eq fun x ↦ by
     exact congrArg (UniformSpace.Completion.coeRingHom (α := WithVal (v.valuation K)))
       (IsScalarTower.algebraMap_apply S₀ S (WithVal (v.valuation K)) x)
 
-instance {S₀ : Type*} [CommSemiring S₀] [Algebra S₀ S] [Algebra S₀ K] [IsScalarTower S₀ S K] :
+instance {S₀ : Type*} [Semiring S₀] [IsMulCommutative S₀] [Algebra S₀ S] [Algebra S₀ K] [IsScalarTower S₀ S K] :
     IsScalarTower S₀ S (v.adicCompletion K) :=
   .of_algebraMap_eq fun x ↦ by
     apply adicCompletion.ext
@@ -1104,7 +1104,7 @@ namespace Rat
 
 open IsDedekindDomain.HeightOneSpectrum
 
-variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
 
 theorem valuation_le_one_iff_den {𝔭 : HeightOneSpectrum R} {x : ℚ} :
     𝔭.valuation ℚ x ≤ 1 ↔ ↑x.den ∉ 𝔭.asIdeal := by

@@ -27,7 +27,7 @@ open Set
 universe u₁ u₂ u₃ u₄
 
 variable {ι : Type u₁} {k : Type u₂} {V : Type u₃} {P : Type u₄}
-variable [AddCommGroup V] [AffineSpace V P]
+variable [AddGroup V] [IsAddCommutative V] [AffineSpace V P]
 
 namespace AffineBasis
 
@@ -142,7 +142,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing k] [Module k V] [DecidableEq ι] [Fintype ι]
+variable [Ring k] [IsMulCommutative k] [Module k V] [DecidableEq ι] [Fintype ι]
 variable (b b₂ : AffineBasis ι k P)
 
 /-- A change of basis formula for barycentric coordinates.

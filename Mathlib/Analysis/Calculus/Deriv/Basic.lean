@@ -104,7 +104,7 @@ open ContinuousLinearMap (smulRight toSpanSingleton_inj toSpanSingleton)
 section TVS
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {F : Type v} [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
 
 section
 variable [ContinuousSMul 𝕜 F]
@@ -253,7 +253,7 @@ theorem UniqueDiffWithinAt.eq_deriv (s : Set 𝕜) (H : UniqueDiffWithinAt 𝕜 
 end TVS
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type v} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 variable {f f₀ f₁ : 𝕜 → F}
 variable {f' f₀' f₁' g' : F}
@@ -529,7 +529,7 @@ theorem differentiableWithinAt_Ioi_iff_Ici [PartialOrder 𝕜] :
     h.hasDerivWithinAt.Ioi_of_Ici.differentiableWithinAt⟩
 
 -- Golfed while splitting the file
-theorem derivWithin_Ioi_eq_Ici {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (f : ℝ → E)
+theorem derivWithin_Ioi_eq_Ici {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] (f : ℝ → E)
     (x : ℝ) : derivWithin f (Ioi x) x = derivWithin f (Ici x) x := by
   by_cases H : DifferentiableWithinAt ℝ f (Ioi x) x
   · have A := H.hasDerivWithinAt.Ici_of_Ioi
@@ -945,7 +945,7 @@ end MeanValue
 section Semilinear
 
 variable {σ σ' : RingHom 𝕜 𝕜} [RingHomIsometric σ] [RingHomInvPair σ σ']
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] (L : F →SL[σ] F')
+  {F' : Type*} [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜 F'] (L : F →SL[σ] F')
 
 variable (σ')
 

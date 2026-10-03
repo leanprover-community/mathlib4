@@ -80,7 +80,7 @@ variable {R : Type w}
 instance [Semiring R] [Linear R C] (X : C) : Module R (End X) :=
   inferInstanceAs <| Module R (X ⟶ X)
 
-instance [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) :=
+instance [Semiring R] [IsMulCommutative R] [Linear R C] (X : C) : Algebra R (End X) :=
   Algebra.ofModule (fun _ _ _ => comp_smul _ _ _ _ _ _) fun _ _ _ => smul_comp _ _ _ _ _ _
 
 end End
@@ -185,7 +185,7 @@ end
 
 section
 
-variable {S : Type w} [CommSemiring S] [Linear S C]
+variable {S : Type w} [Semiring S] [IsMulCommutative S] [Linear S C]
 
 /-- Composition as a bilinear map. -/
 @[simps]

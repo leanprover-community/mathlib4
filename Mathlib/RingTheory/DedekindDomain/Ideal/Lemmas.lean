@@ -59,7 +59,7 @@ dedekind domain, dedekind ring
 
 @[expose] public section
 
-variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
+variable (R A K : Type*) [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Field K]
 
 open Module
 open scoped nonZeroDivisors Polynomial
@@ -107,7 +107,7 @@ theorem prime_of_isPrime {P : Ideal A} (hP : P ≠ ⊥) (h : IsPrime P) : Prime 
   refine ⟨hP, mt isUnit_iff.mp h.ne_top, fun I J hIJ => ?_⟩
   simpa only [dvd_iff_le] using h.mul_le.mp (le_of_dvd hIJ)
 
-theorem prime_of_mem_primesOver {R : Type*} [CommRing R] [Algebra R A] {p : Ideal R}
+theorem prime_of_mem_primesOver {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R A] {p : Ideal R}
     [IsDomain R] [IsTorsionFree R A] (hp : p ≠ ⊥) {P : Ideal A} (hP : P ∈ primesOver p A) :
     Prime P :=
   prime_of_isPrime (ne_bot_of_mem_primesOver hp hP) hP.1
@@ -375,7 +375,7 @@ end IsDedekindDomain
 
 section IsDedekindDomain
 
-variable {T : Type*} [CommRing T] [IsDedekindDomain T] {I J : Ideal T}
+variable {T : Type*} [Ring T] [IsMulCommutative T] [IsDedekindDomain T] {I J : Ideal T}
 
 open Multiset UniqueFactorizationMonoid
 
@@ -459,7 +459,7 @@ theorem eq_prime_pow_mul_coprime {I : Ideal T} (hI : I ≠ ⊥)
   · nth_rw 1 [← prod_normalizedFactors_eq_self hI, ← filter_add_not (P = ·) (normalizedFactors I)]
     rw [prod_add, pow_count]
 
-theorem map_prime_of_equiv {R : Type*} [CommRing R] [IsDedekindDomain R]
+theorem map_prime_of_equiv {R : Type*} [Ring R] [IsMulCommutative R] [IsDedekindDomain R]
     (f : T ≃+* R) {I : Ideal T} (hI : Prime I) (h : I ≠ ⊥) : Prime (I.map f) := by
   rw [prime_iff_isPrime h] at hI
   exact (prime_iff_isPrime <| (I.map_eq_bot_iff_of_injective f.injective).not.2 h).2
@@ -575,7 +575,7 @@ theorem iInf_localization_eq_bot [Algebra R K] [hK : IsFractionRing R K] :
 
 section RingEquiv
 
-variable {R} {S : Type*} [CommRing S]
+variable {R} {S : Type*} [Ring S] [IsMulCommutative S]
 
 /-- A surjective ring homomorphism `f : R →+* S` induces a map from `HeightOneSpectrum S` to
   `HeightOneSpectrum R` sending `v` to `v.asIdeal.comap f`. -/
@@ -599,7 +599,7 @@ def equivOfRingEquiv (e : R ≃+* S) : (HeightOneSpectrum R) ≃ (HeightOneSpect
     simp only [comap_asIdeal, Ideal.mem_comap, RingHom.coe_coe, Ideal.symm_apply_mem_of_equiv_iff]
     exact Iff.rfl
 
-theorem RingEquiv.nontrivial_heightOneSpectrum {R S : Type*} [CommRing R] [CommRing S]
+theorem RingEquiv.nontrivial_heightOneSpectrum {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     [Nontrivial (HeightOneSpectrum S)] (e : R ≃+* S) : Nontrivial (HeightOneSpectrum R) :=
   (equivOfRingEquiv e).surjective.nontrivial
 
@@ -657,7 +657,7 @@ theorem idealFactorsFunOfQuotHom_id :
 @[deprecated (since := "2026-04-16")]
 alias _root_.idealFactorsFunOfQuotHom_id := idealFactorsFunOfQuotHom_id
 
-variable {B : Type*} [CommRing B] [IsDedekindDomain B] {L : Ideal B}
+variable {B : Type*} [Ring B] [IsMulCommutative B] [IsDedekindDomain B] {L : Ideal B}
 
 theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J →+* B ⧸ L}
     (hf : Function.Surjective f) (hg : Function.Surjective g) :
@@ -1148,8 +1148,8 @@ section primesOverFinset
 
 open UniqueFactorizationMonoid Ideal
 
-variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMaximal]
-  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [IsDomain A] [IsTorsionFree A B]
+variable {A : Type*} [Ring A] [IsMulCommutative A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMaximal]
+  (B : Type*) [Ring B] [IsMulCommutative B] [IsDedekindDomain B] [Algebra A B] [IsDomain A] [IsTorsionFree A B]
 
 namespace IsDedekindDomain
 
@@ -1207,7 +1207,7 @@ theorem equivPrimesOver_apply (hp : p ≠ 0)
 variable (A) in
 /-- The pullback of a height one prime in `B` to `A`. -/
 @[simps]
-def under {B : Type*} [CommRing B] [IsDomain B] [Algebra A B] [Algebra.IsIntegral A B]
+def under {B : Type*} [Ring B] [IsMulCommutative B] [IsDomain B] [Algebra A B] [Algebra.IsIntegral A B]
     (w : HeightOneSpectrum B) : HeightOneSpectrum A where
   asIdeal := w.asIdeal.under A
   isPrime := .under A w.asIdeal

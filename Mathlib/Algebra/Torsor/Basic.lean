@@ -83,7 +83,7 @@ end General
 
 section comm
 
-variable {G : Type*} {P : Type*} [CommGroup G] [Torsor G P]
+variable {G : Type*} {P : Type*} [Group G] [IsMulCommutative G] [Torsor G P]
 
 /-- Cancellation dividing the results of two divisions. -/
 @[to_additive (attr := simp) /-- Cancellation subtracting the results of two subtractions. -/]
@@ -250,7 +250,7 @@ theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P} (h : Injectiv
   rw [pointReflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
     neg_eq_iff_add_eq_zero, ← two_nsmul, ← nsmul_zero 2, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
 
-theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [AddCommGroup G]
+theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [AddGroup G] [IsAddCommutative G]
     [AddTorsor G P] (h : Injective (2 • · : G → G)) (y : P) :
     Injective fun x : P => pointReflection x y :=
   fun x₁ x₂ (hy : pointReflection x₁ y = pointReflection x₂ y) => by
@@ -260,7 +260,7 @@ theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [Add
 
 /-- In the special case of additive commutative groups (as opposed to just additive torsors),
 `Equiv.pointReflection x` coincides with `Equiv.subLeft (2 • x)`. -/
-lemma pointReflection_eq_subLeft {G : Type*} [AddCommGroup G] (x : G) :
+lemma pointReflection_eq_subLeft {G : Type*} [AddGroup G] [IsAddCommutative G] (x : G) :
     pointReflection x = Equiv.subLeft (2 • x) := by
   ext; simp [pointReflection, sub_add_eq_add_sub, two_nsmul]
 

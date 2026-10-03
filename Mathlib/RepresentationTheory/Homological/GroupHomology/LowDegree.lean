@@ -51,7 +51,7 @@ noncomputable section
 
 open CategoryTheory Limits Representation Rep Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G)
+variable {k G : Type u} [Ring k] [IsMulCommutative k] [Group G] (A : Rep.{u} k G)
 
 namespace groupHomology
 
@@ -489,7 +489,7 @@ section IsCycle
 
 section
 
-variable {G A : Type*} [Mul G] [Inv G] [AddCommGroup A] [SMul G A]
+variable {G A : Type*} [Mul G] [Inv G] [AddGroup A] [IsAddCommutative A] [SMul G A]
 
 /-- A finsupp `∑ aᵢ·gᵢ : G →₀ A` satisfies the 1-cycle condition if `∑ gᵢ⁻¹ • aᵢ = ∑ aᵢ`. -/
 def IsCycle₁ (x : G →₀ A) : Prop := x.sum (fun g a => g⁻¹ • a) = x.sum (fun _ a => a)
@@ -504,7 +504,7 @@ end
 
 section
 
-variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
+variable {G A : Type*} [Group G] [AddGroup A] [IsAddCommutative A] [DistribMulAction G A]
 
 @[simp]
 theorem single_isCycle₁_iff (g : G) (a : A) :
@@ -537,7 +537,7 @@ section IsBoundary
 
 section
 
-variable {G A : Type*} [Mul G] [Inv G] [AddCommGroup A] [SMul G A]
+variable {G A : Type*} [Mul G] [Inv G] [AddGroup A] [IsAddCommutative A] [SMul G A]
 
 variable (G) in
 /-- A term `x : A` satisfies the 0-boundary condition if there exists a finsupp
@@ -562,7 +562,7 @@ end
 
 section
 
-variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
+variable {G A : Type*} [Group G] [AddGroup A] [IsAddCommutative A] [DistribMulAction G A]
 
 variable (G) in
 theorem isBoundary₀_iff (a : A) :
@@ -604,7 +604,7 @@ end IsBoundary
 
 section ofDistribMulAction
 
-variable {k G A : Type u} [CommRing k] [Group G] [AddCommGroup A] [Module k A]
+variable {k G A : Type u} [Ring k] [IsMulCommutative k] [Group G] [AddGroup A] [IsAddCommutative A] [Module k A]
   [DistribMulAction G A] [SMulCommClass G k A]
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a term

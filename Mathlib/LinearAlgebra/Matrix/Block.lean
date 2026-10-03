@@ -178,7 +178,7 @@ theorem blockTriangular_single' {i j : m} (hij : b j ≤ b i) (c : R) :
 
 end Zero
 
-variable [CommRing R] [DecidableEq m]
+variable [Ring R] [IsMulCommutative R] [DecidableEq m]
 
 theorem blockTriangular_transvection {i j : m} (hij : b i ≤ b j) (c : R) :
     BlockTriangular (transvection i j c) b :=
@@ -225,19 +225,19 @@ theorem BlockTriangular.pow [DecidableEq m] [Fintype m] [Semiring R] (hM : Block
     (n : ℕ) : BlockTriangular (M ^ n) b :=
   pow_mem (S := blockTriangularSubsemiring R b) hM n
 
-theorem blockTriangular_algebraMap [CommSemiring R] [Semiring A] [Algebra R A]
+theorem blockTriangular_algebraMap [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     [DecidableEq m] [Fintype m] (r : R) : (algebraMap R (Matrix m m A) r).BlockTriangular b :=
   blockTriangular_diagonal _
 
 variable (R A b) in
 /-- `BlockTriangular` matrices form a subalgebra. -/
-def blockTriangularSubalgebra [CommSemiring R] [Semiring A] [Algebra R A]
+def blockTriangularSubalgebra [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     [DecidableEq m] [Fintype m] : Subalgebra R (Matrix m m A) where
   __ := blockTriangularSubsemiring A b
   algebraMap_mem' r := blockTriangular_algebraMap r
 
 @[simp]
-theorem mem_blockTriangularSubalgebra [CommSemiring R] [Semiring A] [Algebra R A]
+theorem mem_blockTriangularSubalgebra [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     [DecidableEq m] [Fintype m] {M : Matrix m m A} :
     M ∈ blockTriangularSubalgebra R A b ↔ BlockTriangular M b :=
   Iff.rfl
@@ -297,7 +297,7 @@ theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B :
 /-! ### Determinant -/
 
 
-variable [CommRing R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
+variable [Ring R] [IsMulCommutative R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
 
 theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
     (e : ∀ x, q x ↔ p x) : (toSquareBlockProp M p).det = (toSquareBlockProp M q).det := by

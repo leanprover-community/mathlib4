@@ -61,7 +61,7 @@ variable {𝕜 : Type*}
   [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 
 variable {E F : Type*}
-  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
 

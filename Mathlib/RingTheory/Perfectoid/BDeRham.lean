@@ -48,7 +48,7 @@ universe u
 
 open Ideal WittVector
 
-variable (R : Type u) [CommRing R] (p : ℕ) [Fact p.Prime]
+variable (R : Type u) [Ring R] [IsMulCommutative R] (p : ℕ) [Fact p.Prime]
     [Fact ¬IsUnit (p : R)] [IsAdicComplete (span {(p : R)}) R]
 
 local notation "𝕎 " A:100 => WittVector p A

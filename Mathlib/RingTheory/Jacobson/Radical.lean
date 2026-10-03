@@ -35,7 +35,7 @@ namespace Module
 open Submodule
 
 variable (R R₂ M M₂ : Type*) [Ring R] [Ring R₂]
-variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 variable (f : M →ₛₗ[τ₁₂] M₂)
 
@@ -103,7 +103,7 @@ theorem jacobson_lt_top [Nontrivial M] [IsCoatomic (Submodule R M)] : jacobson R
 
 example [Nontrivial M] [Module.Finite R M] : jacobson R M < ⊤ := jacobson_lt_top R M
 
-variable {ι} (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+variable {ι} (M : ι → Type*) [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
 
 theorem jacobson_pi_le : jacobson R (Π i, M i) ≤ Submodule.pi Set.univ (jacobson R <| M ·) := by
   simp_rw [← iInf_comap_proj, jacobson, sInf_eq_iInf', comap_iInf, le_iInf_iff]
@@ -120,7 +120,7 @@ end Module
 section
 
 variable (R R₂ : Type*) [Ring R] [Ring R₂] (f : R →+* R₂) [RingHomSurjective f]
-variable (M : Type*) [AddCommGroup M] [Module R M]
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 namespace Ring
 

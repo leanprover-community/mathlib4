@@ -35,9 +35,9 @@ namespace LieAlgebra
 section CommRing
 
 variable {K R L M : Type*}
-variable [Field K] [CommRing R]
+variable [Field K] [Ring R] [IsMulCommutative R]
 variable [LieRing L] [LieAlgebra K L] [LieAlgebra R L]
-variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [Module.Finite K L]
 variable [Module.Finite R L] [Module.Free R L]
 variable [Module.Finite R M] [Module.Free R M]

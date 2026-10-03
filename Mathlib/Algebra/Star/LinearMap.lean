@@ -28,8 +28,8 @@ The reason we chose `WithConv` is because together with the convolution product 
 public section
 
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
-  [AddCommMonoid E] [Module R E] [StarAddMonoid E] [StarModule R E]
-  [AddCommMonoid F] [Module R F] [StarAddMonoid F] [StarModule R F]
+  [AddMonoid E] [IsAddCommutative E] [Module R E] [StarAddMonoid E] [StarModule R E]
+  [AddMonoid F] [IsAddCommutative F] [Module R F] [StarAddMonoid F] [StarModule R F]
 
 open WithConv
 
@@ -67,7 +67,7 @@ protected theorem _root_.IntrinsicStar.StarHomClass.isSelfAdjoint {S : Type*} [F
     IsSelfAdjoint (toConv (f : E →ₗ[R] F) : WithConv (E →ₗ[R] F)) :=
   IntrinsicStar.isSelfAdjoint_iff_map_star _ |>.mpr (map_star f)
 
-variable {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G] [StarModule R G]
+variable {G : Type*} [AddMonoid G] [IsAddCommutative G] [Module R G] [StarAddMonoid G] [StarModule R G]
 
 theorem intrinsicStar_comp (f : WithConv (E →ₗ[R] F)) (g : WithConv (G →ₗ[R] E)) :
     star (toConv (f.ofConv ∘ₗ g.ofConv)) = toConv ((star f).ofConv ∘ₗ (star g).ofConv) := by
@@ -82,7 +82,7 @@ theorem intrinsicStar_comp' (f : E →ₗ[R] F) (g : G →ₗ[R] E) :
 theorem intrinsicStar_zero : star (0 : WithConv (E →ₗ[R] F)) = 0 := by simp
 
 section NonUnitalNonAssocSemiring
-variable {R' E : Type*} [CommSemiring R'] [StarRing R']
+variable {R' E : Type*} [Semiring R'] [IsMulCommutative R'] [StarRing R']
   [NonUnitalNonAssocSemiring E] [StarRing E] [Module R E] [Module R' E]
   [StarModule R E] [StarModule R' E] [SMulCommClass R E E] [IsScalarTower R E E]
 
@@ -104,11 +104,11 @@ instance intrinsicStarModule : StarModule R (WithConv (E →ₗ[R] F)) where
   star_smul _ _ := by ext; simp
 
 section CommSemiring
-variable {R E F G H : Type*} [CommSemiring R] [StarRing R]
-  [AddCommMonoid E] [StarAddMonoid E] [Module R E] [StarModule R E]
-  [AddCommMonoid F] [StarAddMonoid F] [Module R F] [StarModule R F]
-  [AddCommMonoid G] [StarAddMonoid G] [Module R G] [StarModule R G]
-  [AddCommMonoid H] [StarAddMonoid H] [Module R H] [StarModule R H]
+variable {R E F G H : Type*} [Semiring R] [IsMulCommutative R] [StarRing R]
+  [AddMonoid E] [IsAddCommutative E] [StarAddMonoid E] [Module R E] [StarModule R E]
+  [AddMonoid F] [IsAddCommutative F] [StarAddMonoid F] [Module R F] [StarModule R F]
+  [AddMonoid G] [IsAddCommutative G] [StarAddMonoid G] [Module R G] [StarModule R G]
+  [AddMonoid H] [IsAddCommutative H] [StarAddMonoid H] [Module R H] [StarModule R H]
 
 theorem _root_.TensorProduct.intrinsicStar_map
     (f : WithConv (E →ₗ[R] F)) (g : WithConv (G →ₗ[R] H)) :
@@ -154,9 +154,9 @@ theorem intrinsicStar_smulRight [Module S F] [StarModule S F] (f : WithConv (E �
 end starAddMonoidSemiring
 
 section convRing
-variable {R A C : Type*} [CommSemiring R] [StarRing R] [NonUnitalNonAssocSemiring A]
+variable {R A C : Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [NonUnitalNonAssocSemiring A]
   [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarRing A] [StarModule R A]
-  [AddCommMonoid C] [Module R C] [StarAddMonoid C] [StarModule R C]
+  [AddMonoid C] [IsAddCommutative C] [Module R C] [StarAddMonoid C] [StarModule R C]
 
 open Coalgebra TensorProduct
 
@@ -216,7 +216,7 @@ end convRing
 end LinearMap
 
 section matrix
-variable {R m n : Type*} [CommSemiring R] [StarRing R] [Fintype m] [DecidableEq m]
+variable {R m n : Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [Fintype m] [DecidableEq m]
 
 namespace LinearMap
 
@@ -272,7 +272,7 @@ open Module.End in
   ⟨fun h ↦ star_star f ▸ h.intrinsicStar, fun h ↦ h.intrinsicStar⟩
 
 section eigenspace
-variable {R V : Type*} [CommRing R] [InvolutiveStar R] [AddCommGroup V] [StarAddMonoid V]
+variable {R V : Type*} [Ring R] [IsMulCommutative R] [InvolutiveStar R] [AddGroup V] [IsAddCommutative V] [StarAddMonoid V]
   [Module R V] [StarModule R V]
 
 open LinearMap

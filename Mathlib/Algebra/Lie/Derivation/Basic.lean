@@ -40,8 +40,8 @@ This file defines *Lie derivations* and establishes some basic properties.
 
 /-- A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an `R`-linear map
 that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`. -/
-structure LieDerivation (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-    [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+structure LieDerivation (R L M : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+    [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
     extends L →ₗ[R] M where
   protected leibniz' (a b : L) : toLinearMap ⁅a, b⁆ = ⁅a, toLinearMap b⁆ - ⁅b, toLinearMap a⁆
 
@@ -52,8 +52,8 @@ namespace LieDerivation
 
 section
 
-variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-    [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable {R L M : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+    [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 variable (D : LieDerivation R L M) {D1 D2 : LieDerivation R L M} (a b : L)
 
@@ -225,7 +225,7 @@ theorem sub_apply {D1 D2 : LieDerivation R L M} : (D1 - D2) a = D1 a - D2 a :=
 section Scalar
 
 /-- A typeclass mixin saying that scalar multiplication and Lie bracket are left commutative. -/
-class SMulBracketCommClass (S L α : Type*) [SMul S α] [LieRing L] [AddCommGroup α]
+class SMulBracketCommClass (S L α : Type*) [SMul S α] [LieRing L] [AddGroup α] [IsAddCommutative α]
     [LieRingModule L α] : Prop where
   /-- `•` and `⁅⬝, ⬝⁆`  are left commutative -/
   smul_bracket_comm : ∀ (s : S) (l : L) (a : α), s • ⁅l, a⁆ = ⁅l, s • a⁆
@@ -288,7 +288,7 @@ end
 
 section
 
-variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+variable {R L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 
 /-- The commutator of two Lie derivations on a Lie algebra is a Lie derivation. -/
 instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
@@ -328,7 +328,7 @@ end
 
 section
 
-variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R L : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 
 attribute [local instance 100] LieRing.ofAssociativeRing
 
@@ -351,8 +351,8 @@ end
 
 section Inner
 
-variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-    [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable (R L M : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+    [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 /-- The natural map from a Lie module to the derivations taking values in it. -/
 @[simps!]
@@ -390,7 +390,7 @@ end Inner
 
 section ExpNilpotent
 
-variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [Module ℚ L]
+variable {R L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [Module ℚ L]
   (D : LieDerivation R L L)
 
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra

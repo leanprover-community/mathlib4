@@ -24,7 +24,7 @@ open Matrix Module
 
 section Transpose
 
-variable {K V₁ V₂ ι₁ ι₂ : Type*} [CommSemiring K] [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂]
+variable {K V₁ V₂ ι₁ ι₂ : Type*} [Semiring K] [IsMulCommutative K] [AddGroup V₁] [IsAddCommutative V₁] [Module K V₁] [AddGroup V₂] [IsAddCommutative V₂]
   [Module K V₂] [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁] [DecidableEq ι₂] {B₁ : Basis ι₁ K V₁}
   {B₂ : Basis ι₂ K V₂}
 
@@ -45,7 +45,7 @@ theorem Matrix.toLin_transpose (M : Matrix ι₁ ι₂ K) : Matrix.toLin B₁.du
 end Transpose
 
 /-- The dot product as a linear equivalence to the dual. -/
-@[simps] def dotProductEquiv (R n : Type*) [CommSemiring R] [Fintype n] [DecidableEq n] :
+@[simps] def dotProductEquiv (R n : Type*) [Semiring R] [IsMulCommutative R] [Fintype n] [DecidableEq n] :
     (n → R) ≃ₗ[R] Module.Dual R (n → R) where
   toFun v := ⟨⟨dotProduct v, dotProduct_add v⟩, fun t ↦ dotProduct_smul t v⟩
   map_add' v w := by ext; simp

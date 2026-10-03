@@ -645,7 +645,7 @@ end Semiring
 
 namespace AddMonoidHom
 
-variable [CommRing α] [IsDomain α] [CommRing β] (f : β →+ α)
+variable [Ring α] [IsMulCommutative α] [IsDomain α] [Ring β] [IsMulCommutative β] (f : β →+ α)
 
 /-- Make a ring homomorphism from an additive group homomorphism from a commutative ring to an
 integral domain that commutes with self multiplication, assumes that two is nonzero and `1` is sent

@@ -29,7 +29,7 @@ Projective space, collinearity, projective geometry
 
 @[expose] public section
 
-variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
+variable {K V : Type*} [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
   (M : Submodule K V) (S : Set (Projectivization K V))
 
 namespace Projectivization

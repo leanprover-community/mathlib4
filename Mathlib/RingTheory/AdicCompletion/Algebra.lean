@@ -37,8 +37,8 @@ suppress_compilation
 
 open Submodule
 
-variable {R S : Type*} [CommRing R] [CommRing S] (I : Ideal R)
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (I : Ideal R)
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 
 namespace AdicCompletion
 
@@ -347,7 +347,7 @@ example : module I = @Algebra.toModule (AdicCompletion I R)
 
 section liftRingHom
 
-variable {R S : Type*} [NonAssocSemiring R] [CommRing S] (I : Ideal S)
+variable {R S : Type*} [NonAssocSemiring R] [Ring S] [IsMulCommutative S] (I : Ideal S)
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -395,7 +395,7 @@ theorem evalₐ_comp_liftRingHom (n : ℕ) :
 
 section
 
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [Algebra R S]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] [Algebra R S]
 
 /-- `AlgHom` version of `AdicCompletion.liftRingHom`. -/
 def liftAlgHom (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
@@ -469,7 +469,7 @@ end liftRingHom
 
 section
 
-variable {A : Type*} [CommRing A] [Algebra R A] [Algebra R S]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [Algebra R S]
 
 /-- The canonical projection from the `I`-adic completion of `S` to `S ⧸ I`. Defined
 in terms of a surjective map `S →ₐ[R] A`. -/

@@ -40,7 +40,7 @@ public section
 
 universe u v
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
 
 open TensorProduct LinearMap
 
@@ -82,7 +82,7 @@ variable [Module.FaithfullyFlat A B]
 map `M →ₗ[A] B ⊗[A] M` is injective.
 
 See also `Module.Flat.tensorProduct_mk_injective`. -/
-lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddCommGroup M] [Module A M] :
+lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddGroup M] [IsAddCommutative M] [Module A M] :
     Function.Injective (TensorProduct.mk A B M 1) := by
   rw [← Module.FaithfullyFlat.lTensor_injective_iff_injective A B]
   have : (lTensor B <| TensorProduct.mk A B M 1) =

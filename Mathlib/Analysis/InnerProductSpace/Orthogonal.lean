@@ -29,8 +29,8 @@ Note this is not the same unicode symbol as `⊥` (`Bot`).
 @[expose] public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
+variable [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -240,7 +240,7 @@ theorem orthogonalFamily_self :
 end Submodule
 
 @[simp]
-theorem orthogonalBilin_innerₗ {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+theorem orthogonalBilin_innerₗ {E} [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E]
     (K : Submodule ℝ E) : K.orthogonalBilin (innerₗ E) = Kᗮ :=
   rfl
 
@@ -416,7 +416,7 @@ theorem OrthogonalFamily.isOrtho {ι} {V : ι → Submodule 𝕜 E}
 namespace ClosedSubmodule
 
 variable {𝕜 E : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

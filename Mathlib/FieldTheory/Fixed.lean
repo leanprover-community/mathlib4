@@ -305,8 +305,8 @@ theorem finrank_le_card [Fintype G] : finrank (subfield G F) F ≤ Fintype.card 
 
 end FixedPoints
 
-theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [CommSemiring R]
-    [Semiring A] [Algebra R A] [CommRing B] [IsDomain B] [Algebra R B] :
+theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Semiring R] [IsMulCommutative R]
+    [Semiring A] [Algebra R A] [Ring B] [IsMulCommutative B] [IsDomain B] [Algebra R B] :
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
   have : LinearIndependent B (LinearMap.ltoFun R A B B ∘ AlgHom.toLinearMap) :=
     ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>

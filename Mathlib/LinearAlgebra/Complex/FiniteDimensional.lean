@@ -43,17 +43,17 @@ theorem finrank_real_complex_fact : Fact (finrank ℝ ℂ = 2) :=
 
 end Complex
 
-instance (priority := 500) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
+instance (priority := 500) FiniteDimensional.complexToReal (E : Type*) [AddGroup E] [IsAddCommutative E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
   FiniteDimensional.trans ℝ ℂ E
 
-theorem rank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
+theorem rank_real_of_complex (E : Type*) [AddGroup E] [IsAddCommutative E] [Module ℂ E] :
     Module.rank ℝ E = 2 * Module.rank ℂ E :=
   Cardinal.lift_inj.{_, 0}.1 <| by
     rw [← lift_rank_mul_lift_rank ℝ ℂ E, Complex.rank_real_complex']
     simp only [Cardinal.lift_id']
 
-theorem finrank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
+theorem finrank_real_of_complex (E : Type*) [AddGroup E] [IsAddCommutative E] [Module ℂ E] :
     Module.finrank ℝ E = 2 * Module.finrank ℂ E := by
   rw [← Module.finrank_mul_finrank ℝ ℂ E, Complex.finrank_real_complex]
 

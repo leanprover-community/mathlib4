@@ -23,8 +23,8 @@ open Finset QuadraticMap
 
 namespace QuadraticMap
 
-variable {R M M' P : Type*} [AddCommGroup M] [AddCommGroup M'] [AddCommGroup P]
-  [CommRing R] [Module R M] [Module R M'] [Module R P] (Q : QuadraticMap R M P)
+variable {R M M' P : Type*} [AddGroup M] [IsAddCommutative M] [AddGroup M'] [IsAddCommutative M'] [AddGroup P] [IsAddCommutative P]
+  [Ring R] [IsMulCommutative R] [Module R M] [Module R M'] [Module R P] (Q : QuadraticMap R M P)
 
 /-- The radical of a quadratic form `Q` on `M`.
 
@@ -194,7 +194,7 @@ lemma radical_weightedSumSquares :
 
 /-- If the quadratic form `Q` is equivalent to a weighted sum of squares with weights `w`, then
 the rank of `Q.radical` is equal to the number of zero weights. -/
-lemma finrank_radical_of_equiv_weightedSumSquares {M : Type*} [AddCommGroup M] [Module 𝕜 M]
+lemma finrank_radical_of_equiv_weightedSumSquares {M : Type*} [AddGroup M] [IsAddCommutative M] [Module 𝕜 M]
     {Q : QuadraticForm 𝕜 M} (hQ : Equivalent Q (weightedSumSquares 𝕜 w)) :
     Module.finrank 𝕜 Q.radical = {i | w i = 0}.ncard := by
   rw [hQ.rank_radical_eq, radical_weightedSumSquares, Pi.dim_spanSubset]

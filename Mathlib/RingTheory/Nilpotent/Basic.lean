@@ -111,7 +111,7 @@ instance [Zero R] [Pow R ℕ] [Zero S] [Pow S ℕ] [IsReduced R] [IsReduced S] :
   eq_zero _ := fun ⟨n, hn⟩ ↦ have hn := Prod.ext_iff.1 hn
     Prod.ext (IsReduced.eq_zero _ ⟨n, hn.1⟩) (IsReduced.eq_zero _ ⟨n, hn.2⟩)
 
-theorem Prime.isRadical [CommMonoidWithZero R] {y : R} (hy : Prime y) : IsRadical y :=
+theorem Prime.isRadical [MonoidWithZero R] [IsMulCommutative R] {y : R} (hy : Prime y) : IsRadical y :=
   fun _ _ ↦ hy.dvd_of_dvd_pow
 
 theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced R := by
@@ -125,7 +125,7 @@ theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsReduced R ↔ ∀ x : R, x ^ k = 0 → x = 0 := by
   simp_rw [← zero_isRadical_iff, isRadical_iff_pow_one_lt k hk, zero_dvd_iff]
 
-theorem IsRadical.of_dvd [CommMonoidWithZero R] [IsCancelMulZero R] {x y : R} (hy : IsRadical y)
+theorem IsRadical.of_dvd [MonoidWithZero R] [IsMulCommutative R] [IsCancelMulZero R] {x y : R} (hy : IsRadical y)
     (h0 : y ≠ 0) (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
   obtain ⟨z, rfl⟩ := hxy
   refine fun w dvd ↦ ((mul_dvd_mul_iff_right <| right_ne_zero_of_mul h0).mp <| hy 2 _ ?_)
@@ -218,7 +218,7 @@ end Commute
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :

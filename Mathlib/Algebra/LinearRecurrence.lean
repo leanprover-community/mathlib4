@@ -49,20 +49,20 @@ open Polynomial
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/
 @[wikidata Q364089]
-structure LinearRecurrence (R : Type*) [CommSemiring R] where
+structure LinearRecurrence (R : Type*) [Semiring R] [IsMulCommutative R] where
   /-- Order of the linear recurrence -/
   order : ℕ
   /-- Coefficients of the linear recurrence -/
   coeffs : Fin order → R
 
-instance (R : Type*) [CommSemiring R] : Inhabited (LinearRecurrence R) :=
+instance (R : Type*) [Semiring R] [IsMulCommutative R] : Inhabited (LinearRecurrence R) :=
   ⟨⟨0, default⟩⟩
 
 namespace LinearRecurrence
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] (E : LinearRecurrence R)
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (E : LinearRecurrence R)
 
 /-- We say that a sequence `u` is solution of `LinearRecurrence order coeffs` when we have
   `u (n + order) = ∑ i : Fin order, coeffs i * u (n + i)` for any `n`. -/
@@ -191,7 +191,7 @@ section StrongRankCondition
 
 -- note: `StrongRankCondition` is the same as `Nontrivial` on `CommRing`s, but that result,
 -- `commRing_strongRankCondition`, is in a much later file.
-variable {R : Type*} [CommRing R] [StrongRankCondition R] (E : LinearRecurrence R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] [StrongRankCondition R] (E : LinearRecurrence R)
 
 /-- The dimension of `E.solSpace` is `E.order`. -/
 theorem solSpace_rank : Module.rank R E.solSpace = E.order := by
@@ -201,7 +201,7 @@ end StrongRankCondition
 
 section CommRing
 
-variable {R : Type*} [CommRing R] (E : LinearRecurrence R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (E : LinearRecurrence R)
 
 /-- The characteristic polynomial of `E` is
 `X ^ E.order - ∑ i : Fin E.order, (E.coeffs i) * X ^ i`. -/

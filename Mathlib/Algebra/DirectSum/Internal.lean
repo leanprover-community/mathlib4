@@ -58,7 +58,7 @@ open DirectSum
 
 variable {ι : Type*} {σ S R : Type*}
 
-theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [Algebra S R]
+theorem SetLike.algebraMap_mem_graded [Zero ι] [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedOne A] (s : S) : algebraMap S R s ∈ A 0 := by
   rw [Algebra.algebraMap_eq_smul_one]
   exact (A 0).smul_mem s <| SetLike.one_mem_graded _
@@ -108,7 +108,7 @@ instance gsemiring [AddMonoid ι] [Semiring R] [SetLike σ R] [AddSubmonoidClass
   natCast_succ n := Subtype.ext (Nat.cast_succ n)
 
 /-- Build a `DirectSum.GCommSemiring` instance for a collection of additive submonoids. -/
-instance gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSubmonoidClass σ R]
+instance gcommSemiring [AddMonoid ι] [IsAddCommutative ι] [Semiring R] [IsMulCommutative R] [SetLike σ R] [AddSubmonoidClass σ R]
     (A : ι → σ) [SetLike.GradedMonoid A] : DirectSum.GCommSemiring fun i => A i where
 
 /-- Build a `DirectSum.GRing` instance for a collection of additive subgroups. -/
@@ -119,7 +119,7 @@ instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A
   intCast_negSucc_ofNat n := Subtype.ext <| Int.cast_negSucc n
 
 /-- Build a `DirectSum.GCommRing` instance for a collection of additive submonoids. -/
-instance gcommRing [AddCommMonoid ι] [CommRing R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
+instance gcommRing [AddMonoid ι] [IsAddCommutative ι] [Ring R] [IsMulCommutative R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GCommRing fun i => A i where
 
 end SetLike
@@ -219,7 +219,7 @@ end coe
 section CanonicallyOrderedAddCommMonoid
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
-variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι] [SetLike.GradedMonoid A]
+variable [AddMonoid ι] [IsAddCommutative ι] [PartialOrder ι] [CanonicallyOrderedAdd ι] [SetLike.GradedMonoid A]
 
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :
     ((of (fun i => A i) i r * r') n : R) = 0 := by
@@ -275,7 +275,7 @@ end DirectSum
 namespace Submodule
 
 /-- Build a `DirectSum.GAlgebra` instance for a collection of `Submodule`s. -/
-instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A : ι → Submodule S R)
+instance galgebra [AddMonoid ι] [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R] (A : ι → Submodule S R)
     [SetLike.GradedMonoid A] : DirectSum.GAlgebra S fun i => A i where
   toFun :=
     ((Algebra.linearMap S R).codRestrict (A 0) <| SetLike.algebraMap_mem_graded A).toAddMonoidHom
@@ -286,13 +286,13 @@ instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A 
   smul_def := fun _r ⟨i, _xi⟩ => Sigma.subtype_ext (zero_add i).symm <| Algebra.smul_def _ _
 
 @[simp]
-theorem setLike.coe_galgebra_toFun {ι} [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
+theorem setLike.coe_galgebra_toFun {ι} [AddMonoid ι] [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (s : S) :
     (DirectSum.GAlgebra.toFun (A := fun i => A i) s) = (algebraMap S R s : R) :=
   rfl
 
 /-- A direct sum of powers of a submodule of an algebra has a multiplicative structure. -/
-instance nat_power_gradedMonoid [CommSemiring S] [Semiring R] [Algebra S R] (p : Submodule S R) :
+instance nat_power_gradedMonoid [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R] (p : Submodule S R) :
     SetLike.GradedMonoid fun i : ℕ => p ^ i where
   one_mem := by
     rw [← one_le, pow_zero]
@@ -303,19 +303,19 @@ instance nat_power_gradedMonoid [CommSemiring S] [Semiring R] [Algebra S R] (p :
 end Submodule
 
 /-- The canonical algebra isomorphism between `⨁ i, A i` and `R`. -/
-def DirectSum.coeAlgHom [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
+def DirectSum.coeAlgHom [AddMonoid ι] [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] : (⨁ i, A i) →ₐ[S] R :=
   DirectSum.toAlgebra S _ (fun i => (A i).subtype) rfl (fun _ _ => rfl)
 
 /-- The supremum of submodules that form a graded monoid is a subalgebra, and equal to the range of
 `DirectSum.coeAlgHom`. -/
-theorem Submodule.iSup_eq_toSubmodule_range [AddMonoid ι] [CommSemiring S] [Semiring R]
+theorem Submodule.iSup_eq_toSubmodule_range [AddMonoid ι] [Semiring S] [IsMulCommutative S] [Semiring R]
     [Algebra S R] (A : ι → Submodule S R) [SetLike.GradedMonoid A] :
     ⨆ i, A i = Subalgebra.toSubmodule (DirectSum.coeAlgHom A).range :=
   (Submodule.iSup_eq_range_dfinsupp_lsum A).trans <| SetLike.coe_injective rfl
 
 @[simp]
-theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
+theorem DirectSum.coeAlgHom_of [AddMonoid ι] [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     DirectSum.coeAlgHom A (DirectSum.of (fun i => A i) i x) = x :=
   DirectSum.toSemiring_of _ rfl (fun _ _ => rfl) _ _
@@ -348,7 +348,7 @@ instance instSemiring : Semiring (A 0) := inferInstanceAs <| Semiring (subsemiri
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
@@ -381,7 +381,7 @@ theorem coe_intCast (z : ℤ) : (z : A 0) = (z : R) := rfl
 end Ring
 
 section CommRing
-variable [CommRing R] [AddCommMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
+variable [Ring R] [IsMulCommutative R] [AddMonoid ι] [IsAddCommutative ι] [SetLike σ R] [AddSubgroupClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
@@ -391,7 +391,7 @@ instance instCommRing : CommRing (A 0) := inferInstanceAs <| CommRing (subring A
 end CommRing
 
 section Algebra
-variable [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid ι]
+variable [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R] [AddMonoid ι]
 variable (A : ι → Submodule S R) [SetLike.GradedMonoid A]
 
 /-- The subalgebra `A 0` of `R`. -/
@@ -412,11 +412,11 @@ end SetLike.GradeZero
 
 section HomogeneousElement
 
-theorem SetLike.homogeneous_zero_submodule [Zero ι] [Semiring S] [AddCommMonoid R] [Module S R]
+theorem SetLike.homogeneous_zero_submodule [Zero ι] [Semiring S] [AddMonoid R] [IsAddCommutative R] [Module S R]
     (A : ι → Submodule S R) : SetLike.IsHomogeneousElem A (0 : R) :=
   ⟨0, Submodule.zero_mem _⟩
 
-theorem SetLike.Homogeneous.smul [CommSemiring S] [Semiring R] [Algebra S R] {A : ι → Submodule S R}
+theorem SetLike.Homogeneous.smul [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R] {A : ι → Submodule S R}
     {s : S} {r : R} (hr : SetLike.IsHomogeneousElem A r) : SetLike.IsHomogeneousElem A (s • r) :=
   let ⟨i, hi⟩ := hr
   ⟨i, Submodule.smul_mem _ _ hi⟩
@@ -427,7 +427,7 @@ end HomogeneousElement
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid ι] [LinearOrder ι] [IsOrderedAddMonoid ι] [DecidableEq ι]
+variable [AddMonoid ι] [IsAddCommutative ι] [LinearOrder ι] [IsOrderedAddMonoid ι] [DecidableEq ι]
 
 section Semiring
 
@@ -477,7 +477,7 @@ variable [CanonicallyOrderedAdd ι]
 
 section CommSemiring
 
-variable [CommSemiring R] [SetLike σ R] [AddSubmonoidClass σ R]
+variable [Semiring R] [IsMulCommutative R] [SetLike σ R] [AddSubmonoidClass σ R]
 variable {A : ι → σ} [SetLike.GradedMonoid A]
 
 /-- The difference with `DirectSum.multisetProd_apply_eq_zero` is that the indices at which

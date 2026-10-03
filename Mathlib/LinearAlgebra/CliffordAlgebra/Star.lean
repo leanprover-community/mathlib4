@@ -27,8 +27,8 @@ Most results about `star` can be obtained by unfolding it via `CliffordAlgebra.s
 public section
 
 
-variable {R : Type*} [CommRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 variable {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra

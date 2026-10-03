@@ -72,7 +72,7 @@ This is available in bundled forms as:
 * `dotProductBilin`
 * `dotProductEquiv`
 -/
-def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
+def dotProduct [Mul α] [AddMonoid α] [IsAddCommutative α] (v w : m → α) : α :=
   ∑ i, v i * w i
 
 /- The precedence of 72 comes immediately after ` • ` for `SMul.smul`,
@@ -84,16 +84,16 @@ theorem dotProduct_assoc [NonUnitalSemiring α] (u : m → α) (w : n → α) (v
     (fun j => u ⬝ᵥ fun i => v i j) ⬝ᵥ w = u ⬝ᵥ fun i => v i ⬝ᵥ w := by
   simpa [dotProduct, Finset.mul_sum, Finset.sum_mul, mul_assoc] using Finset.sum_comm
 
-theorem dotProduct_comm [AddCommMonoid α] [CommMagma α] (v w : m → α) : v ⬝ᵥ w = w ⬝ᵥ v := by
+theorem dotProduct_comm [AddMonoid α] [IsAddCommutative α] [Mul α] [IsMulCommutative α] (v w : m → α) : v ⬝ᵥ w = w ⬝ᵥ v := by
   simp_rw [dotProduct, mul_comm]
 
 @[simp]
-theorem dotProduct_pUnit [AddCommMonoid α] [Mul α] (v w : PUnit → α) : v ⬝ᵥ w = v ⟨⟩ * w ⟨⟩ := by
+theorem dotProduct_pUnit [AddMonoid α] [IsAddCommutative α] [Mul α] (v w : PUnit → α) : v ⬝ᵥ w = v ⟨⟩ * w ⟨⟩ := by
   simp [dotProduct]
 
 section MulOneClass
 
-variable [MulOneClass α] [AddCommMonoid α]
+variable [MulOneClass α] [AddMonoid α] [IsAddCommutative α]
 
 theorem dotProduct_one (v : n → α) : v ⬝ᵥ 1 = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
 
@@ -239,7 +239,7 @@ end NonUnitalNonAssocRing
 
 section DistribMulAction
 
-variable [Mul α] [AddCommMonoid α] [DistribSMul R α]
+variable [Mul α] [AddMonoid α] [IsAddCommutative α] [DistribSMul R α]
 
 @[simp]
 theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) :
@@ -252,7 +252,7 @@ theorem dotProduct_smul [SMulCommClass R α α] (x : R) (v w : m → α) :
 end DistribMulAction
 
 section CommRing
-variable [CommRing α] [Nontrivial m] [Nontrivial α]
+variable [Ring α] [IsMulCommutative α] [Nontrivial m] [Nontrivial α]
 
 /-- For any vector `a` in a nontrivial commutative ring with nontrivial index,
 there exists a non-zero vector `b` such that `b ⬝ᵥ a = 0`. In other words,
@@ -299,20 +299,20 @@ This is available in bundled forms as:
 -- We want to be lower priority than `instHMul`, but without this we can't have operands with
 -- implicit dimensions.
 @[default_instance 100]
-instance [Fintype m] [Mul α] [AddCommMonoid α] :
+instance [Fintype m] [Mul α] [AddMonoid α] [IsAddCommutative α] :
     HMul (Matrix l m α) (Matrix m n α) (Matrix l n α) where
   hMul M N := fun i k => (fun j => M i j) ⬝ᵥ fun j => N j k
 
-theorem mul_apply [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N : Matrix m n α}
+theorem mul_apply [Fintype m] [Mul α] [AddMonoid α] [IsAddCommutative α] {M : Matrix l m α} {N : Matrix m n α}
     {i k} : (M * N) i k = ∑ j, M i j * N j k :=
   rfl
 
-instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where
+instance [Fintype n] [Mul α] [AddMonoid α] [IsAddCommutative α] : Mul (Matrix n n α) where
   mul M N := M * N
 
-instance [Fintype n] [DecidableEq n] [MulOne α] [AddCommMonoid α] : MulOne (Matrix n n α) where
+instance [Fintype n] [DecidableEq n] [MulOne α] [AddMonoid α] [IsAddCommutative α] : MulOne (Matrix n n α) where
 
-theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N : Matrix m n α}
+theorem mul_apply' [Fintype m] [Mul α] [AddMonoid α] [IsAddCommutative α] {M : Matrix l m α} {N : Matrix m n α}
     {i k} : (M * N) i k = (M i) ⬝ᵥ fun j => N j k :=
   rfl
 
@@ -327,7 +327,7 @@ theorem two_mul_expl {R : Type*} [NonUnitalNonAssocSemiring R] (A B : Matrix (Fi
 
 section AddCommMonoid
 
-variable [AddCommMonoid α] [Mul α]
+variable [AddMonoid α] [IsAddCommutative α] [Mul α]
 
 @[simp]
 theorem smul_mul [Fintype n] [Monoid R] [DistribMulAction R α] [IsScalarTower R α α] (a : R)
@@ -396,7 +396,7 @@ theorem diagonal_mul_diagonal' [Fintype n] [DecidableEq n] (d₁ d₂ : n → α
     diagonal d₁ * diagonal d₂ = diagonal fun i => d₁ i * d₂ i :=
   diagonal_mul_diagonal _ _
 
-theorem commute_diagonal {α : Type*} [NonUnitalNonAssocCommSemiring α]
+theorem commute_diagonal {α : Type*} [NonUnitalNonAssocSemiring α] [IsMulCommutative α]
     [Fintype n] [DecidableEq n] (d₁ d₂ : n → α) :
     Commute (diagonal d₁) (diagonal d₂) := by
   simp_rw [commute_iff_eq, diagonal_mul_diagonal, mul_comm]
@@ -564,7 +564,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring α]
+variable [Semiring α] [IsMulCommutative α]
 
 theorem smul_eq_mul_diagonal [Fintype n] [DecidableEq n] (M : Matrix m n α) (a : α) :
     a • M = M * diagonal fun _ => a := by
@@ -583,7 +583,7 @@ end Matrix
 section IsStablyFiniteRing
 
 /-- A semiring is stably finite if every matrix ring over it is Dedekind-finite. -/
-@[mk_iff] class IsStablyFiniteRing (R) [MulOne R] [AddCommMonoid R] : Prop where
+@[mk_iff] class IsStablyFiniteRing (R) [MulOne R] [AddMonoid R] [IsAddCommutative R] : Prop where
   isDedekindFiniteMonoid (n : ℕ) : IsDedekindFiniteMonoid (Matrix (Fin n) (Fin n) R)
 
 attribute [instance] IsStablyFiniteRing.isDedekindFiniteMonoid
@@ -687,7 +687,7 @@ theorem vecMulVec_smul' [Semigroup α] (w : m → α) (r : α) (v : n → α) :
   ext fun _ _ => mul_assoc _ _ _ |>.symm
 
 @[simp]
-theorem transpose_vecMulVec [CommMagma α] (w : m → α) (v : n → α) :
+theorem transpose_vecMulVec [Mul α] [IsMulCommutative α] (w : m → α) (v : n → α) :
     (vecMulVec w v)ᵀ = vecMulVec v w :=
   ext fun _ _ => mul_comm _ _
 
@@ -1113,7 +1113,7 @@ end NonUnitalNonAssocRing
 
 section NonUnitalCommSemiring
 
-variable [NonUnitalCommSemiring α]
+variable [NonUnitalSemiring α] [IsMulCommutative α]
 
 theorem mulVec_transpose [Fintype m] (A : Matrix m n α) (x : m → α) : Aᵀ *ᵥ x = x ᵥ* A := by
   ext
@@ -1190,14 +1190,14 @@ section Transpose
 open Matrix
 
 @[simp]
-theorem transpose_mul [AddCommMonoid α] [CommMagma α] [Fintype n] (M : Matrix m n α)
+theorem transpose_mul [AddMonoid α] [IsAddCommutative α] [Mul α] [IsMulCommutative α] [Fintype n] (M : Matrix m n α)
     (N : Matrix n l α) : (M * N)ᵀ = Nᵀ * Mᵀ := by
   ext
   apply dotProduct_comm
 
 end Transpose
 
-theorem submatrix_mul [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p q : Type*}
+theorem submatrix_mul [Fintype n] [Fintype o] [Mul α] [AddMonoid α] [IsAddCommutative α] {p q : Type*}
     (M : Matrix m n α) (N : Matrix n p α) (e₁ : l → m) (e₂ : o → n) (e₃ : q → p)
     (he₂ : Function.Bijective e₂) :
     (M * N).submatrix e₁ e₃ = M.submatrix e₁ e₂ * N.submatrix e₂ e₃ :=
@@ -1207,7 +1207,7 @@ theorem submatrix_mul [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p q :
 for when the mappings are bundled. -/
 
 @[simp]
-theorem submatrix_mul_equiv [Fintype n] [Fintype o] [AddCommMonoid α] [Mul α] {p q : Type*}
+theorem submatrix_mul_equiv [Fintype n] [Fintype o] [AddMonoid α] [IsAddCommutative α] [Mul α] {p q : Type*}
     (M : Matrix m n α) (N : Matrix n p α) (e₁ : l → m) (e₂ : o ≃ n) (e₃ : q → p) :
     M.submatrix e₁ e₂ * N.submatrix e₂ e₃ = (M * N).submatrix e₁ e₃ :=
   (submatrix_mul M N e₁ e₂ e₃ e₂.bijective).symm
@@ -1218,13 +1218,13 @@ theorem submatrix_mulVec_equiv [Fintype n] [Fintype o] [NonUnitalNonAssocSemirin
   funext fun _ => Eq.symm (dotProduct_comp_equiv_symm _ _ _)
 
 @[simp]
-theorem submatrix_id_mul_left [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p : Type*}
+theorem submatrix_id_mul_left [Fintype n] [Fintype o] [Mul α] [AddMonoid α] [IsAddCommutative α] {p : Type*}
     (M : Matrix m n α) (N : Matrix o p α) (e₁ : l → m) (e₂ : n ≃ o) :
     M.submatrix e₁ id * N.submatrix e₂ id = M.submatrix e₁ e₂.symm * N := by
   ext; simp [mul_apply, ← e₂.bijective.sum_comp]
 
 @[simp]
-theorem submatrix_id_mul_right [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p : Type*}
+theorem submatrix_id_mul_right [Fintype n] [Fintype o] [Mul α] [AddMonoid α] [IsAddCommutative α] {p : Type*}
     (M : Matrix m n α) (N : Matrix o p α) (e₁ : l → p) (e₂ : o ≃ n) :
     M.submatrix id e₂ * N.submatrix id e₁ = M * N.submatrix e₂.symm e₁ := by
   ext; simp [mul_apply, ← e₂.bijective.sum_comp]
@@ -1256,12 +1256,12 @@ theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [Decidabl
   simp only [A, Matrix.one_mul, submatrix_submatrix, Function.comp_id, submatrix_id_id,
     Equiv.symm_comp_self]
 
-theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid α] [Mul α]
+theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddMonoid α] [IsAddCommutative α] [Mul α]
     (e : m ≃ n) (M : Matrix m n α) : M.submatrix id e * Mᵀ.submatrix e id = M * Mᵀ := by
   rw [submatrix_mul_equiv, submatrix_id_id]
 
 variable (m n R : Type*) [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
-variable [MulOne R] [AddCommMonoid R]
+variable [MulOne R] [AddMonoid R] [IsAddCommutative R]
 
 instance [IsStablyFiniteRing R] : IsDedekindFiniteMonoid (Matrix n n R) :=
   let e := Fintype.equivFin n

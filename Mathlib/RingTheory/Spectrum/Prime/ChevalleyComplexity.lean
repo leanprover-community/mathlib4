@@ -62,8 +62,8 @@ not give an explicit bound on the complexity.
 
 @[expose] public section
 
-variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
-variable [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A] {n : ℕ}
+variable {R₀ R S M A : Type*} [Ring R₀] [IsMulCommutative R₀] [Ring R] [IsMulCommutative R] [Algebra R₀ R] [Ring S] [IsMulCommutative S] [Algebra R₀ S]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [Ring A] [IsMulCommutative A] [Algebra R A] {n : ℕ}
 
 open Function Localization MvPolynomial Polynomial TensorProduct PrimeSpectrum
 open scoped Pointwise
@@ -181,19 +181,19 @@ Consider a property on a vector `e` of polynomials. Suppose that it holds for th
 Then it holds for all vectors `e` over all rings.
 -/
 private lemma induction_structure (n : ℕ)
-    (P : ∀ (R : Type u) [CommRing R], (InductionObj R n) → Prop)
-    (hP₁ : ∀ (R) [CommRing R], P R ⟨0⟩)
-    (hP₂ : ∀ (R) [CommRing R] (e : InductionObj R n) (i : Fin n),
+    (P : ∀ (R : Type u) [Ring R] [IsMulCommutative R], (InductionObj R n) → Prop)
+    (hP₁ : ∀ (R) [Ring R] [IsMulCommutative R], P R ⟨0⟩)
+    (hP₂ : ∀ (R) [Ring R] [IsMulCommutative R] (e : InductionObj R n) (i : Fin n),
       (e.1 i).Monic → (∀ j ≠ i, e.1 j = 0) → P R e)
-    (hP₃ : ∀ (R) [CommRing R] (e : InductionObj R n) (i j : Fin n),
+    (hP₃ : ∀ (R) [Ring R] [IsMulCommutative R] (e : InductionObj R n) (i j : Fin n),
       (e.1 i).Monic → (e.1 i).degree ≤ (e.1 j).degree → i ≠ j →
       P R ⟨update e.1 j (e.1 j %ₘ e.1 i)⟩ → P R e)
-    (hP₄ : ∀ (R) [CommRing R] (c : R) (i : Fin n) (e : InductionObj R n), c = (e.1 i).leadingCoeff →
+    (hP₄ : ∀ (R) [Ring R] [IsMulCommutative R] (c : R) (i : Fin n) (e : InductionObj R n), c = (e.1 i).leadingCoeff →
       c ≠ 0 →
       P (Away c) ⟨Polynomial.C (IsLocalization.Away.invSelf (S := Away c) c) •
         mapRingHom (algebraMap _ _) ∘ e⟩ →
       P (R ⧸ Ideal.span {c}) ⟨mapRingHom (algebraMap _ _) ∘ e⟩ → P R e)
-    {R} [CommRing R] (e : InductionObj R n) : P R e := by
+    {R} [Ring R] [IsMulCommutative R] (e : InductionObj R n) : P R e := by
   classical
   set v := e.degree with hv
   clear_value v
@@ -274,7 +274,7 @@ private lemma induction_structure (n : ℕ)
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
 `induction_structure`. -/
-private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
+private lemma induction_aux (R : Type*) [Ring R] [IsMulCommutative R] [Algebra R₀ R]
     (c : R) (i : Fin n) (e : InductionObj R n) (hi : c = (e.1 i).leadingCoeff) (hc : c ≠ 0) :
     Statement R₀ (Away c) n
       ⟨Polynomial.C (IsLocalization.Away.invSelf (S := Away c) c) •
@@ -552,7 +552,7 @@ end PolynomialC
 
 open PolynomialC InductionObj in
 /-- The `C : R → R[X]` case of **Chevalley's theorem** with complexity bound. -/
-lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM : 1 ∈ M)
+lemma chevalley_polynomialC {R : Type*} [Ring R] [IsMulCommutative R] (M : Submodule ℤ R) (hM : 1 ∈ M)
     (S : ConstructibleSetData R[X]) (hS : ∀ C ∈ S, ∀ j k, (C.g j).coeff k ∈ M) :
     ∃ T : ConstructibleSetData R,
       comap Polynomial.C '' S.toSet = T.toSet ∧ ∀ C ∈ T, C.n ≤ S.degBound ∧

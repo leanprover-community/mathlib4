@@ -20,14 +20,14 @@ In this file we show that monoid algebras are stable under pushout.
 open Algebra TensorProduct
 
 namespace MonoidAlgebra
-variable {R M N S A B : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring A] [CommSemiring B]
+variable {R M N S A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B]
   [Algebra R S] [Algebra R A] [Algebra R B] [Algebra S A] [IsScalarTower R S A]
-  [CommMonoid M] [CommMonoid N]
+  [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N]
 
 -- Note: Cannot be additivised automatically because of the use of `Multiplicative`
 -- in `AddMonoidAlgebra.liftNCAlgHom` and `of`
 /-- Implementation detail. -/
-noncomputable def _root_.AddMonoidAlgebra.rTensorEquivAlgEquiv.invFun [AddCommMonoid M] :
+noncomputable def _root_.AddMonoidAlgebra.rTensorEquivAlgEquiv.invFun [AddMonoid M] [IsAddCommutative M] :
     AddMonoidAlgebra (A ⊗[R] B) M →ₐ[S] A ⊗[R] AddMonoidAlgebra B M :=
   AddMonoidAlgebra.liftNCAlgHom
     (Algebra.TensorProduct.map (.id _ _) AddMonoidAlgebra.singleZeroAlgHom)
@@ -40,8 +40,8 @@ def rTensorEquivAlgEquiv.invFun : (A ⊗[R] B)[M] →ₐ[S] A ⊗[R] B[M] :=
   MonoidAlgebra.liftNCAlgHom (Algebra.TensorProduct.map (.id _ _) singleOneAlgHom)
     (Algebra.TensorProduct.includeRight.toMonoidHom.comp (of B M)) fun _ _ ↦ .all ..
 
-omit [CommMonoid M] in
-variable (R A B) [AddCommMonoid M] in
+omit [Monoid M] [IsMulCommutative M] in
+variable (R A B) [AddMonoid M] [IsAddCommutative M] in
 lemma _root_.AddMonoidAlgebra.rTensorEquivAlgEquiv.invFun_tmul (a : A) (m : M) (b : B) :
     AddMonoidAlgebra.rTensorEquivAlgEquiv.invFun (S := S) (.single m (a ⊗ₜ[R] b)) =
        a ⊗ₜ .single m b := by
@@ -128,7 +128,7 @@ instance instIsPushout [IsPushout R S A B] : IsPushout R S A[M] B[M] where
 instance instIsPushout' [IsPushout R A S B] : IsPushout R A[M] S B[M] :=
   have : IsPushout R S A B := .symm ‹_›; .symm inferInstance
 
-omit [CommMonoid M] [CommMonoid N]
+omit [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N]
 
 -- TODO: Generalise to different base rings, strengthen to an `AlgEquiv`
 variable (R) in

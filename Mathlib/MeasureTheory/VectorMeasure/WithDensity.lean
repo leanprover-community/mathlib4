@@ -37,7 +37,7 @@ namespace MeasureTheory
 open TopologicalSpace
 
 variable {μ : Measure α}
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 open scoped Classical in
 /-- Given a measure `μ` and an integrable function `f`, `μ.withDensityᵥ f` is

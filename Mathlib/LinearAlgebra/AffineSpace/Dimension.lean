@@ -31,7 +31,7 @@ namespace AffineSubspace
 universe u v v' a a'
 
 variable {R : Type u} {V : Type v} {V' : Type v'} {A A₁ : Type a} {A' : Type a'}
-variable [AddCommGroup V] [AddTorsor V A] [AddTorsor V A₁] [AddCommGroup V'] [AddTorsor V' A']
+variable [AddGroup V] [IsAddCommutative V] [AddTorsor V A] [AddTorsor V A₁] [AddGroup V'] [IsAddCommutative V'] [AddTorsor V' A']
 
 section Ring
 

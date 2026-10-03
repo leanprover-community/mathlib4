@@ -52,7 +52,7 @@ theorem modEq_iff_natModEq {a b n : ℕ} : a ≡ b [PMOD n] ↔ a ≡ b [MOD n] 
     rw [← Nat.div_add_mod' a n, ← Nat.div_add_mod' b n, ← Nat.nsmul_eq_mul, ← Nat.nsmul_eq_mul, h]
     exact nsmul_add_modEq _ |>.trans (nsmul_add_modEq _).symm
 
-variable {M : Type*} [AddCommMonoidWithOne M]
+variable {M : Type*} [AddMonoidWithOne M] [IsAddCommutative M]
 
 theorem ModEq.natCast {a b n : ℕ} (h : a ≡ b [MOD n]) : a ≡ b [PMOD (n : M)] := by
   rw [← modEq_iff_natModEq] at h

@@ -73,12 +73,12 @@ theorem add_pow' (h : Commute x y) (n : ℕ) :
 end Commute
 
 /-- The **binomial theorem** -/
-theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
+theorem add_pow [Semiring R] [IsMulCommutative R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ range (n + 1), x ^ m * y ^ (n - m) * n.choose m :=
   (Commute.all x y).add_pow n
 
 /-- A special case of the **binomial theorem** -/
-theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
+theorem sub_pow [Ring R] [IsMulCommutative R] (x y : R) (n : ℕ) :
     (x - y) ^ n = ∑ m ∈ range (n + 1), (-1) ^ (m + n) * x ^ m * y ^ (n - m) * n.choose m := by
   rw [sub_eq_add_neg, add_pow]
   congr! 1 with m hm
@@ -194,7 +194,7 @@ theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
 
 namespace Finset
 
-theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → α) {x : Finset β} :
+theorem sum_powerset_apply_card {α β : Type*} [AddMonoid α] [IsAddCommutative α] (f : ℕ → α) {x : Finset β} :
     ∑ m ∈ x.powerset, f #m = ∑ m ∈ range (#x + 1), (#x).choose m • f m := by
   trans ∑ m ∈ range (#x + 1), ∑ j ∈ x.powerset with #j = m, f #j
   · refine (sum_fiberwise_of_maps_to ?_ _).symm
@@ -221,7 +221,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
 variable [NonAssocSemiring R]
 
 @[to_additive sum_choose_succ_nsmul]
-theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
+theorem prod_pow_choose_succ {M : Type*} [Monoid M] [IsMulCommutative M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ i ∈ range (n + 2), f i (n + 1 - i) ^ (n + 1).choose i) =
       (∏ i ∈ range (n + 1), f i (n + 1 - i) ^ n.choose i) *
         ∏ i ∈ range (n + 1), f (i + 1) (n - i) ^ n.choose i := by
@@ -232,7 +232,7 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
   simpa [choose_succ_succ, pow_add, prod_mul_distrib, A, mul_assoc] using mul_comm _ _
 
 @[to_additive sum_antidiagonal_choose_succ_nsmul]
-theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
+theorem prod_antidiagonal_pow_choose_succ {M : Type*} [Monoid M] [IsMulCommutative M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ ij ∈ antidiagonal (n + 1), f ij.1 ij.2 ^ (n + 1).choose ij.1) =
       (∏ ij ∈ antidiagonal n, f ij.1 (ij.2 + 1) ^ n.choose ij.1) *
         ∏ ij ∈ antidiagonal n, f (ij.1 + 1) ij.2 ^ n.choose ij.2 := by

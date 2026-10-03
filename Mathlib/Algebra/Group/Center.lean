@@ -269,7 +269,7 @@ instance decidableMemCenter [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
 end Semigroup
 
 section CommSemigroup
-variable [CommSemigroup M]
+variable [Semigroup M] [IsMulCommutative M]
 
 variable (M)
 

@@ -54,16 +54,16 @@ noncomputable section
 namespace Module
 
 variable (R M : Type*)
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The left dual space of an R-module M is the R-module of linear maps `M → R`. -/
 @[wikidata Q752487]
-abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
+abbrev Dual (R M : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] :=
   M →ₗ[R] R
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
 @[deprecated LinearMap.id +typeChanged (since := "2026-04-02")]
-def dualPairing (R M) [CommSemiring R] [AddCommMonoid M] [Module R M] :
+def dualPairing (R M) [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] :
     Module.Dual R M →ₗ[R] M →ₗ[R] R :=
   LinearMap.id
 
@@ -84,7 +84,7 @@ theorem eval_apply (v : M) (a : Dual R M) : eval R M v a = a v :=
   rfl
 
 variable {R M} {M' : Type*}
-variable [AddCommMonoid M'] [Module R M']
+variable [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 /-- The transposition of linear maps, as a linear map from `M →ₗ[R] M'` to
 `Dual R M' →ₗ[R] Dual R M`. -/
@@ -94,7 +94,7 @@ def transpose : (M →ₗ[R] M') →ₗ[R] Dual R M' →ₗ[R] Dual R M :=
 theorem transpose_apply (u : M →ₗ[R] M') (l : Dual R M') : transpose u l = l.comp u :=
   rfl
 
-variable {M'' : Type*} [AddCommMonoid M''] [Module R M'']
+variable {M'' : Type*} [AddMonoid M''] [IsAddCommutative M''] [Module R M'']
 
 theorem transpose_comp (u : M' →ₗ[R] M'') (v : M →ₗ[R] M') :
     transpose (u.comp v) = (transpose v).comp (transpose u) :=
@@ -108,8 +108,8 @@ section DualMap
 
 open Module
 
-variable {R M₁ M₂ : Type*} [CommSemiring R]
-variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
+variable {R M₁ M₂ : Type*} [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
 
 /-- Given a linear map `f : M₁ →ₗ[R] M₂`, `f.dualMap` is the linear map between the dual of
 `M₂` and `M₁` such that it maps the functional `φ` to `φ ∘ f`. -/
@@ -134,7 +134,7 @@ theorem LinearMap.dualMap_id : (LinearMap.id : M₁ →ₗ[R] M₁).dualMap = Li
   ext
   rfl
 
-theorem LinearMap.dualMap_comp_dualMap {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃]
+theorem LinearMap.dualMap_comp_dualMap {M₃ : Type*} [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃]
     (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) : f.dualMap.comp g.dualMap = (g.comp f).dualMap :=
   rfl
 
@@ -169,7 +169,7 @@ theorem LinearEquiv.dualMap_symm {f : M₁ ≃ₗ[R] M₂} :
     (LinearEquiv.dualMap f).symm = LinearEquiv.dualMap f.symm :=
   rfl
 
-theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (f : M₁ ≃ₗ[R] M₂)
+theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃] (f : M₁ ≃ₗ[R] M₂)
     (g : M₂ ≃ₗ[R] M₃) : g.dualMap.trans f.dualMap = (f.trans g).dualMap :=
   rfl
 
@@ -203,7 +203,7 @@ section IsReflexive
 open Function
 
 variable (R M N : Type*)
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
 
 /-- A reflexive module is one for which the natural map to its double dual is a bijection.
 
@@ -239,13 +239,13 @@ def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
   ext; simp
 
 @[simp] lemma Dual.eval_comp_comp_evalEquiv_eq
-    {M' : Type*} [AddCommMonoid M'] [Module R M'] {f : M →ₗ[R] M'} :
+    {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] {f : M →ₗ[R] M'} :
     Dual.eval R M' ∘ₗ f ∘ₗ (evalEquiv R M).symm = f.dualMap.dualMap := by
   rw [← LinearMap.comp_assoc, LinearEquiv.comp_toLinearMap_symm_eq,
     evalEquiv_toLinearMap, eval_naturality]
 
 lemma dualMap_dualMap_eq_iff_of_injective
-    {M' : Type*} [AddCommMonoid M'] [Module R M'] {f g : M →ₗ[R] M'}
+    {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] {f g : M →ₗ[R] M'}
     (h : Injective (Dual.eval R M')) :
     f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g := by
   simp only [← Dual.eval_comp_comp_evalEquiv_eq]
@@ -255,7 +255,7 @@ lemma dualMap_dualMap_eq_iff_of_injective
   exact hfg
 
 @[simp] lemma dualMap_dualMap_eq_iff
-    {M' : Type*} [AddCommMonoid M'] [Module R M'] [IsReflexive R M'] {f g : M →ₗ[R] M'} :
+    {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] [IsReflexive R M'] {f g : M →ₗ[R] M'} :
     f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g :=
   dualMap_dualMap_eq_iff_of_injective _ _ (bijective_dual_eval R M').injective
 
@@ -314,7 +314,7 @@ end Module
 
 namespace Submodule
 
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable {W : Submodule R M}
 
 /-- The `dualRestrict` of a submodule `W` of `M` is the linear map from the
@@ -333,7 +333,7 @@ theorem dualRestrict_apply (W : Submodule R M) (φ : Module.Dual R M) (x : W) :
 
 /-- The `dualAnnihilator` of a submodule `W` is the set of linear maps `φ` such
   that `φ w = 0` for all `w ∈ W`. -/
-def dualAnnihilator {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+def dualAnnihilator {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
     (W : Submodule R M) : Submodule R <| Module.Dual R M :=
   LinearMap.ker W.dualRestrict
 
@@ -358,7 +358,7 @@ theorem mem_dualCoannihilator {Φ : Submodule R (Module.Dual R M)} (x : M) :
     x ∈ Φ.dualCoannihilator ↔ ∀ φ ∈ Φ, (φ x : R) = 0 := by
   simp_rw [dualCoannihilator, mem_comap, mem_dualAnnihilator, Module.Dual.eval_apply]
 
-lemma dualAnnihilator_map_dualMap_le {N : Type*} [AddCommMonoid N] [Module R N]
+lemma dualAnnihilator_map_dualMap_le {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
     (W : Submodule R M) (f : N →ₗ[R] M) :
     W.dualAnnihilator.map f.dualMap ≤ (W.comap f).dualAnnihilator := by
   intro; aesop
@@ -473,8 +473,8 @@ open Module
 
 namespace LinearMap
 
-variable {R M₁ M₂ : Type*} [CommSemiring R]
-variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
+variable {R M₁ M₂ : Type*} [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
 variable (f : M₁ →ₗ[R] M₂)
 
 theorem ker_dualMap_eq_dualAnnihilator_range :
@@ -493,7 +493,7 @@ end LinearMap
 section CommSemiring
 
 variable {R M M' : Type*}
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 namespace LinearMap
 

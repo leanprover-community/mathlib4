@@ -34,8 +34,8 @@ universe u v w
 /-- Given `R`-modules `A, B` with comultiplication maps `Δ_A, Δ_B` and counit maps
 `ε_A, ε_B`, an `R`-coalgebra homomorphism `A →ₗc[R] B` is an `R`-linear map `f` such that
 `ε_B ∘ f = ε_A` and `(f ⊗ f) ∘ Δ_A = Δ_B ∘ f`. -/
-structure CoalgHom (R A B : Type*) [CommSemiring R]
-    [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
+structure CoalgHom (R A B : Type*) [Semiring R] [IsMulCommutative R]
+    [AddMonoid A] [IsAddCommutative A] [Module R A] [AddMonoid B] [IsAddCommutative B] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗ[R] B where
   counit_comp : counit ∘ₗ toLinearMap = counit
   map_comp_comul : TensorProduct.map toLinearMap toLinearMap ∘ₗ comul = comul ∘ₗ toLinearMap
@@ -49,7 +49,7 @@ notation:25 A " →ₗc[" R "] " B => CoalgHom R A B
 /-- `CoalgHomClass F R A B` asserts `F` is a type of bundled coalgebra homomorphisms
 from `A` to `B`. -/
 class CoalgHomClass (F : Type*) (R A B : outParam Type*)
-    [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
+    [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] [AddMonoid B] [IsAddCommutative B] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
     extends SemilinearMapClass F (RingHom.id R) A B where
   counit_comp : ∀ f : F, counit ∘ₗ (f : A →ₗ[R] B) = counit
@@ -60,8 +60,8 @@ attribute [simp] CoalgHomClass.counit_comp CoalgHomClass.map_comp_comul
 
 namespace CoalgHomClass
 
-variable {R A B F : Type*} [CommSemiring R]
-  [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
+variable {R A B F : Type*} [Semiring R] [IsMulCommutative R]
+  [AddMonoid A] [IsAddCommutative A] [Module R A] [AddMonoid B] [IsAddCommutative B] [Module R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
   [CoalgHomClass F R A B]
 
@@ -95,8 +95,8 @@ variable {R A B C D : Type*}
 
 section
 
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
-  [AddCommMonoid C] [Module R C] [AddCommMonoid D] [Module R D]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] [AddMonoid B] [IsAddCommutative B] [Module R B]
+  [AddMonoid C] [IsAddCommutative C] [Module R C] [AddMonoid D] [IsAddCommutative D] [Module R D]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
 @[macro_inline]
@@ -114,8 +114,8 @@ instance coalgHomClass : CoalgHomClass (A →ₗc[R] B) R A B where
   map_comp_comul := fun f => f.map_comp_comul
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R α β : Type*} [CommSemiring R]
-    [AddCommMonoid α] [Module R α] [AddCommMonoid β]
+def Simps.apply {R α β : Type*} [Semiring R] [IsMulCommutative R]
+    [AddMonoid α] [IsAddCommutative α] [Module R α] [AddMonoid β] [IsAddCommutative β]
     [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α →ₗc[R] β) : α → β := f
 
@@ -282,7 +282,7 @@ namespace Coalgebra
 
 variable (R : Type u) (A : Type v) (B : Type w) {ι : Type*}
 
-variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [Module R A] [Module R B]
 variable [Coalgebra R A] [Coalgebra R B]
 
 /-- The counit of a coalgebra as a `CoalgHom`. -/

@@ -51,7 +51,7 @@ universe u
 
 noncomputable section
 
-variable {R M A : Type u} [CommRing R] [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A]
+variable {R M A : Type u} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [Ring A] [IsMulCommutative A] [Algebra R A]
 
 open TopCat
 
@@ -933,7 +933,7 @@ theorem globalSectionsIso_hom (R : CommRingCat) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc, elementwise nosimp]
-theorem toStalk_stalkSpecializes {R : Type*} [CommRing R] {x y : PrimeSpectrum R} (h : x ⤳ y) :
+theorem toStalk_stalkSpecializes {R : Type*} [Ring R] [IsMulCommutative R] {x y : PrimeSpectrum R} (h : x ⤳ y) :
     toStalk R y ≫ (structureSheaf R).presheaf.stalkSpecializes h = toStalk R x := by
   dsimp [toStalk]
   simp [structureSheaf]
@@ -942,7 +942,7 @@ end StructureSheaf
 
 @[expose] public section Comap
 
-variable {S : Type u} [CommRing S] {N : Type u} [AddCommGroup N] [Module S N]
+variable {S : Type u} [Ring S] [IsMulCommutative S] {N : Type u} [AddGroup N] [IsAddCommutative N] [Module S N]
   {σ : R →+* S} (f : M →ₛₗ[σ] N)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1048,7 +1048,7 @@ section Ring
 
 open Spec (structureSheaf)
 
-variable {S : Type u} [CommRing S] {P : Type u} [CommRing P]
+variable {S : Type u} [Ring S] [IsMulCommutative S] {P : Type u} [Ring P] [IsMulCommutative P]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

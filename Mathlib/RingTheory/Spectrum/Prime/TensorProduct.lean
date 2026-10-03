@@ -20,8 +20,8 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 @[expose] public section
 
-variable (R S T : Type*) [CommRing R] [CommRing S] [Algebra R S]
-variable [CommRing T] [Algebra R T]
+variable (R S T : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+variable [Ring T] [IsMulCommutative T] [Algebra R T]
 
 open TensorProduct Topology
 

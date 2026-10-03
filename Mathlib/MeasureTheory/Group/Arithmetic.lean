@@ -305,7 +305,7 @@ instance {E} [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E] [Meas
   simp_rw +singlePass [Set.diagonal, ← sub_eq_zero]
   measurability
 
-instance {β : Type*} [AddCommMonoid β] [PartialOrder β]
+instance {β : Type*} [AddMonoid β] [IsAddCommutative β] [PartialOrder β]
     [CanonicallyOrderedAdd β] [Sub β] [OrderedSub β]
     {_ : MeasurableSpace β} [MeasurableSub₂ β] [MeasurableSingletonClass β] :
     MeasurableEq β := by
@@ -380,27 +380,27 @@ theorem measurableEmbedding_inv [InvolutiveInv α] [MeasurableInv α] :
 end Inv
 
 @[to_additive]
-theorem Measurable.mul_iff_right {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+theorem Measurable.mul_iff_right {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [Group G] [IsMulCommutative G]
     [MeasurableMul₂ G] [MeasurableInv G] {f g : α → G} (hf : Measurable f) :
     Measurable (f * g) ↔ Measurable g :=
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
     fun h ↦ hf.mul h⟩
 
 @[to_additive]
-theorem AEMeasurable.mul_iff_right {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+theorem AEMeasurable.mul_iff_right {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [Group G] [IsMulCommutative G]
     [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure α} {f g : α → G} (hf : AEMeasurable f μ) :
     AEMeasurable (f * g) μ ↔ AEMeasurable g μ :=
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
     fun h ↦ hf.mul h⟩
 
 @[to_additive]
-theorem Measurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+theorem Measurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [Group G] [IsMulCommutative G]
     [MeasurableMul₂ G] [MeasurableInv G] {f g : α → G} (hf : Measurable f) :
     Measurable (g * f) ↔ Measurable g :=
   mul_comm g f ▸ Measurable.mul_iff_right hf
 
 @[to_additive]
-theorem AEMeasurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+theorem AEMeasurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [Group G] [IsMulCommutative G]
     [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure α} {f g : α → G} (hf : AEMeasurable f μ) :
     AEMeasurable (g * f) μ ↔ AEMeasurable g μ :=
   mul_comm g f ▸ AEMeasurable.mul_iff_right hf
@@ -796,7 +796,7 @@ end Monoid
 
 section CommMonoid
 
-variable {M ι α β : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+variable {M ι α β : Type*} [Monoid M] [IsMulCommutative M] [MeasurableSpace M] [MeasurableMul₂ M]
   {m : MeasurableSpace α} {mβ : MeasurableSpace β} {μ : Measure α} {f : ι → α → M}
 
 @[to_additive (attr := fun_prop)]

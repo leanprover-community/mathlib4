@@ -21,7 +21,7 @@ public section
 open scoped Polynomial
 open PowerSeries Ideal Quotient
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /--
 Given an ideal `I` of a commutative ring `R`, we say that a polynomial `f : R[X]`

@@ -243,10 +243,10 @@ example {x y z w : ℤ} (h₁ : x * z = y ^ 2) (h₂ : y * w = z ^ 2) :
 example {x : ℚ} (h : x ≥ 5) : x ^ 2 > 2 * x + 11 := by
   linear_combination (x + 3) * h
 
-example {R : Type*} [CommRing R] {a b : R} (h : a = b) : a ^ 2 = b ^ 2 := by
+example {R : Type*} [Ring R] [IsMulCommutative R] {a b : R} (h : a = b) : a ^ 2 = b ^ 2 := by
   linear_combination (a + b) * h
 
-example {A : Type*} [AddCommGroup A]
+example {A : Type*} [AddGroup A] [IsAddCommutative A]
     {x y z : A} (h1 : x + y = 10 • z) (h2 : x - y = 6 • z) :
     2 • x = 2 • (8 • z) := by
   linear_combination (norm := abel) h1 + h2

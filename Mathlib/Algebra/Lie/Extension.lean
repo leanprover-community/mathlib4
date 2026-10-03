@@ -51,7 +51,7 @@ variable {R N L M : Type*}
 
 section IsExtension
 
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing N] [LieAlgebra R N] [LieRing M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [LieRing N] [LieAlgebra R N] [LieRing M]
   [LieAlgebra R M]
 
 /-- A sequence of two Lie algebra homomorphisms is an extension if it is short exact. -/
@@ -104,7 +104,7 @@ end IsExtension
 
 namespace Extension
 
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M]
 
 lemma incl_apply_mem_ker (E : Extension R M L) (x : M) :
     E.incl x ∈ E.proj.ker :=
@@ -126,19 +126,19 @@ end Extension
 
 section Algebra
 
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 
 open LieModule.Cohomology
 
 /-- A one-field structure giving a type synonym for a direct product. We use this to describe an
 alternative Lie algebra structure on the product, where the bracket is shifted by a 2-cocycle. -/
-structure ofTwoCocycle {R L M} [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M]
+structure ofTwoCocycle {R L M} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [AddGroup M] [IsAddCommutative M]
     [Module R M] [LieRingModule L M] [LieModule R L M]
     (c : twoCocycle R L M) where
   /-- The underlying type. -/
   carrier : L × M
 
-variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
   (c : twoCocycle R L M)
 
 /-- An equivalence between the direct product and the corresponding one-field structure. This is
@@ -233,7 +233,7 @@ namespace Extension
 
 open LieModule.Cohomology
 
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M]
 
 section TwoCocycle
 

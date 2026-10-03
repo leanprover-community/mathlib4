@@ -42,10 +42,10 @@ open Module
 
 universe u v w
 
-variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-variable {M' : Type*} [AddCommMonoid M'] [Module R M']
+variable {R : Type*} {M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [IsMulCommutative R₁] [AddGroup M₁] [IsAddCommutative M₁] [Module R₁ M₁]
+variable {V : Type*} {K : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
+variable {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace LinearMap
@@ -303,7 +303,7 @@ theorem not_nondegenerate_zero [Nontrivial M] : ¬(0 : BilinForm R M).Nondegener
 end
 
 variable {M' : Type*}
-variable [AddCommMonoid M'] [Module R M']
+variable [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 theorem Nondegenerate.ne_zero [Nontrivial M] {B : BilinForm R M} (h : B.Nondegenerate) : B ≠ 0 :=
   fun h0 => not_nondegenerate_zero R M <| h0 ▸ h

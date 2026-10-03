@@ -26,7 +26,7 @@ section CommRing
 
 attribute [local instance 100] LieRing.ofAssociativeRing
 
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 /-- Commuting elements have commuting adjoint actions. -/
 theorem LieAlgebra.commute_ad_of_commute {a b : A} (h : Commute a b) :
@@ -58,7 +58,7 @@ end CommRing
 
 section Field
 
-variable {K V : Type*} [Field K] [PerfectField K] [AddCommGroup V] [Module K V]
+variable {K V : Type*} [Field K] [PerfectField K] [AddGroup V] [IsAddCommutative V] [Module K V]
 variable [FiniteDimensional K V]
 
 attribute [local instance 100] LieRing.ofAssociativeRing

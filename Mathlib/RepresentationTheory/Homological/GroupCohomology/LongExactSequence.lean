@@ -39,7 +39,7 @@ namespace groupCohomology
 
 open CategoryTheory ShortComplex
 
-variable {k G : Type u} [CommRing k] [Group G]
+variable {k G : Type u} [Ring k] [IsMulCommutative k] [Group G]
   {X : ShortComplex (Rep k G)} (hX : ShortExact X)
 
 include hX

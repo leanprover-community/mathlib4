@@ -232,25 +232,25 @@ attribute [instance 100] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
-    [NonUnitalCommSemiring α] : NonUnitalNonAssocCommSemiring α where
+    [NonUnitalSemiring α] [IsMulCommutative α] : NonUnitalNonAssocCommSemiring α where
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toNonAssocCommSemiring [CommSemiring α] :
+instance (priority := 100) CommSemiring.toNonAssocCommSemiring [Semiring α] [IsMulCommutative α] :
     NonAssocCommSemiring α where
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
+instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [Semiring α] [IsMulCommutative α] :
     NonUnitalCommSemiring α :=
   { (inferInstance : CommMonoid α), (inferInstance : CommSemiring α) with }
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
+instance (priority := 100) CommSemiring.toCommMonoidWithZero [Semiring α] [IsMulCommutative α] :
     CommMonoidWithZero α :=
   { (inferInstance : CommMonoid α), (inferInstance : CommSemiring α) with }
 
 section CommSemiring
 
-variable [CommSemiring α]
+variable [Semiring α] [IsMulCommutative α]
 
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
   simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
@@ -404,7 +404,7 @@ attribute [instance 100] NonAssocCommRing.toNonUnitalNonAssocCommRing
 attribute [instance 100] NonAssocCommRing.toNonAssocCommSemiring
 
 -- see Note [lower instance priority]
-instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalCommRing α] :
+instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalRing α] [IsMulCommutative α] :
     NonUnitalCommSemiring α :=
   { s with }
 
@@ -412,17 +412,17 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
 @[wikidata Q858656]
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 
-instance (priority := 100) CommRing.toNonAssocCommRing [CommRing α] : NonAssocCommRing α where
+instance (priority := 100) CommRing.toNonAssocCommRing [Ring α] [IsMulCommutative α] : NonAssocCommRing α where
 
-instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
+instance (priority := 100) CommRing.toCommSemiring [s : Ring α] [IsMulCommutative α] : CommSemiring α :=
   { s with }
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
+instance (priority := 100) CommRing.toNonUnitalCommRing [s : Ring α] [IsMulCommutative α] : NonUnitalCommRing α :=
   { s with }
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
+instance (priority := 100) CommRing.toAddCommGroupWithOne [s : Ring α] [IsMulCommutative α] :
     AddCommGroupWithOne α :=
   { s with }
 
@@ -432,7 +432,7 @@ is cancellative on both sides. In other words, a nontrivial semiring `R` satisfy
 `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
 
 This is implemented as a mixin for `Semiring α`.
-To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
+To obtain an integral domain use `[Ring α] [IsMulCommutative α] [IsDomain α]`. -/
 @[stacks 09FE]
 class IsDomain (α : Type u) [Semiring α] : Prop extends IsCancelMulZero α, Nontrivial α
 
@@ -545,7 +545,7 @@ commutative semiring.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
-abbrev toNonAssocCommSemiring [NonUnitalNonAssocCommSemiring A] [IsUnital A] :
+abbrev toNonAssocCommSemiring [NonUnitalNonAssocSemiring A] [IsMulCommutative A] [IsUnital A] :
     NonAssocCommSemiring A where
 
 /-- A unital non-unital semiring is a semiring.
@@ -558,7 +558,7 @@ abbrev toSemiring [NonUnitalSemiring A] [IsUnital A] : Semiring A where
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
-abbrev toCommSemiring [NonUnitalCommSemiring A] [IsUnital A] : CommSemiring A where
+abbrev toCommSemiring [NonUnitalSemiring A] [IsMulCommutative A] [IsUnital A] : CommSemiring A where
 
 /-- A unital non-unital non-associative ring is a non-associative ring.
 
@@ -570,7 +570,7 @@ abbrev toNonAssocRing [NonUnitalNonAssocRing A] [IsUnital A] : NonAssocRing A wh
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
-abbrev toNonAssocCommRing [NonUnitalNonAssocCommRing A] [IsUnital A] : NonAssocCommRing A where
+abbrev toNonAssocCommRing [NonUnitalNonAssocRing A] [IsMulCommutative A] [IsUnital A] : NonAssocCommRing A where
 
 /-- A unital non-unital ring is a ring.
 
@@ -582,7 +582,7 @@ abbrev toRing [NonUnitalRing A] [IsUnital A] : Ring A where
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
-abbrev toCommRing [NonUnitalCommRing A] [IsUnital A] : CommRing A where
+abbrev toCommRing [NonUnitalRing A] [IsMulCommutative A] [IsUnital A] : CommRing A where
 
 end IsUnital
 end

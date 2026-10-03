@@ -24,7 +24,7 @@ We define the maximal ideal of a local ring as the ideal of all nonunits.
 
 namespace IsLocalRing
 
-variable (R : Type*) [CommSemiring R] [IsLocalRing R]
+variable (R : Type*) [Semiring R] [IsMulCommutative R] [IsLocalRing R]
 
 /-- The ideal of elements that are not units. -/
 def maximalIdeal : Ideal R where

@@ -33,7 +33,7 @@ theorem mul_inverse_rev' {a b : M₀} (h : Commute a b) :
   · rw [inverse_non_unit _ hab, inverse_non_unit _ ha, mul_zero]
   · rw [inverse_non_unit _ hab, inverse_non_unit _ hb, zero_mul]
 
-theorem mul_inverse_rev {M₀} [CommMonoidWithZero M₀] (a b : M₀) :
+theorem mul_inverse_rev {M₀} [MonoidWithZero M₀] [IsMulCommutative M₀] (a b : M₀) :
     (a * b)⁻¹ʳ = b⁻¹ʳ * a⁻¹ʳ :=
   mul_inverse_rev' (Commute.all _ _)
 

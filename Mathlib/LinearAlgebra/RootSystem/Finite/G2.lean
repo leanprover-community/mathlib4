@@ -49,7 +49,7 @@ noncomputable section
 open FaithfulSMul Function Set Submodule
 open List hiding mem_toFinset
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   (P : RootPairing ι R M N)
 
 namespace RootPairing

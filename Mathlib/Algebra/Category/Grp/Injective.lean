@@ -30,7 +30,7 @@ open CategoryTheory
 
 universe u
 
-variable (A : Type u) [AddCommGroup A]
+variable (A : Type u) [AddGroup A] [IsAddCommutative A]
 
 theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun I g ↦ by
   rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩

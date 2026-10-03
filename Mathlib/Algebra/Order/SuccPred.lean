@@ -111,7 +111,7 @@ theorem succ_iterate [AddMonoidWithOne α] [SuccAddOrder α] (x : α) (n : ℕ) 
     rw [Function.iterate_succ_apply', IH, Nat.cast_add, succ_eq_add_one, Nat.cast_one, add_assoc]
 
 @[simp]
-theorem pred_iterate [AddCommGroupWithOne α] [PredSubOrder α] (x : α) (n : ℕ) :
+theorem pred_iterate [AddGroupWithOne α] [IsAddCommutative α] [PredSubOrder α] (x : α) (n : ℕ) :
     pred^[n] x = x - n := by
   induction n with
   | zero =>
@@ -172,7 +172,7 @@ theorem IsSuccPrelimit.add_natCast_lt [AddMonoidWithOne α] [SuccAddOrder α]
     rw [Nat.cast_add_one, ← add_assoc]
     exact hx.add_one_lt (hx.add_natCast_lt hy n)
 
-theorem IsPredPrelimit.lt_sub_natCast [AddCommGroupWithOne α] [PredSubOrder α]
+theorem IsPredPrelimit.lt_sub_natCast [AddGroupWithOne α] [IsAddCommutative α] [PredSubOrder α]
     (hx : IsPredPrelimit x) (hy : x < y) : ∀ n : ℕ, x < y - n
   | 0 => by simpa
   | n + 1 => by
@@ -183,7 +183,7 @@ theorem IsSuccLimit.add_natCast_lt [AddMonoidWithOne α] [SuccAddOrder α]
     (hx : IsSuccLimit x) (hy : y < x) : ∀ n : ℕ, y + n < x :=
   hx.isSuccPrelimit.add_natCast_lt hy
 
-theorem IsPredLimit.lt_sub_natCast [AddCommGroupWithOne α] [PredSubOrder α]
+theorem IsPredLimit.lt_sub_natCast [AddGroupWithOne α] [IsAddCommutative α] [PredSubOrder α]
     (hx : IsPredLimit x) (hy : x < y) : ∀ n : ℕ, x < y - n :=
   hx.isPredPrelimit.lt_sub_natCast hy
 

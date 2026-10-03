@@ -36,7 +36,7 @@ universe u v w w₁ w₂
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [LieRingModule L M]
 variable (N N' : LieSubmodule R L M)
 
@@ -213,7 +213,7 @@ end LieSubmodule
 namespace LieHom
 
 variable {R L L' : Type*}
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 variable (f : L →ₗ⁅R⁆ L')
 
 set_option backward.isDefEq.respectTransparency false in

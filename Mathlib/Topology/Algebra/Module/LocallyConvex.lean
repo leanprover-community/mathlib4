@@ -48,11 +48,11 @@ section Semimodule
 neighborhoods of a point form a neighborhood basis at that point. -/
 @[wikidata Q1572357]
 class LocallyConvexSpace (𝕜 E : Type*) [Semiring 𝕜] [PartialOrder 𝕜]
-    [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] : Prop where
+    [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] : Prop where
   convex_basis : ∀ x : E, (𝓝 x).HasBasis (fun s : Set E => s ∈ 𝓝 x ∧ Convex 𝕜 s) id
 
 variable (𝕜 E : Type*) [Semiring 𝕜] [PartialOrder 𝕜]
-  [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem locallyConvexSpace_iff :
     LocallyConvexSpace 𝕜 E ↔ ∀ x : E, (𝓝 x).HasBasis (fun s : Set E => s ∈ 𝓝 x ∧ Convex 𝕜 s) id :=
@@ -80,7 +80,7 @@ end Semimodule
 section Module
 
 variable (𝕜 E : Type*) [Semiring 𝕜] [PartialOrder 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E]
 
 theorem LocallyConvexSpace.ofBasisZero {ι : Type*} (b : ι → Set E) (p : ι → Prop)
@@ -125,7 +125,7 @@ end Module
 section LinearOrderedField
 
 variable (𝕜 E : Type*) [Field 𝕜] [PartialOrder 𝕜] [ZeroLEOneClass 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem LocallyConvexSpace.convex_open_basis_zero [LocallyConvexSpace 𝕜 E] :
@@ -166,8 +166,8 @@ end LinearOrderedField
 section LatticeOps
 
 variable {ι : Sort*} {𝕜 E F : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
-  [AddCommMonoid E] [Module 𝕜 E]
-  [AddCommMonoid F] [Module 𝕜 F]
+  [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E]
+  [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
 
 protected theorem LocallyConvexSpace.sInf {ts : Set (TopologicalSpace E)}
     (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ _ t) :
@@ -211,7 +211,7 @@ instance [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] {S : Submodule 𝕜 E}
     LocallyConvexSpace 𝕜 S :=
   IsInducing.locallyConvexSpace (f := S.subtype) .subtypeVal
 
-instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMonoid (X i)]
+instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddMonoid (X i)] [∀ i, IsAddCommutative (X i)]
     [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :
     LocallyConvexSpace 𝕜 (∀ i, X i) :=
   .iInf fun i => .induced (LinearMap.proj i)
@@ -254,7 +254,7 @@ end LinearOrderedSemiring
 
 lemma Convex.eventually_nhdsWithin_segment {E 𝕜 : Type*}
     [Semiring 𝕜] [PartialOrder 𝕜]
-    [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] [LocallyConvexSpace 𝕜 E]
+    [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [LocallyConvexSpace 𝕜 E]
     {s : Set E} (hs : Convex 𝕜 s) {x₀ : E} (hx₀s : x₀ ∈ s)
     {p : E → Prop} (h : ∀ᶠ x in 𝓝[s] x₀, p x) :
     ∀ᶠ x in 𝓝[s] x₀, ∀ y ∈ segment 𝕜 x₀ x, p y := by

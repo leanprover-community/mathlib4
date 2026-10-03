@@ -31,7 +31,7 @@ blowup in the future.
 
 universe u v
 
-variable {R : Type u} [CommRing R] (I : Ideal R)
+variable {R : Type u} [Ring R] [IsMulCommutative R] (I : Ideal R)
 
 open Polynomial
 

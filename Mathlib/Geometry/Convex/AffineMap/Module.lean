@@ -32,7 +32,7 @@ namespace ConvexSpace.AffineMap
 variable [ConvexSpace R X]
 
 section AddCommMonoid
-variable [AddCommMonoid M] [Module R M] [ConvexSpace R M] [IsModuleConvexSpace R M]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [ConvexSpace R M] [IsModuleConvexSpace R M]
 
 instance : Zero (ConvexSpace.AffineMap R X M) := ⟨.const 0⟩
 
@@ -76,7 +76,7 @@ instance [Semiring S] [Module S M] [SMulCommClass S R M] :
 end AddCommMonoid
 
 section AddCommGroup
-variable [AddCommGroup M] [Module R M] [ConvexSpace R M] [IsModuleConvexSpace R M]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [ConvexSpace R M] [IsModuleConvexSpace R M]
 
 instance : Neg (ConvexSpace.AffineMap R X M) where
   neg f := ⟨-f, f.isAffineMap.neg⟩
@@ -98,7 +98,7 @@ end ConvexSpace.AffineMap
 
 section Pointwise
 variable {R S : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Semiring S]
-  [PartialOrder S] [IsStrictOrderedRing S] [ConvexSpace R X] [AddCommMonoid M] [Module R M]
+  [PartialOrder S] [IsStrictOrderedRing S] [ConvexSpace R X] [AddMonoid M] [IsAddCommutative M] [Module R M]
   [Module S M] [SMulCommClass S R M] [ConvexSpace R M] [IsModuleConvexSpace R M] [ConvexSpace S M]
   [IsModuleConvexSpace S M]
 

@@ -179,7 +179,7 @@ end
 section
 
 variable {mα : MeasurableSpace α} [MeasurableSpace β]
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
 variable (v : VectorMeasure α M)
 
 open scoped Classical in
@@ -217,7 +217,7 @@ theorem map_zero (f : α → β) : (0 : VectorMeasure α M).map f = 0 := by
 
 section
 
-variable {N : Type*} [AddCommMonoid N] [TopologicalSpace N]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [TopologicalSpace N]
 
 /-- Given a vector measure `v` on `M` and a continuous `AddMonoidHom` `f : M → N`, `f ∘ v` is a
 vector measure on `N`. -/
@@ -422,7 +422,7 @@ end ContinuousAdd
 
 section Partition
 
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] [ContinuousAdd M]
+variable {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [T2Space M] [ContinuousAdd M]
 variable {v : VectorMeasure α M} {i s t : Set α}
 
 @[simp]
@@ -457,7 +457,7 @@ end Partition
 
 section Sub
 
-variable {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [IsTopologicalAddGroup M]
 
 @[simp]
 theorem restrict_neg (v : VectorMeasure α M) (i : Set α) :
@@ -478,7 +478,7 @@ end
 section
 
 variable [MeasurableSpace β]
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
 @[simp]
@@ -507,7 +507,7 @@ end
 section
 
 variable [MeasurableSpace β]
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [Module R M] [ContinuousConstSMul R M] [ContinuousAdd M]
 
 /-- `VectorMeasure.map` as a linear map. -/
@@ -529,7 +529,7 @@ end
 
 section Trim
 
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M]
 
 open scoped Classical in
 /-- Restriction of a vector measure onto a sub-σ-algebra. -/

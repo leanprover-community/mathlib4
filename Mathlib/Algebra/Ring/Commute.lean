@@ -178,14 +178,14 @@ lemma sq_ne_one_iff : a ^ 2 ≠ 1 ↔ a ≠ 1 ∧ a ≠ -1 := sq_eq_one_iff.not.
 end Ring
 
 /-- Representation of a difference of two squares in a commutative ring as a product. -/
-theorem mul_self_sub_mul_self [NonUnitalNonAssocCommRing R] (a b : R) :
+theorem mul_self_sub_mul_self [NonUnitalNonAssocRing R] [IsMulCommutative R] (a b : R) :
     a * a - b * b = (a + b) * (a - b) :=
   (Commute.all a b).mul_self_sub_mul_self_eq
 
 theorem mul_self_sub_one [NonAssocRing R] (a : R) : a * a - 1 = (a + 1) * (a - 1) := by
   rw [← (Commute.one_right a).mul_self_sub_mul_self_eq, mul_one]
 
-theorem mul_self_eq_mul_self_iff [NonUnitalNonAssocCommRing R] [NoZeroDivisors R] {a b : R} :
+theorem mul_self_eq_mul_self_iff [NonUnitalNonAssocRing R] [IsMulCommutative R] [NoZeroDivisors R] {a b : R} :
     a * a = b * b ↔ a = b ∨ a = -b :=
   (Commute.all a b).mul_self_eq_mul_self_iff
 
@@ -194,7 +194,7 @@ theorem mul_self_eq_one_iff [NonAssocRing R] [NoZeroDivisors R] {a : R} :
   rw [← (Commute.one_right a).mul_self_eq_mul_self_iff, mul_one]
 
 section CommRing
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 lemma sq_sub_sq (a b : R) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := (Commute.all a b).sq_sub_sq
 

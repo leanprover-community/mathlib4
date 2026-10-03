@@ -50,7 +50,7 @@ noncomputable def genericPolyMap (monoms : ι → Finset (κ →₀ ℕ)) :
 that `∀ i, (p i).support ⊆ monoms i` can be identified with functions
 `(Σ i, monoms i) → R` by using the coefficient function -/
 noncomputable def mvPolynomialSupportLEEquiv
-    [DecidableEq κ] [CommRing R] [DecidableEq R]
+    [DecidableEq κ] [Ring R] [IsMulCommutative R] [DecidableEq R]
     (monoms : ι → Finset (κ →₀ ℕ)) :
     { p : ι → MvPolynomial κ R // ∀ i, (p i).support ⊆ monoms i } ≃
       ((Σ i, monoms i) → R) :=
@@ -69,7 +69,7 @@ noncomputable def mvPolynomialSupportLEEquiv
     right_inv := fun p => by ext; simp }
 
 @[simp]
-theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [CommRing R] [DecidableEq R]
+theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [Ring R] [IsMulCommutative R] [DecidableEq R]
     (p : ι → MvPolynomial κ R) : (mvPolynomialSupportLEEquiv (fun i => (p i).support)).symm
       (fun i => (p i.1).coeff i.2.1) = ⟨p, fun _ => Finset.Subset.refl _⟩ :=
   (mvPolynomialSupportLEEquiv (R := R) (fun i : ι => (p i).support)).symm_apply_apply
@@ -77,7 +77,7 @@ theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [CommRing R
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem lift_genericPolyMap [DecidableEq κ] [CommRing R]
+theorem lift_genericPolyMap [DecidableEq κ] [Ring R] [IsMulCommutative R]
     [DecidableEq R] (monoms : ι → Finset (κ →₀ ℕ))
     (f : (i : ι) × { x // x ∈ monoms i } ⊕ κ → R) (i : ι) :
     FreeCommRing.lift f (genericPolyMap monoms i) =

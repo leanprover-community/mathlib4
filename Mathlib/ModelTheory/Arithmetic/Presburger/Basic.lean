@@ -116,7 +116,7 @@ end
     Term.realize v (n • t) = n • Term.realize v t := by
   induction n with simp [*, add_nsmul]
 
-@[simp] theorem realize_sum [AddCommMonoidWithOne M]
+@[simp] theorem realize_sum [AddMonoidWithOne M] [IsAddCommutative M]
     {β : Type*} {s : Finset β} {f : β → presburger.Term α} :
     Term.realize v (sum s f) = ∑ i ∈ s, Term.realize v (f i) := by
   classical

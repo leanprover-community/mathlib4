@@ -72,30 +72,30 @@ noncomputable section
 nilradical if `p > 1` (`pNilradical_eq_nilradical`), and defined to be the zero ideal if `p ≤ 1`
 (`pNilradical_eq_bot'`). Equivalently, it is the ideal consisting of elements `x` such that
 `x ^ p ^ n = 0` for some `n` (`mem_pNilradical`). -/
-def pNilradical (R : Type*) [CommSemiring R] (p : ℕ) : Ideal R := if 1 < p then nilradical R else ⊥
+def pNilradical (R : Type*) [Semiring R] [IsMulCommutative R] (p : ℕ) : Ideal R := if 1 < p then nilradical R else ⊥
 
-theorem pNilradical_le_nilradical {R : Type*} [CommSemiring R] {p : ℕ} :
+theorem pNilradical_le_nilradical {R : Type*} [Semiring R] [IsMulCommutative R] {p : ℕ} :
     pNilradical R p ≤ nilradical R := by
   by_cases hp : 1 < p
   · rw [pNilradical, ite_eq_left hp]
   simp_rw [pNilradical, ite_eq_right hp, bot_le]
 
-theorem pNilradical_eq_nilradical {R : Type*} [CommSemiring R] {p : ℕ} (hp : 1 < p) :
+theorem pNilradical_eq_nilradical {R : Type*} [Semiring R] [IsMulCommutative R] {p : ℕ} (hp : 1 < p) :
     pNilradical R p = nilradical R := by rw [pNilradical, ite_eq_left hp]
 
-theorem pNilradical_eq_bot {R : Type*} [CommSemiring R] {p : ℕ} (hp : ¬ 1 < p) :
+theorem pNilradical_eq_bot {R : Type*} [Semiring R] [IsMulCommutative R] {p : ℕ} (hp : ¬ 1 < p) :
     pNilradical R p = ⊥ := by rw [pNilradical, ite_eq_right hp]
 
-theorem pNilradical_eq_bot' {R : Type*} [CommSemiring R] {p : ℕ} (hp : p ≤ 1) :
+theorem pNilradical_eq_bot' {R : Type*} [Semiring R] [IsMulCommutative R] {p : ℕ} (hp : p ≤ 1) :
     pNilradical R p = ⊥ := pNilradical_eq_bot (not_lt.2 hp)
 
-theorem pNilradical_prime {R : Type*} [CommSemiring R] {p : ℕ} (hp : p.Prime) :
+theorem pNilradical_prime {R : Type*} [Semiring R] [IsMulCommutative R] {p : ℕ} (hp : p.Prime) :
     pNilradical R p = nilradical R := pNilradical_eq_nilradical hp.one_lt
 
-theorem pNilradical_one {R : Type*} [CommSemiring R] :
+theorem pNilradical_one {R : Type*} [Semiring R] [IsMulCommutative R] :
     pNilradical R 1 = ⊥ := pNilradical_eq_bot' rfl.le
 
-theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
+theorem mem_pNilradical {R : Type*} [Semiring R] [IsMulCommutative R] {p : ℕ} {x : R} :
     x ∈ pNilradical R p ↔ ∃ n : ℕ, x ^ p ^ n = 0 := by
   by_cases hp : 1 < p
   · rw [pNilradical_eq_nilradical hp]
@@ -110,20 +110,20 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
     subsingleton [subsingleton_of_zero_eq_one h.symm]
   rwa [hp, one_pow, pow_one] at h
 
-theorem sub_mem_pNilradical_iff_pow_expChar_pow_eq {R : Type*} [CommRing R] {p : ℕ} [ExpChar R p]
+theorem sub_mem_pNilradical_iff_pow_expChar_pow_eq {R : Type*} [Ring R] [IsMulCommutative R] {p : ℕ} [ExpChar R p]
     {x y : R} : x - y ∈ pNilradical R p ↔ ∃ n : ℕ, x ^ p ^ n = y ^ p ^ n := by
   simp_rw [mem_pNilradical, sub_pow_expChar_pow, sub_eq_zero]
 
-theorem pow_expChar_pow_inj_of_pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+theorem pow_expChar_pow_inj_of_pNilradical_eq_bot (R : Type*) [Ring R] [IsMulCommutative R] (p : ℕ) [ExpChar R p]
     (h : pNilradical R p = ⊥) (n : ℕ) : Function.Injective fun x : R ↦ x ^ p ^ n := fun _ _ H ↦
   sub_eq_zero.1 <| Ideal.mem_bot.1 <| h ▸ sub_mem_pNilradical_iff_pow_expChar_pow_eq.2 ⟨n, H⟩
 
-theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommSemiring R] (p : ℕ) [ExpChar R p]
+theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [Semiring R] [IsMulCommutative R] (p : ℕ) [ExpChar R p]
     (h : Function.Injective (frobenius R p)) : pNilradical R p = ⊥ := bot_unique fun x ↦ by
   rw [mem_pNilradical, Ideal.mem_bot]
   exact fun ⟨n, _⟩ ↦ h.iterate n (by rwa [← coe_iterateFrobenius, map_zero])
 
-theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommSemiring R] (p : ℕ) [ExpChar R p]
+theorem PerfectRing.pNilradical_eq_bot (R : Type*) [Semiring R] [IsMulCommutative R] (p : ℕ) [ExpChar R p]
     [PerfectRing R p] : pNilradical R p = ⊥ :=
   pNilradical_eq_bot_of_frobenius_inj R p (injective_frobenius R p)
 
@@ -133,7 +133,7 @@ variable {K L M N : Type*}
 
 section CommSemiring
 
-variable [CommSemiring K] [CommSemiring L] [CommSemiring M]
+variable [Semiring K] [IsMulCommutative K] [Semiring L] [IsMulCommutative L] [Semiring M] [IsMulCommutative M]
   (i : K →+* L) (j : K →+* M) (f : L →+* M) (p : ℕ)
 
 /-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it is called
@@ -247,7 +247,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing K] [CommRing L] [CommRing M] [CommRing N]
+variable [Ring K] [IsMulCommutative K] [Ring L] [IsMulCommutative L] [Ring M] [IsMulCommutative M] [Ring N] [IsMulCommutative N]
   (i : K →+* L) (j : K →+* M) (k : K →+* N) (f : L →+* M) (g : L →+* N)
   (p : ℕ) [ExpChar M p]
 
@@ -508,7 +508,7 @@ end CommRing
 
 namespace PerfectClosure
 
-variable [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
+variable [Ring K] [IsMulCommutative K] (p : ℕ) [Fact p.Prime] [CharP K p]
 variable (K)
 
 /-- The absolute perfect closure `PerfectClosure` is a `p`-radical extension over the base ring.

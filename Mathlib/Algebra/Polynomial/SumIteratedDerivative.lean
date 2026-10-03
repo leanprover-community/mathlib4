@@ -118,7 +118,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] {A : Type*} [CommRing A] [Algebra R A]
+variable [Semiring R] [IsMulCommutative R] {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A]
 
 theorem aeval_iterate_derivative_of_lt (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     (hp : p.map (algebraMap R A) = (X - C r) ^ q * p') {k : ℕ} (hk : k < q) :
@@ -255,7 +255,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
 end CommSemiring
 
 theorem eval_sumIDeriv_of_pos
-    [CommRing R] [Nontrivial R] [NoZeroDivisors R] (p : R[X]) {q : ℕ} (hq : 0 < q) :
+    [Ring R] [IsMulCommutative R] [Nontrivial R] [NoZeroDivisors R] (p : R[X]) {q : ℕ} (hq : 0 < q) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
       ∀ (r : R) {p' : R[X]},
         p = ((X : R[X]) - C r) ^ (q - 1) * p' →

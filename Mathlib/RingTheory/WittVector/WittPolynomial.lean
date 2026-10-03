@@ -67,7 +67,7 @@ open Finsupp (single)
 --attribute [-simp] coe_eval₂_hom
 
 variable (p : ℕ)
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
 /-- `wittPolynomial p R n` is the `n`-th Witt polynomial
 with respect to a prime `p` with coefficients in a commutative ring `R`.
@@ -105,7 +105,7 @@ If we map the coefficients through a ring homomorphism, we obtain the correspond
 over the target ring. -/
 section
 
-variable {R} {S : Type*} [CommRing S]
+variable {R} {S : Type*} [Ring S] [IsMulCommutative S]
 
 @[simp]
 theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
@@ -134,7 +134,7 @@ theorem wittPolynomial_one : wittPolynomial p R 1 = C (p : R) * X 1 + X 0 ^ p :=
   simp only [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm, range_one, sum_singleton,
     one_mul, pow_one, C_1, pow_zero, tsub_self, tsub_zero]
 
-theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
+theorem aeval_wittPolynomial {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
     aeval f (W_ R n) = ∑ i ∈ range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
   simp [wittPolynomial, map_sum, aeval_monomial, Finsupp.prod_single_index]
 

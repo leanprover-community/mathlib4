@@ -118,18 +118,18 @@ def dotProductᵣ [Mul α] [Add α] [Zero α] {m} (a b : Fin m → α) : α :=
 
 /-- This can be used to prove
 ```lean
-example (a b c d : α) [Mul α] [AddCommMonoid α] :
+example (a b c d : α) [Mul α] [AddMonoid α] [IsAddCommutative α] :
   dot_product ![a, b] ![c, d] = a * c + b * d :=
 (dot_productᵣ_eq _ _).symm
 ```
 -/
 @[simp]
-theorem dotProductᵣ_eq [Mul α] [AddCommMonoid α] {m} (a b : Fin m → α) :
+theorem dotProductᵣ_eq [Mul α] [AddMonoid α] [IsAddCommutative α] {m} (a b : Fin m → α) :
     dotProductᵣ a b = a ⬝ᵥ b := by
   simp_rw [dotProductᵣ, dotProduct, FinVec.sum_eq, FinVec.seq_eq, FinVec.map_eq,
       Function.comp_apply]
 
-example (a b c d : α) [Mul α] [AddCommMonoid α] : ![a, b] ⬝ᵥ ![c, d] = a * c + b * d :=
+example (a b c d : α) [Mul α] [AddMonoid α] [IsAddCommutative α] : ![a, b] ⬝ᵥ ![c, d] = a * c + b * d :=
   (dotProductᵣ_eq _ _).symm
 
 /-- `Matrix.mul` with better defeq for `Fin` -/
@@ -140,7 +140,7 @@ def mulᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (B : Matr
 set_option backward.isDefEq.respectTransparency false in
 /-- This can be used to prove
 ```lean
-example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
+example [AddMonoid α] [IsAddCommutative α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
   !![a₁₁, a₁₂;
      a₂₁, a₂₂] * !![b₁₁, b₁₂;
                     b₂₁, b₂₂] =
@@ -150,12 +150,12 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
 ```
 -/
 @[simp]
-theorem mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
+theorem mulᵣ_eq [Mul α] [AddMonoid α] [IsAddCommutative α] (A : Matrix (Fin l) (Fin m) α)
     (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A * B := by
   simp [mulᵣ, Matrix.transpose]
   rfl
 
-example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
+example [AddMonoid α] [IsAddCommutative α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
     !![a₁₁, a₁₂; a₂₁, a₂₂] * !![b₁₁, b₁₂; b₂₁, b₂₂] =
       !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
         a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] :=

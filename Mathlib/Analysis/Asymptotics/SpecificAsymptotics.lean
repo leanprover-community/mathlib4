@@ -135,7 +135,7 @@ theorem Asymptotics.IsEquivalent.log {α : Type*} {l : Filter α} {f g : α → 
 
 open Finset
 
-theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f : ℕ → α} {g : ℕ → ℝ}
+theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddGroup α] [IsAddCommutative α] {f : ℕ → α} {g : ℕ → ℝ}
     (h : f =o[atTop] g) (hg : 0 ≤ g) (h'g : Tendsto (fun n => ∑ i ∈ range n, g i) atTop atTop) :
     (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => ∑ i ∈ range n, g i := by
   have A : ∀ i, ‖g i‖ = g i := fun i => Real.norm_of_nonneg (hg i)
@@ -165,7 +165,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
       simp only [B]
       ring
 
-theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddCommGroup α]
+theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddGroup α] [IsAddCommutative α]
     {f : ℕ → α} (h : Tendsto f atTop (𝓝 0)) :
     (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => (n : ℝ) := by
   have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i => zero_le_one
@@ -173,7 +173,7 @@ theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddC
   exact this tendsto_natCast_atTop_atTop
 
 /-- The Cesaro average of a converging sequence converges to the same limit. -/
-theorem Filter.Tendsto.cesaro_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {u : ℕ → E}
+theorem Filter.Tendsto.cesaro_smul {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] {u : ℕ → E}
     {l : E} (h : Tendsto u atTop (𝓝 l)) :
     Tendsto (fun n : ℕ => (n⁻¹ : ℝ) • ∑ i ∈ range n, u i) atTop (𝓝 l) := by
   rw [← tendsto_sub_nhds_zero_iff, ← isLittleO_one_iff ℝ]
@@ -222,7 +222,7 @@ bound along `atTop` already suffices (`Continuous.isBounded_range_iff_isBigO_atT
 -/
 
 variable
-  {E : Type*} [SeminormedAddCommGroup E]
+  {E : Type*} [SeminormedAddGroup E] [IsAddCommutative E]
   {D : Type*} [TopologicalSpace D]
   {β : Type*} [TopologicalSpace β] [LinearOrder β] [OrderClosedTopology β] [CompactIccSpace β]
     [NoMaxOrder β] [NoMinOrder β]
@@ -262,7 +262,7 @@ theorem Continuous.isBounded_range_iff_isBigO_atTop_atBot {f : β → E} (hf : C
   rw [hf.isBounded_range_iff_isBigO, cocompact_eq_atBot_atTop, isBigO_sup, and_comm]
 
 /-- A continuous even function has bounded range if and only if `f =O[atTop] 1`. -/
-theorem Continuous.isBounded_range_iff_isBigO_atTop_of_even [AddCommGroup β] [IsOrderedAddMonoid β]
+theorem Continuous.isBounded_range_iff_isBigO_atTop_of_even [AddGroup β] [IsAddCommutative β] [IsOrderedAddMonoid β]
     {f : β → E} (hf : Continuous f) (heven : Function.Even f) :
     IsBounded (range f) ↔ f =O[atTop] (1 : β → ℝ) :=
   ⟨fun h ↦ (hf.isBounded_range_iff_isBigO_atTop_atBot.mp h).1,

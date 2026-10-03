@@ -47,7 +47,7 @@ noncomputable instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) whe
 theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := rfl
 
 @[to_additive]
-theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
+theorem prod_antidiagonal_swap {M : Type*} [Monoid M] [IsMulCommutative M] (n : α →₀ ℕ)
     (f : (α →₀ ℕ) → (α →₀ ℕ) → M) :
     ∏ p ∈ antidiagonal n, f p.1 p.2 = ∏ p ∈ antidiagonal n, f p.2 p.1 :=
   prod_equiv (Equiv.prodComm _ _) (by simp [add_comm]) (by simp)

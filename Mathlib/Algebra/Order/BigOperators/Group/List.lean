@@ -188,7 +188,7 @@ theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod :
 end Monoid
 
 section
-variable {α β : Type*} [Monoid α] [CommMonoid β] [Preorder β] [IsOrderedMonoid β]
+variable {α β : Type*} [Monoid α] [Monoid β] [IsMulCommutative β] [Preorder β] [IsOrderedMonoid β]
 
 @[to_additive le_sum_of_subadditive_on_pred]
 lemma le_prod_of_submultiplicative_on_pred (f : α → β)
@@ -241,7 +241,7 @@ lemma sum_le_foldr_max [AddZeroClass M] [Zero N] [LinearOrder N] (f : M → N) (
     exact (hadd _ _).trans (max_le_max le_rfl IH)
 
 @[to_additive sum_pos]
-lemma one_lt_prod_of_one_lt [CommMonoid M] [Preorder M] [IsOrderedMonoid M] :
+lemma one_lt_prod_of_one_lt [Monoid M] [IsMulCommutative M] [Preorder M] [IsOrderedMonoid M] :
     ∀ l : List M, (∀ x ∈ l, (1 : M) < x) → l ≠ [] → 1 < l.prod
   | [], _, h => (h rfl).elim
   | [b], h, _ => by simpa using h
@@ -254,7 +254,7 @@ lemma one_lt_prod_of_one_lt [CommMonoid M] [Preorder M] [IsOrderedMonoid M] :
 
 /-- See also `List.le_prod_of_mem`. -/
 @[to_additive /-- See also `List.le_sum_of_mem`. -/]
-lemma single_le_prod [CommMonoid M] [Preorder M] [IsOrderedMonoid M]
+lemma single_le_prod [Monoid M] [IsMulCommutative M] [Preorder M] [IsOrderedMonoid M]
     {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) :
     ∀ x ∈ l, x ≤ l.prod := by
   induction l
@@ -265,11 +265,11 @@ lemma single_le_prod [CommMonoid M] [Preorder M] [IsOrderedMonoid M]
   case cons.right hd tl ih => exact fun x H => le_mul_of_one_le_of_le hl₁.1 (ih hl₁.right x H)
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
-lemma all_one_of_le_one_le_of_prod_eq_one [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+lemma all_one_of_le_one_le_of_prod_eq_one [Monoid M] [IsMulCommutative M] [PartialOrder M] [IsOrderedMonoid M]
     {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) (hl₂ : l.prod = 1) {x : M} (hx : x ∈ l) : x = 1 :=
   _root_.le_antisymm (hl₂ ▸ single_le_prod hl₁ _ hx) (hl₁ x hx)
 
-@[to_additive] lemma prod_eq_one_iff [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+@[to_additive] lemma prod_eq_one_iff [Monoid M] [IsMulCommutative M] [PartialOrder M] [IsOrderedMonoid M]
      [CanonicallyOrderedMul M] {l : List M} : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le, fun h => by
     rw [List.eq_replicate_iff.2 ⟨_, h⟩, prod_replicate, one_pow]

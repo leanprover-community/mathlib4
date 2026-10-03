@@ -39,7 +39,7 @@ lemmas that involves both `Submodule.mapQ` and `Ideal.Quotient.factor` in this f
 open Ideal Quotient
 
 variable {R : Type*} [Ring R] {I J K : Ideal R}
-    {M : Type*} [AddCommGroup M] [Module R M]
+    {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 
 lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
     RingHom.ker (factor H) = J.map (Ideal.Quotient.mk I) := by
@@ -152,7 +152,7 @@ end Quotient
 
 end Ideal
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R)
 
 lemma Ideal.map_mk_comap_factorPow {a b : ℕ} (apos : 0 < a) (le : a ≤ b) :
     (I.map (mk (I ^ a))).comap (factorPow I le) = I.map (mk (I ^ b)) := by
@@ -181,7 +181,7 @@ lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I
 
 section powSMulQuotInclusion
 
-variable {M : Type*} [AddCommGroup M] [Module R M] {a b c : ℕ}
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] {a b c : ℕ}
 
 namespace Submodule
 

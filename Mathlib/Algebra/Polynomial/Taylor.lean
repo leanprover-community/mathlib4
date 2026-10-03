@@ -136,7 +136,7 @@ end Ring
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] (r : R) (f : R[X])
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (r : R) (f : R[X])
 
 @[simp]
 theorem taylor_mul (p q : R[X]) : taylor r (p * q) = taylor r p * taylor r q := mul_comp ..
@@ -174,7 +174,7 @@ theorem eval_add_of_sq_eq_zero (p : R[X]) (x y : R) (hy : y ^ 2 = 0) :
   rcases exists_mul_sq_add_linear_part_eq_eval_add p x y with ⟨c, h⟩
   rw [← h, hy]; ring
 
-theorem aeval_add_of_sq_eq_zero {S : Type*} [CommRing S] [Algebra R S]
+theorem aeval_add_of_sq_eq_zero {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S]
     (p : R[X]) (x y : S) (hy : y ^ 2 = 0) :
     p.aeval (x + y) = p.aeval x + p.derivative.aeval x * y := by
   simp only [← eval_map_algebraMap, Polynomial.eval_add_of_sq_eq_zero _ _ _ hy, derivative_map]
@@ -183,7 +183,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] (r : R) (f : R[X])
+variable {R : Type*} [Ring R] [IsMulCommutative R] (r : R) (f : R[X])
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `Polynomial.taylor` as an `AlgEquiv` for commutative rings. -/

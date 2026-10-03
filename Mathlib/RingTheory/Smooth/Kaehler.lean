@@ -42,7 +42,7 @@ open TensorProduct KaehlerDifferential
 
 open Function (Surjective)
 
-variable {R P S : Type*} [CommRing R] [CommRing P] [CommRing S]
+variable {R P S : Type*} [Ring R] [IsMulCommutative R] [Ring P] [IsMulCommutative P] [Ring S] [IsMulCommutative S]
 variable [Algebra R P] [Algebra P S]
 
 section ofSection

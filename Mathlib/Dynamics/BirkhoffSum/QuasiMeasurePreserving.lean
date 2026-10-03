@@ -27,7 +27,7 @@ namespace MeasureTheory.Measure.QuasiMeasurePreserving
 
 open Filter
 
-variable {α M : Type*} [MeasurableSpace α] [AddCommMonoid M]
+variable {α M : Type*} [MeasurableSpace α] [AddMonoid M] [IsAddCommutative M]
 variable {f : α → α} {μ : Measure α} {φ ψ : α → M}
 
 /-- If observables  `φ` and `ψ` are `μ`-a.e. equal then the corresponding `birkhoffSum` are

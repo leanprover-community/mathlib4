@@ -78,7 +78,7 @@ instance (priority := 75) toNonUnitalRing {R : Type*} [NonUnitalRing R] [SetLike
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a `NonUnitalNonAssocCommRing` is a `NonUnitalNonAssocCommRing`. -/
-instance (priority := 75) toNonUnitalNonAssocCommRing {R} [NonUnitalNonAssocCommRing R]
+instance (priority := 75) toNonUnitalNonAssocCommRing {R} [NonUnitalNonAssocRing R] [IsMulCommutative R]
     [SetLike S R] [NonUnitalSubringClass S R] (s : S) :
     NonUnitalNonAssocCommRing s := fast_instance%
   Subtype.val_injective.nonUnitalNonAssocCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -86,7 +86,7 @@ instance (priority := 75) toNonUnitalNonAssocCommRing {R} [NonUnitalNonAssocComm
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
-instance (priority := 75) toNonUnitalCommRing {R} [NonUnitalCommRing R] [SetLike S R]
+instance (priority := 75) toNonUnitalCommRing {R} [NonUnitalRing R] [IsMulCommutative R] [SetLike S R]
     [NonUnitalSubringClass S R] : NonUnitalCommRing s := fast_instance%
   Subtype.val_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
@@ -320,7 +320,7 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
   simp
 
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
-instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
+instance toNonUnitalCommRing {R} [NonUnitalRing R] [IsMulCommutative R] (s : NonUnitalSubring R) :
     NonUnitalCommRing s :=
   NonUnitalSubringClass.toNonUnitalCommRing s
 

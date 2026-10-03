@@ -83,7 +83,7 @@ theorem X_pow_sub_C_eq_prod'
     (monic_X_pow_sub_C _ hn.ne'), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
   rfl
 
-lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
+lemma X_pow_sub_C_eq_prod {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
     {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (hn : 0 < n) (e : α ^ n = a) :
     (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
   let K := FractionRing R

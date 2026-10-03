@@ -727,7 +727,7 @@ theorem addHom_ext' {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
   addHom_ext fun n ↦ DFunLike.congr_fun (h n)
 
 @[ext high]
-theorem lhom_ext' {M : Type*} [AddCommMonoid M] [Module R M] {f g : R[X] →ₗ[R] M}
+theorem lhom_ext' {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] {f g : R[X] →ₗ[R] M}
     (h : ∀ n, f.comp (monomial n) = g.comp (monomial n)) : f = g :=
   LinearMap.toAddMonoidHom_injective <| addHom_ext fun n ↦ LinearMap.congr_fun (h n)
 
@@ -838,14 +838,14 @@ theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
   (nsmul_eq_mul _ _).symm
 
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
-def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
+def sum {S : Type*} [AddMonoid S] [IsAddCommutative S] (p : R[X]) (f : ℕ → R → S) : S :=
   ∑ n ∈ p.support, f n (p.coeff n)
 
-theorem sum_def {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
+theorem sum_def {S : Type*} [AddMonoid S] [IsAddCommutative S] (p : R[X]) (f : ℕ → R → S) :
     p.sum f = ∑ n ∈ p.support, f n (p.coeff n) :=
   rfl
 
-theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R → S)
+theorem sum_eq_of_subset {S : Type*} [AddMonoid S] [IsAddCommutative S] {p : R[X]} (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) {s : Finset ℕ} (hs : p.support ⊆ s) :
     p.sum f = ∑ n ∈ s, f n (p.coeff n) :=
   Finsupp.sum_of_support_subset _ hs f (fun i _ ↦ hf i)
@@ -858,26 +858,26 @@ theorem mul_eq_sum_sum :
     AddMonoidAlgebra.mul_def, Finsupp.sum]
 
 @[simp]
-theorem sum_zero_index {S : Type*} [AddCommMonoid S] (f : ℕ → R → S) : (0 : R[X]).sum f = 0 := by
+theorem sum_zero_index {S : Type*} [AddMonoid S] [IsAddCommutative S] (f : ℕ → R → S) : (0 : R[X]).sum f = 0 := by
   simp [sum]
 
 @[simp]
-theorem sum_monomial_index {S : Type*} [AddCommMonoid S] {n : ℕ} (a : R) (f : ℕ → R → S)
+theorem sum_monomial_index {S : Type*} [AddMonoid S] [IsAddCommutative S] {n : ℕ} (a : R) (f : ℕ → R → S)
     (hf : f n 0 = 0) : (monomial n a : R[X]).sum f = f n a :=
   Finsupp.sum_single_index hf
 
 @[simp]
-theorem sum_C_index {a} {β} [AddCommMonoid β] {f : ℕ → R → β} (h : f 0 0 = 0) :
+theorem sum_C_index {a} {β} [AddMonoid β] [IsAddCommutative β] {f : ℕ → R → β} (h : f 0 0 = 0) :
     (C a).sum f = f 0 a :=
   sum_monomial_index a f h
 
 -- the assumption `hf` is only necessary when the ring is trivial
 @[simp]
-theorem sum_X_index {S : Type*} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 1 0 = 0) :
+theorem sum_X_index {S : Type*} [AddMonoid S] [IsAddCommutative S] {f : ℕ → R → S} (hf : f 1 0 = 0) :
     (X : R[X]).sum f = f 1 1 :=
   sum_monomial_index 1 f hf
 
-theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R → S)
+theorem sum_add_index {S : Type*} [AddMonoid S] [IsAddCommutative S] (p q : R[X]) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
     (p + q).sum f = p.sum f + q.sum f := by
   rw [show p + q = ⟨p.toFinsupp + q.toFinsupp⟩ from rfl]
@@ -885,26 +885,26 @@ theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R 
 
 /-- See also `Polynomial.sum_add`. -/
 @[simp]
-theorem sum_add' {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
+theorem sum_add' {S : Type*} [AddMonoid S] [IsAddCommutative S] (p : R[X]) (f g : ℕ → R → S) :
     p.sum (f + g) = p.sum f + p.sum g := by simp [sum_def, Finset.sum_add_distrib]
 
 /-- See also `Polynomial.sum_add'`. -/
 @[simp]
-theorem sum_add {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
+theorem sum_add {S : Type*} [AddMonoid S] [IsAddCommutative S] (p : R[X]) (f g : ℕ → R → S) :
     (p.sum fun n x ↦ f n x + g n x) = p.sum f + p.sum g :=
   sum_add' _ _ _
 
 /-- See also `Polynomial.sum_smul_index'` for a version using `smul` on the RHS. -/
-theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ → R → S)
+theorem sum_smul_index {S : Type*} [AddMonoid S] [IsAddCommutative S] (p : R[X]) (b : R) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b * a) :=
   Finsupp.sum_smul_index hf
 
 /-- See also `Polynomial.sum_smul_index` for a version using multiplication on the RHS. -/
-theorem sum_smul_index' {S T : Type*} [DistribSMul T R] [AddCommMonoid S] (p : R[X]) (b : T)
+theorem sum_smul_index' {S T : Type*} [DistribSMul T R] [AddMonoid S] [IsAddCommutative S] (p : R[X]) (b : T)
     (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b • a) :=
   Finsupp.sum_smul_index' hf
 
-protected theorem smul_sum {S T : Type*} [AddCommMonoid S] [DistribSMul T S] (p : R[X]) (b : T)
+protected theorem smul_sum {S T : Type*} [AddMonoid S] [IsAddCommutative S] [DistribSMul T S] (p : R[X]) (b : T)
     (f : ℕ → R → S) : b • p.sum f = p.sum fun n a ↦ b • f n a :=
   Finsupp.smul_sum
 
@@ -1070,7 +1070,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 instance commSemiring : CommSemiring R[X] :=
   fast_instance% { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul with
@@ -1136,7 +1136,7 @@ theorem C_sub : C (a - b) = C a - C b :=
 
 end Ring
 
-instance commRing [CommRing R] : CommRing R[X] :=
+instance commRing [Ring R] [IsMulCommutative R] : CommRing R[X] :=
   --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
   { toRing := Polynomial.ring
     mul_comm := mul_comm }
@@ -1202,7 +1202,7 @@ theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=
     fun h ↦ @Polynomial.nontrivial _ _ h⟩
 
 /-- The map sending a collection of roots into a polynomial, as a morphism. -/
-@[simps] def ofMultiset [CommRing R] : AddChar (Multiset R) R[X] where
+@[simps] def ofMultiset [Ring R] [IsMulCommutative R] : AddChar (Multiset R) R[X] where
   toFun s := (s.map (fun a ↦ X - C a)).prod
   map_zero_eq_one' := by simp
   map_add_eq_mul' := by simp

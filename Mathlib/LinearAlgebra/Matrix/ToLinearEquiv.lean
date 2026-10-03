@@ -41,7 +41,7 @@ section LinearEquiv
 
 open LinearMap
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 section ToLinearEquiv'
 
@@ -121,7 +121,7 @@ private theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field
       exact (LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).apply_symm_apply v
     exact Matrix.det_ne_zero_of_right_inverse this
 
-private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [CommRing A]
+private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Ring A] [IsMulCommutative A]
     [Nontrivial A] [Field K] [Algebra A K] [IsFractionRing A K] {M : Matrix n n A} :
     (∃ v ≠ 0, M *ᵥ v = 0) ↔ M.det = 0 := by
   have : (∃ v ≠ 0, (algebraMap A K).mapMatrix M *ᵥ v = 0) ↔ _ :=
@@ -155,7 +155,7 @@ private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq 
           RingHom.mapMatrix_apply, Pi.smul_apply, smul_eq_mul, Algebra.smul_def]
       · rw [mulVec_smul, mul_eq, Pi.smul_apply, Pi.zero_apply, smul_zero]
 
-variable {A : Type*} [CommRing A] [IsDomain A] {M N : Matrix n n A}
+variable {A : Type*} [Ring A] [IsMulCommutative A] [IsDomain A] {M N : Matrix n n A}
 
 theorem exists_mulVec_eq_zero_iff [DecidableEq n] : (∃ v ≠ 0, M *ᵥ v = 0) ↔ M.det = 0 :=
   exists_mulVec_eq_zero_iff' (FractionRing A)
@@ -226,7 +226,7 @@ section Determinant
 /-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
 column positive has nonzero determinant. -/
 lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
-    {S : Type*} [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+    {S : Type*} [Ring S] [IsMulCommutative S] [LinearOrder S] [IsStrictOrderedRing S]
     {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ j, 0 < ∑ i, A i j) :
     A.det ≠ 0 := by
   cases isEmpty_or_nonempty n
@@ -254,7 +254,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
 /-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
 row positive has nonzero determinant. -/
 lemma det_ne_zero_of_sum_row_pos [DecidableEq n]
-    {S : Type*} [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+    {S : Type*} [Ring S] [IsMulCommutative S] [LinearOrder S] [IsStrictOrderedRing S]
     {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
     A.det ≠ 0 := by
   rw [← Matrix.det_transpose]

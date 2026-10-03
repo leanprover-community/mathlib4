@@ -44,7 +44,7 @@ protected lemma smul_neg : s • -t = -(s • t) := by
 end DistribSMul
 
 section Semiring
-variable [Semiring α] [AddCommMonoid β] [Module α β]
+variable [Semiring α] [AddMonoid β] [IsAddCommutative β] [Module α β]
 
 lemma add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
   rintro _ ⟨x, hx, rfl⟩
@@ -67,7 +67,7 @@ lemma zero_mem_smul_iff : 0 ∈ s • t ↔ 0 ∈ s ∧ t.Nonempty ∨ 0 ∈ t �
 end Semiring
 
 section Ring
-variable [Ring α] [AddCommGroup β] [Module α β] (a : α) (s : Set α) (t : Set β)
+variable [Ring α] [AddGroup β] [IsAddCommutative β] [Module α β] (a : α) (s : Set α) (t : Set β)
 
 @[simp]
 lemma neg_smul_set : -a • t = -(a • t) := by

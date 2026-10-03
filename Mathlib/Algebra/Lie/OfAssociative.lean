@@ -64,7 +64,7 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 
 section AssociativeModule
 
-variable {M : Type w} [AddCommGroup M] [Module A M]
+variable {M : Type w} [AddGroup M] [IsAddCommutative M] [Module A M]
 
 /-- We can regard a module over an associative ring `A` as a Lie ring module over `A` with Lie
 bracket equal to its ring commutator.
@@ -91,7 +91,7 @@ end AssociativeModule
 
 section LieAlgebra
 
-variable {R : Type u} [CommRing R] [Algebra R A]
+variable {R : Type u} [Ring R] [IsMulCommutative R] [Algebra R A]
 
 /-- An associative algebra gives rise to a Lie algebra by taking the bracket to be the ring
 commutator. -/
@@ -104,7 +104,7 @@ attribute [local instance] LieRingModule.ofAssociativeModule
 
 section AssociativeRepresentation
 
-variable {M : Type w} [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable {M : Type w} [AddGroup M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 /-- A representation of an associative algebra `A` is also a representation of `A`, regarded as a
 Lie algebra via the ring commutator.
@@ -176,7 +176,7 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 section AdjointAction
 
 variable (R : Type u) (L : Type v) (M : Type w)
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable [LieRingModule L M] [LieModule R L M]
 
 /-- A Lie module yields a Lie algebra morphism into the linear endomorphisms of the module.
@@ -321,7 +321,7 @@ variable {R L M}
 
 namespace LieModule
 
-variable {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
+variable {M₂ : Type w₁} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
   (f : M →ₗ⁅R,L⁆ M₂) (k : ℕ) (x : L)
 
 lemma toEnd_pow_comp_lieHom :
@@ -380,7 +380,7 @@ theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
 end AdjointAction
 
 /-- A subalgebra of an associative algebra is a Lie subalgebra of the associated Lie algebra. -/
-def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [Algebra R A]
+def lieSubalgebraOfSubalgebra (R : Type u) [Ring R] [IsMulCommutative R] (A : Type v) [Ring A] [Algebra R A]
     (A' : Subalgebra R A) : LieSubalgebra R A :=
   { Subalgebra.toSubmodule A' with
     lie_mem' := fun {x y} hx hy => by
@@ -393,7 +393,7 @@ def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [A
 namespace LinearEquiv
 
 variable {R : Type u} {M₁ : Type v} {M₂ : Type w}
-variable [CommRing R] [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
+variable [Ring R] [IsMulCommutative R] [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁] [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂]
 variable (e : M₁ ≃ₗ[R] M₂)
 
 /-- A linear equivalence of two modules induces a Lie algebra equivalence of their endomorphisms. -/
@@ -417,7 +417,7 @@ end LinearEquiv
 namespace AlgEquiv
 
 variable {R : Type u} {A₁ : Type v} {A₂ : Type w}
-variable [CommRing R] [Ring A₁] [Ring A₂] [Algebra R A₁] [Algebra R A₂]
+variable [Ring R] [IsMulCommutative R] [Ring A₁] [Ring A₂] [Algebra R A₁] [Algebra R A₂]
 variable (e : A₁ ≃ₐ[R] A₂)
 
 /-- An equivalence of associative algebras is an equivalence of associated Lie algebras. -/
@@ -440,7 +440,7 @@ end AlgEquiv
 
 namespace LieAlgebra
 
-variable {R L L' : Type*} [CommRing R]
+variable {R L L' : Type*} [Ring R] [IsMulCommutative R]
   [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L']
 

@@ -79,8 +79,8 @@ section Semiring
 
 /-! ### Flatness over a semiring -/
 
-variable {R : Type u} {M : Type v} {N P Q : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module R Q]
+variable {R : Type u} {M : Type v} {N P Q : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [AddMonoid N] [IsAddCommutative N] [Module R N] [AddMonoid P] [IsAddCommutative P] [Module R P] [AddMonoid Q] [IsAddCommutative Q] [Module R Q]
 
 theorem _root_.LinearMap.rTensor_injective_of_fg {f : N →ₗ[R] P}
     (h : ∀ (N' : Submodule R N) (P' : Submodule R P),
@@ -111,7 +111,7 @@ arbitrary `R`-modules `N` and `P` and injective linear maps `N →ₗ[R] P`, see
 `Flat.rTensor_preserves_injective_linearMap`. To show a module over a ring `R` is flat, it
 suffices to consider the case `P = R`, see `Flat.iff_rTensor_injective`. -/
 @[mk_iff] class Flat : Prop where
-  out ⦃P : Type u⦄ [AddCommMonoid P] [Module R P] [Module.Finite R P] (N : Submodule R P) : N.FG →
+  out ⦃P : Type u⦄ [AddMonoid P] [IsAddCommutative P] [Module R P] [Module.Finite R P] (N : Submodule R P) : N.FG →
     Function.Injective (N.subtype.rTensor M)
 
 namespace Flat
@@ -135,7 +135,7 @@ theorem lTensor_preserves_injective_linearMap [Flat R M] (f : N →ₗ[R] P)
 /-- `M` is flat if and only if `f ⊗ 𝟙 M` is injective whenever `f` is an injective linear map
 in a universe that `R` fits in. -/
 lemma iff_rTensor_preserves_injective_linearMapₛ [Small.{v'} R] : Flat R M ↔
-    ∀ ⦃N N' : Type v'⦄ [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
+    ∀ ⦃N N' : Type v'⦄ [AddMonoid N] [IsAddCommutative N] [AddMonoid N'] [IsAddCommutative N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) :=
   ⟨by introv _; apply rTensor_preserves_injective_linearMap, fun h ↦ ⟨fun P _ _ _ _ _ ↦ by
     have := Finite.small.{v'} R P
@@ -145,17 +145,17 @@ lemma iff_rTensor_preserves_injective_linearMapₛ [Small.{v'} R] : Flat R M ↔
 /-- `M` is flat if and only if `𝟙 M ⊗ f` is injective whenever `f` is an injective linear map
 in a universe that `R` fits in. -/
 lemma iff_lTensor_preserves_injective_linearMapₛ [Small.{v'} R] : Flat R M ↔
-    ∀ ⦃N N' : Type v'⦄ [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
+    ∀ ⦃N N' : Type v'⦄ [AddMonoid N] [IsAddCommutative N] [AddMonoid N'] [IsAddCommutative N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.lTensor M) := by
   simp_rw [iff_rTensor_preserves_injective_linearMapₛ, LinearMap.lTensor_inj_iff_rTensor_inj]
 
 /-- An easier-to-use version of `Module.flat_iff`, with finiteness conditions removed. -/
-lemma iff_rTensor_injectiveₛ : Flat R M ↔ ∀ ⦃P : Type u⦄ [AddCommMonoid P] [Module R P]
+lemma iff_rTensor_injectiveₛ : Flat R M ↔ ∀ ⦃P : Type u⦄ [AddMonoid P] [IsAddCommutative P] [Module R P]
     (N : Submodule R P), Function.Injective (N.subtype.rTensor M) :=
   ⟨fun _ _ _ _ _ ↦ rTensor_preserves_injective_linearMap _ Subtype.val_injective,
     fun h ↦ ⟨fun _ _ _ _ _ _ ↦ h _⟩⟩
 
-lemma iff_lTensor_injectiveₛ : Flat R M ↔ ∀ ⦃P : Type u⦄ [AddCommMonoid P] [Module R P]
+lemma iff_lTensor_injectiveₛ : Flat R M ↔ ∀ ⦃P : Type u⦄ [AddMonoid P] [IsAddCommutative P] [Module R P]
     (N : Submodule R P), Function.Injective (N.subtype.lTensor M) := by
   simp_rw [iff_rTensor_injectiveₛ, LinearMap.lTensor_inj_iff_rTensor_inj]
 
@@ -230,7 +230,7 @@ instance of_projective [Projective R M] : Flat R M :=
 
 instance of_free [Free R M] : Flat R M := inferInstance
 
-instance {S} [CommSemiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]
+instance {S} [Semiring S] [IsMulCommutative S] [Algebra R S] [Module S M] [IsScalarTower R S M]
     [Flat S M] [Flat R N] : Flat S (M ⊗[R] N) :=
   iff_rTensor_injectiveₛ.mpr fun P _ _ I ↦ by
     let := RestrictScalars.moduleOrig R S P
@@ -279,14 +279,14 @@ namespace Flat
 
 /-! ### Flatness over a ring -/
 
-variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
-variable {N : Type w} [AddCommGroup N] [Module R N]
+variable {R : Type u} {M : Type v} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {N : Type w} [AddGroup N] [IsAddCommutative N] [Module R N]
 
 /-- `M` is flat if and only if `f ⊗ 𝟙 M` is injective whenever `f` is an injective linear map.
   See `Module.Flat.iff_rTensor_preserves_injective_linearMap` to specialize the universe of
   `N, N', N''` to `Type (max u v)`. -/
 lemma iff_rTensor_preserves_injective_linearMap' [Small.{v'} R] : Flat R M ↔
-    ∀ ⦃N N' : Type v'⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+    ∀ ⦃N N' : Type v'⦄ [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) :=
   ⟨by introv _; apply rTensor_preserves_injective_linearMap, fun h ↦
     iff_rTensor_preserves_injective_linearMapₛ.mpr fun P N _ _ _ _ ↦ by
@@ -298,7 +298,7 @@ lemma iff_rTensor_preserves_injective_linearMap' [Small.{v'} R] : Flat R M ↔
   See `Module.Flat.iff_rTensor_preserves_injective_linearMap'` to generalize the universe of
   `N, N', N''` to any universe that is higher than `R` and `M`. -/
 lemma iff_rTensor_preserves_injective_linearMap : Flat R M ↔
-    ∀ ⦃N N' : Type (max u v)⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+    ∀ ⦃N N' : Type (max u v)⦄ [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) :=
   iff_rTensor_preserves_injective_linearMap'
 
@@ -306,7 +306,7 @@ lemma iff_rTensor_preserves_injective_linearMap : Flat R M ↔
   See `Module.Flat.iff_lTensor_preserves_injective_linearMap` to specialize the universe of
   `N, N', N''` to `Type (max u v)`. -/
 lemma iff_lTensor_preserves_injective_linearMap' [Small.{v'} R] : Flat R M ↔
-    ∀ ⦃N N' : Type v'⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+    ∀ ⦃N N' : Type v'⦄ [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.lTensor M) := by
   simp_rw [iff_rTensor_preserves_injective_linearMap', LinearMap.lTensor_inj_iff_rTensor_inj]
 
@@ -314,14 +314,14 @@ lemma iff_lTensor_preserves_injective_linearMap' [Small.{v'} R] : Flat R M ↔
   See `Module.Flat.iff_lTensor_preserves_injective_linearMap'` to generalize the universe of
   `N, N', N''` to any universe that is higher than `R` and `M`. -/
 lemma iff_lTensor_preserves_injective_linearMap : Flat R M ↔
-    ∀ ⦃N N' : Type (max u v)⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+    ∀ ⦃N N' : Type (max u v)⦄ [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.lTensor M) :=
   iff_lTensor_preserves_injective_linearMap'
 
 variable (M) in
 /-- If `M` is flat then `M ⊗ -` is an exact functor. -/
 lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
-    [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N''] [Module R N] [Module R N'] [Module R N'']
+    [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [AddGroup N''] [IsAddCommutative N''] [Module R N] [Module R N'] [Module R N'']
     ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄ (exact : Function.Exact f g) :
     Function.Exact (f.lTensor M) (g.lTensor M) := by
   let π : N' →ₗ[R] N' ⧸ LinearMap.range f := Submodule.mkQ _
@@ -338,7 +338,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
 variable (M) in
 /-- If `M` is flat then `- ⊗ M` is an exact functor. -/
 lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
-    [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N''] [Module R N] [Module R N'] [Module R N'']
+    [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [AddGroup N''] [IsAddCommutative N''] [Module R N] [Module R N'] [Module R N'']
     ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄ (exact : Function.Exact f g) :
     Function.Exact (f.rTensor M) (g.rTensor M) := by
   let π : N' →ₗ[R] N' ⧸ LinearMap.range f := Submodule.mkQ _
@@ -355,7 +355,7 @@ lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor. See
   `Module.Flat.iff_lTensor_exact` to specialize the universe of `N, N', N''` to `Type (max u v)`. -/
 theorem iff_lTensor_exact' [Small.{v'} R] : Flat R M ↔
-    ∀ ⦃N N' N'' : Type v'⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
+    ∀ ⦃N N' N'' : Type v'⦄ [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [AddGroup N''] [IsAddCommutative N'']
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.lTensor M) (g.lTensor M) := by
   refine ⟨fun _ ↦ lTensor_exact _, fun H ↦ iff_lTensor_preserves_injective_linearMap'.mpr
@@ -369,7 +369,7 @@ theorem iff_lTensor_exact' [Small.{v'} R] : Flat R M ↔
   See `Module.Flat.iff_lTensor_exact'` to generalize the universe of
   `N, N', N''` to any universe that is higher than `R` and `M`. -/
 theorem iff_lTensor_exact : Flat R M ↔
-    ∀ ⦃N N' N'' : Type (max u v)⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
+    ∀ ⦃N N' N'' : Type (max u v)⦄ [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [AddGroup N''] [IsAddCommutative N'']
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.lTensor M) (g.lTensor M) :=
   iff_lTensor_exact'
@@ -377,7 +377,7 @@ theorem iff_lTensor_exact : Flat R M ↔
 /-- `M` is flat if and only if `- ⊗ M` is an exact functor. See
   `Module.Flat.iff_rTensor_exact` to specialize the universe of `N, N', N''` to `Type (max u v)`. -/
 theorem iff_rTensor_exact' [Small.{v'} R] : Flat R M ↔
-    ∀ ⦃N N' N'' : Type v'⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
+    ∀ ⦃N N' N'' : Type v'⦄ [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [AddGroup N''] [IsAddCommutative N'']
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) := by
   refine ⟨fun _ ↦ rTensor_exact _, fun H ↦ iff_rTensor_preserves_injective_linearMap'.mpr
@@ -391,7 +391,7 @@ theorem iff_rTensor_exact' [Small.{v'} R] : Flat R M ↔
   See `Module.Flat.iff_rTensor_exact'` to generalize the universe of
   `N, N', N''` to any universe that is higher than `R` and `M`. -/
 theorem iff_rTensor_exact : Flat R M ↔
-    ∀ ⦃N N' N'' : Type (max u v)⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
+    ∀ ⦃N N' N'' : Type (max u v)⦄ [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [AddGroup N''] [IsAddCommutative N'']
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) :=
   iff_rTensor_exact'
@@ -402,8 +402,8 @@ end Module
 
 section Injective
 
-variable {R S A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-  [CommSemiring S] [Algebra S A] [SMulCommClass R S A]
+variable {R S A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+  [Semiring S] [IsMulCommutative S] [Algebra S A] [SMulCommClass R S A]
 
 namespace Algebra.TensorProduct
 
@@ -423,7 +423,7 @@ theorem includeRight_injective [Module.Flat R B] (ha : Function.Injective (algeb
 
 end Algebra.TensorProduct
 
-variable (A) [Module.Flat R A] {M : Type*} [AddCommMonoid M] [Module R M] (p : Submodule R M)
+variable (A) [Module.Flat R A] {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] (p : Submodule R M)
 
 namespace Submodule
 
@@ -448,11 +448,11 @@ end Injective
 
 section Nontrivial
 
-variable (R : Type*) [CommSemiring R]
+variable (R : Type*) [Semiring R] [IsMulCommutative R]
 
 namespace TensorProduct
 
-variable (M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable (M N : Type*) [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
 
 /-- If `M`, `N` are `R`-modules, there exists an injective `R`-linear map from `R` to `N`,
 and `M` is a nontrivial flat `R`-module, then `M ⊗[R] N` is nontrivial. -/
@@ -469,7 +469,7 @@ theorem nontrivial_of_linearMap_injective_of_flat_right (f : R →ₗ[R] M) (h :
     (TensorProduct.lid R N).symm.injective |>.nontrivial
 
 variable {R M N}
-variable {P Q : Type*} [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module R Q]
+variable {P Q : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P] [AddMonoid Q] [IsAddCommutative Q] [Module R Q]
 
 /-- Tensor product of injective maps are injective under some flatness conditions.
 Also see `TensorProduct.map_injective_of_flat_flat'` and
@@ -578,9 +578,9 @@ end Nontrivial
 
 namespace IsTensorProduct
 
-variable {R M N : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
-  [Module R M] [Module R N] {M₁ M₂ N₁ N₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂]
-  [Module R M₁] [Module R M₂] [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
+variable {R M N : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
+  [Module R M] [Module R N] {M₁ M₂ N₁ N₂ : Type*} [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂]
+  [Module R M₁] [Module R M₂] [AddMonoid N₁] [IsAddCommutative N₁] [AddMonoid N₂] [IsAddCommutative N₂] [Module R N₁] [Module R N₂]
   {f : M₁ →ₗ[R] M₂ →ₗ[R] M} {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
   (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂)
 
@@ -622,8 +622,8 @@ end IsTensorProduct
 
 section IsSMulRegular
 
-variable {R S M N : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Module.Flat R S]
-  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
+variable {R S M N : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S] [Module.Flat R S]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 theorem IsSMulRegular.of_flat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseChange S f) {x : R}
     (reg : IsSMulRegular M x) : IsSMulRegular N (algebraMap R S x) := by
@@ -640,7 +640,7 @@ end IsSMulRegular
   `R`-algebra. If `C ⊗[R] B` is reduced for all finitely generated subalgebras `B` of `A`, then
   `C ⊗[R] A` is also reduced. -/
 theorem IsReduced.tensorProduct_of_flat_of_forall_fg {R C A : Type*}
-    [CommSemiring R] [CommSemiring C] [Semiring A] [Algebra R A] [Algebra R C] [Module.Flat R C]
+    [Semiring R] [IsMulCommutative R] [Semiring C] [IsMulCommutative C] [Semiring A] [Algebra R A] [Algebra R C] [Module.Flat R C]
     (h : ∀ B : Subalgebra R A, B.FG → IsReduced (C ⊗[R] B)) :
     IsReduced (C ⊗[R] A) := by
   by_contra h_contra

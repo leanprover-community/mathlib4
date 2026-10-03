@@ -30,13 +30,13 @@ and show that it is bijective when `S` is `R`-smooth.
 
 open Polynomial TensorProduct
 
-variable {R S B : Type*} [CommRing R] [CommRing S] [Algebra R S] [CommRing B] [Algebra R B]
+variable {R S B : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Ring B] [IsMulCommutative B] [Algebra R B]
 
 variable (R S) in
 /-- The comparison map from `S ⊗[R] integralClosure R B` to `integralClosure S (S ⊗[R] B)`.
 This is injective when `S` is `R`-flat, and (TODO) bijective when `S` is `R`-smooth. -/
 def TensorProduct.toIntegralClosure
-    (B : Type*) [CommRing B] [Algebra R B] :
+    (B : Type*) [Ring B] [IsMulCommutative B] [Algebra R B] :
     S ⊗[R] integralClosure R B →ₐ[S] integralClosure S (S ⊗[R] B) :=
     (Algebra.TensorProduct.map (.id _ _) (integralClosure R B).val).codRestrict _ fun x ↦ by
   induction x with
@@ -55,7 +55,7 @@ lemma TensorProduct.toIntegralClosure_injective_of_flat [Module.Flat R S] :
 
 /-- "Base change preserves integral closure" is stable under composition. -/
 lemma TensorProduct.toIntegralClosure_bijective_of_tower
-    {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     (H : Function.Bijective (toIntegralClosure R S B))
     (H' : Function.Bijective (toIntegralClosure S T (S ⊗[R] B))) :
     Function.Bijective (toIntegralClosure R T B) := by
@@ -70,7 +70,7 @@ lemma TensorProduct.toIntegralClosure_bijective_of_tower
 
 /-- "Base change preserves integral closure" can be checked Zariski-locally. -/
 lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
-    {s : Set S} (hs : Ideal.span s = ⊤) (Sᵣ : s → Type*) [∀ r, CommRing (Sᵣ r)]
+    {s : Set S} (hs : Ideal.span s = ⊤) (Sᵣ : s → Type*) [∀ r, Ring (Sᵣ r)] [∀ r, IsMulCommutative (Sᵣ r)]
     [∀ r, Algebra S (Sᵣ r)] [∀ r, Algebra R (Sᵣ r)] [∀ r, IsScalarTower R S (Sᵣ r)]
     [∀ r, IsLocalization.Away r.1 (Sᵣ r)]
     (H : ∀ r, Function.Bijective (toIntegralClosure R (Sᵣ r) B)) :

@@ -72,7 +72,7 @@ instance NonUnitalSeminormedRing.isBoundedSMulOpposite [NonUnitalSeminormedRing 
 
 section SeminormedRing
 
-variable [SeminormedRing α] [SeminormedAddCommGroup β] [Module α β]
+variable [SeminormedRing α] [SeminormedAddGroup β] [IsAddCommutative β] [Module α β]
 
 theorem IsBoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ ≤ ‖r‖ * ‖x‖) :
     IsBoundedSMul α β :=
@@ -148,7 +148,7 @@ end NormSMulClass
 
 section NormSMulClassModule
 
-variable [SeminormedRing α] [SeminormedAddCommGroup β] [Module α β] [NormSMulClass α β]
+variable [SeminormedRing α] [SeminormedAddGroup β] [IsAddCommutative β] [Module α β] [NormSMulClass α β]
 
 theorem dist_smul₀ (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * dist x y := by
   simp_rw [dist_eq_norm, (norm_smul s (x - y)).symm, smul_sub]
@@ -185,7 +185,7 @@ lemma NormedDivisionRing.toNormSMulClass : NormSMulClass α β where
 end NormedDivisionRing
 
 section NormedDivisionRingModule
-variable [NormedDivisionRing α] [SeminormedAddCommGroup β] [Module α β] [NormSMulClass α β]
+variable [NormedDivisionRing α] [SeminormedAddGroup β] [IsAddCommutative β] [Module α β] [NormSMulClass α β]
 
 theorem Metric.smul_image_ball {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
     (s • ·) '' ball x ε = ball (s • x) (‖s‖ * ε) := by

@@ -434,7 +434,7 @@ end NonUnitalAlgHom
 
 namespace AlgHom
 
-variable {F R : Type*} [CommSemiring R]
+variable {F R : Type*} [Semiring R] [IsMulCommutative R]
 variable {A B : Type*} [Semiring A] [Semiring B] [Algebra R A]
   [Algebra R B]
 

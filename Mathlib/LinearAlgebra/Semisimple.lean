@@ -41,7 +41,7 @@ endomorphism. We provide basic definitions and results about such endomorphisms 
 
 open Set Function Polynomial
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 namespace Module.End
 
@@ -115,7 +115,7 @@ lemma isSemisimple_id [IsSemisimpleModule R M] : IsSemisimple (LinearMap.id : Mo
   simp [isSemisimple_iff, mem_invtSubmodule]
 
 variable (f) in
-protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup M₂] [Module R M₂]
+protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂]
     (g : End R M₂) (e : M ≃ₗ[R] M₂) (he : e ∘ₗ f = g ∘ₗ e) :
     f.IsSemisimple ↔ g.IsSemisimple := by
   let e : AEval' f ≃ₗ[R[X]] AEval' g := LinearEquiv.ofAEval _ (e.trans (AEval'.of g)) fun x ↦ by

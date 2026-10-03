@@ -29,7 +29,7 @@ namespace Algebra.TensorProduct
 
 section
 
-variable {A : Type*} (B : Type*) [CommRing A] [CommRing B] [Algebra A B] (I : Ideal A)
+variable {A : Type*} (B : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] (I : Ideal A)
 
 /-- (Implementation): Use `Algebra.TensorProduct.quotIdealMapEquivTensorQuot` instead. -/
 noncomputable def quotIdealMapEquivTensorQuotAux :
@@ -87,8 +87,8 @@ end
 
 section
 
-variable {R : Type*} (S T A : Type*) [CommRing R] [CommRing S] [Algebra R S]
-  [CommRing T] [Algebra R T] [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+variable {R : Type*} (S T A : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+  [Ring T] [IsMulCommutative T] [Algebra R T] [Ring A] [IsMulCommutative A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of an `S`-algebra `A` over `R` with the quotient of `T` by an ideal `I`
@@ -142,7 +142,7 @@ end
 
 end Algebra.TensorProduct
 
-lemma Ideal.subtype_rTensor_range {R : Type*} [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
+lemma Ideal.subtype_rTensor_range {R : Type*} [Ring R] [IsMulCommutative R] (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
     (I : Ideal R) :
     ((TensorProduct.lid R M).comp (I.subtype.rTensor M)).range = I • (⊤ : Submodule R M) := by
   rw [← Submodule.ker_mkQ (I • (⊤ : Submodule R M)), LinearMap.range_comp,
@@ -152,7 +152,7 @@ lemma Ideal.subtype_rTensor_range {R : Type*} [CommRing R] (M : Type*) [AddCommG
 
 section
 
-variable {R R' R'' S : Type*} [CommRing R] [CommRing R'] [CommRing R''] [CommRing S]
+variable {R R' R'' S : Type*} [Ring R] [IsMulCommutative R] [Ring R'] [IsMulCommutative R'] [Ring R''] [IsMulCommutative R''] [Ring S] [IsMulCommutative S]
   [Algebra R R'] [Algebra R R''] [Algebra R' R''] [IsScalarTower R R' R''] [Algebra R S]
 
 variable (R'') in

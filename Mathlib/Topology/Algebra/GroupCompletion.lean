@@ -180,7 +180,7 @@ end IsUniformAddGroup
 
 section UniformAddCommGroup
 
-variable [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
+variable [UniformSpace α] [AddGroup α] [IsAddCommutative α] [IsUniformAddGroup α]
 
 instance instAddCommGroup : AddCommGroup (Completion α) :=
   { (inferInstance : AddGroup <| Completion α) with
@@ -255,7 +255,7 @@ theorem AddMonoidHom.completion_zero :
     exact continuous_const
   · simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
 
-theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace γ]
+theorem AddMonoidHom.completion_add {γ : Type*} [AddGroup γ] [IsAddCommutative γ] [UniformSpace γ]
     [IsUniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
     AddMonoidHom.completion (f + g) (hf.add hg) =
     AddMonoidHom.completion f hf + AddMonoidHom.completion g hg := by

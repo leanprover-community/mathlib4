@@ -190,7 +190,7 @@ end
 
 section
 
-variable [CommSemiring R] {p : R[X]} [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] {p : R[X]} [Semiring S] [IsMulCommutative S]
 
 theorem evalRingHom_zero : evalRingHom 0 = constantCoeff :=
   DFunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
@@ -212,7 +212,7 @@ theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →
   simp_rw [Finset.ext_iff, mem_support_iff, coeff_map, ← map_zero f, hf.ne_iff,
     forall_const]
 
-variable [CommSemiring R] [CommSemiring S] (f : R →+* S)
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (f : R →+* S)
 
 theorem IsRoot.map {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot p x) : IsRoot (p.map f) (f x) := by
   rw [IsRoot, eval_map, eval₂_hom, h.eq_zero, f.map_zero]
@@ -221,7 +221,7 @@ theorem IsRoot.of_map {R} [Ring R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoo
     (hf : Function.Injective f) : IsRoot p x := by
   rwa [IsRoot, ← (injective_iff_map_eq_zero' f).mp hf, ← eval₂_hom, ← eval_map]
 
-theorem isRoot_map_iff {R : Type*} [CommRing R] {f : R →+* S} {x : R} {p : R[X]}
+theorem isRoot_map_iff {R : Type*} [Ring R] [IsMulCommutative R] {f : R →+* S} {x : R} {p : R[X]}
     (hf : Function.Injective f) : IsRoot (p.map f) (f x) ↔ IsRoot p x :=
   ⟨fun h => h.of_map hf, fun h => h.map⟩
 

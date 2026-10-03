@@ -48,7 +48,7 @@ open TopologicalSpace
 open Filter hiding prod_eq map
 
 variable {α β E : Type*} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : Measure β}
-variable [NormedAddCommGroup E]
+variable [NormedAddGroup E] [IsAddCommutative E]
 
 /-! ### Measurability
 
@@ -258,7 +258,7 @@ theorem Integrable.integral_norm_prod_right [SFinite μ] ⦃f : α × β → E�
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, ‖f (x, y)‖ ∂μ) ν :=
   hf.swap.integral_norm_prod_left
 
-theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
+theorem Integrable.op_fst_snd {F G : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedAddGroup G] [IsAddCommutative G]
     {op : E → F → G} (hop : Continuous op.uncurry) (hop_norm : ∃ C, ∀ x y, ‖op x y‖ ≤ C * ‖x‖ * ‖y‖)
     {f : α → E} {g : β → F} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z ↦ op (f z.1) (g z.2)) (μ.prod ν) := by
@@ -351,7 +351,7 @@ theorem setIntegral_prod_swap (s : Set α) (t : Set β) (f : α × β → E) :
     ∫ (z : β × α) in t ×ˢ s, f z.swap ∂ν.prod μ = ∫ (z : α × β) in s ×ˢ t, f z ∂μ.prod ν := by
   rw [← Measure.prod_restrict, ← Measure.prod_restrict, integral_prod_swap]
 
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
+variable {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace ℝ E']
 
 /-! Some rules about the sum/difference of double integrals. They follow from `integral_add`, but
   we separate them out as separate lemmas, because they involve quite some steps. -/
@@ -508,9 +508,9 @@ theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
   exact integral_prod f hf
 
 theorem integral_prod_bilin {E F G 𝕜 : Type*} [RCLike 𝕜]
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
     (B : E →L[𝕜] F →L[𝕜] G) {f : α → E} {g : β → F}
     (hf : Integrable f μ) (hg : Integrable g ν) :
     ∫ z, B (f z.1) (g z.2) ∂μ.prod ν = B (∫ x, f x ∂μ) (∫ y, g y ∂ν) := by
@@ -551,9 +551,9 @@ theorem integral_fun_fst (f : α → E) : ∫ z, f z.1 ∂μ.prod ν = ν.real u
 
 section ContinuousLinearMap
 
-variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
-  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {E F G : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
+  [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G]
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
   {L : E × F →L[ℝ] G}
 

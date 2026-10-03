@@ -153,7 +153,7 @@ instance Semigroup.opposite_smulCommClass' [Semigroup α] : SMulCommClass α α�
   SMulCommClass.symm _ _ _
 
 @[to_additive]
-instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α α where
+instance CommSemigroup.isCentralScalar [Semigroup α] [IsMulCommutative α] : IsCentralScalar α α where
   op_smul_eq_smul _ _ := mul_comm _ _
 
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/

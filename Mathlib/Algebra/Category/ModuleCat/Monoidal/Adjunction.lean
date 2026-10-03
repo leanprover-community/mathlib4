@@ -28,7 +28,7 @@ open CategoryTheory ModuleCat MonoidalCategory Limits
 
 namespace ModuleCat
 
-variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
+variable {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
 
 @[simp]
 lemma extendsScalars_map_leftUnitor_inv_one_tmul (M : ModuleCat R) (m : M) :

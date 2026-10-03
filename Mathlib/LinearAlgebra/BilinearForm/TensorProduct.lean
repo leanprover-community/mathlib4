@@ -35,8 +35,8 @@ open LinearMap (BilinMap BilinForm)
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring A]
-variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N₁] [AddCommMonoid N₂]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A]
+variable [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid N₁] [IsAddCommutative N₁] [AddMonoid N₂] [IsAddCommutative N₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
 variable [SMulCommClass R A M₁] [IsScalarTower R A M₁]
 variable [SMulCommClass R A N₁] [IsScalarTower R A N₁]
@@ -160,8 +160,8 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R]
-variable [AddCommGroup M₁] [AddCommGroup M₂]
+variable [Ring R] [IsMulCommutative R]
+variable [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂]
 variable [Module R M₁] [Module R M₂]
 variable [Module.Projective R M₁] [Module.Finite R M₁]
 variable [Module.Projective R M₂] [Module.Finite R M₂]

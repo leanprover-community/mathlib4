@@ -118,18 +118,18 @@ instance oreSetBot : OreSet (⊥ : Submonoid R) where
 /-- Every submonoid of a commutative monoid is an Ore set. -/
 @[to_additive AddOreLocalization.addOreSetComm
 /-- Every submonoid of an additive commutative monoid is an Ore set. -/]
-instance (priority := 100) oreSetComm {R} [CommMonoid R] (S : Submonoid R) : OreSet S where
+instance (priority := 100) oreSetComm {R} [Monoid R] [IsMulCommutative R] (S : Submonoid R) : OreSet S where
   ore_right_cancel m n s h := ⟨s, by rw [mul_comm (s : R) n, mul_comm (s : R) m, h]⟩
   oreNum r _ := r
   oreDenom _ s := s
   ore_eq r s := by rw [mul_comm]
 
 @[to_additive (attr := simp) AddOreLocalization.addOreSetComm_oreMin]
-lemma oreSetComm_oreNum {R : Type*} [CommMonoid R] (S : Submonoid R) (r : R) (s : S) :
+lemma oreSetComm_oreNum {R : Type*} [Monoid R] [IsMulCommutative R] (S : Submonoid R) (r : R) (s : S) :
     oreNum r s = r := rfl
 
 @[to_additive (attr := simp) AddOreLocalization.addOreSetComm_oreSubtra]
-lemma oreSetComm_oreDenom {R : Type*} [CommMonoid R] (S : Submonoid R) (r : R) (s : S) :
+lemma oreSetComm_oreDenom {R : Type*} [Monoid R] [IsMulCommutative R] (S : Submonoid R) (r : R) (s : S) :
     oreDenom r s = s := rfl
 
 end Monoid

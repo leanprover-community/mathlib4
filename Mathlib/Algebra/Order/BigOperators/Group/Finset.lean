@@ -35,7 +35,7 @@ namespace Finset
 
 section OrderedCommMonoid
 
-variable [CommMonoid M] [CommMonoid N] [Preorder N]
+variable [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] [Preorder N]
 
 /-- Let `{x | p x}` be a subsemigroup of a commutative monoid `M`. Let `f : M → N` be a map
 submultiplicative on `{x | p x}`, i.e., `p x → p y → f (x * y) ≤ f x * f y`. Let `g i`, `i ∈ s`, be
@@ -227,7 +227,7 @@ theorem prod_le_prod_of_injOn [DecidableEq α] [MulLeftMono N]
 alias prod_le_prod_of_injOn' := prod_le_prod_of_injOn
 
 @[to_additive]
-theorem prod_eq_one_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
+theorem prod_eq_one_iff_of_one_le {ι : Type u_1} {N : Type u_5} [Monoid N] [IsMulCommutative N] [PartialOrder N]
     {f : ι → N} {s : Finset ι} [IsOrderedMonoid N] :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
   classical
@@ -241,7 +241,7 @@ theorem prod_eq_one_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] 
 @[deprecated (since := "2026-09-01")] alias prod_eq_one_iff_of_one_le' := prod_eq_one_iff_of_one_le
 
 @[to_additive sum_pos_iff_of_nonneg]
-lemma one_lt_prod_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
+lemma one_lt_prod_iff_of_one_le {ι : Type u_1} {N : Type u_5} [Monoid N] [IsMulCommutative N] [PartialOrder N]
     {f : ι → N} {s : Finset ι} [IsOrderedMonoid N] (hf : ∀ x ∈ s, 1 ≤ f x) :
     1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x := by
   have hsum : 1 ≤ ∏ x ∈ s, f x := one_le_prod hf
@@ -249,7 +249,7 @@ lemma one_lt_prod_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] [P
   simp +contextual [← exists_prop, -exists_const_iff, hf _ _ |>.lt_iff_ne']
 
 @[to_additive]
-theorem prod_eq_one_iff_of_le_one {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
+theorem prod_eq_one_iff_of_le_one {ι : Type u_1} {N : Type u_5} [Monoid N] [IsMulCommutative N] [PartialOrder N]
     {f : ι → N} {s : Finset ι} [IsOrderedMonoid N] :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   prod_eq_one_iff_of_one_le (N := Nᵒᵈ)
@@ -257,7 +257,7 @@ theorem prod_eq_one_iff_of_le_one {ι : Type u_1} {N : Type u_5} [CommMonoid N] 
 @[deprecated (since := "2026-09-01")] alias prod_eq_one_iff_of_le_one' := prod_eq_one_iff_of_le_one
 
 @[to_additive]
-lemma prod_lt_one_iff_of_le_one {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
+lemma prod_lt_one_iff_of_le_one {ι : Type u_1} {N : Type u_5} [Monoid N] [IsMulCommutative N] [PartialOrder N]
     {f : ι → N} {s : Finset ι} [IsOrderedMonoid N] (hf : ∀ x ∈ s, f x ≤ 1) :
     ∏ x ∈ s, f x < 1 ↔ ∃ x ∈ s, f x < 1 :=
   one_lt_prod_iff_of_one_le (N := Nᵒᵈ) hf
@@ -337,7 +337,7 @@ end OrderedCommMonoid
 
 section ProdSum
 
-variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
+variable [Monoid α] [IsMulCommutative α] [AddMonoid β] [IsAddCommutative β] [Preorder β] [AddLeftMono β]
   (s : Finset ι) {f : ι → α} (g : α → β)
 
 theorem apply_prod_le_sum_apply (h_one : g 1 ≤ 0) (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
@@ -352,33 +352,33 @@ theorem sum_apply_le_apply_prod (h_one : 0 ≤ g 1) (h_mul : ∀ (a b : α), g a
 end ProdSum
 
 @[to_additive]
-lemma max_prod_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι → M} {s : Finset ι} :
+lemma max_prod_le [Monoid M] [IsMulCommutative M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι → M} {s : Finset ι} :
     max (s.prod f) (s.prod g) ≤ s.prod (fun i ↦ max (f i) (g i)) :=
   Multiset.max_prod_le
 
 @[to_additive]
-lemma prod_min_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι → M} {s : Finset ι} :
+lemma prod_min_le [Monoid M] [IsMulCommutative M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι → M} {s : Finset ι} :
     s.prod (fun i ↦ min (f i) (g i)) ≤ min (s.prod f) (s.prod g) :=
   Multiset.prod_min_le
 
-theorem abs_sum_le_sum_abs {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
+theorem abs_sum_le_sum_abs {G : Type*} [AddGroup G] [IsAddCommutative G] [LinearOrder G] [IsOrderedAddMonoid G]
     (f : ι → G) (s : Finset ι) :
     |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero.le abs_add_le s f
 
-theorem abs_sum_of_nonneg {G : Type*} [AddCommGroup G] [LinearOrder G] [AddLeftMono G]
+theorem abs_sum_of_nonneg {G : Type*} [AddGroup G] [IsAddCommutative G] [LinearOrder G] [AddLeftMono G]
     {f : ι → G} {s : Finset ι}
     (hf : ∀ i ∈ s, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg hf)]
 
 set_option linter.deprecated false in
 @[deprecated abs_sum_of_nonneg (since := "2026-09-01")]
-theorem abs_sum_of_nonneg' {G : Type*} [AddCommGroup G] [LinearOrder G] [AddLeftMono G]
+theorem abs_sum_of_nonneg' {G : Type*} [AddGroup G] [IsAddCommutative G] [LinearOrder G] [AddLeftMono G]
     {f : ι → G} {s : Finset ι}
     (hf : ∀ i, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
 
 section CommMonoid
-variable [CommMonoid α] [LE α] [MulLeftMono α] {s : Finset ι} {f : ι → α}
+variable [Monoid α] [IsMulCommutative α] [LE α] [MulLeftMono α] {s : Finset ι} {f : ι → α}
 
 @[to_additive (attr := simp)]
 lemma mulLECancellable_prod :
@@ -481,7 +481,7 @@ end DoubleCounting
 
 section CanonicallyOrderedMul
 
-variable [CommMonoid M] [Preorder M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
+variable [Monoid M] [IsMulCommutative M] [Preorder M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
 
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
@@ -524,7 +524,7 @@ theorem prod_le_prod_of_ne_one (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
 @[deprecated (since := "2026-09-01")] alias prod_le_prod_of_ne_one' := prod_le_prod_of_ne_one
 
 @[to_additive sum_pos_iff]
-lemma one_lt_prod_iff {ι M : Type*} [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M]
+lemma one_lt_prod_iff {ι M : Type*} [Monoid M] [IsMulCommutative M] [PartialOrder M] [CanonicallyOrderedMul M]
     {f : ι → M} {s : Finset ι} : 1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x :=
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le
@@ -534,7 +534,7 @@ lemma one_lt_prod_iff {ι M : Type*} [CommMonoid M] [PartialOrder M] [Canonicall
 @[to_additive /-- In a canonically-ordered additive monoid, if `S'` is contained in
 `(S.erase d) ∪ {d'}` and `f d' < f d` for some `d ∈ S`, then the sum of `f` over `S'` is
 strictly less than over `S`. -/]
-lemma prod_lt_prod_of_subset_erase_union_singleton {ι M : Type*} [DecidableEq ι] [CommMonoid M]
+lemma prod_lt_prod_of_subset_erase_union_singleton {ι M : Type*} [DecidableEq ι] [Monoid M] [IsMulCommutative M]
     [PartialOrder M] [CanonicallyOrderedMul M] [MulLeftStrictMono M] {S S' : Finset ι} {f : ι → M}
     {d d' : ι} (hd_mem : d ∈ S) (hS' : S' ⊆ S.erase d ∪ {d'}) (hlt : f d' < f d) :
     ∏ x ∈ S', f x < ∏ x ∈ S, f x := by
@@ -563,7 +563,7 @@ end CanonicallyOrderedMul
 
 section OrderedCancelCommMonoid
 
-variable [CommMonoid M] [Preorder M] [IsOrderedCancelMonoid M] {f g : ι → M} {s t : Finset ι}
+variable [Monoid M] [IsMulCommutative M] [Preorder M] [IsOrderedCancelMonoid M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive]
 theorem prod_lt_prod [MulLeftStrictMono M] (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
@@ -637,7 +637,7 @@ theorem prod_lt_one' [MulLeftStrictMono M] (h : ∀ i ∈ s, f i ≤ 1) (hs : �
   prod_const_one.le.trans_lt' <| prod_lt_prod h hs
 
 @[to_additive]
-theorem prod_eq_prod_iff_of_le {ι M : Type*} [CommMonoid M] [PartialOrder M]
+theorem prod_eq_prod_iff_of_le {ι M : Type*} [Monoid M] [IsMulCommutative M] [PartialOrder M]
   [IsOrderedCancelMonoid M] {s : Finset ι} {f g : ι → M} (h : ∀ i ∈ s, f i ≤ g i) :
     ((∏ i ∈ s, f i) = ∏ i ∈ s, g i) ↔ ∀ i ∈ s, f i = g i := by
   classical
@@ -656,7 +656,7 @@ theorem prod_eq_prod_iff_of_le {ι M : Type*} [CommMonoid M] [PartialOrder M]
     ← prod_union, inter_comm, sdiff_union_inter]
   simpa only [inter_comm] using disjoint_sdiff_inter t s
 
-@[to_additive] lemma prod_sdiff_lt_prod_sdiff {ι M : Type*} [CommMonoid M] [PartialOrder M]
+@[to_additive] lemma prod_sdiff_lt_prod_sdiff {ι M : Type*} [Monoid M] [IsMulCommutative M] [PartialOrder M]
   [IsOrderedCancelMonoid M] [DecidableEq ι] {s t : Finset ι} {f : ι → M} :
     ∏ i ∈ s \ t, f i < ∏ i ∈ t \ s, f i ↔ ∏ i ∈ s, f i < ∏ i ∈ t, f i := by
   rw [← mul_lt_mul_iff_right, ← prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter,
@@ -667,7 +667,7 @@ end OrderedCancelCommMonoid
 
 section LinearOrderedCancelCommMonoid
 
-variable [CommMonoid M] [LinearOrder M] {f g : ι → M} {s : Finset ι}
+variable [Monoid M] [IsMulCommutative M] [LinearOrder M] {f g : ι → M} {s : Finset ι}
 
 @[to_additive]
 theorem exists_lt_of_prod_lt [IsOrderedMonoid M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) :
@@ -705,7 +705,7 @@ alias exists_one_lt_of_prod_one_of_exists_ne_one' := exists_one_lt_of_prod_one_o
 end LinearOrderedCancelCommMonoid
 
 theorem apply_sup_le_sum [SemilatticeSup α] [OrderBot α]
-    [AddCommMonoid β] [Preorder β] [AddLeftMono β]
+    [AddMonoid β] [IsAddCommutative β] [Preorder β] [AddLeftMono β]
     {f : α → β} (zero : f ⊥ = 0) (ih : ∀ {s t}, f (s ⊔ t) ≤ f s + f t)
     {s : ι → α} (t : Finset ι) :
     f (t.sup s) ≤ ∑ i ∈ t, f (s i) := by
@@ -713,7 +713,7 @@ theorem apply_sup_le_sum [SemilatticeSup α] [OrderBot α]
   refine t.induction_on zero.le fun i t it h ↦ ?_
   simpa only [sup_insert, Finset.sum_insert it] using ih.trans (by gcongr)
 
-theorem apply_union_le_sum [AddCommMonoid β] [Preorder β] [AddLeftMono β]
+theorem apply_union_le_sum [AddMonoid β] [IsAddCommutative β] [Preorder β] [AddLeftMono β]
     {f : Set α → β} (zero : f ∅ = 0) (ih : ∀ {s t}, f (s ∪ t) ≤ f s + f t)
     {s : ι → Set α} (t : Finset ι) :
     f (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, f (s i) :=
@@ -735,7 +735,7 @@ end Finset
 
 namespace Fintype
 section OrderedCommMonoid
-variable [Fintype ι] [CommMonoid M] [Preorder M] [MulLeftMono M] {f : ι → M}
+variable [Fintype ι] [Monoid M] [IsMulCommutative M] [Preorder M] [MulLeftMono M] {f : ι → M}
 
 @[to_additive (attr := mono)]
 theorem prod_mono : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
@@ -749,19 +749,19 @@ lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod fun _ 
 @[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one fun _ _ ↦ hf _
 
 @[to_additive]
-lemma prod_eq_one_iff_of_one_le {ι M : Type*} [Fintype ι] [CommMonoid M] [PartialOrder M]
+lemma prod_eq_one_iff_of_one_le {ι M : Type*} [Fintype ι] [Monoid M] [IsMulCommutative M] [PartialOrder M]
     [IsOrderedMonoid M] {f : ι → M} (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
   (Finset.prod_eq_one_iff_of_one_le fun i _ ↦ hf i).trans <| by simp [funext_iff]
 
 @[to_additive]
-lemma prod_eq_one_iff_of_le_one {ι M : Type*} [Fintype ι] [CommMonoid M] [PartialOrder M]
+lemma prod_eq_one_iff_of_le_one {ι M : Type*} [Fintype ι] [Monoid M] [IsMulCommutative M] [PartialOrder M]
     [IsOrderedMonoid M] {f : ι → M} (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
   (Finset.prod_eq_one_iff_of_le_one fun i _ ↦ hf i).trans <| by simp [funext_iff]
 
 end OrderedCommMonoid
 
 section OrderedCancelCommMonoid
-variable [Fintype ι] [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M] {f : ι → M}
+variable [Fintype ι] [Monoid M] [IsMulCommutative M] [PartialOrder M] [IsOrderedCancelMonoid M] {f : ι → M}
 
 @[to_additive]
 theorem prod_strictMono : StrictMono fun f : ι → M ↦ ∏ x, f x :=

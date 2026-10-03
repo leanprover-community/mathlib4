@@ -276,7 +276,7 @@ This should eventually be remedied.
 
 section mulVec
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {k l m n : Type*}
 
 /-- `Matrix.mulVec M` as a linear map.
@@ -357,7 +357,7 @@ end mulVec
 
 section ToMatrix'
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {k l m n : Type*} [DecidableEq n] [Fintype n]
 
 /-- Linear maps `(n → R) →ₗ[R] (m → R)` are linearly equivalent to `Matrix m n R`. -/
@@ -572,9 +572,9 @@ section ToMatrix
 
 section Finite
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {l m n : Type*} [Fintype n] [Finite m] [DecidableEq n]
-variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+variable {M₁ M₂ : Type*} [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₁] [Module R M₂]
 variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
 /-- Given bases of two modules `M₁` and `M₂` over a commutative ring `R`, we get a linear
@@ -695,7 +695,7 @@ theorem LinearMap.toMatrix_smulBasis_right {G} [Group G] [DistribMulAction G M�
       LinearMap.toMatrix v₁ v₂ (DistribSMul.toLinearMap _ _ g⁻¹ ∘ₗ f) := by
   rfl
 
-variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃]
+variable {M₃ : Type*} [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃]
 
 theorem LinearMap.toMatrix_map_left (f : M₃ →ₗ[R] M₂) (g : M₁ ≃ₗ[R] M₃) :
     f.toMatrix (v₁.map g) v₂ = (f ∘ₗ g.toLinearMap).toMatrix v₁ v₂ := by
@@ -707,9 +707,9 @@ theorem LinearMap.toMatrix_map_right (f : M₁ →ₗ[R] M₃) (g : M₂ ≃ₗ[
 
 end Finite
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {l m n : Type*} [Fintype n] [DecidableEq n]
-variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+variable {M₁ M₂ : Type*} [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₁] [Module R M₂]
 variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
 /-- The matrix of `toSpanSingleton R M₂ x` given by bases `v₁` and `v₂` is equal to
@@ -742,8 +742,8 @@ theorem Matrix.toLin_self [Fintype m] (M : Matrix m n R) (i : n) :
     have := Finset.mem_univ i
     contradiction
 
-theorem Matrix.toLin_apply_eq_zero_iff {R M₁ M₂ : Type*} [Finite m] [CommRing R]
-    [AddCommGroup M₁] [AddCommGroup M₂] [Module R M₁] [Module R M₂]
+theorem Matrix.toLin_apply_eq_zero_iff {R M₁ M₂ : Type*} [Finite m] [Ring R] [IsMulCommutative R]
+    [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [Module R M₁] [Module R M₂]
     {v₁ : Basis n R M₁} {v₂ : Basis m R M₂} {A : Matrix m n R} {x : M₁} :
     A.toLin v₁ v₂ x = 0 ↔ ∀ j, (A *ᵥ v₁.repr x) j = 0 := by
   have := Fintype.ofFinite m
@@ -752,7 +752,7 @@ theorem Matrix.toLin_apply_eq_zero_iff {R M₁ M₂ : Type*} [Finite m] [CommRin
 
 variable [Fintype m]
 
-variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
+variable {M₃ : Type*} [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃] (v₃ : Basis l R M₃)
 
 theorem LinearMap.toMatrix_comp [Finite l] [DecidableEq m] (f : M₂ →ₗ[R] M₃) (g : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix v₁ v₃ (f.comp g) =
@@ -926,7 +926,7 @@ namespace Algebra
 
 section Lmul
 
-variable {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
 variable {m : Type*} [Fintype m] [DecidableEq m] (b : Basis m R S)
 
 theorem toMatrix_lmul' (x : S) (i j) :
@@ -993,7 +993,7 @@ theorem smul_leftMulMatrix {G} [Group G] [DistribMulAction G S]
     DistribMulAction.toLinearEquiv_symm_apply, mul_smul_comm, inv_smul_smul]
 
 variable {A M n : Type*} [Fintype n] [DecidableEq n]
-  [CommSemiring A] [AddCommMonoid M] [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M]
+  [Semiring A] [IsMulCommutative A] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M]
   (bA : Basis m R A) (bM : Basis n A M)
 
 lemma _root_.LinearMap.restrictScalars_toMatrix (f : M →ₗ[A] M) :
@@ -1006,7 +1006,7 @@ end Lmul
 
 section LmulTower
 
-variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [Semiring T]
+variable {R S T : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable (b : Basis m R S) (c : Basis n S T)
@@ -1038,8 +1038,8 @@ end Algebra
 
 section
 
-variable {R : Type*} [CommSemiring R] {n : Type*} [DecidableEq n]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {n : Type*} [DecidableEq n]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/
@@ -1055,8 +1055,8 @@ end
 
 namespace Module.Basis
 
-variable {R M M₁ M₂ ι ι₁ ι₂ : Type*} [CommSemiring R]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable {R M M₁ M₂ ι ι₁ ι₂ : Type*} [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R M₁] [Module R M₂]
 variable [Fintype ι] [Fintype ι₁] [Fintype ι₂]
 variable [DecidableEq ι] [DecidableEq ι₁]
@@ -1107,7 +1107,7 @@ lemma end_apply (ij : ι × ι) : (b.end ij) = (Matrix.toLin b b) (Matrix.stdBas
 lemma end_apply_apply (ij : ι × ι) (k : ι) : (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 :=
   linearMap_apply_apply b b ij k
 
-lemma lie_end_of_apply_eq_smul {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+lemma lie_end_of_apply_eq_smul {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
     (b : Basis ι R M) (a : ι → R) (s : Module.End R M)
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
     ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
@@ -1123,9 +1123,9 @@ end Module.Basis
 section
 
 variable (ι : Type*) [Fintype ι] [DecidableEq ι]
-variable (R : Type*) [CommSemiring R]
+variable (R : Type*) [Semiring R] [IsMulCommutative R]
 variable (A : Type*) [Semiring A] [Algebra R A]
-variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 set_option backward.isDefEq.respectTransparency false in
 /--

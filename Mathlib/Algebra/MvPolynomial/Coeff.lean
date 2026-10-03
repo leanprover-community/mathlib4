@@ -25,7 +25,7 @@ namespace MvPolynomial
 
 open Finsupp
 
-variable {R σ : Type*} [CommSemiring R] {s : σ →₀ ℕ}
+variable {R σ : Type*} [Semiring R] [IsMulCommutative R] {s : σ →₀ ℕ}
 
 private lemma coeff_linearCombination_X_pow_of_eq (a : σ →₀ R) {n : ℕ}
     (hs : s.sum (fun _ m ↦ m) = n) :

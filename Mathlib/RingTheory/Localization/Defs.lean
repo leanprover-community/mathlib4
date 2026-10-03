@@ -26,7 +26,7 @@ ring homomorphism `f : R →+* S` satisfying 3 properties:
 In the following, let `R, P` be commutative rings, `S, Q` be `R`- and `P`-algebras
 and `M, T` be submonoids of `R` and `P` respectively, e.g.:
 ```
-variable (R S P Q : Type*) [CommRing R] [CommRing S] [CommRing P] [CommRing Q]
+variable (R S P Q : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring P] [IsMulCommutative P] [Ring Q] [IsMulCommutative Q]
 variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 ```
 
@@ -75,7 +75,7 @@ which are about the `LocalizationMap.mk'` induced by any localization map.
 
 The proof that "a `CommRing` `K` which is the localization of an integral domain `R` at `R \ {0}`
 is a field" is a `def` rather than an `instance`, so if you want to reason about a field of
-fractions `K`, assume `[Field K]` instead of just `[CommRing K]`.
+fractions `K`, assume `[Field K]` instead of just `[Ring K] [IsMulCommutative K]`.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -90,8 +90,8 @@ open Function
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
-variable [Algebra R S] {P : Type*} [CommSemiring P]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (M : Submonoid R) (S : Type*) [Semiring S] [IsMulCommutative S]
+variable [Algebra R S] {P : Type*} [Semiring P] [IsMulCommutative P]
 
 /-- An auxiliary typeclass to avoid auto-generated declarations
 under the `IsLocalization` namespace. -/
@@ -577,7 +577,7 @@ theorem lift_injective_iff :
 
 variable (M) in
 include M in
-lemma injective_iff_map_algebraMap_eq {T} [CommSemiring T] (f : S →+* T) :
+lemma injective_iff_map_algebraMap_eq {T} [Semiring T] [IsMulCommutative T] (f : S →+* T) :
     Function.Injective f ↔ ∀ x y,
       algebraMap R S x = algebraMap R S y ↔ f (algebraMap R S x) = f (algebraMap R S y) := by
   rw [← IsLocalization.lift_of_comp (M := M) f, IsLocalization.lift_injective_iff]
@@ -585,7 +585,7 @@ lemma injective_iff_map_algebraMap_eq {T} [CommSemiring T] (f : S →+* T) :
 
 section Map
 
-variable {T : Submonoid P} {Q : Type*} [CommSemiring Q]
+variable {T : Submonoid P} {Q : Type*} [Semiring Q] [IsMulCommutative Q]
 variable [Algebra P Q] [IsLocalization T Q]
 
 section
@@ -625,7 +625,7 @@ theorem map_unique (j : S →+* Q) (hj : ∀ x : R, j (algebraMap R S x) = algeb
 
 /-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
-theorem map_comp_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring W]
+theorem map_comp_map {A : Type*} [Semiring A] [IsMulCommutative A] {U : Submonoid A} {W} [Semiring W] [IsMulCommutative W]
     [Algebra A W] [IsLocalization U W] {l : P →+* A} (hl : T ≤ U.comap l) :
     (map W l hl).comp (map Q g hy : S →+* _) = map W (l.comp g) fun _ hx => hl (hy hx) :=
   RingHom.ext fun x =>
@@ -634,7 +634,7 @@ theorem map_comp_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSem
 
 /-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
-theorem map_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring W] [Algebra A W]
+theorem map_map {A : Type*} [Semiring A] [IsMulCommutative A] {U : Submonoid A} {W} [Semiring W] [IsMulCommutative W] [Algebra A W]
     [IsLocalization U W] {l : P →+* A} (hl : T ≤ U.comap l) (x : S) :
     map W l hl (map Q g hy x) = map W (l.comp g) (fun _ hx => hl (hy hx)) x := by
   rw [← map_comp_map (Q := Q) hy hl]; rfl
@@ -645,7 +645,7 @@ protected theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • 
 end
 
 @[simp]
-theorem map_id_mk' {Q : Type*} [CommSemiring Q] [Algebra R Q] [IsLocalization M Q] (x) (y : M) :
+theorem map_id_mk' {Q : Type*} [Semiring Q] [IsMulCommutative Q] [Algebra R Q] [IsLocalization M Q] (x) (y : M) :
     map Q (RingHom.id R) (le_refl M) (mk' S x y) = mk' Q x y :=
   map_mk' ..
 
@@ -706,7 +706,7 @@ end Map
 
 section
 
-variable (M S) (Q : Type*) [CommSemiring Q] [Algebra P Q]
+variable (M S) (Q : Type*) [Semiring Q] [IsMulCommutative Q] [Algebra P Q]
 
 /-- Injectivity of a map descends to the map induced on localizations. -/
 theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M.map g) Q] :
@@ -762,7 +762,7 @@ theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
   intro r
   rw [RingHom.algebraMap_toAlgebra]
 
-theorem of_ringEquiv_left {S : Type*} [CommSemiring S] {K : Type*} [CommSemiring K]
+theorem of_ringEquiv_left {S : Type*} [Semiring S] [IsMulCommutative S] {K : Type*} [Semiring K] [IsMulCommutative K]
     [Algebra R K] (e : R ≃+* S) [Algebra S K] {M₁ : Submonoid S} {M₂ : Submonoid R}
     (hM : M₂.map e = M₁) (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsLocalization M₁ K] :
     IsLocalization M₂ K := by
@@ -850,7 +850,7 @@ theorem mk_eq_mk'_apply (x y) : mk x y = IsLocalization.mk' (Localization M) x y
 theorem mk_eq_mk' : (mk : R → M → Localization M) = IsLocalization.mk' (Localization M) :=
   mk_eq_monoidOf_mk'
 
-theorem mk_algebraMap {A : Type*} [CommSemiring A] [Algebra A R] (m : A) :
+theorem mk_algebraMap {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra A R] (m : A) :
     mk (algebraMap A R m) 1 = algebraMap A (Localization M) m := by
   rw [mk_eq_mk', mk'_eq_iff_eq_mul, Submonoid.coe_one, map_one, mul_one]; rfl
 
@@ -900,7 +900,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {M : Submonoid R} (S : Type*) [Ring S] [IsMulCommutative S]
 variable [Algebra R S]
 
 namespace Localization
@@ -926,7 +926,7 @@ theorem mk'_sub (x₁ x₂ : R) (y₁ y₂ : M) :
   rw [sub_eq_add_neg, sub_eq_add_neg, ← mk'_neg, ← mk'_add, neg_mul]
 
 include M in
-lemma injective_of_map_algebraMap_zero {T} [CommRing T] (f : S →+* T)
+lemma injective_of_map_algebraMap_zero {T} [Ring T] [IsMulCommutative T] (f : S →+* T)
     (h : ∀ x, f (algebraMap R S x) = 0 → algebraMap R S x = 0) :
     Function.Injective f := by
   rw [IsLocalization.injective_iff_map_algebraMap_eq M]

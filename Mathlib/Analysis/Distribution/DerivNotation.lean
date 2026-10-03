@@ -99,7 +99,7 @@ and `∂_{v + w} x = ∂_{v} x + ∂_{w} y` for all `v w : V`.
 Note that `lineDeriv` on functions is not additive.
 -/
 class LineDerivAdd (V : Type u) (E : Type v) (F : outParam (Type w))
-    [AddCommGroup V] [AddCommGroup E] [AddCommGroup F] [LineDeriv V E F] where
+    [AddGroup V] [IsAddCommutative V] [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [LineDeriv V E F] where
   lineDerivOp_add (v : V) (x y : E) : ∂_{v} (x + y) = ∂_{v} x + ∂_{v} y
   lineDerivOp_left_add (v w : V) (x : E) : ∂_{v + w} x = ∂_{v} x + ∂_{w} x
 
@@ -138,7 +138,7 @@ export ContinuousLineDeriv (continuous_lineDerivOp)
 
 section lineDerivOp
 
-variable [AddCommGroup V] [AddCommGroup E] [AddCommGroup F] [LineDeriv V E F] [LineDerivAdd V E F]
+variable [AddGroup V] [IsAddCommutative V] [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [LineDeriv V E F] [LineDerivAdd V E F]
 
 @[simp]
 theorem lineDerivOp_zero (v : V) : ∂_{v} (0 : E) = 0 :=
@@ -170,8 +170,8 @@ end lineDerivOp
 
 section lineDerivOpCLM
 
-variable [Ring R] [AddCommGroup E] [Module R E] [AddCommGroup F] [Module R F]
-  [TopologicalSpace E] [TopologicalSpace F] [AddCommGroup V]
+variable [Ring R] [AddGroup E] [IsAddCommutative E] [Module R E] [AddGroup F] [IsAddCommutative F] [Module R F]
+  [TopologicalSpace E] [TopologicalSpace F] [AddGroup V] [IsAddCommutative V]
   [LineDeriv V E F] [LineDerivAdd V E F] [LineDerivSMul R V E F] [ContinuousLineDeriv V E F]
 
 variable (R E) in
@@ -194,7 +194,7 @@ variable {n : ℕ} (m : Fin n → V)
 
 section add
 
-variable [AddCommGroup V] [AddCommGroup E] [LineDerivAdd V E E]
+variable [AddGroup V] [IsAddCommutative V] [AddGroup E] [IsAddCommutative E] [LineDerivAdd V E E]
 
 theorem iteratedLineDerivOp_add (x y : E) :
     ∂^{m} (x + y) = ∂^{m} x + ∂^{m} y := by
@@ -238,7 +238,7 @@ theorem continuous_iteratedLineDerivOp [ContinuousLineDeriv V E E] {n : ℕ} (m 
   | succ n IH =>
     exact (continuous_lineDerivOp _).comp (IH _)
 
-variable [Ring R] [AddCommGroup V] [AddCommGroup E] [Module R E]
+variable [Ring R] [AddGroup V] [IsAddCommutative V] [AddGroup E] [IsAddCommutative E] [Module R E]
   [LineDerivAdd V E E] [LineDerivSMul R V E E] [ContinuousLineDeriv V E E]
 
 variable (R E) in
@@ -274,13 +274,13 @@ end Laplacian
 namespace LineDeriv
 
 variable [LineDeriv E V₁ V₂] [LineDeriv E V₂ V₃]
-  [AddCommGroup V₁] [AddCommGroup V₂] [AddCommGroup V₃]
+  [AddGroup V₁] [IsAddCommutative V₁] [AddGroup V₂] [IsAddCommutative V₂] [AddGroup V₃] [IsAddCommutative V₃]
 
 /-! ## Laplacian of `LineDeriv` -/
 
 section TensorProduct
 
-variable [CommRing R] [AddCommGroup E] [Module R E]
+variable [Ring R] [IsMulCommutative R] [AddGroup E] [IsAddCommutative E] [Module R E]
   [Module R V₂] [Module R V₃]
   [LineDerivAdd E V₂ V₃] [LineDerivAdd E V₁ V₂]
   [LineDerivSMul R E V₂ V₃] [LineDerivLeftSMul R E V₁ V₂] [LineDerivLeftSMul R E V₂ V₃]
@@ -310,7 +310,7 @@ end TensorProduct
 
 section InnerProductSpace
 
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 
 section LinearMap
 
@@ -331,7 +331,7 @@ section ContinuousLinearMap
 
 section definition
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
   [Module R V₁] [Module R V₂] [Module R V₃]
   [TopologicalSpace V₁] [TopologicalSpace V₂] [TopologicalSpace V₃] [IsTopologicalAddGroup V₃]
   [LineDerivAdd E V₁ V₂] [LineDerivSMul R E V₁ V₂] [ContinuousLineDeriv E V₁ V₂]

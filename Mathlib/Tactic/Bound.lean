@@ -105,7 +105,7 @@ lemma Nat.cast_pos_of_pos {R : Type} [Semiring R] [PartialOrder R] [IsOrderedRin
     {n : ℕ} : 0 < n → 0 < (n : R) :=
   Nat.cast_pos.mpr
 
-lemma Nat.one_le_cast_of_le {α : Type} [AddCommMonoidWithOne α] [PartialOrder α]
+lemma Nat.one_le_cast_of_le {α : Type} [AddMonoidWithOne α] [IsAddCommutative α] [PartialOrder α]
     [AddLeftMono α] [ZeroLEOneClass α]
     [CharZero α] {n : ℕ} : 1 ≤ n → 1 ≤ (n : α) :=
   Nat.one_le_cast.mpr

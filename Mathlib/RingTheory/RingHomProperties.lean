@@ -31,16 +31,16 @@ open CategoryTheory CategoryTheory.Limits TensorProduct
 
 namespace RingHom
 
-variable {P Q : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop}
+variable {P Q : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (_ : R →+* S), Prop}
 
 section RespectsIso
 
 variable (P) in
 /-- A property `RespectsIso` if it still holds when composed with an isomorphism -/
 def RespectsIso : Prop :=
-  (∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
+  (∀ {R S T : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T],
       ∀ (f : R →+* S) (e : S ≃+* T) (_ : P f), P (e.toRingHom.comp f)) ∧
-    ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
+    ∀ {R S T : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T],
       ∀ (f : S →+* T) (e : R ≃+* S) (_ : P f), P (f.comp e.toRingHom)
 
 theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
@@ -59,7 +59,7 @@ theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCa
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
-    (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
+    (R' S' : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R R']
     [Algebra S S'] (f : R →+* S) (r : R) [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] :
     P (Localization.awayMap f r) ↔ P (IsLocalization.Away.map R' S' f r) := by
   let e₁ : R' ≃+* Localization.Away r :=
@@ -102,11 +102,11 @@ variable (P) in
 /-- A property is `StableUnderComposition` if the composition of two such morphisms
 still falls in the class. -/
 def StableUnderComposition : Prop :=
-  ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
+  ∀ ⦃R S T⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T],
     ∀ (f : R →+* S) (g : S →+* T) (_ : P f) (_ : P g), P (g.comp f)
 
 theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition @P)
-    (hP' : ∀ {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S), P e.toRingHom) :
+    (hP' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (e : R ≃+* S), P e.toRingHom) :
     RingHom.RespectsIso @P := by
   constructor
   · introv H
@@ -129,13 +129,13 @@ variable (P) in
 /-- A morphism property `P` is `IsStableUnderBaseChange` if `P(S →+* A)` implies
 `P(B →+* A ⊗[S] B)`. -/
 def IsStableUnderBaseChange : Prop :=
-  ∀ (R S R' S') [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
+  ∀ (R S R' S') [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'],
     ∀ [Algebra R S] [Algebra R R'] [Algebra R S'] [Algebra S S'] [Algebra R' S'],
       ∀ [IsScalarTower R S S'] [IsScalarTower R R' S'],
         ∀ [Algebra.IsPushout R S R' S'], P (algebraMap R S) → P (algebraMap R' S')
 
 theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
-    (h₂ : ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T],
+    (h₂ : ∀ ⦃R S T⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S] [Algebra R T],
       P (algebraMap R T) → P (algebraMap S (S ⊗[R] T))) :
     IsStableUnderBaseChange @P := by
   introv R h H
@@ -153,7 +153,7 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
 lemma IsStableUnderBaseChange.tensorProduct (hP : RingHom.IsStableUnderBaseChange P)
-    {R S : Type u} (T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+    {R S : Type u} (T : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S] [Algebra R T]
     (h : P (algebraMap R S)) :
     P (algebraMap T (T ⊗[R] S)) :=
   -- This only works because the `Algebra.TensorProduct.rightAlgebra` instance is present here.
@@ -225,22 +225,22 @@ end ToMorphismProperty
 
 section Descent
 
-variable (Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
+variable (Q : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop)
 
-variable (R S T : Type u) [CommRing R] [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
+variable (R S T : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Ring T] [IsMulCommutative T] [Algebra R T]
 
 variable (P) in
 /-- A property of ring homomorphisms `Q` codescends along `Q'` if whenever
 `R' →+* R' ⊗[R] S` satisfies `Q` and `R →+* R'` satisfies `Q'`, then `R →+* S` satisfies `Q`. -/
 def CodescendsAlong : Prop :=
-  ∀ ⦃R S R' S' : Type u⦄ [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
+  ∀ ⦃R S R' S' : Type u⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'],
   ∀ [Algebra R S] [Algebra R R'] [Algebra R S'] [Algebra S S'] [Algebra R' S'],
     ∀ [IsScalarTower R S S'] [IsScalarTower R R' S'],
       ∀ [Algebra.IsPushout R S R' S'],
         Q (algebraMap R R') → P (algebraMap R' S') → P (algebraMap R S)
 
 lemma CodescendsAlong.mk (h₁ : RespectsIso P)
-    (h₂ : ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
+    (h₂ : ∀ ⦃R S T⦄ [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T],
       ∀ [Algebra R S] [Algebra R T],
         Q (algebraMap R S) → P (algebraMap S (S ⊗[R] T)) → P (algebraMap R T)) :
     CodescendsAlong P Q := by
@@ -265,7 +265,7 @@ lemma CodescendsAlong.includeRight (hPQ : CodescendsAlong P Q) (h : Q (algebraMa
   let _ : Algebra T (S ⊗[R] T) := Algebra.TensorProduct.rightAlgebra
   apply hPQ h H
 
-variable {Q} {P' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+variable {Q} {P' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
 
 lemma CodescendsAlong.and (hP : CodescendsAlong P Q) (hP' : CodescendsAlong P' Q) :
     CodescendsAlong (fun f ↦ P f ∧ P' f) Q :=
@@ -275,8 +275,8 @@ end Descent
 
 /-- A property of ring homomorphisms `P` is said to have equalizers, if the equalizer of algebra
 maps between algebras satisfying `P` also satisfies `P`. -/
-def HasEqualizers (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
-  ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+def HasEqualizers (P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop) : Prop :=
+  ∀ {R S T : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S] [Algebra R T]
     (f g : S →ₐ[R] T), P (algebraMap R S) → P (algebraMap R T) →
       P (algebraMap R (AlgHom.equalizer f g))
 
@@ -286,8 +286,8 @@ lemma HasEqualizers.and (hP : HasEqualizers P) (hQ : HasEqualizers Q) :
 
 /-- A property of ring homomorphisms `P` is said to have finite products, if a finite product of
 algebras satisfying `Q` also satisfies `P`. -/
-def HasFiniteProducts (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
-  ∀ {R : Type u} [CommRing R] {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRing (S i)]
+def HasFiniteProducts (P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop) : Prop :=
+  ∀ {R : Type u} [Ring R] [IsMulCommutative R] {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, Ring (S i)] [∀ i, IsMulCommutative (S i)]
     [∀ i, Algebra R (S i)],
     (∀ i, P (algebraMap R (S i))) → P (algebraMap R (Π i, S i))
 

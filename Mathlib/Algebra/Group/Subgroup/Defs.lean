@@ -212,7 +212,7 @@ instance (priority := 75) toGroup : Group H := fast_instance%
 -- Prefer subclasses of `CommGroup` over subclasses of `SubgroupClass`.
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An additive subgroup of an `AddCommGroup` is an `AddCommGroup`. -/]
-instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
+instance (priority := 75) toCommGroup {G : Type*} [Group G] [IsMulCommutative G] [SetLike S G] [SubgroupClass S G] :
     CommGroup H := fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
@@ -557,7 +557,7 @@ instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`. -/]
-instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
+instance toCommGroup {G : Type*} [Group G] [IsMulCommutative G] (H : Subgroup G) : CommGroup H :=
   SubgroupClass.toCommGroup H
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
@@ -716,7 +716,7 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 end Normalizer
 
 @[to_additive (attr := deprecated inferInstance +typeChanged (since := "2026-04-09"))]
-theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
+theorem commGroup_isMulCommutative {G : Type*} [Group G] [IsMulCommutative G] (H : Subgroup G) :
     IsMulCommutative H := inferInstance
 
 @[to_additive (attr := deprecated setLike_mul_comm +typeChanged (since := "2026-03-09"))]

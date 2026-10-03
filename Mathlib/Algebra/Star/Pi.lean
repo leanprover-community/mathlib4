@@ -54,7 +54,7 @@ theorem single_star [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] [Decid
 open scoped ComplexConjugate
 
 @[simp]
-lemma conj_apply {ι : Type*} {α : ι → Type*} [∀ i, CommSemiring (α i)] [∀ i, StarRing (α i)]
+lemma conj_apply {ι : Type*} {α : ι → Type*} [∀ i, Semiring (α i)] [∀ i, IsMulCommutative (α i)] [∀ i, StarRing (α i)]
     (f : ∀ i, α i) (i : ι) : conj f i = conj (f i) := rfl
 
 end Pi

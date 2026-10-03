@@ -38,7 +38,7 @@ open Function (Surjective)
 
 namespace Submodule
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 open Set
 
@@ -56,7 +56,7 @@ theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid
   simp_rw [fg_def, ← toAddSubmonoid_inj, span_nat_eq_addSubmonoidClosure,
     AddSubmonoid.isAddFG_iff_finite]
 
-theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
+theorem fg_iff_addSubgroup_fg {G : Type*} [AddGroup G] [IsAddCommutative G] (P : Submodule ℤ G) :
     P.FG ↔ P.toAddSubgroup.FG := by
   simp_rw [fg_def, ← toAddSubgroup_inj, span_int_eq_addSubgroupClosure,
     AddSubgroup.isAddFG_iff_finite]
@@ -73,7 +73,7 @@ theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
 
 universe w v u in
 lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type v}
-    [AddCommMonoid M] [Module A M] {N : Submodule A M} :
+    [AddMonoid M] [IsAddCommutative M] [Module A M] {N : Submodule A M} :
     N.FG ↔ ∃ (G : Type w) (_ : Finite G) (g : G → M), span A (range g) = N := by
   constructor
   · intro hN
@@ -118,7 +118,7 @@ section ModuleAndAlgebra
 variable (R A M : Type*)
 
 /-- A module over a semiring is `Module.Finite` if it is finitely generated as a module. -/
-protected class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
+protected class Module.Finite [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : Prop where
   of_fg_top ::
     fg_top : (⊤ : Submodule R M).FG
 
@@ -126,10 +126,10 @@ attribute [inherit_doc Module.Finite] Module.Finite.fg_top
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- See also `Module.Finite.iff_fg` for a version when `M` is itself a submodule. -/
-theorem finite_def {R M} [Semiring R] [AddCommMonoid M] [Module R M] :
+theorem finite_def {R M} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] :
     Module.Finite R M ↔ (⊤ : Submodule R M).FG :=
   ⟨(·.fg_top), .of_fg_top⟩
 
@@ -137,11 +137,11 @@ namespace Finite
 
 open Submodule Set
 
-theorem iff_addMonoid_fg {M : Type*} [AddCommMonoid M] : Module.Finite ℕ M ↔ AddMonoid.FG M :=
+theorem iff_addMonoid_fg {M : Type*} [AddMonoid M] [IsAddCommutative M] : Module.Finite ℕ M ↔ AddMonoid.FG M :=
   ⟨fun h => AddMonoid.fg_def.mpr <| (fg_iff_addSubmonoid_fg ⊤).mp h.fg_top,
     fun h => of_fg_top <| (fg_iff_addSubmonoid_fg ⊤).mpr (AddMonoid.fg_def.mp h)⟩
 
-theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ AddGroup.FG G :=
+theorem iff_addGroup_fg {G : Type*} [AddGroup G] [IsAddCommutative G] : Module.Finite ℤ G ↔ AddGroup.FG G :=
   ⟨fun h => AddGroup.fg_def.mpr <| (fg_iff_addSubgroup_fg ⊤).mp h.fg_top,
     fun h => of_fg_top <| (fg_iff_addSubgroup_fg ⊤).mpr (AddGroup.fg_def.mp h)⟩
 
@@ -155,11 +155,11 @@ end Finite
 
 end Module
 
-instance AddMonoid.FG.to_moduleFinite_nat {M : Type*} [AddCommMonoid M] [FG M] :
+instance AddMonoid.FG.to_moduleFinite_nat {M : Type*} [AddMonoid M] [IsAddCommutative M] [FG M] :
     Module.Finite ℕ M :=
   Module.Finite.iff_addMonoid_fg.mpr ‹_›
 
-instance AddMonoid.FG.to_moduleFinite_int {G : Type*} [AddCommGroup G] [FG G] :
+instance AddMonoid.FG.to_moduleFinite_int {G : Type*} [AddGroup G] [IsAddCommutative G] [FG G] :
     Module.Finite ℤ G :=
   Module.Finite.iff_addGroup_fg.mpr <| AddGroup.fg_iff_addMonoid_fg.mpr ‹_›
 
@@ -167,7 +167,7 @@ end ModuleAndAlgebra
 
 namespace RingHom
 
-variable {A B : Type*} [CommRing A] [CommRing B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
 
 /-- A ring morphism `A →+* B` is `RingHom.Finite` if `B` is finitely generated as `A`-module. -/
 @[algebraize Module.Finite, stacks 0563]
@@ -184,8 +184,8 @@ end RingHom
 
 namespace AlgHom
 
-variable {R A B : Type*} [CommRing R]
-variable [CommRing A] [CommRing B]
+variable {R A B : Type*} [Ring R] [IsMulCommutative R]
+variable [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
 variable [Algebra R A] [Algebra R B]
 
 /-- An algebra morphism `A →ₐ[R] B` is finite if it is finite as ring morphism.

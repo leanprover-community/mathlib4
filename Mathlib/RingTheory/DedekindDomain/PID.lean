@@ -28,7 +28,7 @@ principal.
 public section
 
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 open Ideal
 
@@ -60,7 +60,7 @@ theorem Ideal.eq_span_singleton_of_mem_of_notMem_sq_of_notMem_prime_ne {P : Idea
 
 -- Porting note: replaced three implicit coercions of `I` with explicit `(I : Submodule R A)`
 theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {R A : Type*}
-    [CommRing R] [CommRing A] [Algebra R A] {S : Submonoid R} [IsLocalization S A]
+    [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] {S : Submonoid R} [IsLocalization S A]
     (I : (FractionalIdeal S A)ˣ) {v : A} (hv : v ∈ (↑I⁻¹ : FractionalIdeal S A))
     (h : Submodule.comap (Algebra.linearMap R A) ((I : Submodule R A) * Submodule.span R {v}) = ⊤) :
     Submodule.IsPrincipal (I : Submodule R A) := by
@@ -86,7 +86,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
 An invertible fractional ideal of a commutative ring with finitely many maximal ideals is principal.
 
 https://math.stackexchange.com/a/95857 -/
-theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommRing A]
+theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [Ring A] [IsMulCommutative A]
     [Algebra R A] {S : Submonoid R} [IsLocalization S A] (hS : S ≤ R⁰)
     (hf : {I : Ideal R | I.IsMaximal}.Finite) (I I' : FractionalIdeal S A) (hinv : I * I' = 1) :
     Submodule.IsPrincipal (I : Submodule R A) := by
@@ -169,10 +169,10 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
 
 section
 variable [IsDedekindDomain R]
-variable (S : Type*) [CommRing S]
+variable (S : Type*) [Ring S] [IsMulCommutative S]
 variable [Algebra R S] [Module.IsTorsionFree R S] [Module.Finite R S]
 variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
-variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
+variable {Sₚ : Type*} [Ring Sₚ] [IsMulCommutative Sₚ] [Algebra S Sₚ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
 variable [Algebra R Sₚ] [IsScalarTower R S Sₚ]
 include hp0
@@ -241,7 +241,7 @@ end
 
 -- not an instance because this might cause a timeout
 theorem IsPrincipalIdealRing.of_isDedekindDomain_of_uniqueFactorizationMonoid
-    (R : Type*) [CommRing R] [IsDedekindDomain R] [UniqueFactorizationMonoid R] :
+    (R : Type*) [Ring R] [IsMulCommutative R] [IsDedekindDomain R] [UniqueFactorizationMonoid R] :
     IsPrincipalIdealRing R := by
   refine .of_prime_ne_bot fun P hp hp₀ ↦ ?_
   obtain ⟨x, hx₁, hx₂⟩ := hp.exists_mem_prime_of_ne_bot hp₀

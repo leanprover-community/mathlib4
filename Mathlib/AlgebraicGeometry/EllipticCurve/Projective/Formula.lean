@@ -77,8 +77,8 @@ universe r s u v
 
 namespace WeierstrassCurve
 
-variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [CommRing S]
-  [CommRing A] [CommRing B] [Field F] [Field K] {W' : Projective R} {W : Projective F}
+variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
+  [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Field F] [Field K] {W' : Projective R} {W : Projective F}
 
 namespace Projective
 

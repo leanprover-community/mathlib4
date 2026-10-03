@@ -166,7 +166,7 @@ end
 section
 
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
-variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [Ring β] [IsMulCommutative β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
   Function.Surjective.commRing mk Quotient.mk'_surjective rfl rfl

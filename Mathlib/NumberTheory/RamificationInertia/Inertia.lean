@@ -40,8 +40,8 @@ namespace Ideal
 
 universe u v
 
-variable {R : Type u} [CommRing R]
-variable {S : Type v} [CommRing S] [Algebra R S]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
+variable {S : Type v} [Ring S] [IsMulCommutative S] [Algebra R S]
 variable (p : Ideal R) (P : Ideal S)
 
 local notation "f" => algebraMap R S
@@ -52,7 +52,7 @@ attribute [local instance] Ideal.Quotient.field
 
 section DecEq
 
-variable {S₁ : Type*} [CommRing S₁] [Algebra R S₁]
+variable {S₁ : Type*} [Ring S₁] [IsMulCommutative S₁] [Algebra R S₁]
 
 /-- The inertia degree of `P : Ideal S` lying over `p : Ideal R` is the degree of the
 extension `(S / P) : (R / p)`.
@@ -159,7 +159,7 @@ set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_bot := inertiaDeg'_bot
 
 @[deprecated "Use `Ideal.inertiaDeg_above_le` instead." (since := "2026-08-14")]
-theorem inertiaDeg'_le_inertiaDeg' {T : Type*} [CommRing T] [Algebra R T] [Algebra S T]
+theorem inertiaDeg'_le_inertiaDeg' {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T]
     [IsScalarTower R S T] [Module.Finite R T] (Q : Ideal T) [P.LiesOver p] [Q.LiesOver P]
     [p.IsPrime] : inertiaDeg' P Q ≤ inertiaDeg' p Q := by
   have : Q.LiesOver p := LiesOver.trans Q P p
@@ -179,7 +179,7 @@ section absNorm
 -- The assumption `Module.Free ℤ` has been replaced by `Infinite`: it should hold
 -- automatically in all cases; if not, the corresponding instance should be added.
 @[deprecated "Use `Ideal.absNorm_pow_inertiaDeg` instead." (since := "2026-08-14")]
-lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [CommRing S] [IsDedekindDomain S]
+lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [Ring S] [IsMulCommutative S] [IsDedekindDomain S]
     [Infinite S] [IsDedekindDomain R] [Infinite R] [Algebra S R] [Module.Finite S R]
     (P : Ideal R) (p : Ideal S) [P.LiesOver p] (hp : p.IsPrime) (hp_ne_bot : p ≠ ⊥) :
     absNorm P = absNorm p ^ (p.inertiaDeg' P) := by
@@ -217,7 +217,7 @@ end absNorm
 
 section tower
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,

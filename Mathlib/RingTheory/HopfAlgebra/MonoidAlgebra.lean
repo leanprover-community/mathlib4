@@ -32,7 +32,7 @@ open HopfAlgebra
 
 namespace MonoidAlgebra
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [HopfAlgebra R A]
 variable {G : Type*} [Group G]
 
 variable (R A G) in
@@ -60,7 +60,7 @@ end MonoidAlgebra
 
 namespace LaurentPolynomial
 
-variable (R A : Type*) [CommSemiring R] [Semiring A] [HopfAlgebra R A]
+variable (R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [HopfAlgebra R A]
 
 instance instHopfAlgebra : HopfAlgebra R A[T;T⁻¹] :=
   inferInstanceAs (HopfAlgebra R <| AddMonoidAlgebra A ℤ)

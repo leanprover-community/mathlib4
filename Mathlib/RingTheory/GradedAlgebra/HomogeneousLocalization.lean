@@ -80,7 +80,7 @@ open DirectSum
 open DirectSum SetLike
 
 variable {ι A σ : Type*}
-variable [CommRing A] [SetLike σ A]
+variable [Ring A] [IsMulCommutative A] [SetLike σ A]
 
 local notation "at " x => Localization x
 
@@ -154,7 +154,7 @@ theorem den_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).den : A) = c.d
 end SMul
 
 variable [AddSubmonoidClass σ A] {𝒜 : ι → σ} (x : Submonoid A)
-variable [AddCommMonoid ι] [DecidableEq ι] [GradedRing 𝒜]
+variable [AddMonoid ι] [IsAddCommutative ι] [DecidableEq ι] [GradedRing 𝒜]
 
 open GradedOne in
 instance : One (NumDenSameDeg 𝒜 x) where
@@ -376,7 +376,7 @@ theorem val_neg {x} : ∀ y : HomogeneousLocalization 𝒜 x, (-y).val = -y.val 
 
 end Neg
 
-variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
+variable [AddSubgroupClass σ A] [AddMonoid ι] [IsAddCommutative ι] [DecidableEq ι]
 variable {𝒜 : ι → σ} [GradedRing 𝒜] (x : Submonoid A)
 
 instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
@@ -560,7 +560,7 @@ end
 section
 
 variable [AddSubgroupClass σ A] {𝒜 : ι → σ} {x : Submonoid A}
-variable [AddCommMonoid ι] [DecidableEq ι] [GradedRing 𝒜]
+variable [AddMonoid ι] [IsAddCommutative ι] [DecidableEq ι] [GradedRing 𝒜]
 variable (𝒜) (𝔭 : Ideal A) [Ideal.IsPrime 𝔭]
 
 /-- Localizing a ring homogeneously at a prime ideal. -/
@@ -599,7 +599,7 @@ section
 abbrev Away (𝒜 : ι → σ) (f : A) :=
   HomogeneousLocalization 𝒜 (Submonoid.powers f)
 
-variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
+variable [AddSubgroupClass σ A] [AddMonoid ι] [IsAddCommutative ι] [DecidableEq ι]
 variable (𝒜 : ι → σ) [GradedRing 𝒜] {f : A}
 
 /-- This is a convenient constructor for `Away 𝒜 f` when `f` is homogeneous.
@@ -643,11 +643,11 @@ end
 
 section
 
-variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
+variable [AddSubgroupClass σ A] [AddMonoid ι] [IsAddCommutative ι] [DecidableEq ι]
 variable {𝒜 : ι → σ} [GradedRing 𝒜]
-variable {B τ : Type*} [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
+variable {B τ : Type*} [Ring B] [IsMulCommutative B] [SetLike τ B] [AddSubgroupClass τ B]
 variable {ℬ : ι → τ} [GradedRing ℬ]
-variable {C ψ : Type*} [CommRing C] [SetLike ψ C] [AddSubgroupClass ψ C]
+variable {C ψ : Type*} [Ring C] [IsMulCommutative C] [SetLike ψ C] [AddSubgroupClass ψ C]
 variable {𝒞 : ι → ψ} [GradedRing 𝒞]
 variable {P : Submonoid A} {Q : Submonoid B}
 
@@ -773,7 +773,7 @@ end
 
 section mapAway
 
-variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
+variable [AddSubgroupClass σ A] [AddMonoid ι] [IsAddCommutative ι] [DecidableEq ι]
 variable (𝒜 : ι → σ) [GradedRing 𝒜]
 variable {e : ι} {f : A} {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g)
 
@@ -936,7 +936,7 @@ end isLocalization
 section span
 
 set_option backward.isDefEq.respectTransparency.types false in
-variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι] {𝒜 : ι → σ} [GradedRing 𝒜] in
+variable [AddSubgroupClass σ A] [AddMonoid ι] [IsAddCommutative ι] [DecidableEq ι] {𝒜 : ι → σ} [GradedRing 𝒜] in
 /--
 Let `𝒜` be a graded ring, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,
 where `vᵢ` has degree `dvᵢ`.

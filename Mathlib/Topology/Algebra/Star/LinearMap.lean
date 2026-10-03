@@ -27,8 +27,8 @@ public section
 
 namespace ContinuousLinearMap
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
-  [AddCommMonoid E] [Module R E] [StarAddMonoid E] [StarModule R E]
-  [AddCommMonoid F] [Module R F] [StarAddMonoid F] [StarModule R F]
+  [AddMonoid E] [IsAddCommutative E] [Module R E] [StarAddMonoid E] [StarModule R E]
+  [AddMonoid F] [IsAddCommutative F] [Module R F] [StarAddMonoid F] [StarModule R F]
   [TopologicalSpace E] [TopologicalSpace F] [ContinuousStar E] [ContinuousStar F]
 
 open WithConv
@@ -61,13 +61,13 @@ instance intrinsicInvolutiveStar : InvolutiveStar (WithConv (E →L[R] F)) where
 instance intrinsicStarAddMonoid [ContinuousAdd F] : StarAddMonoid (WithConv (E →L[R] F)) where
   star_add x y := by ext; simp
 
-theorem intrinsicStar_comp {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G]
+theorem intrinsicStar_comp {G : Type*} [AddMonoid G] [IsAddCommutative G] [Module R G] [StarAddMonoid G]
     [StarModule R G] [TopologicalSpace G] [ContinuousStar G] (f : WithConv (E →L[R] F))
     (g : WithConv (G →L[R] E)) :
     star (toConv (f.ofConv ∘L g.ofConv)) = toConv ((star f).ofConv ∘L (star g).ofConv) := by
   ext; simp
 
-theorem intrinsicStar_comp' {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G]
+theorem intrinsicStar_comp' {G : Type*} [AddMonoid G] [IsAddCommutative G] [Module R G] [StarAddMonoid G]
     [StarModule R G] [TopologicalSpace G] [ContinuousStar G] (f : E →L[R] F) (g : G →L[R] E) :
     star (toConv (f ∘L g)) = toConv ((star (toConv f)).ofConv ∘L (star (toConv g)).ofConv) := by
   ext; simp
@@ -93,7 +93,7 @@ end starAddMonoidSemiring
 instance intrinsicStarModule [SMulCommClass R R F] [ContinuousConstSMul R F] :
     StarModule R (WithConv (E →L[R] F)) where star_smul _ _ := by ext; simp
 
-lemma intrinsicStar_eq_comp {R : Type*} [CommSemiring R] [StarRing R] [Module R E] [StarModule R E]
+lemma intrinsicStar_eq_comp {R : Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [Module R E] [StarModule R E]
     [Module R F] [StarModule R F] (f : WithConv (E →L[R] F)) :
     star f = toConv
       ((starL R).toContinuousLinearMap.comp (f.ofConv.comp (starL R).toContinuousLinearMap)) := rfl

@@ -32,7 +32,7 @@ section Injective
 
 open Function
 
-variable {A B : Type*} [CommSemiring A] [CommSemiring B] (I : Ideal A) (J : Ideal B)
+variable {A B : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] (I : Ideal A) (J : Ideal B)
 
 /-- Given a divided power algebra `(B, J, δ)` and an injective ring morphism `f : A →+* B`, if `I`
 is an `A`-ideal such that `I.map f = J` and such that for all `n : ℕ`, `x ∈ I`, the preimage of

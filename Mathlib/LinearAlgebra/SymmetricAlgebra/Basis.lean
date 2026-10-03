@@ -39,7 +39,7 @@ universe uκ uR uM
 variable {κ : Type uκ} {R : Type uR} {M : Type uM}
 
 section CommSemiring
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- `SymmetricAlgebra.equivMvPolynomial` gives an algebra isomorphism between the symmetric algebra
 over a free module and multivariate polynomials over a basis. This is analogous to
@@ -87,7 +87,7 @@ instance instNoZeroDivisors [NoZeroDivisors R] [Module.Free R M] :
 end CommSemiring
 
 section CommRing
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- The `TensorAlgebra` of a free module over an integral domain is a domain. -/
 instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (SymmetricAlgebra R M) :=

@@ -57,7 +57,7 @@ absolutely continuous
 
 @[expose] public section
 
-variable {X F : Type*} [PseudoMetricSpace X] [SeminormedAddCommGroup F]
+variable {X F : Type*} [PseudoMetricSpace X] [SeminormedAddGroup F] [IsAddCommutative F]
 
 open Set Filter Function MeasureTheory
 
@@ -347,7 +347,7 @@ theorem _root_.LipschitzWith.comp_absolutelyContinuousOnInterval
   hf.lipschitzOnWith.comp_absolutelyContinuousOnInterval (mapsTo_univ _ _) h
 
 /-- If `f` is `C^1` on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
-theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddCommGroup E]
+theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
     [NormedSpace ℝ E] {f : ℝ → E} (hf : ContDiffOn ℝ 1 f (uIcc a b)) :
     AbsolutelyContinuousOnInterval f a b := by
   obtain ⟨K, hK⟩ := hf.exists_lipschitzOnWith (by decide) (convex_Icc _ _) isCompact_Icc

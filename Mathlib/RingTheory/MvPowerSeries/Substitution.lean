@@ -63,10 +63,10 @@ as it is discrete.
 namespace MvPowerSeries
 
 variable {σ : Type*}
-  {A : Type*} [CommSemiring A]
-  {R : Type*} [CommRing R] [Algebra A R]
+  {A : Type*} [Semiring A] [IsMulCommutative A]
+  {R : Type*} [Ring R] [IsMulCommutative R] [Algebra A R]
   {τ : Type*}
-  {S : Type*} [CommRing S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
+  {S : Type*} [Ring S] [IsMulCommutative S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
 
 open WithPiTopology
 
@@ -384,7 +384,7 @@ lemma HasSubst.cons_subst_zero_right {f : MvPowerSeries (Fin 2) R} (i j k : σ)
     fin_cases s <;> simp_all [constantCoeff_subst_eq_zero .X_X]
 
 variable
-    {T : Type*} [CommRing T]
+    {T : Type*} [Ring T] [IsMulCommutative T]
     [UniformSpace T] [T2Space T] [CompleteSpace T]
     [IsUniformAddGroup T] [IsTopologicalRing T] [IsLinearTopology T T] [Algebra R T]
     {ε : MvPowerSeries τ S →ₐ[R] T}
@@ -422,7 +422,7 @@ theorem eval₂_subst
     using comp_subst_apply ha hε f
 
 variable {υ : Type*}
-  {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+  {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   {b : τ → MvPowerSeries υ T}
 
 lemma IsNilpotent_subst (ha : HasSubst a)
@@ -623,7 +623,7 @@ section rescale
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 -- To match the `PowerSeries.rescale` API which holds for `CommSemiring`,
 -- we redo it by hand.

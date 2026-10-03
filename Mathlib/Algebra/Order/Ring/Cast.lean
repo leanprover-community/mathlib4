@@ -31,7 +31,7 @@ variable {R : Type*}
 namespace Int
 section OrderedAddCommGroupWithOne
 
-variable [AddCommGroupWithOne R] [PartialOrder R] [AddLeftMono R]
+variable [AddGroupWithOne R] [IsAddCommutative R] [PartialOrder R] [AddLeftMono R]
 variable [ZeroLEOneClass R]
 
 @[gcongr]

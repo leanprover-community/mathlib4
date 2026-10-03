@@ -30,7 +30,7 @@ namespace LinearMap
 
 section Semiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The symmetric bilinear form on `Module.Dual R M × M` defined as
 `B (f, x) (g, y) = f y + g x`. -/
@@ -45,7 +45,7 @@ end Semiring
 
 section Ring
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem separatingLeft_dualProd :
@@ -78,7 +78,7 @@ open QuadraticMap
 namespace QuadraticForm
 section Semiring
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
 
 /-- The quadratic form on `Module.Dual R M × M` defined as `Q (f, x) = f x`. -/
 @[simps]
@@ -120,7 +120,7 @@ end Semiring
 
 section Ring
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable {R M}
 
 set_option backward.defeqAttrib.useBackward true in
@@ -161,7 +161,7 @@ linearly independent.
 
 This is [serre1965](Ch. V, §9, Lemma 4). -/
 lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
-    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup M] [Module R M]
+    [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R] [AddGroup M] [IsAddCommutative M] [Module R M]
     (B : LinearMap.BilinForm R M) (hB : B.toQuadraticMap.PosDef)
     (f : Module.Dual R M) (v : ι → M)
     (hp : ∀ i, 0 < f (v i))

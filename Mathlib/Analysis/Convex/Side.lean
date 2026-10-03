@@ -38,9 +38,9 @@ namespace AffineSubspace
 
 section StrictOrderedCommRing
 
-variable [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup V] [Module R V] [AddTorsor V P]
-variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
+variable [Ring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R]
+  [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
+variable [AddGroup V'] [IsAddCommutative V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points `x` and `y` are weakly on the same side of `s`. -/
 def WSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
@@ -349,8 +349,8 @@ end StrictOrderedCommRing
 
 section LinearOrderedCommRing
 
-variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
 
 /-- If `x` and `y` are displaced from points of `s` by multiples of a common vector whose
 coefficients have nonnegative product, they are weakly on the same side of `s`. -/
@@ -390,7 +390,7 @@ end LinearOrderedCommRing
 section LinearOrderedField
 
 variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup V] [Module R V] [AddTorsor V P]
+  [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
 
 @[simp]
 theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ x ∈ s := by
@@ -786,7 +786,7 @@ end LinearOrderedField
 
 section Normed
 
-variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
+variable [SeminormedAddGroup V] [IsAddCommutative V] [NormedSpace ℝ V] [PseudoMetricSpace P]
 variable [NormedAddTorsor V P]
 
 theorem isConnected_setOfPred_wSameSide {s : AffineSubspace ℝ P} (x : P)
@@ -904,7 +904,7 @@ namespace Affine.Simplex
 
 open AffineSubspace
 
-variable [Field R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup V] [Module R V]
+variable [Field R] [LinearOrder R] [IsStrictOrderedRing R] [AddGroup V] [IsAddCommutative V] [Module R V]
 variable [AddTorsor V P] {n : ℕ} [NeZero n] (s : Simplex R P n)
 
 lemma sSameSide_affineSpan_faceOpposite_of_sign_eq {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)

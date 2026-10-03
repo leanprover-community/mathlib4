@@ -32,8 +32,8 @@ and minimal ones are nilpotent (TODO), hence Cartan subalgebras.
 
 open LieAlgebra
 
-variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable {R L M : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieSubalgebra
 

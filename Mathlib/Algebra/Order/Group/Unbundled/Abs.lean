@@ -115,7 +115,7 @@ variable [MulRightMono α]
 end Group
 
 section CommGroup
-variable [CommGroup α] [MulLeftMono α]
+variable [Group α] [IsMulCommutative α] [MulLeftMono α]
 
 -- Banasiak Proposition 2.12, Zaanen 2nd lecture
 /-- The absolute value satisfies the triangle inequality. -/
@@ -282,7 +282,7 @@ variable [MulRightMono α]
 end LinearOrder
 
 namespace LatticeOrderedAddCommGroup
-variable [Lattice α] [AddCommGroup α] {s t : Set α}
+variable [Lattice α] [AddGroup α] [IsAddCommutative α] {s t : Set α}
 
 /-- A set `s` in a lattice ordered group is *solid* if for all `x ∈ s` and all `y ∈ α` such that
 `|y| ≤ |x|`, then `y ∈ s`. -/

@@ -50,7 +50,7 @@ open scoped zeta
 section ProdPrimeFactors
 
 /-- The map $n \mapsto \prod_{p \mid n} f(p)$ as an arithmetic function -/
-def prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R where
+def prodPrimeFactors [MonoidWithZero R] [IsMulCommutative R] (f : ℕ → R) : ArithmeticFunction R where
   toFun d := if d = 0 then 0 else ∏ p ∈ d.primeFactors, f p
   map_zero' := ite_eq_left rfl
 
@@ -62,14 +62,14 @@ scoped macro_rules (kind := bigproddvd)
   | `(∏ᵖ $x:ident ∣ $n, $r) => `(prodPrimeFactors (fun $x ↦ $r) $n)
 
 @[simp]
-theorem prodPrimeFactors_apply [CommMonoidWithZero R] {f : ℕ → R} {n : ℕ} (hn : n ≠ 0) :
+theorem prodPrimeFactors_apply [MonoidWithZero R] [IsMulCommutative R] {f : ℕ → R} {n : ℕ} (hn : n ≠ 0) :
     ∏ᵖ p ∣ n, f p = ∏ p ∈ n.primeFactors, f p :=
   ite_eq_right hn
 
 namespace IsMultiplicative
 
 @[arith_mult]
-theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
+theorem prodPrimeFactors [MonoidWithZero R] [IsMulCommutative R] (f : ℕ → R) :
     IsMultiplicative (prodPrimeFactors f) := by
   rw [iff_ne_zero]
   simp only [ne_eq, one_ne_zero, not_false_eq_true, prodPrimeFactors_apply, primeFactors_one,
@@ -79,7 +79,7 @@ theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
   rw [prodPrimeFactors_apply hxy₀, prodPrimeFactors_apply hx, prodPrimeFactors_apply hy,
     primeFactors_mul hx hy, ← prod_union hxy.disjoint_primeFactors]
 
-theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFunction R}
+theorem prodPrimeFactors_add_of_squarefree [Semiring R] [IsMulCommutative R] {f g : ArithmeticFunction R}
     (hf : IsMultiplicative f) (hg : IsMultiplicative g) {n : ℕ} (hn : Squarefree n) :
     ∏ᵖ p ∣ n, (f + g) p = (f * g) n := by
   rw [prodPrimeFactors_apply hn.ne_zero]

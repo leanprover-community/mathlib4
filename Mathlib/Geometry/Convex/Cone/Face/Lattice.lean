@@ -36,7 +36,7 @@ variable {R M N : Type*}
 
 section Semiring
 
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- The face lattice of a pointed cone `C`. -/
 structure Face (C : PointedCone R M) extends PointedCone R M where
@@ -122,8 +122,8 @@ section DivisionRing
 
 namespace Face
 
-variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
-  [AddCommGroup N] [Module R N] {C C₁ : PointedCone R M} {C₂ : PointedCone R N}
+variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R] [AddGroup M] [IsAddCommutative M] [Module R M]
+  [AddGroup N] [IsAddCommutative N] [Module R N] {C C₁ : PointedCone R M} {C₂ : PointedCone R N}
 
 /-- The bottom face of `C` is its lineality space. -/
 theorem lineal_eq_bot : ((⊥ : Face C) : PointedCone R M) = C.lineal := by

@@ -26,7 +26,7 @@ this restriction of scalars for submodules.
 
 namespace Submodule
 
-variable (S : Type*) {R M : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]
+variable (S : Type*) {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Semiring S]
   [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
 
 /-- `V.restrictScalars S` is the `S`-submodule of the `S`-module given by restriction of scalars,
@@ -172,7 +172,7 @@ lemma restrictScalars_sup (s t : Submodule R M) :
   simpa using restrictScalars_sSup S (s := {s, t})
 
 @[simp]
-lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
     (N : Submodule R M) :
     N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
 

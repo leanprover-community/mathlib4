@@ -47,7 +47,7 @@ noncomputable def isometryEquivSumSquaresUnits [DecidableEq K] (w : ι → Kˣ) 
 /-- A nondegenerate quadratic form on an algebraically closed field of characteristic not equal to 2
 is equivalent to the sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/
 theorem equivalent_weightedSumSquares_of_isAlgClosed [Invertible (2 : K)] {M : Type*}
-    [AddCommGroup M] [Module K M]
+    [AddGroup M] [IsAddCommutative M] [Module K M]
     [FiniteDimensional K M] (Q : QuadraticForm K M) (hQ : (associated Q).SeparatingLeft) :
     Equivalent Q (weightedSumSquares K (1 : Fin (Module.finrank K M) → K)) :=
   open scoped Classical in
@@ -56,7 +56,7 @@ theorem equivalent_weightedSumSquares_of_isAlgClosed [Invertible (2 : K)] {M : T
 
 /-- All nondegenerate quadratic forms on an algebraically closed field of characteristic not equal
 to 2 are equivalent. -/
-theorem equivalent_of_isAlgClosed [Invertible (2 : K)] {M : Type*} [AddCommGroup M] [Module K M]
+theorem equivalent_of_isAlgClosed [Invertible (2 : K)] {M : Type*} [AddGroup M] [IsAddCommutative M] [Module K M]
     [FiniteDimensional K M] (Q₁ Q₂ : QuadraticForm K M)
     (hQ₁ : (associated Q₁).SeparatingLeft)
     (hQ₂ : (associated Q₂).SeparatingLeft) : Equivalent Q₁ Q₂ :=

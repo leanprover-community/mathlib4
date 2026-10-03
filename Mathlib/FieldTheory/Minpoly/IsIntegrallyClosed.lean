@@ -32,11 +32,11 @@ open Polynomial Set Function minpoly Module
 
 namespace minpoly
 
-variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain R] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [IsDomain R] [Algebra R S]
 
 section
 
-variable (K L : Type*) [Field K] [Algebra R K] [IsFractionRing R K] [CommRing L] [Nontrivial L]
+variable (K L : Type*) [Field K] [Algebra R K] [IsFractionRing R K] [Ring L] [IsMulCommutative L] [Nontrivial L]
   [Algebra R L] [Algebra S L] [Algebra K L] [IsScalarTower R K L] [IsScalarTower R S L]
 
 variable [IsIntegrallyClosed R]

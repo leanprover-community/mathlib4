@@ -798,7 +798,7 @@ end AddGroup
 
 section WellQuasiOrderedLE
 
-variable {M N : Type*} [CommMonoid M] [PartialOrder M] [WellQuasiOrderedLE M]
+variable {M N : Type*} [Monoid M] [IsMulCommutative M] [PartialOrder M] [WellQuasiOrderedLE M]
   [IsOrderedCancelMonoid M] [CanonicallyOrderedMul M]
 
 /-- In a canonically ordered and well-quasi-ordered monoid, any divisive submonoid is finitely

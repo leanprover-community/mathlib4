@@ -96,7 +96,7 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
 
-protected theorem finite (R B : Type*) [CommRing R] [CommRing B] [Algebra R B] [Module.Finite R B]
+protected theorem finite (R B : Type*) [Ring R] [IsMulCommutative R] [Ring B] [IsMulCommutative B] [Algebra R B] [Module.Finite R B]
     [IsDomain B] [MulSemiringAction G B] [IsGaloisGroup G R B] : Finite G := by
   let A : Subring B := (algebraMap R B).range
   let := FractionRing.liftAlgebra A (FractionRing B)
@@ -111,7 +111,7 @@ protected theorem finite (R B : Type*) [CommRing R] [CommRing B] [Algebra R B] [
 
 section IsDomain
 
-variable (A B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
+variable (A B : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [IsDomain B] [Algebra A B]
   [MulSemiringAction G B] [MulSemiringAction G' B] [IsGaloisGroup G A B] [IsGaloisGroup G' A B]
   [Finite G] [Finite G']
 
@@ -215,7 +215,7 @@ attribute [local instance] FractionRing.liftAlgebra in
 /-- If `G` is a finite Galois group for `B / R` and `R ⊆ A ⊆ B` is a tower of commutative domains
 with `A` integrally closed, then the fixing subgroup of the image of `A` in `B` is a Galois group
 for `B / A`. -/
-theorem of_isScalarTower [Finite G] (R B A : Type*) [CommRing R] [CommRing B] [CommRing A]
+theorem of_isScalarTower [Finite G] (R B A : Type*) [Ring R] [IsMulCommutative R] [Ring B] [IsMulCommutative B] [Ring A] [IsMulCommutative A]
     [IsDomain B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
     [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G R B] [IsIntegrallyClosed A] :
     IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap A B))) A B := by
@@ -325,7 +325,7 @@ theorem fixedPoints_fixingSubgroup [Finite G] :
 /-- If `G` acts as a Galois group on `L/K` and the subgroup `H` acts as a Galois group on `L/B`,
 then the fixed points of `H` equals the range of `algebraMap B L`. -/
 theorem fixedPoints_eq_range_algebraMap (B : Type*)
-    [CommSemiring B] [Algebra B L] [IsGaloisGroup H B L] :
+    [Semiring B] [IsMulCommutative B] [Algebra B L] [IsGaloisGroup H B L] :
     (FixedPoints.intermediateField H : IntermediateField K L) = Set.range (algebraMap B L) := by
   ext
   rw [SetLike.mem_coe, FixedPoints.mem_intermediateField_iff, Set.mem_range]
@@ -337,7 +337,7 @@ include K in
 /-- If `G` acts as a Galois group on `L/K` and the subgroup `H` acts as a Galois group on `L/B`,
 then the fixing subgroup of `algebraMap B L` inside `G` equals `H`.
 See `fixingSubgroup_range_algebraMap` for a more general version. -/
-theorem fixingSubgroup_range_algebraMap' [Finite G] (B : Type*) [CommSemiring B] [Algebra B L]
+theorem fixingSubgroup_range_algebraMap' [Finite G] (B : Type*) [Semiring B] [IsMulCommutative B] [Algebra B L]
     [IsGaloisGroup H B L] :
     fixingSubgroup G (Set.range (algebraMap B L)) = H := by
   rw [← fixedPoints_eq_range_algebraMap G K L H, fixingSubgroup_fixedPoints]
@@ -346,7 +346,7 @@ attribute [local instance] FractionRing.liftAlgebra in
 /-- If `G` acts on a domain `C` with `IsGaloisGroup G A C`, and a subgroup `H` acts on `C` with
 `IsGaloisGroup H B C`, then the fixing subgroup of `algebraMap B C` equals `H`. -/
 theorem fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*) (H : Subgroup G)
-    [CommRing A] [CommRing B] [CommRing C] [IsDomain C]
+    [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C] [IsDomain C]
     [Algebra A C] [MulSemiringAction G C] [hGAC : IsGaloisGroup G A C]
     [Algebra B C] [hH : IsGaloisGroup H B C] :
     fixingSubgroup G (Set.range (algebraMap B C)) = H := by
@@ -382,7 +382,7 @@ section Quotient
 
 section Domain
 
-variable (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [IsDomain C] [Algebra A B]
+variable (A B C : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C] [IsDomain C] [Algebra A B]
     [Algebra A C] [Algebra B C] [FaithfulSMul B C] [IsScalarTower A B C]
 
 /-- If `G` is a Galois group for `C/A`, and the normal subgroup `N ≤ G` is a Galois group for

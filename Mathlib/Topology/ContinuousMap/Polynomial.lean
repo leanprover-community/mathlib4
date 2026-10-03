@@ -68,7 +68,7 @@ end
 
 section
 
-variable {α : Type*} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace R]
+variable {α : Type*} [TopologicalSpace α] [Semiring R] [IsMulCommutative R] [TopologicalSpace R]
   [IsTopologicalSemiring R]
 
 @[simp]
@@ -84,7 +84,7 @@ end
 
 noncomputable section
 
-variable [CommSemiring R] [TopologicalSpace R] [IsTopologicalSemiring R]
+variable [Semiring R] [IsMulCommutative R] [TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-- The algebra map from `R[X]` to continuous functions `C(R, R)`.
 -/
@@ -134,7 +134,7 @@ end Polynomial
 
 section
 
-variable [CommSemiring R] [TopologicalSpace R] [IsTopologicalSemiring R]
+variable [Semiring R] [IsMulCommutative R] [TopologicalSpace R] [IsTopologicalSemiring R]
 
 /--
 The subalgebra of polynomial functions in `C(X, R)`, for `X` a subset of some topological semiring

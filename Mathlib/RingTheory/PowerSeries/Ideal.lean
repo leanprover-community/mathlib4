@@ -53,7 +53,7 @@ variable {R : Type*}
 open Ideal Set Finset
 
 namespace PowerSeries
-variable [CommRing R] {I : Ideal R⟦X⟧} {S : Set R}
+variable [Ring R] [IsMulCommutative R] {I : Ideal R⟦X⟧} {S : Set R}
 
 section X_mem
 

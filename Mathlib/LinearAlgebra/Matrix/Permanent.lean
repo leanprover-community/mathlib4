@@ -25,7 +25,7 @@ open Equiv Fintype Finset
 namespace Matrix
 
 variable {n : Type*} [DecidableEq n] [Fintype n]
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- The permanent of a square matrix defined as a sum over all permutations. This is analogous to
 the determinant but without alternating signs. -/

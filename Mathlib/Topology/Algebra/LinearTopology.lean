@@ -84,7 +84,7 @@ namespace IsLinearTopology
 
 section Module
 
-variable {R R' M : Type*} [Ring R] [Ring R'] [AddCommGroup M] [Module R M] [Module R' M]
+variable {R R' M : Type*} [Ring R] [Ring R'] [AddGroup M] [IsAddCommutative M] [Module R M] [Module R' M]
   [SMulCommClass R R' M] [TopologicalSpace M]
 
 variable (R M) in
@@ -343,7 +343,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] [TopologicalSpace R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R]
 
 /-- If `R` is commutative and left-linearly topologized, it is also right-linearly topologized. -/
 instance (priority := 100) [IsLinearTopology R R] :

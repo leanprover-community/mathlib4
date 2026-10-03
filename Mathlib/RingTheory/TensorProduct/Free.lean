@@ -39,8 +39,8 @@ section Basis
 
 universe uM uι
 variable {M : Type uM} {ι : Type uι}
-variable [CommSemiring R] [Semiring A] [Algebra R A]
-variable [AddCommMonoid M] [Module R M] (b : Basis ι R M)
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] (b : Basis ι R M)
 
 variable (A) in
 /-- Given an `R`-algebra `A` and an `R`-basis of `M`, this is an `R`-linear isomorphism
@@ -85,8 +85,8 @@ section baseChange
 open LinearMap
 
 variable [Fintype ι]
-variable {ι' N : Type*} [Fintype ι'] [DecidableEq ι'] [AddCommMonoid N] [Module R N]
-variable (A : Type*) [CommSemiring A] [Algebra R A]
+variable {ι' N : Type*} [Fintype ι'] [DecidableEq ι'] [AddMonoid N] [IsAddCommutative N] [Module R N]
+variable (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 lemma _root_.Module.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
     baseChange A (b'.linearMap b ij) = (basis A b').linearMap (basis A b) ij := by
@@ -107,8 +107,8 @@ end baseChange
 end Basis
 
 instance instFree (R A M : Type*)
-    [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
-    [CommSemiring A] [Algebra R A] :
+    [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module.Free R M]
+    [Semiring A] [IsMulCommutative A] [Algebra R A] :
     Module.Free A (A ⊗[R] M) :=
   Module.Free.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
 
@@ -122,8 +122,8 @@ open Algebra.TensorProduct
 
 variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
   [Fintype ι] [Finite ι₂] [DecidableEq ι]
-  [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
+  [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
+  [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
 
 @[simp]
 lemma toMatrix_baseChange (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b₂ : Basis ι₂ R M₂) :

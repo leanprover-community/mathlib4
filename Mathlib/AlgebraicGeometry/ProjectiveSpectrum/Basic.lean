@@ -42,7 +42,7 @@ open HomogeneousLocalization CategoryTheory
 universe u
 
 variable {σ : Type*} {A : Type u}
-variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable [Ring A] [IsMulCommutative A] [SetLike σ A] [AddSubgroupClass σ A]
 variable (𝒜 : ℕ → σ)
 variable [GradedRing 𝒜]
 

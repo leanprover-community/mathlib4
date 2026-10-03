@@ -124,7 +124,7 @@ theorem add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : M
 
 /-- To get commutativity, we need the underlying multiplication to be commutative. -/
 @[to_additive /-- To get commutativity, we need the underlying addition to be commutative. -/]
-theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M] (μ : Measure M)
+theorem mconv_comm {M : Type*} [Monoid M] [IsMulCommutative M] [MeasurableSpace M] [MeasurableMul₂ M] (μ : Measure M)
     (ν : Measure M) [SFinite μ] [SFinite ν] : μ ∗ₘ ν = ν ∗ₘ μ := by
   unfold mconv
   rw [← prod_swap, map_map (by fun_prop)]
@@ -189,7 +189,7 @@ lemma map_mconv_monoidHom {M M' : Type*} {mM : MeasurableSpace M} [Monoid M] [Me
     ext; simp
   rw [this, ← map_map (by fun_prop) (by fun_prop), ← map_prod_map _ _ (by fun_prop) (by fun_prop)]
 
-lemma map_conv_continuousLinearMap {E F : Type*} [AddCommMonoid E] [AddCommMonoid F]
+lemma map_conv_continuousLinearMap {E F : Type*} [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F]
     [Module ℝ E] [Module ℝ F] [TopologicalSpace E] [TopologicalSpace F]
     {mE : MeasurableSpace E} [MeasurableAdd₂ E] {mF : MeasurableSpace F} [MeasurableAdd₂ F]
     [OpensMeasurableSpace E] [BorelSpace F]

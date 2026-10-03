@@ -142,7 +142,7 @@ variable (g : β → α)
 
 section AddCommMonoid
 
-variable [AddCommMonoid α] (hna : IsNonarchimedean f)
+variable [AddMonoid α] [IsAddCommutative α] (hna : IsNonarchimedean f)
 
 section Multiset
 
@@ -180,7 +180,7 @@ theorem multiset_image_add [Nonempty β] (s : Multiset β) (f_zero_le : ∀ x, f
       Multiset.cons_ne_zero
     exact ⟨b, fun _ ↦ hb1, hb2⟩
 
-theorem multiset_powerset_image_add (n : ℕ) [CommMonoid α] (s : Multiset α) :
+theorem multiset_powerset_image_add (n : ℕ) [Monoid α] [IsMulCommutative α] (s : Multiset α) :
     ∃ t : Multiset α, card t = card s - n ∧ (∀ x : α, x ∈ t → x ∈ s) ∧
     f (map prod (powersetCard (card s - n) s)).sum ≤ f t.prod := by
   set g := fun t : Multiset α ↦ t.prod
@@ -234,7 +234,7 @@ lemma finset_image_add [Nonempty β] (f_zero_le : ∀ x, f 0 ≤ f x) :
     exact ⟨b, by simp, by simpa using f_zero_le (g b)⟩
   · exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| hna.finset_image_add_of_nonempty g hs
 
-theorem finset_powerset_image_add [CommMonoid α] : ∃ u : s.powersetCard (s.card - n),
+theorem finset_powerset_image_add [Monoid α] [IsMulCommutative α] : ∃ u : s.powersetCard (s.card - n),
     f ((s.powersetCard (s.card - n)).sum fun t ↦ ∏ i ∈ t, g i) ≤ f (∏ i ∈ u.val, g i) := by
   obtain ⟨b, hb_in, hb⟩ := hna.finset_image_add_of_nonempty (fun t ↦ ∏ i ∈ t, g i)
     (powersetCard_nonempty.mpr (s.card.sub_le n))
@@ -244,7 +244,7 @@ end Finset
 
 end AddCommMonoid
 
-lemma apply_sum_eq_of_lt [AddCommGroup α] (hna : IsNonarchimedean f)
+lemma apply_sum_eq_of_lt [AddGroup α] [IsAddCommutative α] (hna : IsNonarchimedean f)
     (f_neg : ∀ a, f (-a) = f a) {s : Finset β} {k : β} (hk : k ∈ s)
     (hmax : ∀ j ∈ s, j ≠ k → f (g j) < f (g k)) : f (∑ i ∈ s, g i) = f (g k) := by
   by_cases hcard : s.card = 1
@@ -261,7 +261,7 @@ variable (a b n) in
 /-- If `f` is a submultiplicative, nonarchimedean function on a commutative semiring `α`, then for
   `n : ℕ` and `a b : α` we can find `m : ℕ` such that `m ≤ n` and
   `f ((a + b) ^ n) ≤ (f (a ^ m)) * (f (b ^ (n - m)))`. -/
-theorem add_pow_le [Mul R] [CommSemiring α] (f_mul : ∀ x y, f (x * y) ≤ f x * f y)
+theorem add_pow_le [Mul R] [Semiring α] [IsMulCommutative α] (f_mul : ∀ x y, f (x * y) ≤ f x * f y)
     (hna : IsNonarchimedean f) : ∃ m < n + 1, f ((a + b) ^ n) ≤ f (a ^ m) * f (b ^ (n - m)) := by
   obtain ⟨m, hm_lt, hM⟩ := hna.finset_image_add_of_nonempty
     (fun m => a ^ m * b ^ (n - m) * ↑(n.choose m)) (s := Finset.range (n + 1)) (by simp)

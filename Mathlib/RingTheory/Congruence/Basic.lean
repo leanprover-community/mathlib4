@@ -96,7 +96,7 @@ instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R
     MulSemiringAction.smul_mul _ _ _
 
 section
-variable [CommSemiring α] [Semiring R] [Algebra α R]
+variable [Semiring α] [IsMulCommutative α] [Semiring R] [Algebra α R]
 
 instance (c : RingCon R) : Algebra α c.Quotient where
   algebraMap := c.mk'.comp (algebraMap α R)

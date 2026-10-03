@@ -38,9 +38,9 @@ suppress_compilation
 
 open Submodule Ideal Quotient
 
-variable {R S T : Type*} [CommRing R] (I : Ideal R)
-variable (M : Type*) [AddCommGroup M] [Module R M]
-variable {N : Type*} [AddCommGroup N] [Module R N]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R)
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
 
 /-- A module `M` is Hausdorff with respect to an ideal `I` if `⋂ I^n M = 0`. -/
 class IsHausdorff : Prop where
@@ -72,12 +72,12 @@ theorem IsHausdorff.eq_iff_smodEq [IsHausdorff I M] {x y : M} :
   apply IsHausdorff.haus' (I := I) (x - y)
   simpa [SModEq.sub_mem] using h
 
-theorem IsHausdorff.map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
+theorem IsHausdorff.map_algebraMap_iff [Ring S] [IsMulCommutative S] [Module S M] [Algebra R S]
     [IsScalarTower R S M] : IsHausdorff (I.map (algebraMap R S)) M ↔ IsHausdorff I M := by
   simp [isHausdorff_iff, ← Ideal.map_pow, ← SModEq.restrictScalars R,
     restrictScalars_map_smul_eq]
 
-theorem IsHausdorff.of_map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S]
+theorem IsHausdorff.of_map [Ring S] [IsMulCommutative S] [Module S M] {J : Ideal S} [Algebra R S]
     [IsScalarTower R S M] (hIJ : I.map (algebraMap R S) ≤ J) [IsHausdorff J M] :
     IsHausdorff I M := by
   refine ⟨fun x h ↦ IsHausdorff.haus ‹_› x fun n ↦ ?_⟩
@@ -117,7 +117,7 @@ theorem IsHausdorff.StrictMono.funext {M : Type*} [IsHausdorff I N] {f g : M →
 /--
 A variant of `IsHausdorff.funext`, where the target is a ring instead of a module.
 -/
-theorem IsHausdorff.funext' {R S : Type*} [CommRing S] (I : Ideal S) [IsHausdorff I S]
+theorem IsHausdorff.funext' {R S : Type*} [Ring S] [IsMulCommutative S] (I : Ideal S) [IsHausdorff I S]
     {f g : R → S} (h : ∀ n r, Ideal.Quotient.mk (I ^ n) (f r) = Ideal.Quotient.mk (I ^ n) (g r)) :
     f = g := by
   ext r
@@ -128,7 +128,7 @@ theorem IsHausdorff.funext' {R S : Type*} [CommRing S] (I : Ideal S) [IsHausdorf
 /--
 A variant of `IsHausdorff.StrictMono.funext`, where the target is a ring instead of a module.
 -/
-theorem IsHausdorff.StrictMono.funext' {R S : Type*} [CommRing S] (I : Ideal S) [IsHausdorff I S]
+theorem IsHausdorff.StrictMono.funext' {R S : Type*} [Ring S] [IsMulCommutative S] (I : Ideal S) [IsHausdorff I S]
     {f g : R → S} {a : ℕ → ℕ} (ha : StrictMono a) (h : ∀ n r, Ideal.Quotient.mk (I ^ a n) (f r) =
     Ideal.Quotient.mk (I ^ a n) (g r)) : f = g := by
   ext m
@@ -149,7 +149,7 @@ theorem isPrecomplete_iff :
           ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
-theorem IsPrecomplete.map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
+theorem IsPrecomplete.map_algebraMap_iff [Ring S] [IsMulCommutative S] [Module S M] [Algebra R S]
     [IsScalarTower R S M] : IsPrecomplete (I.map (algebraMap R S)) M ↔ IsPrecomplete I M := by
   simp [isPrecomplete_iff, ← Ideal.map_pow, ← SModEq.restrictScalars R,
     restrictScalars_map_smul_eq]
@@ -710,7 +710,7 @@ namespace IsAdicComplete
 
 open AdicCompletion
 
-theorem map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
+theorem map_algebraMap_iff [Ring S] [IsMulCommutative S] [Module S M] [Algebra R S]
     [IsScalarTower R S M] : IsAdicComplete (I.map (algebraMap R S)) M ↔ IsAdicComplete I M := by
   simp [isAdicComplete_iff, IsPrecomplete.map_algebraMap_iff, IsHausdorff.map_algebraMap_iff]
 

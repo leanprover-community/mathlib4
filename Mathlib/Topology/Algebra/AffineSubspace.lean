@@ -25,7 +25,7 @@ affine map.
 
 namespace AffineSubspace
 
-variable {R V P : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpace P]
+variable {R V P : Type*} [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V] [TopologicalSpace P]
   [AddTorsor V P]
 
 /-- Embedding of an affine subspace to the ambient space, as a continuous affine map. -/
@@ -55,8 +55,8 @@ end AffineSubspace
 
 namespace ContinuousAffineEquiv
 
-variable {R V P W Q : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpace P]
-  [AddTorsor V P] [AddCommGroup W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
+variable {R V P W Q : Type*} [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V] [TopologicalSpace P]
+  [AddTorsor V P] [AddGroup W] [IsAddCommutative W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
 
 /-- A continuous affine equivalence restricts to a continuous affine equivalence between an affine
 subspace and its image.
@@ -85,7 +85,7 @@ end ContinuousAffineEquiv
 
 namespace AffineSubspace
 
-variable {R V P : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpace P]
+variable {R V P : Type*} [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V] [TopologicalSpace P]
   [AddTorsor V P]
 
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P]

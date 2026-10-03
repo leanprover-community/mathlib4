@@ -23,7 +23,7 @@ namespace Polynomial
 
 open scoped nonZeroDivisors TensorProduct
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 variable (I : Ideal R) [I.IsPrime] (J : Ideal R[X]) [J.IsPrime] [J.LiesOver I]
   [Algebra (Localization.AtPrime I) (Localization.AtPrime J)]
   [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime J)]

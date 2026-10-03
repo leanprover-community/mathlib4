@@ -61,7 +61,7 @@ theorem sound (U : Set (G ⧸ N)) (g : N.op) :
 local notation " Q " => G ⧸ N
 
 @[to_additive (attr := simp)]
-theorem mk_prod {G ι : Type*} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f : ι → G} :
+theorem mk_prod {G ι : Type*} [Group G] [IsMulCommutative G] (N : Subgroup G) (s : Finset ι) {f : ι → G} :
     ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i => (f i : G ⧸ N)) :=
   map_prod (QuotientGroup.mk' N) _ _
 
@@ -206,7 +206,7 @@ def equivQuotientSubgroupOfOfEq {A' A B' B : Subgroup G} [hAN : (A'.subgroupOf A
 
 section ZPow
 
-variable {A B C : Type u} [CommGroup A] [CommGroup B] [CommGroup C]
+variable {A B C : Type u} [Group A] [IsMulCommutative A] [Group B] [IsMulCommutative B] [Group C] [IsMulCommutative C]
 variable (f : A →* B) (g : B →* A) (e : A ≃* B) (d : B ≃* C) (n : ℤ)
 
 /-- The map of quotients by powers of an integer induced by a group homomorphism. -/
@@ -429,7 +429,7 @@ of type `G →* A` and the group of homomorphisms `G ⧸ H →* A`.
 The `AddEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
 of type `G →+ A` and the group of homomorphisms `G ⧸ H →+ A`.
 -/]
-def _root_.MonoidHom.domRestrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgroup G) [H.Normal] :
+def _root_.MonoidHom.domRestrictHomKerEquiv (A : Type*) [Group A] [IsMulCommutative A] (H : Subgroup G) [H.Normal] :
     (MonoidHom.domRestrictHom H A).ker ≃* (G ⧸ H →* A) where
   toFun := fun ⟨f, hf⟩ ↦ QuotientGroup.lift _ f
     (by simpa [mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff] using! hf)
@@ -439,12 +439,12 @@ def _root_.MonoidHom.domRestrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgr
   right_inv _ := by ext; simp
 
 @[simp]
-theorem _root_.MonoidHom.domRestrictHomKerEquiv_apply_coe (A : Type*) [CommGroup A] (H : Subgroup G)
+theorem _root_.MonoidHom.domRestrictHomKerEquiv_apply_coe (A : Type*) [Group A] [IsMulCommutative A] (H : Subgroup G)
     [H.Normal] (f : (MonoidHom.domRestrictHom H A).ker) (g : G) :
     domRestrictHomKerEquiv A H f g = f.val g := rfl
 
 @[simp]
-theorem _root_.MonoidHom.domRestrictHomKerEquiv_symm_coe_apply (A : Type*) [CommGroup A]
+theorem _root_.MonoidHom.domRestrictHomKerEquiv_symm_coe_apply (A : Type*) [Group A] [IsMulCommutative A]
     (H : Subgroup G) [H.Normal] (f : G ⧸ H →* A) (g : G) :
     ((domRestrictHomKerEquiv A H).symm f).val g = f g := rfl
 
@@ -479,7 +479,7 @@ section powMonoidHom
 
 -- TODO: Generalize to arbitrary products of homomorphisms
 
-variable {ι : Type*} (A : ι → Type*) [∀ i, CommGroup (A i)] (n : ℕ)
+variable {ι : Type*} (A : ι → Type*) [∀ i, Group (A i)] [∀ i, IsMulCommutative (A i)] (n : ℕ)
 
 /-- The isomorphism between the quotient of a product by the image of the `n`th power map
 and the product of the quotients by the images of the `n`th power maps on the factors. -/

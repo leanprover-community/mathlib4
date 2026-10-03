@@ -29,9 +29,9 @@ variable {ι R K M M₁ M₂ M₃ V N : Type*}
 
 namespace QuadraticMap
 
-variable [CommSemiring R]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-         [AddCommMonoid N]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
+         [AddMonoid N] [IsAddCommutative N]
 variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R N]
 
 /-- An isometric equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
@@ -152,7 +152,7 @@ noncomputable def isometryEquivBasisRepr (Q : QuadraticMap R M N) (v : Basis ι 
 end QuadraticMap
 
 namespace QuadraticForm
-variable [Field K] [Invertible (2 : K)] [AddCommGroup V] [Module K V]
+variable [Field K] [Invertible (2 : K)] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 /-- Given an orthogonal basis, a quadratic form is isometrically equivalent with a weighted sum of
 squares. -/
@@ -183,7 +183,7 @@ theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm
   exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 
 variable {ι S R : Type*}
-variable [Fintype ι] [CommSemiring R] [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
+variable [Fintype ι] [Semiring R] [IsMulCommutative R] [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
 variable [IsScalarTower S R R]
 variable {w : ι → S} {w' : ι → S}
 

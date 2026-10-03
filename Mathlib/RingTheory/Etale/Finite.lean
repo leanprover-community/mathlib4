@@ -38,7 +38,7 @@ universe v w u
 
 namespace CommAlgCat
 
-variable (R : Type u) [CommRing R] (k : Type u) [Field k]
+variable (R : Type u) [Ring R] [IsMulCommutative R] (k : Type u) [Field k]
 
 section
 
@@ -55,7 +55,7 @@ abbrev finiteEtale : ObjectProperty (CommAlgCat.{v} R) :=
   finite R ⊓ etale R
 
 /-- The category of finite étale `R`-algebras. -/
-abbrev FiniteEtale (R : Type u) [CommRing R] : Type _ :=
+abbrev FiniteEtale (R : Type u) [Ring R] [IsMulCommutative R] : Type _ :=
   (finiteEtale.{v} R).FullSubcategory
 
 instance : CoeSort (FiniteEtale.{v} R) (Type v) := ⟨fun R ↦ R.obj⟩
@@ -68,7 +68,7 @@ instance (S : FiniteEtale.{v} R) : Module.Finite R S :=
 
 /-- Construct a term of `FiniteEtale R` from a finite étale `R`-algebra. -/
 @[simps obj]
-abbrev FiniteEtale.of (S : Type v) [CommRing S] [Algebra R S]
+abbrev FiniteEtale.of (S : Type v) [Ring S] [IsMulCommutative S] [Algebra R S]
     [Module.Finite R S] [Algebra.Etale R S] :
     FiniteEtale.{v} R where
   obj := ↧S
@@ -78,7 +78,7 @@ variable {R}
 
 /-- Construct a morphism in `FiniteEtale R` from an algebra map. -/
 @[simps]
-abbrev FiniteEtale.ofHom {S T : Type v} [CommRing S] [CommRing T]
+abbrev FiniteEtale.ofHom {S T : Type v} [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
     [Algebra R S] [Algebra R T] [Module.Finite R S] [Algebra.Etale R S] [Module.Finite R T]
     [Algebra.Etale R T] (f : S →ₐ[R] T) :
     FiniteEtale.of R S ⟶ FiniteEtale.of R T where
@@ -96,7 +96,7 @@ instance (R : FiniteEtale k) : IsArtinianRing R :=
   isArtinian_of_tower k inferInstance
 
 variable (Ω : Type w) [Field Ω] [Algebra R Ω]
-  (S : Type w) [CommRing S] [Algebra R S] [Algebra S Ω] [IsScalarTower R S Ω]
+  (S : Type w) [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra S Ω] [IsScalarTower R S Ω]
 
 /-- If `S` is an `R`-algebra, this is the base change functor `A ↦ S ⊗[R] A`. -/
 @[expose, simps]
@@ -115,7 +115,7 @@ def FiniteEtale.baseChangeSelfIso : baseChange R R ≅ 𝟭 (FiniteEtale R) :=
 /-- The fiber functor for finite étale `R`-algebras at the geometric point `Ω`: This is the
 functor sending `S` to `R`-algebra homomorphisms `S →ₐ[R] Ω`. -/
 @[expose, simps]
-def FiniteEtale.fiber (R : Type u) [CommRing R] (Ω : Type w) [Field Ω] [Algebra R Ω] :
+def FiniteEtale.fiber (R : Type u) [Ring R] [IsMulCommutative R] (Ω : Type w) [Field Ω] [Algebra R Ω] :
     (FiniteEtale.{v} R)ᵒᵖ ⥤ FintypeCat.{max v w} where
   obj S := ↧(S.unop →ₐ[R] Ω)
   map {S T} f := FintypeCat.homMk (·.comp f.unop.hom.hom)

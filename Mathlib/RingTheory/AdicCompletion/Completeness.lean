@@ -44,8 +44,8 @@ noncomputable section
 
 open Submodule Finsupp
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R)
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 variable {a b c : ℕ}
 
 namespace AdicCompletion

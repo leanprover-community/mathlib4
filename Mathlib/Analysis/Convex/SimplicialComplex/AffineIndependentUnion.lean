@@ -65,7 +65,7 @@ Construct a simplicial complex from a `PreAbstractSimplicialComplex` on a set of
 under the assumption that the union of the defining points is affinely independent.
 -/
 def ofAffineIndependent {𝕜 E}
-    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [DecidableEq E] [AddCommGroup E] [Module 𝕜 E]
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [DecidableEq E] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
     (abstract : PreAbstractSimplicialComplex E)
     (indep : AffineIndependent 𝕜 (Subtype.val : (⋃ s ∈ abstract.faces, (s : Set E)) → E)) :
     SimplicialComplex 𝕜 E where

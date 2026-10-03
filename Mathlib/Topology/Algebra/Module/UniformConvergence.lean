@@ -47,8 +47,8 @@ open scoped Pointwise UniformConvergence Uniformity
 
 section Module
 
-variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddCommGroup H] [Module 𝕜 H]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [IsUniformAddGroup E]
+variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddGroup H] [IsAddCommutative H] [Module 𝕜 H]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [IsUniformAddGroup E]
   [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α}
   [FunLike hom H (α → E)] [LinearMapClass hom 𝕜 H (α → E)]
 

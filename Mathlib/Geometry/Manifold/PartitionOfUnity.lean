@@ -68,8 +68,8 @@ open scoped Topology Manifold ContDiff
 
 noncomputable section
 
-variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {F : Type uF} [NormedAddCommGroup F] [NormedSpace ℝ F] {H : Type uH}
+variable {ι : Type uι} {E : Type uE} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  {F : Type uF} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] {H : Type uH}
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM} [TopologicalSpace M]
   [ChartedSpace H M]
 
@@ -232,7 +232,7 @@ theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport
     ∑ i ∈ I, ρ i x₀ = 1 :=
   ρ.toPartitionOfUnity.sum_finsupport' hx₀ hI
 
-theorem sum_finsupport_smul_eq_finsum {A : Type*} [AddCommGroup A] [Module ℝ A] (φ : ι → M → A) :
+theorem sum_finsupport_smul_eq_finsum {A : Type*} [AddGroup A] [IsAddCommutative A] [Module ℝ A] (φ : ι → M → A) :
     ∑ i ∈ ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ :=
   ρ.toPartitionOfUnity.sum_finsupport_smul_eq_finsum φ
 
@@ -296,7 +296,7 @@ end SmoothPartitionOfUnity
 namespace BumpCovering
 
 -- Repeat variables to drop `[FiniteDimensional ℝ E]` and `[IsManifold I ∞ M]`
-theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
     {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM}
     [TopologicalSpace M] [ChartedSpace H M] {s : Set M} (f : BumpCovering ι M s)
     (hf : ∀ i, CMDiff ∞ (f i)) (i : ι) : CMDiff ∞ (f.toPartitionOfUnity i) :=
@@ -590,8 +590,8 @@ Then there exists a global $C^n$ smooth section `s : Cₛ^n⟮I_M; F_fiber, V⟯
 `s x ∈ t x` for all `x : M`.
 -/
 theorem exists_contMDiffSection_forall_mem_convex_of_local
-    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
-    (V : M → Type*) [∀ x, AddCommGroup (V x)] [∀ x, TopologicalSpace (V x)] [∀ x, Module ℝ (V x)]
+    {F_fiber : Type*} [NormedAddGroup F_fiber] [IsAddCommutative F_fiber] [NormedSpace ℝ F_fiber]
+    (V : M → Type*) [∀ x, AddGroup (V x)] [∀ x, IsAddCommutative (V x)] [∀ x, TopologicalSpace (V x)] [∀ x, Module ℝ (V x)]
     [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
     (t : ∀ x, Set (V x)) (ht_conv : ∀ x, Convex ℝ (t x))
     (Hloc :

@@ -28,7 +28,7 @@ open Filter Set WithTop.LinearOrderedAddCommGroup
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {R : Type*} [NormedRing R] [NoZeroDivisors R]
   [Module R E] [IsBoundedSMul R E] [Module.IsTorsionFree R E]
   {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']

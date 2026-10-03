@@ -60,7 +60,7 @@ end semiring
 
 section IsDomain
 
-variable [CommSemiring R] [IsDomain R]
+variable [Semiring R] [IsMulCommutative R] [IsDomain R]
 
 theorem span_notMem_kaplanskySet {a : R} (ha : a ≠ 0)
       (H : ∀ I ≠ (⊥ : Ideal R), I.IsPrime → ∃ x ∈ I, Prime x) :

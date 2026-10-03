@@ -56,15 +56,15 @@ variable {α 𝕜 𝕝 E F : Type*}
 
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
 functionals `fun v => v x` are continuous. -/
-def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-    [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
+def WeakDual (𝕜 E : Type*) [Semiring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+    [ContinuousConstSMul 𝕜 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
 deriving TopologicalSpace, Inhabited, FunLike, ContinuousLinearMapClass
 
 namespace WeakDual
 
-variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
@@ -105,8 +105,8 @@ end WeakDual
 
 namespace StrongDual
 
-variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- For vector spaces `E`, there is a canonical map `StrongDual 𝕜 E → WeakDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. -/
@@ -127,8 +127,8 @@ namespace WeakDual
 
 section Semiring
 
-variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- For vector spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
@@ -181,8 +181,8 @@ end Semiring
 
 section Ring
 
-variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+variable [Ring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+variable [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 instance instAddCommGroup : AddCommGroup (WeakDual 𝕜 E) :=
   inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E))
@@ -196,38 +196,38 @@ end WeakDual
 
 /-- The weak topology is the coarsest topology on `E` such that all functionals
 `fun x => v x` are continuous. -/
-def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-    [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
+def WeakSpace (𝕜 E) [Semiring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+    [ContinuousConstSMul 𝕜 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
 deriving TopologicalSpace
 
 section Semiring
 
-variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
-variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
 
 -- The `SMul` instance exists to avoid an nsmul diamond.
-variable [CommSemiring 𝕝] [Module 𝕝 E] in
+variable [Semiring 𝕝] [IsMulCommutative 𝕝] [Module 𝕝 E] in
 deriving instance SMul 𝕝 for WeakSpace 𝕜 E
 
 deriving instance AddCommMonoid, ContinuousAdd for WeakSpace
 
 namespace WeakSpace
 
-instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
+instance instModule' [Semiring 𝕝] [IsMulCommutative 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
   inferInstanceAs <| Module 𝕝 (WeakBilin (topDualPairing 𝕜 E).flip)
 
 instance instModule : Module 𝕜 (WeakSpace 𝕜 E) := inferInstance
 
-instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
+instance instIsScalarTower [Semiring 𝕝] [IsMulCommutative 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
     IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=
   WeakBilin.instIsScalarTower (topDualPairing 𝕜 E).flip
 
 instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakSpace 𝕜 E) :=
   WeakBilin.instContinuousSMul _
 
-variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
+variable [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-- A continuous linear map from `E` to `F` is still continuous when `E` and `F` are equipped with
 their weak topologies. -/
@@ -290,8 +290,8 @@ section Ring
 
 namespace WeakSpace
 
-variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+variable [Ring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+variable [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
   inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E).flip)

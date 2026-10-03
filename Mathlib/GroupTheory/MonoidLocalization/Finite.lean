@@ -20,7 +20,7 @@ public section
 
 open Localization
 
-variable {M : Type*} [CommMonoid M] {S : Submonoid M}
+variable {M : Type*} [Monoid M] [IsMulCommutative M] {S : Submonoid M}
 
 namespace Localization
 

@@ -42,7 +42,7 @@ theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.pro
     exact IsUnit.mul (u h mem_cons_self) (prod_isUnit fun m mt => u m (mem_cons_of_mem h mt))
 
 @[to_additive]
-theorem prod_isUnit_iff {M : Type*} [CommMonoid M] {L : List M} :
+theorem prod_isUnit_iff {M : Type*} [Monoid M] [IsMulCommutative M] {L : List M} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
   refine ⟨fun h => ?_, prod_isUnit⟩
   induction L with
@@ -149,12 +149,12 @@ theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : 
     (Int.isUnit_iff.mp (prod_isUnit_iff.mp
       (h.symm ▸ ⟨⟨-1, -1, by decide, by decide⟩, rfl⟩ : IsUnit l.prod) x h₁)) h₂ ▸ h₁
 
-theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
+theorem dvd_prod [Monoid M] [IsMulCommutative M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
   let ⟨s, t, h⟩ := append_of_mem ha
   rw [h, prod_append, prod_cons, mul_left_comm]
   exact dvd_mul_right _ _
 
-theorem Sublist.prod_dvd_prod [CommMonoid M] {l₁ l₂ : List M} (h : l₁ <+ l₂) :
+theorem Sublist.prod_dvd_prod [Monoid M] [IsMulCommutative M] {l₁ l₂ : List M} (h : l₁ <+ l₂) :
     l₁.prod ∣ l₂.prod := by
   obtain ⟨l, hl⟩ := h.exists_perm_append
   rw [hl.prod_eq, prod_append]
@@ -162,7 +162,7 @@ theorem Sublist.prod_dvd_prod [CommMonoid M] {l₁ l₂ : List M} (h : l₁ <+ l
 
 section Alternating
 
-variable [CommGroup G]
+variable [Group G] [IsMulCommutative G]
 
 @[to_additive]
 theorem alternatingProd_append :

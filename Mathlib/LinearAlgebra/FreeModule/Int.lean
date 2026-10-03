@@ -20,7 +20,7 @@ index.
 public section
 
 
-variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]
+variable {ι R M : Type*} {n : ℕ} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M]
 
 namespace Module.Basis.SmithNormalForm
 

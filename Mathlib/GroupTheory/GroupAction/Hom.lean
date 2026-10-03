@@ -449,7 +449,7 @@ instance [SMul M X] [AddMonoid Y] [DistribSMul N Y] :
   nsmul_zero f := ext fun x ↦ AddMonoid.nsmul_zero (f x)
   nsmul_succ n f := ext fun x ↦ AddMonoid.nsmul_succ n (f x)
 
-instance [SMul M X] [AddCommMonoid Y] [DistribSMul N Y] :
+instance [SMul M X] [AddMonoid Y] [IsAddCommutative Y] [DistribSMul N Y] :
     AddCommMonoid (X →ₑ[σ] Y) where
   add_comm _ _ := ext fun _ ↦ add_comm _ _
 
@@ -470,7 +470,7 @@ instance [AddMonoid Y] [Monoid R] [SMul M X] [DistribSMul N Y]
   __ := (inferInstance : MulAction _ _)
   __ := (inferInstance : DistribSMul _ _)
 
-instance [AddCommMonoid Y] [Semiring R] [SMul M X] [DistribSMul N Y]
+instance [AddMonoid Y] [IsAddCommutative Y] [Semiring R] [SMul M X] [DistribSMul N Y]
     [Module R Y] [SMulCommClass N R Y] :
     Module R (X →ₑ[σ] Y) where
   add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
@@ -493,7 +493,7 @@ lemma coe_neg [SMul M X] [AddGroup Y] [DistribSMul N Y] (f : X →ₑ[σ] Y) :
 lemma coe_sub [SMul M X] [AddGroup Y] [DistribSMul N Y] (f g : X →ₑ[σ] Y) :
     ⇑(f - g) = ⇑f - ⇑g := rfl
 
-instance [SMul M X] [AddCommGroup Y] [DistribSMul N Y] : AddCommGroup (X →ₑ[σ] Y) where
+instance [SMul M X] [AddGroup Y] [IsAddCommutative Y] [DistribSMul N Y] : AddCommGroup (X →ₑ[σ] Y) where
 
 instance [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] :
     Monoid (X →ₑ[σ] Y) where
@@ -511,7 +511,7 @@ lemma coe_mul [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] (f g : 
 lemma coe_one [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] :
     ⇑(1 : X →ₑ[σ] Y) = 1 := rfl
 
-instance [SMul M X] [Monoid N] [CommMonoid Y] [MulDistribMulAction N Y] :
+instance [SMul M X] [Monoid N] [Monoid Y] [IsMulCommutative Y] [MulDistribMulAction N Y] :
     CommMonoid (X →ₑ[σ] Y) where
   mul_comm _ _ := ext fun _ ↦ mul_comm _ _
 
@@ -524,13 +524,13 @@ instance [SMul M X] [Monoid N] [Semiring Y] [MulSemiringAction N Y] :
   left_distrib _ _ _ := ext fun x ↦ left_distrib _ _ _
   right_distrib _ _ _ := ext fun x ↦ right_distrib _ _ _
 
-instance [SMul M X] [Monoid N] [CommSemiring Y] [MulSemiringAction N Y] :
+instance [SMul M X] [Monoid N] [Semiring Y] [IsMulCommutative Y] [MulSemiringAction N Y] :
     CommSemiring (X →ₑ[σ] Y) where
 
 instance [SMul M X] [Monoid N] [Ring Y] [MulSemiringAction N Y] :
     Ring (X →ₑ[σ] Y) where
 
-instance [SMul M X] [Monoid N] [CommRing Y] [MulSemiringAction N Y] :
+instance [SMul M X] [Monoid N] [Ring Y] [IsMulCommutative Y] [MulSemiringAction N Y] :
     CommRing (X →ₑ[σ] Y) where
 
 namespace End

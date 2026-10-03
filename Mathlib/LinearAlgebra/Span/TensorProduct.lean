@@ -29,8 +29,8 @@ variable {R : Type*} (A : Type*) {M : Type*}
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M]
   (p : Submodule R M)
 
 /-- If `A` is an `R`-algebra and `p` is an `R`-submodule of an `A`-module `M`, this is the natural
@@ -92,9 +92,9 @@ section CommRing
 
 open Module
 
-variable [CommRing R] [CommRing A] [Nontrivial A]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Nontrivial A]
   [Algebra R A] [Algebra.IsEpi R A] [Module.Flat R A]
-  [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M]
   (p : Submodule R M) [Free R p] [Module.Finite R p]
 
 @[simp] lemma finrank_span_eq_finrank :

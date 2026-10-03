@@ -48,7 +48,7 @@ namespace WeierstrassCurve
 
 section Integral
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 variable {K : Type*} [Field K] [Algebra R K]
 
 /-- A Weierstrass equation over the fraction field `K` is integral if
@@ -202,7 +202,7 @@ section UIntegral
 
 open Polynomial
 
-variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] {K : Type*} [Field K]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [IsDiscreteValuationRing R] {K : Type*} [Field K]
   [Algebra R K] [IsFractionRing R K] {W W' : WeierstrassCurve K} [IsIntegral R W] [IsIntegral R W']
   {CK : VariableChange K} (hCK : CK • W = W') {u : Rˣ} (hu : algebraMap R K u = CK.u)
 
@@ -245,7 +245,7 @@ end UIntegral
 
 section Minimal
 
-variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsDomain R] [IsDiscreteValuationRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 open WithZero Multiplicative
@@ -306,7 +306,7 @@ end Minimal
 
 section Reduction
 
-variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsDomain R] [IsDiscreteValuationRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 open IsDiscreteValuationRing IsLocalRing IsDedekindDomain.HeightOneSpectrum

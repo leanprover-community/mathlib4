@@ -30,7 +30,7 @@ universe u
 
 open CategoryTheory Limits
 
-variable {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+variable {Q : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
 
 open MorphismProperty
 
@@ -135,7 +135,7 @@ lemma Under.hasFiniteLimits (hQi : RingHom.RespectsIso Q)
 
 end CommRingCat
 
-variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
+variable (P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop)
 
 open RingHom
 

@@ -14,7 +14,7 @@ public meta import Lean.Linter.UnusedVariables
 
 This defines a command like `variable` that automatically adds all missing typeclass
 arguments. For example, `variable? [Module R M]` is the same as
-`variable [Semiring R] [AddCommMonoid M] [Module R M]`, though if any of these three instance
+`variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]`, though if any of these three instance
 arguments can be inferred from previous variables then they will be omitted.
 
 An inherent limitation with this command is that variables are recorded in the scope as
@@ -70,10 +70,10 @@ Structures tagged with the `variable_alias` attribute can serve as aliases for a
 of typeclasses. For example, given
 ```lean
 @[variable_alias]
-structure VectorSpace (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+structure VectorSpace (k V : Type*) [Field k] [AddGroup V] [IsAddCommutative V] [Module k V]
 ```
 then `variable? [VectorSpace k V]` is
-equivalent to `variable {k V : Type*} [Field k] [AddCommGroup V] [Module k V]`, assuming
+equivalent to `variable {k V : Type*} [Field k] [AddGroup V] [IsAddCommutative V] [Module k V]`, assuming
 that there are no pre-existing instances on `k` and `V`.
 Note that this is not a simple replacement: it only adds instances not inferable
 from others in the current scope.
@@ -92,7 +92,7 @@ Example:
 ```
 @[variable_alias]
 structure VectorSpace (k V : Type*)
-  [Field k] [AddCommGroup V] [Module k V]
+  [Field k] [AddGroup V] [IsAddCommutative V] [Module k V]
 ```
 Then `variable? [VectorSpace k V]` ensures that these three typeclasses are present in
 the current scope. Notice that it's looking at the arguments to the `VectorSpace` type

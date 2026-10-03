@@ -61,8 +61,8 @@ open RCLike LinearPMap WithLp
 open scoped ComplexConjugate
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
+variable [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

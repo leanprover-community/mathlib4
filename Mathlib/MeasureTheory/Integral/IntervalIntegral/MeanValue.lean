@@ -195,7 +195,7 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_monotoneOn
   refine ⟨-ξ, by grind, ?_⟩
   simpa using (intervalIntegral.integral_comp_neg (fun x ↦ f (-x) * g (-x))).trans hξ
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 variable {g : ℝ → E}
 
 /-- An inequality version of the second mean value theorem for interval integrals

@@ -23,7 +23,7 @@ public section
 
 namespace Subgroup
 
-variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+variable {G : Type*} [Group G] [IsMulCommutative G] [LinearOrder G] [IsOrderedMonoid G]
   [TopologicalSpace G] [OrderTopology G]
 
 /-- In a linearly ordered group with the order topology, the powers of a single element form a

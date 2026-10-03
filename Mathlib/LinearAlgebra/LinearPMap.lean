@@ -39,7 +39,7 @@ They are also the basis for the theory of unbounded operators.
 
 /-- A `LinearPMap σ E F` or `E →ₛₗ.[σ] F` is a (semi)linear map from a submodule of `E` to `F`. -/
 structure LinearPMap {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*)
-    [AddCommGroup E] [Module R E] (F : Type*) [AddCommGroup F] [Module S F] where
+    [AddGroup E] [IsAddCommutative E] [Module R E] (F : Type*) [AddGroup F] [IsAddCommutative F] [Module S F] where
   /-- The domain of the (semi)linear map. -/
   domain : Submodule R E
   /-- The (semi)linear map itself. -/
@@ -51,8 +51,8 @@ structure LinearPMap {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*
 notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap (RingHom.id R) E F
 
 variable {R S T : Type*} [Ring R] [Ring S] [Ring T] {σ : R →+* S} {τ : S →+* T} {E : Type*}
-  [AddCommGroup E] [Module R E] {F : Type*} [AddCommGroup F] [Module S F] {G : Type*}
-  [AddCommGroup G] [Module T G]
+  [AddGroup E] [IsAddCommutative E] [Module R E] {F : Type*} [AddGroup F] [IsAddCommutative F] [Module S F] {G : Type*}
+  [AddGroup G] [IsAddCommutative G] [Module T G]
 
 namespace LinearPMap
 
@@ -206,14 +206,14 @@ theorem mkSpanSingleton'_apply_self (x : E) (y : F) (H : ∀ c : R, c • x = 0 
 /-- The unique `LinearPMap` on `span R {x}` that sends a non-zero vector `x` to `y`.
 This version works for modules over division rings. -/
 noncomputable abbrev mkSpanSingleton {K L E F : Type*} [DivisionRing K] [DivisionRing L]
-    {σ : K →+* L} [AddCommGroup E] [Module K E] [AddCommGroup F] [Module L F] (x : E) (y : F)
+    {σ : K →+* L} [AddGroup E] [IsAddCommutative E] [Module K E] [AddGroup F] [IsAddCommutative F] [Module L F] (x : E) (y : F)
     (hx : x ≠ 0) : E →ₛₗ.[σ] F :=
   mkSpanSingleton' x y fun c hc =>
     (smul_eq_zero.1 hc).elim (fun hc => by rw [hc, RingHom.map_zero, zero_smul]) fun hx' =>
     absurd hx' hx
 
 theorem mkSpanSingleton_apply (K L : Type*) {E F : Type*} [DivisionRing K] [DivisionRing L]
-    {σ : K →+* L} [AddCommGroup E] [Module K E] [AddCommGroup F] [Module L F] {x : E} (hx : x ≠ 0)
+    {σ : K →+* L} [AddGroup E] [IsAddCommutative E] [Module K E] [AddGroup F] [IsAddCommutative F] [Module L F] {x : E} (hx : x ≠ 0)
     (y : F) :
     (mkSpanSingleton x y hx : E →ₛₗ.[σ] F)
       ⟨x, (Submodule.mem_span_singleton_self x : x ∈ Submodule.span K {x})⟩ = y :=

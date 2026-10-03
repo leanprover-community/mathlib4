@@ -56,11 +56,11 @@ open Submodule (span)
 
 namespace RootPairing
 
-variable {ι R M N : Type*} [Fintype ι] [AddCommGroup M] [AddCommGroup N]
+variable {ι R M N : Type*} [Fintype ι] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
 
 section CommRing
 
-variable [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
+variable [Ring R] [IsMulCommutative R] [Module R M] [Module R N] (P : RootPairing ι R M N)
 
 /-- We say a finite root pairing is anisotropic if there are no roots / coroots which have length
 zero w.r.t. the root / coroot forms.
@@ -77,7 +77,7 @@ instance [P.IsAnisotropic] : P.flip.IsAnisotropic where
   corootForm_coroot_ne_zero := IsAnisotropic.rootForm_root_ne_zero (P := P)
 
 lemma isAnisotropic_of_isValuedIn (S : Type*)
-    [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+    [Ring S] [IsMulCommutative S] [LinearOrder S] [IsStrictOrderedRing S]
     [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S] :
     IsAnisotropic P where
   rootForm_root_ne_zero i := (P.posRootForm S).form_apply_root_ne_zero i
@@ -133,7 +133,7 @@ lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [IsDomain R] [IsTorsi
 
 section DomainAlg
 
-variable (S : Type*) [CommRing S] [IsDomain R] [IsDomain S] [Algebra S R] [FaithfulSMul S R]
+variable (S : Type*) [Ring S] [IsMulCommutative S] [IsDomain R] [IsDomain S] [Algebra S R] [FaithfulSMul S R]
   [P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
 
 lemma finrank_range_polarization_eq_finrank_span_coroot [P.IsAnisotropic] :
@@ -188,7 +188,7 @@ end DomainAlg
 
 section LinearOrderedCommRingAlg
 
-variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [IsDomain R] [Algebra S R]
+variable (S : Type*) [Ring S] [IsMulCommutative S] [LinearOrder S] [IsStrictOrderedRing S] [IsDomain R] [Algebra S R]
   [FaithfulSMul S R] [P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N]
   [IsScalarTower S R N]
 
@@ -224,7 +224,7 @@ end CommRing
 
 section IsDomain
 
-variable [CommRing R] [IsDomain R] [Module R M] [Module R N] (P : RootPairing ι R M N)
+variable [Ring R] [IsMulCommutative R] [IsDomain R] [Module R M] [Module R N] (P : RootPairing ι R M N)
   [P.IsAnisotropic]
 
 @[simp]
@@ -401,7 +401,7 @@ end Field
 
 section LinearOrderedCommRing
 
-variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+variable [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
   [Module R M] [Module R N] (P : RootPairing ι R M N)
 
 instance instIsAnisotropicOfLinearOrderedCommRing : IsAnisotropic P :=

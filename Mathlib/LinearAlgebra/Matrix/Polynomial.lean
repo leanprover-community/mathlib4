@@ -30,7 +30,7 @@ public section
 
 open Matrix Polynomial
 
-variable {n α : Type*} [DecidableEq n] [Fintype n] [CommRing α]
+variable {n α : Type*} [DecidableEq n] [Fintype n] [Ring α] [IsMulCommutative α]
 
 open Polynomial Matrix Equiv.Perm
 

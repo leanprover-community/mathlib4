@@ -59,7 +59,7 @@ namespace PrimeSpectrum
 
 section CommSemiRing
 
-variable [CommSemiring R] [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 variable {R S}
 
 lemma nonempty_iff_nontrivial : Nonempty (PrimeSpectrum R) ↔ Nontrivial R := by
@@ -428,8 +428,8 @@ section Noetherian
 
 open Submodule
 
-variable (R : Type u) [CommRing R] [IsNoetherianRing R]
-variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
+variable (R : Type u) [Ring R] [IsMulCommutative R] [IsNoetherianRing R]
+variable {A : Type u} [Ring A] [IsMulCommutative A] [IsDomain A] [IsNoetherianRing A]
 
 /-- In a Noetherian ring, every ideal contains a product of prime ideals
 ([samuel1967, § 3.3, Lemma 3]). -/

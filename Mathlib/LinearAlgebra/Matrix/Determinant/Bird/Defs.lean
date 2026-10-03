@@ -38,7 +38,7 @@ public section
 
 namespace BirdDet
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /--
 `get n A i j` returns the (i, j)th entry of the `n × n` matrix whose entries are

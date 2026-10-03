@@ -53,7 +53,7 @@ theorem IsConj.pow {a b : α} (n : ℕ) : IsConj a b → IsConj (a ^ n) (b ^ n)
   | ⟨c, hc⟩ => ⟨c, hc.pow_right n⟩
 
 @[to_additive (attr := simp)]
-theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
+theorem isConj_iff_eq {α : Type*} [Monoid α] [IsMulCommutative α] {a b : α} : IsConj a b ↔ a = b :=
   ⟨fun ⟨c, hc⟩ => by
     rw [SemiconjBy, mul_comm, ← Units.mul_inv_eq_iff_eq_mul, mul_assoc, c.mul_inv, mul_one] at hc
     exact hc, fun h => by rw [h]⟩
@@ -220,7 +220,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α]
+variable [Monoid α] [IsMulCommutative α]
 
 @[to_additive]
 theorem mk_injective : Function.Injective (@ConjClasses.mk α _) := fun _ _ =>

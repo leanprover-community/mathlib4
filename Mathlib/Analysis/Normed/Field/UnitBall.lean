@@ -46,7 +46,7 @@ instance Metric.unitBall.instContinuousMul [NonUnitalSeminormedRing 𝕜] :
     ContinuousMul (ball (0 : 𝕜) 1) :=
   (Subsemigroup.unitBall 𝕜).continuousMul
 
-instance Metric.unitBall.instCommSemigroup [SeminormedCommRing 𝕜] :
+instance Metric.unitBall.instCommSemigroup [SeminormedRing 𝕜] [IsMulCommutative 𝕜] :
     CommSemigroup (ball (0 : 𝕜) 1) :=
   inferInstanceAs <| CommSemigroup (Subsemigroup.unitBall 𝕜)
 
@@ -150,7 +150,7 @@ instance Metric.unitClosedBall.instMonoid [SeminormedRing 𝕜] [NormOneClass �
     Monoid (closedBall (0 : 𝕜) 1) :=
   inferInstanceAs <| Monoid (Submonoid.unitClosedBall 𝕜)
 
-instance Metric.unitClosedBall.instCommMonoid [SeminormedCommRing 𝕜] [NormOneClass 𝕜] :
+instance Metric.unitClosedBall.instCommMonoid [SeminormedRing 𝕜] [IsMulCommutative 𝕜] [NormOneClass 𝕜] :
     CommMonoid (closedBall (0 : 𝕜) 1) :=
   inferInstanceAs <| CommMonoid (Submonoid.unitClosedBall 𝕜)
 
@@ -222,7 +222,7 @@ instance Metric.unitSphere.instMonoid [SeminormedRing 𝕜] [NormMulClass 𝕜] 
     Monoid (sphere (0 : 𝕜) 1) :=
   inferInstanceAs <| Monoid (Submonoid.unitSphere 𝕜)
 
-instance Metric.unitSphere.instCommMonoid [SeminormedCommRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+instance Metric.unitSphere.instCommMonoid [SeminormedRing 𝕜] [IsMulCommutative 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     CommMonoid (sphere (0 : 𝕜) 1) :=
   inferInstanceAs <| CommMonoid (Submonoid.unitSphere 𝕜)
 

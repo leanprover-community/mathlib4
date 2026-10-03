@@ -217,14 +217,14 @@ instance instAddMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A)
 instance instAddGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) :=
   fast_instance% equiv.addGroup
 
-instance instAddCommSemigroup [AddCommSemigroup R] [AddCommSemigroup A] :
+instance instAddCommSemigroup [AddSemigroup R] [IsAddCommutative R] [AddSemigroup A] [IsAddCommutative A] :
     AddCommSemigroup (Unitization R A) :=
   fast_instance% equiv.addCommSemigroup
 
-instance instAddCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) :=
+instance instAddCommMonoid [AddMonoid R] [IsAddCommutative R] [AddMonoid A] [IsAddCommutative A] : AddCommMonoid (Unitization R A) :=
   fast_instance% equiv.addCommMonoid
 
-instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
+instance instAddCommGroup [AddGroup R] [IsAddCommutative R] [AddGroup A] [IsAddCommutative A] : AddCommGroup (Unitization R A) :=
   fast_instance% equiv.addCommGroup
 
 @[simp]
@@ -276,7 +276,7 @@ instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMul
     [DistribMulAction S A] : DistribMulAction S (Unitization R A) :=
   fast_instance% (addEquiv _ _).distribMulAction S
 
-instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
+instance instModule [Semiring S] [AddMonoid R] [IsAddCommutative R] [AddMonoid A] [IsAddCommutative A] [Module S R] [Module S A] :
     Module S (Unitization R A) :=
   fast_instance% (addEquiv _ _).module S
 
@@ -287,13 +287,13 @@ lemma toEquiv_addEquiv [Add R] [Add A] : (addEquiv R A).toEquiv = equiv :=
 variable (R S A) in
 /-- The identity map between `Unitization R A` and `R × A` as a `LinearEquiv`. -/
 @[simps! apply symm_apply]
-def linearEquiv [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
+def linearEquiv [Semiring S] [AddMonoid R] [IsAddCommutative R] [AddMonoid A] [IsAddCommutative A] [Module S R] [Module S A] :
     Unitization R A ≃ₗ[S] R × A where
   toAddEquiv := addEquiv R A
   map_smul' _ _ := rfl
 
 @[simp]
-lemma toAddEquiv_linearEquiv [Semiring S] [AddCommMonoid R] [AddCommMonoid A]
+lemma toAddEquiv_linearEquiv [Semiring S] [AddMonoid R] [IsAddCommutative R] [AddMonoid A] [IsAddCommutative A]
     [Module S R] [Module S A] : (linearEquiv S R A).toAddEquiv = addEquiv R A :=
   rfl
 
@@ -399,13 +399,13 @@ theorem ind {R A} [AddZeroClass R] [AddZeroClass A] {P : Unitization R A → Pro
   inl_fst_add_inr_snd_eq x ▸ inl_add_inr x.fst x.snd
 
 @[ext]
-theorem linearMap_ext {N} [CommSemiring S] [AddCommMonoid R] [AddCommMonoid A] [AddCommMonoid N]
+theorem linearMap_ext {N} [Semiring S] [IsMulCommutative S] [AddMonoid R] [IsAddCommutative R] [AddMonoid A] [IsAddCommutative A] [AddMonoid N] [IsAddCommutative N]
     [Module S R] [Module S A] [Module S N] ⦃f g : Unitization R A →ₗ[S] N⦄
     (hl : ∀ r, f (inl r) = g (inl r)) (hr : ∀ a : A, f a = g a) : f = g :=
   (linearEquiv S R A).arrowCongr (.refl ..) |>.injective <|
     LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
 
-variable [Semiring S] [Semiring R] [AddCommMonoid A] [SMul R A] [Module S R] [Module S A]
+variable [Semiring S] [Semiring R] [AddMonoid A] [IsAddCommutative A] [SMul R A] [Module S R] [Module S A]
 
 variable (S R A) in
 /-- The canonical `S`-linear inclusion `A → Unitization R A`. -/
@@ -520,7 +520,7 @@ instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module
       simp [smul_add, add_smul, add_mul]
       abel }
 
-instance instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
+instance instMonoid [Monoid R] [IsMulCommutative R] [NonUnitalSemiring A] [DistribMulAction R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Monoid (Unitization R A) :=
   fast_instance%
   { Unitization.instMulOneClass with
@@ -529,33 +529,33 @@ instance instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
         mul_smul_comm, mul_comm z.fst x.fst, mul_comm z.fst y.fst]
       abel }
 
-instance instCommMonoid [CommMonoid R] [NonUnitalCommSemiring A] [DistribMulAction R A]
+instance instCommMonoid [Monoid R] [IsMulCommutative R] [NonUnitalSemiring A] [IsMulCommutative A] [DistribMulAction R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : CommMonoid (Unitization R A) :=
   fast_instance%
   { Unitization.instMonoid with
     mul_comm _ _ := Unitization.ext (mul_comm ..) <| by simp [add_comm, mul_comm] }
 
-instance instSemiring [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
+instance instSemiring [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Semiring (Unitization R A) :=
   fast_instance%
   { Unitization.instMonoid, Unitization.instNonAssocSemiring with }
 
-instance instCommSemiring [CommSemiring R] [NonUnitalCommSemiring A] [Module R A]
+instance instCommSemiring [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [IsMulCommutative A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : CommSemiring (Unitization R A) :=
   fast_instance%
   { Unitization.instCommMonoid, Unitization.instNonAssocSemiring with }
 
-instance instNonAssocRing [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
+instance instNonAssocRing [Ring R] [IsMulCommutative R] [NonUnitalNonAssocRing A] [Module R A] :
     NonAssocRing (Unitization R A) :=
   fast_instance%
   { Unitization.instAddCommGroup, Unitization.instNonAssocSemiring with }
 
-instance instRing [CommRing R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
+instance instRing [Ring R] [IsMulCommutative R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Ring (Unitization R A) :=
   fast_instance%
   { Unitization.instAddCommGroup, Unitization.instSemiring with }
 
-instance instCommRing [CommRing R] [NonUnitalCommRing A] [Module R A] [IsScalarTower R A A]
+instance instCommRing [Ring R] [IsMulCommutative R] [NonUnitalRing A] [IsMulCommutative A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : CommRing (Unitization R A) :=
   fast_instance%
   { Unitization.instAddCommGroup, Unitization.instCommSemiring with }
@@ -606,11 +606,11 @@ instance instStarAddMonoid [AddMonoid R] [AddMonoid A] [StarAddMonoid R] [StarAd
   star_involutive x := Unitization.ext (star_star x.fst) (star_star x.snd)
   star_add x y := Unitization.ext (star_add x.fst y.fst) (star_add x.snd y.snd)
 
-instance instStarModule [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAddMonoid A]
+instance instStarModule [Semiring R] [IsMulCommutative R] [StarRing R] [AddMonoid A] [IsAddCommutative A] [StarAddMonoid A]
     [Module R A] [StarModule R A] : StarModule R (Unitization R A) where
   star_smul _ _ := Unitization.ext (by simp) (by simp)
 
-instance instStarRing [CommSemiring R] [StarRing R] [NonUnitalNonAssocSemiring A] [StarRing A]
+instance instStarRing [Semiring R] [IsMulCommutative R] [StarRing R] [NonUnitalNonAssocSemiring A] [StarRing A]
     [Module R A] [StarModule R A] :
     StarRing (Unitization R A) :=
   fast_instance%
@@ -625,7 +625,7 @@ end Star
 
 section Algebra
 
-variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A] [Module R A]
+variable (S R A : Type*) [Semiring S] [IsMulCommutative S] [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [Module R A]
   [IsScalarTower R A A] [SMulCommClass R A A] [Algebra S R] [DistribMulAction S A]
   [IsScalarTower S R A]
 
@@ -673,7 +673,7 @@ section coe
 /-- The coercion from a non-unital `R`-algebra `A` to its unitization `Unitization R A`
 realized as a non-unital algebra homomorphism. -/
 @[simps toFun]
-def inrNonUnitalAlgHom (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] :
+def inrNonUnitalAlgHom (R A : Type*) [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [Module R A] :
     A →ₙₐ[R] Unitization R A where
   toFun := (↑)
   map_smul' := inr_smul R
@@ -684,7 +684,7 @@ def inrNonUnitalAlgHom (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Mod
 /-- The coercion from a non-unital `R`-algebra `A` to its unitization `Unitization R A`
 realized as a non-unital star algebra homomorphism. -/
 @[simps! apply]
-def inrNonUnitalStarAlgHom (R A : Type*) [CommSemiring R] [StarAddMonoid R]
+def inrNonUnitalStarAlgHom (R A : Type*) [Semiring R] [IsMulCommutative R] [StarAddMonoid R]
     [NonUnitalSemiring A] [Star A] [Module R A] :
     A →⋆ₙₐ[R] Unitization R A where
   toNonUnitalAlgHom := inrNonUnitalAlgHom R A
@@ -693,7 +693,7 @@ def inrNonUnitalStarAlgHom (R A : Type*) [CommSemiring R] [StarAddMonoid R]
 /-- The star algebra equivalence obtained by restricting `Unitization.inrNonUnitalStarAlgHom`
 to its range. -/
 @[simps!]
-def inrRangeEquiv (R A : Type*) [CommSemiring R] [StarAddMonoid R] [NonUnitalSemiring A]
+def inrRangeEquiv (R A : Type*) [Semiring R] [IsMulCommutative R] [StarAddMonoid R] [NonUnitalSemiring A]
     [Star A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] :
     A ≃⋆ₐ[R] NonUnitalStarAlgHom.range (inrNonUnitalStarAlgHom R A) :=
   StarAlgEquiv.ofLeftInverse' (g := fun a ↦ a.snd) (snd_inr R ·)
@@ -702,7 +702,7 @@ end coe
 
 section AlgHom
 
-variable {S R A : Type*} [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A] [Module R A]
+variable {S R A : Type*} [Semiring S] [IsMulCommutative S] [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [Module R A]
   [SMulCommClass R A A] [IsScalarTower R A A] {B : Type*} [Semiring B] [Algebra S B] [Algebra S R]
   [DistribMulAction S A] [IsScalarTower S R A] {C : Type*} [Semiring C] [Algebra R C]
 
@@ -784,7 +784,7 @@ end AlgHom
 
 section StarAlgHom
 
-variable {R A C : Type*} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
+variable {R A C : Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [Semiring C] [Algebra R C] [StarRing C]
 
@@ -818,7 +818,7 @@ end StarAlgHom
 
 section StarMap
 
-variable {R A B C : Type*} [CommSemiring R] [StarRing R]
+variable {R A B C : Type*} [Semiring R] [IsMulCommutative R] [StarRing R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalSemiring B] [StarRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 variable [NonUnitalSemiring C] [StarRing C] [Module R C] [SMulCommClass R C C] [IsScalarTower R C C]
@@ -892,7 +892,7 @@ variable (R) in
 lemma _root_.IsSelfAdjoint.inr (ha : IsSelfAdjoint a) : IsSelfAdjoint (a : Unitization R A) :=
   isSelfAdjoint_inr.mpr ha
 
-variable [AddCommMonoid A] [Mul A] [SMulWithZero R A]
+variable [AddMonoid A] [IsAddCommutative A] [Mul A] [SMulWithZero R A]
 
 @[simp]
 lemma isStarNormal_inr : IsStarNormal (a : Unitization R A) ↔ IsStarNormal a := by

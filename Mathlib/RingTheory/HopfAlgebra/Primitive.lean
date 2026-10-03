@@ -28,7 +28,7 @@ public section
 
 open Bialgebra HopfAlgebra
 
-variable {R A : Type*} [CommSemiring R] [Ring A] [HopfAlgebra R A] {a : A}
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [HopfAlgebra R A] {a : A}
 
 namespace Bialgebra.IsPrimitiveElem
 

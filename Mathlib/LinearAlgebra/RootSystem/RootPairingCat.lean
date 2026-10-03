@@ -36,17 +36,17 @@ noncomputable section
 
 universe v u
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 /-- Objects in the category of root pairings. -/
-structure RootPairingCat (R : Type u) [CommRing R] where
+structure RootPairingCat (R : Type u) [Ring R] [IsMulCommutative R] where
   /-- The weight space of a root pairing. -/
   weight : Type v
-  [weightIsAddCommGroup : AddCommGroup weight]
+  [weightIsAddCommGroup : AddGroup weight] [IsAddCommutative weight]
   [weightIsModule : Module R weight]
   /-- The coweight space of a root pairing. -/
   coweight : Type v
-  [coweightIsAddCommGroup : AddCommGroup coweight]
+  [coweightIsAddCommGroup : AddGroup coweight] [IsAddCommutative coweight]
   [coweightIsModule : Module R coweight]
   /-- The set that indexes roots and coroots. -/
   index : Type v

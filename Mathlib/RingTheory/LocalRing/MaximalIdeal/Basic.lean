@@ -25,7 +25,7 @@ variable {R K : Type*}
 
 section CommSemiring
 
-variable [CommSemiring R] [IsLocalRing R]
+variable [Semiring R] [IsMulCommutative R] [IsLocalRing R]
 
 @[simp]
 theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
@@ -92,7 +92,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [IsLocalRing R]
+variable [Ring R] [IsMulCommutative R] [IsLocalRing R]
 
 theorem maximalIdeal_le_jacobson (I : Ideal R) :
     IsLocalRing.maximalIdeal R ≤ I.jacobson :=
@@ -111,7 +111,7 @@ end CommRing
 
 section
 
-variable [CommRing R] [IsLocalRing R]
+variable [Ring R] [IsMulCommutative R] [IsLocalRing R]
 
 theorem ker_eq_maximalIdeal [DivisionRing K] (φ : R →+* K) (hφ : Function.Surjective φ) :
     RingHom.ker φ = maximalIdeal R :=

@@ -56,7 +56,7 @@ open scoped Pointwise
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
-protected def pointwiseMulSemiringAction {R : Type*} [CommRing R] [MulSemiringAction M R] :
+protected def pointwiseMulSemiringAction {R : Type*} [Ring R] [IsMulCommutative R] [MulSemiringAction M R] :
     MulSemiringAction M (Ideal R) where
   smul_one a := by simp only [Ideal.one_eq_top]; exact Ideal.map_top _
   smul_mul a I J := Ideal.map_mul (MulSemiringAction.toRingHom _ _ a) I J

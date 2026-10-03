@@ -26,7 +26,7 @@ this API can be used to remove Noetherian hypothesis in certain cases.
 
 open TensorProduct
 
-variable {R S ι σ : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S ι σ : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 variable {P : Algebra.Presentation R S ι σ}
 
@@ -84,7 +84,7 @@ A ring `R₀` has the coefficients of the presentation `P` if the coefficients o
 lie in the image of `R₀` in `R`.
 The smallest subring of `R` satisfying this is given by `Algebra.Presentation.Core P`.
 -/
-class HasCoeffs (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S]
+class HasCoeffs (R₀ : Type*) [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S]
     [IsScalarTower R₀ R S] where
   coeffs_subset_range : P.coeffs ⊆ Set.range (algebraMap R₀ R)
 
@@ -94,13 +94,13 @@ instance : P.HasCoeffs P.Core where
     refine subset_trans P.coeffs_subset_core ?_
     simp [Core, Subalgebra.algebraMap_eq]
 
-variable (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+variable (R₀ : Type*) [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
   [P.HasCoeffs R₀]
 
 lemma coeffs_subset_range : (P.coeffs : Set R) ⊆ Set.range (algebraMap R₀ R) :=
   HasCoeffs.coeffs_subset_range
 
-lemma HasCoeffs.of_isScalarTower {R₁ : Type*} [CommRing R₁] [Algebra R₀ R₁] [Algebra R₁ R]
+lemma HasCoeffs.of_isScalarTower {R₁ : Type*} [Ring R₁] [IsMulCommutative R₁] [Algebra R₀ R₁] [Algebra R₁ R]
     [IsScalarTower R₀ R₁ R] [Algebra R₁ S] [IsScalarTower R₁ R S] :
     P.HasCoeffs R₁ := by
   refine ⟨subset_trans (P.coeffs_subset_range R₀) ?_⟩
@@ -223,7 +223,7 @@ end Algebra.Presentation
 namespace Algebra.PreSubmersivePresentation
 
 variable (P : Algebra.PreSubmersivePresentation R S ι σ)
-variable (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+variable (R₀ : Type*) [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
   [P.HasCoeffs R₀]
 
 /-- The presubmersive presentation on `P.ModelOfHasCoeffs R₀` provided `P.HasCoeffs R₀`. -/
@@ -284,11 +284,11 @@ lemma coeffs_toPresentation_subset_coeffs : P.toPresentation.coeffs ⊆ P.coeffs
 
 /-- A type class witnessing the fact that `R₀` contains enough coefficients to descend
 `P` to a submersive presentation. -/
-class HasCoeffs (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S]
+class HasCoeffs (R₀ : Type*) [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S]
     [IsScalarTower R₀ R S] where
   coeffs_subset_range : P.coeffs ⊆ ↑(algebraMap R₀ R).range
 
-variable (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+variable (R₀ : Type*) [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
   [P.HasCoeffs R₀]
 
 instance (priority := low) : P.toPresentation.HasCoeffs R₀ where

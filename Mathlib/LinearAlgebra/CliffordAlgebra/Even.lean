@@ -38,7 +38,7 @@ choosing `S` to itself be a submodule of morphisms.
 
 namespace CliffordAlgebra
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable {Q : QuadraticForm R M}
 
 -- put this after `Q` since we want to talk about morphisms from `CliffordAlgebra Q` to `A` and

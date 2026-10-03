@@ -41,7 +41,7 @@ associated primes.
 
 universe u v
 
-variable {A : Type u} [CommRing A] {M : Type v} [AddCommGroup M] [Module A M]
+variable {A : Type u} [Ring A] [IsMulCommutative A] {M : Type v} [AddGroup M] [IsAddCommutative M] [Module A M]
 
 /-- A `Prop` asserting that two submodules `N₁, N₂` satisfy `N₁ ≤ N₂` and
 `N₂ / N₁` is isomorphic to `A / p` for some prime ideal `p` of `A`. -/
@@ -114,20 +114,20 @@ https://github.com/leanprover/lean4/issues/4246
 currently it is induction for `Module.Finite A M`. -/
 @[elab_as_elim]
 theorem IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
-    ⦃M : Type v⦄ [AddCommGroup M] [Module A M] (_ : Module.Finite A M)
-    {motive : (N : Type v) → [AddCommGroup N] → [Module A N] → [Module.Finite A N] → Prop}
-    (subsingleton : (N : Type v) → [AddCommGroup N] → [Module A N] → [Module.Finite A N] →
+    ⦃M : Type v⦄ [AddGroup M] [IsAddCommutative M] [Module A M] (_ : Module.Finite A M)
+    {motive : (N : Type v) → [AddGroup N] [IsAddCommutative N] → [Module A N] → [Module.Finite A N] → Prop}
+    (subsingleton : (N : Type v) → [AddGroup N] [IsAddCommutative N] → [Module A N] → [Module.Finite A N] →
       [Subsingleton N] → motive N)
-    (quotient : (N : Type v) → [AddCommGroup N] → [Module A N] → [Module.Finite A N] →
+    (quotient : (N : Type v) → [AddGroup N] [IsAddCommutative N] → [Module A N] → [Module.Finite A N] →
       (p : PrimeSpectrum A) → (N ≃ₗ[A] A ⧸ p.1) → motive N)
-    (exact : (N₁ : Type v) → [AddCommGroup N₁] → [Module A N₁] → [Module.Finite A N₁] →
-      (N₂ : Type v) → [AddCommGroup N₂] → [Module A N₂] → [Module.Finite A N₂] →
-      (N₃ : Type v) → [AddCommGroup N₃] → [Module A N₃] → [Module.Finite A N₃] →
+    (exact : (N₁ : Type v) → [AddGroup N₁] [IsAddCommutative N₁] → [Module A N₁] → [Module.Finite A N₁] →
+      (N₂ : Type v) → [AddGroup N₂] [IsAddCommutative N₂] → [Module A N₂] → [Module.Finite A N₂] →
+      (N₃ : Type v) → [AddGroup N₃] [IsAddCommutative N₃] → [Module A N₃] → [Module.Finite A N₃] →
       (f : N₁ →ₗ[A] N₂) → (g : N₂ →ₗ[A] N₃) →
       Function.Injective f → Function.Surjective g → Function.Exact f g →
       motive N₁ → motive N₃ → motive N₂) : motive M := by
-  have equiv (N₁ : Type v) [AddCommGroup N₁] [Module A N₁] [Module.Finite A N₁]
-      (N₂ : Type v) [AddCommGroup N₂] [Module A N₂] [Module.Finite A N₂]
+  have equiv (N₁ : Type v) [AddGroup N₁] [IsAddCommutative N₁] [Module A N₁] [Module.Finite A N₁]
+      (N₂ : Type v) [AddGroup N₂] [IsAddCommutative N₂] [Module A N₂] [Module.Finite A N₂]
       (f : N₁ ≃ₗ[A] N₂) (h : motive N₁) : motive N₂ :=
     exact N₁ N₂ PUnit.{v + 1} f 0 f.injective (Function.surjective_to_subsingleton _)
       ((f.exact_zero_iff_surjective _).2 f.surjective) h (subsingleton _)

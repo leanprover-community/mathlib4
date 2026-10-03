@@ -359,7 +359,7 @@ structure CommSemiRingCat where
   of ::
   /-- The underlying type. -/
   carrier : Type u
-  [commSemiring : CommSemiring carrier]
+  [commSemiring : Semiring carrier] [IsMulCommutative carrier]
 
 section Notation
 
@@ -383,7 +383,7 @@ instance : CoeSort (CommSemiRingCat) (Type u) :=
 
 attribute [coe] CommSemiRingCat.carrier
 
-lemma coe_of (R : Type u) [CommSemiring R] : (of R : Type u) = R :=
+lemma coe_of (R : Type u) [Semiring R] [IsMulCommutative R] : (of R : Type u) = R :=
   rfl
 
 lemma of_carrier (R : CommSemiRingCat.{u}) : of R = R := rfl
@@ -410,7 +410,7 @@ abbrev Hom.hom {R S : CommSemiRingCat.{u}} (f : Hom R S) :=
   ConcreteCategory.hom (C := CommSemiRingCat) f
 
 /-- Typecheck a `RingHom` as a morphism in `CommSemiRingCat`. -/
-abbrev ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : of R ⟶ of S :=
+abbrev ofHom {R S : Type u} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (f : R →+* S) : of R ⟶ of S :=
   ConcreteCategory.ofHom (C := CommSemiRingCat) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
@@ -443,7 +443,7 @@ lemma hom_ext {R S : CommSemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f =
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
+lemma hom_ofHom {R S : Type u} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (f : R →+* S) :
     (ofHom f).hom = f := rfl
 
 @[simp]
@@ -451,15 +451,15 @@ lemma ofHom_hom {R S : CommSemiRingCat} (f : R ⟶ S) :
     ofHom (Hom.hom f) = f := rfl
 
 @[simp]
-lemma ofHom_id {R : Type u} [CommSemiring R] : ofHom (RingHom.id R) = 𝟙 (of R) := rfl
+lemma ofHom_id {R : Type u} [Semiring R] [IsMulCommutative R] : ofHom (RingHom.id R) = 𝟙 (of R) := rfl
 
 @[simp]
-lemma ofHom_comp {R S T : Type u} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+lemma ofHom_comp {R S T : Type u} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring T] [IsMulCommutative T]
     (f : R →+* S) (g : S →+* T) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
-lemma ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S]
+lemma ofHom_apply {R S : Type u} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
 lemma inv_hom_apply {R S : CommSemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
@@ -501,7 +501,7 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
 /-- Ring equivalences are isomorphisms in category of commutative semirings -/
 @[simps]
 def _root_.RingEquiv.toCommSemiRingCatIso
-    {R S : Type u} [CommSemiring R] [CommSemiring S] (e : R ≃+* S) :
+    {R S : Type u} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (e : R ≃+* S) :
     of R ≅ of S where
   hom := ofHom e
   inv := ofHom e.symm
@@ -522,7 +522,7 @@ structure CommRingCat where
   of ::
   /-- The underlying type. -/
   carrier : Type u
-  [commRing : CommRing carrier]
+  [commRing : Ring carrier] [IsMulCommutative carrier]
 
 section Notation
 
@@ -546,7 +546,7 @@ instance : CoeSort CommRingCat (Type u) :=
 
 attribute [coe] CommRingCat.carrier
 
-lemma coe_of (R : Type u) [CommRing R] : (of R : Type u) = R :=
+lemma coe_of (R : Type u) [Ring R] [IsMulCommutative R] : (of R : Type u) = R :=
   rfl
 
 lemma of_carrier (R : CommRingCat.{u}) : of R = R := rfl
@@ -573,7 +573,7 @@ abbrev Hom.hom {R S : CommRingCat.{u}} (f : Hom R S) :=
   ConcreteCategory.hom (C := CommRingCat) f
 
 /-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
-abbrev ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
+abbrev ofHom {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) : of R ⟶ of S :=
   ConcreteCategory.ofHom (C := CommRingCat) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
@@ -606,22 +606,22 @@ lemma hom_ext {R S : CommRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : (ofHom f).hom = f := rfl
+lemma hom_ofHom {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommRingCat} (f : R ⟶ S) :
     ofHom (Hom.hom f) = f := rfl
 
 @[simp]
-lemma ofHom_id {R : Type u} [CommRing R] : ofHom (RingHom.id R) = 𝟙 (of R) := rfl
+lemma ofHom_id {R : Type u} [Ring R] [IsMulCommutative R] : ofHom (RingHom.id R) = 𝟙 (of R) := rfl
 
 @[simp]
-lemma ofHom_comp {R S T : Type u} [CommRing R] [CommRing S] [CommRing T]
+lemma ofHom_comp {R S T : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
     (f : R →+* S) (g : S →+* T) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
-lemma ofHom_apply {R S : Type u} [CommRing R] [CommRing S]
+lemma ofHom_apply {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
 lemma inv_hom_apply {R S : CommRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
@@ -678,7 +678,7 @@ instance : HasForget₂ CommRingCat CommMonCat where
 /-- Ring equivalences are isomorphisms in category of commutative rings -/
 @[simps]
 def _root_.RingEquiv.toCommRingCatIso
-    {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S) :
+    {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (e : R ≃+* S) :
     of R ≅ of S where
   hom := ofHom e
   inv := ofHom e.symm

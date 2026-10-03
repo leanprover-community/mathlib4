@@ -260,7 +260,7 @@ theorem inv_le_self : f⁻¹ ≤ f ↔ f⁻¹ = f :=
 end InvolutiveInv
 
 @[to_additive (attr := simp)]
-lemma inv_atTop {G : Type*} [CommGroup G] [Preorder G] [IsOrderedMonoid G] :
+lemma inv_atTop {G : Type*} [Group G] [IsMulCommutative G] [Preorder G] [IsOrderedMonoid G] :
     (atTop : Filter G)⁻¹ = atBot :=
   (OrderIso.inv G).map_atTop
 
@@ -506,7 +506,7 @@ protected def semigroup [Semigroup α] : Semigroup (Filter α) where
 /-- `Filter α` is a `CommSemigroup` under pointwise operations if `α` is. -/
 @[to_additive (attr := instance_reducible)
   /-- `Filter α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
-protected def commSemigroup [CommSemigroup α] : CommSemigroup (Filter α) :=
+protected def commSemigroup [Semigroup α] [IsMulCommutative α] : CommSemigroup (Filter α) :=
   { Filter.semigroup with mul_comm := fun _ _ => map₂_comm mul_comm }
 
 section MulOneClass
@@ -619,7 +619,7 @@ end Monoid
 /-- `Filter α` is a `CommMonoid` under pointwise operations if `α` is. -/
 @[to_additive (attr := instance_reducible)
   /-- `Filter α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
-protected def commMonoid [CommMonoid α] : CommMonoid (Filter α) :=
+protected def commMonoid [Monoid α] [IsMulCommutative α] : CommMonoid (Filter α) :=
   { Filter.mulOneClass, Filter.commSemigroup with }
 
 section DivisionMonoid
@@ -666,7 +666,7 @@ end DivisionMonoid
 /-- `Filter α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive (attr := instance_reducible) subtractionCommMonoid
 /-- `Filter α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
-protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (Filter α) :=
+protected def divisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] : DivisionCommMonoid (Filter α) :=
   { Filter.divisionMonoid, Filter.commSemigroup with }
 
 /-- `Filter α` has distributive negation if `α` has. -/

@@ -57,7 +57,7 @@ variable (R A L : Type*)
 
 namespace LieAlgebra
 
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
 
 /-- A loop algebra is the base change of a Lie algebra `L` over `R` by `R[z,z⁻¹]`. We make a
 slightly more general definition which coincides with the Laurent polynomial construction when
@@ -74,7 +74,7 @@ def loopAlgebraEquivLaurent :
 namespace LoopAlgebra
 
 open DirectSum in
-noncomputable instance [DecidableEq A] [AddCommMonoid A] :
+noncomputable instance [DecidableEq A] [AddMonoid A] [IsAddCommutative A] :
     GradedLieAlgebra (fun a : A ↦ (decomposeTensor (AddMonoidAlgebra.grade R) L a)) where
   bracket_mem i j xi xj hi hj := by
     rw [decomposeTensor_apply] at hi hj ⊢
@@ -124,7 +124,7 @@ open Finsupp in
 /-- The residue pairing on the loop algebra.  When `A = ℤ` and the elements are viewed as Laurent
 polynomials with coefficients in `L`, the pairing is interpreted as `(f, g) ↦ Res f dg`. -/
 @[simps]
-def residuePairing [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R R]
+def residuePairing [AddGroup A] [IsAddCommutative A] [DistribSMul A R] [SMulCommClass A R R]
     (Φ : LinearMap.BilinForm R L) :
     LinearMap.BilinForm R (loopAlgebra R A L) where
   toFun f :=
@@ -150,7 +150,7 @@ def residuePairing [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R R]
 open LieModule in
 /-- A 2-cochain on a loop algebra given by an invariant bilinear form. When `A = ℤ`, the alternating
 condition amounts to the fact that Res f df = 0. -/
-def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+def twoCochainOfBilinear [Ring A] [IsMulCommutative A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : Φ.IsSymm) :
     Cohomology.twoCochain R (loopAlgebra R A L) (TrivialLieModule R (loopAlgebra R A L) R) where
   val := (residuePairing R A L Φ).compr₂ (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm
@@ -171,7 +171,7 @@ def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     · exact Or.inl <| by simpa using h
 
 @[simp]
-lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+lemma twoCochainOfBilinear_apply_apply [Ring A] [IsMulCommutative A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : Φ.IsSymm) (x y : loopAlgebra R A L) :
     twoCochainOfBilinear R A L Φ hΦ x y =
       (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm (residuePairing R A L Φ x y) :=
@@ -180,7 +180,7 @@ lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebr
 open LieModule in
 /-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
 @[simps]
-def twoCocycleOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+def twoCocycleOfBilinear [Ring A] [IsMulCommutative A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : Φ.lieInvariant L) (hΦs : Φ.IsSymm) :
     Cohomology.twoCocycle R (loopAlgebra R A L) (TrivialLieModule R (loopAlgebra R A L) R) where
   val := twoCochainOfBilinear R A L Φ hΦs

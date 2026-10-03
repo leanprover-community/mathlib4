@@ -36,9 +36,9 @@ bilinear, tensor, tensor product
 section Semiring
 
 variable {R R' R'' : Type*}
-variable [CommSemiring R] [Monoid R'] [Semiring R'']
+variable [Semiring R] [IsMulCommutative R] [Monoid R'] [Semiring R'']
 variable {A M N P S : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid S]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [AddMonoid S] [IsAddCommutative S]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
 variable [Module R M] [Module R N] [Module R S]
@@ -383,12 +383,12 @@ theorem ite_tmul (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
 theorem tmul_ite (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
     (x₁ ⊗ₜ[R] if P then x₂ else 0) = if P then x₁ ⊗ₜ x₂ else 0 := by split_ifs <;> simp
 
-lemma tmul_single {ι : Type*} [DecidableEq ι] {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+lemma tmul_single {ι : Type*} [DecidableEq ι] {M : ι → Type*} [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)]
     [∀ i, Module R (M i)] (i : ι) (x : N) (m : M i) (j : ι) :
     x ⊗ₜ[R] Pi.single i m j = (Pi.single i (x ⊗ₜ[R] m) : ∀ i, N ⊗[R] M i) j := by
   by_cases h : i = j <;> aesop
 
-lemma single_tmul {ι : Type*} [DecidableEq ι] {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+lemma single_tmul {ι : Type*} [DecidableEq ι] {M : ι → Type*} [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)]
     [∀ i, Module R (M i)] (i : ι) (x : N) (m : M i) (j : ι) :
     Pi.single i m j ⊗ₜ[R] x = (Pi.single i (m ⊗ₜ[R] x) : ∀ i, M i ⊗[R] N) j := by
   by_cases h : i = j <;> aesop

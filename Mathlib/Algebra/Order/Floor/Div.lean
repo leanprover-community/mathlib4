@@ -56,7 +56,7 @@ public section
 variable {ι α β : Type*}
 
 section OrderedAddCommMonoid
-variable (α β) [AddCommMonoid α] [PartialOrder α] [AddCommMonoid β] [PartialOrder β]
+variable (α β) [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [AddMonoid β] [IsAddCommutative β] [PartialOrder β]
   [SMulZeroClass α β]
 
 /-- Typeclass for division rounded down. For each `a > 0`, this asserts the existence of a right
@@ -124,7 +124,7 @@ end CeilDiv
 end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
-variable [AddCommMonoid α] [LinearOrder α] [AddCommMonoid β] [PartialOrder β] [SMulZeroClass α β]
+variable [AddMonoid α] [IsAddCommutative α] [LinearOrder α] [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [SMulZeroClass α β]
   [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b : β}
 
 lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
@@ -135,7 +135,7 @@ lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
 end LinearOrderedAddCommMonoid
 
 section OrderedSemiring
-variable [Semiring α] [PartialOrder α] [AddCommMonoid β] [PartialOrder β] [MulActionWithZero α β]
+variable [Semiring α] [PartialOrder α] [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [MulActionWithZero α β]
 
 section FloorDiv
 variable [FloorDiv α β] {a : α}
@@ -199,8 +199,8 @@ lemma ceilDiv_eq_add_pred_div (a b : ℕ) : a ⌈/⌉ b = (a + b - 1) / b := rfl
 end Nat
 
 namespace Pi
-variable {π : ι → Type*} [AddCommMonoid α] [PartialOrder α]
-  [∀ i, AddCommMonoid (π i)] [∀ i, PartialOrder (π i)]
+variable {π : ι → Type*} [AddMonoid α] [IsAddCommutative α] [PartialOrder α]
+  [∀ i, AddMonoid (π i)] [∀ i, IsAddCommutative (π i)] [∀ i, PartialOrder (π i)]
   [∀ i, SMulZeroClass α (π i)]
 
 section FloorDiv
@@ -234,8 +234,8 @@ end CeilDiv
 end Pi
 
 namespace Finsupp
-variable [AddCommMonoid α] [PartialOrder α]
-  [AddCommMonoid β] [PartialOrder β] [SMulZeroClass α β]
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α]
+  [AddMonoid β] [IsAddCommutative β] [PartialOrder β] [SMulZeroClass α β]
 
 section FloorDiv
 variable [FloorDiv α β] {f : ι →₀ β} {a : α}

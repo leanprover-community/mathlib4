@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.Noetherian.Defs
 
 public section
 
-variable {R M : Type*} [CommSemiring R] [TopologicalSpace R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [IsMulCommutative R] [TopologicalSpace R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable [TopologicalSpace M] [ContinuousAdd M] [ContinuousSMul R M]
 
 lemma Submodule.isCompact_of_fg [CompactSpace R] {N : Submodule R M} (hN : N.FG) :
@@ -40,7 +40,7 @@ lemma Module.Finite.compactSpace [CompactSpace R] [Module.Finite R M] : CompactS
   ⟨Submodule.isCompact_of_fg (Module.Finite.fg_top (R := R))⟩
 
 instance (priority := low) IsNoetherianRing.isClosed_ideal
-    {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
+    {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R] [IsTopologicalRing R]
     [IsNoetherianRing R] [CompactSpace R] [T2Space R] (I : Ideal R) :
     IsClosed (X := R) I :=
   (Ideal.isCompact_of_fg (IsNoetherian.noetherian I)).isClosed

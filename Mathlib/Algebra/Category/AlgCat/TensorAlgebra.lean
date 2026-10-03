@@ -29,11 +29,11 @@ namespace AlgCat
 
 /-- The functor sending an `R`-module `M` to its tensor algebra over `R`. -/
 @[simps]
-def tensorAlgebra (R : Type u) [CommRing R] : ModuleCat.{w} R ⥤ AlgCat.{max u w} R where
+def tensorAlgebra (R : Type u) [Ring R] [IsMulCommutative R] : ModuleCat.{w} R ⥤ AlgCat.{max u w} R where
   obj M := ↧(TensorAlgebra R M)
   map f := AlgCat.ofHom (TensorAlgebra.lift _ (TensorAlgebra.ι _ ∘ₗ f.hom))
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
@@ -54,7 +54,7 @@ def tensorAlgebraAdj : tensorAlgebra.{u} R ⊣ forget₂ (AlgCat.{u} R) (ModuleC
     ext
     simp
 
-instance (R : Type v) [CommRing R] [Small.{u} R] :
+instance (R : Type v) [Ring R] [IsMulCommutative R] [Small.{u} R] :
     (forget₂ (AlgCat.{u} R) (ModuleCat.{u} R)).IsRightAdjoint := by
   let e : AlgCat.{u} R ≌ AlgCat.{u} (Shrink.{u} R) :=
     restrictScalarsEquivalenceOfRingEquiv (Shrink.ringEquiv R)

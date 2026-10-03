@@ -39,19 +39,19 @@ public section
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]
-class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V]
+class SeparatingDual (R V : Type*) [Ring R] [AddGroup V] [IsAddCommutative V] [TopologicalSpace V]
     [TopologicalSpace R] [Module R V] : Prop where
   /-- Any nonzero vector can be mapped by a continuous linear map to a nonzero scalar. -/
   exists_ne_zero' : ∀ (x : V), x ≠ 0 → ∃ f : StrongDual R V, f x ≠ 0
 
-instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGroup E]
+instance {E : Type*} [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [IsTopologicalAddGroup E]
     [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] [T1Space E] : SeparatingDual ℝ E :=
   ⟨fun x hx ↦ by
     rcases geometric_hahn_banach_point_point hx.symm with ⟨f, hf⟩
     simp only [map_zero] at hf
     exact ⟨f, hf.ne'⟩⟩
 
-instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
+instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦
     let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
     let : Module ℝ E := .restrictScalars ℝ 𝕜 E
@@ -63,7 +63,7 @@ namespace SeparatingDual
 
 section Ring
 
-variable {R V : Type*} [Ring R] [AddCommGroup V] [TopologicalSpace V]
+variable {R V : Type*} [Ring R] [AddGroup V] [IsAddCommutative V] [TopologicalSpace V]
   [TopologicalSpace R] [Module R V] [SeparatingDual R V]
 
 lemma exists_ne_zero {x : V} (hx : x ≠ 0) :
@@ -102,7 +102,7 @@ end Ring
 
 section Field
 
-variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [TopologicalSpace V]
+variable {R V : Type*} [Field R] [AddGroup V] [IsAddCommutative V] [TopologicalSpace R] [TopologicalSpace V]
   [IsTopologicalRing R] [Module R V]
 
 -- TODO (@alreadydone): this could generalize to CommRing R if we were to add a section
@@ -120,7 +120,7 @@ open Function
 /-- Given a finite-dimensional subspace `W` of a space `V` with separating dual, any
   linear functional on `W` extends to a continuous linear functional on `V`.
   This is stated more generally for an injective linear map from `W` to `V`. -/
-theorem dualMap_surjective_iff {W} [AddCommGroup W] [Module R W] [FiniteDimensional R W]
+theorem dualMap_surjective_iff {W} [AddGroup W] [IsAddCommutative W] [Module R W] [FiniteDimensional R W]
     {f : W →ₗ[R] V} : Surjective (f.dualMap ∘ ContinuousLinearMap.toLinearMap) ↔ Injective f := by
   constructor <;> intro hf
   · exact LinearMap.dualMap_surjective_iff.mp hf.of_comp
@@ -134,7 +134,7 @@ open ContinuousLinearMap in
 in the normed setting, we show that if `V` and `W` are nontrivial topological vector spaces over a
 topological field `R` that acts continuously on `W`, and if `SeparatingDual R V`, there are
 nontrivial continuous `R`-linear operators between `V` and `W`. -/
-instance (W) [AddCommGroup W] [TopologicalSpace W] [Module R W] [Nontrivial W]
+instance (W) [AddGroup W] [IsAddCommutative W] [TopologicalSpace W] [Module R W] [Nontrivial W]
     [ContinuousSMul R W] [Nontrivial V] : Nontrivial (V →L[R] W) := by
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   obtain ⟨w, hw⟩ := exists_ne (0 : W)
@@ -159,7 +159,7 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
 variable [IsTopologicalAddGroup V] [ContinuousSMul R V]
 
 section algebra
-variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebra S R]
+variable {S : Type*} [Semiring S] [IsMulCommutative S] [Module S V] [SMulCommClass R S V] [Algebra S R]
   [IsScalarTower S R V] [ContinuousConstSMul S V]
 
 /-- The center of continuous linear maps on a topological vector space
@@ -178,7 +178,7 @@ instance _root_.Algebra.IsCentral.instContinuousLinearMap [Algebra.IsCentral S R
 
 open ContinuousLinearMap ContinuousLinearEquiv in
 theorem _root_.ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff
-    {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]
+    {R V W : Type*} [NormedField R] [AddGroup V] [IsAddCommutative V] [AddGroup W] [IsAddCommutative W] [TopologicalSpace R]
     [TopologicalSpace V] [TopologicalSpace W] [IsTopologicalRing R] [Module R V] [Module R W]
     [SeparatingDual R V] [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
     [ContinuousSMul R V] [ContinuousSMul R W] (f g : V ≃L[R] W) :

@@ -22,8 +22,8 @@ open TensorProduct
 
 namespace LinearMap
 
-variable {R M N} (A) [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
-variable [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower R A N]
+variable {R M N} (A) [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A] [AddMonoid M] [IsAddCommutative M]
+variable [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N] [Module A N] [IsScalarTower R A N]
 
 /-- If `M` is an `R`-module and `N` is an `A`-module, then `A`-linear maps
 `A ⊗[R] M →ₗ[A] N` correspond to `R`-linear maps `M →ₗ[R] N` by composing with
@@ -45,7 +45,7 @@ lemma liftBaseChange_one_tmul (l : M →ₗ[R] N) (y) : l.liftBaseChange A (1 �
 lemma liftBaseChangeEquiv_symm_apply (l : A ⊗[R] M →ₗ[A] N) (x) :
     (liftBaseChangeEquiv A).symm l x = l (1 ⊗ₜ x) := rfl
 
-lemma liftBaseChange_comp {P} [AddCommMonoid P] [Module A P] [Module R P] [IsScalarTower R A P]
+lemma liftBaseChange_comp {P} [AddMonoid P] [IsAddCommutative P] [Module A P] [Module R P] [IsScalarTower R A P]
     (l : M →ₗ[R] N) (l' : N →ₗ[A] P) :
       l' ∘ₗ l.liftBaseChange A = (l'.restrictScalars R ∘ₗ l).liftBaseChange A := by
   ext

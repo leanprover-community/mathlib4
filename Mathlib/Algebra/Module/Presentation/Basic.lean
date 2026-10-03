@@ -73,7 +73,7 @@ def toQuotient : (relations.G →₀ A) →ₗ[A] relations.Quotient := Submodul
 
 variable {relations} in
 @[ext]
-lemma Quotient.linearMap_ext {M : Type v} [AddCommGroup M] [Module A M]
+lemma Quotient.linearMap_ext {M : Type v} [AddGroup M] [IsAddCommutative M] [Module A M]
     {f f' : relations.Quotient →ₗ[A] M}
     (h : ∀ (g : relations.G), f (relations.toQuotient (Finsupp.single g 1)) =
       f' (relations.toQuotient (Finsupp.single g 1))) :
@@ -118,7 +118,7 @@ lemma toQuotient_map_apply (x : relations.R →₀ A) :
     relations.toQuotient (relations.map x) = 0 :=
   congr($relations.toQuotient_map x)
 
-variable (M : Type v) [AddCommGroup M] [Module A M]
+variable (M : Type v) [AddGroup M] [IsAddCommutative M] [Module A M]
 
 /-- The type of solutions in a module `M` of the equations given by `relations : Relations A`. -/
 @[ext]
@@ -178,7 +178,7 @@ lemma fromQuotient_comp_toQuotient :
 lemma fromQuotient_toQuotient (x : relations.G →₀ A) :
     solution.fromQuotient (relations.toQuotient x) = solution.π x := rfl
 
-variable {N : Type v'} [AddCommGroup N] [Module A N] (f : M →ₗ[A] N)
+variable {N : Type v'} [AddGroup N] [IsAddCommutative N] [Module A N] (f : M →ₗ[A] N)
 
 /-- The image of a solution to `relations : Relation A` by a linear map `M →ₗ[A] N`. -/
 @[simps]
@@ -189,7 +189,7 @@ def postcomp : relations.Solution N where
     simp [this]
 
 @[simp]
-lemma postcomp_comp {N' : Type v''} [AddCommGroup N'] [Module A N'] (g : N →ₗ[A] N') :
+lemma postcomp_comp {N' : Type v''} [AddGroup N'] [IsAddCommutative N'] [Module A N'] (g : N →ₗ[A] N') :
     solution.postcomp (g.comp f) = (solution.postcomp f).postcomp g := rfl
 
 @[simp]
@@ -312,7 +312,7 @@ lemma exact : Function.Exact relations.map solution.π := by
   rw [LinearMap.exact_iff, range_map, ← solution.injective_fromQuotient_iff_ker_π_eq_span]
   exact h.bijective.1
 
-variable {N : Type v'} [AddCommGroup N] [Module A N]
+variable {N : Type v'} [AddGroup N] [IsAddCommutative N] [Module A N]
 
 /-- If `M` admits a presentation by generators and relations, and we have a solution of the
 same equations in a module `N`, then this is the canonical induced linear map `M →ₗ[A] N`. -/
@@ -421,10 +421,10 @@ an auxiliary universe `w'`. See `IsPresentationCore.isPresentation`. -/
 structure IsPresentationCore (solution : relations.Solution M) where
   /-- any solution in a module `N : Type w'` is obtained in a unique way
   by postcomposing `solution : relations.Solution M` by a linear map `M →ₗ[A] N`. -/
-  desc {N : Type w'} [AddCommGroup N] [Module A N] (s : relations.Solution N) : M →ₗ[A] N
-  postcomp_desc {N : Type w'} [AddCommGroup N] [Module A N] (s : relations.Solution N) :
+  desc {N : Type w'} [AddGroup N] [IsAddCommutative N] [Module A N] (s : relations.Solution N) : M →ₗ[A] N
+  postcomp_desc {N : Type w'} [AddGroup N] [IsAddCommutative N] [Module A N] (s : relations.Solution N) :
     solution.postcomp (desc s) = s
-  postcomp_injective {N : Type w'} [AddCommGroup N] [Module A N] {f f' : M →ₗ[A] N}
+  postcomp_injective {N : Type w'} [AddGroup N] [IsAddCommutative N] [Module A N] {f f' : M →ₗ[A] N}
       (h : solution.postcomp f = solution.postcomp f') : f = f'
 
 namespace IsPresentationCore
@@ -433,7 +433,7 @@ variable {solution : relations.Solution M}
 
 @[simp]
 lemma desc_var (h : IsPresentationCore.{w'} solution)
-    {N : Type w'} [AddCommGroup N] [Module A N] (s : relations.Solution N) (g : relations.G) :
+    {N : Type w'} [AddGroup N] [IsAddCommutative N] [Module A N] (s : relations.Solution N) (g : relations.G) :
     h.desc s (solution.var g) = s.var g :=
   congr_var (h.postcomp_desc s) g
 
@@ -484,7 +484,7 @@ end Solution
 
 end Relations
 
-variable (M : Type v) [AddCommGroup M] [Module A M]
+variable (M : Type v) [AddGroup M] [IsAddCommutative M] [Module A M]
 
 set_option linter.checkUnivs false in
 /-- Given an `A`-module `M`, a term in this type is a presentation by `M` by
@@ -507,7 +507,7 @@ def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
 a module `M` and a linear equivalence `e : M ≃ₗ[A] N`. -/
 @[simps! toRelations toSolution]
 def Presentation.ofLinearEquiv (pres : Presentation.{w₀, w₁} A M)
-    {N : Type v'} [AddCommGroup N] [Module A N] (e : M ≃ₗ[A] N) :
+    {N : Type v'} [AddGroup N] [IsAddCommutative N] [Module A N] (e : M ≃ₗ[A] N) :
     Presentation A N :=
   ofIsPresentation (pres.toIsPresentation.of_linearEquiv e)
 

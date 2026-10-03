@@ -30,12 +30,12 @@ The following variables generalize the setting where:
 - `A` is a Lie ideal of `L`.
 Besides generalizing, it also make the proof of `lie_stable` syntactically smoother.
 -/
-variable {R L A V : Type*} [CommRing R]
+variable {R L A V : Type*} [Ring R] [IsMulCommutative R]
 variable [IsPrincipalIdealRing R] [IsDomain R] [CharZero R]
 variable [LieRing L] [LieAlgebra R L]
 variable [LieRing A] [LieAlgebra R A]
 variable [Bracket L A] [Bracket A L]
-variable [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
+variable [AddGroup V] [IsAddCommutative V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable [LieRingModule L V] [LieModule R L V]
 variable [LieRingModule A V] [LieModule R A V]
 variable [IsLieTower L A V] [IsLieTower A L V]
@@ -158,7 +158,7 @@ section
 
 variable {k : Type*} [Field k]
 variable {L : Type*} [LieRing L] [LieAlgebra k L]
-variable {V : Type*} [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModule k L V]
+variable {V : Type*} [AddGroup V] [IsAddCommutative V] [Module k V] [LieRingModule L V] [LieModule k L V]
 
 variable [CharZero k] [Module.Finite k V]
 

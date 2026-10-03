@@ -183,7 +183,7 @@ theorem induction_on {p : v.Completion → Prop} (x : v.Completion) (hp : IsClos
 
 section Algebra
 
-variable (R : Type*) [CommSemiring R] [Algebra R (WithAbs v.1)]
+variable (R : Type*) [Semiring R] [IsMulCommutative R] [Algebra R (WithAbs v.1)]
   [UniformContinuousConstSMul R (WithAbs v.1)]
 
 instance : Algebra R v.Completion := fast_instance% (equivCompletion v).algebra R

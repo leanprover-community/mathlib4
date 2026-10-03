@@ -25,8 +25,8 @@ open Asymptotics
 namespace ContinuousLinearMap
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
 variable (f : E →L[𝕜] F)
 variable {x : E}
 variable {s : Set E}
@@ -90,8 +90,8 @@ end ContinuousLinearMap
 
 namespace IsBoundedLinearMap
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 variable {f : E → F}
 variable {x : E}
 variable {s : Set E}

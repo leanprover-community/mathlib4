@@ -26,8 +26,8 @@ open Set Filter TopologicalSpace ENNReal
 
 namespace MeasureTheory
 
-variable {α E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup G]
+variable {α E F G : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [NormedAddGroup G] [IsAddCommutative G]
   {m : MeasurableSpace α} {μ μ' μ'' : Measure α}
 
 section Function

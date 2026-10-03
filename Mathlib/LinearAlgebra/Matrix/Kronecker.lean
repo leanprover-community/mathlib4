@@ -199,7 +199,7 @@ theorem kroneckerMap_assoc₁ {δ ξ ω : Type*} (f : α → β → γ) (g : γ 
 /-- When `f` is bilinear then `Matrix.kroneckerMap f` is also bilinear. -/
 @[simps!]
 def kroneckerMapBilinear [Semiring S] [Semiring R]
-    [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
+    [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] [AddMonoid γ] [IsAddCommutative γ]
     [Module R α] [Module R γ] [Module S β] [Module S γ] [SMulCommClass S R γ]
     (f : α →ₗ[R] β →ₗ[S] γ) :
     Matrix l m α →ₗ[R] Matrix n p β →ₗ[S] Matrix (l × n) (m × p) γ :=
@@ -228,7 +228,7 @@ theorem kroneckerMapBilinear_mul_mul [Semiring S] [Semiring R] [Fintype m] [Fint
 
 This is primarily used with `R = ℕ` to prove `Matrix.trace_kronecker`. -/
 theorem trace_kroneckerMapBilinear [Semiring S] [Semiring R] [Fintype m] [Fintype n]
-    [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
+    [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] [AddMonoid γ] [IsAddCommutative γ]
     [Module R α] [Module R γ] [Module S β] [Module S γ] [SMulCommClass S R γ]
     (f : α →ₗ[R] β →ₗ[S] γ)
     (A : Matrix m m α) (B : Matrix n n β) :
@@ -240,7 +240,7 @@ theorem trace_kroneckerMapBilinear [Semiring S] [Semiring R] [Fintype m] [Fintyp
 
 This is primarily used with `R = ℕ` to prove `Matrix.det_kronecker`. -/
 theorem det_kroneckerMapBilinear [Semiring S] [Semiring R] [Fintype m] [Fintype n] [DecidableEq m]
-    [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β] [CommRing γ] [Module R α] [Module S β]
+    [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β] [Ring γ] [IsMulCommutative γ] [Module R α] [Module S β]
     [Module R γ] [Module S γ] [SMulCommClass S R γ]
     (f : α →ₗ[R] β →ₗ[S] γ) (h_comm : ∀ a b a' b', f (a * b) (a' * b') = f a a' * f b b')
     (A : Matrix m m α) (B : Matrix n n β) :
@@ -285,7 +285,7 @@ theorem kronecker_apply [Mul α] (A : Matrix l m α) (B : Matrix n p α) (i₁ i
   rfl
 
 /-- `Matrix.kronecker` as a bilinear map. -/
-def kroneckerBilinear [CommSemiring R] [Semiring α] [Algebra R α] :
+def kroneckerBilinear [Semiring R] [IsMulCommutative R] [Semiring α] [Algebra R α] :
     Matrix l m α →ₗ[R] Matrix n p α →ₗ[R] Matrix (l × n) (m × p) α :=
   kroneckerMapBilinear (Algebra.lmul R α)
 
@@ -379,7 +379,7 @@ theorem one_kronecker [MulZeroOneClass α] [DecidableEq l] (B : Matrix m n α) :
   (diagonal_kronecker _ _).trans <|
     congr_arg _ <| congr_arg _ <| funext fun _ => Matrix.ext fun _ _ => one_mul _
 
-theorem mul_kronecker_mul [Fintype m] [Fintype m'] [CommSemiring α] (A : Matrix l m α)
+theorem mul_kronecker_mul [Fintype m] [Fintype m'] [Semiring α] [IsMulCommutative α] (A : Matrix l m α)
     (B : Matrix m n α) (A' : Matrix l' m' α) (B' : Matrix m' n' α) :
     (A * B) ⊗ₖ (A' * B') = A ⊗ₖ A' * B ⊗ₖ B' :=
   kroneckerMapBilinear_mul_mul (Algebra.lmul ℕ α).toLinearMap mul_mul_mul_comm A B A' B'
@@ -399,13 +399,13 @@ theorem trace_kronecker [Fintype m] [Fintype n] [Semiring α] (A : Matrix m m α
     trace (A ⊗ₖ B) = trace A * trace B :=
   trace_kroneckerMapBilinear (Algebra.lmul ℕ α).toLinearMap _ _
 
-theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommRing R]
+theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [Ring R] [IsMulCommutative R]
     (A : Matrix m m R) (B : Matrix n n R) :
     det (A ⊗ₖ B) = det A ^ Fintype.card n * det B ^ Fintype.card m := by
   refine (det_kroneckerMapBilinear (Algebra.lmul ℕ R).toLinearMap mul_mul_mul_comm _ _).trans ?_
   simp
 
-theorem conjTranspose_kronecker [CommMagma R] [StarMul R] (x : Matrix l m R) (y : Matrix n p R) :
+theorem conjTranspose_kronecker [Mul R] [IsMulCommutative R] [StarMul R] (x : Matrix l m R) (y : Matrix n p R) :
     (x ⊗ₖ y)ᴴ = xᴴ ⊗ₖ yᴴ := by
   ext; simp
 
@@ -428,8 +428,8 @@ open Matrix TensorProduct
 
 section Module
 
-variable [CommSemiring R]
-variable [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
+variable [Semiring R] [IsMulCommutative R]
+variable [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] [AddMonoid γ] [IsAddCommutative γ]
 variable [Module R α] [Module R β] [Module R γ]
 
 /-- The Kronecker tensor product. This is just a shorthand for `kroneckerMap (⊗ₜ)`.
@@ -542,11 +542,11 @@ open scoped Kronecker
 open Algebra.TensorProduct
 
 section Semiring
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 @[simp]
 theorem one_kroneckerTMul_one
-    [AddCommMonoidWithOne α] [AddCommMonoidWithOne β] [Module R α] [Module R β]
+    [AddMonoidWithOne α] [IsAddCommutative α] [AddMonoidWithOne β] [IsAddCommutative β] [Module R α] [Module R β]
     [DecidableEq m] [DecidableEq n] :
     (1 : Matrix m m α) ⊗ₖₜ[R] (1 : Matrix n n β) = 1 :=
   kroneckerMap_one_one _ (zero_tmul _) (tmul_zero _) rfl
@@ -564,7 +564,7 @@ end Semiring
 
 section CommRing
 
-variable [CommRing R] [CommRing α] [CommRing β] [Algebra R α] [Algebra R β]
+variable [Ring R] [IsMulCommutative R] [Ring α] [IsMulCommutative α] [Ring β] [IsMulCommutative β] [Algebra R α] [Algebra R β]
 
 unseal mul in
 theorem det_kroneckerTMul [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]

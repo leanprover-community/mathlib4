@@ -55,7 +55,7 @@ section BilinForm
 
 namespace LinearMap
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
 
 /-- Construct a seminorm from a linear form `f : E →ₗ[𝕜] 𝕜` over a normed field `𝕜` by
 `fun x => ‖f x‖` -/
@@ -102,7 +102,7 @@ section
 section TopologicalRing
 
 variable [Finite ι] [Field 𝕜] [t𝕜 : TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [T0Space 𝕜]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [T0Space 𝕜]
 
 /-- A linear functional `φ` can be expressed as a linear combination of linear functionals `f₁,…,fₙ`
 if and only if `φ` is continuous with respect to the topology induced by `f₁,…,fₙ`. See
@@ -127,7 +127,7 @@ end TopologicalRing
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 /-- A linear functional `φ` is in the span of a collection of linear functionals if and only if `φ`
 is continuous with respect to the topology induced by the collection of linear functionals. See
@@ -177,7 +177,7 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
     exact ⟨s, C, hC⟩
   · exact WithSeminorms.continuous_normedSpace_rng _ this _ H
 
-variable [AddCommGroup F] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
+variable [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 /-- The Weak Representation Theorem: Every continuous functional on `E` endowed with
 the `σ(E, F; B)`-topology is of the form `x ↦ B(x, y)` for some `y : F`. -/
@@ -209,7 +209,7 @@ end BilinForm
 
 section Topology
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
 
 theorem LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     WithSeminorms (LinearMap.toSeminormFamily B : F → Seminorm 𝕜 (WeakBilin B)) :=
@@ -225,7 +225,7 @@ end Topology
 
 section LocallyConvex
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
 variable [NormedSpace ℝ 𝕜] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
 instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :

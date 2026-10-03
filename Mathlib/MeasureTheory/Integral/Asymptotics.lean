@@ -30,13 +30,13 @@ public section
 
 open Asymptotics MeasureTheory Set Filter
 
-variable {α E F : Type*} [NormedAddCommGroup E] {f : α → E} {g : α → F} {a : α} {l : Filter α}
+variable {α E F : Type*} [NormedAddGroup E] [IsAddCommutative E] {f : α → E} {g : α → F} {a : α} {l : Filter α}
 
 namespace Asymptotics
 
 section Basic
 
-variable [MeasurableSpace α] [NormedAddCommGroup F] {μ : Measure α}
+variable [MeasurableSpace α] [NormedAddGroup F] [IsAddCommutative F] {μ : Measure α}
 
 /-- If `f = O[l] g` on measurably generated `l`, `f` is strongly measurable at `l`,
 and `g` is integrable at `l`, then `f` is integrable at `l`. -/
@@ -78,7 +78,7 @@ theorem IsBigO.eventually_integrableOn [Norm F]
   intro y hy
   exact ht (y, x) <| huv ⟨hu hy, hx.2⟩
 
-variable [NormedSpace ℝ E] [NormedAddCommGroup F]
+variable [NormedSpace ℝ E] [NormedAddGroup F] [IsAddCommutative F]
 
 /-- Let `f : X x Y → Z`. If as `y` tends to `l`, `f(x, y) = O(g(y))` uniformly on `s : Set X`
 of finite measure, then the integral of `f` along `s` is `O(g(y))`. -/
@@ -96,7 +96,7 @@ theorem IsBigO.set_integral_isBigO (hf : f =O[𝓟 s ×ˢ l] (g ∘ Prod.snd)) (
 end Asymptotics
 
 variable [TopologicalSpace α] [SecondCountableTopology α] [MeasurableSpace α] {μ : Measure α}
-  [NormedAddCommGroup F]
+  [NormedAddGroup F] [IsAddCommutative F]
 
 namespace MeasureTheory
 
@@ -159,7 +159,7 @@ end LinearOrder
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [CompactIccSpace α]
+variable [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α] [CompactIccSpace α]
 
 /-- If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g`, for some
 `g` integrable at `atTop`, then `f` is integrable. -/

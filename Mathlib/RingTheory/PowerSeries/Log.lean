@@ -42,7 +42,7 @@ over ℚ-algebras and establishes its key properties.
 
 namespace PowerSeries
 
-variable (A : Type*) [CommRing A] [Algebra ℚ A]
+variable (A : Type*) [Ring A] [IsMulCommutative A] [Algebra ℚ A]
 
 /-- Power series for `log(1 + X) = X - X²/2 + X³/3 - ⋯`. -/
 def log : PowerSeries A :=
@@ -60,7 +60,7 @@ theorem constantCoeff_log : constantCoeff (log A) = 0 := by
   simp [← coeff_zero_eq_constantCoeff_apply]
 
 @[simp]
-theorem map_log {A' : Type*} [CommRing A'] [Algebra ℚ A'] (f : A →+* A') :
+theorem map_log {A' : Type*} [Ring A'] [IsMulCommutative A'] [Algebra ℚ A'] (f : A →+* A') :
     map f (log A) = log A' := by
   ext n; simp only [coeff_map, coeff_log]; split_ifs <;> simp [RingHom.map_rat_algebraMap]
 

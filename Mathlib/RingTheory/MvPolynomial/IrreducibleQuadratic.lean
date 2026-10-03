@@ -62,11 +62,11 @@ open scoped Polynomial
 
 section
 
-variable {n : Type*} {R : Type*} [CommRing R]
+variable {n : Type*} {R : Type*} [Ring R] [IsMulCommutative R]
 
 open scoped Polynomial in
 attribute [local simp] MvPolynomial.optionEquivLeft_X_none in -- tag simp globally?
-lemma irreducible_mul_X_add {n : Type*} {R : Type*} [CommRing R] [IsDomain R]
+lemma irreducible_mul_X_add {n : Type*} {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
     (f g : MvPolynomial n R) (i : n) (hf0 : f ≠ 0) (hif : i ∉ f.vars) (hig : i ∉ g.vars)
     (h : IsRelPrime f g) :
     Irreducible (f * X i + g) := by
@@ -128,7 +128,7 @@ end
 section
 /-! ## The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
 
-variable {n : Type*} {R : Type*} [CommRing R]
+variable {n : Type*} {R : Type*} [Ring R] [IsMulCommutative R]
 
 theorem irreducible_of_totalDegree_eq_one
     [IsDomain R] {p : MvPolynomial n R} (hp : p.totalDegree = 1)

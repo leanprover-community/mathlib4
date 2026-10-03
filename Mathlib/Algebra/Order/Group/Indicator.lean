@@ -223,7 +223,7 @@ lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ 
 end CanonicallyOrderedMul
 
 section LatticeOrderedCommGroup
-variable [CommGroup M] [Lattice M]
+variable [Group M] [IsMulCommutative M] [Lattice M]
 
 open scoped symmDiff
 

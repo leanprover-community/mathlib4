@@ -31,7 +31,7 @@ open scoped MonoidAlgebra
 noncomputable section
 
 variable {k : Type u} {G : Type v} {V : Type u'} {W : Type v'} [Monoid G] [Semiring k]
-  [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+  [AddGroup V] [IsAddCommutative V] [Module k V] [AddGroup W] [IsAddCommutative W] [Module k W]
   {σ : Representation k G V} {ρ : Representation k G W} {X Y Z : Action (Type w) G}
 
 open CategoryTheory
@@ -109,7 +109,7 @@ section comm
 
 open scoped MonoidalCategory
 
-variable {k : Type u} [CommSemiring k] [Module k V] [Module k W] {σ : Representation k G V}
+variable {k : Type u} [Semiring k] [IsMulCommutative k] [Module k V] [Module k W] {σ : Representation k G V}
   {ρ : Representation k G W}
 
 variable (X Y) in

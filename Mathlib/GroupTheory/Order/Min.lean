@@ -74,7 +74,7 @@ lemma minOrder_eq_top [IsMulTorsionFree G] : minOrder G = ⊤ := by
 end Group
 
 section CommGroup
-variable [CommGroup G]
+variable [Group G] [IsMulCommutative G]
 
 @[to_additive (attr := simp)]
 lemma minOrder_eq_top_iff : minOrder G = ⊤ ↔ IsMulTorsionFree G := by

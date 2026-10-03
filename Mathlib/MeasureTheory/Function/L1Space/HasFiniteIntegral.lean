@@ -39,7 +39,7 @@ open scoped Topology
 open Set Filter TopologicalSpace ENNReal MeasureTheory
 
 variable {α β γ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
-variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [ENorm ε] [ENorm ε']
+variable [NormedAddGroup β] [IsAddCommutative β] [NormedAddGroup γ] [IsAddCommutative γ] [ENorm ε] [ENorm ε']
   [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
 
 namespace MeasureTheory
@@ -447,7 +447,7 @@ section NormedSpace
 variable {𝕜 : Type*}
 
 @[fun_prop]
-theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β]
+theorem HasFiniteIntegral.smul [NormedAddGroup 𝕜] [IsAddCommutative 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β]
     (c : 𝕜) {f : α → β} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (c • f) μ := by
   simp only [HasFiniteIntegral]

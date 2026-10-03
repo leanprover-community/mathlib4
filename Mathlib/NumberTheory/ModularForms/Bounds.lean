@@ -41,7 +41,7 @@ open UpperHalfPlane hiding I
 
 open scoped Matrix Modular MatrixGroups ComplexConjugate ModularForm Manifold Topology Real
 
-variable {E : Type*} [SeminormedAddCommGroup E]
+variable {E : Type*} [SeminormedAddGroup E] [IsAddCommutative E]
 
 local notation "𝕢" => Function.Periodic.qParam
 

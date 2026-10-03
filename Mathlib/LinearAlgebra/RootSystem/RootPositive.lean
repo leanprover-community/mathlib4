@@ -40,9 +40,9 @@ noncomputable section
 
 open FaithfulSMul Function Set Submodule
 
-variable {ι R S M N : Type*} [CommRing S] [LinearOrder S]
-  [CommRing R] [Algebra S R]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R S M N : Type*} [Ring S] [IsMulCommutative S] [LinearOrder S]
+  [Ring R] [IsMulCommutative R] [Algebra S R]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace RootPairing
 

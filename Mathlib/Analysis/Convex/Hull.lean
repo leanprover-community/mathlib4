@@ -38,7 +38,7 @@ variable [Semiring 𝕜] [PartialOrder 𝕜]
 section AddCommMonoid
 
 variable (𝕜)
-variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
+variable [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F]
 
 /-- The convex hull of a set `s` is the minimal convex set that includes `s`. -/
 @[simps! isClosed]
@@ -173,7 +173,7 @@ end OrderedSemiring
 
 section CommSemiring
 
-variable [CommSemiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E]
 
 theorem convexHull_smul (a : 𝕜) (s : Set E) : convexHull 𝕜 (a • s) = a • convexHull 𝕜 s :=
   (LinearMap.lsmul _ _ a).image_convexHull _ |>.symm
@@ -186,7 +186,7 @@ variable [Ring 𝕜] [PartialOrder 𝕜]
 
 section AddCommGroup
 
-variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+variable [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 E] [Module 𝕜 F]
 
 theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) (s : Set E) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) := by

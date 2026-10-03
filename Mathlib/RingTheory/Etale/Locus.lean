@@ -26,7 +26,7 @@ Let `A` be a `R`-algebra.
 
 namespace Algebra
 
-variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
+variable {R A B : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra A B]
     [Algebra R B] [IsScalarTower R A B]
 
 variable (R) in

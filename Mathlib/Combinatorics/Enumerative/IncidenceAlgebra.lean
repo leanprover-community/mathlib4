@@ -159,7 +159,7 @@ end Smul
 instance instAddMonoid [AddMonoid 𝕜] [LE α] : AddMonoid (IncidenceAlgebra 𝕜 α) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ ↦ rfl
 
-instance instAddCommMonoid [AddCommMonoid 𝕜] [LE α] : AddCommMonoid (IncidenceAlgebra 𝕜 α) :=
+instance instAddCommMonoid [AddMonoid 𝕜] [IsAddCommutative 𝕜] [LE α] : AddCommMonoid (IncidenceAlgebra 𝕜 α) :=
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ ↦ rfl
 
 section AddGroup
@@ -181,7 +181,7 @@ instance instAddGroup : AddGroup (IncidenceAlgebra 𝕜 α) :=
 
 end AddGroup
 
-instance instAddCommGroup [AddCommGroup 𝕜] [LE α] : AddCommGroup (IncidenceAlgebra 𝕜 α) :=
+instance instAddCommGroup [AddGroup 𝕜] [IsAddCommutative 𝕜] [LE α] : AddCommGroup (IncidenceAlgebra 𝕜 α) :=
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl)
     fun _ _ ↦ rfl
 
@@ -198,7 +198,7 @@ instance instOne : One (IncidenceAlgebra 𝕜 α) :=
 end One
 
 section Mul
-variable [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [Mul 𝕜]
+variable [Preorder α] [LocallyFiniteOrder α] [AddMonoid 𝕜] [IsAddCommutative 𝕜] [Mul 𝕜]
 
 /--
 The multiplication operation in incidence algebras is defined on an interval by summing over
@@ -246,7 +246,7 @@ instance instRing [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Ring �
 /-! ### Scalar multiplication between incidence algebras -/
 
 section SMul
-variable [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [AddCommMonoid 𝕝] [SMul 𝕜 𝕝]
+variable [Preorder α] [LocallyFiniteOrder α] [AddMonoid 𝕜] [IsAddCommutative 𝕜] [AddMonoid 𝕝] [IsAddCommutative 𝕝] [SMul 𝕜 𝕝]
 
 instance instSMul : SMul (IncidenceAlgebra 𝕜 α) (IncidenceAlgebra 𝕝 α) :=
   ⟨fun f g ↦
@@ -259,8 +259,8 @@ lemma smul_apply (f : IncidenceAlgebra 𝕜 α) (g : IncidenceAlgebra 𝕝 α) (
 
 end SMul
 
-instance instIsScalarTower [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [Monoid 𝕜]
-    [Semiring 𝕝] [AddCommMonoid 𝕞] [SMul 𝕜 𝕝] [Module 𝕝 𝕞] [DistribMulAction 𝕜 𝕞]
+instance instIsScalarTower [Preorder α] [LocallyFiniteOrder α] [AddMonoid 𝕜] [IsAddCommutative 𝕜] [Monoid 𝕜]
+    [Semiring 𝕝] [AddMonoid 𝕞] [IsAddCommutative 𝕞] [SMul 𝕜 𝕝] [Module 𝕝 𝕞] [DistribMulAction 𝕜 𝕞]
     [IsScalarTower 𝕜 𝕝 𝕞] :
     IsScalarTower (IncidenceAlgebra 𝕜 α) (IncidenceAlgebra 𝕝 α) (IncidenceAlgebra 𝕞 α) where
   smul_assoc f g h := by
@@ -282,13 +282,13 @@ instance smulWithZeroRight [Zero 𝕜] [Zero 𝕝] [SMulWithZero 𝕜 𝕝] [LE 
   DFunLike.coe_injective.smulWithZero ⟨((⇑) : IncidenceAlgebra 𝕝 α → α → α → 𝕝), coe_zero⟩
     coe_constSMul
 
-instance moduleRight [Preorder α] [Semiring 𝕜] [AddCommMonoid 𝕝] [Module 𝕜 𝕝] :
+instance moduleRight [Preorder α] [Semiring 𝕜] [AddMonoid 𝕝] [IsAddCommutative 𝕝] [Module 𝕜 𝕝] :
     Module 𝕜 (IncidenceAlgebra 𝕝 α) :=
   DFunLike.coe_injective.module _ ⟨⟨((⇑) : IncidenceAlgebra 𝕝 α → α → α → 𝕝), coe_zero⟩, coe_add⟩
     coe_constSMul
 
-instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α] [CommSemiring 𝕜]
-    [CommSemiring 𝕝] [Algebra 𝕜 𝕝] : Algebra 𝕜 (IncidenceAlgebra 𝕝 α) where
+instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] [IsMulCommutative 𝕜]
+    [Semiring 𝕝] [IsMulCommutative 𝕝] [Algebra 𝕜 𝕝] : Algebra 𝕜 (IncidenceAlgebra 𝕝 α) where
   algebraMap :=
   { toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
     map_one' := by
@@ -347,7 +347,7 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
 
 section Mu
-variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
+variable (𝕜) [AddGroup 𝕜] [IsAddCommutative 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
 
 set_option backward.privateInPublic true in
 /-- The Möbius function of the incidence algebra as a bare function defined recursively. -/
@@ -394,7 +394,7 @@ def eulerChar [BoundedOrder α] : 𝕜 := mu 𝕜 (⊥ : α) ⊤
 end Mu
 
 section MuSpec
-variable [AddCommGroup 𝕜] [One 𝕜] [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
+variable [AddGroup 𝕜] [IsAddCommutative 𝕜] [One 𝕜] [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
 
 lemma sum_Icc_mu_right (a b : α) : ∑ x ∈ Icc a b, mu 𝕜 a x = if a = b then 1 else 0 := by
   split_ifs with hab
@@ -407,7 +407,7 @@ lemma sum_Icc_mu_right (a b : α) : ∑ x ∈ Icc a b, mu 𝕜 a x = if a = b th
 end MuSpec
 
 section Mu'
-variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
+variable (𝕜) [AddGroup 𝕜] [IsAddCommutative 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
 
 /-- `mu'` as a bare function defined recursively. -/
 private def muFun' (b : α) : α → 𝕜
@@ -450,7 +450,7 @@ private lemma mu'_eq_sum_Ioc_of_ne (h : a ≠ b) : mu' 𝕜 a b = -∑ x ∈ Ioc
 end Mu'
 
 section Mu'Spec
-variable [AddCommGroup 𝕜] [One 𝕜] [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
+variable [AddGroup 𝕜] [IsAddCommutative 𝕜] [One 𝕜] [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
 
 private lemma sum_Icc_mu'_left (a b : α) : ∑ x ∈ Icc a b, mu' 𝕜 x b = if a = b then 1 else 0 := by
   split_ifs with hab
@@ -463,7 +463,7 @@ private lemma sum_Icc_mu'_left (a b : α) : ∑ x ∈ Icc a b, mu' 𝕜 x b = if
 end Mu'Spec
 
 section MuZeta
-variable (𝕜 α) [AddCommGroup 𝕜] [MulOneClass 𝕜] [PartialOrder α] [LocallyFiniteOrder α]
+variable (𝕜 α) [AddGroup 𝕜] [IsAddCommutative 𝕜] [MulOneClass 𝕜] [PartialOrder α] [LocallyFiniteOrder α]
   [DecidableEq α] [DecidableLE α]
 
 lemma mu_mul_zeta : (mu 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) = 1 := by
@@ -629,7 +629,7 @@ lemma zeta_prod_zeta [DecidableLE α] [DecidableLE β] :
 end Ring
 
 section CommRing
-variable [CommRing 𝕜] [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
+variable [Ring 𝕜] [IsMulCommutative 𝕜] [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
   [DecidableLE (α × β)] (f₁ f₂ : IncidenceAlgebra 𝕜 α) (g₁ g₂ : IncidenceAlgebra 𝕜 β)
 
 @[simp]

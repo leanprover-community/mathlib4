@@ -39,7 +39,7 @@ universe u v
 
 open TensorProduct Equiv
 
-variable (R ι : Type u) [CommSemiring R] (M : Type v) [AddCommMonoid M] [Module R M] (s : ι → M)
+variable (R ι : Type u) [Semiring R] [IsMulCommutative R] (M : Type v) [AddMonoid M] [IsAddCommutative M] [Module R M] (s : ι → M)
 
 /-- The relation on the `ι`-indexed tensor power of `M` where two tensors are equal
 if they are related by a permutation of `ι`. -/
@@ -61,7 +61,7 @@ scoped[TensorProduct] notation:max "Sym[" R "]^" n:arg M:arg => Sym[R] (Fin n) M
 
 namespace SymmetricPower
 
-instance (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M] :
+instance (R : Type u) [Ring R] [IsMulCommutative R] (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R M] :
     AddCommGroup (Sym[R] ι M) :=
   inferInstanceAs <| AddCommGroup (AddCon.Quotient _)
 

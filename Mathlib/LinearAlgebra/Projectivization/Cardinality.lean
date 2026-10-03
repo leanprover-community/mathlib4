@@ -25,7 +25,7 @@ open scoped LinearAlgebra.Projectivization
 
 section
 
-variable (k V : Type*) [DivisionRing k] [AddCommGroup V] [Module k V]
+variable (k V : Type*) [DivisionRing k] [AddGroup V] [IsAddCommutative V] [Module k V]
 
 /-- `ℙ k V` is equivalent to the quotient of the non-zero elements of `V` by `kˣ`. -/
 def equivQuotientOrbitRel : ℙ k V ≃ Quotient (MulAction.orbitRel kˣ { v : V // v ≠ 0 }) :=
@@ -92,7 +92,7 @@ lemma card' [Finite V] : Nat.card V = Nat.card (ℙ k V) * (Nat.card k - 1) + 1 
 
 end
 
-variable (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
+variable (k V : Type*) [Field k] [AddGroup V] [IsAddCommutative V] [Module k V]
 
 /-- Cardinality formula for the points of `ℙ k V` if `k` and `V` are finite expressed
 as a fraction. -/

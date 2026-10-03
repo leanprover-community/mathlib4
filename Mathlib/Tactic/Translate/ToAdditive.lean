@@ -37,7 +37,7 @@ To use this attribute, just write:
 
 ```
 @[to_additive]
-theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := mul_comm x y
+theorem mul_comm' {α} [Semigroup α] [IsMulCommutative α] (x y : α) : x * y = y * x := mul_comm x y
 ```
 
 This code will generate a theorem named `add_comm'`. It is also
@@ -55,7 +55,7 @@ has a doc string, a doc string for the additive version should be passed explici
 ```
 /-- Multiplication is commutative -/
 @[to_additive /-- Addition is commutative -/]
-theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
+theorem mul_comm' {α} [Semigroup α] [IsMulCommutative α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
 ```
 
 The transport tries to do the right thing in most cases using several

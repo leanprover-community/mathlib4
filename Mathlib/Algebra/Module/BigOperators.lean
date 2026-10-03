@@ -20,7 +20,7 @@ variable {ι κ α β R M : Type*}
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem List.sum_smul {l : List R} {x : M} : l.sum • x = (l.map fun r ↦ r • x).sum :=
   map_list_sum ((smulAddHom R M).flip x) l
@@ -52,7 +52,7 @@ theorem Finset.cast_card [NonAssocSemiring R] (s : Finset α) : (#s : R) = ∑ _
   rw [Finset.sum_const, Nat.smul_one_eq_cast]
 
 namespace Fintype
-variable [DecidableEq ι] [Fintype ι] [AddCommMonoid α]
+variable [DecidableEq ι] [Fintype ι] [AddMonoid α] [IsAddCommutative α]
 
 lemma sum_piFinset_apply (f : κ → α) (s : Finset κ) (i : ι) :
     ∑ g ∈ piFinset fun _ : ι ↦ s, f (g i) = #s ^ (card ι - 1) • ∑ b ∈ s, f b := by

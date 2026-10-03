@@ -21,7 +21,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type*` `[CommRing R]` (the coefficients)
++ `R : Type*` `[Ring R] [IsMulCommutative R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
@@ -51,7 +51,7 @@ variable {σ : Type*} {a a' : R} {n m : σ}
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 variable {p q : MvPolynomial σ R}
 
 variable (σ a a')
@@ -153,7 +153,7 @@ end Vars
 
 section Eval
 
-variable [CommRing S]
+variable [Ring S] [IsMulCommutative S]
 variable (f : R →+* S) (g : σ → S)
 
 @[simp]

@@ -462,7 +462,7 @@ instance isStrictOrderedRing : IsStrictOrderedRing ZNum :=
     apply mul_pos
 
 @[simp, norm_cast]
-theorem cast_sub [AddCommGroupWithOne α] (m n) : ((m - n : ZNum) : α) = m - n := by
+theorem cast_sub [AddGroupWithOne α] [IsAddCommutative α] (m n) : ((m - n : ZNum) : α) = m - n := by
   simp [sub_eq_neg_add]
 
 @[norm_cast]

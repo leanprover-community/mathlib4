@@ -30,7 +30,7 @@ theorem StrongRankCondition.of_isArtinian (R) [Semiring R] [Nontrivial R]
 
 namespace IsArtinianRing
 
-variable (R : Type*) [CommRing R] [IsArtinianRing R] [IsReduced R]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsArtinianRing R] [IsReduced R]
 
 attribute [local instance] fieldOfSubtypeIsMaximal
 

@@ -80,7 +80,7 @@ end StarStructure
 section Precomposition
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-variable (𝕜 : Type*) [CommSemiring 𝕜]
+variable (𝕜 : Type*) [Semiring 𝕜] [IsMulCommutative 𝕜]
 variable (A : Type*) [TopologicalSpace A] [Semiring A] [IsTopologicalSemiring A] [Star A]
 variable [ContinuousStar A] [Algebra 𝕜 A]
 
@@ -113,7 +113,7 @@ end Precomposition
 
 section Postcomposition
 
-variable (X : Type*) {𝕜 A B C : Type*} [TopologicalSpace X] [CommSemiring 𝕜]
+variable (X : Type*) {𝕜 A B C : Type*} [TopologicalSpace X] [Semiring 𝕜] [IsMulCommutative 𝕜]
 variable [TopologicalSpace A] [Semiring A] [IsTopologicalSemiring A] [Star A]
 variable [ContinuousStar A] [Algebra 𝕜 A]
 variable [TopologicalSpace B] [Semiring B] [IsTopologicalSemiring B] [Star B]
@@ -151,7 +151,7 @@ end ContinuousMap
 namespace Homeomorph
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-variable (𝕜 : Type*) [CommSemiring 𝕜]
+variable (𝕜 : Type*) [Semiring 𝕜] [IsMulCommutative 𝕜]
 variable (A : Type*) [TopologicalSpace A] [Semiring A] [IsTopologicalSemiring A] [StarRing A]
 variable [ContinuousStar A] [Algebra 𝕜 A]
 
@@ -174,7 +174,7 @@ end Homeomorph
 
 /-! ### Evaluation as a bundled map -/
 
-variable {X : Type*} (S R : Type*) [TopologicalSpace X] [CommSemiring S] [CommSemiring R]
+variable {X : Type*} (S R : Type*) [TopologicalSpace X] [Semiring S] [IsMulCommutative S] [Semiring R] [IsMulCommutative R]
 variable [Algebra S R] [TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-- Evaluation of continuous maps at a point, bundled as a star algebra homomorphism. -/

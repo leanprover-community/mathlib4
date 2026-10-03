@@ -95,7 +95,7 @@ lemma PSL.iwasawaT_map_conj (g : Matrix.SpecialLinearGroup ι F)
     fun ⟨a, ha, hx⟩ ↦ ⟨g * a * g⁻¹, by simp [mul_assoc, ha], by simp [hx, mul_assoc]⟩⟩
 
 private lemma LinearMap.exists_restrict_span_singleton_eq_smul_id
-    {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
+    {R V : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid V] [IsAddCommutative V] [Module R V]
     {v : V} {A : V →ₗ[R] V} (hAv : A v ∈ Submodule.span R {v}) :
     ∃ c : R, A v = c • v ∧ ∃ hcomap : Submodule.span R {v} ≤ (Submodule.span R {v}).comap A,
       A.restrict hcomap = (c • LinearMap.id : Submodule.span R {v} →ₗ[R] _) := by

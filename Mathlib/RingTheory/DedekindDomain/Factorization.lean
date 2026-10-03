@@ -60,7 +60,7 @@ open scoped nonZeroDivisors
 
 open Set Function UniqueFactorizationMonoid IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
 
-variable {R : Type*} [CommRing R] {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-! ### Factorization of ideals of Dedekind domains -/
 
@@ -797,7 +797,7 @@ end div
 
 section primesOver
 
-variable {S : Type*} [CommRing S] [Algebra S R] [Algebra.IsIntegral S R] [IsDomain S]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [Algebra S R] [Algebra.IsIntegral S R] [IsDomain S]
   [Module.IsTorsionFree S R]
 
 open IsDedekindDomain Ideal.IsDedekindDomain
@@ -837,7 +837,7 @@ a prime ideal `p` in the factorization of some ideal `I` into `multiplicity p.as
 
 section conversion
 
-variable {R : Type*} [CommRing R] [IsDedekindDomain R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDedekindDomain R]
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
@@ -884,10 +884,10 @@ These are phrased in terms of `multiplicity p.asIdeal I`.
 section multiplicity
 
 @[simp]
-lemma Ideal.emultiplicity_bot {R : Type*} [CommSemiring R] (I : Ideal R) : emultiplicity I ⊥ = ⊤ :=
+lemma Ideal.emultiplicity_bot {R : Type*} [Semiring R] [IsMulCommutative R] (I : Ideal R) : emultiplicity I ⊥ = ⊤ :=
   Submodule.zero_eq_bot (R := R) (M := R) ▸ emultiplicity_zero_right I
 
-variable {R : Type*} [CommRing R] [IsDedekindDomain R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDedekindDomain R]
 
 lemma Ideal.finprod_heightOneSpectrum_pow_multiplicity {I : Ideal R} (hI : I ≠ ⊥) :
     ∏ᶠ p : HeightOneSpectrum R, p.asIdeal ^ multiplicity p.asIdeal I = I := by

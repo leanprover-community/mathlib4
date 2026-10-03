@@ -40,12 +40,12 @@ open Set LinearMap Submodule
 namespace Finsupp
 
 variable {α : Type*} {M : Type*} {R : Type*} {S : Type*}
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [Semiring S] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 section LinearCombination
 
 variable (R)
-variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
+variable {α' : Type*} {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] (v : α → M) {v' : α' → M'}
 
 /-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
     evaluates this linear combination. -/
@@ -114,7 +114,7 @@ theorem linearCombination_range (h : Function.Surjective v) :
 
 /-- Any module is a quotient of a free module. This is stated as surjectivity of
 `Finsupp.linearCombination R id : (M →₀ R) →ₗ[R] M`. -/
-theorem linearCombination_id_surjective (M) [AddCommMonoid M] [Module R M] :
+theorem linearCombination_id_surjective (M) [AddMonoid M] [IsAddCommutative M] [Module R M] :
     Function.Surjective (linearCombination R (id : M → M)) :=
   linearCombination_surjective R Function.surjective_id
 
@@ -298,7 +298,7 @@ end Finsupp
 
 section Fintype
 
-variable {α M : Type*} (R : Type*) [Fintype α] [Semiring R] [AddCommMonoid M] [Module R M]
+variable {α M : Type*} (R : Type*) [Fintype α] [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable (S : Type*) [Semiring S] [Module S M] [SMulCommClass R S M]
 variable (v : α → M)
 
@@ -427,7 +427,7 @@ end SpanRange
 end Fintype
 
 variable {R : Type*} {M : Type*} {N : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 open Finsupp
 
@@ -521,7 +521,7 @@ lemma Submodule.span_eq_iUnion_nat (s : Set M) :
 
 section Ring
 
-variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : ι → R) (h₀ : c i = 0)
+variable {R M ι : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] (i : ι) (c : ι → R) (h₀ : c i = 0)
 
 /-- Given `c : ι → R` and an index `i` such that `c i = 0`, this is the linear isomorphism sending
 the `j`-th standard basis vector to itself plus `c j` multiplied with the `i`-th standard basis

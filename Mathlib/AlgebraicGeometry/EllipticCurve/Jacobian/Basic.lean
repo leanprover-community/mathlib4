@@ -128,8 +128,8 @@ lemma fin3_def_ext (a b c : R) : ![a, b, c] x = a ∧ ![a, b, c] y = b ∧ ![a, 
 lemma comp_fin3 {S : Type s} (f : R → S) (a b c : R) : f ∘ ![a, b, c] = ![f a, f b, f c] :=
   (FinVec.map_eq ..).symm
 
-variable [CommRing R] [Field F] {W' : Jacobian R} {W : Jacobian F} {S : Type s} [CommRing S]
-  {A : Type u} [CommRing A] {B : Type v} [CommRing B] {K : Type v} [Field K]
+variable [Ring R] [IsMulCommutative R] [Field F] {W' : Jacobian R} {W : Jacobian F} {S : Type s} [Ring S] [IsMulCommutative S]
+  {A : Type u} [Ring A] [IsMulCommutative A] {B : Type v} [Ring B] [IsMulCommutative B] {K : Type v} [Field K]
 
 /-- The scalar multiplication for a Jacobian point representative on a Weierstrass curve. -/
 scoped instance : SMul R <| Fin 3 → R :=

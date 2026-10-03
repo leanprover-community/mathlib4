@@ -26,7 +26,7 @@ open scoped ComplexConjugate
 variable {ι G R : Type*} [AddGroup G]
 
 section CommSemiring
-variable [CommSemiring R] [StarRing R] {f g : G → R}
+variable [Semiring R] [IsMulCommutative R] [StarRing R] {f g : G → R}
 
 /-- Conjugation-negation. Sends `f` to `fun x ↦ conj (f (-x))`. -/
 def conjneg (f : G → R) : G → R := conj fun x ↦ f (-x)
@@ -81,7 +81,7 @@ lemma sum_conjneg [Fintype G] (f : G → R) : ∑ a, conjneg f a = ∑ a, conj (
 end CommSemiring
 
 section CommRing
-variable [CommRing R] [StarRing R]
+variable [Ring R] [IsMulCommutative R] [StarRing R]
 
 @[simp] lemma conjneg_sub (f g : G → R) : conjneg (f - g) = conjneg f - conjneg g := by ext; simp
 @[simp] lemma conjneg_neg (f : G → R) : conjneg (-f) = -conjneg f := by ext; simp

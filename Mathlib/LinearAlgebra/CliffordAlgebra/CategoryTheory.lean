@@ -21,7 +21,7 @@ public import Mathlib.Algebra.Category.AlgCat.Basic
 universe v u
 open CategoryTheory
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 /-- The "clifford algebra" functor, sending a quadratic `R`-module `V` to the clifford algebra on
 `V`.

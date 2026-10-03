@@ -50,10 +50,10 @@ inner product spaces.
 @[expose] public section
 
 variable {𝕜 E F G H : Type*} [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+  [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
+  [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace 𝕜 F]
+  [NormedAddGroup G] [IsAddCommutative G] [InnerProductSpace 𝕜 G]
+  [NormedAddGroup H] [IsAddCommutative H] [InnerProductSpace 𝕜 H]
 
 open scoped TensorProduct
 
@@ -642,7 +642,7 @@ lemma mapL_smul_right (r : 𝕜) (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
 
 section comp
 
-variable {A B : Type*} [NormedAddCommGroup A] [InnerProductSpace 𝕜 A] [NormedAddCommGroup B]
+variable {A B : Type*} [NormedAddGroup A] [IsAddCommutative A] [InnerProductSpace 𝕜 A] [NormedAddGroup B] [IsAddCommutative B]
   [InnerProductSpace 𝕜 B]
 
 lemma mapL_comp (f₁ : E →L[𝕜] F) (f₂ : A →L[𝕜] E) (g₁ : G →L[𝕜] H) (g₂ : B →L[𝕜] G) :
@@ -751,7 +751,7 @@ theorem congrL_refl_refl : congrL (.refl 𝕜 E) (.refl 𝕜 G) = .refl 𝕜 _ :
   ext; simp [congrL]
 
 section congr_congr
-variable {F₂ H₂ : Type*} [NormedAddCommGroup F₂] [InnerProductSpace 𝕜 F₂] [NormedAddCommGroup H₂]
+variable {F₂ H₂ : Type*} [NormedAddGroup F₂] [IsAddCommutative F₂] [InnerProductSpace 𝕜 F₂] [NormedAddGroup H₂] [IsAddCommutative H₂]
   [InnerProductSpace 𝕜 H₂] (f₂ : F ≃L[𝕜] F₂) (g₂ : H ≃L[𝕜] H₂) (f₁ : E ≃L[𝕜] F) (g₁ : G ≃L[𝕜] H)
 
 theorem congrL_trans_trans :

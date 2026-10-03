@@ -27,10 +27,10 @@ open Module Free Polynomial Matrix
 
 universe u v w
 
-variable {R M M₁ M₂ : Type*} [CommRing R]
-variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
-variable [AddCommGroup M₁] [Module R M₁] [Module.Finite R M₁] [Module.Free R M₁]
-variable [AddCommGroup M₂] [Module R M₂] [Module.Finite R M₂] [Module.Free R M₂]
+variable {R M M₁ M₂ : Type*} [Ring R] [IsMulCommutative R]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Free R M] [Module.Finite R M]
+variable [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁] [Module.Finite R M₁] [Module.Free R M₁]
+variable [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [Module.Finite R M₂] [Module.Free R M₂]
 variable (f : M →ₗ[R] M)
 
 namespace LinearMap

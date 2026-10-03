@@ -248,11 +248,11 @@ theorem ne_zero_of_eq_add_single [Zero Γ] {x y : R⟦Γ⟧}
   simp only [h, order_zero, leadingCoeff_zero, map_zero, add_zero] at hxy
   exact hy hxy.symm
 
-theorem coeff_order_of_eq_add_single {R} [AddCancelCommMonoid R] [Zero Γ] {x y : R⟦Γ⟧}
+theorem coeff_order_of_eq_add_single {R} [AddCancelMonoid R] [IsAddCommutative R] [Zero Γ] {x y : R⟦Γ⟧}
     (hxy : x = y + single x.order x.leadingCoeff) : y.coeff x.order = 0 := by
   simpa [← leadingCoeff_eq] using congr(($hxy).coeff x.order)
 
-theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [AddCancelCommMonoid R]
+theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [AddCancelMonoid R] [IsAddCommutative R]
     {x y : R⟦Γ⟧} (hxy : x = y + single x.order x.leadingCoeff) (hy : y ≠ 0) :
     x.order < y.order := by
   have : x.order ≠ y.order := by
@@ -305,7 +305,7 @@ end AddMonoid
 
 section AddCommMonoid
 
-variable [AddCommMonoid R]
+variable [AddMonoid R] [IsAddCommutative R]
 
 instance : AddCommMonoid R⟦Γ⟧ where
   add_comm x y := by
@@ -436,7 +436,7 @@ theorem le_orderTop_of_leadingCoeff_eq {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧} {
 
 end AddGroup
 
-instance [AddCommGroup R] : AddCommGroup R⟦Γ⟧ where
+instance [AddGroup R] [IsAddCommutative R] : AddCommGroup R⟦Γ⟧ where
 
 end Addition
 
@@ -474,7 +474,7 @@ end DistribMulAction
 
 section Module
 
-variable [PartialOrder Γ] [Semiring R] [AddCommMonoid V] [Module R V]
+variable [PartialOrder Γ] [Semiring R] [AddMonoid V] [IsAddCommutative V] [Module R V]
 
 instance : Module R V⟦Γ⟧ where
   zero_smul _ := by
@@ -498,7 +498,7 @@ def coeff.linearMap (g : Γ) : V⟦Γ⟧ →ₗ[R] V :=
   { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
 
 @[simp]
-protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R} {x : U⟦Γ⟧} :
+protected lemma map_smul [AddMonoid U] [IsAddCommutative U] [Module R U] (f : U →ₗ[R] V) {r : R} {x : U⟦Γ⟧} :
     (r • x).map f = r • (x.map f : V⟦Γ⟧) := by
   ext; simp
 

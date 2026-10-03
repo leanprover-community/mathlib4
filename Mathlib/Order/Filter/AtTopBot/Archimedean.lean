@@ -158,11 +158,11 @@ namespace Filter
 
 variable {l : Filter α} {f : α → R} {r : R}
 
-theorem map_add_atTop_eq [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
+theorem map_add_atTop_eq [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
     [IsDirectedOrder α] (k : α) : map (fun a => a + k) atTop = atTop :=
   map_atTop_eq_of_gc (fun a => a - k) 0 add_left_mono (by simp [le_sub_iff_add_le]) (by simp)
 
-theorem map_sub_atTop_eq [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
+theorem map_sub_atTop_eq [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
     [IsDirectedOrder α] (k : α) : map (fun a => a - k) atTop = atTop := by
   simp_rw [sub_eq_add_neg]
   apply map_add_atTop_eq
@@ -236,7 +236,7 @@ end LinearOrderedRing
 
 section LinearOrderedCancelAddCommMonoid
 
-variable [AddCommMonoid R] [LinearOrder R] [IsOrderedCancelAddMonoid R] [Archimedean R]
+variable [AddMonoid R] [IsAddCommutative R] [LinearOrder R] [IsOrderedCancelAddMonoid R] [Archimedean R]
 
 theorem Tendsto.atTop_nsmul_const {f : α → ℕ} (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x • r) l atTop := by
@@ -248,7 +248,7 @@ end LinearOrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup R] [LinearOrder R] [IsOrderedAddMonoid R] [Archimedean R]
+variable [AddGroup R] [IsAddCommutative R] [LinearOrder R] [IsOrderedAddMonoid R] [Archimedean R]
 
 theorem Tendsto.atTop_nsmul_neg_const {f : α → ℕ} (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x • r) l atBot := by simpa using hf.atTop_nsmul_const (neg_pos.2 hr)

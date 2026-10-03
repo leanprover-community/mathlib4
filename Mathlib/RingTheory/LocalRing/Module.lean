@@ -35,11 +35,11 @@ public section
 open Module
 
 universe u
-variable {R M N P : Type*} [CommRing R]
+variable {R M N P : Type*} [Ring R] [IsMulCommutative R]
 
 section
 
-variable [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N]
 
 open Function (Injective Surjective Exact)
 open IsLocalRing TensorProduct
@@ -47,7 +47,7 @@ open IsLocalRing TensorProduct
 local notation "k" => ResidueField R
 local notation "𝔪" => maximalIdeal R
 
-variable [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+variable [AddGroup P] [IsAddCommutative P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
 
 namespace IsLocalRing
 
@@ -122,8 +122,8 @@ then `M₃ ⊗ N₁ → M₃ ⊗ N₂` is also injective.
 -/
 theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
     {M₁ M₂ M₃ N₁ N₂ N₃}
-    [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup M₃] [Module R M₃]
-    [AddCommGroup N₁] [Module R N₁] [AddCommGroup N₂] [Module R N₂] [AddCommGroup N₃] [Module R N₃]
+    [AddGroup M₁] [IsAddCommutative M₁] [Module R M₁] [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup M₃] [IsAddCommutative M₃] [Module R M₃]
+    [AddGroup N₁] [IsAddCommutative N₁] [Module R N₁] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂] [AddGroup N₃] [IsAddCommutative N₃] [Module R N₃]
     {f₁ : M₁ →ₗ[R] M₂} {f₂ : M₂ →ₗ[R] M₃} {g₁ : N₁ →ₗ[R] N₂} {g₂ : N₂ →ₗ[R] N₃}
     (hfexact : Exact f₁ f₂) (hfsurj : Surjective f₂)
     (hgexact : Exact g₁ g₂) (hgsurj : Surjective g₂)
@@ -383,7 +383,7 @@ namespace Module
 
 open Ideal TensorProduct Submodule
 
-variable (R M) [Finite (MaximalSpectrum R)] [AddCommGroup M] [Module R M]
+variable (R M) [Finite (MaximalSpectrum R)] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- If `M` is a finite flat module over a commutative semilocal ring `R` that has the same rank `n`
 at every maximal ideal, then `M` is free of rank `n`. -/

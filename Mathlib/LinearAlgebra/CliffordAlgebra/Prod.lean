@@ -31,7 +31,7 @@ to a graded algebra equivalence.
 suppress_compilation
 
 variable {R M₁ M₂ N : Type*}
-variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [AddGroup N] [IsAddCommutative N]
 variable [Module R M₁] [Module R M₂] [Module R N]
 variable (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Qₙ : QuadraticForm R N)
 

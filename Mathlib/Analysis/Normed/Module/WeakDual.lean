@@ -112,8 +112,8 @@ open Filter Function Bornology Metric Set Topology Filter
 
 variable {𝕜 M E : Type*}
 variable [NontriviallyNormedField 𝕜]
-variable [AddCommGroup M] [TopologicalSpace M] [Module 𝕜 M]
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [Module 𝕜 M]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 
 namespace WeakDual
 
@@ -381,7 +381,7 @@ namespace WeakDual
 
 -- we shadow the variables for this section because they don't fit with the rest of the file.
 variable {α 𝕜 E F : Type*} [TopologicalSpace α] [RCLike 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
 
 /-- A map into `WeakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)` over `𝕜` (with `RCLike 𝕜`) is
 continuous if the real parts of all the evaluation maps `a ↦ B (g a) y` are

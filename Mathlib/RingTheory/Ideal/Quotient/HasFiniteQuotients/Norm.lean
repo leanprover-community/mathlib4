@@ -20,7 +20,7 @@ public section
 
 namespace Ring.HasFiniteQuotients
 
-variable {R : Type*} [CommRing R] [HasFiniteQuotients R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [HasFiniteQuotients R]
 
 instance : Northcott fun p : Ideal R ↦ p.cardQuot :=
   ⟨Ring.HasFiniteQuotients.finite_cardQuot_le⟩

@@ -43,7 +43,7 @@ lemma IsHermitian.coe_re_diag (h : A.IsHermitian) : (fun i => (re (A.diag i) : �
 symmetric. -/
 @[simp]
 lemma isSymmetric_toLin_iff [Fintype n] [DecidableEq n] {E : Type*}
-    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (b : OrthonormalBasis n 𝕜 E) :
+    [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E] (b : OrthonormalBasis n 𝕜 E) :
     (A.toLin b.toBasis b.toBasis).IsSymmetric ↔ A.IsHermitian := by
   have : FiniteDimensional 𝕜 E := b.toBasis.finiteDimensional_of_finite
   simp_rw [LinearMap.IsSymmetric, ← LinearMap.adjoint_inner_left, ← toLin_conjTranspose]
@@ -73,6 +73,6 @@ end Matrix
 Hermitian. -/
 @[simp]
 lemma LinearMap.isHermitian_toMatrix_iff {n 𝕜 E : Type*} [Fintype n] [DecidableEq n] [RCLike 𝕜]
-    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {f : E →ₗ[𝕜] E} (b : OrthonormalBasis n 𝕜 E) :
+    [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E] {f : E →ₗ[𝕜] E} (b : OrthonormalBasis n 𝕜 E) :
     (f.toMatrix b.toBasis b.toBasis).IsHermitian ↔ f.IsSymmetric := by
   rw [← Matrix.isSymmetric_toLin_iff b, Matrix.toLin_toMatrix]

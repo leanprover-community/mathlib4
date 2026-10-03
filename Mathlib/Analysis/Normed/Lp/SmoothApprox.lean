@@ -24,14 +24,14 @@ This result is recorded in `MeasureTheory.MemLp.exist_sub_eLpNorm_le`.
 
 public section
 
-variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
+variable {α β E F : Type*} [MeasurableSpace E] [NormedAddGroup F] [IsAddCommutative F]
 
 open scoped Nat NNReal ContDiff
 open MeasureTheory ENNReal
 
 namespace HasCompactSupport
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
   [NormedSpace ℝ F]
 
 /-- For every continuous compactly supported function `f` there exists a smooth compactly supported
@@ -78,7 +78,7 @@ end HasCompactSupport
 
 namespace MeasureTheory.MemLp
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
   [NormedSpace ℝ F]
   {μ : Measure E} [IsFiniteMeasureOnCompacts μ]
 

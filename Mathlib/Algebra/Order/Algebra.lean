@@ -37,7 +37,7 @@ ordered algebra
 
 public section
 
-variable {α β : Type*} [CommSemiring α] [PartialOrder α] [Semiring β] [PartialOrder β] [Algebra α β]
+variable {α β : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [Semiring β] [PartialOrder β] [Algebra α β]
 
 theorem IsOrderedModule.of_algebraMap_mono [PosMulMono β] [MulPosMono β]
     (h : Monotone (algebraMap α β)) : IsOrderedModule α β :=

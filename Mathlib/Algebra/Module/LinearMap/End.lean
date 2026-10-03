@@ -29,7 +29,7 @@ universe u v
 
 /-- Linear endomorphisms of a module, with associated ring structure
 `Module.End.semiring` and algebra structure `Module.End.algebra`. -/
-abbrev Module.End (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] :=
+abbrev Module.End (R : Type u) (M : Type v) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] :=
   M →ₗ[R] M
 
 variable {R R₂ S M M₁ M₂ M₃ N₁ : Type*}
@@ -42,7 +42,7 @@ open Function LinearMap
 
 namespace Module.End
 
-variable [Semiring R] [AddCommMonoid M] [AddCommGroup N₁] [Module R M] [Module R N₁]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddGroup N₁] [IsAddCommutative N₁] [Module R M] [Module R N₁]
 
 instance : One (Module.End R M) := ⟨LinearMap.id⟩
 
@@ -134,7 +134,7 @@ theorem pow_map_zero_of_le {f : End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
   rw [← Nat.sub_add_cancel hk, pow_add, mul_apply, hm, map_zero]
 
 theorem commute_pow_left_of_commute
-    [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₁₂ : R →+* R₂}
+    [Semiring R₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂] {σ₁₂ : R →+* R₂}
     {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
   induction k with
@@ -185,7 +185,7 @@ theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjectiv
   map_add' := smul_add _
   map_smul' β _ := by simp [smul_smul, ((Set.mem_center_iff.mp hα).comm β).eq]
 
-@[simp] lemma smulLeft_eq {R : Type*} [CommSemiring R] [Module R M] (α : R)
+@[simp] lemma smulLeft_eq {R : Type*} [Semiring R] [IsMulCommutative R] [Module R M] (α : R)
     (hα : α ∈ Set.center R := by simp) : smulLeft α hα = α • .id (M := M) := rfl
 
 end
@@ -231,7 +231,7 @@ section
 
 /-! ## Actions as module endomorphisms -/
 
-variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R M) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable [Monoid S]
 
 /-- Each element of the monoid defines a linear map.
@@ -257,7 +257,7 @@ end
 
 section Module
 
-variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R M) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable [Semiring S] [Module S M] [SMulCommClass S R M]
 
 /-- Each element of the semiring defines a module endomorphism.
@@ -290,11 +290,11 @@ def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 
-theorem Module.End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
+theorem Module.End.natCast_def (n : ℕ) [AddMonoid N₁] [IsAddCommutative N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=
   rfl
 
-theorem Module.End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
+theorem Module.End.intCast_def (z : ℤ) [AddGroup N₁] [IsAddCommutative N₁] [Module R N₁] :
     (z : Module.End R N₁) = Module.toModuleEnd R N₁ z :=
   rfl
 
@@ -306,7 +306,7 @@ section AddCommMonoid
 
 section SMulRight
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [Module R M] [Module R M₁]
 variable [Semiring S] [Module R S] [Module S M] [IsScalarTower R S M]
 
 /-- When `f` is an `R`-linear map taking values in `S`, then `fun b ↦ f b • x` is an `R`-linear
@@ -339,7 +339,7 @@ end AddCommMonoid
 
 section Module
 
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable [Semiring R] [Semiring S] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R M₁] [Module R M₂] [Module S M₁] [Module S M₂]
 variable [SMulCommClass R S M₁] [SMulCommClass R S M₂]
 variable (S)
@@ -373,7 +373,7 @@ end Module
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R M₂] [Module R M₃]
 variable (f : M →ₗ[R] M₂)
 
@@ -423,7 +423,7 @@ end LinearMap
 
 namespace Module.End
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : Module.End R M)
+variable {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] (f : Module.End R M)
 
 lemma commute_id_left : Commute LinearMap.id f := by ext; simp
 

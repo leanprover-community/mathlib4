@@ -366,7 +366,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /--
 When the ring is commutative, two-sided ideals are exactly the same as left ideals.

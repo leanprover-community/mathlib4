@@ -58,8 +58,8 @@ universe u v w u'
 definition, although in applications `M` and `M₂` will be topological modules over the topological
 ring `R`. -/
 structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
-    (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
-    [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
+    (M : Type*) [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] (M₂ : Type*) [TopologicalSpace M₂]
+    [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
   cont : Continuous toFun := by
     first | fun_prop | eta_expand; dsimp; fun_prop | skip
 
@@ -77,8 +77,8 @@ notation:25 M " →L[" R "] " M₂ => ContinuousLinearMap (RingHom.id R) M M₂
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
 and `f (c • x) = (σ c) • f x`. -/
 class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
-    (σ : outParam <| R →+* S) (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M]
-    (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
+    (σ : outParam <| R →+* S) (M : outParam Type*) [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M]
+    (M₂ : outParam Type*) [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M]
     [Module S M₂] [FunLike F M M₂] : Prop
     extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂
 
@@ -86,15 +86,15 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring 
 `R`-linear maps `M → M₂`.  This is an abbreviation for
 `ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
 abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
-    (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
-    [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
+    (M : outParam Type*) [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] (M₂ : outParam Type*)
+    [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
   ContinuousSemilinearMapClass F (RingHom.id R) M M₂
 
 /-- The *strong dual* of a topological vector space `M` over a ring `R`. This is the space of
 continuous linear functionals and is equipped with the topology of uniform convergence
 on bounded subsets. `StrongDual R M` is an abbreviation for `M →L[R] R`. -/
 abbrev StrongDual (R : Type*) [Semiring R] [TopologicalSpace R]
-  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] : Type _ := M →L[R] R
+  (M : Type*) [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M] : Type _ := M →L[R] R
 
 namespace ContinuousLinearMap
 
@@ -106,9 +106,9 @@ section Semiring
 
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃]
   {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} {M₁ : Type*} [TopologicalSpace M₁]
-  [AddCommMonoid M₁] {M'₁ : Type*} [TopologicalSpace M'₁] [AddCommMonoid M'₁] {M₂ : Type*}
-  [TopologicalSpace M₂] [AddCommMonoid M₂] {M₃ : Type*} [TopologicalSpace M₃] [AddCommMonoid M₃]
-  {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R₁ M₁] [Module R₁ M'₁]
+  [AddMonoid M₁] [IsAddCommutative M₁] {M'₁ : Type*} [TopologicalSpace M'₁] [AddMonoid M'₁] [IsAddCommutative M'₁] {M₂ : Type*}
+  [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] {M₃ : Type*} [TopologicalSpace M₃] [AddMonoid M₃] [IsAddCommutative M₃]
+  {M₄ : Type*} [TopologicalSpace M₄] [AddMonoid M₄] [IsAddCommutative M₄] [Module R₁ M₁] [Module R₁ M'₁]
   [Module R₂ M₂] [Module R₃ M₃]
 
 attribute [coe] ContinuousLinearMap.toLinearMap
@@ -149,7 +149,7 @@ protected theorem continuous_toLinearMap (f : M₁ →SL[σ₁₂] M₂) : Conti
 
 @[simp]
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
-    [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [IsUniformAddGroup E₁]
+    [AddGroup E₁] [IsAddCommutative E₁] [AddGroup E₂] [IsAddCommutative E₂] [Module R₁ E₁] [Module R₂ E₂] [IsUniformAddGroup E₁]
     [IsUniformAddGroup E₂] (f : E₁ →SL[σ₁₂] E₂) : UniformContinuous f :=
   uniformContinuous_addMonoidHom_of_continuous f.continuous
 
@@ -495,8 +495,8 @@ theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : .id R₂ M₂ ∘SL f = f :=
 section
 
 variable {R E F : Type*} [Semiring R]
-  [TopologicalSpace E] [AddCommMonoid E] [Module R E]
-  [TopologicalSpace F] [AddCommMonoid F] [Module R F]
+  [TopologicalSpace E] [AddMonoid E] [IsAddCommutative E] [Module R E]
+  [TopologicalSpace F] [AddMonoid F] [IsAddCommutative F] [Module R F]
 
 /-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
 lemma leftInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
@@ -668,23 +668,23 @@ theorem isClosed_eqLocus [T2Space M₂] (f g : M₁ →SL[σ₁₂] M₂) :
     IsClosed (f.eqLocus g : Set M₁) :=
   isClosed_eq f.continuous g.continuous
 
-theorem isComplete_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
+theorem isComplete_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddMonoid M'] [IsAddCommutative M']
     [Module R₁ M'] [T1Space M₂] (f : M' →SL[σ₁₂] M₂) :
     IsComplete (f.ker : Set M') :=
   (isClosed_ker f).isComplete
 
-theorem isComplete_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
+theorem isComplete_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddMonoid M'] [IsAddCommutative M']
     [Module R₁ M'] [T2Space M₂] (f g : M' →SL[σ₁₂] M₂) :
     IsComplete (f.eqLocus g : Set M') :=
   (isClosed_eqLocus f g).isComplete
 
 instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
-    [AddCommMonoid M'] [Module R₁ M'] [T1Space M₂]
+    [AddMonoid M'] [IsAddCommutative M'] [Module R₁ M'] [T1Space M₂]
     (f : M' →SL[σ₁₂] M₂) : CompleteSpace f.ker :=
   (isComplete_ker f).completeSpace_coe
 
 instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
-    [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂]
+    [AddMonoid M'] [IsAddCommutative M'] [Module R₁ M'] [T2Space M₂]
     (f g : M' →SL[σ₁₂] M₂) : CompleteSpace (f.toLinearMap.eqLocus g.toLinearMap) :=
   (isComplete_eqLocus f g).completeSpace_coe
 
@@ -715,7 +715,7 @@ end
 
 variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
 
-theorem smulRight_comp_smulRight {M₃ : Type*} [AddCommMonoid M₃] [Module R₁ M₃]
+theorem smulRight_comp_smulRight {M₃ : Type*} [AddMonoid M₃] [IsAddCommutative M₃] [Module R₁ M₃]
     [TopologicalSpace M₃] [ContinuousSMul R₁ M₃] (f : M₃ →L[R₁] R₁) (g : M₁ →L[R₁] R₁) {x : M₂}
     {y : M₃} : (smulRight f x) ∘L (smulRight g y) = smulRight g (f y • x) := by
   ext
@@ -796,9 +796,9 @@ end Semiring
 section Ring
 
 variable {R : Type*} [Ring R] {R₂ : Type*} [Ring R₂] {R₃ : Type*} [Ring R₃] {M : Type*}
-  [TopologicalSpace M] [AddCommGroup M] {M₂ : Type*} [TopologicalSpace M₂] [AddCommGroup M₂]
-  {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃] {M₄ : Type*} [TopologicalSpace M₄]
-  [AddCommGroup M₄] [Module R M] [Module R₂ M₂] [Module R₃ M₃] {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃}
+  [TopologicalSpace M] [AddGroup M] [IsAddCommutative M] {M₂ : Type*} [TopologicalSpace M₂] [AddGroup M₂] [IsAddCommutative M₂]
+  {M₃ : Type*} [TopologicalSpace M₃] [AddGroup M₃] [IsAddCommutative M₃] {M₄ : Type*} [TopologicalSpace M₄]
+  [AddGroup M₄] [IsAddCommutative M₄] [Module R M] [Module R₂ M₂] [Module R₃ M₃] {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃}
   {σ₁₃ : R →+* R₃}
 
 section
@@ -911,7 +911,7 @@ variable {R M : Type*}
 
 /-- A nonzero continuous linear functional is open. -/
 protected theorem isOpenMap_of_ne_zero [TopologicalSpace R] [DivisionRing R] [ContinuousSub R]
-    [AddCommGroup M] [TopologicalSpace M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
+    [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
     (f : StrongDual R M) (hf : f ≠ 0) : IsOpenMap f :=
   let ⟨x, hx⟩ := exists_ne_zero hf
   IsOpenMap.of_sections fun y =>
@@ -924,10 +924,10 @@ section SMulMonoid
 
 -- The M's are used for semilinear maps, and the N's for plain linear maps
 variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R₃] [Monoid S] [Monoid S₃]
-  {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] {M₂ : Type*}
-  [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R₂ M₂] {M₃ : Type*} [TopologicalSpace M₃]
-  [AddCommMonoid M₃] [Module R₃ M₃] {N₂ : Type*} [TopologicalSpace N₂] [AddCommMonoid N₂]
-  [Module R N₂] {N₃ : Type*} [TopologicalSpace N₃] [AddCommMonoid N₃] [Module R N₃]
+  {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M] {M₂ : Type*}
+  [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂] {M₃ : Type*} [TopologicalSpace M₃]
+  [AddMonoid M₃] [IsAddCommutative M₃] [Module R₃ M₃] {N₂ : Type*} [TopologicalSpace N₂] [AddMonoid N₂] [IsAddCommutative N₂]
+  [Module R N₂] {N₃ : Type*} [TopologicalSpace N₃] [AddMonoid N₃] [IsAddCommutative N₃] [Module R N₃]
   [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃] [ContinuousConstSMul S₃ M₃]
   [DistribMulAction S N₃] [SMulCommClass R S N₃] [ContinuousConstSMul S N₃] {σ₁₂ : R →+* R₂}
   {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
@@ -962,10 +962,10 @@ section SMul
 
 -- The M's are used for semilinear maps, and the N's for plain linear maps
 variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S] [Semiring S₃]
-  {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] {M₂ : Type*}
-  [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R₂ M₂] {M₃ : Type*} [TopologicalSpace M₃]
-  [AddCommMonoid M₃] [Module R₃ M₃] {N₂ : Type*} [TopologicalSpace N₂] [AddCommMonoid N₂]
-  [Module R N₂] {N₃ : Type*} [TopologicalSpace N₃] [AddCommMonoid N₃] [Module R N₃] [Module S₃ M₃]
+  {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M] {M₂ : Type*}
+  [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R₂ M₂] {M₃ : Type*} [TopologicalSpace M₃]
+  [AddMonoid M₃] [IsAddCommutative M₃] [Module R₃ M₃] {N₂ : Type*} [TopologicalSpace N₂] [AddMonoid N₂] [IsAddCommutative N₂]
+  [Module R N₂] {N₃ : Type*} [TopologicalSpace N₃] [AddMonoid N₃] [IsAddCommutative N₃] [Module R N₃] [Module S₃ M₃]
   [SMulCommClass R₃ S₃ M₃] [ContinuousConstSMul S₃ M₃] [Module S N₂] [ContinuousConstSMul S N₂]
   [SMulCommClass R S N₂] [Module S N₃] [SMulCommClass R S N₃] [ContinuousConstSMul S N₃]
   {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (c : S)
@@ -1000,10 +1000,10 @@ end SMul
 
 section lcomp
 
-variable {R U V : Type*} (W : Type*) [CommSemiring R]
-    [AddCommMonoid U] [Module R U] [TopologicalSpace U]
-    [AddCommMonoid V] [Module R V] [TopologicalSpace V]
-    [AddCommMonoid W] [Module R W] [TopologicalSpace W]
+variable {R U V : Type*} (W : Type*) [Semiring R] [IsMulCommutative R]
+    [AddMonoid U] [IsAddCommutative U] [Module R U] [TopologicalSpace U]
+    [AddMonoid V] [IsAddCommutative V] [Module R V] [TopologicalSpace V]
+    [AddMonoid W] [IsAddCommutative W] [Module R W] [TopologicalSpace W]
     [ContinuousAdd W] [ContinuousConstSMul R W]
 
 /-- Composition of continuous linear maps, as a linear map. Compare `LinearMap.lcomp`. -/
@@ -1017,11 +1017,11 @@ end lcomp
 
 section llcomp
 
-variable (R U V W : Type*) [CommSemiring R]
-  [AddCommMonoid U] [Module R U] [TopologicalSpace U]
-  [AddCommMonoid V] [Module R V] [TopologicalSpace V]
+variable (R U V W : Type*) [Semiring R] [IsMulCommutative R]
+  [AddMonoid U] [IsAddCommutative U] [Module R U] [TopologicalSpace U]
+  [AddMonoid V] [IsAddCommutative V] [Module R V] [TopologicalSpace V]
   [ContinuousAdd V] [ContinuousConstSMul R V]
-  [AddCommMonoid W] [Module R W] [TopologicalSpace W]
+  [AddMonoid W] [IsAddCommutative W] [Module R W] [TopologicalSpace W]
   [ContinuousAdd W] [ContinuousConstSMul R W]
 
 /-- Composition of continuous linear maps, as a bilinear map. Compare `LinearMap.llcomp`. -/
@@ -1035,7 +1035,7 @@ end llcomp
 
 section toSpanSingletonLE
 
-variable (R S M : Type*) [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
+variable (R S M : Type*) [Semiring R] [Semiring S] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M]
   [SMulCommClass R S M] [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul S M]
   [TopologicalSpace R] [ContinuousSMul R M]
 
@@ -1056,8 +1056,8 @@ end toSpanSingletonLE
 section SMulRightₗ
 
 variable {R S T M M₂ : Type*} [Semiring R] [Semiring S] [Semiring T] [Module R S]
-  [AddCommMonoid M₂] [Module R M₂] [Module S M₂] [IsScalarTower R S M₂] [TopologicalSpace S]
-  [TopologicalSpace M₂] [ContinuousSMul S M₂] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+  [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂] [Module S M₂] [IsScalarTower R S M₂] [TopologicalSpace S]
+  [TopologicalSpace M₂] [ContinuousSMul S M₂] [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M]
   [ContinuousAdd M₂] [Module T M₂] [ContinuousConstSMul T M₂] [SMulCommClass R T M₂]
   [SMulCommClass S T M₂]
 
@@ -1080,8 +1080,8 @@ theorem coe_smulRightₗ (c : M →L[R] S) : ⇑(smulRightₗ c : M₂ →ₗ[T]
 end SMulRightₗ
 
 section Semiring
-variable {R S M : Type*} [Semiring R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
-  [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M]
+variable {R S M : Type*} [Semiring R] [TopologicalSpace M] [AddGroup M] [IsAddCommutative M] [Module R M]
+  [Semiring S] [IsMulCommutative S] [Module S M] [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M]
   [ContinuousConstSMul S M] [IsTopologicalAddGroup M]
 
 instance algebra : Algebra S (M →L[R] M) :=
@@ -1095,7 +1095,7 @@ end ContinuousLinearMap
 
 section topDualPairing
 
-variable {𝕜 E : Type*} [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddCommMonoid E]
+variable {𝕜 E : Type*} [Semiring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddMonoid E] [IsAddCommutative E]
   [Module 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜]
 
 variable (𝕜 E) in

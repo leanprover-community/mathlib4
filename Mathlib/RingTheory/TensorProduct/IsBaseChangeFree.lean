@@ -20,10 +20,10 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 namespace IsBaseChange
 
-variable {R : Type*} [CommSemiring R]
-    {S : Type*} [CommSemiring S] [Algebra R S]
-    {V : Type*} [AddCommMonoid V] [Module R V]
-    {W : Type*} [AddCommMonoid W] [Module R W] [Module S W] [IsScalarTower R S W]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
+    {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra R S]
+    {V : Type*} [AddMonoid V] [IsAddCommutative V] [Module R V]
+    {W : Type*} [AddMonoid W] [IsAddCommutative W] [Module R W] [Module S W] [IsScalarTower R S W]
     {ι : Type*}
     {ε : V →ₗ[R] W}
 
@@ -76,9 +76,9 @@ namespace IsBaseChange
 
 open TensorProduct
 
-variable {R : Type*} [CommSemiring R]
-  {V : Type*} [AddCommMonoid V] [Module R V]
-  (A : Type*) [CommSemiring A] [Algebra A R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
+  {V : Type*} [AddMonoid V] [IsAddCommutative V] [Module R V]
+  (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra A R]
   [Module A V] [IsScalarTower A R V]
 
 open TensorProduct

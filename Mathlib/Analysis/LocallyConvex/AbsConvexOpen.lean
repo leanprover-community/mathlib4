@@ -41,7 +41,7 @@ variable {𝕜 E : Type*}
 
 section AbsolutelyConvexSets
 
-variable [TopologicalSpace E] [AddCommMonoid E] [SeminormedRing 𝕜]
+variable [TopologicalSpace E] [AddMonoid E] [IsAddCommutative E] [SeminormedRing 𝕜]
 variable [SMul 𝕜 E]
 variable (𝕜 E) [PartialOrder 𝕜]
 
@@ -82,7 +82,7 @@ instance AbsConvexOpenSets.instNonempty : Nonempty (AbsConvexOpenSets 𝕜 E) :=
 end AbsolutelyConvexSets
 
 variable [RCLike 𝕜]
-variable [AddCommGroup E] [TopologicalSpace E]
+variable [AddGroup E] [IsAddCommutative E] [TopologicalSpace E]
 variable [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 variable [ContinuousSMul ℝ E]
 variable (𝕜 E)

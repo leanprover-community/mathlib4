@@ -78,7 +78,7 @@ theorem map_join (f : α → β) (S : Multiset (Multiset α)) :
   | cons _ _ ih => simp [ih]
 
 @[to_additive (attr := simp)]
-theorem prod_join [CommMonoid α] {S : Multiset (Multiset α)} :
+theorem prod_join [Monoid α] [IsMulCommutative α] {S : Multiset (Multiset α)} :
     prod (join S) = prod (map prod S) := by
   induction S using Multiset.induction with
   | empty => simp
@@ -218,7 +218,7 @@ theorem filterMap_bind (m : Multiset α) (f : α → Multiset β) (g : β → Op
   simp [bind, filterMap_join]
 
 @[to_additive (attr := simp)]
-theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
+theorem prod_bind [Monoid β] [IsMulCommutative β] (s : Multiset α) (t : α → Multiset β) :
     (s.bind t).prod = (s.map fun a => (t a).prod).prod := by simp [bind]
 
 open scoped Relator in
@@ -348,7 +348,7 @@ protected theorem Nodup.product : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
     (s ×ˢ t).map Prod.swap = t ×ˢ s := by
   induction s using Multiset.induction <;> simp_all
 
-lemma prod_map_product_eq_prod_prod {M : Type*} [CommMonoid M]
+lemma prod_map_product_eq_prod_prod {M : Type*} [Monoid M] [IsMulCommutative M]
     (s : Multiset α) (t : Multiset β) (f : α × β → M) :
     ((s ×ˢ t).map f).prod = (s.map fun i ↦ (t.map fun j ↦ f (i, j)).prod).prod := by
   induction s using Multiset.induction <;> simp_all

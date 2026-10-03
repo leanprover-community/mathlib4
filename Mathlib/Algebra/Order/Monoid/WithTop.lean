@@ -20,7 +20,7 @@ variable {α : Type u}
 namespace WithTop
 
 @[to_dual]
-instance [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
+instance [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] :
     IsOrderedAddMonoid (WithTop α) where
   add_le_add_left _ _ := add_le_add_left
   add_le_add_right _ _ := add_le_add_right
@@ -50,7 +50,7 @@ protected theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
   · rw [← WithBot.coe_add, WithBot.coe_le_coe]
     exact le_self_add
 
-protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd α]
+protected theorem le_add_self [Add α] [IsAddCommutative α] [LE α] [CanonicallyOrderedAdd α]
     {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
     y ≤ x + y := by
   induction x

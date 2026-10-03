@@ -523,7 +523,7 @@ instance instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) :=
   fast_instance% Function.Injective.addMonoid (fun f => show α → β from f) coe_injective coe_zero
     coe_add fun _ _ => coe_smul _ _
 
-instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
+instance instAddCommMonoid [AddMonoid β] [IsAddCommutative β] : AddCommMonoid (α →ₛ β) :=
   fast_instance% Function.Injective.addCommMonoid (fun f => show α → β from f)
     coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
@@ -531,7 +531,7 @@ instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) :=
   Function.Injective.addGroup (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
     coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
-instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
+instance instAddCommGroup [AddGroup β] [IsAddCommutative β] : AddCommGroup (α →ₛ β) :=
   fast_instance% Function.Injective.addCommGroup (fun f => show α → β from f) coe_injective
     coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
@@ -543,7 +543,7 @@ instance instMonoid [Monoid β] : Monoid (α →ₛ β) :=
     coe_mul coe_pow
 
 @[to_additive existing]
-instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) :=
+instance instCommMonoid [Monoid β] [IsMulCommutative β] : CommMonoid (α →ₛ β) :=
   fast_instance% Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one
     coe_mul coe_pow
 
@@ -553,14 +553,14 @@ instance instGroup [Group β] : Group (α →ₛ β) :=
     coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive existing]
-instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
+instance instCommGroup [Group β] [IsMulCommutative β] : CommGroup (α →ₛ β) :=
   fast_instance% Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one
     coe_mul coe_inv coe_div coe_pow coe_zpow
 
 instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) :=
   fast_instance% Function.Injective.mulAction (fun f => show α → β from f) coe_injective coe_smul
 
-instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
+instance instModule [Semiring K] [AddMonoid β] [IsAddCommutative β] [Module K β] : Module K (α →ₛ β) :=
   fast_instance% Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
     coe_injective coe_smul
 
@@ -600,19 +600,19 @@ instance [NonAssocRing β] : NonAssocRing (α →ₛ β) :=
   fast_instance% Function.Injective.nonAssocRing (fun f => show α → β from f) coe_injective
     coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_natCast coe_intCast
 
-instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →ₛ β) :=
+instance [NonUnitalSemiring β] [IsMulCommutative β] : NonUnitalCommSemiring (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalCommSemiring (fun f => show α → β from f)
     coe_injective coe_zero coe_add coe_mul coe_smul
 
-instance [CommSemiring β] : CommSemiring (α →ₛ β) :=
+instance [Semiring β] [IsMulCommutative β] : CommSemiring (α →ₛ β) :=
   fast_instance% Function.Injective.commSemiring (fun f => show α → β from f)
     coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_pow coe_natCast
 
-instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
+instance [NonUnitalRing β] [IsMulCommutative β] : NonUnitalCommRing (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalCommRing (fun f => show α → β from f)
     coe_injective coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
 
-instance [CommRing β] : CommRing (α →ₛ β) :=
+instance [Ring β] [IsMulCommutative β] : CommRing (α →ₛ β) :=
   fast_instance% Function.Injective.commRing (fun f => show α → β from f) coe_injective coe_zero
     coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
 
@@ -634,7 +634,7 @@ instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalar
 instance [SMul γ β] [SMul K β] [SMulCommClass K γ β] : SMulCommClass K γ (α →ₛ β) where
   smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
-instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) where
+instance [Semiring K] [IsMulCommutative K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) where
   algebraMap := {
     toFun r := const α <| algebraMap K β r
     map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
@@ -645,11 +645,11 @@ instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def ..
 
 @[simp]
-lemma const_algebraMap [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
+lemma const_algebraMap [Semiring K] [IsMulCommutative K] [Semiring β] [Algebra K β] (k : K) :
     const α (algebraMap K β k) = algebraMap K (α →ₛ β) k := rfl
 
 @[simp]
-lemma coe_algebraMap [CommSemiring K] [Semiring β] [Algebra K β] (k : K) (x : α) :
+lemma coe_algebraMap [Semiring K] [IsMulCommutative K] [Semiring β] [Algebra K β] (k : K) (x : α) :
     ⇑(algebraMap K (α →ₛ β)) k x = algebraMap K (α → β) k x := rfl
 
 section Star
@@ -709,7 +709,7 @@ instance instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
   le_top _ _ := le_top
 
 @[to_additive]
-instance [CommMonoid β] [Preorder β] [IsOrderedMonoid β] :
+instance [Monoid β] [IsMulCommutative β] [Preorder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α →ₛ β) where
   mul_le_mul_left _ _ h _ _ := mul_le_mul_left (h _) _
 

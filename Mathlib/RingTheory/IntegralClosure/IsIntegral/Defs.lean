@@ -32,7 +32,7 @@ open Polynomial
 section Ring
 
 variable {R S A : Type*}
-variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
+variable [Ring R] [IsMulCommutative R] [Ring A] [Ring S] (f : R →+* S)
 
 /-- An element `x` of `A` is said to be integral over `R` with respect to `f`
 if it is a root of a monic polynomial `p : R[X]` evaluated under `f` -/

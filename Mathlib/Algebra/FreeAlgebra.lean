@@ -53,7 +53,7 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 
 open scoped MonoidAlgebra
 
-variable (R X : Type*) [CommSemiring R]
+variable (R X : Type*) [Semiring R] [IsMulCommutative R]
 
 namespace FreeAlgebra
 
@@ -174,7 +174,7 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 
 /-! Define the basic operations -/
 
-instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
+instance instSMul {A} [Semiring A] [IsMulCommutative A] [Algebra R A] : SMul R (FreeAlgebra A X) where
   smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
 
 instance instZero : Zero (FreeAlgebra R X) where zero := Quot.mk _ 0
@@ -259,7 +259,7 @@ instance : Semiring (FreeAlgebra R X) where
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
-instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
+instance instAlgebra {A} [Semiring A] [IsMulCommutative A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
   algebraMap := ({
       toFun := fun r => Quot.mk _ r
       map_one' := rfl
@@ -274,10 +274,10 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
 
 -- verify there is no diamond at `default` transparency but we will need
 -- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
-variable (S : Type) [CommSemiring S] in
+variable (S : Type) [Semiring S] [IsMulCommutative S] in
 example : (Semiring.toNatAlgebra : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
-instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
+instance {R S A} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [IsMulCommutative A]
     [SMul R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
     IsScalarTower R S (FreeAlgebra A X) where
   smul_assoc r s x := by
@@ -287,16 +287,16 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     simp only [Algebra.algebraMap_eq_smul_one, smul_eq_mul]
     rw [smul_assoc, ← smul_one_mul]
 
-instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A] [Algebra S A] :
+instance {R S A} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [IsMulCommutative A] [Algebra R A] [Algebra S A] :
     SMulCommClass R S (FreeAlgebra A X) where
   smul_comm r s x := smul_comm (algebraMap R A r) (algebraMap S A s) x
 
-instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
+instance {S : Type*} [Ring S] [IsMulCommutative S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
 -- verify there is no diamond but we will need
 -- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
-variable (S : Type) [CommRing S] in
+variable (S : Type) [Ring S] [IsMulCommutative S] in
 example : (Ring.toIntAlgebra _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 variable {X}
@@ -468,7 +468,7 @@ instance instNoZeroDivisors [NoZeroDivisors R] : NoZeroDivisors (FreeAlgebra R X
   equivMonoidAlgebraFreeMonoid.toMulEquiv.noZeroDivisors
 
 /-- `FreeAlgebra R X` is a domain when `R` is an integral domain. -/
-instance instIsDomain {R X} [CommRing R] [IsDomain R] : IsDomain (FreeAlgebra R X) :=
+instance instIsDomain {R X} [Ring R] [IsMulCommutative R] [IsDomain R] : IsDomain (FreeAlgebra R X) :=
   NoZeroDivisors.to_isDomain _
 
 section

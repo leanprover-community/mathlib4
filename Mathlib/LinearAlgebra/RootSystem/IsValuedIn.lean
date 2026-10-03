@@ -41,7 +41,7 @@ noncomputable section
 
 namespace RootPairing
 
-variable {ι R S M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+variable {ι R S M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N]
   [Module R N] (P : RootPairing ι R M N) (i j : ι)
 
 /-- If `R` is an `S`-algebra, a root pairing over `R` is said to be valued in `S` if the pairing
@@ -49,7 +49,7 @@ between a root and coroot always belongs to `S`.
 
 Of particular interest is the case `S = ℤ`. See `RootPairing.IsCrystallographic`. -/
 @[mk_iff]
-class IsValuedIn (S : Type*) [CommRing S] [Algebra S R] : Prop where
+class IsValuedIn (S : Type*) [Ring S] [IsMulCommutative S] [Algebra S R] : Prop where
   exists_value : ∀ i j, ∃ s, algebraMap S R s = P.pairing i j
 
 protected alias exists_value := IsValuedIn.exists_value
@@ -61,7 +61,7 @@ abbrev IsCrystallographic := P.IsValuedIn ℤ
 instance : P.IsValuedIn R where
   exists_value i j := by simp
 
-variable (S : Type*) [CommRing S] [Algebra S R]
+variable (S : Type*) [Ring S] [IsMulCommutative S] [Algebra S R]
 
 variable {S} in
 lemma isValuedIn_iff_mem_range :
@@ -122,7 +122,7 @@ lemma pairingIn_reflectionPerm_self_right [FaithfulSMul S R] [P.IsValuedIn S] (i
     P.pairingIn S i (P.reflectionPerm j j) = - P.pairingIn S i j := by
   simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
 
-lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
+lemma IsValuedIn.trans (T : Type*) [Ring T] [IsMulCommutative T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
     [P.IsValuedIn T] :
     P.IsValuedIn S where
   exists_value i j := by
@@ -133,7 +133,7 @@ instance [P.IsCrystallographic] [Algebra ℚ R] : P.IsValuedIn ℚ :=
   IsValuedIn.trans P (T := ℤ) (S := ℚ)
 
 @[simp] lemma algebraMap_pairingIn' (T : Type*)
-    [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R] [P.IsValuedIn T] [P.IsValuedIn S]
+    [Ring T] [IsMulCommutative T] [Algebra T S] [Algebra T R] [IsScalarTower T S R] [P.IsValuedIn T] [P.IsValuedIn S]
     [FaithfulSMul S R] (i j : ι) :
     algebraMap T S (P.pairingIn T i j) = P.pairingIn S i j := by
   apply FaithfulSMul.algebraMap_injective S R
@@ -304,14 +304,14 @@ lemma iInf_ker_coroot'_eq :
     span R (range P.coroot') = ⊤ :=
   span_root'_eq_top P.flip
 
-lemma pairingIn_eq_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
+lemma pairingIn_eq_zero_iff {S : Type*} [Ring S] [IsMulCommutative S] [Algebra S R] [FaithfulSMul S R]
     [P.IsValuedIn S] [IsDomain R] [Module.IsTorsionFree R M] [NeZero (2 : R)] {i j : ι} :
     P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
   simpa only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn] using
     P.pairing_eq_zero_iff
 
 variable {P i j} in
-lemma reflection_apply_root' (S : Type*) [CommRing S] [Algebra S R]
+lemma reflection_apply_root' (S : Type*) [Ring S] [IsMulCommutative S] [Algebra S R]
     [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] :
     P.reflection i (P.root j) = P.root j - (P.pairingIn S j i) • P.root i := by
   rw [reflection_apply_root, ← P.algebraMap_pairingIn S, algebraMap_smul]
@@ -321,10 +321,10 @@ coefficients.
 
 Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
 `[FaithfulSMul S R]`. -/
-def coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S] (i j : ι) : S :=
+def coxeterWeightIn (S : Type*) [Ring S] [IsMulCommutative S] [Algebra S R] [P.IsValuedIn S] (i j : ι) : S :=
   P.pairingIn S i j * P.pairingIn S j i
 
-@[simp] lemma algebraMap_coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S]
+@[simp] lemma algebraMap_coxeterWeightIn (S : Type*) [Ring S] [IsMulCommutative S] [Algebra S R] [P.IsValuedIn S]
     (i j : ι) :
     algebraMap S R (P.coxeterWeightIn S i j) = P.coxeterWeight i j := by
   simp [coxeterWeightIn, coxeterWeight]

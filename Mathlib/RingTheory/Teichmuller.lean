@@ -21,7 +21,7 @@ Then there is a canonical map `Perfection (R ⧸ I) p →*₀ R` that we shall c
 
 @[expose] public section
 
-variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommRing R] {I : Ideal R} [CharP (R ⧸ I) p]
+variable {p : ℕ} [Fact p.Prime] {R : Type*} [Ring R] [IsMulCommutative R] {I : Ideal R} [CharP (R ⧸ I) p]
 
 namespace Perfection
 
@@ -192,7 +192,7 @@ theorem mk_comp_teichmuller' :
 Note that `Perfection R p` is generally not a ring, and the forward map is induced by
 the quotient map, and the backwards map is constructed using the Teichmüller map. -/
 noncomputable def quotientMulEquiv (p : ℕ) [Fact p.Prime]
-    {R : Type*} [CommRing R] (I : Ideal R) [CharP (R ⧸ I) p] [IsAdicComplete I R] :
+    {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R) [CharP (R ⧸ I) p] [IsAdicComplete I R] :
     Perfection R p ≃* Perfection (R ⧸ I) p := MonoidHom.toMulEquiv
   (mapMonoidHom _ <| Ideal.Quotient.mk I)
   (liftMonoidHom p _ _ <| teichmuller p I)

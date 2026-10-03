@@ -70,7 +70,7 @@ end IsTopologicalSemiring
 
 section TopologicalAlgebra
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [TopologicalSpace A]
   [IsTopologicalSemiring A] (p : R[X])
 
 @[continuity, fun_prop]
@@ -117,7 +117,7 @@ theorem tendsto_abv_atTop {R k α : Type*} [Ring R]
   apply tendsto_abv_eval₂_atTop _ _ _ h _ hz
   exact mt leadingCoeff_eq_zero.1 (ne_zero_of_degree_gt h)
 
-theorem tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [Algebra R A]
+theorem tendsto_abv_aeval_atTop {R A k α : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A]
     [Field k] [LinearOrder k] [IsStrictOrderedRing k]
     (abv : A → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
     (h₀ : algebraMap R A p.leadingCoeff ≠ 0) {l : Filter α} {z : α → A}
@@ -154,7 +154,7 @@ section Roots
 
 open Polynomial NNReal
 
-variable {F K : Type*} [CommRing F] [NormedField K]
+variable {F K : Type*} [Ring F] [IsMulCommutative F] [NormedField K]
 
 /-- Nonzero polynomials are nonzero away from a codiscrete set. -/
 lemma eventually_eval_ne_zero_codiscrete [IsDomain F] [TopologicalSpace F] [T1Space F]

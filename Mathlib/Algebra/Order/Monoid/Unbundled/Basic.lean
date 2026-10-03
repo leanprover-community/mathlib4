@@ -1220,12 +1220,12 @@ protected theorem mul_le_iff_le_one_left [MulOneClass α] [IsMulCommutative α] 
     (h : MulLECancellable (a * b)) : MulLECancellable b :=
   fun c d hcd ↦ h <| by rw [mul_assoc, mul_assoc]; exact mul_le_mul_right hcd _
 
-@[to_additive] lemma of_mul_left [CommSemigroup α] [MulLeftMono α]
+@[to_additive] lemma of_mul_left [Semigroup α] [IsMulCommutative α] [MulLeftMono α]
     (h : MulLECancellable (a * b)) : MulLECancellable a := (mul_comm a b ▸ h).of_mul_right
 
 end MulLECancellable
 
 @[to_additive (attr := simp)]
-lemma mulLECancellable_mul [LE α] [CommSemigroup α] [MulLeftMono α] :
+lemma mulLECancellable_mul [LE α] [Semigroup α] [IsMulCommutative α] [MulLeftMono α] :
     MulLECancellable (a * b) ↔ MulLECancellable a ∧ MulLECancellable b :=
   ⟨fun h ↦ ⟨h.of_mul_left, h.of_mul_right⟩, fun h ↦ h.1.mul h.2⟩

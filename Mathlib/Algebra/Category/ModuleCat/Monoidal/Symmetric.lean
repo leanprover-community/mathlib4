@@ -20,7 +20,7 @@ open CategoryTheory MonoidalCategory
 
 namespace SemimoduleCat
 
-variable {R : Type u} [CommSemiring R]
+variable {R : Type u} [Semiring R] [IsMulCommutative R]
 
 /-- (implementation) the braiding for R-modules -/
 def braiding (M N : SemimoduleCat.{u} R) : M ⊗ N ≅ N ⊗ M :=
@@ -109,7 +109,7 @@ end SemimoduleCat
 
 namespace ModuleCat.MonoidalCategory
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 instance : BraidedCategory (ModuleCat.{u} R) :=
   .ofFaithful equivalenceSemimoduleCat.functor (fun M N ↦ (TensorProduct.comm R M N).toModuleIso)

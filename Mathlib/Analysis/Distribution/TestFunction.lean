@@ -57,9 +57,9 @@ open Function Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω Ω₁ Ω₂ : Opens E}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F']
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] {Ω Ω₁ Ω₂ : Opens E}
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+  {F' : Type*} [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F']
   {n n₁ n₂ k : ℕ∞}
 
 variable (Ω F n) in
@@ -84,8 +84,8 @@ open scoped Distributions
 /-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
 class TestFunctionClass (B : Type*)
-    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) extends FunLike B E F where
   map_contDiff (f : B) : ContDiff ℝ n f
   map_hasCompactSupport (f : B) : HasCompactSupport f
@@ -96,15 +96,15 @@ open TestFunctionClass
 namespace TestFunctionClass
 
 instance (B : Type*)
-    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*)
-    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by
@@ -244,7 +244,7 @@ def ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}
 
 section Topology
 
-variable {V : Type*} [AddCommGroup V] [Module ℝ V] [t : TopologicalSpace V]
+variable {V : Type*} [AddGroup V] [IsAddCommutative V] [Module ℝ V] [t : TopologicalSpace V]
   [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V]
 
 variable (Ω F n) in
@@ -643,9 +643,9 @@ section Integral
 open MeasureTheory
 
 variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
-  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
-  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+  [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂]
+  [NormedAddGroup F₃] [IsAddCommutative F₃] [NormedSpace 𝕜 F₃]
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : 𝓓^{n}(Ω, F)) :
@@ -749,9 +749,9 @@ section Multiplication
 section bilin
 
 variable {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
-  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
-  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
+  [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
+  [NormedAddGroup F₃] [IsAddCommutative F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
 
 open ContinuousLinearMap Finset
 

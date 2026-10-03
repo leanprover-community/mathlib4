@@ -76,8 +76,8 @@ universe r s u v w
 
 namespace WeierstrassCurve
 
-variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} {L : Type w} [CommRing R]
-  [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] [Field L] {W' : Affine R}
+variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} {L : Type w} [Ring R] [IsMulCommutative R]
+  [Ring S] [IsMulCommutative S] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Field F] [Field K] [Field L] {W' : Affine R}
   {W : Affine F}
 
 namespace Affine

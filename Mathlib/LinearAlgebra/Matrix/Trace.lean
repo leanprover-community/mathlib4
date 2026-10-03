@@ -34,7 +34,7 @@ variable [Fintype m] [Fintype n] [Fintype p]
 
 section AddCommMonoid
 
-variable [AddCommMonoid R]
+variable [AddMonoid R] [IsAddCommutative R]
 
 /-- The trace of a square matrix. For more bundled versions, see:
 * `Matrix.traceAddMonoidHom`
@@ -106,7 +106,7 @@ theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
     trace (∑ i ∈ s, f i) = ∑ i ∈ s, trace (f i) :=
   map_sum (traceAddMonoidHom n R) f s
 
-theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] {F : Type*} [FunLike F R S]
+theorem _root_.AddMonoidHom.map_trace [AddMonoid S] [IsAddCommutative S] {F : Type*} [FunLike F R S]
     [AddMonoidHomClass F R S] (f : F) (A : Matrix n n R) :
     f (trace A) = trace (A.map f) :=
   map_sum f (fun i => diag A i) Finset.univ
@@ -124,7 +124,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup R]
+variable [AddGroup R] [IsAddCommutative R]
 
 @[simp]
 theorem trace_sub (A B : Matrix n n R) : trace (A - B) = trace A - trace B :=
@@ -138,7 +138,7 @@ end AddCommGroup
 
 section One
 
-variable [DecidableEq n] [AddCommMonoidWithOne R]
+variable [DecidableEq n] [AddMonoidWithOne R] [IsAddCommutative R]
 
 @[simp]
 theorem trace_one : trace (1 : Matrix n n R) = Fintype.card n := by
@@ -149,18 +149,18 @@ end One
 section Mul
 
 @[simp]
-theorem trace_transpose_mul [AddCommMonoid R] [Mul R] (A : Matrix m n R) (B : Matrix n m R) :
+theorem trace_transpose_mul [AddMonoid R] [IsAddCommutative R] [Mul R] (A : Matrix m n R) (B : Matrix n m R) :
     trace (Aᵀ * Bᵀ) = trace (A * B) :=
   Finset.sum_comm
 
-theorem trace_mul_comm [AddCommMonoid R] [CommMagma R] (A : Matrix m n R) (B : Matrix n m R) :
+theorem trace_mul_comm [AddMonoid R] [IsAddCommutative R] [Mul R] [IsMulCommutative R] (A : Matrix m n R) (B : Matrix n m R) :
     trace (A * B) = trace (B * A) := by rw [← trace_transpose, ← trace_transpose_mul, transpose_mul]
 
-theorem trace_mul_cycle [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
+theorem trace_mul_cycle [NonUnitalSemiring R] [IsMulCommutative R] (A : Matrix m n R) (B : Matrix n p R)
     (C : Matrix p m R) : trace (A * B * C) = trace (C * A * B) := by
   rw [trace_mul_comm, Matrix.mul_assoc]
 
-theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
+theorem trace_mul_cycle' [NonUnitalSemiring R] [IsMulCommutative R] (A : Matrix m n R) (B : Matrix n p R)
     (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
 
@@ -177,7 +177,7 @@ theorem trace_vecMulVec [NonUnitalNonAssocSemiring R] (a b : n → R) :
 
 end Mul
 
-lemma trace_submatrix_succ {n : ℕ} [AddCommMonoid R]
+lemma trace_submatrix_succ {n : ℕ} [AddMonoid R] [IsAddCommutative R]
     (M : Matrix (Fin n.succ) (Fin n.succ) R) :
     M 0 0 + trace (submatrix M Fin.succ Fin.succ) = trace M := by
   delta trace
@@ -186,7 +186,7 @@ lemma trace_submatrix_succ {n : ℕ} [AddCommMonoid R]
 
 section CommSemiring
 
-variable [DecidableEq m] [CommSemiring R]
+variable [DecidableEq m] [Semiring R] [IsMulCommutative R]
 
 -- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so that the ascription isn't needed
 theorem trace_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
@@ -203,7 +203,7 @@ end CommSemiring
 
 section Fin
 
-variable [AddCommMonoid R]
+variable [AddMonoid R] [IsAddCommutative R]
 
 /-! ### Special cases for `Fin n` for low values of `n`
 -/
@@ -240,7 +240,7 @@ end Fin
 section single
 
 variable {m n : Type*} {R α : Type*} [DecidableEq m] [DecidableEq n]
-variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
+variable [Fintype n] [AddMonoid α] [IsAddCommutative α] (i j : n) (c : α)
 
 @[simp]
 theorem trace_single_eq_of_ne (h : i ≠ j) : trace (single i j c) = 0 := by
@@ -262,7 +262,7 @@ theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
 
 end single
 
-theorem trace_surjective [AddCommMonoid R] [Nonempty n] :
+theorem trace_surjective [AddMonoid R] [IsAddCommutative R] [Nonempty n] :
     Function.Surjective (trace : Matrix n n R → R) := fun r ↦ by
   classical
   inhabit n

@@ -98,7 +98,7 @@ theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
 /-- `ε` commutes with every element of the algebra. -/
 theorem commute_eps_right [Semiring R] (x : DualNumber R) : Commute x ε := (commute_eps_left x).symm
 
-variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable {A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- For two `R`-algebra morphisms out of `A[ε]` to agree, it suffices for them to agree on the
 elements of `A` and the `A`-multiples of `ε`. -/
@@ -124,7 +124,7 @@ theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := 
 /-- A ring morphism `R[ε] →+* R'` is determined by its restriction
 on `R` and its value on `ε`. -/
 @[ext high]
-lemma ringHom_ext {R' : Type*} [CommSemiring R'] {f g : R[ε] →+* R'}
+lemma ringHom_ext {R' : Type*} [Semiring R'] [IsMulCommutative R'] {f g : R[ε] →+* R'}
     (h₀ : f.comp (algebraMap R R[ε]) = g.comp (algebraMap R R[ε]))
     (hε : f ε = g ε) : f = g := by
   let : Algebra R R' := by

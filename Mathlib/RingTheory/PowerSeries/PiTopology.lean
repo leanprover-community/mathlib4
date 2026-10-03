@@ -109,14 +109,14 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
   · ext _; congr; ext; simp
   · ext; simp
 
-theorem tendsto_trunc_atTop [CommSemiring R] (f : R⟦X⟧) :
+theorem tendsto_trunc_atTop [Semiring R] [IsMulCommutative R] (f : R⟦X⟧) :
     Tendsto (fun d ↦ (trunc d f : R⟦X⟧)) atTop (𝓝 f) := by
   rw [tendsto_iff_coeff_tendsto]
   intro d
   exact tendsto_atTop_of_eventually_const fun n (hdn : d < n) ↦ (by simp [coeff_trunc, hdn])
 
 /-- The inclusion of polynomials into power series has dense image -/
-theorem denseRange_toPowerSeries [CommSemiring R] :
+theorem denseRange_toPowerSeries [Semiring R] [IsMulCommutative R] :
     DenseRange (Polynomial.toPowerSeries (R := R)) := fun f =>
   mem_closure_of_tendsto (tendsto_trunc_atTop R f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
@@ -190,7 +190,7 @@ end GeomSeries
 end Sum
 
 section Prod
-variable [CommSemiring R] {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] {f : ι → R⟦X⟧}
+variable [Semiring R] [IsMulCommutative R] {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] {f : ι → R⟦X⟧}
 
 /-- If the order of a family of `PowerSeries` tends to infinity, the collection of all
 possible products over `Finset` is summable. -/
@@ -219,7 +219,7 @@ theorem multipliable_one_add_of_tendsto_order_atTop_nhds_top
 end Prod
 
 section ProdOneSubPow
-variable (R : Type*) [CommRing R] [TopologicalSpace R]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [TopologicalSpace R]
 
 theorem multipliable_one_sub_X_pow : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^ (n + 1) := by
   nontriviality R
@@ -288,12 +288,12 @@ open MvPowerSeries.WithPiTopology
 theorem continuous_C [Semiring R] : Continuous (C (R := R)) :=
   MvPowerSeries.WithPiTopology.continuous_C
 
-theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
+theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [Semiring R] [IsMulCommutative R]
     {f : PowerSeries R} (hf : IsNilpotent (constantCoeff (R := R) f)) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
   MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent hf
 
-theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
+theorem isTopologicallyNilpotent_of_constantCoeff_zero [Semiring R] [IsMulCommutative R]
     {f : PowerSeries R} (hf : constantCoeff (R := R) f = 0) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
   MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero hf
@@ -302,7 +302,7 @@ theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
 iff its constant coefficient is nilpotent.
 [N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981] -/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
-    [CommRing R] [DiscreteTopology R] (f : PowerSeries R) :
+    [Ring R] [IsMulCommutative R] [DiscreteTopology R] (f : PowerSeries R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff f) :=
   MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent f

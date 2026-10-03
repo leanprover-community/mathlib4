@@ -73,7 +73,7 @@ open Matrix
 
 variable (n p q l : Type*) (R : Type u₂)
 variable [DecidableEq p] [DecidableEq q] [DecidableEq l]
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 @[simp]
 theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.trace ⁅X, Y⁆ = 0 :=

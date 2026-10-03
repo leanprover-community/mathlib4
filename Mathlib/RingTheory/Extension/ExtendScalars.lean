@@ -45,12 +45,12 @@ namespace Algebra.Extension
 
 universe w v u
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
+variable {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- Given an extension `P` of `S` over `R`, `P.extendScalars` is the same extension
 but viewed as an extension of `S` over `P.Ring`. -/
 @[simps]
-def extendScalars {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
+def extendScalars {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
     (P : Extension.{w} R S) : Extension P.Ring S where
   Ring := P.Ring
   σ := P.σ
@@ -62,14 +62,14 @@ set_option backward.defeqAttrib.useBackward true in
 on the underlying extension rings. -/
 @[simps!]
 noncomputable
-def toExtendScalars {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
+def toExtendScalars {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
     (P : Extension.{w} R S) : P.Hom P.extendScalars :=
   .ofAlgHom (IsScalarTower.toAlgHom R P.Ring P.extendScalars.Ring)
     (by dsimp; ext; simp)
 
 /-- `Extension.extendScalars` does not change the cotangent space of an extension. -/
 noncomputable
-def cotangentExtendScalarsEquiv {R : Type u} {S : Type v} [CommRing R] [CommRing S]
+def cotangentExtendScalarsEquiv {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     [Algebra R S] (P : Extension.{w} R S) :
     P.extendScalars.Cotangent ≃ₗ[S] P.Cotangent :=
   LinearEquiv.refl _ _
@@ -92,7 +92,7 @@ theorem H1Cotangent.map_toExtendScalars_injective (P : Extension.{w} R S) :
 linearly equivalent to that of `S` over `P.Ring`. -/
 @[simps! toLinearMap]
 noncomputable
-def h1CotangentExtendScalarsEquiv {R : Type u} {S : Type v} [CommRing R] [CommRing S]
+def h1CotangentExtendScalarsEquiv {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     [Algebra R S] (P : Extension.{w} R S) :
     P.extendScalars.H1Cotangent ≃ₗ[S] H1Cotangent P.Ring S :=
   Extension.H1Cotangent.equiv
@@ -106,7 +106,7 @@ lemma h1CotangentExtendScalarsEquiv_symm_toLinearMap (P : Extension.{w} R S) :
 this is the equivalence induced by `P.h1Cotangentι`. -/
 @[simps! toLinearMap]
 noncomputable
-def h1CotangentEquivOfSurjective {R : Type u} {S : Type v} [CommRing R] [CommRing S]
+def h1CotangentEquivOfSurjective {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     [Algebra R S] (P : Extension.{w} R S) (h : Function.Surjective (algebraMap R P.Ring)) :
     P.H1Cotangent ≃ₗ[S] P.Cotangent where
   __ := P.h1Cotangentι
@@ -118,7 +118,7 @@ def h1CotangentEquivOfSurjective {R : Type u} {S : Type v} [CommRing R] [CommRin
 the first homology of the naive cotangent complex of `S` over `P.Ring` and
 the cotangent space of `P`. -/
 noncomputable
-def h1CotangentEquivCotangent {R : Type u} {S : Type v} [CommRing R] [CommRing S]
+def h1CotangentEquivCotangent {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     [Algebra R S] (P : Extension.{w} R S) :
     H1Cotangent P.Ring S ≃ₗ[S] P.Cotangent :=
   P.h1CotangentExtendScalarsEquiv.symm ≪≫ₗ

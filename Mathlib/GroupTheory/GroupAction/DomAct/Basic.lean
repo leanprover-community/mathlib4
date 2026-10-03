@@ -257,11 +257,11 @@ variable {A M B : Type*}
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddZeroClass B] :
     MulAction Mᵈᵐᵃ (A →+ B) := DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
 
-instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddCommMonoid B] :
+instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddMonoid B] [IsAddCommutative B] :
     DistribMulAction Mᵈᵐᵃ (A →+ B) :=
   DFunLike.coe_injective.distribMulAction (AddMonoidHom.coeFn A B) fun _ _ ↦ rfl
 
-instance [Monoid M] [Monoid A] [MulDistribMulAction M A] [CommMonoid B] :
+instance [Monoid M] [Monoid A] [MulDistribMulAction M A] [Monoid B] [IsMulCommutative B] :
     MulDistribMulAction Mᵈᵐᵃ (A →* B) :=
   DFunLike.coe_injective.mulDistribMulAction (MonoidHom.coeFn A B) fun _ _ ↦ rfl
 

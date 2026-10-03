@@ -600,13 +600,13 @@ instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient 
 /-- The quotient of a commutative magma by a congruence relation is a commutative magma. -/
 @[to_additive /-- The quotient of an `AddCommMagma` by an additive congruence relation is
 an `AddCommMagma`. -/]
-instance commMagma {M : Type*} [CommMagma M] (c : Con M) : CommMagma c.Quotient := fast_instance%
+instance commMagma {M : Type*} [Mul M] [IsMulCommutative M] (c : Con M) : CommMagma c.Quotient := fast_instance%
   Function.Surjective.commMagma _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive /-- The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`. -/]
-instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
+instance commSemigroup {M : Type*} [Semigroup M] [IsMulCommutative M] (c : Con M) : CommSemigroup c.Quotient :=
   Function.Surjective.commSemigroup _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
@@ -618,7 +618,7 @@ instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient := fast_i
 /-- The quotient of a `CommMonoid` by a congruence relation is a `CommMonoid`. -/
 @[to_additive /-- The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`. -/]
-instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient := fast_instance%
+instance commMonoid {M : Type*} [Monoid M] [IsMulCommutative M] (c : Con M) : CommMonoid c.Quotient := fast_instance%
   fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -697,7 +697,7 @@ instance group : Group c.Quotient := fast_instance%
 /-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
 @[to_additive /-- The quotient of an `AddCommGroup` by an additive congruence
 relation is an `AddCommGroup`. -/]
-instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient := fast_instance%
+instance commGroup {M : Type*} [Group M] [IsMulCommutative M] (c : Con M) : CommGroup c.Quotient := fast_instance%
   Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
       (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 

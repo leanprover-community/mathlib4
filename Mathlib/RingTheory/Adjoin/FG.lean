@@ -37,7 +37,7 @@ open scoped Pointwise
 
 namespace Algebra
 
-variable {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable {R : Type u} {A : Type v} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
   {s t : Set A}
 
 theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t).toSubmodule.FG) :
@@ -87,7 +87,7 @@ end Algebra
 namespace Subalgebra
 
 variable {R : Type u} {A : Type v} {B : Type w}
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- A subalgebra `S` is finitely generated if there exists `t : Finset A` such that
 `Algebra.adjoin R t = S`. -/
@@ -181,7 +181,7 @@ end Subalgebra
 section Semiring
 
 variable {R : Type u} {A : Type v} {B : Type w}
-variable [CommSemiring R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra R B]
 
 /-- The image of a Noetherian R-algebra under an R-algebra map is a Noetherian ring. -/
 instance AlgHom.isNoetherianRing_range (f : A →ₐ[R] B) [IsNoetherianRing A] :
@@ -193,7 +193,7 @@ end Semiring
 section Ring
 
 variable {R : Type u} {A : Type v}
-variable [CommRing R] [CommRing A] [Algebra R A]
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
 
 theorem isNoetherianRing_of_fg {S : Subalgebra R A} (HS : S.FG) [IsNoetherianRing R] :
     IsNoetherianRing S :=

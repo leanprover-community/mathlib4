@@ -19,7 +19,7 @@ and more advanced evaluations that allow one to map the coefficients to differen
 In the definitions below, we use the following notation:
 
 + `σ : Type*` (indexing the variables)
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[Semiring R] [IsMulCommutative R]` (the coefficients)
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
 + `a : R`
@@ -58,7 +58,7 @@ variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ �
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
+variable [Semiring R] [IsMulCommutative R] [Semiring S₁] [IsMulCommutative S₁] {p q : MvPolynomial σ R}
 
 section Eval₂
 
@@ -186,16 +186,16 @@ theorem eval₂Hom_X' (f : R →+* S₁) (g : σ → S₁) (i : σ) : eval₂Hom
   eval₂_X f g i
 
 @[simp]
-theorem comp_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) (φ : S₁ →+* S₂) :
+theorem comp_eval₂Hom [Semiring S₂] [IsMulCommutative S₂] (f : R →+* S₁) (g : σ → S₁) (φ : S₁ →+* S₂) :
     φ.comp (eval₂Hom f g) = eval₂Hom (φ.comp f) fun i => φ (g i) := by
   ext <;> simp
 
-theorem map_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) (φ : S₁ →+* S₂)
+theorem map_eval₂Hom [Semiring S₂] [IsMulCommutative S₂] (f : R →+* S₁) (g : σ → S₁) (φ : S₁ →+* S₂)
     (p : MvPolynomial σ R) : φ (eval₂Hom f g p) = eval₂Hom (φ.comp f) (fun i => φ (g i)) p := by
   rw [← comp_eval₂Hom]
   rfl
 
-theorem hom_eval₂ [CommSemiring S₂] (p : MvPolynomial σ R) (f : R →+* S₁)
+theorem hom_eval₂ [Semiring S₂] [IsMulCommutative S₂] (p : MvPolynomial σ R) (f : R →+* S₁)
     (φ : S₁ →+* S₂) (g : σ → S₁) :
     φ (p.eval₂ f g) = p.eval₂ (φ.comp f) (fun i => φ (g i)) :=
   map_eval₂Hom f g φ p
@@ -211,7 +211,7 @@ theorem eval₂Hom_smul (f : R →+* S₁) (g : σ → S₁) (r : R) (P : MvPoly
 
 section
 
-theorem eval₂_comp_left {S₂} [CommSemiring S₂] (k : S₁ →+* S₂) (f : R →+* S₁) (g : σ → S₁) (p) :
+theorem eval₂_comp_left {S₂} [Semiring S₂] [IsMulCommutative S₂] (k : S₁ →+* S₂) (f : R →+* S₁) (g : σ → S₁) (p) :
     k (eval₂ f g p) = eval₂ (k.comp f) (k ∘ g) p := by
   apply MvPolynomial.induction_on p <;>
     simp +contextual [eval₂_add, k.map_add, eval₂_mul, k.map_mul]
@@ -310,7 +310,7 @@ theorem eval_assoc {τ} (f : σ → MvPolynomial τ R) (g : τ → R) (p : MvPol
 theorem eval₂_id {g : σ → R} (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
   rfl
 
-theorem eval_eval₂ {S τ : Type*} {x : τ → S} [CommSemiring S]
+theorem eval_eval₂ {S τ : Type*} {x : τ → S} [Semiring S] [IsMulCommutative S]
     (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
     eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
   apply induction_on p
@@ -346,13 +346,13 @@ theorem map_X (n : σ) : map f (X n : MvPolynomial σ R) = X n := by simp [X]
 
 theorem map_id : ∀ p : MvPolynomial σ R, map (RingHom.id R) p = p := AddMonoidAlgebra.map_id
 
-theorem map_map [CommSemiring S₂] (g : S₁ →+* S₂) (p : MvPolynomial σ R) :
+theorem map_map [Semiring S₂] [IsMulCommutative S₂] (g : S₁ →+* S₂) (p : MvPolynomial σ R) :
     map g (map f p) = map (g.comp f) p := AddMonoidAlgebra.map_map ..
 
 theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval₂ f g = eval g (map f p) := by
   simp [eval₂, eval]; simp [map, MvPolynomial, Finsupp.sum_mapRange_index, mapRingHom]
 
-theorem eval₂_comp_right {S₂} [CommSemiring S₂] (k : S₁ →+* S₂) (f : R →+* S₁) (g : σ → S₁) (p) :
+theorem eval₂_comp_right {S₂} [Semiring S₂] [IsMulCommutative S₂] (k : S₁ →+* S₂) (f : R →+* S₁) (g : σ → S₁) (p) :
     k (eval₂ f g p) = eval₂ k (k ∘ g) (map f p) := by
   apply MvPolynomial.induction_on p
   · intro r
@@ -377,7 +377,7 @@ lemma eval₂_map_comp_C {ι : Type*} (f : R →+* S₁) (h : ι → MvPolynomia
     (p : MvPolynomial ι R) : eval₂ ((map f).comp C) h p = eval₂ C h (map f p) := by
   induction p using MvPolynomial.induction_on <;> simp_all
 
-lemma map_eval {S₂ : Type*} [CommSemiring S₂] (q : S₁ →+* S₂) (g : σ → S₁) (p : MvPolynomial σ S₁) :
+lemma map_eval {S₂ : Type*} [Semiring S₂] [IsMulCommutative S₂] (q : S₁ →+* S₂) (g : σ → S₁) (p : MvPolynomial σ S₁) :
     q (eval g p) = eval (q ∘ g) (map q p) := by
   rw [← eval₂_eq_eval_map, ← eval₂_id, eval₂_comp_right, map_id]
 
@@ -438,12 +438,12 @@ theorem eval₂_comp (f : R →+* S₁) (g : σ → R) (p : MvPolynomial σ R) :
   rw [← p.map_id, eval_map, eval₂_comp_right]
 
 @[simp]
-theorem eval₂_map [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₂) (φ : S₁ →+* S₂)
+theorem eval₂_map [Semiring S₂] [IsMulCommutative S₂] (f : R →+* S₁) (g : σ → S₂) (φ : S₁ →+* S₂)
     (p : MvPolynomial σ R) : eval₂ φ g (map f p) = eval₂ (φ.comp f) g p := by
   rw [← eval_map, ← eval_map, map_map]
 
 @[simp]
-theorem eval₂Hom_map_hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₂) (φ : S₁ →+* S₂)
+theorem eval₂Hom_map_hom [Semiring S₂] [IsMulCommutative S₂] (f : R →+* S₁) (g : σ → S₂) (φ : S₁ →+* S₂)
     (p : MvPolynomial σ R) : eval₂Hom φ g (map f p) = eval₂Hom (φ.comp f) g p :=
   eval₂_map f g φ p
 
@@ -529,11 +529,11 @@ lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S�
       exact ⟨q + u, by simp [hq, hu]⟩
 
 /-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
-def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+def mapAlgHom [Semiring S₂] [IsMulCommutative S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ := AddMonoidAlgebra.mapAlgHom _ f
 
 @[simp]
-lemma mapAlgHom_apply [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂)
+lemma mapAlgHom_apply [Semiring S₂] [IsMulCommutative S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂)
     (x : MvPolynomial σ S₁) : mapAlgHom f x = map f x := rfl
 
 @[simp]
@@ -542,7 +542,7 @@ theorem mapAlgHom_id [Algebra R S₁] :
   AlgHom.ext map_id
 
 @[simp]
-theorem toRingHom_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+theorem toRingHom_mapAlgHom [Semiring S₂] [IsMulCommutative S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     ↑(mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂) =
       (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
   RingHom.mk_coe _ _ _ _ _
@@ -550,7 +550,7 @@ theorem toRingHom_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂
 @[deprecated toRingHom_mapAlgHom (since := "2026-05-05")]
   alias mapAlgHom_coe_ringHom := toRingHom_mapAlgHom
 
-lemma range_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+lemma range_mapAlgHom [Semiring S₂] [IsMulCommutative S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     (mapAlgHom f).range.toSubmodule = coeffsIn σ f.range.toSubmodule := by
   simp only [← SetLike.coe_set_eq, Subalgebra.coe_toSubmodule, AlgHom.coe_range]
   ext
@@ -564,7 +564,7 @@ section Aeval
 /-! ### The algebra of multivariate polynomials -/
 
 
-variable [Algebra R S₁] [CommSemiring S₂]
+variable [Algebra R S₁] [Semiring S₂] [IsMulCommutative S₂]
 variable (f : σ → S₁)
 
 /-- A map `σ → S₁` where `S₁` is an algebra over `R` generates an `R`-algebra homomorphism
@@ -607,18 +607,18 @@ theorem aeval_X_left : aeval X = AlgHom.id R (MvPolynomial σ R) :=
 theorem aeval_X_left_apply (p : MvPolynomial σ R) : aeval X p = p :=
   congr($aeval_X_left p)
 
-theorem comp_aeval {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[R] B) :
+theorem comp_aeval {B : Type*} [Semiring B] [IsMulCommutative B] [Algebra R B] (φ : S₁ →ₐ[R] B) :
     φ.comp (aeval f) = aeval fun i => φ (f i) := by
   ext i
   simp
 
-lemma comp_aeval_apply {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[R] B)
+lemma comp_aeval_apply {B : Type*} [Semiring B] [IsMulCommutative B] [Algebra R B] (φ : S₁ →ₐ[R] B)
     (p : MvPolynomial σ R) :
     φ (aeval f p) = aeval (fun i ↦ φ (f i)) p := by
   rw [← comp_aeval, AlgHom.coe_comp, comp_apply]
 
 @[simp]
-theorem map_aeval {B : Type*} [CommSemiring B] (g : σ → S₁) (φ : S₁ →+* B) (p : MvPolynomial σ R) :
+theorem map_aeval {B : Type*} [Semiring B] [IsMulCommutative B] (g : σ → S₁) (φ : S₁ →+* B) (p : MvPolynomial σ R) :
     φ (aeval g p) = eval₂Hom (φ.comp (algebraMap R S₁)) (fun i => φ (g i)) p := by
   rw [← comp_eval₂Hom]
   rfl
@@ -745,7 +745,7 @@ end Algebra
 
 section AevalTower
 
-variable {S A : Type*} [CommSemiring S] [CommSemiring A]
+variable {S A : Type*} [Semiring S] [IsMulCommutative S] [Semiring A] [IsMulCommutative A]
 variable [Algebra S R] [Algebra S A]
 
 /-- Version of `aeval` for defining algebra homs out of `MvPolynomial σ R` over a smaller base ring
@@ -806,7 +806,7 @@ end AevalTower
 
 section EvalMem
 
-variable {S subS : Type*} [CommSemiring S] [SetLike subS S] [SubsemiringClass subS S]
+variable {S subS : Type*} [Semiring S] [IsMulCommutative S] [SetLike subS S] [SubsemiringClass subS S]
 
 theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     (hs : ∀ i ∈ p.support, f (p.coeff i) ∈ s) {v : σ → S} (hv : ∀ i, v i ∈ s) :
@@ -839,7 +839,7 @@ theorem eval_mem {p : MvPolynomial σ S} {s : subS} (hs : ∀ i ∈ p.support, p
 
 end EvalMem
 
-variable {S T : Type*} [CommSemiring S] [Algebra R S] [CommSemiring T] [Algebra R T] [Algebra S T]
+variable {S T : Type*} [Semiring S] [IsMulCommutative S] [Algebra R S] [Semiring T] [IsMulCommutative T] [Algebra R T] [Algebra S T]
   [IsScalarTower R S T]
 
 lemma aeval_sumElim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (g : σ → T) :
@@ -854,7 +854,7 @@ end CommSemiring
 
 section Algebra
 
-variable {R S σ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R S σ : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 open scoped AlgebraMonoidAlgebra in
 /--

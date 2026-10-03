@@ -293,10 +293,10 @@ end BaseType
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
-theorem Nat.cast_eq_algebraMap (A : Type*) [CommSemiring A] (n : ℕ) :
+theorem Nat.cast_eq_algebraMap (A : Type*) [Semiring A] [IsMulCommutative A] (n : ℕ) :
     Nat.cast n = algebraMap ℕ A n := rfl
 
-theorem Int.cast_eq_algebraMap (A : Type*) [CommRing A] (n : ℤ) :
+theorem Int.cast_eq_algebraMap (A : Type*) [Ring A] [IsMulCommutative A] (n : ℤ) :
     Int.cast n = algebraMap ℤ A n := rfl
 
 /-- Remove some nonstandard spellings of `algebraMap` such as `Nat.cast` -/

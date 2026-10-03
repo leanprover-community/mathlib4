@@ -19,7 +19,7 @@ Localization results.
 
 noncomputable section
 
-variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
+variable (R S P : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring P] [IsMulCommutative P]
 
 namespace MaximalSpectrum
 
@@ -28,7 +28,7 @@ variable {R}
 open Set
 
 variable (R : Type*)
-variable [CommRing R] [IsDomain R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
+variable [Ring R] [IsMulCommutative R] [IsDomain R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- An integral domain is equal to the intersection of its localizations at all its maximal ideals
 viewed as subalgebras of its field of fractions. -/
@@ -53,7 +53,7 @@ end MaximalSpectrum
 namespace PrimeSpectrum
 
 variable (R : Type*)
-variable [CommRing R] [IsDomain R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
+variable [Ring R] [IsMulCommutative R] [IsDomain R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- An integral domain is equal to the intersection of its localizations at all its prime ideals
 viewed as subalgebras of its field of fractions. -/
@@ -120,7 +120,7 @@ theorem mapPiLocalization_bijective : Function.Bijective (mapPiLocalization f hf
 
 section Pi
 
-variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)] [∀ i, Nontrivial (R i)]
+variable {ι} (R : ι → Type*) [∀ i, Semiring (R i)] [∀ i, IsMulCommutative (R i)] [∀ i, Nontrivial (R i)]
 
 theorem toPiLocalization_not_surjective_of_infinite [Infinite ι] :
     ¬ Function.Surjective (toPiLocalization (Π i, R i)) := fun surj ↦ by
@@ -245,7 +245,7 @@ theorem mapPiLocalization_bijective (hf : Function.Bijective f) :
 
 section Pi
 
-variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)] [∀ i, Nontrivial (R i)]
+variable {ι} (R : ι → Type*) [∀ i, Semiring (R i)] [∀ i, IsMulCommutative (R i)] [∀ i, Nontrivial (R i)]
 
 theorem toPiLocalization_not_surjective_of_infinite [Infinite ι] :
     ¬ Function.Surjective (toPiLocalization (Π i, R i)) :=

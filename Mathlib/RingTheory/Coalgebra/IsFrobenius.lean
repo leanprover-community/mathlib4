@@ -70,7 +70,7 @@ public section
 open TensorProduct LinearMap Coalgebra
 open scoped RingTheory.LinearMap
 
-variable {R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalNonAssocSemiring A] [Module R A]
   [SMulCommClass R A A] [IsScalarTower R A A]
 
 local notation3 "α" => (TensorProduct.assoc R _ _ _).toLinearMap

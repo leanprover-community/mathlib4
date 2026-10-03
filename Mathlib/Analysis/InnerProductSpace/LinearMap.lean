@@ -42,14 +42,14 @@ section Norm_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddGroup F] [IsAddCommutative F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 section Complex_Seminormed
 
-variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [SeminormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℂ V]
 
 /-- A complex polarization identity, with a linear map. -/
 theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
@@ -78,7 +78,7 @@ end Complex_Seminormed
 
 section Complex
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℂ V]
 
 /-- A linear map `T` is zero, if and only if the identity `⟪T x, x⟫_ℂ = 0` holds for all `x`.
 -/
@@ -105,7 +105,7 @@ end Complex
 
 section
 
-variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E' : Type*} [SeminormedAddGroup E'] [IsAddCommutative E'] [InnerProductSpace 𝕜 E']
 
 /-- A linear isometry preserves the inner product. -/
 @[simp]
@@ -193,7 +193,7 @@ variable {𝕜}
 
 namespace ContinuousLinearMap
 
-variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E' : Type*} [SeminormedAddGroup E'] [IsAddCommutative E'] [InnerProductSpace 𝕜 E']
 
 -- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
@@ -246,14 +246,14 @@ variable {G : Type*}
 
 /-- The inner product on an inner product space of dimension 2 can be evaluated in terms
 of a complex-number representation of the space. -/
-theorem inner_map_complex [SeminormedAddCommGroup G] [InnerProductSpace ℝ G] (f : G ≃ₗᵢ[ℝ] ℂ)
+theorem inner_map_complex [SeminormedAddGroup G] [IsAddCommutative G] [InnerProductSpace ℝ G] (f : G ≃ₗᵢ[ℝ] ℂ)
     (x y : G) : ⟪x, y⟫_ℝ = (f y * conj (f x)).re := by rw [← Complex.inner, f.inner_map_map]
 
 end RCLikeToReal
 
 section ReApplyInnerSelf
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -270,7 +270,7 @@ end ReApplyInnerSelf
 
 section ReApplyInnerSelf_Seminormed
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -287,9 +287,9 @@ theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {
 end ReApplyInnerSelf_Seminormed
 
 namespace InnerProductSpace
-variable {𝕜 E F G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+variable {𝕜 E F G : Type*} [RCLike 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+  [SeminormedAddGroup F] [IsAddCommutative F] [InnerProductSpace 𝕜 F]
+  [SeminormedAddGroup G] [IsAddCommutative G] [InnerProductSpace 𝕜 G]
 
 open ContinuousLinearMap
 
@@ -321,7 +321,7 @@ lemma toLinearMap_rankOne (x : E) (y : F) :
 
 @[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 x y z = inner 𝕜 y z • x := rfl
 
-lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+lemma comp_rankOne {G : Type*} [SeminormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
     (x : E) (y : F) (f : E →L[𝕜] G) : f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
   simp_rw [rankOne_def', ← comp_assoc, comp_toSpanSingleton]
 
@@ -346,8 +346,8 @@ lemma inner_right_rankOne_apply (x y : F) (z w : G) :
   simp [inner_smul_right, mul_comm]
 
 section Normed
-variable {F H : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+variable {F H : Type*} [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace 𝕜 F]
+  [NormedAddGroup H] [IsAddCommutative H] [InnerProductSpace 𝕜 H]
 
 @[simp] theorem rankOne_eq_zero {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
   simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
@@ -403,8 +403,8 @@ namespace ContinuousLinearMap
 
 open InnerProductSpace
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E]
+    [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace 𝕜 F]
 
 theorem opNorm_le_of_re_inner_le {T : E →L[𝕜] F} {C : ℝ} (hC : 0 ≤ C)
     (h : ∀ x y, ‖x‖ = 1 → ‖y‖ = 1 → re ⟪T x, y⟫_𝕜 ≤ C) : ‖T‖ ≤ C := by

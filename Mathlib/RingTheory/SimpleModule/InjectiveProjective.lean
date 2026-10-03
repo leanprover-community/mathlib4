@@ -18,7 +18,7 @@ public section
 
 namespace Module
 
-variable (R : Type*) [Ring R] [IsSemisimpleRing R] (M : Type*) [AddCommGroup M] [Module R M]
+variable (R : Type*) [Ring R] [IsSemisimpleRing R] (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 theorem injective_of_isSemisimpleRing : Module.Injective R M where
   out X Y _ _ _ _ f hf g :=

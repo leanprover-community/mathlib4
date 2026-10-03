@@ -27,7 +27,7 @@ universe u v
 variable {ι : Type u} (R : ι → CommRingCat.{u})
 
 lemma Ideal.span_eq_top_of_span_image_evalRingHom
-    {ι} {R : ι → Type*} [∀ i, CommRing (R i)] (s : Set (Π i, R i))
+    {ι} {R : ι → Type*} [∀ i, Ring (R i)] [∀ i, IsMulCommutative (R i)] (s : Set (Π i, R i))
     (hs : s.Finite) (hs' : ∀ i, Ideal.span (Pi.evalRingHom (R ·) i '' s) = ⊤) :
     Ideal.span s = ⊤ := by
   simp only [Ideal.eq_top_iff_one, ← Subtype.range_val (s := s), ← Set.range_comp,

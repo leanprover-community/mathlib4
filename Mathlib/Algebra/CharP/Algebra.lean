@@ -58,11 +58,11 @@ theorem charP_of_injective_ringHom [NonAssocSemiring R] [NonAssocSemiring A]
     rw [← CharP.cast_eq_zero_iff R p x, ← map_natCast f x, map_eq_zero_iff f h]
 
 /-- If the algebra map `R →+* A` is injective then `A` has the same characteristic as `R`. -/
-theorem charP_of_injective_algebraMap [CommSemiring R] [Semiring A] [Algebra R A]
+theorem charP_of_injective_algebraMap [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     (h : Function.Injective (algebraMap R A)) (p : ℕ) [CharP R p] : CharP A p :=
   charP_of_injective_ringHom h p
 
-theorem charP_of_injective_algebraMap' (R : Type*) [CommRing R] [Semiring A]
+theorem charP_of_injective_algebraMap' (R : Type*) [Ring R] [IsMulCommutative R] [Semiring A]
     [Algebra R A] [FaithfulSMul R A] (p : ℕ) [CharP R p] : CharP A p :=
   charP_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) p
 
@@ -73,7 +73,7 @@ theorem charZero_of_injective_ringHom [NonAssocSemiring R] [NonAssocSemiring A]
   cast_injective _ _ _ := CharZero.cast_injective <| h <| by simpa only [map_natCast f]
 
 /-- If the algebra map `R →+* A` is injective and `R` has characteristic zero then so does `A`. -/
-theorem charZero_of_injective_algebraMap [CommSemiring R] [Semiring A] [Algebra R A]
+theorem charZero_of_injective_algebraMap [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     (h : Function.Injective (algebraMap R A)) [CharZero R] : CharZero A :=
   charZero_of_injective_ringHom h
 
@@ -115,12 +115,12 @@ lemma RingHom.expChar_iff [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+*
 
 /-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
-lemma expChar_of_injective_algebraMap [CommSemiring R] [Semiring A] [Algebra R A]
+lemma expChar_of_injective_algebraMap [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     (h : Function.Injective (algebraMap R A)) (q : ℕ) [ExpChar R q] : ExpChar A q :=
   expChar_of_injective_ringHom h q
 
 variable (R) in
-theorem ExpChar.of_injective_algebraMap' [CommRing R] [CommRing A]
+theorem ExpChar.of_injective_algebraMap' [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A]
     [Algebra R A] [FaithfulSMul R A] (q : ℕ) [ExpChar R q] : ExpChar A q :=
   expChar_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) q
 
@@ -173,7 +173,7 @@ lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [NonAssocSemiring L
 
 section
 
-variable (K L : Type*) [Field K] [CommSemiring L] [Nontrivial L] [Algebra K L]
+variable (K L : Type*) [Field K] [Semiring L] [IsMulCommutative L] [Nontrivial L] [Algebra K L]
 
 protected theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
   (algebraMap K L).charP_iff_charP p
@@ -186,7 +186,7 @@ end
 
 namespace FreeAlgebra
 
-variable {R X : Type*} [CommSemiring R] (p : ℕ)
+variable {R X : Type*} [Semiring R] [IsMulCommutative R] (p : ℕ)
 
 /-- If `R` has characteristic `p`, then so does `FreeAlgebra R X`. -/
 instance charP [CharP R p] : CharP (FreeAlgebra R X) p :=
@@ -200,7 +200,7 @@ end FreeAlgebra
 
 namespace IsFractionRing
 
-variable (R : Type*) {K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R : Type*) {K : Type*} [Ring R] [IsMulCommutative R] [Field K] [Algebra R K] [IsFractionRing R K]
 variable (p : ℕ)
 
 /-- If `R` has characteristic `p`, then so does Frac(R). -/

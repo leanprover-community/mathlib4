@@ -267,7 +267,7 @@ theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
         rw [← Filter.map_map, ← hright, hleft y₀, Filter.map_map, key₂, ← hleft]⟩
 
 @[to_additive]
-theorem continuousMul_of_comm_of_nhds_one (M : Type u) [CommMonoid M] [TopologicalSpace M]
+theorem continuousMul_of_comm_of_nhds_one (M : Type u) [Monoid M] [IsMulCommutative M] [TopologicalSpace M]
     (hmul : Tendsto (uncurry ((· * ·) : M → M → M)) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : M, 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1)) : ContinuousMul M := by
   apply ContinuousMul.of_nhds_one hmul hleft
@@ -921,7 +921,7 @@ theorem Continuous.units_map [Monoid M] [Monoid N] [TopologicalSpace M] [Topolog
 
 section
 
-variable [TopologicalSpace M] [CommMonoid M]
+variable [TopologicalSpace M] [Monoid M] [IsMulCommutative M]
 
 @[to_additive]
 theorem Submonoid.mem_nhds_one (S : Submonoid M) (oS : IsOpen (S : Set M)) :
@@ -981,7 +981,7 @@ theorem continuousOn_finsetProd {f : ι → X → M} (s : Finset ι) {t : Set X}
 alias continuousOn_finset_prod := continuousOn_finsetProd
 
 @[to_additive]
-theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filter X}
+theorem eventuallyEq_prod {X M : Type*} [Monoid M] [IsMulCommutative M] {s : Finset ι} {l : Filter X}
     {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i ∈ s, f i =ᶠ[l] ∏ i ∈ s, g i := by
   replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x := by rwa [eventually_all_finset]
   filter_upwards [hs] with x hx
@@ -999,7 +999,7 @@ theorem LocallyFinite.exists_finset_mulSupport {M : Type*} [One M] {f : ι → X
   exact ⟨y, hi, hy⟩
 
 @[to_additive]
-theorem finprod_eventually_eq_prod {M : Type*} [CommMonoid M] {f : ι → X → M}
+theorem finprod_eventually_eq_prod {M : Type*} [Monoid M] [IsMulCommutative M] {f : ι → X → M}
     (hf : LocallyFinite fun i => mulSupport (f i)) (x : X) :
     ∃ s : Finset ι, ∀ᶠ y in 𝓝 x, ∏ᶠ i, f i y = ∏ i ∈ s, f i y :=
   let ⟨I, hI⟩ := hf.exists_finset_mulSupport x

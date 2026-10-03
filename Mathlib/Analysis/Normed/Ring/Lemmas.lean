@@ -108,35 +108,35 @@ end NormedRing
 
 section NonUnitalSeminormedCommRing
 
-variable [NonUnitalSeminormedCommRing α]
+variable [NonUnitalSeminormedRing α] [IsMulCommutative α]
 
 /-- Non-unital seminormed commutative ring structure on the product of finitely many non-unital
 seminormed commutative rings, using the sup norm. -/
 instance Pi.nonUnitalSeminormedCommRing {R : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalSeminormedCommRing (R i)] : NonUnitalSeminormedCommRing (∀ i, R i) :=
+    [∀ i, NonUnitalSeminormedRing (R i)] [∀ i, IsMulCommutative (R i)] : NonUnitalSeminormedCommRing (∀ i, R i) :=
   { Pi.nonUnitalSeminormedRing, Pi.nonUnitalCommRing with }
 
 end NonUnitalSeminormedCommRing
 
 section NonUnitalNormedCommRing
 
-variable [NonUnitalNormedCommRing α]
+variable [NonUnitalNormedRing α] [IsMulCommutative α]
 
 /-- Normed commutative ring structure on the product of finitely many non-unital normed
 commutative rings, using the sup norm. -/
 instance Pi.nonUnitalNormedCommRing {R : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalNormedCommRing (R i)] : NonUnitalNormedCommRing (∀ i, R i) :=
+    [∀ i, NonUnitalNormedRing (R i)] [∀ i, IsMulCommutative (R i)] : NonUnitalNormedCommRing (∀ i, R i) :=
   { Pi.nonUnitalSeminormedCommRing, Pi.normedAddCommGroup with }
 
 end NonUnitalNormedCommRing
 
 section SeminormedCommRing
 
-variable [SeminormedCommRing α]
+variable [SeminormedRing α] [IsMulCommutative α]
 
 /-- Seminormed commutative ring structure on the product of finitely many seminormed commutative
 rings, using the sup norm. -/
-instance Pi.seminormedCommRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedCommRing (R i)] :
+instance Pi.seminormedCommRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (R i)] [∀ i, IsMulCommutative (R i)] :
     SeminormedCommRing (∀ i, R i) :=
   { Pi.nonUnitalSeminormedCommRing, Pi.ring with }
 
@@ -144,11 +144,11 @@ end SeminormedCommRing
 
 section NormedCommRing
 
-variable [NormedCommRing α]
+variable [NormedRing α] [IsMulCommutative α]
 
 /-- Normed commutative ring structure on the product of finitely many normed commutative rings,
 using the sup norm. -/
-instance Pi.normedCommutativeRing {R : ι → Type*} [Fintype ι] [∀ i, NormedCommRing (R i)] :
+instance Pi.normedCommutativeRing {R : ι → Type*} [Fintype ι] [∀ i, NormedRing (R i)] [∀ i, IsMulCommutative (R i)] :
     NormedCommRing (∀ i, R i) :=
   { Pi.seminormedCommRing, Pi.normedAddCommGroup with }
 
@@ -186,7 +186,7 @@ instance [NonUnitalSeminormedRing α] : NonUnitalNormedRing (SeparationQuotient 
   __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
-instance [NonUnitalSeminormedCommRing α] : NonUnitalNormedCommRing (SeparationQuotient α) where
+instance [NonUnitalSeminormedRing α] [IsMulCommutative α] : NonUnitalNormedCommRing (SeparationQuotient α) where
   __ : NonUnitalCommRing (SeparationQuotient α) := inferInstance
   __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
@@ -196,12 +196,12 @@ instance [SeminormedRing α] : NormedRing (SeparationQuotient α) where
   __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
-instance [SeminormedCommRing α] : NormedCommRing (SeparationQuotient α) where
+instance [SeminormedRing α] [IsMulCommutative α] : NormedCommRing (SeparationQuotient α) where
   __ : CommRing (SeparationQuotient α) := inferInstance
   __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
-instance [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+instance [SeminormedAddGroup α] [IsAddCommutative α] [One α] [NormOneClass α] :
     NormOneClass (SeparationQuotient α) where
   norm_one := norm_one (α := α)
 

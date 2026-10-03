@@ -28,7 +28,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ τ : Type*` (indexing the variables)
 
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[Semiring R] [IsMulCommutative R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
@@ -58,7 +58,7 @@ variable {σ τ : Type*} {r : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
 
-variable [CommSemiring R] {p q : MvPolynomial σ R}
+variable [Semiring R] [IsMulCommutative R] {p q : MvPolynomial σ R}
 
 section Vars
 
@@ -211,7 +211,7 @@ theorem vars_prod {ι : Type*} [DecidableEq σ] {s : Finset ι} (f : ι → MvPo
 
 section IsDomain
 
-variable {A : Type*} [CommRing A] [NoZeroDivisors A]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [NoZeroDivisors A]
 
 theorem vars_C_mul (a : A) (ha : a ≠ 0) (φ : MvPolynomial σ A) :
     (C a * φ : MvPolynomial σ A).vars = φ.vars := by
@@ -255,7 +255,7 @@ end Sum
 
 section Map
 
-variable [CommSemiring S] (f : R →+* S)
+variable [Semiring S] [IsMulCommutative S] (f : R →+* S)
 variable (p)
 
 theorem vars_map : (map f p).vars ⊆ p.vars := by
@@ -284,7 +284,7 @@ section EvalVars
 /-! ### `vars` and `eval` -/
 
 
-variable [CommSemiring S]
+variable [Semiring S] [IsMulCommutative S]
 
 theorem eval₂Hom_congr' {f₁ f₂ : R →+* S} {g₁ g₂ : σ → S} {p₁ p₂ : MvPolynomial σ R} :
     f₁ = f₂ →

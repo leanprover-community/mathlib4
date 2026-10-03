@@ -27,7 +27,7 @@ obtained by formally making the last term of each short exact sequence invertibl
 open Function Localization
 
 namespace Algebra
-variable {M G : Type*} [CommMonoid M] [CommGroup G]
+variable {M G : Type*} [Monoid M] [IsMulCommutative M] [Group G] [IsMulCommutative G]
 
 variable (M) in
 /-- The Grothendieck group of a monoid `M` is the localization at its top submonoid. -/

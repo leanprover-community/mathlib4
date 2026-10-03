@@ -21,12 +21,12 @@ It is a square-zero extension because `M^2 = 0`.
 Note that expressing this requires bimodules; we write these in general for a
 not-necessarily-commutative `R` as:
 ```lean
-variable {R M : Type*} [Semiring R] [AddCommMonoid M]
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 ```
 If we instead work with a commutative `R'` acting symmetrically on `M`, we write
 ```lean
-variable {R' M : Type*} [CommSemiring R'] [AddCommMonoid M]
+variable {R' M : Type*} [Semiring R'] [IsMulCommutative R'] [AddMonoid M] [IsAddCommutative M]
 variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 ```
 noting that in this context `IsCentralScalar R' M` implies `SMulCommClass R' R'ᵐᵒᵖ M`.
@@ -206,13 +206,13 @@ instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) where
   zsmul := letI := smul (S := ℤ) (R := R) (M := M); (· • ·)
   __ : AddGroup (tsze R M) := inferInstanceAs <| AddGroup (R × M)
 
-instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
+instance addCommSemigroup [AddSemigroup R] [IsAddCommutative R] [AddSemigroup M] [IsAddCommutative M] : AddCommSemigroup (tsze R M) :=
   inferInstanceAs <| AddCommSemigroup (R × M)
 
-instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
+instance addCommMonoid [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] : AddCommMonoid (tsze R M) :=
   inferInstanceAs <| AddCommMonoid (R × M)
 
-instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
+instance addCommGroup [AddGroup R] [IsAddCommutative R] [AddGroup M] [IsAddCommutative M] : AddCommGroup (tsze R M) :=
   inferInstanceAs <| AddCommGroup (R × M)
 
 instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
@@ -234,7 +234,7 @@ instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
     [DistribMulAction S R] [DistribMulAction S M] : DistribMulAction S (tsze R M) :=
   inferInstanceAs <| DistribMulAction S (R × M)
 
-instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
+instance module [Semiring S] [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] [Module S R] [Module S M] :
     Module S (tsze R M) :=
   inferInstanceAs <| Module S (R × M)
 
@@ -288,11 +288,11 @@ theorem fst_smul [SMul S R] [SMul S M] (s : S) (x : tsze R M) : (s • x).fst = 
 theorem snd_smul [SMul S R] [SMul S M] (s : S) (x : tsze R M) : (s • x).snd = s • x.snd :=
   rfl
 
-theorem fst_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → tsze R M) :
+theorem fst_sum {ι} [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] (s : Finset ι) (f : ι → tsze R M) :
     (∑ i ∈ s, f i).fst = ∑ i ∈ s, (f i).fst :=
   Prod.fst_sum
 
-theorem snd_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → tsze R M) :
+theorem snd_sum {ι} [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] (s : Finset ι) (f : ι → tsze R M) :
     (∑ i ∈ s, f i).snd = ∑ i ∈ s, (f i).snd :=
   Prod.snd_sum
 
@@ -323,7 +323,7 @@ theorem inl_smul [Monoid S] [AddMonoid M] [SMul S R] [DistribMulAction S M] (s :
     (inl (s • r) : tsze R M) = s • inl r :=
   ext rfl (smul_zero s).symm
 
-theorem inl_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → R) :
+theorem inl_sum {ι} [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] (s : Finset ι) (f : ι → R) :
     (inl (∑ i ∈ s, f i) : tsze R M) = ∑ i ∈ s, inl (f i) :=
   map_sum (LinearMap.inl ℕ _ _) _ _
 
@@ -356,7 +356,7 @@ theorem inr_smul [Zero R] [SMulZeroClass S R] [SMul S M] (r : S) (m : M) :
     (inr (r • m) : tsze R M) = r • inr m :=
   ext (smul_zero _).symm rfl
 
-theorem inr_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → M) :
+theorem inr_sum {ι} [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] (s : Finset ι) (f : ι → M) :
     (inr (∑ i ∈ s, f i) : tsze R M) = ∑ i ∈ s, inr (f i) :=
   map_sum (LinearMap.inr ℕ _ _) _ _
 
@@ -375,7 +375,7 @@ theorem ind {R M} [AddZeroClass R] [AddZeroClass M] {P : TrivSqZeroExt R M → P
 
 /-- This cannot be marked `@[ext]` as it ends up being used instead of `LinearMap.prod_ext` when
 working with `R × M`. -/
-theorem linearMap_ext {N} [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [AddCommMonoid N]
+theorem linearMap_ext {N} [Semiring S] [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
     [Module S R] [Module S M] [Module S N] ⦃f g : tsze R M →ₗ[S] N⦄
     (hl : ∀ r, f (inl r) = g (inl r)) (hr : ∀ m, f (inr m) = g (inr m)) : f = g :=
   LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
@@ -384,12 +384,12 @@ variable (R M)
 
 /-- The canonical `R`-linear inclusion `M → TrivSqZeroExt R M`. -/
 @[simps apply]
-def inrHom [Semiring R] [AddCommMonoid M] [Module R M] : M →ₗ[R] tsze R M :=
+def inrHom [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : M →ₗ[R] tsze R M :=
   { LinearMap.inr R R M with toFun := inr }
 
 /-- The canonical `R`-linear projection `TrivSqZeroExt R M → M`. -/
 @[simps apply]
-def sndHom [Semiring R] [AddCommMonoid M] [Module R M] : tsze R M →ₗ[R] M :=
+def sndHom [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : tsze R M →ₗ[R] M :=
   { LinearMap.snd _ _ _ with toFun := snd }
 
 end Additive
@@ -449,7 +449,7 @@ section
 variable (R)
 
 @[simp]
-theorem inr_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (m₁ m₂ : M) :
+theorem inr_mul_inr [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] (m₁ m₂ : M) :
     (inr m₁ * inr m₂ : tsze R M) = 0 :=
   ext (mul_zero _) <|
     show (0 : R) •> m₂ + m₁ <• (0 : R) = 0 by rw [zero_smul, zero_add, op_zero, zero_smul]
@@ -519,7 +519,7 @@ theorem snd_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).
 theorem inl_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze R M) = z :=
   rfl
 
-instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
+instance nonAssocSemiring [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocSemiring (tsze R M) where
   zero_mul := fun x =>
     ext (zero_mul x.1) <|
@@ -540,7 +540,7 @@ instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module R�
           x₁.1 •> x₃.2 + x₁.2 <• x₃.1 + (x₂.1 •> x₃.2 + x₂.2 <• x₃.1)
         by simp_rw [add_smul, smul_add, add_add_add_comm]
 
-instance nonAssocRing [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] :
+instance nonAssocRing [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocRing (tsze R M) where
 
 /-- In the general non-commutative case, the power operator is
@@ -591,7 +591,7 @@ theorem snd_pow_of_smul_comm' [Monoid R] [AddMonoid M] [DistribMulAction R M]
   rw [snd_pow_of_smul_comm _ _ h, snd_pow_of_smul_comm.aux _ h]
 
 @[simp]
-theorem snd_pow [CommMonoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+theorem snd_pow [Monoid R] [IsMulCommutative R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [IsCentralScalar R M] (x : tsze R M) (n : ℕ) : snd (x ^ n) = n • x.fst ^ n.pred • x.snd :=
   snd_pow_of_smul_comm _ _ (op_smul_eq_smul _ _)
 
@@ -626,12 +626,12 @@ theorem fst_list_prod [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMu
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) : l.prod.fst = (l.map fst).prod :=
   map_list_prod ({ toFun := fst, map_one' := fst_one, map_mul' := fst_mul } : tsze R M →* R) _
 
-instance semiring [Semiring R] [AddCommMonoid M]
+instance semiring [Semiring R] [AddMonoid M] [IsAddCommutative M]
     [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] : Semiring (tsze R M) where
 
 /-- The second element of a product $\prod_{i=0}^n (r_i + m_i)$ is a sum of terms of the form
 $r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
-theorem snd_list_prod [Monoid R] [AddCommMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+theorem snd_list_prod [Monoid R] [AddMonoid M] [IsAddCommutative M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
     l.prod.snd =
       (l.zipIdx.map fun x : tsze R M × ℕ =>
@@ -646,10 +646,10 @@ theorem snd_list_prod [Monoid R] [AddCommMonoid M] [DistribMulAction R M] [Distr
       ← smul_comm (_ : R) (_ : Rᵐᵒᵖ)]
     exact add_comm _ _
 
-instance ring [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] :
+instance ring [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] :
     Ring (tsze R M) where
 
-instance commMonoid [CommMonoid R] [AddCommMonoid M] [DistribMulAction R M]
+instance commMonoid [Monoid R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [DistribMulAction R M]
     [DistribMulAction Rᵐᵒᵖ M] [IsCentralScalar R M] : CommMonoid (tsze R M) :=
   { TrivSqZeroExt.monoid with
     mul_comm := fun x₁ x₂ =>
@@ -657,17 +657,17 @@ instance commMonoid [CommMonoid R] [AddCommMonoid M] [DistribMulAction R M]
         show x₁.1 •> x₂.2 + x₁.2 <• x₂.1 = x₂.1 •> x₁.2 + x₂.2 <• x₁.1 by
           rw [op_smul_eq_smul, op_smul_eq_smul, add_comm] }
 
-instance commSemiring [CommSemiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+instance commSemiring [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M]
     [IsCentralScalar R M] : CommSemiring (tsze R M) where
 
-instance commRing [CommRing R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
+instance commRing [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
     CommRing (tsze R M) where
 
 variable (R M)
 
 /-- The canonical inclusion of rings `R → TrivSqZeroExt R M`. -/
 @[simps apply]
-def inlHom [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] : R →+* tsze R M where
+def inlHom [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] : R →+* tsze R M where
   toFun := inl
   map_one' := inl_one M
   map_mul' := inl_mul M
@@ -697,7 +697,7 @@ end Inv
 /-! This section is heavily inspired by analogous results about matrices. -/
 section Invertible
 variable {R : Type u} {M : Type v}
-variable [AddCommGroup M] [Semiring R] [Module Rᵐᵒᵖ M] [Module R M]
+variable [AddGroup M] [IsAddCommutative M] [Semiring R] [Module Rᵐᵒᵖ M] [Module R M]
 
 /-- `x.fst : R` is invertible when `x : tzre R M` is. -/
 abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fst where
@@ -766,7 +766,7 @@ end Invertible
 
 section DivisionSemiring
 variable {R : Type u} {M : Type v}
-variable [DivisionSemiring R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M]
+variable [DivisionSemiring R] [AddGroup M] [IsAddCommutative M] [Module Rᵐᵒᵖ M] [Module R M]
 
 protected theorem inv_inl (r : R) :
     (inl r)⁻¹ = (inl (r⁻¹ : R) : tsze R M) := by
@@ -834,7 +834,7 @@ end DivisionSemiring
 
 section DivisionRing
 variable {R : Type u} {M : Type v}
-variable [DivisionRing R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M]
+variable [DivisionRing R] [AddGroup M] [IsAddCommutative M] [Module Rᵐᵒᵖ M] [Module R M]
 
 protected theorem inv_neg {x : tsze R M} : (-x)⁻¹ = -(x⁻¹) := by
   ext <;> simp [inv_neg]
@@ -844,7 +844,7 @@ end DivisionRing
 section Algebra
 
 variable (S : Type*) (R R' : Type u) (M : Type v)
-variable [CommSemiring S] [Semiring R] [CommSemiring R'] [AddCommMonoid M]
+variable [Semiring S] [IsMulCommutative S] [Semiring R] [Semiring R'] [IsMulCommutative R'] [AddMonoid M] [IsAddCommutative M]
 variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
@@ -1058,8 +1058,8 @@ def liftEquivOfComm :
 
 section map
 
-variable {N P : Type*} [AddCommMonoid N] [Module R' N] [Module R'ᵐᵒᵖ N] [IsCentralScalar R' N]
-  [AddCommMonoid P] [Module R' P] [Module R'ᵐᵒᵖ P] [IsCentralScalar R' P]
+variable {N P : Type*} [AddMonoid N] [IsAddCommutative N] [Module R' N] [Module R'ᵐᵒᵖ N] [IsCentralScalar R' N]
+  [AddMonoid P] [IsAddCommutative P] [Module R' P] [Module R'ᵐᵒᵖ P] [IsCentralScalar R' P]
 
 /-- Functoriality of `TrivSqZeroExt` when the ring is commutative: a linear map
 `f : M →ₗ[R'] N` induces a morphism of `R'`-algebras from `TrivSqZeroExt R' M` to

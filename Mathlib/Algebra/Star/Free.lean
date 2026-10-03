@@ -43,7 +43,7 @@ end FreeMonoid
 
 namespace FreeAlgebra
 
-variable {R : Type*} [CommSemiring R] {X : Type*}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {X : Type*}
 
 /-- The star ring formed by reversing the elements of products -/
 instance : StarRing (FreeAlgebra R X) where

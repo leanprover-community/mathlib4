@@ -45,8 +45,8 @@ variable {ι ι' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
 namespace DFinsupp
 
-variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-variable [AddCommMonoid N] [Module R N]
+variable [Semiring R] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
+variable [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 section DecidableEq
 variable [DecidableEq ι]
@@ -115,7 +115,7 @@ variable [DecidableEq ι]
 @[macro_inline]
 instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
-    [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
+    [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module S M₂] :
     EquivLike (LinearEquiv σ M M₂) M M₂ :=
   inferInstance
 
@@ -209,7 +209,7 @@ section mapRange
 variable {β β₁ β₂ : ι → Type*}
 
 section AddCommMonoid
-variable [∀ i, AddCommMonoid (β i)] [∀ i, AddCommMonoid (β₁ i)] [∀ i, AddCommMonoid (β₂ i)]
+variable [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, AddMonoid (β₁ i)] [∀ i, IsAddCommutative (β₁ i)] [∀ i, AddMonoid (β₂ i)] [∀ i, IsAddCommutative (β₂ i)]
 variable [∀ i, Module R (β i)] [∀ i, Module R (β₁ i)] [∀ i, Module R (β₂ i)]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -304,13 +304,13 @@ end AddCommMonoid
 section AddCommGroup
 
 lemma ker_mapRangeAddMonoidHom
-    [∀ i, AddCommGroup (β₁ i)] [∀ i, AddCommMonoid (β₂ i)] (f : ∀ i, β₁ i →+ β₂ i) :
+    [∀ i, AddGroup (β₁ i)] [∀ i, IsAddCommutative (β₁ i)] [∀ i, AddMonoid (β₂ i)] [∀ i, IsAddCommutative (β₂ i)] (f : ∀ i, β₁ i →+ β₂ i) :
     (mapRange.addMonoidHom f).ker =
       (AddSubgroup.pi Set.univ (f · |>.ker)).comap coeFnAddMonoidHom :=
   AddSubgroup.toAddSubmonoid_injective <| mker_mapRangeAddMonoidHom f
 
 lemma range_mapRangeAddMonoidHom
-    [∀ i, AddCommGroup (β₁ i)] [∀ i, AddCommGroup (β₂ i)] (f : ∀ i, β₂ i →+ β₁ i) :
+    [∀ i, AddGroup (β₁ i)] [∀ i, IsAddCommutative (β₁ i)] [∀ i, AddGroup (β₂ i)] [∀ i, IsAddCommutative (β₂ i)] (f : ∀ i, β₂ i →+ β₁ i) :
     (mapRange.addMonoidHom f).range =
       (AddSubgroup.pi Set.univ (f · |>.range)).comap coeFnAddMonoidHom :=
   AddSubgroup.toAddSubmonoid_injective <| mrange_mapRangeAddMonoidHom f
@@ -346,7 +346,7 @@ end DFinsupp
 
 namespace Submodule
 
-variable [Semiring R] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 open DFinsupp
 
@@ -475,7 +475,7 @@ open DFinsupp
 
 section Semiring
 
-variable [DecidableEq ι] [Semiring R] [AddCommMonoid N] [Module R N]
+variable [DecidableEq ι] [Semiring R] [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 /-- Independence of a family of submodules can be expressed as a quantifier over `DFinsupp`s.
 
@@ -527,7 +527,7 @@ end Semiring
 
 section Ring
 
-variable [DecidableEq ι] [Ring R] [AddCommGroup N] [Module R N]
+variable [DecidableEq ι] [Ring R] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 /-- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
 subgroups are independent. -/
@@ -677,7 +677,7 @@ variable {R : Type*} {R₂ : Type*}
 variable {M : Type*} {M₂ : Type*}
 variable {ι : Type*}
 variable [Semiring R] [Semiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable {σ₁₂ : R →+* R₂}
 variable [Module R M] [Module R₂ M₂]
 
@@ -727,7 +727,7 @@ section DFinsupp
 open DFinsupp
 
 variable [Semiring R] [Semiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]

@@ -34,7 +34,7 @@ noncomputable section
 open ENNReal Filter MeasureTheory Set
 
 variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ : Measure α}
-variable [NormedAddCommGroup β] [TopologicalSpace ε] [ContinuousENorm ε]
+variable [NormedAddGroup β] [IsAddCommutative β] [TopologicalSpace ε] [ContinuousENorm ε]
   [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 namespace MeasureTheory

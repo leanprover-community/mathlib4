@@ -55,7 +55,7 @@ open Topology
 /-- The type copy of `E →SL[σ] F` endowed with the weak operator topology, denoted as
 `E →SWOT[σ] F`. Likewise, when `σ := RingHom.id 𝕜`, the notation `E →WOT[𝕜] F` is available. -/
 structure ContinuousLinearMapWOT {𝕜₁ 𝕜₂ : Type*} [Semiring 𝕜₁] [Semiring 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂)
-    (E F : Type*) [AddCommGroup E] [TopologicalSpace E] [Module 𝕜₁ E] [AddCommGroup F]
+    (E F : Type*) [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [Module 𝕜₁ E] [AddGroup F] [IsAddCommutative F]
     [TopologicalSpace F] [Module 𝕜₂ F] where
   /-- Construct an element of `E →SWOT[σ] F` from a continuous linear map. -/
   ofCLM ::
@@ -84,8 +84,8 @@ end Notation
 variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
   {σ : 𝕜₁ →+* 𝕜₂}
   {E F : Type*}
-  [AddCommGroup E] [TopologicalSpace E] [Module 𝕜₁ E]
-  [AddCommGroup F] [TopologicalSpace F] [Module 𝕜₂ F]
+  [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [Module 𝕜₁ E]
+  [AddGroup F] [IsAddCommutative F] [TopologicalSpace F] [Module 𝕜₂ F]
 
 local notation X "⋆" => StrongDual 𝕜₂ X
 
@@ -166,7 +166,7 @@ instance instIsCentralScalar {S : Type*} [Semiring S] [Module S F] [SMulCommClas
 instance instRing [IsTopologicalAddGroup E] : Ring (E →WOT[𝕜₁] E) :=
   equiv.ring
 
-instance instAlgebra {S : Type*} [CommSemiring S] [Module S E] [SMulCommClass 𝕜₁ S E] [SMul S 𝕜₁]
+instance instAlgebra {S : Type*} [Semiring S] [IsMulCommutative S] [Module S E] [SMulCommClass 𝕜₁ S E] [SMul S 𝕜₁]
     [IsScalarTower S 𝕜₁ E] [ContinuousConstSMul S E] [IsTopologicalAddGroup E] :
     Algebra S (E →WOT[𝕜₁] E) :=
   equiv.algebra S
@@ -185,7 +185,7 @@ def ringEquiv [IsTopologicalAddGroup E] : (E →WOT[𝕜₁] E) ≃+* (E →L[�
 
 /-- The algebra equivalence between `ContinuousLinearMapWOT` and `ContinuousLinearMap`. -/
 @[simps!]
-def algEquiv (S : Type*) [CommSemiring S] [Module S E] [SMulCommClass 𝕜₁ S E] [SMul S 𝕜₁]
+def algEquiv (S : Type*) [Semiring S] [IsMulCommutative S] [Module S E] [SMulCommClass 𝕜₁ S E] [SMul S 𝕜₁]
     [IsScalarTower S 𝕜₁ E] [ContinuousConstSMul S E] [IsTopologicalAddGroup E] :
     (E →WOT[𝕜₁] E) ≃ₐ[S] (E →L[𝕜₁] E) :=
   equiv.algEquiv S
@@ -246,7 +246,7 @@ end SMul
 
 section Algebra
 
-variable {S : Type*} [CommSemiring S] [Module S E] [SMulCommClass 𝕜₁ S E] [SMul S 𝕜₁]
+variable {S : Type*} [Semiring S] [IsMulCommutative S] [Module S E] [SMulCommClass 𝕜₁ S E] [SMul S 𝕜₁]
     [IsScalarTower S 𝕜₁ E] [ContinuousConstSMul S E] [IsTopologicalAddGroup E]
 
 @[simp] lemma toCLM_algebraMap (c : S) :
@@ -453,10 +453,10 @@ variable {𝕜₁ 𝕜₂ 𝕜₃ 𝕜₄ : Type*} {E F G H : Type*}
     {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₃₄ : 𝕜₃ →+* 𝕜₄}
     [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
     [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
-    [AddCommGroup E] [TopologicalSpace E] [Module 𝕜₁ E]
-    [AddCommGroup F] [TopologicalSpace F] [Module 𝕜₂ F]
-    [AddCommGroup G] [TopologicalSpace G] [Module 𝕜₃ G]
-    [AddCommGroup H] [TopologicalSpace H] [Module 𝕜₄ H]
+    [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [Module 𝕜₁ E]
+    [AddGroup F] [IsAddCommutative F] [TopologicalSpace F] [Module 𝕜₂ F]
+    [AddGroup G] [IsAddCommutative G] [TopologicalSpace G] [Module 𝕜₃ G]
+    [AddGroup H] [IsAddCommutative H] [TopologicalSpace H] [Module 𝕜₄ H]
 
 variable (𝕜₂ F) in
 /-- The identity as a continuous linear map on the type synonym equipped with the weak operator

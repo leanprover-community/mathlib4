@@ -54,7 +54,7 @@ variable {R : Type*}
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The arithmetic function corresponding to the Dirichlet series `f(q⁻ˢ)`.
@@ -154,7 +154,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- In `ArithmeticFunction.ofPowerSeries`, replacing the base `q` with a power `q ^ k` corresponds
 to substituting `X` with `X ^ k` in the original power series. -/
@@ -220,7 +220,7 @@ section EulerProduct
 
 open Filter
 
-variable {ι R : Type*} [CommSemiring R]
+variable {ι R : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- A private uniform space instance on `ArithmeticFunction R` in order to define `eulerProduct` as
 a `tprod`. If `R` is viewed as having the discrete topology, then the resulting topology on

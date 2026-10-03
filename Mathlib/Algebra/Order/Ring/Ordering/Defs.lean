@@ -39,7 +39,7 @@ into an ordered ring, and vice versa.
 #### Preorderings
 -/
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
 /-- A preordering on a ring `R` is a subsemiring of `R` containing all squares,
 but not containing `-1`. -/

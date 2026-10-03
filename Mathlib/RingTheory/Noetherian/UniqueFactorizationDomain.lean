@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 
 public section
 
-variable {R : Type*} [CommSemiring R] [IsDomain R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [IsDomain R]
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsNoetherianRing.wfDvdMonoid [h : IsNoetherianRing R] :

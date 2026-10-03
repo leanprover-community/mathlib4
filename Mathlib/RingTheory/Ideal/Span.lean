@@ -110,7 +110,7 @@ theorem span_singleton_eq_bot {x} : span ({x} : Set α) = ⊥ ↔ x = 0 := by si
 
 theorem span_singleton_zero : span ({0} : Set α) = ⊥ := by simp
 
-theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬IsUnit x) :
+theorem span_singleton_ne_top {α : Type*} [Semiring α] [IsMulCommutative α] {x : α} (hx : ¬IsUnit x) :
     Ideal.span ({x} : Set α) ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr fun h1 =>
     let ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp h1
@@ -175,7 +175,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring α] (I : Ideal α)
+variable [Semiring α] [IsMulCommutative α] (I : Ideal α)
 
 theorem mem_span_singleton {x y : α} : x ∈ span ({y} : Set α) ↔ y ∣ x :=
   mem_span_singleton'.trans <| exists_congr fun _ => by rw [eq_comm, mul_comm]
@@ -184,7 +184,7 @@ theorem span_singleton_le_span_singleton {x y : α} :
     span ({x} : Set α) ≤ span ({y} : Set α) ↔ y ∣ x :=
   span_le.trans <| singleton_subset_iff.trans mem_span_singleton
 
-theorem span_singleton_eq_span_singleton {α : Type u} [CommSemiring α] [IsDomain α] {x y : α} :
+theorem span_singleton_eq_span_singleton {α : Type u} [Semiring α] [IsMulCommutative α] [IsDomain α] {x y : α} :
     span ({x} : Set α) = span ({y} : Set α) ↔ Associated x y := by
   rw [← dvd_dvd_iff_associated, le_antisymm_iff, and_comm]
   apply and_congr <;> rw [span_singleton_le_span_singleton]
@@ -291,7 +291,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing α] (x y z : α)
+variable [Ring α] [IsMulCommutative α] (x y z : α)
 
 @[simp]
 theorem span_pair_add_right_mul : span {x + y * z, y} = span {x, y} := by
@@ -350,7 +350,7 @@ end Ideal
 
 namespace IsIdempotentElem
 
-variable {R} [CommRing R] {e : R} (he : IsIdempotentElem e)
+variable {R} [Ring R] [IsMulCommutative R] {e : R} (he : IsIdempotentElem e)
 include he
 
 theorem ker_toSpanSingleton_eq_span :

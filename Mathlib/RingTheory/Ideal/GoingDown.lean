@@ -40,11 +40,11 @@ The condition only asks for `<` which is easier to prove, use
 `Ideal.exists_ideal_le_liesOver_of_le` for applying it.
 -/
 @[stacks 00HV "(2)"]
-class Algebra.HasGoingDown (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] : Prop where
+class Algebra.HasGoingDown (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] : Prop where
   exists_ideal_le_liesOver_of_lt {p : Ideal R} [p.IsPrime] (Q : Ideal S) [Q.IsPrime] :
     p < Q.under R → ∃ P ≤ Q, P.IsPrime ∧ P.LiesOver p
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 lemma Ideal.exists_ideal_le_liesOver_of_le [Algebra.HasGoingDown R S]
     {p q : Ideal R} [p.IsPrime] [q.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver q]
@@ -97,7 +97,7 @@ lemma Ideal.exists_ltSeries_of_hasGoingDown [Algebra.HasGoingDown R S]
 
 namespace Algebra.HasGoingDown
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- An `R`-algebra `S` has the going down property if and only if generalizations lift
 along `Spec S → Spec R`. -/
@@ -121,7 +121,7 @@ lemma iff_generalizingMap_primeSpectrumComap :
 
 variable (R S) in
 @[stacks 00HX]
-lemma trans (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+lemma trans (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [Algebra.HasGoingDown R S] [Algebra.HasGoingDown S T] :
     Algebra.HasGoingDown R T := by
   rw [iff_generalizingMap_primeSpectrumComap, IsScalarTower.algebraMap_eq R S T]

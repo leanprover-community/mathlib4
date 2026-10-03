@@ -46,7 +46,7 @@ namespace Finset
 
 section CommGroup
 
-variable [CommGroup α] (e : α) (x : Finset α × Finset α)
+variable [Group α] [IsMulCommutative α] (e : α) (x : Finset α × Finset α)
 
 /-- The **Dyson e-transform**. Turns `(s, t)` into `(s ∪ e • t, t ∩ e⁻¹ • s)`. This reduces the
 product of the two sets. -/
@@ -161,7 +161,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup α] (e : α) (x : Finset α × Finset α)
+variable [Group α] [IsMulCommutative α] (e : α) (x : Finset α × Finset α)
 
 @[to_additive (attr := simp)]
 theorem mulETransformLeft_inv : mulETransformLeft e⁻¹ x = (mulETransformRight e x.swap).swap := by

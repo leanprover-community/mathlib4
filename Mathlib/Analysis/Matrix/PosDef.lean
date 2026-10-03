@@ -47,7 +47,7 @@ lemma re_dotProduct_nonneg (hA : A.PosSemidef) (x : n → 𝕜) : 0 ≤ RCLike.r
 
 -- TODO generalise this lemma. Similarly to `Matrix.PosDef.det_pos`, it requires just the following
 -- assumptions on the scalars `R`:
--- `[CommRing R] [PartialOrder R] [StarRing R] [Nontrivial R] [IsOrderedRing R] [PosMulReflectLE R]`
+-- `[Ring R] [IsMulCommutative R] [PartialOrder R] [StarRing R] [Nontrivial R] [IsOrderedRing R] [PosMulReflectLE R]`
 lemma det_nonneg [DecidableEq n] (hA : A.PosSemidef) : 0 ≤ A.det := by
   rw [hA.isHermitian.det_eq_prod_eigenvalues]
   exact Finset.prod_nonneg fun i _ ↦ by simpa using hA.eigenvalues_nonneg i

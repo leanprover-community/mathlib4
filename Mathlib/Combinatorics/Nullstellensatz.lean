@@ -52,7 +52,7 @@ open Finsupp
 
 open scoped Finset
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace MvPolynomial
 

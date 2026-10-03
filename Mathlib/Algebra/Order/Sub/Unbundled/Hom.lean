@@ -31,14 +31,14 @@ theorem le_mul_tsub {R : Type*} [Distrib R] [Preorder R] [Sub R] [OrderedSub R]
     [MulLeftMono R] {a b c : R} : a * b - a * c ≤ a * (b - c) :=
   (AddHom.mulLeft a).le_map_tsub (monotone_id.const_mul' a) _ _
 
-theorem le_tsub_mul {R : Type*} [NonUnitalCommSemiring R] [Preorder R] [Sub R] [OrderedSub R]
+theorem le_tsub_mul {R : Type*} [NonUnitalSemiring R] [IsMulCommutative R] [Preorder R] [Sub R] [OrderedSub R]
     [MulLeftMono R] {a b c : R} : a * c - b * c ≤ (a - b) * c := by
   simpa only [mul_comm _ c] using le_mul_tsub
 
 end Add
 
-theorem map_tsub_of_le {F : Type*} [PartialOrder α] [AddCommSemigroup α] [ExistsAddOfLE α]
-    [AddLeftMono α] [Sub α] [OrderedSub α] [PartialOrder β] [AddCommSemigroup β] [Sub β]
+theorem map_tsub_of_le {F : Type*} [PartialOrder α] [AddSemigroup α] [IsAddCommutative α] [ExistsAddOfLE α]
+    [AddLeftMono α] [Sub α] [OrderedSub α] [PartialOrder β] [AddSemigroup β] [IsAddCommutative β] [Sub β]
     [OrderedSub β] [AddLeftReflectLE β] [FunLike F α β] [AddHomClass F α β]
     (f : F) (a b : α) (h : b ≤ a) : f a - f b = f (a - b) := by
   conv => lhs; rw [← tsub_add_cancel_of_le h]
@@ -60,7 +60,7 @@ theorem OrderIso.map_tsub {M N : Type*} [Preorder M] [Add M] [Sub M] [OrderedSub
 section Preorder
 
 variable [Preorder α]
-variable [AddCommMonoid α] [Sub α] [OrderedSub α]
+variable [AddMonoid α] [IsAddCommutative α] [Sub α] [OrderedSub α]
 
 theorem AddMonoidHom.le_map_tsub [Preorder β] [AddZeroClass β] [Sub β] [OrderedSub β] (f : α →+ β)
     (hf : Monotone f) (a b : α) : f a - f b ≤ f (a - b) :=

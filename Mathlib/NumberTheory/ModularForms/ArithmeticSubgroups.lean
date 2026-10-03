@@ -30,7 +30,7 @@ namespace Subgroup
 
 section det_typeclasses
 
-variable {R : Type*} [CommRing R] (Γ : Subgroup (GL n R))
+variable {R : Type*} [Ring R] [IsMulCommutative R] (Γ : Subgroup (GL n R))
 
 /-- Typeclass saying that a subgroup of `GL(2, ℝ)` has determinant contained in `{±1}`. Necessary
 so that the typeclass system can detect when the slash action is multiplicative. -/
@@ -55,11 +55,11 @@ class HasDetOne : Prop where
 instance (Γ : Subgroup (SL n R)) : HasDetOne (Γ.map toGL) where
   det_eq {g} hg := by rcases hg with ⟨g, hg, rfl⟩; simp
 
-instance {S : Type*} [CommRing S] [Algebra R S] (Γ : Subgroup (SL n R)) :
+instance {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] (Γ : Subgroup (SL n R)) :
     HasDetOne (Γ.map <| mapGL S) where
   det_eq {g} hg := by rcases hg with ⟨g, hg, rfl⟩; simp
 
-instance {S : Type*} [CommRing S] [Algebra R S] :
+instance {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] :
     HasDetOne (mapGL (n := n) (R := R) S).range where
   det_eq {g} hg := by rcases hg with ⟨g, hg, rfl⟩; simp
 
@@ -223,7 +223,7 @@ instance [TopologicalSpace R] [IsTopologicalRing R] [T2Space R]
 
 section CommRing
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 @[simp] lemma Subgroup.hasDetPlusMinusOne_adjoinNegOne_iff {𝒢 : Subgroup (GL n R)} :
     𝒢.adjoinNegOne.HasDetPlusMinusOne ↔ 𝒢.HasDetPlusMinusOne := by

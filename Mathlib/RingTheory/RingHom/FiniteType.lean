@@ -34,8 +34,8 @@ open scoped Pointwise TensorProduct
 
 universe u
 
-variable {R S : Type*} [CommRing R] [CommRing S] (M : Submonoid R) (f : R →+* S)
-variable (R' S' : Type*) [CommRing R'] [CommRing S']
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (M : Submonoid R) (f : R →+* S)
+variable (R' S' : Type*) [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S']
 variable [Algebra R R'] [Algebra S S']
 
 theorem finiteType_stableUnderComposition : StableUnderComposition @FiniteType := by
@@ -60,8 +60,8 @@ theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType
 theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHom.FiniteType :=
   finiteType_isStableUnderBaseChange.localizationPreserves
 
-theorem localization_away_map_finiteType (R S R' S' : Type u) [CommRing R] [CommRing S]
-    [CommRing R'] [CommRing S'] [Algebra R R'] (f : R →+* S) [Algebra S S']
+theorem localization_away_map_finiteType (R S R' S' : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
+    [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R R'] (f : R →+* S) [Algebra S S']
     (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.FiniteType) :
     (IsLocalization.Away.map R' S' f r).FiniteType :=

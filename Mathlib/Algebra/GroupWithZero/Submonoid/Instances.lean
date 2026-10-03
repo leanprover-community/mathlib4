@@ -34,7 +34,7 @@ lemma val_mrange_zero [MulZeroOneClass G] [MulZeroOneClass H] (f : G →*₀ H) 
 instance [MulZeroOneClass G] [MonoidWithZero H] (f : G →*₀ H) :
     MonoidWithZero (MonoidHom.mrange f) where
 
-instance [MulZeroOneClass G] [CommMonoidWithZero H] (f : G →*₀ H) :
+instance [MulZeroOneClass G] [MonoidWithZero H] [IsMulCommutative H] (f : G →*₀ H) :
     CommMonoidWithZero (MonoidHom.mrange f) where
 
 instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
@@ -50,10 +50,10 @@ instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
     simp only [ne_eq, Subtype.ext_iff] at h
     simpa using mul_inv_cancel₀ h
 
-instance [GroupWithZero G] [CommGroupWithZero H] (f : G →*₀ H) :
+instance [GroupWithZero G] [GroupWithZero H] [IsMulCommutative H] (f : G →*₀ H) :
     CommGroupWithZero (MonoidHom.mrange f) where
 
-lemma mker_inverse [CommGroupWithZero H] :
+lemma mker_inverse [GroupWithZero H] [IsMulCommutative H] :
     MonoidHom.mker (MonoidWithZero.inverse (M := H)) = ⊥ := by
   ext
   simp

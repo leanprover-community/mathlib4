@@ -34,8 +34,8 @@ open Module (finrank)
 
 section Ring
 
-variable [Ring R] [Ring S] [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
-variable [AddCommGroup N] [Module R N] [Module S N] [SMulCommClass R S N]
+variable [Ring R] [Ring S] [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Free R M] [Module.Finite R M]
+variable [AddGroup N] [IsAddCommutative N] [Module R N] [Module S N] [SMulCommClass R S N]
 
 private noncomputable def linearMapEquivFun : (M →ₗ[R] N) ≃ₗ[S] ChooseBasisIndex R M → N :=
   (chooseBasis R M).repr.congrLeft N S ≪≫ₗ (Finsupp.lsum S).symm ≪≫ₗ
@@ -73,8 +73,8 @@ end Ring
 
 section AlgHom
 
-variable (K M : Type*) (L : Type v) [CommRing K] [Ring M] [Algebra K M]
-  [Module.Free K M] [Module.Finite K M] [CommRing L] [IsDomain L] [Algebra K L]
+variable (K M : Type*) (L : Type v) [Ring K] [IsMulCommutative K] [Ring M] [Algebra K M]
+  [Module.Free K M] [Module.Finite K M] [Ring L] [IsMulCommutative L] [IsDomain L] [Algebra K L]
 
 instance Finite.algHom : Finite (M →ₐ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).finite
@@ -97,7 +97,7 @@ end AlgHom
 
 section Integer
 
-variable [AddCommGroup M] [Module.Finite ℤ M] [Module.Free ℤ M] [AddCommGroup N]
+variable [AddGroup M] [IsAddCommutative M] [Module.Finite ℤ M] [Module.Free ℤ M] [AddGroup N] [IsAddCommutative N]
 
 instance Module.Finite.addMonoidHom [Module.Finite ℤ N] : Module.Finite ℤ (M →+ N) :=
   Module.Finite.equiv (addMonoidHomLequivInt ℤ).symm

@@ -19,8 +19,8 @@ open TensorProduct
 
 namespace PiTensorProduct
 
-instance finite {R : Type*} [CommRing R] {ι : Type*} [Finite ι]
-    {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+instance finite {R : Type*} [Ring R] [IsMulCommutative R] {ι : Type*} [Finite ι]
+    {M : ι → Type*} [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
     [∀ i, Module.Finite R (M i)] :
     Module.Finite R (⨂[R] i, M i) := by
   choose n γ hg using fun i => Module.Finite.exists_fin (R := R) (M := M i)

@@ -21,7 +21,7 @@ open Module
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
   {S : IntermediateField K L}
 
-theorem IntermediateField.coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
+theorem IntermediateField.coe_isIntegral_iff {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R K] [Algebra R L]
     [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x :=
   isIntegral_algHom_iff (S.val.restrictScalars R) Subtype.val_injective
 

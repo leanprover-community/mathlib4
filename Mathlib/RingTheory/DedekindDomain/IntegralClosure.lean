@@ -40,7 +40,7 @@ public section
 open Algebra Module
 open scoped nonZeroDivisors Polynomial
 
-variable (A K : Type*) [CommRing A] [Field K]
+variable (A K : Type*) [Ring A] [IsMulCommutative A] [Field K]
 
 section IsIntegralClosure
 
@@ -52,7 +52,7 @@ of a number field is a Dedekind domain. -/
 
 
 variable [Algebra A K] [IsFractionRing A K]
-variable (L : Type*) [Field L] (C : Type*) [CommRing C]
+variable (L : Type*) [Field L] (C : Type*) [Ring C] [IsMulCommutative C]
 variable [Algebra K L] [Algebra A L] [IsScalarTower A K L]
 variable [Algebra C L] [IsIntegralClosure C A L] [Algebra A C] [IsScalarTower A C L]
 include K L

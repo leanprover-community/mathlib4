@@ -41,7 +41,7 @@ variable {V : Type*}
 /-- Let `V` be a real topological vector space. A subset of `V` is a convex body if and only if
 it is convex, compact, and nonempty.
 -/
-structure ConvexBody (V : Type*) [TopologicalSpace V] [AddCommMonoid V] [SMul ℝ V] where
+structure ConvexBody (V : Type*) [TopologicalSpace V] [AddMonoid V] [IsAddCommutative V] [SMul ℝ V] where
   /-- The **carrier set** underlying a convex body: the set of points contained in it -/
   carrier : Set V
   /-- A convex body has convex carrier set -/
@@ -55,7 +55,7 @@ namespace ConvexBody
 
 section TVS
 
-variable [TopologicalSpace V] [AddCommGroup V] [Module ℝ V]
+variable [TopologicalSpace V] [AddGroup V] [IsAddCommutative V] [Module ℝ V]
 
 instance : SetLike (ConvexBody V) V where
   coe := ConvexBody.carrier
@@ -171,7 +171,7 @@ end TVS
 
 section SeminormedAddCommGroup
 
-variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] (K L : ConvexBody V)
+variable [SeminormedAddGroup V] [IsAddCommutative V] [NormedSpace ℝ V] (K L : ConvexBody V)
 
 protected theorem isBounded : Bornology.IsBounded (K : Set V) :=
   K.isCompact.isBounded
@@ -227,7 +227,7 @@ end SeminormedAddCommGroup
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable [NormedAddGroup V] [IsAddCommutative V] [NormedSpace ℝ V]
 
 /-- Convex bodies in a fixed normed space `V` form a metric space under the Hausdorff metric. -/
 noncomputable instance : MetricSpace (ConvexBody V) where

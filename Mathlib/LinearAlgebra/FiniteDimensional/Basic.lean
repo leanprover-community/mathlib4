@@ -49,7 +49,7 @@ variable {K : Type u} {V : Type v}
 
 namespace FiniteDimensional
 section DivisionRing
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem finrank_le_iff_rank_le [FiniteDimensional K V] {n : ℕ} :
     finrank K V ≤ n ↔ Module.rank K V ≤ n := by
@@ -106,7 +106,7 @@ section
 open Finset
 
 variable {L : Type*} [Field L] [LinearOrder L] [IsStrictOrderedRing L]
-variable {W : Type v} [AddCommGroup W] [Module L W]
+variable {W : Type v} [AddGroup W] [IsAddCommutative W] [Module L W]
 
 /-- A slight strengthening of `exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card`
 available when working over an ordered field:
@@ -161,7 +161,7 @@ end FiniteDimensional
 
 section ZeroRank
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
     FiniteDimensional K V :=
@@ -186,7 +186,7 @@ open Module
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 /-- A submodule contained in a finite-dimensional submodule is
 finite-dimensional. -/
@@ -233,7 +233,7 @@ end Submodule
 
 section
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 instance finiteDimensional_finsupp {ι : Type*} [Finite ι] [FiniteDimensional K V] :
     FiniteDimensional K (ι →₀ V) :=
@@ -242,7 +242,7 @@ instance finiteDimensional_finsupp {ι : Type*} [Finite ι] [FiniteDimensional K
 end
 
 namespace Submodule
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 /-- If a submodule is contained in a finite-dimensional
 submodule with the same or smaller dimension, they are equal. -/
@@ -284,7 +284,7 @@ open Module
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] {V₂ : Type v'} [AddGroup V₂] [IsAddCommutative V₂]
   [Module K V₂]
 
 /-- On a finite-dimensional space, an injective linear map is surjective. -/
@@ -335,7 +335,7 @@ instance (priority := low) : IsStablyFiniteRing K := by
   rw [← mul_assoc, hfg, one_mul, mul_one] at this; rwa [← this]
 
 /-- A domain finitely generated as a module over a field is a field. -/
-theorem _root_.IsField.of_isDomain_of_finite (K L : Type*) [Field K] [CommRing L] [IsDomain L]
+theorem _root_.IsField.of_isDomain_of_finite (K L : Type*) [Field K] [Ring L] [IsMulCommutative L] [IsDomain L]
     [Algebra K L] [Module.Finite K L] : IsField L where
   exists_pair_ne := Nontrivial.exists_pair_ne
   mul_comm := mul_comm
@@ -343,7 +343,7 @@ theorem _root_.IsField.of_isDomain_of_finite (K L : Type*) [Field K] [CommRing L
 
 section Semiring
 
-variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] [Free R M] [Module.Finite R M]
+variable (R M : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Free R M] [Module.Finite R M]
 variable [IsStablyFiniteRing R]
 
 instance : IsStablyFiniteRing (Module.End R M) := by
@@ -405,7 +405,7 @@ namespace LinearEquiv
 
 open Module
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 variable [FiniteDimensional K V]
 
 /-- The linear equivalence corresponding to an injective endomorphism. -/
@@ -427,7 +427,7 @@ theorem ofInjectiveEndo_left_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     ((ofInjectiveEndo f h_inj).symm : V →ₗ[K] V) * f = 1 :=
   LinearMap.ext (ofInjectiveEndo f h_inj).symm_apply_apply
 
-variable {V' : Type*} [AddCommGroup V'] [Module K V'] [FiniteDimensional K V']
+variable {V' : Type*} [AddGroup V'] [IsAddCommutative V'] [Module K V'] [FiniteDimensional K V']
 omit [FiniteDimensional K V]
 
 /-- An injective linear map between finite-dimensional modules of equal rank
@@ -451,7 +451,7 @@ end LinearEquiv
 
 namespace LinearMap
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem isUnit_iff_ker_eq_bot [FiniteDimensional K V] (f : V →ₗ[K] V) :
     IsUnit f ↔ (LinearMap.ker f) = ⊥ := by
@@ -474,7 +474,7 @@ open FiniteDimensional Module
 
 section
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem finrank_zero_iff_forall_zero [FiniteDimensional K V] : finrank K V = 0 ↔ ∀ x : V, x = 0 :=
   Module.finrank_zero_iff.trans (subsingleton_iff_forall_eq 0)
@@ -518,7 +518,7 @@ lemma FiniteDimensional.isUnit (F : Type*) {K : Type*} [Field F] [Ring K] [IsDom
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
 @[instance_reducible]
-noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing K] [IsDomain K]
+noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : Ring K] [IsMulCommutative K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : Field K :=
   { divisionRingOfFiniteDimensional F K with
     toCommRing := h }
@@ -526,7 +526,7 @@ noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing
 end
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 section Span
 
@@ -607,7 +607,7 @@ theorem finrank_eq_one_iff_of_nonzero' (v : V) (nz : v ≠ 0) :
 -- * `A = K`
 -- * `[Field K] [Algebra K A] [IsScalarTower K A V] [IsScalarTower K A W]`
 theorem surjective_of_nonzero_of_finrank_eq_one {W A : Type*} [Semiring A] [Module A V]
-    [AddCommGroup W] [Module K W] [Module A W] [LinearMap.CompatibleSMul V W K A]
+    [AddGroup W] [IsAddCommutative W] [Module K W] [Module A W] [LinearMap.CompatibleSMul V W K A]
     (h : finrank K W = 1) {f : V →ₗ[A] W} (w : f ≠ 0) : Surjective f := by
   change Surjective (f.restrictScalars K)
   obtain ⟨v, n⟩ := DFunLike.ne_iff.mp w
@@ -641,7 +641,7 @@ namespace Module
 
 namespace End
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem ker_pow_constant {f : End K V} {k : ℕ}
     (h : LinearMap.ker (f ^ k) = LinearMap.ker (f ^ k.succ)) :

@@ -40,7 +40,7 @@ namespace DirectSum
 
 section AddCommMonoid
 
-variable [DecidableEq ι] [AddCommMonoid M]
+variable [DecidableEq ι] [AddMonoid M] [IsAddCommutative M]
 variable [SetLike σ M] [AddSubmonoidClass σ M] (ℳ : ι → σ)
 
 /-- A decomposition is an equivalence between an additive monoid `M` and a direct sum of additive
@@ -216,7 +216,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [DecidableEq ι] [AddCommGroup M]
+variable [DecidableEq ι] [AddGroup M] [IsAddCommutative M]
 variable [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ)
 variable [Decomposition ℳ]
 
@@ -241,7 +241,7 @@ end AddCommGroup
 
 section Module
 
-variable [DecidableEq ι] [Semiring R] [AddCommMonoid M] [Module R M]
+variable [DecidableEq ι] [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable (ℳ : ι → Submodule R M)
 
 /-- A convenience method to construct a decomposition from an `LinearMap`, such that the proofs
@@ -286,7 +286,7 @@ theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompo
 /-- Two linear maps from a module with a decomposition agree if they agree on every piece.
 
 Note this cannot be `@[ext]` as `ℳ` cannot be inferred. -/
-theorem decompose_lhom_ext {N} [AddCommMonoid N] [Module R N] ⦃f g : M →ₗ[R] N⦄
+theorem decompose_lhom_ext {N} [AddMonoid N] [IsAddCommutative N] [Module R N] ⦃f g : M →ₗ[R] N⦄
     (h : ∀ i, f ∘ₗ (ℳ i).subtype = g ∘ₗ (ℳ i).subtype) : f = g :=
   LinearMap.ext <| (decomposeLinearEquiv ℳ).symm.surjective.forall.mpr <|
     suffices f ∘ₗ (decomposeLinearEquiv ℳ).symm

@@ -474,7 +474,7 @@ differences of nonnegative elements, and whose codomain is a star-ordered ring. 
 linear over `ℂ`, they are also star-preserving, and this lemma is used to establish that one by
 splitting into real and imaginary parts. -/
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
-lemma IsSelfAdjoint.map' {F E R : Type*} [AddCommGroup E] [PartialOrder E] [StarAddMonoid E]
+lemma IsSelfAdjoint.map' {F E R : Type*} [AddGroup E] [IsAddCommutative E] [PartialOrder E] [StarAddMonoid E]
     [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
     [SelfAdjointDecompose E] [FunLike F E R] [OrderHomClass F E R] [AddMonoidHomClass F E R]
     {a : E} (ha : IsSelfAdjoint a) (f : F) :

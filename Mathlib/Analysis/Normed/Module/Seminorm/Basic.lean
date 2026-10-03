@@ -69,7 +69,7 @@ section Of
 
 /-- Alternative constructor for a `Seminorm` on an `AddCommGroup E` that is a module over a
 `SeminormedRing 𝕜`. -/
-def Seminorm.of [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ)
+def Seminorm.of [SeminormedRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] (f : E → ℝ)
     (add_le : ∀ x y : E, f (x + y) ≤ f x + f y) (smul : ∀ (a : 𝕜) (x : E), f (a • x) = ‖a‖ * f x) :
     Seminorm 𝕜 E where
   toFun := f
@@ -80,7 +80,7 @@ def Seminorm.of [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E �
 
 /-- Alternative constructor for a `Seminorm` over a normed field `𝕜` that only assumes `f 0 = 0`
 and an inequality for the scalar multiplication. -/
-def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ) (map_zero : f 0 = 0)
+def Seminorm.ofSMulLE [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] (f : E → ℝ) (map_zero : f 0 = 0)
     (add_le : ∀ x y, f (x + y) ≤ f x + f y) (smul_le : ∀ (r : 𝕜) (x), f (r • x) ≤ ‖r‖ * f x) :
     Seminorm 𝕜 E :=
   Seminorm.of f add_le fun r x => by
@@ -262,7 +262,7 @@ variable [SeminormedRing 𝕜₂] [SeminormedRing 𝕜₃]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable {σ₂₃ : 𝕜₂ →+* 𝕜₃} [RingHomIsometric σ₂₃]
 variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomIsometric σ₁₃]
-variable [AddCommGroup E] [AddCommGroup E₂] [AddCommGroup E₃]
+variable [AddGroup E] [IsAddCommutative E] [AddGroup E₂] [IsAddCommutative E₂] [AddGroup E₃] [IsAddCommutative E₃]
 variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃]
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
@@ -396,9 +396,9 @@ end SeminormedRing
 
 section SeminormedCommRing
 
-variable [SeminormedRing 𝕜] [SeminormedCommRing 𝕜₂]
+variable [SeminormedRing 𝕜] [SeminormedRing 𝕜₂] [IsMulCommutative 𝕜₂]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
-variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
+variable [AddGroup E] [IsAddCommutative E] [AddGroup E₂] [IsAddCommutative E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
 theorem comp_smul (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) :
     p.comp (c • f) = ‖c‖₊ • p.comp f := by
@@ -412,7 +412,7 @@ end SeminormedCommRing
 
 section NormedField
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {p q : Seminorm 𝕜 E} {x : E}
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] {p q : Seminorm 𝕜 E} {x : E}
 
 /-- Auxiliary lemma to show that the infimum of seminorms is well-defined. -/
 theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
@@ -592,7 +592,7 @@ variable [SeminormedRing 𝕜]
 
 section AddCommGroup
 
-variable [AddCommGroup E]
+variable [AddGroup E] [IsAddCommutative E]
 
 section SMul
 
@@ -743,7 +743,7 @@ end SMul
 section Module
 
 variable [Module 𝕜 E]
-variable [SeminormedRing 𝕜₂] [AddCommGroup E₂] [Module 𝕜₂ E₂]
+variable [SeminormedRing 𝕜₂] [AddGroup E₂] [IsAddCommutative E₂] [Module 𝕜₂ E₂]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 theorem ball_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
@@ -888,7 +888,7 @@ end SeminormedRing
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
+variable [NormedDivisionRing 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
 
 theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r := by
@@ -973,7 +973,7 @@ end NormedDivisionRing
 
 section NormedField
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
 
 theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E)
     {r : ℝ} (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
@@ -988,7 +988,7 @@ end NormedField
 
 section Convex
 
-variable [NormedField 𝕜] [AddCommGroup E] [SMul ℝ 𝕜] [NormSMulClass ℝ 𝕜] [Module 𝕜 E]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [SMul ℝ 𝕜] [NormSMulClass ℝ 𝕜] [Module 𝕜 E]
 
 section SMul
 
@@ -1030,7 +1030,7 @@ end Convex
 section RestrictScalars
 
 variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [SeminormedRing 𝕜'] [SMul 𝕜 𝕜'] [NormSMulClass 𝕜 𝕜']
-  [NormOneClass 𝕜'] [AddCommGroup E] [Module 𝕜' E] [SMul 𝕜 E] [IsScalarTower 𝕜 𝕜' E]
+  [NormOneClass 𝕜'] [AddGroup E] [IsAddCommutative E] [Module 𝕜' E] [SMul 𝕜 E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Reinterpret a seminorm over a field `𝕜'` as a seminorm over a smaller field `𝕜`. This will
 typically be used with `RCLike 𝕜'` and `𝕜 = ℝ`. -/
@@ -1058,7 +1058,7 @@ end RestrictScalars
 
 section Continuity
 
-variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [Module 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 variable [Module 𝕝 E]
 
 /-- A seminorm is continuous at `0` if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
@@ -1220,7 +1220,7 @@ end Continuity
 
 section ShellLemmas
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 /-- Let `p` be a seminorm on a vector space over a `NormedField`.
 If there is a scalar `c` with `‖c‖>1`, then any `x` such that `p x ≠ 0` can be
@@ -1295,7 +1295,7 @@ end ShellLemmas
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 /-- Let `p i` be a family of seminorms on `E`. Let `s` be an absorbent set in `𝕜`.
 If all seminorms are uniformly bounded at every point of `s`,

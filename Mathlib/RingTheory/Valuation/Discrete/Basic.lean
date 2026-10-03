@@ -257,7 +257,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] {v : Valuation R Γ} [hv : IsRankOneDiscrete v]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {v : Valuation R Γ} [hv : IsRankOneDiscrete v]
 
 theorem IsUniformizer.not_isUnit {π : v.integer} (hπ : IsUniformizer v π) : ¬ IsUnit π :=
   fun h ↦ ne_of_gt hπ.val_lt_one (Integers.one_of_isUnit (integer.integers v) h).symm

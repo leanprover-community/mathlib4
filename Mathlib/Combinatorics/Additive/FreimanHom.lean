@@ -72,12 +72,12 @@ open scoped Pointwise
 variable {F α β γ : Type*}
 
 section CommMonoid
-variable [CommMonoid α] [CommMonoid β] [CommMonoid γ] {A A₁ A₂ : Set α}
+variable [Monoid α] [IsMulCommutative α] [Monoid β] [IsMulCommutative β] [Monoid γ] [IsMulCommutative γ] {A A₁ A₂ : Set α}
   {B B₁ B₂ : Set β} {C : Set γ} {f f₁ f₂ : α → β} {g : β → γ} {n : ℕ}
 
 /-- An additive `n`-Freiman homomorphism from a set `A` to a set `B` is a map which preserves sums
 of `n` elements. -/
-structure IsAddFreimanHom [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) (A : Set α) (B : Set β)
+structure IsAddFreimanHom [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] (n : ℕ) (A : Set α) (B : Set β)
     (f : α → β) : Prop where
   mapsTo : MapsTo f A B
   /-- An additive `n`-Freiman homomorphism preserves sums of `n` elements. -/
@@ -97,7 +97,7 @@ structure IsMulFreimanHom (n : ℕ) (A : Set α) (B : Set β) (f : α → β) : 
 
 /-- An additive `n`-Freiman homomorphism from a set `A` to a set `B` is a bijective map which
 preserves sums of `n` elements. -/
-structure IsAddFreimanIso [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) (A : Set α) (B : Set β)
+structure IsAddFreimanIso [AddMonoid α] [IsAddCommutative α] [AddMonoid β] [IsAddCommutative β] (n : ℕ) (A : Set α) (B : Set β)
     (f : α → β) : Prop where
   bijOn : BijOn f A B
   /-- An additive `n`-Freiman homomorphism preserves sums of `n` elements. -/
@@ -331,7 +331,7 @@ lemma IsMulFreimanHom.subtypeVal {S : Type*} [SetLike S α] [SubmonoidClass S α
 end CommMonoid
 
 section CancelCommMonoid
-variable [CommMonoid α] [CancelCommMonoid β] {A : Set α} {B : Set β} {f : α → β} {m n : ℕ}
+variable [Monoid α] [IsMulCommutative α] [CancelMonoid β] [IsMulCommutative β] {A : Set α} {B : Set β} {f : α → β} {m n : ℕ}
 
 @[to_additive]
 lemma isMulFreimanHom_antitone : Antitone (IsMulFreimanHom · A B f) :=
@@ -351,7 +351,7 @@ lemma IsMulFreimanHom.mono (hmn : m ≤ n) (hf : IsMulFreimanHom n A B f) : IsMu
 end CancelCommMonoid
 
 section CancelCommMonoid
-variable [CancelCommMonoid α] [CancelCommMonoid β] {A : Set α} {B : Set β} {f : α → β} {m n : ℕ}
+variable [CancelMonoid α] [IsMulCommutative α] [CancelMonoid β] [IsMulCommutative β] {A : Set α} {B : Set β} {f : α → β} {m n : ℕ}
 
 @[to_additive]
 lemma IsMulFreimanIso.mono {hmn : m ≤ n} (hf : IsMulFreimanIso n A B f) :
@@ -362,7 +362,7 @@ lemma IsMulFreimanIso.mono {hmn : m ≤ n} (hf : IsMulFreimanIso n A B f) :
 end CancelCommMonoid
 
 section DivisionCommMonoid
-variable [CommMonoid α] [DivisionCommMonoid β] {A : Set α} {B : Set β} {f : α → β} {n : ℕ}
+variable [Monoid α] [IsMulCommutative α] [DivisionMonoid β] [IsMulCommutative β] {A : Set α} {B : Set β} {f : α → β} {n : ℕ}
 
 @[to_additive]
 lemma IsMulFreimanHom.inv (hf : IsMulFreimanHom n A B f) : IsMulFreimanHom n A B⁻¹ f⁻¹ where
@@ -370,7 +370,7 @@ lemma IsMulFreimanHom.inv (hf : IsMulFreimanHom n A B f) : IsMulFreimanHom n A B
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [Pi.inv_def, prod_map_inv, prod_map_inv, hf.map_prod_eq_map_prod hsA htA hs ht h]
 
-@[to_additive] lemma IsMulFreimanHom.div {β : Type*} [DivisionCommMonoid β] {B₁ B₂ : Set β}
+@[to_additive] lemma IsMulFreimanHom.div {β : Type*} [DivisionMonoid β] [IsMulCommutative β] {B₁ B₂ : Set β}
     {f₁ f₂ : α → β} (h₁ : IsMulFreimanHom n A B₁ f₁) (h₂ : IsMulFreimanHom n A B₂ f₂) :
     IsMulFreimanHom n A (B₁ / B₂) (f₁ / f₂) where
   mapsTo := h₁.mapsTo.div h₂.mapsTo
@@ -383,18 +383,18 @@ end DivisionCommMonoid
 section Prod
 
 @[to_additive]
-lemma IsMulFreimanHom.fst [CommMonoid α] [CommMonoid β] {A : Set α} {B : Set β} {n : ℕ} :
+lemma IsMulFreimanHom.fst [Monoid α] [IsMulCommutative α] [Monoid β] [IsMulCommutative β] {A : Set α} {B : Set β} {n : ℕ} :
     IsMulFreimanHom n (A ×ˢ B) A Prod.fst :=
   MulHomClass.isMulFreimanHom (MonoidHom.fst _ _) mapsTo_fst_prod
 
 @[to_additive]
-lemma IsMulFreimanHom.snd [CommMonoid α] [CommMonoid β] {A : Set α} {B : Set β} {n : ℕ} :
+lemma IsMulFreimanHom.snd [Monoid α] [IsMulCommutative α] [Monoid β] [IsMulCommutative β] {A : Set α} {B : Set β} {n : ℕ} :
     IsMulFreimanHom n (A ×ˢ B) B Prod.snd :=
   MulHomClass.isMulFreimanHom (MonoidHom.snd _ _) mapsTo_snd_prod
 
 section
 
-variable {α β₁ β₂ : Type*} [CommMonoid α] [CommMonoid β₁] [CommMonoid β₂]
+variable {α β₁ β₂ : Type*} [Monoid α] [IsMulCommutative α] [Monoid β₁] [IsMulCommutative β₁] [Monoid β₂] [IsMulCommutative β₂]
   {A : Set α} {B₁ : Set β₁} {B₂ : Set β₂} {f₁ : α → β₁} {f₂ : α → β₂} {n : ℕ}
 
 @[to_additive prodMk]
@@ -409,7 +409,7 @@ end
 
 section
 
-variable {α₁ α₂ β₁ β₂ : Type*} [CommMonoid α₁] [CommMonoid α₂] [CommMonoid β₁] [CommMonoid β₂]
+variable {α₁ α₂ β₁ β₂ : Type*} [Monoid α₁] [IsMulCommutative α₁] [Monoid α₂] [IsMulCommutative α₂] [Monoid β₁] [IsMulCommutative β₁] [Monoid β₂] [IsMulCommutative β₂]
   {A₁ : Set α₁} {A₂ : Set α₂} {B₁ : Set β₁} {B₂ : Set β₂} {f₁ : α₁ → β₁} {f₂ : α₂ → β₂} {n : ℕ}
 
 @[to_additive prodMap]

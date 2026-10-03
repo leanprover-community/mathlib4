@@ -24,7 +24,7 @@ public section
 
 namespace Set
 
-variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedCancelAddMonoid M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedCancelAddMonoid M]
   [ExistsAddOfLE M] (a b c d : M)
 
 theorem Ici_add_bij : BijOn (· + d) (Ici a) (Ici (a + d)) := by

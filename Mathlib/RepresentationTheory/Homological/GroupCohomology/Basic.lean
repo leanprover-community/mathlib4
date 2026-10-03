@@ -70,7 +70,7 @@ noncomputable section
 
 universe u
 
-variable {k G : Type u} [CommRing k] {n : ℕ}
+variable {k G : Type u} [Ring k] [IsMulCommutative k] {n : ℕ}
 
 open CategoryTheory
 

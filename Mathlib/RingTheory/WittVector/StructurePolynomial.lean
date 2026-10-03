@@ -54,7 +54,7 @@ of `wittStructureInt Φ n` from the integers to the rationals,
 one obtains `wittStructureRat Φ n`.
 Ultimately, the proof of `map_wittStructureInt` relies on
 ```
-dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
+dvd_sub_pow_of_dvd_sub {R : Type*} [Ring R] [IsMulCommutative R] {p : ℕ} {a b : R} :
     (p : R) ∣ a - b → ∀ (k : ℕ), (p : R) ^ (k + 1) ∣ a ^ p ^ k - b ^ p ^ k
 ```
 
@@ -100,7 +100,7 @@ open Finsupp (single)
 -- We disable this locally, and probably it should be disabled globally in mathlib.
 attribute [-simp] coe_eval₂Hom
 
-variable {p : ℕ} {R : Type*} {idx : Type*} [CommRing R]
+variable {p : ℕ} {R : Type*} {idx : Type*} [Ring R] [IsMulCommutative R]
 
 open scoped Witt
 

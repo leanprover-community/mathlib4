@@ -25,7 +25,7 @@ noncomputable section
 
 namespace CommAlgCat
 universe u v
-variable {R : Type u} [CommRing R] {A B C D : CommAlgCat.{u} R}
+variable {R : Type u} [Ring R] [IsMulCommutative R] {A B C D : CommAlgCat.{u} R}
 
 variable (A B)
 

@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Valuation.Basic
 
 @[expose] public section
 
-variable {R : Type*} [CommRing R] [IsDomain R] {p : R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] {p : R}
 
 /-- `multiplicity` of a prime in an integral domain as an additive valuation to `ℕ∞`. -/
 noncomputable def multiplicity_addValuation (hp : Prime p) : AddValuation R ℕ∞ :=

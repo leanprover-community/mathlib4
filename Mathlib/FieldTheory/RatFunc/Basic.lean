@@ -32,20 +32,20 @@ Working with rational functions as fractions:
 Lifting homomorphisms of polynomials to other types, by mapping and dividing, as long
 as the homomorphism retains the non-zero-divisor property:
 - `RatFunc.liftMonoidWithZeroHom` lifts a `K[X] →*₀ G₀` to
-  a `K⟮X⟯ →*₀ G₀`, where `[CommRing K] [CommGroupWithZero G₀]`
+  a `K⟮X⟯ →*₀ G₀`, where `[Ring K] [IsMulCommutative K] [GroupWithZero G₀] [IsMulCommutative G₀]`
 - `RatFunc.liftRingHom` lifts a `K[X] →+* L` to a `K⟮X⟯ →+* L`,
-  where `[CommRing K] [Field L]`
+  where `[Ring K] [IsMulCommutative K] [Field L]`
 - `RatFunc.liftAlgHom` lifts a `K[X] →ₐ[S] L` to a `K⟮X⟯ →ₐ[S] L`,
-  where `[CommRing K] [Field L] [CommSemiring S] [Algebra S K[X]] [Algebra S L]`
+  where `[Ring K] [IsMulCommutative K] [Field L] [Semiring S] [IsMulCommutative S] [Algebra S K[X]] [Algebra S L]`
 
 This is satisfied by injective homs.
 
 We also have lifting homomorphisms of polynomials to other polynomials,
 with the same condition on retaining the non-zero-divisor property across the map:
-- `RatFunc.map` lifts `K[X] →* R[X]` when `[CommRing K] [CommRing R]`
-- `RatFunc.mapRingHom` lifts `K[X] →+* R[X]` when `[CommRing K] [CommRing R]`
+- `RatFunc.map` lifts `K[X] →* R[X]` when `[Ring K] [IsMulCommutative K] [Ring R] [IsMulCommutative R]`
+- `RatFunc.mapRingHom` lifts `K[X] →+* R[X]` when `[Ring K] [IsMulCommutative K] [Ring R] [IsMulCommutative R]`
 - `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when
-  `[CommRing K] [IsDomain K] [CommRing R] [IsDomain R]`
+  `[Ring K] [IsMulCommutative K] [IsDomain K] [Ring R] [IsMulCommutative R] [IsDomain R]`
 -/
 
 @[expose] public section
@@ -62,7 +62,7 @@ namespace RatFunc
 
 section Field
 
-variable [CommRing K]
+variable [Ring K] [IsMulCommutative K]
 
 /-- The zero rational function. -/
 protected irreducible_def zero : K⟮X⟯ :=
@@ -260,7 +260,7 @@ local macro "smul_tac" : tactic => `(tactic|
 
 section CommRing
 
-variable (K) [CommRing K]
+variable (K) [Ring K] [IsMulCommutative K]
 /-- `K⟮X⟯` is a commutative monoid.
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
@@ -305,7 +305,7 @@ section LiftHom
 
 open RatFunc
 
-variable {G₀ L R S F : Type*} [CommGroupWithZero G₀] [Field L] [CommRing R] [CommRing S]
+variable {G₀ L R S F : Type*} [GroupWithZero G₀] [IsMulCommutative G₀] [Field L] [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 variable [FunLike F R[X] S[X]]
 
 open scoped Classical in
@@ -489,7 +489,7 @@ section IsDomain
 
 variable [IsDomain K]
 
-instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R K⟮X⟯ where
+instance (R : Type*) [Semiring R] [IsMulCommutative R] [Algebra R K[X]] : Algebra R K⟮X⟯ where
   algebraMap :=
   { toFun x := RatFunc.mk (algebraMap _ _ x) 1
     map_add' x y := by simp only [mk_one', map_add, ofFractionRing_add]
@@ -524,7 +524,7 @@ variable (K) in
 The equivalence between `K⟮X⟯` and the field of fractions of `K[X]`
 -/
 @[simps! apply]
-def toFractionRingAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]] :
+def toFractionRingAlgEquiv (R : Type*) [Semiring R] [IsMulCommutative R] [Algebra R K[X]] :
     K⟮X⟯ ≃ₐ[R] FractionRing K[X] where
   __ := RatFunc.toFractionRingRingEquiv K
   commutes' r := by
@@ -542,12 +542,12 @@ theorem div_smul {R} [Monoid R] [DistribMulAction R K[X]] [IsScalarTower R K[X] 
       c • (algebraMap _ _ p / algebraMap _ _ q) := by
   rw [← mk_eq_div, mk_smul, mk_eq_div]
 
-theorem algebraMap_apply {R : Type*} [CommSemiring R] [Algebra R K[X]] (x : R) :
+theorem algebraMap_apply {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R K[X]] (x : R) :
     algebraMap R K⟮X⟯ x = algebraMap _ _ (algebraMap R K[X] x) / algebraMap K[X] _ 1 := by
   rw [← mk_eq_div]
   rfl
 
-theorem map_apply_div_ne_zero {R F : Type*} [CommRing R] [IsDomain R]
+theorem map_apply_div_ne_zero {R F : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
     [FunLike F K[X] R[X]] [MonoidHomClass F K[X] R[X]]
     (φ : F) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (p q : K[X]) (hq : q ≠ 0) :
     map φ hφ (algebraMap _ _ p / algebraMap _ _ q) =
@@ -557,7 +557,7 @@ theorem map_apply_div_ne_zero {R F : Type*} [CommRing R] [IsDomain R]
     mk_eq_localization_mk _ hq']
 
 @[simp]
-theorem map_apply_div {R F : Type*} [CommRing R] [IsDomain R]
+theorem map_apply_div {R F : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
     [FunLike F K[X] R[X]] [MonoidWithZeroHomClass F K[X] R[X]]
     (φ : F) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (p q : K[X]) :
     map φ hφ (algebraMap _ _ p / algebraMap _ _ q) =
@@ -569,7 +569,7 @@ theorem map_apply_div {R F : Type*} [CommRing R] [IsDomain R]
     exact one_ne_zero
   exact map_apply_div_ne_zero _ _ _ _ hq
 
-theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
+theorem liftMonoidWithZeroHom_apply_div {L : Type*} [GroupWithZero L] [IsMulCommutative L]
     (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
     liftMonoidWithZeroHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q := by
   rcases eq_or_ne q 0 with (rfl | hq)
@@ -578,7 +578,7 @@ theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
     liftMonoidWithZeroHom_apply_ofFractionRing_mk]
 
 @[simp]
-theorem liftMonoidWithZeroHom_apply_div' {L : Type*} [CommGroupWithZero L]
+theorem liftMonoidWithZeroHom_apply_div' {L : Type*} [GroupWithZero L] [IsMulCommutative L]
     (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
     liftMonoidWithZeroHom φ hφ (algebraMap _ _ p) / liftMonoidWithZeroHom φ hφ (algebraMap _ _ q) =
       φ p / φ q := by
@@ -617,7 +617,7 @@ variable {K}
 
 section LiftAlgHom
 
-variable {L R S : Type*} [Field L] [CommRing R] [IsDomain R] [CommSemiring S] [Algebra S K[X]]
+variable {L R S : Type*} [Field L] [Ring R] [IsMulCommutative R] [IsDomain R] [Semiring S] [IsMulCommutative S] [Algebra S K[X]]
   [Algebra S L] [Algebra S R[X]] (φ : K[X] →ₐ[S] L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
 
 /-- Lift an algebra homomorphism that maps polynomials `φ : K[X] →ₐ[S] R[X]`
@@ -748,7 +748,7 @@ As `R⟮X⟯` is a one-field-struct, we need to specialize the following instanc
 `FractionRing`.
 -/
 
-variable (R L : Type*) [CommRing R] [Field L] [IsDomain R] [Algebra R[X] L] [FaithfulSMul R[X] L]
+variable (R L : Type*) [Ring R] [IsMulCommutative R] [Field L] [IsDomain R] [Algebra R[X] L] [FaithfulSMul R[X] L]
 
 /-- `FractionRing.liftAlgebra` specialized to `R⟮X⟯`.
 
@@ -798,20 +798,20 @@ section IsScalarTower
 
 /-- Let `A⟮X⟯ / A[X] / R / R₀` be a tower. If `A[X] / R / R₀` is a scalar tower
 then so is `A⟮X⟯ / R / R₀`. -/
-instance (R₀ R A : Type*) [CommSemiring R₀] [CommSemiring R] [CommRing A] [IsDomain A]
+instance (R₀ R A : Type*) [Semiring R₀] [IsMulCommutative R₀] [Semiring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [IsDomain A]
     [Algebra R₀ A[X]] [SMul R₀ R] [Algebra R A[X]] [IsScalarTower R₀ R A[X]] :
     IsScalarTower R₀ R A⟮X⟯ := IsScalarTower.to₁₂₄ _ _ A[X] _
 
 /-- Let `K / A⟮X⟯ / A[X] / R` be a tower. If `K / A[X] / R` is a scalar tower
 then so is `K / A⟮X⟯ / R`. -/
-instance (R A K : Type*) [CommRing A] [IsDomain A] [Field K] [Algebra A[X] K]
-    [FaithfulSMul A[X] K] [CommSemiring R] [Algebra R A[X]] [SMul R K] [IsScalarTower R A[X] K] :
+instance (R A K : Type*) [Ring A] [IsMulCommutative A] [IsDomain A] [Field K] [Algebra A[X] K]
+    [FaithfulSMul A[X] K] [Semiring R] [IsMulCommutative R] [Algebra R A[X]] [SMul R K] [IsScalarTower R A[X] K] :
     IsScalarTower R A⟮X⟯ K :=
   IsScalarTower.to₁₃₄ _ A[X] _ _
 
 /-- Let `K / k / A⟮X⟯ / A[X]` be a tower. If `K / k / A[X]` is a scalar tower
 then so is `K / k / A⟮X⟯`. -/
-instance (A k K : Type*) [CommRing A] [IsDomain A] [Field k] [Field K] [Algebra A[X] k]
+instance (A k K : Type*) [Ring A] [IsMulCommutative A] [IsDomain A] [Field k] [Field K] [Algebra A[X] k]
     [Algebra A[X] K] [SMul k K] [FaithfulSMul A[X] k] [FaithfulSMul A[X] K]
     [IsScalarTower A[X] k K] : IsScalarTower A⟮X⟯ k K where
   smul_assoc a b c := by
@@ -1093,14 +1093,14 @@ theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClas
     (φ : F) (hφ : Function.Injective φ) (f : K⟮X⟯) : φ f.denom ≠ 0 := fun H =>
   (denom_ne_zero f) ((map_eq_zero_iff φ hφ).mp H)
 
-theorem map_apply {R F : Type*} [CommRing R] [IsDomain R]
+theorem map_apply {R F : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
     [FunLike F K[X] R[X]] [MonoidHomClass F K[X] R[X]] (φ : F)
     (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (f : K⟮X⟯) :
     map φ hφ f = algebraMap _ _ (φ f.num) / algebraMap _ _ (φ f.denom) := by
   rw [← num_div_denom f, map_apply_div_ne_zero, num_div_denom f]
   exact denom_ne_zero _
 
-theorem liftMonoidWithZeroHom_apply {L : Type*} [CommGroupWithZero L] (φ : K[X] →*₀ L)
+theorem liftMonoidWithZeroHom_apply {L : Type*} [GroupWithZero L] [IsMulCommutative L] (φ : K[X] →*₀ L)
     (hφ : K[X]⁰ ≤ L⁰.comap φ) (f : K⟮X⟯) :
     liftMonoidWithZeroHom φ hφ f = φ f.num / φ f.denom := by
   rw [← num_div_denom f, liftMonoidWithZeroHom_apply_div, num_div_denom]
@@ -1109,7 +1109,7 @@ theorem liftRingHom_apply {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]�
     (f : K⟮X⟯) : liftRingHom φ hφ f = φ f.num / φ f.denom :=
   liftMonoidWithZeroHom_apply _ hφ _
 
-theorem liftAlgHom_apply {L S : Type*} [Field L] [CommSemiring S] [Algebra S K[X]] [Algebra S L]
+theorem liftAlgHom_apply {L S : Type*} [Field L] [Semiring S] [IsMulCommutative S] [Algebra S K[X]] [Algebra S L]
     (φ : K[X] →ₐ[S] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (f : K⟮X⟯) :
     liftAlgHom φ hφ f = φ f.num / φ f.denom :=
   liftMonoidWithZeroHom_apply _ hφ _

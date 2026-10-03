@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Order.Module.Synonym
 @[expose] public section
 
 variable (α β : Type*)
-variable [Semiring α] [AddCommMonoid β] [Module α β]
+variable [Semiring α] [AddMonoid β] [IsAddCommutative β] [Module α β]
 
 /-- `toLex` as a linear equivalence -/
 def toLexLinearEquiv : β ≃ₗ[α] Lex β := (toLexAddEquiv β).toLinearEquiv toLex_smul

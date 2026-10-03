@@ -939,7 +939,7 @@ end Finset
 
 namespace Finset
 
-variable [Semiring α] [AddCommMonoid β] [Module α β] {s : Finset ι} {σ : Perm ι}
+variable [Semiring α] [AddMonoid β] [IsAddCommutative β] [Module α β] {s : Finset ι} {σ : Perm ι}
 
 set_option backward.isDefEq.respectTransparency false in
 theorem sum_smul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f : ι → α) (g : ι → β) :

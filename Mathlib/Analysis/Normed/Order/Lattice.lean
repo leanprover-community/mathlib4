@@ -44,10 +44,10 @@ section SolidNorm
 /-- Let `α` be an `AddCommGroup` with a `Lattice` structure. A norm on `α` is *solid* if, for `a`
 and `b` in `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`.
 -/
-class HasSolidNorm (α : Type*) [NormedAddCommGroup α] [Lattice α] : Prop where
+class HasSolidNorm (α : Type*) [NormedAddGroup α] [IsAddCommutative α] [Lattice α] : Prop where
   solid : ∀ ⦃x y : α⦄, |x| ≤ |y| → ‖x‖ ≤ ‖y‖
 
-variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α]
+variable {α : Type*} [NormedAddGroup α] [IsAddCommutative α] [Lattice α] [HasSolidNorm α]
 
 theorem norm_le_norm_of_abs_le_abs {a b : α} (h : |a| ≤ |b|) : ‖a‖ ≤ ‖b‖ :=
   HasSolidNorm.solid h
@@ -66,7 +66,7 @@ instance Int.hasSolidNorm : HasSolidNorm ℤ where
 
 end SolidNorm
 
-variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]
+variable {α : Type*} [NormedAddGroup α] [IsAddCommutative α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]
 
 open HasSolidNorm
 
@@ -139,7 +139,7 @@ instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
 
 -- see Note [lower instance priority]
 instance (priority := 100) HasSolidNorm.continuousSup {α : Type*}
-    [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α] : ContinuousSup α :=
+    [NormedAddGroup α] [IsAddCommutative α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α] : ContinuousSup α :=
   OrderDual.continuousSup αᵒᵈ
 
 -- see Note [lower instance priority]
@@ -180,7 +180,7 @@ lemma isClosed_nonneg : IsClosed {x : α | 0 ≤ x} := by
   exact isClosed_singleton.preimage continuous_negPart
 
 theorem isClosed_le_of_isClosed_nonneg {G}
-    [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G] [TopologicalSpace G]
+    [AddGroup G] [IsAddCommutative G] [PartialOrder G] [IsOrderedAddMonoid G] [TopologicalSpace G]
     [ContinuousSub G] (h : IsClosed { x : G | 0 ≤ x }) :
     IsClosed { p : G × G | p.fst ≤ p.snd } := by
   have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G ↦ p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } := by
@@ -190,6 +190,6 @@ theorem isClosed_le_of_isClosed_nonneg {G}
 
 -- See note [lower instance priority]
 instance (priority := 100) HasSolidNorm.orderClosedTopology {E}
-    [NormedAddCommGroup E] [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] :
+    [NormedAddGroup E] [IsAddCommutative E] [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] :
     OrderClosedTopology E :=
   ⟨isClosed_le_of_isClosed_nonneg isClosed_nonneg⟩

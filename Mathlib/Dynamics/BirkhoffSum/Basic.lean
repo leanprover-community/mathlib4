@@ -25,7 +25,7 @@ open Finset Function
 
 section AddCommMonoid
 
-variable {α M : Type*} [AddCommMonoid M]
+variable {α M : Type*} [AddMonoid M] [IsAddCommutative M]
 
 /-- The sum of values of `g` on the first `n` points of the orbit of `x` under `f`. -/
 def birkhoffSum (f : α → α) (g : α → M) (n : ℕ) (x : α) : M := ∑ k ∈ range n, g (f^[k] x)
@@ -84,12 +84,12 @@ theorem Function.IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedP
     (n : ℕ) : birkhoffSum f g n x = n • g x := by
   simp [birkhoffSum, (h.iterate _).eq]
 
-theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F M N]
+theorem map_birkhoffSum {F N : Type*} [AddMonoid N] [IsAddCommutative N] [FunLike F M N] [AddMonoidHomClass F M N]
     (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffSum f g n x) = birkhoffSum f (g' ∘ g) n x :=
   map_sum g' _ _
 
-theorem map_comp_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N]
+theorem map_comp_birkhoffSum {F N : Type*} [AddMonoid N] [IsAddCommutative N] [FunLike F M N]
     [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) :
     ⇑g' ∘ birkhoffSum f g n = birkhoffSum f (g' ∘ g) n :=
   funext <| map_birkhoffSum g' f g n
@@ -120,7 +120,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable {α G : Type*} [AddCommGroup G]
+variable {α G : Type*} [AddGroup G] [IsAddCommutative G]
 
 theorem birkhoffSum_neg_apply (f : α → α) (g : α → G) (n : ℕ) (x : α) :
     birkhoffSum f (-g) n x = -birkhoffSum f g n x := by

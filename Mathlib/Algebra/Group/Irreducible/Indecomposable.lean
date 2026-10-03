@@ -17,7 +17,7 @@ import Mathlib.Algebra.Order.Group.Defs
 
 open Set
 
-variable {ι M G S : Type*} [Monoid M] [CommGroup G] [LinearOrder S]
+variable {ι M G S : Type*} [Monoid M] [Group G] [IsMulCommutative G] [LinearOrder S]
 
 /-- Given a family of elements of a monoid, a member is said to be indecomposable if it cannot be
 written as a product of two others in a non-trivial way. -/
@@ -51,7 +51,7 @@ lemma IsMulIndecomposable.baseOf_subset_one_lt [Monoid S] (v : ι → M) (f : M 
 
 @[to_additive]
 lemma IsMulIndecomposable.image_baseOf_inv_comp_eq [InvolutiveInv ι]
-    [CommGroup S] [IsOrderedMonoid S]
+    [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) :
     v '' baseOf v (invMonoidHom.comp f) = (invMonoidHom ∘ v) '' baseOf v f := by
@@ -83,7 +83,7 @@ which are indecomposable with respect to points in this half space.
 If `v` is the set of roots of a crystallographic root system and `S = ℚ`, then this is
 [serre1965](Ch. V, §9, Lemma 2) and it may be used to prove that the root system has a base. -/]
 lemma Submonoid.closure_image_isMulIndecomposable_baseOf [Finite ι]
-    [CommMonoid S] [IsOrderedCancelMonoid S]
+    [Monoid S] [IsMulCommutative S] [IsOrderedCancelMonoid S]
     (v : ι → M) (f : M →* S) :
     closure (v '' IsMulIndecomposable.baseOf v f) = closure (v '' {i | 1 < f (v i)}) := by
   refine le_antisymm (closure_mono (image_mono <| IsMulIndecomposable.baseOf_subset_one_lt v f))
@@ -109,7 +109,7 @@ lemma Submonoid.closure_image_isMulIndecomposable_baseOf [Finite ι]
 
 @[to_additive]
 lemma Subgroup.closure_image_isMulIndecomposable_baseOf [Finite ι] [InvolutiveInv ι]
-    [CommGroup S] [IsOrderedMonoid S]
+    [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1) :
     closure (v '' IsMulIndecomposable.baseOf v f) = closure (range v) := by
@@ -153,7 +153,7 @@ lemma pairwise_div_notMem_range [InvolutiveInv ι]
     exact fun _ ↦ ⟨k⁻¹, hk', i, h_sub hi, by simp [hv_inv, hk]⟩
 
 @[to_additive]
-lemma pairwise_div_notMem_range' [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+lemma pairwise_div_notMem_range' [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1)
     (s : Set ι) (hst : s ⊆ {j | IsMulIndecomposable v {i | 1 < f (v i)} j}) :
@@ -163,7 +163,7 @@ lemma pairwise_div_notMem_range' [InvolutiveInv ι] [CommGroup S] [IsOrderedMono
   simpa [hv_inv] using (hf i).symm
 
 @[to_additive]
-lemma pairwise_baseOf_div_notMem [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+lemma pairwise_baseOf_div_notMem [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1) :
     (baseOf v f).Pairwise fun i j ↦ v i / v j ∉ range v :=
@@ -171,7 +171,7 @@ lemma pairwise_baseOf_div_notMem [InvolutiveInv ι] [CommGroup S] [IsOrderedMono
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[to_additive]
-lemma mem_or_inv_mem_closure_baseOf [Finite ι] [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+lemma mem_or_inv_mem_closure_baseOf [Finite ι] [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G)
     (f : G →* S) (i : ι) (hi : f (v i) ≠ 1) (hi' : v i⁻¹ = (v i)⁻¹) :
      v i    ∈ Submonoid.closure (v '' baseOf v f) ∨
@@ -186,7 +186,7 @@ lemma mem_or_inv_mem_closure_baseOf [Finite ι] [InvolutiveInv ι] [CommGroup S]
 end IsMulIndecomposable
 
 @[to_additive]
-lemma Submonoid.mem_closure_image_one_lt_iff [CommMonoid S] [IsOrderedCancelMonoid S]
+lemma Submonoid.mem_closure_image_one_lt_iff [Monoid S] [IsMulCommutative S] [IsOrderedCancelMonoid S]
     (v : ι → M) (f : M →* S) (i : ι) (hv_one : v i ≠ 1) :
     v i ∈ closure (v '' {i | 1 < f (v i)}) ↔ 1 < f (v i) := by
   refine ⟨fun hi ↦ ?_, fun hi ↦ subset_closure <| mem_image_of_mem v hi⟩
@@ -199,7 +199,7 @@ lemma Submonoid.mem_closure_image_one_lt_iff [CommMonoid S] [IsOrderedCancelMono
 
 @[to_additive]
 lemma Submonoid.apply_ne_one_of_mem_or_inv_mem_closure
-    [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+    [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G)
     (f : G →* S)
     (s : Set ι)
@@ -220,7 +220,7 @@ lemma Submonoid.apply_ne_one_of_mem_or_inv_mem_closure
 open Submonoid in
 @[to_additive]
 lemma IsMulIndecomposable.apply_ne_one_iff_mem_closure
-    [Finite ι] [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+    [Finite ι] [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G) (f : G →* S) (i : ι) (hi : v i ≠ 1) (hi' : v i⁻¹ = (v i)⁻¹) :
     f (v i) ≠ 1 ↔ v i ∈ closure (v '' baseOf v f) ∨ (v i)⁻¹ ∈ closure (v '' baseOf v f) :=
   ⟨fun h ↦ mem_or_inv_mem_closure_baseOf v f i h hi',

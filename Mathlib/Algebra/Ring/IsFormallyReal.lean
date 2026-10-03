@@ -101,12 +101,12 @@ variable (R) in
 /--
 A ring is formally real if, whenever `∑ i, x i ^ 2 = 0`, we in fact have `x i = 0` for all `i`.
 -/
-class IsFormallyReal [AddCommMonoid R] [Mul R] : Prop where
+class IsFormallyReal [AddMonoid R] [IsAddCommutative R] [Mul R] : Prop where
   not_isSumNonzeroSq_zero : ¬ IsSumNonzeroSq (0 : R)
 
 namespace IsFormallyReal
 
-theorem of_eq_zero_of_mul_self_of_eq_zero_of_add [AddCommMonoid R] [Mul R]
+theorem of_eq_zero_of_mul_self_of_eq_zero_of_add [AddMonoid R] [IsAddCommutative R] [Mul R]
     (hz : ∀ {a : R}, a * a = 0 → a = 0)
     (ha : ∀ {s₁ s₂ : R}, IsSumSq s₁ → IsSumSq s₂ → s₁ + s₂ = 0 → s₁ = 0) : IsFormallyReal R where
   not_isSumNonzeroSq_zero := by

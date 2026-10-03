@@ -25,8 +25,8 @@ In this file we show some results connecting multivariate polynomial rings and l
 
 @[expose] public section
 
-variable {σ R : Type*} [CommRing R] (M : Submonoid R)
-variable (S : Type*) [CommRing S] [Algebra R S]
+variable {σ R : Type*} [Ring R] [IsMulCommutative R] (M : Submonoid R)
+variable (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S]
 
 namespace MvPolynomial
 

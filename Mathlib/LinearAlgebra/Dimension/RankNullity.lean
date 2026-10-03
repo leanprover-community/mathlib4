@@ -32,7 +32,7 @@ universe u v
 open Function Set Cardinal Module Submodule LinearMap
 
 variable {R} {M M₁ : Type u} {M' : Type v} [Ring R]
-variable [AddCommGroup M] [AddCommGroup M₁] [AddCommGroup M']
+variable [AddGroup M] [IsAddCommutative M] [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M'] [IsAddCommutative M']
 variable [Module R M] [Module R M₁] [Module R M']
 
 /--
@@ -47,9 +47,9 @@ See `DivisionRing.hasRankNullity` and `IsDomain.hasRankNullity`.
 -/
 @[pp_with_univ]
 class HasRankNullity (R : Type v) [inst : Ring R] : Prop where
-  exists_set_linearIndependent : ∀ (M : Type u) [AddCommGroup M] [Module R M],
+  exists_set_linearIndependent : ∀ (M : Type u) [AddGroup M] [IsAddCommutative M] [Module R M],
     ∃ s : Set M, #s = Module.rank R M ∧ LinearIndepOn R id s
-  rank_quotient_add_rank : ∀ {M : Type u} [AddCommGroup M] [Module R M] (N : Submodule R M),
+  rank_quotient_add_rank : ∀ {M : Type u} [AddGroup M] [IsAddCommutative M] [Module R M] (N : Submodule R M),
     Module.rank R (M ⧸ N) + Module.rank R N = Module.rank R M
 
 variable [HasRankNullity.{u} R]
@@ -254,7 +254,7 @@ lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul 
   exact Nat.eq_sub_of_add_eq rfl
 
 lemma Submodule.disjoint_ker_of_finrank_le [IsDomain R] [IsTorsionFree R M] {N : Type*}
-    [AddCommGroup N] [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
+    [AddGroup N] [IsAddCommutative N] [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
     (h : finrank R L ≤ finrank R (L.map f)) :
     Disjoint L (LinearMap.ker f) := by
   refine LinearMap.injective_domRestrict_iff.mp <| LinearMap.ker_eq_bot.mp <|

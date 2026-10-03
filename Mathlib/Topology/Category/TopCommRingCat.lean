@@ -31,7 +31,7 @@ structure TopCommRingCat where
   of ::
   /-- carrier of a topological commutative ring. -/
   α : Type u
-  [isCommRing : CommRing α]
+  [isCommRing : Ring α] [IsMulCommutative α]
   [isTopologicalSpace : TopologicalSpace α]
   [isTopologicalRing : IsTopologicalRing α]
 
@@ -76,7 +76,7 @@ instance : ConcreteCategory TopCommRingCat.{u} fun R S => { f : R →+* S // Con
   hom f := f
   ofHom f := f
 
-theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] :
+theorem coe_of (X : Type u) [Ring X] [IsMulCommutative X] [TopologicalSpace X] [IsTopologicalRing X] :
     (of X : Type u) = X := rfl
 
 instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=

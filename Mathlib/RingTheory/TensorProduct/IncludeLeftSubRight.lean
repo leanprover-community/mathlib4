@@ -34,7 +34,7 @@ open scoped TensorProduct
 
 namespace Algebra
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {S : Type*} [Ring S] [Algebra R S]
 
 namespace TensorProduct
@@ -62,7 +62,7 @@ lemma includeLeftSubRight_algebraMap_zero (r : R) :
   includeLeftSubRight_zero_of_mem_range (Set.mem_range.mp (exists_apply_eq_apply _ _))
 
 /-- `includeLeftSubRight` is compatible with `distribBaseChange` and `lTensor`. -/
-lemma distribBaseChange_comp_includeLeftSubRight (T : Type*) [CommRing T] [Algebra R T] :
+lemma distribBaseChange_comp_includeLeftSubRight (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] :
     ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).restrictScalars R).toLinearMap ∘ₗ
       (includeLeftSubRight R S).lTensor T =
     (includeLeftSubRight T (T ⊗[R] S)).restrictScalars R := by
@@ -70,7 +70,7 @@ lemma distribBaseChange_comp_includeLeftSubRight (T : Type*) [CommRing T] [Algeb
   simp [TensorProduct.tmul_sub, TensorProduct.one_def, tmul_one_tmul_one_tmul]
 
 @[simp]
-lemma distribBaseChange_includeLeftSubRight_apply (T : Type*) [CommRing T] [Algebra R T]
+lemma distribBaseChange_includeLeftSubRight_apply (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T]
     (x : T ⊗[R] S) :
     TensorProduct.AlgebraTensorModule.distribBaseChange R T S S
       ((includeLeftSubRight R S).lTensor T x) =
@@ -118,9 +118,9 @@ lemma of_section (g : S →ₐ[R] R) : IsEffective R S := by
 
 section FaithfullyFlat
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 variable (S : Type*)
-variable (T : Type*) [CommRing T] [Algebra R T]
+variable (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T]
 
 /-- `IsEffective` descends along faithfully flat algebras. -/
 lemma of_isEffective_tensorProduct_of_faithfullyFlat
@@ -143,7 +143,7 @@ lemma of_isEffective_tensorProduct_of_faithfullyFlat
     simp
 
 /-- `IsEffective R S` is true for any faithfully flat `R`-algebra `S`. -/
-lemma of_faithfullyFlat [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S] :
+lemma of_faithfullyFlat [Ring S] [IsMulCommutative S] [Algebra R S] [Module.FaithfullyFlat R S] :
     IsEffective R S :=
   of_isEffective_tensorProduct_of_faithfullyFlat _ _ _ (of_section (TensorProduct.lmul'' R))
 
@@ -155,7 +155,7 @@ section CodRestrictEqLocusPushoutCocone
 
 universe u
 
-variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
+variable (R S : Type u) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical ring map from `R` to the explicit equalizer of

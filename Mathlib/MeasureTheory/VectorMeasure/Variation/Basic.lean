@@ -42,7 +42,7 @@ namespace MeasureTheory.VectorMeasure
 variable {X V : Type*} {mX : MeasurableSpace X}
 
 /-- The sum of a vector measure `μ` on a `Finpartition` of `Subtype MeasurableSet` equals `μ s`. -/
-lemma sum_finpartition [AddCommMonoid V] [TopologicalSpace V] [T2Space V]
+lemma sum_finpartition [AddMonoid V] [IsAddCommutative V] [TopologicalSpace V] [T2Space V]
     (μ : VectorMeasure X V) {s : Set X} {hs : MeasurableSet s}
     (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) : ∑ p ∈ P.parts, μ p.val = μ s := by
   rw [← μ.of_biUnion_finset (P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl) (fun p _ => p.prop),
@@ -50,7 +50,7 @@ lemma sum_finpartition [AddCommMonoid V] [TopologicalSpace V] [T2Space V]
 
 section Basic
 
-variable [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
+variable [TopologicalSpace V] [ENormedAddMonoid V] [IsAddCommutative V] [T2Space V]
   {μ ν : VectorMeasure X V} {s : Set X}
 
 lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
@@ -296,7 +296,7 @@ end Basic
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup V] {μ ν : VectorMeasure X V}
+variable [NormedAddGroup V] [IsAddCommutative V] {μ ν : VectorMeasure X V}
 
 theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by finiteness) :
     ‖μ E‖ ≤ μ.variation.real E := by

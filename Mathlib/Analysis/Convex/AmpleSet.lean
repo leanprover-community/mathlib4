@@ -46,7 +46,7 @@ ample set
 
 open Set
 
-variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+variable {F : Type*} [AddGroup F] [IsAddCommutative F] [Module ℝ F] [TopologicalSpace F]
 
 /-- A subset of a topological real vector space is ample
 if the convex hull of each of its connected components is the full space. -/
@@ -55,7 +55,7 @@ def AmpleSet (s : Set F) : Prop :=
 
 /-- A whole vector space is ample. -/
 @[simp]
-theorem ampleSet_univ {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] :
+theorem ampleSet_univ {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] :
     AmpleSet (univ : Set F) := by
   intro x _
   rw [connectedComponentIn_univ, PreconnectedSpace.connectedComponent_eq_univ, convexHull_univ]
@@ -78,7 +78,7 @@ theorem union {s t : Set F} (hs : AmpleSet s) (ht : AmpleSet t) : AmpleSet (s �
   apply connectedComponentIn_mono <;>
   [apply subset_union_left; apply subset_union_right]
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E] [TopologicalSpace E]
 
 /-- Images of ample sets under continuous affine equivalences are ample. -/
 theorem image {s : Set E} (h : AmpleSet s) (L : E ≃ᴬ[ℝ] F) :

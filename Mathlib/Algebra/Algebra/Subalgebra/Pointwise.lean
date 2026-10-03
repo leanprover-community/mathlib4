@@ -22,7 +22,7 @@ namespace Subalgebra
 
 section Pointwise
 
-variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R : Type*} {A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 theorem mul_toSubmodule_le (S T : Subalgebra R A) :
     Subalgebra.toSubmodule S * Subalgebra.toSubmodule T ≤ Subalgebra.toSubmodule (S ⊔ T) := by
@@ -43,7 +43,7 @@ theorem isIdempotentElem_toSubmodule (S : Subalgebra R A) :
     exact Submodule.mul_mem_mul hx1 (show (1 : A) ∈ S from one_mem S)
 
 /-- When `A` is commutative, `Subalgebra.mul_toSubmodule_le` is strict. -/
-theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+theorem mul_toSubmodule {R : Type*} {A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
     (S T : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule T)
         = Subalgebra.toSubmodule (S ⊔ T) := by
   refine le_antisymm (mul_toSubmodule_le _ _) ?_
@@ -94,7 +94,7 @@ theorem pointwise_smul_toSubmodule (m : R') (S : Subalgebra R A) :
   rfl
 
 @[simp]
-theorem pointwise_smul_toSubring {R' R A : Type*} [Semiring R'] [CommRing R] [Ring A]
+theorem pointwise_smul_toSubring {R' R A : Type*} [Semiring R'] [Ring R] [IsMulCommutative R] [Ring A]
     [MulSemiringAction R' A] [Algebra R A] [SMulCommClass R' R A] (m : R') (S : Subalgebra R A) :
     (m • S).toSubring = m • S.toSubring :=
   rfl

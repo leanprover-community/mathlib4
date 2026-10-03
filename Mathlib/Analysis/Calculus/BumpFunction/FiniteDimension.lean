@@ -34,7 +34,7 @@ open Set Metric TopologicalSpace Function MeasureTheory Module
 
 open scoped Pointwise Topology NNReal Convolution ContDiff
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
 
 section
 
@@ -460,7 +460,7 @@ theorem y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
 
 end HelperDefinitions
 
-instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+instance (priority := 100) {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] : HasContDiffBump E := by
   refine ⟨⟨?_⟩⟩
   borelize E

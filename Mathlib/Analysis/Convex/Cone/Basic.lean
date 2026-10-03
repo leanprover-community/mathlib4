@@ -47,9 +47,9 @@ The next steps are:
 open ContinuousLinearMap Function Set
 
 variable {𝕜 R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]
-variable [AddCommMonoid F] [TopologicalSpace F] [Module R F]
-variable [AddCommMonoid G] [TopologicalSpace G] [Module R G]
+variable [AddMonoid E] [IsAddCommutative E] [TopologicalSpace E] [Module R E]
+variable [AddMonoid F] [IsAddCommutative F] [TopologicalSpace F] [Module R F]
+variable [AddMonoid G] [IsAddCommutative G] [TopologicalSpace G] [Module R G]
 
 local notation "R≥0" => Nonneg R
 

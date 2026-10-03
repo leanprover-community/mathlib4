@@ -124,7 +124,7 @@ theorem integralNormalization_mul_C_leadingCoeff (p : R[X]) :
       exact coe_lt_degree.mp h'
     · simp [coeff_eq_zero_of_degree_lt (lt_of_le_of_ne (le_of_not_gt h') h)]
 
-variable {A : Type*} [CommSemiring S] [Semiring A]
+variable {A : Type*} [Semiring S] [IsMulCommutative S] [Semiring A]
 
 theorem leadingCoeff_smul_integralNormalization (p : S[X]) :
     p.leadingCoeff • integralNormalization p = scaleRoots p p.leadingCoeff := by
@@ -146,7 +146,7 @@ theorem integralNormalization_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (
       f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x :=
   integralNormalization_eval₂_leadingCoeff_mul_of_commute h _ _ (.all _ _) (.all _ _)
 
-lemma integralNormalization_aeval_smul {R} [CommSemiring R] [Algebra R S] {p : R[X]}
+lemma integralNormalization_aeval_smul {R} [Semiring R] [IsMulCommutative R] [Algebra R S] {p : R[X]}
     (h : 1 ≤ p.natDegree) (x : S) :
     p.integralNormalization.aeval (p.leadingCoeff • x) =
       p.leadingCoeff ^ (p.natDegree - 1) • p.aeval x := by

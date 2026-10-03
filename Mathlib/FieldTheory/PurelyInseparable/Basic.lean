@@ -96,7 +96,7 @@ universe u v w
 
 section General
 
-variable (F E : Type*) [CommRing F] [Ring E] [Algebra F E]
+variable (F E : Type*) [Ring F] [IsMulCommutative F] [Ring E] [Algebra F E]
 variable (K : Type*) [Ring K] [Algebra F K]
 
 /-- Typeclass for purely inseparable field extensions: an algebraic extension `E / F` is purely
@@ -362,12 +362,12 @@ theorem isPurelyInseparable_of_finSepDegree_eq_one
 
 namespace IsPurelyInseparable
 
-variable [IsPurelyInseparable F E] (R L : Type*) [CommSemiring R] [Algebra R F] [Algebra R E]
+variable [IsPurelyInseparable F E] (R L : Type*) [Semiring R] [IsMulCommutative R] [Algebra R F] [Algebra R E]
 
 /-- If `E / F` is purely inseparable, then for any reduced ring `L`, the map `(E →+* L) → (F →+* L)`
 induced by `algebraMap F E` is injective. In particular, a purely inseparable field extension
 is an epimorphism in the category of fields. -/
-theorem injective_comp_algebraMap [CommRing L] [IsReduced L] :
+theorem injective_comp_algebraMap [Ring L] [IsMulCommutative L] [IsReduced L] :
     Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E) := fun f g heq ↦ by
   ext x
   let q := ringExpChar F
@@ -378,7 +378,7 @@ theorem injective_comp_algebraMap [CommRing L] [IsReduced L] :
   have := expChar_of_injective_ringHom (f.comp (algebraMap F E)).injective q
   exact iterateFrobenius_inj L q n heq
 
-theorem injective_restrictDomain [CommRing L] [IsReduced L] [Algebra R L] [IsScalarTower R F E] :
+theorem injective_restrictDomain [Ring L] [IsMulCommutative L] [IsReduced L] [Algebra R L] [IsScalarTower R F E] :
     Function.Injective (AlgHom.domRestrict (A := R) F (C := E) (D := L)) := fun _ _ eq ↦
   AlgHom.toRingHom_injective <| injective_comp_algebraMap F E L congr($(eq).toRingHom)
 
@@ -405,12 +405,12 @@ end IsPurelyInseparable
 /-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
 `F`-algebra homomorphism from `E` to `L`. -/
 instance instSubsingletonAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
-    [CommRing L] [IsReduced L] [Algebra F L] : Subsingleton (E →ₐ[F] L) where
+    [Ring L] [IsMulCommutative L] [IsReduced L] [Algebra F L] : Subsingleton (E →ₐ[F] L) where
   allEq f g := AlgHom.toRingHom_injective <|
     IsPurelyInseparable.injective_comp_algebraMap F E L (by simp_rw [AlgHom.comp_algebraMap])
 
 instance instUniqueAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
-    [CommRing L] [IsReduced L] [Algebra F L] [Algebra E L] [IsScalarTower F E L] :
+    [Ring L] [IsMulCommutative L] [IsReduced L] [Algebra F L] [Algebra E L] [IsScalarTower F E L] :
     Unique (E →ₐ[F] L) := uniqueOfSubsingleton (IsScalarTower.toAlgHom F E L)
 
 /-- If `E / F` is purely inseparable, then `Field.Emb F E` has exactly one element. -/
@@ -639,7 +639,7 @@ open TensorProduct
 
 section Subalgebra
 
-variable (R A : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] (p : ℕ) [ExpChar A p]
+variable (R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A] (p : ℕ) [ExpChar A p]
 
 /-- The perfect closure of `R` in `A` are the elements `x : A` such that `x ^ p ^ n`
 is in `R` for some `n`, where `p` is the exponential characteristic of `R`. -/
@@ -664,7 +664,7 @@ theorem Subalgebra.mem_perfectClosure_iff {x : A} :
 
 end Subalgebra
 
-variable {k K R : Type*} [Field k] [Field K] [Algebra k K] [CommRing R] [Algebra k R]
+variable {k K R : Type*} [Field k] [Field K] [Algebra k K] [Ring R] [IsMulCommutative R] [Algebra k R]
 
 lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
     [IsPurelyInseparable k K] (q : ℕ) [ExpChar k q] (x : R ⊗[k] K) :

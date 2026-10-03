@@ -51,7 +51,7 @@ namespace Affine
 
 namespace Simplex
 
-variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddGroup V] [IsAddCommutative V] [Module k V]
   [AffineSpace V P]
 
 variable {n : ℕ}
@@ -196,7 +196,7 @@ theorem affineIndependent_points_update_centroid [CharZero k] (s : Simplex k P n
     s.centroid_notMem_affineSpan_of_ne_univ (by simp)
   exact AffineIndependent.affineIndependent_update_of_notMem_affineSpan s.independent this
 
-theorem centroid_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
+theorem centroid_map [CharZero k] {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂]
     [AffineSpace V₂ P₂] {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) :
     (s.map f hf).centroid = f (s.centroid) := by
@@ -389,7 +389,7 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
   rw [centroid_vsub_point_eq_smul_vsub, eq_vadd_iff_vsub_eq, smul_smul,
     inv_mul_cancel₀ (NeZero.ne (n : k)), one_smul]
 
-@[simp] theorem faceOppositeCentroid_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂]
+@[simp] theorem faceOppositeCentroid_map [CharZero k] {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂]
     [Module k V₂] [AffineSpace V₂ P₂] {n : ℕ} [NeZero n] (s : Simplex k P n) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) {i : Fin (n + 1)} :
     (s.map f hf).faceOppositeCentroid i = f (s.faceOppositeCentroid i) := by
@@ -431,7 +431,7 @@ def median (s : Simplex k P n) (i : Fin (n + 1)) : AffineSubspace k P :=
   simp [median]
 
 @[simp]
-theorem median_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+theorem median_map [CharZero k] {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AffineSpace V₂ P₂]
     {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1))
     (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     (s.map f hf).median i = (s.median i).map f := by
@@ -551,7 +551,7 @@ theorem medial_reindex {m n : ℕ} [NeZero m] [NeZero n]
   ext i
   simp [medial_points]
 
-theorem medial_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂] [CharZero k]
+theorem medial_map {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AffineSpace V₂ P₂] [CharZero k]
     {n : ℕ} [NeZero n] (s : Simplex k P n)
     (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     (s.map f hf).medial = s.medial.map f hf := by

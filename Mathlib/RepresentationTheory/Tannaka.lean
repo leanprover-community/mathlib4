@@ -35,7 +35,7 @@ namespace TannakaDuality
 
 namespace FiniteGroup
 
-variable {k G : Type u} [CommRing k] [Group G]
+variable {k G : Type u} [Ring k] [IsMulCommutative k] [Group G]
 
 section definitions
 

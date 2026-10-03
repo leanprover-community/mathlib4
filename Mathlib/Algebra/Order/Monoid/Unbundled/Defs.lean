@@ -504,35 +504,35 @@ instance mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRig
 -- This instance has low priority because it isn't compatible with `to_dual`.
 -- Note that we will want to remove these classes anyways: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Remove.20docs.23CovariantClass.20and.20docs.23ContravariantClass/with/613122790
 @[to_additive]
-instance (priority := 10) covariant_swap_mul_of_covariant_mul [CommSemigroup N]
+instance (priority := 10) covariant_swap_mul_of_covariant_mul [Semigroup N] [IsMulCommutative N]
     [CovariantClass N N (· * ·) r] : CovariantClass N N (swap (· * ·)) r where
   elim := (covariant_flip_iff N r (· * ·)).mpr CovariantClass.elim
 
 @[to_additive]
-theorem mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
+theorem mulRightMono_of_mulLeftMono [Semigroup N] [IsMulCommutative N] [LE N] [MulLeftMono N] :
     MulRightMono N :=
   inferInstance
 
 @[to_additive]
-theorem mulRightStrictMono_of_mulLeftStrictMono [CommSemigroup N] [LT N] [MulLeftStrictMono N] :
+theorem mulRightStrictMono_of_mulLeftStrictMono [Semigroup N] [IsMulCommutative N] [LT N] [MulLeftStrictMono N] :
     MulRightStrictMono N :=
   inferInstance
 
 -- This instance has low priority because it isn't compatible with `to_dual`.
 -- Note that we will want to remove these classes anyways: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Remove.20docs.23CovariantClass.20and.20docs.23ContravariantClass/with/613122790
 @[to_additive]
-instance (priority := 10) contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
+instance (priority := 10) contravariant_swap_mul_of_contravariant_mul [Semigroup N] [IsMulCommutative N]
     [ContravariantClass N N (· * ·) r] : ContravariantClass N N (swap (· * ·)) r where
   elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
 
 @[to_additive]
-instance mulRightReflectLE_of_mulLeftReflectLE [CommSemigroup N] [LE N] [MulLeftReflectLE N] :
+instance mulRightReflectLE_of_mulLeftReflectLE [Semigroup N] [IsMulCommutative N] [LE N] [MulLeftReflectLE N] :
     MulRightReflectLE N where
   le_of_mul_le_mul_right' := contravariant_flip_iff .. |>.mpr
     (fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left' : Contravariant N N (· * ·) _) _
 
 @[to_additive]
-theorem mulRightReflectLT_of_mulLeftReflectLT [CommSemigroup N] [LT N] [MulLeftReflectLT N] :
+theorem mulRightReflectLT_of_mulLeftReflectLT [Semigroup N] [IsMulCommutative N] [LT N] [MulLeftReflectLT N] :
     MulRightReflectLT N :=
   inferInstance
 

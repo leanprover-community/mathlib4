@@ -183,7 +183,7 @@ theorem coe_toHomUnits (f : G →* M) (g : G) : (f.toHomUnits g : M) = f g := rf
 
 end Monoid
 
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 @[simp] lemma toHomUnits_mul (f g : G →* M) : (f * g).toHomUnits = f.toHomUnits * g.toHomUnits := by
   ext; rfl

@@ -40,7 +40,7 @@ lemma mul_toAddSubmonoid (M N : AddSubgroup R) :
 end NonUnitalNonAssocRing
 
 section Semiring
-variable [Semiring R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 @[simp] protected lemma zero_smul (s : AddSubgroup M) : (0 : R) • s = ⊥ := by
   simp [eq_bot_iff_forall, pointwise_smul_def]

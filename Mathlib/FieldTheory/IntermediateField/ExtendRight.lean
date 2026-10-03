@@ -64,7 +64,7 @@ theorem algebraMap_extendRightEquiv_symm (a : F.extendRight M) :
 
 namespace extendRight
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra S F]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra S F]
 
 variable [Algebra S M] [IsScalarTower S F M]
 

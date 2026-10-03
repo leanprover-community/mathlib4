@@ -49,7 +49,7 @@ to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R
 @[expose] public section
 
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 open Set IsTopologicalAddGroup Submodule Filter
 
@@ -119,7 +119,7 @@ theorem isLinearTopology (I : Ideal R) : @IsLinearTopology R R _ _ _ I.adicTopol
   letI := I.adicTopology
   IsLinearTopology.mk_of_hasBasis _ I.hasBasis_nhds_zero_adic
 
-variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+variable (I : Ideal R) (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 theorem adic_module_basis :
     I.ringFilterBasis.SubmodulesBasis fun n : ℕ => I ^ n • (⊤ : Submodule R M) :=
@@ -207,7 +207,7 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
     apply Ideal.pow_le_pow_right
     apply Nat.le_add_left
 
-theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [IsTopologicalRing A] :
+theorem is_bot_adic_iff {A : Type*} [Ring A] [IsMulCommutative A] [TopologicalSpace A] [IsTopologicalRing A] :
     IsAdic (⊥ : Ideal A) ↔ DiscreteTopology A := by
   rw [isAdic_iff]
   constructor
@@ -234,7 +234,7 @@ theorem IsAdic.hasBasis_nhds {I : Ideal R} (hI : IsAdic I) (x : R) :
 end IsAdic
 
 /-- The ring `R` is equipped with a preferred ideal. -/
-class WithIdeal (R : Type*) [CommRing R] where
+class WithIdeal (R : Type*) [Ring R] [IsMulCommutative R] where
   i : Ideal R
 
 namespace WithIdeal
@@ -257,7 +257,7 @@ instance (priority := 100) : IsUniformAddGroup R :=
 instance (priority := 100) : IsLinearTopology R R := i.isLinearTopology
 
 variable {R} in
-theorem uniformContinuous_of_map_le {S : Type*} [CommRing S] [WithIdeal S] {f : R →+* S}
+theorem uniformContinuous_of_map_le {S : Type*} [Ring S] [IsMulCommutative S] [WithIdeal S] {f : R →+* S}
     (hf : i.map f ≤ i) : UniformContinuous f := uniformContinuous_of_continuousAt_zero f (by
   rw [ContinuousAt, map_zero, i.hasBasis_nhds_zero_adic.tendsto_iff i.hasBasis_nhds_zero_adic]
   refine fun n _ ↦ ⟨n, trivial, Ideal.map_le_iff_le_comap.mp ?_⟩
@@ -266,7 +266,7 @@ theorem uniformContinuous_of_map_le {S : Type*} [CommRing S] [WithIdeal S] {f : 
 variable {R} in
 /-- A ring equivalence induces a uniform equivalence with respect to the adic topologies,
 provided it preserves the defining ideals. -/
-def uniformEquiv {S : Type*} [CommRing S] [WithIdeal S] (e : R ≃+* S)
+def uniformEquiv {S : Type*} [Ring S] [IsMulCommutative S] [WithIdeal S] (e : R ≃+* S)
     (h : i.map e.toRingHom = i) : UniformEquiv R S where
   __ := e
   uniformContinuous_toFun := uniformContinuous_of_map_le (f := e.toRingHom) (by rw [h])
@@ -281,7 +281,7 @@ lemma isTopologicallyNilpotent_of_mem {a : R} (ha : a ∈ i) : IsTopologicallyNi
 /-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
 @[instance_reducible]
-def topologicalSpaceModule (M : Type*) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
+def topologicalSpaceModule (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicModuleTopology M
 
 /-
@@ -292,13 +292,13 @@ example : NonarchimedeanRing R := by infer_instance
 
 example : IsTopologicalRing (UniformSpace.Completion R) := by infer_instance
 
-example (M : Type*) [AddCommGroup M] [Module R M] :
+example (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] :
     @IsTopologicalAddGroup M (WithIdeal.topologicalSpaceModule R M) _ := by infer_instance
 
-example (M : Type*) [AddCommGroup M] [Module R M] :
+example (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] :
     @ContinuousSMul R M _ _ (WithIdeal.topologicalSpaceModule R M) := by infer_instance
 
-example (M : Type*) [AddCommGroup M] [Module R M] :
+example (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] :
     @NonarchimedeanAddGroup M _ (WithIdeal.topologicalSpaceModule R M) :=
   SubmodulesBasis.nonarchimedean _
 

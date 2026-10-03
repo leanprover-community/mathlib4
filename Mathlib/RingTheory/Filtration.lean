@@ -40,7 +40,7 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
 
 @[expose] public section
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] (I : Ideal R)
 
 open Polynomial
 
@@ -49,7 +49,7 @@ open scoped Polynomial
 /-- An `I`-filtration on the module `M` is a sequence of decreasing submodules `N i` such that
 `I • (N i) ≤ N (i + 1)`. Note that we do not require the filtration to start from `⊤`. -/
 @[ext]
-structure Ideal.Filtration (M : Type*) [AddCommGroup M] [Module R M] where
+structure Ideal.Filtration (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] where
   N : ℕ → Submodule R M
   mono : ∀ i, N (i + 1) ≤ N i
   smul_le : ∀ i, I • N i ≤ N (i + 1)
@@ -435,7 +435,7 @@ theorem Ideal.iInf_pow_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R
   rw [smul_eq_mul, ← Ideal.one_eq_top, mul_one]
 
 /-- Also see `Ideal.isIdempotentElem_iff_eq_bot_or_top` for integral domains. -/
-theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
+theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [Ring R] [IsMulCommutative R]
     [IsNoetherianRing R] [IsLocalRing R] (I : Ideal R) :
     IsIdempotentElem I ↔ I = ⊥ ∨ I = ⊤ := by
   constructor

@@ -71,7 +71,7 @@ end right
 
 end one_side
 
-variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable [Semiring R] [IsMulCommutative R] [NonUnitalNonAssocSemiring A] [Module R A]
 variable [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- A version of `LinearMap.mul` for matrix multiplication. -/
@@ -108,7 +108,7 @@ theorem mulRightLinearMap_mul [IsScalarTower R A A] (a : Matrix m n A) (b : Matr
 
 end one_side
 
-variable [Fintype m] [Fintype n] [CommSemiring R] [NonUnitalSemiring A] [Module R A]
+variable [Fintype m] [Fintype n] [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [Module R A]
 variable [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- A version of `LinearMap.commute_mulLeft_right` for matrix multiplication. -/

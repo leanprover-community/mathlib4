@@ -26,7 +26,7 @@ theorem mabs_mem_iff {S G} [Group G] [LinearOrder G] {_ : SetLike S G}
 
 section ModularLattice
 
-variable {C : Type*} [CommGroup C]
+variable {C : Type*} [Group C] [IsMulCommutative C]
 
 @[to_additive]
 instance : IsModularLattice (Subgroup C) :=
@@ -81,23 +81,23 @@ variable {G : Type*}
 /-- A subgroup of an ordered group is an ordered group. -/
 @[to_additive
 /-- An additive subgroup of an additive ordered group is an additive ordered group. -/]
-instance toIsOrderedMonoid [CommGroup G] [Preorder G] [IsOrderedMonoid G] (H : Subgroup G) :
+instance toIsOrderedMonoid [Group G] [IsMulCommutative G] [Preorder G] [IsOrderedMonoid G] (H : Subgroup G) :
     IsOrderedMonoid H :=
   Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 end Subgroup
 
 @[to_additive]
-lemma Subsemigroup.strictMono_topEquiv {G : Type*} [CommMonoid G] [Preorder G] :
+lemma Subsemigroup.strictMono_topEquiv {G : Type*} [Monoid G] [IsMulCommutative G] [Preorder G] :
     StrictMono (topEquiv (M := G)) := fun _ _ ↦ id
 
 @[to_additive]
 lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*}
-    [CommMonoid G] [Preorder G] {S T : Subsemigroup G}
+    [Monoid G] [IsMulCommutative G] [Preorder G] {S T : Subsemigroup G}
     (h : S = T) : StrictMono (subsemigroupCongr h) := fun _ _ ↦ id
 
 @[to_additive]
-lemma MulEquiv.strictMono_symm {G G' : Type*} [CommMonoid G] [LinearOrder G]
-    [CommMonoid G'] [Preorder G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
+lemma MulEquiv.strictMono_symm {G G' : Type*} [Monoid G] [IsMulCommutative G] [LinearOrder G]
+    [Monoid G'] [IsMulCommutative G'] [Preorder G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
   intro
   simp [← he.lt_iff_lt]

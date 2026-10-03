@@ -78,11 +78,11 @@ noncomputable section
 namespace Module
 
 variable (R M : Type*)
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 section Prod
 
-variable (M' : Type*) [AddCommMonoid M'] [Module R M']
+variable (M' : Type*) [AddMonoid M'] [IsAddCommutative M'] [Module R M']
 
 /-- Taking duals distributes over products. -/
 @[simps!]
@@ -107,7 +107,7 @@ variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 section Finite
 
@@ -116,7 +116,7 @@ variable [Finite ι]
 -- Not sure whether this is true for free modules over a commutative ring
 /-- A vector space over a field is isomorphic to its dual if and only if it is finite-dimensional:
   a consequence of the Erdős-Kaplansky theorem. -/
-theorem Basis.linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] [Module K V] :
+theorem Basis.linearEquiv_dual_iff_finiteDimensional [Field K] [AddGroup V] [IsAddCommutative V] [Module K V] :
     Nonempty (V ≃ₗ[K] Dual K V) ↔ FiniteDimensional K V := by
   refine ⟨fun ⟨e⟩ ↦ ?_, fun h ↦ ⟨(Module.Free.chooseBasis K V).toDualEquiv⟩⟩
   rw [FiniteDimensional, ← Module.rank_lt_aleph0_iff]
@@ -157,7 +157,7 @@ namespace Module
 
 universe uK uV
 variable {K : Type uK} {V : Type uV}
-variable [CommSemiring K] [AddCommMonoid V] [Module K V] [Projective K V]
+variable [Semiring K] [IsMulCommutative K] [AddMonoid V] [IsAddCommutative V] [Module K V] [Projective K V]
 
 open Module Module.Dual Submodule LinearMap Cardinal Module
 
@@ -249,7 +249,7 @@ section IsReflexive
 open Function
 
 variable (R M N : Type*)
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
 
 /-- See also `Module.instFiniteDimensionalOfIsReflexive` for the converse over a field. -/
 instance (priority := 900) IsReflexive.of_finite_of_free [Module.Finite R M] [Free R M] :
@@ -282,7 +282,7 @@ instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
 -- Very low priority because instance resolution will often end up using the instances above
 -- to prove `IsReflexive`, which require proving `Finite` again.
 instance (priority := 90) instFiniteDimensionalOfIsReflexive (K V : Type*)
-    [Field K] [AddCommGroup V] [Module K V] [IsReflexive K V] :
+    [Field K] [AddGroup V] [IsAddCommutative V] [Module K V] [IsReflexive K V] :
     FiniteDimensional K V := by
   rw [FiniteDimensional, ← rank_lt_aleph0_iff]
   by_contra! contra
@@ -305,8 +305,8 @@ namespace LinearMap
 
 section Projective
 
-variable {R : Type*} [CommSemiring R]
-variable {M : Type*} [AddCommMonoid M] [Module R M] [Projective R M]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] [Projective R M]
 
 /-- The identity pairing is right-separating. -/
 protected theorem SeparatingRight.id : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
@@ -343,7 +343,7 @@ namespace Submodule
 
 open Module
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {p : Submodule R M}
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] {p : Submodule R M}
 
 @[simp]
 theorem dualCoannihilator_top [Projective R M] :
@@ -351,7 +351,7 @@ theorem dualCoannihilator_top [Projective R M] :
   rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
 
 theorem exists_dual_map_eq_bot_of_notMem
-    {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {p : Submodule R M}
+    {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] {p : Submodule R M}
     {x : M} (hx : x ∉ p) (hp' : Projective R (M ⧸ p)) :
     ∃ f : Dual R M, f x ≠ 0 ∧ p.map f = ⊥ := by
   suffices ∃ f : Dual R (M ⧸ p), f (p.mkQ x) ≠ 0 by
@@ -360,7 +360,7 @@ theorem exists_dual_map_eq_bot_of_notMem
   exact Projective.exists_dual_ne_zero R hx
 
 theorem exists_dual_map_eq_bot_of_lt_top
-    {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {p : Submodule R M}
+    {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] {p : Submodule R M}
     (hp : p < ⊤) (hp' : Projective R (M ⧸ p)) :
     ∃ f : Dual R M, f ≠ 0 ∧ p.map f = ⊥ := by
   obtain ⟨x, hx⟩ : ∃ x : M, x ∉ p := by rw [lt_top_iff_ne_top] at hp; contrapose! hp; ext; simp [hp]
@@ -381,7 +381,7 @@ theorem span_eq_top_of_ne_zero [IsReflexive R M]
   obtain ⟨x, xs, hx⟩ := h φs (by simp [φne, φs])
   exact hx <| this x xs
 
-variable {ι 𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {ι 𝕜 E : Type*} [Field 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 
 open LinearMap Set FiniteDimensional
 
@@ -430,7 +430,7 @@ namespace Subspace
 open Submodule LinearMap
 
 -- We work in vector spaces because `exists_isCompl` only hold for vector spaces
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+variable {K V : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 @[simp]
 theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
@@ -456,7 +456,7 @@ theorem map_le_dualAnnihilator_dualAnnihilator (W : Subspace K V) :
   map_le_iff_le_comap.mpr (comap_dualAnnihilator_dualAnnihilator W).ge
 
 /-- `Submodule.dualAnnihilator` and `Submodule.dualCoannihilator` form a Galois coinsertion. -/
-def dualAnnihilatorGci (K V : Type*) [Field K] [AddCommGroup V] [Module K V] :
+def dualAnnihilatorGci (K V : Type*) [Field K] [AddGroup V] [IsAddCommutative V] [Module K V] :
     GaloisCoinsertion
       (OrderDual.toDual ∘ (dualAnnihilator : Subspace K V → Subspace K (Module.Dual K V)))
       (dualCoannihilator ∘ OrderDual.ofDual) where
@@ -595,7 +595,7 @@ open Module
 section CommRing
 
 variable {R M M' : Type*}
-variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup M'] [IsAddCommutative M'] [Module R M']
 
 namespace Submodule
 
@@ -756,7 +756,7 @@ section VectorSpace
 section
 
 variable {K V₁ : Type*} [DivisionRing K]
-variable [AddCommGroup V₁] [Module K V₁]
+variable [AddGroup V₁] [IsAddCommutative V₁] [Module K V₁]
 
 namespace Module.Dual
 
@@ -765,7 +765,7 @@ variable {f : Module.Dual K V₁}
 section
 variable (hf : f ≠ 0)
 
-lemma range_eq_top_of_ne_zero {K V₁ : Type*} [DivisionSemiring K] [AddCommMonoid V₁] [Module K V₁]
+lemma range_eq_top_of_ne_zero {K V₁ : Type*} [DivisionSemiring K] [AddMonoid V₁] [IsAddCommutative V₁] [Module K V₁]
     {f : Module.Dual K V₁} (hf : f ≠ 0) : LinearMap.range f = ⊤ :=
   LinearMap.range_eq_top.mpr (LinearMap.surjective hf)
 
@@ -818,7 +818,7 @@ end
 namespace LinearMap
 
 variable {K V₁ V₂ : Type*} [Field K]
-variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
+variable [AddGroup V₁] [IsAddCommutative V₁] [Module K V₁] [AddGroup V₂] [IsAddCommutative V₂] [Module K V₂]
 
 theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function.Injective f) :
     Function.Surjective f.dualMap := fun φ ↦
@@ -840,7 +840,7 @@ theorem dualMap_surjective_iff {f : V₁ →ₗ[K] V₂} :
 end LinearMap
 
 variable {K V₁ V₂ : Type*} [Field K]
-variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
+variable [AddGroup V₁] [IsAddCommutative V₁] [Module K V₁] [AddGroup V₂] [IsAddCommutative V₂] [Module K V₂]
 
 namespace Subspace
 
@@ -985,7 +985,7 @@ end LinearMap
 
 namespace Subspace
 
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+variable {K V : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem quotDualCoannihilatorToDual_bijective (W : Subspace K (Dual K V)) [FiniteDimensional K W] :
     Function.Bijective W.quotDualCoannihilatorToDual :=
@@ -1082,7 +1082,7 @@ theorem span_flip_eq_top_iff_linearIndependent {ι α F} [Finite ι] [Field F] {
   ext
   simp [funext_iff, Finsupp.linearCombination, Finsupp.sum, Finset.sum_apply, flip]
 
-lemma Module.exists_dual_forall_apply_eq_one {ι K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+lemma Module.exists_dual_forall_apply_eq_one {ι K V : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
     {s : Set ι} {v : ι → V} (hli : LinearIndepOn K v s) :
     ∃ f : Dual K V, ∀ i ∈ s, f (v i) = 1 := by
   replace hli : LinearIndepOn K id (v '' s) := LinearIndepOn.id_image hli
@@ -1109,7 +1109,7 @@ open LinearMap
 
 section
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
 variable [Module R M] [Module R N]
 
 /-- The canonical linear map from `Dual M ⊗ Dual N` to `Dual (M ⊗ N)`,
@@ -1136,7 +1136,7 @@ lemma dualDistrib_apply_comm (w : Dual R N ⊗[R] Dual R M) (z : M ⊗[R] N) :
 end
 
 namespace AlgebraTensorModule
-variable [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M] [AddCommMonoid N]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
 variable [Module R M] [Module A M] [Module R N] [IsScalarTower R A M]
 
 /-- Heterobasic version of `TensorProduct.dualDistrib` -/

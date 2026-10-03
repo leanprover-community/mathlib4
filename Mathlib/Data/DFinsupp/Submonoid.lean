@@ -36,12 +36,12 @@ variable [DecidableEq ι]
 
 @[to_additive]
 theorem dfinsuppProd_mem [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-    [CommMonoid γ] {S : Type*} [SetLike S γ] [SubmonoidClass S γ]
+    [Monoid γ] [IsMulCommutative γ] {S : Type*} [SetLike S γ] [SubmonoidClass S γ]
     (s : S) (f : Π₀ i, β i) (g : ∀ i, β i → γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _ hi => h _ <| mem_support_iff.1 hi
 
-theorem dfinsuppSumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S : Type*}
+theorem dfinsuppSumAddHom_mem [∀ i, AddZeroClass (β i)] [AddMonoid γ] [IsAddCommutative γ] {S : Type*}
     [SetLike S γ] [AddSubmonoidClass S γ] (s : S) (f : Π₀ i, β i) (g : ∀ i, β i →+ γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : DFinsupp.sumAddHom g f ∈ s := by
   classical
@@ -52,7 +52,7 @@ theorem dfinsuppSumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S
 `DFinsupp.sumAddHom`; that is, every element in the `iSup` can be produced from taking a finite
 number of non-zero elements of `S i`, coercing them to `γ`, and summing them. -/
 theorem AddSubmonoid.iSup_eq_mrange_dfinsuppSumAddHom
-    [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
+    [AddMonoid γ] [IsAddCommutative γ] (S : ι → AddSubmonoid γ) :
     iSup S = AddMonoidHom.mrange (DFinsupp.sumAddHom fun i => (S i).subtype) := by
   apply le_antisymm
   · apply iSup_le _
@@ -66,7 +66,7 @@ theorem AddSubmonoid.iSup_eq_mrange_dfinsuppSumAddHom
 bounded `iSup` can be produced from taking a finite number of non-zero elements from the `S i` that
 satisfy `p i`, coercing them to `γ`, and summing them. -/
 theorem AddSubmonoid.bsupr_eq_mrange_dfinsuppSumAddHom (p : ι → Prop) [DecidablePred p]
-    [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
+    [AddMonoid γ] [IsAddCommutative γ] (S : ι → AddSubmonoid γ) :
     ⨆ (i) (_ : p i), S i =
       AddMonoidHom.mrange ((sumAddHom fun i => (S i).subtype).comp (filterAddMonoidHom _ p)) := by
   apply le_antisymm
@@ -80,12 +80,12 @@ theorem AddSubmonoid.bsupr_eq_mrange_dfinsuppSumAddHom (p : ι → Prop) [Decida
     · simp [hp]
     · simp [hp]
 
-theorem AddSubmonoid.mem_iSup_iff_exists_dfinsupp [AddCommMonoid γ] (S : ι → AddSubmonoid γ)
+theorem AddSubmonoid.mem_iSup_iff_exists_dfinsupp [AddMonoid γ] [IsAddCommutative γ] (S : ι → AddSubmonoid γ)
     (x : γ) : x ∈ iSup S ↔ ∃ f : Π₀ i, S i, DFinsupp.sumAddHom (fun i => (S i).subtype) f = x :=
   SetLike.ext_iff.mp (AddSubmonoid.iSup_eq_mrange_dfinsuppSumAddHom S) x
 
 /-- A variant of `AddSubmonoid.mem_iSup_iff_exists_dfinsupp` with the RHS fully unfolded. -/
-theorem AddSubmonoid.mem_iSup_iff_exists_dfinsupp' [AddCommMonoid γ] (S : ι → AddSubmonoid γ)
+theorem AddSubmonoid.mem_iSup_iff_exists_dfinsupp' [AddMonoid γ] [IsAddCommutative γ] (S : ι → AddSubmonoid γ)
     [∀ (i) (x : S i), Decidable (x ≠ 0)] (x : γ) :
     x ∈ iSup S ↔ ∃ f : Π₀ i, S i, (f.sum fun _ xi => ↑xi) = x := by
   rw [AddSubmonoid.mem_iSup_iff_exists_dfinsupp]
@@ -93,7 +93,7 @@ theorem AddSubmonoid.mem_iSup_iff_exists_dfinsupp' [AddCommMonoid γ] (S : ι �
   rfl
 
 theorem AddSubmonoid.mem_bsupr_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p]
-    [AddCommMonoid γ] (S : ι → AddSubmonoid γ) (x : γ) :
+    [AddMonoid γ] [IsAddCommutative γ] (S : ι → AddSubmonoid γ) (x : γ) :
     (x ∈ ⨆ (i) (_ : p i), S i) ↔
       ∃ f : Π₀ i, S i, DFinsupp.sumAddHom (fun i => (S i).subtype) (f.filter p) = x :=
   SetLike.ext_iff.mp (AddSubmonoid.bsupr_eq_mrange_dfinsuppSumAddHom p S) x

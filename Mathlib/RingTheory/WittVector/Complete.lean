@@ -28,7 +28,7 @@ when `k` is a perfect ring of characteristic `p`.
 
 namespace WittVector
 
-variable {p : ℕ} [hp : Fact (Nat.Prime p)] {k : Type*} [CommRing k]
+variable {p : ℕ} [hp : Fact (Nat.Prime p)] {k : Type*} [Ring k] [IsMulCommutative k]
 
 local notation "𝕎" => WittVector p
 

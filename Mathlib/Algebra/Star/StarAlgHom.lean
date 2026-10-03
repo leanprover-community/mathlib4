@@ -281,7 +281,7 @@ section Unital
 
 /-- A *⋆-algebra homomorphism* is an algebra homomorphism between `R`-algebras `A` and `B`
 equipped with a `star` operation, and this homomorphism is also `star`-preserving. -/
-structure StarAlgHom (R A B : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
+structure StarAlgHom (R A B : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Star A]
   [Semiring B] [Algebra R B] [Star B] extends AlgHom R A B where
   /-- By definition, a ⋆-algebra homomorphism preserves the `star` operation. -/
   map_star' : ∀ x : A, toFun (star x) = star (toFun x)
@@ -298,7 +298,7 @@ namespace StarAlgHomClass
 
 variable {F R A B : Type*}
 
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Star A]
 variable [Semiring B] [Algebra R B] [Star B] [FunLike F A B] [AlgHomClass F R A B]
 variable [StarHomClass F A B]
 
@@ -314,7 +314,7 @@ end StarAlgHomClass
 
 namespace StarAlgHom
 
-variable {F R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
+variable {F R A B C D : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
   [Algebra R B] [Star B] [Semiring C] [Algebra R C] [Star C] [Semiring D] [Algebra R D] [Star D]
 
 @[macro_inline]
@@ -403,7 +403,7 @@ theorem coe_id : ⇑(StarAlgHom.id R A) = id :=
 
 /-- `algebraMap R A` as a `StarAlgHom` when `A` is a star algebra over `R`. -/
 @[simps]
-def ofId (R A : Type*) [CommSemiring R] [StarRing R] [Semiring A] [StarMul A]
+def ofId (R A : Type*) [Semiring R] [IsMulCommutative R] [StarRing R] [Semiring A] [StarMul A]
     [Algebra R A] [StarModule R A] : R →⋆ₐ[R] A :=
   { Algebra.ofId R A with
     toFun := algebraMap R A
@@ -532,7 +532,7 @@ def _root_.Pi.evalNonUnitalStarAlgHom (R : Type*) (A : ι → Type*) (j : ι) [M
 
 /-- `Function.eval` as a `StarAlgHom`. -/
 @[simps]
-def _root_.Pi.evalStarAlgHom (R : Type*) (A : ι → Type*) (j : ι) [CommSemiring R]
+def _root_.Pi.evalStarAlgHom (R : Type*) (A : ι → Type*) (j : ι) [Semiring R] [IsMulCommutative R]
     [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] [∀ i, Star (A i)] :
     (∀ i, A i) →⋆ₐ[R] A j :=
   { Pi.evalNonUnitalStarAlgHom R A j, Pi.evalRingHom A j with
@@ -575,7 +575,7 @@ end NonUnitalStarAlgHom
 
 namespace StarAlgHom
 
-variable (R A B C : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
+variable (R A B C : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
   [Algebra R B] [Star B] [Semiring C] [Algebra R C] [Star C]
 
 /-- The first projection of a product is a ⋆-algebra homomorphism. -/
@@ -654,7 +654,7 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
   { }
 
 -- See note [lower instance priority]
-instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
+instance (priority := 100) (F R A B : Type*) [Semiring R] [IsMulCommutative R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
@@ -824,7 +824,7 @@ theorem rightInverse_symm (e : A ≃⋆ₐ[R] B) : Function.RightInverse e.symm 
   e.right_inv
 
 section AlgEquiv
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [Star A] [Star B]
 
 /-- Interpret a ⋆-algebra equivalence as an algebra equivalence. -/
@@ -972,7 +972,7 @@ end NonUnitalArrowCongr
 section Unital
 
 variable {R A₁ A₂ A₃ A₁' A₂' A₃' : Type*}
-  [CommSemiring R] [Semiring A₁] [Semiring A₂] [Semiring A₃]
+  [Semiring R] [IsMulCommutative R] [Semiring A₁] [Semiring A₂] [Semiring A₃]
   [Semiring A₁'] [Semiring A₂'] [Semiring A₃']
   [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
   [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
@@ -1034,7 +1034,7 @@ theorem symm_arrowCongr (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[
 
 /-- Construct a star algebra equivalence from a pair of star algebra homomorphisms. -/
 @[simps]
-def ofStarAlgHom {R A B : Type*} [CommSemiring R]
+def ofStarAlgHom {R A B : Type*} [Semiring R] [IsMulCommutative R]
     [Semiring A] [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B]
     (f : A →⋆ₐ[R] B) (g : B →⋆ₐ[R] A) (h₁ : g.comp f = .id R A) (h₂ : f.comp g = .id R B) :
     A ≃⋆ₐ[R] B :=

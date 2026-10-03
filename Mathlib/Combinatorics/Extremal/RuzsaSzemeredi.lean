@@ -114,7 +114,7 @@ end ruzsaSzemerediNumber
 /-! ### The Ruzsa-Szemerédi construction -/
 
 section RuzsaSzemeredi
-variable [Fintype α] [CommRing α] {s : Finset α} {x : α × α × α}
+variable [Fintype α] [Ring α] [IsMulCommutative α] {s : Finset α} {x : α × α × α}
 
 /-- The triangle indices for the Ruzsa-Szemerédi construction. -/
 private def triangleIndices (s : Finset α) : Finset (α × α × α) :=
@@ -171,7 +171,7 @@ private lemma card_edgeFinset (hs : ThreeAPFree (s : Set α)) [DecidableEq α] :
 
 end RuzsaSzemeredi
 
-variable (α) [Fintype α] [DecidableEq α] [CommRing α] [Fact <| IsUnit (2 : α)]
+variable (α) [Fintype α] [DecidableEq α] [Ring α] [IsMulCommutative α] [Fact <| IsUnit (2 : α)]
 
 lemma addRothNumber_le_ruzsaSzemerediNumber :
     card α * addRothNumber (univ : Finset α) ≤ ruzsaSzemerediNumber (Sum α (Sum α α)) := by

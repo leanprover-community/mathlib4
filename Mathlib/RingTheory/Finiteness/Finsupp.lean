@@ -23,7 +23,7 @@ open Finsupp
 
 namespace LinearMap
 
-variable {R M N ι : Type*} (S : Type*) [Semiring R] [AddCommMonoid M] [AddCommMonoid N]
+variable {R M N ι : Type*} (S : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
 variable [Module R M] [Module R N] [Semiring S] [Module S N] [SMulCommClass R S N]
 
 /-- The linear map from `Hom(M,N)^(ι)` to `Hom(M,N^(ι))`. This is the `Finsupp` version of
@@ -58,8 +58,8 @@ end LinearMap
 
 namespace Submodule
 
-variable {R M N P : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-  [Module R N] [AddCommGroup P] [Module R P]
+variable {R M N P : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N]
+  [Module R N] [AddGroup P] [IsAddCommutative P] [Module R P]
 
 open Set
 
@@ -169,7 +169,7 @@ end Submodule
 
 section
 
-variable {R V} [Semiring R] [AddCommMonoid V] [Module R V]
+variable {R V} [Semiring R] [AddMonoid V] [IsAddCommutative V] [Module R V]
 
 instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R V] :
     Module.Finite R (ι →₀ V) :=

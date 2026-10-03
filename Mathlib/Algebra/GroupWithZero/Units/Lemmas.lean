@@ -121,7 +121,7 @@ end GroupWithZero
 
 /-- We define the inverse as a `MonoidWithZeroHom` by extending the inverse map by zero
 on non-units. -/
-noncomputable def MonoidWithZero.inverse {M : Type*} [CommMonoidWithZero M] :
+noncomputable def MonoidWithZero.inverse {M : Type*} [MonoidWithZero M] [IsMulCommutative M] :
     M →*₀ M where
   toFun := Ring.inverse
   map_zero' := Ring.inverse_zero _
@@ -129,17 +129,17 @@ noncomputable def MonoidWithZero.inverse {M : Type*} [CommMonoidWithZero M] :
   map_mul' x y := (Ring.mul_inverse_rev x y).trans (mul_comm _ _)
 
 @[simp]
-theorem MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
+theorem MonoidWithZero.coe_inverse {M : Type*} [MonoidWithZero M] [IsMulCommutative M] :
     (MonoidWithZero.inverse : M → M) = Ring.inverse :=
   rfl
 
 @[simp]
-theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
+theorem MonoidWithZero.inverse_apply {M : Type*} [MonoidWithZero M] [IsMulCommutative M] (a : M) :
     MonoidWithZero.inverse a = a⁻¹ʳ :=
   rfl
 
 /-- Inversion on a commutative group with zero, considered as a monoid with zero homomorphism. -/
-def invMonoidWithZeroHom {G₀ : Type*} [CommGroupWithZero G₀] : G₀ →*₀ G₀ :=
+def invMonoidWithZeroHom {G₀ : Type*} [GroupWithZero G₀] [IsMulCommutative G₀] : G₀ →*₀ G₀ :=
   { invMonoidHom with map_zero' := inv_zero }
 
 /-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,

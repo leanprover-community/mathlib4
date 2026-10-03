@@ -44,7 +44,7 @@ namespace MvPowerSeries
 
 section CommSemiring
 
-variable {σ R : Type*} [CommSemiring R]
+variable {σ R : Type*} [Semiring R] [IsMulCommutative R]
 
 section isEmptyEquiv
 
@@ -159,7 +159,7 @@ section finSuccEquiv
 
 variable {n : ℕ}
 
-private lemma embDomain_finSuccEquiv_cons {M : Type*} [AddCommMonoid M] {n : ℕ} (i : M)
+private lemma embDomain_finSuccEquiv_cons {M : Type*} [AddMonoid M] [IsAddCommutative M] {n : ℕ} (i : M)
     (x : Fin n →₀ M) : embDomain (finSuccEquiv n).toEmbedding (cons i x) = optionElim i x := by
   ext a; cases a <;> simp [embDomain_eq_mapDomain]
 
@@ -211,7 +211,7 @@ theorem finSuccEquiv_comp_C : (MvPowerSeries.finSuccEquiv R n).symm.toRingHom.co
     (PowerSeries.C.comp MvPowerSeries.C) = MvPowerSeries.C := by
   ext1; simp [AlgEquiv.symm_apply_eq]
 
-variable (S : Type*) [CommRing S] [IsNoetherianRing S]
+variable (S : Type*) [Ring S] [IsMulCommutative S] [IsNoetherianRing S]
 
 private lemma isNoetherianRing_fin (n : ℕ) : IsNoetherianRing (MvPowerSeries (Fin n) S) := by
   induction n with
@@ -235,7 +235,7 @@ section toAdicCompletion
 
 open Finsupp
 
-variable {σ R : Type*} {n : ℕ} [CommRing R] [Finite σ]
+variable {σ R : Type*} {n : ℕ} [Ring R] [IsMulCommutative R] [Finite σ]
 
 lemma truncTotal_sub_truncTotal_mem_pow_idealOfVars {l m n : ℕ} (h : l ≤ m) (h' : l ≤ n)
     (p : MvPowerSeries σ R) : p.truncTotal m - p.truncTotal n ∈
@@ -255,7 +255,7 @@ lemma truncTotal_mul_sub_mul_truncTotal_mem_pow_idealOfVars (p q : MvPowerSeries
 the quotient ring of multivariate polynomials by the `n`-th power of
 the ideal spanned by all variables. -/
 @[simps]
-def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
+def truncTotalAlgHom (σ R : Type*) [Finite σ] [Ring R] [IsMulCommutative R] (n : ℕ) :
     MvPowerSeries σ R →ₐ[MvPolynomial σ R]
       MvPolynomial σ R ⧸ (MvPolynomial.idealOfVars σ R) ^ n where
   toFun p := truncTotal n p
@@ -280,7 +280,7 @@ def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
 /-- The canonical map from multivariate power series to the adic completion of
 multivariate polynomials with respect to the ideal spanned by all variables
 when the index is finite. -/
-def toAdicCompletion (σ R : Type*) [Finite σ] [CommRing R] :
+def toAdicCompletion (σ R : Type*) [Finite σ] [Ring R] [IsMulCommutative R] :
     MvPowerSeries σ R →ₐ[MvPolynomial σ R]
       AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R) :=
   AdicCompletion.liftAlgHom (MvPolynomial.idealOfVars σ R) (truncTotalAlgHom σ R)
@@ -311,7 +311,7 @@ theorem toAdicCompletion_coe (p : MvPolynomial σ R) :
   exact (MvPolynomial.mem_pow_idealOfVars_iff' ..).mpr fun x hx ↦ by simp [coeff_truncTotal _ hx]
 
 /-- An inverse function of `toAdicCompletion`. -/
-def toAdicCompletionInv (σ R : Type*) [CommRing R]
+def toAdicCompletionInv (σ R : Type*) [Ring R] [IsMulCommutative R]
     (f : AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R)) :
       MvPowerSeries σ R := fun x ↦ (f.val (degree x + 1)).out.coeff x
 
@@ -340,7 +340,7 @@ theorem mk_truncTotal_toAdicCompletionInv {n : ℕ}
 /-- The isomorphism from multivariate power series to the adic completion of
 multivariate polynomials with respect to the ideal spanned by all variables
 when the index is finite. -/
-def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [CommRing R] :
+def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [Ring R] [IsMulCommutative R] :
     MvPowerSeries σ R ≃ₐ[MvPolynomial σ R]
       AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R) where
   __ := toAdicCompletion σ R
@@ -365,7 +365,7 @@ end MvPowerSeries
 
 section toMvPowerSeries
 
-variable {R σ τ : Type*} [CommSemiring R] {f : PowerSeries R} (i : σ) (r : R)
+variable {R σ τ : Type*} [Semiring R] [IsMulCommutative R] {f : PowerSeries R} (i : σ) (r : R)
 
 open PowerSeries Filter
 namespace PowerSeries
@@ -395,7 +395,7 @@ theorem toMvPowerSeries_inj (i : σ) {p q : R⟦X⟧} :
 
 section CommRing
 
-variable {R : Type*} [CommRing R] {f : R⟦X⟧} {i : σ}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {f : R⟦X⟧} {i : σ}
 
 theorem toMvPowerSeries_eq_subst : f.toMvPowerSeries i = f.subst (MvPowerSeries.X i) := by
   rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, comp_def, subst]

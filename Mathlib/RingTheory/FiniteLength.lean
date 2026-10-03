@@ -27,14 +27,14 @@ variable (R : Type*) [Ring R]
 
 /-- A module of finite length is either trivial or a simple extension of a module known
 to be of finite length. -/
-inductive IsFiniteLength : ∀ (M : Type*) [AddCommGroup M] [Module R M], Prop
-  | of_subsingleton {M} [AddCommGroup M] [Module R M] [Subsingleton M] : IsFiniteLength M
-  | of_simple_quotient {M} [AddCommGroup M] [Module R M] {N : Submodule R M}
+inductive IsFiniteLength : ∀ (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M], Prop
+  | of_subsingleton {M} [AddGroup M] [IsAddCommutative M] [Module R M] [Subsingleton M] : IsFiniteLength M
+  | of_simple_quotient {M} [AddGroup M] [IsAddCommutative M] [Module R M] {N : Submodule R M}
       [IsSimpleModule R (M ⧸ N)] : IsFiniteLength N → IsFiniteLength M
 
 attribute [nontriviality] IsFiniteLength.of_subsingleton
 
-variable {R} {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R} {M N : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 theorem LinearEquiv.isFiniteLength (e : M ≃ₗ[R] N)
     (h : IsFiniteLength R M) : IsFiniteLength R N := by

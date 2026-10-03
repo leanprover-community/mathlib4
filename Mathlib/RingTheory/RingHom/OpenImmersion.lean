@@ -22,11 +22,11 @@ namespace Algebra
 
 open IsLocalization Away
 
-variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+variable {R S T : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring T] [IsMulCommutative T]
   [Algebra R S] [Algebra R T]
 
 /-- A standard open immersion is one that is a localization map away from some element. -/
-@[mk_iff] class IsStandardOpenImmersion (R S : Type*) [CommSemiring R] [CommSemiring S]
+@[mk_iff] class IsStandardOpenImmersion (R S : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
     [Algebra R S] : Prop where
   exists_away (R S) : ∃ r : R, IsLocalization.Away r S
 
@@ -59,7 +59,7 @@ lemma of_bijective (h : Function.Bijective (algebraMap R S)) :
   use 1
   apply IsLocalization.away_of_isUnit_of_bijective _ isUnit_one h
 
-lemma of_algEquiv {T : Type*} [CommSemiring T] [Algebra R T] (e : S ≃ₐ[R] T)
+lemma of_algEquiv {T : Type*} [Semiring T] [IsMulCommutative T] [Algebra R T] (e : S ≃ₐ[R] T)
     [h : IsStandardOpenImmersion R S] :
     IsStandardOpenImmersion R T := by
   rw [Algebra.isStandardOpenImmersion_iff] at *
@@ -67,13 +67,13 @@ lemma of_algEquiv {T : Type*} [CommSemiring T] [Algebra R T] (e : S ≃ₐ[R] T)
   use r
   exact IsLocalization.isLocalization_of_algEquiv _ e
 
-lemma iff_of_algEquiv {T : Type*} [CommSemiring T] [Algebra R T]
+lemma iff_of_algEquiv {T : Type*} [Semiring T] [IsMulCommutative T] [Algebra R T]
     (e : S ≃ₐ[R] T) :
     IsStandardOpenImmersion R S ↔ IsStandardOpenImmersion R T :=
   ⟨fun _ ↦ .of_algEquiv e, fun _ ↦ .of_algEquiv e.symm⟩
 
 variable (R S) in
-lemma of_isPushout (R' S' : Type*) [CommSemiring R'] [CommSemiring S']
+lemma of_isPushout (R' S' : Type*) [Semiring R'] [IsMulCommutative R'] [Semiring S'] [IsMulCommutative S']
     [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S'] [IsScalarTower R R' S']
     [IsScalarTower R S S'] [IsPushout R S R' S'] [IsStandardOpenImmersion R S] :
     IsStandardOpenImmersion R' S' :=
@@ -84,7 +84,7 @@ end Algebra.IsStandardOpenImmersion
 
 namespace RingHom
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S) (g : S →+* T)
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] (f : R →+* S) (g : S →+* T)
 
 /-- A standard open immersion is one that is a localization map away from some element. -/
 @[algebraize RingHom.IsStandardOpenImmersion.toAlgebra]

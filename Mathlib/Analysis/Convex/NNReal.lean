@@ -36,7 +36,7 @@ protected lemma segment_eq_uIcc {x y : ℝ≥0} :
   Nonneg.segment_eq_uIcc
 
 set_option backward.isDefEq.respectTransparency false in
-protected lemma convex_iff {M : Type*} [AddCommMonoid M] [Module ℝ M] {s : Set M} :
+protected lemma convex_iff {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module ℝ M] {s : Set M} :
     Convex ℝ≥0 s ↔ Convex ℝ s := by
   refine ⟨fun H ↦ ?_, Convex.lift ℝ≥0⟩
   intro _ hx _ hy a b ha hb hab

@@ -32,7 +32,7 @@ variable {α β γ : Type*} {L : SummationFilter β}
 
 section ProdDomain
 
-variable [CommMonoid α] [TopologicalSpace α]
+variable [Monoid α] [IsMulCommutative α] [TopologicalSpace α]
 
 @[to_additive]
 theorem hasProd_pi_single [DecidableEq β] (b : β) (a : α) : HasProd (Pi.mulSingle b a) a := by
@@ -64,7 +64,7 @@ end ProdDomain
 
 section ProdCodomain
 
-variable [CommMonoid α] [TopologicalSpace α] [CommMonoid γ] [TopologicalSpace γ]
+variable [Monoid α] [IsMulCommutative α] [TopologicalSpace α] [Monoid γ] [IsMulCommutative γ] [TopologicalSpace γ]
 
 @[to_additive HasSum.prodMk]
 theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : HasProd f a L)
@@ -75,12 +75,12 @@ end ProdCodomain
 
 section ContinuousMul
 
-variable [CommMonoid α] [TopologicalSpace α] [ContinuousMul α]
+variable [Monoid α] [IsMulCommutative α] [TopologicalSpace α] [ContinuousMul α]
 
 section Sum
 
 @[to_additive]
-lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+lemma HasProd.sum {α β M : Type*} [Monoid M] [IsMulCommutative M] [TopologicalSpace M] [ContinuousMul M]
     {f : α ⊕ β → M} {a b : M}
     (h₁ : HasProd (f ∘ Sum.inl) a) (h₂ : HasProd (f ∘ Sum.inr) b) : HasProd f (a * b) := by
   have : Tendsto ((∏ b ∈ ·, f b) ∘ sumEquiv.symm) (atTop.map sumEquiv) (nhds (a * b)) := by
@@ -94,13 +94,13 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
 see `Multipliable.tprod_finsetProd`. -/
 @[to_additive /-- For the statement that `tsum` commutes with `Finset.sum`,
 see `Summable.tsum_finsetSum`. -/]
-protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M]
+protected lemma Multipliable.tprod_sum {α β M : Type*} [Monoid M] [IsMulCommutative M] [TopologicalSpace M]
     [ContinuousMul M] [T2Space M] {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl))
     (h₂ : Multipliable (f ∘ .inr)) : ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
   (h₁.hasProd.sum h₂.hasProd).tprod_eq
 
 @[to_additive]
-lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+lemma Multipliable.sum {α β M : Type*} [Monoid M] [IsMulCommutative M] [TopologicalSpace M] [ContinuousMul M]
     (f : α ⊕ β → M) (h₁ : Multipliable (f ∘ Sum.inl)) (h₂ : Multipliable (f ∘ Sum.inr)) :
     Multipliable f :=
   ⟨_, .sum h₁.hasProd h₂.hasProd⟩
@@ -187,7 +187,7 @@ end ContinuousMul
 
 section CompleteSpace
 
-variable [CommGroup α] [UniformSpace α] [IsUniformGroup α]
+variable [Group α] [IsMulCommutative α] [UniformSpace α] [IsUniformGroup α]
 
 @[to_additive]
 theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β → α} {a : α}
@@ -269,7 +269,7 @@ end CompleteSpace
 
 section Pi
 
-variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, TopologicalSpace (X x)]
+variable {ι : Type*} {X : α → Type*} [∀ x, Monoid (X x)] [∀ x, IsMulCommutative (X x)] [∀ x, TopologicalSpace (X x)]
   {L : SummationFilter ι}
 
 /-- See also `hasProd_apply` for `FunLike` types. -/
@@ -299,7 +299,7 @@ section MulOpposite
 
 open MulOpposite
 
-variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α}
+variable [AddMonoid α] [IsAddCommutative α] [TopologicalSpace α] {f : β → α} {a : α}
 
 theorem HasSum.op (hf : HasSum f a L) : HasSum (fun a ↦ op (f a)) (op a) L :=
   (hf.map (@opAddEquiv α _) continuous_op :)
@@ -342,7 +342,7 @@ end MulOpposite
 
 section ContinuousStar
 
-variable [AddCommMonoid α] [TopologicalSpace α] [StarAddMonoid α] [ContinuousStar α] {f : β → α}
+variable [AddMonoid α] [IsAddCommutative α] [TopologicalSpace α] [StarAddMonoid α] [ContinuousStar α] {f : β → α}
   {a : α}
 
 theorem HasSum.star (h : HasSum f a L) : HasSum (fun b ↦ star (f b)) (star a) L := by

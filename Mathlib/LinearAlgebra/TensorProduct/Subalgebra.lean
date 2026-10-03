@@ -46,7 +46,7 @@ variable {R S T : Type*}
 
 section Semiring
 
-variable [CommSemiring R] [Semiring S] [Algebra R S] [Semiring T] [Algebra R T]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] [Semiring T] [Algebra R T]
 
 namespace Subalgebra
 
@@ -197,7 +197,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S] [Algebra R S] [CommSemiring T] [Algebra R T]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S] [Semiring T] [IsMulCommutative T] [Algebra R T]
 
 variable (A B : Subalgebra R S)
 

@@ -27,7 +27,7 @@ universe w w₀ w₁ v u
 namespace Module
 
 variable {A : Type u} [Ring A] (relations : Relations.{w₀, w₁} A)
-  (M : Type v) [AddCommGroup M] [Module A M]
+  (M : Type v) [AddGroup M] [IsAddCommutative M] [Module A M]
 
 namespace Relations
 

@@ -35,7 +35,7 @@ namespace Ideal
 
 section IsPrincipal
 
-variable {R : Type*} [CommRing R] [IsDomain R] {I : Ideal R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] {I : Ideal R}
 
 /-- For a principal ideal `I`, `R ⧸ I ≃ₗ[R] I ^ n ⧸ I ^ (n + 1)`. To convert into a form
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with

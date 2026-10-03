@@ -34,7 +34,7 @@ open scoped Topology
 namespace NonarchimedeanGroup
 
 variable {α G : Type*}
-variable [CommGroup G] [UniformSpace G] [IsUniformGroup G] [NonarchimedeanGroup G]
+variable [Group G] [IsMulCommutative G] [UniformSpace G] [IsUniformGroup G] [NonarchimedeanGroup G]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Let `G` be a nonarchimedean multiplicative abelian group, and let `f : α → G` be a function that

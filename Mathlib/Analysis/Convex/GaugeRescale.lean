@@ -26,7 +26,7 @@ noncomputable section
 
 section Module
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E]
 
 /-- The gauge rescale map `gaugeRescale s t` sends each point `x` to the point `y` on the same ray
 that has the same gauge w.r.t. `t` as `x` has w.r.t. `s`.
@@ -182,7 +182,7 @@ theorem exists_homeomorph_image_eq {s t : Set E}
 
 end Module
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 /-- If `s` is a convex bounded set with a nonempty interior in a real normed space,
 then there is a homeomorphism of the ambient space to itself

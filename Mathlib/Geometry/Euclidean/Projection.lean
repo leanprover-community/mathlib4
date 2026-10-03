@@ -31,8 +31,8 @@ noncomputable section
 namespace EuclideanGeometry
 
 variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
-variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace 𝕜 V₂]
+variable [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace 𝕜 V]
+variable {V₂ P₂ : Type*} [NormedAddGroup V₂] [IsAddCommutative V₂] [InnerProductSpace 𝕜 V₂]
 
 open AffineSubspace
 
@@ -585,8 +585,8 @@ namespace Simplex
 open EuclideanGeometry
 
 variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
-variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace 𝕜 V₂]
+variable [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace 𝕜 V]
+variable {V₂ P₂ : Type*} [NormedAddGroup V₂] [IsAddCommutative V₂] [InnerProductSpace 𝕜 V₂]
 
 variable [MetricSpace P] [NormedAddTorsor V P]
 
@@ -662,7 +662,7 @@ namespace AffineSubspace
 open EuclideanGeometry
 
 variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+variable [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace 𝕜 V]
 variable [MetricSpace P] [NormedAddTorsor V P]
 
 /-- The preimage of `mk' p K` under the inclusion of an affine subspace `s`, for a submodule `K`

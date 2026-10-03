@@ -272,19 +272,19 @@ instance (priority := 100) NormedGroup.toSeminormedGroup [NormedGroup E] : Semin
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) NormedCommGroup.toSeminormedCommGroup [NormedCommGroup E] :
+instance (priority := 100) NormedCommGroup.toSeminormedCommGroup [NormedGroup E] [IsMulCommutative E] :
     SeminormedCommGroup E :=
   { ‹NormedCommGroup E› with }
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.toSeminormedGroup [SeminormedCommGroup E] :
+instance (priority := 100) SeminormedCommGroup.toSeminormedGroup [SeminormedGroup E] [IsMulCommutative E] :
     SeminormedGroup E :=
   { ‹SeminormedCommGroup E› with }
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) NormedCommGroup.toNormedGroup [NormedCommGroup E] : NormedGroup E :=
+instance (priority := 100) NormedCommGroup.toNormedGroup [NormedGroup E] [IsMulCommutative E] : NormedGroup E :=
   { ‹NormedCommGroup E› with }
 
 -- See note [reducible non-instances]
@@ -311,7 +311,7 @@ instance. -/
 `SeminormedAddCommGroup` satisfying `∀ x, ‖x‖ = 0 → x = 0`. This avoids having to go back to the
 `(Pseudo)MetricSpace` level when declaring a `NormedAddCommGroup` instance as a special case
 of a more general `SeminormedAddCommGroup` instance. -/]
-abbrev NormedCommGroup.ofSeparation [SeminormedCommGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
+abbrev NormedCommGroup.ofSeparation [SeminormedGroup E] [IsMulCommutative E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
     NormedCommGroup E :=
   { ‹SeminormedCommGroup E›, NormedGroup.ofSeparation h with }
 
@@ -343,7 +343,7 @@ abbrev SeminormedGroup.ofMulDist' [Norm E] [Group E] [PseudoMetricSpace E]
 /-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/
 @[to_additive
   /-- Construct a seminormed group from a translation-invariant pseudodistance. -/]
-abbrev SeminormedCommGroup.ofMulDist [Norm E] [CommGroup E] [PseudoMetricSpace E]
+abbrev SeminormedCommGroup.ofMulDist [Norm E] [Group E] [IsMulCommutative E] [PseudoMetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist 1 x) (h₂ : ∀ x y z : E, dist x y ≤ dist (z * x) (z * y)) :
     SeminormedCommGroup E :=
   { SeminormedGroup.ofMulDist h₁ h₂ with
@@ -353,7 +353,7 @@ abbrev SeminormedCommGroup.ofMulDist [Norm E] [CommGroup E] [PseudoMetricSpace E
 /-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/
 @[to_additive
   /-- Construct a seminormed group from a translation-invariant pseudodistance. -/]
-abbrev SeminormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [PseudoMetricSpace E]
+abbrev SeminormedCommGroup.ofMulDist' [Norm E] [Group E] [IsMulCommutative E] [PseudoMetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist 1 x) (h₂ : ∀ x y z : E, dist (z * x) (z * y) ≤ dist x y) :
     SeminormedCommGroup E :=
   { SeminormedGroup.ofMulDist' h₁ h₂ with
@@ -381,7 +381,7 @@ abbrev NormedGroup.ofMulDist' [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x :
 /-- Construct a normed group from a multiplication-invariant pseudodistance. -/
 @[to_additive
 /-- Construct a normed group from a translation-invariant pseudodistance. -/]
-abbrev NormedCommGroup.ofMulDist [Norm E] [CommGroup E] [MetricSpace E]
+abbrev NormedCommGroup.ofMulDist [Norm E] [Group E] [IsMulCommutative E] [MetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist 1 x) (h₂ : ∀ x y z : E, dist x y ≤ dist (z * x) (z * y)) :
     NormedCommGroup E :=
   { NormedGroup.ofMulDist h₁ h₂ with
@@ -391,7 +391,7 @@ abbrev NormedCommGroup.ofMulDist [Norm E] [CommGroup E] [MetricSpace E]
 /-- Construct a normed group from a multiplication-invariant pseudodistance. -/
 @[to_additive
   /-- Construct a normed group from a translation-invariant pseudodistance. -/]
-abbrev NormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [MetricSpace E]
+abbrev NormedCommGroup.ofMulDist' [Norm E] [Group E] [IsMulCommutative E] [MetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist 1 x) (h₂ : ∀ x y z : E, dist (z * x) (z * y) ≤ dist x y) :
     NormedCommGroup E :=
   { NormedGroup.ofMulDist' h₁ h₂ with
@@ -425,7 +425,7 @@ creates bad definitional equalities (e.g., it does not take into account a possi
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
 existing `UniformSpace` instance on `E`). -/]
-abbrev GroupSeminorm.toSeminormedCommGroup [CommGroup E] (f : GroupSeminorm E) :
+abbrev GroupSeminorm.toSeminormedCommGroup [Group E] [IsMulCommutative E] (f : GroupSeminorm E) :
     SeminormedCommGroup E :=
   { f.toSeminormedGroup with
     mul_comm := mul_comm }
@@ -454,6 +454,6 @@ equalities (e.g., it does not take into account a possibly existing `UniformSpac
 space structure from the norm properties. Note that in most cases this instance creates bad
 definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
 instance on `E`). -/]
-abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGroup E :=
+abbrev GroupNorm.toNormedCommGroup [Group E] [IsMulCommutative E] (f : GroupNorm E) : NormedCommGroup E :=
   { f.toNormedGroup with
     mul_comm := mul_comm }

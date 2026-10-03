@@ -23,7 +23,7 @@ open Topology
 namespace SeparationQuotient
 section VectorSpace
 
-variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
+variable (K E : Type*) [DivisionRing K] [AddGroup E] [IsAddCommutative E] [Module K E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul K E]
 
 /-- There exists a continuous `K`-linear map from `SeparationQuotient E` to `E`
@@ -57,7 +57,7 @@ theorem mk_comp_outCLM : mk ∘ outCLM K E = id := funext (mk_outCLM K)
 
 variable {K} in
 theorem postcomp_mkCLM_surjective {L : Type*} [Semiring L] (σ : L →+* K)
-    (F : Type*) [AddCommMonoid F] [Module L F] [TopologicalSpace F] :
+    (F : Type*) [AddMonoid F] [IsAddCommutative F] [Module L F] [TopologicalSpace F] :
     Function.Surjective ((mkCLM K E).comp : (F →SL[σ] E) → (F →SL[σ] SeparationQuotient E)) := by
   intro f
   use (outCLM K E).comp f
@@ -74,7 +74,7 @@ end VectorSpace
 
 section VectorSpaceUniform
 
-variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
+variable (K E : Type*) [DivisionRing K] [AddGroup E] [IsAddCommutative E] [Module K E]
     [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul K E]
 
 @[fun_prop]

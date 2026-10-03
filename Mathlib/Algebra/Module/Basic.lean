@@ -28,17 +28,17 @@ universe u v
 variable {α R M M₂ : Type*}
 
 @[simp]
-theorem Units.neg_smul [Ring R] [AddCommGroup M] [Module R M] (u : Rˣ) (x : M) :
+theorem Units.neg_smul [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] (u : Rˣ) (x : M) :
     -u • x = -(u • x) := by
   rw [Units.smul_def, Units.val_neg, _root_.neg_smul, Units.smul_def]
 
 @[simp]
-theorem invOf_two_smul_add_invOf_two_smul (R) [Semiring R] [AddCommMonoid M] [Module R M]
+theorem invOf_two_smul_add_invOf_two_smul (R) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
     [Invertible (2 : R)] (x : M) :
     (⅟2 : R) • x + (⅟2 : R) • x = x :=
   Convex.combo_self invOf_two_add_invOf_two _
 
-theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
+theorem map_inv_natCast_smul [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*)
     [DivisionSemiring R] [DivisionSemiring S] [Module R M]
     [Module S M₂] (n : ℕ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
@@ -55,7 +55,7 @@ theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} 
     rw [← smul_inv_smul₀ hR x, map_natCast_smul f R S, hS, zero_smul]
   · rw [← inv_smul_smul₀ hS (f _), ← map_natCast_smul f R S, smul_inv_smul₀ hR]
 
-theorem map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
+theorem map_inv_intCast_smul [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (z : ℤ) (x : M) : f ((z⁻¹ : R) • x) = (z⁻¹ : S) • f x := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
@@ -65,27 +65,27 @@ theorem map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [F
 
 /-- If `E` is a vector space over two division semirings `R` and `S`, then scalar multiplications
 agree on inverses of natural numbers in `R` and `S`. -/
-theorem inv_natCast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [DivisionSemiring R]
+theorem inv_natCast_smul_eq {E : Type*} (R S : Type*) [AddMonoid E] [IsAddCommutative E] [DivisionSemiring R]
     [DivisionSemiring S] [Module R E] [Module S E] (n : ℕ) (x : E) :
     (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_natCast_smul (AddMonoidHom.id E) R S n x
 
 /-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
 agree on inverses of integer numbers in `R` and `S`. -/
-theorem inv_intCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
+theorem inv_intCast_smul_eq {E : Type*} (R S : Type*) [AddGroup E] [IsAddCommutative E] [DivisionRing R]
     [DivisionRing S] [Module R E] [Module S E] (n : ℤ) (x : E) : (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_intCast_smul (AddMonoidHom.id E) R S n x
 
 /-- If `E` is a vector space over a division semiring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of natural numbers in `R`. -/
-theorem inv_natCast_smul_comm {α E : Type*} (R : Type*) [AddCommMonoid E] [DivisionSemiring R]
+theorem inv_natCast_smul_comm {α E : Type*} (R : Type*) [AddMonoid E] [IsAddCommutative E] [DivisionSemiring R]
     [Module R E] [DistribSMul α E] (n : ℕ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
   (map_inv_natCast_smul (DistribSMul.toAddMonoidHom E s) R R n x).symm
 
 /-- If `E` is a vector space over a division ring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of integers in `R` -/
-theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [DivisionRing R]
+theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddGroup E] [IsAddCommutative E] [DivisionRing R]
     [Module R E] [DistribSMul α E] (n : ℤ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
   (map_inv_intCast_smul (DistribSMul.toAddMonoidHom E s) R R n x).symm
@@ -102,11 +102,11 @@ lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g :
     support (f • g) ⊆ support g :=
   fun x hbf hf ↦ hbf <| by rw [Pi.smul_apply', hf, smul_zero]
 
-lemma support_const_smul_of_ne_zero [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
+lemma support_const_smul_of_ne_zero [Semiring R] [IsDomain R] [AddMonoid M] [IsAddCommutative M] [Module R M]
     [Module.IsTorsionFree R M] (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
   ext fun _ ↦ smul_ne_zero_iff_right hc
 
-lemma support_smul [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
+lemma support_smul [Semiring R] [IsDomain R] [AddMonoid M] [IsAddCommutative M] [Module R M]
     [Module.IsTorsionFree R M] (f : α → R) (g : α → M) : support (f • g) = support f ∩ support g :=
   ext fun _ => smul_ne_zero_iff
 

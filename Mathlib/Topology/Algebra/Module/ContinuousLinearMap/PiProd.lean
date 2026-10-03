@@ -75,10 +75,10 @@ section Semiring
 
 variable
   {R : Type*} [Semiring R]
-  {M₁ : Type*} [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R M₁]
-  {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
-  {M₃ : Type*} [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R M₃]
-  {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R M₄]
+  {M₁ : Type*} [TopologicalSpace M₁] [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁]
+  {M₂ : Type*} [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
+  {M₃ : Type*} [TopologicalSpace M₃] [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃]
+  {M₄ : Type*} [TopologicalSpace M₄] [AddMonoid M₄] [IsAddCommutative M₄] [Module R M₄]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The Cartesian product of two bounded linear maps, as a bounded linear map. -/
@@ -199,9 +199,9 @@ end Semiring
 
 section Pi
 
-variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
-  {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂] {ι : Type*} {φ : ι → Type*}
-  [∀ i, TopologicalSpace (φ i)] [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)]
+variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  {M₂ : Type*} [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂] {ι : Type*} {φ : ι → Type*}
+  [∀ i, TopologicalSpace (φ i)] [∀ i, AddMonoid (φ i)] [∀ i, IsAddCommutative (φ i)] [∀ i, Module R (φ i)]
 
 /-- `pi` construction for continuous linear functions. From a family of continuous linear functions
 it produces a continuous linear function into a family of topological modules. -/
@@ -256,7 +256,7 @@ theorem iInf_ker_proj :
   LinearMap.iInf_ker_proj
 
 section PiMap
-variable {ψ : ι → Type*} [∀ i, TopologicalSpace (ψ i)] [∀ i, AddCommMonoid (ψ i)]
+variable {ψ : ι → Type*} [∀ i, TopologicalSpace (ψ i)] [∀ i, AddMonoid (ψ i)] [∀ i, IsAddCommutative (ψ i)]
   [∀ i, Module R (ψ i)]
 
 /-- Construct a continuous linear map between two (dependent) function spaces
@@ -305,9 +305,9 @@ end Pi
 section Ring
 
 variable {R : Type*} [Ring R]
-  {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
-  {M₂ : Type*} [TopologicalSpace M₂] [AddCommGroup M₂] [Module R M₂]
-  {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃] [Module R M₃]
+  {M : Type*} [TopologicalSpace M] [AddGroup M] [IsAddCommutative M] [Module R M]
+  {M₂ : Type*} [TopologicalSpace M₂] [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂]
+  {M₃ : Type*} [TopologicalSpace M₃] [AddGroup M₃] [IsAddCommutative M₃] [Module R M₃]
 
 theorem range_prod_eq {f : M →L[R] M₂} {g : M →L[R] M₃} (h : f.ker ⊔ g.ker = ⊤) :
     (f.prod g).range = f.range.prod g.range :=
@@ -323,9 +323,9 @@ section SMul
 
 variable
   {R : Type*} [Semiring R]
-  {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
-  {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
-  {M₃ : Type*} [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R M₃]
+  {M : Type*} [TopologicalSpace M] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  {M₂ : Type*} [TopologicalSpace M₂] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
+  {M₃ : Type*} [TopologicalSpace M₃] [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃]
 
 /-- `ContinuousLinearMap.prod` as an `Equiv`. -/
 @[simps apply]
@@ -365,8 +365,8 @@ variable {R S M N M₁ M₂ : Type*}
 
 section AddCommMonoid
 
-variable [AddCommMonoid M] [Module R M] [ContinuousAdd M] [AddCommMonoid N] [Module R N]
-  [ContinuousAdd N] [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [ContinuousAdd M] [AddMonoid N] [IsAddCommutative N] [Module R N]
+  [ContinuousAdd N] [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
 
 /-- The continuous linear map given by `(x, y) ↦ f₁ x + f₂ y`. -/
 @[simps! coe apply]
@@ -424,8 +424,8 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup M] [Module R M] [ContinuousAdd M] [AddCommMonoid M₁] [Module R M₁]
-  [AddCommGroup M₂] [Module R M₂]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [ContinuousAdd M] [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁]
+  [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂]
 
 lemma ker_coprod_of_disjoint_range {f₁ : M₁ →L[R] M} {f₂ : M₂ →L[R] M}
     (hf : Disjoint f₁.range f₂.range) :

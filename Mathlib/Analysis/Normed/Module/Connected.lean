@@ -36,7 +36,7 @@ open scoped Convex ENNReal
 
 section TopologicalVectorSpace
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
 
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is path
@@ -130,7 +130,7 @@ end TopologicalVectorSpace
 
 section NormedSpace
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 section Ball
 
@@ -245,7 +245,7 @@ end NormedSpace
 
 section
 
-variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+variable {F : Type*} [AddGroup F] [IsAddCommutative F] [Module ℝ F] [TopologicalSpace F]
   [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
 
 /-- Let `E` be a linear subspace in a real vector space.

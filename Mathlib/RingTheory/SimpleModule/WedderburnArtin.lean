@@ -43,7 +43,7 @@ import Mathlib.RingTheory.SimpleRing.Matrix
 public section
 
 universe u
-variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]
+variable (R₀ : Type*) {R : Type u} [Semiring R₀] [IsMulCommutative R₀] [Ring R] [Algebra R₀ R]
 
 /-- A simple ring is semisimple iff it is Artinian, iff it has a minimal left ideal. -/
 theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
@@ -78,7 +78,7 @@ variable (R) [IsSimpleRing R] [IsArtinianRing R]
 instance (priority := low) : IsSemisimpleRing R :=
   (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).1
 
-theorem isIsotypic (M) [AddCommGroup M] [Module R M] : IsIsotypic R M :=
+theorem isIsotypic (M) [AddGroup M] [IsAddCommutative M] [Module R M] : IsIsotypic R M :=
   (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).2.1.of_self M
 
 /-- The **Wedderburn–Artin Theorem**: an Artinian simple ring is isomorphic to a matrix
@@ -132,7 +132,7 @@ namespace IsSemisimpleModule
 open Module (End)
 
 universe v
-variable (R) (M : Type v) [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
+variable (R) (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
   [IsSemisimpleModule R M] [Module.Finite R M]
 
 theorem exists_end_algEquiv_pi_matrix_end :

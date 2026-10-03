@@ -40,12 +40,12 @@ instance [IntCast R] : IntCast Rᵒᵈ := inferInstanceAs <| IntCast R
 
 instance [AddMonoidWithOne R] : AddMonoidWithOne Rᵒᵈ := inferInstanceAs <| AddMonoidWithOne R
 
-instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne Rᵒᵈ :=
+instance [AddMonoidWithOne R] [IsAddCommutative R] : AddCommMonoidWithOne Rᵒᵈ :=
   inferInstanceAs <| AddCommMonoidWithOne R
 
 instance [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := inferInstanceAs <| AddGroupWithOne R
 
-instance [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ :=
+instance [AddGroupWithOne R] [IsAddCommutative R] : AddCommGroupWithOne Rᵒᵈ :=
   inferInstanceAs <| AddCommGroupWithOne R
 
 instance [NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ := inferInstanceAs <| NonUnitalSemiring R
@@ -54,10 +54,10 @@ instance [NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ := inferInstanceAs <| N
 
 instance [Semiring R] : Semiring Rᵒᵈ := inferInstanceAs <| Semiring R
 
-instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ :=
+instance [NonUnitalSemiring R] [IsMulCommutative R] : NonUnitalCommSemiring Rᵒᵈ :=
   inferInstanceAs <| NonUnitalCommSemiring R
 
-instance [CommSemiring R] : CommSemiring Rᵒᵈ := inferInstanceAs <| CommSemiring R
+instance [Semiring R] [IsMulCommutative R] : CommSemiring Rᵒᵈ := inferInstanceAs <| CommSemiring R
 
 instance [Mul R] [HasDistribNeg R] : HasDistribNeg Rᵒᵈ := inferInstanceAs <| HasDistribNeg R
 
@@ -70,9 +70,9 @@ instance [NonAssocRing R] : NonAssocRing Rᵒᵈ := inferInstanceAs <| NonAssocR
 
 instance [Ring R] : Ring Rᵒᵈ := inferInstanceAs <| Ring R
 
-instance [NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ := inferInstanceAs <| NonUnitalCommRing R
+instance [NonUnitalRing R] [IsMulCommutative R] : NonUnitalCommRing Rᵒᵈ := inferInstanceAs <| NonUnitalCommRing R
 
-instance [CommRing R] : CommRing Rᵒᵈ := inferInstanceAs <| CommRing R
+instance [Ring R] [IsMulCommutative R] : CommRing Rᵒᵈ := inferInstanceAs <| CommRing R
 
 instance [Ring R] [IsDomain R] : IsDomain Rᵒᵈ := inferInstanceAs <| IsDomain R
 
@@ -125,22 +125,22 @@ instance [IntCast R] : IntCast (Lex R) := inferInstanceAs <| IntCast R
 
 instance [AddMonoidWithOne R] : AddMonoidWithOne (Lex R) := inferInstanceAs <| AddMonoidWithOne R
 
-instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne (Lex R) :=
+instance [AddMonoidWithOne R] [IsAddCommutative R] : AddCommMonoidWithOne (Lex R) :=
   inferInstanceAs <| AddCommMonoidWithOne R
 
 instance [AddGroupWithOne R] : AddGroupWithOne (Lex R) := inferInstanceAs <| AddGroupWithOne R
 
-instance [AddCommGroupWithOne R] : AddCommGroupWithOne (Lex R) :=
+instance [AddGroupWithOne R] [IsAddCommutative R] : AddCommGroupWithOne (Lex R) :=
   inferInstanceAs <| AddCommGroupWithOne R
 
 instance [NonAssocSemiring R] : NonAssocSemiring (Lex R) := inferInstanceAs <| NonAssocSemiring R
 
 instance [Semiring R] : Semiring (Lex R) := inferInstanceAs <| Semiring R
 
-instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (Lex R) :=
+instance [NonUnitalSemiring R] [IsMulCommutative R] : NonUnitalCommSemiring (Lex R) :=
   inferInstanceAs <| NonUnitalCommSemiring R
 
-instance [CommSemiring R] : CommSemiring (Lex R) := inferInstanceAs <| CommSemiring R
+instance [Semiring R] [IsMulCommutative R] : CommSemiring (Lex R) := inferInstanceAs <| CommSemiring R
 
 instance [Mul R] [HasDistribNeg R] : HasDistribNeg (Lex R) := inferInstanceAs <| HasDistribNeg R
 
@@ -153,9 +153,9 @@ instance [NonAssocRing R] : NonAssocRing (Lex R) := inferInstanceAs <| NonAssocR
 
 instance [Ring R] : Ring (Lex R) := inferInstanceAs <| Ring R
 
-instance [NonUnitalCommRing R] : NonUnitalCommRing (Lex R) := inferInstanceAs <| NonUnitalCommRing R
+instance [NonUnitalRing R] [IsMulCommutative R] : NonUnitalCommRing (Lex R) := inferInstanceAs <| NonUnitalCommRing R
 
-instance [CommRing R] : CommRing (Lex R) := inferInstanceAs <| CommRing R
+instance [Ring R] [IsMulCommutative R] : CommRing (Lex R) := inferInstanceAs <| CommRing R
 
 instance [Ring R] [IsDomain R] : IsDomain (Lex R) := inferInstanceAs <| IsDomain R
 

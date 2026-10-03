@@ -26,7 +26,7 @@ open scoped nonZeroDivisors
 
 open Localization Ideal IsLocalization
 
-variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
+variable {R K : Type*} [Ring R] [IsMulCommutative R] [Field K] [Algebra R K] [IsFractionRing R K]
 
 theorem IsIntegrallyClosed.iInf {ι : Type*} (S : ι → Subalgebra R K)
     (h : ∀ i, IsIntegrallyClosed (S i)) :

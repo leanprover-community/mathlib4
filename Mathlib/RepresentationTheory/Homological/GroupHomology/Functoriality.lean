@@ -43,7 +43,7 @@ namespace groupHomology
 
 open CategoryTheory Rep Finsupp Representation
 
-variable {k G H : Type u} [CommRing k] [Group G] [Group H]
+variable {k G H : Type u} [Ring k] [IsMulCommutative k] [Group G] [Group H]
   {A : Rep k G} {B : Rep k H} (f : G →* H) (φ : A ⟶ res f B) (n : ℕ)
 
 theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ res f₁ B} {T : Type*}

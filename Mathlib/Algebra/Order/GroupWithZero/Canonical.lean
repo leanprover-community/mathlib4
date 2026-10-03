@@ -469,7 +469,7 @@ theorem exists_ne_zero_and_lt_and_lt [NoMinOrder α] (hx : x ≠ 0) (hy : y ≠ 
 
 end LinearOrder
 
-instance isOrderedMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
+instance isOrderedMonoid [Monoid α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α] :
     IsOrderedMonoid (WithZero α) where
   mul_le_mul_left _ _ := mul_le_mul_left
 
@@ -482,7 +482,7 @@ elements are ≤ 1 and then 1 is the top element.
 -/
 /-- If `0` is the least element in `α`, then `WithZero α` is an ordered `AddMonoid`. -/
 -- See note [reducible non-instances]
-protected lemma isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
+protected lemma isOrderedAddMonoid [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
     (zero_le : ∀ a : α, 0 ≤ a) :
     IsOrderedAddMonoid (WithZero α) := by
   have := WithZero.addLeftMono zero_le
@@ -500,14 +500,14 @@ instance instCanonicallyOrderedAdd [AddZeroClass α] [Preorder α] [CanonicallyO
   | (a : α), 0 => le_rfl
   | (a : α), (b : α) => WithZero.coe_le_coe.2 le_self_add
 
-instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α]
+instance instLinearOrderedCommMonoidWithZero [Monoid α] [IsMulCommutative α] [LinearOrder α]
     [IsOrderedCancelMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) where
   isBot_zero _ := zero_le
   mul_lt_mul_of_pos_left
   | (a : α), _, 0, (c : α), _ => by simp [← WithZero.coe_mul]
   | (a : α), _, (b : α), (c : α), hbc => by norm_cast at *; exact mul_lt_mul_right hbc _
 
-instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
+instance instLinearOrderedCommGroupWithZero [Group α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
 
 -- Add a shortcut instance for the common case, to speed up unification.

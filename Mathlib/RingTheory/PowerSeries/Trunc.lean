@@ -157,7 +157,7 @@ section Trunc
 Lemmas in this section involve the coercion `R[X] → R⟦X⟧`, so they may only be stated in the case
 `R` is commutative. This is because the coercion is an `R`-algebra map.
 -/
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 open Nat hiding pow_succ pow_zero
 open Finset Finset.Nat

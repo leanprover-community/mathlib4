@@ -21,7 +21,7 @@ creating two separate topologies on the same space.
 public section
 
 variable {𝕜 E F : Type*}
-variable [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+variable [RCLike 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
 variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   [LocallyConvexSpace ℝ E]
@@ -115,8 +115,8 @@ theorem LinearEquiv.image_closure_of_convex' {s : Set E} (hs : Convex ℝ s) (e 
   · simpa [← he'] using fun f ↦ map_continuous (e_dual.symm f)
 
 /-- The weak topology on a space with separating dual is T2 (Hausdorff). -/
-instance {R V : Type*} [CommRing R] [TopologicalSpace R] [T2Space R]
-    [ContinuousAdd R] [ContinuousConstSMul R R] [AddCommGroup V] [Module R V]
+instance {R V : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R] [T2Space R]
+    [ContinuousAdd R] [ContinuousConstSMul R R] [AddGroup V] [IsAddCommutative V] [Module R V]
     [TopologicalSpace V] [SeparatingDual R V] : T2Space (WeakSpace R V) :=
   (WeakBilin.isEmbedding (B := (topDualPairing R V).flip) fun _ _ h => by
     by_contra hne

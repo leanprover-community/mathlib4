@@ -22,8 +22,8 @@ open scoped Topology
 
 namespace MeasureTheory
 
-variable {α E ε ε' : Type*} {m : MeasurableSpace α} [NormedAddCommGroup E]
-  [TopologicalSpace ε] [ESeminormedAddMonoid ε] [TopologicalSpace ε'] [ESeminormedAddCommMonoid ε']
+variable {α E ε ε' : Type*} {m : MeasurableSpace α} [NormedAddGroup E] [IsAddCommutative E]
+  [TopologicalSpace ε] [ESeminormedAddMonoid ε] [TopologicalSpace ε'] [ESeminormedAddMonoid ε'] [IsAddCommutative ε']
   {p : ℝ≥0∞} {q : ℝ} {μ : Measure α} {f g : α → ε}
 
 theorem eLpNorm'_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)

@@ -20,24 +20,24 @@ public section
 variable {R : Type*}
 
 @[simp]
-theorem star_prod [CommMonoid R] [StarMul R] {α : Type*} (s : Finset α) (f : α → R) :
+theorem star_prod [Monoid R] [IsMulCommutative R] [StarMul R] {α : Type*} (s : Finset α) (f : α → R) :
     star (∏ x ∈ s, f x) = ∏ x ∈ s, star (f x) := map_prod (starMulAut : R ≃* R) _ _
 
 @[simp]
-theorem star_sum [AddCommMonoid R] [StarAddMonoid R] {α : Type*} (s : Finset α) (f : α → R) :
+theorem star_sum [AddMonoid R] [IsAddCommutative R] [StarAddMonoid R] {α : Type*} (s : Finset α) (f : α → R) :
     star (∑ x ∈ s, f x) = ∑ x ∈ s, star (f x) := map_sum (starAddEquiv : R ≃+ R) _ _
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
-theorem isSelfAdjoint_sum {ι : Type*} [AddCommMonoid R] [StarAddMonoid R] (s : Finset ι)
+theorem isSelfAdjoint_sum {ι : Type*} [AddMonoid R] [IsAddCommutative R] [StarAddMonoid R] (s : Finset ι)
     {x : ι → R} (h : ∀ i ∈ s, IsSelfAdjoint (x i)) : IsSelfAdjoint (∑ i ∈ s, x i) := by
   simpa [IsSelfAdjoint, star_sum] using Finset.sum_congr rfl fun _ hi => h _ hi
 
 @[simp]
-theorem star_finsuppSum {ι : Type*} {M : Type*} [Zero M] [AddCommMonoid R] [StarAddMonoid R]
+theorem star_finsuppSum {ι : Type*} {M : Type*} [Zero M] [AddMonoid R] [IsAddCommutative R] [StarAddMonoid R]
     (s : ι →₀ M) (f : ι → M → R) : star (s.sum f) = s.sum (fun i m ↦ star f i m) := by
   simp [Finsupp.sum]
 
 @[simp]
-theorem star_finsuppProd {ι : Type*} {M : Type*} [Zero M] [CommMonoid R] [StarMul R]
+theorem star_finsuppProd {ι : Type*} {M : Type*} [Zero M] [Monoid R] [IsMulCommutative R] [StarMul R]
     (s : ι →₀ M) (f : ι → M → R) : star (s.prod f) = s.prod (fun i m ↦ star f i m) := by
   simp [Finsupp.prod]

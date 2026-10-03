@@ -28,12 +28,12 @@ public section
 /--
 A ring `R` has finite quotients if the quotient `R ⧸ I` is finite for all nonzero ideals of `R`.
 -/
-class Ring.HasFiniteQuotients (R : Type*) [CommRing R] : Prop where
+class Ring.HasFiniteQuotients (R : Type*) [Ring R] [IsMulCommutative R] : Prop where
   finiteQuotient {I : Ideal R} : I ≠ ⊥ → Finite (R ⧸ I)
 
 namespace Ring.HasFiniteQuotients
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 /-- A finite ring has finite quotients. -/
 instance [Finite R] : Ring.HasFiniteQuotients R where
@@ -82,7 +82,7 @@ variable (R) in
 Assume that `R` has finite quotients and that `S` is a domain and a finite `R`-module. Then
 `S` has finite quotients.
 -/
-theorem of_module_finite (S : Type*) [CommRing S] [IsDomain S]
+theorem of_module_finite (S : Type*) [Ring S] [IsMulCommutative S] [IsDomain S]
     [Algebra R S] [Module.Finite R S] :
     HasFiniteQuotients S where
   finiteQuotient {I} hI := by

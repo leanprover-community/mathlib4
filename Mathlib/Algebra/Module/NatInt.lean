@@ -53,7 +53,7 @@ instance [SubtractionMonoid M] : SMulWithZero ℤ M where
 
 section AddCommMonoid
 
-variable [AddCommMonoid M]
+variable [AddMonoid M] [IsAddCommutative M]
 
 instance AddCommMonoid.toNatModule : Module ℕ M where
   smul_add n a b := nsmul_add a b n
@@ -68,7 +68,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable (M) [AddCommGroup M]
+variable (M) [AddGroup M] [IsAddCommutative M]
 
 instance AddCommGroup.toIntModule : Module ℤ M where
   one_smul := one_zsmul
@@ -88,7 +88,7 @@ variable (R) in
 structure.
 See note [reducible non-instances]. -/
 abbrev Module.addCommMonoidToAddCommGroup
-    [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M where
+    [Ring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : AddCommGroup M where
   neg := fun a => (-1 : R) • a
   neg_add_cancel := fun a =>
     show (-1 : R) • a + a = 0 by
@@ -103,7 +103,7 @@ abbrev Module.addCommMonoidToAddCommGroup
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 section
 
@@ -147,7 +147,7 @@ instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
 
 end AddCommMonoid
 
-theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
+theorem map_natCast_smul [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
   simp only [Nat.cast_smul_eq_nsmul, map_nsmul]
@@ -160,7 +160,7 @@ theorem Int.smul_one_eq_cast {R : Type*} [NonAssocRing R] (m : ℤ) : m • (1 :
 
 section AddCommGroup
 
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 section
 
@@ -190,17 +190,17 @@ def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
 end AddCommGroup
 
 /-- All `ℤ`-module structures are equal. See also `AddCommGroup.uniqueIntModule`. -/
-instance AddCommMonoid.subsingletonIntModule [AddCommMonoid M] : Subsingleton (Module ℤ M) where
+instance AddCommMonoid.subsingletonIntModule [AddMonoid M] [IsAddCommutative M] : Subsingleton (Module ℤ M) where
   allEq a b :=
     let : AddCommGroup M := Module.addCommMonoidToAddCommGroup ℤ
     AddCommGroup.uniqueIntModule.instSubsingleton.allEq a b
 
-theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
+theorem map_intCast_smul [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
     (x : ℤ) (a : M) :
     f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
 
-instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
+instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddGroup M] [IsAddCommutative M]
     [Module R M] : IsScalarTower ℤ R M where
   smul_assoc n x y := by
     cases n with
@@ -210,7 +210,7 @@ instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCo
 variable (M) in
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
 zero as well. Usually `M` is an `R`-algebra. -/
-lemma CharZero.of_module [Semiring R] [AddCommMonoidWithOne M] [CharZero M] [Module R M] :
+lemma CharZero.of_module [Semiring R] [AddMonoidWithOne M] [IsAddCommutative M] [CharZero M] [Module R M] :
     CharZero R := by
   refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ ?_⟩
   rw [← nsmul_one, ← nsmul_one, ← Nat.cast_smul_eq_nsmul R, ← Nat.cast_smul_eq_nsmul R, h]

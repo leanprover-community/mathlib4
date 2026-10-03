@@ -30,7 +30,7 @@ open PrimeSpectrum
 
 /-- The pullback of an element of `PrimeSpectrum S` along a ring homomorphism `f : R →+* S`.
 The bundled continuous version is `PrimeSpectrum.comap`. -/
-def PrimeSpectrum.comap {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S)
+def PrimeSpectrum.comap {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (f : R →+* S)
     (p : PrimeSpectrum S) : PrimeSpectrum R :=
   ⟨Ideal.comap f p.asIdeal, inferInstance⟩
 
@@ -38,7 +38,7 @@ namespace PrimeSpectrum
 
 open RingHom
 
-variable {R S} {S' : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring S']
+variable {R S} {S' : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring S'] [IsMulCommutative S']
 
 variable (f : R →+* S)
 
@@ -99,7 +99,7 @@ def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
 
 section Pi
 
-variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)]
+variable {ι} (R : ι → Type*) [∀ i, Semiring (R i)] [∀ i, IsMulCommutative (R i)]
 
 /--
 The canonical map from a disjoint union of prime spectra of commutative semirings to
@@ -161,7 +161,7 @@ theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fu
   (Set.range_eq_univ.mpr surj ▸ notMem) ⟨⟩
 
 lemma exists_comap_evalRingHom_eq
-    {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)] [Finite ι]
+    {ι : Type*} {R : ι → Type*} [∀ i, Ring (R i)] [∀ i, IsMulCommutative (R i)] [Finite ι]
     (p : PrimeSpectrum (Π i, R i)) :
     ∃ (i : ι) (q : PrimeSpectrum (R i)), comap (Pi.evalRingHom R i) q = p := by
   classical
@@ -185,7 +185,7 @@ lemma exists_comap_evalRingHom_eq
     rwa [Ideal.comap_map_of_surjective _ h₁, sup_eq_left]
   exact ⟨i, ⟨_, Ideal.map_isPrime_of_surjective h₁ h₂⟩, PrimeSpectrum.ext this⟩
 
-lemma sigmaToPi_bijective {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] [Finite ι] :
+lemma sigmaToPi_bijective {ι : Type*} (R : ι → Type*) [∀ i, Ring (R i)] [∀ i, IsMulCommutative (R i)] [Finite ι] :
     Function.Bijective (sigmaToPi R) := by
   refine ⟨sigmaToPi_injective R, ?_⟩
   intro q
@@ -193,8 +193,8 @@ lemma sigmaToPi_bijective {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)
   exact ⟨⟨i, q⟩, rfl⟩
 
 lemma iUnion_range_comap_comp_evalRingHom
-    {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)] [Finite ι]
-    {S : Type*} [CommRing S] (f : S →+* Π i, R i) :
+    {ι : Type*} {R : ι → Type*} [∀ i, Ring (R i)] [∀ i, IsMulCommutative (R i)] [Finite ι]
+    {S : Type*} [Ring S] [IsMulCommutative S] (f : S →+* Π i, R i) :
     ⋃ i, Set.range (comap ((Pi.evalRingHom R i).comp f)) = Set.range (comap f) := by
   simp_rw [comap_comp]
   apply subset_antisymm
@@ -211,7 +211,7 @@ section SpecOfSurjective
 
 open Function RingHom
 
-variable [CommRing R] [CommRing S]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 variable (f : R →+* S)
 variable {R}
 
@@ -278,7 +278,7 @@ lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
 open TensorProduct
 
 /-- A prime `p` is in the range of `Spec S → Spec R` if the fiber over `p` is nontrivial. -/
-lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
+lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [Ring S] [IsMulCommutative S]
     [Algebra R S] (p : PrimeSpectrum R) :
     Nontrivial (p.asIdeal.ResidueField ⊗[R] S) ↔ p ∈ Set.range (comap (algebraMap R S)) := by
   let k := p.asIdeal.ResidueField
@@ -295,7 +295,7 @@ lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
         (IsScalarTower.toAlgHom _ _ _) (fun _ _ ↦ Commute.all ..)
     exact RingHom.domain_nontrivial f.toRingHom
 
-lemma RingHom.strictMono_comap_of_surjective {S : Type*} [CommRing S]
+lemma RingHom.strictMono_comap_of_surjective {S : Type*} [Ring S] [IsMulCommutative S]
     {f : R →+* S} (hf : Function.Surjective f) : StrictMono (comap f) :=
   fun _ _ h ↦ (Ideal.relIsoOfSurjective _ hf).strictMono h
 
@@ -303,7 +303,7 @@ end SpecOfSurjective
 
 section ResidueField
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 lemma PrimeSpectrum.residueField_comap (I : PrimeSpectrum R) :
     Set.range (comap (algebraMap R I.asIdeal.ResidueField)) = {I} := by
@@ -313,7 +313,7 @@ lemma PrimeSpectrum.residueField_comap (I : PrimeSpectrum R) :
 end ResidueField
 
 variable {R S} in
-theorem IsLocalHom.of_comap_surjective [CommSemiring R] [CommSemiring S] (f : R →+* S)
+theorem IsLocalHom.of_comap_surjective [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (f : R →+* S)
     (hf : Function.Surjective (comap f)) : IsLocalHom f where
   map_nonunit x hfx := by
     by_contra hx

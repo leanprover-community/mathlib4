@@ -36,7 +36,7 @@ open Function (Surjective)
 
 open LinearMap
 
-variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R : Type u} {M : Type v} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /--
 Define the character module of `M` to be `M →+ ℚ ⧸ ℤ`.
@@ -45,7 +45,7 @@ The character module of `M` is an injective module if and only if
 -/
 lemma injective_characterModule_iff_rTensor_preserves_injective_linearMap :
     Module.Injective R (CharacterModule M) ↔
-    ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+    ∀ ⦃N N' : Type v⦄ [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) := by
   simp_rw [injective_iff, rTensor_injective_iff_lcomp_surjective, Surjective, DFunLike.ext_iff]; rfl
 

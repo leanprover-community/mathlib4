@@ -72,7 +72,7 @@ protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum �
 
 /-- Product of a multiset of elements in a `Subsemiring` of a `CommSemiring`
 is in the `Subsemiring`. -/
-protected theorem multiset_prod_mem {R} [CommSemiring R] (s : Subsemiring R) (m : Multiset R) :
+protected theorem multiset_prod_mem {R} [Semiring R] [IsMulCommutative R] (s : Subsemiring R) (m : Multiset R) :
     (∀ a ∈ m, a ∈ s) → m.prod ∈ s :=
   multiset_prod_mem m
 
@@ -83,7 +83,7 @@ protected theorem multiset_sum_mem (m : Multiset R) : (∀ a ∈ m, a ∈ s) →
 
 /-- Product of elements of a subsemiring of a `CommSemiring` indexed by a `Finset` is in the
 `Subsemiring`. -/
-protected theorem prod_mem {R : Type*} [CommSemiring R] (s : Subsemiring R) {ι : Type*}
+protected theorem prod_mem {R : Type*} [Semiring R] [IsMulCommutative R] (s : Subsemiring R) {ι : Type*}
     {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i ∈ t, f i) ∈ s :=
   prod_mem h
 
@@ -314,7 +314,7 @@ theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
   SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
-theorem center_eq_top (R) [CommSemiring R] : center R = ⊤ :=
+theorem center_eq_top (R) [Semiring R] [IsMulCommutative R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 end Semiring
@@ -1004,14 +1004,14 @@ instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring 
     MulActionWithZero S α :=
   inferInstance
 
-instance (priority := low) [AddCommMonoid α] [Module R' α] {S' : Type*} [SetLike S' R']
+instance (priority := low) [AddMonoid α] [IsAddCommutative α] [Module R' α] {S' : Type*} [SetLike S' R']
     [SubsemiringClass S' R'] (s : S') : Module s α where
   toDistribMulAction := inferInstance
   add_smul r₁ r₂ := add_smul (r₁ : R') r₂
   zero_smul := zero_smul R'
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance module [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α :=
+instance module [AddMonoid α] [IsAddCommutative α] [Module R' α] (S : Subsemiring R') : Module S α :=
   inferInstance
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/

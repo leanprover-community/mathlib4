@@ -50,7 +50,7 @@ variable {ι μ : Type*}
 
 namespace Finset
 section AddCommMonoid
-variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {n : μ}
+variable [DecidableEq ι] [AddMonoid μ] [IsAddCommutative μ] [HasAntidiagonal μ] [DecidableEq μ] {n : μ}
 
 /-!
 ### `Fin d → μ`
@@ -154,7 +154,7 @@ alias finsetCongr_piAntidiag_eq_antidiag := finset_congr_piAntidiag_eq_antidiag
 end AddCommMonoid
 
 section AddCancelCommMonoid
-variable [DecidableEq ι] [AddCancelCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {i : ι}
+variable [DecidableEq ι] [AddCancelMonoid μ] [IsAddCommutative μ] [HasAntidiagonal μ] [DecidableEq μ] {i : ι}
   {s : Finset ι}
 
 lemma pairwiseDisjoint_piAntidiag_map_addRightEmbedding (hi : i ∉ s) (n : μ) :
@@ -189,7 +189,7 @@ lemma piAntidiag_insert [DecidableEq (ι → μ)] (hi : i ∉ s) (n : μ) :
 end AddCancelCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [AddCommMonoid μ] [PartialOrder μ]
+variable [DecidableEq ι] [AddMonoid μ] [IsAddCommutative μ] [PartialOrder μ]
   [CanonicallyOrderedAdd μ] [HasAntidiagonal μ] [DecidableEq μ]
 
 @[simp] lemma piAntidiag_zero (s : Finset ι) : piAntidiag s (0 : μ) = {0} := by

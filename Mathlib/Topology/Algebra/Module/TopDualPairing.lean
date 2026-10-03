@@ -27,7 +27,7 @@ public section
 open Module
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
 variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 variable [FiniteDimensional 𝕜 E] [T2Space E]
 

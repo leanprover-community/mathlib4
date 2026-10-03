@@ -41,7 +41,7 @@ universe u u' v w
 
 variable {ι : Type u} {ι' : Type u'} (R : Type*) {S : Type v} {A : Type w}
 variable {x : ι → A} {y : ι' → A}
-variable [CommRing R] [CommRing S] [CommRing A]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring A] [IsMulCommutative A]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
 open AlgebraicIndependent
@@ -542,7 +542,7 @@ variable (R S A)
   rw [← hs.cardinalMk_eq_trdeg, ← ht.cardinalMk_eq_trdeg, ← lift_umax.{w}, add_comm,
     ← (hs.sumElim_comp ht).lift_cardinalMk_eq_trdeg, mk_sum, lift_add, lift_lift, lift_lift]
 
-@[stacks 030H] theorem trdeg_add_eq [Nontrivial R] {A : Type v} [CommRing A] [NoZeroDivisors A]
+@[stacks 030H] theorem trdeg_add_eq [Nontrivial R] {A : Type v} [Ring A] [IsMulCommutative A] [NoZeroDivisors A]
     [Algebra R A] [Algebra S A] [FaithfulSMul R S] [FaithfulSMul S A] [IsScalarTower R S A] :
     trdeg R S + trdeg S A = trdeg R A := by
   rw [← (trdeg R S).lift_id, ← (trdeg S A).lift_id, ← (trdeg R A).lift_id]

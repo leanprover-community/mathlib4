@@ -21,7 +21,7 @@ open TopologicalSpace MeasureTheory Filter
 open scoped NNReal ENNReal Topology ComplexConjugate
 
 variable {α ε ε' E F : Type*} {m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [ENorm ε] [ENorm ε']
+  [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [ENorm ε] [ENorm ε']
 
 namespace MeasureTheory
 
@@ -206,7 +206,7 @@ protected lemma MemLp.piecewise {f g : α → ε} [DecidablePred (· ∈ s)] (hs
     rw [setLIntegral_congr_fun₀ hs.compl h]
     exact lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_zero hp_top hg
 
-theorem eLpNorm_indicator_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β]
+theorem eLpNorm_indicator_sub_le_of_dist_bdd {β : Type*} [NormedAddGroup β] [IsAddCommutative β]
     (μ : Measure α := by volume_tac) (hp' : p ≠ ∞) (hs : NullMeasurableSet s μ) {f g : α → β}
     {c : ℝ} (hc : 0 ≤ c) (hfgm : AEStronglyMeasurable (s.indicator (f - g)) μ)
     (hf : ∀ x ∈ s, dist (f x) (g x) ≤ c) :
@@ -225,7 +225,7 @@ theorem eLpNorm_indicator_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β
   grw [eLpNorm_mono hfgm this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm,
     Real.norm_eq_abs, abs_of_nonneg hc]
 
-theorem eLpNorm_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β]
+theorem eLpNorm_sub_le_of_dist_bdd {β : Type*} [NormedAddGroup β] [IsAddCommutative β]
     (μ : Measure α := by volume_tac) (hp : p ≠ ⊤) (hs : NullMeasurableSet s μ) {c : ℝ} (hc : 0 ≤ c)
     {f g : α → β} (hfgm : AEStronglyMeasurable (f - g) μ)
     (h : ∀ x, dist (f x) (g x) ≤ c) (hs₁ : f.support ⊆ s) (hs₂ : g.support ⊆ s) :
@@ -243,7 +243,7 @@ end Indicator
 section UnifTight
 
 /-- A single function that is `MemLp f p μ` is tight with respect to `μ`. -/
-theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup β] (hp_top : p ≠ ∞)
+theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddGroup β] [IsAddCommutative β] (hp_top : p ≠ ∞)
     {f : α → β} (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ eLpNorm (sᶜ.indicator f) p μ < ε := by
   rcases eq_or_ne p 0 with rfl | hp₀

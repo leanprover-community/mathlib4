@@ -19,7 +19,7 @@ public section
 
 namespace QuadraticAlgebra
 
-variable {R : Type*} [CommRing R] {a b : R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {a b : R}
 
 /-- The norm of an element in a quadratic algebra is the determinant of the endomorphism defined by
 left multiplication by that element. -/

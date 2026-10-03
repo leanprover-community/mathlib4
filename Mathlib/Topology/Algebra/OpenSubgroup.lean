@@ -428,8 +428,8 @@ end OpenSubgroup
 
 namespace Submodule
 
-variable {R : Type*} {M : Type*} [CommRing R]
-variable [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M] [Module R M]
+variable {R : Type*} {M : Type*} [Ring R] [IsMulCommutative R]
+variable [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [IsTopologicalAddGroup M] [Module R M]
 
 theorem isOpen_mono {U P : Submodule R M} (h : U ≤ P) (hU : IsOpen (U : Set M)) :
     IsOpen (P : Set M) :=
@@ -439,7 +439,7 @@ end Submodule
 
 namespace Ideal
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 variable [TopologicalSpace R] [IsTopologicalRing R]
 
 theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U : Set R)) :

@@ -44,7 +44,7 @@ open Polynomial
 
 section CommSemiring
 
-variable {F : Type*} [CommSemiring F] (q : ℕ)
+variable {F : Type*} [Semiring F] [IsMulCommutative F] (q : ℕ)
 
 /-- A separable contraction of a polynomial `f` is a separable polynomial `g` such that
 `g(x^(q^m)) = f(x)` for some `m : ℕ`. -/

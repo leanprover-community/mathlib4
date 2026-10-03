@@ -20,7 +20,7 @@ open scoped TensorProduct
 
 universe u v
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 suppress_compilation
 

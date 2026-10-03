@@ -224,7 +224,7 @@ namespace IsSimpleGroup
 
 section CommSimpleGroup
 
-variable [CommGroup α] [IsSimpleGroup α]
+variable [Group α] [IsMulCommutative α] [IsSimpleGroup α]
 
 @[to_additive]
 instance (priority := 100) isCyclic : IsCyclic α := by
@@ -269,7 +269,7 @@ theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
   ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
 
 @[to_additive]
-theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
+theorem CommGroup.is_simple_iff_prime_card [Group α] [IsMulCommutative α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
   Group.is_simple_iff_prime_card
 
 open Subgroup in
@@ -303,7 +303,7 @@ section EquivInt
 /-- A linearly-ordered additive abelian group is cyclic iff it is isomorphic to `ℤ` as an ordered
 additive monoid. -/
 lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
-    [AddCommGroup A] [LinearOrder A] [IsOrderedAddMonoid A] [Nontrivial A] :
+    [AddGroup A] [IsAddCommutative A] [LinearOrder A] [IsOrderedAddMonoid A] [Nontrivial A] :
     IsAddCyclic A ↔ Nonempty (A ≃+o ℤ) := by
   refine ⟨?_, fun ⟨e⟩ ↦ e.isAddCyclic.mpr inferInstance⟩
   rintro ⟨g, hs⟩
@@ -322,7 +322,7 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
 /-- A linearly-ordered abelian group is cyclic iff it is isomorphic to `Multiplicative ℤ` as an
 ordered monoid. -/
 lemma LinearOrderedCommGroup.isCyclic_iff_nonempty_equiv_int {G : Type*}
-    [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] :
+    [Group G] [IsMulCommutative G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] :
     IsCyclic G ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
   rw [← isAddCyclic_additive_iff, LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int,
     OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr]
@@ -342,14 +342,14 @@ theorem IsCyclic.exponent_eq_card [Group α] [IsCyclic α] :
   exact order_dvd_exponent _
 
 @[to_additive]
-theorem IsCyclic.of_exponent_eq_card [CommGroup α] [Finite α] (h : exponent α = Nat.card α) :
+theorem IsCyclic.of_exponent_eq_card [Group α] [IsMulCommutative α] [Finite α] (h : exponent α = Nat.card α) :
     IsCyclic α :=
   let ⟨_⟩ := nonempty_fintype α
   let ⟨g, _, hg⟩ := Finset.mem_image.mp (Finset.max'_mem _ _)
   isCyclic_of_orderOf_eq_card g <| hg.trans <| exponent_eq_max'_orderOf.symm.trans h
 
 @[to_additive]
-theorem IsCyclic.iff_exponent_eq_card [CommGroup α] [Finite α] :
+theorem IsCyclic.iff_exponent_eq_card [Group α] [IsMulCommutative α] [Finite α] :
     IsCyclic α ↔ exponent α = Nat.card α :=
   ⟨fun _ => IsCyclic.exponent_eq_card, IsCyclic.of_exponent_eq_card⟩
 
@@ -537,7 +537,7 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
   zmodAddEquivOfGenerator h.exists_generator.choose_spec rfl
 
 /-- A commutative simple group is isomorphic to `ZMod p` from some prime `p`. -/
-theorem exists_prime_addEquiv_ZMod [CommGroup G] [IsSimpleGroup G] :
+theorem exists_prime_addEquiv_ZMod [Group G] [IsMulCommutative G] [IsSimpleGroup G] :
     ∃ p : ℕ, Nat.Prime p ∧ Nonempty (Additive G ≃+ ZMod p) := by
   obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (inferInstance : IsCyclic G)
   use orderOf g; rw [orderOf_eq_card_of_zpowers_eq_top hg]
@@ -646,14 +646,14 @@ lemma mulintEquivOfZPowersEqTop_symm_apply_zpow [Group G] {g : G} (hg : zpowers 
     (intEquivOfZPowersEqTop g hg).symm (g ^ k) = Multiplicative.ofAdd k := by
   simp [← ofAdd_zsmul]
 
-lemma mulintEquivOfZPowersEqTop_strictMono [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
+lemma mulintEquivOfZPowersEqTop_strictMono [Group G] [IsMulCommutative G] [PartialOrder G] [IsOrderedMonoid G]
     {g : G} (hg : zpowers g = ⊤) (hg1 : 1 < g) :
     StrictMono (intEquivOfZPowersEqTop g hg) := by
   intro x y hxy
   simp only [intEquivOfZPowersEqTop, MulEquiv.ofBijective_apply, zpowersHom_apply]
   exact zpow_lt_zpow_right hg1 hxy
 
-lemma mulintEquivOfZPowersEqTop_strictAnti [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
+lemma mulintEquivOfZPowersEqTop_strictAnti [Group G] [IsMulCommutative G] [PartialOrder G] [IsOrderedMonoid G]
     {g : G} (hg : zpowers g = ⊤) (hg1 : g < 1) :
     StrictAnti (intEquivOfZPowersEqTop g hg) := by
   intro x y hxy
@@ -718,30 +718,30 @@ section powMonoidHom
 
 variable (G)
 
--- Note. Even though cyclic groups only require `[Group G]`, we need `[CommGroup G]` for
+-- Note. Even though cyclic groups only require `[Group G]`, we need `[Group G] [IsMulCommutative G]` for
 -- `powMonoidHom` to be defined.
 
 @[to_additive]
-theorem IsCyclic.card_powMonoidHom_range [CommGroup G] [hG : IsCyclic G] [Finite G] (d : ℕ) :
+theorem IsCyclic.card_powMonoidHom_range [Group G] [IsMulCommutative G] [hG : IsCyclic G] [Finite G] (d : ℕ) :
     Nat.card (powMonoidHom d : G →* G).range = Nat.card G / (Nat.card G).gcd d := by
   obtain ⟨g, h⟩ := isCyclic_iff_exists_zpowers_eq_top.mp hG
   rw [MonoidHom.range_eq_map, ← h, MonoidHom.map_zpowers, Nat.card_zpowers, powMonoidHom_apply,
     orderOf_pow, orderOf_eq_card_of_zpowers_eq_top h]
 
 @[to_additive]
-theorem IsCyclic.index_powMonoidHom_ker [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+theorem IsCyclic.index_powMonoidHom_ker [Group G] [IsMulCommutative G] [IsCyclic G] [Finite G] (d : ℕ) :
     (powMonoidHom d : G →* G).ker.index = Nat.card G / (Nat.card G).gcd d := by
   rw [Subgroup.index_ker, card_powMonoidHom_range]
 
 @[to_additive]
-theorem IsCyclic.card_powMonoidHom_ker [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+theorem IsCyclic.card_powMonoidHom_ker [Group G] [IsMulCommutative G] [IsCyclic G] [Finite G] (d : ℕ) :
     Nat.card (powMonoidHom d : G →* G).ker = (Nat.card G).gcd d := by
   have h : (powMonoidHom d : G →* G).ker.index ≠ 0 := Subgroup.index_ne_zero_of_finite
   rw [← mul_left_inj' h, Subgroup.card_mul_index, index_powMonoidHom_ker, Nat.mul_div_cancel']
   exact Nat.gcd_dvd_left (Nat.card G) d
 
 @[to_additive]
-theorem IsCyclic.index_powMonoidHom_range [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+theorem IsCyclic.index_powMonoidHom_range [Group G] [IsMulCommutative G] [IsCyclic G] [Finite G] (d : ℕ) :
     (powMonoidHom d : G →* G).range.index = (Nat.card G).gcd d := by
   rw [Subgroup.index_range, card_powMonoidHom_ker]
 
@@ -849,7 +849,7 @@ end generator
 section prod
 
 @[to_additive] theorem Group.isCyclic_of_coprime_card_range_card_ker {M N : Type*}
-    [CommGroup M] [Group N] (f : M →* N) (h : (Nat.card f.ker).Coprime (Nat.card f.range))
+    [Group M] [IsMulCommutative M] [Group N] (f : M →* N) (h : (Nat.card f.ker).Coprime (Nat.card f.range))
     [IsCyclic f.ker] [IsCyclic f.range] : IsCyclic M := by
   cases (finite_or_infinite f.ker).symm
   · rw [Nat.card_eq_zero_of_infinite, Nat.coprime_zero_left] at h
@@ -867,7 +867,7 @@ section prod
   · exact MonoidHom.exponent_dvd f.rangeRestrict_surjective
 
 @[to_additive] theorem Group.isCyclic_of_coprime_card_ker {M N : Type*}
-    [CommGroup M] [Group N] (f : M →* N) (h : (Nat.card f.ker).Coprime (Nat.card N))
+    [Group M] [IsMulCommutative M] [Group N] (f : M →* N) (h : (Nat.card f.ker).Coprime (Nat.card N))
     [IsCyclic f.ker] [hN : IsCyclic N] (hf : Function.Surjective f) : IsCyclic M := by
   rw [← Subgroup.topEquiv.isCyclic, ← f.range_eq_top.mpr hf] at hN
   rw [← Subgroup.card_top (G := N), ← f.range_eq_top.mpr hf] at h

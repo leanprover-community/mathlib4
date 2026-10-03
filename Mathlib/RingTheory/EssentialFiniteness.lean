@@ -26,7 +26,7 @@ open scoped TensorProduct
 
 namespace Algebra
 
-variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
+variable (R S T : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
 variable [Algebra R S] [Algebra R T]
 
 /--
@@ -252,7 +252,7 @@ end Algebra
 
 namespace RingHom
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] {f : R →+* S}
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] {f : R →+* S}
 
 /-- A ring hom is essentially of finite type if it is the composition of a localization map
 and a ring hom of finite type. See `Algebra.EssFiniteType`. -/
@@ -261,7 +261,7 @@ def EssFiniteType (f : R →+* S) : Prop :=
   letI := f.toAlgebra
   Algebra.EssFiniteType R S
 
-lemma essFiniteType_algebraMap {R S : Type*} [CommRing R] [CommRing S]
+lemma essFiniteType_algebraMap {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     [Algebra R S] : (algebraMap R S).EssFiniteType ↔ Algebra.EssFiniteType R S := by
   rw [RingHom.EssFiniteType, toAlgebra_algebraMap]
 

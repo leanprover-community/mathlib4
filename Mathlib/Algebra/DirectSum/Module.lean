@@ -37,7 +37,7 @@ section General
 
 variable {R : Type u} [Semiring R]
 variable {ι : Type v}
-variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+variable {M : ι → Type w} [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
   inferInstanceAs <| Module R (Π₀ i, M i)
@@ -99,7 +99,7 @@ theorem support_smul [∀ (i : ι) (x : M i), Decidable (x ≠ 0)] (c : R) (v : 
     (c • v).support ⊆ v.support :=
   DFinsupp.support_smul _ _
 
-variable {N : Type u₁} [AddCommMonoid N] [Module R N]
+variable {N : Type u₁} [AddMonoid N] [IsAddCommutative N] [Module R N]
 variable (φ : ∀ i, M i →ₗ[R] N)
 variable (R ι N)
 
@@ -170,15 +170,15 @@ theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
   (linearEquivFunOnFintype R ι M).symm_apply_apply _
 
 /-- The natural linear equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
-protected def lid (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Module R M] [Unique ι] :
+protected def lid (M : Type v) (ι : Type* := PUnit) [AddMonoid M] [IsAddCommutative M] [Module R M] [Unique ι] :
     (⨁ _ : ι, M) ≃ₗ[R] M :=
   { DirectSum.id M ι, toModule R ι M fun _ ↦ LinearMap.id with }
 
-@[simp] lemma lid_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Module R M] [Unique ι]
+@[simp] lemma lid_apply {M : Type v} {ι : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] [Unique ι]
     (x : ⨁ _ : ι, M) : DirectSum.lid R M ι x = x default :=
   DirectSum.id_apply x
 
-@[simp] lemma lid_symm_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Module R M] [Unique ι]
+@[simp] lemma lid_symm_apply {M : Type v} {ι : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] [Unique ι]
     (x : M) : (DirectSum.lid R M ι).symm x = lof R _ _ default x :=
   DirectSum.id_symm_apply x
 
@@ -226,7 +226,7 @@ section map
 variable {R} {N : ι → Type*}
 
 section AddCommMonoid
-variable [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+variable [∀ i, AddMonoid (N i)] [∀ i, IsAddCommutative (N i)] [∀ i, Module R (N i)]
 
 section
 variable (f : ∀ i, M i →+ N i)
@@ -262,7 +262,7 @@ def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
     (lmap (fun i ↦ LinearMap.id (R := R) (M := M i))) = LinearMap.id :=
   DFinsupp.mapRange.linearMap_id
 
-@[simp] lemma lmap_comp {K : ι → Type*} [∀ i, AddCommMonoid (K i)] [∀ i, Module R (K i)]
+@[simp] lemma lmap_comp {K : ι → Type*} [∀ i, AddMonoid (K i)] [∀ i, IsAddCommutative (K i)] [∀ i, Module R (K i)]
     (g : ∀ (i : ι), N i →ₗ[R] K i) :
     (lmap (fun i ↦ (g i) ∘ₗ (f i))) = (lmap g) ∘ₗ (lmap f) :=
   DFinsupp.mapRange.linearMap_comp _ _
@@ -299,12 +299,12 @@ end AddCommMonoid
 section AddCommGroup
 variable {ι : Type v} {M : ι → Type w} {N : ι → Type*}
 
-lemma ker_map [∀ i, AddCommGroup (M i)] [∀ i, AddCommMonoid (N i)] (f : ∀ i, M i →+ N i) :
+lemma ker_map [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, AddMonoid (N i)] [∀ i, IsAddCommutative (N i)] (f : ∀ i, M i →+ N i) :
     (map f).ker =
       (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom M) :=
   DFinsupp.ker_mapRangeAddMonoidHom f
 
-lemma range_map [∀ i, AddCommGroup (M i)] [∀ i, AddCommGroup (N i)] (f : ∀ i, M i →+ N i) :
+lemma range_map [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, AddGroup (N i)] [∀ i, IsAddCommutative (N i)] (f : ∀ i, M i →+ N i) :
     (map f).range =
       (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom N) :=
   DFinsupp.range_mapRangeAddMonoidHom f
@@ -348,7 +348,7 @@ end CongrLeft
 section Sigma
 
 variable {α : ι → Type*} {δ : ∀ i, α i → Type w}
-variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
+variable [DecidableEq ι] [∀ i j, AddMonoid (δ i j)] [∀ i j, IsAddCommutative (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σ _, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
@@ -376,7 +376,7 @@ end Sigma
 
 section Option
 
-variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)] [∀ i, Module R (α i)]
+variable {α : Option ι → Type w} [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, Module R (α i)]
 
 /-- Linear isomorphism obtained by separating the term of index `none` of a direct sum over
 `Option ι`. -/
@@ -394,7 +394,7 @@ section Semiring
 
 variable {R : Type u} [Semiring R]
 variable {ι : Type v} [dec_ι : DecidableEq ι]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable (A : ι → Submodule R M)
 
 /-- The canonical linear map from `⨁ i, A i` to `M` where `A` is a collection of `Submodule R M`
@@ -503,7 +503,7 @@ section Ring
 
 variable {R : Type u} [Ring R]
 variable {ι : Type v} [dec_ι : DecidableEq ι]
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- Note that this is not generally true for `[Semiring R]`; see
 `iSupIndep.dfinsupp_lsum_injective` for details. -/
@@ -552,11 +552,11 @@ lemma isInternal_biSup_submodule_of_iSupIndep {A : ι → Submodule R M} (s : Se
 /-! Now copy the lemmas for subgroup and submonoids. -/
 
 
-theorem IsInternal.addSubmonoid_iSupIndep {M : Type*} [AddCommMonoid M] {A : ι → AddSubmonoid M}
+theorem IsInternal.addSubmonoid_iSupIndep {M : Type*} [AddMonoid M] [IsAddCommutative M] {A : ι → AddSubmonoid M}
     (h : IsInternal A) : iSupIndep A :=
   iSupIndep_of_dfinsuppSumAddHom_injective _ h.injective
 
-theorem IsInternal.addSubgroup_iSupIndep {G : Type*} [AddCommGroup G] {A : ι → AddSubgroup G}
+theorem IsInternal.addSubgroup_iSupIndep {G : Type*} [AddGroup G] [IsAddCommutative G] {A : ι → AddSubgroup G}
     (h : IsInternal A) : iSupIndep A :=
   iSupIndep_of_dfinsuppSumAddHom_injective' _ h.injective
 
@@ -569,7 +569,7 @@ section Congr
 variable {R : Type*} [Semiring R]
     {ι : Type*}
     {N : ι → Type*} [(i : ι) → AddCommMonoid (N i)] [(i : ι) → Module R (N i)]
-    {P : ι → Type*} [∀ i, AddCommMonoid (P i)] [∀ i, Module R (P i)]
+    {P : ι → Type*} [∀ i, AddMonoid (P i)] [∀ i, IsAddCommutative (P i)] [∀ i, Module R (P i)]
 
 /-- Direct sums of isomorphic additive groups are isomorphic. -/
 def congrAddEquiv (u : (i : ι) → N i ≃+ P i) :

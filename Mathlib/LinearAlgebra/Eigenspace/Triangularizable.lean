@@ -43,8 +43,8 @@ public section
 
 open Set Function Module Module
 
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
-  {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {K V : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
+  {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 namespace Module.End
 

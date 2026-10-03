@@ -27,8 +27,8 @@ can be unified.
 @[expose] public section
 
 
-variable {R : Type*} [CommSemiring R] {S : Submonoid R} {M : Type*} [AddCommMonoid M]
-  [Module R M] {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {S : Submonoid R} {M : Type*} [AddMonoid M] [IsAddCommutative M]
+  [Module R M] {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] (f : M →ₗ[R] M')
 
 namespace IsLocalizedModule
 

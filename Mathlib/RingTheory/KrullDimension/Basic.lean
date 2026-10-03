@@ -23,14 +23,14 @@ open Order
 /--
 The ring-theoretic Krull dimension is the Krull dimension of its spectrum ordered by inclusion.
 -/
-noncomputable def ringKrullDim (R : Type*) [CommSemiring R] : WithBot ℕ∞ :=
+noncomputable def ringKrullDim (R : Type*) [Semiring R] [IsMulCommutative R] : WithBot ℕ∞ :=
   krullDim (PrimeSpectrum R)
 
 /-- Type class for rings with krull dimension at most `n`. -/
-abbrev Ring.KrullDimLE (n : ℕ) (R : Type*) [CommSemiring R] : Prop :=
+abbrev Ring.KrullDimLE (n : ℕ) (R : Type*) [Semiring R] [IsMulCommutative R] : Prop :=
   Order.KrullDimLE n (PrimeSpectrum R)
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 lemma Ring.krullDimLE_iff {n : ℕ} :
     KrullDimLE n R ↔ ringKrullDim R ≤ n := Order.krullDimLE_iff n (PrimeSpectrum R)
@@ -60,7 +60,7 @@ theorem ringKrullDim_le_of_surjective (f : R →+* S) (hf : Function.Surjective 
         simpa using h))
 
 /-- If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`. -/
-theorem ringKrullDim_quotient_le {R : Type*} [CommRing R] (I : Ideal R) :
+theorem ringKrullDim_quotient_le {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R) :
     ringKrullDim (R ⧸ I) ≤ ringKrullDim R :=
   ringKrullDim_le_of_surjective _ Ideal.Quotient.mk_surjective
 
@@ -74,7 +74,7 @@ alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
 
 /-- A ring has finite Krull dimension if its `PrimeSpectrum` is
 finite-dimensional (and non-empty). -/
-abbrev FiniteRingKrullDim (R : Type*) [CommSemiring R] :=
+abbrev FiniteRingKrullDim (R : Type*) [Semiring R] [IsMulCommutative R] :=
   FiniteDimensionalOrder (PrimeSpectrum R)
 
 lemma ringKrullDim_ne_top [FiniteRingKrullDim R] :
@@ -136,10 +136,10 @@ lemma Ideal.mem_minimalPrimes_iff_isPrime [Ring.KrullDimLE 0 R] {I : Ideal R} :
     I ∈ minimalPrimes R ↔ I.IsPrime :=
   ⟨(·.1.1), fun _ ↦ I.mem_minimalPrimes_of_krullDimLE_zero⟩
 
-theorem nilradical_le_jacobson (R) [CommRing R] : nilradical R ≤ Ring.jacobson R :=
+theorem nilradical_le_jacobson (R) [Ring R] [IsMulCommutative R] : nilradical R ≤ Ring.jacobson R :=
   nilradical_eq_sInf R ▸ le_sInf fun _I hI ↦ sInf_le (Ideal.IsMaximal.isPrime ⟨hI⟩)
 
-theorem Ring.jacobson_eq_nilradical_of_krullDimLE_zero (R) [CommRing R] [KrullDimLE 0 R] :
+theorem Ring.jacobson_eq_nilradical_of_krullDimLE_zero (R) [Ring R] [IsMulCommutative R] [KrullDimLE 0 R] :
     jacobson R = nilradical R :=
   (nilradical_le_jacobson R).antisymm' <| nilradical_eq_sInf R ▸ le_sInf fun I (_ : I.IsPrime) ↦
     sInf_le Ideal.IsMaximal.out

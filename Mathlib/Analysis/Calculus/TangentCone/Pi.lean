@@ -24,7 +24,7 @@ open scoped Topology
 section Semiring
 
 variable {𝕜 : Type*} [Semiring 𝕜]
-  {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+  {ι : Type*} {E : ι → Type*} [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module 𝕜 (E i)]
   [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousAdd (E i)] [∀ i, ContinuousConstSMul 𝕜 (E i)]
   {s : ∀ i, Set (E i)} {x : ∀ i, E i}
 
@@ -66,7 +66,7 @@ theorem UniqueDiffOn.univ_pi {s : ∀ i, Set (E i)} (h : ∀ i, UniqueDiffOn �
 end Semiring
 
 variable {𝕜 : Type*} [DivisionSemiring 𝕜]
-  {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+  {ι : Type*} {E : ι → Type*} [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, Module 𝕜 (E i)]
   [TopologicalSpace 𝕜] [(𝓝[≠] (0 : 𝕜)).NeBot]
   [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousAdd (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
   {s : ∀ i, Set (E i)} {x : ∀ i, E i} {I : Set ι}

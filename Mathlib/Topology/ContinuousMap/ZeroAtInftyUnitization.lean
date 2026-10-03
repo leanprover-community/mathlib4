@@ -109,14 +109,14 @@ def toOnePointAddMonoidHom [AddMonoid R] [ContinuousAdd R] :
 
 /-- `ZeroAtInftyContinuousMap.toOnePoint` as a `LinearMap`. -/
 @[simps]
-def toOnePointLinearMap [Semiring S] [AddCommMonoid R] [ContinuousAdd R] [Module S R]
+def toOnePointLinearMap [Semiring S] [AddMonoid R] [IsAddCommutative R] [ContinuousAdd R] [Module S R]
     [ContinuousConstSMul S R] : C₀(X, R) →ₗ[S] C(OnePoint X, R) where
   toFun := toOnePoint
   map_add' := toOnePoint_add
   map_smul' := toOnePoint_smul
 
 @[simp]
-lemma toAddMonoidHom_toOnePointLinearMap [Semiring S] [AddCommMonoid R] [ContinuousAdd R]
+lemma toAddMonoidHom_toOnePointLinearMap [Semiring S] [AddMonoid R] [IsAddCommutative R] [ContinuousAdd R]
     [Module S R] [ContinuousConstSMul S R] :
     (toOnePointLinearMap X R S).toAddMonoidHom = toOnePointAddMonoidHom X R := rfl
 
@@ -161,7 +161,7 @@ end ZeroAtInftyContinuousMap
 
 namespace ContinuousMap
 
-variable [TopologicalSpace R] [AddCommGroup R] [IsTopologicalAddGroup R]
+variable [TopologicalSpace R] [AddGroup R] [IsAddCommutative R] [IsTopologicalAddGroup R]
 
 /-- The continuous function vanishing at infinity obtained by taking `g : C(OnePoint X, R)` and
 restricting `g` to `X` and subtracting the constant `g ∞`. -/
@@ -237,7 +237,7 @@ variable [TopologicalSpace R]
 
 section AddCommGroup
 
-variable [AddCommGroup R] [IsTopologicalAddGroup R]
+variable [AddGroup R] [IsAddCommutative R] [IsTopologicalAddGroup R]
 
 variable (X R) in
 /-- The canonical equivalence `Unitization R C₀(X, R) ≃ C(OnePoint X, R)` mapping `(r, f)` to the
@@ -346,7 +346,7 @@ end AddCommGroup
 
 section CommRing
 
-variable [CommRing R] [IsTopologicalRing R]
+variable [Ring R] [IsMulCommutative R] [IsTopologicalRing R]
 
 @[simp]
 lemma unitizationEquiv_one : unitizationEquiv X R 1 = 1 := by
@@ -374,7 +374,7 @@ lemma coe_unitizationRingEquiv_symm :
 lemma toAddEquiv_unitizationRingEquiv :
     (unitizationRingEquiv X R).toAddEquiv = unitizationAddEquiv X R := rfl
 
-variable [CommSemiring S] [Algebra S R]
+variable [Semiring S] [IsMulCommutative S] [Algebra S R]
 
 @[simp]
 lemma unitizationEquiv_algebraMap (s : S) :

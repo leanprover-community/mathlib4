@@ -19,9 +19,9 @@ public section
 
 universe u
 
-variable {R M N : Type*} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
-variable [AddCommGroup N] [Module R N]
-variable {P Q : Type*} [AddCommGroup P] [Module R P] [AddCommGroup Q] [Module R Q]
+variable {R M N : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [AddGroup M] [IsAddCommutative M] [Module R M]
+variable [AddGroup N] [IsAddCommutative N] [Module R N]
+variable {P Q : Type*} [AddGroup P] [IsAddCommutative P] [Module R P] [AddGroup Q] [IsAddCommutative Q] [Module R Q]
 
 open TensorProduct Function
 

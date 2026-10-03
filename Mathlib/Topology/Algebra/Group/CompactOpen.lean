@@ -19,7 +19,7 @@ public import Mathlib.Topology.UniformSpace.Ascoli
 open Function Topology
 open scoped Pointwise
 
-variable (A B C E : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup E]
+variable (A B C E : Type*) [Monoid A] [Monoid B] [Monoid C] [Group E] [IsMulCommutative E]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   [TopologicalSpace E] [IsTopologicalGroup E]
 
@@ -118,7 +118,7 @@ def compLeft (f : ContinuousMonoidHom A B) :
 variable (A) in
 /-- `ContinuousMonoidHom f _` is a functor. -/
 @[to_additive /-- `ContinuousAddMonoidHom f _` is a functor. -/]
-def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup B]
+def compRight {B : Type*} [Group B] [IsMulCommutative B] [TopologicalSpace B] [IsTopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
   toFun g := f.comp g
@@ -142,7 +142,7 @@ end DiscreteTopology
 section LocallyCompact
 
 variable {X Y : Type*} [TopologicalSpace X] [Group X] [IsTopologicalGroup X]
-  [UniformSpace Y] [CommGroup Y] [IsUniformGroup Y] [T0Space Y] [CompactSpace Y]
+  [UniformSpace Y] [Group Y] [IsMulCommutative Y] [IsUniformGroup Y] [T0Space Y] [CompactSpace Y]
 
 @[to_additive]
 theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)

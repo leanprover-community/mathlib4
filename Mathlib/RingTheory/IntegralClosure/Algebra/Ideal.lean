@@ -27,9 +27,9 @@ public section
 
 namespace Polynomial
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
-lemma coeff_mem_pow_of_mem_adjoin_C_mul_X {R : Type*} [CommRing R]
+lemma coeff_mem_pow_of_mem_adjoin_C_mul_X {R : Type*} [Ring R] [IsMulCommutative R]
     {I : Ideal R} {P : R[X]} (hP : P ∈ Algebra.adjoin R { C r * X | r ∈ I }) (i : ℕ) :
     P.coeff i ∈ I ^ i := by
   induction hP using Algebra.adjoin_induction generalizing i with

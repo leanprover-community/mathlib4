@@ -28,7 +28,7 @@ open Module Polynomial nonZeroDivisors
 
 section
 
-variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+variable (R : Type u) {A : Type v} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A]
 
 @[nontriviality]
 theorem is_transcendental_of_subsingleton [Subsingleton R] (x : A) : Transcendental R x :=
@@ -127,8 +127,8 @@ end
 
 section zero_ne_one
 
-variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
-variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
+variable {R : Type u} {S : Type*} {A : Type v} [Ring R] [IsMulCommutative R]
+variable [Ring S] [IsMulCommutative S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
 variable [IsScalarTower R S A]
 
 theorem isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
@@ -163,7 +163,7 @@ theorem isAlgebraic_ratCast (R : Type u) {A : Type v} [DivisionRing A] [Field R]
 @[deprecated (since := "2026-07-14")] alias isAlgebraic_int := isAlgebraic_intCast
 @[deprecated (since := "2026-07-14")] alias isAlgebraic_rat := isAlgebraic_ratCast
 
-theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [CommRing R] [Field A] [Algebra R A]
+theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R] [Field A] [Algebra R A]
     {p : R[X]} {x : A} (hx : x ∈ p.rootSet A) : IsAlgebraic R x :=
   ⟨p, ne_zero_of_mem_rootSet hx, aeval_eq_zero_of_mem_rootSet hx⟩
 
@@ -405,7 +405,7 @@ section Ring
 
 section CommRing
 
-variable [CommRing R] [CommRing S] [Ring A]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring A]
 variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 /-- If `x` is algebraic over `R`, then `x` is algebraic over `S` when `S` is an extension of `R`,
@@ -476,7 +476,7 @@ theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlge
 
 variable (K) (A)
 
-theorem Algebra.IsAlgebraic.tower_bot (K L A : Type*) [CommRing K] [Field L] [Ring A]
+theorem Algebra.IsAlgebraic.tower_bot (K L A : Type*) [Ring K] [IsMulCommutative K] [Field L] [Ring A]
     [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
     [Nontrivial A] [Algebra.IsAlgebraic K A] :
     Algebra.IsAlgebraic K L :=
@@ -490,7 +490,7 @@ section IsTorsionFree
 
 namespace Algebra.IsAlgebraic
 
-variable [CommRing K] [IsDomain K] [Field L] [Algebra K L]
+variable [Ring K] [IsMulCommutative K] [IsDomain K] [Field L] [Algebra K L]
 
 theorem algHom_bijective [IsTorsionFree K L] [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
     Function.Bijective f := by
@@ -536,7 +536,7 @@ end
 
 section
 
-variable {R S : Type*} [CommRing R]
+variable {R S : Type*} [Ring R] [IsMulCommutative R]
 
 section
 
@@ -589,7 +589,7 @@ end
 
 namespace Algebra.IsAlgebraic
 
-variable (S) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
+variable (S) {A : Type*} [Ring S] [IsMulCommutative S] [NoZeroDivisors S] [Algebra R S]
   [alg : Algebra.IsAlgebraic R S] [Ring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
 open Function (Injective) in
@@ -670,7 +670,7 @@ end Field
 
 section Infinite
 
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A] [Nontrivial R]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A] [Nontrivial R]
 
 theorem Transcendental.infinite {x : A} (hx : Transcendental R x) : Infinite A :=
   .of_injective _ (transcendental_iff_injective.mp hx)

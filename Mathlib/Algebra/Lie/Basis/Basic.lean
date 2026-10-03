@@ -49,7 +49,7 @@ namespace LieAlgebra
 /-- A basis for a semisimple Lie algebra distinguishes a natural Cartan subalgebra and a base
 for the associated root system. -/
 @[ext]
-structure Basis (ι : Type*) {R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L]
+structure Basis (ι : Type*) {R L : Type*} [Finite ι] [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
     (H : LieSubalgebra R L) where
   /-- The Cartan matrix. -/
   A : Matrix ι ι ℤ
@@ -73,7 +73,7 @@ namespace Basis
 
 section CommRing
 
-variable {ι R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L]
+variable {ι R L : Type*} [Finite ι] [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
   {H : LieSubalgebra R L} (b : Basis ι H)
 
 @[simp] lemma A_diag_eq_two [IsAddTorsionFree L] (i : ι) : b.A i i = 2 := by

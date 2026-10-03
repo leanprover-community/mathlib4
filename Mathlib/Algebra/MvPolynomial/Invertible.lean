@@ -20,7 +20,7 @@ public section
 
 open MvPolynomial
 
-noncomputable instance MvPolynomial.invertibleC (σ : Type*) {R : Type*} [CommSemiring R] (r : R)
+noncomputable instance MvPolynomial.invertibleC (σ : Type*) {R : Type*} [Semiring R] [IsMulCommutative R] (r : R)
     [Invertible r] : Invertible (C r : MvPolynomial σ R) :=
   Invertible.map (C : R →+* MvPolynomial σ R) _
 
@@ -28,6 +28,6 @@ noncomputable instance MvPolynomial.invertibleC (σ : Type*) {R : Type*} [CommSe
 is also invertible when coerced to any polynomial ring with rational coefficients.
 
 Short-cut for typeclass resolution. -/
-noncomputable instance MvPolynomial.invertibleCoeNat (σ R : Type*) (p : ℕ) [CommSemiring R]
+noncomputable instance MvPolynomial.invertibleCoeNat (σ R : Type*) (p : ℕ) [Semiring R] [IsMulCommutative R]
     [Invertible (p : R)] : Invertible (p : MvPolynomial σ R) :=
   IsScalarTower.invertibleAlgebraCoeNat R _ _

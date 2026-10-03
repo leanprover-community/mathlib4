@@ -141,7 +141,7 @@ end monoidHomCongrEquiv
 
 section monoidHomCongr
 variable [MulOneClass M] [MulOneClass M₁] [MulOneClass M₂] [MulOneClass M₃]
-  [CommMonoid N] [CommMonoid N₁] [CommMonoid N₂] [CommMonoid N₃]
+  [Monoid N] [IsMulCommutative N] [Monoid N₁] [IsMulCommutative N₁] [Monoid N₂] [IsMulCommutative N₂] [Monoid N₃] [IsMulCommutative N₃]
 
 /-- The isomorphism `(M₁ →* N) ≃* (M₂ →* N)` obtained by postcomposition with
 a multiplicative equivalence `e : M₁ ≃* M₂`. -/

@@ -255,7 +255,7 @@ instance instSMul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul 
 
 section AddCommMonoid
 
-variable [AddCommMonoid R] [ContinuousAdd R]
+variable [AddMonoid R] [IsAddCommutative R] [ContinuousAdd R]
 
 instance instAddCommMonoid : AddCommMonoid C(X, R)₀ :=
   fast_instance% toContinuousMap_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
@@ -279,7 +279,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup R] [IsTopologicalAddGroup R]
+variable [AddGroup R] [IsAddCommutative R] [IsTopologicalAddGroup R]
 
 instance instAddCommGroup : AddCommGroup C(X, R)₀ :=
   fast_instance% toContinuousMap_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl)
@@ -289,7 +289,7 @@ end AddCommGroup
 
 section Semiring
 
-variable [CommSemiring R] [IsTopologicalSemiring R]
+variable [Semiring R] [IsMulCommutative R] [IsTopologicalSemiring R]
 
 instance instNonUnitalCommSemiring : NonUnitalCommSemiring C(X, R)₀ :=
   fast_instance% toContinuousMap_injective.nonUnitalCommSemiring
@@ -370,7 +370,7 @@ end Semiring
 section Ring
 
 variable {X R : Type*} [Zero X] [TopologicalSpace X]
-variable [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
+variable [Ring R] [IsMulCommutative R] [TopologicalSpace R] [IsTopologicalRing R]
 
 instance instNonUnitalCommRing : NonUnitalCommRing C(X, R)₀ :=
   fast_instance% toContinuousMap_injective.nonUnitalCommRing _ rfl
@@ -427,10 +427,10 @@ end UniformSpace
 
 section CompHoms
 
-variable {X Y M R S : Type*} [Zero X] [Zero Y] [CommSemiring M]
+variable {X Y M R S : Type*} [Zero X] [Zero Y] [Semiring M] [IsMulCommutative M]
   [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R] [TopologicalSpace S]
-  [CommSemiring R] [StarRing R] [IsTopologicalSemiring R] [ContinuousStar R]
-  [CommSemiring S] [StarRing S] [IsTopologicalSemiring S] [ContinuousStar S]
+  [Semiring R] [IsMulCommutative R] [StarRing R] [IsTopologicalSemiring R] [ContinuousStar R]
+  [Semiring S] [IsMulCommutative S] [StarRing S] [IsTopologicalSemiring S] [ContinuousStar S]
   [Module M R] [Module M S] [ContinuousConstSMul M R] [ContinuousConstSMul M S]
 
 variable (R) in
@@ -482,25 +482,25 @@ lemma isometry_toContinuousMap [MetricSpace R] [Zero R] :
     Isometry (toContinuousMap : C(α, R)₀ → C(α, R)) :=
   fun _ _ ↦ rfl
 
-noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
+noncomputable instance [NormedAddGroup R] [IsAddCommutative R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖
 
-lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
+lemma norm_def [NormedAddGroup R] [IsAddCommutative R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
   rfl
 
-noncomputable instance [NormedAddCommGroup R] : NormedAddCommGroup C(α, R)₀ where
+noncomputable instance [NormedAddGroup R] [IsAddCommutative R] : NormedAddCommGroup C(α, R)₀ where
   dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
 
-noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
+noncomputable instance [NormedRing R] [IsMulCommutative R] : NonUnitalNormedCommRing C(α, R)₀ where
   dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
   norm_mul_le f g := norm_mul_le (f : C(α, R)) g
   mul_comm f g := mul_comm f g
 
-noncomputable instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] :
+noncomputable instance [NormedField 𝕜] [NormedRing R] [IsMulCommutative R] [NormedAlgebra 𝕜 R] :
     NormedSpace 𝕜 C(α, R)₀ where
   norm_smul_le r f := norm_smul_le r (f : C(α, R))
 
-instance [NormedCommRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ where
+instance [NormedRing R] [IsMulCommutative R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ where
   norm_mul_self_le f := CStarRing.norm_mul_self_le (f : C(α, R))
 
 end Norm

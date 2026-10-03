@@ -51,7 +51,7 @@ open Submodule
 
 section
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 instance bot_isPrincipal : (⊥ : Submodule R M).IsPrincipal :=
   ⟨⟨0, by simp⟩⟩
@@ -80,7 +80,7 @@ end
 
 namespace Submodule.IsPrincipal
 
-variable [AddCommMonoid M]
+variable [AddMonoid M] [IsAddCommutative M]
 
 section Semiring
 
@@ -125,7 +125,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [Module R M]
 
 theorem associated_generator_span_self [IsDomain R] (r : R) :
     Associated (generator <| Ideal.span {r}) r := by
@@ -186,7 +186,7 @@ theorem span_gcd : Ideal.span {gcd x y} = Ideal.span {x, y} :=
 
 end
 
-variable [CommRing R] (x y z : R) [(Ideal.span {x, y}).IsPrincipal]
+variable [Ring R] [IsMulCommutative R] (x y z : R) [(Ideal.span {x, y}).IsPrincipal]
 
 theorem gcd_dvd_left : gcd x y ∣ x :=
   (Submodule.IsPrincipal.mem_iff_generator_dvd _).mp (Ideal.subset_span (by simp))
@@ -230,7 +230,7 @@ theorem associated_gcd_gcd [GCDMonoid R] : Associated (IsBezout.gcd x y) (GCDMon
 end IsBezout
 
 /-- A version of Bézout's lemma for greatest common divisors over arbitrary `Finset`s. -/
-lemma Finset.gcd_eq_sum_mul {α : Type*} [CommRing R] [IsBezout R] [NormalizedGCDMonoid R]
+lemma Finset.gcd_eq_sum_mul {α : Type*} [Ring R] [IsMulCommutative R] [IsBezout R] [NormalizedGCDMonoid R]
     (s : Finset α) (f : α → R) :
     ∃ g : α → R, s.gcd f = ∑ a ∈ s, f a * g a := by classical
   induction s using Finset.induction with
@@ -254,7 +254,7 @@ open Submodule.IsPrincipal Ideal
 -- 0 isn't prime in a non-ID PIR but the Krull dimension is still <= 1.
 -- The below result follows from this, but we could also use the below result to
 -- prove this (quotient out by p).
-theorem to_maximal_ideal [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] {S : Ideal R}
+theorem to_maximal_ideal [Ring R] [IsMulCommutative R] [IsDomain R] [IsPrincipalIdealRing R] {S : Ideal R}
     [hpi : IsPrime S] (hS : S ≠ ⊥) : IsMaximal S :=
   isMaximal_iff.2
     ⟨(ne_top_iff_one S).1 hpi.1, by
@@ -312,7 +312,7 @@ namespace PrincipalIdealRing
 
 open IsPrincipalIdealRing
 
-theorem isMaximal_of_irreducible [CommSemiring R] [IsPrincipalIdealRing R] {p : R}
+theorem isMaximal_of_irreducible [Semiring R] [IsMulCommutative R] [IsPrincipalIdealRing R] {p : R}
     (hp : Irreducible p) : Ideal.IsMaximal (span R ({p} : Set R)) :=
   ⟨⟨mt Ideal.span_singleton_eq_top.1 hp.1, fun I hI => by
       rcases principal I with ⟨a, rfl⟩
@@ -323,18 +323,18 @@ theorem isMaximal_of_irreducible [CommSemiring R] [IsPrincipalIdealRing R] {p : 
         Ideal.span_singleton_le_span_singleton, IsUnit.mul_right_dvd hb]⟩⟩
 
 theorem _root_.Ideal.irreducible_iff_isMaximal_span_singleton
-    [CommSemiring R] [IsPrincipalIdealRing R] [IsDomain R] {p : R} (hp : p ≠ 0) :
+    [Semiring R] [IsMulCommutative R] [IsPrincipalIdealRing R] [IsDomain R] {p : R} (hp : p ≠ 0) :
     Irreducible p ↔ Ideal.IsMaximal (span R ({p} : Set R)) :=
   ⟨isMaximal_of_irreducible, Ideal.irreducible_of_isMaximal_span_singleton hp⟩
 
 theorem _root_.Ideal.irreducible_iff_isMaximal_span_singleton_of_not_isField
-    [CommSemiring R] [IsPrincipalIdealRing R] [IsDomain R] (h : ¬IsField R) {p : R} :
+    [Semiring R] [IsMulCommutative R] [IsPrincipalIdealRing R] [IsDomain R] (h : ¬IsField R) {p : R} :
     Irreducible p ↔ Ideal.IsMaximal (span R ({p} : Set R)) := by
   by_cases hp : p = 0
   · simp [hp, ← Ring.isField_iff_maximal_bot, h]
   · exact Ideal.irreducible_iff_isMaximal_span_singleton hp
 
-variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+variable [Ring R] [IsMulCommutative R] [IsDomain R] [IsPrincipalIdealRing R]
 
 section
 
@@ -348,7 +348,7 @@ theorem factors_spec (a : R) (h : a ≠ 0) :
   unfold factors; rw [dite_eq_right h]
   exact Classical.choose_spec (WfDvdMonoid.exists_factors a h)
 
-theorem ne_zero_of_mem_factors {R : Type v} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+theorem ne_zero_of_mem_factors {R : Type v} [Ring R] [IsMulCommutative R] [IsDomain R] [IsPrincipalIdealRing R]
     {a b : R} (ha : a ≠ 0) (hb : b ∈ factors a) : b ≠ 0 :=
   Irreducible.ne_zero ((factors_spec a ha).1 b hb)
 
@@ -360,7 +360,7 @@ theorem mem_submonoid_of_factors_subset_of_units_subset (s : Submonoid R) {a : R
 
 /-- If a `RingHom` maps all units and all factors of an element `a` into a submonoid `s`, then it
 also maps `a` into that submonoid. -/
-theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type*} [CommRing R]
+theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type*} [Ring R] [IsMulCommutative R]
     [IsDomain R] [IsPrincipalIdealRing R] [NonAssocSemiring S] (f : R →+* S) (s : Submonoid S)
     (a : R) (ha : a ≠ 0) (h : ∀ b ∈ factors a, f b ∈ s) (hf : ∀ c : Rˣ, f c ∈ s) : f a ∈ s :=
   mem_submonoid_of_factors_subset_of_units_subset (s.comap f.toMonoidHom) ha h hf
@@ -378,7 +378,7 @@ section Surjective
 
 open Submodule
 
-variable {S N F : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Semiring S]
+variable {S N F : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Semiring S]
 variable [Module R M] [Module R N] [FunLike F R S] [RingHomClass F R S]
 
 theorem Submodule.IsPrincipal.map (f : M →ₗ[R] N) {S : Submodule R M}
@@ -424,7 +424,7 @@ section
 
 open Ideal
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 section Bezout
 variable [IsBezout R]
@@ -556,7 +556,7 @@ lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m :
   simp only [Ideal.mem_span_singleton]
   exact lcm_dvd_iff.symm
 
-lemma Ideal.exists_normalized_span_of_isPrincipal {R : Type*} [CommSemiring R]
+lemma Ideal.exists_normalized_span_of_isPrincipal {R : Type*} [Semiring R] [IsMulCommutative R]
     [NormalizationMonoid R] (I : Ideal R) [I.IsPrincipal] :
     ∃ x, normalize x = x ∧ I = Ideal.span {x} := by
   obtain ⟨x, rfl⟩ := ‹I.IsPrincipal›

@@ -513,12 +513,12 @@ theorem isQuotientMap_smul {S β} [SMul S M] [SMul S α] [IsScalarTower S M α]
     (c : S) (hc : IsUnit (c • 1 : M)) : IsQuotientMap (c • · : β → β) :=
   hf.of_comp_isQuotientMap <| by convert! hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
 
-theorem isQuotientMap_nsmul {M β} [Semiring M] [AddCommMonoid α] [Module M α]
+theorem isQuotientMap_nsmul {M β} [Semiring M] [AddMonoid α] [IsAddCommutative α] [Module M α]
     [ContinuousConstSMul M α] [AddMonoid β] (f : α →+ β) [TopologicalSpace β]
     (hf : IsQuotientMap f) (n : ℕ) (hc : IsUnit (n : M)) : IsQuotientMap (n • · : β → β) :=
   isQuotientMap_smul (M := M) ⟨f, map_nsmul f⟩ hf _ <| by rwa [nsmul_one]
 
-theorem isQuotientMap_zsmul {M β} [Ring M] [AddCommGroup α] [Module M α]
+theorem isQuotientMap_zsmul {M β} [Ring M] [AddGroup α] [IsAddCommutative α] [Module M α]
     [ContinuousConstSMul M α] [AddGroup β] (f : α →+ β) [TopologicalSpace β]
     (hf : IsQuotientMap f) (n : ℤ) (hc : IsUnit (n : M)) : IsQuotientMap (n • · : β → β) :=
   isQuotientMap_smul (M := M) ⟨f, map_zsmul f⟩ hf _ <| by rwa [zsmul_one n]

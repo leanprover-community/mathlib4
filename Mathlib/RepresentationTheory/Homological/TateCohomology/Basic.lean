@@ -54,7 +54,7 @@ https://github.com/kbuzzard/ClassFieldTheory/ for more information.
 
 universe u v
 
-variable {R G : Type u} [CommRing R] [Group G] [Fintype G] (M : Rep R G) {X Y : Rep R G}
+variable {R G : Type u} [Ring R] [IsMulCommutative R] [Group G] [Fintype G] (M : Rep R G) {X Y : Rep R G}
 
 open CategoryTheory groupCohomology groupHomology
 

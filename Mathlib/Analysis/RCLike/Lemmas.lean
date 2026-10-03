@@ -17,7 +17,7 @@ open scoped Finset
 variable {K E : Type*} [RCLike K]
 
 open ComplexOrder RCLike in
-lemma convex_RCLike_iff_convex_real [AddCommMonoid E] [Module K E] [Module ℝ E]
+lemma convex_RCLike_iff_convex_real [AddMonoid E] [IsAddCommutative E] [Module K E] [Module ℝ E]
     [IsScalarTower ℝ K E] {s : Set E} : Convex K s ↔ Convex ℝ s :=
   ⟨Convex.lift ℝ,
   fun hs => convex_of_nonneg_surjective_algebraMap _ (fun _ => nonneg_iff_exists_ofReal.mp) hs⟩
@@ -63,7 +63,7 @@ This instance generates a type-class problem with a metavariable `?m` that shoul
 instance rclike_to_real : FiniteDimensional ℝ K := ⟨{1, I}, by simp [span_one_I]⟩
 
 variable (K E)
-variable [NormedAddCommGroup E] [NormedSpace K E]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace K E]
 
 /-- A finite-dimensional vector space over an `RCLike` is a proper metric space.
 

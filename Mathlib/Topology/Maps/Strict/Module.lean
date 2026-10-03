@@ -24,7 +24,7 @@ open Topology
 namespace LinearMap
 
 variable {R S M N Nₗ M' Nₗ' : Type*} [Ring R] [Ring S] {σ : R →+* S}
-  [AddCommGroup M] [AddCommGroup N] [AddCommGroup Nₗ] [AddCommGroup M'] [AddCommGroup Nₗ']
+  [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddGroup Nₗ] [IsAddCommutative Nₗ] [AddGroup M'] [IsAddCommutative M'] [AddGroup Nₗ'] [IsAddCommutative Nₗ']
   [Module R M] [Module S N] [Module R Nₗ] [Module R M'] [Module R Nₗ']
   {f : M →ₛₗ[σ] N} {fₗ : M →ₗ[R] Nₗ} {gₗ : M' →ₗ[R] Nₗ'}
   [TopologicalSpace M] [TopologicalSpace N] [TopologicalSpace Nₗ]

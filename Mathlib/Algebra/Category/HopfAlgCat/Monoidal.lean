@@ -26,7 +26,7 @@ universe u
 namespace HopfAlgCat
 open CategoryTheory TensorProduct
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 @[simps] noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (HopfAlgCat R) where

@@ -64,7 +64,7 @@ lemma coe_scalar [Semiring R] (u : Rˣ) : ↑(scalar n u) = Matrix.scalar n u.1 
 
 end CoeFnInstance
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 section DistribMulAction
 
@@ -123,11 +123,11 @@ def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
 /-- The isomorphism from `GL n R` to the general linear group of a module
 associated with a basis. -/
 noncomputable def toLin'
-    {V : Type*} [AddCommGroup V] [Module R V] (b : Module.Basis n R V) :
+    {V : Type*} [AddGroup V] [IsAddCommutative V] [Module R V] (b : Module.Basis n R V) :
     GL n R ≃* LinearMap.GeneralLinearGroup R V :=
   toLin.trans <| LinearMap.GeneralLinearGroup.congrLinearEquiv b.equivFun.symm
 
-lemma toLin'_apply {V : Type*} [AddCommGroup V] [Module R V]
+lemma toLin'_apply {V : Type*} [AddGroup V] [IsAddCommutative V] [Module R V]
     (b : Module.Basis n R V) (M : GL n R) (v : V) :
     (toLin' b M).toLinearEquiv v = Fintype.linearCombination R ⇑b (↑M *ᵥ (b.repr v)) := by
   simp [toLin', toLin, Fintype.linearCombination_apply, MulEquiv.trans_apply]
@@ -180,7 +180,7 @@ theorem toLin_apply (v : n → R) : (toLin A : _ → n → R) v = Matrix.mulVecL
 
 end CoeLemmas
 
-variable {S T : Type*} [CommRing S] [CommRing T]
+variable {S T : Type*} [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
 @[simps! apply_val]
@@ -245,7 +245,7 @@ lemma map_scalar (u : Rˣ) : map f (scalar n u) = scalar n (Units.map f u) := by
   split <;> simp
 
 section kronecker
-variable {R m : Type*} [CommSemiring R] [Fintype m] [DecidableEq m]
+variable {R m : Type*} [Semiring R] [IsMulCommutative R] [Fintype m] [DecidableEq m]
 
 open scoped Kronecker
 
@@ -266,8 +266,8 @@ end GeneralLinearGroup
 
 namespace SpecialLinearGroup
 
-variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
-  {S : Type*} [CommRing S] [Algebra R S]
+variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [Ring R] [IsMulCommutative R]
+  {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- `toGL` is the map from the special linear group to the general linear group. -/
 def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R where
@@ -332,7 +332,7 @@ lemma mapGL_coe_matrix (g : SpecialLinearGroup n R) :
   rfl
 
 @[simp]
-lemma map_mapGL {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+lemma map_mapGL {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     (g : SpecialLinearGroup n R) :
     (mapGL S g).map (algebraMap S T) = mapGL T g := by
   ext
@@ -347,7 +347,7 @@ end SpecialLinearGroup
 section
 
 variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n]
-  [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
 
 section
 
@@ -374,7 +374,7 @@ end
 section Neg
 
 variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n]
-  [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
   [Fact (Even (Fintype.card n))]
 
 /-- Formal operation of negation on general linear group on even cardinality `n` given by negating
@@ -407,7 +407,7 @@ end Neg
 namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n]
-  {R : Type v} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  {R : Type v} [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
 
 /-- `Matrix.SpecialLinearGroup n R` embeds into `GL_pos n R` -/
 def toGLPos : SpecialLinearGroup n R →* GLPos n R where

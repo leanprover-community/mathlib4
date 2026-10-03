@@ -112,7 +112,7 @@ variable {a b : α}
 -- order.
 namespace Ideal
 
-variable [CommSemiring α] (I : Ideal α)
+variable [Semiring α] [IsMulCommutative α] (I : Ideal α)
 
 theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hk : m + n ≤ k + 1) :
@@ -244,7 +244,7 @@ end DivisionSemiring
 -- about `CommSemiring`s.
 namespace Ring
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
     ∃ (x : R) (_hx : x ≠ (0 : R)), ¬IsUnit x := by
@@ -309,7 +309,7 @@ end Ring
 
 namespace Ideal
 
-variable {R : Type*} [CommSemiring R] [Nontrivial R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [Nontrivial R]
 
 theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M :=
   (Ring.ne_bot_of_isMaximal_of_not_isField hm non_field).bot_lt

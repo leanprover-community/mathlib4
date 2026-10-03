@@ -64,7 +64,7 @@ end MonoidWithZero
 
 section CommMonoidWithZero
 
-variable {R : Type*} [CommMonoidWithZero R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] {S : Submonoid R} [OreSet S]
 
 instance : CommMonoidWithZero R[S⁻¹] where
   __ := (inferInstance : MonoidWithZero R[S⁻¹])
@@ -245,7 +245,7 @@ end DistribMulAction
 section AddCommMonoid
 
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
-variable {X : Type*} [AddCommMonoid X] [DistribMulAction R X]
+variable {X : Type*} [AddMonoid X] [IsAddCommutative X] [DistribMulAction R X]
 
 protected theorem add_comm (x y : X[S⁻¹]) : x + y = y + x := by
   induction x with | _ r s
@@ -294,7 +294,7 @@ end AddGroup
 section AddCommGroup
 
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
-variable {X : Type*} [AddCommGroup X] [DistribMulAction R X]
+variable {X : Type*} [AddGroup X] [IsAddCommutative X] [DistribMulAction R X]
 
 instance : AddCommGroup X[S⁻¹] where
   __ := (inferInstance : AddGroup X[S⁻¹])

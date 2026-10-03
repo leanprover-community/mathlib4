@@ -33,7 +33,7 @@ open scoped Polynomial
 
 section CommSemiring
 
-variable {R : Type v} {M : Type w} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type v} {M : Type w} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem ker_aeval_ring_hom'_unit_polynomial (f : End R M) (c : R[X]ˣ) :
     LinearMap.ker (aeval f (c : R[X])) = ⊥ :=
@@ -44,7 +44,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type v} {M : Type w} [CommRing R] [AddCommGroup M] [Module R M] {f : End R M} {μ : R}
+variable {R : Type v} {M : Type w} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] {f : End R M} {μ : R}
   {x : M} {p : R[X]}
 
 theorem aeval_apply_of_hasEigenvector (h : f.HasEigenvector μ x) :
@@ -111,7 +111,7 @@ end CommRing
 
 section Field
 
-variable {K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V]
+variable {K : Type v} {V : Type w} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degree q = 1) :
     eigenspace f (-q.coeff 0 / q.leadingCoeff) = LinearMap.ker (aeval f q) :=
@@ -134,7 +134,7 @@ end Module
 section FiniteSpectrum
 
 /-- An endomorphism of a finite-dimensional vector space has a finite spectrum. -/
-theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
+theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddGroup V] [IsAddCommutative V]
     [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
     Set.Finite (spectrum K f) := by
   convert! f.finite_hasEigenvalue using 1

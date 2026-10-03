@@ -50,18 +50,18 @@ theorem IsSymm.ext {A : Matrix n n α} : (∀ i j, A j i = A i j) → A.IsSymm :
 theorem IsSymm.apply {A : Matrix n n α} (h : A.IsSymm) (i j : n) : A j i = A i j :=
   IsSymm.ext_iff.1 h i j
 
-theorem isSymm_mul_transpose_self [Fintype n] [NonUnitalCommSemiring α] (A : Matrix n n α) :
+theorem isSymm_mul_transpose_self [Fintype n] [NonUnitalSemiring α] [IsMulCommutative α] (A : Matrix n n α) :
     (A * Aᵀ).IsSymm :=
   transpose_mul _ _
 
-theorem isSymm_transpose_mul_self [Fintype n] [NonUnitalCommSemiring α] (A : Matrix n n α) :
+theorem isSymm_transpose_mul_self [Fintype n] [NonUnitalSemiring α] [IsMulCommutative α] (A : Matrix n n α) :
     (Aᵀ * A).IsSymm :=
   transpose_mul _ _
 
-theorem isSymm_add_transpose_self [AddCommSemigroup α] (A : Matrix n n α) : (A + Aᵀ).IsSymm :=
+theorem isSymm_add_transpose_self [AddSemigroup α] [IsAddCommutative α] (A : Matrix n n α) : (A + Aᵀ).IsSymm :=
   add_comm _ _
 
-theorem isSymm_transpose_add_self [AddCommSemigroup α] (A : Matrix n n α) : (Aᵀ + A).IsSymm :=
+theorem isSymm_transpose_add_self [AddSemigroup α] [IsAddCommutative α] (A : Matrix n n α) : (Aᵀ + A).IsSymm :=
   add_comm _ _
 
 @[simp]
@@ -72,7 +72,7 @@ theorem isSymm_zero [Zero α] : (0 : Matrix n n α).IsSymm :=
 theorem isSymm_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α).IsSymm :=
   transpose_one
 
-theorem IsSymm.pow [CommSemiring α] [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsSymm)
+theorem IsSymm.pow [Semiring α] [IsMulCommutative α] [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsSymm)
     (k : ℕ) :
     (A ^ k).IsSymm := by
   rw [IsSymm, transpose_pow, h]
@@ -134,7 +134,7 @@ theorem isSymm_smul_iff [Monoid R] [MulAction R α] {A : Matrix n n α} (k : R) 
   rw [← invOf_smul_smul k A]
   exact h.smul ⅟k
 
-lemma IsSymm.dotProduct_mulVec_comm [Fintype n] [NonUnitalCommSemiring α]
+lemma IsSymm.dotProduct_mulVec_comm [Fintype n] [NonUnitalSemiring α] [IsMulCommutative α]
     {A : Matrix n n α} (hA : A.IsSymm) {x y : n → α} :
     x ⬝ᵥ A *ᵥ y = y ⬝ᵥ A *ᵥ x := by
   rw [dotProduct_mulVec, ← mulVec_transpose, hA.eq, dotProduct_comm]

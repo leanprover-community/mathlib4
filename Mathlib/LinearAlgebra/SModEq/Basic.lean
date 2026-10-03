@@ -22,10 +22,10 @@ open Polynomial
 
 variable {R : Type*} [Ring R]
 variable {S : Type*} [Ring S]
-variable {A : Type*} [CommRing A]
-variable {M : Type*} [AddCommGroup M] [Module R M] [Module S M] (U U₁ U₂ : Submodule R M)
+variable {A : Type*} [Ring A] [IsMulCommutative A]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [Module S M] (U U₁ U₂ : Submodule R M)
 variable {x x₁ x₂ y y₁ y₂ z : M}
-variable {N : Type*} [AddCommGroup N] [Module R N] (V : Submodule R N)
+variable {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N] (V : Submodule R N)
 
 /-- A predicate saying two elements of a module are equivalent modulo a submodule. -/
 def SModEq (x y : M) : Prop :=
@@ -154,7 +154,7 @@ theorem comap {f : M →ₗ[R] N} (hxy : f x ≡ f y [SMOD V]) : x ≡ y [SMOD V
     show f (x - y) ∈ V from (f.map_sub x y).symm ▸ (Submodule.Quotient.eq _).1 hxy
 
 @[gcongr]
-theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
+theorem eval {R : Type*} [Ring R] [IsMulCommutative R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
     f.eval x ≡ f.eval y [SMOD I] := by
   simp_rw [Polynomial.eval_eq_sum, Polynomial.sum]
   gcongr
@@ -163,7 +163,7 @@ variable (S) in
 theorem restrictScalars [SMul S R] [IsScalarTower S R M] : x ≡ y [SMOD U.restrictScalars S] ↔
     x ≡ y [SMOD U] := by simp [SModEq.sub_mem]
 
-theorem idealQuotientMk {R : Type*} [CommRing R] {I : Ideal R} {x y : R} :
+theorem idealQuotientMk {R : Type*} [Ring R] [IsMulCommutative R] {I : Ideal R} {x y : R} :
     x ≡ y [SMOD I] ↔ Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := Iff.rfl
 
 section Pointwise

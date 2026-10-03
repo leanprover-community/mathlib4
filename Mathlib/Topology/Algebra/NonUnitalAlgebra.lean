@@ -28,7 +28,7 @@ namespace NonUnitalSubalgebra
 
 section Semiring
 
-variable {R A B : Type*} [CommSemiring R] [TopologicalSpace A]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [TopologicalSpace A]
 variable [NonUnitalSemiring A] [Module R A]
 variable [ContinuousConstSMul R A]
 
@@ -105,7 +105,7 @@ end Semiring
 
 section Ring
 
-variable {R A : Type*} [CommRing R] [TopologicalSpace A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace A]
 variable [NonUnitalRing A] [Module R A]
 variable [ContinuousConstSMul R A]
 
@@ -138,7 +138,7 @@ namespace NonUnitalAlgebra
 
 open NonUnitalSubalgebra
 
-variable (R : Type*) {A : Type*} [CommSemiring R] [NonUnitalSemiring A]
+variable (R : Type*) {A : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [TopologicalSpace A] [IsSemitopologicalSemiring A] [ContinuousConstSMul R A]
 

@@ -34,7 +34,7 @@ namespace Ring
 
 noncomputable section NormalClosure
 
-variable (R S : Type*) [CommRing R] [CommRing S] [IsDomain R] [IsDomain S]
+variable (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [IsDomain R] [IsDomain S]
   [Algebra R S] [Module.IsTorsionFree R S]
 
 /--

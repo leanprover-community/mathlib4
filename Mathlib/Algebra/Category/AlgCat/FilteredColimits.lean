@@ -25,7 +25,7 @@ universe w v u
 
 open CategoryTheory Limits
 
-variable {R : Type u} [CommRing R] {J : Type*} [Category* J] {F : J ⥤ AlgCat.{v} R}
+variable {R : Type u} [Ring R] [IsMulCommutative R] {J : Type*} [Category* J] {F : J ⥤ AlgCat.{v} R}
   [PreservesColimitsOfShape J (forget RingCat.{v})]
 
 section

@@ -26,7 +26,7 @@ See `traceForm_dualBasis_powerBasis_eq`.
 
 open Polynomial Module Algebra
 
-variable (R K) {L S} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S] [Algebra K L]
+variable (R K) {L S} [Ring R] [IsMulCommutative R] [Field K] [Field L] [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra K L]
 variable (x : S)
 
 /-- `minpolyDiv R x : S[X]` for `x : S` is the polynomial `minpoly R x / (X - C x)`. -/
@@ -56,7 +56,7 @@ lemma minpolyDiv_eval_eq_zero_of_ne_of_aeval_eq_zero [IsDomain S]
   simp only [eval_mul, eval_sub, eval_X, eval_C, mul_eq_zero] at hy
   exact hy.resolve_right (by rwa [sub_eq_zero])
 
-lemma eval₂_minpolyDiv_of_eval₂_eq_zero {T} [CommRing T]
+lemma eval₂_minpolyDiv_of_eval₂_eq_zero {T} [Ring T] [IsMulCommutative T]
     [IsDomain T] [DecidableEq T] {x y}
     (σ : S →+* T) (hy : eval₂ (σ.comp (algebraMap R S)) y (minpoly R x) = 0) :
     eval₂ σ y (minpolyDiv R x) =
@@ -66,7 +66,7 @@ lemma eval₂_minpolyDiv_of_eval₂_eq_zero {T} [CommRing T]
   · rw [← eval₂_map, ← minpolyDiv_spec] at hy
     simpa [sub_eq_zero, Ne.symm h] using hy
 
-lemma eval₂_minpolyDiv_self {T} [CommRing T] [Algebra R T] [IsDomain T] [DecidableEq T] (x : S)
+lemma eval₂_minpolyDiv_self {T} [Ring T] [IsMulCommutative T] [Algebra R T] [IsDomain T] [DecidableEq T] (x : S)
     (σ₁ σ₂ : S →ₐ[R] T) :
     eval₂ σ₁ (σ₂ x) (minpolyDiv R x) =
       if σ₁ x = σ₂ x then σ₁ (aeval x (derivative <| minpoly R x)) else 0 := by

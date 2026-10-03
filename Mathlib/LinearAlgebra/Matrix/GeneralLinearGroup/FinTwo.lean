@@ -32,7 +32,7 @@ namespace Matrix
 
 section CommRing
 
-variable {R : Type*} [CommRing R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
 /-- A `2 × 2` matrix is *parabolic* if it is non-scalar and its discriminant is 0. -/
 def IsParabolic : Prop := m ∉ Set.range (scalar _) ∧ m.discr = 0
@@ -129,7 +129,7 @@ end Field
 
 section Preorder
 
-variable {R : Type*} [CommRing R] [Preorder R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] [Preorder R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
 /-- A `2 × 2` matrix is *hyperbolic* if its discriminant is strictly positive. -/
 def IsHyperbolic : Prop := 0 < m.discr
@@ -167,7 +167,7 @@ end Preorder
 
 section LinearOrder
 
-variable {R : Type*} [CommRing R] [LinearOrder R] [IsOrderedRing R] {m : Matrix (Fin 2) (Fin 2) R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] [LinearOrder R] [IsOrderedRing R] {m : Matrix (Fin 2) (Fin 2) R}
 
 theorem IsElliptic.bc_ne_zero (hm : m.IsElliptic) : m 0 1 * m 1 0 ≠ 0 := by
   intro hc
@@ -202,7 +202,7 @@ lemma injective_upperRightHom : Function.Injective (upperRightHom (R := R)) := b
 
 end Ring
 
-variable {R K : Type*} [CommRing R] [Field K]
+variable {R K : Type*} [Ring R] [IsMulCommutative R] [Field K]
 
 /-- Synonym of `Matrix.IsParabolic`, for dot-notation. -/
 abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic

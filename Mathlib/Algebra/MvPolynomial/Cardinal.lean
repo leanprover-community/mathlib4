@@ -31,7 +31,7 @@ namespace MvPolynomial
 
 section TwoUniverses
 
-variable {σ : Type u} {R : Type v} [CommSemiring R]
+variable {σ : Type u} {R : Type v} [Semiring R] [IsMulCommutative R]
 
 -- We want this to have higher priority than `AddMonoidAlgebra.cardinalMk_eq_max_lift_of_infinite`.
 @[simp high]
@@ -50,13 +50,13 @@ theorem cardinalMk_eq_one [Subsingleton R] : #(MvPolynomial σ R) = 1 := mk_eq_o
 of `#R`, `#σ` and `ℵ₀`.
 
 See `cardinalMk_le_max` for the universe monomorphic version. -/
-theorem cardinalMk_le_max_lift {σ : Type u} {R : Type v} [CommSemiring R] :
+theorem cardinalMk_le_max_lift {σ : Type u} {R : Type v} [Semiring R] [IsMulCommutative R] :
     #(MvPolynomial σ R) ≤ lift.{u} #R ⊔ lift.{v} #σ ⊔ ℵ₀ := by
   nontriviality R; cases isEmpty_or_nonempty σ <;> simp
 
 end TwoUniverses
 
-variable {σ R : Type u} [CommSemiring R]
+variable {σ R : Type u} [Semiring R] [IsMulCommutative R]
 
 theorem cardinalMk_eq_max [Nonempty σ] [Nontrivial R] : #(MvPolynomial σ R) = #R ⊔ #σ ⊔ ℵ₀ := by
   simp [sup_assoc]

@@ -37,7 +37,7 @@ open Real EuclideanGeometry Real Module
 
 open scoped RealInnerProductSpace
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V]
 
 namespace InnerProductGeometry
 

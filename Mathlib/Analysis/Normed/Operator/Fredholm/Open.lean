@@ -33,7 +33,7 @@ open Topology Submodule Module LinearMap
 namespace ContinuousLinearMap
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
     [CompleteSpace E]
 
 /-- Let `T₀ : E → F` be a Fredholm operator between two Banach spaces, and choose a

@@ -32,10 +32,10 @@ and `Frac R` denotes the fraction field of a domain `R`.
 
 open FractionalIdeal nonZeroDivisors IntermediateField Algebra Module Submodule
 
-variable (A B : Type*) {K L : Type*} [CommRing A] [Field K] [Algebra A K] [IsFractionRing A K]
-  [CommRing B] [Field L] [Algebra B L] [Algebra A L] [Algebra K L] [FiniteDimensional K L]
+variable (A B : Type*) {K L : Type*} [Ring A] [IsMulCommutative A] [Field K] [Algebra A K] [IsFractionRing A K]
+  [Ring B] [IsMulCommutative B] [Field L] [Algebra B L] [Algebra A L] [Algebra K L] [FiniteDimensional K L]
   [IsScalarTower A K L]
-variable (R₁ R₂ : Type*) [CommRing R₁] [CommRing R₂] [IsDomain R₁] [Algebra A R₁] [Algebra A R₂]
+variable (R₁ R₂ : Type*) [Ring R₁] [IsMulCommutative R₁] [Ring R₂] [IsMulCommutative R₂] [IsDomain R₁] [Algebra A R₁] [Algebra A R₂]
   [Algebra R₁ B] [Algebra R₂ B] [Algebra R₁ L] [Algebra R₂ L]
   [IsScalarTower A R₁ L] [IsScalarTower R₁ B L] [IsScalarTower R₂ B L] [Module.Finite A R₂]
 variable {F₁ F₂ : IntermediateField K L} [Algebra R₁ F₁] [Algebra R₂ F₂] [IsTorsionFree R₁ F₁]

@@ -70,8 +70,8 @@ open scoped UniformConvergence Uniformity
 
 variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂)
   {E F G : Type*}
-  [AddCommGroup E] [Module 𝕜₁ E] [TopologicalSpace E]
-  [AddCommGroup F] [Module 𝕜₂ F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜₁ E] [TopologicalSpace E]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
 variable (F)
 
 /-- Given `E` and `F` two topological vector spaces and `𝔖 : Set (Set E)`, then
@@ -362,7 +362,7 @@ theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpac
 set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 theorem isUniformInducing_postcomp
-    [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
+    [AddGroup G] [IsAddCommutative G] [UniformSpace G] [IsUniformAddGroup G]
     {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [IsUniformAddGroup F]
     (g : F →SL[τ] G) (hg : IsUniformInducing g) (𝔖 : Set (Set E)) :
@@ -373,7 +373,7 @@ theorem isUniformInducing_postcomp
 
 variable {F} in
 theorem isUniformEmbedding_postcomp
-    [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
+    [AddGroup G] [IsAddCommutative G] [UniformSpace G] [IsUniformAddGroup G]
     {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [IsUniformAddGroup F]
     (g : F →SL[τ] G) (hg : IsUniformEmbedding g) (𝔖 : Set (Set E)) :
@@ -420,7 +420,7 @@ in curried form, it defines a continuous linear map `E →L[𝕜] (F →Lᵤ[�
 
 Note that, in full generality, the converse is not true.
 See also `ContinuousLinearMap.continuous_of_continuous_uncurry`. -/
-protected theorem continuous_of_continuous_uncurry [AddCommGroup G]
+protected theorem continuous_of_continuous_uncurry [AddGroup G] [IsAddCommutative G]
     {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₃ →+* 𝕜₂} [RingHomSurjective τ]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F]
@@ -474,9 +474,9 @@ namespace ContinuousLinearMap
 open scoped UniformConvergenceCLM
 
 variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
-  {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*} [AddCommGroup E]
-  [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F]
-  [AddCommGroup G] [Module 𝕜₃ G] [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
+  {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*} [AddGroup E] [IsAddCommutative E]
+  [Module 𝕜₁ E] [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜₃ G] [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
 variable (𝔖 : Set (Set E)) (𝔗 : Set (Set F))
 
@@ -527,8 +527,8 @@ section Pi
 open scoped UniformConvergenceCLM
 
 variable (𝕜 : Type*) [NormedField 𝕜] {E ι : Type*} (F : ι → Type*)
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
+  [∀ i, AddGroup (F i)] [∀ i, IsAddCommutative (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -577,7 +577,7 @@ open scoped UniformConvergenceCLM
 section Semilinear
 
 variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
-  {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  {G : Type*} {H : Type*} [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [AddGroup G] [IsAddCommutative G] [AddGroup H] [IsAddCommutative H]
   [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
@@ -628,7 +628,7 @@ end Semilinear
 section Linear
 
 variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*}
-  [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [AddGroup G] [IsAddCommutative G] [AddGroup H] [IsAddCommutative H]
   [NormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]

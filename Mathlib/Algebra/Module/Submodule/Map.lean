@@ -37,7 +37,7 @@ namespace Submodule
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
@@ -70,7 +70,7 @@ theorem map_toAddSubmonoid' (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M)
   SetLike.coe_injective rfl
 
 @[simp]
-theorem _root_.AddMonoidHom.coe_toIntLinearMap_map {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_map {A A₂ : Type*} [AddGroup A] [IsAddCommutative A] [AddGroup A₂] [IsAddCommutative A₂]
     (f : A →+ A₂) (s : AddSubgroup A) :
     (AddSubgroup.toIntSubmodule s).map f.toIntLinearMap =
       AddSubgroup.toIntSubmodule (s.map f) := rfl
@@ -179,7 +179,7 @@ theorem comap_coe (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂) : (
   rfl
 
 @[simp]
-theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
+theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddGroup A] [IsAddCommutative A] [AddGroup A₂] [IsAddCommutative A₂]
     (f : A →+ A₂) (s : AddSubgroup A₂) :
     (AddSubgroup.toIntSubmodule s).comap f.toIntLinearMap =
       AddSubgroup.toIntSubmodule (s.comap f) := rfl
@@ -477,8 +477,8 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M)
-variable [AddCommGroup M₂] [Module R M₂]
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] (p : Submodule R M)
+variable [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂]
 
 @[simp]
 protected theorem map_neg (f : M →ₗ[R] M₂) : map (-f) p = map f p :=
@@ -503,8 +503,8 @@ namespace Submodule
 
 variable {K : Type*} {V : Type*} {V₂ : Type*}
 variable [Semifield K]
-variable [AddCommMonoid V] [Module K V]
-variable [AddCommMonoid V₂] [Module K V₂]
+variable [AddMonoid V] [IsAddCommutative V] [Module K V]
+variable [AddMonoid V₂] [IsAddCommutative V₂] [Module K V₂]
 
 theorem comap_smul (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) (h : a ≠ 0) :
     p.comap (a • f) = p.comap f := by
@@ -529,7 +529,7 @@ namespace Submodule
 
 section Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- If `s ≤ t`, then we can view `s` as a submodule of `t` by taking the comap
 of `t.subtype`. -/
@@ -549,7 +549,7 @@ end Submodule
 namespace Submodule
 
 variable [Semiring R] [Semiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
@@ -600,9 +600,9 @@ end Submodule
 namespace Submodule
 
 variable {S N N₂ : Type*}
-variable [CommSemiring S] [Semiring R] [CommSemiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
-variable [AddCommMonoid N] [AddCommMonoid N₂] [Module S N] [Module S N₂]
+variable [Semiring S] [IsMulCommutative S] [Semiring R] [Semiring R₂] [IsMulCommutative R₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R₂ M₂]
+variable [AddMonoid N] [IsAddCommutative N] [AddMonoid N₂] [IsAddCommutative N₂] [Module S N] [Module S N₂]
 variable {τ₁₂ : R →+* R₂}
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
 variable (pₗ : Submodule S N) (qₗ : Submodule S N₂)
@@ -633,7 +633,7 @@ end Submodule
 namespace LinearMap
 
 variable [Semiring R] [Semiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R₂ M₂]
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 
 /-- The `LinearMap` from the preimage of a submodule to itself.
@@ -722,7 +722,7 @@ section AddCommMonoid
 section
 
 variable [Semiring R] [Semiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable {module_M : Module R M} {module_M₂ : Module R₂ M₂}
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}

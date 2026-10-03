@@ -16,9 +16,9 @@ public import Mathlib.RingTheory.Ideal.Operations
 
 public section
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
-lemma Finsupp.submodule_smul {M : Type*} [AddCommGroup M] [Module R M]
+lemma Finsupp.submodule_smul {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
     (ι : Type*) (p : ι → Submodule R M) (I : Ideal R) :
     Finsupp.submodule (fun i ↦ I • p i) = I • Finsupp.submodule p := by
   simp only [Finsupp.submodule_eq_iSup, Submodule.map_smul'', ← Submodule.smul_iSup]

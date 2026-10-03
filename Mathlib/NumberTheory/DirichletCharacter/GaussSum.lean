@@ -13,7 +13,7 @@ public import Mathlib.NumberTheory.GaussSum
 -/
 
 public section
-variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
+variable {N : ℕ} [NeZero N] {R : Type*} [Ring R] [IsMulCommutative R] (e : AddChar (ZMod N) R)
 
 open AddChar DirichletCharacter
 

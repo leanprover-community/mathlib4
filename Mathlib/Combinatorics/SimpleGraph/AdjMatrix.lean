@@ -377,7 +377,7 @@ theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) 
 
 variable (α) in
 @[simp]
-theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix α) = 0 := by
+theorem trace_adjMatrix [AddMonoid α] [IsAddCommutative α] [One α] : Matrix.trace (G.adjMatrix α) = 0 := by
   simp [Matrix.trace]
 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :

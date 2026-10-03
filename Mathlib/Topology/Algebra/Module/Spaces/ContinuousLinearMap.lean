@@ -62,9 +62,9 @@ section BoundedConvergence
 /-! ### Topology of bounded convergence  -/
 
 variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
-  {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*} [AddCommGroup E]
-  [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F]
-  [AddCommGroup G] [Module 𝕜₃ G] [TopologicalSpace E]
+  {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*} [AddGroup E] [IsAddCommutative E]
+  [Module 𝕜₁ E] [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜₃ G] [TopologicalSpace E]
 
 /-- The topology of bounded convergence on `E →L[𝕜] F`. This coincides with the topology induced by
 the operator norm when `E` and `F` are normed spaces. -/
@@ -258,8 +258,8 @@ end BoundedConvergence
 section Pi
 
 variable (𝕜 : Type*) [NormedField 𝕜] (E : Type*) {ι : Type*} (F : ι → Type*)
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
+  [∀ i, AddGroup (F i)] [∀ i, IsAddCommutative (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
 
 /-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
@@ -286,9 +286,9 @@ If `f` is a continuous bilinear map, to use the corresponding rules for the seco
 section AddCommMonoid
 variable
   [Semiring R] [NormedField 𝕜₂] [NormedField 𝕜₃]
-  [AddCommMonoid E] [Module R E] [TopologicalSpace E]
-  [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
-  [AddCommGroup G] [Module 𝕜₃ G]
+  [AddMonoid E] [IsAddCommutative E] [Module R E] [TopologicalSpace E]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F] [TopologicalSpace F]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜₃ G]
   [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
   {σ₁₃ : R →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
@@ -324,9 +324,9 @@ end AddCommMonoid
 section Nonsemilinear
 variable
   [NormedField 𝕜₂] [NormedField 𝕜₃]
-  [AddCommMonoid E] [Module 𝕜₃ E] [TopologicalSpace E]
-  [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
-  [AddCommGroup G] [Module 𝕜₃ G]
+  [AddMonoid E] [IsAddCommutative E] [Module 𝕜₃ E] [TopologicalSpace E]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F] [TopologicalSpace F]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜₃ G]
   [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
   {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
@@ -339,9 +339,9 @@ end Nonsemilinear
 section AddCommGroup
 variable
   [Semiring R] [NormedField 𝕜₂] [NormedField 𝕜₃]
-  [AddCommGroup E] [Module R E] [TopologicalSpace E]
-  [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
-  [AddCommGroup G] [Module 𝕜₃ G]
+  [AddGroup E] [IsAddCommutative E] [Module R E] [TopologicalSpace E]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F] [TopologicalSpace F]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜₃ G]
   [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
   {σ₁₃ : R →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
@@ -354,7 +354,7 @@ theorem map_neg₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
 end AddCommGroup
 
 section BilinForm
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [NormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- Send a continuous bilinear form to an abstract bilinear form (forgetting continuity). -/
 def toBilinForm (L : E →L[𝕜] E →L[𝕜] 𝕜) : LinearMap.BilinForm 𝕜 E := L.toLinearMap₁₂
@@ -376,8 +376,8 @@ end BilinearMaps
 section RestrictScalars
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-  {F : Type*} [AddCommGroup F]
+  {E : Type*} [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+  {F : Type*} [AddGroup F] [IsAddCommutative F]
 
 section UniformSpace
 
@@ -437,11 +437,11 @@ end RestrictScalars
 section Prod
 
 variable {𝕜 E F G : Type*} (S : Type*) [NormedField 𝕜] [Semiring S]
-  [AddCommGroup E] [Module 𝕜 E]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-  [AddCommGroup F] [Module 𝕜 F]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜 F]
   [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
-  [AddCommGroup G] [Module 𝕜 G]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜 G]
   [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
   [Module S G] [SMulCommClass 𝕜 S G] [ContinuousConstSMul S G]
 
@@ -469,7 +469,7 @@ def prodL : ((E →L[𝕜] F) × (E →L[𝕜] G)) ≃L[S] (E →L[𝕜] F × G)
 
 end Prod
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 /-- `ContinuousLinearMap.toSpanSingleton` as a continuous linear equivalence. -/
@@ -491,7 +491,7 @@ namespace ContinuousLinearEquiv
 section Semilinear
 
 variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
-  {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  {G : Type*} {H : Type*} [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [AddGroup G] [IsAddCommutative G] [AddGroup H] [IsAddCommutative H]
   [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
@@ -522,8 +522,8 @@ end Semilinear
 
 section Linear
 
-variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*} [AddCommGroup E]
-  [AddCommGroup F] [AddCommGroup G] [AddCommGroup H] [NormedField 𝕜] [Module 𝕜 E]
+variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*} [AddGroup E] [IsAddCommutative E]
+  [AddGroup F] [IsAddCommutative F] [AddGroup G] [IsAddCommutative G] [AddGroup H] [IsAddCommutative H] [NormedField 𝕜] [Module 𝕜 E]
   [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H] [TopologicalSpace E] [TopologicalSpace F]
   [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
   [ContinuousConstSMul 𝕜 G] [ContinuousConstSMul 𝕜 H]

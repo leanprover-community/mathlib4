@@ -21,7 +21,7 @@ public section
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] [Ring.KrullDimLE 0 R] (I : Ideal R)
+variable {R : Type*} [Semiring R] [IsMulCommutative R] [Ring.KrullDimLE 0 R] (I : Ideal R)
 
 lemma Ring.KrullDimLE.mem_minimalPrimes_iff {I J : Ideal R} :
     I ∈ J.minimalPrimes ↔ I.IsPrime ∧ J ≤ I :=
@@ -68,7 +68,7 @@ lemma ringKrullDimZero_iff_ringKrullDim_eq_zero [Nontrivial R] :
 /-- A quotient `R ⧸ I` has krull dimension at most zero if and only if all minimal primes over `I`
 are maximal. -/
 theorem Ideal.krullDimLE_zero_quotient_iff_forall_minimalPrimes_isMaximal
-    {R : Type*} [CommRing R] {I : Ideal R} :
+    {R : Type*} [Ring R] [IsMulCommutative R] {I : Ideal R} :
     Ring.KrullDimLE 0 (R ⧸ I) ↔ ∀ J ∈ I.minimalPrimes, J.IsMaximal := by
   rw [Ring.krullDimLE_zero_iff_forall_minimalPrimes_isMaximal, minimalPrimes_eq_comap,
     Set.forall_mem_image]
@@ -166,7 +166,7 @@ theorem Ring.KrullDimLE.of_isMaximal_nilradical [(nilradical R).IsMaximal] :
 
 omit [Ring.KrullDimLE 0 R] in
 lemma Ring.KrullDimLE.of_isLocalization (p : Ideal R) (hp : p ∈ minimalPrimes R)
-    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization.AtPrime S p (hp := hp.1.1)] :
+    (S : Type*) [Semiring S] [IsMulCommutative S] [Algebra R S] [IsLocalization.AtPrime S p (hp := hp.1.1)] :
     Ring.KrullDimLE 0 S :=
   have := IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes p hp S
   ⟨Order.krullDim_nonpos_of_subsingleton⟩
@@ -180,7 +180,7 @@ instance PrimeSpectrum.unique_of_ringKrullDimLE_zero [IsLocalRing R] : Unique (P
     fun _ ↦ PrimeSpectrum.ext (Ring.KrullDimLE.eq_maximalIdeal_of_isPrime _)⟩
 
 lemma PrimeSpectrum.subsingleton_iff_isField_of_isReduced
-    {R : Type*} [CommRing R] [IsReduced R] [Nontrivial R] :
+    {R : Type*} [Ring R] [IsMulCommutative R] [IsReduced R] [Nontrivial R] :
     Subsingleton (PrimeSpectrum R) ↔ IsField R := by
   refine ⟨fun H ↦ ?_, fun H ↦ letI := H.toField; inferInstance⟩
   have : Subsingleton (MaximalSpectrum R) := MaximalSpectrum.toPrimeSpectrum_injective.subsingleton
@@ -193,7 +193,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R)
 
 lemma Ideal.jacobson_eq_radical [Ring.KrullDimLE 0 R] : I.jacobson = I.radical := by
   simp [jacobson, radical_eq_sInf, Ideal.isMaximal_iff_isPrime]

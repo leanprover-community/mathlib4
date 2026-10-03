@@ -23,7 +23,7 @@ variable {s : Finset α} {a : α}
 
 namespace Finset
 
-variable [CommMonoid β]
+variable [Monoid β] [IsMulCommutative β]
 
 /-- A product over all subsets of `s ∪ {x}` is obtained by multiplying the product over all subsets
 of `s`, and over all subsets of `s` to which one adds `x`. -/

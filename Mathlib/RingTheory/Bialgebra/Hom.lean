@@ -35,7 +35,7 @@ universe u v w
 /-- Given `R`-algebras `A, B` with comultiplication maps `Δ_A, Δ_B` and counit maps
 `ε_A, ε_B`, an `R`-bialgebra homomorphism `A →ₐc[R] B` is an `R`-algebra map `f` such that
 `ε_B ∘ f = ε_A` and `(f ⊗ f) ∘ Δ_A = Δ_B ∘ f`. -/
-structure BialgHom (R A B : Type*) [CommSemiring R]
+structure BialgHom (R A B : Type*) [Semiring R] [IsMulCommutative R]
     [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗc[R] B, A →* B
 
@@ -51,7 +51,7 @@ notation:25 A " →ₐc[" R "] " B => BialgHom R A B
 /-- `BialgHomClass F R A B` asserts `F` is a type of bundled bialgebra homomorphisms
 from `A` to `B`. -/
 class BialgHomClass (F : Type*) (R A B : outParam Type*)
-    [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+    [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
     extends CoalgHomClass F R A B, MonoidHomClass F A B
 
@@ -61,7 +61,7 @@ variable {R A B F : Type*}
 
 section
 
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
   [BialgHomClass F R A B]
 
@@ -86,7 +86,7 @@ instance instCoeToBialgHom :
 
 end
 section
-variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Semiring B] [Bialgebra R B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Bialgebra R A] [Semiring B] [Bialgebra R B]
   [FunLike F A B] [BialgHomClass F R A B]
 
 @[simp]
@@ -105,7 +105,7 @@ end BialgHomClass
 
 namespace BialgHom
 
-variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+variable {R A B C D : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
 
 section AlgebraCoalgebra
 
@@ -129,7 +129,7 @@ instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
   map_one := fun f => f.map_one'
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R α β : Type*} [CommSemiring R]
+def Simps.apply {R α β : Type*} [Semiring R] [IsMulCommutative R]
     [Semiring α] [Algebra R α] [Semiring β]
     [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α →ₐc[R] β) : α → β := f
@@ -339,7 +339,7 @@ theorem map_comp_comulAlgHom (f : A →ₐc[R] B) :
 end BialgHom
 
 namespace Bialgebra
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Bialgebra R A]
 
 variable (R A) in
 /-- The unit of a bialgebra as a `BialgHom`. -/

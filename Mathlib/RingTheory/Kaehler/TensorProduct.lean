@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.Localization.BaseChange
 
 @[expose] public section
 
-variable (R S A B : Type*) [CommRing R] [CommRing S] [Algebra R S] [CommRing A] [CommRing B]
+variable (R S A B : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
 variable [Algebra R A] [Algebra R B]
 variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 

@@ -88,7 +88,7 @@ theorem ascPochhammer_eval₂ (f : S →+* T) (n : ℕ) (t : T) :
   rw [← ascPochhammer_map f]
   exact eval_map f t
 
-theorem ascPochhammer_eval_comp {R : Type*} [CommSemiring R] (n : ℕ) (p : R[X]) [Algebra R S]
+theorem ascPochhammer_eval_comp {R : Type*} [Semiring R] [IsMulCommutative R] (n : ℕ) (p : R[X]) [Algebra R S]
     (x : S) : ((ascPochhammer S n).comp (p.map (algebraMap R S))).eval x =
     (ascPochhammer S n).eval (p.eval₂ (algebraMap R S) x) := by
   rw [ascPochhammer_eval₂ (algebraMap R S), ← eval₂_comp', ← ascPochhammer_map (algebraMap R S),
@@ -454,7 +454,7 @@ theorem descPochhammer_eval_coe_nat_of_lt {k n : ℕ} (h : k < n) :
     ← Nat.cast_add_one, ← neg_sub, ← Nat.cast_sub h]
   exact ascPochhammer_eval_neg_coe_nat_of_lt (Nat.sub_lt_of_pos_le k.succ_pos h)
 
-lemma descPochhammer_eval_eq_prod_range {R : Type*} [CommRing R] (n : ℕ) (r : R) :
+lemma descPochhammer_eval_eq_prod_range {R : Type*} [Ring R] [IsMulCommutative R] (n : ℕ) (r : R) :
     (descPochhammer R n).eval r = ∏ j ∈ Finset.range n, (r - j) := by
   induction n with
   | zero => simp

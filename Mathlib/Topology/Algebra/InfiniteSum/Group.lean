@@ -30,7 +30,7 @@ variable {α β γ : Type*} {L : SummationFilter β}
 
 section IsTopologicalGroup
 
-variable [CommGroup α] [TopologicalSpace α] [IsTopologicalGroup α]
+variable [Group α] [IsMulCommutative α] [TopologicalSpace α] [IsTopologicalGroup α]
 variable {f g : β → α} {a a₁ a₂ : α}
 
 -- `by simpa using` speeds up elaboration. Why?
@@ -201,11 +201,11 @@ variable [UniformSpace α]
 /-- The **Cauchy criterion** for infinite products, also known as the **Cauchy convergence test** -/
 @[to_additive /-- The **Cauchy criterion** for infinite sums, also known as the
 **Cauchy convergence test** -/]
-theorem multipliable_iff_cauchySeq_finset [CommMonoid α] [CompleteSpace α] {f : β → α} :
+theorem multipliable_iff_cauchySeq_finset [Monoid α] [IsMulCommutative α] [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   exact cauchy_map_iff_exists_tendsto.symm
 
-variable [CommGroup α] [IsUniformGroup α] {f g : β → α}
+variable [Group α] [IsMulCommutative α] [IsUniformGroup α] {f g : β → α}
 
 @[to_additive]
 theorem cauchySeq_finset_iff_prod_vanishing :
@@ -324,7 +324,7 @@ end IsUniformGroup
 
 section IsTopologicalGroup
 
-variable {G : Type*} [TopologicalSpace G] [CommGroup G] [IsTopologicalGroup G] {f : α → G}
+variable {G : Type*} [TopologicalSpace G] [Group G] [IsMulCommutative G] [IsTopologicalGroup G] {f : α → G}
 
 @[to_additive]
 theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
@@ -371,7 +371,7 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
 
 @[to_additive]
 theorem Multipliable.hasFiniteMulSupport_of_discreteTopology
-    {α : Type*} [CommGroup α] [TopologicalSpace α] [DiscreteTopology α]
+    {α : Type*} [Group α] [IsMulCommutative α] [TopologicalSpace α] [DiscreteTopology α]
     {β : Type*} (f : β → α) (h : Multipliable f) : HasFiniteMulSupport f :=
   haveI : IsTopologicalGroup α := ⟨⟩
   h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
@@ -417,7 +417,7 @@ end IsTopologicalGroup
 
 section CommGroupWithZero
 
-variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K]
+variable {K : Type*} [GroupWithZero K] [IsMulCommutative K] [TopologicalSpace K]
   {f g : α → K} {L : SummationFilter α}
 
 /-!

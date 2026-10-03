@@ -57,7 +57,7 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 
 variable {ι : Type*} [Fintype ι]
 variable {𝕜 : Type*}
-variable {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)]
+variable {E : ι → Type*} [∀ i, SeminormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)]
 
 open scoped TensorProduct
 
@@ -144,7 +144,7 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
-theorem norm_eval_le_projectiveSeminorm {G : Type*} [SeminormedAddCommGroup G]
+theorem norm_eval_le_projectiveSeminorm {G : Type*} [SeminormedAddGroup G] [IsAddCommutative G]
     [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * ‖x‖ := by
   rw [norm_def, mul_comm, Real.iInf_mul_of_nonneg (norm_nonneg _)]
@@ -156,7 +156,7 @@ theorem norm_eval_le_projectiveSeminorm {G : Type*} [SeminormedAddCommGroup G]
   simpa [norm_smul, ← mul_assoc, mul_comm ‖f‖ _] using
     fun a m _ ↦ mul_le_mul_of_nonneg_left (f.le_opNorm _) (norm_nonneg _)
 
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [SeminormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 variable (𝕜 E F)
 
@@ -217,8 +217,8 @@ theorem liftIsometry_tprodL :
 section map
 
 variable {E' E'' : ι → Type*}
-variable [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
-variable [∀ i, SeminormedAddCommGroup (E'' i)] [∀ i, NormedSpace 𝕜 (E'' i)]
+variable [∀ i, SeminormedAddGroup (E' i)] [∀ i, IsAddCommutative (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
+variable [∀ i, SeminormedAddGroup (E'' i)] [∀ i, IsAddCommutative (E'' i)] [∀ i, NormedSpace 𝕜 (E'' i)]
 variable (g : Π i, E' i →L[𝕜] E'' i) (f : Π i, E i →L[𝕜] E' i)
 
 /-- Let `Eᵢ` and `E'ᵢ` be two families of normed `𝕜`-vector spaces.
@@ -279,8 +279,8 @@ protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
 -- to avoid the `[Fintype ι]` assumption present throughout the rest of the file.
 open Function in
 private theorem mapL_add_smul_aux {ι : Type*}
-    {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-    {E' : ι → Type*} [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
+    {E : ι → Type*} [∀ i, SeminormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    {E' : ι → Type*} [∀ i, SeminormedAddGroup (E' i)] [∀ i, IsAddCommutative (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
     (f : (i : ι) → E i →L[𝕜] E' i) [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
     (fun j ↦ (update f i u j).toLinearMap) =
       update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by

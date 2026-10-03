@@ -16,7 +16,7 @@ public import Mathlib.RepresentationTheory.Basic
 
 open scoped MonoidAlgebra
 
-variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [IsMulCommutative k] [Monoid G] [AddMonoid V] [IsAddCommutative V] [Module k V]
   (ρ : Representation k G V)
 
 namespace Representation

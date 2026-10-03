@@ -30,7 +30,7 @@ variable (R S M₁ M₂ M₃ : Type*)
 
 namespace TensorProduct
 
-variable [CommSemiring R] [Semiring S] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Algebra R S]
 variable [Module R M₁] [Module S M₁] [IsScalarTower R S M₁] [Module R M₂] [Module R M₃]
 

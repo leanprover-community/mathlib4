@@ -38,12 +38,12 @@ section OrderedRing
 abstract affine combination spaces, this will no longer need to be a separate definition from
 `segment`. However, lemmas involving `+ᵥ` or `-ᵥ` will still be relevant after such a
 refactoring, as distinct from versions involving `+` or `-` in a module. -/
-def affineSegment [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V]
+def affineSegment [Ring R] [PartialOrder R] [AddGroup V] [IsAddCommutative V] [Module R V]
     [AddTorsor V P] (x y : P) :=
   lineMap x y '' Set.Icc (0 : R) 1
 
-variable [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
+variable [Ring R] [PartialOrder R] [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
+variable [AddGroup V'] [IsAddCommutative V'] [Module R V'] [AddTorsor V' P']
 
 lemma affineSegment_subset_affineSpan (x y : P) : affineSegment R x y ⊆ line[R, x, y] := by
   rw [affineSegment, Set.subset_def]
@@ -728,8 +728,8 @@ end OrderedRing
 
 section StrictOrderedCommRing
 
-variable [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [IsMulCommutative R] [PartialOrder R] [IsStrictOrderedRing R]
+  [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
 variable {R}
 
 theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ y) := by
@@ -748,7 +748,7 @@ end StrictOrderedCommRing
 section LinearOrderedRing
 
 variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup V] [Module R V] [AddTorsor V P]
+  [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
 variable {R}
 
 /-- Suppose lines from two vertices of a triangle to interior points of the opposite side meet at
@@ -825,7 +825,7 @@ end LinearOrderedRing
 section LinearOrderedField
 
 variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
+  [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
 
 lemma wbtw_iff_of_le {x y z : R} (hxz : x ≤ z) : Wbtw R x y z ↔ x ≤ y ∧ y ≤ z := by

@@ -300,7 +300,7 @@ theorem support_restriction (p : R[X]) : support (restriction p) = support p := 
   exact ⟨fun H => by rw [H, ZeroMemClass.coe_zero], fun H => Subtype.coe_injective H⟩
 
 @[simp]
-theorem map_restriction {R : Type u} [CommRing R] (p : R[X]) :
+theorem map_restriction {R : Type u} [Ring R] [IsMulCommutative R] (p : R[X]) :
     p.restriction.map (algebraMap _ _) = p :=
   ext fun n => by rw [coeff_map, Algebra.algebraMap_ofSubsemiring_apply, coeff_restriction]
 
@@ -380,7 +380,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [Semiring S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S]
 
 /-- If every coefficient of a polynomial is in an ideal `I`, then so is the polynomial itself -/
 theorem polynomial_mem_ideal_of_coeff_mem_ideal (I : Ideal R[X]) (p : R[X])
@@ -565,7 +565,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- If `P` is a prime ideal of `R`, then `P.R[x]` is a prime ideal of `R[x]`. -/
 theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
@@ -676,7 +676,7 @@ theorem exists_C_coeff_notMem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
 end Ideal
 
 variable {σ : Type v} {M : Type w}
-variable [CommRing R] [CommRing S] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 section Prime
 
@@ -697,10 +697,10 @@ end Polynomial
 
 namespace MvPolynomial
 
-instance {ι R : Type*} [CommSemiring R] [IsEmpty ι] : Module.Finite R (MvPolynomial ι R) :=
+instance {ι R : Type*} [Semiring R] [IsMulCommutative R] [IsEmpty ι] : Module.Finite R (MvPolynomial ι R) :=
   Module.Finite.equiv (MvPolynomial.isEmptyAlgEquiv R ι).toLinearEquiv.symm
 
-private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Finite σ] :
+private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [Ring R] [IsMulCommutative R] [Finite σ] :
     Prime (C r : MvPolynomial σ R) ↔ Prime r := by
   have := Fintype.ofFinite σ
   rw [← MulEquiv.prime_iff (renameEquiv R (Fintype.equivFin σ))]
@@ -895,7 +895,7 @@ end Polynomial
 
 namespace MvPolynomial
 
-lemma aeval_natDegree_le {R : Type*} [CommSemiring R] {m n : ℕ}
+lemma aeval_natDegree_le {R : Type*} [Semiring R] [IsMulCommutative R] {m n : ℕ}
     (F : MvPolynomial σ R) (hF : F.totalDegree ≤ m)
     (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ n) :
     (MvPolynomial.aeval f F).natDegree ≤ m * n := by
@@ -938,7 +938,7 @@ instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
     @isNoetherianRing_of_ringEquiv (MvPolynomial (Fin (Fintype.card σ)) R) _ _ _
       (renameEquiv R (Fintype.equivFin σ).symm).toRingEquiv isNoetherianRing_fin
 
-theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommSemiring S] [Finite σ]
+theorem map_mvPolynomial_eq_eval₂ {S : Type*} [Semiring S] [IsMulCommutative S] [Finite σ]
     (ϕ : MvPolynomial σ R →+* S) (p : MvPolynomial σ R) :
     ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by
   cases nonempty_fintype σ
@@ -998,7 +998,7 @@ theorem ker_map (f : R →+* S) :
   rw [MvPolynomial.mem_map_C_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
   simp_rw [coeff_map, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply, RingHom.mem_ker]
 
-lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁]
+lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [Ring S₁] [IsMulCommutative S₁] [Ring S₂] [IsMulCommutative S₂] [Algebra R S₁]
     [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     RingHom.ker (MvPolynomial.mapAlgHom (σ := σ) f) = Ideal.map MvPolynomial.C (RingHom.ker f) :=
   MvPolynomial.ker_map (f.toRingHom : S₁ →+* S₂)

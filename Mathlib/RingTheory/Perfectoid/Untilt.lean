@@ -37,7 +37,7 @@ open Ideal Perfection
 
 namespace PreTilt
 
-variable {O : Type*} [CommRing O] {p : ℕ} [Fact (Nat.Prime p)] [Fact ¬IsUnit (p : O)]
+variable {O : Type*} [Ring O] [IsMulCommutative O] {p : ℕ} [Fact (Nat.Prime p)] [Fact ¬IsUnit (p : O)]
 variable [IsAdicComplete (span {(p : O)}) O]
 
 /--

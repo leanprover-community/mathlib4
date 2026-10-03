@@ -24,8 +24,8 @@ public section
 
 open IsLocalRing LinearMap Module Submodule TensorProduct AlgebraTensorModule
 
-variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
-  [IsLocalHom (algebraMap A B)] [AddCommGroup M] [Module A M]
+variable {A B M : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
+  [IsLocalHom (algebraMap A B)] [AddGroup M] [IsAddCommutative M] [Module A M]
 
 section tower
 

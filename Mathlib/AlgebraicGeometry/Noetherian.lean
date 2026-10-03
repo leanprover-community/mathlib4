@@ -57,7 +57,7 @@ class IsLocallyNoetherian (X : Scheme) : Prop where
 
 section localizationProps
 
-variable {R : Type u} [CommRing R] (S : Finset R) (hS : Ideal.span (α := R) S = ⊤)
+variable {R : Type u} [Ring R] [IsMulCommutative R] (S : Finset R) (hS : Ideal.span (α := R) S = ⊤)
   (hN : ∀ s : S, IsNoetherianRing (Away (M := R) s))
 
 include hS hN in
@@ -338,7 +338,7 @@ instance (priority := 100) quasiCompact_of_noetherianSpace_source {X Y : Scheme}
 /-- If `R` is a Noetherian ring, `Spec R` is a Noetherian scheme. -/
 instance {R : CommRingCat} [IsNoetherianRing R] : IsNoetherian (Spec R) where
 
-instance {R} [CommRing R] [IsNoetherianRing R] :
+instance {R} [Ring R] [IsMulCommutative R] [IsNoetherianRing R] :
     IsNoetherian <| Spec <| .of R := by
   suffices IsNoetherianRing (CommRingCat.of R) by infer_instance
   assumption

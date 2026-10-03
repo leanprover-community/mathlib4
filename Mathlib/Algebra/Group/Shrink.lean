@@ -79,7 +79,7 @@ def mulEquiv [Mul α] : Shrink.{v} α ≃* α := (equivShrink α).symm.mulEquiv
 instance [Semigroup α] : Semigroup (Shrink.{v} α) := (equivShrink α).symm.semigroup
 
 @[to_additive]
-instance [CommSemigroup α] : CommSemigroup (Shrink.{v} α) := (equivShrink α).symm.commSemigroup
+instance [Semigroup α] [IsMulCommutative α] : CommSemigroup (Shrink.{v} α) := (equivShrink α).symm.commSemigroup
 
 @[to_additive]
 instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Shrink.{v} α) :=
@@ -99,13 +99,13 @@ instance [MulOneClass α] : MulOneClass (Shrink.{v} α) := (equivShrink α).symm
 instance [Monoid α] : Monoid (Shrink.{v} α) := (equivShrink α).symm.monoid
 
 @[to_additive]
-instance [CommMonoid α] : CommMonoid (Shrink.{v} α) := (equivShrink α).symm.commMonoid
+instance [Monoid α] [IsMulCommutative α] : CommMonoid (Shrink.{v} α) := (equivShrink α).symm.commMonoid
 
 @[to_additive]
 instance [Group α] : Group (Shrink.{v} α) := (equivShrink α).symm.group
 
 @[to_additive]
-instance [CommGroup α] : CommGroup (Shrink.{v} α) := (equivShrink α).symm.commGroup
+instance [Group α] [IsMulCommutative α] : CommGroup (Shrink.{v} α) := (equivShrink α).symm.commGroup
 
 @[to_additive]
 instance [Monoid M] [MulAction M α] : MulAction M (Shrink.{v} α) := (equivShrink α).symm.mulAction M

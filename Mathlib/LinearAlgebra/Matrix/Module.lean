@@ -26,8 +26,8 @@ matrix, module
 
 @[expose] public section
 
-variable {ι R M N P : Type*} [Ring R] [Fintype ι] [DecidableEq ι] [AddCommGroup M] [Module R M]
-  [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
+variable {ι R M N P : Type*} [Ring R] [Fintype ι] [DecidableEq ι] [AddGroup M] [IsAddCommutative M] [Module R M]
+  [AddGroup N] [IsAddCommutative N] [Module R N] [AddGroup P] [IsAddCommutative P] [Module R P]
 
 namespace Matrix.Module
 

@@ -48,7 +48,7 @@ section general_case
 open MeasureTheory MeasureTheory.Measure Module ENNReal
 
 theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (hp : 0 < p) :
     μ (Metric.ball 0 1) =
       .ofReal ((∫ (x : E), Real.exp (-‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
@@ -69,7 +69,7 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
       mul_div_assoc, mul_div_assoc, mul_comm, mul_assoc, this, mul_one, ofReal_measureReal _]
     exact ne_of_lt measure_ball_lt_top
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E] [mE : MeasurableSpace E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E] [FiniteDimensional ℝ E] [mE : MeasurableSpace E]
   [tE : TopologicalSpace E] [IsTopologicalAddGroup E] [BorelSpace E] [T2Space E]
   [ContinuousSMul ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {g : E → ℝ} (h1 : g 0 = 0)
   (h2 : ∀ x, g (-x) = g x) (h3 : ∀ x y, g (x + y) ≤ g x + g y) (h4 : ∀ {x}, g x = 0 → x = 0)
@@ -333,7 +333,7 @@ namespace InnerProductSpace
 open scoped Nat
 open MeasureTheory MeasureTheory.Measure ENNReal Real Module Metric
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 
 section Nontrivial

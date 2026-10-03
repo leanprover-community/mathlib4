@@ -20,7 +20,7 @@ open scoped ENNReal
 
 namespace WithLp
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] (p : ℝ≥0∞) [Fact (1 ≤ p)]
 
 lemma analyticOn_ofLp (s : Set (WithLp p (E × F))) : AnalyticOn 𝕜 ofLp s :=
@@ -34,7 +34,7 @@ end WithLp
 namespace PiLp
 
 variable {𝕜 ι : Type*} [Fintype ι] {E : ι → Type*} [NontriviallyNormedField 𝕜]
-  [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (p : ℝ≥0∞) [Fact (1 ≤ p)]
+  [∀ i, NormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] [∀ i, NormedSpace 𝕜 (E i)] (p : ℝ≥0∞) [Fact (1 ≤ p)]
 
 lemma analyticOn_ofLp (s : Set (PiLp p E)) : AnalyticOn 𝕜 ofLp s :=
   (continuousLinearEquiv p 𝕜 E).analyticOn s

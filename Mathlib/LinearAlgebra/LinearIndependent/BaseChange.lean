@@ -44,7 +44,7 @@ private lemma LinearIndependent.linearIndependent_algebraMap_comp_aux {K : Type*
   exact b'.linearIndependent.comp _ h_inj
 
 @[simp] lemma linearIndependent_algebraMap_comp_iff {R S : Type*}
-    [CommRing R] [CommRing S] [Algebra R S] [FaithfulSMul R S] [IsDomain S]
+    [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [FaithfulSMul R S] [IsDomain S]
     {v : ι → ι' → R} :
     LinearIndependent S (fun i ↦ algebraMap R S ∘ v i) ↔ LinearIndependent R v := by
   change LinearIndependent S (Pi.algebraMap ι' R S ∘ v) ↔ LinearIndependent R v

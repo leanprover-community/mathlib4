@@ -120,7 +120,7 @@ theorem isClosed_sublevelLeft [TopologicalSpace E]
 
 /-- From the quasi-convexity of `f (·, y)`, deduce that `sublevelLeft` is connected -/
 theorem isPreconnected_sublevelLeft [TopologicalSpace E]
-    [AddCommGroup E] [Module ℝ E] [IsTopologicalAddGroup E]
+    [AddGroup E] [IsAddCommutative E] [Module ℝ E] [IsTopologicalAddGroup E]
     [ContinuousSMul ℝ E]
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X (fun x ↦ f x y))
     (b : β) (y : Y) :
@@ -128,7 +128,7 @@ theorem isPreconnected_sublevelLeft [TopologicalSpace E]
   (hfy' y.val y.prop).isPreconnected_preimage_subtype
 
 /-- From the quasi-concavity of `f (x, ·)`, deduce an inclusion of `sublevelLeft` sets -/
-theorem sublevelLeft_subset_union [AddCommGroup F] [Module ℝ F]
+theorem sublevelLeft_subset_union [AddGroup F] [IsAddCommutative F] [Module ℝ F]
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
     (b : β) (y y' : Y) (z : segment ℝ y.val y'.val) :
     sublevelLeft X f b z ⊆ sublevelLeft X f b y ∪ sublevelLeft X f b y' := fun x hx ↦ by
@@ -143,9 +143,9 @@ theorem sublevelLeft_subset_union [AddCommGroup F] [Module ℝ F]
 
 The hypotheses imply that `sublevelLeft X f b z` is connected,
 and that the two other are disjoint. -/
-theorem sublevelLeft_subset_or [TopologicalSpace E] [AddCommGroup E]
+theorem sublevelLeft_subset_or [TopologicalSpace E] [AddGroup E] [IsAddCommutative E]
     [IsTopologicalAddGroup E] [Module ℝ E] [ContinuousSMul ℝ E]
-    [AddCommGroup F] [Module ℝ F]
+    [AddGroup F] [IsAddCommutative F] [Module ℝ F]
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
     (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E => f x y) X)
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
@@ -162,13 +162,13 @@ theorem sublevelLeft_subset_or [TopologicalSpace E] [AddCommGroup E]
     (sublevelLeft_subset_union hfx' b y y' z)
   simp [(disjoint_sublevelLeft ha hb).inter_eq]
 
-variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
+variable [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [Module ℝ E]
     [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
     (ne_X : X.Nonempty) (kX : IsCompact X)
     (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E => f x y) X)
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
 
-variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
+variable [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [Module ℝ F]
     (cY : Convex ℝ Y) (kY : IsCompact Y)
     (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
@@ -434,13 +434,13 @@ section CompleteLinearOrder
 
 variable {E F β : Type*} [CompleteLinearOrder β] [DenselyOrdered β]
 variable {X : Set E} {Y : Set F} {f : E → F → β}
-variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
+variable [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [Module ℝ E]
     [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
     (ne_X : X.Nonempty) (cX : Convex ℝ X) (kX : IsCompact X)
     (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E ↦ f x y) X)
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
 
-variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
+variable [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [Module ℝ F]
   [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
   (cY : Convex ℝ Y) (ne_Y : Y.Nonempty) (kY : IsCompact Y)
   (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
@@ -481,13 +481,13 @@ section DedekindMacNeille
 variable {E F β γ : Type*} [LinearOrder β]
 
 variable {X : Set E} {Y : Set F} {f : E → F → β}
-variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
+variable [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [Module ℝ E]
     [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
     (ne_X : X.Nonempty) (cX : Convex ℝ X) (kX : IsCompact X)
     (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E ↦ f x y) X)
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
 
-variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
+variable [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [Module ℝ F]
   [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
   (cY : Convex ℝ Y) (ne_Y : Y.Nonempty) (kY : IsCompact Y)
   (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
@@ -528,13 +528,13 @@ section Real
 
 variable {E F : Type*}
 variable {X : Set E} {Y : Set F} {f : E → F → ℝ}
-variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
+variable [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [Module ℝ E]
     [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
     (ne_X : X.Nonempty) (cX : Convex ℝ X) (kX : IsCompact X)
     (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E ↦ f x y) X)
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
 
-variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
+variable [TopologicalSpace F] [AddGroup F] [IsAddCommutative F] [Module ℝ F]
   [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
   (cY : Convex ℝ Y) (ne_Y : Y.Nonempty) (kY : IsCompact Y)
   (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)

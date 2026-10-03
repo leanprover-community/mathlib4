@@ -21,7 +21,7 @@ public section
 
 namespace Ideal
 
-variable {ι R : Type*} [CommSemiring R]
+variable {ι R : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- A finite family of ideals is pairwise coprime (that is, any two of them generate the whole ring)
 iff when taking all the possible intersections of all but one of these ideals, the resulting family

@@ -23,7 +23,7 @@ is stated not for `κ ⊕ σ`, but for an arbitrary type `ι` with two maps `κ 
 
 @[expose] public section
 
-variable {R M K P : Type*} [Ring R] [AddCommGroup M] [AddCommGroup K] [AddCommGroup P]
+variable {R M K P : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [AddGroup K] [IsAddCommutative K] [AddGroup P] [IsAddCommutative P]
 variable [Module R M] [Module R K] [Module R P]
 variable {f : K →ₗ[R] M} {g : M →ₗ[R] P} {s : M →ₗ[R] K}
 variable (hs : s ∘ₗ f = LinearMap.id) (hfg : Function.Exact f g)
@@ -140,7 +140,7 @@ lemma Submodule.projectionOnto_comp_bijective_of_exact
   Submodule.projectionOnto_comp_bijective_of_exact
 
 lemma LinearMap.linearProjOfIsCompl_comp_bijective_of_exact
-    (hf : Function.Injective f) {q : Submodule R M} {E : Type*} [AddCommGroup E] [Module R E]
+    (hf : Function.Injective f) {q : Submodule R M} {E : Type*} [AddGroup E] [IsAddCommutative E] [Module R E]
     {i : E →ₗ[R] M} (hi : Function.Injective i) (h : IsCompl (LinearMap.range i) q)
     (hker : Disjoint (LinearMap.ker g) q) (hmap : Submodule.map g q = ⊤) :
     Function.Bijective (LinearMap.linearProjOfIsCompl q i hi h ∘ₗ f) := by

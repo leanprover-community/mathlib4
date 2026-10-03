@@ -343,7 +343,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup α]
+variable [Group α] [IsMulCommutative α]
 
 section LE
 
@@ -527,7 +527,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup α]
+variable [Group α] [IsMulCommutative α]
 
 section LE
 
@@ -649,7 +649,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup α]
+variable [Group α] [IsMulCommutative α]
 
 section LT
 
@@ -739,7 +739,7 @@ theorem div_le_inv_mul_iff [MulRightMono α] :
 -- Note: we intentionally don't have `@[simp]` for the additive version,
 -- since the LHS simplifies with `tsub_le_iff_right`
 @[to_additive]
-theorem div_le_div_flip {α : Type*} [CommGroup α] [LinearOrder α]
+theorem div_le_div_flip {α : Type*} [Group α] [IsMulCommutative α] [LinearOrder α]
     [MulLeftMono α] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
   rw [div_eq_mul_inv b, mul_comm]
   exact div_le_inv_mul_iff

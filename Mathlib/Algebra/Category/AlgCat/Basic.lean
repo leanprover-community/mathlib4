@@ -23,7 +23,7 @@ open CategoryTheory
 
 universe v u
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R] [IsMulCommutative R]
 
 /-- The category of R-algebras and their morphisms. -/
 structure AlgCat where
@@ -116,7 +116,7 @@ lemma hom_ext {A B : AlgCat.{v} R} {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g 
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
+lemma hom_ofHom {R : Type u} [Ring R] [IsMulCommutative R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
     [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
 
 @[simp]
@@ -132,7 +132,7 @@ lemma ofHom_comp {X Y Z : Type v} [Ring X] [Ring Y] [Ring Z] [Algebra R X] [Alge
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
-lemma ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
+lemma ofHom_apply {R : Type u} [Ring R] [IsMulCommutative R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
     [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
 
 lemma inv_hom_apply {A B : AlgCat.{v} R} (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by
@@ -253,7 +253,7 @@ namespace AlgCat
 /-- The restriction of scalars functor `AlgCat S ⥤ AlgCat R` induced by a ring homomorphism
 `R →+* S`. -/
 @[simps]
-def restrictScalars {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) :
+def restrictScalars {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) :
     AlgCat.{v} S ⥤ AlgCat.{v} R where
   obj A :=
     letI : Algebra R A := Algebra.compHom _ f
@@ -270,7 +270,7 @@ def restrictScalars {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) :
 set_option backward.isDefEq.respectTransparency false in
 /-- Restricting scalars along the identity is isomorphic to the identity. -/
 @[simps!]
-def restrictScalarsId' {R : Type*} [CommRing R] (f : R →+* R) (hf : f = .id R) :
+def restrictScalarsId' {R : Type*} [Ring R] [IsMulCommutative R] (f : R →+* R) (hf : f = .id R) :
     AlgCat.restrictScalars.{v} f ≅ 𝟭 _ :=
   NatIso.ofComponents
     fun A ↦ AlgEquiv.toAlgebraIso <|
@@ -282,7 +282,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Restricting scalars along a composition is isomorphic to the composition
 of restriction of scalars. -/
 @[simps!]
-def restrictScalarsComp' {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S)
+def restrictScalarsComp' {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] (f : R →+* S)
       (g : S →+* T) (gf : R →+* T) (hfg : gf = g.comp f) :
     AlgCat.restrictScalars.{v} gf ≅
       AlgCat.restrictScalars.{v} g ⋙ AlgCat.restrictScalars.{v} f :=
@@ -295,7 +295,7 @@ def restrictScalarsComp' {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] 
 
 /-- A ring isomorphism induces an equivalence of categories of algebras. -/
 @[simps]
-def restrictScalarsEquivalenceOfRingEquiv {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
+def restrictScalarsEquivalenceOfRingEquiv {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (e : R ≃+* S) :
     AlgCat.{u} S ≌ AlgCat.{u} R where
   functor := restrictScalars e.toRingHom
   inverse := restrictScalars e.symm.toRingHom
@@ -304,11 +304,11 @@ def restrictScalarsEquivalenceOfRingEquiv {R S : Type*} [CommRing R] [CommRing S
   counitIso := (restrictScalarsComp' _ _ _ e.symm_toRingHom_comp_toRingHom.symm).symm ≪≫
     restrictScalarsId' _ rfl
 
-instance {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
+instance {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (e : R ≃+* S) :
     (restrictScalars e.toRingHom).IsEquivalence :=
   inferInstanceAs <| (restrictScalarsEquivalenceOfRingEquiv e).functor.IsEquivalence
 
-instance {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
+instance {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (e : R ≃+* S) :
     (restrictScalars e.symm.toRingHom).IsEquivalence :=
   inferInstanceAs <| (restrictScalarsEquivalenceOfRingEquiv e).inverse.IsEquivalence
 

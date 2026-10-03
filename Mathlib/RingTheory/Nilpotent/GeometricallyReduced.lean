@@ -51,7 +51,7 @@ variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
 /-- An `R`-algebra `A` is geometrically reduced iff for every prime ideal `p` of R`
   the base change to `AlgebraicClosure p.ResidueField` is reduced. -/
 @[mk_iff]
-class IsGeometricallyReduced (R A : Type*) [CommRing R] [Ring A] [Algebra R A] : Prop where
+class IsGeometricallyReduced (R A : Type*) [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A] : Prop where
   isReduced_algebraicClosure_tensorProduct (p : Ideal R) [p.IsPrime] :
     IsReduced (AlgebraicClosure p.ResidueField ⊗[R] A)
 

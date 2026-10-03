@@ -32,7 +32,7 @@ structure TopRep (k : Type u) (G : Type v) [Ring k] [TopologicalSpace k] [Monoid
   _mkInternal ::
   /-- the underlying type of an object in `TopRep k G` -/
   V : Type w
-  [hV1 : AddCommGroup V]
+  [hV1 : AddGroup V] [IsAddCommutative V]
   [hV2 : Module k V]
   [hV3 : TopologicalSpace V]
   [hV4 : IsTopologicalAddGroup V]
@@ -43,8 +43,8 @@ structure TopRep (k : Type u) (G : Type v) [Ring k] [TopologicalSpace k] [Monoid
 namespace TopRep
 
 variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [Ring k]
-  [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
-  [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddCommGroup Y] [Module k Y] [TopologicalSpace Y]
+  [Monoid G] [AddGroup X] [IsAddCommutative X] [Module k X] [TopologicalSpace X]
+  [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddGroup Y] [IsAddCommutative Y] [Module k Y] [TopologicalSpace Y]
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y}
 
@@ -152,9 +152,9 @@ instance : Preadditive (TopRep k G) where
 
 section Linear
 
-variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [CommRing k]
-  [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
-  [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddCommGroup Y] [Module k Y] [TopologicalSpace Y]
+variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [Ring k] [IsMulCommutative k]
+  [Monoid G] [AddGroup X] [IsAddCommutative X] [Module k X] [TopologicalSpace X]
+  [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddGroup Y] [IsAddCommutative Y] [Module k Y] [TopologicalSpace Y]
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y} {A B C : TopRep k G}
 
@@ -237,7 +237,7 @@ abbrev invariantsFunctor : TopRep k G ⥤ TopModuleCat k where
 
 instance : (invariantsFunctor k G).Additive where
 
-instance {k : Type u} [CommRing k] [TopologicalSpace k] : (invariantsFunctor k G).Linear k where
+instance {k : Type u} [Ring k] [IsMulCommutative k] [TopologicalSpace k] : (invariantsFunctor k G).Linear k where
 
 /-- The top rep induced by the coinduced representation. -/
 abbrev coind₁ (A : TopRep k G) : TopRep k G := of A.ρ.coind₁
@@ -251,7 +251,7 @@ abbrev coind₁Functor : TopRep k G ⥤ TopRep k G where
 
 instance : (TopRep.coind₁Functor k G).Additive where
 
-instance {k : Type u} [CommRing k] [TopologicalSpace k] : (coind₁Functor k G).Linear k where
+instance {k : Type u} [Ring k] [IsMulCommutative k] [TopologicalSpace k] : (coind₁Functor k G).Linear k where
 
 /-- The constant function `rep ⟶ C(G, rep)` as a natural transformation. -/
 @[implicit_reducible, simps]

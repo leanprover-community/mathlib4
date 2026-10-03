@@ -28,10 +28,10 @@ do not immediately apply and a “primed” version is provided here.
 namespace PowerSeries
 
 variable
-  {A : Type*} [CommRing A]
-  {R : Type*} [CommRing R] [Algebra A R]
+  {A : Type*} [Ring A] [IsMulCommutative A]
+  {R : Type*} [Ring R] [IsMulCommutative R] [Algebra A R]
   {τ : Type*}
-  {S : Type*} [CommRing S]
+  {S : Type*} [Ring S] [IsMulCommutative S]
 
 open MvPowerSeries.WithPiTopology
 
@@ -151,7 +151,7 @@ lemma HasSubst.eventually_coeff_pow_eq_zero {f : A⟦X⟧} (hf : HasSubst f) (n 
     (by rwa [map_pow]), ← _root_.le_add_right le_rfl, Nat.cast_lt]
   lia
 
-variable {υ : Type*} {T : Type*} [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T]
+variable {υ : Type*} {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R S] [Algebra R T] [Algebra S T]
 
 /-- Substitution of power series into a power series. -/
 noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :

@@ -42,7 +42,7 @@ namespace LinearMap
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 
 open Submodule
@@ -109,7 +109,7 @@ theorem map_le_range [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M�
 
 @[simp]
 theorem range_neg {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semiring R] [Ring R₂]
-    [AddCommMonoid M] [AddCommGroup M₂] [Module R M] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
+    [AddMonoid M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] [Module R M] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
     [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : LinearMap.range (-f) = LinearMap.range f := by
   change range ((-LinearMap.id : M₂ →ₗ[R₂] M₂).comp f) = _
   rw [range_comp, Submodule.map_neg, Submodule.map_id]
@@ -123,8 +123,8 @@ lemma range_domRestrict_le_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[�
   exact LinearMap.mem_range_self f y
 
 @[simp]
-theorem _root_.AddMonoidHom.coe_toIntLinearMap_range {M M₂ : Type*} [AddCommGroup M]
-    [AddCommGroup M₂] (f : M →+ M₂) :
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_range {M M₂ : Type*} [AddGroup M] [IsAddCommutative M]
+    [AddGroup M₂] [IsAddCommutative M₂] (f : M →+ M₂) :
     LinearMap.range f.toIntLinearMap = AddSubgroup.toIntSubmodule f.range := rfl
 
 lemma _root_.Submodule.map_comap_eq_of_le [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂}
@@ -206,8 +206,8 @@ theorem comap_injective {f : M →ₛₗ[τ₁₂] M₂} (hf : range f = ⊤) : 
 
 -- TODO (?): generalize the next two lemmas to semilinear maps with `f ∘ₗ g` bijective.
 
-theorem ker_eq_range_of_comp_eq_id {M P} [AddCommGroup M] [Module R M]
-    [AddCommGroup P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M} (h : f ∘ₗ g = .id) :
+theorem ker_eq_range_of_comp_eq_id {M P} [AddGroup M] [IsAddCommutative M] [Module R M]
+    [AddGroup P] [IsAddCommutative P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M} (h : f ∘ₗ g = .id) :
     ker f = range (LinearMap.id - g ∘ₗ f) :=
   le_antisymm (fun x hx ↦ ⟨x, show x - g (f x) = x by rw [hx, map_zero, sub_zero]⟩) <|
     range_le_ker_iff.mpr <| by rw [comp_sub, comp_id, ← comp_assoc, h, id_comp, sub_self]
@@ -215,8 +215,8 @@ theorem ker_eq_range_of_comp_eq_id {M P} [AddCommGroup M] [Module R M]
 /-- If `f : E →ₗ[R] F` has a left inverse `g`, then `range f = ker (f ∘ g - id)`.
 
 This is the dual version of `LinearMap.ker_eq_range_of_comp_eq_id`. -/
-lemma range_eq_ker_of_leftInverse {M P} [AddCommGroup M] [Module R M]
-    [AddCommGroup P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M}
+lemma range_eq_ker_of_leftInverse {M P} [AddGroup M] [IsAddCommutative M] [Module R M]
+    [AddGroup P] [IsAddCommutative P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M}
     (h : LeftInverse g f) : f.range = ker ((f.comp g) - LinearMap.id) :=
   -- If `y = f x ∈ range f`, we have `(f ∘ g) y = f (g (f x)) = f x = y` by hypothesis `h`.
   -- Conversely, f g z - z = 0 implies z = f (g z) ∈ range f.
@@ -229,7 +229,7 @@ end AddCommMonoid
 section Ring
 
 variable [Ring R] [Ring R₂]
-variable [AddCommGroup M] [AddCommGroup M₂]
+variable [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂}
 variable {f : M →ₛₗ[τ₁₂] M₂}
@@ -264,8 +264,8 @@ end Ring
 
 section CommSemiring
 
-variable [Semiring R] [CommSemiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable [Semiring R] [Semiring R₂] [IsMulCommutative R₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 
 theorem range_smul_le_range (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : range (c • f) ≤ range f := by
@@ -276,8 +276,8 @@ end CommSemiring
 section Semifield
 
 variable [Semifield K]
-variable [AddCommMonoid V] [Module K V]
-variable [AddCommMonoid V₂] [Module K V₂]
+variable [AddMonoid V] [IsAddCommutative V] [Module K V]
+variable [AddMonoid V₂] [IsAddCommutative V₂] [Module K V₂]
 
 theorem range_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : range (a • f) = range f := by
   simpa only [range_eq_map] using Submodule.map_smul f _ a h
@@ -294,7 +294,7 @@ namespace Submodule
 
 section AddCommMonoid
 
-variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Semiring R] [Semiring R₂] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R₂ M₂]
 variable (p : Submodule R M)
 variable {τ₁₂ : R →+* R₂}
@@ -405,7 +405,7 @@ namespace LinearMap
 section Semiring
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
@@ -426,12 +426,12 @@ section Image
 
 /-- If `O` is a submodule of `M`, and `Φ : O →ₗ M'` is a linear map,
 then `(ϕ : O →ₗ M').submoduleImage N` is `ϕ(N)` as a submodule of `M'` -/
-def submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
+def submoduleImage {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] {O : Submodule R M}
     (ϕ : O →ₗ[R] M') (N : Submodule R M) : Submodule R M' :=
   (N.comap O.subtype).map ϕ
 
 @[simp]
-theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
+theorem mem_submoduleImage {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} {x : M'} :
     x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O), y ∈ N ∧ ϕ ⟨y, yO⟩ = x := by
   refine Submodule.mem_map.trans ⟨?_, ?_⟩ <;> simp_rw [Submodule.mem_comap]
@@ -440,12 +440,12 @@ theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Su
   · rintro ⟨y, yO, yN, h⟩
     exact ⟨⟨y, yO⟩, yN, h⟩
 
-theorem mem_submoduleImage_of_le {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
+theorem mem_submoduleImage_of_le {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} (hNO : N ≤ O) {x : M'} :
     x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yN : y ∈ N), ϕ ⟨y, hNO yN⟩ = x := by
   grind [mem_submoduleImage]
 
-theorem submoduleImage_apply_of_le {M' : Type*} [AddCommMonoid M'] [Module R M']
+theorem submoduleImage_apply_of_le {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M']
     {O : Submodule R M} (ϕ : O →ₗ[R] M') (N : Submodule R M) (hNO : N ≤ O) :
     ϕ.submoduleImage N = range (ϕ.comp (Submodule.inclusion hNO)) := by
   rw [submoduleImage, range_comp, Submodule.range_inclusion]

@@ -27,7 +27,7 @@ namespace LinearOrderedCommGroup
 
 open LinearOrderedCommGroup
 
-variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+variable {G : Type*} [Group G] [IsMulCommutative G] [LinearOrder G] [IsOrderedMonoid G]
 
 namespace Subgroup
 

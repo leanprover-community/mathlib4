@@ -143,7 +143,7 @@ variable {a b : α}
 -- order.
 namespace Ideal
 
-variable [CommSemiring α] (I : Ideal α)
+variable [Semiring α] [IsMulCommutative α] (I : Ideal α)
 
 theorem span_singleton_prime {p : α} (hp : p ≠ 0) : IsPrime (span ({p} : Set α)) ↔ Prime p := by
   simp [isPrime_iff, Prime, span_singleton_eq_top, hp, mem_span_singleton]

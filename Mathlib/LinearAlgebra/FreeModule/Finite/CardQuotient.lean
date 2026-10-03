@@ -26,7 +26,7 @@ open Module Submodule
 
 section Submodule
 
-variable {M : Type*} [AddCommGroup M] [Module.Free ℤ M] [Module.Finite ℤ M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module.Free ℤ M] [Module.Finite ℤ M]
 
 /-- Let `e : M ≃ N` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the cardinality of the quotient `M ⧸ N` is given by taking
@@ -95,7 +95,7 @@ end Submodule
 
 section AddSubgroup
 
-theorem AddSubgroup.index_eq_natAbs_det {E : Type*} [AddCommGroup E] {ι : Type*}
+theorem AddSubgroup.index_eq_natAbs_det {E : Type*} [AddGroup E] [IsAddCommutative E] {ι : Type*}
     [DecidableEq ι] [Fintype ι] (bE : Basis ι ℤ E) (N : AddSubgroup E) (bN : Basis ι ℤ N) :
     N.index = (bE.det (bN ·)).natAbs :=
   have : Module.Free ℤ E := Module.Free.of_basis bE
@@ -103,7 +103,7 @@ theorem AddSubgroup.index_eq_natAbs_det {E : Type*} [AddCommGroup E] {ι : Type*
   (Submodule.natAbs_det_basis_change bE N.toIntSubmodule bN).symm
 
 set_option backward.isDefEq.respectTransparency false in
-theorem AddSubgroup.relIndex_eq_natAbs_det {E : Type*} [AddCommGroup E]
+theorem AddSubgroup.relIndex_eq_natAbs_det {E : Type*} [AddGroup E] [IsAddCommutative E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
     (b₁ : Basis ι ℤ L₁.toIntSubmodule) (b₂ : Basis ι ℤ L₂.toIntSubmodule) :
     L₁.relIndex L₂ = (b₂.det (fun i ↦ ⟨b₁ i, (H (SetLike.coe_mem _))⟩)).natAbs := by
@@ -111,7 +111,7 @@ theorem AddSubgroup.relIndex_eq_natAbs_det {E : Type*} [AddCommGroup E]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ E]
+theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℚ E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
     (b₁ b₂ : Basis ι ℚ E) (h₁ : L₁ = .closure (Set.range b₁)) (h₂ : L₂ = .closure (Set.range b₂)) :
     L₁.relIndex L₂ = |b₂.det b₁| := by

@@ -41,8 +41,8 @@ section
 
 open scoped Pointwise
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] (M : Submonoid R)
-variable (R' S' : Type*) [CommSemiring R'] [CommSemiring S']
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (M : Submonoid R)
+variable (R' S' : Type*) [Semiring R'] [IsMulCommutative R'] [Semiring S'] [IsMulCommutative S']
 variable [Algebra R R'] [Algebra S S']
 
 set_option backward.isDefEq.respectTransparency false in
@@ -94,7 +94,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
 /-- If `M` is an `R' = S⁻¹R` module, and `x ∈ span R' s`,
 then `t • x ∈ span R s` for some `t : S`. -/
 theorem multiple_mem_span_of_mem_localization_span
-    {N : Type*} [AddCommMonoid N] [Module R N] [Module R' N]
+    {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N] [Module R' N]
     [IsScalarTower R R' N] [IsLocalization M R'] (s : Set N) (x : N)
     (hx : x ∈ Submodule.span R' s) : ∃ (t : M), t • x ∈ Submodule.span R s := by
   classical
@@ -132,15 +132,15 @@ namespace Module.Finite
 
 section
 
-variable {R : Type u} [CommSemiring R] (S : Submonoid R)
-variable {Rₚ : Type v} [CommSemiring Rₚ] [Algebra R Rₚ] [IsLocalization S Rₚ]
-variable {M : Type w} [AddCommMonoid M] [Module R M]
-variable {Mₚ : Type t} [AddCommMonoid Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
+variable {R : Type u} [Semiring R] [IsMulCommutative R] (S : Submonoid R)
+variable {Rₚ : Type v} [Semiring Rₚ] [IsMulCommutative Rₚ] [Algebra R Rₚ] [IsLocalization S Rₚ]
+variable {M : Type w} [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {Mₚ : Type t} [AddMonoid Mₚ] [IsAddCommutative Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
 variable (f : M →ₗ[R] Mₚ) [IsLocalizedModule S f]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma of_isLocalization (R S) {Rₚ Sₚ : Type*} [CommSemiring R] [CommSemiring S]
-    [CommSemiring Rₚ] [CommSemiring Sₚ] [Algebra R S] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
+lemma of_isLocalization (R S) {Rₚ Sₚ : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
+    [Semiring Rₚ] [IsMulCommutative Rₚ] [Semiring Sₚ] [IsMulCommutative Sₚ] [Algebra R S] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
     [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] (M : Submonoid R)
     [IsLocalization M Rₚ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ]
     [hRS : Module.Finite R S] :
@@ -156,14 +156,14 @@ lemma of_isLocalization (R S) {Rₚ Sₚ : Type*} [CommSemiring R] [CommSemiring
   use T.image (algebraMap S Sₚ)
   simpa using span_eq_top_localization_localization Rₚ M Sₚ hT
 
-instance {R S : Type*} [CommSemiring R] {P : Ideal R} [CommSemiring S] [Algebra R S]
+instance {R S : Type*} [Semiring R] [IsMulCommutative R] {P : Ideal R} [Semiring S] [IsMulCommutative S] [Algebra R S]
     [Module.Finite R S] [P.IsPrime] :
     Module.Finite (Localization.AtPrime P)
       (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
   .of_isLocalization R S P.primeCompl
 
 open Algebra nonZeroDivisors in
-instance {A C : Type*} [CommRing A] [CommRing C] [Algebra A C] [Module.Finite A C] :
+instance {A C : Type*} [Ring A] [IsMulCommutative A] [Ring C] [IsMulCommutative C] [Algebra A C] [Module.Finite A C] :
     Module.Finite (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=
   .of_isLocalization A C A⁰
 
@@ -179,7 +179,7 @@ instance [Module.Finite R M] : Module.Finite (Localization S) (LocalizedModule S
 
 end
 
-variable {R : Type u} [CommSemiring R] {M : Type w} [AddCommMonoid M] [Module R M]
+variable {R : Type u} [Semiring R] [IsMulCommutative R] {M : Type w} [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /--
 If there exists a finite set `{ r }` of `R` that generates the unit ideal and such that `Mᵣ` is
@@ -191,8 +191,8 @@ See `Module.Finite.of_localizationSpan_finite` for the specialized version.
 See `of_localizationSpan'` for a version without the finite set assumption.
 -/
 theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) = ⊤)
-    {Mₚ : ∀ (_ : t), Type*} [∀ (g : t), AddCommMonoid (Mₚ g)] [∀ (g : t), Module R (Mₚ g)]
-    {Rₚ : ∀ (_ : t), Type*} [∀ (g : t), CommSemiring (Rₚ g)] [∀ (g : t), Algebra R (Rₚ g)]
+    {Mₚ : ∀ (_ : t), Type*} [∀ (g : t), AddMonoid (Mₚ g)] [∀ (g : t), IsAddCommutative (Mₚ g)] [∀ (g : t), Module R (Mₚ g)]
+    {Rₚ : ∀ (_ : t), Type*} [∀ (g : t), Semiring (Rₚ g)] [∀ (g : t), IsMulCommutative (Rₚ g)] [∀ (g : t), Algebra R (Rₚ g)]
     [∀ (g : t), IsLocalization.Away g.val (Rₚ g)]
     [∀ (g : t), Module (Rₚ g) (Mₚ g)] [∀ (g : t), IsScalarTower R (Rₚ g) (Mₚ g)]
     (f : ∀ (g : t), M →ₗ[R] Mₚ g) [∀ (g : t), IsLocalizedModule.Away g.val (f g)]
@@ -227,8 +227,8 @@ General version for any modules `Mᵣ` and rings `Rᵣ` satisfying the correct u
 See `Module.Finite.of_localizationSpan_finite` for the specialized version.
 -/
 theorem of_localizationSpan' (t : Set R) (ht : Ideal.span t = ⊤)
-    {Mₚ : ∀ (_ : t), Type*} [∀ (g : t), AddCommMonoid (Mₚ g)] [∀ (g : t), Module R (Mₚ g)]
-    {Rₚ : ∀ (_ : t), Type*} [∀ (g : t), CommSemiring (Rₚ g)] [∀ (g : t), Algebra R (Rₚ g)]
+    {Mₚ : ∀ (_ : t), Type*} [∀ (g : t), AddMonoid (Mₚ g)] [∀ (g : t), IsAddCommutative (Mₚ g)] [∀ (g : t), Module R (Mₚ g)]
+    {Rₚ : ∀ (_ : t), Type*} [∀ (g : t), Semiring (Rₚ g)] [∀ (g : t), IsMulCommutative (Rₚ g)] [∀ (g : t), Algebra R (Rₚ g)]
     [h₁ : ∀ (g : t), IsLocalization.Away g.val (Rₚ g)]
     [∀ (g : t), Module (Rₚ g) (Mₚ g)] [∀ (g : t), IsScalarTower R (Rₚ g) (Mₚ g)]
     (f : ∀ (g : t), M →ₗ[R] Mₚ g) [h₂ : ∀ (g : t), IsLocalizedModule.Away g.val (f g)]
@@ -273,12 +273,12 @@ end Module
 
 namespace Submodule
 
-variable {R : Type u} [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R M]
+variable {R : Type u} [Semiring R] [IsMulCommutative R] {M : Type v} [AddMonoid M] [IsAddCommutative M] [Module R M]
   {N : Submodule R M}
 
 lemma of_localizationSpan' (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
-    {Mₚ : ∀ (_ : s), Type*} [∀ (g : s), AddCommMonoid (Mₚ g)] [∀ (g : s), Module R (Mₚ g)]
-    {Rₚ : ∀ (_ : s), Type*} [∀ (g : s), CommSemiring (Rₚ g)] [∀ (g : s), Algebra R (Rₚ g)]
+    {Mₚ : ∀ (_ : s), Type*} [∀ (g : s), AddMonoid (Mₚ g)] [∀ (g : s), IsAddCommutative (Mₚ g)] [∀ (g : s), Module R (Mₚ g)]
+    {Rₚ : ∀ (_ : s), Type*} [∀ (g : s), Semiring (Rₚ g)] [∀ (g : s), IsMulCommutative (Rₚ g)] [∀ (g : s), Algebra R (Rₚ g)]
     [∀ (g : s), IsLocalization.Away g.val (Rₚ g)]
     [∀ (g : s), Module (Rₚ g) (Mₚ g)] [∀ (g : s), IsScalarTower R (Rₚ g) (Mₚ g)]
     (ϕ : ∀ (g : s), M →ₗ[R] Mₚ g) [∀ (g : s), IsLocalizedModule (Submonoid.powers g.val) (ϕ g)]
@@ -292,8 +292,8 @@ lemma of_localizationSpan (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
     (H : ∀ (g : s), (localized (Submonoid.powers g.1) N).FG) : N.FG :=
   N.of_localizationSpan' s hs (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.1) M) H
 
-variable (R' : Type*) [CommSemiring R'] [Algebra R R']
-  {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module R' M'] [IsScalarTower R R' M']
+variable (R' : Type*) [Semiring R'] [IsMulCommutative R'] [Algebra R R']
+  {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] [Module R' M'] [IsScalarTower R R' M']
   (S : Submonoid R) [IsLocalization S R'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
 
 lemma localized'_fg (h : N.FG) : (N.localized' R' S f).FG := by
@@ -307,7 +307,7 @@ end Submodule
 
 namespace Ideal
 
-variable {R : Type u} [CommSemiring R]
+variable {R : Type u} [Semiring R] [IsMulCommutative R]
 
 /-- If `I` is an ideal such that there exists a set `{ r }` of `R` that generates the unit ideal
 and such that the image of `I` in `Rᵣ` is finitely generated for each `r`, then `I` is finitely
@@ -321,7 +321,7 @@ lemma fg_of_localizationSpan {I : Ideal R} (t : Set R) (ht : Ideal.span t = ⊤)
 
 end Ideal
 
-variable {R : Type u} [CommSemiring R] {S : Type v} [CommSemiring S] {f : R →+* S}
+variable {R : Type u} [Semiring R] [IsMulCommutative R] {S : Type v} [Semiring S] [IsMulCommutative S] {f : R →+* S}
 
 /--
 To check that the kernel of a ring homomorphism is finitely generated,

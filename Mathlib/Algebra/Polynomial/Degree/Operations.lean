@@ -729,7 +729,7 @@ lemma degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q)
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] {p : R[X]} (hp : p.Monic)
+variable [Semiring R] [IsMulCommutative R] {p : R[X]} (hp : p.Monic)
 include hp
 
 lemma Monic.natDegree_pos : 0 < natDegree p ↔ p ≠ 1 :=

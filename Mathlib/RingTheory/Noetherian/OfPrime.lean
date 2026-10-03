@@ -24,7 +24,7 @@ public import Mathlib.RingTheory.Ideal.BigOperators
 
 public section
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace Ideal
 

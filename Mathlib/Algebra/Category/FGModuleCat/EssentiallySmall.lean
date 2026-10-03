@@ -35,7 +35,7 @@ structure FGModuleRepr : Type u where
 
 namespace FGModuleRepr
 
-variable (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M]
+variable (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Finite R M]
 
 variable {R} in
 /-- The finite module represented by an object of the type `FGModuleRepr R`, which is the quotient

@@ -22,7 +22,7 @@ In this file, we define the height of a prime ideal and the height of an ideal.
 
 public section
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R)
 
 open Ideal
 
@@ -352,7 +352,7 @@ lemma Ideal.height_le_iff_covBy {p : Ideal R} {n : ℕ} [p.IsPrime] [IsNoetheria
       (H _ hx hxp.1 (fun I hI e ↦ hxp.2 (show Subtype.mk x hx < ⟨I, hI⟩ from e)))
 
 /-- Use `RingEquiv.height_comap` instead, which does not assume `IsPrime`. -/
-private lemma RingEquiv.height_comap_of_isPrime {S : Type*} [CommRing S] (e : R ≃+* S)
+private lemma RingEquiv.height_comap_of_isPrime {S : Type*} [Ring S] [IsMulCommutative S] (e : R ≃+* S)
     (p : Ideal S) [p.IsPrime] : (p.comap e).height = p.height := by
   rw [height_eq_primeHeight, height_eq_primeHeight, primeHeight, primeHeight,
     ← Order.height_orderIso (PrimeSpectrum.comapEquiv e.symm) ⟨p, ‹_›⟩]
@@ -360,7 +360,7 @@ private lemma RingEquiv.height_comap_of_isPrime {S : Type*} [CommRing S] (e : R 
   congr
 
 @[simp]
-lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal S) :
+lemma RingEquiv.height_comap {S : Type*} [Ring S] [IsMulCommutative S] (e : R ≃+* S) (I : Ideal S) :
     (I.comap e).height = I.height := by
   refine (Equiv.iInf_congr e.idealComapOrderIso fun J ↦ (Equiv.iInf_congr ?_ fun h ↦ ?_).symm).symm
   · refine .ofIff ?_
@@ -372,12 +372,12 @@ lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal
       ← Ideal.height_eq_primeHeight, RingEquiv.height_comap_of_isPrime]
 
 @[simp]
-lemma RingEquiv.height_map {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal R) :
+lemma RingEquiv.height_map {S : Type*} [Ring S] [IsMulCommutative S] (e : R ≃+* S) (I : Ideal R) :
     (I.map e).height = I.height := by
   rw [← Ideal.comap_symm e, height_comap]
 
 /-- `dim R ≤ n` if and only if the height of all prime ideals is less than `n`. -/
-lemma ringKrullDim_le_iff_height_le {R : Type*} [CommRing R] (n : WithBot ℕ∞) :
+lemma ringKrullDim_le_iff_height_le {R : Type*} [Ring R] [IsMulCommutative R] (n : WithBot ℕ∞) :
     ringKrullDim R ≤ n ↔ ∀ ⦃p : Ideal R⦄, p.IsPrime → p.height ≤ n := by
   rw [ringKrullDim, Order.krullDim_eq_iSup_height, iSup_le_iff]
   refine ⟨fun h p hp ↦ ?_, fun h p ↦ ?_⟩
@@ -387,7 +387,7 @@ lemma ringKrullDim_le_iff_height_le {R : Type*} [CommRing R] (n : WithBot ℕ∞
     rwa [Ideal.height_eq_primeHeight] at h
 
 /-- `dim R ≤ n` if and only if the height of all maximal ideals is less than `n`. -/
-lemma ringKrullDim_le_iff_isMaximal_height_le {R : Type*} [CommRing R] (n : WithBot ℕ∞) :
+lemma ringKrullDim_le_iff_isMaximal_height_le {R : Type*} [Ring R] [IsMulCommutative R] (n : WithBot ℕ∞) :
     ringKrullDim R ≤ n ↔ ∀ ⦃m : Ideal R⦄, m.IsMaximal → m.height ≤ n := by
   rw [ringKrullDim_le_iff_height_le]
   refine ⟨fun h m hm ↦ h hm.isPrime, fun h p hp ↦ ?_⟩
@@ -396,7 +396,7 @@ lemma ringKrullDim_le_iff_isMaximal_height_le {R : Type*} [CommRing R] (n : With
   norm_cast
   exact Ideal.height_mono hle
 
-private theorem IsLocalization.height_under_eq_of_isPrime (S : Submonoid R) {A : Type*} [CommRing A]
+private theorem IsLocalization.height_under_eq_of_isPrime (S : Submonoid R) {A : Type*} [Ring A] [IsMulCommutative A]
     [Algebra R A] [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
     (J.comap (algebraMap R A)).height = J.height := by
   rw [eq_comm, Ideal.height_eq_primeHeight, Ideal.height_eq_primeHeight, Ideal.primeHeight,
@@ -415,12 +415,12 @@ private theorem IsLocalization.height_under_eq_of_isPrime (S : Submonoid R) {A :
       map_rel_iff' {I₁ I₂} := @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
 
 @[deprecated "Use `Ideal.height_ne_top_of_isPrime` instead." (since := "2026-04-04")]
-private theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A]
+private theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [Ring A] [IsMulCommutative A]
     [Algebra R A] [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
     (J.comap (algebraMap R A)).primeHeight = J.primeHeight := by
   simpa [Ideal.height_eq_primeHeight] using IsLocalization.height_under_eq_of_isPrime S J
 
-theorem IsLocalization.height_under (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
+theorem IsLocalization.height_under (S : Submonoid R) {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) : (J.under R).height = J.height := by
   rw [(J.comap _).height_eq_inf_minimalPrimes, J.height_eq_inf_minimalPrimes]
   simp only [IsLocalization.minimalPrimes_comap S A, iInf_image]
@@ -432,14 +432,14 @@ theorem IsLocalization.height_under (S : Submonoid R) {A : Type*} [CommRing A] [
   IsLocalization.height_under
 
 theorem IsLocalization.AtPrime.ringKrullDim_eq_height (I : Ideal R) [I.IsPrime] (A : Type*)
-    [CommRing A] [Algebra R A] [IsLocalization.AtPrime A I] :
+    [Ring A] [IsMulCommutative A] [Algebra R A] [IsLocalization.AtPrime A I] :
     ringKrullDim A = I.height := by
   have := IsLocalization.AtPrime.isLocalRing A I
   rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim,
       ← IsLocalization.height_under I.primeCompl,
       ← IsLocalization.AtPrime.under_maximalIdeal A I]
 
-lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R S] (M : Submonoid R)
+lemma IsLocalization.height_map_of_disjoint {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] (M : Submonoid R)
     [IsLocalization M S] (p : Ideal R) [p.IsPrime] (h : Disjoint (M : Set R) (p : Set R)) :
     (p.map <| algebraMap R S).height = p.height := by
   let P := p.map (algebraMap R S)

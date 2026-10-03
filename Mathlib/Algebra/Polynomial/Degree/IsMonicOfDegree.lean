@@ -254,7 +254,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 lemma IsMonicOfDegree.of_dvd_add {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha : IsMonicOfDegree a m)
     (hb : IsMonicOfDegree b n) (hr : r.natDegree < m) (h : b ∣ a + r) :

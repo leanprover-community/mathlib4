@@ -67,7 +67,7 @@ theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by
 
 /-! ### Derivative of exp -/
 
-theorem derivative_exp (A : Type*) [CommRing A] [Algebra ℚ A] :
+theorem derivative_exp (A : Type*) [Ring A] [IsMulCommutative A] [Algebra ℚ A] :
     d⁄dX (exp A) = exp A := by
   ext n
   rw [coeff_derivative, coeff_exp, coeff_exp]
@@ -85,7 +85,7 @@ variable {A : Type*}
 
 The proof uses induction on coefficients: if `f' = f` and `f(0) = 1`, then
 `coeff (n+1) f * (n+1) = coeff n f`, which determines all coefficients uniquely. -/
-theorem exp_unique_of_derivative_eq_self [CommRing A] [Algebra ℚ A] [IsAddTorsionFree A]
+theorem exp_unique_of_derivative_eq_self [Ring A] [IsMulCommutative A] [Algebra ℚ A] [IsAddTorsionFree A]
     {f : PowerSeries A} (hd : d⁄dX f = f) (hc : constantCoeff f = 1) :
     f = exp A := by
   ext n
@@ -117,7 +117,7 @@ open RingHom
 
 open Finset Nat
 
-variable {A : Type*} [CommRing A]
+variable {A : Type*} [Ring A] [IsMulCommutative A]
 
 /-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :

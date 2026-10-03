@@ -71,13 +71,13 @@ open Cardinal Module Submodule
 
 /-- `FiniteDimensional` vector spaces are defined to be finite modules.
 Use `Module.Basis.finiteDimensional_of_finite` to prove finite dimension from another definition. -/
-abbrev FiniteDimensional (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] :=
+abbrev FiniteDimensional (K V : Type*) [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] :=
   Module.Finite K V
 
 variable {K : Type u} {V : Type v}
 
 namespace FiniteDimensional
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] {V₂ : Type v'} [AddGroup V₂] [IsAddCommutative V₂]
   [Module K V₂]
 
 /-- If the codomain of an injective linear map is finite dimensional, the domain must be as well. -/
@@ -95,7 +95,7 @@ variable (K V)
 instance finiteDimensional_pi {ι : Type*} [Finite ι] : FiniteDimensional K (ι → K) :=
   Finite.pi
 
-instance finiteDimensional_pi' {ι : Type*} [Finite ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
+instance finiteDimensional_pi' {ι : Type*} [Finite ι] (M : ι → Type*) [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)]
     [∀ i, Module K (M i)] [∀ i, FiniteDimensional K (M i)] : FiniteDimensional K (∀ i, M i) :=
   Finite.pi
 
@@ -161,7 +161,7 @@ end FiniteDimensional
 namespace Module
 
 variable (K V)
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 /-- In a finite-dimensional space, its dimension (seen as a cardinal) coincides with its
 `finrank`. This is a copy of `finrank_eq_rank _ _` which creates easier typeclass searches. -/
@@ -173,7 +173,7 @@ variable {K V}
 theorem finrank_of_infinite_dimensional (h : ¬FiniteDimensional K V) : finrank K V = 0 :=
   Module.finrank_of_not_finite h
 
-theorem finiteDimensional_iff_of_rank_eq_nsmul {W} [AddCommGroup W] [Module K W] {n : ℕ}
+theorem finiteDimensional_iff_of_rank_eq_nsmul {W} [AddGroup W] [IsAddCommutative W] [Module K W] {n : ℕ}
     (hn : n ≠ 0) (hVW : Module.rank K V = n • Module.rank K W) :
     FiniteDimensional K V ↔ FiniteDimensional K W :=
   Module.finite_iff_of_rank_eq_nsmul hn hVW
@@ -188,7 +188,7 @@ end Module
 
 namespace FiniteDimensional
 section DivisionRing
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] {V₂ : Type v'} [AddGroup V₂] [IsAddCommutative V₂]
   [Module K V₂]
 
 variable (K)
@@ -216,7 +216,7 @@ end DivisionRing
 
 section Tower
 
-variable (F K A : Type*) [DivisionRing F] [DivisionRing K] [AddCommGroup A]
+variable (F K A : Type*) [DivisionRing F] [DivisionRing K] [AddGroup A] [IsAddCommutative A]
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 
 theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
@@ -230,7 +230,7 @@ namespace Submodule
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 /-- A submodule is finitely generated if and only if it is finite-dimensional -/
 theorem fg_iff_finiteDimensional (s : Submodule K V) : s.FG ↔ FiniteDimensional K s :=
@@ -242,7 +242,7 @@ end Submodule
 
 namespace LinearEquiv
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] {V₂ : Type v'} [AddGroup V₂] [IsAddCommutative V₂]
   [Module K V₂]
 
 /-- Finite dimensionality is preserved under linear equivalence. -/

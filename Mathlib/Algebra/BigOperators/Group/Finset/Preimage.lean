@@ -20,7 +20,7 @@ variable {ι κ β : Type*}
 
 namespace Finset
 
-variable [CommMonoid β]
+variable [Monoid β] [IsMulCommutative β]
 
 @[to_additive]
 lemma prod_preimage' (f : ι → κ) [DecidablePred (· ∈ Set.range f)] (s : Finset κ) (hf) (g : κ → β) :

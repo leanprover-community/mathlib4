@@ -1021,7 +1021,7 @@ theorem MeasureTheory.measurableSet_exists_tendsto [TopologicalSpace γ]
 
 section Measurable
 
-variable {X E ι : Type*} [MeasurableSpace X] [CommMonoid E] [TopologicalSpace E]
+variable {X E ι : Type*} [MeasurableSpace X] [Monoid E] [IsMulCommutative E] [TopologicalSpace E]
 
 section
 

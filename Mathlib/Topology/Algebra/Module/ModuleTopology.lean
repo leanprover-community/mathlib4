@@ -205,9 +205,9 @@ section iso
 
 variable {R S : Type*} [τR : TopologicalSpace R] [τS : TopologicalSpace S] [Semiring R] [Semiring S]
 variable {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-variable {A : Type*} [AddCommMonoid A] [Module R A] [τA : TopologicalSpace A] [IsModuleTopology R A]
-variable {B : Type*} [AddCommMonoid B] [Module R B] [τB : TopologicalSpace B]
-variable {B' : Type*} [AddCommMonoid B'] [Module S B'] [τB' : TopologicalSpace B']
+variable {A : Type*} [AddMonoid A] [IsAddCommutative A] [Module R A] [τA : TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddMonoid B] [IsAddCommutative B] [Module R B] [τB : TopologicalSpace B]
+variable {B' : Type*} [AddMonoid B'] [IsAddCommutative B'] [Module S B'] [τB' : TopologicalSpace B']
 
 /-- If `A` and `B` are modules, homeomorphic via a semilinear homeomorphism, and if
 `A` has the module topology, then so does `B`. -/
@@ -300,10 +300,10 @@ end MulOpposite
 section function
 
 variable {R S : Type*} [τR : TopologicalSpace R] [τS : TopologicalSpace S] [Semiring R] [Semiring S]
-variable {A : Type*} [AddCommMonoid A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
-variable {B : Type*} [AddCommMonoid B] [Module R B] [aB : TopologicalSpace B]
+variable {A : Type*} [AddMonoid A] [IsAddCommutative A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddMonoid B] [IsAddCommutative B] [Module R B] [aB : TopologicalSpace B]
     [ContinuousAdd B] [ContinuousSMul R B]
-variable {B' : Type*} [AddCommMonoid B'] [Module S B'] [aB' : TopologicalSpace B']
+variable {B' : Type*} [AddMonoid B'] [IsAddCommutative B'] [Module S B'] [aB' : TopologicalSpace B']
     [ContinuousAdd B'] [ContinuousSMul S B']
 
 /-- Every semilinear map between two topological modules, where the source has the module
@@ -341,18 +341,18 @@ theorem continuous_of_linearMap (φ : A →ₗ[R] B) : Continuous φ :=
   continuous_of_distribMulActionHom φ.toDistribMulActionHom
 
 variable (R) in
-theorem continuous_neg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+theorem continuous_neg (C : Type*) [AddGroup C] [IsAddCommutative C] [Module R C] [TopologicalSpace C]
     [IsModuleTopology R C] : Continuous (fun a ↦ -a : C → C) :=
   haveI : ContinuousAdd C := IsModuleTopology.toContinuousAdd R C
   continuous_of_linearMap (LinearEquiv.neg R).toLinearMap
 
 variable (R) in
-theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+theorem continuousNeg (C : Type*) [AddGroup C] [IsAddCommutative C] [Module R C] [TopologicalSpace C]
     [IsModuleTopology R C] : ContinuousNeg C where
   continuous_neg := continuous_neg R C
 
 variable (R) in
-theorem isTopologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+theorem isTopologicalAddGroup (C : Type*) [AddGroup C] [IsAddCommutative C] [Module R C] [TopologicalSpace C]
     [IsModuleTopology R C] : IsTopologicalAddGroup C where
   continuous_add := (IsModuleTopology.toContinuousAdd R C).1
   continuous_neg := continuous_neg R C
@@ -360,7 +360,7 @@ theorem isTopologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [Topolog
 @[deprecated (since := "2026-08-21")] alias topologicalAddGroup := isTopologicalAddGroup
 
 @[fun_prop, continuity]
-theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
+theorem continuous_of_ringHom {R A B} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B]
     [TopologicalSpace R] [TopologicalSpace A] [IsModuleTopology R A] [TopologicalSpace B]
     [IsTopologicalSemiring B]
     (φ : A →+* B) (hφ : Continuous (φ.comp (algebraMap R A))) : Continuous φ := by
@@ -374,9 +374,9 @@ end function
 section surjection
 
 variable {R S : Type*} [τR : TopologicalSpace R] [τS : TopologicalSpace S] [Ring R] [Ring S]
-variable {A : Type*} [AddCommGroup A] [Module R A] [TopologicalSpace A] [IsModuleTopology R A]
-variable {B : Type*} [AddCommGroup B] [Module R B]
-variable {B' : Type*} [AddCommGroup B'] [Module S B']
+variable {A : Type*} [AddGroup A] [IsAddCommutative A] [Module R A] [TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddGroup B] [IsAddCommutative B] [Module R B]
+variable {B' : Type*} [AddGroup B'] [IsAddCommutative B'] [Module S B']
 
 open Topology in
 /-- A semilinear surjection between modules with the module topology is a quotient map.
@@ -517,8 +517,8 @@ end surjection
 section Prod
 
 variable {R : Type*} [TopologicalSpace R] [Semiring R]
-variable {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [IsModuleTopology R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N] [TopologicalSpace N] [IsModuleTopology R N]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] [TopologicalSpace M] [IsModuleTopology R M]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N] [TopologicalSpace N] [IsModuleTopology R N]
 
 /-- The product of the module topologies for two modules over a topological ring
 is the module topology. -/
@@ -559,7 +559,7 @@ end Prod
 section Pi
 
 variable {R : Type*} [TopologicalSpace R] [Semiring R]
-variable {ι : Type*} [Finite ι] {A : ι → Type*} [∀ i, AddCommMonoid (A i)]
+variable {ι : Type*} [Finite ι] {A : ι → Type*} [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)]
   [∀ i, Module R (A i)] [∀ i, TopologicalSpace (A i)]
   [∀ i, IsModuleTopology R (A i)]
 
@@ -599,9 +599,9 @@ section bilinear
 
 section semiring
 
-variable {R : Type*} [TopologicalSpace R] [CommSemiring R]
-variable {B : Type*} [AddCommMonoid B] [Module R B] [TopologicalSpace B] [IsModuleTopology R B]
-variable {C : Type*} [AddCommMonoid C] [Module R C] [TopologicalSpace C] [IsModuleTopology R C]
+variable {R : Type*} [TopologicalSpace R] [Semiring R] [IsMulCommutative R]
+variable {B : Type*} [AddMonoid B] [IsAddCommutative B] [Module R B] [TopologicalSpace B] [IsModuleTopology R B]
+variable {C : Type*} [AddMonoid C] [IsAddCommutative C] [Module R C] [TopologicalSpace C] [IsModuleTopology R C]
 
 /--
 If `n` is finite and `B`,`C` are `R`-modules with the module topology,
@@ -636,10 +636,10 @@ end semiring
 
 section ring
 
-variable {R : Type*} [TopologicalSpace R] [CommRing R] [IsTopologicalRing R]
-variable {A : Type*} [AddCommGroup A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
-variable {B : Type*} [AddCommGroup B] [Module R B] [aB : TopologicalSpace B] [IsModuleTopology R B]
-variable {C : Type*} [AddCommGroup C] [Module R C] [aC : TopologicalSpace C] [IsModuleTopology R C]
+variable {R : Type*} [TopologicalSpace R] [Ring R] [IsMulCommutative R] [IsTopologicalRing R]
+variable {A : Type*} [AddGroup A] [IsAddCommutative A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddGroup B] [IsAddCommutative B] [Module R B] [aB : TopologicalSpace B] [IsModuleTopology R B]
+variable {C : Type*} [AddGroup C] [IsAddCommutative C] [Module R C] [aC : TopologicalSpace C] [IsModuleTopology R C]
 
 /--
 If `A`, `B` and `C` have the module topology, and if furthermore `A` is a finite `R`-module,
@@ -678,7 +678,7 @@ end bilinear
 
 section algebra
 
-variable (R : Type*) [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [TopologicalSpace R] [IsTopologicalRing R]
     (D : Type*) [Ring D] [Algebra R D] [Module.Finite R D] [TopologicalSpace D]
     [IsModuleTopology R D]
 

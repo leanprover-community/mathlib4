@@ -13,9 +13,9 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 
 public section
 
-variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
     [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
-    (A) [CommRing A] [Algebra R A]
+    (A) [Ring A] [IsMulCommutative A] [Algebra R A]
 
 @[simp]
 lemma LinearMap.charpoly_baseChange :

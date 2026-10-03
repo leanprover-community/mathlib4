@@ -82,7 +82,7 @@ lemma add_sub_mul_of_commute (h : Commute a b) (ha : IsIdempotentElem a) (hb : I
 end NonUnitalRing
 
 section CommRing
-variable [CommRing R] {a b : R}
+variable [Ring R] [IsMulCommutative R] {a b : R}
 
 lemma add_sub_mul (hp : IsIdempotentElem a) (hq : IsIdempotentElem b) :
     IsIdempotentElem (a + b - a * b) := add_sub_mul_of_commute (.all ..) hp hq

@@ -54,7 +54,7 @@ open FaithfulSMul (algebraMap_injective)
 open Module
 open End (invtSubmodule mem_invtSubmodule)
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace RootPairing
 
@@ -97,7 +97,7 @@ lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
 
 section Map
 
-variable {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+variable {ι₂ M₂ N₂ : Type*} [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂] [AddGroup N₂] [IsAddCommutative N₂] [Module R N₂]
   {P₂ : RootPairing ι₂ R M₂ N₂} (e : P.Equiv P₂)
 
 private lemma map_aux_pos [DecidableEq ι₂] (s : Finset ι) {f : ι → M} {f₂ : ι₂ → M₂}

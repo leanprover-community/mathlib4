@@ -45,7 +45,7 @@ namespace Polynomial
 
 section MulActionWithZero
 
-variable {R : Type*} [Semiring R] (r : R) (p : R[X]) {S : Type*} [AddCommMonoid S] [Pow S ℕ]
+variable {R : Type*} [Semiring R] (r : R) (p : R[X]) {S : Type*} [AddMonoid S] [IsAddCommutative S] [Pow S ℕ]
   [MulActionWithZero R S] (x : S)
 
 /-- Scalar multiplication together with taking a natural number power. -/
@@ -102,7 +102,7 @@ end MulActionWithZero
 
 section Module
 
-variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [AddCommMonoid S] [Pow S ℕ] [Module R S]
+variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [AddMonoid S] [IsAddCommutative S] [Pow S ℕ] [Module R S]
   (x : S)
 
 @[simp]
@@ -147,7 +147,7 @@ end Module
 
 section Neg
 
-variable (R : Type*) [Ring R] {S : Type*} [AddCommGroup S] [Pow S ℕ] [Module R S] (p q : R[X])
+variable (R : Type*) [Ring R] {S : Type*} [AddGroup S] [IsAddCommutative S] [Pow S ℕ] [Module R S] (p q : R[X])
   (x : S)
 
 @[simp]
@@ -170,8 +170,8 @@ section NatPowAssoc
 
 /-!
 In the module docstring for algebras at `Mathlib/Algebra/Algebra/Basic.lean`, we see that
-`[CommSemiring R] [Semiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]` is an
-equivalent way to express `[CommSemiring R] [Semiring S] [Algebra R S]` that allows one to relax
+`[Semiring R] [IsMulCommutative R] [Semiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]` is an
+equivalent way to express `[Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]` that allows one to relax
 the defining structures independently.  For non-associative power-associative algebras (e.g.,
 octonions), we replace the `[Semiring S]` with `[NonAssocSemiring S] [Pow S ℕ] [NatPowAssoc S]`.
 -/
@@ -312,13 +312,13 @@ end Commute
 
 section Algebra
 
-theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
+theorem aeval_eq_smeval {R : Type*} [Semiring R] [IsMulCommutative R] {S : Type*} [Semiring S] [Algebra R S]
     (x : S) (p : R[X]) : aeval x p = p.smeval x := by
   rw [aeval_def, eval₂_def, Algebra.algebraMap_eq_smul_one', smeval_def]
   simp only [Algebra.smul_mul_assoc, one_mul]
   exact rfl
 
-theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
+theorem aeval_coe_eq_smeval {R : Type*} [Semiring R] [IsMulCommutative R] {S : Type*} [Semiring S] [Algebra R S]
     (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := funext fun p => aeval_eq_smeval x p
 
 end Algebra

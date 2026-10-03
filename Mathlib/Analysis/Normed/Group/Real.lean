@@ -122,8 +122,8 @@ end Real
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] {a : E}
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε]
+variable [SeminormedGroup E] [IsMulCommutative E] {a : E}
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedMonoid ε] [IsMulCommutative ε]
 
 @[to_additive (attr := simp high) norm_norm] -- Higher priority as a shortcut lemma.
 lemma norm_norm' (x : E) : ‖‖x‖‖ = ‖x‖ := Real.norm_of_nonneg (norm_nonneg' _)

@@ -29,7 +29,7 @@ public section
 open Set Pointwise
 
 variable {E : Type*} {s : Set E}
-variable [AddCommGroup E] [Module ℝ E]
+variable [AddGroup E] [IsAddCommutative E] [Module ℝ E]
 variable [UniformSpace E] [IsUniformAddGroup E] [LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 protected lemma TotallyBounded.convexHull (hs : TotallyBounded s) :

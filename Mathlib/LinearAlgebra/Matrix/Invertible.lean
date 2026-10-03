@@ -102,7 +102,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring α] (A : Matrix n n α)
+variable [Semiring α] [IsMulCommutative α] (A : Matrix n n α)
 
 /-- The transpose of an invertible matrix is invertible. -/
 instance invertibleTranspose [Invertible A] : Invertible Aᵀ where

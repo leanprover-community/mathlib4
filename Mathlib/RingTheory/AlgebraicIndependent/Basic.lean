@@ -37,7 +37,7 @@ open Function Set Subalgebra MvPolynomial Algebra
 universe u v v'
 
 variable {ι : Type u} {ι' R : Type*} {A : Type v} {A' : Type v'} {x : ι → A}
-variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
+variable [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring A'] [IsMulCommutative A'] [Algebra R A] [Algebra R A']
 
 variable (R A) in
 /-- The transcendence degree of a commutative algebra `A` over a commutative ring `R` is
@@ -133,7 +133,7 @@ theorem trdeg_eq_zero_of_not_injective (h : ¬ Injective (algebraMap R A)) : trd
   have := isEmpty_algebraicIndependent h
   rw [trdeg, ciSup_of_empty, bot_eq_zero]
 
-theorem MvPolynomial.algebraicIndependent_X (σ R : Type*) [CommRing R] :
+theorem MvPolynomial.algebraicIndependent_X (σ R : Type*) [Ring R] [IsMulCommutative R] :
     AlgebraicIndependent R (X (R := R) (σ := σ)) := by
   rw [AlgebraicIndependent, aeval_X_left]
   exact injective_id
@@ -173,7 +173,7 @@ theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
 
 /-- A set of algebraically independent elements in an algebra `A` over a ring `K` is also
 algebraically independent over a subring `R` of `K`. -/
-theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [Algebra R K] [Algebra K A]
+theorem AlgebraicIndependent.restrictScalars {K : Type*} [Ring K] [IsMulCommutative K] [Algebra R K] [Algebra K A]
     [IsScalarTower R K A] (hinj : Function.Injective (algebraMap R K))
     (ai : AlgebraicIndependent K x) : AlgebraicIndependent R x := by
   have : (aeval x : MvPolynomial ι K →ₐ[K] A).toRingHom.comp (MvPolynomial.map (algebraMap R K)) =
@@ -185,7 +185,7 @@ theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [Algebra R
 
 section RingHom
 
-variable {S B FRS FAB : Type*} [CommRing S] [CommRing B] [Algebra S B]
+variable {S B FRS FAB : Type*} [Ring S] [IsMulCommutative S] [Ring B] [IsMulCommutative B] [Algebra S B]
 
 section
 
@@ -336,7 +336,7 @@ theorem lift_trdeg_le_of_injective (f : A →ₐ[R] A') (hf : Injective f) :
   rw [trdeg, lift_iSup bddAbove_of_small]
   exact ciSup_le' fun i ↦ (i.2.map' hf).lift_cardinalMk_le_trdeg
 
-theorem trdeg_le_of_injective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
+theorem trdeg_le_of_injective {A' : Type v} [Ring A'] [IsMulCommutative A'] [Algebra R A'] (f : A →ₐ[R] A')
     (hf : Injective f) : trdeg R A ≤ trdeg R A' := by
   rw [← (trdeg R A).lift_id, ← (trdeg R A').lift_id]; exact lift_trdeg_le_of_injective f hf
 
@@ -348,7 +348,7 @@ theorem lift_trdeg_le_of_surjective (f : A →ₐ[R] A') (hf : Surjective f) :
     of_comp f ?_)
   convert! i.2; simp [invFun_eq (hf _)]
 
-theorem trdeg_le_of_surjective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
+theorem trdeg_le_of_surjective {A' : Type v} [Ring A'] [IsMulCommutative A'] [Algebra R A'] (f : A →ₐ[R] A')
     (hf : Surjective f) : trdeg R A' ≤ trdeg R A := by
   rw [← (trdeg R A).lift_id, ← (trdeg R A').lift_id]; exact lift_trdeg_le_of_surjective f hf
 
@@ -357,7 +357,7 @@ theorem AlgEquiv.lift_trdeg_eq (e : A ≃ₐ[R] A') :
   (lift_trdeg_le_of_injective e.toAlgHom e.injective).antisymm
     (lift_trdeg_le_of_surjective e.toAlgHom e.surjective)
 
-theorem AlgEquiv.trdeg_eq {A' : Type v} [CommRing A'] [Algebra R A'] (e : A ≃ₐ[R] A') :
+theorem AlgEquiv.trdeg_eq {A' : Type v} [Ring A'] [IsMulCommutative A'] [Algebra R A'] (e : A ≃ₐ[R] A') :
     trdeg R A = trdeg R A' := by
   rw [← (trdeg R A).lift_id, e.lift_trdeg_eq, lift_id]
 

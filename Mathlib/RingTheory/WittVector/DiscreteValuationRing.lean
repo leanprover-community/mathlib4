@@ -39,7 +39,7 @@ local notation "𝕎" => WittVector p
 
 section CommRing
 
-variable {k : Type*} [CommRing k] [CharP k p]
+variable {k : Type*} [Ring k] [IsMulCommutative k] [CharP k p]
 
 /-- This is the `n+1`st coefficient of our inverse. -/
 def succNthValUnits (n : ℕ) (a : Units k) (A : 𝕎 k) (bs : Fin (n + 1) → k) : k :=
@@ -112,7 +112,7 @@ end Field
 
 section PerfectRing
 
-variable {k : Type*} [CommRing k] [CharP k p] [PerfectRing k p]
+variable {k : Type*} [Ring k] [IsMulCommutative k] [CharP k p] [PerfectRing k p]
 
 theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
     ∃ (m : ℕ) (b : 𝕎 k), b.coeff 0 ≠ 0 ∧ a = (p : 𝕎 k) ^ m * b := by

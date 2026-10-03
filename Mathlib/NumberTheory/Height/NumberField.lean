@@ -65,7 +65,7 @@ lemma count_multisetInfinitePlace_eq_mult [DecidableEq (AbsoluteValue K ℝ)] (v
 
 set_option backward.isDefEq.respectTransparency.types false in
 -- For the user-facing version, see `prod_archAbsVal_eq` below.
-private lemma prod_multisetInfinitePlace_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
+private lemma prod_multisetInfinitePlace_eq {M : Type*} [Monoid M] [IsMulCommutative M] (f : AbsoluteValue K ℝ → M) :
     ((multisetInfinitePlace K).map f).prod = ∏ v : InfinitePlace K, f v.val ^ v.mult := by
   classical
   rw [Finset.prod_multiset_map_count]
@@ -83,17 +83,17 @@ instance instAdmissibleAbsValues : AdmissibleAbsValues K where
 
 open AdmissibleAbsValues
 
-lemma prod_archAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
+lemma prod_archAbsVal_eq {M : Type*} [Monoid M] [IsMulCommutative M] (f : AbsoluteValue K ℝ → M) :
     (archAbsVal.map f).prod = ∏ v : InfinitePlace K, f v.val ^ v.mult :=
   prod_multisetInfinitePlace_eq f
 
-lemma prod_nonarchAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
+lemma prod_nonarchAbsVal_eq {M : Type*} [Monoid M] [IsMulCommutative M] (f : AbsoluteValue K ℝ → M) :
     (∏ᶠ v : nonarchAbsVal, f v.val) = ∏ᶠ v : FinitePlace K, f v.val :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 open Finset Multiset in
-lemma sum_archAbsVal_eq {M : Type*} [AddCommMonoid M] (f : AbsoluteValue K ℝ → M) :
+lemma sum_archAbsVal_eq {M : Type*} [AddMonoid M] [IsAddCommutative M] (f : AbsoluteValue K ℝ → M) :
     (archAbsVal.map f).sum = ∑ v : InfinitePlace K, v.mult • f v.val := by
   classical
   rw [sum_multiset_map_count]
@@ -103,7 +103,7 @@ lemma sum_archAbsVal_eq {M : Type*} [AddCommMonoid M] (f : AbsoluteValue K ℝ �
       simp only [archAbsVal, mem_toFinset, mem_multisetInfinitePlace] at hw ⊢
       simp [count_multisetInfinitePlace_eq_mult ⟨w, hw⟩]
 
-lemma sum_nonarchAbsVal_eq {M : Type*} [AddCommMonoid M] (f : AbsoluteValue K ℝ → M) :
+lemma sum_nonarchAbsVal_eq {M : Type*} [AddMonoid M] [IsAddCommutative M] (f : AbsoluteValue K ℝ → M) :
     (∑ᶠ v : nonarchAbsVal, f v.val) = ∑ᶠ v : FinitePlace K, f v.val :=
   rfl
 

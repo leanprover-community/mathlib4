@@ -40,16 +40,16 @@ public section
 
 /-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
 implemented as the well-foundedness of submodule inclusion. -/
-abbrev IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop :=
+abbrev IsArtinian (R M) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : Prop :=
   WellFoundedLT (Submodule R M)
 
 @[deprecated "this is definitionally true" (since := "2026-09-07")]
-theorem isArtinian_iff (R M) [Semiring R] [AddCommMonoid M] [Module R M] : IsArtinian R M ↔
+theorem isArtinian_iff (R M) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : IsArtinian R M ↔
     WellFounded (· < · : Submodule R M → Submodule R M → Prop) :=
   .rfl
 
 /-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
-theorem IsArtinian.induction {R M} [Semiring R] [AddCommMonoid M] [Module R M] [IsArtinian R M]
+theorem IsArtinian.induction {R M} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [IsArtinian R M]
     {P : Submodule R M → Prop} (hgt : ∀ I, (∀ J < I, P J) → P I) (I : Submodule R M) : P I :=
   WellFoundedLT.induction I hgt
 

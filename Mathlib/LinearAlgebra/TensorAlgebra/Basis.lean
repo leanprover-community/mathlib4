@@ -35,7 +35,7 @@ universe uκ uR uM
 variable {κ : Type uκ} {R : Type uR} {M : Type uM}
 
 section CommSemiring
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- A basis provides an algebra isomorphism with the free algebra, replacing each basis vector
 with its index. -/
@@ -78,7 +78,7 @@ instance instNoZeroDivisors [NoZeroDivisors R] [Module.Free R M] :
 end CommSemiring
 
 section CommRing
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- The `TensorAlgebra` of a free module over an integral domain is a domain. -/
 instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (TensorAlgebra R M) :=

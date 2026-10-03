@@ -26,7 +26,7 @@ namespace LinearMap
 
 section NonUnitalNonAssoc
 
-variable (R A) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable (R A) [Semiring R] [IsMulCommutative R] [NonUnitalNonAssocSemiring A] [Module R A]
 variable [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
@@ -53,13 +53,13 @@ theorem mul_apply' (a b : A) : mul R A a b = a * b :=
 theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
   rfl
 
-lemma restrictScalars_mul {S : Type*} [CommSemiring S] [Module S A] [SMulCommClass S A A]
+lemma restrictScalars_mul {S : Type*} [Semiring S] [IsMulCommutative S] [Module S A] [SMulCommClass S A A]
     [IsScalarTower S A A] [CompatibleSMul A A R S] (a : A) :
     LinearMap.restrictScalars R (LinearMap.mul S A a) = LinearMap.mul R A a := by
   ext x
   simp
 
-variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {r : R} :
     lift (lsmul R M ∘ₗ mul R R r) = lsmul R M r ∘ₗ lift (lsmul R M) := by
@@ -71,7 +71,7 @@ end NonUnitalNonAssoc
 
 section NonUnital
 
-variable [CommSemiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
+variable [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
 variable [SMulCommClass R A A] [IsScalarTower R A A]
 variable [SMulCommClass R B B] [IsScalarTower R B B]
 
@@ -134,7 +134,7 @@ end right
 
 end one_side
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 /-- The multiplication in an algebra is an algebra homomorphism into the endomorphisms on
 the algebra.
@@ -172,7 +172,7 @@ variable (R A) in
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] [NonUnitalNonAssocCommSemiring A]
+variable [Semiring R] [IsMulCommutative R] [NonUnitalNonAssocSemiring A] [IsMulCommutative A]
   [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 
 @[simp] lemma flip_mul : (mul R A).flip = mul R A := by ext; simp [mul_comm]
@@ -189,7 +189,7 @@ end LinearMap
 open scoped RingTheory.LinearMap
 
 namespace NonUnitalAlgHom
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
   [NonUnitalNonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
   [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
@@ -199,7 +199,7 @@ lemma comp_mul' (f : A →ₙₐ[R] B) : (f : A →ₗ[R] B) ∘ₗ μ = μ[R] �
 end NonUnitalAlgHom
 
 namespace AlgHom
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 lemma comp_mul' (f : A →ₐ B) : f.toLinearMap ∘ₗ μ = μ[R] ∘ₗ (f.toLinearMap ⊗ₘ f.toLinearMap) :=
   TensorProduct.ext' <| by simp

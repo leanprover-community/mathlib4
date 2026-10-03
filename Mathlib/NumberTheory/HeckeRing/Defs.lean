@@ -202,10 +202,10 @@ supported). -/
 instance [Zero Z] : FunLike (HeckeCosetModule Δ H₁ H₂ Z) (HeckeCoset Δ H₁ H₂) Z :=
   inferInstanceAs (FunLike (HeckeCoset Δ H₁ H₂ →₀ Z) (HeckeCoset Δ H₁ H₂) Z)
 
-noncomputable instance [AddCommMonoid Z] : AddCommMonoid (HeckeCosetModule Δ H₁ H₂ Z) :=
+noncomputable instance [AddMonoid Z] [IsAddCommutative Z] : AddCommMonoid (HeckeCosetModule Δ H₁ H₂ Z) :=
   inferInstanceAs (AddCommMonoid (HeckeCoset Δ H₁ H₂ →₀ Z))
 
-noncomputable instance [AddCommGroup Z] : AddCommGroup (HeckeCosetModule Δ H₁ H₂ Z) :=
+noncomputable instance [AddGroup Z] [IsAddCommutative Z] : AddCommGroup (HeckeCosetModule Δ H₁ H₂ Z) :=
   inferInstanceAs (AddCommGroup (HeckeCoset Δ H₁ H₂ →₀ Z))
 
 /-- The sanctioned constructor of `HeckeCosetModule Δ H₁ H₂ Z` from a finitely-supported function

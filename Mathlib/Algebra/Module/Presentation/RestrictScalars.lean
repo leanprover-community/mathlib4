@@ -25,10 +25,10 @@ a presentation of `B` as a `A`-module (and some additional data).
 
 namespace Module
 
-variable {B : Type*} [Ring B] {M : Type*} [AddCommGroup M] [Module B M]
+variable {B : Type*} [Ring B] {M : Type*} [AddGroup M] [IsAddCommutative M] [Module B M]
   [DecidableEq B]
   (presM : Presentation B M) [DecidableEq presM.G]
-  {A : Type*} [CommRing A] [Algebra A B] [Module A M] [IsScalarTower A B M]
+  {A : Type*} [Ring A] [IsMulCommutative A] [Algebra A B] [Module A M] [IsScalarTower A B M]
   (presB : Presentation A B)
 
 namespace Presentation

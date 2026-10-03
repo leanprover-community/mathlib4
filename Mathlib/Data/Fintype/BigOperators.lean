@@ -40,7 +40,7 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 namespace Fintype
 
 @[to_additive]
-theorem prod_bool [CommMonoid α] (f : Bool → α) : ∏ b, f b = f true * f false := by simp
+theorem prod_bool [Monoid α] [IsMulCommutative α] (f : Bool → α) : ∏ b, f b = f true * f false := by simp
 
 theorem card_eq_sum_ones {α} [Fintype α] : Fintype.card α = ∑ _a : α, 1 :=
   Finset.card_eq_sum_ones _
@@ -52,7 +52,7 @@ open Finset
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 @[to_additive]
-theorem prod_extend_by_one [CommMonoid α] (s : Finset ι) (f : ι → α) :
+theorem prod_extend_by_one [Monoid α] [IsMulCommutative α] (s : Finset ι) (f : ι → α) :
     ∏ i, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i := by
   rw [← prod_filter, filter_mem_eq_inter, univ_inter]
 
@@ -60,7 +60,7 @@ end
 
 section
 
-variable {M : Type*} [Fintype α] [CommMonoid M]
+variable {M : Type*} [Fintype α] [Monoid M] [IsMulCommutative M]
 
 @[to_additive]
 theorem prod_eq_one (f : α → M) (h : ∀ a, f a = 1) : ∏ a, f a = 1 :=
@@ -96,7 +96,7 @@ open Finset
 
 section
 
-variable {M : Type*} [Fintype α] [CommMonoid M]
+variable {M : Type*} [Fintype α] [Monoid M] [IsMulCommutative M]
 
 @[to_additive (attr := simp)]
 theorem Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i, f (some i) :=
@@ -145,7 +145,7 @@ of multiplication over `Finset.univ`. -/
 @[to_additive /-- Sum over a sigma type equals the repeated sum.
 
 This is a version of `Finset.sum_sigma` specialized to the case of summation over `Finset.univ`. -/]
-theorem prod_sigma {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [CommMonoid M]
+theorem prod_sigma {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [Monoid M] [IsMulCommutative M]
     (f : Sigma α → M) : ∏ x, f x = ∏ x, ∏ y, f ⟨x, y⟩ :=
   Finset.prod_sigma ..
 
@@ -153,7 +153,7 @@ theorem prod_sigma {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fin
 This version is useful to rewrite from right to left. -/
 @[to_additive /-- Sum over a sigma type equals the repeated sum, curried version.
 This version is useful to rewrite from right to left. -/]
-theorem prod_sigma' {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [CommMonoid M]
+theorem prod_sigma' {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [Monoid M] [IsMulCommutative M]
     (f : (i : ι) → α i → M) : ∏ x : Sigma α, f x.1 x.2 = ∏ x, ∏ y, f x y :=
   prod_sigma ..
 
@@ -223,7 +223,7 @@ lemma Finset.card_filter_length_eq_le [Fintype α] {T : Finset (List α)} {s : �
 
 /-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
 @[to_additive /-- It is equivalent to sum a function over `fin n` or `finset.range n`. -/]
-theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
+theorem Fin.prod_univ_eq_prod_range [Monoid α] [IsMulCommutative α] (f : ℕ → α) (n : ℕ) :
     ∏ i : Fin n, f i = ∏ i ∈ range n, f i :=
   calc
     ∏ i : Fin n, f i = ∏ i : { x // x ∈ range n }, f i :=
@@ -231,19 +231,19 @@ theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
     _ = ∏ i ∈ range n, f i := by rw [← attach_eq_univ, prod_attach]
 
 @[to_additive]
-theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → β) :
+theorem Finset.prod_fin_eq_prod_range [Monoid β] [IsMulCommutative β] {n : ℕ} (c : Fin n → β) :
     ∏ i, c i = ∏ i ∈ Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 := by
   rw [← Fin.prod_univ_eq_prod_range, Finset.prod_congr rfl]
   rintro ⟨i, hi⟩ _
   simp only [hi, dite_eq_left]
 
 @[to_additive]
-theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)
+theorem Finset.prod_toFinset_eq_subtype {M : Type*} [Monoid M] [IsMulCommutative M] [Fintype α] (p : α → Prop)
     [DecidablePred p] (f : α → M) : ∏ a ∈ { x | p x }.toFinset, f a = ∏ a : Subtype p, f a := by
   rw [← Finset.prod_subtype]
   simp_rw [Set.mem_toFinset]; intro; rfl
 
-nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
+nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [Monoid β] [IsMulCommutative β]
     (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
@@ -254,7 +254,7 @@ nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p
 
 section
 
-variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
+variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [Monoid M] [IsMulCommutative M]
 
 @[to_additive]
 theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
@@ -270,7 +270,7 @@ theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
 in the reverse direction, use `Fintype.prod_prod_type'`. -/
 @[to_additive Fintype.sum_prod_type /-- The sum over a product type equals the sum of fiberwise
 sums. For rewriting in the reverse direction, use `Fintype.sum_prod_type'`. -/]
-theorem Fintype.prod_prod_type [CommMonoid γ] (f : α₁ × α₂ → γ) :
+theorem Fintype.prod_prod_type [Monoid γ] [IsMulCommutative γ] (f : α₁ × α₂ → γ) :
     ∏ x, f x = ∏ x, ∏ y, f (x, y) :=
   Finset.prod_product ..
 
@@ -278,19 +278,19 @@ theorem Fintype.prod_prod_type [CommMonoid γ] (f : α₁ × α₂ → γ) :
 in the reverse direction, use `Fintype.prod_prod_type`. -/
 @[to_additive Fintype.sum_prod_type' /-- The sum over a product type equals the sum of fiberwise
 sums. For rewriting in the reverse direction, use `Fintype.sum_prod_type`. -/]
-theorem Fintype.prod_prod_type' [CommMonoid γ] (f : α₁ → α₂ → γ) :
+theorem Fintype.prod_prod_type' [Monoid γ] [IsMulCommutative γ] (f : α₁ → α₂ → γ) :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x, ∏ y, f x y :=
   Finset.prod_product' ..
 
 @[to_additive Fintype.sum_prod_type_right]
-theorem Fintype.prod_prod_type_right [CommMonoid γ] (f : α₁ × α₂ → γ) :
+theorem Fintype.prod_prod_type_right [Monoid γ] [IsMulCommutative γ] (f : α₁ × α₂ → γ) :
     ∏ x, f x = ∏ y, ∏ x, f (x, y) :=
   Finset.prod_product_right ..
 
 /-- An uncurried version of `Finset.prod_prod_type_right`. -/
 @[to_additive Fintype.sum_prod_type_right'
 /-- An uncurried version of `Finset.sum_prod_type_right` -/]
-theorem Fintype.prod_prod_type_right' [CommMonoid γ] (f : α₁ → α₂ → γ) :
+theorem Fintype.prod_prod_type_right' [Monoid γ] [IsMulCommutative γ] (f : α₁ → α₂ → γ) :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ y, ∏ x, f x y :=
   Finset.prod_product_right' ..
 

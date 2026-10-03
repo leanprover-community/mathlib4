@@ -22,9 +22,9 @@ namespace AffineMap
 
 variable
   {R V P W Q : Type*}
-  [AddCommGroup V] [TopologicalSpace V]
+  [AddGroup V] [IsAddCommutative V] [TopologicalSpace V]
   [AddTorsor V P] [TopologicalSpace P] [IsTopologicalAddTorsor P]
-  [AddCommGroup W] [TopologicalSpace W]
+  [AddGroup W] [IsAddCommutative W] [TopologicalSpace W]
   [AddTorsor W Q] [TopologicalSpace Q] [IsTopologicalAddTorsor Q]
 
 section Ring
@@ -122,7 +122,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] [Module R V] [ContinuousConstSMul R V]
+variable [Ring R] [IsMulCommutative R] [Module R V] [ContinuousConstSMul R V]
 
 @[continuity, fun_prop]
 theorem homothety_continuous (x : P) (t : R) : Continuous <| homothety x t := by

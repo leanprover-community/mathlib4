@@ -379,7 +379,7 @@ variable (X 𝕜 : Type*) [TopologicalSpace X]
 
 section ContinuousMapEval
 
-variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
+variable [Ring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the

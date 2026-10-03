@@ -81,7 +81,7 @@ def eval [Add M] [Zero M] [SMul R M] (l : NF R M) : M := (l.map (fun (⟨r, x⟩
 theorem eval_nil [Add M] [Zero M] [SMul R M] : NF.eval ([] : NF R M) = 0 := by
   simp [eval]
 
-theorem eval_cons_eq [AddCommMonoid M] [Semiring R] [Module R M] {r r' : R} (x : M)
+theorem eval_cons_eq [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M] {r r' : R} (x : M)
     {l : NF R M} {e : M} (hr : r = r') (h : l.eval = e) :
     ((r, x) ::ᵣ l).eval = r' • x + e := by
   subst hr h
@@ -97,7 +97,7 @@ theorem add_eq_eval₁ [AddMonoid M] [SMul R M] (a₁ : R × M) {a₂ : R × M} 
     (a₁ ::ᵣ l₁).eval + (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h, add_assoc]
 
-theorem add_eq_eval₂ [Semiring R] [AddCommMonoid M] [Module R M] (r₁ r₂ : R) (x : M)
+theorem add_eq_eval₂ [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] (r₁ r₂ : R) (x : M)
     {l₁ l₂ l : NF R M} (h : l₁.eval + l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval + ((r₂, x) ::ᵣ l₂).eval = ((r₁ + r₂, x) ::ᵣ l).eval := by
   simp only [← h, eval_cons, add_smul, add_assoc]
@@ -106,7 +106,7 @@ theorem add_eq_eval₂ [Semiring R] [AddCommMonoid M] [Module R M] (r₁ r₂ : 
   congr! 1
   rw [add_comm]
 
-theorem add_eq_eval₃ [Semiring R] [AddCommMonoid M] [Module R M] {a₁ : R × M} (a₂ : R × M)
+theorem add_eq_eval₃ [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] {a₁ : R × M} (a₂ : R × M)
     {l₁ l₂ l : NF R M} (h : (a₁ ::ᵣ l₁).eval + l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval + (a₂ ::ᵣ l₂).eval = (a₂ ::ᵣ l).eval := by
   simp only [eval_cons, ← h]
@@ -115,7 +115,7 @@ theorem add_eq_eval₃ [Semiring R] [AddCommMonoid M] [Module R M] {a₁ : R × 
   congr! 2
   rw [add_comm]
 
-theorem add_eq_eval {R₁ R₂ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₁]
+theorem add_eq_eval {R₁ R₂ : Type*} [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M] [Semiring R₁]
     [Module R₁ M] [Semiring R₂] [Module R₂ M] {l₁ l₂ l : NF R M} {l₁' : NF R₁ M} {l₂' : NF R₂ M}
     {x₁ x₂ : M} (hx₁ : x₁ = l₁'.eval) (hx₂ : x₂ = l₂'.eval) (h₁ : l₁.eval = l₁'.eval)
     (h₂ : l₂.eval = l₂'.eval) (h : l₁.eval + l₂.eval = l.eval) :
@@ -127,7 +127,7 @@ theorem sub_eq_eval₁ [SMul R M] [AddGroup M] (a₁ : R × M) {a₂ : R × M} {
     (a₁ ::ᵣ l₁).eval - (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h, sub_eq_add_neg, add_assoc]
 
-theorem sub_eq_eval₂ [Ring R] [AddCommGroup M] [Module R M] (r₁ r₂ : R) (x : M) {l₁ l₂ l : NF R M}
+theorem sub_eq_eval₂ [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] (r₁ r₂ : R) (x : M) {l₁ l₂ l : NF R M}
     (h : l₁.eval - l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval - ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
   simp only [← h, eval_cons, sub_eq_add_neg, neg_add, add_smul, neg_smul, add_assoc]
@@ -136,14 +136,14 @@ theorem sub_eq_eval₂ [Ring R] [AddCommGroup M] [Module R M] (r₁ r₂ : R) (x
   congr! 1
   rw [add_comm]
 
-theorem sub_eq_eval₃ [Ring R] [AddCommGroup M] [Module R M] {a₁ : R × M} (a₂ : R × M)
+theorem sub_eq_eval₃ [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] {a₁ : R × M} (a₂ : R × M)
     {l₁ l₂ l : NF R M} (h : (a₁ ::ᵣ l₁).eval - l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval - (a₂ ::ᵣ l₂).eval = ((-a₂.1, a₂.2) ::ᵣ l).eval := by
   simp only [eval_cons, neg_smul, neg_add, sub_eq_add_neg, ← h, ← add_assoc]
   congr! 1
   rw [add_comm, add_assoc]
 
-theorem sub_eq_eval {R₁ R₂ S₁ S₂ : Type*} [AddCommGroup M] [Ring R] [Module R M] [Semiring R₁]
+theorem sub_eq_eval {R₁ R₂ S₁ S₂ : Type*} [AddGroup M] [IsAddCommutative M] [Ring R] [Module R M] [Semiring R₁]
     [Module R₁ M] [Semiring R₂] [Module R₂ M] [Semiring S₁] [Module S₁ M] [Semiring S₂]
     [Module S₂ M] {l₁ l₂ l : NF R M} {l₁' : NF R₁ M} {l₂' : NF R₂ M} {l₁'' : NF S₁ M}
     {l₂'' : NF S₂ M} {x₁ x₂ : M} (hx₁ : x₁ = l₁''.eval) (hx₂ : x₂ = l₂''.eval)
@@ -157,16 +157,16 @@ instance [Neg R] : Neg (NF R M) where
 
 theorem neg_cons [Neg R] (p : R × M) (l : NF R M) : -(p ::ᵣ l) = (-p.1, p.2) ::ᵣ (-l) := rfl
 
-theorem eval_neg [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
+theorem eval_neg [AddGroup M] [IsAddCommutative M] [Ring R] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
   induction l with
   | nil => exact neg_zero.symm
   | cons p l ih => simp only [eval_cons, neg_add, neg_cons, ih, neg_smul]
 
-theorem zero_sub_eq_eval [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) :
+theorem zero_sub_eq_eval [AddGroup M] [IsAddCommutative M] [Ring R] [Module R M] (l : NF R M) :
     0 - l.eval = (-l).eval := by
   simp [eval_neg]
 
-theorem neg_eq_eval [AddCommGroup M] [Semiring S] [Module S M] [Ring R] [Module R M] {l : NF R M}
+theorem neg_eq_eval [AddGroup M] [IsAddCommutative M] [Semiring S] [Module S M] [Ring R] [Module R M] {l : NF R M}
     {l₀ : NF S M} (hl : l.eval = l₀.eval) {x : M} (h : x = l₀.eval) :
     - x = (-l).eval := by
   rw [h, ← hl, eval_neg]
@@ -180,14 +180,14 @@ instance [Mul R] : SMul R (NF R M) where
 theorem smul_cons [Mul R] (r : R) (p : R × M) (l : NF R M) :
     r • (p ::ᵣ l) = (r * p.1, p.2) ::ᵣ (r • l) := rfl
 
-theorem eval_smul [AddCommMonoid M] [Semiring R] [Module R M] {l : NF R M} {x : M} (h : x = l.eval)
+theorem eval_smul [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M] {l : NF R M} {x : M} (h : x = l.eval)
     (r : R) : (r • l).eval = r • x := by
   subst h
   induction l with
   | nil => exact (smul_zero r).symm
   | cons p l ih => simp only [smul_cons, eval_cons, ih, smul_add, mul_smul]
 
-theorem smul_eq_eval {R₀ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₀]
+theorem smul_eq_eval {R₀ : Type*} [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M] [Semiring R₀]
     [Module R₀ M] [Semiring S] [Module S M] {l : NF R M} {l₀ : NF R₀ M} {s : S} {r : R}
     {x : M} (hx : x = l₀.eval) (hl : l.eval = l₀.eval) (hs : r • x = s • x) :
     s • x = (r • l).eval := by
@@ -199,17 +199,17 @@ theorem eq_cons_cons [AddMonoid M] [SMul R M] {r₁ r₂ : R} (m : M) {l₁ l₂
     ((r₁, m) ::ᵣ l₁).eval = ((r₂, m) ::ᵣ l₂).eval := by
   simp [h1, h2]
 
-theorem eq_cons_const [AddCommMonoid M] [Semiring R] [Module R M] {r : R} (m : M) {n : M}
+theorem eq_cons_const [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M] {r : R} (m : M) {n : M}
     {l : NF R M} (h1 : r = 0) (h2 : l.eval = n) :
     ((r, m) ::ᵣ l).eval = n := by
   simp [h1, h2]
 
-theorem eq_const_cons [AddCommMonoid M] [Semiring R] [Module R M] {r : R} (m : M) {n : M}
+theorem eq_const_cons [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M] {r : R} (m : M) {n : M}
     {l : NF R M} (h1 : 0 = r) (h2 : n = l.eval) :
     n = ((r, m) ::ᵣ l).eval := by
   simp [← h1, h2]
 
-theorem eq_of_eval_eq_eval {R₁ R₂ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₁]
+theorem eq_of_eval_eq_eval {R₁ R₂ : Type*} [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M] [Semiring R₁]
     [Module R₁ M] [Semiring R₂] [Module R₂ M] {l₁ l₂ : NF R M} {l₁' : NF R₁ M} {l₂' : NF R₂ M}
     {x₁ x₂ : M} (hx₁ : x₁ = l₁'.eval) (hx₂ : x₂ = l₂'.eval) (h₁ : l₁.eval = l₁'.eval)
     (h₂ : l₂.eval = l₂'.eval) (h : l₁.eval = l₂.eval) :
@@ -221,13 +221,13 @@ variable (R)
 /-- Operate on a `Module.NF S M` object `l`, i.e. a list of pairs in `S × M`, where `S` is some
 commutative semiring, by applying to each `S`-component the algebra-map from `S` into a specified
 `S`-algebra `R`. -/
-def algebraMap [CommSemiring S] [Semiring R] [Algebra S R] (l : NF S M) : NF R M :=
+def algebraMap [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R] (l : NF S M) : NF R M :=
   l.map (fun ⟨s, x⟩ ↦ (Algebra.algebraMap S R s, x))
 
-theorem algebraMap_cons [CommSemiring S] [Semiring R] [Algebra S R] (p : S × M) (l : NF S M) :
+theorem algebraMap_cons [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R] (p : S × M) (l : NF S M) :
     (p ::ᵣ l).algebraMap R = (Algebra.algebraMap S R p.1, p.2) ::ᵣ (l.algebraMap R) := rfl
 
-theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M] [SMul S M]
+theorem eval_algebraMap [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R] [AddMonoid M] [SMul S M]
     [MulAction R M] [IsScalarTower S R M] (l : NF S M) :
     (l.algebraMap R).eval = l.eval := by
   induction l with
@@ -712,19 +712,19 @@ If the set of scalar types encountered is not totally ordered (in the sense that
 
 Examples:
 ```
-example [AddCommMonoid M] [Semiring R] [Module R M] (a b : R) (x : M) :
+example [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (b + a) • x := by
   match_scalars
   -- one goal: `⊢ a + b = b + a`
 
-example [AddCommGroup M] [Ring R] [Module R M] (a b : R) (x : M) :
+example [AddGroup M] [IsAddCommutative M] [Ring R] [Module R M] (a b : R) (x : M) :
     a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
   match_scalars
   -- two goals:
   -- `⊢ a * a + b * b = 1` (from the `x` atom)
   -- `⊢ a * -b + b * a = 0` (from the `y` atom)
 
-example [AddCommGroup M] [Ring R] [Module R M] (a : R) (x : M) :
+example [AddGroup M] [IsAddCommutative M] [Ring R] [Module R M] (a : R) (x : M) :
     -(2:R) • a • x = a • (-2:ℤ) • x := by
   match_scalars
   -- one goal: `⊢ -2 * a = a * -2`
@@ -742,19 +742,19 @@ equalities, you can instead use `match_scalars` followed by specialized proofs f
 
 Examples:
 ```
-example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M) :
+example [AddMonoid M] [IsAddCommutative M] [Semiring R] [IsMulCommutative R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (b + a) • x := by
   module
 
-example [AddCommMonoid M] [Field K] [CharZero K] [Module K M] (x : M) :
+example [AddMonoid M] [IsAddCommutative M] [Field K] [CharZero K] [Module K M] (x : M) :
     (2:K)⁻¹ • x + (3:K)⁻¹ • x + (6:K)⁻¹ • x = x := by
   module
 
-example [AddCommGroup M] [CommRing R] [Module R M] (a : R) (v w : M) :
+example [AddGroup M] [IsAddCommutative M] [Ring R] [IsMulCommutative R] [Module R M] (a : R) (v w : M) :
     (1 + a ^ 2) • (v + w) - a • (a • v - w) = v + (1 + a + a ^ 2) • w := by
   module
 
-example [AddCommGroup M] [CommRing R] [Module R M] (a b μ ν : R) (x y : M) :
+example [AddGroup M] [IsAddCommutative M] [Ring R] [IsMulCommutative R] [Module R M] (a b μ ν : R) (x y : M) :
     (μ - ν) • a • x = (a • μ • x + b • ν • y) - ν • (a • x + b • y) := by
   module
 ```

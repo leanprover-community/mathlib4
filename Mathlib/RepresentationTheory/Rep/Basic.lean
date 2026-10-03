@@ -31,7 +31,7 @@ structure Rep (k : Type u) (G : Type v) [Semiring k] [Monoid G] where
   _mkInternal ::
   /-- the underlying type of an object in `Rep k G` -/
   V : Type w
-  [hV1 : AddCommGroup V]
+  [hV1 : AddGroup V] [IsAddCommutative V]
   [hV2 : Module k V]
   /-- the underlying representation of an object in `Rep k G` -/
   ρ : Representation k G V
@@ -42,8 +42,8 @@ noncomputable section
 
 section semiring
 
-variable {k : Type u} {G : Type v} [Semiring k] [Monoid G] {X Y : Type w} [AddCommGroup X]
-  [AddCommGroup Y] [Module k X] [Module k Y] {ρ : Representation k G X} {σ : Representation k G Y}
+variable {k : Type u} {G : Type v} [Semiring k] [Monoid G] {X Y : Type w} [AddGroup X] [IsAddCommutative X]
+  [AddGroup Y] [IsAddCommutative Y] [Module k X] [Module k Y] {ρ : Representation k G X} {σ : Representation k G Y}
   (A B C : Rep.{w} k G)
 
 attribute [instance] hV1
@@ -119,7 +119,7 @@ variable {A B} in
 lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (f.hom a) := by
   simpa using congr($(f.hom.2 g) a)
 
-variable {Z : Type w} [AddCommGroup Z] [Module k Z] {τ : Representation k G Z}
+variable {Z : Type w} [AddGroup Z] [IsAddCommutative Z] [Module k Z] {τ : Representation k G Z}
 
 @[simp] lemma hom_ofHom (f : ρ.IntertwiningMap σ) : (ofHom f).hom = f := rfl
 @[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
@@ -275,7 +275,7 @@ lemma sum_hom {ι : Type u'} (f : ι → (A ⟶ B)) (s : Finset ι) :
   | empty => simp
   | insert a s ha h => simp [Finset.sum_insert ha, add_hom, h]
 
-lemma ofHom_sum {ι : Type u'} {M N : Type v'} [AddCommGroup M] [AddCommGroup N] [Module k M]
+lemma ofHom_sum {ι : Type u'} {M N : Type v'} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module k M]
     [Module k N] {σ : Representation k G M} {ρ : Representation k G N} (f : ι → σ.IntertwiningMap ρ)
     (s : Finset ι) :
     ofHom (∑ i ∈ s, f i) = ∑ i ∈ s, ofHom (f i) := by
@@ -285,23 +285,23 @@ lemma ofHom_sum {ι : Type u'} {M N : Type v'} [AddCommGroup M] [AddCommGroup N]
 
 variable (k G) in
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
-abbrev trivial (V : Type w) [AddCommGroup V] [Module k V] : Rep k G :=
+abbrev trivial (V : Type w) [AddGroup V] [IsAddCommutative V] [Module k V] : Rep k G :=
   Rep.of (Representation.trivial k G V)
 
-lemma trivial_V {V : Type w} [AddCommGroup V] [Module k V] : (trivial k G V).V = V := rfl
+lemma trivial_V {V : Type w} [AddGroup V] [IsAddCommutative V] [Module k V] : (trivial k G V).V = V := rfl
 
-lemma trivial_ρ {V : Type w} [AddCommGroup V] [Module k V] (g : G) :
+lemma trivial_ρ {V : Type w} [AddGroup V] [IsAddCommutative V] [Module k V] (g : G) :
     (trivial k G V).ρ g = LinearMap.id := rfl
 
 @[simp]
-lemma trivial_ρ_apply {V : Type w} [AddCommGroup V] [Module k V] (g : G) (v : V) :
+lemma trivial_ρ_apply {V : Type w} [AddGroup V] [IsAddCommutative V] [Module k V] (g : G) (v : V) :
     (trivial k G V).ρ g v = v := rfl
 
 lemma ρ_mul (g1 g2 : G) : A.ρ (g1 * g2) = A.ρ g1 ∘ₗ A.ρ g2 := by ext; simp
 
 section Commutative
 
-variable {G : Type v} [CommMonoid G]
+variable {G : Type v} [Monoid G] [IsMulCommutative G]
 variable (A : Rep k G)
 
 /-- Given a representation `A` of a commutative monoid `G`, the map `ρ_A(g)` is a representation
@@ -355,7 +355,7 @@ abbrev ofMulActionSubsingletonIsoTrivial
 
 section
 
-variable (A : Type w') [AddCommGroup A] [Module k A] [DistribMulAction G A] [SMulCommClass G k A]
+variable (A : Type w') [AddGroup A] [IsAddCommutative A] [Module k A] [DistribMulAction G A] [SMulCommClass G k A]
 
 /-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
 `k`-linear `G`-representation on `A`. -/
@@ -366,13 +366,13 @@ def ofDistribMulAction : Rep k G := Rep.of (Representation.ofDistribMulAction k 
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `S`. -/
-@[simp] def ofAlgebraAut (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] :
+@[simp] def ofAlgebraAut (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] :
     Rep ℤ (S ≃ₐ[R] S) := ofDistribMulAction ℤ (S ≃ₐ[R] S) S
 
 end
 
 section
-variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+variable (M G : Type*) [Monoid M] [Group G] [IsMulCommutative G] [MulDistribMulAction M G]
 
 /-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
 `ℤ`-linear `M`-representation on `Additive G`. -/
@@ -389,7 +389,7 @@ def toAdditive : ofMulDistribMulAction M G ≃+ Additive G := AddEquiv.refl _
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `Sˣ`. -/
-@[simp] def ofAlgebraAutOnUnits (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] :
+@[simp] def ofAlgebraAutOnUnits (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] :
     Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
 
 end
@@ -442,14 +442,14 @@ abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
 
 instance (X : ModuleCat k) : ((trivialFunctor k G).obj X).IsTrivial where
 
-instance {V : Type w} [AddCommGroup V] [Module k V] :
+instance {V : Type w} [AddGroup V] [IsAddCommutative V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
 
-instance {V : Type w} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
+instance {V : Type w} [AddGroup V] [IsAddCommutative V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
     IsTrivial (Rep.of ρ) where
   out := Representation.isTrivial_def ρ
 
-instance {H : Type u'} {V : Type w} [Group H] [AddCommGroup V] [Module k V]
+instance {H : Type u'} {V : Type w} [Group H] [AddGroup V] [IsAddCommutative V] [Module k V]
     (ρ : Representation k H V) (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
     Representation.IsTrivial ((Rep.of ρ).ρ.comp f) := ‹_›
 
@@ -592,12 +592,12 @@ end ring
 
 section CommSemiring
 
-variable {k : Type u} {G : Type v} [CommSemiring k] [Monoid G]
+variable {k : Type u} {G : Type v} [Semiring k] [IsMulCommutative k] [Monoid G]
 
 instance {M N : Rep k G} : SMul k (M ⟶ N) where
   smul r f := ofHom (r • f.hom)
 
-lemma ofHom_smul {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
+lemma ofHom_smul {M N : Type w} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module k M] [Module k N]
     {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) (r : k) :
     ofHom (r • f) = r • ofHom f := rfl
 
@@ -622,7 +622,7 @@ instance : Linear k (Rep k G) where
 
 end CommSemiring
 
-variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+variable {k : Type u} {G : Type v} [Ring k] [IsMulCommutative k] [Monoid G]
 
 instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
   map_smul {X Y} f r := by
@@ -680,7 +680,7 @@ lemma hom_tensorHom {X₁ X₂ Y₁ Y₂ : Rep k G} (f : X₁ ⟶ Y₁) (g : X�
     (f ⊗ₘ g).hom = f.hom.tensor g.hom := rfl
 
 @[simp]
-lemma of_tensor {X Y : Type u} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
+lemma of_tensor {X Y : Type u} [AddGroup X] [IsAddCommutative X] [AddGroup Y] [IsAddCommutative Y] [Module k X] [Module k Y]
     (σ : Representation k G X) (ρ : Representation k G Y) :
     of (σ.tprod ρ) = of σ ⊗ of ρ := rfl
 
@@ -943,7 +943,7 @@ abbrev finsuppTensorRight : A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
 
 section
 
-variable (k G α : Type u) [DecidableEq α] [CommRing k] [Monoid G]
+variable (k G α : Type u) [DecidableEq α] [Ring k] [IsMulCommutative k] [Monoid G]
 
 /-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
 abbrev leftRegularTensorTrivialIsoFree : leftRegular k G ⊗ trivial k G k[α] ≅ free k G α :=

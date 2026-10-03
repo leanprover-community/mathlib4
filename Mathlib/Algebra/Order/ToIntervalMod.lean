@@ -36,7 +36,7 @@ noncomputable section
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [hα : Archimedean α]
+variable {α : Type*} [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α] [hα : Archimedean α]
   {p : α} (hp : 0 < p)
   {a b c : α} {n : ℤ}
 
@@ -1396,7 +1396,7 @@ open Set Int
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [Archimedean α]
+variable {α : Type*} [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α] [Archimedean α]
   {p : α} (hp : 0 < p) (a : α)
 include hp
 

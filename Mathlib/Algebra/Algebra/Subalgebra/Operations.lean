@@ -24,7 +24,7 @@ assert_not_exists Cardinal
 
 namespace AlgHom
 
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 theorem ker_rangeRestrict (f : A →ₐ[R] B) : RingHom.ker f.rangeRestrict = RingHom.ker f :=
   Ideal.ext fun _ ↦ Subtype.ext_iff
@@ -35,7 +35,7 @@ namespace Subalgebra
 
 open Algebra
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 variable (S' : Subalgebra R S)
 
 /-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` ∈ `S`, and `S'` a subalgebra of `S` that contains
@@ -82,7 +82,7 @@ end Subalgebra
 
 section MulSemiringAction
 
-variable (A B B' : Type*) [CommSemiring A] [Ring B] [Semiring B'] [Algebra A B] [Algebra A B']
+variable (A B B' : Type*) [Semiring A] [IsMulCommutative A] [Ring B] [Semiring B'] [Algebra A B] [Algebra A B']
 variable (G : Type*) [Monoid G] [MulSemiringAction G B] [SMulCommClass G A B]
   [MulSemiringAction G B'] [SMulCommClass G A B']
 

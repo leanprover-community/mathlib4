@@ -21,7 +21,7 @@ namespace Representation
 
 open scoped MonoidAlgebra
 
-variable {G k V W : Type*} [Monoid G] [Field k] [AddCommGroup V] [Module k V] [AddCommGroup W]
+variable {G k V W : Type*} [Monoid G] [Field k] [AddGroup V] [IsAddCommutative V] [Module k V] [AddGroup W] [IsAddCommutative W]
     [Module k W] (ρ : Representation k G V) (σ : Representation k G W)
 
 /-- A representation `ρ` is irreducible if it is non-trivial and has no proper non-trivial
@@ -35,7 +35,7 @@ theorem irreducible_iff_isSimpleModule_asModule :
   exact OrderIso.isSimpleOrder_iff Subrepresentation.subrepresentationSubmoduleOrderIso
 
 set_option backward.isDefEq.respectTransparency false in
-theorem isSimpleModule_iff_irreducible_ofModule (M : Type*) [AddCommGroup M] [Module k[G] M] :
+theorem isSimpleModule_iff_irreducible_ofModule (M : Type*) [AddGroup M] [IsAddCommutative M] [Module k[G] M] :
     IsSimpleModule k[G] M ↔ IsIrreducible (ofModule (k := k) (G := G) M) := by
   rw [isSimpleModule_iff]
   exact OrderIso.isSimpleOrder_iff Subrepresentation.submoduleSubrepresentationOrderIso

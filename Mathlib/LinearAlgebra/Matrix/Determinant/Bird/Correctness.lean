@@ -43,7 +43,7 @@ The theorem names `paper_eq1`, ..., `paper_eq5` follow Bird's numbering.
 namespace BirdDet
 
 open Function
-variable {R : Type*} [CommRing R] {m n : ℕ}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {m n : ℕ}
 
 /-- `sumFrom n lo f` is the sum of `f` over the half-open interval `[lo, n)`. -/
 theorem sumFrom_eq_sum_Ico {lo : ℕ} (f : ℕ → R) :

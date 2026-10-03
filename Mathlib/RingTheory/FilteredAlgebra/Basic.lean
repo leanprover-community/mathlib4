@@ -84,7 +84,7 @@ section FilteredModule
 
 variable {ι ιM R M σ σM : Type*} [AddMonoid ι] [PartialOrder ι] [PartialOrder ιM] [VAdd ι ιM]
 variable [Preorder σ] [Semiring R] [SetLike σ R]
-variable [Preorder σM] [AddCommMonoid M] [Module R M] [SetLike σM M]
+variable [Preorder σM] [AddMonoid M] [IsAddCommutative M] [Module R M] [SetLike σM M]
 
 /-- For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a family of subsets of
 an `R`-module `M`, an increasing series `FM` in `σM` is a module filtration if `IsFiltration F F_lt`

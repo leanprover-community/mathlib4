@@ -25,7 +25,7 @@ open DirectSum
 
 section Semiring
 
-variable (R : Type*) [Semiring R] {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
+variable (R : Type*) [Semiring R] {ι : Type*} (M : ι → Type*) [∀ i : ι, AddMonoid (M i)] [∀ i : ι, IsAddCommutative (M i)]
 variable [∀ i : ι, Module R (M i)]
 
 instance Module.Free.directSum [∀ i : ι, Module.Free R (M i)] : Module.Free R (⨁ i, M i) :=

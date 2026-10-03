@@ -70,7 +70,7 @@ noncomputable section
 
 open Finset Ideal MvPolynomial
 
-variable (α R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable (α R M : Type*) [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 namespace DividedPowerAlgebra
 
@@ -223,7 +223,7 @@ def embed : M →ₗ[R] DividedPowerAlgebra R M where
 
 theorem embed_def (m : M) : embed R M m = dp R 1 m := rfl
 
-theorem algHom_ext_iff {A : Type*} [CommSemiring A] [Algebra R A]
+theorem algHom_ext_iff {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
     {f g : DividedPowerAlgebra R M →ₐ[R] A} :
     f = g ↔ ∀ n m, f (dp R n m) = g (dp R n m) := by
   refine ⟨fun h _ _ ↦ by rw [h], fun h ↦ ?_⟩
@@ -232,7 +232,7 @@ theorem algHom_ext_iff {A : Type*} [CommSemiring A] [Algebra R A]
   simpa [← AlgHom.coe_comp] using MvPolynomial.algHom_ext fun ⟨n, m⟩ ↦ h n m
 
 @[ext]
-theorem algHom_ext {A : Type*} [CommSemiring A] [Algebra R A]
+theorem algHom_ext {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
     {f g : DividedPowerAlgebra R M →ₐ[R] A}
     (h : ∀ n m, f (dp R n m) = g (dp R n m)) : f = g :=
   algHom_ext_iff.mpr h
@@ -241,7 +241,7 @@ section
 
 open Submodule
 
-variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] {v : ι → M}
+variable {R M ι : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] {v : ι → M}
 
 /- If the `R`-module is spanned by elements `v i`, then `DividedPowerAlgebra R M`
 is linearly spanned by the finite products `∏ i, dp R (k i) (v i)`.
@@ -299,7 +299,7 @@ section UniversalProperty
 
 variable (R M)
 
-variable {A : Type*} [CommSemiring A] [Algebra R A]
+variable {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 private theorem lift'_imp {f : ℕ × M → A} (hf_zero : ∀ m, f (0, m) = 1)
     (hf_smul : ∀ (n : ℕ) (r : R) (m : M), f ⟨n, r • m⟩ = r ^ n • f ⟨n, m⟩)
@@ -382,7 +382,7 @@ section Functoriality
 
 section Map
 
-variable {S : Type*} [CommSemiring S] {N : Type*} [AddCommMonoid N] [Module R N] [Module S N]
+variable {S : Type*} [Semiring S] [IsMulCommutative S] {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N] [Module S N]
   (f : M →ₗ[R] N)
 
 namespace LinearMap
@@ -458,12 +458,12 @@ end IsScalarTower
 
 end Map
 
-variable (S : Type*) [CommSemiring S] {N : Type*} [AddCommMonoid N] [Module R N] [Module S N]
+variable (S : Type*) [Semiring S] [IsMulCommutative S] {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N] [Module S N]
   (f : M →ₗ[R] N)
 
 section IsScalarTower
 
-variable [Algebra R S] [IsScalarTower R S N] {P : Type*} [AddCommMonoid P] [Module R P]
+variable [Algebra R S] [IsScalarTower R S N] {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P]
 
 lemma map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
     map R (g.comp f) = (map R g).comp (map R f) := by

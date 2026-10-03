@@ -34,7 +34,7 @@ namespace AlgebraicGeometry
 
 section
 
-variable (Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
+variable (Q : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop)
 
 /-- This is the affine target morphism property where the source is affine and
 the induced map of rings on global sections satisfies `P`. -/
@@ -174,10 +174,10 @@ lemma targetAffineLocally_affineAnd_eq_affineLocally (hQ : RingHom.PropertyIsLoc
   ext X Y f
   exact targetAffineLocally_affineAnd_iff_affineLocally hQ f
 
-variable {W : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+variable {W : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
 
 lemma targetAffineLocally_affineAnd_le
-    (hQW : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, Q f → W f) :
+    (hQW : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {f : R →+* S}, Q f → W f) :
     targetAffineLocally (affineAnd Q) ≤ targetAffineLocally (affineAnd W) := by
   intro X Y f h U
   exact ⟨(h U).1, hQW (h U).2⟩
@@ -186,7 +186,7 @@ end
 
 section
 
-variable {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+variable {Q : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
 
 /-- If `P` is a morphism property affine locally defined by `affineAnd Q`, `P` is stable under
 composition if `Q` is. -/
@@ -270,11 +270,11 @@ lemma HasAffineProperty.SpecMap_iff_of_affineAnd {P : MorphismProperty Scheme.{u
   rw [HasAffineProperty.iff_of_isAffine (P := P), affineAnd, and_iff_right]
   exacts [MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty Q)
     (arrowIsoΓSpecOfIsAffine f).symm, inferInstance]
-variable {Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+variable {Q' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
 
 lemma HasAffineProperty.affineAnd_le_affineAnd {P P' : MorphismProperty Scheme.{u}}
     (hP : HasAffineProperty P (affineAnd Q)) (hP' : HasAffineProperty P' (affineAnd Q'))
-    (hQQ' : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, Q f → Q' f) :
+    (hQQ' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {f : R →+* S}, Q f → Q' f) :
     P ≤ P' := by
   rw [HasAffineProperty.eq_targetAffineLocally (P := P),
     HasAffineProperty.eq_targetAffineLocally (P := P')]
@@ -282,7 +282,7 @@ lemma HasAffineProperty.affineAnd_le_affineAnd {P P' : MorphismProperty Scheme.{
 
 lemma HasAffineProperty.coprodDesc_affineAnd {P : MorphismProperty Scheme.{u}}
     (hP : HasAffineProperty P (affineAnd Q)) (hQi : RingHom.RespectsIso Q)
-    (hQ : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S) (g : R →+* T),
+    (hQ : ∀ {R S T : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] (f : R →+* S) (g : R →+* T),
       Q f → Q g → Q (f.prod g))
     {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) (hf : P f) (hg : P g) :
     P (Limits.coprod.desc f g) := by
@@ -298,7 +298,7 @@ lemma HasAffineProperty.coprodDesc_affineAnd {P : MorphismProperty Scheme.{u}}
     ← CommRingCat.hom_comp, ← hQi.cancel_right_isIso _
     ((Limits.limit.isLimit _).conePointUniqueUpToIso (CommRingCat.prodFanIsLimit _ _)).hom,
     ← CommRingCat.hom_comp]
-  have {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S × T) :
+  have {R S T : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] (f : R →+* S × T) :
       Q (.comp (.fst _ _) f) → Q (.comp (.snd _ _) f) → Q f :=
     hQ (.comp (.fst _ _) f) (.comp (.snd _ _) f)
   refine this _ ?_ ?_

@@ -572,7 +572,7 @@ protected def semigroup [Semigroup α] : Semigroup (Set α) :=
 
 section CommSemigroup
 
-variable [CommSemigroup α] {s t : Set α}
+variable [Semigroup α] [IsMulCommutative α] {s t : Set α}
 
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
 @[to_additive (attr := instance_reducible)
@@ -764,7 +764,7 @@ end CancelMonoid
 /-- `Set α` is a `CommMonoid` under pointwise operations if `α` is. -/
 @[to_additive (attr := instance_reducible)
   /-- `Set α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
-protected def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
+protected def commMonoid [Monoid α] [IsMulCommutative α] : CommMonoid (Set α) :=
   { Set.monoid, Set.commSemigroup with }
 
 scoped[Pointwise] attribute [instance] Set.commMonoid Set.addCommMonoid
@@ -859,7 +859,7 @@ end DivisionMonoid
 /-- `Set α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive (attr := instance_reducible) subtractionCommMonoid
       /-- `Set α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
-protected def divisionCommMonoid [DivisionCommMonoid α] :
+protected def divisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] :
     DivisionCommMonoid (Set α) :=
   { Set.divisionMonoid, Set.commSemigroup with }
 

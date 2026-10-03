@@ -54,7 +54,7 @@ variable {𝕜 V W Q P : Type*}
 
 section AddTorsor
 
-variable (𝕜) [Ring 𝕜] [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace P] [AddTorsor V P]
+variable (𝕜) [Ring 𝕜] [AddGroup V] [IsAddCommutative V] [Module 𝕜 V] [TopologicalSpace P] [AddTorsor V P]
   {s t : Set P} {x : P}
 
 /-- The intrinsic interior of a set is its interior considered as a set in its affine span. -/
@@ -217,7 +217,7 @@ theorem intrinsicClosure_eq_closure_inter_affineSpan (s : Set P) :
   rw [Subtype.range_coe]
   apply subset_affineSpan
 
-theorem intrinsicInterior_prod_eq [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace Q]
+theorem intrinsicInterior_prod_eq [AddGroup W] [IsAddCommutative W] [Module 𝕜 W] [TopologicalSpace Q]
     [AddTorsor W Q] (s : Set P) (t : Set Q) :
     intrinsicInterior 𝕜 (s ×ˢ t) = intrinsicInterior 𝕜 s ×ˢ intrinsicInterior 𝕜 t := by
   let e : affineSpan 𝕜 (s ×ˢ t) ≃ₜ affineSpan 𝕜 s × affineSpan 𝕜 t :=
@@ -229,7 +229,7 @@ theorem intrinsicInterior_prod_eq [AddCommGroup W] [Module 𝕜 W] [TopologicalS
 
 section ImageOfHomeomorphAffineSpan
 
-variable [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace Q] [AddTorsor W Q]
+variable [AddGroup W] [IsAddCommutative W] [Module 𝕜 W] [TopologicalSpace Q] [AddTorsor W Q]
   {f : P → Q} {s : Set P}
 
 /-- If `f` agrees with a homeomorphism between the affine spans of `s` and `f '' s`, then pulling
@@ -291,7 +291,7 @@ end AddTorsor
 
 namespace ContinuousAffineEquiv
 
-variable [Ring 𝕜] [AddCommGroup V] [AddCommGroup W] [Module 𝕜 V] [Module 𝕜 W]
+variable [Ring 𝕜] [AddGroup V] [IsAddCommutative V] [AddGroup W] [IsAddCommutative W] [Module 𝕜 V] [Module 𝕜 W]
   [TopologicalSpace P] [TopologicalSpace Q] [AddTorsor V P] [AddTorsor W Q]
 
 @[simp]
@@ -322,7 +322,7 @@ end ContinuousAffineEquiv
 
 namespace AffineIsometry
 
-variable [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W] [NormedSpace 𝕜 V]
+variable [NormedField 𝕜] [SeminormedAddGroup V] [IsAddCommutative V] [SeminormedAddGroup W] [IsAddCommutative W] [NormedSpace 𝕜 V]
   [NormedSpace 𝕜 W] [MetricSpace P] [PseudoMetricSpace Q] [NormedAddTorsor V P]
   [NormedAddTorsor W Q]
 
@@ -367,8 +367,8 @@ end AffineIsometry
 namespace AffineEquiv
 
 variable [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  [NormedAddCommGroup V] [NormedSpace 𝕜 V] [FiniteDimensional 𝕜 V]
-  [NormedAddCommGroup W] [NormedSpace 𝕜 W]
+  [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V] [FiniteDimensional 𝕜 V]
+  [NormedAddGroup W] [IsAddCommutative W] [NormedSpace 𝕜 W]
   [MetricSpace P] [NormedAddTorsor V P]
   [MetricSpace Q] [NormedAddTorsor W Q]
 
@@ -391,7 +391,7 @@ end AffineEquiv
 
 section NormedAddTorsor
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddGroup V] [IsAddCommutative V] [NormedSpace 𝕜 V]
   [FiniteDimensional 𝕜 V] [MetricSpace P] [NormedAddTorsor V P] (s : Set P)
 
 @[simp]
@@ -431,7 +431,7 @@ end NormedAddTorsor
 
 section Convex
 
-variable [Field 𝕜] [LinearOrder 𝕜] [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V]
+variable [Field 𝕜] [LinearOrder 𝕜] [AddGroup V] [IsAddCommutative V] [Module 𝕜 V] [TopologicalSpace V]
   [IsTopologicalAddGroup V] [ContinuousConstSMul 𝕜 V] {s : Set V}
 
 protected theorem Convex.intrinsicClosure (hs : Convex 𝕜 s) : Convex 𝕜 (intrinsicClosure 𝕜 s) := by
@@ -444,7 +444,7 @@ private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] 
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
   rw [← φ.image_symm, ← φ.symm.image_interior, image_nonempty]
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
+variable [NormedAddGroup V] [IsAddCommutative V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
 
 /-- The intrinsic interior of a nonempty convex set is nonempty. -/
 protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :

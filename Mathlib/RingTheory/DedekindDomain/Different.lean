@@ -44,7 +44,7 @@ universe u
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
   Ideal.Quotient.field
 
-variable (A K : Type*) {L : Type u} {B} [CommRing A] [Field K] [CommRing B] [Field L]
+variable (A K : Type*) {L : Type u} {B} [Ring A] [IsMulCommutative A] [Field K] [Ring B] [IsMulCommutative B] [Field L]
 variable [Algebra A K] [Algebra B L] [Algebra A B] [Algebra K L] [Algebra A L]
 variable [IsScalarTower A K L] [IsScalarTower A B L]
 
@@ -410,7 +410,7 @@ variable (A K B L)
 
 attribute [local instance] SMulCommClass.of_commMonoid
 
-variable (C M : Type*) [CommRing C] [IsDedekindDomain C] [Field M] [Algebra C M]
+variable (C M : Type*) [Ring C] [IsMulCommutative C] [IsDedekindDomain C] [Field M] [Algebra C M]
   [IsFractionRing C M] [Algebra A C] [Algebra B C] [Algebra A M] [Algebra B M] [Algebra K M]
   [Algebra L M] [IsScalarTower A C M] [IsScalarTower A K M] [IsScalarTower B C M]
   [IsScalarTower B L M] [IsScalarTower K L M] [IsIntegralClosure C A M] [FiniteDimensional K M]
@@ -568,7 +568,7 @@ set_option linter.overlappingInstances false
 
 open FractionalIdeal in
 /-- Transitivity of the different ideal. -/
-theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomain B] [CommRing C]
+theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomain B] [Ring C] [IsMulCommutative C]
     [Algebra B C] [Algebra A C] [IsDedekindDomain C]
     [Module.Finite A B] [Module.Finite A C] [Module.Finite B C]
     [IsTorsionFree A C] [IsTorsionFree B C] [IsScalarTower A B C]

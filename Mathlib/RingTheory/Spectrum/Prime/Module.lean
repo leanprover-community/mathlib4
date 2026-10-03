@@ -24,8 +24,8 @@ public import Mathlib.RingTheory.Support
 
 public section
 
-variable {R A M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-  [CommRing A] [Algebra R A] [Module A M]
+variable {R A M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
+  [Ring A] [IsMulCommutative A] [Algebra R A] [Module A M]
 
 variable (R M) in
 lemma IsLocalRing.closedPoint_mem_support [IsLocalRing R] [Nontrivial M] :

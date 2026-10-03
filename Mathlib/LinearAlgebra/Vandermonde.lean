@@ -64,7 +64,7 @@ Characterize when `rectVandermonde v w n` has linearly independent rows.
 
 @[expose] public section
 
-variable {R K : Type*} [CommRing R] [Field K] {n : ℕ}
+variable {R K : Type*} [Ring R] [IsMulCommutative R] [Field K] {n : ℕ}
 
 open Equiv Finset
 
@@ -146,7 +146,7 @@ theorem projVandermonde_apply_zero_right {v w : Fin (n + 1) → R} {i : Fin (n +
 theorem projVandermonde_comp {v w : Fin n → R} (f : Fin n → Fin n) :
     projVandermonde (v ∘ f) (w ∘ f) = (projVandermonde v w).submatrix f id := rfl
 
-theorem projVandermonde_map {R' : Type*} [CommRing R'] (φ : R →+* R') (v w : Fin n → R) :
+theorem projVandermonde_map {R' : Type*} [Ring R'] [IsMulCommutative R'] (φ : R →+* R') (v w : Fin n → R) :
     projVandermonde (fun i ↦ φ (v i)) (fun i ↦ φ (w i)) = φ.mapMatrix (projVandermonde v w) := by
   ext i j
   simp [projVandermonde_apply]

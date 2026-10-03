@@ -33,7 +33,7 @@ open Set
 
 namespace Module.End
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {f g : End R M}
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] {f g : End R M}
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
@@ -85,7 +85,7 @@ lemma IsSemisimple.iSup_maxGenEigenspace_eq_top_iff (hf : f.IsSemisimple) :
 
 section AlgClosed
 
-variable {K V : Type*} [Field K] [IsAlgClosed K] [AddCommGroup V] [Module K V]
+variable {K V : Type*} [Field K] [IsAlgClosed K] [AddGroup V] [IsAddCommutative V] [Module K V]
   [FiniteDimensional K V] {f : End K V}
 
 lemma IsSemisimple.iSup_eigenspace_eq_top (hf : f.IsSemisimple) :

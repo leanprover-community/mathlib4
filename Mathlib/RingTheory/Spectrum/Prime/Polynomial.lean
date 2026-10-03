@@ -32,7 +32,7 @@ public section
 
 open Polynomial TensorProduct PrimeSpectrum
 
-variable {R A} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
 
 /-- If `A` is a finite free `R`-algebra, then `f : A` is nilpotent on `κ(𝔭) ⊗ A` for some
 prime `𝔭 ◃ R` if and only if every non-leading coefficient of `charpoly(f)` is in `𝔭`. -/

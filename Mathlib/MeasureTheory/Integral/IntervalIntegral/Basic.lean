@@ -58,7 +58,7 @@ open MeasureTheory Set Filter Function TopologicalSpace
 
 open scoped Topology Filter ENNReal Interval NNReal
 
-variable {ι 𝕜 ε ε' E F A : Type*} [NormedAddCommGroup E]
+variable {ι 𝕜 ε ε' E F A : Type*} [NormedAddGroup E] [IsAddCommutative E]
   [TopologicalSpace ε] [ENormedAddMonoid ε] [TopologicalSpace ε'] [ENormedAddMonoid ε']
 
 /-!
@@ -277,7 +277,7 @@ theorem mono_fun_enorm [PseudoMetrizableSpace ε'] {g : ℝ → ε'}
     (hle : (‖g ·‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] (‖f ·‖ₑ)) : IntervalIntegrable g μ a b :=
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono_enorm hgm hle
 
-theorem mono_fun {f : ℝ → E} [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
+theorem mono_fun {f : ℝ → E} [NormedAddGroup F] [IsAddCommutative F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
     (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
     (hle : (fun x => ‖g x‖) ≤ᵐ[μ.restrict (Ι a b)] fun x => ‖f x‖) : IntervalIntegrable g μ a b :=
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono hgm hle
@@ -314,7 +314,7 @@ end
 
 variable [NormedRing A] {f g : ℝ → ε} {a b : ℝ} {μ : Measure ℝ}
 
-theorem smul {R : Type*} [NormedAddCommGroup R] [SMulZeroClass R E] [IsBoundedSMul R E] {f : ℝ → E}
+theorem smul {R : Type*} [NormedAddGroup R] [IsAddCommutative R] [SMulZeroClass R E] [IsBoundedSMul R E] {f : ℝ → E}
     (h : IntervalIntegrable f μ a b) (r : R) :
     IntervalIntegrable (r • f) μ a b :=
   ⟨h.1.smul r, h.2.smul r⟩
@@ -329,7 +329,7 @@ theorem sub {f g : ℝ → E} (hf : IntervalIntegrable f μ a b) (hg : IntervalI
     IntervalIntegrable (fun x => f x - g x) μ a b :=
   ⟨hf.1.sub hg.1, hf.2.sub hg.2⟩
 
-theorem sum {ε} [TopologicalSpace ε] [ENormedAddCommMonoid ε] [ContinuousAdd ε]
+theorem sum {ε} [TopologicalSpace ε] [ENormedAddMonoid ε] [IsAddCommutative ε] [ContinuousAdd ε]
     (s : Finset ι) {f : ι → ℝ → ε} (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
     IntervalIntegrable (∑ i ∈ s, f i) μ a b :=
   ⟨integrable_finsetSum' s fun i hi => (h i hi).1, integrable_finsetSum' s fun i hi => (h i hi).2⟩
@@ -337,7 +337,7 @@ theorem sum {ε} [TopologicalSpace ε] [ENormedAddCommMonoid ε] [ContinuousAdd 
 /-- Finite sums of interval integrable functions are interval integrable. -/
 @[simp]
 protected theorem finsum
-    {ε} [TopologicalSpace ε] [ENormedAddCommMonoid ε] [ContinuousAdd ε] [PseudoMetrizableSpace ε]
+    {ε} [TopologicalSpace ε] [ENormedAddMonoid ε] [IsAddCommutative ε] [ContinuousAdd ε] [PseudoMetrizableSpace ε]
     {f : ι → ℝ → ε} (h : ∀ i, IntervalIntegrable (f i) μ a b) :
     IntervalIntegrable (∑ᶠ i, f i) μ a b := by
   by_cases h₁ : f.support.Finite
@@ -856,7 +856,7 @@ nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} 
 section ContinuousLinearMap
 
 variable {a b : ℝ} {μ : Measure ℝ} {f : ℝ → E}
-variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 open ContinuousLinearMap
 
@@ -876,7 +876,7 @@ end ContinuousLinearMap
 section LinearIsometry
 
 variable {a b : ℝ} {μ : Measure ℝ} {f : ℝ → E} [RCLike 𝕜]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+variable [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 variable [NormedSpace ℝ F] [CompleteSpace E] [CompleteSpace F]
 

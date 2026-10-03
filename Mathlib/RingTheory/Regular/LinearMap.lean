@@ -34,7 +34,7 @@ open IsLocalRing LinearMap Module
 
 namespace IsSMulRegular
 
-variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable {R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N]
 
 lemma linearMap_subsingleton_of_mem_annihilator {r : R} (reg : IsSMulRegular M r)
     (mem_ann : r ∈ Module.annihilator R N) : Subsingleton (N →ₗ[R] M) := by

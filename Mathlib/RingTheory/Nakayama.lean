@@ -47,7 +47,7 @@ Nakayama, Jacobson
 public section
 
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 open Ideal
 
@@ -142,7 +142,7 @@ theorem sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : S
   ((sup_le_sup_left smul_le_right _).antisymm (sup_le le_sup_left hNN)).trans
     (sup_eq_sup_smul_of_le_smul_of_le_jacobson hN' hIJ hNN)
 
-theorem le_of_le_smul_of_le_jacobson_bot {R M} [CommRing R] [AddCommGroup M] [Module R M]
+theorem le_of_le_smul_of_le_jacobson_bot {R M} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
     {I : Ideal R} {N N' : Submodule R M} (hN' : N'.FG)
     (hIJ : I ≤ jacobson ⊥) (hNN : N' ≤ N ⊔ I • N') : N' ≤ N := by
   rw [← sup_eq_left, sup_eq_sup_smul_of_le_smul_of_le_jacobson hN' hIJ hNN, bot_smul, sup_bot_eq]
@@ -225,7 +225,7 @@ theorem exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot
 
 end Submodule
 
-lemma LinearMap.surjective_of_surjective_comp_mkQ {N : Type*} [AddCommGroup N] [Module R N]
+lemma LinearMap.surjective_of_surjective_comp_mkQ {N : Type*} [AddGroup N] [IsAddCommutative N] [Module R N]
     [Module.Finite R N] (f : M →ₗ[R] N) (I : Ideal R) (Ile : I ≤ (⊥ : Ideal R).jacobson)
     (surj : Function.Surjective ((I • (⊤ : Submodule R N)).mkQ ∘ₗ f)) : Function.Surjective f := by
   rw [← LinearMap.range_eq_top, ← top_le_iff]

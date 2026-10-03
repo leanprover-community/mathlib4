@@ -35,8 +35,8 @@ open Module
 open scoped Pointwise nonZeroDivisors
 
 namespace FractionalIdeal
-variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
-variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
+variable {K : Type*} [Ring K] [IsMulCommutative K] [Algebra R K] [IsFractionRing R K]
 
 -- A nontrivial free `ℤ`-module is infinite; local to this file to supply `Infinite R`.
 local instance : Infinite R := Module.Free.infinite ℤ R

@@ -129,13 +129,13 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
   rw [nhds_pi, tendsto_pi]
   exact forall_congr' (fun d => Iff.rfl)
 
-theorem tendsto_trunc'_atTop [DecidableEq σ] [CommSemiring R] (f : MvPowerSeries σ R) :
+theorem tendsto_trunc'_atTop [DecidableEq σ] [Semiring R] [IsMulCommutative R] (f : MvPowerSeries σ R) :
     Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
   rw [tendsto_iff_coeff_tendsto]
   intro d
   exact tendsto_atTop_of_eventually_const fun n (hdn : d ≤ n) ↦ (by simp [coeff_trunc', hdn])
 
-theorem tendsto_trunc_atTop [DecidableEq σ] [CommSemiring R] [Nonempty σ] (f : MvPowerSeries σ R) :
+theorem tendsto_trunc_atTop [DecidableEq σ] [Semiring R] [IsMulCommutative R] [Nonempty σ] (f : MvPowerSeries σ R) :
     Tendsto (fun d ↦ (trunc R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
   rw [tendsto_iff_coeff_tendsto]
   intro d
@@ -147,7 +147,7 @@ theorem tendsto_trunc_atTop [DecidableEq σ] [CommSemiring R] [Nonempty σ] (f :
   simpa [Finsupp.lt_def] using ⟨s, by simp⟩
 
 /-- The inclusion of polynomials into power series has dense image -/
-theorem denseRange_toMvPowerSeries [CommSemiring R] :
+theorem denseRange_toMvPowerSeries [Semiring R] [IsMulCommutative R] :
     DenseRange (MvPolynomial.toMvPowerSeries (R := R) (σ := σ)) := fun f ↦ by
   classical
   exact mem_closure_of_tendsto (tendsto_trunc'_atTop f) <| .of_forall fun _ ↦ Set.mem_range_self _
@@ -187,7 +187,7 @@ theorem continuous_C [Semiring R] :
 
 /-- Scalar multiplication on `MvPowerSeries` is continuous. -/
 instance {S : Type*} [Semiring S] [TopologicalSpace S]
-    [CommSemiring R] [Algebra R S] [ContinuousSMul R S] :
+    [Semiring R] [IsMulCommutative R] [Algebra R S] [ContinuousSMul R S] :
     ContinuousSMul R (MvPowerSeries σ S) :=
   instContinuousSMulForall
 
@@ -203,7 +203,7 @@ theorem variables_tendsto_zero [Semiring R] :
   · simpa only [ite_eq_right_iff] using
       Eventually.of_forall fun x h' ↦ (h x h').elim
 
-theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
+theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [Semiring R] [IsMulCommutative R]
     {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
     IsTopologicallyNilpotent f := by
   obtain ⟨m, hm⟩ := hf
@@ -211,7 +211,7 @@ theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
   exact fun d ↦ tendsto_atTop_of_eventually_const fun n hn ↦
     coeff_eq_zero_of_constantCoeff_nilpotent hm hn
 
-theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
+theorem isTopologicallyNilpotent_of_constantCoeff_zero [Semiring R] [IsMulCommutative R]
     {f : MvPowerSeries σ R} (hf : constantCoeff f = 0) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) := by
   apply isTopologicallyNilpotent_of_constantCoeff_isNilpotent
@@ -224,7 +224,7 @@ iff its constant coefficient is nilpotent.
 
 See also `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`. -/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
-    [CommRing R] [DiscreteTopology R] (f : MvPowerSeries σ R) :
+    [Ring R] [IsMulCommutative R] [DiscreteTopology R] (f : MvPowerSeries σ R) :
     IsTopologicallyNilpotent f ↔ IsNilpotent (constantCoeff f) := by
   refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff_isNilpotent⟩
   replace H := H.map (continuous_constantCoeff R)
@@ -314,7 +314,7 @@ end GeomSeries
 end Sum
 
 section Prod
-variable {σ R : Type*} [TopologicalSpace R] [CommSemiring R]
+variable {σ R : Type*} [TopologicalSpace R] [Semiring R] [IsMulCommutative R]
 variable {ι : Type*} {f : ι → MvPowerSeries σ R} [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 /-- If the weighted order of a family of `MvPowerSeries` tends to infinity, the collection of all

@@ -18,7 +18,7 @@ Indeed, it is a field.
 
 public section
 
-variable {R : Type*} [CommRing R] [IsSimpleRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsSimpleRing R]
 
 instance : IsSimpleOrder (Ideal R) := TwoSidedIdeal.orderIsoIdeal.symm.isSimpleOrder
 

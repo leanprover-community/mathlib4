@@ -247,7 +247,7 @@ lemma lsingle_apply [Semiring R] [Module R S] (a : M) (b : S) :
 
 /-- A copy of `Finsupp.lhom_ext'` for `MonoidAlgebra`. -/
 @[to_additive (attr := ext high)]
-lemma lhom_ext' {N : Type*} [Semiring R] [AddCommMonoid N] [Module R N] [Module R S]
+lemma lhom_ext' {N : Type*} [Semiring R] [AddMonoid N] [IsAddCommutative N] [Module R N] [Module R S]
     ⦃f g : S[M] →ₗ[R] N⦄
     (H : ∀ (x : M), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) : f = g :=
   LinearMap.toAddMonoidHom_injective <| addMonoidHom_ext fun a x ↦ congr($(H a) x)
@@ -307,8 +307,8 @@ end NonUnitalNonAssocAlgebra
 
 section Submodule
 
-variable [CommSemiring S] [Monoid M]
-variable {V : Type*} [AddCommMonoid V]
+variable [Semiring S] [IsMulCommutative S] [Monoid M]
+variable {V : Type*} [AddMonoid V] [IsAddCommutative V]
 variable [Module S V] [Module S[M] V] [IsScalarTower S S[M] V]
 
 /-- A submodule over `S` which is stable under scalar multiplication by elements of `M` is a

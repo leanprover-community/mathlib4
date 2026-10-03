@@ -85,7 +85,7 @@ def ExProd := Common.ExProd RatCoeff sα
 def ExSum := Common.ExSum RatCoeff sα
 
 section
-variable {R : Type*} [CommSemiring R] {a : R}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {a : R}
 
 theorem cast_pos {n : ℕ} : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
@@ -173,7 +173,7 @@ def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
 
 section
 
-variable {R : Type*} [CommSemiring R] {n : ℕ} {a₁ a₂ a₃ : ℕ} {b₁ b₂ b₃ : R}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {n : ℕ} {a₁ a₂ a₃ : ℕ} {b₁ b₂ b₃ : R}
 
 /-! ### Scalar multiplication by `ℕ` -/
 
@@ -243,18 +243,18 @@ end
 
 /-! ### Scalar multiplication by `ℤ` -/
 
-theorem natCast_int {R} [CommRing R] (n) : ((Nat.rawCast n : ℤ) : R) = Nat.rawCast n := by simp
+theorem natCast_int {R} [Ring R] [IsMulCommutative R] (n) : ((Nat.rawCast n : ℤ) : R) = Nat.rawCast n := by simp
 
-theorem intCast_negOfNat_Int {R} [CommRing R] (n) :
+theorem intCast_negOfNat_Int {R} [Ring R] [IsMulCommutative R] (n) :
     ((Int.rawCast (Int.negOfNat n) : ℤ) : R) = Int.rawCast (Int.negOfNat n) := by simp
 
-theorem intCast_mul {R} [CommRing R] {b₁ b₃ : R} {a₁ a₃ : ℤ} (a₂) (_ : ((a₁ : ℤ) : R) = b₁)
+theorem intCast_mul {R} [Ring R] [IsMulCommutative R] {b₁ b₃ : R} {a₁ a₃ : ℤ} (a₂) (_ : ((a₁ : ℤ) : R) = b₁)
     (_ : ((a₃ : ℤ) : R) = b₃) : ((a₁ ^ a₂ * a₃ : ℤ) : R) = b₁ ^ a₂ * b₃ := by
   subst_vars; simp
 
-theorem intCast_zero {R} [CommRing R] : ((0 : ℤ) : R) = 0 := Int.cast_zero
+theorem intCast_zero {R} [Ring R] [IsMulCommutative R] : ((0 : ℤ) : R) = 0 := Int.cast_zero
 
-theorem intCast_add {R} [CommRing R] {b₁ b₂ : R} {a₁ a₂ : ℤ}
+theorem intCast_add {R} [Ring R] [IsMulCommutative R] {b₁ b₂ : R} {a₁ a₂ : ℤ}
     (_ : ((a₁ : ℤ) : R) = b₁) (_ : ((a₂ : ℤ) : R) = b₂) : ((a₁ + a₂ : ℤ) : R) = b₁ + b₂ := by
   subst_vars; simp
 
@@ -356,7 +356,7 @@ theorem Nat.smul_eq_mul {n n' : ℕ} {r : R} (hr : n = r) (hn : n' = n) (a : R) 
   subst_vars
   simp only [nsmul_eq_mul]
 
-theorem Int.smul_eq_mul {R} {n n' : ℤ} {r : R} [CommRing R] (hr : n = r) (hn : n' = n) (a : R) :
+theorem Int.smul_eq_mul {R} {n n' : ℤ} {r : R} [Ring R] [IsMulCommutative R] (hr : n = r) (hn : n' = n) (a : R) :
     n' • a = r * a := by
   subst_vars
   simp only [zsmul_eq_mul]

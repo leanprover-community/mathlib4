@@ -32,7 +32,7 @@ instance PosSMulStrictMono.nnrat_of_rat [Preorder α] [MulAction ℚ≥0 α] [Mu
     exact smul_lt_smul_of_pos_left (α := ℚ) ha hq
 
 section LinearOrderedAddCommGroup
-variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+variable [AddGroup α] [IsAddCommutative α] [LinearOrder α] [IsOrderedAddMonoid α]
 
 @[simp] lemma abs_nnqsmul [DistribMulAction ℚ≥0 α] [PosSMulMono ℚ≥0 α] (q : ℚ≥0) (a : α) :
     |q • a| = q • |a| := by

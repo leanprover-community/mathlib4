@@ -279,7 +279,7 @@ instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction �
   fast_instance% DistribMulAction.compHom M toRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ` restricts to a `Module` over `ℝ≥0`. -/
-instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
+instance {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module ℝ M] : Module ℝ≥0 M :=
   fast_instance% Module.compHom M toRealHom
 
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
@@ -524,7 +524,7 @@ theorem coe_min (x y : ℝ≥0) : ((min x y : ℝ≥0) : ℝ) = min (x : ℝ) (y
 theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 
-instance instIsStrictOrderedModule {M : Type*} [AddCommMonoid M] [PartialOrder M]
+instance instIsStrictOrderedModule {M : Type*} [AddMonoid M] [IsAddCommutative M] [PartialOrder M]
     [Module ℝ M] [IsStrictOrderedModule ℝ M] :
     IsStrictOrderedModule ℝ≥0 M := inferInstanceAs <| IsStrictOrderedModule (Subtype _) M
 

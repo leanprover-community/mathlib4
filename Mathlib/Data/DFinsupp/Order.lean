@@ -138,21 +138,21 @@ end Zero
 
 /-! ### Algebraic order structures -/
 
-instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+instance (α : ι → Type*) [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedAddMonoid (α i)] : IsOrderedAddMonoid (Π₀ i, α i) :=
   { add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
 
-instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+instance (α : ι → Type*) [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedCancelAddMonoid (α i)] :
     IsOrderedCancelAddMonoid (Π₀ i, α i) :=
   { le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
 
-instance [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, AddLeftReflectLE (α i)] :
+instance [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)] [∀ i, AddLeftReflectLE (α i)] :
     AddLeftReflectLE (Π₀ i, α i) where
   le_of_add_le_add_left H i := le_of_add_le_add_left <| H i
 
 section Module
-variable {α : Type*} {β : ι → Type*} [Semiring α] [Preorder α] [∀ i, AddCommMonoid (β i)]
+variable {α : Type*} {β : ι → Type*} [Semiring α] [Preorder α] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)]
   [∀ i, Preorder (β i)] [∀ i, Module α (β i)]
 
 instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (Π₀ i, β i) :=
@@ -170,7 +170,7 @@ instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosRefle
 end Module
 
 section Module
-variable {α : Type*} {β : ι → Type*} [Semiring α] [PartialOrder α] [∀ i, AddCommMonoid (β i)]
+variable {α : Type*} {β : ι → Type*} [Semiring α] [PartialOrder α] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)]
   [∀ i, PartialOrder (β i)] [∀ i, Module α (β i)]
 
 instance instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] : PosSMulStrictMono α (Π₀ i, β i) :=
@@ -189,7 +189,7 @@ end Module
 
 section PartialOrder
 
-variable (α) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+variable (α) [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, PartialOrder (α i)]
 
 instance [∀ i, IsBotZeroClass (α i)] : OrderBot (Π₀ i, α i) where
   bot := 0
@@ -295,7 +295,7 @@ theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
 end PartialOrder
 
 section LinearOrder
-variable [∀ i, AddCommMonoid (α i)] [∀ i, LinearOrder (α i)] [∀ i, IsBotZeroClass (α i)]
+variable [∀ i, AddMonoid (α i)] [∀ i, IsAddCommutative (α i)] [∀ i, LinearOrder (α i)] [∀ i, IsBotZeroClass (α i)]
   [DecidableEq ι] {f g : Π₀ i, α i}
 
 @[simp]

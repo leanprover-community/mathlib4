@@ -23,8 +23,8 @@ namespace Module
 
 open TensorProduct
 
-variable {A : Type u} [CommRing A] {M₁ : Type v₁} {M₂ : Type v₂}
-  [AddCommGroup M₁] [AddCommGroup M₂] [Module A M₁] [Module A M₂]
+variable {A : Type u} [Ring A] [IsMulCommutative A] {M₁ : Type v₁} {M₂ : Type v₂}
+  [AddGroup M₁] [IsAddCommutative M₁] [AddGroup M₂] [IsAddCommutative M₂] [Module A M₁] [Module A M₂]
 
 namespace Relations
 

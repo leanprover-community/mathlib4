@@ -233,7 +233,7 @@ def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i,
 lemma coeFnAddMonoidHom_apply [∀ i, AddZeroClass (β i)] (v : Π₀ i, β i) : coeFnAddMonoidHom v = v :=
   rfl
 
-instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
+instance addCommMonoid [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] : AddCommMonoid (Π₀ i, β i) :=
   fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) :=
@@ -270,7 +270,7 @@ instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
   fast_instance% DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
-instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
+instance addCommGroup [∀ i, AddGroup (β i)] [∀ i, IsAddCommutative (β i)] : AddCommGroup (Π₀ i, β i) :=
   fast_instance% DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 

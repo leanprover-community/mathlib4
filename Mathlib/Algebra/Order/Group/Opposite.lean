@@ -33,7 +33,7 @@ end Preorder
 @[to_additive] instance [PartialOrder α] : PartialOrder αᵐᵒᵖ := PartialOrder.lift _ unop_injective
 
 section OrderedCommMonoid
-variable [CommMonoid α] [PartialOrder α]
+variable [Monoid α] [IsMulCommutative α] [PartialOrder α]
 
 @[to_additive] instance [IsOrderedMonoid α] : IsOrderedMonoid αᵐᵒᵖ where
   mul_le_mul_left a b hab c := mul_le_mul_right (by simpa) c.unop
@@ -46,7 +46,7 @@ variable [CommMonoid α] [PartialOrder α]
 end OrderedCommMonoid
 
 section OrderedAddCommMonoid
-variable [AddCommMonoid α] [PartialOrder α]
+variable [AddMonoid α] [IsAddCommutative α] [PartialOrder α]
 
 instance [IsOrderedAddMonoid α] : IsOrderedAddMonoid αᵐᵒᵖ where
   add_le_add_left a b hab c := add_le_add_left (by simpa) c.unop
@@ -62,7 +62,7 @@ end MulOpposite
 
 namespace AddOpposite
 section OrderedCommMonoid
-variable [CommMonoid α] [PartialOrder α]
+variable [Monoid α] [IsMulCommutative α] [PartialOrder α]
 
 instance [IsOrderedMonoid α] : IsOrderedMonoid αᵃᵒᵖ where
   mul_le_mul_left a b hab c := mul_le_mul_left (by simpa) c.unop

@@ -83,7 +83,7 @@ variable (f : X ⟶ Y) [CompactSpace X]
 
 section AddCommMonoid
 
-variable [AddCommMonoid R]
+variable [AddMonoid R] [IsAddCommutative R]
 
 /--
 The degree of a zero-cycle `D` with respect to a morphism `f : X ⟶ Y`.

@@ -32,7 +32,7 @@ noncomputable instance : (forget₂ (ModuleCat.{v} R) Ab).PreservesHomology wher
 /-- Constructor for short complexes in `ModuleCat.{v} R` taking as inputs
 linear maps `f` and `g` and the vanishing of their composition. -/
 @[simps]
-def moduleCatMk {X₁ X₂ X₃ : Type v} [AddCommGroup X₁] [AddCommGroup X₂] [AddCommGroup X₃]
+def moduleCatMk {X₁ X₂ X₃ : Type v} [AddGroup X₁] [IsAddCommutative X₁] [AddGroup X₂] [IsAddCommutative X₂] [AddGroup X₃] [IsAddCommutative X₃]
     [Module R X₁] [Module R X₂] [Module R X₃] (f : X₁ →ₗ[R] X₂) (g : X₂ →ₗ[R] X₃)
     (hfg : g.comp f = 0) : ShortComplex (ModuleCat.{v} R) :=
   ShortComplex.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g) (ModuleCat.hom_ext hfg)
@@ -199,7 +199,7 @@ end CategoryTheory
 
 section
 
-variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N] [Module R N]
+variable {M : Type v} [AddGroup M] [IsAddCommutative M] [Module R M] {N : Type v} [AddGroup N] [IsAddCommutative N] [Module R N]
 
 open CategoryTheory
 
@@ -216,7 +216,7 @@ theorem LinearMap.shortExact_shortComplexKer {f : M →ₗ[R] N} (h : Function.S
   mono_f := (ModuleCat.mono_iff_injective _).mpr (LinearMap.ker f).injective_subtype
   epi_g := (ModuleCat.epi_iff_surjective _).mpr h
 
-variable {L : Type v} [AddCommGroup L] [Module R L]
+variable {L : Type v} [AddGroup L] [IsAddCommutative L] [Module R L]
 
 /-- The short complex in `ModuleCat` obtained from two linear map with composition equal to zero. -/
 abbrev ModuleCat.shortComplexOfCompEqZero (f : M →ₗ[R] N) (g : N →ₗ[R] L) (eq0 : g.comp f = 0) :
@@ -235,7 +235,7 @@ lemma ModuleCat.shortComplex_shortExact (S : ShortComplex (ModuleCat.{v} R))
   mono_f := (ModuleCat.mono_iff_injective _).mpr inj
   epi_g := (ModuleCat.epi_iff_surjective _).mpr surj
 
-variable {M' N' L' : Type*} [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup L']
+variable {M' N' L' : Type*} [AddGroup M'] [IsAddCommutative M'] [AddGroup N'] [IsAddCommutative N'] [AddGroup L'] [IsAddCommutative L']
   [Module R M'] [Module R N'] [Module R L']
 
 variable (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[R] N') (eL : L ≃ₗ[R] L') (f : M' →ₗ[R] N') (g : N' →ₗ[R] L')

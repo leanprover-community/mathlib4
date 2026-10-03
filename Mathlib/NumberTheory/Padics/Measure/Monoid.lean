@@ -19,7 +19,7 @@ over it). Moreover, if `G` is abelian and compact, then `D(G, R)` is a commutati
 
 public noncomputable section
 
-variable {G R : Type*} [TopologicalSpace G] [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
+variable {G R : Type*} [TopologicalSpace G] [Ring R] [IsMulCommutative R] [TopologicalSpace R] [IsTopologicalRing R]
 
 namespace AbstractMeasure
 
@@ -166,7 +166,7 @@ order of the two integration variables. The Fubini theorem we use
 (`AbstractMeasure.prodMk_eq_prodMk'`) requires the space to be compact and separated.
 -/
 
-variable [CommMonoid G] [ContinuousMul G]
+variable [Monoid G] [IsMulCommutative G] [ContinuousMul G]
   [CompactSpace G] [T2Space G] [TotallyDisconnectedSpace G] [T0Space R]
 
 noncomputable instance : CommRing D(G, R) where

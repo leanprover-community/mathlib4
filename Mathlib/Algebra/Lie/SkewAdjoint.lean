@@ -41,7 +41,7 @@ section SkewAdjointEndomorphisms
 
 open LinearMap (BilinForm)
 
-variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R : Type u} {M : Type v} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable (B : BilinForm R M)
 
 theorem LinearMap.BilinForm.isSkewAdjoint_bracket {f g : Module.End R M}
@@ -61,7 +61,7 @@ def skewAdjointLieSubalgebra : LieSubalgebra R (Module.End R M) :=
   { B.skewAdjointSubmodule with
     lie_mem' := B.isSkewAdjoint_bracket }
 
-variable {N : Type w} [AddCommGroup N] [Module R N] (e : N ≃ₗ[R] M)
+variable {N : Type w} [AddGroup N] [IsAddCommutative N] [Module R N] (e : N ≃ₗ[R] M)
 
 /-- An equivalence of modules with bilinear forms gives equivalence of Lie algebras of skew-adjoint
 endomorphisms. -/
@@ -89,7 +89,7 @@ section SkewAdjointMatrices
 
 open scoped Matrix
 
-variable {R : Type u} {n : Type w} [CommRing R] [Fintype n]
+variable {R : Type u} {n : Type w} [Ring R] [IsMulCommutative R] [Fintype n]
 variable (J : Matrix n n R)
 
 theorem Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, Aᵀ⁆ :=

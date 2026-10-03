@@ -447,7 +447,7 @@ instance [AddSemigroup R] : Semigroup (MinTropical R) where
   mul_assoc _ _ _ := untrop_injective (add_assoc _ _ _)
 
 @[to_dual]
-instance [AddCommSemigroup R] : CommSemigroup (MinTropical R) where
+instance [AddSemigroup R] [IsAddCommutative R] : CommSemigroup (MinTropical R) where
   mul_comm := fun _ _ => untrop_injective (add_comm _ _)
 
 @[to_dual]
@@ -478,7 +478,7 @@ theorem trop_nsmul [AddMonoid R] (x : R) (n : ℕ) : trop (n • x) = trop x ^ n
   rfl
 
 @[to_dual]
-instance [AddCommMonoid R] : CommMonoid (MinTropical R) where
+instance [AddMonoid R] [IsAddCommutative R] : CommMonoid (MinTropical R) where
 
 @[to_dual]
 instance [AddGroup R] : Group (MinTropical R) where
@@ -490,7 +490,7 @@ instance [AddGroup R] : Group (MinTropical R) where
   zpow_neg' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_neg' _ _
 
 @[to_dual]
-instance [AddCommGroup R] : CommGroup (MinTropical R) where
+instance [AddGroup R] [IsAddCommutative R] : CommGroup (MinTropical R) where
   mul_comm := fun _ _ => untrop_injective (add_comm _ _)
 
 @[to_dual (attr := simp)]
@@ -595,11 +595,11 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : MinTropical R) (n : ℕ
 -- Requires `zero_eq_bot` to be true
 -- lemma add_eq_zero_iff {a b : tropical R} :
 --   a + b = 1 ↔ a = 1 ∨ b = 1 := sorry
-theorem mul_eq_zero_iff {R : Type*} [AddCommMonoid R]
+theorem mul_eq_zero_iff {R : Type*} [AddMonoid R] [IsAddCommutative R]
     {a b : MinTropical (WithTop R)} : a * b = 0 ↔ a = 0 ∨ b = 0 := by
   simp [← untrop_inj_iff, WithTop.add_eq_top]
 
-instance {R : Type*} [AddCommMonoid R] :
+instance {R : Type*} [AddMonoid R] [IsAddCommutative R] :
     NoZeroDivisors (MinTropical (WithTop R)) :=
   ⟨mul_eq_zero_iff.mp⟩
 

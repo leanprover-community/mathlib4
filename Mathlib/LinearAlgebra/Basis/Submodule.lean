@@ -25,7 +25,7 @@ universe u
 variable {ι R M : Type*}
 
 namespace Module.Basis
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 variable (b : Basis ι R M)
 
@@ -49,7 +49,7 @@ theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {
 end Basis
 
 variable {v : ι → M}
-variable [Ring R] [AddCommGroup M]
+variable [Ring R] [AddGroup M] [IsAddCommutative M]
 variable [Module R M]
 variable {x : M}
 variable (b : Basis ι R M)
@@ -72,7 +72,7 @@ end Module
 section Induction
 
 variable [Ring R] [IsDomain R]
-variable [AddCommGroup M] [Module R M] {b : ι → M}
+variable [AddGroup M] [IsAddCommutative M] [Module R M] {b : ι → M}
 
 /-- If `N` is a submodule with finite rank, do induction on adjoining a linear independent
 element to a submodule. -/
@@ -155,7 +155,7 @@ lemma mem_center_iff {A}
 
 section RestrictScalars
 
-variable {S : Type*} [CommRing R] [IsDomain R] [Ring S] [Nontrivial S] [AddCommGroup M]
+variable {S : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [Ring S] [Nontrivial S] [AddGroup M] [IsAddCommutative M]
 variable [Algebra R S] [Module S M] [Module R M]
 variable [IsScalarTower R S M] [IsTorsionFree R S] (b : Basis ι S M)
 variable (R)
@@ -202,7 +202,7 @@ end RestrictScalars
 section AddSubgroup
 
 variable {M R : Type*} [Ring R] [Nontrivial R] [IsAddTorsionFree R]
-  [AddCommGroup M] [Module R M] (A : AddSubgroup M) {ι : Type*} (b : Basis ι R M)
+  [AddGroup M] [IsAddCommutative M] [Module R M] (A : AddSubgroup M) {ι : Type*} (b : Basis ι R M)
 
 /--
 Let `A` be a subgroup of an additive commutative group `M` that is also an `R`-module.

@@ -24,7 +24,7 @@ namespace TrivSqZeroExt
 open Ideal
 
 variable (R M : Type*)
-  [CommSemiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
+  [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 
 /-- The kernel of the `AlgHom` `fstHom R R M` -/
 def kerIdeal : Ideal (TrivSqZeroExt R M) := RingHom.ker (fstHom R R M)

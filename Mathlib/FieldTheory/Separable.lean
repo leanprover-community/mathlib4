@@ -36,7 +36,7 @@ namespace Polynomial
 
 section CommSemiring
 
-variable {R : Type u} [CommSemiring R] {S : Type v} [CommSemiring S]
+variable {R : Type u} [Semiring R] [IsMulCommutative R] {S : Type v} [Semiring S] [IsMulCommutative S]
 
 /-- A polynomial is separable iff it is coprime with its derivative. -/
 @[stacks 09H1 "first part"]
@@ -180,7 +180,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 theorem separable_X_sub_C {x : R} : Separable (X - C x) := by
   simpa only [sub_eq_add_neg, C_neg] using separable_X_add_C (-x)
@@ -278,7 +278,7 @@ end CommRing
 
 section IsDomain
 
-variable {R : Type u} [CommRing R] [IsDomain R]
+variable {R : Type u} [Ring R] [IsMulCommutative R] [IsDomain R]
 
 theorem count_roots_le_one [DecidableEq R] {p : R[X]} (hsep : Separable p) (x : R) :
     p.roots.count x ≤ 1 := by
@@ -307,7 +307,7 @@ theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
         natDegree_derivative_lt <| mt derivative_of_natDegree_zero h⟩
 
 attribute [local instance] Ideal.Quotient.field in
-theorem separable_map {S} [CommRing S] [Nontrivial S] (f : F →+* S) {p : F[X]} :
+theorem separable_map {S} [Ring S] [IsMulCommutative S] [Nontrivial S] (f : F →+* S) {p : F[X]} :
     (p.map f).Separable ↔ p.Separable := by
   refine ⟨fun H ↦ ?_, fun H ↦ H.map⟩
   obtain ⟨m, hm⟩ := Ideal.exists_maximal S
@@ -520,7 +520,7 @@ open Polynomial
 
 section CommRing
 
-variable (F L K : Type*) [CommRing F] [Ring K] [Algebra F K]
+variable (F L K : Type*) [Ring F] [IsMulCommutative F] [Ring K] [Algebra F K]
 
 -- TODO: refactor to allow transcendental extensions?
 -- See: https://en.wikipedia.org/wiki/Separable_extension#Separability_of_transcendental_extensions
@@ -751,7 +751,7 @@ end AlgEquiv
 
 section CardAlgHom
 
-variable {S : Type*} [CommRing S]
+variable {S : Type*} [Ring S] [IsMulCommutative S]
 variable {K L : Type*} [Field K] [Field L]
 variable [Algebra K S] [Algebra K L]
 

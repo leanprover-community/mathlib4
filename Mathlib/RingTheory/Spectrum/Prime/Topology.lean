@@ -116,7 +116,7 @@ namespace PrimeSpectrum
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 variable {R S}
 
 /-- The Zariski topology on the prime spectrum of a commutative (semi)ring is defined
@@ -203,7 +203,7 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
     lt_iff_le_not_ge]
 
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
-def closedsEmbedding (R : Type*) [CommSemiring R] :
+def closedsEmbedding (R : Type*) [Semiring R] [IsMulCommutative R] :
     (TopologicalSpace.Closeds <| PrimeSpectrum R)ᵒᵈ ↪o Ideal R :=
   OrderEmbedding.ofMapLEIff (fun s => vanishingIdeal ↑(OrderDual.ofDual s)) fun s _ =>
     (vanishingIdeal_anti_mono_iff s.2).symm
@@ -411,7 +411,7 @@ section SpecOfSurjective
 
 open Function RingHom
 
-variable [CommRing R] [CommRing S]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 variable (f : R →+* S)
 variable {R}
 
@@ -441,7 +441,7 @@ end SpecOfSurjective
 
 section SpecProd
 
-variable {R S} [CommSemiring R] [CommSemiring S]
+variable {R S} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 
 lemma primeSpectrumProd_symm_inl (x) :
     (primeSpectrumProd R S).symm (.inl x) = comap (RingHom.fst R S) x := by
@@ -495,7 +495,7 @@ end SpecProd
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
 variable {R S}
 
 section BasicOpen
@@ -584,7 +584,7 @@ theorem basicOpen_eq_bot_iff (f : R) : basicOpen f = ⊥ ↔ IsNilpotent f := by
     nilpotent_iff_mem_prime, Set.compl_empty_iff, mem_zeroLocus, SetLike.mem_coe]
   exact ⟨fun h I hI => h ⟨I, hI⟩, fun h ⟨I, hI⟩ => h I hI⟩
 
-theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
+theorem localization_away_comap_range (S : Type v) [Semiring S] [IsMulCommutative S] [Algebra R S] (r : R)
     [IsLocalization.Away r S] : Set.range (comap (algebraMap R S)) = basicOpen r := by
   rw [localization_comap_range S (Submonoid.powers r)]
   ext x
@@ -596,7 +596,7 @@ theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S
   · rintro h₁ _ ⟨⟨n, rfl⟩, h₃⟩
     exact h₁ (x.2.mem_of_pow_mem _ h₃)
 
-theorem localization_away_isOpenEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
+theorem localization_away_isOpenEmbedding (S : Type v) [Semiring S] [IsMulCommutative S] [Algebra R S] (r : R)
     [IsLocalization.Away r S] : IsOpenEmbedding (comap (algebraMap R S)) where
   toIsEmbedding := localization_comap_isEmbedding S (Submonoid.powers r)
   isOpen_range := by
@@ -643,7 +643,7 @@ theorem isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton [Algebra R S]
 
 open Localization Polynomial Set in
 lemma range_comap_algebraMap_localization_compl_eq_range_comap_quotientMk
-    {R : Type*} [CommRing R] (c : R) :
+    {R : Type*} [Ring R] [IsMulCommutative R] (c : R) :
     letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
     (range (comap (algebraMap R[X] (Away c)[X])))ᶜ
       = range (comap (mapRingHom (Ideal.Quotient.mk (.span {c})))) := by
@@ -664,7 +664,7 @@ end BasicOpen
 
 section Pi
 
-variable {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)]
+variable {ι : Type*} {R : ι → Type*} [∀ i, Ring (R i)] [∀ i, IsMulCommutative (R i)]
 
 lemma comap_evalRingHom_basicOpen [DecidableEq ι] (i : ι) (f : R i) :
     comap (Pi.evalRingHom R i) '' basicOpen f = basicOpen (Pi.single i f) := by
@@ -710,7 +710,7 @@ lemma isOpenEmbedding_sigmaToPi : Topology.IsOpenEmbedding (sigmaToPi R) := by
 
 /-- If `ι` is finite, the disjoint union of the prime spectra of the `R i` is homeomorphic
 to the prime spectrum of the product. -/
-noncomputable def sigmaToPiHomeo {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] [Finite ι] :
+noncomputable def sigmaToPiHomeo {ι : Type*} (R : ι → Type*) [∀ i, Ring (R i)] [∀ i, IsMulCommutative (R i)] [Finite ι] :
     (Σ i, PrimeSpectrum (R i)) ≃ₜ PrimeSpectrum (Π i, R i) :=
   (isOpenEmbedding_sigmaToPi R).toHomeomorphOfSurjective (sigmaToPi_bijective R).surjective
 
@@ -779,12 +779,12 @@ theorem _root_.MaximalSpectrum.toPiLocalizationEquiv_apply_apply (x : R) (I : Ma
     MaximalSpectrum.toPiLocalizationEquiv R x I = algebraMap R _ x :=
   rfl
 
-theorem discreteTopology_iff_toPiLocalization_surjective {R} [CommSemiring R] :
+theorem discreteTopology_iff_toPiLocalization_surjective {R} [Semiring R] [IsMulCommutative R] :
     DiscreteTopology (PrimeSpectrum R) ↔ Function.Surjective (toPiLocalization R) :=
   ⟨fun _ ↦ toPiLocalization_surjective_of_discreteTopology _,
     discreteTopology_of_toLocalization_surjective⟩
 
-theorem discreteTopology_iff_toPiLocalization_bijective {R} [CommSemiring R] :
+theorem discreteTopology_iff_toPiLocalization_bijective {R} [Semiring R] [IsMulCommutative R] :
     DiscreteTopology (PrimeSpectrum R) ↔ Function.Bijective (toPiLocalization R) :=
   discreteTopology_iff_toPiLocalization_surjective.trans
     (and_iff_right <| toPiLocalization_injective _).symm
@@ -855,7 +855,7 @@ def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
 
 section stableUnderSpecialization
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S)
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (f : R →+* S)
 
 lemma isClosed_image_of_stableUnderSpecialization
     (Z : Set (PrimeSpectrum S)) (hZ : IsClosed Z)
@@ -890,7 +890,7 @@ end stableUnderSpecialization
 
 section IsQuotientMap
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] {f : R →+* S}
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] {f : R →+* S}
   (h₁ : Function.Surjective (comap f))
 
 include h₁
@@ -920,7 +920,7 @@ end IsQuotientMap
 
 section denseRange
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S)
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (f : R →+* S)
 
 lemma vanishingIdeal_range_comap :
     vanishingIdeal (Set.range (comap f)) = (RingHom.ker f).radical := by
@@ -1146,7 +1146,7 @@ section IsIntegral
 
 open Polynomial
 
-variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
 
 theorem isClosedMap_comap_of_isIntegral (hf : f.IsIntegral) :
     IsClosedMap (comap f) := by
@@ -1288,7 +1288,7 @@ end PrimeSpectrum
 
 namespace IsLocalRing
 
-variable [CommSemiring R] [IsLocalRing R]
+variable [Semiring R] [IsMulCommutative R] [IsLocalRing R]
 
 /-- The closed point in the prime spectrum of a local ring. -/
 def closedPoint : PrimeSpectrum R :=
@@ -1306,7 +1306,7 @@ theorem PrimeSpectrum.asIdeal_top : (⊤ : PrimeSpectrum R).asIdeal = IsLocalRin
 
 variable {R}
 
-theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S]
+theorem isLocalHom_iff_comap_closedPoint {S : Type v} [Semiring S] [IsMulCommutative S] [IsLocalRing S]
     (f : R →+* S) : IsLocalHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
   -- Porting note: inline `this` does **not** work
   have := (local_hom_TFAE f).out 1 5
@@ -1314,7 +1314,7 @@ theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalR
   rfl
 
 @[simp]
-theorem comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S] (f : R →+* S)
+theorem comap_closedPoint {S : Type v} [Semiring S] [IsMulCommutative S] [IsLocalRing S] (f : R →+* S)
     [IsLocalHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
   (isLocalHom_iff_comap_closedPoint f).mp inferInstance
 
@@ -1334,7 +1334,7 @@ lemma closed_point_mem_iff {U : TopologicalSpace.Opens (PrimeSpectrum R)} :
   ⟨(eq_top_iff.mpr fun x _ ↦ (specializes_closedPoint x).mem_open U.2 ·), (· ▸ trivial)⟩
 
 @[simp]
-theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [IsLocalRing T]
+theorem PrimeSpectrum.comap_residue (T : Type u) [Ring T] [IsMulCommutative T] [IsLocalRing T]
     (x : PrimeSpectrum (ResidueField T)) : PrimeSpectrum.comap (residue T) x = closedPoint T := by
   rw [Subsingleton.elim x ⊥]
   ext1
@@ -1353,7 +1353,7 @@ end IsLocalRing
 
 section KrullDimension
 
-theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommSemiring R] :
+theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [Semiring R] [IsMulCommutative R] :
     topologicalKrullDim (PrimeSpectrum R) = ringKrullDim R :=
   Order.krullDim_orderDual.symm.trans <| Order.krullDim_eq_of_orderIso
   (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
@@ -1362,7 +1362,7 @@ end KrullDimension
 
 section Idempotent
 
-variable {R} [CommRing R]
+variable {R} [Ring R] [IsMulCommutative R]
 
 namespace PrimeSpectrum
 

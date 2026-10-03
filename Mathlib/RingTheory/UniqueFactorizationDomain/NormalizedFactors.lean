@@ -28,7 +28,7 @@ local infixl:50 " ~ᵤ " => Associated
 
 namespace UniqueFactorizationMonoid
 
-variable [CommMonoidWithZero α] [NormalizationMonoid α]
+variable [MonoidWithZero α] [IsMulCommutative α] [NormalizationMonoid α]
 variable [UniqueFactorizationMonoid α]
 
 /-- Noncomputably determines the multiset of prime factors. -/
@@ -38,7 +38,7 @@ noncomputable def normalizedFactors (a : α) : Multiset α :=
 /-- An arbitrary choice of factors of `x : M` is exactly the (unique) normalized set of factors,
 if `M` has a trivial group of units. -/
 @[simp]
-theorem factors_eq_normalizedFactors {M : Type*} [CommMonoidWithZero M]
+theorem factors_eq_normalizedFactors {M : Type*} [MonoidWithZero M] [IsMulCommutative M]
     [UniqueFactorizationMonoid M] [Subsingleton Mˣ] (x : M) : factors x = normalizedFactors x := by
   unfold normalizedFactors
   convert (Multiset.map_id (factors x)).symm with p
@@ -54,7 +54,7 @@ theorem prod_normalizedFactors {a : α} (ane0 : a ≠ 0) :
   ext
   rw [Function.comp_apply, Associates.mk_normalize]
 
-theorem prod_normalizedFactors_eq {α} [CommMonoidWithZero α] [StrongNormalizationMonoid α]
+theorem prod_normalizedFactors_eq {α} [MonoidWithZero α] [IsMulCommutative α] [StrongNormalizationMonoid α]
     [UniqueFactorizationMonoid α] {a : α} (ane0 : a ≠ 0) :
     (normalizedFactors a).prod = normalize a := by
   trans normalize (normalizedFactors a).prod
@@ -338,7 +338,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     · apply Multiset.prod_ne_zero
       exact fun h ↦ hs (Multiset.mem_cons_of_mem h)
 
-variable {β : Type*} [CommMonoidWithZero β] [NormalizationMonoid β]
+variable {β : Type*} [MonoidWithZero β] [IsMulCommutative β] [NormalizationMonoid β]
   [UniqueFactorizationMonoid β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] {f : F}
 
 /--
@@ -370,7 +370,7 @@ namespace UniqueFactorizationMonoid
 
 open Multiset Associates
 
-variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α]
 
 open scoped Classical in
 /-- Noncomputably defines a `StrongNormalizationMonoid` structure on a `UniqueFactorizationMonoid`.
@@ -417,7 +417,7 @@ namespace UniqueFactorizationMonoid
 
 open Multiset
 
-variable {α : Type*} [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable {α : Type*} [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α]
 
 lemma normalizedFactors_prod_eq_self_of_subset [Subsingleton αˣ] {a : α} {m : Multiset α}
     (hm : m ⊆ normalizedFactors a) :

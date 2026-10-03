@@ -17,7 +17,7 @@ We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness
 
 public section
 
-variable {α ι : Type*} [AddCommMonoid α] [LinearOrder α] [IsOrderedCancelAddMonoid α]
+variable {α ι : Type*} [AddMonoid α] [IsAddCommutative α] [LinearOrder α] [IsOrderedCancelAddMonoid α]
   [Nontrivial α] [DenselyOrdered α]
 
 theorem Pi.exists_forall_pos_add_lt [ExistsAddOfLE α] [Finite ι] {x y : ι → α}

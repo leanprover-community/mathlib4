@@ -23,7 +23,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 
 open Algebra TensorProduct
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
 set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing in
@@ -60,7 +60,7 @@ lemma ResidueField.exists_smul_eq_tmul_one
 
 See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it
 and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`. -/
-abbrev Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [AddCommGroup S] [Module R S] : Type _ :=
+abbrev Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [AddGroup S] [IsAddCommutative S] [Module R S] : Type _ :=
   p.ResidueField ⊗[R] S
 
 instance (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
@@ -190,8 +190,8 @@ variable (R S) in
 /-- The `OrderIso` between the set of primes lying over a prime ideal `p : Ideal R`,
 and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
-noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [CommRing R]
-    [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
+noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [Ring R] [IsMulCommutative R]
+    [Ring S] [IsMulCommutative S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
     p.primesOver S ≃o PrimeSpectrum (p.Fiber S) :=
   .trans ⟨⟨fun q ↦ ⟨⟨q, q.2.1⟩, PrimeSpectrum.ext q.2.2.1.symm⟩,
     fun q ↦ ⟨q.1.asIdeal, ⟨q.1.2, ⟨congr($(q.2).1).symm⟩⟩⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
@@ -200,8 +200,8 @@ noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [CommRing 
 /-- The `Homeomorph` between the fiber of `PrimeSpectrum S → PrimeSpectrum R`
 at a prime ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
-noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing R]
-    [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
+noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [Ring R] [IsMulCommutative R]
+    [Ring S] [IsMulCommutative S] [Algebra R S] (p : PrimeSpectrum R) :
     comap (algebraMap R S) ⁻¹' {p} ≃ₜ PrimeSpectrum (p.asIdeal.Fiber S) := by
   letI H : Topology.IsEmbedding (preimageOrderIsoFiber R S p).symm := by
     refine (Topology.IsEmbedding.of_comp_iff .subtypeVal).mp ?_

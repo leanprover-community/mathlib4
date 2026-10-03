@@ -36,7 +36,7 @@ saying that `n` is zero. -/
 noncomputable def eqZero (n : ℕ) : Language.ring.Sentence :=
   Term.equal (termOfFreeCommRing n) 0
 
-@[simp] theorem realize_eqZero [CommRing K] [CompatibleRing K] (n : ℕ)
+@[simp] theorem realize_eqZero [Ring K] [IsMulCommutative K] [CompatibleRing K] (n : ℕ)
     (v : Empty → K) : (Formula.Realize (eqZero n) v) ↔ ((n : K) = 0) := by
   simp [eqZero]
 

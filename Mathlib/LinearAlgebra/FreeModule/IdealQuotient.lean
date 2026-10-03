@@ -24,7 +24,7 @@ open scoped DirectSum
 namespace Ideal
 
 
-variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {ι R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
 
 /-- We can write the quotient of an ideal over a PID as a product of quotients by principal ideals.
@@ -48,7 +48,7 @@ theorem finiteQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
   let b := Module.Free.chooseBasis ℤ S
   Submodule.finiteQuotientOfFreeOfRankEq (I.restrictScalars ℤ) <| finrank_eq_finrank b I hI
 
-variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
+variable (F : Type*) [Ring F] [IsMulCommutative F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
   (b : Basis ι R S) {I : Ideal S} (hI : I ≠ ⊥)
 
 /-- Decompose `S⧸I` as a direct sum of cyclic `R`-modules

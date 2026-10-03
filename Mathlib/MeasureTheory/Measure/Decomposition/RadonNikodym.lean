@@ -576,7 +576,7 @@ lemma setLIntegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪
   rw [setLIntegral_withDensity_eq_lintegral_mul₀ (measurable_rnDeriv μ ν).aemeasurable hf hs]
   simp only [Pi.mul_apply]
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HaveLebesgueDecomposition μ ν]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [HaveLebesgueDecomposition μ ν]
   [SigmaFinite μ] {f : α → E}
 
 theorem integrable_rnDeriv_smul_iff (hμν : μ ≪ ν) :

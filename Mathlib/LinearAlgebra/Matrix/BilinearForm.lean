@@ -37,8 +37,8 @@ bilinear form, bilin form, BilinearForm, matrix, basis
 open LinearMap (BilinForm)
 open Module
 
-variable {R₁ : Type*} {M₁ : Type*} [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ M₁]
-variable {R₂ : Type*} {M₂ : Type*} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
+variable {R₁ : Type*} {M₁ : Type*} [Semiring R₁] [IsMulCommutative R₁] [AddMonoid M₁] [IsAddCommutative M₁] [Module R₁ M₁]
+variable {R₂ : Type*} {M₂ : Type*} [Ring R₂] [IsMulCommutative R₂] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂]
 
 section Matrix
 
@@ -243,7 +243,7 @@ theorem LinearMap.BilinForm.toMatrix_toBilin (M : Matrix n n R₁) :
     BilinForm.toMatrix b (Matrix.toBilin b M) = M :=
   (BilinForm.toMatrix b).apply_symm_apply M
 
-variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₁ M₂']
+variable {M₂' : Type*} [AddMonoid M₂'] [IsAddCommutative M₂'] [Module R₁ M₂']
 variable (c : Basis o R₁ M₂')
 variable [DecidableEq o]
 
@@ -355,7 +355,7 @@ section Det
 
 open Matrix
 
-variable {A : Type*} [CommRing A] [IsDomain A] [Module A M₂] (B₃ : BilinForm A M₂)
+variable {A : Type*} [Ring A] [IsMulCommutative A] [IsDomain A] [Module A M₂] (B₃ : BilinForm A M₂)
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 theorem _root_.Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin {M : Matrix ι ι R₁}

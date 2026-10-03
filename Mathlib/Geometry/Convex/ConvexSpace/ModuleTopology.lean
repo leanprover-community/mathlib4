@@ -18,7 +18,7 @@ open Topology
 namespace Convexity.StdSimplex
 
 variable {R E ι : Type*} [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup E] [Module R E] [ConvexSpace R E]
+  [AddGroup E] [IsAddCommutative E] [Module R E] [ConvexSpace R E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [TopologicalSpace R]
   [IsTopologicalRing R] [ContinuousSMul R E] [IsModuleConvexSpace R E]
 

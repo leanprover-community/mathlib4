@@ -87,11 +87,11 @@ instance instSubNegMonoid [SubNegMonoid E] : SubNegMonoid C⋆ᵐᵒᵈ(A, E) :=
 instance instSubNegZeroMonoid [SubNegZeroMonoid E] : SubNegZeroMonoid C⋆ᵐᵒᵈ(A, E) :=
   ‹SubNegZeroMonoid E›
 
-instance instAddCommGroup [AddCommGroup E] : AddCommGroup C⋆ᵐᵒᵈ(A, E) := ‹AddCommGroup E›
+instance instAddCommGroup [AddGroup E] [IsAddCommutative E] : AddCommGroup C⋆ᵐᵒᵈ(A, E) := ‹AddCommGroup E›
 
 instance instSMul {R : Type*} [SMul R E] : SMul R C⋆ᵐᵒᵈ(A, E) := ‹SMul R E›
 
-instance instModule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
+instance instModule {R : Type*} [Semiring R] [AddGroup E] [IsAddCommutative E] [Module R E] :
     Module R C⋆ᵐᵒᵈ(A, E) :=
   ‹Module R E›
 
@@ -112,7 +112,7 @@ variable [SMul R E] (c : R) (x y : C⋆ᵐᵒᵈ(A, E)) (x' y' : E)
 
 section AddCommGroup
 
-variable [AddCommGroup E]
+variable [AddGroup E] [IsAddCommutative E]
 
 @[simp]
 theorem equiv_zero : equiv A E 0 = 0 :=
@@ -161,23 +161,23 @@ theorem equiv_symm_smul : (equiv A E).symm (c • x') = c • (equiv A E).symm x
 end Equiv
 
 /-- `WithCStarModule.equiv` as an additive equivalence. -/
-def addEquiv [AddCommGroup E] : C⋆ᵐᵒᵈ(A, E) ≃+ E :=
+def addEquiv [AddGroup E] [IsAddCommutative E] : C⋆ᵐᵒᵈ(A, E) ≃+ E :=
   { AddEquiv.refl _ with
     toFun := equiv _ _
     invFun := (equiv _ _).symm }
 
 /-- `WithCStarModule.equiv` as a linear equivalence. -/
 @[simps -fullyApplied]
-def linearEquiv [Semiring R] [AddCommGroup E] [Module R E] : C⋆ᵐᵒᵈ(A, E) ≃ₗ[R] E :=
+def linearEquiv [Semiring R] [AddGroup E] [IsAddCommutative E] [Module R E] : C⋆ᵐᵒᵈ(A, E) ≃ₗ[R] E :=
   { LinearEquiv.refl _ _ with
     toFun := equiv _ _
     invFun := (equiv _ _).symm }
 
-lemma map_top_submodule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
+lemma map_top_submodule {R : Type*} [Semiring R] [AddGroup E] [IsAddCommutative E] [Module R E] :
     (⊤ : Submodule R E).map (linearEquiv R A E).symm.toLinearMap = ⊤ :=
   Submodule.map_eq_top_iff.mpr rfl
 
-instance instModuleFinite [Semiring R] [AddCommGroup E] [Module R E] [Module.Finite R E] :
+instance instModuleFinite [Semiring R] [AddGroup E] [IsAddCommutative E] [Module R E] [Module.Finite R E] :
     Module.Finite R C⋆ᵐᵒᵈ(A, E) := ‹Module.Finite R E›
 
 /-! ## `C⋆ᵐᵒᵈ(A, E)` inherits the uniformity and bornology from `E`. -/
@@ -195,7 +195,7 @@ def uniformEquiv [UniformSpace E] : C⋆ᵐᵒᵈ(A, E) ≃ᵤ E :=
 
 /-- `WithCStarModule.equiv` as a continuous linear equivalence between `C⋆ᵐᵒᵈ E` and `E`. -/
 @[simps! apply symm_apply]
-def equivL [Semiring R] [AddCommGroup E] [UniformSpace E] [Module R E] : C⋆ᵐᵒᵈ(A, E) ≃L[R] E :=
+def equivL [Semiring R] [AddGroup E] [IsAddCommutative E] [UniformSpace E] [Module R E] : C⋆ᵐᵒᵈ(A, E) ≃L[R] E :=
   { linearEquiv R A E with
     continuous_toFun := UniformEquiv.continuous uniformEquiv
     continuous_invFun := UniformEquiv.continuous uniformEquiv.symm }
@@ -203,13 +203,13 @@ def equivL [Semiring R] [AddCommGroup E] [UniformSpace E] [Module R E] : C⋆ᵐ
 instance [UniformSpace E] [CompleteSpace E] : CompleteSpace C⋆ᵐᵒᵈ(A, E) :=
   uniformEquiv.completeSpace_iff.mpr inferInstance
 
-instance [AddCommGroup E] [UniformSpace E] [ContinuousAdd E] : ContinuousAdd C⋆ᵐᵒᵈ(A, E) :=
+instance [AddGroup E] [IsAddCommutative E] [UniformSpace E] [ContinuousAdd E] : ContinuousAdd C⋆ᵐᵒᵈ(A, E) :=
   ContinuousAdd.induced (addEquiv A E)
 
-instance [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E] : IsUniformAddGroup C⋆ᵐᵒᵈ(A, E) :=
+instance [AddGroup E] [IsAddCommutative E] [UniformSpace E] [IsUniformAddGroup E] : IsUniformAddGroup C⋆ᵐᵒᵈ(A, E) :=
   IsUniformAddGroup.comap (addEquiv A E)
 
-instance [Semiring R] [TopologicalSpace R] [AddCommGroup E] [UniformSpace E] [Module R E]
+instance [Semiring R] [TopologicalSpace R] [AddGroup E] [IsAddCommutative E] [UniformSpace E] [Module R E]
     [ContinuousSMul R E] : ContinuousSMul R C⋆ᵐᵒᵈ(A, E) :=
   ContinuousSMul.induced (linearEquiv R A E)
 
@@ -228,7 +228,7 @@ variable (x y : C⋆ᵐᵒᵈ(A, E × F)) (c : R)
 
 section AddCommGroup
 
-variable [AddCommGroup E] [AddCommGroup F]
+variable [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F]
 
 @[simp]
 theorem zero_fst : (0 : C⋆ᵐᵒᵈ(A, E × F)).fst = 0 :=
@@ -318,7 +318,7 @@ variable (c : R) (x y : C⋆ᵐᵒᵈ(A, Π i, E i)) (i : ι)
 
 section AddCommGroup
 
-variable [∀ i, AddCommGroup (E i)]
+variable [∀ i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)]
 
 @[simp]
 theorem zero_apply : (0 : C⋆ᵐᵒᵈ(A, Π i, E i)) i = 0 :=

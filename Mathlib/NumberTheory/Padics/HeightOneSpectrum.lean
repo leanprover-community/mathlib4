@@ -56,7 +56,7 @@ open IsDedekindDomain UniformSpace.Completion NumberField PadicInt
 
 local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
 
-variable (R : Type*) [CommRing R] [Algebra R ℚ]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [Algebra R ℚ]
 
 theorem Rat.int_algebraMap_injective : Function.Injective (algebraMap ℤ R) :=
   .of_comp (IsScalarTower.algebraMap_eq ℤ R ℚ ▸ RingHom.injective_int (algebraMap ℤ ℚ))
@@ -83,7 +83,7 @@ theorem Rat.IsIntegralClosure.intEquiv_apply_eq_ringOfIntegersEquiv (x : 𝓞 �
 
 namespace Rat.HeightOneSpectrum
 
-variable {R : Type*} [CommRing R] [Algebra R ℚ] [IsIntegralClosure R ℤ ℚ]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R ℚ] [IsIntegralClosure R ℤ ℚ]
 
 /-- If `v : HeightOneSpectrum R` then `natGenerator v` is the generator in `ℕ` of the corresponding
 ideal in `ℤ`. -/
@@ -208,7 +208,7 @@ open Rat.HeightOneSpectrum
 
 namespace Padic
 
-variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
   [IsIntegralClosure R ℤ ℚ]
 
 /-- The continuous `ℚ`-algebra isomorphism between `ℚ_[p]` and
@@ -224,7 +224,7 @@ namespace PadicInt
 
 open Padic
 
-variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
   [IsIntegralClosure R ℤ ℚ]
 
 /-- The continuous `ℤ`-algebra isomorphism between `ℤ_[p]` and

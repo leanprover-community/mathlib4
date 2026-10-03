@@ -25,8 +25,8 @@ public section
 
 namespace LinearMap
 
-variable {R : Type*} [CommRing R] {M1 M2 M3 : Type*} (N : Type*)
-  [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup M3] [AddCommGroup N]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {M1 M2 M3 : Type*} (N : Type*)
+  [AddGroup M1] [IsAddCommutative M1] [AddGroup M2] [IsAddCommutative M2] [AddGroup M3] [IsAddCommutative M3] [AddGroup N] [IsAddCommutative N]
   [Module R M1] [Module R M2] [Module R M3] [Module R N]
 
 lemma exact_lcomp_of_exact_of_surjective {f : M1 →ₗ[R] M2} {g : M2 →ₗ[R] M3}

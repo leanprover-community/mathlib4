@@ -192,7 +192,7 @@ end MulLeftMono
 end Group
 
 section CommGroup
-variable [CommGroup α] [MulLeftMono α]
+variable [Group α] [IsMulCommutative α] [MulLeftMono α]
 
 -- Bourbaki A.VI.12 (with a and b swapped)
 @[to_additive] lemma sup_eq_mul_oneLePart_div (a b : α) : a ⊔ b = b * (a / b)⁺ᵐ := by

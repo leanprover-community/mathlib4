@@ -275,7 +275,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] {p : R[X]}
+variable [Semiring R] [IsMulCommutative R] {p : R[X]}
 
 theorem monic_multiset_prod_of_monic (t : Multiset ι) (f : ι → R[X]) (ht : ∀ i ∈ t, Monic (f i)) :
     Monic (t.map f).prod := by

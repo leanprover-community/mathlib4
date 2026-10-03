@@ -57,7 +57,7 @@ open TensorProduct Module MvPolynomial
 
 namespace Algebra
 
-variable (R : Type u) (S : Type v) (ι : Type w) (σ : Type t) [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type v) (ι : Type w) (σ : Type t) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /--
 A `PreSubmersivePresentation` of an `R`-algebra `S` is a `Presentation`
@@ -181,20 +181,20 @@ section Constructions
 /-- Transport a pre-submersive presentation along an algebra isomorphism. -/
 @[simps toPresentation map]
 noncomputable def ofAlgEquiv
-    (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    (P : PreSubmersivePresentation R S ι σ) {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] (e : S ≃ₐ[R] T) :
     PreSubmersivePresentation R T ι σ where
   __ := P.toPresentation.ofAlgEquiv e
   map := P.map
   map_inj := P.map_inj
 
 @[simp]
-lemma jacobiMatrix_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T]
+lemma jacobiMatrix_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [Ring T] [IsMulCommutative T]
     [Algebra R T] (e : S ≃ₐ[R] T) [Fintype σ] [DecidableEq σ] :
     (P.ofAlgEquiv e).jacobiMatrix = P.jacobiMatrix :=
   rfl
 
 @[simp]
-lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T]
+lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [Ring T] [IsMulCommutative T]
     [Algebra R T] (e : S ≃ₐ[R] T) [Finite σ] :
     (P.ofAlgEquiv e).jacobian = e P.jacobian := by
   classical
@@ -265,7 +265,7 @@ end Localization
 
 section Composition
 
-variable {ι' σ' T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {ι' σ' T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable (Q : PreSubmersivePresentation S T ι' σ') (P : PreSubmersivePresentation R S ι σ)
 
 /-- Given an `R`-algebra `S` and an `S`-algebra `T` with pre-submersive presentations,
@@ -401,7 +401,7 @@ end Composition
 
 section BaseChange
 
-variable (T : Type*) [CommRing T] [Algebra R T] (P : PreSubmersivePresentation R S ι σ)
+variable (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] (P : PreSubmersivePresentation R S ι σ)
 
 /-- If `P` is a pre-submersive presentation of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural pre-submersive presentation of `T ⊗[R] S` over `T`. -/
@@ -521,7 +521,7 @@ variable {R S ι σ} in
 /-- Transport a submersive presentation along an algebra isomorphism. -/
 @[simps toPreSubmersivePresentation]
 noncomputable def ofAlgEquiv
-    (P : SubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    (P : SubmersivePresentation R S ι σ) {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] (e : S ≃ₐ[R] T) :
     SubmersivePresentation R T ι σ where
   __ := P.toPreSubmersivePresentation.ofAlgEquiv e
   jacobian_isUnit := by simp [P.jacobian_isUnit]
@@ -548,7 +548,7 @@ noncomputable def mvPolynomial : SubmersivePresentation R (MvPolynomial ι R) ι
 
 section Composition
 variable {R S ι σ}
-variable {T ι' σ' : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T ι' σ' : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable [Finite σ'] (Q : SubmersivePresentation S T ι' σ') (P : SubmersivePresentation R S ι σ)
 
 /-- Given an `R`-algebra `S` and an `S`-algebra `T` with submersive presentations,
@@ -577,7 +577,7 @@ end Localization
 
 section BaseChange
 
-variable (T) [CommRing T] [Algebra R T] (P : SubmersivePresentation R S ι σ)
+variable (T) [Ring T] [IsMulCommutative T] [Algebra R T] (P : SubmersivePresentation R S ι σ)
 
 variable {R S ι σ} in
 /-- If `P` is a submersive presentation of `S` over `R` and `T` is an `R`-algebra, we

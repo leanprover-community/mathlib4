@@ -25,7 +25,7 @@ public section
 
 universe u v
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 namespace IsBezout
 
@@ -41,7 +41,7 @@ theorem iff_span_pair_isPrincipal :
       rw [← Submodule.span_insert]
       exact H _ _
 
-theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
+theorem _root_.Function.Surjective.isBezout {S : Type v} [Ring S] [IsMulCommutative S] (f : R →+* S)
     (hf : Function.Surjective f) [IsBezout R] : IsBezout S := by
   rw [iff_span_pair_isPrincipal]
   intro x y

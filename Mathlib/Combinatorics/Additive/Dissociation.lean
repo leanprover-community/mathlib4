@@ -28,7 +28,7 @@ independence and linear span of sets in a vector space but where the scalars are
 
 @[expose] public section
 
-variable {α β : Type*} [CommGroup α] [CommGroup β]
+variable {α β : Type*} [Group α] [IsMulCommutative α] [Group β] [IsMulCommutative β]
 
 section dissociation
 variable {s : Set α} {t u : Finset α} {a : α}

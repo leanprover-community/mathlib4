@@ -19,7 +19,7 @@ to have general results so that when we prove a corresponding fact about group r
 
 public section
 
-variable {A V : Type*} (k : Type*) [Field k] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
+variable {A V : Type*} (k : Type*) [Field k] [Ring A] [Algebra k A] [AddGroup V] [IsAddCommutative V] [Module k V]
   [Module A V] [IsScalarTower k A V]
   [IsSimpleModule A V] [FiniteDimensional k V] [IsAlgClosed k]
 

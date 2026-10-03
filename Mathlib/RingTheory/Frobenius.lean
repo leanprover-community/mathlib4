@@ -47,7 +47,7 @@ Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of 
 
 @[expose] public section
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- `φ : S →ₐ[R] S` is an (arithmetic) Frobenius at `Q` if
 `φ x ≡ x ^ #(R/p) (mod Q)` for all `x : S` (`AlgHom.IsArithFrobAt`). -/

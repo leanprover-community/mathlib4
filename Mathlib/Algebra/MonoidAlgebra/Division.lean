@@ -46,7 +46,7 @@ namespace AddMonoidAlgebra
 
 section
 
-variable [AddCommMonoid G]
+variable [AddMonoid G] [IsAddCommutative G]
 
 /-- Divide by `of' k G g`, discarding terms not divisible by this. -/
 noncomputable def divOf [IsCancelAdd G] (x : k[G]) (g : G) : k[G] where

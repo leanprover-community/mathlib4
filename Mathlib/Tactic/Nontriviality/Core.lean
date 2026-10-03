@@ -88,7 +88,7 @@ example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
   nontriviality -- There is now a `Nontrivial R` hypothesis available.
   assumption
 
-example {R : Type} [CommRing R] {r s : R} : r * s = s * r := by
+example {R : Type} [Ring R] [IsMulCommutative R] {r s : R} : r * s = s * r := by
   nontriviality -- There is now a `Nontrivial R` hypothesis available.
   apply mul_comm
 

@@ -22,7 +22,7 @@ defining maps between proper cones. The current API is basic and should be exten
 namespace ConvexCone
 
 variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
-variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [SMul 𝕜 E]
+variable {E : Type*} [AddMonoid E] [IsAddCommutative E] [TopologicalSpace E] [ContinuousAdd E] [SMul 𝕜 E]
   [ContinuousConstSMul 𝕜 E]
 
 /-- The closure of a convex cone inside a topological space as a convex cone. This
@@ -52,7 +52,7 @@ end ConvexCone
 namespace PointedCone
 
 variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E]
+variable {E : Type*} [AddMonoid E] [IsAddCommutative E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E]
   [ContinuousConstSMul 𝕜 E]
 
 lemma toConvexCone_closure_pointed (K : PointedCone 𝕜 E) : (K : ConvexCone 𝕜 E).closure.Pointed :=

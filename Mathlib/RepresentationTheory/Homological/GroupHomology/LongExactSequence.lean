@@ -34,7 +34,7 @@ namespace groupHomology
 
 open CategoryTheory ShortComplex Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] {X : ShortComplex (Rep k G)} (hX : ShortExact X)
+variable {k G : Type u} [Ring k] [IsMulCommutative k] [Group G] {X : ShortComplex (Rep k G)} (hX : ShortExact X)
 
 include hX
 

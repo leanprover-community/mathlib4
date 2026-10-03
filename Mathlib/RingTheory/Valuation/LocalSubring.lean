@@ -28,7 +28,7 @@ Note that the order on local subrings is not merely inclusion but domination.
 
 open IsLocalRing Algebra
 
-variable {R S K : Type*} [CommRing R] [CommRing S] [Field K]
+variable {R S K : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Field K]
 
 instance (V : ValuationSubring K) : IsIntegrallyClosed V.toSubring := by
   rw [← V.integer_valuation]; infer_instance

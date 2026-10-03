@@ -113,7 +113,7 @@ end
 section HasseDeriv
 
 /-- The Hasse derivative of Laurent series, as a linear map. -/
-def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] (k : ℕ) :
+def hasseDeriv (R : Type*) {V : Type*} [AddGroup V] [IsAddCommutative V] [Semiring R] [Module R V] (k : ℕ) :
     V⸨X⸩ →ₗ[R] V⸨X⸩ where
   toFun f := HahnSeries.ofSuppBddBelow (fun n ↦ Ring.choose (n + k) k • f.coeff (n + k)) <| by
     refine ⟨f.order - k, fun x h ↦ ?_⟩
@@ -126,7 +126,7 @@ def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
     ext
     simp only [ofSuppBddBelow, HahnSeries.coeff_smul, RingHom.id_apply, smul_comm r]
 
-variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
+variable [Semiring R] {V : Type*} [AddGroup V] [IsAddCommutative V] [Module R V]
 
 @[simp]
 theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
@@ -166,14 +166,14 @@ theorem hasseDeriv_comp (k l : ℕ) (f : LaurentSeries V) :
   simp [hasseDeriv_comp_coeff k l f n]
 
 @[simp]
-theorem hasseDeriv_map {W : Type*} [AddCommGroup W] [Module R W]
+theorem hasseDeriv_map {W : Type*} [AddGroup W] [IsAddCommutative W] [Module R W]
     (g : V →ₗ[R] W) (k : ℕ) (f : LaurentSeries V) :
     hasseDeriv R k (f.map g) = (hasseDeriv R k f).map g := by
   ext
   simp
 
 /-- The derivative of a Laurent series. -/
-def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] :
+def derivative (R : Type*) {V : Type*} [AddGroup V] [IsAddCommutative V] [Semiring R] [Module R V] :
     LaurentSeries V →ₗ[R] LaurentSeries V :=
   hasseDeriv R 1
 
@@ -181,7 +181,7 @@ def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
 theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1 f := by
   exact rfl
 
-theorem derivative_map {W : Type*} [AddCommGroup W] [Module R W]
+theorem derivative_map {W : Type*} [AddGroup W] [IsAddCommutative W] [Module R W]
     (g : V →ₗ[R] W) (f : LaurentSeries V) :
     derivative R (f.map g) = (derivative R f).map g :=
   hasseDeriv_map g 1 f
@@ -196,7 +196,7 @@ theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
       Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
 
 @[simp]
-theorem iterate_derivative_map {W : Type*} [AddCommGroup W] [Module R W]
+theorem iterate_derivative_map {W : Type*} [AddGroup W] [IsAddCommutative W] [Module R W]
     (g : V →ₗ[R] W) (k : ℕ) (f : LaurentSeries V) :
     (derivative R)^[k] (f.map g) = ((derivative R)^[k] f).map g := by
   induction k generalizing f with
@@ -280,16 +280,16 @@ theorem X_order_mul_powerSeriesPart {n : ℕ} {f : R⸨X⸩} (hn : n = f.order) 
 
 end Semiring
 
-instance [CommSemiring R] : Algebra R⟦X⟧ R⸨X⸩ := (HahnSeries.ofPowerSeries ℤ R).toAlgebra
+instance [Semiring R] [IsMulCommutative R] : Algebra R⟦X⟧ R⸨X⸩ := (HahnSeries.ofPowerSeries ℤ R).toAlgebra
 
 @[simp]
-theorem coe_algebraMap [CommSemiring R] :
+theorem coe_algebraMap [Semiring R] [IsMulCommutative R] :
     ⇑(algebraMap R⟦X⟧ R⸨X⸩) = HahnSeries.ofPowerSeries ℤ R :=
   rfl
 
 /-- The localization map from power series to Laurent series. -/
 @[simps (rhsMd := .all) +simpRhs]
-instance of_powerSeries_localization [CommRing R] :
+instance of_powerSeries_localization [Ring R] [IsMulCommutative R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : R⟦X⟧)) R⸨X⸩ where
   map_units := by
     rintro ⟨_, n, rfl⟩

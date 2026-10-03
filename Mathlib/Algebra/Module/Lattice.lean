@@ -51,7 +51,7 @@ open scoped Pointwise
 
 universe u
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace Submodule
 
@@ -64,8 +64,8 @@ Note 1: `A` is marked as an `outParam` here. In practice this should not cause i
 
 Note 2: In the case `R = ℤ` and `A = K` a field, there is also `IsZLattice` where the finitely
 generated condition is replaced by having the discrete topology. -/
-class IsLattice (A : outParam Type*) [CommRing A] [Algebra R A]
-    {V : Type*} [AddCommMonoid V] [Module R V] [Module A V] [IsScalarTower R A V]
+class IsLattice (A : outParam Type*) [Ring A] [IsMulCommutative A] [Algebra R A]
+    {V : Type*} [AddMonoid V] [IsAddCommutative V] [Module R V] [Module A V] [IsScalarTower R A V]
     [IsScalarTower R A V] (M : Submodule R V) : Prop where
   fg : M.FG
   span_eq_top : Submodule.span A (M : Set V) = ⊤
@@ -74,8 +74,8 @@ namespace IsLattice
 
 section
 
-variable (A : Type*) [CommRing A] [Algebra R A]
-variable {V : Type*} [AddCommGroup V] [Module R V] [Module A V] [IsScalarTower R A V]
+variable (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A]
+variable {V : Type*} [AddGroup V] [IsAddCommutative V] [Module R V] [Module A V] [IsScalarTower R A V]
 variable (M : Submodule R V)
 
 /-- Any `R`-lattice is finite. -/
@@ -115,8 +115,8 @@ section Field
 variable {K : Type*} [Field K] [Algebra R K]
 
 lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type u} [IsDomain R]
-    [IsFractionRing R K] [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] [Module K N] [IsScalarTower R K N] [Module.Finite K N]
+    [IsFractionRing R K] [AddGroup M] [IsAddCommutative M] [Module R M]
+    [AddGroup N] [IsAddCommutative N] [Module R N] [Module K N] [IsScalarTower R K N] [Module.Finite K N]
     {f : M →ₗ[R] N} (hf : Function.Injective f) (h : Module.rank K N ≤ Module.rank R M) :
     Submodule.span K (LinearMap.range f : Set N) = ⊤ := by
   obtain ⟨s, hs, hli⟩ := exists_set_linearIndependent R M
@@ -132,7 +132,7 @@ lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type u} 
   rw [eq_top_iff, ← LinearIndependent.span_eq_top_of_card_eq_finrank' hli hcard]
   exact Submodule.span_mono hsubset
 
-variable (K) {V : Type*} [AddCommGroup V] [Module K V] [Module R V] [IsScalarTower R K V]
+variable (K) {V : Type*} [AddGroup V] [IsAddCommutative V] [Module K V] [Module R V] [IsScalarTower R K V]
 
 /-- Any basis of an `R`-lattice in `V` defines a `K`-basis of `V`. -/
 noncomputable def _root_.Module.Basis.extendOfIsLattice [IsFractionRing R K] {κ : Type*}

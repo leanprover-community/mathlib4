@@ -44,7 +44,7 @@ Lemmas relating to natural numbers and integers are in `Mathlib.RingTheory.Radic
 
 namespace UniqueFactorizationMonoid
 
-variable {M : Type*} [CommMonoidWithZero M] [NormalizationMonoid M]
+variable {M : Type*} [MonoidWithZero M] [IsMulCommutative M] [NormalizationMonoid M]
   [UniqueFactorizationMonoid M] {a b u : M}
 
 open scoped Classical in
@@ -364,7 +364,7 @@ open UniqueFactorizationMonoid
 /-! Theorems for UFDs -/
 namespace UniqueFactorizationDomain
 
-variable {R : Type*} [CommRing R] [NormalizationMonoid R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [NormalizationMonoid R]
   [UniqueFactorizationMonoid R] {a : R}
 
 @[simp]

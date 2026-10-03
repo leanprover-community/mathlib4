@@ -67,7 +67,7 @@ def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (�
   map_mul' φ ψ := Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
 /-- The map `Germ (𝓝 x) E → E` into a `𝕜`-module `E` as a `𝕜`-linear map -/
-def valueₗ {X 𝕜 E : Type*} [Semiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace X]
+def valueₗ {X 𝕜 E : Type*} [Semiring 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace X]
     {x : X} : Germ (𝓝 x) E →ₗ[𝕜] E where
   __ := Filter.Germ.valueAddHom
   map_smul' := fun _ φ ↦ Germ.inductionOn φ fun _ ↦ rfl
@@ -183,6 +183,6 @@ lemma eq_of_germ_isConstant_on {s : Set X} (h : ∀ x ∈ s, (f : Germ (𝓝 x) 
   exact eq_of_germ_isConstant (fun y ↦ Germ.isConstant_comp_subtype (h y y.2)) _ _
 
 @[to_additive (attr := simp)]
-theorem Germ.coe_prod {α : Type*} (l : Filter α) (R : Type*) [CommMonoid R] {ι} (f : ι → α → R)
+theorem Germ.coe_prod {α : Type*} (l : Filter α) (R : Type*) [Monoid R] [IsMulCommutative R] {ι} (f : ι → α → R)
     (s : Finset ι) : ((∏ i ∈ s, f i : α → R) : Germ l R) = ∏ i ∈ s, (f i : Germ l R) :=
   map_prod (Germ.coeMulHom l : (α → R) →* Germ l R) f s

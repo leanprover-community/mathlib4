@@ -36,7 +36,7 @@ open scoped RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 open AffineSubspace
@@ -184,7 +184,7 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The circumsphere of a simplex. -/
@@ -329,7 +329,7 @@ theorem circumcenter_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
 theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumradius = s.circumradius := by simp_rw [circumradius, circumsphere_reindex]
 
-@[simp] lemma circumcenter_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+@[simp] lemma circumcenter_map {V₂ P₂ : Type*} [NormedAddGroup V₂] [IsAddCommutative V₂] [InnerProductSpace ℝ V₂]
     [MetricSpace P₂] [NormedAddTorsor V₂ P₂] {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
     (s.map f.toAffineMap f.injective).circumcenter = f s.circumcenter := by
   rw [eq_comm]
@@ -338,7 +338,7 @@ theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
   rw [map_points, Set.range_comp, ← AffineSubspace.map_span]
   exact AffineSubspace.mem_map_of_mem _ s.circumcenter_mem_affineSpan
 
-@[simp] lemma circumradius_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+@[simp] lemma circumradius_map {V₂ P₂ : Type*} [NormedAddGroup V₂] [IsAddCommutative V₂] [InnerProductSpace ℝ V₂]
     [MetricSpace P₂] [NormedAddTorsor V₂ P₂] {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
     (s.map f.toAffineMap f.injective).circumradius = s.circumradius := by
   rw [eq_comm]
@@ -439,7 +439,7 @@ def pointIndexEmbedding (n : ℕ) : Fin (n + 1) ↪ PointsWithCircumcenterIndex 
   ⟨fun i => pointIndex i, fun _ _ h => by injection h⟩
 
 /-- The sum of a function over `PointsWithCircumcenterIndex`. -/
-theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
+theorem sum_pointsWithCircumcenter {α : Type*} [AddMonoid α] [IsAddCommutative α] {n : ℕ}
     (f : PointsWithCircumcenterIndex n → α) :
     ∑ i, f i = (∑ i : Fin (n + 1), f (pointIndex i)) + f circumcenterIndex := by
   classical
@@ -613,7 +613,7 @@ namespace EuclideanGeometry
 
 open Affine AffineSubspace Module
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- Given a nonempty affine subspace, whose direction is complete,

@@ -49,7 +49,7 @@ open TensorProduct
 
 namespace RingHom
 
-variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
+variable (P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (_ : R →+* S), Prop)
 
 /--
 For a property of ring homomorphisms `P`, `Locally P` holds for `f : R →+* S` if
@@ -58,11 +58,11 @@ the unit ideal, such that `P` holds for all compositions `R →+* Sₜ`.
 
 We may require `s` to be finite here, for the equivalence, see `locally_iff_finite`.
 -/
-def Locally {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
+def Locally {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) : Prop :=
   ∃ (s : Set S) (_ : Ideal.span s = ⊤),
     ∀ t ∈ s, P ((algebraMap S (Localization.Away t)).comp f)
 
-variable {R S : Type u} [CommRing R] [CommRing S]
+variable {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 lemma locally_iff_span_eq_top {f : R →+* S} :
     Locally P f ↔ Ideal.span {g : S | P ((algebraMap S (Localization.Away g)).comp f)} = ⊤ := by
@@ -89,7 +89,7 @@ variable {P}
 to check `P` holds on a standard open cover. -/
 lemma locally_of_exists (hP : RespectsIso P) (f : R →+* S) {ι : Type*} (s : ι → S)
     (hsone : Ideal.span (Set.range s) = ⊤)
-    (Sₜ : ι → Type u) [∀ i, CommRing (Sₜ i)] [∀ i, Algebra S (Sₜ i)]
+    (Sₜ : ι → Type u) [∀ i, Ring (Sₜ i)] [∀ i, IsMulCommutative (Sₜ i)] [∀ i, Algebra S (Sₜ i)]
     [∀ i, IsLocalization.Away (s i) (Sₜ i)] (hf : ∀ i, P ((algebraMap S (Sₜ i)).comp f)) :
     Locally P f := by
   use Set.range s, hsone
@@ -116,7 +116,7 @@ lemma locally_iff_exists (hP : RespectsIso P) (f : R →+* S) :
 algebra satisfying `IsLocalization.Away`. -/
 lemma locally_iff_isLocalization (hP : RespectsIso P) (f : R →+* S) :
     Locally P f ↔ ∃ (s : Finset S) (_ : Ideal.span (s : Set S) = ⊤),
-      ∀ t ∈ s, ∀ (Sₜ : Type u) [CommRing Sₜ] [Algebra S Sₜ] [IsLocalization.Away t Sₜ],
+      ∀ t ∈ s, ∀ (Sₜ : Type u) [Ring Sₜ] [IsMulCommutative Sₜ] [Algebra S Sₜ] [IsLocalization.Away t Sₜ],
       P ((algebraMap S Sₜ).comp f) := by
   rw [locally_iff_finite P f]
   refine ⟨fun ⟨s, hsone, hs⟩ ↦ ⟨s, hsone, fun t ht Sₜ _ _ _ ↦ ?_⟩, fun ⟨s, hsone, hs⟩ ↦ ?_⟩
@@ -136,15 +136,15 @@ lemma locally_of (hP : RespectsIso P) (f : R →+* S) (hf : P f) : Locally P f :
   simp only [Set.mem_singleton_iff, forall_eq, Ideal.span_singleton_one, exists_const]
   exact hP.left f e hf
 
-lemma locally_of_locally {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
-    (hPQ : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, P f → Q f)
-    {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S} (hf : Locally P f) : Locally Q f := by
+lemma locally_of_locally {Q : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
+    (hPQ : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {f : R →+* S}, P f → Q f)
+    {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {f : R →+* S} (hf : Locally P f) : Locally Q f := by
   obtain ⟨s, hsone, hs⟩ := hf
   exact ⟨s, hsone, fun t ht ↦ hPQ (hs t ht)⟩
 
 /-- If `P` is local on the target, then `Locally P` coincides with `P`. -/
 lemma locally_iff_of_localizationSpanTarget (hPi : RespectsIso P)
-    (hPs : OfLocalizationSpanTarget P) {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
+    (hPs : OfLocalizationSpanTarget P) {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) :
     Locally P f ↔ P f :=
   ⟨fun ⟨s, hsone, hs⟩ ↦ hPs f s hsone (fun a ↦ hs a.val a.property), locally_of hPi f⟩
 

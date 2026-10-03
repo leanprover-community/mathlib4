@@ -105,7 +105,7 @@ lemma prime_composite_induction {motive : ℕ → Prop} (zero : motive 0) (one :
 
 /-- For any multiplicative function `f` with `f 1 = 1` and any `n ≠ 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
-theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → β)
+theorem multiplicative_factorization {β : Type*} [Monoid β] [IsMulCommutative β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, Coprime x y → f (x * y) = f x * f y) (hf : f 1 = 1) :
     ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
@@ -122,7 +122,7 @@ theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → �
 
 /-- For any multiplicative function `f` with `f 1 = 1` and `f 0 = 1`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
-theorem multiplicative_factorization' {β : Type*} [CommMonoid β] (f : ℕ → β)
+theorem multiplicative_factorization' {β : Type*} [Monoid β] [IsMulCommutative β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, Coprime x y → f (x * y) = f x * f y) (hf0 : f 0 = 1) (hf1 : f 1 = 1) :
     f n = n.factorization.prod fun p k => f (p ^ k) := by
   obtain rfl | hn := eq_or_ne n 0

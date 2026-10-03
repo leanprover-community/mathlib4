@@ -81,7 +81,7 @@ instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ �
 instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
-instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) :=
+instance [NonUnitalSemiring β] [IsMulCommutative β] : NonUnitalCommSemiring (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) :=
@@ -92,7 +92,7 @@ instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ ↦ rfl)
     fun _ _ ↦ rfl
 
-instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
+instance [NonUnitalRing β] [IsMulCommutative β] : NonUnitalCommRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 

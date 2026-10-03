@@ -24,17 +24,17 @@ open TensorProduct
 
 /-- A ring homomorphism `f : R →+* S` is flat if `S` is flat as an `R` module. -/
 @[algebraize Module.Flat]
-def RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
+def RingHom.Flat {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) : Prop :=
   letI : Algebra R S := f.toAlgebra
   Module.Flat R S
 
-lemma RingHom.flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
+lemma RingHom.flat_algebraMap_iff {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] :
     (algebraMap R S).Flat ↔ Module.Flat R S := by
   rw [RingHom.Flat, toAlgebra_algebraMap]
 
 namespace RingHom.Flat
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
 
 variable (R) in
 /-- The identity of a ring is flat. -/
@@ -134,9 +134,9 @@ lemma of_isField (hR : IsField R) (f : R →+* S) : f.Flat := by
 section
 
 variable [Algebra R S]
-variable (A : Type*) {B C D : Type*} [CommRing A] [Algebra R A] [Algebra S A]
-  [IsScalarTower R S A] [CommRing B] [Algebra R B] [CommRing C] [Algebra R C] [Algebra S C]
-  [IsScalarTower R S C] [CommRing D] [Algebra R D]
+variable (A : Type*) {B C D : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [Algebra S A]
+  [IsScalarTower R S A] [Ring B] [IsMulCommutative B] [Algebra R B] [Ring C] [IsMulCommutative C] [Algebra R C] [Algebra S C]
+  [IsScalarTower R S C] [Ring D] [IsMulCommutative D] [Algebra R D]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma lTensor {f : B →ₐ[R] D} (hf : f.Flat) :
@@ -232,7 +232,7 @@ def flat : MorphismProperty CommRingCat.{u} :=
 lemma flat_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
     flat f ↔ f.hom.Flat := .rfl
 
-lemma flat_ofHom_iff {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
+lemma flat_ofHom_iff {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) :
     flat (ofHom f) ↔ f.Flat := .rfl
 
 instance : flat.IsStableUnderCobaseChange := by
@@ -247,7 +247,7 @@ open CategoryTheory Limits
 -- TODO: If necessary, generalize the universes here by composing with suitable `ULift`
 -- isomorphisms.
 lemma RingHom.Flat.mapOfCompatibleSMul {R S : Type u} (T A : Type u)
-    [CommRing R] [CommRing S] [CommRing T] [CommRing A] [Algebra R S]
+    [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Ring A] [IsMulCommutative A] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [Algebra R A] [Algebra S A] [IsScalarTower R S A]
     (h : (Algebra.TensorProduct.lmul' (S := S) R).Flat) :

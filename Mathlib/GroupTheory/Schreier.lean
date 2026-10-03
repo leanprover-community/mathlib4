@@ -34,7 +34,7 @@ section CommGroup
 
 open Subgroup
 
-variable (G : Type*) [CommGroup G] [Group.FG G]
+variable (G : Type*) [Group G] [IsMulCommutative G] [Group.FG G]
 
 @[to_additive]
 theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.rank G := by

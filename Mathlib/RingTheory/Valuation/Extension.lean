@@ -57,7 +57,7 @@ open Module
 
 namespace Valuation
 
-variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
+variable {R A ΓR ΓA : Type*} [Ring R] [IsMulCommutative R] [Ring A]
     [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA] [Algebra R A]
     (vR : Valuation R ΓR) (vA : Valuation A ΓA)
 
@@ -101,7 +101,7 @@ instance id : vR.HasExtension vR where
   val_isEquiv_comap := by
     simp only [Algebra.algebraMap_self, comap_id, IsEquiv.refl]
 
-theorem comp {A B ΓR ΓA ΓB : Type*} [CommRing A] [Ring B]
+theorem comp {A B ΓR ΓA ΓB : Type*} [Ring A] [IsMulCommutative A] [Ring B]
     [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA]
     [LinearOrderedCommMonoidWithZero ΓB] [Algebra R A] [Algebra A B] [Algebra R B]
     [IsScalarTower R A B]
@@ -166,7 +166,7 @@ theorem algebraMap_injective [vK.HasExtension vA] [Nontrivial A] :
   FaithfulSMul.algebraMap_injective _ _
 
 @[instance]
-theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]
+theorem instIsLocalHomValuationInteger {S ΓS : Type*} [Ring S] [IsMulCommutative S]
     [LinearOrderedCommGroupWithZero ΓS]
     [Algebra R S] [IsLocalHom (algebraMap R S)] {vS : Valuation S ΓS}
     [vR.HasExtension vS] : IsLocalHom (algebraMap vR.integer vS.integer) where
@@ -301,7 +301,7 @@ theorem mapValueGroup₀_self : mapValueGroup₀ vR vR = .id .. := by
 
 section tower
 variable {A B ΓA ΓB : Type*}
-    [CommRing A] [Ring B] [Algebra R A] [Algebra A B] [Algebra R B]
+    [Ring A] [IsMulCommutative A] [Ring B] [Algebra R A] [Algebra A B] [Algebra R B]
     [IsScalarTower R A B]
     [LinearOrderedCommGroupWithZero ΓA] [LinearOrderedCommGroupWithZero ΓB]
     (vA : Valuation A ΓA) (vB : Valuation B ΓB)

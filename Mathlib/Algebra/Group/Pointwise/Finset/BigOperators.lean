@@ -36,7 +36,7 @@ namespace Finset
 
 section CommMonoid
 
-variable [CommMonoid α]
+variable [Monoid α] [IsMulCommutative α]
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_prod [DecidableEq α] (s : Finset ι) (f : ι → Finset α) :

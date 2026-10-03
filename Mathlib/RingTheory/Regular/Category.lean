@@ -15,11 +15,11 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 universe u v w
 
-variable {R : Type u} [CommRing R] (M : ModuleCat.{v} R)
+variable {R : Type u} [Ring R] [IsMulCommutative R] (M : ModuleCat.{v} R)
 
 open CategoryTheory Abelian Pointwise
 
-lemma LinearMap.exact_lsmul_mkQ_smul_top (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
+lemma LinearMap.exact_lsmul_mkQ_smul_top (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R M] (r : R) :
     Function.Exact (LinearMap.lsmul _ M r) (r • (⊤ : Submodule R M)).mkQ := by
   intro x
   simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_smul_pointwise_iff_exists]

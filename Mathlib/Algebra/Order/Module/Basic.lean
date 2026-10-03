@@ -19,7 +19,7 @@ public section
 variable {𝕜 R M : Type*}
 
 section Semiring
-variable [Semiring R] [Invertible (2 : R)] [Lattice M] [AddCommGroup M] [Module R M]
+variable [Semiring R] [Invertible (2 : R)] [Lattice M] [AddGroup M] [IsAddCommutative M] [Module R M]
   [IsOrderedAddMonoid M]
 
 variable (R) in
@@ -35,7 +35,7 @@ lemma sup_eq_half_smul_add_add_abs_sub (x y : M) : x ⊔ y = (⅟2 : R) • (x +
 end Semiring
 
 section Ring
-variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [LinearOrder M]
+variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddGroup M] [IsAddCommutative M] [LinearOrder M]
   [IsOrderedAddMonoid M] [Module R M] [PosSMulMono R M]
 
 @[simp]
@@ -47,7 +47,7 @@ theorem abs_smul (a : R) (b : M) : |a • b| = |a| • |b| := by
 end Ring
 
 section DivisionSemiring
-variable [DivisionSemiring 𝕜] [NeZero (2 : 𝕜)] [Lattice M] [AddCommGroup M] [Module 𝕜 M]
+variable [DivisionSemiring 𝕜] [NeZero (2 : 𝕜)] [Lattice M] [AddGroup M] [IsAddCommutative M] [Module 𝕜 M]
   [IsOrderedAddMonoid M]
 
 variable (𝕜) in

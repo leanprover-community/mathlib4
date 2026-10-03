@@ -50,7 +50,7 @@ end Asymmetric
 
 section Symmetric
 
-variable {α : Type*} [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
+variable {α : Type*} [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
   [LocallyFiniteOrder α]
 
 lemma tendsto_Icc_neg_atTop_atTop :

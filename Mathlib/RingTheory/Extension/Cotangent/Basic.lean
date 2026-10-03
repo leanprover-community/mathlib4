@@ -45,7 +45,7 @@ namespace Algebra
 
 universe w u v
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
+variable {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 namespace Extension
 
@@ -75,13 +75,13 @@ lemma Cotangent.mk_C_mem_ker_cotangentComplex {σ : Type*} (G : Generators R S �
 
 section baseChange
 
-variable {A : Type*} [CommRing A] [Algebra S A] [Algebra P.Ring A] [IsScalarTower P.Ring S A]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Algebra S A] [Algebra P.Ring A] [IsScalarTower P.Ring S A]
 
 variable (R S) in
 /-- This is (isomorphic to) the base change of the cotangent complex to `A`, but
 the domain and codomains of this are more manageable. -/
 def _root_.KaehlerDifferential.cotangentComplexBaseChange
-    (P A : Type*) [CommRing P] [CommRing A] [Algebra P S] [Algebra P A]
+    (P A : Type*) [Ring P] [IsMulCommutative P] [Ring A] [IsMulCommutative A] [Algebra P S] [Algebra P A]
     [Algebra R P] [Algebra S A] [IsScalarTower P S A] :
     A ⊗[P] RingHom.ker (algebraMap P S) →ₗ[A] A ⊗[P] Ω[P⁄R] :=
   LinearMap.liftBaseChange _ (KaehlerDifferential.kerToTensor _ _ _ ∘ₗ Submodule.inclusion
@@ -89,7 +89,7 @@ def _root_.KaehlerDifferential.cotangentComplexBaseChange
 
 omit [Algebra R S] in
 lemma _root_.KaehlerDifferential.cotangentComplexBaseChange_tmul
-    {P A : Type*} [CommRing P] [CommRing A] [Algebra P S]
+    {P A : Type*} [Ring P] [IsMulCommutative P] [Ring A] [IsMulCommutative A] [Algebra P S]
     [Algebra P A] [Algebra R P] [Algebra S A] [IsScalarTower P S A] (a b) :
   cotangentComplexBaseChange R S P A (a ⊗ₜ b) =
     a • kerToTensor R P A ⟨b.1, by rw [IsScalarTower.algebraMap_eq P S A]; aesop⟩ := rfl
@@ -120,7 +120,7 @@ end baseChange
 
 universe w' u' v'
 
-variable {R' : Type u'} {S' : Type v'} [CommRing R'] [CommRing S'] [Algebra R' S']
+variable {R' : Type u'} {S' : Type v'} [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R' S']
 variable (P' : Extension.{w'} R' S')
 variable [Algebra R R'] [Algebra S S'] [Algebra R S'] [IsScalarTower R R' S']
 
@@ -130,7 +130,7 @@ variable {P P'}
 
 universe w'' u'' v''
 
-variable {R'' : Type u''} {S'' : Type v''} [CommRing R''] [CommRing S''] [Algebra R'' S'']
+variable {R'' : Type u''} {S'' : Type v''} [Ring R''] [IsMulCommutative R''] [Ring S''] [IsMulCommutative S''] [Algebra R'' S'']
 variable {P'' : Extension.{w''} R'' S''}
 variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
   [IsScalarTower R R'' S'']
@@ -333,16 +333,16 @@ defined as the kernel of `I/I² → S ⊗[P] Ω[P⁄R]`.
 protected def H1Cotangent : Type _ := LinearMap.ker P.cotangentComplex
 
 -- The `SMul` instance exists to avoid a zsmul diamond.
-variable {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
+variable {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
   [IsScalarTower R₀ S P.Cotangent] in
 deriving instance SMul R₀, AddCommGroup, Module R₀ for (P).H1Cotangent
 
 @[simp] lemma H1Cotangent.val_add (x y : P.H1Cotangent) : (x + y).1 = x.1 + y.1 := rfl
 @[simp] lemma H1Cotangent.val_zero : (0 : P.H1Cotangent).1 = 0 := rfl
-@[simp] lemma H1Cotangent.val_smul {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
+@[simp] lemma H1Cotangent.val_smul {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
     [IsScalarTower R₀ S P.Cotangent] (r : R₀) (x : P.H1Cotangent) : (r • x).1 = r • x.1 := rfl
 
-instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ R₂]
+instance {R₁ R₂} [Ring R₁] [IsMulCommutative R₁] [Ring R₂] [IsMulCommutative R₂] [Algebra R₁ R₂]
     [Algebra R₁ S] [Algebra R₂ S]
     [Module R₁ P.Cotangent] [IsScalarTower R₁ S P.Cotangent]
     [Module R₂ P.Cotangent] [IsScalarTower R₂ S P.Cotangent]
@@ -477,7 +477,7 @@ lemma cotangentRestrict_mk {σ : Type*} {u : σ → ι} (hu : Function.Injective
 
 universe w' u' v'
 
-variable {R' : Type u'} {S' : Type v'} {ι' : Type w'} [CommRing R'] [CommRing S'] [Algebra R' S']
+variable {R' : Type u'} {S' : Type v'} {ι' : Type w'} [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R' S']
 variable (P' : Generators R' S' ι')
 variable [Algebra R R'] [Algebra S S'] [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
 
@@ -536,8 +536,8 @@ def Generators.H1Cotangent.equiv (P : Generators R S ι) (P' : Generators R S ι
   Extension.H1Cotangent.equiv
     (Generators.defaultHom P P').toExtensionHom (Generators.defaultHom P' P).toExtensionHom
 
-variable {S' : Type*} [CommRing S'] [Algebra R S']
-variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {S' : Type*} [Ring S'] [IsMulCommutative S'] [Algebra R S']
+variable {T : Type w} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable [Algebra S' T] [IsScalarTower R S' T]
 
 variable (R S S' T)

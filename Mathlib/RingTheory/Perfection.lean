@@ -46,7 +46,7 @@ namespace Perfection
 section CommMonoid
 
 /-- `Perfection M p` as a submonoid of `ℕ → M`. -/
-def submonoid (M : Type*) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
+def submonoid (M : Type*) [Monoid M] [IsMulCommutative M] (p : ℕ) : Submonoid (ℕ → M) where
   carrier := { f | ∀ n, f (n + 1) ^ p = f n }
   one_mem' _ := one_pow _
   mul_mem' hf hg n := (mul_pow _ _ _).trans congr($(hf n) * $(hg n))
@@ -54,10 +54,10 @@ def submonoid (M : Type*) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
 @[deprecated (since := "2026-03-03")]
 alias _root_.Monoid.perfection := submonoid
 
-instance (M : Type*) [CommMonoid M] (p : ℕ) : CommMonoid (Perfection M p) :=
+instance (M : Type*) [Monoid M] [IsMulCommutative M] (p : ℕ) : CommMonoid (Perfection M p) :=
   inferInstanceAs <| CommMonoid (submonoid M p)
 
-variable (M : Type*) [CommMonoid M] (p : ℕ)
+variable (M : Type*) [Monoid M] [IsMulCommutative M] (p : ℕ)
 
 /-- The `n`-th coefficient of an element of the perfection. -/
 def coeffMonoidHom (n : ℕ) : Perfection M p →* M where
@@ -152,8 +152,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- Given monoids `M` and `N`, with `M` being perfect,
 any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
 @[simps! symm_apply]
-noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRing M p]
-    (N : Type*) [CommMonoid N] : (M →* N) ≃* (M →* Perfection N p) where
+noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [Monoid M] [IsMulCommutative M] [PerfectRing M p]
+    (N : Type*) [Monoid N] [IsMulCommutative N] : (M →* N) ≃* (M →* Perfection N p) where
   toFun f :=
     { toFun r := ⟨fun n ↦ f ((powMulEquiv M (p ^ n)).symm r), fun n ↦ by
         rw [← map_pow, powMulEquiv_pow, pow_succ, MulAut.mul_def, MulEquiv.symm_trans_apply,
@@ -171,19 +171,19 @@ noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRin
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma coeffMonoidHom_zero_liftMonoidHom
-    (p : ℕ) {M N : Type*} [CommMonoid M] [PerfectRing M p] [CommMonoid N] (e : M →* N) (x : M) :
+    (p : ℕ) {M N : Type*} [Monoid M] [IsMulCommutative M] [PerfectRing M p] [Monoid N] [IsMulCommutative N] (e : M →* N) (x : M) :
     coeffMonoidHom N p 0 (liftMonoidHom p M N e x) = e x := by simp [liftMonoidHom]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A monoid homomorphism `M →* N` induces `Perfection M p →* Perfection N p`. -/
-def mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N] (φ : M →* N) :
+def mapMonoidHom (p : ℕ) {M N : Type*} [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] (φ : M →* N) :
     Perfection M p →* Perfection N p where
   toFun f := ⟨fun n ↦ φ (f.coeffMonoidHom M p n), fun n ↦ by rw [← map_pow, coeffMonoidHom_pow_p']⟩
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
 
 @[simp]
-theorem coeffMonoidHom_mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N]
+theorem coeffMonoidHom_mapMonoidHom (p : ℕ) {M N : Type*} [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N]
     (φ : M →* N) (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom N p n (mapMonoidHom p φ f) = φ (coeffMonoidHom M p n f) := rfl
 
@@ -192,7 +192,7 @@ end CommMonoid
 section CommSemiring
 
 /-- `Perfection R p` as a subsemiring of `ℕ → R`. -/
-def subsemiring (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
+def subsemiring (R : Type*) [Semiring R] [IsMulCommutative R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
     Subsemiring (ℕ → R) where
   __ := submonoid R p
   zero_mem' _ := zero_pow hp.1.ne_zero
@@ -201,7 +201,7 @@ def subsemiring (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [Char
 @[deprecated (since := "2026-03-03")]
 alias _root_.Ring.perfectionSubsemiring := subsemiring
 
-variable (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
+variable (R : Type*) [Semiring R] [IsMulCommutative R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : CommSemiring (Perfection R p) :=
   inferInstanceAs <| CommSemiring (subsemiring R p)
@@ -323,8 +323,8 @@ variable (R p)
 /-- Given rings `R` and `S` of characteristic `p`, with `R` being perfect,
 any homomorphism `R →+* S` can be lifted to a homomorphism `R →+* Perfection S p`. -/
 @[simps]
-noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing R p]
-    (S : Type u₂) [CommSemiring S] [CharP S p] : (R →+* S) ≃ (R →+* Perfection S p) where
+noncomputable def lift (R : Type u₁) [Semiring R] [IsMulCommutative R] [CharP R p] [PerfectRing R p]
+    (S : Type u₂) [Semiring S] [IsMulCommutative S] [CharP S p] : (R →+* S) ≃ (R →+* Perfection S p) where
   toFun f :=
     { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
         fun n => by rw [← f.map_pow, Function.iterate_succ_apply', RingHom.coe_coe,
@@ -341,12 +341,12 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
       rw [← coeff_iterate_frobenius _ 0 n, zero_add, ← RingHom.map_iterate_frobenius,
         Function.RightInverse.iterate (frobenius_apply_frobeniusEquiv_symm R p) n]
 
-theorem hom_ext {R : Type u₁} [CommSemiring R] [CharP R p] [PerfectRing R p] {S : Type u₂}
-    [CommSemiring S] [CharP S p] {f g : R →+* Perfection S p}
+theorem hom_ext {R : Type u₁} [Semiring R] [IsMulCommutative R] [CharP R p] [PerfectRing R p] {S : Type u₂}
+    [Semiring S] [IsMulCommutative S] [CharP S p] {f g : R →+* Perfection S p}
     (hfg : ∀ x, coeff S p 0 (f x) = coeff S p 0 (g x)) : f = g :=
   (lift p R S).symm.injective <| RingHom.ext hfg
 
-variable {R} {S : Type u₂} [CommSemiring S] [CharP S p]
+variable {R} {S : Type u₂} [Semiring S] [IsMulCommutative S] [CharP S p]
 
 /-- A ring homomorphism `R →+* S` induces `Perfection R p →+* Perfection S p`. -/
 def map (φ : R →+* S) : Perfection R p →+* Perfection S p where
@@ -362,7 +362,7 @@ end CommSemiring
 section CommRing
 
 /-- `Perfection R p` as a semiring of `ℕ → R`. -/
-def subring (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
+def subring (R : Type*) [Ring R] [IsMulCommutative R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
     Subring (ℕ → R) where
   __ := subsemiring R p
   neg_mem' hf n := (map_neg (frobenius R p) _).trans congr(-$(hf n))
@@ -370,7 +370,7 @@ def subring (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
 @[deprecated (since := "2026-03-03")]
 alias _root_.Ring.perfectionSubring := subring
 
-variable (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
+variable (R : Type*) [Ring R] [IsMulCommutative R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : Ring (Perfection R p) :=
   inferInstanceAs <| Ring (subring R p)
@@ -382,7 +382,7 @@ end CommRing
 
 section CommMonoid_CommRing
 
-@[simp] theorem coeff_mapMonoidHom {p : ℕ} [Fact p.Prime] {M N : Type*} [CommMonoid M] [CommRing N]
+@[simp] theorem coeff_mapMonoidHom {p : ℕ} [Fact p.Prime] {M N : Type*} [Monoid M] [IsMulCommutative M] [Ring N] [IsMulCommutative N]
     [CharP N p] (e : M →* N) (n : ℕ) (x : Perfection M p) :
     coeff N p n (mapMonoidHom p e x) = e (coeffMonoidHom M p n x) := rfl
 
@@ -392,8 +392,8 @@ end Perfection
 
 /-- A perfection map to a ring of characteristic `p` is a map that is isomorphic
 to its perfection. -/
-structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R] [CharP R p]
-    {P : Type u₂} [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* R) : Prop where
+structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [Semiring R] [IsMulCommutative R] [CharP R p]
+    {P : Type u₂} [Semiring P] [IsMulCommutative P] [CharP P p] [PerfectRing P p] (π : P →+* R) : Prop where
   injective : ∀ ⦃x y : P⦄,
     (∀ n, π (((frobeniusEquiv P p).symm)^[n] x) = π (((frobeniusEquiv P p).symm)^[n] y)) → x = y
   surjective : ∀ f : ℕ → R, (∀ n, f (n + 1) ^ p = f n) → ∃ x : P, ∀ n,
@@ -402,8 +402,8 @@ structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R
 namespace PerfectionMap
 
 variable {p : ℕ} [Fact p.Prime]
-variable {R : Type u₁} [CommSemiring R] [CharP R p]
-variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
+variable {R : Type u₁} [Semiring R] [IsMulCommutative R] [CharP R p]
+variable {P : Type u₃} [Semiring P] [IsMulCommutative P] [CharP P p] [PerfectRing P p]
 
 /-- Create a `PerfectionMap` from an isomorphism to the perfection. -/
 theorem mk' {f : P →+* R} (g : P ≃+* Perfection R p) (hfg : Perfection.lift p P R f = g) :
@@ -466,8 +466,8 @@ variable (p R P)
 any homomorphism `R →+* S` can be lifted to a homomorphism `R →+* P`,
 where `P` is any perfection of `S`. -/
 @[simps]
-noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP S p] (P : Type u₃)
-    [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* S) (m : PerfectionMap p π) :
+noncomputable def lift [PerfectRing R p] (S : Type u₂) [Semiring S] [IsMulCommutative S] [CharP S p] (P : Type u₃)
+    [Semiring P] [IsMulCommutative P] [CharP P p] [PerfectRing P p] (π : P →+* S) (m : PerfectionMap p π) :
     (R →+* S) ≃ (R →+* P) where
   toFun f := RingHom.comp ↑m.equiv.symm <| Perfection.lift p R S f
   invFun f := π.comp f
@@ -481,14 +481,14 @@ noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP
 
 variable {R p}
 
-theorem hom_ext [PerfectRing R p] {S : Type u₂} [CommSemiring S] [CharP S p] {P : Type u₃}
-    [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* S) (m : PerfectionMap p π)
+theorem hom_ext [PerfectRing R p] {S : Type u₂} [Semiring S] [IsMulCommutative S] [CharP S p] {P : Type u₃}
+    [Semiring P] [IsMulCommutative P] [CharP P p] [PerfectRing P p] (π : P →+* S) (m : PerfectionMap p π)
     {f g : R →+* P} (hfg : ∀ x, π (f x) = π (g x)) : f = g :=
   (lift p R S P π m).symm.injective <| RingHom.ext hfg
 
 variable {P} (p)
-variable {S : Type u₂} [CommSemiring S] [CharP S p]
-variable {Q : Type u₄} [CommSemiring Q] [CharP Q p] [PerfectRing Q p]
+variable {S : Type u₂} [Semiring S] [IsMulCommutative S] [CharP S p]
+variable {Q : Type u₄} [Semiring Q] [IsMulCommutative Q] [CharP Q p] [PerfectRing Q p]
 
 /-- A ring homomorphism `R →+* S` induces `P →+* Q`, a map of the respective perfections. -/
 @[nolint unusedArguments]
@@ -511,7 +511,7 @@ end PerfectionMap
 
 section ModP
 
-variable (O : Type u₂) [CommRing O] (p : ℕ)
+variable (O : Type u₂) [Ring O] [IsMulCommutative O] (p : ℕ)
 
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
 abbrev ModP :=
@@ -532,7 +532,7 @@ end ModP
 section Perfectoid
 
 variable (K : Type u₁) [Field K] (v : Valuation K ℝ≥0)
-variable (O : Type u₂) [CommRing O] [Algebra O K] (hv : v.Integers O)
+variable (O : Type u₂) [Ring O] [IsMulCommutative O] [Algebra O K] (hv : v.Integers O)
 variable (p : ℕ)
 
 namespace ModP

@@ -20,7 +20,7 @@ open Finset Topology
 open scoped Polynomial
 
 namespace PrimeSpectrum
-variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+variable {R S T : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring T] [IsMulCommutative T]
 
 variable (R) in
 /-- The data of a basic constructible set `s` is a tuple `(f, g₁, ..., gₙ)` -/
@@ -138,7 +138,7 @@ lemma exists_constructibleSetData_iff {s : Set (PrimeSpectrum R)} :
 universe u in
 @[stacks 00F8 "without the finite presentation part"]
 -- TODO: show that the constructed `f` is of finite presentation
-lemma exists_range_eq_of_isConstructible {R : Type u} [CommRing R]
+lemma exists_range_eq_of_isConstructible {R : Type u} [Ring R] [IsMulCommutative R]
     {s : Set (PrimeSpectrum R)} (hs : IsConstructible s) :
     ∃ (S : Type u) (_ : CommRing S) (f : R →+* S), Set.range (comap f) = s := by
   obtain ⟨s, rfl⟩ := exists_constructibleSetData_iff.mpr hs
@@ -157,14 +157,14 @@ lemma exists_range_eq_of_isConstructible {R : Type u} [CommRing R]
       Set.sdiff_eq_compl_inter, basicOpen_eq_zeroLocus_compl, Ideal.mk_ker, zeroLocus_span]
 
 @[stacks 00I0 "(1)"]
-lemma isClosed_of_stableUnderSpecialization_of_isConstructible {R : Type*} [CommRing R]
+lemma isClosed_of_stableUnderSpecialization_of_isConstructible {R : Type*} [Ring R] [IsMulCommutative R]
     {s : Set (PrimeSpectrum R)} (hs : StableUnderSpecialization s) (hs' : IsConstructible s) :
     IsClosed s := by
   obtain ⟨S, _, f, rfl⟩ := exists_range_eq_of_isConstructible hs'
   exact isClosed_range_of_stableUnderSpecialization _ hs
 
 @[stacks 00I0 "(1)"]
-lemma isOpen_of_stableUnderGeneralization_of_isConstructible {R : Type*} [CommRing R]
+lemma isOpen_of_stableUnderGeneralization_of_isConstructible {R : Type*} [Ring R] [IsMulCommutative R]
     {s : Set (PrimeSpectrum R)} (hs : StableUnderGeneralization s) (hs' : IsConstructible s) :
     IsOpen s := by
   rw [← isClosed_compl_iff]

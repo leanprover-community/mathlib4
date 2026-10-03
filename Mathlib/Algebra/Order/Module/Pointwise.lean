@@ -63,7 +63,7 @@ end
 section OrderedRing
 
 variable [Ring α] [PartialOrder α] [IsOrderedRing α]
-  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [AddGroup β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β]
   [Module α β] [PosSMulMono α β] {s : Set β} {a : α}
 
 lemma smul_lowerBounds_subset_upperBounds_smul (ha : a ≤ 0) :
@@ -84,7 +84,7 @@ end OrderedRing
 
 section LinearOrderedField
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
-  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [AddGroup β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β]
   [Module α β] [PosSMulMono α β] {s : Set β}
   {a : α}
 

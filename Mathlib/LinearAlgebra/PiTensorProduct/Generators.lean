@@ -35,7 +35,7 @@ variable (R : Type*)
 section equivPiTensorComplSingletonTensor
 
 variable {ι : Type*} [DecidableEq ι] (M : ι → Type*)
-  [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+  [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
 
 /-- The linear equivalence between `⨂[R] i, M i` and the tensor product of
 the pi tensor product indexed by the complement of `{i₀}` and `M i₀`. -/
@@ -122,8 +122,8 @@ variable {R} {ι : Type*} [Finite ι] {M : ι → Type*} {N : Type*} {γ : ι �
 
 section AddCommMonoid
 
-variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-  [AddCommMonoid N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
+variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
+  [AddMonoid N] [IsAddCommutative N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma ext_of_span_eq_top
@@ -181,8 +181,8 @@ lemma _root_.MultilinearMap.ext_of_span_eq_top
 
 end AddCommMonoid
 
-variable [CommRing R] [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
-  [AddCommMonoid N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
+variable [Ring R] [IsMulCommutative R] [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
+  [AddMonoid N] [IsAddCommutative N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
 lemma submodule_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) :

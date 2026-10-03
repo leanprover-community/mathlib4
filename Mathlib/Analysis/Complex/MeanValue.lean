@@ -22,7 +22,7 @@ public section
 open Complex Metric Real Set
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E] [CompleteSpace E]
   {f : ℂ → E} {R : ℝ} {c w : ℂ} {s : Set ℂ}
 
 /-!

@@ -60,7 +60,7 @@ in fact implies the universe polymorphic versions
 and `OrzechProperty.injective_of_surjective_of_submodule`. -/
 @[mk_iff]
 class OrzechProperty : Prop where
-  injective_of_surjective_of_submodule' : ∀ {M : Type u} [AddCommMonoid M] [Module R M]
+  injective_of_surjective_of_submodule' : ∀ {M : Type u} [AddMonoid M] [IsAddCommutative M] [Module R M]
     [Module.Finite R M] {N : Submodule R M} (f : N →ₗ[R] M), Surjective f → Injective f
 
 namespace OrzechProperty
@@ -73,10 +73,10 @@ instance [Finite R] : OrzechProperty R where
 
 variable {R}
 
-variable [OrzechProperty R] {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
+variable [OrzechProperty R] {M : Type v} [AddMonoid M] [IsAddCommutative M] [Module R M] [Module.Finite R M]
 
 theorem injective_of_surjective_of_injective
-    {N : Type w} [AddCommMonoid N] [Module R N]
+    {N : Type w} [AddMonoid N] [IsAddCommutative N] [Module R N]
     (i f : N →ₗ[R] M) (hi : Injective i) (hf : Surjective f) : Injective f := by
   obtain ⟨n, g, hg⟩ := Module.Finite.exists_fin' R M
   have := small_of_surjective hg
@@ -88,7 +88,7 @@ theorem injective_of_surjective_of_injective
   simpa [f'] using injective_of_surjective_of_submodule' f' hf
 
 theorem bijective_of_surjective_of_injective
-    {N : Type w} [AddCommMonoid N] [Module R N]
+    {N : Type w} [AddMonoid N] [IsAddCommutative N] [Module R N]
     (i f : N →ₗ[R] M) (hi : Function.Injective i)
     (hf : Function.Surjective f) : Function.Bijective f :=
   ⟨OrzechProperty.injective_of_surjective_of_injective _ _ hi hf, hf⟩

@@ -24,7 +24,7 @@ open Measure TopologicalSpace
 open scoped ENNReal
 
 variable {α G E F : Type*} [MeasurableSpace G]
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [NormedAddGroup F] [IsAddCommutative F]
 variable {μ : Measure G} {f : G → E} {g : G}
 
 section MeasurableInv
@@ -54,7 +54,7 @@ end MeasurableInv
 
 section MeasurableInvOrder
 
-variable [PartialOrder G] [CommGroup G] [IsOrderedMonoid G] [MeasurableInv G]
+variable [PartialOrder G] [Group G] [IsMulCommutative G] [IsOrderedMonoid G] [MeasurableInv G]
 variable [IsInvInvariant μ]
 
 @[to_additive]

@@ -97,13 +97,13 @@ def continuousMapPresheafEquivOfTotallyDisconnectedSpace [TotallyDisconnectedSpa
 
 /-- `continuousMapPresheaf` as a presheaf of abelian groups associated to a topological abelian
 group. -/
-def continuousMapPresheafAb (A : Type v) [TopologicalSpace A] [AddCommGroup A]
+def continuousMapPresheafAb (A : Type v) [TopologicalSpace A] [AddGroup A] [IsAddCommutative A]
     [IsTopologicalAddGroup A] :
     Scheme.{u}ᵒᵖ ⥤ Ab.{max v u} where
   obj U := ↧C(U.unop, A)
   map {U V} f := AddCommGrpCat.ofHom (ContinuousMap.compAddMonoidHom' f.unop.base.hom)
 
-variable (A : Type v) [TopologicalSpace A] [AddCommGroup A] [IsTopologicalAddGroup A]
+variable (A : Type v) [TopologicalSpace A] [AddGroup A] [IsAddCommutative A] [IsTopologicalAddGroup A]
 
 /-- `continuousMapPresheafAb` viewed as a type valued sheaf is isomorphic to
 `continuousMapPresheaf`. -/

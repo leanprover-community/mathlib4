@@ -25,7 +25,7 @@ In particular, a topological vector space over `ℝ` is path connected.
 open AffineMap Set
 open scoped Convex unitInterval
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E]
+variable {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
 
 namespace Path

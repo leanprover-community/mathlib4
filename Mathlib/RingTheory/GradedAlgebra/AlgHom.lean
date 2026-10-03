@@ -25,7 +25,7 @@ This file defines bundled `R`-linear homomorphisms of graded `R`-algebras.
 
 /-- An `R`-linear homomorphism of graded algebras, denoted `𝒜 →ₐᵍ[R] ℬ`. -/
 structure GradedAlgHom (R : Type*) {A B ι : Type*}
-    [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [DecidableEq ι] [AddMonoid ι]
     (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule R B) [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
     extends A →ₐ[R] B, 𝒜 →+*ᵍ ℬ
@@ -39,7 +39,7 @@ notation:25 𝒜 " →ₐᵍ[" R "] " ℬ => GradedAlgHom R 𝒜 ℬ
 namespace GradedAlgHom
 
 variable {R A B C D ι : Type*}
-  [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+  [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
   [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
   [DecidableEq ι] [AddMonoid ι]
   {𝒜 : ι → Submodule R A} {ℬ : ι → Submodule R B} {𝒞 : ι → Submodule R C} {𝒟 : ι → Submodule R D}
@@ -256,12 +256,12 @@ end
 section restrictScalars
 
 /-- Restrict the base ring to a "smaller" ring. -/
-@[coe, simps!] def restrictScalars (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
+@[coe, simps!] def restrictScalars (R₀ : Type*) [Semiring R₀] [IsMulCommutative R₀] [Algebra R₀ R]
     [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
     (f : 𝒜 →ₐᵍ[R] ℬ) : (𝒜 · |>.restrictScalars R₀) →ₐᵍ[R₀] (ℬ · |>.restrictScalars R₀) :=
   { f.toAlgHom.restrictScalars R₀, f with }
 
-variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
+variable (R₀ : Type*) [Semiring R₀] [IsMulCommutative R₀] [Algebra R₀ R]
     [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
     (f : 𝒜 →ₐᵍ[R] ℬ)
 

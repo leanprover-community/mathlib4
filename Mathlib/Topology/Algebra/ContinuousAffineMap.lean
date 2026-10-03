@@ -28,8 +28,8 @@ for `ContinuousLinearMap R E F`.
 
 
 /-- A continuous map of affine spaces -/
-structure ContinuousAffineMap (R : Type*) {V W : Type*} (P Q : Type*) [Ring R] [AddCommGroup V]
-  [Module R V] [TopologicalSpace P] [AddTorsor V P] [AddCommGroup W] [Module R W]
+structure ContinuousAffineMap (R : Type*) {V W : Type*} (P Q : Type*) [Ring R] [AddGroup V] [IsAddCommutative V]
+  [Module R V] [TopologicalSpace P] [AddTorsor V P] [AddGroup W] [IsAddCommutative W] [Module R W]
   [TopologicalSpace Q] [AddTorsor W Q] extends P →ᵃ[R] Q where
   cont : Continuous toFun
 
@@ -39,8 +39,8 @@ notation:25 P " →ᴬ[" R "] " Q => ContinuousAffineMap R P Q
 namespace ContinuousAffineMap
 
 variable {R V W P Q : Type*} [Ring R]
-variable [AddCommGroup V] [Module R V] [TopologicalSpace P] [AddTorsor V P]
-variable [AddCommGroup W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
+variable [AddGroup V] [IsAddCommutative V] [Module R V] [TopologicalSpace P] [AddTorsor V P]
+variable [AddGroup W] [IsAddCommutative W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
 
 instance : Coe (P →ᴬ[R] Q) (P →ᵃ[R] Q) :=
   ⟨toAffineMap⟩
@@ -130,7 +130,7 @@ def id : P →ᴬ[R] P := { AffineMap.id R P with cont := continuous_id }
 theorem coe_id : ⇑(id R P) = _root_.id := rfl
 
 variable {R P} {W₂ Q₂ : Type*}
-variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
+variable [AddGroup W₂] [IsAddCommutative W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
 /-- The composition of continuous affine maps as a continuous affine map -/
 def comp (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) : P →ᴬ[R] Q₂ :=
@@ -389,10 +389,10 @@ end
 section Prod
 
 variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k]
-  [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
-  [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
-  [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃] [TopologicalSpace P₃]
-  [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄] [TopologicalSpace P₄]
+  [AddGroup V₁] [IsAddCommutative V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
+  [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
+  [AddGroup V₃] [IsAddCommutative V₃] [Module k V₃] [AddTorsor V₃ P₃] [TopologicalSpace P₃]
+  [AddGroup V₄] [IsAddCommutative V₄] [Module k V₄] [AddTorsor V₄ P₄] [TopologicalSpace P₄]
 
 /-- The product of two continuous affine maps is a continuous affine map. -/
 @[simps toAffineMap]
@@ -443,8 +443,8 @@ end ContinuousAffineMap
 namespace ContinuousLinearMap
 
 variable {R V W : Type*} [Ring R]
-variable [AddCommGroup V] [Module R V] [TopologicalSpace V]
-variable [AddCommGroup W] [Module R W] [TopologicalSpace W]
+variable [AddGroup V] [IsAddCommutative V] [Module R V] [TopologicalSpace V]
+variable [AddGroup W] [IsAddCommutative W] [Module R W] [TopologicalSpace W]
 
 /-- A continuous linear map can be regarded as a continuous affine map. -/
 def toContinuousAffineMap (f : V →L[R] W) : V →ᴬ[R] W where
@@ -476,8 +476,8 @@ end ContinuousLinearMap
 namespace ContinuousAffineMap
 
 variable (R S V : Type*) {W : Type*} (Q : Type*) [Ring S] [Ring R]
-variable [AddCommGroup V] [Module R V] [TopologicalSpace V] [IsTopologicalAddGroup V]
-variable [AddCommGroup W] [Module R W] [TopologicalSpace W]
+variable [AddGroup V] [IsAddCommutative V] [Module R V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+variable [AddGroup W] [IsAddCommutative W] [Module R W] [TopologicalSpace W]
 variable [Module S W] [SMulCommClass R S W] [ContinuousConstSMul S W]
 variable [AddTorsor W Q] [TopologicalSpace Q]
 

@@ -31,7 +31,7 @@ open scoped nonZeroDivisors
 namespace ClassGroup
 section EuclideanDomain
 
-variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
+variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [Ring S] [IsMulCommutative S] [IsDomain S]
 variable [Field K] [Field L]
 variable [Algebra R K] [IsFractionRing R K]
 variable [Algebra K L] [FiniteDimensional K L] [Algebra.IsSeparable K L]

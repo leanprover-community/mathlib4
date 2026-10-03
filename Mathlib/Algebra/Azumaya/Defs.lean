@@ -31,7 +31,7 @@ Azumaya algebra, central simple algebra, noncommutative algebra
 
 @[expose] public section
 
-variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 open TensorProduct MulOpposite
 

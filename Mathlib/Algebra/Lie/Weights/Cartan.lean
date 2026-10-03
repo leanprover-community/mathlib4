@@ -32,9 +32,9 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 open Set
 
-variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+variable {R L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
   (H : LieSubalgebra R L) [LieRing.IsNilpotent H]
-  {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+  {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieAlgebra
 

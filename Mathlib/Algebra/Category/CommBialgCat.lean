@@ -24,7 +24,7 @@ open Bialgebra Coalgebra Opposite CategoryTheory Limits MonObj
 open scoped MonoidalCategory
 
 universe v u
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 variable (R) in
 /-- The category of commutative `R`-bialgebras and their morphisms. -/
@@ -32,12 +32,12 @@ structure CommBialgCat where
   _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
-  [commRing : CommRing carrier]
+  [commRing : Ring carrier] [IsMulCommutative carrier]
   [bialgebra : Bialgebra R carrier]
 
 namespace CommBialgCat
-variable {A B C : CommBialgCat.{v} R} {X Y Z : Type v} [CommRing X] [Bialgebra R X]
-  [CommRing Y] [Bialgebra R Y] [CommRing Z] [Bialgebra R Z]
+variable {A B C : CommBialgCat.{v} R} {X Y Z : Type v} [Ring X] [IsMulCommutative X] [Bialgebra R X]
+  [Ring Y] [IsMulCommutative Y] [Bialgebra R Y] [Ring Z] [IsMulCommutative Z] [Bialgebra R Z]
 
 attribute [instance] commRing bialgebra
 
@@ -51,7 +51,7 @@ variable (R) in
 /-- Turn an unbundled `R`-bialgebra into the corresponding object in the category of `R`-bialgebras.
 
 This is the preferred way to construct a term of `CommBialgCat R`. -/
-abbrev of (X : Type v) [CommRing X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X⟩
+abbrev of (X : Type v) [Ring X] [IsMulCommutative X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
 /-- This prints `CommBialgCat.of R X` as `↧X`. -/
@@ -59,7 +59,7 @@ open Lean.PrettyPrinter.Delaborator in
 meta def delabOf : Delab := CategoryTheory.delabOf
 
 variable (R) in
-lemma coe_of (X : Type v) [CommRing X] [Bialgebra R X] : (of R X : Type v) = X := rfl
+lemma coe_of (X : Type v) [Ring X] [IsMulCommutative X] [Bialgebra R X] : (of R X : Type v) = X := rfl
 
 /-- The type of morphisms in `CommBialgCat R`. -/
 @[ext]
@@ -182,7 +182,7 @@ end CommBialgCat
 
 attribute [local ext] Quiver.Hom.unop_inj
 
-instance CommAlgCat.monObjOpOf {A : Type u} [CommRing A] [Bialgebra R A] :
+instance CommAlgCat.monObjOpOf {A : Type u} [Ring A] [IsMulCommutative A] [Bialgebra R A] :
     MonObj (op <| CommAlgCat.of R A) where
   one := (CommAlgCat.ofHom <| counitAlgHom R A).op
   mul := (CommAlgCat.ofHom <| comulAlgHom R A).op
@@ -191,18 +191,18 @@ instance CommAlgCat.monObjOpOf {A : Type u} [CommRing A] [Bialgebra R A] :
   mul_assoc := by ext; exact (Coalgebra.coassoc_symm_apply _).symm
 
 @[simp]
-lemma CommAlgCat.one_op_of_unop_hom {A : Type u} [CommRing A] [Bialgebra R A] :
+lemma CommAlgCat.one_op_of_unop_hom {A : Type u} [Ring A] [IsMulCommutative A] [Bialgebra R A] :
     η[op <| CommAlgCat.of R A].unop.hom = counitAlgHom R A := rfl
 
 @[simp]
-lemma CommAlgCat.mul_op_of_unop_hom {A : Type u} [CommRing A] [Bialgebra R A] :
+lemma CommAlgCat.mul_op_of_unop_hom {A : Type u} [Ring A] [IsMulCommutative A] [Bialgebra R A] :
     μ[op <| CommAlgCat.of R A].unop.hom = comulAlgHom R A := rfl
 
-instance {A : Type u} [CommRing A] [Bialgebra R A] [IsCocomm R A] :
+instance {A : Type u} [Ring A] [IsMulCommutative A] [Bialgebra R A] [IsCocomm R A] :
     IsCommMonObj (Opposite.op <| CommAlgCat.of R A) where
   mul_comm := by ext; exact comm_comul R _
 
-instance {A B : Type u} [CommRing A] [Bialgebra R A] [CommRing B] [Bialgebra R B]
+instance {A B : Type u} [Ring A] [IsMulCommutative A] [Bialgebra R A] [Ring B] [IsMulCommutative B] [Bialgebra R B]
     (f : A →ₐc[R] B) : IsMonHom (CommAlgCat.ofHom f.toAlgHom).op where
 
 instance (A : (CommAlgCat R)ᵒᵖ) [MonObj A] : Bialgebra R A.unop :=

@@ -41,9 +41,9 @@ open scoped Topology ENNReal
 open Finset Filter
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
+  {G : Type*} [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
 
 namespace FormalMultilinearSeries
 

@@ -51,12 +51,12 @@ class LieAdmissibleRing (L : Type*) extends NonUnitalNonAssocRing L where
 /-- A `LieAdmissibleAlgebra` is a `LieAdmissibleRing` equipped with a compatible action by scalars
 from a commutative ring. -/
 @[ext]
-class LieAdmissibleAlgebra (R L : Type*) [CommRing R] [LieAdmissibleRing L]
+class LieAdmissibleAlgebra (R L : Type*) [Ring R] [IsMulCommutative R] [LieAdmissibleRing L]
   extends Module R L, IsScalarTower R L L, SMulCommClass R L L
 
 section instances
 
-variable {R L : Type*} [CommRing R]
+variable {R L : Type*} [Ring R] [IsMulCommutative R]
 
 namespace LieAdmissibleRing
 

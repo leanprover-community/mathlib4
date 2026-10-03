@@ -34,7 +34,7 @@ public section
 
 namespace Matrix.charpoly
 
-variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [DecidableEq n]
+variable {R S : Type*} (n : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Fintype n] [DecidableEq n]
 variable (f : R →+* S)
 
 variable (R) in

@@ -18,8 +18,8 @@ open FaithfulSMul (algebraMap_injective)
 
 namespace RootPairing
 
-variable {ι R M N : Type*} [CommRing R] [CharZero R] [IsDomain R]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R] [CharZero R] [IsDomain R]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   {P : RootPairing ι R M N} [Finite ι] [P.IsCrystallographic]
 
 local notation "Φ" => range P.root

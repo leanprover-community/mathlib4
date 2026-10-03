@@ -26,7 +26,7 @@ namespace LinearMap
 
 open Function Module
 
-variable {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+variable {M N : Type*} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
 
 section Ring
 
@@ -109,7 +109,7 @@ public lemma index_eq_of_finiteDimensional [FiniteDimensional k M] [FiniteDimens
 
 set_option backward.isDefEq.respectTransparency.types false in
 open Submodule in
-@[simp] public lemma index_comp {P : Type*} [AddCommGroup P] [Module k P]
+@[simp] public lemma index_comp {P : Type*} [AddGroup P] [IsAddCommutative P] [Module k P]
     (g : N →ₗ[k] P) (f : M →ₗ[k] N)
     [FiniteDimensional k f.ker] [FiniteDimensional k g.ker]
     [FiniteDimensional k (N ⧸ f.range)] [FiniteDimensional k (P ⧸ g.range)] :

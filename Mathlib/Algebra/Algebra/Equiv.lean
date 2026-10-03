@@ -28,7 +28,7 @@ universe u v w u₁ v₁ u₂ u₃
 
 /-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
 is an equivalence of rings commuting with the actions of scalars. -/
-structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
+structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   protected commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
@@ -43,7 +43,7 @@ notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/
-class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semiring A]
+class AlgEquivClass (F : Type*) (R A B : outParam Type*) [Semiring R] [IsMulCommutative R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] : Prop
     extends RingEquivClass F A B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
@@ -52,12 +52,12 @@ class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semir
 namespace AlgEquivClass
 
 -- See note [lower instance priority]
-instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
+instance (priority := 100) toAlgHomClass (F R A B : Type*) [Semiring R] [IsMulCommutative R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] [h : AlgEquivClass F R A B] :
     AlgHomClass F R A B :=
   { h with }
 
-instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
+instance (priority := 100) toLinearEquivClass (F R A B : Type*) [Semiring R] [IsMulCommutative R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [EquivLike F A B] [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
@@ -65,7 +65,7 @@ instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
 @[coe]
-def _root_.AlgEquiv.ofClass {F R A B : Type*} [CommSemiring R]
+def _root_.AlgEquiv.ofClass {F R A B : Type*} [Semiring R] [IsMulCommutative R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B]
     (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃ B), (RingEquivClass.toRingEquiv f : A ≃+* B) with commutes' := commutes f }
@@ -83,7 +83,7 @@ variable {A₁' : Type uA₁'} {A₂' : Type uA₂'} {A₃' : Type uA₃'}
 
 section Semiring
 
-variable [CommSemiring R] [Semiring A₁] [Semiring A₂] [Semiring A₃]
+variable [Semiring R] [IsMulCommutative R] [Semiring A₁] [Semiring A₂] [Semiring A₃]
 variable [Semiring A₁'] [Semiring A₂'] [Semiring A₃']
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 variable [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
@@ -749,7 +749,7 @@ theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
     e.toAlgHom.algebraMap_eq_apply h⟩
 
 /-- `AlgEquiv.toAlgHom` as a `MonoidHom`. -/
-@[simps] def toAlgHomHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
+@[simps] def toAlgHomHom (R A) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] :
     (A ≃ₐ[R] A) →* A →ₐ[R] A where
   toFun := AlgEquiv.toAlgHom
   map_one' := rfl
@@ -757,7 +757,7 @@ theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
 
 /-- `AlgEquiv.toLinearMap` as a `MonoidHom`. -/
 @[simps!]
-def toLinearMapHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
+def toLinearMapHom (R A) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] :
     (A ≃ₐ[R] A) →* Module.End R A :=
   AlgHom.toEnd.comp (toAlgHomHom R A)
 
@@ -772,7 +772,7 @@ lemma one_toLinearMap :
 /-- The units group of `S →ₐ[R] S` is `S ≃ₐ[R] S`.
 See `LinearMap.GeneralLinearGroup.generalLinearEquiv` for the linear map version. -/
 @[simps]
-def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
+def algHomUnitsEquiv (R S : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] :
     (S →ₐ[R] S)ˣ ≃* (S ≃ₐ[R] S) where
   toFun := fun f ↦
     { (f : S →ₐ[R] S) with
@@ -859,7 +859,7 @@ end RingEquiv
 
 namespace MulSemiringAction
 
-variable {G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {G : Type*} (R A : Type*) [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 section
 
@@ -895,7 +895,7 @@ end MulSemiringAction
 
 section
 
-variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+variable {R S T : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
 
 instance [Subsingleton S] [Subsingleton T] : Unique (S ≃ₐ[R] T) where
   default := AlgEquiv.ofAlgHom default default
@@ -912,20 +912,20 @@ end
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
 @[simps! apply, simps! -isSimp symm_apply, pp_with_univ]
-def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
+def ULift.algEquiv {R : Type u} {A : Type v} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] :
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
 
 @[simp]
-lemma ULift.down_algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+lemma ULift.down_algEquiv_symm_apply {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     (a : A) :
     (ULift.algEquiv (R := R).symm a).down = a :=
   rfl
 
 section
 
-variable {R S T : Type*} [CommSemiring R] [Semiring S]
+variable {R S T : Type*} [Semiring R] [IsMulCommutative R] [Semiring S]
   [Semiring T] [Algebra R S] [Algebra R T]
 
 attribute [local instance] ULift.algebra' in
@@ -953,7 +953,7 @@ equivalence of `R`-algebras.
 Note that if `e : R ≃ₗ[R] A` is the linear equivalence, then this is not the same as the equivalence
 of algebras provided here unless `e 1 = 1`. -/
 @[simps] def LinearEquiv.algEquivOfRing
-    {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A]
     (e : R ≃ₗ[R] A) : R ≃ₐ[R] A where
   __ := Algebra.ofId R A
   invFun x := e.symm (e 1 * x)
@@ -970,8 +970,8 @@ of algebras provided here unless `e 1 = 1`. -/
           ← map_smul, smul_eq_mul, mul_one, e.apply_symm_apply, one_mul]
 
 namespace LinearEquiv
-variable {R S M₁ M₂ : Type*} [CommSemiring R] [AddCommMonoid M₁] [Module R M₁]
-  [AddCommMonoid M₂] [Module R M₂] [Semiring S] [Module S M₁] [Module S M₂]
+variable {R S M₁ M₂ : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁]
+  [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂] [Semiring S] [Module S M₁] [Module S M₂]
   [SMulCommClass S R M₁] [SMulCommClass S R M₂] [SMul R S] [IsScalarTower R S M₁]
   [IsScalarTower R S M₂]
 

@@ -17,7 +17,7 @@ import Mathlib.Data.Fintype.Order
 
 public section
 
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 theorem Module.End.isNilpotent_iff_of_finite [Module.Finite R M] {f : End R M} :
     IsNilpotent f ↔ ∀ m : M, ∃ n : ℕ, (f ^ n) m = 0 := by

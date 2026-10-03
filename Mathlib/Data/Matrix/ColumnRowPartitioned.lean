@@ -267,7 +267,7 @@ end Semiring
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 /-- Multiplication of a matrix by its inverse is commutative.
 This is the column and row partitioned matrix form of `Matrix.mul_eq_one_comm`.

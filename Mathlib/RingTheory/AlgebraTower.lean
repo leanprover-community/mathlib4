@@ -36,7 +36,7 @@ namespace IsScalarTower
 
 section Semiring
 
-variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra S A] [Algebra S B] [Algebra R A] [Algebra R B]
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
@@ -60,7 +60,7 @@ end IsScalarTower
 
 section AlgebraMapCoeffs
 namespace Module.Basis
-variable {R} {ι M : Type*} [CommSemiring R] [Semiring A] [AddCommMonoid M]
+variable {R} {ι M : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [AddMonoid M] [IsAddCommutative M]
 variable [Algebra R A] [Module A M] [Module R M] [IsScalarTower R A M]
 variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
@@ -91,7 +91,7 @@ section Semiring
 open Finsupp
 
 variable {R S A}
-variable [Semiring R] [Semiring S] [AddCommMonoid A]
+variable [Semiring R] [Semiring S] [AddMonoid A] [IsAddCommutative A]
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 theorem linearIndependent_smul {ι : Type*} {b : ι → S} {ι' : Type*} {c : ι' → A}
@@ -169,7 +169,7 @@ end Semiring
 section Ring
 
 variable {R S}
-variable [CommRing R] [IsDomain R] [Ring S] [Nontrivial S] [Algebra R S]
+variable [Ring R] [IsMulCommutative R] [IsDomain R] [Ring S] [Nontrivial S] [Algebra R S]
 
 theorem Module.Basis.algebraMap_injective {ι : Type*} (b : Basis ι R S) :
     Function.Injective (algebraMap R S) :=
@@ -180,10 +180,10 @@ end Ring
 
 section AlgHomTower
 
-variable {A} {C D : Type*} [CommSemiring A] [CommSemiring C] [CommSemiring D] [Algebra A C]
+variable {A} {C D : Type*} [Semiring A] [IsMulCommutative A] [Semiring C] [IsMulCommutative C] [Semiring D] [IsMulCommutative D] [Algebra A C]
   [Algebra A D]
 
-variable [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C] (f : C →ₐ[A] D)
+variable [Semiring B] [IsMulCommutative B] [Algebra A B] [Algebra B C] [IsScalarTower A B C] (f : C →ₐ[A] D)
 
 /-- Restrict the domain of an `AlgHom`. -/
 def AlgHom.domRestrict : B →ₐ[A] D :=

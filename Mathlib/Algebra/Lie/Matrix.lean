@@ -35,7 +35,7 @@ section Matrices
 
 open scoped Matrix
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
 attribute [local instance 100] LieRing.ofAssociativeRing

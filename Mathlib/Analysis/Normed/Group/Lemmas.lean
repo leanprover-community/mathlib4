@@ -22,7 +22,7 @@ This file contains further lemmas about normed groups, requiring heavier imports
 
 public section
 
-variable {E : Type*} [SeminormedAddCommGroup E]
+variable {E : Type*} [SeminormedAddGroup E] [IsAddCommutative E]
 open NNReal
 
 open scoped Topology

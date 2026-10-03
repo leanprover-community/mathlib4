@@ -85,7 +85,7 @@ open LinearMap (BilinMap BilinForm)
 
 section Polar
 
-variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
 
 namespace QuadraticMap
 
@@ -124,7 +124,7 @@ theorem polar_add_left_iff {f : M → N} {x x' y : M} :
   rw [add_comm y x, add_right_comm _ _ (f (x + y)), add_comm _ (f (x + y)),
     add_right_comm (f (x + y)), add_left_inj]
 
-theorem polar_comp {F : Type*} [AddCommGroup S] [FunLike F N S] [AddMonoidHomClass F N S]
+theorem polar_comp {F : Type*} [AddGroup S] [IsAddCommutative S] [FunLike F N S] [AddMonoidHomClass F N S]
     (f : M → N) (g : F) (x y : M) :
     polar (g ∘ f) x y = g (polar f x y) := by
   simp only [polar, Function.comp_apply, map_sub]
@@ -143,8 +143,8 @@ end Polar
 /-- A quadratic map on a module.
 
 For a more familiar constructor when `R` is a ring, see `QuadraticMap.ofPolar`. -/
-structure QuadraticMap (R : Type u) (M : Type v) (N : Type w) [CommSemiring R] [AddCommMonoid M]
-    [Module R M] [AddCommMonoid N] [Module R N] where
+structure QuadraticMap (R : Type u) (M : Type v) (N : Type w) [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M]
+    [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N] where
   /-- The underlying function.
 
   Do NOT use directly. Use the coercion instead. -/
@@ -154,7 +154,7 @@ structure QuadraticMap (R : Type u) (M : Type v) (N : Type w) [CommSemiring R] [
 
 section QuadraticForm
 
-variable (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable (R : Type u) (M : Type v) [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- A quadratic form on a module. -/
 abbrev QuadraticForm : Type _ := QuadraticMap R M R
@@ -165,7 +165,7 @@ namespace QuadraticMap
 
 section DFunLike
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 variable {Q Q' : QuadraticMap R M N}
 
 @[macro_inline]
@@ -214,7 +214,7 @@ end DFunLike
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 variable (Q : QuadraticMap R M N)
 
 protected theorem map_smul (a : R) (x : M) : Q (a • x) = (a * a) • Q x :=
@@ -241,7 +241,7 @@ protected theorem map_zero : Q 0 = 0 := by
 instance zeroHomClass : ZeroHomClass (QuadraticMap R M N) M N :=
   { QuadraticMap.instFunLike (R := R) (M := M) (N := N) with map_zero := QuadraticMap.map_zero }
 
-theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [SMul S M] [IsScalarTower S R M]
+theorem map_smul_of_tower [Semiring S] [IsMulCommutative S] [Algebra S R] [SMul S M] [IsScalarTower S R M]
     [Module S N] [IsScalarTower S R N] (a : S)
     (x : M) : Q (a • x) = (a * a) • Q x := by
   rw [← IsScalarTower.algebraMap_smul R a x, Q.map_smul, ← map_mul, algebraMap_smul]
@@ -257,7 +257,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
 variable [Module R M] [Module R N] (Q : QuadraticMap R M N)
 
 @[simp]
@@ -322,7 +322,7 @@ lemma polarSym2_map_smul {ι} (Q : QuadraticMap R M N) (g : ι → M) (l : ι �
     polarSym2 Q (p.map (l • g)) = (p.map l).mul • polarSym2 Q (p.map g) := by
   obtain ⟨_, _⟩ := p; simp [← smul_assoc, mul_comm]
 
-variable [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M] [Module S N]
+variable [Semiring S] [IsMulCommutative S] [Algebra S R] [Module S M] [IsScalarTower S R M] [Module S N]
     [IsScalarTower S R N]
 
 @[simp]
@@ -385,7 +385,7 @@ end CommRing
 
 section SemiringOperators
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 section SMul
 
@@ -474,7 +474,7 @@ end SemiringOperators
 
 section RingOperators
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
 
 instance : Neg (QuadraticMap R M N) :=
   ⟨fun Q =>
@@ -505,7 +505,7 @@ end RingOperators
 
 section restrictScalars
 
-variable [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N]
   [Module R N] [Module S M] [Module S N] [Algebra S R]
 variable [IsScalarTower S R M] [IsScalarTower S R N]
 
@@ -525,8 +525,8 @@ end restrictScalars
 
 section Comp
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
+variable [AddMonoid P] [IsAddCommutative P] [Module R P]
 
 /-- Compose the quadratic map with a linear function on the right. -/
 def comp (Q : QuadraticMap R N P) (f : M →ₗ[R] N) : QuadraticMap R M P where
@@ -552,7 +552,7 @@ def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] P) (Q : QuadraticMap R M 
 
 /-- Compose a quadratic map with a linear function on the left. -/
 @[simps! +simpRhs]
-def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S N] [Module S M]
+def _root_.LinearMap.compQuadraticMap' [Semiring S] [IsMulCommutative S] [Algebra S R] [Module S N] [Module S M]
     [IsScalarTower S R N] [IsScalarTower S R M] [Module S P]
     (f : N →ₗ[S] P) (Q : QuadraticMap R M N) : QuadraticMap S M P :=
   _root_.LinearMap.compQuadraticMap f Q.restrictScalars
@@ -583,7 +583,7 @@ end Comp
 
 section NonUnitalNonAssocSemiring
 
-variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [NonUnitalNonAssocSemiring A] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- The product of linear maps into an `R`-algebra is a quadratic map. -/
@@ -610,7 +610,7 @@ theorem add_linMulLin (f g h : M →ₗ[R] A) : linMulLin (f + g) h = linMulLin 
 theorem linMulLin_add (f g h : M →ₗ[R] A) : linMulLin f (g + h) = linMulLin f g + linMulLin f h :=
   ext fun _ => mul_add _ _ _
 
-variable {N' : Type*} [AddCommMonoid N'] [Module R N']
+variable {N' : Type*} [AddMonoid N'] [IsAddCommutative N'] [Module R N']
 
 @[simp]
 theorem linMulLin_comp (f g : M →ₗ[R] A) (h : N' →ₗ[R] M) :
@@ -660,8 +660,8 @@ open LinearMap (BilinMap)
 
 section Semiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-variable {N' : Type*} [AddCommMonoid N'] [Module R N']
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
+variable {N' : Type*} [AddMonoid N'] [IsAddCommutative N'] [Module R N']
 
 /-- A bilinear map gives a quadratic map by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where
@@ -742,7 +742,7 @@ end Semiring
 
 section Ring
 
-variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N]
 variable {B : BilinMap R M N}
 
 @[simp]
@@ -775,7 +775,7 @@ theorem _root_.QuadraticMap.polarBilin_injective (h : IsUnit (2 : R)) :
 
 section
 
-variable {N' : Type*} [AddCommGroup N'] [Module R N']
+variable {N' : Type*} [AddGroup N'] [IsAddCommutative N'] [Module R N']
 
 theorem _root_.QuadraticMap.polarBilin_comp (Q : QuadraticMap R N' N) (f : M →ₗ[R] N') :
     polarBilin (Q.comp f) = LinearMap.compl₁₂ (polarBilin Q) f f :=
@@ -783,9 +783,9 @@ theorem _root_.QuadraticMap.polarBilin_comp (Q : QuadraticMap R N' N) (f : M →
 
 end
 
-variable {N' : Type*} [AddCommGroup N']
+variable {N' : Type*} [AddGroup N'] [IsAddCommutative N']
 
-theorem _root_.LinearMap.compQuadraticMap_polar [CommSemiring S] [Algebra S R] [Module S N]
+theorem _root_.LinearMap.compQuadraticMap_polar [Semiring S] [IsMulCommutative S] [Algebra S R] [Module S N]
     [Module S N'] [IsScalarTower S R N] [Module S M] [IsScalarTower S R M] (f : N →ₗ[S] N')
     (Q : QuadraticMap R M N) (x y : M) : polar (f.compQuadraticMap' Q) x y = f (polar Q x y) := by
   simp [polar]
@@ -810,7 +810,7 @@ open LinearMap (BilinMap)
 
 section
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- If `2` is invertible in `R`, then it is also invertible in `End R M`. -/
 instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
@@ -836,9 +836,9 @@ end
 
 section AssociatedHom
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
-variable [AddCommGroup N] [Module R N]
-variable (S) [CommSemiring S] [Algebra S R] [Module S N] [IsScalarTower S R N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
+variable [AddGroup N] [IsAddCommutative N] [Module R N]
+variable (S) [Semiring S] [IsMulCommutative S] [Algebra S R] [Module S N] [IsScalarTower S R N]
 
 -- the requirement that multiplication by `2` is invertible on the target module `N`
 variable [Invertible (2 : Module.End R N)]
@@ -884,7 +884,7 @@ lemma associated_flip : (associatedHom S Q).flip = associatedHom S Q := by
     add_assoc]
 
 @[simp]
-theorem associated_comp {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N' →ₗ[R] M) :
+theorem associated_comp {N' : Type*} [AddGroup N'] [IsAddCommutative N'] [Module R N'] (f : N' →ₗ[R] M) :
     associatedHom S (Q.comp f) = (associatedHom S Q).compl₁₂ f f := by
   ext
   simp only [associated_apply, comp_apply, map_add, LinearMap.compl₁₂_apply]
@@ -950,8 +950,8 @@ end AssociatedHom
 
 section Associated
 
-variable [CommSemiring S] [CommRing R] [AddCommGroup M] [Algebra S R] [Module R M]
-variable [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower S R N]
+variable [Semiring S] [IsMulCommutative S] [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Algebra S R] [Module R M]
+variable [AddGroup N] [IsAddCommutative N] [Module R N] [Module S N] [IsScalarTower S R N]
 variable [Invertible (2 : Module.End R N)]
 
 -- Note:  When possible, rather than writing lemmas about `associated`, write a lemma applying to
@@ -993,7 +993,7 @@ section IsOrtho
 /-! ### Orthogonality -/
 
 section CommSemiring
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
   {Q : QuadraticMap R M N}
 
 /-- The proposition that two elements of a quadratic map space are orthogonal. -/
@@ -1028,7 +1028,7 @@ theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
 end CommSemiring
 
 section CommRing
-variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   {Q : QuadraticMap R M N}
 
 theorem isOrtho_polarBilin {x y : M} : Q.polarBilin x y = 0 ↔ IsOrtho Q x y := by
@@ -1050,7 +1050,7 @@ section Anisotropic
 
 section Semiring
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [Module R M] [Module R N]
 
 /-- An anisotropic quadratic map is zero only on zero vectors. -/
 def Anisotropic (Q : QuadraticMap R M N) : Prop :=
@@ -1068,7 +1068,7 @@ end Semiring
 
 section Ring
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- The associated bilinear form of an anisotropic quadratic form is nondegenerate. -/
 theorem separatingLeft_of_anisotropic [Invertible (2 : R)] (Q : QuadraticMap R M R)
@@ -1084,8 +1084,8 @@ end Anisotropic
 
 section PosDef
 
-variable {R₂ : Type u} [CommSemiring R₂] [AddCommMonoid M] [Module R₂ M]
-variable [PartialOrder N] [AddCommMonoid N] [Module R₂ N]
+variable {R₂ : Type u} [Semiring R₂] [IsMulCommutative R₂] [AddMonoid M] [IsAddCommutative M] [Module R₂ M]
+variable [PartialOrder N] [AddMonoid N] [IsAddCommutative N] [Module R₂ N]
 variable {Q₂ : QuadraticMap R₂ M N}
 
 /-- A positive definite quadratic form is positive on nonzero vectors. -/
@@ -1093,7 +1093,7 @@ def PosDef (Q₂ : QuadraticMap R₂ M N) : Prop :=
   ∀ x, x ≠ 0 → 0 < Q₂ x
 
 
-theorem PosDef.smul {R} [CommSemiring R] [PartialOrder R]
+theorem PosDef.smul {R} [Semiring R] [IsMulCommutative R] [PartialOrder R]
     [Module R M] [Module R N] [PosSMulStrictMono R N]
     {Q : QuadraticMap R M N} (h : PosDef Q) {a : R} (a_pos : 0 < a) : PosDef (a • Q) :=
   fun x hx => smul_pos a_pos (h x hx)
@@ -1128,7 +1128,7 @@ theorem PosDef.add [AddLeftStrictMono N]
     PosDef (Q + Q') :=
   fun x hx => add_pos (hQ x hx) (hQ' x hx)
 
-theorem linMulLinSelfPosDef {R} [CommSemiring R] [Module R M]
+theorem linMulLinSelfPosDef {R} [Semiring R] [IsMulCommutative R] [Module R M]
     [Semiring A] [LinearOrder A] [IsStrictOrderedRing A]
     [ExistsAddOfLE A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] (f : M →ₗ[R] A)
     (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (A := A) f f) :=
@@ -1150,7 +1150,7 @@ The determinant of the matrix is the discriminant of the quadratic form.
 -/
 
 variable {n : Type w} [Fintype n] [DecidableEq n]
-variable [CommRing R] [AddCommMonoid M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- `M.toQuadraticForm'` is the map `fun x ↦ row x * M * col x` as a quadratic form on `n → R`. -/
 def Matrix.toQuadraticForm' (M : Matrix n n R) : QuadraticForm R (n → R) :=
@@ -1202,7 +1202,7 @@ section Basis
 
 open Module
 
-variable [AddCommGroup N] [Module R N] (b : Basis n R N) (Q : QuadraticForm R N)
+variable [AddGroup N] [IsAddCommutative N] [Module R N] (b : Basis n R N) (Q : QuadraticForm R N)
 
 /-- A matrix representation of the quadratic form `Q : QuadraticForm R N` with respect to a
   given basis. See also `QuadraticForm.toMatrix'` for the special case of `N = n → R` with
@@ -1224,7 +1224,7 @@ theorem isSymm_toMatrix (Q : QuadraticForm R N) : (Q.toMatrix b).IsSymm := by
   rw [toMatrix, Matrix.transpose_apply, LinearMap.toMatrix₂_apply, LinearMap.toMatrix₂_apply,
     ← QuadraticMap.associated_isSymm]
 
-variable {m : Type w} [DecidableEq m] [Fintype m] [AddCommGroup P] [Module R P]
+variable {m : Type w} [DecidableEq m] [Fintype m] [AddGroup P] [IsAddCommutative P] [Module R P]
 
 open Matrix
 
@@ -1265,7 +1265,7 @@ section Basis
 
 open Module
 
-variable [AddCommGroup N] [Module R N] (b : Basis n R N) (Q : QuadraticForm R N)
+variable [AddGroup N] [IsAddCommutative N] [Module R N] (b : Basis n R N) (Q : QuadraticForm R N)
 
 /-- The discriminant of a quadratic form `Q : QuadraticForm R N` generalizes the discriminant
   of a quadratic polynomial. -/
@@ -1276,7 +1276,7 @@ variable {b Q}
 theorem discr_smul (a : R) : (a • Q).discr b = a ^ Fintype.card n * (Q.discr b) := by
   simp [discr, toMatrix_smul]
 
-theorem discr_comp [AddCommGroup P] [Module R P] (b' : Basis n R P) (Q : QuadraticForm R P)
+theorem discr_comp [AddGroup P] [IsAddCommutative P] [Module R P] (b' : Basis n R P) (Q : QuadraticForm R P)
     (f : N →ₗ[R] P) :
     QuadraticForm.discr b (Q.comp f) =
       (f.toMatrix b b').det * (f.toMatrix b b').det * (Q.discr b') := by
@@ -1302,7 +1302,7 @@ open LinearMap (BilinMap)
 
 section Semiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /--
 A bilinear form is separating left if the quadratic form it is associated with is anisotropic.
@@ -1312,7 +1312,7 @@ theorem separatingLeft_of_anisotropic {B : BilinForm R M} (hB : B.toQuadraticMap
 
 end Semiring
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 /-- There exists a non-null vector with respect to any symmetric, nonzero bilinear form `B`
 on a module `M` over a ring `R` with invertible `2`, i.e. there exists some
@@ -1325,7 +1325,7 @@ theorem exists_bilinForm_self_ne_zero [htwo : Invertible (2 : R)] {B : BilinForm
 
 open Module
 
-variable {V : Type u} {K : Type v} [Field K] [AddCommGroup V] [Module K V]
+variable {V : Type u} {K : Type v} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
 variable [FiniteDimensional K V]
 
 /-- Given a symmetric bilinear form `B` on some vector space `V` over a field `K`
@@ -1383,7 +1383,7 @@ namespace QuadraticMap
 
 open Finset Module
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
 variable {ι : Type*}
 
 /-- Given a quadratic map `Q` and a basis, `basisRepr` is the basis representation of `Q`. -/
@@ -1420,7 +1420,7 @@ theorem weightedSumSquares_apply [Monoid S] [DistribMulAction S R] [SMulCommClas
   sum_apply _ _ _
 
 /-- On an orthogonal basis, the basis representation of `Q` is just a sum of squares. -/
-theorem basisRepr_eq_of_iIsOrtho {R M} [CommRing R] [AddCommGroup M] [Module R M]
+theorem basisRepr_eq_of_iIsOrtho {R M} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
     [Invertible (2 : R)] (Q : QuadraticForm R M) (v : Basis ι R M)
     (hv₂ : (associated (R := R) Q).IsOrthoᵢ v) :
     Q.basisRepr v = weightedSumSquares _ fun i => Q (v i) := by

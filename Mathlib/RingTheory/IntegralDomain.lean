@@ -62,7 +62,7 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [MonoidWithZero M] [IsLeftCancelMu
       exact Fintype.rightInverse_bijInv _ _
     inv_zero := by simp }
 
-theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R]
+theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [Semiring R] [IsMulCommutative R]
     [GCDMonoid R] [Subsingleton Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
     ∃ d : R, a = d ^ n := by
   refine exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one ?_) h
@@ -72,7 +72,7 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R]
     (dvd_mul_of_dvd_right (gcd_dvd_right _ _) _)
 
 nonrec
-theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R]
+theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [Semiring R] [IsMulCommutative R]
     [GCDMonoid R] [Subsingleton Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
     (h : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → IsCoprime (f i) (f j))
     (hprod : ∏ i ∈ s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
@@ -106,16 +106,16 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
 @[instance_reducible]
-def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
+def Fintype.fieldOfDomain (R) [Ring R] [IsMulCommutative R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 
-theorem Finite.isField_of_domain (R) [CommRing R] [IsDomain R] [Finite R] : IsField R := by
+theorem Finite.isField_of_domain (R) [Ring R] [IsMulCommutative R] [IsDomain R] [Finite R] : IsField R := by
   cases nonempty_fintype R
   exact @Field.toIsField R (@Fintype.fieldOfDomain R _ _ (Classical.decEq R) _)
 
 end Ring
 
-variable [CommRing R] [IsDomain R] [Group G]
+variable [Ring R] [IsMulCommutative R] [IsDomain R] [Group G]
 
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
     {n : ℕ} (hn : 0 < n) (g₀ : G) :

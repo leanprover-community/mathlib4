@@ -38,8 +38,8 @@ open MeasureTheory
 
 open scoped Convolution
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedAddCommGroup F₁] [NormedAddCommGroup F₂] [NormedAddCommGroup F₃]
+variable [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E]
+  [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedAddGroup F₃] [IsAddCommutative F₃]
   [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
   [NormedSpace 𝕜 F₁] [NormedSpace 𝕜 F₂] [NormedSpace 𝕜 F₃]
 
@@ -128,11 +128,11 @@ end Real
 namespace SchwartzMap
 
 variable [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
+  [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
   [BorelSpace E]
-  [NormedAddCommGroup F₁] [NormedSpace ℂ F₁] [NormedSpace 𝕜 F₁] [SMulCommClass ℂ 𝕜 F₁]
-  [NormedAddCommGroup F₂] [NormedSpace ℂ F₂] [NormedSpace 𝕜 F₂] [SMulCommClass ℂ 𝕜 F₂]
-  [NormedAddCommGroup F₃] [NormedSpace ℂ F₃] [NormedSpace 𝕜 F₃] [SMulCommClass ℂ 𝕜 F₃]
+  [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace ℂ F₁] [NormedSpace 𝕜 F₁] [SMulCommClass ℂ 𝕜 F₁]
+  [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace ℂ F₂] [NormedSpace 𝕜 F₂] [SMulCommClass ℂ 𝕜 F₂]
+  [NormedAddGroup F₃] [IsAddCommutative F₃] [NormedSpace ℂ F₃] [NormedSpace 𝕜 F₃] [SMulCommClass ℂ 𝕜 F₃]
 
 open FourierTransform
 

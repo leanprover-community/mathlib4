@@ -31,7 +31,7 @@ open Matrix
 
 namespace Matrix
 
-variable {n' : Type*} [DecidableEq n'] [Fintype n'] {R : Type*} [CommRing R]
+variable {n' : Type*} [DecidableEq n'] [Fintype n'] {R : Type*} [Ring R] [IsMulCommutative R]
 
 local notation "M" => Matrix n' n' R
 noncomputable instance : DivInvMonoid (Matrix n' n' R) where

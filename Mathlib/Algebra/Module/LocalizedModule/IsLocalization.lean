@@ -16,9 +16,9 @@ public section
 
 section IsLocalizedModule
 
-variable {R : Type*} [CommSemiring R] (S : Submonoid R)
-variable {A Aₛ : Type*} [CommSemiring A] [Algebra R A]
-variable [CommSemiring Aₛ] [Algebra A Aₛ] [Algebra R Aₛ] [IsScalarTower R A Aₛ]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (S : Submonoid R)
+variable {A Aₛ : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
+variable [Semiring Aₛ] [IsMulCommutative Aₛ] [Algebra A Aₛ] [Algebra R Aₛ] [IsScalarTower R A Aₛ]
 
 variable {S} in
 theorem isLocalizedModule_iff_isLocalization :

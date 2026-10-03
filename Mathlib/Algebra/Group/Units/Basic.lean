@@ -125,7 +125,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α] (a c : α) (b d : αˣ)
+variable [Monoid α] [IsMulCommutative α] (a c : α) (b d : αˣ)
 
 @[to_additive]
 theorem mul_inv_eq_mul_inv_iff : a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b := by
@@ -198,7 +198,7 @@ end IsDedekindFiniteMonoid
 
 section CommMonoid
 
-variable [CommMonoid α]
+variable [Monoid α] [IsMulCommutative α]
 
 theorem divp_mul_eq_mul_divp (x y : α) (u : αˣ) : x /ₚ u * y = x * y /ₚ u := by
   rw [divp, divp, mul_right_comm]
@@ -383,7 +383,7 @@ protected lemma mul_mul_div (a : α) (h : IsUnit b) : a * b * (1 / b) = a := by 
 end DivisionMonoid
 
 section DivisionCommMonoid
-variable [DivisionCommMonoid α] {a b c d : α}
+variable [DivisionMonoid α] [IsMulCommutative α] {a b c d : α}
 
 @[to_additive]
 protected lemma div_mul_right (h : IsUnit a) (b : α) : a / (a * b) = 1 / b := by

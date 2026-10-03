@@ -31,10 +31,10 @@ open Set
 
 section UniqueMDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddGroup E] [IsAddCommutative E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M] {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H' M'']
   {s : Set M} {x : M}
@@ -131,7 +131,7 @@ end
 
 open Bundle
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type*}
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] {Z : M → Type*}
   [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)] [FiberBundle F Z]
 
 private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}

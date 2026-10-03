@@ -528,7 +528,7 @@ end GroupWithZero
 
 section CommGroupWithZero
 
-variable [CommGroupWithZero G₀]
+variable [GroupWithZero G₀] [IsMulCommutative G₀]
 
 theorem div_mul_eq_mul_div₀ (a b c : G₀) : a / c * b = a * b / c := by
   simp_rw [div_eq_mul_inv, mul_assoc, mul_comm c⁻¹]

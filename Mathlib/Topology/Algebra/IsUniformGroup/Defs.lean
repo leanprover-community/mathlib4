@@ -241,7 +241,7 @@ theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} 
   simp_all
 
 @[to_additive]
-theorem Finset.uniformContinuous_prod {α β ι : Type*} [UniformSpace α] [CommGroup α]
+theorem Finset.uniformContinuous_prod {α β ι : Type*} [UniformSpace α] [Group α] [IsMulCommutative α]
     [IsUniformGroup α] [UniformSpace β] {f : ι → β → α} (s : Finset ι)
     (h : ∀ i ∈ s, UniformContinuous (f i)) :
     UniformContinuous (∏ i ∈ s, f i ·) := by
@@ -696,7 +696,7 @@ universe u v w x
 
 open Filter
 
-variable (G : Type*) [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
+variable (G : Type*) [Group G] [IsMulCommutative G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 section
 

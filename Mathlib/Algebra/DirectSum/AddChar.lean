@@ -19,7 +19,7 @@ This file defines the direct sum of additive characters.
 open Function
 open scoped DirectSum
 
-variable {ι R : Type*} {G : ι → Type*} [DecidableEq ι] [∀ i, AddCommGroup (G i)] [CommMonoid R]
+variable {ι R : Type*} {G : ι → Type*} [DecidableEq ι] [∀ i, AddGroup (G i)] [∀ i, IsAddCommutative (G i)] [Monoid R] [IsMulCommutative R]
 
 namespace AddChar
 section DirectSum

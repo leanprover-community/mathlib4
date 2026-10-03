@@ -27,7 +27,7 @@ lie algebra, radical, simple, semisimple
 public section
 
 variable (R L M : Type*)
-variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
 
 /-- A nontrivial Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`. -/
 abbrev LieModule.IsIrreducible : Prop :=

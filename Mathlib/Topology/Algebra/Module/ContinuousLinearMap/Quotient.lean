@@ -35,8 +35,8 @@ namespace Submodule
 section Ring
 
 variable {R R₂ : Type*} [Ring R] [Ring R₂] {σ : R →+* R₂} {M M₂ : Type*}
-  [TopologicalSpace M] [AddCommGroup M] [Module R M]
-  [TopologicalSpace M₂] [AddCommGroup M₂] [Module R₂ M₂]
+  [TopologicalSpace M] [AddGroup M] [IsAddCommutative M] [Module R M]
+  [TopologicalSpace M₂] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂]
   (S : Submodule R M)
 
 open ContinuousLinearMap

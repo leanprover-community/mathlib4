@@ -37,8 +37,8 @@ open TensorProduct MvPolynomial
 
 namespace Algebra.Generators
 
-variable {R S T ι : Type*} [CommRing R] [CommRing S] [Algebra R S]
-  [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {R S T ι : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+  [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable (g : S) [IsLocalization.Away g T] (P : Generators R S ι)
 
 lemma comp_localizationAway_ker (P : Generators R S ι) (f : P.Ring)

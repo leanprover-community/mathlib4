@@ -195,7 +195,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a₁ a₂ b₁ b₂ : E} {r₁ r₂ : ℝ}
+variable [SeminormedGroup E] [IsMulCommutative E] [SeminormedGroup F] [IsMulCommutative F] {a₁ a₂ b₁ b₂ : E} {r₁ r₂ : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isIsometricSMul_right : IsIsometricSMul Eᵐᵒᵖ E :=
@@ -264,7 +264,7 @@ theorem edist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
   apply nndist_mul_mul_le
 
 section PseudoEMetricSpace
-variable {α E : Type*} [SeminormedCommGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}
+variable {α E : Type*} [SeminormedGroup E] [IsMulCommutative E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}
   {f g : α → E} {s : Set α}
 
 @[to_additive (attr := simp)]

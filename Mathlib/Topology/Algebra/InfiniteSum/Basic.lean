@@ -34,7 +34,7 @@ variable {α β γ : Type*}
 
 section HasProd
 
-variable [CommMonoid α] [TopologicalSpace α]
+variable [Monoid α] [IsMulCommutative α] [TopologicalSpace α]
 variable {f g : β → α} {a b : α} {L : SummationFilter β}
 
 /-- Constant one function has product `1` -/
@@ -214,7 +214,7 @@ theorem Equiv.multipliable_iff_of_mulSupport {g : γ → α} (e : mulSupport f �
   exists_congr fun _ ↦ e.hasProd_iff_of_mulSupport he
 
 @[to_additive]
-protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasProd f a L) {G}
+protected theorem HasProd.map [Monoid γ] [IsMulCommutative γ] [TopologicalSpace γ] (hf : HasProd f a L) {G}
     [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
     HasProd (g ∘ f) (g a) L := by
   have : (g ∘ fun s : Finset β ↦ ∏ b ∈ s, f b) = fun s : Finset β ↦ ∏ b ∈ s, (g ∘ f) b :=
@@ -224,20 +224,20 @@ protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasPro
   exact (hg.tendsto a).comp hf
 
 @[to_additive]
-protected theorem Topology.IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
+protected theorem Topology.IsInducing.hasProd_iff [Monoid γ] [IsMulCommutative γ] [TopologicalSpace γ] {G}
     [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) (a : α) :
     HasProd (g ∘ f) (g a) L ↔ HasProd f a L := by
   simp_rw [HasProd, comp_apply, ← _root_.map_prod]
   exact hg.tendsto_nhds_iff.symm
 
 @[to_additive]
-protected theorem Multipliable.map [CommMonoid γ] [TopologicalSpace γ]
+protected theorem Multipliable.map [Monoid γ] [IsMulCommutative γ] [TopologicalSpace γ]
     (hf : Multipliable f L) {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
     Multipliable (g ∘ f) L :=
   (hf.hasProd.map g hg).multipliable
 
 @[to_additive]
-protected theorem Multipliable.map_iff_of_leftInverse [CommMonoid γ]
+protected theorem Multipliable.map_iff_of_leftInverse [Monoid γ] [IsMulCommutative γ]
     [TopologicalSpace γ] {G G'}
     [FunLike G α γ] [MonoidHomClass G α γ] [FunLike G' γ α] [MonoidHomClass G' γ α]
     (g : G) (g' : G') (hg : Continuous g) (hg' : Continuous g') (hinv : Function.LeftInverse g' g) :
@@ -247,14 +247,14 @@ protected theorem Multipliable.map_iff_of_leftInverse [CommMonoid γ]
     rwa [← Function.comp_assoc, hinv.id] at this, fun h ↦ h.map _ hg⟩
 
 @[to_additive]
-theorem Multipliable.map_tprod [L.NeBot] [CommMonoid γ] [TopologicalSpace γ] [T2Space γ]
+theorem Multipliable.map_tprod [L.NeBot] [Monoid γ] [IsMulCommutative γ] [TopologicalSpace γ] [T2Space γ]
     (hf : Multipliable f L) {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
     g (∏'[L] i, f i) = ∏'[L] i, g (f i) :=
   (HasProd.tprod_eq (HasProd.map hf.hasProd g hg)).symm
 
 @[to_additive]
 lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
-    [CommMonoid α] [CommMonoid α'] [TopologicalSpace α] [TopologicalSpace α'] [T2Space α']
+    [Monoid α] [IsMulCommutative α] [Monoid α'] [IsMulCommutative α'] [TopologicalSpace α] [TopologicalSpace α'] [T2Space α']
     (f : ι → α) {L : SummationFilter ι} {g : G} [FunLike G α α'] [MonoidHomClass G α α']
     (hge : Topology.IsClosedEmbedding g) :
     g (∏'[L] i, f i) = ∏'[L] i, g (f i) := by
@@ -277,14 +277,14 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
 to apply in practice. -/
 @[to_additive /-- Special case of `Topology.IsClosedEmbedding.map_tsum`, logically weaker but
 possibly easier to apply in practice. -/]
-lemma Function.LeftInverse.map_tprod {G : Type*} (f : β → α) [CommMonoid γ] [TopologicalSpace γ]
+lemma Function.LeftInverse.map_tprod {G : Type*} (f : β → α) [Monoid γ] [IsMulCommutative γ] [TopologicalSpace γ]
     [T2Space γ] {g : G} [FunLike G α γ] [MonoidHomClass G α γ] (hg : Continuous g)
     {g' : γ → α} (hg' : Continuous g') (hgg' : LeftInverse g' g) :
     g (∏'[L] b, f b) = ∏'[L] b, g (f b) :=
   (hgg'.isClosedEmbedding hg' hg).map_tprod _
 
 @[to_additive]
-lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
+lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [Monoid γ] [IsMulCommutative γ] [TopologicalSpace γ]
     [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) :
     Multipliable f L ↔ Multipliable (g ∘ f) L ∧ ∏'[L] i, g (f i) ∈ Set.range g := by
   constructor
@@ -304,14 +304,14 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] 
 
 /-- "A special case of `Multipliable.map_iff_of_leftInverse` for convenience" -/
 @[to_additive /-- A special case of `Summable.map_iff_of_leftInverse` for convenience -/]
-protected theorem Multipliable.map_iff_of_equiv [CommMonoid γ] [TopologicalSpace γ] {G}
+protected theorem Multipliable.map_iff_of_equiv [Monoid γ] [IsMulCommutative γ] [TopologicalSpace γ] {G}
     [EquivLike G α γ] [MulEquivClass G α γ] (g : G) (hg : Continuous g)
     (hg' : Continuous (EquivLike.inv g : γ → α)) :
     Multipliable (g ∘ f) L ↔ Multipliable f L :=
   Multipliable.map_iff_of_leftInverse g (g : α ≃* γ).symm hg hg' (EquivLike.left_inv g)
 
 @[to_additive]
-theorem Function.Surjective.multipliable_iff_of_hasProd_iff {α' : Type*} [CommMonoid α']
+theorem Function.Surjective.multipliable_iff_of_hasProd_iff {α' : Type*} [Monoid α'] [IsMulCommutative α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) {f : β → α} {g : γ → α'}
     (he : ∀ {a}, HasProd f (e a) ↔ HasProd g a) : Multipliable f ↔ Multipliable g :=
   hes.exists.trans <| exists_congr @he
@@ -401,7 +401,7 @@ it gives a relationship between the products of `f` and `f.update` given that bo
 @[to_additive /-- Version of `HasSum.update` for `AddCommMonoid` rather than `AddCommGroup`.
 Rather than showing that `f.update` has a specific sum in terms of `HasSum`,
 it gives a relationship between the sums of `f` and `f.update` given that both exist. -/]
-theorem HasProd.update' [L.LeAtTop] [L.NeBot] {α : Type*} [TopologicalSpace α] [CommMonoid α]
+theorem HasProd.update' [L.LeAtTop] [L.NeBot] {α : Type*} [TopologicalSpace α] [Monoid α] [IsMulCommutative α]
     [T2Space α] [ContinuousMul α] [DecidableEq β] {f : β → α} {a a' : α} (hf : HasProd f a L)
     (b : β) (x : α) (hf' : HasProd (update f b x) a' L) :
     a * x = a' * f b := by
@@ -420,7 +420,7 @@ a relationship between the products of `f` and `ite (n = b) 0 (f n)` given that 
 @[to_additive /-- Version of `hasSum_ite_sub_hasSum` for `AddCommMonoid` rather than `AddCommGroup`.
 Rather than showing that the `ite` expression has a specific sum in terms of `HasSum`,
 it gives a relationship between the sums of `f` and `ite (n = b) 0 (f n)` given that both exist. -/]
-theorem eq_mul_of_hasProd_ite [L.LeAtTop] [L.NeBot] {α : Type*} [TopologicalSpace α] [CommMonoid α]
+theorem eq_mul_of_hasProd_ite [L.LeAtTop] [L.NeBot] {α : Type*} [TopologicalSpace α] [Monoid α] [IsMulCommutative α]
     [T2Space α] [ContinuousMul α] [DecidableEq β] {f : β → α} {a : α} (hf : HasProd f a L) (b : β)
     (a' : α) (hf' : HasProd (fun n ↦ ite (n = b) 1 (f n)) a' L) : a = a' * f b := by
   refine (mul_one a).symm.trans (hf.update' b 1 ?_)
@@ -431,7 +431,7 @@ end HasProd
 
 section tprod
 
-variable [CommMonoid α] [TopologicalSpace α] {f g : β → α} {L : SummationFilter β}
+variable [Monoid α] [IsMulCommutative α] [TopologicalSpace α] {f g : β → α} {L : SummationFilter β}
 
 @[to_additive]
 theorem tprod_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :
@@ -696,7 +696,7 @@ lemma mulIndicator_iUnion_of_pairwise_disjoint (s : γ → Set β) (hs : Pairwis
 variable [T2Space α]
 
 @[to_additive]
-theorem Function.Surjective.tprod_eq_tprod_of_hasProd_iff_hasProd {α' : Type*} [CommMonoid α']
+theorem Function.Surjective.tprod_eq_tprod_of_hasProd_iff_hasProd {α' : Type*} [Monoid α'] [IsMulCommutative α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) (h1 : e 1 = 1) {f : β → α}
     {g : γ → α'} (h : ∀ {a}, HasProd f (e a) ↔ HasProd g a) : ∏' b, f b = e (∏' c, g c) :=
   by_cases (fun x ↦ (h.mpr x.hasProd).tprod_eq) fun hg : ¬Multipliable g ↦ by
@@ -772,7 +772,7 @@ end ContinuousMul
 end tprod
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero α] [TopologicalSpace α] {f : β → α} {L : SummationFilter β}
+variable [MonoidWithZero α] [IsMulCommutative α] [TopologicalSpace α] {f : β → α} {L : SummationFilter β}
 
 lemma hasProd_zero_of_exists_eq_zero (hf : ∃ b, f b = 0) [L.LeAtTop] : HasProd f 0 L := by
   obtain ⟨b, hb⟩ := hf

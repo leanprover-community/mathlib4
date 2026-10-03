@@ -307,7 +307,7 @@ theorem iUnion_biUnion (πi : ∀ J : Box ι, Prepartition J) :
 
 open scoped Classical in
 @[simp]
-theorem sum_biUnion_boxes {M : Type*} [AddCommMonoid M] (π : Prepartition I)
+theorem sum_biUnion_boxes {M : Type*} [AddMonoid M] [IsAddCommutative M] (π : Prepartition I)
     (πi : ∀ J, Prepartition J) (f : Box ι → M) :
     (∑ J ∈ π.boxes.biUnion fun J => (πi J).boxes, f J) =
       ∑ J ∈ π.boxes, ∑ J' ∈ (πi J).boxes, f J' := by
@@ -413,7 +413,7 @@ theorem ofWithBot_mono {boxes₁ : Finset (WithBot (Box ι))}
       ofWithBot boxes₂ le_of_mem₂ pairwise_disjoint₂ :=
   le_ofWithBot _ fun J hJ => H J (mem_ofWithBot.1 hJ) WithBot.coe_ne_bot
 
-theorem sum_ofWithBot {M : Type*} [AddCommMonoid M] (boxes : Finset (WithBot (Box ι)))
+theorem sum_ofWithBot {M : Type*} [AddMonoid M] [IsAddCommutative M] (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
     (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) (f : Box ι → M) :
     (∑ J ∈ (ofWithBot boxes le_of_mem pairwise_disjoint).boxes, f J) =
@@ -562,7 +562,7 @@ theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     exact fun _ ⟨h, _⟩ => h
 
 open scoped Classical in
-theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι → α) (g : Box ι → M) :
+theorem sum_fiberwise {α M} [AddMonoid M] [IsAddCommutative M] (π : Prepartition I) (f : Box ι → α) (g : Box ι → M) :
     (∑ y ∈ π.boxes.image f, ∑ J ∈ (π.filter fun J => f J = y).boxes, g J) =
       ∑ J ∈ π.boxes, g J := by
   convert! sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
@@ -590,7 +590,7 @@ theorem iUnion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
 
 open scoped Classical in
 @[simp]
-theorem sum_disj_union_boxes {M : Type*} [AddCommMonoid M] (h : Disjoint π₁.iUnion π₂.iUnion)
+theorem sum_disj_union_boxes {M : Type*} [AddMonoid M] [IsAddCommutative M] (h : Disjoint π₁.iUnion π₂.iUnion)
     (f : Box ι → M) :
     ∑ J ∈ π₁.boxes ∪ π₂.boxes, f J = (∑ J ∈ π₁.boxes, f J) + ∑ J ∈ π₂.boxes, f J :=
   sum_union <| disjoint_boxes_of_disjoint_iUnion h

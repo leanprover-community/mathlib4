@@ -62,7 +62,7 @@ open IsLocalization Pointwise nonZeroDivisors
 
 section Defs
 
-variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {S : Submonoid R} {P : Type*} [Ring P] [IsMulCommutative P]
 variable [Algebra R P]
 variable (S)
 
@@ -89,7 +89,7 @@ namespace FractionalIdeal
 
 open Set Submodule
 
-variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {S : Submonoid R} {P : Type*} [Ring P] [IsMulCommutative P]
 variable [Algebra R P]
 
 /-- Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
@@ -298,7 +298,7 @@ theorem coeIdeal_le_coeIdeal' [IsLocalization S P] (h : S ≤ nonZeroDivisors R)
   coeSubmodule_le_coeSubmodule h
 
 @[simp, gcongr]
-theorem coeIdeal_le_coeIdeal (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
+theorem coeIdeal_le_coeIdeal (K : Type*) [Ring K] [IsMulCommutative K] [Algebra R K] [IsFractionRing R K]
     {I J : Ideal R} : (I : FractionalIdeal R⁰ K) ≤ J ↔ I ≤ J :=
   IsFractionRing.coeSubmodule_le_coeSubmodule
 
@@ -692,8 +692,8 @@ end Order
 
 section FG
 
-variable {R : Type*} [CommRing R] [IsDomain R] {S : Submonoid R}
-variable {P : Type*} [Nontrivial P] [CommRing P] [Algebra R P] [Module.IsTorsionFree R P]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] {S : Submonoid R}
+variable {P : Type*} [Nontrivial P] [Ring P] [IsMulCommutative P] [Algebra R P] [Module.IsTorsionFree R P]
 
 /-- The fractional ideals of a Noetherian ring are finitely generated. -/
 lemma fg_of_isNoetherianRing [hR : IsNoetherianRing R] (hS : S ≤ R⁰) (I : FractionalIdeal S P) :

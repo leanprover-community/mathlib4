@@ -29,8 +29,8 @@ between `f χ (v χ)` and `f χ (w χ)` is, to first order, `φ (v χ - w χ)`. 
 `χ : α` stands for a point (or a pair of points) in a space containing `E`, and `v χ` or `w χ` is
 its projection (or both are projections). -/
 theorem isLittleO_sub_sub_fderiv
-    {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E]
+    [NormedSpace ℝ E] [NormedSpace 𝕜 E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
     {u : E} {v w : α → E} {l : Filter α} (hv : Tendsto v l (𝓝 u)) (hw : Tendsto w l (𝓝 u))
     (s : Set E := Set.univ) (seg : ∀ᶠ χ in l, [w χ -[ℝ] v χ] ⊆ s := by simp)
     {f : α → E → F} {f' : α → E → E →L[𝕜] F}
@@ -49,8 +49,8 @@ theorem isLittleO_sub_sub_fderiv
     (fun z hz => (df' z hz).mono seg) (fun z hz => (cf' z hz).le)
     (convex_segment ..) (left_mem_segment ..) (right_mem_segment ..)
 
-variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
-  [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜] [NormedAddGroup E₁] [IsAddCommutative E₁] [NormedSpace 𝕜 E₁]
+  [NormedAddGroup E₂] [IsAddCommutative E₂] [NormedSpace 𝕜 E₂] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- If bivariate `f : E₁ → E₂ → F` has partial derivatives `f₁` and `f₂` in a neighbourhood of

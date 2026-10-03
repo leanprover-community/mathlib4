@@ -53,7 +53,7 @@ open Module RCLike
 open scoped ComplexConjugate
 
 variable {𝕜 E F G : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [NormedAddGroup G] [IsAddCommutative G]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F] [InnerProductSpace 𝕜 G]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -332,8 +332,8 @@ theorem innerSL_apply_comp_of_isSymmetric (x : E) {f : E →L[𝕜] E} (hf : f.I
     adjoint (rankOne 𝕜 x y) = rankOne 𝕜 y x := by
   simp [rankOne_def', adjoint_comp, ← adjoint_innerSL_apply]
 
-lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGroup E]
-    [NormedSpace 𝕜 E] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G] [CompleteSpace G]
+lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddGroup E] [IsAddCommutative E]
+    [NormedSpace 𝕜 E] [NormedAddGroup G] [IsAddCommutative G] [InnerProductSpace 𝕜 G] [CompleteSpace G]
     (x : E) (y : F) (f : G →L[𝕜] F) :
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
@@ -837,10 +837,10 @@ end LinearMap
 
 section Unitary
 
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
+variable {H : Type*} [NormedAddGroup H] [IsAddCommutative H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
 
 section linearIsometryEquiv
-variable {K : Type*} [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [CompleteSpace K]
+variable {K : Type*} [NormedAddGroup K] [IsAddCommutative K] [InnerProductSpace 𝕜 K] [CompleteSpace K]
 
 namespace ContinuousLinearMap
 
@@ -921,7 +921,7 @@ lemma conjStarAlgEquiv_apply (e : H ≃ₗᵢ[𝕜] K) (x : H →L[𝕜] H) :
 
 @[simp] theorem conjStarAlgEquiv_refl : conjStarAlgEquiv (.refl 𝕜 H) = .refl _ _ := rfl
 
-theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddGroup G] [IsAddCommutative G] [InnerProductSpace 𝕜 G]
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
     (e.trans f).conjStarAlgEquiv = e.conjStarAlgEquiv.trans f.conjStarAlgEquiv := rfl
 
@@ -1064,16 +1064,16 @@ end Matrix
 
 @[simp]
 theorem LinearIsometry.adjoint_comp_self {E E' : Type*}
-    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
-    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [CompleteSpace E'] (f : E →ₗᵢ[𝕜] E') :
+    [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddGroup E'] [IsAddCommutative E'] [InnerProductSpace 𝕜 E'] [CompleteSpace E'] (f : E →ₗᵢ[𝕜] E') :
     f.toContinuousLinearMap.adjoint ∘L f.toContinuousLinearMap = 1 :=
   f.toContinuousLinearMap.isometry_iff_adjoint_comp_self.mp f.isometry
 
 /-- A version of `LinearIsometry.adjoint_comp_self` in terms of `LinearMap.adjoint`. -/
 @[simp]
 theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
-    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
-    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [FiniteDimensional 𝕜 E'] (f : E →ₗᵢ[𝕜] E') :
+    [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
+    [NormedAddGroup E'] [IsAddCommutative E'] [InnerProductSpace 𝕜 E'] [FiniteDimensional 𝕜 E'] (f : E →ₗᵢ[𝕜] E') :
     f.adjoint ∘ₗ f.toLinearMap = LinearMap.id := by
   have := FiniteDimensional.complete 𝕜 E
   have := FiniteDimensional.complete 𝕜 E'

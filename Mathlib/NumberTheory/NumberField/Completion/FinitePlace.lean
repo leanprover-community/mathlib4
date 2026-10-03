@@ -52,7 +52,7 @@ open scoped WithZero NNReal
 
 section DVR
 
-variable (A : Type*) [CommRing A] [IsDedekindDomain A]
+variable (A : Type*) [Ring A] [IsMulCommutative A] [IsDedekindDomain A]
     (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K]
     (v : HeightOneSpectrum A) (hv : Finite (A ⧸ v.asIdeal))
 
@@ -87,7 +87,7 @@ end DVR
 
 namespace NumberField
 
-variable {K L : Type*} [Field K] [Field L] [Algebra K L] {R : Type*} [CommRing R] [Algebra R K]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R K]
   [IsDedekindDomain R] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- The embedding of a field inside its `adicCompletion` with respect to `v`. -/
@@ -452,7 +452,7 @@ theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
 
 @[deprecated (since := "2026-03-03")] alias mulSupport_finite := hasFiniteMulSupport
 
-lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : Ideal (𝓞 K)}
+lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [Monoid M] [IsMulCommutative M] {I : Ideal (𝓞 K)}
     (hI : I ≠ ⊥) (f : Ideal (𝓞 K) → M) :
     (fun v : FinitePlace K ↦
       f v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I).HasFiniteMulSupport :=

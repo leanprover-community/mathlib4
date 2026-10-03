@@ -45,7 +45,7 @@ Unbounded operators, closed operators
 @[expose] public section
 
 variable {R E F : Type*}
-variable [CommRing R] [AddCommGroup E] [AddCommGroup F]
+variable [Ring R] [IsMulCommutative R] [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F]
 variable [Module R E] [Module R F]
 variable [TopologicalSpace E] [TopologicalSpace F]
 

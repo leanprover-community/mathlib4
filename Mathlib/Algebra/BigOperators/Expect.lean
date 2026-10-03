@@ -57,7 +57,7 @@ variable {ι κ K M N : Type*}
 local notation a " /ℚ " q => (q : ℚ≥0)⁻¹ • a
 
 /-- Average of a function over a finset. If the finset is empty, this is equal to zero. -/
-def Finset.expect [AddCommMonoid M] [Module ℚ≥0 M] (s : Finset ι) (f : ι → M) : M :=
+def Finset.expect [AddMonoid M] [IsAddCommutative M] [Module ℚ≥0 M] (s : Finset ι) (f : ι → M) : M :=
   (#s : ℚ≥0)⁻¹ • ∑ i ∈ s, f i
 
 namespace BigOperators
@@ -115,7 +115,7 @@ open scoped BigOperators
 
 namespace Finset
 section AddCommMonoid
-variable [AddCommMonoid M] [Module ℚ≥0 M] [AddCommMonoid N] [Module ℚ≥0 N] {s t : Finset ι}
+variable [AddMonoid M] [IsAddCommutative M] [Module ℚ≥0 M] [AddMonoid N] [IsAddCommutative N] [Module ℚ≥0 N] {s t : Finset ι}
   {f g : ι → M} {p q : ι → Prop} [DecidablePred p] [DecidablePred q]
 
 lemma expect_univ [Fintype ι] : 𝔼 i, f i = (∑ i, f i) /ℚ Fintype.card ι := by
@@ -304,7 +304,7 @@ lemma smul_expect {G : Type*} [DistribSMul G M] [SMulCommClass G ℚ≥0 M] (a :
 end AddCommMonoid
 
 section AddCommGroup
-variable [AddCommGroup M] [Module ℚ≥0 M]
+variable [AddGroup M] [IsAddCommutative M] [Module ℚ≥0 M]
 
 lemma expect_sub_distrib (s : Finset ι) (f g : ι → M) :
     𝔼 i ∈ s, (f i - g i) = 𝔼 i ∈ s, f i - 𝔼 i ∈ s, g i := by
@@ -339,7 +339,7 @@ lemma expect_mul_expect [IsScalarTower ℚ≥0 M M] [SMulCommClass ℚ≥0 M M] 
 end Semiring
 
 section CommSemiring
-variable [CommSemiring M] [Module ℚ≥0 M] [IsScalarTower ℚ≥0 M M] [SMulCommClass ℚ≥0 M M]
+variable [Semiring M] [IsMulCommutative M] [Module ℚ≥0 M] [IsScalarTower ℚ≥0 M M] [SMulCommClass ℚ≥0 M M]
 
 lemma expect_pow (s : Finset ι) (f : ι → M) (n : ℕ) :
     (𝔼 i ∈ s, f i) ^ n = 𝔼 p ∈ Fintype.piFinset fun _ : Fin n ↦ s, ∏ i, f (p i) := by
@@ -376,7 +376,7 @@ lemma expect_div (s : Finset ι) (f : ι → K) (a : K) : (𝔼 i ∈ s, f i) / 
 
 end Semifield
 
-@[simp] lemma expect_apply {α : Type*} {π : α → Type*} [∀ a, CommSemiring (π a)]
+@[simp] lemma expect_apply {α : Type*} {π : α → Type*} [∀ a, Semiring (π a)] [∀ a, IsMulCommutative (π a)]
     [∀ a, Module ℚ≥0 (π a)] (s : Finset ι) (f : ι → ∀ a, π a) (a : α) :
     (𝔼 i ∈ s, f i) a = 𝔼 i ∈ s, f i a := by simp [expect]
 
@@ -395,7 +395,7 @@ namespace Fintype
 variable [Fintype ι] [Fintype κ]
 
 section AddCommMonoid
-variable [AddCommMonoid M] [Module ℚ≥0 M]
+variable [AddMonoid M] [IsAddCommutative M] [Module ℚ≥0 M]
 
 /-- `Fintype.expect_bijective` is a variant of `Finset.expect_bij` that accepts
 `Function.Bijective`.

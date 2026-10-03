@@ -18,7 +18,7 @@ For the proof see `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean`.
 
 public section
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 open Function Localization Polynomial TensorProduct PrimeSpectrum Topology
 open scoped Pointwise
@@ -70,7 +70,7 @@ lemma isOpenMap_comap_of_hasGoingDown_of_finitePresentation
 open TensorProduct in
 @[stacks 037G]
 theorem isOpenMap_comap_algebraMap_tensorProduct_of_field
-    {K A B : Type*} [Field K] [CommRing A] [CommRing B] [Algebra K A] [Algebra K B] :
+    {K A B : Type*} [Field K] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra K A] [Algebra K B] :
     IsOpenMap (PrimeSpectrum.comap (algebraMap A (A ⊗[K] B))) := by
   intro U hU
   wlog hU' : ∃ f, U = SetLike.coe (basicOpen f) generalizing U

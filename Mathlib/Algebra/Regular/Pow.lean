@@ -23,7 +23,7 @@ variable {R : Type*} {a : R}
 
 section CommMonoid
 
-variable {ι R : Type*} [CommMonoid R] {s : Finset ι} {f : ι → R}
+variable {ι R : Type*} [Monoid R] [IsMulCommutative R] {s : Finset ι} {f : ι → R}
 
 lemma IsLeftRegular.prod (h : ∀ i ∈ s, IsLeftRegular (f i)) :
     IsLeftRegular (∏ i ∈ s, f i) :=

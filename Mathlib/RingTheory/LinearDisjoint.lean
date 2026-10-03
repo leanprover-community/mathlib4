@@ -146,7 +146,7 @@ variable {R : Type u} {S : Type v}
 
 section Semiring
 
-variable [CommSemiring R] [Semiring S] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
 
@@ -215,7 +215,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 variable {A B : Subalgebra R S}
 
@@ -342,7 +342,7 @@ section Ring
 
 namespace LinearDisjoint
 
-variable [CommRing R] [Ring S] [Algebra R S]
+variable [Ring R] [IsMulCommutative R] [Ring S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
 
@@ -528,7 +528,7 @@ section CommRing
 
 namespace LinearDisjoint
 
-variable [CommRing R] [CommRing S] [Algebra R S]
+variable [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 variable {A B : Subalgebra R S}
 
@@ -574,7 +574,7 @@ variable (R) in
 the algebra maps are injective, then there exists an `R`-algebra `K` that is a field that `A`
 and `B` inject into with linearly disjoint images. Note: `K` can chosen to be the
 fraction field of `A ⊗[R] B`, but here we hide this fact. -/
-theorem exists_field_of_isDomain_of_injective (A : Type v) [CommRing A] (B : Type w) [CommRing B]
+theorem exists_field_of_isDomain_of_injective (A : Type v) [Ring A] [IsMulCommutative A] (B : Type w) [Ring B] [IsMulCommutative B]
     [Algebra R A] [Algebra R B] [Module.Flat R A] [Module.Flat R B] [IsDomain (A ⊗[R] B)]
     (ha : Function.Injective (algebraMap R A)) (hb : Function.Injective (algebraMap R B)) :
     ∃ (K : Type (max v w)) (_ : Field K) (_ : Algebra R K) (fa : A →ₐ[R] K) (fb : B →ₐ[R] K),
@@ -614,7 +614,7 @@ variable (R) in
 /-- If `A` and `B` are flat `R`-algebras, both of them are transcendental, then `A ⊗[R] B` cannot
 be a field. -/
 theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
-    (A : Type v) [CommRing A] (B : Type w) [CommRing B] [Algebra R A] [Algebra R B]
+    (A : Type v) [Ring A] [IsMulCommutative A] (B : Type w) [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra R B]
     [Module.Flat R A] [Module.Flat R B] [Algebra.Transcendental R A] [Algebra.Transcendental R B] :
     ¬IsField (A ⊗[R] B) := fun H ↦ by
   let := H.toField
@@ -664,7 +664,7 @@ variable (R) in
 /-- If `A` and `B` are flat `R`-algebras, such that `A ⊗[R] B` is a field, then one of `A` and `B`
 is algebraic over `R`. -/
 theorem _root_.Algebra.TensorProduct.isAlgebraic_of_isField
-    (A : Type v) [CommRing A] (B : Type w) [CommRing B] [Algebra R A] [Algebra R B]
+    (A : Type v) [Ring A] [IsMulCommutative A] (B : Type w) [Ring B] [IsMulCommutative B] [Algebra R A] [Algebra R B]
     [Module.Flat R A] [Module.Flat R B] (H : IsField (A ⊗[R] B)) :
     Algebra.IsAlgebraic R A ∨ Algebra.IsAlgebraic R B := by
   by_contra! h
@@ -850,7 +850,7 @@ section FieldAndCommRing
 
 namespace LinearDisjoint
 
-variable [Field R] [CommRing S] [Algebra R S]
+variable [Field R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 variable {A B : Subalgebra R S}
 

@@ -42,9 +42,9 @@ universe v u
 
 open LinearMap RingTheory.Sequence Ideal CategoryTheory Abelian Limits Pointwise IsSMulRegular
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
-private lemma smul_top_quotSMulTop_ne_top_of_smul_top_ne_top {M : Type*} [AddCommGroup M]
+private lemma smul_top_quotSMulTop_ne_top_of_smul_top_ne_top {M : Type*} [AddGroup M] [IsAddCommutative M]
     [Module R M] {I : Ideal R} {r : R} (hr : r ∈ I)
     (hI : I • (⊤ : Submodule R M) ≠ ⊤) :
     I • (⊤ : Submodule R (QuotSMulTop r M)) ≠ ⊤ := by

@@ -28,6 +28,6 @@ open MeasureTheory
 Gaussian. -/
 @[fun_prop]
 public structure ProbabilityTheory.IsGaussianProcess {Ω E T : Type*} {mΩ : MeasurableSpace Ω}
-    [MeasurableSpace E] [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
+    [MeasurableSpace E] [TopologicalSpace E] [AddMonoid E] [IsAddCommutative E] [Module ℝ E]
     (X : T → Ω → E) (P : Measure Ω := by volume_tac) : Prop where
   hasGaussianLaw : ∀ I : Finset T, HasGaussianLaw (fun ω ↦ I.restrict (X · ω)) P

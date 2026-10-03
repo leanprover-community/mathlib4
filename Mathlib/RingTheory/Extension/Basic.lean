@@ -38,7 +38,7 @@ universe w u v
 
 open TensorProduct MvPolynomial
 
-variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type v) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 /--
 An extension of an `R`-algebra `S` is an `R` algebra `P` together with a surjection `P →ₐ[R] S`.
@@ -47,7 +47,7 @@ Also see `Algebra.Extension.ofSurjective`.
 structure Algebra.Extension where
   /-- The underlying algebra of an extension. -/
   Ring : Type w
-  [commRing : CommRing Ring]
+  [commRing : Ring Ring] [IsMulCommutative Ring]
   [algebra₁ : Algebra R Ring]
   [algebra₂ : Algebra Ring S]
   [isScalarTower : IsScalarTower R Ring S]
@@ -66,20 +66,20 @@ attribute [simp] algebraMap_σ
 
 -- We want to make sure `R₀` acts compatibly on `R` and `S` to avoid nonsensical instances
 @[nolint unusedArguments]
-noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+noncomputable instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     Algebra R₀ P.Ring := Algebra.compHom P.Ring (algebraMap R₀ R)
 
-instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ R P.Ring := IsScalarTower.of_algebraMap_eq' rfl
 
-instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
-    {R₁} [CommRing R₁] [Algebra R₁ R] [Algebra R₁ S] [IsScalarTower R₁ R S]
+instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+    {R₁} [Ring R₁] [IsMulCommutative R₁] [Algebra R₁ R] [Algebra R₁ S] [IsScalarTower R₁ R S]
     [Algebra R₀ R₁] [IsScalarTower R₀ R₁ R] :
     IsScalarTower R₀ R₁ P.Ring := IsScalarTower.of_algebraMap_eq' <| by
   rw [IsScalarTower.algebraMap_eq R₀ R, IsScalarTower.algebraMap_eq R₁ R,
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R₀ R₁ R]
 
-instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <| by
   rw [IsScalarTower.algebraMap_eq R₀ R P.Ring, ← RingHom.comp_assoc,
     ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
@@ -99,7 +99,7 @@ section Construction
 /-- Construct `Extension` from a surjective algebra homomorphism. -/
 @[simps -isSimp Ring σ]
 noncomputable
-def ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
+def ofSurjective {P : Type w} [Ring P] [IsMulCommutative P] [Algebra R P] (f : P →ₐ[R] S)
     (h : Function.Surjective f) : Extension.{w} R S where
   Ring := P
   algebra₂ := f.toAlgebra
@@ -121,7 +121,7 @@ abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
 
 section Localization
 
-variable (M : Submonoid S) {S' : Type*} [CommRing S'] [Algebra S S'] [IsLocalization M S']
+variable (M : Submonoid S) {S' : Type*} [Ring S'] [IsMulCommutative S'] [Algebra S S'] [IsLocalization M S']
 variable [Algebra R S'] [IsScalarTower R S S']
 
 /--
@@ -150,11 +150,11 @@ def localization (P : Extension.{w} R S) : Extension R S' where
 
 end Localization
 
-variable {T} [CommRing T] [Algebra R T]
+variable {T} [Ring T] [IsMulCommutative T] [Algebra R T]
 
 /-- The base change of an `R`-extension of `S` to `T` gives a `T`-extension of `T ⊗[R] S`. -/
 noncomputable
-def baseChange {T} [CommRing T] [Algebra R T] (P : Extension R S) : Extension T (T ⊗[R] S) where
+def baseChange {T} [Ring T] [IsMulCommutative T] [Algebra R T] (P : Extension R S) : Extension T (T ⊗[R] S) where
   Ring := T ⊗[R] P.Ring
   __ := ofSurjective (P := T ⊗[R] P.Ring) (Algebra.TensorProduct.map (AlgHom.id T T)
     (IsScalarTower.toAlgHom _ _ _)) (LinearMap.lTensor_surjective T
@@ -183,8 +183,8 @@ instance : IsScalarTower R P.Ring (P.baseChange (T := T)).Ring :=
 
 end Construction
 
-variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Extension R' S')
-variable {R'' S''} [CommRing R''] [CommRing S''] [Algebra R'' S''] (P'' : Extension R'' S'')
+variable {R' S'} [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R' S'] (P' : Extension R' S')
+variable {R'' S''} [Ring R''] [IsMulCommutative R''] [Ring S''] [IsMulCommutative S''] [Algebra R'' S''] (P'' : Extension R'' S'')
 
 section Hom
 
@@ -285,7 +285,7 @@ set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- The canonical hom from `P` to its base change `P.baseChange`. -/
 @[simps]
-noncomputable def toBaseChange (T : Type*) [CommRing T] [Algebra R T] :
+noncomputable def toBaseChange (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] :
     P.Hom (P.baseChange (T := T)) where
   toRingHom := TensorProduct.includeRight.toRingHom
   toRingHom_algebraMap x := by simp [baseChange]
@@ -382,10 +382,10 @@ instance Cotangent.module : Module S P.Cotangent where
     simpa only [sub_smul, mul_smul, sub_eq_zero] using! this
 
 noncomputable
-instance {R₀} [CommRing R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=
+instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=
   Module.compHom P.Cotangent (algebraMap R₀ S)
 
-instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂]
+instance {R₁ R₂} [Ring R₁] [IsMulCommutative R₁] [Ring R₂] [IsMulCommutative R₂] [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂]
     [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ P.Cotangent := by
   constructor
@@ -394,7 +394,7 @@ instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R
   rw [Algebra.smul_def, map_mul, mul_smul, ← IsScalarTower.algebraMap_apply]
 
 /-- The action of `R₀` on `P.Cotangent` for an extension `P → S`, if `S` is an `R₀` algebra. -/
-lemma Cotangent.val_smul''' {R₀} [CommRing R₀] [Algebra R₀ S] (r : R₀) (x : P.Cotangent) :
+lemma Cotangent.val_smul''' {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ S] (r : R₀) (x : P.Cotangent) :
     (r • x).val = P.σ (algebraMap R₀ S r) • x.val := rfl
 
 /-- The action of `S` on `P.Cotangent` for an extension `P → S`. -/

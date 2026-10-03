@@ -49,7 +49,7 @@ def arithGeom [Mul R] [Add R] (a b u₀ : R) : ℕ → R
 lemma arithGeom_succ [Mul R] [Add R] (n : ℕ) :
     arithGeom a b u₀ (n + 1) = a * arithGeom a b u₀ n + b := rfl
 
-lemma arithGeom_eq_add_sum [CommSemiring R] (n : ℕ) :
+lemma arithGeom_eq_add_sum [Semiring R] [IsMulCommutative R] (n : ℕ) :
     arithGeom a b u₀ n = a ^ n * u₀ + b * ∑ k ∈ Finset.range n, a ^ k := by
   induction n with
   | zero => simp
@@ -61,11 +61,11 @@ lemma arithGeom_eq_add_sum [CommSemiring R] (n : ℕ) :
     congr with k
     ring
 
-lemma arithGeom_same_eq_sum [CommSemiring R] (n : ℕ) :
+lemma arithGeom_same_eq_sum [Semiring R] [IsMulCommutative R] (n : ℕ) :
     arithGeom a b b n = b * ∑ k ∈ Finset.range (n + 1), a ^ k := by
   rw [arithGeom_eq_add_sum, Finset.sum_range_succ, mul_add, add_comm, mul_comm _ b]
 
-lemma arithGeom_zero_eq_sum [CommSemiring R] (n : ℕ) :
+lemma arithGeom_zero_eq_sum [Semiring R] [IsMulCommutative R] (n : ℕ) :
     arithGeom a b 0 n = b * ∑ k ∈ Finset.range n, a ^ k := by
   simp [arithGeom_eq_add_sum]
 

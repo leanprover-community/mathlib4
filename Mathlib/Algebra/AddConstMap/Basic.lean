@@ -140,34 +140,34 @@ theorem map_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F 
 
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
-theorem map_const_add [AddCommMagma G] [Add H] [AddConstMapClass F G H a b]
+theorem map_const_add [Add G] [IsAddCommutative G] [Add H] [AddConstMapClass F G H a b]
     (f : F) (x : G) : f (a + x) = f x + b := by
   rw [add_comm, map_add_const]
 
-theorem map_one_add [AddCommMonoidWithOne G] [Add H] [AddConstMapClass F G H 1 b]
+theorem map_one_add [AddMonoidWithOne G] [IsAddCommutative G] [Add H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) : f (1 + x) = f x + b := map_const_add f x
 
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
-theorem map_nsmul_add [AddCommMonoid G] [AddMonoid H] [AddConstMapClass F G H a b]
+theorem map_nsmul_add [AddMonoid G] [IsAddCommutative G] [AddMonoid H] [AddConstMapClass F G H a b]
     (f : F) (n : ℕ) (x : G) : f (n • a + x) = f x + n • b := by
   rw [add_comm, map_add_nsmul]
 
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
-theorem map_nat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
+theorem map_nat_add' [AddMonoidWithOne G] [IsAddCommutative G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℕ) (x : G) : f (↑n + x) = f x + n • b := by
   simpa using map_nsmul_add f n x
 
-theorem map_ofNat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
+theorem map_ofNat_add' [AddMonoidWithOne G] [IsAddCommutative G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℕ) [n.AtLeastTwo] (x : G) :
     f (ofNat(n) + x) = f x + ofNat(n) • b :=
   map_nat_add' f n x
 
-theorem map_nat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
+theorem map_nat_add [AddMonoidWithOne G] [IsAddCommutative G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℕ) (x : G) : f (↑n + x) = f x + n := by simp
 
-theorem map_ofNat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
+theorem map_ofNat_add [AddMonoidWithOne G] [IsAddCommutative G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℕ) [n.AtLeastTwo] (x : G) :
     f (ofNat(n) + x) = f x + ofNat(n) :=
   map_nat_add f n x
@@ -240,17 +240,17 @@ theorem map_sub_int [AddGroupWithOne G] [AddGroupWithOne H] [AddConstMapClass F 
 
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
-theorem map_zsmul_add [AddCommGroup G] [AddGroup H] [AddConstMapClass F G H a b]
+theorem map_zsmul_add [AddGroup G] [IsAddCommutative G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (n : ℤ) (x : G) : f (n • a + x) = f x + n • b := by
   rw [add_comm, map_add_zsmul]
 
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
-theorem map_int_add' [AddCommGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
+theorem map_int_add' [AddGroupWithOne G] [IsAddCommutative G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℤ) (x : G) : f (↑n + x) = f x + n • b := by
   rw [← map_zsmul_add, zsmul_one]
 
-theorem map_int_add [AddCommGroupWithOne G] [AddGroupWithOne H] [AddConstMapClass F G H 1 1]
+theorem map_int_add [AddGroupWithOne G] [IsAddCommutative G] [AddGroupWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℤ) (x : G) : f (↑n + x) = f x + n := by simp
 
 theorem map_fract {R : Type*} [Ring R] [LinearOrder R] [FloorRing R] [AddGroup H]
@@ -261,7 +261,7 @@ theorem map_fract {R : Type*} [Ring R] [LinearOrder R] [FloorRing R] [AddGroup H
 open scoped Relator in
 /-- Auxiliary lemmas for the "monotonicity on a fundamental interval implies monotonicity" lemmas.
 We formulate it for any relation so that the proof works both for `Monotone` and `StrictMono`. -/
-protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
+protected theorem rel_map_of_Icc [AddGroup G] [IsAddCommutative G] [LinearOrder G] [IsOrderedAddMonoid G]
     [Archimedean G] [AddGroup H]
     [AddConstMapClass F G H a b] {f : F} {R : H → H → Prop} [IsTrans H R]
     [hR : CovariantClass H H (fun x y ↦ y + x) R] (ha : 0 < a) {l : G}
@@ -302,27 +302,27 @@ protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddM
         refine hR (k • b) (hf _ ?_ _ ?_ ?_) <;> simpa
       · assumption
 
-theorem monotone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
-    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
+theorem monotone_iff_Icc [AddGroup G] [IsAddCommutative G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddGroup H] [IsAddCommutative H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     Monotone f ↔ MonotoneOn f (Icc l (l + a)) :=
   ⟨(Monotone.monotoneOn · _), fun hf ↦ monotone_iff_forall_lt.2 <|
     AddConstMapClass.rel_map_of_Icc ha fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
 
-theorem antitone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
-    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
+theorem antitone_iff_Icc [AddGroup G] [IsAddCommutative G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddGroup H] [IsAddCommutative H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     Antitone f ↔ AntitoneOn f (Icc l (l + a)) :=
   monotone_iff_Icc (H := Hᵒᵈ) ha l
 
-theorem strictMono_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
-    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
+theorem strictMono_iff_Icc [AddGroup G] [IsAddCommutative G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddGroup H] [IsAddCommutative H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     StrictMono f ↔ StrictMonoOn f (Icc l (l + a)) :=
   ⟨(StrictMono.strictMonoOn · _), AddConstMapClass.rel_map_of_Icc ha⟩
 
-theorem strictAnti_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
-    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
+theorem strictAnti_iff_Icc [AddGroup G] [IsAddCommutative G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddGroup H] [IsAddCommutative H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     StrictAnti f ↔ StrictAntiOn f (Icc l (l + a)) :=
   strictMono_iff_Icc (H := Hᵒᵈ) ha l
@@ -471,7 +471,7 @@ end AddMonoid
 
 section AddCommGroup
 
-variable {G H : Type*} [AddCommGroup G] [AddCommGroup H] {a : G} {b : H}
+variable {G H : Type*} [AddGroup G] [IsAddCommutative G] [AddGroup H] [IsAddCommutative H] {a : G} {b : H}
 
 /-- If `f : G → H` is an `AddConstMap`, then so is `fun x ↦ -f (-x)`. -/
 @[simps! apply_coe]

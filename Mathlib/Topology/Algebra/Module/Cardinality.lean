@@ -52,7 +52,7 @@ theorem continuum_le_cardinal_of_nontriviallyNormedField
 continuum. -/
 theorem continuum_le_cardinal_of_module
     (𝕜 : Type u) (E : Type v) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    [AddCommGroup E] [Module 𝕜 E] [Nontrivial E] : 𝔠 ≤ #E := by
+    [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [Nontrivial E] : 𝔠 ≤ #E := by
   have A : lift.{v} (𝔠 : Cardinal.{u}) ≤ lift.{v} (#𝕜) := by
     simpa using continuum_le_cardinal_of_nontriviallyNormedField 𝕜
   simpa using A.trans (Cardinal.mk_le_of_module 𝕜 E)
@@ -121,7 +121,7 @@ theorem cardinal_eq_of_isOpen
 /-- In a nontrivial topological vector space over a complete nontrivially normed field, any nonempty
 open set has cardinality at least continuum. -/
 theorem continuum_le_cardinal_of_isOpen
-    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
+    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddGroup E] [IsAddCommutative E]
     [Module 𝕜 E] [Nontrivial E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {s : Set E} (hs : IsOpen s) (h's : s.Nonempty) : 𝔠 ≤ #s := by
   simpa [cardinal_eq_of_isOpen 𝕜 hs h's] using continuum_le_cardinal_of_module 𝕜 E
@@ -129,7 +129,7 @@ theorem continuum_le_cardinal_of_isOpen
 /-- In a nontrivial topological vector space over a complete nontrivially normed field, any
 countable set has dense complement. -/
 theorem Set.Countable.dense_compl
-    {E : Type u} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
+    {E : Type u} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddGroup E] [IsAddCommutative E]
     [Module 𝕜 E] [Nontrivial E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {s : Set E} (hs : s.Countable) : Dense sᶜ := by
   rw [← interior_eq_empty_iff_dense_compl]

@@ -34,7 +34,7 @@ namespace IsPrimitiveRoot
 
 section CommRing
 
-variable {n : ℕ} {K : Type*} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
+variable {n : ℕ} {K : Type*} [Ring K] [IsMulCommutative K] {μ : K} (h : IsPrimitiveRoot μ n)
 include h
 
 /-- `μ` is integral over `ℤ`. -/

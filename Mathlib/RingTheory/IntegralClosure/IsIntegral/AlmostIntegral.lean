@@ -17,7 +17,7 @@ section
 
 open scoped nonZeroDivisors
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 variable (R) in
 /-- An element `s` in an `R`-algebra is almost integral if there exists `r ∈ R⁰` such that

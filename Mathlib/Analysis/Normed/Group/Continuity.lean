@@ -145,7 +145,7 @@ instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
 @[to_additive]
-instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
+instance NormedCommGroup.toENormedCommMonoid [NormedGroup E] [IsMulCommutative E] : ENormedCommMonoid E where
   __ := NormedGroup.toENormedMonoid
   __ := ‹NormedCommGroup E›
 
@@ -299,7 +299,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E}
+variable [SeminormedGroup E] [IsMulCommutative E] [SeminormedGroup F] [IsMulCommutative F] {a b : E}
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
@@ -409,7 +409,7 @@ lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
 
 @[to_additive]
-theorem tendsto_norm_div_self_nhdsNE {E : Type*} [NormedCommGroup E] (a : E) :
+theorem tendsto_norm_div_self_nhdsNE {E : Type*} [NormedGroup E] [IsMulCommutative E] (a : E) :
     Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) := by
   simp_rw [← norm_inv_mul]
   exact tendsto_norm_inv_mul_self_nhdsNE a

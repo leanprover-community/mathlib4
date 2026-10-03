@@ -198,7 +198,7 @@ end Group
 open scoped Combinatorics.Additive
 
 section CommGroup
-variable {G : Type*} [CommGroup G] [DecidableEq G] {A B : Finset G}
+variable {G : Type*} [Group G] [IsMulCommutative G] [DecidableEq G] {A B : Finset G}
 
 @[to_additive (attr := simp)]
 lemma mulConst_inv_left (A B : Finset G) : σₘ[A⁻¹, B] = δₘ[A, B] := by

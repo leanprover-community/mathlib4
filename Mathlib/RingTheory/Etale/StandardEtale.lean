@@ -40,7 +40,7 @@ open scoped Bivariate
 
 noncomputable section
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T] [Algebra R S] [Algebra R T]
 
 variable (R) in
 /-- A `StandardEtalePair R` is a pair `f g : R[X]` such that `f` is monic,
@@ -258,7 +258,7 @@ lemma HasMap.map_algebraMap [Algebra S T] [IsScalarTower R S T] {x : T} (H : P.H
 end StandardEtalePair
 
 /-- An isomorphism to the standard etale algebra of a standard etale pair. -/
-structure StandardEtalePresentation (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] extends
+structure StandardEtalePresentation (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] extends
     P : StandardEtalePair R where
   /-- The image of X in a `StandardEtalePresentation`. -/
   x : S
@@ -375,7 +375,7 @@ namespace Algebra
 
 /-- The class of standard etale algebras,
 defined to be the existence of a `StandardEtalePresentation`. -/
-class IsStandardEtale (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] where
+class IsStandardEtale (R S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] where
   nonempty_standardEtalePresentation : Nonempty (StandardEtalePresentation R S)
 
 attribute [instance] IsStandardEtale.nonempty_standardEtalePresentation
@@ -399,7 +399,7 @@ instance : IsStandardEtale R R :=
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
-    {Sₛ : Type*} [CommRing Sₛ] [Algebra S Sₛ]
+    {Sₛ : Type*} [Ring Sₛ] [IsMulCommutative Sₛ] [Algebra S Sₛ]
     [Algebra R Sₛ] [IsScalarTower R S Sₛ] (s : S) [IsLocalization.Away s Sₛ] :
     IsStandardEtale R Sₛ := by
   have P : StandardEtalePresentation R S := IsStandardEtale.nonempty_standardEtalePresentation.some

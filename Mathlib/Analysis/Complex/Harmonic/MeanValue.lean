@@ -38,9 +38,9 @@ namespace InnerProductSpace
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
+variable {G : Type*} [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G]
 
 /--
 Compositions of continuous ℝ-linear maps with functions that are harmonic on a set and continuous
@@ -56,7 +56,7 @@ end
 ## The Mean Value Property
 -/
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [CompleteSpace F]
 variable {f : ℂ → F} {c : ℂ} {R : ℝ}
 
 /--

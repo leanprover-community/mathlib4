@@ -23,7 +23,7 @@ variable {M N : Type*}
 
 namespace Submonoid.LocalizationMap
 
-variable [CommMonoidWithZero M] [CommMonoidWithZero N] {S : Submonoid M}
+variable [MonoidWithZero M] [IsMulCommutative M] [MonoidWithZero N] [IsMulCommutative N] {S : Submonoid M}
 
 theorem map_prime (f : S.LocalizationMap N) {m : M} (prime : Prime m)
     (n0 : f m ≠ 0) (nu : ¬ IsUnit (f m)) : Prime (f m) := by
@@ -73,10 +73,10 @@ theorem uniqueFactorizationMonoid (f : S.LocalizationMap N)
 
 end Submonoid.LocalizationMap
 
-variable [CommSemiring M] (S : Submonoid M)
+variable [Semiring M] [IsMulCommutative M] (S : Submonoid M)
 
 /-- A localization of a unique factorization monoid is still a unique factorization monoid. -/
-theorem UniqueFactorizationMonoid.of_isLocalization (N : Type*) [CommSemiring N] [Algebra M N]
+theorem UniqueFactorizationMonoid.of_isLocalization (N : Type*) [Semiring N] [IsMulCommutative N] [Algebra M N]
     [IsLocalization S N] [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid N :=
   (IsLocalization.toLocalizationMap S N).uniqueFactorizationMonoid
 

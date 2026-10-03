@@ -185,7 +185,7 @@ lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :
 
 section Eval₂
 
-variable {S : Type*} [CommSemiring S]
+variable {S : Type*} [Semiring S] [IsMulCommutative S]
 
 theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
     (hf : f.natDegree ≤ N) : eval₂ i (⅟x) (reflect N f) * x ^ N = eval₂ i x f := by
@@ -326,7 +326,7 @@ theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
 
 section Eval₂
 
-variable {S : Type*} [CommSemiring S]
+variable {S : Type*} [Semiring S] [IsMulCommutative S]
 
 theorem eval₂_reverse_mul_pow (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
     eval₂ i (⅟x) (reverse f) * x ^ f.natDegree = eval₂ i x f :=

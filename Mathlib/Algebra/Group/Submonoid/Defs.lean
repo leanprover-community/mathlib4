@@ -400,7 +400,7 @@ instance toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
-instance toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
+instance toCommMonoid {M} [Monoid M] [IsMulCommutative M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 
@@ -481,7 +481,7 @@ instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
 
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
-instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S :=
+instance toCommMonoid {M} [Monoid M] [IsMulCommutative M] (S : Submonoid M) : CommMonoid S :=
   SubmonoidClass.toCommMonoid S
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/

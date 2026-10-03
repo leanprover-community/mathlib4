@@ -148,7 +148,7 @@ end Ring
 
 section CommSemiring
 
-variable [CommSemiring R] [CharP R 2]
+variable [Semiring R] [IsMulCommutative R] [CharP R 2]
 
 theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
   simp [add_pow_two]
@@ -184,7 +184,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [CharP R 2] [NoZeroDivisors R]
+variable [Ring R] [IsMulCommutative R] [CharP R 2] [NoZeroDivisors R]
 
 theorem sq_injective : Function.Injective fun x : R ↦ x ^ 2 := by
   intro x y h

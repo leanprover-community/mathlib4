@@ -36,13 +36,13 @@ namespace ContinuousLinearMap
 
 @[grind =]
 theorem isIdempotentElem_toLinearMap_iff {R M : Type*} [Semiring R] [TopologicalSpace M]
-    [AddCommMonoid M] [Module R M] {f : M →L[R] M} :
+    [AddMonoid M] [IsAddCommutative M] [Module R M] {f : M →L[R] M} :
     IsIdempotentElem f.toLinearMap ↔ IsIdempotentElem f := by
   simp only [IsIdempotentElem, Module.End.mul_eq_comp, ← toLinearMap_comp, mul_def, coe_inj]
 
 alias ⟨_, IsIdempotentElem.toLinearMap⟩ := isIdempotentElem_toLinearMap_iff
 
-variable {R M : Type*} [Ring R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [TopologicalSpace M] [AddGroup M] [IsAddCommutative M] [Module R M]
 
 open ContinuousLinearMap
 

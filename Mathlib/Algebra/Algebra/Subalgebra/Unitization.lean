@@ -51,7 +51,7 @@ this map to be injective it suffices that the range omits `1`. In this setting w
 
 namespace Unitization
 
-variable {R A C : Type*} [CommSemiring R] [NonUnitalSemiring A]
+variable {R A C : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [Semiring C] [Algebra R C]
 
 theorem lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
@@ -73,7 +73,7 @@ namespace NonUnitalSubalgebra
 
 section Semiring
 
-variable {R S A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [SetLike S A]
+variable {R S A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [SetLike S A]
   [hSA : NonUnitalSubsemiringClass S A] [hSRA : SMulMemClass S R A] (s : S)
 
 /-- The natural `R`-algebra homomorphism from the unitization of a non-unital subalgebra into
@@ -95,7 +95,7 @@ end Semiring
 /-- A sufficient condition for injectivity of `NonUnitalSubalgebra.unitization` when the scalars
 are a commutative ring. When the scalars are a field, one should use the more natural
 `NonUnitalStarSubalgebra.unitization_injective` whose hypothesis is easier to verify. -/
-theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R] [Ring A]
+theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [Ring R] [IsMulCommutative R] [Ring A]
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
     (s : S) (h : ∀ r, r ≠ 0 → algebraMap R A r ∉ s)
     [FunLike F (Unitization R s) A] [AlgHomClass F R (Unitization R s) A]
@@ -199,7 +199,7 @@ end NonUnitalSubring
 
 namespace Unitization
 
-variable {R A C : Type*} [CommSemiring R] [NonUnitalSemiring A] [StarRing R] [StarRing A]
+variable {R A C : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [StarRing R] [StarRing A]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarModule R A]
 variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 
@@ -225,7 +225,7 @@ namespace NonUnitalStarSubalgebra
 
 section Semiring
 
-variable {R S A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]
+variable {R S A : Type*} [Semiring R] [IsMulCommutative R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]
   [StarModule R A] [SetLike S A] [hSA : NonUnitalSubsemiringClass S A] [hSRA : SMulMemClass S R A]
   [StarMemClass S A] (s : S)
 /-- The natural star `R`-algebra homomorphism from the unitization of a non-unital star subalgebra

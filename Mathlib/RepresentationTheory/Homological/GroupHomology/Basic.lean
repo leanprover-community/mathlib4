@@ -76,7 +76,7 @@ universe u v w
 
 open CategoryTheory CategoryTheory.Limits
 
-variable (k G : Type u) [CommRing k] [Group G]
+variable (k G : Type u) [Ring k] [IsMulCommutative k] [Group G]
 
 open MonoidalCategory Representation Finsupp
 
@@ -117,7 +117,7 @@ namespace groupHomology
 
 open Rep Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (n : ℕ)
+variable {k G : Type u} [Ring k] [IsMulCommutative k] [Group G] (A : Rep.{u} k G) (n : ℕ)
 
 namespace inhomogeneousChains
 
@@ -221,7 +221,7 @@ end groupHomology
 
 open groupHomology Rep
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
+variable {k G : Type u} [Ring k] [IsMulCommutative k] [Group G] (A : Rep k G)
 
 /-- The group homology of a `k`-linear `G`-representation `A`, as the homology of its complex
 of inhomogeneous chains. -/

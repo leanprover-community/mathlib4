@@ -35,7 +35,7 @@ section PolynomialDetermination
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] [IsDomain R] {f g : R[X]}
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] {f g : R[X]}
 
 section Finset
 
@@ -522,7 +522,7 @@ end Interpolate
 
 section Nodal
 
-variable {R : Type*} [CommRing R] {ι : Type*}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {ι : Type*}
 variable {s : Finset ι} {v : ι → R}
 
 open Finset Polynomial

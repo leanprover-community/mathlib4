@@ -23,7 +23,7 @@ import Mathlib.Tactic.NormNum
 namespace LinearMap
 
 variable {R : Type*} [Semiring R]
-  {U V : Type*} [AddCommMonoid U] [AddCommMonoid V]
+  {U V : Type*} [AddMonoid U] [IsAddCommutative U] [AddMonoid V] [IsAddCommutative V]
   [Module R U] [Module R V] (e : V ≃ₗ[R] V)
 
 
@@ -40,7 +40,7 @@ theorem mem_fixedSubmodule_iff {f : V →ₗ[R] V} {v : V} :
   simp [fixedSubmodule]
 
 theorem fixedSubmodule_eq_ker {R : Type*} [Ring R]
-    {V : Type*} [AddCommGroup V] [Module R V] (f : V →ₗ[R] V) :
+    {V : Type*} [AddGroup V] [IsAddCommutative V] [Module R V] (f : V →ₗ[R] V) :
     f.fixedSubmodule = LinearMap.ker (f - id (R := R)) := by
   ext; simp [sub_eq_zero]
 
@@ -63,7 +63,7 @@ open scoped Pointwise
 open LinearMap Submodule MulAction
 
 variable {R : Type*} [Semiring R]
-  {U V : Type*} [AddCommMonoid U] [AddCommMonoid V]
+  {U V : Type*} [AddMonoid U] [IsAddCommutative U] [AddMonoid V] [IsAddCommutative V]
   [Module R U] [Module R V] (e : V ≃ₗ[R] V)
 
 variable {P : Submodule R U} {Q : Submodule R V}
@@ -101,7 +101,7 @@ theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
     rwa [← hv', he w hv]
   · refine ⟨v, hv, he v hv⟩
 
-variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- When `u : V ≃ₗ[R] V` maps a submodule `W` into itself,

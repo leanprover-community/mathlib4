@@ -123,7 +123,7 @@ lemma swap_mul_self (i j : n) : swap R i j * swap R i j = 1 := by
 end
 
 namespace GeneralLinearGroup
-variable (R : Type*) {n : Type*} [CommRing R] [DecidableEq n] [Fintype n]
+variable (R : Type*) {n : Type*} [Ring R] [IsMulCommutative R] [DecidableEq n] [Fintype n]
 
 /-- `Matrix.swap` as an element of `GL n R`. -/
 @[simps val]
@@ -133,7 +133,7 @@ def swap (i j : n) : GL n R where
   val_inv := swap_mul_self i j
   inv_val := swap_mul_self i j
 
-variable {R} {S : Type*} [CommRing S] (f : R →+* S)
+variable {R} {S : Type*} [Ring S] [IsMulCommutative S] (f : R →+* S)
 
 @[simp]
 lemma map_swap (i j : n) : (swap R i j).map f = swap S i j := by

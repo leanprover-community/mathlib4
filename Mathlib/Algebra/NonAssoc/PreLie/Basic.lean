@@ -57,7 +57,7 @@ class RightPreLieRing (L : Type*) extends NonUnitalNonAssocRing L where
 
 section algebras
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
 /-- A `LeftPreLieAlgebra` is a `LeftPreLieRing` with an action of a `CommRing` satisfying
 `r • x * y = r • (x * y)` and ` x * (r • y) = r • (x * y)`. -/
@@ -73,7 +73,7 @@ class RightPreLieAlgebra (L : Type*) [RightPreLieRing L] : Type _ extends
 
 end algebras
 
-variable {R L : Type*} [CommRing R]
+variable {R L : Type*} [Ring R] [IsMulCommutative R]
 
 namespace LeftPreLieRing
 

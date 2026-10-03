@@ -29,7 +29,7 @@ section Unital
 
 /-- An extension of the `ContinuousFunctionalCalculus` requiring that `cfcHom` is an isometry. -/
 class IsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
-    [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+    [Semiring R] [IsMulCommutative R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [MetricSpace A] [Algebra R A] : Prop
     extends ContinuousFunctionalCalculus R A p where
   isometric (a : A) (ha : p a) : Isometry (cfcHom ha (R := R))
@@ -38,7 +38,7 @@ section MetricSpace
 
 open scoped ContinuousFunctionalCalculus
 
-variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
+variable {R A : Type*} {p : A → Prop} [Semiring R] [IsMulCommutative R] [StarRing R]
   [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
   [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
 
@@ -225,7 +225,7 @@ section NonUnital
 /-- An extension of the `NonUnitalContinuousFunctionalCalculus` requiring that `cfcₙHom` is an
 isometry. -/
 class NonUnitalIsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
-    [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
+    [Semiring R] [IsMulCommutative R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [MetricSpace A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Prop
     extends NonUnitalContinuousFunctionalCalculus R A p where
@@ -234,7 +234,7 @@ class NonUnitalIsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam
 section MetricSpace
 
 variable {R A : Type*} {p : outParam (A → Prop)}
-variable [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
+variable [Semiring R] [IsMulCommutative R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
 variable [ContinuousStar R]
 variable [NonUnitalRing A] [StarRing A] [MetricSpace A] [Module R A]
 variable [IsScalarTower R A A] [SMulCommClass R A A]

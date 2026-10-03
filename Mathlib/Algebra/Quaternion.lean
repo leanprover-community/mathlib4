@@ -326,7 +326,7 @@ instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂,c�
 instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂,c₃] where
   smul_comm s t x := by ext <;> exact smul_comm _ _ _
 
-@[simp] theorem im_smul {S} [CommRing R] [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
+@[simp] theorem im_smul {S} [Ring R] [IsMulCommutative R] [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
   QuaternionAlgebra.ext (smul_zero s).symm rfl rfl rfl
 
 @[simp]
@@ -339,7 +339,7 @@ end SMul
 instance [Monoid S] [MulAction S R] : MulAction S ℍ[R,c₁,c₂,c₃] :=
   (equivProd ..).injective.mulAction _ fun _ _ ↦ rfl
 
-instance [AddCommGroup R] : AddCommGroup ℍ[R,c₁,c₂,c₃] := by
+instance [AddGroup R] [IsAddCommutative R] : AddCommGroup ℍ[R,c₁,c₂,c₃] := by
   apply (equivProd c₁ c₂ c₃).injective.addCommGroup <;> intros <;> rfl
 
 @[simp, norm_cast]
@@ -347,14 +347,14 @@ theorem coe_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
     (↑(s • r) : ℍ[R,c₁,c₂,c₃]) = s • (r : ℍ[R,c₁,c₂,c₃]) :=
   QuaternionAlgebra.ext rfl (smul_zero _).symm (smul_zero _).symm (smul_zero _).symm
 
-instance [Semiring S] [AddCommGroup R] [DistribMulAction S R] : DistribMulAction S ℍ[R,c₁,c₂,c₃] :=
+instance [Semiring S] [AddGroup R] [IsAddCommutative R] [DistribMulAction S R] : DistribMulAction S ℍ[R,c₁,c₂,c₃] :=
   (addEquivProd ..).injective.distribMulAction (addEquivProd c₁ c₂ c₃).toAddMonoidHom fun _ _ ↦ rfl
 
-instance [Semiring S] [AddCommGroup R] [Module S R] : Module S ℍ[R,c₁,c₂,c₃] :=
+instance [Semiring S] [AddGroup R] [IsAddCommutative R] [Module S R] : Module S ℍ[R,c₁,c₂,c₃] :=
   (addEquivProd ..).injective.module _ (addEquivProd c₁ c₂ c₃).toAddMonoidHom fun _ _ ↦ rfl
 
 section AddCommGroupWithOne
-variable [AddCommGroupWithOne R]
+variable [AddGroupWithOne R] [IsAddCommutative R]
 
 instance : AddCommGroupWithOne ℍ[R,c₁,c₂,c₃] where
   natCast n := ((n : R) : ℍ[R,c₁,c₂,c₃])
@@ -432,7 +432,7 @@ theorem coe_intCast (z : ℤ) : ↑(z : R) = (z : ℍ[R,c₁,c₂,c₃]) :=
 end AddCommGroupWithOne
 
 -- For the remainder of the file we assume `CommRing R`.
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
   left_distrib _ _ _ := by ext <;> simp <;> ring
@@ -451,7 +451,7 @@ lemma coe_ofNat {n : ℕ} [n.AtLeastTwo] :
     ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
-instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
+instance [Semiring S] [IsMulCommutative S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
   algebraMap :=
   { toFun s := coe (algebraMap S R s)
     map_one' := by simp only [map_one, coe_one]
@@ -706,7 +706,7 @@ theorem Quaternion.equivTuple_apply (R : Type*) [Zero R] [One R] [Neg R] (x : �
 
 namespace Quaternion
 
-variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
+variable {S T R : Type*} [Ring R] [IsMulCommutative R] (r x y : R) (a b : ℍ[R])
 
 /-- Coercion `R → ℍ[R]`. -/
 @[coe] def coe : R → ℍ[R] := QuaternionAlgebra.coe
@@ -1065,7 +1065,7 @@ variable {R : Type*}
 
 section LinearOrderedCommRing
 
-variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {a : ℍ[R]}
+variable [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by

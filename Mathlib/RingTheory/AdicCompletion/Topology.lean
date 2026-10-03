@@ -24,7 +24,7 @@ public section
 
 section TopologicalSpace
 
-variable {R : Type*} [CommRing R] [TopologicalSpace R] {I : Ideal R} (hI : IsAdic I)
+variable {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R] {I : Ideal R} (hI : IsAdic I)
 
 include hI in
 /-- `IsHausdorff I R` is equivalent to being Hausdorff in the adic topology. -/
@@ -38,7 +38,7 @@ section UniformSpace
 
 open scoped Uniformity
 
-variable {R : Type*} [CommRing R] [UniformSpace R] [IsUniformAddGroup R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [UniformSpace R] [IsUniformAddGroup R]
   {I : Ideal R} (hI : IsAdic I)
 
 include hI in
@@ -80,7 +80,7 @@ end UniformSpace
 
 section congrRingEquiv
 
-variable {R S : Type*} [CommRing R] [CommRing S] (I : Ideal R) (e : R ≃+* S)
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (I : Ideal R) (e : R ≃+* S)
 
 theorem IsPrecomplete.congr_ringEquiv : IsPrecomplete (I.map e) S ↔ IsPrecomplete I R := by
   let : WithIdeal R := ⟨I⟩

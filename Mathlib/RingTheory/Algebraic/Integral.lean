@@ -46,7 +46,7 @@ open Polynomial
 
 section zero_ne_one
 
-variable {R : Type u} {A : Type v} [CommRing R]
+variable {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R]
 variable [Ring A] [Algebra R A]
 
 /-- An integral element of an algebra is algebraic. -/
@@ -81,8 +81,8 @@ alias ⟨IsAlgebraic.isIntegral, _⟩ := isAlgebraic_iff_isIntegral
 protected instance Algebra.IsAlgebraic.isIntegral [Algebra.IsAlgebraic K A] :
     Algebra.IsIntegral K A := Algebra.isAlgebraic_iff_isIntegral.mp ‹_›
 
-theorem Algebra.IsAlgebraic.of_isIntegralClosure (R B C : Type*) [CommRing R] [Nontrivial R]
-    [CommRing B] [CommRing C] [Algebra R B] [Algebra R C] [Algebra B C]
+theorem Algebra.IsAlgebraic.of_isIntegralClosure (R B C : Type*) [Ring R] [IsMulCommutative R] [Nontrivial R]
+    [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C] [Algebra R B] [Algebra R C] [Algebra B C]
     [IsScalarTower R B C] [IsIntegralClosure B R C] : Algebra.IsAlgebraic R B :=
   have := IsIntegralClosure.isIntegral_algebra R (A := B) C
   inferInstance
@@ -95,7 +95,7 @@ variable (K L R : Type*) {A : Type*}
 
 section Ring
 
-variable [CommRing R] [Nontrivial R] [Ring A] [Algebra R A]
+variable [Ring R] [IsMulCommutative R] [Nontrivial R] [Ring A] [Algebra R A]
 
 theorem IsAlgebraic.of_finite (e : A) [Module.Finite R A] : IsAlgebraic R e :=
   (IsIntegral.of_finite R e).isAlgebraic
@@ -137,7 +137,7 @@ end Field
 
 end
 
-variable {R S A : Type*} [CommRing R] [CommRing S] [Ring A]
+variable {R S A : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring A]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 variable {z : A}
 
@@ -189,7 +189,7 @@ theorem iff_exists_smul_integral [IsReduced R] :
 
 section integralClosure
 
-variable {K : Type*} [CommRing K] [Algebra S K] [Algebra R K] [IsIntegralClosure S R K]
+variable {K : Type*} [Ring K] [IsMulCommutative K] [Algebra S K] [Algebra R K] [IsIntegralClosure S R K]
 
 variable (S)
 
@@ -504,7 +504,7 @@ namespace Algebra.IsAlgebraic
 
 section IsFractionRing
 
-variable (R S) (R' S' : Type*) [CommRing S'] [FaithfulSMul R S] [alg : Algebra.IsAlgebraic R S]
+variable (R S) (R' S' : Type*) [Ring S'] [IsMulCommutative S'] [FaithfulSMul R S] [alg : Algebra.IsAlgebraic R S]
   [NoZeroDivisors S] [Algebra S S'] [IsFractionRing S S']
 
 instance : IsLocalization (algebraMapSubmonoid S R⁰) S' :=
@@ -519,7 +519,7 @@ variable [Algebra R S'] [IsScalarTower R S S']
 instance : IsLocalizedModule R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap :=
   isLocalizedModule_iff_isLocalization.mpr inferInstance
 
-variable [CommRing R'] [Algebra R R'] [IsFractionRing R R']
+variable [Ring R'] [IsMulCommutative R'] [Algebra R R'] [IsFractionRing R R']
 
 theorem isBaseChange_of_isFractionRing [Module R' S'] [IsScalarTower R R' S'] :
     IsBaseChange R' (IsScalarTower.toAlgHom R S S').toLinearMap :=
@@ -532,12 +532,12 @@ instance : IsPushout R S R' S' := .symm inferInstance
 
 end IsFractionRing
 
-variable (R) (R' : Type*) (S : Type u) [CommRing R'] [CommRing S] [Algebra R S]
+variable (R) (R' : Type*) (S : Type u) [Ring R'] [IsMulCommutative R'] [Ring S] [IsMulCommutative S] [Algebra R S]
   [Algebra R R'] [IsFractionRing R R'] [FaithfulSMul R S] [Algebra.IsAlgebraic R S]
 
 section
 
-variable [NoZeroDivisors S] (S' : Type v) [CommRing S'] [Algebra R S'] [Algebra S S'] [Module R' S']
+variable [NoZeroDivisors S] (S' : Type v) [Ring S'] [IsMulCommutative S'] [Algebra R S'] [Algebra S S'] [Module R' S']
   [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S']
 
 theorem lift_rank_of_isFractionRing :
@@ -547,7 +547,7 @@ theorem lift_rank_of_isFractionRing :
 
 @[deprecated (since := "2026-07-13")] alias finrank_of_isFractionRing := IsFractionRing.finrank_eq
 
-theorem rank_of_isFractionRing (S' : Type u) [CommRing S'] [Algebra R S'] [Algebra S S']
+theorem rank_of_isFractionRing (S' : Type u) [Ring S'] [IsMulCommutative S'] [Algebra R S'] [Algebra S S']
     [Module R' S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S'] :
     Module.rank R' S' = Module.rank R S := by
   simpa using lift_rank_of_isFractionRing R R' S S'
@@ -565,7 +565,7 @@ attribute [local instance] FractionRing.liftAlgebra in
 /-- Tower law for `Module.finrank` in a tower of domains `R → S → T`. This is a variant of
 `Module.finrank_mul_finrank` that assumes the rings are domains instead of the modules being
 free. -/
-theorem Module.finrank_mul_finrank' (T : Type*) [CommRing T] [IsDomain T]
+theorem Module.finrank_mul_finrank' (T : Type*) [Ring T] [IsMulCommutative T] [IsDomain T]
     [Algebra S T] [Algebra R T] [IsScalarTower R S T] [FaithfulSMul S T] :
     Module.finrank R S * Module.finrank S T = Module.finrank R T := by
   by_cases h : FaithfulSMul R S
@@ -604,7 +604,7 @@ variable [alg : Algebra.IsAlgebraic R S]
 
 section Pushout
 
-variable (R S) (R' : Type*) [CommRing R'] [Algebra R R'] [NoZeroDivisors R'] [FaithfulSMul R R']
+variable (R S) (R' : Type*) [Ring R'] [IsMulCommutative R'] [Algebra R R'] [NoZeroDivisors R'] [FaithfulSMul R R']
 
 open TensorProduct in
 instance Algebra.IsAlgebraic.tensorProduct : Algebra.IsAlgebraic R' (R' ⊗[R] S) where
@@ -613,7 +613,7 @@ instance Algebra.IsAlgebraic.tensorProduct : Algebra.IsAlgebraic R' (R' ⊗[R] S
     have := (FaithfulSMul.algebraMap_injective R R').nontrivial
     p.inductionOn (fun _ s ↦ .tmul _ <| alg.1 s) (fun _ _ ↦ .add)
 
-variable (S' : Type*) [CommRing S'] [Algebra R S'] [Algebra S S'] [Algebra R' S']
+variable (S' : Type*) [Ring S'] [IsMulCommutative S'] [Algebra R S'] [Algebra S S'] [Algebra R' S']
   [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 theorem Algebra.IsPushout.isAlgebraic' [IsPushout R R' S S'] : Algebra.IsAlgebraic R' S' :=

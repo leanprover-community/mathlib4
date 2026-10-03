@@ -66,8 +66,8 @@ Schwartz space, tempered distributions
 open scoped Nat NNReal ContDiff
 
 variable {ι 𝕜 𝕜' D E F G H V : Type*}
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+variable [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
 
 variable (E F) in
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
@@ -564,9 +564,9 @@ section CLM
 
 
 variable [NormedField 𝕜] [NormedField 𝕜']
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [NormedAddGroup D] [IsAddCommutative D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
+variable [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 variable {σ : 𝕜 →+* 𝕜'}
 
 /-- Create a semilinear map between Schwartz spaces.
@@ -631,7 +631,7 @@ end CLM
 section EvalCLM
 
 variable [NormedField 𝕜]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
+variable [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
 variable (𝕜 E G) in
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
@@ -660,8 +660,8 @@ end EvalCLM
 section Multiplication
 
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
-  [NormedAddCommGroup D] [NormedSpace ℝ D]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [NormedAddGroup D] [IsAddCommutative D] [NormedSpace ℝ D]
+  [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 F]
 
 section bilin
@@ -901,7 +901,7 @@ section Comp
 
 variable (𝕜)
 variable [RCLike 𝕜]
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [NormedAddGroup D] [IsAddCommutative D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 F]
 
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
@@ -1016,8 +1016,8 @@ section Postcomp
 
 variable [RCLike 𝕜]
   [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G]
-  [NormedAddCommGroup H] [NormedSpace ℝ H] [NormedSpace 𝕜 H]
+  [NormedAddGroup G] [IsAddCommutative G] [NormedSpace ℝ G] [NormedSpace 𝕜 G]
+  [NormedAddGroup H] [IsAddCommutative H] [NormedSpace ℝ H] [NormedSpace 𝕜 H]
 
 /-- Postcomposition with a continuous linear map is a continuous linear map on Schwartz
 functions. -/
@@ -1087,8 +1087,8 @@ section Integration
 open Real Filter MeasureTheory MeasureTheory.Measure Module
 
 variable [RCLike 𝕜]
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
+variable [NormedAddGroup D] [IsAddCommutative D] [NormedSpace ℝ D]
+variable [NormedAddGroup V] [IsAddCommutative V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
 variable [MeasurableSpace D]
 
 variable {μ : Measure D} [hμ : HasTemperateGrowth μ]
@@ -1252,7 +1252,7 @@ section Lp
 open MeasureTheory
 open scoped NNReal ENNReal
 
-variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
+variable [NormedAddGroup D] [IsAddCommutative D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
   [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 variable (𝕜 F) in
@@ -1393,9 +1393,9 @@ section L2
 
 open MeasureTheory
 
-variable [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H]
+variable [NormedAddGroup H] [IsAddCommutative H] [NormedSpace ℝ H] [FiniteDimensional ℝ H]
   [MeasurableSpace H] [BorelSpace H]
-  [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+  [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℂ V]
 
 @[simp]
 theorem inner_toL2_toL2_eq (f g : 𝓢(H, V)) (μ : Measure H := by volume_tac) [μ.HasTemperateGrowth] :

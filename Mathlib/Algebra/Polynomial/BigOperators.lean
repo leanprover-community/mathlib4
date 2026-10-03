@@ -17,7 +17,7 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 ## Main results
 
 - `Polynomial.natDegree_prod_of_monic` : the degree of a product of monic polynomials is the
-  product of degrees. We prove this only for `[CommSemiring R]`,
+  product of degrees. We prove this only for `[Semiring R] [IsMulCommutative R]`,
   but it ought to be true for `[Semiring R]` and `List.prod`.
 - `Polynomial.natDegree_prod` : for polynomials over an integral domain,
   the degree of the product is the sum of degrees.
@@ -129,7 +129,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] (f : ι → R[X]) (t : Multiset R[X])
+variable [Semiring R] [IsMulCommutative R] (f : ι → R[X]) (t : Multiset R[X])
 
 theorem natDegree_multiset_prod_le : t.prod.natDegree ≤ (t.map natDegree).sum :=
   Quotient.inductionOn t (by simpa using natDegree_list_prod_le)
@@ -246,7 +246,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 open Monic
 
@@ -284,7 +284,7 @@ theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
   simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
 
-lemma degree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f : ι → R[X]}
+lemma degree_sum_eq_of_linearIndepOn {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] {f : ι → R[X]}
     {v : ι → A} (h : LinearIndepOn R v s) :
     (∑ i ∈ s, v i • (f i).map (algebraMap R A)).degree = s.sup (fun i ↦ (f i).degree) := by
   apply le_antisymm
@@ -305,7 +305,7 @@ lemma degree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f :
 
 -- Note: Proof duplicated from the `degree` version, since the statements don't
 -- trivially follow from each other.
-lemma natDegree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f : ι → R[X]}
+lemma natDegree_sum_eq_of_linearIndepOn {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] {f : ι → R[X]}
     {v : ι → A} (h : LinearIndepOn R v s) :
     (∑ i ∈ s, v i • (f i).map (algebraMap R A)).natDegree = s.sup (fun i ↦ (f i).natDegree) := by
   apply le_antisymm
@@ -359,7 +359,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [NoZeroDivisors R] (f : ι → R[X]) (t : Multiset R[X])
+variable [Semiring R] [IsMulCommutative R] [NoZeroDivisors R] (f : ι → R[X]) (t : Multiset R[X])
 
 /-- The degree of a product of polynomials is equal to
 the sum of the degrees.

@@ -27,7 +27,7 @@ open Coalgebra Function Module TensorProduct
 variable {F R A B : Type*}
 
 section CommSemiring
-variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Coalgebra R A]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [AddMonoid B] [IsAddCommutative B] [Module R A] [Coalgebra R A]
   [Module R B] [Coalgebra R B] {a b : A}
 
 variable (R) in
@@ -95,7 +95,7 @@ end GroupLike
 end CommSemiring
 
 section CommRing
-variable [CommRing R] [IsDomain R] [AddCommGroup A] [Module R A] [Coalgebra R A]
+variable [Ring R] [IsMulCommutative R] [IsDomain R] [AddGroup A] [IsAddCommutative A] [Module R A] [Coalgebra R A]
   [IsTorsionFree R A]
 
 open Submodule in

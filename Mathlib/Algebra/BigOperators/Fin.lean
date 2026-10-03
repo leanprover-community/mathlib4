@@ -36,7 +36,7 @@ variable {ι M : Type*}
 namespace Finset
 
 @[to_additive]
-theorem prod_range [CommMonoid M] {n : ℕ} (f : ℕ → M) :
+theorem prod_range [Monoid M] [IsMulCommutative M] {n : ℕ} (f : ℕ → M) :
     ∏ i ∈ Finset.range n, f i = ∏ i : Fin n, f i :=
   (Fin.prod_univ_eq_prod_range _ _).symm
 
@@ -46,7 +46,7 @@ namespace Fin
 
 section CommMonoid
 
-variable [CommMonoid M] {n : ℕ}
+variable [Monoid M] [IsMulCommutative M] {n : ℕ}
 
 @[to_additive]
 theorem prod_ofFn (f : Fin n → M) : (List.ofFn f).prod = ∏ i, f i := by
@@ -459,7 +459,7 @@ theorem prod_prod_eq_prod_triangle_mul (f : Fin (n + 1) → Fin n → M) :
 
 end CommMonoid
 
-theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) :
+theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [Semiring R] [IsMulCommutative R] (a b : R) :
     (∑ s : Finset (Fin n), a ^ s.card * b ^ (n - s.card)) = (a + b) ^ n := by
   simpa using Fintype.sum_pow_mul_eq_add_pow (Fin n) a b
 
@@ -719,7 +719,7 @@ namespace List
 
 section CommMonoid
 
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 @[to_additive]
 theorem prod_take_ofFn {n : ℕ} (f : Fin n → M) (i : ℕ) :
@@ -751,7 +751,7 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → M} : (ofFn f).prod = ∏ i, f i :=
 end CommMonoid
 
 @[to_additive]
-theorem alternatingProd_eq_finsetProd {G : Type*} [DivisionCommMonoid G] :
+theorem alternatingProd_eq_finsetProd {G : Type*} [DivisionMonoid G] [IsMulCommutative G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ)
   | [] => by
     rw [alternatingProd, Finset.prod_eq_one]
@@ -780,7 +780,7 @@ end List
 
 The chosen spelling, which gives definitional power over `d`, is influenced by downstream
 applications such as `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. -/
-lemma Fin.sum_neg_one_pow_eq_zero {α : Type*} [AddCommGroup α]
+lemma Fin.sum_neg_one_pow_eq_zero {α : Type*} [AddGroup α] [IsAddCommutative α]
     {n : ℕ} (d : Fin (n + 2) → α) (r : Fin (n + 1) → α)
     (h_first : d 0 = r 0)
     (h_mid : ∀ i : Fin n, d i.succ.castSucc = r i.castSucc + r i.succ)

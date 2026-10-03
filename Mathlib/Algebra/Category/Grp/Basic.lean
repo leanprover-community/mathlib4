@@ -253,14 +253,14 @@ end GrpCat
 structure AddCommGrpCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
-  [str : AddCommGroup carrier]
+  [str : AddGroup carrier] [IsAddCommutative carrier]
 
 /-- The category of groups and group morphisms. -/
 @[to_additive]
 structure CommGrpCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
-  [str : CommGroup carrier]
+  [str : Group carrier] [IsMulCommutative carrier]
 
 attribute [instance] AddCommGrpCat.str CommGrpCat.str
 
@@ -280,7 +280,7 @@ attribute [coe] AddCommGrpCat.carrier CommGrpCat.carrier
 
 /-- Construct a bundled `CommGrpCat` from the underlying type and typeclass. -/
 @[to_additive /-- Construct a bundled `AddCommGrpCat` from the underlying type and typeclass. -/]
-abbrev of (M : Type u) [CommGroup M] : CommGrpCat := ⟨M⟩
+abbrev of (M : Type u) [Group M] [IsMulCommutative M] : CommGrpCat := ⟨M⟩
 
 end CommGrpCat
 
@@ -332,7 +332,7 @@ abbrev Hom.hom {X Y : CommGrpCat.{u}} (f : Hom X Y) :=
 
 /-- Typecheck a `MonoidHom` as a morphism in `CommGrpCat`. -/
 @[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGrpCat`. -/]
-abbrev ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : of X ⟶ of Y :=
+abbrev ofHom {X Y : Type u} [Group X] [IsMulCommutative X] [Group Y] [IsMulCommutative Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := CommGrpCat) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
@@ -363,7 +363,7 @@ instance : Inhabited CommGrpCat :=
 
 @[to_additive]
 -- This is not `simp` to avoid rewriting in types of terms.
-theorem coe_of (R : Type u) [CommGroup R] : ↑(CommGrpCat.of R) = R :=
+theorem coe_of (R : Type u) [Group R] [IsMulCommutative R] : ↑(CommGrpCat.of R) = R :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -388,23 +388,23 @@ lemma hom_ext {X Y : CommGrpCat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [Group X] [IsMulCommutative X] [Group Y] [IsMulCommutative Y] (f : X →* Y) : (ofHom f).hom = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {X Y : CommGrpCat} (f : X ⟶ Y) :
     ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
-lemma ofHom_id {X : Type u} [CommGroup X] : ofHom (MonoidHom.id X) = 𝟙 (of X) := rfl
+lemma ofHom_id {X : Type u} [Group X] [IsMulCommutative X] : ofHom (MonoidHom.id X) = 𝟙 (of X) := rfl
 
 @[to_additive (attr := simp)]
-lemma ofHom_comp {X Y Z : Type u} [CommGroup X] [CommGroup Y] [CommGroup Z]
+lemma ofHom_comp {X Y Z : Type u} [Group X] [IsMulCommutative X] [Group Y] [IsMulCommutative Y] [Group Z] [IsMulCommutative Z]
     (f : X →* Y) (g : Y →* Z) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
 @[to_additive]
-lemma ofHom_apply {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
+lemma ofHom_apply {X Y : Type u} [Group X] [IsMulCommutative X] [Group Y] [IsMulCommutative Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
 -- This is essentially an alias for `Iso.hom_inv_id_apply`; consider deprecation?
@@ -422,7 +422,7 @@ instance hasForgetToGroup : HasForget₂ CommGrpCat GrpCat where
   forget₂.obj X := ↧X
   forget₂.map f := GrpCat.ofHom f.hom
 
-@[to_additive (attr := simp)] lemma forget₂_grp_map_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y]
+@[to_additive (attr := simp)] lemma forget₂_grp_map_ofHom {X Y : Type u} [Group X] [IsMulCommutative X] [Group Y] [IsMulCommutative Y]
     (f : X →* Y) :
     (forget₂ CommGrpCat GrpCat).map (ofHom f) = GrpCat.ofHom f := rfl
 
@@ -448,7 +448,7 @@ instance hasForgetToCommMonCat : HasForget₂ CommGrpCat CommMonCat where
   forget₂.map f := CommMonCat.ofHom f.hom
 
 @[to_additive (attr := simp)] lemma forget₂_commMonCat_map_ofHom {X Y : Type u}
-    [CommGroup X] [CommGroup Y] (f : X →* Y) :
+    [Group X] [IsMulCommutative X] [Group Y] [IsMulCommutative Y] (f : X →* Y) :
     (forget₂ CommGrpCat CommMonCat).map (ofHom f) = CommMonCat.ofHom f := rfl
 
 @[to_additive]
@@ -463,7 +463,7 @@ theorem one_apply (G H : CommGrpCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :
   rfl
 
 @[to_additive]
-lemma ofHom_injective {X Y : Type u} [CommGroup X] [CommGroup Y] :
+lemma ofHom_injective {X Y : Type u} [Group X] [IsMulCommutative X] [Group Y] [IsMulCommutative Y] :
     Function.Injective (fun (f : X →* Y) ↦ ofHom f) := by
   intro _ _ h
   ext

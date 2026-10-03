@@ -29,7 +29,7 @@ namespace GradedAlgebra
 variable {ι R A S : Type*}
 
 section Semiring
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 variable [DecidableEq ι] [AddMonoid ι]
 variable [Semiring A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
@@ -55,9 +55,9 @@ instance : Algebra S ((𝒜 0).baseChange S) :=
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 variable [DecidableEq ι] [AddMonoid ι]
-variable [CommSemiring A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
+variable [Semiring A] [IsMulCommutative A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
 instance : CommSemiring ((𝒜 0).baseChange S) :=
   GradeZero.instCommSemiring fun i ↦ (𝒜 i).baseChange S
@@ -65,9 +65,9 @@ instance : CommSemiring ((𝒜 0).baseChange S) :=
 end CommSemiring
 
 section Algebra
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
-variable [DecidableEq ι] [AddCommMonoid ι]
-variable [CommSemiring A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
+variable [DecidableEq ι] [AddMonoid ι] [IsAddCommutative ι]
+variable [Semiring A] [IsMulCommutative A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
 instance : Algebra ((𝒜 0).baseChange S) (S ⊗[R] A) :=
   GradeZero.instAlgebraSubtypeMemOfNat fun i ↦ (𝒜 i).baseChange S
@@ -77,7 +77,7 @@ instance : Algebra ((𝒜 0).baseChange S) (S ⊗[R] A) :=
 end Algebra
 
 section Ring
-variable [CommSemiring R] [CommRing S] [Algebra R S]
+variable [Semiring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 variable [DecidableEq ι] [AddMonoid ι]
 variable [Semiring A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
@@ -87,9 +87,9 @@ instance : Ring ((𝒜 0).baseChange S) :=
 end Ring
 
 section CommRing
-variable [CommSemiring R] [CommRing S] [Algebra R S]
-variable [DecidableEq ι] [AddCommMonoid ι]
-variable [CommSemiring A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
+variable [Semiring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+variable [DecidableEq ι] [AddMonoid ι] [IsAddCommutative ι]
+variable [Semiring A] [IsMulCommutative A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
 instance : CommRing ((𝒜 0).baseChange S) :=
   GradeZero.instCommRing fun i ↦ (𝒜 i).baseChange S
@@ -104,7 +104,7 @@ section liftEquiv
 
 variable {ι R S A B : Type*}
 variable [DecidableEq ι] [AddMonoid ι]
-variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
 variable (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule S B)
 variable [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
 variable [Algebra R S] [Algebra R B] [IsScalarTower R S B]

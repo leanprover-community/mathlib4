@@ -28,7 +28,7 @@ commutative ring, field of fractions
 @[expose] public section
 
 
-variable {R : Type*} [CommSemiring R] {M : Submonoid R} {S : Type*} [CommSemiring S]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {M : Submonoid R} {S : Type*} [Semiring S] [IsMulCommutative S]
 variable [Algebra R S]
 
 open Function

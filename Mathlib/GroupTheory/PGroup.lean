@@ -503,7 +503,7 @@ end P2comm
 end IsPGroup
 
 namespace ZModModule
-variable {n : ℕ} {G : Type*} [AddCommGroup G] [Module (ZMod n) G]
+variable {n : ℕ} {G : Type*} [AddGroup G] [IsAddCommutative G] [Module (ZMod n) G]
 
 lemma isPGroup_multiplicative : IsPGroup n (Multiplicative G) := by
   simpa [IsPGroup, Multiplicative.forall] using

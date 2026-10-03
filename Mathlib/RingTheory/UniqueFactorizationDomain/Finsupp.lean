@@ -23,7 +23,7 @@ local infixl:50 " ~ᵤ " => Associated
 
 section Finsupp
 
-variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α]
 variable [NormalizationMonoid α] [DecidableEq α]
 
 open UniqueFactorizationMonoid

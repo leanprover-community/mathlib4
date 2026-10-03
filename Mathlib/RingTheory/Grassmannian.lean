@@ -57,7 +57,7 @@ universe u v w
 
 namespace Module
 
-variable (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M] (k : ℕ)
+variable (R : Type u) [Ring R] [IsMulCommutative R] (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R M] (k : ℕ)
 
 /-- `G(k, M; R)` is the `k`ᵗʰ Grassmannian of the `R`-module `M`. It is defined to be the set of
 submodules of `M` whose quotient is locally free of rank `k`. Note that there is another convention
@@ -88,8 +88,8 @@ open CategoryTheory TensorProduct AlgebraTensorModule
 
 attribute [local ext high] ConcreteCategory.hom_ext
 
-variable {A : Type w} [CommRing A] [Algebra R A]
-variable (B : Type w) [CommRing B] [Algebra R B]
+variable {A : Type w} [Ring A] [IsMulCommutative A] [Algebra R A]
+variable (B : Type w) [Ring B] [IsMulCommutative B] [Algebra R B]
 
 section BaseChangeMkQ
 
@@ -146,7 +146,7 @@ variable (k)
   ext : 1
   exact (ker_baseChange_comp_cancelBaseChange_symm N.mkQ).trans N.toSubmodule.ker_mkQ
 
-variable {C : Type w} [CommRing C] [Algebra R C]
+variable {C : Type w} [Ring C] [IsMulCommutative C] [Algebra R C]
 variable (g : B →ₐ[R] C)
 
 theorem map_comp (N : G(k, A ⊗[R] M; A)) :

@@ -248,13 +248,13 @@ theorem mk_pow [AddMonoid ι] [GMonoid A] {i} (a : A i) (n : ℕ) :
     mk i a ^ n = mk (n • i) (GMonoid.gnpow _ a) := rfl
 
 /-- A graded version of `CommMonoid`. -/
-class GCommMonoid [AddCommMonoid ι] extends GMonoid A where
+class GCommMonoid [AddMonoid ι] [IsAddCommutative ι] extends GMonoid A where
   /-- Multiplication is commutative -/
   mul_comm (a : GradedMonoid A) (b : GradedMonoid A) : a * b = b * a
 
 /-- `GCommMonoid` implies a `CommMonoid (GradedMonoid A)`, although this is only used as an
 instance locally to define notation in `gmonoid` and similar typeclasses. -/
-instance GCommMonoid.toCommMonoid [AddCommMonoid ι] [GCommMonoid A] :
+instance GCommMonoid.toCommMonoid [AddMonoid ι] [IsAddCommutative ι] [GCommMonoid A] :
     CommMonoid (GradedMonoid A) where
   mul_comm := GCommMonoid.mul_comm
 
@@ -330,7 +330,7 @@ end Monoid
 
 section Monoid
 
-variable [AddCommMonoid ι] [GCommMonoid A]
+variable [AddMonoid ι] [IsAddCommutative ι] [GCommMonoid A]
 
 /-- The `CommMonoid` structure derived from `GCommMonoid A`. -/
 instance (priority := 900) GradeZero.commMonoid : CommMonoid (A 0) :=
@@ -454,7 +454,7 @@ instance Monoid.gMonoid [AddMonoid ι] [Monoid R] : GradedMonoid.GMonoid fun _ :
 
 /-- If all grades are the same type and themselves form a commutative monoid, then there is a
 trivial grading structure. -/
-instance CommMonoid.gCommMonoid [AddCommMonoid ι] [CommMonoid R] :
+instance CommMonoid.gCommMonoid [AddMonoid ι] [IsAddCommutative ι] [Monoid R] [IsMulCommutative R] :
     GradedMonoid.GCommMonoid fun _ : ι => R where
   mul_comm := fun _ _ => Sigma.ext (add_comm _ _) (heq_of_eq (mul_comm _ _))
 
@@ -542,7 +542,7 @@ instance instMonoid : Monoid (A 0) :=
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The commutative monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instCommMonoid
-    {R S : Type*} [SetLike S R] [CommMonoid R]
+    {R S : Type*} [SetLike S R] [Monoid R] [IsMulCommutative R]
     {A : ι → S} [SetLike.GradedMonoid A] :
     CommMonoid (A 0) :=
   inferInstanceAs <| CommMonoid (GradeZero.submonoid A)
@@ -601,7 +601,7 @@ theorem SetLike.coe_gnpow {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A
   rfl
 
 /-- Build a `GCommMonoid` instance for a collection of subobjects. -/
-instance SetLike.gCommMonoid {S : Type*} [SetLike S R] [CommMonoid R] [AddCommMonoid ι] (A : ι → S)
+instance SetLike.gCommMonoid {S : Type*} [SetLike S R] [Monoid R] [IsMulCommutative R] [AddMonoid ι] [IsAddCommutative ι] (A : ι → S)
     [SetLike.GradedMonoid A] : GradedMonoid.GCommMonoid fun i => A i where
   mul_comm := fun ⟨_, _, _⟩ ⟨_, _, _⟩ => Sigma.subtype_ext (add_comm _ _) (mul_comm _ _)
 
@@ -670,7 +670,7 @@ section CommMonoid
 
 namespace SetLike
 
-variable {ι R S : Type*} [SetLike S R] [CommMonoid R] [AddCommMonoid ι]
+variable {ι R S : Type*} [SetLike S R] [Monoid R] [IsMulCommutative R] [AddMonoid ι] [IsAddCommutative ι]
 variable (A : ι → S) [SetLike.GradedMonoid A]
 
 variable {κ : Type*} (i : κ → ι) (g : κ → R) {F : Finset κ}

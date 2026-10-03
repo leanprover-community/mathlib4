@@ -19,7 +19,7 @@ such that `affine f g (t, x) = AffineMap.lineMap (f x) (g x) t`.
 @[expose] public section
 
 variable {X E : Type*} [TopologicalSpace X]
-  [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+  [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [Module ℝ E] [ContinuousSMul ℝ E]
 
 namespace ContinuousMap.Homotopy

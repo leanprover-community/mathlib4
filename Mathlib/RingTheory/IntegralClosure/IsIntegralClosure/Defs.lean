@@ -25,11 +25,11 @@ public section
 the integral closure of `R` in `B`,
 i.e. that an element of `B` is integral over `R` iff it is an element of (the image of) `A`.
 -/
-class IsIntegralClosure (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B] [Algebra R B]
+class IsIntegralClosure (A R B : Type*) [Ring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra R B]
   [Algebra A B] : Prop where
   algebraMap_injective (A R B) : Function.Injective (algebraMap A B)
   isIntegral_iff : ∀ {x : B}, IsIntegral R x ↔ ∃ y, algebraMap A B y = x
 
-theorem IsIntegralClosure.faithfulSMul (R A B : Type*) [CommRing R] [CommSemiring A] [CommRing B]
+theorem IsIntegralClosure.faithfulSMul (R A B : Type*) [Ring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
     [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : FaithfulSMul A B :=
   (faithfulSMul_iff_algebraMap_injective A B).mpr (algebraMap_injective A R B)

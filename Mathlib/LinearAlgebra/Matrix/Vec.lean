@@ -77,12 +77,12 @@ theorem vec_sub [Sub R] (A B : Matrix m n R) : vec (A - B) = vec A - vec B :=
 theorem vec_smul {α} [SMul α R] (r : α) (A : Matrix m n R) : vec (r • A) = r • vec A :=
   rfl
 
-theorem vec_sum [AddCommMonoid R] (s : Finset ι) (A : ι → Matrix m n R) :
+theorem vec_sum [AddMonoid R] [IsAddCommutative R] (s : Finset ι) (A : ι → Matrix m n R) :
     vec (∑ i ∈ s, A i) = ∑ i ∈ s, vec (A i) := by
   ext
   simp_rw [vec, Finset.sum_apply, vec, Matrix.sum_apply]
 
-theorem vec_dotProduct_vec [AddCommMonoid R] [Mul R] [Fintype m] [Fintype n]
+theorem vec_dotProduct_vec [AddMonoid R] [IsAddCommutative R] [Mul R] [Fintype m] [Fintype n]
     (A B : Matrix m n R) :
     vec A ⬝ᵥ vec B = (Aᵀ * B).trace := by
   simp_rw [Matrix.trace, Matrix.diag, Matrix.mul_apply, dotProduct, vec, transpose_apply,
@@ -92,7 +92,7 @@ theorem star_vec [Star R] (x : Matrix m n R) :
     star x.vec = (x.map star).vec :=
   rfl
 
-theorem star_vec_dotProduct_vec [AddCommMonoid R] [Mul R] [Star R] [Fintype m] [Fintype n]
+theorem star_vec_dotProduct_vec [AddMonoid R] [IsAddCommutative R] [Mul R] [Star R] [Fintype m] [Fintype n]
     (A B : Matrix m n R) :
     star (vec A) ⬝ᵥ vec B = (Aᴴ * B).trace := by
   simp_rw [star_vec, vec_dotProduct_vec, ← conjTranspose_transpose, transpose_transpose]
@@ -109,7 +109,7 @@ section Kronecker
 open scoped Kronecker
 
 section CommSemigroup
-variable [CommSemigroup R]
+variable [Semigroup R] [IsMulCommutative R]
 
 theorem hadamard_kronecker_hadamard (A B : Matrix l m R) (C D : Matrix n p R) :
     (A ⊙ B) ⊗ₖ (C ⊙ D) = (A ⊗ₖ C) ⊙ (B ⊗ₖ D) :=
@@ -144,7 +144,7 @@ theorem vec_vecMul_kronecker_of_commute (A : Matrix m l R) (X : Matrix m n R) (B
 end NonUnitalSemiring
 
 section NonUnitalCommSemiring
-variable [NonUnitalCommSemiring R] [Fintype m] [Fintype n]
+variable [NonUnitalSemiring R] [IsMulCommutative R] [Fintype m] [Fintype n]
 
 theorem kronecker_mulVec_vec (A : Matrix l m R) (X : Matrix m n R) (B : Matrix p n R) :
     (B ⊗ₖ A) *ᵥ vec X = vec (A * X * Bᵀ) :=

@@ -29,7 +29,7 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁)
 
 namespace Algebra
 
-theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D] [CommSemiring E]
+theorem adjoin_restrictScalars (C D E : Type*) [Semiring C] [IsMulCommutative C] [Semiring D] [IsMulCommutative D] [Semiring E] [IsMulCommutative E]
     [Algebra C D] [Algebra C E] [Algebra D E] [IsScalarTower C D E] (S : Set E) :
     (Algebra.adjoin D S).restrictScalars C =
       (Algebra.adjoin ((⊤ : Subalgebra C D).map (IsScalarTower.toAlgHom C D E)) S).restrictScalars
@@ -42,8 +42,8 @@ theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D]
     rw [this]
   simp
 
-theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
-    [CommSemiring E] [CommSemiring F] [Algebra C D] [Algebra C E] [Algebra C F] [Algebra D F]
+theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [Semiring C] [IsMulCommutative C] [Semiring D] [IsMulCommutative D]
+    [Semiring E] [IsMulCommutative E] [Semiring F] [IsMulCommutative F] [Algebra C D] [Algebra C E] [Algebra C F] [Algebra D F]
     [Algebra E F] [IsScalarTower C D F] [IsScalarTower C E F] {S : Set D} {T : Set E}
     (hS : Algebra.adjoin C S = ⊤) (hT : Algebra.adjoin C T = ⊤) :
     (Algebra.adjoin E (algebraMap D F '' S)).restrictScalars C =
@@ -57,7 +57,7 @@ end Algebra
 
 section
 
-theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
+theorem Algebra.fg_trans' {R S A : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).FG)
     (hSA : (⊤ : Subalgebra S A).FG) : (⊤ : Subalgebra R A).FG := by
   classical
@@ -78,7 +78,7 @@ variable (C : Type*)
 
 section Semiring
 
-variable [CommSemiring A] [CommSemiring B] [Semiring C]
+variable [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Semiring C]
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 open Finset Submodule
@@ -133,7 +133,7 @@ end Semiring
 
 section Ring
 
-variable [CommRing A] [CommRing B] [CommRing C]
+variable [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C]
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and

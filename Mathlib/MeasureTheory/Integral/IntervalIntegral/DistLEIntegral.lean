@@ -26,7 +26,7 @@ open Filter Set MeasureTheory Metric
 open scoped Topology
 
 variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
 
 section Line
 

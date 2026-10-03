@@ -37,7 +37,7 @@ open Module
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 /-- The dimension of a strict submodule is strictly bounded by the dimension of the ambient
 space.
@@ -132,7 +132,7 @@ namespace FiniteDimensional
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] {V₂ : Type v'} [AddGroup V₂] [IsAddCommutative V₂]
   [Module K V₂]
 
 variable [FiniteDimensional K V] [FiniteDimensional K V₂]
@@ -165,7 +165,7 @@ open Module
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] {V₂ : Type v'} [AddGroup V₂] [IsAddCommutative V₂]
   [Module K V₂]
 
 /-- rank-nullity theorem : the dimensions of the kernel and the range of a linear map add up to
@@ -191,7 +191,7 @@ open Module
 
 namespace LinearMap
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] {V₂ : Type v'} [AddGroup V₂] [IsAddCommutative V₂]
   [Module K V₂]
 
 theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
@@ -229,7 +229,7 @@ namespace Submodule
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
     finrank K s < finrank K t :=
@@ -251,7 +251,7 @@ end Submodule
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 section Basis
 variable {ι : Type*} [Fintype ι]
@@ -393,7 +393,7 @@ namespace Module
 
 namespace End
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
     ∃ k : ℕ, k ≤ finrank K V ∧ LinearMap.ker (f ^ k) = LinearMap.ker (f ^ k.succ) := by
@@ -447,7 +447,7 @@ namespace Submodule
 
 section DivisionRing
 
-variable {W : Type v'} [DivisionRing K] [AddCommGroup W] [AddCommGroup V] [Module K V] [Module K W]
+variable {W : Type v'} [DivisionRing K] [AddGroup W] [IsAddCommutative W] [AddGroup V] [IsAddCommutative V] [Module K V] [Module K W]
   {f : V →ₗ[K] W}
 
 instance (p : Submodule K W) [FiniteDimensional K p] [FiniteDimensional K f.ker] :

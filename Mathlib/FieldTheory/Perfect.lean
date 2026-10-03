@@ -48,7 +48,7 @@ class PerfectRing (R : Type*) (p : ℕ) [Pow R ℕ] : Prop where
 section PerfectRing
 
 section Monoid
-variable (M : Type*) (p q : ℕ) [CommMonoid M] [PerfectRing M p] [PerfectRing M q]
+variable (M : Type*) (p q : ℕ) [Monoid M] [IsMulCommutative M] [PerfectRing M p] [PerfectRing M q]
 
 namespace PerfectRing
 
@@ -90,15 +90,15 @@ theorem powMulEquiv_pow (n : ℕ) : powMulEquiv M (p ^ n) = powMulEquiv M p ^ n 
 end Monoid
 
 section CommSemiring
-variable (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
+variable (R : Type*) (p m n : ℕ) [Semiring R] [IsMulCommutative R] [ExpChar R p]
 
 /-- For a reduced ring, surjectivity of the Frobenius map is a sufficient condition for perfection.
 -/
-lemma PerfectRing.ofSurjective (R : Type*) (p : ℕ) [CommRing R] [ExpChar R p]
+lemma PerfectRing.ofSurjective (R : Type*) (p : ℕ) [Ring R] [IsMulCommutative R] [ExpChar R p]
     [IsReduced R] (h : Surjective <| frobenius R p) : PerfectRing R p :=
   ⟨frobenius_inj R p, h⟩
 
-instance PerfectRing.ofFiniteOfIsReduced (R : Type*) [CommRing R] [ExpChar R p]
+instance PerfectRing.ofFiniteOfIsReduced (R : Type*) [Ring R] [IsMulCommutative R] [ExpChar R p]
     [Finite R] [IsReduced R] : PerfectRing R p :=
   ofSurjective _ _ <| Finite.surjective_of_injective (frobenius_inj R p)
 
@@ -227,7 +227,7 @@ theorem iterate_frobeniusEquiv_symm_pow_p_pow (x : R) (n : ℕ) :
 
 section commute
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] (p : ℕ)
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (p : ℕ)
     [ExpChar R p] [PerfectRing R p] [ExpChar S p] [PerfectRing S p]
 
 /--
@@ -270,12 +270,12 @@ lemma polynomial_expand_eq (f : R[X]) :
     frobenius_comp_frobeniusEquiv_symm, map_id]
 
 @[simp]
-theorem not_irreducible_expand (R p) [CommSemiring R] [Fact p.Prime] [CharP R p] [PerfectRing R p]
+theorem not_irreducible_expand (R p) [Semiring R] [IsMulCommutative R] [Fact p.Prime] [CharP R p] [PerfectRing R p]
     (f : R[X]) : ¬ Irreducible (expand R p f) := by
   rw [polynomial_expand_eq]
   exact not_irreducible_pow (Fact.out : p.Prime).ne_one
 
-instance instPerfectRingProd (S : Type*) [CommSemiring S] [ExpChar S p] [PerfectRing S p] :
+instance instPerfectRingProd (S : Type*) [Semiring S] [IsMulCommutative S] [ExpChar S p] [PerfectRing S p] :
     PerfectRing (R × S) p where
   bijective_frobenius := (bijective_frobenius R p).prodMap (bijective_frobenius S p)
 
@@ -353,7 +353,7 @@ theorem PerfectField.of_ringEquiv {K L : Type*} [Field K] [Field L] (h : K ≃+*
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] [IsDomain R] (p n : ℕ) [ExpChar R p] (f : R[X])
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] (p n : ℕ) [ExpChar R p] (f : R[X])
 
 open Multiset
 

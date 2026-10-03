@@ -20,7 +20,7 @@ public section
 
 open Filter Finset
 
-variable {α β M : Type*} [CommMonoid M]
+variable {α β M : Type*} [Monoid M] [IsMulCommutative M]
 
 /-- Let `f` and `g` be two maps to the same commutative monoid. This lemma gives a sufficient
 condition for comparison of the filter `atTop.map (fun s ↦ ∏ b ∈ s, f b)` with

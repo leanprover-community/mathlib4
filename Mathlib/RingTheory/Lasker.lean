@@ -32,7 +32,7 @@ section IsLasker
 
 open Ideal
 
-variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable (R M : Type*) [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- An `R`-module `M` satisfies `IsLasker R M` when any `N : Submodule R M` can be
   decomposed into finitely many primary submodules. -/
@@ -156,7 +156,7 @@ lemma mem_associatedPrimes {N : Submodule R M} {t : Finset (Submodule R M)}
 
 section CommRing
 
-variable {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M] {N : Submodule R M}
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] {N : Submodule R M}
 
 open LocalizedModule in
 lemma comap_localized₀_eq_ite
@@ -240,7 +240,7 @@ section Noetherian
 
 open scoped Pointwise
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [IsNoetherian R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [IsNoetherian R M]
 
 lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrimary := by
   rw [Submodule.IsPrimary]

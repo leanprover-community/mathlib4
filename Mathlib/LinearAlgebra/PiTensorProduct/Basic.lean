@@ -69,12 +69,12 @@ open Function
 section Semiring
 
 variable {ι ι₂ ι₃ : Type*}
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 variable {R₁ R₂ : Type*}
-variable {s : ι → Type*} [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable {E : Type*} [AddCommMonoid E] [Module R E]
-variable {F : Type*} [AddCommMonoid F]
+variable {s : ι → Type*} [∀ i, AddMonoid (s i)] [∀ i, IsAddCommutative (s i)] [∀ i, Module R (s i)]
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {E : Type*} [AddMonoid E] [IsAddCommutative E] [Module R E]
+variable {F : Type*} [AddMonoid F] [IsAddCommutative F]
 
 namespace PiTensorProduct
 
@@ -468,8 +468,8 @@ end lift
 section map
 
 variable {t t' : ι → Type*}
-variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
-variable [∀ i, AddCommMonoid (t' i)] [∀ i, Module R (t' i)]
+variable [∀ i, AddMonoid (t i)] [∀ i, IsAddCommutative (t i)] [∀ i, Module R (t i)]
+variable [∀ i, AddMonoid (t' i)] [∀ i, IsAddCommutative (t' i)] [∀ i, Module R (t' i)]
 variable (g : Π i, t i →ₗ[R] t' i) (f : Π i, s i →ₗ[R] t i)
 
 /--
@@ -744,7 +744,7 @@ theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
   simp [reindex, domDomCongrLinearEquiv']
 
 variable {t : ι → Type*}
-variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
+variable [∀ i, AddMonoid (t i)] [∀ i, IsAddCommutative (t i)] [∀ i, Module R (t i)]
 
 /-- Re-indexing the components of the tensor product by an equivalence `e` is compatible
 with `PiTensorProduct.map`. -/
@@ -836,7 +836,7 @@ variable (R M)
 
 section tmulEquivDep
 
-variable (N : ι ⊕ ι₂ → Type*) [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+variable (N : ι ⊕ ι₂ → Type*) [∀ i, AddMonoid (N i)] [∀ i, IsAddCommutative (N i)] [∀ i, Module R (N i)]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
@@ -911,8 +911,8 @@ open PiTensorProduct
 
 open TensorProduct
 
-variable {ι : Type*} {R : Type*} [CommRing R]
-variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
+variable {ι : Type*} {R : Type*} [Ring R] [IsMulCommutative R]
+variable {s : ι → Type*} [∀ i, AddGroup (s i)] [∀ i, IsAddCommutative (s i)] [∀ i, Module R (s i)]
 
 /-- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
 this is false in the case where `ι` is empty. -/

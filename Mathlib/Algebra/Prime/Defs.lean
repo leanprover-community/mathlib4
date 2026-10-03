@@ -36,7 +36,7 @@ variable {M : Type*}
 
 section Prime
 
-variable [CommMonoidWithZero M]
+variable [MonoidWithZero M] [IsMulCommutative M]
 
 /-- An element `p` of a commutative monoid with zero (e.g., a ring) is called *prime*,
 if it's not zero, not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`. -/
@@ -100,14 +100,14 @@ theorem not_prime_one : ¬Prime (1 : M) := fun h => h.not_isUnit isUnit_one
 
 end Prime
 
-theorem Irreducible.not_dvd_isUnit [CommMonoid M] {p u : M} (hp : Irreducible p) (hu : IsUnit u) :
+theorem Irreducible.not_dvd_isUnit [Monoid M] [IsMulCommutative M] {p u : M} (hp : Irreducible p) (hu : IsUnit u) :
     ¬p ∣ u :=
   mt (isUnit_of_dvd_unit · hu) hp.not_isUnit
 
-theorem Irreducible.not_dvd_one [CommMonoid M] {p : M} (hp : Irreducible p) : ¬p ∣ 1 :=
+theorem Irreducible.not_dvd_one [Monoid M] [IsMulCommutative M] {p : M} (hp : Irreducible p) : ¬p ∣ 1 :=
   hp.not_dvd_isUnit isUnit_one
 
-theorem Irreducible.not_dvd_unit [CommMonoid M] {p : M} (u : Mˣ) (hp : Irreducible p) :
+theorem Irreducible.not_dvd_unit [Monoid M] [IsMulCommutative M] {p : M} (u : Mˣ) (hp : Irreducible p) :
     ¬ p ∣ u :=
   hp.not_dvd_isUnit u.isUnit
 
@@ -132,7 +132,7 @@ theorem Irreducible.dvd_comm [Monoid M] {p q : M} (hp : Irreducible p) (hq : Irr
 
 section CommMonoidWithZero
 
-variable [CommMonoidWithZero M]
+variable [MonoidWithZero M] [IsMulCommutative M]
 
 theorem Irreducible.prime_of_isPrimal {a : M}
     (irr : Irreducible a) (primal : IsPrimal a) : Prime a :=
@@ -147,7 +147,7 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CommMonoidWithZero M] [IsCancelMulZero M] {p : M}
+variable [MonoidWithZero M] [IsMulCommutative M] [IsCancelMulZero M] {p : M}
 
 protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
   ⟨hp.not_isUnit, fun a b ↦ by

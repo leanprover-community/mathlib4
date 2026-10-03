@@ -53,7 +53,7 @@ open LinearMap Submodule
 
 namespace Submodule
 
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (N : Submodule R M)
+variable {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] (N : Submodule R M)
   (I : Ideal R) (x : M)
 
 /-- `I : Ideal R` is an associated prime of a submodule `N : Submodule R M` if `I` is prime
@@ -90,7 +90,7 @@ end Submodule
 
 section Semiring
 
-variable {R : Type*} [CommSemiring R] (I : Ideal R) (M : Type*) [AddCommMonoid M] [Module R M]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] (I : Ideal R) (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the radical of the annihilator
 of some `x : M`. -/
@@ -102,7 +102,7 @@ variable (R) in
 def associatedPrimes : Set (Ideal R) :=
   { I | IsAssociatedPrime I M }
 
-variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
+variable {I J M} {M' : Type*} [AddMonoid M'] [IsAddCommutative M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 
@@ -153,7 +153,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
 
 namespace associatedPrimes
 
-variable {f} {M'' : Type*} [AddCommMonoid M''] [Module R M''] {g : M' →ₗ[R] M''}
+variable {f} {M'' : Type*} [AddMonoid M''] [IsAddCommutative M''] [Module R M''] {g : M' →ₗ[R] M''}
 
 /-- If `M → M'` is injective, then the set of associated primes of `M` is
 contained in that of `M'`. -/
@@ -248,7 +248,7 @@ theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :
 
 end Semiring
 
-variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+variable {R : Type*} [Ring R] [IsMulCommutative R] (I J : Ideal R) (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
 
 theorem isAssociatedPrime_iff_exists_injective_linearMap [IsNoetherianRing R] :
     IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ (f : R ⧸ I →ₗ[R] M), Function.Injective f := by

@@ -837,7 +837,7 @@ end AdjoinPair
 
 end IntermediateField
 
-instance (R : Type*) [CommSemiring R] (K : Type*) [Field K] [Algebra R K]
+instance (R : Type*) [Semiring R] [IsMulCommutative R] (K : Type*) [Field K] [Algebra R K]
     (S : Type*) [Semiring S] [Algebra R S] [Module.Finite R S] :
     Finite (S →ₐ[R] K) :=
   .of_equiv _ (Algebra.TensorProduct.liftEquivRight _ K _ _).symm

@@ -43,7 +43,7 @@ variable {R : Type*}
 
 section CommutativeSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 /-- The formal derivative of a formal power series -/
 noncomputable def derivative : Derivation R R⟦X⟧ R⟦X⟧ :=
@@ -108,17 +108,17 @@ theorem derivative_pow (g : R⟦X⟧) (n : ℕ) :
 end CommutativeSemiring
 
 /-- If `f` and `g` have the same constant term and derivative, then they are equal. -/
-theorem derivative.ext [CommRing R] [IsAddTorsionFree R] {f g : R⟦X⟧} (hD : d⁄dX f = d⁄dX g)
+theorem derivative.ext [Ring R] [IsMulCommutative R] [IsAddTorsionFree R] {f g : R⟦X⟧} (hD : d⁄dX f = d⁄dX g)
     (hc : constantCoeff f = constantCoeff g) : f = g :=
   MvPowerSeries.pderiv.ext (fun _ => hD) hc
 
 @[simp]
-theorem derivative_inv [CommRing R] (f : R⟦X⟧ˣ) :
+theorem derivative_inv [Ring R] [IsMulCommutative R] (f : R⟦X⟧ˣ) :
     d⁄dX ↑f⁻¹ = -(↑f⁻¹ : R⟦X⟧) ^ 2 * d⁄dX f :=
   MvPowerSeries.pderiv_inv f
 
 @[simp]
-theorem derivative_invOf [CommRing R] (f : R⟦X⟧) [Invertible f] :
+theorem derivative_invOf [Ring R] [IsMulCommutative R] (f : R⟦X⟧) [Invertible f] :
     d⁄dX ⅟f = -⅟f ^ 2 * d⁄dX f :=
   MvPowerSeries.pderiv_invOf f
 
@@ -131,12 +131,12 @@ there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`
   MvPowerSeries.pderiv_inv' f
 
 /-- Chain rule for polynomials viewed as power series.  Use `derivative_subst` instead. -/
-private theorem derivative_subst_coe [CommRing R] (p : Polynomial R) {g : R⟦X⟧} (hg : HasSubst g) :
+private theorem derivative_subst_coe [Ring R] [IsMulCommutative R] (p : Polynomial R) {g : R⟦X⟧} (hg : HasSubst g) :
     d⁄dX ((p : R⟦X⟧).subst g) = (d⁄dX (p : R⟦X⟧)).subst g * d⁄dX g := by
   simp [subst_coe hg, derivative_coe, Derivation.comp_aeval_eq (a := g) derivative p,
     smul_eq_mul]
 
-theorem derivative_subst [CommRing R] {f g : R⟦X⟧} (hg : HasSubst g) :
+theorem derivative_subst [Ring R] [IsMulCommutative R] {f g : R⟦X⟧} (hg : HasSubst g) :
     d⁄dX (f.subst g) = (d⁄dX f).subst g * d⁄dX g := by
   ext n
   obtain ⟨m, hm⟩ := (hg.eventually_coeff_pow_eq_zero (n + 1)).exists_forall_of_atTop
@@ -154,7 +154,7 @@ theorem derivative_subst [CommRing R] {f g : R⟦X⟧} (hg : HasSubst g) :
 
 section deprecated
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 /--
 The formal derivative of a power series in one variable.

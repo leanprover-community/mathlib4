@@ -82,7 +82,7 @@ Examples:
 example : Matrix.det (R := ℤ) !![1, 2; 3, 4] = -2 := by
   eval_det
 
-example {R : Type*} [CommRing R] (a b c d : R) :
+example {R : Type*} [Ring R] [IsMulCommutative R] (a b c d : R) :
     Matrix.det !![a, b; c, d] = a * d - b * c := by
   eval_det
   ring

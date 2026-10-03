@@ -59,7 +59,7 @@ namespace Polynomial
 
 open Ideal.Quotient Ideal RingHom
 
-variable {R : Type*} [CommRing R] [IsDomain R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R]
   {K : Type*} [Field K] [Algebra R K]
 
 private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}

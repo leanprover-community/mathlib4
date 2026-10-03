@@ -57,7 +57,7 @@ universe u
 
 namespace WeierstrassCurve
 
-variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
+variable {R : Type u} [Ring R] [IsMulCommutative R] (W : WeierstrassCurve R)
 
 section Ψ₂Sq
 

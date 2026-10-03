@@ -176,10 +176,10 @@ instance Additive.addSemigroup [Semigroup α] : AddSemigroup (Additive α) :=
 instance Multiplicative.semigroup [AddSemigroup α] : Semigroup (Multiplicative α) :=
   { Multiplicative.mul with mul_assoc := @add_assoc α _ }
 
-instance Additive.addCommSemigroup [CommSemigroup α] : AddCommSemigroup (Additive α) :=
+instance Additive.addCommSemigroup [Semigroup α] [IsMulCommutative α] : AddCommSemigroup (Additive α) :=
   { Additive.addSemigroup with add_comm := @mul_comm α _ }
 
-instance Multiplicative.commSemigroup [AddCommSemigroup α] : CommSemigroup (Multiplicative α) :=
+instance Multiplicative.commSemigroup [AddSemigroup α] [IsAddCommutative α] : CommSemigroup (Multiplicative α) :=
   { Multiplicative.semigroup with mul_comm := @add_comm α _ }
 
 instance Additive.isLeftCancelAdd [Mul α] [IsLeftCancelMul α] : IsLeftCancelAdd (Additive α) :=
@@ -353,16 +353,16 @@ instance Multiplicative.rightCancelMonoid [AddRightCancelMonoid α] :
     RightCancelMonoid (Multiplicative α) :=
   { Multiplicative.monoid, Multiplicative.rightCancelSemigroup with }
 
-instance Additive.addCommMonoid [CommMonoid α] : AddCommMonoid (Additive α) :=
+instance Additive.addCommMonoid [Monoid α] [IsMulCommutative α] : AddCommMonoid (Additive α) :=
   { Additive.addMonoid, Additive.addCommSemigroup with }
 
-instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicative α) :=
+instance Multiplicative.commMonoid [AddMonoid α] [IsAddCommutative α] : CommMonoid (Multiplicative α) :=
   { Multiplicative.monoid, Multiplicative.commSemigroup with }
 
-instance Additive.instAddCancelCommMonoid [CancelCommMonoid α] :
+instance Additive.instAddCancelCommMonoid [CancelMonoid α] [IsMulCommutative α] :
     AddCancelCommMonoid (Additive α) where
 
-instance Multiplicative.instCancelCommMonoid [AddCancelCommMonoid α] :
+instance Multiplicative.instCancelCommMonoid [AddCancelMonoid α] [IsAddCommutative α] :
     CancelCommMonoid (Multiplicative α) where
 
 instance Additive.neg [Inv α] : Neg (Additive α) :=
@@ -455,11 +455,11 @@ instance Multiplicative.divisionMonoid [SubtractionMonoid α] : DivisionMonoid (
     mul_inv_rev := @neg_add_rev α _
     inv_eq_of_mul := @neg_eq_of_add_eq_zero_right α _ }
 
-instance Additive.subtractionCommMonoid [DivisionCommMonoid α] :
+instance Additive.subtractionCommMonoid [DivisionMonoid α] [IsMulCommutative α] :
     SubtractionCommMonoid (Additive α) :=
   { Additive.subtractionMonoid, Additive.addCommSemigroup with }
 
-instance Multiplicative.divisionCommMonoid [SubtractionCommMonoid α] :
+instance Multiplicative.divisionCommMonoid [SubtractionMonoid α] [IsAddCommutative α] :
     DivisionCommMonoid (Multiplicative α) :=
   { Multiplicative.divisionMonoid, Multiplicative.commSemigroup with }
 
@@ -469,10 +469,10 @@ instance Additive.addGroup [Group α] : AddGroup (Additive α) :=
 instance Multiplicative.group [AddGroup α] : Group (Multiplicative α) :=
   { Multiplicative.divInvMonoid with inv_mul_cancel := @neg_add_cancel α _ }
 
-instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
+instance Additive.addCommGroup [Group α] [IsMulCommutative α] : AddCommGroup (Additive α) :=
   { Additive.addGroup, Additive.addCommMonoid with }
 
-instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) :=
+instance Multiplicative.commGroup [AddGroup α] [IsAddCommutative α] : CommGroup (Multiplicative α) :=
   { Multiplicative.group, Multiplicative.commMonoid with }
 
 instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) where

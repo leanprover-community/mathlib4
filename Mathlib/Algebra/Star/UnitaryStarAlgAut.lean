@@ -66,12 +66,12 @@ theorem toRingEquiv_conjStarAlgAut (u : unitary R) :
       MulSemiringAction.toRingEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
   rfl
 
-theorem toAlgEquiv_conjStarAlgAut {S : Type*} [CommSemiring S] [Algebra S R] (u : unitary R) :
+theorem toAlgEquiv_conjStarAlgAut {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra S R] (u : unitary R) :
     (conjStarAlgAut S R u).toAlgEquiv =
       MulSemiringAction.toAlgEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
   rfl
 
-theorem conjStarAlgAut_ext_iff {S : Type*} [CommSemiring S] [Algebra S R] [Algebra.IsCentral S R]
+theorem conjStarAlgAut_ext_iff {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra S R] [Algebra.IsCentral S R]
     (u v : unitary R) : conjStarAlgAut S R u = conjStarAlgAut S R v ↔ ∃ α : S, (u : R) = α • v := by
   conv_lhs => rw [eq_comm]
   simp_rw [StarAlgEquiv.ext_iff, conjStarAlgAut_apply, ← coe_star, star_eq_inv,
@@ -81,7 +81,7 @@ theorem conjStarAlgAut_ext_iff {S : Type*} [CommSemiring S] [Algebra S R] [Algeb
     Set.mem_range, Algebra.algebraMap_eq_smul_one, Units.eq_inv_mul_iff_mul_eq, mul_smul_comm,
     mul_one, eq_comm]
 
-theorem conjStarAlgAut_ext_iff' {R S : Type*} [Ring R] [StarMul R] [CommRing S] [StarMul S]
+theorem conjStarAlgAut_ext_iff' {R S : Type*} [Ring R] [StarMul R] [Ring S] [IsMulCommutative S] [StarMul S]
     [Algebra S R] [StarModule S R] [Algebra.IsCentral S R] [IsCancelMulZero S]
     [Module.IsTorsionFree S R] (u v : unitary R) :
     conjStarAlgAut S R u = conjStarAlgAut S R v ↔ ∃ α : unitary S, u = α • v := by

@@ -20,8 +20,8 @@ a global minimum, and likewise for concave functions.
 public section
 
 
-variable {E β : Type*} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [IsTopologicalAddGroup E]
-  [ContinuousSMul ℝ E] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+variable {E β : Type*} [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [Module ℝ E] [IsTopologicalAddGroup E]
+  [ContinuousSMul ℝ E] [AddGroup β] [IsAddCommutative β] [PartialOrder β] [IsOrderedAddMonoid β]
   [Module ℝ β] [IsOrderedModule ℝ β] [PosSMulReflectLE ℝ β] {s : Set E}
 
 open Set Filter Function

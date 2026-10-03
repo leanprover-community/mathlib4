@@ -34,7 +34,7 @@ namespace WittVector
 
 open MvPolynomial
 
-variable (p : ℕ) {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable (p : ℕ) {R S : Type*} [hp : Fact p.Prime] [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 

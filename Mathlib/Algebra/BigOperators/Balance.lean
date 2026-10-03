@@ -27,7 +27,7 @@ variable {ι H F G : Type*}
 namespace Fintype
 
 section AddCommGroup
-variable [Fintype ι] [AddCommGroup G] [Module ℚ≥0 G] [AddCommGroup H] [Module ℚ≥0 H]
+variable [Fintype ι] [AddGroup G] [IsAddCommutative G] [Module ℚ≥0 G] [AddGroup H] [IsAddCommutative H] [Module ℚ≥0 H]
 
 /-- The balancing of a function, namely the function minus its average. -/
 def balance (f : ι → G) : ι → G := f - Function.const _ (𝔼 y, f y)

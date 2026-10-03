@@ -15,7 +15,7 @@ public import Mathlib.Data.Matrix.Basis
 public section
 
 namespace Matrix
-variable {n R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Fintype n] [DecidableEq n]
+variable {n R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Fintype n] [DecidableEq n]
 
 theorem subalgebraCenter_eq_scalarAlgHom_map :
     Subalgebra.center R (Matrix n n A) = (Subalgebra.center R A).map (scalarAlgHom n R) :=
@@ -24,7 +24,7 @@ theorem subalgebraCenter_eq_scalarAlgHom_map :
 end Matrix
 
 namespace Algebra.IsCentral
-variable (K D : Type*) [CommSemiring K] [Semiring D] [Algebra K D] [IsCentral K D]
+variable (K D : Type*) [Semiring K] [IsMulCommutative K] [Semiring D] [Algebra K D] [IsCentral K D]
 
 open Matrix in
 instance matrix (ι : Type*) [Fintype ι] [DecidableEq ι] :

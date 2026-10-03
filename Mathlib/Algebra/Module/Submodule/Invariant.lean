@@ -27,7 +27,7 @@ open Submodule (span)
 
 namespace Module.End
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (f g : End R M)
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] (f g : End R M)
 
 /-- Given an endomorphism, `f` of some module, this is the sublattice of all `f`-invariant
 submodules. -/
@@ -188,16 +188,16 @@ protected lemma comp {p : Submodule R M} {g : End R M}
     p ∈ invtSubmodule (f ∘ₗ g) :=
   fun _ hx ↦ hf (hg hx)
 
-@[simp] lemma _root_.LinearEquiv.map_mem_invtSubmodule_conj_iff {R M N : Type*} [CommSemiring R]
-    [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] {f : End R M}
+@[simp] lemma _root_.LinearEquiv.map_mem_invtSubmodule_conj_iff {R M N : Type*} [Semiring R] [IsMulCommutative R]
+    [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N] {f : End R M}
     {e : M ≃ₗ[R] N} {p : Submodule R M} :
     p.map (e : M →ₗ[R] N) ∈ (e.conj f).invtSubmodule ↔ p ∈ f.invtSubmodule := by
   have : e.symm.toLinearMap ∘ₗ ((e ∘ₗ f) ∘ₗ e.symm.toLinearMap) ∘ₗ e = f := by ext; simp
   rw [LinearEquiv.conj_apply, mem_invtSubmodule, mem_invtSubmodule, Submodule.map_le_iff_le_comap,
     Submodule.map_equiv_eq_comap_symm, ← Submodule.comap_comp, ← Submodule.comap_comp, this]
 
-lemma _root_.LinearEquiv.map_mem_invtSubmodule_iff {R M N : Type*} [CommSemiring R]
-    [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] {f : End R N}
+lemma _root_.LinearEquiv.map_mem_invtSubmodule_iff {R M N : Type*} [Semiring R] [IsMulCommutative R]
+    [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N] {f : End R N}
     {e : M ≃ₗ[R] N} {p : Submodule R M} :
     p.map (e : M →ₗ[R] N) ∈ f.invtSubmodule ↔ p ∈ (e.symm.conj f).invtSubmodule := by
   simp [← e.map_mem_invtSubmodule_conj_iff]

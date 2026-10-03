@@ -62,7 +62,7 @@ lemma isQuasiregular_prod_iff [NonUnitalSemiring A] [NonUnitalSemiring B] (a : A
   simp only [isQuasiregular_iff', ← isUnit_map_iff (PreQuasiregular.toProd A B), Prod.isUnit_iff]
   congr!
 
-lemma quasispectrum.mem_iff_of_isUnit [CommSemiring R] [NonUnitalRing A]
+lemma quasispectrum.mem_iff_of_isUnit [Semiring R] [IsMulCommutative R] [NonUnitalRing A]
     [Module R A] {a : A} {r : R} (hr : IsUnit r) :
     r ∈ quasispectrum R a ↔ ¬ IsQuasiregular (-(hr.unit⁻¹ • a)) :=
   ⟨fun h => h hr, fun h _ => h⟩
@@ -71,19 +71,19 @@ end quasiregular
 
 section spectrum
 
-lemma Pi.spectrum_eq [CommSemiring R] [∀ i, Ring (κ i)] [∀ i, Algebra R (κ i)]
+lemma Pi.spectrum_eq [Semiring R] [IsMulCommutative R] [∀ i, Ring (κ i)] [∀ i, Algebra R (κ i)]
     (a : ∀ i, κ i) : spectrum R a = ⋃ i, spectrum R (a i) := by
   apply compl_injective
   simp_rw [spectrum, Set.compl_iUnion, compl_compl, resolventSet, Set.iInter_ofPred,
     Pi.isUnit_iff, sub_apply, algebraMap_apply]
 
-lemma Prod.spectrum_eq [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+lemma Prod.spectrum_eq [Semiring R] [IsMulCommutative R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
     (a : A) (b : B) : spectrum R (⟨a, b⟩ : A × B) = spectrum R a ∪ spectrum R b := by
   apply compl_injective
   simp_rw [spectrum, Set.compl_union, compl_compl, resolventSet, ← Set.ofPred_and,
     Prod.isUnit_iff, algebraMap_apply, mk_sub_mk]
 
-lemma Pi.quasispectrum_eq [Nonempty ι] [CommSemiring R] [∀ i, NonUnitalRing (κ i)]
+lemma Pi.quasispectrum_eq [Nonempty ι] [Semiring R] [IsMulCommutative R] [∀ i, NonUnitalRing (κ i)]
     [∀ i, Module R (κ i)] (a : ∀ i, κ i) :
     quasispectrum R a = ⋃ i, quasispectrum R (a i) := by
   ext r
@@ -93,7 +93,7 @@ lemma Pi.quasispectrum_eq [Nonempty ι] [CommSemiring R] [∀ i, NonUnitalRing (
     simp [isQuasiregular_pi_iff]
   · simp [hr]
 
-lemma Prod.quasispectrum_eq [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B]
+lemma Prod.quasispectrum_eq [Semiring R] [IsMulCommutative R] [NonUnitalRing A] [NonUnitalRing B]
     [Module R A] [Module R B] (a : A) (b : B) :
     quasispectrum R (⟨a, b⟩ : A × B) = quasispectrum R a ∪ quasispectrum R b := by
   apply compl_injective

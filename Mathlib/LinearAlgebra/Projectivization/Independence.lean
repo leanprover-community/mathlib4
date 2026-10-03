@@ -33,7 +33,7 @@ public section
 
 open scoped LinearAlgebra.Projectivization
 
-variable {ι K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] {f : ι → ℙ K V}
+variable {ι K V : Type*} [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] {f : ι → ℙ K V}
 
 namespace Projectivization
 

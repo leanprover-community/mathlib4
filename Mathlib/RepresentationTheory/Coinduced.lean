@@ -48,7 +48,7 @@ universe t u' u v' v w' w
 namespace Representation
 
 variable {k G H : Type*} [Semiring k] [Monoid G] [Monoid H] (φ : G →* H) {A B : Type*}
-  [AddCommMonoid A] [Module k A] [AddCommMonoid B] [Module k B] (σ : Representation k G A)
+  [AddMonoid A] [IsAddCommutative A] [Module k A] [AddMonoid B] [IsAddCommutative B] [Module k B] (σ : Representation k G A)
   (ρ : Representation k G B)
 
 /--
@@ -108,7 +108,7 @@ namespace Rep
 
 open CategoryTheory Finsupp
 
-variable {k : Type u} {G : Type v} {H : Type w} [CommRing k] [Monoid G] [Monoid H]
+variable {k : Type u} {G : Type v} {H : Type w} [Ring k] [IsMulCommutative k] [Monoid G] [Monoid H]
   (φ : G →* H) (A : Rep k G)
 
 section Coind

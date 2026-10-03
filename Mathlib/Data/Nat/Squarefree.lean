@@ -295,7 +295,7 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
       · rw [← Multiset.mem_toFinset]
         apply hy hz
 
-theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [AddCommMonoid α]
+theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [AddMonoid α] [IsAddCommutative α]
     {f : ℕ → α} :
     ∑ d ∈ n.divisors with Squarefree d, f d =
       ∑ i ∈ (UniqueFactorizationMonoid.normalizedFactors n).toFinset.powerset, f i.val.prod := by

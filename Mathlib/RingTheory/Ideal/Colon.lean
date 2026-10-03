@@ -27,7 +27,7 @@ variable {R M : Type*}
 
 section Semiring
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable {N N₁ N₂ : Submodule R M} {S S₁ S₂ : Set M}
 
 /-- `N.colon P` is the ideal of all elements `r : R` such that `r • P ⊆ N`.
@@ -120,7 +120,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable {N N' : Submodule R M} {S : Set M}
 
 theorem mem_colon_iff_le {r} : r ∈ N.colon N' ↔ r • N' ≤ N := by
@@ -153,7 +153,7 @@ end CommSemiring
 
 section Ring
 
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
 variable {N P : Submodule R M}
 
 @[simp]

@@ -181,7 +181,7 @@ open scoped MonomialOrder
 
 -- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
 noncomputable instance {α N : Type*} [LinearOrder α]
-    [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
+    [AddMonoid N] [IsAddCommutative N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
     IsOrderedCancelAddMonoid (Lex (α →₀ N)) where
   le_of_add_le_add_left a b c h := by simpa only [add_le_add_iff_left] using h
   add_le_add_left a b h c := by simpa using h

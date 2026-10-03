@@ -31,7 +31,7 @@ TODO: We should move these to their own file.
 -/
 namespace CategoryTheory.DifferentialObject
 
-variable {β : Type*} [AddCommGroup β] {b : β}
+variable {β : Type*} [AddGroup β] [IsAddCommutative β] {b : β}
 variable {V : Type*} [Category* V] [HasZeroMorphisms V]
 variable (X : DifferentialObject ℤ (GradedObjectWithShift b V))
 
@@ -67,7 +67,7 @@ open CategoryTheory.DifferentialObject
 
 namespace HomologicalComplex
 
-variable {β : Type*} [AddCommGroup β] (b : β)
+variable {β : Type*} [AddGroup β] [IsAddCommutative β] (b : β)
 variable (V : Type*) [Category* V] [HasZeroMorphisms V]
 
 @[reassoc]

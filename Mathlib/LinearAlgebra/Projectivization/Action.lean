@@ -34,7 +34,7 @@ namespace Projectivization
 
 section DivisionRing
 
-variable {G K V : Type*} [AddCommGroup V] [DivisionRing K] [Module K V]
+variable {G K V : Type*} [AddGroup V] [IsAddCommutative V] [DivisionRing K] [Module K V]
   [Group G] [DistribMulAction G V] [SMulCommClass G K V]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -110,7 +110,7 @@ section Field
 
 open MulAction LinearEquiv SpecialLinearGroup
 
-variable {K V : Type*} [AddCommGroup V] [Field K] [Module K V]
+variable {K V : Type*} [AddGroup V] [IsAddCommutative V] [Field K] [Module K V]
 
 theorem specialLinearGroup_smul_def (g : SpecialLinearGroup K V) (D : ℙ K V) :
     g • D = g.toLinearEquiv • D := rfl

@@ -17,7 +17,7 @@ In this file, we proved some results about the Krull dimension of a local ring.
 public section
 
 lemma ringKrullDim_eq_one_iff_of_isLocalRing_isDomain {R : Type*}
-    [CommRing R] [IsLocalRing R] [IsDomain R] : ringKrullDim R = 1 ↔ ¬ IsField R ∧
+    [Ring R] [IsMulCommutative R] [IsLocalRing R] [IsDomain R] : ringKrullDim R = 1 ↔ ¬ IsField R ∧
     ∀ (x : R), x ≠ 0 → IsLocalRing.maximalIdeal R ≤ Ideal.radical (Ideal.span {x}) := by
   refine ⟨fun h ↦ ⟨fun h' ↦ ?_, ?_⟩, fun ⟨hn, h⟩ ↦ ?_⟩
   · exact zero_ne_one ((ringKrullDim_eq_zero_of_isField h') ▸ h)

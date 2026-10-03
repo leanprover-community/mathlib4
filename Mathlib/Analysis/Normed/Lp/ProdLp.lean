@@ -66,7 +66,7 @@ section algebra
 lemmas for `Prod` will not trigger. -/
 
 variable {p 𝕜 α β}
-variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
+variable [Semiring 𝕜] [AddGroup α] [IsAddCommutative α] [AddGroup β] [IsAddCommutative β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 
 /-- The projection on the first coordinate in `WithLp`. -/
@@ -547,7 +547,7 @@ end UniformSpace
 section ContinuousLinearEquiv
 
 variable [TopologicalSpace α] [TopologicalSpace β]
-variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
+variable [Semiring 𝕜] [AddGroup α] [IsAddCommutative α] [AddGroup β] [IsAddCommutative β]
 variable [Module 𝕜 α] [Module 𝕜 β]
 
 /-- `WithLp.equiv` as a continuous linear equivalence. -/
@@ -672,7 +672,7 @@ lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 
 /-- Seminormed group instance on the product of two normed groups, using the `L^p`
 norm. -/
-instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
+instance instProdSeminormedAddCommGroup [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] :
     SeminormedAddCommGroup (WithLp p (α × β)) where
   dist_eq x y := by
     rcases p.dichotomy with (rfl | h)
@@ -691,48 +691,48 @@ lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 section
 variable {β p}
 
-theorem enorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem enorm_fst_le [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] (x : WithLp p (α × β)) :
     ‖x.fst‖ₑ ≤ ‖x‖ₑ := by
   simpa using edist_fst_le x 0
 
-theorem enorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem enorm_snd_le [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] (x : WithLp p (α × β)) :
     ‖x.snd‖ₑ ≤ ‖x‖ₑ := by
   simpa using edist_snd_le x 0
 
-theorem nnnorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem nnnorm_fst_le [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] (x : WithLp p (α × β)) :
     ‖x.fst‖₊ ≤ ‖x‖₊ := by
   simpa using nndist_fst_le x 0
 
-theorem nnnorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem nnnorm_snd_le [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] (x : WithLp p (α × β)) :
     ‖x.snd‖₊ ≤ ‖x‖₊ := by
   simpa using nndist_snd_le x 0
 
-theorem norm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem norm_fst_le [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] (x : WithLp p (α × β)) :
     ‖x.fst‖ ≤ ‖x‖ := by
   simpa using dist_fst_le x 0
 
-theorem norm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem norm_snd_le [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] (x : WithLp p (α × β)) :
     ‖x.snd‖ ≤ ‖x‖ := by
   simpa using dist_snd_le x 0
 
 end
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
-instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
+instance instProdNormedAddCommGroup [NormedAddGroup α] [IsAddCommutative α] [NormedAddGroup β] [IsAddCommutative β] :
     NormedAddCommGroup (WithLp p (α × β)) :=
   { instProdSeminormedAddCommGroup p α β with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+example [NormedAddGroup α] [IsAddCommutative α] [NormedAddGroup β] [IsAddCommutative β] :
     (instProdNormedAddCommGroup p α β).toMetricSpace.toUniformSpace.toTopologicalSpace =
     instProdTopologicalSpace p α β :=
   rfl
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+example [NormedAddGroup α] [IsAddCommutative α] [NormedAddGroup β] [IsAddCommutative β] :
     (instProdNormedAddCommGroup p α β).toMetricSpace.toUniformSpace = instProdUniformSpace p α β :=
   rfl
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+example [NormedAddGroup α] [IsAddCommutative α] [NormedAddGroup β] [IsAddCommutative β] :
     (instProdNormedAddCommGroup p α β).toMetricSpace.toBornology = instProdBornology p α β :=
   rfl
 
@@ -746,7 +746,7 @@ theorem prod_norm_eq_of_nat [Norm α] [Norm β] (n : ℕ) (h : p = n) (f : WithL
   simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast,
     prod_norm_eq_add this]
 
-variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+variable [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β]
 
 theorem prod_nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
     ‖f‖₊ = (‖f.fst‖₊ ^ p.toReal + ‖f.snd‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
@@ -835,7 +835,7 @@ end L2
 
 end norm_of
 
-variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+variable [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β]
 
 section Single
 
@@ -1029,24 +1029,24 @@ lemma dist_pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β]
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
 Lp norm. -/
-abbrev seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
+abbrev seminormedAddCommGroupToProd [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] :
     SeminormedAddCommGroup (α × β) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
   dist_eq x y := by
     rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
 
-lemma norm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+lemma norm_seminormedAddCommGroupToProd [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β]
     (x : α × β) :
     @Norm.norm _ (seminormedAddCommGroupToProd p α β).toNorm x = ‖toLp p x‖ := rfl
 
-lemma nnnorm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+lemma nnnorm_seminormedAddCommGroupToProd [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β]
     (x : α × β) :
     @NNNorm.nnnorm _ (seminormedAddCommGroupToProd p α β).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
 
 lemma isBoundedSMulSeminormedAddCommGroupToProd
-    [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]
+    [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] {R : Type*} [SeminormedRing R]
     [Module R α] [Module R β] [IsBoundedSMul R α] [IsBoundedSMul R β] :
     letI := pseudoMetricSpaceToProd p α β
     IsBoundedSMul R (α × β) := by
@@ -1056,7 +1056,7 @@ lemma isBoundedSMulSeminormedAddCommGroupToProd
   · simpa [dist_pseudoMetricSpaceToProd] using dist_pair_smul x y (toLp p z)
 
 lemma normSMulClassSeminormedAddCommGroupToProd
-    [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]
+    [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] {R : Type*} [SeminormedRing R]
     [Module R α] [Module R β] [NormSMulClass R α] [NormSMulClass R β] :
     letI := seminormedAddCommGroupToProd p α β
     NormSMulClass R (α × β) := by
@@ -1066,7 +1066,7 @@ lemma normSMulClassSeminormedAddCommGroupToProd
 /-- This definition allows to endow `α × β` with a normed space structure corresponding to
 the Lp norm. It is useful for type synonyms of `α × β`. -/
 abbrev normedSpaceSeminormedAddCommGroupToProd
-    [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [NormedField R]
+    [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] {R : Type*} [NormedField R]
     [NormedSpace R α] [NormedSpace R β] :
     letI := seminormedAddCommGroupToProd p α β
     NormedSpace R (α × β) := by
@@ -1076,7 +1076,7 @@ abbrev normedSpaceSeminormedAddCommGroupToProd
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
 Lp norm. -/
-abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
+abbrev normedAddCommGroupToProd [NormedAddGroup α] [IsAddCommutative α] [NormedAddGroup β] [IsAddCommutative β] :
     NormedAddCommGroup (α × β) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
@@ -1174,11 +1174,11 @@ end Isometry
 section Linear
 
 variable [hp : Fact (1 ≤ p)] [Semiring 𝕜]
-  [SeminormedAddCommGroup α] [Module 𝕜 α]
-  [SeminormedAddCommGroup β] [Module 𝕜 β]
-  [SeminormedAddCommGroup γ] [Module 𝕜 γ]
-  [SeminormedAddCommGroup α'] [Module 𝕜 α']
-  [SeminormedAddCommGroup β'] [Module 𝕜 β']
+  [SeminormedAddGroup α] [IsAddCommutative α] [Module 𝕜 α]
+  [SeminormedAddGroup β] [IsAddCommutative β] [Module 𝕜 β]
+  [SeminormedAddGroup γ] [IsAddCommutative γ] [Module 𝕜 γ]
+  [SeminormedAddGroup α'] [IsAddCommutative α'] [Module 𝕜 α']
+  [SeminormedAddGroup β'] [IsAddCommutative β'] [Module 𝕜 β']
 
 variable {𝕜 α β} in
 /-- The `L^p` product of two linear isometries. -/

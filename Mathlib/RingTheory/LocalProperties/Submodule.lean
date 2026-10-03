@@ -19,8 +19,8 @@ public section
 
 open scoped nonZeroDivisors
 
-variable {R M M₁ : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid M₁] [Module R M₁]
+variable {R M M₁ : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁]
 
 section maximal
 
@@ -139,11 +139,11 @@ include span_eq
 
 variable
   (Rₚ : ∀ _ : s, Type*)
-  [∀ r : s, CommSemiring (Rₚ r)]
+  [∀ r : s, Semiring (Rₚ r)] [∀ r : s, IsMulCommutative (Rₚ r)]
   [∀ r : s, Algebra R (Rₚ r)]
   [∀ r : s, IsLocalization.Away r.1 (Rₚ r)]
   (Mₚ : ∀ _ : s, Type*)
-  [∀ r : s, AddCommMonoid (Mₚ r)]
+  [∀ r : s, AddMonoid (Mₚ r)] [∀ r : s, IsAddCommutative (Mₚ r)]
   [∀ r : s, Module R (Mₚ r)]
   [∀ r : s, Module (Rₚ r) (Mₚ r)]
   [∀ r : s, IsScalarTower R (Rₚ r) (Mₚ r)]

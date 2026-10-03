@@ -31,7 +31,7 @@ This file defines totally unimodular matrices and provides basic API for them.
 
 namespace Matrix
 
-variable {m m' n n' R : Type*} [CommRing R]
+variable {m m' n n' R : Type*} [Ring R] [IsMulCommutative R]
 
 /-- `A.IsTotallyUnimodular` means that every square submatrix of `A` (not necessarily contiguous)
 has determinant `0` or `1` or `-1`; that is, the determinant is in the range of `SignType.cast`. -/

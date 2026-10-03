@@ -28,7 +28,7 @@ This file deals with the set of principal ideals of a `CommRing R`.
 
 @[expose] public section
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace Ideal
 

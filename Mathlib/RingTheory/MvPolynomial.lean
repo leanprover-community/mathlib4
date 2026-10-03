@@ -38,7 +38,7 @@ theorem quotient_mk_comp_C_injective [Field K] (I : Ideal (MvPolynomial σ K)) (
   have := I.mul_mem_left (MvPolynomial.C x⁻¹) hx
   rwa [← MvPolynomial.C.map_mul, inv_mul_cancel₀ hx0, MvPolynomial.C_1] at this
 
-variable {σ K} [CommRing K] [Nontrivial K]
+variable {σ K} [Ring K] [IsMulCommutative K] [Nontrivial K]
 open Cardinal
 
 theorem rank_eq_lift : Module.rank K (MvPolynomial σ K) = lift.{v} #(σ →₀ ℕ) := by

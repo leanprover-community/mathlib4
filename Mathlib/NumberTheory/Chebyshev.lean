@@ -330,7 +330,7 @@ are close.
 -/
 
 /-- A sum over prime powers may be written as a double sum over exponents and then primes. -/
-theorem sum_PrimePow_eq_sum_sum' {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x)
+theorem sum_PrimePow_eq_sum_sum' {R : Type*} [AddMonoid R] [IsAddCommutative R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x)
   {N : ℕ} (hN : ⌊log x / log 2⌋₊ ≤ N) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
       = ∑ k ∈ Icc 1 N, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) := by
@@ -369,7 +369,7 @@ theorem sum_PrimePow_eq_sum_sum' {R : Type*} [AddCommMonoid R] (f : ℕ → R) {
     contrapose! this
     apply rpow_lt_one hx this (by bound)
 
-theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
+theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddMonoid R] [IsAddCommutative R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
       = ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) :=
   sum_PrimePow_eq_sum_sum' f hx (le_refl _)

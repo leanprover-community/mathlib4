@@ -38,7 +38,7 @@ namespace MeasureTheory
 
 section InnerProductSpace
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   {μ : Measure E} [IsFiniteMeasure μ]
 

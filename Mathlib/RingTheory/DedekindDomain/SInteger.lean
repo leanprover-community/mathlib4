@@ -53,7 +53,7 @@ open scoped nonZeroDivisors
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDedekindDomain R]
+variable {R : Type u} [Ring R] [IsMulCommutative R] [IsDedekindDomain R]
   (S : Set <| HeightOneSpectrum R) (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-! ## `S`-integers -/

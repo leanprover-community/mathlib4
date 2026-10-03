@@ -40,7 +40,7 @@ public section
 
 open scoped nonZeroDivisors Polynomial
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 section IsIntegrallyClosed
 
@@ -108,7 +108,7 @@ namespace Polynomial
 
 section
 
-variable {S : Type*} [CommRing S] [IsDomain S]
+variable {S : Type*} [Ring S] [IsMulCommutative S] [IsDomain S]
 variable {φ : R →+* S} (hinj : Function.Injective φ) {f : R[X]} (hf : f.IsPrimitive)
 include hinj hf
 

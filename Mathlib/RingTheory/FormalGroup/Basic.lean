@@ -40,7 +40,7 @@ when `F` is a commutative formal group law
 
 @[expose] public section
 
-variable {R : Type*} [CommRing R] {S : Type*} [CommRing S] {σ τ : Type*}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {S : Type*} [Ring S] [IsMulCommutative S] {σ τ : Type*}
 
 noncomputable section
 

@@ -27,7 +27,7 @@ public section
 
 namespace QuadraticAlgebra
 
-variable {R : Type*} [CommSemiring R] {a b : R}
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {a b : R}
 
 /-- A quadratic algebra is a quadratic extension. -/
 instance [StrongRankCondition R] :
@@ -40,7 +40,7 @@ namespace Algebra
 
 open QuadraticAlgebra
 
-variable {R A : Type*} [CommRing R] [StrongRankCondition R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [StrongRankCondition R] [Ring A] [IsMulCommutative A] [Algebra R A]
   [IsQuadraticExtension R A]
 
 /-- Every quadratic extension `A / R` is isomorphic to `QuadraticAlgebra R a b` for some `a, b`. -/

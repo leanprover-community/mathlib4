@@ -50,7 +50,7 @@ namespace MatrixModCat
 
 open Matrix
 
-variable {M : Type*} [AddCommGroup M] [Module (Matrix ι ι R) M] [Module R M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module (Matrix ι ι R) M] [Module R M]
   [IsScalarTower R (Matrix ι ι R) M]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -77,7 +77,7 @@ variable {R} in
 /-- An `R`-linear map between `Eᵢᵢ • M` and `Eᵢᵢ • N` induced by an `Mₙ(R)`-linear map
   from `M` to `N`. -/
 @[simps!]
-def fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N] (i : ι)
+def fromMatrixLinear {N : Type*} [AddGroup N] [IsAddCommutative N] [Module (Matrix ι ι R) N] (i : ι)
     [Module R N] [IsScalarTower R (Matrix ι ι R) N] (f : M →ₗ[Matrix ι ι R] N) :
     toModuleCatObj R M i →ₗ[R] toModuleCatObj R N i :=
   f.restrictScalars R |>.restrict fun x hx => by
@@ -110,7 +110,7 @@ open MatrixModCat Matrix
 
 /-- The linear equiv induced by the equality `toModuleCat (toMatrixModCat M) = Eᵢᵢ • Mⁿ`. -/
 def fromModuleCatToModuleCatLinearEquivtoModuleCatObj
-    (M : Type*) [AddCommGroup M] [Module R M] (i : ι) :
+    (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] (i : ι) :
     (ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R i).obj ↧M ≃ₗ[R]
     MatrixModCat.toModuleCatObj R (ι → M) i where
   __ := AddEquiv.refl _
@@ -118,7 +118,7 @@ def fromModuleCatToModuleCatLinearEquivtoModuleCatObj
 
 /-- Auxiliary isomorphism showing that compose two functors gives `id` on objects. -/
 @[simps]
-def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M] (i : ι) :
+def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] (i : ι) :
     MatrixModCat.toModuleCatObj R (ι → M) i ≃ₗ[R] M where
   toFun x := ∑ i : ι, x.1 i
   map_add' := by simp [Finset.sum_add_distrib]
@@ -202,7 +202,7 @@ set_option backward.isDefEq.respectTransparency false in
 open ModuleCat.Algebra in
 /-- Moreover `ModuleCat.matrixEquivalence` is a `MoritaEquivalence`. -/
 @[simps]
-def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
+def moritaEquivalenceMatrix (R₀ : Type*) [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] (i : ι) :
     MoritaEquivalence R₀ R (Matrix ι ι R) where
   eqv := ModuleCat.matrixEquivalence R i
   linear.map_smul {X Y} f r := by
@@ -215,6 +215,6 @@ def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i :
     change _ = ((algebraMap R₀ (Matrix ι ι R) r) • ((ModuleCat.Hom.hom f).mapMatrixModule ι v)) i
     simp [Matrix.algebraMap_matrix_apply]
 
-theorem IsMoritaEquivalent.matrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Nonempty ι] :
+theorem IsMoritaEquivalent.matrix (R₀ : Type*) [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Nonempty ι] :
     IsMoritaEquivalent R₀ R (Matrix ι ι R) :=
   ⟨Nonempty.map (moritaEquivalenceMatrix R R₀) inferInstance⟩

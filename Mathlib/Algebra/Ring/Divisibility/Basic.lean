@@ -83,7 +83,7 @@ end Semiring
 
 section NonUnitalCommSemiring
 
-variable [NonUnitalCommSemiring α]
+variable [NonUnitalSemiring α] [IsMulCommutative α]
 
 theorem Dvd.dvd.linear_comb {d x y : α} (hdx : d ∣ x) (hdy : d ∣ y) (a b : α) : d ∣ a * x + b * y :=
   dvd_add (hdx.mul_left a) (hdy.mul_left b)
@@ -177,7 +177,7 @@ end Ring
 
 section NonUnitalCommRing
 
-variable [NonUnitalCommRing α]
+variable [NonUnitalRing α] [IsMulCommutative α]
 
 theorem dvd_mul_sub_mul {k a b x y : α} (hab : k ∣ a - b) (hxy : k ∣ x - y) :
     k ∣ a * x - b * y := by

@@ -67,7 +67,7 @@ end SMulWithZero
 
 section IsOrderedModule
 
-variable [IsOrderedRing R] [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+variable [IsOrderedRing R] [AddMonoid M] [IsAddCommutative M] [PartialOrder M] [IsOrderedAddMonoid M]
   [SMulWithZero R M]
 
 instance instIsOrderedModule [hM : IsOrderedModule R M] : IsOrderedModule R≥0 M where
@@ -83,7 +83,7 @@ end IsOrderedModule
 
 section Module
 
-variable [IsOrderedRing R] [AddCommMonoid M] [Module R M]
+variable [IsOrderedRing R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- A module over an ordered semiring is also a module over just the non-negative scalars. -/
 instance instModule : Module R≥0 M where

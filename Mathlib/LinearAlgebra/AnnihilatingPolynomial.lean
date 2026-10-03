@@ -27,7 +27,7 @@ as defined in `FieldTheory.Minpoly`.
 
 ## Special case: endomorphism algebra
 
-Given an `R`-module `M` (`[AddCommGroup M] [Module R M]`)
+Given an `R`-module `M` (`[AddGroup M] [IsAddCommutative M] [Module R M]`)
 there are some common specializations which may be more familiar.
 * Example 1: `A = M →ₗ[R] M`, the endomorphism algebra of an `R`-module M.
 * Example 2: `A = n × n` matrices with entries in `R`.
@@ -42,7 +42,7 @@ namespace Polynomial
 
 section Semiring
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 variable (R) in
 /-- `annIdeal R a` is the *annihilating ideal* of all `p : R[X]` such that `p(a) = 0`.
@@ -162,7 +162,7 @@ theorem monic_generator_eq_minpoly (a : A) (p : 𝕜[X]) (p_monic : p.Monic)
     apply eq_of_monic_of_associated p_monic _ p_gen
     apply monic_annIdealGenerator _ _ ((Associated.ne_zero_iff p_gen).mp h)
 
-theorem span_minpoly_eq_annihilator {M} [AddCommGroup M] [Module 𝕜 M] (f : Module.End 𝕜 M) :
+theorem span_minpoly_eq_annihilator {M} [AddGroup M] [IsAddCommutative M] [Module 𝕜 M] (f : Module.End 𝕜 M) :
     Ideal.span {minpoly 𝕜 f} = Module.annihilator 𝕜[X] (Module.AEval' f) := by
   rw [← annIdealGenerator_eq_minpoly, span_singleton_annIdealGenerator]; ext
   rw [mem_annIdeal_iff_aeval_eq_zero, DFunLike.ext_iff, Module.mem_annihilator]; rfl

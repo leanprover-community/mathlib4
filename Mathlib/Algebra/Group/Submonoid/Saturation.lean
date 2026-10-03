@@ -78,13 +78,13 @@ theorem iInf {ι : Sort*} {f : ι → Submonoid M} (hf : ∀ i, (f i).MulSaturat
 
 /-- If `M` is commutative, we only need to check the left condition `x ∈ s`. -/
 @[to_additive /-- If `M` is commutative, we only need to check the left condition `x ∈ s`. -/]
-theorem of_left {M : Type*} [CommMonoid M] {s : Submonoid M}
+theorem of_left {M : Type*} [Monoid M] [IsMulCommutative M] {s : Submonoid M}
     (h : ∀ ⦃x y⦄, x * y ∈ s → x ∈ s) : s.MulSaturated :=
   fun x y hxy ↦ ⟨h hxy, h <| mul_comm x y ▸ hxy⟩
 
 /-- If `M` is commutative, we only need to check the right condition `y ∈ s`. -/
 @[to_additive /-- If `M` is commutative, we only need to check the right condition `y ∈ s`. -/]
-theorem of_right {M : Type*} [CommMonoid M] {s : Submonoid M}
+theorem of_right {M : Type*} [Monoid M] [IsMulCommutative M] {s : Submonoid M}
     (h : ∀ ⦃x y⦄, x * y ∈ s → y ∈ s) : s.MulSaturated :=
   of_left fun x y ↦ mul_comm x y ▸ @h y x
 
@@ -240,7 +240,7 @@ theorem saturation_induction {s : Submonoid M}
 end MulOneClass
 
 section CommMonoid
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 variable {s : Submonoid M} {x : M}
 
@@ -302,7 +302,7 @@ theorem iSup_def {ι : Sort*} {f : ι → SaturatedSubmonoid M} :
 end MulOneClass
 
 section CommMonoid
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 @[to_additive]
 theorem mem_bot_iff {x : M} : x ∈ (⊥ : SaturatedSubmonoid M) ↔ IsUnit x := by

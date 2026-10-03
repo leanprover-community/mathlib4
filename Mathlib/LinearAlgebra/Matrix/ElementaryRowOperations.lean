@@ -54,7 +54,7 @@ lemma rowScale_apply_ne {i a b : m} (hab : a ≠ b) (c : R) :
 
 end ZeroOne
 
-variable [CommRing R] [Fintype m]
+variable [Ring R] [IsMulCommutative R] [Fintype m]
 
 lemma rowScale_mul (i : m) (c : R) (M : Matrix m n R) :
     rowScale i c * M = M.updateRow i (c • M.row i) := by
@@ -83,7 +83,7 @@ def rowScale (i : m) (c : Rˣ) : GL m R where
   inv_val := by simp
 
 @[simp]
-lemma map_rowScale {S : Type*} [CommRing S] (f : R →+* S) (i : m) (c : Rˣ) :
+lemma map_rowScale {S : Type*} [Ring S] [IsMulCommutative S] (f : R →+* S) (i : m) (c : Rˣ) :
     (rowScale (R := R) i c).map f = rowScale (R := S) i (Units.map f c) := by
   ext j k
   rcases eq_or_ne j k with rfl | hjk

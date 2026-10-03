@@ -33,7 +33,7 @@ open Set Metric
 
 open Filter in
 open scoped Topology in
-theorem disjoint_interior_extremePoints {E : Type*} [AddCommGroup E] [Module ℝ E]
+theorem disjoint_interior_extremePoints {E : Type*} [AddGroup E] [IsAddCommutative E] [Module ℝ E]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [Nontrivial E]
     (S : Set E) : Disjoint (interior S) (extremePoints ℝ S) := by
   refine Set.disjoint_iff.mpr fun x ⟨x_int, x_ext⟩ ↦ ?_
@@ -47,7 +47,7 @@ theorem disjoint_interior_extremePoints {E : Type*} [AddCommGroup E] [Module ℝ
   grind only [x_ext.2 hv₁ hv₂ key]
 
 lemma StrictConvex.sdiff_interior_subset_extremePoints {𝕜 A : Type*} [Semiring 𝕜]
-    [PartialOrder 𝕜] [AddCommMonoid A] [Module 𝕜 A] [TopologicalSpace A] {C : Set A}
+    [PartialOrder 𝕜] [AddMonoid A] [IsAddCommutative A] [Module 𝕜 A] [TopologicalSpace A] {C : Set A}
     (hc : StrictConvex 𝕜 C) : C \ interior C ⊆ extremePoints 𝕜 C := by
   refine fun x hx ↦ ⟨hx.1, fun y hy z hz ⟨a, b, ha, hb, hab, hxab⟩ ↦ ?_⟩
   have hyz : y = z := by
@@ -60,7 +60,7 @@ alias StrictConvex.diff_interior_subset_extremePoints :=
   StrictConvex.sdiff_interior_subset_extremePoints
 
 section Normed
-variable {A : Type*} [NormedAddCommGroup A] [NormedSpace ℝ A]
+variable {A : Type*} [NormedAddGroup A] [IsAddCommutative A] [NormedSpace ℝ A]
 
 /-- In a nontrivial normed space, the extreme points of the closed ball is contained in
 the sphere. -/

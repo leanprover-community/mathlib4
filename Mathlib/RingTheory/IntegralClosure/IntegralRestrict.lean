@@ -32,7 +32,7 @@ We call this the AKLB setup.
 open Module nonZeroDivisors
 
 variable (A K L L₂ L₃ B B₂ B₃ : Type*)
-variable [CommRing A] [CommRing B] [CommRing B₂] [CommRing B₃]
+variable [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring B₂] [IsMulCommutative B₂] [Ring B₃] [IsMulCommutative B₃]
 variable [Algebra A B] [Algebra A B₂] [Algebra A B₃]
 variable [Field K] [Field L] [Field L₂] [Field L₃]
 variable [Algebra A K] [IsFractionRing A K]
@@ -229,7 +229,7 @@ instance (priority := 900) [IsDomain A] [IsDomain B] [IsIntegrallyClosed B]
   haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
   Fintype.ofEquiv _ (galRestrict A (FractionRing A) (FractionRing B) B).toEquiv
 
-variable {Aₘ Bₘ} [CommRing Aₘ] [CommRing Bₘ] [Algebra Aₘ Bₘ] [Algebra A Aₘ] [Algebra B Bₘ]
+variable {Aₘ Bₘ} [Ring Aₘ] [IsMulCommutative Aₘ] [Ring Bₘ] [IsMulCommutative Bₘ] [Algebra Aₘ Bₘ] [Algebra A Aₘ] [Algebra B Bₘ]
 variable [Algebra A Bₘ] [IsScalarTower A Aₘ Bₘ] [IsScalarTower A B Bₘ]
 variable (M : Submonoid A) [IsLocalization M Aₘ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid B M) Bₘ]
@@ -425,7 +425,7 @@ lemma Algebra.algebraMap_intNorm_fractionRing (x : B) :
 
 variable (A B)
 
-theorem Algebra.intNorm_intNorm {C : Type*} [CommRing C] [IsDomain C] [IsIntegrallyClosed C]
+theorem Algebra.intNorm_intNorm {C : Type*} [Ring C] [IsMulCommutative C] [IsDomain C] [IsIntegrallyClosed C]
     [Algebra A C] [Algebra B C] [IsScalarTower A B C] [Algebra.IsIntegral A C]
     [Algebra.IsIntegral B C] [IsTorsionFree A C] [IsTorsionFree B C] (x : C) :
     intNorm A B (intNorm B C x) = intNorm A C x := by

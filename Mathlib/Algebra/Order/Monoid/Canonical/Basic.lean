@@ -19,7 +19,7 @@ import Mathlib.Tactic.SetLike
 public section
 
 namespace Set
-variable {α : Type*} [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
+variable {α : Type*} [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [CanonicallyOrderedAdd α]
   [Sub α] [OrderedSub α] {β : Type*} {f : α → β} {k : α}
 
 theorem range_add_eq_image_Ici : range (fun x ↦ f (x + k)) = f '' Ici k :=
@@ -73,7 +73,7 @@ theorem exists_le_add_iff_le_left [AddLeftMono α] [IsLeftCancelAdd α] :
 end Add
 
 section AddCommMagma
-variable [AddCommMagma α] [CanonicallyOrderedAdd α]
+variable [Add α] [IsAddCommutative α] [CanonicallyOrderedAdd α]
 
 theorem lt_add_iff_lt_right_or_exists_lt [AddLeftReflectLT α] [IsLeftCancelAdd α] :
     a < b + c ↔ a < c ∨ ∃ d < b, a = d + c := by

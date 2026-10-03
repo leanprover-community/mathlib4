@@ -36,7 +36,7 @@ section ProfiniteGrp
 
 universe u
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
 variable {G : Type u} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 variable {P : Ideal A}
 variable [TopologicalSpace G] [CompactSpace G] [TotallyDisconnectedSpace G]

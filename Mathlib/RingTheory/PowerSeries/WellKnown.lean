@@ -66,7 +66,7 @@ end Ring
 
 section invOneSubPow
 
-variable (S : Type*) [CommRing S] (d : ℕ)
+variable (S : Type*) [Ring S] [IsMulCommutative S] (d : ℕ)
 
 /--
 (1 + X + X^2 + ...) * (1 - X) = 1.

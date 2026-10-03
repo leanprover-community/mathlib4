@@ -32,7 +32,7 @@ open scoped MonoidalCategory
 
 universe v u
 
-variable {R : Type u} [CommRing R] [Invertible (2 : R)]
+variable {R : Type u} [Ring R] [IsMulCommutative R] [Invertible (2 : R)]
 
 namespace QuadraticModuleCat
 

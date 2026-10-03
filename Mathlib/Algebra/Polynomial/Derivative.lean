@@ -466,7 +466,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 theorem derivative_pow_succ (p : R[X]) (n : ℕ) :
     derivative (p ^ (n + 1)) = C (n + 1 : R) * p ^ n * derivative p :=
@@ -661,7 +661,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 theorem derivative_comp_one_sub_X (p : R[X]) :
     derivative (p.comp (1 - X)) = -p.derivative.comp (1 - X) := by simp [derivative_comp]
@@ -766,7 +766,7 @@ end NoZeroDivisors
 
 section CommSemiringNoZeroDivisors
 
-variable [CommSemiring R] [NoZeroDivisors R]
+variable [Semiring R] [IsMulCommutative R] [NoZeroDivisors R]
 
 theorem derivative_pow_eq_zero {n : ℕ} (chn : (n : R) ≠ 0) {a : R[X]} :
     derivative (a ^ n) = 0 ↔ derivative a = 0 := by

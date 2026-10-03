@@ -34,7 +34,7 @@ namespace Finsupp
 section uniqueLinearEquiv
 
 variable (R : Type*) {α : Type*} (M : Type*)
-variable [AddCommMonoid M] [Semiring R] [Module R M]
+variable [AddMonoid M] [IsAddCommutative M] [Semiring R] [Module R M]
 
 /-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
 `R`-linearly equivalent to `M`. -/
@@ -72,7 +72,7 @@ theorem LinearEquiv.finsuppUnique_symm_apply (α : Type*) [Unique α] (m : M) :
 end uniqueLinearEquiv
 
 variable {α : Type*} {M : Type*} {R : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- Forget that a function is finitely supported.
 
@@ -95,8 +95,8 @@ def lcoeFun : (α →₀ M) →ₗ[R] α → M where
 end Finsupp
 
 variable {R M N P : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module R N]
+variable [AddMonoid P] [IsAddCommutative P] [Module R P]
 
 open Finsupp
 
@@ -252,7 +252,7 @@ namespace FunOnFinite
 
 section
 
-variable {M : Type*} [AddCommMonoid M] {X Y Z : Type*}
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] {X Y Z : Type*}
 
 /-- The map `(X → M) → (Y → M)` induced by a map `X → Y` between finite types. -/
 noncomputable def map [Finite X] [Finite Y] (f : X → Y) (s : X → M) : Y → M :=
@@ -289,7 +289,7 @@ end
 
 section
 
-variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] {X Y Z : Type*}
+variable (R M : Type*) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] {X Y Z : Type*}
 
 /-- The linear map `(X → M) →ₗ[R] (Y → M)` induced by a map `X → Y` between finite types. -/
 noncomputable def linearMap [Finite X] [Finite Y] (f : X → Y) :

@@ -25,7 +25,7 @@ open Algebra
 
 namespace Subalgebra
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 variable {n : Type*} [Fintype n] [DecidableEq n]
 
 /-- A version of `Set.matrix` for `Subalgebra`s.

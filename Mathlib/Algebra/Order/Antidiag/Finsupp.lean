@@ -38,7 +38,7 @@ variable {ι μ μ' : Type*}
 
 namespace Finset
 section AddCommMonoid
-variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι}
+variable [DecidableEq ι] [AddMonoid μ] [IsAddCommutative μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι}
   {n : μ} {f : ι →₀ μ}
 
 /-- The finset of functions `ι →₀ μ` with support contained in `s` and sum equal to `n`. -/
@@ -117,7 +117,7 @@ theorem finsuppAntidiag_mono {s t : Finset ι} (h : s ⊆ t) (n : μ) :
   rintro ⟨hsum, hmem⟩
   exact ⟨hsum, hmem.trans h⟩
 
-variable [AddCommMonoid μ'] [HasAntidiagonal μ'] [DecidableEq μ']
+variable [AddMonoid μ'] [IsAddCommutative μ'] [HasAntidiagonal μ'] [DecidableEq μ']
 
 set_option backward.isDefEq.respectTransparency false in
 -- This should work under the assumption that e is an embedding and an AddHom
@@ -151,7 +151,7 @@ lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
 end AddCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [DecidableEq μ] [AddCommMonoid μ] [PartialOrder μ]
+variable [DecidableEq ι] [DecidableEq μ] [AddMonoid μ] [IsAddCommutative μ] [PartialOrder μ]
   [CanonicallyOrderedAdd μ] [HasAntidiagonal μ]
 
 @[simp] lemma finsuppAntidiag_zero (s : Finset ι) : finsuppAntidiag s (0 : μ) = {0} := by

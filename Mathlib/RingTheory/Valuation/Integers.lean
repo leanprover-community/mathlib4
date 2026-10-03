@@ -43,9 +43,9 @@ end Ring
 
 section CommRing
 
-variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
+variable {R : Type u} {Γ₀ : Type v} [Ring R] [IsMulCommutative R] [LinearOrderedCommGroupWithZero Γ₀]
 variable (v : Valuation R Γ₀)
-variable (O : Type w) [CommRing O] [Algebra O R]
+variable (O : Type w) [Ring O] [IsMulCommutative O] [Algebra O R]
 
 /-- Given a valuation v : R → Γ₀ and a ring homomorphism O →+* R, we say that O is the integers of v
 if f is injective, and its range is exactly `v.integer`. -/
@@ -122,7 +122,7 @@ end CommRing
 section Field
 
 variable {F : Type u} {Γ₀ : Type v} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
-variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F]
+variable {v : Valuation F Γ₀} {O : Type w} [Ring O] [IsMulCommutative O] [Algebra O F]
 
 namespace Integers
 

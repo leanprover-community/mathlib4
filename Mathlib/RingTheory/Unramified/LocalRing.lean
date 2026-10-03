@@ -38,7 +38,7 @@ namespace Algebra
 
 section IsLocalRing
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 variable [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)]
 
 instance : FormallyUnramified S (ResidueField S) := .quotient _
@@ -122,7 +122,7 @@ end IsLocalRing
 
 section IsUnramifiedAt
 
-variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type*) {S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 variable [EssFiniteType R S] (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
   [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
   [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)]
@@ -155,7 +155,7 @@ end Algebra
 
 section UniquePrimeOver
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {p : Ideal R} [p.IsPrime]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] {p : Ideal R} [p.IsPrime]
   {q : Ideal S} [q.IsPrime] (hq : p.primesOver S = {q})
 
 include hq

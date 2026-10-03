@@ -35,7 +35,7 @@ section Identities
 -/
 /-- `(x + y)^n` can be expressed as `x^n + n*x^(n-1)*y + k * y^2` for some `k` in the ring.
 -/
-def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
+def powAddExpansion {R : Type*} [Semiring R] [IsMulCommutative R] (x y : R) :
     ∀ n : ℕ, { k // (x + y) ^ n = x ^ n + n * x ^ (n - 1) * y + k * y ^ 2 }
   | 0 => ⟨0, by simp⟩
   | 1 => ⟨0, by simp⟩
@@ -49,7 +49,7 @@ def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
         push_cast
         ring!
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 set_option backward.privateInPublic true in
 private def polyBinomAux1 (x y : R) (e : ℕ) (a : R) :

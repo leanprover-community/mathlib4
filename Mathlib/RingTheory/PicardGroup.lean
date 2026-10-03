@@ -66,8 +66,8 @@ open TensorProduct
 
 universe u v
 
-variable (R : Type u) (M : Type v) (N P Q A : Type*) [CommSemiring R]
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable (R : Type u) (M : Type v) (N P Q A : Type*) [Semiring R] [IsMulCommutative R]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
 
 namespace Module
@@ -348,7 +348,7 @@ end algEquivOfRing
 
 section CommSemiring
 
-variable [CommSemiring A] [Algebra R A]
+variable [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 instance : Module.Invertible A (A ⊗[R] M) :=
   .right (M := A ⊗[R] Dual R M) <| (AlgebraTensorModule.distribBaseChange ..).symm ≪≫ₗ
@@ -363,7 +363,7 @@ theorem of_isLocalization (S : Submonoid R) [IsLocalization S A]
 instance (S : Submonoid R) : Module.Invertible (Localization S) (LocalizedModule S M) :=
   of_isLocalization S (LocalizedModule.mkLinearMap S M)
 
-instance (L) [AddCommMonoid L] [Module R L] [Module A L] [IsScalarTower R A L]
+instance (L) [AddMonoid L] [IsAddCommutative L] [Module R L] [Module A L] [IsScalarTower R A L]
     [Module.Invertible A L] : Module.Invertible A (L ⊗[R] M) :=
   .congr (AlgebraTensorModule.cancelBaseChange R A A L M)
 
@@ -411,7 +411,7 @@ open CategoryTheory Module
 instance (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) : Module.Invertible R M :=
   .right (Quotient.eq.mp M.inv_mul).some.toLinearEquivₛ
 
-instance (R : Type u) [CommRing R] (M : (Skeleton <| ModuleCat.{u} R)ˣ) : Module.Invertible R M :=
+instance (R : Type u) [Ring R] [IsMulCommutative R] (M : (Skeleton <| ModuleCat.{u} R)ˣ) : Module.Invertible R M :=
   .right (Quotient.eq.mp M.inv_mul).some.toLinearEquiv
 
 instance : Small.{u} (Skeleton <| SemimoduleCat.{u} R)ˣ :=
@@ -421,12 +421,12 @@ instance : Small.{u} (Skeleton <| SemimoduleCat.{u} R)ˣ :=
   small_of_injective (f := f) fun M N eq ↦ Units.ext <| Quotient.out_equiv_out.mp
     ⟨((Finite.reprEquivₛ R M).symm ≪≫ₗ this eq ≪≫ₗ Finite.reprEquivₛ R N).toModuleIsoₛ⟩
 
-instance (R : Type u) [CommRing R] : Small.{u} (Skeleton <| ModuleCat.{u} R)ˣ :=
+instance (R : Type u) [Ring R] [IsMulCommutative R] : Small.{u} (Skeleton <| ModuleCat.{u} R)ˣ :=
   small_map (Units.mapEquiv <| Skeleton.mulEquiv ModuleCat.equivalenceSemimoduleCat).toEquiv
 
 /-- The Picard group of a commutative semiring R consists of the invertible R-modules,
 up to isomorphism. -/
-def CommRing.Pic (R : Type u) [CommSemiring R] : Type u :=
+def CommRing.Pic (R : Type u) [Semiring R] [IsMulCommutative R] : Type u :=
   Shrink (Skeleton <| SemimoduleCat.{u} R)ˣ
 
 open CommRing (Pic)
@@ -445,7 +445,7 @@ abbrev AsModule (M : Pic R) : Type u := ((equivShrink _).symm M).val
 
 noncomputable instance : CoeSort (Pic R) (Type u) := ⟨AsModule⟩
 
-noncomputable instance (R) [CommRing R] (M : Pic R) : AddCommGroup M :=
+noncomputable instance (R) [Ring R] [IsMulCommutative R] (M : Pic R) : AddCommGroup M :=
   Module.addCommMonoidToAddCommGroup R
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -518,13 +518,13 @@ theorem mul_eq_tensor (M N : Pic R) : M * N = Pic.mk R (M ⊗[R] N) := by
   rw [mk_tensor, mk_eq_self, mk_eq_self]
 
 theorem subsingleton_iffₛ : Subsingleton (Pic R) ↔
-    ∀ (M : Type u) [AddCommMonoid M] [Module R M], Module.Invertible R M → Free R M :=
+    ∀ (M : Type u) [AddMonoid M] [IsAddCommutative M] [Module R M], Module.Invertible R M → Free R M :=
   .trans ⟨fun _ M _ _ _ ↦ Subsingleton.elim ..,
       fun h ↦ ⟨fun M N ↦ by rw [← mk_eq_self (M := M), ← mk_eq_self (M := N), h, h]⟩⟩ <|
     forall₄_congr fun _ _ _ _ ↦ mk_eq_one_iff_free
 
-theorem subsingleton_iff {R : Type u} [CommRing R] : Subsingleton (Pic R) ↔
-    ∀ (M : Type u) [AddCommGroup M] [Module R M], Module.Invertible R M → Free R M :=
+theorem subsingleton_iff {R : Type u} [Ring R] [IsMulCommutative R] : Subsingleton (Pic R) ↔
+    ∀ (M : Type u) [AddGroup M] [IsAddCommutative M] [Module R M], Module.Invertible R M → Free R M :=
   subsingleton_iffₛ.trans
     ⟨fun h M ↦ h M, fun h M ↦ let _ := @Module.addCommMonoidToAddCommGroup R; h M⟩
 
@@ -542,11 +542,11 @@ instance [IsLocalRing R] : Subsingleton (Pic R) := subsingleton_iffₛ.mpr fun M
     LinearMap.range_eq_top.mp <| Ideal.eq_top_of_isUnit_mem _ ⟨m, rfl⟩ hfm)
 
 /-- The Picard group of a semilocal ring is trivial. -/
-instance (R) [CommRing R] [Finite (MaximalSpectrum R)] : Subsingleton (Pic R) :=
+instance (R) [Ring R] [IsMulCommutative R] [Finite (MaximalSpectrum R)] : Subsingleton (Pic R) :=
   subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_finrank_eq _ _ 1
     fun _ ↦ let _ := @Ideal.Quotient.field; Invertible.finrank_eq_one ..
 
-variable (R) (A B : Type*) [CommSemiring A] [CommSemiring B] [Algebra R A]
+variable (R) (A B : Type*) [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Algebra R A]
 
 open AlgebraTensorModule in
 /-- Every `R`-algebra `A` gives rise to a homomorphism between Picard groups of `R` and `A`. -/
@@ -572,7 +572,7 @@ theorem mapAlgebra_self_apply {M : Pic R} : mapAlgebra R R M = M :=
 
 theorem mapAlgebra_self : mapAlgebra R R = .id _ := by ext; exact mapAlgebra_self_apply
 
-variable {S T : Type*} [CommSemiring S] [CommSemiring T] (f : R →+* S) (g : S →+* T)
+variable {S T : Type*} [Semiring S] [IsMulCommutative S] [Semiring T] [IsMulCommutative T] (f : R →+* S) (g : S →+* T)
 
 /-- Every ring homomorphism between commutative semirings induces a homomorphism between
 Picard groups. -/
@@ -609,7 +609,7 @@ noncomputable def functor : CommSemiRingCat.{u} ⥤ CommGrpCat.{u} where
 
 end Pic
 
-variable (A : Type*) [CommSemiring A] [Algebra R A]
+variable (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 /-- The relative Picard group of an `R`-algebra `A`, denoted `Pic(A/R)`,
 defined to be the kernel of `Pic.mapAlgebra R A`. -/
@@ -829,7 +829,7 @@ end Module.Flat
 
 section PicardGroup
 
-variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]
+variable [Semiring A] [IsMulCommutative A] [Algebra R A] [FaithfulSMul R A]
 
 open CommRing Pic LinearMap Module.Flat
 
@@ -873,7 +873,7 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The class group of a domain is isomorphic to the Picard group. -/
-@[simps!] noncomputable def ClassGroup.equivPic (R) [CommRing R] [IsDomain R] :
+@[simps!] noncomputable def ClassGroup.equivPic (R) [Ring R] [IsMulCommutative R] [IsDomain R] :
     ClassGroup R ≃* Pic R :=
   (mulEquivUnitsSubmoduleQuotRange R).trans <| .trans (Submodule.unitsQuotEquivRelPic R _) <|
     .trans (.subgroupCongr <| relPic_eq_top R _) Subgroup.topEquiv
@@ -881,7 +881,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The Picard group of a domain with normalizable gcd is trivial.
 This includes unique factorization domains. -/
 @[stacks 0BCH]
-instance (R) [CommRing R] [IsDomain R] [IsGCDMonoid R] : Subsingleton (Pic R) :=
+instance (R) [Ring R] [IsMulCommutative R] [IsDomain R] [IsGCDMonoid R] : Subsingleton (Pic R) :=
   Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
 
 end PicardGroup
@@ -890,8 +890,8 @@ open CommRing Pic
 
 section Ideal
 
-variable (R M : Type*) [CommRing R]
-variable [AddCommGroup M] [Module R M] [Module.Invertible R M]
+variable (R M : Type*) [Ring R] [IsMulCommutative R]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [Module.Invertible R M]
 
 /-- If `FractionRing R` has trivial Picard group,
 every invertible `R`-module is isomorphic to an ideal. -/

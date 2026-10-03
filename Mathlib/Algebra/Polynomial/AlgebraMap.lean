@@ -46,7 +46,7 @@ variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B : Type*} {a b
 
 section CommSemiring
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable {p r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
@@ -76,7 +76,7 @@ theorem toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebra
 theorem ofFinsupp_algebraMap (r : R) : (⟨algebraMap R _ r⟩ : A[X]) = algebraMap R A[X] r :=
   toFinsupp_injective (toFinsupp_algebraMap _).symm
 
-/-- When we have `[CommSemiring R]`, the function `C` is the same as `algebraMap R R[X]`.
+/-- When we have `[Semiring R] [IsMulCommutative R]`, the function `C` is the same as `algebraMap R R[X]`.
 
 (But note that `C` is defined when `R` is not necessarily commutative, in which case
 `algebraMap` is not available.)
@@ -125,14 +125,14 @@ instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
       simp⟩⟩
 
 @[simp]
-theorem algHom_eval₂_algebraMap {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+theorem algHom_eval₂_algebraMap {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (p : R[X]) (f : A →ₐ[R] B) (a : A) :
     f (eval₂ (algebraMap R A) a p) = eval₂ (algebraMap R B) (f a) p := by
   simp only [eval₂_eq_sum, sum_def]
   simp only [map_sum, map_mul, map_pow, AlgHom.commutes]
 
 @[simp]
-theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (p : R[X])
+theorem eval₂_algebraMap_X {R A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] (p : R[X])
     (f : R[X] →ₐ[R] A) : eval₂ (algebraMap R A) (f X) p = f p := by
   conv_rhs => rw [← Polynomial.sum_C_mul_X_pow_eq p]
   simp only [eval₂_eq_sum, sum_def]
@@ -238,7 +238,7 @@ end CommSemiring
 
 section aeval
 
-variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring A'] [IsMulCommutative A'] [Semiring B]
 variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
@@ -263,7 +263,7 @@ lemma aevalEquiv_apply (x : A) : aevalEquiv R A x = aeval x :=
   rfl
 
 /-- The map `R[X] → S[X]` as an algebra homomorphism. -/
-def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S] :
+def mapAlg (R : Type u) [Semiring R] [IsMulCommutative R] (S : Type v) [Semiring S] [Algebra R S] :
     R[X] →ₐ[R] S[X] :=
   @aeval _ S[X] _ _ _ (X : S[X])
 
@@ -326,7 +326,7 @@ theorem aeval_dvd (h : p ∣ q) : p.aeval x ∣ q.aeval x := _root_.map_dvd (aev
 
 section IsScalarTower
 
-variable {A : Type*} (B C : Type*) [CommSemiring A] [CommSemiring B] [Semiring C]
+variable {A : Type*} (B C : Type*) [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Semiring C]
   [Algebra A B] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
 
 theorem mapAlg_comp (p : A[X]) : (mapAlg A C) p = (mapAlg B C) (mapAlg A B p) := by
@@ -358,11 +358,11 @@ theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(a * X + b)`,
   with inverse `p(X) ↦ p(a⁻¹ * (X - b))`. -/
 @[simps!]
-def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
+def algEquivCMulXAddC {R : Type*} [Ring R] [IsMulCommutative R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (C a * X + C b) (C ⅟a * (X - C b))
     (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
-theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible a] :
+theorem algEquivCMulXAddC_symm_eq {R : Type*} [Ring R] [IsMulCommutative R] (a b : R) [Invertible a] :
     (algEquivCMulXAddC a b).symm = algEquivCMulXAddC (⅟a) (-⅟a * b) := by
   ext p : 1
   simp only [algEquivCMulXAddC_symm_apply, neg_mul, algEquivCMulXAddC_apply, map_neg, map_mul]
@@ -372,25 +372,25 @@ theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
 @[simps! apply]
-def algEquivAevalXAddC {R : Type*} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
+def algEquivAevalXAddC {R : Type*} [Ring R] [IsMulCommutative R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
 @[simp]
-theorem algEquivAevalXAddC_eq_iff {R : Type*} [CommRing R] (t t' : R) :
+theorem algEquivAevalXAddC_eq_iff {R : Type*} [Ring R] [IsMulCommutative R] (t t' : R) :
     algEquivAevalXAddC t = algEquivAevalXAddC t' ↔ t = t' := by
   simp [algEquivAevalXAddC]
 
 @[simp]
-theorem algEquivAevalXAddC_symm {R : Type*} [CommRing R] (t : R) :
+theorem algEquivAevalXAddC_symm {R : Type*} [Ring R] [IsMulCommutative R] (t : R) :
     (algEquivAevalXAddC t).symm = algEquivAevalXAddC (-t) := by
   simp [algEquivAevalXAddC, sub_eq_add_neg]
 
 /-- The involutive automorphism of the polynomial algebra given by `p(X) ↦ p(-X)`. -/
 @[simps!]
-def algEquivAevalNegX {R : Type*} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
+def algEquivAevalNegX {R : Type*} [Ring R] [IsMulCommutative R] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (-X) (-X) (by simp) (by simp)
 
-theorem comp_neg_X_comp_neg_X {R : Type*} [CommRing R] (p : R[X]) :
+theorem comp_neg_X_comp_neg_X {R : Type*} [Ring R] [IsMulCommutative R] (p : R[X]) :
     (p.comp (-X)).comp (-X) = p := by
   rw [comp_assoc]
   simp only [neg_comp, X_comp, neg_neg, comp_X]
@@ -405,7 +405,7 @@ theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
 theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
   congr($(@aeval_X_left R _) p)
 
-lemma aeval_X_left_eq_map [CommSemiring S] [Algebra R S] (p : R[X]) :
+lemma aeval_X_left_eq_map [Semiring S] [IsMulCommutative S] [Algebra R S] (p : R[X]) :
     aeval X p = map (algebraMap R S) p :=
   rfl
 
@@ -498,14 +498,14 @@ theorem coeff_zero_eq_aeval_zero (p : R[X]) : p.coeff 0 = aeval 0 p := by
 theorem coeff_zero_eq_aeval_zero' (p : R[X]) : algebraMap R A (p.coeff 0) = aeval (0 : A) p := by
   simp [aeval_def]
 
-theorem map_aeval_eq_aeval_map {S T U : Type*} [Semiring S] [CommSemiring T] [Semiring U]
+theorem map_aeval_eq_aeval_map {S T U : Type*} [Semiring S] [Semiring T] [IsMulCommutative T] [Semiring U]
     [Algebra R S] [Algebra T U] {φ : R →+* T} {ψ : S →+* U}
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) (p : R[X]) (a : S) :
     ψ (aeval a p) = aeval (ψ a) (p.map φ) := by
   conv_rhs => rw [← eval_map_algebraMap]
   rw [map_map, h, ← map_map, eval_map, eval₂_at_apply, aeval_def, eval_map]
 
-theorem aeval_eq_aeval_map [Semiring S] [CommSemiring T] [Algebra R S]
+theorem aeval_eq_aeval_map [Semiring S] [Semiring T] [IsMulCommutative T] [Algebra R S]
     [Algebra T S] {φ : R →+* T} (h : (algebraMap T S).comp φ = (algebraMap R S))
     (p : R[X]) (a : S) : aeval a p = aeval a (p.map φ) :=
   map_aeval_eq_aeval_map (by rwa [RingHom.id_comp]) p a
@@ -551,7 +551,7 @@ section CommSemiring
 
 section aevalTower
 
-variable [CommSemiring S] [Algebra S R] [Algebra S A'] [Algebra S B]
+variable [Semiring S] [IsMulCommutative S] [Algebra S R] [Algebra S A'] [Algebra S B]
 
 /-- Version of `aeval` for defining algebra homs out of `R[X]` over a smaller base ring
   than `R`. -/
@@ -598,8 +598,8 @@ theorem aevalTower_ofId : aevalTower (Algebra.ofId S A') = aeval := by
 end aevalTower
 
 open LinearMap TensorProduct in
-lemma X_pow_smul_rTensor_monomial [CommSemiring S] [Algebra R S] {N : Type*}
-    [AddCommMonoid N] [Module R N] (k : ℕ) (sn : S ⊗[R] N) :
+lemma X_pow_smul_rTensor_monomial [Semiring S] [IsMulCommutative S] [Algebra R S] {N : Type*}
+    [AddMonoid N] [IsAddCommutative N] [Module R N] (k : ℕ) (sn : S ⊗[R] N) :
     X (R := S) ^ k • (LinearMap.rTensor N ((monomial 0).restrictScalars R)) sn =
       (LinearMap.rTensor N ((monomial k).restrictScalars R)) sn := by
   induction sn using TensorProduct.inductionOn with
@@ -613,7 +613,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing S] {f : R →+* S}
+variable [Ring S] [IsMulCommutative S] {f : R →+* S}
 
 theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_eval : p ∣ f.eval z)
     (dvd_terms : ∀ j ≠ i, p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
@@ -654,7 +654,7 @@ theorem not_isUnit_X_sub_C [Nontrivial R] (r : R) : ¬IsUnit (X - C r) :=
 end Ring
 
 section CommRing
-variable [CommRing R] {p : R[X]} {t : R}
+variable [Ring R] [IsMulCommutative R] {p : R[X]} {t : R}
 
 @[simp]
 theorem aeval_neg {p : R[X]} [Ring A] [Algebra R A] (x : A) :
@@ -664,7 +664,7 @@ theorem aeval_neg {p : R[X]} [Ring A] [Algebra R A] (x : A) :
 theorem aeval_sub {p q : R[X]} [Ring A] [Algebra R A] (x : A) :
     aeval x (p - q) = aeval x p - aeval x q := map_sub ..
 
-theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
+theorem aeval_endomorphism {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
   rw [aeval_def, eval₂_eq_sum]
   exact map_sum (LinearMap.applyₗ v) _ _
@@ -701,7 +701,7 @@ end CommRing
 
 section StableSubmodule
 
-variable {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
   {q : Submodule R M} {m : M}
 
 lemma aeval_apply_smul_mem_of_le_comap'
@@ -726,7 +726,7 @@ end StableSubmodule
 
 section CommSemiring
 
-variable [CommSemiring R] {a p : R[X]}
+variable [Semiring R] [IsMulCommutative R] {a p : R[X]}
 
 theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) (Q : R[X])
     (hQ : P * Q = 0) : Q = 0 := by

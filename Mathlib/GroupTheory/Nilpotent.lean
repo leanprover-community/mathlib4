@@ -953,7 +953,7 @@ instance (priority := 100) CommGroup.isNilpotent {G : Type*} [Group G] [IsMulCom
 
 /-- Abelian groups have nilpotency class at most one. -/
 @[to_additive /-- Abelian groups have nilpotency class at most one. -/]
-theorem CommGroup.nilpotencyClass_le_one {G : Type*} [CommGroup G] :
+theorem CommGroup.nilpotencyClass_le_one {G : Type*} [Group G] [IsMulCommutative G] :
     Group.nilpotencyClass G ≤ 1 := by
   rw [← upperCentralSeries_eq_top_iff_nilpotencyClass_le, upperCentralSeries_one]
   apply CommGroup.center_eq_top

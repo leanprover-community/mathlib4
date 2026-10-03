@@ -29,7 +29,7 @@ variable {G : Type*} {H : Type*}
 variable {F : Type*}
 
 section CommMonoid
-variable [CommMonoid α]
+variable [Monoid α] [IsMulCommutative α]
 
 /-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
 monoids. -/
@@ -44,7 +44,7 @@ end CommMonoid
 
 section DivisionCommMonoid
 
-variable [DivisionCommMonoid α]
+variable [DivisionMonoid α] [IsMulCommutative α]
 
 /-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
 homomorphism. -/
@@ -145,7 +145,7 @@ namespace MulHom
 sending `x` to `f x * g x`. -/
 @[to_additive /-- Given two additive morphisms `f`, `g` to an additive commutative semigroup,
 `f + g` is the additive morphism sending `x` to `f x + g x`. -/]
-instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
+instance [Mul M] [Semigroup N] [IsMulCommutative N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_mul' := fun x y => by
@@ -153,15 +153,15 @@ instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
 @[to_additive (attr := simp)]
-theorem mul_apply {M N} [Mul M] [CommSemigroup N] (f g : M →ₙ* N) (x : M) :
+theorem mul_apply {M N} [Mul M] [Semigroup N] [IsMulCommutative N] (f g : M →ₙ* N) (x : M) :
     (f * g) x = f x * g x := rfl
 
 @[to_additive]
-theorem mul_comp [Mul M] [Mul N] [CommSemigroup P] (g₁ g₂ : N →ₙ* P) (f : M →ₙ* N) :
+theorem mul_comp [Mul M] [Mul N] [Semigroup P] [IsMulCommutative P] (g₁ g₂ : N →ₙ* P) (f : M →ₙ* N) :
     (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
 
 @[to_additive]
-theorem comp_mul [Mul M] [CommSemigroup N] [CommSemigroup P] (g : N →ₙ* P) (f₁ f₂ : M →ₙ* N) :
+theorem comp_mul [Mul M] [Semigroup N] [IsMulCommutative N] [Semigroup P] [IsMulCommutative P] (g : N →ₙ* P) (f₁ f₂ : M →ₙ* N) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext
   simp
@@ -231,7 +231,7 @@ theorem coe_of_map_div {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x /
 end Group
 
 section Mul
-variable [MulOneClass M] [CommMonoid N]
+variable [MulOneClass M] [Monoid N] [IsMulCommutative N]
 
 /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
 sending `x` to `f x * g x`. -/
@@ -254,7 +254,7 @@ lemma mul_comp [MulOneClass P] (g₁ g₂ : M →* N) (f : P →* M) :
     (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
 
 @[to_additive]
-lemma comp_mul [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
+lemma comp_mul [Monoid P] [IsMulCommutative P] (g : N →* P) (f₁ f₂ : M →* N) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext
   simp
@@ -262,7 +262,7 @@ lemma comp_mul [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
 end Mul
 
 section InvDiv
-variable [MulOneClass M] [MulOneClass N] [CommGroup G] [CommGroup H]
+variable [MulOneClass M] [MulOneClass N] [Group G] [IsMulCommutative G] [Group H] [IsMulCommutative H]
 
 /-- If `f` is a monoid homomorphism to a commutative group, then `f⁻¹` is the homomorphism sending
 `x` to `(f x)⁻¹`. -/
@@ -303,13 +303,13 @@ end InvDiv
 
 /-- If `H` is commutative and `G →* H` is injective, then `G` is commutative. -/
 @[instance_reducible]
-def commGroupOfInjective [Group G] [CommGroup H] (f : G →* H) (hf : Function.Injective f) :
+def commGroupOfInjective [Group G] [Group H] [IsMulCommutative H] (f : G →* H) (hf : Function.Injective f) :
     CommGroup G :=
   ⟨by simp_rw [← hf.eq_iff, map_mul, mul_comm, implies_true]⟩
 
 /-- If `G` is commutative and `G →* H` is surjective, then `H` is commutative. -/
 @[instance_reducible]
-def commGroupOfSurjective [CommGroup G] [Group H] (f : G →* H) (hf : Function.Surjective f) :
+def commGroupOfSurjective [Group G] [IsMulCommutative G] [Group H] (f : G →* H) (hf : Function.Surjective f) :
     CommGroup H :=
   ⟨by simp_rw [hf.forall₂, ← map_mul, mul_comm, implies_true]⟩
 

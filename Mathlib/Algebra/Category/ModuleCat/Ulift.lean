@@ -102,6 +102,6 @@ instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesInjectiveObjects wher
 
 end Ring
 
-instance [CommRing R] : (uliftFunctor.{v', v} R).Linear R where
+instance [Ring R] [IsMulCommutative R] : (uliftFunctor.{v', v} R).Linear R where
 
 end ModuleCat

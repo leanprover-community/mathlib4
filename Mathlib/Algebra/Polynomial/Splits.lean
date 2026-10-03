@@ -137,7 +137,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 @[simp, aesop safe apply]
 theorem Splits.multisetProd {m : Multiset R[X]} (hm : ∀ f ∈ m, Splits f) : Splits m.prod :=
@@ -226,7 +226,7 @@ theorem Splits.of_algHom {f : R[X]} {A B : Type*} [Semiring A] [Semiring B]
   rw [← e.comp_algebraMap, ← map_map]
   apply hf.map
 
-theorem Splits.of_isScalarTower {f : R[X]} {A : Type*} (B : Type*) [CommSemiring A] [Semiring B]
+theorem Splits.of_isScalarTower {f : R[X]} {A : Type*} (B : Type*) [Semiring A] [IsMulCommutative A] [Semiring B]
     [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
     (hf : Splits (f.map (algebraMap R A))) : Splits (f.map (algebraMap R B)) :=
   hf.of_algHom (IsScalarTower.toAlgHom R A B)
@@ -262,7 +262,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] {f g : R[X]} {A B : Type*} [CommRing A] [CommRing B]
+variable [Ring R] [IsMulCommutative R] {f g : R[X]} {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
   [IsDomain A] [IsDomain B] [Algebra R A] [Algebra R B]
 
 theorem splits_iff_exists_multiset :
@@ -336,7 +336,7 @@ theorem Splits.eval_root_derivative [DecidableEq R] (hf : f.Splits) (hm : f.Moni
   rw [← eval_multiset_prod_X_sub_C_derivative hx, ← hf.eq_prod_roots_of_monic hm]
 
 omit [IsDomain R] in
-theorem Splits.of_splits_map_of_injective {S : Type*} [CommRing S] [IsDomain S] {i : R →+* S}
+theorem Splits.of_splits_map_of_injective {S : Type*} [Ring S] [IsMulCommutative S] [IsDomain S] {i : R →+* S}
     (hi : Function.Injective i) (hf : Splits (f.map i))
     (hi : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits f := by
   choose j hj using hi
@@ -383,7 +383,7 @@ theorem Splits.roots_ne_zero (hf : Splits f) (hf0 : natDegree f ≠ 0) :
     f.roots ≠ 0 := by
   simpa [hf.natDegree_eq_card_roots] using hf0
 
-theorem Splits.roots_map_of_ne_zero {S : Type*} [CommRing S] [IsDomain S]
+theorem Splits.roots_map_of_ne_zero {S : Type*} [Ring S] [IsMulCommutative S] [IsDomain S]
     {f : R[X]} (hf : Splits f) {φ : R →+* S} (hφ : f.map φ ≠ 0) :
     (f.map φ).roots = f.roots.map φ := by
   induction hf using Submonoid.closure_induction with
@@ -391,7 +391,7 @@ theorem Splits.roots_map_of_ne_zero {S : Type*} [CommRing S] [IsDomain S]
   | one => simp
   | mul x y _ _ hx hy => simp_all [roots_mul, show x * y ≠ 0 by aesop]
 
-theorem Splits.roots_map_of_injective {S : Type*} [CommRing S] [IsDomain S]
+theorem Splits.roots_map_of_injective {S : Type*} [Ring S] [IsMulCommutative S] [IsDomain S]
     (hf : f.Splits) {i : R →+* S} (hi : Function.Injective i) : (f.map i).roots = f.roots.map i :=
   (roots_map_of_injective_of_card_eq_natDegree hi hf.natDegree_eq_card_roots.symm).symm
 
@@ -533,7 +533,7 @@ section Field
 
 section
 
-variable {S : Type*} [Field R] [CommRing S] [IsDomain S]
+variable {S : Type*} [Field R] [Ring S] [IsMulCommutative S] [IsDomain S]
 
 theorem Splits.of_splits_map {f : R[X]} (i : R →+* S)
     (hf : Splits (f.map i)) (hi : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits f :=
@@ -559,8 +559,8 @@ end
 
 section
 
-variable {A B : Type*} [CommRing R] [Field A] [Algebra R A]
-  [CommRing B] [IsDomain B] [Algebra R B] {f : R[X]}
+variable {A B : Type*} [Ring R] [IsMulCommutative R] [Field A] [Algebra R A]
+  [Ring B] [IsMulCommutative B] [IsDomain B] [Algebra R B] {f : R[X]}
 
 theorem Splits.image_rootSet (hf : (f.map (algebraMap R A)).Splits)
     (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
@@ -578,7 +578,7 @@ end
 
 section
 
-variable {A B : Type*} [CommRing R] [CommRing A] [IsDomain A] [Algebra R A] [CommRing B]
+variable {A B : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [IsDomain A] [Algebra R A] [Ring B] [IsMulCommutative B]
   [IsDomain B] [Algebra R B] [Algebra A B] [FaithfulSMul A B] [IsScalarTower R A B] {f : R[X]}
 
 theorem Splits.map_aroots_algebraMap (hf : (f.map (algebraMap R A)).Splits) :
@@ -684,7 +684,7 @@ variable (i)
 
 end CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 section UFD
 

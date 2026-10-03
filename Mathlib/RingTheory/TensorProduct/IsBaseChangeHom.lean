@@ -32,11 +32,11 @@ namespace IsBaseChange
 
 open LinearMap TensorProduct Module
 
-variable {R : Type*} [CommSemiring R]
-    (S : Type*) [CommSemiring S] [Algebra R S]
-    (M : Type*) [AddCommMonoid M] [Module R M]
-    {N : Type*} [AddCommMonoid N] [Module R N]
-    {P : Type*} [AddCommMonoid P] [Module R P]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
+    (S : Type*) [Semiring S] [IsMulCommutative S] [Algebra R S]
+    (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M]
+    {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
+    {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module R P]
 
 section LinearMapRight
 
@@ -98,7 +98,7 @@ end LinearMapRight
 section LinearMapLeftRight
 
 variable {S M}
-  {Q : Type*} [AddCommMonoid Q] [Module R Q]
+  {Q : Type*} [AddMonoid Q] [IsAddCommutative Q] [Module R Q]
   [Module S P] [IsScalarTower R S P]
   [Module S Q] [IsScalarTower R S Q]
 
@@ -189,7 +189,7 @@ end End
 
 section Matrix
 
-variable {Q : Type*} [AddCommMonoid Q] [Module R Q] [Module S P] [IsScalarTower R S P]
+variable {Q : Type*} [AddMonoid Q] [IsAddCommutative Q] [Module R Q] [Module S P] [IsScalarTower R S P]
   [Module S Q] [IsScalarTower R S Q]
   {α : M →ₗ[R] P} {β : N →ₗ[R] Q}
   (ibcM : IsBaseChange S α) (ibcN : IsBaseChange S β)
@@ -215,10 +215,10 @@ end Matrix
 
 section determinant
 
-variable {R : Type*} [CommRing R]
-    (S : Type*) [CommRing S] [Algebra R S]
-    (M : Type*) [AddCommGroup M] [Module R M]
-    {P : Type*} [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+    (S : Type*) [Ring S] [IsMulCommutative S] [Algebra R S]
+    (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M]
+    {P : Type*} [AddGroup P] [IsAddCommutative P] [Module R P] [Module S P] [IsScalarTower R S P]
 
 variable [Free R M] [Module.Finite R M]
 

@@ -39,7 +39,7 @@ open Module TensorProduct
 
 section
 
-variable (R : Type u) [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R M]
+variable (R : Type u) [Semiring R] [IsMulCommutative R] {M : Type v} [AddMonoid M] [IsAddCommutative M] [Module R M]
 variable {ι : Type w} [DecidableEq ι] [Fintype ι]
 variable {κ : Type*} [DecidableEq κ] [Fintype κ]
 variable (b : Basis ι R M) (c : Basis κ R M)
@@ -116,7 +116,7 @@ lemma trace_mul_cycle' (f g h : M →ₗ[R] M) :
     trace R M (f * (g * h)) = trace R M (h * (f * g)) := by
   rw [← mul_assoc, LinearMap.trace_mul_comm]
 
-lemma trace_lie_mul_eq {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+lemma trace_lie_mul_eq {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
     (f g h : M →ₗ[R] M) : trace R M (⁅f, g⁆ * h) = trace R M (f * ⁅g, h⁆) := by
   simp only [Ring.lie_def, sub_mul, mul_sub, map_sub, mul_assoc]
   rw [trace_mul_comm R g (f * h), mul_assoc]
@@ -129,7 +129,7 @@ theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) :
   simp
 
 @[simp]
-lemma trace_lie {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f g : Module.End R M) :
+lemma trace_lie {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] (f g : Module.End R M) :
     trace R M ⁅f, g⁆ = 0 := by
   rw [Ring.lie_def, map_sub, trace_mul_comm]
   exact sub_self _
@@ -138,8 +138,8 @@ end
 
 section
 
-variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
-variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
+variable {R : Type*} [Ring R] [IsMulCommutative R] {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
+variable (N P : Type*) [AddGroup N] [IsAddCommutative N] [Module R N] [AddGroup P] [IsAddCommutative P] [Module R P]
 variable {ι : Type*}
 
 /-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
@@ -304,7 +304,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
       ((e.symm.toEquiv.image s).trans (Set.equivOfEq Finset.coe_image.symm))⟩⟩
 
-@[simp] theorem trace_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W]
+@[simp] theorem trace_map {K V W : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V] [AddGroup W] [IsAddCommutative W]
     [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)] [AlgEquivClass F K _ _]
     (f : F) (x : End K V) : (f x).trace K W = x.trace K V :=
   have ⟨_, h⟩ := (AlgEquiv.ofClass f).eq_linearEquivConjAlgEquiv
@@ -337,8 +337,8 @@ The `Module.Free` and `Module.Finite` instance arguments on `range e` and `ker e
 automatic over a field, and more generally over any principal ideal domain `R` for which
 `M` itself is finite and free (submodules of finite free modules over a PID are finite
 and free). -/
-theorem IsIdempotentElem.trace_eq_zero_iff {R : Type*} [CommRing R] [CharZero R]
-    {M : Type*} [AddCommGroup M] [Module R M]
+theorem IsIdempotentElem.trace_eq_zero_iff {R : Type*} [Ring R] [IsMulCommutative R] [CharZero R]
+    {M : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
     {e : M →ₗ[R] M} (he : IsIdempotentElem e)
     [Module.Free R (range e)] [Module.Finite R (range e)]
     [Module.Free R (ker e)] [Module.Finite R (ker e)] :
@@ -376,7 +376,7 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
 -- Maybe it should move elsewhere?
 @[simp]
 lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
-    (f : M →ₗ[R] M) (A : Type*) [CommRing A] [Algebra R A] :
+    (f : M →ₗ[R] M) (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A] :
     trace A _ (f.baseChange A) = algebraMap R A (trace R _ f) := by
   let b := Module.Free.chooseBasis R M
   let b' := Algebra.TensorProduct.basis A b
@@ -389,7 +389,7 @@ end LinearMap
 
 /-- If `S` is an `R-algebra that is free of rank `1` over `R`, the map `R →+* S` is an
 isomorphism. -/
-lemma Module.Free.bijective_algebraMap_of_finrank_eq_one {R S : Type*} [CommRing R] [Ring S]
+lemma Module.Free.bijective_algebraMap_of_finrank_eq_one {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S]
     [Algebra R S] [Nontrivial R] [Free R S] (h : finrank R S = 1) :
     Function.Bijective (algebraMap R S) := by
   have : Module.Finite R S := finite_of_finrank_pos (by grind)

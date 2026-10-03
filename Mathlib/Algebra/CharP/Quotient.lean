@@ -22,7 +22,7 @@ theorem CharP.ker_intAlgebraMap_eq_span
   ext a
   simp [CharP.intCast_eq_zero_iff R p, Ideal.mem_span_singleton]
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace CharP
 

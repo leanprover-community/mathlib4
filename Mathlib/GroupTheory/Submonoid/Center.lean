@@ -135,7 +135,7 @@ end Monoid
 
 section
 
-variable (M : Type*) [CommMonoid M]
+variable (M : Type*) [Monoid M] [IsMulCommutative M]
 
 @[simp]
 theorem center_eq_top : center M = ⊤ :=

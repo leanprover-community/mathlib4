@@ -27,7 +27,7 @@ open MvPolynomial TensorProduct
 
 namespace Algebra.Generators
 
-variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {σ : Type*}
+variable {R : Type*} {S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] {σ : Type*}
 
 noncomputable section
 

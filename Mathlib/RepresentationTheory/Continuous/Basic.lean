@@ -44,9 +44,9 @@ continuous representation, algebra
 
 @[expose] public section
 
-variable (R G V W U : Type*) [Monoid G] [Ring R] [AddCommGroup V] [TopologicalSpace V]
-  [IsTopologicalAddGroup V] [Module R V] [AddCommGroup W] [TopologicalSpace W]
-  [IsTopologicalAddGroup W] [Module R W] [AddCommGroup U] [Module R U] [TopologicalSpace U]
+variable (R G V W U : Type*) [Monoid G] [Ring R] [AddGroup V] [IsAddCommutative V] [TopologicalSpace V]
+  [IsTopologicalAddGroup V] [Module R V] [AddGroup W] [IsAddCommutative W] [TopologicalSpace W]
+  [IsTopologicalAddGroup W] [Module R W] [AddGroup U] [IsAddCommutative U] [Module R U] [TopologicalSpace U]
   [IsTopologicalAddGroup U]
 
 /-- A continuous representation of a group `G` on a `R`-module `V` which is a topological addgroup

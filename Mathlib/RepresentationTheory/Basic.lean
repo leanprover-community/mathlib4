@@ -41,7 +41,7 @@ open LinearMap Module
 
 section
 
-variable (k G V : Type*) [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [Semiring k] [Monoid G] [AddMonoid V] [IsAddCommutative V] [Module k V]
 
 /-- A representation of `G` on the `k`-module `V` is a homomorphism `G →* (V →ₗ[k] V)`.
 -/
@@ -54,7 +54,7 @@ namespace Representation
 
 section trivial
 
-variable (k G V : Type*) [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [Semiring k] [Monoid G] [AddMonoid V] [IsAddCommutative V] [Module k V]
 
 /-- The trivial representation of `G` on a `k`-module V.
 -/
@@ -85,7 +85,7 @@ end trivial
 
 section Group
 
-variable {k G V : Type*} [Semiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [Group G] [AddMonoid V] [IsAddCommutative V] [Module k V]
   (ρ : Representation k G V)
 
 @[simp]
@@ -110,7 +110,7 @@ end Group
 
 section MonoidAlgebra
 
-variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [IsMulCommutative k] [Monoid G] [AddMonoid V] [IsAddCommutative V] [Module k V]
 variable (ρ : Representation k G V)
 
 /-- A `k`-linear representation of `G` on `V` can be thought of as
@@ -132,7 +132,7 @@ theorem asAlgebraHom_of (g : G) : asAlgebraHom ρ (of k G g) = ρ g := by
 
 section
 
-variable {k G V : Type*} [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [Monoid G] [AddMonoid V] [IsAddCommutative V] [Module k V]
 /-- If `ρ : Representation k G V`, then `ρ.asModule` is a type synonym for `V`,
 which we equip with an instance `Module k[G] ρ.asModule`.
 
@@ -188,13 +188,13 @@ We remedy this below in `ofModule`
 (with the tradeoff that the representation is defined
 only on a type synonym of the original module.)
 -/
-noncomputable def ofModule' (M : Type*) [AddCommMonoid M] [Module k M] [Module k[G] M]
+noncomputable def ofModule' (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module k M] [Module k[G] M]
     [IsScalarTower k k[G] M] : Representation k G M :=
   (MonoidAlgebra.lift k (M →ₗ[k] M) G).symm (Algebra.lsmul k k M)
 
 section
 
-variable (M : Type*) [AddCommMonoid M] [Module k[G] M]
+variable (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module k[G] M]
 
 /-- Build a `Representation` from a `[Module k[G] M]`.
 
@@ -275,7 +275,7 @@ end MonoidAlgebra
 
 section Norm
 
-variable {k G V : Type*} [Semiring k] [Group G] [Fintype G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [Group G] [Fintype G] [AddMonoid V] [IsAddCommutative V] [Module k V]
 variable (ρ : Representation k G V)
 
 /-- Given a representation `(V, ρ)` of a finite group `G`, `norm ρ` is the linear map `V →ₗ[k] V`
@@ -304,7 +304,7 @@ end Norm
 
 section Subrepresentation
 
-variable {k G V : Type*} [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [Monoid G] [AddMonoid V] [IsAddCommutative V] [Module k V]
   (ρ : Representation k G V)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
@@ -320,7 +320,7 @@ end Subrepresentation
 
 section Quotient
 
-variable {k G V : Type*} [Ring k] [Monoid G] [AddCommGroup V] [Module k V]
+variable {k G V : Type*} [Ring k] [Monoid G] [AddGroup V] [IsAddCommutative V] [Module k V]
   (ρ : Representation k G V)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)` and a `G`-invariant `k`-submodule `W ≤ V`, this
@@ -336,7 +336,7 @@ end Quotient
 
 section OfQuotient
 
-variable {k G V : Type*} [Semiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [Group G] [AddMonoid V] [IsAddCommutative V] [Module k V]
 variable (ρ : Representation k G V) (S : Subgroup G)
 
 lemma apply_eq_of_coe_eq [IsTrivial (ρ.comp S.subtype)] (g h : G) (hgh : (g : G ⧸ S) = h) :
@@ -366,7 +366,7 @@ end OfQuotient
 
 section AddCommGroup
 
-variable {k G V : Type*} [Ring k] [Monoid G] [AddCommGroup V] [Module k V]
+variable {k G V : Type*} [Ring k] [Monoid G] [AddGroup V] [IsAddCommutative V] [Module k V]
 variable (ρ : Representation k G V)
 
 instance : AddCommGroup ρ.asModule := inferInstanceAs <| AddCommGroup V
@@ -417,7 +417,7 @@ theorem ofMulAction_single (g : G) (x : H) (r : k) :
 end MulAction
 section DistribMulAction
 
-variable (k G A : Type*) [Semiring k] [Monoid G] [AddCommMonoid A] [Module k A]
+variable (k G A : Type*) [Semiring k] [Monoid G] [AddMonoid A] [IsAddCommutative A] [Module k A]
   [DistribMulAction G A] [SMulCommClass G k A]
 
 /-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
@@ -442,7 +442,7 @@ theorem norm_ofDistribMulAction_eq {G : Type*} [Group G] [Fintype G]
 
 end DistribMulAction
 section MulDistribMulAction
-variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+variable (M G : Type*) [Monoid M] [Group G] [IsMulCommutative G] [MulDistribMulAction M G]
 
 /-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
 `ℤ`-linear `M`-representation on `Additive G`. -/
@@ -455,7 +455,7 @@ def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
 
 @[simp]
 theorem norm_ofMulDistribMulAction_eq {G M : Type} [Group G] [Fintype G]
-    [CommGroup M] [MulDistribMulAction G M] (x : Additive M) :
+    [Group M] [IsMulCommutative M] [MulDistribMulAction G M] (x : Additive M) :
     Additive.toMul ((ofMulDistribMulAction G M).norm x) =
       ∏ g : G, g • Additive.toMul x := by
   simp [norm]
@@ -484,7 +484,7 @@ noncomputable instance : HMul k[G] (ofMulAction k G G).asModule k[G] where
 
 end
 
-variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [IsMulCommutative k] [Group G] [AddMonoid V] [IsAddCommutative V] [Module k V]
   (ρ : Representation k G V)
 
 @[simp]
@@ -590,7 +590,7 @@ end DirectSum
 section Prod
 
 variable {k G V W : Type*} [Semiring k] [Monoid G]
-variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
+variable [AddMonoid V] [IsAddCommutative V] [Module k V] [AddMonoid W] [IsAddCommutative W] [Module k W]
 variable (ρV : Representation k G V) (ρW : Representation k G W)
 
 /-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on their
@@ -606,8 +606,8 @@ end Prod
 
 section TensorProduct
 
-variable {k G V W : Type*} [CommSemiring k] [Monoid G]
-variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
+variable {k G V W : Type*} [Semiring k] [IsMulCommutative k] [Monoid G]
+variable [AddMonoid V] [IsAddCommutative V] [Module k V] [AddMonoid W] [IsAddCommutative W] [Module k W]
 variable (ρV : Representation k G V) (ρW : Representation k G W)
 
 open TensorProduct
@@ -645,8 +645,8 @@ end TensorProduct
 
 section LinearHom
 
-variable {k G V W : Type*} [CommSemiring k] [Group G]
-variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
+variable {k G V W : Type*} [Semiring k] [IsMulCommutative k] [Group G]
+variable [AddMonoid V] [IsAddCommutative V] [Module k V] [AddMonoid W] [IsAddCommutative W] [Module k W]
 variable (ρV : Representation k G V) (ρW : Representation k G W)
 
 /-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on the
@@ -694,8 +694,8 @@ end LinearHom
 
 section
 
-variable {k G : Type*} [CommSemiring k] [Monoid G] {α A : Type*}
-  [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
+variable {k G : Type*} [Semiring k] [IsMulCommutative k] [Monoid G] {α A : Type*}
+  [AddMonoid A] [IsAddCommutative A] [Module k A] (ρ : Representation k G A)
 
 open Finsupp
 
@@ -713,11 +713,11 @@ lemma finsupp_single (g : G) (x : α) (a : A) :
   simp [finsupp_apply]
 
 /-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation. -/
-noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
+noncomputable abbrev free (k G : Type*) [Semiring k] [IsMulCommutative k] [Monoid G] (α : Type*) :
     Representation k G (α →₀ k[G]) :=
   finsupp (leftRegular k G) α
 
-noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
+noncomputable instance (k G : Type*) [Ring k] [IsMulCommutative k] [Monoid G] (α : Type*) :
     AddCommGroup (free k G α).asModule :=
   inferInstanceAs <| AddCommGroup (α →₀ k[G])
 

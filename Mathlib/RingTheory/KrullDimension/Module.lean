@@ -20,9 +20,9 @@ the krull dimension of its support. It is equal to the krull dimension of `R / A
 
 @[expose] public section
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R]
 
-variable (M : Type*) [AddCommGroup M] [Module R M] (N : Type*) [AddCommGroup N] [Module R N]
+variable (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] (N : Type*) [AddGroup N] [IsAddCommutative N] [Module R N]
 
 namespace Module
 

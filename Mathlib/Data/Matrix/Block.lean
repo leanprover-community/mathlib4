@@ -33,7 +33,7 @@ open Matrix
 
 namespace Matrix
 
-theorem dotProduct_block [Fintype m] [Fintype n] [Mul α] [AddCommMonoid α] (v w : m ⊕ n → α) :
+theorem dotProduct_block [Fintype m] [Fintype n] [Mul α] [AddMonoid α] [IsAddCommutative α] (v w : m ⊕ n → α) :
     v ⬝ᵥ w = v ∘ Sum.inl ⬝ᵥ w ∘ Sum.inl + v ∘ Sum.inr ⬝ᵥ w ∘ Sum.inr :=
   Fintype.sum_sum_type _
 
@@ -817,7 +817,7 @@ end BlockDiag'
 
 section
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 theorem toBlock_mul_eq_mul {m n k : Type*} [Fintype n] (p : m → Prop) (q : k → Prop)
     (A : Matrix m n R) (B : Matrix n k R) :

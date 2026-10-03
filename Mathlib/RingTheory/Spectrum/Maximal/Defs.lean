@@ -24,11 +24,11 @@ public section
 /-- The maximal spectrum of a commutative (semi)ring `R` is the type of all
 maximal ideals of `R`. -/
 @[ext]
-structure MaximalSpectrum (R : Type*) [CommSemiring R] where
+structure MaximalSpectrum (R : Type*) [Semiring R] [IsMulCommutative R] where
   asIdeal : Ideal R
   isMaximal : asIdeal.IsMaximal
 
 attribute [instance] MaximalSpectrum.isMaximal
 
-instance (R : Type*) [CommSemiring R] : Coe (MaximalSpectrum R) (Ideal R) where
+instance (R : Type*) [Semiring R] [IsMulCommutative R] : Coe (MaximalSpectrum R) (Ideal R) where
   coe P := P.asIdeal

@@ -58,7 +58,7 @@ def divRight₀ (a : G₀) (ha : a ≠ 0) : Perm G₀ where
 end GroupWithZero
 
 section CommGroupWithZero
-variable [CommGroupWithZero G₀]
+variable [GroupWithZero G₀] [IsMulCommutative G₀]
 
 /-- Left division by a nonzero element in a `CommGroupWithZero` is a permutation of the underlying
 type. -/

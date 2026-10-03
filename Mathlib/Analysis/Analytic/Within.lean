@@ -32,7 +32,7 @@ open Set Filter Metric
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 /-!
 ### Basic properties

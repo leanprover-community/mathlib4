@@ -41,7 +41,7 @@ namespace CoalgCat
 
 open CategoryTheory MonoidalCategory ComonObj
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 @[simps counit comul]
 noncomputable instance (X : CoalgCat R) : ComonObj (ModuleCat.of R X) where
@@ -116,7 +116,7 @@ noncomputable def instMonoidalCategoryAux : MonoidalCategory (CoalgCat R) :=
 
 namespace MonoidalCategoryAux
 
-variable {M N P Q : Type u} [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q]
+variable {M N P Q : Type u} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [AddGroup P] [IsAddCommutative P] [AddGroup Q] [IsAddCommutative Q]
     [Module R M] [Module R N] [Module R P] [Module R Q] [Coalgebra R M] [Coalgebra R N]
     [Coalgebra R P] [Coalgebra R Q]
 

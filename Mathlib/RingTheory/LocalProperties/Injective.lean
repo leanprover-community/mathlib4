@@ -28,7 +28,7 @@ universe u v
 
 public section
 
-variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M] (S : Submonoid R)
+variable {R : Type u} [Ring R] [IsMulCommutative R] {M : Type v} [AddGroup M] [IsAddCommutative M] [Module R M] (S : Submonoid R)
 
 section
 
@@ -36,7 +36,7 @@ universe u' v'
 
 open IsLocalizedModule in
 theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R] {Rₛ : Type u'}
-    [Small.{v'} Rₛ] [CommRing Rₛ] [Algebra R Rₛ] {Mₛ : Type v'} [AddCommGroup Mₛ] [Module R Mₛ]
+    [Small.{v'} Rₛ] [Ring Rₛ] [IsMulCommutative Rₛ] [Algebra R Rₛ] {Mₛ : Type v'} [AddGroup Mₛ] [IsAddCommutative Mₛ] [Module R Mₛ]
     [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ]
     [IsLocalizedModule S f] [Module.Injective R M] : Module.Injective Rₛ Mₛ := by
   have MB : Baer R M := Baer.of_injective ‹_›

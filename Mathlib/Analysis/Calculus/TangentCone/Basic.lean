@@ -25,7 +25,7 @@ variable {𝕜 E : Type*}
 
 section SMul
 
-variable [AddCommGroup E] [SMul 𝕜 E] [TopologicalSpace E] {s t : Set E} {x : E}
+variable [AddGroup E] [IsAddCommutative E] [SMul 𝕜 E] [TopologicalSpace E] {s t : Set E} {x : E}
 
 @[gcongr]
 theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
@@ -99,7 +99,7 @@ end SMul
 
 section Module
 
-variable [AddCommGroup E] [Semiring 𝕜] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E]
+variable [AddGroup E] [IsAddCommutative E] [Semiring 𝕜] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E]
   {s t : Set E} {x : E}
 
 omit [ContinuousAdd E] in
@@ -186,7 +186,7 @@ end Module
 
 section TVS
 
-variable [DivisionSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace 𝕜]
+variable [DivisionSemiring 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace 𝕜]
   [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} {x y : E}
 
 theorem mem_tangentConeAt_of_add_smul_mem {α : Type*} {l : Filter α} [l.NeBot] {c : α → 𝕜}
@@ -217,7 +217,7 @@ section UniqueDiff
 This section is devoted to properties of the predicates `UniqueDiffWithinAt` and `UniqueDiffOn`. -/
 
 section Semiring
-variable [Semiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Semiring 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
 variable {x y : E} {s t : Set E}
 
 theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
@@ -267,7 +267,7 @@ end Semiring
 
 section DivisionSemiring
 
-variable [DivisionSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [DivisionSemiring 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
   [TopologicalSpace 𝕜] [(𝓝[≠] (0 : 𝕜)).NeBot] [ContinuousSMul 𝕜 E]
   {x : E} {s : Set E}
 

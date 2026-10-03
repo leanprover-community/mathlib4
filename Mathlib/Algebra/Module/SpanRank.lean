@@ -54,7 +54,7 @@ section Defs
 
 universe u v
 
-variable {R : Type*} {M : Type u} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type u} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 open Cardinal
 
@@ -301,8 +301,8 @@ namespace Submodule
 section Semilinear
 
 variable {R S : Type*} {M N : Type u} [Semiring R] [Semiring S] {σ : R →+* S}
-  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module S N]
-  {L : Type v} [AddCommMonoid L] [Module S L]
+  [AddMonoid M] [IsAddCommutative M] [Module R M] [AddMonoid N] [IsAddCommutative N] [Module S N]
+  {L : Type v} [AddMonoid L] [IsAddCommutative L] [Module S L]
 
 lemma lift_spanRank_map_le [RingHomSurjective σ] (f : M →ₛₗ[σ] L) (p : Submodule R M) :
     Cardinal.lift.{u} (p.map f).spanRank ≤ Cardinal.lift.{v} p.spanRank := by
@@ -360,7 +360,7 @@ end Semilinear
 
 section RestrictScalars
 
-variable {R S : Type*} {M : Type u} [CommSemiring R] [Semiring S] [AddCommMonoid M]
+variable {R S : Type*} {M : Type u} [Semiring R] [IsMulCommutative R] [Semiring S] [AddMonoid M] [IsAddCommutative M]
   [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
 
 lemma le_spanRank_restrictScalars (N : Submodule S M) :
@@ -429,7 +429,7 @@ section rank
 
 open Cardinal Module Submodule
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 lemma Module.Basis.mk_eq_spanRank [RankCondition R] {ι : Type*} (v : Basis ι R M) :
     #(Set.range v) = (⊤ : Submodule R M).spanRank := by

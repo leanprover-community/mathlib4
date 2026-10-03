@@ -108,7 +108,7 @@ theorem threeGPFree_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {
 end Monoid
 
 section CommMonoid
-variable [CommMonoid α] [CommMonoid β] {s A : Set α} {t : Set β} {f : α → β}
+variable [Monoid α] [IsMulCommutative α] [Monoid β] [IsMulCommutative β] {s A : Set α} {t : Set β} {f : α → β}
 
 /-- Geometric progressions of length three are reflected under `2`-Freiman homomorphisms. -/
 @[to_additive
@@ -158,7 +158,7 @@ end CommMonoid
 
 section CancelCommMonoid
 
-variable [CommMonoid α] [IsCancelMul α] {s : Set α} {a : α}
+variable [Monoid α] [IsMulCommutative α] [IsCancelMul α] {s : Set α} {a : α}
 
 @[to_additive] lemma ThreeGPFree.eq_right (hs : ThreeGPFree s) :
     ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → b = c := by
@@ -201,7 +201,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Set α} {a : α}
+variable [Monoid α] [IsMulCommutative α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Set α} {a : α}
 
 @[to_additive]
 theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
@@ -215,7 +215,7 @@ end OrderedCancelCommMonoid
 
 section CancelCommMonoidWithZero
 
-variable [CommMonoidWithZero α] [IsCancelMulZero α] [NoZeroDivisors α] {s : Set α} {a : α}
+variable [MonoidWithZero α] [IsMulCommutative α] [IsCancelMulZero α] [NoZeroDivisors α] {s : Set α} {a : α}
 
 lemma ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) : ThreeGPFree (a • s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h
@@ -332,7 +332,7 @@ theorem mulRothNumber_lt_of_forall_not_threeGPFree
 end Monoid
 
 section CommMonoid
-variable [CommMonoid α] [CommMonoid β] [DecidableEq β] {A : Finset α} {B : Finset β} {f : α → β}
+variable [Monoid α] [IsMulCommutative α] [Monoid β] [IsMulCommutative β] [DecidableEq β] {A : Finset α} {B : Finset β} {f : α → β}
 
 /-- Arithmetic progressions can be pushed forward along bijective 2-Freiman homs. -/
 @[to_additive /-- Arithmetic progressions can be pushed forward along bijective 2-Freiman homs. -/]
@@ -366,7 +366,7 @@ end CommMonoid
 
 section CancelCommMonoid
 
-variable [CancelCommMonoid α] (s : Finset α) (a : α)
+variable [CancelMonoid α] [IsMulCommutative α] (s : Finset α) (a : α)
 
 @[to_additive (attr := simp)]
 theorem mulRothNumber_map_mul_left :

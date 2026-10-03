@@ -94,8 +94,8 @@ universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 variable {𝕜 : Type u𝕜} {G : Type uG} {E : Type uE} {E' : Type uE'} {E'' : Type uE''} {F : Type uF}
   {F' : Type uF'} {F'' : Type uF''} {P : Type uP}
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
-  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y : E}
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup E'] [IsAddCommutative E'] [NormedAddGroup E''] [IsAddCommutative E'']
+  [NormedAddGroup F] [IsAddCommutative F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y : E}
 
 namespace MeasureTheory
 section NontriviallyNormedField
@@ -334,7 +334,7 @@ end Group
 
 section CommGroup
 
-variable [AddCommGroup G]
+variable [AddGroup G] [IsAddCommutative G]
 
 section MeasurableGroup
 
@@ -665,7 +665,7 @@ end Group
 
 section CommGroup
 
-variable [AddCommGroup G]
+variable [AddGroup G] [IsAddCommutative G]
 
 theorem support_convolution_subset : support (f ⋆[L, μ] g) ⊆ support f + support g :=
   (support_convolution_subset_swap L).trans (add_comm _ _).subset
@@ -738,7 +738,7 @@ end CommGroup
 
 section NormedAddCommGroup
 
-variable [SeminormedAddCommGroup G]
+variable [SeminormedAddGroup G] [IsAddCommutative G]
 
 /-- Compute `(f ⋆ g) x₀` if the support of the `f` is within `Metric.ball 0 R`, and `g` is constant
 on `Metric.ball x₀ R`.
@@ -876,8 +876,8 @@ variable (L : E →L[𝕜] E' →L[𝕜] F)
 
 section Assoc
 variable [CompleteSpace F]
-variable [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [CompleteSpace F']
-variable [NormedAddCommGroup F''] [NormedSpace ℝ F''] [NormedSpace 𝕜 F''] [CompleteSpace F'']
+variable [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [CompleteSpace F']
+variable [NormedAddGroup F''] [IsAddCommutative F''] [NormedSpace ℝ F''] [NormedSpace 𝕜 F''] [CompleteSpace F'']
 variable {k : G → E''}
 variable (L₂ : F →L[𝕜] E'' →L[𝕜] F')
 variable (L₃ : E →L[𝕜] F'' →L[𝕜] F')
@@ -967,7 +967,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
 
 end Assoc
 
-theorem convolution_precompR_apply [NormedAddCommGroup G] [BorelSpace G]
+theorem convolution_precompR_apply [NormedAddGroup G] [IsAddCommutative G] [BorelSpace G]
     {g : G → E'' →L[𝕜] E'} (hf : LocallyIntegrable f μ)
     (hcg : HasCompactSupport g) (hg : Continuous g) (x₀ : G) (x : E'') :
     (f ⋆[L.precompR E'', μ] g) x₀ x = (f ⋆[L, μ] fun a => g a x) x₀ := by

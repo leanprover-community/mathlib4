@@ -300,7 +300,7 @@ theorem le_weightedOrder_pow (n : ℕ) : n • f.weightedOrder w ≤ (f ^ n).wei
   | zero => simp
   | succ n hn => grw [succ_nsmul, pow_succ, hn, le_weightedOrder_mul]
 
-theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ → ℕ)
+theorem le_weightedOrder_prod {R : Type*} [Semiring R] [IsMulCommutative R] {ι : Type*} (w : σ → ℕ)
     (f : ι → MvPowerSeries σ R) (s : Finset ι) :
     ∑ i ∈ s, (f i).weightedOrder w ≤ (∏ i ∈ s, f i).weightedOrder w := by
   induction s using Finset.cons_induction with
@@ -341,7 +341,7 @@ theorem coeff_mul_right_one_sub_of_lt_weightedOrder
   apply coeff_eq_zero_of_lt_weightedOrder w
   apply lt_of_lt_of_le (lt_of_lt_of_le h le_self_add) (le_weightedOrder_mul w)
 
-theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [CommRing R] (d : σ →₀ ℕ)
+theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [Ring R] [IsMulCommutative R] (d : σ →₀ ℕ)
     (s : Finset ι) (f : MvPowerSeries σ R) (g : ι → MvPowerSeries σ R)
     (h : ∀ i ∈ s, (weight w d) < weightedOrder w (g i)) :
     coeff d (f * ∏ i ∈ s, (1 - g i)) = coeff d f := by
@@ -472,7 +472,7 @@ alias order_mul_ge := le_order_mul
 theorem le_order_pow (n : ℕ) : n • f.order ≤ (f ^ n).order :=
   le_weightedOrder_pow _ n
 
-theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*}
+theorem le_order_prod {R : Type*} [Semiring R] [IsMulCommutative R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (s : Finset ι) : ∑ i ∈ s, (f i).order ≤ (∏ i ∈ s, f i).order :=
   le_weightedOrder_prod _ _ _
 
@@ -521,7 +521,7 @@ theorem coeff_mul_right_one_sub_of_lt_order (d : σ →₀ ℕ) (h : degree d < 
   rw [degree_eq_weight_one] at h
   exact coeff_mul_right_one_sub_of_lt_weightedOrder _ h
 
-theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (d : σ →₀ ℕ) (s : Finset ι)
+theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [Ring R] [IsMulCommutative R] (d : σ →₀ ℕ) (s : Finset ι)
     (f : MvPowerSeries σ R) (g : ι → MvPowerSeries σ R) :
     (∀ i ∈ s, degree d < order (g i)) → coeff d (f * ∏ i ∈ s, (1 - g i)) = coeff d f := by
   rw [degree_eq_weight_one]

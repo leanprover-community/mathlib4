@@ -21,12 +21,12 @@ variable {M N : Type*}
 
 namespace Finsupp
 
-lemma sum_cons [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
+lemma sum_cons [AddMonoid M] [IsAddCommutative M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
     (sum (cons i σ) fun _ e ↦ e) = i + sum σ (fun _ e ↦ e) := by
   rw [sum_fintype _ _ (fun _ => rfl), sum_fintype _ _ (fun _ => rfl)]
   exact Fin.sum_cons i σ
 
-lemma sum_cons' [Zero M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀ M) (i : M)
+lemma sum_cons' [Zero M] [AddMonoid N] [IsAddCommutative N] (n : ℕ) (σ : Fin n →₀ M) (i : M)
     (f : Fin (n + 1) → M → N) (h : ∀ x, f x 0 = 0) :
     (sum (Finsupp.cons i σ) f) = f 0 i + sum σ (Fin.tail f) := by
   rw [sum_fintype _ _ (fun _ => by apply h), sum_fintype _ _ (fun _ => by apply h)]
@@ -49,7 +49,7 @@ See also `finTwoArrowEquiv`. -/
 noncomputable def finTwoArrowEquiv' [Zero M] : (Fin 2 →₀ M) ≃ M × M :=
   Finsupp.equivFunOnFinite.trans (finTwoArrowEquiv M)
 
-theorem finTwoArrowEquiv'_sum_eq {d : M × M} [AddCommMonoid M] :
+theorem finTwoArrowEquiv'_sum_eq {d : M × M} [AddMonoid M] [IsAddCommutative M] :
     (((finTwoArrowEquiv' M).symm d).sum fun _ n ↦ n) = d.1 + d.2 := by
   apply (Finsupp.equivFunOnFinite_symm_sum _).trans
   simp

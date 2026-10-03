@@ -126,7 +126,7 @@ See also `MulHom.eval`. -/
 @[to_additive (attr := simps) /-- Coercion of an `AddHom` into a function is itself an `AddHom`.
 
 See also `AddHom.eval`. -/]
-def MulHom.coeFn (α β : Type*) [Mul α] [CommSemigroup β] :
+def MulHom.coeFn (α β : Type*) [Mul α] [Semigroup β] [IsMulCommutative β] :
     (α →ₙ* β) →ₙ* α → β where
   toFun g := g
   map_mul' _ _ := rfl
@@ -215,7 +215,7 @@ See also `MonoidHom.eval`. -/
 an `AddMonoidHom`.
 
 See also `AddMonoidHom.eval`. -/]
-def MonoidHom.coeFn (α β : Type*) [MulOneClass α] [CommMonoid β] : (α →* β) →* α → β where
+def MonoidHom.coeFn (α β : Type*) [MulOneClass α] [Monoid β] [IsMulCommutative β] : (α →* β) →* α → β where
   toFun g := g
   map_one' := rfl
   map_mul' _ _ := rfl
@@ -347,7 +347,7 @@ theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i
   · simp [h, eqComm]
 
 @[to_additive]
-theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
+theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [Monoid M] [IsMulCommutative M]
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by

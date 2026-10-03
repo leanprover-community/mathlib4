@@ -216,7 +216,7 @@ noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUn
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0. -/
 -- See note [reducible non-instances]
-noncomputable abbrev Field.ofIsUnitOrEqZero [CommRing R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
+noncomputable abbrev Field.ofIsUnitOrEqZero [Ring R] [IsMulCommutative R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     Field R where
   toCommRing := ‹CommRing R›
   __ := DivisionRing.ofIsUnitOrEqZero h

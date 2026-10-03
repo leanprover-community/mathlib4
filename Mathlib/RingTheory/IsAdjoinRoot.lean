@@ -75,7 +75,7 @@ and `AdjoinRoot` which constructs a new type.
 
 This is not a typeclass because the choice of root given `S` and `f` is not unique.
 -/
-structure IsAdjoinRoot {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
+structure IsAdjoinRoot {R : Type u} (S : Type v) [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
     (f : R[X]) : Type max u v where
   map : R[X] →ₐ[R] S
   map_surjective : Function.Surjective map
@@ -92,13 +92,13 @@ we have `IsAdjoinRootMonic.powerBasis`.
 Bundling `Monic` into this structure is very useful when working with explicit `f`s such as
 `X^2 - C a * X - C b` since it saves you carrying around the proofs of monicity.
 -/
-structure IsAdjoinRootMonic {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
+structure IsAdjoinRootMonic {R : Type u} (S : Type v) [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S]
     (f : R[X]) extends IsAdjoinRoot S f where
   monic : Monic f
 
 section Ring
 
-variable {R : Type u} {S : Type v} [CommRing R] [Ring S] {f : R[X]} [Algebra R S]
+variable {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] {f : R[X]} [Algebra R S]
 
 namespace IsAdjoinRoot
 
@@ -252,7 +252,7 @@ end Equiv
 
 section lift
 
-variable {T : Type*} [CommRing T] {i : R →+* T} {x : T}
+variable {T : Type*} [Ring T] [IsMulCommutative T] {i : R →+* T} {x : T}
 
 section
 variable (hx : f.eval₂ i x = 0)
@@ -491,7 +491,7 @@ theorem _root_.finrank_quotient_span_eq_natDegree' [StrongRankCondition R] (hf :
 
 /-- `IsAdjoinRootMonic.liftPolyₗ` lifts a linear map on polynomials to a linear map on `S`. -/
 @[simps!]
-def liftPolyₗ {T : Type*} [AddCommGroup T] [Module R T] (g : R[X] →ₗ[R] T) : S →ₗ[R] T :=
+def liftPolyₗ {T : Type*} [AddGroup T] [IsAddCommutative T] [Module R T] (g : R[X] →ₗ[R] T) : S →ₗ[R] T :=
   g.comp h.modByMonicHom
 
 /-- `IsAdjoinRootMonic.coeff h x i` is the `i`th coefficient of the representative of `x : S`.
@@ -570,7 +570,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {f : R[X]}
+variable {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] {f : R[X]}
 
 namespace IsAdjoinRoot
 
@@ -617,7 +617,7 @@ end mkOfAdjoinEqTop
 
 section Equiv
 
-variable {T : Type*} [CommRing T] [Algebra R T] (h' : IsAdjoinRoot T f) {U : Type*} [CommRing U]
+variable {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] (h' : IsAdjoinRoot T f) {U : Type*} [Ring U] [IsMulCommutative U]
 
 @[simp]
 theorem lift_algEquiv (i : R →+* U) (x hx z) :

@@ -369,7 +369,7 @@ end Map
 
 section CommMonoid
 
-variable [CommMonoid R] [StarMul R]
+variable [Monoid R] [IsMulCommutative R] [StarMul R]
 
 instance : CommGroup (unitary R) :=
   { (inferInstance : Group (unitary R)), Submonoid.toCommMonoid _ with }
@@ -423,7 +423,7 @@ section UnitaryConjugate
 
 universe u
 
-variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A] [StarMul A]
 
 /-- Unitary conjugation preserves the spectrum, star on right. -/
 @[simp]

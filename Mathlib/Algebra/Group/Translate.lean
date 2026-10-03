@@ -32,7 +32,7 @@ convention is that translating is an action by subtraction, not by addition.
 open Function Set
 open scoped Pointwise
 
-variable {ι α β M G H : Type*} [AddCommGroup G]
+variable {ι α β M G H : Type*} [AddGroup G] [IsAddCommutative G]
 
 /-- Translation of a function in a group by an element of that group.
 `τ a f` is defined as `x ↦ f (x - a)`. -/
@@ -72,7 +72,7 @@ lemma translate_sub_right [Sub α] (a : G) (f g : G → α) : τ a (f - g) = τ 
 lemma translate_neg_right [Neg α] (a : G) (f : G → α) : τ a (-f) = -τ a f := rfl
 
 section AddCommMonoid
-variable [AddCommMonoid M]
+variable [AddMonoid M] [IsAddCommutative M]
 
 lemma translate_sum_right (a : G) (f : ι → G → M) (s : Finset ι) :
     τ a (∑ i ∈ s, f i) = ∑ i ∈ s, τ a (f i) := by ext; simp
@@ -83,14 +83,14 @@ lemma sum_translate [Fintype G] (a : G) (f : G → M) : ∑ b, τ a f b = ∑ b,
 end AddCommMonoid
 
 section AddCommGroup
-variable [AddCommGroup H]
+variable [AddGroup H] [IsAddCommutative H]
 
 @[simp] lemma support_translate (a : G) (f : G → H) : support (τ a f) = a +ᵥ support f := by
   ext; simp [mem_vadd_set_iff_neg_vadd_mem, sub_eq_neg_add]
 
 end AddCommGroup
 
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 lemma translate_prod_right (a : G) (f : ι → G → M) (s : Finset ι) :
     τ a (∏ i ∈ s, f i) = ∏ i ∈ s, τ a (f i) := by ext; simp

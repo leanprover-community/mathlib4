@@ -37,7 +37,7 @@ namespace DirectSum
 open DirectSum
 
 variable (R : Type uR) (A : ι → Type uA) {B : Type uB}
-variable [CommSemiring R] [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] [∀ i, Module R (A i)]
 variable [AddMonoid ι] [GSemiring A]
 
 section
@@ -155,7 +155,7 @@ end DirectSum
 
 /-- A direct sum of copies of an `Algebra` inherits the algebra structure. -/
 @[simps]
-instance Algebra.directSumGAlgebra {R A : Type*} [AddMonoid ι] [CommSemiring R]
+instance Algebra.directSumGAlgebra {R A : Type*} [AddMonoid ι] [Semiring R] [IsMulCommutative R]
     [Semiring A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι => A where
   toFun := (algebraMap R A).toAddMonoidHom
   map_one := (algebraMap R A).map_one

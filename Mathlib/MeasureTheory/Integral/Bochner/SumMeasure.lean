@@ -48,7 +48,7 @@ open scoped ENNReal NNReal Topology
 
 namespace MeasureTheory
 
-variable {ι X E : Type*} [Countable ι] {mX : MeasurableSpace X} [NormedAddCommGroup E]
+variable {ι X E : Type*} [Countable ι] {mX : MeasurableSpace X} [NormedAddGroup E] [IsAddCommutative E]
   {μ : ι → Measure X} {f : X → E}
 
 section Integrable

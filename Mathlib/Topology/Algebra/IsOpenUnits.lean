@@ -62,7 +62,7 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
 
 /-- If `R` has the `I`-adic topology where `I` is contained in the Jacobson radical
 (e.g. when `R` is complete or local), then `Rˣ` is an open subspace of `R`. -/
-lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
+lemma IsOpenUnits.of_isAdic {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R] [IsTopologicalRing R]
     {I : Ideal R}
     (hR : IsAdic I) (hI : I ≤ Ideal.jacobson ⊥) :
     IsOpenUnits R := by

@@ -107,7 +107,7 @@ where `0 ≤ a < b` and `c₀` are real numbers, `c : G → ℝ`, then `G` is fi
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
 where `0 ≤ a < b` and `c₀` are real numbers, `c : G → ℝ`, then `G` is finitely generated. -/]
-theorem CommGroup.fg_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → ℝ} {a b c₀ : ℝ}
+theorem CommGroup.fg_of_descent {G : Type*} [Group G] [IsMulCommutative G] {n : ℕ} {h : G → ℝ} {a b c₀ : ℝ}
     {c : G → ℝ} (ha : 0 ≤ a) (H₀ : a < b) (H₁ : (powMonoidHom (α := G) n).range.FiniteIndex)
     (H₂ : ∀ g x, h x ≤ a * h (g * x) + c g) (H₃ : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
     Group.FG G := by
@@ -144,7 +144,7 @@ then `G` is finitely generated.
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
 then `G` is finitely generated. -/]
-theorem CommGroup.fg_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : ℝ}
+theorem CommGroup.fg_of_descent' {G : Type*} [Group G] [IsMulCommutative G] {h : G → ℝ} {C : ℝ}
     (H₁ : (powMonoidHom (α := G) 2).range.FiniteIndex) (H₂ : ∀ x, 0 ≤ h x)
     (H₃ : ∀ x y, |h (x * y) + h (x / y) - 2 * (h x + h y)| ≤ C) [Northcott h] :
     Group.FG G := by
@@ -190,7 +190,7 @@ where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is f
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
 where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is finite. -/]
-theorem CommGroup.finite_torsion_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → ℝ}
+theorem CommGroup.finite_torsion_of_descent {G : Type*} [Group G] [IsMulCommutative G] {n : ℕ} {h : G → ℝ}
     {b c₀ : ℝ} (hb : 1 < b) (H : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
     Finite (torsion G) :=
   Monoid.finite_set_isOfFiniteOrder_of_descent hb H
@@ -207,7 +207,7 @@ then the torsion subgroup of `G` is finite.
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
 then the torsion subgroup of `G` is finite. -/]
-theorem CommGroup.finite_torsion_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : ℝ}
+theorem CommGroup.finite_torsion_of_descent' {G : Type*} [Group G] [IsMulCommutative G] {h : G → ℝ} {C : ℝ}
     (H : ∀ x y, |h (x * y) + h (x / y) - 2 * (h x + h y)| ≤ C) [Northcott h] :
     Finite (torsion G) := by
   have H' x : 4 * h x - (h 1 + C) ≤ h (x ^ 2) := by grind [pow_two, div_self']

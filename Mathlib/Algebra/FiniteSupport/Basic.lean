@@ -76,7 +76,7 @@ lemma HasFiniteMulSupport.inv {M : Type*} [DivisionMonoid M] {f : α → M}
   hf.comp inv_one
 
 @[to_additive (attr := fun_prop)]
-lemma HasFiniteMulSupport.prod {M : Type*} [CommMonoid M] {ι : Type*} {f : ι → α → M}
+lemma HasFiniteMulSupport.prod {M : Type*} [Monoid M] [IsMulCommutative M] {ι : Type*} {f : ι → α → M}
     (hf : ∀ i, HasFiniteMulSupport (f i)) (s : Finset ι) :
     HasFiniteMulSupport fun a ↦ ∏ i ∈ s, f i a :=
   (s.finite_toSet.biUnion fun i _ ↦ hf i).subset <| s.mulSupport_prod f

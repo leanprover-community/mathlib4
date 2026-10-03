@@ -45,7 +45,7 @@ open ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
 open scoped Topology
 
 variable {α β γ δ ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
-variable [NormedAddCommGroup β] [NormedAddCommGroup γ]
+variable [NormedAddGroup β] [IsAddCommutative β] [NormedAddGroup γ] [IsAddCommutative γ]
   [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
 
 namespace MeasureTheory
@@ -436,7 +436,7 @@ end ESeminormedAddMonoid
 
 section ESeminormedAddCommMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddCommMonoid ε'] [ContinuousAdd ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddMonoid ε'] [IsAddCommutative ε'] [ContinuousAdd ε']
 
 @[fun_prop]
 theorem integrable_finsetSum' {ι} (s : Finset ι) {f : ι → α → ε'}
@@ -557,7 +557,7 @@ theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun
 
 @[fun_prop]
 theorem Integrable.inf {β}
-    [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+    [NormedAddGroup β] [IsAddCommutative β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
     {f g : α → β} (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⊓ g) μ := by
   rw [← memLp_one_iff_integrable] at hf hg ⊢
@@ -565,7 +565,7 @@ theorem Integrable.inf {β}
 
 @[fun_prop]
 theorem Integrable.sup {β}
-    [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+    [NormedAddGroup β] [IsAddCommutative β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
     {f g : α → β} (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⊔ g) μ := by
   rw [← memLp_one_iff_integrable] at hf hg ⊢
@@ -573,7 +573,7 @@ theorem Integrable.sup {β}
 
 @[fun_prop]
 theorem Integrable.abs {β}
-    [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+    [NormedAddGroup β] [IsAddCommutative β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
     {f : α → β} (hf : Integrable f μ) :
     Integrable (fun a => |f a|) μ := by
   rw [← memLp_one_iff_integrable] at hf ⊢
@@ -785,7 +785,7 @@ end count
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 theorem integrable_withDensity_iff_integrable_coe_smul {f : α → ℝ≥0} (hf : Measurable f)
     {g : α → E} :
@@ -849,7 +849,7 @@ theorem integrable_withDensity_iff {f : α → ℝ≥0∞} (hf : Measurable f) (
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
 
 theorem memL1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable f)
     (u : Lp E 1 (μ.withDensity fun x => f x)) : MemLp (fun x => f x • u x) 1 μ :=
@@ -962,13 +962,13 @@ variable {𝕜 : Type*}
   {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
 
 @[to_fun (attr := fun_prop)]
-theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
+theorem Integrable.smul [NormedAddGroup 𝕜] [IsAddCommutative 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} (hf : Integrable f μ) : Integrable (c • f) μ := by
   constructor <;> fun_prop
 
 @[to_fun (attr := fun_prop)]
 theorem Integrable.smul_enorm
-    [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
+    [NormedAddGroup 𝕜] [IsAddCommutative 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
     {f : α → ε} (hf : Integrable f μ) : Integrable (c • f) μ := by
   constructor <;> fun_prop
 
@@ -1019,7 +1019,7 @@ end IsBoundedSMul
 section NormedSpaceOverCompleteField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
 
 theorem integrable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
     Integrable (fun x => f x • c) μ ↔ Integrable f μ := by
@@ -1133,7 +1133,7 @@ end RCLike
 
 section Trim
 
-variable {H : Type*} [NormedAddCommGroup H] {m0 : MeasurableSpace α} {μ' : Measure α} {f : α → H}
+variable {H : Type*} [NormedAddGroup H] [IsAddCommutative H] {m0 : MeasurableSpace α} {μ' : Measure α} {f : α → H}
 
 theorem Integrable.trim (hm : m ≤ m0) (hf_int : Integrable f μ') (hf : StronglyMeasurable[m] f) :
     Integrable f (μ'.trim hm) := by
@@ -1184,7 +1184,7 @@ section ContinuousLinearMap
 
 open MeasureTheory
 
-variable {E H : Type*} [NormedAddCommGroup E] [NormedAddCommGroup H]
+variable {E H : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup H] [IsAddCommutative H]
   {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
   [NormedSpace 𝕜' E] [NormedSpace 𝕜 H]
 
@@ -1217,8 +1217,8 @@ end ContinuousLinearMap
 
 namespace MeasureTheory
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E F : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
 
 @[fun_prop]
 lemma Integrable.fst {f : α → E × F} (hf : Integrable f μ) : Integrable (fun x ↦ (f x).1) μ :=

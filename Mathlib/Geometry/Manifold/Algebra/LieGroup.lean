@@ -59,7 +59,7 @@ open scoped Manifold ContDiff
 /-- An additive Lie group is a group and a `C^n` manifold at the same time in which
 the addition and negation operations are `C^n`. -/
 class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
+    {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : ℕ∞ω) (G : Type*)
     [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffAdd I n G where
   /-- Negation is smooth in an additive Lie group. -/
@@ -70,7 +70,7 @@ class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Top
 the multiplication and inverse operations are `C^n`. -/
 @[to_additive]
 class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
+    {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : ℕ∞ω) (G : Type*)
     [Group G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffMul I n G where
   /-- Inversion is smooth in a Lie group. -/
@@ -85,9 +85,9 @@ class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topolo
 section PointwiseDivision
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} {G : Type*}
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [Group G] {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
 
 @[to_additive]
@@ -182,9 +182,9 @@ section Product
 @[to_additive]
 instance Prod.instLieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
     {H : Type*} [TopologicalSpace H] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
     [TopologicalSpace G] [ChartedSpace H G] [Group G] [LieGroup I n G] {E' : Type*}
-    [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+    [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
     {I' : ModelWithCorners 𝕜 E' H'} {G' : Type*} [TopologicalSpace G'] [ChartedSpace H' G']
     [Group G'] [LieGroup I' n G'] : LieGroup (I.prod I') n (G × G') :=
   { ContMDiffMul.prod _ _ _ _ with contMDiff_inv := contMDiff_fst.inv.prodMk contMDiff_snd.inv }
@@ -194,7 +194,7 @@ end Product
 /-! ### Normed spaces are Lie groups -/
 
 instance instNormedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] : LieAddGroup 𝓘(𝕜, E) n E where
+    {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] : LieAddGroup 𝓘(𝕜, E) n E where
   contMDiff_neg := contDiff_neg.contMDiff
 
 /-! ## `C^n` manifolds with `C^n` inversion away from zero
@@ -208,7 +208,7 @@ section ContMDiffInv₀
 /-- A `C^n` manifold with `0` and `Inv` such that `fun x ↦ x⁻¹` is `C^n` at all nonzero points.
 Any complete normed (semi)field has this property. -/
 class ContMDiffInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
+    {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : ℕ∞ω) (G : Type*)
     [Inv G] [Zero G] [TopologicalSpace G] [ChartedSpace H G] : Prop where
   /-- Inversion is `C^n` away from `0`. -/
@@ -222,9 +222,9 @@ instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} : ContMDif
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [Inv G] [Zero G] {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
   {f : M → G}
 
@@ -296,10 +296,10 @@ section Div
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [GroupWithZero G] [ContMDiffInv₀ I n G]
   [ContMDiffMul I n G]
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
   {f g : M → G} {s : Set M} {a : M}
 

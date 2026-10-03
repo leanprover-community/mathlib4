@@ -63,7 +63,7 @@ structure PeriodPair : Type where
   ω₂ : ℂ
   indep : LinearIndependent ℝ ![ω₁, ω₂]
 
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] (L : PeriodPair)
+variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [TopologicalSpace M] (L : PeriodPair)
 
 namespace PeriodPair
 

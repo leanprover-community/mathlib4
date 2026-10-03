@@ -25,5 +25,5 @@ instance [SemigroupWithZero α] : SemigroupWithZero (Shrink α) :=
 instance [MulZeroClass α] : MulZeroClass (Shrink α) := (equivShrink _).symm.mulZeroClass
 instance [MulZeroOneClass α] : MulZeroOneClass (Shrink α) := (equivShrink _).symm.mulZeroOneClass
 
-instance [Monoid M] [AddCommMonoid α] [DistribMulAction M α] : DistribMulAction M (Shrink.{v} α) :=
+instance [Monoid M] [AddMonoid α] [IsAddCommutative α] [DistribMulAction M α] : DistribMulAction M (Shrink.{v} α) :=
   Shrink.addEquiv.distribMulAction M

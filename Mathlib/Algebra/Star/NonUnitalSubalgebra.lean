@@ -71,7 +71,7 @@ variable {A : Type v} {B : Type w} {C : Type w'}
 
 namespace NonUnitalStarSubalgebraClass
 
-variable [CommSemiring R] [NonUnitalNonAssocSemiring A]
+variable [Semiring R] [IsMulCommutative R] [NonUnitalNonAssocSemiring A]
 variable [Star A] [Module R A]
 variable {S : Type w''} [SetLike S A] [NonUnitalSubsemiringClass S A]
 variable [hSR : SMulMemClass S R A] [StarMemClass S A] (s : S)
@@ -98,7 +98,7 @@ end NonUnitalStarSubalgebraClass
 
 /-- A non-unital star subalgebra is a non-unital subalgebra which is closed under the `star`
 operation. -/
-structure NonUnitalStarSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
+structure NonUnitalStarSubalgebra (R : Type u) (A : Type v) [Semiring R] [IsMulCommutative R]
     [NonUnitalNonAssocSemiring A] [Module R A] [Star A] : Type v
     extends NonUnitalSubalgebra R A where
   /-- The `carrier` of a `NonUnitalStarSubalgebra` is closed under the `star` operation. -/
@@ -109,7 +109,7 @@ add_decl_doc NonUnitalStarSubalgebra.toNonUnitalSubalgebra
 
 namespace NonUnitalStarSubalgebra
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
   [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
   [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
   [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
@@ -123,7 +123,7 @@ instance : PartialOrder (NonUnitalStarSubalgebra R A) := .ofSetLike (NonUnitalSt
 /-- The actual `NonUnitalStarSubalgebra` obtained from an element of a type satisfying
 `NonUnitalSubsemiringClass`, `SMulMemClass` and `StarMemClass`. -/
 @[simps]
-def ofClass {S R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
+def ofClass {S R A : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
     [SetLike S A] [NonUnitalSubsemiringClass S A] [SMulMemClass S R A] [StarMemClass S A]
     (s : S) : NonUnitalStarSubalgebra R A where
   carrier := s
@@ -157,7 +157,7 @@ instance instSMulMemClass : SMulMemClass (NonUnitalStarSubalgebra R A) R A where
 instance instStarMemClass : StarMemClass (NonUnitalStarSubalgebra R A) A where
   star_mem {s} := s.star_mem'
 
-instance instNonUnitalSubringClass {R : Type u} {A : Type v} [CommRing R] [NonUnitalNonAssocRing A]
+instance instNonUnitalSubringClass {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R] [NonUnitalNonAssocRing A]
     [Module R A] [Star A] : NonUnitalSubringClass (NonUnitalStarSubalgebra R A) A :=
   { NonUnitalStarSubalgebra.instNonUnitalSubsemiringClass with
     neg_mem := fun _S {x} hx => neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
@@ -215,26 +215,26 @@ theorem copy_eq (s : Set A) (hs : s = ↑S) : S.copy s hs = S :=
 
 /-- A non-unital star subalgebra over a ring is also a `Subring`. -/
 @[reducible]
-def toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
+def toNonUnitalSubring {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R] [NonUnitalRing A] [Module R A]
     [Star A] (S : NonUnitalStarSubalgebra R A) : NonUnitalSubring A where
   toNonUnitalSubsemiring := S.toNonUnitalSubsemiring
   neg_mem' := neg_mem (s := S)
 
-theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
+theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R] [NonUnitalRing A] [Module R A]
     [Star A] {S : NonUnitalStarSubalgebra R A} {x} : x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
   Iff.rfl
 
 @[simp]
-theorem coe_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
+theorem coe_toNonUnitalSubring {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R] [NonUnitalRing A] [Module R A]
     [Star A] (S : NonUnitalStarSubalgebra R A) : (↑S.toNonUnitalSubring : Set A) = S :=
   rfl
 
-theorem toNonUnitalSubring_injective {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A]
+theorem toNonUnitalSubring_injective {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R] [NonUnitalRing A]
     [Module R A] [Star A] :
     Function.Injective (toNonUnitalSubring : NonUnitalStarSubalgebra R A → NonUnitalSubring A) :=
   fun S T h => ext fun x => by rw [← mem_toNonUnitalSubring, ← mem_toNonUnitalSubring, h]
 
-theorem toNonUnitalSubring_inj {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
+theorem toNonUnitalSubring_inj {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R] [NonUnitalRing A] [Module R A]
     [Star A] {S U : NonUnitalStarSubalgebra R A} :
     S.toNonUnitalSubring = U.toNonUnitalSubring ↔ S = U :=
   toNonUnitalSubring_injective.eq_iff
@@ -247,19 +247,19 @@ section
 /-! `NonUnitalStarSubalgebra`s inherit structure from their `NonUnitalSubsemiringClass` and
 `NonUnitalSubringClass` instances. -/
 
-instance toNonUnitalSemiring {R A} [CommSemiring R] [NonUnitalSemiring A] [Module R A] [Star A]
+instance toNonUnitalSemiring {R A} [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [Module R A] [Star A]
     (S : NonUnitalStarSubalgebra R A) : NonUnitalSemiring S :=
   inferInstance
 
-instance toNonUnitalCommSemiring {R A} [CommSemiring R] [NonUnitalCommSemiring A] [Module R A]
+instance toNonUnitalCommSemiring {R A} [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [IsMulCommutative A] [Module R A]
     [Star A] (S : NonUnitalStarSubalgebra R A) : NonUnitalCommSemiring S :=
   inferInstance
 
-instance toNonUnitalRing {R A} [CommRing R] [NonUnitalRing A] [Module R A] [Star A]
+instance toNonUnitalRing {R A} [Ring R] [IsMulCommutative R] [NonUnitalRing A] [Module R A] [Star A]
     (S : NonUnitalStarSubalgebra R A) : NonUnitalRing S :=
   inferInstance
 
-instance toNonUnitalCommRing {R A} [CommRing R] [NonUnitalCommRing A] [Module R A] [Star A]
+instance toNonUnitalCommRing {R A} [Ring R] [IsMulCommutative R] [NonUnitalRing A] [IsMulCommutative A] [Module R A] [Star A]
     (S : NonUnitalStarSubalgebra R A) : NonUnitalCommRing S :=
   inferInstance
 end
@@ -310,11 +310,11 @@ protected theorem coe_mul (x y : S) : (↑(x * y) : A) = ↑x * ↑y :=
 protected theorem coe_zero : ((0 : S) : A) = 0 :=
   rfl
 
-protected theorem coe_neg {R : Type u} {A : Type v} [CommRing R] [NonUnitalNonAssocRing A]
+protected theorem coe_neg {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R] [NonUnitalNonAssocRing A]
     [Module R A] [Star A] {S : NonUnitalStarSubalgebra R A} (x : S) : (↑(-x) : A) = -↑x :=
   rfl
 
-protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [NonUnitalNonAssocRing A]
+protected theorem coe_sub {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R] [NonUnitalNonAssocRing A]
     [Module R A] [Star A] {S : NonUnitalStarSubalgebra R A} (x y : S) : (↑(x - y) : A) = ↑x - ↑y :=
   rfl
 
@@ -332,7 +332,7 @@ theorem toNonUnitalSubalgebra_subtype :
   rfl
 
 @[simp]
-theorem toSubring_subtype {R A : Type*} [CommRing R] [NonUnitalNonAssocRing A] [Module R A] [Star A]
+theorem toSubring_subtype {R A : Type*} [Ring R] [IsMulCommutative R] [NonUnitalNonAssocRing A] [Module R A] [Star A]
     (S : NonUnitalStarSubalgebra R A) :
     NonUnitalSubringClass.subtype S = NonUnitalStarSubalgebraClass.subtype S :=
   rfl
@@ -397,7 +397,7 @@ theorem coe_comap (S : NonUnitalStarSubalgebra R B) (f : A →⋆ₙₐ[R] B) :
     comap f S = f ⁻¹' (S : Set B) :=
   rfl
 
-instance instNoZeroDivisors {R A : Type*} [CommSemiring R] [NonUnitalSemiring A] [NoZeroDivisors A]
+instance instNoZeroDivisors {R A : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [NoZeroDivisors A]
     [Module R A] [Star A] (S : NonUnitalStarSubalgebra R A) : NoZeroDivisors S :=
   NonUnitalSubsemiringClass.noZeroDivisors S
 
@@ -405,7 +405,7 @@ end NonUnitalStarSubalgebra
 
 namespace NonUnitalSubalgebra
 
-variable [CommSemiring R] [NonUnitalSemiring A] [Module R A] [Star A]
+variable [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [Module R A] [Star A]
 variable (s : NonUnitalSubalgebra R A)
 
 /-- A non-unital subalgebra closed under `star` is a non-unital star subalgebra. -/
@@ -437,7 +437,7 @@ theorem _root_.NonUnitalStarSubalgebra.toNonUnitalSubalgebra_toNonUnitalStarSuba
 end NonUnitalSubalgebra
 namespace NonUnitalStarAlgHom
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
   [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
   [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
   [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
@@ -510,7 +510,7 @@ theorem mem_equalizer (φ ψ : A →⋆ₙₐ[R] B) (x : A) :
 end NonUnitalStarAlgHom
 
 namespace StarAlgEquiv
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
   [NonUnitalSemiring A] [Module R A] [Star A]
   [NonUnitalSemiring B] [Module R B] [Star B]
   [NonUnitalSemiring C] [Module R C] [Star C]
@@ -558,7 +558,7 @@ namespace NonUnitalSubalgebra
 
 open scoped Pointwise
 
-variable [CommSemiring R] [StarRing R]
+variable [Semiring R] [IsMulCommutative R] [StarRing R]
   [NonUnitalSemiring A] [StarRing A] [Module R A]
   [StarModule R A]
 
@@ -640,7 +640,7 @@ end NonUnitalSubalgebra
 
 namespace NonUnitalStarAlgebra
 
-variable [CommSemiring R] [StarRing R]
+variable [Semiring R] [IsMulCommutative R] [StarRing R]
   [NonUnitalSemiring A] [StarRing A] [Module R A]
   [NonUnitalSemiring B] [StarRing B] [Module R B]
 
@@ -740,7 +740,7 @@ lemma adjoin_eq_span (s : Set A) :
   rw [adjoin_toNonUnitalSubalgebra, NonUnitalAlgebra.adjoin_eq_span]
 
 @[simp]
-lemma span_eq_toSubmodule {R} [CommSemiring R] [Module R A] (s : NonUnitalStarSubalgebra R A) :
+lemma span_eq_toSubmodule {R} [Semiring R] [IsMulCommutative R] [Module R A] (s : NonUnitalStarSubalgebra R A) :
     Submodule.span R (s : Set A) = s.toSubmodule := by
   simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
 
@@ -895,7 +895,7 @@ namespace NonUnitalStarSubalgebra
 
 open NonUnitalStarAlgebra
 
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
   [NonUnitalSemiring A] [StarRing A] [Module R A]
   [NonUnitalSemiring B] [StarRing B] [Module R B]
 variable (S : NonUnitalStarSubalgebra R A)
@@ -1144,7 +1144,7 @@ theorem center_toNonUnitalSubalgebra :
   rfl
 
 @[simp]
-theorem center_eq_top (A : Type*) [StarRing R] [NonUnitalCommSemiring A] [StarRing A] [Module R A]
+theorem center_eq_top (A : Type*) [StarRing R] [NonUnitalSemiring A] [IsMulCommutative A] [StarRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : center R A = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ A)
 
@@ -1236,7 +1236,7 @@ namespace NonUnitalStarAlgebra
 
 open NonUnitalStarSubalgebra
 
-variable [CommSemiring R] [StarRing R]
+variable [Semiring R] [IsMulCommutative R] [StarRing R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A]
 variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
 
@@ -1309,7 +1309,7 @@ open scoped IsMulCommutative in
 
 See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [StarRing R]
+abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [Ring R] [IsMulCommutative R] [StarRing R]
     [NonUnitalRing A] [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     [StarModule R A] {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
     (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :

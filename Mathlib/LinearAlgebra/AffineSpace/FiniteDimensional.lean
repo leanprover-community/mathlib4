@@ -42,7 +42,7 @@ variable {ι : Type*}
 
 open AffineSubspace Module
 
-variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable [DivisionRing k] [AddGroup V] [IsAddCommutative V] [Module k V] [AffineSpace V P]
 
 /-- The `vectorSpan` of a finite set is finite-dimensional. -/
 theorem finiteDimensional_vectorSpan_of_finite {s : Set P} (h : Set.Finite s) :
@@ -140,7 +140,7 @@ instance AffineSubspace.finiteDimensional_sup (s₁ s₂ : AffineSubspace k P)
   infer_instance
 
 /-- The image of a finite-dimensional affine subspace under an affine map is finite-dimensional. -/
-instance finiteDimensional_direction_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
+instance finiteDimensional_direction_map {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module k V₂]
     [AffineSpace V₂ P₂] (s : AffineSubspace k P) [FiniteDimensional k s.direction]
     (f : P →ᵃ[k] P₂) : FiniteDimensional k (s.map f).direction := by
   rw [map_direction]
@@ -806,7 +806,7 @@ variable {k : Type*} {V : Type*} {P : Type*}
 
 open AffineSubspace Module Module
 
-variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable [DivisionRing k] [AddGroup V] [IsAddCommutative V] [Module k V] [AffineSpace V P]
 
 /-- Adding a point to a finite-dimensional subspace increases the dimension by at most one. -/
 theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
@@ -888,7 +888,7 @@ namespace AffineBasis
 universe u₁ u₂ u₃ u₄
 
 variable {ι : Type u₁} {k : Type u₂} {V : Type u₃} {P : Type u₄}
-variable [AddCommGroup V] [AffineSpace V P]
+variable [AddGroup V] [IsAddCommutative V] [AffineSpace V P]
 
 section DivisionRing
 
@@ -927,8 +927,8 @@ end AffineBasis
 namespace AffineMap
 
 variable {R S V W P : Type*} [Ring R] [Ring S]
-  [AddCommGroup V] [Module R V] [Module.Finite R V] [Module.Free R V] [AddTorsor V P]
-  [AddCommGroup W] [Module R W] [Module S W] [Module.Finite S W] [SMulCommClass R S W]
+  [AddGroup V] [IsAddCommutative V] [Module R V] [Module.Finite R V] [Module.Free R V] [AddTorsor V P]
+  [AddGroup W] [IsAddCommutative W] [Module R W] [Module S W] [Module.Finite S W] [SMulCommClass R S W]
 
 instance : Module.Finite S (P →ᵃ[R] W) :=
   have ⟨p⟩ : Nonempty P := inferInstance

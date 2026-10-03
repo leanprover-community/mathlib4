@@ -43,7 +43,7 @@ assumption from the Leibniz rule when `M` is cancellative.
 
 TODO: update this when bimodules are defined. -/
 structure Derivation (R : Type*) (A : Type*) (M : Type*)
-    [CommSemiring R] [CommSemiring A] [AddCommMonoid M] [Algebra R A] [Module A M] [Module R M]
+    [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [AddMonoid M] [IsAddCommutative M] [Algebra R A] [Module A M] [Module R M]
     extends A →ₗ[R] M where
   protected map_one_eq_zero' : toLinearMap 1 = 0
   protected leibniz' (a b : A) : toLinearMap (a * b) = a • toLinearMap b + b • toLinearMap a
@@ -56,7 +56,7 @@ namespace Derivation
 section
 
 variable {R : Type*} {A : Type*} {B : Type*} {M : Type*}
-variable [CommSemiring R] [CommSemiring A] [CommSemiring B] [AddCommMonoid M]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [AddMonoid M] [IsAddCommutative M]
 variable [Algebra R A] [Algebra R B]
 variable [Module A M] [Module B M] [Module R M]
 
@@ -277,7 +277,7 @@ instance instModule {S : Type*} [Semiring S] [Module S M] [SMulCommClass R S M]
 
 section PushForward
 
-variable {N : Type*} [AddCommMonoid N] [Module A N] [Module R N] [IsScalarTower R A M]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module A N] [Module R N] [IsScalarTower R A M]
   [IsScalarTower R A N]
 
 variable (f : M →ₗ[A] N) (e : M ≃ₗ[A] N)
@@ -351,7 +351,7 @@ def compAlgebraMapL [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
 
 section RestrictScalars
 
-variable {S : Type*} [CommSemiring S]
+variable {S : Type*} [Semiring S] [IsMulCommutative S]
 variable [Algebra S A] [Module S M] [LinearMap.CompatibleSMul A M R S]
 variable (R)
 
@@ -374,7 +374,7 @@ end
 section Lift
 
 variable {R : Type*} {A : Type*} {M : Type*}
-variable [CommSemiring R] [CommRing A] [CommRing M]
+variable [Semiring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring M] [IsMulCommutative M]
 variable [Algebra R A] [Algebra R M]
 variable {F : Type*} [FunLike F A M] [AlgHomClass F R A M]
 
@@ -433,8 +433,8 @@ end Lift
 
 section Cancel
 
-variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A] {M : Type*}
-  [AddCancelCommMonoid M] [Module R M] [Module A M]
+variable {R : Type*} [Semiring R] [IsMulCommutative R] {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A] {M : Type*}
+  [AddCancelMonoid M] [IsAddCommutative M] [Module R M] [Module A M]
 
 /-- Define `Derivation R A M` from a linear map when `M` is cancellative by verifying the Leibniz
 rule. -/
@@ -456,12 +456,12 @@ end Cancel
 
 section
 
-variable {R : Type*} [CommRing R]
-variable {A : Type*} [CommRing A] [Algebra R A]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
+variable {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A]
 
 section
 
-variable {M : Type*} [AddCommGroup M] [Module A M] [Module R M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [Module A M] [Module R M]
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (a b : A)
 
 protected theorem map_neg : D (-a) = -D a :=

@@ -21,7 +21,7 @@ This file defines the conductor ideal of an element `x` of `R`-algebra `S`. This
 
 @[expose] public section
 
-variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type*) {S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 open Ideal Module Algebra RingHom
 
@@ -62,7 +62,7 @@ theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
   ⟨fun h ↦ adjoin_eq_top_of_conductor_eq_top h, fun h ↦ conductor_eq_top_of_adjoin_eq_top h⟩
 
 open IsLocalization in
-lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
+lemma mem_coeSubmodule_conductor {L} [Ring L] [IsMulCommutative L] [Algebra S L] [Algebra R L]
     [IsScalarTower R S L] [FaithfulSMul S L] {x : S} {y : L} :
     y ∈ coeSubmodule L (conductor R x) ↔ ∀ z : S,
       y * (algebraMap S L) z ∈ R[algebraMap S L x] := by

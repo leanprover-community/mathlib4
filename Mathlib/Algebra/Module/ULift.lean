@@ -120,14 +120,14 @@ instance mulActionWithZero' [MonoidWithZero R] [Zero M] [MulActionWithZero R M] 
     one_smul := one_smul _
     mul_smul := mul_smul }
 
-instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module (ULift R) M :=
+instance module [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : Module (ULift R) M :=
   { ULift.smulWithZero with
     add_smul := fun _ _ => add_smul _ _
     smul_add := smul_add
     one_smul := one_smul _
     mul_smul := mul_smul }
 
-instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M) :=
+instance module' [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : Module R (ULift M) :=
   { ULift.smulWithZero' with
     add_smul := fun _ _ _ => ULift.ext <| add_smul _ _ _
     one_smul := one_smul _
@@ -138,7 +138,7 @@ instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M
 
 This is a linear version of `AddEquiv.ulift`. -/
 @[simps apply symm_apply]
-def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ[R] M where
+def moduleEquiv [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : ULift.{w} M ≃ₗ[R] M where
   toFun := ULift.down
   invFun := ULift.up
   map_smul' _ _ := rfl

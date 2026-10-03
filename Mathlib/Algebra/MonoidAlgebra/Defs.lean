@@ -209,11 +209,11 @@ lemma ofCoeff_sum (s : Finset ι) (f : ι → M →₀ R) :
     ofCoeff (∑ i ∈ s, f i) = ∑ i ∈ s, ofCoeff (f i) := map_sum coeffAddEquiv.symm ..
 
 @[to_additive (attr := simp)]
-lemma coeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → R[M]) :
+lemma coeff_finsuppSum [AddMonoid N] [IsAddCommutative N] (f : ι →₀ N) (g : ι → N → R[M]) :
     coeff (f.sum g) = f.sum (fun i n ↦ coeff (g i n)) := map_finsuppSum coeffAddEquiv ..
 
 @[to_additive (attr := simp)]
-lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → M →₀ R) :
+lemma ofCoeff_finsuppSum [AddMonoid N] [IsAddCommutative N] (f : ι →₀ N) (g : ι → N → M →₀ R) :
     ofCoeff (f.sum g) = f.sum (fun i n ↦ ofCoeff (g i n)) := map_finsuppSum coeffAddEquiv.symm ..
 
 /-- `MonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/
@@ -411,7 +411,7 @@ lemma addHom_ext' {N : Type*} [AddZeroClass N] ⦃f g : R[M] →+ N⦄
   addMonoidHom_ext <| by simpa [DFunLike.ext_iff] using hfg
 
 @[to_additive (attr := deprecated Finsupp.sum_single_index +typeChanged (since := "2026-06-18"))]
-lemma sum_single_index [AddCommMonoid N] {m : M} {r : R} {h : M → R → N} (h_zero : h m 0 = 0) :
+lemma sum_single_index [AddMonoid N] [IsAddCommutative N] {m : M} {r : R} {h : M → R → N} (h_zero : h m 0 = 0) :
     (single m r).coeff.sum h = h m r := by
   simp [h_zero]
 
@@ -845,10 +845,10 @@ end Group
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R]
+variable [Semiring R] [IsMulCommutative R]
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalCommSemiring [CommSemigroup M] : NonUnitalCommSemiring R[M] where
+instance nonUnitalCommSemiring [Semigroup M] [IsMulCommutative M] : NonUnitalCommSemiring R[M] where
   mul_comm f g := by simp [mul_def, Finsupp.sum, mul_comm, f.coeff.support.sum_comm]
 
 @[to_additive (dont_translate := R)]
@@ -857,7 +857,7 @@ lemma single_one_comm [MulOneClass M] (r : R) (f : R[M]) :
   single_commute .one_left (.all _) f
 
 section CommMonoid
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 @[to_additive (dont_translate := R)]
 instance commSemiring : CommSemiring R[M] where
@@ -871,7 +871,7 @@ lemma prod_single (s : Finset ι) (m : ι → M) (r : ι → R) :
 
 open Finset in
 @[to_additive (dont_translate := R) (attr := simp) finsuppProd_single]
-lemma finsuppProd_single [AddCommMonoid N] (f : ι →₀ N) (m : ι → N → M) (r : ι → N → R) :
+lemma finsuppProd_single [AddMonoid N] [IsAddCommutative N] (f : ι →₀ N) (m : ι → N → M) (r : ι → N → R) :
     f.prod (fun i n ↦ single (m i n) (r i n)) = single (f.prod m) (f.prod r) := prod_single ..
 
 end CommMonoid
@@ -925,13 +925,13 @@ lemma neg_apply (m : M) (x : R[M]) : (-x).coeff m = -x.coeff m := rfl
 end Ring
 
 section CommRing
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalCommRing [CommSemigroup M] : NonUnitalCommRing R[M] where
+instance nonUnitalCommRing [Semigroup M] [IsMulCommutative M] : NonUnitalCommRing R[M] where
 
 @[to_additive (dont_translate := R)]
-instance commRing [CommMonoid M] : CommRing R[M] where
+instance commRing [Monoid M] [IsMulCommutative M] : CommRing R[M] where
 
 end CommRing
 end MonoidAlgebra

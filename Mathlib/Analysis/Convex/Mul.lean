@@ -26,10 +26,10 @@ open Set
 variable {𝕜 E F G : Type*}
 
 section LinearOrderedCommRing
-variable [CommRing 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  [CommRing E] [LinearOrder E] [IsStrictOrderedRing E]
-  [AddCommGroup F] [LinearOrder F] [IsOrderedAddMonoid F]
-  [AddCommGroup G] [Module 𝕜 G]
+variable [Ring 𝕜] [IsMulCommutative 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [Ring E] [IsMulCommutative E] [LinearOrder E] [IsStrictOrderedRing E]
+  [AddGroup F] [IsAddCommutative F] [LinearOrder F] [IsOrderedAddMonoid F]
+  [AddGroup G] [IsAddCommutative G] [Module 𝕜 G]
   [Module 𝕜 E] [Module 𝕜 F] [Module E F] [IsScalarTower 𝕜 E F] [SMulCommClass 𝕜 E F]
   [IsOrderedModule 𝕜 F] [IsStrictOrderedModule E F] {s : Set G} {f : G → E} {g : G → F}
 

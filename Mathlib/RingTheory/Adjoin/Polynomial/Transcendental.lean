@@ -32,7 +32,7 @@ variable {R S : Type*}
 
 open Algebra
 
-variable [CommRing R] [Ring S] [Algebra R S]
+variable [Ring R] [IsMulCommutative R] [Ring S] [Algebra R S]
 
 variable (s : S)
 
@@ -79,7 +79,7 @@ namespace Algebra
 
 open Ideal Polynomial
 
-variable {T : Type*} [CommRing T] [Algebra R T] {p : R[X]}
+variable {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] {p : R[X]}
 
 /-- If `s : S` is transcendental over `R`, we get an `R`-algebra homomorphism given by
 evaluation at some element `c`.

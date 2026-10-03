@@ -49,7 +49,7 @@ theorem HasNondegenerateEdges.two_le [NeZero n] {poly : Polygon P n}
   · simp_all only [neZero_zero_iff_false]
   · exact h 0 (by simp)
 
-variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
 
 variable (R) in
 /-- The `i`-th edge as an affine map `R →ᵃ[R] P`. -/
@@ -99,7 +99,7 @@ end Polygon
 namespace Affine.Triangle
 
 variable {R V P : Type*}
-variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
 
 /-- Embedding from affine triangles to polygons with 3 vertices. -/
 def toPolygon : Affine.Triangle R P ↪ Polygon P 3 where
@@ -117,7 +117,7 @@ end Affine.Triangle
 namespace Polygon
 
 variable {R V P : Type*}
-variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
 
 variable (R) in
 /-- Convert a polygon with 3 nondegenerate vertices to an `Affine.Triangle`. -/
@@ -143,7 +143,7 @@ end Polygon
 namespace Affine.Triangle
 
 variable {R V P : Type*}
-variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
 
 /-- The polygon obtained from a triangle has nondegenerate vertices. -/
 theorem toPolygon_hasNondegenerateVertices (t : Affine.Triangle R P) :

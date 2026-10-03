@@ -30,8 +30,8 @@ open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
+variable {E F G H : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [NormedAddGroup F] [IsAddCommutative F]
+  [NormedSpace 𝕜 F] [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G] [NormedAddGroup H] [IsAddCommutative H]
   [NormedSpace 𝕜 H]
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
@@ -460,7 +460,7 @@ or `fun x ↦ (f ⬝ x)`. We use the latter spelling in the statements, for read
 section
 
 variable {ι : Type*} [Fintype ι] {e : E} {Fm : ι → Type*}
-    [∀ i, NormedAddCommGroup (Fm i)] [∀ i, NormedSpace 𝕜 (Fm i)]
+    [∀ i, NormedAddGroup (Fm i)] [∀ i, IsAddCommutative (Fm i)] [∀ i, NormedSpace 𝕜 (Fm i)]
     {f : Π i, E → Fm i} {s : Set E} {r : ℝ≥0∞}
     {p : Π i, FormalMultilinearSeries 𝕜 E (Fm i)}
 
@@ -1184,7 +1184,7 @@ theorem Finset.analyticOnNhd_sum {f : α → E → F} {s : Set E}
   fun z zs ↦ N.analyticAt_sum (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticWithinAt_fun_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticWithinAt_fun_prod {A : Type*} [NormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s c := by
   classical
@@ -1198,7 +1198,7 @@ theorem Finset.analyticWithinAt_fun_prod {A : Type*} [NormedCommRing A] [NormedA
     exact (h a (Or.inl rfl)).mul (hB fun b m ↦ h b (Or.inr m))
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticWithinAt_prod {A : Type*} [NormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (∏ n ∈ N, f n) s c := by
   convert! N.analyticWithinAt_fun_prod h
@@ -1206,7 +1206,7 @@ theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgeb
 
 /-- Finite products of analytic functions are analytic -/
 @[fun_prop]
-theorem Finset.analyticAt_fun_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticAt_fun_prod {A : Type*} [NormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) c := by
   simp_rw [← analyticWithinAt_univ] at h ⊢
@@ -1214,41 +1214,41 @@ theorem Finset.analyticAt_fun_prod {A : Type*} [NormedCommRing A] [NormedAlgebra
 
 /-- Finite products of analytic functions are analytic -/
 @[fun_prop]
-theorem Finset.analyticAt_prod {α : Type*} {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticAt_prod {α : Type*} {A : Type*} [NormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (∏ n ∈ N, f n) c := by
   convert! N.analyticAt_fun_prod h
   simp
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticOn_fun_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticOn_fun_prod {A : Type*} [NormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
     AnalyticOn 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticWithinAt_fun_prod (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticOn_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticOn_prod {A : Type*} [NormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
     AnalyticOn 𝕜 (∏ n ∈ N, f n) s :=
   fun z zs ↦ N.analyticWithinAt_prod (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
 @[fun_prop]
-theorem Finset.analyticOnNhd_fun_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticOnNhd_fun_prod {A : Type*} [NormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
     AnalyticOnNhd 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_fun_prod (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
 @[fun_prop]
-theorem Finset.analyticOnNhd_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticOnNhd_prod {A : Type*} [NormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
     AnalyticOnNhd 𝕜 (∏ n ∈ N, f n) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)
 
 /-- Finproducts of analytic functions are analytic -/
 @[fun_prop]
-theorem analyticAt_finprod {α : Type*} {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem analyticAt_finprod {α : Type*} {A : Type*} [NormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (h : ∀ a, AnalyticAt 𝕜 (f a) c) :
     AnalyticAt 𝕜 (∏ᶠ n, f n) c := by
   by_cases hf : (Function.mulSupport f).Finite

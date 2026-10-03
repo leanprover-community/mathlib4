@@ -40,7 +40,7 @@ open Algebra Polynomial
 
 namespace Module.End
 
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] {f : End K V}
+variable {K V : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V] {f : End K V}
 
 theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : ℕ}
     (sep : P.Separable) (nil : minpoly K f ∣ P ^ k) :

@@ -44,7 +44,7 @@ namespace Ideal
 
 open Submodule
 
-variable (R S : Type*) [CommRing R] [IsDomain R] {S : Type*} [CommRing S] [IsDomain S]
+variable (R S : Type*) [Ring R] [IsMulCommutative R] [IsDomain R] {S : Type*} [Ring S] [IsMulCommutative S] [IsDomain S]
 variable [IsIntegrallyClosed R] [IsIntegrallyClosed S] [Algebra R S] [Module.Finite R S]
 variable [IsTorsionFree R S]
 
@@ -105,7 +105,7 @@ theorem spanNorm_mono {I J : Ideal S} (h : I ≤ J) : spanNorm R I ≤ spanNorm 
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R⁰)
-    {Rₘ : Type*} (Sₘ : Type*) [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
+    {Rₘ : Type*} (Sₘ : Type*) [Ring Rₘ] [IsMulCommutative Rₘ] [Algebra R Rₘ] [Ring Sₘ] [IsMulCommutative Sₘ] [Algebra S Sₘ]
     [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
     [IsLocalization M Rₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
     [IsIntegrallyClosed Rₘ] [IsDomain Rₘ] [IsDomain Sₘ] [IsTorsionFree Rₘ Sₘ]
@@ -218,7 +218,7 @@ theorem spanNorm_mul [IsDedekindDomain R] [IsDedekindDomain S] (I J : Ideal S) :
 
 section spanNorm_spanNorm
 
-variable (T : Type*) [CommRing T] [IsDomain T] [IsIntegrallyClosed T] [Algebra R T] [Algebra T S]
+variable (T : Type*) [Ring T] [IsMulCommutative T] [IsDomain T] [IsIntegrallyClosed T] [Algebra R T] [Algebra T S]
   [Module.Finite R T] [Module.Finite T S] [IsTorsionFree R T] [IsTorsionFree T S]
   [IsScalarTower R T S]
 
@@ -311,7 +311,7 @@ theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J
 
 variable {R}
 
-private theorem relNorm_map_algEquiv_aux {T : Type*} [CommRing T] [IsDedekindDomain T]
+private theorem relNorm_map_algEquiv_aux {T : Type*} [Ring T] [IsMulCommutative T] [IsDedekindDomain T]
     [IsIntegrallyClosed T] [Algebra R T] [Module.Finite R T] [IsTorsionFree R T]
     (σ : S ≃ₐ[R] T) (I : Ideal S) : relNorm R (I.map σ) ≤ relNorm R I :=
   span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨σ.toRingEquiv.symm x,
@@ -319,7 +319,7 @@ private theorem relNorm_map_algEquiv_aux {T : Type*} [CommRing T] [IsDedekindDom
     hx₂ ▸ Algebra.intNorm_map_algEquiv _ x σ.symm⟩
 
 @[simp]
-theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+theorem relNorm_map_algEquiv {T : Type*} [Ring T] [IsMulCommutative T] [IsDedekindDomain T] [IsIntegrallyClosed T]
     [Algebra R T] [Module.Finite R T] [IsTorsionFree R T] (σ : S ≃ₐ[R] T) (I : Ideal S) :
     relNorm R (I.map σ) = relNorm R I := by
   refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
@@ -328,7 +328,7 @@ theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIn
   simp [map_mapₐ]
 
 @[simp]
-theorem relNorm_comap_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+theorem relNorm_comap_algEquiv {T : Type*} [Ring T] [IsMulCommutative T] [IsDedekindDomain T] [IsIntegrallyClosed T]
     [Algebra R T] [Module.Finite R T] [IsTorsionFree R T] (σ : S ≃ₐ[R] T) (I : Ideal T) :
     relNorm R (I.comap σ) = relNorm R I := map_symm σ.toRingEquiv ▸ relNorm_map_algEquiv σ.symm I
 
@@ -342,7 +342,7 @@ theorem relNorm_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClas
 theorem relNorm_le_comap (I : Ideal S) : relNorm R I ≤ comap (algebraMap R S) I :=
   spanNorm_le_comap R I
 
-theorem relNorm_relNorm (T : Type*) [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+theorem relNorm_relNorm (T : Type*) [Ring T] [IsMulCommutative T] [IsDedekindDomain T] [IsIntegrallyClosed T]
     [Algebra R T] [Algebra T S] [IsScalarTower R T S] [Module.Finite R T] [Module.Finite T S]
     [IsTorsionFree R T] [IsTorsionFree T S]
     (I : Ideal S) : relNorm R (relNorm T I) = relNorm R I :=
@@ -371,7 +371,7 @@ theorem relNorm_algebraMap (I : Ideal R) :
 variable (R)
 
 /-- A version of `relNorm_algebraMap` involving a tower of algebras `S/R/R'`. -/
-theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
+theorem relNorm_algebraMap' {R'} [Ring R'] [IsMulCommutative R'] (I : Ideal R') [Algebra R' R]
     [Algebra R' S] [IsScalarTower R' R S] :
     relNorm R (I.map (algebraMap R' S)) = I.map (algebraMap R' R) ^ finrank R S := by
   rw [← relNorm_algebraMap, Ideal.map_map, IsScalarTower.algebraMap_eq R' R S]

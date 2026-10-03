@@ -22,7 +22,7 @@ variable {ι M M₀ : Type*}
 
 namespace WithTop
 section AddCommMonoid
-variable [AddCommMonoid M] {s : Finset ι} {f : ι → WithTop M}
+variable [AddMonoid M] [IsAddCommutative M] {s : Finset ι} {f : ι → WithTop M}
 
 @[simp, norm_cast] lemma coe_sum (s : Finset ι) (f : ι → M) :
     ∑ i ∈ s, f i = ∑ i ∈ s, (f i : WithTop M) := map_sum addHom f s
@@ -43,7 +43,7 @@ variable [LT M]
 end AddCommMonoid
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero M₀] [NoZeroDivisors M₀] [Nontrivial M₀] [DecidableEq M₀]
+variable [MonoidWithZero M₀] [IsMulCommutative M₀] [NoZeroDivisors M₀] [Nontrivial M₀] [DecidableEq M₀]
   {s : Finset ι} {f : ι → WithTop M₀} {i : ι}
 
 /-- A product of finite terms is finite. -/
@@ -84,7 +84,7 @@ end WithTop
 
 namespace WithBot
 section AddCommMonoid
-variable [AddCommMonoid M] {s : Finset ι} {f : ι → WithBot M}
+variable [AddMonoid M] [IsAddCommutative M] {s : Finset ι} {f : ι → WithBot M}
 
 @[simp, norm_cast] lemma coe_sum (s : Finset ι) (f : ι → M) :
     ∑ i ∈ s, f i = ∑ i ∈ s, (f i : WithBot M) := map_sum addHom f s
@@ -106,7 +106,7 @@ lemma sum_lt_bot (h : ∀ i ∈ s, f i ≠ ⊥) : ⊥ < ∑ i ∈ s, f i :=
 end AddCommMonoid
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero M₀] [NoZeroDivisors M₀] [Nontrivial M₀] [DecidableEq M₀]
+variable [MonoidWithZero M₀] [IsMulCommutative M₀] [NoZeroDivisors M₀] [Nontrivial M₀] [DecidableEq M₀]
   {s : Finset ι} {f : ι → WithBot M₀}
 
 /-- A product of finite terms is finite. -/

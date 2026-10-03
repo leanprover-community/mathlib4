@@ -111,7 +111,7 @@ end MulOneClass
 
 section CommSemigroup
 
-variable [CommSemigroup G]
+variable [Semigroup G] [IsMulCommutative G]
 
 @[to_additive]
 theorem mul_left_comm (a b c : G) : a * (b * c) = b * (a * c) := by
@@ -219,7 +219,7 @@ lemma pow_iterate (k : ℕ) : ∀ n : ℕ, (fun x : M ↦ x ^ k)^[n] = (· ^ k ^
 end Monoid
 
 section CommMonoid
-variable [CommMonoid M] {x y z : M}
+variable [Monoid M] [IsMulCommutative M] {x y z : M}
 
 @[to_additive]
 theorem inv_unique (hy : x * y = 1) (hz : x * z = 1) : y = z :=
@@ -274,7 +274,7 @@ theorem right_ne_mul : b ≠ a * b ↔ a ≠ 1 := right_eq_mul.not
 end RightCancelMonoid
 
 section CancelCommMonoid
-variable [CancelCommMonoid α] {a b c d : α}
+variable [CancelMonoid α] [IsMulCommutative α] {a b c d : α}
 
 @[to_additive] lemma eq_iff_eq_of_mul_eq_mul (h : a * b = c * d) : a = c ↔ b = d := by aesop
 @[to_additive] lemma ne_iff_ne_of_mul_eq_mul (h : a * b = c * d) : a ≠ c ↔ b ≠ d := by aesop
@@ -515,7 +515,7 @@ end DivisionMonoid
 
 section DivisionCommMonoid
 
-variable [DivisionCommMonoid α] (a b c d : α)
+variable [DivisionMonoid α] [IsMulCommutative α] (a b c d : α)
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm div_eq_mul_inv
 
@@ -911,7 +911,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup G] {a b c d : G}
+variable [Group G] [IsMulCommutative G] {a b c d : G}
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm div_eq_mul_inv
 
@@ -1077,14 +1077,14 @@ open Lean
 
 variable (α : Type*)
 
-instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] :
+instance AddCommMonoid.toGrindNatModule [s : AddMonoid α] [IsAddCommutative α] :
     Grind.NatModule α :=
   { s with
     nsmul := ⟨s.nsmul⟩
     zero_nsmul := AddMonoid.nsmul_zero
     add_one_nsmul n a := by change (n + 1) • a = n • a + a; rw [add_nsmul, one_nsmul] }
 
-instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
+instance AddCommGroup.toGrindIntModule [s : AddGroup α] [IsAddCommutative α] :
     Grind.IntModule α :=
   { s with
     nsmul := ⟨s.nsmul⟩

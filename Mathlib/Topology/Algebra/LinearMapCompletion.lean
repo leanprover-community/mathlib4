@@ -24,9 +24,9 @@ lifted to a continuous semilinear map between the completions of those modules.
 
 @[expose] public section
 
-variable {α β : Type*} {R S : Type*} [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
+variable {α β : Type*} {R S : Type*} [UniformSpace α] [AddGroup α] [IsAddCommutative α] [IsUniformAddGroup α]
   [Semiring S] [Module S α] [UniformContinuousConstSMul S α] [Semiring R] [UniformSpace β]
-  [AddCommGroup β] [IsUniformAddGroup β] [Module R β] [UniformContinuousConstSMul R β]
+  [AddGroup β] [IsAddCommutative β] [IsUniformAddGroup β] [Module R β] [UniformContinuousConstSMul R β]
   {σ : S →+* R}
 
 namespace ContinuousLinearMap

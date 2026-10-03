@@ -36,7 +36,7 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v}
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
   to themselves form a module. -/
-structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Type v
+structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : Type v
     extends AddSubmonoid M, SubMulAction R M
 
 /-- Reinterpret a `Submodule` as an `AddSubmonoid`. -/
@@ -47,7 +47,7 @@ add_decl_doc Submodule.toSubMulAction
 
 namespace Submodule
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
@@ -61,7 +61,7 @@ initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
 /-- The actual `Submodule` obtained from an element of a `SMulMemClass` and `AddSubmonoidClass`. -/
 @[simps]
-def ofClass {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
+def ofClass {S R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [SetLike S M]
     [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Submodule R M where
   carrier := s
   add_mem' := add_mem
@@ -167,7 +167,7 @@ end Submodule
 
 namespace SMulMemClass
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] {A : Type*} [SetLike A M]
   [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
@@ -191,7 +191,7 @@ namespace Submodule
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M]
 
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
@@ -308,7 +308,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Ring R] [AddCommGroup M]
+variable [Ring R] [AddGroup M] [IsAddCommutative M]
 variable {module_M : Module R M}
 variable (p p' : Submodule R M)
 variable {x y : M}
@@ -369,7 +369,7 @@ end Submodule
 
 namespace SubmoduleClass
 
-instance (priority := 75) module' {T : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]
+instance (priority := 75) module' {T : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Semiring S]
     [Module R M] [SMul S R] [Module S M] [IsScalarTower S R M] [SetLike T M] [AddSubmonoidClass T M]
     [SMulMemClass T R M] (t : T) : Module S t where
   one_smul _ := by ext; simp
@@ -379,7 +379,7 @@ instance (priority := 75) module' {T : Type*} [Semiring R] [AddCommMonoid M] [Se
   add_smul _ _ _ := by ext; simp [add_smul]
   smul_add _ _ _ := by ext; simp [smul_add]
 
-instance (priority := 75) module [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
+instance (priority := 75) module [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [SetLike S M]
     [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Module R s :=
   module' s
 

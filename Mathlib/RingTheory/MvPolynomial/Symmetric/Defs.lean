@@ -44,7 +44,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ τ : Type*` (indexing the variables)
 
-+ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
++ `R S : Type*` `[Semiring R] [IsMulCommutative R]` `[Semiring S] [IsMulCommutative S]` (the coefficients)
 
 + `r : R` elements of the coefficient ring
 
@@ -63,7 +63,7 @@ noncomputable section
 
 namespace Multiset
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
 
 /-- The `n`th elementary symmetric function evaluated at the elements of `s` -/
 def esymm (s : Multiset R) (n : ℕ) : R :=
@@ -108,18 +108,18 @@ variable {σ τ : Type*} {R S : Type*}
 
 /-- A `MvPolynomial φ` is symmetric if it is invariant under
 permutations of its variables by the `rename` operation -/
-def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
+def IsSymmetric [Semiring R] [IsMulCommutative R] (φ : MvPolynomial σ R) : Prop :=
   ∀ e : Perm σ, rename e φ = φ
 
 /-- The subalgebra of symmetric `MvPolynomial`s. -/
-def symmetricSubalgebra (σ R : Type*) [CommSemiring R] : Subalgebra R (MvPolynomial σ R) where
+def symmetricSubalgebra (σ R : Type*) [Semiring R] [IsMulCommutative R] : Subalgebra R (MvPolynomial σ R) where
   carrier := Set.ofPred IsSymmetric
   algebraMap_mem' r e := rename_C e r
   mul_mem' ha hb e := by rw [map_mul, ha, hb]
   add_mem' ha hb e := by rw [map_add, ha, hb]
 
 @[simp]
-theorem mem_symmetricSubalgebra [CommSemiring R] (p : MvPolynomial σ R) :
+theorem mem_symmetricSubalgebra [Semiring R] [IsMulCommutative R] (p : MvPolynomial σ R) :
     p ∈ symmetricSubalgebra σ R ↔ p.IsSymmetric :=
   Iff.rfl
 
@@ -127,7 +127,7 @@ namespace IsSymmetric
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S] {φ ψ : MvPolynomial σ R}
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] {φ ψ : MvPolynomial σ R}
 
 @[simp]
 theorem C (r : R) : IsSymmetric (C r : MvPolynomial σ R) :=
@@ -168,7 +168,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] {φ ψ : MvPolynomial σ R}
+variable [Ring R] [IsMulCommutative R] {φ ψ : MvPolynomial σ R}
 
 theorem neg (hφ : IsSymmetric φ) : IsSymmetric (-φ) :=
   (symmetricSubalgebra σ R).neg_mem hφ
@@ -183,7 +183,7 @@ end IsSymmetric
 set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.rename` induces an isomorphism between the symmetric subalgebras. -/
 @[simps! apply_coe symm_apply_coe]
-def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
+def renameSymmetricSubalgebra [Semiring R] [IsMulCommutative R] (e : σ ≃ τ) :
     symmetricSubalgebra σ R ≃ₐ[R] symmetricSubalgebra τ R :=
   AlgEquiv.ofAlgHom
     (((rename e).comp (symmetricSubalgebra σ R).val).codRestrict _ <| fun x => x.2.rename e)
@@ -191,7 +191,7 @@ def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
     (AlgHom.ext <| fun p => Subtype.ext <| by simp)
     (AlgHom.ext <| fun p => Subtype.ext <| by simp)
 
-variable (σ R : Type*) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
+variable (σ R : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Fintype σ] [Fintype τ]
 
 section ElementarySymmetric
 

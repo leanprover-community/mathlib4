@@ -29,12 +29,12 @@ namespace HahnSeries
 
 variable {Γ R A : Type*}
 
-variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
+variable [LinearOrder Γ] [AddMonoid Γ] [IsAddCommutative Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsMulCommutative R]
   [BinomialRing R]
 
 namespace SummableFamily
 
-variable [CommRing A] [Algebra R A]
+variable [Ring A] [IsMulCommutative A] [Algebra R A]
 
 /-- A summable family of Hahn series, whose `n`th term is `Ring.choose r n • (x - 1) ^ n` when
 `x` is close to `1` (more precisely, when `0 < (x - 1).orderTop`), and `0 ^ n` otherwise. These

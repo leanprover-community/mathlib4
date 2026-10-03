@@ -22,7 +22,7 @@ namespace Finset
 
 section CommMonoid
 
-variable [CommMonoid M]
+variable [Monoid M] [IsMulCommutative M]
 
 @[to_additive]
 theorem prod_apply_dite {p : ι → Prop} [DecidablePred p]
@@ -171,7 +171,7 @@ theorem prod_pi_mulSingle' [DecidableEq ι] (a : ι) (x : M) (s : Finset ι) :
   prod_dite_eq' _ _ _
 
 @[to_additive (attr := simp)]
-theorem prod_pi_mulSingle {M : ι → Type*} [DecidableEq ι] [∀ a, CommMonoid (M a)] (a : ι)
+theorem prod_pi_mulSingle {M : ι → Type*} [DecidableEq ι] [∀ a, Monoid (M a)] [∀ a, IsMulCommutative (M a)] (a : ι)
     (f : ∀ a, M a) (s : Finset ι) :
     (∏ a' ∈ s, Pi.mulSingle a' (f a') a) = if a ∈ s then f a else 1 :=
   prod_dite_eq _ _ _
@@ -284,7 +284,7 @@ namespace Fintype
 
 open Finset
 
-variable [CommMonoid M] [Fintype ι]
+variable [Monoid M] [IsMulCommutative M] [Fintype ι]
 
 @[to_additive]
 lemma prod_ite_eq_ite_exists (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p i → p j → i = j)
@@ -321,7 +321,7 @@ lemma prod_ite_eq' (i : ι) (f : ι → M) : ∏ j, (if j = i then f j else 1) =
 
 /-- See also `Finset.prod_pi_mulSingle`. -/
 @[to_additive /-- See also `Finset.sum_pi_single`. -/]
-lemma prod_pi_mulSingle {M : ι → Type*} [∀ i, CommMonoid (M i)] (i : ι) (f : ∀ i, M i) :
+lemma prod_pi_mulSingle {M : ι → Type*} [∀ i, Monoid (M i)] [∀ i, IsMulCommutative (M i)] (i : ι) (f : ∀ i, M i) :
     ∏ j, Pi.mulSingle j (f j) i = f i := prod_dite_eq _ _
 
 /-- See also `Finset.prod_pi_mulSingle'`. -/

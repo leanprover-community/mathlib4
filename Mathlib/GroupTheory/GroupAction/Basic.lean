@@ -375,7 +375,7 @@ theorem orbit_range_conj_eq_conjugatesOf (g : G) :
 end MulAction
 
 section
-variable (R M : Type*) [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
+variable (R M : Type*) [Ring R] [IsDomain R] [AddGroup M] [IsAddCommutative M] [Module R M] [IsTorsionFree R M]
 
 variable {M} in
 lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :

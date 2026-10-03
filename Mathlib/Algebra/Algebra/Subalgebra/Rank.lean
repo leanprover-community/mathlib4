@@ -25,7 +25,7 @@ open Module
 
 namespace Subalgebra
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
   (A B : Subalgebra R S)
 
 section

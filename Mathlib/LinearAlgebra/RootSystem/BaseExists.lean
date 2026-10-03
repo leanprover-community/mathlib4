@@ -41,12 +41,12 @@ open Function IsAddIndecomposable Module Set Submodule
 
 namespace RootPairing
 
-variable {ι R M N : Type*} [Finite ι] [AddCommGroup M] [AddCommGroup N]
+variable {ι R M N : Type*} [Finite ι] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
 
 section CommRing
 
-variable [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
-  {S : Type*} [LinearOrder S] [AddCommGroup S] [IsOrderedAddMonoid S] (f : M →+ S)
+variable [Ring R] [IsMulCommutative R] [Module R M] [Module R N] (P : RootPairing ι R M N)
+  {S : Type*} [LinearOrder S] [AddGroup S] [IsAddCommutative S] [IsOrderedAddMonoid S] (f : M →+ S)
 
 /-- This is [serre1965](Ch. V, §9, Lemma 3). -/
 lemma baseOf_pairwise_pairing_le_zero [CharZero R] [IsDomain R] [P.IsCrystallographic]
@@ -66,7 +66,7 @@ This lemma is mostly a stepping stone en route to `RootPairing.linearIndepOn_roo
 linear independence is established over `R` rather than just `S`) except that this version does not
 make the field assumption and so covers the case `S = R = ℤ` which the latter does not. -/
 lemma linearIndepOn_root_baseOf' [IsDomain R] {S : Type*}
-    [LinearOrder S] [CommRing S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
+    [LinearOrder S] [Ring S] [IsMulCommutative S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
     [Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
     [P.IsValuedIn S] [P.IsCrystallographic]
     (f : Dual S M) (hf : ∀ i, f (P.root i) ≠ 0) :

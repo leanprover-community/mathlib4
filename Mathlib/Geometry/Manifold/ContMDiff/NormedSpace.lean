@@ -28,15 +28,15 @@ open scoped Topology Manifold
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- declare normed spaces `E'`, `F`, `F'`, `F₁`, `F₂`, `F₃`, `F₄`.
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-  {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
+  {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E']
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
+  {F' : Type*} [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜 F']
+  {F₁ : Type*} [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddGroup F₂] [IsAddCommutative F₂]
+  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddGroup F₃] [IsAddCommutative F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
+  [NormedAddGroup F₄] [IsAddCommutative F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
   {s : Set M} {x : M} {n : WithTop ℕ∞}
 

@@ -23,7 +23,7 @@ open scoped Pointwise
 
 section Galois
 
-variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
+variable (A K L B : Type*) [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Field K] [Field L]
   [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
   [Algebra A B] [Algebra K L] [Algebra A L] [IsScalarTower A K L] [IsScalarTower A B L]
   [IsIntegrallyClosed A] [IsIntegralClosure B A L]
@@ -69,7 +69,7 @@ end Galois
 
 section normal
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
   (G : Type*) [Finite G] [Group G] [MulSemiringAction G B] [Algebra.IsInvariant A B G]
   (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
 

@@ -55,14 +55,14 @@ universe u v w
 
 /-- Isolates the antipode of a Hopf algebra, to allow API to be constructed before proving the
 Hopf algebra axioms. See `HopfAlgebra` for documentation. -/
-class HopfAlgebraStruct (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
+class HopfAlgebraStruct (R : Type u) (A : Type v) [Semiring R] [IsMulCommutative R] [Semiring A]
     extends Bialgebra R A where
   /-- The antipode of the Hopf algebra. -/
   antipode (R) : A →ₗ[R] A
 
 /-- A Hopf algebra over a commutative (semi)ring `R` is a bialgebra over `R` equipped with an
 `R`-linear endomorphism `antipode` satisfying the antipode axioms. -/
-class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
+class HopfAlgebra (R : Type u) (A : Type v) [Semiring R] [IsMulCommutative R] [Semiring A] extends
     HopfAlgebraStruct R A where
   /-- One of the antipode axioms for a Hopf algebra. -/
   mul_antipode_rTensor_comul :
@@ -75,7 +75,7 @@ namespace HopfAlgebra
 
 export HopfAlgebraStruct (antipode)
 
-variable {R : Type u} {A : Type v} {ι : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
+variable {R : Type u} {A : Type v} {ι : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [HopfAlgebra R A]
   {a : A}
 
 @[simp]
@@ -131,7 +131,7 @@ end HopfAlgebra
 
 namespace CommSemiring
 
-variable (R : Type u) [CommSemiring R]
+variable (R : Type u) [Semiring R] [IsMulCommutative R]
 
 open HopfAlgebra
 
@@ -153,7 +153,7 @@ variable {R A : Type*}
 open Coalgebra WithConv LinearMap
 
 /-- Upgrade a bialgebra to a Hopf algebra by specifying a convolution inverse of the identity. -/
-abbrev ofConvInverse [CommSemiring R] [Semiring A] [Bialgebra R A]
+abbrev ofConvInverse [Semiring R] [IsMulCommutative R] [Semiring A] [Bialgebra R A]
     (antipode : A →ₗ[R] A)
     (antipode_convMul_id : toConv antipode * toConv LinearMap.id = 1)
     (id_convMul_antipode : toConv LinearMap.id * toConv antipode = 1) :
@@ -164,7 +164,7 @@ abbrev ofConvInverse [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 /-- Upgrade a commutative bialgebra to a Hopf algebra by specifying the antipode `A →ₐ[R] A`
 with appropriate conditions. -/
-abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
+abbrev ofAlgHom [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Bialgebra R A]
     (antipode : A →ₐ[R] A)
     (mul_antipode_rTensor_comul :
       ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ Commute.all _).comp

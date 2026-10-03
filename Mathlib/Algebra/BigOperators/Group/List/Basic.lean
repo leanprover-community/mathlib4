@@ -67,7 +67,7 @@ theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * 
   rw [← foldr_hom₂ l f _ _ ((fun x y => f (f₁ x) (f₂ x) * y)) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
-theorem prod_map_mul {M : Type*} [CommMonoid M] {l : List ι} {f g : ι → M} :
+theorem prod_map_mul {M : Type*} [Monoid M] [IsMulCommutative M] {l : List ι} {f g : ι → M} :
     (l.map fun i => f i * g i).prod = (l.map f).prod * (l.map g).prod :=
   l.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 
@@ -224,7 +224,7 @@ theorem prod_filter_bne_one [BEq M] [LawfulBEq M] (l : List M) :
 end Monoid
 
 section CommMonoid
-variable [CommMonoid M] {a : M} {l l₁ l₂ : List M}
+variable [Monoid M] [IsMulCommutative M] {a : M} {l l₁ l₂ : List M}
 
 @[to_additive (attr := simp)]
 theorem CommMonoid.prod_insertIdx {i} (h : i ≤ l.length) : (l.insertIdx i a).prod = a * l.prod :=
@@ -338,11 +338,11 @@ end Group
 
 section CommGroup
 
-variable [CommGroup G]
+variable [Group G] [IsMulCommutative G]
 
 /-- This is the `List.prod` version of `mul_inv` -/
 @[to_additive /-- This is the `List.sum` version of `add_neg` -/]
-theorem prod_inv {K : Type*} [DivisionCommMonoid K] :
+theorem prod_inv {K : Type*} [DivisionMonoid K] [IsMulCommutative K] :
     ∀ L : List K, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
   | [] => by simp
   | x :: xs => by simp [mul_comm, prod_inv xs]
@@ -428,7 +428,7 @@ theorem alternatingProd_cons_cons [DivInvMonoid G] (a b : G) (l : List G) :
     alternatingProd (a :: b :: l) = a / b * alternatingProd l := by
   rw [div_eq_mul_inv, alternatingProd_cons_cons']
 
-variable [CommGroup G]
+variable [Group G] [IsMulCommutative G]
 
 @[to_additive]
 theorem alternatingProd_cons' :
@@ -485,7 +485,7 @@ end MonoidHom
 
 namespace List
 
-theorem prod_zpow {β : Type*} [DivisionCommMonoid β] {r : ℤ} {l : List β} :
+theorem prod_zpow {β : Type*} [DivisionMonoid β] [IsMulCommutative β] {r : ℤ} {l : List β} :
     l.prod ^ r = (map (fun x ↦ x ^ r) l).prod :=
   let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_zpow r⟩, (mul_zpow · · r)⟩
   map_list_prod fr l

@@ -14,19 +14,19 @@ public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 public section
 
-theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal R) :
+theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [Ring R] [IsMulCommutative R] (I : Ideal R) :
     I.IsRadical ↔ IsReduced (R ⧸ I) := by
   conv_lhs => rw [← @Ideal.mk_ker R _ I]
   exact RingHom.ker_isRadical_iff_reduced_of_surjective Quotient.mk_surjective
 
-variable {S : Type*} [CommRing S] (I : Ideal S)
+variable {S : Type*} [Ring S] [IsMulCommutative S] (I : Ideal S)
 
 /-- Let `P` be a property on ideals. If `P` holds for square-zero ideals, and if
   `P I → P (J ⧸ I) → P J`, then `P` holds for all nilpotent ideals. -/
 theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
-    {P : ∀ ⦃S : Type _⦄ [CommRing S], Ideal S → Prop}
-    (h₁ : ∀ ⦃S : Type _⦄ [CommRing S], ∀ I : Ideal S, I ^ 2 = ⊥ → P I)
-    (h₂ : ∀ ⦃S : Type _⦄ [CommRing S], ∀ I J : Ideal S, I ≤ J → P I →
+    {P : ∀ ⦃S : Type _⦄ [Ring S] [IsMulCommutative S], Ideal S → Prop}
+    (h₁ : ∀ ⦃S : Type _⦄ [Ring S] [IsMulCommutative S], ∀ I : Ideal S, I ^ 2 = ⊥ → P I)
+    (h₂ : ∀ ⦃S : Type _⦄ [Ring S] [IsMulCommutative S], ∀ I J : Ideal S, I ≤ J → P I →
       P (J.map (Ideal.Quotient.mk I)) → P J) :
     P I := by
   obtain ⟨n, hI : I ^ n = ⊥⟩ := hI
@@ -50,7 +50,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   · apply h₁
     rw [← Ideal.map_pow, Ideal.map_quotient_self]
 
-theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R}
+theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [Ring R] [IsMulCommutative R] {I : Ideal R}
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
   refine ⟨?_, fun h => h.map <| Ideal.Quotient.mk I⟩
   revert x

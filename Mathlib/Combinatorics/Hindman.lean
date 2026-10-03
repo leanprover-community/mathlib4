@@ -236,7 +236,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   lia
 
 @[to_additive]
-theorem FP.finsetProd {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
+theorem FP.finsetProd {M} [Monoid M] [IsMulCommutative M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
     FP a (s.prod fun i => a.get i) := by
   refine FP_drop_subset_FP _ (s.min' hs) ?_
   induction s using Finset.eraseInduction with | H s ih => _

@@ -44,7 +44,7 @@ lemma sum_sq_le_sq_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
 end OrderedSemiring
 
 section OrderedCommSemiring
-variable [CommSemiring R] [PartialOrder R] [IsOrderedRing R] {f g : ι → R} {s t : Finset ι}
+variable [Semiring R] [IsMulCommutative R] [PartialOrder R] [IsOrderedRing R] {f g : ι → R} {s t : Finset ι}
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
   sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
@@ -60,7 +60,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
     simp only [and_imp, mem_sdiff, mem_singleton]
     exact fun j hj hji ↦ le_trans (hg j hj) (hgf j hj hji)
 
-theorem le_prod_of_submultiplicative_on_pred_of_nonneg {M : Type*} [CommMonoid M] (f : M → R)
+theorem le_prod_of_submultiplicative_on_pred_of_nonneg {M : Type*} [Monoid M] [IsMulCommutative M] (f : M → R)
     (p : M → Prop) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 ≤ 1)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Finset ι) (g : ι → M) (hps : ∀ a, a ∈ s → p (g a)) :
@@ -71,7 +71,7 @@ theorem le_prod_of_submultiplicative_on_pred_of_nonneg {M : Type*} [CommMonoid M
   obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp ha
   exact hps i hi
 
-theorem le_prod_of_submultiplicative_of_nonneg {M : Type*} [CommMonoid M]
+theorem le_prod_of_submultiplicative_of_nonneg {M : Type*} [Monoid M] [IsMulCommutative M]
     (f : M → R) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 ≤ 1)
     (h_mul : ∀ x y : M, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
     f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
@@ -98,7 +98,7 @@ theorem sum_pow_eq_zero_iff_of_even {n : ℕ} (hn : n ≠ 0) (heven : Even n) :
 
 end StrictOrderedRing
 
-lemma abs_prod [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (s : Finset ι) (f : ι → R) :
+lemma abs_prod [Ring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R] (s : Finset ι) (f : ι → R) :
     |∏ x ∈ s, f x| = ∏ x ∈ s, |f x| :=
   map_prod absHom _ _
 
@@ -108,7 +108,7 @@ theorem PNat.coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
   map_prod PNat.coeMonoidHom _ _
 
 section CanonicallyOrderedAdd
-variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
+variable [Semiring R] [IsMulCommutative R] [PartialOrder R] [CanonicallyOrderedAdd R]
   {f g h : ι → R} {s : Finset ι} {i : ι}
 
 /-- Note that the name is to match `CanonicallyOrderedAdd.mul_pos`. -/
@@ -135,7 +135,7 @@ end CanonicallyOrderedAdd
 This is written in terms of sequences `f`, `g`, and `r`, where `r` is usually a stand-in for
 `√(f i * g i)`. See `sum_mul_sq_le_sq_mul_sq` for the more usual form in terms of squared
 sequences. -/
-lemma sum_sq_le_sum_mul_sum_of_sq_le_mul [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
+lemma sum_sq_le_sum_mul_sum_of_sq_le_mul [Semiring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
     [ExistsAddOfLE R]
     (s : Finset ι) {r f g : ι → R} (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i)
     (ht : ∀ i ∈ s, r i ^ 2 ≤ f i * g i) : (∑ i ∈ s, r i) ^ 2 ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
@@ -161,14 +161,14 @@ lemma sum_sq_le_sum_mul_sum_of_sq_le_mul [CommSemiring R] [LinearOrder R] [IsStr
       _ = _ := by simp_rw [sum_add_distrib, ← sum_mul]; ring
 
 @[deprecated sum_sq_le_sum_mul_sum_of_sq_le_mul +typeChanged (since := "2026-05-12")]
-lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
+lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [Semiring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
     [ExistsAddOfLE R]
     (s : Finset ι) {r f g : ι → R} (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i)
     (ht : ∀ i ∈ s, r i ^ 2 = f i * g i) : (∑ i ∈ s, r i) ^ 2 ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i :=
   sum_sq_le_sum_mul_sum_of_sq_le_mul s hf hg (fun i hi => (ht i hi).le)
 
 /-- **Cauchy-Schwarz inequality** for finsets, squared version. -/
-lemma sum_mul_sq_le_sq_mul_sq [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
+lemma sum_mul_sq_le_sq_mul_sq [Semiring R] [IsMulCommutative R] [LinearOrder R] [IsStrictOrderedRing R]
     [ExistsAddOfLE R] (s : Finset ι)
     (f g : ι → R) : (∑ i ∈ s, f i * g i) ^ 2 ≤ (∑ i ∈ s, f i ^ 2) * ∑ i ∈ s, g i ^ 2 :=
   sum_sq_le_sum_mul_sum_of_sq_le_mul s
@@ -205,14 +205,14 @@ lemma IsAbsoluteValue.abv_sum [Semiring R] [Semiring S] [PartialOrder S] [IsOrde
     (f : ι → R) (s : Finset ι) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 
-nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R]
-    [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+nonrec lemma AbsoluteValue.map_prod [Semiring R] [IsMulCommutative R] [Nontrivial R]
+    [Ring S] [IsMulCommutative S] [LinearOrder S] [IsStrictOrderedRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i ∈ s, f i) = ∏ i ∈ s, abv (f i) :=
   map_prod abv f s
 
-lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R]
-    [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+lemma IsAbsoluteValue.map_prod [Semiring R] [IsMulCommutative R] [Nontrivial R]
+    [Ring S] [IsMulCommutative S] [LinearOrder S] [IsStrictOrderedRing S]
     (abv : R → S) [IsAbsoluteValue abv] (f : ι → R) (s : Finset ι) :
     abv (∏ i ∈ s, f i) = ∏ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).map_prod _ _

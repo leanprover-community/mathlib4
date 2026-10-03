@@ -23,8 +23,8 @@ namespace Representation
 section non_comm
 section Monoid
 
-variable {A G V W U : Type*} [Semiring A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
-  [AddCommMonoid U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
+variable {A G V W U : Type*} [Semiring A] [Monoid G] [AddMonoid V] [IsAddCommutative V] [AddMonoid W] [IsAddCommutative W]
+  [AddMonoid U] [IsAddCommutative U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
   (σ : Representation A G W) (τ : Representation A G U) (f : V →ₗ[A] W)
 
 /-- An unbundled version of `IntertwiningMap`. -/
@@ -155,7 +155,7 @@ lemma sum_apply {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) 
 
 section group
 
-variable {V W : Type*} [AddCommMonoid V] [AddCommGroup W]
+variable {V W : Type*} [AddMonoid V] [IsAddCommutative V] [AddGroup W] [IsAddCommutative W]
   [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W)
   (f : V →ₗ[A] W)
 
@@ -270,7 +270,7 @@ lemma fst_prod (f : IntertwiningMap ρ σ) (g : IntertwiningMap ρ τ) :
 lemma snd_prod (f : IntertwiningMap ρ σ) (g : IntertwiningMap ρ τ) :
     (snd A σ τ).comp (prod f g) = g := IntertwiningMap.ext <| LinearMap.snd_prod _ _
 
-lemma prod_comp (X : Type*) [AddCommMonoid X] [Module A X] {π : Representation A G X}
+lemma prod_comp (X : Type*) [AddMonoid X] [IsAddCommutative X] [Module A X] {π : Representation A G X}
     (f : IntertwiningMap ρ σ) (g₁ : IntertwiningMap σ τ) (g₂ : IntertwiningMap σ π) :
     (prod g₁ g₂).comp f = prod (g₁.comp f) (g₂.comp f) :=
   IntertwiningMap.ext <| LinearMap.prod_comp ..
@@ -456,8 +456,8 @@ end Monoid
 
 end non_comm
 
-variable {A G V W U : Type*} [CommSemiring A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
-  [AddCommMonoid U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
+variable {A G V W U : Type*} [Semiring A] [IsMulCommutative A] [Monoid G] [AddMonoid V] [IsAddCommutative V] [AddMonoid W] [IsAddCommutative W]
+  [AddMonoid U] [IsAddCommutative U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
   (σ : Representation A G W) (τ : Representation A G U) (f : V →ₗ[A] W)
 
 variable {ρ σ} in
@@ -650,7 +650,7 @@ noncomputable def centralAlgebraMul {z : A[G]} (hz : z ∈ Submonoid.center A[G]
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommGroup V] [AddCommGroup W]
+variable {A G V W : Type*} [Ring A] [IsMulCommutative A] [Monoid G] [AddGroup V] [IsAddCommutative V] [AddGroup W] [IsAddCommutative W]
   [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W) in
 instance [Module.Finite A V] [IsNoetherian A W] :
     Module.Finite A (IntertwiningMap ρ σ) :=
@@ -668,7 +668,7 @@ def ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
 theorem coe_ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
     ⇑(f.ofBijective hf) = ⇑f := rfl
 
-variable {P : Type*} [AddCommMonoid P] [Module A P] {π : Representation A G P}
+variable {P : Type*} [AddMonoid P] [IsAddCommutative P] [Module A P] {π : Representation A G P}
 
 variable {ρ σ τ}
 
@@ -757,7 +757,7 @@ lemma rTensor_add (f₁ f₂ : IntertwiningMap σ τ) :
 lemma rTensor_smul (a : A) (f : IntertwiningMap σ τ) :
     rTensor ρ (a • f) = a • rTensor ρ f := tensor_smul_left _ _ _
 
-variable {Q : Type*} [AddCommMonoid Q] [Module A Q] {υ : Representation A G Q}
+variable {Q : Type*} [AddMonoid Q] [IsAddCommutative Q] [Module A Q] {υ : Representation A G Q}
 
 lemma rTensor_comp_lTensor (f : ρ.IntertwiningMap τ) (g : σ.IntertwiningMap υ) :
     (f.rTensor υ).comp (g.lTensor ρ) = f.tensor g := by ext; simp
@@ -841,7 +841,7 @@ namespace Equiv
 
 section Group
 
-variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V] [AddCommGroup W]
+variable {G k V W : Type*} [Group G] [Field k] [AddGroup V] [IsAddCommutative V] [Module k V] [AddGroup W] [IsAddCommutative W]
     [Module k W] [FiniteDimensional k V] [FiniteDimensional k W]
     (ρ : Representation k G V) (σ : Representation k G W)
 

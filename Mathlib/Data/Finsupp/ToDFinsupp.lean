@@ -224,7 +224,7 @@ variable (R)
 
 /-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
-def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
+def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddMonoid M] [IsAddCommutative M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
     toFun := Finsupp.toDFinsupp
@@ -233,12 +233,12 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_add' := Finsupp.toDFinsupp_add }
 
 @[simp]
-theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
+theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddMonoid M] [IsAddCommutative M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
     (↑(finsuppLequivDFinsupp (M := M) R) : (ι →₀ M) → _) = Finsupp.toDFinsupp := rfl
 
 @[simp]
-theorem finsuppLequivDFinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
+theorem finsuppLequivDFinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddMonoid M] [IsAddCommutative M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
     ↑(LinearEquiv.symm (finsuppLequivDFinsupp (ι := ι) (M := M) R)) = DFinsupp.toFinsupp :=
   rfl
@@ -334,7 +334,7 @@ attribute [-instance] Finsupp.instAddMonoid
 
 /-- `Finsupp.split` is a linear equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]
-def sigmaFinsuppLequivDFinsupp [AddCommMonoid N] [Module R N] :
+def sigmaFinsuppLequivDFinsupp [AddMonoid N] [IsAddCommutative N] [Module R N] :
     ((Σ i, η i) →₀ N) ≃ₗ[R] Π₀ i, η i →₀ N :=
   { sigmaFinsuppAddEquivDFinsupp with
     map_smul' := sigmaFinsuppEquivDFinsupp_smul }

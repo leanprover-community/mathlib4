@@ -187,17 +187,17 @@ def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace where
 lemma Spec.locallyRingedSpaceObj_sheaf (R : CommRingCat.{u}) :
     (Spec.locallyRingedSpaceObj R).sheaf = structureSheaf R := rfl
 
-lemma Spec.locallyRingedSpaceObj_sheaf' (R : Type u) [CommRing R] :
+lemma Spec.locallyRingedSpaceObj_sheaf' (R : Type u) [Ring R] [IsMulCommutative R] :
     (Spec.locallyRingedSpaceObj ↧R).sheaf = structureSheaf R := rfl
 
 lemma Spec.locallyRingedSpaceObj_presheaf_map (R : CommRingCat.{u}) {U V} (i : U ⟶ V) :
     (Spec.locallyRingedSpaceObj R).presheaf.map i =
     (structureSheaf R).1.map i := rfl
 
-lemma Spec.locallyRingedSpaceObj_presheaf' (R : Type u) [CommRing R] :
+lemma Spec.locallyRingedSpaceObj_presheaf' (R : Type u) [Ring R] [IsMulCommutative R] :
     (Spec.locallyRingedSpaceObj ↧R).presheaf = (structureSheaf R).1 := rfl
 
-lemma Spec.locallyRingedSpaceObj_presheaf_map' (R : Type u) [CommRing R] {U V} (i : U ⟶ V) :
+lemma Spec.locallyRingedSpaceObj_presheaf_map' (R : Type u) [Ring R] [IsMulCommutative R] {U V} (i : U ⟶ V) :
     (Spec.locallyRingedSpaceObj ↧R).presheaf.map i =
     (structureSheaf R).1.map i := rfl
 

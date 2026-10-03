@@ -37,7 +37,7 @@ open scoped TensorProduct
 
 universe u
 
-variable (K A L : Type*) [Field K] [Field L] [CommRing A] [Algebra K A] [Algebra K L]
+variable (K A L : Type*) [Field K] [Field L] [Ring A] [IsMulCommutative A] [Algebra K A] [Algebra K L]
 
 namespace Algebra.FormallyUnramified
 
@@ -151,7 +151,7 @@ theorem isReduced_of_field :
     (A := Localization.AtPrime M)).toField
   exact hy.eq_zero
 
-theorem isRadical_map_isMaximal (B : Type*) [CommRing B] [Algebra A B]
+theorem isRadical_map_isMaximal (B : Type*) [Ring B] [IsMulCommutative B] [Algebra A B]
     [Algebra.EssFiniteType A B] [Algebra.FormallyUnramified A B] (p : Ideal A) [p.IsMaximal] :
     (p.map (algebraMap A B)).IsRadical := by
   let : Field (A ⧸ p) := Ideal.Quotient.field p

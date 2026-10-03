@@ -32,13 +32,13 @@ public section
 section Congr
 
 variable {R S M N} [Semiring R] [Semiring S] {σ : R →+* S} {σ' : S →+* R}
-    [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [AddCommMonoid M] [Module R M]
+    [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
-lemma LinearEquiv.isSMulRegular_congr' [AddCommMonoid N] [Module S N]
+lemma LinearEquiv.isSMulRegular_congr' [AddMonoid N] [IsAddCommutative N] [Module S N]
     (e : M ≃ₛₗ[σ] N) (r : R) : IsSMulRegular M r ↔ IsSMulRegular N (σ r) :=
   e.toEquiv.isSMulRegular_congr (e.map_smul' r)
 
-lemma LinearEquiv.isSMulRegular_congr [AddCommMonoid N] [Module R N]
+lemma LinearEquiv.isSMulRegular_congr [AddMonoid N] [IsAddCommutative N] [Module R N]
     (e : M ≃ₗ[R] N) (r : R) : IsSMulRegular M r ↔ IsSMulRegular N r :=
   e.isSMulRegular_congr' r
 
@@ -46,7 +46,7 @@ end Congr
 
 variable {R M M' M'' : Type*}
 
-lemma IsSMulRegular.submodule [Semiring R] [AddCommMonoid M] [Module R M]
+lemma IsSMulRegular.submodule [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
     (N : Submodule R M) (r : R) (h : IsSMulRegular M r) : IsSMulRegular N r :=
   h.of_injective N.subtype N.injective_subtype
 
@@ -54,7 +54,7 @@ section TensorProduct
 
 open scoped TensorProduct
 
-variable (M) [CommRing R] [AddCommGroup M] [AddCommGroup M']
+variable (M) [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [AddGroup M'] [IsAddCommutative M']
     [Module R M] [Module R M'] [Module.Flat R M] {r : R}
     (h : IsSMulRegular M' r)
 include h
@@ -71,8 +71,8 @@ end TensorProduct
 
 section Ring
 
-variable [Ring R] [AddCommGroup M] [Module R M]
-    [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
+variable [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M]
+    [AddGroup M'] [IsAddCommutative M'] [Module R M'] [AddGroup M''] [IsAddCommutative M''] [Module R M'']
     (N : Submodule R M) (r : R)
 
 lemma isSMulRegular_submodule_iff_right_eq_zero_of_smul :
@@ -117,8 +117,8 @@ section CommRing
 
 open Submodule Pointwise
 
-variable (M) [CommRing R] [AddCommGroup M] [Module R M]
-    [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
+variable (M) [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M]
+    [AddGroup M'] [IsAddCommutative M'] [Module R M'] [AddGroup M''] [IsAddCommutative M''] [Module R M'']
     (N : Submodule R M) (r : R)
 
 variable (R) in
@@ -172,7 +172,7 @@ lemma smul_top_inf_eq_smul_of_isSMulRegular_on_quot :
 set_option backward.isDefEq.respectTransparency.types false in
 open Function in
 lemma QuotSMulTop.map_first_exact_on_four_term_exact_of_isSMulRegular_last
-    {M'''} [AddCommGroup M'''] [Module R M''']
+    {M'''} [AddGroup M'''] [IsAddCommutative M'''] [Module R M''']
     {r : R} {f₁ : M →ₗ[R] M'} {f₂ : M' →ₗ[R] M''} {f₃ : M'' →ₗ[R] M'''}
     (h₁₂ : Exact f₁ f₂) (h₂₃ : Exact f₂ f₃) (h : IsSMulRegular M''' r) :
     Exact (map r f₁) (map r f₂) :=

@@ -63,7 +63,7 @@ namespace TrivSqZeroExt
 section Topology
 
 section not_charZero
-variable [Field 𝕜] [Ring R] [AddCommGroup M]
+variable [Field 𝕜] [Ring R] [AddGroup M] [IsAddCommutative M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
   [TopologicalSpace R] [TopologicalSpace M]
@@ -76,7 +76,7 @@ variable [Field 𝕜] [Ring R] [AddCommGroup M]
 end not_charZero
 
 section Ring
-variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
+variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddGroup M] [IsAddCommutative M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
   [TopologicalSpace R] [TopologicalSpace M]
@@ -142,7 +142,7 @@ theorem exp_inr (m : M) : exp (inr m : tsze R M) = 1 + inr m := by
 end Ring
 
 section CommRing
-variable [CommRing R] [AddCommGroup M] [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M]
   [TopologicalSpace R] [TopologicalSpace M]
   [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
@@ -169,7 +169,7 @@ theorem eq_smul_exp_of_invertible (x : tsze R M) [Invertible x.fst] :
 end CommRing
 
 section Field
-variable [Field R] [AddCommGroup M]
+variable [Field R] [AddGroup M] [IsAddCommutative M]
   [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M]
   [TopologicalSpace R] [TopologicalSpace M]
@@ -195,7 +195,7 @@ end Topology
 noncomputable section Seminormed
 
 section Ring
-variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
+variable [SeminormedRing S] [IsMulCommutative S] [SeminormedRing R] [SeminormedAddGroup M] [IsAddCommutative M]
 variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
@@ -256,7 +256,7 @@ end Ring
 
 section CommRing
 
-variable [SeminormedCommRing R] [SeminormedAddCommGroup M]
+variable [SeminormedRing R] [IsMulCommutative R] [SeminormedAddGroup M] [IsAddCommutative M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
@@ -272,7 +272,7 @@ noncomputable section Normed
 
 section Ring
 
-variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [NormedRing R] [NormedAddGroup M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
@@ -286,7 +286,7 @@ end Ring
 
 section CommRing
 
-variable [NormedCommRing R] [NormedAddCommGroup M]
+variable [NormedRing R] [IsMulCommutative R] [NormedAddGroup M] [IsAddCommutative M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
@@ -298,7 +298,7 @@ end CommRing
 
 section Algebra
 
-variable [NormedField 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [NormedField 𝕜] [NormedRing R] [NormedAddGroup M] [IsAddCommutative M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
@@ -316,7 +316,7 @@ end Normed
 
 section
 
-variable [NormedRing R] [NormedAddCommGroup M]
+variable [NormedRing R] [NormedAddGroup M] [IsAddCommutative M]
 variable [NormedAlgebra ℚ R] [NormedSpace ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [CompleteSpace R] [CompleteSpace M]

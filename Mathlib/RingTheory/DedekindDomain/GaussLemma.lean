@@ -22,7 +22,7 @@ namespace Polynomial
 
 open IsDedekindDomain HeightOneSpectrum
 
-variable {R : Type*} [CommRing R] [IsDedekindDomain R] (v : HeightOneSpectrum R) {b : NNReal}
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDedekindDomain R] (v : HeightOneSpectrum R) {b : NNReal}
   (hb : 1 < b) (p : R[X])
 
 theorem gaussNorm_intAdicAbv_le_one : p.gaussNorm (v.intAdicAbv hb) 1 ≤ 1 := by
@@ -59,7 +59,7 @@ theorem contentIdeal_eq_top_iff_forall_gaussNorm_eq_one (hR : ¬IsField R) :
   · grind [gaussNorm_intAdicAbv_le_one]
   simp [← not_iff_not, gaussNorm_lt_one_iff_contentIdeal_le, ideal_ne_top_iff_exists hR]
 
-variable {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] (hR : ¬IsField R)
+variable {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [IsPrincipalIdealRing R] (hR : ¬IsField R)
   {b : NNReal} (hb : 1 < b) (p : R[X])
 
 include hR in

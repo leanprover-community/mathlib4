@@ -21,7 +21,7 @@ elements.
 namespace Representation
 
 variable {k G : Type*} [Group G] [Semiring k]
-variable {V V' : Type*} [AddCommMonoid V] [Module k V] [AddCommMonoid V'] [Module k V']
+variable {V V' : Type*} [AddMonoid V] [IsAddCommutative V] [Module k V] [AddMonoid V'] [IsAddCommutative V'] [Module k V']
 
 /-- The stabilizer of a vector in a representation. -/
 def stabilizer (ρ : Representation k G V) (v : V) : Subgroup G where

@@ -25,7 +25,7 @@ public section
 open Nat
 
 variable {𝕜 E F : Type*}
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F]
 
 section NontriviallyNormedField
 

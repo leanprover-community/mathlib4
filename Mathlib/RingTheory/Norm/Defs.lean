@@ -39,7 +39,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 universe u v w
 
-variable {R S : Type*} [CommRing R] [Ring S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S]
 variable [Algebra R S]
 variable {K : Type*} [Field K]
 variable {ι : Type w}

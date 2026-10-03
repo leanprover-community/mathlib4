@@ -20,7 +20,7 @@ public section
 
 universe u v
 
-variable (R : Type u) [CommSemiring R]
+variable (R : Type u) [Semiring R] [IsMulCommutative R]
 
 open Cardinal
 

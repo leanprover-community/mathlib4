@@ -32,7 +32,7 @@ a unit. Finally, an injective `f` preserves the trace and the norm, and commutes
 
 namespace QuadraticAlgebra
 
-variable {R : Type*} [CommRing R] {a b a' b' : R}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {a b a' b' : R}
   (f : QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra R a' b')
 
 private theorem smul_omega_sub_eq :

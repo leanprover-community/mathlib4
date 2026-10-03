@@ -57,7 +57,7 @@ protected abbrev semigroup [Semigroup M₂] (f : M₁ → M₂) (hf : Injective 
 @[to_additive -- See note [reducible non-instances]
 /-- A type endowed with `+` is an additive commutative semigroup, if it admits
 a surjective map that preserves `+` from an additive commutative semigroup. -/]
-protected abbrev commMagma [CommMagma M₂] (f : M₁ → M₂) (hf : Injective f)
+protected abbrev commMagma [Mul M₂] [IsMulCommutative M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : CommMagma M₁ where
   mul_comm x y := hf <| by rw [mul, mul, mul_comm]
 
@@ -66,7 +66,7 @@ preserves `*` to a commutative semigroup.  See note [reducible non-instances]. -
 @[to_additive
 /-- A type endowed with `+` is an additive commutative semigroup,if it admits
 an injective map that preserves `+` to an additive commutative semigroup. -/]
-protected abbrev commSemigroup [CommSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
+protected abbrev commSemigroup [Semigroup M₂] [IsMulCommutative M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₁ where
   toSemigroup := hf.semigroup f mul
   __ := hf.commMagma f mul
@@ -175,7 +175,7 @@ preserves `1` and `*` to a commutative monoid.  See note [reducible non-instance
 @[to_additive
 /-- A type endowed with `0` and `+` is an additive commutative monoid, if it
 admits an injective map that preserves `0` and `+` to an additive commutative monoid. -/]
-protected abbrev commMonoid [CommMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
+protected abbrev commMonoid [Monoid M₂] [IsMulCommutative M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoid M₁ :=
   { hf.monoid f one mul npow, hf.commSemigroup f mul with }
@@ -184,7 +184,7 @@ protected abbrev commMonoid [CommMonoid M₂] (f : M₁ → M₂) (hf : Injectiv
 that preserves `1` and `*` to a cancel commutative monoid. See note [reducible non-instances]. -/
 @[to_additive /-- A type endowed with `0` and `+` is an additive cancel commutative monoid if it
 admits an injective map that preserves `0` and `+` to an additive cancel commutative monoid. -/]
-protected abbrev cancelCommMonoid [CancelCommMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
+protected abbrev cancelCommMonoid [CancelMonoid M₂] [IsMulCommutative M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : CancelCommMonoid M₁ :=
   { hf.commMonoid f one mul npow, hf.leftCancelSemigroup f mul with }
@@ -267,7 +267,7 @@ See note [reducible non-instances]. -/
 `-` is a `SubtractionCommMonoid` if it admits an injective map that preserves `0`, `+`, unary `-`,
 and binary `-` to a `SubtractionCommMonoid`. This version takes custom `nsmul` and `zsmul` as
 `[SMul ℕ M₁]` and `[SMul ℤ M₁]` arguments. -/]
-protected abbrev divisionCommMonoid [DivisionCommMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
+protected abbrev divisionCommMonoid [DivisionMonoid M₂] [IsMulCommutative M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivisionCommMonoid M₁ :=
@@ -291,7 +291,7 @@ preserves `1`, `*` and `⁻¹` to a commutative group. See note [reducible non-i
 @[to_additive
 /-- A type endowed with `0` and `+` is an additive commutative group, if it
 admits an injective map that preserves `0` and `+` to an additive commutative group. -/]
-protected abbrev commGroup [CommGroup M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
+protected abbrev commGroup [Group M₂] [IsMulCommutative M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₁ :=
@@ -322,7 +322,7 @@ protected abbrev semigroup [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective
 @[to_additive
 /-- A type endowed with `+` is an additive commutative semigroup, if it admits
 a surjective map that preserves `+` from an additive commutative semigroup. -/]
-protected abbrev commMagma [CommMagma M₁] (f : M₁ → M₂) (hf : Surjective f)
+protected abbrev commMagma [Mul M₁] [IsMulCommutative M₁] (f : M₁ → M₂) (hf : Surjective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : CommMagma M₂ where
   mul_comm := hf.forall₂.2 fun x y => by rw [← mul, ← mul, mul_comm]
 
@@ -331,7 +331,7 @@ protected abbrev commMagma [CommMagma M₁] (f : M₁ → M₂) (hf : Surjective
 @[to_additive
 /-- A type endowed with `+` is an additive commutative semigroup, if it admits
 a surjective map that preserves `+` from an additive commutative semigroup. -/]
-protected abbrev commSemigroup [CommSemigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
+protected abbrev commSemigroup [Semigroup M₁] [IsMulCommutative M₁] (f : M₁ → M₂) (hf : Surjective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₂ where
   toSemigroup := hf.semigroup f mul
   __ := hf.commMagma f mul
@@ -370,7 +370,7 @@ preserves `1` and `*` from a commutative monoid. See note [reducible non-instanc
 @[to_additive
 /-- A type endowed with `0` and `+` is an additive commutative monoid, if it
 admits a surjective map that preserves `0` and `+` to an additive commutative monoid. -/]
-protected abbrev commMonoid [CommMonoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
+protected abbrev commMonoid [Monoid M₁] [IsMulCommutative M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoid M₂ :=
   { hf.monoid f one mul npow, hf.commSemigroup f mul with }
@@ -423,7 +423,7 @@ map that preserves `1`, `*`, `⁻¹`, and `/` from a commutative group. See note
 @[to_additive
 /-- A type endowed with `0` and `+` is an additive commutative group, if it
 admits a surjective map that preserves `0` and `+` to an additive commutative group. -/]
-protected abbrev commGroup [CommGroup M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
+protected abbrev commGroup [Group M₁] [IsMulCommutative M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₂ :=

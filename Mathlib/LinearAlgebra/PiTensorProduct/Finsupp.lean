@@ -24,8 +24,8 @@ open PiTensorProduct TensorProduct
 attribute [local ext] TensorProduct.ext
 
 variable {R ι : Type*} {κ M : ι → Type*}
-variable [CommSemiring R] [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)]
-variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, DecidableEq (M i)]
+variable [Semiring R] [IsMulCommutative R] [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)]
+variable [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)] [∀ i, DecidableEq (M i)]
 
 /-- If `ι` is a `Fintype`, `κ i` is a family of types indexed by `ι` and `M i` is a family
 of modules indexed by `ι`, then the tensor product of the family `κ i →₀ M i` is linearly

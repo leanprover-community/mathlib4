@@ -27,8 +27,8 @@ namespace UniqueFactorizationMonoid
 
 section Multiplicative
 
-variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
-variable {β : Type*} [CommMonoidWithZero β]
+variable [MonoidWithZero α] [IsMulCommutative α] [UniqueFactorizationMonoid α]
+variable {β : Type*} [MonoidWithZero β] [IsMulCommutative β]
 
 theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
     (hps : p ∉ s) (is_prime : ∀ q ∈ insert p s, Prime q)

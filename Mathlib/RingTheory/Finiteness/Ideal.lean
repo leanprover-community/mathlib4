@@ -19,7 +19,7 @@ public section
 
 namespace Ideal
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- The image of a finitely generated ideal is finitely generated.
 
@@ -31,7 +31,7 @@ theorem FG.map {R S : Type*} [Semiring R] [Semiring S] {I : Ideal R} (h : I.FG) 
     refine ⟨s.image f, ?_⟩
     rw [Finset.coe_image, ← map_span, hs]
 
-theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : R →+* S)
+theorem fg_ker_comp {R S A : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring A] [IsMulCommutative A] (f : R →+* S)
     (g : S →+* A) (hf : (RingHom.ker f).FG) (hg : (RingHom.ker g).FG)
     (hsur : Function.Surjective f) :
     (RingHom.ker (g.comp f)).FG := by
@@ -46,7 +46,7 @@ theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : 
 
 /-- Let `f : R →+* S` be a surjective ring homomorphism, and let `I` be an ideal of `R`. If `f(I)`
 and `I ∩ ker(f)` are finitely generated ideals, then `I` is also finitely generated. -/
-theorem fg_of_fg_map_of_fg_inf_ker_of_surjective {R S : Type*} [CommRing R] [CommRing S]
+theorem fg_of_fg_map_of_fg_inf_ker_of_surjective {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
     {f : R →+* S} {I : Ideal R} (hmap : (I.map f).FG) (hk : (I ⊓ (RingHom.ker f)).FG)
     (hf : Function.Surjective f) : I.FG := by
   algebraize [f]
@@ -54,7 +54,7 @@ theorem fg_of_fg_map_of_fg_inf_ker_of_surjective {R S : Type*} [CommRing R] [Com
   have : RingHomSurjective f := ⟨hf⟩
   simpa [Ideal.map_eq_submodule_map] using! Submodule.FG.restrictScalars_of_surjective hmap hf
 
-theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (h : I.radical.FG) :
+theorem exists_radical_pow_le_of_fg {R : Type*} [Semiring R] [IsMulCommutative R] (I : Ideal R) (h : I.radical.FG) :
     ∃ n : ℕ, I.radical ^ n ≤ I := by
   suffices hJ : ∀ J : Ideal R, J.FG → J ≤ I.radical → ∃ n : ℕ, J ^ n ≤ I by
     simpa using hJ I.radical h
@@ -73,13 +73,13 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     · exact mul_le_left.trans ((pow_le_pow_right h).trans hn)
     · exact mul_le_right.trans ((pow_le_pow_right (by lia)).trans hm)
 
-theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {I J : Ideal R}
+theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [Semiring R] [IsMulCommutative R] {I J : Ideal R}
     (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
     ∃ k : ℕ, I ^ k ≤ J := by
   obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
   exact ⟨k, (pow_right_mono hIJ k).trans hk⟩
 
-lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Ideal R}
+lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [Semiring R] [IsMulCommutative R] {I J : Ideal R}
     (h' : I ≤ J.radical) (h : I.FG) :
     ∃ n : ℕ, I ^ n ≤ J := by
   induction I, h using Submodule.fg_induction with

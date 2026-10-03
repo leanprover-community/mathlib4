@@ -40,7 +40,7 @@ open scoped unitInterval Interval Pointwise Topology
 open AffineMap Filter Function MeasureTheory Set
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
 
 namespace ContinuousMap.Homotopy
 

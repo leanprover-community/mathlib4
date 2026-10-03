@@ -37,8 +37,8 @@ We define the trace / Killing form in this file and prove some basic properties.
 
 @[expose] public section
 
-variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable (R K L M : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 local notation "φ" => LieModule.toEnd R L M
 
@@ -110,7 +110,7 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
 
 open scoped TensorProduct in
 @[simp] lemma traceForm_baseChange [Module.Free R M] [Module.Finite R M]
-    (A : Type*) [CommRing A] [Algebra R A] :
+    (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A] :
     traceForm A (A ⊗[R] L) (A ⊗[R] M) = (traceForm R L M).baseChange A := by
   ext; simp [traceForm_apply_apply, ← LinearMap.baseChange_comp, Algebra.algebraMap_eq_smul_one]
 

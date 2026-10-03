@@ -37,7 +37,7 @@ namespace MvPolynomial.symmetricSubalgebra
 
 section CommSemiring
 
-variable [Fintype σ] [Fintype τ] [CommRing R] [CommSemiring S] [Algebra R S]
+variable [Fintype σ] [Fintype τ] [Ring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
 
 variable (σ R) in
 /-- `aevalMultiset` evaluates a symmetric polynomial at the elements of `s`. -/
@@ -102,8 +102,8 @@ end CommSemiring
 
 section CommRing
 
-variable [Fintype σ] [CommRing R] [CommRing S] [Algebra R S]
-  [CommRing A] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
+variable [Fintype σ] [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+  [Ring A] [IsMulCommutative A] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 theorem esymm_map_smul_aroots_mem_range_algebraMap [IsDomain A] {q : S[X]} {r : ℕ}
     (hsplit : (q.map (algebraMap S A)).Splits) :
@@ -146,7 +146,7 @@ namespace Polynomial
 
 open MvPolynomial.symmetricSubalgebra
 
-variable {R A : Type*} [CommRing R] [CommRing A] [IsDomain A] [Algebra R A] (p : R[X]) (q : R[X])
+variable {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [IsDomain A] [Algebra R A] (p : R[X]) (q : R[X])
 
 /-- `p.leadingCoeff ^ q.natDegree • ∑ i ∈ p.aroots A, q.aeval i` lies in the base ring. -/
 theorem leadingCoeff_pow_natDegree_smul_sum_map_aroots_aeval_mem_range_algebraMap

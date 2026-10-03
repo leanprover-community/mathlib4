@@ -24,7 +24,7 @@ open TensorProduct
 
 namespace Algebra.TensorProduct
 
-variable (R S A : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [Semiring A]
+variable (R S A : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S] [Semiring A]
   [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 variable {ι : Type*} (B : ι → Type*) [∀ i, Semiring (B i)] [∀ i, Algebra R (B i)]
 
@@ -104,7 +104,7 @@ end
 end Algebra.TensorProduct
 
 theorem TensorProduct.piScalarRight_symm_algebraMap
-    (R : Type*) [CommSemiring R] (S : Type*) [CommSemiring S] [Algebra R S]
+    (R : Type*) [Semiring R] [IsMulCommutative R] (S : Type*) [Semiring S] [IsMulCommutative S] [Algebra R S]
     (ι : Type*) [Fintype ι] [DecidableEq ι]
     {N : Type*} [Semiring N] [Algebra R N] [Module S N] [IsScalarTower R S N]
     (x : ι → R) :

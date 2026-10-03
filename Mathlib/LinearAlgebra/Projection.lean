@@ -33,10 +33,10 @@ projection, complement subspace
 
 noncomputable section Ring
 
-variable {R : Type*} [Ring R] {E : Type*} [AddCommGroup E] [Module R E]
-variable {F : Type*} [AddCommGroup F] [Module R F] {G : Type*} [AddCommGroup G] [Module R G]
+variable {R : Type*} [Ring R] {E : Type*} [AddGroup E] [IsAddCommutative E] [Module R E]
+variable {F : Type*} [AddGroup F] [IsAddCommutative F] [Module R F] {G : Type*} [AddGroup G] [IsAddCommutative G] [Module R G]
 variable (p q : Submodule R E)
-variable {S : Type*} [Semiring S] {M : Type*} [AddCommMonoid M] [Module S M] (m : Submodule S M)
+variable {S : Type*} [Semiring S] {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module S M] (m : Submodule S M)
 
 namespace LinearMap
 
@@ -343,12 +343,12 @@ section
 
 This has an advantage over `Submodule.projectionOnto` in that it allows the user better
 definitional control over the type. -/
-def linearProjOfIsCompl {F : Type*} [AddCommGroup F] [Module R F]
+def linearProjOfIsCompl {F : Type*} [AddGroup F] [IsAddCommutative F] [Module R F]
     (i : F →ₗ[R] E) (hi : Function.Injective i)
     (h : IsCompl (LinearMap.range i) q) : E →ₗ[R] F :=
   (LinearEquiv.ofInjective i hi).symm ∘ₗ (LinearMap.range i).projectionOnto q h
 
-variable {F : Type*} [AddCommGroup F] [Module R F] (i : F →ₗ[R] E) (hi : Function.Injective i)
+variable {F : Type*} [AddGroup F] [IsAddCommutative F] [Module R F] (i : F →ₗ[R] E) (hi : Function.Injective i)
     (h : IsCompl (LinearMap.range i) q)
 
 @[simp]
@@ -411,8 +411,8 @@ theorem ofIsCompl_add (h : IsCompl p q) {φ₁ φ₂ : p →ₗ[R] F} {ψ₁ ψ�
   ofIsCompl_eq _ (by simp) (by simp)
 
 @[simp]
-theorem ofIsCompl_smul {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E]
-    {F : Type*} [AddCommGroup F] [Module R F] {p q : Submodule R E} (h : IsCompl p q)
+theorem ofIsCompl_smul {R : Type*} [Ring R] [IsMulCommutative R] {E : Type*} [AddGroup E] [IsAddCommutative E] [Module R E]
+    {F : Type*} [AddGroup F] [IsAddCommutative F] [Module R F] {p q : Submodule R E} (h : IsCompl p q)
     {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (c : R) : ofIsCompl h (c • φ) (c • ψ) = c • ofIsCompl h φ ψ :=
   ofIsCompl_eq _ (by simp) (by simp)
 
@@ -445,7 +445,7 @@ theorem ofIsCompl_symm (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R
 
 section
 
-variable {R₁ : Type*} [CommRing R₁] [Module R₁ E] [Module R₁ F]
+variable {R₁ : Type*} [Ring R₁] [IsMulCommutative R₁] [Module R₁ E] [Module R₁ F]
 
 /-- The linear map from `(p →ₗ[R₁] F) × (q →ₗ[R₁] F)` to `E →ₗ[R₁] F`. -/
 def ofIsComplProd {p q : Submodule R₁ E} (h : IsCompl p q) :
@@ -678,7 +678,7 @@ open LinearMap in
 /-- Given an idempotent linear operator `q`,
 we have `q ∘ p = p` iff `range p ⊆ range q` for all `p`. -/
 theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempotentElem q)
-    {E : Type*} [AddCommMonoid E] [Module S E] (p : E →ₗ[S] M) :
+    {E : Type*} [AddMonoid E] [IsAddCommutative E] [Module S E] (p : E →ₗ[S] M) :
     q.comp p = p ↔ range p ≤ range q := by
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
     IsConcreteLE.le_iff, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
@@ -696,28 +696,28 @@ lemma IsIdempotentElem.ext_iff {p q : E →ₗ[R] E}
 
 alias ⟨_, IsIdempotentElem.ext⟩ := IsIdempotentElem.ext_iff
 
-theorem IsIdempotentElem.range_eq_ker {E : Type*} [AddCommGroup E] [Module S E]
+theorem IsIdempotentElem.range_eq_ker {E : Type*} [AddGroup E] [IsAddCommutative E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (id - p) :=
   le_antisymm
     (LinearMap.range_le_ker_iff.mpr hp.one_sub_mul_self)
     fun x hx ↦ ⟨x, by simpa [sub_eq_zero, eq_comm (a := x)] using hx⟩
 
-theorem IsIdempotentElem.range_eq_ker_one_sub {E : Type*} [AddCommGroup E] [Module S E]
+theorem IsIdempotentElem.range_eq_ker_one_sub {E : Type*} [AddGroup E] [IsAddCommutative E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
   range_eq_ker hp
 
 open LinearMap in
-theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddCommGroup E] [Module S E]
+theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddGroup E] [IsAddCommutative E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (id - p) := by
   simpa using! hp.one_sub.range_eq_ker_one_sub.symm
 
-theorem IsIdempotentElem.ker_eq_range_one_sub {E : Type*} [AddCommGroup E] [Module S E]
+theorem IsIdempotentElem.ker_eq_range_one_sub {E : Type*} [AddGroup E] [IsAddCommutative E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) :=
   ker_eq_range hp
 
 open LinearMap in
-theorem IsIdempotentElem.comp_eq_left_iff {M : Type*} [AddCommGroup M] [Module S M] {q : M →ₗ[S] M}
-    (hq : IsIdempotentElem q) {E : Type*} [AddCommGroup E] [Module S E] (p : M →ₗ[S] E) :
+theorem IsIdempotentElem.comp_eq_left_iff {M : Type*} [AddGroup M] [IsAddCommutative M] [Module S M] {q : M →ₗ[S] M}
+    (hq : IsIdempotentElem q) {E : Type*} [AddGroup E] [IsAddCommutative E] [Module S E] (p : M →ₗ[S] E) :
     p ∘ₗ q = p ↔ ker q ≤ ker p := by
   simp [hq.ker_eq_range, range_le_ker_iff, comp_sub, sub_eq_zero, eq_comm]
 
@@ -729,7 +729,7 @@ section CommRing
 
 namespace LinearMap
 
-variable {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E] {p : Submodule R E}
+variable {R : Type*} [Ring R] [IsMulCommutative R] {E : Type*} [AddGroup E] [IsAddCommutative E] [Module R E] {p : Submodule R E}
 
 theorem IsProj.eq_conj_prodMap {f : E →ₗ[R] E} (h : IsProj p f) :
     f = (p.prodEquivOfIsCompl (ker f) h.isCompl).conj (prodMap id 0) := by
@@ -744,7 +744,7 @@ namespace LinearMap.IsIdempotentElem
 
 open Submodule LinearMap
 
-variable {E R : Type*} [Ring R] [AddCommGroup E] [Module R E] {T f : E →ₗ[R] E}
+variable {E R : Type*} [Ring R] [AddGroup E] [IsAddCommutative E] [Module R E] {T f : E →ₗ[R] E}
 
 /-- `range f` is invariant under `T` if and only if `f ∘ₗ T ∘ₗ f = T ∘ₗ f`,
 for idempotent `f`. -/

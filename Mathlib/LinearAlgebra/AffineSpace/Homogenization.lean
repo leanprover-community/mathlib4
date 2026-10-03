@@ -53,16 +53,16 @@ Values of type `Homogenization R P` can be constructed as linear combinations of
 `(v, c)` representing `ofVector v + c • ofPoint (Classical.arbitrary P)`. -/
 @[nolint unusedArguments]
 def Homogenization
-    (R : Type*) {V : Type*} (P : Type*) [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P] :=
+    (R : Type*) {V : Type*} (P : Type*) [Ring R] [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P] :=
   V × R
 
 variable
   {R : Type*} [Ring R]
-  {V P : Type*} [AddCommGroup V] [Module R V] [AddTorsor V P]
-  {V₁ P₁ : Type*} [AddCommGroup V₁] [Module R V₁] [AddTorsor V₁ P₁]
-  {V₂ P₂ : Type*} [AddCommGroup V₂] [Module R V₂] [AddTorsor V₂ P₂]
-  {V₃ P₃ : Type*} [AddCommGroup V₃] [Module R V₃] [AddTorsor V₃ P₃]
-  {W : Type*} [AddCommGroup W] [Module R W]
+  {V P : Type*} [AddGroup V] [IsAddCommutative V] [Module R V] [AddTorsor V P]
+  {V₁ P₁ : Type*} [AddGroup V₁] [IsAddCommutative V₁] [Module R V₁] [AddTorsor V₁ P₁]
+  {V₂ P₂ : Type*} [AddGroup V₂] [IsAddCommutative V₂] [Module R V₂] [AddTorsor V₂ P₂]
+  {V₃ P₃ : Type*} [AddGroup V₃] [IsAddCommutative V₃] [Module R V₃] [AddTorsor V₃ P₃]
+  {W : Type*} [AddGroup W] [IsAddCommutative W] [Module R W]
 
 namespace Homogenization
 
@@ -149,7 +149,7 @@ theorem induction_of_point {motive : Homogenization R P → Prop} (p : P) (x : H
 
 /-- Over a division ring `R`, every element of `Homogenization R P` is either a nonzero multiple of
 a point of `P`, or an element of the vector space associated to `P`. -/
-theorem ofVector_ofPoint_cases {R V P : Type*} [DivisionRing R] [AddCommGroup V] [Module R V]
+theorem ofVector_ofPoint_cases {R V P : Type*} [DivisionRing R] [AddGroup V] [IsAddCommutative V] [Module R V]
     [AddTorsor V P] (x : Homogenization R P) {motive : Homogenization R P → Prop}
     (smul_ofPoint : ∀ (c : R) p, c ≠ 0 → motive (c • ofPoint p))
     (ofVector : ∀ v, motive (ofVector v)) : motive x := by

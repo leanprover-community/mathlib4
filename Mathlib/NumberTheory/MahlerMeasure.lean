@@ -118,7 +118,7 @@ end Northcott
 section Cyclotomic
 
 /-- The Mahler measure of a cyclotomic polynomial is 1. -/
-theorem cyclotomic_mahlerMeasure_eq_one {R : Type*} [CommRing R] [Algebra R ℂ] (n : ℕ) :
+theorem cyclotomic_mahlerMeasure_eq_one {R : Type*} [Ring R] [IsMulCommutative R] [Algebra R ℂ] (n : ℕ) :
     ((cyclotomic n R).map (algebraMap R ℂ)).mahlerMeasure = 1 := by
   rcases eq_or_ne n 0 with hn | hn
   · simp [hn]

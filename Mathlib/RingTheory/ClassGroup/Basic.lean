@@ -34,7 +34,7 @@ identical no matter the choice of field of fractions for `R`.
 @[expose] public noncomputable section
 
 
-variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
+variable {R K : Type*} [Ring R] [IsMulCommutative R] [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped nonZeroDivisors
 
@@ -456,7 +456,7 @@ theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)]
 
 section MulEquiv
 
-theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} [CommRing S]
+theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} [Ring S] [IsMulCommutative S]
     [IsDomain S] [Field L] [Algebra S L] [IsFractionRing S L] (f : R ≃+* S) :
   Subgroup.map ((Units.mapEquiv (ringEquivOfRingEquiv K L f))).toMonoidHom
     (toPrincipalIdeal R K).range = (toPrincipalIdeal S L).range := by
@@ -486,7 +486,7 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A ring isomorphism `R ≃+* R'` induces an isomorphism on their class groups. -/
 @[simps!]
-noncomputable def ClassGroup.mulEquiv {R' : Type*} [CommRing R'] [IsDomain R'] (g : R ≃+* R') :
+noncomputable def ClassGroup.mulEquiv {R' : Type*} [Ring R'] [IsMulCommutative R'] [IsDomain R'] (g : R ≃+* R') :
     ClassGroup R ≃* ClassGroup R' :=
   (ClassGroup.equiv (R := R) (FractionRing R)).trans
     ((QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range

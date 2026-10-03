@@ -46,8 +46,8 @@ assert_not_exists InnerProductSpace
 open Set LinearMap Pointwise
 
 namespace PointedCone
-variable {R M N : Type*} [CommRing R] [PartialOrder R] [TopologicalSpace R] [ClosedIciTopology R]
-  [IsOrderedRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [TopologicalSpace N]
+variable {R M N : Type*} [Ring R] [IsMulCommutative R] [PartialOrder R] [TopologicalSpace R] [ClosedIciTopology R]
+  [IsOrderedRing R] [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module R N] [TopologicalSpace N]
   {p : M →ₗ[R] N →ₗ[R] R} {s : Set M}
 
 lemma isClosed_dual (hp : ∀ x, Continuous (p x)) : IsClosed (dual p s : Set N) := by
@@ -58,10 +58,10 @@ lemma isClosed_dual (hp : ∀ x, Continuous (p x)) : IsClosed (dual p s : Set N)
 end PointedCone
 
 namespace ProperCone
-variable {R M N : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R] [TopologicalSpace R]
+variable {R M N : Type*} [Ring R] [IsMulCommutative R] [PartialOrder R] [IsOrderedRing R] [TopologicalSpace R]
   [ClosedIciTopology R]
-  [AddCommGroup M] [Module R M] [TopologicalSpace M]
-  [AddCommGroup N] [Module R N] [TopologicalSpace N]
+  [AddGroup M] [IsAddCommutative M] [Module R M] [TopologicalSpace M]
+  [AddGroup N] [IsAddCommutative N] [Module R N] [TopologicalSpace N]
   {p : M →ₗ[R] N →ₗ[R] R} [p.IsContPerfPair] {s t : Set M} {y : N}
 
 variable (p s) in
@@ -107,8 +107,8 @@ end ProperCone
 
 namespace ProperCone
 variable {E F : Type*}
-  [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGroup E]
-  [TopologicalSpace F] [AddCommGroup F]
+  [TopologicalSpace E] [AddGroup E] [IsAddCommutative E] [IsTopologicalAddGroup E]
+  [TopologicalSpace F] [AddGroup F] [IsAddCommutative F]
   [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
   [Module ℝ F]
   {K : Set E} {x₀ : E}

@@ -67,7 +67,7 @@ open CategoryTheory Opposite TopologicalSpace CategoryTheory.Limits AlgebraicGeo
 
 namespace RingHom
 
-variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
+variable (P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -96,7 +96,7 @@ namespace AlgebraicGeometry
 
 section affineLocally
 
-variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
+variable (P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop)
 
 /-- For `P` a property of ring homomorphisms, `sourceAffineLocally P` holds for `f : X ⟶ Y`
 whenever `P` holds for the restriction of `f` on every affine open subset of `X`. -/
@@ -181,8 +181,8 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
 
 variable {P}
 
-lemma affineLocally_le {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
-    (hPQ : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, P f → Q f) :
+lemma affineLocally_le {Q : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
+    (hPQ : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {f : R →+* S}, P f → Q f) :
     affineLocally P ≤ affineLocally Q :=
   fun _ _ _ hf U V ↦ hPQ (hf U V)
 
@@ -256,7 +256,7 @@ To make the proofs easier, we state it instead as
   See `HasRingHomProperty.iff_appLE`.
 -/
 class HasRingHomProperty (P : MorphismProperty Scheme.{u})
-    (Q : outParam (∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)) : Prop where
+    (Q : outParam (∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop)) : Prop where
   isLocal_ringHomProperty : RingHom.PropertyIsLocal Q
   eq_affineLocally' : P = affineLocally Q
 
@@ -266,8 +266,8 @@ variable (P : MorphismProperty Scheme.{u}) {Q} [HasRingHomProperty P Q]
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 lemma copy {P' : MorphismProperty Scheme.{u}}
-    {Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
-    (e : P = P') (e' : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S), Q f ↔ Q' f) :
+    {Q' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
+    (e : P = P') (e' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S), Q f ↔ Q' f) :
     HasRingHomProperty P' Q' := by
   subst e
   have heq : @Q = @Q' := by
@@ -456,7 +456,7 @@ lemma of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget [IsZariskiLocalAtTarge
     rfl
 
 lemma inf {P P' : MorphismProperty Scheme.{u}}
-    {Q Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    {Q Q' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
     [HasRingHomProperty P Q] [HasRingHomProperty P' Q'] :
     HasRingHomProperty (P ⊓ P') (fun f ↦ Q f ∧ Q' f) where
   isLocal_ringHomProperty :=
@@ -504,7 +504,7 @@ lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     exact hP _ _ hg hf
 
 theorem of_comp
-    (H : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
+    (H : ∀ {R S T : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T],
       ∀ (f : R →+* S) (g : S →+* T), Q (g.comp f) → Q g)
     {X Y Z : Scheme.{u}} {f : X ⟶ Y} {g : Y ⟶ Z} (h : P (f ≫ g)) : P f := by
   wlog hZ : IsAffine Z generalizing X Y Z
@@ -713,9 +713,9 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Let `Q` be a property of ring maps that implies `Q'` on stalks.
 Then if the associated property of scheme morphisms holds for `f`, `Q'` holds on all stalks. -/
 lemma stalkMap_of_respectsIso
-    {Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    {Q' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
     (hQ' : RingHom.RespectsIso Q')
-    (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (_ : Q f)
+    (hQ : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (_ : Q f)
       (J : Ideal S) (_ : J.IsPrime), Q' (Localization.localRingHom _ J f rfl))
     (hf : P f) (x : X) : Q' (f.stalkMap x).hom := by
   wlog h : IsAffine X ∧ IsAffine Y generalizing X Y f
@@ -743,15 +743,15 @@ lemma stalkMap_of_respectsIso
 
 /-- Let `Q` be a property of ring maps that is stable under localization.
 Then if the associated property of scheme morphisms holds for `f`, `Q` holds on all stalks. -/
-lemma stalkMap (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (_ : Q f)
+lemma stalkMap (hQ : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) (_ : Q f)
       (J : Ideal S) (_ : J.IsPrime), Q (Localization.localRingHom _ J f rfl))
     (hf : P f) (x : X) : Q (f.stalkMap x).hom :=
   stalkMap_of_respectsIso (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso hQ hf x
 
 lemma ext {P' : MorphismProperty Scheme.{u}}
-    {Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    {Q' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S], (R →+* S) → Prop}
     [HasRingHomProperty P' Q']
-    (h : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S), Q f ↔ Q' f) :
+    (h : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S), Q f ↔ Q' f) :
     P = P' := by
   ext f
   rw [HasRingHomProperty.eq_affineLocally (P := P), HasRingHomProperty.eq_affineLocally (P := P'),

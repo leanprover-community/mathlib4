@@ -108,7 +108,7 @@ attribute [fun_prop] continuous_fourierInv
 
 section fourier
 
-variable [AddCommGroup E] [AddCommGroup F] [FourierTransform E F] [FourierAdd E F]
+variable [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [FourierTransform E F] [FourierAdd E F]
 
 @[simp]
 theorem fourier_zero : 𝓕 (0 : E) = 0 :=
@@ -126,7 +126,7 @@ end fourier
 
 section fourierInv
 
-variable [AddCommGroup E] [AddCommGroup F] [FourierTransformInv E F] [FourierInvAdd E F]
+variable [AddGroup E] [IsAddCommutative E] [AddGroup F] [IsAddCommutative F] [FourierTransformInv E F] [FourierInvAdd E F]
 
 @[simp]
 theorem fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
@@ -142,7 +142,7 @@ theorem fourierInv_sum (f : ι → E) (s : Finset ι) : 𝓕⁻ (∑ i ∈ s, f 
 
 end fourierInv
 
-variable [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
+variable [Semiring R] [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F] [Module R E] [Module R F]
 
 section fourierCLM
 
@@ -222,7 +222,7 @@ export FourierInvPair (fourier_fourierInv_eq)
 attribute [simp] fourierInv_fourier_eq
 attribute [simp] fourier_fourierInv_eq
 
-variable {R E F : Type*} [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
+variable {R E F : Type*} [Semiring R] [AddMonoid E] [IsAddCommutative E] [AddMonoid F] [IsAddCommutative F] [Module R E] [Module R F]
   [FourierTransform E F] [FourierAdd E F] [FourierSMul R E F]
   [FourierTransformInv F E]
   [FourierPair E F] [FourierInvPair F E]

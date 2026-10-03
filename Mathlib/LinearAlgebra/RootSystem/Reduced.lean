@@ -36,7 +36,7 @@ public section
 
 open Module Set Function
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {ι R M N : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
   (P : RootPairing ι R M N) (S : Type*) {i j : ι}
 
 namespace RootPairing
@@ -267,7 +267,7 @@ section IsValuedIn
 
 open FaithfulSMul
 
-variable [CommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
+variable [Ring S] [IsMulCommutative S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
 omit [Module.IsTorsionFree R N]
 variable {i j}
 

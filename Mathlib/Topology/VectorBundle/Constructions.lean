@@ -38,7 +38,7 @@ open Bundle Set FiberBundle
 
 namespace Bundle.Trivial
 
-variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup F]
+variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜] [NormedAddGroup F] [IsAddCommutative F]
   [NormedSpace 𝕜 F] [TopologicalSpace B]
 
 instance trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where
@@ -93,15 +93,15 @@ end Bundle.Trivial
 section
 
 variable (𝕜 : Type*) {B : Type*} [NontriviallyNormedField 𝕜] [TopologicalSpace B] (F₁ : Type*)
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*) [TopologicalSpace (TotalSpace F₁ E₁)]
-  (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
+  [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*) [TopologicalSpace (TotalSpace F₁ E₁)]
+  (F₂ : Type*) [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)]
 
 namespace Bundle.Trivialization
 
 variable {F₁ E₁ F₂ E₂}
-variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
-  [∀ x, AddCommMonoid (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
+variable [∀ x, AddMonoid (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
+  [∀ x, AddMonoid (E₂ x)] [∀ x, IsAddCommutative (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
   (e₂ e₂' : Trivialization F₂ (π F₂ E₂))
 
 instance prod.isLinear [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] : (e₁.prod e₂).IsLinear 𝕜 where
@@ -134,7 +134,7 @@ end Bundle.Trivialization
 
 open Trivialization
 
-variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [∀ x, AddCommMonoid (E₂ x)]
+variable [∀ x, AddMonoid (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [∀ x, AddMonoid (E₂ x)] [∀ x, IsAddCommutative (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)]
   [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
 
@@ -182,19 +182,19 @@ section
 variable (R 𝕜 : Type*) {B : Type*} (F : Type*) (E : B → Type*) {B' : Type*} (f : B' → B)
 
 -- This instance exists to avoid an nsmul diamond.
-instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x)] (x : B') :
+instance [Semiring R] [∀ x : B, AddMonoid (E x)] [∀ x : B, IsAddCommutative (E x)] [i : ∀ x, Module R (E x)] (x : B') :
     SMul R ((f *ᵖ E) x) :=
   inferInstanceAs <| SMul R (E (f x))
 
-instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) :=
+instance [i : ∀ x : B, AddMonoid (E x)] [∀ x : B, IsAddCommutative (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) :=
   inferInstanceAs <| AddCommMonoid (E (f x))
 
-instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x)] (x : B') :
+instance [Semiring R] [∀ x : B, AddMonoid (E x)] [∀ x : B, IsAddCommutative (E x)] [i : ∀ x, Module R (E x)] (x : B') :
     Module R ((f *ᵖ E) x) :=
   inferInstanceAs <| Module R (E (f x))
 
 variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)] [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace B] [∀ x, AddCommMonoid (E x)]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] [TopologicalSpace B] [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)]
   [∀ x, Module 𝕜 (E x)] {K : Type*} [FunLike K B' B] [ContinuousMapClass K B' B]
 
 instance Bundle.Trivialization.pullback_linear (e : Trivialization F (π F E)) [e.IsLinear 𝕜]

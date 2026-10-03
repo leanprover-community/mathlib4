@@ -116,7 +116,7 @@ end FirstPart
 section SecondPart
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E]
   {a₀ : E} {f : ℂ → E}
 
 /-!

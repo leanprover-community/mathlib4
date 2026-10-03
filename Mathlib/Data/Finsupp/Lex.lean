@@ -220,32 +220,32 @@ section OrderedAddMonoid
 
 variable [LinearOrder α]
 
-instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+instance Lex.orderBot [AddMonoid N] [IsAddCommutative N] [PartialOrder N] [IsBotZeroClass N] :
     OrderBot (Lex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 
-instance Lex.isBotZeroClass [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+instance Lex.isBotZeroClass [AddMonoid N] [IsAddCommutative N] [PartialOrder N] [IsBotZeroClass N] :
     IsBotZeroClass (Lex (α →₀ N)) where
   isBot_zero := isBot_bot
 
-instance Colex.orderBot [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+instance Colex.orderBot [AddMonoid N] [IsAddCommutative N] [PartialOrder N] [IsBotZeroClass N] :
     OrderBot (Colex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toColex_monotone bot_le
 
-instance Colex.isBotZeroClass [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+instance Colex.isBotZeroClass [AddMonoid N] [IsAddCommutative N] [PartialOrder N] [IsBotZeroClass N] :
     IsBotZeroClass (Colex (α →₀ N)) where
   isBot_zero := isBot_bot
 
 instance Lex.isOrderedCancelAddMonoid
-    [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
+    [AddMonoid N] [IsAddCommutative N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
     IsOrderedCancelAddMonoid (Lex (α →₀ N)) where
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (α → N)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (α → N))
 
 instance Colex.isOrderedCancelAddMonoid
-    [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
+    [AddMonoid N] [IsAddCommutative N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
     IsOrderedCancelAddMonoid (Colex (α →₀ N)) :=
   Lex.isOrderedCancelAddMonoid (α := αᵒᵈ)
 

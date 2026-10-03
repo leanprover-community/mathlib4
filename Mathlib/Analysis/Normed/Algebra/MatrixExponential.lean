@@ -106,7 +106,7 @@ end Ring
 
 section CommRing
 
-variable [Fintype m] [DecidableEq m] [CommRing 𝔸] [TopologicalSpace 𝔸]
+variable [Fintype m] [DecidableEq m] [Ring 𝔸] [IsMulCommutative 𝔸] [TopologicalSpace 𝔸]
   [IsTopologicalRing 𝔸] [Algebra ℚ 𝔸] [T2Space 𝔸]
 
 theorem exp_transpose (A : Matrix m m 𝔸) : exp Aᵀ = (exp A)ᵀ := by
@@ -168,7 +168,7 @@ end Normed
 section NormedComm
 
 variable [Fintype m] [DecidableEq m]
-  [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
+  [NormedRing 𝔸] [IsMulCommutative 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by

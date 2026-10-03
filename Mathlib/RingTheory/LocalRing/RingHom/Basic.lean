@@ -56,7 +56,7 @@ section
 
 open IsLocalRing
 
-variable [CommSemiring R] [IsLocalRing R] [CommSemiring S] [IsLocalRing S]
+variable [Semiring R] [IsMulCommutative R] [IsLocalRing R] [Semiring S] [IsMulCommutative S] [IsLocalRing S]
 
 /--
 The image of the maximal ideal of the source is contained within the maximal ideal of the target.
@@ -70,7 +70,7 @@ namespace IsLocalRing
 
 section
 
-variable [CommSemiring R] [IsLocalRing R] [CommSemiring S] [IsLocalRing S]
+variable [Semiring R] [IsMulCommutative R] [IsLocalRing R] [Semiring S] [IsMulCommutative S] [IsLocalRing S]
 
 /-- A ring homomorphism between local rings is a local ring hom iff it reflects units,
 i.e. any preimage of a unit is still a unit. -/
@@ -113,7 +113,7 @@ theorem of_surjective [Semiring R] [IsLocalRing R] [Semiring S] [Nontrivial S] (
       (isUnit_or_isUnit_of_isUnit_add <| IsLocalHom.map_nonunit _ hab).imp f.isUnit_map
         f.isUnit_map)
 
-lemma _root_.IsLocalHom.of_surjective [CommRing R] [CommRing S] [Nontrivial S] [IsLocalRing R]
+lemma _root_.IsLocalHom.of_surjective [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Nontrivial S] [IsLocalRing R]
     (f : R →+* S) (hf : Function.Surjective f) :
     IsLocalHom f := by
   have := IsLocalRing.of_surjective' f ‹_›
@@ -136,17 +136,17 @@ theorem surjective_units_map_of_local_ringHom [Semiring R] [Semiring S] (f : R �
 -- see Note [lower instance priority]
 /-- Every ring hom `f : K →+* R` from a division ring `K` to a nontrivial ring `R` is a
 local ring hom. -/
-instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
+instance (priority := 100) {K R} [DivisionRing K] [Ring R] [IsMulCommutative R] [Nontrivial R]
     (f : K →+* R) : IsLocalHom f where
   map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
 
-lemma map_maximalIdeal_of_surjective [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+lemma map_maximalIdeal_of_surjective [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [IsLocalRing R] [IsLocalRing S]
     (f : R →+* S) (hf : Function.Surjective f) : (maximalIdeal R).map f = maximalIdeal S := by
   let := IsLocalHom.of_surjective f hf
   rw [← maximalIdeal_comap f, Ideal.map_comap_of_surjective f hf]
 
 @[simp]
-lemma map_ringEquiv_maximalIdeal [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+lemma map_ringEquiv_maximalIdeal [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [IsLocalRing R] [IsLocalRing S]
     (e : R ≃+* S) : (maximalIdeal R).map e = maximalIdeal S :=
   map_maximalIdeal_of_surjective (e : R →+* S) e.surjective
 
@@ -161,6 +161,6 @@ protected theorem isLocalRing {A B : Type*} [Semiring A] [IsLocalRing A] [Semiri
 
 end RingEquiv
 
-instance {R : Type*} [CommRing R] [IsLocalRing R] {n : ℕ} [Nontrivial (ZMod n)] (f : R →+* ZMod n) :
+instance {R : Type*} [Ring R] [IsMulCommutative R] [IsLocalRing R] {n : ℕ} [Nontrivial (ZMod n)] (f : R →+* ZMod n) :
     IsLocalHom f :=
   (ZMod.ringHom_surjective f).isLocalHom

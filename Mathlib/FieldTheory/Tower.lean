@@ -36,7 +36,7 @@ variable (F : Type u) (K : Type v) (A : Type w)
 namespace Module.Finite
 
 variable [Ring F] [Ring K] [Module F K]
-  [AddCommGroup A] [Module K A] [Module.IsTorsionFree K A]
+  [AddGroup A] [IsAddCommutative A] [Module K A] [Module.IsTorsionFree K A]
   [Module F A] [IsNoetherian F A] [IsScalarTower F K A] in
 /-- In a tower of field extensions `A / K / F`, if `A / F` is finite, so is `K / F`.
 
@@ -50,7 +50,7 @@ theorem left [IsDomain K] [Nontrivial A] : Module.Finite F K :=
     (LinearMap.ringLmapEquivSelf K ℕ A |>.symm x |>.restrictScalars F) (smul_left_injective K hx)
 
 variable [Semiring F] [Semiring K] [Module F K]
-  [AddCommMonoid A] [Module K A] [Module F A] [IsScalarTower F K A] in
+  [AddMonoid A] [IsAddCommutative A] [Module K A] [Module F A] [IsScalarTower F K A] in
 @[stacks 09G5]
 theorem right [hf : Module.Finite F A] : Module.Finite K A :=
   let ⟨⟨b, hb⟩⟩ := hf

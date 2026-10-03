@@ -127,7 +127,7 @@ lemma _root_.isStrictlyPositive_algebraMap [ZeroLEOneClass A] [Semifield 𝕜] [
   rw [Algebra.algebraMap_eq_smul_one]
   exact IsStrictlyPositive.smul hc isStrictlyPositive_one
 
-lemma spectrum_pos [CommSemiring 𝕜] [PartialOrder 𝕜] [Algebra 𝕜 A]
+lemma spectrum_pos [Semiring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜] [Algebra 𝕜 A]
     [NonnegSpectrumClass 𝕜 A] {a : A} (ha : IsStrictlyPositive a) {x : 𝕜}
     (hx : x ∈ spectrum 𝕜 a) : 0 < x := by
   have h₁ : 0 ≤ x := by grind

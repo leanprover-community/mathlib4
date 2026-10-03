@@ -43,8 +43,8 @@ open ENNReal MeasureTheory MeasureTheory.Measure Set Filter TopologicalSpace Fun
 
 open scoped BigOperators Topology ENNReal Convex
 
-variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ ν : Measure α}
+variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace ℝ E]
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F] [CompleteSpace F] {μ ν : Measure α}
   {s t : Set α}
 
 /-!

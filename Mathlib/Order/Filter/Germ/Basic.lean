@@ -354,7 +354,7 @@ instance instSemigroup [Semigroup M] : Semigroup (Germ l M) :=
       fun _ _ _ => congrArg ofFun <| mul_assoc .. }
 
 @[to_additive]
-instance instCommSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) :=
+instance instCommSemigroup [Semigroup M] [IsMulCommutative M] : CommSemigroup (Germ l M) :=
   { mul_comm := Quotient.ind₂' fun _ _ => congrArg ofFun <| mul_comm .. }
 
 @[to_additive]
@@ -423,7 +423,7 @@ theorem coe_coeMulHom [Monoid M] : (coeMulHom l : (α → M) → Germ l M) = ofF
   rfl
 
 @[to_additive]
-instance instCommMonoid [CommMonoid M] : CommMonoid (Germ l M) :=
+instance instCommMonoid [Monoid M] [IsMulCommutative M] : CommMonoid (Germ l M) :=
   { mul_comm := mul_comm }
 
 instance instNatCast [NatCast M] : NatCast (Germ l M) where natCast n := (n : α → M)
@@ -453,7 +453,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M)
   natCast_zero := congrArg ofFun <| by simp; rfl
   natCast_succ _ := congrArg ofFun <| by simp; rfl
 
-instance instAddCommMonoidWithOne [AddCommMonoidWithOne M] : AddCommMonoidWithOne (Germ l M) :=
+instance instAddCommMonoidWithOne [AddMonoidWithOne M] [IsAddCommutative M] : AddCommMonoidWithOne (Germ l M) :=
   { add_comm := add_comm }
 
 @[to_additive] instance instInv [Inv G] : Inv (Germ l G) := ⟨map Inv.inv⟩
@@ -511,7 +511,7 @@ instance instGroup [Group G] : Group (Germ l G) :=
   { inv_mul_cancel := Quotient.ind' fun _ => congrArg ofFun <| inv_mul_cancel _ }
 
 @[to_additive]
-instance instCommGroup [CommGroup G] : CommGroup (Germ l G) :=
+instance instCommGroup [Group G] [IsMulCommutative G] : CommGroup (Germ l G) :=
   { mul_comm := mul_comm }
 
 instance instAddGroupWithOne [AddGroupWithOne G] : AddGroupWithOne (Germ l G) where
@@ -583,18 +583,18 @@ instance instRing [Ring R] : Ring (Germ l R) where
   __ := instAddCommGroup
   __ := instNonAssocRing
 
-instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] :
+instance instNonUnitalCommSemiring [NonUnitalSemiring R] [IsMulCommutative R] :
     NonUnitalCommSemiring (Germ l R) :=
   { mul_comm := mul_comm }
 
-instance instCommSemiring [CommSemiring R] : CommSemiring (Germ l R) :=
+instance instCommSemiring [Semiring R] [IsMulCommutative R] : CommSemiring (Germ l R) :=
   { mul_comm := mul_comm }
 
-instance instNonUnitalCommRing [NonUnitalCommRing R] : NonUnitalCommRing (Germ l R) where
+instance instNonUnitalCommRing [NonUnitalRing R] [IsMulCommutative R] : NonUnitalCommRing (Germ l R) where
   __ := instNonUnitalRing
   __ := instCommSemigroup
 
-instance instCommRing [CommRing R] : CommRing (Germ l R) :=
+instance instCommRing [Ring R] [IsMulCommutative R] : CommRing (Germ l R) :=
   { mul_comm := mul_comm }
 
 /-- Coercion `(α → R) → Germ l R` as a `RingHom`. -/
@@ -654,7 +654,7 @@ instance instDistribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
       simp [smul_add]
   smul_zero c := inductionOn c fun c => by simp only [← coe_zero, ← coe_smul', smul_zero]
 
-instance instModule [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M) where
+instance instModule [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : Module R (Germ l M) where
   add_smul c₁ c₂ f :=
     inductionOn f fun f => by
       norm_cast
@@ -664,7 +664,7 @@ instance instModule [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ
       norm_cast
       simp [zero_smul]
 
-instance instModule' [Semiring R] [AddCommMonoid M] [Module R M] :
+instance instModule' [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] :
     Module (Germ l R) (Germ l M) where
   add_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by

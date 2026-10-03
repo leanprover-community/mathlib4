@@ -46,7 +46,7 @@ other arguments belong to specific domains.
 section OrderedRing
 
 variable [Ring k] [PartialOrder k] [IsOrderedRing k]
-  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [IsStrictOrderedModule k E]
+  [AddGroup E] [IsAddCommutative E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [IsStrictOrderedModule k E]
 variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
@@ -101,7 +101,7 @@ end OrderedRing
 section LinearOrderedRing
 
 variable [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
-  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [IsStrictOrderedModule k E]
+  [AddGroup E] [IsAddCommutative E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [IsStrictOrderedModule k E]
   {a a' b b' : E} {r r' : k}
 
 theorem lineMap_le_lineMap_iff_of_lt' (h : a < b) : lineMap a b r ≤ lineMap a b r' ↔ r ≤ r' := by
@@ -145,7 +145,7 @@ end LinearOrderedRing
 section LinearOrderedField
 
 variable [Field k] [LinearOrder k] [IsStrictOrderedRing k]
-  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
+  [AddGroup E] [IsAddCommutative E] [PartialOrder E] [IsOrderedAddMonoid E]
 variable [Module k E] [IsStrictOrderedModule k E] [PosSMulReflectLE k E]
 
 section

@@ -45,8 +45,8 @@ section Module
 section DivisionRing
 
 variable [DivisionRing K]
-variable [AddCommGroup V] [Module K V]
-variable [AddCommGroup V₁] [Module K V₁]
+variable [AddGroup V] [IsAddCommutative V] [Module K V]
+variable [AddGroup V₁] [IsAddCommutative V₁] [Module K V₁]
 
 /-- If a vector space has a finite dimension, the index set of `Basis.ofVectorSpace` is finite. -/
 theorem Module.Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V < ℵ₀) :
@@ -69,8 +69,8 @@ instance DivisionRing.hasRankNullity : HasRankNullity.{u₀} K where
 
 section
 
-variable [AddCommGroup V₂] [Module K V₂]
-variable [AddCommGroup V₃] [Module K V₃]
+variable [AddGroup V₂] [IsAddCommutative V₂] [Module K V₂]
+variable [AddGroup V₃] [IsAddCommutative V₃] [Module K V₃]
 
 open LinearMap
 
@@ -104,7 +104,7 @@ end
 
 namespace Submodule
 
-variable {R : Type*} [CommRing R] [Nontrivial R]
+variable {R : Type*} [Ring R] [IsMulCommutative R] [Nontrivial R]
 variable [SMulWithZero R K] [FaithfulSMul R K] [IsScalarTower R K K]
 variable [Module R V] [IsScalarTower R K V]
 variable (M : Submodule R V)

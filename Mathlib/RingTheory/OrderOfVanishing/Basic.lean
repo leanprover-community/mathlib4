@@ -23,7 +23,7 @@ field of fractions
 
 open LinearMap Pointwise IsLocalization Ideal WithZero
 
-variable {R : Type*} {M : Type*} [AddCommMonoid M]
+variable {R : Type*} {M : Type*} [AddMonoid M] [IsAddCommutative M]
 
 namespace Ring
 
@@ -42,7 +42,7 @@ lemma ord_one : ord R 1 = 0 := by
 
 end Ring
 
-variable [CommRing R] [Module R M]
+variable [Ring R] [IsMulCommutative R] [Module R M]
 
 /--
 The map `R ⧸ I →ₗ[R] R ⧸ (a • I)` defined by multiplication by `a`
@@ -169,7 +169,7 @@ In an `S` algebra `R`, the order of vanishing of `x : R` is equal to the order o
 of `a • x` for `a` a unit in `S`.
 -/
 @[simp]
-lemma ord_smul_of_isUnit {S : Type*} [CommRing S] [Algebra S R]
+lemma ord_smul_of_isUnit {S : Type*} [Ring S] [IsMulCommutative S] [Algebra S R]
     {a : S} (h : IsUnit a) (x : R) : ord R (a • x) = ord R x := by
   rw [Algebra.smul_def a x]
   exact ord_mul_of_isUnit_left (RingHom.isUnit_map (algebraMap S R) h) x
@@ -196,7 +196,7 @@ In an `S` algebra `R`, the order of vanishing of `x : R` is less than or equal
 to the order of vanishing of `a • x` for any `a : S`. One should note that the order here
 is the order on `ℕ∞` where `∞` is a top element.
 -/
-lemma ord_le_smul {S : Type*} [CommRing S] [Algebra S R] (a : S) (x : R) :
+lemma ord_le_smul {S : Type*} [Ring S] [IsMulCommutative S] [Algebra S R] (a : S) (x : R) :
     ord R x ≤ ord R (a • x) := by simp [Algebra.smul_def, ord_le_ord_mul]
 
 /--

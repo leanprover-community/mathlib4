@@ -61,7 +61,7 @@ namespace Polynomial.Chebyshev
 
 open Polynomial
 
-variable (R R' : Type*) [CommRing R] [CommRing R']
+variable (R R' : Type*) [Ring R] [IsMulCommutative R] [Ring R'] [IsMulCommutative R']
 
 /-- `T n` is the `n`-th Chebyshev polynomial of the first kind. -/
 noncomputable def T : ℤ → R[X]

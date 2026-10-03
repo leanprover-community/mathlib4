@@ -27,7 +27,7 @@ variable {R S M A B : Type*}
 
 namespace ZeroHom
 
-instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
+instance instModule [Semiring R] [AddMonoid A] [AddMonoid B] [IsAddCommutative B] [Module R B] :
     Module R (ZeroHom A B) where
   __ : MulActionWithZero _ _ := ZeroHom.instMulActionWithZero
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
@@ -39,14 +39,14 @@ end ZeroHom
 
 namespace AddMonoidHom
 
-instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
+instance instModule [Semiring R] [AddMonoid A] [AddMonoid B] [IsAddCommutative B] [Module R B] :
     Module R (A →+ B) where
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
   zero_smul _ := ext fun _ => zero_smul _ _
 
 set_option backward.isDefEq.respectTransparency false in
 instance instDomMulActModule
-    {S M M₂ : Type*} [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [Module S M] :
+    {S M M₂ : Type*} [Semiring S] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module S M] :
     Module Sᵈᵐᵃ (M →+ M₂) where
   add_smul s s' f := AddMonoidHom.ext fun m ↦ by
     simp_rw [AddMonoidHom.add_apply, DomMulAct.smul_addMonoidHom_apply, ← map_add, ← add_smul]; rfl
@@ -67,7 +67,7 @@ namespace AddMonoid.End
 
 section
 
-variable [Monoid R] [Monoid S] [AddCommMonoid A]
+variable [Monoid R] [Monoid S] [AddMonoid A] [IsAddCommutative A]
 
 instance instDistribSMul [DistribSMul M A] : DistribSMul M (AddMonoid.End A) :=
   inferInstanceAs <| DistribSMul M (A →+ A)
@@ -94,13 +94,13 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ A] [IsCentralScalar R A] :
 
 end
 
-instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (AddMonoid.End A) :=
+instance instModule [Semiring R] [AddMonoid A] [IsAddCommutative A] [Module R A] : Module R (AddMonoid.End A) :=
   inferInstanceAs <| Module R (A →+ A)
 
 /-- The tautological action by `AddMonoid.End α` on `α`.
 
 This generalizes `AddMonoid.End.applyDistribMulAction`. -/
-instance applyModule [AddCommMonoid A] : Module (AddMonoid.End A) A where
+instance applyModule [AddMonoid A] [IsAddCommutative A] : Module (AddMonoid.End A) A where
   add_smul _ _ _ := rfl
   zero_smul _ := rfl
 
@@ -112,10 +112,10 @@ namespace AddMonoidHom
 
 /-- Scalar multiplication as a biadditive monoid homomorphism. We need `M` to be commutative
 to have addition on `M →+ M`. -/
-protected def smul [Semiring R] [AddCommMonoid M] [Module R M] : R →+ M →+ M :=
+protected def smul [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : R →+ M →+ M :=
   (Module.toAddMonoidEnd R M).toAddMonoidHom
 
-@[simp] theorem coe_smul' [Semiring R] [AddCommMonoid M] [Module R M] :
+@[simp] theorem coe_smul' [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] :
     ⇑(.smul : R →+ M →+ M) = DistribSMul.toAddMonoidHom _ := rfl
 
 end AddMonoidHom

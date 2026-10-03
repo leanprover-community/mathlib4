@@ -113,8 +113,8 @@ protected lemma HasIndepIncrements.map' {F G : Type*} [MeasurableSpace G] [FunLi
   simp_rw [← map_sub]
   exact (hX n t ht).comp (fun _ ↦ f) (fun _ ↦ hf)
 
-protected lemma HasIndepIncrements.map {R F : Type*} [Semiring R] [SeminormedAddCommGroup E]
-    [Module R E] [OpensMeasurableSpace E] [SeminormedAddCommGroup F] [Module R F]
+protected lemma HasIndepIncrements.map {R F : Type*} [Semiring R] [SeminormedAddGroup E] [IsAddCommutative E]
+    [Module R E] [OpensMeasurableSpace E] [SeminormedAddGroup F] [IsAddCommutative F] [Module R F]
     [MeasurableSpace F] [BorelSpace F] (L : E →L[R] F) (hX : HasIndepIncrements X P) :
     HasIndepIncrements (fun t ω ↦ L (X t ω)) P :=
   hX.map' L.measurable
@@ -124,7 +124,7 @@ protected lemma HasIndepIncrements.smul {R : Type*} [AddGroup E] [DistribSMul R 
     HasIndepIncrements (fun t ω ↦ c • (X t ω)) P :=
   hX.map' (f := DistribSMul.toAddMonoidHom E c) (MeasurableConstSMul.measurable_const_smul c)
 
-protected lemma HasIndepIncrements.neg [AddCommGroup E] [MeasurableNeg E]
+protected lemma HasIndepIncrements.neg [AddGroup E] [IsAddCommutative E] [MeasurableNeg E]
     (hX : HasIndepIncrements X P) :
     HasIndepIncrements (-X) P :=
   hX.map' (f := negAddMonoidHom) measurable_neg

@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 namespace IsLocalRing
 
-variable (R : Type*) [CommRing R] [IsLocalRing R]
+variable (R : Type*) [Ring R] [IsMulCommutative R] [IsLocalRing R]
 
 /-- The residue field of a local ring is the quotient of the ring by its maximal ideal. -/
 @[wikidata Q7315530]

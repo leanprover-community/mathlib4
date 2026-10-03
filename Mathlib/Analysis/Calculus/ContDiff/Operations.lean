@@ -42,9 +42,9 @@ open Set Fin Filter Function
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
+  {E : Type uE} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] {F : Type uF}
+  [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddGroup G] [IsAddCommutative G] [NormedSpace 𝕜 G]
+  {X : Type*} [NormedAddGroup X] [IsAddCommutative X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
   {g : F → G} {x x₀ : E} {b : E × F → G} {m n : ℕ∞ω} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-!
@@ -53,7 +53,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Pi
 
-variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
+variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, NormedAddGroup (F' i)] [∀ i, IsAddCommutative (F' i)]
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {p' : ∀ i, E → FormalMultilinearSeries 𝕜 E (F' i)}
   {Φ : E → ∀ i, F' i} {P' : E → FormalMultilinearSeries 𝕜 E (∀ i, F' i)}
 
@@ -424,7 +424,7 @@ theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i 
 
 section MulProd
 
-variable {𝔸 𝔸' ι 𝕜' : Type*} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormedCommRing 𝔸']
+variable {𝔸 𝔸' ι 𝕜' : Type*} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormedRing 𝔸'] [IsMulCommutative 𝔸']
   [NormedAlgebra 𝕜 𝔸'] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 -- The product is smooth.
@@ -697,8 +697,8 @@ end ConstSMul
 
 section prodMap
 
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+variable {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E']
+variable {F' : Type*} [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜 F']
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
@@ -717,8 +717,8 @@ theorem ContDiffWithinAt.prodMap {s : Set E} {t : Set E'} {f : E → F} {g : E' 
 
 /-- The product map of two `C^n` functions on a set is `C^n` on the product set. -/
 @[fun_prop]
-theorem ContDiffOn.prodMap {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F' : Type*}
-    [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
+theorem ContDiffOn.prodMap {E' : Type*} [NormedAddGroup E'] [IsAddCommutative E'] [NormedSpace 𝕜 E'] {F' : Type*}
+    [NormedAddGroup F'] [IsAddCommutative F'] [NormedSpace 𝕜 F'] {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
     (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g t) : ContDiffOn 𝕜 n (Prod.map f g) (s ×ˢ t) :=
   (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))

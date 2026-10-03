@@ -115,7 +115,7 @@ end PreQuasiregular
 namespace Unitization
 open PreQuasiregular
 
-variable {R A : Type*} [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
+variable {R A : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
   [SMulCommClass R A A]
 
 variable (R A) in
@@ -233,7 +233,7 @@ lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
     noncomm_ring
 
 -- interestingly, this holds even in the semiring case.
-lemma isQuasiregular_iff_isUnit' (R : Type*) {A : Type*} [CommSemiring R] [NonUnitalSemiring A]
+lemma isQuasiregular_iff_isUnit' (R : Type*) {A : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {x : A} :
     IsQuasiregular x ↔ IsUnit (1 + x : Unitization R A) := by
   refine ⟨?_, fun hx ↦ ?_⟩
@@ -243,7 +243,7 @@ lemma isQuasiregular_iff_isUnit' (R : Type*) {A : Type*} [CommSemiring R] [NonUn
 
 alias ⟨IsQuasiregular.isUnit', _⟩ := isQuasiregular_iff_isUnit'
 
-variable (R : Type*) {A : Type*} [CommSemiring R] [NonUnitalRing A]
+variable (R : Type*) {A : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalRing A]
   [Module R A]
 
 /-- If `A` is a non-unital `R`-algebra, the `R`-quasispectrum of `a : A` consists of those `r : R`
@@ -332,7 +332,7 @@ where `R` is a *semi*ring, but `φ` must still function over a scalar ring `S`. 
 need `S` to be explicit. The primary use case is, for instance, `R := ℝ≥0` and `S := ℝ` or
 `S := ℂ`. -/
 lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B : Type*}
-    [CommSemiring R] [Semiring S] [NonUnitalRing A] [NonUnitalRing B] [Module R S]
+    [Semiring R] [IsMulCommutative R] [Semiring S] [NonUnitalRing A] [NonUnitalRing B] [Module R S]
     [Module S A] [Module R A] [Module S B] [Module R B] [IsScalarTower R S A] [IsScalarTower R S B]
     [FunLike F A B] [NonUnitalAlgHomClass F S A B] (φ : F) (a : A) :
     quasispectrum R (φ a) ⊆ quasispectrum R a := by
@@ -346,13 +346,13 @@ lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B
 /-- If `φ` is non-unital algebra homomorphism over a scalar ring `R`, then
 `quasispectrum R (φ a) ⊆ quasispectrum R a`. -/
 lemma NonUnitalAlgHom.quasispectrum_apply_subset {F R A B : Type*}
-    [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B] [Module R A] [Module R B]
+    [Semiring R] [IsMulCommutative R] [NonUnitalRing A] [NonUnitalRing B] [Module R A] [Module R B]
     [FunLike F A B] [NonUnitalAlgHomClass F R A B] (φ : F) (a : A) :
     quasispectrum R (φ a) ⊆ quasispectrum R a :=
   NonUnitalAlgHom.quasispectrum_apply_subset' R φ a
 
 @[simp]
-lemma AlgEquiv.quasispectrum_eq {F R A B : Type*} [CommSemiring R] [NonUnitalRing A]
+lemma AlgEquiv.quasispectrum_eq {F R A B : Type*} [Semiring R] [IsMulCommutative R] [NonUnitalRing A]
     [NonUnitalRing B] [Module R A] [Module R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
     (f : F) (a : A) : quasispectrum R (f a) = quasispectrum R a := by
   /- the `Star` material is here because `AlgEquiv` only exists for unital algebras,
@@ -373,7 +373,7 @@ lemma quasispectrum.mem_of_not_quasiregular (a : A) {r : Rˣ}
     (hr : ¬ IsQuasiregular (-(r⁻¹ • a))) : (r : R) ∈ quasispectrum R a :=
   fun _ ↦ by simpa using hr
 
-lemma quasispectrum_eq_spectrum_union (R : Type*) {A : Type*} [CommSemiring R]
+lemma quasispectrum_eq_spectrum_union (R : Type*) {A : Type*} [Semiring R] [IsMulCommutative R]
     [Ring A] [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {r : R | ¬ IsUnit r} := by
   ext r
   rw [quasispectrum]
@@ -382,7 +382,7 @@ lemma quasispectrum_eq_spectrum_union (R : Type*) {A : Type*} [CommSemiring R]
   rw [not_iff_not, isQuasiregular_iff_isUnit, ← sub_eq_add_neg, Algebra.algebraMap_eq_smul_one]
   exact (IsUnit.smul_sub_iff_sub_inv_smul hr.unit a).symm
 
-lemma spectrum_subset_quasispectrum (R : Type*) {A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
+lemma spectrum_subset_quasispectrum (R : Type*) {A : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A]
     (a : A) : spectrum R a ⊆ quasispectrum R a :=
   quasispectrum_eq_spectrum_union R a ▸ Set.subset_union_left
 
@@ -407,20 +407,20 @@ lemma isQuasiregular_inr_iff (a : A) :
   lift y to A using by simpa using congr(fstHom R A $hy₁)
   refine ⟨y, ?_, ?_⟩ <;> exact inr_injective (R := R) <| by simpa
 
-lemma zero_mem_spectrum_inr (R S : Type*) {A : Type*} [CommSemiring R]
-    [CommRing S] [Nontrivial S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
+lemma zero_mem_spectrum_inr (R S : Type*) {A : Type*} [Semiring R] [IsMulCommutative R]
+    [Ring S] [IsMulCommutative S] [Nontrivial S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
     [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] (a : A) :
     0 ∈ spectrum R (a : Unitization S A) := by
   rw [spectrum.zero_mem_iff]
   rintro ⟨u, hu⟩
   simpa [-Units.mul_inv, hu] using congr($(u.mul_inv).fst)
 
-lemma mem_spectrum_inr_of_not_isUnit {R A : Type*} [CommRing R]
+lemma mem_spectrum_inr_of_not_isUnit {R A : Type*} [Ring R] [IsMulCommutative R]
     [NonUnitalRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     (a : A) (r : R) (hr : ¬ IsUnit r) : r ∈ spectrum R (a : Unitization R A) :=
   fun h ↦ hr <| by simpa [map_sub] using h.map (fstHom R A)
 
-lemma quasispectrum_eq_spectrum_inr (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
+lemma quasispectrum_eq_spectrum_inr (R : Type*) {A : Type*} [Ring R] [IsMulCommutative R] [NonUnitalRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] (a : A) :
     quasispectrum R a = spectrum R (a : Unitization R A) := by
   ext r
@@ -448,7 +448,7 @@ lemma quasispectrum_inr_eq (R S : Type*) {A : Type*} [Semifield R]
 
 end Unitization
 
-lemma quasispectrum.mul_comm {R A : Type*} [CommRing R] [NonUnitalRing A] [Module R A]
+lemma quasispectrum.mul_comm {R A : Type*} [Ring R] [IsMulCommutative R] [NonUnitalRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] (a b : A) :
     quasispectrum R (a * b) = quasispectrum R (b * a) := by
   rw [← Set.inter_union_compl (quasispectrum R (a * b)) {r | IsUnit r},
@@ -461,7 +461,7 @@ lemma quasispectrum.mul_comm {R A : Type*} [CommRing R] [NonUnitalRing A] [Modul
 
 /-- A class for `𝕜`-algebras with a partial order where the ordering is compatible with the
 (quasi)spectrum. -/
-class NonnegSpectrumClass (𝕜 A : Type*) [CommSemiring 𝕜] [PartialOrder 𝕜]
+class NonnegSpectrumClass (𝕜 A : Type*) [Semiring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜]
     [NonUnitalRing A] [PartialOrder A]
     [Module 𝕜 A] : Prop where
   quasispectrum_nonneg_of_nonneg : ∀ a : A, 0 ≤ a → ∀ x ∈ quasispectrum 𝕜 a, 0 ≤ x
@@ -477,7 +477,7 @@ lemma iff_spectrum_nonneg {𝕜 A : Type*} [Semifield 𝕜] [LinearOrder 𝕜] [
 
 alias ⟨_, of_spectrum_nonneg⟩ := iff_spectrum_nonneg
 
-lemma nonneg_of_mem_quasispectrum {𝕜 : Type*} [CommSemiring 𝕜] [PartialOrder 𝕜] [PartialOrder A]
+lemma nonneg_of_mem_quasispectrum {𝕜 : Type*} [Semiring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜] [PartialOrder A]
     [Module 𝕜 A] [NonnegSpectrumClass 𝕜 A] {a : A} (ha : 0 ≤ a) {x : 𝕜}
     (hx : x ∈ quasispectrum 𝕜 a) : 0 ≤ x := quasispectrum_nonneg_of_nonneg a ha x hx
 
@@ -485,7 +485,7 @@ grind_pattern nonneg_of_mem_quasispectrum => x ∈ quasispectrum 𝕜 a
 
 end NonnegSpectrumClass
 
-lemma spectrum_nonneg_of_nonneg {𝕜 A : Type*} [CommSemiring 𝕜] [PartialOrder 𝕜]
+lemma spectrum_nonneg_of_nonneg {𝕜 A : Type*} [Semiring 𝕜] [IsMulCommutative 𝕜] [PartialOrder 𝕜]
     [Ring A] [PartialOrder A]
     [Algebra 𝕜 A] [NonnegSpectrumClass 𝕜 A] ⦃a : A⦄ (ha : 0 ≤ a) ⦃x : 𝕜⦄ (hx : x ∈ spectrum 𝕜 a) :
     0 ≤ x :=
@@ -506,7 +506,7 @@ and `A` is a C⋆-algebra.
 This is the property allows us to restrict a continuous functional calculus over `S` to a
 continuous functional calculus over `R`. -/
 structure QuasispectrumRestricts
-    {R S A : Type*} [CommSemiring R] [CommSemiring S] [NonUnitalRing A]
+    {R S A : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [NonUnitalRing A]
     [Module R A] [Module S A] [Algebra R S] (a : A) (f : S → R) : Prop where
   /-- `f` is a right inverse of `algebraMap R S` when restricted to `quasispectrum S a`. -/
   rightInvOn : (quasispectrum S a).RightInvOn f (algebraMap R S)
@@ -514,7 +514,7 @@ structure QuasispectrumRestricts
   left_inv : Function.LeftInverse f (algebraMap R S)
 
 lemma quasispectrumRestricts_iff
-    {R S A : Type*} [CommSemiring R] [CommSemiring S] [NonUnitalRing A]
+    {R S A : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [NonUnitalRing A]
     [Module R A] [Module S A] [Algebra R S] (a : A) (f : S → R) :
     QuasispectrumRestricts a f ↔ (quasispectrum S a).RightInvOn f (algebraMap R S) ∧
       Function.LeftInverse f (algebraMap R S) :=

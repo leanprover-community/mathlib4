@@ -22,11 +22,11 @@ section
 
 variable {𝕜 B F M : Type*} {E : B → Type*}
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NontriviallyNormedField 𝕜] [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
   [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
-  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  [NormedAddGroup EB] [IsAddCommutative EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
   (IB : ModelWithCorners 𝕜 EB HB) (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
-  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
+  [NormedAddGroup EM] [IsAddCommutative EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
@@ -97,7 +97,7 @@ theorem mdifferentiableWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace 
 
 section
 
-variable (𝕜) [∀ x, AddCommMonoid (E x)]
+variable (𝕜) [∀ x, AddMonoid (E x)] [∀ x, IsAddCommutative (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
 theorem mdifferentiable_zeroSection : MDiff (zeroSection F E) := by
@@ -325,12 +325,12 @@ theorem mdifferentiableOn_section_baseSet_iff {s : ∀ x, E x}
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace 𝕜 F]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   (Z : M → Type*) [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)]
-  [FiberBundle F Z] [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
+  [FiberBundle F Z] [∀ b, AddMonoid (Z b)] [∀ b, IsAddCommutative (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
 
 theorem mdifferentiable [ContMDiffVectorBundle 1 F Z I]
     (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
@@ -353,14 +353,14 @@ variable {𝕜 B F M : Type*} {E : B → Type*}
 variable
   -- Let `E` be a fiber bundle with base `B` and fiber `F` (a vector space over `𝕜`)
   [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
-  [NormedAddCommGroup F] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [FiberBundle F E]
+  [NormedAddGroup F] [IsAddCommutative F] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [FiberBundle F E]
   -- Moreover let `E` be a vector bundle
   [(x : B) → AddCommGroup (E x)] [(x : B) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
   -- Let the base `B` be charted over a fixed model space `HB`
   {HB : Type*} [TopologicalSpace HB] [ChartedSpace HB B]
   -- Moreover let `HB` be modelled on a normed space `EB` so that `B` (and hence `E`) have
   -- differentiable structures
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {I : ModelWithCorners 𝕜 EB HB}
+  {EB : Type*} [NormedAddGroup EB] [IsAddCommutative EB] [NormedSpace 𝕜 EB] {I : ModelWithCorners 𝕜 EB HB}
 
 variable {f : B → 𝕜} {a : 𝕜} {s t : Π x : B, E x} {u : Set B} {x₀ : B}
 
@@ -611,18 +611,18 @@ and two vector bundles `E₁` and `E₂` respectively over `B₁` and `B₂` (wi
 Also a third manifold `M`, which will be the source of all our maps.
 -/
 variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
-  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
-  [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  [∀ x, AddGroup (E₁ x)] [∀ x, IsAddCommutative (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddGroup F₁] [IsAddCommutative F₁] [NormedSpace 𝕜 F₁]
+  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddGroup (E₂ x)] [∀ x, IsAddCommutative (E₂ x)]
+  [∀ x, Module 𝕜 (E₂ x)] [NormedAddGroup F₂] [IsAddCommutative F₂] [NormedSpace 𝕜 F₂]
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
   {EB₁ : Type*}
-  [NormedAddCommGroup EB₁] [NormedSpace 𝕜 EB₁] {HB₁ : Type*} [TopologicalSpace HB₁]
+  [NormedAddGroup EB₁] [IsAddCommutative EB₁] [NormedSpace 𝕜 EB₁] {HB₁ : Type*} [TopologicalSpace HB₁]
   {IB₁ : ModelWithCorners 𝕜 EB₁ HB₁} [TopologicalSpace B₁] [ChartedSpace HB₁ B₁]
   {EB₂ : Type*}
-  [NormedAddCommGroup EB₂] [NormedSpace 𝕜 EB₂] {HB₂ : Type*} [TopologicalSpace HB₂]
+  [NormedAddGroup EB₂] [IsAddCommutative EB₂] [NormedSpace 𝕜 EB₂] {HB₂ : Type*} [TopologicalSpace HB₂]
   {IB₂ : ModelWithCorners 𝕜 EB₂ HB₂} [TopologicalSpace B₂] [ChartedSpace HB₂ B₂]
   {EM : Type*}
-  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
+  [NormedAddGroup EM] [IsAddCommutative EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
   [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
@@ -688,10 +688,10 @@ section extend
 
 namespace FiberBundle
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  (F : Type*) [NormedAddCommGroup F]
+  (F : Type*) [NormedAddGroup F] [IsAddCommutative F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)] [(x : M) → AddCommGroup (V x)]
   [(x : M) → TopologicalSpace (V x)]
   [FiberBundle F V] [NormedSpace 𝕜 F] {k : WithTop ℕ∞}
@@ -737,7 +737,7 @@ lemma mdifferentiableAt_extend {x : M} (σ₀ : V x) :
 
 variable (V) in
 lemma _root_.VectorBundle.injective_eval_mdifferentiableAt_sec [∀ x, Module 𝕜 (V x)]
-    (W : Type*) [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace W] (x : M) :
+    (W : Type*) [AddGroup W] [IsAddCommutative W] [Module 𝕜 W] [TopologicalSpace W] (x : M) :
     Function.Injective
       (fun A : V x →L[𝕜] W ↦
         fun (Z : Π x, V x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) := by
@@ -747,7 +747,7 @@ lemma _root_.VectorBundle.injective_eval_mdifferentiableAt_sec [∀ x, Module �
 
 variable (V) in
 lemma _root_.VectorBundle.injective_eval_contMDiffAt_sec [∀ x, Module 𝕜 (V x)]
-    (W : Type*) [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace W] (x : M) :
+    (W : Type*) [AddGroup W] [IsAddCommutative W] [Module 𝕜 W] [TopologicalSpace W] (x : M) :
     Function.Injective
       (fun A : V x →L[𝕜] W ↦
         fun (Z : Π x, V x) (_ : CMDiffAt k (T% Z) x) ↦ A (Z x)) := by

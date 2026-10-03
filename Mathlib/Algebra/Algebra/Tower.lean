@@ -33,8 +33,8 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 variable {A}
 
@@ -86,7 +86,7 @@ namespace IsScalarTower
 
 section Module
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 variable [MulAction A M]
 variable {R} {M}
 
@@ -107,7 +107,7 @@ end Module
 
 section Semiring
 
-variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra S A] [Algebra S B]
 variable {R S A}
 
@@ -132,7 +132,7 @@ theorem algebraMap_apply (x : R) : algebraMap R A x = algebraMap S A (algebraMap
   rw [algebraMap_eq R S A, RingHom.comp_apply]
 
 @[ext]
-theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 h2 : Algebra S A)
+theorem Algebra.ext {S : Type u} {A : Type v} [Semiring S] [IsMulCommutative S] [Semiring A] (h1 h2 : Algebra S A)
     (h : ∀ (r : S) (x : A), (by have I := h1; exact r • x) = r • x) : h1 = h2 :=
   Algebra.algebra_ext _ _ fun r => by
     simpa only [@Algebra.smul_def _ _ _ _ h1, @Algebra.smul_def _ _ _ _ h2, mul_one] using h r 1
@@ -156,8 +156,8 @@ instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A
   of_algebraMap_eq fun _x => rfl
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed @[nolint instance_priority], linter not ported yet
-instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
-    [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
+instance (priority := 999) of_algHom {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A]
+    [Semiring B] [IsMulCommutative B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
   letI := (f : A →+* B).toAlgebra
   of_algebraMap_eq fun x => (f.commutes x).symm
@@ -168,7 +168,7 @@ end IsScalarTower
 
 section Homs
 
-variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra S A] [Algebra S B]
 variable [Algebra R A] [Algebra R B]
 variable [IsScalarTower R S A] [IsScalarTower R S B]
@@ -337,7 +337,7 @@ end Homs
 namespace Submodule
 
 variable {M}
-variable [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [AddMonoid M] [IsAddCommutative M]
 variable [Module R M] [Module A M] [IsScalarTower R A M]
 
 /-- If `A` is an `R`-algebra such that the induced morphism `R →+* A` is surjective, then the
@@ -360,7 +360,7 @@ isomorphism `Submodule S M ≃o Submodule R M`.
 -/
 @[simps apply symm_apply]
 def orderIsoOfAlgebraMapSurjective
-    {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
+    {R S M : Type*} [Ring R] [IsMulCommutative R] [Ring S] [AddGroup M] [IsAddCommutative M]
     [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
     (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M where
   toFun N := N.restrictScalars R
@@ -379,7 +379,7 @@ namespace Submodule
 
 section Module
 
-variable [Semiring R] [Semiring S] [AddCommMonoid A]
+variable [Semiring R] [Semiring S] [AddMonoid A] [IsAddCommutative A]
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 open IsScalarTower
@@ -417,7 +417,7 @@ end Module
 
 section Algebra
 
-variable [CommSemiring R] [Semiring S] [AddCommMonoid A]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [AddMonoid A] [IsAddCommutative A]
 variable [Algebra R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 /-- A variant of `Submodule.span_image` for `algebraMap`. -/
@@ -425,13 +425,13 @@ theorem span_algebraMap_image (a : Set R) :
     Submodule.span R (algebraMap R S '' a) = (Submodule.span R a).map (Algebra.linearMap R S) :=
   (Submodule.span_image <| Algebra.linearMap R S).trans rfl
 
-theorem span_algebraMap_image_of_tower {S T : Type*} [CommSemiring S] [Semiring T] [Module R S]
+theorem span_algebraMap_image_of_tower {S T : Type*} [Semiring S] [IsMulCommutative S] [Semiring T] [Module R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] (a : Set S) :
     Submodule.span R (algebraMap S T '' a) =
       (Submodule.span R a).map ((Algebra.linearMap S T).restrictScalars R) :=
   (Submodule.span_image <| (Algebra.linearMap S T).restrictScalars R).trans rfl
 
-theorem map_mem_span_algebraMap_image {S T : Type*} [CommSemiring S] [Semiring T] [Algebra R S]
+theorem map_mem_span_algebraMap_image {S T : Type*} [Semiring S] [IsMulCommutative S] [Semiring T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] (x : S) (a : Set S)
     (hx : x ∈ Submodule.span R a) : algebraMap S T x ∈ Submodule.span R (algebraMap S T '' a) := by
   rw [span_algebraMap_image_of_tower, mem_map]
@@ -447,8 +447,8 @@ section Ring
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [IsDomain A] [Semiring B] [Algebra R A] [Algebra R B]
-variable [AddCommGroup M] [Module R M] [Module A M] [Module B M]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsDomain A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [AddGroup M] [IsAddCommutative M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 theorem lsmul_injective [Module.IsTorsionFree A M] {x : A} (hx : x ≠ 0) :
@@ -462,7 +462,7 @@ end Ring
 section Algebra.algebraMapSubmonoid
 
 @[simp]
-theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [CommSemiring R] [CommSemiring A]
+theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A]
     [Algebra R A] (M : Submonoid R) [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
     algebraMapSubmonoid B (algebraMapSubmonoid A M) = algebraMapSubmonoid B M :=
   algebraMapSubmonoid_map_eq _ (IsScalarTower.toAlgHom R A B)

@@ -57,8 +57,8 @@ suppress_compilation
 open scoped TensorProduct
 
 variable {R ι A B : Type*}
-variable [CommSemiring ι] [DecidableEq ι]
-variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+variable [Semiring ι] [IsMulCommutative ι] [DecidableEq ι]
+variable [Ring R] [IsMulCommutative R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule R B)
 variable [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
 
@@ -103,7 +103,7 @@ theorem symm_of_of (x : 𝒜 ᵍ⊗[R] ℬ) : of R 𝒜 ℬ ((of R 𝒜 ℬ).sym
 /-- Two linear maps from the graded tensor product agree if they agree on the underlying tensor
 product. -/
 @[ext]
-theorem hom_ext {M} [AddCommMonoid M] [Module R M] ⦃f g : 𝒜 ᵍ⊗[R] ℬ →ₗ[R] M⦄
+theorem hom_ext {M} [AddMonoid M] [IsAddCommutative M] [Module R M] ⦃f g : 𝒜 ᵍ⊗[R] ℬ →ₗ[R] M⦄
     (h : f ∘ₗ of R 𝒜 ℬ = (g ∘ₗ of R 𝒜 ℬ : A ⊗[R] B →ₗ[R] M)) :
     f = g :=
   h

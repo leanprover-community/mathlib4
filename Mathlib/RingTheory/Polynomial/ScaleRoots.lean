@@ -124,7 +124,7 @@ end Semiring
 
 section CommSemiring
 
-variable [Semiring S] [CommSemiring R] [Semiring A] [Field K]
+variable [Semiring S] [Semiring R] [IsMulCommutative R] [Semiring A] [Field K]
 
 theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s : S)
     (hsa : Commute (f s) a) (hf : ∀ s₁ s₂, Commute (f s₁) (f s₂)) :
@@ -157,7 +157,7 @@ lemma scaleRoots_eval_mul (p : R[X]) (r s : R) :
     eval (s * r) (p.scaleRoots s) = s ^ p.natDegree * eval r p :=
   scaleRoots_eval₂_mul _ _ _
 
-lemma scaleRoots_aeval_smul {S} [CommSemiring S] [Algebra S R] {p : S[X]} (r : R) (s : S) :
+lemma scaleRoots_aeval_smul {S} [Semiring S] [IsMulCommutative S] [Algebra S R] {p : S[X]} (r : R) (s : S) :
     (p.scaleRoots s).aeval (s • r) = s ^ p.natDegree • p.aeval r := by
   simp_rw [Algebra.smul_def, map_pow]
   exact scaleRoots_eval₂_mul _ _ _
@@ -326,7 +326,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 lemma rootMultiplicity_scaleRoots (p : R[X]) {r a : R} (hr : IsLeftRegular r) :
     rootMultiplicity (r * a) (p.scaleRoots r) = rootMultiplicity a p := by

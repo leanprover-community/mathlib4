@@ -29,10 +29,10 @@ namespace Module.Dual
 
 open TensorProduct LinearEquiv
 
-variable {R : Type*} [CommSemiring R]
-  {V : Type*} [AddCommMonoid V] [Module R V]
-  {W : Type*} [AddCommMonoid W] [Module R W]
-  (A : Type*) [CommSemiring A] [Algebra R A]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
+  {V : Type*} [AddMonoid V] [IsAddCommutative V] [Module R V]
+  {W : Type*} [AddMonoid W] [IsAddCommutative W] [Module R W]
+  (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A]
 
 /-- Equivalent modules have equivalent duals. -/
 @[simps!] def congr (e : V ≃ₗ[R] W) :
@@ -47,7 +47,7 @@ theorem baseChange_apply_tmul (f : Dual R V) (a : A) (v : V) :
     f.baseChange A (a ⊗ₜ v) = (f v) • a :=
   rfl
 
-variable {B : Type*} [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+variable {B : Type*} [Semiring B] [IsMulCommutative B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
 open AlgebraTensorModule in
 theorem baseChange_baseChange (f : Dual R V) :
@@ -60,10 +60,10 @@ namespace IsBaseChange
 
 open Module TensorProduct
 
-variable {R : Type*} [CommSemiring R]
-  {V : Type*} [AddCommMonoid V] [Module R V]
-  {W : Type*} [AddCommMonoid W] [Module R W]
-  {A : Type*} [CommSemiring A] [Algebra R A] [Module A W] [IsScalarTower R A W]
+variable {R : Type*} [Semiring R] [IsMulCommutative R]
+  {V : Type*} [AddMonoid V] [IsAddCommutative V] [Module R V]
+  {W : Type*} [AddMonoid W] [IsAddCommutative W] [Module R W]
+  {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A] [Module A W] [IsScalarTower R A W]
   {j : V →ₗ[R] W} (ibc : IsBaseChange A j)
 
 /-- The base change of an element of the dual. -/

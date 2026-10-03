@@ -26,7 +26,7 @@ assert_not_exists Algebra.IsIntegral
 -- for results about finiteness, see `Mathlib/RingTheory/Finiteness/Quotient.lean`
 assert_not_exists Module.Finite
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [Ring R] [IsMulCommutative R]
 
 namespace Ideal
 
@@ -36,7 +36,7 @@ open scoped Pointwise
 
 section CommRing
 
-variable {S : Type*} [CommRing S] {f : R →+* S}
+variable {S : Type*} [Ring S] [IsMulCommutative S] {f : R →+* S}
 
 variable {p : Ideal R} {P : Ideal S}
 
@@ -87,7 +87,7 @@ section ideal_liesOver
 
 section Semiring
 
-variable (A : Type*) [CommSemiring A] {B C : Type*} [Semiring B] [Semiring C] [Algebra A B]
+variable (A : Type*) [Semiring A] [IsMulCommutative A] {B C : Type*} [Semiring B] [Semiring C] [Algebra A B]
   [Algebra A C] (P : Ideal B) {Q : Ideal C} (p : Ideal A)
   {G : Type*} [Group G] [MulSemiringAction G B] (g : G)
 
@@ -179,7 +179,7 @@ end Semiring
 
 section CommSemiring
 
-variable {A : Type*} [CommSemiring A] {B : Type*} [CommSemiring B] {C : Type*} [Semiring C]
+variable {A : Type*} [Semiring A] [IsMulCommutative A] {B : Type*} [Semiring B] [IsMulCommutative B] {C : Type*} [Semiring C]
   [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
   (𝔓 : Ideal C) (P : Ideal B) (p : Ideal A)
 
@@ -209,7 +209,7 @@ C → D
 and let `P` be an ideal of `B`. The image in `C` of the ideal of `A` under `P` is included
 in the ideal of `C` under the image of `P` in `D`.
 -/
-theorem map_under_le_under_map {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C]
+theorem map_under_le_under_map {C D : Type*} [Semiring C] [IsMulCommutative C] [Semiring D] [Algebra A C]
     [Algebra C D] [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D] :
     map (algebraMap A C) (under A P) ≤ under C (map (algebraMap B D) P) := by
   apply le_comap_of_map_le
@@ -228,7 +228,7 @@ and let `P` be an ideal of `B`. Assume that the image in `C` of the ideal of `A`
 is maximal and that the image of `P` in `D` is not equal to `D`, then the image in `C` of the
 ideal of `A` under `P` is equal to the ideal of `C` under the image of `P` in `D`.
 -/
-theorem under_map_eq_map_under {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C]
+theorem under_map_eq_map_under {C D : Type*} [Semiring C] [IsMulCommutative C] [Semiring D] [Algebra A C]
     [Algebra C D] [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D]
     (h₁ : (map (algebraMap A C) (under A P)).IsMaximal) (h₂ : map (algebraMap B D) P ≠ ⊤) :
     under C (map (algebraMap B D) P) = map (algebraMap A C) (under A P) :=
@@ -255,7 +255,7 @@ end CommSemiring
 
 section CommRing
 
-variable (A B : Type*) [CommSemiring A] [Semiring B]
+variable (A B : Type*) [Semiring A] [IsMulCommutative A] [Semiring B]
   [Algebra A B] [FaithfulSMul A B] {p : Ideal A}
 
 @[simp]
@@ -277,7 +277,7 @@ instance {K A : Type*} [Field K] [Semiring A] [Algebra K A] (P : Ideal A) [P.IsP
   ⟨((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right Ideal.IsPrime.ne_top').symm⟩
 namespace Quotient
 
-variable (R : Type*) [CommSemiring R] {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+variable (R : Type*) [Semiring R] [IsMulCommutative R] {A B C : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Ring C] [IsMulCommutative C]
   [Algebra A B] [Algebra A C] [Algebra R A] [Algebra R B] [IsScalarTower R A B]
   (P : Ideal B) {Q : Ideal C} (p : Ideal A) [Q.LiesOver p] [P.LiesOver p]
   (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
@@ -369,7 +369,7 @@ end ideal_liesOver
 
 section primesOver
 
-variable {A : Type*} [CommSemiring A] (p : Ideal A) (B : Type*) [Semiring B] [Algebra A B]
+variable {A : Type*} [Semiring A] [IsMulCommutative A] (p : Ideal A) (B : Type*) [Semiring B] [Algebra A B]
 
 /-- The set of all prime ideals in `B` that lie over an ideal `p` of `A`. -/
 def primesOver : Set (Ideal B) :=

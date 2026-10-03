@@ -54,7 +54,7 @@ lemma LowerHemicontinuous.hasOpenCGraph_of_add_hasOpenCGraph [TopologicalSpace �
 
 end tvs
 
-variable {g : α → β} [NormalSpace α] [ParacompactSpace α] [AddCommGroup β] [Module ℝ β]
+variable {g : α → β} [NormalSpace α] [ParacompactSpace α] [AddGroup β] [IsAddCommutative β] [Module ℝ β]
 
 section approximate
 

@@ -25,7 +25,7 @@ universe u u' v w w'
 namespace Algebra
 
 variable (R : Type u) {A : Type v} {B : Type w}
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
 @[simps -isSimp toSubsemiring]
@@ -52,10 +52,10 @@ instance : CompleteLattice (Subalgebra R A) where
   bot := (Algebra.ofId R A).range
   bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
 
-instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
+instance {C : Type*} [Semiring C] [IsMulCommutative C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
   Algebra ↑(min S₁ S₂) S₁ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_left).toRingHom
 
-instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
+instance {C : Type*} [Semiring C] [IsMulCommutative C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
   Algebra ↑(S₁ ⊓ S₂) S₂ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_right).toRingHom
 
 theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) := rfl
@@ -75,7 +75,7 @@ theorem top_toSubmodule : Subalgebra.toSubmodule (⊤ : Subalgebra R A) = ⊤ :=
 theorem top_toSubsemiring : (⊤ : Subalgebra R A).toSubsemiring = ⊤ := rfl
 
 @[simp]
-theorem top_toSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] :
+theorem top_toSubring {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A] :
     (⊤ : Subalgebra R A).toSubring = ⊤ := rfl
 
 @[simp]
@@ -87,7 +87,7 @@ theorem toSubsemiring_eq_top {S : Subalgebra R A} : S.toSubsemiring = ⊤ ↔ S 
   Subalgebra.toSubsemiring_injective.eq_iff' top_toSubsemiring
 
 @[simp]
-theorem toSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A] {S : Subalgebra R A} :
+theorem toSubring_eq_top {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A] {S : Subalgebra R A} :
     S.toSubring = ⊤ ↔ S = ⊤ :=
   Subalgebra.toSubring_injective.eq_iff' top_toSubring
 
@@ -240,7 +240,7 @@ theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 
 @[simp]
-theorem toSubring_bot (A : Type*) [CommRing A] (R : Subring A) :
+theorem toSubring_bot (A : Type*) [Ring A] [IsMulCommutative A] (R : Subring A) :
     (⊥ : Subalgebra R A).toSubring = R := by
   aesop (add norm Subalgebra.mem_carrier.symm)
 
@@ -312,7 +312,7 @@ namespace Subalgebra
 open Algebra
 
 variable {R : Type u} {A : Type v} {B : Type w}
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 variable (S : Subalgebra R A)
 
 /-- The top subalgebra is isomorphic to the algebra.
@@ -350,7 +350,7 @@ section Center
 variable (R A)
 
 @[simp]
-theorem center_eq_top (A : Type*) [CommSemiring A] [Algebra R A] : center R A = ⊤ :=
+theorem center_eq_top (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A] : center R A = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ A)
 
 end Center
@@ -371,7 +371,7 @@ section Equalizer
 
 namespace AlgHom
 
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 @[simp]
 theorem equalizer_eq_top {φ ψ : A →ₐ[R] B} : equalizer φ ψ = ⊤ ↔ φ = ψ := by
@@ -399,7 +399,7 @@ section MapComap
 
 namespace Subalgebra
 
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable {R A B : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 theorem map_comap_eq (f : A →ₐ[R] B) (S : Subalgebra R B) : (S.comap f).map f = S ⊓ f.range :=
   SetLike.coe_injective Set.image_preimage_eq_inter_range
@@ -420,7 +420,7 @@ section saturation
 
 namespace Subalgebra
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Algebra R S]
   {s : Subalgebra R S} {M : Submonoid S} {H : M ≤ s.toSubmonoid}
 
 /-- The saturation of a subalgebra `s` with respect to a submonoid `M` is the smallest
@@ -508,7 +508,7 @@ open Algebra
 
 section Semiring
 
-variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
@@ -542,7 +542,7 @@ scoped instance (x y : α) (s : Set α) [CoeAdjoinAux x s] : CoeAdjoinAux x (ins
 
 /-- Enables notation `xₖ : R[x₁, ..., xₙ]` instead of
 `(⟨xₖ, "membership proof"⟩ : R[x₁, ..., xₙ])`. -/
-scoped instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B]
+scoped instance {A B : Type*} [Semiring A] [IsMulCommutative A] [Semiring B] [Algebra A B]
     (s : Set B) (x : B) [CoeAdjoinAux x s] :
     CoeDep B x (adjoin A s) where
   coe := ⟨x, mem_adjoin_of_mem CoeAdjoinAux.mem⟩
@@ -809,7 +809,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring A]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A]
 variable [Algebra R A] {s t : Set A}
 variable (R s t)
 
@@ -823,7 +823,7 @@ end CommSemiring
 
 section Ring
 
-variable [CommRing R] [Ring A]
+variable [Ring R] [IsMulCommutative R] [Ring A]
 variable [Algebra R A] {s : Set A}
 
 @[simp]
@@ -863,7 +863,7 @@ open Algebra Subalgebra
 
 namespace AlgHom
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 theorem map_adjoin (φ : A →ₐ[R] B) (s : Set A) : (adjoin R s).map φ = adjoin R (φ '' s) :=
   (adjoin_image _ _ _).symm
@@ -933,7 +933,7 @@ end NatInt
 
 section
 
-variable (F E : Type*) {K : Type*} [CommSemiring E] [Semiring K] [SMul F E] [Algebra E K]
+variable (F E : Type*) {K : Type*} [Semiring E] [IsMulCommutative E] [Semiring K] [SMul F E] [Algebra E K]
 
 /-- If `K / E / F` is a ring extension tower, `L` is a submonoid of `K / F` which is generated by
 `S` as an `F`-module, then `E[L]` is generated by `S` as an `E`-module. -/
@@ -943,7 +943,7 @@ theorem Submonoid.adjoin_eq_span_of_eq_span [Semiring F] [Module F K] [IsScalarT
   rw [adjoin_eq_span, L.closure_eq, h]
   exact (span_le.mpr <| span_subset_span _ _ _).antisymm (span_mono subset_span)
 
-variable [CommSemiring F] [Algebra F K] [IsScalarTower F E K] (L : Subalgebra F K) {F}
+variable [Semiring F] [IsMulCommutative F] [Algebra F K] [IsScalarTower F E K] (L : Subalgebra F K) {F}
 
 /-- If `K / E / F` is a ring extension tower, `L` is a subalgebra of `K / F` which is generated by
 `S` as an `F`-module, then `E[L]` is generated by `S` as an `E`-module. -/
@@ -954,7 +954,7 @@ theorem Subalgebra.adjoin_eq_span_of_eq_span {S : Set K} (h : toSubmodule L = sp
 end
 
 section CommSemiring
-variable (R) [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable (R) [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
 lemma NonUnitalAlgebra.adjoin_le_algebra_adjoin (s : Set A) :
     adjoin R s ≤ (Algebra.adjoin R s).toNonUnitalSubalgebra := adjoin_le Algebra.subset_adjoin
@@ -971,7 +971,7 @@ namespace Subalgebra
 
 section toNonUnitalSubalgebra
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
 
 /-- The forgetful map from subalgebras to non-unital subalgebras, as an order embedding. -/
 def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
@@ -988,7 +988,7 @@ alias ⟨_, toNonUnitalSubalgebra_mono⟩ := toNonUnitalSubalgebra_le_toNonUnita
 
 end toNonUnitalSubalgebra
 
-variable [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable [Semiring R] [IsMulCommutative R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
 theorem comap_map_eq (f : A →ₐ[R] B) (S : Subalgebra R A) :
     (S.map f).comap f = S ⊔ Algebra.adjoin R (f ⁻¹' {0}) := by

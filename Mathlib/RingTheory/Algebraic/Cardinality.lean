@@ -25,7 +25,7 @@ open scoped Polynomial
 
 namespace Algebra.IsAlgebraic
 
-variable (R : Type u) [CommRing R] [IsDomain R] (L : Type v) [CommRing L] [IsDomain L] [Algebra R L]
+variable (R : Type u) [Ring R] [IsMulCommutative R] [IsDomain R] (L : Type v) [Ring L] [IsMulCommutative L] [IsDomain L] [Algebra R L]
 variable [IsTorsionFree R L] [Algebra.IsAlgebraic R L]
 
 theorem lift_cardinalMk_le_sigma_polynomial :
@@ -58,7 +58,7 @@ theorem lift_cardinalMk_le_max : lift.{u} #L ≤ lift.{v} #R ⊔ ℵ₀ :=
       gcongr; simp only [lift_le, Polynomial.cardinalMk_le_max]
     _ = _ := by simp
 
-variable (L : Type u) [CommRing L] [IsDomain L] [Algebra R L]
+variable (L : Type u) [Ring L] [IsMulCommutative L] [IsDomain L] [Algebra R L]
 variable [IsTorsionFree R L] [Algebra.IsAlgebraic R L]
 
 theorem cardinalMk_le_sigma_polynomial :

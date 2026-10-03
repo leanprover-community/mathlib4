@@ -204,7 +204,7 @@ This in fact allows us to generalize to any type satisfying `[Finset.HasAntidiag
 section CauchyProduct
 
 section HasAntidiagonal
-variable {A : Type*} [AddCommMonoid A] [HasAntidiagonal A]
+variable {A : Type*} [AddMonoid A] [IsAddCommutative A] [HasAntidiagonal A]
 variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : A → α}
 
 /-- The family `(k, l) : ℕ × ℕ ↦ f k * g l` is summable if and only if the family
@@ -295,7 +295,7 @@ This section extends `Finset.prod_one_add` to the infinite product
 `∏' i : ι, (1 + f i) = ∑' s : Finset ι, ∏ i ∈ s, f i`.
 -/
 
-variable [CommSemiring α] [TopologicalSpace α] {f : ι → α}
+variable [Semiring α] [IsMulCommutative α] [TopologicalSpace α] {f : ι → α}
 
 theorem hasProd_one_add_of_hasSum_prod {a : α} (h : HasSum (∏ i ∈ ·, f i) a) :
     HasProd (1 + f ·) a := by
@@ -341,7 +341,7 @@ theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
 /-- The infinite version of `Finset.prod_one_sub_ordered`. -/
 @[to_dual tprod_one_sub_ordered']
 theorem tprod_one_sub_ordered {α : Type*} {f : ι → α}
-    [CommRing α] [TopologicalSpace α] [T2Space α] [IsTopologicalAddGroup α]
+    [Ring α] [IsMulCommutative α] [TopologicalSpace α] [T2Space α] [IsTopologicalAddGroup α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 - f j))
     (hprod : Multipliable (1 - f ·)) :
     ∏' i, (1 - f i) = 1 - ∑' i, f i * ∏ j ∈ Iio i, (1 - f j) := by

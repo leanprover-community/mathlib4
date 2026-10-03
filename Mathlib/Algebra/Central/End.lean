@@ -16,8 +16,8 @@ This file shows that the algebra of endomorphisms on a free module is central.
 
 open Module
 
-variable {R S M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Free R M]
-  [CommSemiring S] [Module S M] [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M]
+variable {R S M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Free R M]
+  [Semiring S] [IsMulCommutative S] [Module S M] [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M]
 
 public theorem Module.End.mem_subsemiringCenter_iff {f : End R M} :
     f ∈ Subsemiring.center (End R M) ↔
@@ -41,7 +41,7 @@ public instance [IsCentral S R] : IsCentral S (End R M) where out T hT :=
 end Algebra.IsCentral
 
 open LinearMap in
-public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
+public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
     [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂] [Algebra.IsCentral S R]
     {f g : M ≃ₗ[R] M₂} : f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : S, ⇑f = α • g := by
   conv_lhs => rw [eq_comm]
@@ -53,8 +53,8 @@ public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddCommMonoid M�
     LinearMap.smul_apply, End.one_apply, Pi.smul_apply, LinearMapClass.map_smul_of_tower g]
 
 open LinearMap in
-public theorem LinearEquiv.conjAlgEquiv_ext_iff' {S M₂ : Type*} [CommRing S] [IsCancelMulZero S]
-    [Module S M] [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M] [AddCommGroup M₂]
+public theorem LinearEquiv.conjAlgEquiv_ext_iff' {S M₂ : Type*} [Ring S] [IsMulCommutative S] [IsCancelMulZero S]
+    [Module S M] [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M] [AddGroup M₂] [IsAddCommutative M₂]
     [Module R M₂] [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂]
     [Algebra.IsCentral S R] [IsTorsionFree S M₂]
     (f g : M ≃ₗ[R] M₂) : f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : Sˣ, f = α • g := by

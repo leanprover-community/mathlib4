@@ -46,7 +46,7 @@ noncomputable section
 
 universe u v v'
 
-variable (R : Type u) [Ring R] (Q : Type v) [AddCommGroup Q] [Module R Q]
+variable (R : Type u) [Ring R] (Q : Type v) [AddGroup Q] [IsAddCommutative Q] [Module R Q]
 
 /--
 An `R`-module `Q` is injective if and only if every injective `R`-linear map descends to a linear
@@ -61,7 +61,7 @@ map to `Q`, i.e. in the following diagram, if `f` is injective then there is an 
   ```
 -/
 @[mk_iff] class Module.Injective : Prop where
-  out : ∀ ⦃X Y : Type v⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
+  out : ∀ ⦃X Y : Type v⦄ [AddGroup X] [IsAddCommutative X] [AddGroup Y] [IsAddCommutative Y] [Module R X] [Module R Y]
     (f : X →ₗ[R] Y) (_ : Function.Injective f) (g : X →ₗ[R] Q),
     ∃ h : Y →ₗ[R] Q, ∀ x, h (f x) = g x
 
@@ -72,7 +72,7 @@ def Module.Baer : Prop :=
 
 namespace Module.Baer
 
-variable {R Q} {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+variable {R Q} {M N : Type*} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
 variable [Module R M] [Module R N] (i : M →ₗ[R] N) (f : M →ₗ[R] Q)
 
 lemma of_equiv (e : Q ≃ₗ[R] M) (h : Module.Baer R Q) : Module.Baer R M := fun I g ↦
@@ -81,7 +81,7 @@ lemma of_equiv (e : Q ≃ₗ[R] M) (h : Module.Baer R Q) : Module.Baer R M := fu
 
 lemma congr (e : Q ≃ₗ[R] M) : Module.Baer R Q ↔ Module.Baer R M := ⟨of_equiv e, of_equiv e.symm⟩
 
-lemma iff_surjective {R : Type u} [CommRing R] [Module R M] : Module.Baer R M ↔
+lemma iff_surjective {R : Type u} [Ring R] [IsMulCommutative R] [Module R M] : Module.Baer R M ↔
     ∀ (I : Ideal R), Function.Surjective (LinearMap.lcomp R M I.subtype) := by
   refine ⟨fun h I g ↦ ?_, fun h I g ↦ ?_⟩
   · rcases h I g with ⟨g', hg'⟩
@@ -418,7 +418,7 @@ end Module.Baer
 
 section ULift
 
-variable {M : Type v} [AddCommGroup M] [Module R M]
+variable {M : Type v} [AddGroup M] [IsAddCommutative M] [Module R M]
 
 lemma Module.ulift_injective_of_injective [Small.{v} R]
     (inj : Module.Injective R M) :
@@ -451,9 +451,9 @@ section lifting_property
 universe uR uM uP uP'
 
 variable (R : Type uR) [Ring R] [Small.{uM} R]
-variable (M : Type uM) [AddCommGroup M] [Module R M] [inj : Module.Injective R M]
-variable (P : Type uP) [AddCommGroup P] [Module R P]
-variable (P' : Type uP') [AddCommGroup P'] [Module R P']
+variable (M : Type uM) [AddGroup M] [IsAddCommutative M] [Module R M] [inj : Module.Injective R M]
+variable (P : Type uP) [AddGroup P] [IsAddCommutative P] [Module R P]
+variable (P' : Type uP') [AddGroup P'] [IsAddCommutative P'] [Module R P']
 
 lemma Module.Injective.extension_property
     (f : P →ₗ[R] P') (hf : Function.Injective f)
@@ -466,7 +466,7 @@ end lifting_property
 universe w in
 instance Module.Injective.pi
     (R : Type u) [Ring R] {ι : Type w} (M : ι → Type v) [Small.{v} R]
-    [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
     [∀ i, Module.Injective R (M i)] :
     Module.Injective R (∀ i, M i) :=
   ⟨fun X Y _ _ _ _ f hf g ↦ by
@@ -479,7 +479,7 @@ set_option backward.isDefEq.respectTransparency false in
 universe u' in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 theorem Module.Injective.of_ringEquiv {R : Type u} [Ring R] [Small.{v} R] {S : Type u'} [Ring S]
-    {M : Type v} {N : Type v'} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module S N]
+    {M : Type v} {N : Type v'} [AddGroup M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N] [Module R M] [Module S N]
     (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
     [inj : Module.Injective R M] : Module.Injective S N := by
   apply Module.Baer.injective (fun I g ↦ ?_)

@@ -62,7 +62,7 @@ namespace FiniteField
 
 section Polynomial
 
-variable [CommRing R] [IsDomain R]
+variable [Ring R] [IsMulCommutative R] [IsDomain R]
 
 open Polynomial
 
@@ -104,7 +104,7 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
 
 end Polynomial
 
-theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
+theorem prod_univ_units_id_eq_neg_one [Ring K] [IsMulCommutative K] [IsDomain K] [Fintype Kˣ] :
     ∏ x : Kˣ, x = (-1 : Kˣ) := by
   classical
     have : (∏ x ∈ (@univ Kˣ _).erase (-1), x) = 1 :=
@@ -177,7 +177,7 @@ theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
     exact sum_subgroup_units_eq_zero G_bot
 
 @[simp]
-theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
+theorem sum_subgroup_pow_eq_zero [Ring K] [IsMulCommutative K] [NoZeroDivisors K]
     {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Fintype.card G) :
     ∑ x : G, ((x : Kˣ) : K) ^ k = 0 := by
   rw [← Nat.card_eq_fintype_card] at k_lt_card_G
@@ -326,7 +326,7 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0
 
 section frobenius
 
-variable (R) [CommRing R] [Algebra K R]
+variable (R) [Ring R] [IsMulCommutative R] [Algebra K R]
 
 /-- If `R` is an algebra over a finite field `K`, the Frobenius `K`-algebra endomorphism of `R` is
   given by raising every element of `R` to its `#K`-th power. -/

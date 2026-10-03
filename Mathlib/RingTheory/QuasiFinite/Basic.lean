@@ -37,7 +37,7 @@ In this file, we define the notion of quasi-finite algebras and prove basic prop
 
 @[expose] public section
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 -- See `Mathlib/RingTheory/QuasiFinite/Polynomial.lean`
@@ -117,7 +117,7 @@ lemma isDiscrete_comap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)}
 instance (priority := low) [Module.Finite R S] : QuasiFinite R S where
 
 @[stacks 00PP "(3)"]
-instance baseChange [QuasiFinite R S] {A : Type*} [CommRing A] [Algebra R A] :
+instance baseChange [QuasiFinite R S] {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] :
     QuasiFinite A (A ⊗[R] S) := by
   refine ⟨fun P hP ↦ ?_⟩
   let p := P.under R
@@ -368,7 +368,7 @@ abbrev QuasiFiniteAt (p : Ideal S) [p.IsPrime] : Prop :=
   QuasiFinite R (Localization.AtPrime p)
 
 lemma QuasiFiniteAt.baseChange (p : Ideal S) [p.IsPrime] [QuasiFiniteAt R p]
-    {A : Type*} [CommRing A] [Algebra R A] (q : Ideal (A ⊗[R] S)) [q.IsPrime]
+    {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] (q : Ideal (A ⊗[R] S)) [q.IsPrime]
     (hq : p = q.comap Algebra.TensorProduct.includeRight.toRingHom) :
     QuasiFiniteAt A q := by
   let f : A ⊗[R] Localization.AtPrime p →ₐ[A] Localization.AtPrime q :=

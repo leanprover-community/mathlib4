@@ -29,8 +29,8 @@ open TopologicalSpace Bornology Filter Pointwise
 open scoped Topology
 
 variable {𝕜 𝕜' E F : Type*}
-variable [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-variable [AddCommGroup F] [TopologicalSpace F]
+variable [AddGroup E] [IsAddCommutative E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+variable [AddGroup F] [IsAddCommutative F] [TopologicalSpace F]
 
 section NontriviallyNormedField
 

@@ -537,7 +537,7 @@ instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
   Injective.monoid _ DFunLike.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
-instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
+instance instCommMonoid [Monoid R] [IsMulCommutative R] [BoundedMul R] [ContinuousMul R] :
     CommMonoid (α →ᵇ R) := fast_instance%
   Injective.commMonoid _ DFunLike.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
@@ -562,12 +562,12 @@ def toContinuousMapMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α �
     simp
 
 @[to_additive (attr := simp)]
-lemma coe_prod {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]
+lemma coe_prod {ι : Type*} (s : Finset ι) [Monoid R] [IsMulCommutative R] [BoundedMul R] [ContinuousMul R]
     (f : ι → α →ᵇ R) :
     ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, ⇑(f i) := map_prod coeFnMonoidHom f s
 
 @[to_additive]
-lemma prod_apply {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]
+lemma prod_apply {ι : Type*} (s : Finset ι) [Monoid R] [IsMulCommutative R] [BoundedMul R] [ContinuousMul R]
     (f : ι → α →ᵇ R) (a : α) :
     (∏ i ∈ s, f i) a = ∏ i ∈ s, f i a := by simp
 
@@ -760,7 +760,7 @@ end DistribMulAction
 
 section Module
 
-variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
+variable [Semiring 𝕜] [AddMonoid β] [IsAddCommutative β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 variable {f : α →ᵇ β} {x : α} {C : ℝ}
 variable [BoundedAdd β] [ContinuousAdd β]
 

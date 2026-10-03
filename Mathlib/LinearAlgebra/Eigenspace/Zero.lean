@@ -32,7 +32,7 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
 
 public section
 
-variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
+variable {R K M : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [Field K] [AddGroup M] [IsAddCommutative M]
 variable [Module R M] [Module.Finite R M] [Module.Free R M]
 variable [Module K M] [Module.Finite K M]
 

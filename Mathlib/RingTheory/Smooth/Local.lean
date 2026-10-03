@@ -18,7 +18,7 @@ public section
 
 open TensorProduct IsLocalRing KaehlerDifferential
 
-variable {R S : Type*} [CommRing R] [CommRing S] [IsLocalRing S] [Algebra R S]
+variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [IsLocalRing S] [Algebra R S]
 
 namespace Algebra
 
@@ -46,7 +46,7 @@ theorem FormallySmooth.iff_injective_lTensor_residueField.{u}
     P.formallySmooth_iff_split_injection]
 
 theorem FormallySmooth.iff_injective_cotangentComplexBaseChange_residueField
-    (P : Type*) [CommRing P] [Algebra R P] [Algebra P S]
+    (P : Type*) [Ring P] [IsMulCommutative P] [Algebra R P] [Algebra P S]
     [IsScalarTower R P S] [FormallySmooth R P] [Module.Free P Ω[P⁄R]] [Module.Finite P Ω[P⁄R]]
     (h₁ : Function.Surjective (algebraMap P S)) (h₂ : (RingHom.ker (algebraMap P S)).FG) :
     Algebra.FormallySmooth R S ↔
@@ -69,7 +69,7 @@ Then `S` is formally smooth iff `k ⊗ₛ I → k ⊗ₚ Ω[P/R]` is injective,
 where `k` any field extension of the residue field of `S`.
 -/
 theorem FormallySmooth.iff_injective_cotangentComplexBaseChange
-    (P K : Type*) [Field K] [CommRing P] [Algebra R P] [Algebra P S]
+    (P K : Type*) [Field K] [Ring P] [IsMulCommutative P] [Algebra R P] [Algebra P S]
     [IsScalarTower R P S] [Algebra S K] [Algebra P K] [IsScalarTower P S K]
     [FormallySmooth R P] [Module.Free P Ω[P⁄R]] [Module.Finite P Ω[P⁄R]]
     (h₁ : Function.Surjective (algebraMap P S)) (h₂ : (RingHom.ker (algebraMap P S)).FG)

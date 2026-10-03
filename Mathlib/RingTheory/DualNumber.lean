@@ -27,7 +27,7 @@ namespace TrivSqZeroExt
 variable {R M : Type*}
 
 section Semiring
-variable [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
 lemma isNilpotent_iff_isNilpotent_fst {x : TrivSqZeroExt R M} :
     IsNilpotent x ↔ IsNilpotent x.fst := by
@@ -51,7 +51,7 @@ lemma isNilpotent_inr (x : M) : IsNilpotent (.inr x : TrivSqZeroExt R M) := by
 
 end Semiring
 
-lemma isUnit_or_isNilpotent_of_isMaximal_isNilpotent [CommSemiring R] [AddCommGroup M]
+lemma isUnit_or_isNilpotent_of_isMaximal_isNilpotent [Semiring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M]
     [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
     (h : ∀ I : Ideal R, I.IsMaximal → IsNilpotent I)
     (a : TrivSqZeroExt R M) :
@@ -62,7 +62,7 @@ lemma isUnit_or_isNilpotent_of_isMaximal_isNilpotent [CommSemiring R] [AddCommGr
   refine (h _ hI).imp fun n hn ↦ ?_
   exact hn.le (Ideal.pow_mem_pow haI _)
 
-lemma isUnit_or_isNilpotent [DivisionSemiring R] [AddCommGroup M]
+lemma isUnit_or_isNilpotent [DivisionSemiring R] [AddGroup M] [IsAddCommutative M]
     [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
     (a : TrivSqZeroExt R M) :
     IsUnit a ∨ IsNilpotent a := by

@@ -36,7 +36,7 @@ variable {R : Type u} {S : Type v} {k : Type y} {A : Type z} {a b : R} {n : ℕ}
 
 section CommRing
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero
     (p : R[X]) (t : R) (hnezero : derivative p ≠ 0) :
@@ -142,7 +142,7 @@ end CommRing
 
 section IsDomain
 
-variable [CommRing R]
+variable [Ring R] [IsMulCommutative R]
 
 theorem one_lt_rootMultiplicity_iff_isRoot_gcd
     [GCDMonoid R[X]] {p : R[X]} {t : R} (h : p ≠ 0) :
@@ -236,7 +236,7 @@ theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := b
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
 
-theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p : R[X]} :
+theorem roots_normalize {R} [Ring R] [IsMulCommutative R] [IsDomain R] [NormalizationMonoid R] {p : R[X]} :
     (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
@@ -463,7 +463,7 @@ theorem gcd_map [Field k] [DecidableEq R] [DecidableEq k] (f : R →+* k) :
 
 end
 
-theorem eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
+theorem eval₂_gcd_eq_zero [Semiring k] [IsMulCommutative k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} (hf : f.eval₂ ϕ α = 0)
     (hg : g.eval₂ ϕ α = 0) : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0 := by
   rw [EuclideanDomain.gcd_eq_gcd_ab f g, Polynomial.eval₂_add, Polynomial.eval₂_mul,
@@ -473,17 +473,17 @@ theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
     (hf : f.eval α = 0) (hg : g.eval α = 0) : (EuclideanDomain.gcd f g).eval α = 0 :=
   eval₂_gcd_eq_zero hf hg
 
-theorem root_left_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
+theorem root_left_of_root_gcd [Semiring k] [IsMulCommutative k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : f.eval₂ ϕ α = 0 := by
   obtain ⟨p, hp⟩ := EuclideanDomain.gcd_dvd_left f g
   rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 
-theorem root_right_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
+theorem root_right_of_root_gcd [Semiring k] [IsMulCommutative k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : g.eval₂ ϕ α = 0 := by
   obtain ⟨p, hp⟩ := EuclideanDomain.gcd_dvd_right f g
   rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 
-theorem root_gcd_iff_root_left_right [CommSemiring k] [DecidableEq R]
+theorem root_gcd_iff_root_left_right [Semiring k] [IsMulCommutative k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} :
     (EuclideanDomain.gcd f g).eval₂ ϕ α = 0 ↔ f.eval₂ ϕ α = 0 ∧ g.eval₂ ϕ α = 0 :=
   ⟨fun h => ⟨root_left_of_root_gcd h, root_right_of_root_gcd h⟩, fun h => eval₂_gcd_eq_zero h.1 h.2⟩
@@ -496,26 +496,26 @@ theorem isCoprime_map [Field k] (f : R →+* k) : IsCoprime (p.map f) (q.map f) 
   classical
   rw [← EuclideanDomain.gcd_isUnit_iff, ← EuclideanDomain.gcd_isUnit_iff, gcd_map, isUnit_map]
 
-theorem mem_roots_map [CommRing k] [IsDomain k] {f : R →+* k} {x : k} (hp : p ≠ 0) :
+theorem mem_roots_map [Ring k] [IsMulCommutative k] [IsDomain k] {f : R →+* k} {x : k} (hp : p ≠ 0) :
     x ∈ (p.map f).roots ↔ p.eval₂ f x = 0 := by
   rw [mem_roots (map_ne_zero hp), IsRoot, Polynomial.eval_map]
 
-theorem rootSet_monomial [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
+theorem rootSet_monomial [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : (monomial n a).rootSet S = {0} := by
   classical
   rw [rootSet, aroots_monomial ha,
     Multiset.toFinset_nsmul _ _ hn, Multiset.toFinset_singleton, Finset.coe_singleton]
 
-theorem rootSet_C_mul_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
+theorem rootSet_C_mul_X_pow [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : rootSet (C a * X ^ n) S = {0} := by
   rw [C_mul_X_pow_eq_monomial, rootSet_monomial hn ha]
 
-theorem rootSet_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) :
+theorem rootSet_X_pow [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) :
     (X ^ n : R[X]).rootSet S = {0} := by
   rw [← one_mul (X ^ n : R[X]), ← C_1, rootSet_C_mul_X_pow hn]
   exact one_ne_zero
 
-theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : ι → R[X])
+theorem rootSet_prod [Ring S] [IsMulCommutative S] [IsDomain S] [Algebra R S] {ι : Type*} (f : ι → R[X])
     (s : Finset ι) (h : s.prod f ≠ 0) : (s.prod f).rootSet S = ⋃ i ∈ s, (f i).rootSet S := by
   classical
   simp only [rootSet, aroots, ← Finset.mem_coe]
@@ -639,7 +639,7 @@ theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Ring K] (f : K[X])
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
 
 theorem divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
-    {K : Type*} [CommRing K] (f : K[X]) (a : K) :
+    {K : Type*} [Ring K] [IsMulCommutative K] (f : K[X]) (a : K) :
     f /ₘ (X - C a) + (X - C a) * derivative (f /ₘ (X - C a)) = derivative f := by
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
   simpa only [derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero, one_mul,

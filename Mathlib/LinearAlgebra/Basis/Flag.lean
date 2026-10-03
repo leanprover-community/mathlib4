@@ -30,7 +30,7 @@ namespace Module.Basis
 
 section Semiring
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {n : ℕ} {b : Basis (Fin n) R M}
+variable {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] {n : ℕ} {b : Basis (Fin n) R M}
   {i j : Fin (n + 1)}
 
 /-- The subspace spanned by the first `k` vectors of the basis `b`. -/
@@ -53,7 +53,7 @@ theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
   simp [flag, Fin.castSucc_lt_castSucc_iff, le_iff_eq_or_lt, ofPred_or, span_insert]
 
 /-- `flag` commutes with `Basis.map`. -/
-theorem flag_map {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
+theorem flag_map {M₂ : Type*} [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
     (b : Basis (Fin n) R M) (e : M ≃ₗ[R] M₂) (k : Fin (n + 1)) :
     (b.map e).flag k = (b.flag k).map (e : M →ₗ[R] M₂) := by
   simp [flag, Submodule.map_span, Set.image_image, coe_map]
@@ -87,7 +87,7 @@ end Semiring
 
 section Ring
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {n : ℕ}
+variable {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] {n : ℕ}
 
 /-- The span of the new head vector lies in the successor flag of `Basis.mkFinCons`. -/
 theorem span_singleton_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
@@ -113,7 +113,7 @@ end Ring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {n : ℕ}
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] {n : ℕ}
 
 @[simp]
 theorem flag_le_ker_coord_iff [Nontrivial R] (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n} :
@@ -134,7 +134,7 @@ end CommRing
 
 section DivisionRing
 
-variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] {n : ℕ}
+variable {K V : Type*} [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] {n : ℕ}
 
 theorem flag_covBy (b : Basis (Fin n) K V) (i : Fin n) :
     b.flag i.castSucc ⋖ b.flag i.succ := by

@@ -49,7 +49,7 @@ namespace Matrix
 universe u v w
 
 variable {m : Type u} {n : Type v} {α : Type w}
-variable [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m] [CommRing α]
+variable [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m] [Ring α] [IsMulCommutative α]
 
 open Matrix Polynomial Equiv Equiv.Perm Finset
 
@@ -323,7 +323,7 @@ theorem adjugate_diagonal (v : n → α) :
     · rw [updateCol_self, Pi.single_eq_of_ne' hij]
     · rw [updateCol_ne hjk, diagonal_apply_ne' _ hjk]
 
-theorem _root_.RingHom.map_adjugate {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+theorem _root_.RingHom.map_adjugate {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
     (M : Matrix n n R) : f.mapMatrix M.adjugate = Matrix.adjugate (f.mapMatrix M) := by
   ext i k
   have : Pi.single i (1 : S) = f ∘ Pi.single i 1 := by
@@ -332,7 +332,7 @@ theorem _root_.RingHom.map_adjugate {R S : Type*} [CommRing R] [CommRing S] (f :
   rw [adjugate_apply, RingHom.mapMatrix_apply, map_apply, RingHom.mapMatrix_apply, this, ←
     map_updateRow, ← RingHom.mapMatrix_apply, ← RingHom.map_det, ← adjugate_apply]
 
-theorem _root_.AlgHom.map_adjugate {R A B : Type*} [CommSemiring R] [CommRing A] [CommRing B]
+theorem _root_.AlgHom.map_adjugate {R A B : Type*} [Semiring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) (M : Matrix n n A) :
     f.mapMatrix M.adjugate = Matrix.adjugate (f.mapMatrix M) :=
   f.toRingHom.map_adjugate _

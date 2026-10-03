@@ -62,7 +62,7 @@ variable (n m : ℕ)
 
 namespace Algebra
 
-variable (R : Type u) (S : Type v) (ι : Type w) (σ : Type t) [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type v) (ι : Type w) (σ : Type t) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
 
 attribute [local instance] Fintype.ofFinite
 
@@ -150,12 +150,12 @@ instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth
   obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
   exact P.finitePresentation_of_isFinite
 
-lemma IsStandardSmooth.of_algEquiv {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T)
+lemma IsStandardSmooth.of_algEquiv {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] (e : S ≃ₐ[R] T)
     [IsStandardSmooth R S] : IsStandardSmooth R T := by
   obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
   exact (P.ofAlgEquiv e).isStandardSmooth
 
-lemma IsStandardSmoothOfRelativeDimension.of_algEquiv {T : Type*} [CommRing T] [Algebra R T]
+lemma IsStandardSmoothOfRelativeDimension.of_algEquiv {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T]
     (e : S ≃ₐ[R] T) [IsStandardSmoothOfRelativeDimension n R S] :
     IsStandardSmoothOfRelativeDimension n R T := by
   obtain ⟨_, _, _, _, ⟨P, hP⟩⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
@@ -163,7 +163,7 @@ lemma IsStandardSmoothOfRelativeDimension.of_algEquiv {T : Type*} [CommRing T] [
 
 section Composition
 
-variable (R S T) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable (R S T) [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 lemma IsStandardSmooth.trans [IsStandardSmooth R S] [IsStandardSmooth S T] :
     IsStandardSmooth R T where
@@ -194,7 +194,7 @@ lemma IsStandardSmoothOfRelativeDimension.localization_away (r : R) [IsLocalizat
 
 section BaseChange
 
-variable (T) [CommRing T] [Algebra R T]
+variable (T) [Ring T] [IsMulCommutative T] [Algebra R T]
 
 instance IsStandardSmooth.baseChange [IsStandardSmooth R S] :
     IsStandardSmooth T (T ⊗[R] S) where

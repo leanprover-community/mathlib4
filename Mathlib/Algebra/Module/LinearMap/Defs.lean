@@ -66,8 +66,8 @@ variable {R R₁ R₂ R₃ S S₃ T M M₁ M₂ M₃ N₂ N₃ : Type*}
 `f (x + y) = f x + f y` and `f (c • x) = c • f x`. The predicate `IsLinearMap R f` asserts this
 property. A bundled version is available with `LinearMap`, and should be favored over
 `IsLinearMap` most of the time. -/
-structure IsLinearMap (R : Type u) {M : Type v} {M₂ : Type w} [Semiring R] [AddCommMonoid M]
-  [AddCommMonoid M₂] [Module R M] [Module R M₂] (f : M → M₂) : Prop where
+structure IsLinearMap (R : Type u) {M : Type v} {M₂ : Type w} [Semiring R] [AddMonoid M] [IsAddCommutative M]
+  [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R M₂] (f : M → M₂) : Prop where
   /-- A linear map preserves addition. -/
   map_add : ∀ x y, f (x + y) = f x + f y
   /-- A linear map preserves scalar multiplication. -/
@@ -82,7 +82,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `σ = RingHom.id R`), the notation `M →ₗ[R] M₂` is available. An unbundled version of plain linear
 maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. -/
 structure LinearMap {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type*)
-    (M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
+    (M₂ : Type*) [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module S M₂] extends
     AddHom M M₂, MulActionHom σ M M₂
 
 /-- The `MulActionHom` underlying a `LinearMap`. -/
@@ -105,7 +105,7 @@ A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ :
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
-    (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
+    (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
     [Module R M] [Module S M₂] [FunLike F M M₂] : Prop
     extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
 
@@ -119,12 +119,12 @@ end
 This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
 -/
 abbrev LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
-    [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
+    [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R M₂]
     [FunLike F M M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂
 
-protected lemma LinearMapClass.map_smul {R M M₂ : outParam Type*} [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂]
+protected lemma LinearMapClass.map_smul {R M M₂ : outParam Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M]
+    [AddMonoid M₂] [IsAddCommutative M₂] [Module R M] [Module R M₂]
     {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :
     f (r • x) = r • f x := by rw [map_smul]
 
@@ -132,7 +132,7 @@ namespace SemilinearMapClass
 
 variable (F : Type*)
 variable [Semiring R] [Semiring S]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
@@ -180,7 +180,7 @@ variable [Semiring R] [Semiring S]
 
 section
 
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
@@ -286,7 +286,7 @@ end
 
 section
 
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable (σ : R →+* S)
 variable (fₗ : M →ₗ[R] M₂) (f g : M →ₛₗ[σ] M₃)
@@ -469,7 +469,7 @@ def _root_.RingHom.toSemilinearMap (f : R →+* S) : R →ₛₗ[f] S :=
 section
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₁] [IsAddCommutative M₁] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃}
 
@@ -508,7 +508,7 @@ theorem id_comp : id.comp f = f :=
   rfl
 
 theorem comp_assoc
-    {R₄ M₄ : Type*} [Semiring R₄] [AddCommMonoid M₄] [Module R₄ M₄]
+    {R₄ M₄ : Type*} [Semiring R₄] [AddMonoid M₄] [IsAddCommutative M₄] [Module R₄ M₄]
     {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
     [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
     (f : M₁ →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃) (h : M₃ →ₛₗ[σ₃₄] M₄) :
@@ -546,7 +546,7 @@ theorem cancel_left (hf : Injective f) : f.comp g = f.comp g' ↔ g = g' :=
 
 end
 
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ']
 
 /-- If a function `g` is a left and right inverse of a linear map `f`, then `g` is linear itself. -/
@@ -575,7 +575,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Semiring R] [Semiring S] [AddCommGroup M] [AddCommGroup M₂]
+variable [Semiring R] [Semiring S] [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂]
 variable {module_M : Module R M} {module_M₂ : Module S M₂} {σ : R →+* S}
 variable (f : M →ₛₗ[σ] M₂)
 
@@ -616,7 +616,7 @@ end Module
 
 namespace DistribMulActionHom
 
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Semiring R] [Module R M] [Semiring S] [Module S M₂] [Module R M₃]
 variable {σ : R →+* S}
 
@@ -641,7 +641,7 @@ namespace IsLinearMap
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R M₂]
 
 /-- Convert an `IsLinearMap` predicate to a `LinearMap` -/
@@ -654,13 +654,13 @@ def mk' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ where
 theorem mk'_apply {f : M → M₂} (lin : IsLinearMap R f) (x : M) : mk' f lin x = f x :=
   rfl
 
-theorem isLinearMap_smul {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (c : R) :
+theorem isLinearMap_smul {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] (c : R) :
     IsLinearMap R fun z : M ↦ c • z := by
   refine IsLinearMap.mk (smul_add c) ?_
   intro _ _
   simp only [smul_smul, mul_comm]
 
-theorem isLinearMap_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (a : M) :
+theorem isLinearMap_smul' {R M : Type*} [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] (a : M) :
     IsLinearMap R fun c : R ↦ c • a :=
   IsLinearMap.mk (fun x y ↦ add_smul x y a) fun x y ↦ mul_smul x y a
 
@@ -671,7 +671,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Semiring R] [AddCommGroup M] [AddCommGroup M₂]
+variable [Semiring R] [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R M₂]
 
 theorem isLinearMap_neg : IsLinearMap R fun z : M ↦ -z :=
@@ -688,37 +688,37 @@ end AddCommGroup
 end IsLinearMap
 
 /-- Reinterpret an additive homomorphism as an `ℕ`-linear map. -/
-def AddMonoidHom.toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) :
+def AddMonoidHom.toNatLinearMap [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] (f : M →+ M₂) :
     M →ₗ[ℕ] M₂ where
   toFun := f
   map_add' := f.map_add
   map_smul' := map_nsmul f
 
-theorem AddMonoidHom.toNatLinearMap_injective [AddCommMonoid M] [AddCommMonoid M₂] :
+theorem AddMonoidHom.toNatLinearMap_injective [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] :
     Function.Injective (@AddMonoidHom.toNatLinearMap M M₂ _ _) := by
   intro f g h
   ext x
   congrm $h x
 
 @[simp]
-theorem AddMonoidHom.coe_toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) :
+theorem AddMonoidHom.coe_toNatLinearMap [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] (f : M →+ M₂) :
     ⇑f.toNatLinearMap = f :=
   rfl
 
 /-- Reinterpret an additive homomorphism as a `ℤ`-linear map. -/
-def AddMonoidHom.toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+ M₂) : M →ₗ[ℤ] M₂ where
+def AddMonoidHom.toIntLinearMap [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] (f : M →+ M₂) : M →ₗ[ℤ] M₂ where
   toFun := f
   map_add' := f.map_add
   map_smul' := map_zsmul f
 
-theorem AddMonoidHom.toIntLinearMap_injective [AddCommGroup M] [AddCommGroup M₂] :
+theorem AddMonoidHom.toIntLinearMap_injective [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] :
     Function.Injective (@AddMonoidHom.toIntLinearMap M M₂ _ _) := by
   intro f g h
   ext x
   congrm $h x
 
 @[simp]
-theorem AddMonoidHom.coe_toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+ M₂) :
+theorem AddMonoidHom.coe_toIntLinearMap [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] (f : M →+ M₂) :
     ⇑f.toIntLinearMap = f :=
   rfl
 
@@ -727,7 +727,7 @@ namespace LinearMap
 section SMul
 
 variable [Semiring R] [Semiring R₂]
-variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {σ₁₂ : R →+* R₂}
 variable [DistribSMul S M₂] [SMulCommClass R₂ S M₂]
@@ -766,8 +766,8 @@ end SMul
 section Arithmetic
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [AddCommGroup N₂] [AddCommGroup N₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
+variable [AddGroup N₂] [IsAddCommutative N₂] [AddGroup N₃] [IsAddCommutative N₃]
 variable [Module R₁ M] [Module R₂ M₂] [Module R₃ M₃]
 variable [Module R₂ N₂] [Module R₃ N₃]
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
@@ -914,7 +914,7 @@ end Arithmetic
 section Actions
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
@@ -955,7 +955,7 @@ end Actions
 
 section RestrictScalarsAsLinearMap
 
-variable {R S M N P : Type*} [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid N]
+variable {R S M N P : Type*} [Semiring R] [Semiring S] [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
   [Module R M] [Module R N] [Module S M] [Module S N] [CompatibleSMul M N R S]
 
 variable (R S M N) in
@@ -969,7 +969,7 @@ theorem restrictScalars_add (f g : M →ₗ[S] N) :
   rfl
 
 @[simp]
-theorem restrictScalars_neg {M N : Type*} [AddCommMonoid M] [AddCommGroup N]
+theorem restrictScalars_neg {M N : Type*} [AddMonoid M] [IsAddCommutative M] [AddGroup N] [IsAddCommutative N]
     [Module R M] [Module R N] [Module S M] [Module S N] [CompatibleSMul M N R S]
     (f : M →ₗ[S] N) : (-f).restrictScalars R = -f.restrictScalars R :=
   rfl
@@ -982,7 +982,7 @@ theorem restrictScalars_smul (c : R₁) (f : M →ₗ[S] N) :
   rfl
 
 @[simp]
-lemma restrictScalars_comp [AddCommMonoid P] [Module S P] [Module R P]
+lemma restrictScalars_comp [AddMonoid P] [IsAddCommutative P] [Module S P] [Module R P]
     [CompatibleSMul N P R S] [CompatibleSMul M P R S] (f : N →ₗ[S] P) (g : M →ₗ[S] N) :
     (f ∘ₗ g).restrictScalars R = f.restrictScalars R ∘ₗ g.restrictScalars R :=
   rfl

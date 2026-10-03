@@ -27,9 +27,9 @@ namespace End
 
 open LinearMap
 
-variable {R M : Type*} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] [AddGroup M] [IsAddCommutative M] [Module R M]
   [Module.Free R M] [Module.Finite R M]
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [Module.Finite K V]
+variable {K V : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V] [Module.Finite K V]
 
 /--
 The roots of the characteristic polynomial are exactly the eigenvalues.

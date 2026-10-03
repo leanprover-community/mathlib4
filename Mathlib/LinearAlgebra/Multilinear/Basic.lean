@@ -86,7 +86,7 @@ set_option genInjectivity false in
 /-- Multilinear maps over the ring `R`, from `∀ i, M₁ i` to `M₂` where `M₁ i` and `M₂` are modules
 over `R`. -/
 structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁) (M₂ : Type v₂) [Semiring R]
-  [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)] [Module R M₂] where
+  [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddMonoid M₂] [IsAddCommutative M₂] [∀ i, Module R (M₁ i)] [Module R M₂] where
   /-- The underlying multivariate function of a multilinear map. -/
   toFun : (∀ i, M₁ i) → M₂
   /-- A multilinear map is additive in every argument. -/
@@ -102,8 +102,8 @@ namespace MultilinearMap
 
 section Semiring
 
-variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂]
-  [AddCommMonoid M₃] [AddCommMonoid M'] [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂]
+variable [Semiring R] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddMonoid M₂] [IsAddCommutative M₂]
+  [AddMonoid M₃] [IsAddCommutative M₃] [AddMonoid M'] [IsAddCommutative M'] [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂]
   [Module R M₃] [Module R M'] (f f' : MultilinearMap R M₁ M₂)
 
 @[macro_inline]
@@ -249,7 +249,7 @@ def prod (f : MultilinearMap R M₁ M₂) (g : MultilinearMap R M₁ M₃) :
 /-- Combine a family of multilinear maps with the same domain and codomains `M' i` into a
 multilinear map taking values in the space of functions `∀ i, M' i`. -/
 @[simps]
-def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, Module R (M' i)]
+def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddMonoid (M' i)] [∀ i, IsAddCommutative (M' i)] [∀ i, Module R (M' i)]
     (f : ∀ i, MultilinearMap R M₁ (M' i)) : MultilinearMap R M₁ (∀ i, M' i) where
   toFun m i := f i m
   map_update_add' _ _ _ _ := funext fun j => (f j).map_update_add _ _ _ _
@@ -339,8 +339,8 @@ theorem map_insertNth_smul (f : MultilinearMap R M M₂) (p : Fin (n + 1))
 
 section
 
-variable [∀ i, AddCommMonoid (M₁' i)] [∀ i, Module R (M₁' i)]
-variable [∀ i, AddCommMonoid (M₁'' i)] [∀ i, Module R (M₁'' i)]
+variable [∀ i, AddMonoid (M₁' i)] [∀ i, IsAddCommutative (M₁' i)] [∀ i, Module R (M₁' i)]
+variable [∀ i, AddMonoid (M₁'' i)] [∀ i, IsAddCommutative (M₁'' i)] [∀ i, Module R (M₁'' i)]
 
 /-- If `g` is a multilinear map and `f` is a collection of linear maps,
 then `g (f₁ m₁, ..., fₙ mₙ)` is again a multilinear map, that we call
@@ -786,8 +786,8 @@ end MultilinearMap
 namespace LinearMap
 
 variable [Semiring R]
-variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₁' i)]
-  [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄] [AddCommMonoid M']
+variable [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [∀ i, AddMonoid (M₁' i)] [∀ i, IsAddCommutative (M₁' i)]
+  [AddMonoid M₂] [IsAddCommutative M₂] [AddMonoid M₃] [IsAddCommutative M₃] [AddMonoid M₄] [IsAddCommutative M₄] [AddMonoid M'] [IsAddCommutative M']
 variable [∀ i, Module R (M₁ i)] [∀ i, Module R (M₁' i)]
   [Module R M₂] [Module R M₃] [Module R M₄] [Module R M']
 
@@ -879,7 +879,7 @@ namespace MultilinearMap
 section Semiring
 
 variable [Semiring R] [(i : ι) → AddCommMonoid (M₁ i)] [(i : ι) → Module R (M₁ i)]
-  [AddCommMonoid M₂] [Module R M₂]
+  [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
 
 instance [Monoid S] [DistribMulAction S M₂] [SMulCommClass R S M₂] :
     DistribMulAction S (MultilinearMap R M₁ M₂) := fast_instance% FunLike.distribMulAction
@@ -896,7 +896,7 @@ instance : Module S (MultilinearMap R M₁ M₂) := fast_instance%
 instance [Module.IsTorsionFree S M₂] : Module.IsTorsionFree S (MultilinearMap R M₁ M₂) :=
   coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
 
-variable [AddCommMonoid M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
+variable [AddMonoid M₃] [IsAddCommutative M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
 
 variable (S) in
 /-- `LinearMap.compMultilinearMap` as an `S`-linear map. -/
@@ -1003,7 +1003,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M₂]
+variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [∀ i, AddMonoid (M i)] [∀ i, IsAddCommutative (M i)] [AddMonoid M₂] [IsAddCommutative M₂]
   [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂] (f f' : MultilinearMap R M₁ M₂)
 
 section
@@ -1181,7 +1181,7 @@ theorem ext_ring [Finite ι] ⦃f g : MultilinearMap R (fun _ : ι => R) M₂⦄
 section
 
 variable (R ι)
-variable (A : Type*) [CommSemiring A] [Algebra R A] [Fintype ι]
+variable (A : Type*) [Semiring A] [IsMulCommutative A] [Algebra R A] [Fintype ι]
 
 /-- Given an `R`-algebra `A`, `mkPiAlgebra` is the multilinear map on `A^ι` associating
 to `m` the product of all the `m i`.
@@ -1209,7 +1209,7 @@ variable (A : Type*) [Semiring A] [Algebra R A]
 /-- Given an `R`-algebra `A`, `mkPiAlgebraFin` is the multilinear map on `A^n` associating
 to `m` the product of all the `m i`.
 
-See also `MultilinearMap.mkPiAlgebra` for a version that assumes `[CommSemiring A]` but works
+See also `MultilinearMap.mkPiAlgebra` for a version that assumes `[Semiring A] [IsMulCommutative A]` but works
 for `A^ι` with any finite type `ι`. -/
 protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A :=
   MultilinearMap.mk' (fun m ↦ (List.ofFn m).prod)
@@ -1278,7 +1278,7 @@ end CommSemiring
 
 section RangeAddCommGroup
 
-variable [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommGroup M₂] [∀ i, Module R (M₁ i)]
+variable [Semiring R] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddGroup M₂] [IsAddCommutative M₂] [∀ i, Module R (M₁ i)]
   [Module R M₂] (f g : MultilinearMap R M₁ M₂)
 
 instance : Neg (MultilinearMap R M₁ M₂) :=
@@ -1305,7 +1305,7 @@ end RangeAddCommGroup
 
 section AddCommGroup
 
-variable [Semiring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i, Module R (M₁ i)]
+variable [Semiring R] [∀ i, AddGroup (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddGroup M₂] [IsAddCommutative M₂] [∀ i, Module R (M₁ i)]
   [Module R M₂] (f : MultilinearMap R M₁ M₂)
 
 @[simp]
@@ -1385,7 +1385,7 @@ end AddCommGroup
 
 section CommSemiring
 
-variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)]
+variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddMonoid M₂] [IsAddCommutative M₂] [∀ i, Module R (M₁ i)]
   [Module R M₂]
 
 /-- When `ι` is finite, multilinear maps on `R^ι` with values in `M₂` are in bijection with `M₂`,
@@ -1407,7 +1407,7 @@ end CommSemiring
 
 section Submodule
 
-variable [Ring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M'] [AddCommMonoid M₂]
+variable [Ring R] [∀ i, AddMonoid (M₁ i)] [∀ i, IsAddCommutative (M₁ i)] [AddMonoid M'] [IsAddCommutative M'] [AddMonoid M₂] [IsAddCommutative M₂]
   [∀ i, Module R (M₁ i)] [Module R M'] [Module R M₂]
 
 /-- The pushforward of an indexed collection of submodule `p i ⊆ M₁ i` by `f : M₁ → M₂`.

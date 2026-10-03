@@ -28,7 +28,7 @@ universe u v
 namespace ModelWithCorners
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H]
 
 /-- The category of `C^n` manifolds modeled on a fixed model with corners `I`. -/

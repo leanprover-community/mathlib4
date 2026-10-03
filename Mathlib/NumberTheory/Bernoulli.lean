@@ -71,7 +71,7 @@ The proof of von Staudt-Clausen's theorem follows Rado's JLMS 1934 paper
 
 open Nat Finset Finset.Nat PowerSeries
 
-variable (A : Type*) [CommRing A] [Algebra ℚ A]
+variable (A : Type*) [Ring A] [IsMulCommutative A] [Algebra ℚ A]
 
 /-! ### Definitions -/
 

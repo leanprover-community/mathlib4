@@ -43,7 +43,7 @@ open Ideal
 
 section CommSemiring
 
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 /-- A proper submodule `S : Submodule R M` is primary iff
   `r • x ∈ S` implies `x ∈ S` or `∃ n : ℕ, r ^ n • (⊤ : Submodule R M) ≤ S`.
@@ -111,7 +111,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {S : Submodule R M}
+variable {R M : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] {S : Submodule R M}
 
 lemma isPrimary_iff_zero_divisor_quotient_imp_nilpotent_smul :
     S.IsPrimary ↔ S ≠ ⊤ ∧ ∀ (r : R) (x : M ⧸ S), x ≠ 0 → r • x = 0 →

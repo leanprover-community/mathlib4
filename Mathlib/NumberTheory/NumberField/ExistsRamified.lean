@@ -23,7 +23,7 @@ public section
 
 open scoped NumberField nonZeroDivisors
 
-variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
+variable {K 𝒪 : Type*} [Field K] [NumberField K] [Ring 𝒪] [IsMulCommutative 𝒪] [Algebra 𝒪 K]
 variable [IsIntegralClosure 𝒪 ℤ K]
 
 /-- If `K` is a number field with positive rank, then some prime is ramified in `K`. -/

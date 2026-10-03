@@ -229,7 +229,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] (v : Valuation R Γ₀)
+variable [Ring R] [IsMulCommutative R] (v : Valuation R Γ₀)
 
 instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 
@@ -266,10 +266,10 @@ instance {P : Type*} [Ring S] [SMul P R] [SMul S R] [SMul P S]
     [IsScalarTower P S R] (v : Valuation S Γ₀) : IsScalarTower P (WithVal v) R where
   smul_assoc := by simp [smul_right_def, smul_left_def, -toVal_smul]
 
-instance [AddCommMonoid S] [Module R S] : Module (WithVal v) S :=
+instance [AddMonoid S] [IsAddCommutative S] [Module R S] : Module (WithVal v) S :=
   fast_instance% .compHom S (equiv v).toRingHom
 
-instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
+instance [AddMonoid S] [IsAddCommutative S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
 instance [Semiring S] [Module S R] : Module S (WithVal v) :=
@@ -296,7 +296,7 @@ variable {S : Type*}
 
 section left
 
-variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
+variable [Ring R] [IsMulCommutative R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
 instance : Algebra (WithVal v) S := fast_instance% {
   algebraMap.toFun r := algebraMap R S (ofVal r)
@@ -305,7 +305,7 @@ instance : Algebra (WithVal v) S := fast_instance% {
 theorem algebraMap_left_apply (s : WithVal v) :
     algebraMap (WithVal v) S s = algebraMap R S s.ofVal := rfl
 
-instance {S : Type*} [CommSemiring S] [Algebra R S] [i : IsFractionRing R S] :
+instance {S : Type*} [Semiring S] [IsMulCommutative S] [Algebra R S] [i : IsFractionRing R S] :
     IsFractionRing (WithVal v) S := .of_ringEquiv_left (equiv v) (fun _ ↦ rfl)
 
 theorem algebraMap_left_injective (h : Function.Injective (algebraMap R S)) :
@@ -315,7 +315,7 @@ end left
 
 section right
 
-variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
+variable [Semiring R] [IsMulCommutative R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
 
 instance : Algebra R (WithVal v) := fast_instance% {
   (equiv v).algebra R with
@@ -329,7 +329,7 @@ theorem algebraMap_right_injective (h : Function.Injective (algebraMap R S)) :
 
 end right
 
-variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
+variable [Semiring R] [IsMulCommutative R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
 
 variable (R) in
 /-- The canonical `R`-algebra isomorphism between `WithVal v` and `S`, when `v : Valuation S Γ₀`. -/
@@ -339,7 +339,7 @@ def algEquiv : WithVal v ≃ₐ[R] S := (equiv v).algEquiv R
 
 @[simp] theorem algEquiv_symm_apply (x : S) : (algEquiv R v).symm x = toVal v x := rfl
 
-instance {S : Type*} [CommRing S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
+instance {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
     (v : Valuation S Γ₀) : IsLocalization M (WithVal v) := by
   rwa [← IsLocalization.isLocalization_iff_of_algEquiv M (algEquiv R v).symm]
 
@@ -644,13 +644,13 @@ variable {K : Type*} [Field K] [NumberField K] (v : Valuation K Γ₀)
 instance : CoeHead (𝓞 (WithVal v)) (WithVal v) where
   coe x := RingOfIntegers.val x
 
-instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
+instance (R : Type*) [Ring R] [IsMulCommutative R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     IsIntegralClosure R ℤ (WithVal v) := .of_algEquiv _ (WithVal.algEquiv ℤ v).symm (fun _ ↦ rfl)
 
 /-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
 `ℤ` in `K`. -/
 @[simps!]
-def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
+def withValEquiv (R : Type*) [Ring R] [IsMulCommutative R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     𝓞 (WithVal v) ≃+* R := NumberField.RingOfIntegers.equiv R
 
 end NumberField.RingOfIntegers

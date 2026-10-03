@@ -22,7 +22,7 @@ variable {ι β : Type*}
 
 namespace Finset
 
-variable [CommMonoid β]
+variable [Monoid β] [IsMulCommutative β]
 
 /-- Taking a product over `univ.pi t` is the same as taking the product over `Fintype.piFinset t`.
 `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`, but differ

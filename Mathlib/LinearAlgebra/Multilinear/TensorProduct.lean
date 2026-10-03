@@ -21,15 +21,15 @@ section DomCoprod
 open TensorProduct
 
 variable {R ι₁ ι₂ ι₃ ι₄ : Type*}
-variable [CommSemiring R]
-variable {N₁ : Type*} [AddCommMonoid N₁] [Module R N₁]
-variable {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
+variable [Semiring R] [IsMulCommutative R]
+variable {N₁ : Type*} [AddMonoid N₁] [IsAddCommutative N₁] [Module R N₁]
+variable {N₂ : Type*} [AddMonoid N₂] [IsAddCommutative N₂] [Module R N₂]
 
 attribute [local simp] add_tmul tmul_add smul_tmul
 
 section
 
-variable {N : ι₁ ⊕ ι₂ → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+variable {N : ι₁ ⊕ ι₂ → Type*} [∀ i, AddMonoid (N i)] [∀ i, IsAddCommutative (N i)] [∀ i, Module R (N i)]
 
 /-- Given a family of modules `N` indexed by a type `ι₁ ⊕ ι₂`,
 a multilinear map from the modules `N (.inl i₁)` to `N₁` and
@@ -65,7 +65,7 @@ theorem domCoprodDep'_apply (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N
 
 end
 
-variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddMonoid N] [IsAddCommutative N] [Module R N]
 
 /-- Given two multilinear maps `(ι₁ → N) → N₁` and `(ι₂ → N) → N₂`, this produces the map
 `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂` by taking the coproduct of the domain and the tensor product

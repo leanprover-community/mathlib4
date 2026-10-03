@@ -28,7 +28,7 @@ universe u u₁ v w
 
 -- this is not an instance because Lean cannot determine `𝕜`.
 theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E : Type w}
-    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
     [ContinuousSMul 𝕜 E] [T2Space E] [FiniteDimensional 𝕜 E] [CompleteSpace 𝕜]
     [TietzeExtension.{u, v} 𝕜] : TietzeExtension.{u, w} E :=
   Module.Basis.ofVectorSpace 𝕜 E |>.equivFun.toContinuousLinearEquiv.toHomeomorph |> .of_homeo
@@ -40,19 +40,19 @@ instance (priority := 900) RCLike.instTietzeExtension {𝕜 : Type*} [RCLike �
     TietzeExtension 𝕜 := TietzeExtension.of_tvs ℝ
 
 instance RCLike.instTietzeExtensionTVS {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
-    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
     [ContinuousSMul 𝕜 E] [T2Space E] [FiniteDimensional 𝕜 E] :
     TietzeExtension.{u, w} E :=
   TietzeExtension.of_tvs 𝕜
 
 instance Set.instTietzeExtensionUnitBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] :
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] :
     TietzeExtension.{u, w} (Metric.ball (0 : E) 1) :=
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   .of_homeo Homeomorph.unitBall.symm
 
 instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] :
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] :
     TietzeExtension.{u, w} (Metric.closedBall (0 : E) 1) := by
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   have : IsScalarTower ℝ 𝕜 E := Real.isScalarTower
@@ -76,14 +76,14 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E 
     exact fun x hx ↦ norm_pos_iff.mp <| one_pos.trans_le hx
 
 theorem Metric.instTietzeExtensionBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] {r : ℝ} (hr : 0 < r) :
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] {r : ℝ} (hr : 0 < r) :
     TietzeExtension.{u, w} (Metric.ball (0 : E) r) :=
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   .of_homeo <| show (Metric.ball (0 : E) r) ≃ₜ (Metric.ball (0 : E) 1) from
     OpenPartialHomeomorph.unitBallBall (0 : E) r hr |>.toHomeomorphSourceTarget.symm
 
 theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : Type w}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] (y : E) {r : ℝ} (hr : 0 < r) :
+    [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] (y : E) {r : ℝ} (hr : 0 < r) :
     TietzeExtension.{u, w} (Metric.closedBall y r) :=
   .of_homeo (Z := Metric.closedBall (0 : E) 1) <| by
     symm
@@ -100,7 +100,7 @@ instance unitInterval.instTietzeExtension : TietzeExtension unitInterval := by
 
 variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
 variable (𝕜 : Type v) [RCLike 𝕜]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
+variable {E : Type w} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
 
 namespace BoundedContinuousFunction
 

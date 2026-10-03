@@ -48,7 +48,7 @@ section Extend
 section NormedField
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [NormedAddCommGroup E] [NormedAddCommGroup Eₗ] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
+  [NormedAddGroup E] [IsAddCommutative E] [NormedAddGroup Eₗ] [IsAddCommutative Eₗ] [NormedAddGroup F] [IsAddCommutative F] [NormedAddGroup Fₗ] [IsAddCommutative Fₗ]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace F]
   (f : E →SL[σ₁₂] F) {e : E →L[𝕜] Eₗ}
 
@@ -88,7 +88,7 @@ namespace LinearMap
 section compInv
 
 variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [AddCommGroup E] [NormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
+  [AddGroup E] [IsAddCommutative E] [NormedAddGroup F] [IsAddCommutative F] [SeminormedAddGroup Eₗ] [IsAddCommutative Eₗ]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
 
 variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Eₗ)
@@ -122,7 +122,7 @@ end compInv
 section NormedDivisionRing
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [AddCommGroup E] [SeminormedAddCommGroup Eₗ] [NormedAddCommGroup F]
+  [AddGroup E] [IsAddCommutative E] [SeminormedAddGroup Eₗ] [IsAddCommutative Eₗ] [NormedAddGroup F] [IsAddCommutative F]
   [Module 𝕜 E] [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ]
   [CompleteSpace F]
 
@@ -164,9 +164,9 @@ end NormedDivisionRing
 section NormedField
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [NormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
+  [NormedAddGroup F] [IsAddCommutative F] [SeminormedAddGroup Eₗ] [IsAddCommutative Eₗ]
   [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Eₗ]
-  [AddCommGroup E] [Module 𝕜 E] [CompleteSpace F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [CompleteSpace F]
 
 variable {f : E →ₛₗ[σ₁₂] F} {e : E →ₗ[𝕜] Eₗ}
 
@@ -179,9 +179,9 @@ end NormedField
 section extendOfIsometry
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂]
-  [AddCommGroup E] [Module 𝕜 E]
-  [NormedAddCommGroup Eₗ] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ]
-  [NormedAddCommGroup F] [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [CompleteSpace F]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
+  [NormedAddGroup Eₗ] [IsAddCommutative Eₗ] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ]
+  [NormedAddGroup F] [IsAddCommutative F] [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [CompleteSpace F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} (f : E →ₛₗ[σ₁₂] F) {e : E →ₗ[𝕜] Eₗ}
 
 /-- Extend a linear map `f : E →ₛₗ[σ₁₂] F` to a linear isometry `Eₗ →ₛₗᵢ[σ₁₂] F` between
@@ -224,7 +224,7 @@ namespace LinearEquiv
 section extend
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂]
-  [AddCommGroup E] [NormedAddCommGroup Eₗ] [AddCommGroup F] [NormedAddCommGroup Fₗ]
+  [AddGroup E] [IsAddCommutative E] [NormedAddGroup Eₗ] [IsAddCommutative Eₗ] [AddGroup F] [IsAddCommutative F] [NormedAddGroup Fₗ] [IsAddCommutative Fₗ]
   [Module 𝕜 E] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ] [Module 𝕜₂ F] [Module 𝕜₂ Fₗ] [IsBoundedSMul 𝕜₂ Fₗ]
   [CompleteSpace Eₗ] [CompleteSpace Fₗ]
 
@@ -294,10 +294,10 @@ end extend
 section extendOfIsometry
 
 variable [NormedField 𝕜] [NormedField 𝕜₂]
-  [AddCommGroup E] [Module 𝕜 E]
-  [AddCommGroup F] [Module 𝕜₂ F]
-  [NormedAddCommGroup Eₗ] [NormedSpace 𝕜 Eₗ] [CompleteSpace Eₗ]
-  [NormedAddCommGroup Fₗ] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace Fₗ]
+  [AddGroup E] [IsAddCommutative E] [Module 𝕜 E]
+  [AddGroup F] [IsAddCommutative F] [Module 𝕜₂ F]
+  [NormedAddGroup Eₗ] [IsAddCommutative Eₗ] [NormedSpace 𝕜 Eₗ] [CompleteSpace Eₗ]
+  [NormedAddGroup Fₗ] [IsAddCommutative Fₗ] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace Fₗ]
 
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 variable (f : E ≃ₛₗ[σ₁₂] F) (e₁ : E →ₗ[𝕜] Eₗ) (e₂ : F →ₗ[𝕜₂] Fₗ)
@@ -347,8 +347,8 @@ namespace LinearIsometry
 
 open UniformSpace
 
-variable {R R₂ : Type*} [Semiring R] [Semiring R₂] [SeminormedAddCommGroup E] [Module R E]
-  [IsUniformAddGroup E] [UniformContinuousConstSMul R E] [NormedAddCommGroup F] [Module R₂ F]
+variable {R R₂ : Type*} [Semiring R] [Semiring R₂] [SeminormedAddGroup E] [IsAddCommutative E] [Module R E]
+  [IsUniformAddGroup E] [UniformContinuousConstSMul R E] [NormedAddGroup F] [IsAddCommutative F] [Module R₂ F]
   {σ₁₂ : R →+* R₂} (f : E →ₛₗᵢ[σ₁₂] F)
 
 section fromCompletion
