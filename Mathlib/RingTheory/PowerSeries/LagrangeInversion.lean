@@ -222,17 +222,6 @@ private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1
     simp [hmt] at *
     linear_combination (k + t + 1) • hsum + hcoeff
 
-private theorem lagrange_burmann_coeff_of_torsionFree (n : ℕ) (H : R⟦X⟧) :
-    (n + 1) • coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n := by
-  have hlhs : (n + 1) • coeff (n + 1) (H.subst Y) =
-        ∑ i ∈ range (n + 2), H.coeff i * (i • (P ^ (n + 1)).coeff (n + 1 - i)) := by
-    rw [coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY) H, smul_sum]
-    refine sum_congr rfl fun i hi ↦ ?_
-    rw [← lagrange_inversion_coeff_pow_of_le hY (mem_range_succ_iff.mp hi)]
-    ring
-  rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
-  grind [coeff_derivative]
-
 end TorsionFree
 
 section CommRing
@@ -253,6 +242,17 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
     AddMonoidAlgebra.coeffAddEquiv.toAddMonoidHom
   let P₀ : U⟦X⟧ := mk fun i ↦ MvPolynomial.X (Sum.inl i)
   let H₀ : U⟦X⟧ := mk fun i ↦ MvPolynomial.X (Sum.inr i)
+  obtain ⟨Y₀, hY₀, _⟩ := existsUnique_fixedPoint P₀
+  have hcoeff : (n + 1) • coeff (n + 1) (H₀.subst Y₀) =
+      (d⁄dX H₀ * P₀ ^ (n + 1)).coeff n := by
+    have hlhs : (n + 1) • coeff (n + 1) (H₀.subst Y₀) =
+        ∑ i ∈ range (n + 2), H₀.coeff i * (i • (P₀ ^ (n + 1)).coeff (n + 1 - i)) := by
+      rw [coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY₀) H₀, smul_sum]
+      refine sum_congr rfl fun i hi ↦ ?_
+      rw [← lagrange_inversion_coeff_pow_of_le hY₀ (mem_range_succ_iff.mp hi)]
+      ring
+    rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
+    grind [coeff_derivative]
   let e : U →+* R := MvPolynomial.eval₂Hom (Int.castRingHom R)
     (Sum.elim (fun i ↦ P.coeff i) (fun i ↦ H.coeff i))
   have hP : map e P₀ = P := by
@@ -261,7 +261,6 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
   have hH : map e H₀ = H := by
     ext i
     simp [H₀, e, U, coeff_map]
-  obtain ⟨Y₀, hY₀, _⟩ := existsUnique_fixedPoint P₀
   have hmap_subst (F : U⟦X⟧) : map e (F.subst Y₀) = (map e F).subst (map e Y₀) :=
     map_subst (hasSubst_of_fixedPoint hY₀) F
   have hmapY : map e Y₀ = Y := by
@@ -272,7 +271,7 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
         e ((n + 1) • coeff (n + 1) (H₀.subst Y₀)) := by
       rw [map_nsmul, ← coeff_map, hmap_subst, hH, hmapY]
     _ = e ((d⁄dX H₀ * P₀ ^ (n + 1)).coeff n) :=
-      congrArg e (lagrange_burmann_coeff_of_torsionFree hY₀ n H₀)
+      congrArg e hcoeff
     _ = (d⁄dX H * P ^ (n + 1)).coeff n := by
       rw [← coeff_map, map_mul, map_pow, map_derivative, hH, hP]
 
