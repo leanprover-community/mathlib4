@@ -606,14 +606,14 @@ theorem lowerCentralSeries_length_eq_nilpotencyClass :
     exact ⟨lowerCentralSeries ⊤, ⟨lowerCentralSeries_isDescendingCentralSeries, h⟩⟩
 
 @[to_additive (attr := simp)]
-theorem lowerCentralSeries_nilpotencyClass :
+theorem top_lowerCentralSeries_nilpotencyClass :
     lowerCentralSeries (⊤ : Subgroup G) (Group.nilpotencyClass G) = ⊥ := by
   classical
   rw [← lowerCentralSeries_length_eq_nilpotencyClass]
   exact Nat.find_spec (nilpotent_iff_lowerCentralSeries.mp hG)
 
 @[to_additive]
-theorem lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {n : ℕ} :
+theorem top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {n : ℕ} :
     lowerCentralSeries (⊤ : Subgroup G) n = ⊥ ↔ Group.nilpotencyClass G ≤ n := by
   classical
   constructor
@@ -621,7 +621,7 @@ theorem lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {n : ℕ} :
     rw [← lowerCentralSeries_length_eq_nilpotencyClass]
     exact Nat.find_le h
   · intro h
-    rw [eq_bot_iff, ← lowerCentralSeries_nilpotencyClass]
+    rw [eq_bot_iff, ← top_lowerCentralSeries_nilpotencyClass]
     exact lowerCentralSeries_antitone _ h
 
 omit [IsNilpotent G] in
@@ -631,9 +631,9 @@ theorem lowerCentralSeries_eq_bot_iff_upperCentralSeries_eq_top {n : ℕ} :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have : IsNilpotent G := nilpotent_iff_lowerCentralSeries.mpr ⟨n, h⟩
     rwa [upperCentralSeries_eq_top_iff_nilpotencyClass_le,
-      ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le]
+      ← top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le]
   · have : IsNilpotent G := ⟨n, h⟩
-    rwa [lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+    rwa [top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
       ← upperCentralSeries_eq_top_iff_nilpotencyClass_le]
 
 end Subgroup
@@ -700,12 +700,20 @@ theorem isNilpotent_of_lowerCentralSeries_eq_bot {S : Subgroup G} {n : ℕ}
     (h : S.lowerCentralSeries n = ⊥) : Group.IsNilpotent S :=
   (isNilpotent_iff_lowerCentralSeries S).mpr ⟨n, h⟩
 
+@[to_additive (attr := simp)]
+theorem lowerCentralSeries_nilpotencyClass (S : Subgroup G) [Group.IsNilpotent S] :
+    S.lowerCentralSeries (Group.nilpotencyClass S) = ⊥ := by
+  rw [← top_subtype_lowerCentralSeries, top_lowerCentralSeries_nilpotencyClass, map_bot]
+
 @[to_additive]
-theorem lowerCentralSeries_eq_bot_of_nilpotencyClass_le {S : Subgroup G}
-    [Group.IsNilpotent S] {n : ℕ} (hn : Group.nilpotencyClass S ≤ n) :
-    S.lowerCentralSeries n = ⊥ := by
-  rw [← top_subtype_lowerCentralSeries,
-    lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr hn, map_bot]
+theorem lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {S : Subgroup G} [Group.IsNilpotent S]
+    {n : ℕ} : S.lowerCentralSeries n = ⊥ ↔ Group.nilpotencyClass S ≤ n := by
+  rw [← top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+    ← map_eq_bot_iff_of_injective _ S.subtype_injective, top_subtype_lowerCentralSeries]
+
+@[to_additive]
+alias ⟨_, lowerCentralSeries_eq_bot_of_nilpotencyClass_le⟩ :=
+  lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
 
 @[to_additive]
 instance (priority := 100) _root_.Group.isNilpotent_of_subsingleton [Subsingleton G] :
@@ -758,7 +766,7 @@ theorem nilpotencyClass_le_of_ker_le_center {H : Type*} [Group H] (f : G →* H)
   refine lowerCentralSeries_succ_eq_bot ⊤
     (le_trans ((Subgroup.map_eq_bot_iff _).mp ?_) hf1)
   rw [map_lowerCentralSeries, ← le_bot_iff,
-    ← lowerCentralSeries_nilpotencyClass (G := H)]
+    ← top_lowerCentralSeries_nilpotencyClass (G := H)]
   exact Subgroup.lowerCentralSeries_mono _ le_top
 
 /-- The range of a surjective homomorphism from a nilpotent group is nilpotent. -/
@@ -1077,8 +1085,8 @@ instance Group.isNilpotent_prod [IsNilpotent G₁] [IsNilpotent G₂] : IsNilpot
   rw [nilpotent_iff_lowerCentralSeries]
   refine ⟨max (Group.nilpotencyClass G₁) (Group.nilpotencyClass G₂), ?_⟩
   rw [top_lowerCentralSeries_prod,
-    lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr (le_max_left _ _),
-    lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr (le_max_right _ _), bot_prod_bot]
+    top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr (le_max_left _ _),
+    top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr (le_max_right _ _), bot_prod_bot]
 
 /-- The nilpotency class of a product is the max of the nilpotency classes of the factors. -/
 @[to_additive /-- The nilpotency class of a product is the max of the nilpotency classes of the
@@ -1087,7 +1095,7 @@ theorem Group.nilpotencyClass_prod [IsNilpotent G₁] [IsNilpotent G₂] :
     Group.nilpotencyClass (G₁ × G₂) =
     max (Group.nilpotencyClass G₁) (Group.nilpotencyClass G₂) := by
   refine eq_of_forall_ge_iff fun k => ?_
-  simp only [max_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+  simp only [max_le_iff, ← top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
     top_lowerCentralSeries_prod, prod_eq_bot_iff]
 
 end Prod
@@ -1123,7 +1131,7 @@ theorem Group.isNilpotent_pi_of_bounded_class [∀ i, IsNilpotent (Gs i)] (n : �
   rw [nilpotent_iff_lowerCentralSeries]
   refine ⟨n, eq_bot_iff.mpr <| (top_lowerCentralSeries_pi_le _).trans ?_⟩
   rw [le_bot_iff, pi_eq_bot_iff]
-  exact fun i => lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr (h i)
+  exact fun i => top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr (h i)
 
 end BoundedPi
 
@@ -1155,7 +1163,7 @@ instance Group.isNilpotent_pi [Finite η] [∀ i, IsNilpotent (Gs i)] : IsNilpot
   refine ⟨Finset.univ.sup fun i => Group.nilpotencyClass (Gs i), ?_⟩
   rw [top_lowerCentralSeries_pi_of_finite, pi_eq_bot_iff]
   intro i
-  rw [lowerCentralSeries_eq_bot_iff_nilpotencyClass_le]
+  rw [top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le]
   exact Finset.le_sup (f := fun i => Group.nilpotencyClass (Gs i)) (Finset.mem_univ i)
 
 /-- The nilpotency class of an n-ary product is the sup of the nilpotency classes of the factors. -/
@@ -1165,7 +1173,7 @@ theorem Group.nilpotencyClass_pi [Fintype η] [∀ i, IsNilpotent (Gs i)] :
     Group.nilpotencyClass (∀ i, Gs i) = Finset.univ.sup fun i => Group.nilpotencyClass (Gs i) := by
   apply eq_of_forall_ge_iff
   intro k
-  simp only [Finset.sup_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+  simp only [Finset.sup_le_iff, ← top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
     top_lowerCentralSeries_pi_of_finite, pi_eq_bot_iff, Finset.mem_univ, true_imp_iff]
 
 end FinitePi
@@ -1423,9 +1431,9 @@ alias least_descending_central_series_length_eq_nilpotencyClass :=
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_length_eq_nilpotencyClass :=
   lowerCentralSeries_length_eq_nilpotencyClass
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_nilpotencyClass :=
-  lowerCentralSeries_nilpotencyClass
+  top_lowerCentralSeries_nilpotencyClass
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_eq_bot_iff_nilpotencyClass_le :=
-  lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
+  top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
 set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_map_subtype_le :=
   lowerCentralSeries_map_subtype_le
