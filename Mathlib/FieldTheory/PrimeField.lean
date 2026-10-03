@@ -59,17 +59,20 @@ The smallest subfield of a field of characteristic `p` is (the image of) `ZMod p
 Note that the fact that the field `K` is of characteristic `p` is stated by the fact that it is
 `ZMod p`-algebra.
 -/
-theorem Subfield.bot_eq_of_zMod_algebra (p : ℕ) [Fact (Nat.Prime p)] [Algebra (ZMod p) K] :
+theorem Subfield.bot_eq_of_zmod_algebra (p : ℕ) [Fact (Nat.Prime p)] [Algebra (ZMod p) K] :
     (⊥ : Subfield K) = (algebraMap (ZMod p) K).fieldRange := by
   rw [eq_comm, eq_bot_iff, ← Subfield.map_bot (algebraMap (ZMod p) K),
     subsingleton_iff_bot_eq_top.mpr inferInstance, ← RingHom.fieldRange_eq_map]
+
+@[deprecated (since := "2026-10-03")] alias Subfield.bot_eq_of_zMod_algebra :=
+  Subfield.bot_eq_of_zmod_algebra
 
 variable (K) in
 /-- Equivalence between the smallest subfield of a field of characteristic `p` and `ZMod p`. -/
 @[expose] noncomputable
 def Subfield.botEquivZMod (p : ℕ) [Fact (Nat.Prime p)] [Algebra (ZMod p) K] :
     (⊥ : Subfield K) ≃+* ZMod p :=
-  (RingEquiv.subfieldCongr (Subfield.bot_eq_of_zMod_algebra p)).trans
+  (RingEquiv.subfieldCongr (Subfield.bot_eq_of_zmod_algebra p)).trans
     (algebraMap (ZMod p) K).rangeRestrictFieldEquiv.symm
 
 @[simp]
