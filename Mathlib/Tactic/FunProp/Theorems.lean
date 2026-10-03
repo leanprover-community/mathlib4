@@ -324,7 +324,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
   let info ← getConstInfo declName
   forallTelescope info.type fun xs b => do
     let some (decl,f) ← getFunProp? b
-      | throwError "unrecognized function property `{← ppExpr b}`"
+      | throwError "unrecognized function property `{b}`"
     let funPropName := decl.funPropName
     let fData? ←
       withConfig (fun cfg => { cfg with zeta := false}) <| getFunctionData? f defaultUnfoldPred
@@ -336,7 +336,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
 
     let .data fData := fData?
-      | throwError s!"function in invalid form {← ppExpr f}"
+      | throwError "function in invalid form {f}"
 
     match fData.fn with
     | .const funName _ =>
@@ -374,7 +374,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
 
         throwError "Not a valid `fun_prop` theorem!"
     | _ =>
-      throwError "unrecognized theoremType `{← ppExpr b}`"
+      throwError "unrecognized theoremType `{b}`"
 
 
 /-- Register theorem `declName` with `fun_prop`. -/
