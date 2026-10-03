@@ -79,11 +79,11 @@ example (a b : Nat) (h : a + 1 ≤ b + 1) : max a b ≤ b := by
 
 section allowing_more_unused_tactics
 
-/-- info: The `SyntaxNodeKind` is 'Lean.Parser.Tactic.refine'. -/
+/-- info: The `SyntaxNodeKind` is `Lean.Parser.Tactic.refine`. -/
 #guard_msgs in
 #show_kind refine _
 
-/-- info: The `SyntaxNodeKind` is 'Lean.Parser.Tactic.skip'. -/
+/-- info: The `SyntaxNodeKind` is `Lean.Parser.Tactic.skip`. -/
 #guard_msgs in
 #show_kind skip
 
