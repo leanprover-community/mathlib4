@@ -313,6 +313,9 @@ theorem multiplicity_one_right : multiplicity a 1 = 0 := by
 
 @[deprecated (since := "2026-09-11")] alias FiniteMultiplicity.one_right := multiplicity_one_right
 
+theorem multiplicity_of_isUnit_left {a : α} (ha : IsUnit a) (b : α) : multiplicity a b = 0 :=
+  multiplicity_eq_zero_of_not_finiteMultiplicity (FiniteMultiplicity.not_of_isUnit_left b ha)
+
 theorem multiplicity_one_left (b : α) : multiplicity 1 b = 0 := by
   simp
 
@@ -491,6 +494,28 @@ theorem multiplicity_eq_of_associated_left {a b c : α} (h : Associated a b) :
 theorem emultiplicity_mk_eq_emultiplicity {a b : α} :
     emultiplicity (Associates.mk a) (Associates.mk b) = emultiplicity a b := by
   simp [emultiplicity_eq_emultiplicity_iff, ← Associates.mk_pow, Associates.mk_dvd_mk]
+
+/-- A non-unit has finite multiplicity at an irreducible element. -/
+theorem Irreducible.finiteMultiplicity_of_not_isUnit {a x : α} (ha : Irreducible a)
+    (hx : ¬ IsUnit x) : FiniteMultiplicity x a :=
+  ⟨1, fun h ↦ ha.not_mul_self_dvd hx (by simpa [pow_succ] using h)⟩
+
+/-- The `multiplicity` of an irreducible element at itself is `1`. -/
+protected theorem Irreducible.multiplicity_self {a : α} (ha : Irreducible a) :
+    multiplicity a a = 1 :=
+  multiplicity_eq_of_dvd_of_not_dvd (by simp) fun h ↦
+    ha.not_mul_self_dvd ha.not_isUnit (by simpa [pow_succ] using h)
+
+/-- The `multiplicity` of `p` at an irreducible `q` is `1` if `p` and `q` are associated,
+and `0` otherwise. -/
+theorem Irreducible.multiplicity_eq_ite (p : α) {q : α} [Decidable (Associated p q)]
+    (hq : Irreducible q) : multiplicity p q = if Associated p q then 1 else 0 := by
+  by_cases hp : IsUnit p
+  · rw [ite_eq_right, multiplicity_of_isUnit_left hp]
+    exact fun h ↦ hq.not_isUnit (h.isUnit hp)
+  · split_ifs with h
+    · rw [multiplicity_eq_of_associated_right h.symm, (h.symm.irreducible hq).multiplicity_self]
+    · exact multiplicity_eq_zero_of_not_dvd <| by simp [hq.dvd_iff, h, Associated.comm, hp]
 
 end CommMonoid
 
@@ -696,10 +721,14 @@ theorem multiplicity_self {a : α} (ha : FiniteMultiplicity a a) : multiplicity 
     simpa [this] using ha.not_isUnit
   · simpa using ha.ne_zero
 
+/-- A non-unit has finite multiplicity at a prime. -/
+theorem Prime.finiteMultiplicity_of_not_isUnit {a x : α} (ha : Prime a) (hx : ¬ IsUnit x) :
+    FiniteMultiplicity x a :=
+  ha.irreducible.finiteMultiplicity_of_not_isUnit hx
+
 /-- The `multiplicity` of a prime at itself is `1`. -/
 protected theorem Prime.multiplicity_self {a : α} (ha : Prime a) : multiplicity a a = 1 :=
-  multiplicity_self ⟨1, fun h ↦ ha.not_isUnit
-    (isUnit_of_dvd_one ((mul_dvd_mul_iff_left ha.ne_zero).mp (by simpa [pow_two] using h)))⟩
+  ha.irreducible.multiplicity_self
 
 @[simp]
 theorem FiniteMultiplicity.emultiplicity_self {a : α} (hfin : FiniteMultiplicity a a) :
@@ -769,21 +798,11 @@ theorem multiplicity_pow_self_of_prime {p : α} (hp : Prime p) (n : ℕ) :
     multiplicity p (p ^ n) = n :=
   multiplicity_pow_self hp.ne_zero hp.not_isUnit n
 
-/-- The `multiplicity` of a prime `p` at an irreducible `q` is `1` if `p` and `q` are
-associated, and `0` otherwise. -/
-theorem Prime.multiplicity_irreducible {p q : α} [Decidable (Associated p q)] (hp : Prime p)
-    (hq : Irreducible q) : multiplicity p q = if Associated p q then 1 else 0 := by
-  split_ifs with h
-  · rw [multiplicity_eq_of_associated_right h.symm, hp.multiplicity_self]
-  · exact multiplicity_eq_zero_of_not_dvd
-      ((hp.irreducible.dvd_irreducible_iff_associated hq).not.mpr h)
-
-/-- The `multiplicity` of a prime `p` at another prime `q` is `1` if `p` and `q` are
-associated, and `0` otherwise. This is `Prime.multiplicity_irreducible` with both arguments
-prime, stated for convenience and symmetry. -/
-theorem Prime.multiplicity_prime {p q : α} [Decidable (Associated p q)] (hp : Prime p)
-    (hq : Prime q) : multiplicity p q = if Associated p q then 1 else 0 :=
-  hp.multiplicity_irreducible hq.irreducible
+/-- The `multiplicity` of `p` at a prime `q` is `1` if `p` and `q` are associated, and
+`0` otherwise. -/
+theorem Prime.multiplicity_eq_ite (p : α) {q : α} [Decidable (Associated p q)] (hq : Prime q) :
+    multiplicity p q = if Associated p q then 1 else 0 :=
+  hq.irreducible.multiplicity_eq_ite p
 
 end CancelCommMonoidWithZero
 
