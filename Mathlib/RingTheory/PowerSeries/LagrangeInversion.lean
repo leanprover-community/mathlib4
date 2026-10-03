@@ -234,9 +234,8 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
     map_subst (hasSubst_of_fixedPoint hY₀) F
   have hmapY : map e Y₀ = Y := by
     apply fixedPoint_unique _ hY
-    simpa only [map_mul, map_X, hmap_subst, hP] using congrArg (map e) hY₀
-  simpa only [map_nsmul, ← coeff_map, hmap_subst, map_mul, map_pow, map_derivative,
-    hH, hP, hmapY] using congrArg e hcoeff
+    simpa [hmap_subst, hP] using congrArg (map e) hY₀
+  simpa [← coeff_map, hmap_subst, map_derivative, hH, hP, hmapY] using congrArg e hcoeff
 
 /-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
 `(n + k) * [X ^ (n + k)] Y ^ k = k * [X ^ n] P ^ (n + k)` for all natural numbers
