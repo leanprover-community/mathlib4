@@ -7074,6 +7074,7 @@ public import Mathlib.RingTheory.MvPolynomial.EulerIdentity
 public import Mathlib.RingTheory.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.MvPolynomial.Groebner
+public import Mathlib.RingTheory.MvPolynomial.Height
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.MvPolynomial.Ideal
 public import Mathlib.RingTheory.MvPolynomial.IrreducibleQuadratic
