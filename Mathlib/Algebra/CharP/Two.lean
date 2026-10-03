@@ -220,8 +220,8 @@ end CommSemiring
 end CharTwo
 
 @[simp]
-protected theorem IsSelfNeg.one [AddGroupWithOne R] [CharP R 2] : IsSelfNeg (1 : R) := by
-  rw [isSelfNeg_iff, neg_eq_iff_add_eq_zero, one_add_one_eq_two, CharTwo.two_eq_zero]
+protected theorem IsSelfNeg.one [AddGroupWithOne R] [CharP R 2] : IsSelfNeg (1 : R) :=
+  CharTwo.neg_one_eq_one
 
 section ringChar
 
