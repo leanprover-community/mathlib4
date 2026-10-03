@@ -141,8 +141,6 @@ def equivProdPrimeFactors (h : p ≠ 0) : Sylow p G ≃ Sylow (p.primeFactors.pr
     isPGroup := isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr H.isPGroup,
     eq_of_isPGroup_of_ge hQ :=
       H.eq_of_isPGroup_of_ge <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mp hQ }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem coe_equivProdPrimeFactors_apply (h : p ≠ 0) (H : Sylow p G) :
@@ -162,7 +160,7 @@ variable {K : Type*} [Group K] (ϕ : K →* G) {N : Subgroup G}
 def comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : P ≤ ϕ.range) : Sylow p K :=
   { P.1.comap ϕ with
     isPGroup := P.2.comap_of_ker_isPGroup ϕ hϕ
-    eq_of_isPGroup_of_ge := fun {Q} hQ hle => by
+    eq_of_isPGroup_of_ge {Q} hQ hle := by
       show Q = P.1.comap ϕ
       rw [← P.3 (hQ.map ϕ) (le_trans (ge_of_eq (map_comap_eq_self h)) (map_mono hle))]
       exact (comap_map_eq_self ((P.1.ker_le_comap ϕ).trans hle)).symm }
@@ -506,8 +504,8 @@ variable [Finite G] {G' : Type*} [Group G'] {f : G →* G'} (hf : Function.Surje
 def mapSurjective [Fact p.Prime] (P : Sylow p G) : Sylow p G' :=
   { P.1.map f with
     isPGroup := P.2.map f
-    eq_of_isPGroup_of_ge := fun hQ hPQ ↦ ((P.2.map f).toSylow
-      (fun h ↦ P.not_dvd_index (h.trans (P.index_map_dvd hf)))).3 hQ hPQ }
+    eq_of_isPGroup_of_ge hQ hPQ :=
+      ((P.2.map f).toSylow (fun h ↦ P.not_dvd_index (h.trans (P.index_map_dvd hf)))).3 hQ hPQ }
 
 @[simp] theorem coe_mapSurjective [Fact p.Prime] (P : Sylow p G) : P.mapSurjective hf = P.map f :=
   rfl
