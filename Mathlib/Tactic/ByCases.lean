@@ -30,13 +30,13 @@ open Lean.Parser.Tactic
 -/
 syntax (name := byCases!) "by_cases! " optConfig (atomic(ident " : "))? term : tactic
 
-local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
+local elab "try_push_not_at" cfg:optConfig h:ident : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
     (ifUnchanged := .silent)
 
 macro_rules
   | `(tactic| by_cases! $cfg:optConfig $e) => `(tactic| by_cases! $cfg h : $e)
   | `(tactic| by_cases! $cfg:optConfig $h : $e) =>
-    `(tactic| by_cases $h : $e; on_goal 2 => try_push_neg_at $cfg $h:ident)
+    `(tactic| by_cases $h : $e; on_goal 2 => try_push_not_at $cfg $h:ident)
 
 end Mathlib.Tactic.ByCases
