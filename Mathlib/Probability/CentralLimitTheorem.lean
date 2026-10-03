@@ -188,16 +188,9 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
   let Y' : Ω' → ℝ := fun ω ↦ ⟪Y ω, t⟫
   let Y : ℕ → Ω → ℝ := fun i ω => ⟪X i ω, t⟫
   have hY' : HasLaw Y' (gaussianReal 0 (‖t‖ ^ 2).toNNReal) P' := by
-    have hproj : HasLaw (fun x : EuclideanSpace ℝ (Fin d) ↦ ⟪x, t⟫)
-        (gaussianReal 0 (‖t‖ ^ 2).toNNReal)
-        (stdGaussian (EuclideanSpace ℝ (Fin d))) := by
-      refine ⟨by fun_prop, ?_⟩
-      simpa only [multivariateGaussian_zero_one, Matrix.one_mulVec, dotProduct,
-        ← pow_two, ← EuclideanSpace.real_norm_sq_eq, inner_zero_left] using
-        (multivariateGaussian_map_inner (μ := 0) (S := 1) Matrix.PosSemidef.one t)
-    convert hproj.comp hY using 1
-    ext
-    simp [Y']
+    rw [← multivariateGaussian_zero_one] at hY
+    simpa [Y', dotProduct, ← pow_two, ← EuclideanSpace.real_norm_sq_eq] using
+        hY.inner_multivariateGaussian Matrix.PosSemidef.one t
   have hY0 : P[Y 0] = 0 := by
     dsimp [Y]
     calc
