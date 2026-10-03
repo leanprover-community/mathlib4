@@ -7066,6 +7066,7 @@ public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.MatrixAlgebra
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra
 public import Mathlib.RingTheory.Morita.Basic
+public import Mathlib.RingTheory.Morita.IsSimpleRing
 public import Mathlib.RingTheory.Morita.Matrix
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.MvPolynomial
