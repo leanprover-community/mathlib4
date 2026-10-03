@@ -185,11 +185,9 @@ theorem Module.projective_of_localization_maximal'
 
 /-- A finitely presented module is projective if and only if all of its
 localizations at maximal ideals are free. -/
-theorem Module.projective_iff_localization_maximal_free
-    [Module.FinitePresentation R M] :
-    Module.Projective R M ↔
-      ∀ (I : Ideal R) (_ : I.IsMaximal),
-        Module.Free (Localization.AtPrime I) (LocalizedModule.AtPrime I M) := by
+theorem Module.projective_iff_localization_maximal_free [Module.FinitePresentation R M] :
+    Module.Projective R M ↔ ∀ (I : Ideal R) (_ : I.IsMaximal),
+      Module.Free (Localization.AtPrime I) (LocalizedModule.AtPrime I M) := by
   constructor
   · intro _ I _
     have : Module.Projective (Localization.AtPrime I) (LocalizedModule.AtPrime I M) :=
