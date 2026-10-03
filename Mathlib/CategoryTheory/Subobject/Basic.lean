@@ -416,7 +416,7 @@ theorem ofMkLEMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLEMk f f le_r
 
 -- As with `ofLE`, we have `X` and `Y` as explicit arguments for readability.
 /-- An equality of subobjects gives an isomorphism of the corresponding objects.
-(One could use `underlying.mapIso (eqToIso h))` here, but this is more readable.) -/
+(One could use `underlying.mapIso (eqToIso h)` here, but this is more readable.) -/
 @[simps]
 def isoOfEq {B : C} (X Y : Subobject B) (h : X = Y) : (X : C) ≅ (Y : C) where
   hom := ofLE _ _ h.le
