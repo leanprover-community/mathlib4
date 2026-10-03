@@ -219,7 +219,7 @@ lake exe cache query
 #   lake exe cache get --scope=5a3c7e9a...
 ```
 
-The `query` command walks your git log backwards from `HEAD`, stopping at the
+The `query` command walks Mathlib's git log backwards from `HEAD`, stopping at the
 merge base with `master` or a hard cap of 50 commits (whichever comes first),
 and probes each commit for a completed SHA-scoped upload in the `forks`
 container. That signal is written by `cache put` only after a successful
@@ -247,8 +247,10 @@ lake exe cache query 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
 # prints "cached: 5a3c7e9a..." (exit 0) or "not cached: 5a3c7e9a..." (exit 1)
 ```
 
-By default `query` (both modes) targets the cwd's git remote — pass `--repo=`
-to override.
+All Git lookups use the Mathlib source directory, including HEAD, scope refs,
+and history walks. In a downstream project, this is the Mathlib dependency
+directory. By default, `query` targets that checkout's Git remote. Pass
+`--repo=` to override the remote without changing where refs resolve.
 
 ### Unsafe automatic scope walk
 
@@ -292,7 +294,7 @@ security warning to stderr. This happens when:
 3. **`--cache-from` widens the read chain** — you are explicitly telling the tool
    to trust containers beyond the repo default.
 4. **`--repo` overrides the detected git remote** — you are reading cache for a
-   different repository than your cwd's git remote.
+   different repository than the Mathlib checkout's git remote.
 
 Example warning:
 
