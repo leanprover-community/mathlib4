@@ -656,17 +656,15 @@ This is a form of the fact that the horizontal maps in a pullback square have th
 kernel. -/
 def isLimitKernelForkPullbackπ (h : x.arrow ≫ f = 0)
     (hx : IsLimit (KernelFork.ofι x.arrow h)) :
-    IsLimit (KernelFork.ofι _ (ofLE_comp_pullbackπ_eq_zero f y h)) := by
-  apply KernelFork.IsLimit.ofι' _ (ofLE_comp_pullbackπ_eq_zero f y h)
-  intro Z z hz
+    IsLimit (KernelFork.ofι _ (ofLE_comp_pullbackπ_eq_zero f y h)) := 
+  KernelFork.IsLimit.ofι' _ (ofLE_comp_pullbackπ_eq_zero f y h) fun {Z} z hz ↦
   -- a map into the pullback killed by `pullbackπ` is, after the arrow, killed by `f`,
   -- so it factors through `x`; that factorization is the required lift
-  have hz' : (z ≫ ((pullback f).obj y).arrow) ≫ f = 0 := by
-    rw [Category.assoc, ← (isPullback f y).toCommSq.w, ← Category.assoc, hz, zero_comp]
-  refine ⟨hx.lift (KernelFork.ofι (z ≫ ((pullback f).obj y).arrow) hz'), ?_⟩
-  apply (cancel_mono ((pullback f).obj y).arrow).mp
-  rw [Category.assoc, ofLE_arrow (le_pullback_of_comp_eq_zero f y h)]
-  exact Fork.IsLimit.lift_ι hx
+  ⟨hx.lift (KernelFork.ofι (z ≫ ((pullback f).obj y).arrow) (by
+    simp [← (isPullback f y).toCommSq.w, reassoc_of% hz])), by
+  simp [← cancel_mono ((pullback f).obj y).arrow,
+    ofLE_arrow (le_pullback_of_comp_eq_zero f y h),
+    dsimp% Fork.IsLimit.lift_ι hx]⟩
 
 end
 
