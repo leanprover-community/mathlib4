@@ -195,20 +195,14 @@ variable [CommSemiring R] [CharP R 2]
 theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
   simp [add_pow_two]
 
-/-- See `frobenius` for the Frobenius map. -/
-private def sqAddMonoidHom : R →+ R where
-  toFun := (· ^ 2)
-  map_zero' := zero_pow two_ne_zero
-  map_add' := add_sq
+theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum := by
+  simpa only [sq] using list_sum_mul_self l
 
-theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
-  map_list_sum sqAddMonoidHom _
+theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum := by
+  simpa only [sq] using multiset_sum_mul_self l
 
-theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
-  map_multiset_sum sqAddMonoidHom _
-
-theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 :=
-  map_sum sqAddMonoidHom _ _
+theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 := by
+  simpa only [sq] using sum_mul_self s f
 
 variable [NoZeroDivisors R]
 
