@@ -64,8 +64,6 @@ structure TacticNode where
   ctxI : ContextInfo
   /-- `TacticInfo` at the infotree node. -/
   tacI : TacticInfo
-  /-- This tactic is allowed to fail because it is in a `try`/`anyGoals`/etc block. -/
-  mayFail : Bool
 
 /-- Run tactic code, given by a piece of syntax, in the context of a tactic info node.
 
@@ -163,7 +161,7 @@ initialize registerBuiltinAttribute {
     | _ => throwUnsupportedSyntax
 }
 
-/-- Parse an infotree to find all the sequences of tactics contained within `stx`.
+/-- Parse an infotree to find all the sequences of tactics contained in the original syntax.
 
 We consider a sequence here to be a maximal interval of tactics joined by `;` or newlines.
 This function returns an array of sequences. For example, a proof of the form:
@@ -181,50 +179,25 @@ would result in three sequences:
 Similarly, a declaration with multiple `by` blocks results in each of the blocks getting its
 own sequence.
 -/
-def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) := do
-  -- Turn the CommandElabM into a surrounding context for traversing the tree.
-  let ctx ← read
-  let state ← get
-  let ctxInfo := { env := state.env, fileMap := ctx.fileMap, ngen := state.ngen }
-  let out ← tree.visitM (m := CommandElabM) (ctx? := some ctxInfo)
-    (fun _ _ _ => pure true) -- Assumption: a tactic can occur as a child of any piece of syntax.
-    (fun ctx i _c cs => do
-      let relevantChildren := (cs.filterMap id).toArray
-      let childTactics := relevantChildren.filterMap Prod.fst
-      let childSequences := (relevantChildren.map Prod.snd).flatten
-      let stx := i.stx
-      -- Tactic sequencing operators: collect all the child tactics into a new sequence.
-      -- This must happen regardless of source info, as `have h := by ...` creates tacticSeq
-      -- nodes with synthetic source info.
-      if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
-          ``Lean.Parser.Term.byTactic] then
-        return (none, if childTactics.isEmpty then
-            childSequences
-          else
-            childSequences.push childTactics)
-      if let some (.original _ _ _ _) := stx.getHeadInfo? then
-        -- Punctuation: skip this.
-        if stx.getKind ∈ [`«;», `Lean.cdotTk, `«]», nullKind, `«by»] then
-          return (none, childSequences)
-        -- Tactic modifiers: return the children unmodified.
-        if stx.getKind ∈ [``Lean.Parser.Tactic.withAnnotateState] then
-          return (childTactics[0]?, childSequences)
-
-        -- Remaining options: plain pieces of syntax.
-        -- We discard `childTactics` here, because those are either already picked up by a
-        -- sequencing operator, or come from macros.
-        if let .ofTacticInfo i := i then
-          let childSequences :=
-            -- This tactic accepts the failure of its children.
-            if stx.getKind ∈ [``Lean.Parser.Tactic.tacticTry_, ``Lean.Parser.Tactic.anyGoals] then
-              childSequences.map (·.map fun i => { i with mayFail := true })
-            else
-              childSequences
-          return (some ⟨ctx, i, false⟩, childSequences)
-        return (none, childSequences)
-      else
-        return (none, childSequences))
-  return (out.map Prod.snd).getD #[]
+def findTacticSeqs (tree : InfoTree) : Array (Array TacticNode) :=
+  tree.foldInfoTree (init := #[]) fun ctx tree seqs ↦ Id.run do
+    let .node (.ofTacticInfo i) trees := tree | return seqs
+    unless i.elaborator == `Lean.Elab.Tactic.evalTacticSeq1Indented do
+      return seqs
+    -- Note: `have h := by ...` creates tacticSeq nodes with synthetic source info,
+    -- so we cannot filter out synthetic tactic sequences.
+    let tacs := trees.foldl (init := #[]) fun
+      | tacs, .node (.ofTacticInfo i) _ =>
+        -- Exclude atomic tactics like `;`.
+        -- Exclude tactics with synthetic source info, as they aren't user-written.
+        if !i.stx.isAtom && i.stx.getHeadInfo? matches some (.original ..) then
+          tacs.push ⟨ctx, i⟩
+        else
+          tacs
+      | tacs, _ => tacs
+    if tacs.isEmpty then
+      return seqs
+    return seqs.push tacs
 
 /-- Tag `msg` as a finding of the pass enabled by `opt`, copying the shape of
 `Lean.Linter.logLint` (core has no `MessageData`-level helper for this, so keep the two in sync):
@@ -263,7 +236,7 @@ def runPasses (configs : Array Pass) (trees : PersistentArray InfoTree) : Comman
   if enabledConfigs.isEmpty then
     return
   for i in trees do
-    for seq in (← findTacticSeqs i) do
+    for seq in findTacticSeqs i do
       for (opt, config) in enabledConfigs do
         withLintTagging opt <| config.run seq
 
@@ -356,9 +329,7 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
       let (oldGoals, oldHeartbeats) ← withHeartbeats <|
         try
           i.runTacticCode goal stx
-        catch e =>
-          if !i.mayFail then
-            logWarning m!"original tactic '{stx}' failed: {e.toMessageData}"
+        catch _ =>
           return [goal]
       let (new, newHeartbeats) ← withHeartbeats <| config.test i.ctxI i.tacI ctx goal
       if let some msg ← config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
