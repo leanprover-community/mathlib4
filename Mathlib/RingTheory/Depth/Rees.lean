@@ -24,11 +24,12 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 * `ModuleCat.exists_isRegular_tfae` (Rees theorem) : For any `n : ℕ`, Noetherian ring `R`,
   `I : Ideal R`, and finitely generated and nontrivial `R`-module `M` satisfying `IM < M`,
   the following are equivalent:
-  · for any `N : ModuleCat R` finitely generated such that `Supp N ⊆ V(I)`, `∀ i < n, Ext N M i = 0`
-  · `∀ i < n, Ext (R ⧸ I) M i = 0`
-  · there exists a `N : ModuleCat R` finitely generated and nontrivial with `Supp N = V(I)`
+  * for any `N : ModuleCat R` finitely generated and nontrivial such that `Supp N ⊆ V(I)`,
+    `∀ i < n, Ext N M i = 0`
+  * `∀ i < n, Ext (R ⧸ I) M i = 0`
+  * there exists an `N : ModuleCat R` finitely generated and nontrivial with `Supp N = V(I)`
     such that `∀ i < n, Ext N M i = 0`
-  · there exists a `M`-regular sequence of length `n` with every element in `I`
+  * there exists an `M`-regular sequence of length `n` with every element in `I`
 
 ## References
 
@@ -99,7 +100,7 @@ module over Noetherian ring `R` and ideal `I` satisfying `IM < M` and `Supp N �
 if there is an `M`-regular sequence `rs` contained in `I`,
 then `Ext N M i = 0` for all `i < rs.length`. -/
 lemma subsingleton_ext_of_exists_isRegular [Small.{v} R] [IsNoetherianRing R] (I : Ideal R)
-    (N : ModuleCat.{v} R) [Nfin : Module.Finite R N]
+    (N : ModuleCat.{v} R) [Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (rs : List R) (mem : ∀ r ∈ rs, r ∈ I) (reg : IsRegular M rs) :
@@ -151,9 +152,9 @@ For any `n : ℕ`, Noetherian ring `R`, `I : Ideal R`, and finitely generated an
 * for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
 * `∀ i < n, Ext (R ⧸ I) M i = 0`
-* there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
+* there exists an `N : ModuleCat R` finitely generated and nontrivial with support equal to the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
-* there exists a `M`-regular sequence of length `n` with every element in `I`
+* there exists an `M`-regular sequence of length `n` with every element in `I`
 -/
 lemma exists_isRegular_tfae [Small.{v} R] [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
