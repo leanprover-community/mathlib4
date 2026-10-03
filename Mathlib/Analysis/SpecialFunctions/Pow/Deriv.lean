@@ -79,7 +79,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f g : E → ℂ
 theorem HasStrictFDerivAt.cpow (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasStrictFDerivAt (fun x => f x ^ g x)
       ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Complex.log (f x)) • g') x :=
-  (hasStrictFDerivAt_cpow (p := (f x, g x)) h0).comp x (hf.prodMk hg)
+  (hasStrictFDerivAt_cpow (p := (f x, g x)) h0).fun_comp x (hf.prodMk hg)
 
 theorem HasStrictFDerivAt.const_cpow (hf : HasStrictFDerivAt f f' x) (h0 : c ≠ 0 ∨ f x ≠ 0) :
     HasStrictFDerivAt (fun x => c ^ f x) ((c ^ f x * Complex.log c) • f') x :=
@@ -543,7 +543,7 @@ theorem HasFDerivAt.rpow (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) (h 
 theorem HasStrictFDerivAt.rpow (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x)
     (h : 0 < f x) : HasStrictFDerivAt (fun x => f x ^ g x)
       ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Real.log (f x)) • g') x :=
-  (hasStrictFDerivAt_rpow_of_pos (f x, g x) h).comp x (hf.prodMk hg)
+  (hasStrictFDerivAt_rpow_of_pos (f x, g x) h).fun_comp x (hf.prodMk hg)
 
 @[fun_prop]
 theorem DifferentiableWithinAt.rpow (hf : DifferentiableWithinAt ℝ f s x)

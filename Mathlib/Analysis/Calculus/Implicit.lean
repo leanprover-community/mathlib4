@@ -220,7 +220,7 @@ theorem map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
 theorem hasStrictFDerivAt_implicitFunction_fderiv :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt))
       (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt)) (φ.rightFun φ.pt) := by
-  have := φ.hasStrictFDerivAt.to_localInverse.comp (φ.rightFun φ.pt)
+  have := φ.hasStrictFDerivAt.to_localInverse.fun_comp (φ.rightFun φ.pt)
     ((hasStrictFDerivAt_const _ _).prodMk (hasStrictFDerivAt_id _))
   convert! this
   exact this.hasFDerivAt.fderiv
@@ -234,7 +234,7 @@ theorem fderiv_implicitFunction_apply_eq_iff (φ : ImplicitFunctionData 𝕜 E F
       φ.leftDeriv y = 0 ∧ φ.rightDeriv y = x := by
   unfold implicitFunction Function.curry toOpenPartialHomeomorph
   simp only [← HasStrictFDerivAt.localInverse_def]
-  rw [φ.hasStrictFDerivAt.to_localInverse.comp (φ.rightFun φ.pt)
+  rw [φ.hasStrictFDerivAt.to_localInverse.fun_comp (φ.rightFun φ.pt)
     ((hasStrictFDerivAt_const _ _).prodMk (hasStrictFDerivAt_id _)) |>.hasFDerivAt |>.fderiv]
   simp [ContinuousLinearEquiv.symm_apply_eq, @eq_comm _ (φ.leftDeriv _),
     @eq_comm _ (φ.rightDeriv _)]
