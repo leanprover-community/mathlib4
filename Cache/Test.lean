@@ -236,21 +236,23 @@ section PerRepoAllowlist
 /-- Trust-ordered read chain per GitHub repo: the tool tries containers in this
 order and stops at the first hit, so both membership and ordering are part of
 the trust boundary. Key points the tests pin:
-- The nightly-testing chain excludes `pr-toolchain-tests`, so trusted-nightly
-  consumers never fall back to low-trust toolchain-PR uploads (those branches
-  opt into the wider chain via `MATHLIB_CACHE_FROM` in CI).
-- The fork chain leads with `master` (shared upstream deps), then `forks`
-  (PR-specific files); `master` is absent from the nightly chain because that
-  repo's toolchain gives it a different root hash.
+- Nightly-testing reads the public cache, then its HEAD-scoped container.
+- Forks read the public cache, then their HEAD-scoped container.
 -/
 def test_defaultContainersForRepo : IO Unit := do
   IO.println "defaultContainersForRepo:"
   assertTrue "canonical repo → [master]"
     (defaultContainersForRepo MATHLIBREPO == [.master])
-  assertTrue "nightly-testing repo → [nightly-testing, forks], no pr-toolchain-tests"
-    (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.nightlyTesting, .forks])
+  assertTrue "nightly-testing repo → [master, nightly-testing]"
+    (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.master, .nightlyTesting])
   assertTrue "fork repo → [master, forks]"
     (defaultContainersForRepo "alice/mathlib4" == [.master, .forks])
+  assertTrue "nightly markers use the nightly container"
+    (scopedContainerForRepo NIGHTLY_TESTING_REPO == .nightlyTesting)
+  assertTrue "fork markers use the forks container"
+    (scopedContainerForRepo "alice/mathlib4" == .forks)
+  assertTrue "nightly supports per-commit queries"
+    (!isCanonicalRepo NIGHTLY_TESTING_REPO)
   assertTrue "unknown repo falls back to the fork chain"
     (defaultContainersForRepo "some/other-repo" == [.master, .forks])
 
@@ -1597,54 +1599,44 @@ section UnsafeRounds
 /-- `expandDownloadRounds` turns the trust-ordered container list into the
 concrete download rounds to run, each tagged with the SHA scope to read at.
 
-Without `--unsafe` (empty `unsafeScopes`) every round carries the single resolved
-base scope; with no base scope, `headScope?` applies to the `forks` round only,
-so a plain `cache get` reads the fork namespace of the checked-out commit while
-the other containers' non-SHA-scoped layouts stay untouched. With `--unsafe` the
-`forks` container — the only SHA-scoped container — fans out into one round per
-discovered SHA (most recent first), while every other container reads unscoped
-and the base scope is dropped. -/
+Both developer containers default to HEAD and expand into the chosen scopes
+in unsafe mode. Missing HEAD must never permit an unscoped developer read.
+-/
 def test_expandDownloadRounds : IO Unit := do
   IO.println "expandDownloadRounds:"
   let chain : List (Option Container × String) :=
     [(some .master, "U_m"), (some .forks, "U_f"), (some .nightlyTesting, "U_n")]
 
-  -- No unsafe scopes: one round per container, each carrying the base scope.
-  assertTrue "no unsafe scopes, no base scope → scope none on every round"
-    (expandDownloadRounds chain none [] ==
-      [(some .master, "U_m", none), (some .forks, "U_f", none),
-       (some .nightlyTesting, "U_n", none)])
-  assertTrue "no unsafe scopes, base scope → base scope on every round"
+  assertTrue "missing HEAD never reads an unscoped developer namespace"
+    (expandDownloadRounds chain none [] == [(some .master, "U_m", none)])
+  assertTrue "explicit scope applies to each container"
     (expandDownloadRounds chain (some "S") [] ==
       [(some .master, "U_m", some "S"), (some .forks, "U_f", some "S"),
        (some .nightlyTesting, "U_n", some "S")])
-
-  -- With no base scope the forks round defaults to the HEAD scope; the other
-  -- containers' layouts are not SHA-scoped, so it must not leak into them.
-  assertTrue "no base scope, head scope → forks at head, others unscoped"
+  assertTrue "forks and nightly-testing default to HEAD"
     (expandDownloadRounds chain none [] (some "H") ==
       [(some .master, "U_m", none), (some .forks, "U_f", some "H"),
-       (some .nightlyTesting, "U_n", none)])
-  assertTrue "explicit base scope wins over head scope"
+       (some .nightlyTesting, "U_n", some "H")])
+  assertTrue "explicit scope wins over HEAD"
     (expandDownloadRounds chain (some "S") [] (some "H") ==
       [(some .master, "U_m", some "S"), (some .forks, "U_f", some "S"),
        (some .nightlyTesting, "U_n", some "S")])
-  assertTrue "unsafe mode ignores head scope"
+  assertTrue "unsafe mode ignores HEAD"
     (expandDownloadRounds chain none ["a"] (some "H") ==
       [(some .master, "U_m", none), (some .forks, "U_f", some "a"),
-       (some .nightlyTesting, "U_n", none)])
-
-  -- Unsafe scopes: only forks fans out, in order; others unscoped, base dropped.
-  assertTrue "unsafe scopes fan out forks (in order), others unscoped"
+       (some .nightlyTesting, "U_n", some "a")])
+  assertTrue "each SHA-scoped container fans out in commit order"
     (expandDownloadRounds chain (some "ignored") ["a", "b"] ==
       [(some .master, "U_m", none),
        (some .forks, "U_f", some "a"), (some .forks, "U_f", some "b"),
-       (some .nightlyTesting, "U_n", none)])
-
-  -- A chain without forks admits no SHA-scoped reads, so it is left unchanged.
-  assertTrue "no forks container → unsafe scopes have no effect"
+       (some .nightlyTesting, "U_n", some "a"), (some .nightlyTesting, "U_n", some "b")])
+  assertTrue "nightly default chain supports unsafe scopes"
     (expandDownloadRounds [(some .master, "U_m"), (some .nightlyTesting, "U_n")] none ["a", "b"] ==
-      [(some .master, "U_m", none), (some .nightlyTesting, "U_n", none)])
+      [(some .master, "U_m", none), (some .nightlyTesting, "U_n", some "a"),
+       (some .nightlyTesting, "U_n", some "b")])
+  assertTrue "the public cache stays unscoped in unsafe mode"
+    (expandDownloadRounds [(some .master, "U_m")] none ["a", "b"] ==
+      [(some .master, "U_m", none)])
 
 end UnsafeRounds
 

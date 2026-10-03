@@ -223,8 +223,7 @@ HEAD has no published fork cache:
   a scope and the non-default-scope warning did the talking)
 - no `--cache-from` override (the user has taken explicit responsibility for
   the lookup chain)
-- the repo is a fork, not a first-party repo: the canonical repos don't build
-  into the per-commit `forks` namespace this hint points at
+- the repo uses a per-commit cache: `forks` or `nightly-testing`
 - HEAD is not an ancestor of `master`: misses there are master-container lag
   (CI still building master), which no fork scope can serve
 - the fork marker for HEAD is absent; when it is present the HEAD scope was
@@ -242,7 +241,7 @@ def forkHintSHA? (repo : String) (unsafeMode : Bool) : IO (Option String) := do
   if isCanonicalRepo repo then return none
   if (← headIsAncestorOfMaster) then return none
   let sha ← try getGitCommitHash catch _ => return none
-  if (← probeContainerForSHA Container.forks repo sha) then return none
+  if (← probeContainerForSHA (scopedContainerForRepo repo) repo sha) then return none
   return some sha
 
 /--

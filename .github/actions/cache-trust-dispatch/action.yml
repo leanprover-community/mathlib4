@@ -22,7 +22,7 @@ inputs:
   head-sha:
     description: |
       Head commit SHA for the ref being built. Used as the per-commit cache
-      namespace (`MATHLIB_CACHE_REPO_SCOPE`) for fork-trust uploads, so a
+      namespace (`MATHLIB_CACHE_REPO_SCOPE`) for forks and nightly uploads, so a
       closed/hidden PR's poisoned artifacts cannot be served to a later
       honest PR from the same fork.
     required: true
@@ -33,7 +33,7 @@ inputs:
 # `with:` blocks (e.g. constructing further `if:` conditions).
 outputs:
   primary:
-    description: Container name for uploads (master, forks, nightly-testing, pr-toolchain-tests).
+    description: Container name for uploads (master, forks, nightly-testing).
     value: ${{ steps.dispatch.outputs.primary }}
   read-chain:
     description: |
@@ -43,9 +43,7 @@ outputs:
   repo-scope:
     description: |
       Per-commit namespace suffix for `MATHLIB_CACHE_REPO_SCOPE`. Set to
-      the head SHA when uploading to fork-trust containers; empty for
-      master / nightly / pr-toolchain-tests uploads where scoping isn't
-      applied.
+      the head SHA for forks and nightly-testing; empty for master.
     value: ${{ steps.dispatch.outputs.repo-scope }}
 
 runs:
@@ -58,33 +56,18 @@ runs:
         REPO: ${{ inputs.repo }}
         BRANCH: ${{ inputs.branch }}
         HEAD_SHA: ${{ inputs.head-sha }}
-        # Whether `branch` names a branch or a tag. Read from the run context
-        # rather than an input: unlike `repo`/`branch`, the value does not
-        # depend on which event shape (PR vs push) the caller handles.
         REF_TYPE: ${{ github.ref_type }}
       run: |
         PRIMARY=""
         READ_CHAIN=""
         REPO_SCOPE=""
 
-        # Security note: this dispatch is NOT the trust boundary for writes.
-        # The real enforcement is the OIDC bearer token minted in upload_cache:
-        # the token is scoped to a specific container, so a malicious actor
-        # rewriting this case to `--container=master` from a fork build would
-        # be 403'd by Azure regardless. The dispatch exists so the workflow
-        # does the right thing in the honest case; defence in depth is RBAC.
-
-        # Privileged containers (master, nightly-testing, pr-toolchain-tests) are
-        # writable only by a repo's own native CI, whose OIDC token is RBAC-scoped
-        # to match. A cross-repo pull request is built by build_fork.yml with
-        # fork-trust credentials whatever repo the PR head lives on (e.g. a `bump/*`
-        # branch on the mathlib4-nightly-testing fork), so it can only write
-        # `forks`. `GITHUB_REPOSITORY` is the repo the workflow runs as (the base
-        # repo for `pull_request_target`), i.e. the one whose credentials this job
-        # holds; when it differs from `$REPO`, the build is a fork and targets
-        # `forks` regardless of the head repo's own trust class.
+        # Storage credentials enforce write isolation. This action chooses
+        # the matching read and write paths for an honest workflow.
+        # Cross-repository PRs use the base repository's forks credential.
         if [ "$REPO" != "$GITHUB_REPOSITORY" ]; then
           PRIMARY="forks"
+          READ_CHAIN="master,forks"
         else
         case "$REPO" in
           "leanprover-community/mathlib4")
@@ -137,24 +120,8 @@ runs:
             fi
             ;;
           "leanprover-community/mathlib4-nightly-testing")
-            case "$BRANCH" in
-              "nightly-testing"|"nightly-testing-green"|"staging"|bump/*)
-                # Trusted nightly refs use the default [nightly-testing, forks].
-                # It excludes `pr-toolchain-tests` so an upload from a
-                # `batteries-pr-testing-*` branch never reaches a trusted-nightly
-                # consumer.
-                PRIMARY="nightly-testing"
-                ;;
-              *)
-                # `batteries-pr-testing-*`, etc.:
-                # least-trusted (can build with arbitrary toolchains). Widen
-                # reads to recover this branch's own previously-uploaded
-                # artifacts; trusted-nightly stays preferred where hash
-                # spaces happen to align.
-                PRIMARY="pr-toolchain-tests"
-                READ_CHAIN="pr-toolchain-tests,nightly-testing"
-                ;;
-            esac
+            PRIMARY="nightly-testing"
+            READ_CHAIN="master,nightly-testing"
             ;;
           *)
             # Foreign fork. The cache tool's default chain for a fork repo
@@ -166,15 +133,12 @@ runs:
         esac
         fi
 
-        # Per-commit cache namespace, only for fork-trust uploads. Closes the
-        # within-fork temporal replay attack: each commit's CI run gets its
-        # own /f/{repo}/{sha}/... namespace, so artifacts from a closed/
-        # hidden PR cannot be served to a later honest build on the same
-        # fork. Master / nightly / pr-toolchain-tests uploads stay un-scoped:
-        # master has a single writer (no replay risk), and the per-toolchain
-        # hash partitioning isolates nightly and toolchain-test classes via
-        # their root-hash inputs.
-        if [ "$PRIMARY" = "forks" ]; then
+        # Each non-public writer gets a namespace for this exact build commit.
+        if [ "$PRIMARY" = "forks" ] || [ "$PRIMARY" = "nightly-testing" ]; then
+          if [[ ! "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::a scoped cache upload requires a full lowercase commit SHA"
+            exit 1
+          fi
           REPO_SCOPE="$HEAD_SHA"
         fi
 

@@ -92,7 +92,9 @@ When arguments are provided, only the specified files and their transitive impor
 | `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
 | `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. |
 
-Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`.
+Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`.
+The parser still accepts `pr-toolchain-tests`, but the public resolver no longer
+serves that retired container after the R2 cutover.
 
 ## Trust-ordered containers
 
@@ -106,9 +108,14 @@ order, depending on the repo:
 | GitHub repo                                     | Container order tried       |
 |-------------------------------------------------|-----------------------------|
 | `leanprover-community/mathlib4`                 | `master`                    |
-| `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `forks`  |
+| `leanprover-community/mathlib4-nightly-testing` | `master`, `nightly-testing` |
 | any fork (PRs)                                  | `master`, `forks`           |
 | downstream with mathlib as a dependency         | `master`                    |
+
+Both `forks` and `nightly-testing` default to the checked-out HEAD's namespace.
+The nightly destination is one R2 bucket for all native nightly push builds.
+The old unscoped nightly caches are absent from this chain. Use `cache query`
+and `--scope` or `--unsafe` to explicitly select another cached commit.
 
 Override the read chain with `--cache-from=LIST`:
 

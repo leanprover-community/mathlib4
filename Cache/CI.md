@@ -19,7 +19,7 @@ The trust model behind the containers and the write credentials is in [`SECURITY
 
 | Option              | Description                                          |
 |---------------------|------------------------------------------------------|
-| `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`. An upload targets exactly one container; required unless `MATHLIB_CACHE_PUT_URL` is set. |
+| `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`. An upload targets exactly one container; required unless `MATHLIB_CACHE_PUT_URL` is set. |
 | `--backend=NAME`    | The storage backend, `azure` (the default) or `s3` (see [Backends and transfer tools](#backends-and-transfer-tools)). |
 | `--staging-dir=DIR` | For `put-staged`: the staging directory to upload.   |
 | `--scope=REF`       | The per-commit namespace to upload under, and its completeness marker. Takes precedence over `MATHLIB_CACHE_REPO_SCOPE`. The read-side use of `--scope` is documented in the README. |
@@ -66,3 +66,17 @@ The curl tool's non-overwrite guard relies on the store honoring
 An empty value means unset for every variable above except
 `MATHLIB_CACHE_PUT_URL`, where any set value counts: a misconfigured endpoint
 fails the upload and does not divert it to the backend's destination.
+
+## Nightly uploads
+
+All nightly-testing push builds use `nightly-testing` with the build SHA in
+`MATHLIB_CACHE_REPO_SCOPE`. Their read chain is `master,nightly-testing`.
+The uploader and packer come from canonical mathlib4 `master`, including its
+toolchain, regardless of the nightly branch under test.
+
+Nightly uploads use R2 only. The `cache-upload-nightly-testing` environment
+must admit the native push refs. Set `MATHLIB_CACHE_BROKER_URL` and
+`MATHLIB_CACHE_R2_NIGHTLY_PUT_BASE_URL` as repository variables. The latter is
+`https://<account-id>.r2.cloudflarestorage.com/mathlib4-nightly-testing-cache`.
+The broker derives artifact and marker permissions from the signed build SHA.
+A missing broker configuration or failed R2 upload fails the upload job.

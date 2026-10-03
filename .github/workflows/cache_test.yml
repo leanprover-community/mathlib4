@@ -10,6 +10,8 @@ on:
   pull_request:
     paths:
       - 'Cache/**'
+      - '.github/actions/cache-trust-dispatch/**'
+      - 'scripts/test_cache_trust_dispatch.py'
       # The `cache-test` target and the toolchain it compiles under live here;
       # a bump can break the tool's compilation even with `Cache/` untouched.
       - 'lakefile.lean'
@@ -56,6 +58,9 @@ jobs:
           lint: "false"
           use-mathlib-cache: "false"
           use-github-cache: "false"
+
+      - name: test cache trust dispatch
+        run: python scripts/test_cache_trust_dispatch.py
 
       - name: build cache-test
         run: lake build cache-test

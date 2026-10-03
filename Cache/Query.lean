@@ -116,15 +116,14 @@ def defaultUnsafeSHAWindow : Nat := 1
 
 /--
 Walk a list of SHAs (most recent first) and collect up to `limit` of them whose
-per-SHA marker exists in the `forks` container. Stops early once `limit` are
+per-SHA marker exists in the repository’s scoped container. Stops early once `limit` are
 found, so at most `limit` probes succeed (and at most `shas.length` are made).
 
-`forks` is the only SHA-scoped container; master/nightly-testing/pr-toolchain-tests
-are not scoped, so probing them here would be meaningless.
+Nightly-testing uses its own SHA-scoped container. Other repositories use `forks`.
 -/
 def findRecentSHAsWithCache (shas : List String) (repo : String) (limit : Nat) :
     IO (List String) := do
-  let container := Container.forks
+  let container := scopedContainerForRepo repo
   let mut found : Array String := #[]
   for sha in shas do
     if found.size ≥ limit then break
@@ -172,8 +171,8 @@ def resolveQueryRepo (repoExplicit? : Option String) : IO String := do
 Boolean probe for a single commit: prints `cached` or `not cached` and exits
 with status 0 / 1 respectively. Intended for scripting.
 
-Probes the `forks` per-SHA marker, the only SHA-scoped container. Canonical repos
-have no per-commit namespace, so it exits non-zero with a note instead of a
+Probes the repository’s SHA-scoped container marker. The canonical repository
+has no per-commit namespace, so it exits non-zero with a note instead of a
 misleading `not cached`.
 -/
 def cacheQuerySingle (repo sha : String) : IO Unit := do
@@ -181,7 +180,8 @@ def cacheQuerySingle (repo sha : String) : IO Unit := do
     IO.eprintln s!"{repo} caches by file hash, not per commit, so there is no per-commit build to query."
     (← IO.getStderr).flush
     IO.Process.exit 1
-  let cached ← probeContainerForSHA Container.forks repo sha
+  let container := scopedContainerForRepo repo
+  let cached ← probeContainerForSHA container repo sha
   if cached then
     IO.println s!"cached: {sha}"
   else
@@ -218,7 +218,7 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
   let found? ← findMostRecentSHAWithCache shas repo
   match found? with
   | some sha =>
-    IO.println s!"Most recent cached commit on this branch for fork {repo}: {sha}"
+    IO.println s!"Most recent cached commit on this branch for {repo}: {sha}"
     IO.println s!""
     IO.println s!"To use this cache, run:"
     IO.println s!"  lake exe cache get --scope={sha}"
@@ -226,7 +226,7 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
     IO.println s!"Note: this means trusting the artifacts built at that commit;"
     IO.println s!"`cache get` will print a security notice when --scope is set."
   | none =>
-    IO.println s!"No commit-specific cache found for fork {repo} within the last {cap} commits on this branch."
+    IO.println s!"No commit-specific cache found for {repo} within the last {cap} commits on this branch."
     IO.println "Simply call:"
     IO.println "  lake exe cache get"
     IO.println "If CI is still building your latest commit, call it again after CI finishes."
@@ -236,13 +236,13 @@ Discover the SHA scopes `cache get --unsafe` should try, most recent first.
 
 Walks git history from HEAD back to the merge base with `master` (or a hard
 `cap` if the merge base is not reachable) and returns up to `window` commit SHAs
-whose per-SHA marker exists in the `forks` container — i.e. the most recent
-`window` commits on this branch that CI has fully cached for this fork.
+whose per-SHA marker exists in the repository’s scoped container — i.e. the most recent
+`window` commits on this branch that CI has fully cached for this repository.
 
 Unlike `cacheQuery`, this is consumed automatically by `cache get` rather than
 printed for the user, and it returns several SHAs instead of one. An empty
 result means no cached commit was found in range; the caller falls back to a
-normal (unscoped) read.
+normal HEAD-scoped read.
 -/
 def discoverUnsafeScopes (repo : String) (window : Nat := defaultUnsafeSHAWindow)
     (cap : Nat := 50) (cwd : FilePath := ".") : IO (List String) := do
