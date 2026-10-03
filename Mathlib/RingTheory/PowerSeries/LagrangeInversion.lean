@@ -83,8 +83,7 @@ theorem fixedPoint_unique {Z : R⟦X⟧} (hY : Y = X * P.subst Y)
   | h n ih =>
     cases n with
     | zero =>
-      simp only [coeff_zero_eq_constantCoeff_apply, constantCoeff_eq_zero hY,
-        constantCoeff_eq_zero hZ]
+      simp [constantCoeff_eq_zero hY, constantCoeff_eq_zero hZ]
     | succ n =>
       rw [hY, hZ, coeff_succ_X_mul, coeff_succ_X_mul]
       apply coeff_subst_congr (constantCoeff_eq_zero hY) (constantCoeff_eq_zero hZ)
@@ -105,7 +104,7 @@ private lemma coeff_fixedPointApprox_stable (P : R⟦X⟧) (n s j : ℕ) (hj : j
   | zero => omega
   | succ n ih =>
     cases j with
-    | zero => simp only [coeff_zero_eq_constantCoeff_apply, constantCoeff_fixedPointApprox]
+    | zero => simp [constantCoeff_fixedPointApprox]
     | succ j =>
       simp only [Nat.succ_add, fixedPointApprox, coeff_succ_X_mul]
       apply coeff_subst_congr (constantCoeff_fixedPointApprox P n)
@@ -133,8 +132,7 @@ private theorem fixedPointSolution_fixedPoint (P : R⟦X⟧) :
   cases n with
   | zero => simp
   | succ n =>
-    nth_rw 1 [fixedPointSolution]
-    rw [coeff_mk, fixedPointApprox, coeff_succ_X_mul, coeff_succ_X_mul]
+    simp only [fixedPointSolution, fixedPointApprox, coeff_mk, coeff_succ_X_mul]
     apply coeff_subst_congr (constantCoeff_fixedPointApprox P (n + 1))
       (constantCoeff_fixedPointSolution P)
     intro j hj
