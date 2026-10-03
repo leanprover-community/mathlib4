@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Nelson
+Authors: Peter Nelson, Jun Kwon
 -/
 module
 
@@ -28,6 +28,10 @@ of `Q`.
 * `Partition.removeBot`: A constructor for `Partition s` that removes `⊥` from a set of parts.
 * `Partition.instOrderTop`: `Partition s` has a top element, consisting of just `s` if `s ≠ ⊥` or
   nothing otherwise.
+* `Partition.induce`: The induce of a partition by a frame element.
+* `Partition.disjUnion`: The disjoint union of two partitions.
+* `Partition.bind`: The finer partition obtained by family of partitions for each part of the
+  original partition.
 * `Partition.instSemilatticeInf`: `Partition s` has finite meets `P ⊓ Q` when `α` is a frame,
   given by the collection of all non-bottom infima `p ⊓ q` of parts of the two partitions.
 * `Partition.Rel`: The partial equivalence relation induced by a partition of a set.
@@ -56,11 +60,12 @@ proved separately.
 
 * Link this to `Finpartition`.
 * Show that when `α` is a frame `Partition α` also has finite joins, i.e. that it is a lattice.
+* Show that when `α` is a `CompleteDistribLattice`, `Partition α` is a `CompleteLattice`.
 
 -/
 
 @[expose] public section
-variable {α : Type*} {s t x y z : α} {S : Set α}
+variable {α : Type*} {u u' u'' s t x y z : α} {S : Set α}
 
 open Set
 
@@ -78,7 +83,7 @@ structure Partition [CompleteLattice α] (s : α) where
 
 namespace Partition
 
-section Basic
+section CompleteLattice
 
 variable [CompleteLattice α] {P Q : Partition s}
 
@@ -180,12 +185,6 @@ lemma ne_bot_of_mem' (hxP : x ∈ P) : s ≠ ⊥ := by
   rintro rfl
   exact P.notMem_of_bot _ hxP
 
-end Basic
-
-section Order
-
-variable [CompleteLattice α] {P Q : Partition s}
-
 /-- Partitions on `s` are ordered by refinement: `P ≤ Q` if every part of `P` is contained in a part
 of `Q`. -/
 instance : PartialOrder (Partition s) where
@@ -234,13 +233,82 @@ lemma top_def : (⊤ : Partition s) = removeBot {s} (sSupIndep_singleton s) sSup
 
 lemma parts_top_subset : ((⊤ : Partition s) : Set α) ⊆ {s} := by simp
 
+end CompleteLattice
+
+section Frame
+
+variable [Order.Frame α] {P Q : Partition u}
+
+/-- The induce of a partition by a frame element. -/
+@[simps!]
+protected def induce (P : Partition u) (u' : α) : Partition (u' ⊓ u) :=
+  removeBot ((u' ⊓ ·) '' P.parts) (P.sSupIndep.image (fun _ ↦ inf_le_right)) <| by
+    rw [sSup_image, ← inf_sSup_eq, P.sSup_eq']
+
+@[simp]
+lemma mem_induce_iff : x ∈ P.induce u' ↔ x ≠ ⊥ ∧ ∃ t ∈ P, u' ⊓ t = x := by
+  simp [Partition.induce, and_comm]
+
+lemma inf_mem_induce (h : x ∈ P) (hne : u' ⊓ x ≠ ⊥) : u' ⊓ x ∈ P.induce u' :=
+  mem_induce_iff.mpr ⟨hne, x, h, rfl⟩
+
+@[simp]
+lemma induce_induce : (P.induce u').induce u'' = (P.induce (u'' ⊓ u')).copy (inf_assoc ..) := by
+  ext x
+  simp only [mem_induce_iff, mem_copy_iff]
+  grind [inf_assoc, inf_le_right]
+
+/-- The disjoint union of two partitions. -/
+@[simps]
+def disjUnion (P : Partition u) (Q : Partition u') (h : Disjoint u u') : Partition (u ⊔ u') where
+  parts := P.parts ∪ Q.parts
+  sSupIndep' b hb := by
+    rw [union_diff_distrib, sSup_union, disjoint_sup_right]
+    simp only [coe_parts, mem_union, SetLike.mem_coe] at hb
+    obtain ⟨hbP, hbQ⟩ | ⟨hbQ, hbP⟩ : (b ∈ P ∧ b ∉ Q) ∨ (b ∈ Q ∧ b ∉ P) := by
+      suffices ¬ (b ∈ P ∧ b ∈ Q) by tauto
+      rintro ⟨hbP, hbQ⟩
+      simp [le_bot_iff.mp (h (P.le_of_mem hbP) (Q.le_of_mem hbQ))] at hbP
+    · exact ⟨P.sSupIndep' hbP, by simp [hbQ, h.mono_left (P.le_of_mem hbP)]⟩
+    · exact ⟨by simp [hbP, h.symm.mono_left (Q.le_of_mem hbQ)], Q.sSupIndep' hbQ⟩
+  bot_notMem' := by simp
+  sSup_eq' := by simp [sSup_union]
+
+/-- The finer partition obtained by family of partitions for each part of the original partition. -/
+@[simps] protected def bind (P : Partition u) (Qs : ∀ a ∈ P, Partition a) : Partition u where
+  parts := ⋃ a : P, (Qs a a.prop)
+  sSupIndep' b hb:= by
+    simp only [mem_iUnion, SetLike.mem_coe, Subtype.exists] at hb
+    obtain ⟨a, haP, hba : b ∈ Qs a haP⟩ := hb
+    refine (((Qs a haP).sSupIndep' hba).sup_right <| (P.sSupIndep' haP).mono_left <|
+      (Qs a haP).le_of_mem hba).mono_right ?_
+    simp only [coe_parts, sSup_le_iff, mem_diff, mem_iUnion, SetLike.mem_coe, Subtype.exists,
+      mem_singleton_iff, and_imp, forall_exists_index]
+    rintro t' x hx (ht' : t' ∈ Qs x hx) hne
+    obtain rfl | hne := eq_or_ne x a
+    · exact (le_sSup_of_le (show t' ∈ _ \ {b} from ⟨ht', hne⟩) le_rfl).trans le_sup_left
+    exact (le_sSup_of_le (show x ∈ _ \ _ from ⟨hx, hne⟩) ((Qs ..).le_of_mem ht')).trans le_sup_right
+  bot_notMem' := by
+    simp only [mem_iUnion, SetLike.mem_coe, Subtype.exists, not_exists]
+    exact fun x hx ↦ (Qs x hx).bot_notMem'
+  sSup_eq' := by simp_rw [sSup_iUnion, sSup_eq, ← P.sSup_eq, sSup_eq_iSup, iSup_subtype]; rfl
+
+@[simp] lemma mem_bind_iff {Qs : ∀ a ∈ P, Partition a} :
+    x ∈ P.bind Qs ↔ ∃ (b : α) (hb : b ∈ P), x ∈ Qs b hb := by
+  change _ ∈ ⋃ _, _ ↔ _; simp
+
+@[simp] lemma bind_le (Qs : ∀ a ∈ P, Partition a) : P.bind Qs ≤ P := by
+  intro t ht
+  obtain ⟨b, hbp, h⟩ := mem_bind_iff.1 ht
+  exact ⟨b, hbp, Partition.le_of_mem _ h⟩
+
 /-- When `α` is a frame, the meet `P ⊓ Q` of two partitions is the partition consisting of all
 non-bottom meets `p ⊓ q` for `p ∈ P` and `q ∈ Q`.
 
 Note that while finite meets of partitions can be constructed in this way, arbitrary meets generally
 do not exist: for example when `α` is the frame of open subsets of the Cantor space, `Partition α`
 has no bottom element. -/
-instance instSemilatticeInf {α : Type*} [Order.Frame α] (s : α) : SemilatticeInf (Partition s) where
+instance instSemilatticeInf (s : α) : SemilatticeInf (Partition s) where
   inf P Q := removeBot {a | ∃ p ∈ P, ∃ q ∈ Q, a = p ⊓ q} (by
       rw [sSupIndep_iff_pairwiseDisjoint]
       intro a ha a' ha' h
@@ -267,7 +335,7 @@ lemma mem_inf_iff {α : Type*} [Order.Frame α] {s a : α} {P Q : Partition s} :
     a ∈ P ⊓ Q ↔ a ≠ ⊥ ∧ ∃ p ∈ P, ∃ q ∈ Q, a = p ⊓ q :=
   and_comm
 
-end Order
+end Frame
 
 variable {S : Set (Set α)} {u s t : Set α} {a b c : α} {P Q : Partition u}
 
