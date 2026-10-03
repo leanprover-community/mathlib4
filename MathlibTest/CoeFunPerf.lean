@@ -3,11 +3,16 @@ module
 import Mathlib
 
 /-
-Test that synthesization of `CoeFun` fails quickly.
+Test that synthesis of `CoeFun` fails quickly.
 Currently, it only tries the following instances:
 - `DFunLike.toCoeFun`
 - `RKHS.instFunLike`
 - `EquivLike.toFunLike`
+
+Hint: if this test fails, consider:
+* using unbundled inheritance from `FunLike`: turn
+   `class MyClass extends FunLike F A B where ...` into `class MyClass [FunLike F A B] where ...` or,
+* reordering arguments so classes with fewer instances come first.
 -/
 
 set_option trace.Meta.synthInstance true
