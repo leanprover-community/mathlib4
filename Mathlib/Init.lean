@@ -6,6 +6,7 @@ public import Mathlib.Lean.Linter -- linter utilities; will be transitively impo
 public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Linter.AuxLemma
+public import Mathlib.Tactic.Linter.DeclType
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
@@ -19,13 +20,11 @@ public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
-public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.TacticDocumentation
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
-public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.TacticAnalysis.Declarations
