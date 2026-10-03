@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.MvPowerSeries.PiTopology
   the two-sided ideals from `MvPowerSeries.LinearTopology.basis` form a basis
   of neighborhoods of `0` if the topology of `R` is (left and right) linear.
 
-## Instances :
+## Instances
 
 If `R` has a linear topology, then the product topology on `MvPowerSeries σ R`
 is a linear topology.
