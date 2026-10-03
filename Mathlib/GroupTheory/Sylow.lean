@@ -912,9 +912,9 @@ noncomputable def directProductOfNormal [Finite G]
     (hn : ∀ {p : ℕ} [Fact p.Prime] (P : Sylow p G), P.Normal) :
     (∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, P) ≃* G :=
   letI ps := (Nat.card G).primeFactors
-  -- “The” Sylow subgroup for p
-  letI P p : Sylow p G := default
-  haveI (p : ℕ) : Fintype (P p) := Fintype.ofFinite (P p)
+  -- `P p` is the unique Sylow subgroup for every prime `p`
+  letI P (p : ps) : Sylow p G := default
+  haveI (p : ps) : Fintype (P p) := Fintype.ofFinite (P p)
   haveI (p : ps) : Fact (Nat.Prime p) := ⟨Nat.prime_of_mem_primeFactors p.prop⟩
   letI (p : ps) : Unique (Sylow p G) := unique_of_normal (P p) (hn (P p))
   haveI hcomm : Pairwise fun p₁ p₂ : ps ↦ ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
