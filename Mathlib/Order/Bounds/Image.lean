@@ -23,7 +23,7 @@ open OrderDual (toDual ofDual)
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
+variable {α : Type u} {β : Type v} {γ : Type w} {ι ι' : Sort*}
 
 namespace MonotoneOn
 
@@ -430,3 +430,17 @@ alias BddAbove.range_comp := BddAbove.range_comp_left
 
 @[deprecated BddBelow.range_comp_left (since := "2026-06-07")]
 alias BddBelow.range_comp := BddBelow.range_comp_left
+
+@[to_dual]
+theorem BddAbove.extend_of_forall_le [Preorder β] {f : ι' → ι} {g : ι' → β}
+    (hf : FactorsThrough g f) (hg : BddAbove (range g)) {j : ι → β} (x : ι')
+    (hjg : ∀ i, j i ≤ g x) :
+    BddAbove (range (extend f g j)) := by
+  obtain ⟨a, ha⟩ := hg
+  use a
+  rintro _ ⟨i, rfl⟩
+  by_cases h : ∃ b, f b = i
+  · obtain ⟨b, rfl⟩ := h
+    simpa [hf.extend_apply] using ha (Set.mem_range_self b)
+  · rw [Function.extend_apply' _ _ _ h]
+    exact (hjg i).trans (ha (Set.mem_range_self x))
