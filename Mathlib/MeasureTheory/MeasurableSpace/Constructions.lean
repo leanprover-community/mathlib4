@@ -422,10 +422,11 @@ theorem measurable_prodMk_right {y : β} : Measurable fun x : α => (x, y) :=
   measurable_id.prodMk measurable_const
 
 @[fun_prop]
-theorem measurable_diag : @Measurable α (α × α) m (m.prod m) Function.diag :=
+theorem measurable_diag : @Measurable α (α × α) m (m.prod m) Function.diagonal :=
   measurable_id.prodMk measurable_id
 
-theorem measurable_diag' {m'} (h : m' ≤ m) : @Measurable α (α × α) m (m.prod m') Function.diag :=
+theorem measurable_diag' {m'} (h : m' ≤ m) :
+    @Measurable α (α × α) m (m.prod m') Function.diagonal :=
   measurable_id.prodMk (measurable_id'' h)
 
 theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncurry f)) {x : α} :
@@ -465,7 +466,7 @@ theorem measurableSet_prod {s : Set α} {t : Set β} :
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t ∨ s = ∅ ∨ t = ∅ := by
   rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.mp h]
-  · simp [← not_nonempty_iff_eq_empty, prod_nonempty_iff.mp h, measurableSet_prod_of_nonempty h]
+  · simp [← not_nonempty_iff_eq_empty, prod_nonempty.mp h, measurableSet_prod_of_nonempty h]
 
 theorem measurableSet_swap_iff {s : Set (α × β)} :
     MeasurableSet (Prod.swap ⁻¹' s) ↔ MeasurableSet s :=
@@ -1082,7 +1083,7 @@ end curry
 variable (α) in
 /-- Typeclass for a measurable space `α` for which the diagonal of `α × α` is measurable. -/
 class MeasurableEq [MeasurableSpace α] where
-  measurableSet_diagonal : MeasurableSet (diagonal α)
+  measurableSet_diagonal : MeasurableSet (diagonalUniv α)
 
 export MeasurableEq (measurableSet_diagonal)
 
@@ -1104,5 +1105,5 @@ instance [MeasurableSpace α] [MeasurableEq α] : MeasurableSingletonClass α :=
 
 instance [MeasurableSpace α] [MeasurableSingletonClass α] [Countable α] : MeasurableEq α := by
   constructor
-  simp_rw [← Set.range_diag, Set.range_eq_iUnion]
+  simp_rw [← Set.range_diagonal, Set.range_eq_iUnion]
   measurability

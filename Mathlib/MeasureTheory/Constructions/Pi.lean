@@ -82,7 +82,7 @@ theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = 
   cases isEmpty_or_nonempty ι
   · simp [piPremeasure]
   rcases (pi univ s).eq_empty_or_nonempty with h | h
-  · rcases univ_pi_eq_empty_iff.mp h with ⟨i, hi⟩
+  · rcases univ_pi_eq_empty.mp h with ⟨i, hi⟩
     have : ∃ i, m i (s i) = 0 := ⟨i, by simp [hi]⟩
     simpa [h, Finset.card_univ, zero_pow Fintype.card_ne_zero, @eq_comm _ (0 : ℝ≥0∞),
       Finset.prod_eq_zero_iff, piPremeasure]
@@ -117,7 +117,7 @@ theorem le_pi {m : ∀ i, OuterMeasure (α i)} {n : OuterMeasure (∀ i, α i)} 
   rw [OuterMeasure.pi, le_boundedBy']; constructor
   · intro h s hs; refine (h _ hs).trans_eq (piPremeasure_pi hs)
   · intro h s hs; refine le_trans (n.mono <| subset_pi_eval_image univ s) (h _ ?_)
-    simp [univ_pi_nonempty_iff, hs]
+    simp [univ_pi_nonempty, hs]
 
 end OuterMeasure
 

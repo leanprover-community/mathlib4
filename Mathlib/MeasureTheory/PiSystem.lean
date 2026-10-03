@@ -137,7 +137,7 @@ theorem isPiSystem_iUnion_of_monotone {α ι} [SemilatticeSup ι] (p : ι → Se
 lemma IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C) (hD : IsPiSystem D) :
     IsPiSystem (image2 (· ×ˢ ·) C D) := by
   rintro _ ⟨s₁, hs₁, t₁, ht₁, rfl⟩ _ ⟨s₂, hs₂, t₂, ht₂, rfl⟩ hst
-  rw [prod_inter_prod] at hst ⊢; rw [prod_nonempty_iff] at hst
+  rw [prod_inter_prod] at hst ⊢; rw [prod_nonempty] at hst
   exact mem_image2_of_mem (hC _ hs₁ _ hs₂ hst.1) (hD _ ht₁ _ ht₂ hst.2)
 
 /-- A nonempty finite intersection of sets in a π-system belongs to the π-system. -/
