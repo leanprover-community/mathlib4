@@ -69,14 +69,7 @@ theorem coeff_derivative_mul (f g : R⟦X⟧) (n : ℕ) :
   rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk, Finset.sum_range_succ']
   simp only [zero_smul, mul_zero, add_zero]
   refine Finset.sum_congr rfl fun i _ ↦ ?_
-  rw [coeff_derivative, Nat.add_sub_add_right, nsmul_eq_mul, mul_assoc]
-  simp only [Nat.cast_add, Nat.cast_one]
-
-/-- Mapping coefficients commutes with formal differentiation. -/
-theorem map_derivative {S : Type*} [CommSemiring S] (f : R →+* S) (φ : R⟦X⟧) :
-    map f (d⁄dX φ) = d⁄dX (map f φ) := by
-  ext n
-  simp [coeff_map, coeff_derivative]
+  simp [coeff_derivative, mul_assoc]
 
 /-- The `k`-th coefficient of the `n`-th formal derivative: differentiating `n` times multiplies the
 `(k + n)`-th coefficient by the ascending factorial `(k + 1)(k + 2) ⋯ (k + n)`. -/
@@ -98,6 +91,12 @@ theorem constantCoeff_iterate_derivative (f : R⟦X⟧) (n : ℕ) :
 theorem derivative_coe (f : R[X]) : d⁄dX (f : R⟦X⟧) = Polynomial.derivative f := by
   ext
   rw [coeff_derivative, coeff_coe, coeff_coe, Polynomial.coeff_derivative]
+
+/-- Mapping coefficients commutes with formal differentiation. -/
+theorem map_derivative {S : Type*} [CommSemiring S] (f : R →+* S) (φ : R⟦X⟧) :
+    map f (d⁄dX φ) = d⁄dX (map f φ) := by
+  ext n
+  simp [coeff_map, coeff_derivative]
 
 @[simp] theorem derivative_X : d⁄dX (X : R⟦X⟧) = 1 :=
   MvPowerSeries.pderiv_X_self
