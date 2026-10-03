@@ -17,6 +17,8 @@ This file defines a hierarchy of group action type-classes on top of the previou
 notation classes `SMul` and its additive version `VAdd`:
 
 * `SMulZeroClass` is a typeclass for an action that preserves zero
+* `MulActionZeroClass M A` is a typeclass for an action of a multiplicative monoid on a type with
+  a zero such that `a • 0 = 0`
 * `DistribSMul M A` is a typeclass for an action on an additive monoid (`AddZeroClass`) that
   preserves addition and zero
 * `DistribMulAction M A` is a typeclass for an action of a multiplicative monoid on
@@ -176,16 +178,29 @@ instance AddGroup.intSMulWithZero [AddGroup A] : SMulWithZero ℤ A where
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
 
+/-- An action of a monoid `M` on a type `A` with a `0` that preserves `0`. -/
+class MulActionZeroClass (M A : Type*) [Monoid M] [Zero A] extends MulAction M A, SMulZeroClass M A
+
+section Group
+
+variable [Group α] [Zero β] [MulActionZeroClass α β]
+
+lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
+  ⟨fun h => by rw [← inv_smul_smul a x, h, smul_zero], fun h => h.symm ▸ smul_zero _⟩
+
+lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
+  not_congr <| smul_eq_zero_iff_eq a
+
+end Group
+
 section MonoidWithZero
 variable (M₀ A) [MonoidWithZero M₀] [MonoidWithZero M₀'] [Zero A]
 
 /-- An action of a monoid with zero `M₀` on a Type `A`, also with `0`, extends `MulAction` and
 is compatible with `0` (both in `M₀` and in `A`), with `1 ∈ M₀`, and with associativity of
 multiplication on the monoid `A`. -/
-class MulActionWithZero extends MulAction M₀ A where
-  -- these fields are copied from `SMulWithZero`, as `extends` behaves poorly
-  /-- Scalar multiplication by any element send `0` to `0`. -/
-  smul_zero : ∀ r : M₀, r • (0 : A) = 0
+class MulActionWithZero extends MulActionZeroClass M₀ A where
+  -- this field is copied from `SMulWithZero`, as `extends` behaves poorly
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : A, (0 : M₀) • m = 0
 
@@ -357,11 +372,21 @@ variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
 
-/-! We make sure that the definition of `DistribMulAction.toDistribSMul` was done correctly,
-and the two paths from `DistribMulAction` to `SMul` are indeed definitionally equal. -/
+-- See note [lower instance priority]
+instance (priority := 100) DistribMulAction.toMulActionZeroClass : MulActionZeroClass M A :=
+  { ‹DistribMulAction M A› with }
+
+/-! We make sure that the definitions of `DistribMulAction.toDistribSMul` and of
+`DistribMulAction.toMulActionZeroClass` were done correctly, and the three paths from
+`DistribMulAction` to `SMul` are indeed definitionally equal. -/
 example :
     (DistribMulAction.toMulAction.toSMul : SMul M A) =
       DistribMulAction.toDistribSMul.toSMul :=
+  rfl
+
+example :
+    (DistribMulAction.toMulAction.toSMul : SMul M A) =
+      DistribMulAction.toMulActionZeroClass.toMulAction.toSMul :=
   rfl
 
 /-- Pullback a distributive multiplicative action along an injective additive monoid
@@ -412,21 +437,10 @@ theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
 
 end
 
-section DistribMulAction
-variable [Group α] [AddMonoid β] [DistribMulAction α β]
-
-lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
-  ⟨fun h => by rw [← inv_smul_smul a x, h, smul_zero], fun h => h.symm ▸ smul_zero _⟩
-
-lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
-  not_congr <| smul_eq_zero_iff_eq a
-
-end DistribMulAction
-
 section MulDistribMulAction
 variable [Group α] [GroupWithZero β] [MulDistribMulAction α β]
 
-instance : SMulZeroClass α β where
+instance : MulActionZeroClass α β where
   smul_zero g := not_imp_comm.mp mul_inv_cancel₀ <| by
     rw [← smul_one g, ← inv_smul_eq_iff, smul_mul', inv_smul_smul, zero_mul]
     exact zero_ne_one

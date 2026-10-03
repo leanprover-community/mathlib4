@@ -71,7 +71,7 @@ section Zero
 
 instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
     [UniformContinuousConstSMul M α] : MulActionWithZero M (Completion α) where
-  smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, MulActionWithZero.smul_zero r]
+  smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, smul_zero r]
   zero_smul :=
     ext' (continuous_const_smul _) continuous_const fun a ↦ by
       rw [← coe_smul, zero_smul, coe_zero]
