@@ -102,7 +102,7 @@ we construct a value of `P` for such elements of `K⟮X⟯` by setting
 `liftOn (p / q) f _ = f p q`.
 
 When `[IsDomain K]`, one can use `RatFunc.liftOn'`, which has the stronger requirement
-of `∀ {p q a : K[X]} (hq : q ≠ 0) (ha : a ≠ 0), f (a * p) (a * q) = f p q)`.
+of `∀ {p q a : K[X]} (hq : q ≠ 0) (ha : a ≠ 0), f (a * p) (a * q) = f p q`.
 -/
 protected irreducible_def liftOn {P : Sort v} (x : K⟮X⟯) (f : K[X] → K[X] → P)
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :

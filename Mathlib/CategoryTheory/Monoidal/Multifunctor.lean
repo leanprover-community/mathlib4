@@ -105,7 +105,7 @@ namespace Functor.LaxMonoidal
 
 ## Lax monoidal functors
 
-Given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C))` and a tensorator `μ : F - ⊗ F - ⟶ F (- ⊗ -)`
+Given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` and a tensorator `μ : F - ⊗ F - ⟶ F (- ⊗ -)`
 such that the diagrams below commute, we define
 `CategoryTheory.Functor.LaxMonoidal.ofBifunctor : F.LaxMonoidal`.
 
@@ -275,7 +275,7 @@ variable {F : C ⥤ D}
       topMapᵣ ε ≫ ((flipFunctor _ _ _).map μ).app (𝟙_ C) ≫ bottomMapᵣ F)
 
 /--
-`F` is lax monoidal given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C))` and a tensorator
+`F` is lax monoidal given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` and a tensorator
 `μ : F - ⊗ F - ⟶ F (- ⊗ -)` as a natural transformation between bifunctors, satisfying the
 relevant compatibilities.
 -/
@@ -298,7 +298,7 @@ namespace OplaxMonoidal
 
 ## Oplax monoidal functors
 
-Given a counit morphism `η : F.obj (𝟙_ C)) ⟶ 𝟙_ D` and a tensorator `δ : F (- ⊗ -) ⟶ F - ⊗ F -`
+Given a counit morphism `η : F.obj (𝟙_ C) ⟶ 𝟙_ D` and a tensorator `δ : F (- ⊗ -) ⟶ F - ⊗ F -`
 such that the diagrams below commute, we define
 `CategoryTheory.Functor.OplaxMonoidal.ofBifunctor : F.OplaxMonoidal`.
 
