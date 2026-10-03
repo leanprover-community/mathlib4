@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.End
 public import Mathlib.Algebra.Module.End
 public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Bundled Hom instances for module and multiplicative actions

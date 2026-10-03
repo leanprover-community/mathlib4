@@ -92,6 +92,7 @@ protected theorem ext {α β} {x y : Const α β} (h : x.run = y.run) : x = y :=
 protected def map {γ α β} (_f : α → β) (x : Const γ β) : Const γ α :=
   x
 
+@[nolint instanceDiamonds]
 instance functor {γ} : Functor (Const γ) where map := @Const.map γ
 
 instance lawfulFunctor {γ} : LawfulFunctor (Const γ) := by constructor <;> intros <;> rfl
