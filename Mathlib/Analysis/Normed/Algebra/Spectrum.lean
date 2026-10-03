@@ -5,16 +5,14 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
-public import Mathlib.Analysis.Normed.Ring.Units
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Analysis.Normed.Ring.Units
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
-public import Mathlib.Topology.Semicontinuity.Hemicontinuity
+import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -417,7 +415,7 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
   have h₃ : exp (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
     rw [exp_eq_tsum 𝕜]
-    convert! (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
+    convert (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
     · simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
     · exact h₀.symm
   rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp z)), hexpmul, ← _root_.sub_mul,
@@ -763,7 +761,7 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     simp
   · replace h : ∀ x ∈ spectrum ℝ a, ‖t - x‖₊ ≤ t := by
       simpa [spectralRadius, iSup₂_le_iff, ← spectrum.singleton_sub_eq] using h
-    peel h with x hx h_le
+    gconvert h with x hx h_le
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
 
@@ -774,7 +772,7 @@ lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [Norm
   obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
   rw [← hx₂, ENNReal.toNNReal_coe, ← spectrum.algebraMap_mem_iff ℝ, NNReal.algebraMap_eq_coe]
   have : 0 ≤ x := ha'.rightInvOn hx₁ ▸ NNReal.zero_le_coe
-  convert! hx₁
+  convert hx₁
   simpa
 
 lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
@@ -849,7 +847,7 @@ theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [Proper
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum 𝕜 : A → Set 𝕜) := by
-  convert!
+  convert
     upperHemicontinuous_spectrum 𝕜 (WithLp 1 (Unitization 𝕜 A)) |>.comp
       unitization_isometry_inr.continuous
   ext1 a
