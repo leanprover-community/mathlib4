@@ -822,18 +822,14 @@ theorem eq_one_of_mul_le_one_left (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤
   ha.eq_of_not_lt' fun h => hab.not_gt <| one_lt_mul_of_lt_of_le' h hb
 
 @[to_additive]
-theorem mul_eq_one_iff_of_one_le_left (ha : 1 ≤ a) (hb : 1 ≤ b) :
-    a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  Iff.intro
-    (fun hab : a * b = 1 =>
-      have : a = 1 := eq_one_of_mul_le_one_left ha hb hab.le
-      have : b = 1 := one_mul b ▸ ‹a = 1› ▸ hab
-      And.intro ‹a = 1› ‹b = 1›)
-    (by rintro ⟨rfl, rfl⟩; rw [mul_one])
+theorem mul_eq_one_iff_of_one_le (ha : 1 ≤ a) (hb : 1 ≤ b) :
+    a * b = 1 ↔ a = 1 ∧ b = 1 := by
+  refine ⟨fun hab ↦ ?_, by simp +contextual⟩
+  simpa [eq_one_of_mul_le_one_left ha hb hab.le] using hab
 
 @[to_additive]
 instance (priority := 100) [IsBotOneClass α] : IsDedekindFiniteMonoid α where
-  mul_eq_one_symm := by simp [mul_eq_one_iff_of_one_le_left]
+  mul_eq_one_symm := by simp [mul_eq_one_iff_of_one_le]
 
 end Left
 
@@ -850,23 +846,16 @@ theorem eq_one_of_mul_le_one_right (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b �
   hb.eq_of_not_lt' fun h => hab.not_gt <| Right.one_lt_mul_of_le_of_lt ha h
 
 @[to_additive]
-theorem mul_eq_one_iff_of_one_le_right (ha : 1 ≤ a) (hb : 1 ≤ b) :
-    a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  Iff.intro
-    (fun hab : a * b = 1 =>
-      have : b = 1 := eq_one_of_mul_le_one_right ha hb hab.le
-      have : a = 1 := mul_one a ▸ ‹b = 1› ▸ hab
-      And.intro ‹a = 1› ‹b = 1›)
-    (by rintro ⟨rfl, rfl⟩; rw [mul_one])
+theorem mul_eq_one_iff_of_one_le' (ha : 1 ≤ a) (hb : 1 ≤ b) :
+    a * b = 1 ↔ a = 1 ∧ b = 1 := by
+  refine ⟨fun hab ↦ ?_, by simp +contextual⟩
+  simpa [eq_one_of_mul_le_one_right ha hb hab.le] using hab
 
 @[to_additive]
 instance (priority := 100) [IsBotOneClass α] : IsDedekindFiniteMonoid α where
-  mul_eq_one_symm := by simp [mul_eq_one_iff_of_one_le_right]
+  mul_eq_one_symm := by simp [mul_eq_one_iff_of_one_le']
 
 end Right
-
-@[deprecated (since := "2026-08-18")]
-alias mul_eq_one_iff_of_one_le := mul_eq_one_iff_of_one_le_left
 
 end PartialOrder
 
