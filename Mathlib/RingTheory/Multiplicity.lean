@@ -506,12 +506,17 @@ protected theorem Irreducible.multiplicity_self {a : α} (ha : Irreducible a) :
   multiplicity_eq_of_dvd_of_not_dvd (by simp) fun h ↦
     ha.not_isUnit (ha.isUnit_of_mul_self_dvd (by simpa [pow_succ] using h))
 
+/-- The `multiplicity` of an irreducible element in an associated element is `1`. -/
+theorem Irreducible.multiplicity_eq_one_of_associated {a b : α} (ha : Irreducible a)
+    (h : Associated a b) : multiplicity a b = 1 := by
+  rw [multiplicity_eq_of_associated_right h.symm, ha.multiplicity_self]
+
 /-- The `multiplicity` of `p` in an irreducible `q` is `1` if `p` and `q` are associated,
 and `0` otherwise. -/
 theorem Irreducible.multiplicity_eq_ite (p : α) {q : α} [Decidable (Associated p q)]
     (hq : Irreducible q) : multiplicity p q = if Associated p q then 1 else 0 := by
   split_ifs with h
-  · rw [multiplicity_eq_of_associated_right h.symm, (h.symm.irreducible hq).multiplicity_self]
+  · exact (h.symm.irreducible hq).multiplicity_eq_one_of_associated h
   · by_cases hp : IsUnit p
     · exact multiplicity_of_isUnit_left hp q
     · exact multiplicity_eq_zero_of_not_dvd fun hd ↦ (hq.dvd_iff.mp hd).elim hp fun ha ↦ h ha.symm
