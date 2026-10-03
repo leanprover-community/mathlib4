@@ -182,10 +182,7 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
     map_subst (hasSubst_of_fixedPoint hY₀) F
   have hmapY : map e Y₀ = Y := by
     apply fixedPoint_unique _ hY
-    calc
-      map e Y₀ = map e (X * P₀.subst Y₀) := congrArg (map e) hY₀
-      _ = X * P.subst (map e Y₀) := by
-        rw [map_mul, map_X, hmap_subst, hP]
+    simpa only [map_mul, map_X, hmap_subst, hP] using congrArg (map e) hY₀
   calc
     (n + 1) • coeff (n + 1) (H.subst Y) =
         e ((n + 1) • coeff (n + 1) (H₀.subst Y₀)) := by

@@ -77,8 +77,7 @@ private lemma coeff_fixedPointSolution_eq_approx (P : R⟦X⟧) {n j : ℕ} (hj 
 
 @[simp] private lemma constantCoeff_fixedPointSolution (P : R⟦X⟧) :
     (fixedPointSolution P).constantCoeff = 0 := by
-  rw [← coeff_zero_eq_constantCoeff_apply,
-    coeff_fixedPointSolution_eq_approx P (Nat.zero_lt_succ 0)]
+  rw [fixedPointSolution, constantCoeff_mk]
   simpa only [coeff_zero_eq_constantCoeff_apply] using constantCoeff_fixedPointApprox P 1
 
 private theorem fixedPointSolution_fixedPoint (P : R⟦X⟧) :
