@@ -39,8 +39,7 @@ containers a consumer reads from:
 | nightly-testing         | `nightly-testing`, `forks` |
 | forks (PRs)             | `master`, `forks`    |
 
-The table shows trust classes; every chain also ends with the
-read-only `legacy` container, omitted here. The nightly chain includes `forks`
+The nightly chain includes `forks`
 because PRs from that repo into mathlib4 upload there; it excludes
 `pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
 branch cannot reach a trusted nightly consumer.

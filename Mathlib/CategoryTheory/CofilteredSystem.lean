@@ -169,7 +169,7 @@ def toPreimages : J ⥤ Type v where
     rw [mem_iInter] at h ⊢
     intro f
     rw [← mem_preimage, preimage_preimage, mem_preimage]
-    convert! h (g ≫ f); rw [F.map_comp]; rfl)
+    convert h (g ≫ f); rw [F.map_comp]; rfl)
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
   fun _ => Subtype.finite
@@ -279,7 +279,7 @@ theorem thin_diagram_of_surjective
   apply ConcreteCategory.ext
   have := congrArg F.map hφ
   simp only [map_comp, ConcreteCategory.ext_iff, DFunLike.ext_iff, comp_apply, ← funext_iff] at this
-  simpa using (Fsur φ).injective_comp_right <| this
+  simpa using (Fsur φ).injective_comp_right this
 
 theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
     (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), Function.Surjective (F.map f)) (hs : s.Nonempty) (j) :

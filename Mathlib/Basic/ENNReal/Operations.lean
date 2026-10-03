@@ -251,12 +251,14 @@ section Cancel
 /-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
   This is true in `ℝ≥0∞` for all elements except `∞`. -/
 @[simp]
-theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
+theorem addLECancellable_iff_ne_top {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
   WithTop.addLECancellable_iff_ne_top
+
+@[deprecated (since := "2026-09-25")] alias addLECancellable_iff_ne := addLECancellable_iff_ne_top
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
 theorem cancel_of_ne {a : ℝ≥0∞} (h : a ≠ ∞) : AddLECancellable a :=
-  addLECancellable_iff_ne.mpr h
+  addLECancellable_iff_ne_top.mpr h
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
 theorem cancel_of_lt {a : ℝ≥0∞} (h : a < ∞) : AddLECancellable a :=
@@ -541,7 +543,7 @@ theorem toReal_sInf (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
   · exact Real.iInf_nonneg h
 
 theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
-  le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) <| le_rfl)
+  le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) le_rfl)
     (tsub_le_iff_right.1 <| le_iInf fun _ => tsub_le_iff_right.2 <| iInf_le _ _)
 
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
