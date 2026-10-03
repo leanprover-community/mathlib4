@@ -35,6 +35,10 @@ but are independent of that choice. The `..._iff` lemmas express this independen
 Often, definitions assume that Dedekind domains are not fields. We found it more practical
 to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
+To obtain `HasUniqueRoots (Ideal A)` for a Dedekind domain `A` (and consequently
+`HasUniqueRoots (FractionalIdeal A⁰ K)` for the field of fractions `K`), one needs to import
+`Mathlib.Algebra.GroupWithZero.Torsion`.
+
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
@@ -271,7 +275,7 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
   refine (isIntegrallyClosed_iff (FractionRing A)).mpr (fun {x hx} => ?_)
   rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
-    Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
+    Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), map_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (Ne.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
   · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
@@ -325,7 +329,7 @@ theorem isDedekindDomain_iff_isDedekindDomainInv [IsDomain A] :
     exact ⟨spanSingleton A⁰ (algebraMap _ _ a) * (J : FractionalIdeal A⁰ _)⁻¹, h₂⟩
   subst hJ
   rw [mul_assoc, mul_left_comm (J : FractionalIdeal A⁰ _), coe_ideal_mul_inv, mul_one,
-    spanSingleton_mul_spanSingleton, inv_mul_cancel₀, spanSingleton_one]
+    ← map_mul, inv_mul_cancel₀, map_one]
   · exact mt ((injective_iff_map_eq_zero (algebraMap A _)).mp (IsFractionRing.injective A _) _) ha
   · exact coeIdeal_ne_zero.mp (right_ne_zero_of_mul hI)
 
