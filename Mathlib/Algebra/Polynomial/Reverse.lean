@@ -339,6 +339,23 @@ theorem eval₂_reverse_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (f : 
 
 end Eval₂
 
+@[simp]
+theorem eval_reverse_zero
+    {R : Type*} [CommSemiring R] (f : R[X]) :
+    f.reverse.eval 0 = f.leadingCoeff := by
+  simp [← coeff_zero_eq_eval_zero]
+
+theorem eval_reverse_mul_pow
+    {R : Type*} [CommSemiring R] (x : R) [Invertible x] (f : R[X]) :
+    f.reverse.eval (⅟x) * x ^ f.natDegree = f.eval x := by
+  simpa using f.eval₂_reverse_mul_pow (RingHom.id _) x
+
+theorem eval_reverse_mul_pow₀
+    {F : Type*} [Field F] {x : F} (hx : x ≠ 0) (f : F[X]) :
+    f.reverse.eval x⁻¹ * x ^ f.natDegree = f.eval x := by
+  let := invertibleOfNonzero hx
+  simpa using f.eval_reverse_mul_pow x
+
 end Semiring
 
 section Ring
