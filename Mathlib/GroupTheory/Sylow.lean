@@ -916,42 +916,22 @@ noncomputable def directProductOfNormal [Finite G]
   set ps := (Nat.card G).primeFactors
   -- “The” Sylow subgroup for p
   let P : ∀ p, Sylow p G := default
-  have : ∀ p, Fintype (P p) := fun p ↦ Fintype.ofFinite (P p)
-  have hcomm : Pairwise fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
-    rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
-    have hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
-    have hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
-    have hne' : p₁ ≠ p₂ := by simpa using hne
-    apply Subgroup.commute_of_normal_of_disjoint _ _ (hn (P p₁)) (hn (P p₂))
-    apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
-  refine MulEquiv.trans (N := ∀ p : ps, P p) ?_ ?_
-  -- There is only one Sylow subgroup for each p, so the inner product is trivial
-  · -- here we need to help the elaborator with an explicit instantiation
-    apply @MulEquiv.piCongrRight ps (fun p => ∀ P : Sylow p G, P) (fun p => P p) _ _
-    rintro ⟨p, hp⟩
-    haveI hp' := Fact.mk (Nat.prime_of_mem_primeFactors hp)
-    letI := unique_of_normal _ (hn (P p))
+  have (p : ℕ) : Fintype (P p) := Fintype.ofFinite (P p)
+  have (p : ps) : Fact (Nat.Prime p) := ⟨Nat.prime_of_mem_primeFactors p.property⟩
+  have hcomm : Pairwise fun p₁ p₂ : ps ↦ ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
+    intro p₁ p₂ hne
+    apply commute_of_normal_of_disjoint _ _ (hn (P p₁)) (hn (P p₂))
+    exact IsPGroup.disjoint_of_ne p₁ p₂ (by simpa) _ _ (P p₁).isPGroup' (P p₂).isPGroup'
+  refine .trans (.piCongrRight fun p ↦ ?_) (.ofBijective (noncommPiCoprod hcomm) ?_)
+  -- There is only one Sylow subgroup for each `p`, so the inner product is trivial
+  · let := unique_of_normal _ <| hn (P p)
     apply MulEquiv.piUnique
-  apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
-  apply (Fintype.bijective_iff_injective_and_card _).mpr
-  constructor
-  · apply Subgroup.injective_noncommPiCoprod_of_iSupIndep
-    apply independent_of_coprime_order hcomm
-    rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
-    have hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
-    have hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
-    have hne' : p₁ ≠ p₂ := by simpa using hne
-    simp only [← Nat.card_eq_fintype_card]
-    apply IsPGroup.coprime_card_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
-  · simp only [← Nat.card_eq_fintype_card]
-    calc
-      Nat.card (∀ p : ps, P p) = ∏ p : ps, Nat.card (P p) := Nat.card_pi
-      _ = ∏ p : ps, p.1 ^ (Nat.card G).factorization p.1 := by
-        congr 1 with ⟨p, hp⟩
-        exact @card_eq_multiplicity _ _ _ p ⟨Nat.prime_of_mem_primeFactors hp⟩ (P p)
-      _ = ∏ p ∈ ps, p ^ (Nat.card G).factorization p :=
-        (Finset.prod_finset_coe (fun p => p ^ (Nat.card G).factorization p) _)
-      _ = (Nat.card G).factorization.prod (· ^ ·) := rfl
-      _ = Nat.card G := Nat.prod_factorization_pow_eq_self Nat.card_pos.ne'
+  refine Fintype.bijective_iff_injective_and_card _ |>.mpr ⟨?_, ?_⟩
+  · apply injective_noncommPiCoprod_of_iSupIndep
+    refine independent_of_coprime_order hcomm fun p₁ p₂ hne ↦ ?_
+    simpa using IsPGroup.coprime_card_of_ne p₁ p₂ (by simpa) _ _ (P p₁).isPGroup' (P p₂).isPGroup'
+  · simp_rw [← Nat.card_eq_fintype_card, Nat.card_pi, card_eq_multiplicity]
+    conv_rhs => rw [← Nat.prod_factorization_pow_eq_self Nat.card_pos.ne']
+    simp [Nat.prod_factorization_eq_prod_primeFactors, ps]
 
 end Sylow
