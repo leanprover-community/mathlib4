@@ -50,4 +50,12 @@ theorem continuousAt_sign_of_ne_zero {a : α} (h : a ≠ 0) : ContinuousAt SignT
   · exact continuousAt_sign_of_neg h_neg
   · exact continuousAt_sign_of_pos h_pos
 
+/-- The sign of a continuous function is continuous wherever the function is nonzero. -/
+theorem ContinuousOn.sign {β : Type*} [TopologicalSpace β] {f : β → α} {s : Set β}
+    (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
+    ContinuousOn (fun x => SignType.sign (f x)) s := by
+  refine (continuousOn_of_forall_continuousAt fun y hy => ?_).comp' hf (Set.mapsTo_image _ _)
+  obtain ⟨x, hx, rfl⟩ := hy
+  exact continuousAt_sign_of_ne_zero (h0 x hx)
+
 end LinearOrder
