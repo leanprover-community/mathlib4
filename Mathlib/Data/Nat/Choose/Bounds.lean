@@ -103,9 +103,7 @@ theorem le_mul_add_choose_of_succ_succ'_le {c : α} {g : ℕ → ℕ → α} (hg
     (hg : ∀ k ℓ, g (k + 1) (ℓ + 1) ≤ g (k + 1) ℓ + g k (ℓ + 1)) (k ℓ : ℕ) :
     g k ℓ ≤ c * (k + ℓ).choose k := by
   induction h : k + ℓ generalizing k ℓ with
-  | zero =>
-    obtain ⟨_, _⟩ : k = 0 ∧ ℓ = 0 := by omega
-    aesop
+  | zero => simp_all
   | succ n ih =>
     obtain _ | k := k
     · simpa using hg₀_left ℓ
