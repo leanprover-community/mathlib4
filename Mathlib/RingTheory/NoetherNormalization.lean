@@ -141,7 +141,8 @@ private lemma leadingCoeff_finSuccEquiv_varChange :
     simp only [this, one_pow, Finset.prod_const_one, mul_one]
   exact fun i ↦ pow_zero _
 
-/-- If `f ≠ 0`, the leading coefficient of `varChange f f` as a polynomial in `X_0` is a unit. -/
+/-- `varChange f` maps `f` into some polynomial in `X_0` such that the leading coefficient is
+invertible. -/
 lemma varChange_leadingCoeff_isUnit (fne : f ≠ 0) :
     IsUnit (finSuccEquiv k n (varChange f f)).leadingCoeff := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
