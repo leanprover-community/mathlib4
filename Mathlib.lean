@@ -5423,6 +5423,7 @@ public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.LinearAlgebra.Quotient.Pi
 public import Mathlib.LinearAlgebra.Ray
 public import Mathlib.LinearAlgebra.Reflection
+public import Mathlib.LinearAlgebra.Resolvent
 public import Mathlib.LinearAlgebra.RootSystem.Base
 public import Mathlib.LinearAlgebra.RootSystem.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.BaseExists
