@@ -109,13 +109,7 @@ theorem le_mul_add_choose_of_succ_succ'_le {c : α} {g : ℕ → ℕ → α} (hg
     · simpa using hg₀_left ℓ
     obtain _ | ℓ := ℓ
     · simpa [h] using hg₀_right _
-    calc g (k + 1) (ℓ + 1)
-      _ ≤ g (k + 1) ℓ + g k (ℓ + 1) := hg k ℓ
-      _ ≤ c * n.choose (k + 1) + c * n.choose k := by
-        gcongr <;>
-        exact ih _ _ <| by grind
-      _ = c * (n + 1).choose (k + 1) := by
-        rw [choose_succ_succ']
-        grind
+    grw [choose_succ_succ', cast_add, mul_add]
+    grind only
 
 end Nat
