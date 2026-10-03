@@ -695,5 +695,3 @@ theorem Algebra.Transcendental.infinite [Algebra.Transcendental R A] : Infinite 
   hx.infinite
 
 end Infinite
-
-
