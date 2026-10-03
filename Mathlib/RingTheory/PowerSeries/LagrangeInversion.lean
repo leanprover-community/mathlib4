@@ -130,27 +130,37 @@ private lemma coeff_fixedPointApprox_stable (P : R⟦X⟧) (n s j : ℕ) (hj : j
       intro i hi
       exact ih i (by omega)
 
+private noncomputable def fixedPointSolution (P : R⟦X⟧) : R⟦X⟧ :=
+  mk fun n ↦ (fixedPointApprox P (n + 1)).coeff n
+
+private lemma coeff_fixedPointSolution_eq_approx (P : R⟦X⟧) {n j : ℕ} (hj : j < n) :
+    (fixedPointSolution P).coeff j = (fixedPointApprox P n).coeff j := by
+  obtain ⟨s, rfl⟩ := Nat.exists_eq_add_of_le (Nat.succ_le_of_lt hj)
+  rw [fixedPointSolution, coeff_mk]
+  exact coeff_fixedPointApprox_stable P (j + 1) s j (by omega)
+
+@[simp] private lemma constantCoeff_fixedPointSolution (P : R⟦X⟧) :
+    (fixedPointSolution P).constantCoeff = 0 := by
+  rw [fixedPointSolution, constantCoeff_mk]
+  simpa only [coeff_zero_eq_constantCoeff_apply] using constantCoeff_fixedPointApprox P 1
+
+private theorem fixedPointSolution_fixedPoint (P : R⟦X⟧) :
+    fixedPointSolution P = X * P.subst (fixedPointSolution P) := by
+  ext n
+  cases n with
+  | zero => simp
+  | succ n =>
+    nth_rw 1 [fixedPointSolution]
+    rw [coeff_mk, fixedPointApprox, coeff_succ_X_mul, coeff_succ_X_mul]
+    apply coeff_subst_congr (constantCoeff_fixedPointApprox P (n + 1))
+      (constantCoeff_fixedPointSolution P)
+    intro j hj
+    exact (coeff_fixedPointSolution_eq_approx P (by omega : j < n + 1)).symm
+
 /-- Existence and uniqueness of a solution of `Y = X * P(Y)`. -/
-theorem existsUnique_fixedPoint (P : R⟦X⟧) : ∃! Y : R⟦X⟧, Y = X * P.subst Y := by
-  let Y : R⟦X⟧ := mk fun n ↦ (fixedPointApprox P (n + 1)).coeff n
-  have hcoeff {n j : ℕ} (hj : j < n) : Y.coeff j = (fixedPointApprox P n).coeff j := by
-    obtain ⟨s, rfl⟩ := Nat.exists_eq_add_of_le (Nat.succ_le_of_lt hj)
-    simp only [Y, coeff_mk]
-    exact coeff_fixedPointApprox_stable P (j + 1) s j (by omega)
-  have hY₀ : Y.constantCoeff = 0 := by
-    simpa only [Y, constantCoeff_mk, coeff_zero_eq_constantCoeff_apply] using
-      constantCoeff_fixedPointApprox P 1
-  have hY : Y = X * P.subst Y := by
-    ext n
-    cases n with
-    | zero => simp [hY₀]
-    | succ n =>
-      nth_rw 1 [Y]
-      rw [coeff_mk, fixedPointApprox, coeff_succ_X_mul, coeff_succ_X_mul]
-      apply coeff_subst_congr (constantCoeff_fixedPointApprox P (n + 1)) hY₀
-      intro j hj
-      exact (hcoeff (by omega : j < n + 1)).symm
-  exact ⟨Y, hY, fun _ hZ ↦ fixedPoint_unique hZ hY⟩
+theorem existsUnique_fixedPoint (P : R⟦X⟧) : ∃! Y : R⟦X⟧, Y = X * P.subst Y :=
+  ⟨fixedPointSolution P, fixedPointSolution_fixedPoint P, fun _ hY ↦
+    fixedPoint_unique hY (fixedPointSolution_fixedPoint P)⟩
 
 variable (hY : Y = X * P.subst Y)
 include hY
