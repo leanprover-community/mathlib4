@@ -609,6 +609,12 @@ lemma coe_δ {n : ℕ} (i : Fin (n + 2)) :
 lemma coe_σ {n : ℕ} (i : Fin (n + 1)) :
     dsimp% ⇑(σ i) = Fin.predAbove i := rfl
 
+lemma δ_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
+    SimplexCategory.δ i j = Fin.succAbove i j := rfl
+
+lemma σ_apply {n : ℕ} (i : Fin (n + 1)) (j : Fin (n + 2)) :
+    SimplexCategory.σ i j = Fin.predAbove i j := rfl
+
 end Concrete
 
 section EpiMono
