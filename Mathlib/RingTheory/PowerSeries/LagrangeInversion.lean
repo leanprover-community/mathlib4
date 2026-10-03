@@ -7,9 +7,7 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Derivative
 
-import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Ring
 
 /-!
 # Lagrange inversion formula for formal power series
@@ -209,13 +207,12 @@ a formal power series `H`,
 theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
     (n + 1) • coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n := by
   let U := MvPolynomial (ℕ ⊕ ℕ) ℤ
-  let : HasUniqueDiv U := AddMonoidAlgebra.coeff_injective.hasUniqueDiv
+  have : HasUniqueDiv U := AddMonoidAlgebra.coeff_injective.hasUniqueDiv
     AddMonoidAlgebra.coeffAddEquiv.toAddMonoidHom
   let P₀ : U⟦X⟧ := mk fun i ↦ MvPolynomial.X (Sum.inl i)
   let H₀ : U⟦X⟧ := mk fun i ↦ MvPolynomial.X (Sum.inr i)
   obtain ⟨Y₀, hY₀, _⟩ := existsUnique_fixedPoint P₀
-  have hcoeff : (n + 1) • coeff (n + 1) (H₀.subst Y₀) =
-      (d⁄dX H₀ * P₀ ^ (n + 1)).coeff n := by
+  have hcoeff : (n + 1) • coeff (n + 1) (H₀.subst Y₀) = (d⁄dX H₀ * P₀ ^ (n + 1)).coeff n := by
     rw [coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY₀) H₀, smul_sum,
       coeff_derivative_mul]
     refine sum_congr rfl fun i hi ↦ ?_
