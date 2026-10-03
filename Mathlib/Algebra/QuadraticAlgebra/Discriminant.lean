@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.AlgHom
-public import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Nat.Prime.Int
 
 /-!
 # Discriminant of a quadratic algebra
@@ -56,6 +56,12 @@ theorem discr_def [CommSemiring R] (a b : R) : discr a b = b ^ 2 + 4 * a := by r
 theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     z.im ^ 2 * discr a b = trace z ^ 2 - 4 * norm z := by
   rw [trace_def, norm_def, discr_def]; ring
+
+/-- The discriminant commutes with a base change `R → S`. -/
+@[simp]
+theorem discr_algebraMap {S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] (a b : R) :
+    discr (algebraMap R S a) (algebraMap R S b) = algebraMap R S (discr a b) := by
+  simp [discr_def, map_ofNat]
 
 /-- Under the change of generator `ω ↦ u • ω + k` (see `QuadraticAlgebra.changeGenerator`), the
 discriminant is multiplied by `u ^ 2`. -/

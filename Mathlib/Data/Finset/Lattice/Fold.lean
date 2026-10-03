@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Fold
 public import Mathlib.Data.Finset.Sum
 public import Mathlib.Data.Multiset.Lattice
 public import Mathlib.Data.Set.BooleanAlgebra

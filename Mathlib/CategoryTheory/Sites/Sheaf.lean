@@ -7,11 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 
 /-!
@@ -110,7 +108,7 @@ def conesEquivSieveCompatibleFamily :
         have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
         dsimp at this ⊢
         rw [id_comp, ← this]
-        convert! rfl
+        convert rfl
         simp only [Over.w] }
 
 variable {P S E}

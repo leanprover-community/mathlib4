@@ -5,10 +5,7 @@ Authors: Patrick Stevens, Yury Kudryashov, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.Algebra.Squarefree.Basic
-public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.NumberTheory.PrimeCounting
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset

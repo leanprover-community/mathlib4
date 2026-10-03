@@ -7,14 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Fin.Tuple
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.Module.Prod
-public import Mathlib.Algebra.Module.Submodule.Ker
-public import Mathlib.Algebra.Module.Submodule.Range
-public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Option
 
 /-!
 # Pi types of modules
@@ -108,6 +103,11 @@ theorem pi_proj : pi proj = LinearMap.id (R := R) (M := ∀ i, φ i) := rfl
 
 @[simp]
 theorem pi_proj_comp (f : M₂ →ₗ[R] ∀ i, φ i) : pi (proj · ∘ₗ f) = f := rfl
+
+@[simp]
+theorem proj_comp_funLeft (f : ι' → ι) (i : ι') :
+    proj i ∘ₗ funLeft R M₂ f = proj (f i) :=
+  rfl
 
 theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :=
   surjective_eval i
@@ -645,14 +645,15 @@ lemma Pi.mem_span_range_single_inl_iff
 
 section Extend
 
-variable (R) {η : Type*} [Semiring R] (s : ι → η)
+variable (R) {η : Type*} [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] (s : ι → η)
 
 /-- `Function.extend s f 0` as a bundled linear map. -/
-@[simps]
-noncomputable def Function.ExtendByZero.linearMap : (ι → R) →ₗ[R] η → R :=
-  { Function.ExtendByZero.hom R s with
-    toFun := fun f => Function.extend s f 0
-    map_smul' := fun r f => by simpa using Function.extend_smul r s f 0 }
+@[simps!]
+noncomputable def Function.ExtendByZero.linearMap : (ι → M) →ₗ[R] η → M where
+  __ := hom M s
+  map_smul' r f := by
+    ext i
+    simpa using congr($(extend_smul r s f 0) i)
 
 end Extend
 

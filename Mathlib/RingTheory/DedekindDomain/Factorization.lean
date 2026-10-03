@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.RingTheory.RamificationInertia.Ramification
@@ -518,7 +517,7 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     (h_exps : ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, exps v = 0) :
     count K v (∏ᶠ v : HeightOneSpectrum R,
       (v.asIdeal : FractionalIdeal R⁰ K) ^ exps v) = exps v := by
-  convert! count_finsuppProd K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
+  convert count_finsuppProd K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
   rw [finprod_eq_finsetProd_of_mulSupport_subset (s := h_exps.toFinset), Finsupp.prod]
   · rfl
   · rw [Finite.coe_toFinset]
@@ -648,7 +647,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   rintro ⟨q, hq⟩
   by_cases hqp : q = p'
   · subst hqp
-    convert! sub_mem H₁ H₂
+    convert sub_mem H₁ H₂
     rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem hp's, add_sub_cancel_right]
   · refine Ideal.mul_mono_right ?_ (ha p' hp's)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))

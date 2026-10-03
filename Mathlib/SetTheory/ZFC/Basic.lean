@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Logic.Small.Basic
 public import Mathlib.SetTheory.ZFC.PSet
 

@@ -6,15 +6,12 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-public import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Regular.Pow
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
-public import Mathlib.Order.SymmDiff
 public import Mathlib.Tactic.Polynomial.Core
 
 /-!
@@ -1038,7 +1035,7 @@ lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S
   refine ⟨fun h x _ ↦ h x, fun h i ↦ ?_⟩
   by_cases hp : i ∈ p.support
   · exact h hp
-  · convert! M.zero_mem
+  · convert M.zero_mem
     simpa using hp
 
 end Module

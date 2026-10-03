@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Order.DirSupClosed
-public import Mathlib.Order.SuccPred.CompleteLinearOrder
+import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.Order.SuccPred.InitialSeg
 
 /-!
@@ -128,7 +128,7 @@ theorem map_sSup (hf : IsNormal f) {s : Set α} (hs : s.Nonempty) (hs' : BddAbov
 theorem map_iSup {ι} [Nonempty ι] {g : ι → α} (hf : IsNormal f) (hg : BddAbove (range g)) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
   unfold iSup
-  convert! map_sSup hf (range_nonempty g) hg
+  convert map_sSup hf (range_nonempty g) hg
   ext
   simp
 
@@ -174,7 +174,7 @@ variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOr
 
 theorem apply_of_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) :
     f a = ⨆ b : Iio a, f b := by
-  convert! map_iSup hf _
+  convert map_iSup hf _
   · exact ha.iSup_Iio.symm
   · exact ⟨⊥, ha.bot_lt⟩
   · use a
@@ -214,7 +214,7 @@ theorem ext_iff [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g
   | succ a ha IH => exact H₂ a IH
   | isSuccLimit a ha IH =>
     apply (hf.isLUB_image_Iio_of_isSuccLimit ha).unique
-    convert! hg.isLUB_image_Iio_of_isSuccLimit ha using 1
+    convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
 
 theorem exists_map_le_lt_map_succ_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β]

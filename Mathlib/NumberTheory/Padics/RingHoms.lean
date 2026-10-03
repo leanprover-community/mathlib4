@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-public import Mathlib.RingTheory.ZMod
+import Mathlib.RingTheory.ZMod
 
 /-!
 
@@ -254,7 +254,7 @@ lemma zmodRepr_natCast_of_lt {n : ℕ} (hn : n < p) :
 
 lemma zmodRepr_natCast_ofNat {n : ℕ} (hn : ofNat(n) < p) :
     zmodRepr (ofNat(n) : ℤ_[p]) = ofNat(n) := by
-  convert! zmodRepr_natCast_of_lt hn
+  convert zmodRepr_natCast_of_lt hn
   rcases n with _ | _ | n <;> simp
 
 lemma zmodRepr_units_ne_zero (x : ℤ_[p]ˣ) : x.val.zmodRepr ≠ 0 := by
@@ -282,7 +282,7 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
     intro x y
     rw [f_congr (x + y) _ (f x + f y), cast_add]
     · exact f_spec _
-    · convert! Ideal.add_mem _ (f_spec x) (f_spec y) using 1
+    · convert Ideal.add_mem _ (f_spec x) (f_spec y) using 1
       rw [cast_add]
       ring
   map_mul' := by
@@ -290,7 +290,7 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
     rw [f_congr (x * y) _ (f x * f y), cast_mul]
     · exact f_spec _
     · let I : Ideal ℤ_[p] := Ideal.span {↑v}
-      convert! I.add_mem (I.mul_mem_left x (f_spec y)) (I.mul_mem_right ↑(f y) (f_spec x)) using 1
+      convert I.add_mem (I.mul_mem_left x (f_spec y)) (I.mul_mem_right ↑(f y) (f_spec x)) using 1
       rw [cast_mul]
       ring
 
@@ -316,7 +316,7 @@ This coercion is only a ring homomorphism if it coerces into a ring whose charac
 `p`. While this is not the case here we can still make use of the coercion.
 -/
 theorem toZMod_spec : x - (ZMod.cast (toZMod x) : ℤ_[p]) ∈ maximalIdeal ℤ_[p] := by
-  convert! sub_zmodRepr_mem x using 2
+  convert sub_zmodRepr_mem x using 2
   dsimp [toZMod, toZModHom]
   rcases Nat.exists_eq_add_of_lt hp_prime.1.pos with ⟨p', rfl⟩
   change ↑((_ : ZMod (0 + p' + 1)).val) = (_ : ℤ_[0 + p' + 1])
@@ -333,7 +333,7 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
   · intro h
     rw [← sub_zero x] at h
     dsimp [toZMod, toZModHom]
-    convert! zmod_congr_of_sub_mem_max_ideal x _ 0 _ h
+    convert zmod_congr_of_sub_mem_max_ideal x _ 0 _ h
     · norm_cast
     · apply sub_zmodRepr_mem
 
@@ -463,7 +463,7 @@ theorem ker_toZModPow (n : ℕ) :
   constructor
   · intro h
     suffices x.appr n = 0 by
-      convert! appr_spec n x
+      convert appr_spec n x
       simp only [this, sub_zero, cast_zero]
     dsimp [toZModPow, toZModHom] at h
     rw [ZMod.natCast_eq_zero_iff] at h
@@ -673,7 +673,7 @@ theorem lift_sub_val_mem_span (r : R) (n : ℕ) :
   rw [sub_eq_sub_add_sub (limNthHom f_compat r) _ ↑(nthHom f r (max n k))]
   apply Ideal.add_mem _ _ this
   rw [Ideal.mem_span_singleton]
-  convert!
+  convert
     map_dvd (Int.castRingHom ℤ_[p]) (pow_dvd_nthHom_sub f_compat r n (max n k) (le_max_left _ _))
   · simp
   · simp [nthHom]

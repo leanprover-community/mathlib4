@@ -267,7 +267,7 @@ abbrev truth_as_subobject : Subobject 𝒞.Ω :=
 lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
     ∃ (Z : C) (i : Z ⟶ X) (_ : Mono i), φ = 𝒞.χ i :=
   ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, 𝒞.uniq _ (by
-    convert! IsPullback.of_hasPullback φ 𝒞.truth)⟩
+    convert IsPullback.of_hasPullback φ 𝒞.truth)⟩
 
 @[simp]
 lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
@@ -368,7 +368,7 @@ lemma iso_inv_left_π :
     (h.iso m).inv.hom.left ≫ h.π m = Subobject.pullbackπ (h.χ m) h.Ω₀ := by
   dsimp only [π]
   rw [← Over.comp_left_assoc]
-  convert! Category.id_comp _ using 2
+  convert Category.id_comp _ using 2
   exact (MonoOver.forget _ ⋙ Over.forget _).congr_map (h.iso m).inv_hom_id
 
 #adaptation_note

@@ -10,8 +10,6 @@ public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.PNat.Equiv
 public import Mathlib.Logic.Equiv.Nat
-public import Mathlib.Order.Directed
-public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Encodable types
