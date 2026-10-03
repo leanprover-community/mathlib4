@@ -105,6 +105,8 @@ theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ] (hf : Submart
   refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le zero_le MeasurableSet.univ)
   simp [stoppedAbove, stoppedProcess, hf0]
 
+@[deprecated "A direct call of `Submartingale.eLpNorm_stoppedAbove_le` is prefered"
+(since := "2026-08-21")]
 theorem Submartingale.eLpNorm_stoppedAbove_le' [IsFiniteMeasure μ]
     (hf : Submartingale f ℱ μ) (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
@@ -119,8 +121,9 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     ∀ᵐ ω ∂μ, BddAbove (Set.range fun n => f n ω) → ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   have ht : ∀ᵐ ω ∂μ, ∀ i : ℕ, ∃ c, Tendsto (fun n => stoppedAbove f i n ω) atTop (𝓝 c) := by
     rw [ae_all_iff]
-    exact fun i ↦ Submartingale.exists_ae_tendsto_of_bdd (hf.stoppedAbove i)
-      (hf.eLpNorm_stoppedAbove_le' i.cast_nonneg hf0 hbdd)
+    refine fun i ↦ Submartingale.exists_ae_tendsto_of_bdd (hf.stoppedAbove i) ?_
+    apply lt_of_le_of_lt (b := 2 * μ Set.univ * ENNReal.ofReal (i + R)) _ (by finiteness)
+    exact iSup_le_iff.2 fun n ↦ hf.eLpNorm_stoppedAbove_le i.cast_nonneg hf0 hbdd n
   filter_upwards [ht] with ω hω hωb
   rw [BddAbove] at hωb
   obtain ⟨i, hi⟩ := exists_nat_gt hωb.some
