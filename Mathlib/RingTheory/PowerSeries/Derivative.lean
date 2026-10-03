@@ -25,7 +25,6 @@ See also `MvPowerSeries.pderiv` for the multivariate setting.
 
 - `PowerSeries.coeff_derivative`: coefficient formula
   `coeff n (d⁄dX R f) = coeff (n + 1) f * (n + 1)`.
-- `PowerSeries.coeff_derivative_mul`: finite-sum formula for the coefficients of `d⁄dX f * g`.
 - `PowerSeries.derivative_coe`: compatibility with `Polynomial.derivative`.
 - `PowerSeries.trunc_derivative`: truncation commutes with differentiation.
 - `PowerSeries.derivative.ext`: a power series is determined by its constant term and derivative.
