@@ -204,7 +204,7 @@ end FintypeCat
 section ToMulAction
 
 variable {V : Type (u + 1)} [LargeCategory V] {FV : V → V → Type*} {CV : V → Type*}
-variable [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV]
+variable {_ : ∀ X Y, FunLike (FV X Y) (CV X) (CV Y)} [ConcreteCategory V FV]
 
 instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
     MulAction G (ToType X) where
