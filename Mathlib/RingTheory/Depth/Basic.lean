@@ -39,9 +39,9 @@ all modules refer to `R`-module.
   module `M` and `N`, if support of `N` is equal to `PrimeSpectrum.zeroLocus I` and `IM < M`,
   `depth N M` is equal to the supremum of length of `M`-regular sequence in `I`
 
-* `Ideal.depth_eq_sSup_length_isRegular` : For nontrivial finitely generated module `M`,
-  and an ideal `I` of Noetherian ring `R`, `I.depth M` equals to maximal length of `M`-regular
-  sequences contained in `I`.
+* `Ideal.depth_eq_sSup_length_isRegular` : For finitely generated module `M` and an ideal `I`
+  of Noetherian ring `R` with `IM < M`, `I.depth M` equals to maximal length of
+  `M`-regular sequences contained in `I`.
 
 ## References
 
