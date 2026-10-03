@@ -128,4 +128,13 @@ theorem uncurry_mulSingle_mulSingle (i : ι) (i' : ι') (b : M) :
     uncurry (Pi.mulSingle i (Pi.mulSingle i' b)) = Pi.mulSingle (i, i') b :=
   uncurry_update_update _ _ _ _
 
+@[to_additive]
+lemma mulSingle_eq_mulSingle_iff (i j : ι) (m n : M) :
+    mulSingle (M := fun _ ↦ M) i m = mulSingle j n ↔ i = j ∧ m = n ∨ m = 1 ∧ n = 1 := by
+  refine ⟨fun h ↦ ?_, by grind⟩
+  by_cases hij : i = j
+  · left; simpa [hij] using congr_fun h i
+  · right
+    exact ⟨by simpa [hij] using congr_fun h i, by simpa [hij] using (congr_fun h j).symm⟩
+
 end Pi
