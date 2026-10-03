@@ -255,6 +255,7 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
     simp only [zero_smul, mul_zero, add_zero]
     refine sum_congr rfl fun i _ ↦ ?_
     rw [coeff_derivative, Nat.add_sub_add_right, nsmul_eq_mul, mul_assoc]
+    simp only [Nat.cast_add, Nat.cast_one]
   let e : U →+* R := MvPolynomial.eval₂Hom (Int.castRingHom R)
     (Sum.elim (fun i ↦ P.coeff i) (fun i ↦ H.coeff i))
   have hP : map e P₀ = P := by
