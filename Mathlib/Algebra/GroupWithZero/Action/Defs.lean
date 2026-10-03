@@ -427,11 +427,7 @@ section MonoidWithZero
 variable [Group α] [MonoidWithZero β] [MulDistribMulAction α β]
 
 instance : SMulZeroClass α β where
-  smul_zero g := by
-    have h : g • (0 : β) = (g • (0 : β)) * 0 := by
-      conv_lhs => rw [show (0 : β) = 0 * (g⁻¹ • (0 : β)) from (zero_mul _).symm]
-      rw [smul_mul', smul_inv_smul]
-    exact h.trans (mul_zero _)
+  smul_zero g := by rw [← zero_mul (g⁻¹ • 0), smul_mul', smul_inv_smul, mul_zero, zero_mul]
 
 end MonoidWithZero
 
