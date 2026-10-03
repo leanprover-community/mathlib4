@@ -83,6 +83,8 @@ noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExte
   le_antisymm := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.2.1
   le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.2.1
   toDecidableLE := Classical.decRel _
+  toDecidableEq := Classical.decRel _
+  toDecidableLT := Classical.decRel _
 
 /-- The embedding of `α` into `LinearExtension α` as an order homomorphism. -/
 noncomputable def toLinearExtension {α : Type u} [PartialOrder α] : α →o LinearExtension α where

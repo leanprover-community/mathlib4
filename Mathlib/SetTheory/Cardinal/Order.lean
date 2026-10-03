@@ -97,6 +97,8 @@ instance linearOrder : LinearOrder Cardinal.{u} :=
     le_total := by
       rintro ⟨α⟩ ⟨β⟩
       apply Embedding.total
+    toDecidableEq := Classical.decRel _
+    toDecidableLT := Classical.decRel _
     toDecidableLE := Classical.decRel _ }
 
 theorem le_def (α β : Type u) : #α ≤ #β ↔ Nonempty (α ↪ β) :=
