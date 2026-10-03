@@ -84,6 +84,10 @@ lemma ext {e e' : Edge x₀ x₁} (h : e.edge = e'.edge) :
 
 section
 
+#adaptation_note
+/-- The autoParam in this `variable` generates a private helper declaration, so every public
+declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable (edge : X _⦋1⦌) (src_eq : X.δ 1 edge = x₀ := by cat_disch)
   (tgt_eq : X.δ 0 edge = x₁ := by cat_disch)
 
@@ -202,6 +206,10 @@ end
 
 section
 
+#adaptation_note
+/-- The autoParam in this `variable` generates a private helper declaration, so every public
+declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable (simplex : X _⦋2⦌)
   (d₂ : X.δ 2 simplex = e₀₁.edge := by cat_disch)
   (d₀ : X.δ 0 simplex = e₁₂.edge := by cat_disch)

@@ -71,6 +71,10 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 namespace MeasureTheory.Measure
 
+#adaptation_note
+/-- The autoParam in this `variable` generates a private helper declaration, so every public
+declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
 
@@ -89,6 +93,10 @@ end MeasureTheory.Measure
 
 namespace Function.HasTemperateGrowth
 
+#adaptation_note
+/-- The autoParam in this `variable` generates a private helper declaration, so every public
+declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
 
