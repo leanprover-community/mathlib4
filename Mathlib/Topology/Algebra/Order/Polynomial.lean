@@ -34,10 +34,10 @@ theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
   let := Preorder.topology F
   have : OrderTopology F := ⟨rfl⟩
   have : Q ≠ 0 := fun hc ↦ by simp [hc] at hpos
-  rw [Filter.tendsto_iff_tendsto_inv_inv, inv_atTop₀,
+  rw [tendsto_iff_tendsto_inv_inv, inv_atTop₀,
     tendsto_congr' (f₂ := (fun x ↦
       P.reverse.eval x / Q.reverse.eval x * x⁻¹ ^ (P.natDegree - Q.natDegree)))]
-  · refine Filter.Tendsto.pos_mul_atTop hpos ?_ (tendsto_inv_nhdsGT_zero.atTop_pow₀ ?_)
+  · refine Tendsto.pos_mul_atTop hpos ?_ (tendsto_inv_nhdsGT_zero.atTop_pow₀ ?_)
     · convert ContinuousWithinAt.tendsto _ using 2
       · simp
       · fun_prop (disch := simp [‹Q ≠ 0›])
