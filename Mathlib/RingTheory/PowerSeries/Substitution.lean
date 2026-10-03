@@ -249,6 +249,26 @@ theorem coeff_subst' {b : S⟦X⟧} (hb : HasSubst b) (f : R⟦X⟧) (e : ℕ) :
         coeff d f • PowerSeries.coeff e (b ^ d)) := by
   simp [PowerSeries.coeff, coeff_subst hb]
 
+/-- The coefficient of a substitution by a power series with zero constant coefficient is a
+finite sum. -/
+theorem coeff_subst_of_constantCoeff_zero {b : R⟦X⟧} (hb : b.constantCoeff = 0) (f : R⟦X⟧) (e : ℕ) :
+    coeff e (f.subst b) = ∑ d ∈ Finset.range (e + 1), f.coeff d * (b ^ d).coeff e := by
+  rw [coeff_subst' (HasSubst.of_constantCoeff_zero' hb),
+    finsum_eq_sum_of_support_subset (s := Finset.range (e + 1))]
+  · simp
+  · intro d hd
+    simp only [Finset.mem_coe, Finset.mem_range]
+    by_contra hde
+    simp [coeff_pow_eq_zero_of_lt hb (by omega : e < d)] at hd
+
+/-- Substituting series with zero constant coefficient and matching coefficients up to degree
+`n` gives matching coefficients in degree `n`. -/
+theorem coeff_subst_congr {f g : R⟦X⟧} (hf : f.constantCoeff = 0)
+    (hg : g.constantCoeff = 0) (P : R⟦X⟧) (n : ℕ)
+    (h : ∀ j ≤ n, f.coeff j = g.coeff j) : coeff n (P.subst f) = coeff n (P.subst g) := by
+  rw [coeff_subst_of_constantCoeff_zero hf, coeff_subst_of_constantCoeff_zero hg]
+  exact Finset.sum_congr rfl fun k _ ↦ congrArg (P.coeff k * ·) (coeff_pow_congr n k h)
+
 theorem constantCoeff_subst (ha : HasSubst a) (f : PowerSeries R) :
     MvPowerSeries.constantCoeff (subst a f) =
       finsum (fun d ↦ coeff d f • MvPowerSeries.constantCoeff (a ^ d)) := by
