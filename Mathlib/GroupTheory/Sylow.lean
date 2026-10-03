@@ -930,8 +930,7 @@ noncomputable def directProductOfNormal [Finite G]
   · apply injective_noncommPiCoprod_of_iSupIndep
     refine independent_of_coprime_order hcomm fun p₁ p₂ hne ↦ ?_
     simpa using IsPGroup.coprime_card_of_ne p₁ p₂ (by simpa) _ _ (P p₁).isPGroup' (P p₂).isPGroup'
-  · simp_rw [← Nat.card_eq_fintype_card, Nat.card_pi, card_eq_multiplicity]
-    conv_rhs => rw [← Nat.prod_factorization_pow_eq_self Nat.card_pos.ne']
-    simp [Nat.prod_factorization_eq_prod_primeFactors, ps]
+  · simp_rw [Fintype.card_eq_nat_card, Nat.card_pi, card_eq_multiplicity, ps]
+    simp [← Nat.prod_primeFactors_pow_factorization]
 
 end Sylow
