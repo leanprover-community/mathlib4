@@ -902,6 +902,46 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [Decida
 
 end piLpCongrLeft
 
+section piLpExtendByZero
+variable {ι' : Type*} [Fintype ι'] {E : Type*} [SeminormedAddCommGroup E] [Module 𝕜 E]
+
+variable (p 𝕜 E) in
+/-- An embedding of finite domains induces a linearly isometric map of Pi types with the Lp norm.
+This is the `PiLp` version of `Function.ExtendByZero.linearMap`. It can be also seen as the
+embedding version of `LinearIsometryEquiv.piLpCongrLeft`. -/
+@[simps!]
+def _root_.LinearIsometry.piLpExtendByZero (f : ι ↪ ι') :
+    PiLp p (fun _ : ι ↦ E) →ₗᵢ[𝕜] PiLp p (fun _ : ι' ↦ E) where
+  __ := (Function.ExtendByZero.linearMap 𝕜 E f).withLpMap p
+  norm_map' x := by
+    rcases p.dichotomy with rfl | h
+    · suffices ⨆ i, ‖Function.extend f x.ofLp 0 i‖ = ⨆ i, ‖x.ofLp i‖ by simpa [norm_eq_ciSup]
+      rcases isEmpty_or_nonempty ι with _ | hι
+      · simp
+      have : Nonempty ι' := hι.map f
+      refine le_antisymm (ciSup_le fun j ↦ ?_) ?_
+      · by_cases h : ∃ i, f i = j
+        · obtain ⟨i, rfl⟩ := h
+          exact le_ciSup_of_le (by simp) i (by simp [f.injective.extend_apply])
+        · exact le_ciSup_of_le (by simp) hι.some (by simp [h])
+      · exact ciSup_le fun i ↦ le_ciSup_of_le (by simp) (f i) (by simp [f.injective.extend_apply])
+    · have hp : 0 < p.toReal := zero_lt_one.trans_le h
+      suffices ∑ i, ‖x.ofLp i‖ ^ p.toReal = ∑ i, ‖Function.extend f x.ofLp 0 i‖ ^ p.toReal by
+        simp [norm_eq_sum hp, this]
+      refine Finset.sum_of_injOn f f.injective.injOn (by simp) (fun i hi hi' ↦ ?_) ?_
+      · rw [Function.extend_apply' _ _ _ (by simpa using hi')]
+        simp [hp.ne']
+      · simp [f.injective.extend_apply]
+
+@[simp]
+theorem _root_.LinearIsometry.piLpExtendByZero_apply_single [DecidableEq ι] [DecidableEq ι']
+    (f : ι ↪ ι') (i : ι) (a : E) :
+    LinearIsometry.piLpExtendByZero p 𝕜 E f (PiLp.single p i a) = PiLp.single p (f i) a := by
+  ext j
+  simp [f.injective.extend_single, Pi.single_apply]
+
+end piLpExtendByZero
+
 section piLpCongrRight
 variable {β}
 
