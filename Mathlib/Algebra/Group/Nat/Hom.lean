@@ -86,6 +86,11 @@ lemma MonoidHom.ext_mnat ⦃f g : Multiplicative ℕ →* M⦄
     (h : f (Multiplicative.ofAdd 1) = g (Multiplicative.ofAdd 1)) : f = g :=
   MonoidHom.ext fun n ↦ by rw [f.apply_mnat, g.apply_mnat, h]
 
+@[to_additive]
+lemma iterate_mul_left_eq_pow {M : Type*} [Monoid M] (a : M) (n : ℕ) :
+    (a * ·)^[n] a = a ^ (n + 1) := by
+  cases n <;> simp [pow_succ, ← mul_assoc]
+
 end Monoid
 
 section AddCommMonoid
