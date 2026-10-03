@@ -363,6 +363,10 @@ theorem ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) :
     simp [smul_comm c]
   · grind [zero_smul, locallyIntegrableOn_smul_iff, smul_zero]
 
+theorem ofFun_dirac_eq_delta (x : E) :
+    ofFun Ω (1 : E → ℝ) (Measure.dirac x) n = delta x := by
+  ext; simp [ofFun_apply_eq_ite, Pi.one_def, locallyIntegrableOn_const]
+
 variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 
 theorem ofFun_injective {f f' : E → F} {μ : Measure E}
