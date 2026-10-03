@@ -103,7 +103,7 @@ theorem ae_eventually_measure_pos [SecondCountableTopology α] :
   have h : v.FineSubfamilyOn f s := by
     intro x hx ε εpos
     rw [hs] at hx
-    simp only [frequently_filterAt_iff, gt_iff_lt, mem_ofPred_eq] at hx
+    simp only [frequently_filterAt_iff, gt_iff_lt, mem_ofPred] at hx
     rcases hx ε εpos with ⟨a, a_sets, ax, μa⟩
     exact ⟨a, ⟨a_sets, μa⟩, ax⟩
   refine le_antisymm ?_ bot_le
@@ -185,7 +185,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
         refine v.measure_le_of_frequently_le ρ smul_absolutelyContinuous _ ?_
         intro x hx
         rw [hs] at hx
-        simp only [mem_inter_iff, not_lt, not_eventually, mem_ofPred_eq] at hx
+        simp only [mem_inter_iff, not_lt, not_eventually, mem_ofPred] at hx
         exact hx.1
       _ ≤ ε⁻¹ * ρ o := by gcongr; apply inter_subset_right
       _ = 0 := by rw [ρo, mul_zero]
@@ -239,13 +239,13 @@ theorem ae_tendsto_div : ∀ᵐ x ∂μ, ∃ c, Tendsto (fun a => ρ a / μ a) (
       ¬((∃ᶠ a in v.filterAt x, ρ a / μ a < c) ∧ ∃ᶠ a in v.filterAt x, d < ρ a / μ a) := by
     intro c hc d hd hcd
     apply v.null_of_frequently_le_of_frequently_ge hρ hcd
-    · simp only [not_and, not_frequently, not_lt, mem_compl_iff, mem_ofPred_eq, Classical.not_imp,
+    · simp only [not_and, not_frequently, not_lt, mem_compl_iff, mem_ofPred, Classical.not_imp,
       not_eventually, not_le, and_imp]
       intro x h1x _
       apply h1x.mono fun a ha ↦ ?_
       exact (ENNReal.div_le_iff_le_mul (.inr hcd.ne_top) (.inr ha.ne_bot)).1 ha.le
     · simp only [and_imp, exists_prop, not_frequently, not_and, not_lt, not_le, not_eventually,
-        mem_ofPred_eq, mem_compl_iff, not_forall]
+        mem_ofPred, mem_compl_iff, not_forall]
       intro x _ h2x
       apply h2x.mono fun a ha => ?_
       exact ENNReal.mul_le_of_le_div ha.le

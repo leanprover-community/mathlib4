@@ -233,7 +233,7 @@ theorem finite_cardQuot_le (B : ℕ) : {I : Ideal S | I.cardQuot ≤ B}.Finite :
     (t.finite_toSet.biUnion fun x hx ↦ finite_setOfPred_mem x (by grind)).subset this
   intro I hI
   rw [Set.mem_sdiff, Set.mem_ofPred, Submodule.cardQuot_apply] at hI
-  simp_rw [Set.mem_iUnion, exists_prop, Set.mem_ofPred_eq]
+  simp_rw [Set.mem_iUnion, exists_prop, Set.mem_ofPred]
   -- `s` has cardinality `B + 1`, but the quotient `S ⧸ I` has cardinality at most `B`
   replace hs : (s.image (Ideal.Quotient.mk I)).card < s.card := by
     have := finiteQuotient hI.2

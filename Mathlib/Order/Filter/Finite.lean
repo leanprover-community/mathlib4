@@ -140,7 +140,7 @@ theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {
     rintro ⟨I, hIf, V, hV₁, hV₂, rfl⟩
     choose! t ht₁ ht₂ using hV₁
     refine ⟨I ∩ {i | p i}, hIf.inter_of_left _, fun i ↦ And.right, ?_⟩
-    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_ofPred_eq]
+    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_ofPred]
     gcongr with i hpi
     exact ht₁ i hpi
   · rintro ⟨I, hIf, hpI, hst⟩

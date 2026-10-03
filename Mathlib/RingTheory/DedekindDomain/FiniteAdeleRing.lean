@@ -57,7 +57,7 @@ lemma HeightOneSpectrum.Support.finite (k : K) : (Support R k).Finite := by
     intro v hv
     apply_fun v.valuation K at hk
     simp only [Valuation.map_mul, valuation_of_algebraMap] at hk
-    rw [Set.mem_ofPred_eq, valuation_of_algebraMap]
+    rw [Set.mem_ofPred, valuation_of_algebraMap]
     have := intValuation_le_one v n
     contrapose! this
     rw [← hk, mul_comm]

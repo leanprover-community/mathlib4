@@ -173,7 +173,7 @@ noncomputable def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
 open scoped Classical in
 noncomputable instance decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
-  simp only [Set.mem_ofPred_eq]; infer_instance
+  simp only [Set.mem_ofPred]; infer_instance
 
 variable [Field K]
 

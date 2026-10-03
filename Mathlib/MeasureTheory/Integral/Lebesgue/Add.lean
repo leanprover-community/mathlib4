@@ -145,7 +145,7 @@ theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurabl
   split_ifs with h
   · rfl
   · have := Set.notMem_subset hs.1 h
-    simp only [not_forall, not_le, mem_ofPred_eq, not_exists, not_lt] at this
+    simp only [not_forall, not_le, mem_ofPred, not_exists, not_lt] at this
     exact this n
 
 open Encodable in

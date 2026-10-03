@@ -25,7 +25,7 @@ public section
 lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m] (f : ℕ → R) :
     f = ∑ a : ZMod m, {n : ℕ | (n : ZMod m) = a}.indicator f := by
   ext n
-  simp only [Finset.sum_apply, Set.indicator_apply, Set.mem_ofPred_eq, Finset.sum_ite_eq,
+  simp only [Finset.sum_apply, Set.indicator_apply, Set.mem_ofPred, Finset.sum_ite_eq,
     Finset.mem_univ, ↓reduceIte]
 
 open Set in
@@ -45,7 +45,7 @@ lemma summable_indicator_mod_iff_summable {R : Type*} [AddCommGroup R] [Topologi
       contrapose! hn
       exact (Nat.range_mul_add m k).symm ▸ mem_of_indicator_ne_zero hn
     convert (Function.Injective.summable_iff hg hg').symm
-    simp only [Function.comp_apply, mem_ofPred_eq, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero,
+    simp only [Function.comp_apply, mem_ofPred, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero,
       zero_mul, zero_add, le_add_iff_nonneg_left, zero_le, and_self, indicator_of_mem, g]
 
 /-- If `f : ℕ → ℝ` is decreasing and has a negative term, then `f` is not summable. -/

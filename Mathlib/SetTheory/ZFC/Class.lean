@@ -508,7 +508,7 @@ variable {x y : ZFSet.{u}}
 theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] (h : y ∈ x) :
     (ZFSet.map f x ′ y : ZFClass.{u}) = f y :=
   ZFClass.iota_val _ _ fun z => by
-    simp only [ZFClass.coe_cmem, Set.mem_ofPred_eq, SetLike.mem_coe, mem_map]
+    simp only [ZFClass.coe_cmem, Set.mem_ofPred, SetLike.mem_coe, mem_map]
     exact
       ⟨fun ⟨w, _, pr⟩ => by
         let ⟨wy, fw⟩ := ZFSet.pair_injective pr
@@ -560,9 +560,9 @@ theorem isOrdinal_notCMem_univ : {x | IsOrdinal x} ᶜ∉ (.univ : ZFClass.{u}) 
   rintro ⟨x, hx, -⟩
   suffices IsOrdinal x by
     apply ZFClass.cmem_irrefl (A := (x : ZFClass.{u}))
-    rwa [ZFClass.coe_cmem, hx, Set.mem_ofPred_eq]
+    rwa [ZFClass.coe_cmem, hx, Set.mem_ofPred]
   refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;>
-    rw [← SetLike.mem_coe, hx, Set.mem_ofPred_eq] at *
+    rw [← SetLike.mem_coe, hx, Set.mem_ofPred] at *
   exacts [hy.mem hz, hwx.mem_trans hyz hzw]
 
 end ZFSet

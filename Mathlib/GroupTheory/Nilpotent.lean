@@ -197,7 +197,7 @@ theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
   simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, mem_bot, mem_mk,
-    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_ofPred_eq, mem_center_iff]
+    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_ofPred, mem_center_iff]
   exact forall_congr' fun y => by
     rw [commutatorElement_def, mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
 
