@@ -103,12 +103,39 @@ theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ
   exact congr_arg (quotientEquivAlgOfEq ℤ (by simp [map_span])) <|
     quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral Q
 
+section monicFactorsMod
+
+omit [NumberField K]
+
 variable (p θ) in
 /--
 The finite set of monic irreducible factors of `minpoly ℤ θ` modulo `p`.
 -/
 abbrev monicFactorsMod : Finset ((ZMod p)[X]) :=
   (normalizedFactors (map (Int.castRingHom (ZMod p)) (minpoly ℤ θ))).toFinset
+
+/--
+Membership in `monicFactorsMod θ p` unfolds to irreducibility, monicity and divisibility.
+-/
+theorem mem_monicFactorsMod_iff {Q : (ZMod p)[X]} :
+    Q ∈ monicFactorsMod θ p ↔
+      Irreducible Q ∧ Q.Monic ∧ Q ∣ (minpoly ℤ θ).map (Int.castRingHom (ZMod p)) := by
+  rw [monicFactorsMod, Multiset.mem_toFinset,
+    Polynomial.mem_normalizedFactors_iff (map_monic_ne_zero (minpoly.monic θ.isIntegral))]
+
+theorem irreducible_monicFactorsMod (Q : monicFactorsMod θ p) :
+    Irreducible (Q : (ZMod p)[X]) :=
+  (mem_monicFactorsMod_iff.mp Q.2).1
+
+theorem monic_monicFactorsMod (Q : monicFactorsMod θ p) :
+    (Q : (ZMod p)[X]).Monic :=
+  (mem_monicFactorsMod_iff.mp Q.2).2.1
+
+theorem monicFactorsMod_dvd_map_minpoly (Q : monicFactorsMod θ p) :
+    (Q : (ZMod p)[X]) ∣ (minpoly ℤ θ).map (Int.castRingHom (ZMod p)) :=
+  (mem_monicFactorsMod_iff.mp Q.2).2.2
+
+end monicFactorsMod
 
 /--
 If `p` does not divide `exponent θ` and `Q` is a lift of a monic irreducible factor of
@@ -118,14 +145,11 @@ def ZModXQuotSpanEquivQuotSpanPair (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
     (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
     (ZMod p)[X] ⧸ span {Polynomial.map (Int.castRingHom (ZMod p)) Q} ≃+*
       𝓞 K ⧸ span {(p : 𝓞 K), (aeval θ) Q} :=
-  have h₀ : map (Int.castRingHom (ZMod p)) (minpoly ℤ θ) ≠ 0 :=
-      map_monic_ne_zero (minpoly.monic θ.isIntegral)
   have h_eq₁ : span {map (Int.castRingHom (ZMod p)) Q} =
       span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)} ⊔
         span {map (Int.castRingHom (ZMod p)) Q} := by
     rw [← span_insert, span_pair_comm, span_pair_eq_span_left_iff_dvd.mpr]
-    simp only [Multiset.mem_toFinset] at hQ
-    exact ((Polynomial.mem_normalizedFactors_iff h₀).mp hQ).2.2
+    exact (mem_monicFactorsMod_iff.mp hQ).2.2
   have h_eq₂ : span {↑p} ⊔ span {(aeval θ) Q} = span {↑p, (aeval θ) Q} := by
     rw [span_insert]
   ((Ideal.quotEquivOfEq h_eq₁).trans (DoubleQuot.quotQuotEquivQuotSup _ _).symm).trans <|
@@ -261,5 +285,30 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ 
         multiplicity Q ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
   obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
   rw [ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply]
+
+/--
+The residual degree of a prime above `p` is the degree of the corresponding factor of
+`minpoly ℤ θ` modulo `p`.
+-/
+theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply (hp : ¬ p ∣ exponent θ)
+    (P : (span {(p : ℤ)}).primesOver (𝓞 K)) :
+    inertiaDeg (P : Ideal (𝓞 K)) ℤ =
+      natDegree (primesOverSpanEquivMonicFactorsMod hp P : (ZMod p)[X]) := by
+  simpa only [Subtype.coe_eta, Equiv.symm_apply_apply] using
+    inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' hp
+      (primesOverSpanEquivMonicFactorsMod hp P).2
+
+/--
+The ramification index of a prime above `p` is the multiplicity of the corresponding factor of
+`minpoly ℤ θ` modulo `p`.
+-/
+theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_apply (hp : ¬ p ∣ exponent θ)
+    (P : (span {(p : ℤ)}).primesOver (𝓞 K)) :
+    ramificationIdx (P : Ideal (𝓞 K)) ℤ =
+      multiplicity (primesOverSpanEquivMonicFactorsMod hp P : (ZMod p)[X])
+        ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
+  simpa only [Subtype.coe_eta, Equiv.symm_apply_apply] using
+    ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' hp
+      (primesOverSpanEquivMonicFactorsMod hp P).2
 
 end NumberField.Ideal
