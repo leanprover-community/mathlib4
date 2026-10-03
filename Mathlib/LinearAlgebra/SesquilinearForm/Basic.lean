@@ -357,74 +357,123 @@ section AdjointPair
 
 section AddCommMonoid
 
-variable [CommSemiring R]
-variable [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid M₁] [Module R M₁]
-variable [AddCommMonoid M₂] [Module R M₂]
-variable [AddCommMonoid M₃] [Module R M₃]
-variable {I : R →+* R}
-variable {B : M →ₗ[R] M →ₛₗ[I] M₃} {B' : M₁ →ₗ[R] M₁ →ₛₗ[I] M₃} {B'' : M₂ →ₗ[R] M₂ →ₛₗ[I] M₃}
-variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
-variable (B B' f g)
+variable {R₁ R₂ R₃ S₁ S₂ S₃ T₁ T₂ T₃ T₄ T₅ T₆ : Type*}
+variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
+variable [Semiring S₁] [Semiring S₂] [Semiring S₃]
+variable [Semiring T₁] [Semiring T₂] [Semiring T₃]
+variable [Semiring T₄] [Semiring T₅] [Semiring T₆]
+variable {M N M' N' M'' N'' P : Type*}
+variable [AddCommMonoid M] [Module R₁ M] [AddCommMonoid N] [Module S₁ N]
+variable [AddCommMonoid M'] [Module R₂ M'] [AddCommMonoid N'] [Module S₂ N']
+variable [AddCommMonoid M''] [Module R₃ M''] [AddCommMonoid N''] [Module S₃ N'']
+variable [AddCommMonoid P]
+variable [Module T₁ P] [Module T₂ P] [Module T₃ P] [Module T₄ P] [Module T₅ P] [Module T₆ P]
+variable [SMulCommClass T₂ T₁ P] [SMulCommClass T₄ T₃ P] [SMulCommClass T₆ T₅ P]
+variable {σ₁ : R₁ →+* T₁} {σ₂ : S₁ →+* T₂}
+variable {ρ₁ : R₂ →+* T₃} {ρ₂ : S₂ →+* T₄}
+variable {π₁ : R₃ →+* T₅} {π₂ : S₃ →+* T₆}
 
-/-- Given a pair of modules equipped with bilinear maps, this is the condition for a pair of
-maps between them to be mutually adjoint. -/
-def IsAdjointPair (f : M → M₁) (g : M₁ → M) :=
+local instance : SMulCommClass T₁ T₂ P := SMulCommClass.symm T₂ T₁ P
+local instance : SMulCommClass T₃ T₄ P := SMulCommClass.symm T₄ T₃ P
+local instance : SMulCommClass T₅ T₆ P := SMulCommClass.symm T₆ T₅ P
+
+variable (B : M →ₛₗ[σ₁] N →ₛₗ[σ₂] P) (B' : M' →ₛₗ[ρ₁] N' →ₛₗ[ρ₂] P)
+  {B'' : M'' →ₛₗ[π₁] N'' →ₛₗ[π₂] P}
+
+/-- `f : M → M'` and `g : N' → N` are mutually adjoint w.r.t. the pairings `B` and `B'`. -/
+def IsAdjointPair (f : M → M') (g : N' → N) :=
   ∀ x y, B' (f x) y = B x (g y)
 
-variable {B B' f g}
+variable {B B'}
 
-theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp f = B.compl₂ g := by
-  constructor <;> intro h
-  · ext x y
-    rw [comp_apply, compl₂_apply]
-    exact h x y
-  · intro _ _
-    rw [← compl₂_apply, ← comp_apply, h]
+theorem isAdjointPair_zero : IsAdjointPair B B' (0 : M → M') (0 : N' → N) := fun _ _ ↦ by
+  simp only [Pi.zero_apply, map_zero, LinearMap.zero_apply]
 
-theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by
-  simp only [Pi.zero_apply, map_zero, zero_apply]
-
-theorem isAdjointPair_id : IsAdjointPair B B (_root_.id : M → M) (_root_.id : M → M) :=
-  fun _ _ ↦ rfl
-
-theorem isAdjointPair_one : IsAdjointPair B B (1 : Module.End R M) (1 : Module.End R M) :=
-  isAdjointPair_id
-
-theorem IsAdjointPair.add {f f' : M → M₁} {g g' : M₁ → M} (h : IsAdjointPair B B' f g)
-    (h' : IsAdjointPair B B' f' g') :
+theorem IsAdjointPair.add {f f' : M → M'} {g g' : N' → N}
+    (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
     IsAdjointPair B B' (f + f') (g + g') := fun x _ ↦ by
   rw [Pi.add_apply, Pi.add_apply, B'.map_add₂, (B x).map_add, h, h']
 
-theorem IsAdjointPair.comp {f : M → M₁} {g : M₁ → M} {f' : M₁ → M₂} {g' : M₂ → M₁}
+theorem IsAdjointPair.comp {f : M → M'} {g : N' → N} {f' : M' → M''} {g' : N'' → N'}
     (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B' B'' f' g') :
     IsAdjointPair B B'' (f' ∘ f) (g ∘ g') := fun _ _ ↦ by
   rw [Function.comp_def, Function.comp_def, h', h]
 
-theorem IsAdjointPair.mul {f g f' g' : Module.End R M} (h : IsAdjointPair B B f g)
-    (h' : IsAdjointPair B B f' g') : IsAdjointPair B B (f * f') (g' * g) :=
-  h'.comp h
+section
 
-end AddCommMonoid
+variable {P : Type*}
+variable [AddCommMonoid P] [Module T₁ P] [Module T₂ P] [SMulCommClass T₂ T₁ P]
+variable {σ₁ : R₁ →+* T₁} {σ₂ : S₁ →+* T₂}
+variable {ρ₁ : R₂ →+* T₁} {ρ₂ : S₂ →+* T₂}
+
+local instance : SMulCommClass T₁ T₂ P := SMulCommClass.symm T₂ T₁ P
+
+variable {B : M →ₛₗ[σ₁] N →ₛₗ[σ₂] P} {B' : M' →ₛₗ[ρ₁] N' →ₛₗ[ρ₂] P}
+
+theorem isAdjointPair_iff_comp_eq_compl₂
+    {α : R₁ →+* R₂} {β : S₂ →+* S₁}
+    [RingHomCompTriple α ρ₁ σ₁] [RingHomCompTriple β σ₂ ρ₂]
+    {f : M →ₛₗ[α] M'} {g : N' →ₛₗ[β] N} :
+    IsAdjointPair B B' f g ↔ B'.comp f = B.compl₂ g := by
+  constructor <;> intro h
+  · ext x y
+    rw [LinearMap.comp_apply, LinearMap.compl₂_apply]
+    exact h x y
+  · intro _ _
+    rw [← LinearMap.compl₂_apply, ← LinearMap.comp_apply, h]
+
+theorem isAdjointPair_id : IsAdjointPair B B (_root_.id : M → M) (_root_.id : N → N) :=
+  fun _ _ ↦ rfl
+
+theorem isAdjointPair_one :
+    IsAdjointPair B B (1 : Module.End R₁ M) (1 : Module.End S₁ N) :=
+  isAdjointPair_id
+
+theorem IsAdjointPair.mul {f f' : Module.End R₁ M} {g g' : Module.End S₁ N}
+    (h : IsAdjointPair B B f g) (h' : IsAdjointPair B B f' g') :
+    IsAdjointPair B B (f * f') (g' * g) := h'.comp h
+
+end
 
 section AddCommGroup
 
-variable [CommRing R]
-variable [AddCommGroup M] [Module R M]
-variable [AddCommGroup M₁] [Module R M₁]
-variable [AddCommGroup M₂] [Module R M₂]
-variable {B : M →ₗ[R] M →ₗ[R] M₂} {B' : M₁ →ₗ[R] M₁ →ₗ[R] M₂}
-variable {f f' : M → M₁} {g g' : M₁ → M}
+variable {M' N P : Type*}
+variable [AddCommGroup N] [Module S₁ N]
+variable [AddCommGroup M'] [Module R₂ M']
+variable [AddCommGroup P]
+variable [Module T₁ P] [Module T₂ P] [Module T₃ P] [Module T₄ P]
+variable [SMulCommClass T₂ T₁ P] [SMulCommClass T₄ T₃ P]
+
+local instance : SMulCommClass T₁ T₂ P := SMulCommClass.symm T₂ T₁ P
+local instance : SMulCommClass T₃ T₄ P := SMulCommClass.symm T₄ T₃ P
+
+variable {B : M →ₛₗ[σ₁] N →ₛₗ[σ₂] P} {B' : M' →ₛₗ[ρ₁] N' →ₛₗ[ρ₂] P}
+variable {f f' : M → M'} {g g' : N' → N}
 
 theorem IsAdjointPair.sub (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
     IsAdjointPair B B' (f - f') (g - g') := fun x _ ↦ by
   rw [Pi.sub_apply, Pi.sub_apply, B'.map_sub₂, (B x).map_sub, h, h']
 
-theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B' f g) :
-    IsAdjointPair B B' (c • f) (c • g) := fun _ _ ↦ by
-  simp [h _]
-
 end AddCommGroup
+
+section
+
+variable {R T : Type*} [Semiring R] [Semiring T]
+variable [Module R M] [Module R M']
+variable [Module R N] [Module R N']
+variable [Module T P] [SMulCommClass T T P] {ρ : R →+* T}
+
+variable {B : M →ₛₗ[ρ] N →ₛₗ[ρ] P} {B' : M' →ₛₗ[ρ] N' →ₛₗ[ρ] P}
+
+theorem IsAdjointPair.smul {f : M → M'} {g : N' → N} (c : R)
+    (h : IsAdjointPair B B' f g) :
+    IsAdjointPair B B' (c • f) (c • g) := fun x y ↦ by
+  rw [Pi.smul_apply, Pi.smul_apply, map_smulₛₗ B', LinearMap.smul_apply,
+    map_smulₛₗ (B x), h x y]
+
+end
+
+end AddCommMonoid
 
 section OrthogonalMap
 
