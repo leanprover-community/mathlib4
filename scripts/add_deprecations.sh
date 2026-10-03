@@ -16,6 +16,28 @@ information to insert deprecated aliases as needed.
 Most other differences may confuse the script, although there is some slack.
 Please, do not try to push the boundaries of the script, since it is quite simple-minded!
 
+** `to_additive` **
+When the renamed declaration sits under `@[to_additive]`, the script also emits an additive
+deprecation alias.  The additive deprecation comes first; the multiplicative deprecation is
+tagged `to_additive existing` so the additive companion is rederived by the `to_additive`
+machinery rather than left to drift.  For example, renaming `foo_mul` to `bar_mul` produces
+
+```
+@[deprecated (since := "...")]
+alias foo_add := bar_add
+
+@[to_additive existing, deprecated (since := "...")]
+alias foo_mul := bar_mul
+```
+
+The additive name is computed by a small set of substitutions (`mul`/`add`, `prod`/`sum`,
+`one`/`zero`, `inv`/`neg`, `div`/`sub`).  The script deliberately does not try to rename
+typeclass prefixes such as `Monoid`, `Group`, or `Semigroup`; if such tokens remain, the
+additive alias is skipped and should be handled by hand.
+
+This is a stop-gap text-based heuristic; a Lean-aware diff would be a stronger long-term
+solution.
+
 BASH_MODULE_DOC
 
 if [ -z "${1}" ]
@@ -44,15 +66,55 @@ identRegex=[a-zA-Z_\u3b1-\u3ba\u3bc-\u3c9\u391-\u39f\u3a1-\u3a2\u3a4-\u3a9\u3ca-
 ##  The separators `||||` are later replaced by line breaks.
 ## To use a specific date, replace $(date +%Y-%m-%d) with 2024-04-17 for instance
 mkDeclAndDepr () {
-  git diff --unified=0 "${commit}" "${1}" |
+  # `--unified=3` so that the `awk` block can spot `@[to_additive]` attached to
+  # the renamed declaration via diff context; the rest of the script remains
+  # text-based.
+  git diff --unified=3 "${commit}" "${1}" |
     awk -v regex="${begs}" -v idRegex="${identRegex}" -v date="$(date +%Y-%m-%d)" -v fil="${1}" '
     # with `perr` we print to stderr a summary of the deprecations
     function perr(msg) { print msg | "cat >&2"; close("cat >&2") }
-    function depr(ol,ne) {
+    # `toAdditiveName` applies the most common `to_additive` substitutions
+    # to a declaration name.  Intentionally restricted to declaration-name
+    # tokens (mul/add, prod/sum, one/zero, inv/neg, div/sub) — we deliberately
+    # do not rename typeclass prefixes (Monoid, Group, Semigroup, ...) because
+    # ordered substitution there is fragile (e.g. `CommMonoid` and `Monoid`
+    # collide).  When the conservative substitution leaves a residual
+    # typeclass token in the name, `nameLooksRisky` will flag the result and
+    # the additive alias is skipped — those renames must be deprecated by hand.
+    function toAdditiveName(name,    out) {
+      out = name
+      gsub(/mul/, "add", out)
+      gsub(/Mul/, "Add", out)
+      gsub(/prod/, "sum", out)
+      gsub(/Prod/, "Sum", out)
+      gsub(/one/, "zero", out)
+      gsub(/One/, "Zero", out)
+      gsub(/inv/, "neg", out)
+      gsub(/Inv/, "Neg", out)
+      gsub(/div/, "sub", out)
+      gsub(/Div/, "Sub", out)
+      return out
+    }
+    # `nameRiskyAt` returns 1 when `token` appears in `name` without being
+    # immediately preceded by `Add` — i.e. when the conservative substitution
+    # almost certainly missed a typeclass rename and the result is unsafe.
+    function nameRiskyAt(name, token,    pos, prefix) {
+      pos = index(name, token)
+      if (pos == 0) return 0
+      if (pos <= 3) return 1
+      prefix = substr(name, pos - 3, 3)
+      return (prefix == "Add") ? 0 : 1
+    }
+    function nameLooksRisky(name) {
+      return nameRiskyAt(name, "Monoid") || \
+             nameRiskyAt(name, "Group") || \
+             nameRiskyAt(name, "Semigroup")
+    }
+    function depr(ol,ne,attrPrefix) {
       aliasLine=sprintf("alias %s :=||||  %s", ol, ne)
       # if the `alias` line contains less than 100 characters long, we leave it on a single line
       if(length(aliasLine) <= 105) { sub(/\|\|\|\| /, "", aliasLine) }
-      line=sprintf("@[deprecated (since := \"%s\")]||||%s", date, aliasLine)
+      line=sprintf("@[%sdeprecated (since := \"%s\")]||||%s", attrPrefix, date, aliasLine)
       # if the `deprecated` and `alias` lines together contain less than 100 characters, we leave them on a single line
       if(length(line) <= 103) { sub(/\|\|\|\|/, " ", line) }
       return line
@@ -65,6 +127,19 @@ mkDeclAndDepr () {
       plusRegex="^\\+[^+-]*" regexIdent
       minusRegex="^-[^+-]*" regexIdent
       regex="^"regex"$"
+      toAdditivePending=0
+    }
+    # Reset the `to_additive` flag at hunk boundaries so it cannot leak between
+    # unrelated renames in the same file.
+    /^@@/ { toAdditivePending=0 }
+    # Pick up `@[to_additive]` (or `@[..., to_additive, ...]`) appearing in a
+    # diff context line near a renamed declaration.  We only react to context
+    # lines (leading space) — when the `@[to_additive]` line is itself a `+`/`-`
+    # the additive linkage is being added or removed, in which case generating
+    # an additive deprecation alias would be wrong.
+    /^ / {
+      if ($0 ~ /@\[[^]]*to_additive[^a-zA-Z0-9_]/ ||
+          $0 ~ /@\[[^]]*to_additive$/) { toAdditivePending=1 }
     }
     ($0 ~ minusRegex) {
       for(i=1; i<=NF; i++) {
@@ -82,19 +157,53 @@ mkDeclAndDepr () {
         if (strip ~ regex) {
           sub(/^\+/, "", $i)
           if (!(old == $(i+1))) {
+            new=$(i+1)
+            # When `@[to_additive]` was in scope, emit the additive alias FIRST
+            # and tag the multiplicative alias with `to_additive existing` so the
+            # additive deprecation is rederived through the `to_additive`
+            # machinery — see Snir Broshi'\''s suggestion on issue #38550.
+            # Skip the additive companion if our conservative substitution
+            # cannot produce a different name on both sides; otherwise we would
+            # generate `alias x := x`, which is bogus.
+            emitAdditive=0
+            if (toAdditivePending) {
+              oldAdd=toAdditiveName(old)
+              newAdd=toAdditiveName(new)
+              # Emit only when the substitution actually changed both names AND
+              # the result is free of unhandled typeclass tokens.  Otherwise
+              # leave a TODO to the reviewer rather than ship a wrong alias.
+              if ((oldAdd != old) && (newAdd != new) &&
+                  !nameLooksRisky(oldAdd) && !nameLooksRisky(newAdd)) {
+                emitAdditive=1
+              }
+            }
+            if (emitAdditive) {
+              addAlias=depr(oldAdd, newAdd, "")
+              mulAlias=depr(old, new, "to_additive existing, ")
+              # `||||||||` becomes a blank line after the final `sed` step,
+              # separating the additive and multiplicative alias blocks.
+              deprText=addAlias "||||||||" mulAlias
+              report[reps]=sprintf("%s\n", addAlias)
+              reps++
+              report[reps]=sprintf("%s\n", mulAlias)
+              reps++
+            } else {
+              deprText=depr(old, new, "")
+              report[reps]=sprintf("%s\n", deprText)
+              reps++
+            }
             # print the line that passes on to `addDeprecations`
-            printf("%s %s ,%s@@@", $i, $(i+1), depr(old, $(i+1)))
-            # accumulate the summary of deprecations
-            report[reps]=sprintf("%s\n", depr(old, $(i+1)))
-            reps++
+            printf("%s %s ,%s@@@", $i, new, deprText)
             # reset the "old name counter", since the deprecation happened
             old=""
+            toAdditivePending=0
             break
           } else {
             # We found a keyword corresponding to a declaration, but the following word was not
             # different from the line prior to the change.  Hence, we do not need to deprecate.
             # reset the "old name counter", since the deprecation should not happen
             old=""
+            toAdditivePending=0
             break
           }
         }
@@ -117,9 +226,11 @@ addDeprecations () {
     split(data, pairs, "@@@")  ## we setup the data:
     for(i in pairs) {
       if (pairs[i] ~ ",") {
-        split(pairs[i], declDepr, ",")
-        lines[i]=declDepr[1]   ## `lines` contains `theorem/lemma name`s
-        deprs[i]=declDepr[2]   ## `deprs` contains the deprecation statements
+        ## split on the FIRST comma only — the deprecation text may itself
+        ## contain commas (e.g. `@[to_additive existing, deprecated ...]`).
+        commaIdx = index(pairs[i], ",")
+        lines[i] = substr(pairs[i], 1, commaIdx - 1)  ## `lines` contains `theorem/lemma name`s
+        deprs[i] = substr(pairs[i], commaIdx + 1)     ## `deprs` contains the deprecation statements
       }
     }
     currDep=""
