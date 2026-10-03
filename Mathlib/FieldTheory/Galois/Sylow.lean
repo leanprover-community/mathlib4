@@ -30,8 +30,7 @@ theorem exists_intermediateField_finrank_eq_pow_prime {p n : ℕ} (hp : p.Prime)
   have := Fact.mk hp
   rw [← IsGalois.card_aut_eq_finrank K L] at hn
   rcases Sylow.exists_subgroup_card_pow_prime p hn with ⟨H, hH⟩
-  exact ⟨IntermediateField.fixedField H,
-        by simpa [IntermediateField.finrank_fixedField_eq_card] using hH⟩
+  exact ⟨IntermediateField.fixedField H, by rwa [IntermediateField.finrank_fixedField_eq_card]⟩
 
 theorem exists_intermediateField_finrank_eq_pow_prime_mul {p n a : ℕ} (hp : p.Prime)
     (hn : Module.finrank K L = p ^ n * a) {m : ℕ} (hm : m ≤ n) :
