@@ -65,6 +65,8 @@ public register_option linter.oldObtain : Bool := {
   descr := "enable the `oldObtain` linter"
 }
 
+-- `(priority := high)` ensures we avoid producing choice nodes, and thereby avoid unexpected
+-- behavior arising from choice node elaboration
 @[tactic_alt obtain]
 syntax (name := obtain') (priority := high) "obtain" (ppSpace rcasesPatMed)? (" : " term)? : tactic
 
