@@ -52,8 +52,11 @@ variable (p : ℕ) (G : Type*) [Group G]
 
 /-- A Sylow `p`-subgroup is a maximal `p`-subgroup. -/
 structure Sylow extends Subgroup G where
-  isPGroup' : IsPGroup p toSubgroup
-  is_maximal' : ∀ {Q : Subgroup G}, IsPGroup p Q → toSubgroup ≤ Q → Q = toSubgroup
+  isPGroup : IsPGroup p toSubgroup
+  eq_of_isPGroup_of_ge {H : Subgroup G} : IsPGroup p H → toSubgroup ≤ H → H = toSubgroup
+
+@[deprecated (since := "2026-10-03")] alias Sylow.isPGroup' := Sylow.isPGroup
+@[deprecated (since := "2026-10-03")] alias Sylow.is_maximal' := Sylow.eq_of_isPGroup_of_ge
 
 variable {p} {G}
 
@@ -86,8 +89,8 @@ protected theorem coe_coe (P : Sylow p G) : (P : Subgroup G) = (P : Set G) :=
 def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
     (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) : Sylow p G :=
   { P with
-    isPGroup' := hP1
-    is_maximal' := by
+    isPGroup := hP1
+    eq_of_isPGroup_of_ge := by
       intro Q hQ hPQ
       have : P.FiniteIndex := ⟨fun h ↦ hP2 (h ▸ (dvd_zero p))⟩
       obtain ⟨k, hk⟩ := (hQ.to_quotient (P.normalCore.subgroupOf Q)).exists_card_eq
@@ -106,7 +109,7 @@ def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
 
 theorem _root_.IsPGroup.le_sylow_of_normal {N : Subgroup G} [N.Normal] (h : IsPGroup p N)
     (H : Sylow p G) : N ≤ H :=
-  sup_eq_right.mp <| H.is_maximal' (h.to_sup_of_normal_left H.isPGroup') le_sup_right
+  sup_eq_right.mp <| H.eq_of_isPGroup_of_ge (h.to_sup_of_normal_left H.isPGroup) le_sup_right
 
 /-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
 where `n` is the multiplicity of `p` in the group order. -/
@@ -122,20 +125,22 @@ theorem coe_ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
   rfl
 
 theorem eq_top_of_zero (H : Sylow 0 G) : (H : Subgroup G) = ⊤ :=
-  (H.is_maximal' (.zero _) le_top).symm
+  (H.eq_of_isPGroup_of_ge (.zero _) le_top).symm
 
 theorem eq_bot_of_one (H : Sylow 1 G) : (H : Subgroup G) = ⊥ :=
-  have := isPGroup_one_iff_subsingleton.mp H.isPGroup'
+  have := isPGroup_one_iff_subsingleton.mp H.isPGroup
   eq_bot_of_subsingleton _
 
 /-- The type of Sylow `p`-subgroups depends only on the prime factors of `p`. -/
 def equivProdPrimeFactors (h : p ≠ 0) : Sylow p G ≃ Sylow (p.primeFactors.prod id) G where
   toFun H := { H with
-    isPGroup' := isPGroup_iff_isPGroup_prod_primeFactors h |>.mp H.isPGroup',
-    is_maximal' hQ := H.is_maximal' <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr hQ }
+    isPGroup := isPGroup_iff_isPGroup_prod_primeFactors h |>.mp H.isPGroup,
+    eq_of_isPGroup_of_ge hQ :=
+      H.eq_of_isPGroup_of_ge <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr hQ }
   invFun H := { H with
-    isPGroup' := isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr H.isPGroup',
-    is_maximal' hQ := H.is_maximal' <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mp hQ }
+    isPGroup := isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr H.isPGroup,
+    eq_of_isPGroup_of_ge hQ :=
+      H.eq_of_isPGroup_of_ge <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mp hQ }
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -156,8 +161,8 @@ variable {K : Type*} [Group K] (ϕ : K →* G) {N : Subgroup G}
 /-- The preimage of a Sylow subgroup under a p-group-kernel homomorphism is a Sylow subgroup. -/
 def comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : P ≤ ϕ.range) : Sylow p K :=
   { P.1.comap ϕ with
-    isPGroup' := P.2.comap_of_ker_isPGroup ϕ hϕ
-    is_maximal' := fun {Q} hQ hle => by
+    isPGroup := P.2.comap_of_ker_isPGroup ϕ hϕ
+    eq_of_isPGroup_of_ge := fun {Q} hQ hle => by
       show Q = P.1.comap ϕ
       rw [← P.3 (hQ.map ϕ) (le_trans (ge_of_eq (map_comap_eq_self h)) (map_mono hle))]
       exact (comap_map_eq_self ((P.1.ker_le_comap ϕ).trans hle)).symm }
@@ -234,7 +239,7 @@ theorem exists_comap_subtype_eq {H : Subgroup G} (P : Sylow p H) :
 theorem iSup_of_normal {ι : Type*} (H : ι → Subgroup G) [∀ i, (H i).Normal]
     (h : ∀ i, IsPGroup p (H i)) : IsPGroup p (⨆ i, H i : Subgroup G) :=
   have H' := Classical.arbitrary <| Sylow p G
-  H'.isPGroup'.to_le <| iSup_le (h · |>.le_sylow_of_normal H')
+  H'.isPGroup.to_le <| iSup_le (h · |>.le_sylow_of_normal H')
 
 theorem biSup_of_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G) (h : ∀ i ∈ s, IsPGroup p (H i))
     (hn : ∀ i ∈ s, (H i).Normal) : IsPGroup p (⨆ i ∈ s, H i : Subgroup G) := by
@@ -269,7 +274,7 @@ instance (H : Subgroup G) [Finite (Sylow p G)] : Finite (Sylow p H) :=
 theorem finite_of_finiteIndex (P : Sylow p G) [P.FiniteIndex] : Finite (Sylow p G) := by
   apply finite_of_ker_is_pGroup (f := QuotientGroup.mk' P.normalCore)
   rw [QuotientGroup.ker_mk']
-  exact P.isPGroup'.to_le P.normalCore_le
+  exact P.isPGroup.to_le P.normalCore_le
 
 open scoped Pointwise
 
@@ -500,8 +505,8 @@ variable [Finite G] {G' : Type*} [Group G'] {f : G →* G'} (hf : Function.Surje
 /-- Surjective group homomorphisms map Sylow subgroups to Sylow subgroups. -/
 def mapSurjective [Fact p.Prime] (P : Sylow p G) : Sylow p G' :=
   { P.1.map f with
-    isPGroup' := P.2.map f
-    is_maximal' := fun hQ hPQ ↦ ((P.2.map f).toSylow
+    isPGroup := P.2.map f
+    eq_of_isPGroup_of_ge := fun hQ hPQ ↦ ((P.2.map f).toSylow
       (fun h ↦ P.not_dvd_index (h.trans (P.index_map_dvd hf)))).3 hQ hPQ }
 
 @[simp] theorem coe_mapSurjective [Fact p.Prime] (P : Sylow p G) : P.mapSurjective hf = P.map f :=
@@ -832,7 +837,7 @@ theorem ne_bot_of_dvd_card [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p
 where `n` is the multiplicity of `p` in the group order. -/
 theorem card_eq_multiplicity [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G) :
     Nat.card P = p ^ Nat.factorization (Nat.card G) p := by
-  obtain ⟨n, heq : Nat.card P = _⟩ := IsPGroup.iff_card.mp P.isPGroup'
+  obtain ⟨n, heq : Nat.card P = _⟩ := IsPGroup.iff_card.mp P.isPGroup
   refine Nat.dvd_antisymm ?_ (P.pow_dvd_card_of_pow_dvd_card (Nat.ordProj_dvd _ p))
   rw [heq, ← hp.out.pow_dvd_iff_dvd_ordProj (show Nat.card G ≠ 0 from Nat.card_pos.ne'), ← heq]
   exact P.1.card_subgroup_dvd_card
@@ -923,7 +928,7 @@ noncomputable def directProductOfNormal [Finite G]
     have hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
     have hne' : p₁ ≠ p₂ := by simpa using hne
     apply Subgroup.commute_of_normal_of_disjoint _ _ (hn (P p₁)) (hn (P p₂))
-    apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
+    apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup (P p₂).isPGroup
   refine MulEquiv.trans (N := ∀ p : ps, P p) ?_ ?_
   -- There is only one Sylow subgroup for each p, so the inner product is trivial
   · -- here we need to help the elaborator with an explicit instantiation
@@ -942,7 +947,7 @@ noncomputable def directProductOfNormal [Finite G]
     have hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
     have hne' : p₁ ≠ p₂ := by simpa using hne
     simp only [← Nat.card_eq_fintype_card]
-    apply IsPGroup.coprime_card_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
+    apply IsPGroup.coprime_card_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup (P p₂).isPGroup
   · simp only [← Nat.card_eq_fintype_card]
     calc
       Nat.card (∀ p : ps, P p) = ∏ p : ps, Nat.card (P p) := Nat.card_pi
