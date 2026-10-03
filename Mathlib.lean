@@ -3628,6 +3628,7 @@ public import Mathlib.CategoryTheory.Thin
 public import Mathlib.CategoryTheory.Topos.Sheaf
 public import Mathlib.CategoryTheory.Triangulated.Adjunction
 public import Mathlib.CategoryTheory.Triangulated.Basic
+public import Mathlib.CategoryTheory.Triangulated.Bicategory
 public import Mathlib.CategoryTheory.Triangulated.Functor
 public import Mathlib.CategoryTheory.Triangulated.Generators
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
