@@ -33,8 +33,8 @@ For an intermediate ring `R` of `B`, we introduce two characteristic predicates:
 In the classical setting `L/K` is a Galois extension of fields with `G = Gal(L/K)`, and `A`, `B` are
 subrings of `K`, `L` with `K` the fraction field of `A`, `L` that of `B`, and `B` the integral
 closure of `A` in `L`. The decomposition (resp. inertia) *field* is the subfield of `L` fixed by the
-decomposition (resp. inertia) group of `P`, and the associated ring is its integral closure over
-`A`. Decomposition and inertia rings arising this way are provided by
+decomposition (resp. inertia) group of `P`, and the associated ring is the integral closure of `A`
+in this field. Decomposition and inertia rings arising this way are provided by
 `Ideal.IsDecompositionRing.of_isFractionRing` and `Ideal.IsInertiaRing.of_isFractionRing`.
 
 The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
@@ -79,25 +79,25 @@ instance [IsGaloisGroup (inertia G P) R B] : IsInertiaRing G P R where
 variable (L : Type*) [Field L] [Algebra B L] [IsFractionRing B L]
   [MulSemiringAction G L] [SMulDistribClass G B L]
 
-/-- If `L` is Galois over the field `D` with the decomposition group of `P` (so `D` is the
-decomposition field of `P`), and `R` is an integrally closed subring of `D` with fraction field `D`
-such that `B` is integral over `R`, then `R` is a decomposition ring of `P`. -/
+/-- If `L` is Galois over the field `D` with the decomposition group of `P` as a Galois group (so
+`D` is the decomposition field of `P`), and `R` is an integrally closed subring of `D` with fraction
+field `D` such that `B` is integral over `R`, then `R` is a decomposition ring of `P`. -/
 theorem IsDecompositionRing.of_isFractionRing (D : Type*) [Field D]
     [Algebra R D] [Algebra R L] [Algebra D L] [IsScalarTower R D L] [IsScalarTower R B L]
     [IsFractionRing R D] [IsIntegrallyClosed R] [Algebra.IsIntegral R B]
     [IsGaloisGroup (stabilizer G P) D L] :
-    IsDecompositionRing G P R :=
-  { toIsGaloisGroup := .of_isFractionRing (stabilizer G P) R B D L }
+    IsDecompositionRing G P R where
+  toIsGaloisGroup := .of_isFractionRing (stabilizer G P) R B D L
 
-/-- If `L` is Galois over the field `E` with the inertia group of `P` (so `E` is the inertia field
-of `P`), and `R` is an integrally closed subring of `E` with fraction field `E` such that `B` is
-integral over `R`, then `R` is an inertia ring of `P`. -/
+/-- If `L` is Galois over the field `E` with the inertia group of `P` as a Galois group (so `E` is
+the inertia field of `P`), and `R` is an integrally closed subring of `E` with fraction field `E`
+such that `B` is integral over `R`, then `R` is an inertia ring of `P`. -/
 theorem IsInertiaRing.of_isFractionRing (E : Type*) [Field E]
     [Algebra R E] [Algebra R L] [Algebra E L] [IsScalarTower R E L] [IsScalarTower R B L]
     [IsFractionRing R E] [IsIntegrallyClosed R] [Algebra.IsIntegral R B]
     [IsGaloisGroup (inertia G P) E L] :
-    IsInertiaRing G P R :=
-  { toIsGaloisGroup := .of_isFractionRing (inertia G P) R B E L }
+    IsInertiaRing G P R where
+  toIsGaloisGroup := .of_isFractionRing (inertia G P) R B E L
 
 end basic
 
