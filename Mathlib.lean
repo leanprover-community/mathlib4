@@ -5327,6 +5327,8 @@ public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.HadamardMatrix
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
+public import Mathlib.LinearAlgebra.Matrix.Hessenberg.Defs
+public import Mathlib.LinearAlgebra.Matrix.Hessenberg.Similarity
 public import Mathlib.LinearAlgebra.Matrix.Ideal
 public import Mathlib.LinearAlgebra.Matrix.Integer
 public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
@@ -7623,6 +7625,10 @@ public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.Have
 public import Mathlib.Tactic.HaveI
+public import Mathlib.Tactic.Hessenberg.CharPoly
+public import Mathlib.Tactic.Hessenberg.Coeffs
+public import Mathlib.Tactic.Hessenberg.Lemmas
+public import Mathlib.Tactic.Hessenberg.Recurrence
 public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
