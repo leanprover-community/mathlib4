@@ -93,7 +93,7 @@ theorem exists_isFiniteMeasure_absolutelyContinuous [SFinite μ] :
 end SFinite
 
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
-`{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = s`. -/
+`{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = Set.univ`. -/
 class SigmaFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : Nonempty (μ.FiniteSpanningSetsIn univ)
 
