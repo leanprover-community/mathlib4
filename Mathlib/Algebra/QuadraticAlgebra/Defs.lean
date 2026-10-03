@@ -6,7 +6,7 @@ Authors: Yunzhou Xie, Kenny Lau, Jiayang Hong
 module
 
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 
 /-!
@@ -20,6 +20,11 @@ and define some algebraic structures on it.
 
 * `QuadraticAlgebra R a b`:
   [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b` in `R`.
+
+## Implementation notes
+
+The canonical way of writing an element `r` of `R` in `QuadraticAlgebra R a b` is
+`QuadraticAlgebra.C r` (or `algebraMap R _ r` when `R` is a commutative ring), rather than `⟨r, 0⟩`.
 
 ## Tags
 
@@ -78,7 +83,7 @@ theorem re_C : (.C r : QuadraticAlgebra R a b).re = r := rfl
 theorem im_C : (.C r : QuadraticAlgebra R a b).im = 0 := rfl
 
 theorem C_injective : Function.Injective (.C : R → QuadraticAlgebra R a b) :=
-  fun _ _ h => congr_arg re h
+  fun _ _ h => congr(re $h)
 
 @[simp]
 theorem C_inj {x y : R} : (.C x : QuadraticAlgebra R a b) = .C y ↔ x = y :=
@@ -298,7 +303,7 @@ variable [AddCommGroupWithOne R]
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
   intCast n := .C n
   intCast_ofNat n := by norm_cast
-  intCast_negSucc n := by rw [Int.negSucc_eq, Int.cast_neg, C_neg]; norm_cast
+  intCast_negSucc n := by ext <;> simp [Int.negSucc_eq]
 
 @[simp, norm_cast]
 theorem re_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).re = n := rfl

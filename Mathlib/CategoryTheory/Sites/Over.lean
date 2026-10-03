@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
-public import Mathlib.CategoryTheory.Functor.Flat
 
 /-! # Localization
 
@@ -226,6 +225,10 @@ lemma overEquiv_functorPushforward_post {D : Type*} [Category* D] (F : C ⥤ D) 
   simp [Sieve.overEquiv, ← Sieve.functorPushforward_comp, ← Over.post_forget_eq_forget_comp]
 
 end Sieve
+
+/-- The precoverage on `Over X` for any `X : C` that is induced by a precoverage on `C`. -/
+abbrev Precoverage.over (X : C) (J : Precoverage C) : Precoverage (Over X) :=
+  J.comap (Over.forget X)
 
 variable (J : GrothendieckTopology C)
 
@@ -508,7 +511,6 @@ def Sheaf.pushforwardOverMapIso (F : Sheaf J A) {X Y : C} (f : X ⟶ Y) :
   ObjectProperty.isoMk _ (NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- For `f : X ⟶ Y`, this is the morphism from `F.over Y` to the pushforward of `F.over X`
 along `Over.pullback f` induced by `Limits.pullback.fst`. -/
 @[simps]

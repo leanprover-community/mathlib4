@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Tactic.FieldSimp.Lemmas
 
 import Mathlib.Tactic.FieldSimp
 
@@ -460,8 +460,8 @@ theorem changeGenerator_injective (a b u k : R) {a' b' : R}
     (hb : b' = u * b + 2 * k) (hu : IsRegular u) :
     Function.Injective (changeGenerator a b u k ha hb) := by
   intro z w h
-  have hy : z.im = w.im := hu.right <| by simpa using congr_arg im h
-  exact QuadraticAlgebra.ext (by simpa [hy] using congr_arg re h) hy
+  have hy : z.im = w.im := hu.right <| by simpa using congr(im $h)
+  exact QuadraticAlgebra.ext (by simpa [hy] using congr(re $h)) hy
 
 /-- `changeGenerator` along a unit `u`, as an isomorphism. -/
 @[simps! apply symm_apply]
@@ -502,8 +502,8 @@ lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra K a b} :
   · intro hz
     simp [hz]
 
-@[simps] instance : NNRatCast (QuadraticAlgebra K a b) where nnratCast q := ⟨q, 0⟩
-@[simps] instance : RatCast (QuadraticAlgebra K a b) where ratCast q := ⟨q, 0⟩
+@[simps] instance : NNRatCast (QuadraticAlgebra K a b) where nnratCast q := .C q
+@[simps] instance : RatCast (QuadraticAlgebra K a b) where ratCast q := .C q
 
 @[simps -isSimp, simps!] instance : Inv (QuadraticAlgebra K a b) where inv z := (norm z)⁻¹ • star z
 @[simps -isSimp, simps!] instance : Div (QuadraticAlgebra K a b) where div w z := w * z⁻¹
@@ -531,6 +531,12 @@ instance {a : K} [Fact (¬ IsSquare a)] : Fact (∀ r : K, r ^ 2 ≠ a + 0 * r) 
 
 -- The `b = 0` bridge makes the `Field` instance inferable from `¬ IsSquare a` alone.
 example {a : K} [Fact (¬ IsSquare a)] : Field (QuadraticAlgebra K a 0) := inferInstance
+
+-- Over `ℚ`, the algebra structure of `QuadraticAlgebra.instAlgebra` and the one coming from the
+-- `Field` structure through `DivisionRing.toRatAlgebra` are the same instance.
+example {a b : ℚ} [Fact (∀ r : ℚ, r ^ 2 ≠ a + b * r)] :
+    (DivisionRing.toRatAlgebra : Algebra ℚ (QuadraticAlgebra ℚ a b)) = instAlgebra := by
+  with_implicit rfl
 
 end field
 
