@@ -185,6 +185,10 @@ lemma measure_singleton_lt_top [SigmaFinite μ] : μ {a} < ∞ :=
   measure_lt_top_mono (singleton_subset_iff.2 <| mem_spanningSetsIndex ..)
     (measure_spanningSets_lt_top _ _)
 
+theorem _root_.Set.Finite.measure_lt_top_of_sigmaFinite [SigmaFinite μ] (hs : s.Finite) :
+    μ s < ∞ := by
+  grw [← s.biUnion_of_singleton, measure_biUnion_lt_top hs fun _ _ ↦ measure_singleton_lt_top]
+
 theorem sum_restrict_disjointed_spanningSets (μ ν : Measure α) [SigmaFinite ν] :
     sum (fun n ↦ μ.restrict (disjointed (spanningSets ν) n)) = μ := by
   rw [← restrict_iUnion (disjoint_disjointed _)
