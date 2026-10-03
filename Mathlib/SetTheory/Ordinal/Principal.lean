@@ -28,14 +28,12 @@ equivalent to the epsilon numbers given by `Ordinal.epsilon`.
   `0` and the ordinal powers of `ω`.
 * `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
   `0`, `1`, `2`, and the ordinals `ω ^ ω ^ x`.
-
-## TODO
-
-* Prove that the exponential principal ordinals are `0`, `1`, `2`, `ω`, or `ε_ x`.
+* `isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq`: The exponential principal
+  ordinals are `0`, `2`, `ω` and the fixed points of `ω ^ ·`.
 
 ## Tags
 
-additively indecomposable, multiplicatively indecomposable
+additively indecomposable, multiplicatively indecomposable, exponentially indecomposable
 -/
 
 @[expose] public section
@@ -517,6 +515,23 @@ theorem isPrincipal_opow_omega0 : IsPrincipal (· ^ ·) ω := fun a b ha hb =>
 @[deprecated (since := "2026-03-17")]
 alias principal_opow_omega0 := isPrincipal_opow_omega0
 
+theorem isPrincipal_opow_two : IsPrincipal (· ^ ·) 2 := by
+  intro a b ha hb
+  rw [lt_two_iff] at *
+  rw [← opow_one 1]
+  exact opow_le_opow ha hb zero_lt_one
+
+theorem isPrincipal_opow_of_omega0_opow_eq (ho : ω ^ o = o) :
+    IsPrincipal (· ^ ·) o := by
+  intro o₁ o₂ ho₁ ho₂
+  have hm : IsPrincipal (· * ·) o := by
+    simpa only [ho] using isPrincipal_mul_omega0_opow_opow o
+  calc
+    _ ≤ (ω ^ o₁) ^ o₂ := opow_le_opow_left o₂ (right_le_opow o₁ one_lt_omega0)
+    _ = ω ^ (o₁ * o₂) := (opow_mul ω o₁ o₂).symm
+    _ < ω ^ o := (opow_lt_opow_iff_right one_lt_omega0).mpr (hm ho₁ ho₂)
+    _ = _ := ho
+
 theorem opow_omega0 (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
   ((opow_le_of_isSuccLimit (one_le_iff_ne_zero.1 <| le_of_lt a1) isSuccLimit_omega0).2 fun _ hb =>
       (isPrincipal_opow_omega0 h hb).le).antisymm
@@ -524,5 +539,34 @@ theorem opow_omega0 (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
 
 theorem natCast_opow_omega0 {n : ℕ} (hn : 1 < n) : n ^ ω = ω :=
   opow_omega0 (mod_cast hn) (natCast_lt_omega0 n)
+
+theorem isPrincipal_mul_of_isPrincipal_opow (ho : IsPrincipal (· ^ ·) o) :
+    IsPrincipal (· * ·) o := by
+  obtain h | h := le_or_gt o 2
+  · exact isPrincipal_mul_of_le_two h
+  intro o₁ o₂ ho₁ ho₂
+  calc
+    _ ≤ (max o₁ o₂) * (max o₁ o₂) := mul_le_mul' le_sup_left le_sup_right
+    _ = (max o₁ o₂) ^ (2 : Ordinal) := by rw [← one_add_one_eq_two, opow_add, opow_one]
+    _ < _ := ho (max_lt ho₁ ho₂) h
+
+/-- The main characterization theorem for exponential principal ordinals. -/
+theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq :
+    IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ ω ^ o = o := by
+  constructor
+  · intro ho
+    obtain h₁ | h₁ := le_or_gt o 2
+    · obtain _ | _ | _ | _ := le_two_iff.mp h₁ <;> simp_all
+    have hl := isSuccLimit_of_isPrincipal_mul h₁ (isPrincipal_mul_of_isPrincipal_opow ho)
+    obtain h₂ | h₂ := le_or_gt o ω
+    · have := omega0_le_of_isSuccLimit hl
+      exact .inr <| .inr <| .inl (le_antisymm h₂ this)
+    exact .inr <| .inr <| .inr <| op_eq_self_of_isPrincipal
+      h₂ (isNormal_opow one_lt_omega0) ho hl
+  · rintro (rfl | rfl | rfl | h)
+    · exact isPrincipal_zero
+    · exact isPrincipal_opow_two
+    · exact isPrincipal_opow_omega0
+    · exact isPrincipal_opow_of_omega0_opow_eq h
 
 end Ordinal

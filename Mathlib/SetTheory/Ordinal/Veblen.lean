@@ -580,6 +580,18 @@ theorem natCast_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
 theorem epsilon_pos (o : Ordinal) : 0 < ε_ o :=
   veblen_pos
 
+theorem isPrincipal_opow_epsilon (o : Ordinal) : IsPrincipal (· ^ ·) (ε_ o) :=
+  isPrincipal_opow_of_omega0_opow_eq (omega0_opow_epsilon o)
+
+theorem omega0_opow_eq_self_iff {o : Ordinal} : ω ^ o = o ↔ o ∈ Set.range epsilon := by
+  simpa using (mem_range_veblen (o := 1) one_ne_zero).symm
+
+/-- The exponential principal ordinals are `0`, `2`, `ω`, and the epsilon numbers. -/
+theorem isPrincipal_opow_iff {o : Ordinal} :
+    IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ o ∈ Set.range epsilon := by
+  rw [← omega0_opow_eq_self_iff]
+  exact isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq
+
 theorem omega0_le_veblen_of_left_ne_zero
     {a : Ordinal} (b : Ordinal) (ha : a ≠ 0) : ω ≤ veblen a b := by
   grw [omega0_lt_epsilon b |>.le, epsilon_le_veblen_of_ne_zero ha]
