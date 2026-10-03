@@ -491,7 +491,7 @@ of commutative rings. Denote `φψ` the composition of `φ` and `ψ`.
 Assume we have a presheaf of modules `M` over `R` and a universal derivation
 `M.Derivation φ`. Given a `φψ`-derivation of a presheaf of modules
 `P` over `T`, this is the morphism from `M` to the pushforward of `P`
-by `ψ` which correspond to the pushforward of this derivation.
+by `ψ` which corresponds to the pushforward of this derivation.
 -/
 noncomputable def pushforwardMap : M ⟶ (pushforwardψ).obj P :=
   hdφ.desc (Derivation.pushforward fac dφψ)
