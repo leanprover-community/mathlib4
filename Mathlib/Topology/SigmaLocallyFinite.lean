@@ -1,0 +1,139 @@
+/-
+Copyright (c) 2026 Ben Eltschig. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ben Eltschig
+-/
+module
+
+public import Mathlib.Order.Disjointed
+public import Mathlib.Topology.LocallyFinite
+
+import Mathlib.Basic.Finite.Sigma
+
+/-! # `σ`-locally finite families of sets
+In this file we define σ-locally finite families of sets, i.e. families of sets that consist of
+countably many locally finite families.
+
+## References
+
+* [Engelking, *General Topology*][engelking1989]
+-/
+
+public section
+
+universe u
+
+open Set Function
+
+variable {ι X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : ι → Set X}
+
+/-- A family of sets is *σ-locally finite* if it can be split into countably many locally finite
+families. -/
+@[expose]
+def SigmaLocallyFinite (s : ι → Set X) :=
+  ∃ κ : ℕ → Set ι, ⋃ n, κ n = univ ∧ ∀ n, LocallyFinite (fun k : κ n ↦ s k)
+
+lemma sigmaLocallyFinite_iff_exists_fun : SigmaLocallyFinite s ↔
+    ∃ κ : ℕ → Set ι, ⋃ n, κ n = univ ∧ ∀ n, LocallyFinite (fun k : κ n ↦ s k) :=
+  Iff.rfl
+
+lemma sigmaLocallyFinite_iff_exists_equiv {ι : Type u} {s : ι → Set X} : SigmaLocallyFinite s ↔
+    ∃ κ : ℕ → Type u, ∃ e : ι ≃ Σ n, κ n, ∀ n, LocallyFinite (fun k ↦ s (e.symm ⟨n, k⟩)) := by
+  refine ⟨fun h ↦ ?_, fun ⟨κ, e, he⟩ ↦ ?_⟩
+  · have ⟨f, hf, hf', hf''⟩ : ∃ κ : ℕ → Set ι,
+        ⋃ n, κ n = univ ∧ univ.PairwiseDisjoint κ ∧ ∀ n, LocallyFinite (fun k : κ n ↦ s k) := by
+      obtain ⟨f, hf⟩ := h
+      refine ⟨disjointed f, ?_, ?_, fun n ↦ ?_⟩
+      · rw [iUnion_disjointed, hf.1]
+      · exact pairwise_univ.2 <| disjoint_disjointed f
+      · exact (hf.2 n).comp_injective <| inclusion_injective <| disjointed_subset f n
+    refine ⟨fun n ↦ f n, (Equiv.ofBijective (fun i ↦ i.snd) ⟨?_, fun i ↦ ?_⟩).symm, fun n ↦ ?_⟩
+    · intro i i' h
+      have := pairwiseDisjoint_iff.1 hf' (mem_univ i.fst) (mem_univ i'.fst) ⟨i.snd, by grind⟩
+      ext <;> assumption
+    · have ⟨n, hi⟩ := iUnion_eq_univ_iff.1 hf i
+      use ⟨n, ⟨i, hi⟩⟩
+    · simp [hf'', Equiv.ofBijective]
+  · refine ⟨fun n ↦ e ⁻¹' range (Sigma.mk n), ?_, fun n ↦ ?_⟩
+    · simp [← preimage_iUnion, iUnion_of_singleton]
+    · refine .of_comp_surjective (g := fun k ↦ ⟨e.symm ⟨n, k⟩, by simp⟩) ?_ ?_
+      · exact (surjective_codRestrict _).2 <| by grind
+      · convert he n; simp
+
+lemma LocallyFinite.sigmaLocallyFinite (hu : LocallyFinite s) : SigmaLocallyFinite s :=
+  ⟨fun _ ↦ univ, by simp [iUnion_const], fun n ↦ hu.comp_injective Subtype.val_injective⟩
+
+lemma sigmaLocallyFinite_of_countable [Countable ι] : SigmaLocallyFinite s := by
+  obtain _ | _ := isEmpty_or_nonempty ι
+  · exact ⟨fun _ ↦ ∅, by simp [univ_eq_empty_iff.2], fun n ↦ locallyFinite_of_finite _⟩
+  · have ⟨f, hf⟩ := (countable_iff_exists_surjective (α := ι)).1 ‹_›
+    exact ⟨fun n ↦ {f n}, by simp [hf.range_eq], fun n ↦ locallyFinite_of_finite _⟩
+
+lemma SigmaLocallyFinite.point_countable (hs : SigmaLocallyFinite s) (x : X) :
+    {i : ι | x ∈ s i}.Countable := by
+  obtain ⟨f, hf⟩ := hs
+  rw [← Set.inter_univ {i : ι | x ∈ s i}, ← hf.1, inter_iUnion, countable_iUnion_iff]
+  refine fun n ↦ Finite.countable <| (((hf.2 n).point_finite x).image (↑)).subset fun _ ↦ ?_
+  simp
+
+protected lemma SigmaLocallyFinite.subset (ht : SigmaLocallyFinite t) (h : ∀ i, s i ⊆ t i) :
+    SigmaLocallyFinite s := by
+  obtain ⟨f, hf⟩ := ht
+  exact ⟨f, hf.1, fun n ↦ (hf.2 n).subset fun _ ↦ h _⟩
+
+lemma SigmaLocallyFinite.comp_injOn (hs : SigmaLocallyFinite s) {κ : Type*} {f : κ → ι}
+    (hf : InjOn f {i | (s (f i)).Nonempty}) : SigmaLocallyFinite (s ∘ f) := by
+  obtain ⟨g, hg⟩ := hs
+  refine ⟨fun n ↦ f ⁻¹' g n, by simp [← preimage_iUnion, hg.1], fun n ↦ ?_⟩
+  exact (hg.2 n).comp_injOn (g := (mapsTo_preimage f _).restrict _ _ _) <| hf.restrict _
+
+lemma SigmaLocallyFinite.comp_injective (hs : SigmaLocallyFinite s) {κ : Type*} {f : κ → ι}
+    (hf : Injective f) : SigmaLocallyFinite (s ∘ f) :=
+  hs.comp_injOn hf.injOn
+
+lemma SigmaLocallyFinite.of_comp_surjective {κ : Type*} {f : κ → ι}
+    (hf : Surjective f) (hs : SigmaLocallyFinite (s ∘ f)) : SigmaLocallyFinite s := by
+  simpa only [comp_def, surjInv_eq hf] using hs.comp_injective (injective_surjInv hf)
+
+protected lemma SigmaLocallyFinite.closure (hs : SigmaLocallyFinite s) :
+    SigmaLocallyFinite (fun i ↦ closure (s i)) := by
+  obtain ⟨f, hf⟩ := hs
+  exact ⟨f, hf.1, fun n ↦ (hf.2 n).closure⟩
+
+lemma SigmaLocallyFinite.preimage_continuous (hs : SigmaLocallyFinite s)
+    {Y : Type*} [TopologicalSpace Y] {f : Y → X} (hf : Continuous f) :
+    SigmaLocallyFinite (fun i ↦ f ⁻¹' s i) := by
+  obtain ⟨g, hg⟩ := hs
+  exact ⟨g, hg.1, fun n ↦ (hg.2 n).preimage_continuous hf⟩
+
+lemma SigmaLocallyFinite.prod_right (hs : SigmaLocallyFinite s) (t : ι → Set Y) :
+    SigmaLocallyFinite fun i ↦ s i ×ˢ t i := by
+  obtain ⟨f, hf⟩ := hs
+  exact ⟨f, hf.1, fun n ↦ (hf.2 n).prod_right  _⟩
+
+lemma SigmaLocallyFinite.prod_left {t : ι → Set Y} (ht : SigmaLocallyFinite t) (s : ι → Set X) :
+    SigmaLocallyFinite fun i ↦ s i ×ˢ t i := by
+  obtain ⟨f, hf⟩ := ht
+  exact ⟨f, hf.1, fun n ↦ (hf.2 n).prod_left  _⟩
+
+@[simp]
+lemma Equiv.sigmaLocallyFinite_comp_iff {ι' : Type*} (e : ι' ≃ ι) :
+    SigmaLocallyFinite (s ∘ e) ↔ SigmaLocallyFinite s :=
+  ⟨fun hs ↦ hs.of_comp_surjective e.surjective, fun hs ↦ hs.comp_injective e.injective⟩
+
+/-- Every σ-locally finite open cover has a locally finite but not necessarily open refinement. -/
+lemma SigmaLocallyFinite.exists_locallyFinite_refinement (hs : SigmaLocallyFinite s)
+    (hs' : ∀ i, IsOpen (s i)) (hs'' : ⋃ i, s i = univ) :
+    ∃ t : ι → Set X, LocallyFinite t ∧ ⋃ i, t i = univ ∧ ∀ i, t i ⊆ s i := by
+  obtain ⟨κ, e, he⟩ := sigmaLocallyFinite_iff_exists_equiv.1 hs
+  refine ⟨fun i ↦ s i \ ⋃ n < (e i).fst, ⋃ i', s (e.symm ⟨n, i'⟩), fun x ↦ ?_, ?_, fun i ↦ by simp⟩
+  · have ⟨⟨n, k⟩, hk⟩ := e.exists_congr_left.1 <| iUnion_eq_univ_iff.1 hs'' x
+    choose u hu hu' using fun n ↦ he n x
+    refine ⟨s (e.symm ⟨n, k⟩) ∩ ⋂ m ≤ n, u m, Filter.inter_mem ((hs' _).mem_nhds hk) <|
+      (Filter.biInter_mem <| finite_Iic n).2 fun m _ ↦ hu m, ?_⟩
+    refine (((finite_Iic n).sigma (fun n _ ↦ hu' n)).preimage e.injective.injOn).subset
+      fun i ⟨x', hx'⟩ ↦ ?_
+    simp only [mem_inter_iff, mem_sdiff, mem_iUnion, mem_iInter] at hx' ⊢
+    exact ⟨by grind, x', by grind, by grind⟩
+  · rw [← e.symm.surjective.iUnion_comp, iUnion_sigma, ← iUnion_disjointed] at hs''
+    simpa [← e.symm.surjective.iUnion_comp, iUnion_sigma, disjointed_apply, iUnion_sdiff] using hs''
