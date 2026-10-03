@@ -33,7 +33,7 @@ universe v u
 namespace CategoryTheory
 
 /-- The nerve of a category -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := ComposableArrows C (Δ.unop.len)
   map f := ↾fun x ↦ x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor
@@ -70,7 +70,7 @@ lemma nerveMap_app_mk₁ {x y : C} (f : x ⟶ y) :
 end
 
 /-- The nerve of a category, as a functor `Cat ⥤ SSet` -/
-@[simps]
+@[simps, implicit_reducible]
 def nerveFunctor : Cat.{v, u} ⥤ SSet where
   obj C := nerve C
   map F := nerveMap F.toFunctor
