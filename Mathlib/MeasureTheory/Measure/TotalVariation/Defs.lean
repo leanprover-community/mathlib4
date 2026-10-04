@@ -23,15 +23,15 @@ so that it takes values in `[0, 1]`.
 
 ## Main definitions
 
-* `eTVDist μ ν`: total variation distance between two finite measures, defined as the value on the
+* `etvdist μ ν`: total variation distance between two finite measures, defined as the value on the
   whole space of the variation of `μ - ν`, in which both measures are seen as signed measures.
   This distance takes values in `ℝ≥0∞` but is always finite.
-* `tvDist μ ν`: total variation distance between two finite measures,
-  defined as `(eTVDist μ ν).toReal`.
+* `tvdist μ ν`: total variation distance between two finite measures,
+  defined as `(etvdist μ ν).toReal`.
 
 ## Main statements
 
-* `tvDist_self`, `tvDist_eq_zero_iff`, `tvDist_comm`, `tvDist_triangle`: the total variation
+* `tvdist_self`, `tvdist_eq_zero_iff`, `tvdist_comm`, `tvdist_triangle`: the total variation
   distance between finite measures is a distance.
 
 -/
@@ -48,147 +48,147 @@ variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧}
   {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 /-- Total variation distance between two finite measures, with value in `ℝ≥0∞`. -/
-noncomputable def eTVDist (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : ℝ≥0∞ :=
-  VectorMeasure.eTVDist μ.toSignedMeasure ν.toSignedMeasure
+noncomputable def etvdist (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : ℝ≥0∞ :=
+  VectorMeasure.etvdist μ.toSignedMeasure ν.toSignedMeasure
 
 /-- Total variation distance between two finite measures, with value in `ℝ`. -/
-noncomputable def tvDist (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : ℝ :=
-  (eTVDist μ ν).toReal
+noncomputable def tvdist (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : ℝ :=
+  (etvdist μ ν).toReal
 
 section ETVDist
 
-lemma eTVDist_lt_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    eTVDist μ ν < ∞ := by
-  calc eTVDist μ ν
-  _ ≤ eTVDist μ 0 + eTVDist 0 ν := VectorMeasure.eTVDist_triangle _ _ _
+lemma etvdist_lt_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    etvdist μ ν < ∞ := by
+  calc etvdist μ ν
+  _ ≤ etvdist μ 0 + etvdist 0 ν := VectorMeasure.etvdist_triangle _ _ _
   _ = μ Set.univ + ν Set.univ := by
-    simp [eTVDist]
+    simp [etvdist]
   _ < ∞ := by simp
 
 @[simp]
-lemma eTVDist_ne_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    eTVDist μ ν ≠ ∞ := (eTVDist_lt_top μ ν).ne
+lemma etvdist_ne_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    etvdist μ ν ≠ ∞ := (etvdist_lt_top μ ν).ne
 
-lemma eTVDist_eq_iSup_finPartition_enorm :
-    eTVDist μ ν =
+lemma etvdist_eq_iSup_finPartition_enorm :
+    etvdist μ ν =
       ⨆ (P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧)))),
         ∑ p ∈ P.parts, ‖μ.real p - ν.real p‖ₑ := by
-  rw [eTVDist, VectorMeasure.eTVDist_eq_iSup_finPartition_enorm]
+  rw [etvdist, VectorMeasure.etvdist_eq_iSup_finPartition_enorm]
   simp only [Measure.toSignedMeasure_apply]
   congrm ⨆ P, ∑ s ∈ _, ?_
   simp [s.2]
 
 @[simp]
-lemma eTVDist_self (μ : Measure 𝓧) [IsFiniteMeasure μ] : eTVDist μ μ = 0 := by simp [eTVDist]
+lemma etvdist_self (μ : Measure 𝓧) [IsFiniteMeasure μ] : etvdist μ μ = 0 := by simp [etvdist]
 
 @[simp]
-lemma eTVDist_eq_zero_iff (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-  eTVDist μ ν = 0 ↔ μ = ν := by simp [eTVDist]
+lemma etvdist_eq_zero_iff (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+  etvdist μ ν = 0 ↔ μ = ν := by simp [etvdist]
 
-lemma eTVDist_comm (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    eTVDist μ ν = eTVDist ν μ := VectorMeasure.eTVDist_comm _ _
+lemma etvdist_comm (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    etvdist μ ν = etvdist ν μ := VectorMeasure.etvdist_comm _ _
 
-lemma eTVDist_triangle (μ ν ξ : Measure 𝓧)
+lemma etvdist_triangle (μ ν ξ : Measure 𝓧)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ] :
-    eTVDist μ ξ ≤ eTVDist μ ν + eTVDist ν ξ := VectorMeasure.eTVDist_triangle _ _ _
+    etvdist μ ξ ≤ etvdist μ ν + etvdist ν ξ := VectorMeasure.etvdist_triangle _ _ _
 
 @[simp]
-lemma eTVDist_zero_right (μ : Measure 𝓧) [IsFiniteMeasure μ] : eTVDist μ 0 = μ Set.univ := by
-  simp [eTVDist]
+lemma etvdist_zero_right (μ : Measure 𝓧) [IsFiniteMeasure μ] : etvdist μ 0 = μ Set.univ := by
+  simp [etvdist]
 
 @[simp]
-lemma eTVDist_zero_left (ν : Measure 𝓧) [IsFiniteMeasure ν] : eTVDist 0 ν = ν Set.univ := by
-  simp [eTVDist]
+lemma etvdist_zero_left (ν : Measure 𝓧) [IsFiniteMeasure ν] : etvdist 0 ν = ν Set.univ := by
+  simp [etvdist]
 
-lemma eTVDist_restrict_add_compl {s : Set 𝓧} (hs : MeasurableSet s) :
-    eTVDist (μ.restrict s) (ν.restrict s) + eTVDist (μ.restrict sᶜ) (ν.restrict sᶜ) =
-      eTVDist μ ν := by
-  unfold eTVDist
+lemma etvdist_restrict_add_compl {s : Set 𝓧} (hs : MeasurableSet s) :
+    etvdist (μ.restrict s) (ν.restrict s) + etvdist (μ.restrict sᶜ) (ν.restrict sᶜ) =
+      etvdist μ ν := by
+  unfold etvdist
   rw [← VectorMeasure.restrict_toSignedMeasure hs,
     ← VectorMeasure.restrict_toSignedMeasure hs.compl, ← VectorMeasure.restrict_toSignedMeasure hs,
     ← VectorMeasure.restrict_toSignedMeasure hs.compl,
-    VectorMeasure.eTVDist_restrict_add_compl hs]
+    VectorMeasure.etvdist_restrict_add_compl hs]
 
-lemma eTVDist_of_ge (hμν : ν ≤ μ) : eTVDist μ ν = μ Set.univ - ν Set.univ := by
-  calc eTVDist μ ν
-  _ = eTVDist (μ - ν) 0 := by
-    simp only [eTVDist_eq_iSup_finPartition_abs, measureReal_zero, Pi.zero_apply, sub_zero]
+lemma etvdist_of_ge (hμν : ν ≤ μ) : etvdist μ ν = μ Set.univ - ν Set.univ := by
+  calc etvdist μ ν
+  _ = etvdist (μ - ν) 0 := by
+    simp only [etvdist_eq_iSup_finPartition_enorm, measureReal_zero, Pi.zero_apply, sub_zero]
     congrm ⨆ P, ∑ s ∈ _, ‖?_‖ₑ
     simp only [Measure.real]
     rw [Measure.sub_apply s.2 hμν, ENNReal.toReal_sub_of_le (hμν s) (by simp)]
   _ = (μ - ν) Set.univ := by simp
   _ = μ Set.univ - ν Set.univ := by rw [Measure.sub_apply .univ hμν]
 
-lemma eTVDist_of_le (hμν : μ ≤ ν) : eTVDist μ ν = ν Set.univ - μ Set.univ := by
-  rw [eTVDist_comm, eTVDist_of_ge hμν]
+lemma etvdist_of_le (hμν : μ ≤ ν) : etvdist μ ν = ν Set.univ - μ Set.univ := by
+  rw [etvdist_comm, etvdist_of_ge hμν]
 
-lemma eTVDist_le_add : eTVDist μ ν ≤ μ Set.univ + ν Set.univ := by
-  calc eTVDist μ ν
-  _ ≤ eTVDist μ 0 + eTVDist 0 ν := eTVDist_triangle _ _ _
+lemma etvdist_le_add : etvdist μ ν ≤ μ Set.univ + ν Set.univ := by
+  calc etvdist μ ν
+  _ ≤ etvdist μ 0 + etvdist 0 ν := etvdist_triangle _ _ _
   _ = μ Set.univ + ν Set.univ := by simp
 
 end ETVDist
 
 section TVDist
 
-@[simp] lemma tvDist_nonneg : 0 ≤ tvDist μ ν := ENNReal.toReal_nonneg
+@[simp] lemma tvdist_nonneg : 0 ≤ tvdist μ ν := ENNReal.toReal_nonneg
 
-lemma ofReal_tvDist (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    ENNReal.ofReal (tvDist μ ν) = eTVDist μ ν := by
-  rw [tvDist, ENNReal.ofReal_toReal (eTVDist_ne_top μ ν)]
+lemma ofReal_tvdist (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    ENNReal.ofReal (tvdist μ ν) = etvdist μ ν := by
+  rw [tvdist, ENNReal.ofReal_toReal (etvdist_ne_top μ ν)]
 
-lemma tvDist_eq_iSup_finPartition_abs :
-    tvDist μ ν = ⨆ (P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧)))),
+lemma tvdist_eq_iSup_finPartition_abs :
+    tvdist μ ν = ⨆ (P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧)))),
       ∑ p ∈ P.parts, |μ.real p - ν.real p| := by
-  rw [tvDist, eTVDist_eq_iSup_finPartition_abs, ENNReal.toReal_iSup (by simp)]
+  rw [tvdist, etvdist_eq_iSup_finPartition_enorm, ENNReal.toReal_iSup (by simp)]
   congr with P
   rw [ENNReal.toReal_sum (by simp)]
   simp
 
 @[simp]
-lemma tvDist_self (μ : Measure 𝓧) [IsFiniteMeasure μ] : tvDist μ μ = 0 := by simp [tvDist]
+lemma tvdist_self (μ : Measure 𝓧) [IsFiniteMeasure μ] : tvdist μ μ = 0 := by simp [tvdist]
 
 @[simp]
-lemma tvDist_eq_zero_iff (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-  tvDist μ ν = 0 ↔ μ = ν := by simp [tvDist, ENNReal.toReal_eq_zero_iff]
+lemma tvdist_eq_zero_iff (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+  tvdist μ ν = 0 ↔ μ = ν := by simp [tvdist, ENNReal.toReal_eq_zero_iff]
 
-lemma tvDist_comm (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    tvDist μ ν = tvDist ν μ := by
-  unfold tvDist
-  rw [eTVDist_comm]
+lemma tvdist_comm (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    tvdist μ ν = tvdist ν μ := by
+  unfold tvdist
+  rw [etvdist_comm]
 
-lemma tvDist_triangle (μ ν ξ : Measure 𝓧)
+lemma tvdist_triangle (μ ν ξ : Measure 𝓧)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ] :
-    tvDist μ ξ ≤ tvDist μ ν + tvDist ν ξ := by
-  unfold tvDist
+    tvdist μ ξ ≤ tvdist μ ν + tvdist ν ξ := by
+  unfold tvdist
   rw [← ENNReal.toReal_add (by simp) (by simp)]
   gcongr
   · simp
-  exact eTVDist_triangle _ _ _
+  exact etvdist_triangle _ _ _
 
 @[simp]
-lemma tvDist_zero_right (μ : Measure 𝓧) [IsFiniteMeasure μ] : tvDist μ 0 = μ.real Set.univ := by
-  simp [tvDist, Measure.real]
+lemma tvdist_zero_right (μ : Measure 𝓧) [IsFiniteMeasure μ] : tvdist μ 0 = μ.real Set.univ := by
+  simp [tvdist, Measure.real]
 
 @[simp]
-lemma tvDist_zero_left (ν : Measure 𝓧) [IsFiniteMeasure ν] : tvDist 0 ν = ν.real Set.univ := by
-  simp [tvDist, Measure.real]
+lemma tvdist_zero_left (ν : Measure 𝓧) [IsFiniteMeasure ν] : tvdist 0 ν = ν.real Set.univ := by
+  simp [tvdist, Measure.real]
 
-lemma tvDist_restrict_add_compl {s : Set 𝓧} (hs : MeasurableSet s) :
-    tvDist (μ.restrict s) (ν.restrict s) + tvDist (μ.restrict sᶜ) (ν.restrict sᶜ) = tvDist μ ν := by
-  unfold tvDist
-  rw [← ENNReal.toReal_add (by simp) (by simp), eTVDist_restrict_add_compl hs]
+lemma tvdist_restrict_add_compl {s : Set 𝓧} (hs : MeasurableSet s) :
+    tvdist (μ.restrict s) (ν.restrict s) + tvdist (μ.restrict sᶜ) (ν.restrict sᶜ) = tvdist μ ν := by
+  unfold tvdist
+  rw [← ENNReal.toReal_add (by simp) (by simp), etvdist_restrict_add_compl hs]
 
-lemma tvDist_of_ge (hμν : ν ≤ μ) : tvDist μ ν = μ.real Set.univ - ν.real Set.univ := by
-  rw [tvDist, eTVDist_of_ge hμν, ENNReal.toReal_sub_of_le (hμν .univ) (by simp), Measure.real,
+lemma tvdist_of_ge (hμν : ν ≤ μ) : tvdist μ ν = μ.real Set.univ - ν.real Set.univ := by
+  rw [tvdist, etvdist_of_ge hμν, ENNReal.toReal_sub_of_le (hμν .univ) (by simp), Measure.real,
     Measure.real]
 
-lemma tvDist_of_le (hμν : μ ≤ ν) : tvDist μ ν = ν.real Set.univ - μ.real Set.univ := by
-  rw [tvDist_comm, tvDist_of_ge hμν]
+lemma tvdist_of_le (hμν : μ ≤ ν) : tvdist μ ν = ν.real Set.univ - μ.real Set.univ := by
+  rw [tvdist_comm, tvdist_of_ge hμν]
 
-lemma tvDist_le_add : tvDist μ ν ≤ μ.real Set.univ + ν.real Set.univ := by
-  calc tvDist μ ν
-  _ ≤ tvDist μ 0 + tvDist 0 ν := tvDist_triangle _ _ _
+lemma tvdist_le_add : tvdist μ ν ≤ μ.real Set.univ + ν.real Set.univ := by
+  calc tvdist μ ν
+  _ ≤ tvdist μ 0 + tvdist 0 ν := tvdist_triangle _ _ _
   _ = μ.real Set.univ + ν.real Set.univ := by simp
 
 end TVDist
