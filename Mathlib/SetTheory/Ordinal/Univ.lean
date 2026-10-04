@@ -54,7 +54,7 @@ namespace Ordinal
 theorem type_lt_ordinal : typeLT Ordinal = univ.{u, u + 1} :=
   (lift_id _).symm
 
-@[deprecated type_lt_ordinal (since := "2026-03-20")]
+@[deprecated type_lt_ordinal +typeChanged (since := "2026-03-20")]
 theorem univ_id : univ.{u, u + 1} = typeLT Ordinal :=
   lift_id _
 
@@ -63,7 +63,7 @@ theorem lift_univ : lift.{w} univ.{u, v} = univ.{u, max v w} :=
   lift_lift _
 
 theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
-  congr_fun lift_umax _
+  congr($lift_umax _)
 
 /-- Principal segment version of the lift operation on ordinals, embedding `Ordinal.{u}` in
 `Ordinal.{v}` as a principal segment when `u < v`. -/
@@ -102,7 +102,7 @@ theorem liftPrincipalSeg_coe :
 theorem liftPrincipalSeg_top : (liftPrincipalSeg.{u, v}).top = univ.{u, v} :=
   rfl
 
-@[deprecated liftPrincipalSeg_top (since := "2026-03-20")]
+@[deprecated liftPrincipalSeg_top +typeChanged (since := "2026-03-20")]
 theorem liftPrincipalSeg_top' : liftPrincipalSeg.{u, u + 1}.top = typeLT Ordinal := by
   simp
 
@@ -120,7 +120,7 @@ namespace Cardinal
 theorem mk_ordinal : #Ordinal = univ.{u, u + 1} :=
   (lift_id _).symm
 
-@[deprecated mk_ordinal (since := "2026-04-22")]
+@[deprecated mk_ordinal +typeChanged (since := "2026-04-22")]
 theorem univ_id : univ.{u, u + 1} = #Ordinal :=
   lift_id _
 
@@ -129,7 +129,7 @@ theorem lift_univ : lift.{w} univ.{u, v} = univ.{u, max v w} :=
   lift_lift _
 
 theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
-  congr_fun lift_umax _
+  congr($lift_umax _)
 
 theorem lift_lt_univ (c : Cardinal) : lift.{u + 1, u} c < univ.{u, u + 1} := by
   simpa only [Ordinal.liftPrincipalSeg_coe, lift_ord, Cardinal.lift_succ, ord_le,

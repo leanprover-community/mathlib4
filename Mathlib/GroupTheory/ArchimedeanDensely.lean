@@ -5,11 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
-public import Mathlib.Data.Int.Interval
+import Mathlib.Data.Int.Interval
 public import Mathlib.GroupTheory.Archimedean
-public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.Order.Interval.Finset.DenselyOrdered
 
@@ -340,7 +338,7 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discr
       simp [Function.onFun]
   constructor
   · intro h
-    replace h : WellFounded (α := {x : G | 0 ≤ x}) (· < ·) := h
+    change @WellFounded {x : G | 0 ≤ x} (· < ·) at h
     rw [WellFounded.wellFounded_iff_has_min] at h
     by_cases! H : ∀ (x : G) {y}, 0 < y → ∃ n : ℕ, x ≤ n • y -- Archimedean
     · replace H : Archimedean G := ⟨H⟩
@@ -477,9 +475,8 @@ alias LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
 
 instance instWellFoundedGTWithZeroMultiplicativeIntLeOne :
     WellFoundedGT { v : ℤᵐ⁰ // v ≤ 1 } :=
-  { wf :=
-    (LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete_of_ne_zero
-    one_ne_zero).mpr instNonemptyOfInhabited }
+  (LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete_of_ne_zero
+    one_ne_zero).mpr instNonemptyOfInhabited
 
 end WellFounded
 

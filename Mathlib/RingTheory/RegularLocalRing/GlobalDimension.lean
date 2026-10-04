@@ -44,13 +44,12 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
       let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
       have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
       have ge : IsLocalRing.depth S.X₁ ≥ IsLocalRing.depth S.X₂ ⊓ (IsLocalRing.depth M + 1) :=
-        moduleDepth_ge_min_of_shortExact_fst_snd _ S S_exact
+        ModuleCat.depth_min_snd_trd_add_one_le_fst_right _ S S_exact
       have ge' : (depth S.X₁) + i ≥ ringKrullDim R := by
         apply le_trans _ (add_le_add_left (WithBot.coe_le_coe.mpr ge) i)
         have : IsLocalRing.depth S.X₂ = IsLocalRing.depth (ModuleCat.of R R) := by
           have : Nontrivial S.X₂ := surjf.nontrivial
-          exact (free_depth_eq_ring_depth S.X₂ _).trans
-            (ring_depth_shrink_eq (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
+          exact (free_depth_eq_ring_depth S.X₂ _).trans (maximalIdeal R).depth_shrink
         simpa [← (isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing,
           this, min_add] using ⟨WithBot.le_self_add (WithBot.natCast_ne_bot i) (ringKrullDim R), le⟩
       rcases ih S.X₁ ge' with ⟨m, hm⟩
@@ -70,7 +69,7 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
   rw [globalDimension_eq_sup_projectiveDimension_finite]
   have depth_eq : depth (ModuleCat.of R (Shrink.{v, u} R)) = ringKrullDim R := by
     rw [(isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing]
-    exact WithBot.coe_inj.mpr (ring_depth_shrink_eq (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
+    exact WithBot.coe_inj.mpr (maximalIdeal R).depth_shrink
   apply le_antisymm
   · simp only [iSup_le_iff]
     intro M hM
@@ -87,7 +86,7 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
     have eq : projectiveDimension k + depth k = ringKrullDim R := by
       rw [← depth_eq, AuslanderBuchsbaum k fink]
     have eq0 : depth k = 0 := by
-      apply (moduleDepth_eq_zero_of_hom_nontrivial _ _).mpr
+      apply (ModuleCat.depth_eq_zero_iff_nontrivial_linearMap _ _).mpr
       use LinearMap.id, 0
       exact LinearMap.ne_zero_of_injective fun ⦃_ _⦄ a ↦ a
     simpa [← eq, eq0] using! le_biSup projectiveDimension ‹_›
