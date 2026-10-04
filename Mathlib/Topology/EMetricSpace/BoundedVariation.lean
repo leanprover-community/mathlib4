@@ -5,9 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.Interval.Set.ProjIcc
+import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Order.LeftRightLim
@@ -378,7 +377,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
           ∑ i ∈ Finset.Ico (n + 1) (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       congr 1
       rw [Finset.range_eq_Ico]
-      convert!
+      convert
           Finset.sum_Ico_add (fun i : ℕ => edist (f (w (i + 1))) (f (w i))) 0 m (n + 1) using 3 <;>
         abel
     _ ≤ ∑ i ∈ Finset.range (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
@@ -529,13 +528,13 @@ theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
   have hψ : MonotoneOn ψ (φ '' t) := Function.monotoneOn_of_rightInvOn_of_mapsTo hφ ψφs ψts
   change eVariationOn (f ∘ id) (φ '' t) ≤ eVariationOn (f ∘ φ) t
   rw [← eq_of_eqOn (ψφs.comp_left : EqOn (f ∘ φ ∘ ψ) (f ∘ id) (φ '' t))]
-  exact comp_le_of_monotoneOn _ ψ hψ ψts
+  exact comp_le_of_monotoneOn (f ∘ φ) ψ hψ ψts
 
 theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t)
     {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
     eVariationOn (f ∘ φ) (t ∩ Icc x y) = eVariationOn f (φ '' t ∩ Icc (φ x) (φ y)) := by
   rcases le_total x y with (h | h)
-  · convert! comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
+  · convert comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
     apply le_antisymm
     · rintro _ ⟨⟨u, us, rfl⟩, vφx, vφy⟩
       rcases le_total x u with (xu | ux)
@@ -562,13 +561,13 @@ theorem comp_eq_of_antitoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
   have hψ : AntitoneOn ψ (φ '' t) := Function.antitoneOn_of_rightInvOn_of_mapsTo hφ ψφs ψts
   change eVariationOn (f ∘ id) (φ '' t) ≤ eVariationOn (f ∘ φ) t
   rw [← eq_of_eqOn (ψφs.comp_left : EqOn (f ∘ φ ∘ ψ) (f ∘ id) (φ '' t))]
-  exact comp_le_of_antitoneOn _ ψ hψ ψts
+  exact comp_le_of_antitoneOn (f ∘ φ) ψ hψ ψts
 
 open OrderDual
 
 @[simp] theorem comp_ofDual (f : α → E) (s : Set α) :
     eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) = eVariationOn f s := by
-  convert! comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
+  convert comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
   simp only [Equiv.image_preimage]
 
 protected lemma _root_.BoundedVariationOn.ofDual
@@ -1002,7 +1001,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_left
       grind [Set.Subsingleton]
   have W := eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt (f := f)
     (s := s ∩ Icc y x) (a := x) ?_ ?_
-  · convert! W using 2 <;> grind
+  · convert W using 2 <;> grind
   · rwa [show s ∩ Icc y x ∩ Iio x = (s ∩ Iio x) ∩ Ici y by grind, nhdsWithin_inter_of_mem']
     apply mem_nhdsWithin_of_mem_nhds
     exact Ici_mem_nhds hy
@@ -1012,7 +1011,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_left
 small closed intervals to the right of this point tends to `0`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_right
     [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α}
-    (hf : BoundedVariationOn f s) (x : α) (h : ContinuousWithinAt f (s ∩ Ici x) x) :
+    (hf : BoundedVariationOn f s) {x : α} (h : ContinuousWithinAt f (s ∩ Ici x) x) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Icc x y)) (𝓝[s] x) (𝓝 0) := by
   have : (fun y ↦ eVariationOn f (s ∩ Icc x y)) =
       (fun y ↦ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s ∩ Icc (toDual y) (toDual x))) := by
@@ -1190,7 +1189,7 @@ theorem MonotoneOn.eVariationOn_eq (hf : MonotoneOn f s) (as : a ∈ s) (bs : b 
     grw [← h.dist_le (x := a) (y := b)] <;> grind [Real.dist_eq]
   · simp [hab, hf bs as hab.le]
 
-@[deprecated MonotoneOn.eVariationOn_eq (since := "2026-07-08")]
+@[deprecated MonotoneOn.eVariationOn_eq +typeChanged (since := "2026-07-08")]
 theorem MonotoneOn.eVariationOn_le (hf : MonotoneOn f s) (as : a ∈ s) (bs : b ∈ s) :
     eVariationOn f (s ∩ Icc a b) ≤ .ofReal (f b - f a) := (hf.eVariationOn_eq as bs).le
 

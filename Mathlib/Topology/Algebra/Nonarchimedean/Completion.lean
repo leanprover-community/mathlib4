@@ -6,7 +6,6 @@ Authors: Mitchell Lee
 module
 
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
@@ -19,7 +18,9 @@ The completion of a nonarchimedean ring is a nonarchimedean ring.
 
 public section
 
-open UniformSpace UniformSpace.Completion AddSubgroup OpenAddSubgroup Topology
+open UniformSpace UniformSpace.Completion AddSubgroup OpenAddSubgroup
+
+open scoped Topology
 
 /-- The completion of a nonarchimedean additive group is a nonarchimedean additive group. -/
 instance {G : Type*} [AddGroup G] [UniformSpace G] [IsUniformAddGroup G]

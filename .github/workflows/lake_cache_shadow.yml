@@ -104,6 +104,7 @@ env:
   SHADOW_SCOPE: mathlib4-master-shadow
   # NOTE: STAGE_TARGETS is set per-job (not here) from the `targets` input, so
   # it can be overridden per dispatch — see the `build_and_stage`/`consume` env.
+  MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
 
 jobs:
   build_and_stage:
@@ -126,9 +127,6 @@ jobs:
       - name: job info
         shell: bash -euo pipefail {0}
         run: echo "::notice::Lake cache shadow on ref ${{ inputs.mathlib_ref || 'master' }} run ${{ github.run_id }}"
-
-      - name: Setup jq
-        uses: dcarbone/install-jq-action@4fcb5062d7ce9bc4382d1a352d19ba3ba2c317c1 # v4.0.1
 
       - name: Checkout tools branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -170,7 +168,6 @@ jobs:
           # errors out if the path is missing. Runs that skip legacy hydration
           # reach the first landrun step with it absent.
           mkdir -p "$HOME/.cache/mathlib/"
-          mkdir -p _work
 
       - name: install elan
         shell: bash -euo pipefail {0}
@@ -182,8 +179,8 @@ jobs:
 
       # `elan which` below does not auto-install non-pinned toolchains. The
       # uninstall forces a fresh download: pr-release tags are republished in
-      # place, and elan skips toolchains it already has, so a persistent
-      # runner would otherwise keep running a stale binary under that name.
+      # place, elan skips toolchains it already has, and the runner's `~/.elan`
+      # can already hold an older build under that name.
       - name: Install override toolchain
         if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         shell: bash -euo pipefail {0}

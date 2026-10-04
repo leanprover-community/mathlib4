@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.Prod.Lex
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Prod.Lex.Basic
 
 /-!
 # Order homomorphism for `Prod.Lex`

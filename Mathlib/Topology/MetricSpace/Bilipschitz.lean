@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Topology.MetricSpace.Antilipschitz
-public import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-! # Bilipschitz equivalence
 
@@ -35,7 +35,7 @@ open NNReal
 
 section Uniformity
 
-open Uniformity
+open scoped Uniformity
 
 variable {α β : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 variable {K₁ K₂ : ℝ≥0} {f : α → β}

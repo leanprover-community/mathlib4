@@ -5,8 +5,6 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import Mathlib.Algebra.Star.Center
 
@@ -25,7 +23,7 @@ This file is heavily inspired by `Mathlib/Algebra/Star/NonUnitalSubalgebra.lean`
 
 universe v w w'
 
-variable {A : Type v} {B : Type w} {C : Type w'}
+variable {A : Type v}
 
 /-- A sub star semigroup is a subset of a magma which is closed under the `star`. -/
 structure SubStarSemigroup (M : Type v) [Mul M] [Star M] : Type v

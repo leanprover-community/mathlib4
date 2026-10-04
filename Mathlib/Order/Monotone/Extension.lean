@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Monotone
+import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
@@ -20,7 +20,7 @@ public section
 
 open Set
 
-variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
+variable {α β : Type*} [PartialOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
 
 /-- If a function is monotone and is bounded on a set `s`, then it admits a monotone extension to
 the whole space. -/

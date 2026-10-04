@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Descent.IsStack
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
 /-!
 # Characterization of (pre)stacks for a precoverage
@@ -82,7 +84,7 @@ public lemma faithful_pullFunctor :
         Functor.comp_obj, Cat.Hom.hom_inv_id_toNatTrans_app_assoc, ← reassoc_of% this,
         D₂.hom_self _ _ rfl, F.mapComp'_id_comp_inv_app, ← Functor.map_comp,
         F.mapComp'_id_comp_hom_app_assoc]
-    replace hφ := congr_fun (congr_arg DescentData.Hom.hom hφ) j
+    replace hφ := congr($(hφ).hom j)
     dsimp at hφ
     simp only [this, hφ]
 
@@ -378,7 +380,6 @@ section
 variable {F} [HasPullbacks C] {J : Precoverage C}
   [J.HasIsos] [J.IsStableUnderBaseChange] [J.IsStableUnderComposition]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If a precoverage satisfies `HasIsos`, `IsStableUnderBaseChange` and
 `IsStableUnderComposition` (which is a slightly stronger condition as compared
 to pretopologies), then in order to check that a pseudofunctor is a prestack

@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.Extend
-public import Mathlib.Algebra.Homology.Embedding.IsSupported
-public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Homology of the extension of a homological complex
@@ -29,7 +27,7 @@ variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
   {C : Type*} [Category* C] [HasZeroMorphisms C]
   [HasZeroObject C]
 
-variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
+variable (K L : HomologicalComplex C c) (φ : K ⟶ L) (e : c.Embedding c')
 
 namespace extend
 

@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 public meta import Mathlib.Data.Nat.NthRoot.Defs
-public import Qq
 
 /-! # Power function on `ℝ`
 
@@ -664,11 +663,11 @@ theorem rpow_le_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x ≤ 1) (hz : 0 ≤ z) :
   gcongr
 
 theorem rpow_lt_one_of_one_lt_of_neg {x z : ℝ} (hx : 1 < x) (hz : z < 0) : x ^ z < 1 := by
-  convert! rpow_lt_rpow_of_exponent_lt hx hz
+  convert rpow_lt_rpow_of_exponent_lt hx hz
   exact (rpow_zero x).symm
 
 theorem rpow_le_one_of_one_le_of_nonpos {x z : ℝ} (hx : 1 ≤ x) (hz : z ≤ 0) : x ^ z ≤ 1 := by
-  convert! rpow_le_rpow_of_exponent_le hx hz
+  convert rpow_le_rpow_of_exponent_le hx hz
   exact (rpow_zero x).symm
 
 theorem one_lt_rpow {x z : ℝ} (hx : 1 < x) (hz : 0 < z) : 1 < x ^ z := by
@@ -681,12 +680,12 @@ theorem one_le_rpow {x z : ℝ} (hx : 1 ≤ x) (hz : 0 ≤ z) : 1 ≤ x ^ z := b
 
 theorem one_lt_rpow_of_pos_of_lt_one_of_neg (hx1 : 0 < x) (hx2 : x < 1) (hz : z < 0) :
     1 < x ^ z := by
-  convert! rpow_lt_rpow_of_exponent_gt hx1 hx2 hz
+  convert rpow_lt_rpow_of_exponent_gt hx1 hx2 hz
   exact (rpow_zero x).symm
 
 theorem one_le_rpow_of_pos_of_le_one_of_nonpos (hx1 : 0 < x) (hx2 : x ≤ 1) (hz : z ≤ 0) :
     1 ≤ x ^ z := by
-  convert! rpow_le_rpow_of_exponent_ge hx1 hx2 hz
+  convert rpow_le_rpow_of_exponent_ge hx1 hx2 hz
   exact (rpow_zero x).symm
 
 theorem rpow_lt_one_iff_of_pos (hx : 0 < x) : x ^ y < 1 ↔ 1 < x ∧ y < 0 ∨ x < 1 ∧ 0 < y := by
@@ -894,6 +893,10 @@ with positive exponent. -/
 lemma log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ n ^ ε / ε :=
   log_le_rpow_div n.cast_nonneg hε
 
+/-- `log x` is bounded below by minus a multiple of every power of `x` with negative exponent. -/
+lemma neg_rpow_div_le_log {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : -x ^ (-ε) / ε ≤ log x := by
+  simpa [rpow_neg_eq_inv_rpow, neg_div] using neg_le_neg (log_le_rpow_div (inv_nonneg.mpr hx) hε)
+
 lemma strictMono_rpow_of_base_gt_one {b : ℝ} (hb : 1 < b) :
     StrictMono (b ^ · : ℝ → ℝ) := by
   simp_rw [Real.rpow_def_of_pos (zero_lt_one.trans hb)]
@@ -941,7 +944,7 @@ lemma norm_prime_cpow_le_one_half (p : Nat.Primes) {s : ℂ} (hs : 1 < s.re) :
   refine (Real.rpow_le_rpow_of_nonpos zero_lt_two (Nat.cast_le.mpr p.prop.two_le) <|
     by rw [neg_re]; linarith only [hs]).trans ?_
   rw [one_div, ← Real.rpow_neg_one]
-  exact Real.rpow_le_rpow_of_exponent_le one_le_two <| (neg_lt_neg hs).le
+  exact Real.rpow_le_rpow_of_exponent_le one_le_two (neg_lt_neg hs).le
 
 lemma one_sub_prime_cpow_ne_zero {p : ℕ} (hp : p.Prime) {s : ℂ} (hs : 1 < s.re) :
     1 - (p : ℂ) ^ (-s) ≠ 0 := by
@@ -979,7 +982,7 @@ end Complex
 
 namespace Real
 
-variable {z x y : ℝ}
+variable {x : ℝ}
 
 section Sqrt
 

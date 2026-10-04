@@ -5,7 +5,6 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Connected.Basic
 public import Mathlib.Topology.Connected.Clopen
 
 /-!
@@ -24,7 +23,7 @@ open Set Topology
 universe u v
 
 variable {α : Type u} {β : Type v} {ι : Type*} {X : ι → Type*} [TopologicalSpace α]
-  {s t u v : Set α}
+  {s t : Set α}
 
 section LocallyConnectedSpace
 

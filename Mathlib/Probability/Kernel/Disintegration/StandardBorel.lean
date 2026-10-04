@@ -5,11 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.Disintegration.Basic
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
 public import Mathlib.Probability.Kernel.Disintegration.Density
-public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 
 /-!
@@ -159,10 +157,11 @@ instance instIsMarkovKernelCondKernelUnitReal (κ : Kernel Unit (α × ℝ)) [Is
   rw [condKernelUnitReal]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance condKernelUnitReal.instIsCondKernel (κ : Kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
     κ.IsCondKernel κ.condKernelUnitReal where
-  disintegrate := by rw [condKernelUnitReal, compProd_toKernel]; ext; simp
+  disintegrate := by
+    rw [condKernelUnitReal]
+    exact compProd_toKernel (isCondKernelCDF_condCDF (κ ()))
 
 end Real
 

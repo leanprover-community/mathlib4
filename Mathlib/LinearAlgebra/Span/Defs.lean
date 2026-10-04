@@ -25,7 +25,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 assert_not_exists Field
 
-variable {R R₂ K M M₂ V S : Type*}
+variable {R M M₂ V S : Type*}
 
 namespace Submodule
 
@@ -37,9 +37,7 @@ section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 variable {x : M} (p p' : Submodule R M)
-variable [Semiring R₂] {σ₁₂ : R →+* R₂}
-variable [AddCommMonoid M₂] [Module R₂ M₂]
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+variable [AddCommMonoid M₂]
 
 section
 
@@ -273,7 +271,7 @@ theorem span_empty : span R (∅ : Set M) = ⊥ :=
 
 @[simp]
 theorem span_univ : span R (univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| SetLike.le_def.2 <| subset_span
+  eq_top_iff.2 <| IsConcreteLE.le_iff.2 subset_span
 
 @[simp]
 theorem span_inter (S S' : Submodule R M) : span R (S ∩ S') = S ⊓ S' :=
@@ -459,7 +457,8 @@ theorem mem_span_singleton {y : M} : x ∈ R ∙ y ↔ ∃ a : R, a • y = x :=
     rintro ⟨a, y, rfl⟩; exact smul_mem _ _ (subset_span <| by simp)⟩
 
 theorem le_span_singleton_iff {s : Submodule R M} {v₀ : M} :
-    s ≤ R ∙ v₀ ↔ ∀ v ∈ s, ∃ r : R, r • v₀ = v := by simp_rw [SetLike.le_def, mem_span_singleton]
+    s ≤ R ∙ v₀ ↔ ∀ v ∈ s, ∃ r : R, r • v₀ = v := by
+  simp_rw [IsConcreteLE.le_iff, mem_span_singleton]
 
 theorem eq_span_singleton_of_surjective {s : Submodule R M}
     {f : R →ₗ[R] s} (hf : Surjective f) : s = span R {(f 1 : M)} := by
@@ -490,7 +489,7 @@ theorem span_singleton_smul_le {S} [SMul S R] [SMul S M] [IsScalarTower S R M]
 theorem span_singleton_group_smul_eq {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M]
     (g : G) (x : M) : R ∙ g • x = R ∙ x := by
   refine le_antisymm (span_singleton_smul_le R g x) ?_
-  convert! span_singleton_smul_le R g⁻¹ (g • x)
+  convert span_singleton_smul_le R g⁻¹ (g • x)
   exact (inv_smul_smul g x).symm
 
 variable {R}

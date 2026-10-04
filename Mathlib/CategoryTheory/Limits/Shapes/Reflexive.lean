@@ -5,9 +5,8 @@ Authors: Bhavik Mehta, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.ConeCategory
+import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 /-!
@@ -285,8 +284,6 @@ def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair
     | .id _ => WalkingReflexivePair.Hom.id _
   map_comp := by
     intro _ _ _ f g; cases f <;> cases g <;> rfl
-
-variable {C : Type u} [Category.{v} C]
 
 instance (X : WalkingReflexivePair) :
     Nonempty (StructuredArrow X inclusionWalkingReflexivePair) := by

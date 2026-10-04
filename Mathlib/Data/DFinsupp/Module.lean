@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.DFinsupp.Defs
@@ -22,7 +21,7 @@ public import Mathlib.Data.DFinsupp.Defs
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
-variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
+variable {ι : Type u} {γ : Type w} {β : ι → Type v}
 
 namespace DFinsupp
 

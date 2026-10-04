@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.Finite
+import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 
 /-!
@@ -436,7 +436,7 @@ def basis : Basis (Fin (natDegree f)) R S where
     ext i
     simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
     rw [(Polynomial.modByMonic_eq_self_iff h.monic).mpr, Polynomial.coeff]
-    · rw [Finsupp.mapDomain_apply Fin.val_injective]
+    · rw [Finsupp.mapDomain_apply_of_injective Fin.val_injective]
     rw [degree_eq_natDegree h.monic.ne_zero, degree_lt_iff_coeff_zero]
     intro m hm
     rw [Polynomial.coeff]
@@ -498,7 +498,7 @@ def liftPolyₗ {T : Type*} [AddCommGroup T] [Module R T] (g : R[X] →ₗ[R] T)
 -/
 def coeff : S →ₗ[R] ℕ → R :=
   h.liftPolyₗ
-    { toFun := Polynomial.coeff
+    { toFun p := ⇑p.coeff
       map_add' p q := funext (Polynomial.coeff_add p q)
       map_smul' c p := funext (Polynomial.coeff_smul c p) }
 
@@ -640,7 +640,7 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyCl
   let ⟨q, hq⟩ := minpoly.isIntegrallyClosed_dvd h.isIntegral_root h.aeval_root_self
   symm <|
     eq_of_monic_of_associated h.monic (minpoly.monic h.isIntegral_root) <| by
-      convert!
+      convert
         Associated.mul_left (minpoly R h.root) <|
           associated_one_iff_isUnit.2 <|
             (hirr.isUnit_or_isUnit hq).resolve_left <| minpoly.not_isUnit R h.root
@@ -704,6 +704,13 @@ open scoped IntermediateField
 variable {F E : Type*} [Field F] [Field E] [Algebra F E] {f : F[X]}
 
 namespace IsAdjoinRoot
+
+theorem isField_iff_irreducible {E : Type*} [Ring E] [Algebra F E] (h : IsAdjoinRoot E f) :
+    IsField E ↔ Irreducible f := by
+  rw [← MulEquiv.isField_congr h.adjoinRootAlgEquiv.toMulEquiv, AdjoinRoot.isField_iff_irreducible]
+
+protected theorem irreducible (h : IsAdjoinRoot E f) : Irreducible f :=
+  (isField_iff_irreducible h).mp (Field.toIsField E)
 
 theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
   IntermediateField.adjoin_eq_top_of_algebra F {h.root} (adjoin_root_eq_top h)

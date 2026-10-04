@@ -138,7 +138,6 @@ instance : (quasiIso C c).IsMultiplicative where
 lemma homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => hf i
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_eq_quasiIso_map_quotient :
     quasiIso C c = (HomologicalComplex.quasiIso C c).map (quotient C c) := by
   ext ⟨K⟩ ⟨L⟩ f
@@ -172,6 +171,7 @@ lemma Q_map_eq_of_homotopy {K L : HomologicalComplex C c} {f g : K ⟶ L} (h : H
 
 /-- The functor `HomotopyCategory C c ⥤ HomologicalComplexUpToQuasiIso C c` from the homotopy
 category to the localized category with respect to quasi-isomorphisms. -/
+@[no_expose]
 def Qh : HomotopyCategory C c ⥤ HomologicalComplexUpToQuasiIso C c :=
   CategoryTheory.Quotient.lift _ HomologicalComplexUpToQuasiIso.Q (by
     intro K L f g ⟨h⟩
@@ -180,10 +180,10 @@ def Qh : HomotopyCategory C c ⥤ HomologicalComplexUpToQuasiIso C c :=
 variable (C c)
 
 /-- The canonical isomorphism `HomotopyCategory.quotient C c ⋙ Qh ≅ Q`. -/
+@[no_expose]
 def quotientCompQhIso : HomotopyCategory.quotient C c ⋙ Qh ≅ Q := by
   apply Quotient.lift.isLift
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Qh_inverts_quasiIso : (HomotopyCategory.quasiIso C c).IsInvertedBy Qh := by
   rintro ⟨K⟩ ⟨L⟩ φ
   obtain ⟨φ, rfl⟩ := (HomotopyCategory.quotient C c).map_surjective φ
@@ -307,7 +307,7 @@ end ChainComplex
 
 section CochainComplex
 
-variable (C : Type*) [Category* C] {ι : Type*} [Preadditive C] [HasBinaryBiproducts C]
+variable (C : Type*) [Category* C] [Preadditive C] [HasBinaryBiproducts C]
 
 instance : (HomotopyCategory.quotient C (ComplexShape.up ℤ)).IsLocalization
     (HomologicalComplex.homotopyEquivalences _ _) :=
@@ -384,6 +384,7 @@ variable [c.QFactorsThroughHomotopy C] [c.QFactorsThroughHomotopy D]
 
 /-- The functor `F.mapHomologicalComplexUpToQuasiIso c` is induced by
 `F.mapHomotopyCategory c`. -/
+@[no_expose]
 noncomputable def mapHomologicalComplexUpToQuasiIsoFactorsh :
     HomologicalComplexUpToQuasiIso.Qh ⋙ F.mapHomologicalComplexUpToQuasiIso c ≅
       F.mapHomotopyCategory c ⋙ HomologicalComplexUpToQuasiIso.Qh :=

@@ -6,8 +6,7 @@ Authors: Jireh Loreaux, Jon Bannon
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Unitization
-public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Multiplier Algebra of a C⋆-algebra
@@ -74,7 +73,7 @@ structure DoubleCentralizer (𝕜 : Type u) (A : Type v) [NontriviallyNormedFiel
 @[inherit_doc]
 scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 𝕜 A
 
-open MultiplierAlgebra
+open scoped MultiplierAlgebra
 
 @[ext]
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
@@ -395,7 +394,7 @@ instance instStar : Star 𝓜(𝕜, A) where
           ((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A)
       central := fun x y => by
         simpa only [star_mul, star_star]
-          using! (congr_arg star (a.central (star y) (star x))).symm }
+          using! congr(star $(a.central (star y) (star x))).symm }
 
 @[simp]
 theorem star_fst (a : 𝓜(𝕜, A)) (b : A) : (star a).fst b = star (a.snd (star b)) :=
@@ -536,7 +535,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
     have h1 b : C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by grw [f.le_opNNNorm b]; ring_nf; rfl
     have := NNReal.div_le_of_le_mul <| f.opNNNorm_le_bound _ <| by
       simpa only [sqrt_sq, sqrt_mul] using fun b ↦ sqrt_le_sqrt.2 <| (h b).trans (h1 b)
-    convert! NNReal.rpow_le_rpow this two_pos.le
+    convert NNReal.rpow_le_rpow this two_pos.le
     · simp only [NNReal.rpow_two, div_pow, sq_sqrt]
       simp only [sq, mul_self_div_self]
     · simp only [NNReal.rpow_two, sq_sqrt]
