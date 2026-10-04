@@ -36,10 +36,6 @@ protected theorem Measurable.oneLePart (hf : Measurable f) :
 protected theorem AEMeasurable.oneLePart {μ : MeasureTheory.Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable f⁺ᵐ μ := hf.sup_const 1
 
-@[to_additive (attr := fun_prop)]
-protected theorem AEMeasurable.oneLePart' {μ : MeasureTheory.Measure β} (hf : AEMeasurable f μ) :
-    AEMeasurable f⁺ᵐ μ := hf.oneLePart
-
 variable [MeasurableInv α]
 
 @[to_additive]
