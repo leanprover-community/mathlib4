@@ -1,6 +1,8 @@
 module
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Ring.Commute
 
 local infix:70 " ⚬ " => fun a b => a * b + b * a
 
@@ -65,6 +67,11 @@ example : a + -b = -b + a := by
   abel
 example : a ^ 50 * a ^ 37 = a ^ 23 * a ^ 64 := by noncomm_ring
 
+-- Collect additive terms inside otherwise uninterpreted function applications.
+example (f : R → R) :
+    f ((a + b) * c) + f ((b + a) * c) = 2 * f (a * c + b * c) := by
+  noncomm_ring
+
 /- some examples using arguments -/
 example (h : ∀ a : R, (2 : ℤ) • a = 0) : (a + 1) ^ 2 = a ^ 2 + 1 := by
   noncomm_ring [h]
@@ -73,3 +80,14 @@ set_option linter.unusedVariables false in
 example (h : a = b) (h2 : a = c) : a = c := by
   fail_if_success noncomm_ring [h]
   noncomm_ring [h2]
+
+-- Multiplication need not be associative or unital.
+example {R : Type*} [NonAssocSemiring R] (a b c : R) :
+    (a + b) * c = b * c + a * c := by noncomm_ring
+
+example {R : Type*} [NonUnitalNonAssocRing R] (a b c : R) :
+    a * (b - c) + a * c = a * b := by noncomm_ring
+
+example {R : Type*} [NonUnitalSemiring R] (a b c : R) :
+    (a + b) * c + (2 : Nat) • (b * c) = a * c + (3 : Nat) • (b * c) := by
+  noncomm_ring
