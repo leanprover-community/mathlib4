@@ -313,7 +313,7 @@ public register_option linter.unusedDecidableInType : Bool := {
 /-- Detects `Decidable*` instance hypotheses in the type of `thm` which are not used in the
 remainder of the type, and suggests replacing them with a use of `classical` in the proof or
 `open scoped Classical in` at the term level. -/
-def unusedDecidableInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM Unit := do
+public def unusedDecidableInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM Unit := do
   /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
   on decidable instances without using them in the type. -/
   if (`Decidable).isPrefixOf thm.name then return
@@ -354,7 +354,7 @@ public register_option linter.unusedFintypeInType : Bool := {
 /-- Detects `Fintype` instance hypotheses in the type of `thm` which are not used in the
 remainder of the type, and suggests replacing them with the corresponding hypothesis of `Finite`
 and the use of `Fintype.ofFinite` in the proof. -/
-def unusedFintypeInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM Unit := do
+public def unusedFintypeInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM Unit := do
   logUnusedInstancesInTheorem thm
     (·.isAppOrForallOfConst `Fintype)
     fun unusedParams => do

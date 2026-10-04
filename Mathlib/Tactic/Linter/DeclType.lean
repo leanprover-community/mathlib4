@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.OverlappingInstances
-import all Mathlib.Tactic.Linter.UnusedInstancesInType
-import all Mathlib.Tactic.Linter.OverlappingInstances
 
 /-!
 # Declaration type linters

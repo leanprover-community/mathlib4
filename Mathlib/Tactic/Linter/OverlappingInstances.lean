@@ -136,7 +136,7 @@ partial def findOverlappingInstances : MetaM (ExprMap (Array FVarId)) := do
   return overlaps
 
 /-- Lints against overlaps between instances in the local contexts of declarations. -/
-register_option linter.overlappingInstances : Bool := {
+public register_option linter.overlappingInstances : Bool := {
   defValue := true
   descr := "enable the overlapping instances linter."
 }
@@ -211,7 +211,7 @@ open Linter in
 /--
 Lints against data-carrying overlaps between instances in the local contexts of declarations.
 -/
-def overlappingInstances (bodyRef : Syntax) (ctx : ContextInfo) (info : Info) : CommandElabM Unit := do
+public def overlappingInstances (bodyRef : Syntax) (ctx : ContextInfo) (info : Info) : CommandElabM Unit := do
   let some (lctx, expectedType?) := info.getLCtx? | pure ()
   withTraceNode `overlappingInstances
     (fun _ ↦ return m!"linting `{.ofConstName <| ctx.parentDecl?.getD .anonymous}`") do
