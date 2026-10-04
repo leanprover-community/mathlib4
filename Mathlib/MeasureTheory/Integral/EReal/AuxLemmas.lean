@@ -33,7 +33,7 @@ lemma EReal.posPart_sub_negPart (x : EReal) : x⁺ - x⁻ = x := by
 variable {α : Type*} {mα : MeasurableSpace α}
 
 lemma EReal.posPart_fun_sub_negPart_fun_apply (f : α → EReal) (x : α) : f⁺ x - f⁻ x = f x := by
-  rcases le_total 0 (f x) with h | h <;> simp [posPart_def, negPart_def, h]
+  rcases le_total 0 (f x) with h | h <;> simp [negPart_def, h]
 
 lemma EReal.posPart_fun_sub_negPart_fun (f : α → EReal) : f⁺ - f⁻ = f := by
   ext x
@@ -42,6 +42,6 @@ lemma EReal.posPart_fun_sub_negPart_fun (f : α → EReal) : f⁺ - f⁻ = f := 
 
 lemma EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero (f : α → EReal) (x : α) :
     f⁺ x = 0 ∨ f⁻ x = 0 := by
-  rcases le_total 0 (f x) with h | h <;> simp [posPart_def, negPart_def, h]
+  rcases le_total 0 (f x) with h | h <;> simp [negPart_def, h]
 
 end PosNeg

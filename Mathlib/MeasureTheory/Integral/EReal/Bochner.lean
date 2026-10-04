@@ -104,8 +104,12 @@ lemma integrable_ereal_toReal_iff (hf_meas : AEMeasurable f μ)
   rw [lintegral_enorm_ereal_toReal h_bot h_top] at h_lintegral
   rw [eintegral_eq_posPartFun_sub_negPartFun]
   have := lintegral_enorm_eq_posPartFun_add_negPartFun hf_meas
-  have h_pos_ne_bot : ∫ᵉ x, f⁺ x ∂μ ≠ ⊥ := by simp [eintegral_of_nonneg (posPart_fun_nonneg _)]
-  have h_neg_ne_bot : ∫ᵉ x, f⁻ x ∂μ ≠ ⊥ := by simp [eintegral_of_nonneg (negPart_fun_nonneg _)]
+  have h_pos_ne_bot : ∫ᵉ x, f⁺ x ∂μ ≠ ⊥ := by
+    rw [eintegral_of_nonneg (posPart_fun_nonneg _)]
+    simp
+  have h_neg_ne_bot : ∫ᵉ x, f⁻ x ∂μ ≠ ⊥ := by
+    rw [eintegral_of_nonneg (negPart_fun_nonneg _)]
+    simp
   have h_pos_ne_top : ∫ᵉ x, f⁺ x ∂μ ≠ ⊤ := by
     intro h_contra
     simp only [h_contra] at this

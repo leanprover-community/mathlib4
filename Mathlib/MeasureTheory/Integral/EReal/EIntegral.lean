@@ -434,7 +434,7 @@ lemma eintegral_real_const_mul_of_nonneg (c : ℝ) (hf : ∀ x, 0 ≤ f x) :
 lemma eintegral_real_const_mul (c : ℝ) (hf : EIntegrable f μ) :
     ∫ᵉ x, c * f x ∂μ = c * ∫ᵉ x, f x ∂μ := by
   have h_mul x : c * (f⁺ x - f⁻ x) = c * f⁺ x - c * f⁻ x := by
-    rcases le_total 0 (f x) with h | h <;> simp [posPart_def, negPart_def, h]
+    rcases le_total 0 (f x) with h | h <;> simp [negPart_def, h]
   simp_rw [eintegral_eq_posPartFun_sub_negPartFun f, ← EReal.posPart_fun_sub_negPart_fun_apply f,
     h_mul]
   rcases le_total 0 c with hc | hc
@@ -688,15 +688,18 @@ lemma eintegral_add (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
         | inl h' => exact h'
         | inr h' =>
           intro h_false
+          simp only [Pi.posPart_apply, Pi.negPart_apply] at h_false h'
           simp [h_false, EReal.top_sub h'] at h
       | inr h =>
         refine lt_of_le_of_lt (eintegral_mono (fun _ ↦ min_le_right _ _)) (Ne.lt_top ?_)
         intro h_false
+        simp only [Pi.negPart_apply] at h_false
         simp [h_false] at h
     · cases h_ne_bot_1 with
       | inl h =>
         refine lt_of_le_of_lt (eintegral_mono (fun _ ↦ min_le_left _ _)) (Ne.lt_top ?_)
         intro h_false
+        simp only [Pi.negPart_apply] at h_false
         simp [h_false] at h
       | inr h =>
         refine lt_of_le_of_lt (eintegral_mono (fun _ ↦ min_le_right _ _)) (Ne.lt_top ?_)
@@ -704,6 +707,7 @@ lemma eintegral_add (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
         | inl h' => exact h'
         | inr h' =>
           intro h_false
+          simp only [Pi.posPart_apply, Pi.negPart_apply] at h_false h'
           simp [h_false, EReal.top_sub h'] at h
   · exact fun _ ↦ add_nonneg (by simp) (by simp)
   · exact fun _ ↦ add_nonneg (by simp) (by simp)
@@ -726,9 +730,11 @@ lemma eintegral_add' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     simp only [eintegral_eq_posPartFun_sub_negPartFun f, sub_eq_add_neg, EReal.add_eq_bot_iff,
       EReal.neg_eq_bot_iff] at hf_int_eq_bot
     have : ∫ᵉ x, f⁺ x ∂μ ≠ ⊥ := ne_bot_of_le_ne_bot (by simp) <| eintegral_nonneg (by simp)
+    simp only [Pi.posPart_apply, ne_eq] at this
     simpa [this] using hf_int_eq_bot
   have hg₂_int : ∫ᵉ x, g⁻ x ∂μ ≠ ⊤ := by
     intro h_false
+    simp only [Pi.negPart_apply] at h_false
     simp [eintegral_eq_posPartFun_sub_negPartFun g, h_false] at hg_ne_bot
   have hg₁_int : ∫ᵉ x, g⁺ x ∂μ ≠ ⊤ := by
     intro h_false
@@ -743,7 +749,9 @@ lemma eintegral_add' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
   simp_rw [hf_add_g]
   rw [eintegral_sub_of_nonneg (fun _ ↦ add_nonneg (by simp) (by simp))
     (fun _ ↦ add_nonneg (by simp) (by simp)) (by fun_prop) (by fun_prop)]
-  · suffices ∫ᵉ x, f⁻ x + g⁻ x ∂μ = ⊤ by simp [this]
+  · suffices ∫ᵉ x, f⁻ x + g⁻ x ∂μ = ⊤ by
+      simp only [Pi.negPart_apply] at this
+      simp [this]
     rw [← top_le_iff]
     calc ⊤
     _ = ∫ᵉ x, f⁻ x ∂μ := by rw [hf₂_int]
