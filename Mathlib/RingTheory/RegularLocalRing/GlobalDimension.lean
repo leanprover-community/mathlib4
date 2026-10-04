@@ -69,7 +69,7 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
   rw [globalDimension_eq_sup_projectiveDimension_finite]
   have depth_eq : depth (ModuleCat.of R (Shrink.{v, u} R)) = ringKrullDim R := by
     rw [(isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing]
-    exact WithBot.coe_inj.mpr (ring_depth_shrink_eq (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
+    exact WithBot.coe_inj.mpr (maximalIdeal R).depth_shrink
   apply le_antisymm
   · simp only [iSup_le_iff]
     intro M hM
@@ -86,7 +86,7 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
     have eq : projectiveDimension k + depth k = ringKrullDim R := by
       rw [← depth_eq, AuslanderBuchsbaum k fink]
     have eq0 : depth k = 0 := by
-      apply (moduleDepth_eq_zero_of_hom_nontrivial _ _).mpr
+      apply (ModuleCat.depth_eq_zero_iff_nontrivial_linearMap _ _).mpr
       use LinearMap.id, 0
       exact LinearMap.ne_zero_of_injective fun ⦃_ _⦄ a ↦ a
     simpa [← eq, eq0] using! le_biSup projectiveDimension ‹_›
