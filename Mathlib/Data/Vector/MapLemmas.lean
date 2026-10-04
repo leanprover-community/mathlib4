@@ -5,10 +5,11 @@ Authors: Alex Keizer
 -/
 module
 
-public import Mathlib.Data.Vector.Basic
 public import Mathlib.Data.Vector.Snoc
 
 /-!
+# Normalization lemmas for `map` and `mapAccumr` on vectors
+
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
 
