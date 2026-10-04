@@ -358,8 +358,7 @@ theorem coe_castLEOrderEmb (h : n ≤ m) : castLEOrderEmb h = castLE h :=
   rfl
 
 @[simp]
-theorem castLEOrderEmb_toEmbedding (h : n ≤ m) :
-    (castLEOrderEmb h).toEmbedding = castLEEmb h :=
+theorem castLEOrderEmb_toEmbedding (h : n ≤ m) : (castLEOrderEmb h).toEmbedding = castLEEmb h :=
   rfl
 
 /-- `Fin.castAdd` as an `OrderEmbedding`.
@@ -374,7 +373,7 @@ theorem coe_castAddOrderEmb (m : ℕ) : (castAddOrderEmb m : Fin n → _) = cast
 
 @[simp]
 theorem castAddOrderEmb_toEmbedding (m : ℕ) :
-    (castAddOrderEmb m : Fin n ↪o _).toEmbedding = castAddEmb m :=
+    (castAddOrderEmb m (n := n)).toEmbedding = castAddEmb m :=
   rfl
 
 /-- `Fin.castSucc` as an `OrderEmbedding`.
@@ -388,8 +387,7 @@ theorem coe_castSuccOrderEmb : (castSuccOrderEmb : Fin n → _) = castSucc :=
   rfl
 
 @[simp]
-theorem castSuccOrderEmb_toEmbedding :
-    (castSuccOrderEmb : Fin n ↪o _).toEmbedding = castSuccEmb :=
+theorem castSuccOrderEmb_toEmbedding : (castSuccOrderEmb (n := n)).toEmbedding = castSuccEmb :=
   rfl
 
 /-- `Fin.addNat` as an `OrderEmbedding`.
@@ -404,7 +402,7 @@ theorem coe_addNatOrderEmb (m : ℕ) : (addNatOrderEmb m : Fin n → _) = (addNa
 
 @[simp]
 theorem addNatOrderEmb_toEmbedding (m : ℕ) :
-    (addNatOrderEmb m : Fin n ↪o _).toEmbedding = addNatEmb m :=
+    (addNatOrderEmb m (n := n)).toEmbedding = addNatEmb m :=
   rfl
 
 /-- `Fin.natAdd` as an `OrderEmbedding`.
@@ -419,7 +417,7 @@ theorem coe_natAddOrderEmb (n : ℕ) : (natAddOrderEmb n : Fin m → _) = natAdd
 
 @[simp]
 theorem natAddOrderEmb_toEmbedding (n : ℕ) :
-    (natAddOrderEmb n : Fin m ↪o _).toEmbedding = natAddEmb n :=
+    (natAddOrderEmb n (m := m)).toEmbedding = natAddEmb n :=
   rfl
 
 /-- `Fin.succAbove p` as an `OrderEmbedding`. -/
