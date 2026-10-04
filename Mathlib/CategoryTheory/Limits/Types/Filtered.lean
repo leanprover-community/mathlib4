@@ -82,15 +82,6 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
 
 variable [IsFilteredOrEmpty J]
 
-#adaptation_note
-/--
-Note that the body of `isColimitOf'` locally enables `respectTransparency true` for a subterm.
-The underlying reason is that there is one corner case where `respectTransparency true` unfolds
-*more*, and we need that here.
-The intended fix is to get rid of the outer `respectTransparency false`. After that, the inner
-`respectTransparency true` is redundant and can be removed, too.
--/
-set_option backward.defeqAttrib.useBackward true in
 /-- Recognizing filtered colimits of types. The injectivity condition here is
 slightly easier to check as compared to `isColimitOf`. -/
 noncomputable def isColimitOf' (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
@@ -99,7 +90,7 @@ noncomputable def isColimitOf' (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x
   isColimitOf _ _ hsurj (fun i j xi xj h ↦ by
     obtain ⟨k, g, hg⟩ := hinj (IsFiltered.max i j) (F.map (IsFiltered.leftToMax i j) xi)
       (F.map (IsFiltered.rightToMax i j) xj)
-      (by set_option backward.isDefEq.respectTransparency true in simp_all)
+      (by simp_all)
     exact ⟨k, IsFiltered.leftToMax i j ≫ g, IsFiltered.rightToMax i j ≫ g, by simpa using hg⟩)
 
 protected theorem rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) where

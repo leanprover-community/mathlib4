@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+public import Mathlib.CategoryTheory.Limits.Types.CardinalFiltered
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 
 /-! # Presentable objects
@@ -278,6 +279,14 @@ lemma Limits.exists_hom₂_of_preservesColimit_coyoneda
   Types.FilteredColimit.jointly_surjective_of_isColimit₂
     (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f g
 
+lemma Limits.exists_hom_of_preservesColimit_coyoneda_of_hasCardinalLT
+    [IsCardinalFiltered J κ] {c : Cocone D} (hc : IsColimit c) {X : C}
+    [PreservesColimit D (coyoneda.obj (.op X))] {ι : Type*} (hi : HasCardinalLT ι κ)
+    (f : ι → (X ⟶ c.pt)) :
+    ∃ (j : J) (p : ι → (X ⟶ D.obj j)), ∀ (i : ι), p i ≫ c.ι.app j = f i :=
+  Types.FilteredColimit.jointly_surjective_of_isColimit_of_hasCardinalLT.{v₁} κ
+    (isColimitOfPreserves (coyoneda.obj (.op X)) hc) hi f
+
 lemma Limits.exists_eq_of_preservesColimit_coyoneda [IsFiltered J] {c : Cocone D}
     (hc : IsColimit c) {X : C} [PreservesColimit D (coyoneda.obj (.op X))]
     {i j : J} (f : X ⟶ D.obj i) (g : X ⟶ D.obj j) (h : f ≫ c.ι.app i = g ≫ c.ι.app j) :
@@ -288,6 +297,16 @@ lemma Limits.exists_eq_of_preservesColimit_coyoneda_self [IsFiltered J] {c : Coc
     (hc : IsColimit c) {X : C} [PreservesColimit D (coyoneda.obj (.op X))]
     {i : J} (f g : X ⟶ D.obj i) (h : f ≫ c.ι.app i = g ≫ c.ι.app i) :
     ∃ (j : J) (a : i ⟶ j), f ≫ D.map a = g ≫ D.map a :=
+  (Types.FilteredColimit.isColimit_eq_iff'
+    (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f g).mp h
+
+lemma Limits.exists_eq_of_preservesColimit_coyoneda_self_of_hasCardinalLT
+    [IsCardinalFiltered J κ] {c : Cocone D}
+    (hc : IsColimit c) {ι : Type*} (hi : HasCardinalLT ι κ)
+    {X : C} [PreservesColimit D (coyoneda.obj (.op X))]
+    {i : J} (f : ι → (X ⟶ D.obj i))
+    (h : ∀ (i₀ i₁ : ι), f i₀ ≫ c.ι.app i = f i₁ ≫ c.ι.app i) :
+    ∃ (j : J) (a : i ⟶ j), ∀ (i₀ i₁ : ι), f i₀ ≫ D.map a = f i₁ ≫ D.map a :=
   (Types.FilteredColimit.isColimit_eq_iff'
     (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f g).mp h
 
@@ -344,6 +363,14 @@ lemma IsCardinalPresentable.exists_hom₂_of_isColimit [IsCardinalPresentable X 
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   exact exists_hom₂_of_preservesColimit_coyoneda hc f g
 
+lemma IsCardinalPresentable.exists_hom_of_isColimit_of_hasCardinalLT [IsCardinalPresentable X κ]
+    [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {ι : Type*} (hι : HasCardinalLT ι κ)
+    (f : ι → (X ⟶ c.pt)) :
+    ∃ (j : J) (f' : ι → (X ⟶ F.obj j)), ∀ (i : ι), f' i ≫ c.ι.app j = f i :=
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  exists_hom_of_preservesColimit_coyoneda_of_hasCardinalLT κ hc hι f
+
 lemma IsCardinalPresentable.exists_eq_of_isColimit [IsCardinalPresentable X κ]
     [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
     {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i₁ i₂ : J} (f₁ : X ⟶ F.obj i₁)
@@ -361,6 +388,16 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   have := isFiltered_of_isCardinalFiltered J κ
   exact exists_eq_of_preservesColimit_coyoneda_self hc f₁ f₂ hf
+
+lemma IsCardinalPresentable.exists_eq_of_isColimit'_of_hasCardinalLT [IsCardinalPresentable X κ]
+    [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i : J}
+    {ι : Type*} (hi : HasCardinalLT ι κ) (f : ι → (X ⟶ F.obj i))
+    (hf : ∀ (i₁ i₂ : ι), f i₁ ≫ c.ι.app i = f i₂ ≫ c.ι.app i) :
+    ∃ (j : J) (u : i ⟶ j), ∀ (i₁ i₂ : ι), f i₁ ≫ F.map u = f i₂ ≫ F.map u := by
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  have := isFiltered_of_isCardinalFiltered J κ
+  exact exists_eq_of_preservesColimit_coyoneda_self_of_hasCardinalLT hc f₁ f₂ hf
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a commutative square where both objects on the top are `κ`-presentable
