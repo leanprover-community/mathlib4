@@ -5,6 +5,7 @@ Authors: Thomas R. Murrills
 -/
 module
 
+public meta import Batteries.Lean.Position
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Lean.Elab.InfoTree
@@ -14,8 +15,6 @@ public meta import Lean.Linter.Basic
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Lint.Basic
 public import Batteries.Tactic.Lint.Misc
-
-meta import Batteries.Lean.Position
 
 /-!
 # Linters for Unused Instances in Types
