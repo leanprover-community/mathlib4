@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.Disjoint
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Tactic.Monotonicity.Attr
-public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Order homomorphisms
@@ -193,7 +192,7 @@ variable [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β]
 
 @[to_dual (attr := simp) le_map_inv_iff]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
-  convert! (map_le_map_iff f).symm
+  convert (map_le_map_iff f).symm
   exact (EquivLike.right_inv f _).symm
 
 @[to_dual self]
@@ -856,7 +855,7 @@ theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = 
 theorem eq_symm_apply (e : α ≃o β) {x : α} {y : β} : x = e.symm y ↔ e x = y :=
   e.toEquiv.eq_symm_apply
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply (e : α ≃o β) (x : α) (y : β) : e x = y ↔ x = e.symm y :=
   e.eq_symm_apply.symm
 
@@ -1014,6 +1013,9 @@ theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
 theorem prodComm_symm : (prodComm : α × β ≃o β × α).symm = prodComm :=
   rfl
 
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm : α × β ≃o β × α).trans prodComm = .refl _ := rfl
+
 variable (α)
 
 /-- The order isomorphism between a type and its double dual. -/
@@ -1131,7 +1133,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
     map_rel_iff' := by
       intro a b
       apply le_iff_le_of_cmp_eq_cmp
-      convert! (h a (f b)).symm
+      convert (h a (f b)).symm
       apply gf }
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show

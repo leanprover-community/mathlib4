@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.ENat.Basic
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.ENat.Basic
 public import Mathlib.Tactic.Bound.Init
 
 /-!
@@ -389,7 +389,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
   obtain ⟨w, hp, u, h⟩ :=
     hα (e.symm a) fun h =>
       ha <| by
-        convert! ← map_zero e
+        convert ← map_zero e
         simp [← h]
   exact
     ⟨w.map e, fun b hb =>
@@ -397,8 +397,8 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
         he ▸ (prime_iff e).2 (hp c hc),
         Units.map e.toMonoidHom u,
       by
-        rw [Multiset.prod_hom, toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, ← map_mul e, h,
-          apply_symm_apply]⟩
+        rw [Multiset.prod_hom, toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_ofClass,
+          ← map_mul e, h, apply_symm_apply]⟩
 
 theorem MulEquiv.uniqueFactorizationMonoid_iff (e : α ≃* β) :
     UniqueFactorizationMonoid α ↔ UniqueFactorizationMonoid β :=

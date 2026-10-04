@@ -366,14 +366,13 @@ variable (X : Discrete α ⥤ C) [HasProduct (fun j => X.obj (Discrete.mk j))]
 
 /-- A limit cone for `X : Discrete α ⥤ C` that is given
 by `∏ᶜ (fun j => X.obj (Discrete.mk j))`. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- A colimit cocone for `X : Discrete α ⥤ C` that is given
 by `∐ (fun j => X.obj (Discrete.mk j))`. -/]
 def Pi.cone : Cone X where
   pt := ∏ᶜ (fun j => X.obj (Discrete.mk j))
   π := Discrete.natTrans (fun _ => Pi.π _ _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cone `Pi.cone X` is a limit cone. -/
 @[to_dual /-- The cocone `Sigma.cocone X` is a colimit cocone. -/]
 def productIsProduct' :

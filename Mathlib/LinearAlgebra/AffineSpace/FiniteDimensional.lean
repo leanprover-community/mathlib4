@@ -5,12 +5,11 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.FieldTheory.Finiteness
+import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 import Mathlib.RingTheory.Finiteness.Prod
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
@@ -108,7 +107,7 @@ theorem finiteDimensional_iff_finite {p : ι → P} (hi : AffineIndependent k p)
   exact hi.codRestrict (vectorSpan k (Set.range p)) (by simp [vsub_mem_vectorSpan]) |>.finite
 
 /-- An affine-independent family of points in a finite-dimensional affine subspace is finite. -/
-@[deprecated finiteDimensional_iff_finite (since := "2026-09-01")]
+@[deprecated finiteDimensional_iff_finite +typeChanged (since := "2026-09-01")]
 theorem finite_of_fin_dim_affineIndependent {p : ι → P} (hi : AffineIndependent k p)
     [FiniteDimensional k (vectorSpan k (Set.range p))] : Finite ι :=
   finiteDimensional_iff_finite k hi |>.mp inferInstance
@@ -122,7 +121,7 @@ theorem finiteDimensional_iff_setFinite {s : Set ι} {f : s → P}
     exact finiteDimensional_vectorSpan_range k f
 
 /-- An affine-independent subset of a finite-dimensional affine subspace is finite. -/
-@[deprecated finiteDimensional_iff_setFinite (since := "2026-09-01")]
+@[deprecated finiteDimensional_iff_setFinite +typeChanged (since := "2026-09-01")]
 theorem finite_set_of_fin_dim_affineIndependent {s : Set ι} {f : s → P} (hi : AffineIndependent k f)
     [FiniteDimensional k (vectorSpan k (Set.range f))] : s.Finite :=
   finiteDimensional_iff_setFinite k hi |>.mp inferInstance
@@ -189,6 +188,22 @@ theorem AffineIndependent.vectorSpan_eq_top_of_card_eq_finrank_add_one [FiniteDi
     [Fintype ι] {p : ι → P} (hi : AffineIndependent k p) (hc : Fintype.card ι = finrank k V + 1) :
     vectorSpan k (Set.range p) = ⊤ :=
   Submodule.eq_top_of_finrank_eq <| hi.finrank_vectorSpan hc
+
+/-- The `vectorSpan` of the image of an affinely independent finite nonempty set has dimension one
+less than its cardinality. -/
+theorem AffineIndepOn.finrank_vectorSpan_image {p : ι → P} {s : Set ι} (hs₁ : s.Finite)
+    (hs₂ : s.Nonempty) (hi : AffineIndepOn k p s) :
+    finrank k (vectorSpan k (p '' s)) = s.ncard - 1 := by
+  have := hs₁.fintype
+  rw [Set.image_eq_range]
+  apply hi.affineIndependent.finrank_vectorSpan
+  simp [Nat.sub_add_cancel <| (Set.ncard_pos hs₁).mpr hs₂]
+
+/-- The `vectorSpan` of an affinely independent finite nonempty set has dimension one less than its
+cardinality. -/
+theorem AffineIndepOn.finrank_vectorSpan {s : Set P} (hs₁ : s.Finite) (hs₂ : s.Nonempty)
+    (hi : AffineIndepOn k id s) : finrank k (vectorSpan k s) = s.ncard - 1 := by
+  rw [← hi.finrank_vectorSpan_image hs₁ hs₂, Set.image_id]
 
 namespace Affine.Simplex
 
@@ -533,7 +548,7 @@ theorem collinear_iff_of_mem {s : Set P} {p₀ : P} (h : p₀ ∈ s) :
       rcases hp₀v p hp with ⟨r, rfl⟩
       use r
       simp
-    have hw' := SetLike.le_def.1 hs hw
+    have hw' := mem_of_le_of_mem hs hw
     rwa [Submodule.mem_span_singleton] at hw'
 
 /-- A set of points is collinear if and only if they can all be
@@ -723,7 +738,7 @@ theorem affineIndependent_iff_affineIndependent_collinear_ne {p₁ p₂ p₃ p :
     AffineIndependent k ![p₁, p₂, p] ↔ AffineIndependent k ![p₁, p₂, p₃] := by
   refine ⟨fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h hcol hne2,
     fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h ?_ hne1⟩
-  convert! hcol using 1
+  convert hcol using 1
   aesop
 
 variable (k) in
@@ -810,7 +825,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
   · rw [coe_eq_bot_iff] at hs
     rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan, direction_bot, finrank_bot,
       zero_add]
-    convert! zero_le_one' ℕ
+    convert zero_le_one' ℕ
     rw [← finrank_bot k V]
     convert! rfl <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀, add_comm]
