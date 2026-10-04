@@ -1504,3 +1504,9 @@ lemma Ideal.exists_subset_radical_span_sup_of_subset_radical_sup {R : Type*} [Co
   choose m a b ha hb heq using hs
   refine ⟨a, by rwa [Set.range_subset_iff], fun z hz ↦ ⟨m ⟨z, hz⟩, heq ⟨z, hz⟩ ▸ ?_⟩⟩
   exact Ideal.add_mem _ (mem_sup_left (subset_span ⟨⟨z, hz⟩, rfl⟩)) (mem_sup_right <| hb _)
+
+theorem Ideal.map_sub_mem_of_map_le {R S : Type*} [Ring R] [Ring S]
+    {f : R →+* S} {I : Ideal R} {J : Ideal S} (h : Ideal.map f I ≤ J)
+    {x y : R} (hx : x ∈ I) (hy : y ∈ I) : f (x - y) ∈ J := by
+  rw [map_sub]
+  exact J.sub_mem (h (Ideal.mem_map_of_mem f hx)) (h (Ideal.mem_map_of_mem f hy))
