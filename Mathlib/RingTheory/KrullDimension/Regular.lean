@@ -31,7 +31,7 @@ variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 
 omit [IsNoetherianRing R] [Module.Finite R M] in
-lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (support R M)) :
+lemma exists_ltseries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (support R M)) :
     ∃ p : LTSeries (support R M), q.length ≤ p.length ∧ p.last.1.1.IsMaximal := by
   obtain ⟨m, hmm, hm⟩ := exists_le_maximal _ q.last.1.2.1
   obtain hlt | rfl := lt_or_eq_of_le hm
@@ -39,18 +39,22 @@ lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (
     simpa
   · use q
 
+@[deprecated (since := "2026-10-04")]
+alias exists_ltSeries_support_isMaximal_last_of_ltSeries_support :=
+  exists_ltseries_support_isMaximal_last_of_ltSeries_support
+
 theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
     (h : x ∈ (annihilator R M).jacobson) : supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   nontriviality M
   refine iSup_le_iff.mpr (fun p ↦ ?_)
   wlog hxp : x ∈ p.last.1.1 generalizing p
-  · obtain ⟨p, hle, hm⟩ := exists_ltSeries_support_isMaximal_last_of_ltSeries_support p
+  · obtain ⟨p, hle, hm⟩ := exists_ltseries_support_isMaximal_last_of_ltSeries_support p
     have hj : (annihilator R M).jacobson ≤ p.last.1.1 :=
       sInf_le ⟨mem_support_iff_of_finite.mp p.last.2, inferInstance⟩
     exact (Nat.cast_le.mpr hle).trans <| this _ (hj h)
   -- `q` is a chain of primes such that `x ∈ q 1`, `p.length = q.length` and `p.head = q.head`.
   obtain ⟨q, hxq, hq, h0, _⟩ : ∃ q : LTSeries (PrimeSpectrum R), _ ∧ _ ∧ p.head = q.head ∧ _ :=
-    exist_ltSeries_mem_one_of_mem_last (p.map Subtype.val (fun ⦃_ _⦄ lt ↦ lt)) hxp
+    exist_ltseries_mem_one_of_mem_last (p.map Subtype.val (fun ⦃_ _⦄ lt ↦ lt)) hxp
   by_cases hp0 : p.length = 0
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
       (supportDim_ne_bot_iff_nontrivial R (QuotSMulTop x M)).mpr <|

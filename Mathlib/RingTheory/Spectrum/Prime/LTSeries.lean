@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 ## Main results
 
-* `PrimeSpectrum.exist_ltSeries_mem_one_of_mem_last`: Let $R$ be a Noetherian ring,
+* `PrimeSpectrum.exist_ltseries_mem_one_of_mem_last`: Let $R$ be a Noetherian ring,
   $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a chain of primes, $x \in \mathfrak{p}_n$.
   Then we can find another chain of primes $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that
   $x \in \mathfrak{q}_1$, $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$.
@@ -77,7 +77,7 @@ set_option backward.isDefEq.respectTransparency false in
   chain of primes, $x \in \mathfrak{p}_n$. Then we can find another chain of primes
   $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that $x \in \mathfrak{q}_1$,
   $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$. -/
-theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
+theorem exist_ltseries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     {x : R} (hx : x ∈ p.last.asIdeal) : ∃ q : LTSeries (PrimeSpectrum R),
     x ∈ (q 1).asIdeal ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
   generalize hp : p.length = n
@@ -102,5 +102,8 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
   have h1 : 1 < Q.length + 1 := Nat.lt_of_sub_ne_zero (hQ.symm.trans_ne h0)
   have h : 1 = (1 : Fin (Q.length + 1)).castSucc := by simp [Fin.one_eq_mk_of_lt h1]
   exact ⟨Q.snoc p.last (by simpa [← hl] using! hq), by simpa [h], by simpa, by simp [← hh], by simp⟩
+
+@[deprecated (since := "2026-10-04")]
+alias exist_ltSeries_mem_one_of_mem_last := exist_ltseries_mem_one_of_mem_last
 
 end PrimeSpectrum
