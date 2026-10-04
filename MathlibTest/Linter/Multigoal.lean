@@ -61,15 +61,6 @@ warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of whi
 Please focus on the current goal, for instance using `·` (typed as "\.").
 
 Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
-  on_goal 2 =>
-    constructor
-    trivial
-    trivial
-Please focus on the current goal, for instance using `·` (typed as "\.").
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 -/
 #guard_msgs in
 example : True ∧ True ∧ True := by
@@ -81,12 +72,6 @@ example : True ∧ True ∧ True := by
   trivial
 
 /--
-warning: The following tactic starts with 2 goals and ends with 2 goals, 2 of which are not operated on.
-  pick_goal 2
-Please focus on the current goal, for instance using `·` (typed as "\.").
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
 warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
   exact hq
 Please focus on the current goal, for instance using `·` (typed as "\.").
