@@ -561,9 +561,10 @@ structure Cofinal (P) [Preorder P] where
   /-- The `Cofinal` contains arbitrarily large elements. -/
   isCofinal : IsCofinal carrier
 
-namespace Cofinal
+set_option linter.deprecated false in
+section
 
-set_option linter.deprecated false
+namespace Cofinal
 
 variable [Preorder P]
 
@@ -598,8 +599,6 @@ theorem le_above : x ≤ D.above x :=
 end Cofinal
 
 section IdealOfCofinals
-
-set_option linter.deprecated false
 
 variable [Preorder P] (p : P) {ι : Type*} [Encodable ι] (𝒟 : ι → Cofinal P)
 
@@ -660,6 +659,8 @@ theorem cofinal_meets_idealOfCofinals (i : ι) : ∃ x : P, x ∈ 𝒟 i ∧ x �
   ⟨_, sequenceOfCofinals.encode_mem p 𝒟 i, _, le_rfl⟩
 
 end IdealOfCofinals
+
+end
 
 section sUnion
 
