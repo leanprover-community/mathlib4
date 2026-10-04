@@ -340,7 +340,7 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
         simp
       · change _ * algebraMap _ _ _ = algebraMap _ _ _
         simp
-      repeat
+      on_goal 1 2 =>
         change liftFun R X f _ + liftFun R X f _ = _
         simp only [*]
         rfl

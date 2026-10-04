@@ -98,7 +98,7 @@ theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
   have : ↑m < ℵ₀ := natCast_lt_aleph0
   rw [hk, mul_lt_aleph0_iff] at this
   rcases this with (h | h | ⟨-, hk'⟩)
-  iterate 2 simp only [h, mul_zero, zero_mul, Nat.cast_eq_zero] at hk; simp [hk]
+  on_goal 1 2 => simp only [h, mul_zero, zero_mul, Nat.cast_eq_zero] at hk; simp [hk]
   lift k to ℕ using hk'
   exact ⟨k, mod_cast hk⟩
 

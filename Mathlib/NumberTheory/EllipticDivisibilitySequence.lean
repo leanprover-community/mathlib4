@@ -468,7 +468,7 @@ lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
   induction m using Int.negInduction with
   | nat m =>
     rcases m with _ | _ | _ | m
-    iterate 3 simp
+    on_goal 1 2 3 => simp
     simp_rw [Nat.cast_succ, Int.add_sub_cancel, show (m : ℤ) + 1 + 1 + 1 = m + 1 + 2 by rfl,
       Int.add_sub_cancel]
     norm_cast
@@ -483,7 +483,7 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
   induction m using Int.negInduction with
   | nat m =>
     rcases m with _ | _ | _
-    iterate 2 simp
+    on_goal 1 2 => simp
     simp_rw [Nat.cast_succ, Int.add_sub_cancel, Int.even_add_one, not_not, Int.even_coe_nat]
     norm_cast
     simpa only [preNormEDS_ofNat] using preNormEDS'_odd ..
