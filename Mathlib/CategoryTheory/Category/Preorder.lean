@@ -161,6 +161,21 @@ def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
 theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f :=
   rfl
 
+def Monotone.functorComp {Z : Type*} [Preorder Z] {f : X → Y} (h : Monotone f) {g : Y → Z}
+    (h' : Monotone g) :
+    h.functor ⋙ h'.functor ≅ (h'.comp h).functor := NatIso.ofComponents fun x ↦ .refl (g (f x))
+
+@[simp]
+theorem Monotone.functorComp_hom_app {Z : Type*} [Preorder Z] {f : X → Y} (h : Monotone f)
+    {g : Y → Z}
+    (h' : Monotone g) (x : X) :
+  (h.functorComp h').hom.app x = 𝟙 (g (f x)) := rfl
+
+@[simp]
+theorem Monotone.functorComp_inv_app {Z : Type*} [Preorder Z] {f : X → Y} (h : Monotone f) {g : Y → Z}
+    (h' : Monotone g) (x : X) :
+  (h.functorComp h').inv.app x = 𝟙 (g (f x)) := rfl
+
 -- Faithfulness is automatic because preorder categories are thin
 instance (f : X ↪o Y) : f.monotone.functor.Full where
   map_surjective h := ⟨homOfLE (f.map_rel_iff.1 h.le), rfl⟩
