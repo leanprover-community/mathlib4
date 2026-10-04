@@ -808,7 +808,7 @@ generated. -/
 theorem Submonoid.fg_of_divisive {P : Submonoid M} (hP : ∀ x ∈ P, ∀ y, x * y ∈ P → y ∈ P) :
     P.FG := by
   have hpwo := Set.isPWO_of_wellQuasiOrderedLE { x | x ∈ P ∧ x ≠ 1 }
-  refine fg_iff P |>.mpr ⟨_, ?_, (setOfPred_minimal_antichain _).finite_of_partiallyWellOrderedOn
+  refine P.fg_iff.mpr ⟨_, ?_, (setOfPred_minimal_antichain _).finite_of_partiallyWellOrderedOn
     (hpwo.mono (setOfPred_minimal_subset _))⟩
   refine ext fun x ↦ ⟨fun hx ↦ ?_, fun hx₁ ↦ ?_⟩
   · rw [← P.closure_eq]
