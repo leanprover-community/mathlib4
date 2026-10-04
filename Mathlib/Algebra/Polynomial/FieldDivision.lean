@@ -749,20 +749,12 @@ theorem exists_odd_natDegree_monic_irreducible_factor (p : R[X]) (hp : Odd p.nat
   simpa using Finset.even_sum _ fun _ hq ↦ by
     simpa using hp _ (Multiset.mem_of_mem_toEnumFinset hq)
 
-theorem exists_root_of_odd_natDegree_imp_not_irreducible
-    (h : ∀ {q : R[X]}, Odd q.natDegree → q.natDegree ≠ 1 → ¬ Irreducible q)
+theorem exists_root_of_odd_natDegree_irreducible_imp_natDegree_eq_one
+    (h : ∀ {q : R[X]}, q.Monic → Odd q.natDegree → Irreducible q → q.natDegree = 1)
     (p : R[X]) (hp : Odd p.natDegree) : ∃ x, p.IsRoot x := by
   rcases p.exists_odd_natDegree_monic_irreducible_factor hp with ⟨q, ho, hm, hi, hd⟩
   rcases q.exists_root_of_natDegree_eq_one (by grind) with ⟨x, hx⟩
   exact ⟨x, hx.dvd hd⟩
-
-theorem exists_root_of_monic_odd_natDegree_imp_not_irreducible
-    (h : ∀ {g : R[X]}, g.Monic → Odd g.natDegree → g.natDegree ≠ 1 → ¬ Irreducible g)
-    (p : R[X]) (hp : Odd p.natDegree) : ∃ x, p.IsRoot x := by
-  classical
-  refine exists_root_of_odd_natDegree_imp_not_irreducible (fun {f} hf₁ hf₂ hf₃ ↦ ?_) _ hp
-  exact h (monic_normalize hf₃.ne_zero)
-    (by simpa using hf₁) (by simpa using hf₂) (by simpa using hf₃)
 
 end normalizedFactors
 
