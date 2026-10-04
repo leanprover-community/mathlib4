@@ -845,11 +845,13 @@ end
 end constructor
 
 end PositetskiInductionDataUpTo
-lemma positetski_4_5_attempt1 [OrderBot Λ] (hΛ : HasCardinalLT Λ κ)
+
+open PositetskiInductionDataUpTo Order Limits in
+lemma positetski_4_5 [OrderBot Λ] (hΛ : HasCardinalLT Λ κ)
     (E : Inserter F G) (S T : K)
     [IsCardinalPresentable S κ] [IsCardinalPresentable T κ]
-    [Limits.HasColimitsOfShape Λ K] [Limits.HasColimitsOfShape Λ L]
-    [Limits.PreservesColimitsOfShape Λ F] [Limits.PreservesColimitsOfShape Λ G]
+    [HasColimitsOfShape Λ K] [HasColimitsOfShape Λ L]
+    [PreservesColimitsOfShape Λ F] [PreservesColimitsOfShape Λ G]
     (σ : F.obj S ⟶ G.obj T)
     (u : S ⟶ T) (v : T ⟶ E.obj)
     (h : σ ≫ G.map v = F.map u ≫ F.map v ≫ E.hom) :
@@ -860,12 +862,12 @@ lemma positetski_4_5_attempt1 [OrderBot Λ] (hΛ : HasCardinalLT Λ κ)
   let O₀ := isCardinalPresentable K κ
   have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
   let hcolimT := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ T_ξ
-  have (X : K) : Limits.PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
+  have (X : K) : PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
     G.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
-  have (X : K) : Limits.PreservesColimitsOfShape (CostructuredArrow O₀.ι X) F :=
+  have (X : K) : PreservesColimitsOfShape (CostructuredArrow O₀.ι X) F :=
     F.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
-  let hcolimGT := Limits.isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
-  let hcolimFT := Limits.isColimitOfPreserves F (O₀.ι.denseAt E.obj) -- F(E.obj) ≅ colim_ξ F(T_ξ)
+  let hcolimGT := isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
+  let hcolimFT := isColimitOfPreserves F (O₀.ι.denseAt E.obj) -- F(E.obj) ≅ colim_ξ F(T_ξ)
   -- Now we get a first factorization for σ
   obtain ⟨ξ₀, v₀, hv₀⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimT v
   dsimp at v₀ hv₀
@@ -897,29 +899,29 @@ lemma positetski_4_5_attempt1 [OrderBot Λ] (hΛ : HasCardinalLT Λ κ)
   have : NoMaxOrder κ.ord.ToType := Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
   -- Anyway, we now construct the thing, let’s take bot
   let data : CategoryTheory.Functor.WellOrderInductionData
-      (PositetskiInductionDataUpTo.functor κ Λ E) :=
+      (functor κ Λ E) :=
     Functor.WellOrderInductionData.ofExists
-      (fun i hi ↦ PositetskiInductionDataUpTo.surjective_trunc κ Λ hΛ E i)
-      (fun j hj S ↦ PositetskiInductionDataUpTo.ISeg.exists_extension E j hj S hΛ)
-  let D₀ : PositetskiInductionDataUpTo κ Λ E (Order.succ ⊥) := .mkSuccBot Λ ξ₀ ξ₁ u₀ ψ₀ (by
+      (fun i hi ↦ surjective_trunc κ Λ hΛ E i)
+      (fun j hj S ↦ ISeg.exists_extension E j hj S hΛ)
+  let D₀ : PositetskiInductionDataUpTo κ Λ E (succ ⊥) := .mkSuccBot Λ ξ₀ ξ₁ u₀ ψ₀ (by
     rwa [← dsimp% CostructuredArrow.w u₀, Functor.map_comp, Category.assoc, Eq.comm])
-  let S : PositetskiInductionDataUpTo.Seg κ Λ E :=
-    (data.surjective' (Order.succ ⊥) (Order.not_isSuccLimit_succ ⊥) D₀).choose
-  have S_val : S.val (Opposite.op <| Order.succ ⊥) = D₀ :=
-    (data.surjective' (Order.succ ⊥) (Order.not_isSuccLimit_succ ⊥) D₀).choose_spec
+  let S : Seg κ Λ E :=
+    (data.surjective' (succ ⊥) (not_isSuccLimit_succ ⊥) D₀).choose
+  have S_val : S.val (Opposite.op <| succ ⊥) = D₀ :=
+    (data.surjective' (succ ⊥) (not_isSuccLimit_succ ⊥) D₀).choose_spec
   let Ξ₀ : Λ ⥤ CostructuredArrow O₀.ι E.obj := S.functor
   have e₀ : Ξ₀.obj ⊥ = ξ₀ :=
-    (S.ξ_obj_eq ⊥ (Order.succ ⊥) (Order.le_succ _)).trans <|
-      (congr($(S_val).ξ.obj ⟨⊥, Order.le_succ ⊥⟩)).trans <|
-        PositetskiInductionDataUpTo.mkSuccBot_bot_eq ..
-  have e₁ : Ξ₀.obj (Order.succ ⊥) = ξ₁ :=
-    (S.ξ_obj_eq (Order.succ ⊥) (Order.succ ⊥) le_rfl).trans <|
-      (congr($(S_val).ξ.obj ⟨Order.succ ⊥, le_rfl⟩)).trans <|
-        PositetskiInductionDataUpTo.mkSuccBot_succ_bot_eq ..
-  have e₂ : Ξ₀.map (homOfLE <| Order.le_succ ⊥) = eqToHom e₀ ≫ u₀ ≫ eqToHom e₁.symm := by
-    dsimp [Ξ₀, PositetskiInductionDataUpTo.Seg.functor]
-    rw [Functor.congr_hom (congr($(S_val).ξ)), PositetskiInductionDataUpTo.mkSuccBot_map_homOfLE_eq]
-    simp [PositetskiInductionDataUpTo.Seg.ξObjIso, PositetskiInductionDataUpTo.Seg.ξ]
+    (S.ξ_obj_eq ⊥ (succ ⊥) (le_succ _)).trans <|
+      (congr($(S_val).ξ.obj ⟨⊥, le_succ ⊥⟩)).trans <|
+        mkSuccBot_bot_eq ..
+  have e₁ : Ξ₀.obj (succ ⊥) = ξ₁ :=
+    (S.ξ_obj_eq (succ ⊥) (succ ⊥) le_rfl).trans <|
+      (congr($(S_val).ξ.obj ⟨succ ⊥, le_rfl⟩)).trans <|
+        mkSuccBot_succ_bot_eq ..
+  have e₂ : Ξ₀.map (homOfLE <| le_succ ⊥) = eqToHom e₀ ≫ u₀ ≫ eqToHom e₁.symm := by
+    dsimp [Ξ₀, Seg.functor]
+    rw [Functor.congr_hom (congr($(S_val).ξ)), mkSuccBot_map_homOfLE_eq]
+    simp [Seg.ξObjIso, Seg.ξ]
   let Θ :
       Ξ₀ ⋙ CostructuredArrow.proj (isCardinalPresentable K κ).ι E.obj ⋙
           (isCardinalPresentable K κ).ι ⋙ F ⟶
@@ -927,58 +929,57 @@ lemma positetski_4_5_attempt1 [OrderBot Λ] (hΛ : HasCardinalLT Λ κ)
           (isCardinalPresentable K κ).ι ⋙ G :=
     S.ψNatTrans
   have e₁ : Θ.app ⊥ = F.map (eqToHom e₀).left.hom ≫ ψ₀ ≫ G.map (eqToHom e₁.symm).left.hom := by
-    dsimp [Θ, PositetskiInductionDataUpTo.Seg.ψNatTrans, PositetskiInductionDataUpTo.Seg.ψ]
-    rw [PositetskiInductionDataUpTo.congr_ψ _ _ S_val, PositetskiInductionDataUpTo.mkSuccBot_ψ]
-    simp [PositetskiInductionDataUpTo.Seg.ξObjIso, PositetskiInductionDataUpTo.Seg.ξ]
+    dsimp [Θ, Seg.ψNatTrans, Seg.ψ]
+    rw [congr_ψ _ _ S_val, mkSuccBot_ψ]
+    simp [Seg.ξObjIso, Seg.ξ]
   -- need to work out that colimit but should be ok
   have : O₀.IsClosedUnderColimitsOfShape Λ :=
     CategoryTheory.isClosedUnderColimitsOfShape_isCardinalPresentable K (by
       rwa [hasCardinalLT_arrow_iff_of_isThin _ κ (Cardinal.IsRegular.aleph0_le Fact.out)])
-  have : Limits.HasColimitsOfShape Λ O₀.FullSubcategory :=
-    CategoryTheory.Limits.hasColimitsOfShape_of_closedUnderColimits ..
-  have : (Order.succ_mono (α := Λ)).functor.Final :=
-    (Monotone.final_functor_iff _).mpr fun j ↦ ⟨j, Order.le_succ j⟩
-  let U := Limits.colimit Ξ₀
-  let t := Limits.colimMap Θ
+  have : HasColimitsOfShape Λ O₀.FullSubcategory := hasColimitsOfShape_of_closedUnderColimits ..
+  have : (succ_mono (α := Λ)).functor.Final :=
+    (Monotone.final_functor_iff _).mpr fun j ↦ ⟨j, le_succ j⟩
+  let U := colimit Ξ₀
+  let t := colimMap Θ
   let t1 : F.obj U.left.obj ⟶ G.obj U.left.obj :=
     (preservesColimitIso (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) Ξ₀).hom ≫ t ≫
-    (Functor.Final.colimitIso (Order.succ_mono.functor) _).hom ≫
-    (preservesColimitIso _ _).inv
-  -- 1 :
+    (Functor.Final.colimitIso (succ_mono.functor) _).hom ≫ (preservesColimitIso _ _).inv
   let UU : Inserter F G := ⟨t1⟩
   refine ⟨UU, ?_, ⟨U.hom, ?_⟩,
-    v₀ ≫ (eqToHom e₀.symm).left.hom ≫ (Limits.colimit.ι Ξ₀ ⊥).left.hom, ?_, ?_⟩
+    v₀ ≫ (eqToHom e₀.symm).left.hom ≫ (colimit.ι Ξ₀ ⊥).left.hom, ?_, ?_⟩
   · dsimp [U, UU, t1]
     infer_instance
   · dsimp [U, UU, t1]
-    apply Limits.isColimitOfPreserves (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F)
-      (Limits.colimit.isColimit Ξ₀) |>.hom_ext
+    apply isColimitOfPreserves (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F)
+      (colimit.isColimit Ξ₀) |>.hom_ext
     intro j
     have e₁ := ι_preservesColimitIso_hom (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) Ξ₀ j
     dsimp at e₁
     simp [← Functor.map_comp_assoc, reassoc_of% e₁, t, ← G.map_comp, Θ, Ξ₀,
-      (S.sq₁ j (Order.succ j) (Order.lt_succ j)).symm]
-  · have := ι_preservesColimitIso_hom
-      (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) Ξ₀ ⊥
+      (S.sq₁ j (succ j) (lt_succ j)).symm]
+  · have := ι_preservesColimitIso_hom (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) Ξ₀ ⊥
     dsimp at this
     simp [UU, t1, t, reassoc_of% this]
-    simp [e₁, ← reassoc_of% he1, ← Limits.colimit.w Ξ₀ (homOfLE (Order.le_succ ⊥) : ⊥ ⟶ _),
-      -Limits.colimit.w, e₂]
+    simp [e₁, ← reassoc_of% he1, ← colimit.w Ξ₀ (homOfLE (le_succ ⊥) : ⊥ ⟶ _),
+      -colimit.w, e₂]
   · simp only [Functor.comp_obj, CostructuredArrow.proj_obj, ObjectProperty.ι_obj,
-      Category.assoc, UU, t1, t, ← Limits.colimit.w Ξ₀ (homOfLE (Order.le_succ ⊥) : ⊥ ⟶ _), e₂]
+      Category.assoc, UU, t1, t, ← colimit.w Ξ₀ (homOfLE (le_succ ⊥) : ⊥ ⟶ _), e₂]
     simp [-CostructuredArrow.eqToHom_left, -ObjectProperty.eqToHom_hom, U, hv₀]
 
 end
 
-/-- Let `Λ < κ` be a pair of infinite cardinals, such that `κ` is regular. Assume that
+/-- Let `Λ < κ` be a pair of infinite cardinals such that `κ` is regular. Assume that
 - `K` and `L` are `κ`-accessible categories with colimits of `Λ`-chains.
-- `F G : C ⥤ D` are `κ`-accessible functors preserving colimits of `Λ`-chains and with `F`
-  preserving `κ`-presentable objects.
-Then the category `Inserter F G` is κ-accessible.
+- `F G : C ⥤ D` are `κ`-accessible functors preserving colimits of `Λ`-chains
+- `F` preserves `κ`-presentable objects.
+
+Then the category `Inserter F G` is `κ`-accessible.
+This theorem appears as [4.1, Positetski]
 
 Note that if `K` and `L` are `κ`-accessible, and `F`, `G` are `κ`-accessible with `F` preserving
-`κ`-presentable objects, then as `κ` is sharply less than `κ⁺`, one can show that the pair `κ < κ⁺`
-satisfies the conditions above, and hence `Inserter F G` is `κ⁺` accessible in this situation. -/
+`κ`-presentable objects then since `κ` is sharply less than `κ⁺`, one can show that the pair
+`κ < κ⁺` satisfies the conditions above, and hence `Inserter F G` is `κ⁺`-accessible in
+this situation. -/
 public theorem isCardinalAccessibleCategory
     {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardinal.{w})
     [Fact κ.IsRegular] [IsCardinalAccessibleCategory K κ] [IsCardinalAccessibleCategory L κ]
