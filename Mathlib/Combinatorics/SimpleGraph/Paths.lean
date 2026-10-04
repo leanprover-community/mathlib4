@@ -1235,8 +1235,7 @@ variable {G} {u v : V} {s : Set V} {p : G.Walk u v} {c : G.Walk u u}
 
 @[simp]
 lemma isTrail_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsTrail ↔ p.IsTrail := by
-  rw [isTrail_def, isTrail_def, edges_induce, List.nodup_map_iff fun _ _ h ↦ ?_, List.nodup_attach]
-  simpa [Subtype.val_inj] using Sym2.attachWith_inj h
+  simp [isTrail_def, edges_induce, List.nodup_map_iff, Injective.eq_def]
 
 @[simp]
 lemma isPath_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsPath ↔ p.IsPath := by
