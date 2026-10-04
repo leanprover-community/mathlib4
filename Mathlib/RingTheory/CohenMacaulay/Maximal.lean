@@ -45,7 +45,7 @@ instance (priority := low) [IsNoetherianRing R] [IsLocalRing R] [Small.{v} R]
     (M : ModuleCat.{v} R) [M.IsMaximalCohenMacaulay] : Nontrivial M := by
   by_contra! sub
   have := (isMaximalCohenMacaulay_def M).mp ‹_›
-  simp only [IsLocalRing.depth_eq_top_of_subsingleton M sub, WithBot.coe_top] at this
+  simp only [IsLocalRing.depth_eq_top_of_subsingleton M, WithBot.coe_top] at this
   absurd this.symm
   exact ringKrullDim_ne_top
 
@@ -59,7 +59,7 @@ lemma isCohenMacaulay_of_isMaximalCohenMacaulay [IsNoetherianRing R] [IsLocalRin
 lemma isCohenMacaulayLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
     IsCohenMacaulayLocalRing R := by
   apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth
-  rw [depth_eq_sSup_length_regular]
+  rw [depth_eq_sSup_length_isRegular]
   let fg' : (maximalIdeal R).FG := (maximalIdeal R).fg_of_isNoetherianRing
   have : Fintype (maximalIdeal R).generators := (Submodule.FG.finite_generators fg').fintype
   have : ringKrullDim R = ((maximalIdeal R).generators.toFinset.card : ℕ∞) := by
@@ -114,7 +114,7 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
       rw [isMaximalCohenMacaulay_def, ← ENat.WithBot.add_natCast_cancel, Nat.cast_one,
         (quotient_span_singleton R xmem xnmem).2, ← WithBot.coe_one, ← WithBot.coe_add,
         ← (isMaximalCohenMacaulay_def M).mp ‹_›, WithBot.coe_inj,
-        ← depth_quotSMulTop_succ_eq_moduleDepth M x reg xmem]
+        ← depth_quotSMulTop_succ_eq_depth M x reg xmem]
       congr 1
       have := nontrivial_quotSMulTop_of_mem_maximalIdeal M xmem
       apply (depth_eq_of_algebraMap_surjective _ _).symm

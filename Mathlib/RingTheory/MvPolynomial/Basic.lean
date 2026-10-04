@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Data.DFinsupp.Small
-public import Mathlib.Data.Fintype.Pi
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
@@ -134,8 +132,7 @@ open scoped Pointwise in
       ← AddMonoidAlgebra.one_def, SetLike.mem_coe, Submodule.mem_one, algebraMap_eq]
     exact ⟨1, by simp⟩
   · rintro _ ⟨x, rfl⟩
-    simp [mem_restrictSupport_iff, subset_def, coeff, AddMonoidAlgebra.one_def,
-      Finsupp.single_apply]
+    simp [mem_restrictSupport_iff, subset_def, AddMonoidAlgebra.one_def, Finsupp.single_apply]
 
 @[simp]
 lemma restrictSupport_univ : restrictSupport R (.univ : Set (σ →₀ ℕ)) = ⊤ := by

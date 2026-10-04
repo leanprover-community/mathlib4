@@ -37,7 +37,7 @@ def exprToHtml (e : Expr) : MetaM Html :=
 /-- Turn a constant into an HTML with hover info.
 This avoids the `@` that may appear when using `exprToHtml`. -/
 def constToHtml (n : Name) : MetaM Html := do
-  let delab := withOptionAtCurrPos `pp.tagAppFns true <| delabConst
+  let delab := withOptionAtCurrPos `pp.tagAppFns true delabConst
   let ⟨fmt, infos⟩ ← PrettyPrinter.ppExprWithInfos (delab := delab) (← mkConstWithLevelParams n)
   let tt := TaggedText.prettyTagged fmt
   let ctx := {
@@ -424,5 +424,18 @@ def kabstractFindsPositions (e p : Expr) (targetPos : SubExpr.Pos) : MetaM Bool 
     foundRef.get
   catch _ =>
     return false
+
+/-- Determine which metavariables count as "unhelpful", given the old and new metavariables.
+This is used in suggestions of e.g. `apply`, to filter out suggestions with unhelpful metavariables.
+
+A metavariable is unhelpful if it was freshly introduced, and is not used in the assignment
+of a previously appearing metavariable.
+-/
+def hasUnhelpfulMVars (newMVars : Array MVarId) (oldMVars newExpressions : Array Expr) :
+    MetaM Bool := do
+  let used ← oldMVars.foldlM (init := {}) (Expr.collectMVars · <$> instantiateMVars ·)
+  let used := used.result
+  let unhelpful := newMVars.filter (!used.contains ·)
+  return newExpressions.any (·.findMVar? unhelpful.contains |>.isSome)
 
 end Mathlib.Tactic.ClickSuggestions
