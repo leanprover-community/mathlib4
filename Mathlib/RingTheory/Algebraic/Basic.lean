@@ -395,19 +395,17 @@ lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
 
 alias ⟨_, IsAlgebraic.inv⟩ := IsAlgebraic.inv_iff
 
-theorem not_isAlgebraic_mul_of_not_isAlgebraic_left {K L : Type*} [Field K] [Field L] [Algebra K L]
-    {x y : L} (hx : ¬ IsAlgebraic K x) (hy : IsAlgebraic K y) (hy_ne : y ≠ 0) :
-    ¬ IsAlgebraic K (x * y) := by
-  intro hxy
-  have hx' : IsAlgebraic K ((x * y) * y⁻¹) := hxy.mul hy.inv
-  rw [mul_inv_cancel_right₀ hy_ne] at hx'
-  exact hx hx'
+theorem IsAlgebraic.of_mul_right {K L : Type*} [Field K] [Field L] [Algebra K L]
+    {x y : L} (hxy : IsAlgebraic K (x * y)) (hy : IsAlgebraic K y) (hy_ne : y ≠ 0) :
+    IsAlgebraic K x := by
+  have hx : IsAlgebraic K ((x * y) * y⁻¹) := hxy.mul hy.inv
+  rwa [mul_inv_cancel_right₀ hy_ne] at hx
 
-theorem not_isAlgebraic_mul_of_not_isAlgebraic_right {K L : Type*} [Field K] [Field L] [Algebra K L]
-    {x y : L} (hx : IsAlgebraic K x) (hy : ¬ IsAlgebraic K y) (hx_ne : x ≠ 0) :
-    ¬ IsAlgebraic K (x * y) := by
-  rw [mul_comm]
-  exact not_isAlgebraic_mul_of_not_isAlgebraic_left hy hx hx_ne
+theorem IsAlgebraic.of_mul_left {K L : Type*} [Field K] [Field L] [Algebra K L]
+    {x y : L} (hxy : IsAlgebraic K (x * y)) (hx : IsAlgebraic K x) (hx_ne : x ≠ 0) :
+    IsAlgebraic K y := by
+  rw [mul_comm] at hxy
+  exact IsAlgebraic.of_mul_right hxy hx hx_ne
 
 end zero_ne_one
 
