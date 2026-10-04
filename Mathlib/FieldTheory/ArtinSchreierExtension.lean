@@ -31,11 +31,11 @@ universe u
 
 open IntermediateField Polynomial
 
-noncomputable def artinSchreierPoly {F : Type*} [Field F] (a : F) : Polynomial F :=
-  X ^ ringChar F -  X - C a
+noncomputable def artinSchreierPoly {F : Type*} [Field F] {p} [CharP F p] (a : F) :
+    Polynomial F := X ^ p -  X - C a
 
 lemma artinSchreierPoly.def {F : Type*} [Field F] {p} [CharP F p] (a : F) :
-    artinSchreierPoly a = X ^ p - X - C a := by rw [artinSchreierPoly, ringChar.eq F p]
+    artinSchreierPoly a = X ^ p - X - C a := by rw [artinSchreierPoly]
 
 @[simp]
 lemma artinSchreierPoly_isMonicOfDegree {F : Type u} [CommRing F] [Nontrivial F] (a : F)
@@ -53,7 +53,7 @@ variable {F : Type u} {K : Type u} {p : ℕ} [Field F] [Field K] [Algebra F K] [
 
 open AdjoinRoot Multiset
 
-lemma splits_artinSchreierPoly {a : F} {c : F} (hr : (artinSchreierPoly a).eval c = 0) :
+lemma splits_artinSchreierPoly {a : F} {c : F} (hr : (artinSchreierPoly a).IsRoot c) :
     Splits (X ^ p - X - C a) := by
   rcases CharP.char_is_prime_or_zero F p with hp | rfl
   · rw [← Splits.taylor_iff c]
@@ -83,7 +83,7 @@ lemma irreducible_artinSchreierPoly {a : F} (hr : (X ^ p - X - C a).roots = 0) :
       have hdiv : b.map (of c) ∣ f.map (of c) := map_dvd _ hb3
       have hc := IsRoot.dvd (isRoot_root c) (map_dvd (of c) hc1)
       rw [show f.map (of c) = X ^ p - X - C (of c a) by simp [hf]] at hm0 hdiv hc
-      rw [IsRoot.def, ← artinSchreierPoly.def] at hc
+      rw [← artinSchreierPoly.def] at hc
       exact hb2.natDegree_dvd_finrank ((splits_artinSchreierPoly hc).of_dvd hm0 hdiv)
     have h3 := (((Nat.dvd_prime hp).mp (h2.trans hmon.1.dvd)).resolve_left h1).symm
     exact (associated_of_dvd_of_natDegree_le hb3 h0 (hmon.1.trans h3).le).irreducible hb2
@@ -95,7 +95,7 @@ lemma artinSchreierPoly_irreducible_or_splits (a : F) :
   · left; exact irreducible_artinSchreierPoly hr
   · right
     have ⟨_, hc⟩ := exists_mem_of_ne_zero hr
-    simp only [mem_roots', ne_eq, IsRoot.def, ← artinSchreierPoly.def] at hc
+    simp only [mem_roots', ne_eq, ← artinSchreierPoly.def] at hc
     exact splits_artinSchreierPoly hc.2
 
 section Lemmas
