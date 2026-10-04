@@ -300,6 +300,14 @@ lemma Limits.exists_eq_of_preservesColimit_coyoneda_self [IsFiltered J] {c : Coc
   (Types.FilteredColimit.isColimit_eq_iff'
     (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f g).mp h
 
+lemma Limits.exists_eq_of_preservesColimit_coyoneda_self_of_hasCardinalLT [IsCardinalFiltered J κ]
+    {c : Cocone D} (hc : IsColimit c) {X : C} [PreservesColimit D (coyoneda.obj (.op X))]
+    {i : J} {ι : Type*} (hi : HasCardinalLT ι κ)
+    (f : ι → (X ⟶ D.obj i)) (h : ∀ (k k' : ι), f k ≫ c.ι.app i = f k' ≫ c.ι.app i) :
+    ∃ (j : J) (a : i ⟶ j), ∀ (k k' : ι), f k ≫ D.map a = f k' ≫ D.map a :=
+  (Types.FilteredColimit.isColimit_eq_iff'_of_hasCardinal_LT κ
+    (isColimitOfPreserves (coyoneda.obj (.op X)) hc) hi f).mp h
+
 lemma Limits.exists_hom_of_preservesColimit_yoneda {c : Cone D} (hc : IsLimit c) {X : C}
     [PreservesColimit D.op (yoneda.obj X)] (f : c.pt ⟶ X) :
     ∃ (j : J) (p : D.obj j ⟶ X), c.π.app j ≫ p = f := by
@@ -378,6 +386,28 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   have := isFiltered_of_isCardinalFiltered J κ
   exact exists_eq_of_preservesColimit_coyoneda_self hc f₁ f₂ hf
+
+lemma IsCardinalPresentable.exists_eq_of_isColimit'_of_hasCardinalLT
+    [IsCardinalPresentable X κ] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i : J} {ι : Type*} (hι : HasCardinalLT ι κ)
+    (f : ι → (X ⟶ F.obj i))
+    (hf : ∀ (i₀ i₁ : ι), f i₀ ≫ c.ι.app i = f i₁ ≫ c.ι.app i) :
+    ∃ (j : J) (u : i ⟶ j), ∀ (i₀ i₁ : ι), f i₀ ≫ F.map u = f i₁ ≫ F.map u := by
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  have := isFiltered_of_isCardinalFiltered J κ
+  have (i₀ i₁ : ι) := exists_eq_of_preservesColimit_coyoneda_self hc (f i₀) (f i₁) (hf i₀ i₁)
+  choose j₀ u₀ hu₀ using this
+  let j₁ := Sigma.uncurry j₀
+  have : HasCardinalLT ((_ : ι) × ι) κ := by
+    let e : (_ : ι) × ι ≃ ι × ι := Equiv.sigmaEquivProd ι ι
+    rw [hasCardinalLT_iff_of_equiv e]
+    exact hasCardinalLT_prod (Cardinal.IsRegular.aleph0_le Fact.out) hι hι
+  let u₁ := Sigma.uncurry u₀
+  obtain ⟨m₀, a₀, b₀, hb₀⟩ := IsCardinalFiltered.wideSpan u₁ this
+  use m₀, b₀
+  intro i₀ i₁
+  rw [← hb₀ ⟨i₀, i₁⟩, Functor.map_comp]
+  simp [u₁, Sigma.uncurry, reassoc_of% hu₀ i₀ i₁]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a commutative square where both objects on the top are `κ`-presentable
