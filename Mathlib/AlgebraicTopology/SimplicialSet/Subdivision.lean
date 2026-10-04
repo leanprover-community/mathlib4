@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
 public import Mathlib.Order.NonemptyFiniteChains
 
 /-!
@@ -42,6 +42,7 @@ noncomputable def SimplexCategory.sd : SimplexCategory ⥤ SSet.{u} :=
 namespace SSet
 
 /-- The subdivision functor on simplicial sets. -/
+@[no_expose]
 noncomputable def sd : SSet.{u} ⥤ SSet.{u} :=
   stdSimplex.leftKanExtension SimplexCategory.sd
 
@@ -49,12 +50,11 @@ noncomputable def sd : SSet.{u} ⥤ SSet.{u} :=
 noncomputable def ex : SSet.{u} ⥤ SSet.{u} :=
   Presheaf.restrictedULiftYoneda.{0} SimplexCategory.sd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the subdivision functor `sd` and `ex`. -/
+@[no_expose]
 noncomputable def sdExAdjunction : sd.{u} ⊣ ex :=
-  Presheaf.uliftYonedaAdjunction.{0}
-    (SSet.stdSimplex.{u}.leftKanExtension SimplexCategory.sd)
-    (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.sd)
+  (Presheaf.restrictedULiftYonedaAdjunction.{0}
+    (uliftYoneda.{u}.leftKanExtensionUnit SimplexCategory.sd) :)
 
 instance : sd.{u}.IsLeftAdjoint := sdExAdjunction.isLeftAdjoint
 
@@ -63,8 +63,9 @@ instance : ex.{u}.IsRightAdjoint := sdExAdjunction.isRightAdjoint
 namespace stdSimplex
 
 /-- The natural isomorphism `stdSimplex ⋙ sd ≅ SimplexCategory.sd`. -/
+@[no_expose]
 noncomputable def sdIso : stdSimplex.{u} ⋙ sd ≅ SimplexCategory.sd :=
-  Presheaf.isExtensionAlongULiftYoneda _
+  (asIso (uliftYoneda.{u}.leftKanExtensionUnit SimplexCategory.sd.{u})).symm
 
 end stdSimplex
 

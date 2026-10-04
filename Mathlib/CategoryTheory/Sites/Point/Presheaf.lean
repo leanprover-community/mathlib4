@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
+public import Mathlib.CategoryTheory.Limits.Elements
 
 /-!
 # Points of presheaf toposes
@@ -58,7 +59,8 @@ instance :
       (shrinkYonedaObjObjEquiv.symm (𝟙 X))) := by
   rw [NatTrans.isIso_iff_isIso_app]
   exact fun _ ↦ (colimit.isColimit _).isIso_ι_app_of_isTerminal _
-    (Functor.Elements.isInitialElementsMkShrinkYonedaObjObjEquivId X).op
+    ((Functor.Elements.isInitialOfCorepresentableBy
+      (shrinkCoyonedaCorepresentableBy (op X))).op)
 
 /-- The fiber functor `(Cᵒᵖ ⥤ A) ⥤ A` corresponding to the point
 of the Grothendieck topology `⊥` attached to an object `X : C`
