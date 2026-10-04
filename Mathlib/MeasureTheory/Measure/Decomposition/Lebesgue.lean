@@ -1087,7 +1087,7 @@ lemma add_sub_of_mutuallySingular {ξ : Measure α} (h : μ ⟂ₘ ξ) : μ + (�
 
 end Measure
 
-lemma IsHahnDecomposition_withDensity_le_one {α : Type*} {_ : MeasurableSpace α} {μ : Measure α}
+lemma isHahnDecomposition_withDensity_le_one {α : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     {f : α → ℝ≥0∞} (hf : Measurable f) :
     IsHahnDecomposition (μ.withDensity f) μ {x | f x ≤ 1} where
   measurableSet := measurableSet_le hf measurable_const

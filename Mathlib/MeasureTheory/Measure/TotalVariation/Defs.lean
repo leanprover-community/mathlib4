@@ -24,7 +24,7 @@ so that it takes values in `[0, 1]`.
 ## Main definitions
 
 * `eTVDist μ ν`: total variation distance between two finite measures, defined as the value on the
-  universal set of the variation of `μ - ν`, in which both measures are seen as signed measures.
+  whole space of the variation of `μ - ν`, in which both measures are seen as signed measures.
   This distance takes values in `ℝ≥0∞` but is always finite.
 * `tvDist μ ν`: total variation distance between two finite measures,
   defined as `(eTVDist μ ν).toReal`.
@@ -62,14 +62,14 @@ lemma eTVDist_lt_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasur
   calc eTVDist μ ν
   _ ≤ eTVDist μ 0 + eTVDist 0 ν := VectorMeasure.eTVDist_triangle _ _ _
   _ = μ Set.univ + ν Set.univ := by
-    simp [eTVDist, VectorMeasure.eTVDist_zero_right, VectorMeasure.eTVDist_zero_left]
+    simp [eTVDist]
   _ < ∞ := by simp
 
 @[simp]
 lemma eTVDist_ne_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     eTVDist μ ν ≠ ∞ := (eTVDist_lt_top μ ν).ne
 
-lemma eTVDist_eq_iSup_finPartition_abs :
+lemma eTVDist_eq_iSup_finPartition_enorm :
     eTVDist μ ν =
       ⨆ (P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧)))),
         ∑ p ∈ P.parts, ‖μ.real p - ν.real p‖ₑ := by
