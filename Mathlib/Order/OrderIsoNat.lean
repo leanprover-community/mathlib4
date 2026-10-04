@@ -216,11 +216,15 @@ theorem Finite.of_wellFoundedLT_of_wellFoundedGT (α : Type*) [LinearOrder α] [
 @[deprecated (since := "2026-08-11")]
 alias Finite.of_wellFoundedLT_wellFoundedGT := Finite.of_wellFoundedLT_of_wellFoundedGT
 
-theorem IsChain.finite_of_wellFoundedLT_of_wellFoundedGT [Preorder α] [WellFoundedLT α]
-    [WellFoundedGT α] {s : Set α} (h : IsChain (· < ·) s) : s.Finite := by
+theorem IsLTChain.finite_of_wellFoundedLT_of_wellFoundedGT [Preorder α] [WellFoundedLT α]
+    [WellFoundedGT α] {s : Set α} (h : IsLTChain s) : s.Finite := by
   classical
   let := h.linearOrder
   exact Finite.of_wellFoundedLT_of_wellFoundedGT s
+
+@[deprecated (since := "2026-10-04")]
+alias IsChain.finite_of_wellFoundedLT_of_wellFoundedGT :=
+  IsLTChain.finite_of_wellFoundedLT_of_wellFoundedGT
 
 /-- The **monotone chain condition**: a preorder is co-well-founded iff every increasing sequence
 contains two non-increasing indices.

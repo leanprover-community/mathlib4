@@ -721,11 +721,11 @@ theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Pr
 of subgroups whose orders divide `p ^ n` can be completed to a tower of subgroups of orders
 `p ^ 0, …, p ^ n`. -/
 theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
-    (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
+    (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsLEChain s)
     (hcard : ∀ H ∈ s, Nat.card H ∣ p ^ n) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
   suffices ∀ (n : ℕ) (H : Subgroup G) (hdvd : p ^ n ∣ Nat.card H) (s : Set (Subgroup G))
-      (hchain : IsChain (· ≤ ·) s) (hcard : ∀ K ∈ s, Nat.card K ∣ p ^ n) (hle : ∀ K ∈ s, K ≤ H),
+      (hchain : IsLEChain s) (hcard : ∀ K ∈ s, Nat.card K ∣ p ^ n) (hle : ∀ K ∈ s, K ≤ H),
       ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧
         ∀ k, Nat.card (f k) = p ^ k.val ∧ f k ≤ H by
     obtain ⟨f, hf⟩ := this n ⊤ (by simpa) s hchain hcard (by simp)
@@ -737,7 +737,7 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
   | zero => exact ⟨.ofStrictMono ![⊥] (by simp), by simpa using hcard⟩
   | succ n ih =>
     have h : ∃ T ≤ H, Nat.card T ∣ p ^ (n + 1) ∧ ∀ K ∈ s, K ≤ T := by
-      let : LinearOrder s := hchain.lt_of_le.linearOrder
+      let : LinearOrder s := hchain.isLTChain.linearOrder
       by_cases! h : Nonempty s
       · obtain ⟨⟨t, hts⟩, ht⟩ := Finite.exists_max (fun x : s ↦ x)
         exact ⟨t, hle t hts, hcard t hts, fun g hg ↦ ht ⟨g, hg⟩⟩

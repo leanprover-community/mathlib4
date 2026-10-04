@@ -54,6 +54,10 @@ lemma zorny_lemma : zorny_statement := by
       proof_that_construction_contains_all_stuff_in_c⟩
 ```
 
+## TODO
+
+Zorn lemmas can be proved over `<`-chains, which is more general than `≤` versions.
+
 ## Notes
 
 Originally ported from Isabelle/HOL. The
@@ -101,16 +105,16 @@ section Preorder
 variable [Preorder α]
 
 @[to_dual zorn_ge]
-theorem zorn_le (h : ∀ c : Set α, IsChain (· ≤ ·) c → BddAbove c) : ∃ m : α, IsMax m :=
+theorem zorn_le (h : ∀ c : Set α, IsLEChain c → BddAbove c) : ∃ m : α, IsMax m :=
   exists_maximal_of_chains_bounded h le_trans
 
 @[to_dual zorn_ge_nonempty]
 theorem zorn_le_nonempty [Nonempty α]
-    (h : ∀ c : Set α, IsChain (· ≤ ·) c → c.Nonempty → BddAbove c) : ∃ m : α, IsMax m :=
+    (h : ∀ c : Set α, IsLEChain c → c.Nonempty → BddAbove c) : ∃ m : α, IsMax m :=
   exists_maximal_of_nonempty_chains_bounded h le_trans
 
 @[to_dual zorn_ge₀]
-theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) :
+theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsLEChain c → ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) :
     ∃ m, Maximal (· ∈ s) m :=
   let ⟨⟨m, hms⟩, h⟩ :=
     @zorn_le s _ fun c hc =>
@@ -124,7 +128,7 @@ theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃
 
 @[to_dual zorn_ge_nonempty₀]
 theorem zorn_le_nonempty₀ (s : Set α)
-    (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α) (hxs : x ∈ s) :
+    (ih : ∀ c ⊆ s, IsLEChain c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α) (hxs : x ∈ s) :
     ∃ m, x ≤ m ∧ Maximal (· ∈ s) m := by
   have H := zorn_le₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_
   · rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
@@ -136,7 +140,7 @@ theorem zorn_le_nonempty₀ (s : Set α)
 
 @[to_dual zorn_ge_nonempty_Iic₀]
 theorem zorn_le_nonempty_Ici₀ (a : α)
-    (ih : ∀ c ⊆ Ici a, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub, ∀ z ∈ c, z ≤ ub) (x : α) (hax : a ≤ x) :
+    (ih : ∀ c ⊆ Ici a, IsLEChain c → ∀ y ∈ c, ∃ ub, ∀ z ∈ c, z ≤ ub) (x : α) (hax : a ≤ x) :
     ∃ m, x ≤ m ∧ IsMax m := by
   let ⟨m, hxm, ham, hm⟩ := zorn_le_nonempty₀ (Ici a) (fun c hca hc y hy ↦ ?_) x hax
   · exact ⟨m, hxm, fun z hmz => hm (ham.trans hmz) hmz⟩
@@ -186,15 +190,18 @@ namespace Flag
 
 variable [Preorder α] {c : Set α} {s : Flag α} {a b : α}
 
-lemma _root_.IsChain.exists_subset_flag (hc : IsChain (· ≤ ·) c) : ∃ s : Flag α, c ⊆ s :=
+lemma _root_.IsLEChain.exists_subset_flag (hc : IsLEChain c) : ∃ s : Flag α, c ⊆ s :=
   let ⟨s, hs, hcs⟩ := hc.exists_maxChain; ⟨ofIsMaxChain s hs, hcs⟩
 
+@[deprecated (since := "2026-10-04")]
+alias _root_.IsChain.exists_subset_flag := IsLEChain.exists_subset_flag
+
 lemma exists_mem (a : α) : ∃ s : Flag α, a ∈ s :=
-  let ⟨s, hs⟩ := Set.subsingleton_singleton (a := a).isChain.exists_subset_flag
+  let ⟨s, hs⟩ := IsLEChain.exists_subset_flag <| Set.subsingleton_singleton.isChain
   ⟨s, hs rfl⟩
 
 lemma exists_mem_mem (hab : a ≤ b) : ∃ s : Flag α, a ∈ s ∧ b ∈ s := by
-  simpa [Set.insert_subset_iff] using (IsChain.pair hab).exists_subset_flag
+  simpa [Set.insert_subset_iff] using IsLEChain.exists_subset_flag (IsChain.pair hab)
 
 instance : Nonempty (Flag α) := ⟨.ofIsMaxChain _ maxChain_spec⟩
 
