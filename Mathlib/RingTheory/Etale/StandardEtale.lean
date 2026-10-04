@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
 import Mathlib.RingTheory.Ideal.IdempotentFG
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 /-!
 

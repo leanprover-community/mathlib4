@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
+public import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 

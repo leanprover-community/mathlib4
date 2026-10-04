@@ -12,6 +12,10 @@ import Mathlib.LinearAlgebra.Matrix.Defs
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Tactic.SetLike
 
 /-!
 # Parsing matrix literals

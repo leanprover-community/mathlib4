@@ -6,7 +6,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 module
 
 import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Analysis.Normed.Operator.NNNorm
+public import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # Operators on complete normed spaces

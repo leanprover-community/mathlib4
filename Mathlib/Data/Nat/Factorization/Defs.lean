@@ -5,7 +5,6 @@ Authors: Stuart Presnell
 -/
 module
 
-import Batteries.Data.List.Count
 public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Data.Nat.PrimeFin

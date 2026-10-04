@@ -5,8 +5,13 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Core.Expr
 public meta import Mathlib.Tactic.Inclusion.Core.Extensions
+public meta import Aesop
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Inclusion.Core.Expr
+public import Mathlib.Tactic.Inclusion.Core.Extensions
+public meta import Mathlib.Tactic.Simps
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Constructing inclusions

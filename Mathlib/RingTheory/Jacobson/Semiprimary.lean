@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
 # Semiprimary rings

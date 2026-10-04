@@ -7,7 +7,6 @@ module
 
 import Mathlib.Init
 public import Qq
-import Qq.Typ
 
 /-! # Helpers to invoke functions involving algebra at tactic time
 

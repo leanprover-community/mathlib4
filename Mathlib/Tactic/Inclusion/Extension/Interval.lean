@@ -5,12 +5,12 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Tactic.Inclusion.Core.ToSet
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # (possibly unbounded) intervals

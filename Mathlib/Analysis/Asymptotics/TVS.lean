@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Tactic.Peel
 
 /-!
 # Asymptotics in a Topological Vector Space

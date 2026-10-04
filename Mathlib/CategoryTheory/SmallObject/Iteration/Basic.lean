@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.Data.Finset.Attr
 
 /-! # Transfinite iterations of a successor structure
 

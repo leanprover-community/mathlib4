@@ -9,7 +9,6 @@ import Mathlib.Analysis.Complex.IsIntegral
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.NumberTheory.Real.Irrational
-import Mathlib.Tactic.Peel
 import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Qify
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Even
 public import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Tactic.ApplyFun
 

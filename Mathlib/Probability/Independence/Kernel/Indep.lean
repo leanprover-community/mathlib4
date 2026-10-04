@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Basic
-import Mathlib.Tactic.Peel
 
 /-!
 # Independence of families of sets with respect to a kernel and a measure

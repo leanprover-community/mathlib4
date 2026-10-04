@@ -6,7 +6,7 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.EqToHom
-import Mathlib.Data.ULift
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basic API for ULift

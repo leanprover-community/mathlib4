@@ -6,7 +6,9 @@ Authors: Yury Kudryashov
 module
 
 import Mathlib.Analysis.Calculus.BumpFunction.Convolution
-public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Density of smooth functions in the space of continuous functions

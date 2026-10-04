@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Tactic.Peel
 
 /-!
 # Eigenvectors and eigenvalues

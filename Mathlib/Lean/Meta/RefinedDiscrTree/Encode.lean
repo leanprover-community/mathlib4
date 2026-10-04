@@ -6,7 +6,6 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-import Lean.Meta.DiscrTree
 public import Lean.Meta.LazyDiscrTree
 
 /-!

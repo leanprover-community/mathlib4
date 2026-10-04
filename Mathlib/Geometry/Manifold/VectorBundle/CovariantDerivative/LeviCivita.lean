@@ -8,6 +8,7 @@ module
 import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
+public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 
 /-!
 # The Levi-Civita connection on a Riemannian manifold

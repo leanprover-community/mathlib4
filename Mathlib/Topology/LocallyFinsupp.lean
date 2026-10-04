@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Pi
 public import Mathlib.Topology.Separation.Hausdorff
-public import Mathlib.Tactic.Peel
 
 /-!
 # Type of functions with locally finite support

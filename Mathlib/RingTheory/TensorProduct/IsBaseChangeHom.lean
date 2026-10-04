@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.LinearAlgebra.TensorProduct.Prod
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 public import Mathlib.LinearAlgebra.Determinant
 

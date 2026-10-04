@@ -11,6 +11,7 @@ import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Support
 
 /-!
 

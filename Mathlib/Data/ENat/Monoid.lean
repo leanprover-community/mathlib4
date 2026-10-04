@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Data.ENat.Basic
-import Mathlib.Tactic.Basify.Attr
 
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Data.Nat.Cast.Order.Basic

@@ -7,9 +7,10 @@ module
 
 import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # Kraft-McMillan Inequality

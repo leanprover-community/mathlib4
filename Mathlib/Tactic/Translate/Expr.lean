@@ -10,6 +10,8 @@ public meta import Batteries.Lean.NameMapAttribute
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
 public import Mathlib.Tactic.Translate.GuessName
+public import Batteries.Lean.NameMapAttribute
+meta import Mathlib.Tactic.Translate.Reorder
 
 /-!
 # Expression translation for the translation attribute.

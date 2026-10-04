@@ -6,7 +6,6 @@ Authors: Raphael Douglas Giles
 
 module
 
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.OrderOfVanishing.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 
