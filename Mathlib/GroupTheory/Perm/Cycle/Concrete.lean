@@ -205,7 +205,7 @@ theorem IsCycleOn.injOn_sym2_pow_apply {f : Perm α} {a : α} {s : Finset α}
 
 /-- For a cycle `f` on a finset `s` of cardinality not equal to `2` and `a ∈ s`, the unordered
 pair `s((f ^ k) a, (f ^ (k + 1)) a)` differs from `s(a, f a)` when `k ≠ 0` and `k < s.card`. -/
-theorem IsCycleOn.sym2_pow_apply_ne {f : Perm α} {a : α} {s : Finset α}
+theorem IsCycleOn.sym2Mk_pow_apply_ne {f : Perm α} {a : α} {s : Finset α}
     (hf : f.IsCycleOn s) (ha : a ∈ s)
     {k : ℕ} (hk1 : k ≠ 0) (hk2 : k < s.card) (hs : s.card ≠ 2) :
     s((f ^ k) a, (f ^ (k + 1)) a) ≠ s(a, f a) := fun heq ↦ hk1 <|
