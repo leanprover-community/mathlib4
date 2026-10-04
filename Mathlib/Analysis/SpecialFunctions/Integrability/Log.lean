@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
 import Mathlib.Analysis.Normed.Module.Connected
 import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 

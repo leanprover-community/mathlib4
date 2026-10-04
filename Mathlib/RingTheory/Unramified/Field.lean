@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.Unramified.Finite
 public import Mathlib.RingTheory.Unramified.Locus
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 # Unramified algebras over fields

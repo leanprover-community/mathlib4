@@ -20,6 +20,7 @@ public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.Expr
+public meta import Mathlib.Tactic.Translate.Expr
 
 /-!
 # The translation attribute.

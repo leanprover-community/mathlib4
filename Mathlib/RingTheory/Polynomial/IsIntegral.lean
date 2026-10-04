@@ -10,6 +10,7 @@ import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
 import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 

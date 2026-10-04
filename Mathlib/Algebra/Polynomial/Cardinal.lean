@@ -7,7 +7,7 @@ module
 
 import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.SetTheory.Cardinal.Finsupp
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Cardinality of Polynomial Ring

@@ -6,7 +6,6 @@ Authors: Jireh Loreaux
 module
 
 public import Aesop.Frontend
-public meta import Batteries.Util.LibraryNote
 import Mathlib.Init
 public import Aesop.Frontend.Basic
 public import Batteries.Util.LibraryNote

@@ -11,6 +11,7 @@ public import Mathlib.Order.Nat
 import Mathlib.Tactic.Basify.Attr
 
 import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Definition and basic properties of extended natural numbers

@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.DFinsupp.Lex
 public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.Cardinal.Order
-import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`

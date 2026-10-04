@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Algebra.Ring.GrindInstances
-public import Mathlib.Tactic.Tauto
 
 /-!
 # Ordered rings and semirings

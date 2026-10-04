@@ -6,7 +6,6 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!

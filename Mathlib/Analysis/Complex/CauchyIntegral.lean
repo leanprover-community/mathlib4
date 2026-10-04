@@ -12,6 +12,7 @@ import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+public import Mathlib.Analysis.Analytic.Within
 
 /-!
 # Cauchy integral formula

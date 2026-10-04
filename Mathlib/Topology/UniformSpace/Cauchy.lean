@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.

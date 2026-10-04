@@ -5,7 +5,6 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 module
 
-import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic

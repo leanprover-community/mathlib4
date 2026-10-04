@@ -11,6 +11,7 @@ import Mathlib.Algebra.Module.LocalizedModule.Exact
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 public import Mathlib.RingTheory.LocalProperties.Injective
+public import Mathlib.RingTheory.LocalProperties.Submodule
 
 /-!
 

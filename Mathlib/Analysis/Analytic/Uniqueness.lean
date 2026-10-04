@@ -9,7 +9,7 @@ import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Normed.Module.Completion
-public import Mathlib.Analysis.Analytic.ChangeOrigin
+public import Mathlib.Analysis.Analytic.Basic
 
 /-!
 # Uniqueness principle for analytic functions

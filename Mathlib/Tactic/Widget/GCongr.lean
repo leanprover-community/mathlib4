@@ -6,7 +6,6 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Tactic.Widget.SelectPanelUtils
-import ProofWidgets.Component.Basic
 import ProofWidgets.Component.OfRpcMethod
 public meta import ProofWidgets.Component.Basic
 

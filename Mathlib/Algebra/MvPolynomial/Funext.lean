@@ -8,7 +8,7 @@ module
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.MvPolynomial.Polynomial
-public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Function extensionality for multivariate polynomials

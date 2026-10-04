@@ -10,7 +10,6 @@ module
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Meta.AppBuilder
-public import Lean.Meta.Match.MatcherInfo
 import Lean.Meta.Transform
 
 /-!

@@ -6,7 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 import Mathlib.Topology.UniformSpace.CompleteSeparated
-import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.HeineCantor
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.Group.Quotient

@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.Data.Fin.Tuple.Sort
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 
 /-! # Spectral theory of self-adjoint operators
 

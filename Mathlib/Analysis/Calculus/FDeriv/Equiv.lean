@@ -6,7 +6,13 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Linear
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # The derivative of a linear equivalence

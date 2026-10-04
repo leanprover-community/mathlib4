@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Init
 public import Batteries.Tactic.Exact
-import Lean.Meta.Tactic.Simp
+public import Lean.Meta.Tactic.Simp
 
 /-!
 # Dischargers for `simp` to tactics

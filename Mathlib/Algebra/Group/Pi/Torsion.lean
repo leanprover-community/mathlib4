@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Torsion of products

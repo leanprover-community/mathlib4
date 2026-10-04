@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Push
 
 /-!

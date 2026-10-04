@@ -7,8 +7,10 @@ module
 
 import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Injective
-public import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.RingTheory.LocalProperties.Exactness
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 

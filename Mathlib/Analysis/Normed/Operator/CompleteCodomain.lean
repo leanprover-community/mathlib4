@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-! # Completeness of spaces of linear and multilinear maps
 

@@ -6,9 +6,9 @@ Authors: Anatole Dedecker, Floris van Doorn
 module
 
 import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
+public import Mathlib.Analysis.Convex.Hull
 
 /-!
 # Ample subsets of real vector spaces

@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Analytic.Constructions
 
 /-!
 # Faa di Bruno formula

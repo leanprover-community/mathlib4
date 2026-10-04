@@ -12,6 +12,7 @@ public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Basify.Attr
+public import Mathlib.Tactic.Basify.Attr
 
 /-!
 # The positive natural numbers

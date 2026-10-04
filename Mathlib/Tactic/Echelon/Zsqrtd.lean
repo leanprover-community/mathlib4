@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.Tactic.Echelon.Core
 public meta import Mathlib.NumberTheory.Zsqrtd.Basic
+public meta import Mathlib.Tactic.Echelon.Core
 
 /-!
 # The `ℤ√d` model for the Bareiss elimination

@@ -5,7 +5,6 @@ Authors: Aaron Liu, Wojciech Nawrocki
 -/
 module
 
-public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Tactic.Rewrite
 import Mathlib.Init
