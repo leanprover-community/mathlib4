@@ -6,10 +6,11 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Probability.Decision.Risk.Defs
+public import Mathlib.Probability.Kernel.Composition.MapComap
 public import Mathlib.Probability.Kernel.WithDensity
 
 import Mathlib.Probability.Decision.Risk.Basic
-public import Mathlib.Probability.Kernel.Composition.MapComap
+import Mathlib.Probability.Kernel.Composition.WithDensity
 
 /-!
 # Risk increase (or statistical information)
@@ -44,18 +45,6 @@ open MeasureTheory Set Function
 open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
-
-lemma Kernel.withDensity_comp {α β γ : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {_ : MeasurableSpace γ} {κ : Kernel α β} [IsSFiniteKernel κ]
-    {η : Kernel β γ} [IsSFiniteKernel η] {f : α → ℝ≥0∞} (hf : Measurable f) :
-    (η ∘ₖ κ).withDensity (fun a _ ↦ f a) = η ∘ₖ (κ.withDensity (fun a _ ↦ f a)) := by
-  ext a s hs
-  rw [Kernel.withDensity_apply _ (by fun_prop), Kernel.comp_apply, Kernel.comp_apply]
-  conv_rhs => rw [Measure.bind_apply hs (by fun_prop)]
-  simp only [withDensity_const, Measure.smul_apply, smul_eq_mul]
-  rw [lintegral_withDensity _ (by fun_prop), Measure.bind_apply hs (Kernel.aemeasurable _),
-    lintegral_const_mul]
-  all_goals exact η.measurable_coe hs
 
 variable {Θ 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧}
   {m𝓧' : MeasurableSpace 𝓧'} [MeasurableSpace 𝓨]
@@ -129,7 +118,7 @@ lemma riskIncrease_withDensity (hl : Measurable (uncurry ℓ))
     (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (π : Measure Θ)
     {f : Θ → ℝ≥0∞} (hf : Measurable f) :
     riskIncrease ℓ (P.withDensity (fun θ _ ↦ f θ)) π = riskIncrease ℓ P (π.withDensity f) := by
-  rw [riskIncrease, ← Kernel.withDensity_comp hf, bayesRisk_withDensity hl _ π hf,
+  rw [riskIncrease, ← Kernel.withDensity_comp_left hf, bayesRisk_withDensity hl _ π hf,
     bayesRisk_withDensity hl _ π hf, riskIncrease]
 
 end ProbabilityTheory
