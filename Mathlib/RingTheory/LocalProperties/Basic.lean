@@ -5,9 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Localization.LocalizationLocalization
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.LocalProperties.Submodule
 public import Mathlib.RingTheory.RingHomProperties
@@ -317,7 +315,7 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one (Equiv.refl _).bijective
     have : IsLocalization.Away (f 1) T :=
       IsLocalization.away_of_isUnit_of_bijective _ (by simp) e.bijective
-    convert! hP f 1 R T hf
+    convert hP f 1 R T hf
     trans (IsLocalization.Away.map R T f 1).comp (algebraMap R R)
     · rw [IsLocalization.Away.map, IsLocalization.map_comp]; rfl
     · rfl
@@ -327,7 +325,7 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.symm.bijective
     have : IsLocalization.Away (f 1) T :=
       IsLocalization.away_of_isUnit_of_bijective _ (by simp) (Equiv.refl _).bijective
-    convert! hP f 1 R T hf
+    convert hP f 1 R T hf
     have : RingHomInvPair (e : R →+* S) e.symm := RingHomInvPair.of_ringEquiv _
     have : (IsLocalization.Away.map R T f 1).comp e.symm.toRingHom = f :=
       IsLocalization.map_comp ..
@@ -356,7 +354,7 @@ theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
 theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) :
     RingHom.LocalizationAwayPreserves P := by
   intro R S _ _ f r R' S' _ _ _ _ _ _ hf
-  have : IsLocalization ((Submonoid.powers r).map f) S' := by rw [Submonoid.map_powers]; assumption
+  have : IsLocalization ((Submonoid.powers r).map f) S' := by rwa [Submonoid.map_powers]
   exact H f (Submonoid.powers r) R' S' hf
 
 lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsLocal @P)
@@ -432,7 +430,7 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
   apply hP _ s hs
   intro r
   obtain ⟨T, _, _, _, hT⟩ := hT r
-  convert! hP'.1 _ (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
+  convert hP'.1 _ (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
   rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
     RingHom.comp_id]
@@ -521,10 +519,6 @@ section Ideal
 
 variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable (p : Submonoid R) [IsLocalization p S]
-
-theorem Ideal.localized'_eq_map (I : Ideal R) :
-    Submodule.localized' S p (Algebra.linearMap R S) I = I.map (algebraMap R S) := by
-  rw [map, span, Submodule.localized'_eq_span, Algebra.coe_linearMap]
 
 theorem Ideal.localized₀_eq_restrictScalars_map (I : Ideal R) :
     Submodule.localized₀ p (Algebra.linearMap R S) I = (I.map (algebraMap R S)).restrictScalars R :=

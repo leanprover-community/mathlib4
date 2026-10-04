@@ -6,14 +6,14 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
-public import Mathlib.Algebra.Algebra.Subalgebra.Rank
-public import Mathlib.Algebra.Polynomial.Basis
+import Mathlib.Algebra.Algebra.Subalgebra.Rank
+import Mathlib.Algebra.Polynomial.Basis
 public import Mathlib.LinearAlgebra.LinearDisjoint
 public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
-public import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 public import Mathlib.RingTheory.Norm.Defs
 public import Mathlib.RingTheory.TensorProduct.Nontrivial
 public import Mathlib.RingTheory.Trace.Defs
@@ -651,7 +651,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
     refine ⟨⟨a, by simp [fa]⟩, ⟨b, hf ?_⟩⟩
     simp_rw [fb, Algebra.TensorProduct.includeRight_apply, f,
       Algebra.TensorProduct.mapOfCompatibleSMul_tmul]
-    convert! ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
+    convert ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
       (simp_rw [Algebra.smul_def, mul_one]; exact aeval_X _)
   have key3 := (Subalgebra.inclusion key2).comp (AlgEquiv.ofInjective gab htab).toAlgHom
     |>.toLinearMap.lift_rank_le_of_injective
@@ -706,7 +706,7 @@ include H in
 free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`. -/
 theorem finrank_sup_of_free [Module.Free R A] [Module.Free R B] :
     Module.finrank R ↥(A ⊔ B) = Module.finrank R A * Module.finrank R B := by
-  simpa only [map_mul] using! congr(Cardinal.toNat $(H.rank_sup_of_free))
+  simpa only [map_mul] using! congr($(H.rank_sup_of_free).toNat)
 
 /-- In a commutative ring, if `A` and `B` are subalgebras which are free modules of finite rank,
 such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
