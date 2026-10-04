@@ -30,13 +30,14 @@ open scoped ENNReal
 
 namespace MeasureTheory
 
-variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧}
-  {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {μ ν : Measure 𝓧}
 
 lemma etvdist_of_mutuallySingular (hμν : μ ⟂ₘ ν) :
     etvdist μ ν = μ Set.univ + ν Set.univ := by
   rw [add_comm, ← etvdist_restrict_add_compl hμν.measurableSet_nullSet]
   simp
+
+variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 lemma tvdist_of_mutuallySingular (hμν : μ ⟂ₘ ν) :
     tvdist μ ν = μ.real Set.univ + ν.real Set.univ := by
