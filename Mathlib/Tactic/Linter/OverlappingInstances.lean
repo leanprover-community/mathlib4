@@ -6,8 +6,9 @@ Authors: Jovan Gerbscheid, Thomas R. Murrills
 module
 
 public meta import Lean.Elab.Command
-public meta import Batteries.Lean.Position
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
+
+meta import Batteries.Lean.Position
 
 /-!
 # A linter for declarations with local instances that overlap

@@ -15,6 +15,8 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Lint.Basic
 public import Batteries.Tactic.Lint.Misc
 
+meta import Batteries.Lean.Position
+
 /-!
 # Linters for Unused Instances in Types
 
@@ -312,14 +314,19 @@ public register_option linter.unusedDecidableInType : Bool := {
 /-- Detects `Decidable*` instance hypotheses in the type of `thm` which are not used in the
 remainder of the type, and suggests replacing them with a use of `classical` in the proof or
 `open scoped Classical in` at the term level. -/
-def unusedDecidableInType (thm : ConstantVal) : CoreM Unit := do
+def unusedDecidableInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM Unit := do
   /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
   on decidable instances without using them in the type. -/
   if (`Decidable).isPrefixOf thm.name then return
   logUnusedInstancesInTheorem thm
     isDecidableVariant
     fun unusedParams => do
-      logLint linter.unusedDecidableInType (← getRef) m!"\
+      /- Log the warning from the declaration's selection range (usually the declaration name,
+      or `instance`) to the body if possible. This underlines the hypotheses and type,
+      and makes the warning visible in the infoview when the cursor is within the body. -/
+      let ref := (← findDeclarationSyntaxRange? thm.name).elim (← getRef)
+        (mkNullNode #[.ofRange ·, bodyRef])
+      logLint linter.unusedDecidableInType ref m!"\
         {thm.name.unusedInstancesMsg unusedParams}\n\n\
         Consider removing \
         {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} \
@@ -348,7 +355,7 @@ public register_option linter.unusedFintypeInType : Bool := {
 /-- Detects `Fintype` instance hypotheses in the type of `thm` which are not used in the
 remainder of the type, and suggests replacing them with the corresponding hypothesis of `Finite`
 and the use of `Fintype.ofFinite` in the proof. -/
-def unusedFintypeInType (thm : ConstantVal) : CoreM Unit := do
+def unusedFintypeInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM Unit := do
   logUnusedInstancesInTheorem thm
     (·.isAppOrForallOfConst `Fintype)
     fun unusedParams => do
@@ -356,7 +363,12 @@ def unusedFintypeInType (thm : ConstantVal) : CoreM Unit := do
         if (← getEnv).isImportedConst `Fintype.ofFinite then none else
           some <| .note "Add `import Mathlib.Data.Fintype.EquivFin` \
             to make `Fintype.ofFinite` available."
-      logLint linter.unusedFintypeInType (← getRef) m!"\
+      /- Log the warning from the declaration's selection range (usually the declaration name,
+      or `instance`) to the body if possible. This underlines the hypotheses and type,
+      and makes the warning visible in the infoview when the cursor is within the body. -/
+      let ref := (← findDeclarationSyntaxRange? thm.name).elim (← getRef)
+        (mkNullNode #[.ofRange ·, bodyRef])
+      logLint linter.unusedFintypeInType ref m!"\
         {thm.name.unusedInstancesMsg unusedParams}\n\n\
         Consider replacing \
         {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} with the \

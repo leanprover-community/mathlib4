@@ -50,8 +50,8 @@ def declTypeLinter : Linter where
         if let some declName := ctx.parentDecl? then
           if let some thm := (← getEnv).findTheoremConstVal? declName then
             Command.liftCoreM do
-            if decidable then unusedDecidableInType thm
-            if fintype then unusedFintypeInType thm
+            if decidable then unusedDecidableInType thm ref
+            if fintype then unusedFintypeInType thm ref
 
 initialize addLinter declTypeLinter
 
