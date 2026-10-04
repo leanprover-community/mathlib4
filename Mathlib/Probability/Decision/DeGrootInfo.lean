@@ -6,7 +6,7 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Probability.Decision.Binary
-public import Mathlib.Probability.Decision.RiskIncrease
+public import Mathlib.Probability.Decision.Risk.RiskIncrease
 
 /-!
 # Statistical information
