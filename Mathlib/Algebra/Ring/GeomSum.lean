@@ -284,7 +284,7 @@ protected lemma Commute.geom_sum₂_Ico_mul (h : Commute x y) {m n : ℕ}
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]
-  convert! (Commute.op h).mul_geom_sum₂_Ico hmn
+  convert (Commute.op h).mul_geom_sum₂_Ico hmn
 
 lemma geom_sum_Ico_mul (x : R) {m n : ℕ} (hmn : m ≤ n) :
     (∑ i ∈ Finset.Ico m n, x ^ i) * (x - 1) = x ^ n - x ^ m := by
