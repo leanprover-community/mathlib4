@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Reverse
-public import Mathlib.Algebra.Polynomial.Inductions
+import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-! # Laurent polynomials
@@ -241,12 +241,12 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     · exact fun m => h_C_mul_T_Z m a
   have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p.coeff n) * T n) := by
     apply Finset.induction
-    · convert! h_C 0
+    · convert h_C 0
       simp only [Finset.sum_empty, map_zero]
     · intro n s ns ih
       rw [Finset.sum_insert ns]
       exact h_add A ih
-  convert! B p.coeff.support
+  convert B p.coeff.support
   ext a
   simp_rw [← single_eq_C_mul_T]
   simp only [AddMonoidAlgebra.coeff_sum, coeff_single]
@@ -266,7 +266,7 @@ protected theorem induction_on' {motive : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]
     (C_mul_T : ∀ (n : ℤ) (a : R), motive (C a * T n)) : motive p := by
   refine p.induction_on (fun a => ?_) (fun {p q} => add p q) ?_ ?_ <;>
       try exact fun n f _ => C_mul_T _ f
-  convert! C_mul_T 0 a
+  convert C_mul_T 0 a
   exact (mul_one _).symm
 
 theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
@@ -299,7 +299,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
   apply (toFinsuppIso R).injective
   simp only [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply,
     RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe,
-    AddMonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
+    AddMonoidHom.coe_ofClass, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
   split_ifs with hn
   · lift n to ℕ using hn
     simp [toFinsupp_monomial, -single_eq_C_mul_T]
@@ -523,7 +523,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk'_one_X :
     IsLocalization.mk' R[T;T⁻¹] 1 (⟨X, 1, pow_one X⟩ : Submonoid.powers (X : R[X])) = T (-1) := by
-  convert! mk'_one_X_pow 1
+  convert mk'_one_X_pow 1
   exact (pow_one X).symm
 
 /-- Given a ring homomorphism `f : R →+* S` and a unit `x` in `S`, the induced homomorphism

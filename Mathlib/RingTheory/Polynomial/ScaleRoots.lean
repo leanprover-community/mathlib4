@@ -46,8 +46,7 @@ theorem zero_scaleRoots (s : R) : scaleRoots 0 s = 0 := by
 theorem scaleRoots_ne_zero {p : R[X]} (hp : p ≠ 0) (s : R) : scaleRoots p s ≠ 0 := by
   intro h
   have : p.coeff p.natDegree ≠ 0 := mt leadingCoeff_eq_zero.mp hp
-  have : (scaleRoots p s).coeff p.natDegree = 0 :=
-    congr_fun (congr_arg (coeff : R[X] → ℕ → R) h) p.natDegree
+  have : (scaleRoots p s).coeff p.natDegree = 0 := by rw [h]; simp
   rw [coeff_scaleRoots_natDegree] at this
   contradiction
 
@@ -174,7 +173,7 @@ theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
   -- if we don't specify the type with `(_ : S)`, the proof is much slower
   nontriviality S using Subsingleton.eq_zero (α := S)
-  convert! @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
+  convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
   rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 

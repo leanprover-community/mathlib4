@@ -122,6 +122,12 @@ theorem regularizedHGFunCoeff_add_one_div_self (h : regularizedHGFunCoeff a b n 
       grind [Multiset.prod_eq_zero, Multiset.mem_map]
     simp [regularizedHGFunCoeff_eq_zero_right a b n 0, h₁]
 
+@[simp]
+theorem regularizedHGFunCoeff_zero_neg_nat_add_one (n i : ℕ) :
+    regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) = regularizedHGFunCoeff 0 {(n : ℂ) + 1} i := by
+  simp [regularizedHGFunCoeff, ← Gamma_nat_eq_factorial]
+  grind
+
 private theorem multiset_prod_eq_pow_mul_multiset_prod (a : Multiset ℂ) (hn : n ≠ 0) :
     (a.map (· + (n : ℂ))).prod = n ^ a.card * (a.map (· / (n : ℂ) + 1)).prod := calc
   _ = (a.map (fun j ↦ n * (j / (n : ℂ) + 1))).prod := by
@@ -164,6 +170,11 @@ theorem regularizedHGFunSeries_eq_zero :
 variable (a b) in
 /-- The regularized hypergeometric function. -/
 def regularizedHGFun (z : ℂ) : ℂ := (regularizedHGFunSeries a b).sum z
+
+@[simp]
+theorem regularizedHGFun_zero : regularizedHGFun a b 0 = regularizedHGFunCoeff a b 0 := by
+  rw [regularizedHGFun, regularizedHGFunSeries, ← FormalMultilinearSeries.ofScalarsSum]
+  simp
 
 /-- If there exists `j` and `k : ℕ`, such that `a j = -k`, then the hypergeometric series is finite
 and has convergence radius `∞`. -/
@@ -239,6 +250,27 @@ theorem radius_regularizedHGFunSeries_eq_top (h : a.card ≤ b.card) :
     rw [← Complex.norm_div, regularizedHGFunCoeff_add_one_div_self hn₁,
       multiset_prod_div_multiset_prod_mul a b hn₂, mul_div]
 
+@[simp]
+theorem radius_regularizedHGFunSeries_zero_eq_top : (regularizedHGFunSeries 0 b).radius = ⊤ :=
+  radius_regularizedHGFunSeries_eq_top (by simp)
+
+theorem analyticOnNhd_regularizedHGFun_of_card_le (h : a.card ≤ b.card) :
+    AnalyticOnNhd ℂ (regularizedHGFun a b) .univ := by
+  convert! (regularizedHGFunSeries a b).analyticOnNhd
+  simp [radius_regularizedHGFunSeries_eq_top h]
+
+theorem analyticAt_regularizedHGFun_of_card_le (h : a.card ≤ b.card) (z : ℂ) :
+    AnalyticAt ℂ (regularizedHGFun a b) z :=
+  analyticOnNhd_regularizedHGFun_of_card_le h z (by simp)
+
+@[fun_prop]
+theorem analyticOnNhd_regularizedHGFun_zero : AnalyticOnNhd ℂ (regularizedHGFun 0 b) .univ :=
+  analyticOnNhd_regularizedHGFun_of_card_le (by simp)
+
+@[fun_prop]
+theorem analyticAt_regularizedHGFun_zero (z : ℂ) : AnalyticAt ℂ (regularizedHGFun 0 b) z :=
+  analyticAt_regularizedHGFun_of_card_le (by simp) z
+
 /-- If `a.card = b.card + 1`, then the hypergeometric series has convergence radius `1`, unless it
 is a polynomial. -/
 @[grind =]
@@ -266,6 +298,38 @@ theorem radius_regularizedHGFunSeries_ge_one (h : a.card = b.card + 1) :
   · obtain ⟨j, hj, k, h'⟩ := h'
     rw [radius_regularizedHGFunSeries_eq_top_of_finite hj h']
     simp
+
+theorem analyticOnNhd_regularizedHGFun_of_card_eq_add_one (h : a.card = b.card + 1) :
+    AnalyticOnNhd ℂ (regularizedHGFun a b) (Metric.eball 0 1) := by
+  apply (regularizedHGFunSeries a b).analyticOnNhd.mono
+  exact Metric.eball_subset_eball (radius_regularizedHGFunSeries_ge_one h)
+
+theorem analyticAt_regularizedHGFun_of_card_eq_add_one (h : a.card = b.card + 1) {z : ℂ}
+    (hz : ‖z‖ < 1) :
+    AnalyticAt ℂ (regularizedHGFun a b) z := by
+  apply analyticOnNhd_regularizedHGFun_of_card_eq_add_one h
+  rwa [Metric.mem_eball, edist_zero_right, ← ofReal_norm, ENNReal.ofReal_lt_one]
+
+theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
+    regularizedHGFun 0 {-(n : ℂ) + 1} z = z ^ n * regularizedHGFun 0 {(n : ℂ) + 1} z :=
+  calc
+    _ = ∑ i ∈ Finset.range n, z ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} i +
+        ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+      rw [regularizedHGFun, FormalMultilinearSeries.sum,
+        ← ((regularizedHGFunSeries 0 {-(n : ℂ) + 1}).summable (by simp)).sum_add_tsum_nat_add n]
+      simp
+    _ = 0 + ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+      congrm $(Finset.sum_eq_zero fun i hi ↦ mul_eq_zero_of_right _ ?_) + _
+      refine regularizedHGFunCoeff_eq_zero_right _ _ _ (n - i - 1) ?_
+      rw [Multiset.mem_singleton]
+      norm_cast
+      grind
+    _ = z ^ n * ∑' i, z ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+      simp_rw [zero_add, ← tsum_mul_left]
+      congr with i
+      ring
+    _ = _ := by
+      simp [regularizedHGFun, FormalMultilinearSeries.sum]
 
 section ZeroZero
 
