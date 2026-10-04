@@ -143,7 +143,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
 
-lemma dual_univ_ker : dual p .univ = ker p.flip := by
+lemma dual_univ_eq_ker : dual p .univ = ker p.flip := by
   ext x
   simp_rw [mem_dual, Set.mem_univ, forall_const, Submodule.restrictScalars_mem,
     mem_ker, LinearMap.ext_iff, flip_apply, zero_apply]
@@ -152,7 +152,7 @@ lemma dual_univ_ker : dual p .univ = ker p.flip := by
   · rw [h y]
 
 variable [Fact p.SeparatingRight] in
-@[simp] lemma dual_univ : dual p .univ = ⊥ := by simp [dual_univ_ker]
+@[simp] lemma dual_univ : dual p .univ = ⊥ := by simp [dual_univ_eq_ker]
 
 variable {N : Type*} [AddCommGroup N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
