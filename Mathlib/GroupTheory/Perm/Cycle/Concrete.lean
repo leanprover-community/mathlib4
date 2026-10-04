@@ -209,7 +209,7 @@ theorem IsCycleOn.sym2Mk_pow_apply_ne {f : Perm α} {a : α} {s : Finset α}
     (hf : f.IsCycleOn s) (ha : a ∈ s)
     {k : ℕ} (hk1 : k ≠ 0) (hk2 : k < s.card) (hs : s.card ≠ 2) :
     s((f ^ k) a, (f ^ (k + 1)) a) ≠ s(a, f a) := fun heq ↦ hk1 <|
-  hf.injOn_sym2_pow_apply ha hs hk2 (Finset.card_pos.mpr ⟨a, ha⟩) (by simpa using heq)
+  hf.injOn_sym2Mk_pow_apply ha hs hk2 (Finset.card_pos.mpr ⟨a, ha⟩) (by simpa using heq)
 
 section Fintype
 

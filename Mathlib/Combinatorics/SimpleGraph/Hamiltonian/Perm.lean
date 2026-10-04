@@ -40,7 +40,7 @@ theorem IsHamiltonian.of_perm {σ : Perm α}
     change (↑σ : α → α)^[Fintype.card α - 1 + 1] x = x
     rw [Nat.sub_add_cancel (by lia), Equiv.Perm.iterate_eq_pow,
       ← Finset.card_univ, hcycOn.pow_card_apply (Finset.mem_univ x)])
-  refine ⟨x, .cons (hadj x) p, Walk.isHamiltonianCycle_cons_iff (hadj x) p |>.mpr ⟨?_, ?_⟩⟩
+  refine ⟨x, .cons (hadj x) p, Walk.isHamiltonianCycle_cons_iff.mpr ⟨?_, ?_⟩⟩
   · -- p is a Hamiltonian path: visits every vertex exactly once.
     rw [Walk.isHamiltonian_iff_isPath_and_length_eq]
     refine ⟨?_, by simp [p]⟩
@@ -60,7 +60,7 @@ theorem IsHamiltonian.of_perm {σ : Perm α}
     rintro ⟨i, hi, heq⟩
     rw [List.mem_range] at hi
     simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
-    exact hcycOn.sym2_pow_apply_ne (Finset.mem_univ x) (by lia)
+    exact hcycOn.sym2Mk_pow_apply_ne (Finset.mem_univ x) (by lia)
       (by rw [Finset.card_univ]; lia) (by rw [Finset.card_univ]; lia) heq
 
 end SimpleGraph
