@@ -273,13 +273,19 @@ end FGModuleCat
 -/
 
 @[simp]
-theorem LinearMap.comp_id_fgModuleCat
+theorem LinearMap.comp_id_fgmoduleCat
     {R} [Ring R] {G : FGModuleCat.{v} R} {H : Type v} [AddCommGroup H] [Module R H]
     (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f :=
   ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.ofHom f)
 
+@[deprecated (since := "2026-10-04")]
+alias LinearMap.comp_id_fgModuleCat := LinearMap.comp_id_fgmoduleCat
+
 @[simp]
-theorem LinearMap.id_fgModuleCat_comp
+theorem LinearMap.id_fgmoduleCat_comp
     {R} [Ring R] {G : Type v} [AddCommGroup G] [Module R G] {H : FGModuleCat.{v} R}
     (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f :=
   ModuleCat.hom_ext_iff.mp <| Category.comp_id (ModuleCat.ofHom f)
+
+@[deprecated (since := "2026-10-04")]
+alias LinearMap.id_fgModuleCat_comp := LinearMap.id_fgmoduleCat_comp
