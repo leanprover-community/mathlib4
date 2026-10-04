@@ -1,4 +1,5 @@
 module
+import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.AdaptationNote
 
@@ -76,6 +77,12 @@ example (a b : Nat) (h : a + 1 ≤ b + 1) : max a b ≤ b := by
   -- The linter does not look inside of dischargers, no matter whether it's actually used or not.
   have : True := by simp (disch := grind)
   simp (disch := grind) [Nat.max_eq_right]
+
+-- The linter works correctly with `on_goal`.
+example : True ∧ True := by
+  constructor
+  on_goal 1 => skip; trivial
+  trivial
 
 section allowing_more_unused_tactics
 
