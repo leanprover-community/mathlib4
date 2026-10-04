@@ -5,13 +5,12 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.GroupTheory.NoncommCoprod
 public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
-public import Mathlib.GroupTheory.Perm.DomMulAct
-public import Mathlib.GroupTheory.Rank
+import Mathlib.GroupTheory.Perm.DomMulAct
+import Mathlib.GroupTheory.Rank
 
 /-!
 # Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups
@@ -39,8 +38,8 @@ commute with `g`. It is accessed here as `MulAction.stabilizer
 
 We compute this subgroup as follows.
 
-* If `h : Subgroup.centralizer {g}`, then the action of `ConjAct.toConjAct h`
-  by conjugation on `Equiv.Perm α` stabilizes `g.cycleFactorsFinset`.
+* If `h : Subgroup.centralizer {g}`, then the action of `MulAut.conj h`
+  on `Equiv.Perm α` stabilizes `g.cycleFactorsFinset`.
   That induces an action of `Subgroup.centralizer {g}` on
   `g.cycleFactorsFinset` which is defined as an instance.
 
@@ -113,35 +112,38 @@ namespace OnCycleFactors
 variable (g)
 
 variable {g} in
-lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
+lemma Subgroup.Centralizer.conj_smul_mem_cycleFactorsFinset {k c : Perm α}
     (k_mem : k ∈ centralizer {g}) (c_mem : c ∈ g.cycleFactorsFinset) :
-    ConjAct.toConjAct k • c ∈ g.cycleFactorsFinset := by
-  suffices (g.cycleFactorsFinset : Set (Perm α)) =
-    (ConjAct.toConjAct k) • g.cycleFactorsFinset by
+    MulAut.conj k • c ∈ g.cycleFactorsFinset := by
+  suffices (g.cycleFactorsFinset : Set (Perm α)) = MulAut.conj k • g.cycleFactorsFinset by
     rw [← Finset.mem_coe, this]
     simp only [Set.smul_mem_smul_set_iff, Finset.mem_coe, c_mem]
-  have := cycleFactorsFinset_conj_eq (ConjAct.toConjAct (k : Perm α)) g
-  rw [ConjAct.toConjAct_smul, mem_centralizer_singleton_iff.mp k_mem, mul_assoc] at this
+  have := cycleFactorsFinset_conj_eq k g
+  rw [MulAut.conj_apply, mem_centralizer_singleton_iff.mp k_mem, mul_assoc] at this
   simp only [mul_inv_cancel, mul_one] at this
   conv_lhs => rw [this]
   simp only [Finset.coe_smul_finset]
+
+@[deprecated (since := "2026-09-21")]
+alias Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset :=
+  Subgroup.Centralizer.conj_smul_mem_cycleFactorsFinset
 
 /-- The action by conjugation of `Subgroup.centralizer {g}`
   on the cycles of a given permutation -/
 @[instance_reducible]
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     MulAction (centralizer {g}) g.cycleFactorsFinset where
-  smul k c := ⟨ConjAct.toConjAct (k : Perm α) • c.val,
-    Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset k.prop c.prop⟩
+  smul k c := ⟨MulAut.conj (k : Perm α) c.val,
+    Subgroup.Centralizer.conj_smul_mem_cycleFactorsFinset k.prop c.prop⟩
   one_smul c := by
     rw [← Subtype.coe_inj]
-    change ConjAct.toConjAct (1 : Perm α) • c.val = c
-    simp only [map_one, one_smul]
+    change MulAut.conj 1 c.val = c
+    simp
   mul_smul k l c := by
     simp only [← Subtype.coe_inj]
-    change ConjAct.toConjAct (k * l : Perm α) • c.val =
-      ConjAct.toConjAct (k : Perm α) • (ConjAct.toConjAct (l : Perm α)) • c.val
-    simp only [map_mul, mul_smul]
+    change MulAut.conj (k * l : Perm α) c.val =
+      MulAut.conj (k : Perm α) • (MulAut.conj (l : Perm α)) • c.val
+    simp [mul_assoc]
 
 /-- The conjugation action of `Subgroup.centralizer {g}` on `g.cycleFactorsFinset` -/
 scoped instance : MulAction (centralizer {g}) (g.cycleFactorsFinset) :=
@@ -153,7 +155,7 @@ def toPermHom := MulAction.toPermHom (centralizer {g}) g.cycleFactorsFinset
 
 theorem centralizer_smul_def (k : centralizer {g}) (c : g.cycleFactorsFinset) :
     k • c = ⟨k * c * k⁻¹,
-      Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset k.prop c.prop⟩ :=
+      Subgroup.Centralizer.conj_smul_mem_cycleFactorsFinset k.prop c.prop⟩ :=
   rfl
 
 @[simp]
@@ -210,6 +212,7 @@ structure Basis (g : Equiv.Perm α) where
   /-- For each cycle, the chosen element belongs to the cycle -/
   (mem_support_self' : ∀ (c : g.cycleFactorsFinset), toFun c ∈ c.val.support)
 
+@[macro_inline]
 instance (g : Perm α) : FunLike (Basis g) g.cycleFactorsFinset α where
   coe a := a.toFun
   coe_injective a a' _ := by cases a; cases a'; congr
@@ -648,7 +651,7 @@ theorem card_isConj_mul_eq :
   classical
   rw [Nat.card_eq_fintype_card, ← nat_card_centralizer g]
   rw [Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
-  convert! MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
+  convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
   · ext h
     simp only [Set.mem_ofPred_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
   · rw [ConjAct.card, Fintype.card_perm]
@@ -683,7 +686,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
   · -- nonempty case
     classical
     obtain ⟨g, rfl⟩ := (exists_with_cycleType_iff α).mpr hm
-    convert! card_isConj_mul_eq g
+    convert card_isConj_mul_eq g
     simp_rw [Set.coe_ofPred, Nat.card_eq_fintype_card, ← Fintype.card_coe, Finset.mem_filter,
       Finset.mem_univ, true_and, ← isConj_iff_cycleType_eq, isConj_comm (g := g)]
   · -- empty case

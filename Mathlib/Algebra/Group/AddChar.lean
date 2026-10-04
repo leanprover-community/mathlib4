@@ -5,11 +5,11 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Algebra.Group.Units.Equiv
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -92,6 +92,7 @@ section Basic
 variable {A B M N : Type*} [AddMonoid A] [AddMonoid B] [Monoid M] [Monoid N] {ψ : AddChar A M}
 
 /-- Define coercion to a function. -/
+@[macro_inline]
 instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
   coe_injective φ ψ h := by cases φ; cases ψ; congr

@@ -6,7 +6,6 @@ Authors: Damiano Testa, Yuyang Zhao
 module
 
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Tactic.Bound.Attribute
@@ -14,7 +13,6 @@ public import Mathlib.Tactic.Monotonicity.Attr
 
 import Mathlib.Data.Set.Function
 public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas on the monotone multiplication typeclasses
@@ -1271,7 +1269,6 @@ lemma div_lt_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b 
 lemma div_le_div_of_nonneg_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   gcongr
-  exacts [ha, hc]
 
 @[gcongr, bound]
 lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a / c :=
@@ -1281,12 +1278,12 @@ lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a /
 lemma div_le_div₀ (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hdb : d ≤ b) : a / b ≤ c / d := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   gcongr
-  exacts [inv_nonneg.2 <| hd.le.trans hdb, hc, hd]
+  exact inv_nonneg.2 <| hd.le.trans hdb
 
 @[gcongr]
 lemma div_lt_div₀ (hac : a < c) (hdb : d ≤ b) (hc : 0 ≤ c) (hd : 0 < d) : a / b < c / d := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
-  apply mul_lt_mul hac (by gcongr; assumption) _ hc
+  apply mul_lt_mul hac (by gcongr) _ hc
   exact inv_pos.2 (hd.trans_le hdb)
 
 lemma div_lt_div₀' (hac : a ≤ c) (hdb : d < b) (hc : 0 < c) (hd : 0 < d) : a / b < c / d := by
