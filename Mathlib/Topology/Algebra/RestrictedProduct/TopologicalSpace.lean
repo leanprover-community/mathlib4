@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Algebra.Group.Pointwise
+import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
 
@@ -184,7 +184,7 @@ variable {S : Set ι}
 theorem topologicalSpace_eq_of_principal :
     topologicalSpace R A (𝓟 S) =
       .induced ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) inferInstance :=
-  le_antisymm (continuous_iff_le_induced.mp continuous_coe) <|
+  le_antisymm (continuous_iff_le_induced.mp continuous_coe)
     (le_iSup₂_of_le S le_rfl <| by rw [inclusion_eq_id R A (𝓟 S), @coinduced_id])
 
 theorem topologicalSpace_eq_of_top :
@@ -344,7 +344,7 @@ include hAopen in
 theorem isOpen_forall_imp_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 S) {p : ι → Prop} :
     IsOpen {f : Πʳ i, [R i, A i]_[𝓟 S] | ∀ i, p i → f.1 i ∈ A i} := by
   rw [le_principal_iff] at hS
-  convert!
+  convert
     isOpen_set_pi (hS.inter_of_left {i | p i}) (fun i _ ↦ hAopen i) |>.preimage continuous_coe
   ext f
   refine ⟨fun H i hi ↦ H i hi.2, fun H i hiT ↦ ?_⟩

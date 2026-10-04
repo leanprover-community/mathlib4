@@ -174,7 +174,7 @@ theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace 𝕜 P} [N
   have h := SetLike.coe_mem (orthogonalProjection ({p₁} : AffineSubspace 𝕜 P) p₂)
   rwa [mem_singleton_iff] at h
 
-@[deprecated orthogonalProjection_singleton (since := "2026-09-01")]
+@[deprecated orthogonalProjection_singleton +typeChanged (since := "2026-09-01")]
 lemma orthogonalProjection_affineSpan_singleton (p₁ p₂ : P) :
     orthogonalProjection (affineSpan 𝕜 {p₁}) p₂ = p₁ := by
   simp
@@ -240,6 +240,13 @@ lemma orthogonalProjection_eq_iff_mem {s : AffineSubspace 𝕜 P} [Nonempty s]
     orthogonalProjection s p = q ↔ p -ᵥ q ∈ s.directionᗮ := by
   simpa using coe_orthogonalProjection_eq_iff_mem (s := s) (p := p) (q := (q : P))
 
+/-- The orthogonal projection of `w +ᵥ p`, for `w` in the direction of the subspace, is `w +ᵥ` the
+orthogonal projection of `p`. -/
+theorem orthogonalProjection_vadd (s : AffineSubspace 𝕜 P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] (w : s.direction) (p : P) :
+    orthogonalProjection s ((w : V) +ᵥ p) = w +ᵥ orthogonalProjection s p := by
+  simp
+
 /-- A condition for two points to have the same orthogonal projection onto a given subspace. -/
 lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubspace 𝕜 P}
     [Nonempty s] [s.direction.HasOrthogonalProjection] {p q : P} :
@@ -256,7 +263,7 @@ lemma orthogonalProjection_sup_of_orthogonalProjection_eq {s₁ s₂ : AffineSub
     [(s₁ ⊔ s₂).direction.HasOrthogonalProjection] :
     (orthogonalProjection (s₁ ⊔ s₂) p : P) = orthogonalProjection s₁ p := by
   rw [coe_orthogonalProjection_eq_iff_mem]
-  refine ⟨SetLike.le_def.1 le_sup_left (orthogonalProjection_mem _), ?_⟩
+  refine ⟨mem_of_le_of_mem le_sup_left (orthogonalProjection_mem _), ?_⟩
   rw [direction_sup_eq_sup_direction (orthogonalProjection_mem p) (h ▸ orthogonalProjection_mem p),
     ← Submodule.inf_orthogonal]
   exact ⟨vsub_orthogonalProjection_mem_direction_orthogonal _ _,
@@ -286,7 +293,7 @@ lemma orthogonalProjection_orthogonalProjection_of_le {s₁ s₂ : AffineSubspac
     (h : s₁ ≤ s₂) (p : P) :
     orthogonalProjection s₁ (orthogonalProjection s₂ p) = orthogonalProjection s₁ p := by
   rw [orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem]
-  exact SetLike.le_def.1 (Submodule.orthogonal_le (direction_le h))
+  exact mem_of_le_of_mem (Submodule.orthogonal_le (direction_le h))
     (orthogonalProjection_vsub_mem_direction_orthogonal _ _)
 
 /-- The square of the distance from a point in `s` to `p₂` equals the
@@ -499,7 +506,7 @@ theorem dist_reflection_eq_of_mem (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p₁ : P} (hp₁ : p₁ ∈ s) (p₂ : P) :
     dist p₁ (reflection s p₂) = dist p₁ p₂ := by
   rw [← reflection_eq_self_iff p₁] at hp₁
-  convert! (reflection s).dist_map p₁ p₂
+  convert (reflection s).dist_map p₁ p₂
   rw [hp₁]
 
 /-- The reflection of a point in a subspace is contained in any larger
@@ -539,7 +546,7 @@ variable [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
   rw [coe_orthogonalProjection_eq_iff_mem]
   simp only [mem_map, AffineIsometry.coe_toAffineMap, AffineIsometry.map_eq_iff, exists_eq_right,
     SetLike.coe_mem, map_direction, AffineIsometry.linear_eq_linearIsometry, true_and]
-  rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.linearMap_vsub, Submodule.mem_orthogonal]
+  rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.linear_apply_vsub, Submodule.mem_orthogonal]
   intro u hu
   rw [Submodule.mem_map] at hu
   obtain ⟨v, hv, rfl⟩ := hu
@@ -623,7 +630,7 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
 lemma orthogonalProjectionSpan_eq_point (s : Simplex 𝕜 P 0) (p : P) :
     s.orthogonalProjectionSpan p = s.points 0 := by
   rw [orthogonalProjectionSpan]
-  convert! orthogonalProjection_singleton _ _
+  convert orthogonalProjection_singleton _ _
   simp [Fin.fin_one_eq_zero]
 
 lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex 𝕜 P 1) (i : Fin 2)
@@ -636,7 +643,7 @@ lemma orthogonalProjectionSpan_map {n : ℕ} (s : Simplex 𝕜 P n) (f : P →�
     (s.map f.toAffineMap f.injective).orthogonalProjectionSpan (f p) =
       f (s.orthogonalProjectionSpan p) := by
   simp_rw [orthogonalProjectionSpan]
-  convert! orthogonalProjection_map (affineSpan 𝕜 (Set.range s.points)) f p
+  convert orthogonalProjection_map (affineSpan 𝕜 (Set.range s.points)) f p
   simp [AffineSubspace.map_span, Set.range_comp]
 
 @[simp] lemma orthogonalProjectionSpan_restrict {n : ℕ} (s : Simplex 𝕜 P n)
@@ -649,3 +656,24 @@ lemma orthogonalProjectionSpan_map {n : ℕ} (s : Simplex 𝕜 P n) (f : P →�
 end Simplex
 
 end Affine
+
+namespace AffineSubspace
+
+open EuclideanGeometry
+
+variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
+variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+variable [MetricSpace P] [NormedAddTorsor V P]
+
+/-- The preimage of `mk' p K` under the inclusion of an affine subspace `s`, for a submodule `K`
+containing `s.directionᗮ`, is `mk'` of the orthogonal projection of `p` and the preimage of `K`. -/
+theorem comap_subtype_mk' (s : AffineSubspace 𝕜 P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] (p : P) {K : Submodule 𝕜 V} (hK : s.directionᗮ ≤ K) :
+    (mk' p K).comap s.subtype = mk' (orthogonalProjection s p) (K.comap s.direction.subtype) := by
+  suffices (mk' p K).comap s.subtype =
+      (mk' (s.subtype (orthogonalProjection s p)) K).comap s.subtype by
+    simpa [comap_mk']
+  congrm comap _ ?_
+  simpa using hK <| vsub_orthogonalProjection_mem_direction_orthogonal s p
+
+end AffineSubspace

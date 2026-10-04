@@ -6,7 +6,7 @@ Authors: Moritz Firsching, Ralf Stephan
 module
 
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
-public import Mathlib.NumberTheory.LucasPrimality
+import Mathlib.NumberTheory.LucasPrimality
 
 /-!
 # Fermat numbers
