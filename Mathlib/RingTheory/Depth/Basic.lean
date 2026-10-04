@@ -23,29 +23,33 @@ all modules refer to `R`-module.
 
 ## Main definition and results
 
-* `depth` : The depth between two `R`-modules defined as the minimal nontrivial `Ext`
+* `ModuleCat.depth` : The depth between two `R`-modules defined as the minimal nontrivial `Ext`
   between them, equal to `⊤ : ℕ∞` if no such index.
 
 * `Ideal.depth` : The depth of an `R`-module `M` with respect to an ideal `I`,
-  defined as `depth (R⧸ I) M`.
+  defined as `depth (R ⧸ I) M`.
   This is `grade(I, M)` in Bruns–Herzog, where "depth" is reserved for the local case below.
 
 * `IsLocalRing.depth` : For a local ring `R`, the depth of an `R`-module with respect to
   the maximal ideal.
 
-* `depth_eq_depth_of_support_eq` : For `I : Ideal R`, if support of a finitely generated
+* `ModuleCat.depth_eq_depth_of_support_eq` : For `I : Ideal R`, if support of a finitely generated
   module `N` is equal to `PrimeSpectrum.zeroLocus I`, then for any finitely generated nontrivial
   module `M` with `IM < M`, `depth N M = I.depth M`
 
-* `depth_eq_sSup_length_isRegular` : For `I : Ideal R`, nontrivial finitely generated module
-  `M` and `N`, if support of `N` is equal to `PrimeSpectrum.zeroLocus I` and `IM < M`,
+* `ModuleCat.depth_eq_sSup_length_isRegular` : For `I : Ideal R`, nontrivial finitely generated
+  module `M` and `N`, if support of `N` is equal to `PrimeSpectrum.zeroLocus I` and `IM < M`,
   `depth N M` is equal to the supremum of length of `M`-regular sequence in `I`
+
+* `Ideal.depth_eq_sSup_length_isRegular` : For finitely generated module `M` and an ideal `I`
+  of Noetherian ring `R` with `IM < M`, `I.depth M` equals to maximal length of
+  `M`-regular sequences contained in `I`.
 
 * `IsLocalRing.depth_quotSMulTop_succ_eq_depth` : For `R` local, a `R`-module `M` and a
   `M`-regular element `x` in `maximalIdeal R`,
   `IsLocalRing.depth (QuotSMulTop x M) + 1 = IsLocalRing.depth M`
 
-* `depth_quotient_isRegular_add_length_eq_depth` : For `R` local, a `R`-module
+* `IsLocalRing.depth_quotient_isRegular_add_length_eq_depth` : For `R` local, a `R`-module
   `M` and a `M`-regular sequence `rs` in `maximalIdeal R`,
   `depth N (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M)) + rs.length = depth N M`
 
