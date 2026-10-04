@@ -530,6 +530,13 @@ def pairingCore.weakRankFunction : (pairingCore x₀).WeakRankFunction ℕ where
         rw [S.ext_iff']
         exact ⟨by simpa [s], rfl⟩
       rwa [congr_finsetNotMem_card x₀ this]
+    obtain ⟨hst₁, hst₂⟩ := hst
+    obtain ⟨i, hi⟩ : ∃ i, (nerve (NonemptyFiniteChains X)).δ i t.simplex = s.simplex₂ := by
+      rw [Subcomplex.N.lt_iff] at hst₂
+      obtain ⟨f, _, hf⟩ := N.le_iff_exists_mono.1 hst₂.le
+      obtain ⟨i, rfl⟩ := SimplexCategory.eq_δ_of_mono f
+      exact ⟨i, hf⟩
+    --rw [ι.simplex₂_def] at hi
     sorry
 
 instance : (pairingCore x₀).IsRegular := by
