@@ -8,15 +8,17 @@ module
 public import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
-# Parsing input expressions into linear form
+# Preparing comparisons for `linarith`
 
-`linarith` assumes, without justification, that its input expressions belong to a commutative
-ring. It lowers its existing permissive syntax to `Lean.Grind.CommRing.Expr` and uses Lean's
-polynomial arithmetic to identify monomials up to ring equivalence. Certificate verification
-independently proves the resulting contradiction.
+`linarith` searches for a linear combination of comparisons that yields a contradiction.
+This module expands their expressions as polynomials and assigns a linear variable to each
+distinct monomial. For example, `x * y` becomes a variable in the linear problem; the solver
+does not need to reason about multiplication.
 
-Atomic expressions are identified up to definitional equality at the configured transparency.
-Each distinct monomial then becomes a linear variable. `linearFormsAndMaxVar` is the entry point.
+The parser recognizes numerals and polynomial operations, treating other subexpressions as
+atoms. Atoms are identified up to definitional equality at the configured transparency.
+This computation guides the search for a certificate; verification separately proves the
+proposed contradiction. In particular, the parser can treat subtraction formally even on `Nat`.
 -/
 
 public meta section
@@ -40,18 +42,20 @@ private def atom (red : TransparencyMode) (e : Lean.Expr) :
   set ((e, i) :: atoms)
   return .var i
 
-/-- Preserve the oracle's grammar, including formal subtraction on types such as `Nat`. -/
-private partial def lower (red : TransparencyMode) (e : Lean.Expr) :
+/-- Parse numerals, addition, subtraction, multiplication, negation, and powers with literal
+natural exponents. Other subexpressions, including division and symbolic powers, become atoms.
+Repeated atoms share a variable when they are definitionally equal at transparency `red`. -/
+private partial def parseExpr (red : TransparencyMode) (e : Lean.Expr) :
     ParseM Lean.Grind.CommRing.Expr := do
   let e ← whnfR e
   if let some n := e.numeral? then return .num n
   match e.getAppFnArgs with
-  | (``HMul.hMul, #[_, _, _, _, a, b]) => return .mul (← lower red a) (← lower red b)
-  | (``HAdd.hAdd, #[_, _, _, _, a, b]) => return .add (← lower red a) (← lower red b)
-  | (``HSub.hSub, #[_, _, _, _, a, b]) => return .sub (← lower red a) (← lower red b)
-  | (``Neg.neg, #[_, _, a]) => return .neg (← lower red a)
+  | (``HMul.hMul, #[_, _, _, _, a, b]) => return .mul (← parseExpr red a) (← parseExpr red b)
+  | (``HAdd.hAdd, #[_, _, _, _, a, b]) => return .add (← parseExpr red a) (← parseExpr red b)
+  | (``HSub.hSub, #[_, _, _, _, a, b]) => return .sub (← parseExpr red a) (← parseExpr red b)
+  | (``Neg.neg, #[_, _, a]) => return .neg (← parseExpr red a)
   | (``HPow.hPow, #[_, _, _, _, a, n]) =>
-    if let some n := n.numeral? then return .pow (← lower red a) n else atom red e
+    if let some n := n.numeral? then return .pow (← parseExpr red a) n else atom red e
   | _ => atom red e
 
 private def polyEntries : Poly → List (Mon × Int)
@@ -82,7 +86,7 @@ def linearFormsAndMaxVar (red : TransparencyMode) (pfs : List Lean.Expr) :
     let mut comps := []
     for pf in pfs do
       let (iq, e) ← parseCompAndExpr (← inferType pf)
-      let p := (← lower red e).toPoly
+      let p := (← parseExpr red e).toPoly
       let (map, coeffs) := elimMonom p monoms
       monoms := map
       comps := ⟨iq, coeffs⟩ :: comps
