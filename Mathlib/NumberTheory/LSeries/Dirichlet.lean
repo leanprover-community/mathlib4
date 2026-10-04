@@ -443,3 +443,27 @@ lemma LSeries_vonMangoldt_eq_deriv_riemannZeta_div {s : ℂ} (hs : 1 < s.re) :
 end ArithmeticFunction
 
 end vonMangoldt
+
+namespace NumberTheory.EulerFactor
+
+variable {R : Type*} [CommRing R]
+
+/-- Local Euler factor identity for ramified primes in quadratic fields:
+`1 - X = (1 - X) * (1 - 0 * X)`. -/
+theorem local_euler_factor_ramified_eq (X : R) :
+    1 - X = (1 - X) * (1 - 0 * X) := by
+  ring
+
+/-- Local Euler factor identity for split primes in quadratic fields:
+`(1 - X) ^ 2 = (1 - X) * (1 - 1 * X)`. -/
+theorem local_euler_factor_split_eq (X : R) :
+    (1 - X) ^ 2 = (1 - X) * (1 - 1 * X) := by
+  ring
+
+/-- Local Euler factor identity for inert primes in quadratic fields:
+`1 - X ^ 2 = (1 - X) * (1 - (-1) * X)`. -/
+theorem local_euler_factor_inert_eq (X : R) :
+    1 - X ^ 2 = (1 - X) * (1 - (-1) * X) := by
+  ring
+
+end NumberTheory.EulerFactor
