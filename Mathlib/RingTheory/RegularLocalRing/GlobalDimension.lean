@@ -43,13 +43,12 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
       let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
       have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
       have ge : IsLocalRing.depth S.X₁ ≥ IsLocalRing.depth S.X₂ ⊓ (IsLocalRing.depth M + 1) :=
-        moduleDepth_ge_min_of_shortExact_fst_snd _ S S_exact
+        ModuleCat.depth_min_snd_trd_add_one_le_fst_right _ S S_exact
       have ge' : (depth S.X₁) + i ≥ ringKrullDim R := by
         apply le_trans _ (add_le_add_left (WithBot.coe_le_coe.mpr ge) i)
         have : IsLocalRing.depth S.X₂ = IsLocalRing.depth (ModuleCat.of R R) := by
           have : Nontrivial S.X₂ := surjf.nontrivial
-          exact (free_depth_eq_ring_depth S.X₂ _).trans
-            (ring_depth_shrink_eq (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
+          exact (free_depth_eq_ring_depth S.X₂ _).trans (maximalIdeal R).depth_shrink
         simpa [← (isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing,
           this, min_add] using ⟨WithBot.le_self_add (WithBot.natCast_ne_bot i) (ringKrullDim R), le⟩
       rcases ih S.X₁ ge' with ⟨m, hm⟩
