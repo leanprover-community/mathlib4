@@ -6,7 +6,7 @@ Authors: William Coram
 module
 
 public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!

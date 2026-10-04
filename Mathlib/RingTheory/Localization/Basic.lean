@@ -7,11 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Field.IsField
-public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Basic.Finite.Prod
-public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+import Mathlib.Basic.Finite.Prod
 public import Mathlib.RingTheory.Localization.Defs
-public import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Localizations of commutative rings
@@ -330,7 +327,7 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
     IsLocalization M P := by
   constructor; constructor
   · intro y
-    convert! (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
+    convert (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
     exact (h.commutes y).symm
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M (h.symm y)

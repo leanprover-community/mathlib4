@@ -5,12 +5,14 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Pi
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Algebra.Order.Field.Pi
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Topology.Algebra.Order.UpperLower
+import Mathlib.Topology.MetricSpace.Sequences
+
 public import Mathlib.Analysis.Normed.Group.Pointwise
-public import Mathlib.Topology.Algebra.Order.UpperLower
-public import Mathlib.Topology.MetricSpace.Sequences
+public import Mathlib.Analysis.Normed.Order.Lattice
 
 /-!
 # Upper/lower/order-connected sets in normed groups
@@ -21,13 +23,6 @@ set).
 
 We also prove lemmas specific to `ℝⁿ`. Those are helpful to prove that order-connected sets in `ℝⁿ`
 are measurable.
-
-## TODO
-
-Is there a way to generalise `IsClosed.upperClosure_pi`/`IsClosed.lowerClosure_pi` so that they also
-apply to `ℝ`, `ℝ × ℝ`, `EuclideanSpace ι ℝ`? `_pi` has been appended to their names to disambiguate
-from the other possible lemmas, but we will want there to be a single set of lemmas for all
-situations.
 -/
 
 public section
@@ -117,37 +112,48 @@ theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ clo
 
 end Finite
 
+section NormedLatticeAddCommGroup
+variable [NormedAddCommGroup α] [Lattice α] [IsOrderedAddMonoid α] [HasSolidNorm α]
+
+lemma dist_inf_sup (x y : α) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
+  simp [dist_eq_norm, sup_sub_inf_eq_abs_sub, norm_abs_eq_norm, norm_sub_rev]
+
+lemma dist_mono_left {y : α} : MonotoneOn (dist · y) (Ici y) := by
+  intro y₁ hy₁ y₂ hy₂ hy
+  simp only [dist_eq_norm]
+  apply norm_le_norm_of_abs_le_abs
+  rw [abs_of_nonneg (sub_nonneg.mpr hy₁), abs_of_nonneg (sub_nonneg.mpr hy₂)]
+  exact sub_le_sub_right hy y
+
+lemma dist_mono_right {x : α} : MonotoneOn (dist x) (Ici x) := by
+  simpa only [dist_comm] using dist_mono_left (y := x)
+
+lemma dist_anti_left {y : α} : AntitoneOn (dist · y) (Iic y) := by
+  intro y₁ hy₁ y₂ hy₂ hy
+  simp only [dist_comm, dist_eq_norm]
+  apply norm_le_norm_of_abs_le_abs
+  rw [abs_of_nonneg (sub_nonneg.mpr hy₂), abs_of_nonneg (sub_nonneg.mpr hy₁)]
+  exact sub_le_sub_left hy y
+
+lemma dist_anti_right {x : α} : AntitoneOn (dist x) (Iic x) := by
+  simpa only [dist_comm] using dist_anti_left (y := x)
+
+lemma dist_le_dist_of_le {a₁ a₂ b₁ b₂ : α} (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) :
+    dist a₁ b₁ ≤ dist a₂ b₂ :=
+  (dist_mono_right h₁ (h₁.trans hb) hb).trans <|
+    dist_anti_left (ha.trans <| h₁.trans hb) (h₁.trans hb) ha
+
+@[deprecated (since := "2026-10-02")] alias dist_inf_sup_pi := dist_inf_sup
+@[deprecated (since := "2026-10-02")] alias dist_mono_left_pi := dist_mono_left
+@[deprecated (since := "2026-10-02")] alias dist_mono_right_pi := dist_mono_right
+@[deprecated (since := "2026-10-02")] alias dist_anti_left_pi := dist_anti_left
+@[deprecated (since := "2026-10-02")] alias dist_anti_right_pi := dist_anti_right
+@[deprecated (since := "2026-10-02")] alias dist_le_dist_of_le_pi := dist_le_dist_of_le
+
+end NormedLatticeAddCommGroup
+
 section Fintype
 variable [Fintype ι] {s : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
-
--- TODO: Generalise those lemmas so that they also apply to `ℝ` and `EuclideanSpace ι ℝ`
-lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
-  congrm NNReal.toReal $(Finset.sup_congr rfl fun i _ ↦ ?_)
-  simp only [Real.nndist_eq', max_sub_min_eq_abs, Pi.inf_apply,
-    Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
-
-lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
-  refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
-  rw [Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₁ i)),
-    Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₂ i))]
-  grw [hy i] -- TODO(gcongr): we would like `grw [hy]` to work here
-
-lemma dist_mono_right_pi : MonotoneOn (dist x) (Ici x) := by
-  simpa only [dist_comm] using dist_mono_left_pi (y := x)
-
-lemma dist_anti_left_pi : AntitoneOn (dist · y) (Iic y) := by
-  refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
-  rw [Real.nndist_eq', Real.nnabs_of_nonneg (sub_nonneg_of_le (‹_ ≤ y› i : y₂ i ≤ y i)),
-    Real.nndist_eq', Real.nnabs_of_nonneg (sub_nonneg_of_le (‹_ ≤ y› i : y₁ i ≤ y i))]
-  exact Real.toNNReal_mono (sub_le_sub_left (hy _) _)
-
-lemma dist_anti_right_pi : AntitoneOn (dist x) (Iic x) := by
-  simpa only [dist_comm] using dist_anti_left_pi (y := x)
-
-lemma dist_le_dist_of_le_pi (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) :
-    dist a₁ b₁ ≤ dist a₂ b₂ :=
-  (dist_mono_right_pi h₁ (h₁.trans hb) hb).trans <|
-    dist_anti_left_pi (ha.trans <| h₁.trans hb) (h₁.trans hb) ha
 
 theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by

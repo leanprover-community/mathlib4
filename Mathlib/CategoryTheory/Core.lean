@@ -5,10 +5,7 @@ Authors: Kim Morrison, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.CategoryTheory.Whiskering
-public import Mathlib.Control.EquivFunctor
 
 /-!
 # The core of a category
