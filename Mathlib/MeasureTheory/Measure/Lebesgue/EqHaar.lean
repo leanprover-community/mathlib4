@@ -827,7 +827,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
       exact measure_mono inter_subset_right
   refine this.congr fun r => ?_
   congr 1
-  apply measure_toMeasurable_inter_of_sFinite
+  apply measure_toMeasurable_inter_of_sfinite
   simp only [image_add_left, singleton_add]
   apply (continuous_const_add (-x)).measurable (ht.const_smul₀ r)
 

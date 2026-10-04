@@ -82,6 +82,9 @@ theorem re_C : (.C r : QuadraticAlgebra R a b).re = r := rfl
 @[simp]
 theorem im_C : (.C r : QuadraticAlgebra R a b).im = 0 := rfl
 
+@[simp]
+theorem mk_zero_eq_C (r : R) : (⟨r, 0⟩ : QuadraticAlgebra R a b) = .C r := rfl
+
 theorem C_injective : Function.Injective (.C : R → QuadraticAlgebra R a b) :=
   fun _ _ h => congr(re $h)
 
@@ -420,7 +423,7 @@ instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) whe
   commutes' s z := by ext <;> simp [Algebra.commutes]
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
 
-theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = ⟨r, 0⟩ := rfl
+theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = .C r := rfl
 
 theorem algebraMap_injective : (algebraMap R (QuadraticAlgebra R a b) : _ → _).Injective :=
   fun _ _ ↦ by simp [algebraMap_eq]
