@@ -11,7 +11,7 @@ import all Mathlib.Tactic.Linter.UnusedInstancesInType
 import all Mathlib.Tactic.Linter.OverlappingInstances
 
 /-!
-# Instance linters
+# Declaration type linters
 
 We bundle a number of linters that act on declaration types into a single linter:
 
