@@ -1316,3 +1316,18 @@ instance ZMod.instSubsingletonModule (n : ℕ) (M : Type*) [AddCommMonoid M] :
   refine ⟨fun m1 m2 ↦ Module.ext' _ _ fun r m ↦ ?_⟩
   obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
   rw [(letI := m1; Nat.cast_smul_eq_nsmul _ r m), Nat.cast_smul_eq_nsmul _ r m]
+
+namespace ZMod
+
+/-- In `ZMod 6`, the element `5` is equivalent to `-1`. -/
+lemma five_eq_neg_one : (5 : ZMod 6) = -1 := rfl
+
+/-- Multiplication by `5` in `ZMod 6` acts as negation (reflection). -/
+lemma five_mul (x : ZMod 6) : (5 : ZMod 6) * x = -x := by
+  rw [five_eq_neg_one, neg_one_mul]
+
+/-- The reflection operator in `ZMod 6` is an involution. -/
+lemma five_mul_five_mul (x : ZMod 6) : (5 : ZMod 6) * (5 * x) = x := by
+  rw [five_mul, five_mul, neg_neg]
+
+end ZMod
