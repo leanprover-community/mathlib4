@@ -553,18 +553,20 @@ open HomotopicalAlgebra
 
 namespace SSet
 
-namespace modelCategoryQuillen
-
-lemma J.anodyneExtensions_sd_map {A B : SSet.{u}} {i : A ⟶ B} (hi : J i) :
-    anodyneExtensions (sd.map i) := by
+lemma anodyneExtensions.sd_horn_ι {n : ℕ} (i : Fin (n + 2)) :
+    anodyneExtensions (sd.{u}.map Λ[n + 1, i].ι) := by
   sorry
+
+namespace modelCategoryQuillen
 
 instance {E B : SSet.{u}} (p : E ⟶ B) [Fibration p] :
     Fibration (ex.map p) := by
   rw [fibration_iff]
   intro A B i hi
+  simp only [J, MorphismProperty.iSup_iff] at hi
+  obtain ⟨n, ⟨i⟩⟩ := hi
   rw [← sdExAdjunction.hasLiftingProperty_iff]
-  exact hi.anodyneExtensions_sd_map _ (mem_fibrations p)
+  exact anodyneExtensions.sd_horn_ι _ _ (mem_fibrations p)
 
 end modelCategoryQuillen
 
