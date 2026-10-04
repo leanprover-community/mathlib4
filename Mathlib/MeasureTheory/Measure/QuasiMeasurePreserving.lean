@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
 /-!
@@ -154,7 +154,7 @@ theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreservi
     rwa [Equiv.Perm.iterate_eq_pow e⁻¹ k, inv_pow e k] at he'
   · rw [zpow_neg, zpow_natCast]
     replace hs : e ⁻¹' s =ᵐ[μ] s := by
-      convert! he.preimage_ae_eq hs.symm
+      convert he.preimage_ae_eq hs.symm
       rw [Equiv.preimage_image]
     replace he : (⇑e)^[k] ⁻¹' s =ᵐ[μ] s := he.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e k] at he
@@ -184,6 +184,20 @@ theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePrese
     exact limsup_ae_eq_of_forall_ae_eq _ fun n ↦ .trans (h.preimage_iterate_ae_eq _ this) ht.symm
   · simp only [Set.preimage_iterate_eq]
     exact CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) t
+
+/-- If a quasi-measure-preserving map `f` maps a set `s` to a set `t`,
+then it is quasi-measure-preserving with respect to the restrictions of the measures. -/
+protected theorem restrict {ν : Measure β} {f : α → β}
+    (hf : QuasiMeasurePreserving f μ ν) {t : Set β} (hmaps : MapsTo f s t) :
+    QuasiMeasurePreserving f (μ.restrict s) (ν.restrict t) where
+  measurable := hf.measurable
+  absolutelyContinuous := by
+    refine AbsolutelyContinuous.mk fun u hum ↦ ?_
+    suffices ν (u ∩ t) = 0 → μ (f ⁻¹' u ∩ s) = 0 by simpa [hum, hf.measurable, hf.measurable hum]
+    refine fun hu ↦ measure_mono_null ?_ (hf.preimage_null hu)
+    rw [preimage_inter]
+    gcongr
+    assumption
 
 open scoped Pointwise
 
@@ -244,3 +258,17 @@ theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
   ⟨e.symm.measurable, by rw [Measure.map_map, e.symm_comp_self, Measure.map_id] <;> measurability⟩
 
 end MeasurableEquiv
+
+namespace AEMeasurable
+
+open Measure
+
+variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+  {μa : Measure α} {μb : Measure β} {f : α → β}
+
+@[fun_prop]
+theorem comp_quasiMeasurePreserving {g : β → γ} (hg : AEMeasurable g μb)
+    (hf : QuasiMeasurePreserving f μa μb) : AEMeasurable (g ∘ f) μa :=
+  (hg.mono_ac hf.absolutelyContinuous).comp_measurable hf.measurable
+
+end AEMeasurable

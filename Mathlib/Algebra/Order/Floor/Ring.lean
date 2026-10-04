@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas on `Int.floor`, `Int.ceil` and `Int.fract`
@@ -250,7 +249,7 @@ lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast :
   aesop
 
 theorem floor_lt_self_iff {a : R} : ⌊a⌋ < a ↔ a ∉ range Int.cast :=
-  (floor_le a).lt_iff_ne.trans <| (floor_eq_self_iff_mem _).not
+  (floor_le a).lt_iff_ne.trans (floor_eq_self_iff_mem _).not
 
 section LinearOrderedRing
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a : R}
@@ -268,7 +267,7 @@ theorem mul_fract_eq_one_iff_exists_int {x : R} {k : R} (hk : 1 < k) :
   rw [fract, mul_sub, sub_eq_iff_eq_add']
   refine ⟨fun hx ↦ ⟨⌊x⌋, hx⟩, ?_⟩
   rintro ⟨n, hn⟩
-  convert! hn
+  convert hn
   have hk0 : 0 < (k : R) := zero_le_one.trans_lt hk
   rw [floor_eq_iff, ← mul_le_mul_iff_right₀ hk0, ← mul_lt_mul_iff_right₀ hk0, hn]
   simp [mul_add, hk]
