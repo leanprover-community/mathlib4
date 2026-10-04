@@ -448,19 +448,23 @@ end CharTwo
 
 namespace Nat
 
-/-- `3^a` is odd for any natural number `a`. -/
-lemma Odd.three_pow (a : ℕ) : Odd (3 ^ a) :=
-  Odd.pow (by decide)
-
-/-- `2^b` is even for any non-zero natural number `b`. -/
-lemma Even.two_pow {b : ℕ} (hb : b ≠ 0) : Even (2 ^ b) :=
-  even_pow.mpr ⟨by decide, hb⟩
-
-/-- Diophantine parity obstruction: $2^b \neq 3^a$ for $b \neq 0$. -/
-theorem two_pow_ne_three_pow {a b : ℕ} (hb : b ≠ 0) : 2 ^ b ≠ 3 ^ a := by
+/--
+Parity obstruction for powers: an even natural number raised to a non-zero power
+cannot equal an odd natural number raised to any power.
+-/
+theorem even_pow_ne_odd_pow {m n a b : ℕ} (hm : Even m) (hn : Odd n) (hb : b ≠ 0) :
+    m ^ b ≠ n ^ a := by
   intro h
-  have h_even : Even (3 ^ a) := h ▸ Even.two_pow hb
-  have h_odd : Odd (3 ^ a) := Odd.three_pow a
-  exact Nat.not_even_iff_odd.mpr h_odd h_even
+  have h_even : Even (m ^ b) := Nat.even_pow.mpr ⟨hm, hb⟩
+  have h_odd : Odd (n ^ a) := hn.pow a
+  rw [h] at h_even
+  exact Nat.even_iff_not_odd.mp h_even h_odd
+
+/--
+Diophantine parity obstruction for powers of 2 and 3:
+`2^b = 3^a` has no solutions for `b > 0`.
+-/
+theorem two_pow_ne_three_pow {a b : ℕ} (hb : b ≠ 0) : 2 ^ b ≠ 3 ^ a :=
+  even_pow_ne_odd_pow (by decide) (by decide) hb
 
 end Nat
