@@ -401,8 +401,6 @@ end LinearOrder
 
 end ClosedIicTopology
 
-section ClosedIciTopology
-
 section OrderClosedTopology
 
 section Preorder

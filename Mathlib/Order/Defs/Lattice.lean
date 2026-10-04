@@ -234,6 +234,11 @@ to_dual_for Lattice.mk := {
   sup_le a b c := le_inf c a b
 }
 
+to_dual_for Lattice.inf := (· ⊔ ·)
+to_dual_for Lattice.le_inf := sup_le
+to_dual_for Lattice.inf_le_left := le_sup_left
+to_dual_for Lattice.inf_le_right := le_sup_right
+
 section Lattice
 
 variable [Lattice α] {a b c : α}
