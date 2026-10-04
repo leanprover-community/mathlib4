@@ -5,7 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Bilinear
+import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!

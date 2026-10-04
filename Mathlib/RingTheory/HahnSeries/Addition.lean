@@ -5,14 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.Group.Support
-public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.RingTheory.HahnSeries.Basic
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Additive properties of Hahn series
@@ -136,8 +131,8 @@ and the additive opposite of Hahn series over `Γ` with coefficients `R`.
 -/
 @[simps -isSimp]
 def addOppositeEquiv : Rᵃᵒᵖ⟦Γ⟧ ≃+ R⟦Γ⟧ᵃᵒᵖ where
-  toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert! x.isPWO_support; ext; simp⟩
-  invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert! x.unop.isPWO_support; ext; simp⟩
+  toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
+  invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩
   left_inv x := by simp
   right_inv x := by
     apply AddOpposite.unop_injective

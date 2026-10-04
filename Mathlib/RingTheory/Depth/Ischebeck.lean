@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.RingTheory.Depth.Basic
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.KrullDimension.Field
 public import Mathlib.RingTheory.KrullDimension.Module
+public import Mathlib.RingTheory.Regular.Category
 
 /-!
 
@@ -20,16 +22,16 @@ public import Mathlib.RingTheory.KrullDimension.Module
 @[expose] public section
 
 open IsLocalRing LinearMap ModuleCat Pointwise
-open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
+open RingTheory.Sequence Ideal CategoryTheory Abelian Limits ModuleCat
 
 universe u v
 
 variable {R : Type u} [CommRing R]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
+theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
-    [Small.{v} R] : moduleDepth N M ≥ IsLocalRing.depth M -
+    [Small.{v} R] : N.depth M ≥ IsLocalRing.depth M -
     (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) := by
   generalize dim : ((Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N)) = r
   induction r with
@@ -40,12 +42,12 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
     · simp only [eq0, CharP.cast_eq_zero, WithBot.unbot_eq_iff, WithBot.coe_zero] at dim
       have smul_lt := (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
         (maximalIdeal_le_jacobson (Module.annihilator R M))).lt_top'
-      simp [eq0, IsLocalRing.depth, moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M smul_lt
+      simp [eq0, IsLocalRing.depth, depth_eq_depth_of_support_eq (maximalIdeal R) N M smul_lt
         (support_of_supportDim_eq_zero R N dim)]
     · refine (IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
         (motive := fun L ↦ (∀ (Lntr : Nontrivial L),
           ((Module.supportDim R L).unbot (Module.supportDim_ne_bot_of_nontrivial R L)) = r →
-          (moduleDepth (ModuleCat.of R L) M ≥ IsLocalRing.depth M - r))) R Nfin)
+          ((ModuleCat.of R L).depth M ≥ IsLocalRing.depth M - r))) R Nfin)
           (fun L _ _ _ Ltr Lntr ↦ ?_) (fun L _ _ _ p e Lntr dim_eq ↦ ?_) ?_ Nntr dim
       · absurd Ltr
         exact (not_subsingleton_iff_nontrivial.mpr Lntr)
@@ -91,7 +93,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             exact (ENat.add_one_le_iff this).mp succle
           rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt dimlt) with ⟨m, hm⟩
           simp only [← hm, Nat.cast_lt] at dimlt
-          apply ext_subsingleton_of_lt_moduleDepth
+          apply subsingleton_ext_of_lt_depth
           refine lt_of_lt_of_le ?_ (ihr m dimlt (ModuleCat.of R (QuotSMulTop x L)) hm.symm)
           by_cases eqtop : IsLocalRing.depth M = ⊤
           · simp only [Nat.cast_add, eqtop, ENat.top_sub_natCast, ENat.add_lt_top,
@@ -124,14 +126,14 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         · have : Function.Injective g := by
             simp [← ker_eq_bot, exact_iff.mp exac, Subsingleton.eq_zero f]
           let eg : L2 ≃ₗ[R] L3 := LinearEquiv.ofBijective g ⟨this, surj⟩
-          rw [moduleDepth_eq_of_iso_fst M eg.toModuleIso]
+          rw [depth_eq_of_iso_left M eg.toModuleIso]
           apply ih3' this.nontrivial
           rw [← dim_eq, WithBot.unbot_inj, Module.supportDim_eq_of_equiv eg]
         · rcases subsingleton_or_nontrivial L3 with sub3|ntr3
           · have : Function.Surjective f := by
               simp [← range_eq_top, ← exact_iff.mp exac, Subsingleton.eq_zero g]
             let ef : L1 ≃ₗ[R] L2 := LinearEquiv.ofBijective f ⟨inj, this⟩
-            rw [← moduleDepth_eq_of_iso_fst M ef.toModuleIso]
+            rw [← depth_eq_of_iso_left M ef.toModuleIso]
             apply ih1' this.nontrivial
             rw [← dim_eq, WithBot.unbot_inj, Module.supportDim_eq_of_equiv ef]
           · have dimle1 : ((Module.supportDim R L1).unbot
@@ -142,14 +144,14 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
               (Module.supportDim_ne_bot_of_nontrivial R L3)) ≤ r := by
               rw [← dim_eq, ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
               exact Module.supportDim_le_of_surjective g surj
-            have ge1 : moduleDepth (of R L1) M ≥ IsLocalRing.depth M -
+            have ge1 : (of R L1).depth M ≥ IsLocalRing.depth M -
               ((Module.supportDim R L1).unbot (Module.supportDim_ne_bot_of_nontrivial R L1)) := by
               rcases lt_or_eq_of_le dimle1 with lt|eq
               · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt) with ⟨m, hm⟩
                 simp only [← hm, Nat.cast_lt] at lt
                 simpa [← hm] using ihr m lt (ModuleCat.of.{v} R L1) hm.symm
               · simpa [eq] using ih1' ntr1 eq
-            have ge3 : moduleDepth (of R L3) M ≥ IsLocalRing.depth M -
+            have ge3 : (of R L3).depth M ≥ IsLocalRing.depth M -
               ((Module.supportDim R L3).unbot (Module.supportDim_ne_bot_of_nontrivial R L3)) := by
               rcases lt_or_eq_of_le dimle3 with lt|eq
               · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt) with ⟨m, hm⟩
@@ -158,7 +160,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
               · simpa [eq] using ih3' ntr3 eq
             let S := ModuleCat.shortComplexOfCompEqZero f g exac.linearMap_comp_eq_zero
             have hS := ModuleCat.shortComplex_shortExact S exac inj surj
-            exact ge_trans (moduleDepth_ge_min_of_shortExact_snd_fst S hS M) (le_inf_iff.mpr
+            exact ge_trans (depth_min_fst_trd_le_snd_left S hS M) (le_inf_iff.mpr
               ⟨(tsub_le_tsub_left dimle1 _).trans ge1, (tsub_le_tsub_left dimle3 _).trans ge3⟩)
 
 lemma quotient_prime_ringKrullDim_ne_bot {P : Ideal R} (prime : P.IsPrime) :
@@ -171,13 +173,13 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
     (ass : P ∈ associatedPrimes R M) : IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot
       (quotient_prime_ringKrullDim_ne_bot ass.1) := by
   have := Quotient.nontrivial_iff.mpr ass.1.ne_top'
-  have dep0 : moduleDepth (of R (Shrink.{v} (R ⧸ P))) M = 0 := by
-    rw [moduleDepth_eq_zero_of_hom_nontrivial,
-      (LinearEquiv.congrLeft M R (Shrink.linearEquiv R (R ⧸ P))).nontrivial_congr]
+  have dep0 : (of R (Shrink.{v} (R ⧸ P))).depth M = 0 := by
+    rw [depth_eq_zero_iff_nontrivial_linearMap,
+      ((Shrink.linearEquiv R (R ⧸ P)).congrLeft M R).nontrivial_congr]
     rcases ((isAssociatedPrime_iff_exists_injective_linearMap P M).mp
       (AssociatedPrimes.mem_iff.mp ass)).2 with ⟨f, hf⟩
     exact nontrivial_of_ne f 0 (ne_zero_of_injective hf)
-  have := moduleDepth_ge_depth_sub_dim M (ModuleCat.of R (Shrink.{v} (R ⧸ P)))
+  have := depth_ge_depth_sub_dim M (ModuleCat.of R (Shrink.{v} (R ⧸ P)))
   simp only [dep0, ge_iff_le, nonpos_iff_eq_zero, tsub_eq_zero_iff_le] at this
   convert! this
   rw [← Module.supportDim_quotient_eq_ringKrullDim,
