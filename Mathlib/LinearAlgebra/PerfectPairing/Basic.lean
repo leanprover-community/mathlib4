@@ -125,8 +125,7 @@ lemma IsPerfPair.separatingRight {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfP
 lemma IsPerfPair.nondegenerate {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
     p.Nondegenerate := ⟨hp.separatingLeft, hp.separatingRight⟩
 
-set_option linter.overlappingInstances false
-instance [inst : p.IsPerfPair] : Fact p.Nondegenerate := ⟨inst.nondegenerate⟩
+instance : Fact p.Nondegenerate := ⟨‹p.IsPerfPair›.nondegenerate⟩
 
 end CommSemiring
 
