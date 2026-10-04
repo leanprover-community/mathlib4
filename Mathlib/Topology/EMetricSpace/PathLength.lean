@@ -5,6 +5,8 @@ Authors: Zhenhua Wu
 -/
 module
 
+public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Topology.EMetricSpace.ArcLength
 public import Mathlib.Topology.Path
 
@@ -20,6 +22,7 @@ the basic API for this definition.
 * `Path.length`: the length of a path, defined as `arcLength γ 0 1`.
 * `Path.length_eq_eVariationOn`: `Path.length` agrees with `eVariationOn` on `Set.univ`.
 * `Path.edist_le_length`: the endpoint distance is bounded above by the length.
+* `Path.segment_length`: the straight-line segment has length equal to the endpoint distance.
 * `Path.length_symm`: reversing a path does not change its length.
 * `Path.length_trans`: the length of a concatenation is the sum of the lengths.
 
@@ -29,7 +32,7 @@ the basic API for this definition.
 -/
 
 open scoped ENNReal
-open Set unitInterval
+open Set unitInterval AffineMap
 
 namespace Path
 
@@ -52,6 +55,19 @@ theorem edist_le_length (γ : Path a b) : edist a b ≤ γ.length := by
   simp_rw [length, ← γ.source, ← γ.target]
   exact edist_le_arcLength _ zero_le_one
 
+/-- The straight-line segment has length equal to the distance between its endpoints. -/
+theorem segment_length {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+    (a b : E) : (Path.segment a b).length = edist a b := by
+  refine le_antisymm ?_ (edist_le_length (Path.segment a b))
+  have h : eVariationOn ((↑) : I → ℝ) (Icc 0 1) = 1 := by
+    rw [← univ_inter (Icc 0 1), MonotoneOn.eVariationOn_eq (f := ((↑) : I → ℝ)) (fun x _ y _ h => h)
+      (mem_univ _) (mem_univ _), Icc.coe_one, Icc.coe_zero, sub_zero, ENNReal.ofReal_one]
+  rw [length, arcLength]
+  calc eVariationOn (lineMap a b ∘ ((↑) : I → ℝ)) (Icc 0 1)
+      ≤ nndist a b * eVariationOn ((↑) : I → ℝ) (Icc 0 1) :=
+        (lipschitzWith_lineMap a b).lipschitzOnWith.comp_eVariationOn_le (mapsTo_univ _ _)
+    _ = edist a b := by rw [h, mul_one, edist_nndist]
+
 /-- The constant path has zero length. -/
 @[simp]
 theorem length_refl (x : E) : (refl x).length = 0 :=
@@ -61,7 +77,7 @@ theorem length_refl (x : E) : (refl x).length = 0 :=
 @[simp]
 theorem length_symm (γ : Path a b) : γ.symm.length = γ.length := by
   rw [length, length, symm_eq_comp γ, arcLength_comp_eq_of_antitoneOn _ _
-    (strictAnti_symm.antitone.antitoneOn (Icc (0 : I) 1)) (symm_image_Icc 0 1 nonneg'), symm_one,
+    (strictAnti_symm.antitone.antitoneOn (Icc 0 1)) (symm_image_Icc 0 1 nonneg'), symm_one,
     symm_zero]
 
 /-! ## Auxiliary lemmas for concatenation -/
