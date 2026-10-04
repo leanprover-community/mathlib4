@@ -86,11 +86,9 @@ theorem lift_rank_mul_lift_rank_of_isFractionRing_isLocalization :
   have a := h₀.lift_rank_eq
   have b := h₁.lift_rank_eq
   have c := h₂.lift_rank_eq
-  clear * - a b c
   rw [lift_id', lift_umax] at b c
-  rw [← b, ← c, ← lift_inj.{_, v'}, lift_mul]
-  convert ← lift_rank_mul_lift_rank FR FS M'
-  rw [← lift_lift.{v, w}, a, lift_lift, lift_lift]
+  rw [← b, ← c, ← lift_inj.{_, v'}, lift_mul, ← lift_rank_mul_lift_rank FR FS M',
+    ← lift_lift.{v, w}, a, lift_lift, lift_lift]
 
 /-- **Tower law over domains.**
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S = (S⁰)⁻¹ S`,
