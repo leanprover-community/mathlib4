@@ -7,8 +7,8 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
-public import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
+import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
 
 /-!
 # Ideals in cyclotomic fields
@@ -85,7 +85,7 @@ theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
 
 theorem p_mem_span_zeta_sub_one : (p : 𝓞 K) ∈ span {hζ.toInteger - 1} := by
-  convert! absNorm_mem _
+  convert absNorm_mem _
   exact (absNorm_span_zeta_sub_one ..).symm
 
 theorem span_zeta_sub_one_ne_bot : span {hζ.toInteger - 1} ≠ ⊥ :=
@@ -190,10 +190,13 @@ instance isPrime_span_zeta_sub_one' : IsPrime (span {hζ.toInteger - 1}) := by
 
 /-- If `2 < p`, then `2` is not in the ideal `(ζ - 1)`, where `ζ` is a primitive `p`-th root of
 unity. -/
-theorem two_not_mem_span_zeta_sub_one' (h : 2 < p) : (2 : 𝓞 K) ∉ span {hζ.toInteger - 1} := by
+theorem two_notMem_span_zeta_sub_one' (h : 2 < p) : (2 : 𝓞 K) ∉ span {hζ.toInteger - 1} := by
   rw [mem_span_singleton]
   rw [← pow_one p] at hK hζ
   exact hζ.toInteger_sub_one_not_dvd_two h.ne'
+
+@[deprecated (since := "2026-09-28")]
+alias two_not_mem_span_zeta_sub_one' := two_notMem_span_zeta_sub_one'
 
 omit hp hK [NumberField K] in
 lemma associated_sub_one_of_isPrimitiveRoot [NeZero p] {η : K} (hη : IsPrimitiveRoot η p) :

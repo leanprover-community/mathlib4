@@ -1070,7 +1070,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
     TransGen (· ⩿ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Icc x y`.
   -- It's impossible for the cardinality to be zero since `x ≤ y`
-  have : #(Ico x y) < #(Icc x y) := card_lt_card <|
+  have : #(Ico x y) < #(Icc x y) := card_lt_card
     ⟨Ico_subset_Icc_self, not_subset.mpr ⟨y, ⟨right_mem_Icc.mpr hxy, right_notMem_Ico⟩⟩⟩
   by_cases hxy' : y ≤ x
   -- If `y ≤ x`, then `x ⩿ y`
