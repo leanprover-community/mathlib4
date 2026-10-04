@@ -85,7 +85,7 @@ private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _
 
 /-- The automorphism of `k[X_0, ..., X_n]` fixing `X_0` and sending `X_i` to `X_i + X_0 ^ r_i`. -/
 noncomputable abbrev varChange := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
-  (by exact t1_comp_t1_neg f 1) (by simpa using t1_comp_t1_neg f (-1))
+  (private_decl% (t1_comp_t1_neg f 1)) (by simpa using t1_comp_t1_neg f (-1))
 
 private lemma sum_r_mul_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (ne : v ≠ w) :
     ∑ x : Fin (n + 1), r x * v x ≠ ∑ x : Fin (n + 1), r x * w x := by
