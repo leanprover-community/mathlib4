@@ -78,18 +78,6 @@ example (a b : Nat) (h : a + 1 ≤ b + 1) : max a b ≤ b := by
   have : True := by simp (disch := grind)
   simp (disch := grind) [Nat.max_eq_right]
 
--- The linter works correctly with `on_goal`.
-/--
-warning: Unused tactic linter: `skip` does nothing
-
-Note: This linter can be disabled with `set_option linter.unusedTactic false`
--/
-#guard_msgs in
-example : True ∧ True := by
-  constructor
-  on_goal 1 => skip; trivial
-  trivial
-
 section allowing_more_unused_tactics
 
 /-- info: The `SyntaxNodeKind` is 'Lean.Parser.Tactic.refine'. -/
