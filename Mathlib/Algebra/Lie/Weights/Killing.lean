@@ -160,7 +160,7 @@ variable [FiniteDimensional K L] [IsKilling K L]
 instance : InvolutiveNeg (Weight K H L) where
   neg α := ⟨-α, by
     by_cases hα : α.IsZero
-    · convert! α.genWeightSpace_ne_bot; rw [hα, neg_zero]
+    · convert α.genWeightSpace_ne_bot; rw [hα, neg_zero]
     · intro e
       obtain ⟨x, hx, x_ne0⟩ := α.exists_ne_zero
       have := mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H hx
@@ -573,7 +573,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
       mul_one, two_smul, two_smul]
   refine ⟨⁅e, f⁆, e, f, ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
   · rw [contra] at hef
-    have : IsAddTorsionFree L := .of_isTorsionFree K L
+    have : HasUniqueDiv L := .of_isTorsionFree K L
     simp only [zero_lie, eq_comm (a := (0 : L)), smul_eq_zero, OfNat.ofNat_ne_zero, false_or] at hef
     contradiction
   · have : ⁅⁅e, f'⁆, f'⁆ = - α h • f' := lie_eq_smul_of_mem_rootSpace hfα h
