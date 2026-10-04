@@ -60,7 +60,7 @@ structure NonemptyFiniteChains (X : Type u) [PartialOrder X] where
   /-- a finite subset -/
   finset : Finset X
   nonempty : finset.Nonempty := by simp
-  comparable (a b : finset) : a ≤ b ∨ b ≤ a
+  comparable (a b : finset) : a ≤ b ∨ b ≤ a := by apply le_total
 
 namespace NonemptyFiniteChains
 
