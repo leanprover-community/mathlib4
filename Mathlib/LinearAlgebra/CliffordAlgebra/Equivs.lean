@@ -6,7 +6,8 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.DualNumber
-public import Mathlib.Algebra.QuaternionBasis
+public import Mathlib.Algebra.Quaternion.Basis
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.QuadraticForm.Prod

@@ -1,5 +1,5 @@
-import Mathlib.Algebra.Quaternion
-import Mathlib.Basic.Real.Basic
+import Mathlib.Algebra.Quaternion.Basic
+import Mathlib.Data.Real.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
 open Quaternion
