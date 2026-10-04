@@ -33,9 +33,9 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
-  { docString? := newDoc.map (·, doc.verso.get (← getOptions))
+  { docString? := newDoc
     visibility :=
-    if isPrivateNameExport nm then
+    if isPrivateName nm then
       Visibility.private
     else
       Visibility.regular
@@ -85,7 +85,7 @@ def MVarId.rintroWithPats (g : MVarId) (patterns : List (TSyntax `rintroPat))
   return (← RCases.rintro pats none g |>.run', remaining)
 
 /-- Introduce variables, giving them names from a specified list. -/
-@[deprecated MVarId.rintroWithPats (since := "2026-04-17")]
+@[deprecated MVarId.rintroWithPats +typeChanged (since := "2026-04-17")]
 def MVarId.introsWithBinderIdents
     (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
     MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do

@@ -5,14 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
-public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Tactic.FinCases
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.NormNum
-public import Mathlib.Tactic.Positivity.Finset
-public import Mathlib.Tactic.Ring
 
 /-!
 # Small tripling implies small powers
@@ -27,7 +24,7 @@ implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 
 public section
 
-open Fin MulOpposite
+open Fin
 open List hiding tail
 open scoped Pointwise
 

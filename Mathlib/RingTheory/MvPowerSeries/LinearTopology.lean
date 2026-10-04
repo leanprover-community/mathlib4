@@ -5,11 +5,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Data.Finsupp.Interval
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
-public import Mathlib.Topology.Algebra.LinearTopology
-public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-! # Linear topology on the ring of multivariate power series
 
@@ -90,7 +87,7 @@ theorem basis_le_iff {J K : TwoSidedIdeal R} {d e : σ →₀ ℕ} (hK : K ≠ �
     basis σ R ⟨J, d⟩ ≤ basis σ R ⟨K, e⟩ ↔ J ≤ K ∧ e ≤ d := by
   classical
   constructor
-  · simp only [basis, TwoSidedIdeal.le_iff, TwoSidedIdeal.coe_mk', setOf_subset_setOf]
+  · simp only [basis, TwoSidedIdeal.le_iff, TwoSidedIdeal.coe_mk', ofPred_subset_ofPred]
     intro h
     constructor
     · intro x hx

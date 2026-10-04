@@ -5,8 +5,8 @@ Authors: Mitchell Lee
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Finite
-public import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 
@@ -27,13 +27,16 @@ sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
 
 public section
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 namespace NonarchimedeanGroup
 
 variable {α G : Type*}
 variable [CommGroup G] [UniformSpace G] [IsUniformGroup G] [NonarchimedeanGroup G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `G` be a nonarchimedean multiplicative abelian group, and let `f : α → G` be a function that
 tends to one on the filter of cofinite sets. For each finite subset of `α`, consider the partial
 product of `f` on that subset. These partial products form a Cauchy filter. -/

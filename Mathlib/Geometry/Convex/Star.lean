@@ -29,7 +29,7 @@ Incidentally, this choice means we don't need to assume a set is nonempty for it
 Concretely, the empty set is star-convex at every point.
 -/
 
-open Finsupp Set
+open Set
 
 public section
 

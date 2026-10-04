@@ -7,10 +7,9 @@ module
 
 public import Mathlib.Algebra.DirectSum.LinearMap
 public import Mathlib.Algebra.Lie.Weights.Cartan
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
-public import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.RingTheory.Finiteness.Nilpotent
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Chains of roots and weights
@@ -70,7 +69,7 @@ variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
-variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+variable [HasUniqueDiv R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
 include hχ₁
 
 lemma eventually_genWeightSpace_smul_add_eq_bot :
@@ -203,6 +202,7 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
   | add => simp_all
   | smul => simp_all
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
 `I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
 integral linear combination between `α` and any weight `χ` of a representation.
@@ -254,7 +254,7 @@ section
 
 variable {M}
 variable [LieRing.IsNilpotent L]
-variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M]
+variable [HasUniqueDiv R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/
@@ -273,8 +273,8 @@ def chainBotCoeff : ℕ := chainTopCoeff (-α) β
 @[simp] lemma chainBotCoeff_neg : chainBotCoeff (-α) β = chainTopCoeff α β := by
   rw [← chainTopCoeff_neg, neg_neg]
 
-@[simp] lemma chainTopCoeff_zero : chainTopCoeff 0 β = 0 := dif_pos rfl
-@[simp] lemma chainBotCoeff_zero : chainBotCoeff 0 β = 0 := dif_pos neg_zero
+@[simp] lemma chainTopCoeff_zero : chainTopCoeff 0 β = 0 := dite_eq_left rfl
+@[simp] lemma chainBotCoeff_zero : chainBotCoeff 0 β = 0 := dite_eq_left neg_zero
 
 section
 variable (hα : α ≠ 0)
@@ -285,7 +285,7 @@ lemma chainTopCoeff_add_one :
     chainTopCoeff α β + 1 =
       Nat.find (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists := by
   classical
-  rw [chainTopCoeff, dif_neg hα]
+  rw [chainTopCoeff, dite_eq_right hα]
   apply Nat.succ_pred_eq_of_pos
   rw [zero_lt_iff]
   intro e

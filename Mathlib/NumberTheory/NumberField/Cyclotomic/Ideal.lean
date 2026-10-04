@@ -7,8 +7,8 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
-public import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
+import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
 
 /-!
 # Ideals in cyclotomic fields
@@ -85,7 +85,7 @@ theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
 
 theorem p_mem_span_zeta_sub_one : (p : 𝓞 K) ∈ span {hζ.toInteger - 1} := by
-  convert! absNorm_mem _
+  convert absNorm_mem _
   exact (absNorm_span_zeta_sub_one ..).symm
 
 theorem span_zeta_sub_one_ne_bot : span {hζ.toInteger - 1} ≠ ⊥ :=
@@ -190,10 +190,13 @@ instance isPrime_span_zeta_sub_one' : IsPrime (span {hζ.toInteger - 1}) := by
 
 /-- If `2 < p`, then `2` is not in the ideal `(ζ - 1)`, where `ζ` is a primitive `p`-th root of
 unity. -/
-theorem two_not_mem_span_zeta_sub_one' (h : 2 < p) : (2 : 𝓞 K) ∉ span {hζ.toInteger - 1} := by
+theorem two_notMem_span_zeta_sub_one' (h : 2 < p) : (2 : 𝓞 K) ∉ span {hζ.toInteger - 1} := by
   rw [mem_span_singleton]
   rw [← pow_one p] at hK hζ
   exact hζ.toInteger_sub_one_not_dvd_two h.ne'
+
+@[deprecated (since := "2026-09-28")]
+alias two_not_mem_span_zeta_sub_one' := two_notMem_span_zeta_sub_one'
 
 omit hp hK [NumberField K] in
 lemma associated_sub_one_of_isPrimitiveRoot [NeZero p] {η : K} (hη : IsPrimitiveRoot η p) :
@@ -279,9 +282,6 @@ theorem ramificationIdxIn_eq_of_prime :
   rw [← pow_one p] at hK
   rw [ramificationIdxIn_eq_of_prime_pow p 0, pow_zero, one_mul]
 
-@[deprecated (since := "2025-12-03")] alias ramificationIdxIn_of_prime :=
-  ramificationIdxIn_eq_of_prime
-
 end Prime
 
 section notDvd
@@ -290,6 +290,7 @@ open NumberField.Ideal Polynomial
 
 variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg P ℤ = orderOf (p : ZMod m) := by
   replace hm : p.Coprime m := hp.out.coprime_iff_not_dvd.mpr hm
@@ -310,9 +311,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
       ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
     simp [ζ]
 
-@[deprecated (since := "2025-12-10")]
-alias inertiaDeg_of_not_dvd := inertiaDeg_eq_of_not_dvd
-
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx P ℤ = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
@@ -329,11 +327,8 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
   · apply emultiplicity_le_one_of_separable
     · exact isUnit_iff_degree_eq_zero.not.mpr (Irreducible.degree_pos h₂.1).ne'
     · exact (zeta_spec m ℚ K).toInteger_isPrimitiveRoot.separable_minpoly_mod hm
-  · rw [ENat.coe_one]
+  · rw [ENat.natCast_one]
     exact Order.one_le_iff_pos.mpr <| emultiplicity_pos_of_dvd h₂.2.2
-
-@[deprecated (since := "2025-12-10")]
-alias ramificationIdx_of_not_dvd := ramificationIdx_eq_of_not_dvd
 
 theorem inertiaDegIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) := by
@@ -347,17 +342,12 @@ theorem ramificationIdxIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
   obtain ⟨⟨P, _, _⟩⟩ := 𝒑.nonempty_primesOver (S := 𝓞 K)
   rw [ramificationIdxIn_eq_ramificationIdx 𝒑 P Gal(K/ℚ), ramificationIdx_eq_of_not_dvd p K P hm]
 
-@[deprecated (since := "2025-12-03")] alias inertiaDegIn_of_not_dvd := inertiaDegIn_eq_of_not_dvd
-@[deprecated (since := "2025-12-03")] alias ramificationIdxIn_of_not_dvd :=
-  ramificationIdxIn_eq_of_not_dvd
-
 end notDvd
 
 section general
 
 variable {m p k} [IsCyclotomicExtension {n} ℚ K]
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) ∧

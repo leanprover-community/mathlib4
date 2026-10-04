@@ -6,9 +6,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.Convex.Function
+import Mathlib.Analysis.Convex.Function
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
-public import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Exposed sets
@@ -43,7 +42,7 @@ Prove lemmas relating exposed sets and points to the intrinsic frontier.
 
 @[expose] public section
 
-open Affine Set
+open Set
 
 section PreorderSemiring
 
@@ -139,7 +138,6 @@ protected theorem inter [IsOrderedRing 𝕜] [ContinuousAdd 𝕜] {A B C : Set E
 
 theorem sInter [IsOrderedRing 𝕜] [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
     (hAF : ∀ B ∈ F, IsExposed 𝕜 A B) : IsExposed 𝕜 A (⋂₀ F) := by
-  classical
   induction F using Finset.induction with
   | empty => exfalso; exact Finset.not_nonempty_empty hF
   | insert C F _ hF' =>

@@ -5,7 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Degree.Domain
 public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.GroupTheory.GroupAction.Ring
@@ -34,7 +34,7 @@ namespace Polynomial
 
 universe u v w y z
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {A : Type z} {a b : R} {n : ℕ}
+variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {n : ℕ}
 
 section Derivative
 
@@ -60,13 +60,13 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
   rw [derivative_apply]
   simp only [coeff_X_pow, coeff_sum, coeff_C_mul]
   rw [sum, Finset.sum_eq_single (n + 1)]
-  · simp only [Nat.add_succ_sub_one, add_zero, mul_one, if_true]; norm_cast
+  · simp only [Nat.add_succ_sub_one, add_zero, mul_one, ite_true]; norm_cast
   · intro b
     cases b
     · intros
       rw [Nat.cast_zero, mul_zero, zero_mul]
     · intro _ H
-      rw [Nat.add_one_sub_one, if_neg (mt (congr_arg Nat.succ) H.symm), mul_zero]
+      rw [Nat.add_one_sub_one, ite_eq_right (mt (congr_arg Nat.succ) H.symm), mul_zero]
   · simp_all
 
 @[simp]
@@ -97,7 +97,7 @@ theorem derivative_C_mul_X_sq (a : R) : derivative (C a * X ^ 2) = C (a * 2) * X
   rw [derivative_C_mul_X_pow, Nat.cast_two, pow_one]
 
 theorem derivative_X_pow (n : ℕ) : derivative (X ^ n : R[X]) = C (n : R) * X ^ (n - 1) := by
-  convert! derivative_C_mul_X_pow (1 : R) n <;> simp
+  convert derivative_C_mul_X_pow (1 : R) n <;> simp
 
 @[simp]
 theorem derivative_X_pow_succ (n : ℕ) :
@@ -358,9 +358,6 @@ noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-@[deprecated (since := "2025-12-15")]
-alias derivativeFinsupp_apply_toFun := derivativeFinsupp_apply_apply
-
 @[simp]
 theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
     (derivativeFinsupp p).support ⊆ range n := by
@@ -398,7 +395,7 @@ theorem derivativeFinsupp_derivative (p : R[X]) :
   simp
 
 section IsAddTorsionFree
-variable [IsAddTorsionFree R]
+variable [HasUniqueDiv R]
 
 lemma mem_support_derivative : n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
   suffices ¬p.coeff (n + 1) * (n + 1 : ℕ) = 0 ↔ coeff p (n + 1) ≠ 0 by
@@ -453,13 +450,13 @@ lemma derivative_ne_zero : p.derivative ≠ 0 ↔ p.natDegree ≠ 0 := derivativ
   norm_cast
   congr <;> lia
 
-@[deprecated (since := "2026-06-03")]
+@[deprecated derivative_eq_zero +typeChanged (since := "2026-06-03")]
 alias ⟨natDegree_eq_zero_of_derivative_eq_zero, _⟩ := derivative_eq_zero
 
 lemma eq_C_of_derivative_eq_zero (h : derivative p = 0) : p = C (p.coeff 0) :=
   eq_C_of_natDegree_eq_zero <| derivative_eq_zero.1 h
 
-@[deprecated degree_derivative (since := "2026-06-03")]
+@[deprecated degree_derivative +typeChanged (since := "2026-06-03")]
 lemma degree_derivative_eq (p : R[X]) (hp : 0 < natDegree p) :
     degree (derivative p) = (natDegree p - 1 : ℕ) :=
   degree_derivative (by lia)
@@ -562,19 +559,19 @@ theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
 
 theorem iterate_derivative_mul_X {n : ℕ} (p : R[X]) :
     derivative^[n] (p * X) = (derivative^[n] p) * X + n • derivative^[n - 1] p := by
-  convert! p.iterate_derivative_mul_X_pow n 1; · simp
+  convert p.iterate_derivative_mul_X_pow n 1; · simp
   rcases n with rfl | n <;> simp [sum_range_succ]
 
 theorem iterate_derivative_derivative_mul_X {n : ℕ} (p : R[X]) :
     derivative^[n] (derivative p * X) = (derivative^[n + 1] p) * X + n • derivative^[n] p := by
-  convert! (derivative p).iterate_derivative_mul_X_pow n 1; · simp
+  convert (derivative p).iterate_derivative_mul_X_pow n 1; · simp
   rcases n with rfl | n <;> simp [sum_range_succ]
 
 theorem iterate_derivative_derivative_mul_X_sq {n : ℕ} (p : R[X]) :
     derivative^[n] (derivative^[2] p * X ^ 2) =
       (derivative^[n + 2] p) * X ^ 2 + (2 * n) • (derivative^[n + 1] p) * X +
         (n * (n - 1)) • derivative^[n] p := by
-  convert! (derivative^[2] p).iterate_derivative_mul_X_pow n 2
+  convert (derivative^[2] p).iterate_derivative_mul_X_pow n 2
   rcases n with rfl | n; · simp
   rcases n with rfl | n; · simp [sum_range_succ, ← mul_assoc]
   suffices ((n + 1 + 1) * (n + 1) / 2) * 2 = (n + 1 + 1) * (n + 1) by
