@@ -365,7 +365,7 @@ public def unusedFintypeInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM Un
       /- Log the warning from the declaration's selection range (usually the declaration name,
       or `instance`) to the body if possible. This underlines the hypotheses and type,
       and makes the warning visible in the infoview when the cursor is within the body. -/
-      let ref := (← findDeclarationSyntaxRange? thm.name).elim (← getRef)
+      let ref := (← findDeclarationSyntaxRange? thm.name).elim bodyRef
         (mkNullNode #[.ofRange ·, bodyRef])
       logLint linter.unusedFintypeInType ref m!"\
         {thm.name.unusedInstancesMsg unusedParams}\n\n\
