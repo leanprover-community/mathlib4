@@ -220,26 +220,26 @@ theorem uniformOfFinset_apply_singleton (a : α) :
     simp
     grind
 
-@[deprecated (since := "2026-08-18")] alias _root_.uniformOfFinset_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.uniformOfFinset_apply :=
   uniformOfFinset_apply_singleton
 
 theorem uniformOfFinset_apply_singleton_of_mem (ha : a ∈ s) :
     uniformOfFinset s {a} = (s.card : ℝ≥0∞)⁻¹ := by
   simp [ha]
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.uniformOfFinset_apply_of_mem :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.uniformOfFinset_apply_of_mem :=
   uniformOfFinset_apply_singleton_of_mem
 
 theorem uniformOfFinset_apply_singleton_of_notMem (ha : a ∉ s) : uniformOfFinset s {a} = 0 := by
   simp [ha]
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.uniformOfFinset_apply_of_notMem :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.uniformOfFinset_apply_of_notMem :=
   uniformOfFinset_apply_singleton_of_notMem
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.support_uniformOfFinset :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.support_uniformOfFinset :=
   uniformOfFinset_apply_singleton_of_mem
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.mem_support_uniformOfFinset_iff :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.mem_support_uniformOfFinset_iff :=
   uniformOfFinset_apply_singleton_of_mem
 
 section Measure
@@ -257,10 +257,10 @@ theorem uniformOfFinset_apply :
     _ = #{x ∈ s | x ∈ t} / #s := by
         simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.toOuterMeasure_uniformOfFinset_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.toOuterMeasure_uniformOfFinset_apply :=
   uniformOfFinset_apply
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.toMeasure_uniformOfFinset_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.toMeasure_uniformOfFinset_apply :=
   uniformOfFinset_apply
 
 end Measure
@@ -269,23 +269,23 @@ end UniformOfFinset
 
 section UniformOfFintype
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.uniformOfFintype := uniformOfFinset
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.uniformOfFintype := uniformOfFinset
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.uniformOfFintype_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.uniformOfFintype_apply :=
   uniformOfFinset_apply_singleton
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.support_uniformOfFintype :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.support_uniformOfFintype :=
   uniformOfFinset_apply_singleton_of_mem
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.mem_support_uniformOfFintype :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.mem_support_uniformOfFintype :=
   uniformOfFinset_apply_singleton_of_mem
 
 section Measure
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.toOuterMeasure_uniformOfFintype_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.toOuterMeasure_uniformOfFintype_apply :=
   uniformOfFinset_apply
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.toMeasure_uniformOfFintype_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.toMeasure_uniformOfFintype_apply :=
   uniformOfFinset_apply
 
 end Measure
@@ -314,26 +314,26 @@ theorem ofMultiset_apply_singleton (a : α) : ofMultiset s {a} = s.count a / (Mu
     · simp
       grind
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.ofMultiset_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.ofMultiset_apply :=
   ofMultiset_apply_singleton
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.support_ofMultiset :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.support_ofMultiset :=
   ofMultiset_apply_singleton
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.mem_support_ofMultiset_iff :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.mem_support_ofMultiset_iff :=
   ofMultiset_apply_singleton
 
 theorem ofMultiset_apply_singleton_of_notMem {a : α} (ha : a ∉ s) : ofMultiset s {a} = 0 := by simpa
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.ofMultiset_apply_of_notMem :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.ofMultiset_apply_of_notMem :=
   ofMultiset_apply_singleton_of_notMem
 
 section Measure
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.toOuterMeasure_ofMultiset_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.toOuterMeasure_ofMultiset_apply :=
   ofMultiset_apply_singleton
 
-@[deprecated (since := "2026-08-18")] alias _root_.PMF.toMeasure_ofMultiset_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.toMeasure_ofMultiset_apply :=
   ofMultiset_apply_singleton
 
 end Measure
