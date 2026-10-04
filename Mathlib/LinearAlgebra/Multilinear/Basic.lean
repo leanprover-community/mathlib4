@@ -6,16 +6,15 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.FunLike.Group
-public import Mathlib.Data.FunLike.Module
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 
 /-!
@@ -125,8 +124,8 @@ def mk' [DecidableEq ι] (f : (∀ i, M₁ i) → M₂)
       f (update m i (c • x)) = c • f (update m i x) := by aesop) :
     MultilinearMap R M₁ M₂ where
   toFun := f
-  map_update_add' m i x y := by convert! h₁ m i x y
-  map_update_smul' m i c x := by convert! h₂ m i c x
+  map_update_add' m i x y := by convert h₁ m i x y
+  map_update_smul' m i c x := by convert h₂ m i c x
 
 @[simp]
 theorem toFun_eq_coe : f.toFun = ⇑f :=
@@ -137,10 +136,10 @@ theorem coe_mk (f : (∀ i, M₁ i) → M₂) (h₁ h₂) : ⇑(⟨f, h₁, h₂
   rfl
 
 theorem congr_fun {f g : MultilinearMap R M₁ M₂} (h : f = g) (x : ∀ i, M₁ i) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 nonrec theorem congr_arg (f : MultilinearMap R M₁ M₂) {x y : ∀ i, M₁ i} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 theorem coe_injective : Injective ((↑) : MultilinearMap R M₁ M₂ → (∀ i, M₁ i) → M₂) :=
   DFunLike.coe_injective
@@ -188,7 +187,6 @@ instance : Add (MultilinearMap R M₁ M₂) :=
       simp [smul_add]⟩⟩
 
 instance : IsAddApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
@@ -196,7 +194,6 @@ instance : Zero (MultilinearMap R M₁ M₂) :=
   ⟨⟨fun _ => 0, fun _ _ _ _ => by simp, fun _ _ c _ => by simp⟩⟩
 
 instance : IsZeroApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  zero_apply _ := rfl
 
 instance : Inhabited (MultilinearMap R M₁ M₂) :=
   ⟨0⟩
@@ -213,7 +210,6 @@ instance : SMul S (MultilinearMap R M₁ M₂) :=
       simp [← smul_comm x c (_ : M₂)]⟩⟩
 
 instance : IsSMulApply S (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -278,7 +274,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
         simpa [update_eq_const_of_subsingleton] using! f.map_update_add 0 i x y
       map_smul' := fun c x ↦ by
         simpa [update_eq_const_of_subsingleton] using! f.map_update_smul 0 i c x }
-  right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
+  right_inv f := by ext x; congrm f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (M₁) {M₂}
 
@@ -1290,7 +1286,6 @@ instance : Neg (MultilinearMap R M₁ M₂) :=
   ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
 
 instance : IsNegApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
@@ -1302,7 +1297,6 @@ instance : Sub (MultilinearMap R M₁ M₂) :=
       fun m i c x => by simp only [MultilinearMap.map_update_smul, smul_sub]⟩⟩
 
 instance : IsSubApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
@@ -1358,7 +1352,7 @@ lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M�
     f (s.piecewise a v) - f (s.piecewise b v) = ∑ i ∈ s, f
       fun j ↦ if j ∈ s then if j < i then a j else if j = i then a j - b j else b j else v j := by
   rw [← s.piecewise_idem_right b a, map_sub_map_piecewise]
-  refine Finset.sum_congr rfl fun i hi ↦ congr_arg f <| funext fun j ↦ ?_
+  refine Finset.sum_congr rfl fun i hi ↦ congr(f $(funext fun j ↦ ?_))
   by_cases hjs : j ∈ s
   · rw [ite_eq_left hjs]; by_cases hji : j < i
     · rw [ite_eq_left fun _ ↦ hji, ite_eq_left hji, s.piecewise_eq_of_mem _ _ hjs]
