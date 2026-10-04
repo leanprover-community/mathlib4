@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid, Thomas R. Murrills
 -/
 module
 
-public meta import Batteries.Lean.Position
 public meta import Lean.Elab.Command
+public meta import Batteries.Lean.Position
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 
 /-!
@@ -211,7 +211,7 @@ open Linter in
 /--
 Lints against data-carrying overlaps between instances in the local contexts of declarations.
 -/
-def overlappingInstances (ref : Syntax) (ctx : ContextInfo) (info : Info) : CommandElabM Unit := do
+def overlappingInstances (bodyRef : Syntax) (ctx : ContextInfo) (info : Info) : CommandElabM Unit := do
   let some (lctx, expectedType?) := info.getLCtx? | pure ()
   withTraceNode `overlappingInstances
     (fun _ ↦ return m!"linting `{.ofConstName <| ctx.parentDecl?.getD .anonymous}`") do
@@ -220,7 +220,7 @@ def overlappingInstances (ref : Syntax) (ctx : ContextInfo) (info : Info) : Comm
   or `instance`) to the body if possible. This underlines the hypotheses and type,
   and makes the warning visible in the infoview when the cursor is within the body. -/
   let declRange? ← ctx.parentDecl?.bindM findDeclarationSyntaxRange?
-  let ref := declRange?.elim ref (mkNullNode #[.ofRange ·, ref])
+  let ref := declRange?.elim bodyRef (mkNullNode #[.ofRange ·, bodyRef])
   logLint linter.overlappingInstances ref msg
 
 end Mathlib.Linter.OverlappingInstances

@@ -44,14 +44,14 @@ def declTypeLinter : Linter where
     unless overlap || decidable || fintype do return
     profileitM Exception "declTypeLinter" (← getOptions) do
     for t in ← getInfoTrees do
-      for (ref, ctx, info) in t.getDeclBodyInfos do
+      for (bodyRef, ctx, info) in t.getDeclBodyInfos do
         if overlap then
-          overlappingInstances ref ctx info
+          overlappingInstances bodyRef ctx info
         if let some declName := ctx.parentDecl? then
           if let some thm := (← getEnv).findTheoremConstVal? declName then
             Command.liftCoreM do
-            if decidable then unusedDecidableInType thm ref
-            if fintype then unusedFintypeInType thm ref
+            if decidable then unusedDecidableInType thm bodyRef
+            if fintype then unusedFintypeInType thm bodyRef
 
 initialize addLinter declTypeLinter
 
