@@ -29,11 +29,10 @@ structure, such as a bottom element, a top element, or a join-semilattice struct
   Dual to the notion of a proper filter.
 - `Order.Ideal.IsMaximal I`: a predicate for maximal ideals.
   Dual to the notion of an ultrafilter.
-- `Order.Cofinal P`: the type of subsets of `P` containing arbitrarily large elements.
-  Dual to the notion of 'dense set' used in forcing.
-- `Order.idealOfCofinals p 𝒟`, where `p : P`, and `𝒟` is a countable family of cofinal
+- `Order.exists_ideal_meets_cofinals p 𝒟`, where `p : P`, and `𝒟` is a countable family of cofinal
   subsets of `P`: an ideal in `P` which contains `p` and intersects every set in `𝒟`. (This a form
-  of the Rasiowa–Sikorski lemma.)
+  of the Rasiowa–Sikorski lemma; cofinal sets are dual to the notion of 'dense set' used in
+  forcing.)
 
 ## References
 
@@ -523,9 +522,39 @@ end CompleteLattice
 
 end Ideal
 
+/-- *Rasiowa–Sikorski lemma* for ideals: given an element `p : P` and a family `𝒟` of cofinal
+subsets of a preorder `P`, indexed by a countable type, there exists an ideal `I` in `P` such that
+`p ∈ I` and `I` intersects every set in `𝒟` (i.e. `I` is `𝒟`-generic). -/
+theorem exists_ideal_meets_cofinals [Preorder P] (p : P) {ι : Type*} [Countable ι] (𝒟 : ι → Set P)
+    (h𝒟 : ∀ i, IsCofinal (𝒟 i)) :
+    ∃ (I : Ideal P), p ∈ I ∧ ∀ i, ((I : Set P) ∩ 𝒟 i).Nonempty := by
+  have := Encodable.ofCountable ι
+  choose f hf hf' using h𝒟
+  let g : ℕ → P := Nat.rec p fun n q =>
+    match Encodable.decode n with
+    | none => q
+    | some i => f i q
+  have hg : Monotone g := by
+    apply monotone_nat_of_le_succ
+    intro n
+    cases hn : (Encodable.decode n : Option ι)
+    · simp [g, hn]
+    · simpa [g, hn] using hf' _ (g n)
+  exact ⟨{
+    carrier := {x : P | ∃ n, x ≤ g n},
+    lower' _ _ hxy := fun ⟨n, hn⟩ ↦ ⟨n, le_trans hxy hn⟩,
+    nonempty' := ⟨p, 0, le_rfl⟩,
+    directed' := fun _ ⟨n, hn⟩ _ ⟨m, hm⟩ ↦
+      ⟨_, ⟨max n m, le_rfl⟩, le_trans hn <| hg (le_max_left _ _),
+        le_trans hm <| hg (le_max_right _ _)⟩
+  }, ⟨0, le_rfl⟩, fun i =>
+    ⟨g (Encodable.encode i + 1), ⟨Encodable.encode i + 1, le_rfl⟩, by simpa [g] using hf i _⟩⟩
+
 /-- For a preorder `P`, `Cofinal P` is the type of subsets of `P`
   containing arbitrarily large elements. They are the dense sets in
   the topology whose open sets are terminal segments. -/
+@[deprecated "`Cofinal` is the bundled version of `IsCofinal`. Use unbundled version instead"
+(since := "2026-10-04")]
 structure Cofinal (P) [Preorder P] where
   /-- The carrier of a `Cofinal` is the underlying set. -/
   carrier : Set P
@@ -534,23 +563,35 @@ structure Cofinal (P) [Preorder P] where
 
 namespace Cofinal
 
+set_option linter.deprecated false
+
 variable [Preorder P]
 
+@[deprecated "`Cofinal` is the bundled version of `IsCofinal`. Use unbundled version instead"
+(since := "2026-10-04")]
 instance : Inhabited (Cofinal P) :=
   ⟨_, .univ⟩
 
+@[deprecated "`Cofinal` is the bundled version of `IsCofinal`. Use unbundled version instead"
+(since := "2026-10-04")]
 instance : Membership P (Cofinal P) :=
   ⟨fun D x ↦ x ∈ D.carrier⟩
 
 variable (D : Cofinal P) (x : P)
 
 /-- A (noncomputable) element of a cofinal set lying above a given element. -/
+@[deprecated "`Cofinal` is the bundled version of `IsCofinal`. Use unbundled version instead"
+(since := "2026-10-04")]
 noncomputable def above : P :=
   Classical.choose <| D.isCofinal x
 
+@[deprecated "`Cofinal` is the bundled version of `IsCofinal`. Use unbundled version instead"
+(since := "2026-10-04")]
 theorem above_mem : D.above x ∈ D :=
   (Classical.choose_spec <| D.isCofinal x).1
 
+@[deprecated "`Cofinal` is the bundled version of `IsCofinal`. Use unbundled version instead"
+(since := "2026-10-04")]
 theorem le_above : x ≤ D.above x :=
   (Classical.choose_spec <| D.isCofinal x).2
 
@@ -558,10 +599,14 @@ end Cofinal
 
 section IdealOfCofinals
 
+set_option linter.deprecated false
+
 variable [Preorder P] (p : P) {ι : Type*} [Encodable ι] (𝒟 : ι → Cofinal P)
 
 /-- Given a starting point, and a countable family of cofinal sets,
   this is an increasing sequence that intersects each cofinal set. -/
+@[deprecated "Use `Order.exists_ideal_meets_cofinals` for Rasiowa–Sikorski lemma"
+(since := "2026-10-04")]
 noncomputable def sequenceOfCofinals : ℕ → P
   | 0 => p
   | n + 1 =>
@@ -569,6 +614,8 @@ noncomputable def sequenceOfCofinals : ℕ → P
     | none => sequenceOfCofinals n
     | some i => (𝒟 i).above (sequenceOfCofinals n)
 
+@[deprecated "Use `Order.exists_ideal_meets_cofinals` for Rasiowa–Sikorski lemma"
+(since := "2026-10-04")]
 theorem sequenceOfCofinals.monotone : Monotone (sequenceOfCofinals p 𝒟) := by
   apply monotone_nat_of_le_succ
   intro n
@@ -577,6 +624,8 @@ theorem sequenceOfCofinals.monotone : Monotone (sequenceOfCofinals p 𝒟) := by
   · rfl
   · apply Cofinal.le_above
 
+@[deprecated "Use `Order.exists_ideal_meets_cofinals` for Rasiowa–Sikorski lemma"
+(since := "2026-10-04")]
 theorem sequenceOfCofinals.encode_mem (i : ι) :
     sequenceOfCofinals p 𝒟 (Encodable.encode i + 1) ∈ 𝒟 i := by
   dsimp only [sequenceOfCofinals, Nat.add]
@@ -589,6 +638,8 @@ theorem sequenceOfCofinals.encode_mem (i : ι) :
   - intersects every set in `𝒟`, according to `cofinal_meets_idealOfCofinals p 𝒟`.
 
   This proves the Rasiowa–Sikorski lemma. -/
+@[deprecated "Use `Order.exists_ideal_meets_cofinals` for Rasiowa–Sikorski lemma"
+(since := "2026-10-04")]
 def idealOfCofinals : Ideal P where
   carrier := { x : P | ∃ n, x ≤ sequenceOfCofinals p 𝒟 n }
   lower' := fun _ _ hxy ⟨n, hn⟩ ↦ ⟨n, le_trans hxy hn⟩
@@ -597,10 +648,14 @@ def idealOfCofinals : Ideal P where
     ⟨_, ⟨max n m, le_rfl⟩, le_trans hn <| sequenceOfCofinals.monotone p 𝒟 (le_max_left _ _),
       le_trans hm <| sequenceOfCofinals.monotone p 𝒟 (le_max_right _ _)⟩
 
+@[deprecated "Use `Order.exists_ideal_meets_cofinals` for Rasiowa–Sikorski lemma"
+(since := "2026-10-04")]
 theorem mem_idealOfCofinals : p ∈ idealOfCofinals p 𝒟 :=
   ⟨0, le_rfl⟩
 
 /-- `idealOfCofinals p 𝒟` is `𝒟`-generic. -/
+@[deprecated "Use `Order.exists_ideal_meets_cofinals` for Rasiowa–Sikorski lemma"
+(since := "2026-10-04")]
 theorem cofinal_meets_idealOfCofinals (i : ι) : ∃ x : P, x ∈ 𝒟 i ∧ x ∈ idealOfCofinals p 𝒟 :=
   ⟨_, sequenceOfCofinals.encode_mem p 𝒟 i, _, le_rfl⟩
 
