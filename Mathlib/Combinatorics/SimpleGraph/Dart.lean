@@ -65,7 +65,7 @@ theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = s(p
   rfl
 
 @[simp]
-theorem Dart.symMk_fst_snd (d : G.Dart) : s(d.fst, d.snd) = d.edge :=
+theorem Dart.sym2Mk_fst_snd (d : G.Dart) : s(d.fst, d.snd) = d.edge :=
   rfl
 
 @[simp]

@@ -510,7 +510,7 @@ theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath)
     (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
   simpa [hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
 
-theorem IsPath.eq_snd_or_eq_penultimate_of_mem_edges (hp : p.dropLast.IsPath)
+theorem IsPath.eq_snd_or_eq_penultimate_of_start_mem_edges (hp : p.dropLast.IsPath)
     (hmem : s(u, w) ∈ p.edges) : w = p.snd ∨ w = p.penultimate := by
   by_cases hl : p.length = 1
   · grind [length_edges, List.length_eq_one_iff, mk_start_snd_mem_edges]
@@ -521,15 +521,27 @@ theorem IsPath.eq_snd_or_eq_penultimate_of_mem_edges (hp : p.dropLast.IsPath)
   rw [edges_dropLast]
   exact List.mem_dropLast_of_mem_of_ne_getLast hmem h
 
-theorem IsPath.eq_snd_of_mem_darts {d : G.Dart} (hd : d ∈ p.darts)
-    (hp : p.dropLast.IsPath) (hu : u = d.fst) : p.snd = d.snd := by
+theorem IsPath.eq_snd_or_eq_penultimate_of_end_mem_edges (hp : p.tail.IsPath)
+    (hmem : s(v, w) ∈ p.edges) : w = p.snd ∨ w = p.penultimate := by
+  rw [or_comm, ← penultimate_reverse, ← snd_reverse]
+  rw [← isPath_reverse_iff, reverse_tail, isPath_copy] at hp
+  exact hp.eq_snd_or_eq_penultimate_of_start_mem_edges (by simpa)
+
+theorem IsPath.snd_eq_of_mem_darts (hp : p.dropLast.IsPath) {d : G.Dart} (hd : d ∈ p.darts)
+    (hu : u = d.fst) : p.snd = d.snd := by
   by_cases h : p.darts.getLast (List.ne_nil_of_mem hd) = d
   · grind [darts_getElem_eq_getVert, getVert_length, length_dropLast,
       hp.getVert_eq_start_iff_of_not_nil]
   have hl : p.length ≠ 1 := by grind [List.length_eq_one_iff]
   rw [← p.snd_dropLast_eq_snd hl, ← hp.eq_snd_of_mem_edges ?_]
   grind [edge_mem_edges_of_mem_darts, darts_dropLast, List.mem_dropLast_of_mem_of_ne_getLast,
-    d.symMk_fst_snd]
+    d.sym2Mk_fst_snd]
+
+theorem IsPath.penultimate_eq_of_mem_darts (hp : p.tail.IsPath) {d : G.Dart} (hd : d ∈ p.darts)
+    (hv : v = d.snd) : p.penultimate = d.fst := by
+  rw [← snd_reverse, ← Prod.snd_swap]
+  rw [← isPath_reverse_iff, reverse_tail, isPath_copy] at hp
+  exact hp.snd_eq_of_mem_darts (d := d.symm) (by simpa) hv
 
 theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
     Set.InjOn f {w | w ∈ p.support} := by
