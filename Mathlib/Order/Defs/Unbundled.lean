@@ -6,7 +6,6 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Defs
-public import Batteries.Tactic.Alias
 public import Mathlib.Tactic.ExtendDoc
 
 
@@ -80,11 +79,17 @@ instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
 instance (α : Sort*) : Std.Symm (α := α) Ne where
   symm _ _ := Ne.symm
 
+instance (α : Sort*) : Std.Irrefl (α := α) Ne where
+  irrefl _ := Ne.irrefl
+
 /-- `Iff` is an equivalence relation. -/
 instance iff_isEquiv : IsEquiv Prop Iff where
   symm := @Iff.symm
   trans := @Iff.trans
   refl := @Iff.refl
+
+instance : IsTrans Prop And where
+  trans _ _ _ := fun ⟨a, _⟩ ⟨_, b⟩ ↦ ⟨a, b⟩
 
 section
 
@@ -175,6 +180,19 @@ lemma total_of [Std.Total r] (a b : α) : a ≺ b ∨ b ≺ a := Std.Total.total
 
 @[elab_without_expected_type]
 lemma trichotomous_of [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
+
+theorem stdIsPreorder_iff {α : Type*} [LE α] : Std.IsPreorder α ↔ IsPreorder α (· ≤ ·) :=
+  ⟨fun _ ↦ {}, fun _ ↦ ⟨refl, fun _ _ _ ↦ _root_.trans⟩⟩
+
+theorem stdIsPartialOrder_iff {α : Type*} [LE α] :
+    Std.IsPartialOrder α ↔ IsPartialOrder α (· ≤ ·) := by
+  refine ⟨fun _ ↦ {}, fun _ ↦ { toIsPreorder := ?_, le_antisymm _ _ := antisymm }⟩
+  exact stdIsPreorder_iff.mpr inferInstance
+
+theorem stdIsLinearOrder_iff {α : Type*} [LE α] :
+    Std.IsLinearOrder α ↔ IsLinearOrder α (· ≤ ·) := by
+  refine ⟨fun _ ↦ {}, fun _ ↦ { toIsPartialOrder := ?_, le_total := total_of _ }⟩
+  exact stdIsPartialOrder_iff.mpr inferInstance
 
 section
 
