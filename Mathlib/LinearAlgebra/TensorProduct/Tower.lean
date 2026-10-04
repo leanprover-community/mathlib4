@@ -661,13 +661,15 @@ def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
 theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ f x :=
   rfl
 
-theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
+theorem baseChange_eq_lTensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
   rfl
+
+@[deprecated (since := "2026-09-28")] alias baseChange_eq_ltensor := baseChange_eq_lTensor
 
 @[simp]
 theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
   ext
-  simp [baseChange_eq_ltensor, -baseChange_tmul]
+  simp [baseChange_eq_lTensor, -baseChange_tmul]
 
 @[simp]
 theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
@@ -751,7 +753,7 @@ theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R]
     (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans (f.baseChange R A N P) := by
   ext x
   simp only [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange, LinearEquiv.trans_apply,
-    LinearEquiv.coe_trans, baseChange_eq_ltensor, lTensor_comp_apply]
+    LinearEquiv.coe_trans, baseChange_eq_lTensor, lTensor_comp_apply]
 
 theorem _root_.LinearEquiv.baseChange_mul (e : M ≃ₗ[R] M) (f : M ≃ₗ[R] M) :
     (e * f).baseChange R A M M = (e.baseChange R A M M) * (f.baseChange R A M M) := by
@@ -762,7 +764,7 @@ theorem _root_.LinearEquiv.baseChange_symm (e : M ≃ₗ[R] N) :
   ext x
   rw [LinearEquiv.eq_symm_apply]
   simp [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange,
-    baseChange_eq_ltensor, ← lTensor_comp_apply]
+    baseChange_eq_lTensor, ← lTensor_comp_apply]
 
 theorem _root_.LinearEquiv.baseChange_inv (e : M ≃ₗ[R] M) :
     (e⁻¹).baseChange R A M M = (e.baseChange R A M M)⁻¹ :=
@@ -788,7 +790,7 @@ variable {R A M N} in
 theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
     (φ.toLinearMap.rTensor N) (f.baseChange A t) =
       (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
-  simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
+  simp [LinearMap.baseChange_eq_lTensor, ← LinearMap.comp_apply]
 
 end Semiring
 

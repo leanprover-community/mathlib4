@@ -86,7 +86,7 @@ differentiable functions `E → F` with compact support contained in `Ω : Opens
 class TestFunctionClass (B : Type*)
     {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
     (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) extends FunLike B E F where
+    (n : outParam ℕ∞) [FunLike B E F] where
   map_contDiff (f : B) : ContDiff ℝ n f
   map_hasCompactSupport (f : B) : HasCompactSupport f
   tsupport_map_subset (f : B) : tsupport f ⊆ Ω
@@ -98,14 +98,14 @@ namespace TestFunctionClass
 instance (B : Type*)
     {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
     (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
+    (n : outParam ℕ∞) [FunLike B E F] [TestFunctionClass B Ω F n] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*)
     {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
     (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
+    (n : outParam ℕ∞) [FunLike B E F] [TestFunctionClass B Ω F n] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by
     obtain ⟨C, hC⟩ := (map_continuous f).bounded_above_of_compact_support (map_hasCompactSupport f)
@@ -115,9 +115,11 @@ end TestFunctionClass
 
 namespace TestFunction
 
-instance toTestFunctionClass : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
+instance : FunLike 𝓓^{n}(Ω, F) E F where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr
+
+instance : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   map_contDiff f := f.contDiff'
   map_hasCompactSupport f := f.hasCompactSupport'
   tsupport_map_subset f := f.tsupport_subset'
