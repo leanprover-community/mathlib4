@@ -26,7 +26,9 @@ properties of its epimorphisms and monomorphisms.
 
 universe u
 
-open Simplicial CategoryTheory Limits
+open CategoryTheory Limits
+
+open scoped Simplicial
 
 namespace SimplexCategory
 
@@ -44,7 +46,7 @@ lemma congr_toOrderHom_apply {a b : SimplexCategory} {f g : a ⟶ b} (h : f = g)
 
 /-- The constant morphism from ⦋0⦌. -/
 def const (x y : SimplexCategory) (i : Fin (y.len + 1)) : x ⟶ y :=
-  Hom.mk <| ⟨fun _ => i, by tauto⟩
+  Hom.mk ⟨fun _ => i, by tauto⟩
 
 @[simp]
 lemma const_eq_id : const ⦋0⦌ ⦋0⦌ 0 = 𝟙 _ := by aesop
@@ -529,7 +531,7 @@ section Skeleton
 of `NonemptyFinLinOrd` -/
 @[simps obj map]
 def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd where
-  obj a := NonemptyFinLinOrd.of (Fin (a.len + 1))
+  obj a := ↧(Fin (a.len + 1))
   map f := NonemptyFinLinOrd.ofHom f.toOrderHom
 
 theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
@@ -551,7 +553,7 @@ instance : skeletalFunctor.Full where
 instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
     ext : 3
-    exact CategoryTheory.congr_fun h _
+    congrm $h _
 
 instance : skeletalFunctor.EssSurj where
   mem_essImage X :=
@@ -595,12 +597,6 @@ section Concrete
 instance : ConcreteCategory SimplexCategory (fun i j => Fin (i.len + 1) →o Fin (j.len + 1)) where
   hom := Hom.toOrderHom
   ofHom f := Hom.mk f
-
-instance (x : SimplexCategory) : Fintype (ToType x) :=
-  inferInstanceAs (Fintype (Fin _))
-
-instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
-  inferInstanceAs (OfNat (Fin _) n)
 
 lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 
@@ -671,10 +667,9 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                 by_cases h' : y₁ < y₂
                 · by_contra h''
                   apply not_le.mpr h'
-                  convert! f.toOrderHom.monotone (le_of_not_ge h'')
+                  convert f.toOrderHom.monotone (le_of_not_ge h'')
                   all_goals
-                    exact (ConcreteCategory.congr_hom (Iso.inv_hom_id
-                      (asIso ((forget SimplexCategory).map f))) _).symm
+                    exact congr($(Iso.inv_hom_id (asIso ((forget SimplexCategory).map f))) _).symm
                 · rw [eq_of_le_of_not_lt h h'] }
         hom_inv_id := by
           ext x : 3
@@ -718,9 +713,9 @@ def orderIsoOfIso {x y : SimplexCategory} (e : x ≅ y) : Fin (x.len + 1) ≃o F
     { toFun := e.hom.toOrderHom
       invFun := e.inv.toOrderHom
       left_inv := fun i => by
-        simpa only using! congr_arg (fun φ => (Hom.toOrderHom φ) i) e.hom_inv_id
+        simpa only using! congr($(e.hom_inv_id).toOrderHom i)
       right_inv := fun i => by
-        simpa only using! congr_arg (fun φ => (Hom.toOrderHom φ) i) e.inv_hom_id }
+        simpa only using! congr($(e.inv_hom_id).toOrderHom i) }
     e.hom.toOrderHom.monotone e.inv.toOrderHom.monotone
 
 theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := by
@@ -729,10 +724,10 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
   ext : 4
-  exact DFunLike.congr_fun (eq₁.trans eq₂.symm) _
+  congrm $(eq₁.trans eq₂.symm) _
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
-  congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
+  congr($(iso_eq_iso_refl (asIso f)).hom)
 
 set_option backward.defeqAttrib.useBackward true in
 theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
@@ -745,7 +740,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
   by_cases h' : x ≤ Fin.castSucc i
   · rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
-    rw [Fin.succAbove_of_castSucc_lt _ _ _]
+    rw [Fin.succAbove_of_castSucc_lt]
     · rw [Fin.castSucc_castPred]
     · exact (Fin.castSucc_lt_succ_iff.mpr h')
   · simp only [not_le] at h'
@@ -877,7 +872,7 @@ def toPartOrd : SimplexCategory ⥤ PartOrd.{u} :=
 
 @[simp]
 lemma toPartOrd_obj (n : SimplexCategory) :
-    toPartOrd.{u}.obj n = .of (ULift.{u} (Fin (n.len + 1))) := rfl
+    toPartOrd.{u}.obj n = ↧(ULift.{u} (Fin (n.len + 1))) := rfl
 
 @[simp]
 lemma toPartOrd_map_apply {n m : SimplexCategory} (f : n ⟶ m) (i : (Fin (n.len + 1))) :
@@ -912,12 +907,12 @@ lemma δ_injective {n : ℕ} : Function.Injective (δ (n := n)) := by
   intro i j hij
   rw [← Fin.succAbove_left_inj]
   ext k : 1
-  exact congr($hij k)
+  congrm $hij k
 
 lemma σ_injective {n : ℕ} : Function.Injective (σ (n := n)) := by
   intro i j hij
   rw [← Fin.predAbove_left_inj]
   ext k : 1
-  exact congr($hij k)
+  congrm $hij k
 
 end SimplexCategory

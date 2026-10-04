@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Monoidal.Opposite
-public import Mathlib.CategoryTheory.CommSq
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
 /-!
@@ -147,7 +146,6 @@ def tensorLeftIsoTensorRight (X : C) :
   hom := { app Y := (β_ X Y).hom }
   inv := { app Y := (β_ X Y).inv }
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The braiding isomorphism as a natural isomorphism of bifunctors `C ⥤ C ⥤ C`. -/
@@ -169,7 +167,7 @@ theorem yang_baxter' (X Y Z : C) :
     (β_ X Y).hom ▷ Z ⊗≫ Y ◁ (β_ X Z).hom ⊗≫ (β_ Y Z).hom ▷ X =
       𝟙 _ ⊗≫ (X ◁ (β_ Y Z).hom ⊗≫ (β_ X Z).hom ▷ Y ⊗≫ Z ◁ (β_ X Y).hom) ⊗≫ 𝟙 _ := by
   rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
-  convert! yang_baxter X Y Z using 1
+  convert yang_baxter X Y Z using 1
   all_goals monoidal
 
 theorem yang_baxter_iso (X Y Z : C) :
@@ -656,13 +654,13 @@ theorem tensorμ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : X
 theorem tensorμ_natural_left {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (Z₁ Z₂ : C) :
     (f₁ ⊗ₘ f₂) ▷ (Z₁ ⊗ Z₂) ≫ tensorμ Y₁ Y₂ Z₁ Z₂ =
       tensorμ X₁ X₂ Z₁ Z₂ ≫ (f₁ ▷ Z₁ ⊗ₘ f₂ ▷ Z₂) := by
-  convert! tensorμ_natural f₁ f₂ (𝟙 Z₁) (𝟙 Z₂) using 1 <;> simp
+  convert tensorμ_natural f₁ f₂ (𝟙 Z₁) (𝟙 Z₂) using 1 <;> simp
 
 @[reassoc]
 theorem tensorμ_natural_right (Z₁ Z₂ : C) {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) :
     (Z₁ ⊗ Z₂) ◁ (f₁ ⊗ₘ f₂) ≫ tensorμ Z₁ Z₂ Y₁ Y₂ =
       tensorμ Z₁ Z₂ X₁ X₂ ≫ (Z₁ ◁ f₁ ⊗ₘ Z₂ ◁ f₂) := by
-  convert! tensorμ_natural (𝟙 Z₁) (𝟙 Z₂) f₁ f₂ using 1 <;> simp
+  convert tensorμ_natural (𝟙 Z₁) (𝟙 Z₂) f₁ f₂ using 1 <;> simp
 
 @[reassoc]
 theorem tensor_left_unitality (X₁ X₂ : C) :

@@ -53,7 +53,6 @@ theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
   rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span, hv]
   exact mem_map_of_mem mem_top
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ (f ∘ v) := by
   rw [linearIndependent_iff'ₛ] at hv ⊢
@@ -72,7 +71,6 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
   simpa only [map_mul, (IsLocalization.map_units Rₛ s).mul_right_inj, hfg.1 ⟨i, hi⟩, hfg.2 ⟨i, hi⟩,
     Algebra.smul_def, (IsLocalization.map_units Rₛ a).mul_right_inj] using this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.of_isLocalizedModule_of_isRegular {ι : Type*} {v : ι → M}
     (hv : LinearIndependent R v) (h : ∀ s : S, IsRegular (s : R)) : LinearIndependent R (f ∘ v) :=
   hv.map_injOn _ <| by
@@ -81,7 +79,7 @@ theorem LinearIndependent.of_isLocalizedModule_of_isRegular {ι : Type*} {v : ι
     congr; ext i
     have ⟨s, eq⟩ := IsLocalizedModule.exists_of_eq (S := S) eq
     simp_rw [Submonoid.smul_def, ← map_smul] at eq
-    exact (h s).1 (DFunLike.congr_fun (hv eq) i)
+    exact (h s).1 congr($(hv eq) i)
 
 theorem LinearIndependent.localization [Module Rₛ M] [IsScalarTower R Rₛ M]
     {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
@@ -89,7 +87,6 @@ theorem LinearIndependent.localization [Module Rₛ M] [IsScalarTower R Rₛ M]
   have := isLocalizedModule_id S M Rₛ
   exact hli.of_isLocalizedModule Rₛ S .id
 
-set_option backward.isDefEq.respectTransparency false in
 include f in
 lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → Mₛ} (hf : LinearIndependent R v) :
     ∃ w : ι → M, LinearIndependent R w := by
@@ -122,7 +119,7 @@ theorem ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
     ((b.ofIsLocalizedModule Rₛ S f).repr (f m)) i = algebraMap R Rₛ (b.repr m i) := by
   suffices ((b.ofIsLocalizedModule Rₛ S f).repr.toLinearMap.restrictScalars R) ∘ₗ f =
       Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
-    exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
+    congrm $this m i
   refine ext b fun i ↦ ?_
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self, LinearMap.coe_comp,
@@ -239,7 +236,7 @@ def LinearMap.extendScalarsOfIsLocalizationEquiv : (M →ₗ[R] N) ≃ₗ[A] (M 
 /-- An `R`-linear isomorphism between `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
 @[simps!]
 def LinearEquiv.extendScalarsOfIsLocalization (f : M ≃ₗ[R] N) : M ≃ₗ[A] N :=
-  .ofLinear (LinearMap.extendScalarsOfIsLocalization S A f)
+  .ofLinearMap (LinearMap.extendScalarsOfIsLocalization S A f)
     (LinearMap.extendScalarsOfIsLocalization S A f.symm)
     (by ext; simp) (by ext; simp)
 
@@ -277,7 +274,7 @@ def mapExtendScalars : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[Rₛ] N') :=
 @[simps!]
 noncomputable
 def mapEquiv (e : M ≃ₗ[R] N) : M' ≃ₗ[Rₛ] N' :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (IsLocalizedModule.mapExtendScalars S f g Rₛ e)
     (IsLocalizedModule.mapExtendScalars S g f Rₛ e.symm)
     (by
@@ -313,7 +310,7 @@ lemma LocalizedModule.map_mk (f : M →ₗ[R] N) (x y) :
 @[simp]
 lemma LocalizedModule.map_id :
     LocalizedModule.map S (.id (R := R) (M := M)) = LinearMap.id :=
-  LinearMap.ext fun x ↦ LinearMap.congr_fun (IsLocalizedModule.map_id S (mkLinearMap S M)) x
+  LinearMap.ext fun x ↦ congr($(IsLocalizedModule.map_id S (mkLinearMap S M)) x)
 
 lemma LocalizedModule.map_injective (l : M →ₗ[R] N) (hl : Function.Injective l) :
     Function.Injective (map S l) :=

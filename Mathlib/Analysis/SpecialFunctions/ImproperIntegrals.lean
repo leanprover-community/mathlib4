@@ -5,9 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
@@ -167,6 +166,12 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
     rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
     exact hs.not_gt this
 
+theorem not_integrableOn_Ioi_rpow_of_neg_one_le {a s : ℝ} (hs : -1 ≤ s) :
+    ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi a) := by
+  refine fun h ↦ not_lt.mpr hs ?_
+  rw [← integrableAtFilter_rpow_atTop_iff]
+  exact ⟨Ioi a, Ioi_mem_atTop a, h⟩
+
 theorem setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_rpow s)
 
@@ -174,12 +179,12 @@ theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     ∫ t : ℝ in Ioi c, t ^ a = -c ^ (a + 1) / (a + 1) := by
   have hd : ∀ x ∈ Ici c, HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
-    convert! (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
+    convert (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
     simp [show a + 1 ≠ 0 from ne_of_lt (by linarith), mul_comm]
   have ht : Tendsto (fun t => t ^ (a + 1) / (a + 1)) atTop (𝓝 (0 / (a + 1))) := by
     apply Tendsto.div_const
     simpa only [neg_neg] using tendsto_rpow_neg_atTop (by linarith : 0 < -(a + 1))
-  convert! integral_Ioi_of_hasDerivAt_of_tendsto' hd (integrableOn_Ioi_rpow_of_lt ha hc) ht using 1
+  convert integral_Ioi_of_hasDerivAt_of_tendsto' hd (integrableOn_Ioi_rpow_of_lt ha hc) ht using 1
   simp only [neg_div, zero_div, zero_sub]
 
 theorem integrableOn_Ioi_norm_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
@@ -289,12 +294,39 @@ theorem integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
     integrable_inv_one_add_sq (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atBot)
     (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atTop)
 
+theorem integrable_inv_one_add_mul_sq {b : ℝ} (hb : b ≠ 0) :
+    Integrable fun x ↦ (1 + (b * x) ^ 2)⁻¹ :=
+  (integrable_inv_one_add_sq.comp_mul_left' hb).congr (by simp)
+
+@[simp]
+theorem integral_univ_inv_one_add_mul_sq (b : ℝ) :
+    ∫ x, (1 + (b * x) ^ 2)⁻¹ = π / |b| := by
+  rw [Measure.integral_comp_mul_left (fun x ↦ (1 + x ^ 2)⁻¹) b, integral_univ_inv_one_add_sq]
+  simp [div_eq_inv_mul]
+
+theorem integrableOn_Ioi_zero_inv_mul_one_add_log_sq {b : ℝ} (hb : b ≠ 0) :
+    IntegrableOn (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) (Ioi 0) := by
+  have : (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ := by
+    ext; simp [mul_comm]
+  rw [this, integrableOn_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹)]
+  exact integrable_inv_one_add_mul_sq hb
+
+/-- The total mass of the log-Cauchy density on `Ioi 0`.
+
+This is not `@[simp]`: `simp` rewrites the left-hand side with `mul_inv_rev`. -/
+theorem integral_Ioi_zero_inv_mul_one_add_log_sq (b : ℝ) :
+    ∫ t in Ioi 0, (t * (1 + (b * log t) ^ 2))⁻¹ = π / |b| := by
+  have : (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ := by
+    ext; simp [mul_comm]
+  rw [this, integral_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹),
+    integral_univ_inv_one_add_mul_sq b]
+
 @[simp]
 theorem integrableOn_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
     IntegrableOn (fun t ↦ t⁻¹ / (log t) ^ 2) (.Ioi c) volume := by
   apply integrableOn_Ioi_deriv_of_nonneg' _ _ tendsto_log_atTop.inv_tendsto_atTop.neg
   · intro t _
-    convert! (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
+    convert (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
     field
   · intro t _
     have : 0 < t := by grind
@@ -303,11 +335,11 @@ theorem integrableOn_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
 @[simp]
 theorem integral_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
     ∫ (t : ℝ) in .Ioi c, t⁻¹ / (log t) ^ 2 = (log c)⁻¹ := by
-  convert! integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := fun t ↦ -(log t)⁻¹) ?_
+  convert integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := fun t ↦ -(log t)⁻¹) ?_
     (integrableOn_inv_div_log_sq_Ioi hc) ?_ using 1
   · simp
   · intro t _
-    convert! (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
+    convert (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
     field
-  convert! tendsto_log_atTop.inv_tendsto_atTop.neg using 1
+  convert tendsto_log_atTop.inv_tendsto_atTop.neg using 1
   simp

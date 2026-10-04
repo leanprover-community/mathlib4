@@ -5,8 +5,8 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.GeometryOfNumbers
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+import Mathlib.MeasureTheory.Group.GeometryOfNumbers
+import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 
@@ -55,7 +55,9 @@ variable (f : InfinitePlace K → ℝ≥0)
 
 /-- The convex body defined by `f`: the set of points `x : E` such that `‖x w‖ < f w` for all
 infinite places `w`. -/
-abbrev convexBodyLT : Set (mixedSpace K) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable abbrev convexBodyLT : Set (mixedSpace K) :=
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsReal w } => ball 0 (f w))) ×ˢ
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsComplex w } => ball 0 (f w)))
 
@@ -130,7 +132,7 @@ theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁ 
       inv_mul_cancel₀, mul_one]
     · rw [Finset.prod_ne_zero_iff]
       exact fun w hw => pow_ne_zero _ (hf w (Finset.ne_of_mem_erase hw))
-    · rw [mult]; split_ifs <;> norm_num
+    · rw [mult]; split_ifs <;> simp
 
 end convexBodyLT
 
@@ -145,7 +147,9 @@ open scoped Classical in
 needed to ensure the element constructed is not real, see for example
 `exists_primitive_element_lt_of_isComplex`.
 -/
-abbrev convexBodyLT' : Set (mixedSpace K) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable abbrev convexBodyLT' : Set (mixedSpace K) :=
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsReal w } ↦ ball 0 (f w))) ×ˢ
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsComplex w } ↦
     if w = w₀ then {x | |x.re| < 1 ∧ |x.im| < (f w : ℝ) ^ 2} else ball 0 (f w)))
@@ -163,12 +167,12 @@ theorem convexBodyLT'_mem {x : K} :
     · specialize h₂ w (not_isReal_iff_isComplex.mp hw)
       rw [apply_ite (w.embedding x ∈ ·), Set.mem_ofPred_eq,
         mem_ball_zero_iff, norm_embedding_eq] at h₂
-      rwa [if_neg (by exact Subtype.coe_ne_coe.1 h_ne)] at h₂
-  · simpa [if_true] using h₂ w₀.val w₀.prop
+      rwa [ite_eq_right (by exact Subtype.coe_ne_coe.1 h_ne)] at h₂
+  · simpa [ite_true] using h₂ w₀.val w₀.prop
   · exact h₁ w (ne_of_isReal_isComplex hw w₀.prop)
   · by_cases h_ne : w = w₀
     · simpa [h_ne]
-    · rw [if_neg (by exact Subtype.coe_ne_coe.1 h_ne)]
+    · rw [ite_eq_right (by exact Subtype.coe_ne_coe.1 h_ne)]
       rw [mem_ball_zero_iff, norm_embedding_eq]
       exact h₁ w h_ne
 
@@ -225,7 +229,7 @@ theorem convexBodyLT'_volume :
       rw [← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
       congr 2
       · refine Finset.prod_congr rfl (fun w' hw' ↦ ?_)
-        rw [if_neg (Finset.ne_of_mem_erase hw'), Complex.volume_ball]
+        rw [ite_eq_right (Finset.ne_of_mem_erase hw'), Complex.volume_ball]
       · simpa only [ite_true] using vol_box (f w₀)
     _ = ((2 : ℝ≥0) ^ nrRealPlaces K *
           (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))) *
@@ -340,7 +344,7 @@ theorem convexBodySum_neg_mem {x : mixedSpace K} (hx : x ∈ (convexBodySum K B)
 
 theorem convexBodySum_convex : Convex ℝ (convexBodySum K B) := by
   refine Convex_subadditive_le (fun _ _ => convexBodySumFun_add_le _ _) (fun c x h => ?_) B
-  convert! le_of_eq (convexBodySumFun_smul c x)
+  convert le_of_eq (convexBodySumFun_smul c x)
   exact (abs_eq_self.mpr h).symm
 
 theorem convexBodySum_isBounded : Bornology.IsBounded (convexBodySum K B) := by
@@ -355,7 +359,7 @@ theorem convexBodySum_compact : IsCompact (convexBodySum K B) := by
   classical
   rw [Metric.isCompact_iff_isClosed_bounded]
   refine ⟨?_, convexBodySum_isBounded K B⟩
-  convert! IsClosed.preimage (convexBodySumFun_continuous K) (isClosed_Icc : IsClosed (Set.Icc 0 B))
+  convert IsClosed.preimage (convexBodySumFun_continuous K) (isClosed_Icc : IsClosed (Set.Icc 0 B))
   ext
   simp [convexBodySumFun_nonneg]
 
@@ -377,7 +381,7 @@ theorem convexBodySum_volume :
     exact finrank_pos.ne'
   · suffices volume (convexBodySum K 1) = (convexBodySumFactor K) by
       rw [mul_comm]
-      convert! addHaar_smul volume B (convexBodySum K 1)
+      convert addHaar_smul volume B (convexBodySum K 1)
       · simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hB), Set.preimage_ofPred_eq, convexBodySumFun,
         normAtPlace_smul, abs_inv, abs_eq_self.mpr (le_of_lt hB), ← mul_assoc, mul_comm, mul_assoc,
         ← Finset.mul_sum, inv_mul_le_iff₀ hB, mul_one]
@@ -536,7 +540,7 @@ theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : 
   obtain ⟨a, h_nz, h_le⟩ := exists_ne_zero_mem_ringOfIntegers_lt K this
   refine ⟨a, ?_, fun w ↦ lt_of_lt_of_le (h_le w) ?_⟩
   · exact is_primitive_element_of_infinitePlace_lt h_nz
-      (fun w h_ne ↦ by convert! (if_neg h_ne) ▸ h_le w) (Or.inl hw₀)
+      (fun w h_ne ↦ by convert! (ite_eq_right h_ne) ▸ h_le w) (Or.inl hw₀)
   · split_ifs <;> simp
 
 theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀ : IsComplex w₀)
@@ -555,9 +559,9 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
   obtain ⟨a, h_nz, h_le, h_le₀⟩ := exists_ne_zero_mem_ringOfIntegers_lt' K ⟨w₀, hw₀⟩ this
   refine ⟨a, ?_, fun w ↦ ?_⟩
   · exact is_primitive_element_of_infinitePlace_lt h_nz
-      (fun w h_ne ↦ by convert! if_neg h_ne ▸ h_le w h_ne) (Or.inr h_le₀.1)
+      (fun w h_ne ↦ by convert! ite_eq_right h_ne ▸ h_le w h_ne) (Or.inr h_le₀.1)
   · by_cases h_eq : w = w₀
-    · rw [if_pos rfl] at h_le₀
+    · rw [ite_eq_left rfl] at h_le₀
       dsimp only at h_le₀
       rw [h_eq, ← norm_embedding_eq, Real.lt_sqrt (norm_nonneg _), ← Complex.re_add_im
         (embedding w₀ _), Complex.norm_add_mul_I, Real.sq_sqrt (by positivity)]
@@ -566,9 +570,9 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
         exact h_le₀.1
       · rw [sq_lt_sq, NNReal.abs_eq, ← NNReal.sq_sqrt B]
         exact h_le₀.2
-    · refine lt_of_lt_of_le (if_neg h_eq ▸ h_le w h_eq) ?_
+    · refine lt_of_lt_of_le (ite_eq_right h_eq ▸ h_le w h_eq) ?_
       rw [NNReal.coe_one, Real.le_sqrt' zero_lt_one, one_pow]
-      norm_num
+      simp
 
 open scoped Classical in
 /-- Let `I` be a fractional ideal of `K`. Assume that `B : ℝ` is such that

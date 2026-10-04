@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.Ker
-public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Subring.Basic
@@ -487,12 +486,6 @@ lemma isTorsionFree_iff_algebraMap_injective : IsTorsionFree R A ↔ Injective (
   rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective]
 
 end Module
-
-@[deprecated (since := "2026-01-21")]
-alias NoZeroSMulDivisors.iff_algebraMap_injective := isTorsionFree_iff_algebraMap_injective
-
-@[deprecated (since := "2026-01-21")]
-alias NoZeroSMulDivisors.iff_faithfulSMul := isTorsionFree_iff_faithfulSMul
 
 example {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
     [IsScalarTower R A A] : Algebra R A :=

@@ -5,13 +5,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.RingTheory.MvPowerSeries.Order
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
-public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Instances.ENat
-public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.TopologicallyNilpotent
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
@@ -147,7 +142,7 @@ theorem tendsto_trunc_atTop [DecidableEq σ] [CommSemiring R] [Nonempty σ] (f :
   obtain ⟨s, _⟩ := (exists_const σ).mpr trivial
   apply tendsto_atTop_of_eventually_const (i₀ := d + Finsupp.single s 1)
   intro n hn
-  rw [MvPolynomial.coeff_coe, coeff_trunc, if_pos]
+  rw [MvPolynomial.coeff_coe, coeff_trunc, ite_eq_left]
   apply lt_of_lt_of_le _ hn
   simpa [Finsupp.lt_def] using ⟨s, by simp⟩
 

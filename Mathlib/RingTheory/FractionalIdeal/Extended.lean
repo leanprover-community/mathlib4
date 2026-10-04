@@ -37,7 +37,10 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 fractional ideal, fractional ideals, extended, extension
 -/
 
-@[expose] public section
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- This is why this section is `noncomputable`.
+-- See https://github.com/leanprover/lean4/issues/14084.
+@[expose] public noncomputable section
 
 open IsLocalization FractionalIdeal Module Submodule
 
@@ -281,7 +284,7 @@ theorem coe_extendedHom_eq_span (I : FractionalIdeal A⁰ K) :
 theorem le_one_of_extendedHom_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed B]
     (hI : extendedHom L B I ≤ 1) : I ≤ 1 := by
   contrapose hI
-  rw [SetLike.not_le_iff_exists] at hI ⊢
+  rw [IsConcreteLE.not_le_iff_exists] at hI ⊢
   obtain ⟨x, hx₁, hx₂⟩ := hI
   refine ⟨algebraMap K L x, ?_, ?_⟩
   · simpa [← FractionalIdeal.mem_coe, IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]

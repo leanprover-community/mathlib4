@@ -30,7 +30,7 @@ distributions. The multiplier function is throughout assumed to have temperate g
 
 @[expose] public noncomputable section
 
-variable {ι 𝕜 E F F₁ F₂ : Type*}
+variable {ι 𝕜 E F : Type*}
 
 namespace SchwartzMap
 

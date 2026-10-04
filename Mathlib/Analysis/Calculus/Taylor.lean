@@ -6,12 +6,12 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 # Taylor's theorem
@@ -55,7 +55,7 @@ open scoped Interval Topology Nat
 
 open Set
 
-variable {𝕜 E F : Type*}
+variable {E F : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The `k`th coefficient of the Taylor polynomial. -/
@@ -162,7 +162,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
       field
     rw [this]
     exact (monomial_has_deriv_aux y x _).hasDerivWithinAt.const_mul _
-  convert! this.smul hf using 1
+  convert this.smul hf using 1
   field_simp
   module
 
@@ -191,7 +191,7 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
     have hdiff : DifferentiableOn ℝ (iteratedDerivWithin k f s) s' :=
       (hf.differentiableOn_iteratedDerivWithin (mod_cast coe_lt_succ) hs_unique).mono h
     specialize hk hf.of_succ ((hdiff y hy).mono_of_mem_nhdsWithin hs')
-    convert!
+    convert
       hk.add
         (hasDerivWithinAt_taylor_coeff_within hs'_unique (nhdsWithin_mono _ h self_mem_nhdsWithin)
           hf') using 1
@@ -252,7 +252,7 @@ theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     · simp
     replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
     simp only [Nat.cast_add, Nat.cast_one] at hf
-    convert!
+    convert
       Convex.isLittleO_pow_succ_real hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl)) (f := fun x ↦
         f x - taylorWithinEval f (n + 1) s x₀ x) using 1
     · simp
@@ -349,7 +349,7 @@ lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : �
     (hf : ContDiffOn ℝ (n + 1) f (uIcc x₀ x)) :
     ∃ x' ∈ uIoo x₀ x, f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =
       iteratedDeriv (n + 1) f x' * (x - x₀) ^ (n + 1) / (n + 1)! := by
-  have hu : UniqueDiffOn ℝ (uIcc x₀ x) := uniqueDiffOn_Icc (by grind)
+  have hu : UniqueDiffOn ℝ (uIcc x₀ x) := uniqueDiffOn_uIcc hx
   have hd : DifferentiableOn ℝ (iteratedDerivWithin n f (uIcc x₀ x)) (uIcc x₀ x) := by
     refine hf.differentiableOn_iteratedDerivWithin ?_ hu
     norm_cast
@@ -476,13 +476,12 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
     rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
     rfl
   | succ n ih =>
-    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
     specialize ih (by grind)
     simp only [taylorWithinEval_succ, mul_inv_rev]
     rw [sub_add_eq_sub_sub, ih]
     simp only [Nat.factorial, Nat.succ_eq_add_one, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
     have := hf (n + 1) (by rfl)
-    convert! this.symm using 1
+    convert this.symm using 1
     · simp only [sub_self, ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false, not_false_eq_true,
         zero_pow, zero_div, zero_smul, zero_sub, deriv_div_const, Nat.factorial]
       apply fun (a b c d : F) (_ : b = c) (_ : a = -d) ↦ show a - b = -c - d by grind
@@ -522,9 +521,8 @@ theorem taylor_integral_remainder_of_absolutelyContinuous {f : ℝ → ℝ} {x x
     fun_prop
   · rcases hk.eq_or_lt with rfl | hk
     · exact hf₂
-    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
     replace hf₁ := hf₁.of_le (m := k.succ) (by norm_cast)
-    grind [ContDiffOn.absolutelyContinuousOnInterval,
+    grind [ContDiffOn.absolutelyContinuousOnInterval, uniqueDiffOn_uIcc,
       contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin]
 
 /-- **Taylor's theorem** with the Integral form of the remainder.
@@ -540,7 +538,7 @@ theorem taylor_integral_remainder [NormedAddCommGroup F] [NormedSpace ℝ F]
       ∫ t in x₀..x, ((x - t) ^ n / n !) • iteratedDerivWithin (n + 1) f (uIcc x₀ x) t := by
   rcases eq_or_ne x₀ x with rfl | this
   · simp
-  have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
+  have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_uIcc this
   apply taylor_integral_remainder_aux
   intro k hk
   apply intervalIntegral.integral_smul_deriv_eq_deriv_smul_of_hasDerivAt

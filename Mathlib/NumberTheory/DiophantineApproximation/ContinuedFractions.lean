@@ -5,7 +5,7 @@ Authors: Michael Geißer, Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
+import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 public import Mathlib.NumberTheory.DiophantineApproximation.Basic
 
@@ -47,7 +47,7 @@ end Convergent
 
 namespace Real
 
-variable {ξ : ℝ} {u v : ℤ}
+variable {ξ : ℝ}
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,

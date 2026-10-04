@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.Attr.Core
 
 /-!
@@ -283,6 +281,14 @@ protected def toEquiv : e.source ≃ e.target where
   invFun y := ⟨e.symm y, e.map_target y.mem⟩
   left_inv := fun ⟨_, hx⟩ => Subtype.ext <| e.left_inv hx
   right_inv := fun ⟨_, hy⟩ => Subtype.ext <| e.right_inv hy
+
+lemma toEquiv_eq_codRestrict_restrict :
+    e.toEquiv = codRestrict (e.source.domRestrict e) e.target (by simp) :=
+  rfl
+
+lemma toEquiv_symm_eq_codRestrict_restrict :
+    e.toEquiv.symm = codRestrict (e.target.domRestrict e.invFun) e.source (by simp) := by
+  rfl
 
 @[simp, mfld_simps]
 theorem symm_source : e.symm.source = e.target :=
