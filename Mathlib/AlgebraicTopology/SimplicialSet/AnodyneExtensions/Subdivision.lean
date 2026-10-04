@@ -5,7 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
+public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonemptyFiniteChains
 public import Mathlib.Order.Interval.Finset.Fin
 
@@ -546,3 +548,32 @@ instance : (pairingCore x₀).IsRegular := by
 end horn
 
 end PartialOrder.NonemptyFiniteChains
+
+open HomotopicalAlgebra
+
+namespace SSet
+
+namespace modelCategoryQuillen
+
+lemma J.anodyneExtensions_sd_map {A B : SSet.{u}} {i : A ⟶ B} (hi : J i) :
+    anodyneExtensions (sd.map i) := by
+  sorry
+
+instance {E B : SSet.{u}} (p : E ⟶ B) [Fibration p] :
+    Fibration (ex.map p) := by
+  rw [fibration_iff]
+  intro A B i hi
+  rw [← sdExAdjunction.hasLiftingProperty_iff]
+  exact hi.anodyneExtensions_sd_map _ (mem_fibrations p)
+
+end modelCategoryQuillen
+
+open modelCategoryQuillen in
+lemma anodyneExtensions.sd {A B : SSet.{u}} {i : A ⟶ B} (hi : anodyneExtensions i) :
+    anodyneExtensions (sd.map i) := by
+  intro X Y p hp
+  rw [sdExAdjunction.hasLiftingProperty_iff]
+  have : Fibration p := by rwa [modelCategoryQuillen.fibration_iff]
+  exact hi _ (mem_fibrations _)
+
+end SSet
