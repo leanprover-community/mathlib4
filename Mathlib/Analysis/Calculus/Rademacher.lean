@@ -6,11 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.LineDeriv.Measurable
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.Analysis.BoundedVariation
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.Analysis.BoundedVariation
+import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 
 /-!
@@ -257,7 +255,7 @@ theorem ae_exists_fderiv_of_countable
   let L : StrongDual ℝ E :=
     LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
   refine ⟨L, fun v hv ↦ ?_⟩
-  have J : L v = lineDeriv ℝ f x v := by convert! (hx v hv).symm <;> simp [L, B.sum_repr v]
+  have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
 
 omit [MeasurableSpace E] in

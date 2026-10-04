@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.Ring.Units
 public import Mathlib.Data.Nat.Cast.Basic
@@ -80,7 +80,7 @@ variable [Semiring R] [CharZero R]
 variable [IsCancelMulZero R]
 
 /-- A characteristic zero domain is torsion-free. -/
-instance (priority := 100) IsAddTorsionFree.of_isCancelMulZero_charZero : IsAddTorsionFree R where
+instance (priority := 100) HasUniqueDiv.of_isCancelMulZero_charZero : HasUniqueDiv R where
   nsmul_right_injective n hn a b hab := by simpa [hn] using hab
 
 end Semiring

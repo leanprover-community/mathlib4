@@ -6,9 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # The concrete products in the category of modules are products in the categorical sense.
@@ -38,7 +36,7 @@ def productConeIsLimit : IsLimit (productCone Z) where
   uniq s m w := by
     ext x
     funext i
-    exact DFunLike.congr_fun (congr_arg Hom.hom (w ⟨i⟩)) x
+    congrm $(w ⟨i⟩) x
 
 -- While we could use this to construct a `HasProducts (ModuleCat R)` instance,
 -- we already have `HasLimits (ModuleCat R)` in `Algebra.Category.ModuleCat.Limits`.

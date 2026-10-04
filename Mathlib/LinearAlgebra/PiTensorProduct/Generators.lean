@@ -6,11 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Data.SubtypeNeLift
-public import Mathlib.Data.Set.Card
+import Mathlib.Data.Set.Card
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
-public import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Map
-public import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Generators of multiple tensor products
@@ -167,7 +167,7 @@ lemma ext_of_span_eq_top
         rw [Function.subtypeNeLift_of_neq _ _ _ _ (by assumption)]
         rfl
       simpa only [lift.equiv_symm_apply, this] using h (Function.subtypeNeLift i₀ j g₀)
-    · exact Set.ncard_compl_of_ncard_eq_add _ (by simpa)
+    · exact Set.ncard_compl_of_ncard_eq_add {i₀} (by simpa)
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
@@ -176,7 +176,7 @@ lemma _root_.MultilinearMap.ext_of_span_eq_top
     φ = φ' := by
   suffices lift φ = lift φ' by
     ext m
-    simpa using DFunLike.congr_fun this (tprod _ m)
+    simpa using congr($this (tprod _ m))
   exact PiTensorProduct.ext_of_span_eq_top hg (fun j ↦ by simpa using h j)
 
 end AddCommMonoid

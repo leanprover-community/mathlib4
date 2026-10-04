@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Commute.Hom
 public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Products (respectively, sums) over a finset or a multiset.
@@ -416,7 +416,7 @@ theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   case a =>
     intro i _ j _ _
     exact Pi.mulSingle_apply_commute x i j
-  convert! (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
+  convert (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
   · intro j
     exact Pi.mulSingle j (x j) i
   · intro j _; dsimp
