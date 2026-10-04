@@ -6,7 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.Polynomial.Mirror
-public import Mathlib.Data.Int.Order.Units
+import Mathlib.Data.Int.Order.Units
 public import Mathlib.RingTheory.Coprime.Basic
 
 /-!
@@ -51,17 +51,17 @@ variable {k m n u v w}
 theorem trinomial_leading_coeff' (hkm : k < m) (hmn : m < n) :
     (trinomial k m n u v w).coeff n = w := by
   rw [trinomial_def, coeff_add, coeff_add, coeff_C_mul_X_pow, coeff_C_mul_X_pow, coeff_C_mul_X_pow,
-    if_neg (hkm.trans hmn).ne', if_neg hmn.ne', if_pos rfl, zero_add, zero_add]
+    ite_eq_right (hkm.trans hmn).ne', ite_eq_right hmn.ne', ite_eq_left rfl, zero_add, zero_add]
 
 theorem trinomial_middle_coeff (hkm : k < m) (hmn : m < n) :
     (trinomial k m n u v w).coeff m = v := by
   rw [trinomial_def, coeff_add, coeff_add, coeff_C_mul_X_pow, coeff_C_mul_X_pow, coeff_C_mul_X_pow,
-    if_neg hkm.ne', if_pos rfl, if_neg hmn.ne, zero_add, add_zero]
+    ite_eq_right hkm.ne', ite_eq_left rfl, ite_eq_right hmn.ne, zero_add, add_zero]
 
 theorem trinomial_trailing_coeff' (hkm : k < m) (hmn : m < n) :
     (trinomial k m n u v w).coeff k = u := by
   rw [trinomial_def, coeff_add, coeff_add, coeff_C_mul_X_pow, coeff_C_mul_X_pow, coeff_C_mul_X_pow,
-    if_pos rfl, if_neg hkm.ne, if_neg (hkm.trans hmn).ne, add_zero, add_zero]
+    ite_eq_left rfl, ite_eq_right hkm.ne, ite_eq_right (hkm.trans hmn).ne, add_zero, add_zero]
 
 theorem trinomial_natDegree (hkm : k < m) (hmn : m < n) (hw : w ≠ 0) :
     (trinomial k m n u v w).natDegree = n := by
@@ -169,9 +169,9 @@ theorem isUnitTrinomial_iff :
   replace hy := hp.2 m (mem_insert_of_mem (mem_insert_self m {n}))
   replace hz := hp.2 n (mem_insert_of_mem (mem_insert_of_mem (mem_singleton_self n)))
   simp_rw [coeff_add, coeff_C_mul, coeff_X_pow_self, mul_one, coeff_X_pow] at hx hy hz
-  rw [if_neg hkm.ne, if_neg (hkm.trans hmn).ne] at hx
-  rw [if_neg hkm.ne', if_neg hmn.ne] at hy
-  rw [if_neg (hkm.trans hmn).ne', if_neg hmn.ne'] at hz
+  rw [ite_eq_right hkm.ne, ite_eq_right (hkm.trans hmn).ne] at hx
+  rw [ite_eq_right hkm.ne', ite_eq_right hmn.ne] at hy
+  rw [ite_eq_right (hkm.trans hmn).ne', ite_eq_right hmn.ne'] at hz
   simp_rw [mul_zero, zero_add, add_zero] at hx hy hz
   exact ⟨k, m, n, hkm, hmn, hx.unit, hy.unit, hz.unit, rfl⟩
 
@@ -233,7 +233,7 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
     (u v w : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w) (hq : q = trinomial k m' n (u : ℤ) v w)
     (h : p * p.mirror = q * q.mirror) : q = p ∨ q = p.mirror := by
   let f (p : ℤ[X]) : ℤ[X] := ⟨.ofCoeff <| .filter (· ∈ Set.Ioo (k + n) (n + n)) p.toFinsupp.coeff⟩
-  replace h := congr_arg f h
+  replace h := congr(f $h)
   replace h := (irreducible_aux1 hkm hmn u v w hp).trans h
   replace h := h.trans (irreducible_aux1 hkm' hmn' u v w hq).symm
   rw [(isUnit_C.mpr v.isUnit).mul_right_inj] at h
@@ -250,12 +250,12 @@ theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
     (u v w x z : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w)
     (hq : q = trinomial k m' n (x : ℤ) v z) (h : p * p.mirror = q * q.mirror) :
     q = p ∨ q = p.mirror := by
-  have hmul := congr_arg leadingCoeff h
+  have hmul := congr(leadingCoeff $h)
   rw [leadingCoeff_mul, leadingCoeff_mul, mirror_leadingCoeff, mirror_leadingCoeff, hp, hq,
     trinomial_leadingCoeff hkm hmn w.ne_zero, trinomial_leadingCoeff hkm' hmn' z.ne_zero,
     trinomial_trailingCoeff hkm hmn u.ne_zero, trinomial_trailingCoeff hkm' hmn' x.ne_zero]
     at hmul
-  have hadd := congr_arg (eval 1) h
+  have hadd := congr(eval 1 $h)
   rw [eval_mul, eval_mul, mirror_eval_one, mirror_eval_one, ← sq, ← sq, hp, hq] at hadd
   simp only [eval_add, eval_C_mul, eval_X_pow, one_pow, mul_one, trinomial_def] at hadd
   rw [add_assoc, add_assoc, add_comm (u : ℤ), add_comm (x : ℤ), add_assoc, add_assoc] at hadd

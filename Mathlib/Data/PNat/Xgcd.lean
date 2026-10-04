@@ -5,7 +5,7 @@ Authors: Neil Strickland
 -/
 module
 
-public import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring
 public import Mathlib.Data.PNat.Prime
 
 /-!
@@ -309,11 +309,11 @@ decreasing_by apply u.step_wf _h
 
 theorem reduce_a {u : XgcdType} (h : u.r = 0) : u.reduce = u.finish := by
   rw [reduce]
-  exact if_pos h
+  exact ite_eq_left h
 
 theorem reduce_b {u : XgcdType} (h : u.r ≠ 0) : u.reduce = u.step.reduce.flip := by
   rw [reduce]
-  exact if_neg h
+  exact ite_eq_right h
 
 theorem reduce_isReduced : ∀ u : XgcdType, u.reduce.IsReduced
   | u =>
@@ -421,8 +421,8 @@ theorem gcd_props :
   let hv : Prod.mk (w * d + x * ur.b : ℕ) (y * d + z * ur.b : ℕ) = ⟨a, b⟩ :=
     u.reduce_v.trans (XgcdType.start_v a b)
   rw [← hb, ← add_mul, ← add_mul, ← ha', ← hb'] at hv
-  have ha'' : (a : ℕ) = a' * d := (congr_arg Prod.fst hv).symm
-  have hb'' : (b : ℕ) = b' * d := (congr_arg Prod.snd hv).symm
+  have ha'' : (a : ℕ) = a' * d := congr($(hv).fst).symm
+  have hb'' : (b : ℕ) = b' * d := congr($(hv).snd).symm
   constructor
   · exact eq ha''
   constructor

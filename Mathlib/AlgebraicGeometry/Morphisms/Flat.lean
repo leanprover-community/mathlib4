@@ -46,8 +46,6 @@ class Flat (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.flat_appLE := Flat.flat_appLE
 
-@[deprecated (since := "2026-01-20")] alias Flat.flat_of_affine_subset := Scheme.Hom.flat_appLE
-
 namespace Flat
 
 instance : HasRingHomProperty @Flat RingHom.Flat where
@@ -231,7 +229,6 @@ abbrev pushoutSection : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ⟶ �
   pushout.desc (g.appLE UX UY (by simp [*])) (iY.appLE UT UY (by simp [*]))
     (by simp only [Scheme.Hom.appLE_comp_appLE, H.w])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_pushoutSection_iff :
     IsIso (pushoutSection H hUST hUSX hUY) ↔ IsPushout (iX.appLE US UX hUSX) (f.appLE US UT hUST)
       (g.appLE UX UY (by simp [*])) (iY.appLE UT UY (by simp [*])) :=
@@ -241,7 +238,7 @@ lemma isIso_pushoutSection_iff :
 
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] IsAffineOpen.isoSpec_hom in
-attribute [local simp← ] Scheme.Hom.resLE_eq_morphismRestrict in
+attribute [local simp ←] Scheme.Hom.resLE_eq_morphismRestrict in
 lemma isIso_pushoutSection_of_isAffineOpen (hUS : IsAffineOpen US) (hUT : IsAffineOpen UT)
     (hUX : IsAffineOpen UX) : IsIso (pushoutSection H hUST hUSX hUY) := by
   refine (isIso_pushoutSection_iff ..).mpr (IsPullback.of_map_of_faithful Scheme.Spec ?_).unop
@@ -253,7 +250,6 @@ lemma isIso_pushoutSection_of_isAffineOpen (hUS : IsAffineOpen US) (hUT : IsAffi
   exact .of_iso (Scheme.Hom.isPullback_resLE H hUST hUSX hUY).flip hUY'.isoSpec hUT.isoSpec
     hUX.isoSpec hUS.isoSpec (by simp) (by simp) (by simp) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Opens) (hVU : iSup VX = UX)
     (hV : ∀ i, Mono (pushoutSection H hUST (show VX i ≤ _ by aesop) rfl))
@@ -446,12 +442,11 @@ lemma mono_pushoutSection_of_isCompact_of_flat_right [Flat f]
     (fun i ↦ have := isIso_pushoutSection_of_isAffineOpen H hUST _ rfl hUS hUT i.1.2; inferInstance)
     (f.flat_appLE hUS hUT _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_pushoutSection_of_isCompact_of_flat_left [Flat iX]
     (hUS : IsAffineOpen US) (hUX : IsAffineOpen UX) (hUT : IsCompact (X := T) UT) :
     Mono (pushoutSection H hUST hUSX hUY) := by
   suffices Mono (pushoutSection H.flip hUSX hUST (hUY.trans (inf_comm _ _))) by
-    rw [← mono_comp_iff_of_isIso (pushoutSymmetry _ _).hom]; convert! this; cat_disch
+    rw [← mono_comp_iff_of_isIso (pushoutSymmetry _ _).hom]; convert this; cat_disch
   exact mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUX hUT
 
 lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat f]
@@ -467,13 +462,12 @@ lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat f]
     i.1.2.isCompact (hIUX _) j.1.1.2 j.1.2.isCompact))
     (f.flat_appLE hUS hUT _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_left [Flat iX]
     (hUS : IsAffineOpen US) (hUX : IsAffineOpen UX)
     (hUT : IsCompact (X := T) UT) (hUT' : IsQuasiSeparated (α := T) UT) :
     IsIso (pushoutSection H hUST hUSX hUY) := by
   suffices IsIso (pushoutSection H.flip hUSX hUST (hUY.trans (inf_comm _ _))) by
-    rw [← isIso_comp_left_iff (pushoutSymmetry _ _).hom]; convert! this; cat_disch
+    rw [← isIso_comp_left_iff (pushoutSymmetry _ _).hom]; convert this; cat_disch
   exact isIso_pushoutSection_of_isQuasiSeparated_of_flat_right _ _ _ _ hUS hUX hUT hUT'
 
 lemma mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat [Flat iX]
@@ -485,16 +479,14 @@ lemma mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat [Flat iX]
   exact mono_pushoutSection_of_iSup_eq _ _ _ _ (fun i : I ↦ i) (by rwa [iSup_subtype, eq_comm])
     (fun i ↦ mono_pushoutSection_of_isCompact_of_flat_left _ _ _ _ hUS i.1.2 hUT) hf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
     (hUS : IsAffineOpen US) (hUT : IsCompact (X := T) UT)
     (hUX : IsCompact (X := X) UX) (hiX : (iX.appLE US UX hUSX).hom.Flat) :
     Mono (pushoutSection H hUST hUSX hUY) := by
   suffices Mono (pushoutSection H.flip hUSX hUST (hUY.trans (inf_comm _ _))) by
-    rw [← mono_comp_iff_of_isIso (pushoutSymmetry _ _).hom]; convert! this; cat_disch
+    rw [← mono_comp_iff_of_isIso (pushoutSymmetry _ _).hom]; convert this; cat_disch
   exact mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat _ _ _ _ hUS hUX hUT hiX
 
-set_option backward.isDefEq.respectTransparency false in
 include H in
 lemma isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
     (hUS : IsAffineOpen US) (hUT : IsCompact (X := T) UT) (hUT' : IsQuasiSeparated (α := T) UT)
@@ -502,7 +494,7 @@ lemma isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
     (hiX : (iX.appLE US UX hUSX).hom.Flat) :
     IsIso (pushoutSection H hUST hUSX hUY) := by
   suffices IsIso (pushoutSection H.flip hUSX hUST (hUY.trans (inf_comm _ _))) by
-    rw [← isIso_comp_left_iff (pushoutSymmetry _ _).hom]; convert! this; cat_disch
+    rw [← isIso_comp_left_iff (pushoutSymmetry _ _).hom]; convert this; cat_disch
   obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUT
   have hIUT (i : I) : i.1 ≤ UT := by rw [e]; intro i; aesop
   have := hI.to_subtype

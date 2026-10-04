@@ -67,13 +67,13 @@ variable {B}
 
 @[simp]
 theorem whiskerLeft_eqToHom {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g = h) :
-    f ◁ eqToHom η = eqToHom (congr_arg₂ (· ≫ ·) rfl η) := by
+    f ◁ eqToHom η = eqToHom congr(_ ≫ $η) := by
   cases η
   simp only [whiskerLeft_id, eqToHom_refl]
 
 @[simp]
 theorem eqToHom_whiskerRight {a b c : B} {f g : a ⟶ b} (η : f = g) (h : b ⟶ c) :
-    eqToHom η ▷ h = eqToHom (congr_arg₂ (· ≫ ·) η rfl) := by
+    eqToHom η ▷ h = eqToHom congr($η ≫ _) := by
   cases η
   simp only [id_whiskerRight, eqToHom_refl]
 

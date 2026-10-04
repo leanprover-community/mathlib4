@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Opposites
-public import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Conv
 
 /-!
 # Group structures on the multiplicative and additive opposites
@@ -175,6 +175,16 @@ variable [Monoid α]
 
 @[to_additive (attr := simp)] lemma unop_pow (x : αᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n := rfl
 
+@[to_additive]
+instance [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ where
+  eq_of_pow_eq_pow_of_commute n hn a b h hab :=
+    unop_injective <| eq_of_pow_eq_pow_of_commute hn
+      (by simpa [commute_iff_eq] using congrArg unop h.symm) (by simpa using congrArg unop hab)
+
+@[to_additive]
+instance [HasUniqueRoots α] : HasUniqueRoots αᵐᵒᵖ :=
+  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp unop_injective⟩
+
 end Monoid
 
 section DivInvMonoid
@@ -241,6 +251,14 @@ attribute [nolint simpComm] AddOpposite.addCommute_unop
 @[to_additive] instance [MulOne α] [IsDedekindFiniteMonoid α] : IsDedekindFiniteMonoid αᵐᵒᵖ :=
   MulOpposite.isDedekindFiniteMonoid_iff.mpr ‹_›
 
+@[to_additive (attr := simp)]
+theorem isMulCommutative_op_iff [Mul α] : IsMulCommutative αᵐᵒᵖ ↔ IsMulCommutative α := by
+  simp [isMulCommutative_iff, ← commute_iff_eq]
+
+@[to_additive]
+instance [Mul α] [IsMulCommutative α] : IsMulCommutative αᵐᵒᵖ :=
+  isMulCommutative_op_iff.mpr ‹_›
+
 end MulOpposite
 
 /-!
@@ -291,9 +309,5 @@ instance instGroup [Group α] : Group αᵃᵒᵖ :=
 instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
   unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
-
-@[to_additive]
-instance instMulTorsionFree [Monoid α] [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ :=
-  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
 
 end AddOpposite

@@ -34,7 +34,9 @@ defined using pentagonal numbers. We then show that this series is equal to both
 * `PowerSeries.coeff_pentagonalSeries` restates the right-hand side without requiring topology.
 -/
 
-open Filter PowerSeries WithPiTopology Topology
+open Filter PowerSeries WithPiTopology
+
+open scoped Topology
 variable (R : Type*) [CommRing R]
 
 namespace Pentagonal
@@ -83,7 +85,7 @@ def pentagonalSeries : R⟦X⟧ :=
     0
 
 theorem coeff_pentagonalSeries_eq_zero {n : ℕ} (h : n ∉ Set.range pentagonal) :
-    (pentagonalSeries R).coeff n = 0 := dif_neg <| by simpa using h
+    (pentagonalSeries R).coeff n = 0 := dite_eq_right <| by simpa using h
 
 @[simp]
 theorem coeff_pentagonalSeries_pentagonal (k : ℤ) :
@@ -94,6 +96,15 @@ theorem coeff_pentagonalSeries_pentagonal (k : ℤ) :
 theorem coeff_pentagonalSeries_eq_zero_iff [Nontrivial R] {n : ℕ} :
     (pentagonalSeries R).coeff n = 0 ↔ n ∉ Set.range pentagonal := by
   grind [pentagonalSeries, coeff_mk, neg_one_pow_ne_zero, Int.coe_negOnePow]
+
+theorem coeff_pentagonalSeries_mul_eq_extend (n : ℕ) (f : ℕ → R) :
+    (pentagonalSeries R).coeff n * f n =
+      Function.extend pentagonal (fun k ↦ k.negOnePow * f (pentagonal k)) 0 n := by
+  by_cases hn : n ∈ Set.range pentagonal
+  · obtain ⟨k, rfl⟩ := hn
+    simp [pentagonal_injective.extend_apply, -Int.coe_negOnePow]
+  · rw [Function.extend_apply' _ _ _ (by simpa using hn)]
+    simp [coeff_pentagonalSeries_eq_zero R hn]
 
 namespace WithPiTopology
 variable [TopologicalSpace R]

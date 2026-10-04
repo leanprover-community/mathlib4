@@ -102,9 +102,6 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
   have : DiscreteTopology W := hW1.isoSpec.hom.homeomorph.symm.discreteTopology
   simpa using (isOpen_discrete ({⟨x, hW2⟩} : Set W)).trans W.2
 
-@[deprecated (since := "2026-01-14")]
-alias IsLocallyArtinian.discreteTopology_of_isAffine := IsLocallyArtinian.discreteTopology
-
 theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ .of_isLocallyNoetherian_of_discreteTopology⟩

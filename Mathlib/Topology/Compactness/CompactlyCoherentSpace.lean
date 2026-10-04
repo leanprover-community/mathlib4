@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Hannah Scholz
 module
 
 public import Mathlib.Topology.Coherent
-public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -146,7 +145,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 instance instTopologicalSpace :
     TopologicalSpace (𝐤X) :=
   .coinduced (.mk X)
-    (⨆ (K : Set X) (_ : IsCompact K), .coinduced (Subtype.val (p := K))
+    (⨆ (K : Set X) (_ : IsCompact K), .coinduced (Subtype.val (p := (· ∈ K)))
       (inferInstanceAs <| TopologicalSpace K))
 
 /-- A set `A` in the compact coherentification is open iff for all compact sets `K`,

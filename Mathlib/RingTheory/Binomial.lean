@@ -6,12 +6,11 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Algebra.Polynomial.Smeval
 public import Mathlib.Algebra.Ring.NegOnePow
-public import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Module
@@ -67,7 +66,7 @@ Further results in Elliot's paper:
 
 @[expose] public section
 
-open Function Polynomial
+open Polynomial
 
 /-- A binomial ring is a ring for which ascending Pochhammer evaluations are uniquely divisible by
 suitable factorials. We define this notion as a mixin for additive commutative monoids with natural
@@ -76,17 +75,20 @@ quotient. -/
 class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] where
   -- This base class has been demoted to a field, to avoid creating
   -- an expensive global instance.
-  [toIsAddTorsionFree : IsAddTorsionFree R]
+  [toHasUniqueDiv : HasUniqueDiv R]
   /-- A multichoose function, giving the quotient of Pochhammer evaluations by factorials. -/
   multichoose : R → ℕ → R
   /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by `n!` -/
   factorial_nsmul_multichoose (r : R) (n : ℕ) :
     n.factorial • multichoose r n = (ascPochhammer ℕ n).smeval r
 
+@[deprecated (since := "2026-09-29")] alias BinomialRing.toIsAddTorsionFree :=
+  BinomialRing.toHasUniqueDiv
+
 -- This is only a local instance as it otherwise causes significant slow downs
 -- to every call to `grind` involving a ring. Please do not make it a global instance.
 -- (~1500 heartbeats measured on `nightly-testing-2025-09-09`.)
-attribute [local instance] BinomialRing.toIsAddTorsionFree
+attribute [local instance] BinomialRing.toHasUniqueDiv
 
 section Multichoose
 
@@ -166,7 +168,7 @@ theorem multichoose_two (k : ℕ) : multichoose (2 : R) k = k + 1 := by
     rw [one_add_one_eq_two.symm, multichoose_succ_succ, multichoose_one, one_add_one_eq_two, ih,
       Nat.cast_succ, add_comm]
 
-attribute [local instance] BinomialRing.toIsAddTorsionFree in
+attribute [local instance] BinomialRing.toHasUniqueDiv in
 lemma map_multichoose {R S F : Type*} [Ring R] [Ring S] [BinomialRing R] [BinomialRing S]
     [FunLike F R S] [RingHomClass F R S] (f : F) (a : R) (n : ℕ) :
     f (Ring.multichoose a n) = Ring.multichoose (f a) n := by
@@ -272,7 +274,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
       norm_cast
 
-attribute [local instance] IsAddTorsionFree.of_module_nnrat
+attribute [local instance] HasUniqueDiv.of_module_nnrat
 
 noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r

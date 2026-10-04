@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Tactic.NormNum
+public import Batteries.Lean.Expr
 
 /-! # `norm_num` extensions for `Nat.log` and `Nat.clog`
 

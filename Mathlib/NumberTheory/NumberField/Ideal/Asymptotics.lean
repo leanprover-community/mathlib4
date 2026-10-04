@@ -22,7 +22,7 @@ We prove several asymptotics involving integral ideals of a number field.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -34,8 +34,10 @@ namespace NumberField.Ideal
 
 open scoped nonZeroDivisors Real
 
-open Filter InfinitePlace mixedEmbedding euclidean fundamentalCone Submodule Topology
+open Filter InfinitePlace mixedEmbedding euclidean fundamentalCone Submodule
 open NumberField.Units
+
+open scoped Topology
 
 variable {C : ClassGroup (𝓞 K)} {J : (Ideal (𝓞 K))⁰} {s : ℝ}
 
@@ -94,7 +96,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
                 (toMixed K).toLinearMap)
               (F := fun x ↦ mixedEmbedding.norm (toMixed K x)) (X :=
               (toMixed K) ⁻¹' (fundamentalCone K)) (fun _ _ _ h ↦ ?_) (fun _ _ h ↦ ?_)
-              ((toMixed K).antilipschitz.isBounded_preimage (isBounded_normLeOne K)) ?_ ?_).mul
+              ((toMixed K).antilipschitzWith.isBounded_preimage (isBounded_normLeOne K)) ?_ ?_).mul
           (tendsto_const_nhds (x := (absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹))).comp
       (tendsto_id.atTop_mul_const' <| Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J)) using
     2 with s
@@ -129,7 +131,7 @@ theorem tendsto_norm_le_div_atTop₀ :
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
             (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
-  convert!
+  convert
     Filter.Tendsto.congr' ?_
       (tendsto_finsetSum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
   · rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, classNumber]

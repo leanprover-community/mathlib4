@@ -6,11 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Probability.IdentDistrib
-public import Mathlib.Probability.Independence.Integrable
+import Mathlib.Probability.Independence.Integrable
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.Analysis.SpecificLimits.FloorPow
-public import Mathlib.Analysis.PSeries
-public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.SpecificLimits.FloorPow
+import Mathlib.Analysis.PSeries
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # The strong law of large numbers
@@ -219,7 +219,6 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
     (hKN : K ≤ N) :
     ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} ≤ ENNReal.ofReal (𝔼[X] + 1) := by
   let ρ : Measure ℝ := Measure.map X ℙ
-  have : IsProbabilityMeasure ρ := Measure.isProbabilityMeasure_map hint.aemeasurable
   have A : ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ ≤ 𝔼[X] + 1 :=
     calc
       ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ =
@@ -494,10 +493,10 @@ expectation. This follows from convergence and Cesàro averaging. -/
 theorem strong_law_aux3 :
     (fun n => 𝔼[∑ i ∈ range n, truncation (X i) i] - n * 𝔼[X 0]) =o[atTop] ((↑) : ℕ → ℝ) := by
   have A : Tendsto (fun i => 𝔼[truncation (X i) i]) atTop (𝓝 𝔼[X 0]) := by
-    convert! (tendsto_integral_truncation hint).comp tendsto_natCast_atTop_atTop using 1
+    convert (tendsto_integral_truncation hint).comp tendsto_natCast_atTop_atTop using 1
     ext i
     exact (hident i).truncation.integral_eq
-  convert! Asymptotics.isLittleO_sum_range_of_tendsto_zero (tendsto_sub_nhds_zero_iff.2 A) using 1
+  convert Asymptotics.isLittleO_sum_range_of_tendsto_zero (tendsto_sub_nhds_zero_iff.2 A) using 1
   ext1 n
   simp only [sum_sub_distrib, sum_const, card_range, nsmul_eq_mul, Finset.sum_apply, sub_left_inj]
   rw [integral_finsetSum _ fun i _ => ?_]
@@ -514,7 +513,7 @@ theorem strong_law_aux4 {c : ℝ} (c_one : 1 < c) :
   filter_upwards [strong_law_aux2 X hint hindep hident hnonneg c_one] with ω hω
   have A : Tendsto (fun n : ℕ => ⌊c ^ n⌋₊) atTop atTop :=
     tendsto_nat_floor_atTop.comp (tendsto_pow_atTop_atTop_of_one_lt c_one)
-  convert! hω.add ((strong_law_aux3 X hint hident).comp_tendsto A) using 1
+  convert hω.add ((strong_law_aux3 X hint hident).comp_tendsto A) using 1
   ext1 n
   simp
 
@@ -526,7 +525,7 @@ theorem strong_law_aux5 :
     ∀ᵐ ω, (fun n : ℕ => ∑ i ∈ range n, truncation (X i) i ω - ∑ i ∈ range n, X i ω) =o[atTop]
     fun n : ℕ => (n : ℝ) := by
   have A : (∑' j : ℕ, ℙ {ω | X j ω ∈ Set.Ioi (j : ℝ)}) < ∞ := by
-    convert! tsum_prob_mem_Ioi_lt_top hint (hnonneg 0) using 2
+    convert tsum_prob_mem_Ioi_lt_top hint (hnonneg 0) using 2
     ext1 j
     exact (hident j).measure_mem_eq measurableSet_Ioi
   have B : ∀ᵐ ω, Tendsto (fun n : ℕ => truncation (X n) n ω - X n ω) atTop (𝓝 0) := by
@@ -542,7 +541,7 @@ theorem strong_law_aux5 :
       simp only [this, true_and, not_le] at h
       exact (hn h).elim
   filter_upwards [B] with ω hω
-  convert! isLittleO_sum_range_of_tendsto_zero hω using 1
+  convert isLittleO_sum_range_of_tendsto_zero hω using 1
   ext n
   rw [sum_sub_distrib]
 
@@ -563,10 +562,10 @@ theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :
       (⌊c ^ n⌋₊ : ℝ) := by
     have A : Tendsto (fun n : ℕ => ⌊c ^ n⌋₊) atTop atTop :=
       tendsto_nat_floor_atTop.comp (tendsto_pow_atTop_atTop_of_one_lt c_one)
-    convert! hω.sub (h'ω.comp_tendsto A) using 1
+    convert hω.sub (h'ω.comp_tendsto A) using 1
     ext1 n
     simp only [Function.comp_apply, sub_sub_sub_cancel_left]
-  convert! L.mul_isBigO (isBigO_refl (fun n : ℕ => (⌊c ^ n⌋₊ : ℝ)⁻¹) atTop) using 1 <;>
+  convert L.mul_isBigO (isBigO_refl (fun n : ℕ => (⌊c ^ n⌋₊ : ℝ)⁻¹) atTop) using 1 <;>
   (ext1 n; field [(H n).ne'])
 
 include hint hindep hident hnonneg in
@@ -679,7 +678,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
     simp [F, Y, ← sum_smul, smul_smul]
   · rintro φ ψ - hφ hψ
     filter_upwards [hφ, hψ] with ω hωφ hωψ
-    convert! hωφ.add hωψ using 1
+    convert hωφ.add hωψ using 1
     · simp [sum_add_distrib]
     · congr 1
       rw [← integral_add]
@@ -849,7 +848,7 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
   have : IsProbabilityMeasure μ := MemLp.isProbabilityMeasure_of_indepFun
     (X 0) (X 1) (zero_lt_one.trans_le hp).ne' hp' hℒp h (hindep zero_ne_one)
   have hmeas : ∀ i, AEStronglyMeasurable (X i) μ := fun i =>
-    (hident i).aestronglyMeasurable_iff.2 hℒp.1
+    (hident i).aestronglyMeasurable_iff.2 hℒp.aestronglyMeasurable
   have hint : Integrable (X 0) μ := hℒp.integrable hp
   have havg (n : ℕ) :
       AEStronglyMeasurable (fun ω => (n : ℝ)⁻¹ • (∑ i ∈ range n, X i ω)) μ :=

@@ -6,7 +6,7 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Analysis.BoundedVariation
-public import Mathlib.Order.SuccPred.IntervalSucc
+import Mathlib.Order.SuccPred.IntervalSucc
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 
@@ -181,6 +181,24 @@ theorem mono (hf : AbsolutelyContinuousOnInterval f a b) (habcd : uIcc c d ⊆ u
   refine le_trans (Filter.map_mono ?_) hf
   gcongr; exact disjWithin_mono habcd
 
+theorem congr (hf : AbsolutelyContinuousOnInterval f a b)
+    (hfg : Set.EqOn f g (uIcc a b)) : AbsolutelyContinuousOnInterval g a b := by
+  apply hf.congr'
+  rw [eventuallyEq_inf_principal_iff]
+  filter_upwards with (n, I) hnI
+  exact Finset.sum_congr rfl fun i hi ↦ by rw [hfg (hnI.1 i hi).1, hfg (hnI.1 i hi).2]
+
+@[refl, simp]
+protected theorem refl (f : ℝ → X) (a : ℝ) : AbsolutelyContinuousOnInterval f a a := by
+  apply tendsto_nhds_of_eventually_eq
+  rw [eventually_inf_principal]
+  filter_upwards with (n, I) hnI
+  refine Finset.sum_eq_zero fun i hi ↦ ?_
+  obtain ⟨h₁, h₂⟩ := hnI.1 i hi
+  simp_all
+
+protected theorem rfl : AbsolutelyContinuousOnInterval f a a := .refl f a
+
 variable {f g : ℝ → F}
 
 @[to_fun]
@@ -229,7 +247,7 @@ theorem uniformContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     UniformContinuousOn f (uIcc a b) := by
   simp only [UniformContinuousOn, Filter.tendsto_iff_comap, uniformity_eq_comap_totalLengthFilter]
   simp only [AbsolutelyContinuousOnInterval, Filter.tendsto_iff_comap] at hf
-  convert! Filter.comap_mono hf
+  convert Filter.comap_mono hf
   · simp only [comap_inf, comap_principal]
     congr
     ext p
@@ -237,9 +255,6 @@ theorem uniformContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
       forall_eq, mem_ofPred_eq, mem_prod]
     simp
   · simp [totalLengthFilter, comap_comap, Function.comp_def]
-
-@[deprecated (since := "2026-02-03")] alias uniformlyContinuousOn :=
-  uniformContinuousOn
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is continuous on `uIcc a b`. -/
 theorem continuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
@@ -308,6 +323,29 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
     _ = ε := by field
 
+/-- If `f` is Lipschitz on a set containing `g '' uIcc a b` and `g` is absolutely continuous on
+`uIcc a b`, then `f ∘ g` is absolutely continuous on `uIcc a b`. -/
+theorem _root_.LipschitzOnWith.comp_absolutelyContinuousOnInterval
+    {Y : Type*} [PseudoMetricSpace Y] {f : X → Y} {K : ℝ≥0} {t : Set X}
+    (hf : LipschitzOnWith K f t) {g : ℝ → X} {a b : ℝ} (hg : MapsTo g (uIcc a b) t)
+    (h : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (f ∘ g) a b := by
+  apply squeeze_zero' ?_ ?_ (by simpa using Tendsto.const_mul (K : ℝ) h)
+  · exact .of_forall fun _ ↦ by positivity
+  rw [eventually_inf_principal]
+  filter_upwards with (n, I) hnI
+  rw [Finset.mul_sum]
+  exact Finset.sum_le_sum fun i hi ↦
+    hf.dist_le_mul _ (hg (hnI.left i hi).left) _ (hg (hnI.left i hi).right)
+
+/-- If `f` is Lipschitz and `g` is absolutely continuous on `uIcc a b`, then `f ∘ g` is absolutely
+continuous on `uIcc a b`. -/
+theorem _root_.LipschitzWith.comp_absolutelyContinuousOnInterval
+    {Y : Type*} [PseudoMetricSpace Y] {f : X → Y} {K : ℝ≥0} (hf : LipschitzWith K f)
+    {g : ℝ → X} {a b : ℝ} (h : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (f ∘ g) a b :=
+  hf.lipschitzOnWith.comp_absolutelyContinuousOnInterval (mapsTo_univ _ _) h
+
 /-- If `f` is `C^1` on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
 theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {f : ℝ → E} (hf : ContDiffOn ℝ 1 f (uIcc a b)) :
@@ -339,7 +377,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   set δ' := (b - a) / (n + 1)
   have hδ₃ : δ' < δ := by
     dsimp only [δ']
-    convert! mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field
+    convert mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field
   have h_mono : Monotone fun (i : ℕ) ↦ a + ↑i * δ' := by
     apply Monotone.const_add
     apply Monotone.mul_const Nat.mono_cast
@@ -369,7 +407,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
           convert! hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
           rw [uIoc_of_le (hp₁ (by lia)), Nat.succ_eq_succ]
       · suffices p.2.val p.1 - p.2.val 0 < δ by
-          convert! this
+          convert this
           rw [← Finset.sum_range_sub]
           congr; ext i
           rw [dist_comm, Real.dist_eq, abs_eq_self.mpr]
@@ -383,7 +421,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     have not_top : ∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i)) ≠ ⊤ := by
       simp [edist_ne_top]
     rw [← ENNReal.ofReal_toReal not_top]
-    convert! ENNReal.ofReal_le_ofReal (veq.symm ▸ vf.le)
+    convert ENNReal.ofReal_le_ofReal (veq.symm ▸ vf.le)
     simp
   -- Reduce to goal that the variation of `f` on each of these subintervals is finite.
   simp only [BoundedVariationOn, v_sum, ne_eq, ENNReal.sum_eq_top, Finset.mem_range, not_exists,
@@ -394,10 +432,10 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     fun hC ↦ by simp [hC] at this
   -- Verify that `[a + i * δ', a + (i + 1) * δ']` is indeed a subinterval of `[a, b]`
   apply v_each
-  · convert! h_mono (show 0 ≤ i by lia); simp
-  · convert! h_mono (show i ≤ i + 1 by lia); norm_cast
+  · convert h_mono (show 0 ≤ i by lia); simp
+  · convert h_mono (show i ≤ i + 1 by lia); norm_cast
   · rw [add_mul, ← add_assoc]; simpa
-  · convert! h_mono (show i + 1 ≤ n + 1 by lia)
+  · convert h_mono (show i + 1 ≤ n + 1 by lia)
     · norm_cast
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field
 

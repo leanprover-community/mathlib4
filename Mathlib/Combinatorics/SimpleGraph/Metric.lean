@@ -226,6 +226,9 @@ protected theorem Connected.exists_walk_length_eq_dist (hconn : G.Connected) (u 
 theorem dist_le (p : G.Walk u v) : G.dist u v ≤ p.length :=
   dist_eq_sInf ▸ Nat.sInf_le ⟨p, rfl⟩
 
+theorem natCast_dist_le_edist : G.dist u v ≤ G.edist u v :=
+  ENat.natCast_toNat_le_self _
+
 @[simp]
 theorem dist_eq_zero_iff_eq_or_not_reachable :
     G.dist u v = 0 ↔ u = v ∨ ¬G.Reachable u v := by simp [dist_eq_sInf, Nat.sInf_eq_zero, Reachable]
@@ -323,7 +326,7 @@ theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u
     p.IsPath := by
   classical
   have : p.bypass = p := by
-    apply bypass_eq_self_of_length_le_length_bypass
+    rw [← length_le_bypass_length_iff]
     calc p.length
       _ = G.dist u v := hp
       _ ≤ p.bypass.length := dist_le p.bypass

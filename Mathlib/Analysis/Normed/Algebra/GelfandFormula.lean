@@ -107,11 +107,11 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
   let p : FormalMultilinearSeries ℂ ℂ A := fun n =>
     ContinuousMultilinearMap.mkPiRing ℂ (Fin n) (a ^ n)
   suffices h : (r : ℝ≥0∞) ≤ p.radius by
-    convert! h
+    convert h
     simp only [p, p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiRing]
     congr
     ext n
-    rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), if_neg]
+    rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), ite_eq_right]
     exact fun ha => (lt_self_iff_false _).mp
       (ha.2.trans_le (one_div_nonneg.mpr n.cast_nonneg : 0 ≤ (1 / n : ℝ)))
   have H₁ := (differentiableOn_inverse_one_sub_smul r_lt).hasFPowerSeriesOnBall r_pos
@@ -133,7 +133,7 @@ instead of `nnnorm`. -/
 theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
     Tendsto (fun n : ℕ => ENNReal.ofReal (‖a ^ n‖ ^ (1 / n : ℝ))) atTop
       (𝓝 (spectralRadius ℂ a)) := by
-  convert! pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
+  convert pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
   ext1
   rw [← ofReal_rpow_of_nonneg (norm_nonneg _) _, ← coe_nnnorm, coe_nnreal_eq]
   simp

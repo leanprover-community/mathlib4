@@ -5,10 +5,8 @@ Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
@@ -146,10 +144,10 @@ lemma fermatLastTheoremFor_iff_nat {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
   Iff.rfl
 
 lemma fermatLastTheoremFor_iff_int {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℤ n :=
-  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 1
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 2
 
 lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℚ n :=
-  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 3
 
 /--
 A relaxed variant of Fermat's Last Theorem over a given commutative semiring with a specific
@@ -245,7 +243,7 @@ lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd : Finset.gcd 
     (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [pow_zero, Int.reduceAdd, OfNat.ofNat_ne_zero] at HF
-  refine isCoprime_of_prime_dvd ?_ <| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
+  refine isCoprime_of_prime_dvd ?_ (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
   · rintro ⟨rfl, rfl⟩
     simp only [ne_eq, hn, not_false_eq_true, zero_pow, add_zero, zero_add, pow_eq_zero_iff]
       at HF

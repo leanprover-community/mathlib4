@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Inversion in an affine space
@@ -28,7 +28,7 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 
 noncomputable section
 
-open Metric Function AffineMap Set AffineSubspace
+open Metric Function AffineMap Set
 open scoped Topology
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
@@ -56,7 +56,6 @@ sphere `Metric.sphere c R`. We also prove that the distance to the center of the
 this inversion is given by `R ^ 2 / dist x c`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inversion_eq_lineMap (c : P) (R : ℝ) (x : P) :
     inversion c R x = lineMap c x ((R / dist x c) ^ 2) :=
   rfl
@@ -193,7 +192,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
   rw [← div_le_div_iff_of_pos_right (mul_pos hb (mul_pos hc hd))]
-  convert! H using 1 <;> simp [field, dist_comm a]; ring
+  convert H using 1 <;> simp [field, dist_comm a]; ring
 
 end EuclideanGeometry
 

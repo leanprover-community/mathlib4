@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqu
 public import Mathlib.CategoryTheory.Limits.FintypeCat
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
-public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 public import Mathlib.CategoryTheory.Limits.Types.Equalizers
 public import Mathlib.CategoryTheory.SingleObj
 public import Mathlib.SetTheory.Cardinal.NatCard
@@ -191,17 +191,17 @@ variable {C : Type u₁} [Category.{u₂, u₁} C]
 
 /-- The canonical action of `Aut F` on the fiber of each object. -/
 instance (X : C) : MulAction (Aut F) (F.obj X) where
-  smul σ x := σ.hom.app X x
+  smul σ x := σ.asIso.hom.app X x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
 lemma mulAction_def {X : C} (σ : Aut F) (x : F.obj X) :
-    σ • x = σ.hom.app X x :=
+    σ • x = σ.asIso.hom.app X x :=
   rfl
 
 lemma mulAction_naturality {X Y : C} (σ : Aut F) (f : X ⟶ Y) (x : F.obj X) :
     σ • F.map f x = F.map f (σ • x) :=
-  NatTrans.naturality_apply σ.hom f x
+  NatTrans.naturality_apply σ.asIso.hom f x
 
 /-- An object that is neither initial or connected has a non-trivial subobject. -/
 lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)
@@ -313,24 +313,21 @@ lemma evaluation_injective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A
 
 /-- The evaluation map on automorphisms is injective for connected objects. -/
 lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj A) :
-    Function.Injective (fun f : Aut A ↦ F.map (f.hom) a) := by
-  change Function.Injective ((fun f : A ⟶ A ↦ F.map f a) ∘ (fun f : Aut A ↦ f.hom))
-  apply Function.Injective.comp
-  · exact evaluation_injective_of_isConnected F A A a
-  · exact @Aut.ext _ _ A
+    Function.Injective (fun f : Aut A ↦ F.map (f.asIso.hom) a) :=
+  (evaluation_injective_of_isConnected F A A a).comp (by cat_disch)
 
 /-- A morphism from an object `X` with non-empty fiber to a connected object `A` is an
 epimorphism. -/
 lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
     (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
   apply evaluation_injective_of_isConnected F A Z (F.map f (Classical.arbitrary _))
-  simpa using ConcreteCategory.congr_hom (F.congr_map huv) _
+  simpa using congr($(F.congr_map huv) _)
 
 /-- An epimorphism induces a surjective map on fibers. -/
 lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=
   surjective_of_epi (FintypeCat.incl.map (F.map f))
 
-/- A morphism from an object with non-empty fiber to a connected object is surjective on fibers. -/
+/-- A morphism from an object with non-empty fiber to a connected object is surjective on fibers. -/
 lemma surjective_of_nonempty_fiber_of_isConnected {X A : C} [Nonempty (F.obj X)]
     [IsConnected A] (f : X ⟶ A) :
     Function.Surjective (F.map f) := by
@@ -411,39 +408,44 @@ end PreGaloisCategory
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fiber functor. -/
 class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop
     extends PreGaloisCategory C where
-  hasFiberFunctor : ∃ F : C ⥤ FintypeCat.{u₂}, Nonempty (PreGaloisCategory.FiberFunctor F)
+  hasFiberFunctor (C) : ∃ F : C ⥤ FintypeCat.{u₂}, PreGaloisCategory.FiberFunctor F
+
+/-- Arbitrarily choose a fiber functor for a Galois category using choice. -/
+noncomputable def GaloisCategory.getFiberFunctor
+    (C : Type u₁) [Category.{u₂, u₁} C] [GaloisCategory C] : C ⥤ FintypeCat.{u₂} :=
+  Classical.choose <| hasFiberFunctor C
+
+open GaloisCategory
+
+@[deprecated (since := "2026-08-10")]
+alias PreGaloisCategory.GaloisCategory.getFiberFunctor := getFiberFunctor
 
 namespace PreGaloisCategory
 
 variable (C : Type u₁) [Category.{u₂, u₁} C] [GaloisCategory C]
 
-/-- Arbitrarily choose a fiber functor for a Galois category using choice. -/
-noncomputable def GaloisCategory.getFiberFunctor : C ⥤ FintypeCat.{u₂} :=
-  Classical.choose <| @GaloisCategory.hasFiberFunctor C _ _
-
 /-- The arbitrarily chosen fiber functor `GaloisCategory.getFiberFunctor` is a fiber functor. -/
-noncomputable instance : FiberFunctor (GaloisCategory.getFiberFunctor C) :=
-  Classical.choice <| Classical.choose_spec (@GaloisCategory.hasFiberFunctor C _ _)
+noncomputable instance : FiberFunctor (getFiberFunctor C) :=
+  Classical.choose_spec (hasFiberFunctor C)
 
 variable {C}
 
 /-- In a `GaloisCategory` the set of morphisms out of a connected object is finite. -/
 instance (A X : C) [IsConnected A] : Finite (A ⟶ X) := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f a)
   exact evaluation_injective_of_isConnected F A X a
 
 /-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
 instance (A : C) [IsConnected A] : Finite (Aut A) := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
-  apply Finite.of_injective (fun f ↦ F.map f.hom a)
-  exact evaluation_aut_injective_of_isConnected F A a
+  exact Finite.of_injective _ (evaluation_aut_injective_of_isConnected F A a)
 
 /-- Coproduct inclusions are monic in Galois categories. -/
 instance : MonoCoprod C := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   exact MonoCoprod.monoCoprod_of_preservesCoprod_of_reflectsMono F
 
 end PreGaloisCategory
