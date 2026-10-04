@@ -29,7 +29,7 @@ In this file, we define the global dimension of ring and proved some of its basi
   finitely generated modules over `R` has projective dimension not exceeding `n` iff for all
   `Ext N M (n + 1)` vanish.
 
-* `globalDimension_eq_sup_projectiveDimension_finite` : The (left) global dimension is equal to
+* `globalDimension_eq_sup_projectiveDimension_finite` : The (left) Global dimension is equal to
   the supremum of projective dimension over finitely generated modules.
 
 -/
@@ -158,6 +158,8 @@ lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
       map_smul' r m := map_smul (Shrink.linearEquiv R' M) (e r) _ }
     rw [← ModuleCat.projectiveDimension_eq_of_semiLinearEquiv e e']
     exact le_iSup _ _
+
+variable (R : Type u) [CommRing R]
 
 variable {R} in
 lemma globalDimension_localization_le [Small.{v} R] (S : Submonoid R) :
