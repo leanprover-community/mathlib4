@@ -300,16 +300,6 @@ lemma Limits.exists_eq_of_preservesColimit_coyoneda_self [IsFiltered J] {c : Coc
   (Types.FilteredColimit.isColimit_eq_iff'
     (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f g).mp h
 
-lemma Limits.exists_eq_of_preservesColimit_coyoneda_self_of_hasCardinalLT
-    [IsCardinalFiltered J κ] {c : Cocone D}
-    (hc : IsColimit c) {ι : Type*} (hi : HasCardinalLT ι κ)
-    {X : C} [PreservesColimit D (coyoneda.obj (.op X))]
-    {i : J} (f : ι → (X ⟶ D.obj i))
-    (h : ∀ (i₀ i₁ : ι), f i₀ ≫ c.ι.app i = f i₁ ≫ c.ι.app i) :
-    ∃ (j : J) (a : i ⟶ j), ∀ (i₀ i₁ : ι), f i₀ ≫ D.map a = f i₁ ≫ D.map a :=
-  (Types.FilteredColimit.isColimit_eq_iff'
-    (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f g).mp h
-
 lemma Limits.exists_hom_of_preservesColimit_yoneda {c : Cone D} (hc : IsLimit c) {X : C}
     [PreservesColimit D.op (yoneda.obj X)] (f : c.pt ⟶ X) :
     ∃ (j : J) (p : D.obj j ⟶ X), c.π.app j ≫ p = f := by
@@ -388,16 +378,6 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   have := isFiltered_of_isCardinalFiltered J κ
   exact exists_eq_of_preservesColimit_coyoneda_self hc f₁ f₂ hf
-
-lemma IsCardinalPresentable.exists_eq_of_isColimit'_of_hasCardinalLT [IsCardinalPresentable X κ]
-    [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
-    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i : J}
-    {ι : Type*} (hi : HasCardinalLT ι κ) (f : ι → (X ⟶ F.obj i))
-    (hf : ∀ (i₁ i₂ : ι), f i₁ ≫ c.ι.app i = f i₂ ≫ c.ι.app i) :
-    ∃ (j : J) (u : i ⟶ j), ∀ (i₁ i₂ : ι), f i₁ ≫ F.map u = f i₂ ≫ F.map u := by
-  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
-  have := isFiltered_of_isCardinalFiltered J κ
-  exact exists_eq_of_preservesColimit_coyoneda_self_of_hasCardinalLT hc f₁ f₂ hf
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a commutative square where both objects on the top are `κ`-presentable
