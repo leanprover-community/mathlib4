@@ -62,7 +62,7 @@ lemma congr_apply {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) {Y}
 @[ext]
 theorem ext {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x y : Meq P S) (h : ∀ I : S.Arrow, x I = y I) :
     x = y :=
-  Subtype.ext <| funext <| h
+  Subtype.ext <| funext h
 
 theorem condition {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (I : S.Relation) :
     P.map I.r.g₁.op (x (S.shape.fst I)) = P.map I.r.g₂.op (x (S.shape.snd I)) :=
@@ -592,7 +592,7 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
     { homEquiv := fun P Q =>
         { toFun := fun e => J.toSheafify P ≫ e.hom
           invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
-          left_inv := fun _ => Sheaf.hom_ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
+          left_inv := fun _ => Sheaf.hom_ext (J.sheafifyLift_unique _ _ _ rfl).symm
           right_inv := fun _ => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm
