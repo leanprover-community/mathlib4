@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.RatFunc.Defs
 public import Mathlib.RingTheory.Algebraic.Integral
 
@@ -234,10 +234,8 @@ def toFractionRingRingEquiv : K⟮X⟯ ≃+* FractionRing K[X] where
 
 end Field
 
-section TacticInterlude
-
 /-- Solve equations for `K⟮X⟯` by working in `FractionRing K[X]`. -/
-macro "frac_tac" : tactic => `(tactic|
+local macro "frac_tac" : tactic => `(tactic|
   · repeat (rintro (⟨⟩ : _⟮X⟯))
     try simp only [← ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_sub,
       ← ofFractionRing_neg, ← ofFractionRing_one, ← ofFractionRing_mul, ← ofFractionRing_div,
@@ -247,7 +245,7 @@ macro "frac_tac" : tactic => `(tactic|
       add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_neg_cancel])
 
 /-- Solve equations for `K⟮X⟯` by applying `RatFunc.induction_on`. -/
-macro "smul_tac" : tactic => `(tactic|
+local macro "smul_tac" : tactic => `(tactic|
     repeat
       (first
         | rintro (⟨⟩ : _⟮X⟯)
@@ -259,8 +257,6 @@ macro "smul_tac" : tactic => `(tactic|
       Int.cast_negSucc, Int.cast_natCast, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
       ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])
-
-end TacticInterlude
 
 section CommRing
 
@@ -326,7 +322,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       simp only [Submonoid.mem_comap.mp (hφ hq), Submonoid.mem_comap.mp (hφ hq'),
         dite_eq_left, ofFractionRing.injEq, Localization.mk_eq_mk_iff]
       refine Localization.r_of_eq ?_
-      simpa only [map_mul] using congr_arg φ h
+      simpa only [map_mul] using congr(φ $h)
   map_one' := by
     simp_rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk,
       OneMemClass.coe_one, map_one, OneMemClass.one_mem, dite_true, ofFractionRing.injEq,
@@ -446,8 +442,7 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯
       obtain ⟨p, q⟩ := pq
       obtain ⟨p', q'⟩ := p'q'
       rw [← ofFractionRing_add, Localization.add_mk]
-      simp only [RingHom.toMonoidWithZeroHom_eq_coe,
-        liftMonoidWithZeroHom_apply_ofFractionRing_mk]
+      simp only [RingHom.coe_toMonoidWithZeroHom, liftMonoidWithZeroHom_apply_ofFractionRing_mk]
       rw [div_add_div, div_eq_div_iff]
       · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
         simp only [map_add, map_mul, Submonoid.coe_mul]
@@ -900,7 +895,7 @@ private theorem num_div' (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
   rw [num, numDenom_div _ hq]
 
 @[simp]
-theorem num_zero : num (0 : K⟮X⟯) = 0 := by convert! num_div' (0 : K[X]) one_ne_zero <;> simp
+theorem num_zero : num (0 : K⟮X⟯) = 0 := by convert num_div' (0 : K[X]) one_ne_zero <;> simp
 
 open scoped Classical in
 @[simp]
@@ -912,10 +907,10 @@ theorem num_div (p q : K[X]) :
   · exact num_div' p hq
 
 @[simp]
-theorem num_one : num (1 : K⟮X⟯) = 1 := by convert! num_div (1 : K[X]) 1 <;> simp
+theorem num_one : num (1 : K⟮X⟯) = 1 := by convert num_div (1 : K[X]) 1 <;> simp
 
 @[simp]
-theorem num_algebraMap (p : K[X]) : num (algebraMap _ _ p) = p := by convert! num_div p 1 <;> simp
+theorem num_algebraMap (p : K[X]) : num (algebraMap _ _ p) = p := by convert num_div p 1 <;> simp
 
 theorem num_div_dvd (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     num (algebraMap _ _ p / algebraMap _ _ q) ∣ p := by
@@ -954,15 +949,15 @@ theorem denom_ne_zero (x : K⟮X⟯) : denom x ≠ 0 :=
 
 @[simp]
 theorem denom_zero : denom (0 : K⟮X⟯) = 1 := by
-  convert! denom_div (0 : K[X]) one_ne_zero <;> simp
+  convert denom_div (0 : K[X]) one_ne_zero <;> simp
 
 @[simp]
 theorem denom_one : denom (1 : K⟮X⟯) = 1 := by
-  convert! denom_div (1 : K[X]) one_ne_zero <;> simp
+  convert denom_div (1 : K[X]) one_ne_zero <;> simp
 
 @[simp]
 theorem denom_algebraMap (p : K[X]) : denom (algebraMap _ K⟮X⟯ p) = 1 := by
-  convert! denom_div p one_ne_zero <;> simp
+  convert denom_div p one_ne_zero <;> simp
 
 @[simp]
 theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q) ∣ q := by
@@ -1086,12 +1081,12 @@ theorem denom_inv_dvd {x : K⟮X⟯} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := 
 
 theorem associated_num_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
   apply associated_of_dvd_dvd (num_inv_dvd hx)
-  convert! denom_inv_dvd (inv_ne_zero hx)
+  convert denom_inv_dvd (inv_ne_zero hx)
   rw [inv_inv]
 
 theorem associated_denom_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (denom x⁻¹) (num x) := by
   apply Associated.symm
-  convert! associated_num_inv (inv_ne_zero hx)
+  convert associated_num_inv (inv_ne_zero hx)
   rw [inv_inv]
 
 theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClass F K[X] L]

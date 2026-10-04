@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
-public import Mathlib.Analysis.Calculus.FDeriv.Prod
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.Monotone
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 
 /-!
@@ -179,6 +180,22 @@ theorem memLp [IsFiniteMeasure μ] {p : ℝ≥0∞} (hf : BoundedVariationOn f u
 
 theorem integrable [IsFiniteMeasure μ] (hf : BoundedVariationOn f univ) : Integrable f μ :=
   memLp_one_iff_integrable.1 hf.memLp
+
+theorem intervalIntegrable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+    {s : Set ℝ} (hf : BoundedVariationOn f s) (hs : uIcc a b ⊆ s) : IntervalIntegrable f μ a b := by
+  replace hf : BoundedVariationOn f (uIcc a b) := hf.mono hs
+  let φ : ℝ → ℝ := fun x ↦ (a ⊓ b) ⊔ ((a ⊔ b) ⊓ x)
+  have hφ : Monotone φ := fun _ _ h ↦ sup_le_sup_left (inf_le_inf_left _ h) _
+  have hmaps : MapsTo φ univ (uIcc a b) := fun _ _ ↦
+    ⟨le_sup_left, sup_le inf_le_sup inf_le_left⟩
+  have heq : EqOn (f ∘ φ) f (uIcc a b) := fun x hx ↦ by
+    simp only [Function.comp_apply, φ, inf_eq_right.2 hx.2, sup_eq_right.2 hx.1]
+  have hg : BoundedVariationOn (f ∘ φ) univ :=
+    ne_top_of_le_ne_top hf (eVariationOn.comp_le_of_monotoneOn f φ (hφ.monotoneOn univ) hmaps)
+  have : IsFiniteMeasure (μ.restrict (uIcc a b)) :=
+    isFiniteMeasure_restrict.2 isCompact_uIcc.measure_lt_top.ne
+  have hint : IntegrableOn (f ∘ φ) (uIcc a b) μ := hg.integrable
+  exact (hint.congr_fun heq measurableSet_uIcc).intervalIntegrable
 
 end BoundedVariationOn
 

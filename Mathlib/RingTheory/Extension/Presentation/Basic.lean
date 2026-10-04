@@ -5,12 +5,10 @@ Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.RingTheory.MvPolynomial.Localization
-public import Mathlib.RingTheory.TensorProduct.MvPolynomial
-public import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 
@@ -29,6 +27,8 @@ A presentation of an `R`-algebra `S` is a distinguished family of generators and
   are finite.
 - `Algebra.Presentation.dimension`: The dimension of a presentation is the number of generators
   minus the number of relations.
+- `Algebra.Presentation.mvPolynomial`: The canonical `R`-presentation of the polynomial algebra
+  `MvPolynomial ι R`, with generators the variables `X i` for `i : ι` and no relations.
 
 We also give constructors for localization, base change and composition.
 
@@ -133,7 +133,7 @@ lemma exists_presentation_fin [FinitePresentation R S] :
   let v : Fin m → MvPolynomial (Fin n) R := H'.choose_spec.choose
   have hv : Ideal.span (Set.range v) = RingHom.ker f := H'.choose_spec.choose_spec
   ⟨n, m,
-    ⟨{__ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert! hf; ext; simp)
+    ⟨{__ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert hf; ext; simp)
       relation := v
       span_range_relation_eq_ker := hv.trans (by congr; ext; simp) }⟩⟩
 
@@ -197,6 +197,20 @@ noncomputable def id : Presentation R R PEmpty.{w + 1} PEmpty.{t + 1} :=
 
 lemma id_dimension : (Presentation.id R).dimension = 0 :=
   ofBijectiveAlgebraMap_dimension (R := R) Function.bijective_id
+
+variable (R ι) in
+/-- The canonical `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
+@[simps -fullyApplied relation]
+noncomputable def mvPolynomial : Presentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  relation := PEmpty.elim
+  span_range_relation_eq_ker := by
+    simpa only [Generators.ker_mvPolynomial, Set.range_eq_empty] using Ideal.span_empty
+  __ := Generators.mvPolynomial R ι
+
+@[simp]
+lemma dimension_mvPolynomial : (mvPolynomial R ι).dimension = Nat.card ι := by
+  simp [dimension]
 
 section Localization
 
@@ -358,7 +372,6 @@ noncomputable def compRelationAux (r : σ') : MvPolynomial (ι' ⊕ ι) R :=
 private lemma aux_X (i : ι' ⊕ ι) : (Q.aux P) (X i) = Sum.elim X (C ∘ P.val) i :=
   aeval_X (Sum.elim X (C ∘ P.val)) i
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The pre-images constructed in `compRelationAux` are indeed pre-images under `aux`. -/
 private lemma compRelationAux_map (r : σ') :
     (Q.aux P) (Q.compRelationAux P r) = Q.relation r := by
@@ -369,8 +382,10 @@ private lemma compRelationAux_map (r : σ') :
   rw [AddMonoidAlgebra.ofCoeff_finsuppSum]
   congr
   ext u s m
-  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom, map_one, one_mul, AddMonoidAlgebra.ofCoeff_single,
-    single_eq_monomial]
+  simp only [aeval, map_one, one_mul]
+  change (eval₂ (algebraMap R (MvPolynomial ι' S)) (C ∘ P.val) (P.σ s) *
+      (Finsupp.mapDomain Sum.inl u).prod fun i k ↦ Sum.elim X (C ∘ P.val) i ^ k).coeff m =
+        (monomial u s).coeff m
   rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def]
   simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
 

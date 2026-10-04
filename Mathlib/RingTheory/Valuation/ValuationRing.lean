@@ -257,6 +257,11 @@ theorem coe_equivInteger_apply (a : A) : (equivInteger A K a : K) = algebraMap A
 theorem range_algebraMap_eq : (valuation A K).integer = (algebraMap A K).range := by
   ext; exact mem_integer_iff _ _ _
 
+theorem integers : (valuation A K).Integers A where
+  hom_inj := IsFractionRing.injective A K
+  map_le_one a := (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩
+  exists_of_le_one _ h := (mem_integer_iff _ _ _).mp h
+
 end
 
 section
@@ -394,7 +399,7 @@ instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
   rcases eq_or_ne g 0 with h | h
   · simp [h]
   have : x * a + y * b = 1 := by
-    apply mul_left_injective₀ h; convert! e' using 1 <;> ring
+    apply mul_left_injective₀ h; convert e' using 1 <;> ring
   rcases IsLocalRing.isUnit_or_isUnit_of_add_one this with h' | h' <;> [left; right]
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
 
@@ -420,7 +425,7 @@ theorem _root_.Function.Surjective.preValuationRing {R S : Type*} [Mul R] [PreVa
   ⟨fun a b => by
     obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := hf a, hf b
     obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b
-    exacts [⟨f c, Or.inl <| (map_mul _ _ _).symm⟩, ⟨f c, Or.inr <| (map_mul _ _ _).symm⟩]⟩
+    exacts [⟨f c, Or.inl (map_mul _ _ _).symm⟩, ⟨f c, Or.inr (map_mul _ _ _).symm⟩]⟩
 
 theorem _root_.Function.Surjective.valuationRing {R S : Type*} [NonAssocSemiring R]
     [PreValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
