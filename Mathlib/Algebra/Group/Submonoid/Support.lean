@@ -77,14 +77,11 @@ theorem eq_one_of_mem_of_inv_mem (hM : M.IsMulPointed)
 alias eq_one_of_mem_of_inv_mem₂ := eq_one_of_mem_of_inv_mem
 
 @[to_additive]
-theorem _root_.isMulPointed_iff_mulSupport_eq_bot : M.IsMulPointed ↔ M.mulSupport = ⊥ where
-  mp _ := by ext; grind [IsMulPointed, one_mem, mem_mulSupport, Subgroup.mem_bot]
-  mpr h := fun x ↦ by
-    apply_fun (x ∈ ·) at h
-    grind [IsMulPointed, one_mem, mem_mulSupport, Subgroup.mem_bot]
+theorem _root_.isMulPointed_iff_mulSupport_eq_bot : M.IsMulPointed ↔ M.mulSupport = ⊥ := by
+  simp_rw [Subgroup.ext_iff, IsMulPointed, mem_mulSupport]
+  grind [one_mem, inv_one, Subgroup.mem_bot]
 
-@[to_additive (attr := simp)]
-alias ⟨mulSupport_eq_bot, _⟩ := isMulPointed_iff_mulSupport_eq_bot
+@[to_additive (attr := simp)] alias ⟨mulSupport_eq_bot, _⟩ := isMulPointed_iff_mulSupport_eq_bot
 
 @[to_additive] alias ⟨_, of_mulSupport_eq_bot⟩ := isMulPointed_iff_mulSupport_eq_bot
 
@@ -104,8 +101,7 @@ variable {M}
 theorem mk (h : ∀ a : G, a ∈ M ∨ a⁻¹ ∈ M) : M.IsMulSpanning := h
 
 @[to_additive]
-theorem mem_or_inv_mem (hM : M.IsMulSpanning) (a : G) : a ∈ M ∨ a⁻¹ ∈ M := by
-  simp_all [IsMulSpanning]
+theorem mem_or_inv_mem (hM : M.IsMulSpanning) (a : G) : a ∈ M ∨ a⁻¹ ∈ M := hM a
 
 @[to_additive]
 theorem of_le {N : Submonoid G} (hM : M.IsMulSpanning) (h : M ≤ N) : N.IsMulSpanning := by
@@ -113,8 +109,8 @@ theorem of_le {N : Submonoid G} (hM : M.IsMulSpanning) (h : M ≤ N) : N.IsMulSp
 
 @[to_additive]
 theorem maximal_isMulPointed (hMp : M.IsMulPointed) (hMs : M.IsMulSpanning) :
-    Maximal IsMulPointed M :=
-  by grind [Maximal, IsConcreteLE.le_iff, IsMulPointed, IsMulSpanning, one_mem, inv_one]
+    Maximal IsMulPointed M := by
+  grind [Maximal, IsConcreteLE.le_iff, IsMulPointed, IsMulSpanning, one_mem, inv_one]
 
 end IsMulSpanning
 
@@ -130,8 +126,8 @@ theorem mulSupport_top : (⊤ : Submonoid G).mulSupport = ⊤ := by ext; simp
 
 variable {M N} in
 @[to_additive]
-theorem mulSupport_mono (h : M ≤ N) : M.mulSupport ≤ N.mulSupport := by
-  grind [mem_mulSupport, IsConcreteLE.le_iff]
+theorem mulSupport_mono (h : M ≤ N) : M.mulSupport ≤ N.mulSupport :=
+  Subgroup.gc_toSubmonoid_mulSupport.monotone_u h
 
 @[to_additive (attr := simp)]
 theorem mulSupport_inf : (M ⊓ N).mulSupport = M.mulSupport ⊓ N.mulSupport := by
