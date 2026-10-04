@@ -64,14 +64,13 @@ lemma tvdist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : Measur
     rwa [← isFiniteMeasure_withDensity_iff]
   have h_hahn : IsHahnDecomposition (μ.withDensity f) μ {x | f x ≤ 1} :=
     isHahnDecomposition_withDensity_le_one hf
-  rw [h_hahn.tvdist_eq]
-  unfold Measure.real
-  rw [withDensity_apply _ (measurableSet_le hf measurable_const),
-    withDensity_apply _ (measurableSet_le hf measurable_const).compl]
-  rw [← integral_toReal (by fun_prop), ← integral_toReal (by fun_prop)]
+  rw [h_hahn.tvdist_eq,
+    withDensity_real_apply_eq_integral (by fun_prop) ?_ (measurableSet_le hf measurable_const),
+    withDensity_real_apply_eq_integral (by fun_prop) ?_
+      (measurableSet_le hf measurable_const).compl]
   rotate_left
-  · exact ae_restrict_of_ae <| by filter_upwards [hf_top] with x hx using hx.lt_top
-  · exact ae_restrict_of_ae <| by filter_upwards [hf_top] with x hx using hx.lt_top
+  · filter_upwards [hf_top] with x hx _ using hx.lt_top
+  · filter_upwards [hf_top] with x hx _ using hx.lt_top
   have hf_int : Integrable (fun x ↦ (f x).toReal) μ := by
     rw [integrable_toReal_iff (by fun_prop) hf_top, ← setLIntegral_univ,
       ← withDensity_apply _ .univ]
@@ -82,7 +81,7 @@ lemma tvdist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : Measur
   have h2 : ∫ x in {x | f x ≤ 1}ᶜ, (f x).toReal ∂μ - μ.real {x | f x ≤ 1}ᶜ =
       ∫ x in {x | f x ≤ 1}ᶜ, (f x).toReal - 1 ∂μ := by
     rw [← setIntegral_one_eq_measureReal, ← integral_sub hf_int.integrableOn (by simp)]
-  rw [← Measure.real, ← Measure.real, h1, h2]
+  rw [h1, h2]
   calc ∫ x in {x | f x ≤ 1}, 1 - (f x).toReal ∂μ + ∫ x in {x | f x ≤ 1}ᶜ, (f x).toReal - 1 ∂μ
   _ = ∫ x in {x | f x ≤ 1}, |1 - (f x).toReal| ∂μ +
       ∫ x in {x | f x ≤ 1}ᶜ,|1 - (f x).toReal| ∂μ := by

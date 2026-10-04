@@ -45,6 +45,10 @@ theorem withDensity_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableS
     μ.withDensity f s = ∫⁻ a in s, f a ∂μ :=
   Measure.ofMeasurable_apply s hs
 
+lemma withDensity_real_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+    (μ.withDensity f).real s = (∫⁻ a in s, f a ∂μ).toReal := by
+  rw [Measure.real, withDensity_apply f hs]
+
 theorem withDensity_apply_le (f : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ a in s, f a ∂μ ≤ μ.withDensity f s := by
   let t := toMeasurable (μ.withDensity f) s
