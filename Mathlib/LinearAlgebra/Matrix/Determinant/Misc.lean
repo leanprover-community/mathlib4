@@ -45,7 +45,7 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
       simp_rw [neg_one_smul, updateRow_apply, Finset.sum_neg_distrib, Pi.neg_apply,
         Finset.sum_apply, submatrix_apply, id_eq]
       split_ifs with h
-      · replace hv := congr_fun hv b
+      · replace hv := congr($hv b)
         rw [Fin.sum_univ_succAbove _ i.succ, Pi.add_apply, Finset.sum_apply] at hv
         rwa [h, Fin.succAbove_castSucc_self, neg_eq_iff_add_eq_zero, add_comm]
       · obtain h | h := ne_iff_lt_or_gt.mp h

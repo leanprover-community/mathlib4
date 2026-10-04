@@ -6,7 +6,7 @@ Authors: Seewoo Lee
 module
 
 public import Mathlib.NumberTheory.ModularForms.Derivative
-public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
+import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 
 /-!
 # Ramanujan's formulas for derivatives of Eisenstein series
