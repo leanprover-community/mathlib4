@@ -189,7 +189,7 @@ namespace Equiv.Perm
 
 /-- For a cycle `f` on a finset `s` of cardinality not equal to `2` and `a ∈ s`, the map
 `k ↦ s((f ^ k) a, (f ^ (k + 1)) a)` is injective on `[0, s.card)`. -/
-theorem IsCycleOn.injOn_sym2_pow_apply {f : Perm α} {a : α} {s : Finset α}
+theorem IsCycleOn.injOn_sym2Mk_pow_apply {f : Perm α} {a : α} {s : Finset α}
     (hf : f.IsCycleOn s) (ha : a ∈ s) (hs : s.card ≠ 2) :
     Set.InjOn (fun k ↦ s((f ^ k) a, (f ^ (k + 1)) a)) (Set.Iio s.card) := by
   intro j hj k hk heq
