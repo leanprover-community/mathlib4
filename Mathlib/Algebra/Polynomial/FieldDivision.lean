@@ -5,13 +5,15 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Group.Finset
 
 /-!
 # Theory of univariate polynomials
@@ -538,6 +540,9 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
     rw [← mem_roots (by simp [← zero_le_degree_iff, h])]
     simp [roots_degree_eq_one h]⟩
 
+theorem exists_root_of_natDegree_eq_one (h : natDegree p = 1) : ∃ x, IsRoot p x :=
+  exists_root_of_degree_eq_one (degree_eq_iff_natDegree_eq_of_neZero.mpr h)
+
 theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
   rw [eq_C_of_degree_eq_zero (degree_coe_units u), eq_C_of_degree_eq_zero (degree_coe_units u⁻¹),
     coeff_C, coeff_C, inv_eq_one_div]
@@ -694,7 +699,10 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
 
-open UniqueFactorizationMonoid in
+section normalizedFactors
+
+open UniqueFactorizationMonoid
+
 /--
 The normalized factors of a polynomial over a field times its leading coefficient give
 the polynomial.
@@ -707,12 +715,56 @@ theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
     mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
   simp_all
 
-open UniqueFactorizationMonoid in
 protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
     p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
   by_cases hp : p = 0
   · simpa [hp] using zero_notMem_normalizedFactors _
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
+
+theorem natDegree_eq_sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
+    ((normalizedFactors a).map natDegree).sum = a.natDegree := by
+  by_cases h0: a = 0
+  · simp [h0]
+  nth_rw 2 [← leadingCoeff_mul_prod_normalizedFactors a]
+  rw [natDegree_C_mul (by simp [h0]),
+      natDegree_multiset_prod _ (zero_notMem_normalizedFactors a)]
+
+/-- A polynomial over a field which is not a unit must have a monic irreducible factor.
+See also `WfDvdMonoid.exists_irreducible_factor`. -/
+theorem exists_monic_irreducible_factor (p : R[X]) (hu : ¬IsUnit p) :
+    ∃ q : R[X], q.Monic ∧ Irreducible q ∧ q ∣ p := by
+  classical
+  by_cases h0 : p = 0
+  · exact ⟨X, monic_X, irreducible_X, h0 ▸ dvd_zero X⟩
+  rcases exists_mem_normalizedFactors h0 hu with ⟨q, hq⟩
+  grind [Polynomial.mem_normalizedFactors_iff]
+
+theorem exists_odd_natDegree_monic_irreducible_factor (p : R[X]) (hp : Odd p.natDegree) :
+    ∃ q : R[X], Odd q.natDegree ∧ q.Monic ∧ Irreducible q ∧ q ∣ p := by
+  classical
+  suffices ∃ q ∈ normalizedFactors p, Odd q.natDegree by
+    grind [Polynomial.mem_normalizedFactors_iff, show p ≠ 0 by grind]
+  contrapose! hp
+  rw [← p.natDegree_eq_sum_natDegree_normalizedFactors, Multiset.sum_map_eq_sum_toEnumFinset]
+  simpa using Finset.even_sum _ fun _ hq ↦ by
+    simpa using hp _ (Multiset.mem_of_mem_toEnumFinset hq)
+
+theorem exists_root_of_odd_natDegree_imp_not_irreducible
+    (h : ∀ {q : R[X]}, Odd q.natDegree → q.natDegree ≠ 1 → ¬ Irreducible q)
+    (p : R[X]) (hp : Odd p.natDegree) : ∃ x, p.IsRoot x := by
+  rcases p.exists_odd_natDegree_monic_irreducible_factor hp with ⟨q, ho, hm, hi, hd⟩
+  rcases q.exists_root_of_natDegree_eq_one (by grind) with ⟨x, hx⟩
+  exact ⟨x, hx.dvd hd⟩
+
+theorem exists_root_of_monic_odd_natDegree_imp_not_irreducible
+    (h : ∀ {g : R[X]}, g.Monic → Odd g.natDegree → g.natDegree ≠ 1 → ¬ Irreducible g)
+    (p : R[X]) (hp : Odd p.natDegree) : ∃ x, p.IsRoot x := by
+  classical
+  refine exists_root_of_odd_natDegree_imp_not_irreducible (fun {f} hf₁ hf₂ hf₃ ↦ ?_) _ hp
+  exact h (monic_normalize hf₃.ne_zero)
+    (by simpa using hf₁) (by simpa using hf₂) (by simpa using hf₃)
+
+end normalizedFactors
 
 variable (p) in
 @[simp]
@@ -743,35 +795,6 @@ theorem mul_mod_mul_left {p₁ p₂ q : R[X]} : (q * p₁) % (q * p₂) = q * (p
       mod_eq_of_dvd_sub ⟨p₁ / p₂, by rw [← mul_sub, EuclideanDomain.mod_eq_sub_mul_div]; ring⟩
     rw [h1, mod_eq_self_iff (mul_ne_zero hq hp₂), degree_mul, degree_mul]
     exact WithBot.add_lt_add_left (degree_ne_bot.mpr hq) (degree_mod_lt p₁ hp₂)
-
-theorem exists_root_of_odd_natDegree_imp_not_irreducible
-    (h : ∀ {q : R[X]}, Odd q.natDegree → q.natDegree ≠ 1 → ¬ Irreducible q)
-    (hf : Odd p.natDegree) : ∃ x, p.IsRoot x := by
-  induction hdeg : p.natDegree using Nat.strong_induction_on generalizing p with | h n ih =>
-    subst hdeg
-    by_cases hdeg1 : p.natDegree = 1
-    · exact exists_root_of_degree_eq_one <| by
-        simpa [← degree_eq_iff_natDegree_eq_of_neZero] using hdeg1
-    · rcases irreducible_or_factor (not_isUnit_of_natDegree_pos p (by grind)) with
-          _ | ⟨a, b, ha, hb, rfl⟩
-      · grind
-      have hsum : (a * b).natDegree = a.natDegree + b.natDegree :=
-        natDegree_mul (by grind) (by grind)
-      wlog h : Odd a.natDegree generalizing a b
-      · rw [mul_comm, add_comm] at *
-        apply this b a <;> grind
-      · have : b.natDegree ≠ 0 := fun _ ↦ by
-          simp_all [isUnit_iff_degree_eq_zero, degree_eq_natDegree (show b ≠ 0 by grind)]
-        rcases ih a.natDegree (by lia) h rfl with ⟨r, hr⟩
-        exact ⟨r, hr.dvd (by simp)⟩
-
-theorem exists_root_of_monic_odd_natDegree_imp_not_irreducible
-    (h : ∀ {g : R[X]}, g.Monic → Odd g.natDegree → g.natDegree ≠ 1 → ¬ Irreducible g)
-    {f : R[X]} (hf : Odd f.natDegree) : ∃ x, f.IsRoot x := by
-  classical
-  refine exists_root_of_odd_natDegree_imp_not_irreducible (fun {f} hf₁ hf₂ hf₃ ↦ ?_) hf
-  exact h (monic_normalize hf₃.ne_zero)
-    (by simpa using hf₁) (by simpa using hf₂) (by simpa using hf₃)
 
 end Field
 
