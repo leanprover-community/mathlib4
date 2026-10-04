@@ -5,7 +5,9 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Square
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RegularLocalRing.Defs
@@ -92,8 +94,10 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
       this.comp _ (Set.inclusion_injective h)
   tfae_have 2 → 3 := by
     intro li
-    let _ : IsLocalRing (R ⧸ Ideal.span (S : Set R)) :=
+    have : IsLocalRing (R ⧸ Ideal.span (S : Set R)) :=
       IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
+    have : IsNoetherianRing (R ⧸ Ideal.span (S : Set R)) :=
+      isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
     rw [isRegularLocalRing_iff]
     have le := ringKrullDim_le_ringKrullDim_quotient_add_card S
       (by simpa [IsLocalRing.ringJacobson_eq_maximalIdeal] using sub)
