@@ -677,14 +677,14 @@ lemma elemDiagSL_smul_single_fst {i j : ι} (hij : i ≠ j) (α : F) (hα : α �
     elemDiagSL hij α • (Pi.single i 1 : ι → F) = α • Pi.single i 1 := by
   simp only [elemDiagSL_smul, transvection_smul_single_fst, transvection_smul_single_snd,
     smul_add, smul_comm (M := SpecialLinearGroup ι F) (N := F)]
-  match_scalars <;> field_simp <;> ring
+  match_scalars <;> simp [inv_mul_cancel₀ hα, mul_inv_cancel₀ hα]
 
 /-- `elemDiagSL hij α` acts as multiplication by `α⁻¹` on `e_j`. -/
 lemma elemDiagSL_smul_single_snd {i j : ι} (hij : i ≠ j) (α : F) (hα : α ≠ 0) :
     elemDiagSL hij α • (Pi.single j 1 : ι → F) = α⁻¹ • Pi.single j 1 := by
   simp only [elemDiagSL_smul, transvection_smul_single_fst, transvection_smul_single_snd,
     smul_add, smul_comm (M := SpecialLinearGroup ι F) (N := F)]
-  match_scalars <;> field_simp <;> ring
+  match_scalars <;> simp [inv_mul_cancel₀ hα, mul_inv_cancel₀ hα]
 
 /-- `elemDiagSL hij α` fixes `e_k` whenever `k ∉ {i, j}`. -/
 lemma elemDiagSL_smul_single_of_ne {i j : ι} (hij : i ≠ j) (α : F) {k : ι} (hki : k ≠ i)
@@ -700,10 +700,10 @@ lemma diag2n_eq_elemDiagSL {i j : ι} (hij : i ≠ j) (α : F) (hα : α ≠ 0) 
   rw [diag2n_coe, diagonal_mulVec_single, ← smul_eq_mul, Pi.single_smul',
     ← smul_eq_mulVec, ← SpecialLinearGroup.smul_def]
   rcases eq_or_ne k i with rfl | hki
-  · rw [elemDiagSL_smul_single_fst hij α hα, if_pos rfl]
+  · rw [elemDiagSL_smul_single_fst hij α hα, ite_eq_left rfl]
   rcases eq_or_ne k j with rfl | hkj
-  · rw [elemDiagSL_smul_single_snd hij α hα, if_neg hij.symm, if_pos rfl]
-  · rw [elemDiagSL_smul_single_of_ne hij α hki hkj, if_neg hki, if_neg hkj, one_smul]
+  · rw [elemDiagSL_smul_single_snd hij α hα, ite_eq_right hij.symm, ite_eq_left rfl]
+  · rw [elemDiagSL_smul_single_of_ne hij α hki hkj, ite_eq_right hki, ite_eq_right hkj, one_smul]
 
 end elemDiag
 

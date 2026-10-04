@@ -6,6 +6,7 @@ Authors: Edison Xie
 module
 
 public import Mathlib.LinearAlgebra.Projectivization.PSL.PSL2
+public import Mathlib.GroupTheory.IsPerfect
 
 /-!
 # Simplicity of `PSLₙ(F)` (general case)
@@ -118,7 +119,7 @@ lemma elemDiagSL_mem_commutator_of_three_le (hι : 3 ≤ Fintype.card ι) {i j :
 commutator subgroup. -/
 lemma SL_le_commutator_of_three_le (hι : 3 ≤ Fintype.card ι) (M : Matrix.SpecialLinearGroup ι F) :
     M ∈ commutator (Matrix.SpecialLinearGroup ι F) := by
-  haveI : Nontrivial ι := Fintype.one_lt_card_iff_nontrivial.mp (by omega)
+  have : Nontrivial ι := Fintype.one_lt_card_iff_nontrivial.mp (by omega)
   refine diagonal_transvection_induction' _ M ?_
     (transvection_mem_commutator_of_three_le hι) fun A B hA hB ↦ mul_mem hA hB
   intro i j hij c hc
@@ -134,7 +135,7 @@ lemma SL_commutator_eq_top_of_three_le (hι : 3 ≤ Fintype.card ι) :
 /-- `commutator (PSL ι F) = ⊤` when `Fintype.card ι ≥ 3`. -/
 lemma PSL_commutator_eq_top_of_three_le (hι : 3 ≤ Fintype.card ι) :
     commutator (Matrix.ProjectiveSpecialLinearGroup ι F) = ⊤ :=
-  haveI : Group.IsPerfect (Matrix.SpecialLinearGroup ι F) :=
+  have : Group.IsPerfect (Matrix.SpecialLinearGroup ι F) :=
     ⟨SL_commutator_eq_top_of_three_le hι⟩
   Group.IsPerfect.commutator_eq_top
 
