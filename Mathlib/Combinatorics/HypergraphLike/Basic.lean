@@ -186,18 +186,18 @@ noncomputable def edgeMap [Nonempty E] (G : Gr) (i : I) : E :=
   if hi : i ∈ I(G) then edgeMap' G ⟨i, hi⟩ else Classical.arbitrary E
 
 @[simp]
-lemma val_attach'_eq_attach [Nonempty V] (i : I(G)) : (attach' G i : V) = attach G (i : I) := by
+lemma val_attach' [Nonempty V] (i : I(G)) : (attach' G i : V) = attach G (i : I) := by
   simp [attach]
 
 @[simp]
-lemma val_edgeMap'_eq_edgeMap [Nonempty E] (i : I(G)) : (edgeMap' G i : E) = edgeMap G (i : I) := by
+lemma val_edgeMap' [Nonempty E] (i : I(G)) : (edgeMap' G i : E) = edgeMap G (i : I) := by
   simp [edgeMap]
 
 lemma attach_mem_verts [Nonempty V] (hi : i ∈ I(G)) : attach G i ∈ V(G) := by
-  simpa only [val_attach'_eq_attach] using (attach' G ⟨i, hi⟩).property
+  simpa only [val_attach'] using (attach' G ⟨i, hi⟩).property
 
 lemma edgeMap_mem_edges [Nonempty E] (hi : i ∈ I(G)) : edgeMap G i ∈ E(G) := by
-  simpa only [val_edgeMap'_eq_edgeMap] using (edgeMap' G ⟨i, hi⟩).property
+  simpa only [val_edgeMap'] using (edgeMap' G ⟨i, hi⟩).property
 
 /-! ### Incidence fibers -/
 
@@ -323,10 +323,10 @@ lemma Adj.right_mem_vertexSet (h : u ~[G] v) : v ∈ V(G) :=
 lemma not_isLink_of_notMem_edges (he : e ∉ E(G)) : ¬ u ~[G; e] v := mt IsLink.edge_mem_edgeSet he
 
 @[simp]
-lemma not_adj_of_notMem_verts (hu : u ∉ V(G)) : ¬ u ~[G] v := mt Adj.left_mem_vertexSet hu
+lemma not_adj_of_left_notMem_verts (hu : u ∉ V(G)) : ¬ u ~[G] v := mt Adj.left_mem_vertexSet hu
 
 @[simp]
-lemma not_adj_of_notMem_verts_right (hv : v ∉ V(G)) : ¬ u ~[G] v := mt Adj.right_mem_vertexSet hv
+lemma not_adj_of_right_notMem_verts (hv : v ∉ V(G)) : ¬ u ~[G] v := mt Adj.right_mem_vertexSet hv
 
 lemma isLink_iff_exists_incidence [Nonempty V] [Nonempty E] :
     u ~[G; e] v ↔
@@ -359,15 +359,15 @@ def incVerts (G : Gr) (e : E) : Set V :=
 def incEdges (G : Gr) (v : V) : Set E :=
   (fun i : I(G) ↦ (edgeMap' G i : E)) '' {i | (attach' G i : V) = v}
 
-@[simp]
+@[simp, grind norm]
 lemma mem_incEdges : e ∈ incEdges G v ↔ v ∈ incVerts G e := by
   simp [incEdges, incVerts, and_comm]
 
 lemma incVerts_eq_image [Nonempty V] (G : Gr) : incVerts G e = attach G '' edgeFiber G e := by
-  simp only [incVerts, edgeFiber, image_image, val_attach'_eq_attach]
+  simp only [incVerts, edgeFiber, image_image, val_attach']
 
 lemma incEdges_eq_image [Nonempty E] (G : Gr) : incEdges G v = edgeMap G '' vertexFiber G v := by
-  simp only [incEdges, vertexFiber, image_image, val_edgeMap'_eq_edgeMap]
+  simp only [incEdges, vertexFiber, image_image, val_edgeMap']
 
 lemma mem_incVerts_iff_exists_incidence [Nonempty V] [Nonempty E] :
     v ∈ incVerts G e ↔ ∃ i, i ∈ I(G) ∧ edgeMap G i = e ∧ attach G i = v := by
@@ -377,29 +377,20 @@ lemma mem_incEdges_iff_exists_incidence [Nonempty V] [Nonempty E] :
     e ∈ incEdges G v ↔ ∃ i, i ∈ I(G) ∧ attach G i = v ∧ edgeMap G i = e := by
   simp only [incEdges_eq_image, mem_image, mem_vertexFiber, and_assoc]
 
-@[grind ←]
+@[grind! ←]
 lemma incVerts_subset_verts : incVerts G e ⊆ V(G) := by
   rintro v ⟨i, _, rfl⟩
   exact (attach' G i).property
 
-@[grind ←]
+@[grind! ←]
 lemma incEdges_subset_edges : incEdges G v ⊆ E(G) := by
   rintro e ⟨i, _, rfl⟩
   exact (edgeMap' G i).property
 
 @[grind →]
-lemma mem_verts_of_mem_incVerts (h : v ∈ incVerts G e) : v ∈ V(G) :=
-  incVerts_subset_verts h
-
-@[grind →]
-lemma mem_edges_of_mem_incEdges (h : e ∈ incEdges G v) : e ∈ E(G) :=
-  incEdges_subset_edges h
-
-@[grind →]
 lemma mem_edges_of_mem_incVerts (h : v ∈ incVerts G e) : e ∈ E(G) :=
   incEdges_subset_edges (mem_incEdges.mpr h)
 
-@[grind →]
 lemma mem_verts_of_mem_incEdges (h : e ∈ incEdges G v) : v ∈ V(G) :=
   incVerts_subset_verts (mem_incEdges.mp h)
 
@@ -446,11 +437,9 @@ lemma IsLink.right_mem_incVerts (h : u ~[G; e] v) : v ∈ incVerts G e := by
   obtain ⟨l⟩ := h
   exact ⟨⟨l.target, l.isTarget_target.mem_incs⟩, l.edgeMap'_target, l.attach'_target⟩
 
-@[grind →]
 lemma IsLink.mem_incEdges_left (h : u ~[G; e] v) : e ∈ incEdges G u :=
   mem_incEdges.mpr h.left_mem_incVerts
 
-@[grind →]
 lemma IsLink.mem_incEdges_right (h : u ~[G; e] v) : e ∈ incEdges G v :=
   mem_incEdges.mpr h.right_mem_incVerts
 
