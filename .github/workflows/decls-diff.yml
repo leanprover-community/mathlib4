@@ -94,17 +94,22 @@ jobs:
           set -euo pipefail
           # The build records the PR number in the artifact — reliable for fork
           # PRs, where the commit-SHA search API lags or misses. Fall back to the
-          # commit's associated PRs for same-repo pushes (commit is on this repo).
+          # commit's associated PRs for same-repo pushes (commit is on this repo);
+          # these include every open PR whose branch contains the commit, so take
+          # the one whose head it is.
           PR_NUMBER="$(tr -dc '0-9' < ./new-artifact/pr_number.txt 2>/dev/null || true)"
           if [ -z "$PR_NUMBER" ]; then
-            PR_NUMBER="$(gh api "repos/$REPO/commits/$NEW_SHA/pulls" --jq '.[0].number // empty')"
+            PR_NUMBER="$(gh api "repos/$REPO/commits/$NEW_SHA/pulls" \
+                          --jq "[.[] | select(.head.sha == \"$NEW_SHA\")] | .[0].number // empty")"
           fi
           # For fork PRs the artifact was produced by PR code, so the number is
           # untrusted: only accept a PR whose current head is the commit we built.
           if [ -n "$PR_NUMBER" ]; then
-            HEAD_SHA="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.head.sha' || true)"
-            if [ "$HEAD_SHA" != "$NEW_SHA" ]; then
-              echo "::notice::PR #$PR_NUMBER head is ${HEAD_SHA:-unknown}, not $NEW_SHA; not patching."
+            if ! HEAD_SHA="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.head.sha')"; then
+              echo "::warning::Could not read PR #$PR_NUMBER to check its head; not patching."
+              PR_NUMBER=""
+            elif [ "$HEAD_SHA" != "$NEW_SHA" ]; then
+              echo "::notice::PR #$PR_NUMBER head is $HEAD_SHA, not $NEW_SHA; not patching."
               PR_NUMBER=""
             fi
           fi
@@ -112,6 +117,9 @@ jobs:
 
       - name: Find master Build for the merge-base
         id: master-run
+        # Without a verified PR number there is nothing to patch. Skipping this
+        # step leaves `found` unset, so the diff steps below are skipped too.
+        if: steps.pr.outputs.pr-number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -145,17 +153,21 @@ jobs:
           run-id: ${{ steps.master-run.outputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Tooling is checked out unconditionally: the patcher (from CI_SCRIPTS_DIR)
-      # is needed on the cache-miss path too, to post the warning notice.
+      # Tooling is checked out whenever there is a PR to patch, not only when the
+      # diff is computed: the patcher (from CI_SCRIPTS_DIR) is needed on the
+      # cache-miss path too, to post the warning notice.
       - name: Checkout local actions
+        if: steps.pr.outputs.pr-number != ''
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       - name: Get mathlib-ci
+        if: steps.pr.outputs.pr-number != ''
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       - name: Compute Lean-aware declarations diff
@@ -170,6 +182,8 @@ jobs:
           new-sha:                ${{ steps.meta.outputs.new-sha }}
           with-heading:           'true'
 
+      # Keep both patcher steps gated on a non-empty PR number: given an empty
+      # PR_NUMBER, the patcher looks one up from the commit SHA, unverified.
       - name: Patch PR summary comment (success)
         if: steps.master-run.outputs.found == 'true' && steps.pr.outputs.pr-number != ''
         env:
