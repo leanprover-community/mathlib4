@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Finite.Lemmas
-public import Mathlib.Order.Filter.Bases.Finite
 public import Mathlib.Order.Filter.AtTopBot.Basic
+
+import Mathlib.Order.Filter.Bases.Finite
 
 /-!
 # Finiteness and `Filter.atTop` and `Filter.atBot` filters

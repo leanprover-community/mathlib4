@@ -5,12 +5,12 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
-public import Mathlib.RingTheory.Localization.NumDen
 public import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
 public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.RingTheory.Localization.NumDen
 
 /-!
 # Cusps
@@ -68,7 +68,7 @@ lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : Is
 
 lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
     {g : GL (Fin 2) ℝ} (hg : g ∈ 𝒢) : IsCusp (g • c) 𝒢 := by
-  convert! hc.smul g
+  convert hc.smul g
   ext x
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv,
     ConjAct.toConjAct_smul, inv_inv, Subgroup.mul_mem_cancel_right _ hg,

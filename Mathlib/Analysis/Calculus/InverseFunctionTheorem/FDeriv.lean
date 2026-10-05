@@ -6,10 +6,11 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
-import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
-public import Mathlib.Algebra.Order.Field.Power
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
-public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
+
+import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!
 # Inverse function theorem

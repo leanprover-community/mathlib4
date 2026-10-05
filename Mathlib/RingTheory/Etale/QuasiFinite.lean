@@ -7,7 +7,8 @@ module
 
 public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
 public import Mathlib.RingTheory.ZariskisMainTheorem
-public import Mathlib.RingTheory.Ideal.Quotient.Over
+
+import Mathlib.RingTheory.Ideal.Quotient.Over
 
 /-!
 # Etale local structure of finite maps
@@ -142,7 +143,7 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance high] Algebra.TensorProduct.leftAlgebra IsScalarTower.right
   DivisionRing.instIsArtinianRing in
-/-- A variant of `Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver` that also gives you
+/-- A variant of `Ideal.exists_notMem_forall_mem_of_ne_of_liesOver` that also gives you
 control on the primes in the integral closure. -/
 lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
@@ -152,7 +153,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     ∃ s ∉ q, ∃ hs : IsIntegral R s, (∀ q' : Ideal S, q'.IsPrime → q' ≠ q → q'.LiesOver p → s ∈ q') ∧
       ∀ (q' : Ideal (integralClosure R S)), q'.IsPrime →
         q' ≠ q.under _ → q'.LiesOver p → ⟨s, hs⟩ ∈ q' := by
-  obtain ⟨s₁, hs₁q, hs₁⟩ := Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver (R := R) p q
+  obtain ⟨s₁, hs₁q, hs₁⟩ := Ideal.exists_notMem_forall_mem_of_ne_of_liesOver (R := R) p q
   obtain ⟨s₂, hs₂q, hs₂⟩ := Algebra.ZariskisMainProperty.of_finiteType (R := R) q
   obtain ⟨s₃, hs₃⟩ := hs₂.2 (algebraMap _ _ s₁)
   obtain ⟨s₃, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s₂) s₃
@@ -358,7 +359,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
       (Localization.Away (φ e))
       (Localization.Away (Algebra.ofId R' (Localization.Away e) f))
   refine RingHom.finite_algebraMap.mp ?_
-  convert! equiv.symm.toRingEquiv.finite.comp hf
+  convert equiv.symm.toRingEquiv.finite.comp hf
   apply IsLocalization.ringHom_ext (.powers f)
   dsimp [-AlgEquiv.symm_toRingEquiv,
     ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_ofClass]
@@ -425,7 +426,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     rwa [← P'f.over_def P']
   · suffices Function.Bijective ⇑(Ideal.ResidueField.mapₐ P Pf
         (IsScalarTower.toAlgHom R R' (Localization.Away f)) (Pf.over_def P)) by
-      convert! this.comp hpP; rw [← AlgHom.coe_comp]; congr; ext
+      convert this.comp hpP; rw [← AlgHom.coe_comp]; congr; ext
     exact (RingHom.surjectiveOnStalks_of_isLocalization (.powers f)
       _).residueFieldMap_bijective _ _ _
   · intro P'' _ _ hP''

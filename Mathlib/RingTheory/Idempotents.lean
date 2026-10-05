@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Tactic.LinearCombination
 
 /-!
 

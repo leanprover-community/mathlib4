@@ -6,7 +6,6 @@ Authors: Andreas Swerdlow
 module
 
 public import Mathlib.LinearAlgebra.Basis.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 import Mathlib.Algebra.Module.Torsion.Field
@@ -674,7 +673,7 @@ theorem Nondegenerate.congr (h : B.Nondegenerate) :
 theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
-    convert! h.congr e₁.symm e₂.symm
+    convert h.congr e₁.symm e₂.symm
     ext x y
     simp,
    SeparatingLeft.congr e₁ e₂⟩
