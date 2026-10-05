@@ -129,97 +129,6 @@ def auxLemmaLinter (stx : Syntax) : CommandElabM Unit := do
 
 
 /-!
-### Linter for `attribute [...] in`
-
-Linter for global attributes created via `attribute [...] in`.
-
-The syntax `attribute [instance] instName in` can be used to accidentally create a global instance.
-This is **not** obvious from reading the code, and in fact happened twice during the port,
-hence, we lint against it.
-
-*Example*: before this was discovered, `Mathlib/Topology/Category/TopCat/Basic.lean`
-contained the following code:
-```
-attribute [instance] HasForget.instFunLike in
-instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe f := f
-```
-Despite the `in`, this makes `HasForget.instFunLike` a global instance.
-
-This seems to apply to all attributes. For example:
-```lean
-theorem what : False := sorry
-
-attribute [simp] what in
-#guard true
-
--- the `simp` attribute persists
-example : False := by simp  -- `simp` finds `what`
-
-theorem who {x y : Nat} : x = y := sorry
-
-attribute [ext] who in
-#guard true
-
--- the `ext` attribute persists
-example {x y : Nat} : x = y := by ext
-```
-Therefore, we lint against this pattern on all instances.
-
-For *removing* attributes, the `in` works as expected.
-```lean
-/--
-error: failed to synthesize
-  Add Nat
--/
-
-#guard_msgs in
-attribute [-instance] instAddNat in
-#synth Add Nat
-
--- the `instance` persists
-/-- info: instAddNat -/
-#guard_msgs in
-#synth Add Nat
-
-@[simp]
-theorem what : False := sorry
-
-/-- error: simp made no progress -/
-#guard_msgs in
-attribute [-simp] what in
-example : False := by simp
-
--- the `simp` attribute persists
-#guard_msgs in
-example : False := by simp
-```
--/
-
-/--
-Flag any occurrence of `attribute [...] name in` which is not `local`, `scoped` or negated (`-`):
-these are a footgun, as the attribute is applied *globally* (despite the `in`).
--/
-public register_option linter.globalAttributeIn : Bool := {
-  defValue := true
-  descr := "enable the globalAttributeIn linter"
-}
-
-/-- Run the global attribute in linter, given that `stx` has kind `Lean.Parser.Command.in` -/
-def globalAttributeInLinter (stx : Syntax) : CommandElabM Unit := do
-  if let `(attribute [$attrs,*] $id) := stx[0] then
-    for attr in attrs.getElems do
-      match attr with
-      | `(Parser.Command.eraseAttr| -$_) => pure ()
-      | `(Parser.Term.attrInstance| local $_attr:attr) => pure ()
-      | `(Parser.Term.attrInstance| scoped $_attr:attr) => pure ()
-      | `(attr| $attr) =>
-        Linter.logLintIf linter.globalAttributeIn attr m!
-          "Despite the `in`, the attribute '{attr}' is added globally to '{id}'\n\
-          please remove the `in` or make this a `local {attr}`"
-
-
-/-!
 ### The `oldObtain` linter, against stream-of-consciousness `obtain`
 
 The `oldObtain` linter flags any occurrences of "stream-of-consciousness" `obtain`,
@@ -283,7 +192,6 @@ partial def lintSyntax (stx : Syntax) : CommandElabM Unit := do
     | ``cdotTk | ``Lean.Parser.Term.cdot => cdotLinter stx
     | ``«term_$__» => dollarLinter stx
     | ``Lean.Parser.Term.fun => lambdaLinter stx
-    | ``Lean.Parser.Command.in => globalAttributeInLinter stx
     | ``Lean.Parser.Tactic.obtain => obtainLinter stx
     | _ => pure ()
   | _ => pure ()
