@@ -187,7 +187,7 @@ def limit (F : J ⥤ C) [HasLimit F] :=
 def limit.π (F : J ⥤ C) [HasLimit F] (j : J) : limit F ⟶ F.obj j :=
   (limit.cone F).π.app j
 
-@[to_dual eqToHom_comp_ι]
+@[to_dual (attr := reassoc) eqToHom_comp_ι]
 theorem limit.π_comp_eqToHom (F : J ⥤ C) [HasLimit F] {j j' : J} (hj : j = j') :
     limit.π F j ≫ eqToHom (by subst hj; rfl) = limit.π F j' := by
   subst hj
