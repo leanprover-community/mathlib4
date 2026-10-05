@@ -270,11 +270,11 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       simp only [Submodule.mem_inf, Submodule.mem_comap] at hy
       rcases Submodule.mem_span_singleton.mp hy.2 with ⟨r, hr⟩
       rw [← hr, LinearMap.map_smulₛₗ] at hy
-      simp only [SetLike.mk_smul_mk, smul_eq_mul, g] at hy
+      simp only [SetLike.mk_smul_mk, smul_eq_mul] at hy
       have := Submodule.mem_inf.mpr ⟨Submodule.mem_span_singleton.mpr (by use (residue R) r), hy.1⟩
-      erw [disjoint_iff.mp inf, Submodule.mem_bot] at this
       have eq0 : r ∈ maximalIdeal R := (residue_eq_zero_iff _).mp
-        ((smul_eq_zero_iff_left (by simpa [Ideal.toCotangent_eq_zero] using nmem)).mp this)
+        ((smul_eq_zero_iff_left (by simpa [Ideal.toCotangent_eq_zero, g] using nmem)).mp
+          ((Submodule.mem_bot _).mp ((Submodule.ext_iff.mp (disjoint_iff.mp inf) _).mp this)))
       simp only [SetLike.mk_smul_mk, smul_eq_mul, ← Subtype.val_inj] at hr
       have : y = x • ⟨r, eq0⟩ := by simpa [← Subtype.val_inj, mul_comm x r] using hr.symm
       simpa [this] using Submodule.smul_mem_pointwise_smul (⟨r, eq0⟩ : maximalIdeal R) x ⊤ trivial
