@@ -7,12 +7,7 @@ module
 
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
 public import Mathlib.RingTheory.AdicCompletion.LocalRing
-public import Mathlib.RingTheory.Filtration
-public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
-public import Mathlib.RingTheory.KrullDimension.Basic
 
 /-!
 # Hausdorff-ness for Noetherian rings
