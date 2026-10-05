@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.LocalProperties.InjectiveDimension
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
