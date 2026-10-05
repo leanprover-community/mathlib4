@@ -569,21 +569,6 @@ theorem length_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.
     (ofDarts l hne hchain).length = l.length := by
   grind [darts_ofDarts]
 
-theorem darts_eq_iff_support_eq {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'} (hnil : ¬p.Nil) :
-    p.darts = q.darts ↔ p.support = q.support := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← cons_map_snd_darts, ← cons_map_snd_darts, h]
-    congr
-    have hd : p.darts ≠ [] ∧ q.darts ≠ [] := by grind [darts_eq_nil]
-    have : p.darts.head hd.left = q.darts.head hd.right := by grind only
-    rw [← p.support_getElem_zero, ← q.support_getElem_zero, ← p.support.getElem_dropLast,
-      ← q.support.getElem_dropLast, ← fst_darts_getElem, ← fst_darts_getElem]
-    all_goals grind
-  · refine Dart.toProd_injective.list_map <| List.rightInverse_unzip_zip.injective ?_
-    have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
-    have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
-    grind [map_fst_darts, map_snd_darts]
-
 theorem darts_infix_iff_support_infix {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'}
     (hnil : ¬p.Nil) : p.darts <:+: q.darts ↔ p.support <:+: q.support := by
   rw [List.infix_iff_getElem?, List.infix_iff_getElem?]
@@ -596,6 +581,17 @@ theorem darts_infix_iff_support_infix {u' v' : V} {p : G.Walk u v} {q : G.Walk u
     grind [fst_darts_getElem]
   · rw [getElem?_pos _ _ <| by grind, Option.some_inj]
     ext <;> grind [fst_darts_getElem, snd_darts_getElem]
+
+theorem darts_eq_iff_support_eq {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'} (hnil : ¬p.Nil) :
+    p.darts = q.darts ↔ p.support = q.support := by
+  refine ⟨fun h ↦ List.infix_antisymm ?_ ?_, fun h ↦ ?_⟩
+  · rw [← darts_infix_iff_support_infix hnil, h]
+  · have hnil' : ¬q.Nil := by grind [darts_eq_nil]
+    rw [← darts_infix_iff_support_infix hnil', h]
+  · refine Dart.toProd_injective.list_map <| List.rightInverse_unzip_zip.injective ?_
+    have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
+    have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
+    grind [map_fst_darts, map_snd_darts]
 
 theorem darts_prefix_iff_support_prefix {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'}
     (hnil : ¬p.Nil) : p.darts <+: q.darts ↔ p.support <+: q.support := by
