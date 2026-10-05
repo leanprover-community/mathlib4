@@ -239,6 +239,20 @@ protected theorem IsTotallyComplex.finrank [NumberField K] [h : IsTotallyComplex
     finrank ℚ K = 2 * nrComplexPlaces K := by
   rw [← card_add_two_mul_card_eq_rank, nrRealPlaces_eq_zero_iff.mpr h, zero_add]
 
+variable {K}
+
+/-- A totally complex field with at least one infinite place is not totally real. Note that the
+converse fails: a field may have both real and complex places. -/
+theorem IsTotallyComplex.not_isTotallyReal [Nonempty (InfinitePlace K)] [IsTotallyComplex K] :
+    ¬ IsTotallyReal K := fun _ ↦
+  have ⟨w⟩ := ‹Nonempty (InfinitePlace K)›
+  not_isReal_iff_isComplex.mpr (IsTotallyComplex.isComplex w) (IsTotallyReal.isReal w)
+
+/-- A totally real field with at least one infinite place is not totally complex. Note that the
+converse fails: a field may have both real and complex places. -/
+theorem IsTotallyReal.not_isTotallyComplex [Nonempty (InfinitePlace K)] [IsTotallyReal K] :
+    ¬ IsTotallyComplex K := fun _ ↦ absurd ‹IsTotallyReal K› IsTotallyComplex.not_isTotallyReal
+
 end TotallyComplexField
 
 end NumberField
