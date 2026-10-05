@@ -100,13 +100,12 @@ theorem HasTemperateGrowth.isBigO_cocompact [ProperSpace E] {f : E → F}
   rw [isBigO_top] at hk
   obtain ⟨C, h⟩ := hk
   have hC : 0 ≤ C := by
-    specialize h 0
-    simp only [norm_zero, add_zero, one_pow, norm_one, mul_one] at h
-    exact (norm_nonneg _).trans h
+    suffices ‖iteratedFDeriv ℝ n f 0‖ ≤ C by grind [norm_nonneg]
+    simpa using h 0
   simp only [isBigO_cocompact_iff, gt_iff_lt, norm_pow, norm_norm]
   use k, (k + 1) * (C * (k.choose (k / 2)) + 1), by positivity, (Metric.closedBall 0 1)ᶜ
   constructor
-  · grind [compl_compl, ProperSpace.isCompact_closedBall]
+  · grind [compl_compl, compactness]
   intro y hy
   have hy' : 1 < ‖y‖ := by simpa using hy
   calc
@@ -115,8 +114,7 @@ theorem HasTemperateGrowth.isBigO_cocompact [ProperSpace E] {f : E → F}
       rw [norm_pow, Real.norm_eq_abs, abs_of_pos (by positivity)]
     _ = ∑ x ∈ Finset.range (k + 1), C * ‖y‖ ^ x * ↑(k.choose x) := by
       rw [add_comm 1 ‖y‖, add_pow]
-      simp
-      grind [Finset.mul_sum]
+      grind [one_pow, Finset.mul_sum]
     _ ≤ ∑ x ∈ Finset.range (k + 1), C * ‖y‖ ^ k * (k.choose (k / 2)) := by
       gcongr
       · grind
