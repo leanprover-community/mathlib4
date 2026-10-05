@@ -745,7 +745,7 @@ theorem exists_odd_natDegree_monic_irreducible_factor (p : R[X]) (hp : Odd p.nat
   suffices ∃ q ∈ normalizedFactors p, Odd q.natDegree by
     grind [Polynomial.mem_normalizedFactors_iff, show p ≠ 0 by grind]
   contrapose! hp
-  rw [← p.natDegree_eq_sum_natDegree_normalizedFactors, Multiset.sum_map_eq_sum_toEnumFinset]
+  rw [← p.sum_natDegree_normalizedFactors, Multiset.sum_map_eq_sum_toEnumFinset]
   exact Finset.even_sum _ fun _ hq ↦ hp _ (Multiset.mem_of_mem_toEnumFinset hq)
 
 theorem exists_root_of_odd_natDegree_irreducible_imp_natDegree_eq_one
