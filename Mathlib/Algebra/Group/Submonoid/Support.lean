@@ -5,8 +5,7 @@ Authors: Artie Khovanov
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Group.Submonoid.Pointwise
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
 
 /-!
 # Supports of submonoids
@@ -56,7 +55,15 @@ theorem mulSupport_toSubmonoid : M.mulSupport.toSubmonoid = M ⊓ M⁻¹ := rfl
 @[to_additive /-- The support of a submonoid is the largest subgroup it contains. -/]
 theorem _root_.Subgroup.gc_toSubmonoid_mulSupport :
     GaloisConnection (α := Subgroup G) Subgroup.toSubmonoid mulSupport :=
-  fun _ ↦ by grind [IsConcreteLE.le_iff, mem_mulSupport, Subgroup.mem_toSubmonoid, inv_mem_iff]
+  fun _ _ ↦ by
+    rw [← Subgroup.toSubmonoid_le]
+    grind [mulSupport_toSubmonoid, le_inf_iff, Submonoid.inv_le_inv, Subgroup.toSubmonoid_inv]
+
+@[to_additive]
+def _root_.Subgroup.gci_toSubmonoid_mulSupport :
+    GaloisCoinsertion (α := Subgroup G) Subgroup.toSubmonoid mulSupport :=
+  Subgroup.gc_toSubmonoid_mulSupport.toGaloisCoinsertion <| by
+    simp [← Subgroup.toSubmonoid_le]
 
 /-- A submonoid is pointed if it has zero support. -/
 @[to_additive /-- A submonoid is pointed if it has zero support. -/]
@@ -96,7 +103,6 @@ namespace IsMulSpanning
 
 variable {M}
 
-
 @[to_additive (attr := deprecated "Trivially true" (since := "2026-09-28"))]
 theorem mk (h : ∀ a : G, a ∈ M ∨ a⁻¹ ∈ M) : M.IsMulSpanning := h
 
@@ -114,15 +120,19 @@ theorem maximal_isMulPointed (hMp : M.IsMulPointed) (hMs : M.IsMulSpanning) :
 
 end IsMulSpanning
 
-section Group
-
-variable {G H : Type*} [Group G] [Group H] (f : G →* H) (M N : Submonoid G) (M' : Submonoid H)
+variable {H : Type*} [Group H] (f : G →* H) (N : Submonoid G) (M' : Submonoid H)
 
 @[to_additive (attr := simp)]
-theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by ext; simp
+theorem _root_.Subgroup.mul_support (H : Subgroup G) : H.mulSupport = H :=
+  Subgroup.gci_toSubmonoid_mulSupport.u_l_eq _
 
 @[to_additive (attr := simp)]
-theorem mulSupport_top : (⊤ : Submonoid G).mulSupport = ⊤ := by ext; simp
+theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by
+  simpa using Subgroup.mul_support (G := G) ⊥
+
+@[to_additive (attr := simp)]
+theorem mulSupport_top : (⊤ : Submonoid G).mulSupport = ⊤ :=
+  Subgroup.gc_toSubmonoid_mulSupport.u_top
 
 variable {M N} in
 @[to_additive]
@@ -130,17 +140,18 @@ theorem mulSupport_mono (h : M ≤ N) : M.mulSupport ≤ N.mulSupport :=
   Subgroup.gc_toSubmonoid_mulSupport.monotone_u h
 
 @[to_additive (attr := simp)]
-theorem mulSupport_inf : (M ⊓ N).mulSupport = M.mulSupport ⊓ N.mulSupport := by
-  ext; grind [mem_mulSupport, Subgroup.mem_inf]
+theorem mulSupport_inf : (M ⊓ N).mulSupport = M.mulSupport ⊓ N.mulSupport :=
+  Subgroup.gc_toSubmonoid_mulSupport.u_inf
 
 @[to_additive (attr := simp)]
 theorem mulSupport_sInf (s : Set (Submonoid G)) :
-    (sInf s).mulSupport = InfSet.sInf (mulSupport '' s) := by ext; simp; grind
+    (sInf s).mulSupport = ⨅ M ∈ s, M.mulSupport :=
+  Subgroup.gc_toSubmonoid_mulSupport.u_sInf
 
 @[to_additive (attr := simp)]
 theorem mulSupport_iInf {ι : Type*} (f : ι → Submonoid G) :
-    (⨅ i, f i).mulSupport = ⨅ i, (f i).mulSupport := by
-  ext; grind [mem_mulSupport, mem_iInf, Subgroup.mem_iInf]
+    (iInf f).mulSupport = ⨅ i, (f i).mulSupport :=
+  Subgroup.gc_toSubmonoid_mulSupport.u_iInf
 
 variable {M'} in
 @[to_additive]
@@ -153,15 +164,7 @@ theorem mulSupport_comap : (M'.comap f).mulSupport = M'.mulSupport.comap f := by
 variable {f M} in
 @[to_additive]
 theorem IsMulSpanning.map (hM : M.IsMulSpanning) (hf : Function.Surjective f) :
-    (M.map f).IsMulSpanning := fun x ↦ by
-  obtain ⟨x', rfl⟩ := hf x
-  grind [IsMulSpanning, mem_map]
-
-end Group
-
-section CommGroup
-
-variable {G H : Type*} [CommGroup G] [Group H] (f : G →* H) (M : Submonoid G)
+    (M.map f).IsMulSpanning := fun x ↦ by grind [IsMulSpanning, mem_map, hf x]
 
 variable {f M} in
 @[to_additive (attr := simp)]
@@ -170,9 +173,7 @@ theorem mulSupport_map (hsupp : f.ker ≤ M.mulSupport) :
   ext
   refine ⟨fun ⟨⟨a, ⟨ha₁, ha₂⟩⟩, ⟨b, ⟨hb₁, hb₂⟩⟩⟩ ↦ ?_,
     by grind [Subgroup.mem_map, mem_map, mem_mulSupport]⟩
-  have : (a * b)⁻¹ * b ∈ M := mul_mem (hsupp (show f (a * b) = 1 by simp_all)).2 hb₁
-  grind [mem_mulSupport, SetLike.mem_coe, mul_inv_rev, inv_mul_cancel_comm, Subgroup.mem_map]
-
-end CommGroup
+  have : (b * a)⁻¹ * b ∈ M := mul_mem (hsupp (show f (b * a) = 1 by simp_all)).2 hb₁
+  grind [mem_mulSupport, SetLike.mem_coe, mul_inv_rev, inv_mul_cancel_right, Subgroup.mem_map]
 
 end Submonoid

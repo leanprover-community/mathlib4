@@ -105,6 +105,9 @@ theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
   rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff]
   exact subset_closure (mem_inv.mp hs)
 
+@[to_additive (attr := simp)]
+theorem toSubmonoid_inv (H : Subgroup G) : H.toSubmonoid⁻¹ = H.toSubmonoid := by ext; simp
+
 @[to_additive]
 theorem closure_toSubmonoid (S : Set G) :
     (closure S).toSubmonoid = Submonoid.closure (S ∪ S⁻¹) := by
