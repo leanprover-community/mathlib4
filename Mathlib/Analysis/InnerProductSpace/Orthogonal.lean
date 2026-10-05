@@ -282,8 +282,10 @@ theorem IsOrtho.inner_eq {U V : Submodule 𝕜 E} (h : U ⟂ V) {u v : E} (hu : 
 theorem isOrtho_iff_inner_eq {U V : Submodule 𝕜 E} : U ⟂ V ↔ ∀ u ∈ U, ∀ v ∈ V, ⟪u, v⟫ = 0 :=
   forall₄_congr fun _u _hu _v _hv => inner_eq_zero_symm
 
-/-- TODO: generalize `Submodule.map₂` to semilinear maps, so that we can state
-`U ⟂ V ↔ Submodule.map₂ (innerₛₗ 𝕜) U V ≤ ⊥`. -/
+theorem isOrtho_iff_map₂_le_bot {U V : Submodule 𝕜 E} :
+    U ⟂ V ↔ Submodule.map₂ (innerₛₗ 𝕜) U V ≤ ⊥ := by
+  simpa only [Submodule.map₂_le, Submodule.mem_bot, innerₛₗ_apply_apply] using isOrtho_iff_inner_eq
+
 @[simp]
 theorem isOrtho_bot_left {V : Submodule 𝕜 E} : ⊥ ⟂ V :=
   bot_le
