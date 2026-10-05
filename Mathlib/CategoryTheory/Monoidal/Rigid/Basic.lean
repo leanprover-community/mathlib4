@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+
 import Mathlib.Tactic.ApplyFun
 
 /-!

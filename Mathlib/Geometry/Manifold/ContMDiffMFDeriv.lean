@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 module
 
-import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 public import Mathlib.Geometry.Manifold.VectorBundle.Hom
+
+import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 
 /-!
 ### Interactions between differentiability, smoothness and manifold derivatives

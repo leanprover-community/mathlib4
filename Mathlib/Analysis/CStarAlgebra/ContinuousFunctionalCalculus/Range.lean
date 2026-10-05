@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 import Mathlib.Algebra.Order.Monoid.Submonoid
 

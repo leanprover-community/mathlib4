@@ -8,9 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.Finiteness.Prod
-import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
 
+import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 import Mathlib.RingTheory.SimpleRing.Matrix
 

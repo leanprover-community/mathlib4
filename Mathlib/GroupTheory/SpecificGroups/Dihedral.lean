@@ -5,9 +5,10 @@ Authors: Shing Tak Lam
 -/
 module
 
-import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.GroupAction.CardCommute
 public import Mathlib.GroupTheory.SpecificGroups.KleinFour
+
+import Mathlib.Basic.Finite.Sum
 
 /-!
 # Dihedral Groups
