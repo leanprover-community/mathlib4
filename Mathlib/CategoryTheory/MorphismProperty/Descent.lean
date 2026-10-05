@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!

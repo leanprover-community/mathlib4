@@ -9,8 +9,9 @@ public import Mathlib.Basic.Countable.Small
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Products.Bifunctor
+
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # Filtered colimits commute with finite limits.

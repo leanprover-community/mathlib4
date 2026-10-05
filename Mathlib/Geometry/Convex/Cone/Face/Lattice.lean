@@ -110,6 +110,7 @@ instance : CompleteSemilatticeInf (Face C) where
 instance : CompleteLattice (Face C) where
   top := ⟨C, .refl _⟩
   le_top F := F.toPointedCone_le
+  __ := instSemilatticeInf
   __ := completeLatticeOfCompleteSemilatticeInf _
 
 instance : Inhabited (Face C) := ⟨⊤⟩

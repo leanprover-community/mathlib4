@@ -6,8 +6,9 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
-import Mathlib.NumberTheory.LSeries.Linearity
 public import Mathlib.NumberTheory.LSeries.Nonvanishing
+
+import Mathlib.NumberTheory.LSeries.Linearity
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression
@@ -103,7 +104,7 @@ lemma abscissaOfAbsConv_residueClass_le_one :
   refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable fun y hy ↦ ?_
   unfold LSeriesSummable
   have := LSeriesSummable_vonMangoldt <| show 1 < (y : ℂ).re by simp only [ofReal_re, hy]
-  convert! this.indicator {n : ℕ | (n : ZMod q) = a}
+  convert this.indicator {n : ℕ | (n : ZMod q) = a}
   ext1 n
   by_cases hn : (n : ZMod q) = a
   · simp +contextual only [term, Set.indicator, Set.mem_ofPred_eq, hn, ↓reduceIte, apply_ite,
