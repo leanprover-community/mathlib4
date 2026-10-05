@@ -243,12 +243,11 @@ Note: This linter can be disabled with `set_option {linter.fooLinter.name} false
 ```
 pluralizing as appropriate.
 -/
-def logUnusedInstancesInTheorem (thm : ConstantVal)
+def _root_.Lean.ConstantVal.logOnUnusedInstancesInTypeWhere (thm : ConstantVal)
     (instanceTypeFilter : Expr → Bool)
     (log : Array Parameter → MetaM Unit) :
     CoreM Unit := do
   if thm.type.hasInstanceBinderOf instanceTypeFilter then
-    -- TODO: log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
     thm.onUnusedInstancesWhere instanceTypeFilter log
 
 section Decidable
@@ -317,7 +316,7 @@ public def unusedDecidableInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM 
   /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
   on decidable instances without using them in the type. -/
   if (`Decidable).isPrefixOf thm.name then return
-  logUnusedInstancesInTheorem thm
+  thm.logOnUnusedInstancesInTypeWhere
     isDecidableVariant
     fun unusedParams => do
       /- Log the warning from the declaration's selection range (usually the declaration name,
@@ -355,7 +354,7 @@ public register_option linter.unusedFintypeInType : Bool := {
 remainder of the type, and suggests replacing them with the corresponding hypothesis of `Finite`
 and the use of `Fintype.ofFinite` in the proof. -/
 public def unusedFintypeInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM Unit := do
-  logUnusedInstancesInTheorem thm
+  thm.logOnUnusedInstancesInTypeWhere
     (·.isAppOrForallOfConst `Fintype)
     fun unusedParams => do
       let importFintypeOfFiniteNote? :=
