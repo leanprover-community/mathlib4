@@ -106,7 +106,7 @@ example [AddCommGroup α] (x y z : α) (w : x = z + y) : False := by
 
 example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False := by
   abel_nf at w
-  guard_hyp w : Zero.zero = z + y
+  guard_hyp w : 0 = z + y
   assumption
 
 -- regression test for the issue fixed in PR #29778
@@ -153,7 +153,7 @@ example [AddCommGroup α] (x y z : α) (w : x - x = y + z) : x = 0 := by
 
 example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False := by
   abel_nf at *
-  guard_hyp w : Zero.zero = z + y
+  guard_hyp w : 0 = z + y
   assumption
 
 section
@@ -235,3 +235,8 @@ example (a : ℤ) : ∃ x : ℤ, x = a := by
   apply Exists.intro
   fail_if_success abel_nf
   rfl
+
+-- The normal form uses numeral zero so subsequent simp rewrites can match it.
+example [AddCommGroup α] (f : α → α) (h : f 0 = 0) (a : α) : f (a - a) = 0 := by
+  abel_nf
+  simp only [h]
