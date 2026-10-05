@@ -34,7 +34,7 @@ Prove that global dimension is invariant of universe if assuming `Small.{v} R`. 
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -48,6 +48,7 @@ open Abelian
 
 /-- The (left) global (homological) dimension of a (commutative) ring defined as
 the supremum of projective dimension over all modules. -/
+@[expose]
 noncomputable def globalDimension : WithBot ℕ∞ :=
   ⨆ (M : ModuleCat.{v} R), projectiveDimension.{v} M
 
