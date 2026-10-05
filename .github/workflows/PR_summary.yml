@@ -35,6 +35,7 @@ jobs:
         fetch-depth: 1
         sparse-checkout: .github/actions
         path: workflow-actions
+        persist-credentials: false
     - name: Get mathlib-ci
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
 

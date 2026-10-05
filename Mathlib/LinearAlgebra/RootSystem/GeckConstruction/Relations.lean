@@ -6,8 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 public import Mathlib.Algebra.Lie.Sl2
+
+import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 
 /-!
 # Relations in Geck's construction of a Lie algebra associated to a root system
@@ -141,7 +142,7 @@ lemma lie_e_f_same :
     ⁅e i, f i⁆ = h i := by
   let := P.indexNeg
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   classical
   ext (k | k) (l | l)
   · simp [e, f, h]

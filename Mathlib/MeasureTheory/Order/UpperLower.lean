@@ -5,8 +5,9 @@ Authors: Yaël Dillies, Kexing Ying
 -/
 module
 
-import Mathlib.Analysis.Normed.Order.UpperLower
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+
+import Mathlib.Analysis.Normed.Order.UpperLower
 
 /-!
 # Order-connected sets are null-measurable

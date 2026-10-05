@@ -5,8 +5,9 @@ Authors: Dexin Zhang
 -/
 module
 
-import Mathlib.Algebra.Module.NatInt
 public import Mathlib.ModelTheory.Semantics
+
+import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Presburger arithmetic
