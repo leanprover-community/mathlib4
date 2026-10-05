@@ -106,7 +106,7 @@ lemma nhdsGT_basis_Ioc [DenselyOrdered α] [NoMaxOrder α] (a : α) :
     (𝓝[>] a).HasBasis (fun x ↦ a < x) (Ioc a) :=
   nhdsGT_basis_Ioc_of_exists_gt <| exists_gt a
 
-@[to_dual]
+@[to_dual nhdsLT_eq_bot_iff]
 theorem nhdsGT_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b := by
   by_cases ha : IsTop a
   · simp [ha, ha.isMax.Ioi_eq]
@@ -199,11 +199,6 @@ theorem mem_nhdsGT_iff_exists_Ioc_subset [NoMaxOrder α] [DenselyOrdered α] {a 
     exact ⟨v, hv.1, fun x hx => as ⟨hx.1, lt_of_le_of_lt hx.2 hv.2⟩⟩
   · rintro ⟨u, au, as⟩
     exact ⟨u, au, Subset.trans Ioo_subset_Ioc_self as⟩
-
-theorem nhdsLT_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
-  convert! (config := { preTransparency := .default })
-    nhdsGT_eq_bot_iff (a := OrderDual.toDual a) using 4
-  exact ofDual_covBy_ofDual_iff
 
 open List in
 /-- The following statements are equivalent:

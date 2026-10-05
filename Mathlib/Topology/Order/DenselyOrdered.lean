@@ -41,7 +41,7 @@ theorem closure_Ioi' {a : α} (h : (Ioi a).Nonempty) : closure (Ioi a) = Ici a :
 theorem closure_Ioi (a : α) [NoMaxOrder α] : closure (Ioi a) = Ici a :=
   closure_Ioi' nonempty_Ioi
 
-@[to_dual IsMin.of_disjoint_nhds_Iio]
+@[to_dual of_disjoint_nhds_Iio]
 theorem IsMax.of_disjoint_nhds_Ioi {x : α} {u : Set α} (hu : u ∈ nhds x)
     (hd : Disjoint u (Set.Ioi x)) : IsMax x := by
   by_contra hx
@@ -56,7 +56,7 @@ theorem nonempty_nhds_inter_Ioi {x : α} {u : Set α} (hu : u ∈ nhds x) (hx : 
     (Set.not_nonempty_iff_eq_empty.mp h)))
 
 /-- The closure of the open interval `(a, b)` is the closed interval `[a, b]`. -/
-@[simp]
+@[to_dual none, simp]
 theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := by
   apply Subset.antisymm
   · exact closure_minimal Ioo_subset_Icc_self isClosed_Icc
@@ -85,7 +85,7 @@ theorem closure_uIoc {a b : α} (hab : a ≠ b) : closure (uIoc a b) = uIcc a b 
   simp [uIoc, uIcc, hab]
 
 /-- The closure of the interval `[a, b)` is the closed interval `[a, b]`. -/
-@[simp]
+@[simp, to_dual none]
 theorem closure_Ico {a b : α} (hab : a ≠ b) : closure (Ico a b) = Icc a b := by
   apply Subset.antisymm
   · exact closure_minimal Ico_subset_Icc_self isClosed_Icc
@@ -100,11 +100,11 @@ theorem interior_Ici' {a : α} (ha : (Iio a).Nonempty) : interior (Ici a) = Ioi 
 theorem interior_Ici [NoMinOrder α] {a : α} : interior (Ici a) = Ioi a :=
   interior_Ici' nonempty_Iio
 
-@[simp]--@[to_dual self (reorder := 6 7, 8 9), simp]
+@[simp]
 theorem interior_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} : interior (Icc a b) = Ioo a b := by
   rw [← Ici_inter_Iic, interior_inter, interior_Ici, interior_Iic, Ioi_inter_Iio]
 
-@[simp]--@[to_dual self (reorder := 6 7, 8 9), simp]
+@[simp]
 theorem Icc_mem_nhds_iff [NoMinOrder α] [NoMaxOrder α] {a b x : α} :
     Icc a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
   rw [← interior_Icc, mem_interior_iff_mem_nhds]
@@ -124,6 +124,7 @@ theorem closure_interior_Icc {a b : α} (h : a ≠ b) : closure (interior (Icc a
       _ ⊆ closure (interior (Icc a b)) :=
         closure_mono (interior_maximal Ioo_subset_Icc_self isOpen_Ioo)
 
+@[to_dual]
 theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (Ioc a b)) := by
   rcases eq_or_ne a b with (rfl | h)
   · simp
@@ -132,11 +133,6 @@ theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (
       _ = closure (Ioo a b) := (closure_Ioo h).symm
       _ ⊆ closure (interior (Ioc a b)) :=
         closure_mono (interior_maximal Ioo_subset_Ioc_self isOpen_Ioo)
-
-@[to_dual existing]
-theorem Ico_subset_closure_interior (a b : α) : Ico a b ⊆ closure (interior (Ico a b)) := by
-  simpa only [Ioc_toDual] using!
-    Ioc_subset_closure_interior (OrderDual.toDual b) (OrderDual.toDual a)
 
 @[to_dual (attr := simp)]
 theorem frontier_Ici' {a : α} (ha : (Iio a).Nonempty) : frontier (Ici a) = {a} := by
@@ -239,19 +235,11 @@ theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
   simpa using dense_univ.exists_countable_dense_subset_no_bot_top
 
 /-- `Set.Ico a b` is only closed if it is empty. -/
-@[simp]
+@[to_dual (attr := simp) /-- `Set.Ioc a b` is only closed if it is empty. -/]
 theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
   refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ico hab.ne, Icc_eq_Ico_same_iff] at this
-  exact this hab.le
-
-/-- `Set.Ioc a b` is only closed if it is empty. -/
-@[to_dual existing, simp]
-theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
-  have := h.closure_eq
-  rw [closure_Ioc hab.ne, Icc_eq_Ioc_same_iff] at this
   exact this hab.le
 
 /-- `Set.Ioo a b` is only closed if it is empty. -/

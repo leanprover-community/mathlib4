@@ -110,6 +110,14 @@ example {x y : ℝ} (hx : 3 ≤ x) (hy : 2 ≤ y) : 6 ≤ x * y := by dyadic_int
 
 example {x : ℝ} (hx : x ∈ Set.Icc (-2) 1) : -x ∈ Set.Icc (-1) 2 := by dyadic_interval
 
+example {x y : ℝ} (hx : 3 ≤ x) : 3 ≤ |x| + |y| := by dyadic_interval
+
+example {x : ℝ} (hx : x ∈ Set.Icc (-2.5) 1.25) :
+    |x| ∈ Set.Icc 0 2.5 := by dyadic_interval [prec := 2]
+
+example {x y : ℝ} (hx : x ∈ Set.Icc (-1.5) 0.5) (hy₀ : 2 ≤ y) (hy₁ : y ≤ 3) :
+    |x + y| * |x - 1| ∈ Set.Icc 0.25 8.75 := by dyadic_interval [prec := 2]
+
 example {x y : ℝ} (hx₀ : 2 ≤ x) (hx₁ : x ≤ 3) (hy₀ : 0 ≤ y) (hy₁ : y ≤ 1) :
     x - y ∈ Set.Icc 1 3 := by dyadic_interval
 

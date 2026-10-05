@@ -5,8 +5,7 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
-public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.VectorBundle.Hom
@@ -56,7 +55,7 @@ that point and the 1-jet of the section at that point.
 Here we ask for a map sending a global section `σ` of `V` to a global section `∇ σ` of `Hom(TM, V)`.
 So the fact that `(∇_X σ) x` depends only on `X x` is baked into the definition.
 Note also that we don’t put any differentiability restriction on `σ` and `X`, the type of
-the covariant derivative map is simply `(Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))`.
+the covariant derivative map is simply `(Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)`.
 But the conditions on this map involve differentiability, see the definition of
 `IsCovariantDerivativeOn`.
 
