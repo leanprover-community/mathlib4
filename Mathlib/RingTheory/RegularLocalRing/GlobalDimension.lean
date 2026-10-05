@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Depth.AuslanderBuchsbaum
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
