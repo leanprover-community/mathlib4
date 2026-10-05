@@ -64,6 +64,7 @@ jobs:
           # `new-sha` is fork PR code already built by build_fork.yml; allow the
           # fork checkout under this workflow_run.
           allow-unsafe-pr-checkout: true
+          persist-credentials: false
 
       - name: Resolve merge-base against master
         id: resolve
@@ -97,6 +98,15 @@ jobs:
           PR_NUMBER="$(tr -dc '0-9' < ./new-artifact/pr_number.txt 2>/dev/null || true)"
           if [ -z "$PR_NUMBER" ]; then
             PR_NUMBER="$(gh api "repos/$REPO/commits/$NEW_SHA/pulls" --jq '.[0].number // empty')"
+          fi
+          # For fork PRs the artifact was produced by PR code, so the number is
+          # untrusted: only accept a PR whose current head is the commit we built.
+          if [ -n "$PR_NUMBER" ]; then
+            HEAD_SHA="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.head.sha' || true)"
+            if [ "$HEAD_SHA" != "$NEW_SHA" ]; then
+              echo "::notice::PR #$PR_NUMBER head is ${HEAD_SHA:-unknown}, not $NEW_SHA; not patching."
+              PR_NUMBER=""
+            fi
           fi
           echo "pr-number=$PR_NUMBER" | tee -a "$GITHUB_OUTPUT"
 
@@ -161,7 +171,7 @@ jobs:
           with-heading:           'true'
 
       - name: Patch PR summary comment (success)
-        if: steps.master-run.outputs.found == 'true'
+        if: steps.master-run.outputs.found == 'true' && steps.pr.outputs.pr-number != ''
         env:
           GH_TOKEN:      ${{ secrets.GITHUB_TOKEN }}
           REPO:          ${{ github.repository }}
@@ -172,7 +182,7 @@ jobs:
         run: python3 "$CI_SCRIPTS_DIR/pr_summary/updateDeclsDiffSection.py"
 
       - name: Note cache miss
-        if: steps.master-run.outputs.found != 'true'
+        if: steps.master-run.outputs.found != 'true' && steps.pr.outputs.pr-number != ''
         env:
           GH_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
           REPO:           ${{ github.repository }}
