@@ -6,6 +6,7 @@ Authors: Oliver Nash, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.Star
@@ -365,6 +366,25 @@ theorem Matrix.conjTranspose_tsum [StarAddMonoid R] [ContinuousStar R] [T2Space 
   Function.LeftInverse.map_tsum f (g := conjTransposeAddEquiv m n R)
     continuous_id.matrix_conjTranspose continuous_id.matrix_conjTranspose
     conjTranspose_conjTranspose
+
+lemma Matrix.IsHermitian.of_hasSum [StarAddMonoid R] [ContinuousStar R] [T2Space R] [L.NeBot]
+    {f : X → Matrix n n R} {a : Matrix n n R} (h : HasSum f a L) (hf : ∀ i, (f i).IsHermitian) :
+    a.IsHermitian :=
+  h.matrix_conjTranspose.unique (by simpa only [show ∀ i, (f i)ᴴ = f i from hf] using h)
+#check tsum_mem
+#check SummationFilter.NeBot
+
+lemma Matrix.IsHermitian.tsum [StarAddMonoid R] [ContinuousStar R] [T2Space R]
+    (f : X → Matrix n n R) (hf : ∀ i, (f i).IsHermitian) :
+    (∑'[L] a, f a).IsHermitian := by
+  let selfAdjointAddSubmonoid : AddSubmonoid (Matrix n n R) :=
+    { carrier := {x | IsSelfAdjoint x}}
+  by_cases h : L.NeBot
+  · by_cases h_sum : Summable f L
+    · exact .of_hasSum h_sum.hasSum hf
+    · rw [tsum_eq_zero_of_not_summable h_sum]
+      exact Matrix.isHermitian_zero
+  · rw [tsum_bot h]
 
 theorem HasSum.matrix_diagonal [DecidableEq n] {f : X → n → R} {a : n → R} (hf : HasSum f a L) :
     HasSum (fun x => diagonal (f x)) (diagonal a) L :=

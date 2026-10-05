@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Order.Filter.AtTopBot.Finset
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
 public import Mathlib.Topology.Algebra.Star
@@ -364,5 +365,14 @@ theorem summable_star_iff' : Summable (star f) L ↔ Summable f L :=
 
 theorem tsum_star [T2Space α] : star (∑'[L] b, f b) = ∑'[L] b, star (f b) :=
   Function.LeftInverse.map_tsum (g := starAddEquiv) f continuous_star continuous_star star_star
+
+#check IsSelfAdjoint
+theorem IsSelfAdjoint.tsum [T2Space α] (h : ∀ b, IsSelfAdjoint (f b)) :
+    IsSelfAdjoint (∑'[L] b, f b) :=
+  let aux : AddSubmonoid α :=
+    { carrier := {x | IsSelfAdjoint x}, add_mem' := .add, zero_mem' := .zero}
+  tsum_mem (s := aux) _ h
+  -- Function.LeftInverse.map_tsum (g := starAddEquiv) f continuous_star continuous_star star_star
+
 
 end ContinuousStar
