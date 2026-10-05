@@ -145,11 +145,13 @@ protected lemma injective (b : FreeGroupBasis ι G) : Injective b :=
 lemma isFreeGroup (b : FreeGroupBasis ι G) : IsFreeGroup G :=
   ⟨range b, ⟨b.reindex (Equiv.ofInjective (↑b) b.injective)⟩⟩
 
-def _root_.FreeAddGroupBasis.freeGroupBasis {ι G : Type*} [AddGroup G] (b : FreeAddGroupBasis ι G) :
+/-- An additive free group basis over `G` is a free group basis over `Multiplicative G`. -/
+def _root_.FreeAddGroupBasis.freeGroupBasis {ι G} [AddGroup G] (b : FreeAddGroupBasis ι G) :
     FreeGroupBasis ι (Multiplicative G) :=
   .ofRepr <| b.repr.toMultiplicative.trans FreeGroup.freeGroupEquivMultiplicative.symm
 
-def freeAddGroupBasis (b : FreeGroupBasis ι G) : FreeAddGroupBasis ι (Additive G) :=
+/-- An free group basis over `G` is an additive free group basis over `Additive G`. -/
+def freeAddGroupBasis {ι G} [Group G] (b : FreeGroupBasis ι G) : FreeAddGroupBasis ι (Additive G) :=
   .ofRepr <| b.repr.toAdditive.trans FreeAddGroup.freeAddGroupEquivAdditive.symm
 
 @[to_additive]
