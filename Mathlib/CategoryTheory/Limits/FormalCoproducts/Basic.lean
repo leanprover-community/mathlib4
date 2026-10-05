@@ -5,9 +5,10 @@ Authors: Joël Riou, Kenny Lau
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 # Formal Coproducts

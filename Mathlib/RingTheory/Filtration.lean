@@ -6,9 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Module.Basic
-import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.ReesAlgebra
+
+import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!
 

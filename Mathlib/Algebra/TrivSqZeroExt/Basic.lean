@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!

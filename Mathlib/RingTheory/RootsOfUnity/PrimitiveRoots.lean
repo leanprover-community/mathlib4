@@ -5,8 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.RingTheory.RootsOfUnity.Basic
+
+import Mathlib.Algebra.Group.TypeTags.Finite
 
 /-!
 # Primitive roots of unity

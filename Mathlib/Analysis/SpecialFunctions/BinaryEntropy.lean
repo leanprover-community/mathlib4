@@ -6,6 +6,7 @@ Authors: Adomas Baliuka
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
 /-!

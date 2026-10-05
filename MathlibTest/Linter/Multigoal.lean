@@ -1,3 +1,4 @@
+import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Linter.Multigoal
@@ -51,6 +52,37 @@ example {n : Nat} (hn : n = 0) : n + 0 = 0 := by
   by_cases 0 = 0
   assumption
   assumption
+
+-- The linter works correctly with `pick_goal` and `on_goal`.
+/--
+warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
+  trivial
+Please focus on the current goal, for instance using `·` (typed as "\.").
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+-/
+#guard_msgs in
+example : True ∧ True ∧ True := by
+  constructor
+  on_goal 2 =>
+    constructor
+    trivial
+    trivial
+  trivial
+
+/--
+warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
+  exact hq
+Please focus on the current goal, for instance using `·` (typed as "\.").
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+-/
+#guard_msgs in
+example {p q : Prop} (hp : p) (hq : q) : p ∧ q := by
+  constructor
+  pick_goal 2
+  exact hq
+  exact hp
 
 set_option linter.unusedTactic false in
 #guard_msgs(drop warning) in
