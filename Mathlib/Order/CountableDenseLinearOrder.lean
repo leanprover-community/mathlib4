@@ -169,8 +169,7 @@ variable (β)
 
 /-- The set of partial isomorphisms defined at `a : α`, together with a proof that any
 partial isomorphism can be extended to one defined at `a`. -/
-def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α) :
-    Set (PartialIso α β) :=
+def definedAtLeft (a : α) : Set (PartialIso α β) :=
   {f : PartialIso α β | ∃ b : β, (a, b) ∈ f.val}
 
 theorem isCofinal_definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β]
@@ -192,8 +191,7 @@ variable (α) {β}
 
 /-- The set of partial isomorphisms defined at `b : β`, together with a proof that any
 partial isomorphism can be extended to include `b`. We prove this by symmetry. -/
-def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β) :
-    Set (PartialIso α β) :=
+def definedAtRight (b : β) : Set (PartialIso α β) :=
   {f | ∃ a, (a, b) ∈ f.val}
 
 theorem isCofinal_definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α]
