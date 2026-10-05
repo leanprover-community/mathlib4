@@ -721,7 +721,7 @@ protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
   · simpa [hp] using zero_notMem_normalizedFactors _
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
 
-theorem natDegree_eq_sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
+theorem sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
     ((normalizedFactors a).map natDegree).sum = a.natDegree := by
   by_cases h0: a = 0
   · simp [h0]
