@@ -23,9 +23,6 @@ This file provides `Submodule.map₂`, which is later used to implement `Submodu
 This file is quite similar to the n-ary section of `Mathlib/Data/Set/Basic.lean` and to
 `Mathlib/Order/Filter/NAry.lean`. Please keep them in sync.
 
-## TODO
-
-Generalize this file to semilinear maps.
 -/
 
 @[expose] public section
@@ -42,17 +39,21 @@ variable {ι : Sort uι} {R M N P : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [Module R M] [Module R N] [Module R P]
 
-/-- Map a pair of submodules under a bilinear map.
+/-- Map a pair of submodules under a semilinear map.
 
 This is the submodule version of `Set.image2`. -/
-def map₂ (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) : Submodule R P :=
+def map₂ {σ τ : R →+* R} [RingHomSurjective τ]
+    (f : M →ₛₗ[σ] N →ₛₗ[τ] P) (p : Submodule R M)
+    (q : Submodule R N) : Submodule R P :=
   ⨆ s : p, q.map (f s)
 
-theorem apply_mem_map₂ (f : M →ₗ[R] N →ₗ[R] P) {m : M} {n : N} {p : Submodule R M}
+theorem apply_mem_map₂ {σ τ : R →+* R} [RingHomSurjective τ]
+    (f : M →ₛₗ[σ] N →ₛₗ[τ] P) {m : M} {n : N} {p : Submodule R M}
     {q : Submodule R N} (hm : m ∈ p) (hn : n ∈ q) : f m n ∈ map₂ f p q :=
   (le_iSup _ ⟨m, hm⟩ : _ ≤ map₂ f p q) ⟨n, hn, by rfl⟩
 
-theorem map₂_le {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q : Submodule R N}
+theorem map₂_le {σ τ : R →+* R} [RingHomSurjective τ]
+    {f : M →ₛₗ[σ] N →ₛₗ[τ] P} {p : Submodule R M} {q : Submodule R N}
     {r : Submodule R P} : map₂ f p q ≤ r ↔ ∀ m ∈ p, ∀ n ∈ q, f m n ∈ r :=
   ⟨fun H _m hm _n hn => H <| apply_mem_map₂ _ hm hn, fun H =>
     iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
