@@ -6,11 +6,12 @@ Authors: Kalle Kytölä, Yury Kudryashov, Michał Świętek
 module
 
 public import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.Normed.Operator.Completeness
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
+public import Mathlib.Analysis.LocallyConvex.WeakDual
+
+import Mathlib.Analysis.Normed.Operator.Completeness
 import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
-public import Mathlib.Analysis.LocallyConvex.WeakDual
 
 /-!
 # Weak dual of normed space

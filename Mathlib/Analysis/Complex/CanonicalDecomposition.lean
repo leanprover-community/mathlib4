@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
+
 import Mathlib.Analysis.Meromorphic.RCLike
 import Mathlib.Analysis.Normed.Module.Connected
 

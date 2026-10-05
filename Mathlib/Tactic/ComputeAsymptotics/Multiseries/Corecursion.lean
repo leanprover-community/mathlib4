@@ -9,6 +9,7 @@ public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Topology.MetricSpace.UniformConvergence
 public import Mathlib.Topology.MetricSpace.Contracting
 public import Mathlib.Data.Seq.Defs
+
 import Mathlib.Tactic.ENatToNat
 
 /-!

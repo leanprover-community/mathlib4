@@ -5,10 +5,11 @@ Authors: Floris van Doorn
 -/
 module
 
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Function.Holder
 import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Convolution of functions

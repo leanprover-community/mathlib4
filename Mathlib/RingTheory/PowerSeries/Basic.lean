@@ -6,9 +6,10 @@ Authors: Johan Commelin, Kenny Lau, Ralf Stephan
 module
 
 public import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Tactic.MoveAdd
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.Ideal.Basic
+
+import Mathlib.Tactic.MoveAdd
 
 /-!
 # Formal power series (in one variable)

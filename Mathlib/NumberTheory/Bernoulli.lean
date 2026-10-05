@@ -6,11 +6,12 @@ Authors: Johan Commelin, Kevin Buzzard, Seewoo Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Algebra.Order.Star.Basic
+
+import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 
 /-!
 # Bernoulli numbers
