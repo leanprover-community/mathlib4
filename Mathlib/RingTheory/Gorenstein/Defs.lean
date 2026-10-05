@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
