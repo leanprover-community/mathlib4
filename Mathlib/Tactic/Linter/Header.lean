@@ -5,11 +5,11 @@ Authors: Michael Rothgang, Damiano Testa, Thomas R. Murrills
 -/
 module
 
-public meta import Lean.Elab.Command
+public meta import ImportGraph.Imports.Pretty
+public meta import Lean.Linter.Basic
 public meta import Std.Sync.Mutex
 public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DirectoryDependency
-public meta import Lean.Linter.Basic
 public import Std.Sync.Mutex
 
 /-!
@@ -47,7 +47,7 @@ a module doc-string (unless the command is exempted for some reason).
 
 meta section
 
-open Lean Elab Command Linter
+open ImportGraph Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -233,34 +233,15 @@ public register_option linter.style.header.license : String := {
   descr := "The text required as the second line of the copyright header."
 }
 
-/-- Extends `Import` with ``stx : TSyntax `Lean.Parser.Module.import`` to allow reporting at the
-given import. -/
-structure ImportRef extends Import where
-  stx : TSyntax ``Parser.Module.import
-
-/-- Returns the module `Ident` (following `(public)? (meta)? import (all)?` of a given
-`ImportRef`. -/
-def ImportRef.getIdent (i : ImportRef) : Ident :=
-  match i.stx with
-  | `(Parser.Module.import|
-      $[public]? $[meta]? import $[all]? $n:ident) => n
-  | _ => ⟨.missing⟩
-
-/-- Destructures header syntax (`(module)? (prelude)? $imports*`) into an array of `ImportRef`s. -/
-def headerToImportRefs (header : TSyntax ``Parser.Module.header) : Array ImportRef :=
-  match header with
-  | `(Parser.Module.header| $[module%$moduleTk]? $[prelude]? $imports*) =>
-    imports.filterMap fun
-      | stx@`(Parser.Module.import|
-          $[public%$publicTk]? $[meta%$metaTk]? import $[all%$allTk]? $n:ident) =>
-        some {
-          module := n.getId
-          importAll := allTk.isSome
-          isExported := publicTk.isSome || moduleTk.isNone
-          isMeta := metaTk.isSome
-          stx := ⟨stx⟩ }
-      | _ => none
-  | _ => #[]
+/--
+Whether to reformat import blocks in the module system according to the style convention. Note that
+this only has an effect if `linter.style.header` is `true` and the header is participating in the
+module system. This does not remove redundant imports.
+-/
+public register_option linter.style.header.imports : Bool := {
+  defValue := true
+  descr := "Whether to reformat import blocks according to the style convention."
+}
 
 /-- Returns the `module` token from header syntax, if there is one. -/
 def headerToModuleTk? (header : TSyntax ``Parser.Module.header) : Option Syntax :=
@@ -334,6 +315,28 @@ def duplicateImportsCheck (imports : Array ImportRef) : CommandElabM Unit := do
     else
       importsSoFar := importsSoFar.insert imp.toImport
 
+/--
+If we are in the module system and `linter.style.header.imports` is `true`, reformat imports.
+-/
+def formatImports (imports : Array (ImportRef × Import.Whitespace)) : CommandElabM Unit := do
+  unless
+    (← getEnv).header.isModule && getLinterValue linter.style.header.imports (← getLinterOptions)
+  do
+    return
+  let some (lastImportRef, _) := imports.back? | return
+  let impsRef := mkNullNode <| imports.map (·.1.stx)
+  let some (msg, errs) ← liftCoreM <|
+      Import.mkImportSuggestionMessage impsRef (imports.map (·.1.toImport)) imports
+    | return
+  -- Note: potentially, we should just bail if there are errors.
+  if errs.isEmpty then
+    -- Note: the widget nature of `diffGranularity := .word` effectively gives us a newline
+    -- before `{msg}`, meaning we don't need one here.
+    logWarningAt lastImportRef.stx m!"Imports can be reformatted:{msg}"
+  else
+    logWarningAt lastImportRef.stx m!"Imports can be reformatted, but some comments could not be \
+      carried over. Please review the comment that will be inserted after the imports.\n{msg}"
+
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless getLinterValue linter.style.header (← getLinterOptions) do
@@ -376,7 +379,9 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- Re-parse the header slowly, to get the leading whitespace and nice source locations for imports
   let (headerStx, s, log) ← Parser.parseHeader (Parser.mkInputContext map.source (← getFileName))
   if log.hasErrors then return
-  let importRefs := headerToImportRefs headerStx
+  let importRefsWithWhitespace := headerToImportRefsWithWhitespace headerStx
+  formatImports importRefsWithWhitespace
+  let importRefs := importRefsWithWhitespace.map (·.1)
   -- Report on broad or duplicate imports.
   broadImportsCheck importRefs mainModule
   duplicateImportsCheck importRefs
