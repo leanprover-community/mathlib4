@@ -72,7 +72,7 @@ theorem ofNat_mem_unitary [Nonempty n] {k : ℕ} [k.AtLeastTwo] :
 /-- A reindexed unitary matrix is unitary. -/
 @[simp]
 theorem submatrix_equiv_mem_unitary {A : Matrix m m R} {e₁ e₂ : n ≃ m} :
-    A.submatrix e₁ e₂ ∈ unitary (Matrix n n R) ↔ A ∈ unitary _ := by
+    A.submatrix e₁ e₂ ∈ unitary (Matrix n n R) ↔ A ∈ unitary (Matrix n n R) := by
   simp_rw [Unitary.mem_iff, star_eq_conjTranspose, conjTranspose_submatrix,
     submatrix_mul_equiv, submatrix_equiv_eq_one_iff]
 
