@@ -14,7 +14,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 A typeclass for categories with all countable (co)limits.
 
 We also prove that all cofiltered limits over countable preorders are isomorphic to sequential
-limits, see `sequentialFunctor_initial`.
+limits, see `IsCofiltered.sequentialFunctor_initial`, and dually for filtered colimits, see
+`IsFiltered.sequentialFunctor_final`.
 
 ## Projects
 
@@ -22,7 +23,7 @@ limits, see `sequentialFunctor_initial`.
   implying that all cofiltered limits over countable categories are isomorphic to sequential
   limits.
 
-* Prove the dual result for filtered colimits.
+* Prove the dual result for filtered colimits over countable categories.
 
 -/
 
