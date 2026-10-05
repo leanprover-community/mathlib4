@@ -23,8 +23,42 @@ namespace CategoryTheory.Inserter
 
 universe w
 
-section
+namespace Accessible
 -- Recall everything in the section below private.
+
+open Limits in
+/-- In a category `C`, given a diagram `F : J ⥤ C` where `J` is κ-filtered
+and a commutative diagram
+```
+X₀ ---> X₁ ------> X₂
+|                  |
+v                  v
+X₃ --> F(j₀) --> colim F
+```
+where X₁ is κ-presentable,
+there exists an index j₁ and a commutative diagram
+```
+X₀ -------------> X₁ --------> X₂
+|                 |            |
+v                 v            v
+X₃ --> F(j₀) -> F(j₁) ----> colim F
+```
+-/
+lemma exists_of_hexagon {D J : Type*} [Category* D] [Category* J]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalFiltered J κ] [EssentiallySmall.{w} J] {F : J ⥤ D} {c : Limits.Cocone F}
+    (hc : IsColimit c) {X₀ X₁ X₂ X₃ : D} [IsCardinalPresentable X₀ κ] [IsCardinalPresentable X₁ κ]
+    (f₀₁ : X₀ ⟶ X₁) (f₁₂ : X₁ ⟶ X₂) (f₀₃ : X₀ ⟶ X₃)
+    {j₀ : J} (g : X₃ ⟶ F.obj j₀) (q : X₂ ⟶ c.pt)
+    (h : f₀₁ ≫ f₁₂ ≫ q = f₀₃ ≫ g ≫ c.ι.app j₀) :
+    ∃ (j₁ : J) (u : j₀ ⟶ j₁) (q' : X₁ ⟶ F.obj j₁),
+      (f₀₁ ≫ q' = f₀₃ ≫ g ≫ F.map u) ∧ (f₁₂ ≫ q = q' ≫ c.ι.app j₁) := by
+  obtain ⟨j₁₀, u', v', hu'⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hc
+    (f₁₂ ≫ q) j₀
+  have := isFiltered_of_isCardinalFiltered J κ
+  obtain ⟨j₁, u, w⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hc (f₀₁ ≫ v')
+    (f₀₃ ≫ g ≫ F.map u') (by simpa [hu'])
+  exact ⟨j₁, u' ≫ u, v' ≫ F.map u, by grind, by simp [hu']⟩
 
 /- The setup for accessibility of inserter categories, from Positselski’s paper:
 `F G : K ⥤ L` are a parallel pair of κ-accessible functors between κ-accessible categories
@@ -122,10 +156,11 @@ open Order (succ)
 /-- Macro for a quick discharger tactic that we will repeatedly use. This is an
 optimized grind call for our use case (quick combinations of inequalities). -/
 local macro "valid" : tactic =>
-  `(tactic| grind (ematch := 3) (gen := 3) +order -ring +lia -inj -ac only
-    [Subtype.mk_le_mk, Subtype.mk_lt_mk, Order.le_succ_iff_eq_or_le, Order.lt_succ_iff, Set.mem_Iic,
-      Set.mem_Iio, Order.IsSuccLimit.succ_lt, → Order.succ_lt_succ, → bot_unique,
-      not_lt_bot])
+  `(tactic| grind (ematch := 3) (gen := 3)
+    +order -ext -etaStruct -extAll -ring +lia -inj -ac -funCC -linarith -mbtc only
+      [Subtype.mk_le_mk, Subtype.mk_lt_mk, Order.le_succ_iff_eq_or_le, Order.lt_succ_iff,
+        Set.mem_Iic, Set.mem_Iio, Order.IsSuccLimit.succ_lt, → Order.succ_lt_succ, → bot_unique,
+        not_lt_bot])
 
 /-! In the following, we are going to move very frequently between Λ, Set.Iio _ and Set.Iic _.
 Most of the time, this requires term annotations and rather boring grind-able proof obligations.
@@ -195,7 +230,6 @@ theorem exists_succ_of_hasCardinalLT {E : Inserter F G} {i : Λ}
   have (X : K) : Limits.PreservesColimitsOfShape (CostructuredArrow O₀.ι X) F :=
     F.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
   let hcolimGT := Limits.isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
-  let hcolimFT := Limits.isColimitOfPreserves F (O₀.ι.denseAt E.obj) -- F(E.obj) ≅ colim_ξ F(T_ξ)
   obtain ⟨ξ₂₁, v₀, v₁, hv₀⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimGT
     (F.map ξ₁.hom ≫ E.hom) ξ₁
   -- At this point, the squares required to make that into a functor are not necessarily natural
@@ -208,11 +242,9 @@ theorem exists_succ_of_hasCardinalLT {E : Inserter F G} {i : Λ}
       (b.ψ j.1 i j.property le_rfl ≫ G.map v₀.left.hom)
       (F.map (b.ξ.map <| homOfLE <| j.property.le).left.hom ≫ v₁)
       (by
-        dsimp at *
+        dsimp at hv₀
         simp only [Category.id_comp] at hv₀
-        simp only [homOfLE_leOfHom, Category.id_comp, Category.assoc, hv₀]
-        simp_rw [← Functor.map_comp]
-        simp [ξ₁, b.sq₁ j j.prop, ← Functor.map_comp_assoc])
+        simp [hv₀, ← Functor.map_comp, ξ₁, b.sq₁ j j.prop, ← Functor.map_comp_assoc])
     exact ⟨uij, vij, by simpa using h⟩
   choose u ν huν using Uspec
   have h' : HasCardinalLT (Set.Iio i) κ := by
@@ -846,8 +878,10 @@ lemma positselski_4_5 [OrderBot Λ] (hΛ : HasCardinalLT Λ κ)
     ∃ (B : Inserter F G) (_ : IsCardinalPresentable B.obj κ) (f : B ⟶ E) (g : T ⟶ B.obj),
       σ ≫ G.map g = F.map u ≫ F.map g ≫ B.hom ∧
       g ≫ f.hom = v := by
-  -- First, we summon a diagram to write T as a κ-filtered colimits of κ-filtered objects.
   let O₀ := isCardinalPresentable K κ -- shorthand to make things a bit more compact.
+  -- local grind helper : having this in context helps
+  have _ {x y : CostructuredArrow O₀.ι E.obj} (f : x ⟶ y) : f.left.hom ≫ y.hom = x.hom := by simp
+  -- First, we summon a diagram to write T as a κ-filtered colimits of κ-filtered objects.
   have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
   let hcolimT := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ T_ξ
   have (X : K) : PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
@@ -857,52 +891,35 @@ lemma positselski_4_5 [OrderBot Λ] (hΛ : HasCardinalLT Λ κ)
   obtain ⟨ξ₀, v₀, hv₀⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimT v
   dsimp at v₀ hv₀
   simp only [Category.id_comp] at hv₀
-  -- local grind helper :
-  have help {x y : CostructuredArrow O₀.ι E.obj} (f : x ⟶ y) :
-      f.left.hom ≫ y.hom = x.hom := by
-    simp
   obtain ⟨ξ₁₀, ψ₀₀, hψ₀₀⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimGT
     (F.map ξ₀.hom ≫ E.hom)
   dsimp at ψ₀₀ hψ₀₀
-  -- let’s continue : we want to have...
-  obtain ⟨ξ₁, ψ₀₁, hψ₀₁⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hcolimGT
-    (F.map u ≫ F.map v₀ ≫ ψ₀₀ ≫ G.map (IsFiltered.rightToMax ξ₀ ξ₁₀).left.hom)
-    (σ ≫ G.map v₀ ≫ G.map (IsFiltered.leftToMax ξ₀ ξ₁₀).left.hom)
-    (by dsimp; grind)
-  dsimp at ψ₀₀ hψ₀₁
-  let u₀ : ξ₀ ⟶ ξ₁ := IsFiltered.leftToMax _ _ ≫ ψ₀₁
-  let ψ₀ : F.obj ξ₀.left.obj ⟶ G.obj ξ₁.left.obj :=
-    ψ₀₀ ≫ G.map (IsFiltered.rightToMax ξ₀ ξ₁₀).left.hom ≫ G.map ψ₀₁.left.hom
-  -- "Then, the heptagonal diagram commutes"
-  have he1 : σ ≫ G.map v₀ ≫ G.map u₀.left.hom = F.map u ≫ F.map v₀ ≫ ψ₀ := by
-    dsimp [u₀, ψ₀]
-    grind
-  -- "Notice that the pentagonal diagram commutes"
-  have he2 : ψ₀ ≫ G.map ξ₁.hom = F.map u₀.left.hom ≫ F.map ξ₁.hom ≫ E.hom := by
-    dsimp [u₀, ψ₀]
-    grind
+  obtain ⟨ξ₁, u₀, ψ₀, hψ₀₁⟩ := exists_of_hexagon κ hcolimGT
+    (F.map u ≫ F.map v₀) (F.map ξ₀.hom) σ (G.map v₀) E.hom (by dsimp; grind)
+  dsimp at u₀ ψ₀ hψ₀₁
   have : NoMaxOrder κ.ord.ToType := Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
-  -- Anyway, we now construct the thing, let’s take bot
-  let data : CategoryTheory.Functor.WellOrderInductionData
-      (functor κ Λ E) :=
+  -- Now, we construct a chain by iterating.
+  -- This requires a fair amount of setup: first the induction data
+  let data : CategoryTheory.Functor.WellOrderInductionData (functor κ Λ E) :=
     Functor.WellOrderInductionData.ofExists
       (fun i hi ↦ surjective_trunc κ Λ hΛ E i)
       (fun j hj S ↦ ISeg.exists_extension E j hj S hΛ)
+  -- The initial segment from which we build the chain, corresponding to ξ₀ ⟶ ξ₁ already built.
   let D₀ : PositselskiInductionDataUpTo κ Λ E (succ ⊥) := .mkSuccBot Λ ξ₀ ξ₁ u₀ ψ₀ (by
+    have he2 : ψ₀ ≫ G.map ξ₁.hom = F.map u₀.left.hom ≫ F.map ξ₁.hom ≫ E.hom := by grind
     rwa [← dsimp% CostructuredArrow.w u₀, Functor.map_comp, Category.assoc, Eq.comm])
-  let S : Seg κ Λ E :=
-    (data.surjective' (succ ⊥) (not_isSuccLimit_succ ⊥) D₀).choose
+  -- The extended segment
+  let S : Seg κ Λ E := (data.surjective' (succ ⊥) (not_isSuccLimit_succ ⊥) D₀).choose
   have S_val : S.val (Opposite.op <| succ ⊥) = D₀ :=
     (data.surjective' (succ ⊥) (not_isSuccLimit_succ ⊥) D₀).choose_spec
+  -- Shorthands around S_val with prescribed types
   let Ξ₀ : Λ ⥤ CostructuredArrow O₀.ι E.obj := S.functor
   have e₀ : Ξ₀.obj ⊥ = ξ₀ :=
     (S.ξ_obj_eq ⊥ (succ ⊥) (le_succ _)).trans <|
-      (congr($(S_val).ξ.obj ⟨⊥, le_succ ⊥⟩)).trans <|
-        mkSuccBot_bot_eq ..
+      (congr($(S_val).ξ.obj ⟨⊥, le_succ ⊥⟩)).trans <| mkSuccBot_bot_eq ..
   have e₁ : Ξ₀.obj (succ ⊥) = ξ₁ :=
     (S.ξ_obj_eq (succ ⊥) (succ ⊥) le_rfl).trans <|
-      (congr($(S_val).ξ.obj ⟨succ ⊥, le_rfl⟩)).trans <|
-        mkSuccBot_succ_bot_eq ..
+      (congr($(S_val).ξ.obj ⟨succ ⊥, le_rfl⟩)).trans <| mkSuccBot_succ_bot_eq ..
   have e₂ : Ξ₀.map (homOfLE <| le_succ ⊥) = eqToHom e₀ ≫ u₀ ≫ eqToHom e₁.symm := by
     dsimp [Ξ₀, Seg.functor]
     rw [Functor.congr_hom (congr($(S_val).ξ)), mkSuccBot_map_homOfLE_eq]
@@ -917,32 +934,32 @@ lemma positselski_4_5 [OrderBot Λ] (hΛ : HasCardinalLT Λ κ)
     dsimp [Θ, Seg.ψNatTrans, Seg.ψ]
     rw [congr_ψ _ _ S_val, mkSuccBot_ψ]
     simp [Seg.ξObjIso, Seg.ξ]
-  -- need to work out that colimit but should be ok
+  -- Finally, we can use Ξ₀ : its colimit exists and is κ-presentable.
   have : O₀.IsClosedUnderColimitsOfShape Λ :=
     CategoryTheory.isClosedUnderColimitsOfShape_isCardinalPresentable K (by
       rwa [hasCardinalLT_arrow_iff_of_isThin _ κ (Cardinal.IsRegular.aleph0_le Fact.out)])
   have : HasColimitsOfShape Λ O₀.FullSubcategory := hasColimitsOfShape_of_closedUnderColimits ..
+  let U := colimit Ξ₀
+  -- them map t := colim_i (ψ : F ξ_i ⟶ G ξᵢ₊₁), identifies to a map F (colim ξᵢ) ⟶ G (colim ξᵢ)
+  let t := colimMap Θ
   have : (succ_mono (α := Λ)).functor.Final :=
     (Monotone.final_functor_iff _).mpr fun j ↦ ⟨j, le_succ j⟩
-  let U := colimit Ξ₀
-  let t := colimMap Θ
   let t1 : F.obj U.left.obj ⟶ G.obj U.left.obj :=
     (preservesColimitIso (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) Ξ₀).hom ≫ t ≫
     (Functor.Final.colimitIso (succ_mono.functor) _).hom ≫ (preservesColimitIso _ _).inv
   let UU : Inserter F G := ⟨t1⟩
   refine ⟨UU, ?_, ⟨U.hom, ?_⟩,
     v₀ ≫ (eqToHom e₀.symm).left.hom ≫ (colimit.ι Ξ₀ ⊥).left.hom, ?_, ?_⟩
-  · dsimp [U, UU, t1]
-    infer_instance
-  · dsimp [U, UU, t1]
-    apply isColimitOfPreserves (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F)
+  · infer_instance
+  · apply isColimitOfPreserves (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F)
       (colimit.isColimit Ξ₀) |>.hom_ext
     intro j
     have e₁ := ι_preservesColimitIso_hom (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) Ξ₀ j
     dsimp at e₁
-    simp [← Functor.map_comp_assoc, reassoc_of% e₁, t, ← G.map_comp, Θ, Ξ₀,
+    simp [U, UU, t1, ← Functor.map_comp_assoc, reassoc_of% e₁, t, ← G.map_comp, Θ, Ξ₀,
       (S.sq₁ j (succ j) (lt_succ j)).symm]
   · have := ι_preservesColimitIso_hom (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) Ξ₀ ⊥
+    have he1 : σ ≫ G.map v₀ ≫ G.map u₀.left.hom = F.map u ≫ F.map v₀ ≫ ψ₀ := by grind
     dsimp at this
     simp [UU, t1, t, reassoc_of% this]
     simp [e₁, ← reassoc_of% he1, ← colimit.w Ξ₀ (homOfLE (le_succ ⊥) : ⊥ ⟶ _),
@@ -966,6 +983,7 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
   -- first, represent the object underlying E as a κ-filtered colimit of κ-presentable objects
   let O₀ := isCardinalPresentable K κ -- shorthand to make the writing more compact
   have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
+  let hcolimS := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ S_ξ
   have (X : K) : PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
     G.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
   let hcolimG := isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
@@ -979,7 +997,6 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
     have := (CostructuredArrow.left x).property
     simp only [O₁, ObjectProperty.prop_inverseImage_iff, proj_obj] at this
     infer_instance
-  let hcolimS := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ S_ξ
   refine ⟨fun ι v hι ↦ ?_, fun ι r p f hι hι' ↦ ?_⟩
   · -- There exists an index ξ₀ such that all the v_j factorizes through the index in K
     -- TODO: extract the part where we take an index and advance it by one.
@@ -996,27 +1013,26 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
     -- Following Positselski we also find a u : ξ₀ ⟶ ξ₁ with σ : F.obj ξ₀ ⟶ G.obj ξ₁ such that
     -- `F.map ξ₀.hom ≫ E.hom = σ ≫ G.map ξ₁.hom` and
     -- `F.map (t0 j) ≫ σ = (v j).hom.hom ≫ G.map (t0 j) ≫ G.map u`
-    obtain ⟨ξ₁, u, σ, h1, h2⟩ : ∃ (ξ₁ : CostructuredArrow O₀.ι E.obj) (u : ξ₀ ⟶ ξ₁)
-      (σ : F.obj ξ₀.left.obj ⟶ G.obj ξ₁.left.obj),
-      F.map ξ₀.hom ≫ E.hom = σ ≫ G.map ξ₁.hom ∧
-      ∀ (j : ι), F.map (t0 j) ≫ σ = (v j).left.obj.hom ≫ G.map (t0 j) ≫ G.map u.left.hom := by
-        obtain ⟨ξ₁, ν₁, σ, hξ₁₀⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimG
-          (F.map ξ₀.hom ≫ E.hom) ξ₀
-        dsimp at hξ₁₀ ν₁ σ
-        simp only [Category.id_comp] at hξ₁₀
-        have (j : ι) := IsCardinalPresentable.exists_eq_of_isColimit' κ hcolimG
-          (F.map (t0 j) ≫ σ) ((v j).left.obj.hom ≫ G.map (t0 j) ≫ G.map ν₁.left.hom) (by
-            simp [hξ₁₀, t0, ξ₀, hf0, ← Functor.map_comp_assoc, ← Functor.map_comp])
-        choose p1 p2 p3 using this
-        simp only [Functor.comp_obj, CostructuredArrow.proj_obj, ObjectProperty.ι_obj,
-          Functor.comp_map, CostructuredArrow.proj_map, ObjectProperty.ι_map, Category.assoc] at p3
-        obtain ⟨ξ₁', ν₁', u', h'⟩ := IsCardinalFiltered.wideSpan p2 hι
-        -- let ξ₁' := IsCardinalFiltered.coeq (fun i ↦ p2 i ≫ IsCardinalFiltered.toMax p1 hι i) hι
-        -- let ν₁' : ξ₀ ⟶ ξ₁' := ν₁ ≫ IsCardinalFiltered.toCoeq _ hι
-        let σ' : F.obj ξ₀.left.obj ⟶ G.obj ξ₁'.left.obj := σ ≫ G.map u'.left.hom
-        refine ⟨ξ₁', ν₁ ≫ u', σ', ?_, fun i ↦ ?_⟩
-        · simp [σ', ← G.map_comp, hξ₁₀]
-        · simp [← h' i, reassoc_of% p3, σ']
+    obtain ⟨ξ₁, u, σ, h1, h2⟩ :
+        ∃ (ξ₁ : CostructuredArrow O₀.ι E.obj) (u : ξ₀ ⟶ ξ₁)
+        (σ : F.obj ξ₀.left.obj ⟶ G.obj ξ₁.left.obj),
+        F.map ξ₀.hom ≫ E.hom = σ ≫ G.map ξ₁.hom ∧
+        ∀ (j : ι), F.map (t0 j) ≫ σ = (v j).left.obj.hom ≫ G.map (t0 j) ≫ G.map u.left.hom := by
+      obtain ⟨ξ₁, ν₁, σ, hξ₁₀⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimG
+        (F.map ξ₀.hom ≫ E.hom) ξ₀
+      dsimp at hξ₁₀ ν₁ σ
+      simp only [Category.id_comp] at hξ₁₀
+      have (j : ι) := IsCardinalPresentable.exists_eq_of_isColimit' κ hcolimG
+        (F.map (t0 j) ≫ σ) ((v j).left.obj.hom ≫ G.map (t0 j) ≫ G.map ν₁.left.hom) (by
+          simp [hξ₁₀, t0, ξ₀, hf0, ← Functor.map_comp_assoc, ← Functor.map_comp])
+      choose p1 p2 p3 using this
+      simp only [Functor.comp_obj, CostructuredArrow.proj_obj, ObjectProperty.ι_obj,
+        Functor.comp_map, CostructuredArrow.proj_map, ObjectProperty.ι_map, Category.assoc] at p3
+      obtain ⟨ξ₁', ν₁', u', h'⟩ := IsCardinalFiltered.wideSpan p2 hι
+      let σ' : F.obj ξ₀.left.obj ⟶ G.obj ξ₁'.left.obj := σ ≫ G.map u'.left.hom
+      refine ⟨ξ₁', ν₁ ≫ u', σ', ?_, fun i ↦ ?_⟩
+      · simp [σ', ← G.map_comp, hξ₁₀]
+      · simp [← h' i, reassoc_of% p3, σ']
     -- Then, we use the main lemma with ξ₀ and ξ₁
     obtain ⟨b, _, f, g, h₁, h₂⟩ :=
       positselski_4_5 κ Λ hΛ E (S := ξ₀.left.obj) (T := ξ₁.left.obj) σ u.left.hom ξ₁.hom
@@ -1059,6 +1075,7 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
     let f'' : b'.obj ⟶ E := f'
     use CostructuredArrow.mk (Y := b') f''
     let pt : ι := hι'.some
+    -- TODO: move to a better way fo constructing morphisms.
     use ⟨⟨⟨u ≫ (v ≫ ν₁₀ ≫ ν₁).left.hom ≫ g, ?_⟩⟩, ⟨rfl⟩, ?_⟩,
       ⟨⟨⟨(f pt).left.hom.hom ≫ u ≫ (v ≫ ν₁₀ ≫ ν₁).left.hom ≫ g, ?_⟩⟩, ⟨rfl⟩, ?_⟩
     · intro i
@@ -1090,12 +1107,123 @@ def U (E : Inserter F G) :
     { app X := 𝟙 _ }
     (𝟙 _)
 
+lemma final.nonempty_structured_arrow
+    [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inserter F G)
+    [HasColimitsOfShape Λ K] [HasColimitsOfShape Λ L]
+    [PreservesColimitsOfShape Λ F] [PreservesColimitsOfShape Λ G]
+    (p : CostructuredArrow (isCardinalPresentable K κ).ι E.obj) :
+    Nonempty (StructuredArrow p (U κ E)) := by
+  -- first, represent the object underlying E as a κ-filtered colimit of κ-presentable objects
+  let O₀ := isCardinalPresentable K κ -- shorthand to make the writing more compact
+  have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
+  let hcolimT := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ S_ξ
+  have (X : K) : PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
+    G.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
+  let hcolimG := isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
+  obtain ⟨ξ₀, u, hu⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimT p.hom
+  dsimp at u hu
+  simp only [Category.id_comp] at hu
+  obtain ⟨ξ₁, u', v', hu'⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimG
+    (F.map p.hom ≫ E.hom) ξ₀
+  dsimp at u' v' hu'
+  simp only [Category.id_comp] at hu'
+  obtain ⟨b, _, f, g, h₁, h₂⟩ :=
+    positselski_4_5 κ Λ hΛ E p.left.obj ξ₁.left.obj v' (u ≫ u'.left.hom) ξ₁.hom
+      (by simp [← Functor.map_comp_assoc, hu, hu'])
+  -- TODO: change to (Co)StructuredArrow.mk
+  exact ⟨⟨⟨()⟩,
+    ⟨⟨b, by simp only [O₁, ObjectProperty.prop_inverseImage_iff, proj_obj]; infer_instance⟩,
+      ⟨()⟩, f⟩,
+    ⟨⟨u ≫ u'.left.hom ≫ g⟩, ⟨rfl⟩, by simp [h₂, hu]⟩⟩⟩
+
 lemma final (E : Inserter F G) [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inserter F G)
     [HasColimitsOfShape Λ K] [HasColimitsOfShape Λ L]
     [PreservesColimitsOfShape Λ F] [PreservesColimitsOfShape Λ G] : (U κ E).Final := by
-  sorry
+  constructor
+  intro p
+  have : Nonempty (StructuredArrow p (U κ E)) := final.nonempty_structured_arrow κ Λ hΛ E p
+  apply CategoryTheory.zigzag_isConnected
+  intro r' r''
+  -- useful to have in context for simp_all
+  have r'w := r''.hom.w
+  have r''w := r'.hom.w
+  dsimp at r'w r''w
+  simp only [U_obj_hom, Category.comp_id] at r'w r''w
+  -- Reformulate the goal in a more unbundled way:
+  suffices H :
+      ∃ (u : Δ κ E) (f1 : r'.right ⟶ u) (f2 : r''.right ⟶ u),
+       f1.left.hom.hom ≫ u.hom.hom = r'.right.hom.hom ∧
+       f2.left.hom.hom ≫ u.hom.hom = r''.right.hom.hom ∧
+       r'.hom.left.hom ≫ f1.left.hom.hom = r''.hom.left.hom ≫ f2.left.hom.hom by
+    obtain ⟨u, f1, f2, h1, h2, h3⟩ := H
+    let u' : StructuredArrow p (U κ E) := StructuredArrow.mk (T := U κ E)
+      (CostructuredArrow.homMk ⟨(r'.hom.left.hom ≫ f1.left.hom.hom)⟩ (by simp_all))
+    calc
+      Zigzag r' u' := .of_zag <| .of_hom <| StructuredArrow.homMk f1
+      Zigzag u' r'' := .of_zag <| .of_inv <| StructuredArrow.homMk f2
+  -- As usual: write E.obj as a colimit, and G (E.obj) as well
+  let O₀ := isCardinalPresentable K κ -- shorthand to make the writing more compact
+  have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
+  let hcolimT := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ T_ξ
+  have (X : K) : PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
+    G.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
+  let hcolimG := isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
+  -- TODO: automate this (this is about Δ)
+  have (q : StructuredArrow p (U κ E)) :
+      IsCardinalPresentable ((O₁ κ F G).ι.obj q.right.left).obj κ := by
+    have := q.right.left.property
+    simp only [ObjectProperty.prop_inverseImage_iff, proj_obj] at this
+    dsimp
+    infer_instance
+  have (q : StructuredArrow p (U κ E)) :
+      IsCardinalPresentable (F.obj (CostructuredArrow.left q.right).obj.obj) κ := by
+    have := q.right.left.property
+    simp only [ObjectProperty.prop_inverseImage_iff, proj_obj] at this
+    infer_instance
+  obtain ⟨ξ₀, f₀, f₁, hf₀, hf₁, hsq⟩ :
+      ∃ (ξ₀ : CostructuredArrow O₀.ι E.obj)
+        (f₀ : r'.right.left.obj.obj ⟶ ξ₀.left.obj)
+        (f₁ : r''.right.left.obj.obj ⟶ ξ₀.left.obj),
+        f₀ ≫ ξ₀.hom = r'.right.hom.hom ∧ f₁ ≫ ξ₀.hom = r''.right.hom.hom ∧
+        r'.hom.left.hom ≫ f₀ = r''.hom.left.hom ≫ f₁ := by
+    obtain ⟨ξ₀₀, u₀₀, hu₀₀⟩ :=
+      IsCardinalPresentable.exists_hom_of_isColimit κ hcolimT r'.right.hom.hom
+    obtain ⟨ξ₀, u₀, v₀, hu₀⟩ :=
+      IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimT r''.right.hom.hom ξ₀₀
+    dsimp at u₀₀ hu₀₀ u₀ v₀ hu₀
+    simp only [Category.id_comp] at hu₀₀ hu₀
+    sorry
+  obtain ⟨ξ₁, u, σ, hsq', hl, hr⟩ :
+    ∃ (ξ₁ : CostructuredArrow O₀.ι E.obj)
+      (u : ξ₀ ⟶ ξ₁)
+      (σ : F.obj ξ₀.left.obj ⟶ G.obj ξ₁.left.obj),
+      F.map ξ₀.hom ≫ E.hom = σ ≫ G.map ξ₁.hom ∧
+      (F.map f₀ ≫ σ = r'.right.left.obj.hom ≫ G.map f₀ ≫ G.map u.left.hom) ∧
+      (F.map f₁ ≫ σ = r''.right.left.obj.hom ≫ G.map f₁ ≫ G.map u.left.hom) := by
+    /-
+    obtain ⟨ξ₁₀, u₁₀, v₁₁, hu₁₀, hu₁₀'⟩ :=
+      exists_of_hexagon κ hcolimG (F.map u₀₀ ≫ F.map u₀.left.hom) (F.map ξ₀.hom)
+        r'.right.left.obj.hom (G.map u₀₀) E.hom
+        (by simp [← Functor.map_comp_assoc, ← Functor.map_comp, hu₀₀])
+    obtain ⟨ξ₁₁, u₁, v₁, hu₁, hu₁'⟩ :=
+      exists_of_hexagon κ hcolimG (F.map v₀) (F.map ξ₀.hom)
+        r''.right.left.obj.hom (G.map v₀) E.hom
+        (by simp [← Functor.map_comp_assoc, ← Functor.map_comp, hu₀])
+    -/
+    sorry
+  --obtain ⟨ξ₁, q', t', ht'⟩ := IsFiltered.span (u₁₀) (u₀ ≫ u₁)
+  obtain ⟨b, _, u₁, v₁, hu₁, hv₁⟩ :=
+    positselski_4_5 κ Λ hΛ E ξ₀.left.obj ξ₁.left.obj σ u.left.hom ξ₁.hom (by
+      simp [← hsq', ← F.map_comp_assoc])
+  let b' : (O₁ κ F G).FullSubcategory :=
+    ⟨b, by simp only [O₁, ObjectProperty.prop_inverseImage_iff, proj_obj]; infer_instance⟩
+  use CostructuredArrow.mk (T := E) (Y := b') u₁
+  exact ⟨
+    CostructuredArrow.homMk (⟨⟨f₀ ≫ u.left.hom ≫ v₁, (by simp [b', ← hu₁, reassoc_of% hl])⟩⟩),
+    CostructuredArrow.homMk (⟨⟨f₁ ≫ u.left.hom ≫ v₁, (by simp [b', ← hu₁, reassoc_of% hr])⟩⟩),
+    (by simp [hv₁, hf₀]), (by simp [hv₁, hf₁]), (by simp [reassoc_of% hsq])⟩
 
-end
+end Accessible
 
 /-- Let `Λ < κ` be a pair of infinite cardinals such that `κ` is regular. Assume that
 - `K` and `L` are `κ`-accessible categories with colimits of `Λ`-chains.
