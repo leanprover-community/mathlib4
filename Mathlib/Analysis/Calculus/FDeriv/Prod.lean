@@ -6,8 +6,10 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov, Eric Wieser
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Const
 public import Mathlib.Analysis.Calculus.FDeriv.Linear
+public import Mathlib.Topology.Algebra.Module.Equiv.Pi
+
+import Mathlib.Analysis.Calculus.FDeriv.Const
 
 /-!
 # Derivative of the Cartesian product of functions

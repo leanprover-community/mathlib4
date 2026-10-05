@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ExactSequence
-public import Mathlib.Algebra.Homology.ShortComplex.Limits
-public import Mathlib.CategoryTheory.Abelian.Refinements
+
+import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # The snake lemma
@@ -110,8 +110,8 @@ noncomputable def op : SnakeInput Cᵒᵖ where
   v₀₁ := opMap S.v₂₃
   v₁₂ := opMap S.v₁₂
   v₂₃ := opMap S.v₀₁
-  w₀₂ := congr_arg opMap S.w₁₃
-  w₁₃ := congr_arg opMap S.w₀₂
+  w₀₂ := congr(opMap $S.w₁₃)
+  w₁₃ := congr(opMap $S.w₀₂)
   h₀ := isLimitForkMapOfIsLimit' (ShortComplex.opEquiv C).functor _
       (CokernelCofork.IsColimit.ofπOp _ _ S.h₃)
   h₃ := isColimitCoforkMapOfIsColimit' (ShortComplex.opEquiv C).functor _
@@ -491,7 +491,7 @@ which is `pullback S.L₁.g S.v₀₁.τ₃`. -/
 noncomputable def functorP : SnakeInput C ⥤ C where
   obj S := S.P
   map f := pullback.map _ _ _ _ f.f₁.τ₂ f.f₀.τ₃ f.f₁.τ₃ f.f₁.comm₂₃.symm
-      (congr_arg ShortComplex.Hom.τ₃ f.comm₀₁.symm)
+      congr(ShortComplex.Hom.τ₃ $f.comm₀₁.symm)
 
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by
