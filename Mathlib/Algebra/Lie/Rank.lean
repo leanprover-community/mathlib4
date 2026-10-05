@@ -6,7 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Lie.EngelSubalgebra
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Module.LinearMap.Polynomial
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 
