@@ -1,10 +1,9 @@
-# Cross-reference diff (post-build)
-# Comments on a PR with the cross-references it adds, each as a clickable link.
-#
-# - Reads `crossrefs.json` from the build's `import-graph` artifact (written by
-#   `scripts/export_crossrefs.lean`; see `build_template.yml`'s `post_steps`) and
-#   subtracts the same file from the master build at the PR's merge base.
-# - Posts or updates a marker-keyed comment on the PR.
+# Post-build workflow that comments on a PR with the cross-references it adds,
+# each as a clickable link, after each successful PR build. Consumes the
+# `crossrefs.json` in the `import-graph` artifact uploaded by
+# `build_template.yml` on both sides (PR head + master merge-base), computes
+# the diff via mathlib-ci's `crossrefsDiff.py`, and posts or updates the
+# `#### Crossref diff` comment.
 
 name: Cross-reference diff (post-build)
 
@@ -15,6 +14,8 @@ on:
     workflows: ["continuous integration", "continuous integration (mathlib forks)"]
     types: [completed]
 
+# Per upstream PR (repo + branch), keep only the latest post-build run so rapid
+# pushes don't race to patch the comment with a stale diff.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
@@ -28,7 +29,7 @@ env:
   COMMENT_HEADER: '#### Crossref diff'
 
 jobs:
-  crossrefs:
+  diff:
     # The build never runs on a `pull_request` event: non-fork PRs build via
     # `build.yml` on `push` (head_branch = the PR branch), fork PRs via
     # `build_fork.yml` on `pull_request_target`. Accept both, and for `push`
@@ -42,7 +43,6 @@ jobs:
           github.event.workflow_run.event == 'push'
           && github.event.workflow_run.head_branch != 'master'
           && github.event.workflow_run.head_branch != 'nightly-testing'
-          && !startsWith(github.event.workflow_run.head_branch, 'lean-pr-testing-')
         )
       )
     runs-on: ubuntu-latest
@@ -137,8 +137,6 @@ jobs:
           run-id: ${{ steps.master-run.outputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Actions come from the base repo at the pinned workflow commit, not from
-      # the PR tree checked out above.
       - name: Checkout local actions
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
