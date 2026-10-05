@@ -572,7 +572,7 @@ theorem length_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.
 theorem darts_infix_iff_support_infix {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'}
     (hnil : ¬p.Nil) : p.darts <:+: q.darts ↔ p.support <:+: q.support := by
   rw [List.infix_iff_getElem?, List.infix_iff_getElem?]
-  constructor <;> refine fun ⟨k, hk, h⟩ ↦ ⟨k, by grind, fun i hi ↦ ?_⟩
+  refine ⟨.imp fun k ⟨hk, h⟩ ↦ ⟨by grind, fun i hi ↦ ?_⟩, .imp ?_⟩
   · rcases eq_or_ne i p.length with rfl | _
     · have := h <| p.length - 1
       grind [snd_darts_getElem]
