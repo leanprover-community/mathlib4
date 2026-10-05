@@ -565,7 +565,7 @@ noncomputable def hornArrowIsoSd' :
 noncomputable def hornArrowIsoSd :
     Arrow.mk (NonemptyFiniteChains.horn x₀).ι ≅
       Arrow.mk (sd.map (PartialOrder.horn x₀).ι) :=
-  hornArrowIsoSd' _ ≪≫ (Arrow.isoMk (asIso (sdToSd'.app _)) (asIso (sdToSd'.app _))).symm
+  hornArrowIsoSd' _ ≪≫ Arrow.isoMk (asIso (sdToSd'.app _)).symm (asIso (sdToSd'.app _)).symm
 
 end PartialOrder.NonemptyFiniteChains
 
@@ -597,8 +597,8 @@ open modelCategoryQuillen in
 lemma anodyneExtensions.sd {A B : SSet.{u}} {i : A ⟶ B} (hi : anodyneExtensions i) :
     anodyneExtensions (sd.map i) := by
   intro X Y p hp
-  rw [sdExAdjunction.hasLiftingProperty_iff]
   have : Fibration p := by rwa [modelCategoryQuillen.fibration_iff]
+  rw [sdExAdjunction.hasLiftingProperty_iff]
   exact hi _ (mem_fibrations _)
 
 end SSet
