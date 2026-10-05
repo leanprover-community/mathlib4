@@ -5,9 +5,10 @@ Authors: Riccardo Brasca, Sihan Su, Wan Lin, Xiaoyang Su
 -/
 module
 
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Data.List.Indexes
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
 # Noether normalization lemma
 

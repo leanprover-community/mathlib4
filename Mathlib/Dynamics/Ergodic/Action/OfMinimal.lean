@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Dynamics.Ergodic.Action.Regular
-import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
+
+import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 
 /-!
 # Ergodicity from minimality

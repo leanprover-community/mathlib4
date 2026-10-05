@@ -5,8 +5,9 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # Products and coproducts in `C` and `Cᵒᵖ`

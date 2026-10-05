@@ -6,8 +6,9 @@ Authors: Riccardo Brasca, Anthony Fernandes, Marc Robin
 module
 
 public import Mathlib.Algebra.Module.SpanRank
-import Mathlib.RingTheory.Noetherian.OfPrime
 public import Mathlib.RingTheory.PowerSeries.Inverse
+
+import Mathlib.RingTheory.Noetherian.OfPrime
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
 

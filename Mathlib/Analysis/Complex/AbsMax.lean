@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.InnerProductSpace.Convex
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Extr
+
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.Topology.Order.ExtrClosure
 
