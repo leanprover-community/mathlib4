@@ -5,9 +5,10 @@ Authors: Anatole Dedecker, Luigi Massacci
 -/
 module
 
-import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
+
+import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 
 /-!
 # Distributions

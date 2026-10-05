@@ -31,12 +31,12 @@ noncomputable def isometryEquivSumSquares [DecidableEq K] (w : ι → K) :
     IsometryEquiv (weightedSumSquares K w)
       (weightedSumSquares K (fun i => if w i = 0 then 0 else 1 : ι → K)) := by
   refine isometryEquivWeightedSumSquaresWeightedSumSquares (fun i => if h : w i = 0 then 1 else
-    Units.mk0 (IsAlgClosed.exists_eq_mul_self (w i)).choose (by
-      rw [← mul_self_eq_zero.ne, ← (IsAlgClosed.exists_eq_mul_self (w i)).choose_spec]
+    Units.mk0 (IsAlgClosed.isSquare (w i)).choose (by
+      rw [← mul_self_eq_zero.ne, ← (IsAlgClosed.isSquare (w i)).choose_spec]
       simpa using h)) ?_
   intro i
   split_ifs with h <;>
-    simp [h, pow_two, ← (IsAlgClosed.exists_eq_mul_self (w i : K)).choose_spec]
+    simp [h, pow_two, ← (IsAlgClosed.isSquare (w i : K)).choose_spec]
 
 /-- The isometry between a weighted sum of squares on an algebraically closed field and the
 sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/

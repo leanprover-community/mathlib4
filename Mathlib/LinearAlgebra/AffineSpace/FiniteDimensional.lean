@@ -5,12 +5,12 @@ Authors: Joseph Myers
 -/
 module
 
-import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
+import Mathlib.FieldTheory.Finiteness
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import Mathlib.RingTheory.Finiteness.Prod
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
@@ -738,7 +738,7 @@ theorem affineIndependent_iff_affineIndependent_collinear_ne {p₁ p₂ p₃ p :
     AffineIndependent k ![p₁, p₂, p] ↔ AffineIndependent k ![p₁, p₂, p₃] := by
   refine ⟨fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h hcol hne2,
     fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h ?_ hne1⟩
-  convert! hcol using 1
+  convert hcol using 1
   aesop
 
 variable (k) in
@@ -825,7 +825,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
   · rw [coe_eq_bot_iff] at hs
     rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan, direction_bot, finrank_bot,
       zero_add]
-    convert! zero_le_one' ℕ
+    convert zero_le_one' ℕ
     rw [← finrank_bot k V]
     convert! rfl <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀, add_comm]
