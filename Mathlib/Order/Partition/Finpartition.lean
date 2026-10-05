@@ -195,6 +195,16 @@ theorem ne_bot {b : α} (hb : b ∈ P.parts) : b ≠ ⊥ := by
 protected theorem disjoint : (P.parts : Set α).PairwiseDisjoint id :=
   P.supIndep.pairwiseDisjoint
 
+theorem ext_of_subset {a : α} {P Q : Finpartition a} (h : P.parts ⊆ Q.parts) : P = Q := by
+  ext x
+  refine ⟨fun hxP ↦ h hxP, fun hxQ ↦ of_not_not fun hxP ↦ Q.ne_bot hxQ ?_⟩
+  rw [← (Q.supIndep h hxQ hxP).eq_bot, id, P.sup_parts, eq_comm, inf_eq_left]
+  exact Q.le hxQ
+
+theorem ext_of_subset_iff {a : α} {P Q : Finpartition a} : P = Q ↔ P.parts ⊆ Q.parts where
+  mp h := h ▸ subset_rfl
+  mpr := ext_of_subset
+
 section Apply
 
 variable {β : Type*} {f : α → β}
@@ -462,6 +472,153 @@ theorem card_extend (P : Finpartition a) (b c : α) {hb : b ≠ ⊥} {hab : Disj
     {hc : a ⊔ b = c} : #(P.extend hb hab hc).parts = #P.parts + 1 :=
   card_insert_of_notMem fun h ↦ hb <| hab.symm.eq_bot_of_le <| P.le h
 
+section mergeAlong
+
+-- We make this a local instance so that `mergeAlong` has only `DecidableEq` as an assumption.
+attribute [local instance] SemilatticeSup.decidableLEOfDecidableEq
+
+/-- Given `P : Finpartition a` and `x ≤ a`, replaces a minimal subset of elements of `P` with their
+supremum such that this supremum is at least `x`. When the condition `x ≤ a` does not hold, returns
+the junk value `⊤`. -/
+def mergeAlong (P : Finpartition a) (x : α) : Finpartition a :=
+  .ofErase
+    (let Px := {y ∈ P.parts | ¬ x ≤ (P.parts.erase y).sup id};
+      insert (Px.sup id) (P.parts \ Px))
+    ((P.supIndep.subset sdiff_subset).insert <|
+      P.supIndep.disjoint_sup_sup (filter_subset ..) (sdiff_subset) disjoint_sdiff)
+    (by rw [sup_insert, id, ← sup_union, union_sdiff_of_subset (filter_subset ..), P.sup_parts])
+
+theorem le_mergeAlong (P : Finpartition a) (x : α) : P ≤ P.mergeAlong x := by
+  intro y hy
+  unfold mergeAlong
+  extract_lets Px
+  by_cases hy' : y ∈ Px
+  · refine ⟨Px.sup id, mem_erase_of_ne_of_mem (fun h ↦ ?_) (mem_insert_self ..),
+      le_sup (f := id) hy'⟩
+    rw [Finset.sup_eq_bot_iff] at h
+    exact P.ne_bot hy (h y hy')
+  · exact ⟨y, mem_erase_of_ne_of_mem (P.ne_bot hy) <| mem_insert_of_mem <| mem_sdiff.mpr ⟨hy, hy'⟩,
+      le_rfl⟩
+
+@[simp]
+theorem mergeAlong_bot (P : Finpartition a) : P.mergeAlong ⊥ = P := by
+  ext; simp +contextual [mergeAlong, P.ne_bot]
+
+@[simp]
+theorem mergeAlong_top (x : α) : mergeAlong (⊤ : Finpartition a) x = ⊤ :=
+  top_le_iff.mp <| le_mergeAlong ..
+
+theorem mergeAlong_eq_top_of_not_le (P : Finpartition a) {x : α} (hx : ¬ x ≤ a) :
+    P.mergeAlong x = ⊤ := by
+  by_cases! ha : a = ⊥
+  · subst a; exact Subsingleton.elim _ _
+  grw [eq_comm, ext_of_subset_iff, parts_top_subset, singleton_subset_iff]
+  refine mem_erase.mpr ⟨ha, mem_insert.mpr (.inl ?_)⟩
+  rw [filter_eq_self.mpr ?_, P.sup_parts]
+  grw [erase_subset, P.sup_parts]
+  exact fun _ _ ↦ hx
+
+@[gcongr]
+theorem mergeAlong_mono {P Q : Finpartition a} (hPQ : P ≤ Q) {x y : α} (hxy : x ≤ y) :
+    P.mergeAlong x ≤ Q.mergeAlong y := by
+  intro z hz
+  unfold mergeAlong at hz
+  extract_lets Px at hz
+  simp_rw [ofErase_parts, mem_erase, mem_insert] at hz
+  rcases hz with ⟨hz₁, rfl | hz₂⟩
+  on_goal 2 => exact hPQ.trans (Q.le_mergeAlong y) (sdiff_subset hz₂)
+  unfold mergeAlong
+  extract_lets Qy
+  exists Qy.sup id
+  suffices Px.sup id ≤ Qy.sup id by grind [ofErase_parts]
+  simp_rw [Finset.sup_le_iff, id, Px, mem_filter]
+  intro p ⟨hp, h⟩
+  obtain ⟨q, hq, hpq⟩ := hPQ hp
+  refine Finset.le_sup_of_le (mem_filter.mpr ⟨hq, ?_⟩) hpq
+  contrapose h
+  grw [hxy, h]
+  calc (Q.parts.erase q).sup id
+    _ = (Q.parts.erase q).sup id ⊓ a := by grind [inf_eq_left, Q.sup_parts]
+    _ ≤ (Q.parts.erase q).sup id ⊓ (q ⊔ {p' ∈ P.parts | ¬ p' ≤ q}.sup id) := by
+      gcongr
+      grind [P.sup_parts, Finset.sup_le_iff, le_sup_left, le_sup_right]
+    _ = ((Q.parts.erase q).sup id ⊓ q) ⊔ {p' ∈ P.parts | ¬ p' ≤ q}.sup id := by
+      rw [inf_sup_assoc_of_le _ ?_]
+      refine Finset.sup_le fun p' hp' ↦ ?_
+      obtain ⟨q', hq', hp'q'⟩ := hPQ (mem_of_mem_filter p' hp')
+      exact Finset.le_sup_of_le (by grind) hp'q'
+    _ = {p' ∈ P.parts | ¬ p' ≤ q}.sup id := by
+      have : Disjoint q ((Q.parts.erase q).sup id) :=
+        Q.supIndep (erase_subset _ _) hq (notMem_erase _ _)
+      rw [this.symm.eq_bot, bot_sup_eq]
+    _ ≤ (P.parts.erase p).sup id := by grind
+
+theorem exists_mem_mergeAlong_ge (P : Finpartition a) {x : α} (ha : a ≠ ⊥) (hx : x ≤ a) :
+    ∃ y ∈ (P.mergeAlong x).parts, x ≤ y := by
+  by_cases! hx' : x = ⊥
+  · grind [bot_le, parts_nonempty]
+  unfold mergeAlong
+  extract_lets Px
+  exists Px.sup id
+  suffices x ≤ Px.sup id by grind [ofErase_parts]
+  by_cases h : P.parts ⊆ Px
+  · grw [← h, P.sup_parts, hx]
+  · rw [← sdiff_nonempty] at h
+    have : (P.parts \ Px).inf' h P.parts.erase = Px := by grind [mem_inf']
+    grind [P.supIndep.sup_inf', le_inf']
+
+theorem mergeAlong_eq_self (P : Finpartition a) (x : α) (h : ∃ y ∈ P.parts, x ≤ y) :
+    P.mergeAlong x = P := by
+  apply ext_of_subset
+  unfold mergeAlong
+  extract_lets Px
+  intro y hy
+  rw [ofErase_parts, mem_erase, mem_insert] at hy
+  rcases hy with ⟨h', rfl | _⟩
+  on_goal 2 => grind
+  obtain ⟨y, hy, hxy⟩ := h
+  suffices Px ⊆ {y} by grind [subset_singleton_iff, sup_empty, sup_singleton]
+  rw [subset_singleton_iff']
+  intro z hz
+  rw [mem_filter] at hz
+  obtain ⟨hz, h⟩ := hz
+  contrapose! h
+  exact le_sup_of_le (mem_erase_of_ne_of_mem h.symm hy) hxy
+
+instance : RightCommutative (mergeAlong (a := a)) where
+  right_comm P := by
+    suffices ∀ x y, (P.mergeAlong x).mergeAlong y ≤ (P.mergeAlong y).mergeAlong x by grind
+    intro x y
+    by_cases! ha : a = ⊥
+    · subst a; exact Subsingleton.le _ _
+    by_cases! hya : ¬ y ≤ a
+    · simp [mergeAlong_eq_top_of_not_le _ hya]
+    suffices ∃ z ∈ ((P.mergeAlong y).mergeAlong x).parts, y ≤ z by
+      grw [← mergeAlong_eq_self _ _ this, P.le_mergeAlong y]
+    obtain ⟨u, hu, hyu⟩ := P.exists_mem_mergeAlong_ge ha hya
+    grw [hyu]
+    exact le_mergeAlong _ x hu
+
+end mergeAlong
+
+instance : SemilatticeSup (Finpartition a) where
+  sup P Q := P.parts.val.foldr (fun x R ↦ mergeAlong R x) Q
+  le_sup_left P Q x hx := by
+    obtain ⟨P', hP'⟩ := Multiset.exists_cons_of_mem hx
+    rw [hP', Multiset.foldr_cons]
+    exact exists_mem_mergeAlong_ge _ (P.parts_nonempty_iff.mp ⟨x, hx⟩) (P.le hx)
+  le_sup_right P Q :=
+    Multiset.foldr_induction' _ _ (fun _ ↦ True) _ _
+      (fun _ _ _ h ↦ h.trans (le_mergeAlong _ _)) le_rfl (fun _ _ ↦ trivial)
+  sup_le P Q R hPR hQR := by
+    change ∀ x ∈ P.parts.val, ∃ y ∈ R.parts, x ≤ y at hPR
+    generalize P.parts.val = P at *
+    induction P using Multiset.induction with
+    | empty => simpa
+    | cons x P ih =>
+      rw [Multiset.forall_mem_cons] at hPR
+      grw [Multiset.foldr_cons, ih hPR.2, mergeAlong_eq_self _ _ hPR.1]
+
 end IsModularLattice
 
 section DistribLattice
@@ -493,7 +650,7 @@ theorem parts_inf (P Q : Finpartition a) :
     (P ⊓ Q).parts = ((P.parts ×ˢ Q.parts).image fun bc : α × α ↦ bc.1 ⊓ bc.2).erase ⊥ :=
   rfl
 
-instance : SemilatticeInf (Finpartition a) :=
+instance : Lattice (Finpartition a) :=
   { inf := Min.min
     inf_le_left := fun P Q b hb ↦ by
       obtain ⟨c, hc, rfl⟩ := mem_image.1 (mem_of_mem_erase hb)
