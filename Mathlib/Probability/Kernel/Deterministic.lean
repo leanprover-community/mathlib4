@@ -6,9 +6,10 @@ Authors: Gaëtan Serré
 
 module
 
-import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.Probability.Kernel.Composition.Prod
+
+import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
 /-!
 # Class `IsDeterministic` of deterministic kernels

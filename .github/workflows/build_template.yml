@@ -1092,10 +1092,12 @@ jobs:
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: Extract label actor username
         id: get-label-actor
+        env:
+          TIMELINE: ${{ steps.get-timeline.outputs.data }}
         run: |
           # Parse the GraphQL response and filter for the specific label
-          echo '${{ steps.get-timeline.outputs.data }}'
-          ACTOR=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -c '
+          echo "$TIMELINE"
+          ACTOR=$(echo "$TIMELINE" | jq -c '
             .repository.pullRequest.timelineItems.nodes
             | map(select(.label.name == "auto-merge-after-CI"))
             | sort_by(.createdAt)

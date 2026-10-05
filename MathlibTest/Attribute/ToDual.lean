@@ -514,3 +514,29 @@ run_meta
   let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``GE.ge | failure
   -- `WithBot` gets `(relevant_arg := α)` because `WithBot` is a type
   let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``WithBot | failure
+
+-- `to_dual_for` does not introduce unnamed variables
+def toDualForTest (n : Nat) : Prop := n = 37
+def toDualForTest' : Nat → Prop := (· = 37)
+
+to_dual_for toDualForTest := n ≠ 42
+to_dual_for toDualForTest' := (· ≠ 42)
+
+theorem toDualForTestProof : ∃ n, toDualForTest n := ⟨37, rfl⟩
+
+to_dual_for toDualForTestProof := ⟨37, by decide⟩
+
+-- `to_dual_for foo` gives an `exposed` definition as long as `foo` is not a theorem.
+/--
+info: @[expose] def toDualForTest._to_dual_1 : Nat → Prop :=
+fun n => n ≠ 42
+-/
+#guard_msgs in
+#print toDualForTest._to_dual_1
+
+/--
+info: theorem toDualForTestProof._to_dual_1 : ∃ n, n ≠ 42 :=
+Exists.intro 37 (of_decide_eq_true (id (Eq.refl true)))
+-/
+#guard_msgs in
+#print toDualForTestProof._to_dual_1

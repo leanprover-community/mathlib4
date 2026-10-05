@@ -5,8 +5,9 @@ Authors: Yong-Gyu Choi
 -/
 module
 
-import Mathlib.Algebra.Category.Ring.EqualizerPushout
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+
+import Mathlib.Algebra.Category.Ring.EqualizerPushout
 import Mathlib.Topology.Category.TopCat.EffectiveEpi
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 
