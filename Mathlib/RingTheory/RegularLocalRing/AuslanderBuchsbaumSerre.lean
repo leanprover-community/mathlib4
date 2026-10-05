@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.RegularLocalRing.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -31,6 +31,7 @@ variable {R} (x : R) {M N L : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommG
     [Module R M] [Module R N] [Module R L]
 
 /-- The linear map `M⧸xM →ₗ[R] N⧸xN` induced by a linear map `M →ₗ[R] N`. -/
+@[expose]
 def QuotSMulTopMap (f : M →ₗ[R] N) :
     QuotSMulTop x M →ₗ[R ⧸ Ideal.span {x}] QuotSMulTop x N where
   __ := Submodule.mapQ _ _ f (fun m hm ↦ by
@@ -258,7 +259,6 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       map_smul' r m := map_smul (maximalIdeal R).toCotangent r m }
     have surjg : Function.Surjective g := (maximalIdeal R).toCotangent_surjective
     have supeq : (J'.comap g) ⊔ Submodule.span R {⟨x, mem⟩} = ⊤ := by
-      have : RingHomSurjective (residue R) := ⟨residue_surjective⟩
       rw [sup_comm, ← sup_eq_left.mpr (LinearMap.ker_le_comap g), ← sup_assoc,
         ← Submodule.comap_map_eq, Submodule.map_sup, Submodule.map_span,
         Submodule.map_comap_eq_of_surjective surjg, Set.image_singleton,
