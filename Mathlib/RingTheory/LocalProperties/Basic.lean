@@ -520,10 +520,6 @@ section Ideal
 variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable (p : Submonoid R) [IsLocalization p S]
 
-theorem Ideal.localized'_eq_map (I : Ideal R) :
-    Submodule.localized' S p (Algebra.linearMap R S) I = I.map (algebraMap R S) := by
-  rw [map, span, Submodule.localized'_eq_span, Algebra.coe_linearMap]
-
 theorem Ideal.localized₀_eq_restrictScalars_map (I : Ideal R) :
     Submodule.localized₀ p (Algebra.linearMap R S) I = (I.map (algebraMap R S)).restrictScalars R :=
   congr(Submodule.restrictScalars R $(localized'_eq_map S p I))

@@ -190,13 +190,12 @@ def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 
 instance lattice : Lattice (Regular α) :=
-  gi.liftLattice
+  { gi.liftLattice with inf := (· ⊓ ·) }
 
 @[simp, norm_cast]
 theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜᶜ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : BooleanAlgebra (Regular α) :=
   { Regular.lattice, Regular.boundedOrder, Regular.himp,
     Regular.instCompl with
