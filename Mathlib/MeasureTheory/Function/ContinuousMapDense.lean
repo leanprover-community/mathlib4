@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
@@ -175,7 +175,7 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   rcases exists_continuous_eLpNorm_sub_le_of_closed hp s_closed isOpen_interior sk hsμ.ne c δpos.ne'
     with ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩
   have I3 : eLpNorm (f - t.indicator fun _y => c) p μ ≤ ε := by
-    convert! (hδ _ _ I2 I1).le using 2
+    convert (hδ _ _ I2 I1).le using 2
     ext x
     simp
   refine ⟨f, I3, f_cont, f_mem, HasCompactSupport.intro k_compact fun x hx => ?_⟩
@@ -271,7 +271,7 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
       δpos.ne' with
     ⟨f, f_cont, I2, f_bound, -, f_mem⟩
   have I3 : eLpNorm (f - t.indicator fun _y => c) p μ ≤ ε := by
-    convert! (hδ _ _ I2 I1).le using 2
+    convert (hδ _ _ I2 I1).le using 2
     ext x
     simp
   refine ⟨f, I3, f_cont, f_mem, ?_⟩

@@ -5,8 +5,7 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-public import Mathlib.RingTheory.Norm.Transitivity
+import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Trace.Basic
 
 /-!
@@ -295,7 +294,7 @@ section Int
 /-- Two (finite) ℤ-bases have the same discriminant. -/
 theorem discr_eq_discr (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
     Algebra.discr ℤ b = Algebra.discr ℤ b' := by
-  convert! Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
+  convert Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
   · rw [Basis.toMatrix_map_vecMul]
   · suffices IsUnit (b'.toMatrix b).det by
       rw [Int.isUnit_iff, ← sq_eq_one_iff] at this

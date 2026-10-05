@@ -6,7 +6,7 @@ Authors: Markus Himmel, Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ExactSequence
-public import Mathlib.CategoryTheory.Abelian.Refinements
+import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # The four and five lemmas

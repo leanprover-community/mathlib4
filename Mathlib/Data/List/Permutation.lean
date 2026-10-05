@@ -6,15 +6,15 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Data.List.Count
+import Mathlib.Data.List.Count
 public import Mathlib.Data.List.Duplicate
-public import Mathlib.Data.List.InsertIdx
-public import Mathlib.Data.List.Induction
-public import Batteries.Data.List.Perm
-public import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Order.Basic
+import Mathlib.Data.List.InsertIdx
+import Mathlib.Data.List.Induction
+import Batteries.Data.List.Perm
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Order.Basic
 
 /-!
 # Permutations of a list
@@ -39,7 +39,7 @@ permutations of `a :: l` are obtained by taking all permutations of `l` in order
 all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
 * `[[]]`
 * `[[3]]`
-* `[[2, 3], [3, 2]]]`
+* `[[2, 3], [3, 2]]`
 * `[[1, 2, 3], [2, 1, 3], [2, 3, 1], [1, 3, 2], [3, 1, 2], [3, 2, 1]]`
 * `[[0, 1, 2, 3], [1, 0, 2, 3], [1, 2, 0, 3], [1, 2, 3, 0],`
    `[0, 2, 1, 3], [2, 0, 1, 3], [2, 1, 0, 3], [2, 1, 3, 0],`

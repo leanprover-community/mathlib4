@@ -181,7 +181,7 @@ theorem r_eq_r' : r S = r' S :=
     le_sInf fun b H ⟨p, q⟩ ⟨x, y⟩ ⟨t, ht⟩ ↦ by
       rw [← one_mul (p, q), ← one_mul (x, y)]
       refine b.trans (b.mul (H (t * y)) (b.refl _)) ?_
-      convert! b.symm (b.mul (H (t * q)) (b.refl (x, y))) using 1
+      convert b.symm (b.mul (H (t * q)) (b.refl (x, y))) using 1
       dsimp only [Prod.mk_mul_mk, Submonoid.coe_mul] at ht ⊢
       simp_rw [mul_assoc, ht, mul_comm y q]
 
@@ -753,7 +753,7 @@ theorem liftOn₂_mk' {p : Sort*} (f : M → S → M → S → p) (H) (a c : M) 
 
 /-- The localization of a torsion-free monoid is torsion-free. -/
 @[to_additive /-- The localization of a torsion-free monoid is torsion-free. -/]
-instance instIsMulTorsionFree [IsMulTorsionFree M] : IsMulTorsionFree <| Localization S where
+instance [HasUniqueRoots M] : HasUniqueRoots <| Localization S where
   pow_left_injective n hn := by
     rintro ⟨a⟩ ⟨b⟩ (hab : mk a.1 a.2 ^ n = mk b.1 b.2 ^ n)
     change mk a.1 a.2 = mk b.1 b.2
