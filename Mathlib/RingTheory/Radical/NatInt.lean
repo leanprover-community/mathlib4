@@ -6,7 +6,7 @@ Authors: Bhavik Mehta, Arend Mellendijk, Jeremy Tan
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Radical.Basic
@@ -40,7 +40,7 @@ lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
   ext n : 1
   rw [primeFactors, Nat.factors_eq, Nat.primeFactors]
   -- this convert is necessary because of the different DecidableEq instances
-  convert! List.toFinset_coe _
+  convert List.toFinset_coe _
 
 namespace Nat
 

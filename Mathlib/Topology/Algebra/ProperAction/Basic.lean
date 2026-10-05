@@ -6,9 +6,7 @@ Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guir
 module
 
 public import Mathlib.Topology.Algebra.Group.Quotient
-public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Proper group action
@@ -119,7 +117,7 @@ instance t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
   have : IsOpenQuotientMap (Prod.map π π) :=
     MulAction.isOpenQuotientMap_quotientMk.prodMap MulAction.isOpenQuotientMap_quotientMk
   rw [← this.isQuotientMap.isClosed_preimage]
-  convert! ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
+  convert ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
   · ext ⟨x₁, x₂⟩
     simp only [mem_preimage, map_apply, mem_diagonal_iff, mem_range, Prod.mk.injEq, Prod.exists,
       exists_eq_right]
@@ -271,7 +269,7 @@ lemma ProperSMul.isCompact_setOfPred_inter_nonempty
     {G : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [ProperSMul G X]
     {U V : Set X} (hU : IsCompact U) (hV : IsCompact V) :
     IsCompact {g : G | (g • U ∩ V).Nonempty} := by
-  convert!
+  convert
     ((ProperSMul.isProperMap_smul_pair (G := G)).isCompact_preimage (hV.prod hU)).image
       continuous_fst
   ext g
@@ -287,7 +285,8 @@ alias ProperVAdd.isCompact_setOf_inter_nonempty := ProperVAdd.isCompact_setOfPre
 
 /-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
 action is proper. -/
-@[to_additive]
+@[to_additive /-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper
+map, then the action is proper. -/]
 lemma MulAction.properSMul_of_proper_orbitMap
     [ContinuousSMul G X] [IsTopologicalGroup G] [MulAction.IsPretransitive G X]
     {x : X} (hx : IsProperMap fun g : G ↦ g • x) : ProperSMul G X := by
