@@ -573,11 +573,14 @@ theorem tprod_comp_neg {β : Type*} [InvolutiveNeg β] (f : β → α) :
 
 @[to_additive]
 theorem tprod_mem {ι S : Type*} {s : S} [SetLike S α] [SubmonoidClass S α]
-    (h_closed : IsClosed (s : Set α)) {f : ι → α} (h : ∀ i, f i ∈ s) :
-    ∏' i, f i ∈ s := by
-  by_cases hf : Multipliable f
-  · exact h_closed.mem_of_tendsto hf.hasProd <| .of_forall fun _ => prod_mem fun i _ => h i
-  · simp [tprod_eq_one_of_not_multipliable hf, one_mem]
+    (h_closed : IsClosed (s : Set α)) {f : ι → α} (h : ∀ i, f i ∈ s) (L := unconditional ι) :
+    ∏'[L] i, f i ∈ s := by
+  by_cases hL : L.NeBot
+  · by_cases hf : Multipliable f L
+    · exact h_closed.mem_of_tendsto hf.hasProd <| .of_forall fun _ => prod_mem fun i _ => h i
+    · simp [tprod_eq_one_of_not_multipliable hf, one_mem]
+  · rw [tprod_bot hL]
+    exact finprod_induction _ (one_mem _) (fun _ _ => mul_mem) h
 
 /-! ### `tprod` on subsets - part 1 -/
 
