@@ -1006,7 +1006,7 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
         simp only [Category.id_comp] at hξ₁₀
         have (j : ι) := IsCardinalPresentable.exists_eq_of_isColimit' κ hcolimG
           (F.map (t0 j) ≫ σ) ((v j).left.obj.hom ≫ G.map (t0 j) ≫ G.map ν₁.left.hom) (by
-            simp [hξ₁₀, t0, ξ₀, hf0, ← Functor.map_comp_assoc, ← Functor.map_comp, grind_helper])
+            simp [hξ₁₀, t0, ξ₀, hf0, ← Functor.map_comp_assoc, ← Functor.map_comp])
         choose p1 p2 p3 using this
         simp only [Functor.comp_obj, CostructuredArrow.proj_obj, ObjectProperty.ι_obj,
           Functor.comp_map, CostructuredArrow.proj_map, ObjectProperty.ι_map, Category.assoc] at p3
@@ -1029,7 +1029,6 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
     · ext
       simp [f', b', h₂, ξ₀, t0, hf0]
   · -- first, be pick an index ξ₀ that coequalizes all the components of f
-    let pt : ι := hι'.some
     obtain ⟨ξ₀, u, hu⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimS p.hom.hom
     dsimp at u hu
     simp only [Category.id_comp] at hu
@@ -1040,10 +1039,7 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
     obtain ⟨ξ₀', v, hv⟩ :=
       IsCardinalPresentable.exists_eq_of_isColimit'_of_hasCardinalLT κ hcolimS hι
         (fun i ↦ (f i).left.hom.hom ≫ u) (fun i i' ↦ by
-          have e1 := congr($((f i).w).hom)
-          have e2 := congr($((f i').w).hom)
-          simp at e1 e2
-          simp [hu, CostructuredArrow.hom, e1, e2])
+          simp [hu, dsimp% congr($((f i').w).hom), dsimp% congr($((f i).w).hom)])
     obtain ⟨ξ₁₀, ν₁₀, σ₀, hξ₁₀⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimG
       (F.map ξ₀.hom ≫ E.hom) ξ₀'
     dsimp at hξ₁₀ σ₀
@@ -1062,6 +1058,7 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
     let b' : (O₁ κ F G).FullSubcategory := ⟨b, by simpa [O₁]⟩
     let f'' : b'.obj ⟶ E := f'
     use CostructuredArrow.mk (Y := b') f''
+    let pt : ι := hι'.some
     use ⟨⟨⟨u ≫ (v ≫ ν₁₀ ≫ ν₁).left.hom ≫ g, ?_⟩⟩, ⟨rfl⟩, ?_⟩,
       ⟨⟨⟨(f pt).left.hom.hom ≫ u ≫ (v ≫ ν₁₀ ≫ ν₁).left.hom ≫ g, ?_⟩⟩, ⟨rfl⟩, ?_⟩
     · intro i
