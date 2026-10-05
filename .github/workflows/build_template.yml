@@ -742,7 +742,7 @@ jobs:
 
       - &configure_lean_for_cache
         name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
         with:
           auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
           use-github-cache: false
@@ -947,7 +947,7 @@ jobs:
           head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
         with:
           auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
           use-github-cache: false
@@ -969,6 +969,7 @@ jobs:
           lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
 
       - name: verify that everything was available in the cache
+        id: verify_cache
         # Verify the cache reconstitutes this commit's oleans. This job reads
         # the cache with the PR branch's own `lake exe cache get`. The write
         # path uses master's `cache` binary for fork PRs and the PR branch's
@@ -1017,12 +1018,32 @@ jobs:
           elif [ "${dstat}" -eq 1 ]; then
             echo "::warning::Cache verification incomplete, but this PR's Cache/ differs from master's. CI wrote the cache with master's binary and this job reads it with the PR branch's, so a changed key space (such as a rootHashGeneration bump) misses as expected. Continuing; the cache repopulates once this lands on master."
             echo "${dout}"
+            # The downstream check below reads the same key space, so skip it.
+            echo "key_space_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           else
             echo "::error::Cache verification failed and master's Cache/ baseline could not be compared (diff status ${dstat}); treating as a failure."
             echo "${dout}"
             exit 1
           fi
+
+      - name: check the cache from a downstream project
+        # `DownstreamTest/` is a minimal project that requires mathlib by path. Fetching
+        # the cache from there runs the cache tool's downstream-only checks (toolchain
+        # and manifest mismatches), and `lake build --no-build` checks that Lake accepts
+        # the cached oleans in a dependency context. The path dependency shares mathlib's
+        # `.lake/build`, so Mathlib's oleans are already in place from the steps above;
+        # the dependencies' oleans are fetched into `DownstreamTest/.lake/packages/`.
+        if: steps.verify_cache.outputs.key_space_changed != 'true'
+        env:
+          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        run: |
+          cd DownstreamTest
+          cp ../lean-toolchain .
+          # Skip mathlib's `post_update` hook, so that the `cache get` below is the one tested.
+          MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
+          lake exe cache --repo="${REPO}" get
+          lake build --no-build Mathlib
 
       - name: check declarations in db files
         run: |
@@ -1113,7 +1134,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
+      - uses: leanprover-community/lint-style-action@a52329f904d58af9f3e1fc6ef3b986e8f753cc54 # mathlib4-compat
         with:
           mode: check
           lint-bib-file: true
@@ -1189,10 +1210,12 @@ jobs:
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: Extract label actor username
         id: get-label-actor
+        env:
+          TIMELINE: ${{ steps.get-timeline.outputs.data }}
         run: |
           # Parse the GraphQL response and filter for the specific label
-          echo '${{ steps.get-timeline.outputs.data }}'
-          ACTOR=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -c '
+          echo "$TIMELINE"
+          ACTOR=$(echo "$TIMELINE" | jq -c '
             .repository.pullRequest.timelineItems.nodes
             | map(select(.label.name == "auto-merge-after-CI"))
             | sort_by(.createdAt)

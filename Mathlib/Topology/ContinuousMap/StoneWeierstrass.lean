@@ -6,12 +6,13 @@ Authors: Kim Morrison, Heather Macbeth
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Topology.Algebra.Star.Real
 public import Mathlib.Topology.Algebra.StarSubalgebra
 public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.Lattice
 public import Mathlib.Topology.ContinuousMap.Weierstrass
+
+import Mathlib.Topology.Algebra.Star.Real
 import Mathlib.Algebra.Order.Module.Basic
 
 /-!
@@ -83,7 +84,7 @@ theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : 
 gives another function in `A`.
 
 This lemma proves something slightly more subtle than this:
-we take `f`, and think of it as a function into the restricted target `Set.Icc (-‖f‖) ‖f‖)`,
+we take `f`, and think of it as a function into the restricted target `Set.Icc (-‖f‖) ‖f‖`,
 and then postcompose with a polynomial function on that interval.
 This is in fact the same situation as above, and so also gives a function in `A`.
 -/

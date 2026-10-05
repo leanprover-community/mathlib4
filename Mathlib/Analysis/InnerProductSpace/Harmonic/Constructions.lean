@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+
 import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 

@@ -5,11 +5,12 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
-import Mathlib.RingTheory.Localization.NumDen
 public import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
 public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.RingTheory.Localization.NumDen
 
 /-!
 # Cusps
