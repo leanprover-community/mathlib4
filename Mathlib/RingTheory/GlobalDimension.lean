@@ -22,15 +22,15 @@ In this file, we define the global dimension of ring and proved some of its basi
 
 # Main definition and results
 
-* `globalDimension` : The global (homological) dimension of a (commutative) ring defined as
+* `globalDimension` : The (left) global (homological) dimension of a (commutative) ring defined as
   the supremum of projective dimension over all modules.
 
 * `globalDimension_le_tfae` : For natrual number `n`, `globalDimension R ≤ n` iff all
   finitely generated modules over `R` has projective dimension not exceeding `n` iff for all
   `Ext N M (n + 1)` vanish.
 
-* `globalDimension_eq_sup_projectiveDimension_finite` : Global dimension is equal to the supremum of
-  projective dimension over finitely generated modules.
+* `globalDimension_eq_sup_projectiveDimension_finite` : The (left) Global dimension is equal to
+  the supremum of projective dimension over finitely generated modules.
 
 -/
 
@@ -42,11 +42,11 @@ open CategoryTheory
 
 section GlobalDimension
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R]
 
 open Abelian
 
-/-- The global (homological) dimension of a (commutative) ring defined as
+/-- The (left) global (homological) dimension of a (commutative) ring defined as
 the supremum of projective dimension over all modules. -/
 noncomputable def globalDimension : WithBot ℕ∞ :=
   ⨆ (M : ModuleCat.{v} R), projectiveDimension.{v} M
@@ -69,22 +69,20 @@ lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) :
   tfae_have 1 → 2 := by
     simpa only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
       using fun h M _ ↦ h M
-  tfae_have 2 → 3 := fun h N M ↦ (ModuleCat.hasInjectiveDimensionLT_of_quotients M (n + 1)
-    (fun I ↦ ((h (ModuleCat.of R (Shrink.{v} (R ⧸ I)))).subsingleton _ _ _ (le_refl _)
-    M))).subsingleton _ _ _ (le_refl _) N
+  tfae_have 2 → 4 := fun h M ↦ (ModuleCat.hasInjectiveDimensionLT_of_quotients M (n + 1)
+    (fun I ↦ ((h (ModuleCat.of R (Shrink.{v} (R ⧸ I)))).subsingleton _ _ _ (le_refl _) M)))
+  tfae_have 4 → 3 := fun h N M ↦ (h M).subsingleton _ _ _ (le_refl _) N
   tfae_have 3 → 1 := by
     intro h
     simp only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
     exact fun M ↦ hasProjectiveDimensionLT_of_enoughInjectives M _ (h M)
-  tfae_have 3 → 4 := fun h M ↦ hasInjectiveDimensionLT_of_enoughProjectives M _ (h · M)
-  tfae_have 4 → 3 := fun h N M ↦ (h M).subsingleton _ _ _ (le_refl _) N
   tfae_finish
 
 lemma globalDimension_eq_sup_projectiveDimension_finite [Small.{v} R] : globalDimension.{v} R =
     ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M := by
   have aux (n : ℕ): globalDimension.{v} R ≤ n ↔
     ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M ≤ n := by
-    simpa only [iSup_le_iff, projectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 0 1
+    simpa only [iSup_le_iff, projectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 1 2
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot =>
@@ -101,7 +99,7 @@ lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.
     ⨆ (M : ModuleCat.{v} R), injectiveDimension.{v} M := by
   have aux (n : ℕ): globalDimension.{v} R ≤ n ↔
     ⨆ (M : ModuleCat.{v} R), injectiveDimension.{v} M ≤ n := by
-    simpa only [iSup_le_iff, injectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 0 3
+    simpa only [iSup_le_iff, injectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 1 4
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot =>
@@ -160,6 +158,8 @@ lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
       map_smul' r m := map_smul (Shrink.linearEquiv R' M) (e r) _ }
     rw [← ModuleCat.projectiveDimension_eq_of_semiLinearEquiv e e']
     exact le_iSup _ _
+
+variable (R : Type u) [CommRing R]
 
 variable {R} in
 lemma globalDimension_localization_le [Small.{v} R] (S : Submonoid R) :

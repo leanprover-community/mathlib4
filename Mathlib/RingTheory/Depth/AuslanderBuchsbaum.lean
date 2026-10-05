@@ -55,7 +55,7 @@ end hom
 
 universe v u
 
-open IsLocalRing RingTheory.Sequence Ideal CategoryTheory Abelian Limits
+open IsLocalRing RingTheory.Sequence Ideal CategoryTheory Abelian Limits ModuleCat
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
@@ -95,8 +95,8 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   exact h.subsingleton_congr.trans ⟨subsingleton_of_pi, fun _ ↦ Pi.instSubsingleton⟩
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
-    [Nontrivial M] : moduleDepth N M = moduleDepth N (ModuleCat.of R (Shrink.{v} R)) := by
-  simp only [moduleDepth]
+    [Nontrivial M] : N.depth M = N.depth (ModuleCat.of R (Shrink.{v} R)) := by
+  simp only [ModuleCat.depth]
   congr! 5
   apply finte_free_ext_vanish_iff
 
@@ -235,7 +235,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
-  simp only [IsLocalRing.depth, Ideal.depth, moduleDepth]
+  simp only [IsLocalRing.depth, Ideal.depth, ModuleCat.depth]
   apply le_antisymm
   · rw [ENat.add_sSup ⟨0, by simp⟩]
     apply iSup_le (fun n ↦ iSup_le (fun hn ↦ ?_))
@@ -306,13 +306,10 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
           using WithBot.le_add_self (WithBot.natCast_ne_bot n) 1
       have projX₂ : Projective S.X₂ := inferInstance
       have projdim : projectiveDimension S.X₁ = n := by
-        apply le_antisymm
-        · simpa [projectiveDimension_le_iff, ← S_exact.hasProjectiveDimensionLT_X₃_iff n projX₂]
-            using (projectiveDimension_le_iff M (n + 1)).mp (le_of_eq hn)
-        · have : n - 1 + 2 = n + 1 := by omega
-          rw [projectiveDimension_ge_iff, (Nat.sub_one_add_one eq0).symm,
-            ← S_exact.hasProjectiveDimensionLT_X₃_iff _ projX₂, ← projectiveDimension_ge_iff, this]
-          simp [S, hn]
+        have nproj : ¬ Projective M := by
+          simp [projective_iff_hasProjectiveDimensionLE_zero, ← projectiveDimension_le_iff, hn]
+        rw [← ENat.WithBot.add_one_cancel, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_one,
+          ← S_exact.projectiveDimension_X₃_eq_succ_of_not_projective projX₂ nproj, hn]
       have h_ker := ih S.X₁ (by simpa [projdim] using not_eq_of_beq_eq_false rfl) projdim
       have h_ker' : n + IsLocalRing.depth S.X₁ =
         IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
@@ -325,7 +322,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
         have : IsLocalRing.depth S.X₂ ≠ 0 := by
           simpa only [IsLocalRing.depth, Ideal.depth, free_depth_eq_ring_depth S.X₂ _]
         simp only [IsLocalRing.depth, Ideal.depth, ne_eq,
-          moduleDepth_eq_zero_of_hom_nontrivial, not_nontrivial_iff_subsingleton] at this ⊢
+          depth_eq_zero_iff_nontrivial_linearMap, not_nontrivial_iff_subsingleton] at this ⊢
         apply subsingleton_of_forall_eq 0 (fun F ↦ LinearMap.ext (fun x ↦ ?_))
         apply (LinearMap.ker f).subtype_injective
         rw [← LinearMap.comp_apply, Subsingleton.eq_zero ((LinearMap.ker f).subtype.comp F)]
@@ -336,27 +333,27 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
         · apply (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl).mono_g
           apply (AddCommGrpCat.isZero_of_iff_subsingleton.mpr ?_).eq_zero_of_src
           simpa [finte_free_ext_vanish_iff] using
-            ext_subsingleton_of_lt_moduleDepth (lt_of_le_of_lt (le_self_add) lt)
+            subsingleton_ext_of_lt_depth (lt_of_le_of_lt (le_self_add) lt)
         · apply (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl).epi_f
           apply (AddCommGrpCat.isZero_of_iff_subsingleton.mpr ?_).eq_zero_of_tgt
-          simpa [finte_free_ext_vanish_iff] using ext_subsingleton_of_lt_moduleDepth lt
+          simpa [finte_free_ext_vanish_iff] using subsingleton_ext_of_lt_depth lt
       have eq_add1 : IsLocalRing.depth S.X₁ = IsLocalRing.depth M + 1 := by
         by_cases eqtop : IsLocalRing.depth S.X₁ = ⊤
         · --might be able to removed using Ischbeck theorem
           simp only [eqtop, add_top, S] at h_ker'
           have M_depth_eqtop : IsLocalRing.depth M = ⊤ := by
-            apply (moduleDepth_eq_top_iff _ _).mpr (fun i ↦ ?_)
+            apply (depth_eq_top_iff _ _).mpr (fun i ↦ ?_)
             have := ext_iso i (by simp [← h_ker', ENat.add_lt_top])
             rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
               (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
-            apply ext_subsingleton_of_lt_moduleDepth
+            apply subsingleton_ext_of_lt_depth
             exact lt_of_lt_of_eq (ENat.natCast_lt_top (i + 1)) eqtop.symm
           simp [M_depth_eqtop, eqtop]
         · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨k, hk⟩
           simp only [← hk, gt_iff_lt, Nat.cast_pos] at depth_pos
           have eq : k - 1 + 1 = k := Nat.sub_one_add_one depth_pos.ne.symm
           have : IsLocalRing.depth M = (k - 1 : ℕ) := by
-            simp only [IsLocalRing.depth, Ideal.depth, moduleDepth_eq_iff]
+            simp only [IsLocalRing.depth, Ideal.depth, depth_eq_iff]
             have lt : (k - 1 : ℕ) + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
               simp only [← h_ker', ← ENat.natCast_one, ← ENat.natCast_add, eq, ← hk,
                 ENat.natCast_lt_natCast]
@@ -365,12 +362,12 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
             · have := ext_iso (k - 1) lt
               rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
                 (Eq.refl (k - 1 + 1))))).addCommGroupIsoToAddEquiv.nontrivial_congr, eq]
-              exact ((moduleDepth_eq_iff _ _ k).mp hk.symm).1
+              exact ((depth_eq_iff _ _ k).mp hk.symm).1
             · have := ext_iso i (lt_trans ((WithTop.add_lt_add_iff_right WithTop.one_ne_top).mpr
                 (ENat.natCast_lt_natCast.mpr hi)) lt)
               rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
                 (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
-              exact ((moduleDepth_eq_iff _ _ k).mp hk.symm).2 _ (Nat.add_lt_of_lt_sub hi)
+              exact ((depth_eq_iff _ _ k).mp hk.symm).2 _ (Nat.add_lt_of_lt_sub hi)
           simpa [hk, this] using ENat.natCast_inj.mpr eq.symm
       rw [hn, Nat.cast_add, Nat.cast_one, add_assoc, add_comm 1, ← WithBot.coe_one,
         ← WithBot.coe_add, ← eq_add1, ← projdim]

@@ -5,17 +5,15 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Pi
 public import Mathlib.Data.Finset.Sups
-public import Mathlib.Order.Birkhoff
-public import Mathlib.Order.Booleanisation
-public import Mathlib.Order.Sublattice
-public import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Order.Birkhoff
+import Mathlib.Order.Booleanisation
+import Mathlib.Order.Sublattice
+import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.GCongr
 
 /-!
 # The four functions theorem and corollaries
@@ -120,14 +118,14 @@ set_option backward.privateInPublic.warn false in
 omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma collapse_of_mem (ha : a ∉ s) (ht : t ∈ 𝒜) (hu : u ∈ 𝒜) (hts : t = s)
     (hus : u = insert a s) : collapse 𝒜 a f s = f t + f u := by
-  subst hts; subst hus; simp_rw [collapse_eq ha, if_pos ht, if_pos hu]
+  subst hts; subst hus; simp_rw [collapse_eq ha, ite_eq_left ht, ite_eq_left hu]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma le_collapse_of_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = s) (ht : t ∈ 𝒜) :
     f t ≤ collapse 𝒜 a f s := by
   subst hts
-  rw [collapse_eq ha, if_pos ht]
+  rw [collapse_eq ha, ite_eq_left ht]
   split_ifs
   · exact le_add_of_nonneg_right <| hf _
   · rw [add_zero]
@@ -136,7 +134,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert a s) (ht : t ∈ 𝒜) :
     f t ≤ collapse 𝒜 a f s := by
-  rw [collapse_eq ha, ← hts, if_pos ht]
+  rw [collapse_eq ha, ← hts, ite_eq_left ht]
   split_ifs
   · exact le_add_of_nonneg_left <| hf _
   · rw [zero_add]
@@ -261,8 +259,6 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
 
 variable [ExistsAddOfLE β]
 
--- In the non-terminal simp below, simp runs on four goals, but only needs `exact` once.
-set_option linter.flexible false in
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/
 protected lemma Finset.four_functions_theorem (u : Finset α)
@@ -273,13 +269,18 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
   induction u using Finset.induction generalizing f₁ f₂ f₃ f₄ 𝒜 ℬ with
   | empty =>
     simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
-    obtain rfl | rfl := h𝒜 <;> obtain rfl | rfl := hℬ <;> simp; exact h (subset_refl ∅) subset_rfl
+    obtain rfl | rfl := h𝒜
+    · simp
+    obtain rfl | rfl := hℬ
+    · simp
+    simpa using h (subset_refl ∅) subset_rfl
   | insert a u hu ih =>
     specialize ih (collapse_nonneg h₁) (collapse_nonneg h₂) (collapse_nonneg h₃)
       (collapse_nonneg h₄) (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
     have : 𝒜 ⊼ ℬ ⊆ powerset (insert a u) := by simpa using infs_subset h𝒜 hℬ
     have : 𝒜 ⊻ ℬ ⊆ powerset (insert a u) := by simpa using sups_subset h𝒜 hℬ
-    simpa only [powerset_sups_powerset_self, powerset_infs_powerset_self, sum_collapse,
+    simpa only [powerset_sups_powerset_self, infs_eq_inter, coe_powerset,
+      isLowerSet_preimage_coe_powerset, inter_self, sum_collapse,
       not_false_eq_true, *] using ih
 
 variable (f₁ f₂ f₃ f₄) [Finite α]

@@ -5,12 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Prod
+import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.Topology.Homotopy.Affine
 
 import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
@@ -215,12 +215,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       · exact hcontdiff.continuousOn_fderivWithin hunique (by decide)
     rwa [integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le] at this
     · exact zero_le_one
-    · exact s'
-    · exact hs'c
     · fun_prop
     · fun_prop
-    · exact hf'
-    · exact hg'
     · rw [integrableOn_congr_fun_ae hf'g']
       apply integrableOn_zero
   simp [integral_congr_ae hf'g']
@@ -292,7 +288,6 @@ namespace Convex
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
   {a b c : E} {s : Set E} {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `ω` is a closed `1`-form on a convex set,
 then `∫ᶜ x in Path.segment a b, ω x + ∫ᶜ x in Path.segment b c, ω x = ∫ᶜ x in Path.segment a c, ω x`
@@ -313,7 +308,7 @@ theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex
     simp [φ, ha, hb, hc, hs.lineMap_mem]
   have := φ.curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt (t := range φ) (ω := ω)
     (dω := dω) ?_ ?_ ?_ ?_ ?_
-  · convert! this using 2
+  · convert this using 2
     · dsimp [φ]
       rw [← Path.cast_segment (lineMap_apply_one a b) (lineMap_apply_one a c), curveIntegral_cast]
     · dsimp [φ]

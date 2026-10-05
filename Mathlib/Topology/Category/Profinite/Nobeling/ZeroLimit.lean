@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!
@@ -94,8 +94,8 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 
-instance (α : Type*) [TopologicalSpace α] : IsAddTorsionFree (LocallyConstant α ℤ) :=
-  LocallyConstant.coe_injective.isAddTorsionFree LocallyConstant.coeFnAddMonoidHom
+instance (α : Type*) [TopologicalSpace α] : HasUniqueDiv (LocallyConstant α ℤ) :=
+  LocallyConstant.coe_injective.hasUniqueDiv LocallyConstant.coeFnAddMonoidHom
 
 theorem GoodProducts.linearIndependentSingleton {I} [LinearOrder I] :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) :=
@@ -141,7 +141,9 @@ The image of the `GoodProducts` for `π C (ord I · < o)` in `LocallyConstant C 
 refers to the setting in which we will use this, when we are mapping in `GoodProducts` from a
 smaller set, i.e. when `o` is a smaller ordinal than the one `C` is "contained" in.
 -/
-def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
   (πs C o) '' (range (π C (ord I · < o)))
 
 /--
@@ -237,8 +239,10 @@ theorem GoodProducts.union : range C = ⋃ (e : {o' // o' < o}), (smaller C e.va
 The image of the `GoodProducts` in `C` is equivalent to the union of `smaller C o'` over all
 ordinals `o' < o`.
 -/
-def GoodProducts.range_equiv : range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) :=
-  Equiv.setCongr (union C ho hsC)
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def GoodProducts.range_equiv : range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) :=
+  Set.equivOfEq (union C ho hsC)
 
 theorem GoodProducts.range_equiv_factorization :
     (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) ∘ (range_equiv C ho hsC).toFun =

@@ -5,14 +5,12 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Fourier.Notation
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # The Fourier transform
@@ -206,7 +204,7 @@ theorem integral_fourierIntegral_swap
     apply hM.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
   · filter_upwards with ⟨ξ, x⟩
     simp only [Function.uncurry_apply_pair, norm_mul, norm_norm, ge_iff_le, ← mul_assoc]
-    convert! M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
+    convert M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
     simp
 
 variable [CompleteSpace E] [CompleteSpace F]
@@ -565,5 +563,43 @@ def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
 @[simp]
 theorem Lp.fourierTransformCLM_apply (f : Lp (α := V) E 1) :
   Lp.fourierTransformCLM V E f = Lp.fourierTransform f := rfl
+
+/-- The inverse Fourier transform from `L1` functions to bounded continuous functions. -/
+def Lp.fourierTransformInv (f : Lp (α := V) E 1) : V →ᵇ E :=
+  (Lp.fourierTransform f).compContinuous (-ContinuousMap.id V)
+
+theorem fourierInv_congr_ae {f₁ f₂ : V → E} (hf : f₁ =ᵐ[volume] f₂) (x : V) :
+    𝓕⁻ f₁ x = 𝓕⁻ f₂ x := by
+  apply integral_congr_ae
+  filter_upwards [hf] with _ hf'
+  rw [hf']
+
+@[simp]
+theorem Lp.fourierTransformInv_apply (f : Lp (α := V) E 1) (x : V) :
+    Lp.fourierTransformInv f x = 𝓕⁻ (f : V → E) x := by
+  simp [Lp.fourierTransformInv, fourierInv_eq_fourier_neg]
+
+@[norm_cast]
+theorem Lp.coe_fourierTransformInv (f : Lp (α := V) E 1) :
+    (Lp.fourierTransformInv f : V → E) = 𝓕⁻ (f : V → E) := by
+  ext x
+  simp
+
+@[simp]
+theorem Lp.fourierTransformInv_toLp {f : V → E} (hf : MemLp f 1) :
+    (Lp.fourierTransformInv hf.toLp : V → E) = 𝓕⁻ f := by
+  ext x
+  simpa using (Real.fourierInv_congr_ae hf.coeFn_toLp) x
+
+variable (V E) in
+/-- The inverse Fourier transform from `L1` functions to bounded continuous functions as a
+continuous linear map. -/
+def Lp.fourierTransformInvCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
+  BoundedContinuousFunction.compContinuousCLM _ ℂ (-.id V) ∘L Lp.fourierTransformCLM V E
+
+@[simp]
+theorem Lp.fourierTransformInvCLM_apply (f : Lp (α := V) E 1) :
+    Lp.fourierTransformInvCLM V E f = Lp.fourierTransformInv f := by
+  simp [Lp.fourierTransformInvCLM, Lp.fourierTransformInv]
 
 end Real

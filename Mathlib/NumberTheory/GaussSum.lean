@@ -198,7 +198,7 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ ≠ 1) {ψ :
   classical -- to get `[DecidableEq R]` for `sum_mulShift`
   simp_rw [← Finset.mul_sum, sum_mulShift _ hψ, sub_eq_zero, apply_ite, Nat.cast_zero, mul_zero]
   rw [Finset.sum_ite_eq' Finset.univ (1 : R)]
-  simp only [Finset.mem_univ, map_one, one_mul, if_true]
+  simp only [Finset.mem_univ, map_one, one_mul, ite_true]
 
 /-- If `χ` is a multiplicative character of order `n` on a finite field `F`,
 then `g(χ) * g(χ^(n-1)) = χ(-1)*#F` -/
@@ -356,7 +356,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
     exact mt FFp.dvd_of_dvd_pow hFF
   -- there is a primitive additive character `ℤ/8ℤ → FF`, sending `a + 8ℤ ↦ τ^a`
   -- with a primitive eighth root of unity `τ`
-  let ψ₈ := primitiveZModChar 8 F (by convert! hp2 3 using 1; norm_cast)
+  let ψ₈ := primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
   -- We cast from `AddChar (ZMod (8 : ℕ+)) FF` to `AddChar (ZMod 8) FF`
   -- This is needed to make `simp_rw [← h₁]` below work.
   let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char

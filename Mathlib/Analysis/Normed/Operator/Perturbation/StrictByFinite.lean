@@ -5,9 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Topology.Maps.Strict.Module
-public import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Algebra.Module.LinearMap.FiniteRange
 
@@ -299,7 +298,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T2Spa
   simp_rw [u.isStrictMap_isClosed_range_iff_restrict _ A.isClosed_topologicalClosure,
     v.isStrictMap_isClosed_range_iff_restrict _ A.isClosed_topologicalClosure,
     LinearMap.coe_range, ContinuousLinearMap.coe_coe, ContinuousLinearMap.coe_domRestrict,
-    restrict_eq_restrict_iff.mpr h_eqOn]
+    domRestrict_eq_domRestrict_iff.mpr h_eqOn]
 
 open LinearMap.FiniteRangeSetoid
 

@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
+import Mathlib.Basic.Finite.Sum
 public import Mathlib.CategoryTheory.Galois.GaloisObjects
-public import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
-public import Mathlib.Data.Finite.Sum
+import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
 
 /-!
 # Decomposition of objects into connected components and applications
@@ -39,12 +39,11 @@ universe u₁ u₂ w
 
 namespace CategoryTheory
 
-open Limits CategoryTheory.Functor
+open Limits CategoryTheory.Functor GaloisCategory
 
 variable {C : Type u₁} [Category.{u₂} C]
 
 namespace PreGaloisCategory
-
 
 section Decomposition
 
@@ -58,7 +57,6 @@ non-trivial subobjects which have strictly smaller fiber and conclude by the ind
 
 -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The trivial case if `X` is connected. -/
 private lemma has_decomp_connected_components_aux_conn (X : C) [IsConnected X] :
@@ -119,7 +117,7 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
 theorem has_decomp_connected_components (X : C) :
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → f i ⟶ X) (_ : IsColimit (Cofan.mk X g)),
       (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  let F := GaloisCategory.getFiberFunctor C
+  let F := getFiberFunctor C
   exact has_decomp_connected_components_aux F (Nat.card <| F.obj X) X rfl
 
 /-- In a Galois category, every object is the sum of connected objects. -/
@@ -290,7 +288,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     change F.map (fi1.hom ≫ fi2.inv) x = y
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]
-    exact ConcreteCategory.congr_hom (F.mapIso fi2).hom_inv_id y
+    congrm $((F.mapIso fi2).hom_inv_id) y
   · refine ⟨evaluation_injective_of_isConnected F A X a, ?_⟩
     intro x
     use u ≫ Pi.π _ x

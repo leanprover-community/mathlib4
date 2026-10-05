@@ -6,9 +6,8 @@ Authors: Mario Carneiro, Vasilii Nesterov
 module
 
 public import Mathlib.Data.Seq.Defs
-public import Mathlib.Data.ENat.Basic
 public import Mathlib.Tactic.ENatToNat
-public import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Basic properties of sequences (possibly infinite lists)
@@ -37,7 +36,6 @@ theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
     s.length' = ⊤ := by
   simp [length', h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length_nil : length (nil : Seq α) terminates_nil = 0 :=
   (Nat.find_eq_zero _).mpr terminatedAt_nil
@@ -94,7 +92,7 @@ theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
 theorem length'_le_iff {s : Seq α} {n : ℕ} :
     s.length' ≤ n ↔ s.TerminatedAt n := by
   by_cases h : s.Terminates
-  · simpa [length'_of_terminates h] using length_le_iff
+  · simpa [length'_of_terminates h, ENat.natCast_le_natCast] using length_le_iff
   · simpa [length'_of_not_terminates h] using forall_not_of_not_exists h n
 
 set_option backward.isDefEq.respectTransparency false in
@@ -119,7 +117,7 @@ theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
 theorem lt_length'_iff {s : Seq α} {n : ℕ} :
     n < s.length' ↔ ∃ a, a ∈ s.get? n := by
   by_cases h : s.Terminates
-  · simpa [length'_of_terminates h] using lt_length_iff
+  · simpa [length'_of_terminates h, ENat.natCast_lt_natCast] using lt_length_iff
   · simp only [length'_of_not_terminates h, ENat.natCast_lt_top, Option.mem_def, true_iff]
     rw [not_terminates_iff] at h
     rw [← Option.isSome_iff_exists]
@@ -323,7 +321,7 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
     simpa using m
   | cons c t₁ =>
     intro m e
-    have := congr_arg destruct e
+    have := congr(destruct $e)
     rcases show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' | m
     · rw [e']
       exact Or.inl (mem_cons _ _)
@@ -495,12 +493,12 @@ theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) 
   | zero => simp [drop]
   | succ k ih =>
     simp only [drop, get?_tail]
-    convert! ih using 2
+    convert ih using 2
     lia
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
-  | n + 1 => congr_arg tail (dropn_add s _ n)
+  | n + 1 => congr(tail $(dropn_add s _ n))
 
 theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
   rw [Nat.add_comm]; symm; apply dropn_add
@@ -535,7 +533,7 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
     | nil => simp
     | cons x s =>
       simp only [drop_succ_cons, length'_cons, Nat.cast_add, Nat.cast_one]
-      convert! drop_length' using 1
+      convert drop_length' using 1
       generalize s.length' = m
       enat_to_nat
       lia
@@ -638,12 +636,12 @@ theorem zip_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β �
 
 theorem zip_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') :
     (s₁.map f).zip s₂ = (s₁.zip s₂).map (Prod.map f id) := by
-  convert! zip_map _ _ _ _
+  convert zip_map _ _ _ _
   simp
 
 theorem zip_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') :
     s₁.zip (s₂.map f) = (s₁.zip s₂).map (Prod.map id f) := by
-  convert! zip_map _ _ _ _
+  convert zip_map _ _ _ _
   simp
 
 end ZipWith

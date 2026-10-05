@@ -151,7 +151,8 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
   rw [← IsSMulRegular.subsingleton_linearMap_iff]
   by_contra h
   have eq0 : IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) = 0 :=
-    (moduleDepth_eq_zero_of_hom_nontrivial _ _).mpr (not_subsingleton_iff_nontrivial.mp h)
+    (ModuleCat.depth_eq_zero_iff_nontrivial_linearMap _ _).mpr
+      (not_subsingleton_iff_nontrivial.mp h)
   have eq := AuslanderBuchsbaum (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R)))
     (ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr (ENat.natCast_ne_top _))
       ((projectiveDimension_le_iff _ _).mpr projdim))
@@ -248,6 +249,8 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     have : IsLocalRing (R ⧸ Ideal.span {x}) :=
       IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
+    have : IsNoetherianRing (R ⧸ Ideal.span {x}) :=
+      isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
     let xm' := (Submodule.span (ResidueField R) {(maximalIdeal R).toCotangent ⟨x, mem⟩})
     rcases xm'.exists_isCompl with ⟨J', ⟨inf, sup⟩⟩
     let g : (maximalIdeal R) →ₛₗ[residue R] (maximalIdeal R).Cotangent := {
@@ -402,7 +405,7 @@ theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
   apply le_trans (Nat.cast_le.mpr rs.toFinset_card_le)
   apply le_trans _ (depth_le_ringKrullDim (ModuleCat.of R R))
   have : (rs.length : WithBot ℕ∞) = (rs.length : ℕ∞) := rfl
-  rw [IsLocalRing.depth_eq_sSup_length_regular, this, WithBot.coe_le_coe]
+  rw [IsLocalRing.depth_eq_sSup_length_isRegular, this, WithBot.coe_le_coe]
   apply le_sSup
   use rs, reg
   simp only [← span, exists_prop, and_true]

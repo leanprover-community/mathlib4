@@ -5,9 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.Perm.MaximalSubgroups
-public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Maximal subgroups of the alternating group
 
@@ -28,7 +26,7 @@ Compare with `Equiv.Perm.isCoatom_stabilizer` for the case of the permutation gr
   * Formalize the other cases of the classification.
     The next one should be the *imprimitive case*.
 
-## Reference
+## References
 
 The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
@@ -92,7 +90,7 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     intro _
     simp only [mem_smul_set]
     rintro ⟨x, hx, rfl⟩
-    convert! hx
+    convert hx
     rw [Perm.smul_def, ← Perm.notMem_support]
     exact (Set.disjoint_left.mp hk_support) hx
   intro g
@@ -175,8 +173,7 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
     (hG : stabilizer (alternatingGroup α) s ≤ G) :
     G = ⊤ := by
   obtain ⟨g, hg, hg3⟩ := exists_mem_stabilizer_isThreeCycle s h4
-  rw [eq_top_iff, ← Subgroup.map_subtype_le_map_subtype,
-    ← MonoidHom.range_eq_map, Subgroup.range_subtype]
+  rw [eq_top_iff, ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_top, Subgroup.range_subtype]
   -- By Jordan's theorem, it suffices to prove that G acts primitively
   apply alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem _ hg3
   · use ⟨g, hg3.mem_alternatingGroup⟩

@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.Topology.ContinuousMap.Compact
 
@@ -23,7 +23,7 @@ as `BoundedContinuousFunction.toLp`.
 open BoundedContinuousFunction MeasureTheory Filter
 open scoped ENNReal
 
-variable {α E : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+variable {α E : Type*} {m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
   [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup E] [SecondCountableTopologyEither α E]
 
 variable (E p μ) in
@@ -43,8 +43,9 @@ theorem MeasureTheory.Lp.mem_boundedContinuousFunction_iff {f : Lp E p μ} :
 namespace BoundedContinuousFunction
 
 /-- A bounded continuous function is in `L∞`. -/
-theorem memLp_top (f : α →ᵇ E) : MemLp f ⊤ μ :=
-  ⟨by fun_prop, eLpNormEssSup_lt_top_of_ae_bound <| univ_mem' (id norm_coe_le_norm f)⟩
+theorem memLp_top (f : α →ᵇ E) : MemLp f ⊤ μ := by
+  rw [memLp_iff, eLpNorm_exponent_top (by fun_prop)]
+  exact eLpNormEssSup_lt_top_of_ae_bound <| univ_mem' (id norm_coe_le_norm f)
 
 variable [IsFiniteMeasure μ]
 
@@ -52,7 +53,7 @@ variable [IsFiniteMeasure μ]
 theorem mem_Lp (f : α →ᵇ E) : f.toContinuousMap.toAEEqFun μ ∈ Lp E p μ := by
   refine Lp.mem_Lp_of_ae_bound ‖f‖ ?_
   filter_upwards [f.toContinuousMap.coeFn_toAEEqFun μ] with x _
-  convert! f.norm_coe_le_norm x using 2
+  convert f.norm_coe_le_norm x using 2
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
@@ -63,7 +64,7 @@ theorem Lp_nnnorm_le (f : α →ᵇ E) :
   refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
   intro x hx
   rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
-  convert! f.norm_coe_le_norm x using 2
+  convert f.norm_coe_le_norm x using 2
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
@@ -190,7 +191,7 @@ then in fact `g n` converges uniformly to `h`. -/
 theorem hasSum_of_hasSum_Lp {β : Type*} [μ.IsOpenPosMeasure]
     {g : β → C(α, E)} {f : C(α, E)} (hg : Summable g)
     (hg2 : HasSum (toLp (E := E) p μ 𝕜 ∘ g) (toLp (E := E) p μ 𝕜 f)) : HasSum g f := by
-  convert! Summable.hasSum hg
+  convert Summable.hasSum hg
   exact toLp_injective μ (hg2.unique ((toLp p μ 𝕜).hasSum <| Summable.hasSum hg))
 
 variable (μ) {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]

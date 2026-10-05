@@ -48,7 +48,7 @@ theorem FiniteMultiplicity.of_not_isUnit [CommMonoidWithZero α] [IsCancelMulZer
 
 theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
     {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
-  .of_not_isUnit ha.not_unit hb
+  .of_not_isUnit ha.not_isUnit hb
 
 namespace UniqueFactorizationMonoid
 
@@ -120,7 +120,7 @@ theorem count_normalizedFactors_eq {p x : R} (hp : Irreducible p) (hnorm : norma
   by_cases hx0 : x = 0
   · simp [hx0] at hlt
   apply Nat.cast_injective (R := ℕ∞)
-  convert! (emultiplicity_eq_count_normalizedFactors hp hx0).symm
+  convert (emultiplicity_eq_count_normalizedFactors hp hx0).symm
   · exact hnorm.symm
   exact (emultiplicity_eq_coe.mpr ⟨hle, hlt⟩).symm
 
@@ -165,7 +165,7 @@ lemma dvd_iff_emultiplicity_le {a b : R} (ha : a ≠ 0) :
     have h1 := emultiplicity_eq_count_normalizedFactors hqprime.irreducible ha
     have h2 := emultiplicity_eq_count_normalizedFactors hqprime.irreducible hb
     rw [normalize_normalized_factor q hq] at h1 h2
-    simpa [h1, h2] using h q hqprime
+    simpa [h1, h2, ENat.natCast_le_natCast] using h q hqprime
   · simp [Multiset.count_eq_zero_of_notMem hq]
 
 lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by

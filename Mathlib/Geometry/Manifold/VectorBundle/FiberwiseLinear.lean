@@ -182,7 +182,7 @@ theorem ContMDiffFiberwiseLinear.locality_aux₂
     ext v
     have h1 : e (y, v) = (y, φ p y v) := heuφ _ ⟨(id hyp : (y, v).fst ∈ u p), trivial⟩
     have h2 : e (y, v) = (y, φ p' y v) := heuφ _ ⟨(id hyp' : (y, v).fst ∈ u p'), trivial⟩
-    exact congr_arg Prod.snd (h1.symm.trans h2)
+    congrm $(h1.symm.trans h2).snd
   have hUu' : U = ⋃ i, u i := by
     ext x
     rw [mem_iUnion]
@@ -195,7 +195,7 @@ theorem ContMDiffFiberwiseLinear.locality_aux₂
   let Φ₀ : U → F ≃L[𝕜] F := iUnionLift u (fun x => φ x ∘ (↑)) huφ U hUu'.le
   let Φ : B → F ≃L[𝕜] F := fun y =>
     if hy : y ∈ U then Φ₀ ⟨y, hy⟩ else ContinuousLinearEquiv.refl 𝕜 F
-  have hΦ : ∀ (y) (hy : y ∈ U), Φ y = Φ₀ ⟨y, hy⟩ := fun y hy => dif_pos hy
+  have hΦ : ∀ (y) (hy : y ∈ U), Φ y = Φ₀ ⟨y, hy⟩ := fun y hy => dite_eq_left hy
   have hΦφ : ∀ x : U, ∀ y ∈ u x, Φ y = φ x y := by
     intro x y hyu
     refine (hΦ y (hUu x hyu)).trans ?_
