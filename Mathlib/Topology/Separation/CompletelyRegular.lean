@@ -5,15 +5,9 @@ Authors: Matias Heikkilä
 -/
 module
 
-<<<<<<< HEAD
-=======
-public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.Topology.Compactification.StoneCech
->>>>>>> master
 public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.Topology.Compactification.StoneCech
 
-import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Algebra.Indicator
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.UrysohnsLemma
