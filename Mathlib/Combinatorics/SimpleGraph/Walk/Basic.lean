@@ -628,6 +628,9 @@ theorem darts_suffix_iff_support_suffix {u' v' : V} {p : G.Walk u v} {q : G.Walk
     have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
     grind [List.map_drop]
 
+theorem ext_darts {p q : G.Walk u v} (hnil : ¬p.Nil) (h : p.darts = q.darts) : p = q :=
+  ext_support <| (darts_eq_iff_support_eq hnil).mp h
+
 end Walk
 
 end SimpleGraph
