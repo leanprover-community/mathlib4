@@ -59,8 +59,8 @@ register_option warn.abelTransparency : Bool := {
 private def warnTransparency : TacticM Unit := do
   if warn.abelTransparency.get (← getOptions) then
     logWarning "The `!` variants of `abel` and the `red` configuration option for `abel_nf` will \
-be deprecated soon. If you have a genuine use case for either feature, please write on Zulip: \
-https://leanprover.zulipchat.com/.\n\
+be deprecated soon. If you have a genuine use case for either feature, please write in the Zulip \
+discussion: https://leanprover.zulipchat.com/#narrow/with/629213120.\n\
 To disable this warning, use `set_option warn.abelTransparency false`."
 
 /--
@@ -80,8 +80,9 @@ To disable this warning, use `set_option warn.abelTransparency false`."
 * `abel!`, `abel1!`, `abel_nf!` use a more aggressive reducibility setting to identify atoms.
 
 The `!` variants and the `red` configuration option will be deprecated soon. If you have a genuine
-use case for either feature, please write on Zulip. The warning can be disabled with
-`set_option warn.abelTransparency false`.
+use case for either feature, please write in the
+[Zulip discussion](https://leanprover.zulipchat.com/#narrow/with/629213120). The warning can be
+disabled with `set_option warn.abelTransparency false`.
 
 Examples:
 ```
