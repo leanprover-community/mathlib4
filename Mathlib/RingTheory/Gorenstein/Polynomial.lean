@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.Regular.InjectiveDimension
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -28,6 +28,7 @@ variable (R : Type u) [CommRing R]
 open CategoryTheory Abelian Limits IsLocalRing Polynomial Ideal
 
 /-- The base change map `R ⧸ I → S ⧸ IS ` -/
+@[expose]
 def quotientIsBaseChangeMap (S : Type*) [CommRing S] [Algebra R S] (I : Ideal R) :
     R ⧸ I →ₗ[R] S ⧸ I.map (algebraMap R S) :=
   Submodule.liftQ I ((Ideal.Quotient.mkₐ R (I.map (algebraMap R S))).toLinearMap.comp
@@ -44,7 +45,6 @@ lemma quotientIsBaseChangeMap_isBaseChange (S : Type*) [CommRing S] [Algebra R S
   simp only [quotientIsBaseChangeMap, Submodule.liftQ_apply]
   simp [Ideal.quotMapEquivTensorQuot, Algebra.smul_def]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_iff_exists [IsLocalRing R] [IsNoetherianRing R] :
     IsGorensteinLocalRing R ↔ ∃ n, ∀ i ≥ n, Subsingleton
     (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i) := by
@@ -79,6 +79,7 @@ lemma quotientSMulShortComplex_exact (I : Ideal R) (x : R) :
 variable {R} in
 /-- The short complex `R ⧸ I → R ⧸ I → R ⧸ I ⊔ span {x}`,
 with the first map scalar multilple by `x`. -/
+@[expose]
 def quotientSMulShortComplex (I : Ideal R) (x : R) : ShortComplex (ModuleCat.{u} R) :=
   ModuleCat.shortComplexOfCompEqZero (x • (LinearMap.id (R := R) (M := R ⧸ I)))
     (Submodule.factor (le_sup_left : I ≤ I ⊔ Ideal.span {x}))
@@ -154,7 +155,6 @@ lemma Polynomial.localization_at_comap_maximal_isGorensteinLocalRing_of_isGorens
     · exact AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsing (i - 1) (by omega))
     · exact AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsing i (Nat.le_of_succ_le hi))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Polynomial.isGorensteinRing_of_isGorensteinRing [IsNoetherianRing R] [IsGorensteinRing R] :
     IsGorensteinRing R[X] := by
   apply (isGorensteinRing_def _).mpr (fun p hp ↦ ?_)
