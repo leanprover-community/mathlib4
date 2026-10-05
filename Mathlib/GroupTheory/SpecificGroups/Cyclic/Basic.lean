@@ -16,12 +16,10 @@ import Mathlib.Tactic.Contrapose
 /-!
 # Cyclic groups
 
-`IsCyclic` is a predicate on a group stating that the group is cyclic.
-For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
+This file develops basic properties of cyclic groups that only require minimal imports.
 
-* `isCyclic_of_prime_card` proves that a finite group of prime order is cyclic.
-
-cyclic group
+Note that `IsCyclic` is a predicate on a group stating that the group is cyclic. For the concrete
+cyclic group of order `n`, see `Data.ZMod.Basic`.
 -/
 
 @[expose] public section
@@ -32,7 +30,7 @@ variable {α G G' : Type*} {a : α}
 
 section Cyclic
 
-instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp [smul_eq_mul]⟩⟩
+instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp⟩⟩
 
 @[to_additive]
 instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=

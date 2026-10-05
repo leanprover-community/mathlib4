@@ -9,12 +9,15 @@ public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 /-!
-# Cyclic groups
+# Subgroups of cyclic groups
 
-`IsCyclic` is a predicate on a group stating that the group is cyclic.
-For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
+Develop properties of finite cyclic groups and subgroups of cyclic groups.
+
+## Main statements
 
 * `isCyclic_of_prime_card` proves that a finite group of prime order is cyclic.
+
+## Tags
 
 cyclic group
 -/

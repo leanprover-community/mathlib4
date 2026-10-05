@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.ZMod.Aut
 public import Mathlib.GroupTheory.Exponent
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic.ZMod
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.IntervalCases
 
