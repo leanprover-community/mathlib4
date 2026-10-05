@@ -25,7 +25,7 @@ public import Mathlib.RingTheory.Support
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -81,7 +81,7 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.
       (AddCommGrpCat.isZero_of_iff_subsingleton.mpr (h1 h2.1))
     exact AddCommGrpCat.subsingleton_of_isZero this
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] ModuleCat.smulShortComplex in
 lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ)
     (p : Ideal R) [p.IsPrime] (ne : p ≠ maximalIdeal R) (h : ∀ q > p, q.IsPrime →
       Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ q))) M (n + 1))) :
@@ -201,6 +201,7 @@ universe u'
 variable {R' : Type u'} [CommRing R'] (f : R →+* R')
 
 /-- Restricting scalar by surjective ring homomorphism is fully faithful. -/
+@[expose]
 noncomputable def ModuleCat.restrictScalarsFullyFaithfulOfSurjective (h : Function.Surjective f) :
     (ModuleCat.restrictScalars.{v} f).FullyFaithful where
   preimage {X Y} g := ofHom
@@ -213,7 +214,6 @@ noncomputable def ModuleCat.restrictScalarsFullyFaithfulOfSurjective (h : Functi
 
 end restrictScalars
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasProjectiveDimensionLE_finsupp_quotient_regular [Small.{v} R] (ι : Type v) {x : R}
     (regR : IsSMulRegular R x) :
     HasProjectiveDimensionLE (ModuleCat.of R (ι →₀ Shrink.{v} (R ⧸ Ideal.span {x}))) 1 := by
@@ -255,7 +255,7 @@ lemma hasProjectiveDimensionLE_finsupp_quotient_regular [Small.{v} R] (ι : Type
 
 variable [Small.{v} R]
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] ModuleCat.smulShortComplex in
 open Limits in
 lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
     (regM : IsSMulRegular M x) (N : ModuleCat.{v} R) (ann : x • 𝟙 N = 0) :
@@ -268,7 +268,7 @@ lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
     apply subsingleton_of_forall_eq 0 fun f ↦ ModuleCat.hom_ext (LinearMap.ext fun t ↦ regM ?_)
     have : (x • 𝟙 N) t = x • t := by simp
     simp [smul_zero, ← map_smul, ← this, ann, map_zero]
-  · conv in ShortComplex.f ?_ => change x • (𝟙 M)
+  · simp only [ModuleCat.smulShortComplex_f_eq_smul_id]
     rw [← Ext.mk₀_id_comp (y.comp (Ext.mk₀ (x • 𝟙 M)) rfl), Ext.mk₀_smul,
       Ext.comp_smul, Ext.comp_smul, ← Ext.smul_comp, ← Ext.mk₀_smul]
     simp [ann]
@@ -352,7 +352,6 @@ section
 
 variable [Small.{v} R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
     (regR : IsSMulRegular R x) (regM : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) (n : ℕ) :
     letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
@@ -372,14 +371,9 @@ lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
   let k' := (ModuleCat.of (R ⧸ Ideal.span {x})
     (Shrink.{v} ((R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}))))
   let e' : (R ⧸ maximalIdeal R) ≃ₗ[R] (R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}) :=
-    { __ := RingEquiv.ofBijective _ (ResidueField.map_bijective_of_surjective
-        (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective)
-      map_smul' r y := by
-        simp only [RingEquiv.toEquiv_eq_coe, Algebra.smul_def, Ideal.Quotient.algebraMap_eq,
-          Equiv.toFun_as_coe, EquivLike.coe_coe, map_mul, RingEquiv.coe_ofBijective,
-          RingHom.id_apply, mul_eq_mul_right_iff]
-        left
-        rfl }
+    (DoubleQuot.quotQuotEquivQuotOfLEₐ R ((maximalIdeal R).span_singleton_le_iff_mem.mpr
+      mem)).symm.toLinearEquiv.trans ((Submodule.quotEquivOfEq _ _
+        (map_maximalIdeal_of_surjective _ Ideal.Quotient.mk_surjective)).restrictScalars R)
   let e : (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) ≅
     (ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj k' :=
     (((Shrink.linearEquiv.{v} R _).trans e').trans (Shrink.linearEquiv.{v} R _).symm).toModuleIso
@@ -392,7 +386,6 @@ instance finite_QuotSMulTop' (M : Type*) [AddCommGroup M] [Module R M] [Module.F
     (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
   Module.Finite.of_restrictScalars_finite R _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] [IsNoetherianRing R]
     {M : ModuleCat.{v} R} [Module.Finite R M] {x : R} (regR : IsSMulRegular R x)
     (regM : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
@@ -402,6 +395,8 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
     have : Nontrivial (R ⧸ Ideal.span {x}) :=
       Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
     IsLocalRing.of_surjective' (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
+  have : IsNoetherianRing (R ⧸ Ideal.span {x}) :=
+    isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
     refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
     by_contra!
