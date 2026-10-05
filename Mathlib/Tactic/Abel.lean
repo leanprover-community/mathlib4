@@ -47,7 +47,7 @@ open Lean Elab Meta Tactic
   * `abel_nf (config := cfg)` allows for additional configuration:
     * `red`: the reducibility setting (overridden by `!`).
     * `zetaDelta`: if true, local `let` variables can be unfolded (overridden by `!`).
-* `abel!`, `abel1!`, `abel_nf!` use a more aggressive reducibility setting to identify atoms.
+* `abel!`, `abel1!`, `abel_nf!` also unfold atoms at default transparency and local `let` variables.
 
 Examples:
 ```
@@ -67,7 +67,7 @@ structure AbelNF.Config where
 /-- Elaborate `abel_nf` configuration. -/
 declare_config_elab elabAbelNFConfig AbelNF.Config
 
-/-- Normalize closed scalar arithmetic using Lean's arithmetic certificates. -/
+/-- Normalize scalar arithmetic and additive expressions inside atoms. -/
 private def simpAtom (cfg : AbelNF.Config) (e : Expr) : Sym.Simp.SimpM Sym.Simp.Result := do
   if !e.hasFVar && !e.hasMVar then
     let type ← inferType e
@@ -94,7 +94,7 @@ private def methods (cfg : AbelNF.Config) : Sym.Simp.Methods :=
 
 /-- Normalize maximal additive expressions and recurse into their atoms. -/
 private def normalize (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result :=
-    withConfig ({ · with zetaDelta := cfg.zetaDelta }) do
+    withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| withNewMCtxDepth do
   let r ← Sym.SymM.run do
     Sym.Simp.SimpM.run' (Sym.Simp.simp (← Sym.shareCommon (← Sym.canon e))) (methods cfg)
   match r with

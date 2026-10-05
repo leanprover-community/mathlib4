@@ -229,3 +229,9 @@ example [AddCommGroup α] (f : α → α) (a b : α) : f a + f b = f a + f b := 
   let g := f
   change f a + g b = g a + f b
   abel1
+
+-- Normalization must not choose an existential witness through unification.
+example (a : ℤ) : ∃ x : ℤ, x = a := by
+  apply Exists.intro
+  fail_if_success abel_nf
+  rfl
