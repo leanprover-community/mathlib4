@@ -264,6 +264,7 @@ because they are files that test the linter.
 def headerTestFiles : NameSet := .ofList [
   `MathlibTest.Linter.Header.Basic,
   `MathlibTest.Linter.Header.Fail,
+  `MathlibTest.Linter.Header.ImportFormat,
   `MathlibTest.Linter.Header.Verso,
   `MathlibTest.DirectoryDependencyLinter.Test]
 
