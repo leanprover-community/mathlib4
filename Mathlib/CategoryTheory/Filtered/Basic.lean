@@ -22,7 +22,9 @@ An important example of filtered category is given by nonempty directed types;
 actually, filtered categories may be considered as a generalization of nonempty directed types.
 In the file `CategoryTheory.Presentable.Directed`, we show that "conversely"
 if `C` is a filtered category, there exists a final functor `α ⥤ C` from
-a nonempty directed type (`IsFiltered.isDirected`).
+a nonempty directed type (`IsFiltered.exists_directed`).
+Dually, if `C` is a cofiltered category, there exists an initial functor `α ⥤ C`
+from a nonempty codirected type (`IsCofiltered.exists_codirected`).
 
 Filtered colimits are often better behaved than arbitrary colimits.
 See `Mathlib/CategoryTheory/Limits/Types/` for some details.

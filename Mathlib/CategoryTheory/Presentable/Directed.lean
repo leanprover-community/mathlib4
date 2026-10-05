@@ -19,6 +19,9 @@ any (small) filtered category `J`, there exists a final functor `F : α ⥤ J`
 where `α` is a directed partially ordered set (`IsFiltered.exists_directed`).
 The construction applies more generally to `κ`-filtered categories and
 `κ`-directed posets (`IsCardinalFiltered.exists_cardinal_directed`).
+Dually, for any (small) cofiltered category `J`, there exists an initial
+functor `F : α ⥤ J` where `α` is a codirected partially ordered set
+(`IsCofiltered.exists_codirected`).
 
 Note: the argument by Deligne is reproduced (without reference) in the book
 by Adámek and Rosický (theorem 1.5), but with a mistake:
@@ -542,11 +545,20 @@ attribute [local instance] Cardinal.fact_isRegular_aleph0 in
 @[stacks 0032]
 lemma IsFiltered.exists_directed
     (J : Type w) [SmallCategory J] [IsFiltered J] :
-    ∃ (α : Type w) (_ : PartialOrder α) (_ : IsDirected α (· ≤ ·)) (_ : Nonempty α)
+    ∃ (α : Type w) (_ : PartialOrder α) (_ : IsDirectedOrder α) (_ : Nonempty α)
       (F : α ⥤ J), F.Final := by
   have := (isCardinalFiltered_aleph0_iff.{w} J).2 inferInstance
   obtain ⟨α, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J .aleph0
   have : IsFiltered α := by rwa [← isCardinalFiltered_aleph0_iff.{w}]
   exact ⟨α, _, IsFiltered.isDirectedOrder _, nonempty, F, inferInstance⟩
+
+@[stacks 0032 "(2)"]
+lemma IsCofiltered.exists_codirected
+    (J : Type w) [SmallCategory J] [IsCofiltered J] :
+    ∃ (α : Type w) (_ : PartialOrder α) (_ : IsCodirectedOrder α) (_ : Nonempty α)
+      (F : α ⥤ J), F.Initial := by
+  obtain ⟨α, _, _, _, F, _⟩ := IsFiltered.exists_directed Jᵒᵖ
+  exact ⟨αᵒᵈ, _, inferInstance, inferInstance, (orderDualEquivalence α).functor ⋙ F.leftOp,
+    inferInstance⟩
 
 end CategoryTheory
