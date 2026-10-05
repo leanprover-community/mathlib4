@@ -6,9 +6,11 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Probability.Decision.Risk.Defs
+public import Mathlib.Probability.Kernel.Composition.MapComap
+public import Mathlib.Probability.Kernel.WithDensity
 
 import Mathlib.Probability.Decision.Risk.Basic
-public import Mathlib.Probability.Kernel.Composition.MapComap
+import Mathlib.Probability.Kernel.Composition.WithDensity
 
 /-!
 # Risk increase (or statistical information)
@@ -111,5 +113,12 @@ lemma riskIncrease_map_le (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧
     riskIncrease ℓ (P.map f) π ≤ riskIncrease ℓ P π := by
   rw [← Kernel.deterministic_comp_eq_map hf]
   exact riskIncrease_comp_le ℓ P π (Kernel.deterministic f hf)
+
+lemma riskIncrease_withDensity (hl : Measurable (uncurry ℓ))
+    (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (π : Measure Θ)
+    {f : Θ → ℝ≥0∞} (hf : Measurable f) :
+    riskIncrease ℓ (P.withDensity (fun θ _ ↦ f θ)) π = riskIncrease ℓ P (π.withDensity f) := by
+  rw [riskIncrease, ← Kernel.withDensity_comp_left hf, bayesRisk_withDensity hl _ π hf,
+    bayesRisk_withDensity hl _ π hf, riskIncrease]
 
 end ProbabilityTheory
