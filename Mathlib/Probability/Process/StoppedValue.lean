@@ -348,7 +348,7 @@ theorem stoppedValue_stoppedProcess_ae_eq (hσ : ∀ᵐ ω ∂P, σ ω ≠ ⊤) 
 variable [T2Space E] [TopologicalSpace ι] [MeasurableSpace ι] [OrderTopology ι]
   [SecondCountableTopology ι] [BorelSpace ι] [PseudoMetrizableSpace E]
 
-theorem HasLimitProcess.limitProcess_stoppedValue (hX1 : HasLimitProcess X 𝓕 P)
+theorem HasLimitProcess.limitProcess_stoppedProcess (hX1 : HasLimitProcess X 𝓕 P)
     (hX2 : IsStronglyProgressive 𝓕 X) (hX3 : ∀ ω, _root_.IsRightContinuous (X · ω))
     (hτ : IsStoppingTime 𝓕 τ) :
     𝓕.limitProcess (stoppedProcess X τ) P =ᵐ[P] 𝓕.stoppedValue X τ P := by
@@ -365,7 +365,7 @@ theorem HasLimitProcess.stoppedValue_stoppedProcess (hX1 : HasLimitProcess X �
     (hX2 : IsStronglyProgressive 𝓕 X) (hX3 : ∀ ω, _root_.IsRightContinuous (X · ω))
     (hτ : IsStoppingTime 𝓕 τ) :
     𝓕.stoppedValue (stoppedProcess X τ) σ P =ᵐ[P] 𝓕.stoppedValue X (fun ω ↦ min (σ ω) (τ ω)) P := by
-  filter_upwards [hX1.limitProcess_stoppedValue hX2 hX3 hτ] with ω hω
+  filter_upwards [hX1.limitProcess_stoppedProcess hX2 hX3 hτ] with ω hω
   cases h : σ ω with
   | top =>
     rw [stoppedValue_of_eq_top h, hω, stoppedValue_congr']
