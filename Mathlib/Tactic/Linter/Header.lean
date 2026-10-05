@@ -345,7 +345,7 @@ This approach may be unneeded in the future when using stateful linters. -/
 
 Backtracks to the start of parse at any failure.
 -/
-@[specialize] partial def many (p : Parser) : Parser := fun input s =>
+@[specialize] partial def many (p : Parser) : Parser := fun input s ↦
   let newS := p input s
   if newS.error?.isSome then
     s
@@ -353,7 +353,7 @@ Backtracks to the start of parse at any failure.
     many p input newS
 
 /-- Allow any of the given parsers, committing to the first that succeeded. -/
-def anyOf (ps : List Parser) : Parser := fun input s => Id.run do
+def anyOf (ps : List Parser) : Parser := fun input s ↦ Id.run do
   for p in ps do
     let newS := p input s
     if newS.error?.isSome then
