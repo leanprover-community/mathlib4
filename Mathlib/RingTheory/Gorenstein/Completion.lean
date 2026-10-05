@@ -36,11 +36,11 @@ def quotientIsBaseChangeMap' (S : Type*) [CommRing S] [Algebra R S] (I : Ideal R
 
 lemma quotientIsBaseChangeMap'_isBaseChange (S : Type*) [CommRing S] [Algebra R S] (I : Ideal R) :
     IsBaseChange S (quotientIsBaseChangeMap' R S I) := by
-  apply IsBaseChange.of_equiv (Ideal.qoutMapEquivTensorQout S).symm
+  apply IsBaseChange.of_equiv (Ideal.quotMapEquivTensorQuot S).symm
   intro x
   rcases Submodule.Quotient.mk_surjective _ x with ⟨y, rfl⟩
   simp only [quotientIsBaseChangeMap', Submodule.liftQ_apply]
-  simp [Ideal.qoutMapEquivTensorQout, Algebra.smul_def]
+  simp [Ideal.quotMapEquivTensorQuot, Algebra.smul_def]
 
 lemma isBaseChange_adicCompletion_subsingleton_iff [IsLocalRing R]
     {M N : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M] [AddCommGroup N] [Module R N]
