@@ -5,7 +5,6 @@ Authors: Adam Topaz, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.Functor.EpiMono
@@ -502,14 +501,13 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
   Comma S (Functor.fromPUnit.{0} T)
 
 /-- The type of morphisms in the category `CostructuredArrow`. -/
+@[implicit_reducible]
 protected def CostructuredArrow.Hom {S : C ⥤ D} {T : D}
     (f g : CostructuredArrow S T) := CommaMorphism f g
 
 instance {S : C ⥤ D} {T : D} : Category (CostructuredArrow S T) where
   Hom := CostructuredArrow.Hom
   __ := (inferInstance : Category (Comma _ _))
-
-instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
 
 namespace CostructuredArrow
 

@@ -10,9 +10,8 @@ public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Group.MinMax
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.Tactic.GCongr
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 # Cauchy sequences
@@ -217,7 +216,7 @@ theorem const_apply (x : β) (i : ℕ) : (const x : ℕ → β) i = x :=
   rfl
 
 theorem const_inj {x y : β} : (const x : CauSeq β abv) = const y ↔ x = y :=
-  ⟨fun h => congr_arg (fun f : CauSeq β abv => (f : ℕ → β) 0) h, congr_arg _⟩
+  ⟨fun h => congr($h 0), congr_arg _⟩
 
 instance : Zero (CauSeq β abv) :=
   ⟨const 0⟩
