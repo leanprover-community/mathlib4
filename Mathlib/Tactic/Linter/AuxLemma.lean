@@ -5,11 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public meta import Lean.Elab.Command
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Message
+public import Mathlib.Init
 
 /-!
 # The `auxLemma` linter
@@ -24,4 +20,5 @@ They are not stable across refactors (e.g. reordering fields in a structure can 
 `_proof_` indices), so depending on them makes code fragile.
 -/
 
-deprecated_module "This linter is now in `Mathlib.Tactic.Linter.SyntaxBased`" (since := "2026-10-04")
+deprecated_module "This linter is now in `Mathlib.Tactic.Linter.SyntaxBased`"
+  (since := "2026-10-04")

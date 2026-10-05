@@ -5,11 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
-public meta import Lean.Elab.Command
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Message
+public import Mathlib.Init
 
 /-!
 # The `oldObtain` linter, against stream-of-consciousness `obtain`
@@ -52,4 +48,5 @@ from mathlib: in summary,
   could also be used, as was in fact clearer.
 -/
 
-deprecated_module "This linter is now in `Mathlib.Tactic.Linter.SyntaxBased`" (since := "2026-10-05")
+deprecated_module "This linter is now in `Mathlib.Tactic.Linter.SyntaxBased`"
+  (since := "2026-10-05")
