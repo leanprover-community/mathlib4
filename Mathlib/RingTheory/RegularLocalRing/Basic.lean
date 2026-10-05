@@ -201,7 +201,6 @@ lemma IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one [IsRe
   apply ((IsDiscreteValuationRing.TFAE R nisf).out 1 5).mpr ((Submodule.spanFinrank_eq_one_iff _).mp
     (Nat.cast_inj.mp (((isRegularLocalRing_iff R).mp ‹_›).trans dim))).1
 
-set_option backward.isDefEq.respectTransparency false in
 open RingTheory.Sequence in
 theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
     (span : Ideal.ofList rs = maximalIdeal R) (len : rs.length = ringKrullDim R) :
