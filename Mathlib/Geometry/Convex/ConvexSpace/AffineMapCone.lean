@@ -12,7 +12,7 @@ import Mathlib.Tactic.FinCases
 # The cone of an affine map from the standard simplex
 
 Given an affine map `s : StdSimplex R (Fin n) → Y` and `y : Y`, we define
-an affine map `s.cone : StdSimplex R (Fin (n + 1))) → Y` which sends
+an affine map `s.cone : StdSimplex R (Fin (n + 1)) → Y` which sends
 the vertex `0` to `y` and the vertex `i.succ` to the image by `s` of
 the `i`th vertex of the standard simplex.
 
