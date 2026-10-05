@@ -510,8 +510,7 @@ theorem isPrincipal_opow_two : IsPrincipal (· ^ ·) 2 := by
   intro a b ha _
   simpa using opow_le_opow_left b (lt_two_iff.1 ha)
 
-theorem IsPrincipal.mul_of_opow (ho : IsPrincipal (· ^ ·) o) :
-    IsPrincipal (· * ·) o := by
+theorem IsPrincipal.mul_of_opow (ho : IsPrincipal (· ^ ·) o) : IsPrincipal (· * ·) o := by
   rcases le_or_gt o 2 with ho₂ | ho₂
   · exact isPrincipal_mul_of_le_two ho₂
   · refine fun a b ha hb ↦ mul_le_mul' (le_max_left a b) (le_max_right a b) |>.trans_lt ?_
@@ -542,7 +541,7 @@ theorem omega0_lt_and_isPrincipal_opow_iff :
 /-- Above `ω`, closure under exponentiation is equivalent to being a fixed point of `ω ^ ·`. -/
 theorem isPrincipal_opow_iff_omega0_opow_eq_self (hoω : ω < o) :
     IsPrincipal (· ^ ·) o ↔ ω ^ o = o := by
-  simpa only [hoω, true_and] using (omega0_lt_and_isPrincipal_opow_iff (o := o))
+  simpa only [hoω, true_and] using omega0_lt_and_isPrincipal_opow_iff (o := o)
 
 theorem isPrincipal_opow_omega0 : IsPrincipal (· ^ ·) ω := fun a b ha hb =>
   match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
