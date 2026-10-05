@@ -29,9 +29,10 @@ on:
         type: string
         required: true
       cache_environment:
-        # GitHub environment for the `upload_cache` job. Its only role is to fix the
-        # OIDC `sub` claim to `...:environment:<name>`, which the Azure cache app's
-        # federated credential is scoped to; it must match the writer `cache_application_id`.
+        # GitHub environment for the `upload_cache` and `upload_test_cache` jobs. Its only
+        # role is to fix the OIDC `sub` claim to `...:environment:<name>`, which the Azure
+        # cache app's federated credential is scoped to; it must match the writer
+        # `cache_application_id`.
         type: string
         required: true
       publish_cache:
@@ -935,11 +936,9 @@ jobs:
           persist-credentials: false # no later step needs git credentials
 
       # Sets MATHLIB_CACHE_FROM in env so the `cache get` calls below pick
-      # up the trust-class-appropriate read fallback automatically. Replaces
-      # the previous test-only `--cache-from=master,forks` hardcode that
-      # lived in this file — that policy is now in the shared composite
-      # action so build, upload_cache, and post_steps all consult the same
-      # source of truth.
+      # up the trust-class-appropriate read fallback automatically. Every job
+      # that reads or writes the cache gets this policy from the same composite
+      # action.
       - name: Compute cache trust dispatch
         uses: ./workflow-actions/.github/actions/cache-trust-dispatch
         with:

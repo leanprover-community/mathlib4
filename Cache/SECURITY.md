@@ -168,6 +168,6 @@ The trust model does not attempt to defend against:
 | Transfer tool mechanics                        | [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean), [`Cache/Upload/Dest.lean`](Upload/Dest.lean) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md), [`Cache/CI.md`](CI.md) |
-| OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` job) |
+| OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` and `upload_test_cache` jobs) |
 | (repo, ref) → trust class policy table         | [`.github/actions/cache-trust-dispatch/action.yml`](../.github/actions/cache-trust-dispatch/action.yml) |
 | Caller `cache_application_id` wiring           | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |
