@@ -169,7 +169,7 @@ theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f
   hasSum {z} hz1 hz2 := by
     have : x + z ∈ insert x s := by
       simp only [add_singleton, image_add_right, mem_insert_iff, add_eq_left, mem_preimage] at hz1 ⊢
-      abel_nf at hz1 ⊢
+      abel_nf at hz1
       assumption
     convert hf.hasSum this hz2
     abel
