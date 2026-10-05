@@ -217,24 +217,6 @@ def test_getBaseURLFrom : IO Unit := do
   assertEq "empty value counts as unset"
     publicCacheEndpoint (getBaseURLFrom .master (some "") false)
 
-/-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
-`azureURL`, under whichever base the environment selects. Without a base-URL
-override, both positions of the legacy switch are pinned for `master`: the
-endpoint by default, `azureURL` under legacy. -/
-def test_Container_getURL : IO Unit := do
-  IO.println "Container.getURL:"
-  -- A base-URL override answers for both switch positions, so the pinned
-  -- assertions run only without one.
-  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
-    let ambient ← useLegacy.get
-    useLegacy.set false
-    assertEq "default read URL is on the endpoint"
-      s!"{publicCacheEndpoint}/mathlib4-master" (← Container.master.getURL)
-    useLegacy.set true
-    assertEq "legacy read URL matches azureURL"
-      Container.master.azureURL (← Container.master.getURL)
-    useLegacy.set ambient
-
 end ContainerModel
 
 section PerRepoAllowlist
@@ -1995,7 +1977,6 @@ def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
   test_Container_azureURL
-  test_Container_getURL
   test_envValueNormalization
   test_getBaseURLFrom
   test_defaultContainersForRepo

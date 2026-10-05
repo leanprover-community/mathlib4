@@ -184,10 +184,6 @@ Written on top of the pure function above, which is separate to be testable.
 def getBaseURL (c : Container) : IO String := do
   return getBaseURLFrom c (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
 
-/-- Read URL for a container: `{getBaseURL c}/{pathSegment}`. -/
-def Container.getURL (c : Container) : IO String := do
-  return c.urlUnder (← getBaseURL c)
-
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.
 
