@@ -56,7 +56,6 @@ variable [Algebra A K] [IsFractionRing A K]
 
 variable {A K}
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 variable {R} [IsDomain A] in
 theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit (x : K)
     (hx : IsIntegral A x) (hI : IsUnit (adjoinIntegral A⁰ x hx)) : adjoinIntegral A⁰ x hx = 1 := by

@@ -220,7 +220,6 @@ def normalizationObjIso {U : Y.Opens} (hU : IsAffineOpen U) :
     (by simpa using! (f.fromNormalization_preimage ⟨U, hU⟩).symm)).op ≪≫
   (f.normalizationOpenCover.f ⟨U, hU⟩).appIso ⊤ ≪≫ Scheme.ΓSpecIso _
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 set_option backward.isDefEq.respectTransparency false in
 lemma toNormalization_app_preimage (U : Y.affineOpens) :
     let := (f.app U.1).hom.toAlgebra

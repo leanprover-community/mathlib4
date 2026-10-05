@@ -35,7 +35,6 @@ of primes `p = f⁻¹(q)`.
 def SurjectiveOnStalks (f : R →+* S) : Prop :=
   ∀ (P : Ideal S) (_ : P.IsPrime), Function.Surjective (Localization.localRingHom _ P f rfl)
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /--
 `R_p →+* S_q` is surjective if and only if
 every `x : S` is of the form `f x / f r` for some `f r ∉ q`.

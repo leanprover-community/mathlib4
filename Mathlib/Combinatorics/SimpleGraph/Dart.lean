@@ -126,7 +126,6 @@ to the darts `d` with `d.fst = v`. -/
 def dartOfNeighborSet (v : V) (w : G.neighborSet v) : G.Dart :=
   ⟨(v, w), w.property⟩
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 theorem dartOfNeighborSet_injective (v : V) : Function.Injective (G.dartOfNeighborSet v) :=
   fun e₁ e₂ h =>
   Subtype.ext <| by

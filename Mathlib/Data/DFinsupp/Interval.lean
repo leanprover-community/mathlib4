@@ -32,7 +32,6 @@ namespace Finset
 
 variable [DecidableEq ι] [∀ i, Zero (α i)] {s : Finset ι} {f : Π₀ i, α i} {t : ∀ i, Finset (α i)}
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- Finitely supported product of finsets. -/
 def dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : Finset (Π₀ i, α i) :=
   (s.pi t).map

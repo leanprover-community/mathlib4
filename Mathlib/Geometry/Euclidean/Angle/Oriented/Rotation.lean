@@ -58,7 +58,6 @@ theorem rotationAux_apply (θ : Real.Angle) (x : V) :
     o.rotationAux θ x = Real.Angle.cos θ • x + Real.Angle.sin θ • J x :=
   rfl
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- A rotation by the oriented angle `θ`. -/
 def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
   LinearIsometryEquiv.ofLinearIsometry (o.rotationAux θ)

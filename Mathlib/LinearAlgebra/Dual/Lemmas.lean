@@ -397,7 +397,6 @@ theorem _root_.FiniteDimensional.mem_span_of_iInf_ker_le_ker [FiniteDimensional 
     exact ⟨L i, Submodule.subset_span ⟨i, rfl⟩, (apply_evalEquiv_symm_apply 𝕜 E _ φ).symm⟩
   simp only [apply_evalEquiv_symm_apply, φs, φne] at this
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- Given some linear forms $L_1, ..., L_n, K$ over a vector space $E$, if
 $\bigcap_{i=1}^n \mathrm{ker}(L_i) \subseteq \mathrm{ker}(K)$, then $K$ is in the space generated
 by $L_1, ..., L_n$. -/

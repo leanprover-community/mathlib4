@@ -55,7 +55,6 @@ theorem IsLocalExtrOn.range_ne_top_of_hasStrictFDerivAt
     exact map_snd_nhdsWithin _
   exact hextr.not_nhds_le_map A.ge
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- Lagrange multipliers theorem: if `φ : E → ℝ` has a local extremum on the set `{x | f x = f x₀}`
 at `x₀`, both `f : E → F` and `φ` are strictly differentiable at `x₀`, and the codomain of `f` is
 a complete space, then there exist `Λ : dual ℝ F` and `Λ₀ : ℝ` such that `(Λ, Λ₀) ≠ 0` and

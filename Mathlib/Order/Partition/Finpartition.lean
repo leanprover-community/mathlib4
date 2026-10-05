@@ -781,7 +781,6 @@ lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin #t.1,
   use P.equivSigmaParts.trans ((Equiv.refl _).sigmaCongr (fun t ↦ t.1.equivFin))
   simp [equivSigmaParts, Equiv.sigmaCongr, Equiv.sigmaCongrLeft]
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 theorem sum_card_parts : ∑ i ∈ P.parts, #i = #s := by
   convert! congr($(P.biUnion_parts).card)
   rw [card_biUnion P.supIndep.pairwiseDisjoint]

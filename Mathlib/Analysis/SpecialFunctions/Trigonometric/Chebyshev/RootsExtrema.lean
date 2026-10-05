@@ -93,7 +93,6 @@ theorem abs_eval_T_real_le_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     |x| ≤ 1 ↔ |(T ℝ n).eval x| ≤ 1 :=
   ⟨abs_eval_T_real_le_one n, by simpa using mt <| one_lt_abs_eval_T_real hn⟩
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     |(T ℝ n).eval x| = 1 ↔ ∃ k ≤ n, x = cos (k * π / n) := by
   constructor

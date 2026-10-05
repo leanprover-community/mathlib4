@@ -164,7 +164,6 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
       change (g₁⁻¹ * g₂) • x = x
       rw [mul_smul, ← H, inv_smul_smul]
 
-set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- **Orbit-stabilizer theorem**. -/
 @[to_additive /-- Orbit-stabilizer theorem. -/]
 noncomputable def orbitEquivQuotientStabilizer (b : X) : orbit G b ≃ G ⧸ stabilizer G b :=
