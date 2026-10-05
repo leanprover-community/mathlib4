@@ -10,9 +10,10 @@ public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
+public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.Order.Fin.Tuple
-public import Mathlib.Data.Fin.Tuple.Reflection
+
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Data.Fin.Tuple.Sort

@@ -5,8 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Init
 public import Batteries.Util.LibraryNote
+
+import Mathlib.Init
 
 /-!
 # Documentation for `ext` tactic

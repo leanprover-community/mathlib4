@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Data.Nat.Choose.Sum
+
+import Mathlib.Algebra.MonoidAlgebra.Support
 
 /-!
 # Theory of univariate polynomials

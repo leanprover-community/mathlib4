@@ -69,6 +69,9 @@ def prodComm : (M₁ × M₂) ≃L[R] M₂ × M₁ where
 
 @[simp] lemma prodComm_symm : (prodComm R M₁ M₂).symm = prodComm R M₂ M₁ := rfl
 
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm R M₁ M₂).trans (prodComm R M₂ M₁) = .refl _ _ := rfl
+
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem _root_.ContinuousLinearMap.coprod_comp_prodComm
     [ContinuousAdd M₃] (f : M₁ →L[R] M₃) (g : M₂ →L[R] M₃) :
