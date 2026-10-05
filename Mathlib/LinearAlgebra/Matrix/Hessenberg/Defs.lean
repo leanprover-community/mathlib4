@@ -36,7 +36,7 @@ variable {R m : Type*} [Zero R] [Preorder m] [SuccOrder m]
 abbrev IsUpperHessenberg (M : Matrix m m R) : Prop :=
   ∀ ⦃i j⦄, Order.succ j < i → M i j = 0
 
-instance decidableIsUpperHessenberg [DecidableEq R] [Fintype m] [DecidableLT m]
+instance [DecidableEq R] [Fintype m] [DecidableLT m]
     (M : Matrix m m R) : Decidable M.IsUpperHessenberg :=
   decidable_of_iff (∀ ij : m × m, Order.succ ij.2 < ij.1 → M ij.1 ij.2 = 0)
     ⟨fun h i j hij => h (i, j) hij, fun h _ hij => h hij⟩
