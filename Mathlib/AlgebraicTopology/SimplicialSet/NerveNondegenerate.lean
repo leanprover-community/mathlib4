@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 
 /-!
 # The nondegenerate simplices in the nerve of a partially ordered type

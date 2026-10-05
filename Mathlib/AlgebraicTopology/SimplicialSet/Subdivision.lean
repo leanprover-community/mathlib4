@@ -41,9 +41,9 @@ noncomputable def PartOrd.nerveFunctorCompNIso :
           ext x : 3
           dsimp at x ⊢
           ext y : 2
-          simp only [Iso.mk, OrderHom.comp_coe]
-          dsimp
-          sorry)
+          simp [SSet.mapN_coe, nerveMap_app,
+            PartialOrder.NonemptyFiniteChains.range_toN_simplex_obj.{u}]
+          rfl)
 
 def SSet.stdSimplex.toPartOrdCompNerveFunctorIso :
     SSet.stdSimplex.{u} ≅ SimplexCategory.toPartOrd ⋙ PartOrd.nerveFunctor :=
@@ -115,9 +115,15 @@ instance : IsIso (Functor.whiskerLeft stdSimplex sdToSd') := by
   dsimp
   infer_instance
 
-noncomputable def isColimitSd'MapCoconeCoconeN' (X : SSet.{u}) [Nonsingular X] :
-    IsColimit (sd'.mapCocone X.coconeN') :=
+noncomputable def isColimitSd'MapCoconeCoconeN (X : SSet.{u}) [Nonsingular X] :
+    IsColimit (sd'.mapCocone X.coconeN) :=
   sorry
+
+noncomputable def isColimitSd'MapCoconeCoconeN' (X : SSet.{u}) [Nonsingular X] :
+    IsColimit (sd'.mapCocone X.coconeN') := by
+  refine (IsColimit.equivOfNatIsoOfIso
+    (Functor.isoWhiskerRight X.functorN'Iso.symm _) _ _ ?_).1 X.isColimitSd'MapCoconeCoconeN
+  exact Cocone.ext (Iso.refl _) (fun x ↦ (by simp [← Functor.map_comp]))
 
 instance (X : SSet.{u}) [Nonsingular X] : IsIso (sdToSd'.app X) :=
   MorphismProperty.colimitsOfShape_le (W := .isomorphisms SSet.{u}) _

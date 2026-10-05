@@ -269,7 +269,7 @@ end nerve
 end CategoryTheory
 
 /-- The functor `PartOrd ⥤ SSet` which sends a partially ordered type to its nerve. -/
-@[simps]
+@[simps, implicit_reducible]
 def PartOrd.nerveFunctor : PartOrd.{u} ⥤ SSet.{u} where
   obj X := nerve X
   map f := nerveMap f.hom.monotone.functor

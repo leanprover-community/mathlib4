@@ -26,6 +26,11 @@ section
 
 variable {X : Type u} [PartialOrder X]
 
+@[simp]
+lemma range_toN_simplex_obj {n : ℕ} (x : (nerve X) _⦋n⦌) :
+    Set.range (SSet.S.mk x).toN.simplex.obj = Set.range x.obj := by
+  sorry
+
 open Classical in
 @[no_expose]
 noncomputable def ofS (s : (nerve X).S) : NonemptyFiniteChains X where

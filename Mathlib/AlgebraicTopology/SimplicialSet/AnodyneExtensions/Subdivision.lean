@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
-public import Mathlib.AlgebraicTopology.SimplicialSet.NonemptyFiniteChains
+public import Mathlib.AlgebraicTopology.SimplicialSet.Subdivision
 public import Mathlib.Order.Interval.Finset.Fin
 
 /-!
