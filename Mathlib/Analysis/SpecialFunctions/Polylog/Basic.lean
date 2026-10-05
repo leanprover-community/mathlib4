@@ -5,7 +5,11 @@ Authors: Emlis
 -/
 module
 
-public import Mathlib
+public import Mathlib.Analysis.Complex.HalfPlane
+public import Mathlib.Analysis.Calculus.SmoothSeries
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
 # Polylogarithm
