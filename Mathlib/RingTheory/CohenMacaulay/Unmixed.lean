@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.CohenMacaulay.Catenary
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -22,6 +22,7 @@ variable {R : Type u} [CommRing R]
 open RingTheory.Sequence IsLocalRing Module.associatedPrimes
 
 /-- An ideal `I` is unmixed if every associated prime of `I` has height equal to `I.height`. -/
+@[expose]
 def Ideal.IsUnmixed (I : Ideal R) : Prop :=
   ∀ {p : Ideal R}, p ∈ associatedPrimes R (R ⧸ I) → p.height = I.height
 
