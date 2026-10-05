@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+
 import Mathlib.Algebra.Algebra.Spectrum.Pi
 
 /-! # The continuous functional calculus on product types

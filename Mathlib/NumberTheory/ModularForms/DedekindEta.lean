@@ -5,8 +5,9 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
+
+import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 
 /-!
 # Dedekind eta function
