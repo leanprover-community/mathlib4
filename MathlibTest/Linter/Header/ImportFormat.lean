@@ -20,8 +20,9 @@ warning: Imports can be reformatted:
   public i̲m̲p̲o̲r̲t̲ ̲M̲a̲t̲h̲l̲i̲b̲.̲I̲n̲i̲t̲
   ̲
   ̲meta  ̵ ̵import Mathlib.Init
-  p̵u̵b̵l̵i̵c̵ ̵import Mathlib.Init
-  import Lean.Elab.Command
+  p̵u̵b̵l̵i̵c̵ ̵import M̵a̵t̵h̵l̵i̵b̵.̵I̵n̵i̵t̵
+  ̵i̵m̵p̵o̵r̵t̵ ̵Lean.Elab.Command
+  ̲i̲m̲p̲o̲r̲t̲ ̲M̲a̲t̲h̲l̲i̲b̲.̲I̲n̲i̲t̲
 -/
 #guard_msgs in
 set_option linter.style.header true in
