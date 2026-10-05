@@ -196,14 +196,9 @@ theorem exists_succ_of_hasCardinalLT {E : Inserter F G} {i : Λ}
     F.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
   let hcolimGT := Limits.isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
   let hcolimFT := Limits.isColimitOfPreserves F (O₀.ι.denseAt E.obj) -- F(E.obj) ≅ colim_ξ F(T_ξ)
-  -- having this in context makes grind better in this proof
-  have grind_helper {x y : CostructuredArrow O₀.ι E.obj} (f : x ⟶ y) :
-      f.left.hom ≫ y.hom = x.hom := by simp
   obtain ⟨ξ₂₁, v₀, v₁, hv₀⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimGT
     (F.map ξ₁.hom ≫ E.hom) ξ₁
   -- At this point, the squares required to make that into a functor are not necessarily natural
-  -- so we must coequalize all of them, and then take another max
-  -- We can probably wrap this part in a lemma as well
   have Uspec (j : Set.Iio i) :
     ∃ (uji : CostructuredArrow O₀.ι E.obj) (vji : ξ₂₁ ⟶ uji),
       b.ψ j.1 i j.property le_rfl ≫ G.map v₀.left.hom ≫ G.map vji.left.hom =
@@ -216,29 +211,22 @@ theorem exists_succ_of_hasCardinalLT {E : Inserter F G} {i : Λ}
         dsimp at *
         simp only [Category.id_comp] at hv₀
         simp only [homOfLE_leOfHom, Category.id_comp, Category.assoc, hv₀]
-        simp_rw [← Functor.map_comp, grind_helper]
-        simp [ξ₁, b.sq₁ j j.prop, ← Functor.map_comp_assoc, grind_helper])
+        simp_rw [← Functor.map_comp]
+        simp [ξ₁, b.sq₁ j j.prop, ← Functor.map_comp_assoc])
     exact ⟨uij, vij, by simpa using h⟩
   choose u ν huν using Uspec
   have h' : HasCardinalLT (Set.Iio i) κ := by
     grw [hasCardinalLT_iff_cardinal_mk_lt, Cardinal.mk_set_le, ← hasCardinalLT_iff_cardinal_mk_lt]
     assumption
+  obtain ⟨ξ₂, ν₂, μ₀, h₂⟩ := IsCardinalFiltered.wideSpan ν h'
   let ξ₂₀ := IsCardinalFiltered.max (κ := κ) u h'
-  let ν₂₀ := IsCardinalFiltered.toMax (κ := κ) u h'
-  let ξ₂ := IsCardinalFiltered.coeq (κ := κ) (fun j ↦ ν j ≫ ν₂₀ j) h'
-  let μ : ξ₁ ⟶ ξ₂ := v₀ ≫ IsCardinalFiltered.toCoeq (κ := κ) (fun j ↦ ν j ≫ ν₂₀ j) h'
-  let ψ : F.obj ξ₁.left.obj ⟶ G.obj ξ₂.left.obj :=
-    v₁ ≫ G.map (IsCardinalFiltered.toCoeq (κ := κ) (fun j ↦ ν j ≫ ν₂₀ j) h').left.hom
   -- Now, we check that we have obtained all the conditions we want:
-  have cond_sq1 : F.map ξ₁.hom ≫ E.hom = ψ ≫ G.map ξ₂.hom := by
-    dsimp [μ, ξ₁, ψ] at *
-    grind
-  refine ⟨ξ₂, μ, ψ, cond_sq1, fun j hj ↦ ?_⟩
+  refine ⟨ξ₂, v₀ ≫ μ₀, v₁ ≫ G.map μ₀.left.hom, ?_, fun j hj ↦ ?_⟩
+  · dsimp [ψ, ξ₁] at *
+    simp only [Category.id_comp] at hv₀
+    simp [← Functor.map_comp, hv₀]
   · have S1 := huν (iio% j i)
-    have cond2 := IsCardinalFiltered.coeq_condition (κ := κ) (fun j ↦ ν j ≫ ν₂₀ j) h' (iio% j i)
-    dsimp [μ, ξ₁, ψ] at *
-    simp only [homOfLE_leOfHom, ← cond2]
-    simp [reassoc_of% S1]
+    simp [homOfLE_leOfHom, ← h₂ ⟨j, hj⟩, reassoc_of% S1]
 
 omit [IsCardinalAccessibleCategory K κ]
   [IsCardinalAccessibleCategory L κ]
@@ -968,13 +956,14 @@ abbrev O₁ (F G : K ⥤ L) : ObjectProperty (Inserter F G) :=
 
 abbrev Δ (E : Inserter F G) := CostructuredArrow ((O₁ κ F G).ι) E
 
-open Limits in
+open Limits
+
 lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inserter F G)
     [HasColimitsOfShape Λ K] [HasColimitsOfShape Λ L]
     [PreservesColimitsOfShape Λ F] [PreservesColimitsOfShape Λ G] :
     IsCardinalFiltered (Δ κ E) κ := by
   rw [isCardinalFiltered_iff']
-   -- first, represent the object underlying E as a κ-filtered colimit of κ-presentable objects
+  -- first, represent the object underlying E as a κ-filtered colimit of κ-presentable objects
   let O₀ := isCardinalPresentable K κ -- shorthand to make the writing more compact
   have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
   have (X : K) : PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
@@ -993,6 +982,7 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
   let hcolimS := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ S_ξ
   refine ⟨fun ι v hι ↦ ?_, fun ι r p f hι hι' ↦ ?_⟩
   · -- There exists an index ξ₀ such that all the v_j factorizes through the index in K
+    -- TODO: extract the part where we take an index and advance it by one.
     have b (j : ι) := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimS (v j).hom.hom
     dsimp at b
     simp only [Category.id_comp] at b
@@ -1020,21 +1010,13 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
         choose p1 p2 p3 using this
         simp only [Functor.comp_obj, CostructuredArrow.proj_obj, ObjectProperty.ι_obj,
           Functor.comp_map, CostructuredArrow.proj_map, ObjectProperty.ι_map, Category.assoc] at p3
-        let ξ₁' := IsCardinalFiltered.coeq (fun i ↦ p2 i ≫ IsCardinalFiltered.toMax p1 hι i) hι
-        let ν₁' : ξ₀ ⟶ ξ₁' := ν₁ ≫ IsCardinalFiltered.toCoeq _ hι
-        let σ' : F.obj ξ₀.left.obj ⟶ G.obj ξ₁'.left.obj :=
-          σ ≫ G.map (IsCardinalFiltered.toCoeq
-            (fun (i : ι) ↦ p2 i ≫ IsCardinalFiltered.toMax p1 hι i) hι).left.hom
-        refine ⟨ξ₁', ν₁', σ', ?_, fun i ↦ ?_⟩
-        · simp [σ', ξ₁', ← G.map_comp, hξ₁₀]
-        · simp only [Functor.map_comp, Category.assoc,
-            ← IsCardinalFiltered.coeq_condition
-              (fun i ↦ p2 i ≫ IsCardinalFiltered.toMax p1 hι i) hι i,
-            CostructuredArrow.comp_left, ObjectProperty.FullSubcategory.comp_hom,
-            reassoc_of% p3, σ']
-          simp_rw [← G.map_comp, ν₁']
-          simp [← IsCardinalFiltered.coeq_condition
-            (fun i ↦ p2 i ≫ IsCardinalFiltered.toMax p1 hι i) hι i]
+        obtain ⟨ξ₁', ν₁', u', h'⟩ := IsCardinalFiltered.wideSpan p2 hι
+        -- let ξ₁' := IsCardinalFiltered.coeq (fun i ↦ p2 i ≫ IsCardinalFiltered.toMax p1 hι i) hι
+        -- let ν₁' : ξ₀ ⟶ ξ₁' := ν₁ ≫ IsCardinalFiltered.toCoeq _ hι
+        let σ' : F.obj ξ₀.left.obj ⟶ G.obj ξ₁'.left.obj := σ ≫ G.map u'.left.hom
+        refine ⟨ξ₁', ν₁ ≫ u', σ', ?_, fun i ↦ ?_⟩
+        · simp [σ', ← G.map_comp, hξ₁₀]
+        · simp [← h' i, reassoc_of% p3, σ']
     -- Then, we use the main lemma with ξ₀ and ξ₁
     obtain ⟨b, _, f, g, h₁, h₂⟩ :=
       positselski_4_5 κ Λ hΛ E (S := ξ₀.left.obj) (T := ξ₁.left.obj) σ u.left.hom ξ₁.hom
@@ -1098,6 +1080,24 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
       simp only [ObjectProperty.ι_obj, ObjectProperty.ι_map, comp_hom] at this
       simp [f'', h₂, hu, this]
 
+/-- A shorthand for the forgetful functor from Δ κ E to κ-presentable objects mapping to E.obj.
+We will show below that this functor is final, which will prove that every inserter
+is a filtered colimit of κ-presentable inserters. -/
+@[implicit_reducible, simps!]
+def U (E : Inserter F G) :
+    Δ κ E ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj :=
+  CostructuredArrow.map₂
+    (F := ObjectProperty.lift _ ((O₁ _ _ _).ι ⋙ Inserter.proj F G)
+      (by intro x; simpa [O₁] using x.property))
+    (G := Inserter.proj F G)
+    { app X := 𝟙 _ }
+    (𝟙 _)
+
+lemma final (E : Inserter F G) [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inserter F G)
+    [HasColimitsOfShape Λ K] [HasColimitsOfShape Λ L]
+    [PreservesColimitsOfShape Λ F] [PreservesColimitsOfShape Λ G] : (U κ E).Final := by
+  sorry
+
 end
 
 /-- Let `Λ < κ` be a pair of infinite cardinals such that `κ` is regular. Assume that
@@ -1121,6 +1121,10 @@ public theorem isCardinalAccessibleCategory
     [Limits.HasColimitsOfShape Λ K] [Limits.HasColimitsOfShape Λ L]
     [Limits.PreservesColimitsOfShape Λ F] [Limits.PreservesColimitsOfShape Λ G] :
     IsCardinalAccessibleCategory (Inserter F G) κ :=
+  -- Using that the functor `U : Δ κ E ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj` is
+  -- final, any inserter is the κ-filtered colimit of its projection from Δ κ E,
+  -- as one can postcompose with U to check this, and the canonical cocone for E.obj is a
+  -- colimit diagram.
   sorry
 
 end CategoryTheory.Inserter
