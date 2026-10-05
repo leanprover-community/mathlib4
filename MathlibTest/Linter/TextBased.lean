@@ -655,10 +655,10 @@ end showLinter
 
 /-! Tests for linters defined in `TextBased.lean`. -/
 section textBased
-section unicodeLinter
 
 open Mathlib.Linter.TextBased
-open Mathlib.Linter.TextBased.UnicodeLinter
+
+section importFormatting
 
 set_option linter.unusedTactic false in
 example : True := by
@@ -666,8 +666,10 @@ example : True := by
     let source := "module\n\nimport B\npublic import C\npublic import A\nimport D\n\n#check Nat\n"
     let expected :=
       "module\n\npublic import C\npublic import A\n\nimport B\nimport D\n\n#check Nat\n"
-    let some (_, actual) ← formatImports source "Test.lean"
+    let some (lineNumber, actual) ← formatImports source "Test.lean"
       | throwError "Expected import formatting to change"
+    unless lineNumber == 3 do
+      throwError "Expected the import error on line 3, got line {lineNumber}"
     unless actual == expected do
       throwError "Unexpected import formatting output:\n{actual}"
 
@@ -675,10 +677,28 @@ example : True := by
     unless (← formatImports source "Test.lean").isNone do
       throwError "Correctly grouped imports should be left unchanged"
 
-    let source := "module\n\nimport B\npublic meta import C\npublic import A\n\n#check Nat\n"
-    unless (← formatImports source "Test.lean").isNone do
-      throwError "Import formatting should not prescribe the position of meta imports"
+    let source := "module\n\nimport B\npublic meta import C\nimport all D\n" ++
+      "public import A\n\n#check Nat\n"
+    let expected := "module\n\npublic meta import C\npublic import A\n\nimport B\n" ++
+      "import all D\n\n#check Nat\n"
+    let some (_, actual) ← formatImports source "Test.lean"
+      | throwError "Expected meta and all imports to be grouped by visibility"
+    unless actual == expected do
+      throwError "Unexpected formatting with meta and all imports:\n{actual}"
+
+    let source := "module\n\nimport B /- trailing\ncontinued -/\n" ++
+      "public import A\n\n#check Nat\n"
+    let some (_, actual) ← formatImports source "Test.lean"
+      | throwError "Expected unsafe import formatting to still be reported"
+    unless actual == source do
+      throwError "Unsafe import formatting should be reported without an automatic fix"
   trivial
+
+end importFormatting
+
+section unicodeLinter
+
+open Mathlib.Linter.TextBased.UnicodeLinter
 
 /- A character either does or doesn't have an abbreviation in the VSCode extension. -/
 #guard withVSCodeAbbrev.toList ∩ othersInMathlib.toList = ∅

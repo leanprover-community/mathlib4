@@ -1039,16 +1039,23 @@ jobs:
             merge_base="$(git merge-base "origin/${BASE_BRANCH}" HEAD)"
           fi
 
+          changed_files="${RUNNER_TEMP}/import-style-changed-files"
+          git diff --name-only -z --diff-filter=ACMR "${merge_base}"...HEAD -- Mathlib \
+            > "${changed_files}"
+
           modules=()
           while IFS= read -r -d '' file; do
             if [[ "${file}" == Mathlib/*.lean ]]; then
               module="${file%.lean}"
               modules+=("${module//\//.}")
             fi
-          done < <(git diff --name-only -z --diff-filter=ACMR "${merge_base}"...HEAD -- Mathlib)
+          done < "${changed_files}"
 
           if (( ${#modules[@]} > 0 )); then
-            lake exe lint-style --imports --only "${modules[@]}"
+            printf 'Fix with: lake exe lint-style --imports --fix --only'
+            printf ' %q' "${modules[@]}"
+            printf '\n'
+            lake exe lint-style --github --imports --only "${modules[@]}"
           fi
 
   final:

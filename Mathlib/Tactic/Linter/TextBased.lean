@@ -277,48 +277,39 @@ also return the collection of all lines, changed as needed to fix the linter err
 abbrev TextbasedLinter := LinterOptions → Array String →
   Array (StyleError × ℕ) × (Option (Array String))
 
-/-- Check that ordinary public imports precede ordinary private imports, with a blank line between
-the two groups. -/
+/-- Check that public imports precede private imports, with a blank line between the two groups. -/
 public register_option linter.importFormatting : Bool := { defValue := false }
 
-/-- Check whether ordinary `public import` and `import` declarations in a module are grouped in
-that order and separated by one blank line. If not, return an automatically formatted source file.
+/-- Check whether `public import` and private `import` declarations in a module are grouped in that
+order and separated by one blank line. The `meta` and `all` modifiers are ignored when determining
+the group. If needed, return an automatically formatted source file when it is safe to do so.
 
-This deliberately leaves files containing `meta import` or `import all` alone: the style guide does
-not prescribe where those less common forms belong. The formatter uses the same parsed import and
-whitespace representation as `#norm_imports`, while retaining the order within each group and not
-removing redundant imports. -/
+The formatter uses the source-editing and parsed import/whitespace machinery behind
+`#norm_imports`, while retaining the order within each group and not removing redundant imports. -/
 def formatImports (source fileName : String) : IO (Option (ℕ × String)) := do
   let inputCtx := Lean.Parser.mkInputContext source fileName
   let (header, _, log) ← Lean.Parser.parseHeader inputCtx
   if log.hasErrors || (ImportGraph.Lean.getModule header).isNone then
     return none
   let sourceImports := ImportGraph.headerToImportRefsWithWhitespace header
-  if sourceImports.isEmpty || sourceImports.any fun imp ↦ imp.1.isMeta || imp.1.importAll then
+  if !sourceImports.any (·.1.isExported) || !sourceImports.any (!·.1.isExported) then
     return none
-  let publicImports := sourceImports.filter fun imp ↦ imp.1.isExported
-  let privateImports := sourceImports.filter fun imp ↦ !imp.1.isExported
-  if publicImports.isEmpty || privateImports.isEmpty then
-    return none
-  let formatGroup (imports : Array (ImportGraph.Lean.ImportRef ×
-      ImportGraph.Lean.Import.Whitespace)) : String :=
-    let imports := imports.map fun imp ↦ (imp.1.toImport, imp.2)
-    (ImportGraph.Lean.Import.prettyWithWhitespace imports .none).pretty
-  let formatted := s!"{formatGroup publicImports}\n\n{formatGroup privateImports}"
-  let importsStx := Lean.mkNullNode (sourceImports.map fun imp ↦ imp.1.stx.raw)
-  let some startPos := importsStx.getLeadingPos? | return none
-  let some stopPos := importsStx.getTrailingTailPos? | return none
-  let sourceSubstring : Substring.Raw := { str := source, startPos, stopPos }
-  let (sourceSubstring, formatted) :=
-    if let some sourceSubstring := sourceSubstring.dropPrefix? "\n\n".toRawSubstring then
-      (sourceSubstring, formatted)
-    else
-      (sourceSubstring, s!"\n\n{formatted}")
-  if sourceSubstring.toString == formatted then
-    return none
-  let fixed := String.Pos.Raw.extract source 0 sourceSubstring.startPos ++ formatted ++
-    String.Pos.Raw.extract source sourceSubstring.stopPos source.rawEndPos
-  let lineNumber := (inputCtx.fileMap.toPosition sourceSubstring.startPos).line + 1
+  let imports := sourceImports.map fun imp ↦ (imp.1.toImport, imp.2)
+  let formatted := ImportGraph.Lean.Import.prettyWithWhitespaceGroupedByVisibility imports
+  let some edit := ImportGraph.Lean.Import.mkImportBlockEdit source sourceImports formatted
+    | return none
+  let fixed := edit.apply source
+  let lineNumber := (inputCtx.fileMap.toPosition edit.startPos).line
+  -- Refuse unsafe automatic edits, for example when a multi-line block comment cannot be carried
+  -- with its import by the whitespace representation. Returning the original source still makes
+  -- the linter report the violation.
+  let (fixedHeader, _, fixedLog) ← Lean.Parser.parseHeader <|
+    Lean.Parser.mkInputContext fixed fileName
+  let expectedImports := (sourceImports.filter (·.1.isExported) ++
+    sourceImports.filter (!·.1.isExported)).map (·.1.toImport)
+  let actualImports := (ImportGraph.Lean.headerToImportRefs fixedHeader).map (·.toImport)
+  if fixedLog.hasErrors || actualImports != expectedImports then
+    return some (lineNumber, source)
   return some (lineNumber, fixed)
 
 /-! Definitions of the actual text-based linters. -/
@@ -510,14 +501,6 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
   -- A working copy of the lines in this file, modified by applying the auto-fixes.
   let mut changed := lines
 
-  if getLinterValue linter.importFormatting opts then
-    if let some (lineNumber, fixed) ← formatImports replaced path.toString then
-      let error := ErrorContext.mk StyleError.importFormatting lineNumber path
-      if error.find?_comparable exceptions |>.isNone then
-        errors := errors.push error
-        changed := (fixed.splitOn "\n").toArray
-        changes_made := true
-
   -- We don't need to run any further checks on imports-only files.
   if isImportsOnlyFile changed then
     return (errors, if changes_made then some changed else none)
@@ -555,6 +538,19 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
   -- Filter exceptions. Note: This list is not sorted. For github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
+
+  -- Apply import formatting after the line-based linters. This keeps their reported line numbers
+  -- tied to the source on disk even when regrouping imports adds or removes blank lines.
+  if getLinterValue linter.importFormatting opts then
+    let changedSource := "\n".intercalate changed.toList
+    if let some (lineNumber, fixed) ← formatImports changedSource path.toString then
+      let error := ErrorContext.mk StyleError.importFormatting lineNumber path
+      if error.find?_comparable exceptions |>.isNone then
+        errors := errors.push error
+        let fixedLines := (fixed.splitOn "\n").toArray
+        if fixedLines != changed then
+          changed := fixedLines
+          changes_made := true
   return (errors, if changes_made then some changed else none)
 
 /-- Lint a collection of modules for style violations.
@@ -586,7 +582,7 @@ def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : A
   formatErrors allUnexpectedErrors style
   if allUnexpectedErrors.size > 0 then
     IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)! \
-      Rerun this command with `--fix` to apply automatic fixes."
+      Rerun `lake exe lint-style` with `--fix` to apply automatic fixes."
   return numberErrorFiles
 
 /-- Verify that all modules are named in `UpperCamelCase` -/
