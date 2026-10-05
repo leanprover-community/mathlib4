@@ -103,23 +103,24 @@ runs:
         ./elan-init.sh -y --default-toolchain none
         echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-    # CI only builds against toolchains released by leanprover.
-    - name: check lean-toolchain
-      shell: bash
-      run: |
-        set -euo pipefail
-        toolchain="$(cat pr-branch/lean-toolchain)"
-        if ! [[ "$toolchain" =~ ^leanprover/lean4(-nightly|-pr-releases)?:[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
-          echo "::error file=lean-toolchain::lean-toolchain must name a toolchain from leanprover/lean4, leanprover/lean4-nightly or leanprover/lean4-pr-releases, e.g. 'leanprover/lean4:v4.24.0'; found: $(head -c 200 pr-branch/lean-toolchain | tr -c '[:print:]' '?')"
-          exit 1
-        fi
-
     - name: set toolchain directory
       shell: bash
+      env:
+        IS_FORK: ${{ github.event.pull_request.head.repo.fork == true }}
       run: |
+        set -euo pipefail
         cd pr-branch
+        # CI only builds against official Lean releases and nightlies; builds of
+        # lean4 PRs (`lean4-pr-releases`) are only used on branches of this repository.
+        origins='lean4|lean4-nightly|lean4-pr-releases'
+        if [ "$IS_FORK" = true ]; then origins='lean4|lean4-nightly'; fi
+        toolchain="$(cat lean-toolchain)"
+        if ! [[ "$toolchain" =~ ^leanprover/($origins):[A-Za-z0-9][A-Za-z0-9.-]*$ ]]; then
+          echo "::error file=lean-toolchain::lean-toolchain must name a toolchain from leanprover/${origins//|/, leanprover/}, e.g. 'leanprover/lean4:v4.24.0'"
+          exit 1
+        fi
         # Get the lake binary path from elan and extract toolchain directory
-        LAKE_PATH=$(elan which lake)
+        LAKE_PATH=$(ELAN_TOOLCHAIN="$toolchain" elan which lake)
         echo "Lake path: $LAKE_PATH"
 
         # Extract the toolchain directory by removing /bin/lake from the end
