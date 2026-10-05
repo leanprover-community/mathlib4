@@ -79,32 +79,30 @@ jobs:
         # If you have additional dependencies, install them here
 
     - name: Get changed and removed/renamed files
-      env:
-        BASE_REF: ${{ github.base_ref }}
       run: |
         cd pr-branch
-        git fetch origin "$BASE_REF"  # fetch the base branch
+        git fetch origin ${{ github.base_ref }}  # fetch the base branch
 
         # Get the list of all changed files.
         echo "Saving the changed files to 'changed_files.txt'..."
-        git diff --name-only "origin/$BASE_REF"... | tee changed_files.txt
+        git diff --name-only origin/${{ github.base_ref }}... | tee changed_files.txt
 
         # Get all newly added files.
         echo "Checking for added files..."
-        git diff --name-only --diff-filter A "origin/$BASE_REF"... | tee added_files.txt
+        git diff --name-only --diff-filter A origin/${{ github.base_ref }}... | tee added_files.txt
 
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
 
         # Shows the `D`eleted files, one per line.
-        git diff --name-only --diff-filter D "origin/$BASE_REF"... | tee removed_files.txt
+        git diff --name-only --diff-filter D origin/${{ github.base_ref }}... | tee removed_files.txt
         echo "Checking for renamed files..."
 
         # Shows the `R`enamed files, in human-readable format
         # The `awk` pipe
         # * extracts into an array the old name as the key and the new name as the value
         # * eventually prints "`oldName` was renamed to `newName`" for each key-value pair.
-        git diff -p --summary --diff-filter=R "origin/$BASE_REF"... |
+        git diff -p --summary --diff-filter=R origin/${{ github.base_ref }}... |
           awk '
             /^rename from / {
                 file=$0
@@ -122,13 +120,11 @@ jobs:
               }' | tee renamed_files.txt
 
     - name: Compute (re)moved files without deprecation
-      env:
-        BASE_REF: ${{ github.base_ref }}
       run: |
         cd pr-branch
         touch moved_without_deprecation.txt
         touch extraneous_deprecated_module.txt
-        git checkout "$BASE_REF"
+        git checkout ${{ github.base_ref }}
         while IFS= read -r file
         do
           if grep ^deprecated_module "${file}" ; then
