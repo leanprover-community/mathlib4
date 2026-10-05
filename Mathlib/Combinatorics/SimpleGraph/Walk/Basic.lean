@@ -573,14 +573,12 @@ theorem darts_infix_iff_support_infix {u' v' : V} {p : G.Walk u v} {q : G.Walk u
     (hnil : ¬p.Nil) : p.darts <:+: q.darts ↔ p.support <:+: q.support := by
   rw [List.infix_iff_getElem?, List.infix_iff_getElem?]
   constructor <;> refine fun ⟨k, hk, h⟩ ↦ ⟨k, by grind, fun i hi ↦ ?_⟩
-  · rw [getElem?_pos _ _ <| by grind, Option.some.injEq]
-    rcases eq_or_ne i p.length with rfl | _
+  · rcases eq_or_ne i p.length with rfl | _
     · have := h <| p.length - 1
       grind [snd_darts_getElem]
     have := h i
     grind [fst_darts_getElem]
-  · rw [getElem?_pos _ _ <| by grind, Option.some_inj]
-    ext <;> grind [fst_darts_getElem, snd_darts_getElem]
+  · grind [Dart.ext, fst_darts_getElem, snd_darts_getElem]
 
 theorem darts_eq_iff_support_eq {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'} (hnil : ¬p.Nil) :
     p.darts = q.darts ↔ p.support = q.support := by
@@ -602,14 +600,14 @@ theorem darts_prefix_iff_support_prefix {u' v' : V} {p : G.Walk u v} {q : G.Walk
       simp
     · rw [List.dropLast_take_eq_take_dropLast, ← map_fst_darts, ← map_fst_darts, h]
       simp
-  · have := congrArg List.dropLast h
-    rw [List.dropLast_take_eq_take_dropLast, ← map_fst_darts, ← map_fst_darts] at this
-    have := congrArg List.tail h
-    rw [List.tail_take_eq_take_tail, ← map_snd_darts, ← map_snd_darts] at this
-    refine Dart.toProd_injective.list_map <| List.rightInverse_unzip_zip.injective ?_
+  · refine Dart.toProd_injective.list_map <| List.rightInverse_unzip_zip.injective ?_
+    have hd := congr(($h).dropLast)
+    have ht := congr(($h).tail)
+    simp_rw [List.dropLast_take_eq_take_dropLast, List.tail_take_eq_take_tail, ← map_fst_darts,
+      ← map_snd_darts, ← List.map_take] at hd ht
     have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
     have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
-    grind [List.map_take]
+    grind
 
 theorem darts_suffix_iff_support_suffix {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'}
     (hnil : ¬p.Nil) : p.darts <:+ q.darts ↔ p.support <:+ q.support := by
@@ -619,14 +617,14 @@ theorem darts_suffix_iff_support_suffix {u' v' : V} {p : G.Walk u v} {q : G.Walk
     simp
   · rw [List.dropLast_drop_eq_drop_dropLast, ← map_fst_darts, ← map_fst_darts, h]
     simp
-  · have := congrArg List.dropLast h
-    rw [List.dropLast_drop_eq_drop_dropLast, ← map_fst_darts, ← map_fst_darts] at this
-    have := congrArg List.tail h
-    rw [List.tail_drop_eq_drop_tail, ← map_snd_darts, ← map_snd_darts] at this
+  · have hd := congr(($h).dropLast)
+    have ht := congr(($h).tail)
+    simp_rw [List.dropLast_drop_eq_drop_dropLast, List.tail_drop_eq_drop_tail, ← map_fst_darts,
+      ← map_snd_darts, ← List.map_drop] at hd ht
     refine Dart.toProd_injective.list_map <| List.rightInverse_unzip_zip.injective ?_
     have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
     have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
-    grind [List.map_drop]
+    grind
 
 theorem ext_darts {p q : G.Walk u v} (hnil : ¬p.Nil) (h : p.darts = q.darts) : p = q :=
   ext_support <| (darts_eq_iff_support_eq hnil).mp h
