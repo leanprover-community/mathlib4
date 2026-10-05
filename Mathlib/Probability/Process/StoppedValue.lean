@@ -75,7 +75,7 @@ lemma stoppedValue_of_eq_coe (hτ : τ ω = t) :
   · simp [hτ]
 
 @[gcongr]
-lemma stoppedValue_congr [IsDirectedOrder ι] [Nonempty ι] [T2Space E] (h : X ≡ᵐ[P] Y) :
+lemma stoppedValue_congr [IsDirectedOrder ι] [T2Space E] (h : X ≡ᵐ[P] Y) :
     𝓕.stoppedValue X τ P =ᵐ[P] 𝓕.stoppedValue Y τ P := by
   filter_upwards [h, 𝓕.limitProcess_congr h] with ω h1 h2
   obtain _ | _ := eq_or_ne (τ ω) ⊤ <;> simp_all [stoppedValue_of_ne_top]
@@ -102,22 +102,26 @@ lemma stoppedValue_comp₂_of_ne_top (X : ι → Ω → E) (Z : ι → Ω → F)
 
 @[deprecated (since := "2026-08-28")] alias stoppedValue_norm := stoppedValue_comp_of_ne_top
 
-@[to_fun (attr := to_additive, simp) stoppedValue_fun_inv_of_ne_top]
+/- `simp` is not needed for the `to_fun` version. -/
+@[to_fun (attr := to_additive) stoppedValue_fun_inv_of_ne_top, simp]
 lemma stoppedValue_inv_of_ne_top [Inv E] (hτ : τ ω ≠ ⊤) :
     𝓕.stoppedValue (X⁻¹) τ P ω = (𝓕.stoppedValue X τ P ω)⁻¹ :=
   stoppedValue_comp_of_ne_top X _ hτ
 
-@[to_fun (attr := to_additive, simp) stoppedValue_fun_mul_of_ne_top]
+/- `simp` is not needed for the `to_fun` version. -/
+@[to_fun (attr := to_additive) stoppedValue_fun_mul_of_ne_top, simp]
 lemma stoppedValue_mul_of_ne_top [Mul E] (hτ : τ ω ≠ ⊤) :
     𝓕.stoppedValue (X * Y) τ P ω = 𝓕.stoppedValue X τ P ω * 𝓕.stoppedValue Y τ P ω :=
   stoppedValue_comp₂_of_ne_top X Y _ hτ
 
-@[to_fun (attr := to_additive, simp) stoppedValue_fun_div_of_ne_top]
+/- `simp` is not needed for the `to_fun` version. -/
+@[to_fun (attr := to_additive) stoppedValue_fun_div_of_ne_top, simp]
 lemma stoppedValue_div_of_ne_top [Div E] (hτ : τ ω ≠ ⊤) :
     𝓕.stoppedValue (X / Y) τ P ω = 𝓕.stoppedValue X τ P ω / 𝓕.stoppedValue Y τ P ω :=
   stoppedValue_comp₂_of_ne_top X Y _ hτ
 
-@[to_fun (attr := to_additive, simp) stoppedValue_const_fun_smul_of_ne_top]
+/- `simp` is not needed for the `to_fun` version. -/
+@[to_fun (attr := to_additive) stoppedValue_const_fun_smul_of_ne_top, simp]
 lemma stoppedValue_const_smul_of_ne_top {𝕜 : Type*} [SMul 𝕜 E] (c : 𝕜) (hτ : τ ω ≠ ⊤) :
     𝓕.stoppedValue (c • X) τ P ω = c • 𝓕.stoppedValue X τ P ω :=
   stoppedValue_comp_of_ne_top X _ hτ
@@ -501,13 +505,13 @@ theorem stoppedValue_eq [AddCommMonoid E] {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N)
   simp only [Nat.cast_withTop, WithTop.coe_le_coe] at hbdd
   exact ⟨t, by simpa [Nat.lt_succ_iff], rfl⟩
 
-theorem stoppedValue_piecewise_const {ι' α : Type*} [Nonempty ι'] {i j : ι'} {X : ι' → Ω → α}
+theorem stoppedValue_piecewise_const {ι' α : Type*} {i j : ι'} {X : ι' → Ω → α}
     [TopologicalSpace α] [Zero α] [Preorder ι'] {𝓕 : Filtration ι' mΩ} {s : Set Ω}
     [DecidablePred (· ∈ s)] :
     𝓕.stoppedValue X (s.piecewise (fun _ ↦ i) fun _ ↦ j) P = s.piecewise (X i) (X j) := by
   ext ω; rw [stoppedValue]; by_cases hx : ω ∈ s <;> simp [hx]
 
-theorem stoppedValue_piecewise_const' {ι' α : Type*} [Nonempty ι'] {i j : ι'} {X : ι' → Ω → α}
+theorem stoppedValue_piecewise_const' {ι' α : Type*} {i j : ι'} {X : ι' → Ω → α}
     [TopologicalSpace α] [AddCommGroup α] [Preorder ι'] {𝓕 : Filtration ι' mΩ} {s : Set Ω}
     [DecidablePred (· ∈ s)] :
     𝓕.stoppedValue X (s.piecewise (fun _ ↦ i) fun _ ↦ j) P =
