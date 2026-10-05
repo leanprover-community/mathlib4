@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Reindex
+
 import Mathlib.Tactic.Field
 import Mathlib.GroupTheory.GroupAction.Ring
 

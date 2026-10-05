@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
+
 import Mathlib.Algebra.Ring.Torsion
 
 /-!

@@ -5,12 +5,13 @@ Authors: Bhavik Mehta
 -/
 module
 
+public import Mathlib.Analysis.Normed.Operator.Compact.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.Normed.Module.RieszLemma
 import Mathlib.Analysis.Normed.Operator.Banach
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-public import Mathlib.Analysis.Normed.Operator.Compact.Basic
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Spectral theory of compact operators

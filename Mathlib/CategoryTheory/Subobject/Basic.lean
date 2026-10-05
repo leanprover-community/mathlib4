@@ -7,9 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Skeleton
 public import Mathlib.CategoryTheory.Subobject.MonoOver
-import Mathlib.Tactic.ApplyFun
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Category.GaloisConnection
+
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Subobjects

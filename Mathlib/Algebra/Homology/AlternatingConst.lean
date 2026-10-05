@@ -5,8 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
+
+import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # The alternating constant complex

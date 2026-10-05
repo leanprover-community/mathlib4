@@ -5,8 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
 public import Mathlib.MeasureTheory.Measure.WithDensity
+
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
 
 /-! # From equality of integrals to equality of functions
 

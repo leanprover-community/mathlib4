@@ -5,11 +5,11 @@ Authors: Alastair Irving, Terry Tao, Ruben Van de Velde
 -/
 module
 
-import Mathlib.Algebra.Order.Floor.Semifield
 public import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
+import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog

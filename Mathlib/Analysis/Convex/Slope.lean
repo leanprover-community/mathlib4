@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Malo Jaffré
 module
 
 public import Mathlib.Analysis.Convex.Function
+
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Linarith
 
