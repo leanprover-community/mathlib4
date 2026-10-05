@@ -28,7 +28,7 @@ open scoped Topology
 
 namespace MeasureTheory
 
-variable {ι Ω E : Type*} [LinearOrder ι] {mΩ : MeasurableSpace Ω} {X : ι → Ω → E}
+variable {ι Ω E : Type*} [LinearOrder ι] [mΩ : MeasurableSpace Ω] {X : ι → Ω → E}
 
 section PathApprox
 
