@@ -855,9 +855,6 @@ lemma getVert_mem_tail_support {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
     rw [← getVert_tail, ← p.support_tail_of_not_nil hp]
     exact getVert_mem_support ..
 
-lemma support_injective {u v : V} : (support (G := G) (u := u) (v := v)).Injective :=
-  fun _ _ ↦ ext_support
-
 lemma ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.length)
     (h : ∀ k ≤ p.length, p.getVert k = q.getVert k) :
     p = q := by
