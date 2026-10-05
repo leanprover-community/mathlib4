@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.RegularLocalRing.Polynomial
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
