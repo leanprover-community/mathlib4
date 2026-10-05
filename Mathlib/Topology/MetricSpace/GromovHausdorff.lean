@@ -5,11 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Logic.Encodable.Pi
 public import Mathlib.Topology.MetricSpace.Closeds
-import Mathlib.Topology.MetricSpace.Completion
 public import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
 public import Mathlib.Topology.MetricSpace.Kuratowski
+
+import Mathlib.Logic.Encodable.Pi
+import Mathlib.Topology.MetricSpace.Completion
 
 /-!
 # Gromov-Hausdorff distance

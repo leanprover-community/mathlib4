@@ -5,9 +5,10 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.RingTheory.LocalProperties.Basic
+
+import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
