@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.Regular.Category
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing LinearMap ModuleCat Pointwise
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits ModuleCat
@@ -28,7 +28,7 @@ universe u v
 
 variable {R : Type u} [CommRing R]
 
-set_option backward.isDefEq.respectTransparency false in
+--set_option backward.isDefEq.respectTransparency false in
 theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
     [Small.{v} R] : N.depth M ≥ IsLocalRing.depth M -
@@ -104,13 +104,13 @@ theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : Modul
             apply lt_of_le_of_lt this
             simp only [← hk, ← ENat.natCast_sub, Nat.cast_lt] at hi ⊢
             omega
+        have epi := (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i)).epi_f
+          ((AddCommGrpCat.isZero_of_iff_subsingleton.mpr this).eq_zero_of_tgt _)
         have epi' : Function.Surjective (x • LinearMap.id (R := R) (M := (Ext (of R L) M i))) := by
-          convert (AddCommGrpCat.epi_iff_surjective _).mp <| ShortComplex.Exact.epi_f
-            (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
-            ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _)
+          simp only [smulShortComplex, AddCommGrpCat.epi_iff_surjective] at epi
+          convert epi
           ext a
-          simp only [LinearMap.smul_apply, id_coe, id_eq, smulShortComplex, AddCommGrpCat.hom_ofHom,
-            Ext.bilinearComp_apply_apply]
+          simp only [LinearMap.smul_apply, id_coe, id_eq]
           nth_rw 1 [← Ext.mk₀_id_comp a, ← Ext.smul_comp, ← Ext.mk₀_smul]
           congr
         by_contra! ntr

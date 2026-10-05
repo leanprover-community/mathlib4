@@ -41,7 +41,7 @@ a commutative ring is Cohen Macaulay if its localization at every prime `IsCohen
 
 -/
 
-@[expose] public section
+public section
 
 universe v' v u' u
 
