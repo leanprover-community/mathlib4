@@ -723,8 +723,8 @@ protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
 
 theorem sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
     ((normalizedFactors a).map natDegree).sum = a.natDegree := by
-  by_cases h0: a = 0
-  · simp [h0]
+  obtain rfl | h0 := eq_or_ne a 0
+  · simp
   nth_rw 2 [← leadingCoeff_mul_prod_normalizedFactors a]
   rw [natDegree_C_mul (by simp [h0]),
       natDegree_multiset_prod _ (zero_notMem_normalizedFactors a)]
