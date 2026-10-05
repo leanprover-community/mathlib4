@@ -99,7 +99,7 @@ lemma hittingAfter_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι �
   classical
   simp only [hittingAfter_def, Set.mem_univ, and_true]
   rw [ite_eq_left ⟨n, le_rfl⟩]
-  exact_mod_cast csInf_Ici
+  exact mod_cast csInf_Ici
 
 end Basic
 
@@ -131,7 +131,7 @@ theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (
     u k ω ∉ s := by
   refine fun h ↦ not_le.2 hk₁ ?_
   rw [hittingAfter, ite_eq_left ⟨k, hk₂, h⟩]
-  exact_mod_cast csInf_le bddBelow_Ici.inter_of_left ⟨hk₂, h⟩
+  exact mod_cast csInf_le bddBelow_Ici.inter_of_left ⟨hk₂, h⟩
 
 theorem hittingBtwn_eq_end_iff {m : ι} : hittingBtwn u s n m ω = m ↔
     (∃ j ∈ Set.Icc n m, u j ω ∈ s) → sInf (Set.Icc n m ∩ {i : ι | u i ω ∈ s}) = m := by
@@ -164,7 +164,7 @@ theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u 
 lemma le_hittingAfter (ω : Ω) : n ≤ hittingAfter u s n ω := by
   simp only [hittingAfter]
   split_ifs with h
-  · exact_mod_cast le_csInf h fun b hb => hb.1
+  · exact mod_cast le_csInf h fun b hb => hb.1
   · simp
 
 theorem le_hittingBtwn_of_exists {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -219,7 +219,7 @@ lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i := by
   have h_exists : ∃ k, n ≤ k ∧ u k ω ∈ s := ⟨i, hin, his⟩
   rw [hittingAfter, ite_eq_left h_exists]
-  exact_mod_cast csInf_le (BddBelow.inter_of_left bddBelow_Ici) (Set.mem_inter hin his)
+  exact mod_cast csInf_le (BddBelow.inter_of_left bddBelow_Ici) (Set.mem_inter hin his)
 
 theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
     (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :

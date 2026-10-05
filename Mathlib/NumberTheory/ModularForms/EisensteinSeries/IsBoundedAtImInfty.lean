@@ -44,7 +44,7 @@ lemma summable_norm_eisSummand {k : ℤ} (hk : 3 ≤ k) (z : ℍ) :
     (fun _ ↦ norm_nonneg _)
   intro b
   simp only [eisSummand, norm_zpow]
-  exact_mod_cast summand_bound z (show 0 ≤ (k : ℝ) by positivity) b
+  exact mod_cast summand_bound z (show 0 ≤ (k : ℝ) by positivity) b
 
 /-- The norm of the restricted sum is less than the full sum of the norms. -/
 lemma norm_le_tsum_norm (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
@@ -66,10 +66,10 @@ theorem isBoundedAtImInfty_eisensteinSeriesSIF {N : ℕ} [NeZero N] (a : Fin 2 �
   apply le_trans (norm_le_tsum_norm N (a ᵥ* A) k hk _)
   have hk' : (2 : ℝ) < k := by norm_cast
   apply (summable_norm_eisSummand hk _).tsum_le_tsum _
-  · exact_mod_cast (summable_one_div_norm_rpow hk').mul_left <| r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ (-k)
+  · exact mod_cast (summable_one_div_norm_rpow hk').mul_left <| r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ (-k)
   · intro x
     simp_rw [eisSummand, norm_zpow]
-    exact_mod_cast
+    exact mod_cast
       summand_bound_of_mem_verticalStrip (lt_trans two_pos hk').le x two_pos
       (verticalStrip_anti_right N hz hn)
 

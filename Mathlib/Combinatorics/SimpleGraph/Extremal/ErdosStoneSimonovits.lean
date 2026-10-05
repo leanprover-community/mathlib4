@@ -101,14 +101,14 @@ lemma card_edgeFinset_between_verts_le (hr_pos : 0 < r) (ht'_pos : 0 < t') :
     _ = ∑ v ∈ K.vertsᶜ \ filter K t, ((G.between K.verts K.vertsᶜ).degree v : ℝ)
       + ∑ v ∈ filter K t, ((G.between K.verts K.vertsᶜ).degree v : ℝ) := by
         rw [ErdosStone.filter, sum_sdiff (filter_subset _ K.vertsᶜ), eq_comm]
-        exact_mod_cast isBipartiteWith_sum_degrees_eq_card_edges'
+        exact mod_cast isBipartiteWith_sum_degrees_eq_card_edges'
           (between_verts_isBipartiteWith K)
     _ ≤ ∑ _ ∈ K.vertsᶜ \ filter K t, (#K.verts - t' + t : ℝ)
       + ∑ _ ∈ filter K t, (#K.verts : ℝ) := by
         apply add_le_add <;> refine sum_le_sum (fun v hv ↦ ?_)
         · rw [← Nat.cast_sub ((Nat.le_mul_of_pos_left t' hr_pos).trans_eq K.card_verts.symm)]
-          exact_mod_cast (degree_between_verts_lt_of_mem_sdiff K hv ht'_pos).le
-        · exact_mod_cast isBipartiteWith_degree_le'
+          exact mod_cast (degree_between_verts_lt_of_mem_sdiff K hv ht'_pos).le
+        · exact mod_cast isBipartiteWith_degree_le'
             (between_verts_isBipartiteWith K) (filter_subset_compl_verts K hv)
     _ = (n - #K.verts) * (#K.verts - (t' - t))
       + #(filter K t) * (t' - t) := by
@@ -230,14 +230,14 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
       have hδ_lt_card : (G.minDegree : ℝ) < (n : ℝ) := by
         conv_rhs =>
           rw [← Fintype.card_fin n]
-        exact_mod_cast G.minDegree_lt_card
+        exact mod_cast G.minDegree_lt_card
       contrapose! hδ_lt_card with h1_le_rε
       rw [← div_le_iff₀' (by positivity), ← sub_nonpos,
         ← le_sub_self_iff 1, ← sub_add] at h1_le_rε
       exact hδ.trans' (le_mul_of_one_le_left n.cast_nonneg h1_le_rε)
     have ht_lt_t' : t < t' := by
       rw [mul_comm (r : ℝ) (t' : ℝ), mul_assoc] at ht_lt_rt'ε
-      exact_mod_cast ht_lt_rt'ε.trans_le (mul_le_of_le_one_right (mod_cast ht'_pos.le) hrε_lt_1.le)
+      exact mod_cast ht_lt_rt'ε.trans_le (mul_le_of_le_one_right (mod_cast ht'_pos.le) hrε_lt_1.le)
     -- identify a `completeEquipartiteGraph r t'` in `G` from the inductive hypothesis
     replace ih : completeEquipartiteGraph r t' ⊑ G := by
       rcases eq_or_ne r 1 with hr_eq_1 | hr_ne_1
@@ -275,7 +275,7 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
       rw [← div_le_iff₀ (sub_pos_of_lt ht_lt_rt'ε)]
       trans (N : ℝ)
       · exact (Nat.le_ceil _).trans (Nat.cast_le.mpr <| le_max_right _ _)
-      · exact_mod_cast hn
+      · exact mod_cast hn
     rw [Finset.mem_pi] at hy
     have ⟨s, hs_subset, hcards⟩ := exists_subset_card_eq ht_le_card_filter
     -- identify the `t` vertices in each `K.parts` as a `CompleteEquipartiteSubgraph r t` in `K`

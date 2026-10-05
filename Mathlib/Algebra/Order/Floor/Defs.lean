@@ -236,7 +236,7 @@ noncomputable def FloorRing.ofBounded
   have above (x : α) : ∃ n : ℤ, x ≤ n := by
     obtain ⟨n, hn⟩ := bounded x
     use n
-    exact_mod_cast hn
+    exact mod_cast hn
   .ofFloor _ _ fun n x ↦ (Classical.choose_spec (exists_floor' x (below x) (above x)) n).symm
 
 namespace Int

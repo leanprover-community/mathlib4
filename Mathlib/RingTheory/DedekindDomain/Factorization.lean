@@ -955,7 +955,7 @@ lemma multiplicity_iSup [Nonempty ι] {I : ι → Ideal R} (hI : ∀ i, I i ≠ 
     exact ⟨Classical.ofNonempty, hI _⟩
   have := emultiplicity_iSup p I
   simp only [H'.emultiplicity_eq_multiplicity, (H _).emultiplicity_eq_multiplicity] at this
-  exact_mod_cast this
+  exact mod_cast this
 
 end IsDedekindDomain.HeightOneSpectrum
 

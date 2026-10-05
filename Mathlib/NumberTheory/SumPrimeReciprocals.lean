@@ -90,9 +90,9 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
       mul_le_mul_iff_right₀ <| by positivity] at this
   calc (2 * N₀ : ℝ)
     _ = ((2 * N₀).smoothNumbersUpTo k).card + ((2 * N₀).roughNumbersUpTo k).card := by
-        exact_mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm
+        exact mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm
     _ ≤ m * (2 * N₀).sqrt + ((2 * N₀).roughNumbersUpTo k).card := by
-        exact_mod_cast Nat.add_le_add_right ((2 * N₀).smoothNumbersUpTo_card_le k) _
+        exact mod_cast Nat.add_le_add_right ((2 * N₀).smoothNumbersUpTo_card_le k) _
     _ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S := by grw [roughNumbersUpTo_card_le']; norm_cast
 
 /-- The sum over the reciprocals of the primes diverges. -/
@@ -132,4 +132,4 @@ theorem Nat.Primes.summable_rpow {r : ℝ} :
     refine fun H ↦ Nat.Primes.not_summable_one_div <| H.of_nonneg_of_le (fun _ ↦ by positivity) ?_
     intro p
     rw [one_div, ← Real.rpow_neg_one]
-    exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast p.prop.one_lt.le) <| not_lt.mp h
+    exact Real.rpow_le_rpow_of_exponent_le (mod_cast p.prop.one_lt.le) <| not_lt.mp h

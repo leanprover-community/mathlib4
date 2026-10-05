@@ -124,7 +124,7 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
   have H₀ : 1 ≤ Nat.card ι ^ totalWeight K * mulHeight A * mulHeight x := by
     rw [show (1 : ℝ) = 1 * 1 * 1 by ring]
     gcongr
-    · exact_mod_cast Nat.one_le_pow _ _ Nat.card_pos
+    · exact mod_cast Nat.one_le_pow _ _ Nat.card_pos
     · exact one_le_mulHeight _
     · exact one_le_mulHeight _
   rcases isEmpty_or_nonempty ι' with hι' | hι'

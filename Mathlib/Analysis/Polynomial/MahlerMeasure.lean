@@ -410,7 +410,7 @@ theorem supNorm_le_choose_natDegree_div_two_mul_mahlerMeasure (p : Polynomial �
   calc p.supNorm = ‖p.coeff i‖ := hi
     _ ≤ (p.natDegree.choose i) * p.mahlerMeasure := p.norm_coeff_le_choose_mul_mahlerMeasure i
     _ ≤ (p.natDegree.choose (p.natDegree / 2)) * p.mahlerMeasure :=
-      mul_le_mul_of_nonneg_right (by exact_mod_cast Nat.choose_le_middle i p.natDegree)
+      mul_le_mul_of_nonneg_right (mod_cast Nat.choose_le_middle i p.natDegree)
         p.mahlerMeasure_nonneg
 
 /-!

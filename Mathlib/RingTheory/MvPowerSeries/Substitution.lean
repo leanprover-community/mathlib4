@@ -538,7 +538,7 @@ theorem truncTotal_subst_eq_truncTotal_subst_truncTotal_of_le (ha : HasSubst a)
       obtain ⟨hl₁, -⟩ := mem_finsuppAntidiag.mp hl
       have : (l i).degree ≤ d.degree :=
         hl₁ ▸ Finsupp.degree_mono (single_le_sum_of_canonicallyOrdered hi)
-      exact_mod_cast (coeff_truncTotal_pow _ (by nlinarith [hx i])).symm
+      exact mod_cast (coeff_truncTotal_pow _ (by nlinarith [hx i])).symm
     · exact ha.truncTotal
   simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
@@ -560,7 +560,7 @@ theorem truncTotal_subst_eq_truncTotal_subst_sum (ha : HasSubst a)
       rw [Finsupp.prod]
       refine coeff_of_lt_order (lt_of_lt_of_le (Nat.cast_lt.mpr hc)
         (.trans ?_ (le_order_prod _ n.support)))
-      exact_mod_cast sum_le_sum fun i hi => le_order_pow_of_constantCoeff_eq_zero _ (ha₁ i)
+      exact mod_cast sum_le_sum fun i hi => le_order_pow_of_constantCoeff_eq_zero _ (ha₁ i)
     rw [← Finset.sum_subset this]
     · congr! 2 with n hn
       simp only [map_sum, coeff_homogeneousComponent, sum_ite_eq, mem_range, left_eq_ite_iff,

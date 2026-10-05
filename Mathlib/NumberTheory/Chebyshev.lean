@@ -86,7 +86,7 @@ theorem theta_nonneg (x : ℝ) : 0 ≤ θ x := sum_nonneg fun _ _ ↦ log_nonneg
 
 theorem theta_pos {x : ℝ} (hy : 2 ≤ x) : 0 < θ x := by
   refine sum_pos (fun n hn ↦ log_pos ?_) ⟨2, ?_⟩
-  · simp only [mem_filter] at hn; exact_mod_cast hn.2.one_lt
+  · simp only [mem_filter] at hn; exact mod_cast hn.2.one_lt
   · have : 0 ≤ x := by grind
     simpa using ⟨(le_floor_iff this).2 hy, prime_two⟩
 
@@ -293,14 +293,14 @@ theorem psi_le_primeCounting_mul_log (n : ℕ) : ψ n ≤ (π n) * log n := by
   · simp
   gcongr with p hp
   refine le_log_of_pow_le (mod_cast (prime_of_mem_primesLE hp).pos) ?_
-  exact_mod_cast pow_log_le_self p hn
+  exact mod_cast pow_log_le_self p hn
 
 theorem psi_le_primeCounting_mul_log' (x : ℝ) : ψ x ≤ (π ⌊x⌋₊) * log x := by
   grw [psi_eq_psi_coe_floor, psi_le_primeCounting_mul_log]
   rcases lt_or_ge x 1 with h | h
   · simp [floor_eq_zero.mpr h]
   gcongr
-  · exact_mod_cast lt_of_add_one_le <| (one_le_floor_iff x).mpr h
+  · exact mod_cast lt_of_add_one_le <| (one_le_floor_iff x).mpr h
   · exact floor_le (by positivity)
 
 /-- `ψ n` is the logarithm of `lcmUpto n`. -/

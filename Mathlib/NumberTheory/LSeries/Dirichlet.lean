@@ -338,7 +338,7 @@ lemma riemannZeta_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < riemannZeta x := by
   have hx' : 1 < (x : ℂ).re := by simpa using hx
   rw [← LSeries_one_eq_riemannZeta hx']
   refine LSeries.positive (fun _ ↦ by simp) (by simp) ?_
-  simpa [LSeries.abscissaOfAbsConv_one] using (by exact_mod_cast hx : (1 : EReal) < x)
+  simpa [LSeries.abscissaOfAbsConv_one] using (mod_cast hx : (1 : EReal) < x)
 
 /-- The real part of the Riemann zeta function is positive for real arguments greater than 1. -/
 lemma riemannZeta_re_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < (riemannZeta x).re :=
@@ -379,7 +379,7 @@ lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log :=
 /-- The L-series of the von Mangoldt function `Λ` converges at `s` when `re s > 1`. -/
 lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable ↗Λ s := by
   have hf := LSeriesSummable_logMul_of_lt_re
-    (show abscissaOfAbsConv 1 < s.re by rw [abscissaOfAbsConv_one]; exact_mod_cast hs)
+    (show abscissaOfAbsConv 1 < s.re by rw [abscissaOfAbsConv_one]; exact mod_cast hs)
   rw [LSeriesSummable, ← summable_norm_iff] at hf ⊢
   refine hf.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_term_le s ?_)
   have hΛ : ‖↗Λ n‖ ≤ ‖Complex.log n‖ := by

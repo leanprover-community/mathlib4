@@ -221,7 +221,7 @@ theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z
       rw [← FiniteMultiplicity.pow_dvd_iff_le_multiplicity]
       · norm_cast
       · apply Int.finiteMultiplicity_iff.2 ⟨by simp [hp.out.ne_one], mod_cast hz⟩
-    · exact_mod_cast hp.out.one_lt
+    · exact mod_cast hp.out.one_lt
 
 /-- The `p`-adic norm of an integer `m` is one iff `p` doesn't divide `m`. -/
 theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by

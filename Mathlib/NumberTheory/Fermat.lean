@@ -158,7 +158,7 @@ lemma pow_pow_add_primeFactors_one_lt {a n p : ℕ} (hp : p.Prime) (hp2 : p ≠ 
   have : Fact p.Prime := Fact.mk hp
   have ha1 : (a : ZMod p) ^ (2 ^ n) = -1 := by
     rw [eq_neg_iff_add_eq_zero]
-    exact_mod_cast (natCast_eq_zero_iff (a ^ (2 ^ n) + 1) p).mpr hpdvd
+    exact mod_cast (natCast_eq_zero_iff (a ^ (2 ^ n) + 1) p).mpr hpdvd
   have ha0 : (a : ZMod p) ≠ 0 := by
     intro h
     rw [h, zero_pow (pow_ne_zero n two_ne_zero), zero_eq_neg] at ha1
