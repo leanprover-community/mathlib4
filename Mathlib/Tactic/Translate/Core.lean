@@ -8,13 +8,12 @@ module
 
 public meta import Lean.Compiler.NoncomputableAttr
 public meta import Lean.Elab.App
+public meta import Lean.Meta.CoeAttr
 public meta import Lean.Meta.Tactic.Ext
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
-public meta import Lean.Meta.CoeAttr
 public meta import Mathlib.Lean.Meta.Simp
 public meta import Mathlib.Lean.Name
-
 public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns

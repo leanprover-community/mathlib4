@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Zichen Wang
 module
 
 public import Mathlib.Analysis.Convex.Intrinsic
+
 import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!

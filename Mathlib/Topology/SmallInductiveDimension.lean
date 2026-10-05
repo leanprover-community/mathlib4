@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Topology.Bases
-import Mathlib.Topology.Clopen
 
 import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Topology.Clopen
 
 /-!
 # Small inductive dimension

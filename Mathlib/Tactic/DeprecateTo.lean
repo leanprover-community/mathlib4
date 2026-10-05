@@ -5,11 +5,11 @@ Authors: Damiano Testa
 -/
 module
 
-import Batteries.Tactic.Alias
+public meta import Mathlib.Lean.Name
+public meta import Std.Time.Format
 public import Mathlib.Init
 
-public meta import Std.Time.Format
-public meta import Mathlib.Lean.Name
+import Batteries.Tactic.Alias
 
 /-!
 # `#deprecate to` -- a deprecation tool

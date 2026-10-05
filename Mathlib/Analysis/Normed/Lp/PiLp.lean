@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel, Jireh Loreaux
 -/
 module
 
+public import Mathlib.Analysis.Normed.Lp.ProdLp
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.LinearAlgebra.Matrix.Basis
-public import Mathlib.Analysis.Normed.Lp.ProdLp
 public import Mathlib.Topology.Algebra.Module.Equiv.Pi
 
 /-!

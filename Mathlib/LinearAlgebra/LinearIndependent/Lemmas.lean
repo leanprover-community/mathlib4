@@ -7,14 +7,14 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.NormNum.Ineq
 
 import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Linear independence

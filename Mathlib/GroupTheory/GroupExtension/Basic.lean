@@ -6,6 +6,7 @@ Authors: Yudai Yamazaki
 module
 
 public import Mathlib.GroupTheory.GroupExtension.Defs
+
 import Mathlib.Tactic.Group
 
 /-!

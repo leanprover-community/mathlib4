@@ -5,14 +5,15 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.SpanRank
-import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Nakayama
+
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # The module `I ⧸ I ^ 2`

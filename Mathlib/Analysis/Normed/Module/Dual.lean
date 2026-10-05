@@ -5,10 +5,10 @@ Authors: Heather Macbeth, Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.Polar
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
-public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Analysis.LocallyConvex.Polar
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Polar sets in the strong dual of a normed space
