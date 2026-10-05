@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.IsoIoo
+import Mathlib.Order.Interval.Set.IsoIoo
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.UrysohnsBounded
 
@@ -492,7 +492,7 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
     h.toEquiv.symm_apply_eq.trans Subtype.ext_iff
   refine ⟨g, fun y => ?_, ?_⟩
   · rcases hG y with ⟨a, ha, hay⟩
-    convert! ha
+    convert ha
     exact hgG.2 hay.symm
   · ext x
     exact hgG.2 congr($hGF _)

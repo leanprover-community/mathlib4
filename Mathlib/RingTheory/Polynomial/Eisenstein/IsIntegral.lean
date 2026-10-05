@@ -5,11 +5,10 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Dvd
-public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-public import Mathlib.RingTheory.Norm.Transitivity
+import Mathlib.Data.Nat.Choose.Dvd
+import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
-public import Mathlib.Algebra.Group.Nat.Range
+import Mathlib.Algebra.Group.Nat.Range
 
 /-!
 # Eisenstein polynomials
@@ -158,7 +157,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     have hndiv : ¬p ^ 2 ∣ (minpoly R B.gen).coeff 0 := fun h =>
       hei.notMem ((span_singleton_pow p 2).symm ▸ Ideal.mem_span_singleton.2 h)
     refine hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) (?_ : _ ∣ _) hndiv
-    convert! (IsUnit.dvd_mul_right ⟨(-1) ^ (n.succ * n), rfl⟩).mpr this using 1
+    convert (IsUnit.dvd_mul_right ⟨(-1) ^ (n.succ * n), rfl⟩).mpr this using 1
     push_cast
     ring_nf
     simp
@@ -262,7 +261,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     exact dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt hp hBint hQ hzint hei
   | hi j hind =>
     intro hj
-    convert! hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) _ hndiv
+    convert hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) _ hndiv
     -- Two technical results we will need about `P.natDegree` and `Q.natDegree`.
     have H := degree_modByMonic_lt Q₁ (minpoly.monic hBint)
     rw [← hQ₁, ← hP] at H
@@ -308,7 +307,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     suffices
         p ^ n.succ ∣ Q.coeff (succ j) ^ n.succ *
           (minpoly R B.gen).coeff 0 ^ (succ j + (P.natDegree - (j + 2))) by
-      convert! this
+      convert this
       rw [Nat.succ_eq_add_one, add_assoc, ← Nat.add_sub_assoc H, add_comm (j + 1),
         Nat.add_sub_add_left, ← Nat.add_sub_assoc, Nat.add_sub_add_left, hP, ←
         (minpoly.monic hBint).natDegree_map (algebraMap R K), ←

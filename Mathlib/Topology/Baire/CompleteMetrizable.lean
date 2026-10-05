@@ -5,8 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Tactic.Finiteness
+import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!
@@ -23,6 +22,7 @@ open scoped Uniformity ENNReal
 variable {X : Type*} [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
 
 /-- **First Baire theorem**: a completely pseudometrizable topological space has Baire property. -/
+@[wikidata Q1052678]
 instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace X := by
   let _ := upgradeIsCompletelyPseudoMetrizable X
   refine ⟨fun f ho hd => ?_⟩

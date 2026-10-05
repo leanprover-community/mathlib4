@@ -6,11 +6,11 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-public import Mathlib.NumberTheory.Cyclotomic.Discriminant
+import Mathlib.NumberTheory.Cyclotomic.Discriminant
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
-public import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
-public import Mathlib.RingTheory.Prime
+import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
+import Mathlib.RingTheory.Prime
 
 /-!
 # Ring of integers of cyclotomic fields
@@ -241,7 +241,7 @@ noncomputable def subOneIntegralPowerBasisOfPrimePow [IsCyclotomicExtension {p ^
   PowerBasis.ofAdjoinEqTop'
     (RingOfIntegers.isIntegral ⟨ζ- 1, (hζ.isIntegral (NeZero.pos _)).sub isIntegral_one⟩) (by
     refine hζ.integralPowerBasisOfPrimePow.adjoin_eq_top_of_gen_mem_adjoin ?_
-    convert! Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
+    convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
     simp [RingOfIntegers.ext_iff, integralPowerBasisOfPrimePow_gen, toInteger])
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -265,7 +265,7 @@ theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     simpa using congrArg (algebraMap _ K) h
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
-  convert! Nat.prime_iff_prime_int.1 hp.out
+  convert Nat.prime_iff_prime_int.1 hp.out
   apply RingHom.injective_int (algebraMap ℤ ℚ)
   rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ)]
   simp only [algebraMap_int_eq, map_natCast]
@@ -285,7 +285,7 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
   cases k
-  · convert! Prime.neg Int.prime_two
+  · convert Prime.neg Int.prime_two
     apply RingHom.injective_int (algebraMap ℤ ℚ)
     rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ)]
     simp only [algebraMap_int_eq, map_neg, map_ofNat]
@@ -293,7 +293,7 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K
         pow_zero]
       using! hζ.norm_pow_sub_one_two (cyclotomic.irreducible_rat
         (by simp only [zero_add, pow_one, Nat.ofNat_pos]))
-  convert! Int.prime_two
+  convert Int.prime_two
   apply RingHom.injective_int (algebraMap ℤ ℚ)
   rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), algebraMap_int_eq]
   exact hζ.norm_sub_one_two Nat.AtLeastTwo.prop (cyclotomic.irreducible_rat (by simp))
@@ -309,7 +309,7 @@ theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
 /-- `ζ - 1` is prime if `ζ` is a primitive `p`-th root of unity. -/
 theorem zeta_sub_one_prime' [h : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     Prime ((hζ.toInteger - 1)) := by
-  convert! zeta_sub_one_prime (k := 0) (by simpa only [zero_add, pow_one])
+  convert zeta_sub_one_prime (k := 0) (by simpa only [zero_add, pow_one])
   simpa only [zero_add, pow_one]
 
 theorem subOneIntegralPowerBasisOfPrimePow_gen_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -625,7 +625,7 @@ theorem discr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
   let pB₁ := integralPowerBasisOfPrimePow hζ
   apply (algebraMap ℤ ℚ).injective_int
   rw [← NumberField.discr_eq_discr _ pB₁.basis, ← Algebra.discr_localizationLocalization ℤ ℤ⁰ K]
-  convert!
+  convert
     IsCyclotomicExtension.discr_prime_pow hζ (cyclotomic.irreducible_rat (NeZero.pos _)) using 1
   · have : pB₁.dim = (IsPrimitiveRoot.powerBasis ℚ hζ).dim := by
       rw [← PowerBasis.finrank, ← PowerBasis.finrank]
@@ -871,7 +871,7 @@ noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {n} ℚ K]
   PowerBasis.ofAdjoinEqTop'
     (RingOfIntegers.isIntegral ⟨ζ- 1, (hζ.isIntegral (NeZero.pos _)).sub isIntegral_one⟩) (by
     refine hζ.integralPowerBasis.adjoin_eq_top_of_gen_mem_adjoin ?_
-    convert! Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
+    convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
     simp [RingOfIntegers.ext_iff, integralPowerBasis_gen, toInteger])
 
 set_option backward.isDefEq.respectTransparency.types false in

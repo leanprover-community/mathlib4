@@ -189,6 +189,12 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("codisjoint", ["Disjoint"]),
   ("atom", ["Coatom"]),
   ("coatom", ["Atom"]),
+  ("atoms", ["Coatoms"]),
+  ("coatoms", ["Atoms"]),
+  ("atomic", ["Coatomic"]),
+  ("coatomic", ["Atomic"]),
+  ("atomistic", ["Coatomistic"]),
+  ("coatomistic", ["Atomistic"]),
   ("lfp", ["Gfp"]),
   ("gfp", ["Lfp"]),
   ("ioi", ["Iio"]),
@@ -336,5 +342,15 @@ elab "to_dual_name_hint" hints:(ident ident),* : command => do
   for ⟨hint⟩ in hints.getElems do
     guessNameExt.addTranslation ⟨hint[0]⟩ ⟨hint[1]⟩
     guessNameExt.addTranslation ⟨hint[1]⟩ ⟨hint[0]⟩
+
+/-- `to_dual_for src := e` tells `to_dual` to translate the constant `src` to `e`,
+where `e` can be an arbitrary expression.
+
+TODO: this currently doesn't accept the `(dont_translate := ...)`/`(relevant_arg := ...)` syntax.
+  This can be added if necessary.
+-/
+elab tk:"to_dual_for" src:ident " := " tgt:term : command => Command.liftTermElabM do
+  let src ← realizeGlobalConstNoOverloadWithInfo src
+  addTranslationFor data tk src tgt (dontTranslate := []) (relevantArg? := none)
 
 end Mathlib.Tactic.ToDual

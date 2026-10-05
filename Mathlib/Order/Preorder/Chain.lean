@@ -5,10 +5,10 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.Set.Notation
 public import Mathlib.Data.Set.Pairwise.Basic
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Directed
 public import Mathlib.Order.Hom.Set
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
 public import Mathlib.RingTheory.Bialgebra.Basic
-public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Bialgebra structure on `SymmetricAlgebra R M`
