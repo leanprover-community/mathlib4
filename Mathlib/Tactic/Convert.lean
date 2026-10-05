@@ -246,9 +246,12 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
       return t
 
-/-- Check that `convert!` can be replaced with `convert`. -/
+/-- Check while running `convert!` that it can be replaced with `convert`.
+
+This roughly doubles the running time for `convert!` so it is not enabled by default.
+-/
 register_option linter.convertExclamation : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `convert!` to `convert` replacement linter"
 }
 
