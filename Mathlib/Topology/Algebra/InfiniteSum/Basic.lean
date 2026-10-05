@@ -706,7 +706,7 @@ variable [T2Space α]
 @[to_additive]
 theorem Function.Surjective.tprod_eq_tprod_of_hasProd_iff_hasProd {α' : Type*} [CommMonoid α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) (h1 : e 1 = 1) {f : β → α}
-    {Lb : SummationFilter β} {Lc : SummationFilter γ} [Lb.NeBot] [Lc.NeBot]
+    {Lb : SummationFilter β} {Lc : SummationFilter γ} [Lb.NeBot]
     {g : γ → α'} (h : ∀ {a}, HasProd f (e a) Lb ↔ HasProd g a Lc) :
     ∏'[Lb] b, f b = e (∏'[Lc] c, g c) :=
   by_cases (fun x ↦ (h.mpr x.hasProd).tprod_eq) fun hg : ¬Multipliable g Lc ↦ by
@@ -715,7 +715,7 @@ theorem Function.Surjective.tprod_eq_tprod_of_hasProd_iff_hasProd {α' : Type*} 
 
 @[to_additive]
 theorem tprod_eq_tprod_of_hasProd_iff_hasProd {f : β → α} {g : γ → α}
-    {Lb : SummationFilter β} {Lc : SummationFilter γ} [Lb.NeBot] [Lc.NeBot]
+    {Lb : SummationFilter β} {Lc : SummationFilter γ} [Lb.NeBot]
     (h : ∀ {a}, HasProd f a Lb ↔ HasProd g a Lc) : ∏'[Lb] b, f b = ∏'[Lc] c, g c :=
   surjective_id.tprod_eq_tprod_of_hasProd_iff_hasProd rfl @h
 
