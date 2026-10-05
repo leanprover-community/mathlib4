@@ -75,4 +75,4 @@ example : False := by simp
 ```
 -/
 
-deprecated_module "This linter was upstreamed to Lean core" (since := "2026-10-05")
+deprecated_module "This linter was upstreamed to Lean core in April 2026" (since := "2026-10-05")
