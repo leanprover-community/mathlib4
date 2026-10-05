@@ -19,7 +19,7 @@ including results about submonoid units and units of product spaces.
 
 @[expose] public section
 
-open Units
+open Units Topology
 
 /-- If a submonoid is open in a topological monoid, then its units form an open subset
 of the units of the monoid. -/
@@ -28,6 +28,20 @@ then its additive units form an open subset of the additive units of the monoid.
 lemma Submonoid.isOpen_units {M : Type*} [TopologicalSpace M] [Monoid M]
     {U : Submonoid M} (hU : IsOpen (U : Set M)) : IsOpen (U.units : Set Mˣ) :=
   (hU.preimage Units.continuous_val).inter (hU.preimage Units.continuous_coe_inv)
+
+/-- The isomorphism of topological monoids between the units of a product of two monoids and
+the product of the units. -/
+def ContinuousMulEquiv.prodUnits (M N : Type*) [Monoid M] [TopologicalSpace M]
+    [Monoid N] [TopologicalSpace N] :
+    (M × N)ˣ ≃ₜ* Mˣ × Nˣ where
+  __ := MulEquiv.prodUnits
+  continuous_toFun := Continuous.prodMk (Units.continuous_map continuous_fst)
+    (Units.continuous_map continuous_snd)
+  continuous_invFun := Units.continuous_iff.mpr
+    ⟨continuous_prodMk.mpr ⟨Units.continuous_val.comp continuous_fst,
+        Units.continuous_val.comp continuous_snd⟩,
+      continuous_prodMk.mpr ⟨Units.continuous_coe_inv.comp continuous_fst,
+        Units.continuous_coe_inv.comp continuous_snd⟩⟩
 
 /-- The isomorphism of topological groups between the units of a product and
 the product of the units. -/
@@ -43,6 +57,20 @@ def ContinuousMulEquiv.piUnits {ι : Type*}
   continuous_invFun := Units.continuous_iff.mpr
     ⟨continuous_pi fun _ ↦ Units.continuous_val.comp <| continuous_apply _,
       continuous_pi fun _ ↦ Units.continuous_coe_inv.comp <| continuous_apply _⟩
+
+/-- Given two topological monoids M and N, (M × N)ˣ → M × N is an open embedding. -/
+theorem ContinuousMulEquiv.prodUnits_isOpenEmbedding {M N : Type*} [Monoid M] [TopologicalSpace M]
+    [Monoid N] [TopologicalSpace N] :
+    IsOpenEmbedding (prodUnits M N) :=
+  IsOpenEmbedding.of_continuous_injective_isOpenMap
+    (map_continuous (prodUnits M N)) (prodUnits M N).injective (prodUnits M N).isOpenMap
+
+/-- Given a family of topological monoids M_i, (Π M_i)ˣ → Π M_i is an open embedding. -/
+theorem ContinuousMulEquiv.piUnits_isOpenEmbedding {I : Type*} {f : I → Type _}
+    [(i : I) → Monoid (f i)] [(i : I) → TopologicalSpace (f i)] :
+    IsOpenEmbedding (piUnits (M := f)) :=
+  IsOpenEmbedding.of_continuous_injective_isOpenMap
+    (map_continuous piUnits) (ContinuousMulEquiv.injective piUnits) piUnits.isOpenMap
 
 namespace Units
 
