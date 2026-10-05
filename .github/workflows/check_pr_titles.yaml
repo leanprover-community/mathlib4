@@ -62,10 +62,11 @@ jobs:
             echo "Check passed"
           else
             # Set the output for use in subsequent steps
+            delimiter="EOF_$(openssl rand -hex 16)"
             {
-              echo "errors<<EOF"
+              echo "errors<<$delimiter"
               echo "$output"
-              echo "EOF"
+              echo "$delimiter"
             } | tee -a "$GITHUB_OUTPUT"
             exit "$exit_code"
           fi
