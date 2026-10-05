@@ -38,11 +38,11 @@ def quotientIsBaseChangeMap (S : Type*) [CommRing S] [Algebra R S] (I : Ideal R)
 
 lemma quotientIsBaseChangeMap_isBaseChange (S : Type*) [CommRing S] [Algebra R S] (I : Ideal R) :
     IsBaseChange S (quotientIsBaseChangeMap R S I) := by
-  apply IsBaseChange.of_equiv (Ideal.qoutMapEquivTensorQout S).symm
+  apply IsBaseChange.of_equiv (Ideal.quotMapEquivTensorQuot S).symm
   intro x
   rcases Submodule.Quotient.mk_surjective _ x with ⟨y, rfl⟩
   simp only [quotientIsBaseChangeMap, Submodule.liftQ_apply]
-  simp [qoutMapEquivTensorQout, Algebra.smul_def]
+  simp [Ideal.quotMapEquivTensorQuot, Algebra.smul_def]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_iff_exists [IsLocalRing R] [IsNoetherianRing R] :
