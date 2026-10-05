@@ -146,7 +146,7 @@ public register_option linter.style.missingEnd : Bool := {
 namespace Style.missingEnd
 
 @[inherit_doc Mathlib.Linter.linter.style.missingEnd]
-def missingEndLinter : ModuleLinter where run stxs := do
+def missingEndLinter : ModuleLinter where run _ := do
   if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
       !(← MonadState.get).messages.hasErrors then
     let sc ← getScopes
