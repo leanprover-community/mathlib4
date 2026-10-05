@@ -263,7 +263,7 @@ section Reindex
 
 variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
 
-/-- The equivalence between `SL m R` and `SL n S` given by an equivalence `e : m ≃ n` -/
+/-- The equivalence between `SL m R` and `SL n R` given by an equivalence `e : m ≃ n`. -/
 @[simps! apply]
 def reindexMulEquiv (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
   toFun A := ⟨reindexRingEquiv R e A, by rw [coe_reindexRingEquiv, det_reindex_self, A.det_coe]⟩
