@@ -9,6 +9,7 @@ public import Batteries.Data.String.Lemmas
 public import Mathlib.Data.List.Lex
 public import Mathlib.Data.Char
 public import Mathlib.Algebra.Order.Group.Nat
+
 import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 import all Init.Data.Ord.String  -- for unfolding `String.compare`
 

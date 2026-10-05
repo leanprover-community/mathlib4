@@ -6,6 +6,7 @@ Authors: Mitchell Lee, Óscar Álvarez
 module
 
 public import Mathlib.GroupTheory.Coxeter.Length
+
 import Mathlib.Data.List.GetD
 import Mathlib.Tactic.Group
 

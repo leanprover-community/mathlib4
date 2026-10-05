@@ -5,9 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
+public import Mathlib.Probability.Notation
 
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-public import Mathlib.Probability.Notation
 
 /-! # Conditional Lebesgue expectation
 
