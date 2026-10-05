@@ -5,14 +5,15 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 module
 
-import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Order.CauSeq.BigOperators
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Complex.Norm
-import Mathlib.Basic.Complex.BigOperators
-import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Tactic.NormNum.BigOperators
 public import Mathlib.Tactic.NormNum.NatFactorial
+
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Basic.Complex.BigOperators
+import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Exponential Function

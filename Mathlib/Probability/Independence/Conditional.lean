@@ -6,8 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Independence.Kernel.IndepFun
-import Mathlib.Probability.Kernel.CompProdEqIff
 public import Mathlib.Probability.Kernel.Condexp
+
+import Mathlib.Probability.Kernel.CompProdEqIff
 
 /-!
 # Conditional Independence

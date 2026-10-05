@@ -7,8 +7,9 @@ Authors: Riccardo Brasca, Sanyam Gupta, Omar Haddad, David Lowry-Duda,
 module
 
 public import Mathlib.NumberTheory.FLT.Basic
-import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
+
+import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 import Mathlib.Algebra.Ring.Divisibility.Lemmas
 
 /-!

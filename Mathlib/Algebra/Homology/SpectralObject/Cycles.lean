@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.ExactSequenceFour
+
 import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!

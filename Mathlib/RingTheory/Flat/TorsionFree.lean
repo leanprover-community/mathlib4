@@ -6,8 +6,9 @@ Authors: Matthew Jasper, Kevin Buzzard
 module
 
 public import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Flat.Tensor
+
+import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
