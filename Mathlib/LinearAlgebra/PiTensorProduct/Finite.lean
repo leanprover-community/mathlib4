@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.LinearAlgebra.PiTensorProduct.Generators
-import Mathlib.SetTheory.Cardinal.NatCard
+
+import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
@@ -30,7 +31,7 @@ instance finite {R : Type*} [CommSemiring R] {ι : Type*} [Finite ι] {M : ι �
   obtain ⟨n, hι⟩ : ∃ (n : ℕ), Nat.card ι = n := ⟨_, rfl⟩
   induction n generalizing ι with
   | zero =>
-    let : IsEmpty ι := Finite.card_eq_zero_iff.mp hι
+    let : IsEmpty ι := (Nat.card_eq_zero.mp hι).resolve_right (Finite.not_infinite ‹_›)
     exact Module.Finite.of_surjective
       (isEmptyEquiv ι).symm.toLinearMap
       (isEmptyEquiv ι).symm.surjective
