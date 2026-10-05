@@ -330,6 +330,11 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
         try
           i.runTacticCode goal stx
         catch _ =>
+          -- We can encounter an error in two cases:
+          -- 1. The original tactic is run in a context where it is allowed to fail (e.g. `try`/`any_goals`).
+          -- 2. There is an internal bug in tacticAnalysis.
+          -- Since excluding case 1 is too expensive, we silently let the error pass also in case 2.
+          -- See also https://github.com/leanprover-community/mathlib4/pull/44445
           return [goal]
       let (new, newHeartbeats) ← withHeartbeats <| config.test i.ctxI i.tacI ctx goal
       if let some msg ← config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
