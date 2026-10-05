@@ -5,6 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.RingTheory.Ideal.Defs
 
