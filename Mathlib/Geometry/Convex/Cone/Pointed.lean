@@ -6,7 +6,6 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
-public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
@@ -143,10 +142,10 @@ def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : Poin
     simp_rw [SetLike.mem_coe]
     rcases eq_or_lt_of_le hc with hzero | hpos
     · unfold ConvexCone.Pointed at hC
-      convert! hC
+      convert hC
       simp [← hzero]
     · apply ConvexCone.smul_mem
-      · convert! hpos
+      · convert hpos
       · exact hx
 
 @[simp]

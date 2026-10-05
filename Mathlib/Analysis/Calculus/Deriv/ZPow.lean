@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.Calculus.Deriv.Shift
 
@@ -50,7 +50,7 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
     have := (hasStrictDerivAt_inv ?_).scomp _ (this (-m) (neg_pos.2 hm)) <;>
       [skip; exact zpow_ne_zero _ hx]
     simp only [Function.comp_def, zpow_neg, inv_inv, smul_eq_mul] at this
-    convert! this using 1
+    convert this using 1
     rw [sq, mul_inv, inv_inv, Int.cast_neg, neg_mul, neg_mul_neg, ← zpow_add₀ hx, mul_assoc, ←
       zpow_add₀ hx]
     congr
@@ -108,7 +108,7 @@ theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
 
 theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
     deriv^[k] (fun y => y ^ m) x = (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) :=
-  congr_fun (iter_deriv_zpow' m k) x
+  congr($(iter_deriv_zpow' m k) x)
 
 theorem iter_deriv_pow (n : ℕ) (x : 𝕜) (k : ℕ) :
     deriv^[k] (fun x : 𝕜 => x ^ n) x = (∏ i ∈ Finset.range k, ((n : 𝕜) - i)) * x ^ (n - k) := by
