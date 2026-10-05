@@ -273,8 +273,9 @@ def isDecidableVariant (type : Expr) : Bool :=
     n == ``DecidableLE   ||
     n == ``DecidableLT
 
-/-- `withSetOptionIn` currently breaks infotree searches, so we simply set `Bool` options
-until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313). -/
+/-- `withSetOptionIn` used to break infotree searches,
+this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313). -/
+@[deprecated withSetOptionIn +typeChanged (since := "2026-10-05")]
 public partial def withSetBoolOptionIn (x : CommandElab) : CommandElab
   | `(command| set_option $opt:ident $val in $cmd:command) => do
     match val.raw with
@@ -309,8 +310,8 @@ public register_option linter.unusedDecidableInType : Bool := {
     replaced by a use of `classical` in the proof."
 }
 
-/-- Detects `Decidable*` instance hypotheses in the type of `thm` which are not used in the
-remainder of the type, and suggests replacing them with a use of `classical` in the proof or
+/-- Detect `Decidable*` instance hypotheses in the type of `thm` which are not used in the
+remainder of the type, and suggest replacing them with a use of `classical` in the proof or
 `open scoped Classical in` at the term level. -/
 public def unusedDecidableInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM Unit := do
   /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
@@ -350,8 +351,8 @@ public register_option linter.unusedFintypeInType : Bool := {
     replaced by a hypothesis of `Finite` or removed entirely."
 }
 
-/-- Detects `Fintype` instance hypotheses in the type of `thm` which are not used in the
-remainder of the type, and suggests replacing them with the corresponding hypothesis of `Finite`
+/-- Detect `Fintype` instance hypotheses in the type of `thm` which are not used in the
+remainder of the type, and suggest replacing them with the corresponding hypothesis of `Finite`
 and the use of `Fintype.ofFinite` in the proof. -/
 public def unusedFintypeInType (thm : ConstantVal) (bodyRef : Syntax) : CoreM Unit := do
   thm.logOnUnusedInstancesInTypeWhere
