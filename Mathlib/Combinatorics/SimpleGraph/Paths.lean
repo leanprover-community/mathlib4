@@ -524,8 +524,7 @@ theorem IsPath.eq_snd_or_eq_penultimate_of_start_mem_edges (hp : p.dropLast.IsPa
 theorem IsPath.eq_snd_or_eq_penultimate_of_end_mem_edges (hp : p.tail.IsPath)
     (hmem : s(v, w) ∈ p.edges) : w = p.snd ∨ w = p.penultimate := by
   rw [or_comm, ← penultimate_reverse, ← snd_reverse]
-  rw [← isPath_reverse_iff, reverse_tail, isPath_copy] at hp
-  exact hp.eq_snd_or_eq_penultimate_of_start_mem_edges (by simpa)
+  exact eq_snd_or_eq_penultimate_of_start_mem_edges (by simpa using hp.reverse) (by simpa)
 
 theorem IsPath.snd_eq_of_mem_darts (hp : p.dropLast.IsPath) {d : G.Dart} (hd : d ∈ p.darts)
     (hu : u = d.fst) : p.snd = d.snd := by
@@ -539,9 +538,7 @@ theorem IsPath.snd_eq_of_mem_darts (hp : p.dropLast.IsPath) {d : G.Dart} (hd : d
 
 theorem IsPath.penultimate_eq_of_mem_darts (hp : p.tail.IsPath) {d : G.Dart} (hd : d ∈ p.darts)
     (hv : v = d.snd) : p.penultimate = d.fst := by
-  rw [← snd_reverse, ← Prod.snd_swap]
-  rw [← isPath_reverse_iff, reverse_tail, isPath_copy] at hp
-  exact hp.snd_eq_of_mem_darts (d := d.symm) (by simpa) hv
+  simp [← snd_reverse, snd_eq_of_mem_darts (d := d.symm) (by simpa using hp.reverse) (by simpa) hv]
 
 theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
     Set.InjOn f {w | w ∈ p.support} := by
