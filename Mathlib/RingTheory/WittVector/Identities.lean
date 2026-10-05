@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.WittVector.Frobenius
 public import Mathlib.RingTheory.WittVector.Verschiebung
+
 import Mathlib.RingTheory.WittVector.MulP
 
 /-!

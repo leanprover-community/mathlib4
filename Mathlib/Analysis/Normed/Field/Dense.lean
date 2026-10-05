@@ -6,8 +6,9 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.Algebra.AlgebraicCard
-import Mathlib.Analysis.Normed.Field.Approximation
 public import Mathlib.Analysis.Normed.Field.Krasner
+
+import Mathlib.Analysis.Normed.Field.Approximation
 
 /-!
 # Transfer properties from dense subfields

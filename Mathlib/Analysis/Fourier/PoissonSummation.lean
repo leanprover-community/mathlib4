@@ -5,9 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.Topology.ContinuousMap.Periodic
+
+import Mathlib.Analysis.PSeries
 
 /-!
 # Poisson's summation formula

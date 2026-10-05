@@ -48,13 +48,11 @@ instance instMonoidalCategory : MonoidalCategory (Action V G) where
   __ := Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
 @[simp]
-theorem tensorUnit_ρ {g : G} :
-    @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
-  rfl
+theorem tensorUnit_ρ {g : G} : dsimp% (𝟙_ (Action V G)).ρ g = 1 := rfl
 
 @[simp]
 theorem tensor_ρ {X Y : Action V G} {g : G} :
-    @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ₘ Y.ρ g :=
+    dsimp% ((X ⊗ Y).ρ g).asHom = (X.ρ g).asHom ⊗ₘ (Y.ρ g).asHom := by
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
@@ -193,10 +191,10 @@ theorem rightDual_v [RightRigidCategory V] : Xᘁ.V = X.Vᘁ :=
 theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
   rfl
 
-theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
+theorem rightDual_ρ [RightRigidCategory V] (h : H) : (Xᘁ.ρ h).asHom = (X.ρ (h⁻¹ : H)).asHomᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 
-theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
+theorem leftDual_ρ [LeftRigidCategory V] (h : H) : ((ᘁX).ρ h).asHom = ᘁ(X.ρ (h⁻¹ : H)).asHom := by
   rw [← SingleObj.inv_as_inv]; rfl
 
 end
@@ -299,24 +297,18 @@ variable {W : Type*} [Category* W] [MonoidalCategory V] [MonoidalCategory W]
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.LaxMonoidal] : (F.mapAction G).LaxMonoidal where
   ε :=
     { hom := ε F
-      comm := fun g => by
-        dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
-        rw [Category.id_comp, F.map_id, Category.comp_id] }
+      comm := by simp [F.mapAction_obj_ρ_apply_asHom] }
   μ X Y :=
     { hom := μ F X.V Y.V
-      comm := fun g => μ_natural F (X.ρ g) (Y.ρ g) }
-  μ_natural_left _ _ := by ext; simp
-  μ_natural_right _ _ := by ext; simp
-  associativity _ _ _ := by ext; simp
-  left_unitality _ := by ext; simp
-  right_unitality _ := by ext; simp
+      comm g := by
+        dsimp
+        rw [tensor_ρ]
+        simp [F.mapAction_obj_ρ_apply_asHom] }
 
 @[simp]
 lemma mapAction_ε_hom [F.LaxMonoidal] : (ε (F.mapAction G)).hom = ε F := rfl
@@ -325,21 +317,18 @@ lemma mapAction_ε_hom [F.LaxMonoidal] : (ε (F.mapAction G)).hom = ε F := rfl
 lemma mapAction_μ_hom [F.LaxMonoidal] (X Y : Action V G) :
     (μ (F.mapAction G) X Y).hom = μ F X.V Y.V := rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- An oplax monoidal functor induces an oplax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.OplaxMonoidal] : (F.mapAction G).OplaxMonoidal where
   η :=
     { hom := η F
-      comm := fun g => by
-        dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
-        rw [map_id, Category.id_comp, Category.comp_id] }
+      comm _ := by simp [F.mapAction_obj_ρ_apply_asHom] }
   δ X Y :=
     { hom := δ F X.V Y.V
-      comm := fun g => (δ_natural F (X.ρ g) (Y.ρ g)).symm }
-  δ_natural_left _ _ := by ext; simp
-  δ_natural_right _ _ := by ext; simp
+      comm _ := by
+        dsimp
+        rw [tensor_ρ]
+        simp [F.mapAction_obj_ρ_apply_asHom] }
   oplax_associativity _ _ _ := by ext; simp
   oplax_left_unitality _ := by ext; simp
   oplax_right_unitality _ := by ext; simp
@@ -351,13 +340,8 @@ lemma mapAction_η_hom [F.OplaxMonoidal] : (η (F.mapAction G)).hom = η F := rf
 lemma mapAction_δ_hom [F.OplaxMonoidal] (X Y : Action V G) :
     (δ (F.mapAction G) X Y).hom = δ F X.V Y.V := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A monoidal functor induces a monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.Monoidal] : (F.mapAction G).Monoidal where
-  η_ε := by ext; dsimp; rw [η_ε]
-  ε_η := by ext; dsimp; rw [ε_η]
-  μ_δ _ _ := by ext; dsimp; rw [μ_δ]
-  δ_μ _ _ := by ext; dsimp; rw [δ_μ]
 
 end CategoryTheory.Functor
