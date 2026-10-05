@@ -522,17 +522,21 @@ theorem tprod_ite_eq' (b : β) [DecidablePred (b = ·)] (a : β → α)
   · intro b' hb'; simp [hb'.symm]
 
 @[to_additive]
-theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
-    ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
+theorem Finset.tprod_subtype (s : Finset β) (f : β → α)
+    (L := unconditional { x // x ∈ s }) [L.LeAtTop] :
+    ∏'[L] x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
 
 @[to_additive]
-theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
-    ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by
+theorem Finset.tprod_subtype' (s : Finset β) (f : β → α)
+    (L := unconditional s) [L.LeAtTop] :
+    ∏'[L] x : (s : Set β), f x = ∏ x ∈ s, f x := by
   simp [prod_attach]
 
 @[to_additive]
-theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by simp
+theorem tprod_singleton (b : β) (f : β → α)
+    (L := unconditional ({b} : Set β)) [L.LeAtTop] :
+    ∏'[L] x : ({b} : Set β), f x = f b := by simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
