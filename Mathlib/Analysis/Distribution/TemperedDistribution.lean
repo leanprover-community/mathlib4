@@ -95,11 +95,12 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 set_option backward.privateInPublic true in
 /-- A function of temperate growth `f` defines a tempered distribution via integration, namely
 `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
+@[deprecated "use `LocallyIntegrable.toTemperedDistribution`" (since := "2026-10-06")]
 def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
   toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
 
 set_option backward.privateInPublic true in
-@[simp]
+@[deprecated "use `LocallyIntegrable.toTemperedDistribution_apply`" (since := "2026-10-06")]
 theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (g : 𝓢(E, ℂ)) :
     toTemperedDistribution μ hf g = ∫ (x : E), g x • f x ∂μ := rfl
 
@@ -112,6 +113,8 @@ open Asymptotics Filter
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
+/-- A locally integrable and polynomially bounded function `f` defines a tempered distribution via
+integration, namely `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
 def toTemperedDistribution {f : E → F} {k : ℕ} (hf : LocallyIntegrable f μ)
     (hf' : f =O[Filter.cocompact E] (‖·‖ ^ k)) : 𝓢'(E, F) :=
   toPointwiseConvergenceCLM _ _ _ _ <|
@@ -125,10 +128,10 @@ where finally
     apply integral_smul
   · obtain ⟨c, _hc, s, hs₁, hs₂⟩ := isBigO_cocompact_iff.mp hf'
     simp only [norm_pow, norm_norm] at hs₂
-    set C₁ := ∫ (a : E) in sᶜ, ‖f a‖ ∂μ
+    set C₁ := ∫ x in sᶜ, ‖f x‖ ∂μ
     have hC₁ : 0 ≤ C₁ := by positivity
     set μP := μ.integrablePower
-    set C₂ := c * 2 ^ μP * ∫ (x : E), ((1 + ‖x‖) ^ μP)⁻¹ ∂μ
+    set C₂ := c * 2 ^ μP * ∫ x, ((1 + ‖x‖) ^ μP)⁻¹ ∂μ
     use {(0, 0), (k + μP, 0)}, 2 * (C₁ + C₂), by positivity
     intro g
     set k₁ := g.seminorm ℂ 0 0
@@ -146,7 +149,7 @@ where finally
         grw [norm_le_seminorm ℂ g]
       _ ≤ _ := by
         rw [integral_const_mul, mul_comm]
-    have hsc : ‖∫ (x : E) in s, g x • f x ∂μ‖ ≤ C₂ * (k₁ + k₂) := calc
+    have hsc : ‖∫ x in s, g x • f x ∂μ‖ ≤ C₂ * (k₁ + k₂) := calc
       _ ≤ ∫ x in s, ‖g x • f x‖ ∂μ := by
         grw [MeasureTheory.norm_integral_le_integral_norm]
       _ ≤ ∫ x in s, c * (‖x‖ ^ k * ‖g x‖) ∂μ := by
@@ -169,7 +172,7 @@ where finally
         simpa using integral_pow_mul_iteratedFDeriv_le ℂ μ g k 0
       _ = _ := by grind
     calc
-      _ = ‖∫ (x : E), g x • f x ∂μ‖ := rfl
+      _ = ‖∫ x, g x • f x ∂μ‖ := rfl
       _ ≤ ‖∫ x in sᶜ, g x • f x ∂μ‖ + ‖∫ x in s, g x • f x ∂μ‖ := by
         rw [← MeasureTheory.integral_add_compl₀ hs₁.nullMeasurableSet (by fun_prop)]
         simp only [compl_compl]
@@ -189,7 +192,7 @@ where finally
 @[simp]
 theorem toTemperedDistribution_apply {f : E → F} {k : ℕ} (hf : LocallyIntegrable f μ)
     (hf' : f =O[Filter.cocompact E] (‖·‖ ^ k)) (g : 𝓢(E, ℂ)) :
-    toTemperedDistribution hf hf' g = ∫ (x : E), g x • f x ∂μ := rfl
+    toTemperedDistribution hf hf' g = ∫ x, g x • f x ∂μ := rfl
 
 end MeasureTheory.LocallyIntegrable
 
