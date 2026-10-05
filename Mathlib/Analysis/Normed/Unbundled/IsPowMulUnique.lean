@@ -56,6 +56,6 @@ public theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
   let T : g.copy x ≃L[K] f.copy x := T₀.toContinuousLinearEquiv
   obtain ⟨C1, hC1_pos, hC1⟩ := T.symm.toContinuousLinearMap.bound
   obtain ⟨C2, hC2_pos, hC2⟩ := T.toContinuousLinearMap.bound
-  exact ⟨ C2, C1, hC2_pos, hC1_pos,
+  exact ⟨C2, C1, hC2_pos, hC1_pos,
     forall_and.mpr ⟨fun y ↦ hC2 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩,
       fun y ↦ hC1 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩⟩⟩
