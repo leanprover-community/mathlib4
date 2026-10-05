@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Action.Defs  -- shake: keep (metaprogram output dependency)
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Tactic.Abel
-public meta import Lean.Elab.Tactic.Try
 
 /-! # The `noncomm_ring` tactic
 
