@@ -49,6 +49,20 @@ open Lean Elab Meta Tactic Qq
 initialize registerTraceClass `abel
 initialize registerTraceClass `abel.detail
 
+/-- Set this to `false` to disable warnings about the planned deprecation of the transparency
+controls for `abel`. -/
+register_option warn.abelTransparency : Bool := {
+  defValue := true
+  descr := "warn when transparency controls for 'abel' are used"
+}
+
+private def warnTransparency : TacticM Unit := do
+  if warn.abelTransparency.get (← getOptions) then
+    logWarning "The `!` variants of `abel` and the `red` configuration option for `abel_nf` will \
+be deprecated soon. If you have a genuine use case for either feature, please write on Zulip: \
+https://leanprover.zulipchat.com/.\n\
+To disable this warning, use `set_option warn.abelTransparency false`."
+
 /--
 `abel` solves equations in the language of *additive*, commutative monoids and groups.
 
@@ -61,8 +75,13 @@ initialize registerTraceClass `abel.detail
   * `abel_nf (config := cfg)` allows for additional configuration:
     * `red`: the reducibility setting (overridden by `!`).
     * `zetaDelta`: if true, local `let` variables can be unfolded (overridden by `!`).
-    * `recursive`: if true, `abel_nf` also recurses into atoms.
+    * `contextual`: if true, implication hypotheses are added to the local context of the
+      discharger.
 * `abel!`, `abel1!`, `abel_nf!` use a more aggressive reducibility setting to identify atoms.
+
+The `!` variants and the `red` configuration option will be deprecated soon. If you have a genuine
+use case for either feature, please write on Zulip. The warning can be disabled with
+`set_option warn.abelTransparency false`.
 
 Examples:
 ```
@@ -428,6 +447,7 @@ def isAtom (e : Expr) : Bool :=
 
 @[tactic_alt abel]
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
+  if tk.isSome then warnTransparency
   let tm := if tk.isSome then .default else .reducible
   let some (_, e₁, e₂) := (← whnfR <| ← getMainTarget).eq?
     | throwError "`abel1` requires an equality goal"
@@ -502,9 +522,16 @@ def evalExpr (e : Expr) : AtomM Simp.Result := do
 
 open Parser.Tactic
 
+private def configSetsRed (cfg : Syntax) : Bool :=
+  (getConfigItems cfg).any fun item ↦
+    match item with
+    | `(configItem| ($option:ident := $_)) => option.getId.eraseMacroScopes == `red
+    | _ => false
+
 @[tactic_alt abel]
-elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
-  let mut cfg ← elabAbelNFConfig cfg
+elab (name := abelNF) "abel_nf" tk:"!"? cfgStx:optConfig loc:(location)? : tactic => do
+  let mut cfg ← elabAbelNFConfig cfgStx
+  if tk.isSome || configSetsRed cfgStx || cfg.red != .reducible then warnTransparency
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
@@ -521,8 +548,9 @@ syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
 /-- Elaborator for the `abel_nf` tactic. -/
 @[tactic abelNFConv]
 def elabAbelNFConv : Tactic := fun stx ↦ match stx with
-  | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
-    let mut cfg ← elabAbelNFConfig cfg
+  | `(conv| abel_nf $[!%$tk]? $cfgStx:optConfig) => withMainContext do
+    let mut cfg ← elabAbelNFConfig cfgStx
+    if tk.isSome || configSetsRed cfgStx || cfg.red != .reducible then warnTransparency
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
     Conv.applySimpResult
