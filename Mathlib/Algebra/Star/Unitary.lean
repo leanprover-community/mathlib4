@@ -211,22 +211,24 @@ end Monoid
 end Unitary
 
 namespace Prod
-variable (R S : Type*) [Monoid R] [Monoid S] [StarMul R] [StarMul S]
+variable {R S : Type*} [Monoid R] [Monoid S] [StarMul R] [StarMul S]
 
 lemma mem_unitary_iff {p : R × S} : p ∈ unitary (R × S) ↔ p.1 ∈ unitary R ∧ p.2 ∈ unitary S := by
   simp [Unitary.mem_iff, Prod.ext_iff, and_and_and_comm]
 
+variable (R S) in
 lemma unitary_eq : unitary (R × S) = (unitary R).prod (unitary S) :=
-  Submonoid.ext fun _ => mem_unitary_iff _ _
+  Submonoid.ext fun _ => mem_unitary_iff
 
 end Prod
 
 namespace Pi
-variable {ι} (R : ι → Type*) [Π i, Monoid (R i)] [∀ i, StarMul (R i)]
+variable {ι} {R : ι → Type*} [Π i, Monoid (R i)] [Π i, StarMul (R i)]
 
 lemma mem_unitary_iff {p : Π i, R i} : p ∈ unitary (Π i, R i) ↔ ∀ i, p i ∈ unitary (R i) := by
   simp [Unitary.mem_iff, funext_iff, forall_and]
 
+variable (R) in
 lemma unitary_eq : unitary (Π i, R i) = .pi .univ fun i => unitary (R i) := by
   ext
   simp [mem_unitary_iff, Submonoid.mem_pi]
@@ -239,11 +241,12 @@ lemma const_mem_unitary_iff {R : Type*} [Nonempty ι] [Monoid R] [StarMul R] {r 
 end Pi
 
 namespace MulOpposite
-variable (R : Type*) [Monoid R] [StarMul R]
+variable {R : Type*} [Monoid R] [StarMul R]
 
 lemma mem_unitary_iff {p : Rᵐᵒᵖ} :  p ∈ unitary Rᵐᵒᵖ ↔ p.unop ∈ unitary R := by
   simp [Unitary.mem_iff, ← MulOpposite.unop_inj, and_comm]
 
+variable (R) in
 lemma unitary_eq : unitary Rᵐᵒᵖ = (unitary R).op := by
   ext
   simp [mem_unitary_iff]
