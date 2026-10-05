@@ -345,14 +345,18 @@ theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v 
     obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₂.ne] using h
     rw [edges_injective h₃]
 
-theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
+theorem darts_injective : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
   edges_injective.of_comp
 
-lemma ext_support {p q : G.Walk u v} (h : p.support = q.support) : p = q := by
+theorem support_injective : Function.Injective (Walk.support : G.Walk u v → List V) := by
+  intro p q h
   refine darts_injective (Dart.toProd_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
   have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
   have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
   grind [map_fst_darts, map_snd_darts]
+
+lemma ext_support {p q : G.Walk u v} (h : p.support = q.support) : p = q :=
+  support_injective h
 
 /-- The `Set` of edges of a walk. -/
 def edgeSet {u v : V} (p : G.Walk u v) : Set (Sym2 V) := {e | e ∈ p.edges}
