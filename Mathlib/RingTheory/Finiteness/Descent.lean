@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.RingHom.FiniteType
 

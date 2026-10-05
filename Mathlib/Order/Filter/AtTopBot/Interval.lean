@@ -6,8 +6,9 @@ Authors: Chris Birkbeck, David Loeffler
 module
 
 public import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.Interval.Finset.Defs
+
+import Mathlib.Order.Filter.Prod
 
 /-!
 # Limits of intervals along filters

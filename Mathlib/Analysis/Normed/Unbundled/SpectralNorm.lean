@@ -6,10 +6,11 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
-import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
-import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.Normal.Closure
+
+import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
+import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
@@ -161,7 +162,7 @@ theorem spectralValue_X_pow (n : ℕ) : spectralValue (X ^ n : R[X]) = 0 := by
   rw [spectralValue]
   unfold spectralValueTerms
   simp_rw [coeff_X_pow n, natDegree_X_pow]
-  convert! ciSup_const using 2
+  convert ciSup_const using 2
   · ext m
     by_cases hmn : m < n
     · rw [ite_eq_left hmn, rpow_eq_zero_iff_of_nonneg (norm_nonneg _),

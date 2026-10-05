@@ -5,8 +5,9 @@ Authors: Frédéric Dupuis
 -/
 module
 
-import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+
+import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 
