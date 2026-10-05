@@ -530,7 +530,7 @@ theorem Finset.tprod_subtype (s : Finset β) (f : β → α)
 
 @[to_additive]
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α)
-    (L := unconditional s) [L.LeAtTop] :
+    (L := unconditional (s : Set β)) [L.LeAtTop] :
     ∏'[L] x : (s : Set β), f x = ∏ x ∈ s, f x := by
   simp [prod_attach]
 
