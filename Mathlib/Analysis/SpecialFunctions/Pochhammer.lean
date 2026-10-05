@@ -5,10 +5,11 @@ Authors: Mitchell Horner
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Convex.Deriv
-import Mathlib.Analysis.Convex.Piecewise
 public import Mathlib.RingTheory.Polynomial.Pochhammer
+
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Analysis.Convex.Piecewise
 
 /-!
 # Pochhammer polynomials

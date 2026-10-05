@@ -5,9 +5,10 @@ Authors: Johan Commelin, Jiedong Jiang, Fangming Li, Christian Merten
 -/
 module
 
-import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.Sober
+
+import Mathlib.Tactic.Bound.Init
 import Mathlib.Topology.WithTopology
 
 /-!

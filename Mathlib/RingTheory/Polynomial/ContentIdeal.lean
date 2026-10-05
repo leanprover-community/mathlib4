@@ -5,8 +5,9 @@ Authors: Fabrizio Barroero
 -/
 module
 
-import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Content
+
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
 # The content ideal of a polynomial

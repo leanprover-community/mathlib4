@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Topology.DiscreteSubset
+
 import Mathlib.Topology.WithTopology
 
 /-!

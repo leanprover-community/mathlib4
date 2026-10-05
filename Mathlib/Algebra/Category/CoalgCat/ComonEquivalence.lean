@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 public import Mathlib.CategoryTheory.Monoidal.Comon_
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
+
 import Mathlib.Tactic.SuppressCompilation
 
 /-!

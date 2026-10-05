@@ -414,16 +414,12 @@ theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A
 
 theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
     (f : F) (x : A) (p : R[X]) :
-    aeval (f x) p = f (aeval x p) := by
-  refine Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq => ?_)
-    (by simp [AlgHomClass.commutes])
-  rw [map_add, hp, hq, ← map_add, ← map_add]
+    aeval (f x) p = f (aeval x p) :=
+  p.induction_on' (fun _ _ hp hq => by simp [hp, hq]) (by simp [AlgHomClass.commutes])
 
 theorem aeval_op_apply (x : A) (p : R[X]) :
-    aeval (MulOpposite.op x) p = MulOpposite.op (aeval x p) := by
-  induction p using Polynomial.induction_on' with
-  | add p q hp hq => simp [map_add, hp, hq]
-  | monomial n c => simp [aeval_monomial, MulOpposite.op_pow, Algebra.commutes]
+    aeval (MulOpposite.op x) p = MulOpposite.op (aeval x p) :=
+  p.induction_on' (fun _ _ hp hq => by simp [hp, hq]) (by simp [Algebra.commutes])
 
 theorem aeval_smul (f : R[X]) {G : Type*} [Monoid G] [MulSemiringAction G A] [SMulCommClass G R A]
     (g : G) (x : A) : f.aeval (g • x) = g • (f.aeval x) := by
@@ -624,7 +620,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)
-  · convert! dvd_zero p
+  · convert dvd_zero p
     rw [notMem_support_iff] at hi
     simp [hi]
 
@@ -772,12 +768,17 @@ theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a �
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
   simpa [not_imp_not] using (notMem_nonZeroDivisors_iff (P := P)).not
 
-lemma mem_nonzeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
+lemma mem_nonZeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
     p ∈ R[X]⁰ :=
   Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp.2 _ (by simpa using congr(coeff $hr n))
 
-lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])
+@[deprecated (since := "2026-09-28")]
+alias mem_nonzeroDivisors_of_coeff_mem := mem_nonZeroDivisors_of_coeff_mem
+
+lemma X_mem_nonZeroDivisors : X ∈ R[X]⁰ :=
+  mem_nonZeroDivisors_of_coeff_mem 1 (by simp [one_mem])
+
+@[deprecated (since := "2026-09-28")] alias X_mem_nonzeroDivisors := X_mem_nonZeroDivisors
 
 end CommSemiring
 
