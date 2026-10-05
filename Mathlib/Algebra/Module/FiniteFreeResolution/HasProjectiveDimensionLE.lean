@@ -49,6 +49,7 @@ if its projective dimension is finite. -/
 theorem HasFiniteFreeResolution.of_projectiveDimension_ne_top
     (h : projectiveDimension (ModuleCat.of R M) ≠ ⊤) : HasFiniteFreeResolution R M :=
   let ⟨n, _⟩ := (CategoryTheory.projectiveDimension_ne_top_iff (ModuleCat.of R M)).1 h
-  ⟨n, HasFiniteFreeResolutionOfLength.of_hasProjectiveDimensionLE R M n⟩
+  (HasFiniteFreeResolution.iff R M).mpr
+    ⟨n, HasFiniteFreeResolutionOfLength.of_hasProjectiveDimensionLE R M n⟩
 
 end Module

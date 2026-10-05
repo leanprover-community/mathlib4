@@ -42,7 +42,7 @@ private noncomputable def pairCone (F : Discrete WalkingPair ⥤ ModuleCat.{v} R
             exact ModuleCat.ofHom
               (LinearMap.snd R (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩))
       naturality := by
-        rintro ⟨j⟩ ⟨j'⟩ ⟨⟨h⟩⟩
+        rintro ⟨j⟩ ⟨j'⟩ ⟨h⟩
         cases h
         cases j
         · simp
@@ -97,32 +97,38 @@ finite free resolutions, then so does `M₂`. -/
 theorem of_shortExact_of_left_of_right (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : Function.Exact f g) [HasFiniteFreeResolution R M₁] [HasFiniteFreeResolution R M₃] :
     HasFiniteFreeResolution R M₂ := by
-  let S : ShortComplex (ModuleCat.{v} R) := ModuleCat.shortComplexOfCompEqZero f g (by
+  let S : ShortComplex (ModuleCat.{v} R) := ModuleCat.shortComplexOfCompEqZero f g <| by
     ext x
-    exact h.apply_apply_eq_zero x)
-  exact CategoryTheory.ObjectProperty.HasFiniteResolution.of_shortExact_of_left_of_right
+    exact h.apply_apply_eq_zero x
+  exact ⟨ObjectProperty.hasFiniteResolution.of_shortExact_of_left_of_right
     (ModuleCat.finiteFree_le_projective R) (ModuleCat.shortComplex_shortExact S h hf hg)
+      (ObjectProperty.prop_of_is _ (ModuleCat.of R M₁))
+        (ObjectProperty.prop_of_is _ (ModuleCat.of R M₃))⟩
 
 /-- In a short exact sequence `0 → M₁ → M₂ → M₃ → 0`, if `M₁` and `M₂` have
 finite free resolutions, then so does `M₃`. -/
 theorem of_shortExact_of_left_of_middle (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : Function.Exact f g) [HasFiniteFreeResolution R M₁] [HasFiniteFreeResolution R M₂] :
     HasFiniteFreeResolution R M₃ := by
-  let S : ShortComplex (ModuleCat.{v} R) := ModuleCat.shortComplexOfCompEqZero f g (by
+  let S : ShortComplex (ModuleCat.{v} R) := ModuleCat.shortComplexOfCompEqZero f g <| by
     ext x
-    exact h.apply_apply_eq_zero x)
-  exact CategoryTheory.ObjectProperty.HasFiniteResolution.of_shortExact_of_left_of_middle
+    exact h.apply_apply_eq_zero x
+  exact ⟨ObjectProperty.hasFiniteResolution.of_shortExact_of_left_of_middle
     (ModuleCat.finiteFree_le_projective R) (ModuleCat.shortComplex_shortExact S h hf hg)
+      (ObjectProperty.prop_of_is _ (ModuleCat.of R M₁))
+        (ObjectProperty.prop_of_is _ (ModuleCat.of R M₂))⟩
 
 /-- In a short exact sequence `0 → M₁ → M₂ → M₃ → 0`, if `M₂` and `M₃` have
 finite free resolutions, then so does `M₁`. -/
 theorem of_shortExact_of_middle_of_right (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : Function.Exact f g) [HasFiniteFreeResolution R M₂] [HasFiniteFreeResolution R M₃] :
     HasFiniteFreeResolution R M₁ := by
-  let S : ShortComplex (ModuleCat.{v} R) := ModuleCat.shortComplexOfCompEqZero f g (by
+  let S : ShortComplex (ModuleCat.{v} R) := ModuleCat.shortComplexOfCompEqZero f g <| by
     ext x
-    exact h.apply_apply_eq_zero x)
-  exact CategoryTheory.ObjectProperty.HasFiniteResolution.of_shortExact_of_middle_of_right
+    exact h.apply_apply_eq_zero x
+  exact ⟨ObjectProperty.hasFiniteResolution.of_shortExact_of_middle_of_right
     (ModuleCat.finiteFree_le_projective R) (ModuleCat.shortComplex_shortExact S h hf hg)
+      (ObjectProperty.prop_of_is _ (ModuleCat.of R M₂))
+        (ObjectProperty.prop_of_is _ (ModuleCat.of R M₃))⟩
 
 end Module.HasFiniteFreeResolution

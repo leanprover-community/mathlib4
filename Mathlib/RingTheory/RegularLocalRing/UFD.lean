@@ -13,6 +13,8 @@ public import Mathlib.RingTheory.Ideal.UFD
 public import Mathlib.RingTheory.LocalProperties.Invertible
 public import Mathlib.RingTheory.RegularLocalRing.Localization
 
+import Mathlib.RingTheory.Ideal.IsPrincipal
+
 /-!
 # Any regular local ring is a UFD
 -/

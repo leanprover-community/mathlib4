@@ -32,15 +32,15 @@ theorem prop_biprod_of_isClosedUnderBinaryProducts {P : ObjectProperty A}
     [P.IsClosedUnderBinaryProducts] {X Y : A} (hX : P X) (hY : P Y) : P (X ⊞ Y) :=
   P.prop_of_isLimit_binaryFan (BinaryBiproduct.isLimit X Y) hX hY
 
-theorem HasFiniteResolutionOfLength.biprod_right {P : ObjectProperty A}
+theorem hasFiniteResolutionOfLength.biprod_right {P : ObjectProperty A}
     [P.IsClosedUnderBinaryProducts] {X Y : A} {n : ℕ}
-    (hX : P.HasFiniteResolutionOfLength X n) (hY : P Y) :
-    P.HasFiniteResolutionOfLength (X ⊞ Y) n := by
+    (hX : P.hasFiniteResolutionOfLength n X) (hY : P Y) :
+    P.hasFiniteResolutionOfLength n (X ⊞ Y) := by
   cases hX with
   | zero X hX =>
-      exact HasFiniteResolutionOfLength.zero _ (prop_biprod_of_isClosedUnderBinaryProducts hX hY)
+      exact hasFiniteResolutionOfLength.zero _ (prop_biprod_of_isClosedUnderBinaryProducts hX hY)
   | succ S n hS h₂ h₁ =>
-      refine HasFiniteResolutionOfLength.succ
+      refine hasFiniteResolutionOfLength.succ
         (ShortComplex.mk (biprod.lift S.f 0) (biprod.map S.g (𝟙 Y)) (by ext <;> simp [S.zero])) n
           ?_ (prop_biprod_of_isClosedUnderBinaryProducts h₂ hY) h₁
       have := hS.mono_f
@@ -63,7 +63,7 @@ theorem _root_.CategoryTheory.ShortComplex.ShortExact.pullback
     rw [Category.assoc, pullback.condition, ← Category.assoc, ha, zero_comp]
   refine ⟨ShortComplex.exact_of_f_is_kernel _ (KernelFork.IsLimit.ofι' _ _ fun {W} a ha ↦ ?_)⟩
   refine ⟨hS.exact.lift (a ≫ pullback.fst S.g t) (hker a ha), pullback.hom_ext ?_ ?_⟩
-  · simp [pullback.lift_fst]
+  · simp
   · simpa [pullback.lift_snd] using ha.symm
 
 theorem _root_.CategoryTheory.ShortComplex.ShortExact.pullback_symm
@@ -121,45 +121,49 @@ theorem horseshoe_middle_shortExact {X₁ X₂ X₃ F₁ K₃ F₃ : A}
   · rw [Category.assoc, biprod.lift_fst, pullback.lift_fst]
   · rw [Category.assoc, biprod.lift_snd, ← Category.assoc, pullback.lift_snd, hk₃]
 
-namespace HasFiniteResolution
+namespace hasFiniteResolution
 
 private theorem middle_of_right {P : ObjectProperty A} [P.IsClosedUnderBinaryProducts]
     [P.IsClosedUnderIsomorphisms] (hP : P ≤ isProjective A) {S : ShortComplex A}
-    (hS : S.ShortExact) {n : ℕ} (h₁ : P.HasFiniteResolutionOfLength S.X₁ n)
-    (h₃ : P S.X₃) : P.HasFiniteResolution S.X₂ := by
+    (hS : S.ShortExact) {n : ℕ} (h₁ : P.hasFiniteResolutionOfLength n S.X₁) (h₃ : P S.X₃) :
+    P.hasFiniteResolution S.X₂ := by
   have : Projective S.X₃ := hP _ h₃
-  exact ⟨n, (h₁.biprod_right h₃).of_iso hS.splittingOfProjective.isoBinaryBiproduct.symm⟩
+  exact hasFiniteResolutionOfLength.le_hasFiniteResolution _ <|
+    (P.hasFiniteResolutionOfLength n).prop_of_iso
+      hS.splittingOfProjective.isoBinaryBiproduct.symm (h₁.biprod_right h₃)
 
 /-- In a short exact sequence, if the left and right objects have finite `P`-resolutions,
 then so does the middle object. -/
 theorem of_shortExact_of_left_of_right {P : ObjectProperty A}
     [P.IsClosedUnderBinaryProducts] [P.IsClosedUnderIsomorphisms]
     (hP : P ≤ isProjective A) {S : ShortComplex A} (hS : S.ShortExact)
-    [P.HasFiniteResolution S.X₁] [P.HasFiniteResolution S.X₃] :
-    P.HasFiniteResolution S.X₂ := by
+    (h₁ : P.hasFiniteResolution S.X₁) (h₃ : P.hasFiniteResolution S.X₃) :
+    P.hasFiniteResolution S.X₂ := by
   rcases S with @⟨X₁, X₂, X₃, f, g, w⟩
-  obtain ⟨_, h₁⟩ := HasFiniteResolution.out P X₁
+  replace h₁ := (hasFiniteResolution_iff (X := X₁)).mp h₁
+  obtain ⟨_, h₁⟩ := h₁
   induction h₁ generalizing X₂ X₃ with
   | zero X₁ hX₁ =>
-      obtain ⟨_, h₃⟩ := HasFiniteResolution.out P X₃
+      obtain ⟨_, h₃⟩ := hasFiniteResolution_iff.mp h₃
       have := hS.mono_f
       have := hS.epi_g
       cases h₃ with
-      | zero X₃ hX₃ => exact middle_of_right hP hS (HasFiniteResolutionOfLength.zero X₁ hX₁) hX₃
+      | zero X₃ hX₃ => exact middle_of_right hP hS (hasFiniteResolutionOfLength.zero X₁ hX₁) hX₃
       | succ T₃ _ hS₃ hF₃ hK₃ =>
           have : Projective T₃.X₂ := hP T₃.X₂ hF₃
           let l : T₃.X₂ ⟶ X₂ := Projective.factorThru T₃.g g
           have hl : l ≫ g = T₃.g := Projective.factorThru_comp T₃.g g
           let t : T₃.X₁ ⟶ X₁ := hS.exact.lift (T₃.f ≫ l) (by rw [Category.assoc, hl, T₃.zero])
           have ht : t ≫ f = T₃.f ≫ l := hS.exact.lift_f _ _
-          have : P.HasFiniteResolution T₃.X₁ := hK₃.hasFiniteResolution
-          have : P.HasFiniteResolution (pullback (𝟙 X₁) (- t)) :=
-            HasFiniteResolution.of_iso (asIso (pullback.snd (𝟙 X₁) (- t))).symm
-          exact HasFiniteResolution.of_shortExact
+          have hK₃' : P.hasFiniteResolution T₃.X₁ :=
+            hasFiniteResolutionOfLength.le_hasFiniteResolution _ hK₃
+          have hpb : P.hasFiniteResolution (pullback (𝟙 X₁) (- t)) :=
+            P.hasFiniteResolution.prop_of_iso (asIso (pullback.snd (𝟙 X₁) (- t))).symm hK₃'
+          exact of_shortExact
             (horseshoe_middle_shortExact (𝟙 X₁) hS hS₃ l t hl ht)
-              (prop_biprod_of_isClosedUnderBinaryProducts hX₁ hF₃)
+              (prop_biprod_of_isClosedUnderBinaryProducts hX₁ hF₃) hpb
   | succ T₁ n hS₁ hF₁ hK₁ ih =>
-      obtain ⟨_, h₃⟩ := HasFiniteResolution.out P X₃
+      obtain ⟨_, h₃⟩ := hasFiniteResolution_iff.mp h₃
       have := hS.mono_f
       have := hS.epi_g
       cases h₃ with
@@ -170,31 +174,31 @@ theorem of_shortExact_of_left_of_right {P : ObjectProperty A}
           have hl : l ≫ g = T₃.g := Projective.factorThru_comp T₃.g g
           let t : T₃.X₁ ⟶ T₁.X₃ := hS.exact.lift (T₃.f ≫ l) (by rw [Category.assoc, hl, T₃.zero])
           have ht : t ≫ f = T₃.f ≫ l := hS.exact.lift_f _ _
-          have : P.HasFiniteResolution T₁.X₁ := hK₁.hasFiniteResolution
-          have : P.HasFiniteResolution T₃.X₁ := hK₃.hasFiniteResolution
-          have : P.HasFiniteResolution (pullback T₁.g (- t)) :=
+          have hK₃' : P.hasFiniteResolution T₃.X₁ :=
+            hasFiniteResolutionOfLength.le_hasFiniteResolution _ hK₃
+          have hpb : P.hasFiniteResolution (pullback T₁.g (- t)) :=
             ih (pullback.lift T₁.f 0 (by rw [T₁.zero, zero_comp]))
-              (pullback.snd T₁.g (- t)) (by rw [pullback.lift_snd]) (hS₁.pullback (- t))
+              (pullback.snd T₁.g (- t)) (by rw [pullback.lift_snd]) (hS₁.pullback (- t)) hK₃'
           have := hS₁.epi_g
-          exact HasFiniteResolution.of_shortExact
+          exact of_shortExact
             (horseshoe_middle_shortExact T₁.g hS hS₃ l t hl ht)
-              (prop_biprod_of_isClosedUnderBinaryProducts hF₁ hF₃)
+              (prop_biprod_of_isClosedUnderBinaryProducts hF₁ hF₃) hpb
 
 /-- In a short exact sequence, if the left and middle objects have finite `P`-resolutions,
 then so does the right object. -/
 theorem of_shortExact_of_left_of_middle {P : ObjectProperty A}
     [P.IsClosedUnderBinaryProducts] [P.IsClosedUnderIsomorphisms]
     (hP : P ≤ isProjective A) {S : ShortComplex A} (hS : S.ShortExact)
-    [P.HasFiniteResolution S.X₁] [P.HasFiniteResolution S.X₂] :
-    P.HasFiniteResolution S.X₃ := by
+    (h₁ : P.hasFiniteResolution S.X₁) (h₂ : P.hasFiniteResolution S.X₂) :
+    P.hasFiniteResolution S.X₃ := by
   rcases S with @⟨X₁, X₂, X₃, f, g, w⟩
-  obtain ⟨_, h₂⟩ := HasFiniteResolution.out P X₂
+  obtain ⟨_, h₂⟩ := hasFiniteResolution_iff.mp h₂
   cases h₂ with
-  | zero X₂ hX₂ => exact HasFiniteResolution.of_shortExact hS hX₂
+  | zero X₂ hX₂ => exact of_shortExact hS hX₂ h₁
   | succ T₂ _ hS₂ hF₂ hK₂ =>
-    have : P.HasFiniteResolution (pullback T₂.g f) := by
-      have : P.HasFiniteResolution T₂.X₁ := hK₂.hasFiniteResolution
-      exact of_shortExact_of_left_of_right hP (hS₂.pullback f)
+    have hpb : P.hasFiniteResolution (pullback T₂.g f) :=
+      of_shortExact_of_left_of_right hP (hS₂.pullback f)
+        (hasFiniteResolutionOfLength.le_hasFiniteResolution _ hK₂) h₁
     have := hS₂.epi_g
     have h : (ShortComplex.mk (pullback.fst T₂.g f) (T₂.g ≫ g) (by
         rw [← Category.assoc, pullback.condition, Category.assoc, w, comp_zero])).ShortExact := by
@@ -204,37 +208,37 @@ theorem of_shortExact_of_left_of_middle {P : ObjectProperty A}
       have hker : (a ≫ T₂.g) ≫ g = 0 := by simpa [Category.assoc] using ha
       exact ⟨pullback.lift a (hS.exact.lift (a ≫ T₂.g) hker) (hS.exact.lift_f _ _).symm,
         pullback.lift_fst a _ _⟩
-    simpa using HasFiniteResolution.of_shortExact h hF₂
+    simpa using of_shortExact h hF₂ hpb
 
 private theorem left_of_right {P : ObjectProperty A} [P.IsClosedUnderBinaryProducts]
     [P.IsClosedUnderIsomorphisms] (hP : P ≤ isProjective A) {S : ShortComplex A}
-    (hS : S.ShortExact) (h₃ : P S.X₃) [P.HasFiniteResolution S.X₂] :
-    P.HasFiniteResolution S.X₁ := by
+    (hS : S.ShortExact) (h₃ : P S.X₃) (h₂ : P.hasFiniteResolution S.X₂) :
+    P.hasFiniteResolution S.X₁ := by
   have : Projective S.X₃ := hP _ h₃
   let e : S.X₂ ≅ S.X₁ ⊞ S.X₃ := hS.splittingOfProjective.isoBinaryBiproduct
-  have : P.HasFiniteResolution (S.X₁ ⊞ S.X₃) := HasFiniteResolution.of_iso e
-  have : P.HasFiniteResolution S.X₃ := HasFiniteResolution.of_property h₃
   exact of_shortExact_of_left_of_middle hP
     (S := ⟨biprod.inr, biprod.fst, (BinaryBicone.inr_fst (BinaryBiproduct.bicone S.X₁ S.X₃))⟩)
-      (ShortComplex.Splitting.mk biprod.snd biprod.inl).shortExact
+      (ShortComplex.Splitting.mk biprod.snd biprod.inl).shortExact (le _ h₃)
+        (P.hasFiniteResolution.prop_of_iso e h₂)
 
 /-- In a short exact sequence, if the middle and right objects have finite `P`-resolutions,
 then so does the left object. -/
 theorem of_shortExact_of_middle_of_right {P : ObjectProperty A}
     [P.IsClosedUnderBinaryProducts] [P.IsClosedUnderIsomorphisms]
     (hP : P ≤ isProjective A) {S : ShortComplex A} (hS : S.ShortExact)
-    [P.HasFiniteResolution S.X₂] [P.HasFiniteResolution S.X₃] : P.HasFiniteResolution S.X₁ := by
+    (h₂ : P.hasFiniteResolution S.X₂) (h₃ : P.hasFiniteResolution S.X₃) :
+    P.hasFiniteResolution S.X₁ := by
   rcases S with @⟨X₁, X₂, X₃, f, g, w⟩
-  obtain ⟨_, h₃⟩ := HasFiniteResolution.out P X₃
+  obtain ⟨_, h₃⟩ := hasFiniteResolution_iff.mp h₃
   cases h₃ with
-  | zero _ hX₃ => exact left_of_right hP hS hX₃
+  | zero _ hX₃ => exact left_of_right hP hS hX₃ h₂
   | succ T₃ _ hS₃ hF₃ hK₃ =>
-    have : P.HasFiniteResolution (pullback T₃.g g) := by
-      have : P.HasFiniteResolution T₃.X₁ := hK₃.hasFiniteResolution
-      exact of_shortExact_of_left_of_right hP (hS₃.pullback g)
-    simpa using left_of_right hP (hS.pullback_symm T₃.g) hF₃
+    have hpb : P.hasFiniteResolution (pullback T₃.g g) :=
+      of_shortExact_of_left_of_right hP (hS₃.pullback g)
+        (hasFiniteResolutionOfLength.le_hasFiniteResolution _ hK₃) h₂
+    simpa using left_of_right hP (hS.pullback_symm T₃.g) hF₃ hpb
 
-end HasFiniteResolution
+end hasFiniteResolution
 
 end ObjectProperty
 
