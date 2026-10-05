@@ -5,8 +5,9 @@ Authors: Yoh Tanimoto
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Topology.Algebra.Support
+
+import Mathlib.Algebra.Order.Group.Indicator
 
 /-!
 # The topological support of sup and inf of functions

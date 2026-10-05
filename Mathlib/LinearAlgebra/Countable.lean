@@ -6,9 +6,10 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Finsupp.Encodable
+public import Mathlib.RingTheory.Finiteness.Defs
+
 import Mathlib.Data.Set.Countable
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Countable modules

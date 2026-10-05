@@ -7,8 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
+
+import Mathlib.CategoryTheory.Category.Init
 
 /-!
 # Continuous representations
@@ -194,6 +195,24 @@ instance : AddZeroClass (π₁ →ⁱL π₂) :=
   fast_instance% toContinuousLinearMap_injective.addZeroClass _
     toContinuousLinearMap_zero toContinuousLinearMap_add
 
+section SMul
+
+variable {S : Type*} [DistribSMul S W] [SMulCommClass R S W]
+  [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R]
+
+instance instSMul :
+    SMul S (π₁ →ⁱL π₂) where
+  smul s f := ⟨s • f.toContinuousLinearMap, fun g ↦ by
+    rw [ContinuousLinearMap.smul_comp, f.2, ContinuousLinearMap.comp_smul]⟩
+
+@[simp]
+lemma toContinuousLinearMap_smul (s : S) (f : π₁ →ⁱL π₂) :
+    (s • f).toContinuousLinearMap = s • f.toContinuousLinearMap := rfl
+
+lemma smul_apply (s : S) (f : π₁ →ⁱL π₂) (v : V) : (s • f) v = s • f v := rfl
+
+end SMul
+
 instance : AddCommSemigroup (π₁ →ⁱL π₂) :=
   fast_instance% toContinuousLinearMap_injective.addCommSemigroup _
     toContinuousLinearMap_add
@@ -224,22 +243,11 @@ lemma comp_sub (f : π₂ →ⁱL π₃) (g h : π₁ →ⁱL π₂) :
     f.comp (g - h) = f.comp g - f.comp h := by
   ext; simp
 
-instance instSMul {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
-    [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R] :
-    SMul S (π₁ →ⁱL π₂) where
-  smul s f := ⟨s • f.toContinuousLinearMap, fun g ↦ by
-    rw [ContinuousLinearMap.smul_comp, f.2, ContinuousLinearMap.comp_smul]⟩
 
 section addcommgroup
 
 variable {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
   [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R]
-
-@[simp]
-lemma toContinuousLinearMap_smul (s : S) (f : π₁ →ⁱL π₂) :
-    (s • f).toContinuousLinearMap = s • f.toContinuousLinearMap := rfl
-
-lemma smul_apply (s : S) (f : π₁ →ⁱL π₂) (v : V) : (s • f) v = s • f v := rfl
 
 lemma smul_comp {S : Type*} [Monoid S] [DistribMulAction S U] [SMulCommClass R S U]
     [ContinuousConstSMul S U] [LinearMap.CompatibleSMul U U S R]
