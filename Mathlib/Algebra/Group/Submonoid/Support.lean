@@ -123,12 +123,12 @@ end IsMulSpanning
 variable {H : Type*} [Group H] (f : G →* H) (N : Submonoid G) (M' : Submonoid H)
 
 @[to_additive (attr := simp)]
-theorem _root_.Subgroup.mul_support (H : Subgroup G) : H.mulSupport = H :=
+theorem _root_.Subgroup.mulSupport (H : Subgroup G) : H.mulSupport = H :=
   Subgroup.gci_toSubmonoid_mulSupport.u_l_eq _
 
 @[to_additive (attr := simp)]
 theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by
-  simpa using Subgroup.mul_support (G := G) ⊥
+  simpa using (⊥ : Subgroup G).mul_support
 
 @[to_additive (attr := simp)]
 theorem mulSupport_top : (⊤ : Submonoid G).mulSupport = ⊤ :=
