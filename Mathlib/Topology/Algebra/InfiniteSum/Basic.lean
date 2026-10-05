@@ -313,7 +313,7 @@ protected theorem Multipliable.map_iff_of_equiv [CommMonoid γ] [TopologicalSpac
 @[to_additive]
 theorem Function.Surjective.multipliable_iff_of_hasProd_iff {α' : Type*} [CommMonoid α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) {f : β → α} {g : γ → α'}
-    {Lb : SummationFilter β} {Lc : SummationFilter γ} [Lb.NeBot] [Lc.NeBot]
+    {Lb : SummationFilter β} {Lc : SummationFilter γ}
     (he : ∀ {a}, HasProd f (e a) Lb ↔ HasProd g a Lc) : Multipliable f Lb ↔ Multipliable g Lc :=
   hes.exists.trans <| exists_congr @he
 
