@@ -10,7 +10,6 @@ public import Wanted.Geometry.Euclidean.Volume.Measure
 public import Wanted.Geometry.Manifold.PoincareConjecture
 public import Wanted.Geometry.Manifold.SmoothEmbedding
 public import Wanted.GroupTheory.GroupAction.Jordan
-public import Wanted.Order.KrullDimension
 public import Wanted.Probability.Combinatorics.BinomialRandomGraph.Defs
 public import Wanted.Probability.Distributions.Binomial
 public import Wanted.RingTheory.Congruence.Basic
