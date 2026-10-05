@@ -241,7 +241,7 @@ def prod (f : M [⋀^ι]→ₗ[R] N) (g : M [⋀^ι]→ₗ[R] P) : M [⋀^ι]→
 
 @[simp]
 theorem coe_prod (f : M [⋀^ι]→ₗ[R] N) (g : M [⋀^ι]→ₗ[R] P) :
-    (f.prod g : (fun _ : ι ↦ M) →ₗₘ[R] (N × P)) = MultilinearMap.prod f g :=
+    (f.prod g : (fun _ : ι ↦ M) →ₗₘ[R] N × P) = MultilinearMap.prod f g :=
   rfl
 
 /-- Combine a family of alternating maps with the same domain and codomains `N i` into an
@@ -255,7 +255,7 @@ def pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Mo
 @[simp]
 theorem coe_pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
     (f : ∀ i, M [⋀^ι]→ₗ[R] N i) :
-    (pi f : (fun _ : ι ↦ M) →ₗₘ[R] (∀ i, N i)) = MultilinearMap.pi fun a => f a :=
+    (pi f : (fun _ : ι ↦ M) →ₗₘ[R] ∀ i, N i) = MultilinearMap.pi fun a => f a :=
   rfl
 
 /-- Given an alternating `R`-multilinear map `f` taking values in `R`, `f.smul_right z` is the map

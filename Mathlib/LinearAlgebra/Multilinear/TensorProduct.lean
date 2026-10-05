@@ -52,7 +52,7 @@ def domCoprodDep (a : (fun i₁ ↦ N (.inl i₁)) →ₗₘ[R] N₁) (b : (fun 
 from the tensor product of spaces of multilinear maps. -/
 def domCoprodDep' :
     ((fun i₁ ↦ N (.inl i₁)) →ₗₘ[R] N₁) ⊗[R] ((fun i₂ ↦ N (.inr i₂)) →ₗₘ[R] N₂) →ₗ[R]
-        N →ₗₘ[R] (N₁ ⊗[R] N₂) :=
+        N →ₗₘ[R] N₁ ⊗[R] N₂ :=
   TensorProduct.lift (LinearMap.mk₂ R domCoprodDep
     (by aesop) (by aesop) (by aesop) (by aesop))
 
@@ -81,14 +81,14 @@ to the simple case defined here. See
 -/
 @[simps! apply]
 def domCoprod (a : (fun _ : ι₁ ↦ N) →ₗₘ[R] N₁) (b : (fun _ : ι₂ ↦ N) →ₗₘ[R] N₂) :
-    (fun _ : ι₁ ⊕ ι₂ ↦ N) →ₗₘ[R] (N₁ ⊗[R] N₂) :=
+    (fun _ : ι₁ ⊕ ι₂ ↦ N) →ₗₘ[R] N₁ ⊗[R] N₂ :=
   domCoprodDep a b
 
 /-- A more bundled version of `MultilinearMap.domCoprod` that maps
 `((ι₁ → N) → N₁) ⊗ ((ι₂ → N) → N₂)` to `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂`. -/
 def domCoprod' :
     ((fun _ : ι₁ ↦ N) →ₗₘ[R] N₁) ⊗[R] ((fun _ : ι₂ ↦ N) →ₗₘ[R] N₂) →ₗ[R]
-      (fun _ : ι₁ ⊕ ι₂ ↦ N) →ₗₘ[R] (N₁ ⊗[R] N₂) :=
+      (fun _ : ι₁ ⊕ ι₂ ↦ N) →ₗₘ[R] N₁ ⊗[R] N₂ :=
   domCoprodDep' (R := R) (N := fun (_ : ι₁ ⊕ ι₂) ↦ N)
 
 @[simp]

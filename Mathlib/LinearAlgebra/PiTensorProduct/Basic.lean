@@ -272,10 +272,10 @@ instance : IsScalarTower R R (⨂[R] i, s i) :=
   PiTensorProduct.isScalarTower'
 
 variable (R) in
-/-- The canonical `s →ₗₘ[R] (⨂[R] i, s i)`.
+/-- The canonical `s →ₗₘ[R] ⨂[R] i, s i`.
 
 `tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
-def tprod : s →ₗₘ[R] (⨂[R] i, s i) where
+def tprod : s →ₗₘ[R] ⨂[R] i, s i where
   toFun := tprodCoeff R 1
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
   map_update_smul' {_ f} i r x := by
@@ -284,7 +284,7 @@ def tprod : s →ₗₘ[R] (⨂[R] i, s i) where
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
-theorem tprod_eq_tprodCoeff_one : ⇑(tprod R : s →ₗₘ[R] (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
+theorem tprod_eq_tprodCoeff_one : ⇑(tprod R : s →ₗₘ[R] ⨂[R] i, s i) = tprodCoeff R 1 := rfl
 
 @[simp]
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z • tprod R f := by
@@ -391,7 +391,7 @@ section lift
 
 /-- Auxiliary function to constructing a linear map `(⨂[R] i, s i) → E` given a
 `s →ₗₘ[R] E` with the property that its composition with the canonical
-`s →ₗₘ[R] (⨂[R] i, s i)` is the given multilinear map. -/
+`s →ₗₘ[R] ⨂[R] i, s i` is the given multilinear map. -/
 def liftAux (φ : s →ₗₘ[R] E) : (⨂[R] i, s i) →+ E :=
   liftAddHom (fun p : R × Π i, s i ↦ p.1 • φ p.2)
     (fun z f i hf ↦ by simp_rw [map_coord_zero φ i hf, smul_zero])
@@ -423,7 +423,7 @@ theorem liftAux.smul {φ : s →ₗₘ[R] E} (r : R) (x : ⨂[R] i, s i) :
 
 /-- Constructing a linear map `(⨂[R] i, s i) → E` given a `s →ₗₘ[R] E` with the property that
 its composition with the canonical `s →ₗₘ[R] E` is the given multilinear map `φ`. -/
-def lift : s →ₗₘ[R] E ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
+def lift : (s →ₗₘ[R] E) ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
   toFun φ := { liftAux φ with map_smul' := liftAux.smul }
   invFun φ' := φ'.compMultilinearMap (tprod R)
   left_inv φ := by
@@ -562,7 +562,7 @@ the family.
 -/
 @[simps]
 noncomputable def mapMultilinear :
-    (fun (i : ι) ↦ s i →ₗ[R] t i) →ₗₘ[R] ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
+    (fun (i : ι) ↦ s i →ₗ[R] t i) →ₗₘ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i where
   toFun := map
   map_update_smul' _ _ _ _ := PiTensorProduct.map_update_smul _ _ _ _
   map_update_add' _ _ _ _ := PiTensorProduct.map_update_add _ _ _ _

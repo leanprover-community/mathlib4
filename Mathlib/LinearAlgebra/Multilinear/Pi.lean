@@ -74,7 +74,7 @@ from each selection of indices (with domain `Π i, κ i`).
 -/
 @[simps]
 def piFamily (f : Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₗₘ[R] N p) :
-    (fun i => Π j : κ i, M i j) →ₗₘ[R] (Π t : Π i, κ i, N t) where
+    (fun i => Π j : κ i, M i j) →ₗₘ[R] Π t : Π i, κ i, N t where
   toFun x := fun p => f p (fun i => x i (p i))
   map_update_add' {dec} m i x y := funext fun p => by
     dsimp
@@ -153,7 +153,7 @@ variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 @[simps]
 def piFamilyₗ :
     (Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₗₘ[R] N p)
-      →ₗ[R] (fun i => Π j : κ i, M i j) →ₗₘ[R] (Π t : Π i, κ i, N t) where
+      →ₗ[R] (fun i => Π j : κ i, M i j) →ₗₘ[R] Π t : Π i, κ i, N t where
   toFun := piFamily
   map_add' := piFamily_add
   map_smul' := piFamily_smul

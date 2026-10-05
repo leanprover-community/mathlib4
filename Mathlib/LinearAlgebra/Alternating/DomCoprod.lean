@@ -46,7 +46,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- summand used in `AlternatingMap.domCoprod` -/
 def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
-    (σ : Perm.ModSumCongr ιa ιb) : (fun _ : ιa ⊕ ιb ↦ Mᵢ) →ₗₘ[R'] (N₁ ⊗[R'] N₂) :=
+    (σ : Perm.ModSumCongr ιa ιb) : (fun _ : ιa ⊕ ιb ↦ Mᵢ) →ₗₘ[R'] N₁ ⊗[R'] N₂ :=
   Quotient.liftOn' σ
     (fun σ => Equiv.Perm.sign σ • (MultilinearMap.domCoprod ↑a ↑b : _ →ₗₘ[R'] _).domDomCongr σ)
     fun σ₁ σ₂ H => by

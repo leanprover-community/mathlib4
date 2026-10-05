@@ -875,10 +875,10 @@ theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] E →ₗₘ[𝕜] G') {C 
 
 variable [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
 
-/-- Given a map `f : E →ₗₘ[𝕜] (E' →ₗₘ[𝕜] G)` and an estimate
+/-- Given a map `f : E →ₗₘ[𝕜] E' →ₗₘ[𝕜] G` and an estimate
 `H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `MultilinearMap`s in the type to
 `ContinuousMultilinearMap`s. -/
-def mkContinuousMultilinear (f : E →ₗₘ[𝕜] (E' →ₗₘ[𝕜] G)) (C : ℝ)
+def mkContinuousMultilinear (f : E →ₗₘ[𝕜] E' →ₗₘ[𝕜] G) (C : ℝ)
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ContinuousMultilinearMap 𝕜 E (ContinuousMultilinearMap 𝕜 E' G) :=
   mkContinuous
@@ -896,18 +896,18 @@ def mkContinuousMultilinear (f : E →ₗₘ[𝕜] (E' →ₗₘ[𝕜] G)) (C : 
       positivity
 
 @[simp]
-theorem mkContinuousMultilinear_apply (f : E →ₗₘ[𝕜] (E' →ₗₘ[𝕜] G)) {C : ℝ}
+theorem mkContinuousMultilinear_apply (f : E →ₗₘ[𝕜] E' →ₗₘ[𝕜] G) {C : ℝ}
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) (m : ∀ i, E i) :
     ⇑(mkContinuousMultilinear f C H m) = f m :=
   rfl
 
-theorem mkContinuousMultilinear_norm_le' (f : E →ₗₘ[𝕜] (E' →ₗₘ[𝕜] G)) (C : ℝ)
+theorem mkContinuousMultilinear_norm_le' (f : E →ₗₘ[𝕜] E' →ₗₘ[𝕜] G) (C : ℝ)
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ‖mkContinuousMultilinear f C H‖ ≤ max C 0 := by
   dsimp only [mkContinuousMultilinear]
   exact mkContinuous_norm_le _ (le_max_right _ _) _
 
-theorem mkContinuousMultilinear_norm_le (f : E →ₗₘ[𝕜] (E' →ₗₘ[𝕜] G)) {C : ℝ}
+theorem mkContinuousMultilinear_norm_le (f : E →ₗₘ[𝕜] E' →ₗₘ[𝕜] G) {C : ℝ}
     (hC : 0 ≤ C) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ‖mkContinuousMultilinear f C H‖ ≤ C :=
   (mkContinuousMultilinear_norm_le' f C H).trans_eq (max_eq_left hC)
@@ -1099,7 +1099,7 @@ sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)`
 is continuous-linear in `g` and multilinear in `f₁, ..., fₙ`. -/
 noncomputable def compContinuousLinearMapMultilinear :
     (fun i ↦ E i →L[𝕜] E₁ i) →ₗₘ[𝕜]
-      ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) where
+      (ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G where
   toFun := compContinuousLinearMapL
   map_update_add' f i f₁ f₂ := by
     ext g x
