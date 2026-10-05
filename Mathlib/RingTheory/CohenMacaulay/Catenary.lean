@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.CohenMacaulay.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
