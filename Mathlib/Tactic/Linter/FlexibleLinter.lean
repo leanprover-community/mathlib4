@@ -479,8 +479,9 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     let mvs0 := td.goalsTargetedBy
     let mvs1 := td.goalsCreatedBy
     let skind := s.getKind
-    if stoppers.contains skind then continue
     let shouldStain? := flexible? s && mvs1.length == mvs0.length
+    if !shouldStain? && stains.isEmpty then continue
+    if stoppers.contains skind then continue
     for d in getStained! s do
       if shouldStain? then
         for currMVar1 in mvs1 do
