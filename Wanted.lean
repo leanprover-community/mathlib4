@@ -16,5 +16,4 @@ public import Wanted.Probability.Distributions.Binomial
 public import Wanted.RingTheory.Congruence.Basic
 public import Wanted.RingTheory.Etale.Descent
 public import Wanted.RingTheory.KrullDimension.Basic
-public import Wanted.RingTheory.SimpleModule.Basic
 public import Wanted.RingTheory.SimpleModule.WedderburnArtin
