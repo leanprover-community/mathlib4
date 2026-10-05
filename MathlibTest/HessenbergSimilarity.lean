@@ -51,4 +51,11 @@ example :
           1, 1, 1;
           2, 0, 1]
     let H : Matrix (Fin 3) (Fin 3) ℚ := !![1, 8, 3; 1, 3, 1; 0, -4, -1]
-    M.charpoly = H.charpoly := certShear.charpoly_eq
+    H.charpoly = M.charpoly := certShear.charpoly_eq
+
+example :
+    let M : Matrix (Fin 3) (Fin 3) ℚ :=
+      !![ 1, 2, 3;
+          1, 1, 1;
+          2, 0, 1]
+    certShear.H.charpoly = M.charpoly := by simp

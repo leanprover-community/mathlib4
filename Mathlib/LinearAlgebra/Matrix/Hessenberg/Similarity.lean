@@ -46,13 +46,14 @@ structure Similarity (A : Matrix m m R) where
   diag_ne_zero (i : m) : L.diag i ≠ 0
   isUpperHessenberg: H.IsUpperHessenberg
 
+@[simp]
 theorem Similarity.charpoly_eq [IsDomain R] {A : Matrix m m R} (cert : Similarity A) :
-    A.charpoly = cert.H.charpoly :=
-  calc A.charpoly = (A.submatrix cert.σ cert.σ).charpoly :=
-        (Matrix.charpoly_submatrix_equiv_self cert.σ A).symm
-    _ = cert.H.charpoly :=
-        Matrix.charpoly_eq_of_mul_eq_mul
-          (cert.isLowerTriangular.det_ne_zero cert.diag_ne_zero) cert.mul_eq_mul
+    cert.H.charpoly = A.charpoly :=
+  calc cert.H.charpoly = (A.submatrix cert.σ cert.σ).charpoly :=
+        (Matrix.charpoly_eq_of_mul_eq_mul
+          (cert.isLowerTriangular.det_ne_zero cert.diag_ne_zero) cert.mul_eq_mul).symm
+    _ = A.charpoly :=
+      Matrix.charpoly_submatrix_equiv_self cert.σ A
 
 end Hessenberg
 
