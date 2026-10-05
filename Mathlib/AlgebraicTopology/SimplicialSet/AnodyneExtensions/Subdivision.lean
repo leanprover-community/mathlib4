@@ -545,7 +545,27 @@ instance : (pairingCore x₀).IsRegular := by
   rw [(pairingCore x₀).isRegular_iff_nonempty_weakRankFunction]
   exact ⟨pairingCore.weakRankFunction x₀⟩
 
+lemma anodyneExtensions : anodyneExtensions (horn x₀).ι :=
+  (pairingCore x₀).pairing.anodyneExtensions
+
 end horn
+
+variable [Fintype X] [Nontrivial X] (x₀)
+
+noncomputable def hornArrowIsoRangeSd' :
+    Arrow.mk (NonemptyFiniteChains.horn x₀).ι ≅
+      Arrow.mk (Subcomplex.range (sd'.map (PartialOrder.horn x₀).ι)).ι := by
+  sorry
+
+noncomputable def hornArrowIsoSd' :
+    Arrow.mk (NonemptyFiniteChains.horn x₀).ι ≅
+      Arrow.mk (sd'.map (PartialOrder.horn x₀).ι) :=
+  hornArrowIsoRangeSd' _ ≪≫ Arrow.isoMk (asIso (Subcomplex.toRange _)).symm (Iso.refl _)
+
+noncomputable def hornArrowIsoSd :
+    Arrow.mk (NonemptyFiniteChains.horn x₀).ι ≅
+      Arrow.mk (sd.map (PartialOrder.horn x₀).ι) :=
+  hornArrowIsoSd' _ ≪≫ (Arrow.isoMk (asIso (sdToSd'.app _)) (asIso (sdToSd'.app _))).symm
 
 end PartialOrder.NonemptyFiniteChains
 
@@ -554,8 +574,11 @@ open HomotopicalAlgebra
 namespace SSet
 
 lemma anodyneExtensions.sd_horn_ι {n : ℕ} (i : Fin (n + 2)) :
-    anodyneExtensions (sd.{u}.map Λ[n + 1, i].ι) := by
-  sorry
+    anodyneExtensions (sd.{u}.map Λ[n + 1, i].ι) :=
+  (anodyneExtensions.arrow_mk_iso_iff
+    (PartialOrder.NonemptyFiniteChains.hornArrowIsoSd _ ≪≫
+      sd.mapArrow.mapIso (PartialOrder.hornArrowIso n i))).1
+        (PartialOrder.NonemptyFiniteChains.horn.anodyneExtensions _)
 
 namespace modelCategoryQuillen
 

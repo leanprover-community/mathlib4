@@ -197,4 +197,6 @@ instance (X : SSet.{u}) [Nonsingular X] : IsIso (sdToSd'.app X) :=
       (isColimitOfPreserves sd' X.isColimitCoconeN') (Functor.whiskerLeft _ sdToSd')
       (fun s ↦ (by dsimp; infer_instance)) _ (fun x ↦ by simp))
 
+instance : sd'.{u}.PreservesMonomorphisms := sorry
+
 end SSet
