@@ -5,8 +5,9 @@ Authors: Jannis Limperg
 -/
 module
 
-import Mathlib.Init
 public import Aesop
+
+import Mathlib.Init
 
 /-!
 # Sym2 Rule Set
