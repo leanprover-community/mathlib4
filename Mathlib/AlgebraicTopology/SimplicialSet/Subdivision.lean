@@ -42,8 +42,7 @@ noncomputable def PartOrd.nerveFunctorCompNIso :
           dsimp at x ⊢
           ext y : 2
           simp [SSet.mapN_coe, nerveMap_app,
-            PartialOrder.NonemptyFiniteChains.range_toN_simplex_obj.{u}]
-          rfl)
+            PartialOrder.NonemptyFiniteChains.range_toN_simplex_obj.{u}])
 
 def SSet.stdSimplex.toPartOrdCompNerveFunctorIso :
     SSet.stdSimplex.{u} ≅ SimplexCategory.toPartOrd ⋙ PartOrd.nerveFunctor :=

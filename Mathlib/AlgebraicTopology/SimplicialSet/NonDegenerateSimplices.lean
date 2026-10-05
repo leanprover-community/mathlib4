@@ -304,7 +304,23 @@ lemma dim_toN_le (x : X.S) :
     x.toN.dim ≤ x.dim :=
   SimplexCategory.le_of_epi x.toNπ
 
+lemma self_le_toS_toN (s : X.S) : s ≤ s.toN.toS := by
+  rw [S.le_def, subcomplex_toN]
+
+lemma toS_toN_le_self (s : X.S) : s.toN.toS ≤ s := by
+  rw [S.le_def, subcomplex_toN]
+
 end S
+
+variable {X} in
+@[simp]
+lemma N.toN_toS (x : X.N) : x.toS.toN = x := by
+  simp [S.toN_eq_iff]
+
+variable {X} in
+lemma S.toN_surjective : Function.Surjective (S.toN (X := X)) := by
+  intro x
+  exact ⟨x.toS, by simp⟩
 
 variable {X} {Y : SSet.{u}} (f : X ⟶ Y)
 
@@ -312,22 +328,26 @@ variable {X} {Y : SSet.{u}} (f : X ⟶ Y)
 noncomputable def mapN : X.N →o Y.N where
   toFun x := (S.map f x.toS).toN
   monotone' x x' h := by
-    sorry
-    --simp only [N.le_iff, S.subcomplex_toN, Subpresheaf.ofSection_le_iff, S.map_dim,
-    --  S.map_simplex, mem_ofSimplex_obj_iff] at h ⊢
-    --obtain ⟨g, hg⟩ := h
-    --exact ⟨g, by simp only [← hg, FunctorToTypes.naturality]⟩
+    simp only [N.le_iff, S.subcomplex_toN, Subfunctor.ofSection_le_iff, S.map_simplex] at h ⊢
+    simp only [S.mem_subcomplex_obj_iff] at h ⊢
+    obtain ⟨g, hg⟩ := h
+    exact ⟨g, by simp [← hg]⟩
+
+@[simp]
+lemma mapN_toN (x : X.S) :
+    mapN f x.toN = (S.map f x).toN := by
+  simp [mapN_coe, N.eq_iff]
 
 @[simp]
 lemma mapN_id : mapN (𝟙 X) = OrderHom.id := by
   ext x
-  sorry
-  --obtain ⟨x, rfl⟩ := x.toN_surjective
-  --simp
+  obtain ⟨x, rfl⟩ := S.toN_surjective x
+  simp
 
 lemma mapN_mapN {Z : SSet.{u}} (g : Y ⟶ Z) (x : X.N) :
     mapN g (mapN f x) = mapN (f ≫ g) x := by
-  sorry
+  obtain ⟨x, rfl⟩ := S.toN_surjective x
+  simp [S.map_map]
 
 attribute [local simp] mapN_mapN in
 /-- The functor `SSet ⥤ PartOrd` which sends a simplicial set `X` to
