@@ -209,15 +209,13 @@ variable {α}
 
 /-- Given an ideal which intersects `definedAtLeft β a`, pick `b : β` such that
 some partial function in the ideal maps `a` to `b`. -/
-def funOfIdeal [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α)
-    (I : Ideal (PartialIso α β)) :
+def funOfIdeal (a : α) (I : Ideal (PartialIso α β)) :
     (∃ f, f ∈ definedAtLeft β a ∧ f ∈ I) → { b // ∃ f ∈ I, (a, b) ∈ Subtype.val f } :=
   Classical.indefiniteDescription _ ∘ fun ⟨f, ⟨b, hb⟩, hf⟩ ↦ ⟨b, f, hf, hb⟩
 
 /-- Given an ideal which intersects `definedAtRight α b`, pick `a : α` such that
 some partial function in the ideal maps `a` to `b`. -/
-def invOfIdeal [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β)
-    (I : Ideal (PartialIso α β)) :
+def invOfIdeal (b : β) (I : Ideal (PartialIso α β)) :
     (∃ f, f ∈ definedAtRight α b ∧ f ∈ I) → { a // ∃ f ∈ I, (a, b) ∈ Subtype.val f } :=
   Classical.indefiniteDescription _ ∘ fun ⟨f, ⟨a, ha⟩, hf⟩ ↦ ⟨a, f, hf, ha⟩
 
