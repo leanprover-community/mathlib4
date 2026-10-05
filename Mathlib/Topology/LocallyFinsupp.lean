@@ -10,10 +10,11 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Pi
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Tactic.Peel
+
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Pi
 
 /-!
 # Type of functions with locally finite support

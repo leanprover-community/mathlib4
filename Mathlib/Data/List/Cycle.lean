@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fintype.List
 public import Mathlib.Data.Fintype.OfMap
+
 import Mathlib.Data.Fin.Basic
 
 /-!

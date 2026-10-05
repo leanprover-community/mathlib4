@@ -5,8 +5,9 @@ Authors: Štěpán Holub
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Order.Lattice.Nat
+
+import Mathlib.Algebra.Order.Group.Nat
 
 /-! # Periods of words (Lists)
 

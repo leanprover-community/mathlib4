@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-!

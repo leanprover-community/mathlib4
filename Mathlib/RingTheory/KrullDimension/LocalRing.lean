@@ -5,8 +5,9 @@ Authors: Jingting Wang
 -/
 module
 
-import Mathlib.RingTheory.KrullDimension.Field
 public import Mathlib.RingTheory.KrullDimension.Zero
+
+import Mathlib.RingTheory.KrullDimension.Field
 
 /-!
 # The Krull dimension of a local ring

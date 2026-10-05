@@ -6,6 +6,7 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
+
 import Mathlib.SetTheory.Cardinal.Basic
 
 /-!

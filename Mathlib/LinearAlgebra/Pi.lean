@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Fin.Tuple
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.LinearAlgebra.Prod
+
 import Mathlib.Data.Fintype.Option
 
 /-!

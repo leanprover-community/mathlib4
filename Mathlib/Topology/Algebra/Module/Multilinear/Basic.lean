@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.LinearAlgebra.Multilinear.Basic
+
 import Mathlib.Algebra.BigOperators.Fin
 
 /-!
