@@ -5,10 +5,8 @@ Authors: Amir Livne Bar-on, Bernhard Reinke
 -/
 module
 
-public import Mathlib.Data.List.Induction
-public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.FreeGroup.Reduce
-public import Mathlib.Tactic.Group
+import Mathlib.Tactic.Group
 
 /-!
 # Cyclically reduced words in free groups
@@ -220,7 +218,7 @@ have the same length, and in fact they have to agree. -/
 @[to_additive /-- Free additive groups are torsion free, i.e., scalar multiplication by every
 non-zero element `n : ℕ` is injective. See the instance for free groups for an overview over the
 proof. -/]
-instance : IsMulTorsionFree (FreeGroup α) where
+instance : HasUniqueRoots (FreeGroup α) where
   pow_left_injective n hn x y heq := by
     classical
     let f (a : FreeGroup α) (n : ℕ) : ℕ :=
@@ -231,17 +229,17 @@ instance : IsMulTorsionFree (FreeGroup α) where
           invRev (conjugator a.toWord))
     have heq₂ : x ^ (2 * n) = y ^ (2 * n) := by simp_rw [mul_comm, pow_mul, heq]
     replace heq : g x n = g y n := by
-      simpa [toWord_pow, reduce_flatten_replicate, isReduced_toWord, hn] using congr_arg toWord heq
+      simpa [toWord_pow, reduce_flatten_replicate, isReduced_toWord, hn] using congr(toWord $heq)
     replace heq₂ : g x (2 * n) = g y (2 * n) := by
-      simpa [toWord_pow, reduce_flatten_replicate, isReduced_toWord, hn] using congr_arg toWord heq₂
-    have leq : f x n = f y n := by simpa [g] using congr_arg List.length heq
-    have leq₂ : f x (2 * n) = f y (2 * n) := by simpa [g] using congr_arg List.length heq₂
+      simpa [toWord_pow, reduce_flatten_replicate, isReduced_toWord, hn] using congr(toWord $heq₂)
+    have leq : f x n = f y n := by simpa [g] using congr($(heq).length)
+    have leq₂ : f x (2 * n) = f y (2 * n) := by simpa [g] using congr($(heq₂).length)
     obtain ⟨hc, heq'⟩ := List.append_inj heq (by grind)
     obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
     have hm : reduceCyclically x.toWord = reduceCyclically y.toWord := by
       simp only [replicate_succ, flatten_cons, append_assoc] at heq'
       exact (List.append_inj heq' <| mul_left_cancel₀ hn <| by grind).1
-    have := congr_arg mk (conj_conjugator_reduceCyclically x.toWord).symm
+    have := congr(mk $((conj_conjugator_reduceCyclically x.toWord).symm))
     rwa [hc, hm, conj_conjugator_reduceCyclically, mk_toWord, mk_toWord] at this
 
 end IsMulTorsionFree

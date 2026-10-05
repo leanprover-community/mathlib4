@@ -467,7 +467,7 @@ theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ�
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = 0 := by
   have : Subsingleton (Measure α) := inferInstance
-  convert! lintegral_zero_measure f
+  convert lintegral_zero_measure f
 
 theorem setLIntegral_empty (f : α → ℝ≥0∞) : ∫⁻ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, lintegral_zero_measure]
@@ -477,7 +477,7 @@ theorem setLIntegral_univ (f : α → ℝ≥0∞) : ∫⁻ x in univ, f x ∂μ 
 
 theorem setLIntegral_measure_zero (s : Set α) (f : α → ℝ≥0∞) (hs' : μ s = 0) :
     ∫⁻ x in s, f x ∂μ = 0 := by
-  convert! lintegral_zero_measure _
+  convert lintegral_zero_measure _
   exact Measure.restrict_eq_zero.2 hs'
 
 -- TODO: Need a better way of rewriting inside of an integral
@@ -677,7 +677,7 @@ theorem lintegral_max {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : A
   have hm : NullMeasurableSet { x | f x ≤ g x } μ := (nullMeasurableSet_le hf hg)
   rw [← lintegral_add_compl₀ (fun x ↦ max (f x) (g x)) hm]
   simp only [← compl_ofPred, ← not_le]
-  refine congr_arg₂ (· + ·) (setLIntegral_congr_fun₀ hm ?_) (setLIntegral_congr_fun₀ hm.compl ?_)
+  congrm $(setLIntegral_congr_fun₀ hm ?_) + $(setLIntegral_congr_fun₀ hm.compl ?_)
   exacts [fun x => max_eq_right (a := f x) (b := g x),
     fun x (hx : ¬ f x ≤ g x) => max_eq_left (not_le.1 hx).le]
 

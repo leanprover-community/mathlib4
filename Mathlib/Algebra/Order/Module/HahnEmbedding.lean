@@ -6,11 +6,10 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.DirectSum.Decomposition
-public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.Submodule.Order
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Module.Equiv
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.RingTheory.HahnSeries.Lex
 
@@ -158,7 +157,7 @@ abbrev stratum' (c : FiniteArchimedeanClass M) : Submodule K (baseDomain u) :=
 theorem iSupIndep_stratum' : iSupIndep u.stratum' := by
   apply (iSupIndep_map_orderIso_iff (Submodule.mapIic u.baseDomain)).mp
   apply iSupIndep.of_coe_Iic_comp
-  convert! u.iSupIndep_stratum
+  convert u.iSupIndep_stratum
   ext1 c
   simpa using! le_iSup _ _
 
@@ -358,7 +357,7 @@ theorem truncLT_mem_range_baseEmbedding (x : seed.baseEmbedding.domain)
   · rw [HahnSeries.coe_truncLTLinearMap, HahnSeries.coeff_truncLT_of_le hdc]
     have hcd : c.val ≤ d.val := hdc
     simp only [DFinsupp.mk_apply, hcd, ↓reduceIte]
-    convert! LinearMap.map_zero _
+    convert LinearMap.map_zero _
     simp
 
 /-- `HahnEmbedding.Seed.baseEmbedding` is a partial Hahn embedding. -/
@@ -564,7 +563,7 @@ def eval [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
 @[simp]
 theorem eval_zero [IsOrderedAddMonoid R] [Archimedean R] : f.eval 0 = 0 := by
   unfold eval
-  convert! toLex_zero
+  convert toLex_zero
   ext c
   rw [f.evalCoeff_eq (y := 0) (by simp)]
   simp

@@ -3,6 +3,7 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
 /-!
 # Cache CLI option parsing
@@ -15,6 +16,8 @@ The cache binary partitions its arguments into named options (`--name=value`),
 boolean flags (`--name`), and positional arguments before dispatch. These
 helpers implement that partitioning and the validation of known option names.
 -/
+
+public section
 
 namespace Cache.Cli
 
