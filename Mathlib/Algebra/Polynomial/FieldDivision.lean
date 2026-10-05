@@ -718,7 +718,7 @@ theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (p : R[X]) :
 protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
     p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
   obtain rfl | hp := eq_or_ne p 0
-  · simpa [hp] using zero_notMem_normalizedFactors _
+  · simpa using zero_notMem_normalizedFactors _
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
 
 theorem sum_natDegree_normalizedFactors [DecidableEq R] (p : R[X]) :
