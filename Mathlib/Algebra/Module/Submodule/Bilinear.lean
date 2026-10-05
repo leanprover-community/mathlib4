@@ -42,9 +42,8 @@ variable [Module R M] [Module R N] [Module R P]
 /-- Map a pair of submodules under a semilinear map.
 
 This is the submodule version of `Set.image2`. -/
-def map₂ {σ τ : R →+* R} [RingHomSurjective τ]
-    (f : M →ₛₗ[σ] N →ₛₗ[τ] P) (p : Submodule R M)
-    (q : Submodule R N) : Submodule R P :=
+def map₂ {σ τ : R →+* R} [RingHomSurjective τ] (f : M →ₛₗ[σ] N →ₛₗ[τ] P)
+    (p : Submodule R M) (q : Submodule R N) : Submodule R P :=
   ⨆ s : p, q.map (f s)
 
 theorem apply_mem_map₂ {σ τ : R →+* R} [RingHomSurjective τ]
