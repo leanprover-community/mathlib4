@@ -5,6 +5,8 @@ Authors: Michael Rothgang, Jon Eugster, Adomas Baliuka
 -/
 module
 
+public meta import ImportGraph.Imports.Pretty
+public meta import ImportGraph.Lean.Syntax
 public meta import Lake.Util.Casing
 public import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
@@ -32,6 +34,7 @@ Currently, this file contains linters checking
   `!`, `.` or spaces.
 - for any code containing unicode characters not on the allowlist
 - for incorrect usage of unicode variant selectors
+- for incorrectly grouped public and private imports
 
 This linter has a file for style exceptions (to avoid false positives in the implementation),
 or for downstream projects to allow a gradual adoption of this linter.
@@ -62,6 +65,8 @@ inductive StyleError where
   * `selector` is the desired selector or `none`
   -/
   | unicodeVariant (s : String) (selector: Option Char)
+  /-- Public and private imports are not grouped as prescribed by the style guide. -/
+  | importFormatting
 deriving BEq, Inhabited
 
 /-- How to format style errors -/
@@ -115,6 +120,8 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     | _, _ =>
       s!"Unexpected unicode variant selector: \"{s}\" ({oldHex}). \
         Consider deleting it."
+  | importFormatting =>
+    "Public imports must precede private imports, with a blank line between the two groups"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- The error codes were chosen like this for historic reasons. In principle, we could also print
@@ -126,6 +133,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.semicolon => "ERR_SEM"
   | StyleError.unwantedUnicode _ => "ERR_UNICODE"
   | StyleError.unicodeVariant _ _ => "ERR_UNICODE_VARIANT"
+  | StyleError.importFormatting => "ERR_IMPORTS"
 
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -238,6 +246,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
             let offending := removeQuotations (← errorMessage[4]?)
             StyleError.unicodeVariant offending none
           | _ => none
+        | "ERR_IMPORTS" => some StyleError.importFormatting
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -267,6 +276,50 @@ also return the collection of all lines, changed as needed to fix the linter err
 -/
 abbrev TextbasedLinter := LinterOptions → Array String →
   Array (StyleError × ℕ) × (Option (Array String))
+
+/-- Check that ordinary public imports precede ordinary private imports, with a blank line between
+the two groups. -/
+public register_option linter.importFormatting : Bool := { defValue := false }
+
+/-- Check whether ordinary `public import` and `import` declarations in a module are grouped in
+that order and separated by one blank line. If not, return an automatically formatted source file.
+
+This deliberately leaves files containing `meta import` or `import all` alone: the style guide does
+not prescribe where those less common forms belong. The formatter uses the same parsed import and
+whitespace representation as `#norm_imports`, while retaining the order within each group and not
+removing redundant imports. -/
+def formatImports (source fileName : String) : IO (Option (ℕ × String)) := do
+  let inputCtx := Lean.Parser.mkInputContext source fileName
+  let (header, _, log) ← Lean.Parser.parseHeader inputCtx
+  if log.hasErrors || (ImportGraph.Lean.getModule header).isNone then
+    return none
+  let sourceImports := ImportGraph.headerToImportRefsWithWhitespace header
+  if sourceImports.isEmpty || sourceImports.any fun imp ↦ imp.1.isMeta || imp.1.importAll then
+    return none
+  let publicImports := sourceImports.filter fun imp ↦ imp.1.isExported
+  let privateImports := sourceImports.filter fun imp ↦ !imp.1.isExported
+  if publicImports.isEmpty || privateImports.isEmpty then
+    return none
+  let formatGroup (imports : Array (ImportGraph.Lean.ImportRef ×
+      ImportGraph.Lean.Import.Whitespace)) : String :=
+    let imports := imports.map fun imp ↦ (imp.1.toImport, imp.2)
+    (ImportGraph.Lean.Import.prettyWithWhitespace imports .none).pretty
+  let formatted := s!"{formatGroup publicImports}\n\n{formatGroup privateImports}"
+  let importsStx := Lean.mkNullNode (sourceImports.map fun imp ↦ imp.1.stx.raw)
+  let some startPos := importsStx.getLeadingPos? | return none
+  let some stopPos := importsStx.getTrailingTailPos? | return none
+  let sourceSubstring : Substring.Raw := { str := source, startPos, stopPos }
+  let (sourceSubstring, formatted) :=
+    if let some sourceSubstring := sourceSubstring.dropPrefix? "\n\n".toRawSubstring then
+      (sourceSubstring, formatted)
+    else
+      (sourceSubstring, s!"\n\n{formatted}")
+  if sourceSubstring.toString == formatted then
+    return none
+  let fixed := String.Pos.Raw.extract source 0 sourceSubstring.startPos ++ formatted ++
+    String.Pos.Raw.extract source sourceSubstring.stopPos source.rawEndPos
+  let lineNumber := (inputCtx.fileMap.toPosition sourceSubstring.startPos).line + 1
+  return some (lineNumber, fixed)
 
 /-! Definitions of the actual text-based linters. -/
 section
@@ -454,15 +507,23 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
     changes_made := true
     errors := errors.push (ErrorContext.mk StyleError.windowsLineEnding 1 path)
   let lines := (replaced.splitOn "\n").toArray
+  -- A working copy of the lines in this file, modified by applying the auto-fixes.
+  let mut changed := lines
+
+  if getLinterValue linter.importFormatting opts then
+    if let some (lineNumber, fixed) ← formatImports replaced path.toString then
+      let error := ErrorContext.mk StyleError.importFormatting lineNumber path
+      if error.find?_comparable exceptions |>.isNone then
+        errors := errors.push error
+        changed := (fixed.splitOn "\n").toArray
+        changes_made := true
 
   -- We don't need to run any further checks on imports-only files.
-  if isImportsOnlyFile lines then
-    return (errors, if changes_made then some lines else none)
+  if isImportsOnlyFile changed then
+    return (errors, if changes_made then some changed else none)
 
   -- All further style errors raised in this file.
   let mut allOutput := #[]
-  -- A working copy of the lines in this file, modified by applying the auto-fixes.
-  let mut changed := lines
 
   for lint in allLinters do
     let (new_errors, changes) := lint opts changed
@@ -525,7 +586,7 @@ def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : A
   formatErrors allUnexpectedErrors style
   if allUnexpectedErrors.size > 0 then
     IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)! \
-      Try `lake exe lint-style --fix` to apply automatic fixes."
+      Rerun this command with `--fix` to apply automatic fixes."
   return numberErrorFiles
 
 /-- Verify that all modules are named in `UpperCamelCase` -/

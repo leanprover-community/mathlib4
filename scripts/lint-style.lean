@@ -193,6 +193,10 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     toOptions := ← getLakefileLeanOptions,
     linterSets := linter_sets%,
   }
+  let opts := if args.hasFlag "imports" then
+    { opts with toOptions := opts.toOptions.setBool `linter.importFormatting true }
+  else
+    opts
 
   let style : ErrorFormat := match args.hasFlag "github" with
     | true => ErrorFormat.github
@@ -250,11 +254,14 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   let pkgs := originModules.map (·.components.head!)
   Lean.initSearchPath (← Lean.findSysroot)
   let searchPath ← Lean.getSrcSearchPath
-  let allModuleNames ← originModules.flatMapM fun mod => do
-    let some file ← searchPath.findWithExt "lean" mod
-      | throw <| IO.userError s!"could not find module with name {mod}"
-    let imports := (← file.parseImports').filterInit.imports.map (·.module)
-    pure <| imports.filter (·.components.head! ∈ pkgs)
+  let allModuleNames ← if args.hasFlag "only" then
+    pure originModules
+  else
+    originModules.flatMapM fun mod => do
+      let some file ← searchPath.findWithExt "lean" mod
+        | throw <| IO.userError s!"could not find module with name {mod}"
+      let imports := (← file.parseImports').filterInit.imports.map (·.module)
+      pure <| imports.filter (·.components.head! ∈ pkgs)
 
   -- Read the `nolints` file, with manual exceptions for the linter.
   -- NB. We pass these lints to `lintModules` explicitly to prevent cache invalidation bugs:
@@ -290,6 +297,8 @@ def lintStyle : Cmd := `[Cli|
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
     fix;        "Automatically fix the style error, if possible"
+    imports;    "Check the formatting of public and private import groups"
+    only;       "Lint only the named modules, rather than their transitive imports"
 
   ARGS:
     ...modules : String; "Which modules, and their imports, will be linted.\n\

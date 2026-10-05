@@ -660,6 +660,26 @@ section unicodeLinter
 open Mathlib.Linter.TextBased
 open Mathlib.Linter.TextBased.UnicodeLinter
 
+set_option linter.unusedTactic false in
+example : True := by
+  run_tac do
+    let source := "module\n\nimport B\npublic import C\npublic import A\nimport D\n\n#check Nat\n"
+    let expected :=
+      "module\n\npublic import C\npublic import A\n\nimport B\nimport D\n\n#check Nat\n"
+    let some (_, actual) ← formatImports source "Test.lean"
+      | throwError "Expected import formatting to change"
+    unless actual == expected do
+      throwError "Unexpected import formatting output:\n{actual}"
+
+    let source := "module\n\npublic import A\n\nimport B\n\n#check Nat\n"
+    unless (← formatImports source "Test.lean").isNone do
+      throwError "Correctly grouped imports should be left unchanged"
+
+    let source := "module\n\nimport B\npublic meta import C\npublic import A\n\n#check Nat\n"
+    unless (← formatImports source "Test.lean").isNone do
+      throwError "Import formatting should not prescribe the position of meta imports"
+  trivial
+
 /- A character either does or doesn't have an abbreviation in the VSCode extension. -/
 #guard withVSCodeAbbrev.toList ∩ othersInMathlib.toList = ∅
 
@@ -795,6 +815,10 @@ meta def ErrorContext.isValid_parse?_error_context (ec : ErrorContext) : Bool :=
 
 #guard ErrorContext.isValid_parse?_error_context {
   error := .semicolon,
+  lineNumber := 1234, path := "Mathlib/Tactic/Measurability/Init.lean"}
+
+#guard ErrorContext.isValid_parse?_error_context {
+  error := .importFormatting,
   lineNumber := 1234, path := "Mathlib/Tactic/Measurability/Init.lean"}
 
 #guard ErrorContext.isValid_parse?_error_context {

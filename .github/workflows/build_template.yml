@@ -1022,6 +1022,35 @@ jobs:
           lint-bib-file: true
           ref: ${{ inputs.pr_branch_ref }}
 
+      # Import grouping has many pre-existing violations, so enforce it only in files changed from
+      # the repository's default branch. A separate cleanup PR can normalize the existing files.
+      - name: Check import formatting in modified Mathlib files
+        env:
+          BASE_BRANCH: ${{ github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          base_ref="refs/remotes/origin/${BASE_BRANCH}"
+          refspec="+refs/heads/${BASE_BRANCH}:${base_ref}"
+          git fetch --no-tags origin "${refspec}"
+          if ! merge_base="$(git merge-base "origin/${BASE_BRANCH}" HEAD)"; then
+            # `lint-style-action` uses a shallow checkout. Usually fetching the base branch gives
+            # `merge-base` enough history; deepen only when the branch point is older.
+            git fetch --no-tags --unshallow origin "${refspec}"
+            merge_base="$(git merge-base "origin/${BASE_BRANCH}" HEAD)"
+          fi
+
+          modules=()
+          while IFS= read -r -d '' file; do
+            if [[ "${file}" == Mathlib/*.lean ]]; then
+              module="${file%.lean}"
+              modules+=("${module//\//.}")
+            fi
+          done < <(git diff --name-only -z --diff-filter=ACMR "${merge_base}"...HEAD -- Mathlib)
+
+          if (( ${#modules[@]} > 0 )); then
+            lake exe lint-style --imports --only "${modules[@]}"
+          fi
+
   final:
     name: Post-CI job
     # ensure that this runs iff direct dependencies succeeded even if transitive dependencies  were skipped
