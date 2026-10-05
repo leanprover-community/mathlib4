@@ -5,13 +5,13 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.QExpansion
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.Analysis.SpecialFunctions.Bernstein
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-public import Mathlib.Data.Nat.Choose.Multinomial
-public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
+
+import Mathlib.Analysis.SpecialFunctions.Bernstein
+import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+import Mathlib.Data.Nat.Choose.Multinomial
+import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 /-!
 # Cusp form submodule and IsCuspForm predicate
@@ -63,7 +63,7 @@ lemma toModularFormₗ_eq_coe [Γ.HasDetOne] (f : CuspForm Γ k) :
 
 lemma toModularFormₗ_injective [Γ.HasDetOne] :
     Function.Injective (toModularFormₗ : CuspForm Γ k → ModularForm Γ k) :=
-  fun _ _ h ↦ DFunLike.ext _ _ fun z ↦ DFunLike.congr_fun h z
+  fun _ _ h ↦ DFunLike.ext _ _ fun z ↦ congr($h z)
 
 end CuspForm
 

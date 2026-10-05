@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Basic.Countable.Basic
-public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.SuccPred.Archimedean
+
+import Mathlib.Data.Finset.Max
 
 /-!
 # Linear locally finite orders
@@ -313,7 +314,7 @@ theorem toZ_le_toZ {i j : ι} : toZ i0 i ≤ toZ i0 j ↔ i ≤ j :=
 @[deprecated (since := "2026-05-07")]
 alias toZ_le_iff := toZ_le_toZ
 
-@[deprecated toZ_le_toZ (since := "2026-05-06")]
+@[deprecated toZ_le_toZ +typeChanged (since := "2026-05-06")]
 alias ⟨le_of_toZ_le, toZ_mono⟩ := toZ_le_toZ
 
 @[simp]

@@ -62,6 +62,7 @@ instance : LargeCategory MeasCat where
   id X := ⟨id, measurable_id⟩
   comp f g := ⟨g.1 ∘ f.1, g.2.comp f.2⟩
 
+@[macro_inline]
 instance (X Y : MeasCat) : FunLike ({ f : X → Y // Measurable f }) X Y where
   coe f := f
   coe_injective _ _ := Subtype.ext

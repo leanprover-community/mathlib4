@@ -6,9 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Basic.Denumerable
-public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Lattice.Nat
 
 /-!
@@ -171,7 +168,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         simp only [bad, exists_prop, not_not, Set.mem_ofPred_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         refine ⟨n + n' - n - m, by lia, ?_⟩
-        convert! hn2
+        convert hn2
         lia
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
@@ -232,9 +229,9 @@ See `wellFoundedGT_iff_monotone_chain_condition` for a stronger version on parti
 theorem wellFoundedGT_iff_monotone_chain_condition' [Preorder α] :
     WellFoundedGT α ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
   refine ⟨fun h a => ?_, fun h => ?_⟩
-  · obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.wf.has_min _ (Set.range_nonempty a)
+  · obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.has_min _ (Set.range_nonempty a)
     exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
-  · rw [WellFoundedGT, isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
+  · rw [WellFoundedGT, RelEmbedding.wellFounded_iff_isEmpty]
     refine ⟨fun a => ?_⟩
     obtain ⟨n, hn⟩ := h (a.swap : _ →r _).toOrderHom
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
@@ -300,15 +297,15 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   choose next hnext using exists_covBy_of_wellFoundedLT (α := α)
   have hα := Set.nonempty_iff_univ_nonempty.mp ‹_›
   classical
-  let a : ℕ → α := Nat.rec (wfl.wf.min _ hα) fun _n a ↦ if ha : IsMax a then a else next ha
-  refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.wf.not_lt_min _ (Set.mem_univ _), ?_⟩
+  let a : ℕ → α := Nat.rec (wfl.min _ hα) fun _n a ↦ if ha : IsMax a then a else next ha
+  refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.not_lt_min _ (Set.mem_univ _), ?_⟩
   have cov n (hn : ¬ IsMax (a n)) : a n ⋖ a (n + 1) := by
     change a n ⋖ if ha : IsMax (a n) then a n else _
     rw [dite_eq_right hn]
     exact hnext hn
   have H : ∃ n, IsMax (a n) := by
     by_contra!
-    exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg.wf
+    exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg
   exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ (wellFounded_lt.not_lt_min _ · h)⟩
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [PartialOrder α]

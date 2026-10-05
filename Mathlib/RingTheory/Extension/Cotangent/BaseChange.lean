@@ -7,8 +7,9 @@ module
 
 public import Mathlib.RingTheory.Ideal.CotangentBaseChange
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
-public import Mathlib.Algebra.FiveLemma
-public import Mathlib.RingTheory.Kaehler.TensorProduct
+
+import Mathlib.Algebra.FiveLemma
+import Mathlib.RingTheory.Kaehler.TensorProduct
 
 /-!
 # Base change for the naive cotangent complex
@@ -96,7 +97,6 @@ lemma tensorCotangentSpace_tmul (t : T) (x : P.CotangentSpace) :
     P.tensorCotangentSpace T (t ⊗ₜ x) = t • CotangentSpace.map (P.toBaseChange T) x := by
   dsimp only [CotangentSpace] at x
   induction x with
-  | zero => rw [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero, smul_zero]
   | add x y hx hy => rw [tmul_add, LinearEquiv.map_add, LinearMap.map_add, smul_add, hx, hy]
   | tmul s y =>
   simp [tensorCotangentSpace_tmul_tmul, CotangentSpace.map_tmul_eq_tmul_map,
