@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.KrullDimension.Polynomial
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
