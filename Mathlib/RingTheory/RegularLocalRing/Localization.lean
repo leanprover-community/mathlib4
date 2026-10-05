@@ -17,7 +17,7 @@ that localization of regular local ring is regular.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
