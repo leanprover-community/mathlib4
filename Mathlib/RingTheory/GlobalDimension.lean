@@ -34,7 +34,7 @@ In this file, we define the global dimension of ring and proved some of its basi
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -48,6 +48,7 @@ open Abelian
 
 /-- The (left) global (homological) dimension of a (commutative) ring defined as
 the supremum of projective dimension over all modules. -/
+@[expose]
 noncomputable def globalDimension : WithBot ℕ∞ :=
   ⨆ (M : ModuleCat.{v} R), projectiveDimension.{v} M
 
