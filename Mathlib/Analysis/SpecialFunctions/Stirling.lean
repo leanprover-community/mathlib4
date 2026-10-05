@@ -6,6 +6,7 @@ Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 module
 
 public import Mathlib.Analysis.Real.Pi.Wallis
+
 import Mathlib.Tactic.AdaptationNote
 
 /-!

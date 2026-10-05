@@ -5,10 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 public import Mathlib.CategoryTheory.Abelian.Projective.Basic
 public import Mathlib.CategoryTheory.Generator.Preadditive
+
+import Mathlib.Algebra.Category.Grp.Abelian
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 /-!

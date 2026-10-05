@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!

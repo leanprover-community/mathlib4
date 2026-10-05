@@ -15,6 +15,7 @@ public import Mathlib.LinearAlgebra.Basis.SMul
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.StdBasis
 public import Mathlib.RingTheory.AlgebraTower
+
 import Mathlib.RingTheory.Ideal.Span
 
 /-!
