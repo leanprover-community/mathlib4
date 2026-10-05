@@ -283,10 +283,6 @@ protected theorem Decidable.ne_iff_lt_iff_le [DecidableEq α] : (a ≠ b ↔ a <
 theorem ne_iff_lt_iff_le : (a ≠ b ↔ a < b) ↔ a ≤ b := open scoped Classical in
   Decidable.ne_iff_lt_iff_le
 
-@[to_dual eq_of_forall_ge_iff]
-lemma eq_of_forall_le_iff (H : ∀ c, c ≤ a ↔ c ≤ b) : a = b :=
-  ((H _).1 le_rfl).antisymm ((H _).2 le_rfl)
-
 /-- To prove commutativity of a binary operation `○`, we only to check `a ○ b ≤ b ○ a` for all `a`,
 `b`. -/
 lemma commutative_of_le {f : β → β → α} (comm : ∀ a b, f a b ≤ f b a) : ∀ a b, f a b = f b a :=
@@ -862,8 +858,8 @@ end Subtype
 /-!
 ### Pointwise order on `α × β`
 
-The lexicographic order is defined in `Data.Prod.Lex`, and the instances are available via the
-type synonym `α ×ₗ β = α × β`.
+The lexicographic order is defined in `Order.Prod.Lex.Basic`, and the instances are available via
+the type synonym `α ×ₗ β = α × β`.
 -/
 
 
@@ -970,17 +966,8 @@ class DenselyOrdered (α : Type*) [LT α] : Prop where
   /-- An order is dense if there is an element between any pair of distinct elements. -/
   dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂
 
-@[to_dual existing dense]
-theorem DenselyOrdered.dense' [LT α] [DenselyOrdered α] :
-    ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a := by
-  simp_rw [and_comm]; exact dense
-
-/-- `DenselyOrdered.mk'` is the dual of `DenselyOrdered.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-lemma DenselyOrdered.mk' [LT α] (dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a) :
-    DenselyOrdered α where
-  dense := by simpa [and_comm] using dense
+to_dual_for DenselyOrdered.dense := by simpa [and_comm] using DenselyOrdered.dense a₂ a₁
+to_dual_for DenselyOrdered.mk := ⟨by simpa [and_comm] using forall_comm.mp dense⟩
 
 @[to_dual exists_between']
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=

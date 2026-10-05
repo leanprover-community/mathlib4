@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Basic.ENNReal.Holder
+
 import Mathlib.Tactic.LinearCombination
 
 /-!

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!

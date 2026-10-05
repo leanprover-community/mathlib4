@@ -8,8 +8,9 @@ module
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
-import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
+
+import Mathlib.LinearAlgebra.Transvection.Basic
 import Mathlib.LinearAlgebra.Center
 
 /-!
