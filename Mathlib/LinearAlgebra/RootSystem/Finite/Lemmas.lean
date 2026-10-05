@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
+
 import Mathlib.Algebra.Ring.Torsion
 
 /-!
@@ -89,7 +90,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   lia
 
 variable [IsDomain R]
--- This makes an `IsAddTorsionFree R` instance available, which `grind` needs below.
+-- This makes an `HasUniqueDiv R` instance available, which `grind` needs below.
 open scoped IsDomain
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
@@ -188,7 +189,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     α i - α j ∈ Φ := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by

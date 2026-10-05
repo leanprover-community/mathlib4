@@ -5,9 +5,10 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Uniform convergence of Eisenstein series

@@ -6,10 +6,10 @@ Authors: Attila Gáspár
 module
 
 public import Mathlib.Algebra.Torsor.Basic
-
-import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Algebra.MulAction
+
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Topological torsors of groups
