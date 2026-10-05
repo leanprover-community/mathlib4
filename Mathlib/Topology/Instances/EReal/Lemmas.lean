@@ -337,8 +337,7 @@ lemma le_limsup_mul (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v) :
     le_limsup_of_frequently_le <| (hu.and_eventually hv).mono fun _ ⟨hu, hv⟩ ↦ mul_nonneg hu hv
   refine mul_le_of_forall_lt_of_nonneg u0 uv0 fun a ha b hb ↦ (le_limsup_iff).2 fun c c_ab ↦ ?_
   refine (((frequently_lt_of_lt_limsup) (mem_Ioo.1 ha).2).and_eventually
-    <| (eventually_lt_of_lt_liminf (mem_Ioo.1 hb).2).and
-    <| hv).mono fun x ⟨xa, ⟨xb, vx⟩⟩ ↦ ?_
+    <| (eventually_lt_of_lt_liminf (mem_Ioo.1 hb).2).and hv).mono fun x ⟨xa, ⟨xb, vx⟩⟩ ↦ ?_
   exact c_ab.trans_le (mul_le_mul xa.le xb.le (mem_Ioo.1 hb).1.le ((mem_Ioo.1 ha).1.le.trans xa.le))
 
 lemma limsup_mul_le (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v)

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.CharP.Lemmas
 
 /-!
-### The Frobenius endomorphism
+# The Frobenius endomorphism
 
 ## Tags
 
@@ -33,7 +33,7 @@ lemma frobenius_def : frobenius R p x = x ^ p := rfl
 
 lemma iterateFrobenius_def : iterateFrobenius R p n x = x ^ p ^ n := rfl
 
-lemma iterate_frobenius : (frobenius R p)^[n] x = x ^ p ^ n := congr_fun (pow_iterate p n) x
+lemma iterate_frobenius : (frobenius R p)^[n] x = x ^ p ^ n := congr($(pow_iterate p n) x)
 
 variable (R)
 
