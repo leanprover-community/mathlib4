@@ -5,8 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Reduced
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
+
 import Mathlib.Algebra.Ring.Torsion
 
 /-!

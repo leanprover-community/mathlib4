@@ -5,8 +5,8 @@ Authors: Markus Himmel, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Simple
 public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Simple
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!

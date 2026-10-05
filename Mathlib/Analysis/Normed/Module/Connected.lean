@@ -6,10 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Convex.Contractible
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.Topology.Algebra.Module.Cardinality
+
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Connectedness of subsets of vector spaces

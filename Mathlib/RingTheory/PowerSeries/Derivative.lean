@@ -5,9 +5,10 @@ Authors: Richard M. Hill, Ralf Stephan
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Derivation
 public import Mathlib.RingTheory.MvPowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Substitution
+
+import Mathlib.Algebra.Polynomial.Derivation
 
 /-!
 # Formal derivatives of univariate power series

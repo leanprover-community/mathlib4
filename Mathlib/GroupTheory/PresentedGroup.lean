@@ -6,9 +6,9 @@ Authors: Michael Howes, Newell Jensen
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.GroupTheory.Coprod.Basic
 
 /-!
 # Defining a group given by generators and relations

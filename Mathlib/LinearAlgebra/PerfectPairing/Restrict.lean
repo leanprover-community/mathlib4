@@ -6,8 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
-import Mathlib.LinearAlgebra.Matrix.Basis
+
 import Mathlib.LinearAlgebra.Matrix.BaseChange
+import Mathlib.LinearAlgebra.Matrix.Basis
 
 /-!
 # Restriction to submodules and restriction of scalars for perfect pairings.

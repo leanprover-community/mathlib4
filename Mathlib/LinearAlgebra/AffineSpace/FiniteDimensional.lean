@@ -5,14 +5,14 @@ Authors: Joseph Myers
 -/
 module
 
-import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
-import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.FieldTheory.Finiteness
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 # Finite-dimensional subspaces of affine spaces.

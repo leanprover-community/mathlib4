@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+
+import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Incidence algebras

@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Ella Yu
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
 # Additive energy

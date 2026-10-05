@@ -5,12 +5,12 @@ Authors: Matias Heikkilä
 -/
 module
 
-public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.Topology.Order.Lattice
 public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.UrysohnsLemma
 
 import Mathlib.Topology.Algebra.Indicator
+import Mathlib.Topology.Order.Lattice
 
 /-!
 # Completely regular topological spaces.

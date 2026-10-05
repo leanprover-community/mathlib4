@@ -5,8 +5,9 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
+
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 

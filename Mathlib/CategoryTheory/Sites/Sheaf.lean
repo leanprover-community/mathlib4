@@ -5,12 +5,12 @@ Authors: Kevin Buzzard, Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
 # Sheaves taking values in a category
