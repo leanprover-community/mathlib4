@@ -54,7 +54,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
     exact (Nat.cast_le.mpr hle).trans <| this _ (hj h)
   -- `q` is a chain of primes such that `x ∈ q 1`, `p.length = q.length` and `p.head = q.head`.
   obtain ⟨q, hxq, hq, h0, _⟩ : ∃ q : LTSeries (PrimeSpectrum R), _ ∧ _ ∧ p.head = q.head ∧ _ :=
-    exist_ltseries_mem_one_of_mem_last (p.map Subtype.val (fun ⦃_ _⦄ lt ↦ lt)) hxp
+    exists_ltseries_mem_one_of_mem_last (p.map Subtype.val (fun ⦃_ _⦄ lt ↦ lt)) hxp
   by_cases hp0 : p.length = 0
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
       (supportDim_ne_bot_iff_nontrivial R (QuotSMulTop x M)).mpr <|
