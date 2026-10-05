@@ -6,6 +6,7 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
+
 import Mathlib.Tactic.DeriveFintype
 
 /-!

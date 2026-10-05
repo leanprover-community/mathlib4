@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Galois.Topology
+
 import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
