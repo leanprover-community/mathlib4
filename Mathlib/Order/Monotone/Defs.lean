@@ -110,11 +110,11 @@ to_dual_insert_cast StrictAntiOn := by grind only
 
 end MonotoneDef
 
-/-- `σ` is *stable* for `f` if it breaks ties by increasing index: any two elements sharing the
-same `f`-value keep their original order. This property does not use the order on the codomain of
-`f`, only its equality, so it is unchanged by reversing that order. -/
-def IsStable {α β γ : Type*} [Preorder α] [Preorder β] (f : α → γ) (σ : β → α) : Prop :=
-  ∀ ⦃i j⦄, i < j → f (σ i) = f (σ j) → σ i < σ j
+/-- `σ` is *stable* for `f` if it breaks ties by increasing index: among elements with equal
+`f`-value, `σ` preserves their order. This property does not use the order on the codomain of `f`,
+only its equality, so it is unchanged by reversing that order. -/
+def IsStable {α γ : Type*} [Preorder α] (f : α → γ) (σ : α → α) : Prop :=
+  ∀ ⦃i j⦄, i ≤ j → f (σ i) = f (σ j) → σ i ≤ σ j
 
 section Decidable
 

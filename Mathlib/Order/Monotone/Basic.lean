@@ -94,7 +94,7 @@ omit [Preorder β] in
 /-- Stability of `σ` for `f` is unchanged by reversing the order on the codomain of `f`, since it
 only uses equality there. -/
 @[simp]
-theorem isStable_toDual_comp_iff {γ : Type*} [Preorder γ] (σ : γ → α) :
+theorem isStable_toDual_comp_iff (σ : α → α) :
     IsStable (toDual ∘ f) σ ↔ IsStable f σ :=
   Iff.rfl
 

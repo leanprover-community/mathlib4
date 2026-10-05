@@ -175,15 +175,17 @@ theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) 
     ext1 x
     exact (graphEquiv₁ f).eq_symm_apply.2 congr($this x).symm
 
-/-- A permutation `σ` equals `sort f` if and only if `f ∘ σ` is monotone and whenever `i < j`
-and `f (σ i) = f (σ j)`, then `σ i < σ j`. This means that `sort f` is the lexicographically
-smallest permutation `σ` such that `f ∘ σ` is monotone. -/
+/-- A permutation `σ` equals `sort f` if and only if `f ∘ σ` is monotone and `σ` is stable, i.e.
+whenever `i ≤ j` and `f (σ i) = f (σ j)`, then `σ i ≤ σ j`. This means that `sort f` is the
+lexicographically smallest permutation `σ` such that `f ∘ σ` is monotone. -/
 theorem eq_sort_iff : σ = sort f ↔ Monotone (f ∘ σ) ∧ IsStable f σ := by
   rw [eq_sort_iff']
   refine ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => ?_⟩, fun h i j hij => ?_⟩
-  · exact ((Prod.Lex.toLex_lt_toLex.1 <| h hij).resolve_left hfij.not_lt).2
+  · rcases hij.lt_or_eq with hlt | rfl
+    · exact ((Prod.Lex.toLex_lt_toLex.1 <| h hlt).resolve_left hfij.not_lt).2.le
+    · exact le_rfl
   · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply Prod.Lex.toLex_lt_toLex.2
-    exacts [Or.inr ⟨he, h.2 hij he⟩, Or.inl hl]
+    exacts [Or.inr ⟨he, lt_of_le_of_ne (h.2 hij.le he) (σ.injective.ne hij.ne)⟩, Or.inl hl]
 
 /-- A permutation `σ` equals `sortDesc f` if and only if `f ∘ σ` is antitone and `σ` is stable,
 i.e. `σ` breaks ties by increasing index. This is the descending analogue of `eq_sort_iff`. -/
@@ -250,8 +252,8 @@ theorem sort_perm (σ : Equiv.Perm (Fin n)) :
     sort σ = σ⁻¹ := by
   apply (eq_sort_iff.2 ⟨?_ , ?_⟩).symm
   · simpa using monotone_id
-  · intro _ _ hij h
-    exact (hij.ne (by simpa using h)).elim
+  · intro i j _ h
+    exact le_of_eq (congrArg _ (by simpa using h))
 
 theorem isStable_sort (f : Fin n → α) : IsStable f (sort f) :=
   (eq_sort_iff.mp rfl).2
@@ -267,8 +269,11 @@ theorem isStable_sort_comp_rev_iff :
   · -- `sort f` and its reversal order any tied `x, y` oppositely, so `f` can have no tie.
     have key : ∀ x y, f x = f y → (sort f).symm x < (sort f).symm y → False := by
       intro x y hxy hlt
-      have h1 : x < y := by simpa using isStable_sort f hlt (by simp [hxy])
-      have h2 : y < x := by simpa using hσ (Fin.rev_strictAnti hlt) (by simp [hxy])
+      have hxy' : x ≠ y := fun h => hlt.ne (by rw [h])
+      have h1 : x < y :=
+        lt_of_le_of_ne (by simpa using isStable_sort f hlt.le (by simp [hxy])) hxy'
+      have h2 : y < x :=
+        lt_of_le_of_ne (by simpa using hσ (Fin.rev_strictAnti hlt).le (by simp [hxy])) hxy'.symm
       exact absurd h1 (asymm h2)
     intro a b hfab
     by_contra hab
