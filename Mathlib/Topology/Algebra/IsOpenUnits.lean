@@ -102,7 +102,7 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
 # Units of products
 
 This section contains the instances that the units in a product of two or finitely many topological
-monoids are open.
+monoids with open units are open.
 -/
 
 public section
