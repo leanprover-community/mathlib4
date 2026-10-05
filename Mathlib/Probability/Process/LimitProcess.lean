@@ -12,7 +12,7 @@ public import Mathlib.Probability.Process.Filtration
 
 # Limit of a stochastic process
 
-Under certain assumptions, classical familes of processes such as martingales converge as time
+Under certain assumptions, classical families of processes such as martingales converge as time
 goes to infinity, and several important properties of the process can be inferred from this limit,
 so that it is useful to be able to refer to this limit via a definition.
 This file thus provides a definition `𝓕.limitProcess X P`, which is the limit of the process `X`

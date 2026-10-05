@@ -13,15 +13,10 @@ public import Mathlib.Probability.Process.Stopping
 
 # Stopped value of a stochastic process
 
-In mathlib, given a stochastic process `X : ι → Ω → E` and `τ : Ω → WithTop ι` a stopping time,
-we define `stoppedValue X τ ω` as `X (τ ω)` if `τ ω ≠ ⊤`, and an arbitrary value otherwise.
-This is not well suited in a number of context where `X` converges almost surely at infinity,
-and we would expect the stopped value to be equal to the limit random variable when `τ ω = ⊤`
-(this is for example true if `X` is a uniformly integrable martingale).
-
-This limit process is always defined in mathlib as `𝓕.limitProcess X P`, with a default value
-when it does not make sense. In this file we define `𝓕.stoppedValue X τ P ω` to be equal
-to `X (τ ω)` if `τ ω ≠ ⊤`, and `𝓕.limitProcess X P ω` otherwise.
+Given a stochastic process `X : ι → Ω → E` and `τ : Ω → WithTop ι` a stopping time,
+we define `𝓕.stoppedValue X τ P ω` as `X (τ ω)` if `τ ω ≠ ⊤`, and `𝓕.limitProcess X P ω` otherwise.
+The random variable `𝓕.limitProcess X P` is defined to be the almost sure `⨆ t, 𝓕 t`-strongly
+measurable limit of `X` if it exists, and `0` otherwise.
 
 -/
 
