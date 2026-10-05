@@ -44,7 +44,7 @@ variable {R : Type u} [CommRing R]
 lemma Ideal.ofList_reverse (rs : List R) : Ideal.ofList rs.reverse = Ideal.ofList rs := by
   simp [Ideal.ofList]
 
-open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
+open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence ModuleCat
 
 section
 
@@ -454,7 +454,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
       { __ := ResidueField.map (algebraMap R (Localization qq.1.1.primeCompl))
         map_smul' r x := by
           simp only [RingHom.toMonoidHom_eq_coe, Algebra.smul_def, Ideal.Quotient.algebraMap_eq,
-            OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, map_mul,
+            OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_ofClass, map_mul,
             RingHom.id_apply, mul_eq_mul_right_iff, map_eq_zero]
           left
           rw [IsScalarTower.algebraMap_eq R (Localization qq.1.1.primeCompl) qq.1.1.ResidueField,
@@ -490,7 +490,7 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     injectiveDimension M = IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
   let := Module.Finite.equiv (Shrink.linearEquiv R R).symm
   have lttop := depth_ne_top (ModuleCat.of R (Shrink.{v} R))
-  rw [IsLocalRing.depth_eq_sSup_length_regular (ModuleCat.of R (Shrink.{v} R))] at lttop ⊢
+  rw [IsLocalRing.depth_eq_sSup_length_isRegular (ModuleCat.of R (Shrink.{v} R))] at lttop ⊢
   obtain ⟨rs, reg', mem, len⟩ := @ENat.sSup_mem_of_nonempty_of_lt_top _ (by
     use 0, []
     simpa using IsRegular.nil _ _) lttop.symm.lt_top'
@@ -551,12 +551,11 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     absurd not_nontrivial_iff_subsingleton.mpr sub
     have depth_zero : IsLocalRing.depth (ModuleCat.of R
       ((Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)))) = 0 := by
-      have := depth_quotient_regular_sequence_add_length_eq_depth (ModuleCat.of R (Shrink.{v} R))
-        rs reg'
-      rw [IsLocalRing.depth_eq_sSup_length_regular (ModuleCat.of R (Shrink.{v} R)), ← len] at this
+      have := depth_quotient_isRegular_add_length_eq_depth (ModuleCat.of R (Shrink.{v} R)) rs reg'
+      rw [IsLocalRing.depth_eq_sSup_length_isRegular (ModuleCat.of R (Shrink.{v} R)), ← len] at this
       nth_rw 2 [← zero_add (rs.length : ℕ∞)] at this
       exact (WithTop.add_right_inj (ENat.natCast_ne_top rs.length)).mp this
-    have := (moduleDepth_eq_zero_of_hom_nontrivial _ _).mp depth_zero
+    have := (depth_eq_zero_iff_nontrivial_linearMap _ _).mp depth_zero
     rcases (nontrivial_iff_exists_ne 0).mp this with ⟨f, hf⟩
     have injf : Function.Injective f := by
       rw [← LinearMap.ker_eq_bot, eq_bot_iff]
@@ -695,6 +694,8 @@ lemma quotient_regular_isGorenstein_iff_isGorenstein (rs : List R) (reg : IsRegu
         Ideal.Quotient.nontrivial_iff.mpr (by simpa using mem)
       have : IsLocalRing (R ⧸ Ideal.span {a}) :=
         IsLocalRing.of_surjective' (Ideal.Quotient.mk (Ideal.span {a})) Ideal.Quotient.mk_surjective
+      have : IsNoetherianRing (R ⧸ span {a}) :=
+        isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
       rw [quotient_span_regular_isGorenstein_iff_isGorenstein R a reg.1 mem,
         ih (R ⧸ Ideal.span {a}) _ reg.2 (by simp [h]), ← Ideal.map_ofList, Ideal.ofList_cons]
       let e' := DoubleQuot.quotQuotEquivQuotSup (Ideal.span {a}) (Ideal.ofList rs')

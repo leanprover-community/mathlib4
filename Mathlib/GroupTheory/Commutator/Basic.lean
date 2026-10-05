@@ -5,7 +5,6 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Algebra.Group.Commutator
 public import Mathlib.GroupTheory.Subgroup.Centralizer
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
@@ -97,7 +96,7 @@ theorem Commute.commutatorElement_pow_right {a b : G} (h : Commute b ⁅a, b⁆)
     ⁅a, b⁆ ^ n = ⁅a, b ^ n⁆ := by
   induction n with
   | zero => simp
-  | succ n ih => rw [pow_succ', pow_succ', commutatorElement_mul_right_eq_mul_conj, ←ih,
+  | succ n ih => rw [pow_succ', pow_succ', commutatorElement_mul_right_eq_mul_conj, ← ih,
         (h.pow_right n).right_comm, mul_inv_cancel_right]
 
 @[to_additive]
@@ -469,7 +468,7 @@ variable {G} in
 @[to_additive]
 lemma Subgroup.map_subtype_commutator (H : Subgroup G) :
     (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
-  rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
+  rw [_root_.commutator_def, map_commutator, Subgroup.map_top, H.range_subtype]
 
 variable {G} in
 @[to_additive]
@@ -573,6 +572,10 @@ theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} 
     rw [commutator_eq_closure]
     exact Subgroup.subset_closure (commutator_mem_commutatorSet x y)
 
+open IsMulCommutative in
+instance : IsMulCommutative (G ⧸ _root_.commutator G) :=
+  Subgroup.Normal.quotient_commutative_iff_commutator_le.mpr le_rfl
+
 /-- If `N` is a normal subgroup of `G` and `H` a commutative subgroup such that `H ⊔ N = ⊤`,
   then `N` contains `commutator G`. -/
 @[to_additive /-- If `N` is a normal additive subgroup of `G` and `H` a commutative additive
@@ -587,8 +590,8 @@ theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top {N : Subgro
   apply Function.Surjective.isMulCommutative (f := φ) _ hH
   -- We have to prove that `MonoidHom.range φ = ⊤`
   have : Subgroup.map (QuotientGroup.mk' N) ⊤ = ⊤ := by
-    rw [← MonoidHom.range_eq_map, MonoidHom.range_eq_top]
+    rw [Subgroup.map_top, MonoidHom.range_eq_top]
     exact QuotientGroup.mk'_surjective N
   rw [MulHom.coe_coe, ← MonoidHom.range_eq_top, MonoidHom.range_eq_map, ← Subgroup.map_map, ← this,
-    Subgroup.map_eq_map_iff, QuotientGroup.ker_mk', sup_comm, ← hHN, ← MonoidHom.range_eq_map]
+    Subgroup.map_eq_map_iff, QuotientGroup.ker_mk', sup_comm, ← hHN, Subgroup.map_top]
   simp

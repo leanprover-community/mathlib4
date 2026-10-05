@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Order.SetAccumulate
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.ContinuousOn
@@ -117,7 +116,7 @@ theorem IsCompact.image_of_continuousOn {f : X → Y} (hs : IsCompact s) (hf : C
   have := hx.neBot
   use f x, mem_image_of_mem f hxs
   have : Tendsto f (𝓝 x ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f x) ⊓ l) := by
-    convert! (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
+    convert (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
     rw [nhdsWithin]
     ac_rfl
   exact this.neBot
@@ -908,7 +907,7 @@ instance : NoncompactSpace ℤ :=
 -- Note: We can't make this into an instance because it loops with `Finite.compactSpace`.
 /-- A compact discrete space is finite. -/
 theorem finite_of_compact_of_discrete [CompactSpace X] [DiscreteTopology X] : Finite X :=
-  Finite.of_finite_univ <| isCompact_univ.finite_of_discrete
+  Finite.of_finite_univ isCompact_univ.finite_of_discrete
 
 lemma Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact
     {K : Set X} (hs : s.Infinite) (hK : IsCompact K) (hsub : s ⊆ K) :
@@ -1172,7 +1171,7 @@ theorem isCompact_pi_infinite {s : ∀ i, Set (X i)} :
 /-- **Tychonoff's theorem** formulated using `Set.pi`: product of compact sets is compact. -/
 theorem isCompact_univ_pi {s : ∀ i, Set (X i)} (h : ∀ i, IsCompact (s i)) :
     IsCompact (pi univ s) := by
-  convert! isCompact_pi_infinite h
+  convert isCompact_pi_infinite h
   simp only [← mem_univ_pi, ofPred_mem_eq]
 
 instance Pi.compactSpace [∀ i, CompactSpace (X i)] : CompactSpace (∀ i, X i) :=
