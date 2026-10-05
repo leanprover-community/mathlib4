@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Commute.Units
 public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Irreducible.Defs
 public import Mathlib.Algebra.Group.Units.Equiv

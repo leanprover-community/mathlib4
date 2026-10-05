@@ -6,8 +6,8 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Group.Prod
-public import Mathlib.Algebra.GroupWithZero.Commute
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!
@@ -59,15 +59,13 @@ variable (G₀ H₀ : Type*) [GroupWithZero G₀] [GroupWithZero H₀]
 `G₀` to `WithZero (G₀ˣ × H₀ˣ)`, which is the group with zero that can be identified
 as their product. -/
 def inl [DecidablePred fun x : G₀ ↦ x = 0] : G₀ →*₀ WithZero (G₀ˣ × H₀ˣ) :=
-  (WithZero.map' (.inl _ _)).comp
-    (.ofClass WithZero.withZeroUnitsEquiv.symm)
+  (WithZero.map' (.inl _ _)).comp (WithZero.withZeroUnitsEquiv (G := G₀).symm)
 
 /-- Given groups with zero `G₀`, `H₀`, the natural inclusion ordered homomorphism from
 `H₀` to `WithZero (G₀ˣ × H₀ˣ)`, which is the group with zero that can be identified
 as their product. -/
 def inr [DecidablePred fun x : H₀ ↦ x = 0] : H₀ →*₀ WithZero (G₀ˣ × H₀ˣ) :=
-  (WithZero.map' (.inr _ _)).comp
-    (.ofClass WithZero.withZeroUnitsEquiv.symm)
+  (WithZero.map' (.inr _ _)).comp (WithZero.withZeroUnitsEquiv (G := H₀).symm)
 
 /-- Given groups with zero `G₀`, `H₀`, the natural projection homomorphism from
 `WithZero (G₀ˣ × H₀ˣ)` to `G₀`, which is the group with zero that can be identified

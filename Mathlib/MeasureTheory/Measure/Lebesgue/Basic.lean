@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
-public import Mathlib.MeasureTheory.Group.LIntegral
+import Mathlib.MeasureTheory.Group.LIntegral
 public import Mathlib.MeasureTheory.Integral.Marginal
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
@@ -287,14 +287,14 @@ theorem volume_pi_le_prod_diam (s : Set (ι → ℝ)) :
       volume.mono <|
         Subset.trans (subset_pi_eval_image univ s) <| pi_mono fun _ _ => subset_closure
     _ = ∏ i, volume (closure <| Function.eval i '' s) := volume_pi_pi _
-    _ ≤ ∏ i : ι, ediam (Function.eval i '' s) :=
-      Finset.prod_le_prod' fun _ _ => (volume_le_diam _).trans_eq (ediam_closure _)
+    _ ≤ ∏ i : ι, ediam (Function.eval i '' s) := by
+      gcongr; exact (volume_le_diam _).trans_eq (ediam_closure _)
 
 theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ ediam s ^ Fintype.card ι :=
   calc
     volume s ≤ ∏ i : ι, ediam (Function.eval i '' s) := volume_pi_le_prod_diam s
-    _ ≤ ∏ _i : ι, (1 : ℝ≥0) * ediam s :=
-      (Finset.prod_le_prod' fun i _ => (LipschitzWith.eval i).ediam_image_le s)
+    _ ≤ ∏ _i : ι, (1 : ℝ≥0) * ediam s := by
+      gcongr with i; exact (LipschitzWith.eval i).ediam_image_le s
     _ = ediam s ^ Fintype.card ι := by
       simp only [ENNReal.coe_one, one_mul, Finset.prod_const, Fintype.card]
 
@@ -544,7 +544,7 @@ theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.
     simp only [regionBetween, mem_ofPred_eq, hp, hq]
   rw [lintegral_congr_ae h₁, ←
     volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
-  convert! h₂ using 1
+  convert h₂ using 1
   · rw [Measure.restrict_prod_eq_prod_univ]
     exact (Measure.restrict_eq_self _ (regionBetween_subset f g s)).symm
   · rw [Measure.restrict_prod_eq_prod_univ]

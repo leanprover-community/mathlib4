@@ -153,7 +153,7 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommS
       (_root_.trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
   · refine eval₂_mul_eq_zero_of_left _ _ _ ?_
     rw [eval₂_map, IsLocalization.map_comp, ← hom_eval₂ _ f (algebraMap S Sₘ) x]
-    exact _root_.trans (congr_arg (algebraMap S Sₘ) hf) (map_zero _)
+    exact _root_.trans congr(algebraMap S Sₘ $hf) (map_zero _)
 
 /-- Given a particular witness to an element being algebraic over an algebra `R → S`,
 We can localize to a submonoid containing the leading coefficient to make it integral.
@@ -181,7 +181,7 @@ theorem isIntegral_localization [Algebra.IsIntegral R S] :
   obtain ⟨v, hv⟩ := hu
   obtain ⟨v', hv'⟩ := isUnit_iff_exists_inv'.1 (map_units Rₘ ⟨v, hv.1⟩)
   refine @IsIntegral.of_mul_unit Rₘ _ _ _ (localizationAlgebra M S) x (algebraMap S Sₘ u) v' ?_ ?_
-  · replace hv' := congr_arg (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) hv'
+  · replace hv' := congr((@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) $hv')
     rw [map_mul, map_one, localizationAlgebraMap_def, IsLocalization.map_eq] at hv'
     exact hv.2 ▸ hv'
   · obtain ⟨p, hp⟩ := Algebra.IsIntegral.isIntegral (R := R) s
@@ -280,7 +280,7 @@ lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_mk'
     (hx : IsIntegral R (IsLocalization.mk' Sₘ x a)) : ∃ n, IsIntegral R (r ^ n * x) := by
   refine IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap (Sₘ := Sₘ) hr ?_
   obtain ⟨_, ⟨n, rfl⟩⟩ := a
-  convert! (hr.pow n).algebraMap.mul hx
+  convert (hr.pow n).algebraMap.mul hx
   exact (mk'_spec'_mk ..).symm
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -418,7 +418,7 @@ protected lemma IsLocalization.integralClosure
       (integralClosure Rf Sf) := by
   refine ⟨⟨?_, ?_, ?_⟩⟩
   · rintro ⟨_, f, hf, rfl⟩
-    convert!
+    convert
       (IsLocalization.map_units (S := Rf) ⟨f, hf⟩).map (algebraMap Rf (integralClosure Rf Sf))
     simp [← IsScalarTower.algebraMap_apply]
   · rintro ⟨s, hs⟩
@@ -451,7 +451,7 @@ protected lemma IsLocalization.Away.integralClosure
     [IsScalarTower (integralClosure R S) (integralClosure Rf Sf) Sf]
     [IsScalarTower R (integralClosure R S) (integralClosure Rf Sf)] :
     IsLocalization.Away (algebraMap R (integralClosure R S) f) (integralClosure Rf Sf) := by
-  convert! IsLocalization.integralClosure (S := S) (Rf := Rf) (Sf := Sf) (.powers f)
+  convert IsLocalization.integralClosure (S := S) (Rf := Rf) (Sf := Sf) (.powers f)
   simp
 
 end
