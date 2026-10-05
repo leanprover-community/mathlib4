@@ -26,10 +26,10 @@ example :
       σ := 1
       L := 1
       H := !![1, 2, 3; 4, 5, 6; 0, 7, 8]
-      similarity := by decide +kernel
-      L_lowerTriangular := by decide
-      L_diag_ne_zero := by decide
-      H_hessenberg := by decide
+      mul_eq_mul := by decide +kernel
+      isLowerTriangular := by decide
+      diag_ne_zero := by decide
+      isUpperHessenberg := by decide
 
 def certShear :
     let M : Matrix (Fin 3) (Fin 3) ℚ :=
@@ -40,10 +40,10 @@ def certShear :
       σ := 1
       L := !![1, 0, 0; 0, 1, 0; 0, 2, 1]
       H := !![1, 8, 3; 1, 3, 1; 0, -4, -1]
-      similarity := by decide +kernel
-      L_lowerTriangular := by decide
-      L_diag_ne_zero := by decide
-      H_hessenberg := by decide
+      mul_eq_mul := by decide +kernel
+      isLowerTriangular := by decide
+      diag_ne_zero := by decide
+      isUpperHessenberg := by decide
 
 example :
     let M : Matrix (Fin 3) (Fin 3) ℚ :=

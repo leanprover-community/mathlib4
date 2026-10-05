@@ -41,10 +41,10 @@ structure Similarity (A : Matrix m m R) where
   σ : Equiv.Perm m
   /-- The upper Hessenberg matrix. -/
   H : Matrix m m R
-  similarity : A.submatrix σ σ * L = L * H
-  L_lowerTriangular : L.IsLowerTriangular
-  L_diag_ne_zero (i : m) : L.diag i ≠ 0
-  H_hessenberg : H.IsUpperHessenberg
+  mul_eq_mul : A.submatrix σ σ * L = L * H
+  isLowerTriangular : L.IsLowerTriangular
+  diag_ne_zero (i : m) : L.diag i ≠ 0
+  isUpperHessenberg: H.IsUpperHessenberg
 
 theorem Similarity.charpoly_eq [IsDomain R] {A : Matrix m m R} (cert : Similarity A) :
     A.charpoly = cert.H.charpoly :=
@@ -52,7 +52,7 @@ theorem Similarity.charpoly_eq [IsDomain R] {A : Matrix m m R} (cert : Similarit
         (Matrix.charpoly_submatrix_equiv_self cert.σ A).symm
     _ = cert.H.charpoly :=
         Matrix.charpoly_eq_of_mul_eq_mul
-          (cert.L_lowerTriangular.det_ne_zero cert.L_diag_ne_zero) cert.similarity
+          (cert.isLowerTriangular.det_ne_zero cert.diag_ne_zero) cert.mul_eq_mul
 
 end Hessenberg
 
