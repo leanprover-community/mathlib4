@@ -50,11 +50,10 @@ local instance (f : AlgebraNorm K L) (x : L) : NormedAlgebra K (f.copy x) where
 /-- Uniqueness of power-multiplicative norms over complete normed fields. -/
 public theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
     (hf_pm : IsPowMul f) (hg_pm : IsPowMul g) : f = g := by
-  apply eq_of_powMul_faithful f hf_pm g hg_pm
-  intro x
+  refine eq_of_powMul_faithful f hf_pm g hg_pm fun x ↦ ?_
   let T₀ : g.copy x ≃ₗ[K] f.copy x := LinearEquiv.refl K K⟮x⟯
   let T : g.copy x ≃L[K] f.copy x := T₀.toContinuousLinearEquiv
   obtain ⟨C1, h1_pos, h1⟩ := T.symm.toContinuousLinearMap.bound
   obtain ⟨C2, h2_pos, h2⟩ := T.toContinuousLinearMap.bound
   exact ⟨C2, C1, h2_pos, h1_pos, forall_and.mpr ⟨fun y ↦ h2 ⟨y, algebra_adjoin_le_adjoin K _ y.2⟩,
-      fun y ↦ h1 ⟨y, algebra_adjoin_le_adjoin K _ y.2⟩⟩⟩
+    fun y ↦ h1 ⟨y, algebra_adjoin_le_adjoin K _ y.2⟩⟩⟩
