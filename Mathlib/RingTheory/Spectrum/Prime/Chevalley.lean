@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.FiniteStability
+import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 
@@ -80,7 +80,7 @@ theorem isOpenMap_comap_algebraMap_tensorProduct_of_field
   obtain ⟨B', hB, f, rfl⟩ := exists_fg_and_mem_baseChange f
   have : Algebra.FinitePresentation K B' :=
     Algebra.FinitePresentation.of_finiteType.mp ⟨B'.fg_top.mpr hB⟩
-  convert!
+  convert
     isOpenMap_comap_of_hasGoingDown_of_finitePresentation (R := A) (S := A ⊗[K] B') _
       (basicOpen f).isOpen using 1
   ext x
