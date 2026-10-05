@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.Finset.Attr
 public import Mathlib.Order.Interval.Set.Defs
+
+import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.SetLike
 

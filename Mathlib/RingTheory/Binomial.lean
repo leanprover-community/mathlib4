@@ -10,10 +10,11 @@ public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Algebra.Polynomial.Smeval
 public import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Module
+
+import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Binomial rings
