@@ -8,43 +8,59 @@ module
 public import Mathlib
 
 /-!
-# Polylog
+# Polylogarithm
+
+We define the polylogarithm `Li_s(z)`, and relate it to its integral representation and to
+its power series. The function `Complex.polylog` defined below has a
+junk value (`Classical.choice ‹Nonempty ℂ›`) when `z = 1` and `s.re ≤ 1`.
+When `z ∈ Ici 1 ×ℂ {0}`, it takes the limit from the lower half-plane.
 
 ## Main definitions
 
-* `FooBar`
+* `Complex.polylogKernel`: the integrand `polylogKernel z t = z / (cexp t - z)`.
+* `Complex.polylogIntegral`: the integral representation
+  `polylogIntegral s z = 1 / Gamma s * mellin (polylogKernel z) s`
+* `Complex.polylogSeries`: the power series `polylogSeries s z = ∑' n, z ^ (n + 1) / (n + 1) ^ s`.
+* `Complex.polylog`: the polylogarithm `Li_ s z`.
 
 ## Main statements
 
-* `fooBar_unique`
+* `Complex.polylog_eq_polylogSeries`: `Li_ s z = polylogSeries s z` for `‖z‖ < 1`.
+* `Complex.summable_polylogSeries_of_norm_lt` and `Complex.summable_polylogSeries_of_norm_le`:
+  the defining series is summable for `‖z‖ < 1`, respectively for `‖z‖ ≤ 1` when `1 < s.re`.
+* `Complex.polylog_eq_polylogIntegral`: `Li_ s z = polylogIntegral s z` for `0 < s.re` and `z`
+  off the branch cut.
+* `Complex.mul_deriv_polylog_add_one`: the recurrence `z * deriv (Li_ (s + 1) ·) z = Li_ s z`, for
+  `z` off the branch cut.
+* `Complex.analyticOnNhd_polylog_right`: `Li_ s` is analytic on the complement of the branch cut.
 
 ## Notation
 
+The following notation is localized in `ComplexPolylog`:
 
+* `Li_ s z` is `Complex.polylog s z` i.e. $\operatorname{Li}_s(z)$.
 
-## Implementation details
-
-
+Use `open scoped ComplexPolylog` to use this.
 
 ## References
 
-* [F. Bar, *Quuxes*][bibkey]
+* <https://dlmf.nist.gov/25.12>
 
 ## Tags
 
-Foobars, barfoos
+polylogarithm
+
+## TODO
+
++ prove `Complex.analyticOnNhd_polylog_left`: `Li_ · z` is analytic on all of `ℂ` for `z ≠ 1`
++ prove `Complex.polylog_one_eq_riemannZeta`: `Li_ s 1 = ζ s` for `1 < s.re`
++ prove some formulas and special values
+
 -/
 
 public noncomputable section
 
 open Set Real Filter Topology MeasureTheory Asymptotics
-
-theorem Filter.EventuallyEq.limUnder_eq
-    {X Y : Type*} [TopologicalSpace Y] [Nonempty Y] {f g : X -> Y} {L : Filter X}
-    (hL : f =ᶠ[L] g) : L.limUnder f = L.limUnder g :=
-  congr(lim $(map_congr hL))
--- it says [Mathlib.Topology.Defs.Ultrafilter, Mathlib.Topology.Closure]
--- #find_home Filter.EventuallyEq.limUnder_eq
 
 namespace Complex
 
@@ -62,7 +78,11 @@ private lemma exp_sub_ne_zero (ht : 0 ≤ t) (hz : z ∉ Ici 1 ×ℂ {0}) :
   intro nh
   simp [← sub_eq_zero.mp nh, mem_reProdIm, exp_ofReal_re, ht.not_gt] at hz
 
-/-- TODO: doc -/
+section PolylogKernel
+
+/-- The kernel `z / (cexp t - z)` of the Mellin transform used in the integral representation of
+the polylogarithm. For `z` off the branch cut `Ici 1 ×ℂ {0}` the function `polylogKernel z` is
+analytic on `Ici 0`, and it is `O (rexp (-t))` at `t → +∞`. -/
 @[expose, pp_nodot] def polylogKernel (z : ℂ) (t : ℝ) : ℂ :=
   z / (cexp t - z)
 
@@ -136,15 +156,20 @@ private theorem polylogKernel_eq_tsum (ht : 0 < t) (hz : ‖z‖ < 1) :
   simp [exp_neg, field]
   rfl
 
+end PolylogKernel
+
 section Recurrence
 
-/-- TODO: doc -/
-@[expose, pp_nodot] def polylogIntegral (s z : ℂ) : ℂ :=
+/-- The integral representation of the polylogarithm,
+$$ \operatorname{Li}_s(z) = \dfrac{1}{\Gamma(s)}
+\int_0^\infty t^{s-1}\dfrac{z}{e^t - z} \mathrm{d}t $$
+It is valid for `0 < s.re` when `z` is off the branch cut `Ici 1 ×ℂ {0}`,
+and also for `z = 1` when `1 < s.re`. -/
+@[expose, pp_nodot, dlmf 25.12.11] def polylogIntegral (s z : ℂ) : ℂ :=
   1 / Gamma s * mellin (polylogKernel z) s
 
 private theorem polylogIntegral_and (hs : 0 < s.re) (hz : z ∉ Ici 1 ×ℂ {0}) :
-    MellinConvergent (polylogKernel z) s ∧
-      DifferentiableAt ℂ (polylogIntegral · z) s := by
+    MellinConvergent (polylogKernel z) s ∧ DifferentiableAt ℂ (polylogIntegral · z) s := by
   have hiker : LocallyIntegrableOn (polylogKernel z) (Ioi 0) := by
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
     refine continuousOn_of_forall_continuousAt fun t ht =>
@@ -339,10 +364,9 @@ theorem mul_deriv_polylogIntegral_add_one (hs : 0 < s.re) (hz : z ∉ Ici 1 ×�
     _ = ∫ t : ℝ in Ioi 0, polylogKernel z t * (s * t ^ (s - 1)) :=
       setIntegral_congr_fun measurableSet_Ioi fun t ht =>
         congrArg _ <| deriv_ofReal_cpow_const ht.ne' hs₀
-    _ = ∫ t : ℝ in Ioi 0, s * t ^ (s - 1) * polylogKernel z t := by ac_rfl
+    _ = ∫ t : ℝ in Ioi 0, s * (t ^ (s - 1) * polylogKernel z t) := by ac_rfl
     _ = s * ∫ t : ℝ in Ioi 0, t ^ (s - 1) * polylogKernel z t := by
       rw [← integral_const_mul]
-      ac_rfl
 
 theorem analyticOnNhd_polylogIntegral_right (hs : 0 < s.re) :
     AnalyticOnNhd ℂ (polylogIntegral s ·) (Ici 1 ×ℂ {0})ᶜ :=
@@ -360,20 +384,26 @@ end Recurrence
 
 section PolylogDef
 
-/-- TODO: doc -/
+/-- The `n`-th function in this family is `Li_ s z` off the branch cut if `-n < s.re` -/
 private def polylogAux1 : ℕ -> ℂ -> ℂ -> ℂ
   | 0 => polylogIntegral
   | n + 1 => fun s z : ℂ => z * deriv (polylogAux1 n (s + 1)) z
 
-/-- TODO: doc -/
+/-- The polylogarithm as a function of `z` off the branch cut, for all complex `s` -/
 private def polylogAux2 (s z : ℂ) : ℂ :=
   polylogAux1 ⌊1 - s.re⌋₊ s z
 
 open Classical in
-/-- TODO: doc -/
-@[irreducible, pp_nodot] def polylog (s z : ℂ) : ℂ :=
+/-- The polylogarithm function $\operatorname{Li}_s(z)$ -/
+@[irreducible, pp_nodot, wikidata Q1238449, dlmf 25.12]
+def polylog (s z : ℂ) : ℂ :=
   if z ∉ Ici 1 ×ℂ {0} then polylogAux2 s z else
     limUnder (𝓝[{ z : ℂ | z.im < 0 }] z) (polylogAux2 s)
+
+@[inherit_doc] scoped[ComplexPolylog] notation "Li_ " => Complex.polylog
+recommended_spelling "polylog" for "Li_" in [polylog, ComplexPolylog.«termLi_»]
+
+open scoped ComplexPolylog
 
 private theorem polylogAux1_zero : polylogAux1 0 = polylogIntegral := rfl
 
@@ -387,18 +417,13 @@ private theorem polylog_of_notMem (hz : z ∉ Ici 1 ×ℂ {0}) : polylog s z = p
   simp [polylog, hz]
 
 private theorem deriv_polylog_of_notMem (hz : z ∉ Ici 1 ×ℂ {0}) :
-    deriv (polylog s) z = deriv (polylogAux2 s) z := by
+    deriv (Li_ s) z = deriv (polylogAux2 s) z := by
   apply EventuallyEq.deriv_eq
   filter_upwards [isClosed_Ici_one_reProdIm.compl_mem_nhds hz]
     with z hz using polylog_of_notMem hz
 
--- main property theorem
--- TODO: for `s` a non-positive integers i.e. `{..., -3, -2, -1, 0}`,
--- there is no branch cut but only a pole `z = 1` and `Li_s` is a rational function
--- so we can prove this under `hs : s ∈ {..., -2, -1}` and `hz : z ≠ 1`,
--- call it `mul_deriv_polylog_add_one'`?
 theorem mul_deriv_polylog_add_one (hz : z ∉ Ici 1 ×ℂ {0}) :
-    z * deriv (polylog (s + 1)) z = polylog s z := by
+    z * deriv (Li_ (s + 1)) z = Li_ s z := by
   rw [polylog_of_notMem hz, deriv_polylog_of_notMem hz]
   unfold polylogAux2
   by_cases hs : 0 < s.re
@@ -410,13 +435,13 @@ theorem mul_deriv_polylog_add_one (hz : z ∉ Ici 1 ×ℂ {0}) :
     rw [← Nat.floor_add_one] <;> simp_all [neg_add_eq_sub]
 
 theorem limUnder_nhdsWithin_im_neg_polylog (hz : z ∈ Ici 1 ×ℂ {0}) :
-    limUnder (𝓝[{ z : ℂ | z.im < 0 }] z) (polylog s) = polylog s z := by
+    limUnder (𝓝[{ z : ℂ | z.im < 0 }] z) (Li_ s) = Li_ s z := by
   unfold polylog
   simp only [hz, not_true_eq_false, ↓reduceIte]
   apply EventuallyEq.limUnder_eq
   filter_upwards [self_mem_nhdsWithin] with w hw using ite_eq_left <| by grind [mem_reProdIm]
 
-theorem analyticOnNhd_polylog_right : AnalyticOnNhd ℂ (polylog s) (Ici 1 ×ℂ {0})ᶜ := by
+theorem analyticOnNhd_polylog_right : AnalyticOnNhd ℂ (Li_ s) (Ici 1 ×ℂ {0})ᶜ := by
   have (n : ℕ) (s : ℂ) (hs : 0 < (s + n).re) :
       AnalyticOnNhd ℂ (polylogAux1 n s) (Ici 1 ×ℂ {0})ᶜ := by
     induction n generalizing s with
@@ -430,18 +455,14 @@ theorem analyticOnNhd_polylog_right : AnalyticOnNhd ℂ (polylog s) (Ici 1 ×ℂ
   · unfold polylog
     exact (ite_eq_left hz).symm
 
--- theorem analyticOn_polylog_right' (hs : ∃ n : ℕ, s = -n) : AnalyticOn ℂ (polylog s) ({1})ᶜ :=
---   sorry
+section
 
--- theorem analyticOnNhd_polylog_left (hz : z ≠ 1) : AnalyticOnNhd ℂ (polylog · z) univ :=
---   sorry
+/-- The polylogarithm series $\sum_{n}^{\infty} \frac{z^n}{n^s}$.
+For `‖z‖ < 1` it converges absolutely for all complex `s` and equals the polylogarithm.
+For `‖z‖ ≤ 1`, absolute convergence requires `1 < s.re`.
 
--- theorem analyticOn_polylog_left' : AnalyticOn ℂ (polylog · 1) { s : ℂ | 1 < s.re } :=
---   sorry
-
-section TransferToSeries
-
-/-- TODO: doc -/
+See also `polylog_eq_polylogSeries` and `summable_polylogSeries_of_norm_le`. -/
+@[dlmf 25.12.10]
 def polylogSeries (s z : ℂ) : ℂ :=
   ∑' n : ℕ, z ^ (n + 1) / (n + 1) ^ s
 
@@ -470,6 +491,56 @@ theorem summable_polylogSeries_of_norm_le (hs : 1 < s.re) (hz : ‖z‖ ≤ 1) :
   apply (summable_nat_add_iff 1 |>.mpr <| summable_nat_rpow_inv.mpr hs).of_norm_bounded fun n => ?_
   grw [norm_div, norm_pow, ← n.cast_add_one, ← ofReal_natCast (n + 1),
     norm_cpow_eq_rpow_re_of_pos (mod_cast n.add_one_pos) s, inv_eq_one_div, hz, one_pow]
+
+private lemma polylogIntegral_eq_polylogSeries_aux (hs : 0 < s.re) (hz : ‖z‖ < 1) :
+    ∑' n : ℕ, ∫ t : ℝ in Ioi 0, z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1))) =
+      ∫ t : ℝ in Ioi 0, ∑' n : ℕ, z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1))) := by
+  have hi (c : ℝ) : IntegrableOn (fun t => c * (rexp (-t) * t ^ (s.re - 1))) (Ioi 0) :=
+    Real.GammaIntegral_convergent hs |>.const_mul c
+  have hbdd (n : ℕ) : ∀ t ∈ Ioi (0 : ℝ), ‖z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1)))‖ ≤
+      ‖z‖ ^ (n + 1) * (rexp (-t) * t ^ (s.re - 1)) := fun t (ht : 0 < t) => by
+    suffices ‖z‖ ^ (n + 1) * (t ^ (s.re - 1) * rexp (-(t * (n + 1)))) ≤
+        ‖z‖ ^ (n + 1) * (t ^ (s.re - 1) * rexp (-t)) by
+      simpa [norm_cpow_eq_rpow_re_of_pos ht, norm_exp, mul_comm]
+    gcongr
+    nlinarith
+  have hi' (n : ℕ) : IntegrableOn
+      (fun t : ℝ => z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1)))) (Ioi 0) := by
+    apply (hi (‖z‖ ^ (n + 1))).mono' (ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi) ?_
+    · apply ContinuousOn.const_mul (b := _) <| continuousOn_of_forall_continuousAt fun t ht =>
+        (continuousAt_ofReal_cpow_const t (s - 1) <| Or.inr ht.ne').mul ?_
+      fun_prop
+    · exact ae_restrict_iff' measurableSet_Ioi |>.mpr <| .of_forall (hbdd n)
+  refine integral_tsum_of_summable_integral_norm hi' ?_
+  apply Summable.of_nonneg_of_le (fun n => integral_nonneg fun t => norm_nonneg _) (fun n => ?_) <|
+    (summable_geometric_of_lt_one (norm_nonneg z) hz).mul_right (‖z‖ * Real.Gamma s.re)
+  apply (setIntegral_mono_on (hi' n).norm (hi _) measurableSet_Ioi (hbdd n)).trans_eq
+  rw [integral_const_mul, ← Real.Gamma_eq_integral hs]
+  ring
+
+theorem polylogIntegral_eq_polylogSeries (hs : 0 < s.re) (hz : ‖z‖ < 1) :
+    polylogIntegral s z = polylogSeries s z := calc
+  1 / Gamma s * ∫ t : ℝ in Ioi 0, t ^ (s - 1) * polylogKernel z t
+    = 1 / Gamma s * ∫ t : ℝ in Ioi 0, ∑' n : ℕ,
+      t ^ (s - 1) * (z ^ (n + 1) * cexp (-t * (n + 1))) := by
+    refine congrArg _ <| setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
+    rw [tsum_mul_left, polylogKernel_eq_tsum ht hz]
+  _ = 1 / Gamma s * ∫ t : ℝ in Ioi 0, ∑' n : ℕ,
+      z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1))) := by ac_rfl
+  _ = 1 / Gamma s * ∑' n : ℕ, ∫ t : ℝ in Ioi 0,
+      z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1))) :=
+    congrArg _ <| polylogIntegral_eq_polylogSeries_aux hs hz |>.symm
+  _ = ∑' n : ℕ, z ^ (n + 1) * 1 / Gamma s * ∫ t : ℝ in Ioi 0,
+      t ^ (s - 1) * cexp (-t * (n + 1)) := by
+    simp_rw [← tsum_mul_left, ← integral_const_mul]
+    ring_nf
+  _ = ∑' n : ℕ, z ^ (n + 1) * 1 / Gamma s * (Gamma s / (n + 1) ^ s) := tsum_congr fun n => by
+    congr 1
+    have hn : (0 : ℝ) < n + 1 := mod_cast Nat.zero_lt_succ n
+    simpa [field, arg_eq_pi_iff, hn.not_gt, mul_comm, inv_cpow_eq_ite] using
+      integral_cpow_mul_exp_neg_mul_Ioi hs hn
+  _ = ∑' n : ℕ, z ^ (n + 1) / (n + 1) ^ s := by
+    field_simp [Gamma_ne_zero_of_re_pos hs]
 
 private lemma mul_deriv_polylogSeries_add_one_aux (hz : ‖z‖ < 1) :
     deriv (fun z : ℂ => ∑' n : ℕ, z ^ (n + 1) / (n + 1) ^ (s + 1)) z =
@@ -509,72 +580,15 @@ theorem mul_deriv_polylogSeries_add_one (hz : ‖z‖ < 1) :
     simp [field, cpow_add (x := n + 1) _ _ (mod_cast by simp), cpow_one]
     ring
 
-private lemma polylogIntegral_eq_polylogSeries_aux (hs : 0 < s.re) (hz : ‖z‖ < 1) :
-    ∑' n : ℕ, ∫ t : ℝ in Ioi 0, z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1))) =
-      ∫ t : ℝ in Ioi 0, ∑' n : ℕ, z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1))) := by
-  have hi (c : ℝ) : IntegrableOn (fun t => c * (rexp (-t) * t ^ (s.re - 1))) (Ioi 0) :=
-    Real.GammaIntegral_convergent hs |>.const_mul c
-  have hbdd (n : ℕ) : ∀ t ∈ Ioi (0 : ℝ), ‖z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1)))‖ ≤
-      ‖z‖ ^ (n + 1) * (rexp (-t) * t ^ (s.re - 1)) := fun t (ht : 0 < t) => by
-    suffices ‖z‖ ^ (n + 1) * (t ^ (s.re - 1) * rexp (-(t * (n + 1)))) ≤
-        ‖z‖ ^ (n + 1) * (t ^ (s.re - 1) * rexp (-t)) by
-      simpa [norm_cpow_eq_rpow_re_of_pos ht, norm_exp, mul_comm]
-    gcongr
-    nlinarith
-  have hi' (n : ℕ) : IntegrableOn
-      (fun t : ℝ => z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1)))) (Ioi 0) := by
-    apply (hi (‖z‖ ^ (n + 1))).mono' (ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi) ?_
-    · apply ContinuousOn.const_mul (b := _) <| continuousOn_of_forall_continuousAt fun t ht =>
-        (continuousAt_ofReal_cpow_const t (s - 1) <| Or.inr ht.ne').mul ?_
-      fun_prop
-    · exact ae_restrict_iff' measurableSet_Ioi |>.mpr <| .of_forall (hbdd n)
-  refine integral_tsum_of_summable_integral_norm hi' ?_
-  apply Summable.of_nonneg_of_le (fun n => integral_nonneg fun t => norm_nonneg _) (fun n => ?_) <|
-    (summable_geometric_of_lt_one (norm_nonneg z) hz).mul_right (‖z‖ * Real.Gamma s.re)
-  apply (setIntegral_mono_on (hi' n).norm (hi _) measurableSet_Ioi (hbdd n)).trans_eq
-  rw [integral_const_mul, ← Real.Gamma_eq_integral hs]
-  ring
-
--- main auxiliary theorem
-/-- TODO: doc -/
-theorem polylogIntegral_eq_polylogSeries (hs : 0 < s.re) (hz : ‖z‖ < 1) :
-    polylogIntegral s z = polylogSeries s z := calc
-  1 / Gamma s * ∫ t : ℝ in Ioi 0, t ^ (s - 1) * polylogKernel z t
-    = 1 / Gamma s * ∫ t : ℝ in Ioi 0, ∑' n : ℕ,
-      t ^ (s - 1) * (z ^ (n + 1) * cexp (-t * (n + 1))) := by
-    refine congrArg _ <| setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
-    rw [tsum_mul_left, polylogKernel_eq_tsum ht hz]
-  _ = 1 / Gamma s * ∫ t : ℝ in Ioi 0, ∑' n : ℕ,
-      z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1))) := by ac_rfl
-  _ = 1 / Gamma s * ∑' n : ℕ, ∫ t : ℝ in Ioi 0,
-      z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1))) :=
-    congrArg _ <| polylogIntegral_eq_polylogSeries_aux hs hz |>.symm
-  _ = ∑' n : ℕ, z ^ (n + 1) * 1 / Gamma s * ∫ t : ℝ in Ioi 0,
-      t ^ (s - 1) * cexp (-t * (n + 1)) := by
-    simp_rw [← tsum_mul_left, ← integral_const_mul]
-    ring_nf
-  _ = ∑' n : ℕ, z ^ (n + 1) * 1 / Gamma s * (Gamma s / (n + 1) ^ s) := tsum_congr fun n => by
-    congr 1
-    have hn : (0 : ℝ) < n + 1 := mod_cast Nat.zero_lt_succ n
-    simpa [field, arg_eq_pi_iff, hn.not_gt, mul_comm, inv_cpow_eq_ite] using
-      integral_cpow_mul_exp_neg_mul_Ioi hs hn
-  _ = ∑' n : ℕ, z ^ (n + 1) / (n + 1) ^ s := by
-    field_simp [Gamma_ne_zero_of_re_pos hs]
-
--- main theorem
-/-- TODO: doc -/
+/-- The polylogarithm equals its integral representation
+when `hs : 0 < s.re` and `z` is off the branch cut. -/
 theorem polylog_eq_polylogIntegral (hs : 0 < s.re) (hz : z ∉ Ici 1 ×ℂ {0}) :
-    polylog s z = polylogIntegral s z := by
+    Li_ s z = polylogIntegral s z := by
   rw [polylog_of_notMem hz, polylogAux2_of_re_pos hs]
 
--- theorem polylog_eq_polylogIntegral' (hs : 1 < s.re) :
---     polylog s 1 = polylogIntegral s 1 := by
---   sorry
-
--- main theorem
-/-- TODO: doc -/
+/-- The polylogarithm equals its series representation in the unit disc `‖z‖ < 1` -/
 theorem polylog_eq_polylogSeries (hz : ‖z‖ < 1) :
-    polylog s z = polylogSeries s z := by
+    Li_ s z = polylogSeries s z := by
   revert z
   suffices ∀ z, ‖z‖ < 1 -> polylog (s + ⌊1 - s.re⌋₊) z = polylogSeries (s + ⌊1 - s.re⌋₊) z by
     generalize ⌊1 - s.re⌋₊ = n at *
@@ -594,34 +608,21 @@ theorem polylog_eq_polylogSeries (hz : ‖z‖ < 1) :
   simp only [add_re, natCast_re]
   linarith [Nat.lt_floor_add_one (1 - s.re)]
 
--- theorem polylog_eq_polylogSeries' (hs : 1 < s.re) (hz : ‖z‖ ≤ 1) :
---     polylog s z = polylogSeries s z := by
---   sorry
-
--- theorem polylog_one_eq_riemannZeta (hs : 1 < s.re) :
---     polylog s 1 = riemannZeta s := by
---   sorry
-
 theorem polylog_eq_tsum_pnat (hz : ‖z‖ < 1) :
-    polylog s z = ∑' n : ℕ+, z ^ n.val / n ^ s := by
+    Li_ s z = ∑' n : ℕ+, z ^ n.val / n ^ s := by
   simp [polylog_eq_polylogSeries hz, tsum_pnat_eq_tsum_succ (f := fun n : ℕ => z ^ n / n ^ s)]
   rfl
 
-theorem hasSum_polylog (hz : ‖z‖ < 1) :
+theorem hasSum_polylog_of_norm_lt (hz : ‖z‖ < 1) :
     HasSum (fun n : ℕ => z ^ (n + 1) / (n + 1) ^ s) (polylog s z) :=
   summable_polylogSeries_of_norm_lt hz |>.hasSum_iff.mpr <| polylog_eq_polylogSeries hz |>.symm
 
 @[simp]
-theorem polylog_zero_right : polylog s 0 = 0 := by
+theorem polylog_zero_right : Li_ s 0 = 0 := by
   simp [polylog_eq_polylogSeries, polylogSeries]
 
-end TransferToSeries
+end
 
 end PolylogDef
 
--- theorem polylog_zero_left : polylog 0 z = z / (1 - z) := by
---   sorry
-
 end Complex
-
-#lint
