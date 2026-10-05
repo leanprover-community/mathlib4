@@ -6,6 +6,7 @@ Authors: Moritz Doll, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.Algebra.FilterBasis
@@ -1085,13 +1086,26 @@ theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : 
     rcases hs with ⟨I, r, _, rfl⟩
     exact convex_ball _ _ _
 
-/-- A `PolynormableSpace` over `ℝ` is locally convex.
-
-TODO: generalize to `RCLike`. -/
-instance (priority := low) [PolynormableSpace ℝ E] : LocallyConvexSpace ℝ E :=
-  PolynormableSpace.withSeminorms ℝ E |>.toLocallyConvexSpace
-
 end LocallyConvexSpace
+
+section RCLike
+
+open LocallyConvexSpace
+open scoped ComplexOrder
+
+variable [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E] [Module ℝ E]
+  [IsScalarTower ℝ 𝕜 E] [TopologicalSpace E]
+
+/-- A `PolynormableSpace` over a real or complex field is locally convex. -/
+instance (priority := low) [PolynormableSpace 𝕜 E] : LocallyConvexSpace 𝕜 E := by
+  have hp := PolynormableSpace.withSeminorms 𝕜 E
+  have : IsTopologicalAddGroup E := hp.isTopologicalAddGroup
+  have : LocallyConvexSpace ℝ E := hp.toLocallyConvexSpace
+  apply ofBasisZero 𝕜 E id (fun s ↦ s ∈ 𝓝 0 ∧ Convex ℝ s) (convex_basis_zero ℝ E)
+  exact fun s hs ↦ convex_of_nonneg_surjective_algebraMap 𝕜
+    (fun _ ↦ RCLike.nonneg_iff_exists_ofReal.mp) hs.2
+
+end RCLike
 
 section NormedSpace
 
