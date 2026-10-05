@@ -6,7 +6,6 @@ Authors: Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-public import Mathlib.Tactic.CategoryTheory.Slice
 public import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!

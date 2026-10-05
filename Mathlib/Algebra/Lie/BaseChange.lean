@@ -63,18 +63,15 @@ theorem bracket_tmul (s t : A) (x : L) (y : M) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y
 set_option backward.privateInPublic true in
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
   simp only [bracket_def]
-  refine x.induction_on ?_ ?_ ?_
-  · simp only [map_zero]
+  refine x.inductionOn ?_ ?_
   · intro a l
     simp only [bracket'_tmul, TensorProduct.tmul_zero, lie_self]
   · intro z₁ z₂ h₁ h₂
     suffices bracket' R A L L z₁ z₂ + bracket' R A L L z₂ z₁ = 0 by
       rw [map_add, map_add, LinearMap.add_apply, LinearMap.add_apply, h₁, h₂,
         zero_add, add_zero, add_comm, this]
-    refine z₁.induction_on ?_ ?_ ?_
-    · simp only [map_zero, add_zero, LinearMap.zero_apply]
-    · intro a₁ l₁; refine z₂.induction_on ?_ ?_ ?_
-      · simp only [map_zero, add_zero, LinearMap.zero_apply]
+    refine z₁.inductionOn ?_ ?_
+    · intro a₁ l₁; refine z₂.inductionOn ?_ ?_
       · intro a₂ l₂
         simp only [← lie_skew l₂ l₁, mul_comm a₁ a₂, TensorProduct.tmul_neg, bracket'_tmul,
           add_neg_cancel]
@@ -87,14 +84,11 @@ set_option backward.privateInPublic true in
 private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
   simp only [bracket_def]
-  refine x.induction_on ?_ ?_ ?_
-  · simp only [map_zero, add_zero, LinearMap.zero_apply]
+  refine x.inductionOn ?_ ?_
   · intro a₁ l₁
-    refine y.induction_on ?_ ?_ ?_
-    · simp only [map_zero, add_zero, LinearMap.zero_apply]
+    refine y.inductionOn ?_ ?_
     · intro a₂ l₂
-      refine z.induction_on ?_ ?_ ?_
-      · simp only [map_zero, add_zero]
+      refine z.inductionOn ?_ ?_
       · intro a₃ l₃; simp only [bracket'_tmul]
         rw [mul_left_comm a₂ a₁ a₃, mul_assoc, leibniz_lie, TensorProduct.tmul_add]
       · grind
@@ -131,11 +125,11 @@ def map {R A B L L' : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B
   { TensorProduct.map f.toLinearMap g with
     map_lie' {x y} := by
       simp only [bracket_def, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
-      refine x.induction_on (by simp) ?_ ?_
+      refine x.inductionOn ?_ ?_
       · intro _ _
-        refine y.induction_on (by simp) (fun _ _ ↦ by simp) (fun _ _ h1 h2 ↦ by simp [h1, h2])
+        refine y.inductionOn (fun _ _ ↦ by simp) (fun _ _ h1 h2 ↦ by simp [h1, h2])
       · intro _ _
-        refine y.induction_on (by simp) (fun _ _ h ↦ by simp [h]) (by simp_all) }
+        refine y.inductionOn (fun _ _ h ↦ by simp [h]) (by simp_all) }
 
 @[simp]
 lemma map_apply_tmul {R A B L L' : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B]
@@ -195,7 +189,7 @@ def baseChange : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
       rw [Submodule.mem_carrier, SetLike.mem_coe] at hm ⊢
       rw [Submodule.baseChange_eq_span] at hm
       obtain ⟨c, rfl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp hm
-      refine x.induction_on (by simp) (fun a y ↦ ?_) (fun y z hy hz ↦ ?_)
+      refine x.inductionOn (fun a y ↦ ?_) (fun y z hy hz ↦ ?_)
       · change toEnd A (A ⊗[R] L) (A ⊗[R] M) _ _ ∈ _
         simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum, map_smul, toEnd_apply_apply]
         refine Submodule.sum_mem _ fun ⟨_, n, hn, h⟩ _ ↦ Submodule.smul_mem _ _ ?_

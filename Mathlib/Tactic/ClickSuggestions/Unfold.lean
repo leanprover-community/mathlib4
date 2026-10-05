@@ -5,8 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.NthRewrite
-public import ProofWidgets.Component.Basic
+import ProofWidgets.Component.Basic
 public import Mathlib.Tactic.ClickSuggestions.Util
 
 /-!
@@ -92,8 +91,6 @@ where
           return ← go e (acc.push e)
         if let some e ← reduceNat? e then
           return acc.push e
-        if let some e ← reduceNative? e then
-          return acc.push e
         if let some e ← unfoldProjDefaultInst? e then
           -- when unfolding a default instance, don't add it to the array of unfolds.
           let e ← whnfCore e
@@ -144,7 +141,7 @@ public def suggestUnfold (e : Expr) (rwKind : RwKind) :
     let tactic ← tacticSyntax e unfold rwKind
     mkSuggestion tactic (← exprToHtml unfold)
   return <details>
-    <summary className="mv2 pointer"> unfold ({← exprToHtml e}) </summary>
+    <summary className="mv2 pointer"> unfold </summary>
     {.element "div" #[] htmls}
   </details>
 

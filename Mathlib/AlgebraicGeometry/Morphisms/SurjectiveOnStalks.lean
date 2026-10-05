@@ -7,8 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 public import Mathlib.RingTheory.RingHom.Surjective
-public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
-public import Mathlib.Topology.LocalAtTarget
+import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 
 /-!
 # Morphisms surjective on stalks

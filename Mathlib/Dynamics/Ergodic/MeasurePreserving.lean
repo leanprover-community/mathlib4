@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.AEMeasurable
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
@@ -121,13 +121,13 @@ protected theorem trans {e : α ≃ᵐ β} {e' : β ≃ᵐ γ}
 protected theorem comp_left_iff {g : α → β} {e : β ≃ᵐ γ} (h : MeasurePreserving e μb μc) :
     MeasurePreserving (e ∘ g) μa μc ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => h.comp hg⟩
-  convert! (MeasurePreserving.symm e h).comp hg
+  convert (MeasurePreserving.symm e h).comp hg
   simp [← Function.comp_assoc e.symm e g]
 
 protected theorem comp_right_iff {g : α → β} {e : γ ≃ᵐ α} (h : MeasurePreserving e μc μa) :
     MeasurePreserving (g ∘ e) μc μb ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => hg.comp h⟩
-  convert! hg.comp (MeasurePreserving.symm e h)
+  convert hg.comp (MeasurePreserving.symm e h)
   simp [Function.comp_assoc g e e.symm]
 
 protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb) [SigmaFinite μb] :
@@ -174,7 +174,7 @@ theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : Measure
 
 theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) :
-    Filter.EventuallyConst (f ⁻¹' s) (ae μa) ↔ Filter.EventuallyConst s (ae μb) :=
+    (ae μa).EventuallyEmptyOrUniv (f ⁻¹' s) ↔ (ae μb).EventuallyEmptyOrUniv s :=
   aeconst_comp hf hs.mem
 
 theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
