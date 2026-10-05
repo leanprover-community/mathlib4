@@ -128,7 +128,7 @@ lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
     simp [this]
   -- now `n ≠ 0`
   rw [show (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {n} = n.divisorsAntidiagonal by ext; simp [hn],
-    Finset.tsum_subtype' n.divisorsAntidiagonal (fun p ↦ term f s p.1 * term g s p.2) _,
+    Finset.tsum_subtype' n.divisorsAntidiagonal fun p ↦ term f s p.1 * term g s p.2,
     term_convolution f g s n]
 
 end LSeries
