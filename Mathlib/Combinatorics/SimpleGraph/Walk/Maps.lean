@@ -249,7 +249,7 @@ lemma length_induce {u v} : ∀ {w : G.Walk u v} (hw), (w.induce s hw).length = 
 lemma darts_induce {u v} : ∀ {w : G.Walk u v} (hw),
     (w.induce s hw).darts = w.darts.attach.map fun ⟨d, hd⟩ ↦
       ⟨(⟨d.fst, hw d.fst <| dart_fst_mem_support_of_mem_darts w hd⟩,
-        ⟨d.snd, hw d.snd <| dart_snd_mem_support_of_mem_darts w hd⟩), d.adj⟩
+        ⟨d.snd, hw d.snd <| dart_snd_mem_support_of_mem_darts w hd⟩), by simp⟩
   | nil, _ => rfl
   | cons .., _ => by simp [darts_induce]
 
