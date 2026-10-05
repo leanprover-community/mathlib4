@@ -707,36 +707,36 @@ open UniqueFactorizationMonoid
 The normalized factors of a polynomial over a field times its leading coefficient give
 the polynomial.
 -/
-theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
-    C a.leadingCoeff * (normalizedFactors a).prod = a := by
-  by_cases ha : a = 0
-  · simp [ha]
+theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (p : R[X]) :
+    C p.leadingCoeff * (normalizedFactors p).prod = p := by
+  obtain rfl | _ := eq_or_ne p 0
+  · simp
   rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
     mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
   simp_all
 
 protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
     p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
-  by_cases hp : p = 0
+  obtain rfl | hp := eq_or_ne p 0
   · simpa [hp] using zero_notMem_normalizedFactors _
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
 
-theorem sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
-    ((normalizedFactors a).map natDegree).sum = a.natDegree := by
-  obtain rfl | h0 := eq_or_ne a 0
+theorem sum_natDegree_normalizedFactors [DecidableEq R] (p : R[X]) :
+    ((normalizedFactors p).map natDegree).sum = p.natDegree := by
+  obtain rfl | hp := eq_or_ne p 0
   · simp
-  nth_rw 2 [← leadingCoeff_mul_prod_normalizedFactors a]
-  rw [natDegree_C_mul (by simp [h0]),
-      natDegree_multiset_prod _ (zero_notMem_normalizedFactors a)]
+  nth_rw 2 [← leadingCoeff_mul_prod_normalizedFactors p]
+  rw [natDegree_C_mul (by simp [hp]),
+      natDegree_multiset_prod _ (zero_notMem_normalizedFactors p)]
 
 /-- A polynomial over a field which is not a unit must have a monic irreducible factor.
 See also `WfDvdMonoid.exists_irreducible_factor`. -/
 theorem exists_monic_irreducible_factor (p : R[X]) (hu : ¬IsUnit p) :
     ∃ q : R[X], q.Monic ∧ Irreducible q ∧ q ∣ p := by
   classical
-  by_cases h0 : p = 0
-  · exact ⟨X, monic_X, irreducible_X, h0 ▸ dvd_zero X⟩
-  rcases exists_mem_normalizedFactors h0 hu with ⟨q, hq⟩
+  obtain rfl | hp := eq_or_ne p 0
+  · exact ⟨X, monic_X, irreducible_X, dvd_zero X⟩
+  rcases exists_mem_normalizedFactors hp hu with ⟨q, hq⟩
   grind [Polynomial.mem_normalizedFactors_iff]
 
 theorem exists_odd_natDegree_monic_irreducible_factor (p : R[X]) (hp : Odd p.natDegree) :
