@@ -5,6 +5,7 @@ public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tac
 public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.Convert.Init
 public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
