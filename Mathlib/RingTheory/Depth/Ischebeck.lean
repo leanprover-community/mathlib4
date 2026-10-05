@@ -28,7 +28,6 @@ universe u v
 
 variable {R : Type u} [CommRing R]
 
---set_option backward.isDefEq.respectTransparency false in
 theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
     [Small.{v} R] : N.depth M ≥ IsLocalRing.depth M -
