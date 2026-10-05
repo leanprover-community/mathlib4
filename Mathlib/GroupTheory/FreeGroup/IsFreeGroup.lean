@@ -5,6 +5,7 @@ Authors: David Wärn, Eric Wieser, Joachim Breitner
 -/
 module
 
+public import Mathlib.Algebra.Group.Equiv.TypeTags
 public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
@@ -144,6 +145,13 @@ protected lemma injective (b : FreeGroupBasis ι G) : Injective b :=
 lemma isFreeGroup (b : FreeGroupBasis ι G) : IsFreeGroup G :=
   ⟨range b, ⟨b.reindex (Equiv.ofInjective (↑b) b.injective)⟩⟩
 
+def _root_.FreeAddGroupBasis.freeGroupBasis {ι G : Type*} [AddGroup G] (b : FreeAddGroupBasis ι G) :
+    FreeGroupBasis ι (Multiplicative G) :=
+  .ofRepr <| b.repr.toMultiplicative.trans FreeGroup.freeGroupEquivMultiplicative.symm
+
+def freeAddGroupBasis (b : FreeGroupBasis ι G) : FreeAddGroupBasis ι (Additive G) :=
+  .ofRepr <| b.repr.toAdditive.trans FreeAddGroup.freeAddGroupEquivAdditive.symm
+
 @[to_additive]
 instance (X : Type*) : IsFreeGroup (FreeGroup X) :=
   (ofFreeGroup X).isFreeGroup
@@ -240,6 +248,38 @@ def basis : FreeGroupBasis (Generators G) G := FreeGroupBasis.ofRepr (mulEquiv G
 /-- Any additive free group is isomorphic to "the" additive free group. -/]
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
   (mulEquiv G).symm
+
+@[simp]
+theorem _root_.IsFreeAddGroup.isFreeAddGroup_additive_iff {G} [Group G] :
+    IsFreeAddGroup (Additive G) ↔ IsFreeGroup G :=
+  ⟨fun h ↦ h.basis.freeGroupBasis.isFreeGroup, fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup⟩
+
+@[simp]
+theorem isFreeGroup_multiplicative_iff {G} [AddGroup G] :
+    IsFreeGroup (Multiplicative G) ↔ IsFreeAddGroup G :=
+  ⟨fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup, fun h ↦ h.basis.freeGroupBasis.isFreeGroup⟩
+
+instance (G) [Group G] [IsFreeGroup G] : IsFreeAddGroup (Additive G) :=
+  IsFreeAddGroup.isFreeAddGroup_additive_iff.mpr ‹_›
+
+instance (G) [AddGroup G] [IsFreeAddGroup G] : IsFreeGroup (Multiplicative G) :=
+  isFreeGroup_multiplicative_iff.mpr ‹_›
+
+@[simp]
+theorem _root_.IsFreeAddGroup.isFreeAddGroup_toAddSubgroup_iff {G} [Group G] {H : Subgroup G} :
+    IsFreeAddGroup H.toAddSubgroup ↔ IsFreeGroup H :=
+  ⟨fun h ↦ h.basis.freeGroupBasis.isFreeGroup, fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup⟩
+
+@[simp]
+theorem isFreeGroup_toSubgroup_iff {G} [AddGroup G] {H : AddSubgroup G} :
+    IsFreeGroup H.toSubgroup ↔ IsFreeAddGroup H :=
+  ⟨fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup, fun h ↦ h.basis.freeGroupBasis.isFreeGroup⟩
+
+instance (G) [Group G] (H : Subgroup G) [IsFreeGroup H] : IsFreeAddGroup H.toAddSubgroup :=
+  IsFreeAddGroup.isFreeAddGroup_toAddSubgroup_iff.mpr ‹_›
+
+instance (G) [AddGroup G] (H : AddSubgroup G) [IsFreeAddGroup H] : IsFreeGroup H.toSubgroup :=
+  isFreeGroup_toSubgroup_iff.mpr ‹_›
 
 variable {G}
 
