@@ -29,8 +29,10 @@ lemma Submonoid.isOpen_units {M : Type*} [TopologicalSpace M] [Monoid M]
     {U : Submonoid M} (hU : IsOpen (U : Set M)) : IsOpen (U.units : Set Mˣ) :=
   (hU.preimage Units.continuous_val).inter (hU.preimage Units.continuous_coe_inv)
 
-/-- The isomorphism of topological monoids between the units of a product of two monoids and
+/-- The isomorphism of topological groups between the units of a product of two groups and
 the product of the units. -/
+@[to_additive /-- The isomorphism of topological additive groups between the additive units of a
+product of two additive groups and the product of the additive units. -/]
 def ContinuousMulEquiv.prodUnits (M N : Type*) [Monoid M] [TopologicalSpace M]
     [Monoid N] [TopologicalSpace N] :
     (M × N)ˣ ≃ₜ* Mˣ × Nˣ where
