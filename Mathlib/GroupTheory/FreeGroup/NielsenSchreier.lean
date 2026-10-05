@@ -327,7 +327,7 @@ instance subgroupIsFreeGroupOfIsFreeGroup {G : Type u} [Group G] [IsFreeGroup G]
     IsFreeGroup H :=
   IsFreeGroup.ofMulEquiv (endMulEquivSubgroup H)
 
-@[deprecated (since := "2026-08-11")]
+@[deprecated (since := "2026-10-05")]
 alias subgroupIsFreeOfIsFree := subgroupIsFreeGroupOfIsFreeGroup
 
 /-- The Nielsen-Schreier theorem: an additive subgroup of an additive free group is free. -/
