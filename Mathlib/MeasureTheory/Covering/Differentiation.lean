@@ -533,7 +533,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
       _ = t ^ (2 : ℤ) * (t ^ (n - 1) * μ (s ∩ f ⁻¹' I)) := by
         rw [← mul_assoc, ← ENNReal.zpow_add t_ne_zero ht']
         congr 2
-        omega
+        abel
       _ ≤ t ^ (2 : ℤ) * ρ (s ∩ f ⁻¹' I) := by
         gcongr
         apply v.mul_measure_le_of_subset_lt_limRatioMeas hρ

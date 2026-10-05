@@ -205,14 +205,14 @@ example {K : Type*} [Field K] (x y z : K) (hy : 1 - y ≠ 0) (h : z = y) :
 #guard_msgs in
 example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
   simp
-  abel_nf at h ⊢
+  abel_nf
   assumption
 
 -- So are `abel_nf!` and `group`.
 #guard_msgs in
 example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
   simp
-  abel_nf! at h ⊢
+  abel_nf!
   assumption
 
 #guard_msgs in

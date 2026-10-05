@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Util.AtLocation
+public meta import Mathlib.Util.AtomM
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Tactic.Hint
 public meta import Lean.Elab.Tactic.Config
@@ -47,7 +48,8 @@ open Lean Elab Meta Tactic
   * `abel_nf (config := cfg)` allows for additional configuration:
     * `red`: the reducibility setting (overridden by `!`).
     * `zetaDelta`: if true, local `let` variables can be unfolded (overridden by `!`).
-* `abel!`, `abel1!`, `abel_nf!` also unfold atoms at default transparency and local `let` variables.
+* `abel!`, `abel1!`, `abel_nf!` use default transparency to identify atoms
+  and unfold local `let` variables.
 
 Examples:
 ```
@@ -61,42 +63,55 @@ syntax (name := abel) "abel" "!"? : tactic
 structure AbelNF.Config where
   /-- Unfold local let variables. -/
   zetaDelta := false
-  /-- Transparency used to reduce atoms before normalization. -/
+  /-- Transparency used to identify atoms. -/
   red := TransparencyMode.reducible
 
 /-- Elaborate `abel_nf` configuration. -/
 declare_config_elab elabAbelNFConfig AbelNF.Config
 
 /-- Normalize scalar arithmetic and additive expressions inside atoms. -/
-private def simpAtom (cfg : AbelNF.Config) (e : Expr) : Sym.Simp.SimpM Sym.Simp.Result := do
+private def simpAtom (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) (e : Expr) :
+    Sym.Simp.SimpM Sym.Simp.Result := do
   if !e.hasFVar && !e.hasMVar then
     let type ← inferType e
     if type.isConstOf ``Nat || type.isConstOf ``Int then
       return ← Sym.Arith.normalize? e (fun _ => pure .rfl)
-  let e' ← if cfg.red == .reducible then pure e else withTransparency cfg.red <| whnf e
-  let e' ← Sym.shareCommon (← Sym.canon e')
+  let e' ← Sym.shareCommon (← Sym.canon e)
   -- Revisit only the children: an unsupported operation is also an atom.
   let methods ← Sym.Simp.getMethods
   let methods := { methods with pre := fun x => do
       if Sym.isSameExpr x e' then pure .rfl else methods.pre x }
   let r ← withReader (fun (_ : Sym.Simp.MethodsRef) => methods.toMethodsRef) <| Sym.Simp.simp e'
-  if e == e' then return r
+  let (_, atom') ← AtomM.addAtom (r.getResultExpr e') { red := cfg.red } s
+  let atom' ← Sym.shareCommon atom'
   match r with
-  | .rfl _ cd => return .step e' (← mkEqRefl e') (done := true) (contextDependent := cd)
-  | .step e'' proof _ cd => return .step e'' proof (done := true) (contextDependent := cd)
+  | .rfl done cd =>
+    if e == atom' then return .rfl done cd
+    return .step atom' (← mkEqRefl atom') (done := true) (contextDependent := cd)
+  | .step _ proof _ cd => return .step atom' proof (done := true) (contextDependent := cd)
 
-private def methods (cfg : AbelNF.Config) : Sym.Simp.Methods :=
-  { pre := fun e => Sym.Arith.normalizeAdd? e (simpAtom cfg)
+private def orderVars (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) (vars : Array Expr) :
+    Sym.Simp.SimpM (Array Nat) := do
+  let keys ← vars.mapM fun e => do
+    let (i, _) ← AtomM.addAtom e { red := cfg.red } s
+    pure i
+  return (Array.range vars.size).qsort fun i j => keys[j]! < keys[i]!
+
+private def methods (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) : Sym.Simp.Methods :=
+  { pre := fun e => Sym.Arith.normalizeAdd? e (simpAtom cfg s) (orderVars cfg s)
     post := fun e => do
       let_expr Eq _ a b := e | return .rfl
       unless ← withTransparency .default <| isDefEq a b do return .rfl
       return .step (← Sym.getTrueExpr) (← mkAppM ``eq_self #[a]) (done := true) }
 
 /-- Normalize maximal additive expressions and recurse into their atoms. -/
-private def normalize (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result :=
+private def normalize (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) (e : Expr) :
+    MetaM Simp.Result :=
     withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| withNewMCtxDepth do
   let r ← Sym.SymM.run do
-    Sym.Simp.SimpM.run' (Sym.Simp.simp (← Sym.shareCommon (← Sym.canon e))) (methods cfg)
+    withReader (fun (ctx : Sym.Context) =>
+        { ctx with config := { ctx.config with enforceUnfoldReducible := false } }) do
+      Sym.Simp.SimpM.run' (Sym.Simp.simp (← Sym.shareCommon (← Sym.canon e))) (methods cfg s)
   match r with
   | .rfl .. => return { expr := e }
   | .step e' proof .. =>
@@ -106,13 +121,13 @@ private def normalize (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result :=
 @[tactic_alt abel]
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
   let type ← instantiateMVars (← getMainTarget)
+  unless (← whnfR type).isAppOfArity ``Eq 3 do
+    throwError "`abel1` requires an equality goal"
   let cfg : AbelNF.Config :=
     if tk.isSome then { red := .default, zetaDelta := true } else { zetaDelta := true }
-  let some proof ← withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| Sym.SymM.run do
-      Sym.Simp.SimpM.run'
-        (Sym.Arith.proveAddEq?
-          (← Sym.shareCommon (← Sym.canon type)) (simpAtom cfg)) (methods cfg)
-    | throwError "`abel1` found that the two sides were not equal"
+  let r ← normalize cfg (← IO.mkRef {}) type
+  unless r.expr.isTrue do throwError "`abel1` found that the two sides were not equal"
+  let proof ← mkOfEqTrue (← r.getProof)
   let proof ← Lean.Meta.mkAuxTheorem type proof (zetaDelta := true) (kind? := `_abel)
   closeMainGoal `abel1 proof
 
@@ -126,7 +141,8 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   let mut cfg ← elabAbelNFConfig cfg
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (fun e => normalize cfg e) "abel_nf" loc (ifUnchanged := .error) false
+  let s ← IO.mkRef {}
+  transformAtLocation (fun e => normalize cfg s e) "abel_nf" loc (ifUnchanged := .error) false
 
 @[tactic_alt abel]
 macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
@@ -141,7 +157,7 @@ def elabAbelNFConv : Tactic := fun stx ↦ match stx with
   | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
     let mut cfg ← elabAbelNFConfig cfg
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
-    Conv.applySimpResult (← normalize cfg (← instantiateMVars (← Conv.getLhs)))
+    Conv.applySimpResult (← normalize cfg (← IO.mkRef {}) (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc abel]

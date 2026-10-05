@@ -101,12 +101,12 @@ example : False := by abel_nf
 
 /-- error: `abel_nf` made no progress at `w` -/
 #guard_msgs in
-example [AddCommGroup α] (x y z : α) (w : x = z + y) : False := by
+example [AddCommGroup α] (x y z : α) (w : x = y + z) : False := by
   abel_nf at w
 
 example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False := by
   abel_nf at w
-  guard_hyp w : 0 = z + y
+  guard_hyp w : 0 = y + z
   assumption
 
 -- regression test for the issue fixed in PR #29778
@@ -121,27 +121,27 @@ location.
 -/
 example [AddCommGroup α] {a b c : α} (h1 : a + b + c = 0) (h2 : b + a + c = 0) : c + a + b = 0 := by
   abel_nf at *
-  guard_hyp h1 : c + (b + a) = 0
-  guard_hyp h2 : c + (b + a) = 0
-  guard_target = c + (b + a) = 0
+  guard_hyp h1 : c + (a + b) = 0
+  guard_hyp h2 : c + (a + b) = 0
+  guard_target = c + (a + b) = 0
   exact h1
 
 /--
 error: `abel_nf` made no progress anywhere
 -/
 #guard_msgs in
-example [AddCommGroup α] (x y z : α) (_w : x = z + y) : False := by
+example [AddCommGroup α] (x y z : α) (_w : x = y + z) : False := by
   abel_nf at *
 
 -- Prior to https://github.com/leanprover/lean4/pull/2917 this would fail
 -- (the `at *` would close the goal,
 -- and then error when trying to work on the hypotheses because there was no goal.)
-example [AddCommGroup α] (x y z : α) (_w : x = z + y) : x - x = 0 := by
+example [AddCommGroup α] (x y z : α) (_w : x = y + z) : x - x = 0 := by
   abel_nf at *
 
 /-- error: `abel_nf` made no progress at `w` -/
 #guard_msgs in
-example [AddCommGroup α] (x y z : α) (w : x = z + y) : x - x = 0 := by
+example [AddCommGroup α] (x y z : α) (w : x = y + z) : x - x = 0 := by
   abel_nf at w ⊢
 
 /--
@@ -153,7 +153,7 @@ example [AddCommGroup α] (x y z : α) (w : x - x = y + z) : x = 0 := by
 
 example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False := by
   abel_nf at *
-  guard_hyp w : 0 = z + y
+  guard_hyp w : 0 = y + z
   assumption
 
 section
@@ -172,7 +172,7 @@ a b : α
 x : ℤ
 R : ℤ → ℤ → Prop
 inst✝ : Std.Refl R
-h : R (2 • x) (2 • x)
+h : R (2 • myId x) (2 • myId x)
 ⊢ True
 -/
 #guard_msgs (trace) in
@@ -240,3 +240,6 @@ example (a : ℤ) : ∃ x : ℤ, x = a := by
 example [AddCommGroup α] (f : α → α) (h : f 0 = 0) (a : α) : f (a - a) = 0 := by
   abel_nf
   simp only [h]
+
+-- Closed integer constants combine without norm_num.
+example (n : ℤ) : n + 1 = 2 + (n - 1) := by abel
