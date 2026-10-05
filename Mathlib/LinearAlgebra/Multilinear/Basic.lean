@@ -1092,9 +1092,7 @@ def _root_.LinearEquiv.multilinearMapCongrLeft (e : Π (i : ι), M₁ i ≃ₗ[R
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
 `f₁, ..., fₙ`. -/
 @[simps] def compLinearMapMultilinear :
-    @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
-      ((M₁' →ₗₘ[R] M₂) →ₗ[R] M₁ →ₗₘ[R] M₂) _ _ _
-        (fun _ ↦ LinearMap.module) _ where
+    (fun i ↦ M₁ i →ₗ[R] M₁' i) →ₗₘ[R] (M₁' →ₗₘ[R] M₂) →ₗ[R] M₁ →ₗₘ[R] M₂ where
   toFun := MultilinearMap.compLinearMapₗ
   map_update_add' := by
     intro _ f i f₁ f₂
