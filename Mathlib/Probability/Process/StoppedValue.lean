@@ -423,8 +423,8 @@ theorem memLp_stoppedValue_of_mem_finset (hτ : IsStoppingTime 𝓕 τ) (hu : �
     {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ WithTop.some '' s) :
     MemLp (𝓕.stoppedValue X τ P) p P := by
   rw [stoppedValue_eq_of_mem_finset hbdd]
-  refine memLp_finsetSum' _ fun i _ ↦ MemLp.indicator ?_ (hu i)
-  refine 𝓕.le i {a : Ω | τ a = i} (hτ.measurableSet_eq_of_countable_range ?_ i)
+  refine memLp_finsetSum' _ fun i _ ↦ (hu i).indicator ?_
+  refine (𝓕.le i {a : Ω | τ a = i} (hτ.measurableSet_eq_of_countable_range ?_ i)).nullMeasurableSet
   have : Set.range τ ⊆ WithTop.some '' s := by
     rintro x ⟨y, rfl⟩
     exact hbdd y
