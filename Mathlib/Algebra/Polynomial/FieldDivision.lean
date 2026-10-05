@@ -724,12 +724,11 @@ protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
 
 open UniqueFactorizationMonoid in
-theorem natDegree_eq_sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
+theorem sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
     ((normalizedFactors a).map natDegree).sum = a.natDegree := by
-  symm
   by_cases h0: a = 0
   · simp [h0]
-  nth_rw 1 [← leadingCoeff_mul_prod_normalizedFactors a]
+  nth_rw 2 [← leadingCoeff_mul_prod_normalizedFactors a]
   rw [Polynomial.natDegree_C_mul (by simp [h0]),
       natDegree_multiset_prod _ (zero_notMem_normalizedFactors a)]
 
@@ -740,7 +739,7 @@ lemma dvd_natDegree_of_monic_of_irreducible (f : R[X]) {n : ℕ}
   classical
   by_cases h0 : f = 0
   · simp [h0]
-  · rw [← natDegree_eq_sum_natDegree_normalizedFactors]
+  · rw [← sum_natDegree_normalizedFactors]
     grind [Multiset.dvd_sum, Multiset.mem_map, Polynomial.mem_normalizedFactors_iff]
 
 variable (p) in
