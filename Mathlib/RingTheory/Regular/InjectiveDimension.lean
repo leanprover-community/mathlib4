@@ -25,7 +25,7 @@ public import Mathlib.RingTheory.Support
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -201,6 +201,7 @@ universe u'
 variable {R' : Type u'} [CommRing R'] (f : R →+* R')
 
 /-- Restricting scalar by surjective ring homomorphism is fully faithful. -/
+@[expose]
 noncomputable def ModuleCat.restrictScalarsFullyFaithfulOfSurjective (h : Function.Surjective f) :
     (ModuleCat.restrictScalars.{v} f).FullyFaithful where
   preimage {X Y} g := ofHom
@@ -402,6 +403,8 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
     have : Nontrivial (R ⧸ Ideal.span {x}) :=
       Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
     IsLocalRing.of_surjective' (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
+  have : IsNoetherianRing (R ⧸ Ideal.span {x}) :=
+    isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
     refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
     by_contra!
