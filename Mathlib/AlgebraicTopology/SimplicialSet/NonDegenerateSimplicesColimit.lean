@@ -29,7 +29,7 @@ variable (X : SSet.{u})
 
 /-- If `X : SSet`, this is the functor `X.N ⥤ SSet` which sends a
 nondegenerate simplex of `X` to the subcomplex of `X` that it generates. -/
-@[expose, simps! obj map]
+@[expose, simps! obj map, implicit_reducible]
 public def functorN : X.N ⥤ SSet.{u} :=
   X.orderEmbeddingN.monotone.functor ⋙ Subcomplex.toSSetFunctor
 
@@ -55,8 +55,6 @@ lemma multicoequalizerDiagram :
 
 variable {X}
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `SSet.isColimitCoconeN`. -/
 noncomputable abbrev desc (s : Cocone X.functorN) : X ⟶ s.pt :=
   (Subcomplex.topIso X).inv ≫

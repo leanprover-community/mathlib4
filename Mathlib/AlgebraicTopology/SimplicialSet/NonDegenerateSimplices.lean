@@ -306,4 +306,35 @@ lemma dim_toN_le (x : X.S) :
 
 end S
 
+variable {X} {Y : SSet.{u}} (f : X ⟶ Y)
+
+@[simps -isSimp coe]
+noncomputable def mapN : X.N →o Y.N where
+  toFun x := (S.map f x.toS).toN
+  monotone' x x' h := by
+    sorry
+    --simp only [N.le_iff, S.subcomplex_toN, Subpresheaf.ofSection_le_iff, S.map_dim,
+    --  S.map_simplex, mem_ofSimplex_obj_iff] at h ⊢
+    --obtain ⟨g, hg⟩ := h
+    --exact ⟨g, by simp only [← hg, FunctorToTypes.naturality]⟩
+
+@[simp]
+lemma mapN_id : mapN (𝟙 X) = OrderHom.id := by
+  ext x
+  sorry
+  --obtain ⟨x, rfl⟩ := x.toN_surjective
+  --simp
+
+lemma mapN_mapN {Z : SSet.{u}} (g : Y ⟶ Z) (x : X.N) :
+    mapN g (mapN f x) = mapN (f ≫ g) x := by
+  sorry
+
+attribute [local simp] mapN_mapN in
+/-- The functor `SSet ⥤ PartOrd` which sends a simplicial set `X` to
+the partially ordered type `X.N` of nondegenerate simplices in `X`. -/
+@[simps, implicit_reducible]
+noncomputable def N.functor : SSet.{u} ⥤ PartOrd.{u} where
+  obj X := .of X.N
+  map f := PartOrd.ofHom (mapN f)
+
 end SSet

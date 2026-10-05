@@ -62,7 +62,7 @@ noncomputable def functorN'Iso : X.functorN' ≅ X.functorN :=
 
 /-- If `X` is a nonsingular simplicial set, this is the cocone consisting
 of the (mono)morphisms `Δ[x.dim] ⟶ X` for all nondegenerate simplices `x : X.N`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def coconeN' : Cocone X.functorN' where
   pt := X
   ι.app s := yonedaEquiv.symm s.simplex

@@ -102,7 +102,7 @@ protected def eqToIso (h : S₁ = S₂) : (S₁ : SSet.{u}) ≅ S₂ where
 end
 
 /-- The functor which sends `A : X.Subcomplex` to `A.toSSet`. -/
-@[simps]
+@[simps, implicit_reducible]
 def toSSetFunctor : X.Subcomplex ⥤ SSet.{u} where
   obj A := A
   map h := homOfLE (leOfHom h)
