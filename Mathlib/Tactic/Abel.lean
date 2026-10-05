@@ -97,14 +97,19 @@ private def methods (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) : Sym.Simp.Me
       unless ← withTransparency .default <| isDefEq a b do return .rfl
       return .step (← Sym.getTrueExpr) (← mkAppM ``eq_self #[a]) (done := true) }
 
-/-- Normalize maximal additive expressions and recurse into their atoms. -/
-private def normalize (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) (e : Expr) :
-    MetaM Simp.Result :=
+private def runSimp {β : Type} (cfg : AbelNF.Config) (s : IO.Ref AtomM.State)
+    (action : Sym.Simp.SimpM β) : MetaM β :=
     withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| withNewMCtxDepth do
-  let r ← Sym.SymM.run do
+  Sym.SymM.run do
     withReader (fun (ctx : Sym.Context) =>
         { ctx with config := { ctx.config with enforceUnfoldReducible := false } }) do
-      Sym.Simp.SimpM.run' (Sym.Simp.simp (← Sym.shareCommon (← Sym.canon e))) (methods cfg s)
+      Sym.Simp.SimpM.run' action (methods cfg s)
+
+/-- Normalize maximal additive expressions and recurse into their atoms. -/
+private def normalize (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) (e : Expr) :
+    MetaM Simp.Result := do
+  let r ← runSimp cfg s do
+    Sym.Simp.simp (← Sym.shareCommon (← Sym.canon e))
   match r with
   | .rfl .. => return { expr := e }
   | .step e' proof .. =>
@@ -114,13 +119,14 @@ private def normalize (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) (e : Expr) 
 @[tactic_alt abel]
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
   let type ← instantiateMVars (← getMainTarget)
-  unless (← whnfR type).isAppOfArity ``Eq 3 do
+  let target ← whnfR type
+  unless target.isAppOfArity ``Eq 3 do
     throwError "`abel1` requires an equality goal"
   let cfg : AbelNF.Config :=
     if tk.isSome then { red := .default, zetaDelta := true } else { zetaDelta := true }
-  let r ← normalize cfg (← IO.mkRef {}) type
-  unless r.expr.isTrue do throwError "`abel1` found that the two sides were not equal"
-  let proof ← mkOfEqTrue (← r.getProof)
+  let s ← IO.mkRef {}
+  let some proof ← runSimp cfg s (Sym.Arith.proveAddEq? target (simpAtom cfg s))
+    | throwError "`abel1` found that the two sides were not equal"
   let proof ← Lean.Meta.mkAuxTheorem type proof (zetaDelta := true) (kind? := `_abel)
   closeMainGoal `abel1 proof
 

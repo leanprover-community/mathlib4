@@ -66,10 +66,7 @@ example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
 info: Try these:
-  [apply] 🎉️ norm_num
-  [apply] noncomm_ring
-  Remaining subgoals:
-  ⊢ 1369 • 1 - 1225 • 1 = 72 • 2
+  [apply] 🎉️ noncomm_ring
 -/
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint
@@ -201,9 +198,6 @@ this test no longer reports `field_simp` amongst the successful tactics.
 info: Try these:
   [apply] 🎉️ exact Units.divp_add_divp_same a b u₁
   [apply] norm_num
-  Remaining subgoals:
-  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  [apply] abel_nf
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
 -/
