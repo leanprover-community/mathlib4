@@ -1200,7 +1200,7 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R]
   have deptheq : IsLocalRing.depth (ModuleCat.of R R) = n := by
     rw [← WithBot.coe_inj, ← (isCohenMacaulayLocalRing_def R).mp ‹_›, h2]
     rfl
-  rw [IsLocalRing.depth_eq_sSup_length_regular] at deptheq
+  rw [IsLocalRing.depth_eq_sSup_length_isRegular] at deptheq
   rcases Set.mem_of_eq_of_mem deptheq.symm (@ENat.sSup_mem_of_nonempty_of_lt_top _
     (by use 0, []; simpa using IsRegular.nil _ _)
     (lt_of_eq_of_lt deptheq (ENat.natCast_lt_top n))) with ⟨rs, reg, mem, len⟩
@@ -1211,6 +1211,8 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R]
   have h2' : ringKrullDim (R ⧸ Ideal.ofList rs) = 0 := by
     rw [← ENat.WithBot.add_natCast_cancel (c := rs.length), zero_add,
       ringKrullDim_add_length_eq_ringKrullDim_of_isRegular rs reg, Nat.cast_inj.mp len, h2]
+  have : IsNoetherianRing (R ⧸ Ideal.ofList rs) :=
+    isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
   exact hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero
     ((injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing _).trans h2') h2'
 
@@ -1359,7 +1361,7 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
       apply (((extFunctor _).mapIso
         (Shrink.linearEquiv R (R ⧸ maximalIdeal R)).toModuleIso.op).app
         (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr.mp
-      exact ext_subsingleton_of_lt_moduleDepth lt'
+      exact subsingleton_ext_of_lt_depth lt'
     · have : HasInjectiveDimensionLE (ModuleCat.of R R) n := by
         simp [← injectiveDimension_le_iff, injdim]
       exact HasInjectiveDimensionLT.subsingleton (ModuleCat.of R R) (n + 1) i gt _
