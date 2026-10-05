@@ -90,15 +90,8 @@ private def simpAtom (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) (e : Expr) :
     return .step atom' (← mkEqRefl atom') (done := true) (contextDependent := cd)
   | .step _ proof _ cd => return .step atom' proof (done := true) (contextDependent := cd)
 
-private def orderVars (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) (vars : Array Expr) :
-    Sym.Simp.SimpM (Array Nat) := do
-  let keys ← vars.mapM fun e => do
-    let (i, _) ← AtomM.addAtom e { red := cfg.red } s
-    pure i
-  return (Array.range vars.size).qsort fun i j => keys[j]! < keys[i]!
-
 private def methods (cfg : AbelNF.Config) (s : IO.Ref AtomM.State) : Sym.Simp.Methods :=
-  { pre := fun e => Sym.Arith.normalizeAdd? e (simpAtom cfg s) (orderVars cfg s)
+  { pre := fun e => Sym.Arith.normalizeAdd? e (simpAtom cfg s)
     post := fun e => do
       let_expr Eq _ a b := e | return .rfl
       unless ← withTransparency .default <| isDefEq a b do return .rfl
