@@ -25,7 +25,7 @@ and its right adjoint `ex`.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory Opposite Limits Simplicial
 
 /-- The functor `SimplexCategory ⥤ SSet` which sends `⦋n⦌` to the nerve of the
 partially ordered type of nonempty finite chains in `{0, ..., n}` (ulifted to `Type u`).
@@ -114,20 +114,87 @@ instance : IsIso (Functor.whiskerLeft stdSimplex sdToSd') := by
   dsimp
   infer_instance
 
-noncomputable def isColimitSd'MapCoconeCoconeN (X : SSet.{u}) [Nonsingular X] :
-    IsColimit (sd'.mapCocone X.coconeN) :=
-  sorry
+private lemma preservesColimit_functorN_sd'_aux {X : SSet.{u}}
+    {n : ℕ} {i : X.N} (x : ComposableArrows i.subcomplex.toSSet.N n)
+    {k : X.N} (hk : mapN i.subcomplex.ι (x.obj (Fin.last _)) = k) :
+    ∃ (z : ComposableArrows k.subcomplex.toSSet.N n), ∀ (d : Fin (n + 1)),
+      mapN k.subcomplex.ι (z.obj d) = mapN i.subcomplex.ι (x.obj d) := by
+  let φ (d : Fin (n + 1)) : k.subcomplex.toSSet.N :=
+    (mapN i.subcomplex.ι (x.obj d)).toSubcomplex (by
+      simp only [← Subfunctor.ofSection_le_iff, subcomplex_mapN]
+      have h₁ := x.monotone d.le_last
+      rw [N.le_iff] at h₁
+      exact (Subcomplex.image_monotone i.subcomplex.ι h₁).trans (by simp [← hk]))
+  have hφ : Monotone φ := by
+    intro d d' h
+    dsimp [φ]
+    rw [N.toSubcomplex_le_toSubcomplex_iff]
+    exact (mapN _).monotone (x.monotone h)
+  exact ⟨hφ.functor, fun d ↦ by simp [φ]⟩
 
-noncomputable def isColimitSd'MapCoconeCoconeN' (X : SSet.{u}) [Nonsingular X] :
-    IsColimit (sd'.mapCocone X.coconeN') := by
-  refine (IsColimit.equivOfNatIsoOfIso
-    (Functor.isoWhiskerRight X.functorN'Iso.symm _) _ _ ?_).1 X.isColimitSd'MapCoconeCoconeN
-  exact Cocone.ext (Iso.refl _) (fun x ↦ (by simp [← Functor.map_comp]))
+open Functor in
+instance (X : SSet.{u}) [Nonsingular X] : PreservesColimit X.functorN sd' :=
+  preservesColimit_of_preserves_colimit_cocone X.isColimitCoconeN
+    (evaluationJointlyReflectsColimits _ (fun ⟨n⟩ ↦ by
+      induction n with | mk n
+      refine Nonempty.some ((Types.isColimit_iff_coconeTypesIsColimit ..).2
+        ⟨?_, fun b ↦ ?_⟩)
+      · intro x y h
+        let F := (X.functorN ⋙ sd') ⋙ (evaluation _ _).obj (op ⦋n⦌)
+        obtain ⟨i, x, rfl⟩ := F.ιColimitType_jointly_surjective x
+        obtain ⟨j, y, rfl⟩ := F.ιColimitType_jointly_surjective y
+        dsimp [F] at x y h
+        generalize hx : mapN i.subcomplex.ι (x.obj (Fin.last _)) = k
+        have hy : mapN j.subcomplex.ι (y.obj (Fin.last _)) = k := by
+          rw [← hx]
+          exact Functor.congr_obj h.symm (Fin.last _)
+        have hki : k ≤ i := by
+          rw [← hx, N.le_iff_toS_le_toS, toS_mapN_of_mono, S.le_def]
+          simp
+        have hkj : k ≤ j := by
+          rw [← hy, N.le_iff_toS_le_toS, toS_mapN_of_mono, S.le_def]
+          simp
+        obtain ⟨z, hz⟩ := preservesColimit_functorN_sd'_aux x hx
+        obtain ⟨z', hz'⟩ := preservesColimit_functorN_sd'_aux y hy
+        obtain rfl : z = z' :=
+          ComposableArrows.ext_of_isThin
+            (fun d ↦ mapN_injective_of_mono k.subcomplex.ι (by
+              rw [hz, hz']
+              exact congr($(h).obj d)))
+        trans Functor.ιColimitType _ k z
+        · rw [← ιColimitType_map F (homOfLE hki)]
+          congr
+          refine ComposableArrows.ext_of_isThin (fun d ↦ ?_)
+          apply mapN_injective_of_mono i.subcomplex.ι
+          simp [F, dsimp% sd'_map_app_hom_apply_obj (f := X.functorN.map (homOfLE hki)),
+            mapN_mapN, hz d]
+        · rw [← ιColimitType_map F (homOfLE hkj)]
+          congr
+          refine ComposableArrows.ext_of_isThin (fun d ↦ ?_)
+          apply mapN_injective_of_mono j.subcomplex.ι
+          simp [F, dsimp% sd'_map_app_hom_apply_obj (f := X.functorN.map (homOfLE hkj)),
+            mapN_mapN, hz' d]
+      · refine ⟨ιColimitType _ (b.obj (Fin.last _))
+          (Monotone.functor (f := fun i ↦ (b.obj i).toSubcomplex ?_) (fun i j hij ↦ ?_)),
+          nerve.ext_of_isThin ?_⟩
+        · dsimp
+          rw [← Subfunctor.ofSection_le_iff, ← N.le_iff]
+          exact b.monotone (Fin.le_last _)
+        · rw [N.toSubcomplex_le_toSubcomplex_iff]
+          exact b.monotone hij
+        · ext i : 1
+          rw [N.ext_iff]
+          have : Mono (X.coconeN.ι.app (b.obj (Fin.last n))) := by
+            dsimp; infer_instance
+          apply toS_mapN_of_mono))
+
+instance (X : SSet.{u}) [Nonsingular X] : PreservesColimit X.functorN' sd' :=
+  preservesColimit_of_iso_diagram _ X.functorN'Iso.symm
 
 instance (X : SSet.{u}) [Nonsingular X] : IsIso (sdToSd'.app X) :=
   MorphismProperty.colimitsOfShape_le (W := .isomorphisms SSet.{u}) _
     (.mk' _ _ _ _ (isColimitOfPreserves sd X.isColimitCoconeN')
-      X.isColimitSd'MapCoconeCoconeN' (Functor.whiskerLeft _ sdToSd')
+      (isColimitOfPreserves sd' X.isColimitCoconeN') (Functor.whiskerLeft _ sdToSd')
       (fun s ↦ (by dsimp; infer_instance)) _ (fun x ↦ by simp))
 
 end SSet
