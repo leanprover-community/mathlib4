@@ -14,6 +14,15 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 # Definition of Gorenstein Local Ring
 
+In this file, we defined the concept of Gorenstein local rings which are the local rings itself
+having finite injective dimension as module.
+
+# Main definition and results
+
+* `IsGorensteinLocalRing` : The local ring with `injectiveDimension (ModuleCat.of R R) ≠ ⊤`.
+
+* `IsGorensteinRing` : The ring whose all localizations at primes are Gorenstein local rings.
+
 -/
 
 public section
