@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
+
 import all Init.Data.Repr  -- for exposing `toDigitsCore`
 
 /-!

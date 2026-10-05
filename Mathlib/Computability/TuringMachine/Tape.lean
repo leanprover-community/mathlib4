@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Data.List.GetD
-import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.Basic
+
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Turing machine tapes

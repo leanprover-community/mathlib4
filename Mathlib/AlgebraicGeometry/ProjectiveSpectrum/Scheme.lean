@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+
 import Mathlib.RingTheory.GradedAlgebra.Radical
 
 /-!

@@ -5,8 +5,9 @@ Authors: Tian Chen, Mantas Bakšys
 -/
 module
 
-import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+
+import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Ideal.Span
 
