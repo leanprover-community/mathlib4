@@ -521,17 +521,28 @@ theorem isSuccLimit_of_isPrincipal_opow (ho₂ : 2 < o) (ho : IsPrincipal (· ^ 
     IsSuccLimit o :=
   isSuccLimit_of_isPrincipal_mul ho₂ ho.mul_of_opow
 
-/-- Above `ω`, closure under exponentiation is equivalent to being a fixed point of `ω ^ ·`. -/
-theorem isPrincipal_opow_iff_omega0_opow_eq_self (hoω : ω < o) :
-    IsPrincipal (· ^ ·) o ↔ ω ^ o = o := by
-  refine ⟨fun ho ↦ ?_, fun ho a b ha hb ↦ ?_⟩
+theorem omega0_lt_of_omega0_opow_eq_self (ho : ω ^ o = o) : ω < o := by
+  rcases le_or_gt o 1 with ho₁ | ho₁
+  · rcases le_one_iff.1 ho₁ with rfl | rfl <;> simp [one_lt_omega0.ne'] at ho
+  · grw [left_lt_opow one_lt_omega0 ho₁, ho]
+
+theorem omega0_lt_and_isPrincipal_opow_iff :
+    ω < o ∧ IsPrincipal (· ^ ·) o ↔ ω ^ o = o := by
+  refine ⟨fun ⟨hoω, ho⟩ ↦ ?_, fun ho ↦ ?_⟩
   · exact op_eq_self_of_isPrincipal hoω (isNormal_opow one_lt_omega0) ho
       (isSuccLimit_of_isPrincipal_opow ((natCast_lt_omega0 2).trans hoω) ho)
-  · have hom : IsPrincipal (· * ·) o := by simpa [ho] using isPrincipal_mul_omega0_opow_opow o
+  · have hoω := omega0_lt_of_omega0_opow_eq_self ho
+    refine ⟨hoω, fun a b ha hb ↦ ?_⟩
+    have hom : IsPrincipal (· * ·) o := by simpa [ho] using isPrincipal_mul_omega0_opow_opow o
     have hol := isSuccLimit_of_isPrincipal_mul ((natCast_lt_omega0 2).trans hoω) hom
     have ⟨c, hc, hac⟩ := (lt_opow_of_isSuccLimit omega0_ne_zero hol).1 (ha.trans_eq ho.symm)
     refine (opow_le_opow_left b hac.le).trans_lt ?_
     grw [← opow_mul, ← ho, opow_lt_opow_iff_right one_lt_omega0, ← hom hc hb]
+
+/-- Above `ω`, closure under exponentiation is equivalent to being a fixed point of `ω ^ ·`. -/
+theorem isPrincipal_opow_iff_omega0_opow_eq_self (hoω : ω < o) :
+    IsPrincipal (· ^ ·) o ↔ ω ^ o = o := by
+  simpa only [hoω, true_and] using (omega0_lt_and_isPrincipal_opow_iff (o := o))
 
 theorem isPrincipal_opow_omega0 : IsPrincipal (· ^ ·) ω := fun a b ha hb =>
   match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
@@ -555,10 +566,7 @@ theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq :
     · exact isPrincipal_zero
     · exact isPrincipal_opow_two
     · exact isPrincipal_opow_omega0
-    · rcases le_or_gt o 1 with ho₁ | ho₁
-      · rcases le_one_iff.1 ho₁ with rfl | rfl <;> simp [one_lt_omega0.ne'] at ho
-      · refine (isPrincipal_opow_iff_omega0_opow_eq_self ?_).2 ho
-        grw [left_lt_opow one_lt_omega0 ho₁, ho]
+    · exact (omega0_lt_and_isPrincipal_opow_iff.2 ho).2
 
 theorem opow_omega0 (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
   ((opow_le_of_isSuccLimit (one_le_iff_ne_zero.1 <| le_of_lt a1) isSuccLimit_omega0).2 fun _ hb =>
