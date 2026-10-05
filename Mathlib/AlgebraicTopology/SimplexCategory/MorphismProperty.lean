@@ -21,9 +21,45 @@ the category `SimplexCategory.Truncated d`.
 
 public section
 
-open CategoryTheory
+open CategoryTheory Simplicial
 
 namespace SimplexCategory
+
+/-- A property of morphisms which holds for identities and is stable under postcomposition with
+faces holds for all monomorphisms. -/
+lemma mono_induction {motive : ∀ {x y : SimplexCategory}, (x ⟶ y) → Prop}
+    (id : ∀ x, motive (𝟙 x))
+    (comp_δ : ∀ {x : SimplexCategory} {n : ℕ} (f : x ⟶ ⦋n⦌) (i : Fin (n + 2)),
+      motive f → motive (f ≫ δ i))
+    {x y : SimplexCategory} (f : x ⟶ y) [Mono f] : motive f := by
+  obtain ⟨a⟩ := x
+  obtain ⟨b⟩ := y
+  obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le (len_le_of_mono f)
+  induction c with
+  | zero => exact eq_id_of_mono f ▸ id _
+  | succ c hc =>
+    obtain ⟨i, g, rfl⟩ := eq_comp_δ_of_not_surjective f fun h ↦ by
+      have := epi_iff_surjective.mpr h; grind [len_le_of_epi f]
+    have := mono_of_mono g (δ i)
+    exact comp_δ g i (hc g)
+
+/-- A property of morphisms which holds for identities and is stable under precomposition with
+degeneracies holds for all epimorphisms. -/
+lemma epi_induction {motive : ∀ {x y : SimplexCategory}, (x ⟶ y) → Prop}
+    (id : ∀ x, motive (𝟙 x))
+    (σ_comp : ∀ {n : ℕ} {y : SimplexCategory} (i : Fin (n + 1)) (f : ⦋n⦌ ⟶ y),
+      motive f → motive (σ i ≫ f))
+    {x y : SimplexCategory} (f : x ⟶ y) [Epi f] : motive f := by
+  obtain ⟨a⟩ := x
+  obtain ⟨b⟩ := y
+  obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le (len_le_of_epi f)
+  induction c with
+  | zero => exact eq_id_of_epi f ▸ id _
+  | succ c hc =>
+    obtain ⟨i, g, rfl⟩ := eq_σ_comp_of_not_injective f fun h ↦ by
+      have := mono_iff_injective.mpr h; grind [len_le_of_mono f]
+    have := epi_of_epi (σ i) g
+    exact σ_comp i g (hc g)
 
 lemma Truncated.morphismProperty_eq_top
     {d : ℕ} (W : MorphismProperty (Truncated d)) [W.IsMultiplicative]
