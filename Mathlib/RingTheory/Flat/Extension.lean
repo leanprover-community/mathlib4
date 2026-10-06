@@ -234,7 +234,7 @@ Given a local ring `R` and `K` a field extension over residue field of `R`.
 Flat extension is flat `R`-algebra `S` that is a local ring, forming scalar tower `K/S/R` with
 its maximal ideal equal to the maximal ideal of `R` mapped by algebra map.
 
-This structure is for forming the category to do interation on.
+This structure is for forming the category to do iteration on.
 -/
 structure FlatExtension where
   /-- The underlying ring. -/
