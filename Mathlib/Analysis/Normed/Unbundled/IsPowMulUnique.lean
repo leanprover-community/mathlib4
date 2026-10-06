@@ -33,7 +33,7 @@ local instance (f : AlgebraNorm K L) (x : L) : FiniteDimensional K (f.copy x) :=
 local instance (f : AlgebraNorm K L) (x : L) : Algebra (f.copy x) L :=
   inferInstanceAs (Algebra K⟮x⟯ L)
 
-def AlgebraNorm.ringNorm (f : AlgebraNorm K L) (x : L) : RingNorm (f.copy x) where
+def AlgebraNorm.ringNormCopy (f : AlgebraNorm K L) (x : L) : RingNorm (f.copy x) where
   toFun y := f ((algebraMap (f.copy x) L) y)
   map_zero' := map_zero _
   add_le' a b := map_add_le_add _ _ _
