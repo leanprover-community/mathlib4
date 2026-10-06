@@ -181,7 +181,7 @@ def getBaseURLFrom (c : Container) (envValue? : Option String) (useLegacy : Bool
 Base URL for reads of container `c`, resolved from the environment.
 Written on top of the pure function above, which is separate to be testable.
 -/
-def getBaseURL (c : Container) : IO String := do
+def getBaseURL (c : Container) : BaseIO String := do
   return getBaseURLFrom c (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
 
 /--
