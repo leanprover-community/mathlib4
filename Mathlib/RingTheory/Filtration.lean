@@ -426,7 +426,7 @@ open IsLocalRing in
 theorem Ideal.iInf_pow_smul_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R]
     [Module.Finite R M] (h : I ≠ ⊤) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ :=
   Ideal.iInf_pow_smul_eq_bot_of_le_jacobson _
-    ((le_maximalIdeal h).trans (Ideal.jacobson_bot (R := R) ▸ maximalIdeal_le_jacobson _))
+    ((le_maximalIdeal h).trans (jacobson_bot (R := R) ▸ maximalIdeal_le_jacobson _))
 
 /-- **Krull's intersection theorem** for Noetherian local rings. -/
 theorem Ideal.iInf_pow_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R] (h : I ≠ ⊤) :
