@@ -5,14 +5,13 @@ Authors: Yaël Dillies, Vladimir Ivanov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.Finset.Sups
-public import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Positivity
-public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # The Ahlswede-Zhang identity
@@ -63,11 +62,11 @@ private lemma binomial_sum_eq (h : n < m) :
   have h₂ := h₁.trans_lt h
   have h₃ := h₂.le
   have hi₄ : (i + 1 : ℚ) ≠ 0 := i.cast_add_one_ne_zero
-  have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq m i)
+  have := congr(($(choose_succ_right_eq m i) : ℚ))
   push_cast at this
   dsimp [f, hf]
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
-  have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq n i)
+  have := congr(($(choose_succ_right_eq n i) : ℚ))
   push_cast at this
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
   have : (m - i : ℚ) ≠ 0 := sub_ne_zero_of_ne (cast_lt.mpr h₂).ne'

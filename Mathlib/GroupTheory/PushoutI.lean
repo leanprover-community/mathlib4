@@ -500,7 +500,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
   · induction w using Word.consRecOn with
     | empty => exact empty
     | cons i g w h1 hg1 ih =>
-      convert!
+      convert
         cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩ h1
           (h3 _ _ List.mem_cons_self) ?_ rfl (ih ?_)
       · simp only [Word.cons, NormalWord.cons, map_one, mul_one,
@@ -565,7 +565,7 @@ theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)
   exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg prod (h empty)⟩
+  ⟨fun h => by simpa using congr(prod $(h empty))⟩
 
 instance (i : ι) : FaithfulSMul (G i) (NormalWord d) :=
   ⟨by simp [summand_smul_def']⟩

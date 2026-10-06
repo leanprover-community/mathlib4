@@ -5,7 +5,6 @@ Authors: Rémi Bottinelli
 -/
 module
 
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
@@ -198,7 +197,7 @@ theorem lift_unique (φ : V ⥤q V') (Φ : Quiver.FreeGroupoid V ⥤ V')
     change Φ.map (Groupoid.inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
       Groupoid.inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
     have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)
-    convert! this <;> simp only [Groupoid.inv_eq_inv]
+    convert this <;> simp only [Groupoid.inv_eq_inv]
 
 end UniversalProperty
 

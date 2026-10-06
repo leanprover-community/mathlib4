@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
-public import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Normed.Module.Complemented
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -253,7 +253,7 @@ theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
-  convert! φ.hasStrictFDerivAt_implicitFunction_fderiv
+  convert φ.hasStrictFDerivAt_implicitFunction_fderiv
   ext1 x
   rw [eq_comm, fderiv_implicitFunction_apply_eq_iff]
   simp_all [DFunLike.ext_iff]
@@ -390,7 +390,7 @@ theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (h
       f (hf.implicitFunctionOfComplemented f f' hf' hker p.1 p.2) = p.1 :=
   ((hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).eventually_right_inverse <|
         hf.mem_implicitToOpenPartialHomeomorphOfComplemented_target hf' hker).mono
-    fun ⟨_, _⟩ h => congr_arg Prod.fst h
+    fun ⟨_, _⟩ h => congr($(h).fst)
 
 /-- Any point in some neighborhood of `a` can be represented as
 `HasStrictFDerivAt.implicitFunctionOfComplemented` of some point. -/

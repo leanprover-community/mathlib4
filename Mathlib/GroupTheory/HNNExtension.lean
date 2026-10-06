@@ -591,7 +591,7 @@ theorem prod_injective : Injective
   (equiv φ d).symm.injective
 
 instance : FaithfulSMul (HNNExtension G A B φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg (fun w => w.prod φ) (h empty)⟩
+  ⟨fun h => by simpa using congr($(h empty).prod φ)⟩
 
 end NormalWord
 
@@ -644,7 +644,7 @@ theorem exists_normalWord_prod_eq
         simp only [Cancels, group_smul_head, group_smul_toList, Option.map_eq_some_iff,
           Prod.exists, exists_and_right, exists_eq_right, not_and, not_exists]
         intro hS x hx
-        have hx' := congr_arg (Option.map Prod.fst) hx
+        have hx' := congr(Option.map Prod.fst $hx)
         rw [← List.head?_map, hw'2, List.head?_map, Option.map_some] at hx'
         have : w'.head ∈ toSubgroup A B a.fst := by
           simpa using hw'3 _ hx'

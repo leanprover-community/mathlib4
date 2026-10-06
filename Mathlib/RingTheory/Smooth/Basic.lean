@@ -6,8 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Smooth.Kaehler
 public import Mathlib.RingTheory.Unramified.Basic
 
@@ -138,7 +137,7 @@ theorem exists_lift
         commutes' := fun x => rfl }
     obtain ⟨g', e⟩ := h₂ (this.symm.toAlgHom.comp g)
     obtain ⟨g', rfl⟩ := h₁ g'
-    replace e := congr_arg this.toAlgHom.comp e
+    replace e := congr(this.toAlgHom.comp $e)
     conv_rhs at e =>
       rw [← AlgHom.comp_assoc, AlgEquiv.comp_symm, AlgHom.id_comp]
     exact ⟨g', e⟩
@@ -157,7 +156,7 @@ theorem comp_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
 @[simp]
 theorem mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) (x : A) : Ideal.Quotient.mk I (FormallySmooth.lift I hI g x) = g x :=
-  AlgHom.congr_fun (FormallySmooth.comp_lift I hI g :) x
+  congr($(FormallySmooth.comp_lift I hI g) x)
 
 variable {C : Type*} [CommRing C] [Algebra R C]
 
@@ -294,7 +293,7 @@ theorem iff_split_injection
   rw [formallySmooth_iff, and_comm,
     Module.Projective.iff_split_of_projective (KaehlerDifferential.mapBaseChange R P A)
       (mapBaseChange_surjective R P A hf), ← kerCotangentToTensor_injective_iff hf]
-  convert!
+  convert
     (((exact_kerCotangentToTensor_mapBaseChange R _ _ hf).split_tfae' (g :=
           (KaehlerDifferential.mapBaseChange R P A).restrictScalars P)).out
       1 2) using 2
@@ -484,7 +483,7 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
   have : ∀ x : M, IsUnit (algebraMap R Q x) := by
     intro x
     apply (IsNilpotent.isUnit_quotient_mk_iff ⟨2, e⟩).mp
-    convert! (IsLocalization.map_units Rₘ x).map f
+    convert (IsLocalization.map_units Rₘ x).map f
     simp only [Ideal.Quotient.mk_algebraMap, AlgHom.commutes]
   let : Rₘ →ₐ[R] Q :=
     { IsLocalization.lift this with commutes' := IsLocalization.lift_eq this }

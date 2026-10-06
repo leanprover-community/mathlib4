@@ -3,10 +3,13 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Marcelo Lynch
 -/
+module
 
-import Cache.Hashing
-import Cache.Infra
+public import Cache.Hashing
+public import Cache.Infra
 import Lake.Load.Manifest
+
+public section
 
 namespace Cache.Requests
 
@@ -469,16 +472,10 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
 /--
 Whether an HTTP status returned for a single-file read should be treated as a
 cache miss (fall through to the next container in the chain) rather than a
-transfer failure worth reporting.
-
-`404` is always a miss. A `403` is a miss only when `treatForbiddenAsMiss` is
-set, which callers do for the `legacy` container: when its public read access is
-revoked ahead of retirement it answers reads with `403`, and old clients whose
-chain still lists `legacy` should fall through quietly instead of printing a
-per-file transfer failure. Any other status is a real failure.
+transfer failure worth reporting: `404` is the only miss.
 -/
-def isCacheMissStatus (httpCode : Nat) (treatForbiddenAsMiss : Bool) : Bool :=
-  httpCode == 404 || (httpCode == 403 && treatForbiddenAsMiss)
+def isCacheMissStatus (httpCode : Nat) : Bool :=
+  httpCode == 404
 
 /--
 Whether an HTTP status is the one Azure returns for a blob that already exists,
@@ -521,13 +518,12 @@ Classify one finished download; the parallel and serial paths share this
 table. A transfer delivers only when the status is 200/201 and curl exited
 cleanly: a nonzero exit code after a 200 means the body is truncated. The
 status alone decides a miss. `httpCode?` is `none` when there is no status
-to parse; `treatForbiddenAsMiss` is the `legacy` 403 policy.
+to parse.
 -/
-def classifyDownload (httpCode? : Option Nat) (exitCode : Nat)
-    (treatForbiddenAsMiss : Bool) : TransferVerdict .download :=
+def classifyDownload (httpCode? : Option Nat) (exitCode : Nat) : TransferVerdict .download :=
   match httpCode? with
   | some 200 | some 201 => if exitCode == 0 then .delivered else .failed
-  | some code => if isCacheMissStatus code treatForbiddenAsMiss then .miss else .failed
+  | some code => if isCacheMissStatus code then .miss else .failed
   | none => .failed
 
 /--
@@ -544,12 +540,9 @@ def classifyUpload (httpCode? : Option Nat) (exitCode : Nat)
   | none => .failed
 
 /-- Calls `curl` to download a single file from a specific container to `CACHEDIR`
-(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`).
-`treatForbiddenAsMiss` mirrors the parallel path: a `legacy` `403` (public read
-access revoked ahead of retirement) is a miss, not a failure. -/
+(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`). -/
 def downloadFile (container : Option Container) (repo containerURL : String)
-    (hash : UInt64) (scope? : Option String) (treatForbiddenAsMiss : Bool := false) :
-    IO (TransferVerdict .download) := do
+    (hash : UInt64) (scope? : Option String) : IO (TransferVerdict .download) := do
   let fileName := hash.asLTar
   let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
@@ -563,7 +556,6 @@ def downloadFile (container : Option Container) (repo containerURL : String)
         #["--write-out", "%{http_code}", "-o", partPath.toString] }
   -- Anything short of a delivery leaves at most an error body in the part file.
   let verdict := classifyDownload out.stdout.trimAscii.toNat? out.exitCode.toNat
-    treatForbiddenAsMiss
   if verdict matches .delivered then
     IO.FS.rename partPath path
   else if ← partPath.pathExists then
@@ -654,6 +646,8 @@ in-flight leantar batch, then decompress the pending files. Returns the final
 `(decompressed, decompFailed)` counters. -/
 def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Nat) := do
   let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := state
+  if currentTask.isSome || !pending.isEmpty then
+    IO.eprintln "Still decompressing downloaded files..."
   if let some task := currentTask then
     let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
     decompressed := d
@@ -731,11 +725,6 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
         s!", {s.speed / 1000} KB/s"
       else ""
     let mut msg := s!"\r{caption}: {s.success} file(s) [attempted {s.done}/{size} = {100*s.done/size}%{speedStr}]"
-    -- Add decompression progress if enabled
-    if decompConfig.isSome then
-      msg := msg ++ s!", Decompressed: {s.decomp.decompressed}"
-      if s.decomp.decompFailed != 0 then
-        msg := msg ++ s!" ({s.decomp.decompFailed} failed)"
     if s.failed != 0 then
       msg := msg ++ s!", {s.failed} {dir} failed"
     -- Clear to end of line to avoid remnants from longer previous messages
@@ -874,23 +863,17 @@ private def downloadFilesFromContainer
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
       #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
-    -- `legacy` answers reads with 403 once its public access is revoked ahead
-    -- of retirement; treat that as a miss so the chain stays quiet for clients
-    -- whose chain still lists it.
-    let treatForbiddenAsMiss := container == some Container.legacy
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download"
-      (classifyDownload · · treatForbiddenAsMiss) (removeOnError := true)
+      classifyDownload (removeOnError := true)
       decompConfig decompState
     IO.FS.removeFile IO.CURLCFG
     return (s, served)
   else
-    -- Mirror the parallel path's miss/failure split: a `legacy` 403 is a miss.
-    let treatForbiddenAsMiss := container == some Container.legacy
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do
-        downloadFile container repo containerURL hash scope? treatForbiddenAsMiss) :: acc
+        downloadFile container repo containerURL hash scope?) :: acc
     -- Served hashes carry the remaining files to the next container; hard
-    -- failures (anything but a 404/legacy-403 miss, including a task that threw)
+    -- failures (anything but a 404 miss, including a task that threw)
     -- feed `TransferState.failed`, so they drive the exit code exactly as the
     -- parallel path threads its own `failed` count.
     let (served, failed) := r.foldl (init := ((∅ : Std.HashSet UInt64), 0))
@@ -916,8 +899,8 @@ are not SHA-scoped, so `headScope?` must not leak into their rounds.
 With `--unsafe` (`unsafeScopes` non-empty) the `forks` container — the only
 SHA-scoped container, whose markers the walk probed — is expanded into one round
 per discovered SHA, most recent first. Every other container reads unscoped
-(`master` is flat and serves the bulk of files by hash; `legacy` has no walked
-markers), so the base `scope?` is intentionally dropped here. -/
+(`master` is flat and serves the bulk of files by hash), so the base `scope?`
+is intentionally dropped here. -/
 def expandDownloadRounds (containerURLs : List (Option Container × String))
     (scope? : Option String) (unsafeScopes : List String)
     (headScope? : Option String := none) :
@@ -933,8 +916,18 @@ def expandDownloadRounds (containerURLs : List (Option Container × String))
       else
         [(c, url, none)]
 
+/-- Outcome of a multi-round download. `failed` counts hard transfer errors
+(anything but a 404 miss) and drives the caller's exit code; `missing` counts
+files no round served, a normal outcome (e.g. a fork PR's unique files before
+CI has built them) that the caller may explain to the user. -/
+structure DownloadResult where
+  failed : Nat := 0
+  missing : Nat := 0
+
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Return the number of files which failed to download.
+Returns the hard-failure and miss counts (see `DownloadResult`); explaining
+the misses to the user is the caller's job, since classifying them needs the
+marker probe from a module downstream of this one.
 If `decompress` is true, decompresses files as they're downloaded (pipelined).
 
 For each repo, the tool tries the trust-ordered container list returned by
@@ -945,18 +938,18 @@ fetched are filtered out so the next container only retries genuine misses.
 (empty for a normal read); see `expandDownloadRounds`. -/
 def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
+    (forceDownload : Bool) (parallel : Bool)
     (decompress : Bool := false) (forceUnpack : Bool := false)
     (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
-    (unsafeScopes : List String := []) : IO Nat := do
+    (unsafeScopes : List String := []) : IO DownloadResult := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
-  if hashMap.isEmpty then IO.println "No files to download"; return 0
+  if hashMap.isEmpty then IO.println "No files to download"; return {}
   IO.FS.createDirAll IO.CACHEDIR
 
   let containerURLs ← effectiveGetURLs repo
   if containerURLs.isEmpty then
     IO.eprintln "No container URLs configured for download"
-    return hashMap.size
+    return { failed := hashMap.size }
 
   -- Set up decompression config if enabled: one config shared by all container
   -- rounds, with the pipeline state carried between them via `decompState`.
@@ -1023,16 +1016,6 @@ def downloadFiles
       if remaining.size > 0 then
         IO.eprintln s!"  {remaining.size} file(s) still missing after all scopes."
 
-  if warnOnMissing && !remaining.isEmpty then
-    IO.eprintln "Warning: some files were not found in the cache."
-    IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
-    IO.eprintln ""
-    IO.eprintln "  * If you push your commits to a PR to the mathlib4 repository"
-    IO.eprintln "    (use a draft PR if it is not ready for review),"
-    IO.eprintln "    then CI will build the oleans and they will be available later."
-    IO.eprintln "  * If you have already opened a PR, this may mean"
-    IO.eprintln "    the CI build has failed part-way through building."
-
   -- Drain the decompression pipeline accumulated across all rounds.
   if let some config := decompConfig then
     let (decompressed, decompFailed) ← finalizeDecomp decompState config
@@ -1043,7 +1026,7 @@ def downloadFiles
 
   if downloadFailed > 0 then
     IO.println s!"{downloadFailed} download(s) failed"
-  return downloadFailed
+  return { failed := downloadFailed, missing := remaining.size }
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
@@ -1121,6 +1104,9 @@ def checkForManifestMismatch : IO.CacheM Unit := do
 
 /-- Downloads missing files, and unpacks files.
 
+Returns the number of files no container served, so the caller can print the
+appropriate missing-files guidance (see `warnIfMissingFiles`).
+
 `repo` is the already-resolved GitHub repo (see `resolveRepo`); its
 trust-ordered container list from `defaultContainersForRepo` is the single
 source of truth for what gets tried — there's no separate outer-loop
@@ -1130,7 +1116,7 @@ def getFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload forceUnpack parallel decompress : Bool)
     (unsafeScopes : List String := [])
-    : IO.CacheM Unit := do
+    : IO.CacheM Nat := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do
     checkForToolchainMismatch
@@ -1154,12 +1140,11 @@ def getFiles
     else pure none
   else pure none
 
-  let failed ← downloadFiles repo hashMap forceDownload parallel
-    (warnOnMissing := true)
+  let result ← downloadFiles repo hashMap forceDownload parallel
     (decompress := decompress) (forceUnpack := forceUnpack)
     isMathlibRoot mathlibDepPath (unsafeScopes := unsafeScopes)
-  if failed > 0 then
-    IO.println s!"Downloading {failed} files failed"
+  if result.failed > 0 then
+    IO.println s!"Downloading {result.failed} files failed"
     IO.Process.exit 1
 
   -- Wait for decompression of already-cached files to complete
@@ -1182,8 +1167,11 @@ def getFiles
     else
       -- Either no background decompression ran, or non-parallel mode needs final sweep
       IO.unpackCache hashMap forceUnpack
-  else
+  else if result.missing == 0 then
     IO.println "Downloaded all files successfully!"
+  else
+    IO.println s!"Downloaded all available files ({result.missing} not in the cache)."
+  return result.missing
 
 end Get
 

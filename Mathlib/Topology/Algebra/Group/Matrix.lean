@@ -7,7 +7,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
-public import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Instances.Matrix
 
