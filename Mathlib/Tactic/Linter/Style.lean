@@ -703,7 +703,7 @@ where
         let ref := .ofRange { start, stop }
         let sugg ← Command.liftCoreM <| Hint.mkSuggestionsMessage
           #[{ toTryThisSuggestion := suggestion, diffGranularity := .char }] ref none false
-        logWarningAt ref m!"Try this: {sugg}\n\n\
+        logWarningAt ref m!"Try this:{sugg}\n\n\
           The basic `{symbol}` syntax is preferred over `{symbol}ᵉ`."
 
 @[inherit_doc linter.style.extendedBinder]
