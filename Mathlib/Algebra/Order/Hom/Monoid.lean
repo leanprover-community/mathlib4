@@ -323,7 +323,7 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
-  ext <| by convert! DFunLike.ext_iff.1 h using 0
+  ext <| by convert DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
@@ -554,7 +554,7 @@ theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMulEquiv_injective : Injective (toMulEquiv : _ → α ≃* β) := fun f g h =>
-  ext <| by convert! DFunLike.ext_iff.1 h using 0
+  ext <| by convert DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderIso_injective : Injective (toOrderIso : _ → α ≃o β) := fun f g h =>
@@ -742,7 +742,7 @@ protected lemma strictMono : StrictMono f :=
 protected lemma strictMono_symm : StrictMono f.symm :=
   strictMono_of_le_iff_le <| fun a b ↦ by
     rw [← map_le_map_iff f]
-    convert! Iff.rfl <;>
+    convert Iff.rfl <;>
     exact f.toEquiv.apply_symm_apply _
 
 end Preorder

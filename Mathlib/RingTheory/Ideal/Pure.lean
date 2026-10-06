@@ -5,12 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Flat.Tensor
-public import Mathlib.RingTheory.Ideal.IdempotentFG
-public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 public import Mathlib.RingTheory.LocalProperties.Basic
+
+import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Idempotents
 
 /-!
 # Pure ideals

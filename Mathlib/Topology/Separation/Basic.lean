@@ -5,13 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Piecewise
-public import Mathlib.Topology.Separation.SeparatedNhds
 public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Bases
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Separation properties of topological spaces
@@ -254,7 +251,7 @@ theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set X, x ∈ 
   rcases h x y hxy with ⟨s, hxs, hys, hs⟩
   lift x to s using hxs; lift y to s using hys
   rw [← subtype_inseparable_iff] at hxy
-  exact congr_arg Subtype.val hxy.eq
+  congrm $(hxy.eq).val
 
 theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set X, x ∈ s ∧ IsOpen s ∧ T0Space s) : T0Space X :=
   T0Space.of_cover fun x _ hxy =>
@@ -715,7 +712,7 @@ theorem Dense.sdiff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set
 obtains a dense set. -/
 theorem Dense.sdiff_finite [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     {t : Set X} (ht : t.Finite) : Dense (s \ t) := by
-  convert! hs.sdiff_finset ht.toFinset
+  convert hs.sdiff_finset ht.toFinset
   exact (Finite.coe_toFinset _).symm
 
 @[deprecated (since := "2026-06-03")] alias Dense.diff_finite := Dense.sdiff_finite

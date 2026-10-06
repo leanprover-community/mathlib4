@@ -5,16 +5,14 @@ Authors: Markus Himmel, Alex Keizer
 -/
 module
 
-public import Mathlib.Algebra.NeZero
-public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Bool.Basic
-public import Mathlib.Data.List.GetD
 public import Mathlib.Data.Nat.Bits
-public import Mathlib.Order.Basic
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.Common
-public import Batteries.Data.Nat.Bitwise
+
+import Mathlib.Data.List.GetD
+import Mathlib.Order.Basic
+import Mathlib.Tactic.AdaptationNote
+import Batteries.Data.Nat.Bitwise
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
@@ -204,14 +202,14 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
       · subst hi
         simp only [testBit_bit_zero] at hn hm
         have : n = m :=
-          eq_of_testBit_eq fun i => by convert! hnm (i + 1) (Nat.zero_lt_succ _) using 1
+          eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
           <;> rw [testBit_bit_succ]
         rw [hn, hm, this, bit_false, bit_true]
         exact Nat.lt_succ_self _
       · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
         simp only [testBit_bit_succ] at hn hm
         have := hn' _ hn hm fun j hj => by
-          convert! hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
+          convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
         exact bit_lt_bit b b' this
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :

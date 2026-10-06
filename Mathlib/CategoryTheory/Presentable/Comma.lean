@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Comma
-public import Mathlib.CategoryTheory.Presentable.IsDiscrete
 public import Mathlib.CategoryTheory.Presentable.Uniformization
+
+import Mathlib.CategoryTheory.Comma.LocallySmall
+import Mathlib.CategoryTheory.Presentable.IsDiscrete
 
 /-!
 # Comma categories are accessible
@@ -216,7 +217,7 @@ definitional properties.) -/
 private def π₁ : J κ f ⥤ J₁ κ f where
   obj g := g.fst
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.left))
-    (by exact congr_arg CommaMorphism.left (CostructuredArrow.w φ))
+    (by congrm $(CostructuredArrow.w φ).left)
 
 /-- The second projection `J κ f ⥤ J₂ κ f`. (Note: this functor could be
 defined using `CostructuredArrow.map₂`, but it would not have the same
@@ -225,7 +226,7 @@ definitional properties.) -/
 private def π₂ : J κ f ⥤ J₂ κ f where
   obj g := g.snd
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.right))
-    (by exact congr_arg CommaMorphism.right (CostructuredArrow.w φ))
+    (by congrm $(CostructuredArrow.w φ).right)
 
 variable {κ f}
 
