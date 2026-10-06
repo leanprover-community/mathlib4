@@ -899,6 +899,8 @@ theorem nilpotencyClass_eq_quotient_center_add_one [hH : IsNilpotent G] [Nontriv
 
 @[deprecated (since := "2026-10-06")] alias nilpotencyClass_eq_quotient_center_plus_one :=
   nilpotencyClass_eq_quotient_center_add_one
+@[deprecated (since := "2026-10-06")] alias nilpotencyClass_eq_quotient_center_plus_zero :=
+  nilpotencyClass_eq_quotient_center_add_zero
 
 /-- A custom induction principle for nilpotent groups. The base case is a trivial group
 (`subsingleton G`), and in the induction step, one can assume the hypothesis for
