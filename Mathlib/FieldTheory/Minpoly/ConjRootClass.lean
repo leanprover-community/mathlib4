@@ -116,10 +116,6 @@ theorem carrier_nonempty (c : ConjRootClass K L) : c.carrier.Nonempty := by
   induction c with
   | h a => exact ⟨a, mem_carrier.mpr rfl⟩
 
-theorem card_carrier_ne_zero [Normal K L] [DecidableEq L] [Fintype Gal(L/K)]
-    (c : ConjRootClass K L) : c.carrier.toFinset.card ≠ 0 :=
-  (Finset.card_pos.mpr (Set.toFinset_nonempty.mpr c.carrier_nonempty)).ne'
-
 open Polynomial
 
 /-- `c.minpoly` is the minimal polynomial of the conjugates. -/

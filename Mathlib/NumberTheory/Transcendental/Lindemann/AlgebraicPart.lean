@@ -178,7 +178,7 @@ theorem exists_sum_conjRootClass_eq_zero {F K S : Type*}
   have hx' : (classSumBasis F F K).repr x' 0 ≠ 0 := by
     rw [x'_def, classSumBasis_repr_mul_classSumBasis_apply_zero, neg_neg]
     exact mul_ne_zero (Finsupp.mem_support_iff.mp hi)
-      (Nat.cast_ne_zero.mpr (ConjRootClass.card_carrier_ne_zero i))
+      (Nat.cast_ne_zero.mpr (card_pos.mpr (Set.toFinset_nonempty.mpr i.carrier_nonempty)).ne')
   have lift_x' : AddMonoidAlgebra.lift F _ _ φ x' = 0 := by
     rw [x'_def, Subalgebra.coe_mul, map_mul, hx, zero_mul]
   exact ⟨_, hx', by rw [← lift_eq_sum_classSumBasis_repr, lift_x']⟩
