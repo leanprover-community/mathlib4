@@ -139,11 +139,11 @@ lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
   have hA' : P (A' : C) :=
     P.prop_of_iso ((Subobject.isPullback (cokernel.π A.arrow) B).isoIsPullback _ _
       (IsPullback.of_hasPullback _ _)).symm
-      (P.prop_X₂_of_shortExact (hS.pull B.arrow) (P.prop_sSup _ fun _ hA ↦ hA) hB)
+      (P.prop_X₂_of_shortExact (hS.pull B.arrow) (P.prop_subObjectSSup _ fun _ hA ↦ hA) hB)
   have hle : A' ≤ A := Subobject.le_sSup _ _ hA'
   -- Hence the projection of `A'` onto `B` vanishes, so `B`, and with it the image of `f`,
   -- is zero.
-  have hzero : A'.arrow ≫ cokernel.π A.arrow = 0 := prop_subObjectSSup
+  have hzero : A'.arrow ≫ cokernel.π A.arrow = 0 := by
     rw [← Subobject.ofLE_arrow hle, Category.assoc, cokernel.condition, comp_zero]
   have hπ : Subobject.pullbackπ (cokernel.π A.arrow) B = 0 := by
     apply (cancel_mono B.arrow).mp
@@ -166,11 +166,11 @@ lemma leftOrthogonal_rightOrthogonal_le (P : ObjectProperty C)
     let A : Subobject X := Subobject.sSup {A : Subobject X | P (A : C)}
     haveI : Epi A.arrow :=
       Preadditive.epi_of_cokernel_zero (hX (cokernel.π _) (rightOrthogonal_cokernel_sSup P X))
-    P.prop_of_epi A.arrow (P.prop_sSup _ fun _ hA ↦ hA)
+    P.prop_of_epi A.arrow (P.prop_subObjectSSup _ fun _ hA ↦ hA)
 
 /-- In a well-powered abelian category with coproducts, if `P` is closed under quotients,
 extensions, and coproducts, then `P.rightOrthogonal.leftOrthogonal = P`. This is the hard
-direction of [S. E. Dickson][prop_subObjectSSup66]'s characterisation of torsion classes, see
+direction of [S. E. Dickson][dickson1966]'s characterisation of torsion classes, see
 `CategoryTheory.Abelian.isTorsionClass_iff`. -/
 theorem leftOrthogonal_rightOrthogonal_eq_self (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
