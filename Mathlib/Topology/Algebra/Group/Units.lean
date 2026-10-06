@@ -19,14 +19,16 @@ including results about submonoid units and units of product spaces.
 
 @[expose] public section
 
+variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Monoid M] [Monoid N]
+
 open Units Topology
 
 /-- If a submonoid is open in a topological monoid, then its units form an open subset
 of the units of the monoid. -/
 @[to_additive /-- If a submonoid is open in a topological additive monoid,
 then its additive units form an open subset of the additive units of the monoid. -/]
-lemma Submonoid.isOpen_units {M : Type*} [TopologicalSpace M] [Monoid M]
-    {U : Submonoid M} (hU : IsOpen (U : Set M)) : IsOpen (U.units : Set Mˣ) :=
+lemma Submonoid.isOpen_units {U : Submonoid M} (hU : IsOpen (U : Set M)) :
+    IsOpen (U.units : Set Mˣ) :=
   (hU.preimage Units.continuous_val).inter (hU.preimage Units.continuous_coe_inv)
 
 /-- The isomorphism of topological groups between the units of a product and
@@ -52,8 +54,6 @@ theorem ContinuousMulEquiv.piUnits_isOpenEmbedding {I : Type*} {f : I → Type _
     (map_continuous piUnits) (ContinuousMulEquiv.injective piUnits) piUnits.isOpenMap
 
 namespace Units
-
-variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Monoid M] [Monoid N]
 
 /-- Any `ContinuousMulEquiv` induces a `ContinuousMulEquiv` on units. -/
 @[simps! apply]
@@ -158,24 +158,28 @@ def _root_.Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
 
 end Units
 
+namespace ContinuousMulEquiv
+
 /-- The isomorphism of topological groups between the units of a product of two groups and
 the product of the units. -/
 @[to_additive /-- The isomorphism of topological additive groups between the additive units of a
 product of two additive groups and the product of the additive units. -/]
-def ContinuousMulEquiv.prodUnits (M N : Type*) [Monoid M] [TopologicalSpace M]
-    [Monoid N] [TopologicalSpace N] : (M × N)ˣ ≃ₜ* Mˣ × Nˣ where
+def prodUnits : (M × N)ˣ ≃ₜ* Mˣ × Nˣ where
   __ := MulEquiv.prodUnits
   __ := Homeomorph.prodUnits
 
 /-- Given two topological monoids M and N, (M × N)ˣ → M × N is an open embedding. -/
-theorem ContinuousMulEquiv.prodUnits_isOpenEmbedding {M N : Type*} [Monoid M] [TopologicalSpace M]
-    [Monoid N] [TopologicalSpace N] : IsOpenEmbedding (prodUnits M N) :=
+theorem prodUnits_isOpenEmbedding : IsOpenEmbedding (prodUnits (M := M) (N := N)) :=
   .of_continuous_injective_isOpenMap
-    (map_continuous (prodUnits M N)) (prodUnits M N).injective (prodUnits M N).isOpenMap
-
-lemma toMulEquiv_prodUnits {M N : Type*} [Monoid M] [TopologicalSpace M] [Monoid N]
-    [TopologicalSpace N] : (ContinuousMulEquiv.prodUnits M N).toMulEquiv = .prodUnits := rfl
+    (map_continuous (prodUnits (M := M) (N := N))) (prodUnits (M := M) (N := N)).injective
+      (prodUnits (M := M) (N := N)).isOpenMap
 
 @[simp]
-lemma toHomeomorph_prodUnits {M N : Type*} [Monoid M] [TopologicalSpace M] [Monoid N]
-    [TopologicalSpace N] : (ContinuousMulEquiv.prodUnits M N).toHomeomorph = .prodUnits := rfl
+lemma toMulEquiv_prodUnits :
+    (ContinuousMulEquiv.prodUnits (M := M) (N := N) : (M × N)ˣ ≃* Mˣ × Nˣ) = .prodUnits := rfl
+
+@[simp]
+lemma toHomeomorph_prodUnits :
+    (ContinuousMulEquiv.prodUnits (M := M) (N := N)).toHomeomorph = .prodUnits := rfl
+
+end ContinuousMulEquiv

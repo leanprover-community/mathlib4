@@ -111,11 +111,11 @@ open ContinuousMulEquiv
 instance {M N : Type*} [Monoid M] [TopologicalSpace M] [Monoid N]
     [TopologicalSpace N] [hM : IsOpenUnits M] [hN : IsOpenUnits N] : IsOpenUnits (M × N) := by
   rw [isOpenUnits_iff] at *
-  exact (IsOpenEmbedding.of_comp_iff _ (hM.prodMap hN)).mpr prodUnits_isOpenEmbedding
+  exact ((hM.prodMap hN).of_comp_iff _).mpr prodUnits_isOpenEmbedding
 
 /-- The units in a product of finitely many topological monoids are open. -/
 instance {I : Type*} [Finite I] {f : I → Type _} [(i : I) → Monoid (f i)]
-    [(i : I) → TopologicalSpace (f i)] [(i : I) → IsOpenUnits (f i)] :
+    [(i : I) → TopologicalSpace (f i)] [∀ i, IsOpenUnits (f i)] :
     IsOpenUnits ((i : I) → f i) := by
   simp_rw [isOpenUnits_iff] at *
-  exact (IsOpenEmbedding.of_comp_iff _ (.piMap ‹_›)).mpr piUnits_isOpenEmbedding
+  exact ((IsOpenEmbedding.piMap ‹_›).of_comp_iff _).mpr piUnits_isOpenEmbedding
