@@ -160,6 +160,7 @@ end Units
 
 namespace ContinuousMulEquiv
 
+variable (M N) in
 /-- The isomorphism of topological groups between the units of a product of two groups and
 the product of the units. -/
 @[to_additive /-- The isomorphism of topological additive groups between the additive units of a
@@ -169,17 +170,17 @@ def prodUnits : (M × N)ˣ ≃ₜ* Mˣ × Nˣ where
   __ := Homeomorph.prodUnits
 
 /-- Given two topological monoids M and N, (M × N)ˣ → M × N is an open embedding. -/
-theorem prodUnits_isOpenEmbedding : IsOpenEmbedding (prodUnits (M := M) (N := N)) :=
+theorem prodUnits_isOpenEmbedding : IsOpenEmbedding (prodUnits M N) :=
   .of_continuous_injective_isOpenMap
-    (map_continuous (prodUnits (M := M) (N := N))) (prodUnits (M := M) (N := N)).injective
-      (prodUnits (M := M) (N := N)).isOpenMap
+    (map_continuous (prodUnits M N)) (prodUnits M N).injective
+      (prodUnits M N).isOpenMap
 
 @[simp]
 lemma toMulEquiv_prodUnits :
-    (ContinuousMulEquiv.prodUnits (M := M) (N := N) : (M × N)ˣ ≃* Mˣ × Nˣ) = .prodUnits := rfl
+    (ContinuousMulEquiv.prodUnits M N : (M × N)ˣ ≃* Mˣ × Nˣ) = .prodUnits := rfl
 
 @[simp]
 lemma toHomeomorph_prodUnits :
-    (ContinuousMulEquiv.prodUnits (M := M) (N := N)).toHomeomorph = .prodUnits := rfl
+    (ContinuousMulEquiv.prodUnits M N).toHomeomorph = .prodUnits := rfl
 
 end ContinuousMulEquiv
