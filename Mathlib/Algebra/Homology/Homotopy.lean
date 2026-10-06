@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Tactic.Abel
 
 /-!
 # Chain homotopies
@@ -879,6 +878,12 @@ def Functor.mapHomotopyEquiv (F : V ⥤ W) [F.Additive] (h : HomotopyEquiv C D) 
   homotopyInvHomId := by
     rw [← (F.mapHomologicalComplex c).map_comp, ← (F.mapHomologicalComplex c).map_id]
     exact F.mapHomotopy h.homotopyInvHomId
+
+lemma Functor.homotopyEquivalences_mapHomologicalComplex_map
+    (F : V ⥤ W) [F.Additive] (f : C ⟶ D) (hf : homotopyEquivalences _ _ f) :
+    homotopyEquivalences _ _ ((F.mapHomologicalComplex _).map f) := by
+  obtain ⟨e, rfl⟩ := hf
+  exact ⟨F.mapHomotopyEquiv e, rfl⟩
 
 end CategoryTheory
 

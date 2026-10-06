@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Data.Nat.Factorization.Defs
-public import Mathlib.Analysis.Normed.Module.RCLike.Real
-public import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Real logarithm
@@ -306,7 +305,7 @@ theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
 
 theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [le_sub_iff_add_le]
-  convert! add_one_le_exp (log x)
+  convert add_one_le_exp (log x)
   rw [exp_log hx]
 
 lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
@@ -420,7 +419,7 @@ lemma log_finprod {α : Type*} {f : α → ℝ} (h : ∀ a, 0 < f a) :
     log (∏ᶠ a, f a) = ∑ᶠ a, log (f a) := by
   classical
   have H : (fun i ↦ log (f i)).support = f.mulSupport := by
-    grind [mem_mulSupport, mem_support, log_eq_zero]
+    grind [log_eq_zero]
   have H' : HasFiniteMulSupport f ↔ HasFiniteSupport fun a ↦ log (f a) := by
     simp [HasFiniteMulSupport, HasFiniteSupport, H]
   simp only [finprod_def, finsum_def]
