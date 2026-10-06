@@ -5,7 +5,7 @@ Authors: Alena Gusakov, Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Diam
 
@@ -172,7 +172,7 @@ theorem IsSRGWith.param_eq
   let := Classical.decEq V
   rw [← h.card, Fintype.card_pos_iff] at hn
   obtain ⟨v⟩ := hn
-  convert! card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
+  convert card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
   · simp [h.regular v]
   · simp [h.compl.regular v]
   · intro w hw

@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Ring.GeomSum
 public import Mathlib.Data.Finset.Slice
 public import Mathlib.Data.Nat.BitIndices
-public import Mathlib.Order.SupClosed
+import Mathlib.Order.SupClosed
 public import Mathlib.Order.UpperLower.Closure
 
 /-!
@@ -42,9 +42,9 @@ fixed size. For example, for size 3, the colex order on ℕ starts
 Related files are:
 * `Data.List.Lex`: Lexicographic order on lists.
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
-* `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
-* `Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Order.PSigma`: Lexicographic order on `Σ' i, α i`.
+* `Order.Sigma`: Lexicographic order on `Σ i, α i`.
+* `Order.Prod.Lex.Basic`: Lexicographic order on `α × β`.
 
 ## TODO
 

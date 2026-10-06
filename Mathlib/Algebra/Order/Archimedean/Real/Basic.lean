@@ -11,7 +11,7 @@ public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Order.Int.LeastGreatest
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.

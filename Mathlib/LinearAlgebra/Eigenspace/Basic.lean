@@ -6,13 +6,11 @@ Authors: Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.RingTheory.Nilpotent.Defs
-public import Mathlib.RingTheory.Nilpotent.Lemmas
-public import Mathlib.Tactic.Peel
+import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.Tactic.Peel
 
 /-!
 # Eigenvectors and eigenvalues
@@ -802,7 +800,7 @@ theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp
     (μ : R) : (eigenspace (f.restrict hfp) μ).map p.subtype ≤ f.eigenspace μ := by
   rintro a ⟨x, hx, rfl⟩
   simp only [SetLike.mem_coe, mem_eigenspace_iff, LinearMap.restrict_apply] at hx ⊢
-  exact congr_arg Subtype.val hx
+  congrm $(hx).val
 
 /-- Generalized eigenrange and generalized eigenspace for exponent `finrank K V` are disjoint. -/
 theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End K V) (μ : K) :

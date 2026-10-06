@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Asymptotics
+import Mathlib.MeasureTheory.Integral.Asymptotics
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!

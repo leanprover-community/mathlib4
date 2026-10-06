@@ -85,7 +85,7 @@ theorem map_nhdsWithin_eq {x} (hx : x ∈ e.source) (s : Set X) :
     map e (𝓝[s] x) = 𝓝[e '' (e.source ∩ s)] e x :=
   calc
     map e (𝓝[s] x) = map e (𝓝[e.source ∩ s] x) :=
-      congr_arg (map e) (e.nhdsWithin_source_inter hx _).symm
+      congr(map e $((e.nhdsWithin_source_inter hx _).symm))
     _ = 𝓝[e '' (e.source ∩ s)] e x :=
       (e.leftInvOn.mono inter_subset_left).map_nhdsWithin_eq (e.left_inv hx)
         (e.continuousAt_symm (e.map_source hx)).continuousWithinAt
