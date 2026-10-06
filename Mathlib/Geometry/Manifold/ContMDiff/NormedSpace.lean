@@ -280,7 +280,7 @@ theorem ContinuousAlternatingMap.contMDiffOn (L : E [⋀^ι]→L[𝕜] F) {s} :
 
 theorem ContMDiffWithinAt.compContinuousLinearMapCLM [CharZero 𝕜]
     {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
-    (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s x) :
+    (hf : CMDiffAt[s] n f x) :
     ContMDiffWithinAt I 𝓘(𝕜, (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) n
       (fun y ↦ ContinuousAlternatingMap.compContinuousLinearMapCLM (f y) :
         M → (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) s x := by
@@ -290,55 +290,55 @@ theorem ContMDiffWithinAt.compContinuousLinearMapCLM [CharZero 𝕜]
   · exact hf
 
 nonrec theorem ContMDiffAt.compContinuousLinearMapCLM [CharZero 𝕜] {f : M → F₁ →L[𝕜] F₂} {x : M}
-    (hf : ContMDiffAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f x) :
+    (hf : CMDiffAt n f x) :
     ContMDiffAt I 𝓘(𝕜, (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) n
       (fun y ↦ ContinuousAlternatingMap.compContinuousLinearMapCLM (f y) :
         M → (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) x :=
   ContMDiffWithinAt.compContinuousLinearMapCLM hf
 
 theorem ContMDiffOn.compContinuousLinearMapCLM [CharZero 𝕜] {f : M → F₁ →L[𝕜] F₂} {s : Set M}
-    (hf : ContMDiffOn I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s) :
+    (hf : CMDiff[s] n f) :
     ContMDiffOn I 𝓘(𝕜, (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) n
       (fun y ↦ ContinuousAlternatingMap.compContinuousLinearMapCLM (f y) :
         M → (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) s :=
   fun x hx ↦ (hf x hx).compContinuousLinearMapCLM
 
 theorem ContMDiff.compContinuousLinearMapCLM [CharZero 𝕜] {f : M → F₁ →L[𝕜] F₂}
-    (hf : ContMDiff I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f) :
+    (hf : CMDiff n f) :
     ContMDiff I 𝓘(𝕜, (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) n
       (fun y ↦ ContinuousAlternatingMap.compContinuousLinearMapCLM (f y) :
         M → (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) :=
   fun x ↦ (hf x).compContinuousLinearMapCLM
 
 theorem ContMDiffWithinAt.compContinuousAlternatingMapCLM {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
-    (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f s x) :
+    (hf : CMDiffAt[s] n f x) :
     ContMDiffWithinAt I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) n
       (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) s x :=
   ContDiff.comp_contMDiffWithinAt
     (ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι).contDiff hf
 
 theorem ContMDiffAt.compContinuousAlternatingMapCLM {f : M → F₂ →L[𝕜] F₃} {x : M}
-    (hf : ContMDiffAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f x) :
+    (hf : CMDiffAt n f x) :
     ContMDiffAt I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) n
       (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) x :=
   ContMDiffWithinAt.compContinuousAlternatingMapCLM hf
 
 theorem ContMDiffOn.compContinuousAlternatingMapCLM {f : M → F₂ →L[𝕜] F₃} {s : Set M}
-    (hf : ContMDiffOn I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f s) :
+    (hf : CMDiff[s] n f) :
     ContMDiffOn I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) n
       (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) s :=
   fun x hx ↦ (hf x hx).compContinuousAlternatingMapCLM
 
 theorem ContMDiff.compContinuousAlternatingMapCLM {f : M → F₂ →L[𝕜] F₃}
-    (hf : ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f) :
+    (hf : CMDiff n f) :
     ContMDiff I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) n
       (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) :=
   fun x ↦ (hf x).compContinuousAlternatingMapCLM
 
 theorem ContMDiffWithinAt.continuousAlternatingMapCongr [CharZero 𝕜]
     {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
-    (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) s x)
-    (hg : ContMDiffWithinAt I 𝓘(𝕜, F₃ →L[𝕜] F₄) n (fun x ↦ (g x : F₃ →L[𝕜] F₄)) s x) :
+    (hf : CMDiffAt[s] n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)
+    (hg : CMDiffAt[s] n (fun x ↦ (g x : F₃ →L[𝕜] F₄)) x) :
     ContMDiffWithinAt I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄)) n
       (fun (y : M) ↦ (ContinuousLinearEquiv.continuousAlternatingMapCongr (f y) (g y) (ι := ι) :
           (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) s x := by
@@ -349,8 +349,8 @@ theorem ContMDiffWithinAt.continuousAlternatingMapCongr [CharZero 𝕜]
 
 nonrec theorem ContMDiffAt.continuousAlternatingMapCongr [CharZero 𝕜]
     {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄} {x : M}
-    (hf : ContMDiffAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)
-    (hg : ContMDiffAt I 𝓘(𝕜, F₃ →L[𝕜] F₄) n (fun x ↦ (g x : F₃ →L[𝕜] F₄)) x) :
+    (hf : CMDiffAt n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)
+    (hg : CMDiffAt n (fun x ↦ (g x : F₃ →L[𝕜] F₄)) x) :
     ContMDiffAt I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄)) n
       (fun (y : M) ↦ (ContinuousLinearEquiv.continuousAlternatingMapCongr (f y) (g y) (ι := ι) :
           (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) x :=
@@ -358,8 +358,8 @@ nonrec theorem ContMDiffAt.continuousAlternatingMapCongr [CharZero 𝕜]
 
 theorem ContMDiffOn.continuousAlternatingMapCongr [CharZero 𝕜]
     {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄} {s : Set M}
-    (hf : ContMDiffOn I 𝓘(𝕜, F₂ →L[𝕜] F₁) n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) s)
-    (hg : ContMDiffOn I 𝓘(𝕜, F₃ →L[𝕜] F₄) n (fun x ↦ (g x : F₃ →L[𝕜] F₄)) s) :
+    (hf : CMDiff[s] n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)))
+    (hg : CMDiff[s] n (fun x ↦ (g x : F₃ →L[𝕜] F₄))) :
     ContMDiffOn I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄)) n
       (fun (y : M) ↦ (ContinuousLinearEquiv.continuousAlternatingMapCongr (f y) (g y) (ι := ι) :
           (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) s :=
@@ -367,8 +367,8 @@ theorem ContMDiffOn.continuousAlternatingMapCongr [CharZero 𝕜]
 
 theorem ContMDiff.continuousAlternatingMapCongr [CharZero 𝕜]
     {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
-    (hf : ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₁) n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)))
-    (hg : ContMDiff I 𝓘(𝕜, F₃ →L[𝕜] F₄) n (fun x ↦ (g x : F₃ →L[𝕜] F₄))) :
+    (hf : CMDiff n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)))
+    (hg : CMDiff n (fun x ↦ (g x : F₃ →L[𝕜] F₄))) :
     ContMDiff I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄)) n
       (fun (y : M) ↦ (ContinuousLinearEquiv.continuousAlternatingMapCongr (f y) (g y) (ι := ι) :
           (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) :=
@@ -381,8 +381,8 @@ Version in vector spaces. For versions in nontrivial vector bundles, see
 theorem ContMDiffWithinAt.continuousAlternatingMap_apply
     {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
     (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) n g s x)
-    (hf : ∀ i, ContMDiffWithinAt I 𝓘(𝕜, F₁) n (f i) s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, F₂) n (fun x ↦ g x (fun i ↦ f i x)) s x :=
+    (hf : ∀ i, CMDiffAt[s] n (f i) x) :
+    CMDiffAt[s] n (fun x ↦ g x (fun i ↦ f i x)) x :=
   ContDiffWithinAt.comp_contMDiffWithinAt (t := univ)
     (g := fun x : (F₁ [⋀^ι]→L[𝕜] F₂) × (ι → F₁) => x.1 x.2)
     (f := fun x : M ↦ (g x, fun i ↦ f i x))
@@ -396,20 +396,20 @@ versions in nontrivial vector bundles, see
 nonrec theorem ContMDiffAt.continuousAlternatingMap_apply
     {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
     (hg : ContMDiffAt I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) n g x)
-    (hf : ∀ i, ContMDiffAt I 𝓘(𝕜, F₁) n (f i) x) :
-    ContMDiffAt I 𝓘(𝕜, F₂) n (fun x ↦ g x (fun i ↦ f i x)) x :=
+    (hf : ∀ i, CMDiffAt n (f i) x) :
+    CMDiffAt n (fun x ↦ g x (fun i ↦ f i x)) x :=
   ContMDiffWithinAt.continuousAlternatingMap_apply hg hf
 
 theorem ContMDiffOn.continuousAlternatingMap_apply
     {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
     (hg : ContMDiffOn I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) n g s)
-    (hf : ∀ i, ContMDiffOn I 𝓘(𝕜, F₁) n (f i) s) :
-    ContMDiffOn I 𝓘(𝕜, F₂) n (fun x ↦ g x (fun i ↦ f i x)) s :=
+    (hf : ∀ i, CMDiff[s] n (f i)) :
+    CMDiff[s] n (fun x ↦ g x (fun i ↦ f i x)) :=
   fun x hx ↦ (hg x hx).continuousAlternatingMap_apply (fun i ↦ (hf i x hx))
 
 theorem ContMDiff.continuousAlternatingMap_apply
     {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
     (hg : ContMDiff I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) n g)
-    (hf : ∀ i, ContMDiff I 𝓘(𝕜, F₁) n (f i)) :
-    ContMDiff I 𝓘(𝕜, F₂) n (fun x ↦ g x (fun i ↦ f i x)) :=
+    (hf : ∀ i, CMDiff n (f i)) :
+    CMDiff n (fun x ↦ g x (fun i ↦ f i x)) :=
   fun x ↦ (hg x).continuousAlternatingMap_apply (fun i ↦ (hf i x))
