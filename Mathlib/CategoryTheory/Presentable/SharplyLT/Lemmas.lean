@@ -121,4 +121,71 @@ lemma exists_of_triple (κ₁ κ₂ κ₃ : Cardinal.{u})
   obtain ⟨κ, _, h₁₂, h₃⟩ := exists_of_pair κ₁₂ κ₃
   exact ⟨κ, inferInstance, h₁.trans h₁₂, h₂.trans h₁₂, h₃⟩
 
+
+local instance (κ : Cardinal.{u}) [Fact κ.IsRegular] : Fact (Cardinal.IsRegular (Order.succ κ)) :=
+  .mk <| Cardinal.isRegular_succ (inferInstance : Fact (Cardinal.IsRegular κ)).out.aleph0_le
+
+-- TODO: clean up this proof. Currently it is ewww
+lemma succ (κ : Cardinal.{u}) [Fact κ.IsRegular] : Cardinal.SharplyLT κ (Order.succ κ) := by
+  refine Cardinal.SharplyLT.tfae (Order.lt_succ _) |>.out 1 4 |>.mpr ?_
+  intro X hX
+  have : Cardinal.aleph0 ≤ κ := Cardinal.IsRegular.aleph0_le Fact.out
+  rw [hasCardinalLT_iff_cardinal_mk_lt, Order.lt_succ_iff] at hX
+  obtain ⟨Φ⟩ : Nonempty (X ↪ κ.ord.ToType) := by simpa [← Cardinal.le_def]
+  let Ψ (x : κ.ord.ToType) : CardinalDirectedPoset.SetCardinalLT κ X :=
+    ⟨Φ ⁻¹' (Set.Iic x), by
+      simp only [hasCardinalLT_iff_cardinal_mk_lt]
+      grw [Cardinal.mk_preimage_of_injective]
+      · have := Cardinal.mk_Iio_lt x (by simp)
+        rw [← Set.Iio_union_right]
+        grw [Cardinal.mk_union_le]
+        simp only [Cardinal.mk_toType, Cardinal.card_ord, Cardinal.mk_fintype, Fintype.card_unique,
+          Nat.cast_one] at this ⊢
+        exact Cardinal.add_one_lt_of_lt (by assumption) this
+      · exact Φ.injective⟩
+  use Set.range Ψ
+  constructor
+  · rw [hasCardinalLT_iff_cardinal_mk_lt]
+    grw [Cardinal.mk_range_le]
+    simp
+  · intro x
+    let G0 : X → Set.Iio κ.ord := Ordinal.ToType.toOrd ∘ Φ
+    let V : Set _ := G0 '' x
+    let W : Set Ordinal := (↑) '' V
+    have bdda : BddAbove W := by
+      use κ.ord
+      simp only [upperBounds, Set.mem_ofPred_eq]
+      grind
+    let W' := sSup W
+    have : ∀ T ∈ W, T < κ.ord := by
+      intro T hT
+      have := x.prop
+      simp [hasCardinalLT_iff_cardinal_mk_lt] at this
+      grind
+    have : W' < κ.ord := by
+      apply Ordinal.sSup_lt_of_lt_cof _ this
+      have := x.prop
+      simp [hasCardinalLT_iff_cardinal_mk_lt] at this
+      simp only [Cardinal.lift_ord, gt_iff_lt, W, V]
+      grw [Cardinal.mk_image_le]
+      have := Cardinal.mk_image_le_lift (f := G0) (s := x.val)
+      rw [← Cardinal.lift_ord, ← Ordinal.lift_cof, Cardinal.IsRegular.cof_ord (Fact.out),
+        ← Cardinal.lift_lt.{u + 1}]
+      grw [this]
+      simpa
+    let j1 := Ψ <| Ordinal.ToType.mk ⟨W', this⟩
+    refine ⟨j1, Set.mem_range_self _, ?_⟩
+    dsimp [j1, W', Ψ, W, V]
+    intro x0 hx0
+    simp only [Set.mem_preimage, Set.mem_Iic, ← (Ordinal.ToType.mk (o := κ.ord)).symm.le_iff_le,
+      OrderIso.symm_apply_apply]
+    rw [← Subtype.coe_le_coe]
+    have : Set.Nonempty W := by
+      have : x.val.Nonempty := ⟨x0, hx0⟩
+      simpa [W, V]
+    have := ConditionallyCompleteLattice.isLUB_csSup W this bdda|>.1.out
+    apply this
+    simp only [Set.mem_image, exists_exists_and_eq_and, W, V, G0]
+    exact ⟨x0, hx0, rfl⟩
+
 end Cardinal.SharplyLT
