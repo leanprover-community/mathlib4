@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.PurelyInseparable.AdjoinPthRoots
 public import Mathlib.FieldTheory.SeparablyGenerated
+public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.Nilpotent.GeometricallyReduced
