@@ -11,8 +11,9 @@ public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Basic.Rel
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Sigma
+
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Order.OrderIsoNat
 
 /-!

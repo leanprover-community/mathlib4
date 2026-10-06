@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Topology.Instances.NNReal.Lemmas
+
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!

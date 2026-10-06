@@ -6,10 +6,11 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+
+import Mathlib.Analysis.Matrix.Hermitian
 
 /-!
 # Positive operators

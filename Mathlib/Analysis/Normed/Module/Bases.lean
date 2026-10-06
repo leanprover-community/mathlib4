@@ -5,9 +5,10 @@ Authors: Michał Świętek
 -/
 module
 
-import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Sym.Sym2

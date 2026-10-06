@@ -5,9 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.RatFunc.Defs
 public import Mathlib.RingTheory.Algebraic.Integral
+
+import Mathlib.Algebra.CharP.Algebra
 
 /-!
 # The field structure of rational functions

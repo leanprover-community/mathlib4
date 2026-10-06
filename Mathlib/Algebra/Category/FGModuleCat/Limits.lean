@@ -6,9 +6,10 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Products
+
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
