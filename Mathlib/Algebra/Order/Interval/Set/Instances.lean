@@ -15,7 +15,7 @@ public import Mathlib.Order.Interval.Set.Basic
 # Algebraic instances for unit intervals
 
 For suitably structured underlying type `α`, we exhibit the structure of
-the unit intervals (`Set.Icc`, `Set.Ioc`, `Set.Ioc`, and `Set.Ioo`) from `0` to `1`.
+the unit intervals (`Set.Icc`, `Set.Ico`, `Set.Ioc`, and `Set.Ioo`) from `0` to `1`.
 Note: Instances for the interval `Ici 0` are dealt with in
 `Mathlib/Algebra/Order/Nonneg/Basic.lean`.
 
@@ -72,7 +72,7 @@ instance instOne : One (Icc (0 : R) 1) where one := ⟨1, right_mem_Icc.2 zero_l
 
 instance instZeroLEOneClass : ZeroLEOneClass (Icc (0 : R) 1) := ⟨Subtype.coe_le_coe.mp zero_le_one⟩
 
-instance : IsBotZeroClass (Icc (0 : R) 1) where isBot_zero := coe_nonneg
+instance instIsBotZeroClass : IsBotZeroClass (Icc (0 : R) 1) where isBot_zero := coe_nonneg
 
 @[simp, norm_cast]
 theorem coe_zero : ↑(0 : Icc (0 : R) 1) = (0 : R) :=
@@ -106,6 +106,9 @@ theorem coe_eq_one {x : Icc (0 : R) 1} : (x : R) = 1 ↔ x = 1 := by
 theorem coe_ne_one {x : Icc (0 : R) 1} : (x : R) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
 
+instance instNeZeroOne [NeZero (1 : R)] : NeZero (1 : Icc (0 : R) 1) :=
+  ⟨coe_ne_zero.mp (NeZero.ne _)⟩
+
 /-- like `coe_nonneg`, but with the inequality in `Icc (0:R) 1`. -/
 theorem nonneg {t : Icc (0 : R) 1} : 0 ≤ t :=
   t.2.1
@@ -133,10 +136,10 @@ theorem coe_mul (x y : Icc (0 : R) 1) : ↑(x * y) = (x * y : R) :=
 theorem coe_pow (x : Icc (0 : R) 1) (n : ℕ) : ↑(x ^ n) = ((x : R) ^ n) :=
   rfl
 
-instance : MulLeftMono (Icc (0 : R) 1) where
+instance instMulLeftMono : MulLeftMono (Icc (0 : R) 1) where
   elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_left h x.2.1)
 
-instance : MulRightMono (Icc (0 : R) 1) where
+instance instMulRightMono : MulRightMono (Icc (0 : R) 1) where
   elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_right h x.2.1)
 
 theorem mul_le_left {x y : Icc (0 : R) 1} : x * y ≤ x :=
@@ -156,15 +159,13 @@ def coeMonoidWithZeroHom : (Icc (0 : R) 1) →*₀ R where
   map_one' := rfl
   map_zero' := rfl
 
-instance [IsLeftCancelMulZero R] : IsLeftCancelMulZero (Icc (0 : R) 1) where
-  mul_left_cancel_of_ne_zero ha _ _ h :=
-    Subtype.ext <| mul_left_cancel₀ (coe_eq_zero.not.mpr ha) (congr_arg Subtype.val h)
+instance instIsLeftCancelMulZero [IsLeftCancelMulZero R] : IsLeftCancelMulZero (Icc (0 : R) 1) :=
+  Subtype.coe_injective.isLeftCancelMulZero _ coe_zero coe_mul
 
-instance [IsRightCancelMulZero R] : IsRightCancelMulZero (Icc (0 : R) 1) where
-  mul_right_cancel_of_ne_zero ha _ _ h :=
-    Subtype.ext <| mul_right_cancel₀ (coe_eq_zero.not.mpr ha) (congr_arg Subtype.val h)
+instance instIsRightCancelMulZero [IsRightCancelMulZero R] : IsRightCancelMulZero (Icc (0 : R) 1) :=
+  Subtype.coe_injective.isRightCancelMulZero _ coe_zero coe_mul
 
-instance [IsCancelMulZero R] : IsCancelMulZero (Icc (0 : R) 1) where
+instance instIsCancelMulZero [IsCancelMulZero R] : IsCancelMulZero (Icc (0 : R) 1) where
 
 end OrderedSemiring
 
@@ -172,14 +173,8 @@ instance instCommMonoidWithZero [CommSemiring R] [PartialOrder R] [IsOrderedRing
     CommMonoidWithZero (Icc (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
-instance [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
+instance instIsOrderedMonoid [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
     IsOrderedMonoid (Icc (0 : R) 1) := .of_mulLeftMono
-
-instance instIsCancelMulZero [Ring R] [PartialOrder R] [IsOrderedRing R]
-    [NoZeroDivisors R] :
-    IsCancelMulZero (Icc (0 : R) 1) :=
-  @Function.Injective.isCancelMulZero _ R _ _ _ _ _ Subtype.coe_injective coe_zero coe_mul
-    NoZeroDivisors.toIsCancelMulZero
 
 section OrderedAddCommGroup
 variable [AddCommGroupWithOne R] [Preorder R] [IsOrderedAddMonoid R]
@@ -240,7 +235,7 @@ theorem coe_ne_zero {x : Ico (0 : R) 1} : (x : R) ≠ 0 ↔ x ≠ 0 :=
 theorem nonneg {t : Ico (0 : R) 1} : 0 ≤ t :=
   t.2.1
 
-instance : IsBotZeroClass (Ico (0 : R) 1) where isBot_zero := coe_nonneg
+instance instIsBotZeroClass : IsBotZeroClass (Ico (0 : R) 1) where isBot_zero := coe_nonneg
 
 end ZeroLEOneClass
 
@@ -255,11 +250,11 @@ instance instMul : Mul (Ico (0 : R) 1) where
 theorem coe_mul (x y : Ico (0 : R) 1) : ↑(x * y) = (x * y : R) :=
   rfl
 
-instance : MulLeftMono (Icc (0 : R) 1) where
-  elim x _ _ h := Subtype.coe_le_coe.2 (mul_le_mul_of_nonneg_left h x.2.1)
+instance instMulLeftMono : MulLeftMono (Ico (0 : R) 1) where
+  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_left h x.2.1)
 
-instance : MulRightMono (Icc (0 : R) 1) where
-  elim x _ _ h := Subtype.coe_le_coe.2 (mul_le_mul_of_nonneg_right h x.2.1)
+instance instMulRightMono : MulRightMono (Ico (0 : R) 1) where
+  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_right h x.2.1)
 
 instance instSemigroup : Semigroup (Ico (0 : R) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
@@ -270,18 +265,20 @@ def coeMulHom : (Ico (0 : R) 1) →ₙ* R where
   toFun := (↑)
   map_mul' := coe_mul
 
-instance [NeZero (1 : R)] : SemigroupWithZero (Ico (0 : R) 1) := fast_instance%
+instance instSemigroupWithZero [NeZero (1 : R)] :
+    SemigroupWithZero (Ico (0 : R) 1) := fast_instance%
   Subtype.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
-instance [NeZero (1 : R)] [IsLeftCancelMulZero R] : IsLeftCancelMulZero (Ico (0 : R) 1) where
-  mul_left_cancel_of_ne_zero ha _ _ h :=
-    Subtype.ext <| mul_left_cancel₀ (coe_eq_zero.not.mpr ha) (congr_arg Subtype.val h)
+instance instIsLeftCancelMulZero [NeZero (1 : R)] [IsLeftCancelMulZero R] :
+    IsLeftCancelMulZero (Ico (0 : R) 1) :=
+  Subtype.coe_injective.isLeftCancelMulZero _ coe_zero coe_mul
 
-instance [NeZero (1 : R)] [IsRightCancelMulZero R] : IsRightCancelMulZero (Ico (0 : R) 1) where
-  mul_right_cancel_of_ne_zero ha _ _ h :=
-    Subtype.ext <| mul_right_cancel₀ (coe_eq_zero.not.mpr ha) (congr_arg Subtype.val h)
+instance instIsRightCancelMulZero [NeZero (1 : R)] [IsRightCancelMulZero R] :
+    IsRightCancelMulZero (Ico (0 : R) 1) :=
+  Subtype.coe_injective.isRightCancelMulZero _ coe_zero coe_mul
 
-instance [NeZero (1 : R)] [IsCancelMulZero R] : IsCancelMulZero (Ico (0 : R) 1) where
+instance instIsCancelMulZero [NeZero (1 : R)] [IsCancelMulZero R] :
+    IsCancelMulZero (Ico (0 : R) 1) where
 
 end OrderedSemiring
 
@@ -350,15 +347,15 @@ theorem coe_mul (x y : Ioc (0 : R) 1) : ↑(x * y) = (x * y : R) :=
 theorem coe_pow (x : Ioc (0 : R) 1) (n : ℕ) : ↑(x ^ n) = ((x : R) ^ n) :=
   rfl
 
-instance : MulLeftStrictMono (Ioc (0 : R) 1) where
+instance instMulLeftStrictMono : MulLeftStrictMono (Ioc (0 : R) 1) where
   elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_left h x.2.1)
 
-instance : MulRightStrictMono (Ioc (0 : R) 1) where
+instance instMulRightStrictMono : MulRightStrictMono (Ioc (0 : R) 1) where
   elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_right h x.2.1)
 
-instance : MulLeftMono (Ioc (0 : R) 1) := mulLeftMono_of_mulLeftStrictMono _
+instance instMulLeftMono : MulLeftMono (Ioc (0 : R) 1) := mulLeftMono_of_mulLeftStrictMono _
 
-instance : MulRightMono (Ioc (0 : R) 1) := mulRightMono_of_mulRightStrictMono _
+instance instMulRightMono : MulRightMono (Ioc (0 : R) 1) := mulRightMono_of_mulRightStrictMono _
 
 instance instSemigroup : Semigroup (Ioc (0 : R) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
@@ -373,15 +370,15 @@ def coeMonoidHom : (Ioc (0 : R) 1) →* R where
   map_mul' := coe_mul
   map_one' := rfl
 
-instance [IsLeftCancelMulZero R] : IsLeftCancelMul (Ioc (0 : R) 1) where
+instance instIsLeftCancelMul [IsLeftCancelMulZero R] : IsLeftCancelMul (Ioc (0 : R) 1) where
   mul_left_cancel a _ _ h :=
     Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' (congr_arg Subtype.val h)
 
-instance [IsRightCancelMulZero R] : IsRightCancelMul (Ioc (0 : R) 1) where
+instance instIsRightCancelMul [IsRightCancelMulZero R] : IsRightCancelMul (Ioc (0 : R) 1) where
   mul_right_cancel a _ _ h :=
     Subtype.ext <| mul_right_cancel₀ a.prop.1.ne' (congr_arg Subtype.val h)
 
-instance [IsCancelMulZero R] : IsCancelMul (Ioc (0 : R) 1) where
+instance instIsCancelMul [IsCancelMulZero R] : IsCancelMul (Ioc (0 : R) 1) where
 
 instance instCancelMonoid [IsCancelMulZero R] : CancelMonoid (Ioc (0 : R) 1) :=
   { Set.Ioc.instMonoid with
@@ -410,7 +407,6 @@ end Set.Ioc
 
 /-! ### Instances for `↥(Set.Ioo 0 1)` -/
 
-
 namespace Set.Ioo
 
 section Preorder
@@ -435,6 +431,16 @@ instance instMul : Mul (Ioo (0 : R) 1) where
 theorem coe_mul (x y : Ioo (0 : R) 1) : ↑(x * y) = (x * y : R) :=
   rfl
 
+instance instMulLeftStrictMono : MulLeftStrictMono (Ioo (0 : R) 1) where
+  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_left h x.2.1)
+
+instance instMulRightStrictMono : MulRightStrictMono (Ioo (0 : R) 1) where
+  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_right h x.2.1)
+
+instance instMulLeftMono : MulLeftMono (Ioo (0 : R) 1) := mulLeftMono_of_mulLeftStrictMono _
+
+instance instMulRightMono : MulRightMono (Ioo (0 : R) 1) := mulRightMono_of_mulRightStrictMono _
+
 instance instSemigroup : Semigroup (Ioo (0 : R) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
@@ -443,6 +449,25 @@ instance instSemigroup : Semigroup (Ioo (0 : R) 1) := fast_instance%
 def coeMulHom : (Ioo (0 : R) 1) →ₙ* R where
   toFun := (↑)
   map_mul' := coe_mul
+
+instance instIsLeftCancelMul [IsLeftCancelMulZero R] : IsLeftCancelMul (Ioo (0 : R) 1) where
+  mul_left_cancel a _ _ h :=
+    Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' (congr_arg Subtype.val h)
+
+instance instIsRightCancelMul [IsRightCancelMulZero R] : IsRightCancelMul (Ioo (0 : R) 1) where
+  mul_right_cancel a _ _ h :=
+    Subtype.ext <| mul_right_cancel₀ a.prop.1.ne' (congr_arg Subtype.val h)
+
+instance instIsCancelMul [IsCancelMulZero R] : IsCancelMul (Ioo (0 : R) 1) where
+
+instance instLeftCancelSemigroup [IsLeftCancelMulZero R] : LeftCancelSemigroup (Ioo (0 : R) 1) :=
+  { Set.Ioo.instSemigroup with
+    mul_left_cancel _ _ _ := mul_left_cancel }
+
+instance instRightCancelSemigroup [IsRightCancelMulZero R] :
+    RightCancelSemigroup (Ioo (0 : R) 1) :=
+  { Set.Ioo.instSemigroup with
+    mul_right_cancel _ _ _ := mul_right_cancel }
 
 end OrderedSemiring
 
