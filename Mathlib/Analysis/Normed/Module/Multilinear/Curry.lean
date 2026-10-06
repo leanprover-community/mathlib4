@@ -133,7 +133,7 @@ theorem ContinuousLinearMap.curry_uncurryLeft
 @[simp]
 theorem ContinuousMultilinearMap.uncurry_curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) :
     f.curryLeft.uncurryLeft = f :=
-  ContinuousMultilinearMap.toMultilinearMap_injective <| f.toMultilinearMap.uncurry_curryLeft
+  ContinuousMultilinearMap.toMultilinearMap_injective f.toMultilinearMap.uncurry_curryLeft
 
 variable (𝕜 Ei G)
 
@@ -600,7 +600,7 @@ def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' �
         rfl
       left_inv := fun f => by
         ext m
-        exact congr_arg f (Sum.elim_comp_inl_inr m) }
+        congrm f $(Sum.elim_comp_inl_inr m) }
     (fun f => MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg f) _) fun f => by
       simp only [LinearEquiv.coe_symm_mk]
       exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _

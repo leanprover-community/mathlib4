@@ -5,11 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Abelian
-public import Mathlib.Algebra.Category.Grp.EpiMono
-public import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
-public import Mathlib.Basic.Finite.Prod
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 
 /-!
@@ -37,7 +34,7 @@ def isFinite : ObjectProperty AddCommGrpCat.{u} :=
 lemma prop_isFinite_iff (M : AddCommGrpCat.{u}) : isFinite M ↔ Finite M := Iff.rfl
 
 instance : isFinite.{u}.IsSerreClass where
-  exists_zero := ⟨.of PUnit, isZero_of_subsingleton _,
+  exists_zero := ⟨↧PUnit, isZero_of_subsingleton _,
     by rw [prop_isFinite_iff]; infer_instance⟩
   prop_of_mono {M N} f hf hN := by
     rw [AddCommGrpCat.mono_iff_injective] at hf

@@ -7,7 +7,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Commensurable
-public import Mathlib.GroupTheory.Complement
+import Mathlib.GroupTheory.Complement
 public import Mathlib.Topology.Algebra.ConstMulAction
 
 /-!
@@ -26,7 +26,7 @@ protected lemma Subgroup.properlyDiscontinuousSMul_iff
       IsCompact K → IsCompact L →  {g : Γ | g ∈ S ∧ (g • K ∩ L).Nonempty}.Finite := by
   rw [properlyDiscontinuousSMul_iff]
   congr! with K L hK hL
-  convert! injOn_subtype_val (s := {m : S | (m • K ∩ L).Nonempty}) |>.bijOn_image.finite_iff_finite
+  convert injOn_subtype_val (s := {m : S | (m • K ∩ L).Nonempty}) |>.bijOn_image.finite_iff_finite
   ext g
   simp [Set.subtype_smul_set, and_comm]
 
@@ -36,10 +36,11 @@ lemma Subgroup.properlyDiscontinuousSMul_of_le
     ProperlyDiscontinuousSMul H α := by
   rw [Subgroup.properlyDiscontinuousSMul_iff] at hG ⊢
   intro K L hK hL
-  exact (hG hK hL).subset fun _ ⟨hg, hg'⟩ ↦ ⟨hGH hg, hg'⟩
+  grw [hGH]
+  exact hG hK hL
 
 /-- If `Γ` acts properly discontinuously, so does every subgroup of `Γ`. -/
-@[to_additive]
+@[to_additive /-- If `Γ` acts properly discontinuously, so does every additive subgroup of `Γ`. -/]
 instance [SMul Γ α] [ProperlyDiscontinuousSMul Γ α] (G : Subgroup Γ) :
     ProperlyDiscontinuousSMul G α := by
   refine Subgroup.properlyDiscontinuousSMul_of_le ?_ le_top
@@ -49,7 +50,8 @@ instance [SMul Γ α] [ProperlyDiscontinuousSMul Γ α] (G : Subgroup Γ) :
 open Pointwise in
 /-- If `G, H` are subgroups of `Γ` which acts on `α`, and `G ∩ H` has finite index in `G`,
 then `G` acts properly discontinuously if `H` does. -/
-@[to_additive]
+@[to_additive /-- If `G, H` are additive subgroups of `Γ` which acts on `α`, and `G ∩ H` has finite
+index in `G`, then `G` acts properly discontinuously if `H` does. -/]
 lemma ProperlyDiscontinuousSMul.ofFiniteRelIndex [MulAction Γ α] [ContinuousConstSMul Γ α]
     (G H : Subgroup Γ) [hH : ProperlyDiscontinuousSMul H α] [H.IsFiniteRelIndex G] :
     ProperlyDiscontinuousSMul G α := by
