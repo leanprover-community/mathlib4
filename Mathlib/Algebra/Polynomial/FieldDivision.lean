@@ -712,8 +712,8 @@ theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (p : R[X]) :
   obtain rfl | _ := eq_or_ne p 0
   · simp
   rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
-    mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
-  simp_all
+    mul_comm, mul_assoc, ← map_mul] <;>
+    simp_all
 
 protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
     p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
@@ -751,7 +751,7 @@ theorem exists_odd_natDegree_monic_irreducible_factor (p : R[X]) (hp : Odd p.nat
 theorem exists_root_of_odd_natDegree_irreducible_imp_natDegree_eq_one
     (h : ∀ {q : R[X]}, q.Monic → Odd q.natDegree → Irreducible q → q.natDegree = 1)
     (p : R[X]) (hp : Odd p.natDegree) : ∃ x, p.IsRoot x := by
-  rcases p.exists_odd_natDegree_monic_irreducible_factor hp with ⟨q, ho, hm, hi, hd⟩
+  rcases p.exists_odd_natDegree_monic_irreducible_factor hp with ⟨q, _, _, _, hd⟩
   rcases q.exists_root_of_natDegree_eq_one (by grind) with ⟨x, hx⟩
   exact ⟨x, hx.dvd hd⟩
 
