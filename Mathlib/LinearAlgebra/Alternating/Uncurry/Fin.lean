@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.GroupTheory.Perm.Fin
+
 import Mathlib.Data.Fin.Parity
 
 /-!

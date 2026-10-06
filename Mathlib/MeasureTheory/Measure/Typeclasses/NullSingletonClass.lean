@@ -5,8 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Measure.Restrict
+
+import Mathlib.MeasureTheory.Measure.Interval
 
 /-!
 # Measures having value zero on singletons
