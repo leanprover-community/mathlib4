@@ -5,10 +5,13 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
+public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonsingularColimit
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonemptyFiniteChains
 public import Mathlib.CategoryTheory.Limits.Presheaf
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
 # The subdivision functors
@@ -197,6 +200,42 @@ instance (X : SSet.{u}) [Nonsingular X] : IsIso (sdToSd'.app X) :=
       (isColimitOfPreserves sd' X.isColimitCoconeN') (Functor.whiskerLeft _ sdToSd')
       (fun s ↦ (by dsimp; infer_instance)) _ (fun x ↦ by simp))
 
-instance : sd'.{u}.PreservesMonomorphisms := sorry
+instance : sd'.{u}.PreservesMonomorphisms where
+  preserves {X Y} f hf := by
+    rw [NatTrans.mono_iff_mono_app]
+    rintro ⟨n⟩
+    induction n with | _ n
+    rw [mono_iff_injective]
+    intro s t h
+    rw [nerve.ext_of_isThin_iff]
+    ext i
+    exact mapN_injective_of_mono f (congr($(h).obj i))
+
+instance (n : ℕ) : Mono (sd.map (boundary.{u} n).ι) :=
+  ((MorphismProperty.monomorphisms _).arrow_mk_iso_iff
+    (Arrow.isoMk (asIso (sdToSd'.app _)) (asIso (sdToSd'.app _)))).mpr
+      (.infer_property (sd'.map (boundary.{u} n).ι))
+
+instance : PreservesWellOrderContinuousOfShape ℕ sd.{u} where
+
+instance :
+    ((MorphismProperty.monomorphisms SSet).inverseImage sd.{u}).IsStableUnderCoproducts.{u} where
+  isStableUnderCoproductsOfShape := sorry
+
+open MorphismProperty modelCategoryQuillen in
+instance : sd.{u}.PreservesMonomorphisms where
+  preserves {X Y} i _ := by
+    have : (coproducts.{u} I).pushouts ≤ (monomorphisms _).inverseImage sd.{u} := by
+      rw [← MorphismProperty.map_le_iff]
+      sorry
+      --refine ((coproducts.{u} I).map_pushouts_le sd.{u}).trans ?_
+      --simp only [pushouts_le_iff, map_le_iff, coproducts_le_iff]
+      --intro _ _ _ ⟨n⟩
+      --simp only [inverseImage_iff, monomorphisms.iff]
+      --infer_instance
+    have := relativeCellComplexOfMono i
+    sorry
+    --apply transfiniteCompositionsOfShape_le _ _ _
+    --  ((modelCategoryQuillen.transfiniteCompositionOfMono i).ofLE this).map.mem
 
 end SSet
