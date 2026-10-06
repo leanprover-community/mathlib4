@@ -216,14 +216,13 @@ that (1) are unused in the remainder of the type (2) have types which satisfy `i
 is a performance optimization. `isAppOrForallOfConstP` may be useful in detecting constant
 applications and types of the form `∀ (...), bar ..` here.)
 
-If any such parameters are found in the type of a theorem `foo`, we create a telescope in which the
+If any such parameters are found in the type of `thm`, we create a telescope in which the
 types and free variables of the unused parameters are available as
-`unusedParams : Array Parameter := #[p₁, p₂, ..., pₙ]`, as well as the theorem `thm : ConstantVal`
-and current infotree `t`, and run `log t thm unusedParams`.
+`unusedParams : Array Parameter := #[p₁, p₂, ..., pₙ]`, and run `log unusedParams`.
 
 A simple pattern is therefore
 ```
-fun _ thm unusedParams => do
+fun unusedParams => do
   logLint linter.fooLinter (← getRef) m!"\
     {thm.name.unusedInstancesMsg unusedParams}\n\n\
     <extra caption>"
