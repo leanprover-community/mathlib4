@@ -43,15 +43,13 @@ syntax (name := slice) "slice " num ppSpace num : conv
   normal form
 -/
 def evalSlice (a b : Nat) : TacticM Unit := do
-  let _ ← iterateUntilFailureWithResults do
+  let _ ← iterateUntilFailureWithResults <|
     evalTactic (← `(conv| rw [Category.assoc]))
-  iterateRange (a - 1) (a - 1) do
-      evalTactic (← `(conv| congr))
-      evalTactic (← `(tactic| rotate_left))
-  let k ← iterateUntilFailureCount
-    <| evalTactic (← `(conv| rw [← Category.assoc]))
+  iterateRange (a - 1) (a - 1) <| evalTactic (← `(conv| rhs))
+  let k ← iterateUntilFailureCount <|
+    evalTactic (← `(conv| rw [← Category.assoc]))
   let c := k+1+a-b
-  iterateRange c c <| evalTactic (← `(conv| congr))
+  iterateRange c c <| evalTactic (← `(conv| lhs))
   let _ ← iterateUntilFailureWithResults do
     evalTactic (← `(conv| rw [Category.assoc]))
 
