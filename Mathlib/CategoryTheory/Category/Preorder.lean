@@ -172,8 +172,8 @@ theorem Monotone.functorComp_hom_app {Z : Type*} [Preorder Z] {f : X → Y} (h :
   (h.functorComp h').hom.app x = 𝟙 (g (f x)) := rfl
 
 @[simp]
-theorem Monotone.functorComp_inv_app {Z : Type*} [Preorder Z] {f : X → Y} (h : Monotone f) {g : Y → Z}
-    (h' : Monotone g) (x : X) :
+theorem Monotone.functorComp_inv_app {Z : Type*} [Preorder Z] {f : X → Y} (h : Monotone f)
+    {g : Y → Z} (h' : Monotone g) (x : X) :
   (h.functorComp h').inv.app x = 𝟙 (g (f x)) := rfl
 
 -- Faithfulness is automatic because preorder categories are thin
