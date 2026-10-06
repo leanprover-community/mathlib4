@@ -41,7 +41,6 @@ jobs:
           github.event.workflow_run.event == 'push'
           && github.event.workflow_run.head_branch != 'master'
           && github.event.workflow_run.head_branch != 'nightly-testing'
-          && !startsWith(github.event.workflow_run.head_branch, 'lean-pr-testing-')
         )
       )
     runs-on: ubuntu-latest

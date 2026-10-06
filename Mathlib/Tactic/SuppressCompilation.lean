@@ -5,7 +5,7 @@ Authors: Alex J. Best, Mac Malone
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 public meta import Lean.Elab.Declaration
 
 /-!

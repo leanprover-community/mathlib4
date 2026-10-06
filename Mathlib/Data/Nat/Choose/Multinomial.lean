@@ -138,8 +138,8 @@ theorem multinomial_single [DecidableEq α] :
 /-! ### Connection to binomial coefficients
 
 When `Nat.multinomial` is applied to a `Finset` of two elements `{a, b}`, the
-result a binomial coefficient. We use `binomial` in the names of lemmas that
-involves `Nat.multinomial {a, b}`.
+result is a binomial coefficient. We use `binomial` in the names of lemmas that
+involve `Nat.multinomial {a, b}`.
 -/
 
 theorem binomial_eq [DecidableEq α] (h : a ≠ b) :
@@ -313,7 +313,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       s.sum x ^ n =
         ∑ k : s.sym n,
           k.1.1.countPerms *
-            (k.1.1.map <| x).noncommProd
+            (k.1.1.map x).noncommProd
               (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.2) := by
   induction s using Finset.induction with
   | empty =>
@@ -323,7 +323,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       swap
       · exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert! (@one_mul R _ _).symm
-      convert! @Nat.cast_one R _
+      convert @Nat.cast_one R _
       simp
     · rw [_root_.pow_succ, mul_zero]
       have : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
