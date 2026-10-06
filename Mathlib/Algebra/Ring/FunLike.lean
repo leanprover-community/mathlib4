@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.FunLike
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Pi
+
 import Mathlib.Tactic.Finiteness.Attr
 
 /-! # Ring instances for `FunLike` types

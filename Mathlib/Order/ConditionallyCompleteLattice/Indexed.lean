@@ -124,6 +124,25 @@ theorem le_ciSup {f : ι → α} (H : BddAbove (range f)) (c : ι) : f c ≤ iSu
 theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   le_trans h (le_ciSup H c)
 
+@[to_dual]
+theorem ciSup_extend_le [Nonempty β] {f : ι → β} {g : ι → α} (hg : BddAbove (range g)) {j : β → α}
+    (hj : BddAbove (range j)) :
+    iSup (extend f g j) ≤ iSup g ⊔ iSup j := by
+  refine ciSup_le fun i ↦ ?_
+  classical aesop (add simp [le_sup_of_le_left, le_sup_of_le_right, Function.extend_def, le_ciSup])
+
+@[to_dual]
+theorem ciSup_extend [Nonempty ι] {f : ι → β} {g : ι → α} (hf : FactorsThrough g f)
+    (hg : BddAbove (range g)) {j : β → α} (hjg : ∀ i, j i ≤ iSup g) :
+    iSup (extend f g j) = iSup g := by
+  have hβ : Nonempty β := ‹Nonempty ι›.map f
+  refine le_antisymm ?_ ?_
+  · refine (ciSup_extend_le hg ⟨iSup g, by grind [mem_upperBounds]⟩).trans_eq ?_
+    simpa using ciSup_le hjg
+  · refine ciSup_le fun i ↦ le_ciSup_of_le ?_ (f i) (by simp [hf.extend_apply])
+    refine (bddAbove_union.mpr ⟨hg, ?_⟩).mono (Set.range_extend_subset f g j)
+    exact ⟨iSup g, by grind [mem_upperBounds]⟩
+
 /-- If the set of all `f i j` is bounded above, then so is the set of the supremums of every row -/
 @[to_dual /-- If the set of all `f i j` is bounded below, then so is the set of the infimums of
 every row -/]
