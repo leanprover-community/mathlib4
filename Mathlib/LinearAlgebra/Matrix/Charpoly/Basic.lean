@@ -111,9 +111,10 @@ lemma charmatrix_map (M : Matrix n n R) (f : R →+* S) :
   ext i j
   by_cases h : i = j <;> simp [h, charmatrix, diagonal]
 
-lemma charmatrix_mul_map_C_of_mul_eq_mul {A B P : Matrix n n R} (h : A * P = P * B) :
-    charmatrix A * P.map C = P.map C * charmatrix B := by
-  simp only [charmatrix, RingHom.mapMatrix_apply, sub_mul, mul_sub, ← Matrix.map_mul, h]
+lemma charmatrix_mul_map_C_of_mul_eq_mul {A : Matrix n n R} {B : Matrix m m R} {P : Matrix n m R}
+    (h : A * P = P * B) : charmatrix A * P.map C = P.map C * charmatrix B := by
+  simp only [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_mul, Matrix.mul_sub, ← Matrix.map_mul,
+    h]
   congrm ?_ - _
   exact Matrix.scalar_comm X commute_X _
 
