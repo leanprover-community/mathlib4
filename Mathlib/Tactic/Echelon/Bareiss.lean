@@ -30,7 +30,8 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Echelon
 
-/-- The applicability check of the Bareiss method, which requires a commutative domain. -/
+/-- The applicability check of the Bareiss method, which requires a commutative domain. It
+returns the commutative ring instance for the downstream functions to use. -/
 def inferBareissRing {u : Level} (α : Q(Type u)) :
     MetaM (Except MessageData Q(CommRing $α)) := do
   let .some rα ← trySynthInstanceQ q(CommRing $α)

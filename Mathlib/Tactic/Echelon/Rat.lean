@@ -52,7 +52,7 @@ facts between 0 and 1, but not for general entries against 0. -/
 def checkDecideEq {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) : MetaM Bool := do
   let two : Q($α) ← mkIntNumeral α 2
   -- `Decidable` of the single disequality rather than `DecidableEq`: a ring where equality
-  -- is only decidable against zero should pass
+  -- is only decidable against zero should pass.
   let some _inst ← synthInstanceQ? q(Decidable ($two ≠ 0)) | return false
   let dec := q(decide ($two ≠ 0))
   return (Kernel.whnf (← getEnv) (← getLCtx) dec).toOption.any fun r =>

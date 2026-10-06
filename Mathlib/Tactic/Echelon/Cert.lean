@@ -48,7 +48,7 @@ namespace Mathlib.Tactic.Echelon
 
 /-- Three forms of one list-based matrix literal. This makes the argument list more succinct when
 a cert construction function needs to use multiple representations. -/
-structure ListMatrixLit (u : Level) (m n : Nat) (α : Q(Type u)) where
+structure ListMatrixLit {u : Level} (α : Q(Type u)) (m n : Nat) where
   /-- The matrix, the `ofLists` term on `lit`. -/
   matrix : Q(Matrix (Fin $m) (Fin $n) $α)
   /-- The list literal of `rows`. -/
@@ -58,7 +58,7 @@ structure ListMatrixLit (u : Level) (m n : Nat) (α : Q(Type u)) where
 
 /-- The `ListMatrixLit` of the matrix with rows `rows`. -/
 def ListMatrixLit.ofArray {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
-    (rows : Array (Array Q($α))) : ListMatrixLit u m n α :=
+    (rows : Array (Array Q($α))) : ListMatrixLit α m n :=
   let rows := rows.toList.map Array.toList
   let lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (rows.map mkListLitQ)
   { matrix := q(ofLists $m $n $lit), lit, rows }
@@ -124,7 +124,7 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (certifier : Entry
 /-- Prove that `U` is pivoted by `pivotOfList pivots` from the rows of `U`, with `certifier`
 proving the pivot entries nonzero. -/
 def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (certifier : EntryCertifier α)
-    (zα : Q(Zero $α)) (U : ListMatrixLit u m n α) (cols : List Nat) (pivots : Q(List (Fin $n))) :
+    (zα : Q(Zero $α)) (U : ListMatrixLit α m n) (cols : List Nat) (pivots : Q(List (Fin $n))) :
     MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $pivots i) := do
   let hsorted ← mkDecideProofQ q(($pivots).SortedLT)
   let h ← certifyPivotedList certifier zα cols pivots U.lit
@@ -154,7 +154,7 @@ def certifyRowsEq {u : Level} {α : Q(Type u)} (certifier : EntryCertifier α)
 def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)}
     (certifier? : Option (EntryCertifier α)) (cα : Q(AddCommMonoid $α))
     {zα : Q(Zero $α)} {aα : Q(Add $α)} {mα : Q(Mul $α)} (mulEq : MulEq zα aα mα m m n)
-    (U : ListMatrixLit u m n α) :
+    (U : ListMatrixLit α m n) :
     MetaM Q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix)) := do
   let hmul : Q(ListMatrix.mul $m $m $n $(mulEq.A) $(mulEq.B) = $(U.lit)) ← match certifier? with
     | none =>
@@ -179,7 +179,7 @@ structure DecompositionCert {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(Co
   /-- The decomposition certificate from the theory. -/
   decomp : Q(Echelon.Decomposition $A)
   /-- The echelon form. -/
-  U : ListMatrixLit u m n α
+  U : ListMatrixLit α m n
   /-- The product equation. -/
   mul_eq : Q(($decomp).L * ($A).submatrix ($decomp).σ id = $(U.matrix))
 
@@ -201,7 +201,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)}
   let lRows : List (List Q($α)) := data.L.toList.map Array.toList
   let aRows : List (List Q($α)) := (data.rowOrder.map (entries[·]!)).toList.map Array.toList
   let mulEq := proveMul zα aα mα m m n lRows aRows
-  -- `L` and `Aσ` reuse the literals `proveMul` built
+  -- `L` and `Aσ` reuse the literals `proveMul` built.
   have Lm : Q(Matrix (Fin $m) (Fin $m) $α) := q(ofLists $m $m $(mulEq.A))
   let Aσm : Q(Matrix (Fin $m) (Fin $n) $α) := q(ofLists $m $n $(mulEq.B))
   let Um := U.matrix
