@@ -525,6 +525,14 @@ theorem submatrix_map (f : α → β) (e₁ : l → m) (e₂ : o → n) (A : Mat
     (A.map f).submatrix e₁ e₂ = (A.submatrix e₁ e₂).map f :=
   rfl
 
+/-- Surjective reindexing functions make `submatrix` injective. -/
+theorem submatrix_injective {r : l → m} {c : o → n} (hr : r.Surjective) (hc : c.Surjective) :
+    Function.Injective (submatrix (α := α) · r c) :=
+  fun A B hAB => ext fun i j => by
+    obtain ⟨i', rfl⟩ := hr i
+    obtain ⟨j', rfl⟩ := hc j
+    exact congr($hAB i' j')
+
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence.
 
