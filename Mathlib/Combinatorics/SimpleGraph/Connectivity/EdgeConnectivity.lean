@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Set.Card
 public import Mathlib.Order.CompletePartialOrder
 
 /-!
