@@ -70,17 +70,14 @@ namespace Complex
 
 variable {s z : ℂ} {r t : ℝ} {n : ℕ}
 
-theorem notMem_Ici_one_reProdIm_of_norm_lt_one (hz : ‖z‖ < 1) : z ∉ Ici 1 ×ℂ {0} := by
-  contrapose! hz
-  exact hz.left.trans <| re_le_norm z
+theorem notMem_Ici_one_reProdIm_of_norm_lt_one (hz : ‖z‖ < 1) : z ∉ Ici 1 ×ℂ {0} :=
+  fun nh => (nh.left.trans <| re_le_norm z).not_gt hz
 
 theorem isClosed_Ici_one_reProdIm : IsClosed (Ici 1 ×ℂ {0}) :=
   isClosed_Ici.reProdIm isClosed_singleton
 
-private lemma exp_sub_ne_zero (ht : 0 ≤ t) (hz : z ∉ Ici 1 ×ℂ {0}) :
-    cexp t - z ≠ 0 := by
-  intro nh
-  simp [← sub_eq_zero.mp nh, mem_reProdIm, exp_ofReal_re, ht.not_gt] at hz
+private lemma exp_sub_ne_zero (ht : 0 ≤ t) (hz : z ∉ Ici 1 ×ℂ {0}) : cexp t - z ≠ 0 :=
+  fun nh => hz <| by simpa [← sub_eq_zero.mp nh, mem_reProdIm, exp_ofReal_re, ht.not_gt]
 
 section PolylogKernel
 
@@ -105,39 +102,41 @@ theorem analyticAt_polylogKernel_right (hz : z ∉ Ici 1 ×ℂ {0}) (ht : 0 ≤ 
     |>.sub analyticAt_const) <| exp_sub_ne_zero ht hz
 
 theorem polylogKernel_isBigO :
-    polylogKernel z =O[atTop] fun t : ℝ => (rexp (-t) : ℂ) := by
-  unfold polylogKernel
-  simp only [div_eq_mul_inv, ofReal_exp, ofReal_neg, exp_neg]
-  refine IsBigO.const_mul_left (IsBigO.inv_rev ?_ ?_) z
+    polylogKernel z =O[atTop] fun t : ℝ => rexp (-t) := by
+  apply isBigO_ofReal_right.mp
+  simp only [ofReal_exp, ofReal_neg, exp_neg]
+  refine (IsBigO.inv_rev ?_ ?_).const_mul_left z
   · suffices Tendsto (fun t : ℝ => ‖cexp t‖) atTop atTop from
       IsEquivalent.refl.add_const_of_norm_tendsto_atTop (c := -z) this |>.isBigO_symm
     simp [tendsto_exp_atTop]
   · filter_upwards with t ht using exp_ne_zero t ht |>.elim
 
-private theorem deriv_polylogKernel (ht : 0 ≤ t) (hz : z ∉ Ici 1 ×ℂ {0}) :
+private theorem deriv_polylogKernel' (h : cexp t - z ≠ 0) :
     deriv (fun z => polylogKernel z t) z = cexp t / (cexp t - z) ^ 2 ∧
       deriv (fun t => polylogKernel z t) t = - z * cexp t / (cexp t - z) ^ 2 := by
-  have : cexp t - z ≠ 0 := exp_sub_ne_zero ht hz
   have : deriv ofReal t = 1 := hasDerivAt_id (t : ℂ) |>.comp_ofReal.deriv
   unfold polylogKernel
   simp (disch := first | fun_prop | assumption | simp) [this]
 
+private theorem deriv_polylogKernel (ht : 0 ≤ t) (hz : z ∉ Ici 1 ×ℂ {0}) :
+    deriv (fun z => polylogKernel z t) z = cexp t / (cexp t - z) ^ 2 ∧
+      deriv (fun t => polylogKernel z t) t = - z * cexp t / (cexp t - z) ^ 2 :=
+  deriv_polylogKernel' <| exp_sub_ne_zero ht hz
+
 theorem deriv_polylogKernel_isBigO :
-    deriv (fun t => polylogKernel z t) =O[atTop] fun t : ℝ => (rexp (-t) : ℂ) := by
-  have hnorm : Tendsto (fun t : ℝ => ‖cexp (t : ℂ)‖) atTop atTop := by
+    deriv (fun t => polylogKernel z t) =O[atTop] fun t : ℝ => rexp (-t) := by
+  have hnorm : Tendsto (fun t : ℝ => ‖cexp t‖) atTop atTop := by
     simpa [norm_exp_ofReal] using tendsto_exp_atTop
   have hderiv : (fun t : ℝ => deriv (fun t => polylogKernel z t) t) =ᶠ[atTop]
-      fun t : ℝ => -z * cexp (t : ℂ) / (cexp (t : ℂ) - z) ^ 2 := by
+      fun t : ℝ => -z * cexp t / (cexp t - z) ^ 2 := by
     filter_upwards [hnorm.eventually (eventually_gt_atTop ‖z‖)] with t ht
-    have : cexp (t : ℂ) - z ≠ 0 := sub_ne_zero.mpr fun h => (lt_irrefl ‖z‖) (h ▸ ht)
-    have h2 : deriv ofReal t = 1 := (hasDerivAt_id (t : ℂ)).comp_ofReal.deriv
-    simp (disch := first | assumption | fun_prop | simp) [polylogKernel, h2]
-  have hden : (fun t : ℝ => cexp (t : ℂ) - z) =Θ[atTop] (fun t : ℝ => cexp (t : ℂ)) := by
+    have : cexp t - z ≠ 0 := sub_ne_zero.mpr fun h => (lt_irrefl ‖z‖) (h ▸ ht)
+    exact deriv_polylogKernel' this |>.right
+  have hden : (fun t : ℝ => cexp t - z) =Θ[atTop] (fun t : ℝ => cexp t) := by
     simpa [sub_eq_add_neg] using (IsEquivalent.refl.add_const_of_norm_tendsto_atTop hnorm).isTheta
-  have : (fun t : ℝ => cexp (t : ℂ) / (cexp (t : ℂ) - z) ^ 2) =O[atTop]
-      fun t : ℝ => (rexp (-t) : ℂ) :=
-    IsTheta.isBigO <| IsTheta.trans (IsTheta.div (isTheta_refl _ _) (hden.pow 2)) <|
-      EventuallyEq.isTheta <| Eventually.of_forall fun t => by
+  have : (fun t : ℝ => cexp t / (cexp t - z) ^ 2) =O[atTop] fun t : ℝ => rexp (-t) :=
+    isBigO_ofReal_right.mp <| IsTheta.isBigO <| (isTheta_refl _ _).div (hden.pow 2)
+      |>.trans <| EventuallyEq.isTheta <| Eventually.of_forall fun t => by
         simp [ofReal_exp, div_eq_mul_inv, pow_two, exp_neg]
   refine hderiv.isEquivalent.isBigO.trans ?_
   convert this.const_mul_left (-z) using 2
@@ -157,8 +156,7 @@ private theorem polylogKernel_eq_tsum (ht : 0 < t) (hz : ‖z‖ < 1) :
   conv in _ * _ =>
     rw [mul_comm (-t : ℂ), ← n.cast_add_one, ← nsmul_eq_mul, exp_nsmul, ← mul_pow, pow_succ']
   rw [tsum_mul_left, tsum_geometric_of_norm_lt_one this]
-  simp [exp_neg, field]
-  rfl
+  simp [polylogKernel, exp_neg, field]
 
 end PolylogKernel
 
@@ -182,7 +180,7 @@ private theorem polylogIntegral_and (hs : 0 < s.re) (hz : z ∉ Ici 1 ×ℂ {0})
     analyticAt_polylogKernel_right hz le_rfl |>.continuousAt.continuousWithinAt.isBigO_one
       (F := ℝ) |>.congr_right fun _ => by simp
   have hkerinf : polylogKernel z =O[atTop] fun t : ℝ => rexp (-1 * t) := by
-    simpa using isBigO_ofReal_right.mp (polylogKernel_isBigO (z := z))
+    simpa using polylogKernel_isBigO (z := z)
   refine ⟨mellinConvergent_of_isBigO_rpow_exp one_pos hiker hkerinf hker0 hs, ?_⟩
   have : DifferentiableAt ℂ (fun s => (Gamma s)⁻¹ * mellin (polylogKernel z) s) s :=
     differentiable_one_div_Gamma.differentiableAt.mul <|
@@ -216,7 +214,7 @@ private lemma hasDerivAt_mellin_polylogKernel_add_one (hs : -1 < s.re) (hz : z �
         rw [add_div, div_self <| ne_of_gt <| by linarith]
       _ ≤ 1 + (‖z‖ + ε / 2) / (ε / 2) := by gcongr
   set F : ℂ -> ℝ -> ℂ := fun z t => t ^ s * polylogKernel z t
-  set bdd : ℝ -> ℝ := fun t => M ^ 2 * (t ^ s.re * rexp (-t))
+  set bd : ℝ -> ℝ := fun t => M ^ 2 * (t ^ s.re * rexp (-t))
   have hdF {t : ℝ} (ht : 0 ≤ t) {z : ℂ} (hz : z ∉ Ici 1 ×ℂ {0}) :
       deriv (fun z => F z t) z = t ^ s * (cexp t / (cexp t - z) ^ 2) := by
     simp [F, deriv_polylogKernel ht hz]
@@ -235,7 +233,7 @@ private lemma hasDerivAt_mellin_polylogKernel_add_one (hs : -1 < s.re) (hz : z �
       rw [← div_pow]
       gcongr
       exact hM w hw t ht.le
-  have hibdd : IntegrableOn bdd (Ioi 0) := by
+  have hibd : IntegrableOn bd (Ioi 0) := by
     apply Integrable.const_mul
     have := integrableOn_rpow_mul_exp_neg_mul_rpow hs one_pos one_pos
     simpa
@@ -248,7 +246,7 @@ private lemma hasDerivAt_mellin_polylogKernel_add_one (hs : -1 < s.re) (hz : z �
   convert And.right <| hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (Metric.ball_mem_nhds z <| half_pos hε₀)
     (.of_forall fun z => Measurable.aestronglyMeasurable <| by unfold F polylogKernel; fun_prop)
-    hiF (Measurable.aestronglyMeasurable <| by fun_prop) hFbdd hibdd hmbdd using 1
+    hiF (Measurable.aestronglyMeasurable <| by fun_prop) hFbdd hibd hmbdd using 1
   exact setIntegral_congr_fun measurableSet_Ioi fun t ht => hdF ht.le hz
 
 theorem differentiableAt_polylogIntegral_right (hs : 0 < s.re) (hz : z ∉ Ici 1 ×ℂ {0}) :
@@ -276,12 +274,12 @@ private lemma mul_deriv_polylogIntegral_add_one_aux (hs : 0 < s.re) (hz : z ∉ 
     analyticAt_polylogKernel_right hz ht |>.differentiableAt.hasDerivAt
   -- Asymptotics
   have hau : u =O[atTop] fun t : ℝ => rexp (1 / 2 * t) := by
-    refine IsBigO.of_norm_left <| IsBigO.trans (Filter.EventuallyEq.isBigO ?_)
+    refine IsBigO.of_norm_left <| (Filter.EventuallyEq.isBigO ?_).trans
       (isLittleO_rpow_exp_pos_mul_atTop s.re (by simp)).isBigO
     filter_upwards [eventually_gt_atTop 0] with t ht
     rw [norm_cpow_eq_rpow_re_of_pos ht]
   have hadu : deriv u =O[atTop] fun t : ℝ => rexp (1 / 2 * t) := by
-    refine IsBigO.of_norm_left <| IsBigO.trans (Filter.EventuallyEq.isBigO ?_) <|
+    refine IsBigO.of_norm_left <| (Filter.EventuallyEq.isBigO ?_).trans <|
       (isLittleO_rpow_exp_pos_mul_atTop (s.re - 1) (by simp)).isBigO.const_mul_left ‖s‖
     filter_upwards [eventually_gt_atTop 0] with t ht
     rw [hdu t ht |>.deriv, norm_mul, norm_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
@@ -289,19 +287,17 @@ private lemma mul_deriv_polylogIntegral_add_one_aux (hs : 0 < s.re) (hz : z ∉ 
     rw [← Real.exp_add]
     ring_nf
   have hudv : (u * deriv v) =O[atTop] fun x => rexp (-(1 / 2) * x) :=
-    IsBigO.congr_right (IsBigO.mul hau <| isBigO_ofReal_right.mp deriv_polylogKernel_isBigO) hexp
+    (hau.mul deriv_polylogKernel_isBigO).congr_right hexp
   have hduv : (deriv u * v) =O[atTop] fun x => rexp (-(1 / 2) * x) :=
-    IsBigO.congr_right (IsBigO.mul hadu <| isBigO_ofReal_right.mp polylogKernel_isBigO) hexp
+    (hadu.mul polylogKernel_isBigO).congr_right hexp
   have huv : (u * v) =O[atTop] fun x => rexp (-(1 / 2) * x) :=
-    IsBigO.congr_right (IsBigO.mul hau <| isBigO_ofReal_right.mp polylogKernel_isBigO) hexp
+    (hau.mul polylogKernel_isBigO).congr_right hexp
   -- Continuity
   have hcu : Continuous u := continuous_ofReal_cpow_const hs
   have hcv : ContinuousOn v (Ici 0) :=
     continuousOn_of_forall_continuousAt fun t ht => hdv t ht |>.continuousAt
-  have hcudv : ContinuousOn (u * deriv v) (Ici 0) := by
-    apply hcu.continuousOn.mul <| .congr (.div (by fun_prop) (by fun_prop) fun t ht => ?_)
-      fun t ht => deriv_polylogKernel ht hz |>.right
-    simpa using exp_sub_ne_zero ht hz
+  have hcudv : ContinuousOn (u * deriv v) (Ici 0) := hcu.continuousOn.mul fun t ht =>
+    analyticAt_polylogKernel_right hz ht |>.deriv.continuousAt.continuousWithinAt
   have hcduv : ContinuousOn (deriv u * v) (Ioi 0) := by
     apply ContinuousOn.mul ?_ <| hcv.mono Ioi_subset_Ici_self
     apply ContinuousOn.congr ?_ fun t ht => hasDerivAt_ofReal_cpow_const (by grind) hs₀ |>.deriv
@@ -310,8 +306,8 @@ private lemma mul_deriv_polylogIntegral_add_one_aux (hs : 0 < s.re) (hz : z ∉ 
   -- Integrability, add a lemma in `MeasureTheory/Integral/ExpDecay.lean`?
   have hiudv : IntegrableOn (u * deriv v) (Ioi 0) := by
     have : IntegrableOn (fun x => rexp (-0 * x) • (u * deriv v) x) (Ici 0) :=
-      integrableOn_exp_neg_smul_of_isBigO_exp (b := 0)
-        (ContinuousOn.locallyIntegrableOn hcudv measurableSet_Ici) hudv (by simp)
+      integrableOn_exp_neg_smul_of_isBigO_exp
+        (hcudv.locallyIntegrableOn measurableSet_Ici) hudv (by simp)
     simp only [neg_zero, zero_mul, Real.exp_zero, Pi.mul_apply, one_smul] at this
     exact integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mp this
   have hiduv : IntegrableOn (deriv u * v) (Ioi 0) := by
@@ -328,17 +324,15 @@ private lemma mul_deriv_polylogIntegral_add_one_aux (hs : 0 < s.re) (hz : z ∉ 
         hdu t ht.left |>.deriv, norm_mul, norm_cpow_eq_rpow_re_of_pos ht.left,
         sub_re, one_re]
     · have : IntegrableOn (fun x => rexp (-0 * x) • (deriv u * v) x) (Ici 1) :=
-        integrableOn_exp_neg_smul_of_isBigO_exp (b := 0)
-          (ContinuousOn.locallyIntegrableOn (hcduv.mono (by grind)) measurableSet_Ici)
-          hduv (by simp)
+        integrableOn_exp_neg_smul_of_isBigO_exp
+          ((hcduv.mono (by simp)).locallyIntegrableOn measurableSet_Ici) hduv (by simp)
       simp only [neg_zero, zero_mul, Real.exp_zero, Pi.mul_apply, one_smul] at this
       exact this
   -- Limits
   have huv0 : Tendsto (u * v) (𝓝[>] 0) (𝓝 0) := by
     have : (u * v) 0 = 0 := by simp [u, hs₀]
-    refine this ▸ ContinuousWithinAt.tendsto ?_
-    exact ContinuousWithinAt.mul hcu.continuousWithinAt <|
-      ContinuousWithinAt.mono (hcv 0 <| le_refl 0) Ioi_subset_Ici_self
+    exact this ▸ (hcu.continuousWithinAt.mul
+      (hcv.continuousWithinAt (by simp) |>.mono Ioi_subset_Ici_self)).tendsto
   have huvinf : Tendsto (u * v) atTop (𝓝 0) :=
     huv.trans_tendsto <| tendsto_exp_atBot.comp <|
       tendsto_const_mul_atBot_of_neg (by norm_num) |>.mpr tendsto_id
@@ -413,9 +407,7 @@ private theorem polylogAux1_zero : polylogAux1 0 = polylogIntegral := rfl
 
 private theorem polylogAux2_of_re_pos (hs : 0 < s.re) : polylogAux2 s = polylogIntegral s := by
   unfold polylogAux2
-  convert congrFun polylogAux1_zero s
-  refine Nat.floor_eq_zero.mpr ?_
-  simpa
+  rw [Nat.floor_eq_zero.mpr (by simpa), polylogAux1_zero]
 
 private theorem polylog_of_notMem (hz : z ∉ Ici 1 ×ℂ {0}) : polylog s z = polylogAux2 s z := by
   simp [polylog, hz]
@@ -470,9 +462,9 @@ See also `polylog_eq_polylogSeries` and `summable_polylogSeries_of_norm_le`. -/
 def polylogSeries (s z : ℂ) : ℂ :=
   ∑' n : ℕ, z ^ (n + 1) / (n + 1) ^ s
 
-theorem _root_.Real.summable_polylogSeries_of_abs_lt {x : ℝ} (y : ℝ) (hx : |x| < 1) :
-    Summable fun n : ℕ => x ^ (n + 1) / (n + 1) ^ y := by
-  obtain ⟨k, hk⟩ : ∃ k : ℕ, -y ≤ k := exists_nat_ge (-y)
+theorem _root_.Real.summable_polylogSeries_of_abs_lt {x : ℝ} (s : ℝ) (hx : |x| < 1) :
+    Summable fun n : ℕ => x ^ (n + 1) / (n + 1) ^ s := by
+  obtain ⟨k, hk⟩ : ∃ k : ℕ, -s ≤ k := exists_nat_ge (-s)
   have hg : Summable fun n : ℕ => (n + 1 : ℕ) ^ k * |x| ^ (n + 1) :=
     summable_nat_add_iff (f := fun n : ℕ => n ^ k * |x| ^ n) 1 |>.mpr <|
       summable_pow_mul_geometric_of_norm_lt_one k (by simpa using hx : ‖(|x| : ℝ)‖ < 1)
@@ -485,10 +477,8 @@ theorem _root_.Real.summable_polylogSeries_of_abs_lt {x : ℝ} (y : ℝ) (hx : |
 theorem summable_polylogSeries_of_norm_lt (hz : ‖z‖ < 1) :
     Summable fun n : ℕ => z ^ (n + 1) / (n + 1) ^ s := by
   refine Summable.of_norm ?_
-  convert Real.summable_polylogSeries_of_abs_lt (x := ‖z‖) (y := s.re) (by simpa using hz) using 1
-  ext n
-  rw [norm_div, norm_pow, ← n.cast_add_one, norm_natCast_cpow_of_pos n.succ_pos s]
-  simp
+  convert Real.summable_polylogSeries_of_abs_lt (x := ‖z‖) s.re (by simpa using hz) using 2 with n
+  rw [norm_div, norm_pow, ← n.cast_add_one, norm_natCast_cpow_of_pos n.succ_pos s, Nat.cast_succ]
 
 theorem summable_polylogSeries_of_norm_le (hs : 1 < s.re) (hz : ‖z‖ ≤ 1) :
     Summable fun n : ℕ => z ^ (n + 1) / (n + 1) ^ s := by
@@ -540,7 +530,7 @@ theorem polylogIntegral_eq_polylogSeries (hs : 0 < s.re) (hz : ‖z‖ < 1) :
     ring_nf
   _ = ∑' n : ℕ, z ^ (n + 1) * 1 / Gamma s * (Gamma s / (n + 1) ^ s) := tsum_congr fun n => by
     congr 1
-    have hn : (0 : ℝ) < n + 1 := mod_cast Nat.zero_lt_succ n
+    have hn : (0 : ℝ) < n + 1 := mod_cast n.zero_lt_succ
     simpa [field, arg_eq_pi_iff, hn.not_gt, mul_comm, inv_cpow_eq_ite] using
       integral_cpow_mul_exp_neg_mul_Ioi hs hn
   _ = ∑' n : ℕ, z ^ (n + 1) / (n + 1) ^ s := by
@@ -551,8 +541,7 @@ private lemma mul_deriv_polylogSeries_add_one_aux (hz : ‖z‖ < 1) :
       ∑' n : ℕ, deriv (fun z : ℂ => z ^ (n + 1) / (n + 1) ^ (s + 1)) z := by
   obtain ⟨r, hrz, hr⟩ : ∃ r, r ∈ Ioo ‖z‖ 1 := DenselyOrdered.dense ‖z‖ 1 hz
   have hr₀ : 0 < r := norm_nonneg z |>.trans_lt hrz
-  apply HasDerivAt.deriv
-  apply hasDerivAt_tsum_of_isPreconnected (y₀ := 0) (t := Metric.ball (0 : ℂ) r)
+  apply HasDerivAt.deriv <| hasDerivAt_tsum_of_isPreconnected (y₀ := 0) (t := Metric.ball (0 : ℂ) r)
     (u := fun n : ℕ => (n + 1) * r ^ n / (n + 1) ^ (s.re + 1)) ?_ Metric.isOpen_ball
     Metric.isPreconnected_ball (fun n z' hz' => DifferentiableAt.hasDerivAt (by simp)) ?_
     (by simpa only [Metric.mem_ball, dist_self]) (by simp) (by simpa)
@@ -567,15 +556,13 @@ private lemma mul_deriv_polylogSeries_add_one_aux (hz : ‖z‖ < 1) :
       Complex.norm_mul, norm_pow]
     norm_cast
     gcongr
-    · simp only [Metric.mem_ball, dist_zero_right] at hz'
-      exact hz'.le
-    · rw [← ofReal_natCast, norm_cpow_eq_rpow_re_of_pos <| mod_cast Nat.add_one_pos n]
+    · grind [Metric.mem_ball, dist_zero_right]
+    · rw [← ofReal_natCast, norm_cpow_eq_rpow_re_of_pos <| mod_cast n.add_one_pos]
       simp
 
 theorem mul_deriv_polylogSeries_add_one (hz : ‖z‖ < 1) :
     z * deriv (polylogSeries (s + 1)) z = polylogSeries s z := calc
-  z * deriv (fun z : ℂ => ∑' n : ℕ, z ^ (n + 1) / (n + 1) ^ (s + 1)) z
-    = z * ∑' n : ℕ, deriv (fun z : ℂ => z ^ (n + 1) / (n + 1) ^ (s + 1)) z :=
+  _ = z * ∑' n : ℕ, deriv (fun z : ℂ => z ^ (n + 1) / (n + 1) ^ (s + 1)) z :=
     congrArg _ <| mul_deriv_polylogSeries_add_one_aux hz
   _ = ∑' n : ℕ, z * deriv (fun z : ℂ => z ^ (n + 1)) z / (n + 1) ^ (s + 1) := by
     simp only [deriv_div_const, ← tsum_mul_left]
