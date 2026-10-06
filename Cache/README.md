@@ -199,6 +199,11 @@ The cache covers these packages:
 - `ProofWidgets`
 - `Archive`
 - `Counterexamples`
+- `MathlibTest`
+
+CI uploads `MathlibTest` only for commits that write the `master` container.
+`lake exe cache get` without arguments does not fetch it. To fetch it, run
+`lake exe cache get 'MathlibTest.+'`.
 
 ## Finding Cached Commits with `query`
 
