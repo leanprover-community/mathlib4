@@ -525,12 +525,11 @@ theorem omega0_lt_of_omega0_opow_eq_self (ho : ω ^ o = o) : ω < o := by
   · rcases le_one_iff.1 ho₁ with rfl | rfl <;> simp [one_lt_omega0.ne'] at ho
   · grw [left_lt_opow one_lt_omega0 ho₁, ho]
 
-theorem omega0_lt_and_isPrincipal_opow_iff :
-    ω < o ∧ IsPrincipal (· ^ ·) o ↔ ω ^ o = o := by
+theorem omega0_lt_and_isPrincipal_opow_iff : ω < o ∧ IsPrincipal (· ^ ·) o ↔ ω ^ o = o := by
   refine ⟨fun ⟨hoω, ho⟩ ↦ ?_, fun ho ↦ ?_⟩
-  · exact op_eq_self_of_isPrincipal hoω (isNormal_opow one_lt_omega0) ho
-      (isSuccLimit_of_isPrincipal_opow ((natCast_lt_omega0 2).trans hoω) ho)
-  · have hoω := omega0_lt_of_omega0_opow_eq_self ho
+  · apply op_eq_self_of_isPrincipal hoω (isNormal_opow one_lt_omega0) ho
+    exact isSuccLimit_of_isPrincipal_opow ((natCast_lt_omega0 2).trans hoω) ho
+  · have hoω : ω < o := omega0_lt_of_omega0_opow_eq_self ho
     refine ⟨hoω, fun a b ha hb ↦ ?_⟩
     have hom : IsPrincipal (· * ·) o := by simpa [ho] using isPrincipal_mul_omega0_opow_opow o
     have hol := isSuccLimit_of_isPrincipal_mul ((natCast_lt_omega0 2).trans hoω) hom
@@ -541,7 +540,7 @@ theorem omega0_lt_and_isPrincipal_opow_iff :
 /-- Above `ω`, closure under exponentiation is equivalent to being a fixed point of `ω ^ ·`. -/
 theorem isPrincipal_opow_iff_omega0_opow_eq_self (hoω : ω < o) :
     IsPrincipal (· ^ ·) o ↔ ω ^ o = o := by
-  simpa only [hoω, true_and] using omega0_lt_and_isPrincipal_opow_iff (o := o)
+  simp [← omega0_lt_and_isPrincipal_opow_iff, hoω]
 
 theorem isPrincipal_opow_omega0 : IsPrincipal (· ^ ·) ω := fun a b ha hb =>
   match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
@@ -550,14 +549,13 @@ theorem isPrincipal_opow_omega0 : IsPrincipal (· ^ ·) ω := fun a b ha hb =>
 @[deprecated (since := "2026-03-17")]
 alias principal_opow_omega0 := isPrincipal_opow_omega0
 
-/-- The exponential principal ordinals are `0`, `2`, `ω`, and the fixed points of `ω ^ ·`.
-The ordinal `1` is excluded because `0 ^ 0 = 1`. -/
+/-- The exponential principal ordinals are `0`, `2`, `ω`, and the fixed points of `ω ^ ·`. -/
 theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq :
     IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ ω ^ o = o := by
   refine ⟨fun ho ↦ ?_, ?_⟩
   · simp_rw [or_iff_not_imp_left]
     intro ho₀ ho₂ hoω
-    refine (isPrincipal_opow_iff_omega0_opow_eq_self (lt_of_le_of_ne' ?_ hoω)).1 ho
+    refine omega0_lt_and_isPrincipal_opow_iff.1 ⟨lt_of_le_of_ne' ?_ hoω, ho⟩
     refine omega0_le_of_isSuccLimit (isSuccLimit_of_isPrincipal_opow ?_ ho)
     by_contra!
     simp_all [le_two_iff]

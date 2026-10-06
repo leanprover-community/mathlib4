@@ -563,6 +563,9 @@ theorem mem_range_epsilon : o ∈ range epsilon ↔ ω ^ o = o := by
 theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
   simp [← mem_range_epsilon]
 
+theorem isPrincipal_opow_epsilon (o : Ordinal) : IsPrincipal (· ^ ·) (ε_ o) :=
+  (omega0_lt_and_isPrincipal_opow_iff.2 (omega0_opow_epsilon o)).2
+
 /-- The exponential principal ordinals are `0`, `2`, `ω`, and the epsilon numbers. -/
 theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_epsilon :
     IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ o ∈ range epsilon := by
@@ -581,9 +584,6 @@ theorem iterate_omega0_opow_lt_epsilon_zero (n : ℕ) : (fun a ↦ ω ^ a)^[n] 0
 theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o := by
   apply lt_of_lt_of_le _ <| (veblen_right_strictMono _).monotone zero_le
   simpa using iterate_omega0_opow_lt_epsilon_zero 2
-
-theorem isPrincipal_opow_epsilon (o : Ordinal) : IsPrincipal (· ^ ·) (ε_ o) :=
-  (omega0_lt_and_isPrincipal_opow_iff.2 (omega0_opow_epsilon o)).2
 
 theorem natCast_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
   (natCast_lt_omega0 n).trans <| omega0_lt_epsilon o
