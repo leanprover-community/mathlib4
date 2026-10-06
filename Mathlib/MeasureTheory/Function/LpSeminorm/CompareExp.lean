@@ -366,7 +366,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top_of_pos (p : ℝ≥0∞) (b : E → F 
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) (hp : 0 < p) :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ c * eLpNorm f p μ * eLpNorm g ∞ μ :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_top_of_enorm_of_pos p b c hb.comp_aestronglyMeasurable₂
-  (ae_enorm_bilin_le_of_ae_nnnorm_le h) hp
+    (ae_enorm_bilin_le_of_ae_nnnorm_le h) hp
 
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top_of_enorm (p : ℝ≥0∞) (b : ε → ε' → ε'') (c : ℝ≥0∞)
     {f : α → ε} {g : α → ε'}
@@ -387,7 +387,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (b : E → F → G) 
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ c * eLpNorm f p μ * eLpNorm g ∞ μ :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_top_of_enorm p b c hb.comp_aestronglyMeasurable₂ hg
-  (ae_enorm_bilin_le_of_ae_nnnorm_le h)
+    (ae_enorm_bilin_le_of_ae_nnnorm_le h)
 
 theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm {p q r : ℝ}
     (b : ε → ε' → ε'') (c : ℝ≥0∞) {f : α → ε} {g : α → ε'}
@@ -428,9 +428,8 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm {p q r : ℝ≥0∞} (b : ε →
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ₑ ≤ c * ‖f x‖ₑ * ‖g x‖ₑ)
     [hpqr : HolderTriple p q r] :
     eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ := by
-  have hbf : AEStronglyMeasurable (fun x => b (f x) (g x)) μ := hb hf hg
   rcases eq_zero_or_pos r with rfl | hr
-  · simp [hbf]
+  · simp [hb hf hg]
   have hpqr1 := hpqr.one_div_eq
   obtain (rfl | rfl | hp) := ENNReal.trichotomy p
   · simp_all
@@ -446,7 +445,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm {p q r : ℝ≥0∞} (b : ε →
   obtain ⟨hq₁, hq₂⟩ := ENNReal.toReal_pos_iff.mp hq
   have hpqr' : Real.HolderTriple p.toReal q.toReal r.toReal := hpqr.toReal _ hp hq
   obtain ⟨hr₁, hr₂⟩ := ENNReal.toReal_pos_iff.mp hpqr'.pos'
-  rw [eLpNorm_eq_eLpNorm' hr₁.ne' hr₂.ne hbf,
+  rw [eLpNorm_eq_eLpNorm' hr₁.ne' hr₂.ne (hb hf hg),
     eLpNorm_eq_eLpNorm' hp₁.ne' hp₂.ne hf,
     eLpNorm_eq_eLpNorm' hq₁.ne' hq₂.ne hg]
   exact eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm b c hf hg h hpqr'
@@ -458,7 +457,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm {p q r : ℝ≥0∞} (b : E → F → G) 
     [hpqr : HolderTriple p q r] :
     eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm b c hb.comp_aestronglyMeasurable₂ hf hg
-  (ae_enorm_bilin_le_of_ae_nnnorm_le h)
+    (ae_enorm_bilin_le_of_ae_nnnorm_le h)
 
 @[deprecated (since := "2026-09-16")]
 alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm := eLpNorm_le_eLpNorm_mul_eLpNorm
@@ -499,7 +498,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_pos {p q r : ℝ≥0∞} (b : E → F 
     (hr : 0 < r) [hpqr : HolderTriple p q r] :
     eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm_of_pos b c hb.comp_aestronglyMeasurable₂
-  (ae_enorm_bilin_le_of_ae_nnnorm_le h) hr
+    (ae_enorm_bilin_le_of_ae_nnnorm_le h) hr
 
 @[deprecated (since := "2026-09-16")]
 alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm_of_pos := eLpNorm_le_eLpNorm_mul_eLpNorm_of_pos

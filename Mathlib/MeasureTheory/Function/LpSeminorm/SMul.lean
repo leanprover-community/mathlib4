@@ -175,8 +175,12 @@ theorem eLpNorm_const_mul_ennreal_of_pos {f : α → ℝ≥0∞} {c : ℝ≥0∞
   · simp [eLpNorm_of_not_aestronglyMeasurable, h'f]
   rcases eq_or_ne c ∞ with rfl | h'c; swap
   · apply (hf ?_).elim
-    convert (h'f.aemeasurable.const_mul (c⁻¹)).aestronglyMeasurable with x
-    rw [← mul_assoc, ENNReal.inv_mul_cancel hc h'c, one_mul]
+    apply ((IsUnit.aemeasurable_const_smul_iff (c := c) ?_).1 h'f.aemeasurable).aestronglyMeasurable
+    exact ENNReal.isUnit_iff.mpr ⟨hc, h'c⟩
+  /- to conclude, we want to say that `f` is not ae zero by `hf`, so `∞ * f` is infinity on a set
+  of positive measure, therefore its norm is infinite. However, the set where it is infinity
+  might be nonmeasurable, which creates issues. We circumvent the issue by using the
+  fact that `∞ * f` is ae strongly measurable in our context. -/
   have : (fun x ↦ ∞ * f x) = (fun x ↦ ∞ * (∞ * f x)) := by simp [← mul_assoc]
   rw [this, eLpNorm_const_mul_ennreal h'f, ENNReal.top_mul]
   contrapose! hf
