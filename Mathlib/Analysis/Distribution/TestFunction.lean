@@ -789,7 +789,6 @@ noncomputable def smulLeftCLM (n := ⊤) (g : E → 𝕜) : 𝓓^{n}(Ω, F₁) �
     bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
   else 0
 
-@[simp]
 theorem smulLeftCLM_apply {g : E → 𝕜} (hg : ContDiff ℝ n g) (f : 𝓓^{n}(Ω, F₁)) :
     smulLeftCLM Ω F₁ n g f = fun x ↦ g x • f x := by
   simp [smulLeftCLM, hg]
