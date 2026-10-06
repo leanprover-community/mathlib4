@@ -8,10 +8,11 @@ module
 public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+
+import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # Cauchy integral formula

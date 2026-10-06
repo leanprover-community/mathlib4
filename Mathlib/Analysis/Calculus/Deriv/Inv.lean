@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Comp
+
+import Mathlib.Analysis.Calculus.Deriv.Mul
 
 /-!
 # Derivatives of `x ↦ x⁻¹` and `f x / g x`

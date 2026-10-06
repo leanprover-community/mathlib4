@@ -6,6 +6,7 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
+
 import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 
 /-!

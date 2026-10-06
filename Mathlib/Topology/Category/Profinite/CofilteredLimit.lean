@@ -6,9 +6,10 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Konig
+
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
-public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
 # Cofiltered limits of profinite sets.

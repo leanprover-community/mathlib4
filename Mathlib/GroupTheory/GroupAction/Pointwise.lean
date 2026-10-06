@@ -7,8 +7,9 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Data.Set.Function
 public import Mathlib.GroupTheory.GroupAction.Hom
+
+import Mathlib.Data.Set.Function
 import Mathlib.Algebra.Group.Units.Hom
 
 /-!
