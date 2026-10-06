@@ -279,9 +279,9 @@ theorem isRadical_of_eq_jacobson (h : jacobson I = I) : I.IsRadical :=
 lemma isRadical_jacobson (I : Ideal R) : I.jacobson.IsRadical :=
   isRadical_of_eq_jacobson jacobson_idem
 
-theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ : Ideal R)) :
+theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ Ring.jacobson R) :
     IsUnit r := by
-  obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r h
+  obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r (jacobson_bot (R := R) ▸ h)
   rw [mem_bot, sub_eq_zero, mul_comm] at hs
   exact .of_mul_eq_one _ hs
 
@@ -412,5 +412,10 @@ theorem RingHom.isLocalHom_iff_ker_le_jacobson {g : R →+* S} (h : Function.Sur
   rw [← map_one g, ← sub_eq_zero, ← map_mul, ← map_sub, ← mem_ker] at hy
   exact isUnit_of_mul_isUnit_left <| isUnit_of_sub_one_mem_jacobson_bot _
     <| jacobson_bot (R := R) ▸ le hy
+
+theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
+    (h : I ≤ Ring.jacobson R) : IsLocalHom (Ideal.Quotient.mk I) := by
+  rwa [RingHom.isLocalHom_iff_ker_le_jacobson Ideal.Quotient.mk_surjective,
+    ← Ideal.jacobson_bot, Ideal.mk_ker, jacobson_bot]
 
 end
