@@ -5,8 +5,9 @@ Authors: Sebastian Kumar
 -/
 module
 
-import Batteries.Data.Fin.Fold
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+
+import Batteries.Data.Fin.Fold
 
 /-!
 # Subpaths and concatenation of paths
