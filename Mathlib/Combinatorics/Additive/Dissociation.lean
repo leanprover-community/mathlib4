@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Data.Fintype.Pi
+
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Data.Finset.Powerset
-public import Mathlib.Data.Fintype.Pi
 import Mathlib.Order.Preorder.Finite
 
 /-!

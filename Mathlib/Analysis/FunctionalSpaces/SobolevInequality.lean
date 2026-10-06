@@ -5,11 +5,12 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Pi
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+
+import Mathlib.Analysis.Calculus.Deriv.Pi
 import Mathlib.Analysis.InnerProductSpace.NormPow
 import Mathlib.Data.Finset.Interval
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality

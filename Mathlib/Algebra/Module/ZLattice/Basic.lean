@@ -7,9 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+
+import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.Localization.Module
 
 /-!
@@ -510,21 +511,21 @@ instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup 
 theorem ZLattice.module_free [IsZLattice K L] : Module.Free ℤ L := by
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
-  have : IsAddTorsionFree E := .of_module_rat _
+  have : HasUniqueDiv E := .of_module_rat _
   infer_instance
 
 instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Free ℤ L := by
   have : Module ℚ E := Module.compHom E (algebraMap ℚ ℝ)
-  have : IsAddTorsionFree E := .of_module_rat _
+  have : HasUniqueDiv E := .of_module_rat _
   infer_instance
 
 theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
-  have : IsAddTorsionFree E := .of_module_rat _
+  have : HasUniqueDiv E := .of_module_rat _
   let b₀ := Module.Free.chooseBasis ℤ L
   -- Let `b` be a `ℤ`-basis of `L` formed of vectors of `E`
   let b := Subtype.val ∘ b₀

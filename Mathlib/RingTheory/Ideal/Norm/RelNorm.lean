@@ -5,9 +5,10 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.DedekindDomain.Factorization
+
+import Mathlib.Algebra.GroupWithZero.Torsion
 import Mathlib.RingTheory.DedekindDomain.Instances
 import Mathlib.RingTheory.Ideal.Int
 import Mathlib.RingTheory.NormalClosure
@@ -474,8 +475,8 @@ theorem absNorm_relNorm (I : Ideal S) :
     let P := under R Q
     let p := absNorm (under ℤ P)
     have : Q.LiesOver (span {(p : ℤ)}) := LiesOver.trans Q P _
-    have : IsAddTorsionFree R := .of_isTorsionFree ℤ _
-    have : CharZero R := CharZero.of_isAddTorsionFree R R
+    have : HasUniqueDiv R := .of_isTorsionFree ℤ _
+    have : CharZero R := .of_hasUniqueDiv R R
     rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, ← pow_inertiaDeg p, ← pow_inertiaDeg p,
       ← pow_mul, ← inertiaDeg_tower]
 

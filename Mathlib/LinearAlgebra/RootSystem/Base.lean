@@ -212,7 +212,7 @@ lemma span_coroot_support :
 
 open Finsupp in
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
-    [IsAddTorsionFree M] [IsAddTorsionFree N]
+    [HasUniqueDiv M] [HasUniqueDiv N]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
     ∃ z : ℤ, z * t = 1 := by
   obtain ⟨j, hj⟩ := ht
@@ -238,7 +238,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
 variable [CharZero R]
 
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
-    [IsAddTorsionFree M] [IsAddTorsionFree N]
+    [HasUniqueDiv M] [HasUniqueDiv N]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
     t = 1 ∨ t = -1 := by
   obtain ⟨z, hz⟩ := b.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h t ht

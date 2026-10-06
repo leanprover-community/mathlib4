@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.CStarAlgebra.Classes
+
 import Mathlib.Analysis.CStarAlgebra.Exponential
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.Complex.Liouville
@@ -106,7 +107,7 @@ lemma SemiconjBy.star_right_of_unital (h : SemiconjBy x a b) :
 public lemma isStarNormal_iff_forall_exp_mul_exp_mem_unitary {a : A} :
     IsStarNormal a ↔ ∀ x : ℝ, exp (x • a) * exp (-x • star a) ∈ unitary A := by
   let _ : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
-  have : IsAddTorsionFree A := IsAddTorsionFree.of_module_rat A
+  have : HasUniqueDiv A := .of_module_rat A
   refine ⟨fun ha x ↦ ?_, fun ha ↦ ?_⟩
   /- If `a` is normal, then clearly `exp (x • a) * exp (- x • star a) = exp (I • x • 2 • ℑ a)`
   and the latter is clearly an exponential unitary. -/
