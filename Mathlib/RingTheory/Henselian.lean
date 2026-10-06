@@ -135,8 +135,8 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
 instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     HenselianRing R (maximalIdeal R) where
   jac := by
-    rw [← Ideal.jacobson_bot, Ideal.jacobson, le_sInf_iff]
-    rintro I ⟨-, hI⟩
+    rw [Ring.jacobson_eq_sInf_isMaximal, le_sInf_iff]
+    rintro I hI
     exact (eq_maximalIdeal hI).ge
   is_henselian := by
     intro f hf a₀ h₁ h₂
@@ -179,7 +179,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
-        have := isLocalHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
+        have := isLocalHom_of_le_jacobson_bot (IsAdicComplete.le_jacobson_bot I)
         apply IsUnit.of_map (Ideal.Quotient.mk I)
         convert h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)
