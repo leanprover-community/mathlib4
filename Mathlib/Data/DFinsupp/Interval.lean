@@ -5,11 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Data.DFinsupp.Order
 public import Mathlib.Order.Interval.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Finite intervals of finitely supported functions
@@ -37,7 +38,7 @@ def dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : Finset (Π₀ i, α i)
     ⟨fun f => DFinsupp.mk s fun i => f i i.2, by
       refine (mk_injective _).comp fun f g h => ?_
       ext i hi
-      convert! congr_fun h ⟨i, hi⟩⟩
+      convert! congr($h ⟨i, hi⟩)⟩
 
 @[simp]
 theorem card_dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : #(s.dfinsupp t) = ∏ i ∈ s, #(t i) :=
@@ -50,7 +51,7 @@ theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ 
   · rintro ⟨f, hf, rfl⟩
     rw [Function.Embedding.coeFn_mk]
     refine ⟨support_mk_subset, fun i hi => ?_⟩
-    convert! mem_pi.1 hf i hi
+    convert mem_pi.1 hf i hi
     exact mk_of_mem hi
   · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i
@@ -151,7 +152,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) :=
   LocallyFiniteOrder.ofIcc (Π₀ i, α i)
     (fun f g => (f.support ∪ g.support).dfinsupp <| f.rangeIcc g)
     (fun f g x => by
-      refine (mem_dfinsupp_iff_of_support_subset <| support_rangeIcc_subset).trans ?_
+      refine (mem_dfinsupp_iff_of_support_subset support_rangeIcc_subset).trans ?_
       simp_rw [mem_rangeIcc_apply_iff, forall_and]
       rfl)
 

@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Constructions
-public import Mathlib.Analysis.Normed.Operator.Prod
 
-/-! ## Equivalence of smoothness with the basic definition for functions between vector spaces
+import Mathlib.Analysis.Normed.Operator.Prod
+
+/-! # Equivalence of smoothness with the basic definition for functions between vector spaces
 
 * `contMDiff_iff_contDiff`: for functions between vector spaces,
   manifold-smoothness is equivalent to usual smoothness.
@@ -42,7 +43,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Module
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contMDiffWithinAt_iff_contDiffWithinAt {f : E → E'} {s : Set E} {x : E} :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') n f s x ↔ ContDiffWithinAt 𝕜 n f s x := by
   simp +contextual only [ContMDiffWithinAt, liftPropWithinAt_iff',

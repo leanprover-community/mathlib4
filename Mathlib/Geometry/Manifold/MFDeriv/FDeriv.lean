@@ -6,10 +6,11 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
-public import Mathlib.Geometry.Manifold.Notation
+
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
-### Relations between vector space derivative and manifold derivative
+# Relations between vector space derivative and manifold derivative
 
 The manifold derivative `mfderiv`, when considered on the model vector space with its trivial
 manifold structure, coincides with the usual Fréchet derivative `fderiv`. In this section, we prove
@@ -31,7 +32,6 @@ section MFDerivFDeriv
 theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
     UniqueMDiffAt[s] x ↔ UniqueDiffWithinAt 𝕜 s x := by
   simp only [UniqueMDiffWithinAt, mfld_simps]
-  exact Iff.rfl
 
 alias ⟨UniqueMDiffWithinAt.uniqueDiffWithinAt, UniqueDiffWithinAt.uniqueMDiffWithinAt⟩ :=
   uniqueMDiffWithinAt_iff_uniqueDiffWithinAt

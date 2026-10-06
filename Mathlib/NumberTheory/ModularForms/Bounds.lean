@@ -6,7 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Fourier.AddCircle
-public import Mathlib.NumberTheory.Modular
+public import Mathlib.NumberTheory.ModularForms.NormTrace
 public import Mathlib.NumberTheory.ModularForms.Petersson
 
 /-!
@@ -16,7 +16,7 @@ We prove bounds for the norm of a modular form `f τ` in terms of `im τ`, and d
 bounds for its q-expansion coefficients. The main results are
 
 * `ModularFormClass.exists_bound`: a modular form of weight `k` (for an arithmetic subgroup `Γ`)
-  is bounded by a constant multiple of `max 1 (1 / (im τ) ^ k))`.
+  is bounded by a constant multiple of `max 1 (1 / (im τ) ^ k)`.
 * `CuspFormClass.exists_bound`: a cusp form of weight `k` (for an arithmetic subgroup `Γ`)
   is bounded by a constant multiple of `1 / (im τ) ^ (k / 2)`.
 * `hasSum_norm_sq_qExpansion_coeff_mul_exp`: **Parseval's identity** for `q`-expansions, expressing
