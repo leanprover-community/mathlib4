@@ -310,6 +310,11 @@ def toCotangentSpace : maximalIdeal R →ₛₗ[residue R] CotangentSpace R wher
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_smul]
     rfl
 
+lemma toCotangentSpace_eq_toCotangent : ⇑(toCotangentSpace R) = (maximalIdeal R).toCotangent := rfl
+
+lemma toCotangentSpace_apply (x : maximalIdeal R) :
+    toCotangentSpace R x = (maximalIdeal R).toCotangent x := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _
