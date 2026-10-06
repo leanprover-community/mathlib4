@@ -78,7 +78,7 @@ lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
     convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx IH using 2
     rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
 
-lemma mem_biSup_genWeightSpace_of {s : Set (H → R)} (hs : ∀ᵉ (χ₁ ∈ s) (χ₂ ∈ s), χ₁ + χ₂ ∈ s)
+lemma mem_biSup_genWeightSpace_of {s : Set (H → R)} (hs : ∀ χ₁ ∈ s, ∀ χ₂ ∈ s, χ₁ + χ₂ ∈ s)
     {x : L} {m : M} (hx : x ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace H χ)
     (hm : m ∈ ⨆ χ, ⨆ (_ : χ ∈ s), genWeightSpace M χ) :
     ⁅x, m⁆ ∈ ⨆ χ, ⨆ (_ : χ ∈ s), genWeightSpace M χ := by

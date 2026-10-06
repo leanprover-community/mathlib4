@@ -397,7 +397,7 @@ theorem sSup_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, H.Normal) : sSup 
 
 @[to_additive]
 theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {t : Set X}
-    (hs : ∀ g ∈ s, g⁻¹ ∈ s) (hst : ∀ᵉ (g ∈ s) (x ∈ t), g • x ∈ t) {g : G}
+    (hs : ∀ g ∈ s, g⁻¹ ∈ s) (hst : ∀ g ∈ s, ∀ x ∈ t, g • x ∈ t) {g : G}
     (hg : g ∈ Subgroup.closure s) {x : X} (hx : x ∈ t) : g • x ∈ t := by
   induction hg using Subgroup.closure_induction'' generalizing x with
   | one => simpa

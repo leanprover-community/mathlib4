@@ -559,7 +559,7 @@ lemma disjoint_biSup_of_finite_disjoint_biSup {ι : Type*} {f : ι → α} {s : 
   simp_rw [disjoint_iff, iSup_subtype', ← sSup_range, inf_comm, inf_sSup_eq_iSup_inf_sup_finset,
     iSup_eq_bot]
   intro u hu
-  obtain ⟨t, ht, ht', htu⟩ : ∃ᵉ (t ⊆ s) (hu : t.Finite), f '' t = u :=
+  obtain ⟨t, ht, ht', htu⟩ : ∃ t ⊆ s, ∃ hu : t.Finite, f '' t = u :=
     Set.Finite.exists_subset_finite_image_eq u.finite_toSet <| by rwa [Set.image_eq_range f s]
   replace htu : u.sup id = ⨆ i ∈ t, f i := by
     simp only [Finset.sup_eq_iSup, id_eq, ← Finset.mem_coe, ← htu, iSup_image]

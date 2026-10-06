@@ -609,7 +609,7 @@ theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.en
 See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
 `Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
 lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : MapsTo f s t) :
-    ∃ᵉ (a₁ ∈ s) (a₂ ∈ s), a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
+    ∃ a₁ ∈ s, ∃ a₂ ∈ s, a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
   contrapose! hc
   suffices Function.Injective (hf.restrict f) by
     let f' : s ↪ t := ⟨hf.restrict, this⟩

@@ -158,7 +158,7 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
     (M' : Submodule K M) (N' : Submodule K N)
     (hM : span L (M' : Set M) = ⊤)
     (hN : span L (N' : Set N) = ⊤)
-    (hp : ∀ᵉ (x ∈ M') (y ∈ N'), p x y ∈ (algebraMap K L).range) :
+    (hp : ∀ x ∈ M', ∀ y ∈ N', p x y ∈ (algebraMap K L).range) :
     ∃ (n : ℕ) (b : Basis (Fin n) L M) (b' : Basis (Fin n) K M'), ∀ i, b i = b' i := by
   classical
   have : IsReflexive L M := .of_isPerfPair p
@@ -208,7 +208,7 @@ lemma finrank_eq_of_isPerfPair
     (M' : Submodule K M) (N' : Submodule K N)
     (hM : span L (M' : Set M) = ⊤)
     (hN : span L (N' : Set N) = ⊤)
-    (hp : ∀ᵉ (x ∈ M') (y ∈ N'), p x y ∈ (algebraMap K L).range) :
+    (hp : ∀ x ∈ M', ∀ y ∈ N', p x y ∈ (algebraMap K L).range) :
     finrank K M' = finrank L M := by
   obtain ⟨n, b, b', hb⟩ := exists_basis_basis_of_span_eq_top_of_mem_algebraMap p M' N' hM hN hp
   rw [finrank_eq_card_basis b, finrank_eq_card_basis b']

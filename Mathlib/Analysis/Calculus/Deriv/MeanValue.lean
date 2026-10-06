@@ -286,7 +286,7 @@ of the real line. If `f` is differentiable on the interior of `D` and `C < f'`, 
 theorem Convex.mul_sub_lt_image_sub_of_lt_deriv {D : Set ℝ} (hD : Convex ℝ D) {f : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : DifferentiableOn ℝ f (interior D)) {C}
     (hf'_gt : ∀ x ∈ interior D, C < deriv f x) :
-    ∀ᵉ (x ∈ D) (y ∈ D), x < y → C * (y - x) < f y - f x := by
+    ∀ x ∈ D, ∀ y ∈ D, x < y → C * (y - x) < f y - f x := by
   intro x hx y hy hxy
   have hxyD : Icc x y ⊆ D := hD.ordConnected.out hx hy
   have hxyD' : Ioo x y ⊆ interior D :=
@@ -310,7 +310,7 @@ of the real line. If `f` is differentiable on the interior of `D` and `C ≤ f'`
 theorem Convex.mul_sub_le_image_sub_of_le_deriv {D : Set ℝ} (hD : Convex ℝ D) {f : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : DifferentiableOn ℝ f (interior D)) {C}
     (hf'_ge : ∀ x ∈ interior D, C ≤ deriv f x) :
-    ∀ᵉ (x ∈ D) (y ∈ D), x ≤ y → C * (y - x) ≤ f y - f x := by
+    ∀ x ∈ D, ∀ y ∈ D, x ≤ y → C * (y - x) ≤ f y - f x := by
   intro x hx y hy hxy
   rcases eq_or_lt_of_le hxy with hxy' | hxy'
   · rw [hxy', sub_self, sub_self, mul_zero]

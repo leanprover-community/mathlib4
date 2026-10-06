@@ -245,7 +245,7 @@ theorem toUniformSpace_eq : _u =
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : v.ValueGroup₀ˣ,
-      ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), v.restrict (y - x) < γ.1 := by
+      ∃ M ∈ F, ∀ x ∈ M, ∀ y ∈ M, v.restrict (y - x) < γ.1 := by
   rw [v.toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl
   simp_rw [v.subgroups_basis.mem_addGroupFilterBasis_iff]

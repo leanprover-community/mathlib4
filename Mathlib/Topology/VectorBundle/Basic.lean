@@ -829,9 +829,9 @@ structure VectorPrebundle where
   pretrivializationAt : B → Pretrivialization F (π F E)
   mem_base_pretrivializationAt : ∀ x : B, x ∈ (pretrivializationAt x).baseSet
   pretrivialization_mem_atlas : ∀ x : B, pretrivializationAt x ∈ pretrivializationAtlas
-  exists_coordChange : ∀ᵉ (e ∈ pretrivializationAtlas) (e' ∈ pretrivializationAtlas),
+  exists_coordChange : ∀ e ∈ pretrivializationAtlas, ∀ e' ∈ pretrivializationAtlas,
     ∃ f : B → F →L[R] F, ContinuousOn f (e.baseSet ∩ e'.baseSet) ∧
-      ∀ᵉ (b ∈ e.baseSet ∩ e'.baseSet) (v : F), f b v = (e' ⟨b, e.symm b v⟩).2
+      ∀ b ∈ e.baseSet ∩ e'.baseSet, ∀ v : F, f b v = (e' ⟨b, e.symm b v⟩).2
   totalSpaceMk_isInducing : ∀ b : B, IsInducing (pretrivializationAt b ∘ .mk b)
 
 namespace VectorPrebundle

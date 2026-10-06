@@ -92,7 +92,7 @@ theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
   rwa [← normalize_normalized_factor p p_mem, normalize_eq_normalize_iff, dvd_dvd_iff_associated]
 
 theorem normalizedFactors_eq_of_dvd (a : α) :
-    ∀ᵉ (p ∈ normalizedFactors a) (q ∈ normalizedFactors a), p ∣ q → p = q := by
+    ∀ p ∈ normalizedFactors a, ∀ q ∈ normalizedFactors a, p ∣ q → p = q := by
   intro p hp q hq hdvd
   convert
     normalize_eq_normalize hdvd
