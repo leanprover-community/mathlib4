@@ -262,8 +262,9 @@ theorem ContMDiff.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ �
 
 variable {ι : Type*} [Fintype ι]
 
+-- TODO: would need additions to the elaborators...
 theorem ContinuousAlternatingMap.contMDiff (L : E [⋀^ι]→L[𝕜] F) :
-    ContMDiff 𝓘(𝕜, (Π (_ : ι), E)) 𝓘(𝕜, F) n L :=
+    ContMDiff 𝓘(𝕜, (Π (_ : ι), E)) 𝓘(𝕜, F) n (L : (Π (_ : ι), E) → F) :=
   (ContinuousMultilinearMap.contDiff L.toContinuousMultilinearMap).contMDiff
 
 theorem ContinuousAlternatingMap.contMDiffAt (L : E [⋀^ι]→L[𝕜] F) {x} :
