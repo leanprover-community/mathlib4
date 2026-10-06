@@ -45,9 +45,8 @@ leantar run on a nonexistent archive; none makes a network request.
    so one commit's artifacts never serve another commit on the same fork.
 3. Flat layout for single-writer containers: `master` reads and writes flat at
    `/f/{hash}`, the path older tools also use.
-4. Prefixed layout for multi-writer containers: `forks`, `nightly-testing`, and
-   `pr-toolchain-tests` namespace by repo so uploads from different sources don't
-   collide.
+4. Prefixed layout for the multi-writer container: `forks` namespaces by repo
+   so uploads from different sources don't collide.
 5. Multi-round downloads decompress every file they fetch: the decompression
    pipeline state is carried from each download round into the next and
    drained after the last one, so a fork-PR `get` leaves no downloaded file
@@ -135,8 +134,6 @@ def test_Container_name : IO Unit := do
   IO.println "Container.name:"
   assertEq "master"             "master"             Container.master.name
   assertEq "forks"              "forks"              Container.forks.name
-  assertEq "nightly-testing"    "nightly-testing"    Container.nightlyTesting.name
-  assertEq "pr-toolchain-tests" "pr-toolchain-tests" Container.prToolchainTests.name
 
 /-- Parser is the inverse of `Container.name` on valid inputs, and rejects everything else. -/
 def test_Container_parse : IO Unit := do
@@ -144,9 +141,6 @@ def test_Container_parse : IO Unit := do
   -- Every canonical name round-trips back to its enum case.
   assertTrue "master parses"          (Container.parse? "master" == some .master)
   assertTrue "forks parses"           (Container.parse? "forks" == some .forks)
-  assertTrue "nightly-testing parses" (Container.parse? "nightly-testing" == some .nightlyTesting)
-  assertTrue "pr-toolchain-tests parses"
-    (Container.parse? "pr-toolchain-tests" == some .prToolchainTests)
   -- Matching is case-insensitive, so `--container=Master` canonicalizes too.
   assertTrue "case-insensitive"       (Container.parse? "Master" == some .master)
   -- An unknown name returns `none` so `--container=bogus` errors out rather than
@@ -165,12 +159,6 @@ def test_Container_azureURL : IO Unit := do
   assertEq "forks URL"
     "https://lakecache.blob.core.windows.net/mathlib4-forks"
     Container.forks.azureURL
-  assertEq "nightly-testing URL"
-    "https://lakecache.blob.core.windows.net/mathlib4-nightly-testing"
-    Container.nightlyTesting.azureURL
-  assertEq "pr-toolchain-tests URL"
-    "https://lakecache.blob.core.windows.net/mathlib4-pr-toolchain-tests"
-    Container.prToolchainTests.azureURL
 
 /-- A variable that names a read URL or a read chain arrives trimmed, and an
 empty or whitespace-only value means unset. `MATHLIB_CACHE_BASE_URL`,
@@ -205,9 +193,8 @@ def test_getBaseURLFrom : IO Unit := do
     "https://cache.mathlib.org" (getBaseURLFrom .master none false)
   assertEq "legacy → the storage account for master"
     "https://lakecache.blob.core.windows.net" (getBaseURLFrom .master none true)
-  assertTrue "legacy leaves every other container on the read endpoint"
-    ([Container.forks, .nightlyTesting, .prToolchainTests].all fun c =>
-      getBaseURLFrom c none true == publicCacheEndpoint)
+  assertEq "legacy leaves forks on the read endpoint"
+    publicCacheEndpoint (getBaseURLFrom .forks none true)
   assertEq "override → the given base"
     "https://cache.example.org" (getBaseURLFrom .master (some "https://cache.example.org") false)
   assertEq "override wins over legacy"
@@ -224,19 +211,17 @@ section PerRepoAllowlist
 /-- Trust-ordered read chain per GitHub repo: the tool tries containers in this
 order and stops at the first hit, so both membership and ordering are part of
 the trust boundary. Key points the tests pin:
-- The nightly-testing chain excludes `pr-toolchain-tests`, so trusted-nightly
-  consumers never fall back to low-trust toolchain-PR uploads (those branches
-  opt into the wider chain via `MATHLIB_CACHE_FROM` in CI).
 - The fork chain leads with `master` (shared upstream deps), then `forks`
-  (PR-specific files); `master` is absent from the nightly chain because that
-  repo's toolchain gives it a different root hash.
+  (PR-specific files).
+- The nightly-testing repo reads the fork chain.
 -/
 def test_defaultContainersForRepo : IO Unit := do
   IO.println "defaultContainersForRepo:"
   assertTrue "canonical repo → [master]"
     (defaultContainersForRepo MATHLIBREPO == [.master])
-  assertTrue "nightly-testing repo → [nightly-testing, forks], no pr-toolchain-tests"
-    (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.nightlyTesting, .forks])
+  assertTrue "nightly-testing repo → [master, forks]"
+    (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.master, .forks])
+  assertTrue "nightly-testing is not canonical" (!isCanonicalRepo NIGHTLY_TESTING_REPO)
   assertTrue "fork repo → [master, forks]"
     (defaultContainersForRepo "alice/mathlib4" == [.master, .forks])
   assertTrue "unknown repo falls back to the fork chain"
@@ -298,14 +283,9 @@ def test_fileURL : IO Unit := do
   assertEq "forks prefixes by repo for a fork repo"
     "https://cache.example.org/mathlib4-forks/f/alice/mathlib4/abc.ltar"
     (fileURLOf (some .forks) "alice/mathlib4" base "abc.ltar")
-  assertEq "nightly-testing prefixes by repo"
-    "https://cache.example.org/mathlib4-nightly-testing/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
-    (fileURLOf (some .nightlyTesting) NIGHTLY_TESTING_REPO
-      base "abc.ltar")
-  assertEq "pr-toolchain-tests prefixes by repo"
-    "https://cache.example.org/mathlib4-pr-toolchain-tests/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
-    (fileURLOf (some .prToolchainTests) NIGHTLY_TESTING_REPO
-      base "abc.ltar")
+  assertEq "forks prefixes by repo for the nightly-testing repo"
+    "https://cache.example.org/mathlib4-forks/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
+    (fileURLOf (some .forks) NIGHTLY_TESTING_REPO base "abc.ltar")
   -- No container (user-supplied URL): the shape follows the repo — flat for the
   -- canonical repo, prefixed otherwise.
   assertEq "user URL is flat for the canonical repo"
@@ -341,9 +321,8 @@ or empty input fails the whole list rather than degrading to a default, so a
 typo surfaces instead of silently changing where the cache is read. -/
 def test_parseCacheFromList : IO Unit := do
   IO.println "parseCacheFromList:"
-  assertTrue "all four containers"
-    (parseCacheFromList "master,forks,nightly-testing,pr-toolchain-tests" ==
-      some [.master, .forks, .nightlyTesting, .prToolchainTests])
+  assertTrue "both containers"
+    (parseCacheFromList "master,forks" == some [.master, .forks])
   -- Order is preserved, not normalized: `forks,master` reverses the priority.
   assertTrue "preserves the given order"
     (parseCacheFromList "forks,master" == some [.forks, .master])
@@ -639,7 +618,6 @@ def test_readLocations : IO Unit := do
     let head := (← IO.runCmd "git" #["log", "-1", "--format=%H"]).trimAsciiEnd.copy
     let masterBase ← getBaseURL .master
     let forksBase ← getBaseURL .forks
-    let nightlyBase ← getBaseURL .nightlyTesting
     let paths (locations : List Location) :=
       locations.map fun l => (l.fileURL "x.ltar", l.sha?, l.label)
     cacheFromOverride.set none
@@ -656,14 +634,12 @@ def test_readLocations : IO Unit := do
       (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4") dir) ==
         [(s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master"),
          (s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1", "forks")])
-    cacheFromOverride.set (some [.forks, .master, .nightlyTesting])
+    cacheFromOverride.set (some [.forks, .master])
     assertTrue "unsafe rounds preserve the requested container and SHA order"
       (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4" ["abc2", "abc3"]) dir) ==
         [(s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/abc2/x.ltar", some "abc2", "forks"),
          (s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3", "forks"),
-         (s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master"),
-         (s!"{nightlyBase}/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar",
-          none, "nightly-testing")])
+         (s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master")])
     cacheFromOverride.set (some [])
     assertTrue "an empty container override produces no locations"
       ((← withSuppressedCacheOutput (readLocations "alice/mathlib4") dir).isEmpty)
@@ -827,16 +803,16 @@ def test_getNonDefaultScopeReason : IO Unit := do
       scopeOverride.set (some head)
       let reason ←
         withSuppressedCacheOutput
-          (getNonDefaultScopeReason none none (some [.forks, .nightlyTesting]) MATHLIBREPO)
+          (getNonDefaultScopeReason none none (some [.forks, .master]) MATHLIBREPO)
       assertTrue "a HEAD scope yields the cache-from reason"
-        (reason == "--cache-from=forks, nightly-testing (explicit container override)")
+        (reason == "--cache-from=forks, master (explicit container override)")
       scopeOverride.set none
 
     let reason ←
       withSuppressedCacheOutput
-        (getNonDefaultScopeReason none none (some [.forks, .nightlyTesting]) MATHLIBREPO)
+        (getNonDefaultScopeReason none none (some [.forks, .master]) MATHLIBREPO)
     assertTrue "cache-from reason names the container list"
-      (reason == "--cache-from=forks, nightly-testing (explicit container override)")
+      (reason == "--cache-from=forks, master (explicit container override)")
 
     let reason ← withSuppressedCacheOutput
       (getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4")
@@ -1772,7 +1748,7 @@ exceptions and unsafe expansion. Expected paths are independent literals. -/
 def test_readLocationsFrom : IO Unit := do
   IO.println "readLocationsFrom:"
   let chain : List (Option Container × String) :=
-    [(some .master, "U_m"), (some .forks, "U_f"), (some .nightlyTesting, "U_n")]
+    [(some .master, "U_m"), (some .forks, "U_f")]
   let paths (locations : List Location) :=
     locations.map fun l => (l.fileURL "x.ltar", l.sha?)
   let resolve scope? unsafeScopes headScope? :=
@@ -1780,39 +1756,31 @@ def test_readLocationsFrom : IO Unit := do
   assertTrue "no scope gives unscoped locations"
     (resolve none [] none ==
       [("U_m/mathlib4-master/f/x.ltar", none),
-       ("U_f/mathlib4-forks/f/alice/mathlib4/x.ltar", none),
-       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar", none)])
+       ("U_f/mathlib4-forks/f/alice/mathlib4/x.ltar", none)])
   assertTrue "an explicit scope applies to repo-namespaced locations"
     (resolve (some "abc1") [] none ==
       [("U_m/mathlib4-master/f/x.ltar", none),
-       ("U_f/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1"),
-       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
   assertTrue "HEAD applies only to forks"
     (resolve none [] (some "abc2") ==
       [("U_m/mathlib4-master/f/x.ltar", none),
-       ("U_f/mathlib4-forks/f/alice/mathlib4/abc2/x.ltar", some "abc2"),
-       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar", none)])
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc2/x.ltar", some "abc2")])
   assertTrue "an explicit scope wins over HEAD"
     (resolve (some "abc1") [] (some "abc2") ==
       [("U_m/mathlib4-master/f/x.ltar", none),
-       ("U_f/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1"),
-       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
   assertTrue "unsafe scopes replace HEAD"
     (resolve none ["abc3"] (some "abc2") ==
       [("U_m/mathlib4-master/f/x.ltar", none),
-       ("U_f/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3"),
-       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar", none)])
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3")])
   assertTrue "unsafe scopes expand forks in order and drop the explicit scope"
     (resolve (some "abc1") ["abc3", "abc4"] none ==
       [("U_m/mathlib4-master/f/x.ltar", none),
        ("U_f/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3"),
-       ("U_f/mathlib4-forks/f/alice/mathlib4/abc4/x.ltar", some "abc4"),
-       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar", none)])
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc4/x.ltar", some "abc4")])
   assertTrue "unsafe scopes have no effect without forks"
-    (paths (readLocationsFrom "Alice/Mathlib4"
-      [(some .master, "U_m"), (some .nightlyTesting, "U_n")] none ["abc3", "abc4"]) ==
-      [("U_m/mathlib4-master/f/x.ltar", none),
-       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar", none)])
+    (paths (readLocationsFrom "Alice/Mathlib4" [(some .master, "U_m")] none ["abc3", "abc4"]) ==
+      [("U_m/mathlib4-master/f/x.ltar", none)])
   assertTrue "a fork endpoint retains its explicit scope"
     (paths (readLocationsFrom "Alice/Mathlib4" [(none, "U_e")]
       (some "abc1") [] (some "abc2")) ==
