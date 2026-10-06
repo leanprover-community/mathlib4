@@ -107,13 +107,13 @@ monoids with open units are open.
 
 open ContinuousMulEquiv
 
-/-- The units in a product of two topological monoids are open. -/
+/-- Openness of the group of units is preserved under products. -/
 instance {M N : Type*} [Monoid M] [TopologicalSpace M] [Monoid N]
     [TopologicalSpace N] [hM : IsOpenUnits M] [hN : IsOpenUnits N] : IsOpenUnits (M × N) := by
   rw [isOpenUnits_iff] at *
   exact ((hM.prodMap hN).of_comp_iff _).mpr prodUnits_isOpenEmbedding
 
-/-- The units in a product of finitely many topological monoids are open. -/
+/-- Openness of the group of units is preserved under finite products. -/
 instance {I : Type*} [Finite I] {f : I → Type _} [(i : I) → Monoid (f i)]
     [(i : I) → TopologicalSpace (f i)] [∀ i, IsOpenUnits (f i)] :
     IsOpenUnits ((i : I) → f i) := by

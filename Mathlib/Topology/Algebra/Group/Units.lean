@@ -46,7 +46,7 @@ def ContinuousMulEquiv.piUnits {ι : Type*}
     ⟨continuous_pi fun _ ↦ Units.continuous_val.comp <| continuous_apply _,
       continuous_pi fun _ ↦ Units.continuous_coe_inv.comp <| continuous_apply _⟩
 
-/-- Given a family of topological monoids M_i, (Π M_i)ˣ → Π M_i is an open embedding. -/
+/-- Given a family of topological monoids `M`, (Π i, M i)ˣ → Π i, M i is an open embedding. -/
 theorem ContinuousMulEquiv.piUnits_isOpenEmbedding {I : Type*} {f : I → Type _}
     [(i : I) → Monoid (f i)] [(i : I) → TopologicalSpace (f i)] :
     IsOpenEmbedding (piUnits (M := f)) :=
