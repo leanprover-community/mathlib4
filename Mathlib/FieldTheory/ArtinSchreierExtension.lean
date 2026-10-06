@@ -33,7 +33,7 @@ variable {F : Type u} [CommRing F]
 
 open IntermediateField Polynomial
 
-/-!
+/--
 The Artin-Schreier polynomial defined by an element `a` of a ring `F` of exponential characteristic
 `p` is `X ^ p - X - C a`.
 -/
