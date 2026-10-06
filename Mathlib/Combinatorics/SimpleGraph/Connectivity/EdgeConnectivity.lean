@@ -146,7 +146,7 @@ alias isBridge_iff_adj_and_not_isEdgeConnected_two := isBridge_iff_not_isEdgeRea
 lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e}).Reachable u v := by
   simp [isEdgeReachable_add_one]
 
-/-- A graph is 2-edge-connected iff it has no bridge. -/
+/-- A graph is 2-edge-connected iff it remains preconnected after removing any edge. -/
 lemma isEdgeConnected_two_iff_forall_preconnected :
     G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
   simp [isEdgeConnected_add_one]
