@@ -460,15 +460,6 @@ instance instIsRightCancelMul [IsRightCancelMulZero R] : IsRightCancelMul (Ioo (
 
 instance instIsCancelMul [IsCancelMulZero R] : IsCancelMul (Ioo (0 : R) 1) where
 
-instance instLeftCancelSemigroup [IsLeftCancelMulZero R] : LeftCancelSemigroup (Ioo (0 : R) 1) :=
-  { Set.Ioo.instSemigroup with
-    mul_left_cancel _ _ _ := mul_left_cancel }
-
-instance instRightCancelSemigroup [IsRightCancelMulZero R] :
-    RightCancelSemigroup (Ioo (0 : R) 1) :=
-  { Set.Ioo.instSemigroup with
-    mul_right_cancel _ _ _ := mul_right_cancel }
-
 end OrderedSemiring
 
 instance instCommSemigroup [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
