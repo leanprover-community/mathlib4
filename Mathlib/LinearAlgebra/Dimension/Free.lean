@@ -354,8 +354,6 @@ noncomputable def basisUnique (ι : Type*) [Unique ι]
 theorem Basis.nonempty_unique_index_of_finrank_eq_one
     {ι : Type*} (b : Module.Basis ι R M) (d1 : Module.finrank R M = 1) :
     Nonempty (Unique ι) := by
-  -- why isn't this an instance?
-  have : Nontrivial R := nontrivial_of_invariantBasisNumber R
   have : Module.Finite R M :=
     Module.finite_of_finrank_pos (Nat.lt_of_sub_eq_succ d1)
   have : Finite ι := Module.Finite.finite_basis b
