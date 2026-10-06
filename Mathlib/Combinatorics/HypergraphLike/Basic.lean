@@ -23,7 +23,7 @@ as `SimpleGraph`, `Graph`, and `Digraph`.
 * `HypergraphLike.IsLink G e u v`: the existence of such a link, defined as
   `Nonempty (Link G e u v)`.
 * `HypergraphLike.Adj G u v`: the existence of an edge linking `u` to `v`.
-* `HypergraphLike.edgeFiber` and `HypergraphLike.vertexFiber`: the active incidence labels belonging
+* `HypergraphLike.edgeFiber` and `HypergraphLike.vertexFiber`: the incidences belonging
   to an edge or vertex.
 * `HypergraphLike.incVerts` and `HypergraphLike.incEdges`: the vertices of an edge and the edges at
   a vertex, forgetting incidence multiplicity and orientation.
@@ -42,10 +42,9 @@ Both relations follow the order from source to target and need not be symmetric.
 edges. It uses incidence hypergraph definition, a span of incidences to edges and vertices,
 generalized to also include directional information of whether an incidence is a source or target.
 
-Incidence hypergraphs are more general than graphs or definitions of hypergraph based on
-set-systems. Incidence hypergraphs allow for arbitrary number of incidences of an edge and a vertex,
-and arbitrary number of edges between two vertices. It also has good categorical properties. Two
-additional fields, `IsSource` and `IsTarget`, are used to orient the incidences. Every incidence
+Incidence hypergraphs are more general than graphs or hypergraphs represented by set systems.
+They allow any number of incidences between an edge and a vertex, and distinct edges with the same
+incident vertices. The fields `IsSource` and `IsTarget` orient the incidences. Every incidence
 is either a source or a target or both. Incidences that are sources but not targets, or targets but
 not sources, are used to model directed edges. Incidences that are both sources and targets are
 used to model undirected edges.
@@ -56,21 +55,18 @@ with a vertex). `Link G e u v` retains the chosen incidence data, while `IsLink 
 remembers the existence of a link. Adjacency is then the existence of an edge linking two vertices.
 Both relations are derived from the incidence data and cannot be overridden by instances.
 
-Rather than directly using the given types, `HypergraphLike` has fields for the set of vertices,
-edges, and incidences, and only those in the sets are treated as part of the graph-like
-structure. You can view the elements of, say, `ν : Type*` as all possible labels for vertices and
-only those in `V(G)` are the labels actively being used in the graph-like structure. The maps in
-the definition of `HypergraphLike` act on subtypes of `incs G` and people are discouraged from using
-them directly. Instead, `edgeMap` and `attach` are defined on all incidence type under the
-corresponding `Nonempty` assumptions, by sending an arbitrary value outside the active incidence
-set. -/
+`HypergraphLike` uses ambient types for vertex, edge, and incidence labels. For `G : Gr`, the sets
+`V(G)`, `E(G)`, and `I(G)` specify which labels are vertices, edges, and incidences of `G`.
+The maps `edgeMap' G` and `attach' G` act on the subtype `I(G)`. Prefer the total maps `edgeMap G`
+and `attach G` when the respective edge or vertex label type is nonempty. They agree with the
+primed maps on `I(G)` and return arbitrary values on inputs outside `I(G)`. -/
 
 @[expose] public section
 
 open Set Function
 
-/-- `HypergraphLike` abstracts types of graph-like structures using separate types for vertices,
-incidences, and edges.
+/-- `HypergraphLike` abstracts types of graph-like structures using separate types for vertex,
+incidence, and edge labels.
 
 Consider a type `Gr` that models a graph-like structure. For `G : Gr`, `V(G)`, `E(G)`, and `I(G)`
 specify the vertices, edges, and incidences present in `G`. You can view the elements of,
@@ -240,6 +236,14 @@ lemma mem_edges_of_mem_edgeFiber (hi : i ∈ edgeFiber G e) : e ∈ E(G) := by
 lemma mem_verts_of_mem_vertexFiber (hi : i ∈ vertexFiber G v) : v ∈ V(G) := by
   obtain ⟨j, rfl, _⟩ := hi
   exact (attach' G j).property
+
+@[simp]
+lemma edgeFiber_of_notMem_edges (he : e ∉ E(G)) : edgeFiber G e = ∅ :=
+  eq_empty_iff_forall_notMem.mpr fun _ hi ↦ he (mem_edges_of_mem_edgeFiber hi)
+
+@[simp]
+lemma vertexFiber_of_notMem_verts (hv : v ∉ V(G)) : vertexFiber G v = ∅ :=
+  eq_empty_iff_forall_notMem.mpr fun _ hi ↦ hv (mem_verts_of_mem_vertexFiber hi)
 
 lemma pairwise_disjoint_edgeFiber (G : Gr) : Pairwise (Disjoint on edgeFiber G) :=
   fun _ _ hef ↦ (disjoint_image_iff Subtype.val_injective).mpr
