@@ -3,6 +3,7 @@ Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
 
 /-!
 # Native dependencies of the Mathlib cache
@@ -12,6 +13,8 @@ platform-specific Lake build archive. Prepare these dependencies before the
 ordinary cache download so `lake exe cache get` still reconstructs a checkout
 on which `lake build --no-build` succeeds.
 -/
+
+public section
 
 namespace Cache.Native
 
