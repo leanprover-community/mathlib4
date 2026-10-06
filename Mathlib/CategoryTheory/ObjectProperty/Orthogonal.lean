@@ -59,8 +59,6 @@ lemma gc_rightOrthogonal_leftOrthogonal :
 
 lemma le_leftOrthogonal_iff_le_rightOrthogonal (Q : ObjectProperty C) :
     P ≤ Q.leftOrthogonal ↔ Q ≤ P.rightOrthogonal :=
-  -- the Galois connection has `rightOrthogonal` as its left adjoint, so its two sides
-  -- appear in the opposite order
   (gc_rightOrthogonal_leftOrthogonal P (OrderDual.toDual Q)).symm
 
 lemma le_leftOrthogonal_rightOrthogonal : P ≤ P.rightOrthogonal.leftOrthogonal :=
