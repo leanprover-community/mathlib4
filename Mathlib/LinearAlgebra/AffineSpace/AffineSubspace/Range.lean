@@ -20,7 +20,7 @@ Follows `LinearMap.range`.
 
 @[expose] public section
 
-open Affine AffineMap AffineSubspace
+open Affine AffineMap AffineSubspace Function
 
 section
 
@@ -65,22 +65,18 @@ theorem range_id : (id R P₁).range = ⊤ := by ext; simp
 theorem direction_range_eq_range_linear : f.range.direction = f.linear.range := by
   rw [← map_top, map_direction, direction_top, Submodule.map_top]
 
+theorem range_eq_top_iff_surjective : f.range = ⊤ ↔ Surjective f := by
+  simp [SetLike.ext'_iff, Set.range_eq_univ]
+
 /-- Restrict the codomain of an affine map `f` to `f.range`. -/
+@[simps]
 def rangeRestrict : P₁ →ᵃ[R] f.range where
   toFun p := ⟨f p, p, rfl⟩
   linear := f.linear.codRestrict f.range.direction
     (f.direction_range_eq_range_linear ▸ f.linear.mem_range_self)
   map_vadd' _ _ := by ext; simp
 
-@[simp]
-theorem coe_rangeRestrict_apply (x : P₁) : f.rangeRestrict x = f x :=
-  rfl
-
-@[simp]
-theorem coe_rangeRestrict_linear_apply (x : V₁) : f.rangeRestrict.linear x = f.linear x :=
-  rfl
-
-theorem surjective_rangeRestrict : Function.Surjective ⇑f.rangeRestrict :=
+theorem surjective_rangeRestrict : Surjective f.rangeRestrict :=
   fun ⟨_, y, rfl⟩ => ⟨y, rfl⟩
 
 @[simp]
@@ -89,9 +85,8 @@ theorem range_rangeRestrict : f.rangeRestrict.range = ⊤ := by
   simpa [AffineSubspace.mem_top, iff_true] using ⟨x, rfl⟩
 
 @[simp]
-theorem injective_rangeRestrict_iff :
-    Function.Injective (rangeRestrict f) ↔ Function.Injective f := by
-  convert (Function.Injective.of_comp_iff Subtype.val_injective f.rangeRestrict).symm
+theorem injective_rangeRestrict_iff : Injective (rangeRestrict f) ↔ Injective f := by
+  convert (Injective.of_comp_iff Subtype.val_injective f.rangeRestrict).symm
   ext; simp [rangeRestrict]
 
 end AffineMap
