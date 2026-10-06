@@ -5,9 +5,10 @@ Authors: Chris Hughes, Junyan Xu
 -/
 module
 
-import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.SetTheory.Cardinal.Finsupp
+
+import Mathlib.Algebra.MonoidAlgebra.Cardinal
 
 /-!
 # Cardinality of Polynomial Ring

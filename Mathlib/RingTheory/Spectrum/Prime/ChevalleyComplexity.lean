@@ -6,9 +6,10 @@ Authors: Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.CoeffMem
-import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
 public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+
+import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!

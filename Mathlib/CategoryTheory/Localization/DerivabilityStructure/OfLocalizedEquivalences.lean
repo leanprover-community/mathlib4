@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
+
 import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
 
 /-!
