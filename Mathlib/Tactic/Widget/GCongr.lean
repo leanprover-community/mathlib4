@@ -8,9 +8,7 @@ module
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import ProofWidgets.Component.Basic
 
-import ProofWidgets.Component.Basic
-import ProofWidgets.Component.OfRpcMethod
-
+meta import ProofWidgets.Component.OfRpcMethod
 /-! # GCongr widget
 
 This file defines a `gcongr?` tactic that displays a widget panel allowing to generate

@@ -9,7 +9,7 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep
 public import Mathlib.Tactic.Echelon.Core
 public meta import Mathlib.Tactic.Echelon.Core
 
-import Mathlib.Util.Qq
+meta import Mathlib.Util.Qq
 
 /-!
 # Certificate construction for the Bareiss decomposition

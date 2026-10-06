@@ -13,6 +13,8 @@ public import Lean.Meta.Match.MatcherInfo
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
 import Lean.Meta.Transform
+public import Lean.ProjFns
+public import Lean.Structure
 
 /-!
 # Additional operations on Expr and related types

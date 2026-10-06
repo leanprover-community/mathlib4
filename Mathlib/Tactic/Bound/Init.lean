@@ -6,7 +6,7 @@ Authors: Geoffrey Irving
 module
 
 public import Mathlib.Init
-public import Aesop.Frontend.Command
+public meta import Aesop.Frontend.Command
 
 /-!
 # Bound Rule Set

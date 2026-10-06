@@ -10,10 +10,10 @@ public meta import Lean.Elab.Command
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Mathlib.Tactic.DeclarationNames
-public import Batteries.Tactic.Lint.Basic
-public import Lean.Parser.Module
+public meta import Batteries.Tactic.Lint.Basic
+public meta import Lean.Parser.Module
 
-import Lean.Parser.Command
+meta import Lean.Parser.Command
 
 /-!
 ## Style linters

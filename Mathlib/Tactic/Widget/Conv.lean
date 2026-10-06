@@ -5,7 +5,7 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot, Aaron Liu
 -/
 module
 
-public import Mathlib.Lean.Name
+public meta import Mathlib.Lean.Name
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import ProofWidgets.Component.Basic

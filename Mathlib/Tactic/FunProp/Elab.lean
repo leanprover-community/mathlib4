@@ -9,8 +9,7 @@ public import Mathlib.Tactic.FunProp.Core
 public meta import Lean.Elab.ConfigEval
 
 import Mathlib.Tactic.InferParam
-import Lean.Elab.InfoTree.Main
-import Lean.Elab.ConfigEval
+meta import Lean.Elab.InfoTree.Main
 
 /-!
 ## `funProp` tactic syntax

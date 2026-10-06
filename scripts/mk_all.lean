@@ -74,11 +74,18 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
             module-style aggregator)."
       else pure false
     let mut allFiles ← getAllModulesSorted git d
+    -- Preserve the runtime/elaboration boundary when regenerating an aggregator.
+    let metaImports ← if fileExists then
+        pure <| (← Lean.parseImports' existingContent fileName.toString).imports
+          |>.filter (·.isMeta) |>.map (·.module.toString)
+      else pure #[]
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
       allFiles := #["Std", "Batteries"] ++ allFiles
     let fileContent := (if useModule then "module  -- shake: keep-all --deprecated_module: ignore\n\n" else "") ++
-      ("\n".intercalate (allFiles.map ((if useModule then "public " else "") ++ "import " ++ ·)).toList) ++
+      ("\n".intercalate (allFiles.map fun m =>
+        (if useModule then "public " else "") ++
+        (if metaImports.contains m then "meta " else "") ++ "import " ++ m).toList) ++
       (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
       "\n"
     if !fileExists then

@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Control.Monad.Writer
 public import Batteries.Tactic.Congr
+public import Batteries.Data.Except
 
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Lawful
-import Batteries.Lean.Except
 
 /-!
 # Continuation Monad
