@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
+
 import Mathlib.LinearAlgebra.Unimodular
 import Mathlib.RingTheory.Trace.Basic
 

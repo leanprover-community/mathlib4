@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Bilinear
 public import Mathlib.GroupTheory.Congruence.Hom
+
 import Mathlib.Tactic.NormNum.Basic
 
 /-!
