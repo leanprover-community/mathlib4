@@ -52,4 +52,9 @@ jobs:
 
           # (Optional) A comma-separated list of keywords. Default
           # "depends on, blocked by"
+          #
+          # bors also reads these keywords (`[dependencies] keywords` in
+          # bors.toml) to block PRs on their dependencies, so change both
+          # together. bors takes them as literal text, so `- \[ \] depends on:`
+          # here is `- [ ] depends on:` there.
           keywords: "- \\[ \\] depends on:,- \\[x\\] depends on:"
