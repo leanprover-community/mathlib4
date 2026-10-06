@@ -32,7 +32,7 @@ variable {m R : Type*} [CommRing R] [Fintype m] [DecidableEq m] [LinearOrder m] 
 
 /-- A certificate of a Hessenberg similarity of `A` consisting of a permutation `σ` of its rows and
 columns, a lower triangular matrix `L` with nonzero diagonal and an upper Hessenberg matrix `H`
-satisfying `A.submatrix σ σ * L = L * H`.
+satisfying `A.reindex σ σ * L = L * H`.
 
 NB: The certificate does not represent the standard Hessenberg reduction where the transformation
 matrix `L` is orthogonal.
