@@ -23,7 +23,7 @@ Note: Instances for the interval `Ici 0` are dealt with in
 
 The strongest typeclass provided on each interval is:
 * `Set.Icc.instCommMonoidWithZero`, `Set.Icc.instIsCancelMulZero`
-* `Set.Ico.instCommSemigroup`, `Set.Ico.semigroupWithZero`, `Set.Ico.instIsCancelMulZero`
+* `Set.Ico.instCommSemigroup`, `Set.Ico.instSemigroupWithZero`, `Set.Ico.instIsCancelMulZero`
 * `Set.Ioc.instCancelCommMonoid`
 * `Set.Ioo.instCommSemigroup`, `Set.Ioo.instIsCancelMul`
 
