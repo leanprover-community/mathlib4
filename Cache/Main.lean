@@ -7,7 +7,6 @@ module
 
 public import Cache.Cli
 import Cache.Requests
-import Cache.Marker
 import Cache.Upload
 import Cache.Query
 import Cache.Warning
@@ -33,7 +32,7 @@ Commands:
   clean          Delete non-linked files
   clean!         Delete everything on the local cache
   lookup [ARGS]  Show information about cache files for the given Lean files
-  query [REF]    Without REF: find most recent cached commit on this branch.
+  query [REF]    Without REF: find the most recent cached Mathlib commit.
                  With REF (e.g. HEAD, a SHA): boolean probe; exit 0 if cached, 1 if not.
 
   # Staging
@@ -57,12 +56,13 @@ Options:
   --scope=REF        The per-commit namespace (any git ref `git rev-parse`
                      accepts: HEAD, branch, tag, SHA). For reads: the fork
                      SHA-scoped namespace to read instead of the default, the
-                     checked-out HEAD. Use the SHA reported by `cache query`.
+                     Mathlib checkout's HEAD. Refs resolve in that checkout.
+                     Use the SHA reported by `cache query`.
                      Reading another commit's scope means trusting the
                      artifacts produced at that commit; `cache get` prints a
                      security notice when the scope differs from HEAD.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
-                     this branch's history and try the most recent cached fork
+                     Mathlib's history and try the most recent cached fork
                      commits as scopes, in order, until the cache is satisfied.
                      Trusts the artifacts of every commit it tries. Mutually
                      exclusive with --scope; always prints a security notice.
@@ -176,7 +176,7 @@ def main (args : List String) : IO Unit := do
     let resolved ← try resolveGitRef s catch _ => pure s
     scopeOverride.set (some resolved)
 
-  -- Apply `--cache-from` to the process-wide override read by `effectiveGetURLs`.
+  -- Apply `--cache-from` to the process-wide override read by `effectiveGetBases`.
   if let some s := cacheFromStr? then
     match parseCacheFromList s with
     | none =>
@@ -185,8 +185,8 @@ def main (args : List String) : IO Unit := do
       Process.exit 1
     | some cs => cacheFromOverride.set (some cs)
 
-  -- Parse `--container=NAME`. Validation is unconditional; `put` enforces that
-  -- the flag is set (via `stagedUploadDest`).
+  -- Parse `--container=NAME`. Validation is unconditional; `put` requires the
+  -- flag where the backend needs it (`uploadLocation`).
   let container? ← match containerStr? with
     | none => pure none
     | some s => match Container.parse? s with
@@ -252,7 +252,7 @@ def main (args : List String) : IO Unit := do
     -- Resolve the repo once (single git-remote probe) and thread it through the
     -- read path, the non-default-scope warning, and the missing-files hint below.
     let cliOverride? ← cacheFromOverride.get
-    let (detectedRepo?, resolvedRepo) ← resolveRepo repo? (← read).mathlibDepPath
+    let (detectedRepo?, resolvedRepo) ← resolveRepo repo?
     -- Warn before reading if the scope is non-default (`--unsafe` always is).
     warnIfNonDefaultScope repo? detectedRepo? cliOverride? resolvedRepo unsafeWindow?
     -- In `--unsafe` mode, walk history for recent cached fork commits to try
@@ -271,8 +271,8 @@ def main (args : List String) : IO Unit := do
       | none => pure []
     let missing ← getFiles resolvedRepo hashMap force force goodCurl decompress
       (unsafeScopes := unsafeScopes)
-    -- Explain any files no container served — keyed on the actual outcome, so
-    -- a read fully served by higher-trust containers stays silent even when
+    -- Explain any files no location served — keyed on the actual outcome, so
+    -- a read fully served by the configured locations stays silent even when
     -- HEAD has no fork cache of its own.
     warnIfMissingFiles resolvedRepo missing (unsafeMode := unsafeWindow?.isSome)
   let pack (overwrite verbose unpackedOnly := false) := do

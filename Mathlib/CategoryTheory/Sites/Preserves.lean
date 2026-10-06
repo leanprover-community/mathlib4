@@ -5,9 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 # Sheaves preserve products

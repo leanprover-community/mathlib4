@@ -5,9 +5,10 @@ Authors: Jakob von Raumer
 -/
 module
 
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
 public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 
 /-!
 # Injective objects in abelian categories

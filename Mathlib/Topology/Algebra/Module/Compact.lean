@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.RingTheory.Noetherian.Defs
+
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 

@@ -56,11 +56,11 @@ jobs:
                && vars.CACHE_PR_TOOLCHAIN_TESTS_WRITER_AZURE_APP_ID
           || vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID
         }}
-      # OIDC environment binding for the upload_cache job. MUST track the cache_application_id
-      # mapping above so the minted token's `:environment:` subject matches the writer app's
-      # federated credential. mathlib4-nightly-testing intentionally uses branch/ref-scoped
-      # trust instead of an environment: each nightly writer app is RBAC-isolated to its own
-      # container, so branch scoping is sufficient there.
+      # OIDC environment binding for the upload_cache and upload_test_cache jobs. MUST track
+      # the cache_application_id mapping above so the minted token's `:environment:` subject
+      # matches the writer app's federated credential. mathlib4-nightly-testing intentionally
+      # uses branch/ref-scoped trust instead of an environment: each nightly writer app is
+      # RBAC-isolated to its own container, so branch scoping is sufficient there.
       cache_environment: >-
         ${{
              (github.repository == 'leanprover-community/mathlib4'
