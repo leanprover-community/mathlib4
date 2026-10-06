@@ -51,6 +51,12 @@ lemma artinSchreierPoly.taylor (p : ℕ) [ExpChar F p] (a c : F) :
   · simp
 
 @[simp]
+lemma artinSchreierPoly.map (p : ℕ) [ExpChar F p] (a : F) {K : Type u}
+    [CommRing K] [ExpChar K p] (f : F →+* K) :
+    (artinSchreierPoly a).map f = artinSchreierPoly (f a) := by
+  simp [artinSchreierPoly.def p]
+
+@[simp]
 lemma artinSchreierPoly.isMonicOfDegree (p : ℕ) [ExpChar F p] [hp : Fact p.Prime]
     (a : F) : (artinSchreierPoly a).IsMonicOfDegree p := by
   have := hp.elim.one_lt
@@ -224,17 +230,10 @@ theorem isCyclic_charP_tfae :
     have hpol : f = minpoly F z := by
       refine eq_of_monic_of_dvd_of_natDegree_le (monic (h_int z)) hmon (dvd_iff.mpr h_eval) ?_
       simp [hf, (ha a).1, ((hprim z).mp htop).trans hrank]
-    let pol' := f.map (algebraMap F K)
-    have splits : pol'.Splits := by
-      rw [hf, artinSchreierPoly.def p] at h_eval
-      simp only [← eval_map_algebraMap, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C,
-        eval_sub, eval_pow, eval_X, eval_C] at h_eval
-      subst pol'
-      simp only [hf, artinSchreierPoly.def p, Polynomial.map_sub, Polynomial.map_pow, map_X,
-        map_C]
-      rw [← artinSchreierPoly.def]
+    have splits : (f.map (algebraMap F K)).Splits := by
+      rw [artinSchreierPoly.map p a]
       apply artinSchreierPoly.splits (c := z)
-      simp [artinSchreierPoly.def p, h_eval]
+      rw [← artinSchreierPoly.map p a, IsRoot.def, eval_map_algebraMap, ← hf, h_eval]
     have adjoin : adjoin F (f.rootSet K) = ⊤ := by
       rw [eq_top_iff, ← htop, adjoin_simple_le_iff]
       exact mem_adjoin_of_mem F (hmon.mem_rootSet.mpr h_eval)
