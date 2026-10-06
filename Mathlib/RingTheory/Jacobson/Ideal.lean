@@ -412,8 +412,8 @@ theorem RingHom.isLocalHom_iff_ker_le_jacobson {g : R →+* S} (h : Function.Sur
   rw [← map_one g, ← sub_eq_zero, ← map_mul, ← map_sub, ← mem_ker] at hy
   exact isUnit_of_mul_isUnit_left <| isUnit_of_sub_one_mem_jacobson_bot _ <| le hy
 
-theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
-    (h : I ≤ Ring.jacobson R) : IsLocalHom (Ideal.Quotient.mk I) := by
+theorem isLocalHom_of_le_jacobson_bot (h : I ≤ Ring.jacobson R) :
+    IsLocalHom (Ideal.Quotient.mk I) := by
   rwa [RingHom.isLocalHom_iff_ker_le_jacobson Ideal.Quotient.mk_surjective,
     ← Ideal.jacobson_bot, Ideal.mk_ker, jacobson_bot]
 
