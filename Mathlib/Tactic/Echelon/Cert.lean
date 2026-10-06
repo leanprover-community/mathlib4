@@ -30,8 +30,7 @@ the pivots of `U`, which are established by the model's certifier (or the kernel
 - `certifyDecomposition`: builds the `Echelon.Decomposition` certificate from decomposition data.
 - `DecompositionCert`: the internal certificate structure that includes `U` and the product
   equation for downstream tactics.
-- `MatrixViews`: a `Matrix` literal together with its list-based literal and its literal entry
-  lists.
+- `ListMatrixLit`: an `ofLists` matrix together with its list literal and its rows of entries.
 
 ## Implementation notes
 
@@ -47,22 +46,22 @@ open Lean Meta Qq Mathlib.Tactic.Matrix
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Three views of one matrix literal. This makes the argument list more succinct when a cert
-construction function needs to use multiple representations. -/
-structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
+/-- Three forms of one list-based matrix literal. This makes the argument list more succinct when
+a cert construction function needs to use multiple representations. -/
+structure ListMatrixLit (u : Level) (m n : Nat) (α : Q(Type u)) where
   /-- The matrix, the `ofLists` term on `lit`. -/
   matrix : Q(Matrix (Fin $m) (Fin $n) $α)
-  /-- The list literal of the rows. -/
+  /-- The list literal of `rows`. -/
   lit : Q(List (List $α))
-  /-- The entries of `lit`. -/
-  entries : List (List Q($α))
+  /-- The rows of the matrix. -/
+  rows : List (List Q($α))
 
-/-- The `MatrixViews` of the matrix with rows `rows`. -/
-def MatrixViews.ofArray {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
-    (rows : Array (Array Q($α))) : MatrixViews u m n α :=
-  let entries := rows.toList.map Array.toList
-  let lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)
-  { matrix := q(ofLists $m $n $lit), lit, entries }
+/-- The `ListMatrixLit` of the matrix with rows `rows`. -/
+def ListMatrixLit.ofArray {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
+    (rows : Array (Array Q($α))) : ListMatrixLit u m n α :=
+  let rows := rows.toList.map Array.toList
+  let lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (rows.map mkListLitQ)
+  { matrix := q(ofLists $m $n $lit), lit, rows }
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
 def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m)) := do
@@ -125,7 +124,7 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (certifier : Entry
 /-- Prove that `U` is pivoted by `pivotOfList pivots` from the rows of `U`, with `certifier`
 proving the pivot entries nonzero. -/
 def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (certifier : EntryCertifier α)
-    (zα : Q(Zero $α)) (U : MatrixViews u m n α) (cols : List Nat) (pivots : Q(List (Fin $n))) :
+    (zα : Q(Zero $α)) (U : ListMatrixLit u m n α) (cols : List Nat) (pivots : Q(List (Fin $n))) :
     MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $pivots i) := do
   let hsorted ← mkDecideProofQ q(($pivots).SortedLT)
   let h ← certifyPivotedList certifier zα cols pivots U.lit
@@ -155,7 +154,7 @@ def certifyRowsEq {u : Level} {α : Q(Type u)} (certifier : EntryCertifier α)
 def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)}
     (certifier? : Option (EntryCertifier α)) (cα : Q(AddCommMonoid $α))
     {zα : Q(Zero $α)} {aα : Q(Add $α)} {mα : Q(Mul $α)} (mulEq : MulEq zα aα mα m m n)
-    (U : MatrixViews u m n α) :
+    (U : ListMatrixLit u m n α) :
     MetaM Q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix)) := do
   let hmul : Q(ListMatrix.mul $m $m $n $(mulEq.A) $(mulEq.B) = $(U.lit)) ← match certifier? with
     | none =>
@@ -164,7 +163,7 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)}
       -- evaluation, so the kernel establishes the defeq itself at `ofLists_mul`.
       pure mulEq.proof
     | some certifier => do
-      let ⟨_, _, hrows⟩ ← certifyRowsEq certifier mulEq.rows U.entries
+      let ⟨_, _, hrows⟩ ← certifyRowsEq certifier mulEq.rows U.rows
       mkEqTrans mulEq.proof hrows
   -- `hmul` is stated with the `Zero` and `Add` given to `proveMul`, while `ofLists_mul` uses those
   -- derived from `cα`.
@@ -179,8 +178,8 @@ structure DecompositionCert {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(Co
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
   /-- The decomposition certificate from the theory. -/
   decomp : Q(Echelon.Decomposition $A)
-  /-- The views of the echelon form. -/
-  U : MatrixViews u m n α
+  /-- The echelon form. -/
+  U : ListMatrixLit u m n α
   /-- The product equation. -/
   mul_eq : Q(($decomp).L * ($A).submatrix ($decomp).σ id = $(U.matrix))
 
@@ -194,7 +193,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)}
   let aα : Q(Add $α) ← synthInstanceQ q(Add $α)
   let mα : Q(Mul $α) ← synthInstanceQ q(Mul $α)
   let cα : Q(AddCommMonoid $α) ← synthInstanceQ q(AddCommMonoid $α)
-  let U := MatrixViews.ofArray zα m n data.U
+  let U := ListMatrixLit.ofArray zα m n data.U
   let σ ← mkPerm m data.swaps
   let cols := data.pivot.toList
   let pivots : Q(List (Fin $n)) := mkListLitQ (← cols.mapM (mkFinLitQ n))
