@@ -61,7 +61,8 @@ theorem _root_.Subgroup.gc_toSubmonoid_mulSupport :
     rw [← Subgroup.toSubmonoid_le]
     grind [mulSupport_toSubmonoid, le_inf_iff, Submonoid.inv_le_inv, Subgroup.toSubmonoid_inv]
 
-@[to_additive]
+/-- The support of a submonoid is the largest subgroup it contains. -/
+@[to_additive /-- The support of a submonoid is the largest subgroup it contains. -/]
 def _root_.Subgroup.gciToSubmonoidMulSupport :
     GaloisCoinsertion (α := Subgroup G) Subgroup.toSubmonoid mulSupport :=
   Subgroup.gc_toSubmonoid_mulSupport.toGaloisCoinsertion <| by
