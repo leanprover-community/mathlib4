@@ -39,13 +39,12 @@ variable (P : ObjectProperty C)
 /-- If `P` is closed under quotients and coproducts, then the supremum of a set of subobjects
 satisfying `P` again satisfies `P`. In particular, together with `Subobject.le_sSup`, the
 subobject `Subobject.sSup {A | P A}` is the greatest subobject of `X` satisfying `P`. -/
-lemma prop_sSup {X : C} (s : Set (Subobject X)) (hs : ∀ A ∈ s, P (A : C)) :
+lemma prop_subObjectSSup {X : C} (s : Set (Subobject X)) (hs : ∀ A ∈ s, P (A : C)) :
     P (Subobject.sSup s) := by
   -- `Subobject.sSup s` is the image of the canonical map out of the coproduct of the
   -- members of `s`, so it is a quotient of a coproduct of objects satisfying `P`.
-  apply P.prop_of_iso (Subobject.underlyingIso (image.ι (Subobject.smallCoproductDesc _))).symm
-  apply P.prop_of_epi (factorThruImage _)
-  apply prop_colimit
+  refine P.prop_of_iso (Subobject.underlyingIso _).symm ?_
+  refine P.prop_of_epi (factorThruImage _) (prop_colimit _ _ ?_)
   rintro ⟨⟨_, S, hS, rfl⟩⟩
   simpa using hs S hS
 

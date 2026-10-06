@@ -104,13 +104,9 @@ instance (P : ObjectProperty C) : P.leftOrthogonal.IsClosedUnderExtensions where
 
 /-- The right orthogonal of a property of objects is closed under extensions. -/
 instance (P : ObjectProperty C) : P.rightOrthogonal.IsClosedUnderExtensions where
-  prop_X₂_of_shortExact := by
-    intro s hs hX₁ hX₃ Z k hZ
-    let t : KernelFork s.g := KernelFork.ofι k (hX₃ (k ≫ s.g) hZ)
-    let l : Z ⟶ s.X₁ := hs.fIsKernel.lift t
-    have hl : l = 0 := hX₁ l hZ
-    have hfac : l ≫ s.f = k := hs.fIsKernel.fac t WalkingParallelPair.zero
-    simp [← hfac, hl]
+  prop_X₂_of_shortExact hS h₁ h₃ Z k hZ := by
+    obtain ⟨l, hfac⟩ := Fork.IsLimit.lift' hS.fIsKernel k (by simpa using h₃ _ hZ)
+    simp [← hfac, h₁ l hZ]
 
 end Extensions
 
@@ -151,7 +147,7 @@ lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
   have hle : A' ≤ A := Subobject.le_sSup _ _ hA'
   -- Hence the projection of `A'` onto `B` vanishes, so `B`, and with it the image of `f`,
   -- is zero.
-  have hzero : A'.arrow ≫ cokernel.π A.arrow = 0 := by
+  have hzero : A'.arrow ≫ cokernel.π A.arrow = 0 := prop_subObjectSSup
     rw [← Subobject.ofLE_arrow hle, Category.assoc, cokernel.condition, comp_zero]
   have hπ : Subobject.pullbackπ (cokernel.π A.arrow) B = 0 := by
     apply (cancel_mono B.arrow).mp
@@ -178,7 +174,7 @@ lemma leftOrthogonal_rightOrthogonal_le (P : ObjectProperty C)
 
 /-- In a well-powered abelian category with coproducts, if `P` is closed under quotients,
 extensions, and coproducts, then `P.rightOrthogonal.leftOrthogonal = P`. This is the hard
-direction of [S. E. Dickson][dickson1966]'s characterisation of torsion classes, see
+direction of [S. E. Dickson][prop_subObjectSSup66]'s characterisation of torsion classes, see
 `CategoryTheory.Abelian.isTorsionClass_iff`. -/
 theorem leftOrthogonal_rightOrthogonal_eq_self (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
