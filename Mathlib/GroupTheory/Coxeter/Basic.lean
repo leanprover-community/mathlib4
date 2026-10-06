@@ -5,13 +5,11 @@ Authors: Newell Jensen, Mitchell Lee, Óscar Álvarez
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.GroupTheory.Coxeter.Matrix
 public import Mathlib.GroupTheory.PresentedGroup
-public import Mathlib.Tactic.NormNum.DivMod
 public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Use
+
+import Mathlib.Tactic.NormNum.DivMod
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -350,7 +348,7 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
-    cs.lift ⟨f, hf⟩ (s i) = f i := congrFun (congrArg Subtype.val (cs.lift.left_inv ⟨f, hf⟩)) i
+    cs.lift ⟨f, hf⟩ (s i) = f i := congr($(cs.lift.left_inv ⟨f, hf⟩).val i)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`

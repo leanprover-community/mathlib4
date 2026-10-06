@@ -298,11 +298,13 @@ theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
   S.fg_of_fg_toSubalgebra S.toSubalgebra.fg_of_noetherian
 
-theorem induction_on_adjoin [FiniteDimensional F E] (P : IntermediateField F E → Prop)
-    (base : P ⊥) (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
-    (K : IntermediateField F E) : P K :=
+theorem induction_on_adjoin [FiniteDimensional F E]
+    {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E) (x : E),
+      motive K → motive (K⟮x⟯.restrictScalars F))
+    (K : IntermediateField F E) : motive K :=
   letI : IsNoetherian F E := IsNoetherian.iff_fg.2 inferInstance
-  induction_on_adjoin_fg P base ih K K.fg_of_noetherian
+  induction_on_adjoin_fg bot adjoin_simple K K.fg_of_noetherian
 
 end Induction
 
@@ -322,7 +324,7 @@ theorem algHom_fieldRange_eq_of_comp_eq (h : RingHom.comp f (algebraMap A K) = (
     f.fieldRange = IntermediateField.adjoin F g.range := by
   apply IntermediateField.toSubfield_injective
   simp_rw [AlgHom.fieldRange_toSubfield, IntermediateField.adjoin_toSubfield]
-  convert! ringHom_fieldRange_eq_of_comp_eq h using 2
+  convert ringHom_fieldRange_eq_of_comp_eq h using 2
   exact Set.union_eq_self_of_subset_left fun _ ⟨x, hx⟩ ↦ ⟨algebraMap F A x, by simp [← hx]⟩
 
 /-- If `F` is a field, `A` is an `F`-algebra with fraction field `K`, `L` is a field,

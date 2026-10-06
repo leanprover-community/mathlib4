@@ -7,7 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-!
 # Normal mono categories with finite products and kernels have all equalizers.
@@ -97,7 +98,6 @@ private abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (
     C :=
   pullback (prod.lift (𝟙 X) f) (prod.lift (𝟙 X) g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equalizer of `f` and `g` exists. -/
 lemma hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   have huv : (pullback.fst _ _ : P f g ⟶ X) = pullback.snd _ _ :=
