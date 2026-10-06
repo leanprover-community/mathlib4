@@ -306,9 +306,7 @@ instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
  as `IsLocalRing.residue R` semi-linear map. -/
 def toCotangentSpace : maximalIdeal R →ₛₗ[residue R] CotangentSpace R where
   __ := (maximalIdeal R).toCotangent
-  map_smul' r x := by
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_smul]
-    rfl
+  map_smul' r x := by simp [← ResidueField.algebraMap_eq]
 
 lemma toCotangentSpace_eq_toCotangent : ⇑(toCotangentSpace R) = (maximalIdeal R).toCotangent := rfl
 
