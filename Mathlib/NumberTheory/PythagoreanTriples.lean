@@ -544,7 +544,7 @@ theorem coprime_classification :
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
   · delta PythagoreanTriple
-    rintro ⟨m, n, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, rfl | rfl, co, pp⟩ <;> (refine ⟨by ring, ?_⟩) <;>
+    rintro ⟨m, n, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, rfl | rfl, co, pp⟩ <;> refine ⟨by ring, ?_⟩ <;>
       first
       | exact coprime_sq_sub_mul co pp
       | rw [Int.gcd_comm]; exact coprime_sq_sub_mul co pp
