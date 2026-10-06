@@ -94,13 +94,9 @@ variable [Preadditive C] [Balanced C]
 
 /-- The left orthogonal of a property of objects is closed under extensions. -/
 instance (P : ObjectProperty C) : P.leftOrthogonal.IsClosedUnderExtensions where
-  prop_X₂_of_shortExact := by
-    intro s hs hX₁ hX₃ Z k hZ
-    let t : CokernelCofork s.f := CokernelCofork.ofπ k (hX₁ (s.f ≫ k) hZ)
-    let l : s.X₃ ⟶ Z := hs.gIsCokernel.desc t
-    have hl : l = 0 := hX₃ l hZ
-    have hfac : s.g ≫ l = k := hs.gIsCokernel.fac t WalkingParallelPair.one
-    simp [← hfac, hl]
+  prop_X₂_of_shortExact hS h₁ h₃ Z k hZ := by
+    obtain ⟨l, hfac⟩ := Cofork.IsColimit.desc' hS.gIsCokernel k (by simpa using h₁ _ hZ)
+    simp [← hfac, h₃ l hZ]
 
 /-- The right orthogonal of a property of objects is closed under extensions. -/
 instance (P : ObjectProperty C) : P.rightOrthogonal.IsClosedUnderExtensions where
