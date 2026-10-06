@@ -86,7 +86,7 @@ def initialAllowedUnusedTactics : Std.HashSet SyntaxNodeKind :=
     ``Lean.Parser.Tactic.tacticSeq,
     ``Lean.Parser.Tactic.tacticSeq1Indented,
     ``Lean.Parser.Tactic.tacticTry_,
-    `Batteries.Tactic.«tacticOn_goal-_=>_»,
+    `Batteries.Tactic.«tacticOn_goal_=>_»,
     `Mathlib.Tactic.change?,
     `Mathlib.Tactic.Says.says,
     `Mathlib.Tactic.tacticMatch_target_,
