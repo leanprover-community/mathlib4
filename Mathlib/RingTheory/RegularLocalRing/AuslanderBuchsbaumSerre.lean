@@ -223,7 +223,6 @@ lemma spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R] (x 
     finrank_span_singleton this, Nat.add_sub_cancel_right]
 
 open Pointwise in
-set_option backward.isDefEq.respectTransparency false in
 theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n)
     (n : ℕ) : Submodule.spanFinrank (maximalIdeal R) = n →
@@ -254,16 +253,14 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
     let xm' := (Submodule.span (ResidueField R) {(maximalIdeal R).toCotangent ⟨x, mem⟩})
     rcases xm'.exists_isCompl with ⟨J', ⟨inf, sup⟩⟩
-    let g : (maximalIdeal R) →ₛₗ[residue R] (maximalIdeal R).Cotangent := {
-      __ := (maximalIdeal R).toCotangent
-      map_smul' r m := map_smul (maximalIdeal R).toCotangent r m }
+    let g := toCotangentSpace R
     have surjg : Function.Surjective g := (maximalIdeal R).toCotangent_surjective
     have supeq : (J'.comap g) ⊔ Submodule.span R {⟨x, mem⟩} = ⊤ := by
-      rw [sup_comm, ← sup_eq_left.mpr (LinearMap.ker_le_comap g), ← sup_assoc,
+      rw [sup_comm, ← sup_eq_left.mpr (toCotangentSpace R).ker_le_comap, ← sup_assoc,
         ← Submodule.comap_map_eq, Submodule.map_sup, Submodule.map_span,
         Submodule.map_comap_eq_of_surjective surjg, Set.image_singleton,
-        ← Submodule.comap_top g, ← codisjoint_iff.mp sup]
-      simp [xm', g]
+        ← Submodule.comap_top (toCotangentSpace R), ← codisjoint_iff.mp sup]
+      simp [xm', toCotangentSpace_apply]
     have infle : (J'.comap g) ⊓ Submodule.span R {⟨x, mem⟩} ≤
       x • (⊤ : Submodule R (maximalIdeal R)) := by
       intro y hy
@@ -273,8 +270,9 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       simp only [SetLike.mk_smul_mk, smul_eq_mul] at hy
       have := Submodule.mem_inf.mpr ⟨Submodule.mem_span_singleton.mpr (by use (residue R) r), hy.1⟩
       have eq0 : r ∈ maximalIdeal R := (residue_eq_zero_iff _).mp
-        ((smul_eq_zero_iff_left (by simpa [Ideal.toCotangent_eq_zero, g] using nmem)).mp
-          ((Submodule.mem_bot _).mp ((Submodule.ext_iff.mp (disjoint_iff.mp inf) _).mp this)))
+        ((smul_eq_zero_iff_left
+          (by simpa [Ideal.toCotangent_eq_zero, g, toCotangentSpace_apply] using nmem)).mp
+            ((Submodule.mem_bot _).mp ((Submodule.ext_iff.mp (disjoint_iff.mp inf) _).mp this)))
       simp only [SetLike.mk_smul_mk, smul_eq_mul, ← Subtype.val_inj] at hr
       have : y = x • ⟨r, eq0⟩ := by simpa [← Subtype.val_inj, mul_comm x r] using hr.symm
       simpa [this] using Submodule.smul_mem_pointwise_smul (⟨r, eq0⟩ : maximalIdeal R) x ⊤ trivial
