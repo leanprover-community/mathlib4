@@ -6,6 +6,7 @@ Authors: Ansar Azhdarov
 module
 
 public import Mathlib.Data.Set.Finite.Lattice
+
 import Mathlib.Order.Zorn
 
 /-!

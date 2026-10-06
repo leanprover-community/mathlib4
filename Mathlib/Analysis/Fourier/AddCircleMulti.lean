@@ -6,6 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Fourier.AddCircle
+
 import Mathlib.MeasureTheory.Integral.Pi
 
 /-!
