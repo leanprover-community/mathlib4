@@ -119,11 +119,11 @@ theorem abs_def [AddCommGroup β] [LinearOrder β] (x : β*) :
     |x| = map abs x :=
   inductionOn x fun _a => rfl
 
-@[deprecated const_sup (since := "2026-10-06")]
+@[deprecated const_sup +typeChanged (since := "2026-10-06")]
 theorem const_max [LinearOrder β] (x y : β) : (↑(max x y : β) : β*) = max ↑x ↑y := by
   simp
 
-@[deprecated const_inf (since := "2026-10-06")]
+@[deprecated const_inf +typeChanged (since := "2026-10-06")]
 theorem const_min [LinearOrder β] (x y : β) : (↑(min x y : β) : β*) = min ↑x ↑y := by
   simp
 

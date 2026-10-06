@@ -1193,7 +1193,7 @@ theorem degree_neg {f : MvPolynomial σ R} :
 @[simp]
 theorem leadingCoeff_neg {f : MvPolynomial σ R} :
     m.leadingCoeff (-f) = - m.leadingCoeff f := by
-  simp only [leadingCoeff, degree_neg, coeff_neg]
+  simp [leadingCoeff]
 
 @[simp]
 theorem leadingTerm_neg {f : MvPolynomial σ R} :
@@ -1275,7 +1275,7 @@ lemma degree_sPolynomial_le (f g : MvPolynomial σ R) :
 
 lemma coeff_sPolynomial_sup_eq_zero (f g : MvPolynomial σ R) :
     (m.sPolynomial f g).coeff (m.degree f ⊔ m.degree g) = 0 := by
-  rw [sPolynomial_def, coeff_sub]
+  rw [sPolynomial_def, AddMonoidAlgebra.coeff_sub, Finsupp.sub_apply]
   nth_rewrite 2 [← tsub_add_cancel_of_le le_sup_left]
   rw [coeff_monomial_mul]
   nth_rewrite 2 [← tsub_add_cancel_of_le le_sup_right]

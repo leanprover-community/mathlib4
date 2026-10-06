@@ -88,8 +88,8 @@ example {M} [CommMonoid M] :
   ext
   rfl
 
-@[deprecated _root_.smul_eq_mul +typeChanged (since := "2026-10-06")]
-lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
+@[deprecated smul_eq_mul +typeChanged (since := "2026-10-06")]
+protected lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
     u₁ • u₂ = u₁ * u₂ := _root_.smul_eq_mul _ _
 
 @[to_additive (attr := simp)]
