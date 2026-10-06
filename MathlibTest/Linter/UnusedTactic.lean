@@ -84,7 +84,7 @@ example (a b : Nat) (h : a + 1 ≤ b + 1) : max a b ≤ b := by
 
 -- The linter works correctly with `on_goal`.
 /--
-warning: Unused tactic linter: `skip` does nothing
+warning: Unused tactic linter: `skip` does nothing.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
