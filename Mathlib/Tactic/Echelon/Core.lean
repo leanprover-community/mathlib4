@@ -6,6 +6,7 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.Init
+public import Qq
 
 /-!
 # Parameterized computation core for the Bareiss elimination
@@ -25,7 +26,7 @@ extension registry.
 - `RingOps`: the arithmetic of a model's carrier.
 - `Model`: the computation model of a ring, including the encode/decode between the ring element
   and the carrier representation, and an optional entry certifier.
-- `EntryCertifier`: a function that proves the ring arithmetic facts about single entries that a
+- `EntryCertifier`: the functions that prove the ring arithmetic facts about single entries that a
   certificate needs.
 - `bareissDecomp`: runs fraction-free elimination over a model's carrier.
 - `BareissData`: raw data of the computed decomposition.
@@ -51,7 +52,7 @@ so `L` is conjugated by the matrix of `τ`, as in LU factorisation with partial 
 
 public meta section
 
-open Lean Meta
+open Lean Meta Qq
 
 initialize registerTraceClass `Tactic.evalRank
 
@@ -113,17 +114,19 @@ that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
-/-- An entry certifier proves arithmetic propositions `e₁ = e₂` and `e₁ ≠ e₂`, where `e₁`
-and `e₂` are expressions of the ring. This is used in proving arithmetic facts required in the
-certificates, such as that an unreduced entry of a matrix product is equal to its computed
-value, or that a diagonal entry is nonzero. It should return a proof of the proposition it is
-given, and throw when it fails to do so.
+/-- An entry certifier proves arithmetic facts about expressions of the ring `α` that the
+certificates need. `eq` proves an equation `e₁ = e₂`, such as an unreduced entry of a matrix
+product equal to its computed value, and `neZero` proves `e ≠ 0`, such as for a pivot entry.
+Each should throw when it fails to prove its fact.
 
-A certifier is used instead of a normalizer returning `Simp.Result` to save the double evaluation
-on the kernel path, since the caller already know the exact expected outcome. Realistic certifiers
-such as `normNumCertifier` are built on a normalizer.
+`eq` is typically built on a normalizer, while `neZero` may depend on bespoke methods if a
+normalizer cannot provide a disequality proof.
 -/
-abbrev EntryCertifier := Expr → MetaM Expr
+structure EntryCertifier {u : Level} (α : Q(Type u)) where
+  /-- Prove `a = b`. -/
+  eq (a b : Q($α)) : MetaM Q($a = $b)
+  /-- Prove `a ≠ 0`, stated with the caller's `Zero` instance `zα`. -/
+  neZero (zα : Q(Zero $α)) (a : Q($α)) : MetaM Q($a ≠ 0)
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
@@ -193,21 +196,21 @@ abbrev Carrier.type : Carrier → Type
   | .int => Int
   | .expr => Expr
 
-/-- A computation model of a ring on the carrier `V`. -/
-structure Model (V : Type) where
+/-- A computation model of the ring `α` on the carrier `V`. -/
+structure Model {u : Level} (α : Q(Type u)) (V : Type) where
   /-- The arithmetic of the carrier. -/
   ops : RingOps V
   /-- Evaluate an entry to a value with an optional denominator for the row scaling.
   `(n, some d)` denotes `n / d` with `d` nonzero, and `(n, none)` denotes `n`. -/
-  evalEntry : Expr → MetaM (V × Option V)
+  evalEntry : Q($α) → MetaM (V × Option V)
   /-- A nonzero common multiple for eliminating the denominators (`ops.mul` by default). A
   carrier type with a cheap lcm could supply it as an optimisation to keep the scaled entries
   small. -/
   commonMultiple : V → V → V := ops.mul
   /-- The expression of the ring denoting a value. -/
-  mkEntry : V → MetaM Expr
+  mkEntry : V → MetaM Q($α)
   /-- An optional certifier for the ring, or `none` to leave the conditions to the kernel. -/
-  entryCertifier? : Option EntryCertifier := none
+  entryCertifier? : Option (EntryCertifier α) := none
 
 /-- Clear the denominators of the rows before the decomposition algorithm. -/
 def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
@@ -237,9 +240,9 @@ def restoreScaling {V : Type} (ops : RingOps V) (scales : Array (Option V))
 
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where
-  /-- The model for the element type `R` and its carrier, or `none` if the extension does not
-  handle `R`. -/
-  model? (R : Expr) : MetaM (Option ((c : Carrier) × Model c.type))
+  /-- The model for the element type `α` and its carrier, or `none` if the extension does not
+  handle `α`. -/
+  model? {u : Level} (α : Q(Type u)) : MetaM (Option ((c : Carrier) × Model α c.type))
 
 /-- Read a `bareiss_ext` extension from a declaration of the right type. -/
 def mkBareissExt (n : Name) : ImportM BareissExt := do

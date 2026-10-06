@@ -45,7 +45,7 @@ def inferBareissRing {u : Level} (α : Q(Type u)) :
 /-- Select the first registered computation model for the element type `α`, or the default
 rational model. -/
 def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
-    MetaM ((c : Carrier) × Model c.type) := do
+    MetaM ((c : Carrier) × Model α c.type) := do
   for (name, ext) in bareissExt.getState (← getEnv) do
     if let some model ← ext.model? α then
       trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr α}"
@@ -63,7 +63,7 @@ structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRi
   /-- The carrier of the computation model. -/
   carrier : Carrier
   /-- The computation model that produced the decomposition. -/
-  model : Model carrier.type
+  model : Model α carrier.type
   /-- The decomposition data underlying the certificate, on the model's carrier. -/
   data : BareissData carrier.type
 

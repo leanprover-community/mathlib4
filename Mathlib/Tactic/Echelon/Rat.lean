@@ -59,20 +59,23 @@ def checkDecideEq {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) : MetaM B
     r.isConstOf ``Bool.true || r.isConstOf ``Bool.false
 
 /-- `norm_num`'s core as an entry certifier. -/
-def normNumCertifier : EntryCertifier := fun p => do
-  let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
-  unless b do throwError "norm_num refutes{indentExpr p}"
-  return prf
+def normNumCertifier {u : Level} (α : Q(Type u)) : EntryCertifier α :=
+  let prove (p : Q(Prop)) : MetaM Q($p) := do
+    let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
+    unless b do throwError "norm_num refutes{indentExpr p}"
+    return prf
+  { eq a b := prove q($a = $b)
+    neZero _zα a := prove q($a ≠ 0) }
 
 /-- The rational model. -/
 def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
-    MetaM (Model Int) := do
+    MetaM (Model α Int) := do
   let entryCertifier? ← do
     if ← checkDecideEq α rα then pure none
     else
       trace[Tactic.evalRank] "`decide` cannot settle equality in the element type; \
         using the `norm_num` entry certifier{indentExpr α}"
-      pure (some normNumCertifier)
+      pure (some (normNumCertifier α))
   -- the characteristic determines the zero test
   let pQ : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
   let .some _ ← trySynthInstanceQ q(CharP $α $pQ)

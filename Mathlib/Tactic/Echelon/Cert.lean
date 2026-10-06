@@ -71,9 +71,14 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinLitQ m a) $(← mkFinLitQ m b)).trans $acc)
   return acc
 
+/-- The certifier that leaves each fact to the kernel's `decide`. -/
+def decideCertifier {u : Level} (α : Q(Type u)) : EntryCertifier α where
+  eq a b := mkDecideProofQ q($a = $b)
+  neZero _zα a := mkDecideProofQ q($a ≠ 0)
+
 /-- Construct the list-based `IsLowerTriangularDiagList k c rows` cert. -/
 def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
-    (certifier : EntryCertifier) (k c : Nat) (kQ cQ : Q(Nat)) (rows : Q(List (List $α))) :
+    (certifier : EntryCertifier α) (k c : Nat) (kQ cQ : Q(Nat)) (rows : Q(List (List $α))) :
     MetaM Q(IsLowerTriangularDiagList $kQ $cQ $rows) :=
   match c with
   | 0 => do
@@ -85,7 +90,7 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $�
     have k₁Q : Q(Nat) := mkNatLitQ (k + 1)
     have c₁Q : Q(Nat) := mkNatLitQ c
     let rest ← certifyLowerTriangularDiagList zα certifier (k + 1) c k₁Q c₁Q rowsTl
-    let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
+    let hd ← certifier.neZero zα entry
     have hdrop : List.drop $kQ $row =Q $entry :: List.replicate $c₁Q (0 : $α) := ⟨⟩
     have : $cQ =Q $c₁Q + 1 := ⟨⟩
     have : $k₁Q =Q $kQ + 1 := ⟨⟩
@@ -93,7 +98,7 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $�
 
 /-- Prove that `ofLists m m rows` is lower triangular with a nonzero diagonal. -/
 def certifyLowerTriangularDiag {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m : Nat)
-    (rows : Q(List (List $α))) (certifier : EntryCertifier) :
+    (rows : Q(List (List $α))) (certifier : EntryCertifier α) :
     MetaM (Q((ofLists $m $m $rows).IsLowerTriangular) ×
       Q(∀ i, (ofLists $m $m $rows).diag i ≠ 0)) := do
   let h ← certifyLowerTriangularDiagList zα certifier 0 m q(0) q($m) rows
@@ -101,7 +106,7 @@ def certifyLowerTriangularDiag {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) 
 
 /-- Construct the list-based `IsPivotedList pivots rows` cert. -/
 def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
-    (certifier : EntryCertifier) (cols : List Nat) (pivots : Q(List (Fin $n)))
+    (certifier : EntryCertifier α) (cols : List Nat) (pivots : Q(List (Fin $n)))
     (rows : Q(List (List $α))) : MetaM Q(IsPivotedList $pivots $rows) :=
   match cols with
   | [] => do
@@ -113,7 +118,7 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
     let ⟨row, rowsTl, _⟩ ← unconsListLitQ rows
     let ⟨entry, suffix, _⟩ ← unconsListLitQ (dropListLitQ k row)
     let rest ← certifyPivotedList zα certifier ks pivotsTl rowsTl
-    let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
+    let hd ← certifier.neZero zα entry
     have : $row =Q List.replicate ($pivot : Nat) 0 ++ $entry :: $suffix := ⟨⟩
     return q(IsPivotedList.cons rfl $hd $rest)
 
@@ -121,7 +126,7 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
 proving the pivot entries nonzero. -/
 def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
     (U : MatrixViews u m n α) (cols : List Nat) (pivots : Q(List (Fin $n)))
-    (certifier : EntryCertifier) :
+    (certifier : EntryCertifier α) :
     MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $pivots i) := do
   let hsorted ← mkDecideProofQ q(($pivots).SortedLT)
   let h ← certifyPivotedList zα certifier cols pivots U.lit
@@ -138,19 +143,19 @@ def certifyPermEq {u : Level} {m n : Nat} {α : Q(Type u)} (A : Q(Matrix (Fin $m
 
 /-- Prove the row literals of `rows₁` and `rows₂` equal from the entrywise equations `a = b`,
 each proved by `certifier`. -/
-def certifyRowsEq {u : Level} {α : Q(Type u)} (certifier : EntryCertifier)
+def certifyRowsEq {u : Level} {α : Q(Type u)} (certifier : EntryCertifier α)
     (rows₁ rows₂ : List (List Q($α))) :
     MetaM ((l₁ : Q(List (List $α))) × (l₂ : Q(List (List $α))) × Q($l₁ = $l₂)) := do
   let rowEqs ← rows₁.zipWithM (bs := rows₂) fun row₁ row₂ =>
     mkListCongr <$> row₁.zipWithM (bs := row₂) fun a b => do
-      return ⟨a, b, ← certifier q($a = $b)⟩
+      return ⟨a, b, ← certifier.eq a b⟩
   return mkListCongr (α := q(List $α)) rowEqs
 
 /-- Prove the product `L * Aσ = U` from the expansion `mulEq` of the product of the row lists of
 `L` and `Aσ`, whose literals are `mulEq.A` and `mulEq.B`. -/
 def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (cα : Q(AddCommMonoid $α))
     {zα : Q(Zero $α)} {aα : Q(Add $α)} {mα : Q(Mul $α)} (mulEq : MulEq zα aα mα m m n)
-    (U : MatrixViews u m n α) (certifier? : Option EntryCertifier) :
+    (U : MatrixViews u m n α) (certifier? : Option (EntryCertifier α)) :
     MetaM Q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix)) := do
   let hmul : Q(ListMatrix.mul $m $m $n $(mulEq.A) $(mulEq.B) = $(U.lit)) ← match certifier? with
     | none =>
@@ -183,7 +188,7 @@ structure DecompositionCert {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(Co
 of `A`. -/
 def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
-    (data : BareissData Expr) (certifier? : Option EntryCertifier) :
+    (data : BareissData Q($α)) (certifier? : Option (EntryCertifier α)) :
     MetaM (DecompositionCert rα A) := do
   let zα : Q(Zero $α) ← synthInstanceQ q(Zero $α)
   let aα : Q(Add $α) ← synthInstanceQ q(Add $α)
@@ -204,7 +209,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
   let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq cα mulEq U certifier?
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
-  let certifier := certifier?.getD mkDecideProofQ
+  let certifier := certifier?.getD (decideCertifier α)
   let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy zα U cols pivots certifier
   let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag zα m mulEq.A certifier
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
