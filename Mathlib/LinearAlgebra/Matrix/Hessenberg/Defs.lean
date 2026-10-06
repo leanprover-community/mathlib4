@@ -18,7 +18,7 @@ instance.
 
 ## Main definitions
 
-- `Matrix.IsUpperHessenberg`
+- `Matrix.IsUpperHessenberg` with `Matrix.isUpperHessenberg_iff` to unfold it
 
 ## Main results
 
@@ -33,13 +33,18 @@ namespace Matrix
 variable {R m : Type*} [Zero R] [Preorder m] [SuccOrder m]
 
 /-- `M` is upper Hessenberg: entries strictly below the subdiagonal vanish. -/
-abbrev IsUpperHessenberg (M : Matrix m m R) : Prop :=
+def IsUpperHessenberg (M : Matrix m m R) : Prop :=
   ∀ ⦃i j⦄, Order.succ j < i → M i j = 0
+
+theorem isUpperHessenberg_iff {M : Matrix m m R} :
+    M.IsUpperHessenberg ↔ ∀ ⦃i j⦄, Order.succ j < i → M i j = 0 :=
+  Iff.rfl
 
 instance [DecidableEq R] [Fintype m] [DecidableLT m]
     (M : Matrix m m R) : Decidable M.IsUpperHessenberg :=
   decidable_of_iff (∀ ij : m × m, Order.succ ij.2 < ij.1 → M ij.1 ij.2 = 0)
-    ⟨fun h i j hij => h (i, j) hij, fun h _ hij => h hij⟩
+    ⟨fun h => isUpperHessenberg_iff.mpr fun i j hij => h (i, j) hij,
+        fun h _ hij => isUpperHessenberg_iff.mp h hij⟩
 
 theorem IsUpperTriangular.isUpperHessenberg {M : Matrix m m R} (h : M.IsUpperTriangular) :
     M.IsUpperHessenberg :=
