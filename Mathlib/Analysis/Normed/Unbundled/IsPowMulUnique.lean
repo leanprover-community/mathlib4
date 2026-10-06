@@ -42,7 +42,7 @@ def AlgebraNorm.ringNormCopy (f : AlgebraNorm K L) (x : L) : RingNorm (f.copy x)
   eq_zero_of_map_eq_zero' a ha := by rwa [map_eq_zero_iff_eq_zero, map_eq_zero] at ha
 
 local instance (f : AlgebraNorm K L) (x : L) : NormedRing (f.copy x) :=
-  (f.ringNorm x).toNormedRing
+  (f.ringNormCopy x).toNormedRing
 
 local instance (f : AlgebraNorm K L) (x : L) : NormedAlgebra K (f.copy x) where
   norm_smul_le c y := (map_smul_eq_mul f c (algebraMap (f.copy x) L y)).le
