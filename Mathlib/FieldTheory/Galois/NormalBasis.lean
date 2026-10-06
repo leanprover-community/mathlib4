@@ -5,10 +5,11 @@ Authors: Madison Crim, Aaron Liu, Justus Springer, Junyan Xu
 -/
 module
 
+public import Mathlib.FieldTheory.Galois.Basic
+
 import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 import Mathlib.LinearAlgebra.Dual.Lemmas
 

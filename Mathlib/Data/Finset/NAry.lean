@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Finset.Lattice.Prod
+
 import Mathlib.Data.Set.Lattice.Image
 
 /-!

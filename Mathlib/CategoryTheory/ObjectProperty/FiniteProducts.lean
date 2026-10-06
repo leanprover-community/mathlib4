@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
+
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.FullSubcategory
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 import Mathlib.Data.Fintype.Shrink
 
 /-!

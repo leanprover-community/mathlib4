@@ -6,6 +6,7 @@ Authors: Jingting Wang, Sihan Su, Yi Song, Christian Merten
 module
 
 public import Mathlib.RingTheory.KrullDimension.PID
+
 import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
