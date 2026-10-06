@@ -47,13 +47,11 @@ def evalSlice (a b : Nat) : TacticM Unit := do
     evalTactic (← `(conv| rw [Category.assoc]))
   iterateRange (a - 1) (a - 1) do
       evalTactic (← `(conv| congr))
-      evalTactic (← `(conv| rfl))
-  let k ← iterateUntilFailureCount <| evalTactic (← `(conv| rw [← Category.assoc]))
+      evalTactic (← `(tactic| rotate_left))
+  let k ← iterateUntilFailureCount
+    <| evalTactic (← `(conv| rw [← Category.assoc]))
   let c := k+1+a-b
-  iterateRange c c do
-    evalTactic (← `(conv| congr))
-    evalTactic (← `(tactic| pick_goal 2))
-    evalTactic (← `(conv| rfl))
+  iterateRange c c <| evalTactic (← `(conv| congr))
   let _ ← iterateUntilFailureWithResults do
     evalTactic (← `(conv| rw [Category.assoc]))
 

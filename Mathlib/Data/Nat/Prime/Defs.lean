@@ -354,7 +354,7 @@ theorem minFac_le_div {n : ℕ} (pos : 0 < n) (np : ¬Prime n) : minFac n ≤ n 
   | ⟨x + 2, hx⟩ => by
     conv_rhs =>
       congr
-      · rw [hx]
+      rw [hx]
     rw [Nat.mul_div_cancel_left _ (minFac_pos _)]
     exact minFac_le_of_dvd (le_add_left 2 x) ⟨minFac n, by rwa [mul_comm]⟩
 
