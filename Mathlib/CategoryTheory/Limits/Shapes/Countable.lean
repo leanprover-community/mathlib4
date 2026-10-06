@@ -23,7 +23,7 @@ limits, see `IsCofiltered.sequentialFunctor_initial`, and dually for filtered co
   implying that all cofiltered limits over countable categories are isomorphic to sequential
   limits.
 
-* Prove the dual result for filtered colimits over countable categories.
+* Prove the dual result for filtered colimits.
 
 -/
 
