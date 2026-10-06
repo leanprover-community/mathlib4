@@ -90,21 +90,16 @@ namespace RingEquivClass
 
 variable [EquivLike F R S]
 
--- See note [lower instance priority]a
+-- See note [lower instance priority]
 attribute [instance 100] toAddEquivClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring S]
-    [h : RingEquivClass F R S] : RingHomClass F R S :=
-  { h with
-    map_zero := map_zero
-    map_one := map_one }
+    [RingEquivClass F R S] : RingHomClass F R S where
 
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
-    [NonUnitalNonAssocSemiring S] [h : RingEquivClass F R S] : NonUnitalRingHomClass F R S :=
-  { h with
-    map_zero := map_zero }
+    [NonUnitalNonAssocSemiring S] [RingEquivClass F R S] : NonUnitalRingHomClass F R S where
 
 /-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual
 `RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
