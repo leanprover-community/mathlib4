@@ -6,9 +6,9 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
+public import Mathlib.CategoryTheory.Endomorphism
 
 /-!
 # Category instance for topological spaces
@@ -152,6 +152,15 @@ lemma hom_inv_id_apply {X Y : TopCat.{u}} (f : X ≅ Y) (x : X) : f.inv (f.hom x
 lemma inv_hom_id_apply {X Y : TopCat.{u}} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
   simp
 
+open scoped ContinuousMap.Monoid in
+/-- The continuous self-maps of a topological space and the endomorphisms as an object in `TopCat`
+are equipped with the same monoid structure. -/
+@[simps] def continuousMapEquivEnd {X : Type*} [TopologicalSpace X] :
+    C(X, X) ≃* End (TopCat.of X) where
+  toFun := TopCat.ofHom
+  invFun := TopCat.Hom.hom
+  map_mul' _ _ := rfl
+
 /-- Morphisms in `TopCat` are equivalent to continuous maps. -/
 @[simps]
 def Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) where
@@ -246,7 +255,7 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
   constructor
   · intro h
-    convert! h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
+    convert h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
     exact congr_arg (DFunLike.coe ∘ ConcreteCategory.hom) (IsIso.inv_hom_id_assoc f g).symm
   · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
 

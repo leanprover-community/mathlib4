@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
@@ -219,6 +218,11 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
   · exact ⟨_, h1⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, hmul _ _ _ _ Cx Cy⟩
+
+@[to_additive]
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subgroup G) :
+    ((⨆ i, S i : Subgroup G) : Set G) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subgroup G) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 @[to_additive (attr := simp)]
 theorem mul_subset {t : Set G} {H : Subgroup G} (hs : s ⊆ H) (ht : t ⊆ H) : s * t ⊆ H :=
@@ -497,6 +501,10 @@ theorem pointwise_smul_subset_iff {a : α} {S T : Subgroup G} : a • S ≤ T �
 
 theorem subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_smul_set_iff
+
+theorem _root_.MulAut.coe_conj_apply {H : Subgroup G} (g h : H) :
+    (MulAut.conj g h : G) = MulAut.conj (g : G) (h : G) :=
+  rfl
 
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj (h : G) • P ≤ H := by

@@ -5,11 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Basic
 public import Mathlib.Data.List.Basic
+
+import Mathlib.Data.List.TakeDrop
 
 /-!
 # Prefixes, suffixes, infixes
@@ -116,7 +117,7 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
     x ++ [y.get ⟨x.length, hl⟩] <+: y := by
   use y.drop (x.length + 1)
   nth_rw 1 [List.prefix_iff_eq_take.mp h]
-  convert! List.take_append_drop (x.length + 1) y using 2
+  convert List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
 theorem prefix_append_drop {l₁ l₂ : List α} (h : l₁ <+: l₂) :

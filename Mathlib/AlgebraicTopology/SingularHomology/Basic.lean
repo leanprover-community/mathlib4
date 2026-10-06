@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Homology.AlternatingConst
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
-public import Mathlib.CategoryTheory.Limits.MonoCoprod
+
+import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 /-!
 # Singular homology
@@ -53,6 +54,29 @@ def singularHomologyFunctor [CategoryWithHomology C] : C ⥤ TopCat.{w} ⥤ C :=
   singularChainComplexFunctor C ⋙
     (Functor.whiskeringRight _ _ _).obj (HomologicalComplex.homologyFunctor _ _ n)
 
+section TopologicalSpace
+
+variable {C} [CategoryWithHomology C] (X : Type w) [TopologicalSpace X] (c : C)
+
+/-- The `n`th singular homology of `X` with coefficients in `c`. -/
+abbrev singularHomology : C :=
+  ((singularHomologyFunctor C n).obj c).obj (.of X)
+
+variable {X c}
+
+open scoped ContinuousMap.Monoid
+
+/-- Continuous self-maps act on the singular homology. -/
+def _root_.ContinuousMap.toEndSingularHomology : C(X, X) →* End (singularHomology n X c) :=
+  (((singularHomologyFunctor C n).obj c).mapEnd _).comp TopCat.continuousMapEquivEnd.toMonoidHom
+
+/-- Homeomorphisms act on the singular homology. -/
+def _root_.Homeomorph.toAutSingularHomology : (X ≃ₜ X) →* Aut (singularHomology n X c) :=
+  (Aut.unitsEndEquivAut _).toMonoidHom.comp <|
+    (Units.map <| ContinuousMap.toEndSingularHomology n).comp (ContinuousMap.Monoid.ofHomeomorph X)
+
+end TopologicalSpace
+
 section Adjunction
 
 open Limits _root_.SSet
@@ -92,7 +116,7 @@ lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C)
     simp
   · congr 1
     rw [← reassoc_of% sSetTopAdj_unit_app_app_down]
-    exact congr(($(sSetTopAdj.right_triangle_components X).app (.op ⦋n⦌) i).down)
+    congrm ($(sSetTopAdj.right_triangle_components X).app (.op ⦋n⦌) i).down
 
 end Adjunction
 

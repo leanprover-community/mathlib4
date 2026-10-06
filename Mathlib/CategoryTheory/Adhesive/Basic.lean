@@ -7,7 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 
@@ -108,8 +109,8 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · refine Cocone.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [c'.w, Category.id_comp, Category.comp_id]
-    · exact ⟨NatTrans.congr_app eα.symm _⟩
-    · exact ⟨NatTrans.congr_app eα.symm _⟩
+    · exact ⟨congr($(eα.symm).app _)⟩
+    · exact ⟨congr($(eα.symm).app _)⟩
     · exact ⟨by simp⟩
     constructor
     · rintro ⟨h₁, h₂⟩ (_ | _ | _)
@@ -198,7 +199,7 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
       · refine e₁.trans (Eq.symm ?_); exact h.fac _ _
   · refine fun H => ⟨?_⟩
     fapply Limits.BinaryCofan.isColimitMk
-    · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _ <|
+    · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _
         (hc.fac (BinaryCofan.mk (f ≫ s.inr) s.inl) ⟨WalkingPair.left⟩).symm)
     · intro s
       rw [Category.assoc]
