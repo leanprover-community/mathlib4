@@ -84,18 +84,14 @@ add_decl_doc RingEquiv.toMulEquiv
 /-- `RingEquivClass F R S` states that `F` is a type of ring structure preserving equivalences.
 You should extend this class when you extend `RingEquiv`. -/
 class RingEquivClass (F R S : Type*) [Mul R] [Add R] [Mul S] [Add S] [EquivLike F R S] : Prop
-  extends MulEquivClass F R S where
-  /-- By definition, a ring isomorphism preserves the additive structure. -/
-  map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
+  extends MulEquivClass F R S, AddEquivClass F R S where
 
 namespace RingEquivClass
 
 variable [EquivLike F R S]
 
--- See note [lower instance priority]
-instance (priority := 100) toAddEquivClass [Mul R] [Add R]
-    [Mul S] [Add S] [h : RingEquivClass F R S] : AddEquivClass F R S :=
-  { h with }
+-- See note [lower instance priority]a
+attribute [instance 100] toAddEquivClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring S]
