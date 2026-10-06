@@ -33,12 +33,15 @@ variable {F : Type u} [CommRing F]
 
 open IntermediateField Polynomial
 
+/-
+The Artin-Schreier polynomial defined by an element `a` of a ring `F` of exponential characteristic
+`p` is `X ^ p - X - C a`.
+-/
 noncomputable def artinSchreierPoly (a : F) : Polynomial F := X ^ ringExpChar F -  X - C a
 
 lemma artinSchreierPoly.def (p : ℕ) [ExpChar F p] (a : F) :
     artinSchreierPoly a = X ^ p - X - C a := by simp [artinSchreierPoly, ringExpChar.eq F p]
 
-@[simp]
 lemma artinSchreierPoly.taylor (p : ℕ) [ExpChar F p] (a c : F) :
     (artinSchreierPoly a).taylor c = artinSchreierPoly (c - c ^ p + a) := by
   repeat rw [artinSchreierPoly.def p]
