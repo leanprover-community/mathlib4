@@ -525,22 +525,23 @@ lemma isReduced_of_perfectField [PerfectField k] [IsReduced S]
     (K : Type*) [Field K] [Algebra k K] : IsReduced (K ⊗[k] S) := by
   have : Algebra.IsTranscendentalSeparable k K :=
     Algebra.isTranscendentalSeparable_of_perfectField k K
-  apply tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
+  apply isReduced_tensorProduct_of_isTranscendentalSeparable_of_isReduced
 
 lemma tensorProduct_isReduced_of_localization_of_finiteType [IsReduced S] [Algebra.FiniteType k S]
     (h : ∀ (p : Ideal S) (h : p ∈ minimalPrimes S),
       letI := h.isPrime
       IsReduced (K ⊗[k] (Localization.AtPrime p))) :
     IsReduced (K ⊗[k] S) := by
-  have (x : k) (y : S) : (toLocalizationMinimal S) (x • y) = x • (toLocalizationMinimal S) y := by
+  have (x : k) (y : S) : (MinimalPrimes.piLocalizationMap S) (x • y) =
+    x • (MinimalPrimes.piLocalizationMap S) y := by
     rw [Algebra.smul_def, map_mul]
     ext p
     rw [Pi.mul_apply, Pi.smul_apply, Algebra.smul_def, IsScalarTower.algebraMap_apply k S]
     rfl
-  let g := AlgHom.mk' (toLocalizationMinimal S) this
+  let g := AlgHom.mk' (MinimalPrimes.piLocalizationMap S) this
   have inj : Function.Injective (Algebra.TensorProduct.lTensor K g) :=
     Module.Flat.lTensor_preserves_injective_linearMap _
-      (isReduced_injective_to_prod_localizations S)
+      (IsReduced.piLocalizationMap_injective S)
   have : IsNoetherianRing S := Algebra.FiniteType.isNoetherianRing k S
   have : Fintype (minimalPrimes S) := (minimalPrimes.finite_of_isNoetherianRing S).fintype
   have (p : minimalPrimes S) :
@@ -560,7 +561,7 @@ lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType (p : ℕ) 
     (Algebra.TensorProduct.includeRight_injective (algebraMap k (AdjoinPthRoots k)).injective)
   refine tensorProduct_isReduced_of_localization_of_finiteType k K S (fun q hq ↦ ?_)
   have := hq.isPrime
-  let := (localization_minimal_isField q hq).toField
+  let := (Localization.AtPrime.isField_of_mem_minimalPrimes q hq).toField
   have h : IsReduced ((AdjoinPthRoots k) ⊗[k] (Localization.AtPrime q)) := by
     let : Algebra (AdjoinPthRoots k ⊗[k] S) (AdjoinPthRoots k ⊗[k] Localization.AtPrime q) :=
       (Algebra.TensorProduct.lTensor (S := AdjoinPthRoots k) _
@@ -574,7 +575,7 @@ lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType (p : ℕ) 
   have sep : Algebra.IsTranscendentalSeparable k (Localization.AtPrime q) :=
     ((Algebra.isTranscendentalSeparable_tfae k (Localization.AtPrime q) p hp).out 1 3).mpr h
   have : IsReduced (Localization.AtPrime q ⊗[k] K) :=
-    tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced k _ K
+    isReduced_tensorProduct_of_isTranscendentalSeparable_of_isReduced k _ K
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K _).injective
 
 lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced (p : ℕ) (hp : Nat.Prime p)
