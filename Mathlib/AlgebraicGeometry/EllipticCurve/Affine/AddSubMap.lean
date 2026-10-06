@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+
 import Mathlib.Tactic.Ring.NamePolyVars
 import Mathlib.Algebra.MvPolynomial.CommRing
 

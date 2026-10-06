@@ -31,8 +31,6 @@ strong dual, polar
 
 public section
 
-noncomputable section
-
 open Bornology
 
 open scoped Topology
@@ -58,7 +56,7 @@ theorem polar_closure (s : Set E) : StrongDual.polar 𝕜 (closure s) = StrongDu
     (topDualPairing 𝕜 E).flip.polar_gc.l_le <|
       closure_minimal ((topDualPairing 𝕜 E).flip.polar_gc.le_u_l s) <| by
         simpa [LinearMap.flip_flip] using!
-          (isClosed_polar _ _).preimage (ContinuousLinearMap.apply 𝕜 𝕜 (E := E)).continuous
+          (isClosed_polar _ _).preimage (ContinuousLinearMap.apply 𝕜 𝕜 (E' := E)).continuous
 
 variable {𝕜}
 

@@ -6,6 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Computability.PartrecCode
+
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.NormNum
 
@@ -227,13 +228,13 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
     lia
 
 -- All the inequalities from this point onwards are specific to the main proof.
-private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
+private theorem sq_le_two_pow_add_one_sub_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
   induction n with
   | zero => simp
   | succ k => cases k <;> lia
 
 theorem ack_add_one_sq_lt_ack_add_three : ∀ m n, (ack m n + 1) ^ 2 ≤ ack (m + 3) n
-  | 0, n => by simpa using sq_le_two_pow_add_one_minus_three (n + 2)
+  | 0, n => by simpa using sq_le_two_pow_add_one_sub_three (n + 2)
   | m + 1, 0 => by
     rw [ack_succ_zero, ack_succ_zero]
     apply ack_add_one_sq_lt_ack_add_three
@@ -302,8 +303,8 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
       -- We induct on n.
       induction n with
       | zero => -- The base case is easy.
-        apply (ha m).trans (ack_strictMono_left m <| (le_max_left a b).trans_lt _)
-        lia
+        grw [← le_max_left, ← le_add_right]
+        exact ha m
       | succ n IH => -- We get rid of the first `pair`.
         simp only
         apply (hb _).trans ((ack_pair_lt _ _ _).trans_le _)
