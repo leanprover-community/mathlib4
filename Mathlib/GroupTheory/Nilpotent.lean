@@ -887,7 +887,7 @@ theorem nilpotencyClass_quotient_center :
 /-- The nilpotency class of a non-trivial group is one more than its quotient by the center -/
 @[to_additive /-- The nilpotency class of a non-trivial additive group is one more than its quotient
 by the center -/]
-theorem nilpotencyClass_eq_quotient_center_plus_one [hH : IsNilpotent G] [Nontrivial G] :
+theorem nilpotencyClass_eq_quotient_center_add_one [hH : IsNilpotent G] [Nontrivial G] :
     Group.nilpotencyClass G = Group.nilpotencyClass (G ⧸ center G) + 1 := by
   rw [nilpotencyClass_quotient_center]
   rcases h : Group.nilpotencyClass G with ⟨⟩
@@ -895,6 +895,9 @@ theorem nilpotencyClass_eq_quotient_center_plus_one [hH : IsNilpotent G] [Nontri
     rw [nilpotencyClass_zero_iff_subsingleton] at h
     apply false_of_nontrivial_of_subsingleton G
   · simp
+
+@[deprecated (since := "2026-10-06")] alias nilpotencyClass_eq_quotient_center_plus_one :=
+  nilpotencyClass_eq_quotient_center_add_one
 
 /-- A custom induction principle for nilpotent groups. The base case is a trivial group
 (`subsingleton G`), and in the induction step, one can assume the hypothesis for
@@ -1455,7 +1458,7 @@ set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_quotient_center :=
   nilpotencyClass_quotient_center
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_eq_quotient_center_plus_one :=
-  nilpotencyClass_eq_quotient_center_plus_one
+  nilpotencyClass_eq_quotient_center_add_one
 @[deprecated (since := "2026-03-25")] alias nilpotent_center_quotient_ind :=
   nilpotent_center_quotient_ind
 @[deprecated (since := "2026-03-25")] alias derived_le_lower_central := derived_le_lower_central
