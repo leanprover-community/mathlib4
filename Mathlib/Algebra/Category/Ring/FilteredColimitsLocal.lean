@@ -127,8 +127,14 @@ lemma residueField_eq_iUnion_fieldRange_of_isColimit (hc : IsColimit c) :
   obtain ⟨j, y, rfl⟩ := residueField_exists_rep F hc x
   simpa using ⟨j, y, rfl⟩
 
-/-- The functor of taking residue fields from a functor `F : J ⥤ CommRingCat`, when the `F.obj` are
-local rings and `F.map` are local ring homomorphisms. -/
+/--
+The functor of taking residue fields from a functor `F : J ⥤ CommRingCat`, when the `F.obj` are
+local rings and `F.map` are local ring homomorphisms.
+
+The purpose of this functor is to describe the residue field of colimit of local rings via local
+homomorphisms is colimit of the residue fields. It is currently only implemented on diagrams, since
+we don't have the category of local rings.
+-/
 noncomputable def residueFieldFunctor : J ⥤ CommRingCat.{u} where
   obj j := CommRingCat.of <| ResidueField (F.obj j)
   map f := CommRingCat.ofHom <| ResidueField.map (F.map f).hom
