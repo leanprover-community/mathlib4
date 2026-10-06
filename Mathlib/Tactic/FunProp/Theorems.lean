@@ -10,9 +10,10 @@ public meta import Mathlib.Tactic.FunProp.Types
 public meta import Mathlib.Tactic.FunProp.FunctionData
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 public import Mathlib.Tactic.FunProp.Decl
 public import Mathlib.Tactic.FunProp.Types
+
+import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`

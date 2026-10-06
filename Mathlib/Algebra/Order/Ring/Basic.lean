@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Parity
-public import Mathlib.Tactic.Bound.Attribute
 
 /-!
 # Basic lemmas about ordered rings
@@ -65,6 +64,14 @@ lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a +
   exacts [le_add_of_nonneg_right hb, le_add_of_nonneg_left ha]
 
 end OrderedSemiring
+
+lemma Even.pow_le_pow_of_nonpos [Ring R] [PartialOrder R] [IsOrderedRing R] {n : ℕ}
+    (hn : Even n) {a b : R} (hb : b ≤ 0) (hab : a ≤ b) : b ^ n ≤ a ^ n := by
+  simpa [hn.neg_pow] using pow_le_pow_left₀ (neg_nonneg.mpr hb) (neg_le_neg hab) n
+
+lemma Even.pow_lt_pow_of_nonpos [Ring R] [PartialOrder R] [IsStrictOrderedRing R] {n : ℕ}
+    (hn : Even n) {a b : R} (hb : b ≤ 0) (hab : a < b) (hn₀ : n ≠ 0) : b ^ n < a ^ n := by
+  simpa [hn.neg_pow] using pow_lt_pow_left₀ (neg_lt_neg hab) (neg_nonneg.mpr hb) hn₀
 
 section StrictOrderedRing
 variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R] {a : R}

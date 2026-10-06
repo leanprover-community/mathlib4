@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.Tactic.WLOG
 
 /-!
 # Cardinal Divisibility
@@ -83,7 +82,7 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
     all_goals rwa [mul_comm]
   left
   have habc := le_of_dvd hz hbc
-  rwa [mul_eq_max' <| ha.trans <| habc, max_def', ite_eq_left h] at hbc
+  rwa [mul_eq_max' <| ha.trans habc, max_def', ite_eq_left h] at hbc
 
 theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]

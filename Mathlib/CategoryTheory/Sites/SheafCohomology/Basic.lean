@@ -5,14 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Adjunctions
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.CategoryTheory.Sites.Abelian
-public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.CategoryTheory.Adjunction.Additive
+
+import Mathlib.Algebra.Category.Grp.Zero
 
 /-!
 # Sheaf cohomology

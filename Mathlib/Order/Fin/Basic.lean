@@ -277,7 +277,7 @@ lemma predAbove_left_injective : Injective (@predAbove n) := by
   · obtain h | rfl := h.lt_or_eq
     · exact (this hij.symm h).symm
     · rfl
-  replace hij := congr_fun hij i.succ
+  replace hij := congr($hij i.succ)
   rw [predAbove_succ_self, Fin.predAbove_of_le_castSucc _ _ (by simpa),
     ← Fin.castSucc_inj, castSucc_castPred] at hij
   exact (i.castSucc_lt_succ.ne hij).elim

@@ -75,7 +75,7 @@ theorem l_le {a : α} {b : β} : a ≤ u b → l a ≤ b :=
 
 @[to_dual l_u_le]
 theorem le_u_l (a) : a ≤ u (l a) :=
-  gc.le_u <| le_rfl
+  gc.le_u le_rfl
 
 @[to_dual]
 theorem monotone_u : Monotone u := fun a _ H => gc.le_u ((gc.l_u_le a).trans H)
@@ -233,7 +233,7 @@ def GaloisInsertion.monotoneIntro {α β : Type*} [Preorder α] [Preorder β] {l
     GaloisInsertion l u where
   choice x _ := l x
   gc := GaloisConnection.monotone_intro hu hl h_u_l fun b => le_of_eq (h_l_u b)
-  le_l_u b := le_of_eq <| (h_l_u b).symm
+  le_l_u b := le_of_eq (h_l_u b).symm
   choice_eq _ _ := rfl
 
 /-- Make a `GaloisInsertion l u` from a `GaloisConnection l u` such that `∀ b, b ≤ l (u b)` -/
@@ -252,7 +252,7 @@ def GaloisConnection.liftOrderBot {α β : Type*} [Preorder α] [OrderBot α] [P
     {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
     OrderBot β where
   bot := l ⊥
-  bot_le _ := gc.l_le <| bot_le
+  bot_le _ := gc.l_le bot_le
 
 namespace GaloisInsertion
 
