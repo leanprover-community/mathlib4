@@ -5,12 +5,13 @@ Authors: Gaëtan Serré, Rémy Degenne
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
+
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Sigmoid function

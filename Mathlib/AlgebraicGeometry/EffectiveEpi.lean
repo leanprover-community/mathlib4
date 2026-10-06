@@ -5,8 +5,9 @@ Authors: Yong-Gyu Choi
 -/
 module
 
-import Mathlib.Algebra.Category.Ring.EqualizerPushout
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+
+import Mathlib.Algebra.Category.Ring.EqualizerPushout
 import Mathlib.Topology.Category.TopCat.EffectiveEpi
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 
@@ -116,7 +117,6 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `π : X ⟶ Y` is a flat and surjective morphism between affine schemes, then `π` is a
 regular epimorphism in the category of schemes. -/
-@[stacks 023Q]
 lemma isRegularEpi_of_flat_of_surjective_of_isAffine
     {X Y : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y) [Surjective π] [Flat π] :
     IsRegularEpi π := by

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
+
 import Mathlib.CategoryTheory.Subfunctor.Equalizer
 
 /-!

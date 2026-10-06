@@ -225,7 +225,7 @@ theorem exists_measurable_superset_iff_measure_eq_zero :
 
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     (hfin : ∀ i ∈ s, μ (f i) < ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
-  convert! (measure_biUnion_finset_le (μ := μ) hs.toFinset f).trans_lt _ using 3
+  convert (measure_biUnion_finset_le (μ := μ) hs.toFinset f).trans_lt _ using 3
   · ext
     rw [Finite.mem_toFinset]
   · simpa only [ENNReal.sum_lt_top, Finite.mem_toFinset]
@@ -320,7 +320,7 @@ open scoped Classical in
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
 This property holds without the assumption `μ s ≠ ∞` when the space is s-finite (for example
-σ-finite); see `measure_toMeasurable_inter_of_sFinite`.
+σ-finite); see `measure_toMeasurable_inter_of_sfinite`.
 If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/

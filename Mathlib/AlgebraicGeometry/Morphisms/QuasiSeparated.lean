@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
