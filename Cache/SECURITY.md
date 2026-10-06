@@ -132,8 +132,10 @@ cached fork commits automatically (`--unsafe-window=N` reads the `N` most
 recent, default `1`). Either way the reader is choosing to trust whoever
 produced those fork artifacts — the per-commit namespace bounds *replay*, not
 the trust decision itself — so both forms print the non-default-scope security
-notice before reading. Neither runs in CI; CI routing (above) is loaded from
-the trusted branch.
+notice before reading. CI uses `--unsafe` only for `bump/*` builds on
+nightly-testing, with a window of one: the most recent cached commit in the
+build's first-parent history. Those builds upload the full set, so each
+commit's namespace holds every file. CI routing (above) is loaded from the trusted branch.
 
 ## Explicitly out of scope
 

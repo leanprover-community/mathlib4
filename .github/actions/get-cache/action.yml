@@ -1,7 +1,8 @@
 # Get this commit's oleans, in two phases:
 #   1. Warm the cache from the `cache-snapshot` GitHub artifact (canonical repo only).
 #   2. Fetch this commit's oleans from the remote cache with the trusted master-built binary.
-# The fetch is HEAD-scoped (reads only this commit's own cache scope). The warm is fail-safe
+# The fetch is HEAD-scoped (reads only this commit's own cache scope), unless the dispatch
+# sets an ancestor window (`MATHLIB_CACHE_UNSAFE_WINDOW`). The warm is fail-safe
 # (any failure → just the remote fetch) and its source is hardcoded, so nothing can redirect
 # the download off the trusted master pipeline.
 name: Get cache
@@ -100,7 +101,9 @@ runs:
 
     # 2. Fetch this commit's oleans from the remote cache with the trusted `cache` binary.
     #    Runs on every repo; the warm above just gives the canonical repo a local head
-    #    start. HEAD-scoped: reads only this commit's own cache scope.
+    #    start. HEAD-scoped: reads only this commit's own cache scope. With
+    #    `MATHLIB_CACHE_UNSAFE_WINDOW` set, `--unsafe-window` reads the most recent cached
+    #    commits in the first-parent history, HEAD included, instead.
     #    Earlier steps give PR code write access to `.lake/`, so it can hold symlinks that
     #    point outside it. The fetch runs inside landrun, which denies every write that
     #    resolves outside `.lake/` and the local cache directory.
@@ -126,9 +129,9 @@ runs:
           --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH \
           --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE \
           --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL \
-          --env CACHE_BIN --env CACHE_REPO \
+          --env MATHLIB_CACHE_UNSAFE_WINDOW --env CACHE_BIN --env CACHE_REPO \
           -- bash -euo pipefail -c \
-          'rm -rf .lake/build/lib/lean/Mathlib; exec "${CACHE_BIN}" --repo="${CACHE_REPO}" get' \
+          'rm -rf .lake/build/lib/lean/Mathlib; exec "${CACHE_BIN}" --repo="${CACHE_REPO}" ${MATHLIB_CACHE_UNSAFE_WINDOW:+--unsafe-window="$MATHLIB_CACHE_UNSAFE_WINDOW"} get' \
           2>&1 | tee "${log}"
         # Warmth = how much the snapshot covered HEAD: files already cached locally
         # (just decompressed) vs downloaded from Azure. Parsed best-effort from the log.

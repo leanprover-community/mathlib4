@@ -46,6 +46,13 @@ outputs:
       the head SHA for `forks` uploads; empty for `master` uploads, where
       scoping isn't applied.
     value: ${{ steps.dispatch.outputs.repo-scope }}
+  unsafe-window:
+    description: |
+      Value of `--unsafe-window` for the job's `cache get`, for
+      `MATHLIB_CACHE_UNSAFE_WINDOW`: the number of cached commits in the first-parent
+      history, HEAD included, that the job reads. Empty when the job reads only its
+      own commit's namespace.
+    value: ${{ steps.dispatch.outputs.unsafe-window }}
 
 runs:
   using: composite
@@ -65,6 +72,7 @@ runs:
         PRIMARY=""
         READ_CHAIN=""
         REPO_SCOPE=""
+        UNSAFE_WINDOW=""
 
         # Security note: this dispatch is NOT the trust boundary for writes.
         # The real enforcement is the OIDC bearer token minted in the upload jobs:
@@ -135,9 +143,25 @@ runs:
               esac
             fi
             ;;
+          "leanprover-community/mathlib4-nightly-testing")
+            # A fork in the cache's model. Its CI reads `forks` alone: the
+            # nightly toolchain almost never matches master's, so a `master`
+            # read misses every file.
+            PRIMARY="forks"
+            READ_CHAIN="forks"
+            case "$BRANCH" in
+              bump/*)
+                # A `bump/*` branch often keeps its toolchain and manifest
+                # across commits, so its CI reads the most recent cached
+                # commit in its first-parent history, HEAD included. Its stage
+                # steps then stage every file, so this commit's namespace holds
+                # the full set.
+                UNSAFE_WINDOW="1"
+                ;;
+            esac
+            ;;
           *)
-            # Foreign fork, or the nightly-testing repo, which is a fork in
-            # the cache's model. The cache tool's default chain for a fork repo
+            # Foreign fork. The cache tool's default chain for a fork repo
             # is [master, forks] (master-first): master supplies the
             # bulk of unchanged upstream deps, forks supplies PR-specific
             # files. No widening needed, so MATHLIB_CACHE_FROM stays unset.
@@ -159,6 +183,7 @@ runs:
         echo "primary=$PRIMARY"           >> "$GITHUB_OUTPUT"
         echo "read-chain=$READ_CHAIN"     >> "$GITHUB_OUTPUT"
         echo "repo-scope=$REPO_SCOPE"     >> "$GITHUB_OUTPUT"
+        echo "unsafe-window=$UNSAFE_WINDOW" >> "$GITHUB_OUTPUT"
         echo "MATHLIB_CACHE_PRIMARY=$PRIMARY" >> "$GITHUB_ENV"
         if [ -n "$READ_CHAIN" ]; then
           echo "MATHLIB_CACHE_FROM=$READ_CHAIN" >> "$GITHUB_ENV"
@@ -166,11 +191,17 @@ runs:
         if [ -n "$REPO_SCOPE" ]; then
           echo "MATHLIB_CACHE_REPO_SCOPE=$REPO_SCOPE" >> "$GITHUB_ENV"
         fi
+        if [ -n "$UNSAFE_WINDOW" ]; then
+          echo "MATHLIB_CACHE_UNSAFE_WINDOW=$UNSAFE_WINDOW" >> "$GITHUB_ENV"
+        fi
         # Visible in CI logs so a glance at any cache-touching step shows
         # what trust class the job is operating under.
         SCOPE_NOTE=""
         if [ -n "$REPO_SCOPE" ]; then
           SCOPE_NOTE=", MATHLIB_CACHE_REPO_SCOPE=$REPO_SCOPE"
+        fi
+        if [ -n "$UNSAFE_WINDOW" ]; then
+          SCOPE_NOTE="$SCOPE_NOTE, MATHLIB_CACHE_UNSAFE_WINDOW=$UNSAFE_WINDOW"
         fi
         if [ -n "$READ_CHAIN" ]; then
           echo "cache-trust-dispatch: REPO=$REPO BRANCH=$BRANCH → container=$PRIMARY, MATHLIB_CACHE_FROM=$READ_CHAIN$SCOPE_NOTE"
