@@ -243,7 +243,7 @@ end Pi
 namespace MulOpposite
 variable {R : Type*} [Monoid R] [StarMul R]
 
-lemma mem_unitary_iff {p : Rᵐᵒᵖ} :  p ∈ unitary Rᵐᵒᵖ ↔ p.unop ∈ unitary R := by
+lemma mem_unitary_iff {p : Rᵐᵒᵖ} : p ∈ unitary Rᵐᵒᵖ ↔ p.unop ∈ unitary R := by
   simp [Unitary.mem_iff, ← MulOpposite.unop_inj, and_comm]
 
 variable (R) in
