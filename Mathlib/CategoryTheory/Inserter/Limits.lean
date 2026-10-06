@@ -92,6 +92,10 @@ instance preservesColimitsOfShape_proj [HasColimitsOfShape J C] [HasColimitsOfSh
       (isColimitCoconeOfPreserves _ (colimit.isColimit _))
       (colimit.isColimit _)
 
+instance reflectsColimitsOfShape_proj [HasColimitsOfShape J C] [HasColimitsOfShape J D]
+    [PreservesColimitsOfShape J F] : ReflectsColimitsOfShape J (proj F G) :=
+  reflectsColimitsOfShape_of_reflectsIsomorphisms
+
 end Inserter
 
 end CategoryTheory

@@ -478,6 +478,14 @@ class HasCardinalFilteredColimits (C : Type u₁) [Category.{v₁} C]
 instance (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasColimitsOfSize.{w, w} C] :
     HasCardinalFilteredColimits.{w} C κ where
 
+lemma hasColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredColimits C κ]
+    (J : Type u₃) [Category.{v₃} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
+    HasColimitsOfShape J C := by
+  have := IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J)
+  have := HasCardinalFilteredColimits.hasColimitsOfShape C κ (SmallModel.{w} J)
+  exact hasColimitsOfShape_of_equivalence (equivSmallModel.{w} J).symm
+
 variable {κ} in
 lemma HasCardinalFilteredColimits.of_le {κ : Cardinal.{w}} [Fact κ.IsRegular]
     [HasCardinalFilteredColimits C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :

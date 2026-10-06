@@ -6,7 +6,7 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Functor.Category
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Inserter categories
@@ -94,6 +94,32 @@ instance : Functor.Faithful (proj F G) where map_injective {X Y} := by cat_disch
 /-- The structure morphisms of objects of the inserter assemble into a natural transformation
 `proj ⋙ F ⟶ proj ⋙ G`. -/
 def τ : proj F G ⋙ F ⟶ proj F G ⋙ G where app x := x.hom
+
+variable {F G} in
+/-- Construct an isomorphism of inserters from an isomorphism of the underlying objects -/
+@[simps!]
+def mkIso {E E' : Inserter F G} (e : E.obj ≅ E'.obj)
+    (he : F.map e.hom ≫ E'.hom = E.hom ≫ G.map e.hom := by cat_disch) : E ≅ E' where
+  hom := ⟨e.hom, he⟩
+  inv := ⟨e.inv, by simpa using F.map e.inv ≫= he.symm =≫ G.map e.inv⟩
+
+instance {E E' : Inserter F G} (f : E ⟶ E') [IsIso f] : IsIso f.hom :=
+  (proj F G).map_isIso f
+
+@[simp, push ←]
+lemma inv_hom {E E' : Inserter F G} (f : E ⟶ E') [IsIso f] :
+    (inv f).hom = inv f.hom := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  simp [← comp_hom]
+
+instance : (proj F G).ReflectsIsomorphisms where
+  reflects k h := by
+    dsimp at h
+    exact (inferInstance : IsIso (mkIso (asIso k.hom) (by simp)|>.hom))
+
+lemma isIso_iff {E E' : Inserter F G} (f : E ⟶ E') :
+    IsIso f ↔ IsIso f.hom :=
+  (isIso_iff_of_reflects_iso f (proj F G)).symm
 
 end Inserter
 

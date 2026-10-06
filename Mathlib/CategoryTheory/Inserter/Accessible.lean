@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Presentable.Comma
 import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
 import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
+import Mathlib.CategoryTheory.Presentable.StrongGenerator
 public import Mathlib.Tactic.CategoryTheory.Map
 import Mathlib.Order.Interval.Set.InitialSeg
 
@@ -973,6 +974,12 @@ abbrev O₁ (F G : K ⥤ L) : ObjectProperty (Inserter F G) :=
 
 abbrev Δ (E : Inserter F G) := CostructuredArrow ((O₁ κ F G).ι) E
 
+instance {E : Inserter F G} (x : Δ κ E) : IsCardinalPresentable x.left.obj.obj κ :=
+  x.left.property
+
+instance {E : Inserter F G} (x : Δ κ E) : IsCardinalPresentable ((O₁ κ F G).ι.obj x.left).obj κ :=
+  x.left.property
+
 open Limits
 
 lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inserter F G)
@@ -987,16 +994,6 @@ lemma isCardinalFiltered_Δ [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inser
   have (X : K) : PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
     G.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
   let hcolimG := isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
-  have cp (x : (CostructuredArrow (O₁ κ F G).ι E)) :
-    IsCardinalPresentable ((O₁ κ F G).ι.obj x.left).obj κ := by
-    have := (CostructuredArrow.left x).property
-    simpa using this
-  -- FIXME. shouldn’t be needed
-  have cp (x : (CostructuredArrow (O₁ κ F G).ι E)) :
-    IsCardinalPresentable (F.obj (CostructuredArrow.left x).obj.obj) κ := by
-    have := (CostructuredArrow.left x).property
-    simp only [O₁, ObjectProperty.prop_inverseImage_iff, proj_obj] at this
-    infer_instance
   refine ⟨fun ι v hι ↦ ?_, fun ι r p f hι hι' ↦ ?_⟩
   · -- There exists an index ξ₀ such that all the v_j factorizes through the index in K
     -- TODO: extract the part where we take an index and advance it by one.
@@ -1136,7 +1133,7 @@ lemma final.nonempty_structured_arrow
       ⟨()⟩, f⟩,
     ⟨⟨u ≫ u'.left.hom ≫ g⟩, ⟨rfl⟩, by simp [h₂, hu]⟩⟩⟩
 
-lemma final (E : Inserter F G) [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inserter F G)
+lemma final [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : Inserter F G)
     [HasColimitsOfShape Λ K] [HasColimitsOfShape Λ L]
     [PreservesColimitsOfShape Λ F] [PreservesColimitsOfShape Λ G] : (U κ E).Final := by
   constructor
@@ -1168,63 +1165,90 @@ lemma final (E : Inserter F G) [OrderBot Λ] (hΛ : HasCardinalLT Λ κ) (E : In
   have (X : K) : PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
     G.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
   let hcolimG := isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
-  -- TODO: automate this (this is about Δ)
-  have (q : StructuredArrow p (U κ E)) :
-      IsCardinalPresentable ((O₁ κ F G).ι.obj q.right.left).obj κ := by
-    have := q.right.left.property
-    simp only [ObjectProperty.prop_inverseImage_iff, proj_obj] at this
-    dsimp
-    infer_instance
-  have (q : StructuredArrow p (U κ E)) :
-      IsCardinalPresentable (F.obj (CostructuredArrow.left q.right).obj.obj) κ := by
-    have := q.right.left.property
-    simp only [ObjectProperty.prop_inverseImage_iff, proj_obj] at this
-    infer_instance
   obtain ⟨ξ₀, f₀, f₁, hf₀, hf₁, hsq⟩ :
       ∃ (ξ₀ : CostructuredArrow O₀.ι E.obj)
         (f₀ : r'.right.left.obj.obj ⟶ ξ₀.left.obj)
         (f₁ : r''.right.left.obj.obj ⟶ ξ₀.left.obj),
         f₀ ≫ ξ₀.hom = r'.right.hom.hom ∧ f₁ ≫ ξ₀.hom = r''.right.hom.hom ∧
         r'.hom.left.hom ≫ f₀ = r''.hom.left.hom ≫ f₁ := by
-    obtain ⟨ξ₀₀, u₀₀, hu₀₀⟩ :=
-      IsCardinalPresentable.exists_hom_of_isColimit κ hcolimT r'.right.hom.hom
-    obtain ⟨ξ₀, u₀, v₀, hu₀⟩ :=
-      IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimT r''.right.hom.hom ξ₀₀
-    dsimp at u₀₀ hu₀₀ u₀ v₀ hu₀
-    simp only [Category.id_comp] at hu₀₀ hu₀
-    sorry
+    obtain ⟨ξ₀₀, u₀₀, v₀₀, hu₀₀⟩ :=
+      IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimT r'.right.hom.hom p
+    obtain ⟨ξ₀₁, u₀₁, v₀₁, hu₀₁⟩ :=
+      IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimT r''.right.hom.hom p
+    dsimp at u₀₀ v₀₀ hu₀₀ u₀₁ v₀₁ hu₀₁
+    simp only [Category.id_comp] at hu₀₀ hu₀₁
+    obtain ⟨ξ₀, u, v, h₁, h₂⟩ := IsFiltered.bowtie u₀₀ u₀₁
+      (r'.hom ≫ CostructuredArrow.homMk ⟨v₀₀⟩) (r''.hom ≫ CostructuredArrow.homMk ⟨v₀₁⟩)
+    exact ⟨ξ₀, v₀₀ ≫ u.left.hom, v₀₁ ≫ v.left.hom,
+      by simp [hu₀₀], by simp [hu₀₁], by simpa using congr($(h₂).left.hom)⟩
   obtain ⟨ξ₁, u, σ, hsq', hl, hr⟩ :
-    ∃ (ξ₁ : CostructuredArrow O₀.ι E.obj)
-      (u : ξ₀ ⟶ ξ₁)
-      (σ : F.obj ξ₀.left.obj ⟶ G.obj ξ₁.left.obj),
-      F.map ξ₀.hom ≫ E.hom = σ ≫ G.map ξ₁.hom ∧
-      (F.map f₀ ≫ σ = r'.right.left.obj.hom ≫ G.map f₀ ≫ G.map u.left.hom) ∧
-      (F.map f₁ ≫ σ = r''.right.left.obj.hom ≫ G.map f₁ ≫ G.map u.left.hom) := by
-    /-
-    obtain ⟨ξ₁₀, u₁₀, v₁₁, hu₁₀, hu₁₀'⟩ :=
-      exists_of_hexagon κ hcolimG (F.map u₀₀ ≫ F.map u₀.left.hom) (F.map ξ₀.hom)
-        r'.right.left.obj.hom (G.map u₀₀) E.hom
-        (by simp [← Functor.map_comp_assoc, ← Functor.map_comp, hu₀₀])
-    obtain ⟨ξ₁₁, u₁, v₁, hu₁, hu₁'⟩ :=
-      exists_of_hexagon κ hcolimG (F.map v₀) (F.map ξ₀.hom)
-        r''.right.left.obj.hom (G.map v₀) E.hom
-        (by simp [← Functor.map_comp_assoc, ← Functor.map_comp, hu₀])
-    -/
-    sorry
-  --obtain ⟨ξ₁, q', t', ht'⟩ := IsFiltered.span (u₁₀) (u₀ ≫ u₁)
+      ∃ (ξ₁ : CostructuredArrow O₀.ι E.obj)
+        (u : ξ₀ ⟶ ξ₁)
+        (σ : F.obj ξ₀.left.obj ⟶ G.obj ξ₁.left.obj),
+        F.map ξ₀.hom ≫ E.hom = σ ≫ G.map ξ₁.hom ∧
+        (F.map f₀ ≫ σ = r'.right.left.obj.hom ≫ G.map f₀ ≫ G.map u.left.hom) ∧
+        (F.map f₁ ≫ σ = r''.right.left.obj.hom ≫ G.map f₁ ≫ G.map u.left.hom) := by
+    obtain ⟨ξ₁₀, u₁₀, σ₁₀, hu₁₀, hu₁₀'⟩ :=
+      exists_of_hexagon κ hcolimG (F.map f₀) (F.map ξ₀.hom)
+        r'.right.left.obj.hom (G.map f₀) E.hom
+        (by simp [← F.map_comp_assoc, hf₀, ← G.map_comp] )
+    obtain ⟨ξ₁₁, u₁₁, σ₁₁, hu₁₁, hu₁₁'⟩ :=
+      exists_of_hexagon κ hcolimG (F.map f₁) (F.map ξ₀.hom)
+        r''.right.left.obj.hom (G.map f₁) E.hom
+        (by simp [← F.map_comp_assoc, ← G.map_comp, hf₁] )
+    dsimp at u₁₀ σ₁₀ u₁₁ σ₁₁ hu₁₀ hu₁₀' hu₁₁ hu₁₁'
+    simp only [Category.id_comp] at hu₁₀ hu₁₀' hu₁₁ hu₁₁'
+    obtain ⟨ξ₁₂, u₁₂, v₁₂, hsq''⟩ := IsFiltered.span u₁₀ u₁₁
+    obtain ⟨ξ₁, u₁, h⟩ :=
+      IsCardinalPresentable.exists_eq_of_isColimit' κ hcolimG
+        (σ₁₀ ≫ G.map u₁₂.left.hom) (σ₁₁ ≫ G.map v₁₂.left.hom)
+        (by simp [← Functor.map_comp, ← hu₁₀', ← hu₁₁'])
+    simp only [Functor.comp_obj, CostructuredArrow.proj_obj, ObjectProperty.ι_obj, Functor.comp_map,
+      CostructuredArrow.proj_map, ObjectProperty.ι_map, Category.assoc] at h
+    refine ⟨ξ₁, u₁₀ ≫ u₁₂ ≫ u₁, σ₁₀ ≫ G.map u₁₂.left.hom ≫ G.map u₁.left.hom, ?_, ?_, ?_⟩
+    · simp_rw [Category.assoc, reassoc_of% h, ← G.map_comp, grind_helper, ← hu₁₁']
+    · simp [← reassoc_of% hu₁₀]
+    · simp [reassoc_of% hsq'', ← reassoc_of% hu₁₁, h]
   obtain ⟨b, _, u₁, v₁, hu₁, hv₁⟩ :=
     positselski_4_5 κ Λ hΛ E ξ₀.left.obj ξ₁.left.obj σ u.left.hom ξ₁.hom (by
       simp [← hsq', ← F.map_comp_assoc])
   let b' : (O₁ κ F G).FullSubcategory :=
     ⟨b, by simp only [O₁, ObjectProperty.prop_inverseImage_iff, proj_obj]; infer_instance⟩
   use CostructuredArrow.mk (T := E) (Y := b') u₁
-  exact ⟨
-    CostructuredArrow.homMk (⟨⟨f₀ ≫ u.left.hom ≫ v₁, (by simp [b', ← hu₁, reassoc_of% hl])⟩⟩),
-    CostructuredArrow.homMk (⟨⟨f₁ ≫ u.left.hom ≫ v₁, (by simp [b', ← hu₁, reassoc_of% hr])⟩⟩),
-    (by simp [hv₁, hf₀]), (by simp [hv₁, hf₁]), (by simp [reassoc_of% hsq])⟩
+  exact
+    ⟨ CostructuredArrow.homMk ⟨⟨f₀ ≫ u.left.hom ≫ v₁, by simp [b', ← hu₁, reassoc_of% hl]⟩⟩,
+      CostructuredArrow.homMk ⟨⟨f₁ ≫ u.left.hom ≫ v₁, by simp [b', ← hu₁, reassoc_of% hr]⟩⟩,
+      (by simp [hv₁, hf₀]), (by simp [hv₁, hf₁]), (by simp [reassoc_of% hsq])⟩
+
+attribute [local ext] Inserter in
+instance : ObjectProperty.EssentiallySmall.{w} (O₁ κ F G) := by
+  dsimp [O₁]
+  have : ObjectProperty.EssentiallySmall.{w}
+      (((isCardinalPresentable K κ).inverseImage (proj F G)).map (proj F G)) :=
+    ObjectProperty.EssentiallySmall.of_le (ObjectProperty.map_inverseImage_le _ (proj F G))
+  apply ObjectProperty.EssentiallySmall.of_functor _ (proj F G) this
+  · intro y
+    suffices h : ObjectProperty.EssentiallySmall.{w}
+        (fun (x : Inserter F G) ↦ Nonempty ((proj F G).obj x ≅ y)) by
+      exact ObjectProperty.EssentiallySmall.of_le.{w} (inf_le_right)
+    dsimp
+    let Q : ObjectProperty (Inserter F G) := fun x : Inserter F G ↦ x.obj = y
+    have : ObjectProperty.Small.{w} Q := by
+      let f (x : Subtype Q) : (F.obj y ⟶ G.obj y) :=
+        eqToHom (by rw [x.2]) ≫ x.1.hom ≫ eqToHom (by rw [x.2])
+      apply small_of_injective.{w} (f := f)
+      intro u v huv
+      ext
+      · rw [u.2, v.2]
+      · rwa [← heq_iff_eq, eqToHom_comp_heq_iff, heq_comm, eqToHom_comp_heq_iff,
+          comp_eqToHom_heq_iff, heq_comm, comp_eqToHom_heq_iff] at huv
+    exact ⟨Q, this, fun x ⟨e⟩ ↦
+      (ObjectProperty.prop_isoClosure_iff ..).mpr
+      ⟨⟨F.map e.inv ≫ x.hom ≫ G.map e.hom⟩, rfl, ⟨Inserter.mkIso e⟩⟩⟩
 
 end Accessible
 
+open Accessible in
 /-- Let `Λ < κ` be a pair of infinite cardinals such that `κ` is regular. Assume that
 - `K` and `L` are `κ`-accessible categories with colimits of `Λ`-chains.
 - `F G : C ⥤ D` are `κ`-accessible functors preserving colimits of `Λ`-chains
@@ -1241,15 +1265,61 @@ public theorem isCardinalAccessibleCategory
     {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardinal.{w})
     [Fact κ.IsRegular] [IsCardinalAccessibleCategory K κ] [IsCardinalAccessibleCategory L κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ] [F.PreservesCardinalPresentable κ]
-    (Λ : Type w) [LinearOrder Λ] [SuccOrder Λ] [WellFoundedLT Λ] [NoMaxOrder Λ]
+    (Λ : Type w) [Nonempty Λ] [LinearOrder Λ] [SuccOrder Λ] [WellFoundedLT Λ] [NoMaxOrder Λ]
     (hΛ : HasCardinalLT Λ κ)
     [Limits.HasColimitsOfShape Λ K] [Limits.HasColimitsOfShape Λ L]
     [Limits.PreservesColimitsOfShape Λ F] [Limits.PreservesColimitsOfShape Λ G] :
-    IsCardinalAccessibleCategory (Inserter F G) κ :=
-  -- Using that the functor `U : Δ κ E ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj` is
-  -- final, any inserter is the κ-filtered colimit of its projection from Δ κ E,
-  -- as one can postcompose with U to check this, and the canonical cocone for E.obj is a
-  -- colimit diagram.
-  sorry
+    IsCardinalAccessibleCategory (Inserter F G) κ where
+  exists_generator := by
+    refine ⟨O₁ κ F G, inferInstance, ?_⟩
+    have (X : Inserter F G) : IsCardinalFiltered (CostructuredArrow (O₁ κ F G).ι X) κ := by
+      have : OrderBot Λ := WellFoundedLT.toOrderBot Λ
+      exact isCardinalFiltered_Δ κ Λ hΛ X
+    apply +allowSynthFailures IsCardinalFilteredGenerator.of_isDense_ι
+    · constructor
+      intro E
+      /- Using that the functor `U : Δ κ E ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj`
+      is final, any inserter is the κ-filtered colimit of its projection from Δ κ E:
+      This can be checked after postcomposition with `proj F G` and extension through `U`,
+      and the cocone obtained this way identifies to the canonical cocone for E.obj,
+      which is a colimit diagram as `K` is κ-accessible. -/
+      dsimp [Functor.isDenseAt]
+      -- The canonical cocone making E.hom a κ-filtered colimit of κ-presentable objects
+      let hcolimT := (isCardinalPresentable K κ).ι.denseAt E.obj -- E.obj ≅ colim_ξ S_ξ
+      have : OrderBot Λ := WellFoundedLT.toOrderBot Λ
+      have : (U κ E).Final := final κ Λ hΛ E
+      let t1 := (Functor.Final.isColimitWhiskerEquiv (U κ E) _).symm hcolimT
+      have : Limits.PreservesColimitsOfShape (CostructuredArrow (O₁ κ F G).ι E) F :=
+        Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall _ κ _
+      have : Limits.PreservesColimitsOfShape (CostructuredArrow (O₁ κ F G).ι E) G :=
+        Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall _ κ _
+      have : Limits.HasColimitsOfShape (CostructuredArrow (O₁ κ F G).ι E) L :=
+        hasColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ ..
+      have : Limits.HasColimitsOfShape (CostructuredArrow (O₁ κ F G).ι E) K :=
+        hasColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ ..
+      apply Limits.ReflectsColimit.reflects (F := Inserter.proj F G)
+        (K := CostructuredArrow.proj (O₁ κ F G).ι E ⋙ (O₁ κ F G).ι)
+      let e₁ :
+        (U κ E ⋙ CostructuredArrow.proj (isCardinalPresentable K κ).ι E.obj ⋙
+          (isCardinalPresentable K κ).ι) ≅
+        (CostructuredArrow.proj (O₁ κ F G).ι E ⋙ (O₁ κ F G).ι) ⋙ proj F G := .refl _
+      exact Limits.IsColimit.equivOfNatIsoOfIso e₁
+        (Limits.Cocone.whisker (U κ E) _)
+        ((proj F G).mapCocone
+          ((Functor.LeftExtension.mk (𝟭 _) (O₁ κ F G).ι.rightUnitor.inv).coconeAt E))
+        (Limits.Cocone.ext (.refl _) (by intros; simp [e₁])) t1
+    · intro x hx
+      simp only [O₁, ObjectProperty.prop_inverseImage_iff, proj_obj] at hx
+      infer_instance
+  hasColimitsOfShape J _ _ := by
+    have : Limits.PreservesColimitsOfShape J F :=
+      Functor.IsCardinalAccessible.preservesColimitOfShape κ J
+    have : Limits.PreservesColimitsOfShape J G :=
+      Functor.IsCardinalAccessible.preservesColimitOfShape κ J
+    have : Limits.HasColimitsOfShape J K :=
+      HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+    have : Limits.HasColimitsOfShape J L :=
+      HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+    infer_instance
 
 end CategoryTheory.Inserter
