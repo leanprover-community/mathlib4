@@ -83,4 +83,10 @@ lemma orderPred_succ {n : ℕ} (i : Fin n) :
     Order.pred i.succ = i.castSucc :=
   rfl
 
+lemma lt_orderPred_iff : ∀ {n : ℕ} {i j : Fin n}, i < Order.pred j ↔ (i : ℕ) + 1 < j
+  | n + 1, i, j => by
+    induction j using Fin.cases with
+    | zero => rw [orderPred_zero]; grind
+    | succ j' => rw [Fin.orderPred_succ]; grind
+
 end Fin
