@@ -11,22 +11,22 @@ public import Mathlib.LinearAlgebra.Matrix.Hessenberg.Defs
 /-!
 # Hessenberg similarity certificates
 
-`Hessenberg.Similarity A` certifies a similarity relation between the square matrix `A` and an upper
-Hessenberg matrix.
+`Matrix.Hessenberg.Similarity A` certifies a similarity relation between the square matrix `A` and
+an upper Hessenberg matrix.
 
 ## Main definitions
 
-- `Hessenberg.Similarity`: the certificate structure.
+- `Matrix.Hessenberg.Similarity`: the certificate structure.
 
 ## Main results
 
-- `Hessenberg.Similarity.charpoly_eq`: The characteristic polynomial of `A` is equal to the
+- `Matrix.Hessenberg.Similarity.charpoly_eq`: The characteristic polynomial of `A` is equal to the
   characteristic polynomial of its Hessenberg matrix.
 -/
 
 public section
 
-namespace Hessenberg
+namespace Matrix.Hessenberg
 
 variable {m R : Type*} [CommRing R] [Fintype m] [DecidableEq m] [LinearOrder m] [SuccOrder m]
 
@@ -58,6 +58,6 @@ theorem Similarity.charpoly_eq [IsDomain R] {A : Matrix m m R} (cert : Similarit
     _ = A.charpoly :=
       Matrix.charpoly_reindex cert.σ A
 
-end Hessenberg
+end Matrix.Hessenberg
 
 end

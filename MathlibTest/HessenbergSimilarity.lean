@@ -22,7 +22,7 @@ example :
       !![ 1, 2, 3;
           4, 5, 6;
           0, 7, 8]
-    Hessenberg.Similarity M where
+    Matrix.Hessenberg.Similarity M where
       σ := 1
       L := 1
       H := !![1, 2, 3; 4, 5, 6; 0, 7, 8]
@@ -36,7 +36,7 @@ def certShear :
       !![ 1, 2, 3;
           1, 1, 1;
           2, 0, 1]
-    Hessenberg.Similarity M where
+    Matrix.Hessenberg.Similarity M where
       σ := 1
       L := !![1, 0, 0; 0, 1, 0; 0, 2, 1]
       H := !![1, 8, 3; 1, 3, 1; 0, -4, -1]
