@@ -173,7 +173,6 @@ theorem ContinuousMulEquiv.prodUnits_isOpenEmbedding {M N : Type*} [Monoid M] [T
   .of_continuous_injective_isOpenMap
     (map_continuous (prodUnits M N)) (prodUnits M N).injective (prodUnits M N).isOpenMap
 
-@[simp]
 lemma toMulEquiv_prodUnits {M N : Type*} [Monoid M] [TopologicalSpace M] [Monoid N]
     [TopologicalSpace N] : (ContinuousMulEquiv.prodUnits M N).toMulEquiv = .prodUnits := rfl
 
