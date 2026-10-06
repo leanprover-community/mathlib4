@@ -5,10 +5,11 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.List.Basic
 public import Mathlib.Logic.OpClass
+
+import Mathlib.Data.List.Forall2
+import Mathlib.Data.Nat.Basic
 
 /-!
 # zip & unzip

@@ -6,6 +6,7 @@ Authors: Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Filtered.Final
+
 import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
 
 /-!

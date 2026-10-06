@@ -6,9 +6,10 @@ Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Mi
 -/
 module
 
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
 public import Mathlib.AlgebraicGeometry.ValuativeCriterion
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
 # Properness of `Proj A`
