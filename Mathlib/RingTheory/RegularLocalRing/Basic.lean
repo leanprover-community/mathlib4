@@ -64,8 +64,8 @@ lemma IsLocalRing.spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetheria
     Submodule.span R (Set.range (Set.inclusion sub)) := by
     rw [eqmap, Submodule.comap_map_eq_of_injective (maximalIdeal R).subtype_injective]
   rw [Ideal.mk_ker, this, Submodule.map_span, ← Set.range_comp]
-  simp only [SetLike.coe_sort_coe, toCotangentSpace, LinearMap.coe_mk, LinearMap.coe_toAddHom]
-  exact (Fintype.card_coe S).symm.trans (finrank_span_eq_card li).symm
+  simp only [SetLike.coe_sort_coe, toCotangentSpace_eq_toCotangent, (Fintype.card_coe S).symm]
+  exact (finrank_span_eq_card li).symm
 
 lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     (sub : (S : Set R) ⊆ maximalIdeal R) :
