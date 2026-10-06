@@ -634,11 +634,13 @@ end Bilinear
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
 
-@[simp] theorem LinearMap.comp_id_moduleCat
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+theorem LinearMap.comp_id_moduleCat
     {R} [Ring R] {G : ModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H] (f : G →ₗ[R] H) :
     f.comp (𝟙 G : G ⟶ G).hom = f := by simp
 
-@[simp] theorem LinearMap.id_moduleCat_comp
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+theorem LinearMap.id_moduleCat_comp
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H : H ⟶ H).hom f = f := by simp
 

@@ -39,7 +39,7 @@ As in other polynomial files, we typically use the notation:
 
 noncomputable section
 
-open Function Finsupp
+open Function Finsupp AddMonoidAlgebra
 
 universe u v
 
@@ -64,13 +64,13 @@ theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
 theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
   map_neg _ _
 
-@[simp]
-theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : (-p).coeff m = -p.coeff m :=
-  Finsupp.neg_apply _ _
+@[deprecated AddMonoidAlgebra.coeff_neg +typeChanged (since := "2026-10-06")]
+protected theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : (-p).coeff m = -p.coeff m := by
+  simp
 
-@[simp, grind =]
-theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : (p - q).coeff m = p.coeff m - q.coeff m :=
-  Finsupp.sub_apply _ _ _
+@[deprecated AddMonoidAlgebra.coeff_sub +typeChanged (since := "2026-10-06")]
+protected theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) :
+  (p - q).coeff m = p.coeff m - q.coeff m := by simp
 
 @[simp] lemma support_neg : (-p).support = p.support := by ext; simp
 
@@ -86,8 +86,7 @@ theorem notMem_support_sub_monomial_sub_monomial (d d' : σ →₀ ℕ) (c : R)
     (hdd' : d ≠ d') (hc : p.coeff d = c) :
     d ∉ (p - (monomial d c - monomial d' c)).support := by
   classical
-  rw [notMem_support_iff, coeff_sub, coeff_sub, coeff_monomial, coeff_monomial,
-    ite_eq_left rfl, ite_eq_right hdd'.symm, sub_zero, hc, sub_self]
+  simp [hdd'.symm, hc]
 
 /-- Subtracting `monomial d c - monomial d' c` from `p`, where `c = coeff d p` and `d ≠ d'`,
 leaves the support inside `p.support.erase d ∪ {d'}`. -/
@@ -205,8 +204,8 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → f.coeff m = g.coeff m)
     (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → f.coeff m = g.coeff m) :
     degreeOf x (f - g) < k := by
-  rw [degreeOf_lt_iff h]
-  grind [degreeOf_lt_iff]
+  simp_rw [degreeOf_lt_iff h]
+  grind [coeff_sub, Finsupp.sub_apply]
 
 end DegreeOf
 

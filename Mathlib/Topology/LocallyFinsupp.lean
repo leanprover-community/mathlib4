@@ -833,7 +833,7 @@ noncomputable abbrev truncate₁ [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppW
     locallyFinsuppWithin U Y := D.truncate 1 zero_le_one
 
 /-- Evaluation of the truncation. -/
-@[simp] lemma truncate_apply (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) (z : X) :
+lemma truncate_apply (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) (z : X) :
     D.truncate y hy z = min (D z) y := by simp
 
 /-- Truncation of the zero function. -/

@@ -77,11 +77,9 @@ end Deterministic
 
 section Const
 
-@[simp]
 theorem integral_const {μ : Measure β} : ∫ x, f x ∂const α μ a = ∫ x, f x ∂μ := by
   rw [const_apply]
 
-@[simp]
 theorem setIntegral_const {μ : Measure β} {s : Set β} :
     ∫ x in s, f x ∂const α μ a = ∫ x in s, f x ∂μ := by rw [const_apply]
 
