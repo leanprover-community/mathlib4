@@ -147,7 +147,7 @@ instance adjoinAlgebraic_isLocalRing (x : K) (int : IsIntegral S x) :
   use (maximalIdeal S).map (algebraMap S (adjoinAlgebraic K S x int)), this
   intro m hm
   exact (this.eq_of_le hm.ne_top (Ideal.map_le_iff_le_comap.mpr (le_of_eq (eq_maximalIdeal
-    m.isMaximal_comap_of_isIntegral_of_isMaximal).symm))).symm
+    m.isMaximal_under_of_isIntegral_of_isMaximal).symm))).symm
 
 lemma adjoinAlgebraic_maximalIdeal_eq_map (x : K) (int : IsIntegral S x) :
     maximalIdeal (adjoinAlgebraic K S x int) =
