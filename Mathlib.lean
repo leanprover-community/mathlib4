@@ -5024,6 +5024,8 @@ public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.Perm.DomMulAct
 public import Mathlib.GroupTheory.Perm.Fin
 public import Mathlib.GroupTheory.Perm.Finite
+public import Mathlib.GroupTheory.Perm.Hex
+public import Mathlib.GroupTheory.Perm.Hex.Generated
 public import Mathlib.GroupTheory.Perm.List
 public import Mathlib.GroupTheory.Perm.MaximalSubgroups
 public import Mathlib.GroupTheory.Perm.Option
@@ -7770,6 +7772,7 @@ public import Mathlib.Tactic.Order.ToInt
 public import Mathlib.Tactic.PNatToNat
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.PermGroup
 public import Mathlib.Tactic.Polynomial.Basic
 public import Mathlib.Tactic.Polynomial.Core
 public import Mathlib.Tactic.Polyrith

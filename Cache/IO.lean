@@ -32,6 +32,8 @@ def IRDIR : FilePath :=
 TODO: write a better predicate. -/
 def isPartOfMathlibCache (mod : Name) : Bool := #[
   `Mathlib,
+  `HexBasic,
+  `HexPermGroup,
   `Batteries,
   `BatteriesRecycling,
   `Aesop,
