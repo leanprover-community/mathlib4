@@ -274,6 +274,6 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   simp_rw [← uzpow_add, mul_add, add_mul, mul_comm i₁ j₂]
   congr 1
   abel_nf
-  rw [two_nsmul, uzpow_add, uzpow_add, Int.units_mul_self, one_mul]
+  simp only [two_nsmul, uzpow_add, Int.units_mul_self, one_mul]
 
 end TensorProduct

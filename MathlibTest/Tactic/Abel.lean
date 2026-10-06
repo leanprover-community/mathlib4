@@ -121,9 +121,9 @@ location.
 -/
 example [AddCommGroup α] {a b c : α} (h1 : a + b + c = 0) (h2 : b + a + c = 0) : c + a + b = 0 := by
   abel_nf at *
-  guard_hyp h1 : c + (a + b) = 0
-  guard_hyp h2 : c + (a + b) = 0
-  guard_target = c + (a + b) = 0
+  guard_hyp h1 : a + (b + c) = 0
+  guard_hyp h2 : a + (b + c) = 0
+  guard_target = a + (b + c) = 0
   exact h1
 
 /--
@@ -200,3 +200,48 @@ example [AddCommGroup α] (x : α) (f : α → α) : True := by
     abel_nf
     abel_nf!
   trivial
+
+-- Closed coefficients use Lean's arithmetic certificates.
+example [AddCommMonoid α] (a : α) : (2 + 3 : ℕ) • a = a + 4 • a := by abel
+example [AddCommGroup α] (a : α) :
+    ((2 + 3 : ℤ) * (-2)) • a = -(5 • a + 5 • a) := by abel
+
+-- Other scalar actions remain atoms, and their arguments can still be normalized.
+example {σ : Type*} [AddCommGroup α] [SMul σ α] (n : σ) (a b : α) :
+    n • (a + b) + n • (b + a) = 2 • (n • (a + b)) := by abel
+
+example {β : Type*} [AddCommMonoid α] [AddCommGroup β]
+    (f : β → α) (x y : β) : f (x + y) + f (y + x) = 2 • f (x + y) := by abel_nf
+
+example [AddCommGroup α] (a b : α) : a + b - b = a := by
+  conv_lhs => abel_nf
+
+-- Operation aliases are checked against the module instance by definitional equality.
+private def subAlias [AddCommGroup α] (a b : α) : α := a - b
+section
+variable [AddCommGroup α]
+local instance : Sub α := ⟨subAlias⟩
+example (a b : α) : a - b = a + -b := by abel1
+end
+
+-- Equality proving unfolds local definitions, independently of the `abel_nf` configuration.
+example [AddCommGroup α] (f : α → α) (a b : α) : f a + f b = f a + f b := by
+  let g := f
+  change f a + g b = g a + f b
+  abel1
+
+-- Normalization must not choose an existential witness through unification.
+example (a : ℤ) : ∃ x : ℤ, x = a := by
+  apply Exists.intro
+  fail_if_success abel_nf
+  rfl
+
+-- The normal form uses numeral zero so subsequent simp rewrites can match it.
+example [AddCommGroup α] (f : α → α) (h : f 0 = 0) (a : α) : f (a - a) = 0 := by
+  abel_nf
+  simp only [h]
+
+-- Integer and natural constants combine independently of atom ordering.
+example (n : ℤ) : n + 1 = 2 + (n - 1) := by abel
+example (n : ℤ) : 1 + n = 2 + (n - 1) := by abel
+example (n : ℕ) : n + 1 + 1 = 2 + n := by abel

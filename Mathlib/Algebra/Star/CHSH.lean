@@ -185,8 +185,8 @@ theorem tsirelson_inequality [Ring R] [PartialOrder R] [StarRing R] [StarOrdered
     abel_nf
     -- all terms coincide, but the last one. Simplify all other terms
     simp only [M]
-    simp only [neg_mul, mul_inv_cancel_of_invertible, add_assoc, add_comm,
-      add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.cast_ofNat, ← add_smul]
+    simp only [neg_mul, mul_inv_cancel_of_invertible, add_left_comm, one_smul, Int.cast_neg,
+      neg_smul, Int.cast_ofNat, ← add_smul]
     grind
   have pos : 0 ≤ (√2)⁻¹ • (P ^ 2 + Q ^ 2) := by
     have P_sa : star P = P := by

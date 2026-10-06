@@ -5,7 +5,9 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Tactic.Abel
 
 /-!
