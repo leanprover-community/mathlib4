@@ -189,7 +189,7 @@ noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
 
 theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) :
     k ≤ G.edgeReachability u v :=
-  le_iSup₂ (α := ℕ∞) k h
+  le_iSup₂_of_le k h le_rfl
 
 theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachability u v ≠ 0 := by
   simpa [← Order.one_le_iff_ne_zero] using isEdgeReachable_one.mpr h |>.le_edgeReachability
