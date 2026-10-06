@@ -6,9 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Geometry.Convex.Star
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
-public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Geometry.Convex.Star
 public import Mathlib.Tactic.NormNum.Basic
 
 import Mathlib.LinearAlgebra.Prod
@@ -23,6 +22,8 @@ This file shows that every module over ordered coefficients is a convex space.
 * `ConvexSpace.ofModule`: A semimodule space over a semiring is a convex space.
 * `convexSpaceSelf`: A semiring is a convex space over itself.
 * `IsModuleConvexSpace`: Predicate for a convex space and module structures to be compatible.
+* `IsCancelConvexSpace.of_module`: A torsion-free module over linearly ordered scalars is a
+  cancellative convex space.
 -/
 
 open scoped Pointwise
@@ -30,7 +31,10 @@ open scoped Pointwise
 public noncomputable section
 
 namespace Convexity
-variable {F R M N I : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
+variable {F R M N I : Type*} [Semiring R]
+
+section PartialOrder
+variable [PartialOrder R] [IsStrictOrderedRing R]
 
 section AddCommMonoid
 variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [SetLike F M]
@@ -132,6 +136,9 @@ lemma subtypeVal_submodule_convexCombPair (S : F) (a b : R) (ha hb hab) (x y : S
   subtypeVal_convexCombPair ..
 
 instance (S : F) : IsModuleConvexSpace R S where sConvexComb_eq_sum w := by ext; simp [Finsupp.sum]
+
+instance [IsCancelConvexSpace R M] (S : F) : IsCancelConvexSpace R S :=
+  .subtype _ <| isConvexSet_coe _
 
 instance : IsModuleConvexSpace R (M × N) where
   sConvexComb_eq_sum w := by ext <;> simp [Finsupp.sum, Prod.fst_sum, Prod.snd_sum]
@@ -242,4 +249,20 @@ lemma IsStarConvexSet.sub (hs : IsStarConvexSet R x s) (ht : IsStarConvexSet R y
   rw [← Set.sub_image_prod]; exact (hs.prod ht).image (by fun_prop)
 
 end AddCommGroup
+end PartialOrder
+
+section LinearOrder
+variable [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup M] [Module R M] [ConvexSpace R M]
+  [IsModuleConvexSpace R M] [Module.IsTorsionFree R M]
+
+/-- A torsion-free module over linearly ordered scalars is a cancellative convex space. -/
+instance IsCancelConvexSpace.of_module : IsCancelConvexSpace R M where
+  eq_of_sConvexComb ha _ _ _ _ _ hw₁ hw₂ h := by
+    rw [sConvexComb_eq_sum, sConvexComb_eq_sum, hw₁, hw₂,
+      Finsupp.sum_add_index' (by simp) fun _ _ _ ↦ add_smul .., Finsupp.sum_single_index (by simp),
+      Finsupp.sum_add_index' (by simp) fun _ _ _ ↦ add_smul .., Finsupp.sum_single_index (by simp)]
+      at h
+    exact (IsRegular.of_pos ha).isSMulRegular (add_right_cancel h)
+
+end LinearOrder
 end Convexity
