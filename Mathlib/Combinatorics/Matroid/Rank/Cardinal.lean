@@ -5,10 +5,9 @@ Authors: Peter Nelson, Junyan Xu
 -/
 module
 
-public import Mathlib.Combinatorics.Matroid.Map
 public import Mathlib.Combinatorics.Matroid.Rank.ENat
-public import Mathlib.Combinatorics.Matroid.Rank.Finite
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinal-valued rank
@@ -121,7 +120,7 @@ theorem cRk_le_cardinalMk (M : Matroid α) (X : Set α) : M.cRk X ≤ #X :=
 @[simp] theorem cRank_restrict (M : Matroid α) (X : Set α) : (M ↾ X).cRank = M.cRk X := rfl
 
 theorem cRk_mono (M : Matroid α) : Monotone M.cRk := by
-  simp only [Monotone, le_eq_subset, cRk_le_iff]
+  simp only [Monotone, cRk_le_iff]
   intro X Y hXY I hIX
   obtain ⟨J, hJ, hIJ⟩ := hIX.indep.subset_isBasis'_of_subset (hIX.subset.trans hXY)
   exact (mk_le_mk_of_subset hIJ).trans hJ.cardinalMk_le_cRk

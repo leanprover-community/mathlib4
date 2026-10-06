@@ -5,16 +5,14 @@ Authors: Markus Himmel, Alex Keizer
 -/
 module
 
-public import Mathlib.Algebra.NeZero
-public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Bool.Basic
-public import Mathlib.Data.List.GetD
 public import Mathlib.Data.Nat.Bits
-public import Mathlib.Order.Basic
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.Common
-public import Batteries.Data.Nat.Bitwise
+
+import Mathlib.Data.List.GetD
+import Mathlib.Order.Basic
+import Mathlib.Tactic.AdaptationNote
+import Batteries.Data.Nat.Bitwise
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
@@ -29,7 +27,7 @@ bitwise properties. In the second half of this file, we show properties of the b
 * `exists_most_significant_bit`: if `n ≠ 0`, then there is some position `i` that contains the most
   significant `1`-bit of `n`.
 * `lt_of_testBit`: if `n` and `m` are numbers and `i` is a position such that the `i`-th bit of
-  of `n` is zero, the `i`-th bit of `m` is one, and all more significant bits are equal, then
+  `n` is zero, the `i`-th bit of `m` is one, and all more significant bits are equal, then
   `n < m`.
 
 ## Future work
@@ -75,7 +73,7 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
     binaryRec z f n = n.bit_bodd_div2 ▸ f n.bodd n.div2 (binaryRec z f n.div2) := by
-  rw [binaryRec, dif_neg h, eqRec_eq_cast, eqRec_eq_cast]; rfl
+  rw [binaryRec, dite_eq_right h, eqRec_eq_cast, eqRec_eq_cast]; rfl
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
@@ -204,14 +202,14 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
       · subst hi
         simp only [testBit_bit_zero] at hn hm
         have : n = m :=
-          eq_of_testBit_eq fun i => by convert! hnm (i + 1) (Nat.zero_lt_succ _) using 1
+          eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
           <;> rw [testBit_bit_succ]
         rw [hn, hm, this, bit_false, bit_true]
         exact Nat.lt_succ_self _
       · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
         simp only [testBit_bit_succ] at hn hm
         have := hn' _ hn hm fun j hj => by
-          convert! hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
+          convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
         exact bit_lt_bit b b' this
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :
@@ -253,7 +251,7 @@ lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
 
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
     distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
-macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
+local macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction n using Nat.binaryRec generalizing m k with | zero => simp | bit b n hn => ?_
   induction m using Nat.binaryRec with | zero => simp | bit b' m hm => ?_
   induction k using Nat.binaryRec <;>

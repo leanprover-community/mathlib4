@@ -5,8 +5,6 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!
@@ -38,7 +36,9 @@ def SeparatingRight : Prop :=
 def SeparatingLeft : Prop :=
   (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0)
 
-/-- A matrix `M` is nondegenerate if it is both left-separating and right-separating. -/
+/-- A matrix `M` is nondegenerate if it is both left-separating and right-separating.
+
+See also `Matrix.Nonsingular`. -/
 @[mk_iff]
 structure Nondegenerate (M : Matrix m n R) : Prop where
   separatingLeft : SeparatingLeft M
@@ -46,24 +46,24 @@ structure Nondegenerate (M : Matrix m n R) : Prop where
 
 end Finite
 
-variable {m n R : Type*} [CommRing R] {M : Matrix m n R}
+section CommSemiring
+
+variable {m n R : Type*} [CommSemiring R] {M : Matrix m n R}
 
 lemma separatingRight_def [Fintype m] [Fintype n] :
     M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   refine forall_congr' fun w ↦ ⟨fun hM hw ↦ hM ?_, fun hM hw ↦ hM ?_⟩ <;>
-  convert! hw
+  convert hw
 
 lemma separatingLeft_def [Fintype m] [Fintype n] :
     M.SeparatingLeft ↔ (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) := by
   refine forall_congr' fun v ↦ ⟨fun hM hv ↦ hM ?_, fun hM hv ↦ hM ?_⟩ <;>
-  convert! hv
+  convert hv
 
 lemma nondegenerate_def [Fintype m] [Fintype n] :
     M.Nondegenerate ↔
       (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) ∧ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
-  constructor
-  · exact fun h ↦ ⟨separatingLeft_def.mp h.1, separatingRight_def.mp h.2⟩
-  · exact fun h ↦ ⟨separatingLeft_def.mpr h.1, separatingRight_def.mpr h.2⟩
+  rw [nondegenerate_iff, separatingLeft_def, separatingRight_def]
 
 theorem separatingLeft_iff_forall_vecMul_eq_zero [Fintype m] [Finite n] :
     M.SeparatingLeft ↔ ∀ v, v ᵥ* M = 0 → v = 0 := by
@@ -140,8 +140,10 @@ theorem Nondegenerate.exists_not_ortho_of_ne_zero' (hM : Nondegenerate M) {w : n
     ∃ v, v ⬝ᵥ M *ᵥ w ≠ 0 :=
   not_forall.mp (mt hM.eq_zero_of_ortho' hw)
 
+end CommSemiring
+
 section Determinant
-variable [DecidableEq m] {M : Matrix m m R}
+variable {m R : Type*} [CommRing R] [Fintype m] [DecidableEq m] {M : Matrix m m R}
 
 open scoped nonZeroDivisors
 
@@ -177,6 +179,16 @@ theorem eq_zero_of_mulVec_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m �
     (hv : M *ᵥ v = 0) : v = 0 :=
   nondegenerate_of_det_ne_zero hM |>.separatingRight.eq_zero_of_mulVec_eq_zero hv
 
+/-- See also `Matrix.mulVec_injective_iff_isUnit` when working over a field. -/
+theorem mulVec_injective_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) :
+    Function.Injective M.mulVec :=
+  fun _ _ hxy => sub_eq_zero.mp
+    (eq_zero_of_det_mem_nonZeroDivisors_of_mulVec_eq_zero hM (by rw [mulVec_sub, hxy, sub_self]))
+
+theorem mulVec_injective_of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) :
+    Function.Injective M.mulVec :=
+  mulVec_injective_of_det_mem_nonZeroDivisors (mem_nonZeroDivisors_of_ne_zero hM)
+
 end Determinant
 
 end Matrix
@@ -196,5 +208,5 @@ lemma LinearIndependent.sum_smul_of_nondegenerate
   simp_rw [← Finset.sum_smul] at hw
   replace hv : w ᵥ* A = 0 := funext <| hv _ hw
   replace hv (w' : ι → R) : w ⬝ᵥ A *ᵥ w' = 0 := by
-    simpa [Matrix.dotProduct_mulVec] using congr_arg (fun x ↦ dotProduct x w') hv
+    simpa [Matrix.dotProduct_mulVec] using congr(dotProduct $hv w')
   exact hA.eq_zero_of_ortho hv

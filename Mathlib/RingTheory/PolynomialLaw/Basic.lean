@@ -5,10 +5,11 @@ Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-public import Mathlib.RingTheory.Congruence.Hom
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
+
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.Congruence.Hom
+import Mathlib.RingTheory.FiniteType
 
 /-! # Polynomial laws on modules
 
@@ -93,7 +94,7 @@ theorem PolynomialLaw.isCompat_apply'
     {S : Type u} [CommSemiring S] [Algebra R S] {S' : Type u} [CommSemiring S'] [Algebra R S']
     (φ : S →ₐ[R] S') (x : S ⊗[R] M) :
     (φ.toLinearMap.rTensor N) ((f.toFun' S) x) = (f.toFun' S') (φ.toLinearMap.rTensor M x) := by
-  simpa only using! congr_fun (f.isCompat' φ) x
+  simpa only using! congr($(f.isCompat' φ) x)
 
 attribute [local simp] PolynomialLaw.isCompat_apply'
 
@@ -239,7 +240,7 @@ instance : CoeFun (M →ₚₗ[R] N) (fun _ ↦ M → N) where
 theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   rw [ground_apply]
-  convert! f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
+  convert f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
   · simp only [includeRight_lid]
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
@@ -315,7 +316,7 @@ theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
   rw [← Algebra.adjoin_range_eq_range_aeval]
   congr
   rw [← Function.comp_def, Set.range_comp]
-  simp only [Equiv.range_eq_univ, Set.image_univ, Subtype.range_coe_subtype, Finset.setOf_mem]
+  simp only [Equiv.range_eq_univ, Set.image_univ, Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 variable (S)
 
@@ -419,6 +420,7 @@ theorem factorsThrough_toFunLifted_π :
   · simp only [hq, hu, ← LinearMap.comp_apply, comp_toLinearMap, rTensor_comp]
     congr; ext; rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toFun_eq_rTensor_φ_toFun' {t : S ⊗[R] M} {s : Finset S}
     {p : MvPolynomial (Fin s.card) R ⊗[R] M} (ha : π R M S (⟨s, p⟩ : lifts R M S) = t) :
     f.toFun S t = (φ R s).toLinearMap.rTensor N (f.toFun' _ p) := by
@@ -441,7 +443,6 @@ theorem exists_lift_of_mem_range_rTensor
 /-- Tensor products in `S ⊗[R] M` can be lifted to some
 `MvPolynomial R n ⊗[R] M`, for a finite `n`. -/
 theorem π_surjective : Function.Surjective (π R M S) := by
-  classical
   intro t
   obtain ⟨B : Subalgebra R S, hB : B.FG, ht : t ∈ range _⟩ := TensorProduct.Algebra.exists_of_fg t
   obtain ⟨s : Finset S, hs : (PolynomialLaw.φ R s).range = B⟩ := exists_range_φ_eq_of_fg hB
@@ -458,7 +459,6 @@ theorem exists_lift (t : S ⊗[R] M) : ∃ (n : ℕ) (ψ : MvPolynomial (Fin n) 
 theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial (Fin n) R →ₐ[R] S)
     (p : MvPolynomial (Fin n) R ⊗[R] M) (q : MvPolynomial (Fin n) R),
       ψ.toLinearMap.rTensor M p = t ∧ ψ q = s := by
-  classical
   obtain ⟨A, hA, ht⟩ := TensorProduct.Algebra.exists_of_fg t
   have hB : Subalgebra.FG (A ⊔ Algebra.adjoin R ({s} : Finset S)) :=
     Subalgebra.FG.sup hA (Subalgebra.fg_adjoin_finset _)
@@ -588,7 +588,7 @@ variable {R : Type u} [CommSemiring R]
 theorem one_tmul_ground (x : M) :
     1 ⊗ₜ f.ground x = f.toFun S (1 ⊗ₜ x) := by
   simp only [ground, toFun'_eq_toFun]
-  convert! f.isCompat_apply (Algebra.ofId R S) (1 ⊗ₜ[R] x)
+  convert f.isCompat_apply (Algebra.ofId R S) (1 ⊗ₜ[R] x)
   · simp only [Function.comp_apply, TensorProduct.lid_symm_apply, TensorProduct.includeRight_lid]
     congr
   · rw [rTensor_tmul, toLinearMap_apply, _root_.map_one]

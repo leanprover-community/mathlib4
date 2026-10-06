@@ -5,8 +5,9 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 ## (Unoriented) bordism theory
@@ -95,7 +96,7 @@ singular manifold, bordism, bordism group
 public section
 
 open scoped Manifold
-open Module Set
+open Module
 
 suppress_compilation
 

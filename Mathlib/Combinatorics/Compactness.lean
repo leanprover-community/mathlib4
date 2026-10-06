@@ -5,8 +5,12 @@ Authors: Bhavik Mehta
 -/
 module
 
+public import Mathlib.Basic.Finite.Defs
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Tactic.ToAdditive
+
 import Mathlib.Topology.Compactness.Compact
-public import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Finset.Attr
 
 /-!
 # Combinatorial compactness and the Rado selection lemma
@@ -73,7 +77,7 @@ theorem Finset.rado_selection (g : Finset α → (a : α) → β a) :
     exact (isClosed_discrete _).preimage (by fun_prop)
   have he'' (B : Finset (Finset α)) : (⋂ i ∈ B, e i).Nonempty := by
     refine ⟨g (B.biUnion id), ?_⟩
-    simp only [Set.mem_iInter, Set.mem_setOf_eq, e]
+    simp only [Set.mem_iInter, Set.mem_ofPred_eq, e]
     intro i hi
     exact ⟨_, subset_biUnion_of_mem id hi, by simp⟩
   simpa using! CompactSpace.iInter_nonempty he' he''

@@ -5,12 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
-import Mathlib.Data.Finset.Max
 
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Order
 
 /-!
@@ -65,7 +64,6 @@ lemma partialSups_apply (f : ι → α) (i : ι) :
 lemma partialSups_iff_forall {f : ι → α} (p : α → Prop)
     (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) {i : ι} :
     p (partialSups f i) ↔ ∀ j ≤ i, p (f j) := by
-  classical
   rw [partialSups_apply, apply_sup'_eq_sup'_comp (γ := Propᵒᵈ) _ p, sup'_eq_sup]
   · change (Iic i).inf (p ∘ f) ↔ _
     simp [Finset.inf_eq_iInf]
@@ -100,7 +98,7 @@ lemma upperBounds_range_partialSups (f : ι → α) :
 @[simp]
 theorem bddAbove_range_partialSups {f : ι → α} :
     BddAbove (Set.range (partialSups f)) ↔ BddAbove (Set.range f) :=
-  .of_eq <| congr_arg Set.Nonempty <| upperBounds_range_partialSups f
+  .of_eq congr($(upperBounds_range_partialSups f).Nonempty)
 
 theorem Monotone.partialSups_eq {f : ι → α} (hf : Monotone f) :
     partialSups f = f :=
@@ -119,10 +117,10 @@ lemma partialSups_monotone (f : ι → α) :
 def partialSups.gi :
     GaloisInsertion (partialSups : (ι → α) → ι →o α) (↑) where
   choice f h :=
-    ⟨f, by convert! (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
+    ⟨f, by convert (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
   gc f g := by
     refine ⟨(le_partialSups f).trans, fun h ↦ ?_⟩
-    convert! partialSups_mono h
+    convert partialSups_mono h
     exact OrderHom.ext _ _ g.monotone.partialSups_eq.symm
   le_l_u f := le_partialSups f
   choice_eq f h := OrderHom.ext _ _ ((le_partialSups f).antisymm h)
@@ -132,6 +130,7 @@ protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, Se
     partialSups f i t = partialSups (f · t) i := by
   simp only [partialSups_apply, Finset.sup'_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : ι → α) (g : F) :
     partialSups (g ∘ f) = g ∘ partialSups f := by
   funext _; simp [partialSups]

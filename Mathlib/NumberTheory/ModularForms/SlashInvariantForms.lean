@@ -43,6 +43,7 @@ under the `SlashAction`. -/
 class SlashInvariantFormClass [FunLike F ℍ ℂ] : Prop where
   slash_action_eq : ∀ (f : F), ∀ γ ∈ Γ, (f : ℍ → ℂ) ∣[k] γ = f
 
+@[macro_inline]
 instance (priority := 100) SlashInvariantForm.funLike :
     FunLike (SlashInvariantForm Γ k) ℍ ℂ where
   coe := SlashInvariantForm.toFun
@@ -92,7 +93,7 @@ theorem slash_action_eqn' {k : ℤ} [Γ.HasDetOne] [SlashInvariantFormClass F Γ
     f (γ • z) = (γ 1 0 * z + γ 1 1) ^ k * f z := by
   have : f (γ • z) = f z * denom γ z ^ k := by
     simpa [slash_def, σ, mul_inv_eq_iff_eq_mul₀ (zpow_ne_zero _ (denom_ne_zero _ _)),
-      Subgroup.HasDetOne.det_eq hγ] using congr_fun (slash_action_eqn f γ hγ) z
+      Subgroup.HasDetOne.det_eq hγ] using congr($(slash_action_eqn f γ hγ) z)
   rw [this, denom, mul_comm]
 
 /-- Every `SlashInvariantForm` `f` satisfies ` f (γ • z) = (denom γ z) ^ k * f z`. -/
@@ -117,21 +118,19 @@ instance instAdd : Add (SlashInvariantForm Γ k) :=
       slash_action_eq' := fun γ hγ ↦ by
         rw [SlashAction.add_slash, slash_action_eqn f γ hγ, slash_action_eqn g γ hγ] }⟩
 
-@[simp]
-theorem coe_add (f g : SlashInvariantForm Γ k) : ⇑(f + g) = f + g :=
-  rfl
+instance : IsAddApply (SlashInvariantForm Γ k) ℍ ℂ where
 
-@[simp]
-theorem add_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_add := FunLike.coe_add
+
+@[deprecated (since := "2026-07-10")] protected alias add_apply := add_apply
 
 instance instZero : Zero (SlashInvariantForm Γ k) :=
   ⟨{toFun := 0
     slash_action_eq' := fun _ _ ↦ SlashAction.zero_slash _ _}⟩
 
-@[simp]
-theorem coe_zero : ⇑(0 : SlashInvariantForm Γ k) = (0 : ℍ → ℂ) :=
-  rfl
+instance : IsZeroApply (SlashInvariantForm Γ k) ℍ ℂ where
+
+@[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
 
 section smul
 
@@ -145,13 +144,11 @@ instance instSMul : SMul α (SlashInvariantForm Γ k) where
       rw [← smul_one_smul ℂ]
       simp [-smul_assoc, smul_slash, slash_action_eqn _ _ hγ, σ, Subgroup.HasDetOne.det_eq hγ] }
 
-@[simp]
-theorem coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
-  rfl
+instance : IsSMulApply α (SlashInvariantForm Γ k) ℍ ℂ where
 
-@[simp]
-theorem smul_apply (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) : (n • f) z = n • f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias smul_apply := smul_apply
 
 end smul
 
@@ -167,14 +164,11 @@ instance instSMulℝ : SMul α (SlashInvariantForm Γ k) where
       rw [← smul_one_smul ℝ, ← smul_one_smul ℂ, smul_slash,
         Complex.real_smul, mul_one, σ_ofReal, slash_action_eqn _ _ hγ] }
 
-@[simp]
-theorem coe_smulℝ (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
-  rfl
+instance : IsSMulApply α (SlashInvariantForm Γ k) ℍ ℂ where
 
-@[simp]
-theorem smul_applyℝ (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) :
-    (n • f) z = n • f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_smulℝ := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias smul_applyℝ := smul_apply
 
 end smulℝ
 
@@ -183,44 +177,32 @@ instance instNeg : Neg (SlashInvariantForm Γ k) :=
     { toFun := -f
       slash_action_eq' := fun γ hγ => by rw [SlashAction.neg_slash, slash_action_eqn f γ hγ] }⟩
 
-@[simp]
-theorem coe_neg (f : SlashInvariantForm Γ k) : ⇑(-f) = -f :=
-  rfl
+instance : IsNegApply (SlashInvariantForm Γ k) ℍ ℂ where
 
-@[simp]
-theorem neg_apply (f : SlashInvariantForm Γ k) (z : ℍ) : (-f) z = -f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_neg := FunLike.coe_neg
+
+@[deprecated (since := "2026-07-10")] protected alias neg_apply := neg_apply
 
 instance instSub : Sub (SlashInvariantForm Γ k) :=
   ⟨fun f g => f + -g⟩
 
-@[simp]
-theorem coe_sub (f g : SlashInvariantForm Γ k) : ⇑(f - g) = f - g :=
-  rfl
+instance : IsSubApply (SlashInvariantForm Γ k) ℍ ℂ where
 
-@[simp]
-theorem sub_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_sub := FunLike.coe_sub
 
-instance : AddCommGroup (SlashInvariantForm Γ k) :=
-  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smulℝ coe_smulℝ
+@[deprecated (since := "2026-07-10")] protected alias sub_apply := sub_apply
 
-/-- Additive coercion from `SlashInvariantForm` to `ℍ → ℂ`. -/
-def coeHom : SlashInvariantForm Γ k →+ ℍ → ℂ where
-  toFun f := f
-  map_zero' := rfl
-  map_add' _ _ := rfl
+instance : AddCommGroup (SlashInvariantForm Γ k) := fast_instance% FunLike.addCommGroup
 
-theorem coeHom_injective : Function.Injective (@coeHom Γ k) :=
-  DFunLike.coe_injective
+@[deprecated (since := "2026-07-10")] alias coeHom := FunLike.coeMonoidHom
+
+@[deprecated (since := "2026-07-10")] alias coeHom_injective := FunLike.coeMonoidHom_injective
 
 instance instModuleComplex [Γ.HasDetOne] {α : Type*} [Semiring α] [Module α ℂ]
-    [IsScalarTower α ℂ ℂ] : Module α (SlashInvariantForm Γ k) :=
-  coeHom_injective.module α _ (fun _ _ ↦ rfl)
+    [IsScalarTower α ℂ ℂ] : Module α (SlashInvariantForm Γ k) := FunLike.module
 
 instance instModuleReal {α : Type*} [Semiring α] [Module α ℝ] [Module α ℂ] [IsScalarTower α ℝ ℂ] :
-    Module α (SlashInvariantForm Γ k) :=
-  coeHom_injective.module α _ (fun _ _ ↦ rfl)
+    Module α (SlashInvariantForm Γ k) := FunLike.module
 
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
 @[simps -fullyApplied]
@@ -228,16 +210,12 @@ def const [Γ.HasDetOne] (x : ℂ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' g hg := by ext; simp [slash_def, σ, Subgroup.HasDetOne.det_eq hg]
 
-@[deprecated (since := "2025-12-06")] alias const_toFun := coe_const
-
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
 @[simps -fullyApplied]
 def constℝ [Γ.HasDetPlusMinusOne] (x : ℝ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' g hg := funext fun τ ↦ by simp [slash_apply,
     Subgroup.HasDetPlusMinusOne.abs_det hg, -Matrix.GeneralLinearGroup.val_det_apply]
-
-@[deprecated (since := "2025-12-06")] alias constℝ_toFun := coe_constℝ
 
 instance [Γ.HasDetPlusMinusOne] : One (SlashInvariantForm Γ 0) where
   one := { constℝ 1 with toFun := 1 }
@@ -265,7 +243,7 @@ theorem coe_mul [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : SlashInvariantFor
 /-- Given `SlashInvariantForm`'s `f i` of weight `k i` for `i : ι`, define the form which as a
 function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i ∈ s, k i`. -/
 @[simps -fullyApplied]
-def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
+def prod {ι : Type*} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (f : (i : ι) → SlashInvariantForm Γ (k i)) : SlashInvariantForm Γ m where
   toFun := ∏ i ∈ s, (f i)
@@ -276,7 +254,7 @@ def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
 /-- Given `SlashInvariantForm`'s `f i` of weight `k`, define the form which as a
 function is a product of those indexed by `s : Finset ι` with weight `#s * k`. -/
 @[simps! -fullyApplied]
-def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
+def prodEqualWeights {ι : Type*} {s : Finset ι} {k : ℤ}
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (f : (i : ι) → SlashInvariantForm Γ k) : SlashInvariantForm Γ (s.card * k) :=
   prod (k := fun i ↦ k) (s := s) (s.card * k) (by simp) f
@@ -292,20 +270,5 @@ instance [Γ.HasDetPlusMinusOne] : IntCast (SlashInvariantForm Γ 0) where
 
 @[simp, norm_cast]
 theorem coe_intCast [Γ.HasDetPlusMinusOne] (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
-
-open ConjAct Pointwise in
-/-- Translating a `SlashInvariantForm` by `g : GL (Fin 2) ℝ`, to obtain a new
-`SlashInvariantForm` of level `g⁻¹ Γ g`. -/
-noncomputable def translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
-    SlashInvariantForm (toConjAct g⁻¹ • Γ) k where
-  toFun := f ∣[k] g
-  slash_action_eq' j hj := by
-    rw [map_inv, Γ.mem_inv_pointwise_smul_iff, toConjAct_smul] at hj
-    simpa [← SlashAction.slash_mul] using congr_arg (· ∣[k] g) (slash_action_eqn f _ hj)
-
-@[simp]
-lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
-    translate f g = ⇑f ∣[k] g :=
-  rfl
 
 end SlashInvariantForm

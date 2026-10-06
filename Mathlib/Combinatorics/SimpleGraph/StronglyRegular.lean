@@ -5,9 +5,10 @@ Authors: Alena Gusakov, Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Diam
+
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 
 /-!
 # Strongly regular graphs
@@ -79,11 +80,6 @@ theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht :
     have := not_subsingleton V
     simp_all [Order.le_one_iff]
 
-/-- **Conway's 99-graph problem** (from https://oeis.org/A248380/a248380.pdf)
-can be reformulated as the existence of a strongly regular graph with params (99, 14, 1, 2).
-This is an open problem, and has no known proof of existence. -/
-proof_wanted conway_99 : ∃ α : Type*, ∃ (g : SimpleGraph α), IsSRGWith G 99 14 1 2
-
 variable [DecidableEq V]
 
 /-- Complete graphs are strongly regular. Note that `μ` can take any value
@@ -95,6 +91,7 @@ theorem IsSRGWith.top :
   of_adj _ _ := card_commonNeighbors_top
   of_not_adj v w h h' := (h' ((top_adj v w).2 h)).elim
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
     #(G.neighborFinset v ∪ G.neighborFinset w) =
       2 * k - Fintype.card (G.commonNeighbors v w) := by
@@ -173,10 +170,10 @@ theorem IsSRGWith.param_eq
     {V : Type u} [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj]
     (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     k * (k - ℓ - 1) = (n - k - 1) * μ := by
-  letI := Classical.decEq V
+  let := Classical.decEq V
   rw [← h.card, Fintype.card_pos_iff] at hn
   obtain ⟨v⟩ := hn
-  convert! card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
+  convert card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
   · simp [h.regular v]
   · simp [h.compl.regular v]
   · intro w hw
@@ -201,6 +198,7 @@ theorem IsSRGWith.param_eq
       ← Set.toFinset_card]
     congr!
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `A` and `C` be the adjacency matrices of a strongly regular graph with parameters `n k ℓ μ`
 and its complement respectively and `I` be the identity matrix,
 then `A ^ 2 = k • I + ℓ • A + μ • C`. `C` is equivalent to the expression `J - I - A`

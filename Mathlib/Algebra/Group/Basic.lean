@@ -7,6 +7,7 @@ module
 
 public import Aesop
 public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Int.Init
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.SimpRw
@@ -195,6 +196,14 @@ lemma mul_left_iterate_apply (a b : M) : (a * ·)^[n] b = a ^ n * b := by simp
 /-- Version of `mul_right_iterate` that is fully applied, for `rw`. -/
 @[to_additive /-- Version of `add_right_iterate` that is fully applied, for `rw`. -/ ]
 lemma mul_right_iterate_apply (a b : M) : (· * a)^[n] b = b * a ^ n := by simp
+
+@[to_additive]
+lemma mul_left_iterate_apply_self (a : M) (n : ℕ) : (a * ·)^[n] a = a ^ (n + 1) := by
+  rw [pow_succ, mul_left_iterate_apply]
+
+@[to_additive]
+lemma mul_right_iterate_apply_self (a : M) (n : ℕ) : (· * a)^[n] a = a ^ (n + 1) := by
+  rw [pow_succ', mul_right_iterate_apply]
 
 @[to_additive]
 lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
@@ -443,6 +452,10 @@ lemma one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp only [
 
 @[to_additive zsmul_zero_sub]
 lemma one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_zpow]
+
+@[to_additive]
+theorem zpow_eq_inv_pow_natAbs (a : α) {n : ℤ} (hn : n ≤ 0) : a ^ n = a⁻¹ ^ n.natAbs := by
+  rw [← zpow_natCast, inv_zpow', Int.ofNat_natAbs_of_nonpos hn, Int.neg_neg]
 
 variable {a b c}
 
@@ -1028,11 +1041,6 @@ alias additive_of_symmetric_of_total := additive_of_symm_of_total
 @[to_additive existing additive_of_symmetric_of_total, deprecated (since := "2026-06-10")]
 alias multiplicative_of_symmetric_of_total := multiplicative_of_symm_of_total
 
-@[deprecated (since := "2026-01-09")]
-alias additive_of_symmetric_of_isTotal := additive_of_symm_of_total
-@[to_additive existing additive_of_symmetric_of_isTotal, deprecated (since := "2026-01-09")]
-alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symm_of_total
-
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
   (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied.
@@ -1049,11 +1057,6 @@ theorem multiplicative_of_total (p : α → Prop) (hswap : ∀ {a b}, p a → p 
   · simp_rw [and_imp]; exact @hswap
   · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
-
-@[deprecated (since := "2026-01-09")]
-alias additive_of_isTotal := additive_of_total
-@[to_additive existing additive_of_isTotal, deprecated (since := "2026-01-09")]
-alias multiplicative_of_isTotal := multiplicative_of_total
 
 end multiplicative
 

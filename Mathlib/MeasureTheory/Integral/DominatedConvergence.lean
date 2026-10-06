@@ -6,6 +6,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Patrick Massot, Louis (Yiyang) Liu
 module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
 
 /-!
@@ -150,7 +151,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
     refine fun n => Eventually.of_forall fun x => ?_
-    grw [(h_anti zero_le).subset]
+    grw [h_anti zero_le]
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 
 end TendstoMono
@@ -198,6 +199,21 @@ theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn
     exact intervalIntegrable_const
   case h_lim =>
     exact .of_forall fun x hx ↦ h_lim.tendsto_at <| uIoc_subset_uIcc hx
+
+theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_nhds_zero {l : Filter ι}
+    [IsLocallyFiniteMeasure μ]
+    {F : ι → ℝ → E} (h : TendstoUniformlyOn F 0 l [[a, b]]) :
+    Tendsto (fun i ↦ ∫ x in a..b, F i x ∂μ) l (𝓝 0) := by
+  set M := μ.real (Ι a b)
+  simp_rw [NormedAddGroup.tendsto_nhds_zero, norm_integral_eq_norm_integral_uIoc]
+  intro ε hε
+  filter_upwards [Metric.tendstoUniformlyOn_iff.mp h (ε / (M + 1)) (by positivity)] with i hi
+  calc ‖∫ x in Ι a b, F i x ∂μ‖
+      ≤ ε / (M + 1) * M := norm_setIntegral_le_of_norm_le_const measure_Ioc_lt_top
+        fun x hx ↦ by simpa using (hi x (uIoc_subset_uIcc hx)).le
+    _ < ε := by
+      rw [div_mul_eq_mul_div, div_lt_iff₀ (by positivity)]
+      exact mul_lt_mul_of_pos_left (lt_add_one M) hε
 
 /-- Lebesgue dominated convergence theorem for parametric interval integrals. -/
 nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}

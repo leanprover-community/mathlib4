@@ -151,16 +151,26 @@ initialize translations : NameMapExtension TranslationInfo ← registerNameMapEx
 def nameDict : Std.HashMap String (List String) := .ofList [
   ("top", ["Bot"]),
   ("bot", ["Top"]),
+  ("untop", ["Unbot"]),
+  ("unbot", ["Untop"]),
   ("inf", ["Sup"]),
   ("sup", ["Inf"]),
   ("inf₂", ["Sup₂"]),
   ("sup₂", ["Inf₂"]),
   ("sinf", ["SSup"]),
   ("ssup", ["SInf"]),
+  ("liminf", ["Limsup"]),
+  ("limsup", ["Liminf"]),
+  ("bliminf", ["Blimsup"]),
+  ("blimsup", ["Bliminf"]),
   ("min", ["Max"]),
   ("max", ["Min"]),
-  ("untop", ["Unbot"]),
-  ("unbot", ["Untop"]),
+  ("min?", ["Max?"]),
+  ("max?", ["Min?"]),
+  ("argmin", ["Argmax"]),
+  ("argmax", ["Argmin"]),
+  ("minimum", ["Maximum"]),
+  ("maximum", ["Minimum"]),
   ("minimal", ["Maximal"]),
   ("maximal", ["Minimal"]),
   ("lower", ["Upper"]),
@@ -179,6 +189,12 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("codisjoint", ["Disjoint"]),
   ("atom", ["Coatom"]),
   ("coatom", ["Atom"]),
+  ("atoms", ["Coatoms"]),
+  ("coatoms", ["Atoms"]),
+  ("atomic", ["Coatomic"]),
+  ("coatomic", ["Atomic"]),
+  ("atomistic", ["Coatomistic"]),
+  ("coatomistic", ["Atomistic"]),
   ("lfp", ["Gfp"]),
   ("gfp", ["Lfp"]),
   ("ioi", ["Iio"]),
@@ -199,6 +215,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
   -- ("mono", ["Epi"]),
+  ("epimorphisms", ["Monomorphisms"]),
+  ("monomorphisms", ["Epimorphisms"]),
   ("terminal", ["Initial"]),
   ("initial", ["Terminal"]),
   ("precompose", ["Postcompose"]),
@@ -211,6 +229,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cofan", ["Fan"]),
   ("limit", ["Colimit"]),
   ("colimit", ["Limit"]),
+  ("lim", ["Colim"]),
+  ("colim", ["Lim"]),
   ("limits", ["Colimits"]),
   ("colimits", ["Limits"]),
   ("product", ["Coproduct"]),
@@ -235,6 +255,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonadic", ["Monadic"]),
   ("section", ["Retraction"]),
   ("retraction", ["Section"]),
+  ("functorπ", ["Functorι"]),
+  ("functorι", ["Functorπ"]),
 ]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
@@ -255,9 +277,21 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("galoisCoinsertion", "GaloisInsertion"),
   ("leftOrdContinuous", "RightOrdContinuous"),
   ("rightOrdContinuous", "LeftOrdContinuous"),
+  ("bihimp", "SymmDiff"),
+  ("symmDiff", "Bihimp"),
+  ("isRightContinuous", "IsLeftContinuous"),
+  ("isLeftContinuous", "IsRightContinuous"),
+  ("isCadlag", "IsCaglad"),
+  ("isCaglad", "IsCadlag"),
+  ("leftColim", "RightLim"),
+  ("rightColim", "LeftLim"),
+  ("colimUnder", "LimUnder"),
 
+  -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
+  ("ofSucc", "OfPred"),
+  ("maximalAxioms", "MinimalAxioms"),
 ]
 
 @[inherit_doc GuessName.GuessNameExt]
@@ -295,11 +329,28 @@ initialize registerBuiltinAttribute {
     applicationTime := .afterCompilation
   }
 
+/-- `insert_to_dual_translation name dualName` inserts the translation `name ↔ dualName`
+into the `to_dual` dictionary. This is useful for translating namespaces that don't (yet)
+have a corresponding translated declaration. -/
+elab "insert_to_dual_translation" src:ident tgt:ident : command => do
+  translations.add src.getId { translation := tgt.getId }
+  translations.add tgt.getId { translation := src.getId }
+
 /-- `to_dual_name_hint src₁ tgt₁, ..., srcₙ tgtₙ` lets `to_dual` translate between the name segments
 `srcᵢ` and `tgtᵢ` for the rest of the file current. The name segments should be capitalized. -/
 elab "to_dual_name_hint" hints:(ident ident),* : command => do
   for ⟨hint⟩ in hints.getElems do
     guessNameExt.addTranslation ⟨hint[0]⟩ ⟨hint[1]⟩
     guessNameExt.addTranslation ⟨hint[1]⟩ ⟨hint[0]⟩
+
+/-- `to_dual_for src := e` tells `to_dual` to translate the constant `src` to `e`,
+where `e` can be an arbitrary expression.
+
+TODO: this currently doesn't accept the `(dont_translate := ...)`/`(relevant_arg := ...)` syntax.
+  This can be added if necessary.
+-/
+elab tk:"to_dual_for" src:ident " := " tgt:term : command => Command.liftTermElabM do
+  let src ← realizeGlobalConstNoOverloadWithInfo src
+  addTranslationFor data tk src tgt (dontTranslate := []) (relevantArg? := none)
 
 end Mathlib.Tactic.ToDual

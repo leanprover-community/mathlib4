@@ -5,7 +5,6 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 
 /-!
@@ -114,6 +113,7 @@ theorem Multiseries.const_def {basis_hd basis_tl} (c : ℝ) :
     Multiseries.cons 0 (MultiseriesExpansion.const basis_tl c) .nil := by
   simp [Multiseries.const]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem const_toFun' {basis : Basis} {c : ℝ} : (const basis c).toFun = fun _ ↦ c := by
   match basis with

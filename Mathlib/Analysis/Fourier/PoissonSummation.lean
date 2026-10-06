@@ -5,12 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Fourier.AddCircle
-public import Mathlib.Analysis.Fourier.FourierTransform
-public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 public import Mathlib.Topology.ContinuousMap.Periodic
+
+import Mathlib.Analysis.PSeries
 
 /-!
 # Poisson's summation formula
@@ -76,7 +74,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     -- Swap sum and integral.
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm ?_).symm
-      convert! hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
+      convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
       exact funext fun n => neK _ _
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f).comp (ContinuousMap.addRight n) x := by
       simp only [mul_comp] at eadd ⊢
@@ -85,7 +83,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     _ = ∫ x, e x * f x := by
       suffices Integrable (e * f) from this.hasSum_intervalIntegral_comp_add_int.tsum_eq
       apply integrable_of_summable_norm_Icc
-      convert! hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
+      convert hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
       simp_rw [mul_comp] at eadd ⊢
       simp_rw [eadd]
       exact funext fun n => neK ⟨Icc 0 1, isCompact_Icc⟩ _
@@ -109,14 +107,11 @@ theorem Real.tsum_eq_tsum_fourier {f : C(ℝ, ℂ)}
   have : Summable (fourierCoeff F) := by
     convert! h_sum
     exact Real.fourierCoeff_tsum_comp_add h_norm _
-  convert! (has_pointwise_sum_fourier_series_of_summable this x).tsum_eq.symm using 1
+  convert (has_pointwise_sum_fourier_series_of_summable this x).tsum_eq.symm using 1
   · simpa only [F, coe_mk, ← QuotientAddGroup.mk_zero, Periodic.lift_coe, zsmul_one, comp_apply,
       coe_addRight, zero_add]
        using (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum x).tsum_eq
   · simp_rw [← Real.fourierCoeff_tsum_comp_add h_norm, smul_eq_mul, F, coe_mk]
-
-@[deprecated (since := "2025-11-16")]
-alias Real.tsum_eq_tsum_fourierIntegral := Real.tsum_eq_tsum_fourier
 
 section RpowDecay
 
@@ -148,7 +143,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   refine fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans ?_
   have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
   rw [mul_assoc, mul_le_mul_iff_right₀ hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
-  convert! claim x (by linarith only [hx.1]) y.1 y.2.1
+  convert claim x (by linarith only [hx.1]) y.1 y.2.1
   · apply abs_of_nonneg; linarith [y.2.1]
   · exact abs_of_pos hx'.1
 
@@ -202,10 +197,6 @@ theorem Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable {f : ℝ → ℂ} (h
     ((isBigO_norm_restrict_cocompact ⟨_, hc⟩ (zero_lt_one.trans hb) hf K).comp_tendsto
     Int.tendsto_coe_cofinite)) hFf x
 
-@[deprecated (since := "2025-11-16")]
-alias Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable :=
-  Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable
-
 /-- **Poisson's summation formula**, assuming that both `f` and its Fourier transform decay as
 `|x| ^ (-b)` for some `1 < b`. (This is the one-dimensional case of Corollary VII.2.6 of Stein and
 Weiss, *Introduction to Fourier analysis on Euclidean spaces*.) -/
@@ -215,10 +206,6 @@ theorem Real.tsum_eq_tsum_fourier_of_rpow_decay {f : ℝ → ℂ} (hc : Continuo
     ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) :=
   Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable hc hb hf (summable_of_isBigO
     (Real.summable_abs_int_rpow hb) (hFf.comp_tendsto Int.tendsto_coe_cofinite)) x
-
-@[deprecated (since := "2025-11-16")]
-alias Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay :=
-  Real.tsum_eq_tsum_fourier_of_rpow_decay
 
 end RpowDecay
 
@@ -233,8 +220,5 @@ theorem SchwartzMap.tsum_eq_tsum_fourier (f : 𝓢(ℝ, ℂ)) (x : ℝ) :
   -- `b = 2` and work with that.
   apply Real.tsum_eq_tsum_fourier_of_rpow_decay f.continuous one_lt_two
     (f.isBigO_cocompact_rpow (-2)) ((𝓕 f).isBigO_cocompact_rpow (-2))
-
-@[deprecated (since := "2025-11-16")]
-alias SchwartzMap.tsum_eq_tsum_fourierIntegral := SchwartzMap.tsum_eq_tsum_fourier
 
 end Schwartz
