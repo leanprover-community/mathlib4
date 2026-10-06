@@ -833,7 +833,11 @@ theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContD
   simp [← coe_smul, smul_smul, ← mul_pow, innerSL_apply_apply ℝ]
 
 /-- If `f` and its first `n` derivatives are integrable, then the Fourier transform of `f` decays
-like `|u| ^ (-n)`, with an explicit bound that is also nontrivial at `u = 0`. -/
+like `|u| ^ (-n)`, with an explicit bound that is also nontrivial at `u = 0`.
+
+TODO: a higher-dimensional analogue.  This requires a reverse bound for `fourierPowSMulRight`, for
+which Mathlib currently only has the ≤ direction.
+ -/
 theorem one_add_pow_mul_norm_fourier_le {f : ℝ → E} {n : ℕ} (hf : ContDiff ℝ n f)
     (h'f : ∀ k ≤ n, Integrable (iteratedDeriv k f)) (u : ℝ) :
     (1 + |u| ^ n) * ‖𝓕 f u‖ ≤
