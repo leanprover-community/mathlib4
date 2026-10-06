@@ -205,7 +205,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
     · noncomm_ring
       -- we use `noncomm_ring` even though this is a commutative ring, because we want a weaker
       -- normalization which preserves multiplication order (i.e. doesn't use commutativity rules)
-      rw [hmap]
+      rw [hmap, add_comm]
       apply Submodule.add_mem
       · apply Submodule.finsuppSum_mem
         intro m hm
