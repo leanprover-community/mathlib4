@@ -212,7 +212,7 @@ structure Model {u : Level} (α : Q(Type u)) (V : Type) where
   With `none`, the kernel checks the decomposition product `L * A_σ = U` by evaluating the
   list-based form as a whole without assembling it from per-entry proofs, which is faster than
   applying `decideCertifier` on every entry. As a result this field is optional rather than
-  taking a default value, so that `certifyProductEq` can perform this optimisation. -/
+  taking a default value, so that `certifyProductEq` can perform this optimization. -/
   entryCertifier? : Option (EntryCertifier α) := none
 
 /-- Clear the denominators of the rows before the decomposition algorithm. -/
