@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.Finset.BooleanAlgebra
+
 import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.Interval.Set.Basic
 

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.Stieltjes
-import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+
+import Mathlib.Analysis.Normed.Order.Lattice
 
 /-!
 # Measurable parametric Stieltjes functions

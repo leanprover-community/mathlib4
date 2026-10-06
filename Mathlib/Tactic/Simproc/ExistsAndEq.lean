@@ -8,6 +8,7 @@ module
 public import Mathlib.Init
 public meta import Qq
 public import Qq
+
 import Qq.Typ
 
 /-!

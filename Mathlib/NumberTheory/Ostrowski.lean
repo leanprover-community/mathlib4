@@ -9,8 +9,9 @@ module
 
 public import Mathlib.Analysis.AbsoluteValue.Equivalence
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.NumberTheory.Padics.PadicNorm
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Ostrowski’s Theorem

@@ -5,9 +5,10 @@ Authors: Simon Hudon
 -/
 module
 
-import Mathlib.Data.Stream.Init
 public import Mathlib.Control.Fix
 public import Mathlib.Order.OmegaCompletePartialOrder
+
+import Mathlib.Data.Stream.Init
 
 /-!
 # Lawful fixed point operators
