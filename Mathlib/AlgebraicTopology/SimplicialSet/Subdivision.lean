@@ -7,10 +7,12 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monomorphisms
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonsingularColimit
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonemptyFiniteChains
 public import Mathlib.CategoryTheory.Limits.Presheaf
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
+public import Mathlib.CategoryTheory.MorphismProperty.PreserveLimits
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
@@ -218,24 +220,18 @@ instance (n : ℕ) : Mono (sd.map (boundary.{u} n).ι) :=
 
 instance : PreservesWellOrderContinuousOfShape ℕ sd.{u} where
 
-instance :
-    ((MorphismProperty.monomorphisms SSet).inverseImage sd.{u}).IsStableUnderCoproducts.{u} where
-  isStableUnderCoproductsOfShape := sorry
-
 open MorphismProperty modelCategoryQuillen in
 instance : sd.{u}.PreservesMonomorphisms where
   preserves {X Y} i _ := by
     have : (coproducts.{u} I).pushouts ≤ (monomorphisms _).inverseImage sd.{u} := by
       rw [← MorphismProperty.map_le_iff]
-      sorry
-      --refine ((coproducts.{u} I).map_pushouts_le sd.{u}).trans ?_
-      --simp only [pushouts_le_iff, map_le_iff, coproducts_le_iff]
-      --intro _ _ _ ⟨n⟩
-      --simp only [inverseImage_iff, monomorphisms.iff]
-      --infer_instance
-    have := relativeCellComplexOfMono i
-    sorry
-    --apply transfiniteCompositionsOfShape_le _ _ _
-    --  ((modelCategoryQuillen.transfiniteCompositionOfMono i).ofLE this).map.mem
+      refine ((coproducts.{u} I).map_pushouts_le sd.{u}).trans ?_
+      rw [pushouts_le_iff, map_le_iff, coproducts_le_iff.{u}]
+      intro _ _ _ ⟨n⟩
+      simp only [inverseImage_iff, monomorphisms.iff]
+      infer_instance
+    exact ((monomorphisms _).inverseImage sd).transfiniteCompositionsOfShape_le _ _
+      (((relativeCellComplexOfMono i).transfiniteCompositionOfShape'
+        (fun s ↦ boundary_ι_mem_I s.j)).ofLE this).mem
 
 end SSet
