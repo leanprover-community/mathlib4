@@ -104,13 +104,9 @@ instance (P : ObjectProperty C) : P.leftOrthogonal.IsClosedUnderExtensions where
 
 /-- The right orthogonal of a property of objects is closed under extensions. -/
 instance (P : ObjectProperty C) : P.rightOrthogonal.IsClosedUnderExtensions where
-  prop_X₂_of_shortExact := by
-    intro s hs hX₁ hX₃ Z k hZ
-    let t : KernelFork s.g := KernelFork.ofι k (hX₃ (k ≫ s.g) hZ)
-    let l : Z ⟶ s.X₁ := hs.fIsKernel.lift t
-    have hl : l = 0 := hX₁ l hZ
-    have hfac : l ≫ s.f = k := hs.fIsKernel.fac t WalkingParallelPair.zero
-    simp [← hfac, hl]
+  prop_X₂_of_shortExact hS h₁ h₃ Z k hZ := by
+    obtain ⟨l, hfac⟩ := Fork.IsLimit.lift' hS.fIsKernel k (by simpa using h₃ _ hZ)
+    simp [← hfac, h₁ l hZ]
 
 end Extensions
 
