@@ -168,14 +168,14 @@ instance [IsCancelMulZero R] : IsCancelMulZero (Icc (0 : R) 1) where
 
 end OrderedSemiring
 
-instance instCommMonoidWithZero {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
+instance instCommMonoidWithZero [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
     CommMonoidWithZero (Icc (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
-instance {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
+instance [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
     IsOrderedMonoid (Icc (0 : R) 1) := .of_mulLeftMono
 
-instance instIsCancelMulZero {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
+instance instIsCancelMulZero [Ring R] [PartialOrder R] [IsOrderedRing R]
     [NoZeroDivisors R] :
     IsCancelMulZero (Icc (0 : R) 1) :=
   @Function.Injective.isCancelMulZero _ R _ _ _ _ _ Subtype.coe_injective coe_zero coe_mul
@@ -264,15 +264,14 @@ instance : MulRightMono (Icc (0 : R) 1) where
 instance instSemigroup : Semigroup (Ico (0 : R) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
-instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
-    CommSemigroup (Ico (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.commSemigroup _ coe_mul
-
 /-- The coercion from `Set.Ico 0 1` as a `MulHom`. -/
 @[simps]
 def coeMulHom : (Ico (0 : R) 1) →ₙ* R where
   toFun := (↑)
   map_mul' := coe_mul
+
+instance [NeZero (1 : R)] : SemigroupWithZero (Ico (0 : R) 1) := fast_instance%
+  Subtype.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 instance [NeZero (1 : R)] [IsLeftCancelMulZero R] : IsLeftCancelMulZero (Ico (0 : R) 1) where
   mul_left_cancel_of_ne_zero ha _ _ h :=
@@ -285,6 +284,10 @@ instance [NeZero (1 : R)] [IsRightCancelMulZero R] : IsRightCancelMulZero (Ico (
 instance [NeZero (1 : R)] [IsCancelMulZero R] : IsCancelMulZero (Ico (0 : R) 1) where
 
 end OrderedSemiring
+
+instance instCommSemigroup [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
+    CommSemigroup (Ico (0 : R) 1) := fast_instance%
+  Subtype.coe_injective.commSemigroup _ coe_mul
 
 end Set.Ico
 
@@ -387,19 +390,19 @@ instance instCancelMonoid [IsCancelMulZero R] : CancelMonoid (Ioc (0 : R) 1) :=
 
 end OrderedSemiring
 
-instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
+instance instCommSemigroup [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     CommSemigroup (Ioc (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 
-instance instCommMonoid {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
+instance instCommMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     CommMonoid (Ioc (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
-instance {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
+instance [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     IsOrderedMonoid (Ioc (0 : R) 1) := .of_mulLeftMono
 
-instance instCancelCommMonoid {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
-    [IsDomain R] :
+instance instCancelCommMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
+    [IsCancelMulZero R] :
     CancelCommMonoid (Ioc (0 : R) 1) :=
   { Set.Ioc.instCommMonoid, Set.Ioc.instCancelMonoid with }
 
@@ -435,10 +438,6 @@ theorem coe_mul (x y : Ioo (0 : R) 1) : ↑(x * y) = (x * y : R) :=
 instance instSemigroup : Semigroup (Ioo (0 : R) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
-instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
-    CommSemigroup (Ioo (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.commSemigroup _ coe_mul
-
 /-- The coercion from `Set.Ioo 0 1` as a `MulHom`. -/
 @[simps]
 def coeMulHom : (Ioo (0 : R) 1) →ₙ* R where
@@ -446,6 +445,10 @@ def coeMulHom : (Ioo (0 : R) 1) →ₙ* R where
   map_mul' := coe_mul
 
 end OrderedSemiring
+
+instance instCommSemigroup [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
+    CommSemigroup (Ioo (0 : R) 1) := fast_instance%
+  Subtype.coe_injective.commSemigroup _ coe_mul
 
 section OrderedAddCommGroup
 variable [AddCommGroupWithOne R] [PartialOrder R] [IsOrderedAddMonoid R]
