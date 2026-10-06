@@ -283,6 +283,17 @@ variable (R M N) in
 noncomputable def dualTensorHomEquiv : Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N :=
   .ofBijective (dualTensorHom R M N) dualTensorHom_bijective
 
+/-- To prove a property of linear maps from a finite projective module, it suffices to prove it
+for maps of the rank-one form `φ.smulRight n` and show that it is preserved by addition. -/
+@[elab_as_elim]
+theorem LinearMap.inductionOn_smulRight {motive : (M →ₗ[R] N) → Prop} (f : M →ₗ[R] N)
+    (smulRight : ∀ (φ : Dual R M) (n : N), motive (φ.smulRight n))
+    (add : ∀ f g, motive f → motive g → motive (f + g)) : motive f := by
+  obtain ⟨u, rfl⟩ := (dualTensorHomEquiv R M N).surjective f
+  induction u using TensorProduct.inductionOn with
+  | tmul φ n => exact smulRight φ n
+  | add u v hu hv => simpa only [map_add] using add _ _ hu hv
+
 @[simp] lemma toLinearMap_dualTensorHomEquiv :
     (dualTensorHomEquiv R M N).toLinearMap = dualTensorHom R M N := rfl
 

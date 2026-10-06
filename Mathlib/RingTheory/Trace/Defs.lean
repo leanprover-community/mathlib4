@@ -113,16 +113,13 @@ theorem _root_.LinearMap.trace_restrictScalars {M : Type*} [AddCommGroup M]
     [Module.Finite R M] [Module.Projective R M] (f : M →ₗ[S] M) :
     LinearMap.trace R M (f.restrictScalars R) = trace R S (LinearMap.trace S M f) := by
   symm
-  obtain ⟨u, rfl⟩ := (dualTensorHomEquiv S M M).surjective f
-  induction u using TensorProduct.inductionOn with
-  | add u v hu hv => simp_all
-  | tmul φ m =>
+  induction f using LinearMap.inductionOn_smulRight with
+  | add f g hf hg => simp_all
+  | smulRight φ m =>
     let i : S →ₗ[R] M := ((LinearMap.id : S →ₗ[S] S).smulRight m).restrictScalars R
     let p : M →ₗ[R] S := φ.restrictScalars R
     have hcomp : (φ.smulRight m).restrictScalars R = i ∘ₗ p := rfl
     have hmul : p ∘ₗ i = lmul R S (φ m) := by ext s; simp [i, p, mul_comm]
-    change trace R S (LinearMap.trace S M (φ.smulRight m)) =
-      LinearMap.trace R M ((φ.smulRight m).restrictScalars R)
     rw [LinearMap.trace_smulRight, hcomp, LinearMap.trace_comp_comm' p i, hmul]
     rfl
 

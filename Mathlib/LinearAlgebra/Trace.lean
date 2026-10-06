@@ -68,6 +68,12 @@ theorem trace_eq_contract' :
 
 variable {M}
 
+variable {R} in
+@[simp]
+lemma trace_smulRight (f : M →ₗ[R] R) (x : M) :
+    trace R M (f.smulRight x) = f x := by
+  exact trace_eq_contract_apply R M (f ⊗ₜ[R] x)
+
 theorem trace_eq_matrix_trace (f : M →ₗ[R] M) :
     trace R M f = Matrix.trace (LinearMap.toMatrix b b f) := by
   classical
@@ -85,16 +91,9 @@ variable {R} in
   A.trace_toLin_eq (Pi.basisFun R ι)
 
 theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) := by
-  obtain ⟨u, rfl⟩ := (dualTensorHomEquiv R M M).surjective f
-  obtain ⟨v, rfl⟩ := (dualTensorHomEquiv R M M).surjective g
-  change trace R M (dualTensorHom R M M u * dualTensorHom R M M v) =
-    trace R M (dualTensorHom R M M v * dualTensorHom R M M u)
-  induction u using TensorProduct.inductionOn with
-  | add u w hu hw => simp_all [add_mul, mul_add]
-  | tmul φ m =>
-    induction v using TensorProduct.inductionOn with
-    | add v w hv hw => simp_all [add_mul, mul_add]
-    | tmul ψ n => simp [Module.End.mul_eq_comp, comp_dualTensorHom, mul_comm]
+  induction f using LinearMap.inductionOn_smulRight with
+  | add f h hf hh => simp_all [add_mul, mul_add]
+  | smulRight φ m => simp [Module.End.mul_eq_comp]
 
 lemma trace_mul_cycle (f g h : M →ₗ[R] M) :
     trace R M (f * g * h) = trace R M (h * f * g) := by
@@ -216,11 +215,6 @@ lemma trace_restrict_eq_of_forall_mem (p : Submodule R M)
     trace R p (f.restrict hf') = trace R M f := by
   exact trace_comp_comm' p.subtype (f.codRestrict p hf)
 
-@[simp]
-lemma trace_smulRight (f : M →ₗ[R] R) (x : M) :
-    trace R M (f.smulRight x) = f x := by
-  exact trace_eq_contract_apply R M (f ⊗ₜ[R] x)
-
 omit [Module.Finite R M] [Module.Projective R M] in
 variable [Module.Projective R N] [Module.Finite R N] [Module.Projective R P] [Module.Finite R P] in
 lemma trace_comp_cycle (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : P →ₗ[R] M) :
@@ -321,17 +315,14 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
 @[simp]
 lemma trace_baseChange (f : M →ₗ[R] M) (A : Type*) [CommRing A] [Algebra R A] :
     trace A _ (f.baseChange A) = algebraMap R A (trace R _ f) := by
-  obtain ⟨u, rfl⟩ := (dualTensorHomEquiv R M M).surjective f
-  induction u using TensorProduct.inductionOn with
-  | add u v hu hv => simp_all
-  | tmul φ m =>
+  induction f using LinearMap.inductionOn_smulRight with
+  | add f g hf hg => simp_all
+  | smulRight φ m =>
     let φ' : A ⊗[R] M →ₗ[A] A := (AlgebraTensorModule.rid R A A).toLinearMap ∘ₗ φ.baseChange A
-    have h : ((dualTensorHomEquiv R M M) (φ ⊗ₜ[R] m)).baseChange A =
-        φ'.smulRight (1 ⊗ₜ[R] m) := by
-      ext x
-      simp [φ']
+    have h : (φ.smulRight m).baseChange A = φ'.smulRight (1 ⊗ₜ[R] m) := by
+      ext x; simp [φ']
     rw [h, trace_smulRight]
-    simp [φ', trace, Algebra.algebraMap_eq_smul_one]
+    simp [φ', Algebra.algebraMap_eq_smul_one]
 
 end Ring
 
