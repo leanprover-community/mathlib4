@@ -134,10 +134,10 @@ theorem coe_pow (x : Icc (0 : R) 1) (n : ℕ) : ↑(x ^ n) = ((x : R) ^ n) :=
   rfl
 
 instance : MulLeftMono (Icc (0 : R) 1) where
-  elim x y z h := (mul_le_mul_of_nonneg_left (show y.1 ≤ z.1 from h) x.2.1 :)
+  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_left h x.2.1)
 
 instance : MulRightMono (Icc (0 : R) 1) where
-  elim x y z h := (mul_le_mul_of_nonneg_right (show y.1 ≤ z.1 from h) x.2.1 :)
+  elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_right h x.2.1)
 
 theorem mul_le_left {x y : Icc (0 : R) 1} : x * y ≤ x :=
   (mul_le_mul_of_nonneg_left y.2.2 x.2.1).trans_eq (mul_one _)
@@ -256,10 +256,10 @@ theorem coe_mul (x y : Ico (0 : R) 1) : ↑(x * y) = (x * y : R) :=
   rfl
 
 instance : MulLeftMono (Icc (0 : R) 1) where
-  elim x y z h := (mul_le_mul_of_nonneg_left (show y.1 ≤ z.1 from h) x.2.1 :)
+  elim x _ _ h := Subtype.coe_le_coe.2 (mul_le_mul_of_nonneg_left h x.2.1)
 
 instance : MulRightMono (Icc (0 : R) 1) where
-  elim x y z h := (mul_le_mul_of_nonneg_right (show y.1 ≤ z.1 from h) x.2.1 :)
+  elim x _ _ h := Subtype.coe_le_coe.2 (mul_le_mul_of_nonneg_right h x.2.1)
 
 instance instSemigroup : Semigroup (Ico (0 : R) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
@@ -348,10 +348,10 @@ theorem coe_pow (x : Ioc (0 : R) 1) (n : ℕ) : ↑(x ^ n) = ((x : R) ^ n) :=
   rfl
 
 instance : MulLeftStrictMono (Ioc (0 : R) 1) where
-  elim x y z h := (mul_lt_mul_of_pos_left (show y.1 < z.1 from h) x.2.1 :)
+  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_left h x.2.1)
 
 instance : MulRightStrictMono (Ioc (0 : R) 1) where
-  elim x y z h := (mul_lt_mul_of_pos_right (show y.1 < z.1 from h) x.2.1 :)
+  elim x _ _ h := Subtype.coe_lt_coe.1 (mul_lt_mul_of_pos_right h x.2.1)
 
 instance : MulLeftMono (Ioc (0 : R) 1) := mulLeftMono_of_mulLeftStrictMono _
 

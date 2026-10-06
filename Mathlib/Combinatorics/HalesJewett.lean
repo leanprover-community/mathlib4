@@ -5,11 +5,12 @@ Authors: David Wärn
 -/
 module
 
+public import Mathlib.Data.Fintype.Sum
+
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Basic.Finite.Prod
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Shrink
-public import Mathlib.Data.Fintype.Sum
 
 /-!
 # The Hales-Jewett theorem

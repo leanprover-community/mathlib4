@@ -5,8 +5,9 @@ Authors: Michael Stoll
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.NumberTheory.LSeries.Basic
+
+import Mathlib.Algebra.BigOperators.Field
 
 /-!
 # Linearity of the L-series of `f` as a function of `f`

@@ -5,10 +5,11 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Topology.Algebra.Order.Archimedean
+
 import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Topology.Algebra.OpenSubgroup
-public import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Order.DenselyOrdered
 
 /-!

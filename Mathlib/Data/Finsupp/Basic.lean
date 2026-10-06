@@ -381,7 +381,7 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     simp_rw [single_apply]
     by_cases hax : a ∈ x.support
     · rw [← Finset.add_sum_erase _ _ hax, ite_eq_left rfl]
-      convert! add_zero (x a)
+      convert add_zero (x a)
       refine Finset.sum_eq_zero fun i hi => ite_eq_right ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
     · rw [notMem_support_iff.1 hax]
@@ -1419,7 +1419,7 @@ end Sigma
 
 lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M) :
     x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
-  convert! mem_range_mapDomain_iff _ f.injective _
+  convert mem_range_mapDomain_iff _ f.injective _
   · ext; rw [embDomain_eq_mapDomain]
   · grind
 
