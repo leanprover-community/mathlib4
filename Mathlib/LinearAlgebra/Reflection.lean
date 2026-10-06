@@ -5,11 +5,12 @@ Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.Module.Torsion.Basic
 import Mathlib.LinearAlgebra.FiniteSpan
-public import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Reflections in linear algebra

@@ -5,9 +5,10 @@ Authors: Riccardo Brasca
 -/
 module
 
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.RingTheory.Norm.Transitivity
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 import Mathlib.Algebra.Group.Nat.Range
 
 /-!

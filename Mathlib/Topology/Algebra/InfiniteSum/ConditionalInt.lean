@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Interval
 public import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Order.Filter.AtTopBot.Interval
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+
+import Mathlib.Analysis.Normed.Group.Uniform
+import Mathlib.Order.Filter.AtTopBot.Interval
 
 
 /-!

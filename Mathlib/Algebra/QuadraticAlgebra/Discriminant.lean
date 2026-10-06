@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.AlgHom
+
 import Mathlib.Data.Nat.Prime.Int
 
 /-!

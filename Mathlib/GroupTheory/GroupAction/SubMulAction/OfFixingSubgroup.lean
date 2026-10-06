@@ -5,11 +5,12 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 public import Mathlib.GroupTheory.GroupAction.Transitive
 public import Mathlib.GroupTheory.GroupAction.Primitive
+
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.Tactic.Group
 
 /-!

@@ -6,8 +6,9 @@ Authors: Joël Riou, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.CategoryTheory.Preadditive.LeftExact
 public import Mathlib.CategoryTheory.Abelian.Exact
+
+import Mathlib.CategoryTheory.Preadditive.LeftExact
 
 /-!
 # Exact functors

@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
+
 import Mathlib.Tactic.FinCases
 
 /-!

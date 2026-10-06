@@ -6,6 +6,7 @@ Authors: Geoffrey Irving
 module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
+
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!

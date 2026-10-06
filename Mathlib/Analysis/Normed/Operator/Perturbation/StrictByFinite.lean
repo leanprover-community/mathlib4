@@ -6,9 +6,10 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Topology.Maps.Strict.Module
-import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Algebra.Module.LinearMap.FiniteRange
+
+import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Strict linear maps with closed range are closed under finite-rank perturbation

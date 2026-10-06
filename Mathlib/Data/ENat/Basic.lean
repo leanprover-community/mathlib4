@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Order.Nat
-import Mathlib.Tactic.Basify.Attr
 
+import Mathlib.Tactic.Basify.Attr
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!

@@ -6,8 +6,9 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Covolume
-import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+
+import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 
 /-!
 # Regulator of a number field
