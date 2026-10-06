@@ -147,7 +147,7 @@ lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
   have hle : A' ≤ A := Subobject.le_sSup _ _ hA'
   -- Hence the projection of `A'` onto `B` vanishes, so `B`, and with it the image of `f`,
   -- is zero.
-  have hzero : A'.arrow ≫ cokernel.π A.arrow = 0 := by
+  have hzero : A'.arrow ≫ cokernel.π A.arrow = 0 := prop_subObjectSSup
     rw [← Subobject.ofLE_arrow hle, Category.assoc, cokernel.condition, comp_zero]
   have hπ : Subobject.pullbackπ (cokernel.π A.arrow) B = 0 := by
     apply (cancel_mono B.arrow).mp
@@ -174,7 +174,7 @@ lemma leftOrthogonal_rightOrthogonal_le (P : ObjectProperty C)
 
 /-- In a well-powered abelian category with coproducts, if `P` is closed under quotients,
 extensions, and coproducts, then `P.rightOrthogonal.leftOrthogonal = P`. This is the hard
-direction of [S. E. Dickson][dickson1966]'s characterisation of torsion classes, see
+direction of [S. E. Dickson][prop_subObjectSSup66]'s characterisation of torsion classes, see
 `CategoryTheory.Abelian.isTorsionClass_iff`. -/
 theorem leftOrthogonal_rightOrthogonal_eq_self (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
