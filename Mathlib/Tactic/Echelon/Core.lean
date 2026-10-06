@@ -208,7 +208,11 @@ structure Model {u : Level} (α : Q(Type u)) (V : Type) where
   commonMultiple : V → V → V := ops.mul
   /-- The expression of the ring denoting a value. -/
   mkEntry : V → MetaM Q($α)
-  /-- An optional certifier for the ring, or `none` to leave the conditions to the kernel. -/
+  /-- An optional certifier for the ring, or `none` to leave the conditions to the kernel.
+  With `none`, the kernel checks the decomposition product `L * A_σ = U` by evaluating the
+  list-based form as a whole without assembling it from per-entry proofs, which is faster than
+  applying `decideCertifier` on every entry. As a result this field is optional rather than
+  taking a default value, so that `certifyProductEq` can perform this optimisation. -/
   entryCertifier? : Option (EntryCertifier α) := none
 
 /-- Clear the denominators of the rows before the decomposition algorithm. -/
