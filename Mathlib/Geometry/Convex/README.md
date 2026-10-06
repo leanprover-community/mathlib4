@@ -12,3 +12,4 @@ The topics currently covered are:
 * Star-convex sets
 * Convex hulls
 * Cones
+* Extreme sets and extreme points
