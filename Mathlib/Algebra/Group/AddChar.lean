@@ -5,10 +5,11 @@ Authors: Michael Stoll
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.TransferInstance
+
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Algebra.Group.Units.Equiv
 
 /-!

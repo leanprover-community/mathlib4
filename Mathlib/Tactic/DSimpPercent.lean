@@ -6,6 +6,7 @@ Authors: Robin Carlier, Jovan Gerbscheid
 module
 
 public import Mathlib.Init
+
 meta import Lean.Elab.Tactic.Simp
 
 /-!

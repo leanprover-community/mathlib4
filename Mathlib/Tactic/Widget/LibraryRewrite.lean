@@ -9,10 +9,11 @@ public meta import Mathlib.Lean.Meta.RefinedDiscrTree
 public meta import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
-import Mathlib.Tactic.NthRewrite
-public meta import ProofWidgets.Component.FilterDetails
-meta import ProofWidgets.Component.OfRpcMethod
 public import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import ProofWidgets.Component.FilterDetails
+
+import Mathlib.Tactic.NthRewrite
+meta import ProofWidgets.Component.OfRpcMethod
 
 /-!
 # Point & click library rewriting

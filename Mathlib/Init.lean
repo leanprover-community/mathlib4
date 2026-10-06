@@ -11,7 +11,6 @@ public meta import Mathlib.Tactic.Linter.DirectoryDependency
 public meta import Mathlib.Tactic.Linter.DocPrime
 public meta import Mathlib.Tactic.Linter.DocString
 public meta import Mathlib.Tactic.Linter.EmptyLine
-public meta import Mathlib.Tactic.Linter.GlobalAttributeIn
 public meta import Mathlib.Tactic.Linter.HashCommandLinter
 public meta import Mathlib.Tactic.Linter.HaveILetI
 public meta import Mathlib.Tactic.Linter.Header

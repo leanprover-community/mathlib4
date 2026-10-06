@@ -6,10 +6,11 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Ring.Hom.InjSurj
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.Localization.Integral
+
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Algebraically Closed Field

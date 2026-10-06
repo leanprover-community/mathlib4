@@ -5,10 +5,11 @@ Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
 module
 
+public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
+
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Congruence.Hom
 import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 
 /-! # Polynomial laws on modules
 

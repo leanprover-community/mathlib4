@@ -5,12 +5,13 @@ Authors: Yaël Dillies, Vladimir Ivanov
 -/
 module
 
+public import Mathlib.Data.Finset.Sups
+public import Mathlib.Tactic.Positivity
+
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Data.Finset.Sups
 import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.Positivity
 import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!

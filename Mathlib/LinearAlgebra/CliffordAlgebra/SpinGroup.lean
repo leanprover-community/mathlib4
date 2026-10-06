@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Even
+
 import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 
 /-!

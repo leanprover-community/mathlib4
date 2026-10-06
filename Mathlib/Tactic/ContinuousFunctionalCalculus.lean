@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public meta import Aesop
+
 import Mathlib.Tactic.FunProp
 
 /-!

@@ -6,8 +6,9 @@ Authors: Jovan Gerbscheid
 module
 
 public meta import Lean.Meta.Tactic.Delta
-import Mathlib.Init
 public meta import Lean.Meta.Tactic.Simp
+
+import Mathlib.Init
 
 /-!
 # Modify proof terms so that they don't rely on unfolding certain constants

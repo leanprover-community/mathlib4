@@ -8,9 +8,10 @@ module
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Tactic.Rewrite
-import Mathlib.Init
-public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.ConfigEval.Basic
+public meta import Lean.Elab.ConfigEval
+
+import Mathlib.Init
 meta import Lean.Elab.ConfigEval.DeriveEvalExpr
 meta import Lean.Elab.ConfigEval.DeriveEvalTerm
 meta import Lean.Elab.ConfigEval.MetaInstances
