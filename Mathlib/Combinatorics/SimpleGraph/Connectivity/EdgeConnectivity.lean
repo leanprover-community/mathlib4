@@ -151,7 +151,7 @@ lemma isEdgeConnected_two_iff_forall_preconnected :
     G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
   simp [isEdgeConnected_add_one]
 
-@[deprecated (since := "2026-08-13")]
+@[deprecated (since := "2026-10-01")]
 alias isEdgeConnected_two := isEdgeConnected_two_iff_forall_preconnected
 
 /-- A graph is 2-edge-connected iff it has no bridge. -/
