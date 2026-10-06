@@ -310,7 +310,7 @@ noncomputable abbrev adjoinAlgebraic (S : FlatExtension R K) (x : K)
       IsScalarTower.algebraMap_eq R S, ← Ideal.map_map, S.eqmap]
 
 /-- The homomorphism from a flat extension to `FlatExtension.adjoinAlgebraic`,
-with unduerlying `R`-algebra map `IsScalarTower.toAlgHom`. -/
+with underlying `R`-algebra map `IsScalarTower.toAlgHom`. -/
 noncomputable abbrev toAdjoinAlgebraic (S : FlatExtension R K) (x : K)
     (int : IsIntegral S x) : S ⟶ S.adjoinAlgebraic x int where
   algHom := IsScalarTower.toAlgHom R S.Ring _
@@ -330,7 +330,7 @@ noncomputable abbrev adjoinTranscendental (S : FlatExtension R K) (x : K)
       IsScalarTower.algebraMap_eq R S, ← Ideal.map_map, ← S.eqmap]
 
 /-- The homomorphism from a flat extension to `FlatExtension.adjoinTranscendental`,
-with unduerlying `R`-algebra map `IsScalarTower.toAlgHom`. -/
+with underlying `R`-algebra map `IsScalarTower.toAlgHom`. -/
 noncomputable abbrev toAdjoinTranscendental (S : FlatExtension R K) (x : K)
     (nint : ¬ IsIntegral S x) : S ⟶ S.adjoinTranscendental x nint where
   algHom := IsScalarTower.toAlgHom R S.Ring _
