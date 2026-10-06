@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+
 import Mathlib.Geometry.Manifold.Notation
 
 /-!

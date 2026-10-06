@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+
 import Mathlib.Analysis.Matrix.Order
 
 /-! # Gram Matrices

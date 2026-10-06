@@ -5,11 +5,12 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.NumberTheory.AbelSummation
+public import Mathlib.NumberTheory.LSeries.Basic
+
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-public import Mathlib.NumberTheory.AbelSummation
-public import Mathlib.NumberTheory.LSeries.Basic
 
 /-!
 # Partial sums of coefficients of L-series

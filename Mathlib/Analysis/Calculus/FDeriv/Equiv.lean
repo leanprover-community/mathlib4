@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Linear
+
+import Mathlib.Analysis.Calculus.FDeriv.Add
 
 /-!
 # The derivative of a linear equivalence

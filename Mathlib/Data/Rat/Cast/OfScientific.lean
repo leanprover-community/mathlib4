@@ -5,8 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Data.Rat.Cast.Lemmas
+
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Scientific notation for characteristic-zero fields
