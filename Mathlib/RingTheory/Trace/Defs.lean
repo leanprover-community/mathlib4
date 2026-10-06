@@ -105,27 +105,34 @@ theorem trace_algebraMap [StrongRankCondition R] [Module.Free R S] (x : R) :
   rw [trace_algebraMap_of_basis (Module.Free.chooseBasis R S),
     finrank_eq_card_basis (Module.Free.chooseBasis R S)]
 
+/-- Restricting scalars composes the algebra trace with the linear trace. -/
+@[simp]
+theorem _root_.LinearMap.trace_restrictScalars {M : Type*} [AddCommGroup M]
+    [Module R M] [Module S M] [IsScalarTower R S M]
+    [Module.Finite S M] [Module.Projective S M]
+    [Module.Finite R M] [Module.Projective R M] (f : M →ₗ[S] M) :
+    LinearMap.trace R M (f.restrictScalars R) = trace R S (LinearMap.trace S M f) := by
+  symm
+  obtain ⟨u, rfl⟩ := (dualTensorHomEquiv S M M).surjective f
+  induction u using TensorProduct.inductionOn with
+  | add u v hu hv => simp_all
+  | tmul φ m =>
+    let i : S →ₗ[R] M := ((LinearMap.id : S →ₗ[S] S).smulRight m).restrictScalars R
+    let p : M →ₗ[R] S := φ.restrictScalars R
+    have hcomp : (φ.smulRight m).restrictScalars R = i ∘ₗ p := rfl
+    have hmul : p ∘ₗ i = lmul R S (φ m) := by ext s; simp [i, p, mul_comm]
+    change trace R S (LinearMap.trace S M (φ.smulRight m)) =
+      LinearMap.trace R M ((φ.smulRight m).restrictScalars R)
+    rw [LinearMap.trace_smulRight, hcomp, LinearMap.trace_comp_comm' p i, hmul]
+    rfl
+
 /-- Trace along a tower is transitive for finite projective algebras. -/
 @[simp]
 theorem trace_trace [Algebra S T] [IsScalarTower R S T]
     [Module.Finite S T] [Module.Projective S T]
     [Module.Finite R T] [Module.Projective R T] (x : T) :
     trace R S (trace S T x) = trace R T x := by
-  have h (f : T →ₗ[S] T) :
-      trace R S (LinearMap.trace S T f) = LinearMap.trace R T (f.restrictScalars R) := by
-    obtain ⟨u, rfl⟩ := (dualTensorHomEquiv S T T).surjective f
-    induction u using TensorProduct.inductionOn with
-    | add u v hu hv => simp_all
-    | tmul φ t =>
-      let i : S →ₗ[R] T := ((LinearMap.id : S →ₗ[S] S).smulRight t).restrictScalars R
-      let p : T →ₗ[R] S := φ.restrictScalars R
-      have hcomp : (φ.smulRight t).restrictScalars R = i ∘ₗ p := rfl
-      have hmul : p ∘ₗ i = lmul R S (φ t) := by ext s; simp [i, p, mul_comm]
-      change trace R S (LinearMap.trace S T (φ.smulRight t)) =
-        LinearMap.trace R T ((φ.smulRight t).restrictScalars R)
-      rw [LinearMap.trace_smulRight, hcomp, LinearMap.trace_comp_comm' p i, hmul]
-      rfl
-  exact h (lmul S T x)
+  exact (LinearMap.trace_restrictScalars (R := R) (lmul S T x)).symm
 
 /-- Let `T / S / R` be a tower of finite projective algebras. Then
 $\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$. -/
