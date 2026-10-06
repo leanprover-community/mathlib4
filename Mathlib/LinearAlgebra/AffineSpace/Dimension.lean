@@ -93,6 +93,15 @@ theorem finDim_eq_finrank (h : s ≠ ⊥) : finDim s = Module.finrank R s.direct
   norm_cast
 
 @[simp]
+theorem dim_toAffineSubspace (s : Submodule R V) : s.toAffineSubspace.dim = Module.rank R s := by
+  rw [dim_eq_rank (toAffineSubspace_ne_bot _), Submodule.toAffineSubspace_direction]
+
+@[simp]
+theorem finDim_toAffineSubspace (s : Submodule R V) :
+    s.toAffineSubspace.finDim = Module.finrank R s := by
+  rw [finDim_eq_finrank (toAffineSubspace_ne_bot _), Submodule.toAffineSubspace_direction]
+
+@[simp]
 theorem finDim_eq_finrank_of_not_finite [Module.Free R s.direction] [StrongRankCondition R]
     (h : ¬Module.Finite R s.direction) : finDim s = 0 := by
   by_cases hs : s = ⊥
@@ -172,7 +181,7 @@ theorem lift_dim_map_of_injective {f : A →ᵃ[R] A'} (hf : Function.Injective 
   · simp_all
   rw [dim_eq_rank hs, dim_eq_rank (by simp_all), map_direction]
   simp only [WithBot.map_coe, WithBot.coe_inj]
-  refine LinearEquiv.lift_rank_eq <| (Submodule.equivMapOfInjective _ ?_ _).symm
+  refine LinearEquiv.lift_rank_eq (Submodule.equivMapOfInjective _ ?_ _).symm
   exact f.linear_injective_iff.mpr hf
 
 theorem dim_map_of_injective {f : A →ᵃ[R] A₁} (hf : Function.Injective f)
@@ -185,7 +194,7 @@ theorem finDim_map_of_injective {f : A →ᵃ[R] A'} (hf : Function.Injective f)
   · simp_all
   rw [finDim_eq_finrank hs, finDim_eq_finrank (by simp_all), map_direction]
   norm_cast
-  refine LinearEquiv.finrank_eq <| (Submodule.equivMapOfInjective _ ?_ _).symm
+  refine LinearEquiv.finrank_eq (Submodule.equivMapOfInjective _ ?_ _).symm
   exact f.linear_injective_iff.mpr hf
 
 @[simp]

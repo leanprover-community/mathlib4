@@ -5,13 +5,14 @@ Authors: Alex Meiburg, Snir Broshi
 -/
 module
 
-public import Mathlib.Analysis.Complex.IsIntegral
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.NumberTheory.Real.Irrational
-public import Mathlib.Tactic.Peel
-public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Qify
+
+import Mathlib.Analysis.Complex.IsIntegral
+import Mathlib.Tactic.Peel
+import Mathlib.Tactic.Rify
+import Mathlib.Tactic.Qify
 
 /-! # Niven's Theorem
 
@@ -35,8 +36,8 @@ theorem exists_int_iff_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = 
   refine ⟨?_, fun ⟨w, h⟩ ↦ ⟨w, by simp [h]⟩⟩
   rintro ⟨q, rfl⟩
   rw [ratCast_iff] at h₁
-  peel IsIntegrallyClosed.algebraMap_eq_of_integral h₁ with h
-  simp [← h]
+  gconvert IsIntegrallyClosed.algebraMap_eq_of_integral h₁
+  simp [← this]
 
 end IsIntegral
 
@@ -139,7 +140,7 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
 /-- Niven's theorem, but stated for `sin` instead of `cos`. -/
 theorem niven_sin (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, sin θ = q) :
     sin θ ∈ ({-1, -1 / 2, 0, 1 / 2, 1} : Set ℝ) := by
-  convert! ← niven (θ := θ - π / 2) ?_ ?_ using 1
+  convert ← niven (θ := θ - π / 2) ?_ ?_ using 1
   · exact cos_sub_pi_div_two θ
   · exact hθ.imp' (· - 1 / 2) (by intros; push_cast; linarith)
   · simpa [cos_sub_pi_div_two]
@@ -180,6 +181,6 @@ theorem niven_fract_angle_div_pi_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) 
 theorem irrational_cos_rat_mul_pi {r : ℚ} (hr : 3 < r.den) :
     Irrational (cos (r * π)) := by
   rw [← Rat.den_intFract] at hr
-  by_contra! hnz
+  by_contra hnz
   rcases niven_fract_angle_div_pi_eq (exists_rat_of_not_irrational hnz) with (hr' | hr' | hr' | hr')
   all_goals (try rw [Set.mem_singleton_iff] at hr'); rw [hr'] at hr; norm_num at hr

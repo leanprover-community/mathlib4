@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
@@ -222,6 +221,7 @@ The type of `C`-morphisms that can be lifted back to morphisms in the category `
 abbrev HomSubtype (X Y : DifferentialObject S C) :=
   { f : FC X.obj Y.obj // X.d ≫ (ConcreteCategory.ofHom f)⟦1⟧' = (ConcreteCategory.ofHom f) ≫ Y.d }
 
+@[macro_inline]
 instance (X Y : DifferentialObject S C) :
     FunLike (HomSubtype S C X Y) (CC X.obj) (CC Y.obj) where
   coe f := f.1
