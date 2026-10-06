@@ -232,7 +232,7 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
     (.funCongrLeft R R (Fintype.equivFin α) ≪≫ₗ f ≪≫ₗ
       .symm (.funCongrLeft R R (Fintype.equivFin β)))
 
-theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
+instance (priority := 100) nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra! h
   exact zero_ne_one (eq_of_fin_equiv R <| .ofSubsingleton ..)
 
