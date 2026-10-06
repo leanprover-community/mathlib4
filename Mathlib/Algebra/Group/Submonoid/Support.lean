@@ -174,11 +174,11 @@ theorem map_mulSupport_le : M.mulSupport.map f ≤ (M.map f).mulSupport :=
   fun _ ⟨a, _⟩ ↦ ⟨⟨a, by simp_all⟩, ⟨a⁻¹, by simp_all⟩⟩
 
 variable {f M} in
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mulSupport_map (hsupp : f.ker ≤ M.mulSupport) :
     (M.map f).mulSupport = M.mulSupport.map f := by
   refine le_antisymm (fun _ ⟨⟨a, _⟩, ⟨b, ⟨hb₁, _⟩⟩⟩ ↦ ?_) (map_mulSupport_le f M)
-  have : (b * a)⁻¹ * b ∈ M := mul_mem (hsupp (show f (b * a) = 1 by simp_all)).2 hb₁
+  have : (b * a)⁻¹ * b ∈ M := mul_mem (hsupp (by simp_all)).2 hb₁
   exact ⟨a, by simp_all⟩
 
 end Submonoid
