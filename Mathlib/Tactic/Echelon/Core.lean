@@ -114,20 +114,6 @@ that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
-/-- An entry certifier proves arithmetic facts about expressions of the ring `α` that the
-certificates need. `eq` proves an equation `e₁ = e₂`, such as an unreduced entry of a matrix
-product equal to its computed value, and `neZero` proves `e ≠ 0`, such as for a pivot entry.
-Each should throw when it fails to prove its fact.
-
-`eq` is typically built on a normalizer, while `neZero` may depend on bespoke methods if a
-normalizer cannot provide a disequality proof.
--/
-structure EntryCertifier {u : Level} (α : Q(Type u)) where
-  /-- Prove `a = b`. -/
-  eq (a b : Q($α)) : MetaM Q($a = $b)
-  /-- Prove `a ≠ 0`, stated with the caller's `Zero` instance `zα`. -/
-  neZero (zα : Q(Zero $α)) (a : Q($α)) : MetaM Q($a ≠ 0)
-
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
 
@@ -195,6 +181,19 @@ inductive Carrier
 abbrev Carrier.type : Carrier → Type
   | .int => Int
   | .expr => Expr
+
+/-- An entry certifier proves arithmetic facts about expressions of the ring `α` that the
+certificates need. `eq` proves an equation `a = b`, such as an unreduced entry of a matrix
+product equal to its computed value, and `neZero` proves `a ≠ 0`, such as for a pivot entry.
+
+`eq` is typically built on a normalizer, while `neZero` may depend on bespoke methods if a
+normalizer cannot provide a disequality proof.
+-/
+structure EntryCertifier {u : Level} (α : Q(Type u)) where
+  /-- Prove `a = b`. -/
+  eq (a b : Q($α)) : MetaM Q($a = $b)
+  /-- Prove `a ≠ 0`, stated with the caller's `Zero` instance `zα`. -/
+  neZero (zα : Q(Zero $α)) (a : Q($α)) : MetaM Q($a ≠ 0)
 
 /-- A computation model of the ring `α` on the carrier `V`. -/
 structure Model {u : Level} (α : Q(Type u)) (V : Type) where

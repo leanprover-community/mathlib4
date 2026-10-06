@@ -22,8 +22,8 @@ It proves that `L * A_σ` has the given pivots (through the product `L * A_σ = 
 is lower triangular with nonzero diagonal entries.
 
 The `certify*` functions assemble these proofs from facts about single entries, including the
-arithmetic equalities for the product and the non-zeroness for `L`, which are established
-by the model's certifier (or the kernel).
+arithmetic equalities for the product and the non-zeroness for the diagonal entries of `L` and
+the pivots of `U`, which are established by the model's certifier (or the kernel).
 
 ## Main definitions
 
@@ -77,8 +77,8 @@ def decideCertifier {u : Level} (α : Q(Type u)) : EntryCertifier α where
   neZero _zα a := mkDecideProofQ q($a ≠ 0)
 
 /-- Construct the list-based `IsLowerTriangularDiagList k c rows` cert. -/
-def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
-    (certifier : EntryCertifier α) (k c : Nat) (kQ cQ : Q(Nat)) (rows : Q(List (List $α))) :
+def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (certifier : EntryCertifier α)
+    (zα : Q(Zero $α)) (k c : Nat) (kQ cQ : Q(Nat)) (rows : Q(List (List $α))) :
     MetaM Q(IsLowerTriangularDiagList $kQ $cQ $rows) :=
   match c with
   | 0 => do
@@ -89,7 +89,7 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $�
     let ⟨entry, _, _⟩ ← unconsListLitQ (dropListLitQ k row)
     have k₁Q : Q(Nat) := mkNatLitQ (k + 1)
     have c₁Q : Q(Nat) := mkNatLitQ c
-    let rest ← certifyLowerTriangularDiagList zα certifier (k + 1) c k₁Q c₁Q rowsTl
+    let rest ← certifyLowerTriangularDiagList certifier zα (k + 1) c k₁Q c₁Q rowsTl
     let hd ← certifier.neZero zα entry
     have hdrop : List.drop $kQ $row =Q $entry :: List.replicate $c₁Q (0 : $α) := ⟨⟩
     have : $cQ =Q $c₁Q + 1 := ⟨⟩
@@ -97,16 +97,16 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $�
     return q(IsLowerTriangularDiagList.cons $hdrop $hd $rest)
 
 /-- Prove that `ofLists m m rows` is lower triangular with a nonzero diagonal. -/
-def certifyLowerTriangularDiag {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m : Nat)
-    (rows : Q(List (List $α))) (certifier : EntryCertifier α) :
+def certifyLowerTriangularDiag {u : Level} {α : Q(Type u)} (certifier : EntryCertifier α)
+    (zα : Q(Zero $α)) (m : Nat) (rows : Q(List (List $α))) :
     MetaM (Q((ofLists $m $m $rows).IsLowerTriangular) ×
       Q(∀ i, (ofLists $m $m $rows).diag i ≠ 0)) := do
-  let h ← certifyLowerTriangularDiagList zα certifier 0 m q(0) q($m) rows
+  let h ← certifyLowerTriangularDiagList certifier zα 0 m q(0) q($m) rows
   return (q(isLowerTriangular_ofLists $h), q(diag_ofLists_ne_zero $h))
 
 /-- Construct the list-based `IsPivotedList pivots rows` cert. -/
-def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
-    (certifier : EntryCertifier α) (cols : List Nat) (pivots : Q(List (Fin $n)))
+def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (certifier : EntryCertifier α)
+    (zα : Q(Zero $α)) (cols : List Nat) (pivots : Q(List (Fin $n)))
     (rows : Q(List (List $α))) : MetaM Q(IsPivotedList $pivots $rows) :=
   match cols with
   | [] => do
@@ -117,19 +117,18 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
     let ⟨pivot, pivotsTl, _⟩ ← unconsListLitQ pivots
     let ⟨row, rowsTl, _⟩ ← unconsListLitQ rows
     let ⟨entry, suffix, _⟩ ← unconsListLitQ (dropListLitQ k row)
-    let rest ← certifyPivotedList zα certifier ks pivotsTl rowsTl
+    let rest ← certifyPivotedList certifier zα ks pivotsTl rowsTl
     let hd ← certifier.neZero zα entry
     have : $row =Q List.replicate ($pivot : Nat) 0 ++ $entry :: $suffix := ⟨⟩
     return q(IsPivotedList.cons rfl $hd $rest)
 
 /-- Prove that `U` is pivoted by `pivotOfList pivots` from the rows of `U`, with `certifier`
 proving the pivot entries nonzero. -/
-def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
-    (U : MatrixViews u m n α) (cols : List Nat) (pivots : Q(List (Fin $n)))
-    (certifier : EntryCertifier α) :
+def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (certifier : EntryCertifier α)
+    (zα : Q(Zero $α)) (U : MatrixViews u m n α) (cols : List Nat) (pivots : Q(List (Fin $n))) :
     MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $pivots i) := do
   let hsorted ← mkDecideProofQ q(($pivots).SortedLT)
-  let h ← certifyPivotedList zα certifier cols pivots U.lit
+  let h ← certifyPivotedList certifier zα cols pivots U.lit
   return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hsorted $h)
     q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $pivots i)
 
@@ -153,9 +152,10 @@ def certifyRowsEq {u : Level} {α : Q(Type u)} (certifier : EntryCertifier α)
 
 /-- Prove the product `L * Aσ = U` from the expansion `mulEq` of the product of the row lists of
 `L` and `Aσ`, whose literals are `mulEq.A` and `mulEq.B`. -/
-def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (cα : Q(AddCommMonoid $α))
+def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)}
+    (certifier? : Option (EntryCertifier α)) (cα : Q(AddCommMonoid $α))
     {zα : Q(Zero $α)} {aα : Q(Add $α)} {mα : Q(Mul $α)} (mulEq : MulEq zα aα mα m m n)
-    (U : MatrixViews u m n α) (certifier? : Option (EntryCertifier α)) :
+    (U : MatrixViews u m n α) :
     MetaM Q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix)) := do
   let hmul : Q(ListMatrix.mul $m $m $n $(mulEq.A) $(mulEq.B) = $(U.lit)) ← match certifier? with
     | none =>
@@ -186,10 +186,10 @@ structure DecompositionCert {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(Co
 
 /-- Build the `DecompositionCert` of `A` from the decomposition data and the parsed entries
 of `A`. -/
-def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
+def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)}
+    (certifier? : Option (EntryCertifier α)) (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
-    (data : BareissData Q($α)) (certifier? : Option (EntryCertifier α)) :
-    MetaM (DecompositionCert rα A) := do
+    (data : BareissData Q($α)) : MetaM (DecompositionCert rα A) := do
   let zα : Q(Zero $α) ← synthInstanceQ q(Zero $α)
   let aα : Q(Add $α) ← synthInstanceQ q(Add $α)
   let mα : Q(Mul $α) ← synthInstanceQ q(Mul $α)
@@ -207,11 +207,11 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let Aσm : Q(Matrix (Fin $m) (Fin $n) $α) := q(ofLists $m $n $(mulEq.B))
   let Um := U.matrix
   have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
-  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq cα mulEq U certifier?
+  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq certifier? cα mulEq U
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD (decideCertifier α)
-  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy zα U cols pivots certifier
-  let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag zα m mulEq.A certifier
+  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy certifier zα U cols pivots
+  let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag certifier zα m mulEq.A
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
   assertInstancesCommute

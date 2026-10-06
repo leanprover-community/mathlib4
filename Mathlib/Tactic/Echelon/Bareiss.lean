@@ -11,12 +11,9 @@ public import Mathlib.Tactic.Echelon.Rat
 /-!
 # The Bareiss decomposition driver
 
-Given a matrix literal `A` over a commutative domain, the entry point
-`mkBareissDecomposition` selects a computation model for the element type, runs the
-elimination, and elaborates the certificate of the decomposition.
-The elimination itself is the model-parameterized `bareissDecomp` in
-`Mathlib.Tactic.Echelon.Core`, and the certificate construction `certifyDecomposition` in
-`Mathlib.Tactic.Echelon.Cert`.
+The entry point of the Bareiss decomposition of a matrix literal over a commutative domain.
+The elimination is the model-parameterized `bareissDecomp` in `Mathlib.Tactic.Echelon.Core`,
+and the certificate construction `certifyDecomposition` in `Mathlib.Tactic.Echelon.Cert`.
 
 ## Main definitions
 
@@ -76,7 +73,7 @@ def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(Com
   let (values, scales) := scaleRows model.ops model.commonMultiple fractions
   let data := restoreScaling model.ops scales (← bareissDecomp model.ops values)
   let exprData ← data.mapM model.mkEntry
-  let cert ← certifyDecomposition rα A entries exprData model.entryCertifier?
+  let cert ← certifyDecomposition model.entryCertifier? rα A entries exprData
   return { cert, carrier, model, data }
 
 end Mathlib.Tactic.Echelon
