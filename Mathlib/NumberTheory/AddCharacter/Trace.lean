@@ -92,6 +92,15 @@ theorem compAddChar_traceChar {S : Type*} [CommRing S] {f : R →+* S} (hf : Fun
   rw [MonoidHom.coe_compAddChar, Function.comp_apply, traceChar_apply, traceChar_apply, map_pow,
     RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass]
 
+/-- Pushing `traceChar` along an algebra homomorphism `R → S` gives the character attached to the
+image of `ζ`. This is `compAddChar_traceChar` for `algebraMap`, with injectivity provided by the
+`FaithfulSMul` instance, so that it can be used as a rewrite rule with no side condition. -/
+theorem compAddChar_traceChar_algebraMap {S : Type*} [CommRing S] [Algebra R S]
+    [FaithfulSMul R S] :
+    (algebraMap R S).compAddChar (traceChar A hζ) =
+      traceChar A (hζ.map_of_injective (FaithfulSMul.algebraMap_injective R S)) :=
+  compAddChar_traceChar hζ (FaithfulSMul.algebraMap_injective R S)
+
 /-- If a homomorphism of `R` sends `ζ` to `ζ ^ n`, then it sends the value of `traceChar` at `x`
 to the value at `x` of the shift of `traceChar` by `n`. -/
 theorem map_traceChar_apply_eq_mulShift {G : Type*} [FunLike G R R] [MonoidHomClass G R R] (f : G)
