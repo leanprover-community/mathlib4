@@ -54,7 +54,7 @@ theorem Similarity.charpoly_eq [IsDomain R] {A : Matrix m m R} (cert : Similarit
     cert.H.charpoly = A.charpoly :=
   calc cert.H.charpoly = (A.reindex cert.σ cert.σ).charpoly :=
         (Matrix.charpoly_eq_of_mul_eq_mul
-          (cert.isLowerTriangular.det_ne_zero cert.diag_ne_zero) cert.mul_eq_mul).symm
+          (cert.isLowerTriangular.det_ne_zero_iff.mpr cert.diag_ne_zero) cert.mul_eq_mul).symm
     _ = A.charpoly :=
       Matrix.charpoly_reindex cert.σ A
 
