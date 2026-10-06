@@ -26,11 +26,13 @@ of `Q`.
 * `Partition.supp`: The supremum of the parts of a partition.
 * `Partition.removeBot`: A constructor for `Partition α` that removes `⊥` from a set of parts.
 * `Partition.induce`: The partition obtained by meeting every part with a fixed element.
-* `Partition.bind`: Combine a partition with a family of partitions of its parts.
+* `Partition.bind`: Combine a partition with a family of partitions of its parts in a complete
+  modular lattice.
 * `Partition.instOrderTop`: `Partition α` has a top element, consisting of just `⊤`
   if `⊤ ≠ ⊥` or nothing otherwise.
-* `Partition.instSemilatticeInf`: `Partition α` has finite meets `P ⊓ Q` when `α` is a frame,
-  given by binding `P` with the induced partitions of `Q` on each part of `P`.
+* `Partition.instSemilatticeInf`: `Partition α` has finite meets `P ⊓ Q` when `α` is a complete
+  modular lattice. They are given by binding `P` with the induced partitions of `Q` on each
+  part of `P`.
 
 ## TODO
 
@@ -235,6 +237,8 @@ instance instOrderTop : OrderTop (Partition α) where
       exact (P.ne_bot_of_mem hxP (Subsingleton.elim _ _)).elim
     exact ⟨⊤, by simp [hs], by simp⟩
 
+instance : BoundedOrder (Partition α) where
+
 lemma top_def : (⊤ : Partition α) = removeBot {⊤} (sSupIndep_singleton ⊤) := rfl
 
 @[simp] lemma supp_top : (⊤ : Partition α).supp = ⊤ := by
@@ -299,6 +303,14 @@ lemma induce_le_induce_left (hPQ : P ≤ Q) : P.induce a ≤ Q.induce a := by
   use a ⊓ s, ?_, hsu
   use ne_bot_of_le_ne_bot hne hsu, s
 
+/-- The support of an induced partition lies below the inducing element. -/
+@[simp]
+lemma supp_induce_le (P : Partition α) (a : α) : (P.induce a).supp ≤ a := by
+  rw [← sSup_eq]
+  refine sSup_le fun x hx ↦ ?_
+  obtain ⟨_, b, _, rfl⟩ := mem_induce_iff.mp hx
+  exact inf_le_left
+
 end Induce
 
 section InduceFrame
@@ -316,7 +328,8 @@ end InduceFrame
 
 section Bind
 
-variable [Order.Frame α] {P Q : Partition α} {a : α} {Qs : ∀ a ∈ P, Partition α}
+variable [CompleteLattice α] [IsModularLattice α] {P Q : Partition α} {a : α}
+variable {Qs : ∀ a ∈ P, Partition α}
 
 /-- Combine a partition with a family of partitions of (subparts of) its parts. -/
 @[simps] protected def bind (P : Partition α) (Qs : ∀ a ∈ P, Partition α)
@@ -325,8 +338,9 @@ variable [Order.Frame α] {P Q : Partition α} {a : α} {Qs : ∀ a ∈ P, Parti
   sSupIndep' b hb := by
     simp only [mem_iUnion, Subtype.exists] at hb
     obtain ⟨a, haP, hba⟩ := hb
-    refine (Qs a haP).sSupIndep hba |>.sup_right ((P.sSupIndep haP).mono_left
-      <| ((Qs a haP).le_of_mem hba).trans (hQs a haP)) |>.mono_right ?_
+    refine (Qs a haP).sSupIndep hba |>.disjoint_sup_right_of_disjoint_sup_left
+      ((P.sSupIndep haP).mono_left <| sup_le ((Qs a haP).le_of_mem hba)
+      (sSup_le_sSup sdiff_subset) |>.trans (hQs a haP)) |>.mono_right ?_
     simp only [sSup_le_iff, mem_sdiff, mem_iUnion, Subtype.exists, mem_singleton_iff, and_imp,
       forall_exists_index]
     rintro t' x hx ht' hne
@@ -386,10 +400,10 @@ end Bind
 
 section Inf
 
-variable [Order.Frame α] {P Q R : Partition α}
+variable [CompleteLattice α] [IsModularLattice α] {P Q R : Partition α}
 
-/-- When `α` is a frame, partitions form a semilattice under refinement, with meet given by
-`Partition.inf`. -/
+/-- When `α` is a complete modular lattice, partitions form a semilattice under refinement.
+The parts of `P ⊓ Q` are the nonbottom meets of a part of `P` with a part of `Q`. -/
 instance instSemilatticeInf : SemilatticeInf (Partition α) where
   inf P Q := P.bind (fun a _ ↦ Q.induce a) (by simp)
   inf_le_left P Q := bind_le (by simp)
@@ -407,11 +421,17 @@ lemma mem_inf_iff {a : α} : a ∈ P ⊓ Q ↔ (∃ p ∈ P, ∃ q ∈ Q, p ⊓ 
   change a ∈ (P.bind _ _).parts ↔ _
   simp [and_comm, eq_comm]
 
+end Inf
+
+section InfFrame
+
+variable [Order.Frame α]
+
 @[simp]
 lemma supp_inf (P Q : Partition α) : (P ⊓ Q).supp = P.supp ⊓ Q.supp := by
   rw [show P ⊓ Q = P.bind (fun a _ ↦ Q.induce a) (by simp) from rfl, supp_bind]
   simp only [supp_induce, iSup_subtype', ← iSup_inf_eq, ← P.iSup_eq]
 
-end Inf
+end InfFrame
 
 end Partition
