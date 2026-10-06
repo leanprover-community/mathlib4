@@ -73,7 +73,7 @@ unit. Warning: if `R/I` is not a field then it is not enough to assume that `g` 
 into monic linear factors in which `X - b` shows up only once; for example `1` is not a simple root
 of `X^2-1` over `ℤ/4ℤ`.) -/
 class HenselianRing (R : Type*) [CommRing R] (I : Ideal R) : Prop where
-  jac : I ≤ Ideal.jacobson ⊥
+  jac : I ≤ Ring.jacobson R
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ I)
       (_ : IsUnit (Ideal.Quotient.mk I (f.derivative.eval a₀))), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ I
@@ -135,7 +135,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
 instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     HenselianRing R (maximalIdeal R) where
   jac := by
-    rw [Ideal.jacobson, le_sInf_iff]
+    rw [← Ideal.jacobson_bot, Ideal.jacobson, le_sInf_iff]
     rintro I ⟨-, hI⟩
     exact (eq_maximalIdeal hI).ge
   is_henselian := by
