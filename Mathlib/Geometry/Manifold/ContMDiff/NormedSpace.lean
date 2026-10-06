@@ -380,8 +380,7 @@ Version in vector spaces. For versions in nontrivial vector bundles, see
 `ContMDiffWithinAt.continuousAlternatingMap_bundle_apply`. -/
 theorem ContMDiffWithinAt.continuousAlternatingMap_apply
     {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
-    (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) n g s x)
-    (hf : ∀ i, CMDiffAt[s] n (f i) x) :
+    (hg : CMDiffAt[s] n g x) (hf : ∀ i, CMDiffAt[s] n (f i) x) :
     CMDiffAt[s] n (fun x ↦ g x (fun i ↦ f i x)) x :=
   ContDiffWithinAt.comp_contMDiffWithinAt (t := univ)
     (g := fun x : (F₁ [⋀^ι]→L[𝕜] F₂) × (ι → F₁) => x.1 x.2)
@@ -395,21 +394,18 @@ versions in nontrivial vector bundles, see
 `ContMDiffAt.continuousAlternatingMap_bundle_apply`. -/
 nonrec theorem ContMDiffAt.continuousAlternatingMap_apply
     {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
-    (hg : ContMDiffAt I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) n g x)
-    (hf : ∀ i, CMDiffAt n (f i) x) :
+    (hg : CMDiffAt n g x) (hf : ∀ i, CMDiffAt n (f i) x) :
     CMDiffAt n (fun x ↦ g x (fun i ↦ f i x)) x :=
   ContMDiffWithinAt.continuousAlternatingMap_apply hg hf
 
 theorem ContMDiffOn.continuousAlternatingMap_apply
     {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
-    (hg : ContMDiffOn I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) n g s)
-    (hf : ∀ i, CMDiff[s] n (f i)) :
+    (hg : CMDiff[s] n g) (hf : ∀ i, CMDiff[s] n (f i)) :
     CMDiff[s] n (fun x ↦ g x (fun i ↦ f i x)) :=
   fun x hx ↦ (hg x hx).continuousAlternatingMap_apply (fun i ↦ (hf i x hx))
 
 theorem ContMDiff.continuousAlternatingMap_apply
     {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
-    (hg : ContMDiff I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) n g)
-    (hf : ∀ i, CMDiff n (f i)) :
+    (hg : CMDiff n g) (hf : ∀ i, CMDiff n (f i)) :
     CMDiff n (fun x ↦ g x (fun i ↦ f i x)) :=
   fun x ↦ (hg x).continuousAlternatingMap_apply (fun i ↦ (hf i x))
