@@ -199,15 +199,6 @@ theorem under_ne_bot_of_algebraic_mem [IsDomain S] {x : S} (x_ne_zero : x ≠ 0)
 @[deprecated (since := "2026-09-03")] alias comap_ne_bot_of_algebraic_mem :=
   under_ne_bot_of_algebraic_mem
 
-/-- If `S` is a domain, `x : S` is nonzero and algebraic over `R`, and a ring hom out of `S` kills
-`x`, then it also kills `algebraMap R S y` for some nonzero `y : R`. -/
-theorem _root_.IsAlgebraic.exists_ne_zero_map_algebraMap_eq_zero [IsDomain S] {T : Type*}
-    [Semiring T] {x : S} (hx : IsAlgebraic R x) (g : S →+* T) (x0 : x ≠ 0) (hgx : g x = 0) :
-    ∃ y : R, y ≠ 0 ∧ g (algebraMap R S y) = 0 := by
-  obtain ⟨y, hy, y0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot <|
-    under_ne_bot_of_algebraic_mem (I := RingHom.ker g) x0 hgx hx
-  exact ⟨y, y0, hy⟩
-
 theorem under_ne_bot_of_integral_mem [Nontrivial R] [IsDomain S] {x : S} (x_ne_zero : x ≠ 0)
     (x_mem : x ∈ I) (hx : IsIntegral R x) : I.under R ≠ ⊥ :=
   under_ne_bot_of_algebraic_mem x_ne_zero x_mem hx.isAlgebraic

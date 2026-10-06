@@ -23,6 +23,15 @@ import Mathlib.RingTheory.Invariant.Basic
 
 noncomputable section
 
+/-- If `B` is a domain, `x : B` is nonzero and algebraic over `A`, and a ring hom out of `B` kills
+`x`, then it also kills `algebraMap A B y` for some nonzero `y : A`. -/
+theorem IsAlgebraic.exists_ne_zero_map_algebraMap_eq_zero {A B S : Type*} [CommRing A]
+    [CommRing B] [Algebra A B] [IsDomain B] [Semiring S] {x : B} (hx : IsAlgebraic A x)
+    (f : B →+* S) (x0 : x ≠ 0) (hfx : f x = 0) : ∃ y : A, y ≠ 0 ∧ f (algebraMap A B y) = 0 := by
+  obtain ⟨y, hy, y0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot <|
+    Ideal.under_ne_bot_of_algebraic_mem (I := RingHom.ker f) x0 hfx hx
+  exact ⟨y, y0, hy⟩
+
 namespace LindemannWeierstrass
 
 open scoped AddMonoidAlgebra
