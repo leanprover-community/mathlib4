@@ -710,40 +710,56 @@ def toPerm : MulAut M →* Equiv.Perm M where
   map_one' := rfl
   map_mul' _ _ := rfl
 
-/-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a plain function. -/
-@[to_additive /-- Group conjugation, `AddAut.addConj g h = g + h + -g`, as a plain function. -/]
-def conj [Group G] (g : G) : MulAut G where
+/-- Monoid conjugation, `MulAut.unitsConj g h = g * h * g⁻¹`, as a plain function. -/
+@[to_additive AddAut.addUnitsConj
+/-- Additive monoid conjugation, `AddAut.addUnitsConj g h = g + h + -g`, as a plain function. -/]
+def unitsConj [Monoid G] (g : Gˣ) : MulAut G where
   toFun h := g * h * g⁻¹
   invFun h := g⁻¹ * h * g
   left_inv _ := by simp [mul_assoc]
   right_inv _ := by simp [mul_assoc]
   map_mul' := by simp [mul_assoc]
 
-/-- Group conjugation, `AddAut.addConjHom (.ofAdd g) h = g + h + -g`, as an homomorphism
+/-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a plain function. -/
+@[to_additive
+/-- Additive group conjugation, `AddAut.addConj g h = g + h + -g`, as a plain function. -/]
+abbrev conj [Group G] (g : G) : MulAut G := unitsConj (toUnits g)
+
+/-- Additive monoid conjugation, `AddAut.addUnitsConjHom (.ofAdd g) h = g + h + -g`, as an
+homomorphism mapping addition in `G` into multiplication in the additive automorphism group
+`AddAut G`. -/
+@[simps] def _root_.AddAut.addUnitsConjHom [AddMonoid G] : AddUnits G →+ Additive (AddAut G) where
+  toFun := Additive.ofMul ∘ AddAut.addUnitsConj
+  map_add' _ _ := by ext; simp [AddAut.addUnitsConj, add_assoc]
+  map_zero' := by ext; simp [AddAut.addUnitsConj]
+
+/-- Additive group conjugation, `AddAut.addConjHom (.ofAdd g) h = g + h + -g`, as an homomorphism
 mapping addition in `G` into multiplication in the additive automorphism group `AddAut G`. -/
-@[simps] def _root_.AddAut.addConjHom [AddGroup G] : Multiplicative G →* AddAut G where
-  toFun := AddAut.addConj ∘ Multiplicative.toAdd
-  map_mul' _ _ := by ext; simp [AddAut.addConj, add_assoc]
-  map_one' := by ext; simp [AddAut.addConj]
+@[simps!] def _root_.AddAut.addConjHom [AddGroup G] : G →+ Additive (AddAut G) :=
+  AddAut.addUnitsConjHom.comp toAddUnits.toAddMonoidHom
+
+/-- Monoid conjugation, `MulAut.unitsConjHom g h = g * h * g⁻¹`, as a monoid homomorphism
+mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`. -/
+@[simps] def unitsConjHom [Monoid G] : Gˣ →* MulAut G where
+  toFun := unitsConj
+  map_mul' _ _ := by ext; simp [unitsConj, mul_assoc]
+  map_one' := by ext; simp [unitsConj]
 
 /-- Group conjugation, `MulAut.conjHom g h = g * h * g⁻¹`, as a monoid homomorphism
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
 See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct G) G` instance
 where `conj G` acts on `G` by conjugation. -/
-@[simps] def conjHom [Group G] : G →* MulAut G where
-  toFun := conj
-  map_mul' _ _ := by ext; simp [conj, mul_assoc]
-  map_one' := by ext; simp [conj]
+@[simps!] abbrev conjHom [Group G] : G →* MulAut G := unitsConjHom.comp toUnits.toMonoidHom
 
 theorem _root_.AddAut.addConj_zero [AddGroup G] : AddAut.addConj (0 : G) = 1 :=
-  AddAut.addConjHom.map_one ..
+  AddAut.addConjHom.map_zero ..
 
 @[to_additive existing (attr := simp)] theorem conj_one [Group G] : conj (1 : G) = 1 :=
   conjHom.map_one ..
 
 theorem _root_.AddAut.addConj_add [AddGroup G] (g h : G) :
     AddAut.addConj (g + h) = AddAut.addConj g * AddAut.addConj h :=
-  AddAut.addConjHom.map_mul ..
+  AddAut.addConjHom.map_add ..
 
 @[to_additive existing (attr := simp)]
 theorem conj_mul [Group G] (g h : G) : conj (g * h) = conj g * conj h :=
@@ -751,7 +767,7 @@ theorem conj_mul [Group G] (g h : G) : conj (g * h) = conj g * conj h :=
 
 theorem _root_.AddAut.addConj_neg [AddGroup G] (g : G) :
     AddAut.addConj (-g) = (AddAut.addConj g)⁻¹ :=
-  AddAut.addConjHom.map_inv (Multiplicative.ofAdd g)
+  AddAut.addConjHom.map_neg g
 
 @[to_additive existing (attr := simp)] theorem conj_inv [Group G] (g : G) : conj g⁻¹ = (conj g)⁻¹ :=
   conjHom.map_inv _

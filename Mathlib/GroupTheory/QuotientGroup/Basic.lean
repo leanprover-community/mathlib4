@@ -508,35 +508,41 @@ end powMonoidHom
 
 end QuotientGroup
 
-namespace Group
+namespace Monoid
 
-variable (G : Type*) [Group G]
+variable (G : Type*) [Monoid G]
 
-/-- The action of inner automorphisms of a group on the endomorphism monoid. -/
-abbrev innMulAction : MulAction G (Monoid.End G) :=
-  .compHom _ <| (Units.coeHom _).comp <| MulAut.equivUnitsEnd.toMonoidHom.comp MulAut.conjHom
+/-- The action of inner automorphisms of a monoid on the endomorphism monoid. -/
+abbrev innMulAction : MulAction Gˣ (Monoid.End G) :=
+  .compHom _ <| (Units.coeHom _).comp <| MulAut.equivUnitsEnd.toMonoidHom.comp MulAut.unitsConjHom
 
-attribute [local instance] Group.innMulAction
+attribute [local instance] Monoid.innMulAction
 
 variable {G} in
-@[simp] theorem innMulAction_apply (g : G) (φ : Monoid.End G) x :
-    (g • φ) x = MulAut.conj g (φ x) := rfl
+@[simp] theorem innMulAction_apply (g : Gˣ) (φ : Monoid.End G) (x : G) :
+    (g • φ) x = MulAut.unitsConj g (φ x) := rfl
 
 /-- The congruence relation of "differing by an inner automorphism on the left"
-on the endomorphism monoid of a group. -/
+on the endomorphism monoid of a monoid. -/
 def innConn : Con (Monoid.End G) where
-  toSetoid := MulAction.orbitRel G (Monoid.End G)
-  mul' := by rintro _ φ _ ψ ⟨g, rfl⟩ ⟨g', rfl⟩; use g * φ g'; ext; simp
+  toSetoid := MulAction.orbitRel Gˣ (Monoid.End G)
+  mul' := by
+    rintro _ φ _ ψ ⟨g, rfl⟩ ⟨g', rfl⟩; use g * g'.map φ; ext
+    simp [MulAut.unitsConj, mul_assoc]; rfl
 
 variable {G} in
-theorem bijective_of_innConn_one {φ : Monoid.End G} (hφ : innConn G φ 1) : Function.Bijective φ := by
-  obtain ⟨g, rfl⟩ := hφ; exact (MulAut.conj g).bijective
+theorem bijective_of_innConn_one {φ : Monoid.End G} (hφ : innConn G φ 1) :
+    Function.Bijective φ := by
+  obtain ⟨g, rfl⟩ := hφ; exact (MulAut.unitsConj g).bijective
 
-/-- The outer automorphism group Out(G) := Aut(G) ⧸ Inn(G) of a group G. -/
-abbrev MulOut : Type _ := MulAut G ⧸ MulAut.conjHom.range
+/-- The outer automorphism group Out(G) := Aut(G)⧸Inn(G) of a monoid G. -/
+abbrev Out : Type _ := MulAut G ⧸ MulAut.unitsConjHom.range
 
-/-- Out(G) is isomorphic to (End(G) ⧸ Inn(G))ˣ. -/
-noncomputable def mulOutEquivUnitsQuotientInnConn : MulOut G ≃* (innConn G).Quotientˣ :=
+/-- The outer automorphism monoid End(G)⧸Inn(G) of a monoid G. -/
+abbrev OuterEnd : Type _ := (innConn G).Quotient
+
+/-- Out(G) is isomorphic to (End(G)⧸Inn(G))ˣ. -/
+noncomputable def mulOutEquivUnitsQuotientInnConn : Out G ≃* (OuterEnd G)ˣ :=
   .ofBijective (QuotientGroup.lift _ (⟨⟨fun f ↦ ⟨⟦f.toMonoidHom⟧, ⟦f⁻¹.toMonoidHom⟧,
     congr(⟦$(mul_inv_cancel f).toMonoidHom⟧), congr(⟦$(inv_mul_cancel f).toMonoidHom⟧)⟩, rfl⟩,
     fun _ _ ↦ rfl⟩) <| by rintro _ ⟨g, rfl⟩; refine Units.ext <| Quotient.sound ⟨g, rfl⟩)
@@ -549,4 +555,4 @@ noncomputable def mulOutEquivUnitsQuotientInnConn : MulOut G ≃* (innConn G).Qu
       exact ⟨⟦.ofBijective φ ⟨(bijective_of_innConn_one (Quotient.exact hψφ)).1.of_comp (g := φ),
         (bijective_of_innConn_one (Quotient.exact hφψ)).2.of_comp (f := φ)⟩⟧, Units.ext rfl⟩ }
 
-end Group
+end Monoid

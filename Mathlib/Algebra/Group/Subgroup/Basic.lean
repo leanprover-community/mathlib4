@@ -242,11 +242,11 @@ instance (priority := 100) normal_of_characteristic [h : H.Characteristic] : H.N
 
 end Subgroup
 
-instance x : MulAut.conjHom (G := G).range.Normal where
-  conj_mem := by rintro _ ⟨g, rfl⟩ φ; use φ g; ext; simp
+instance {G : Type*} [Monoid G] : MulAut.unitsConjHom (G := G).range.Normal where
+  conj_mem := by rintro _ ⟨g, rfl⟩ φ; use g.map φ; ext; simp [MulAut.unitsConj]
 
-instance {G : Type*} [AddGroup G] : AddAut.addConjHom (G := G).range.Normal where
-  conj_mem := by rintro _ ⟨g, rfl⟩ φ; use .ofAdd (φ g.toAdd); ext; simp
+instance {G : Type*} [AddMonoid G] : AddAut.addUnitsConjHom (G := G).range.Normal where
+  conj_mem := by rintro _ ⟨g, rfl⟩ φ; use g.map φ.toMul; ext; simp [AddAut.addUnitsConj]
 
 namespace AddSubgroup
 
