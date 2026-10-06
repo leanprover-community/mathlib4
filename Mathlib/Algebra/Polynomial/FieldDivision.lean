@@ -735,7 +735,7 @@ theorem exists_monic_irreducible_factor (p : R[X]) (hu : ¬IsUnit p) :
     ∃ q : R[X], q.Monic ∧ Irreducible q ∧ q ∣ p := by
   classical
   obtain rfl | hp := eq_or_ne p 0
-  · exact ⟨X, monic_X, irreducible_X, dvd_zero X⟩
+  · exact ⟨X, by simp [irreducible_X]⟩
   rcases exists_mem_normalizedFactors hp hu with ⟨q, hq⟩
   grind [Polynomial.mem_normalizedFactors_iff]
 
