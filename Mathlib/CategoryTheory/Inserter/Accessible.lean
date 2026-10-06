@@ -11,8 +11,9 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 import Mathlib.CategoryTheory.Inserter.Limits
 import Mathlib.CategoryTheory.Inserter.LocallySmall
-import Mathlib.CategoryTheory.Presentable.StrongGenerator
 import Mathlib.CategoryTheory.Presentable.Dense
+import Mathlib.CategoryTheory.Presentable.StrongGenerator
+import Mathlib.CategoryTheory.Presentable.Uniformization
 import Mathlib.Order.Interval.Set.InitialSeg
 import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
 import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
@@ -1354,6 +1355,17 @@ public lemma isCardinalPresentable_eq :
   have := isCardinalFiltered_generator_inverseImage_isCardinalPresentable F G κ Λ hΛ
   rw [this.isPresentable_eq_retractClosure]
   apply ObjectProperty.retractClosure_eq_self
+
+end
+
+section
+
+theorem isAccessibleCategory
+    {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L)
+    [IsAccessibleCategory.{w} K] [IsAccessibleCategory.{w} L]
+    [F.IsAccessible.{w}] [G.IsAccessible.{w}] : IsAccessibleCategory.{w} (Inserter F G) := by
+  have := IsCardinalAccessibleCategory.uniformization_pair F G
+  sorry
 
 end
 
