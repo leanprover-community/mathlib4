@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.ClickSuggestions.FindPremises
+
 meta import Mathlib.Tactic.ClickSuggestions.FindPremises
 
 /-!

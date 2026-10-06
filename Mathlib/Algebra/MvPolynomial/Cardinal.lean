@@ -5,11 +5,11 @@ Authors: Chris Hughes, Junyan Xu
 -/
 module
 
-import Mathlib.Data.Finsupp.Fintype
-
-import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.SetTheory.Cardinal.Order
+
+import Mathlib.Data.Finsupp.Fintype
+import Mathlib.Algebra.MonoidAlgebra.Cardinal
 import Mathlib.Tactic.NormNum
 
 /-!

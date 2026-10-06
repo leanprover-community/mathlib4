@@ -6,6 +6,7 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.Algebra.Category.Grp.Colimits
+
 import Mathlib.Algebra.Module.CharacterModule
 
 /-!

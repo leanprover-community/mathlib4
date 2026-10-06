@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
+
 import Mathlib.Algebra.Ring.Torsion
 
 /-!
@@ -29,8 +30,6 @@ root pairings.
 -/
 
 public section
-
-noncomputable section
 
 open Function Set
 open Submodule (span)

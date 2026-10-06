@@ -5,9 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
-import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Commutator.Finite
 public import Mathlib.GroupTheory.Transfer
+
+import Mathlib.GroupTheory.Abelianization.Defs
 
 /-!
 # Schreier's Lemma

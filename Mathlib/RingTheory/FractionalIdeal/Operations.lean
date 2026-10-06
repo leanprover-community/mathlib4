@@ -5,9 +5,10 @@ Authors: Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+
+import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.Field

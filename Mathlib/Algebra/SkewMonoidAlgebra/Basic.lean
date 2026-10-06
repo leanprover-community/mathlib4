@@ -550,7 +550,7 @@ theorem mapDomain_smul {R : Type*} [Monoid R] [DistribMulAction R k] {b : R} :
 `SkewMonoidAlgebra k G` such that `liftNC f g (single a b) = f b * g a`.
 
 If `k` is a semiring and `f` is a ring homomorphism and for all `x : R`, `y : G` the equality
-`(f (y • x)) * g y = (g y) * (f x))` holds, then the result is a ring homomorphism (see
+`(f (y • x)) * g y = (g y) * (f x)` holds, then the result is a ring homomorphism (see
 `SkewMonoidAlgebra.liftNCRingHom`).
 
 If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra homomorphism called

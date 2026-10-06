@@ -5,11 +5,12 @@ Authors: Damiano Testa, Jujian Zhang
 -/
 module
 
-import Mathlib.Algebra.Polynomial.DenomsClearable
 public import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Topology.Algebra.Polynomial
+
+import Mathlib.Algebra.Polynomial.DenomsClearable
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
