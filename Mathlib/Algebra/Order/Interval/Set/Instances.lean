@@ -456,9 +456,12 @@ theorem one_sub_mem {t : R} (ht : t ∈ Ioo (0 : R) 1) : 1 - t ∈ Ioo (0 : R) 1
 theorem mem_iff_one_sub_mem {t : R} : t ∈ Ioo (0 : R) 1 ↔ 1 - t ∈ Ioo (0 : R) 1 :=
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 
-theorem one_minus_pos (x : Ioo (0 : R) 1) : 0 < 1 - (x : R) := by simpa using x.2.2
+theorem one_sub_pos (x : Ioo (0 : R) 1) : 0 < 1 - (x : R) := by simpa using x.2.2
 
-theorem one_minus_lt_one (x : Ioo (0 : R) 1) : 1 - (x : R) < 1 := by simpa using x.2.1
+theorem one_sub_lt_one (x : Ioo (0 : R) 1) : 1 - (x : R) < 1 := by simpa using x.2.1
+
+@[deprecated (since := "2026-10-06")] alias one_minus_pos := one_sub_pos
+@[deprecated (since := "2026-10-06")] alias one_minus_lt_one := one_sub_lt_one
 
 end OrderedAddCommGroup
 
