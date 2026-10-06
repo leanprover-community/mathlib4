@@ -33,7 +33,7 @@ namespace FintypeCat
 noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     FintypeCat.{u} := by
   haveI : Fintype (↑(Set.range f)ᶜ) := Fintype.ofFinite _
-  exact FintypeCat.of (↑(Set.range f)ᶜ)
+  exact ↧(↑(Set.range f)ᶜ)
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
 noncomputable def imageComplementIncl {X Y : FintypeCat.{u}}
@@ -48,14 +48,14 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat G}
     (f : X ⟶ Y) : Action FintypeCat G where
   V := FintypeCat.imageComplement f.hom
   ρ := {
-    toFun g := FintypeCat.homMk (fun y ↦ Subtype.mk ((Y.ρ g).hom y.val) <| by
+    toFun g := .of (FintypeCat.homMk (fun y ↦ Subtype.mk ((Y.ρ g).asHom.hom y.val) <| by
       intro ⟨x, h⟩
       apply y.property
-      use (X.ρ g⁻¹).hom x
-      calc (X.ρ g⁻¹ ≫ f.hom) x
-          = ((Y.ρ g⁻¹ * Y.ρ g)).hom y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
+      use (X.ρ g⁻¹).asHom.hom x
+      calc ((X.ρ g⁻¹).asHom ≫ f.hom) x
+          = ((Y.ρ g⁻¹ * Y.ρ g)).asHom.hom y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
         _ = y.val := by
-          simp [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_hom])
+          simp [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_hom]))
     map_one' := by aesop
     map_mul' := by aesop
   }
@@ -115,7 +115,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     have : Fintype T := Fintype.ofFinite T
     let : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G
       ↑(MulAction.orbit G x)
-    let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
+    let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G ↧T
     let i : T' ⟶ X := ⟨FintypeCat.homMk Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
     have : IsIso i := by
@@ -145,7 +145,7 @@ theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
       · let x : X := i.hom y
         obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq G x x'
         use σ • y
-        change (Y.ρ σ ≫ i.hom) y = x'
+        change ((Y.ρ σ).asHom ≫ i.hom) y = x'
         rw [i.comm, FintypeCat.comp_apply]
         exact hσ
     apply isIso_of_reflects_iso i (Action.forget _ _)
@@ -165,7 +165,7 @@ noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat G)
   haveI : MulAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
   let e : X.V ≃ G ⧸ MulAction.stabilizer G x :=
     (Equiv.Set.univ X.V).symm.trans <|
-      (Equiv.Set.congr ((MulAction.orbit_eq_univ G x).symm)).trans <|
+      (Set.equivOfEq ((MulAction.orbit_eq_univ G x).symm)).trans <|
       MulAction.orbitEquivQuotientStabilizer G x
   Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) <| fun σ : G ↦ by
     ext (a : G ⧸ MulAction.stabilizer G x)
