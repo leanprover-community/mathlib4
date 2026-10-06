@@ -34,11 +34,11 @@ coefficients of `P.eraseLead`.
 
 ## Polynomials from coefficient lists
 
-* `ofCoeffs l`: constructs a polynomial from coefficients in the list `l`, starting with the
+* `ofCoeffList l`: constructs a polynomial from coefficients in the list `l`, starting with the
   constant coefficient.
 * `coeffScale`, `coeffAdd`, `coeffShift`, `coeffSub`: arithmetic on such lists. The lemmas
-  `ofCoeffs_coeffScale`, `ofCoeffs_coeffAdd`, `ofCoeffs_coeffShift` and `ofCoeffs_coeffSub` relate
-  them to the arithmetic of polynomials.
+  `ofCoeffList_coeffScale`, `ofCoeffList_coeffAdd`, `ofCoeffList_coeffShift` and
+  `ofCoeffList_coeffSub` relate them to the arithmetic of polynomials.
 -/
 
 @[expose] public section
@@ -166,35 +166,36 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
 
 /-- Construct a polynomial from a little-endian (i.e. constant term first) coefficient list.
 
-`ofCoeffs [c₀, c₁, ...] = C c₀ + C c₁ * X + ...`
+`ofCoeffList [c₀, c₁, ...] = C c₀ + C c₁ * X + ...`
 
 Little-endian ordering of coefficients is convenient for:
 
 * defining multiplication by X (by cons `(0 :: )`)
 * defining addition of two polynomials of different degrees (their coefficient lists indexes align)
 -/
-noncomputable def ofCoeffs : List R → R[X]
+noncomputable def ofCoeffList : List R → R[X]
   | [] => 0
-  | c :: p => C c + X * ofCoeffs p
+  | c :: p => C c + X * ofCoeffList p
 
 @[simp]
-theorem ofCoeffs_nil : ofCoeffs ([] : List R) = 0 := rfl
+theorem ofCoeffList_nil : ofCoeffList ([] : List R) = 0 := rfl
 
-theorem ofCoeffs_cons (c : R) (p : List R) : ofCoeffs (c :: p) = C c + X * ofCoeffs p := rfl
+theorem ofCoeffList_cons (c : R) (p : List R) :
+    ofCoeffList (c :: p) = C c + X * ofCoeffList p := rfl
 
 @[simp]
-theorem coeff_ofCoeffs (l : List R) (i : ℕ) : (ofCoeffs l).coeff i = l.getD i 0 := by
+theorem coeff_ofCoeffList (l : List R) (i : ℕ) : (ofCoeffList l).coeff i = l.getD i 0 := by
   induction l generalizing i with
   | nil => simp
   | cons c p ih =>
     cases i with
-    | zero => simp [ofCoeffs_cons]
-    | succ i => simp [ofCoeffs_cons, coeff_X_mul, ih]
+    | zero => simp [ofCoeffList_cons]
+    | succ i => simp [ofCoeffList_cons, coeff_X_mul, ih]
 
 @[simp]
-theorem ofCoeffs_reverse_coeffList (P : R[X]) : ofCoeffs P.coeffList.reverse = P := by
+theorem ofCoeffList_reverse_coeffList (P : R[X]) : ofCoeffList P.coeffList.reverse = P := by
   ext i
-  rw [coeff_ofCoeffs, coeffList, List.map_reverse, List.reverse_reverse]
+  rw [coeff_ofCoeffList, coeffList, List.map_reverse, List.reverse_reverse]
   rcases lt_or_ge i P.degree.succ with h | h
   · grind
   · have hd : P.degree < i := by
@@ -202,12 +203,13 @@ theorem ofCoeffs_reverse_coeffList (P : R[X]) : ofCoeffs P.coeffList.reverse = P
       exact (WithBot.coe_le rfl).mpr h
     grind [coeff_eq_zero_of_degree_lt]
 
-theorem map_ofCoeffs {S : Type*} [Semiring S] (f : R →+* S) (l : List R) :
-    (ofCoeffs l).map f = ofCoeffs (l.map f) := by
+theorem map_ofCoeffList {S : Type*} [Semiring S] (f : R →+* S) (l : List R) :
+    (ofCoeffList l).map f = ofCoeffList (l.map f) := by
   induction l with
   | nil => simp
   | cons c p ih =>
-    simp only [ofCoeffs_cons, Polynomial.map_add, map_C, Polynomial.map_mul, map_X, List.map_cons]
+    simp only [ofCoeffList_cons, Polynomial.map_add, map_C, Polynomial.map_mul, map_X,
+      List.map_cons]
     exact
       toFinsupp_inj.mp
         (congrArg toFinsupp (congrArg (HAdd.hAdd (C (f c))) (congrArg (HMul.hMul X) ih)))
@@ -226,26 +228,27 @@ def coeffAdd : List R → List R → List R
 /-- `X * p` on coefficients. -/
 def coeffShift (p : List R) : List R := 0 :: p
 
-theorem ofCoeffs_coeffScale (a : R) (p : List R) :
-    ofCoeffs (coeffScale a p) = C a * ofCoeffs p := by
+theorem ofCoeffList_coeffScale (a : R) (p : List R) :
+    ofCoeffList (coeffScale a p) = C a * ofCoeffList p := by
   induction p with
   | nil => simp [coeffScale]
   | cons c p ih =>
-    rw [coeffScale, ofCoeffs_cons, ofCoeffs_cons, ih, C_mul, ← mul_assoc, X_mul_C, mul_assoc,
+    rw [coeffScale, ofCoeffList_cons, ofCoeffList_cons, ih, C_mul, ← mul_assoc, X_mul_C, mul_assoc,
       mul_add]
 
-theorem ofCoeffs_coeffAdd (p q : List R) : ofCoeffs (coeffAdd p q) = ofCoeffs p + ofCoeffs q := by
+theorem ofCoeffList_coeffAdd (p q : List R) :
+    ofCoeffList (coeffAdd p q) = ofCoeffList p + ofCoeffList q := by
   induction p generalizing q with
   | nil => simp [coeffAdd]
   | cons c p ih =>
     cases q with
     | nil => simp [coeffAdd]
     | cons d q =>
-      rw [coeffAdd, ofCoeffs_cons, ofCoeffs_cons, ofCoeffs_cons, ih, C_add, mul_add,
+      rw [coeffAdd, ofCoeffList_cons, ofCoeffList_cons, ofCoeffList_cons, ih, C_add, mul_add,
         add_add_add_comm]
 
-theorem ofCoeffs_coeffShift (p : List R) : ofCoeffs (coeffShift p) = X * ofCoeffs p := by
-  rw [coeffShift, ofCoeffs_cons, map_zero, zero_add]
+theorem ofCoeffList_coeffShift (p : List R) : ofCoeffList (coeffShift p) = X * ofCoeffList p := by
+  rw [coeffShift, ofCoeffList_cons, map_zero, zero_add]
 
 end Semiring
 
@@ -262,8 +265,9 @@ theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
 /-- `p - q` on coefficients. -/
 def coeffSub (p q : List R) : List R := coeffAdd p (coeffScale (-1) q)
 
-theorem ofCoeffs_coeffSub (p q : List R) : ofCoeffs (coeffSub p q) = ofCoeffs p - ofCoeffs q := by
-  rw [coeffSub, ofCoeffs_coeffAdd, ofCoeffs_coeffScale, map_neg, map_one, neg_one_mul,
+theorem ofCoeffList_coeffSub (p q : List R) :
+    ofCoeffList (coeffSub p q) = ofCoeffList p - ofCoeffList q := by
+  rw [coeffSub, ofCoeffList_coeffAdd, ofCoeffList_coeffScale, map_neg, map_one, neg_one_mul,
     sub_eq_add_neg]
 
 end Ring
