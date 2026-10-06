@@ -42,7 +42,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   -- `w` and `w' p` are integers, `w ≠ 0`, and the `p` in the support of `w'` are integral
   -- polynomials with nonzero constant coefficients.
   obtain ⟨w, w0, w'', p0, h⟩ :=
-    LindemannWeierstrass.exists_sum_map_aroots expMonoidHom u hu u_inj v hv v0 h
+    LindemannWeierstrass.exists_add_sum_map_aroots_eq_zero expMonoidHom u hu u_inj v hv v0 h
   simp_rw [expMonoidHom_apply, toAdd_ofAdd] at h
   let p : w''.support → ℤ[X] := Subtype.val
   let w' := w'' ∘ p
