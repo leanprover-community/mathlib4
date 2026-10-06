@@ -62,7 +62,7 @@ theorem _root_.Subgroup.gc_toSubmonoid_mulSupport :
     grind [mulSupport_toSubmonoid, le_inf_iff, Submonoid.inv_le_inv, Subgroup.toSubmonoid_inv]
 
 @[to_additive]
-def _root_.Subgroup.gci_toSubmonoid_mulSupport :
+def _root_.Subgroup.gciToSubmonoidMulSupport :
     GaloisCoinsertion (α := Subgroup G) Subgroup.toSubmonoid mulSupport :=
   Subgroup.gc_toSubmonoid_mulSupport.toGaloisCoinsertion <| by
     simp [← Subgroup.toSubmonoid_le]
@@ -126,7 +126,7 @@ variable {H : Type*} [Group H] (f : G →* H) (M N : Submonoid G) (M' : Submonoi
 
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.mulSupport_eq (H : Subgroup G) : H.mulSupport = H :=
-  Subgroup.gci_toSubmonoid_mulSupport.u_l_eq _
+  Subgroup.gciToSubmonoidMulSupport.u_l_eq H
 
 @[to_additive (attr := simp)]
 theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by
