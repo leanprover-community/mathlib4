@@ -6,13 +6,17 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Inserter.Limits
-public import Mathlib.CategoryTheory.Inserter.LocallySmall
 public import Mathlib.CategoryTheory.Presentable.Comma
+public import Mathlib.Tactic.CategoryTheory.Map
+
+import Mathlib.CategoryTheory.Inserter.LocallySmall
+
+import Mathlib.CategoryTheory.Presentable.StrongGenerator
+import Mathlib.CategoryTheory.Presentable.Dense
 import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
 import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
-import Mathlib.CategoryTheory.Presentable.StrongGenerator
-public import Mathlib.Tactic.CategoryTheory.Map
+
 import Mathlib.Order.Interval.Set.InitialSeg
 
 /-!
