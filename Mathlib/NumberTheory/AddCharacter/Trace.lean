@@ -18,6 +18,10 @@ Throughout, the ideal `pℤ = Ideal.span {(p : ℤ)}` of `ℤ` is written `𝒑`
 
 This file defines that character and establishes its basic properties.
 
+Over a finite field this is the construction behind `FiniteField.primitiveChar`, with one
+difference: there the root of unity is chosen as part of the construction, whereas here it is
+supplied by the user, which is what one needs when working inside a fixed cyclotomic field.
+
 ## Main definitions
 
 * `AddChar.traceChar`: the additive character of `A` sending `x` to
@@ -28,6 +32,12 @@ This file defines that character and establishes its basic properties.
 * `AddChar.exists_nat_traceChar_eq_pow`: the value of `traceChar` at `x` is `ζ ^ a` for any
   natural number `a` representing the trace of `x`; this is how the character is computed in
   practice.
+
+* `AddChar.mk_traceChar_apply_eq_one`: the values of `traceChar` are congruent to `1` modulo any
+  ideal containing `ζ - 1`.
+
+* `AddChar.mk_traceChar_apply_eq_one_add_smul`: first-order expansion of `traceChar` modulo the
+  square of an ideal containing `ζ - 1`.
 
 * `AddChar.isPrimitive_traceChar`: over a finite field, the character `traceChar` is primitive.
 
@@ -85,6 +95,7 @@ theorem exists_nat_traceChar_eq_pow (x : A) :
     RingHom.coe_coe, RingEquiv.symm_apply_apply] at this
 
 /-- The character `traceChar` is trivial at `x` if and only if the trace of `x` vanishes. -/
+@[simp]
 theorem traceChar_apply_eq_one_iff {x : A} :
     traceChar A hζ x = 1 ↔ Algebra.trace (ℤ ⧸ 𝒑) A x = 0 := by
   rw [traceChar_apply, ← orderOf_dvd_iff_pow_eq_one, ← hζ.eq_orderOf, ← ZMod.natCast_eq_zero_iff,
@@ -99,7 +110,6 @@ theorem mk_traceChar_apply_eq_one {𝓟 : Ideal R} (h : ζ - 1 ∈ 𝓟) (x : A)
   exact Finset.sum_eq_zero fun i _ ↦ by
     rw [Quotient.eq_zero_iff_mem.mpr h, zero_pow i.succ_ne_zero, zero_mul]
 
-include hζ in
 /-- First-order expansion of `traceChar` modulo the square of an ideal containing `ζ - 1`. -/
 theorem mk_traceChar_apply_eq_one_add_smul {𝓟 : Ideal R} [(𝓟 ^ 2).LiesOver 𝒑] (h : ζ - 1 ∈ 𝓟)
     (x : A) :
