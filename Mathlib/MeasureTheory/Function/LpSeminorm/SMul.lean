@@ -177,7 +177,7 @@ theorem eLpNorm_const_mul_ennreal_of_pos {f : α → ℝ≥0∞} {c : ℝ≥0∞
   · apply (hf ?_).elim
     convert (h'f.aemeasurable.const_mul (c⁻¹)).aestronglyMeasurable with x
     rw [← mul_assoc, ENNReal.inv_mul_cancel hc h'c, one_mul]
-  have : (fun x ↦ ∞ * f x) =  (fun x ↦ ∞ * (∞ * f x)) := by simp [← mul_assoc]
+  have : (fun x ↦ ∞ * f x) = (fun x ↦ ∞ * (∞ * f x)) := by simp [← mul_assoc]
   rw [this, eLpNorm_const_mul_ennreal h'f, ENNReal.top_mul]
   contrapose! hf
   rw [eLpNorm_eq_zero_iff hp.ne'] at hf

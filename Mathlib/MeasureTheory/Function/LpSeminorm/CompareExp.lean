@@ -282,7 +282,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_enorm_of_pos (p : ℝ≥0∞) (b :
   have hprod : AEStronglyMeasurable (fun i ↦ ‖f i‖ₑ * ‖g i‖ₑ) μ :=
     (hf.enorm.mul hg.enorm).aestronglyMeasurable
   simp only [mul_assoc]
-  rw [eLpNorm_const_mul_ennreal (by exact (hf.enorm.mul hg.enorm).aestronglyMeasurable)]
+  rw [eLpNorm_const_mul_ennreal (by fun_prop)]
   gcongr
   obtain (rfl | rfl | hp) := ENNReal.trichotomy p
   · simp [hf, hg, hprod]
@@ -309,7 +309,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_pos (p : ℝ≥0∞) (b : E → F 
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) (hp : 0 < p) :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ c * eLpNorm f ∞ μ * eLpNorm g p μ :=
   eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_enorm_of_pos p b c hb.comp_aestronglyMeasurable₂
-  (ae_enorm_bilin_le_of_ae_nnnorm_le h) hp
+    (ae_enorm_bilin_le_of_ae_nnnorm_le h) hp
 
 theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_enorm (p : ℝ≥0∞) (b : ε → ε' → ε'') (c : ℝ≥0∞)
     {f : α → ε} {g : α → ε'}
@@ -345,7 +345,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (b : E → F → G) 
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ c * eLpNorm f ∞ μ * eLpNorm g p μ :=
   eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_enorm p b c hb.comp_aestronglyMeasurable₂ hf
-  (ae_enorm_bilin_le_of_ae_nnnorm_le h)
+    (ae_enorm_bilin_le_of_ae_nnnorm_le h)
 
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top_of_enorm_of_pos (p : ℝ≥0∞) (b : ε → ε' → ε'') (c : ℝ≥0∞)
     {f : α → ε} {g : α → ε'}
@@ -552,8 +552,8 @@ theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (hf : AEStrongl
     continuous_smul hf (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _)
 
 theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} (hf : AEStronglyMeasurable f μ)
-    {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ)
-    (hpqr : Real.HolderTriple q r p) : eLpNorm' (φ • f) p μ ≤ eLpNorm' φ q μ * eLpNorm' f r μ := by
+    {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hpqr : Real.HolderTriple q r p) :
+    eLpNorm' (φ • f) p μ ≤ eLpNorm' φ q μ * eLpNorm' f r μ := by
   simpa using! eLpNorm'_le_eLpNorm'_mul_eLpNorm' (· • ·) 1 hφ hf
     (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) hpqr
 
