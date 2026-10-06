@@ -665,6 +665,45 @@ def domCongrAut : AddAut M →+ Additive (A[M] ≃ₐ[R] A[M]) where
 
 end lift
 
+section comapDomAlgAut
+
+variable {G : Type*} [Group G] [AddMonoid M] [DistribMulAction G M] [CommSemiring R]
+
+variable (R M G) in
+/-- An action of `G` on `M` by additive automorphisms induces an action of `G` on `R[M]`
+by `R`-algebra automorphisms, through the exponents. -/
+def comapDomAlgAut : G →* R[M] ≃ₐ[R] R[M] :=
+  (AddMonoidHom.toMultiplicative (domCongrAut R R (M := M))).comp (DistribMulAction.toAddAut G M)
+
+theorem comapDomAlgAut_apply (g : G) :
+    comapDomAlgAut R M G g = domCongr R R (DistribMulAction.toAddEquiv M g) :=
+  rfl
+
+/-- The action of `G` on `R[M]` through the exponents, `(g • x).coeff m = x.coeff (g⁻¹ • m)`.
+
+This is not an instance: for `M = R` it would conflict with actions on the coefficients. -/
+@[instance_reducible]
+def comapMulSemiringAction : MulSemiringAction G R[M] :=
+  .compHom _ (comapDomAlgAut R M G)
+
+attribute [local instance] comapMulSemiringAction
+
+theorem comapSMul_def (g : G) (x : R[M]) : g • x = comapDomAlgAut R M G g x :=
+  rfl
+
+@[simp]
+theorem coeff_comapSMul (g : G) (x : R[M]) (m : M) : (g • x).coeff m = x.coeff (g⁻¹ • m) := by
+  simp [comapSMul_def, comapDomAlgAut_apply]
+
+@[simp]
+theorem comapSMul_single (g : G) (m : M) (r : R) : g • single m r = single (g • m) r := by
+  simp [comapSMul_def, comapDomAlgAut_apply]
+
+theorem comapSMulCommClass : SMulCommClass G R R[M] where
+  smul_comm g r x := by simp [comapSMul_def]
+
+end comapDomAlgAut
+
 variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A]
 
 variable (R M) in

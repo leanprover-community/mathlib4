@@ -47,6 +47,11 @@ assert_not_exists IntermediateField.adjoin
 
 open scoped Pointwise
 
+instance FixedPoints.subalgebra.isInvariant {A B G : Type*} [CommSemiring A] [CommSemiring B]
+    [Algebra A B] [Group G] [MulSemiringAction G B] [SMulCommClass G A B] :
+    Algebra.IsInvariant (FixedPoints.subalgebra A B G) B G :=
+  ⟨fun b hb ↦ ⟨⟨b, hb⟩, rfl⟩⟩
+
 section Quotient
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]

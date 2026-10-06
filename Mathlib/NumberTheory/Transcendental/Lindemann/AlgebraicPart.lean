@@ -23,188 +23,11 @@ import Mathlib.RingTheory.Invariant.Basic
 
 noncomputable section
 
--- TODO: move to `Mathlib/Algebra/MonoidAlgebra/Basic.lean`, next to `AddMonoidAlgebra.domCongrAut`
--- (the exponent action by additive automorphisms).
-namespace AddMonoidAlgebra
-
-variable {G M R : Type*} [Group G] [AddMonoid M] [DistribMulAction G M] [CommSemiring R]
-
-variable (G M R) in
-/-- An action of `G` on `M` by additive automorphisms induces an action of `G` on `R[M]`
-by `R`-algebra automorphisms, through the exponents. -/
-def comapDomAlgAut : G →* R[M] ≃ₐ[R] R[M] :=
-  (AddMonoidHom.toMultiplicative (domCongrAut R R (M := M))).comp (DistribMulAction.toAddAut G M)
-
-theorem comapDomAlgAut_apply (g : G) :
-    comapDomAlgAut G M R g = domCongr R R (DistribMulAction.toAddEquiv M g) :=
-  rfl
-
-/-- The action of `G` on `R[M]` through the exponents, `(g • x).coeff m = x.coeff (g⁻¹ • m)`.
-
-This is not an instance: for `M = R` it would conflict with actions on the coefficients. -/
-@[instance_reducible]
-def comapMulSemiringAction : MulSemiringAction G R[M] :=
-  .compHom _ (comapDomAlgAut G M R)
-
-attribute [local instance] comapMulSemiringAction
-
-theorem comapSMul_def (g : G) (x : R[M]) : g • x = comapDomAlgAut G M R g x :=
-  rfl
-
-@[simp]
-theorem coeff_comapSMul (g : G) (x : R[M]) (m : M) : (g • x).coeff m = x.coeff (g⁻¹ • m) := by
-  simp [comapSMul_def, comapDomAlgAut_apply]
-
-@[simp]
-theorem comapSMul_single (g : G) (m : M) (r : R) : g • single m r = single (g • m) r := by
-  simp [comapSMul_def, comapDomAlgAut_apply]
-
-theorem comapSMulCommClass : SMulCommClass G R R[M] where
-  smul_comm g r x := by simp [comapSMul_def]
-
--- TODO: move to the `Pushout` section of
--- `Mathlib/RingTheory/IntegralClosure/IsIntegralClosure/Basic.lean`, next to the `R[X]` instance.
-open scoped AlgebraMonoidAlgebra in
-instance isIntegral_algebraAddMonoidAlgebra {R S M : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] [Algebra.IsIntegral R S] [AddCommMonoid M] :
-    Algebra.IsIntegral R[M] S[M] :=
-  Algebra.IsPushout.isIntegral R _ S _
-
-end AddMonoidAlgebra
-
--- TODO: move to `Mathlib/Algebra/Algebra/Subalgebra/Operations.lean`,
--- after `FixedPoints.subalgebra`.
-theorem FixedPoints.mem_subalgebra {A B G : Type*} [CommSemiring A] [Semiring B] [Algebra A B]
-    [Monoid G] [MulSemiringAction G B] [SMulCommClass G A B] {x : B} :
-    x ∈ FixedPoints.subalgebra A B G ↔ ∀ g : G, g • x = x :=
-  Iff.rfl
-
--- TODO: move to `Mathlib/RingTheory/Invariant/Defs.lean` (or `Basic.lean`).
-instance FixedPoints.subalgebra.isInvariant {A B G : Type*} [CommSemiring A] [CommSemiring B]
-    [Algebra A B] [Group G] [MulSemiringAction G B] [SMulCommClass G A B] :
-    Algebra.IsInvariant (FixedPoints.subalgebra A B G) B G :=
-  ⟨fun b hb ↦ ⟨⟨b, hb⟩, rfl⟩⟩
-
--- TODO: move to `Mathlib/RingTheory/Ideal/GoingUp.lean`,
--- after `Ideal.under_ne_bot_of_algebraic_mem`.
-/-- If `B` is a domain, `x : B` is nonzero and algebraic over `A`, and a ring hom out of `B` kills
-`x`, then it also kills `algebraMap A B y` for some nonzero `y : A`. -/
-theorem IsAlgebraic.exists_ne_zero_map_algebraMap_eq_zero {A B S : Type*} [CommRing A]
-    [CommRing B] [Algebra A B] [IsDomain B] [Semiring S] {x : B} (hx : IsAlgebraic A x)
-    (f : B →+* S) (x0 : x ≠ 0) (hfx : f x = 0) : ∃ y : A, y ≠ 0 ∧ f (algebraMap A B y) = 0 := by
-  obtain ⟨y, hy, y0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot <|
-    Ideal.under_ne_bot_of_algebraic_mem (I := RingHom.ker f) x0 hfx hx
-  exact ⟨y, y0, hy⟩
-
--- TODO: move to `Mathlib/Data/Finsupp/Quotient.lean`.
-namespace Quotient
-
-variable {α : Type*} {s : Setoid α} {β : Type*} [Zero β]
-
-/-- Pull a function `Quotient s →₀ β` back to `α →₀ β`, provided the classes of `s` are finite. -/
-def compMkFinsupp (hs : ∀ a, {b | s b a}.Finite) (f : Quotient s →₀ β) : α →₀ β :=
-  Finsupp.ofSupportFinite (f ∘ Quotient.mk s) <| by
-    rw [Function.support_comp_eq_preimage]
-    refine f.hasFiniteSupport.preimage' fun q _ ↦ ?_
-    induction q using Quotient.inductionOn with | h a => ?_
-    convert hs a using 1
-    ext b
-    simp [Quotient.eq]
-
-@[simp]
-theorem compMkFinsupp_apply (hs : ∀ a, {b | s b a}.Finite) (f : Quotient s →₀ β) (a : α) :
-    compMkFinsupp hs f a = f ⟦a⟧ :=
-  rfl
-
-variable (s β) in
-/-- Finitely supported functions on `α` that are constant on the classes of `s` correspond to
-finitely supported functions on `Quotient s`, provided the classes are finite. -/
-def finsuppEquiv (hs : ∀ a, {b | s b a}.Finite) :
-    {f : α →₀ β // ∀ a b, s a b → f a = f b} ≃ (Quotient s →₀ β) where
-  toFun f := Quotient.liftFinsupp f.1 f.2
-  invFun f := ⟨compMkFinsupp hs f, fun a b h ↦ by simp [Quotient.sound h]⟩
-  left_inv _ := Subtype.ext <| Finsupp.ext fun _ ↦ rfl
-  right_inv f := Finsupp.ext fun q ↦ Quotient.inductionOn q fun _ ↦ rfl
-
-@[simp]
-theorem finsuppEquiv_apply_mk (hs : ∀ a, {b | s b a}.Finite)
-    (f : {f : α →₀ β // ∀ a b, s a b → f a = f b}) (a : α) :
-    finsuppEquiv s β hs f ⟦a⟧ = f.1 a :=
-  rfl
-
-@[simp]
-theorem coe_finsuppEquiv_symm (hs : ∀ a, {b | s b a}.Finite) (f : Quotient s →₀ β) :
-    ((finsuppEquiv s β hs).symm f : α →₀ β) = compMkFinsupp hs f :=
-  rfl
-
-end Quotient
-
--- TODO: move to `Mathlib/RingTheory/Localization/Integral.lean`.
-/-- Clearing denominators in a linear relation with coefficients in a fraction field, without
-changing which coefficients vanish. -/
-theorem IsFractionRing.exists_sum_smul_eq_zero (R : Type*) {F M ι : Type*} [CommRing R]
-    [Field F] [Algebra R F] [IsFractionRing R F] [AddCommMonoid M] [Module R M] [Module F M]
-    [IsScalarTower R F M] (f : ι → M) (v : ι →₀ F) (h : (v.sum fun i c ↦ c • f i) = 0) :
-    ∃ v' : ι →₀ R, v'.support = v.support ∧ (v'.sum fun i c ↦ c • f i) = 0 := by
-  classical
-  have : Nontrivial R := (algebraMap R F).domain_nontrivial
-  obtain ⟨⟨b, hb⟩, hv⟩ := IsLocalization.exist_integer_multiples (nonZeroDivisors R) v.support v
-  simp only [IsLocalization.IsInteger, RingHom.mem_rangeS] at hv
-  choose a ha using hv
-  let v' : ι →₀ R := Finsupp.onFinset v.support
-    (fun i ↦ if hi : i ∈ v.support then a i hi else 0) fun i h ↦ by by_contra hi; simp [hi] at h
-  have hv' (i : ι) : algebraMap R F (v' i) = b • v i := by
-    by_cases hi : i ∈ v.support
-    · simp only [v', Finsupp.onFinset_apply, hi, ↓reduceDIte, ha]
-    · simp only [v', Finsupp.onFinset_apply, hi, ↓reduceDIte, map_zero,
-        Finsupp.notMem_support_iff.mp hi, smul_zero]
-  have hb0 : algebraMap R F b ≠ 0 :=
-    (map_ne_zero_iff _ (IsFractionRing.injective R F)).mpr (nonZeroDivisors.ne_zero hb)
-  have supp : v'.support = v.support := by
-    ext i
-    rw [Finsupp.mem_support_iff, Finsupp.mem_support_iff, Ne,
-      ← (IsFractionRing.injective R F).eq_iff, map_zero, hv', Algebra.smul_def, mul_eq_zero,
-      or_iff_right hb0]
-  refine ⟨v', supp, ?_⟩
-  calc (v'.sum fun i c ↦ c • f i) = ∑ i ∈ v.support, b • (v i • f i) := by
-        rw [Finsupp.sum, supp]
-        exact Finset.sum_congr rfl fun i _ ↦ by rw [← algebraMap_smul F (v' i), hv', smul_assoc]
-    _ = 0 := by rw [← Finset.smul_sum]; exact (congrArg (b • ·) h).trans (smul_zero b)
-
-section integerNormalization
-
-open Polynomial
-
-variable {R F : Type*} [CommRing R] [Field F] [Algebra R F] [IsFractionRing R F]
-
--- TODO: move to `Mathlib/RingTheory/Localization/Integral.lean`.
-theorem IsFractionRing.coeff_integerNormalization_eq_zero_iff (p : F[X]) (n : ℕ) :
-    (IsLocalization.integerNormalization (nonZeroDivisors R) p).coeff n = 0 ↔ p.coeff n = 0 := by
-  have : Nontrivial R := (algebraMap R F).domain_nontrivial
-  obtain ⟨b, hb, hbp⟩ := IsLocalization.integerNormalization_spec (nonZeroDivisors R) p
-  have hb0 : algebraMap R F b ≠ 0 :=
-    (map_ne_zero_iff _ (IsFractionRing.injective R F)).mpr (nonZeroDivisors.ne_zero hb)
-  rw [← (IsFractionRing.injective R F).eq_iff, map_zero, ← coeff_map, hbp, coeff_smul,
-    Algebra.smul_def, mul_eq_zero, or_iff_right hb0]
-
--- TODO: move to `Mathlib/RingTheory/Localization/Integral.lean`.
-/-- Clearing the denominators of a polynomial does not change its roots. -/
-theorem IsFractionRing.aroots_integerNormalization {S : Type*} [CommRing S] [IsDomain S]
-    [Algebra R S] [Algebra F S] [IsScalarTower R F S] (p : F[X]) :
-    (IsLocalization.integerNormalization (nonZeroDivisors R) p).aroots S = p.aroots S := by
-  have : Nontrivial R := (algebraMap R F).domain_nontrivial
-  obtain ⟨b, hb, hbp⟩ := IsLocalization.integerNormalization_spec (nonZeroDivisors R) p
-  rw [← aroots_map S F, hbp, ← algebraMap_smul F, aroots_smul_nonzero]
-  exact (map_ne_zero_iff _ (IsFractionRing.injective R F)).mpr (nonZeroDivisors.ne_zero hb)
-
-end integerNormalization
-
 namespace LindemannWeierstrass
 
 open scoped AddMonoidAlgebra
 
 open Finset
-
 
 attribute [local instance] AddMonoidAlgebra.comapMulSemiringAction
   AddMonoidAlgebra.comapSMulCommClass
@@ -212,25 +35,7 @@ attribute [local instance] AddMonoidAlgebra.comapMulSemiringAction
 section classSumBasis
 
 variable {F R K : Type*} [Field F] [CommSemiring R] [Field K] [Algebra F K]
-
--- TODO: move to `Mathlib/FieldTheory/Minpoly/ConjRootClass.lean`.
-@[simp]
-theorem _root_.ConjRootClass.mk_algEquiv_apply (g : K ≃ₐ[F] K) (x : K) :
-    ConjRootClass.mk F (g x) = ConjRootClass.mk F x :=
-  ConjRootClass.mk_eq_mk.mpr (isConjRoot_of_algEquiv' x g)
-
--- TODO: move to `Mathlib/FieldTheory/Minpoly/ConjRootClass.lean`.
-theorem _root_.ConjRootClass.carrier_nonempty (c : ConjRootClass F K) : c.carrier.Nonempty := by
-  induction c using ConjRootClass.ind with
-  | h a => exact ⟨a, ConjRootClass.mem_carrier.mpr rfl⟩
-
-variable [FiniteDimensional F K] [Normal F K]
-
--- TODO: move to `Mathlib/FieldTheory/Minpoly/ConjRootClass.lean`.
-open Classical in
-theorem _root_.ConjRootClass.card_carrier_ne_zero (c : ConjRootClass F K) :
-    #c.carrier.toFinset ≠ 0 :=
-  (Finset.card_pos.mpr (Set.toFinset_nonempty.mpr c.carrier_nonempty)).ne'
+  [FiniteDimensional F K] [Normal F K]
 
 omit [FiniteDimensional F K] in
 theorem mem_fixedPoints_iff_forall_isConjRoot {x : R[K]} :
@@ -246,7 +51,7 @@ def classSumReprAux :
   (AddMonoidAlgebra.coeffEquiv.subtypeEquiv
     (q := fun f : K →₀ R ↦ ∀ a b, IsConjRoot F a b → f a = f b)
     fun _ ↦ mem_fixedPoints_iff_forall_isConjRoot).trans <|
-  Quotient.finsuppEquiv (IsConjRoot.setoid F K) R fun a ↦ by
+  Setoid.liftFinsuppEquiv (IsConjRoot.setoid F K) fun a ↦ by
     classical
     exact (ConjRootClass.mk F a).carrier.toFinite.subset fun b hb ↦
       ConjRootClass.mem_carrier.mpr (ConjRootClass.mk_eq_mk.mpr hb)
@@ -373,7 +178,7 @@ open Polynomial
 
 open Classical in
 theorem exists_sum_conjRootClass_eq_add_sum_map_aroots (A : Type*) {R F K S : Type*}
-    [CommRing A] [Field F] [Algebra A F] [IsFractionRing A F]
+    [CommRing A] [IsDomain A] [Field F] [Algebra A F] [IsFractionRing A F]
     [Field K] [Algebra F K] [FiniteDimensional F K] [Normal F K] [CharZero F]
     [Field S] [Algebra K S] [Algebra F S] [IsScalarTower F K S] [Algebra A S]
     [IsScalarTower A F S] [CommSemiring R] [Module R S]
