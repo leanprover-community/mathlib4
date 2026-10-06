@@ -194,7 +194,7 @@ theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachab
   simpa [← Order.one_le_iff_ne_zero] using isEdgeReachable_one.mpr h |>.le_edgeReachability
 
 theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
-  le_iSup₂ (α := ℕ∞) k h
+  le_iSup₂_of_le k h le_rfl
 
 @[simp]
 theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
