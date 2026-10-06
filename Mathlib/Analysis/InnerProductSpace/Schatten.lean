@@ -11,24 +11,43 @@ namespace ContinuousLinearMap
 section Trace
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+  [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
+
+open scoped ComplexConjugate ENNReal
 
 /-- The trace of an operator on `E`. -/
-def traceOfBasis (A : E →L[𝕜] E) {ι : Type*} (b : HilbertBasis ι 𝕜 E) : ℝ≥0∞ :=
-  ∑' i, ENNReal.ofReal (RCLike.re ⟪b i, A (b i)⟫_𝕜)
+def traceOfBasis (A : E →L[ℂ] E) {ι : Type*} (b : HilbertBasis ι ℂ E) : ℝ≥0∞ :=
+  ∑' i, ENNReal.ofReal (RCLike.re ⟪b i, A (b i)⟫_ℂ)
 
-theorem traceOfBasis_eq {A : E →L[𝕜] E} (hA : 0 ≤ A) {ι : Type*} (b b' : HilbertBasis ι 𝕜 E) :
+theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι : Type*} (b b' : HilbertBasis ι ℂ E) :
     traceOfBasis A b = traceOfBasis A b' := by
-  sorry
+  unfold traceOfBasis
+  set S := CFC.sqrt A with hSdef
+  have hS : S.adjoint * S = A := by
+    simp [hSdef, CFC.sqrt_mul_sqrt_self A hA, (CFC.sqrt_nonneg A).isSelfAdjoint.adjoint_eq]
+  simp_rw [← hS, mul_apply_eq_comp, ContinuousLinearMap.adjoint_inner_right]
+  simp_rw +singlePass [← HilbertBasis.tsum_inner_mul_inner b' (S (b _)),
+    ← inner_conj_symm (S (b _)), ← HilbertBasis.tsum_inner_mul_inner b (S (b' _)),
+    ← inner_conj_symm (S (b' _)), RCLike.conj_mul, ← RCLike.ofReal_pow]
+  simp_rw [← RCLike.ofReal_tsum]
+  simp only [Complex.coe_algebraMap, RCLike.re_to_complex, Complex.ofReal_re]
+  have h : ∀ (c : HilbertBasis ι ℂ E) (x : E),
+      ENNReal.ofReal (∑' a, ‖⟪c a, x⟫_ℂ‖ ^ 2) = ∑' a, ENNReal.ofReal (‖⟪c a, x⟫_ℂ‖ ^ 2) :=
+    fun c x => ENNReal.ofReal_tsum_of_nonneg (fun _ => by positivity)
+      (c.orthonormal.inner_products_summable x)
+  simp_rw [h b, h b']
+  rw [ENNReal.tsum_comm]
+  simp_rw [← LinearMap.IsSymmetric.apply_clm (T := S)
+    (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric (b' _) (b _), norm_inner_symm (S (b' _)) (b _)]
 
 /-- The trace of an operator on `E`. -/
-def trace (A : E →L[𝕜] E) : ℝ≥0∞ := traceOfBasis A
-  (Classical.choose (Classical.choose_spec (exists_hilbertBasis 𝕜 E)))
+def trace (A : E →L[ℂ] E) : ℝ≥0∞ := traceOfBasis A
+  (Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E)))
 
-variable {A B : E →L[𝕜] E}
+variable {A B : E →L[ℂ] E}
 
 @[simp]
-theorem trace_zero : trace (0 : E →L[𝕜] E) = 0 := by simp [trace, traceOfBasis]
+theorem trace_zero : trace (0 : E →L[ℂ] E) = 0 := by simp [trace, traceOfBasis]
 
 @[simp]
 theorem trace_add (hA : 0 ≤ A) (hB : 0 ≤ B) : trace (A + B) = trace A + trace B := by
