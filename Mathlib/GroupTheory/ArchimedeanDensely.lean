@@ -6,10 +6,11 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
-import Mathlib.Data.Int.Interval
 public import Mathlib.GroupTheory.Archimedean
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.Order.Interval.Finset.DenselyOrdered
+
+import Mathlib.Data.Int.Interval
 
 /-!
 # Archimedean groups are either discrete or densely ordered

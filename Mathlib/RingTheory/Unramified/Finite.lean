@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Unramified.Basic
 public import Mathlib.RingTheory.Flat.Stability
+
+import Mathlib.RingTheory.Ideal.IdempotentFG
 
 /-!
 # Various results about unramified algebras

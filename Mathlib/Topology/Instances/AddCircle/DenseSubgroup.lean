@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Topology.Instances.AddCircle.Defs
+
 import Mathlib.Topology.Algebra.Order.Archimedean
 
 /-!

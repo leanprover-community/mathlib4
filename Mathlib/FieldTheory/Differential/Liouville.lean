@@ -5,9 +5,10 @@ Authors: Daniel Weber
 -/
 module
 
+public import Mathlib.FieldTheory.Differential.Basic
+
 import Mathlib.Algebra.Algebra.Field
 import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.FieldTheory.Differential.Basic
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
