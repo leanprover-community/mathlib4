@@ -18,7 +18,7 @@ import Mathlib.Analysis.PSeries
 @[expose] public section
 
 open UpperHalfPlane hiding I
-open scoped Real
+open scoped Real Topology
 open Filter Complex Asymptotics
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic]
@@ -131,8 +131,36 @@ lemma hasSum_Λ (hs : k + 1 < s.re) :
   · rw [Λ, ← ((weakFEPair hk f).hasMellin <| by grind [weakFEPair]).2]
   · simpa using ModularFormClass.qExpansion_isBigO hk.le f
 
-/-- The `L`-series of a modular form (without its Archimedean `Γ`-factor). -/
-noncomputable def L (s : ℂ) : ℂ :=  Λ hk f s * (2 / Gammaℂ s)
+/-- The `L`-series of a modular form (without its Archimedean `Γ`-factor).
+
+At `s = 0`, the quotient `Λ hk f s * (2 / Gammaℂ s)` has a removable singularity: `Λ hk f` has a
+simple pole with residue `-valueAtInfty f` there, which cancels the zero of `1 / Gammaℂ`. We
+define `L hk f 0` to be the limit `-valueAtInfty f` (see `ModularForm.tendsto_L_zero`), as is done
+for the Riemann zeta function. -/
+noncomputable def L : ℂ → ℂ :=
+  Function.update (fun s ↦ Λ hk f s * (2 / Gammaℂ s)) 0 (-valueAtInfty f)
+
+lemma L_of_ne_zero (hs : s ≠ 0) : L hk f s = Λ hk f s * (2 / Gammaℂ s) :=
+  Function.update_of_ne hs ..
+
+@[simp]
+lemma L_zero : L hk f 0 = -valueAtInfty f :=
+  Function.update_self ..
+
+/-- Near `s = 0`, `L hk f s` tends to its value `-valueAtInfty f` at `0`. -/
+lemma tendsto_L_zero : Tendsto (L hk f) (𝓝[≠] 0) (𝓝 (-valueAtInfty f)) := by
+  have := ((weakFEPair hk f).Λ_residue_zero).mul
+    ((Gammaℂ_residue_zero.inv₀ two_ne_zero).const_mul 2)
+  rw [weakFEPair_f₀, mul_inv_cancel₀ two_ne_zero, mul_one] at this
+  refine this.congr' ?_
+  filter_upwards [self_mem_nhdsWithin] with s (hs : s ≠ 0)
+  rw [L_of_ne_zero hk f hs, Λ, smul_eq_mul]
+  field_simp
+
+lemma continuousAt_L_zero : ContinuousAt (L hk f) 0 := by
+  rw [L, continuousAt_update_same]
+  refine (tendsto_L_zero hk f).congr' ?_
+  filter_upwards [self_mem_nhdsWithin] with s hs using L_of_ne_zero hk f hs
 
 /-- Shared conversion from the completed `Λ`-series to the ordinary `L`-series. -/
 private lemma hasSum_L_of_hasSum_Λ (hs : 0 < s.re)
@@ -153,7 +181,8 @@ private lemma hasSum_L_of_hasSum_Λ (hs : 0 < s.re)
     have := Gamma_ne_zero_of_re_pos hs
     have := cpow_ne_zero_iff (y := s).mpr (.inl <| ofReal_ne_zero.mpr Γ.strictWidthInfty_pos.ne')
     field_simp
-  · grind [L]
+  · rw [L_of_ne_zero hk f (by rintro rfl; simp at hs)]
+    ring
 
 theorem hasSum_L (hs : k + 1 < s.re) :
     HasSum (fun n ↦ (qExpansion (h Γ) f).coeff n / n ^ s) (h Γ ^ (-s) * L hk f s) :=
@@ -189,7 +218,12 @@ lemma hasSum_Λ (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
 
 @[fun_prop]
 lemma differentiable_L : Differentiable ℂ (L hk f) := by
-  unfold L
+  have hL : L hk f = fun s ↦ Λ hk f s * (2 / Gammaℂ s) := by
+    funext s
+    rcases eq_or_ne s 0 with rfl | hs
+    · simp [(CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero, Gammaℂ]
+    · exact L_of_ne_zero hk f hs
+  rw [hL]
   simp only [div_eq_mul_inv]
   fun_prop
 

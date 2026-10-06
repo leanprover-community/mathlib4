@@ -116,6 +116,16 @@ lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (
   rw [Gammaℝ]
   ring_nf
 
+lemma Gammaℂ_residue_zero : Tendsto (fun s ↦ s * Gammaℂ s) (𝓝[≠] 0) (𝓝 2) := by
+  have h' : Tendsto (fun s : ℂ ↦ 2 * (2 * π : ℂ) ^ (-s)) (𝓝[≠] 0) (𝓝 2) := by
+    rw [(by simp : 𝓝 2 = 𝓝 (2 * (2 * π : ℂ) ^ (-(0 : ℂ))))]
+    refine Tendsto.mono_left (ContinuousAt.tendsto ?_) nhdsWithin_le_nhds
+    exact continuousAt_const.mul ((continuousAt_const_cpow (by simp [pi_ne_zero])).comp
+      (by fun_prop))
+  convert! mul_one (2 : ℂ) ▸ (h'.mul tendsto_self_mul_Gamma_nhds_zero) using 2 with z
+  rw [Gammaℂ]
+  ring
+
 end analyticity
 
 section reflection
