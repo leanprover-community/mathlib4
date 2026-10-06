@@ -5,12 +5,13 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.CharZero.Infinite
-public import Mathlib.Data.Rat.Encodable
-public import Mathlib.Data.Finset.Sort
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Fraisse
-public import Mathlib.Order.CountableDenseLinearOrder
+
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Finset.Sort
+import Mathlib.Order.CountableDenseLinearOrder
 
 /-!
 # Ordered First-Ordered Structures
@@ -488,7 +489,7 @@ lemma dlo_isExtensionPair
   let g' :
     ((Substructure.closure Language.order).toFun {m} ⊔ S : Language.order.Substructure M) ↪o N :=
     ((Set.orderIsoOfEq _ _ (by
-      convert!
+      convert
         LowerAdjoint.closure_eq_self_of_mem_closed _
           (Substructure.mem_closed_of_isRelational Language.order
             ((insert m hS.toFinset : Finset M) : Set M))
@@ -496,7 +497,7 @@ lemma dlo_isExtensionPair
         Substructure.closure_eq])).toOrderEmbedding.trans g)
   use StrongHomClass.toEmbedding g'
   ext ⟨x, xS⟩
-  refine congr_fun hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩
+  refine congr($hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩)
   simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
 
 set_option backward.isDefEq.respectTransparency false in

@@ -5,8 +5,9 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Cardinal
 public import Mathlib.RingTheory.Algebraic.Basic
+
+import Mathlib.Algebra.Polynomial.Cardinal
 
 /-!
 # Cardinality of algebraic numbers

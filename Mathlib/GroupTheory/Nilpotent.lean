@@ -5,10 +5,13 @@ Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.Order
+public import Mathlib.GroupTheory.IndexNormal
+public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.Solvable
 public import Mathlib.GroupTheory.Sylow
-public import Mathlib.Algebra.Group.Subgroup.Order
-public import Mathlib.GroupTheory.Commutator.Finite
+
+import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
 
@@ -101,7 +104,7 @@ def upperCentralSeriesStep : Subgroup G where
   carrier := { x : G | ∀ y : G, ⁅x, y⁆ ∈ N }
   one_mem' y := by simp
   mul_mem' {a b} ha hb y := by
-    convert! Subgroup.mul_mem _ (ha (b * y * b⁻¹)) (hb y) using 1
+    convert Subgroup.mul_mem _ (ha (b * y * b⁻¹)) (hb y) using 1
     group
   inv_mem' {x} hx y := by
     specialize hx y⁻¹
@@ -191,24 +194,13 @@ instance (n : ℕ) : Characteristic (upperCentralSeries G n) :=
 @[to_additive (attr := simp)]
 theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 
+@[to_additive upperCentralSeries_one]
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
   simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, mem_bot, mem_mk,
     Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_ofPred_eq, mem_center_iff]
   exact forall_congr' fun y => by
     rw [commutatorElement_def, mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
-
-theorem _root_.AddSubgroup.upperCentralSeries_one (G : Type*) [AddGroup G] :
-    AddSubgroup.upperCentralSeries G 1 = AddSubgroup.center G := by
-  ext
-  simp only [AddSubgroup.upperCentralSeries, AddSubgroup.upperCentralSeriesAux,
-    AddSubgroup.upperCentralSeriesStep, AddSubgroup.mem_bot, AddSubgroup.mem_mk,
-    AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_ofPred_eq, AddSubgroup.mem_center_iff]
-  exact forall_congr' fun y => by
-    rw [addCommutatorElement_def, add_neg_eq_zero, add_neg_eq_iff_eq_add, eq_comm]
-
-attribute [to_additive existing (attr := simp) AddSubgroup.upperCentralSeries_one]
-  upperCentralSeries_one
 
 variable {G}
 
@@ -354,7 +346,7 @@ theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : �
     rw [commutatorElement_one_left]
     exact Subgroup.one_mem _
   · apply hH
-    convert! hx using 1
+    convert hx using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 
 @[to_additive]
@@ -367,7 +359,7 @@ theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : �
   · have hnm : n - m = 0 := tsub_eq_zero_iff_le.mpr hm
     rw [hnm, h0]
     exact mem_top _
-  · convert! hH x _ hx g using 1
+  · convert hH x _ hx g using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 
 /-- A group `G` is nilpotent iff there exists a descending central series which reaches the
@@ -1189,8 +1181,8 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group
 /-- A simple nilpotent group is commutative. -/
 @[to_additive /-- A simple nilpotent additive group is commutative. -/]
 instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
-  Group.commGroupOfCenterEqTop <|
-    (IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G) inferInstance).resolve_left
+  fast_instance% Group.commGroupOfCenterEqTop <|
+    (IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G)).resolve_left
       (Group.IsNilpotent.center_ne_bot G)
 
 /-- A simple nilpotent group is cyclic. -/
@@ -1242,6 +1234,42 @@ theorem IsNilpotent.commute_of_orderOf_coprime [IsNilpotent G] {x y : G}
   simp
 
 end Group
+
+namespace Subgroup
+
+/-- In a nilpotent group, the maximal subgroups are exactly the subgroups of prime index. -/
+@[to_additive]
+theorem isCoatom_iff_index_prime [Group.IsNilpotent G] (H : Subgroup G) :
+    IsCoatom H ↔ H.index.Prime := by
+  refine ⟨fun h ↦ ?_, isCoatom_of_index_prime⟩
+  have : H.Normal := Group.normalizerCondition_of_isNilpotent.normal_of_coatom H h
+  have : IsSimpleGroup (G ⧸ H) := Group.isSimpleGroup_of_isCoatom h
+  rwa [index_eq_card, ← Group.is_simple_iff_prime_card]
+
+end Subgroup
+
+namespace IsPGroup
+
+variable {p : ℕ} [hp : Fact p.Prime]
+
+/-- In a nilpotent p-group, the maximal subgroups are exactly the subgroups of index `p`. -/
+theorem isCoatom_iff_index_eq_prime [Group.IsNilpotent G] (hG : IsPGroup p G) {H : Subgroup G} :
+    IsCoatom H ↔ H.index = p := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Subgroup.isCoatom_of_index_prime (h ▸ hp.out)⟩
+  have hHp := H.isCoatom_iff_index_prime.mp h
+  have : H.FiniteIndex := ⟨hHp.ne_zero⟩
+  obtain ⟨k, hk⟩ := IsPGroup.index hG H
+  exact Nat.prime_eq_prime_of_dvd_pow hHp hp.out hk.dvd
+
+/-- A nilpotent p-group is non-cyclic iff it has two distinct subgroups of index `p`. -/
+theorem not_isCyclic_iff_exists_ne_index_eq_prime [Group.IsNilpotent G]
+    [IsCoatomic (Subgroup G)] (hG : IsPGroup p G) :
+    ¬ IsCyclic G ↔ ∃ H₁ H₂ : Subgroup G, H₁ ≠ H₂ ∧ H₁.index = p ∧ H₂.index = p := by
+  refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, hne, h₁, h₂⟩ _ ↦ hne ?_⟩
+  · grind [isCyclic_of_isCoatom_subsingleton, isCoatom_iff_index_eq_prime]
+  · rw [IsCyclic.subgroup_eq_iff_index_eq, h₁, h₂]
+
+end IsPGroup
 
 end WithGroup
 
@@ -1342,122 +1370,3 @@ theorem Group.IsNilpotent.exists_normal_card_eq_of_dvd_card [IsNilpotent G] {n :
 end WithFiniteGroup
 
 open Group
-
-@[deprecated (since := "2026-03-25")] alias upperCentralSeriesStep := upperCentralSeriesStep
-@[deprecated (since := "2026-03-25")] alias mem_upperCentralSeriesStep := mem_upperCentralSeriesStep
-@[deprecated (since := "2026-03-25")] alias upperCentralSeriesStep_eq_comap_center :=
-  upperCentralSeriesStep_eq_comap_center
-@[deprecated (since := "2026-03-25")] alias upperCentralSeriesAux := upperCentralSeriesAux
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries := upperCentralSeries
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries_zero := upperCentralSeries_zero
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries_one := upperCentralSeries_one
-@[deprecated (since := "2026-03-25")] alias mem_upperCentralSeries_succ_iff :=
-  mem_upperCentralSeries_succ_iff
-@[deprecated (since := "2026-03-25")] alias comap_upperCentralSeries := comap_upperCentralSeries
-@[deprecated (since := "2026-03-25")] alias IsAscendingCentralSeries := IsAscendingCentralSeries
-@[deprecated (since := "2026-03-25")] alias IsDescendingCentralSeries := IsDescendingCentralSeries
-@[deprecated (since := "2026-03-25")] alias ascending_central_series_le_upper :=
-  ascending_central_series_le_upper
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries_isAscendingCentralSeries :=
-  upperCentralSeries_isAscendingCentralSeries
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries_mono := upperCentralSeries_mono
-@[deprecated (since := "2026-03-25")] alias nilpotent_iff_finite_ascending_central_series :=
-  nilpotent_iff_finite_ascending_central_series
-@[deprecated (since := "2026-03-25")] alias is_descending_rev_series_of_is_ascending :=
-  is_descending_rev_series_of_is_ascending
-@[deprecated (since := "2026-03-25")] alias is_ascending_rev_series_of_is_descending :=
-  is_ascending_rev_series_of_is_descending
-@[deprecated (since := "2026-03-25")] alias nilpotent_iff_finite_descending_central_series :=
-  nilpotent_iff_finite_descending_central_series
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries := lowerCentralSeries
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_zero := lowerCentralSeries_zero
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_one := top_lowerCentralSeries_one
-@[deprecated (since := "2026-03-25")] alias mem_lowerCentralSeries_succ_iff :=
-  mem_lowerCentralSeries_succ_iff
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ := lowerCentralSeries_succ
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_antitone :=
-  lowerCentralSeries_antitone
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_isDescendingCentralSeries :=
-  lowerCentralSeries_isDescendingCentralSeries
-@[deprecated (since := "2026-03-25")] alias descending_central_series_ge_lower :=
-  descending_central_series_ge_lower
-@[deprecated (since := "2026-03-25")] alias nilpotent_iff_lowerCentralSeries :=
-  nilpotent_iff_lowerCentralSeries
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries_nilpotencyClass :=
-  upperCentralSeries_nilpotencyClass
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries_eq_top_iff_nilpotencyClass_le :=
-  upperCentralSeries_eq_top_iff_nilpotencyClass_le
-@[deprecated (since := "2026-03-25")]
-alias least_ascending_central_series_length_eq_nilpotencyClass :=
-  least_ascending_central_series_length_eq_nilpotencyClass
-@[deprecated (since := "2026-03-25")]
-alias least_descending_central_series_length_eq_nilpotencyClass :=
-  least_descending_central_series_length_eq_nilpotencyClass
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_length_eq_nilpotencyClass :=
-  lowerCentralSeries_length_eq_nilpotencyClass
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_nilpotencyClass :=
-  lowerCentralSeries_nilpotencyClass
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_eq_bot_iff_nilpotencyClass_le :=
-  lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_map_subtype_le :=
-  lowerCentralSeries_map_subtype_le
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries.map := upperCentralSeries.map
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries.map := lowerCentralSeries.map
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ_eq_bot :=
-  lowerCentralSeries_succ_eq_bot
-@[deprecated (since := "2026-03-25")] alias isNilpotent_of_ker_le_center :=
-  isNilpotent_of_ker_le_center
-@[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_of_ker_le_center :=
-  nilpotencyClass_le_of_ker_le_center
-@[deprecated (since := "2026-03-25")] alias nilpotent_of_surjective := nilpotent_of_surjective
-@[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_of_surjective :=
-  nilpotencyClass_le_of_surjective
-@[deprecated (since := "2026-03-25")] alias nilpotent_of_mulEquiv := nilpotent_of_mulEquiv
-@[deprecated (since := "2026-03-25")] alias nilpotent_quotient_of_nilpotent :=
-  nilpotent_quotient_of_nilpotent
-@[deprecated (since := "2026-03-25")] alias nilpotencyClass_quotient_le :=
-  nilpotencyClass_quotient_le
-@[deprecated (since := "2026-03-25")] alias comap_upperCentralSeries_quotient_center :=
-  comap_upperCentralSeries_quotient_center
-@[deprecated (since := "2026-03-25")] alias nilpotencyClass_zero_iff_subsingleton :=
-  nilpotencyClass_zero_iff_subsingleton
-@[deprecated (since := "2026-03-25")] alias of_quotient_center_nilpotent :=
-  of_quotient_center_nilpotent
-@[deprecated (since := "2026-03-25")] alias nilpotencyClass_quotient_center :=
-  nilpotencyClass_quotient_center
-@[deprecated (since := "2026-03-25")] alias nilpotencyClass_eq_quotient_center_plus_one :=
-  nilpotencyClass_eq_quotient_center_plus_one
-@[deprecated (since := "2026-03-25")] alias nilpotent_center_quotient_ind :=
-  nilpotent_center_quotient_ind
-@[deprecated (since := "2026-03-25")] alias derived_le_lower_central := derived_le_lower_central
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries.eq_ge_of_eq_succ :=
-  upperCentralSeries.eq_ge_of_eq_succ
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries.eq_ge_of_eq_gt :=
-  upperCentralSeries.eq_ge_of_eq_gt
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries.eq_top := upperCentralSeries.eq_top
-@[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_of_upperCentralSeries_eq :=
-  nilpotencyClass_le_of_upperCentralSeries_eq
-@[deprecated (since := "2026-03-25")] alias upperCentralSeries.StrictMonoOn :=
-  upperCentralSeries.StrictMonoOn
-@[deprecated (since := "2026-03-25")]
-alias upperCentralSeries.card_image_eq_of_le_nilpotencyClass :=
-  upperCentralSeries.card_image_eq_of_le_nilpotencyClass
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_prod := lowerCentralSeries_prod
-@[deprecated (since := "2026-03-25")] alias isNilpotent_prod := isNilpotent_prod
-@[deprecated (since := "2026-03-25")] alias nilpotencyClass_prod := nilpotencyClass_prod
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_pi_le := lowerCentralSeries_pi_le
-@[deprecated (since := "2026-03-25")] alias isNilpotent_pi_of_bounded_class :=
-  isNilpotent_pi_of_bounded_class
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_pi_of_finite :=
-  lowerCentralSeries_pi_of_finite
-@[deprecated (since := "2026-03-25")] alias isNilpotent_pi := isNilpotent_pi
-@[deprecated (since := "2026-03-25")] alias nilpotencyClass_pi := nilpotencyClass_pi
-@[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_one_of_isSimple_of_isNilpotent :=
-  nilpotencyClass_le_one_of_isSimple_of_isNilpotent
-@[deprecated (since := "2026-03-25")] alias normalizerCondition_of_isNilpotent :=
-  normalizerCondition_of_isNilpotent
-@[deprecated (since := "2026-03-25")] alias isNilpotent_of_product_of_sylow_group :=
-  isNilpotent_of_product_of_sylow_group
-@[deprecated (since := "2026-03-25")] alias isNilpotent_of_finite_tfae := isNilpotent_of_finite_tfae

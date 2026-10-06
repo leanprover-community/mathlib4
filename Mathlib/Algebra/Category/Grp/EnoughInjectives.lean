@@ -6,9 +6,9 @@ Authors: Jujian Zhang, Junyan Xu
 module
 
 public import Mathlib.Algebra.Module.CharacterModule
-public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-public import Mathlib.Algebra.Category.Grp.EpiMono
-public import Mathlib.Algebra.Category.Grp.Injective
+
+import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
+import Mathlib.Algebra.Category.Grp.EpiMono
 
 /-!
 
@@ -45,7 +45,7 @@ instance enoughInjectives : EnoughInjectives AddCommGrpCat.{u} where
       injective := injective_of_divisible _
       f := ofHom ⟨⟨fun a i ↦ ULift.up (i a), by aesop⟩, by aesop⟩
       mono := (AddCommGrpCat.mono_iff_injective _).mpr <| (injective_iff_map_eq_zero _).mpr
-        fun _ h0 ↦ eq_zero_of_character_apply (congr_arg ULift.down <| congr_fun h0 ·) }
+        fun _ h0 ↦ eq_zero_of_character_apply (congr(ULift.down <| $h0 ·)) }
 
 end AddCommGrpCat
 

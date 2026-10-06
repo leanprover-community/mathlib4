@@ -7,8 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
-public import Mathlib.Tactic.Ring.NamePolyVars
-public import Mathlib.Algebra.MvPolynomial.CommRing
+
+import Mathlib.Tactic.Ring.NamePolyVars
+import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 # The addition-and-subtraction map on x-coordinates
@@ -123,7 +124,7 @@ lemma addSubMapCoeff_condition (x : Fin 3 → R) (i : Fin 3) :
 
 lemma addSubMap_ne_zero [IsReduced R] {x : Fin 3 → R} (hx : x ≠ 0) :
     (addSubMap W · |>.eval x) ≠ 0 := by
-  contrapose! hx
+  contrapose hx
   ext i
   simpa [congrFun hx] using (addSubMapCoeff_condition W x i).symm
 
