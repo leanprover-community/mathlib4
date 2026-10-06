@@ -1,5 +1,6 @@
 module
 import Mathlib
+public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
 /-! Test that `simp` can prove some lemmas about derivatives. -/
 
@@ -57,3 +58,33 @@ example (x : ℝ) :
     deriv (fun x ↦ sin (sin (sin x)) ^ 10 + sin x) x =
     10 * sin (sin (sin x)) ^ 9 * (cos (sin (sin x)) * (cos (sin x) * cos x)) + cos x := by
   simp (maxDischargeDepth := 4)
+
+example : (2 : ℝ) + 1 < 4 := by dyadic_interval [prec := 4]
+example : (2 : ℝ) * 3 ≤ 7 := by dyadic_interval
+theorem a : (2 : ℝ) ≠ 3 := by dyadic_interval
+#print a
+
+example (x : ℝ)
+    (hx : x ∈ (Inclusion.Interval.Icc (0 : Dyadic) (1 : Dyadic) : Inclusion.Interval Dyadic)) :
+    x + 1 < 3 := by dyadic_interval [prec := 10]
+
+example (x : ℝ)
+    (hx : x ∈ (Inclusion.Interval.Icc (0 : Dyadic) (1 : Dyadic) : Inclusion.Interval Dyadic)) :
+    0 ≤ x * x := by dyadic_interval [prec := 10]
+
+
+example (x y : ℝ)
+    (hx : x ∈ (Inclusion.Interval.Icc (0 : Dyadic) (1 : Dyadic) : Inclusion.Interval Dyadic))
+    (hy : y ∈ (Inclusion.Interval.Icc (0 : Dyadic) (1 : Dyadic) : Inclusion.Interval Dyadic)) :
+    x + y < 3 := by dyadic_interval [prec := 10]
+
+
+example (x : ℝ)
+    (hx : x ∈ (Inclusion.Interval.Icc (0 : Dyadic) (1 : Dyadic) : Inclusion.Interval Dyadic)) :
+    x ∈ Set.Icc (0 : ℝ) 2 := by dyadic_interval [prec := 10]
+
+
+example : ((1 / 3 : ℚ) : ℝ) < 1 := by dyadic_interval [prec := 10]
+
+example : (2 : ℝ) + 1 < 4 := by dyadic_interval +kernel [prec := 4]
+#version

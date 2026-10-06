@@ -149,6 +149,27 @@ example {x y : ℝ} (hx : x ≤ 1.25) (hy : 0.5 ≤ y) :
 example {x y : ℝ} (hx₀ : 1 ≤ x) (hx₁ : x ≤ 2) (hy : y ∈ Set.Icc 0.5 1.25) :
     x * y + ((1 / 3 : ℚ) : ℝ) ∈ Set.Icc 0.8 2.9 := by dyadic_interval [prec := 12]
 
+example : √2 ∈ Set.Icc 1 2 := by dyadic_interval
+
+-- 50 digits test
+example :
+    √2 ∈ Set.Ioo
+      1.4142135623730950488016887242096980785696718753769
+      1.4142135623730950488016887242096980785696718753770 := by
+  dyadic_interval [prec := 165]
+
+example : √16 = 4 := by dyadic_interval
+
+example : √(-1) = 0 := by dyadic_interval
+
+/-- error: The inclusion check failed:
+The proposition is provably false -/
+#guard_msgs in
+set_option linter.unusedTactic false in
+example (h : False) : √2 < 1.414 := by
+  dyadic_interval? [prec := 7]
+  exact h.elim
+
 end Arithmetic
 
 section Splitting
