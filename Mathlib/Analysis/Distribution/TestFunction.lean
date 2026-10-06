@@ -782,7 +782,7 @@ section smul
 
 variable (F₁ Ω) in
 open scoped Classical in
-/-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
+/-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on test functions,
 where `g` is a C^n function. -/
 noncomputable def smulLeftCLM (n := ⊤) (g : E → 𝕜) : 𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₁) :=
   if hg : ContDiff ℝ n g then
