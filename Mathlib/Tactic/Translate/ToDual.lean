@@ -240,6 +240,14 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cokernel", ["Kernel"]),
   ("kernels", ["Cokernels"]),
   ("cokernels", ["Kernels"]),
+  ("fork", ["Cofork"]),
+  ("cofork", ["Fork"]),
+  ("equalizer", ["Coequalizer"]),
+  ("coequalizer", ["Equalizer"]),
+  ("equalizers", ["Coequalizers"]),
+  ("coequalizers", ["Equalizers"]),
+  ("equalizes", ["Coequalizes"]),
+  ("coequalizes", ["Equalizes"]),
   ("unit", ["Counit"]),
   ("counit", ["Unit"]),
   ("monad", ["Comonad"]),
@@ -248,6 +256,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonadic", ["Monadic"]),
   ("section", ["Retraction"]),
   ("retraction", ["Section"]),
+  ("ofπ", ["Ofι"]),
+  ("ofι", ["Ofπ"]),
   ("functorπ", ["Functorι"]),
   ("functorι", ["Functorπ"]),
 ]
@@ -276,12 +286,17 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("isLeftContinuous", "IsRightContinuous"),
   ("isCadlag", "IsCaglad"),
   ("isCaglad", "IsCadlag"),
+  ("leftColim", "RightLim"),
+  ("rightColim", "LeftLim"),
+  ("colimUnder", "LimUnder"),
 
   -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
   ("ofSucc", "OfPred"),
   ("maximalAxioms", "MinimalAxioms"),
+  ("unitIso", "CounitIso"),
+  ("counitIso", "UnitIso"),
 ]
 
 @[inherit_doc GuessName.GuessNameExt]
@@ -332,5 +347,15 @@ elab "to_dual_name_hint" hints:(ident ident),* : command => do
   for ⟨hint⟩ in hints.getElems do
     guessNameExt.addTranslation ⟨hint[0]⟩ ⟨hint[1]⟩
     guessNameExt.addTranslation ⟨hint[1]⟩ ⟨hint[0]⟩
+
+/-- `to_dual_for src := e` tells `to_dual` to translate the constant `src` to `e`,
+where `e` can be an arbitrary expression.
+
+TODO: this currently doesn't accept the `(dont_translate := ...)`/`(relevant_arg := ...)` syntax.
+  This can be added if necessary.
+-/
+elab tk:"to_dual_for" src:ident " := " tgt:term : command => Command.liftTermElabM do
+  let src ← realizeGlobalConstNoOverloadWithInfo src
+  addTranslationFor data tk src tgt (dontTranslate := []) (relevantArg? := none)
 
 end Mathlib.Tactic.ToDual

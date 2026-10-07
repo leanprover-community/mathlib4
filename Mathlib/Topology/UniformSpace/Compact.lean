@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.UniformSpace.Basic
+
 import Mathlib.Topology.Compactness.Compact
 
 /-!

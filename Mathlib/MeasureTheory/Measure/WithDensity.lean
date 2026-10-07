@@ -77,7 +77,7 @@ theorem withDensity_apply' [SFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
   calc
   μ.withDensity f s ≤ μ.withDensity f t := measure_mono (subset_toMeasurable μ s)
   _ = ∫⁻ a in t, f a ∂μ := withDensity_apply f (measurableSet_toMeasurable μ s)
-  _ = ∫⁻ a in s, f a ∂μ := by congr 1; exact restrict_toMeasurable_of_sFinite s
+  _ = ∫⁻ a in s, f a ∂μ := by congr 1; exact restrict_toMeasurable_of_sfinite s
 
 @[simp]
 lemma withDensity_zero_left (f : α → ℝ≥0∞) : (0 : Measure α).withDensity f = 0 := by
@@ -255,7 +255,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
     simp only [Pi.zero_apply] at A
-    convert! A using 2
+    convert A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_ofPred_eq,
       not_forall]
@@ -670,11 +670,14 @@ instance [SFinite μ] {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0�
   infer_instance
 
 /-- If `μ ≪ ν` and `ν` is s-finite, then `μ` is s-finite. -/
-theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : μ ≪ ν) :
+theorem sfinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : μ ≪ ν) :
     SFinite μ := by
   rw [← Measure.restrict_add_restrict_compl (μ := μ) measurableSet_sigmaFiniteSetWRT,
     restrict_compl_sigmaFiniteSetWRT hμν]
   infer_instance
+
+@[deprecated (since := "2026-09-29")]
+alias sFinite_of_absolutelyContinuous := sfinite_of_absolutelyContinuous
 
 /-- In a countable space, every measure is s-finite. -/
 instance [Countable α] : SFinite μ := by
