@@ -18,7 +18,7 @@ This file contains a definition of the Hodge star on exterior powers.
  * `exteriorPower.hodgeStar`: the Hodge star on exterior powers associated to a choice of bilinear
    form and volume element.
  * `exteriorPower.hodgeStarOfOrientation`: the Hodge star associated to a bilinear form and a
-   choice of orientation.
+   positive orientation.
 
 ## TODO
 
@@ -67,8 +67,8 @@ variable {R M : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 variable (B : LinearMap.BilinForm R M) (hB : Bijective B)
 
 open Set Set.powersetCard in
-/-- The Hodge star for the positive orientation, using `Module.finBasis` to choose the scale of the
-volume element. -/
+/-- The Hodge star associated to `B` and the positive orientation, normalized using
+`Module.finBasis`. -/
 @[expose, simps!]
 public def hodgeStarOfOrientation {k l : ℕ}
     (hkl : k + l = finrank R M) :
@@ -79,9 +79,9 @@ public def hodgeStarOfOrientation {k l : ℕ}
     default := ⟨Finset.univ, by simp⟩
     uniq s := Subtype.ext <| Finset.eq_univ_of_card _ <| by simp
   }
-  let b' := b.exteriorPower (finrank R M)
-  let vol := b'.repr.trans (Finsupp.uniqueLinearEquiv R R default)
-  let vol := if b.orientation = positiveOrientation then vol else vol.trans (LinearEquiv.neg R)
-  exact hodgeStar B hB vol hkl
+  let vol := (b.exteriorPower (finrank R M)).repr.trans
+    (Finsupp.uniqueLinearEquiv R R default)
+  let vol' := if b.orientation = positiveOrientation then vol else vol.trans (LinearEquiv.neg R)
+  exact hodgeStar B hB vol' hkl
 
 end exteriorPower
