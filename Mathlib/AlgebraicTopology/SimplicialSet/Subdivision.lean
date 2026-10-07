@@ -46,7 +46,7 @@ noncomputable def PartOrd.nerveFunctorCompNIso :
           ext x : 3
           dsimp at x ⊢
           ext y : 2
-          simp [SSet.mapN_coe, nerveMap_app,
+          simp [SSet.mapN_coe, nerveMap_app, PartialOrder.NonemptyFiniteChains.nerveNEquiv_apply,
             PartialOrder.NonemptyFiniteChains.range_toN_simplex_obj.{u}])
 
 def SSet.stdSimplex.toPartOrdCompNerveFunctorIso :
@@ -234,6 +234,12 @@ instance : sd.{u}.PreservesMonomorphisms where
       (((relativeCellComplexOfMono i).transfiniteCompositionOfShape'
         (fun s ↦ boundary_ι_mem_I s.j)).ofLE this).mem
 
+lemma mem_range_sd'_map_ι_app_iff {X : SSet.{u}} (A : X.Subcomplex)
+    {d : ℕ} (x : (sd'.obj X) _⦋d⦌) :
+    dsimp% x ∈ Set.range ((sd'.map A.ι).app (op ⦋d⦌)) ↔
+      (x.obj (Fin.last d)).simplex ∈ A.obj _ := by
+  sorry
+
 end SSet
 
 namespace PartialOrder
@@ -244,5 +250,20 @@ noncomputable def nerveNonemptyFiniteChainsIso (X : Type u) [PartialOrder X] :
     sd'.obj (nerve X) ≅ nerve (NonemptyFiniteChains X) :=
   PartOrd.nerveFunctor.mapIso (PartOrd.Iso.mk (α := .of _) (β := .of _)
     NonemptyFiniteChains.nerveNEquiv)
+
+lemma nerveNonemptyFiniteChainsIso_hom_app_obj_finset
+    {X : Type u} [DecidableEq X] [PartialOrder X] {n : ℕ}
+    (t : ComposableArrows (nerve X).N n) (i : Fin (n + 1)) :
+    dsimp% (((nerveNonemptyFiniteChainsIso X).hom.app (Opposite.op ⦋n⦌) t).obj i).finset =
+      Finset.image (t.obj i).simplex.obj .univ := by
+  ext x
+  simp [nerveNonemptyFiniteChainsIso, nerveMap_app]
+
+lemma finsetImage_nerveNonemptyFiniteChainsIso_inv_app_simplex_obj_univ
+    {X : Type u} [DecidableEq X] [PartialOrder X] {n : ℕ}
+    (s : (nerve (NonemptyFiniteChains X)) _⦋n⦌) (i : Fin (n + 1)) :
+    dsimp% Finset.image (((nerveNonemptyFiniteChainsIso X).inv.app _ s).obj i).simplex.obj .univ =
+      (s.obj i).finset := by
+  simp [← nerveNonemptyFiniteChainsIso_hom_app_obj_finset]
 
 end PartialOrder

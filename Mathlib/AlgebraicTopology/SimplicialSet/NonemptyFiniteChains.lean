@@ -66,7 +66,7 @@ noncomputable def ofN (s : (nerve X).N) : NonemptyFiniteChains X := ofS s.toS
 
 @[simp]
 lemma mem_ofN_iff (s : (nerve X).N) (x : X) :
-    x ∈ (ofN s).1 ↔ x ∈ Set.range s.simplex.obj := by
+    x ∈ (ofN s).finset ↔ x ∈ Set.range s.simplex.obj := by
   simp [ofN]
 
 lemma monotone_ofS : Monotone (ofS (X := X)) := by
