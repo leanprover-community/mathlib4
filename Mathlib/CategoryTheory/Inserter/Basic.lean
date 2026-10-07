@@ -24,12 +24,11 @@ we define a category `Inserter F G`. Objects of `Inserter F G` correspond to pai
 
 ## References
 
-* TODO.
+* [nLab, *inserter*](https://ncatlab.org/nlab/show/inserter).
 
 ## Future work
 
 * Link `Inserter F (𝟭 C)` with `Endofunctor.Algebra F` when `F` is an endofunctor.
-* Show that inserter categories are accessible when `C`, `D`, `F` and `G` are.
 
 -/
 

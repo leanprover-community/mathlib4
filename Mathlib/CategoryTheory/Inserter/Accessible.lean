@@ -46,7 +46,7 @@ namespace CategoryTheory.Inserter
 universe w
 
 namespace Accessible
--- Recall everything in the section below private.
+-- Recall everything in the section below is private.
 
 /- The setup for accessibility of inserter categories, from Positselski’s paper:
 `F G : K ⥤ L` are a parallel pair of κ-accessible functors between κ-accessible categories
@@ -147,7 +147,7 @@ this is the relevance of the ordinal Λ that appears in the hypothesis of the ma
 -/
 
 /-- The structure of a partial induction for constructing the chain as in
-Lemma 4.5 of[positselski2014].
+Lemma 4.5 of [positselski2014].
 
 To realize the induction, we transform `j ↦ PartialChainUpTo … j` into a
 presheaf on `j` so that we can use `Functor.WellOrderInductionData`.
@@ -321,9 +321,6 @@ chain to a section of `PartialChainUpTo`. -/
 
 variable [NoMaxOrder Λ]
 open SmallObject.SuccStruct
-
-attribute [local grind =] Subtype.mk_le_mk Order.lt_succ_iff homOfLE_comp
-attribute [local grind =] CostructuredArrow.comp_left ObjectProperty.FullSubcategory.comp_hom
 
 variable {κ} {Λ} {E : Inserter F G} {i : Λ} (b : PartialChainUpTo κ Λ E i)
     (ξₙ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
