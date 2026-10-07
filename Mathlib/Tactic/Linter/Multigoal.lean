@@ -144,21 +144,21 @@ the number of goals after the tactic, and the number of unaffected goals.
 -/
 partial
 def getManyGoals (trees : PersistentArray InfoTree) : Array (Syntax × Nat × Nat × Nat) :=
-  trees.foldl (init := #[]) <| InfoTree.foldInfo fun _ info ranges => Id.run do
-    let .ofTacticInfo info := info | return ranges
-    let some mainGoal := info.goalsBefore[0]? | return ranges
+  trees.foldl (init := #[]) <| InfoTree.foldInfo fun _ info tactics => Id.run do
+    let .ofTacticInfo info := info | return tactics
+    let mainGoal :: _ := info.goalsBefore | return tactics
     -- Don't consider `conv` goals.
     if (isLHSGoal? (info.mctxBefore.getDecl mainGoal).type).isSome then
-      return ranges
+      return tactics
     -- Ideal case: one goal, and it might or might not be closed.
     if info.goalsBefore.length == 1 && info.goalsAfter.length ≤ 1 then
-      return ranges
+      return tactics
     if let .original .. := info.stx.getHeadInfo then
       let backgroundGoals := info.goalsAfter.filter (info.goalsBefore.contains ·)
       if backgroundGoals.length != 0 && !exclusions.contains info.stx.getKind then
-        return ranges.push (info.stx,
+        return tactics.push (info.stx,
                     info.goalsBefore.length, info.goalsAfter.length, backgroundGoals.length)
-    return ranges
+    return tactics
 
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
 def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
