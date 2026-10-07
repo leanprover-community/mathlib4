@@ -1,16 +1,17 @@
 name: publish release cache
 
-# Publishes the Mathlib cache for release tags whose commits are not on
-# `master`.
+# Publishes the Mathlib cache for every release tag.
 #
 # Patch releases (`v4.X.Y` with Y ≥ 1) and patched release candidates (e.g.
 # `v4.32.0-rc1-patch1`) are committed on `bump_to_*` branches that never merge
 # back into `master`, so the master push build never caches them; their branch
 # CI writes only the fork-trust container, which a canonical checkout at the
-# tag never reads. This workflow rebuilds the tagged commit and publishes the
-# result to the `master` container, where every consumer finds it. Tags that
-# point at commits on `master` (plain release candidates and `.0` releases)
-# are already cached by the master push build, so the gate job skips them.
+# tag never reads. A tag on `master` can also lack a cache: bors lands a batch
+# of commits at once and CI builds only the last one, so a tag on an earlier
+# commit of the batch has no build. This workflow rebuilds the tagged commit
+# and publishes the result to the `master` container, where every consumer
+# finds it. When the master build already cached the commit, the build is a
+# full cache hit, stages no files, and uploads nothing.
 #
 # Trust model:
 #   - Creating a `v4.*` tag is restricted to release managers by a tag
@@ -33,7 +34,7 @@ on:
     tags:
       - 'v4.*'
   # Manual fallback; see the retry note above. The `tags` filter does not
-  # apply to dispatches — the gate job's ref guards enforce it instead, so a
+  # apply to dispatches — the build job's ref guards enforce it instead, so a
   # dispatch on a branch ref skips cleanly.
   workflow_dispatch:
 
@@ -48,35 +49,11 @@ permissions:
   contents: read
 
 jobs:
-  gate:
-    name: skip tags already on master
+  build:
+    name: ci
     # The ref guards double as the dispatch-path filter; on the push path the
     # `tags` trigger filter has already enforced them.
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v4.') }}
-    runs-on: ubuntu-latest
-    outputs:
-      off_master: ${{ steps.check.outputs.off_master }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          # `merge-base` needs history, so fetch all of it.
-          fetch-depth: 0
-
-      - name: check whether the tagged commit is on master
-        id: check
-        run: |
-          if git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
-            echo "Tag $GITHUB_REF_NAME points at a commit on master; the master push build covers its cache."
-            echo "off_master=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "Tag $GITHUB_REF_NAME is not on master; rebuilding it to publish its cache."
-            echo "off_master=true" >> "$GITHUB_OUTPUT"
-          fi
-
-  build:
-    name: ci
-    needs: gate
-    if: ${{ needs.gate.outputs.off_master == 'true' }}
     # What build_template.yml needs, granted to this job only — the same set
     # build.yml grants it on push events. In particular, the OIDC token for
     # the cache upload can be minted here and nowhere else in this workflow.
