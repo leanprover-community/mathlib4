@@ -43,7 +43,7 @@ coefficients of `P.eraseLead`.
   respective lists.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 
@@ -68,6 +68,10 @@ theorem coeffList_zero : (0 : R[X]).coeffList = [] := by
 @[simp]
 theorem coeffList_eq_nil {P : R[X]} : P.coeffList = [] ↔ P = 0 := by
   simp [coeffList]
+
+theorem coeffList_of_ne_zero (h : P ≠ 0) :
+    P.coeffList = (List.range (P.natDegree + 1)).reverse.map P.coeff := by
+  simp [coeffList, withBotSucc_degree_eq_natDegree_add_one h]
 
 @[simp]
 theorem coeffList_C {x : R} (h : x ≠ 0) : (C x).coeffList = [x] := by
@@ -180,10 +184,12 @@ noncomputable def ofCoeffList : List R → R[X]
   | c :: p => C c + X * ofCoeffList p
 
 @[simp]
-theorem ofCoeffList_nil : ofCoeffList ([] : List R) = 0 := rfl
+theorem ofCoeffList_nil : ofCoeffList ([] : List R) = 0 := by
+  simp [ofCoeffList]
 
 theorem ofCoeffList_cons (c : R) (p : List R) :
-    ofCoeffList (c :: p) = C c + X * ofCoeffList p := rfl
+    ofCoeffList (c :: p) = C c + X * ofCoeffList p := by
+  simp [ofCoeffList]
 
 @[simp]
 theorem coeff_ofCoeffList (l : List R) (i : ℕ) : (ofCoeffList l).coeff i = l.getD i 0 := by
