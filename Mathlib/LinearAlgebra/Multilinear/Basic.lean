@@ -24,17 +24,17 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 We define multilinear maps as maps from `∀ (i : ι), M i` to `N` which are `σ`-semilinear in each
 coordinate. Here, `M i` and `N` are modules over rings `R` and `S`, respectively, and `ι` is an
 arbitrary type (although some statements will require it to be a fintype). This space, denoted by
-`MultilinearMap σ M N`, inherits a module structure by pointwise addition and multiplication.
+`M →ₛₗₘ[σ] N`, inherits a module structure by pointwise addition and multiplication.
 
 ## Main definitions
 
-* `MultilinearMap σ M N` is the space of `σ`-multilinear maps from `∀ (i : ι), M i` to `N`.
+* `MultilinearMap σ M N` (`M →ₛₗₘ[σ] N`) is the space of `σ`-multisemilinear maps
+  from `∀ (i : ι), M i` to `N`.
 * `f.map_update_smul` is the multiplicativity of the multilinear map `f` along each coordinate.
 * `f.map_update_add` is the additivity of the multilinear map `f` along each coordinate.
 * `f.map_smul_univ` expresses the multiplicativity of `f` over all coordinates at the same time,
   writing `f (fun i => c i • m i)` as `(∏ i, σ (c i)) • f m`.
 * `f.map_add_univ` expresses the additivity of `f` over all coordinates at the same time, writing
-
   `f (m + m')` as the sum over all subsets `s` of `ι` of `f (s.piecewise m m')`.
 * `f.map_sum` expresses `f (Σ_{j₁} g₁ j₁, ..., Σ_{jₙ} gₙ jₙ)` as the sum of
   `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all possible functions.
@@ -100,6 +100,9 @@ structure MultilinearMap {R : Type uR} {S : Type uS} [Semiring R] [Semiring S]
     ∀ [DecidableEq ι] (m : ∀ i, M i) (i : ι) (c : R) (x : M i),
       toFun (update m i (c • x)) = σ c • toFun (update m i x)
 
+/-- `M →ₛₗₘ[σ] N` is the type of `σ`-multisemilinear maps from `M` to `N`. -/
+notation:25 M " →ₛₗₘ[" σ:25 "] " N:0 => MultilinearMap σ M N
+
 namespace MultilinearMap
 
 section Semiring
@@ -113,7 +116,7 @@ instance : FunLike (MultilinearMap σ M N) (∀ i, M i) N where
 
 initialize_simps_projections MultilinearMap (toFun → apply)
 
-/-- Constructor for `MultilinearMap σ M N` when the
+/-- Constructor for `M →ₛₗₘ[σ] N` when the
 index type `ι` is already endowed with a `DecidableEq` instance. -/
 @[simps]
 def mk' [DecidableEq ι] (f : (∀ i, M i) → N)
