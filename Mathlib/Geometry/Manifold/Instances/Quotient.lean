@@ -83,10 +83,8 @@ lemma localInverseAt_apply_mk_eq_smul {g : G} {m : M} (hm : g • m ∈ (x.local
 lemma localInverseAt_symm_trans_eqOn_smul (x y : orbitRel.Quotient G M) (g : G) :
     ((g • ·) ⁻¹' (y.localInverseAt).target).EqOn
       ((x.localInverseAt).symm.trans (y.localInverseAt)) (g • ·) := by
-  intro m hm
-  simpa only [OpenPartialHomeomorph.coe_trans, Function.comp_apply,
-    isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm]
-    using localInverseAt_apply_mk_eq_smul hm
+  intro _ hm
+  simpa using localInverseAt_apply_mk_eq_smul hm
 
 /-- If `⟦m⟧` is in the source of `x.localInverseAt`, then there is some `g ∈ G` such that
 `g • m` lies in the target of `x.localInverseAt`. -/
