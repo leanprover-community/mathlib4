@@ -90,12 +90,23 @@ lemma localInverseAt_symm_trans_eqOn_smul (x y : orbitRel.Quotient G M) (g : G) 
 `g • m` lies in the target of `x.localInverseAt`. -/
 @[to_additive /-- If `⟦m⟧` is in the source of `x.localInverseAt`, then there is some `g ∈ G` such
 that `g +ᵥ m` lies in the target of `x.localInverseAt`. -/]
-lemma exists_smul_mem_localInverseAt_target {m : M}
-    (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (x.localInverseAt).source) :
-    ∃ g : G, g • m ∈ (x.localInverseAt).target := by
-  obtain ⟨g, hg⟩ := orbitRel_apply.mp (Quotient.exact
+def foo {m : M} (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (x.localInverseAt).source) : G :=
+  Classical.choose <| orbitRel_apply.mp (Quotient.exact
     (isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.apply_localInverseAt_of_mem hm))
-  exact ⟨g, by simpa [hg] using (x.localInverseAt).map_source hm⟩
+
+@[to_additive]
+lemma foo_spec {m : M} (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (x.localInverseAt).source) :
+    (foo hm) • m =
+      (isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul (G := G)).localInverseAt
+        x.out ⟦m⟧ :=
+  Classical.choose_spec <| orbitRel_apply.mp (Quotient.exact
+    (isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.apply_localInverseAt_of_mem hm))
+
+@[to_additive]
+lemma bar {m : M}
+    (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (x.localInverseAt).source) :
+    (foo hm) • m ∈ (x.localInverseAt).target := by
+  simpa [foo_spec hm] using (x.localInverseAt).map_source hm
 
 /-!
 ## Transition maps between charts
@@ -121,21 +132,13 @@ lemma transitionMap_eqOn_smul (g : G) : Set.EqOn (transitionMap x y)
   simpa [transitionMap] using
     congr((chartAt H y.out) $(localInverseAt_symm_trans_eqOn_smul x y g hh))
 
-/-- Near each point of its source, the transition map of the quotient is the action of a single
-element `g : G`. -/
-@[to_additive /-- Near each point of its source, the transition map of the quotient is the
-additive action of a single element `g : G`. -/]
-lemma transitionMap_locally_smul {h : H} (hh : h ∈ (transitionMap x y).source) :
-    ∃ g : G, h ∈ (chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target) ∧
-      Set.EqOn (transitionMap x y)
-        ((chartAt H x.out).symm ≫ₕ (Homeomorph.smul g).toOpenPartialHomeomorph ≫ₕ chartAt H y.out)
-        ((chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target)) := by
-  simp only [transitionMap, OpenPartialHomeomorph.trans_source, Set.mem_inter_iff,
-    Set.mem_preimage] at hh
-  obtain ⟨_, ⟨_, hmid⟩, _⟩ := hh
-  obtain ⟨g, hg⟩ := exists_smul_mem_localInverseAt_target
-    (by rwa [isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm] at hmid)
-  exact ⟨g, hg, transitionMap_eqOn_smul x y g⟩
+variable {x y : orbitRel.Quotient G M} in
+@[to_additive]
+lemma hoge {h : H} (hh : h ∈ (transitionMap x y).source) :
+    ⟦(chartAt H (Quotient.out x)).symm h⟧ ∈ y.localInverseAt.source := by
+  simp only [transitionMap, OpenPartialHomeomorph.trans_source, Set.mem_inter_iff, Set.mem_preimage,
+    isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm] at hh
+  exact hh.2.1.2
 
 end orbitRel.Quotient
 
@@ -163,22 +166,21 @@ instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] 
       ← (localInverseAt x).symm.trans_assoc]
     apply StructureGroupoid.locality
     intro _ hh
-    obtain ⟨g0, hg0, hg0'⟩ := transitionMap_locally_smul x y hh
     have hto : IsOpen ((chartAt H x.out).symm.source ∩
-        (chartAt H x.out).symm ⁻¹' ((g0 • ·) ⁻¹' (localInverseAt y).target)) :=
+        (chartAt H x.out).symm ⁻¹' ((foo (hoge hh) • ·) ⁻¹' (localInverseAt y).target)) :=
       (chartAt H x.out).symm.isOpen_inter_preimage
-        ((localInverseAt y).open_target.preimage (continuous_const_smul g0))
-    refine ⟨_, hto, ⟨hh.1, hg0⟩, ?_⟩
+        ((localInverseAt y).open_target.preimage (continuous_const_smul (foo (hoge hh))))
+    refine ⟨_, hto, ⟨hh.1, bar (hoge hh)⟩, ?_⟩
     refine StructureGroupoid.restr_mem_of_eqOn (symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
       (IsManifold.chart_mem_maximalAtlas x.out) (IsManifold.chart_mem_maximalAtlas y.out) ?_ ?_)
-      hto (hg0'.mono Set.inter_subset_right).symm ?_
+      hto ((transitionMap_eqOn_smul x y (g := foo (hoge hh))).mono Set.inter_subset_right).symm ?_
     · rw [Homeomorph.toOpenPartialHomeomorph_apply]
-      exact (ContMDiffConstSMul.contMDiff_const_smul g0).contMDiffOn
+      exact (ContMDiffConstSMul.contMDiff_const_smul (foo (hoge hh))).contMDiffOn
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
-      exact (ContMDiffConstSMul.contMDiff_const_smul g0⁻¹).contMDiffOn
+      exact (ContMDiffConstSMul.contMDiff_const_smul (foo (hoge hh))⁻¹).contMDiffOn
     · rintro h' ⟨⟨hQ1, _, hQ4⟩, _, hh'⟩
       refine ⟨hQ1, Set.mem_univ _, ?_⟩
-      simpa [← localInverseAt_symm_trans_eqOn_smul x y g0 hh'] using hQ4
+      simpa [← localInverseAt_symm_trans_eqOn_smul x y (foo (hoge hh)) hh'] using hQ4
 
 end MulAction
 
