@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
+
 import Mathlib.Analysis.LocallyConvex.Barrelled
 import Mathlib.Topology.Baire.CompleteMetrizable
 

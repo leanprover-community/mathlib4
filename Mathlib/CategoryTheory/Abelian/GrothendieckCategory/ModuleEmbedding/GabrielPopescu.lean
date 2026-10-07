@@ -5,10 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
+
+import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
 import Mathlib.CategoryTheory.Preadditive.LiftToFinset
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 

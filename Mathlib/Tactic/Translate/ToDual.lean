@@ -247,6 +247,14 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cokernel", ["Kernel"]),
   ("kernels", ["Cokernels"]),
   ("cokernels", ["Kernels"]),
+  ("fork", ["Cofork"]),
+  ("cofork", ["Fork"]),
+  ("equalizer", ["Coequalizer"]),
+  ("coequalizer", ["Equalizer"]),
+  ("equalizers", ["Coequalizers"]),
+  ("coequalizers", ["Equalizers"]),
+  ("equalizes", ["Coequalizes"]),
+  ("coequalizes", ["Equalizes"]),
   ("unit", ["Counit"]),
   ("counit", ["Unit"]),
   ("monad", ["Comonad"]),
@@ -255,6 +263,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonadic", ["Monadic"]),
   ("section", ["Retraction"]),
   ("retraction", ["Section"]),
+  ("ofπ", ["Ofι"]),
+  ("ofι", ["Ofπ"]),
   ("functorπ", ["Functorι"]),
   ("functorι", ["Functorπ"]),
 ]
@@ -283,12 +293,17 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("isLeftContinuous", "IsRightContinuous"),
   ("isCadlag", "IsCaglad"),
   ("isCaglad", "IsCadlag"),
+  ("leftColim", "RightLim"),
+  ("rightColim", "LeftLim"),
+  ("colimUnder", "LimUnder"),
 
   -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
   ("ofSucc", "OfPred"),
   ("maximalAxioms", "MinimalAxioms"),
+  ("unitIso", "CounitIso"),
+  ("counitIso", "UnitIso"),
 ]
 
 @[inherit_doc GuessName.GuessNameExt]
