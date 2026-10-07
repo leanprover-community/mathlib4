@@ -21,7 +21,7 @@ In this file, we proved that exterior power commutes with arbitrary base change.
 
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
@@ -126,7 +126,7 @@ lemma baseChangeInverseAlternating_apply_tmul (i : ℕ) (s : Fin i → S) (m : F
     (List.ofFn fun j ↦ ExteriorAlgebra.ι S (s j ⊗ₜ[R] m j)) =
       List.ofFn fun j ↦ s j ⊗ₜ[R] ExteriorAlgebra.ι R (m j) := by
     ext j
-    simp [ExteriorAlgebra.baseChangeExteriorAlgebraToTensor, ExteriorAlgebra.baseChangeι]
+    simp [ExteriorAlgebra.baseChangeExteriorAlgebraToTensor_apply]
   rw [himages, hprod]
   simpa [ExteriorAlgebra.ιMulti_apply] using
     congrArg ((Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] ·) (degreeProjection_apply_ιMulti R M i m)
