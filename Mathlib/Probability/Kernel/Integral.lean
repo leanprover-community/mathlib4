@@ -77,9 +77,11 @@ end Deterministic
 
 section Const
 
+@[deprecated const_apply +typeChanged (since := "2026-10-06")]
 theorem integral_const {μ : Measure β} : ∫ x, f x ∂const α μ a = ∫ x, f x ∂μ := by
   rw [const_apply]
 
+@[deprecated const_apply +typeChanged (since := "2026-10-06")]
 theorem setIntegral_const {μ : Measure β} {s : Set β} :
     ∫ x in s, f x ∂const α μ a = ∫ x in s, f x ∂μ := by rw [const_apply]
 

@@ -97,7 +97,6 @@ end
 variable [LieRingModule L M] [LieModule R L M]
 
 /-- The coboundary operator taking degree 1 cochains to degree 2 cochains. -/
-@[simps -isSimp (attr := deprecated "d₁₂_apply_apply" (since := "2026-10-06"))]
 def d₁₂ : oneCochain R L M →ₗ[R] twoCochain R L M where
   toFun f :=
     { val :=
@@ -114,6 +113,10 @@ def d₁₂ : oneCochain R L M →ₗ[R] twoCochain R L M where
 @[simp]
 lemma d₁₂_apply_apply (f : oneCochain R L M) (x y : L) :
     d₁₂ R L M f x y = ⁅x, f y⁆ - ⁅y, f x⁆ - f ⁅x, y⁆ := rfl
+
+@[deprecated d₁₂_apply_apply +typeChanged (since := "2026-10-06")]
+lemma d₁₂_apply_coe_apply_apply (f : oneCochain R L M) (x y : L) :
+    (d₁₂ R L M f).val x y = ⁅x, f y⁆ - ⁅y, f x⁆ - f ⁅x, y⁆ := rfl
 
 lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R L M) (x y : L) :
     d₁₂ R L M f x y = - f ⁅x, y⁆ := by

@@ -220,9 +220,11 @@ lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
 instance [Nonempty β] : Nonempty {κ : Kernel α β // IsMarkovKernel κ} :=
   nonempty_subtype.2 ⟨Kernel.const _ (Measure.dirac Classical.ofNonempty), inferInstance⟩
 
+@[deprecated const_apply +typeChanged (since := "2026-10-06")]
 theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
     ∫⁻ x, f x ∂const α μ a = ∫⁻ x, f x ∂μ := by rw [const_apply]
 
+@[deprecated const_apply +typeChanged (since := "2026-10-06")]
 theorem setLIntegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} {s : Set β} :
     ∫⁻ x in s, f x ∂const α μ a = ∫⁻ x in s, f x ∂μ := by rw [const_apply]
 
