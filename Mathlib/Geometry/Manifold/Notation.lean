@@ -352,11 +352,16 @@ partial def guessBaseFieldForNormedSpace (e : Expr) : TermElabM <| Option Expr :
   | Prod E _F =>
     guessBaseFieldForNormedSpace E
   | _ =>
+    -- TODO: can/should this just take the field k / R instead of recursing?
     try
       let (_k, E, _F) ← isCLMReduciblyDefeqCoefficients e
       guessBaseFieldForNormedSpace E
     catch _e =>
-      findFromLocalInstance e
+      try
+        let (_R, M, _N, _ι) ← isContAlternatingMaps e
+        guessBaseFieldForNormedSpace M
+      catch _e =>
+        findFromLocalInstance e
 where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
   findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
     match_expr type with
@@ -427,7 +432,7 @@ where
       trace[Elab.DiffGeo.MDiff]
         "{e} is the total space of a fiber bundle: trying to find a model on the base of `{V}`"
       -- `V` should be of type `B → Type*`, where `B` is the base of the vector bundle.
-      -- Then, the desired model with corners is `I.prod (𝓘(𝕜, F))`, where `I` is the model on `B`
+      -- Then, the desired model with corners is `I.prod 𝓘(𝕜, F)`, where `I` is the model on `B`
       -- and `𝕜` is the base field for `F`.
       let vtype ← whnf <| ← instantiateMVars <| ← inferType V
       trace[Elab.DiffGeo.MDiff] "`{V}` has type `{vtype}`"
