@@ -289,25 +289,10 @@ def parallelPairHomMk {F G : WalkingParallelPair ⥤ C}
   app := by rintro (_ | _); exacts [p, q]
   naturality := by rintro _ _ (_ | _); all_goals cat_disch
 
-/-- Constructor for natural isomorphisms between parallel pairs. -/
-@[simps!]
-def parallelPairIsoMk {F G : WalkingParallelPair ⥤ C}
-    (p : F.obj zero ≅ G.obj zero)
-    (q : F.obj one ≅ G.obj one)
-    (hl : F.map left ≫ q.hom = p.hom ≫ G.map left := by cat_disch)
-    (hr : F.map right ≫ q.hom = p.hom ≫ G.map right := by cat_disch) : F ≅ G :=
-  NatIso.ofComponents (by rintro (_ | _); exacts [p, q])
-    (by rintro _ _ (_ | _); all_goals cat_disch)
-
 /-- Construct a morphism between parallel pairs. -/
 def parallelPairHom {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ⟶ X') (q : Y ⟶ Y')
     (wf : f ≫ q = p ≫ f') (wg : g ≫ q = p ≫ g') : parallelPair f g ⟶ parallelPair f' g' :=
   parallelPairHomMk p q
-
-/-- Construct a isomorphism between parallel pairs. -/
-def parallelPairIso {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ≅ X') (q : Y ≅ Y')
-    (wf : f ≫ q.hom = p.hom ≫ f') (wg : g ≫ q.hom = p.hom ≫ g') :
-    parallelPair f g ≅ parallelPair f' g' := parallelPairIsoMk p q
 
 @[simp]
 theorem parallelPairHom_app_zero {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ⟶ X')
@@ -333,6 +318,15 @@ def parallelPair.ext {F G : WalkingParallelPair ⥤ C} (zero : F.obj zero ≅ G.
       rintro ⟨j⟩
       exacts [zero, one])
     (by rintro _ _ ⟨_⟩ <;> simp [left, right])
+
+/-- Construct a isomorphism between parallel pairs. -/
+def parallelPairIso {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ≅ X') (q : Y ≅ Y')
+    (wf : f ≫ q.hom = p.hom ≫ f') (wg : g ≫ q.hom = p.hom ≫ g') :
+    parallelPair f g ≅ parallelPair f' g' := parallelPair.ext p q
+
+@[deprecated (since := "2026-10-07")] alias parallelPairIsoMk := parallelPair.ext
+@[deprecated (since := "2026-10-07")] alias parallelPairIsoMk_hom_app := parallelPair.ext_hom_app
+@[deprecated (since := "2026-10-07")] alias parallelPairIsoMk_inv_app := parallelPair.ext_inv_app
 
 /-- Construct a natural isomorphism between `parallelPair f g` and `parallelPair f' g'` given
 equalities `f = f'` and `g = g'`. -/

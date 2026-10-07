@@ -528,7 +528,7 @@ def IsKernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : KernelFork f} (hs : IsLimit
     (s' : KernelFork f') (eX : X ≅ X') (eY : Y ≅ Y') (e : s.pt ≅ s'.pt)
     (H : eX.hom ≫ f' = f ≫ eY.hom) (H' : e.hom ≫ s'.ι = s.ι ≫ eX.hom) :
     IsLimit s' :=
-  let α : parallelPair f 0 ≅ parallelPair f' 0 := parallelPairIsoMk eX eY H.symm (by simp)
+  let α : parallelPair f 0 ≅ parallelPair f' 0 := parallelPair.ext eX eY H.symm (by simp)
   IsLimit.ofIsoLimit ((IsLimit.postcomposeHomEquiv α s).symm hs) <|
     Cone.ext e (by rintro (_ | _) <;> simp [α, ← H'])
 
@@ -1167,7 +1167,7 @@ def IsCokernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : CokernelCofork f} (hs : I
     (s' : CokernelCofork f') (eX : X ≅ X') (eY : Y ≅ Y') (e : s.pt ≅ s'.pt)
     (H : eX.hom ≫ f' = f ≫ eY.hom) (H' : eY.hom ≫ s'.π = s.π ≫ e.hom) :
     IsColimit s' :=
-  let α : parallelPair f 0 ≅ parallelPair f' 0 := parallelPairIsoMk eX eY H.symm (by simp)
+  let α : parallelPair f 0 ≅ parallelPair f' 0 := parallelPair.ext eX eY H.symm (by simp)
   IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv α.symm s).symm hs) <|
     Cocone.ext e (by rintro (_ | _) <;> simp [α, ← H'])
 
