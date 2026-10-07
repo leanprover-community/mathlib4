@@ -541,8 +541,10 @@ abbrev Out : Type _ := MulAut G ⧸ MulAut.unitsConjHom.range
 /-- The outer automorphism monoid End(G)⧸Inn(G) of a monoid G. -/
 abbrev OuterEnd : Type _ := (innConn G).Quotient
 
+variable {G}
+
 /-- Out(G) is isomorphic to (End(G)⧸Inn(G))ˣ. -/
-noncomputable def mulOutEquivUnitsQuotientInnConn : Out G ≃* (OuterEnd G)ˣ :=
+noncomputable def Out.equivUnitsOuterEnd : Out G ≃* (OuterEnd G)ˣ :=
   .ofBijective (QuotientGroup.lift _ (⟨⟨fun f ↦ ⟨⟦f.toMonoidHom⟧, ⟦f⁻¹.toMonoidHom⟧,
     congr(⟦$(mul_inv_cancel f).toMonoidHom⟧), congr(⟦$(inv_mul_cancel f).toMonoidHom⟧)⟩, rfl⟩,
     fun _ _ ↦ rfl⟩) <| by rintro _ ⟨g, rfl⟩; refine Units.ext <| Quotient.sound ⟨g, rfl⟩)
