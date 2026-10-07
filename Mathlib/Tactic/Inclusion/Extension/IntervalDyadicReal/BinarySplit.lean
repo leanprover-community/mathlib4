@@ -22,8 +22,7 @@ namespace Inclusion
 namespace IntervalDyadicReal
 
 /-- The midpoint of `a` and `b`. -/
-def midpoint (a b : Dyadic) : Dyadic :=
-  (a + b) >>> (1 : ℤ)
+def midpoint (a b : Dyadic) : Dyadic := (a + b) >>> (1 : ℤ)
 
 /-- Map `F` over the intervals produced by bisecting `I` to depth `n`, coarsening the results. -/
 @[specialize]
