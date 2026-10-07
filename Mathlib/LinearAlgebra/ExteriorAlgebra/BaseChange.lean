@@ -65,10 +65,13 @@ lemma baseChangeExteriorAlgebraToTensor_apply (s : S) (m : M) :
     baseChangeExteriorAlgebraToTensor R M S (ι S (s ⊗ₜ[R] m)) = s ⊗ₜ[R] ι R m := by
   simp [baseChangeExteriorAlgebraToTensor]
 
+/-- The auxiliary construction for `ExteriorAlgebra.baseChangeIsoForward`. -/
 def baseChangeIsoForwardAux : ExteriorAlgebra R M →ₐ[R]ExteriorAlgebra S (S ⊗[R] M) :=
   ExteriorAlgebra.lift R
     ⟨((ExteriorAlgebra.ι S).restrictScalars R).comp (TensorProduct.mk R S M 1), fun m ↦ by simp⟩
 
+/-- The forward map of `ExteriorAlgebra.baseChangeIso`, lift from universal property of
+tensor product and `ExteriorAlgebra`. -/
 def baseChangeIsoForward : S ⊗[R] ExteriorAlgebra R M →ₐ[S] ExteriorAlgebra S (S ⊗[R] M) :=
   Algebra.TensorProduct.lift (Algebra.ofId _ _) (baseChangeIsoForwardAux R M S) (fun s y ↦ by
     simp [Algebra.commute_algebraMap_left])
@@ -85,6 +88,7 @@ lemma baseChangeIsoForward_rightInverse :
   ext m
   simp [baseChangeIsoForward, baseChangeIsoForwardAux, baseChangeExteriorAlgebraToTensor]
 
+/-- The commute of `ExteriorAlgebra` and base change. -/
 def baseChangeIso : S ⊗[R] ExteriorAlgebra R M ≃ₐ[S] ExteriorAlgebra S (S ⊗[R] M) where
   __ := baseChangeIsoForward R M S
   invFun := baseChangeExteriorAlgebraToTensor R M S
