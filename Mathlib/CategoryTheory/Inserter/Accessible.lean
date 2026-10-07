@@ -1015,7 +1015,6 @@ lemma isCardinalFiltered_Δ (E : Inserter F G) :
   let hcolimG := isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
   refine ⟨fun ι v hι ↦ ?_, fun ι r p f hι hι' ↦ ?_⟩
   · -- There exists an index ξ₀ such that all the v_j factorizes through the index in K
-    -- TODO: extract the part where we take an index and advance it by one.
     have b (j : ι) := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimS (v j).hom.hom
     dsimp at b
     simp only [Category.id_comp] at b
@@ -1072,6 +1071,7 @@ lemma isCardinalFiltered_Δ (E : Inserter F G) :
       IsCardinalPresentable.exists_eq_of_isColimit'_of_hasCardinalLT κ hcolimS hι
         (fun i ↦ (f i).left.hom.hom ≫ u) (fun i i' ↦ by
           simp [hu, dsimp% congr($((f i').w).hom), dsimp% congr($((f i).w).hom)])
+    -- Then pick ξ₁ such chat..
     obtain ⟨ξ₁₀, ν₁₀, σ₀, hξ₁₀⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimG
       (F.map ξ₀.hom ≫ E.hom) ξ₀'
     dsimp at hξ₁₀ σ₀
@@ -1364,8 +1364,30 @@ theorem isAccessibleCategory
     {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L)
     [IsAccessibleCategory.{w} K] [IsAccessibleCategory.{w} L]
     [F.IsAccessible.{w}] [G.IsAccessible.{w}] : IsAccessibleCategory.{w} (Inserter F G) := by
-  have := IsCardinalAccessibleCategory.uniformization_pair F G
-  sorry
+  obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ := IsCardinalAccessibleCategory.uniformization_pair F G
+  -- To apply the theorem `isCardinalAccessibleCategory`, `κ` must be at least uncountable,
+  -- So we fix this by picking an arbitrary cardinal κ' such that κ is sharply less that κ
+  obtain ⟨κ', _, h⟩ := Cardinal.SharplyLT.exists_single κ
+  have : IsCardinalAccessibleCategory K κ' := h.isCardinalAccessibleCategory K
+  have : IsCardinalAccessibleCategory L κ' := h.isCardinalAccessibleCategory L
+  have : F.IsCardinalAccessible κ' := Functor.isCardinalAccessible_of_le _ h.le
+  have : G.IsCardinalAccessible κ' := Functor.isCardinalAccessible_of_le _ h.le
+  have : F.PreservesCardinalPresentable κ' := F.preservesCardinalPresentable_of_sharplyLT h
+  have : G.PreservesCardinalPresentable κ' := G.preservesCardinalPresentable_of_sharplyLT h
+  have : Nonempty κ.ord.ToType := Cardinal.nonempty_ord_toType (Cardinal.IsRegular.ne_zero Fact.out)
+  have : NoMaxOrder κ.ord.ToType := Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
+  have hCard: HasCardinalLT κ.ord.ToType κ' := by
+    rw [hasCardinalLT_iff_cardinal_mk_lt]
+    simpa using h.lt
+  have : Limits.HasColimitsOfShape κ.ord.ToType K :=
+    HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+  have : Limits.HasColimitsOfShape κ.ord.ToType L :=
+    HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+  have : Limits.PreservesColimitsOfShape κ.ord.ToType F :=
+    Functor.IsCardinalAccessible.preservesColimitOfShape κ _
+  have : Limits.PreservesColimitsOfShape κ.ord.ToType G :=
+    Functor.IsCardinalAccessible.preservesColimitOfShape κ _
+  exact ⟨κ', inferInstance, isCardinalAccessibleCategory F G κ' κ.ord.ToType hCard⟩
 
 end
 

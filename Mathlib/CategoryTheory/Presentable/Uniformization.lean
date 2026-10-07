@@ -60,7 +60,7 @@ variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 
 lemma uniformization_aux
     (F : C ⥤ D) {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
-    [IsCardinalAccessibleCategory C κ₁] [IsCardinalAccessibleCategory D κ₁]
+    [IsCardinalAccessibleCategory C κ₁] [LocallySmall.{w} D]
     [F.IsCardinalAccessible κ₁] (hκ : κ₁.SharplyLT κ₂)
     (hF : isCardinalPresentable C κ₁ ≤ (isCardinalPresentable D κ₂).inverseImage F) :
     F.PreservesCardinalPresentable κ₂ where
@@ -72,6 +72,14 @@ lemma uniformization_aux
     have (j : J) : IsCardinalPresentable ((p.diag ⋙ F).obj j) κ₂ := hF _ (p.prop_diag_obj j)
     exact isCardinalPresentable_of_isColimit _ (isColimitOfPreserves F p.isColimit) _
       ((hasCardinalLT_arrow_iff_of_isThin _ _ (Cardinal.IsRegular.aleph0_le Fact.out)).2 hJ)
+
+theorem _root_.CategoryTheory.Functor.preservesCardinalPresentable_of_sharplyLT
+    (F : C ⥤ D) [LocallySmall.{w} D] {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
+    [IsCardinalAccessibleCategory C κ₁]
+    [F.IsCardinalAccessible κ₁] [F.PreservesCardinalPresentable κ₁]
+    (h : Cardinal.SharplyLT κ₁ κ₂) :
+    F.PreservesCardinalPresentable κ₂ :=
+  uniformization_aux F h (fun _ _ ↦ CategoryTheory.isCardinalPresentable_of_le _ h.le)
 
 /-- Uniformization theorem for accessible categories: if `F i : C ⥤ D` for `i : ι`
 is a small family of accessible functors between accessible categories, there exists
