@@ -61,8 +61,8 @@ def baseChangeExteriorAlgebraToTensor :
   ExteriorAlgebra.lift S
     ⟨ExteriorAlgebra.baseChangeι R M S, ExteriorAlgebra.baseChangeι_sq_zero R M S⟩
 
-lemma baseChangeExteriorAlgebraToTensor_apply (m : M) :
-    baseChangeExteriorAlgebraToTensor R M S (ι S (1 ⊗ₜ[R] m)) = 1 ⊗ₜ[R] ι R m := by
+lemma baseChangeExteriorAlgebraToTensor_apply (s : S) (m : M) :
+    baseChangeExteriorAlgebraToTensor R M S (ι S (s ⊗ₜ[R] m)) = s ⊗ₜ[R] ι R m := by
   simp [baseChangeExteriorAlgebraToTensor]
 
 def baseChangeIsoForwardAux : ExteriorAlgebra R M →ₐ[R]ExteriorAlgebra S (S ⊗[R] M) :=
