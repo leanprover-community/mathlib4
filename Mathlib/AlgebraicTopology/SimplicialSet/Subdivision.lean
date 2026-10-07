@@ -28,7 +28,7 @@ and its right adjoint `ex`.
 
 @[expose] public section
 
-universe v u
+universe u
 
 open CategoryTheory Opposite Limits Simplicial
 
@@ -235,3 +235,14 @@ instance : sd.{u}.PreservesMonomorphisms where
         (fun s ↦ boundary_ι_mem_I s.j)).ofLE this).mem
 
 end SSet
+
+namespace PartialOrder
+
+open SSet
+
+noncomputable def nerveNonemptyFiniteChainsIso (X : Type u) [PartialOrder X] :
+    sd'.obj (nerve X) ≅ nerve (NonemptyFiniteChains X) :=
+  PartOrd.nerveFunctor.mapIso (PartOrd.Iso.mk (α := .of _) (β := .of _)
+    NonemptyFiniteChains.nerveNEquiv)
+
+end PartialOrder

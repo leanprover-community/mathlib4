@@ -554,8 +554,9 @@ variable [Fintype X] [Nontrivial X] (x₀)
 
 noncomputable def hornArrowIsoRangeSd' :
     Arrow.mk (NonemptyFiniteChains.horn x₀).ι ≅
-      Arrow.mk (Subcomplex.range (sd'.map (PartialOrder.horn x₀).ι)).ι := by
-  sorry
+      Arrow.mk (Subcomplex.range (sd'.map (PartialOrder.horn x₀).ι)).ι :=
+  Subcomplex.congrArrowι' (nerveNonemptyFiniteChainsIso _).symm (by
+    sorry)
 
 noncomputable def hornArrowIsoSd' :
     Arrow.mk (NonemptyFiniteChains.horn x₀).ι ≅

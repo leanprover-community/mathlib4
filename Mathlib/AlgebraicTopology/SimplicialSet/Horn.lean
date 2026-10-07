@@ -356,6 +356,14 @@ def horn {X : Type u} [PartialOrder X] (x₀ : X) : (nerve X).Subcomplex where
     rintro _ ⟨i, rfl⟩
     exact ⟨_, rfl⟩))
 
+lemma horn_eq_iSup {X : Type u} [PartialOrder X] (x₀ : X) :
+    horn x₀ =
+      ⨆ y ∈ ({x₀}ᶜ : Set X),
+        SSet.Subcomplex.range
+          (nerveMap (OrderHom.Subtype.val fun x ↦ x ≠ y).monotone.functor) := by
+  ext n x
+  sorry
+
 def hornArrowIso (n : ℕ) (i : Fin (n + 2)) :
     Arrow.mk (horn.{u} (ULift.up i)).ι ≅ Arrow.mk (SSet.horn (n + 1) i).ι :=
   SSet.Subcomplex.congrArrowι' ((SSet.stdSimplex.isoNerve _).symm) (by
