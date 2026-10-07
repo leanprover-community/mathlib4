@@ -346,11 +346,10 @@ theorem comap_ringConGen_ringEquiv (r : R' → R' → Prop) (f : R ≃+* R') :
   simpa [Function.onFun] using hab
 
 theorem comap_ringConGen_equiv
-    {F} [EquivLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R]
+    {F} [EquivLike F R' R] [RingEquivClass F R' R]
     (r : R → R → Prop) (f : F) :
     (ringConGen r).comap f = ringConGen (r on f) :=
-  comap_ringConGen_ringEquiv r
-    { EquivLike.toEquiv f with map_mul' := map_mul f, map_add' := map_add f }
+  comap_ringConGen_ringEquiv r (RingEquivClass.toRingEquiv f)
 
 end Lattice
 
