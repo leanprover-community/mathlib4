@@ -6,10 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Algebra.Order.Ring.Pow
+
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Zify
-public import Mathlib.Algebra.Order.Ring.Pow
 
 /-!
 # Lemmas about `Nat.nthRoot`

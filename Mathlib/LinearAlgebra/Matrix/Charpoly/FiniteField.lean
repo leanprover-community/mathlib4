@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Jalex Stark
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
+
 import Mathlib.LinearAlgebra.Matrix.CharP
 
 /-!

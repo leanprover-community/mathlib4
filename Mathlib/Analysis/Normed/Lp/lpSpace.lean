@@ -6,9 +6,10 @@ Authors: Heather Macbeth, Jireh Loreaux
 module
 
 public import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.MeanInequalitiesPow
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
+
+import Mathlib.Analysis.MeanInequalitiesPow
 
 /-!
 # ℓp space

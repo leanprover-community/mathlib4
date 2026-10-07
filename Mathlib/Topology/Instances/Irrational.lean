@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Data.Rat.Encodable
 public import Mathlib.NumberTheory.Real.Irrational
+
+import Mathlib.Data.Rat.Encodable
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Instances.Real.Lemmas
 

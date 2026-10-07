@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.QuasiIso
+
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # Limits of degreewise eventually constant systems

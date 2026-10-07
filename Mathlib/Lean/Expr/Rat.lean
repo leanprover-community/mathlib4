@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 module
 
-import Mathlib.Init
 public import Lean.ToExpr
+
+import Mathlib.Init
 
 /-!
 # Additional operations on Expr and rational numbers
