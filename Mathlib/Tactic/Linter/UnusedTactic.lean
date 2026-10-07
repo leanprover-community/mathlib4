@@ -181,8 +181,8 @@ For instance, to see the `SyntaxNodeKind` of the `refine` tactic, you could use
 ```
 The trailing underscore `_` makes the syntax valid, since `refine` expects something else.
 -/
-elab "#show_kind " t:tactic : command =>
-  logInfoAt t m!"The `{.ofConstName ``SyntaxNodeKind}` is `{t.raw.getKind}`."
+elab "#show_kind " stx:tactic : command =>
+  logInfoAt stx m!"The `{.ofConstName ``SyntaxNodeKind}` is `{stx.raw.getKind}`."
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
 abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) BaseIO
