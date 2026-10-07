@@ -28,6 +28,6 @@ instance {R : Type*} [NonAssocSemiring R] [Nontrivial R] [IsFormallyReal R] : Is
 instance {F : Type*} [Field F] [IsSemireal F] : IsFormallyReal F :=
   .of_eq_zero_of_eq_zero_of_mul_self_add <| fun {s} {a} _ h ↦ by
     by_contra
-    exact IsSemireal.one_add_ne_zero (s := s * a⁻¹ ^ 2)
-      (by grind [inv_pow, IsSumSq.mul, IsSquare.isSumSq, isSquare_inv, IsSquare.sq])
-      (by grind)
+    apply IsSemireal.one_add_ne_zero (s := s * a⁻¹ ^ 2)
+      · grind [inv_pow, IsSumSq.mul, IsSquare.isSumSq, isSquare_inv, IsSquare.sq]
+      · grind
