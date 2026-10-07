@@ -156,10 +156,6 @@ theorem le_himp_iff : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
 @[to_dual existing sdiff_le_iff]
 theorem le_himp_iff' : a ≤ b ⇨ c ↔ b ⊓ a ≤ c := by rw [le_himp_iff, inf_comm]
 
-/-- `p → q → r ↔ q → p → r` -/
-@[to_dual sdiff_le_comm]
-theorem le_himp_comm : a ≤ b ⇨ c ↔ b ≤ a ⇨ c := by rw [le_himp_iff, le_himp_iff']
-
 to_dual_for GeneralizedHeytingAlgebra.le_himp_iff := sdiff_le_iff'
 to_dual_for GeneralizedCoheytingAlgebra.sdiff_le_iff := le_himp_iff'
 to_dual_for GeneralizedHeytingAlgebra.mk :=
@@ -207,6 +203,10 @@ See also `Prop.heytingAlgebra`. -/
 section GeneralizedHeytingAlgebra
 
 variable [GeneralizedHeytingAlgebra α] {a b c d : α}
+
+/-- `p → q → r ↔ q → p → r` -/
+@[to_dual sdiff_le_comm]
+theorem le_himp_comm : a ≤ b ⇨ c ↔ b ≤ a ⇨ c := by rw [le_himp_iff, le_himp_iff']
 
 /-- `p → q → p` -/
 @[to_dual sdiff_le]
