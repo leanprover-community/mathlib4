@@ -66,10 +66,8 @@ variable [Preorder α] {a b c : α}
 lemma le_rfl : a ≤ a := le_refl a
 
 /-- The relation `≤` on a preorder is transitive. -/
+@[to_dual ge_trans]
 lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
-
-@[to_dual existing le_trans]
-lemma ge_trans : b ≤ a → c ≤ b → c ≤ a := flip le_trans
 
 @[to_dual self]
 lemma lt_iff_le_not_ge : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_not_ge _ _
