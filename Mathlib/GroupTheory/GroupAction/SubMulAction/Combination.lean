@@ -277,16 +277,15 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The action of `alternatingGroup α` on `Set.powersetCard α n` is preprimitive
 provided `1 ≤ n < Nat.card α` and `Nat.card α ≠ 2 * n`. -/
 theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ}
-    (h_three_le : 3 ≤ n) (hn : n < Nat.card α) (hα : Nat.card α ≠ 2 * n) :
+    (h_one_le : 1 ≤ n) (hn : n < Nat.card α) (hα : Nat.card α ≠ 2 * n) :
     IsPreprimitive (alternatingGroup α) (powersetCard α n) := by
   have : IsPretransitive (alternatingGroup α) (powersetCard α n) :=
-    isPretransitive_alternatingGroup (le_trans h_three_le hn.le)
-  have : Nontrivial (powersetCard α n) := nontrivial (by positivity) (by simpa using hn)
+    isPretransitive_alternatingGroup (by omega)
+  have : Nontrivial (powersetCard α n) := nontrivial' h_one_le hn
   obtain ⟨s⟩ := this.to_nonempty
   rw [← isCoatom_stabilizer_iff_preprimitive _ s, stabilizer_coe]
   apply alternatingGroup.isCoatom_stabilizer
-  · rw [powersetCard.coe_nonempty_iff]
-    exact le_trans (by simp) h_three_le
+  · rwa [powersetCard.coe_nonempty_iff]
   · simpa [nonempty_compl, ne_eq, eq_univ_iff_ncard, ncard_eq] using ne_of_lt hn
   · simpa only [ncard_eq]
 
