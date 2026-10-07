@@ -6,10 +6,11 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 module
 
 public import Mathlib.Data.List.Basic
-public import Mathlib.Order.BoundedOrder.Lattice
-public import Mathlib.Data.List.Induction
-public import Mathlib.Order.MinMax
 public import Mathlib.Order.WithBot
+
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Data.List.Induction
+import Mathlib.Order.MinMax
 
 /-!
 # Minimum and maximum of lists

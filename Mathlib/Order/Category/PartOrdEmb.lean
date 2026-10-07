@@ -202,10 +202,13 @@ def dualEquiv : PartOrdEmb ≌ PartOrdEmb where
 
 end PartOrdEmb
 
-theorem partOrdEmb_dual_comp_forget_to_pardOrd :
+theorem partOrdEmb_dual_comp_forget_to_partOrd :
     PartOrdEmb.dual ⋙ forget₂ PartOrdEmb PartOrd =
       forget₂ PartOrdEmb PartOrd ⋙ PartOrd.dual :=
   rfl
+
+@[deprecated (since := "2026-09-17")]
+alias partOrdEmb_dual_comp_forget_to_pardOrd := partOrdEmb_dual_comp_forget_to_partOrd
 
 namespace PartOrdEmb
 

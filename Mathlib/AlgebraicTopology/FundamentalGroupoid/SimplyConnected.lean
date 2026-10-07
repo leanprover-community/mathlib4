@@ -6,10 +6,11 @@ Authors: Praneeth Kolichala
 module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
-public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 public import Mathlib.Topology.Homotopy.Contractible
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
+import Mathlib.CategoryTheory.PUnit
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 
 /-!
 # Simply connected spaces
@@ -64,8 +65,10 @@ instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
 
-instance (x : X) : Subsingleton (FundamentalGroup X x) :=
-  inferInstanceAs <| Subsingleton (Path.Homotopic.Quotient x x)
+instance (x : X) : Subsingleton (FundamentalGroup X x) where
+  allEq _ _ := by
+    ext : 1
+    apply Subsingleton.elim (α := Path.Homotopic.Quotient x x)
 
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance

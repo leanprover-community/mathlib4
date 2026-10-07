@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.Moments.Variance
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 
 /-!
@@ -55,8 +54,6 @@ public section
 
 
 open MeasureTheory Filter
-
-noncomputable section
 
 open scoped Topology MeasureTheory ENNReal NNReal
 

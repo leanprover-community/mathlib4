@@ -203,6 +203,10 @@ theorem map_comap_le : (K.comap f).map f ≤ K :=
   (gc_map_comap f).l_u_le _
 
 @[simp]
+theorem map_comap_bot : ((⊥ : Ideal S).comap f).map f = ⊥ :=
+  le_bot_iff.mp map_comap_le
+
+@[simp]
 theorem comap_top : (⊤ : Ideal S).comap f = ⊤ :=
   (gc_map_comap f).u_top
 
@@ -382,7 +386,7 @@ theorem IsMaximal.comap_piEvalRingHom {ι : Type*} {R : ι → Type*} [∀ i, Se
   refine isMaximal_iff.mpr ⟨I.ne_top_iff_one.mp h.ne_top, fun J x le hxI hxJ ↦ ?_⟩
   have ⟨r, y, hy, eq⟩ := h.exists_inv hxI
   classical
-  convert!
+  convert
     J.add_mem (J.mul_mem_left (update 0 i r) hxJ) (b := update 1 i y)
       (le <| by apply update_self i y 1 ▸ hy)
   ext j
@@ -755,8 +759,12 @@ variable {f} in
 theorem ker_eq : (ker f : Set R) = Set.preimage f {0} :=
   rfl
 
-theorem ker_eq_comap_bot (f : F) : ker f = Ideal.comap f ⊥ :=
+theorem ker_eq_comap_bot : ker f = Ideal.comap f ⊥ :=
   rfl
+
+@[simp]
+theorem map_ker : (ker f).map f = ⊥ :=
+  Ideal.map_comap_bot
 
 theorem comap_ker (f : S →+* R) (g : T →+* S) : (ker f).comap g = ker (f.comp g) := by
   rw [RingHom.ker_eq_comap_bot, Ideal.comap_comap, RingHom.ker_eq_comap_bot]
@@ -1111,7 +1119,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
     rcases hxy with ⟨c, hc, hc'⟩
     rw [← sub_eq_zero, ← map_sub] at hc'
     have : a * b ∈ I := by
-      convert! I.sub_mem hc (hk (hc' : c - a * b ∈ RingHom.ker f)) using 1
+      convert I.sub_mem hc (hk (hc' : c - a * b ∈ RingHom.ker f)) using 1
       abel
     exact
       (H.mem_or_mem this).imp (fun h => ha ▸ mem_map_of_mem f h) fun h => hb ▸ mem_map_of_mem f h
@@ -1142,7 +1150,7 @@ theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {
     (h : RingHom.ker f ≤ I) : map f I.radical = (map f I).radical := by
   rw [radical_eq_sInf, radical_eq_sInf]
   have : ∀ J ∈ {J : Ideal R | I ≤ J ∧ J.IsPrime}, RingHom.ker f ≤ J := fun J hJ => h.trans hJ.left
-  convert! map_sInf hf this
+  convert map_sInf hf this
   ext j
   constructor
   · rintro ⟨hj, hj'⟩

@@ -5,12 +5,11 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Algebra.Order.Group.Multiset
-public import Mathlib.Data.ULift
 public import Mathlib.Data.Set.NAry
+
+import Mathlib.Data.ULift
 
 /-!
 # Finiteness of products
@@ -62,7 +61,7 @@ instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ 
 
 instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
   Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
-    convert! DFunLike.congr_fun h using 0
+    convert DFunLike.congr_fun h using 0
 
 instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
   Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩

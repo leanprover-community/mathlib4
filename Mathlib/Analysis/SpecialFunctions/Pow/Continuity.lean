@@ -16,9 +16,6 @@ This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ
 
 public section
 
-
-noncomputable section
-
 open Real NNReal ENNReal Filter Set
 
 open scoped Topology
@@ -78,11 +75,8 @@ works for `z = 0` but assumes `0 < re w`. -/
 theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : p.fst ∈ slitPlane) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) p := by
   rw [continuousAt_congr (cpow_eq_nhds' <| slitPlane_ne_zero hp_fst)]
-  refine continuous_exp.continuousAt.comp ?_
-  exact
-    ContinuousAt.mul
-      (ContinuousAt.comp (continuousAt_clog hp_fst) continuous_fst.continuousAt)
-      continuous_snd.continuousAt
+  have := continuousAt_clog hp_fst
+  fun_prop
 
 theorem continuousAt_cpow_const {a b : ℂ} (ha : a ∈ slitPlane) :
     ContinuousAt (· ^ b) a :=
@@ -138,6 +132,11 @@ theorem ContinuousOn.cpow_const {b : ℂ} (hf : ContinuousOn f s)
   hf.cpow continuousOn_const h
 
 @[fun_prop]
+theorem continuous_const_cpow' {a : ℂ} (ha : a ≠ 0) : Continuous (fun x : ℂ => a ^ x) := by
+  rw [continuous_iff_continuousAt]
+  intro b; exact continuousAt_const_cpow ha
+
+@[fun_prop]
 lemma continuous_const_cpow (z : ℂ) [NeZero z] : Continuous fun s : ℂ ↦ z ^ s :=
   continuous_id.const_cpow (.inl <| NeZero.ne z)
 
@@ -148,7 +147,6 @@ section RpowLimits
 /-!
 ## Continuity for real powers
 -/
-
 
 namespace Real
 
@@ -459,11 +457,11 @@ private theorem continuousAt_rpow_const_of_pos {x : ℝ≥0∞} {y : ℝ} (h : 0
     ContinuousAt (fun a : ℝ≥0∞ => a ^ y) x := by
   by_cases hx : x = ⊤
   · rw [hx, ContinuousAt]
-    convert! ENNReal.tendsto_rpow_at_top h
+    convert ENNReal.tendsto_rpow_at_top h
     simp [h]
   lift x to ℝ≥0 using hx
   rw [continuousAt_coe_iff]
-  convert! continuous_coe.continuousAt.comp (NNReal.continuousAt_rpow_const (Or.inr h.le)) using 1
+  convert continuous_coe.continuousAt.comp (NNReal.continuousAt_rpow_const (Or.inr h.le)) using 1
   ext1 x
   simp [← coe_rpow_of_nonneg _ h.le]
 
@@ -481,7 +479,7 @@ theorem continuous_rpow_const {y : ℝ} : Continuous fun a : ℝ≥0∞ => a ^ y
 
 theorem tendsto_const_mul_rpow_nhds_zero_of_pos {c : ℝ≥0∞} (hc : c ≠ ∞) {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0∞ => c * x ^ y) (𝓝 0) (𝓝 0) := by
-  convert! ENNReal.Tendsto.const_mul (ENNReal.continuous_rpow_const.tendsto 0) _
+  convert ENNReal.Tendsto.const_mul (ENNReal.continuous_rpow_const.tendsto 0) _
   · simp [hy]
   · exact Or.inr hc
 

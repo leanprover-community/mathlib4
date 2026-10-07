@@ -5,10 +5,11 @@ Authors: Richard Hill, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
 public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+
+import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Homology.ShortComplex.Abelian
 
 /-!
 

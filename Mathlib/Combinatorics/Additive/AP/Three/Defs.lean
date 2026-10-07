@@ -5,11 +5,12 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Interval.Finset.Basic
 public import Mathlib.Combinatorics.Additive.FreimanHom
 public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Action.Defs
+
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 
 /-!
 # Sets without arithmetic progressions of length three and Roth numbers
@@ -380,7 +381,7 @@ theorem mulRothNumber_map_mul_left :
     exact (threeGPFree_smul_set.1 hu).le_mulRothNumber hus
   · obtain ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec s
     have h : ThreeGPFree (u.map <| mulLeftEmbedding a : Set α) := by rw [coe_map]; exact hu.smul_set
-    convert! h.le_mulRothNumber (map_subset_map.2 hus) using 1
+    convert h.le_mulRothNumber (map_subset_map.2 hus) using 1
     rw [card_map, hcard]
 
 @[to_additive (attr := simp)]

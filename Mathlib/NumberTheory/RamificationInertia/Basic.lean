@@ -5,11 +5,8 @@ Authors: Anne Baanen
 -/
 module -- shake: keep-all
 
-public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Ramification index and inertia degree

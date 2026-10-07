@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Connected.TotallyDisconnected
+
+import Mathlib.Data.Fintype.Option
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # Separation properties: profinite spaces

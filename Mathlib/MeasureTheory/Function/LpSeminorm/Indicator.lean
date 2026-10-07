@@ -7,14 +7,14 @@ module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 public import Mathlib.Analysis.Normed.Group.Indicator
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
+
+import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
 /-!
 # ℒp seminorms and indicator functions
 -/
 
 public section
-noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
 

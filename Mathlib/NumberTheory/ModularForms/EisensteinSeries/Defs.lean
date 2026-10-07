@@ -5,9 +5,7 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 /-!
@@ -127,7 +125,7 @@ def gammaSetDivGcdEquiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0
 lemma gammaSetDivGcdEquiv_eq (r : ℕ) [NeZero r] (v : gammaSet 1 r 0) :
     (gammaSetDivGcdEquiv r) v = divIntMap r v.1 := rfl
 
-/-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0)` . -/
+/-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0` . -/
 def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
   apply (Equiv.sigmaFiberEquiv finGcdMap).symm.trans
   refine Equiv.sigmaCongrRight fun b => ?_
@@ -190,7 +188,7 @@ theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z
   simp only [eisSummand, vecMul, vec2_dotProduct, denom, UpperHalfPlane.specialLinearGroup_apply]
   have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : (u * ((a * z + b) / (c * z + d)) + v) ^ (-k) =
       (c * z + d) ^ k * ((u * a + v * c) * z + (u * b + v * d)) ^ (-k) := by
-    replace hc : z * c + d ≠ 0 := by convert! hc using 1; ring
+    replace hc : z * c + d ≠ 0 := by convert hc using 1; ring
     field_simp
     simp [div_zpow]
     ring_nf
