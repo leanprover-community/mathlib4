@@ -6,9 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Sequences
 
 /-!
@@ -24,7 +22,9 @@ public section
 variable {α ι κ E F G : Type*}
 
 open Filter Function Metric
-open ENNReal Filter NNReal Uniformity Topology
+open ENNReal Filter NNReal Topology
+
+open scoped Uniformity
 
 section SeminormedGroup
 
@@ -135,14 +135,18 @@ end SeminormedGroup
 section Instances
 
 @[to_additive]
-instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
+instance SeminormedGroup.toESeminormedMonoid [SeminormedGroup E] : ESeminormedMonoid E where
   continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
+  enorm_zero := by simp [enorm_eq_nnnorm]
+  enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
+
+@[to_additive]
+instance SeminormedCommGroup.toESeminormedCommMonoid [SeminormedCommGroup E] :
+    ESeminormedCommMonoid E where
 
 @[to_additive]
 instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
-  enorm_zero := by simp [enorm_eq_nnnorm]
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
-  enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
 @[to_additive]
 instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
@@ -153,7 +157,7 @@ end Instances
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {a : E}
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -194,7 +198,7 @@ end
 
 section
 
-variable [TopologicalSpace α] {f : α → E} {s : Set α} {a : α}
+variable [TopologicalSpace α] {f : α → E} {a : α}
 
 @[to_additive (attr := fun_prop) Continuous.norm]
 theorem Continuous.norm' : Continuous f → Continuous fun x => ‖f x‖ :=
@@ -299,7 +303,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E}
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :

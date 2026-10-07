@@ -5,11 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 
 /-!
 # Convex combinations
@@ -242,7 +242,7 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
   by_cases h_cases : x = y
   · rw [h_cases, ← add_smul, hab, one_smul]
     exact hy
-  · convert! h { x, y } (fun z => if z = y then b else a) _ _ _
+  · convert h { x, y } (fun z => if z = y then b else a) _ _ _
     · simp only [sum_pair h_cases, ite_eq_right h_cases, ite_eq_left trivial]
     · grind
     · simp only [sum_pair h_cases, ite_eq_right h_cases, ite_eq_left trivial, hab]
@@ -520,7 +520,7 @@ theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι 
     rw [b.coord_apply_combination_of_mem hi hw₁] at hx
     exact hx
 
-variable {s t t₁ t₂ : Finset E}
+variable {s t₁ t₂ : Finset E}
 
 /-- Two simplices glue nicely if the union of their vertices is affine independent. -/
 lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s → E))

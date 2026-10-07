@@ -6,10 +6,9 @@ Authors: Henry Swanson
 module
 
 public import Mathlib.GroupTheory.Perm.Option
-public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Logic.Equiv.Option
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Dynamics.FixedPoints.Defs
+
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Derangements on types

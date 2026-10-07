@@ -84,13 +84,8 @@ structure Discrete.Hom {α : Type u₁} (a b : α) : Type u₁ where
 attribute [aesop (rule_sets := [builtin]) norm constructors] Discrete.Hom
 attribute [aesop (rule_sets := [builtin]) norm 0 destruct] Discrete.Hom.eq
 
-@[to_dual existing eq]
-theorem Discrete.Hom.eq' {α : Type u₁} {a b : α} (self : Discrete.Hom a b) : b = a := self.eq.symm
-
-/-- `Discrete.Hom.mk'` is the dual of `Discrete.Hom.mk`, which is needed for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-abbrev Discrete.Hom.mk' {α : Type u₁} {a b : α} (eq : b = a) : Discrete.Hom a b := ⟨eq.symm⟩
+to_dual_for Discrete.Hom.eq := self.eq.symm
+to_dual_for Discrete.Hom.mk := ⟨eq.symm⟩
 
 /-- The "Discrete" category on a type, whose morphisms are equalities.
 
@@ -285,7 +280,7 @@ def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : 
 /-- We can promote a type-level `Equiv` to
 an equivalence between the corresponding `discrete` categories.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ Discrete J where
   functor := Discrete.functor (Discrete.mk ∘ (e : I → J))
   inverse := Discrete.functor (Discrete.mk ∘ (e.symm : J → I))

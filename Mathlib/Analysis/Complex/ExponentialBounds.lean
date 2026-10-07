@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Joseph Myers
 -/
 module
 
-public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Bounds on specific values of the exponential
@@ -72,7 +72,7 @@ theorem log_two_near_10 : |log 2 - 287209 / 414355| ≤ 1 / 10 ^ 10 := by
   suffices |log 2 - 287209 / 414355| ≤ 1 / 17179869184 + (1 / 10 ^ 10 - 1 / 2 ^ 34) by
     norm_num1 at *
     assumption
-  have t : |(2⁻¹ : ℝ)| = 2⁻¹ := by rw [abs_of_pos]; norm_num
+  have t : |(2⁻¹ : ℝ)| = 2⁻¹ := by rw [abs_of_pos]; simp
   have z := Real.abs_log_sub_add_sum_range_le (show |(2⁻¹ : ℝ)| < 1 by rw [t]; norm_num) 34
   rw [t] at z
   norm_num1 at z

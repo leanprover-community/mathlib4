@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Anatole Dedec
 module
 
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
-public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-! # Linear topologies on modules and rings
@@ -344,7 +343,7 @@ end Ring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R] [TopologicalSpace R]
+variable {R : Type*} [CommRing R] [TopologicalSpace R]
 
 /-- If `R` is commutative and left-linearly topologized, it is also right-linearly topologized. -/
 instance (priority := 100) [IsLinearTopology R R] :

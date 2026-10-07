@@ -243,7 +243,7 @@ lemma image_extremePoints (f : L) (s : Set E) :
   ext b
   obtain ⟨a, rfl⟩ := EquivLike.surjective f b
   have : ∀ x y, f '' openSegment 𝕜 x y = openSegment 𝕜 (f x) (f y) :=
-    image_openSegment _ (LinearMapClass.linearMap f).toAffineMap
+    image_openSegment _ (LinearMap.ofClass f).toAffineMap
   simp only [mem_extremePoints, (EquivLike.surjective f).forall,
     (EquivLike.injective f).mem_set_image, (EquivLike.injective f).eq_iff, ← this]
 
@@ -263,7 +263,7 @@ theorem mem_extremePoints_iff_forall_segment : x ∈ A.extremePoints 𝕜 ↔
   constructor
   · rw [← insert_endpoints_openSegment]
     rintro H (rfl | rfl | hx)
-    exacts [Or.inl rfl, Or.inr rfl, Or.inl <| (H hx).1]
+    exacts [Or.inl rfl, Or.inr rfl, Or.inl (H hx).1]
   · intro H hx
     rcases H (openSegment_subset_segment _ _ _ hx) with (rfl | rfl)
     exacts [⟨rfl, (left_mem_openSegment_iff.1 hx).symm⟩, ⟨right_mem_openSegment_iff.1 hx, rfl⟩]

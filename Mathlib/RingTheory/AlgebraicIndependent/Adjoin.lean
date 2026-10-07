@@ -69,6 +69,6 @@ theorem lift_reprField (p) :
 theorem liftAlgHom_comp_reprField :
     (IsFractionRing.liftAlgHom (algebraicIndependent_iff_injective_aeval.2 hx)).comp hx.reprField =
       IntermediateField.val _ :=
-  AlgHom.ext <| hx.lift_reprField
+  AlgHom.ext hx.lift_reprField
 
 end AlgebraicIndependent

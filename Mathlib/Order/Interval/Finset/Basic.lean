@@ -41,7 +41,7 @@ assert_not_exists MonoidWithZero Finset.sum
 
 open Function OrderDual
 
-open FinsetInterval
+open scoped FinsetInterval
 
 variable {ι α : Type*} {a a₁ a₂ b b₁ b₂ c x : α}
 
@@ -790,7 +790,8 @@ variable [SemilatticeSup α] [LocallyFiniteOrderBot α]
 lemma sup'_Iic (a : α) : (Iic a).sup' nonempty_Iic id = a :=
   le_antisymm (sup'_le _ _ fun _ ↦ mem_Iic.1) <| le_sup' (f := id) <| mem_Iic.2 <| le_refl a
 
-@[simp] lemma sup_Iic [OrderBot α] (a : α) : (Iic a).sup id = a :=
+@[to_dual (attr := simp)]
+lemma sup_Iic [OrderBot α] (a : α) : (Iic a).sup id = a :=
   le_antisymm (Finset.sup_le fun _ ↦ mem_Iic.1) <| le_sup (f := id) <| mem_Iic.2 <| le_refl a
 
 lemma image_subset_Iic_sup [OrderBot α] [DecidableEq α] (f : ι → α) (s : Finset ι) :
@@ -809,9 +810,6 @@ variable [SemilatticeInf α] [LocallyFiniteOrderTop α]
 
 lemma inf'_Ici (a : α) : (Ici a).inf' nonempty_Ici id = a :=
   ge_antisymm (le_inf' _ _ fun _ ↦ mem_Ici.1) <| inf'_le (f := id) <| mem_Ici.2 <| le_refl a
-
-@[simp] lemma inf_Ici [OrderTop α] (a : α) : (Ici a).inf id = a :=
-  le_antisymm (inf_le (f := id) <| mem_Ici.2 <| le_refl a) <| Finset.le_inf fun _ ↦ mem_Ici.1
 
 end SemilatticeInf
 
@@ -1072,7 +1070,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
     TransGen (· ⩿ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Icc x y`.
   -- It's impossible for the cardinality to be zero since `x ≤ y`
-  have : #(Ico x y) < #(Icc x y) := card_lt_card <|
+  have : #(Ico x y) < #(Icc x y) := card_lt_card
     ⟨Ico_subset_Icc_self, not_subset.mpr ⟨y, ⟨right_mem_Icc.mpr hxy, right_notMem_Ico⟩⟩⟩
   by_cases hxy' : y ≤ x
   -- If `y ≤ x`, then `x ⩿ y`

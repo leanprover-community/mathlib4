@@ -8,8 +8,9 @@ module
 
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Tactic.Common
-public import Batteries.Tactic.SeqFocus
 public import Mathlib.Tactic.Attr.Core
+
+import Batteries.Tactic.SeqFocus
 
 /-!
 # Divisibility
@@ -145,11 +146,23 @@ theorem RightDvd.mul_const (a : α) (h : b ∣ᵣ c) : b * a ∣ᵣ c * a := by
 theorem IsRightRegular.rightDvd_cancel_right (h : IsRightRegular a) :
     b * a ∣ᵣ c * a ↔ b ∣ᵣ c :=
   ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd
-    ⟨d, h (eq.trans <| (mul_assoc ..).symm)⟩, RightDvd.mul_const a⟩
+    ⟨d, h (eq.trans (mul_assoc ..).symm)⟩, RightDvd.mul_const a⟩
 
+open MulOpposite in
+/-- Left divisibility in the opposite semigroup is equivalent to right divisibility. -/
+@[simp]
+lemma op_dvd_op_iff : op a ∣ op b ↔ a ∣ᵣ b :=
+  ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective hc⟩, fun ⟨c, hc⟩ ↦ ⟨op c, congrArg op hc⟩⟩
+
+open MulOpposite in
+/-- Right divisibility in the opposite semigroup is equivalent to left divisibility. -/
+@[simp]
+lemma op_rightDvd_op_iff : op a ∣ᵣ op b ↔ a ∣ b :=
+  ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective hc⟩, fun ⟨c, hc⟩ ↦ ⟨op c, congrArg op hc⟩⟩
+
+@[deprecated op_dvd_op_iff +typeChanged (since := "2026-09-30")]
 theorem rightDvd_iff_op_dvd_op : a ∣ᵣ b ↔ MulOpposite.op a ∣ MulOpposite.op b :=
-  ⟨fun ⟨c, hc⟩ => ⟨MulOpposite.op c, by simp [hc]⟩,
-   fun ⟨c, hc⟩ => ⟨MulOpposite.unop c, by simpa using congrArg MulOpposite.unop hc⟩⟩
+  op_dvd_op_iff.symm
 
 end Semigroup
 
@@ -164,7 +177,7 @@ theorem mul_rightDvd_mul_iff_left : b * a ∣ᵣ c * a ↔ b ∣ᵣ c :=
 end RightCancelSemigroup
 
 section Monoid
-variable [Monoid α] {a b c : α} {m n : ℕ}
+variable [Monoid α] {a b : α} {m n : ℕ}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=
@@ -172,8 +185,8 @@ theorem dvd_refl (a : α) : a ∣ a :=
 
 theorem dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
 
-instance : @Std.Refl α (· ∣ ·) :=
-  ⟨dvd_refl⟩
+instance : IsPreorder α (· ∣ ·) where
+  refl := dvd_refl
 
 theorem one_dvd (a : α) : 1 ∣ a :=
   Dvd.intro a (one_mul a)

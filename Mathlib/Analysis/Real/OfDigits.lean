@@ -5,10 +5,11 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Qify
+
+import Mathlib.Analysis.Normed.Group.FunctionSeries
+import Mathlib.Tactic.Rify
+import Mathlib.Tactic.Qify
 
 /-!
 # Representation of reals in positional system
@@ -102,7 +103,7 @@ theorem abs_ofDigits_sub_ofDigits_le {b : ℕ} {x y : ℕ → Fin b} {n : ℕ}
     Finset.sum_congr rfl fun i hi ↦ by simp [ofDigitsTerm, hxy i (Finset.mem_range.mp hi)]
   rw [this, add_sub_add_left_eq_sub, ← mul_sub, abs_mul, abs_of_nonneg (by positivity)]
   apply mul_le_of_le_one_right (by positivity)
-  convert!
+  convert
     abs_sub_le_of_le_of_le (ofDigits_nonneg _) (ofDigits_le_one _) (ofDigits_nonneg _)
       (ofDigits_le_one _)
   simp
@@ -150,7 +151,7 @@ theorem hasSum_ofDigitsTerm_digits (x : ℝ) {b : ℕ} [NeZero b] (hb : 1 < b) (
   rw [hasSum_iff_tendsto_nat_of_summable_norm (by exact summable_ofDigitsTerm.abs)]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le ?_ tendsto_const_nhds
     (le_sum_ofDigitsTerm_digits hx) (sum_ofDigitsTerm_digits_le hx)
-  convert! tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_abs_lt_one _)
+  convert tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_abs_lt_one _)
   · simp
   · simp [abs_of_nonneg, inv_lt_one_iff₀, hb]
 

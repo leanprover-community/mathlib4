@@ -11,11 +11,9 @@ public import Mathlib.Algebra.Group.Int.Units
 public import Mathlib.Data.List.Dedup
 public import Mathlib.Data.List.Flatten
 public import Mathlib.Data.List.Pairwise
-public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.List.Range
 public import Mathlib.Data.List.Rotate
 public import Mathlib.Data.List.ProdSigma
-public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Sums and products from lists
@@ -28,13 +26,13 @@ and `List.alternatingProd`, `List.alternatingSum`, their alternating counterpart
 public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
-variable {ι α β M N P G : Type*}
+variable {α β M N G : Type*}
 
 namespace List
 
 section Monoid
 
-variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
+variable [Monoid M] [Monoid N] {l₁ l₂ : List M} {a : M}
 
 @[to_additive]
 theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.prod

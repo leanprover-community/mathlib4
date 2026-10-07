@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
+public import Batteries.Tactic.Alias
 public import Batteries.Data.Nat.Lemmas
 public import Batteries.Util.LibraryNote
 public import Mathlib.Data.Int.Notation
@@ -55,7 +56,7 @@ The relevant files are:
 assert_not_exists Monoid
 
 namespace Nat
-variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
+variable {a b m n k : ℕ} {p : ℕ → Prop}
 
 /-! ### `succ`, `pred` -/
 

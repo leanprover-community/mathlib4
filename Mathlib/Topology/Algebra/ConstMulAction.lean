@@ -5,13 +5,14 @@ Authors: Alex Kontorovich, Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.Support
+
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-!
 # Monoid actions continuous in the second variable
@@ -206,6 +207,30 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
   (smul_closure_subset c _).trans <| closure_mono <| MulAction.smul_orbit_subset _ _
 
 end Monoid
+
+section Homeomorph
+
+variable {X : Type*} [TopologicalSpace X]
+
+/-- The tautological action by `X ≃ₜ X` on `X`.
+
+This generalizes `Equiv.Perm.applyMulAction`. -/
+instance Homeomorph.applyMulAction : MulAction (X ≃ₜ X) X where
+  smul f x := f x
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp]
+protected theorem Homeomorph.smul_def (f : X ≃ₜ X) (x : X) : f • x = f x := rfl
+
+/-- `Homeomorph.applyMulAction` is faithful. -/
+instance Homeomorph.applyFaithfulSMul : FaithfulSMul (X ≃ₜ X) X := ⟨Homeomorph.ext⟩
+
+/-- `Homeomorph.applyMulAction` is continuous in the second variable. -/
+instance Homeomorph.continuousConstSMul : ContinuousConstSMul (X ≃ₜ X) X :=
+  ⟨fun h ↦ h.continuous⟩
+
+end Homeomorph
 
 section Group
 
@@ -487,7 +512,7 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
 theorem isQuotientMap_smul {S β} [SMul S M] [SMul S α] [IsScalarTower S M α]
     [SMul S β] (f : α →[S] β) [TopologicalSpace β] (hf : IsQuotientMap f)
     (c : S) (hc : IsUnit (c • 1 : M)) : IsQuotientMap (c • · : β → β) :=
-  hf.of_comp_isQuotientMap <| by convert! hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
+  hf.of_comp_isQuotientMap <| by convert hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
 
 theorem isQuotientMap_nsmul {M β} [Semiring M] [AddCommMonoid α] [Module M α]
     [ContinuousConstSMul M α] [AddMonoid β] (f : α →+ β) [TopologicalSpace β]

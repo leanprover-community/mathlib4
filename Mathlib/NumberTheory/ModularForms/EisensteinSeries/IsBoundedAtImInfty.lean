@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
-public import Mathlib.NumberTheory.ModularForms.Identities
+
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+import Mathlib.NumberTheory.ModularForms.Identities
 
 /-!
 # Boundedness of Eisenstein series
@@ -27,8 +28,6 @@ we then use our bounds for Eisenstein series in these vertical strips to get the
 -/
 
 public section
-
-noncomputable section
 
 open ModularForm UpperHalfPlane Matrix SlashInvariantForm CongruenceSubgroup
 
@@ -71,8 +70,5 @@ theorem isBoundedAtImInfty_eisensteinSeriesSIF {N : â„•} [NeZero N] (a : Fin 2 â
     exact_mod_cast
       summand_bound_of_mem_verticalStrip (lt_trans two_pos hk').le x two_pos
       (verticalStrip_anti_right N hz hn)
-
-@[deprecated (since := "2026-02-10")]
-alias isBoundedAtImInfty_eisensteinSeries_SIF := isBoundedAtImInfty_eisensteinSeriesSIF
 
 end EisensteinSeries

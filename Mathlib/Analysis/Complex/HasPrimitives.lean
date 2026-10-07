@@ -6,7 +6,8 @@ Authors: Ian Jauslin, Alex Kontorovich, Oliver Nash
 module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.Analysis.Complex.Convex
+
+import Mathlib.Analysis.Complex.Convex
 
 /-!
 # Primitives of Holomorphic Functions
@@ -33,8 +34,9 @@ TODO: Extend to holomorphic functions on simply connected domains.
 
 noncomputable section
 
-open Complex MeasureTheory Metric Set Topology
-open scoped Interval
+open Complex MeasureTheory Metric Set
+
+open scoped Topology Interval
 
 namespace Complex
 

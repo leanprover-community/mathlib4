@@ -6,11 +6,10 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Topology.NhdsWithin
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.UniformSpace.Closeds
 public import Mathlib.Topology.UniformSpace.UniformConvergence
+
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.Sequences
 
@@ -462,8 +461,6 @@ lemma LowerHemicontinuousAt.exists_subseq_tendsto {ι : Type*} {l : Filter ι} [
   obtain ⟨u, hu⟩ := Filter.exists_seq_tendsto l
   obtain ⟨y, hy_mem, hy_lim⟩ := hf.exists_seq_tendsto (hx.comp hu) hy₀
   exact ⟨u, y, hu, hy_mem, hy_lim⟩
-
-
 
 end facts
 

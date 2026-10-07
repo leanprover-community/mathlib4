@@ -5,9 +5,9 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.Data.ULift
+
+import Mathlib.Data.ULift
 
 /-!
 # Basic API for ULift
@@ -183,7 +183,7 @@ def AsSmall.equiv : C ≌ AsSmall C where
   functor := AsSmall.up
   inverse := AsSmall.down
   unitIso := NatIso.ofComponents fun _ => eqToIso rfl
-  counitIso := NatIso.ofComponents fun _ => eqToIso <| ULift.ext _ _ rfl
+  counitIso := NatIso.ofComponents fun _ => eqToIso <| ULift.ext rfl
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩
