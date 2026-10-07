@@ -353,8 +353,9 @@ theorem gc_inf_himp : GaloisConnection (a ⊓ ·) (a ⇨ ·) :=
   fun _ _ ↦ Iff.symm le_himp_iff'
 
 -- See note [lower instance priority]
-instance (priority := 100) GeneralizedHeytingAlgebra.toDistribLattice : DistribLattice α :=
-  DistribLattice.ofInfSupLe fun a b c => by
+@[to_dual]
+instance (priority := 100) GeneralizedHeytingAlgebra.toDistribLattice : DistribLattice α where
+  inf_sup_le a b c := by
     simp_rw [inf_comm a, ← le_himp_iff, sup_le_iff, le_himp_iff, ← sup_le_iff]; rfl
 
 @[to_dual]
@@ -510,13 +511,6 @@ theorem inf_sdiff_sup_left : a \ c ⊓ (a ⊔ b) = a \ c :=
 @[simp, to_dual none]
 theorem inf_sdiff_sup_right : a \ c ⊓ (b ⊔ a) = a \ c :=
   inf_of_le_left <| sdiff_le.trans le_sup_right
-
--- See note [lower instance priority]
-@[to_dual existing]
-instance (priority := 100) GeneralizedCoheytingAlgebra.toDistribLattice : DistribLattice α :=
-  { ‹GeneralizedCoheytingAlgebra α› with
-    le_sup_inf :=
-      fun a b c => by simp_rw [← sdiff_le_iff, le_inf_iff, sdiff_le_iff, ← le_inf_iff]; rfl }
 
 end GeneralizedCoheytingAlgebra
 
