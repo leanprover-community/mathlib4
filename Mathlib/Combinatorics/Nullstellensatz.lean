@@ -5,13 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.Polynomial.Degree.Defs
-public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.MvPolynomial.Groebner
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+
+import Mathlib.RingTheory.MvPolynomial.Groebner
 
 /-! # Alon's Combinatorial Nullstellensatz
 
@@ -77,14 +73,14 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rwa [← RingHom.mem_ker, that] at this
     apply h _ (fun i ↦ S (e i))
     · intro i
-      convert! Hdeg (e i)
+      convert Hdeg (e i)
       conv_lhs => rw [← e.symm_apply_apply i, degreeOf_rename_of_injective e.symm.injective]
     · intro x hx
       simp only [MvPolynomial.eval_rename]
       apply Heval
       intro s
       simp only [Function.comp_apply]
-      convert! hx (e.symm s)
+      convert hx (e.symm s)
       simp only [Equiv.apply_symm_apply]
   | h_empty =>
     suffices P = C (constantCoeff P) by
@@ -92,7 +88,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rw [this, eval_C] at Heval
       rw [this, Heval, C_0]
     ext m
-    suffices m = 0 by simp [this, ← constantCoeff_eq]
+    suffices m = 0 by simp [this, constantCoeff_eq]
     ext d; exact PEmpty.elim d
   | @h_option σ _ h =>
     set Q := optionEquivLeft R σ P with hQ
@@ -110,9 +106,9 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         intro d hd
         simp only [hQ]
         rw [MvPolynomial.coeff_eval_eq_eval_coeff]
-        convert! map_zero (MvPolynomial.eval x)
+        convert map_zero (MvPolynomial.eval x)
         ext m
-        simp only [coeff_zero]
+        simp only [AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
         set n := (embDomain Function.Embedding.some m).update none d with hn
         rw [eq_option_embedding_update_none_iff] at hn
         rw [← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none]
@@ -120,11 +116,10 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         apply not_le.mpr hd
         rw [MvPolynomial.degreeOf_eq_sup]
         rw [← ne_eq, ← MvPolynomial.mem_support_iff] at hm
-        convert! Finset.le_sup hm
+        convert Finset.le_sup hm
         exact hn.1.symm
     ext m d
-    simp only [Polynomial.coeff_zero, coeff_zero]
-    suffices Q.coeff m = 0 by simp only [this, coeff_zero]
+    suffices Q.coeff m = 0 by simp [this]
     apply h _ (fun i ↦ S (some i))
     · intro i
       apply lt_of_le_of_lt _ (Hdeg (some i))
@@ -134,7 +129,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rw [eq_option_embedding_update_none_iff] at hn
       rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none, ← ne_eq,
         ← MvPolynomial.mem_support_iff] at he
-      convert! Finset.le_sup he
+      convert Finset.le_sup he
       rw [← hn.2, some_apply]
     · intro x hx
       specialize Heval' x hx
@@ -184,11 +179,11 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     rw [← Alon.degree_P]
     apply MonomialOrder.le_degree
     rw [mem_support_iff]
-    convert! he
+    convert he
   · rw [← hm]
     ext j
     by_cases hj : j = i
-    · rw [hj, mapDomain_apply (Function.injective_of_subsingleton _), single_eq_same]
+    · rw [hj, mapDomain_apply_of_injective (Function.injective_of_subsingleton _), single_eq_same]
     · rw [mapDomain_of_notMem_range, single_eq_of_ne hj]
       simp [Set.range_const, Set.mem_singleton_iff, hj]
 
@@ -226,7 +221,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
       linearCombination_apply, map_finsuppSum, Finsupp.sum, Finset.sum_eq_zero]
     intro i _
     rw [smul_eq_mul, map_mul]
-    convert! mul_zero _
+    convert mul_zero _
     rw [Alon.P, _root_.map_prod]
     apply Finset.prod_eq_zero (hx i)
     simp

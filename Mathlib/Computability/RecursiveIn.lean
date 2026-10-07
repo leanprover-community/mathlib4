@@ -119,7 +119,7 @@ theorem of_eq_tot {g : ℕ → ℕ} {O} (hf : Nat.RecursiveIn O f)
 theorem subst {O O'} {f : ℕ →. ℕ} (hf : Nat.RecursiveIn O f)
     (hO : ∀ g, g ∈ O → Nat.RecursiveIn O' g) : Nat.RecursiveIn O' f := by
   induction hf with
-  | zero | succ | left | right => constructor
+  | zero | succ | left | right => constructor!
   | oracle g hg => exact hO g hg
   | pair _ _ ihf ihg => exact .pair ihf ihg
   | comp _ _ ihf ihg => exact .comp ihf ihg
@@ -144,7 +144,7 @@ end Nat.RecursiveIn
 lemma Nat.Partrec.recursiveIn {f : ℕ →. ℕ} {O} (pF : Nat.Partrec f) :
     Nat.RecursiveIn O f := by
   induction pF with
-  | zero | succ | left | right => constructor
+  | zero | succ | left | right => constructor!
   | pair _ _ ih₁ ih₂ => exact .pair ih₁ ih₂
   | comp _ _ ih₁ ih₂ => exact .comp ih₁ ih₂
   | prec _ _ ih₁ ih₂ => exact .prec ih₁ ih₂

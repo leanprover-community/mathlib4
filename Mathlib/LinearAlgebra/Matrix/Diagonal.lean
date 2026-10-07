@@ -8,6 +8,8 @@ module
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+
 /-!
 # Diagonal matrices
 

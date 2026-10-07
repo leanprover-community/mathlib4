@@ -6,10 +6,11 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.MvPolynomial.Cardinal
-public import Mathlib.RingTheory.Algebraic.LinearIndependent
-public import Mathlib.RingTheory.Algebraic.MvPolynomial
 public import Mathlib.RingTheory.Localization.Cardinality
 public import Mathlib.RingTheory.MvPolynomial
+
+import Mathlib.RingTheory.Algebraic.LinearIndependent
+import Mathlib.RingTheory.Algebraic.MvPolynomial
 
 /-!
 # Rank of multivariate rational function field

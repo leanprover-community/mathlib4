@@ -6,7 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Order.Interval.Set.SuccPred
+
+import Mathlib.Order.Interval.Set.SuccPred
 
 /-!
 # Set intervals in an additive successor-predecessor order
@@ -133,8 +134,11 @@ lemma Icc_sub_one_right_eq_Ico_of_not_isMin (hb : ¬ IsMin b) (a : α) : Icc a (
 lemma Ioc_sub_one_left_eq_Icc_of_not_isMin (ha : ¬ IsMin a) (b : α) : Ioc (a - 1) b = Icc a b := by
   simpa [pred_eq_sub_one] using Ioc_pred_left_eq_Icc_of_not_isMin ha b
 
-lemma Ioo_sub_one_left_eq_Ioc_of_not_isMin (ha : ¬ IsMin a) (b : α) : Ioo (a - 1) b = Ico a b := by
-  simpa [pred_eq_sub_one] using Ioo_pred_left_eq_Ioc_of_not_isMin ha b
+lemma Ioo_sub_one_left_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) : Ioo (a - 1) b = Ico a b := by
+  simpa [pred_eq_sub_one] using Ioo_pred_left_eq_Ico_of_not_isMin ha b
+
+@[deprecated (since := "2026-09-03")]
+alias Ioo_sub_one_left_eq_Ioc_of_not_isMin := Ioo_sub_one_left_eq_Ico_of_not_isMin
 
 lemma Ioc_sub_one_sub_one_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
     Ioc (a - 1) (b - 1) = Ico a b := by
@@ -177,8 +181,10 @@ lemma Icc_sub_one_right_eq_Ico (a b : α) : Icc a (b - 1) = Ico a b := by
 lemma Ioc_sub_one_left_eq_Icc (a b : α) : Ioc (a - 1) b = Icc a b := by
   simpa [pred_eq_sub_one] using Ioc_pred_left_eq_Icc a b
 
-lemma Ioo_sub_one_left_eq_Ioc (a b : α) : Ioo (a - 1) b = Ico a b := by
-  simpa [pred_eq_sub_one] using Ioo_pred_left_eq_Ioc a b
+lemma Ioo_sub_one_left_eq_Ico (a b : α) : Ioo (a - 1) b = Ico a b := by
+  simpa [pred_eq_sub_one] using Ioo_pred_left_eq_Ico a b
+
+@[deprecated (since := "2026-09-03")] alias Ioo_sub_one_left_eq_Ioc := Ioo_sub_one_left_eq_Ico
 
 lemma Ioc_sub_one_sub_one_eq_Ico (a b : α) : Ioc (a - 1) (b - 1) = Ico a b := by
   simpa [pred_eq_sub_one] using Ioc_pred_pred_eq_Ico a b
