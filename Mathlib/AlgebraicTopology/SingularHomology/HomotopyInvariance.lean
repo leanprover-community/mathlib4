@@ -73,7 +73,7 @@ open scoped ContinuousMap.Monoid in
 /-- Continuous self-maps up to homotopy act on the singular homology. -/
 noncomputable def MappingClassMonoid.toEndSinularHomology {c : C} :
     MappingClassMonoid X →* End (singularHomology n X c) :=
-  Con.lift _ (ContinuousMap.toEndSingularHomology n) fun _ _ ⟨h⟩ ↦
+  Con.lift _ (ContinuousMap.toEndSingularHomology n) fun _ _ ⟨h⟩ ↦ End.ext <|
     TopCat.Homotopy.congr_homologyMap_singularChainComplexFunctor h c n
 
 /-- The (extended) mapping class group acts on the singular homology. If X is an orientable
@@ -83,7 +83,7 @@ If X is a surface, the Torelli subgroup consists of homeomorphisms that acts tri
 on H₁(S;ℤ) and H₂(S;ℤ). -/
 noncomputable def MappingClassGroup.toAutSingularHomology {c : C} :
     MappingClassGroup X →* Aut (singularHomology n X c) :=
-  Con.lift _ (Homeomorph.toAutSingularHomology n) fun _ _ ⟨h⟩ ↦ Iso.ext <|
+  Con.lift _ (Homeomorph.toAutSingularHomology n) fun _ _ ⟨h⟩ ↦ Aut.ext <| Iso.ext <|
     TopCat.Homotopy.congr_homologyMap_singularChainComplexFunctor h.toHomotopy c n
 
 end TopologicalSpace
