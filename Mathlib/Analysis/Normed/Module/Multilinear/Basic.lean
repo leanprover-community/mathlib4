@@ -135,7 +135,7 @@ then `f m` has norm `0`.
 Note that we cannot drop the continuity assumption because `f (m : Unit → E) = f (m ())`,
 where the domain has zero norm and the codomain has a nonzero norm
 does not satisfy this condition. -/
-lemma norm_map_coord_zero (f : MultilinearMap σ E G) (hf : Continuous f)
+lemma norm_map_coord_zero (f : E →ₛₗₘ[σ] G) (hf : Continuous f)
     {m : ∀ i, E i} {i : ι} (hi : ‖m i‖ = 0) : ‖f m‖ = 0 := by
   classical
   rw [← inseparable_zero_iff_norm] at hi ⊢
@@ -205,7 +205,7 @@ The bound reads
 `‖f m - f m'‖ ≤
   C * ‖m 1 - m' 1‖ * max ‖m 2‖ ‖m' 2‖ * max ‖m 3‖ ‖m' 3‖ * ... * max ‖m n‖ ‖m' n‖ + ...`,
 where the other terms in the sum are the same products where `1` is replaced by any `i`. -/
-theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap σ E G) {C : ℝ} (hC : 0 ≤ C)
+theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : E →ₛₗₘ[σ] G) {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ C * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
   have A :
@@ -247,7 +247,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap σ E G)
 using the multilinearity. Here, we give a usable but not very precise version. See
 `norm_image_sub_le_of_bound'` for a more precise but less usable version. The bound is
 `‖f m - f m'‖ ≤ C * card ι * ‖m - m'‖ * (max ‖m‖ ‖m'‖) ^ (card ι - 1)`. -/
-theorem norm_image_sub_le_of_bound (f : MultilinearMap σ E G)
+theorem norm_image_sub_le_of_bound (f : E →ₛₗₘ[σ] G)
     {C : ℝ} (hC : 0 ≤ C) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ C * Fintype.card ι * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) * ‖m₁ - m₂‖ := by
   classical
@@ -277,7 +277,7 @@ theorem norm_image_sub_le_of_bound (f : MultilinearMap σ E G)
 
 /-- If a multilinear map satisfies an inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`, then it is
 continuous. -/
-theorem continuous_of_bound (f : MultilinearMap σ E G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
+theorem continuous_of_bound (f : E →ₛₗₘ[σ] G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
     Continuous f := by
   let D := max C 1
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
@@ -309,9 +309,9 @@ theorem coe_mkContinuous (f : MultilinearMap (.id 𝕜) E G) (C : ℝ)
 /-- Given a multilinear map in `n` variables, if one restricts it to `k` variables putting `z` on
 the other coordinates, then the resulting restricted function satisfies an inequality
 `‖f.restr v‖ ≤ C * ‖z‖^(n-k) * Π ‖v i‖` if the original function satisfies `‖f v‖ ≤ C * Π ‖v i‖`. -/
-theorem restr_norm_le {k n : ℕ} (f : MultilinearMap σ (fun _ : Fin n => G) G')
-    (s : Finset (Fin n)) (hk : #s = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖)
-    (v : Fin k → G) : ‖f.restr s hk z v‖ ≤ C * ‖z‖ ^ (n - k) * ∏ i, ‖v i‖ := by
+theorem restr_norm_le {k n : ℕ} (f : (fun _ : Fin n => G) →ₛₗₘ[σ] G') (s : Finset (Fin n))
+    (hk : #s = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (v : Fin k → G) :
+    ‖f.restr s hk z v‖ ≤ C * ‖z‖ ^ (n - k) * ∏ i, ‖v i‖ := by
   rw [mul_right_comm, mul_assoc]
   convert! H _ using 2
   simp only [apply_dite norm, Fintype.prod_dite, prod_const ‖z‖, Finset.card_univ,
