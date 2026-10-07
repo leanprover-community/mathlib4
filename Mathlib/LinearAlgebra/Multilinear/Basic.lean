@@ -199,7 +199,6 @@ instance : Zero (M₁ →ₗₘ[R] M₂) :=
   ⟨⟨fun _ => 0, fun _ _ _ _ => by simp, fun _ _ c _ => by simp⟩⟩
 
 instance : IsZeroApply (M₁ →ₗₘ[R] M₂) (∀ i, M₁ i) M₂ where
-  zero_apply _ := rfl
 
 instance : Inhabited (M₁ →ₗₘ[R] M₂) :=
   ⟨0⟩
