@@ -78,6 +78,7 @@ section AddCommMonoid
 
 variable [PartialOrder Γ] [AddCommMonoid R]
 
+@[macro_inline]
 instance : FunLike (SummableFamily Γ R α) α R⟦Γ⟧ where
   coe := toFun
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
@@ -782,12 +783,14 @@ section CommRing
 
 variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
-theorem one_minus_single_neg_mul {x y : R⟦Γ⟧} {r : R} (hr : r * x.leadingCoeff = 1)
+theorem one_sub_single_neg_mul {x y : R⟦Γ⟧} {r : R} (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + single x.order x.leadingCoeff) (oinv : Γ) (hxo : oinv + x.order = 0) :
     1 - single oinv r * x = -(single oinv r * y) := by
   nth_rw 1 [hxy]
   rw [mul_add, single_mul_single, hr, hxo,
     sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq single_zero_one.symm]
+
+@[deprecated (since := "2026-10-06")] alias one_minus_single_neg_mul := one_sub_single_neg_mul
 
 theorem unit_aux (x : R⟦Γ⟧) {r : R} (hr : r * x.leadingCoeff = 1)
     (oinv : Γ) (hxo : oinv + x.order = 0) :
@@ -803,7 +806,7 @@ theorem unit_aux (x : R⟦Γ⟧) {r : R} (hr : r * x.leadingCoeff = 1)
       refine pos_of_lt_add_right (a := x.order) ?_
       rw [← add_assoc, add_comm x.order, hxo, zero_add]
       exact order_lt_order_of_eq_add_single (sub_add_cancel x _).symm hy
-    rw [one_minus_single_neg_mul hr (sub_add_cancel x _).symm _ hxo, orderTop_neg]
+    rw [one_sub_single_neg_mul hr (sub_add_cancel x _).symm _ hxo, orderTop_neg]
     exact zero_lt_orderTop_of_order hy'
 
 theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : R⟦Γ⟧} (hx : IsUnit x.leadingCoeff)

@@ -6,7 +6,6 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Data.Finset.Powerset
-public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.List.Permutation
 
 /-!
@@ -94,7 +93,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · intro h
       rcases h with ⟨f, hf⟩
-      convert! f.nodup
+      convert f.nodup
       rw [hf]
       rfl
     · intro h
