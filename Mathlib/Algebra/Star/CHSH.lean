@@ -59,7 +59,7 @@ The proof given here is purely algebraic.
 
 ## Tightness
 
-Tsirelson's inequality is tight: `Mathlib/Analysis/Matrix/CHSH.lean` constructs
+Tsirelson's inequality is tight: `Archive/TsirelsonTightness.lean` constructs
 an explicit CHSH tuple in the 4-by-4 real matrices whose CHSH operator has
 `√2 ^ 3` as an eigenvalue, and shows that `√2 ^ 3` is the least constant
 bounding that operator in the Loewner order.
