@@ -26,6 +26,9 @@ on:
         required: false
         default: ''
       cache_application_id:
+        # The Azure writer app for the `upload_cache` job. Empty for a repo with no
+        # Azure writer (mathlib4-nightly-testing): the job then skips the Azure
+        # upload and requires the R2 upload.
         type: string
         required: true
       cache_environment:
@@ -234,14 +237,16 @@ jobs:
 
       - name: fetch archive, counterexamples and wanted cache
         # Same sandbox as "Fetch cache from remote" in get-cache.
-        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL -- bash -euxo pipefail {0}
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env MATHLIB_CACHE_UNSAFE_WINDOW -- bash -euxo pipefail {0}
         run: |
           # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache get Archive.lean
-          ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
-          ../tools-branch/.lake/build/bin/cache get Wanted.lean
+          # The ancestor window applies as in get-cache.
+          window=(${MATHLIB_CACHE_UNSAFE_WINDOW:+--unsafe-window="$MATHLIB_CACHE_UNSAFE_WINDOW"})
+          ../tools-branch/.lake/build/bin/cache "${window[@]}" get Archive.lean
+          ../tools-branch/.lake/build/bin/cache "${window[@]}" get Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache "${window[@]}" get Wanted.lean
 
       - name: build archive
         id: archive
@@ -295,42 +300,44 @@ jobs:
 
       - name: stage Mathlib cache files
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_UNSAFE_WINDOW -- bash -euxo pipefail {0}
         run: |
           # Run `cache` directly, as the get/clean steps do, rather than via `lake env`:
           # it reads its context from LEAN_SRC_PATH (forwarded above), and no PR code
           # runs with write access to `cache-staging/`. Use the trusted toolchain's
           # `lean`/`leantar` (see setup-build-env).
+          # With an ancestor window, `get` read other commits' namespaces, so `stage!`
+          # stages every file and this commit's namespace holds the full set.
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" "stage${MATHLIB_CACHE_UNSAFE_WINDOW:+!}"
 
       - name: stage Archive cache files
         if: ${{ steps.archive.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_UNSAFE_WINDOW -- bash -euxo pipefail {0}
         run: |
           # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Archive.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" "stage${MATHLIB_CACHE_UNSAFE_WINDOW:+!}" Archive.lean
 
       - name: stage Counterexamples cache files
         if: ${{ steps.counterexamples.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_UNSAFE_WINDOW -- bash -euxo pipefail {0}
         run: |
           # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" "stage${MATHLIB_CACHE_UNSAFE_WINDOW:+!}" Counterexamples.lean
 
       - name: stage Wanted cache files
         if: ${{ steps.wanted.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_UNSAFE_WINDOW -- bash -euxo pipefail {0}
         run: |
           # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Wanted.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" "stage${MATHLIB_CACHE_UNSAFE_WINDOW:+!}" Wanted.lean
 
       - name: check cache staging contents
         id: cache_staging_check
@@ -728,10 +735,8 @@ jobs:
           fetch-depth: 1
           persist-credentials: false # no later step needs git credentials
 
-      # Same trust dispatch as in the `build` and `post_steps` jobs. Loaded from
-      # the tools-branch checkout above (the branch under test, a trusted in-repo
-      # ref in the contexts where this job runs), which is what the OIDC token's
-      # container scoping is keyed to.
+      # Same trust dispatch as in the `build` and `post_steps` jobs, loaded from
+      # the tools-branch checkout above.
       - &compute_cache_trust_dispatch
         name: Compute cache trust dispatch
         uses: ./.github/actions/cache-trust-dispatch
@@ -767,12 +772,14 @@ jobs:
           path: cache-staging
 
       - name: Azure CLI OIDC login and mint storage bearer token
+        if: inputs.cache_application_id != ''
         uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Upload staged cache to Azure
+        if: inputs.cache_application_id != ''
         shell: bash
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -788,27 +795,28 @@ jobs:
       # A second upload of the same staged set, to R2. `master` writes the
       # public cache bucket, flat. `forks` writes the developer cache bucket
       # in the container's layout, the layout the Azure upload above wrote,
-      # so the cache resolver serves both stores at one path. The other
-      # containers upload to Azure alone.
-      # The action returns short-lived S3 credentials as masked step outputs.
-      # A failed mint fails only this step, and the upload below is skipped.
-      # An empty `MATHLIB_CACHE_BROKER_URL` turns the R2 upload off.
+      # so the cache resolver serves both stores at one path. The mint action
+      # returns short-lived S3 credentials as masked step outputs.
+      # With an Azure writer, the R2 upload is best effort: a failed mint fails
+      # only this step and skips the upload, and an empty
+      # `MATHLIB_CACHE_BROKER_URL` turns the R2 upload off. Without one, R2 is
+      # the only destination, so a failed mint, an empty broker URL, or a
+      # failed upload fails the job.
       - &mint_r2_credentials
         name: Mint R2 credentials
         id: mint-r2
         if: >-
           (env.MATHLIB_CACHE_PRIMARY == 'master' || env.MATHLIB_CACHE_PRIMARY == 'forks') &&
           vars.MATHLIB_CACHE_BROKER_URL != ''
-        continue-on-error: true
+        continue-on-error: ${{ inputs.cache_application_id != '' }}
         uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
           audience: mathlib-cache-broker
 
       - name: Upload staged cache to R2
-        if: steps.mint-r2.outputs.success == 'true'
-        # No need to fail the job for now. Remove when this becomes the primary cache endpoint
-        continue-on-error: true
+        if: steps.mint-r2.outputs.success == 'true' || inputs.cache_application_id == ''
+        continue-on-error: ${{ inputs.cache_application_id != '' }}
         shell: bash
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -827,7 +835,7 @@ jobs:
           # the per-commit scope the dispatch sets.
           DEVELOPER_PUT_BASE_URL: ${{ secrets.MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL }}
         run: |
-          # $MATHLIB_CACHE_PRIMARY is the container the Azure upload above wrote.
+          # $MATHLIB_CACHE_PRIMARY is the container the dispatch selected.
           case "$MATHLIB_CACHE_PRIMARY" in
             master)
               if [ -z "$MASTER_PUT_URL" ]; then
@@ -848,7 +856,7 @@ jobs:
           esac
           echo "Uploading cache to R2 (container: $MATHLIB_CACHE_PRIMARY)..."
           if ! lake env "$CACHE_BIN" put-staged --backend=s3 "${container_args[@]}" --staging-dir="cache-staging" --repo="$REPO"; then
-            echo "::warning::the R2 upload failed; the Azure upload holds this run's files"
+            echo "::warning::the R2 upload failed"
             exit 1
           fi
 
