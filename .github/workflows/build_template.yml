@@ -1134,11 +1134,21 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: leanprover-community/lint-style-action@a52329f904d58af9f3e1fc6ef3b986e8f753cc54 # mathlib4-compat
+      # lint-style-action can check out `pr_branch_ref` itself, but its `actions/checkout` refuses
+      # fork PR code under pull_request_target with no input to opt in, so check out here instead.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.pr_branch_ref }}
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          persist-credentials: false
+          # This job runs with only `contents: read` and no persisted credentials,
+          # so checking out fork PR code under pull_request_target is safe.
+          allow-unsafe-pr-checkout: true
+      - uses: leanprover-community/lint-style-action@a02378f74c5e33adc64fcafb1cf2d00726e15a94 # 2026-10-05
         with:
           mode: check
           lint-bib-file: true
-          ref: ${{ inputs.pr_branch_ref }}
+          checkout: false
 
   final:
     name: Post-CI job
