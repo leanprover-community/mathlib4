@@ -6,7 +6,8 @@ Authors: Robert Y. Lewis, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Topology.MetricSpace.Cauchy
+
+import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
 # Completeness in terms of `Cauchy` filters vs `isCauSeq` sequences
@@ -20,7 +21,9 @@ public section
 
 universe u v
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 variable {β : Type v}
 

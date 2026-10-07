@@ -32,7 +32,9 @@ finite integral
 
 noncomputable section
 
-open Topology ENNReal MeasureTheory NNReal
+open ENNReal MeasureTheory NNReal
+
+open scoped Topology
 
 open Set Filter TopologicalSpace ENNReal MeasureTheory
 
@@ -212,8 +214,8 @@ theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α →
   .of_bounded <| ae_of_all μ <| norm_le_pi_norm f
 
 theorem HasFiniteIntegral.mono_measure {f : α → ε} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
-    HasFiniteIntegral f μ :=
-  lt_of_le_of_lt (lintegral_mono' hμ le_rfl) h
+    HasFiniteIntegral f μ := by
+  unfold HasFiniteIntegral at *; gconvert h
 
 @[fun_prop]
 theorem HasFiniteIntegral.add_measure {f : α → ε} (hμ : HasFiniteIntegral f μ)
@@ -223,11 +225,11 @@ theorem HasFiniteIntegral.add_measure {f : α → ε} (hμ : HasFiniteIntegral f
 
 theorem HasFiniteIntegral.left_of_add_measure {f : α → ε} (h : HasFiniteIntegral f (μ + ν)) :
     HasFiniteIntegral f μ :=
-  h.mono_measure <| Measure.le_add_right <| le_rfl
+  h.mono_measure <| Measure.le_add_right le_rfl
 
 theorem HasFiniteIntegral.right_of_add_measure {f : α → ε} (h : HasFiniteIntegral f (μ + ν)) :
     HasFiniteIntegral f ν :=
-  h.mono_measure <| Measure.le_add_left <| le_rfl
+  h.mono_measure <| Measure.le_add_left le_rfl
 
 @[simp]
 theorem hasFiniteIntegral_add_measure {f : α → ε} :

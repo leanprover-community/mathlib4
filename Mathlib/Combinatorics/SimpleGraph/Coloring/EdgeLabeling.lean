@@ -5,9 +5,7 @@ Authors: Bhavik Mehta, Olivia Röhrig
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Edge labelings
@@ -42,6 +40,12 @@ instance [DecidableEq V] [Fintype G.edgeSet] [Fintype K] : Fintype (EdgeLabeling
 
 instance [Finite G.edgeSet] [Finite K] : Finite (EdgeLabeling G K) :=
   Pi.finite
+
+instance [IsEmpty G.edgeSet] : Unique (EdgeLabeling G K) :=
+  Pi.uniqueOfIsEmpty _
+
+instance [Nonempty G.edgeSet] [IsEmpty K] : IsEmpty (EdgeLabeling G K) :=
+  instIsEmptyForallOfNonempty
 
 instance [Nonempty K] : Nonempty (EdgeLabeling G K) :=
   Pi.instNonempty
@@ -121,11 +125,8 @@ theorem compRight_get (f : K → K') (x y) (h : G.Adj x y) :
 /-- Construct an edge labeling from a symmetric function on adjacent vertices. -/
 def mk (f : ∀ x y : V, G.Adj x y → K)
     (f_symm : ∀ (x y : V) (H : G.Adj x y), f y x H.symm = f x y H) : EdgeLabeling G K
-  | ⟨e, he⟩ => by
-    revert he
-    refine Sym2.hrec f (fun a b ↦ ?_) e
-    apply Function.hfunext (by simp [adj_comm])
-    grind
+  | ⟨e, he⟩ =>
+    e.fromRelNdrec (sym := G.symm) he f (f_symm · · · |>.symm)
 
 theorem get_mk (f : ∀ x y : V, G.Adj x y → K) (f_symm) (x y : V) (h : G.Adj x y) :
     (mk f f_symm).get x y h = f x y h :=
@@ -140,9 +141,7 @@ def labelGraph (C : EdgeLabeling G K) (k : K) : SimpleGraph V :=
 
 theorem labelGraph_adj {C : EdgeLabeling G K} {k : K} (x y : V) :
     (C.labelGraph k).Adj x y ↔ ∃ H : G.Adj x y, C ⟨s(x, y), H⟩ = k := by
-  rw [EdgeLabeling.labelGraph]
-  simp only [mem_edgeSet, fromEdgeSet_adj, Set.mem_ofPred_eq, Ne.eq_def]
-  grind [Adj.ne]
+  grind [EdgeLabeling.labelGraph, mem_edgeSet, fromEdgeSet_adj]
 
 instance [DecidableRel G.Adj] [DecidableEq K] (k : K) {C : EdgeLabeling G K} :
     DecidableRel (C.labelGraph k).Adj := fun _ _ =>
@@ -208,6 +207,6 @@ theorem toTopEdgeLabeling_labelGraph_compl (G : SimpleGraph V) [DecidableRel G.A
 theorem TopEdgeLabeling.labelGraph_toTopEdgeLabeling [DecidableEq V]
     (C : TopEdgeLabeling V (Fin 2)) : (C.labelGraph 1).toTopEdgeLabeling = C := by
   refine EdgeLabeling.ext_get ?_
-  grind [toTopEdgeLabeling_get, TopEdgeLabeling.labelGraph_adj, Adj.ne]
+  grind [toTopEdgeLabeling_get, TopEdgeLabeling.labelGraph_adj]
 
 end SimpleGraph

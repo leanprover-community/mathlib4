@@ -260,6 +260,15 @@ lemma mem_orbit_symm {a₁ a₂ : α} : a₁ ∈ orbit G a₂ ↔ a₂ ∈ orbit
   simp_rw [← orbit_eq_iff, eq_comm]
 
 @[to_additive]
+lemma mem_orbit_trans {a b c : α} (hab : a ∈ orbit G b) (hbc : b ∈ orbit G c) :
+    a ∈ orbit G c := by
+  obtain ⟨g, rfl⟩ := mem_orbit_iff.mp hab
+  obtain ⟨g', rfl⟩ := mem_orbit_iff.mp hbc
+  rw [mem_orbit_iff]
+  use g * g'
+  rw [mul_smul]
+
+@[to_additive]
 lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
     a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -307,7 +316,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_preimage, Set.mem_image]
     refine ⟨g⁻¹ • a, ?_, by simp +instances [f, orbitRel, Quotient.eq']⟩
     rw [← hu₂]
-    convert! hu₁
+    convert hu₁
     simp only [inv_smul_smul]
 
 @[to_additive]
@@ -442,13 +451,13 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
     {a b : x.orbit} {c : α} (h : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧) :
     (a : α) ∈ MulAction.orbit H c ↔ (b : α) ∈ MulAction.orbit H c := by
   simp_rw [mem_orbit_symm (a₂ := c)]
-  convert! Iff.rfl using 2
+  convert Iff.rfl using 2
   rw [orbit_eq_iff]
   suffices hb : ↑b ∈ orbitRel.Quotient.orbit (⟦a⟧ : orbitRel.Quotient H x.orbit) by
     rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) Quotient.out_eq']
        at hb
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
-    convert! hb using 1
+    convert hb using 1
     rw [orbit_eq_iff, ← orbitRel_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
   rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
 
@@ -481,7 +490,7 @@ group action. -/]
 noncomputable def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
-      Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+      Set.equivOfEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/
@@ -518,7 +527,7 @@ theorem mem_stabilizer_iff {a : α} {g : G} : g ∈ stabilizer G a ↔ g • a =
 @[to_additive]
 lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β) :
     stabilizer G a ≤ stabilizer G (a • b) := by
-  simp_rw [SetLike.le_def, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
+  simp_rw [IsConcreteLE.le_iff, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
 
 -- This lemma does not need `MulAction G α`, only `SMul G α`.
 -- We use `G'` instead of `G` to locally reduce the typeclass assumptions.
@@ -526,7 +535,7 @@ lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
 lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MulAction G' β]
     [SMulCommClass G' α β] (a : α) (b : β) :
     stabilizer G' b ≤ stabilizer G' (a • b) := by
-  simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
+  simp_rw [IsConcreteLE.le_iff, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
 
 @[to_additive (attr := simp)]
 lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β)

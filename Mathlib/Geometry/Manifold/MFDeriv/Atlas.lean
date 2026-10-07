@@ -33,8 +33,9 @@ charts, differentiable, bijective
 
 noncomputable section
 
-open scoped Manifold ContDiff
-open Bundle Set Topology
+open Bundle Set
+
+open scoped Manifold ContDiff Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
@@ -308,7 +309,7 @@ lemma mfderivWithin_extend_symm_comp_mfderiv_extend'
     {y : M} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ e.source) :
     (mfderiv[range I] (e.extend I).symm (e.extend I y)) ∘L (mfderiv% (e.extend I) y)
       = ContinuousLinearMap.id _ _ := by
-  convert! mfderivWithin_extend_symm_comp_mfderiv_extend he
+  convert mfderivWithin_extend_symm_comp_mfderiv_extend he
     ((e.extend I).map_source (by simpa using hy))
   rw [(e.extend I).left_inv (by simpa using hy)]
 
@@ -365,7 +366,6 @@ lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm {x : M}
       (mfderiv[range I] (extChartAt I x).symm y) = ContinuousLinearMap.id _ _ :=
   mfderiv_extend_comp_mfderivWithin_extend_symm (IsManifold.chart_mem_maximalAtlas x) hy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the derivative of `extChartAt` with the derivative of the inverse of
 `extChartAt` gives the identity.
 Version where the basepoint belongs to `(extChartAt I x).source`. -/
@@ -393,7 +393,7 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt'
     (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y)) ∘L (mfderiv% (extChartAt I x) y)
       = ContinuousLinearMap.id _ _ := by
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
-  convert! mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
+  convert mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
   rw [(extChartAt I x).left_inv (by simpa using hy)]
 
 lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
@@ -415,7 +415,8 @@ theorem TangentBundle.continuousLinearMapAt_trivializationAt
   have : MDiffAt (extChartAt I x₀) x := mdifferentiableAt_extChartAt hx
   simp only [extChartAt, OpenPartialHomeomorph.extend, PartialEquiv.coe_trans,
     ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe] at this
-  simp [hx, mfderiv, this]
+  simp only [hx, mfderiv, this, mfld_simps]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse trivialization of the tangent bundle at a point is the manifold derivative of the
@@ -427,7 +428,8 @@ theorem TangentBundle.symmL_trivializationAt
       mfderiv[range I] (extChartAt I x₀).symm (extChartAt I x₀ x) := by
   have : MDiffAt[range I] ((chartAt H x₀).symm ∘ I.symm) (I (chartAt H x₀ x)) := by
     simpa using mdifferentiableWithinAt_extChartAt_symm (by simp [hx])
-  simp [hx, mfderivWithin, this]
+  simp only [hx, mfderivWithin, this, mfld_simps]
+  rfl
 
 omit [IsManifold I 1 M] in
 /-- The `fderivWithin` of the round-trip composition `(extChartAt I x) ∘ (extChartAt I x).symm`

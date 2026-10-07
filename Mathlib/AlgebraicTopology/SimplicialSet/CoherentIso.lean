@@ -5,7 +5,6 @@ Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 
@@ -135,7 +134,7 @@ end CategoryTheory
 
 namespace SSet
 
-open Simplicial
+open scoped Simplicial
 
 /-- The simplicial set that encodes a single isomorphism.
 Its n-simplices are formal compositions of arrows in WalkingIso. -/

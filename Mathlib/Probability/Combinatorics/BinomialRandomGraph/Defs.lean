@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Sym.Card
 public import Mathlib.MeasureTheory.Constructions.SimpleGraph
 public import Mathlib.Probability.Distributions.SetBernoulli
+
+import Mathlib.Data.Sym.Card
 
 /-!
 # Binomial random graphs
@@ -65,8 +66,7 @@ lemma binomialRandom_apply' (S : Set (SimpleGraph V)) :
 
 variable (p) in
 lemma binomialRandom_apply (S : Set (SimpleGraph V)) :
-    G(V, p) S = infinitePi
-      (fun e : Sym2 V ↦ toNNReal p • .dirac (¬ e.IsDiag) + toNNReal (σ p) • .dirac False)
+    G(V, p) S = infinitePi (fun e : Sym2 V ↦ Ber(¬ e.IsDiag, False, p))
       ((fun G e ↦ e ∈ G.edgeSet) '' S) := by
   simp [binomialRandom_apply', setBernoulli_apply, ← Set.image_comp]
 

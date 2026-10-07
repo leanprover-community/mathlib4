@@ -4,8 +4,8 @@ import Mathlib.Tactic.NormRank
 
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.LinearAlgebra.Matrix.Cartan
+import Mathlib.Basic.Real.Basic
+import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.Tactic.Echelon.Zsqrtd
 import Mathlib.Tactic.NormNum.NatFib
@@ -294,7 +294,9 @@ example : Matrix.rank (R := ℚ[X]) !![X, 1; 1, X] = 2 := by eval_rank
 error: `eval_rank` made no progress.
 Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.evalRank] the following entry cannot be simplified to a numeral
+trace: [Tactic.evalRank] no registered model handles the element type; using the rational model for
+      ZMod 7
+[Tactic.evalRank] the following entry cannot be simplified to a numeral
       2 / 3
 -/
 #guard_msgs in
@@ -304,7 +306,9 @@ example : Matrix.rank (R := ZMod 7) !![2/3, 0; 0, 1] = 2 := by eval_rank
 /--
 error: `simp` made no progress
 ---
-trace: [Tactic.evalRank] the following entry cannot be simplified to a numeral
+trace: [Tactic.evalRank] no registered model handles the element type; using the rational model for
+      ZMod 7
+[Tactic.evalRank] the following entry cannot be simplified to a numeral
       2 / 3
 -/
 #guard_msgs in

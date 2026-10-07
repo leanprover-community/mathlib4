@@ -6,9 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.RingTheory.Localization.Finiteness
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+
+import Mathlib.RingTheory.Localization.Finiteness
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Free modules and localization
@@ -45,7 +46,7 @@ lemma Module.FinitePresentation.exists_basis_localizedModule_powers
     ∃ (r : R) (hr : r ∈ S)
       (b' : Basis I (Localization (.powers r)) (LocalizedModule.Away r M)),
       ∀ i, (LocalizedModule.lift (.powers r) f fun s ↦ IsLocalizedModule.map_units f
-        ⟨s.1, SetLike.le_def.mp (Submonoid.powers_le.mpr hr) s.2⟩) (b' i) = b i := by
+        ⟨s.1, mem_of_le_of_mem (Submonoid.powers_le.mpr hr) s.2⟩) (b' i) = b i := by
   have : Module.FinitePresentation R (I →₀ R) := Module.finitePresentation_of_projective _ _
   obtain ⟨r, hr, e, he⟩ := Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule S f
     (Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ)) (b.repr.restrictScalars R)
@@ -62,7 +63,7 @@ lemma Module.FinitePresentation.exists_basis_localizedModule_powers
     simp only [Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
       map_one, LocalizedModule.mkLinearMap_apply] at this
     change LocalizedModule.lift _ _ _ (e.symm (e'.symm _)) = _
-    replace he := LinearMap.congr_fun he (e.symm (e'.symm (Finsupp.single i 1)))
+    replace he := congr($he (e.symm (e'.symm (.single i 1))))
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
       Function.comp_apply, LinearEquiv.apply_symm_apply, LinearEquiv.restrictScalars_apply] at he
     apply b.repr.injective

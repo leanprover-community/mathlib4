@@ -49,6 +49,7 @@ variable {R E₁ E₂ E₃ E₄ : Type*} [Semiring R]
   [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
   [Module R E₁] [Module R E₂] [TopologicalSpace E₁] [TopologicalSpace E₂]
 
+@[macro_inline]
 instance : FunLike (E₁ →P[R] E₂) E₁ E₂ where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
@@ -136,7 +137,6 @@ lemma toContinuousLinearMap_zero : (0 : E₁ →P[R] E₂).toContinuousLinearMap
   rfl
 
 instance : IsZeroApply (E₁ →P[R] E₂) E₁ E₂ where
-  zero_apply _ := rfl
 
 variable (R E₁) in
 /-- The identity as a positive continuous linear map. -/
@@ -191,7 +191,6 @@ lemma toContinuousLinearMap_add (f g : E₁ →P[R] E₂) :
   rfl
 
 instance : IsAddApply (E₁ →P[R] E₂) E₁ E₂ where
-  add_apply _ _ _ := rfl
 
 instance : SMul ℕ (E₁ →P[R] E₂) where
   smul n f := .mk (n • f.toPositiveLinearMap) <|
@@ -208,7 +207,6 @@ lemma toContinuousLinearMap_nsmul (f : E₁ →P[R] E₂) (n : ℕ) :
   rfl
 
 instance : IsSMulApply ℕ (E₁ →P[R] E₂) E₁ E₂ where
-  smul_apply _ _ _ := rfl
 
 instance : AddCommMonoid (E₁ →P[R] E₂) := fast_instance% FunLike.addCommMonoid
 

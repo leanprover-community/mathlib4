@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
@@ -31,7 +30,9 @@ sub-modules in a commutative algebra. This important example gives rise to the a
 
 open Set Filter Function Lattice
 
-open Topology Filter Pointwise
+open Filter Pointwise
+
+open scoped Topology
 
 /-- A family of additive subgroups on a ring `A` is a subgroups basis if it satisfies some
 axioms ensuring there is a topology on `A` which is compatible with the ring structure and
@@ -156,9 +157,7 @@ theorem hasBasis_nhds (a : A) :
     constructor
     · rintro ⟨-, ⟨i, rfl⟩, hi⟩
       use i
-      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by
-        rw [h]
-        assumption
+      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by rwa [h]
       simp only [image_add_left, neg_add_eq_sub]
       ext b
       simp

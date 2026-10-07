@@ -5,14 +5,12 @@ Authors: Claus Clausen, Patrick Massot
 -/
 module
 
-public import Mathlib.Probability.CDF
 public import Mathlib.Probability.Distributions.Gamma
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.Variance
 public import Mathlib.Probability.Moments.IntegrableExpMul
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-! # Exponential distributions over ℝ
 
@@ -124,7 +122,7 @@ open Topology
 
 lemma hasDerivAt_neg_exp_mul_exp {r x : ℝ} :
     HasDerivAt (fun a ↦ -exp (-(r * a))) (r * exp (-(r * x))) x := by
-  convert! (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
+  convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
   · simp only [one_mul, id_eq, neg_mul]
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 
@@ -158,7 +156,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
         (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
       · rw [ENNReal.toReal_ofReal_eq_iff.2
           (sub_nonneg.2 (Real.exp_le_one_iff.2 <| by nlinarith))]
-        norm_num; ring
+        simp; ring
       · simp only [intervalIntegrable_iff, uIoc_of_le h]
         exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
       · have : Continuous (fun a ↦ rexp (-(r * a))) := by

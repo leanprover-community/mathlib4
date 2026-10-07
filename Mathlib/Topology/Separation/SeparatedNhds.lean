@@ -5,8 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.NhdsSet
+
+import Mathlib.Topology.Continuous
 
 /-!
 # Separated neighbourhoods
@@ -29,7 +30,9 @@ formulating separation axioms for topological spaces.
 
 @[expose] public section
 
-open Set Filter Topology TopologicalSpace
+open Set Filter TopologicalSpace
+
+open scoped Topology
 
 universe u v
 
