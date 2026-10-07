@@ -927,7 +927,7 @@ variable (R S M₁ M₂ M₃)
 section OfSubsingleton
 
 /-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
-and one-multilinear maps `M₂ [ι]→ₗ[R] M₃`. -/
+and one-multilinear maps `(fun _ : ι ↦ M₂) →ₗₘ[R] M₃`. -/
 @[simps +simpRhs]
 def ofSubsingletonₗ [Subsingleton ι] (i : ι) : (M₂ →ₗ[R] M₃) ≃ₗ[S] (fun _ : ι ↦ M₂) →ₗₘ[R] M₃ :=
   { ofSubsingleton R M₂ M₃ i with
