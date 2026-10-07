@@ -975,7 +975,6 @@ theorem _root_.LinearIsometry.piLpExtendByZero_apply_single [DecidableEq ι] [De
   ext j
   simp [f.injective.extend_single, Pi.single_apply]
 
-@[simp]
 theorem _root_.LinearIsometry.piLpExtendByZero_apply_eq_zero {f : ι ↪ ι'} {i : ι'}
     (hi : i ∉ range f) (v : PiLp p (fun _ : ι ↦ E)) :
     LinearIsometry.piLpExtendByZero p 𝕜 E f v i = 0 := by
