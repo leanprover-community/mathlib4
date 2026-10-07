@@ -999,7 +999,7 @@ G(T) ------------> G(U) --> F(K)
          G(v')
 ```
 -/
-lemma positselski_4_5
+lemma exists_Δ_of_pentagon
     [IsCardinalAccessibleCategory K κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
     [F.PreservesCardinalPresentable κ]
@@ -1051,10 +1051,10 @@ lemma positselski_4_5
   let ξ : Λ ⥤ CostructuredArrow O₀.ι E.obj := S.functor
   have e₀ : ξ.obj ⊥ = ξ₀ :=
     (S.ξ_obj_eq ⊥ (succ ⊥) (le_succ _)).trans <|
-      (congr($(S_val).ξ.obj ⟨⊥, le_succ ⊥⟩)).trans <| mkSuccBot_bot_eq ..
+      congr($(S_val).ξ.obj ⟨⊥, le_succ ⊥⟩).trans <| mkSuccBot_bot_eq ..
   have e₁ : ξ.obj (succ ⊥) = ξ₁ :=
     (S.ξ_obj_eq (succ ⊥) (succ ⊥) le_rfl).trans <|
-      (congr($(S_val).ξ.obj ⟨succ ⊥, le_rfl⟩)).trans <| mkSuccBot_succ_bot_eq ..
+      congr($(S_val).ξ.obj ⟨succ ⊥, le_rfl⟩).trans <| mkSuccBot_succ_bot_eq ..
   have e₂ : ξ.map (homOfLE <| le_succ ⊥) = eqToHom e₀ ≫ u₀ ≫ eqToHom e₁.symm := by
     dsimp [ξ, Seg.functor]
     rw [Functor.congr_hom (congr($(S_val).ξ)), mkSuccBot_map_homOfLE_eq]
@@ -1081,7 +1081,7 @@ lemma positselski_4_5
     (Monotone.final_functor_iff _).mpr fun j ↦ ⟨j, le_succ j⟩
   let t1 : F.obj U.left.obj ⟶ G.obj U.left.obj :=
     (preservesColimitIso (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) ξ).hom ≫ t ≫
-    (Functor.Final.colimitIso (succ_mono.functor) _).hom ≫ (preservesColimitIso _ _).inv
+    (Functor.Final.colimitIso succ_mono.functor _).hom ≫ (preservesColimitIso _ _).inv
   let B₀ : (O₁ κ F G).FullSubcategory :=
     ⟨⟨t1⟩, by simp only [ObjectProperty.prop_inverseImage_iff, proj_obj]; infer_instance⟩
   let B : Δ κ E :=
@@ -1169,9 +1169,9 @@ lemma isCardinalFiltered_Δ (E : Inserter F G) :
       · simp [← h' i, reassoc_of% p3, σ']
     -- Then, we use the main lemma with ξ₀ and ξ₁
     obtain ⟨b, g, h₁, h₂⟩ :=
-      positselski_4_5 κ Λ hΛ E (S := ξ₀.left.obj) (T := ξ₁.left.obj) σ u.left.hom ξ₁.hom
+      exists_Δ_of_pentagon κ Λ hΛ E (S := ξ₀.left.obj) (T := ξ₁.left.obj) σ u.left.hom ξ₁.hom
         (by simp [← h1, ← F.map_comp_assoc])
-    refine ⟨b, fun i ↦ ⟨CostructuredArrow.homMk ⟨(t0 i) ≫ u.left.hom ≫ g, ?_⟩ ?_⟩⟩
+    refine ⟨b, fun i ↦ ⟨CostructuredArrow.homMk ⟨t0 i ≫ u.left.hom ≫ g, ?_⟩ ?_⟩⟩
     · simp [← reassoc_of% h2 i, h₁]
     · ext
       simp [h₂, hf0]
@@ -1202,7 +1202,7 @@ lemma isCardinalFiltered_Δ (E : Inserter F G) :
     simp only [Category.id_comp] at hv₁ hv₂ hv
     -- Then, we use the main lemma with ξ₀ and ξ₁
     obtain ⟨b', g, h₁, h₂⟩ :=
-      positselski_4_5 κ Λ hΛ E ξ₀.left.obj ξ₁.left.obj
+      exists_Δ_of_pentagon κ Λ hΛ E ξ₀.left.obj ξ₁.left.obj
         σ v₁.left.hom ξ₁.hom (by simp [← hv₂, ← Functor.map_comp_assoc])
     let pt : ι := hι'.some -- we need some arbitrary element of ι
     have := congr($(CostructuredArrow.w (f pt)).hom)
@@ -1249,7 +1249,7 @@ lemma final.nonempty_structured_arrow (E : Inserter F G)
   dsimp at u' v' hu'
   simp only [Category.id_comp] at hu'
   obtain ⟨b, g, h₁, h₂⟩ :=
-    positselski_4_5 κ Λ hΛ E p.left.obj ξ₁.left.obj v' (u ≫ u'.left.hom) ξ₁.hom
+    exists_Δ_of_pentagon κ Λ hΛ E p.left.obj ξ₁.left.obj v' (u ≫ u'.left.hom) ξ₁.hom
       (by simp [← Functor.map_comp_assoc, hu, hu'])
   exact ⟨StructuredArrow.mk (Y := b) <|
     CostructuredArrow.homMk ⟨u ≫ u'.left.hom ≫ g⟩ (by simp [h₂, hu])⟩
@@ -1311,11 +1311,11 @@ lemma final (E : Inserter F G) : (U κ E).Final := by
     obtain ⟨ξ₁₀, u₁₀, σ₁₀, hu₁₀, hu₁₀'⟩ :=
       exists_of_hexagon κ hcolimG (F.map f₀) (F.map ξ₀.hom)
         r'.right.left.obj.hom (G.map f₀) E.hom
-        (by simp [← F.map_comp_assoc, hf₀, ← G.map_comp] )
+        (by simp [← F.map_comp_assoc, hf₀, ← G.map_comp])
     obtain ⟨ξ₁₁, u₁₁, σ₁₁, hu₁₁, hu₁₁'⟩ :=
       exists_of_hexagon κ hcolimG (F.map f₁) (F.map ξ₀.hom)
         r''.right.left.obj.hom (G.map f₁) E.hom
-        (by simp [← F.map_comp_assoc, ← G.map_comp, hf₁] )
+        (by simp [← F.map_comp_assoc, ← G.map_comp, hf₁])
     dsimp at u₁₀ σ₁₀ u₁₁ σ₁₁ hu₁₀ hu₁₀' hu₁₁ hu₁₁'
     simp only [Category.id_comp] at hu₁₀ hu₁₀' hu₁₁ hu₁₁'
     obtain ⟨ξ₁₂, u₁₂, v₁₂, hsq''⟩ := IsFiltered.span u₁₀ u₁₁
@@ -1330,7 +1330,7 @@ lemma final (E : Inserter F G) : (U κ E).Final := by
       by simp [← reassoc_of% hu₁₀],
       by simp [reassoc_of% hsq'', ← reassoc_of% hu₁₁, h]⟩
   obtain ⟨b, v₁, hu₁, hv₁⟩ :=
-    positselski_4_5 κ Λ hΛ E ξ₀.left.obj ξ₁.left.obj σ u.left.hom ξ₁.hom (by
+    exists_Δ_of_pentagon κ Λ hΛ E ξ₀.left.obj ξ₁.left.obj σ u.left.hom ξ₁.hom (by
       simp [← hsq', ← F.map_comp_assoc])
   use b
   exact
