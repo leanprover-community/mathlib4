@@ -562,6 +562,17 @@ lemma transvection_mem_center_iff {i j : ι} (hij : i ≠ j) (b : F) :
       add_zero, diagonal_eq_one]
     exact ⟨1, one_pow _, rfl⟩
 
+open scoped commutatorElement in
+lemma commutator_transvection_transvection {i j k : ι} (hij : i ≠ j) (hik : i ≠ k) (hkj : k ≠ j)
+    (a b : F) : ⁅transvection hik a, transvection hkj b⁆ = transvection hij (a * b) := by
+  rw [commutatorElement_def, transvection_inv, transvection_inv]
+  refine Subtype.ext ?_
+  simp only [Matrix.SpecialLinearGroup.coe_mul, transvection_coe, mul_add, add_mul, one_mul,
+    mul_one, ← single_neg, mul_neg, neg_mul, add_zero, single_mul_single_same,
+    single_mul_single_of_ne _ _ _ _ hij.symm, single_mul_single_of_ne _ _ _ _ hik.symm,
+    single_mul_single_of_ne _ _ _ _ hkj.symm]
+  abel
+
 end SpecialLinearGroup
 
 namespace TransvectionStruct

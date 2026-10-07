@@ -79,16 +79,6 @@ lemma iSup_lineStab_eq_top [Nontrivial ι] :
       rw [Projectivization.submodule_mk]
       exact transvection_mem_lineStab hij a
 
-lemma transvection_eq_commutator (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) (hkj : k ≠ j) (α : F) :
-    transvection hij α = ⁅transvection hik α, transvection hkj (1 : F)⁆ := by
-  rw [commutatorElement_def, transvection_inv, transvection_inv]
-  refine Subtype.ext ?_
-  simp only [Matrix.SpecialLinearGroup.coe_mul, transvection_coe, mul_add, add_mul, one_mul,
-    mul_one, ← single_neg, mul_neg, neg_mul, add_zero, single_mul_single_same,
-    single_mul_single_of_ne _ _ _ _ hij.symm, single_mul_single_of_ne _ _ _ _ hik.symm,
-    single_mul_single_of_ne _ _ _ _ hkj.symm]
-  abel
-
 omit [DecidableEq ι] in
 /-- Given `card ι ≥ 3` and `i, j : ι` (not necessarily distinct), there
 exists `k : ι` distinct from both. -/
@@ -104,7 +94,7 @@ lemma exists_third_index_of_three_le (hι : 3 ≤ Fintype.card ι) (i j : ι) :
 private lemma transvection_mem_commutator_of_three_le (hι : 3 ≤ Fintype.card ι) (i j : ι)
     (hij : i ≠ j) (α : F) : transvection hij α ∈ commutator (Matrix.SpecialLinearGroup ι F) := by
   obtain ⟨k, hki, hkj⟩ := exists_third_index_of_three_le hι i j
-  rw [transvection_eq_commutator i j k hij hki.symm hkj α]
+  rw [← mul_one α, ← commutator_transvection_transvection hij hki.symm hkj]
   exact Subgroup.commutator_mem_commutator (Subgroup.mem_top _) (Subgroup.mem_top _)
 
 /-- For `Fintype.card ι ≥ 3`, every elementary diagonal (built via `elemDiagSL`)
