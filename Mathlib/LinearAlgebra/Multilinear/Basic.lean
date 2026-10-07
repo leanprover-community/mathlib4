@@ -214,7 +214,6 @@ instance : SMul S (M₁ →ₗₘ[R] M₂) :=
       simp [← smul_comm x c (_ : M₂)]⟩⟩
 
 instance : IsSMulApply S (M₁ →ₗₘ[R] M₂) (∀ i, M₁ i) M₂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
