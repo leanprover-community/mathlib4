@@ -126,12 +126,10 @@ end fderiv
 
 variable (F) in
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
-def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
-  lineDerivOpCLM 𝕜 𝓢(ℝ, F) (1 : ℝ)
+def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) := lineDerivOpCLM 𝕜 𝓢(ℝ, F) (1 : ℝ)
 
 @[simp]
-theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 F f x = deriv f x :=
-  rfl
+theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 F f x = deriv f x := rfl
 
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 
