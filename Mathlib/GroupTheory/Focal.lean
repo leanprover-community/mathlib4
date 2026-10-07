@@ -175,7 +175,7 @@ variable {G : Type*} [Group G] {p : ℕ} [Fact p.Prime] (P : Sylow p G) [P.Finit
 /-- The power map `y ↦ y^n` is surjective on `P/P*` because `gcd(n, p) = 1`. -/
 lemma focalSubgroupOf.pow_index_surjective :
     Surjective fun y : P ⧸ P.focalSubgroupOf ↦ y ^ P.index :=
-  ((P.2.to_quotient P.focalSubgroupOf).powEquiv' P.not_dvd_index).surjective
+  ((P.isPGroup.to_quotient P.focalSubgroupOf).powEquiv' P.not_dvd_index).surjective
 
 /-- The Transfer homomorphism is surjective from `G` to `P/P*`. -/
 lemma transferFocal_surjective : Surjective P.transferFocal := by
@@ -192,7 +192,7 @@ noncomputable def transferFocal.quotientKerMulEquivQuotientFocalSubroupOf :
 lemma ker_restrict_transferFocal_eq_focalSubgroupOf :
     (P.transferFocal.domRestrict P).ker = P.focalSubgroupOf := by
   ext g
-  have hQ : IsPGroup p (P ⧸ P.focalSubgroupOf) := P.2.to_quotient P.focalSubgroupOf
+  have hQ : IsPGroup p (P ⧸ P.focalSubgroupOf) := P.isPGroup.to_quotient P.focalSubgroupOf
   rw [MonoidHom.mem_ker, MonoidHom.domRestrict_apply, transferFocal_eq_pow]
   simpa using (hQ.powEquiv' P.not_dvd_index).apply_eq_iff_eq (x := g) (y := 1)
 
