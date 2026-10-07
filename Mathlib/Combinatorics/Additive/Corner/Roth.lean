@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.Additive.AP.Three.Defs
 public import Mathlib.Combinatorics.Additive.Corner.Defs
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
+
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 
 /-!

@@ -5,8 +5,9 @@ Authors: Riccardo Brasca
 -/
 module
 
-import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Trace.Basic
+
+import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Discriminant of a family of vectors

@@ -5,9 +5,10 @@ Authors: Andrew Yang, Riccardo Brasca
 -/
 module
 
-import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.Finiteness.Quotient
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+
+import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.LocalRing.Quotient
 
 /-!

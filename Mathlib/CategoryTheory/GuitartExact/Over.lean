@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GuitartExact.Basic
+
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
