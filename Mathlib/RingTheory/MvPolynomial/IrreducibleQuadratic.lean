@@ -166,7 +166,7 @@ theorem coeff_sumSMulX (i : n) :
   rw [Finset.sum_eq_single i _ (by simp)]
   · simp
   intro j hj hji
-  rw [AddMonoidAlgebra.coeff_smul, Finsupp.smul_apply, coeff_X, ite_eq_right]
+  rw [AddMonoidAlgebra.coeff_smul_apply, coeff_X, ite_eq_right]
   · simp
   · rwa [Finsupp.single_left_inj Nat.one_ne_zero]
 

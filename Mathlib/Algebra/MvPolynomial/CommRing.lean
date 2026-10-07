@@ -204,8 +204,8 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → f.coeff m = g.coeff m)
     (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → f.coeff m = g.coeff m) :
     degreeOf x (f - g) < k := by
-  simp_rw [degreeOf_lt_iff h]
-  grind [coeff_sub, Finsupp.sub_apply]
+  rw [degreeOf_lt_iff h]
+  grind [coeff_sub_apply]
 
 end DegreeOf
 
