@@ -16,15 +16,8 @@ namespace CategoryTheory.Limits
 namespace IsCofiltered
 
 /--
-The proof of `preorder_of_cofiltered` should give a countable `I` in the case that `J` is a
-countable category.
--/
-proof_wanted preorder_of_cofiltered_countable
-    (J : Type*) [SmallCategory J] [IsCofiltered J] [CountableCategory J] :
-    ∃ (I : Type) (_ : Preorder I) (_ : Countable I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
-
-/--
-Put together `sequentialFunctor_initial` and `preorder_of_cofiltered_countable`.
+Put together `sequentialFunctor_initial` and
+`CategoryTheory.IsCofiltered.exists_codirected_countable`.
 -/
 proof_wanted hasCofilteredCountableLimits_of_hasSequentialLimits [HasLimitsOfShape ℕᵒᵖ C] :
     ∀ (J : Type) [SmallCategory J] [IsCofiltered J] [CountableCategory J], HasLimitsOfShape J C
