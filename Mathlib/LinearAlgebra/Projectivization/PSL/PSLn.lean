@@ -101,16 +101,16 @@ lemma exists_third_index_of_three_le (hι : 3 ≤ Fintype.card ι) (i j : ι) :
 
 /-- For `Fintype.card ι ≥ 3` and any `i ≠ j`, the transvection
 `transvection hij α` belongs to the commutator subgroup of `SL ι F`. -/
-lemma transvection_mem_commutator_of_three_le (hι : 3 ≤ Fintype.card ι) (i j : ι) (hij : i ≠ j)
-    (α : F) : transvection hij α ∈ commutator (Matrix.SpecialLinearGroup ι F) := by
+private lemma transvection_mem_commutator_of_three_le (hι : 3 ≤ Fintype.card ι) (i j : ι)
+    (hij : i ≠ j) (α : F) : transvection hij α ∈ commutator (Matrix.SpecialLinearGroup ι F) := by
   obtain ⟨k, hki, hkj⟩ := exists_third_index_of_three_le hι i j
   rw [transvection_eq_commutator i j k hij hki.symm hkj α]
   exact Subgroup.commutator_mem_commutator (Subgroup.mem_top _) (Subgroup.mem_top _)
 
 /-- For `Fintype.card ι ≥ 3`, every elementary diagonal (built via `elemDiagSL`)
 lies in the commutator subgroup. -/
-lemma elemDiagSL_mem_commutator_of_three_le (hι : 3 ≤ Fintype.card ι) {i j : ι} (hij : i ≠ j)
-    (α : F) : elemDiagSL hij α ∈ commutator (Matrix.SpecialLinearGroup ι F) :=
+private lemma elemDiagSL_mem_commutator_of_three_le (hι : 3 ≤ Fintype.card ι) {i j : ι}
+    (hij : i ≠ j) (α : F) : elemDiagSL hij α ∈ commutator (Matrix.SpecialLinearGroup ι F) :=
   have h := transvection_mem_commutator_of_three_le (F := F) hι
   mul_mem (mul_mem (mul_mem (mul_mem (mul_mem (h i j hij α) (h j i hij.symm _)) (h i j hij α))
     (h i j hij (-1))) (h j i hij.symm 1)) (h i j hij (-1))
@@ -137,13 +137,6 @@ lemma commutator_PSL_eq_top_of_three_le_card (hι : 3 ≤ Fintype.card ι) :
 
 /-! ### Iwasawa structure -/
 
-/-- The Iwasawa generator property: for nontrivial `ι`, the supremum of the
-`iwasawaT` subgroups equals all of `PSL`. -/
-lemma iSup_iwasawaT_eq_top [Nontrivial ι] :
-    iSup (PSL.iwasawaT (F := F) (ι := ι)) = ⊤ := by
-  rw [← Subgroup.map_iSup, iSup_lineStab_eq_top]
-  exact Subgroup.map_top_of_surjective _ (QuotientGroup.mk'_surjective _)
-
 /-- The Iwasawa data on `PSL ι F` (acting on `ℙ F (ι → F)`) coming
 from the images of the line-stabilisers. -/
 noncomputable def PSL.Iwasawa [Nontrivial ι] :
@@ -159,7 +152,9 @@ noncomputable def PSL.Iwasawa [Nontrivial ι] :
     simp [Matrix.ProjectiveSpecialLinearGroup.smul_proj_mk, PSL.iwasawaT, ← PSL.iwasawaT_map_conj,
       ← lineStab_smul, Submodule.pointwise_smul_def, Subgroup.ext_iff,
       Submodule.mem_span_singleton, smul_comm]
-  is_generator := iSup_iwasawaT_eq_top
+  is_generator := by
+    rw [← Subgroup.map_iSup, iSup_lineStab_eq_top]
+    exact Subgroup.map_top_of_surjective _ (QuotientGroup.mk'_surjective _)
 
 end SLnSimple
 
