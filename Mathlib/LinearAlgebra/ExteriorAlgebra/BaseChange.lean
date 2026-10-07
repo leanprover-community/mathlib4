@@ -21,7 +21,7 @@ In this file, we proved that exterior algebra commutes with arbitrary base chang
 
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
@@ -60,6 +60,10 @@ def baseChangeExteriorAlgebraToTensor :
     ExteriorAlgebra S (S ⊗[R] M) →ₐ[S] S ⊗[R] ExteriorAlgebra R M :=
   ExteriorAlgebra.lift S
     ⟨ExteriorAlgebra.baseChangeι R M S, ExteriorAlgebra.baseChangeι_sq_zero R M S⟩
+
+lemma baseChangeExteriorAlgebraToTensor_apply (m : M) :
+    baseChangeExteriorAlgebraToTensor R M S (ι S (1 ⊗ₜ[R] m)) = 1 ⊗ₜ[R] ι R m := by
+  simp [baseChangeExteriorAlgebraToTensor]
 
 def baseChangeIsoForwardAux : ExteriorAlgebra R M →ₐ[R]ExteriorAlgebra S (S ⊗[R] M) :=
   ExteriorAlgebra.lift R
