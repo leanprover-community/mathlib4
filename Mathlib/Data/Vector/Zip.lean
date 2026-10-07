@@ -8,7 +8,11 @@ module
 public import Mathlib.Data.Vector.Basic
 
 /-!
-# The `zipWith` operation on vectors.
+# Lemmas about `List.Vector.map₂`
+
+`List.Vector.map₂ f x y` applies `f : α → β → γ` to each corresponding pair of elements of the
+vectors `x` and `y`. This file used to define a second copy of this operation,
+`List.Vector.zipWith`, which is now a deprecated alias of `List.Vector.map₂`.
 -/
 
 @[expose] public section
@@ -17,37 +21,39 @@ namespace List
 
 namespace Vector
 
-section ZipWith
+section Map₂
 
 variable {α β γ : Type*} {n : ℕ} (f : α → β → γ)
 
-/-- Apply the function `f : α → β → γ` to each corresponding pair of elements from two vectors. -/
-def zipWith : Vector α n → Vector β n → Vector γ n := fun x y => ⟨List.zipWith f x.1 y.1, by simp⟩
+@[deprecated (since := "2026-10-07")] alias zipWith := map₂
 
 @[simp]
-theorem zipWith_toList (x : Vector α n) (y : Vector β n) :
-    (Vector.zipWith f x y).toList = List.zipWith f x.toList y.toList :=
+theorem toList_map₂ (x : Vector α n) (y : Vector β n) :
+    (map₂ f x y).toList = List.zipWith f x.toList y.toList :=
   rfl
 
-@[simp]
-theorem zipWith_get (x : Vector α n) (y : Vector β n) (i) :
-    (Vector.zipWith f x y).get i = f (x.get i) (y.get i) := by
-  dsimp only [Vector.zipWith, Vector.get]
-  simp
+@[deprecated (since := "2026-10-07")] alias zipWith_toList := toList_map₂
+
+@[deprecated (since := "2026-10-07")] alias zipWith_get := get_map₂
 
 @[simp]
-theorem zipWith_tail (x : Vector α n) (y : Vector β n) :
-    (Vector.zipWith f x y).tail = Vector.zipWith f x.tail y.tail := by
+theorem tail_map₂ (x : Vector α n) (y : Vector β n) :
+    (map₂ f x y).tail = map₂ f x.tail y.tail := by
   ext
   simp [get_tail]
 
+@[deprecated (since := "2026-10-07")] alias zipWith_tail := tail_map₂
+
 @[to_additive]
-theorem prod_mul_prod_eq_prod_zipWith [CommMonoid α] (x y : Vector α n) :
-    x.toList.prod * y.toList.prod = (Vector.zipWith (· * ·) x y).toList.prod :=
+theorem prod_mul_prod_eq_prod_map₂ [CommMonoid α] (x y : Vector α n) :
+    x.toList.prod * y.toList.prod = (map₂ (· * ·) x y).toList.prod :=
   List.prod_mul_prod_eq_prod_zipWith_of_length_eq x.toList y.toList
     ((toList_length x).trans (toList_length y).symm)
 
-end ZipWith
+@[to_additive (attr := deprecated (since := "2026-10-07"))]
+alias prod_mul_prod_eq_prod_zipWith := prod_mul_prod_eq_prod_map₂
+
+end Map₂
 
 end Vector
 
