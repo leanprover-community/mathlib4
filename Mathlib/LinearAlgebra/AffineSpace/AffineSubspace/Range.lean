@@ -69,7 +69,7 @@ theorem range_eq_top_iff_surjective : f.range = ⊤ ↔ Surjective f := by
   simp [SetLike.ext'_iff, Set.range_eq_univ]
 
 /-- Restrict the codomain of an affine map `f` to `f.range`. -/
-@[simps]
+@[simps! apply_coe linear_apply_coe]
 def rangeRestrict : P₁ →ᵃ[R] f.range where
   toFun p := ⟨f p, p, rfl⟩
   linear := f.linear.codRestrict f.range.direction

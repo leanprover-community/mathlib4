@@ -78,6 +78,8 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     apply vadd_right_cancel (f p)
     rw [← f_add, h, ← g_add]
 
+initialize_simps_projections AffineMap (toFun → apply)
+
 namespace LinearMap
 
 variable {k : Type*} {V₁ : Type*} {V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
