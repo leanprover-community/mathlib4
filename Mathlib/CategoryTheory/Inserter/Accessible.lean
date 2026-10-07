@@ -19,8 +19,25 @@ import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
 import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
-/-!
-# Inserter categories are accessible
+/-! # Inserter categories are accessible
+
+In this file, we show that categories of inserters are accessible in good situations.
+
+More precisely, given `F G : K ⥤ L` two `κ`-accessible functors between two κ-accessible categories,
+such that `F` preserves `κ`-presentable objects. Assuming there exists an ordinal `Λ < κ` such that
+`K` and `L` admits Λ-indexed colimits and such that `F` and `G` preserve `Λ`-indexed colimits,
+we show that the category `Inserter F G` remains κ-accessible, and that its κ-presentable objects
+are exactly objects `E : Inserter F G` such that `E.obj` is a κ-presentable object of `K`.
+
+This result appears as Theorem 4.1 in [positselski2014]. We follow the proof from this reference.
+
+Using the uniformization theorem, this implies that if `F G : K ⥤ L` are accessible functors between
+accessible categories, then `Inserter F G` is an accessible category.
+
+Notice that in the case `K = L`, `G = 𝟭 K`, this shows that the category of algebras for the
+endofunctor `F` is accessible. This result can be combined with (TODO) result that categories
+of equifiers are accessible to show that the category of algebras for an accessible monad
+is also accessible.
 
 -/
 
@@ -67,12 +84,11 @@ lemma exists_of_hexagon {D J : Type*} [Category* D] [Category* J]
 
 /- The setup for accessibility of inserter categories, from Positselski’s paper:
 `F G : K ⥤ L` are a parallel pair of κ-accessible functors between κ-accessible categories
-where `F` in addition preserves κ-presentable objects. A given infinite cardinal Λ < κ such
+where `F` in addition preserves κ-presentable objects. A given infinite ordinal Λ < κ such
 that both `K` and `L` have colimits of Λ-chains is given, and we assume that `F` and `G` preserve
-these colimits. Here, we realize `Λ` as a well-founded linear order directly
-(instead of using `Cardinal.ord.ToType`).
+these colimits.
 
-throughout this file, this is realized as
+Throughout this file, this setup is realized as
 ```
 variable {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardinal.{w})
     [Fact κ.IsRegular] [IsCardinalAccessibleCategory K κ] [IsCardinalAccessibleCategory L κ]
@@ -101,19 +117,17 @@ instance isCardinalPresentable_of_proj_isCardinalPresentable (X : Inserter F G)
     IsCardinalPresentable X κ := by
   have : IsCardinalPresentable (proj F G |>.obj X) κ := by assumption
   apply IsCardinalPresentable.mk
-  intro I _ filt B b hb
+  intro I _ _ B b hb
   have : Limits.HasColimitsOfShape I K := HasCardinalFilteredColimits.hasColimitsOfShape _ κ I
   have : Limits.HasColimitsOfShape I L := HasCardinalFilteredColimits.hasColimitsOfShape _ κ I
   have : Limits.PreservesColimitsOfShape I F :=
     Functor.IsCardinalAccessible.preservesColimitOfShape κ I
   have : Limits.PreservesColimitsOfShape I G :=
     Functor.IsCardinalAccessible.preservesColimitOfShape κ I
-  have : Limits.PreservesColimitsOfShape I (proj F G) := inferInstance
   let hcolimG := Limits.isColimitOfPreserves (proj F G ⋙ G) hb
   let hcolim := Limits.isColimitOfPreserves (proj F G) hb
   refine ⟨fun f => ?_, ?_⟩
-  · have : IsCardinalPresentable (F.obj X.obj) κ := inferInstance
-    obtain ⟨i, f', hf'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolim f.hom
+  · obtain ⟨i, f', hf'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolim f.hom
     dsimp at f' hf'
     obtain ⟨j, u, h⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hcolimG
       (f₁ := F.map f' ≫ (B.obj i).hom) (f₂ := X.hom ≫ G.map f') (by dsimp; grind)
@@ -129,15 +143,53 @@ instance isCardinalPresentable_of_proj_isCardinalPresentable (X : Inserter F G)
 
 variable (Λ : Type w)
 
-/-- The structure of a partial induction for constructing the chain
-as in Positselski, 4.5.
-To realize the induction, we transform `j ↦ PositselskiInductionDataUpTo … j` into a
-presheaf on `j` so that we can use `Functor.WellOrderInductionData`. From
-a section of the presheaf, we can extract the chain out of `J` that we are looking for. -/
+/-
+Below, we prove one of the main lemma to prove the main theorem:
+this is lemma 4.5 in [positselski2014].
+
+The lemma says that given a diagram,
+```
+     F(u)      F(v)
+F(S) --> F(T) ---> F(K)
+ |                  | Φ
+ v                  v
+G(T) ------------> G(K)
+        G(v)
+```
+where u : S → T and v : T ⟶ K are maps of κ-presentable objects,
+one can find a factorization
+```
+F(S) --> F(T) ---> F(U) --> F(K)
+ |          F(v')   | σ      | Φ
+ v                  v        v
+G(T) ------------> G(U) --> F(K)
+         G(v')
+```
+The main technical ingredient is that if one uses κ-presentability naively, one
+only produces a diagram of shape
+```
+F(S) --> F(T) ---> F(ξ₀) --> F(K)
+ |          F(v')   | ψ₀       | Φ
+ v                  v          v
+G(T) ------------> G(ξ₁) --> F(K)
+```
+
+One must iterate the construction of such diagrams to construct a chain `U₀ ⟶ U₁ ⟶ …` by transfinite
+induction, equipped with structure maps `ψᵢ : F(ξᵢ) ⟶ G(ξᵢ₊₁)`.
+Once the chain becomes long enough, one can take its colimit to stabilize those maps:
+this is the relevance of the ordinal Λ that appears in the hypothesis of the main theorem.
+-/
+
+/-- The structure of a partial induction for constructing the chain as in
+Lemma 4.5 of[positselski2014].
+
+To realize the induction, we transform `j ↦ PartialChainUpTo … j` into a
+presheaf on `j` so that we can use `Functor.WellOrderInductionData`.
+From a section of the presheaf, we can extract the chain out of `Λ` that we are looking for. -/
 @[ext]
-structure PositselskiInductionDataUpTo [Preorder Λ] [SuccOrder Λ]
+structure PartialChainUpTo [Preorder Λ] [SuccOrder Λ]
     (E : Inserter F G) (i : Λ) where
-  /-- corresponds to all the previous ξᵢ's -/
+  /-- Corresponds to all the previously constructed ξᵢ's -/
   ξ : Set.Iic i ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj
   /-- A structure map ψⱼ : F.obj ξⱼ ⟶ G.obj ξₖ for all j < k ≤ i.
   In particular, this bundles a map F.obj ξᵢ₋₁ ⟶ G.obj ξᵢ when indices
@@ -155,7 +207,7 @@ structure PositselskiInductionDataUpTo [Preorder Λ] [SuccOrder Λ]
     ψ j l (by grind) hl =
       ψ j k hjk (by grind) ≫ G.map (ξ.map (homOfLE hkl)).left.hom
 
-namespace PositselskiInductionDataUpTo
+namespace PartialChainUpTo
 
 open Order (succ)
 
@@ -168,24 +220,21 @@ local macro "valid" : tactic =>
         Set.mem_Iic, Set.mem_Iio, Order.IsSuccLimit.succ_lt, → Order.succ_lt_succ, → bot_unique,
         not_lt_bot])
 
-/-! In the following, we are going to move very frequently between Λ, Set.Iio _ and Set.Iic _.
-Most of the time, this requires term annotations and rather boring grind-able proof obligations.
+/- In the following, we are going to move very frequently between `Λ`, `Set.Iio _` and `Set.Iic _`.
+Most of the time, this requires term annotations and rather boring grind-able proof obligations,
+so we provide a small discharge tactic that is just a specialized `grind` call handling these, an
+elaborator `iio% i j` for `⟨i, …⟩ : Set.Iio j`, and an elaborator
+`iic% i j` for `⟨i, _⟩ : Set.Iic j` in order to write some terms more easily. -/
 
-So we provide a small discharge tactic that is just a specialized `grind` call, and
-elaborators iio% i j for `⟨i, …⟩ : Set.Iio j`, and iic% i j for `⟨i, _⟩ : Set.Iic j` to
-write some terms more easily. -/
-
-/-- `iio% i j` builds i as a term of Set.Iio j using the discharger to prove the
-side goal. -/
+/-- `iio% i j` builds i as a term of `Set.Iio j` using the discharger to prove the side goal. -/
 local macro "iio% " i:term:max j:term:max : term => `((⟨$i, by valid⟩ : Set.Iio $j))
 
-/-- `iic% i j` builds i as a term of Set.Iic j using the discharger to prove the
-side goal. -/
+/-- `iic% i j` builds i as a term of `Set.Iic j` using the discharger to prove the side goal. -/
 local macro "iic% " i:term:max j:term:max : term => `((⟨$i, by valid⟩ : Set.Iic $j))
 
 variable [LinearOrder Λ] [SuccOrder Λ]
 
-theorem eqToHom_ext {E : Inserter F G} {i : Λ} {b b' : PositselskiInductionDataUpTo κ Λ E i}
+theorem eqToHom_ext {E : Inserter F G} {i : Λ} {b b' : PartialChainUpTo κ Λ E i}
     (h_obj : ∀ (j : Set.Iic i), b.ξ.obj j = b'.ξ.obj j)
     (h_map : ∀ (j k : Λ) (hjk : j ≤ k) (hki : k ≤ i),
       b.ξ.map (homOfLE hjk : iic% j i ⟶ iic% k i) =
@@ -207,7 +256,7 @@ theorem eqToHom_ext {E : Inserter F G} {i : Λ} {b b' : PositselskiInductionData
     refine Function.hfunext rfl fun _ _ _ ↦ Function.hfunext rfl fun _ _ _ ↦ ?_
     simp [h_ψ, eqToHom_map]
 
-theorem congr_ψ {E : Inserter F G} {i : Λ} {b b' : PositselskiInductionDataUpTo κ Λ E i}
+theorem congr_ψ {E : Inserter F G} {i : Λ} {b b' : PartialChainUpTo κ Λ E i}
     (h : b = b') (j k : Λ) (hjk : j < k) (hki : k ≤ i) :
     b.ψ j k hjk hki = F.map (eqToHom congr((($h).ξ.obj _).left.obj)) ≫ b'.ψ j k hjk hki ≫
       G.map (eqToHom congr((($h).ξ.obj _).left.obj).symm) := by
@@ -221,7 +270,7 @@ theorem exists_succ_of_hasCardinalLT [IsCardinalAccessibleCategory K κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
     [F.PreservesCardinalPresentable κ]
     {E : Inserter F G} {i : Λ}
-    (b : PositselskiInductionDataUpTo κ Λ E i) (hΛ : HasCardinalLT Λ κ) :
+    (b : PartialChainUpTo κ Λ E i) (hΛ : HasCardinalLT Λ κ) :
     ∃ (ξ₂ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
       (ν : b.ξ.obj (iic% i i) ⟶ ξ₂)
       (ψ : F.obj (b.ξ.obj (iic% i i)).left.obj ⟶ G.obj ξ₂.left.obj),
@@ -269,19 +318,18 @@ theorem exists_succ_of_hasCardinalLT [IsCardinalAccessibleCategory K κ]
   · have S1 := huν (iio% j i)
     simp [homOfLE_leOfHom, ← h₂ ⟨j, hj⟩, reassoc_of% S1]
 
-lemma sq₂ {i : Λ} {E : Inserter F G} (d : PositselskiInductionDataUpTo κ Λ E i)
+lemma sq₂ {i : Λ} {E : Inserter F G} (d : PartialChainUpTo κ Λ E i)
     (j k l m : Λ) (hjk : j < k) (hkm : k ≤ m) (hjl : j ≤ l) (hlm : l < m) (hm : m ≤ i) :
     F.map (d.ξ.map (homOfLE hjl)).left.hom ≫ d.ψ l m hlm (by valid) =
     d.ψ j k hjk (by valid) ≫ G.map (d.ξ.map (homOfLE hkm)).left.hom := by
   rw [← d.t₂, ← d.t₁]
   all_goals grind
 
-/-- Restricts a PositselskiInductionDataUpTo to a lower index,
-turning PositselskiInductionDataUpTo into a presheaf. -/
+/-- Restricts a PartialChainUpTo to a lower index, turning PartialChainUpTo into a presheaf. -/
 @[implicit_reducible]
 def trunc (E : Inserter F G)
-    {i i' : Λ} (hii' : i ≤ i') (d : PositselskiInductionDataUpTo κ Λ E i') :
-    PositselskiInductionDataUpTo κ Λ E i where
+    {i i' : Λ} (hii' : i ≤ i') (d : PartialChainUpTo κ Λ E i') :
+    PartialChainUpTo κ Λ E i where
   ξ := SmallObject.restrictionLE d.ξ hii'
   ψ j k hjk hk := d.ψ j k hjk (hk.trans hii')
   sq₁ j hj := by
@@ -294,18 +342,24 @@ def trunc (E : Inserter F G)
   t₁ j k l hjk hkl hl := d.t₁ j k l hjk hkl (hl.trans hii')
   t₂ j k l hjk hkl hl := d.t₂ j k l hjk hkl (hl.trans hii')
 
+/-- Turning `i ↦ PartialChainUpTo κ Λ E i` into a functor. A section of this functor bundles an
+extension of the ξ and ψ fields to all indices in Λ. -/
 abbrev functor (E : Inserter F G) : Λᵒᵖ ⥤ Type _ where
-  obj i := PositselskiInductionDataUpTo κ Λ E i.unop
+  obj i := PartialChainUpTo κ Λ E i.unop
   map f := TypeCat.ofHom <| trunc κ Λ E (leOfHom f.unop)
 
 namespace extend
+
+/- This section setups the "successor case" of the transfinite induction extending a partial
+chain to a section of `PartialChainUpTo`. -/
+
 variable [NoMaxOrder Λ]
 open SmallObject.SuccStruct
 
 attribute [local grind =] Subtype.mk_le_mk Order.lt_succ_iff homOfLE_comp
 attribute [local grind =] CostructuredArrow.comp_left ObjectProperty.FullSubcategory.comp_hom
 
-variable {κ} {Λ} {E : Inserter F G} {i : Λ} (b : PositselskiInductionDataUpTo κ Λ E i)
+variable {κ} {Λ} {E : Inserter F G} {i : Λ} (b : PartialChainUpTo κ Λ E i)
     (ξₙ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
     (ν : b.ξ.obj (iic% i i) ⟶ ξₙ)
     (ψ₀ : F.obj (b.ξ.obj <| iic% i i).left.obj ⟶ G.obj ξₙ.left.obj)
@@ -313,6 +367,7 @@ variable {κ} {Λ} {E : Inserter F G} {i : Λ} (b : PositselskiInductionDataUpTo
     (h₂ : ∀ (j : Λ) (hj : j < i), F.map (b.ξ.map <| homOfLE hj.le).left.hom ≫ ψ₀ =
       b.ψ j i hj le_rfl ≫ G.map ν.left.hom)
 
+/-- The to-be ξ field of the extension -/
 abbrev ξ := extendToSucc (not_isMax _) b.ξ ν
 
 lemma ξ_map_le_succ (j : Λ) (hj : j ≤ i) :
@@ -326,6 +381,7 @@ lemma ξ_map_le_succ (j : Λ) (hj : j ≤ i) :
   simp only [this, extendToSucc_map_le_succ (not_isMax _) b.ξ ν,
     extendToSuccObjIso_hom_naturality_assoc]
 
+/-- The to-be ψ field of the extension -/
 abbrev ψ (j k : Λ) (hjk : j < k := by valid) (hk : k ≤ succ i := by valid) :
     F.obj ((extend.ξ b ξₙ ν).obj (iic% j (succ i))).left.obj ⟶
       G.obj ((extend.ξ b ξₙ ν).obj ⟨k, by simpa⟩).left.obj :=
@@ -402,16 +458,18 @@ lemma t₂ (j k l : Λ) (hjk : j < k) (hkl : k ≤ l := by valid) (hl : l ≤ Or
 end extend
 
 open SmallObject.SuccStruct in
+/-- Extend a `PartialChainUpTo κ Λ E i` to a `PartialChainUpTo κ Λ E (succ i)` from the data of
+compatible objects and maps -/
 @[implicit_reducible]
 noncomputable def extend [NoMaxOrder Λ] {E : Inserter F G} {i : Λ}
-    (b : PositselskiInductionDataUpTo κ Λ E i)
+    (b : PartialChainUpTo κ Λ E i)
     (ξₙ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
     (ν : b.ξ.obj (iic% i i) ⟶ ξₙ)
     (ψ : F.obj (b.ξ.obj <| iic% i i).left.obj ⟶ G.obj ξₙ.left.obj)
     (h₁ : F.map (b.ξ.obj <| iic% i i).hom ≫ E.hom = ψ ≫ G.map ξₙ.hom)
     (h₂ : ∀ (j : Λ) (hj : j < i), F.map (b.ξ.map <| homOfLE hj.le).left.hom ≫ ψ =
       b.ψ j i hj le_rfl ≫ G.map ν.left.hom) :
-    PositselskiInductionDataUpTo κ Λ E (succ i) where
+    PartialChainUpTo κ Λ E (succ i) where
   ξ := extend.ξ b ξₙ ν
   ψ j k hj hk := extend.ψ b ξₙ ν ψ j k hj hk
   sq₁ j hj := extend.sq₁ b ξₙ ν ψ h₁ j hj
@@ -419,7 +477,7 @@ noncomputable def extend [NoMaxOrder Λ] {E : Inserter F G} {i : Λ}
   t₂ j k l hjk hkl hl := extend.t₂ b ξₙ ν ψ h₂ j k l hjk
 
 theorem trunc_extend [NoMaxOrder Λ]
-    {E : Inserter F G} {i : Λ} (b : PositselskiInductionDataUpTo κ Λ E i)
+    {E : Inserter F G} {i : Λ} (b : PartialChainUpTo κ Λ E i)
     (ξₙ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
     (ν : b.ξ.obj ⟨i, Set.mem_Iic.mpr le_rfl⟩ ⟶ ξₙ)
     (ψ : F.obj (b.ξ.obj (iic% i i)).left.obj ⟶ G.obj ξₙ.left.obj)
@@ -447,20 +505,22 @@ theorem surjective_trunc [NoMaxOrder Λ] [IsCardinalAccessibleCategory K κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
     [F.PreservesCardinalPresentable κ]
     (hΛ : HasCardinalLT Λ κ) (E : Inserter F G) (i : Λ) :
-    Function.Surjective (PositselskiInductionDataUpTo.trunc κ Λ E (Order.le_succ i)) := by
+    Function.Surjective (PartialChainUpTo.trunc κ Λ E (Order.le_succ i)) := by
   intro b
-  -- The hard work is done in exists_succ_of_hasCardinalLT, but we have to spend some time
-  -- to repackage the output here
   obtain ⟨ξ₂, ν, ψ, h₁, h₂⟩ := exists_succ_of_hasCardinalLT b hΛ
   use b.extend _ _ ξ₂ ν ψ h₁ fun _ _ ↦ (h₂ ..).symm
   exact trunc_extend ..
 
 section limit
 
+/- This section setups the limit of the transfinite induction extending a partial
+chain to a section of `PartialChainUpTo`. -/
+
+/-- A wrapper around restricted sections of `PartialChainUpTo.functor`. -/
 @[implicit_reducible]
 def ISeg (E : Inserter F G) (j : Λ) : Type _ :=
   ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙
-      PositselskiInductionDataUpTo.functor κ Λ E).sections
+      PartialChainUpTo.functor κ Λ E).sections
 
 namespace ISeg
 
@@ -468,15 +528,21 @@ open Opposite
 
 variable {κ Λ} {E : Inserter F G} {j : Λ}
 
+/-- Extract the indices of the `PartialChainUpTo` constituting an `ISeg`,
+to get indices for all `i < j`. -/
 abbrev ξ' (S : ISeg κ Λ E j) (t : Set.Iio j) :
     CostructuredArrow (isCardinalPresentable K κ).ι E.obj :=
   (S.val (op t)).ξ.obj (iic% t.1 t.1)
 
+/-- Isomorphism (in fact equality) between `ξ` and the `ξ` field of any component
+of the `ISeg` (provided the indices make sense). -/
 abbrev ξ'ObjIso (S : ISeg κ Λ E j) (i k : Λ) (hi : i ≤ k) (hij : k < j) :
     S.ξ' (iio% i j) ≅ (S.val (op (iio% k j))).ξ.obj (iic% i k) :=
   eqToIso <| congr($(S.2 (homOfLE hi : (iio% i j) ⟶ (iio% k j)).op).ξ.obj (iic% i i)).symm
 
 set_option backward.isDefEq.respectTransparency false in
+/-- Repackage the `ξ` fields of all the `PartialChainUpTo` constituting an `ISeg κ Λ E j`
+into a functor out of `Set.Iio j`. -/
 @[implicit_reducible]
 def ξ (S : ISeg κ Λ E j) :
     Set.Iio j ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj where
@@ -507,6 +573,7 @@ lemma ξ_obj_eq (S : ISeg κ Λ E j) (i k : Λ)
     S.ξ.obj (iio% i j) = (S.val (op ⟨k, by valid⟩)).ξ.obj (iic% i k) :=
   congr($(S.2 (homOfLE hi : iio% i j ⟶ iio% k j).op).ξ.obj (iic% i i)).symm
 
+/-- Characterizing isomorphism of the extracted functor out of `Set.Iio j`. -/
 def ξObjIso (S : ISeg κ Λ E j) (i k : Λ) (hi : i ≤ k := by valid) (hij : k < j := by valid) :
     S.ξ.obj (iio% i j) ≅ (S.val (op ⟨k, by valid⟩)).ξ.obj (iic% i k) :=
   eqToIso <| S.ξ_obj_eq i k hi hij
@@ -532,6 +599,8 @@ open Opposite
 
 variable (S : ISeg κ Λ E j)
 
+/-- Repackage the `ψ` fields of all the `PartialChainUpTo` constituting an `ISeg κ Λ E j`
+into a (natural) map defined for all pairs of indices `u < v`. -/
 def ψ (u v : Λ) (huv : u < v := by valid) (hv : v < j := by valid) :
     F.obj (S.ξ.obj ⟨u, huv.trans hv⟩).left.obj ⟶ G.obj (S.ξ.obj ⟨v, hv⟩).left.obj :=
   F.map (S.ξObjIso u v huv.le hv).hom.left.hom ≫
@@ -579,6 +648,8 @@ lemma sq₂ (j' k l m : Λ)
 namespace extend
 variable [NoMaxOrder Λ] [IsCardinalAccessibleCategory K κ]
 
+/-- An arbitrary cocone over `S.ξ`, which exists as the diagram is small enough with
+value in a κ-filtered category. -/
 noncomputable abbrev c
     (hΛ : HasCardinalLT Λ κ) : Limits.Cocone S.ξ :=
   IsCardinalFiltered.cocone (κ := κ) S.ξ <| by
@@ -588,12 +659,15 @@ noncomputable abbrev c
       assumption
     · exact Cardinal.IsRegular.aleph0_le <| Fact.out
 
+/-- Extend `S.ξ : Set.Iio j ⥤  CostructuredArrow (isCardinalPresentable K κ).ι E.obj` to
+a functor out of `Set.Iic j` by using an arbitrary cocone. -/
 noncomputable abbrev ξ (hΛ : HasCardinalLT Λ κ) :
     Set.Iic j ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj :=
   SmallObject.SuccStruct.ofCocone (c S hΛ)
 
 variable (hΛ : HasCardinalLT Λ κ) (hj : Order.IsSuccLimit j)
 
+/-- Extend `S.ψ` for a limit element. -/
 noncomputable abbrev ψ
     (j' k : Λ) (hj' : j' < k := by valid) (hk : k ≤ j := by valid) :
     F.obj ((ξ S hΛ).obj (iic% j' j)).left.obj ⟶ G.obj ((ξ S hΛ).obj (iic% k j)).left.obj :=
@@ -660,11 +734,12 @@ end extend
 end
 
 open Opposite in
+/-- Extend an `ISeg κ Λ E j` (for a limit element j) into a `PartialChainUpTo κ Λ E j`. -/
 @[implicit_reducible]
 noncomputable def extend [NoMaxOrder Λ] [IsCardinalAccessibleCategory K κ]
     {E : Inserter F G} {j : Λ}
     (S : ISeg κ Λ E j) (hΛ : HasCardinalLT Λ κ) (hj : Order.IsSuccLimit j) :
-    PositselskiInductionDataUpTo κ Λ E j where
+    PartialChainUpTo κ Λ E j where
   ξ := extend.ξ S hΛ
   ψ i k hi hk := extend.ψ S hΛ hj i k hi hk
   sq₁ i i' := extend.sq₁ S hΛ hj i i'
@@ -676,8 +751,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem exists_extension [NoMaxOrder Λ] [IsCardinalAccessibleCategory K κ]
     (E : Inserter F G) (j : Λ) (hj : Order.IsSuccLimit j)
     (S : ISeg κ Λ E j) (hΛ : HasCardinalLT Λ κ) :
-    ∃ (y : (PositselskiInductionDataUpTo.functor ..).obj (op j)), ∀ (i : Λ) (hi : i < j),
-      (PositselskiInductionDataUpTo.functor κ Λ E).map (homOfLE hi.le).op y =
+    ∃ (y : (PartialChainUpTo.functor ..).obj (op j)), ∀ (i : Λ) (hi : i < j),
+      (PartialChainUpTo.functor κ Λ E).map (homOfLE hi.le).op y =
         S.val (op (iio% i j)) := by
   use S.extend hΛ hj
   intro i hi
@@ -695,7 +770,7 @@ theorem exists_extension [NoMaxOrder Λ] [IsCardinalAccessibleCategory K κ]
   · intro j₁ k₁ hjk hki
     change extend.ψ S hΛ hj j₁ k₁ hjk = _
     simp only [extend.ψ, show k₁ ≠ j by valid, ↓reduceDIte, Functor.const_obj_obj]
-    have := PositselskiInductionDataUpTo.congr_ψ κ Λ
+    have := PartialChainUpTo.congr_ψ κ Λ
       (S.2 (homOfLE hki : iio% k₁ j ⟶ iio% i j).op).symm j₁ k₁ hjk le_rfl
     dsimp at this
     simp only [SmallObject.SuccStruct.ofCoconeObjIso, SmallObject.SuccStruct.ofCocone.objIso,
@@ -709,8 +784,9 @@ theorem exists_extension [NoMaxOrder Λ] [IsCardinalAccessibleCategory K κ]
 
 end ISeg
 
+/-- A wrapper around sections of `PartialChainUpTo.functor`. -/
 @[implicit_reducible]
-def Seg (E : Inserter F G) : Type _ := (PositselskiInductionDataUpTo.functor κ Λ E).sections
+def Seg (E : Inserter F G) : Type _ := (PartialChainUpTo.functor κ Λ E).sections
 
 namespace Seg
 
@@ -722,6 +798,8 @@ open Opposite
 
 variable (S : Seg κ Λ E)
 
+/-- Extract the `ξ` fields of all the `PartialChainUpTo` making up a section of
+`PartialChainUpTo.functor`. -/
 @[implicit_reducible]
 def ξ (i : Λ) : CostructuredArrow (isCardinalPresentable K κ).ι E.obj :=
   (S.val (op i)).ξ.obj <| iic% i i
@@ -730,10 +808,14 @@ lemma ξ_obj_eq (i k : Λ) (hi : i ≤ k) :
     S.ξ i = (S.val (op k)).ξ.obj (iic% i k) :=
   congr($(S.2 (homOfLE hi : i ⟶ k).op).ξ.obj (iic% i i)).symm
 
+/-- Characterizing isomorphism for `Seg.ξ`. -/
 def ξObjIso (i k : Λ) (hi : i ≤ k) :
     S.ξ i ≅ (S.val (op k)).ξ.obj (iic% i k) :=
   eqToIso <| S.ξ_obj_eq i k hi
 
+/-- Extract the `ξ` fields of all the `PartialChainUpTo` making up a section of
+`PartialChainUpTo.functor` into a functor out of Λ.
+This is eventually going to be the chains that we use for the proof of [positselski2014], 4.5. -/
 @[implicit_reducible]
 def functor :
     Λ ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj where
@@ -759,6 +841,8 @@ def functor :
     simp [Functor.congr_hom this]
     rfl
 
+/-- Extract the `ψ` fields of all the `PartialChainUpTo` making up a section of
+`PartialChainUpTo.functor` into something defined for all indices. -/
 def ψ (u v : Λ) (huv : u < v) :
     F.obj (S.functor.obj u).left.obj ⟶ G.obj (S.functor.obj v).left.obj :=
   F.map (S.ξObjIso u v huv.le).hom.left.hom ≫
@@ -795,6 +879,8 @@ lemma t₂ (k₁ k₂ k₃ : Λ) (h₁₂ : k₁ < k₂) (h₂₃ : k₂ ≤ k�
   simp [h', ψ, Seg.ξ, congr_ψ _ _ this, trunc, ← Functor.map_comp,
     ← Functor.map_comp_assoc, ξObjIso, functor]
 
+/-- Repackage the `ψ` fields of all the `PartialChainUpTo` in a `Seg` as a
+natural transformation. -/
 @[simps]
 def ψNatTrans [NoMaxOrder Λ] :
     (S.functor ⋙ CostructuredArrow.proj _ _ ⋙ ObjectProperty.ι _ ⋙ F) ⟶
@@ -816,12 +902,10 @@ end limit
 section constructor
 
 variable {κ} in
-/-- Construct a `PositselskiInductionDataUpTo κ Λ E (Order.succ ⊥)` from the data
-of ξ₀ ⟶ ξ₁ equipped with a map F.obj ξ₀ ⟶ G.map ξ₁ -/
+/-- Construct a `PartialChainUpTo κ Λ E ⊥` from the data of an object `ξ₀`. -/
 noncomputable def mkBot [OrderBot Λ] {E : Inserter F G}
     (ξ₀ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj) :
-    --(ν₀ : ξ₀ ⟶ ξ₁) (ψ₀ : F.obj ξ₀.left.obj ⟶ G.obj ξ₁.left.obj) :
-    PositselskiInductionDataUpTo κ Λ E ⊥ where
+    PartialChainUpTo κ Λ E ⊥ where
   ξ := (Functor.const _ |>.obj ξ₀)
   ψ i j hij hk := False.elim <| by valid
   t₁ j k l hjk hkl hl := False.elim <| by valid
@@ -829,16 +913,19 @@ noncomputable def mkBot [OrderBot Λ] {E : Inserter F G}
   sq₁ j hj := False.elim <| by valid
 
 variable {κ} in
+/-- Characterization of `mkBot`. -/
 noncomputable def mkBotObjBotIso [OrderBot Λ] {E : Inserter F G}
     (c : CostructuredArrow (isCardinalPresentable K κ).ι E.obj) :
   (mkBot Λ c).ξ.obj ⟨⊥, le_rfl⟩ ≅ c := .refl _
 
 variable {κ} in
+/-- Construct a `PartialChainUpTo κ Λ E (Order.succ ⊥)` from the data
+of `ξ₀ ⟶ ξ₁` equipped with a map `F.obj ξ₀ ⟶ G.map ξ₁` -/
 noncomputable def mkSuccBot [NoMaxOrder Λ] [OrderBot Λ] {E : Inserter F G}
     (ξ₀ ξ₁ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
     (ν₀ : ξ₀ ⟶ ξ₁) (ψ₀ : F.obj ξ₀.left.obj ⟶ G.obj ξ₁.left.obj)
     (h : F.map ξ₀.hom ≫ E.hom = ψ₀ ≫ G.map ξ₁.hom) :
-    PositselskiInductionDataUpTo κ Λ E (Order.succ ⊥) :=
+    PartialChainUpTo κ Λ E (Order.succ ⊥) :=
   (mkBot Λ ξ₀).extend κ Λ ξ₁ ν₀ ψ₀ h (by valid)
 
 section
@@ -874,7 +961,7 @@ end
 
 end constructor
 
-end PositselskiInductionDataUpTo
+end PartialChainUpTo
 
 /-- Shorthand for the object property that we will eventually prove to be equal to
 the class of κ-presentable objects of the Inserter category -/
@@ -891,7 +978,27 @@ instance {E : Inserter F G} (x : Δ κ E) : IsCardinalPresentable x.left.obj.obj
 instance {E : Inserter F G} (x : Δ κ E) : IsCardinalPresentable ((O₁ κ F G).ι.obj x.left).obj κ :=
   x.left.property
 
-open PositselskiInductionDataUpTo Order Limits in
+open PartialChainUpTo Order Limits in
+/--
+The key technical ingredient in the proof that inserters are accessible: given a diagram,
+```
+     F(u)      F(v)
+F(S) --> F(T) ---> F(K)
+ |                  | Φ
+ v                  v
+G(T) ------------> G(K)
+        G(v)
+```
+where u : S → T and v : T ⟶ K are maps of κ-presentable objects,
+one can find a factorization
+```
+F(S) --> F(T) ---> F(U) --> F(K)
+ |          F(v')   | σ      | Φ
+ v                  v        v
+G(T) ------------> G(U) --> F(K)
+         G(v')
+```
+-/
 lemma positselski_4_5
     [IsCardinalAccessibleCategory K κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
@@ -933,7 +1040,7 @@ lemma positselski_4_5
       (fun i hi ↦ surjective_trunc κ Λ hΛ E i)
       (fun j hj S ↦ ISeg.exists_extension E j hj S hΛ)
   -- The initial segment from which we build the chain, corresponding to ξ₀ ⟶ ξ₁ already built.
-  let D₀ : PositselskiInductionDataUpTo κ Λ E (succ ⊥) := .mkSuccBot Λ ξ₀ ξ₁ u₀ ψ₀ (by
+  let D₀ : PartialChainUpTo κ Λ E (succ ⊥) := .mkSuccBot Λ ξ₀ ξ₁ u₀ ψ₀ (by
     have he2 : ψ₀ ≫ G.map ξ₁.hom = F.map u₀.left.hom ≫ F.map ξ₁.hom ≫ E.hom := by grind
     rwa [← dsimp% CostructuredArrow.w u₀, Functor.map_comp, Category.assoc, Eq.comm])
   -- The extension
@@ -1322,7 +1429,8 @@ include Λ hΛ in
 - `F` preserves `κ`-presentable objects.
 
 Then the category `Inserter F G` is `κ`-accessible.
-This theorem appears as [4.1, Positselski]
+
+This theorem appears as Theorem 4.1 in [positselski2014].
 
 Note that if `K` and `L` are `κ`-accessible, and `F`, `G` are `κ`-accessible with `F` preserving
 `κ`-presentable objects then since `κ` is sharply less than `κ⁺`, one can show that the pair
