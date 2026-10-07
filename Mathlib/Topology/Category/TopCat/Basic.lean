@@ -157,8 +157,8 @@ open scoped ContinuousMap.Monoid in
 are equipped with the same monoid structure. -/
 @[simps] def continuousMapEquivEnd {X : Type*} [TopologicalSpace X] :
     C(X, X) ≃* End (TopCat.of X) where
-  toFun := TopCat.ofHom
-  invFun := TopCat.Hom.hom
+  toFun := .of ∘ TopCat.ofHom
+  invFun := TopCat.Hom.hom ∘ End.asHom
   map_mul' _ _ := rfl
 
 /-- Morphisms in `TopCat` are equivalent to continuous maps. -/
