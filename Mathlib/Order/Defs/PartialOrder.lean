@@ -176,18 +176,15 @@ class PartialOrder (α : Type*) extends Preorder α where
   protected le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
 attribute [to_dual self (reorder := le_antisymm (3 4))] PartialOrder.mk
+attribute [to_dual self (reorder := 5 6)] PartialOrder.le_antisymm
 
 instance [PartialOrder α] : Std.IsPartialOrder α where
   le_antisymm := PartialOrder.le_antisymm
 
 variable [PartialOrder α] {a b : α}
 
+@[to_dual ge_antisymm]
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
-
-@[to_dual existing le_antisymm]
-lemma ge_antisymm : b ≤ a → a ≤ b → a = b := flip le_antisymm
-
-to_dual_for PartialOrder.le_antisymm := ge_antisymm
 
 @[to_dual eq_of_ge_of_le]
 alias eq_of_le_of_ge := le_antisymm
