@@ -206,21 +206,27 @@ theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
     (map g).comp (map f) x = map g (map f x) :=
   rfl
 
+section Equiv
+
+variable (n) (f : R ≃+* S) (g : S ≃+* T)
+
 /-- The equivalence between `GL n R` and `GL n S` given by `f : R ≃+* S`. -/
 @[simps! apply]
-def mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
+def mapEquiv : GL n R ≃* GL n S :=
   Units.mapEquiv f.mapMatrix.toMulEquiv
 
-@[simp] lemma mapEquiv_refl : mapEquiv (.refl R) = .refl (GL n R) := rfl
+@[simp] lemma mapEquiv_refl : mapEquiv n (.refl R) = .refl (GL n R) := rfl
 
-@[simp] lemma symm_mapEquiv (f : R ≃+* S) :
-    (mapEquiv (n := n) f).symm = mapEquiv f.symm := rfl
+@[simp] lemma symm_mapEquiv :
+    (mapEquiv n f).symm = mapEquiv n f.symm := rfl
 
-@[simp] lemma mapEquiv_trans (f : R ≃+* S) (g : S ≃+* T) :
-    .trans (mapEquiv f) (mapEquiv g) = mapEquiv (n := n) (f.trans g) := rfl
+@[simp] lemma mapEquiv_trans_mapEquiv :
+    .trans (mapEquiv n f) (mapEquiv n g) = mapEquiv n (f.trans g) := rfl
 
-@[simp] lemma toMonoidHom_mapEquiv (f : R ≃+* S) :
-    (mapEquiv (n := n) f : GL n R →* GL n S) = map (f : R →+* S) := rfl
+@[simp] lemma toMonoidHom_mapEquiv :
+    (mapEquiv n f : GL n R →* GL n S) = map (f : R →+* S) := rfl
+
+end Equiv
 
 section Reindex
 
