@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Claus Clausen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Claus Clausen, Patrick Massot
+Authors: Claus Clausen, Patrick Massot, Joakim Björnander
 -/
 module
 
