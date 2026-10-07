@@ -38,7 +38,7 @@ lemma contraction_wedge_zero_degree
     apply Subtype.ext
     simp [koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, GradedAlgebra.linearGMul_eq_mul,
       exteriorPower.ιMulti_apply_coe, ExteriorAlgebra.ιMulti_succ_apply]
-  simp only [LinearMap.smul_compAlternatingMap, AlternatingMap.smul_apply,
+  simp only [LinearMap.smul_compAlternatingMap, smul_apply,
     LinearMap.compAlternatingMap_apply, LinearMap.id_apply, LinearMap.comp_apply, koszulComplex.d]
   rw  [hwedge, exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
   simp [koszulComplex.dAlternating, AlternatingMap.alternatizeUncurryFin_apply]
@@ -53,8 +53,7 @@ lemma contraction_wedge_cartan_formula (x : M) (φ : M →ₗ[R] R) (n : ℕ) :
   ext v
   -- After expanding contraction on `x ∧ v`, the terms cancel pairwise except for `φ x`.
   simp only [LinearMap.add_compAlternatingMap, LinearMap.smul_compAlternatingMap,
-    AlternatingMap.add_apply, AlternatingMap.smul_apply, LinearMap.compAlternatingMap_apply,
-    LinearMap.id_apply, koszulComplex.d]
+    add_apply, smul_apply, LinearMap.compAlternatingMap_apply, LinearMap.id_apply, koszulComplex.d]
   have hwedge : koszulCocomplex.d R M x (n + 1) ((exteriorPower.ιMulti R (n + 1)) v) =
       exteriorPower.ιMulti R (n + 2) (Matrix.vecCons x v) := by
     apply Subtype.ext
@@ -73,7 +72,7 @@ lemma contraction_wedge_cartan_formula (x : M) (φ : M →ₗ[R] R) (n : ℕ) :
     exact Fin.cases (by simp [Fin.removeNth]) (fun j ↦ (by simp [Fin.removeNth])) j
   simp only [koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, Int.reduceNeg,
     Fin.coe_ofNat_eq_mod, Nat.zero_mod, pow_zero, LinearMap.coe_smulRight, Fin.removeNth_zero,
-    AlternatingMap.smul_apply, one_smul, Fin.val_succ, pow_succ, mul_comm, neg_mul, one_mul,
+    smul_apply, one_smul, Fin.val_succ, pow_succ, mul_comm, neg_mul, one_mul,
     neg_smul, Finset.sum_neg_distrib, map_add, map_smul, map_neg, map_sum,
     LinearMap.map_smul_of_tower, Matrix.cons_val_zero, Fin.tail_vecCons, Matrix.cons_val_succ,
     hremove, Submodule.coe_add, SetLike.val_smul, GradedAlgebra.linearGMul_eq_mul,
