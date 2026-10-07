@@ -5,8 +5,9 @@ Authors: Giulio Caflisch, David Loeffler, Yu Shao, Weijie Jiang, BeiBei Xiong
 -/
 module
 
-import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.Polynomial.Eval.Degree
+
+import Mathlib.Tactic.Abel
 
 /-!
 # Forward difference operators and Newton series

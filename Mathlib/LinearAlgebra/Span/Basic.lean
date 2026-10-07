@@ -153,7 +153,7 @@ end
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
   · apply span_smul_le
-  · convert! span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
+  · convert span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
     simp [smul_smul]
 
 /-- We can regard `coe_iSup_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is
@@ -806,6 +806,13 @@ theorem span_singleton_eq_range (x : M) :
 
 theorem comp_toSpanSingleton [AddCommMonoid M₂] [Module R M₂] (f : M →ₗ[R] M₂) (x : M) :
     f ∘ₗ toSpanSingleton R M x = toSpanSingleton R M₂ (f x) := by
+  ext; simp
+
+theorem toSpanSingleton_comp [AddCommMonoid M₂] [Module R M₂] (x : M) (f : M₂ →ₗ[R] R) :
+    toSpanSingleton R M x ∘ₗ f = f.smulRight x := rfl
+
+theorem toSpanSingleton_comp_toSpanSingleton (x : M) (c : R) :
+    toSpanSingleton R M x ∘ₗ toSpanSingleton R R c = toSpanSingleton R M (c • x) := by
   ext; simp
 
 theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x ∈ N) :

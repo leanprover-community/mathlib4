@@ -31,8 +31,6 @@ strong dual, polar
 
 public section
 
-noncomputable section
-
 open Bornology
 
 open scoped Topology

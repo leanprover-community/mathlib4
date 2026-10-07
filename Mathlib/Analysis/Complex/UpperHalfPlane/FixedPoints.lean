@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
+
 import Mathlib.Algebra.QuadraticDiscriminant
 
 /-!

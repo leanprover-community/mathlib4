@@ -6,6 +6,7 @@ Authors: Paul Lezeau
 module
 
 public import Mathlib.Data.Nat.Factorization.Basic
+
 import Mathlib.Data.Nat.GCD.BigOperators
 
 /-!
