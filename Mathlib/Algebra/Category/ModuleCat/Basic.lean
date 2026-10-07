@@ -493,7 +493,7 @@ lemma smul_naturality {M N : ModuleCat.{v} R} (f : M ⟶ N) (r : R) :
 
 variable (R) in
 /-- The scalar multiplication on `ModuleCat R` considered as a morphism of rings
-to the endomorphisms of the forgetful functor to `AddCommGrpCat)`. -/
+to the endomorphisms of the forgetful functor to `AddCommGrpCat`. -/
 @[simps]
 def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrpCat) where
   toFun r := .of

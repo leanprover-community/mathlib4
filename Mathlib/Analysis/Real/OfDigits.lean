@@ -5,8 +5,9 @@ Authors: Vasilii Nesterov
 -/
 module
 
-import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
+
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Qify
 

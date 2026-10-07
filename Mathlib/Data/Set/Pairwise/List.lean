@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-import Mathlib.Data.List.Nodup
 public import Mathlib.Data.Set.Pairwise.Basic
+
+import Mathlib.Data.List.Nodup
 
 /-!
 # Translating pairwise relations on sets to lists

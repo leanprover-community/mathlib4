@@ -6,13 +6,13 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.MeasureTheory.Measure.Support
-
-import Mathlib.Analysis.Normed.Algebra.GelfandFormula
-import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+
+import Mathlib.Analysis.Normed.Algebra.GelfandFormula
+import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Tactic.Positivity
 
 /-!

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Field.IsField
-import Mathlib.Basic.Finite.Prod
 public import Mathlib.RingTheory.Localization.Defs
+
+import Mathlib.Basic.Finite.Prod
 
 /-!
 # Localizations of commutative rings
