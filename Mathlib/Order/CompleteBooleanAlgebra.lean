@@ -119,6 +119,14 @@ distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α, BiheytingAlgebra α
 
 attribute [to_dual existing] CompleteDistribLattice.toFrame
+to_dual_for CompleteDistribLattice.toHNot := self.toCompl
+to_dual_for CompleteDistribLattice.toSDiff := self.toHImp
+to_dual_for CompleteDistribLattice.top_sdiff := self.himp_bot a
+to_dual_for CompleteDistribLattice.sdiff_le_iff := le_himp_iff'
+to_dual_for CompleteDistribLattice.mk :=
+  { le_himp_iff a b c := by
+      rw [sdiff_le_iff, inf_comm]
+    himp_bot := top_sdiff }
 
 /-- Structure containing the minimal axioms required to check that an order is a completely
 distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via
