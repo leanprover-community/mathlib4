@@ -55,9 +55,9 @@ jobs:
           # In the order they ran, separated so that they can be pasted into a shell as they are:
           # `mk_all` and `lint-bib.sh` exit non-zero when they change something, so not with `&&`.
           cmds=''
-          if "${mk_all}"; then cmds+="${cmds:+; }lake exe mk_all"; fi
-          if "${lint_style}"; then cmds+="${cmds:+; }lake exe lint-style --fix"; fi
-          if "${lint_bib}"; then cmds+="${cmds:+; }./scripts/lint-bib.sh"; fi
+          if "${mk_all}"; then cmds+="${cmds:+; }\`lake exe mk_all\`"; fi
+          if "${lint_style}"; then cmds+="${cmds:+; }\`lake exe lint-style --fix\`"; fi
+          if "${lint_bib}"; then cmds+="${cmds:+; }\`./scripts/lint-bib.sh\`"; fi
           printf 'cmds=%s\n' "${cmds}" >> "${GITHUB_OUTPUT}"
           printf 'diff=%s\n' "$(git diff --binary HEAD | sha256sum)" >> "${GITHUB_OUTPUT}"
 
@@ -88,7 +88,7 @@ jobs:
         run: |
           cmds="${ACTION_CMDS}"
           if [[ -n "${ACTION_DIFF}" && "$(git diff --binary HEAD | sha256sum)" != "${ACTION_DIFF}" ]]; then
-            cmds+="${cmds:+; }pre-commit run --all-files"
+            cmds+="${cmds:+; }\`pre-commit run --all-files\`"
           fi
           # The message is made only of the fixed strings above, so it cannot contain the delimiter.
           {
