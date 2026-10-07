@@ -39,23 +39,18 @@ variable {f' : α → E'} {g' : α → F'} {f'' : α → E''} {l l' : Filter α}
 /-- `IsBigO` in terms of the non-negative norm. -/
 theorem isBigO_iff_nnnorm :
     f' =O[l] g' ↔ ∃ c : ℝ≥0, ∀ᶠ x in l, ‖f' x‖₊ ≤ c * ‖g' x‖₊ := by
-  simp only [IsBigO_def, IsBigOWith]
+  simp only [IsBigO_def, IsBigOWith, ← NNReal.coe_le_coe, coe_nnnorm, NNReal.coe_mul]
   constructor <;> intro ⟨c, H⟩
   · use c.toNNReal
     filter_upwards [H] with x h
-    grw [← norm_toNNReal, ← norm_toNNReal, h, Real.toNNReal_le_iff_le_coe, NNReal.coe_mul]
-    gcongr <;> simp
+    grw [h, Real.le_coe_toNNReal c]
   · use c
-    simpa
 
 /-- `IsLittleO` in terms of the non-negative norm. -/
 theorem isLittleO_iff_nnnorm :
     f' =o[l] g' ↔ ∀ ⦃c : ℝ≥0⦄, c ≠ 0 → ∀ᶠ x in l, ‖f' x‖₊ ≤ c * ‖g' x‖₊ := by
-  simp only [IsLittleO_def, IsBigOWith]
-  constructor <;> intro H ε hε
-  · filter_upwards [H (c := ε) (by positivity)] with x h using by simpa
-  · filter_upwards [H (c := NNReal.mk ε hε.le) (by simpa [← NNReal.coe_ne_zero] using hε.ne')]
-      with x h using by simpa
+  simpa [-NNReal.image_coe_Ioi, isLittleO_iff_forall_isBigOWith, zero_lt_iff, ← NNReal.coe_le_coe,
+    isBigOWith_iff] using congr(∀ c ∈ $(NNReal.image_coe_Ioi 0), ∀ᶠ x in l, _).symm
 
 /-! ### Conversions -/
 

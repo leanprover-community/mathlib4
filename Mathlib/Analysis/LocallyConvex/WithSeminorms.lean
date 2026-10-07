@@ -515,6 +515,11 @@ theorem WithSeminorms.continuous_seminorm {p : SeminormFamily 𝕜 E ι} (hp : W
   rw [p.withSeminorms_iff_topologicalSpace_eq_iInf.mp hp]
   exact continuous_iInf_dom (@continuous_norm _ (p i).toSeminormedAddGroup)
 
+theorem WithSeminorms.continuous_finsetSup_seminorm {p : SeminormFamily 𝕜 E ι}
+    (hp : WithSeminorms p) (s : Finset ι) : Continuous (s.sup p : Seminorm 𝕜 E) :=
+  have := hp.isTopologicalAddGroup
+  Seminorm.continuous_finsetSup fun i _ ↦ hp.continuous_seminorm i
+
 theorem WithSeminorms.toPolynormableSpace {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
     PolynormableSpace 𝕜 E where
   withSeminorms' := by
