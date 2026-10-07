@@ -10,12 +10,10 @@ public import Mathlib.RingTheory.LocalProperties.Projective
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Localization.Free
-public import Mathlib.RingTheory.Localization.LocalizationLocalization
-public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.RingTheory.TensorProduct.Free
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-public import Mathlib.RingTheory.Support
+
+import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 
@@ -91,7 +89,7 @@ lemma comap_freeLocus_le {A} [CommRing A] [Algebra R A] :
   let Aₚ := Localization.AtPrime p.asIdeal
   rw [Set.mem_preimage, mem_freeLocus_iff_tensor _ Rₚ] at hp
   rw [mem_freeLocus_iff_tensor _ Aₚ]
-  letI algebra : Algebra Rₚ Aₚ := (Localization.localRingHom
+  let algebra : Algebra Rₚ Aₚ := (Localization.localRingHom
     (comap (algebraMap R A) p).asIdeal p.asIdeal (algebraMap R A) rfl).toAlgebra
   have : IsScalarTower R Rₚ Aₚ := IsScalarTower.of_algebraMap_eq'
     (by simp [Rₚ, Aₚ, algebra, RingHom.algebraMap_toAlgebra, Localization.localRingHom,
@@ -110,7 +108,7 @@ lemma freeLocus_localization (S : Submonoid R) :
     p.isPrime.ne_top (Ideal.eq_top_of_isUnit_mem _ H (IsLocalization.map_units _ ⟨x, hx⟩))
   let Rₚ := Localization.AtPrime p'
   let Mₚ := LocalizedModule p'.primeCompl M
-  letI : Algebra (Localization S) Rₚ :=
+  let : Algebra (Localization S) Rₚ :=
     IsLocalization.localizationAlgebraOfSubmonoidLe _ _ S p'.primeCompl hp'
   have : IsScalarTower R (Localization S) Rₚ :=
     IsLocalization.localization_isScalarTower_of_submonoid_le ..
@@ -124,7 +122,7 @@ lemma freeLocus_localization (S : Submonoid R) :
       refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H
-  letI : Module (Localization S) Mₚ := Module.compHom Mₚ (algebraMap _ Rₚ)
+  let : Module (Localization S) Mₚ := Module.compHom Mₚ (algebraMap _ Rₚ)
   have : IsScalarTower R (Localization S) Mₚ :=
     ⟨fun r r' m ↦ show algebraMap _ Rₚ (r • r') • m = _ by
       simp [p', Rₚ, Mₚ, Algebra.smul_def, ← IsScalarTower.algebraMap_apply, mul_smul]; rfl⟩
@@ -197,11 +195,11 @@ lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
     simpa [Submonoid.powers_le, Ideal.primeCompl]
   let Rₚ := Localization.AtPrime p.asIdeal
   let Mₚ := LocalizedModule p.asIdeal.primeCompl M
-  letI : Algebra (Localization.Away f) Rₚ :=
+  let : Algebra (Localization.Away f) Rₚ :=
     IsLocalization.localizationAlgebraOfSubmonoidLe _ _ (.powers f) p.asIdeal.primeCompl hp'
   have : IsScalarTower R (Localization.Away f) Rₚ :=
     IsLocalization.localization_isScalarTower_of_submonoid_le ..
-  letI : Module (Localization.Away f) Mₚ := Module.compHom Mₚ (algebraMap _ Rₚ)
+  let : Module (Localization.Away f) Mₚ := Module.compHom Mₚ (algebraMap _ Rₚ)
   have : IsScalarTower R (Localization.Away f) Mₚ :=
     ⟨fun r r' m ↦ show algebraMap _ Rₚ (r • r') • m = _ by
       simp [Rₚ, Mₚ, Algebra.smul_def, ← IsScalarTower.algebraMap_apply, mul_smul]; rfl⟩

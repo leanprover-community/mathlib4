@@ -6,10 +6,11 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Products
-public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
 # `forget₂ (FGModuleCat K) (ModuleCat K)` creates all finite limits.
@@ -55,7 +56,7 @@ instance (F : J ⥤ FGModuleCat k) :
     ((ModuleCat.mono_iff_injective _).1 inferInstance)
 
 /-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite limits. -/
-@[implicit_reducible]
+@[instance_reducible]
 def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
     CreatesLimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsLimitOfFullyFaithfulOfIso

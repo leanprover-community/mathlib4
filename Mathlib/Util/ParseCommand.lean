@@ -10,6 +10,8 @@ public meta import Lean.Elab.Command
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+import Lean.Parser.Term
+
 /-!
 # `#parse` -- a command to parse text and log outputs
 -/

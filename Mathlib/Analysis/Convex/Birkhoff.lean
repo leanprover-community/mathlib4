@@ -5,12 +5,10 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.Convex.Jensen
-public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
+
+import Mathlib.Combinatorics.Hall.Basic
 
 /-!
 # Birkhoff's theorem
@@ -44,6 +42,7 @@ section LinearOrderedSemifield
 
 variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If M is a positive scalar multiple of a doubly stochastic matrix, then there is a permutation matrix
 whose support is contained in the support of M.

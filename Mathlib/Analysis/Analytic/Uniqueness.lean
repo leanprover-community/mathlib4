@@ -5,11 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Linear
-public import Mathlib.Analysis.Analytic.Composition
-public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.Analytic.ChangeOrigin
+
+import Mathlib.Analysis.Analytic.Linear
+import Mathlib.Analysis.Analytic.Composition
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Uniqueness principle for analytic functions
@@ -78,7 +79,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
       ‖p fun _ => y‖ = ‖k⁻¹ ^ n.succ‖ * ‖p fun _ => k • y‖ := by
         simpa only [inv_smul_smul₀ (norm_pos_iff.mp k_pos), norm_smul, Finset.prod_const,
           Finset.card_fin] using!
-          congr_arg norm (p.map_smul_univ (fun _ : Fin n.succ => k⁻¹) fun _ : Fin n.succ => k • y)
+          congr(norm $((p.map_smul_univ (fun _ : Fin n.succ => k⁻¹) fun _ : Fin n.succ => k • y)))
       _ ≤ ‖k⁻¹ ^ n.succ‖ * (‖k‖ ^ n.succ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1)))) := by gcongr
       _ = ‖(k⁻¹ * k) ^ n.succ‖ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1))) := by
         rw [← mul_assoc]
@@ -166,7 +167,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
   let u := {x | f =ᶠ[𝓝 x] 0}
   suffices main : closure u ∩ U ⊆ u by
     have Uu : U ⊆ u :=
-      hU.subset_of_closure_inter_subset isOpen_setOf_eventually_nhds ⟨z₀, h₀, hfz₀⟩ main
+      hU.subset_of_closure_inter_subset isOpen_setOfPred_eventually_nhds ⟨z₀, h₀, hfz₀⟩ main
     intro z hz
     simpa using mem_of_mem_nhds (Uu hz)
   /- Take a limit point `x`, then a ball `B (x, r)` on which it has a power series expansion, and
@@ -192,7 +193,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
   have A : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) (f z) := has_series.hasSum_sub hz
   have B : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) 0 := by
     have : HasFPowerSeriesAt 0 q y := has_series.hasFPowerSeriesAt.congr yu
-    convert! hasSum_zero (α := F) using 1
+    convert hasSum_zero (α := F) using 1
     ext n
     exact this.apply_eq_zero n _
   exact HasSum.unique A B

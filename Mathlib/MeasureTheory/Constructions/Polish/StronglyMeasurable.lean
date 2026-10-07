@@ -38,7 +38,7 @@ theorem measurableSet_exists_tendsto [IsCompletelyPseudoMetrizableSpace E]
   obtain rfl | hl := eq_or_neBot l
   · simp_all
   borelize E
-  letI := upgradeIsCompletelyPseudoMetrizable E
+  let := upgradeIsCompletelyPseudoMetrizable E
   let s := closure (⋃ i, range (f i))
   have : SecondCountableTopology s := @UniformSpace.secondCountable_of_separable s _ _
     (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.separableSpace
@@ -102,7 +102,7 @@ theorem StronglyMeasurable.tprod {f : ι → X → E} (h : ∀ i : ι, StronglyM
     StronglyMeasurable (fun x => ∏'[L] i : ι, f i x) := by
   let E := { x | Multipliable (f · x) L }
   have hE : MeasurableSet E := StronglyMeasurable.measurableSet_exists_tendsto (by fun_prop)
-  have h0 : (Eᶜ.restrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
+  have h0 : (Eᶜ.domRestrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
     funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
   refine stronglyMeasurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ stronglyMeasurable_const)
   refine stronglyMeasurable_of_tendsto L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.2.hasProd)

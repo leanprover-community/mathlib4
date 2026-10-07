@@ -5,12 +5,12 @@ Authors: Shing Tak Lam, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
-public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 public import Mathlib.Algebra.Star.MonoidHom
 public import Mathlib.Algebra.Star.StarProjection
+public import Mathlib.Algebra.Star.Prod
+public import Mathlib.Algebra.Star.Pi
 
 /-!
 # Unitary elements of a star monoid
@@ -34,7 +34,7 @@ unitary
 -/
 def unitary (R : Type*) [Monoid R] [StarMul R] : Submonoid R where
   carrier := { U | star U * U = 1 ∧ U * star U = 1 }
-  one_mem' := by simp only [mul_one, and_self_iff, Set.mem_setOf_eq, star_one]
+  one_mem' := by simp only [mul_one, and_self_iff, Set.mem_ofPred_eq, star_one]
   mul_mem' := @fun U B ⟨hA₁, hA₂⟩ ⟨hB₁, hB₂⟩ => by
     refine ⟨?_, ?_⟩
     · calc
@@ -183,7 +183,7 @@ instance instIsStarNormal (u : unitary R) : IsStarNormal u where
   star_comm_self := star_mul_self u |>.trans <| (mul_star_self u).symm
 
 instance coe_isStarNormal (u : unitary R) : IsStarNormal (u : R) where
-  star_comm_self := congr(Subtype.val $(star_comm_self' u))
+  star_comm_self := congr($(star_comm_self' u).val)
 
 @[aesop 10% apply (rule_sets := [CStarAlgebra])]
 lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStarNormal u :=
@@ -209,6 +209,49 @@ lemma _root_.commute_unitary_iff_star_right_conjugate {x u : R} (hu : u ∈ unit
 end Monoid
 
 end Unitary
+
+namespace Prod
+variable {R S : Type*} [Monoid R] [Monoid S] [StarMul R] [StarMul S]
+
+lemma mem_unitary_iff {p : R × S} : p ∈ unitary (R × S) ↔ p.1 ∈ unitary R ∧ p.2 ∈ unitary S := by
+  simp [Unitary.mem_iff, Prod.ext_iff, and_and_and_comm]
+
+variable (R S) in
+lemma unitary_eq : unitary (R × S) = (unitary R).prod (unitary S) :=
+  Submonoid.ext fun _ => mem_unitary_iff
+
+end Prod
+
+namespace Pi
+variable {ι} {R : ι → Type*} [Π i, Monoid (R i)] [Π i, StarMul (R i)]
+
+lemma mem_unitary_iff {p : Π i, R i} : p ∈ unitary (Π i, R i) ↔ ∀ i, p i ∈ unitary (R i) := by
+  simp [Unitary.mem_iff, funext_iff, forall_and]
+
+variable (R) in
+lemma unitary_eq : unitary (Π i, R i) = .pi .univ fun i => unitary (R i) := by
+  ext
+  simp [mem_unitary_iff, Submonoid.mem_pi]
+
+@[simp]
+lemma const_mem_unitary_iff {R : Type*} [Nonempty ι] [Monoid R] [StarMul R] {r : R} :
+    Function.const ι r ∈ unitary (ι → R) ↔ r ∈ unitary R := by
+  simp [mem_unitary_iff]
+
+end Pi
+
+namespace MulOpposite
+variable {R : Type*} [Monoid R] [StarMul R]
+
+lemma mem_unitary_iff {p : Rᵐᵒᵖ} : p ∈ unitary Rᵐᵒᵖ ↔ p.unop ∈ unitary R := by
+  simp [Unitary.mem_iff, ← MulOpposite.unop_inj, and_comm]
+
+variable (R) in
+lemma unitary_eq : unitary Rᵐᵒᵖ = (unitary R).op := by
+  ext
+  simp [mem_unitary_iff]
+
+end MulOpposite
 
 section Group
 
@@ -361,7 +404,7 @@ lemma toMonoidHom_mapEquiv (f : R ≃⋆* S) :
 @[simps!]
 def _root_.unitarySubgroupUnitsEquiv {M : Type*} [Monoid M] [StarMul M] :
     unitarySubgroup Mˣ ≃* unitary M where
-  toFun x := ⟨x.val, congr_arg Units.val x.prop.1, congr_arg Units.val x.prop.2⟩
+  toFun x := ⟨x.val, congr($(x.prop.1).val), congr($(x.prop.2).val)⟩
   invFun x := ⟨⟨x, star x, x.prop.2, x.prop.1⟩, Units.ext x.prop.1, Units.ext x.prop.2⟩
   map_mul' _ _ := rfl
   left_inv _ := Subtype.ext <| Units.ext rfl

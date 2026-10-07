@@ -14,7 +14,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 public section
 
-open Function Set
+open Set
 
 variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G] [Nonempty ι] {f : ι → G}
 

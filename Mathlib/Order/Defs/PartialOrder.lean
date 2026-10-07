@@ -5,9 +5,6 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Batteries.Tactic.Alias
-public import Batteries.Tactic.Trans
-public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.ToDual
 
 /-!
@@ -139,7 +136,7 @@ instance instTransGTGE : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'
 instance instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
-@[implicit_reducible]
+@[instance_reducible]
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
   fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
 
@@ -196,6 +193,10 @@ alias eq_of_le_of_ge := le_antisymm
 @[to_dual ge_antisymm_iff]
 lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
+
+@[to_dual eq_of_forall_ge_iff]
+lemma eq_of_forall_le_iff (H : ∀ c, c ≤ a ↔ c ≤ b) : a = b :=
+  le_antisymm ((H _).1 le_rfl) ((H _).2 le_rfl)
 
 @[to_dual lt_of_le_of_ne']
 lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>

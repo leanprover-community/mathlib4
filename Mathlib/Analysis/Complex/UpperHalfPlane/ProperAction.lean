@@ -32,6 +32,7 @@ theorem num_continuous : Continuous ↿num := by unfold num; fun_prop
 @[fun_prop]
 theorem denom_continuous : Continuous ↿denom := by unfold denom; fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma continuous_toSL2R : Continuous toSL2R := by
   apply continuous_induced_rng.mpr
   simp only [Function.comp_def, coe_toSL2R]
@@ -89,7 +90,7 @@ private lemma absq_le {K : Set ℍ} (hK : IsCompact K) :
   let S : SL(2, ℝ) := ⟨!![0, -1; 1, 0], by simp⟩
   obtain ⟨A, hA⟩ := cdsq_le (K := S • K) (hK.image <| continuous_const_smul S)
   refine ⟨A, fun g hg ↦ ?_⟩
-  convert! hA (S * g) (by rwa [mul_smul, Set.smul_mem_smul_set_iff]) using 1
+  convert hA (S * g) (by rwa [mul_smul, Set.smul_mem_smul_set_iff]) using 1
   rw [Matrix.SpecialLinearGroup.coe_mul, Matrix.eta_fin_two g.val, Matrix.mul_fin_two]
   simp
 
@@ -126,7 +127,7 @@ end proper_orbit_map
 /-- Any discrete subgroup of `SL(2, ℝ)` acts properly discontinuously on `ℍ`. -/
 instance instProperlyDiscontinuousSL2RSubgroup (𝒢 : Subgroup SL(2, ℝ)) [DiscreteTopology 𝒢] :
     ProperlyDiscontinuousSMul 𝒢 ℍ := by
-  have : IsClosed (𝒢 : Set SL(2, ℝ)) := Subgroup.isClosed_of_discrete
+  have : IsClosed (𝒢 : Set SL(2, ℝ)) := Subgroup.isClosed_of_discreteTopology
   rw [properlyDiscontinuousSMul_iff_properSMul]
   infer_instance
 

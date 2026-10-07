@@ -5,13 +5,16 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
-public import Mathlib.RingTheory.RootsOfUnity.Basic
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Covering.Quotient
-public import Mathlib.Topology.LocalAtTarget
+
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.Topology.Algebra.Group.Units
+import Mathlib.Topology.GDelta.MetrizableSpace
+import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Covering maps involving the complex plane

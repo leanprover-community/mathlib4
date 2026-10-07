@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Set.Subsingleton
 
+import Batteries.Data.List.Lemmas
+
 /-!
 # Lemmas about `List.find?`
 -/

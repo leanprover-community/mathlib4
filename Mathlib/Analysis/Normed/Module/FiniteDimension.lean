@@ -8,17 +8,13 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Module.RieszLemma
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Logic.Encodable.Pi
-public import Mathlib.Topology.Algebra.AffineSubspace
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 
 /-!
@@ -87,8 +83,6 @@ theorem toLinearIsometryEquiv_apply (li : E₁ →ₗᵢ[R₁] F) (h : finrank R
 end LinearIsometry
 
 namespace AffineIsometry
-
-open AffineMap
 
 variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField 𝕜] [NormedAddCommGroup V₁]
   [SeminormedAddCommGroup V₂] [NormedSpace 𝕜 V₁] [NormedSpace 𝕜 V₂] [MetricSpace P₁]
@@ -166,7 +160,7 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
 
-attribute [deprecated AffineEquiv.toContinuousAffineEquiv (since := "2026-05-11")]
+attribute [deprecated AffineEquiv.toContinuousAffineEquiv +typeChanged (since := "2026-05-11")]
   AffineEquiv.toHomeomorphOfFiniteDimensional
 
 /-- An affine map from a finite-dimensional space is automatically Lipschitz. -/
@@ -174,7 +168,7 @@ theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
     ∃ K : ℝ≥0, LipschitzWith K f := by
   let fL : E →L[𝕜] F := f.linear.toContinuousLinearMap
   refine ⟨‖fL‖₊, LipschitzWith.of_dist_le_mul fun x y ↦ ?_⟩
-  rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', ← f.linearMap_vsub]
+  rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', ← f.linear_apply_vsub]
   exact fL.le_opNorm _
 
 end Affine
@@ -184,7 +178,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
   -- TODO: this could be easier with `det_cases`
   by_cases h : ∃ s : Finset E, Nonempty (Basis (↥s) 𝕜 E)
   · rcases h with ⟨s, ⟨b⟩⟩
-    haveI : FiniteDimensional 𝕜 E := b.finiteDimensional_of_finite
+    have : FiniteDimensional 𝕜 E := b.finiteDimensional_of_finite
     classical
     simp_rw [LinearMap.det_eq_det_toMatrix_of_finset b]
     refine Continuous.matrix_det ?_
@@ -192,7 +186,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
       ((LinearMap.toMatrix b b).toLinearMap.comp
           (ContinuousLinearMap.coeLM 𝕜)).continuous_of_finiteDimensional
   · rw [LinearMap.det]
-    simpa only [h, MonoidHom.one_apply, dif_neg, not_false_iff] using continuous_const
+    simpa only [h, MonoidHom.one_apply, dite_eq_right, not_false_iff] using continuous_const
 
 /-- Any `K`-Lipschitz map from a subset `s` of a metric space `α` to a finite-dimensional real
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
@@ -219,7 +213,7 @@ theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace 
     `E'` and such a space to transfer the result to `E'`. -/
   let ι : Type _ := Basis.ofVectorSpaceIndex ℝ E'
   let A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv
-  have LA : LipschitzWith ‖A.toContinuousLinearMap‖₊ A := by apply A.lipschitz
+  have LA : LipschitzWith ‖A.toContinuousLinearMap‖₊ A := by apply A.lipschitzWith
   have L : LipschitzOnWith (‖A.toContinuousLinearMap‖₊ * K) (A ∘ f) s :=
     LA.comp_lipschitzOnWith hf
   obtain ⟨g, hg, gs⟩ :
@@ -227,7 +221,7 @@ theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace 
     L.extend_pi
   refine ⟨A.symm ∘ g, ?_, ?_⟩
   · have LAsymm : LipschitzWith ‖A.symm.toContinuousLinearMap‖₊ A.symm := by
-      apply A.symm.lipschitz
+      apply A.symm.lipschitzWith
     apply (LAsymm.comp hg).weaken
     rw [lipschitzExtensionConstant, ← mul_assoc]
     exact mul_le_mul' (le_max_left _ _) le_rfl
@@ -241,7 +235,7 @@ theorem LinearMap.exists_antilipschitzWith [FiniteDimensional 𝕜 E] (f : E →
   · exact ⟨1, zero_lt_one, AntilipschitzWith.of_subsingleton⟩
   · rw [LinearMap.ker_eq_bot] at hf
     let e : E ≃L[𝕜] LinearMap.range f := (LinearEquiv.ofInjective f hf).toContinuousLinearEquiv
-    exact ⟨_, e.nnnorm_symm_pos, e.antilipschitz⟩
+    exact ⟨_, e.nnnorm_symm_pos, e.antilipschitzWith⟩
 
 open Function in
 /-- A `LinearMap` on a finite-dimensional space over a complete field
@@ -261,7 +255,7 @@ theorem AffineMap.antilipschitzWith_of_finiteDimensional {PE PF : Type*} [Metric
     ∃ K : ℝ≥0, AntilipschitzWith K f := by
   obtain ⟨K, -, hK⟩ := f.linear.injective_iff_antilipschitz.mp (f.linear_injective_iff.mpr hf)
   refine ⟨K, AntilipschitzWith.of_le_mul_dist fun x y ↦ ?_⟩
-  rw [dist_eq_norm_vsub E, dist_eq_norm_vsub F, ← f.linearMap_vsub]
+  rw [dist_eq_norm_vsub E, dist_eq_norm_vsub F, ← f.linear_apply_vsub]
   exact ZeroHomClass.bound_of_antilipschitz f.linear hK (x -ᵥ y)
 
 open Function in
@@ -276,7 +270,7 @@ theorem ContinuousLinearMap.isOpen_injective [FiniteDimensional 𝕜 E] :
   filter_upwards [this] with φ hφ
   apply φ.injective_iff_antilipschitz.mpr
   exact ⟨(K⁻¹ - ‖φ - φ₀‖₊)⁻¹, inv_pos_of_pos (tsub_pos_of_lt hφ),
-    H.add_sub_lipschitzWith (φ - φ₀).lipschitz hφ⟩
+    H.add_sub_lipschitzWith (φ - φ₀).lipschitzWith hφ⟩
 
 open ContinuousLinearMap
 
@@ -327,19 +321,25 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
   gcongr
   exact norm_le_pi_norm (v - u) i
 
-theorem isOpen_setOf_linearIndependent {ι : Type*} [Finite ι] :
+theorem isOpen_setOfPred_linearIndependent {ι : Type*} [Finite ι] :
     IsOpen { f : ι → E | LinearIndependent 𝕜 f } :=
   isOpen_iff_mem_nhds.2 fun _ => LinearIndependent.eventually
 
-theorem isOpen_setOf_nat_le_rank (n : ℕ) :
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_linearIndependent := isOpen_setOfPred_linearIndependent
+
+theorem isOpen_setOfPred_nat_le_rank (n : ℕ) :
     IsOpen { f : E →L[𝕜] F | ↑n ≤ (f : E →ₗ[𝕜] F).rank } := by
-  simp only [LinearMap.le_rank_iff_exists_linearIndependent_finset, setOf_exists, ← exists_prop]
+  simp only [LinearMap.le_rank_iff_exists_linearIndependent_finset, ofPred_exists, ← exists_prop]
   refine isOpen_biUnion fun t _ => ?_
   have : Continuous fun f : E →L[𝕜] F => fun x : (t : Set E) => f x :=
     continuous_pi fun x => (ContinuousLinearMap.apply 𝕜 F (x : E)).continuous
-  exact isOpen_setOf_linearIndependent.preimage this
+  exact isOpen_setOfPred_linearIndependent.preimage this
 
-theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_nat_le_rank := isOpen_setOfPred_nat_le_rank
+
+theorem isOpen_setOfPred_affineIndependent {ι : Type*} [Finite ι] :
     IsOpen {p : ι → E | AffineIndependent 𝕜 p} := by
   classical
   rcases isEmpty_or_nonempty ι with h | ⟨⟨i₀⟩⟩
@@ -347,10 +347,13 @@ theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
   · simp_rw [affineIndependent_iff_linearIndependent_vsub 𝕜 _ i₀]
     let ι' := { x // x ≠ i₀ }
     cases nonempty_fintype ι
-    haveI : Fintype ι' := Subtype.fintype _
+    have : Fintype ι' := Subtype.fintype _
     convert_to!
       IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
-    exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
+    exact isOpen_setOfPred_linearIndependent.preimage (by fun_prop)
+
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_affineIndependent := isOpen_setOfPred_affineIndependent
 
 namespace Module.Basis
 
@@ -418,7 +421,7 @@ theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : 
     (h : ¬FiniteDimensional 𝕜 E) (s : Finset E) : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y ∈ s, 1 ≤ ‖y - x‖ := by
   let F := Submodule.span 𝕜 (s : Set E)
   have hF : F.FG := ⟨s, rfl⟩
-  haveI : FiniteDimensional 𝕜 F := .of_fg hF
+  have : FiniteDimensional 𝕜 F := .of_fg hF
   have Fclosed : IsClosed (F : Set E) := Submodule.closed_of_finiteDimensional _
   have : ∃ x, x ∉ F := by
     contrapose! h
@@ -543,7 +546,7 @@ explicitly when needed. -/
 theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := by
   have : ProperSpace 𝕜 := .of_locallyCompactSpace 𝕜
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
-  exact e.symm.antilipschitz.properSpace e.symm.continuous e.symm.surjective
+  exact e.symm.antilipschitzWith.properSpace e.symm.continuous e.symm.surjective
 
 end LocallyCompactField
 
@@ -694,16 +697,10 @@ theorem Asymptotics.IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff
 
-@[deprecated (since := "2026-02-07")]
-alias IsEquivalent.summable_iff := Asymptotics.IsEquivalent.summable_iff
-
 theorem Asymptotics.IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) :
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff_nat
-
-@[deprecated (since := "2026-02-07")]
-alias IsEquivalent.summable_iff_nat := Asymptotics.IsEquivalent.summable_iff_nat
 
 namespace Module.Basis
 

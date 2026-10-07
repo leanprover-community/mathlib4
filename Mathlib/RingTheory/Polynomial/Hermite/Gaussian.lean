@@ -6,9 +6,7 @@ Authors: Luke Mantle, Jake Levinson
 module
 
 public import Mathlib.RingTheory.Polynomial.Hermite.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
-public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
@@ -31,8 +29,6 @@ polynomial factor occurring in the `n`th derivative of a Gaussian.
 
 public section
 
-
-noncomputable section
 
 open Polynomial
 

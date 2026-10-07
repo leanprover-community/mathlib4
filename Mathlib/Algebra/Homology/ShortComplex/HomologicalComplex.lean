@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.Tactic.NormNum
 
 /-!
@@ -34,7 +33,7 @@ variable (C : Type*) [Category* C] [HasZeroMorphisms C] {ι : Type*} (c : Comple
 
 /-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends a homological
 complex `K` to the short complex `K.X i ⟶ K.X j ⟶ K.X k` for arbitrary indices `i`, `j` and `k`. -/
-@[simps]
+@[simps, implicit_reducible]
 def shortComplexFunctor' (i j k : ι) : HomologicalComplex C c ⥤ ShortComplex C where
   obj K := ShortComplex.mk (K.d i j) (K.d j k) (K.d_comp_d i j k)
   map f :=
@@ -48,6 +47,7 @@ complex `K` to the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. 
 noncomputable def shortComplexFunctor (i : ι) :=
   shortComplexFunctor' C c (c.prev i) i (c.next i)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k`
 when `c.prev j = i` and `c.next j = k`. -/
@@ -382,6 +382,27 @@ set_option backward.isDefEq.respectTransparency false in
 lemma opcyclesMap_comp : opcyclesMap (φ ≫ ψ) i = opcyclesMap φ i ≫ opcyclesMap ψ i := by
   dsimp [opcyclesMap]
   rw [Functor.map_comp, ShortComplex.opcyclesMap_comp]
+
+instance [IsIso φ] : IsIso (homologyMap φ i) where
+  out := ⟨homologyMap (inv φ) i, by simp [← homologyMap_comp]⟩
+
+instance [IsIso φ] : IsIso (cyclesMap φ i) where
+  out := ⟨cyclesMap (inv φ) i, by simp [← cyclesMap_comp]⟩
+
+instance [IsIso φ] : IsIso (opcyclesMap φ i) where
+  out := ⟨opcyclesMap (inv φ) i, by simp [← opcyclesMap_comp]⟩
+
+@[simp ←, push]
+lemma homologyMap_inv [IsIso φ] : inv (homologyMap φ i) = homologyMap (inv φ) i := by
+  simp [← cancel_epi (homologyMap φ i), ← homologyMap_comp]
+
+@[simp ←, push]
+lemma cyclesMap_inv [IsIso φ] : inv (cyclesMap φ i) = cyclesMap (inv φ) i := by
+  simp [← cancel_epi (cyclesMap φ i), ← cyclesMap_comp]
+
+@[simp ←, push]
+lemma opcyclesMap_inv [IsIso φ] : inv (opcyclesMap φ i) = opcyclesMap (inv φ) i := by
+  simp [← cancel_epi (opcyclesMap φ i), ← opcyclesMap_comp]
 
 variable (K L)
 
@@ -762,7 +783,7 @@ end CochainComplex
 namespace HomologicalComplex
 
 variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
-  {K L : HomologicalComplex C c} {f g : K ⟶ L}
+  {K L : HomologicalComplex C c}
 
 variable (φ ψ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i]
 
@@ -864,7 +885,6 @@ lemma cyclesIsoSc'_inv_iCycles :
     (K.cyclesIsoSc' i j k hi hk).inv ≫ K.iCycles j = (K.sc' i j k).iCycles := by
   simp [cyclesIsoSc', iCycles]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toCycles_cyclesIsoSc'_hom :
     K.toCycles i j ≫ (K.cyclesIsoSc' i j k hi hk).hom = (K.sc' i j k).toCycles := by
@@ -893,7 +913,6 @@ lemma pOpcycles_opcyclesIsoSc'_hom :
     K.pOpcycles j ≫ (K.opcyclesIsoSc' i j k hi hk).hom = (K.sc' i j k).pOpcycles := by
   simp [opcyclesIsoSc', pOpcycles]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opcyclesIsoSc'_inv_fromOpcycles :
     (K.opcyclesIsoSc' i j k hi hk).inv ≫ K.fromOpcycles j k =

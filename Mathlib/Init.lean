@@ -6,24 +6,24 @@ public import Mathlib.Lean.Linter -- linter utilities; will be transitively impo
 public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Linter.AuxLemma
+public import Mathlib.Tactic.Linter.DeclType
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
 public import Mathlib.Tactic.Linter.DocString
 public import Mathlib.Tactic.Linter.EmptyLine
-public import Mathlib.Tactic.Linter.GlobalAttributeIn
 public import Mathlib.Tactic.Linter.HashCommandLinter
+public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
-public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.TacticDocumentation
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
-public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.TacticAnalysis.Declarations
@@ -39,6 +39,8 @@ public import ImportGraph.Tools
 public import Mathlib.Tactic.Linter.Lint
 -- This import makes the `#min_imports in` command available globally.
 public import Mathlib.Tactic.MinImports
+-- This import makes the binder plicity code action available globally
+public import Mathlib.Util.CodeActions
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -98,7 +100,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.longLine
   linter.style.longFile
   linter.style.multiGoal
-  linter.style.nativeDecide
+  linter.style.native
   linter.style.openClassical
   linter.style.maxHeartbeats
   linter.style.missingEnd
@@ -146,3 +148,5 @@ run_cmd liftTermElabM do
     let some cinfo := env.find? mlRes | throwError "{mlRes}: this code should be unreachable."
     if !cinfo.type.isAppOf ``Lean.Option then
       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
+
+#allow_unused_tactic! Mathlib.Linter.Style.show

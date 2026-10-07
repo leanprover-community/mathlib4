@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Order.Interval.Finset.Box
-public import Mathlib.Analysis.Asymptotics.Defs
 
 /-!
 # Summability of Eisenstein series
@@ -165,11 +164,6 @@ lemma linear_isTheta_right_add (c e : ℤ) (z : ℂ) :
   [refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real); skip] <;>
   simpa [-Int.cofinite_eq] using
     .inr <| tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real
-
-@[deprecated linear_isTheta_right_add (since := "2025-12-27")]
-lemma linear_isTheta_right (c : ℤ) (z : ℂ) :
-    (fun (d : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
-  simpa using linear_isTheta_right_add c 0 z
 
 lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
     (fun (c : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by

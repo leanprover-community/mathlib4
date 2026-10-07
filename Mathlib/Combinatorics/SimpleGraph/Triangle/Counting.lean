@@ -5,10 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Tactic.Linarith
+
+import Mathlib.Tactic.Linarith
 
 /-!
 # Triangle counting lemma
