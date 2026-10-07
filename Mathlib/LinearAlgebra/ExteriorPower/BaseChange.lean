@@ -20,7 +20,7 @@ In this PR, we proved that exterior power commutes with arbitrary base change.
 
 -/
 
-public section
+public noncomputable section
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
@@ -31,7 +31,7 @@ open TensorProduct
 namespace ExteriorAlgebra
 
 /-- Abbreviation of base change of `ExteriorAlgebra.ι`. -/
-noncomputable abbrev baseChangeι : S ⊗[R] M →ₗ[S] S ⊗[R] ExteriorAlgebra R M :=
+abbrev baseChangeι : S ⊗[R] M →ₗ[S] S ⊗[R] ExteriorAlgebra R M :=
   (ExteriorAlgebra.ι R).baseChange S
 
 lemma baseChangeι_mul_add_swap (x y : S ⊗[R] M) :
@@ -42,23 +42,21 @@ lemma baseChangeι_mul_add_swap (x y : S ⊗[R] M) :
   · refine TensorProduct.inductionOn y ?_ (fun c d hc hd ↦ ?_)
     · simp [Algebra.TensorProduct.tmul_mul_tmul, ExteriorAlgebra.ι_add_mul_swap, mul_comm,
         ← TensorProduct.tmul_add]
-    · intro x y
+    · intro u v
       simpa [map_add, add_mul, mul_add, add_assoc, add_left_comm, add_comm] using
-        congrArg₂ (· + ·) (hc x y) (hd x y)
+        congrArg₂ (· + ·) (hc u v) (hd u v)
   · simpa [map_add, add_mul, mul_add, add_assoc, add_left_comm, add_comm] using
       congrArg₂ (· + ·) ha hb
 
 lemma baseChangeι_sq_zero (x : S ⊗[R] M) : baseChangeι R M S x * baseChangeι R M S x = 0 := by
-  -- Check the square-zero relation by induction on the tensor and use the anticommutation lemma
-  -- for the cross term in the add case.
-  refine TensorProduct.inductionOn x ?_ (fun a b ha hb ↦ ?_) --(fun x y hx hy ↦ ?_)
+  refine TensorProduct.inductionOn x ?_ (fun a b ha hb ↦ ?_)
   · simp [ExteriorAlgebra.baseChangeι, Algebra.TensorProduct.tmul_mul_tmul]
   · simp only [map_add, mul_add, add_mul, add_left_comm, add_assoc]
     simp [ha, hb, ExteriorAlgebra.baseChangeι_mul_add_swap R M S a b]
 
 /-- The exterior algebra map from `ExteriorAlgebra S (S ⊗[R] M)` to `S ⊗[R] ExteriorAlgebra R M`,
 lift from `ExteriorAlgebra.baseChangeι`. -/
-noncomputable def baseChangeExteriorAlgebraToTensor :
+def baseChangeExteriorAlgebraToTensor :
     ExteriorAlgebra S (S ⊗[R] M) →ₐ[S] S ⊗[R] ExteriorAlgebra R M :=
   ExteriorAlgebra.lift S
     ⟨ExteriorAlgebra.baseChangeι R M S, ExteriorAlgebra.baseChangeι_sq_zero R M S⟩
@@ -97,7 +95,7 @@ lemma baseChangeGenerator_map_update_smul (i : ℕ) (m : Fin i → M) (j : Fin i
 
 /-- The alternating map obtained from `ExteriorAlgebra.ιMulti` on compositing with
 `TensorProduct.mk R S M 1`. -/
-noncomputable def baseChangeGenerator (i : ℕ) : M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S ⊗[R] M) where
+def baseChangeGenerator (i : ℕ) : M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S ⊗[R] M) where
   toFun m := ExteriorAlgebra.ιMulti S i ((TensorProduct.mk R S M 1) ∘ m)
   map_update_add' {_i} := by
     cases Subsingleton.elim _i (by clear _i; infer_instance)
@@ -112,13 +110,13 @@ noncomputable def baseChangeGenerator (i : ℕ) : M [⋀^Fin i]→ₗ[R] Exterio
       (ExteriorAlgebra.ιMulti S i).map_eq_zero_of_eq (((TensorProduct.mk R S M 1) ∘ m)) this hjk_ne
 
 /-- Auxiliary alternating map for `exteriorPower.baseChangeIsoForward`. -/
-noncomputable def baseChangeIsoForwardAux (i : ℕ) : M [⋀^Fin i]→ₗ[R] (⋀[S]^i (S ⊗[R] M)) :=
+def baseChangeIsoForwardAux (i : ℕ) : M [⋀^Fin i]→ₗ[R] (⋀[S]^i (S ⊗[R] M)) :=
   (baseChangeGenerator R M S i).codRestrict ((⋀[S]^i (S ⊗[R] M)).restrictScalars R) (fun m =>
     ExteriorAlgebra.ιMulti_range S i (Set.mem_range_self ((TensorProduct.mk R S M 1) ∘ m)))
 
 /-- Forward function of `exteriorPower.baseChangeIso`, lift from the map
 `(⋀[R]^i M) →ₗ[R] ⋀[S]^i (S ⊗[R] M)` corresponding to `exteriorPower.baseChangeIsoForwardAux`. -/
-noncomputable def baseChangeIsoForward (i : ℕ) : S ⊗[R] (⋀[R]^i M) →ₗ[S] (⋀[S]^i (S ⊗[R] M)) :=
+def baseChangeIsoForward (i : ℕ) : S ⊗[R] (⋀[R]^i M) →ₗ[S] (⋀[S]^i (S ⊗[R] M)) :=
   TensorProduct.AlgebraTensorModule.lift {
     toFun s := s • exteriorPower.alternatingMapLinearEquiv (baseChangeIsoForwardAux R M S i)
     map_add' s t := by simp [add_smul]
@@ -133,7 +131,7 @@ lemma baseChangeIsoForward_apply_one_tmul_ιMulti (i : ℕ) (m : Fin i → M) :
   rfl
 
 /-- Projection from `ExteriorAlgebra` to exterior power. -/
-noncomputable def degreeProjection (i : ℕ) : ExteriorAlgebra R M →ₗ[R] (⋀[R]^i M) :=
+def degreeProjection (i : ℕ) : ExteriorAlgebra R M →ₗ[R] (⋀[R]^i M) :=
   ExteriorAlgebra.liftAlternating (Function.update 0 i (exteriorPower.ιMulti R i))
 
 lemma degreeProjection_apply_ιMulti (i : ℕ) (m : Fin i → M) :
@@ -142,8 +140,7 @@ lemma degreeProjection_apply_ιMulti (i : ℕ) (m : Fin i → M) :
   simp
 
 /-- Auxiliary alternating map for `exteriorPower.baseChangeIsoInverse`. -/
-noncomputable def baseChangeInverseAlternating (i : ℕ) :
-    (S ⊗[R] M) [⋀^Fin i]→ₗ[S] S ⊗[R] (⋀[R]^i M) :=
+def baseChangeInverseAlternating (i : ℕ) : (S ⊗[R] M) [⋀^Fin i]→ₗ[S] S ⊗[R] (⋀[R]^i M) :=
   (((exteriorPower.degreeProjection R M i).baseChange S).comp
     (ExteriorAlgebra.baseChangeExteriorAlgebraToTensor R M S).toLinearMap).compAlternatingMap
       (ExteriorAlgebra.ιMulti S i)
@@ -172,7 +169,7 @@ lemma baseChangeInverseAlternating_apply_tmul (i : ℕ) (s : Fin i → S) (m : F
 
 /-- Inverse function of `exteriorPower.baseChangeIso`,
 obtained from `exteriorPower.baseChangeInverseAlternating`. -/
-noncomputable def baseChangeIsoInverse (i : ℕ) : ⋀[S]^i (S ⊗[R] M) →ₗ[S] S ⊗[R] (⋀[R]^i M) :=
+def baseChangeIsoInverse (i : ℕ) : ⋀[S]^i (S ⊗[R] M) →ₗ[S] S ⊗[R] (⋀[R]^i M) :=
   alternatingMapLinearEquiv (baseChangeInverseAlternating R M S i)
 
 lemma baseChangeIsoInverse_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
@@ -211,7 +208,7 @@ lemma baseChange_right_inverse (i : ℕ) :
   rw [← LinearMap.comp_apply _ _ y, exteriorPower.baseChange_left_inverse, LinearMap.id_coe, id_eq]
 
 /-- The commute of exterior power and base change. -/
-noncomputable def baseChangeIso (i : ℕ) : S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
+def baseChangeIso (i : ℕ) : S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
   __ := baseChangeIsoForward R M S i
   invFun := baseChangeIsoInverse R M S i
   left_inv x := LinearMap.congr_fun (exteriorPower.baseChange_left_inverse R M S i) x
