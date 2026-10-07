@@ -30,10 +30,9 @@ namespace Group
 
 /-- A group `G` is residually finite if the intersection of all finite index normal subgroups is
 trivial. -/
+@[to_additive]
 class ResiduallyFinite (G : Type*) [Group G] : Prop where
   iInf_eq_bot : ⨅ H : FiniteIndexNormalSubgroup G, H.toSubgroup = ⊥
-
-attribute [to_additive existing] ResiduallyFinite
 
 variable {G G' : Type*} [Group G] [Group G']
 
@@ -49,9 +48,12 @@ theorem residuallyFinite_iff_forall_finiteIndexNormalSubgroup :
     FiniteIndexNormalSubgroup.mem_toSubgroup_iff]
 
 @[to_additive]
-theorem eq_one_iff_forall_finiteIndexNormalSubroup [ResiduallyFinite G]
+theorem eq_one_of_forall_finiteIndexNormalSubgroup [ResiduallyFinite G]
     (g : G) (hg : ∀ H : FiniteIndexNormalSubgroup G, g ∈ H) : g = 1 :=
   residuallyFinite_iff_forall_finiteIndexNormalSubgroup.mp ‹_› g hg
+
+@[to_additive (attr := deprecated (since := "2026-10-05"))]
+alias eq_one_iff_forall_finiteIndexNormalSubroup := eq_one_of_forall_finiteIndexNormalSubgroup
 
 @[to_additive]
 theorem residuallyFinite_iff_exists_finiteIndexNormalSubgroup :
@@ -108,14 +110,14 @@ instance [ResiduallyFinite G] {H : Subgroup G} : ResiduallyFinite H := by
   rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
   intro g hg
   ext
-  exact eq_one_iff_forall_finiteIndexNormalSubroup g.1 fun K ↦ hg (K.comap H.subtype)
+  exact eq_one_of_forall_finiteIndexNormalSubgroup g.1 fun K ↦ hg (K.comap H.subtype)
 
 @[to_additive]
 instance [ResiduallyFinite G] [ResiduallyFinite G'] : ResiduallyFinite (G × G') := by
   rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
   intro g hg
   ext
-  · exact eq_one_iff_forall_finiteIndexNormalSubroup g.1 fun K ↦ hg (K.comap (MonoidHom.fst G G'))
-  · exact eq_one_iff_forall_finiteIndexNormalSubroup g.2 fun K ↦ hg (K.comap (MonoidHom.snd G G'))
+  · exact eq_one_of_forall_finiteIndexNormalSubgroup g.1 fun K ↦ hg (K.comap (MonoidHom.fst G G'))
+  · exact eq_one_of_forall_finiteIndexNormalSubgroup g.2 fun K ↦ hg (K.comap (MonoidHom.snd G G'))
 
 end Group

@@ -6,7 +6,8 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
-public import Mathlib.Geometry.Manifold.Notation
+
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 ### Relations between vector space derivative and manifold derivative
@@ -31,7 +32,6 @@ section MFDerivFDeriv
 theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
     UniqueMDiffAt[s] x ↔ UniqueDiffWithinAt 𝕜 s x := by
   simp only [UniqueMDiffWithinAt, mfld_simps]
-  exact Iff.rfl
 
 alias ⟨UniqueMDiffWithinAt.uniqueDiffWithinAt, UniqueDiffWithinAt.uniqueMDiffWithinAt⟩ :=
   uniqueMDiffWithinAt_iff_uniqueDiffWithinAt

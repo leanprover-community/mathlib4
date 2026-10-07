@@ -6,13 +6,14 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Init
-public import Lean.PrettyPrinter.Delaborator.Basic
+
+import Lean.PrettyPrinter.Delaborator.Basic
 
 /-!
 # Additions to the delaborator
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.PrettyPrinter.Delaborator
 

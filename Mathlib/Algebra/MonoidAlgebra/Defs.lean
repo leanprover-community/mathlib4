@@ -453,7 +453,7 @@ lemma induction_linear {motive : R[M] → Prop} (x : R[M]) (zero : motive 0)
 lemma addSubmonoidClosure_single :
     AddSubmonoid.closure {x : R[M] | ∃ m r, x = single m r} = ⊤ :=
   top_unique fun x _hx => induction x (AddSubmonoid.zero_mem _) fun a b _f _ha _hb =>
-    AddSubmonoid.add_mem _ <| AddSubmonoid.subset_closure <| ⟨a, b, rfl⟩
+    AddSubmonoid.add_mem _ <| AddSubmonoid.subset_closure ⟨a, b, rfl⟩
 
 section One
 variable [One M]
@@ -479,16 +479,13 @@ end One
 section Mul
 variable [Mul M]
 
-/-- The multiplication in an additive monoid algebra.
-
-We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[no_expose]
-def _root_.AddMonoidAlgebra.mul' [Add M] (x y : AddMonoidAlgebra R M) : AddMonoidAlgebra R M :=
-  x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ .single (m₁ + m₂) (r₁ * r₂)
 /-- The multiplication in a monoid algebra.
 
 We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[to_additive existing mul', no_expose]
+@[no_expose, to_additive (dont_translate := R) mul'
+/-- The multiplication in an additive monoid algebra.
+
+We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/]
 def mul' (x y : R[M]) : R[M] :=
   x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂)
 

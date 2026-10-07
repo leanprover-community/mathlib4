@@ -69,7 +69,7 @@ public register_option linter.unusedTactic : Bool := {
 namespace UnusedTactic
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
+abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) BaseIO
 
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
@@ -103,7 +103,6 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     `Batteries.Tactic.seq_focus,
     `Mathlib.Tactic.Hint.registerHintStx,
     `Mathlib.Tactic.LinearCombination.linearCombination,
-    `Mathlib.Tactic.LinearCombinationPrime.linearCombination',
     `Aesop.Frontend.Parser.addRules,
     `Aesop.Frontend.Parser.aesopTactic,
     `Aesop.Frontend.Parser.aesopTactic?,
@@ -123,7 +122,7 @@ public def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeK
 Adds a new syntax kind whose children will be ignored by the `unusedTactic` linter.
 This should be called from an `initialize` block.
 -/
-public def addIgnoreTacticKind (kind : SyntaxNodeKind) : IO Unit :=
+public def addIgnoreTacticKind (kind : SyntaxNodeKind) : BaseIO Unit :=
   ignoreTacticKindsRef.modify (·.insert kind)
 
 /-- Accumulates the set of tactic syntaxes that should be evaluated at least once. -/
