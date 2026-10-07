@@ -37,7 +37,7 @@ a multilinear map from the modules `N (.inr i₁)` to `N₂`, this
 is the induced multilinear map from all the modules `N i` to `N₁ ⊗ N₂`. -/
 @[simps apply]
 def domCoprodDep (a : (fun i₁ ↦ N (.inl i₁)) →ₗₘ[R] N₁) (b : (fun i₂ ↦ N (.inr i₂)) →ₗₘ[R] N₂) :
-    N →ₗₘ[R] (N₁ ⊗[R] N₂) where
+    N →ₗₘ[R] N₁ ⊗[R] N₂ where
   toFun v := a (fun i₁ ↦ v (.inl i₁)) ⊗ₜ b (fun i₂ ↦ v (.inr i₂))
   map_update_add' := by
     rintro _ _ (_ | _) _ _
