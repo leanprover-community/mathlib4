@@ -252,13 +252,13 @@ noncomputable def quotientInfRingEquivPiQuotient (f : ι → Ideal R)
     quotientInfToPiQuotient f with }
 
 lemma quotientInfRingEquivPiQuotient_mk_eq {f : ι → Ideal R}
-    (hf : Pairwise (Function.onFun IsCoprime f)) (x : R) :
+    (hf : Pairwise' (Function.onFun IsCoprime f)) (x : R) :
     quotientInfRingEquivPiQuotient _ hf x = fun _ ↦ Ideal.Quotient.mk _ x :=
   rfl
 
 @[simp]
 lemma quotientInfRingEquivPiQuotient_mk_apply {f : ι → Ideal R}
-    (hf : Pairwise (Function.onFun IsCoprime f)) (x : R) (i : ι) :
+    (hf : Pairwise' (Function.onFun IsCoprime f)) (x : R) (i : ι) :
     quotientInfRingEquivPiQuotient _ hf x i = Ideal.Quotient.mk _ x :=
   rfl
 

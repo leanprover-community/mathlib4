@@ -176,9 +176,9 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
-    (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
+    (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise' (IsCoprime on s) := by
   convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
-  simp only [pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
+  simp only [pairwise'_subtype_iff_pairwise_finset', coe_univ, Set.pairwise'_univ]
 
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
     Pairwise' (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j ∈ t \ {i}, s j) := by
