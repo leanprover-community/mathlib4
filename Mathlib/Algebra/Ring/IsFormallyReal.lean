@@ -6,6 +6,7 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.Algebra.Ring.SumsOfSquares
+
 import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
@@ -21,6 +22,10 @@ A ring is then formally real if `¬ IsSumNonzeroSq 0`.
 
 - `IsFormallyReal`: typeclass stating that a ring is formally real.
 
+## References
+
+- *An introduction to real algebra*, by T.Y. Lam. Rocky Mountain J. Math. 14(4): 767-814 (1984).
+  [lam_1984](https://doi.org/10.1216/RMJ-1984-14-4-767)
 -/
 
 @[expose] public section
