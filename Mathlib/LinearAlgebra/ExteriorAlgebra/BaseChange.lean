@@ -21,7 +21,7 @@ In this file, we proved that exterior algebra commutes with arbitrary base chang
 
 -/
 
-public noncomputable section
+@[expose] public noncomputable section
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
