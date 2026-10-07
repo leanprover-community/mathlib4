@@ -17,7 +17,7 @@ This file contains results about quotients of manifolds by group actions.
 ## Main results
 
 * `MulAction.instChartedSpaceQuotient`: a choice of charted space structure on the quotient of a
-  charted space by a free, properly-discontinuous group action.
+  charted space by a free, properly discontinuous group action.
 * `MulAction.isManifold_quotient_of_contMDiffConstSMul`: if, additionally, the action is `C^n`,
   the quotient is a `C^n` manifold.
 
