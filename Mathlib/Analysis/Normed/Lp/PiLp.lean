@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.Analysis.Normed.Lp.ProdLp
@@ -948,6 +947,40 @@ theorem _root_.LinearIsometryEquiv.piLpCongrRight_single (e : ∀ i, α i ≃ₗ
   PiLp.ext <| Pi.apply_single (e ·) (fun _ => map_zero _) _ _
 
 end piLpCongrRight
+
+section piLpExtendByZero
+variable {ι' : Type*} [Fintype ι'] {E : Type*} [SeminormedAddCommGroup E] [Module 𝕜 E]
+
+variable (p 𝕜 E) in
+/-- An embedding of finite domains induces a linearly isometric map of Pi types with the Lp norm.
+This is the `PiLp` version of `Function.ExtendByZero.linearMap`. It can be also seen as the
+embedding version of `LinearIsometryEquiv.piLpCongrLeft`. -/
+@[simps!]
+def _root_.LinearIsometry.piLpExtendByZero (f : ι ↪ ι') :
+    PiLp p (fun _ : ι ↦ E) →ₗᵢ[𝕜] PiLp p (fun _ : ι' ↦ E) where
+  __ := (Function.ExtendByZero.linearMap 𝕜 E f).withLpMap p
+  norm_map' x := by
+    rcases x with ⟨x⟩
+    rcases p.dichotomy with rfl | h
+    · suffices ‖Function.ExtendByZero.linearMap 𝕜 E f x‖ = ‖x‖ by simpa
+      exact (f.injective.factorsThrough _).norm_extend (by simp)
+    · have hp : 0 < p.toReal := zero_lt_one.trans_le h
+      simp [norm_eq_sum hp, Function.apply_extend (‖·‖ ^ p.toReal), hp.ne',
+        Finset.sum_extend_zero_of_injective _ f.injective]
+
+@[simp]
+theorem _root_.LinearIsometry.piLpExtendByZero_apply_single [DecidableEq ι] [DecidableEq ι']
+    (f : ι ↪ ι') (i : ι) (a : E) :
+    LinearIsometry.piLpExtendByZero p 𝕜 E f (PiLp.single p i a) = PiLp.single p (f i) a := by
+  ext j
+  simp [f.injective.extend_single, Pi.single_apply]
+
+theorem _root_.LinearIsometry.piLpExtendByZero_apply_eq_zero {f : ι ↪ ι'} {i : ι'}
+    (hi : i ∉ range f) (v : PiLp p (fun _ : ι ↦ E)) :
+    LinearIsometry.piLpExtendByZero p 𝕜 E f v i = 0 := by
+  simp [Function.extend_apply' _ _ _ hi]
+
+end piLpExtendByZero
 
 section piLpCurry
 

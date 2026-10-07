@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
+
+import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # The alternating constant complex
@@ -74,7 +74,6 @@ variable {c : ComplexShape ℕ} [DecidableRel c.Rel] (hc : ∀ i j, c.Rel i j �
 
 open HomologicalComplex hiding mk
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `i, j, k`th short complex associated to the alternating constant complex on `φ, ψ : A ⟶ A`
 is `A --ψ--> A --φ--> A` when `i ~ j, j ~ k` and `j` is even. -/
 noncomputable def alternatingConstScIsoEven
@@ -89,7 +88,6 @@ noncomputable def alternatingConstScIsoEven
       exact False.elim <| Nat.not_odd_iff_even.2 hi <| by simp_all [Nat.odd_add])
     (by simp_all [alternatingConst])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `i, j, k`th short complex associated to the alternating constant complex on `φ, ψ : A ⟶ A`
 is `A --φ--> A --ψ--> A` when `i ~ j, j ~ k` and `j` is even. -/
 noncomputable def alternatingConstScIsoOdd

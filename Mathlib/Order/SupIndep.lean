@@ -5,14 +5,14 @@ Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finset.Sigma
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Tactic.FinCases
+
+import Mathlib.Data.Finset.Lattice.Union
 
 /-!
 # Supremum independence
@@ -303,9 +303,9 @@ theorem sSupIndep_pair {a b : α} (hab : a ≠ b) :
   · intro h
     exact h.pairwiseDisjoint (mem_insert _ _) (mem_insert_of_mem _ (mem_singleton _)) hab
   · rintro h c ((rfl : c = a) | (rfl : c = b))
-    · convert! h using 1
+    · convert h using 1
       simp [hab, sSup_singleton]
-    · convert! h.symm using 1
+    · convert h.symm using 1
       simp [hab, sSup_singleton]
 
 include hs in
@@ -390,7 +390,7 @@ theorem iSupIndep_ne_bot :
   cases eq_or_ne (t i) ⊥ with
   | inl hi => simp [hi]
   | inr hi => ?_
-  convert! h ⟨i, hi⟩
+  convert h ⟨i, hi⟩
   have : ∀ j, ⨆ (_ : t j = ⊥), t j = ⊥ := fun j ↦ by simp only [iSup_eq_bot, imp_self]
   rw [iSup_split _ (fun j ↦ t j = ⊥), iSup_subtype]
   simp only [iSup_comm (ι' := _ ≠ i), this, ne_eq, sup_of_le_right, Subtype.mk.injEq, iSup_bot,

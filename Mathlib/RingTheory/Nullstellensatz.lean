@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Jacobson.Ring
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Nullstellensatz
@@ -103,7 +102,7 @@ theorem mem_vanishingIdeal_singleton_iff (x : σ → K) (p : MvPolynomial σ k) 
   ⟨fun h => h x rfl, fun hpx _ hy => hy.symm ▸ hpx⟩
 
 instance {x : σ → K} : (vanishingIdeal k {x} : Ideal (MvPolynomial σ k)).IsPrime := by
-  convert! RingHom.ker_isPrime (aeval (R := k) x)
+  convert RingHom.ker_isPrime (aeval (R := k) x)
   ext; simp
 
 instance {x : σ → K} : (vanishingIdeal K {x} : Ideal (MvPolynomial σ K)).IsMaximal := by

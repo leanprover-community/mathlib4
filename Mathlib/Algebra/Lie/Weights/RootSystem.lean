@@ -5,11 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Lie.Weights.Killing
-public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.LinearAlgebra.RootSystem.Basic
-public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 /-!
@@ -425,7 +422,7 @@ def rootSystem :
       rintro ⟨α, hα⟩ - ⟨⟨β, hβ⟩, rfl⟩
       simpa using
         ⟨reflectRoot α β, by simpa using reflectRoot_isNonZero α β <| by simpa using hβ, rfl⟩)
-    (by convert! span_weight_isNonZero_eq_top K L H; ext; simp)
+    (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
 
 instance : (rootSystem H).IsRootSystem :=
   RootPairing.isRootSystem_mk'' fun α β ↦

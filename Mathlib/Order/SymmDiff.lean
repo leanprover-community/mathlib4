@@ -213,7 +213,7 @@ theorem symmDiff_triangle : a ∆ c ≤ a ∆ b ⊔ b ∆ c := by
 
 @[to_dual]
 theorem le_symmDiff_sup_right (a b : α) : a ≤ (a ∆ b) ⊔ b := by
-  convert! symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
+  convert symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
 
 @[to_dual]
 theorem le_symmDiff_sup_left (a b : α) : b ≤ (a ∆ b) ⊔ a :=

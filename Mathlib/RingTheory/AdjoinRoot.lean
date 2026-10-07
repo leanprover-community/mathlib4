@@ -5,15 +5,9 @@ Authors: Mario Carneiro, Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.FinitePresentation
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.PowerBasis
-public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!
@@ -366,7 +360,7 @@ section AdjoinInv
 
 @[simp]
 theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
-  convert! sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
+  convert sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
 
 theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :

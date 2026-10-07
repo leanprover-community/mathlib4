@@ -7,9 +7,10 @@ module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Finiteness.Subalgebra
-public import Mathlib.RingTheory.Polynomial.Tower
+
+import Mathlib.RingTheory.Adjoin.Polynomial.Basic
+import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Properties of integral elements.

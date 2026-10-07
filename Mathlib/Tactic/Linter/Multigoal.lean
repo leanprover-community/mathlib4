@@ -104,7 +104,7 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.rotateLeft,
     ``Lean.Parser.Tactic.rotateRight,
     ``Lean.Parser.Tactic.skip,
-    `Batteries.Tactic.«tacticOn_goal-_=>_»,
+    `Batteries.Tactic.«tacticOn_goal_=>_»,
     `Mathlib.Tactic.«tacticSwap_var__,,»,
     -- tactic combinators
     ``Lean.Parser.Tactic.tacticRepeat_,
@@ -119,7 +119,7 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.intros,
     ``Lean.Parser.Tactic.injections,
     ``Lean.Parser.Tactic.substVars,
-    `Batteries.Tactic.«tacticPick_goal-_»,
+    `Batteries.Tactic.«tacticPick_goal_»,
     ``Lean.Parser.Tactic.case',
     `«tactic#adaptation_note_»,
     `tacticSleep_heartbeats_

@@ -5,7 +5,6 @@ Authors: Thomas Browning, Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.Algebra.Polynomial.Taylor
@@ -671,7 +670,6 @@ theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x =
 
 end Field
 
-noncomputable section
 
 universe u v w
 
@@ -696,7 +694,5 @@ local infixl:50 " ~ᵤ " => Associated
 end UFD
 
 end Splits
-
-end
 
 end Polynomial

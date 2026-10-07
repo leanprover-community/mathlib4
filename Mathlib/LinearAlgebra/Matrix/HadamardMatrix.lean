@@ -6,9 +6,9 @@ Authors: Dennj Osele
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
-public import Mathlib.LinearAlgebra.Matrix.Adjugate
-public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Algebra.Star.Unitary
+
+import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!
 # Hadamard matrices

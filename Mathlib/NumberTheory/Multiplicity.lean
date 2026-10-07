@@ -5,10 +5,11 @@ Authors: Tian Chen, Mantas Bakšys
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.RingTheory.Ideal.Span
+
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Multiplicity in Number Theory
@@ -58,7 +59,7 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
       Nat.cast_succ, tsub_self, pow_zero, mul_one, Nat.choose_self, Nat.cast_zero, zero_add,
       Nat.succ_sub_succ_eq_sub, Nat.sub_zero]
     suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
-      convert! this; abel
+      convert this; abel
     apply Finset.dvd_sum
     intro y hy
     calc
@@ -303,7 +304,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
   have hy : Odd y := by
     rw [← even_iff_two_dvd, Int.not_even_iff_odd] at hx
     replace hxy := (@even_neg _ _ (x - y)).mpr (even_iff_two_dvd.mpr hxy)
-    convert! Even.add_odd hxy hx
+    convert Even.add_odd hxy hx
     abel
   obtain ⟨d, rfl⟩ := hn
   simp only [← two_mul, pow_mul]
@@ -332,7 +333,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
       Int.natCast_pow]
     rw [← Int.natCast_dvd_natCast] at hx
     rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy
-    convert! Int.two_pow_sub_pow hxy hx hn using 2
+    convert Int.two_pow_sub_pow hxy hx hn using 2
     rw [← Int.natCast_emultiplicity]
     rfl
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,

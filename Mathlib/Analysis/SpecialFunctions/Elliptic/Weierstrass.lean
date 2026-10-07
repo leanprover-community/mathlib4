@@ -6,14 +6,14 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Summable
-public import Mathlib.Analysis.Analytic.Binomial
-public import Mathlib.Analysis.Complex.Liouville
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.Tactic.NormNum.NatFactorial
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
-public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+
+import Mathlib.Analysis.Analytic.Binomial
+import Mathlib.Analysis.Complex.Liouville
+import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 
@@ -126,9 +126,9 @@ lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
     (inferInstanceAs (DiscreteTopology L.lattice))
 
 lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
-  convert!
+  convert
     L.isClosed_lattice.isClosedMap_subtype_val _ (isClosed_discrete (α := L.lattice) ((↑) ⁻¹' s))
-  convert! Set.image_preimage_eq_inter_range.symm using 1
+  convert Set.image_preimage_eq_inter_range.symm using 1
   simpa
 
 lemma isOpen_compl_lattice_sdiff {s : Set ℂ} : IsOpen (L.lattice \ s)ᶜ :=
@@ -303,7 +303,7 @@ lemma hasSum_weierstrassP (z : ℂ) :
 lemma differentiableOn_weierstrassP :
     DifferentiableOn ℂ ℘[L] L.latticeᶜ := by
   rw [← L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
-  convert! L.differentiableOn_weierstrassPExcept _
+  convert L.differentiableOn_weierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
@@ -554,7 +554,7 @@ lemma hasSum_derivWeierstrassP (z : ℂ) :
 lemma differentiableOn_derivWeierstrassP :
     DifferentiableOn ℂ ℘'[L] L.latticeᶜ := by
   rw [← L.derivWeierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
-  convert! L.differentiableOn_derivWeierstrassPExcept _
+  convert L.differentiableOn_derivWeierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
@@ -1053,7 +1053,7 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
   · lift x to L.lattice using hx
     have := L.analyticAt_relation_zero
     rw [← sub_self x.1] at this
-    convert! this.comp (f := (· - x.1)) (by fun_prop)
+    convert this.comp (f := (· - x.1)) (by fun_prop)
     ext a
     simp
   · have : AnalyticAt ℂ (fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃) x := by

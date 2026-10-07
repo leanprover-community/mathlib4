@@ -9,8 +9,9 @@ public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Preadditive.Opposite
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 

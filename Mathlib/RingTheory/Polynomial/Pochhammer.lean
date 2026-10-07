@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Polynomial.Eval.Algebra
+
+import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # The Pochhammer polynomials
@@ -445,7 +445,7 @@ theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
       | inr h =>
         exact ⟨n, lt_add_one n, eq_neg_of_add_eq_zero_right h⟩
   · obtain ⟨rn, hrn, rnn⟩ := hrn
-    convert! ascPochhammer_eval_neg_coe_nat_of_lt hrn
+    convert ascPochhammer_eval_neg_coe_nat_of_lt hrn
     simp [rnn]
 
 /-- `descPochhammer R n` is `0` for `0, 1, …, n-1`. -/

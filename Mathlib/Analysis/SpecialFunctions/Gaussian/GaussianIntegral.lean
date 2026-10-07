@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-public import Mathlib.Analysis.SpecialFunctions.PolarCoord
 public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+
+import Mathlib.Analysis.SpecialFunctions.PolarCoord
 
 /-!
 # Gaussian integral
@@ -22,8 +23,6 @@ We prove various versions of the formula for the Gaussian integral:
 -/
 
 public section
-
-noncomputable section
 
 open Real Set MeasureTheory Filter Asymptotics
 
@@ -162,7 +161,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
   have A : ∀ x : ℂ, HasDerivAt (fun x => -(2 * b)⁻¹ * cexp (-b * x ^ 2))
     (x * cexp (-b * x ^ 2)) x := by
     intro x
-    convert! ((hasDerivAt_pow 2 x).const_mul (-b)).cexp.const_mul (-(2 * b)⁻¹) using 1
+    convert ((hasDerivAt_pow 2 x).const_mul (-b)).cexp.const_mul (-(2 * b)⁻¹) using 1
     field
   have B : Tendsto (fun y : ℝ ↦ -(2 * b)⁻¹ * cexp (-b * (y : ℂ) ^ 2))
     atTop (𝓝 (-(2 * b)⁻¹ * 0)) := by
@@ -170,7 +169,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     simp_rw [norm_cexp_neg_mul_sq b]
     exact tendsto_exp_atBot.comp
       ((tendsto_pow_atTop two_ne_zero).const_mul_atTop_of_neg (neg_lt_zero.2 hb))
-  convert!
+  convert
     integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
       (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
   simp only [mul_zero, ofReal_zero, zero_pow, Ne,
@@ -259,7 +258,7 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
       · rw [← ofReal_one, ← ofReal_div]
       · rw [← ofReal_one, ← ofReal_ofNat, ← ofReal_div]
     rw [← ofReal_cpow, ofReal_inj]
-    · convert! integral_gaussian (1 : ℝ) using 1
+    · convert integral_gaussian (1 : ℝ) using 1
       rw [sqrt_eq_rpow]
     · rw [div_one]; exact pi_pos.le
   · -- squares of both sides agree
@@ -306,7 +305,7 @@ set_option linter.unusedSimpArgs false in
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
 theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
-  convert! congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
+  convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
   · rw [← integral_const_mul]
     refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
     have : (x ^ (2 : ℝ)) ^ (1 / (2 : ℝ) - 1) = x⁻¹ := by
@@ -320,7 +319,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
 
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
 theorem Complex.Gamma_one_half_eq : Complex.Gamma (1 / 2) = (π : ℂ) ^ (1 / 2 : ℂ) := by
-  convert! congr(($Real.Gamma_one_half_eq : ℂ))
+  convert congr(($Real.Gamma_one_half_eq : ℂ))
   · simpa only [one_div, ofReal_inv, ofReal_ofNat] using Gamma_ofReal (1 / 2)
   · rw [sqrt_eq_rpow, ofReal_cpow pi_pos.le, ofReal_div, ofReal_ofNat, ofReal_one]
 
@@ -337,7 +336,7 @@ lemma Real.Gamma_nat_add_one_add_half (k : ℕ) :
     ring
 
 open scoped Nat in
-/-- The special-value formula `Γ(k + 1/2) = (2 * k - 1)‼ * √π / (2 ^ k))` for half-integer
+/-- The special-value formula `Γ(k + 1/2) = (2 * k - 1)‼ * √π / (2 ^ k)` for half-integer
 values of the gamma function in terms of `Nat.doubleFactorial`. -/
 lemma Real.Gamma_nat_add_half (k : ℕ) :
     Gamma (k + 1 / 2) = (2 * k - 1 : ℕ)‼ * √π / (2 ^ k) := by
