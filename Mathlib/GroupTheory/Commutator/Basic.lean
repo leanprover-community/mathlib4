@@ -512,13 +512,19 @@ lemma mem_commutatorSet_of_isConj_sq {g : G} (hg : IsConj g (g ^ 2)) : g ∈ com
   rw [commutatorElement_def, hg]
   simp only [IsUnit.mul_inv_cancel_right, Units.isUnit, mul_inv_eq_iff_eq_mul, pow_two]
 
+variable {G} in
 @[to_additive]
-lemma map_commutator_eq {H : Type*} [Group H] (f : G →* H) :
-    (commutator G).map f = ⁅f.range, f.range⁆ := by
+lemma map_commutator_eq (f : G →* G') : (commutator G).map f = ⁅f.range, f.range⁆ := by
   rw [_root_.commutator_def, Subgroup.map_commutator]
   apply congr_arg₂ <;>
   · rw [Subgroup.map_eq_range_iff]
     rw [codisjoint_iff, top_sup_eq]
+
+variable {G} in
+@[to_additive]
+theorem map_commutator_of_surjective {f : G →* G'} (hf : Function.Surjective f) :
+    (_root_.commutator G).map f = _root_.commutator G' := by
+  rw [map_commutator_eq, f.range_eq_top_of_surjective hf, commutator_def]
 
 section commutatorRepresentatives
 
@@ -559,8 +565,8 @@ variable {G}
 @[to_additive]
 theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} [N.Normal] :
     IsMulCommutative (G ⧸ N) ↔ _root_.commutator G ≤ N := by
-  rw [← commutator_eq_bot_iff, _root_.commutator_def, ← QuotientGroup.range_mk',
-    ← map_commutator_eq, map_eq_bot_iff, QuotientGroup.ker_mk']
+  rw [← commutator_eq_bot_iff, ← map_commutator_of_surjective (QuotientGroup.mk'_surjective N),
+    map_eq_bot_iff, QuotientGroup.ker_mk']
 
 open IsMulCommutative in
 instance : IsMulCommutative (G ⧸ _root_.commutator G) :=
