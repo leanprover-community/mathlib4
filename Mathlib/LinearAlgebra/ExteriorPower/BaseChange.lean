@@ -70,8 +70,7 @@ namespace exteriorPower
 instance : IsScalarTower R S (ExteriorAlgebra S (S ⊗[R] M)) :=
   IsScalarTower.of_algebraMap_eq (fun _ ↦ rfl)
 
-lemma baseChangeGenerator_map_update_add (i : ℕ) [DecidableEq (Fin i)] (m : Fin i → M)
-    (j : Fin i) (x y : M) :
+lemma baseChangeGenerator_map_update_add (i : ℕ) (m : Fin i → M) (j : Fin i) (x y : M) :
     (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j (x + y)) =
       (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j x) +
         (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j y) := by
@@ -83,8 +82,7 @@ lemma baseChangeGenerator_map_update_add (i : ℕ) [DecidableEq (Fin i)] (m : Fi
     · simp [Function.update, ne]
   rw [hz (x + y), hz x, hz y, map_add, (ExteriorAlgebra.ιMulti S i).map_update_add]
 
-lemma baseChangeGenerator_map_update_smul (i : ℕ) [DecidableEq (Fin i)] (m : Fin i → M)
-    (j : Fin i) (r : R) (x : M) :
+lemma baseChangeGenerator_map_update_smul (i : ℕ) (m : Fin i → M) (j : Fin i) (r : R) (x : M) :
     (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j (r • x)) =
       r • (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j x) := by
   have hz (z : M) : ((TensorProduct.mk R S M 1) ∘ Function.update m j z) =
@@ -101,8 +99,12 @@ lemma baseChangeGenerator_map_update_smul (i : ℕ) [DecidableEq (Fin i)] (m : F
 `TensorProduct.mk R S M 1`. -/
 noncomputable def baseChangeGenerator (i : ℕ) : M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S ⊗[R] M) where
   toFun m := ExteriorAlgebra.ιMulti S i ((TensorProduct.mk R S M 1) ∘ m)
-  map_update_add' := baseChangeGenerator_map_update_add R M S i
-  map_update_smul' := baseChangeGenerator_map_update_smul R M S i
+  map_update_add' {_i} := by
+    cases Subsingleton.elim _i (by clear _i; infer_instance)
+    exact baseChangeGenerator_map_update_add R M S i
+  map_update_smul' {_i} := by
+    cases Subsingleton.elim _i (by clear _i; infer_instance)
+    exact baseChangeGenerator_map_update_smul R M S i
   map_eq_zero_of_eq' m j k hjk hjk_ne := by
     have : ((mk R S M 1) ∘ m) j = ((mk R S M 1) ∘ m) k := by
       simpa using congrArg (TensorProduct.mk R S M 1) hjk
