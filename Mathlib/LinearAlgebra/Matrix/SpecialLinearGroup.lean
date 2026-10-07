@@ -664,7 +664,7 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 /-- The explicit element of `SL ι F` realising the elementary diagonal `diag2n hij α`
 as a Whitehead-style product of six transvections. -/
-def elemDiagSL {i j : ι} (hij : i ≠ j) (α : F) : SpecialLinearGroup ι F :=
+abbrev elemDiagSL {i j : ι} (hij : i ≠ j) (α : F) : SpecialLinearGroup ι F :=
   transvection hij α
     * transvection hij.symm (-α⁻¹)
     * transvection hij α
@@ -681,7 +681,7 @@ lemma elemDiagSL_smul {i j : ι} (hij : i ≠ j) (α : F) (v : ι → F) :
             (transvection hij (-1 : F) •
               (transvection hij.symm (1 : F) •
                 (transvection hij (-1 : F) • v))))) := by
-  simp only [elemDiagSL, mul_smul]
+  simp only [mul_smul]
 
 /-- `elemDiagSL hij α` acts as multiplication by `α` on `e_i`. -/
 lemma elemDiagSL_smul_single_fst {i j : ι} (hij : i ≠ j) (α : F) (hα : α ≠ 0) :
