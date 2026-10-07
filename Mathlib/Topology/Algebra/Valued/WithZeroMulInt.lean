@@ -5,8 +5,9 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.GroupTheory.ArchimedeanDensely
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+
+import Mathlib.GroupTheory.ArchimedeanDensely
 
 /-!
 # Topological results for integer-valued rings

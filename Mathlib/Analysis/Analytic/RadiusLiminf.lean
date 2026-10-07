@@ -65,6 +65,6 @@ theorem radius_eq_liminf :
 is equal to $\limsup_{n\to\infty} \sqrt[n]{‖p n‖}$. -/
 theorem radius_inv_eq_limsup :
     p.radius⁻¹ = limsup (fun n ↦ ((‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
-  simpa [ENNReal.inv_liminf] using congr($(p.radius_eq_liminf)⁻¹)
+  simpa [ENNReal.inv_liminf] using congr($p.radius_eq_liminf⁻¹)
 
 end FormalMultilinearSeries
