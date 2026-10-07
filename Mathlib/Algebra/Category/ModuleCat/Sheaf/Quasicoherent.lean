@@ -184,10 +184,12 @@ see `GeneratingSections.map` for the version for generators only. -/
 @[simps! generators_I relations_I]
 def Presentation.map : Presentation (F.obj M) :=
   presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
-    (P.mapRelations_mapGenerators F η) <|
-    IsCokernel.ofIso _ (CokernelCofork.mapIsColimit _ P.isColimit F) _ (mapFreeIso F _ η).symm
-      (mapFreeIso F _ η).symm (.refl _) (by simp [mapRelations])
-      (by simp [GeneratingSections.mapFreeHom])
+    (P.mapRelations_mapGenerators F η) <| by
+    refine IsColimit.equivOfNatIsoOfIso
+      (parallelPair.ext (mapFreeIso F _ η).symm (mapFreeIso F _ η).symm
+        (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
+    exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
+      <;> simp [Presentation.mapRelations, GeneratingSections.mapFreeHom, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
     (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
