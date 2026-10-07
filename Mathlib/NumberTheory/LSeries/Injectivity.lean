@@ -5,10 +5,11 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.NumberTheory.LSeries.Convergence
-public import Mathlib.NumberTheory.LSeries.Linearity
-public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+
+import Mathlib.Analysis.Normed.Group.Tannery
+import Mathlib.NumberTheory.LSeries.Linearity
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 /-!
 # A converging L-series determines its coefficients
@@ -181,7 +182,7 @@ lemma LSeries_eq_zero_iff {f : ℕ → ℂ} (hf : f 0 = 0) :
   · simpa [h] using! LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h
   · simp only [h, or_false]
     refine ⟨fun H ↦ ?_, fun H ↦ H ▸ LSeries_zero⟩
-    convert! (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
+    convert (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
     · refine ⟨fun H' _ _ ↦ by rw [H', Pi.zero_apply], fun H' ↦ ?_⟩
       ext (- | m)
       · simp [hf]
@@ -233,7 +234,7 @@ lemma LSeries_eq_iff_of_abscissaOfAbsConv_lt_top {f g : ℕ → ℂ} (hf : absci
     LSeries f = LSeries g ↔ ∀ n ≠ 0, f n = g n := by
   refine ⟨fun H n hn ↦ ?_, fun H ↦ funext (LSeries_congr fun {n} ↦ H n)⟩
   refine eq_of_LSeries_eventually_eq hf hg ?_ hn
-  exact Filter.Eventually.of_forall fun x ↦ congr_fun H x
+  exact Filter.Eventually.of_forall fun x ↦ congr($H x)
 
 /-- The map `f ↦ LSeries f` is injective on functions `f` such that `f 0 = 0` and the L-series
 of `f` converges somewhere. -/

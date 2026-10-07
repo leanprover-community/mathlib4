@@ -5,7 +5,6 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
 /-!

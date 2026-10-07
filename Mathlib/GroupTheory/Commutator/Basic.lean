@@ -5,7 +5,6 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Algebra.Group.Commutator
 public import Mathlib.GroupTheory.Subgroup.Centralizer
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
@@ -97,7 +96,7 @@ theorem Commute.commutatorElement_pow_right {a b : G} (h : Commute b ⁅a, b⁆)
     ⁅a, b⁆ ^ n = ⁅a, b ^ n⁆ := by
   induction n with
   | zero => simp
-  | succ n ih => rw [pow_succ', pow_succ', commutatorElement_mul_right_eq_mul_conj, ←ih,
+  | succ n ih => rw [pow_succ', pow_succ', commutatorElement_mul_right_eq_mul_conj, ← ih,
         (h.pow_right n).right_comm, mul_inv_cancel_right]
 
 @[to_additive]
