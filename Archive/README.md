@@ -1,4 +1,4 @@
-# Archive   
+# Archive
 
 This is an archive for formalizations which don't have a good place in mathlib, probably because there is (almost) no math depending on these results.
 
