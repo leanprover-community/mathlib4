@@ -6,10 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equifibered
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 
@@ -108,7 +109,7 @@ theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKamp
   intro j
   conv_lhs => rw [← Category.comp_id (α.app j)]
   have : IsIso e.inv.hom := Functor.map_isIso (Cocone.forget _) e.inv
-  exact (IsPullback.of_vert_isIso ⟨by simp⟩).paste_vert_iff (NatTrans.congr_app h j).symm
+  exact (IsPullback.of_vert_isIso ⟨by simp⟩).paste_vert_iff congr($(h).app j).symm
 
 theorem IsVanKampenColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
     {c : Cocone G} (hc : IsVanKampenColimit c) :
@@ -145,7 +146,7 @@ theorem IsUniversalColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone 
     (hc : IsUniversalColimit (G.mapCocone c)) : IsUniversalColimit c :=
   fun F' c' α f h hα H ↦
     ⟨isColimitOfReflects _ (hc (G.mapCocone c') (whiskerRight α G) (G.map f)
-    (by ext j; simpa using! G.congr_map (NatTrans.congr_app h j))
+    (by ext j; simpa using! G.congr_map congr($(h).app j))
     (hα.whiskerRight G) (fun j ↦ (H j).map G)).some⟩
 
 theorem IsVanKampenColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone F}
@@ -157,10 +158,10 @@ theorem IsVanKampenColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone 
     (H : IsVanKampenColimit (G.mapCocone c)) : IsVanKampenColimit c := by
   intro F' c' α f h hα
   refine (Iff.trans ?_ (H (G.mapCocone c') (whiskerRight α G) (G.map f)
-      (by ext j; simpa using! G.congr_map (NatTrans.congr_app h j))
+      (by ext j; simpa using! G.congr_map congr($(h).app j))
       (hα.whiskerRight G))).trans (forall_congr' fun j => ?_)
   · exact ⟨fun h => ⟨isColimitOfPreserves G h.some⟩, fun h => ⟨isColimitOfReflects G h.some⟩⟩
-  · exact IsPullback.map_iff G (NatTrans.congr_app h.symm j)
+  · exact IsPullback.map_iff G congr($(h.symm).app j)
 
 theorem IsVanKampenColimit.mapCocone_iff (G : C ⥤ D) {F : J ⥤ C} {c : Cocone F}
     [G.IsEquivalence] : IsVanKampenColimit (G.mapCocone c) ↔ IsVanKampenColimit c :=
@@ -175,11 +176,11 @@ theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J �
     {F : K ⥤ C} {c : Cocone F} (hc : IsUniversalColimit c) :
     IsUniversalColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα H
-  convert!
+  convert
     hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
       ((hα.whiskerLeft _).comp (.of_isIso _)) ?_ using 1
   · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
-  · convert! congr_arg (whiskerLeft e.inverse) e'
+  · convert! congr(whiskerLeft e.inverse $e')
     ext
     simp
   · intro k
@@ -199,7 +200,7 @@ theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J �
     {F : K ⥤ C} {c : Cocone F} (hc : IsVanKampenColimit c) :
     IsVanKampenColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα
-  convert!
+  convert
     hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
       ((hα.whiskerLeft _).comp (.of_isIso _)) using 1
   · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
@@ -237,11 +238,11 @@ theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J 
       (by
         ext y
         dsimp
-        exact NatTrans.congr_app (NatTrans.congr_app e y) x)
+        congrm ($(e).app y).app x)
       (hα.whiskerRight _)
   constructor
   · rintro ⟨hc'⟩ j
-    refine ⟨⟨(NatTrans.congr_app e j).symm⟩, ⟨evaluationJointlyReflectsLimits _ ?_⟩⟩
+    refine ⟨⟨congr($(e).app j).symm⟩, ⟨evaluationJointlyReflectsLimits _ ?_⟩⟩
     refine fun x => (isLimitMapConePullbackConeEquiv _ _).symm ?_
     exact ((this x).mp ⟨isColimitOfPreserves _ hc'⟩ _).isLimit
   · exact fun H => ⟨evaluationJointlyReflectsColimits _ fun x =>
@@ -393,7 +394,7 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
       dsimp [β]
       simp only [Category.comp_id, hα'', Category.assoc, Gl.map_comp]
       congr 1
-      exact (NatTrans.congr_app h j).symm
+      exact congr($(h).app j).symm
   rw [this]
   have := ((H (colimit.cocone <| F' ⋙ Gr) (whiskerRight α' Gr)
     (colimit.desc _ ⟨_, whiskerRight α' Gr ≫ c.2⟩) ?_ (hα'.whiskerRight Gr)).mp
@@ -467,8 +468,7 @@ theorem BinaryCofan.isVanKampen_iff (c : BinaryCofan X Y) :
     clear_value X' Y'
     subst this
     change BinaryCofan X' Y' at c'
-    rw [H c' _ _ _ (NatTrans.congr_app hα ⟨WalkingPair.left⟩)
-        (NatTrans.congr_app hα ⟨WalkingPair.right⟩)]
+    rw [H c' _ _ _ congr($(hα).app ⟨WalkingPair.left⟩) congr($(hα).app ⟨WalkingPair.right⟩)]
     constructor
     · rintro H ⟨⟨⟩⟩
       exacts [H.1, H.2]
@@ -506,7 +506,7 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
         simp
       exact (IsPullback.of_vert_isIso ⟨this⟩).paste_vert hr
   · rintro ⟨H₁, H₂⟩
-    refine ⟨IsColimit.ofIsoColimit ?_ <| (isoBinaryCofanMk _).symm⟩
+    refine ⟨IsColimit.ofIsoColimit ?_ (isoBinaryCofanMk _).symm⟩
     let e₁ : X' ≅ _ := H₁.isLimit.conePointUniqueUpToIso (limits _ _)
     let e₂ : Y' ≅ _ := H₂.isLimit.conePointUniqueUpToIso (limits _ _)
     have he₁ : c'.inl = e₁.hom ≫ (cones f c.inl).fst := by simp [e₁]

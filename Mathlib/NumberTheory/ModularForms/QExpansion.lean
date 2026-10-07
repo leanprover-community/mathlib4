@@ -5,12 +5,13 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+
+import Mathlib.Analysis.Complex.TaylorSeries
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!
 # q-expansions of functions on the upper half plane
@@ -787,7 +788,7 @@ lemma qExpansion_coeff_unique {c : ℕ → ℂ} (hh : 0 < h)
     c m = (qExpansion h f).coeff m := by
   have h1 := (hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf).hasFPowerSeriesAt
   have h2 := (hasFPowerSeries_cuspFunction f hh hfanalytic hf).hasFPowerSeriesAt
-  simpa using congr_arg (FormalMultilinearSeries.coeff · m) (h1.eq_formalMultilinearSeries h2)
+  simpa using congr(FormalMultilinearSeries.coeff $(h1.eq_formalMultilinearSeries h2) m)
 
 end UpperHalfPlane
 

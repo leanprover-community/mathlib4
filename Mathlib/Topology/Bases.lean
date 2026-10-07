@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Data.Set.Constructions
 public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-public import Mathlib.Topology.Constructions
-public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.NhdsWithin
+
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -95,7 +95,7 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
 
 theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
     (hsi : FiniteInter s) : IsTopologicalBasis s := by
-  convert! isTopologicalBasis_of_subbasis hsg
+  convert isTopologicalBasis_of_subbasis hsg
   refine le_antisymm (fun t ht ↦ ⟨{t}, by simpa using ht⟩) ?_
   rintro _ ⟨g, ⟨hg, hgs⟩, rfl⟩
   lift g to Finset (Set α) using hg
@@ -858,7 +858,7 @@ variable (α)
 -- see Note [lower instance priority]
 instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
     [SecondCountableTopology α] : FirstCountableTopology α :=
-  ⟨fun _ => HasCountableBasis.isCountablyGenerated <|
+  ⟨fun _ => HasCountableBasis.isCountablyGenerated
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
         (countable_countableBasis α).mono inter_subset_left⟩⟩
 
@@ -1013,7 +1013,7 @@ lemma IsTopologicalBasis.exists_countable
     obtain ⟨u, u_mem, xu, uv⟩ : ∃ u ∈ countableBasis α, x ∈ u ∧ u ⊆ v :=
       (isBasis_countableBasis α).isOpen_iff.1 hv _ hx
     have : x ∈ ⋃ a ∈ s u, a := by
-      convert! xu
+      convert xu
       exact (hs u u_mem).symm
     obtain ⟨w, ws, xw⟩ : ∃ w ∈ s u, x ∈ w := by simpa using this
     refine ⟨w, ⟨u, u_mem, ws⟩, xw, ?_⟩
