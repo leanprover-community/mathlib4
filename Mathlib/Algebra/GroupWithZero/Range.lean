@@ -292,21 +292,20 @@ def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : valueGroup f :=
   simp only [mk, map_mul, MulMemClass.mk_mul_mk, Units.mk0_mul, Subtype.mk.injEq]
   rw [mul_mul_mul_comm, mul_inv]
 
+@[simp]
 lemma mk_eq_div {r s : A} (hr : f r ≠ 0) (hs : f s ≠ 0) :
     (valueGroup.mk f r s hr hs : Bˣ) = f s / f r := by
   simp [valueGroup.mk, inv_mul_eq_div]
 
-theorem exists_mk (f : A →*₀ B) (x : valueGroup f) :
+theorem exists_mk (f : A →*₀ B) (x : f.valueGroup) :
     ∃ r s hr hs, x = valueGroup.mk f r s hr hs := by
-  have hx := x.2
-  rw [mem_valueGroup_iff_of_comm'] at hx
-  obtain ⟨r, hr, s, hs, hrs⟩ := hx
-  exact ⟨r, s, hr, hs, by simp [valueGroup.mk, ← hrs, mul_comm]⟩
+  obtain ⟨r, hr, s, hs, hrs⟩ := (mem_valueGroup_iff_of_comm' f).mp x.2
+  exact ⟨r, s, hr, hs, by simp [valueGroup.mk, ← hrs]⟩
 
 end valueGroup
 
 theorem mem_valueGroup_iff_exists_mk_of_comm (f : A →*₀ B) {y : Bˣ} :
-    y ∈ valueGroup f ↔ ∃ r s hr hs, y = valueGroup.mk f r s hr hs := by
+    y ∈ f.valueGroup ↔ ∃ r s hr hs, y = valueGroup.mk f r s hr hs := by
   refine ⟨fun hy ↦ ?_, fun ⟨r, s, hr, hs, hy⟩ ↦ by aesop⟩
   obtain ⟨r, s, hr, hs, h⟩ := valueGroup.exists_mk f ⟨y, hy⟩
   exact ⟨r, s, hr, hs, Subtype.ext_iff.mp h⟩
