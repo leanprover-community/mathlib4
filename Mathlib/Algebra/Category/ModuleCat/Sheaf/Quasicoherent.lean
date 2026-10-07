@@ -176,18 +176,18 @@ theorem Presentation.mapRelations_mapGenerators :
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-/-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
-colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
-`Presentation (F.obj M)`. -/
+/-- The presentation of `F.obj M` obtained from a presentation `P` of `M` by applying a functor
+`F` from sheaves of `R`-modules to sheaves of `S`-modules which preserves colimits, given an
+isomorphism `η : unit S ≅ F.obj (unit R)`. Its generators and relations are indexed by the same
+types as those of `P`, and its projection onto `F.obj M` is described by `Presentation.map_π_eq`;
+see `GeneratingSections.map` for the version for generators only. -/
 @[simps! generators_I relations_I]
 def Presentation.map : Presentation (F.obj M) :=
   presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
-    (P.mapRelations_mapGenerators F η) <| by
-    refine IsColimit.equivOfNatIsoOfIso
-      (parallelPair.ext (mapFreeIso F _ η).symm (mapFreeIso F _ η).symm
-        (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
-    exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
-      <;> simp [Presentation.mapRelations, GeneratingSections.mapFreeHom, ← Functor.map_comp])
+    (P.mapRelations_mapGenerators F η) <|
+    IsCokernel.ofIso _ (CokernelCofork.mapIsColimit _ P.isColimit F) _ (mapFreeIso F _ η).symm
+      (mapFreeIso F _ η).symm (.refl _) (by simp [mapRelations])
+      (by simp [GeneratingSections.mapFreeHom])
 
 theorem Presentation.map_π_eq :
     (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
