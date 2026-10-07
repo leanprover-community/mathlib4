@@ -143,6 +143,9 @@ theorem pderiv_comm (i j : σ) (p : MvPolynomial σ R) :
     simp only [pderiv_mul, map_add, pderiv_X, Pi.single_apply, h]
     split_ifs <;> simp [add_right_comm]
 
+theorem commute_pderiv (i j : σ) : Function.Commute (pderiv (R := R) i) (pderiv j) :=
+  pderiv_comm i j
+
 theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
     pderiv i (map φ f) = map φ (pderiv i f) := by
   apply induction_on f (fun r ↦ by simp) (fun p q hp hq ↦ by simp [hp, hq]) fun p j eq ↦ ?_
