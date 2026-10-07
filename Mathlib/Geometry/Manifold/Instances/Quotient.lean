@@ -23,7 +23,7 @@ This file contains results about quotients of manifolds by group actions.
 
 ## TODO
 
-* if `G` acts smoothly, the projection map is smooth
+* if the action is free, properly discontinuous and `C^n`, the projection `M → M⧸G` is `C^n`.
 
 ## Tags
 
