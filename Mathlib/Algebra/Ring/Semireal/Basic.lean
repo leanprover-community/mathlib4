@@ -5,6 +5,7 @@ Authors: Artie Khovanov
 -/
 module
 
+public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Ring.Semireal.Defs
 public import Mathlib.Algebra.Ring.IsFormallyReal
 
