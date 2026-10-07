@@ -54,6 +54,8 @@ def _kill_tree(proc: subprocess.Popen) -> None:
     else:
         subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)],
                        capture_output=True)
+        proc.kill()  # fallback if taskkill failed; no-op if already dead
+
 
 class ShutdownError(Exception):
     """Raised when a shutdown has been requested (e.g. Ctrl-C)."""
