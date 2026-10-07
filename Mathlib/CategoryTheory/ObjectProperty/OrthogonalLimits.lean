@@ -5,12 +5,10 @@ Authors: Blake Farman
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
-public import Mathlib.CategoryTheory.ObjectProperty.Extensions
-public import Mathlib.CategoryTheory.ObjectProperty.Subobject
-
-import Mathlib.Algebra.Homology.ShortComplex.Pullback
-import Mathlib.CategoryTheory.Abelian.Subobject
 
 /-!
 # Orthogonals are closed under (co)limits, quotients and subobjects
