@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiff.Constructions
 
 import Mathlib.Analysis.Normed.Operator.Prod
+import Mathlib.Geometry.Manifold.Notation
 
 /-! # Equivalence of smoothness with the basic definition for functions between vector spaces
 
@@ -44,7 +45,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 section Module
 
 theorem contMDiffWithinAt_iff_contDiffWithinAt {f : E → E'} {s : Set E} {x : E} :
-    ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') n f s x ↔ ContDiffWithinAt 𝕜 n f s x := by
+    CMDiffAt[s] n f x ↔ ContDiffWithinAt 𝕜 n f s x := by
   simp +contextual only [ContMDiffWithinAt, liftPropWithinAt_iff',
     ContDiffWithinAtProp, iff_def, mfld_simps]
   exact ContDiffWithinAt.continuousWithinAt
@@ -53,142 +54,132 @@ alias ⟨ContMDiffWithinAt.contDiffWithinAt, ContDiffWithinAt.contMDiffWithinAt�
   contMDiffWithinAt_iff_contDiffWithinAt
 
 theorem contMDiffAt_iff_contDiffAt {f : E → E'} {x : E} :
-    ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, E') n f x ↔ ContDiffAt 𝕜 n f x := by
+    CMDiffAt n f x ↔ ContDiffAt 𝕜 n f x := by
   rw [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_contDiffWithinAt, contDiffWithinAt_univ]
 
 alias ⟨ContMDiffAt.contDiffAt, ContDiffAt.contMDiffAt⟩ := contMDiffAt_iff_contDiffAt
 
 theorem contMDiffOn_iff_contDiffOn {f : E → E'} {s : Set E} :
-    ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, E') n f s ↔ ContDiffOn 𝕜 n f s :=
+    CMDiff[s] n f ↔ ContDiffOn 𝕜 n f s :=
   forall_congr' <| by simp [contMDiffWithinAt_iff_contDiffWithinAt]
 
 alias ⟨ContMDiffOn.contDiffOn, ContDiffOn.contMDiffOn⟩ := contMDiffOn_iff_contDiffOn
 
-theorem contMDiff_iff_contDiff {f : E → E'} : ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E') n f ↔ ContDiff 𝕜 n f := by
+theorem contMDiff_iff_contDiff {f : E → E'} : CMDiff n f ↔ ContDiff 𝕜 n f := by
   rw [← contDiffOn_univ, ← contMDiffOn_univ, contMDiffOn_iff_contDiffOn]
 
 alias ⟨ContMDiff.contDiff, ContDiff.contMDiff⟩ := contMDiff_iff_contDiff
 
 theorem ContDiffWithinAt.comp_contMDiffWithinAt {g : F → F'} {f : M → F} {s : Set M} {t : Set F}
-    {x : M} (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContMDiffWithinAt I 𝓘(𝕜, F) n f s x)
-    (h : s ⊆ f ⁻¹' t) : ContMDiffWithinAt I 𝓘(𝕜, F') n (g ∘ f) s x :=
+    {x : M} (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : CMDiffAt[s] n f x)
+    (h : s ⊆ f ⁻¹' t) : CMDiffAt[s] n (g ∘ f) x :=
   hg.contMDiffWithinAt.comp x hf h
 
 theorem ContDiffAt.comp_contMDiffWithinAt {g : F → F'} {f : M → F} {s : Set M}
-    {x : M} (hg : ContDiffAt 𝕜 n g (f x)) (hf : ContMDiffWithinAt I 𝓘(𝕜, F) n f s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, F') n (g ∘ f) s x :=
+    {x : M} (hg : ContDiffAt 𝕜 n g (f x)) (hf : CMDiffAt[s] n f x) :
+    CMDiffAt[s] n (g ∘ f) x :=
   hg.contMDiffAt.comp_contMDiffWithinAt x hf
 
 theorem ContDiffAt.comp_contMDiffAt {g : F → F'} {f : M → F} {x : M} (hg : ContDiffAt 𝕜 n g (f x))
-    (hf : ContMDiffAt I 𝓘(𝕜, F) n f x) : ContMDiffAt I 𝓘(𝕜, F') n (g ∘ f) x :=
+    (hf : CMDiffAt n f x) : CMDiffAt n (g ∘ f) x :=
   hg.comp_contMDiffWithinAt hf
 
 theorem ContDiff.comp_contMDiffWithinAt {g : F → F'} {f : M → F} {s : Set M} {x : M}
-    (hg : ContDiff 𝕜 n g) (hf : ContMDiffWithinAt I 𝓘(𝕜, F) n f s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, F') n (g ∘ f) s x :=
+    (hg : ContDiff 𝕜 n g) (hf : CMDiffAt[s] n f x) :
+    CMDiffAt[s] n (g ∘ f) x :=
   hg.contDiffAt.comp_contMDiffWithinAt hf
 
 theorem ContDiff.comp_contMDiffAt {g : F → F'} {f : M → F} {x : M} (hg : ContDiff 𝕜 n g)
-    (hf : ContMDiffAt I 𝓘(𝕜, F) n f x) : ContMDiffAt I 𝓘(𝕜, F') n (g ∘ f) x :=
+    (hf : CMDiffAt n f x) : CMDiffAt n (g ∘ f) x :=
   hg.comp_contMDiffWithinAt hf
 
 theorem ContDiff.comp_contMDiff {g : F → F'} {f : M → F} (hg : ContDiff 𝕜 n g)
-    (hf : ContMDiff I 𝓘(𝕜, F) n f) : ContMDiff I 𝓘(𝕜, F') n (g ∘ f) := fun x =>
+    (hf : CMDiff n f) : CMDiff n (g ∘ f) := fun x =>
   hg.contDiffAt.comp_contMDiffAt (hf x)
 
 end Module
 
 /-! ### Linear maps between normed spaces are smooth -/
 
-theorem ContinuousLinearMap.contMDiff (L : E →L[𝕜] F) : ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, F) n L :=
+theorem ContinuousLinearMap.contMDiff (L : E →L[𝕜] F) : CMDiff n L :=
   L.contDiff.contMDiff
 
-theorem ContinuousLinearMap.contMDiffAt (L : E →L[𝕜] F) {x} : ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, F) n L x :=
+theorem ContinuousLinearMap.contMDiffAt (L : E →L[𝕜] F) {x} : CMDiffAt n L x :=
   L.contMDiff _
 
 theorem ContinuousLinearMap.contMDiffWithinAt (L : E →L[𝕜] F) {s x} :
-    ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, F) n L s x :=
+    CMDiffAt[s] n L x :=
   L.contMDiffAt.contMDiffWithinAt
 
-theorem ContinuousLinearMap.contMDiffOn (L : E →L[𝕜] F) {s} : ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n L s :=
+theorem ContinuousLinearMap.contMDiffOn (L : E →L[𝕜] F) {s} : CMDiff[s] n L :=
   L.contMDiff.contMDiffOn
 
 theorem ContMDiffWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
-    (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
-      (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
+    (hf : CMDiffAt[s] n f x) :
+    CMDiffAt[s] n (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
   ContDiff.comp_contMDiffWithinAt (g := (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip)
     (ContinuousLinearMap.contDiff _) hf
 
 nonrec theorem ContMDiffAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {x : M}
-    (hf : ContMDiffAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f x) :
-    ContMDiffAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
-      (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
+    (hf : CMDiffAt n f x) :
+    CMDiffAt n (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
   hf.clm_precomp
 
 theorem ContMDiffOn.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M}
-    (hf : ContMDiffOn I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s) :
-    ContMDiffOn I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
-      (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) s := fun x hx ↦
+    (hf : CMDiff[s] n f) :
+    CMDiff[s] n (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x hx ↦
   (hf x hx).clm_precomp
 
-theorem ContMDiff.clm_precomp {f : M → F₁ →L[𝕜] F₂} (hf : ContMDiff I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f) :
-    ContMDiff I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
-      (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
+theorem ContMDiff.clm_precomp {f : M → F₁ →L[𝕜] F₂} (hf : CMDiff n f) :
+    CMDiff n (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
   (hf x).clm_precomp
 
 theorem ContMDiffWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
-    (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) n
-      (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
+    (hf : CMDiffAt[s] n f x) :
+    CMDiffAt[s] n (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
   ContDiff.comp_contMDiffWithinAt (F' := (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
     (g := ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃) (ContinuousLinearMap.contDiff _) hf
 
 nonrec theorem ContMDiffAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {x : M}
-    (hf : ContMDiffAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f x) :
-    ContMDiffAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) n
-      (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
+    (hf : CMDiffAt n f x) :
+    CMDiffAt n (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
   hf.clm_postcomp
 
 nonrec theorem ContMDiffOn.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M}
-    (hf : ContMDiffOn I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f s) :
-    ContMDiffOn I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) n
-      (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) s := fun x hx ↦
+    (hf : CMDiff[s] n f) :
+    CMDiff[s] n (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x hx ↦
   (hf x hx).clm_postcomp
 
-theorem ContMDiff.clm_postcomp {f : M → F₂ →L[𝕜] F₃} (hf : ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f) :
-    ContMDiff I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) n
-      (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
+theorem ContMDiff.clm_postcomp {f : M → F₂ →L[𝕜] F₃} (hf : CMDiff n f) :
+    CMDiff n (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
   (hf x).clm_postcomp
 
 theorem ContMDiffWithinAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {s : Set M} {x : M}
-    (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g s x)
-    (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n f s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n (fun x => (g x).comp (f x)) s x :=
+    (hg : CMDiffAt[s] n g x) (hf : CMDiffAt[s] n f x) :
+    CMDiffAt[s] n (fun x ↦ (g x).comp (f x)) x :=
   ContDiff.comp_contMDiffWithinAt (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₁) => x.1.comp x.2)
     (f := fun x => (g x, f x)) (contDiff_fst.clm_comp contDiff_snd) (hg.prodMk_space hf)
 
 theorem ContMDiffAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {x : M}
-    (hg : ContMDiffAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g x) (hf : ContMDiffAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n f x) :
-    ContMDiffAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n (fun x => (g x).comp (f x)) x :=
+    (hg : CMDiffAt n g x) (hf : CMDiffAt n f x) :
+    CMDiffAt n (fun x => (g x).comp (f x)) x :=
   (hg.contMDiffWithinAt.clm_comp hf.contMDiffWithinAt).contMDiffAt Filter.univ_mem
 
 theorem ContMDiffOn.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {s : Set M}
-    (hg : ContMDiffOn I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g s) (hf : ContMDiffOn I 𝓘(𝕜, F₂ →L[𝕜] F₁) n f s) :
-    ContMDiffOn I 𝓘(𝕜, F₂ →L[𝕜] F₃) n (fun x => (g x).comp (f x)) s := fun x hx =>
-  (hg x hx).clm_comp (hf x hx)
+    (hg : CMDiff[s] n g) (hf : CMDiff[s] n f) :
+    CMDiff[s] n (fun x => (g x).comp (f x)) :=
+  fun x hx ↦ (hg x hx).clm_comp (hf x hx)
 
 theorem ContMDiff.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁}
-    (hg : ContMDiff I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g) (hf : ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₁) n f) :
-    ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₃) n fun x => (g x).comp (f x) := fun x => (hg x).clm_comp (hf x)
+    (hg : CMDiff n g) (hf : CMDiff n f) :
+    CMDiff n fun x ↦ (g x).comp (f x) := fun x ↦ (hg x).clm_comp (hf x)
 
 /-- Applying a linear map to a vector is smooth within a set. Version in vector spaces. For
 versions in nontrivial vector bundles, see `ContMDiffWithinAt.clm_apply_of_inCoordinates` and
 `ContMDiffWithinAt.clm_bundle_apply`. -/
 theorem ContMDiffWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {s : Set M} {x : M}
-    (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g s x)
-    (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁) n f s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, F₂) n (fun x => g x (f x)) s x :=
+    (hg : CMDiffAt[s] n g x) (hf : CMDiffAt[s] n f x) :
+    CMDiffAt[s] n (fun x ↦ g x (f x)) x :=
   ContDiffWithinAt.comp_contMDiffWithinAt (t := univ)
     (g := fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2)
     (by apply ContDiff.contDiffAt; exact contDiff_fst.clm_apply contDiff_snd) (hg.prodMk_space hf)
@@ -198,17 +189,17 @@ theorem ContMDiffWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → 
 versions in nontrivial vector bundles, see `ContMDiffAt.clm_apply_of_inCoordinates` and
 `ContMDiffAt.clm_bundle_apply`. -/
 nonrec theorem ContMDiffAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {x : M}
-    (hg : ContMDiffAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g x) (hf : ContMDiffAt I 𝓘(𝕜, F₁) n f x) :
-    ContMDiffAt I 𝓘(𝕜, F₂) n (fun x => g x (f x)) x :=
+    (hg : CMDiffAt n g x) (hf : CMDiffAt n f x) :
+    CMDiffAt n (fun x ↦ g x (f x)) x :=
   hg.clm_apply hf
 
 theorem ContMDiffOn.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {s : Set M}
-    (hg : ContMDiffOn I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g s) (hf : ContMDiffOn I 𝓘(𝕜, F₁) n f s) :
-    ContMDiffOn I 𝓘(𝕜, F₂) n (fun x => g x (f x)) s := fun x hx => (hg x hx).clm_apply (hf x hx)
+    (hg : CMDiff[s] n g) (hf : CMDiff[s] n f) :
+    CMDiff[s] n (fun x ↦ g x (f x)) := fun x hx ↦ (hg x hx).clm_apply (hf x hx)
 
 theorem ContMDiff.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁}
-    (hg : ContMDiff I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g) (hf : ContMDiff I 𝓘(𝕜, F₁) n f) :
-    ContMDiff I 𝓘(𝕜, F₂) n fun x => g x (f x) := fun x => (hg x).clm_apply (hf x)
+    (hg : CMDiff n g) (hf : CMDiff n f) :
+    CMDiff n fun x ↦ g x (f x) := fun x ↦ (hg x).clm_apply (hf x)
 
 theorem ContMDiffWithinAt.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
     {s : Set M} {x : M}
