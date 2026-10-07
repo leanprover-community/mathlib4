@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Order.Nat
-import Mathlib.Tactic.Basify.Attr
 
+import Mathlib.Tactic.Basify.Attr
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!
@@ -342,6 +342,10 @@ protected lemma exists_nat_gt (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
 
 @[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
+
+@[simp]
+theorem addLECancellable_iff_ne_top {a : ℕ∞} : AddLECancellable a ↔ a ≠ ⊤ :=
+  WithTop.addLECancellable_iff_ne_top
 
 lemma addLECancellable_of_ne_top : a ≠ ⊤ → AddLECancellable a := WithTop.addLECancellable_of_ne_top
 lemma addLECancellable_of_lt_top : a < ⊤ → AddLECancellable a := WithTop.addLECancellable_of_lt_top

@@ -3,6 +3,7 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
 /-!
 # Cache CLI option parsing
@@ -16,6 +17,8 @@ boolean flags (`--name`), and positional arguments before dispatch. These
 helpers implement that partitioning and the validation of known option names.
 -/
 
+public section
+
 namespace Cache.Cli
 
 /-- The named options supported by the CLI. -/
@@ -27,7 +30,7 @@ def knownFlagOpts : List String := ["help", "unsafe"]
 
 /-- Parses an optional `--foo=bar` option. Returns the value for the
 last-mentioned occurrence (so a later `--foo=` overrides an earlier one). -/
-def parseNamedOpt (opt : String) (args : List String) : IO (Option String) := do
+def parseNamedOpt (opt : String) (args : List String) : BaseIO (Option String) := do
   let pref := s!"--{opt}="
   if let some a := args.findRev? (fun a => a.startsWith pref) then
     let val := a.drop pref.length

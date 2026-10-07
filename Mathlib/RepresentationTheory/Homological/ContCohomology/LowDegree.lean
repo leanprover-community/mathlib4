@@ -8,7 +8,7 @@ module
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
 
 /-!
-## Low degree continuous cohomology
+# Low degree continuous cohomology
 
 In this file we show that the zeroth continuous cohomology is isomorphic to the
 invariants of the representation.
@@ -74,7 +74,7 @@ def d₀kerIso : ((homogeneousCochains X).d 0 1).hom.ker ≃L[k] X.ρ.invariants
       sub_eq_zero, ContinuousMap.const_apply] at hx ⊢
     simpa using DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hx g) 1
   right_inv _ := rfl
-  continuous_toFun := continuous_induced_rng.2 <| (continuous_eval_const 1).comp <|
+  continuous_toFun := continuous_induced_rng.2 <| (continuous_eval_const 1).comp
     (continuous_subtype_val.comp continuous_subtype_val)
   continuous_invFun := continuous_induced_rng.2 <| continuous_induced_rng.2 <|
     ContinuousMap.continuous_const'.comp continuous_subtype_val
