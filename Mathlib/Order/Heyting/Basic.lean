@@ -189,7 +189,8 @@ abbrev HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α �
 
 -- See note [reducible non-instances]
 /-- Construct a Heyting algebra from the lattice structure and complement operator alone. -/
-@[to_dual /-- Construct a co-Heyting algebra from the difference and Heyting negation alone. -/]
+@[to_dual
+/-- Construct a co-Heyting algebra from the lattice structure and co-Heyting negation alone. -/]
 abbrev HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α → α)
     (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α where
   himp := (compl · ⊔ ·)
