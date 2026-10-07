@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.Algebra.Ring.GrindInstances
+
+import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Partial sums of geometric series in a ring
@@ -238,7 +239,7 @@ lemma mul_geom_sum (x : R) (n : ℕ) : ((x - 1) * ∑ i ∈ range n, x ^ i) = x 
   op_injective <| by simpa using geom_sum_mul (op x) n
 
 lemma geom_sum_mul_neg (x : R) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (1 - x) = 1 - x ^ n := by
-  have := congr_arg Neg.neg (geom_sum_mul x n)
+  have := congr(-$(geom_sum_mul x n))
   rw [neg_sub, ← mul_neg, neg_sub] at this
   exact this
 
@@ -284,7 +285,7 @@ protected lemma Commute.geom_sum₂_Ico_mul (h : Commute x y) {m n : ℕ}
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]
-  convert! (Commute.op h).mul_geom_sum₂_Ico hmn
+  convert (Commute.op h).mul_geom_sum₂_Ico hmn
 
 lemma geom_sum_Ico_mul (x : R) {m n : ℕ} (hmn : m ≤ n) :
     (∑ i ∈ Finset.Ico m n, x ^ i) * (x - 1) = x ^ n - x ^ m := by

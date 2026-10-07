@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
+
+import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 
 /-!
 # Dominated convergence theorem
@@ -106,8 +107,7 @@ theorem tendsto_lintegral_filter_of_dominated_convergence' {ι} {l : Filter ι}
   · refine h_lim.mono fun a h_lim => ?_
     apply @Tendsto.comp _ _ _ (fun n => x (n + k)) fun n => F n a
     · assumption
-    rw [tendsto_add_atTop_iff_nat]
-    assumption
+    rwa [tendsto_add_atTop_iff_nat]
 
 /-- **Dominated convergence theorem** for filters with a countable basis. -/
 theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}

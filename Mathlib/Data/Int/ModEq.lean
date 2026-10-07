@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Nat.ModEq
+
 import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
@@ -70,9 +71,6 @@ protected theorem refl (a : ℤ) : a ≡ a [ZMOD n] :=
 protected theorem rfl : a ≡ a [ZMOD n] :=
   ModEq.refl _
 
-instance : Std.Refl (ModEq n) :=
-  ⟨ModEq.refl⟩
-
 @[symm]
 protected theorem symm : a ≡ b [ZMOD n] → b ≡ a [ZMOD n] :=
   Eq.symm
@@ -81,8 +79,10 @@ protected theorem symm : a ≡ b [ZMOD n] → b ≡ a [ZMOD n] :=
 protected theorem trans : a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMOD n] :=
   Eq.trans
 
-instance : IsTrans ℤ (ModEq n) where
-  trans := @Int.ModEq.trans n
+instance : IsEquiv ℤ (ModEq n) where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
 
 protected theorem eq : a ≡ b [ZMOD n] → a % n = b % n := id
 
@@ -140,7 +140,7 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by convert! Int.dvd_add h₁.dvd h₂.dvd using 1; lia
+  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; lia
 
 protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
   ModEq.rfl.add h
@@ -217,7 +217,7 @@ theorem cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [ZMOD m]) : a ≡ 
   cancel_right_div_gcd hm <| by simpa [mul_comm] using h
 
 theorem of_div (h : a / c ≡ b / c [ZMOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :
-    a ≡ b [ZMOD m] := by convert! h.mul_left' <;> rwa [Int.mul_ediv_cancel']
+    a ≡ b [ZMOD m] := by convert h.mul_left' <;> rwa [Int.mul_ediv_cancel']
 
 /-- Cancel left multiplication on both sides of the `≡` and in the modulus.
 
@@ -360,7 +360,7 @@ theorem modEq_and_modEq_iff_modEq_lcm {a b m n : ℤ} :
 
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.natAbs) :
     a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m * n] := by
-  convert! ← modEq_and_modEq_iff_modEq_lcm using 1
+  convert ← modEq_and_modEq_iff_modEq_lcm using 1
   rw [lcm_eq_mul_iff.mpr (.inr <| .inr hmn), ← natAbs_mul, modEq_natAbs]
 
 theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD b] := by

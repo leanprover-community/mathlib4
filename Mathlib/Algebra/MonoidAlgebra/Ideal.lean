@@ -5,9 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Ideal.Span
 public import Mathlib.Algebra.MonoidAlgebra.Defs
+
+import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Lemmas about ideals of `MonoidAlgebra` and `AddMonoidAlgebra`

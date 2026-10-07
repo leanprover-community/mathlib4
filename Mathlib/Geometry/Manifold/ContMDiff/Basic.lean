@@ -61,8 +61,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   refine ⟨hg.1.comp hf.1 st, ?_⟩
   set e := extChartAt I x
   set e' := extChartAt I' (f x)
-  have : e' (f x) = (writtenInExtChartAt I I' x f) (e x) := by simp only [e, e', mfld_simps]
-  rw [this] at hg
+  rw [← writtenInExtChartAt_apply_extChartAt (I := I) (mem_extChartAt_source x)] at hg
   have A : ∀ᶠ y in 𝓝[e.symm ⁻¹' s ∩ range I] e x, f (e.symm y) ∈ t ∧ f (e.symm y) ∈ e'.source := by
     simp only [e, ← map_extChartAt_nhdsWithin, eventually_map]
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds (I := I') (f x)),
@@ -74,14 +73,13 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
-    simp only [*, e, e', mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
-      true_and]
-    exact mem_range_self _
+    simp only [e', mem_preimage, mem_inter_iff, extChartAt_symm_writtenInExtChartAt hfx']
+    exact ⟨ht, mem_range_self _⟩
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
-    simp only [*, e, e', (· ∘ ·), writtenInExtChartAt, e'.left_inv]
-  · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source,
-      e.left_inv, e'.left_inv]
+    simp only [e, e', comp_apply, extChartAt_symm_writtenInExtChartAt hfx']
+  · simp only [e, e', comp_apply, extChartAt_to_inv,
+      writtenInExtChartAt_apply_extChartAt (mem_extChartAt_source x)]
 
 /-- See note [comp_of_eq lemmas] -/
 theorem ContMDiffWithinAt.comp_of_eq {t : Set M'} {g : M' → M''} {x : M} {y : M'}
@@ -267,7 +265,8 @@ theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (image_eq_one_of_notMem_mulTSupport hx)
 
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
-@[to_additive contMDiffAt_of_notMem]
+@[to_additive contMDiffAt_of_notMem /-- `f` is continuously differentiable at each point outside of
+its `tsupport`. -/]
 theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : ℕ∞ω) : ContMDiffAt I I' n f x :=
   contMDiffWithinAt_of_notMem_mulTSupport hx n univ
@@ -411,7 +410,6 @@ section
 
 variable {e : M → H} (h : IsOpenEmbedding e) {n : ℕ∞ω}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then `e` is `C^n`. -/
 lemma contMDiff_isOpenEmbedding [Nonempty M] :
@@ -426,9 +424,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
   -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
   rw [h.toOpenPartialHomeomorph_right_inv]
-  · rw [I.right_inv]
-    apply mem_of_subset_of_mem _ hz.1
-    exact letI := h.singletonChartedSpace; extChartAt_target_subset_range (I := I) x
+  · simp_all [I.right_inv]
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
     rw [extChartAt_target] at this
@@ -437,7 +433,6 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
       h.toOpenPartialHomeomorph_target] at this
     exact this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is `C^n`. -/
 lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :

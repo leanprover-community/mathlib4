@@ -5,15 +5,14 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Basic
-public import Mathlib.Algebra.GroupWithZero.NeZero
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Tactic.Tauto
+
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Tactic.Tauto
 
 /-!
 # Basic facts for ordered rings and semirings
@@ -90,7 +89,7 @@ theorem mul_nonneg_of_nonpos_of_nonpos [ExistsAddOfLE R] [MulPosMono R]
 theorem mul_le_mul_of_nonneg_of_nonpos [ExistsAddOfLE R] [MulPosMono R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
     (hca : c ≤ a) (hbd : b ≤ d) (hc : 0 ≤ c) (hb : b ≤ 0) : a * b ≤ c * d :=
-  (mul_le_mul_of_nonpos_right hca hb).trans <| by gcongr; assumption
+  (mul_le_mul_of_nonpos_right hca hb).trans <| by gcongr
 
 theorem mul_le_mul_of_nonneg_of_nonpos' [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
@@ -106,6 +105,11 @@ theorem mul_le_mul_of_nonpos_of_nonneg' [ExistsAddOfLE R] [PosMulMono R] [MulPos
     [AddRightMono R] [AddRightReflectLE R]
     (hca : c ≤ a) (hbd : b ≤ d) (ha : 0 ≤ a) (hd : d ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonneg_left hbd ha).trans <| mul_le_mul_of_nonpos_right hca hd
+
+theorem mul_le_mul_of_nonpos_of_nonneg'' [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
+    [AddRightMono R] [AddRightReflectLE R]
+    (hac : a ≤ c) (hdb : d ≤ b) (ha : a ≤ 0) (hd : 0 ≤ d) : a * b ≤ c * d :=
+  (mul_le_mul_of_nonpos_left hdb ha).trans <| mul_le_mul_of_nonneg_right hac hd
 
 theorem mul_le_mul_of_nonpos_of_nonpos [ExistsAddOfLE R] [MulPosMono R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
@@ -297,7 +301,6 @@ lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE R] [MulPosMono R]
   obtain ⟨d, hd, rfl⟩ := exists_nonneg_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   gcongr
-  assumption
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_le_mul_add_mul' [ExistsAddOfLE R] [MulPosMono R]
@@ -314,7 +317,6 @@ lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE R] [MulPosStrictMono R]
   obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   gcongr
-  exact hd
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE R] [MulPosStrictMono R]
@@ -358,7 +360,7 @@ theorem nonpos_of_mul_nonpos_right [PosMulStrictMono R]
 @[simp]
 theorem mul_nonneg_iff_of_pos_left [PosMulStrictMono R]
     (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  convert! mul_le_mul_iff_right₀ h
+  convert mul_le_mul_iff_right₀ h
   simp
 
 @[simp]
@@ -676,8 +678,8 @@ variable [CommSemiring R] [LinearOrder R] {a d : R}
 lemma max_mul_mul_le_max_mul_max [PosMulMono R] [MulPosMono R] (b c : R) (ha : 0 ≤ a) (hd : 0 ≤ d) :
     max (a * b) (d * c) ≤ max a c * max d b :=
   have ba : b * a ≤ max d b * max c a := by
-    gcongr
-    exacts [ha, hd.trans <| le_max_left d b, le_max_right d b, le_max_right c a]
+    grw [← le_max_right c a, ← le_max_right]
+    exact hd.trans <| le_max_left d b
   have cd : c * d ≤ max a c * max b d :=
     mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
@@ -714,7 +716,7 @@ lemma two_mul_le_add_of_sq_le_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMul
   rw [mul_mul_mul_comm, ← pow_two r, two_mul, two_add_two_eq_four]
   grw [mul_le_mul_of_nonneg_left ht zero_le_four, ← mul_assoc, four_mul_le_sq_add a b, sq]
 
-@[deprecated two_mul_le_add_of_sq_le_mul (since := "2026-04-20")]
+@[deprecated two_mul_le_add_of_sq_le_mul +typeChanged (since := "2026-04-20")]
 lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
     [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
     (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b :=

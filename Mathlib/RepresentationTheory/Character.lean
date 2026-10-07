@@ -5,10 +5,11 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Irreducible
+
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # Characters of representations
@@ -112,7 +113,7 @@ variable [Fintype G] [Invertible (Nat.card G : k)]
 
 theorem card_inv_mul_sum_char_eq_finrank :
     (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g = finrank k (invariants ρ) := by
-  have : Invertible (Fintype.card G : k) := by rw [Fintype.card_eq_nat_card]; assumption
+  have : Invertible (Fintype.card G : k) := by rwa [Fintype.card_eq_nat_card]
   rw [← (isProj_averageMap ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
 

@@ -7,11 +7,12 @@ module
 
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.CategoryTheory.Category.Init
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
+
+import Mathlib.CategoryTheory.Category.Init
 
 /-!
-## Continuous representations
+# Continuous representations
 
 This file defines continuous representations of a monoid `G` on a `R`-module `V` and
 related basic results.
@@ -56,6 +57,7 @@ structure ContRepresentation where
   /-- The underlying monoid homomorphism of a continuous representation. -/
   toMonoidHom : G →* V →L[R] V
 
+@[macro_inline]
 instance : FunLike (ContRepresentation R G V) G (V →L[R] V) where
   coe π := π.toMonoidHom
   coe_injective π₁ π₂ _ := by cases π₁; cases π₂; simp_all
@@ -123,8 +125,9 @@ lemma toIntertwiningMap_injective {π₁ : ContRepresentation R G V}
 
 lemma toFun_injective {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toFun := fun f g h ↦ by
-  ext x; exact congr_fun h x
+  ext x; congrm $h x
 
+@[macro_inline]
 instance {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     FunLike (π₁ →ⁱL π₂) V W where
   coe f := f.toFun
@@ -192,6 +195,24 @@ instance : AddZeroClass (π₁ →ⁱL π₂) :=
   fast_instance% toContinuousLinearMap_injective.addZeroClass _
     toContinuousLinearMap_zero toContinuousLinearMap_add
 
+section SMul
+
+variable {S : Type*} [DistribSMul S W] [SMulCommClass R S W]
+  [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R]
+
+instance instSMul :
+    SMul S (π₁ →ⁱL π₂) where
+  smul s f := ⟨s • f.toContinuousLinearMap, fun g ↦ by
+    rw [ContinuousLinearMap.smul_comp, f.2, ContinuousLinearMap.comp_smul]⟩
+
+@[simp]
+lemma toContinuousLinearMap_smul (s : S) (f : π₁ →ⁱL π₂) :
+    (s • f).toContinuousLinearMap = s • f.toContinuousLinearMap := rfl
+
+lemma smul_apply (s : S) (f : π₁ →ⁱL π₂) (v : V) : (s • f) v = s • f v := rfl
+
+end SMul
+
 instance : AddCommSemigroup (π₁ →ⁱL π₂) :=
   fast_instance% toContinuousLinearMap_injective.addCommSemigroup _
     toContinuousLinearMap_add
@@ -222,22 +243,11 @@ lemma comp_sub (f : π₂ →ⁱL π₃) (g h : π₁ →ⁱL π₂) :
     f.comp (g - h) = f.comp g - f.comp h := by
   ext; simp
 
-instance instSMul {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
-    [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R] :
-    SMul S (π₁ →ⁱL π₂) where
-  smul s f := ⟨s • f.toContinuousLinearMap, fun g ↦ by
-    rw [ContinuousLinearMap.smul_comp, f.2, ContinuousLinearMap.comp_smul]⟩
 
 section addcommgroup
 
 variable {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
   [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R]
-
-@[simp]
-lemma toContinuousLinearMap_smul (s : S) (f : π₁ →ⁱL π₂) :
-    (s • f).toContinuousLinearMap = s • f.toContinuousLinearMap := rfl
-
-lemma smul_apply (s : S) (f : π₁ →ⁱL π₂) (v : V) : (s • f) v = s • f v := rfl
 
 lemma smul_comp {S : Type*} [Monoid S] [DistribMulAction S U] [SMulCommClass R S U]
     [ContinuousConstSMul S U] [LinearMap.CompatibleSMul U U S R]
@@ -321,6 +331,7 @@ lemma toContinuousLinearEquiv_inj (φ ψ : σ.Equiv ρ) :
     φ.toContinuousLinearEquiv = ψ.toContinuousLinearEquiv ↔ φ = ψ :=
   toContinuousLinearEquiv_injective.eq_iff
 
+@[macro_inline]
 instance : EquivLike (Equiv ρ σ) V W where
   coe φ := φ.toContinuousLinearEquiv
   inv φ := φ.invFun
