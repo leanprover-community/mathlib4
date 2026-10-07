@@ -678,7 +678,7 @@ theorem _root_.Polynomial.irreducible_comp_iff {f g : K[X]} :
       MulEquiv.isField_congr (AdjoinRoot.compAlgEquiv f g).toMulEquiv]
   intro hfg
   have hg0 : g.natDegree ≠ 0 := by
-    contrapose! hfg
+    contrapose hfg
     rw [natDegree_eq_zero] at hfg
     obtain ⟨r, rfl⟩ := hfg
     simp [not_irreducible_C]
