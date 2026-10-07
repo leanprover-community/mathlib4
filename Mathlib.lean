@@ -1313,8 +1313,8 @@ public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Algebra.Ring.Semiconj
-public import Mathlib.Algebra.Ring.Semireal.Defs
 public import Mathlib.Algebra.Ring.Semireal.Basic
+public import Mathlib.Algebra.Ring.Semireal.Defs
 public import Mathlib.Algebra.Ring.Shrink
 public import Mathlib.Algebra.Ring.Subgroup
 public import Mathlib.Algebra.Ring.Submonoid.Basic
