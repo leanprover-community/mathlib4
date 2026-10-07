@@ -67,8 +67,8 @@ variable {R M : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 variable (B : LinearMap.BilinForm R M) (hB : Bijective B)
 
 open Set Set.powersetCard in
-/-- The Hodge star associated to `B` and the positive orientation, normalized using
-`Module.finBasis`. -/
+/-- The Hodge star associated to `B` and the positive orientation, using `Module.finBasis` to
+choose a volume element compatible with the orientation. -/
 @[expose, simps!]
 public def hodgeStarOfOrientation {k l : ℕ}
     (hkl : k + l = finrank R M) :
@@ -79,8 +79,7 @@ public def hodgeStarOfOrientation {k l : ℕ}
     default := ⟨Finset.univ, by simp⟩
     uniq s := Subtype.ext <| Finset.eq_univ_of_card _ <| by simp
   }
-  let vol := (b.exteriorPower (finrank R M)).repr.trans
-    (Finsupp.uniqueLinearEquiv R R default)
+  let vol := (b.exteriorPower (finrank R M)).equiv (Basis.singleton _ R) (Equiv.refl _)
   let vol' := if b.orientation = positiveOrientation then vol else vol.trans (LinearEquiv.neg R)
   exact hodgeStar B hB vol' hkl
 
