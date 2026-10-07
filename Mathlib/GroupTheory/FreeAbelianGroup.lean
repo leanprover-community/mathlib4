@@ -413,9 +413,11 @@ It is deprecated in favor of using `MonoidAlgebra ℤ α`.
 `MonoidAlgebra` is defined in `Mathlib.Algebra.MonoidAlgebra.Defs`.
 -/
 
+variable (α)
+
 section Mul
 
-variable (α) [Mul α]
+variable [Mul α]
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance mul : Mul (FreeAbelianGroup α) :=
