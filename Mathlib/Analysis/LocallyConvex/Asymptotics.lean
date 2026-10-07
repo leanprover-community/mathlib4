@@ -30,9 +30,23 @@ open scoped NNReal
 open Filter
 
 variable {ι κ α 𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
-  [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
-  [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
+  [AddCommGroup E] [Module 𝕜 E]
+  [AddCommGroup F] [Module 𝕜 F]
 variable {f f₁ f₂ : α → E} {g g₁ g₂ : α → F} {l : Filter α}
+
+namespace Seminorm
+
+theorem isBigO_comp_iff {p : Seminorm 𝕜 E} {q : Seminorm 𝕜 F} :
+    (p ∘ f) =O[l] (q ∘ g) ↔ ∃ C : ℝ≥0, p ∘ f ≤ᶠ[l] (C • q) ∘ g := by
+  simp [Asymptotics.isBigO_iff_nnnorm, EventuallyLE, NNReal.smul_def, ← NNReal.coe_le_coe]
+
+theorem isLittleO_comp_iff {p : Seminorm 𝕜 E} {q : Seminorm 𝕜 F} :
+    (p ∘ f) =o[l] (q ∘ g) ↔ ∀ ε : ℝ≥0, ε ≠ 0 → p ∘ f ≤ᶠ[l] (ε • q) ∘ g := by
+  simp [Asymptotics.isLittleO_iff_nnnorm, EventuallyLE, NNReal.smul_def, ← NNReal.coe_le_coe]
+
+end Seminorm
+
+variable [TopologicalSpace E] [TopologicalSpace F]
 
 namespace PolynormableSpace
 
@@ -47,29 +61,16 @@ theorem isBigOTVS_iff_le :
   congrm ∀ p, _ → ?_
   constructor <;> rintro ⟨q, q_cont, hq⟩ <;>
   refine ⟨‖c‖₊ • q, q_cont.const_smul _, hq.mono fun x hx ↦ ?_⟩
-  · suffices (p (f x)).toNNReal ≤ ‖c‖ₑ * (q (g x)).toNNReal by
-      simpa (discharger := positivity) [NNReal.smul_def, ← Real.toNNReal_le_toNNReal_iff,
-        ← ENNReal.coe_le_coe, Real.toNNReal_mul]
-    calc  ↑(p (f x)).toNNReal
-      _ ≤ egauge 𝕜 (p.ball 0 1) (f x) := p.le_egauge_unitBall _
-      _ ≤ egauge 𝕜 (q.ball 0 1) (g x) := hx
-      _ ≤ ‖c‖ₑ * (q (g x)).toNNReal := q.egauge_unitBall_le_of_one_lt_norm hc _
-  · calc  egauge 𝕜 (p.ball 0 1) (f x)
-      _ ≤ ‖c‖ₑ * (p (f x)).toNNReal := p.egauge_unitBall_le_of_one_lt_norm hc _
-      _ ≤ ‖c‖ₑ * (q (g x)).toNNReal := by gcongr; exact hx
-      _ = ((‖c‖₊ • q) (g x)).toNNReal := by
-            simp [NNReal.smul_def, Real.toNNReal_mul, enorm_eq_nnnorm]
-      _ ≤ egauge 𝕜 ((‖c‖₊ • q).ball 0 1) (g x) := (‖c‖₊ • q).le_egauge_unitBall _
+  · simpa using Seminorm.le_smul_of_egauge_unitBall_le_mul hc (ε := 1) (by simpa using hx)
+  · simpa using Seminorm.egauge_unitBall_le_mul_of_le_smul hc (ε := 1) (by simpa using hx)
 
 theorem isBigOTVS_iff :
     f =O[𝕜; l] g ↔ ∀ p : Seminorm 𝕜 E, Continuous p → ∃ q : Seminorm 𝕜 F,
       Continuous q ∧ (p ∘ f) =O[l] (q ∘ g) := by
-  simp_rw [isBigOTVS_iff_le, Asymptotics.isBigO_iff_nnnorm, Filter.EventuallyLE]
+  simp_rw [isBigOTVS_iff_le, Seminorm.isBigO_comp_iff]
   congrm ∀ p p_cont, ?_
-  constructor <;> rintro ⟨q, q_cont, hq⟩
-  · exact ⟨q, q_cont, 1, by simpa [NNReal.toReal_le]⟩
-  · obtain ⟨C, hC⟩ := hq
-    exact ⟨C • q, q_cont.const_smul _, by simpa [NNReal.toReal_le, NNReal.smul_def] using hC⟩
+  exact ⟨fun ⟨q, q_cont, hq⟩ ↦ ⟨q, q_cont, 1, by simpa⟩,
+    fun ⟨q, q_cont, C, hC⟩ ↦ ⟨C • q, q_cont.const_smul _, hC⟩⟩
 
 theorem isLittleOTVS_iff_le :
     f =o[𝕜; l] g ↔ ∀ p : Seminorm 𝕜 E, Continuous p → ∃ q : Seminorm 𝕜 F,
@@ -100,9 +101,7 @@ theorem isLittleOTVS_iff_le :
 theorem isLittleOTVS_iff :
     f =o[𝕜; l] g ↔ ∀ p : Seminorm 𝕜 E, Continuous p → ∃ q : Seminorm 𝕜 F,
       Continuous q ∧ (p ∘ f) =o[l] (q ∘ g) := by
-  simp_rw [isLittleOTVS_iff_le, Filter.EventuallyLE, Asymptotics.isLittleO_iff_nnnorm]
-  congrm ∀ p p_cont, ∃ q, _ ∧ ∀ ε, ε ≠ 0 → ∀ᶠ (x : α) in l, ?_
-  simp [NNReal.toReal_le, NNReal.smul_def]
+  simp_rw [isLittleOTVS_iff_le, Seminorm.isLittleO_comp_iff]
 
 end PolynormableSpace
 
@@ -144,16 +143,7 @@ theorem isBigOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
 
 theorem isBigOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =O[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, (p i ∘ f) =O[l] (↑(s.sup q) ∘ g) := by
-  simp_rw [hp.isBigOTVS_iff_le hq, Filter.EventuallyLE]
-  congrm ∀ i, ∃ s, ?_
-  constructor
-  · intro ⟨C, hC⟩
-    exact .of_bound C <| by simpa (discharger := positivity) [abs_of_nonneg]
-  · rw [Asymptotics.isBigO_iff']
-    intro ⟨C, C_pos, hC⟩
-    refine ⟨C.toNNReal, ?_⟩
-    convert hC using 2
-    simp (discharger := positivity) [abs_of_nonneg, NNReal.smul_def]
+  simp_rw [hp.isBigOTVS_iff_le hq, Seminorm.isBigO_comp_iff]
 
 theorem isLittleOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace 𝕜 F] :
     f =o[𝕜; l] g ↔
@@ -195,13 +185,7 @@ theorem isLittleOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
 
 theorem isLittleOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =o[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, (p i ∘ f) =o[l] ((s.sup q : Seminorm 𝕜 F) ∘ g) := by
-  simp_rw [hp.isLittleOTVS_iff_le hq, Filter.EventuallyLE, Asymptotics.isLittleO_iff]
-  congrm ∀ i, ∃ s, ?_
-  constructor <;> intro H ε hε
-  · have : NNReal.mk ε hε.le ≠ 0 := by simpa [← NNReal.coe_ne_zero] using hε.ne'
-    simpa [abs_of_nonneg, NNReal.smul_def] using H _ this
-  · simp (discharger := positivity) only [Function.comp_apply, Real.norm_of_nonneg] at H
-    exact H (by positivity)
+  simp_rw [hp.isLittleOTVS_iff_le hq, Seminorm.isLittleO_comp_iff]
 
 end WithSeminorms
 
