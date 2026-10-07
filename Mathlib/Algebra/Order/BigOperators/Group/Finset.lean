@@ -5,14 +5,15 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.Multiset.OrderedMonoid
-public import Mathlib.Tactic.Bound.Attribute
-public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-public import Mathlib.Data.Multiset.Powerset
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Algebra.Order.Monoid.Multiset
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Multiset.Powerset
+public import Mathlib.Tactic.Bound.Attribute
 
 import Mathlib.Algebra.Order.Monoid.OrderDual
 
@@ -102,6 +103,12 @@ theorem le_prod_of_submultiplicative [IsOrderedMonoid N] (f : M → N) (h_one : 
 `i ∈ s`, is a finite family of elements of `M`, then `f (∑ i ∈ s, g i) ≤ ∑ i ∈ s, f (g i)`. -/
 add_decl_doc le_sum_of_subadditive
 
+@[to_additive]
+theorem map_prod_le_prod [IsOrderedMonoid N] {F : Type*} [FunLike F M N] [OneHomClass F M N]
+    [SubmultiplicativeHomClass F M N] (f : F) (s : Finset ι) (g : ι → M) :
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
+  le_prod_of_submultiplicative f (map_one f).le (map_mul_le_mul f) s g
+
 variable {f g : ι → N} {s t : Finset ι}
 
 /-- In an ordered commutative monoid, if each factor `f i` of one finite product is less than or
@@ -158,8 +165,8 @@ theorem one_le_prod [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i �
 theorem one_le_prod'' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   Finset.one_le_prod fun i _ ↦ h i
 
-attribute [deprecated sum_nonneg (since := "2026-09-01")] sum_nonneg'
-attribute [deprecated one_le_prod (since := "2026-09-01")] one_le_prod''
+attribute [deprecated sum_nonneg +typeChanged (since := "2026-09-01")] sum_nonneg'
+attribute [deprecated one_le_prod +typeChanged (since := "2026-09-01")] one_le_prod''
 
 @[to_additive]
 theorem prod_le_one [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=

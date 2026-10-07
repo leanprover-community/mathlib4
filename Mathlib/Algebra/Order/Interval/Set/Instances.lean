@@ -8,10 +8,8 @@ module
 public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic instances for unit intervals
@@ -297,9 +295,9 @@ instance instCancelMonoid {R : Type*} [Ring R] [PartialOrder R] [IsStrictOrdered
     [IsDomain R] : CancelMonoid (Ioc (0 : R) 1) :=
   { Set.Ioc.instMonoid with
     mul_left_cancel := fun a _ _ h =>
-      Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' <| (congr_arg Subtype.val h :)
+      Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' (congr_arg Subtype.val h :)
     mul_right_cancel := fun b _ _ h =>
-      Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h :) }
+      Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' (congr_arg Subtype.val h :) }
 
 instance instCancelCommMonoid {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
     [IsDomain R] :
@@ -357,8 +355,11 @@ theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β
 theorem mem_iff_one_sub_mem {t : β} : t ∈ Ioo (0 : β) 1 ↔ 1 - t ∈ Ioo (0 : β) 1 :=
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 
-theorem one_minus_pos (x : Ioo (0 : β) 1) : 0 < 1 - (x : β) := by simpa using x.2.2
+theorem one_sub_pos (x : Ioo (0 : β) 1) : 0 < 1 - (x : β) := by simpa using x.2.2
 
-theorem one_minus_lt_one (x : Ioo (0 : β) 1) : 1 - (x : β) < 1 := by simpa using x.2.1
+theorem one_sub_lt_one (x : Ioo (0 : β) 1) : 1 - (x : β) < 1 := by simpa using x.2.1
+
+@[deprecated (since := "2026-10-06")] alias one_minus_pos := one_sub_pos
+@[deprecated (since := "2026-10-06")] alias one_minus_lt_one := one_sub_lt_one
 
 end Set.Ioo

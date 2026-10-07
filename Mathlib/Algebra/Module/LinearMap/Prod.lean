@@ -6,8 +6,9 @@ Authors: Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Module.Prod
-public import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.Module.LinearMap.Defs
+
+import Mathlib.Tactic.Abel
 
 /-!
 # Addition and subtraction are linear maps from the product space

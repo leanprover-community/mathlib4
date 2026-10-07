@@ -1,0 +1,186 @@
+/-
+Copyright (c) 2026 Marcelo Lynch. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Marcelo Lynch
+-/
+module
+
+public import Cache.Upload.Curl
+public import Cache.Upload.Rclone
+
+/-!
+# The S3 backend
+
+The complete s3 upload path. This module holds:
+
+* the credential set (`S3Credentials`), its resolution (`s3AuthFrom`), and the
+  signing region (`s3RegionFrom`);
+* the location resolution (`s3UploadLocationFrom`);
+* the transfer-tool policy (`s3UploadToolFrom`);
+* the SigV4 curl arguments (`s3CurlArgs`);
+* the rclone tool's configuration (`rcloneEnv`);
+* the transfer entry point (`s3PutStaged`).
+
+`Cache/Upload/Rclone.lean` validates S3 URLs (`s3EndpointSplit`) and derives
+the rclone remote paths from the upload location.
+-/
+
+public section
+
+namespace Cache.Requests
+
+open System (FilePath)
+
+/-- S3-compatible credentials for a direct bucket write. `sessionToken?`
+carries the session token of a temporary credential and is absent for a
+static keypair. -/
+structure S3Credentials where
+  keyId : String
+  secret : String
+  sessionToken? : Option String
+  deriving DecidableEq, Repr, BEq
+
+/--
+The s3 upload credentials, from the raw environment values:
+`MATHLIB_CACHE_S3_ACCESS_KEY_ID` and `MATHLIB_CACHE_S3_SECRET_ACCESS_KEY`
+(`keyId?`, `secret?`), plus the optional `MATHLIB_CACHE_S3_SESSION_TOKEN`
+(`session?`). One of the pair without the other is a misconfiguration and
+errors.
+
+Pure so the policy is testable; `getS3Auth` wires the environment in.
+-/
+def s3AuthFrom (keyId? secret? session? : Option String) :
+    Except String S3Credentials :=
+  match keyId?, secret? with
+  | some keyId, some secret => .ok ⟨keyId, secret, session?⟩
+  | some _, none => .error
+      "MATHLIB_CACHE_S3_ACCESS_KEY_ID is set but MATHLIB_CACHE_S3_SECRET_ACCESS_KEY is not"
+  | none, some _ => .error
+      "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY is set but MATHLIB_CACHE_S3_ACCESS_KEY_ID is not"
+  | none, none => .error
+      "--backend=s3 uploads with the S3 credential pair: set \
+      MATHLIB_CACHE_S3_ACCESS_KEY_ID and MATHLIB_CACHE_S3_SECRET_ACCESS_KEY"
+
+/-- Retrieves the s3 upload credentials from the environment via
+`s3AuthFrom`. -/
+def getS3Auth : IO S3Credentials := do
+  IO.ofExcept <| s3AuthFrom
+    (← getEnvNonEmpty "MATHLIB_CACHE_S3_ACCESS_KEY_ID")
+    (← getEnvNonEmpty "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY")
+    (← getEnvNonEmpty "MATHLIB_CACHE_S3_SESSION_TOKEN")
+
+/--
+The SigV4 signing region, from the raw `MATHLIB_CACHE_S3_REGION` value
+(`region?`). The store defines its region, so an unset value is an error, and
+so is a value that is not a region name.
+
+Pure so the policy is testable; `getS3Region` wires the environment in.
+-/
+def s3RegionFrom (region? : Option String) : Except String String :=
+  match region? with
+  | some region =>
+    if region.all (fun c => c.isAlphanum || c == '-') then .ok region
+    else .error s!"MATHLIB_CACHE_S3_REGION '{region}' is not a region name"
+  | none => .error "--backend=s3 needs MATHLIB_CACHE_S3_REGION"
+
+/-- Retrieves the s3 signing region from the environment via `s3RegionFrom`. -/
+def getS3Region : IO String := do
+  IO.ofExcept <| s3RegionFrom (← getEnvNonEmpty "MATHLIB_CACHE_S3_REGION")
+
+/--
+The curl arguments for an upload signed with S3 credentials. curl signs each
+request with SigV4 (`--aws-sigv4`) in `region`. The
+`x-amz-content-sha256: UNSIGNED-PAYLOAD` header lets curl sign a `-T` file
+upload; curl supports this from 7.87, and this path runs in CI, whose runners
+ship newer curls. A temporary credential also sends its session token, which
+SigV4 covers as an `x-amz-*` header. The argument list carries the secrets,
+so callers should print curl failures without the argument list.
+-/
+def s3CurlArgs (creds : S3Credentials) (region : String) : Array String :=
+  let sessionArgs : Array String := match creds.sessionToken? with
+    | some token => #["-H", s!"x-amz-security-token: {token}"]
+    | none => #[]
+  #["--aws-sigv4", s!"aws:amz:{region}:s3", "--user", s!"{creds.keyId}:{creds.secret}",
+    "-H", "x-amz-content-sha256: UNSIGNED-PAYLOAD"] ++ sessionArgs
+
+/--
+The upload location for the s3 backend: the container write rebased under
+the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as
+`MATHLIB_CACHE_BASE_URL` rebases reads. A bucket URL is account-specific, so
+the backend has no default endpoint and an unset base errors. A base without
+`--container` errors, since a base rebases a container write.
+-/
+def s3UploadLocationFrom (putBase? : Option String) (container? : Option Container)
+    (repo : String) (scope? : Option String) : Except String Location :=
+  match putBase?, container? with
+  | some base, some c => do
+    -- Validate the base before the container's segment joins it. Otherwise a
+    -- base without a bucket, such as `https://host`, passes the check with the
+    -- segment as the bucket name.
+    discard (s3EndpointSplit base)
+    return c.location base repo scope?
+  | some _, none => .error
+      "MATHLIB_CACHE_PUT_BASE_URL is set, which rebases a container write; \
+      pass --container=NAME to name the container."
+  | none, _ => .error
+      "the s3 backend uploads to the bucket endpoint MATHLIB_CACHE_PUT_BASE_URL \
+      names (https://host/bucket): set it, or set MATHLIB_CACHE_PUT_URL for a \
+      flat upload"
+
+/--
+The rclone S3 backend configuration. It is passed in the child environment,
+so no credential appears on a command line. `RCLONE_S3_SESSION_TOKEN` is set for a
+temporary credential and cleared otherwise, so a stale token in the caller's
+environment is not inherited. `region` is the SigV4 signing region the curl
+tool also uses. rclone refuses to run without a provider, so `provider` must carry
+one; `s3PutStaged` passes the caller's `RCLONE_S3_PROVIDER` and defaults to
+the generic `Other`. Every other `RCLONE_S3_*` option inherits from the
+caller, so an operator can tune transfers without a code change.
+-/
+def rcloneEnv (creds : S3Credentials) (endpoint provider region : String) :
+    Array (String × Option String) :=
+  #[("RCLONE_S3_ENV_AUTH", some "false"),
+    ("RCLONE_S3_ACCESS_KEY_ID", some creds.keyId),
+    ("RCLONE_S3_SECRET_ACCESS_KEY", some creds.secret),
+    ("RCLONE_S3_SESSION_TOKEN", creds.sessionToken?),
+    ("RCLONE_S3_ENDPOINT", some endpoint),
+    ("RCLONE_S3_PROVIDER", some provider),
+    ("RCLONE_S3_REGION", some region)]
+
+/-- The transfer tool an s3 upload uses. -/
+inductive S3UploadTool where
+  | curl
+  | rclone
+  deriving DecidableEq, Repr
+
+/--
+The transfer tool for an s3 upload: rclone when one works on PATH, curl
+otherwise. `forceCurl` (the `MATHLIB_CACHE_PUT_FORCE_CURL` flag) selects curl
+regardless.
+
+Pure so the policy is testable; `s3PutStaged` wires the environment in.
+-/
+def s3UploadToolFrom (forceCurl rcloneAvailable : Bool) : S3UploadTool :=
+  if !forceCurl && rcloneAvailable then .rclone else .curl
+
+/--
+The staged put on the s3 backend: split the base (`s3EndpointSplit`), resolve
+the transfer tool (`s3UploadToolFrom`), and transfer, each request signed with
+`creds` in `region`. Only this resolution reads the
+`MATHLIB_CACHE_PUT_FORCE_CURL` flag, and the availability probe runs only when
+the flag does not already force curl.
+-/
+def s3PutStaged (dest : Location) (creds : S3Credentials) (region : String)
+    (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool) : IO Unit := do
+  let (endpoint, _) ← IO.ofExcept (s3EndpointSplit dest.root)
+  let forceCurl ← getEnvFlag "MATHLIB_CACHE_PUT_FORCE_CURL" (ifUnset := false)
+  let available ← if forceCurl then pure false else rcloneAvailable
+  match s3UploadToolFrom forceCurl available with
+  | .curl =>
+    putStagedViaCurl dest (pure (s3CurlArgs creds region)) srcDir fileNames overwrite
+  | .rclone =>
+    let provider := (← getEnvNonEmpty "RCLONE_S3_PROVIDER").getD "Other"
+    putStagedViaRclone dest (rcloneEnv creds endpoint provider region)
+      srcDir fileNames overwrite
+
+end Cache.Requests
