@@ -5,7 +5,6 @@ Authors: Kim Morrison, Adam Topaz, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.FreeMonoid.UniqueProds
 public import Mathlib.Algebra.MonoidAlgebra.Basic
@@ -340,11 +339,11 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
         simp
       · change _ * algebraMap _ _ _ = algebraMap _ _ _
         simp
-      repeat
+      on_goal 1 2 =>
         change liftFun R X f _ + liftFun R X f _ = _
         simp only [*]
         rfl
-      repeat
+      all_goals
         change liftFun R X f _ * liftFun R X f _ = _
         simp only [*]
         rfl

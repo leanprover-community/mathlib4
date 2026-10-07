@@ -5,10 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.Compactness.Bases
-public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.Sets.Closeds
+
+import Mathlib.Topology.CompactOpen
 
 /-!
 # Clopen subsets in Cartesian products

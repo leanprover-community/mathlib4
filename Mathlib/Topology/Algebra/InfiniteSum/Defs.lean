@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
 public import Mathlib.Topology.Separation.Hausdorff
-public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 
 /-!
 # Infinite sum and product in a topological monoid
@@ -251,7 +252,7 @@ theorem hasProd_fintype_support [Fintype β] (f : β → α) (L : SummationFilte
     (L.filter.biInter_mem L.support.toFinite).mpr (by tauto)
   have h2 : ⋂ b ∈ L.supportᶜ, {s | b ∉ s} ∈ L.filter :=
     (L.filter.biInter_mem L.supportᶜ.toFinite).mpr
-      (fun b hb ↦ (L.eventually_mem_or_not_mem b).resolve_left hb)
+      (fun b hb ↦ (L.eventually_mem_or_notMem b).resolve_left hb)
   filter_upwards [h1, h2] with s hs hs'
   congr 1
   simp only [Set.mem_iInter, Set.mem_ofPred_eq, Set.mem_compl_iff] at hs hs'
@@ -316,7 +317,7 @@ theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b
       rw [finprod_eq_prod_of_mulSupport_subset (s := h.2.toFinset)]
       · exact Finset.prod_congr rfl (by simp_all)
       · simp
-    · grind [Set.Finite.mem_toFinset, mem_mulSupport]
+    · grind [Set.Finite.mem_toFinset]
     · exact h.1
   · exact h'
   · exact ha.choose_spec

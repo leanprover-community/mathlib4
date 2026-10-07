@@ -5,11 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Minimal
-public import Mathlib.Order.Zorn
-public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.DiscreteSubset
-public import Mathlib.Tactic.CrossRefAttribute
+
 import Mathlib.Topology.WithTopology
 
 /-!
@@ -220,8 +217,7 @@ theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : Cont
   refine ⟨f x, mem_image_of_mem f hxs, ?_, ?_⟩
   all_goals
     rw [← mem_preimage]
-    apply mem_of_mem_inter_left
-    show x ∈ _ ∩ s
+    apply mem_of_mem_inter_left (b := s)
     simp [*]
 
 @[stacks 0379]

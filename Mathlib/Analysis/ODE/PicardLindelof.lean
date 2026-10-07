@@ -6,8 +6,9 @@ Authors: Yury Kudryashov, Winston Yin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Topology.Algebra.Order.Floor
 public import Mathlib.Topology.MetricSpace.Contracting
+
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # Picard-Lindelöf (Cauchy-Lipschitz) Theorem
@@ -123,7 +124,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
 lemma continuousOn_comp
     (hf : ContinuousOn (uncurry f) (s ×ˢ u)) (hα : ContinuousOn α s) (hmem : MapsTo α s u) :
     ContinuousOn (fun t ↦ f t (α t)) s :=
-  contDiffOn_zero.mp <| (contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem)
+  contDiffOn_zero.mp (contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem)
 
 end
 

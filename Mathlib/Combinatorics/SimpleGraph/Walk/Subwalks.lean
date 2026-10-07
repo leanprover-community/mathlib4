@@ -6,8 +6,6 @@ Authors: Rida Hamadani
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Operations
-public import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
 # Subwalks
@@ -163,7 +161,7 @@ theorem isSubwalk_toWalk_iff_mem_edges {p : G.Walk u v} (h : G.Adj u' v') :
   have ⟨d, hd, h⟩ := h
   rw [Dart.edge, Sym2.eq, Sym2.rel_iff'] at h
   refine h.imp (fun h ↦ ?_) (fun h ↦ ?_)
-    <;> convert! hd using 2
+    <;> convert hd using 2
     <;> exact h.symm
 
 theorem infix_support_iff_mem_edges {p : G.Walk u v} :
