@@ -126,7 +126,7 @@ runs:
           --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH \
           --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE \
           --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL \
-          --env CACHE_BIN --env CACHE_REPO \
+          --env MATHLIB_CACHE_PARALLEL_MAX --env CACHE_BIN --env CACHE_REPO \
           -- bash -euo pipefail -c \
           'rm -rf .lake/build/lib/lean/Mathlib; exec "${CACHE_BIN}" --repo="${CACHE_REPO}" get' \
           2>&1 | tee "${log}"

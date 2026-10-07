@@ -355,6 +355,15 @@ guarantees the per-transfer JSON report fields `monitorCurl` reads. Pass
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
+/-- `curl` flag that sets the number of simultaneous transfers in a parallel
+download from `MATHLIB_CACHE_PARALLEL_MAX`. -/
+def curlParallelMaxArgs : IO (Array String) := do
+  let some value ← getEnvNonEmpty "MATHLIB_CACHE_PARALLEL_MAX" | return #[]
+  let some n := value.toNat? | do
+    IO.eprintln s!"Warning: ignoring MATHLIB_CACHE_PARALLEL_MAX={value} (expected a number)."
+    return #[]
+  return #["--parallel-max", toString n]
+
 /--
 Separates curl's JSON report from the raw header values after it on the
 same line. JSON allows no raw control character other than whitespace
@@ -844,6 +853,7 @@ private def downloadFilesFromLocation (location : Location)
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent location hashMap)
     let args := #["--request", "GET", "--parallel", "--silent"] ++
+      (← curlParallelMaxArgs) ++
       -- Avoid passing `--fail` here: it slows parallel transfers on curl
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++

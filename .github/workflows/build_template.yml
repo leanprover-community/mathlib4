@@ -50,6 +50,7 @@ env:
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
   MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+  MATHLIB_CACHE_PARALLEL_MAX: ${{ vars.MATHLIB_CACHE_PARALLEL_MAX }}
 
 jobs:
   build:
@@ -234,7 +235,7 @@ jobs:
 
       - name: fetch archive, counterexamples and wanted cache
         # Same sandbox as "Fetch cache from remote" in get-cache.
-        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL -- bash -euxo pipefail {0}
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env MATHLIB_CACHE_PARALLEL_MAX -- bash -euxo pipefail {0}
         run: |
           # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
@@ -522,7 +523,7 @@ jobs:
         if: ${{ env.RUN_TESTS == 'true' }}
         continue-on-error: true
         # Same sandbox as "Fetch cache from remote" in get-cache.
-        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env CACHE_REPO -- bash -euxo pipefail {0}
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env MATHLIB_CACHE_PARALLEL_MAX --env CACHE_REPO -- bash -euxo pipefail {0}
         env:
           CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
