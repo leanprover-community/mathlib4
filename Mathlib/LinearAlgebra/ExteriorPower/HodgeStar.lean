@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
 public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
+public import Mathlib.LinearAlgebra.Orientation
 
 /-!
 # Hodge star on exterior powers
@@ -16,10 +17,11 @@ This file contains a definition of the Hodge star on exterior powers.
 ## Main definitions / results:
  * `exteriorPower.hodgeStar`: the Hodge star on exterior powers associated to a choice of bilinear
    form and volume element.
+ * `exteriorPower.hodgeStarOfOrientation`: the Hodge star associated to a bilinear form and a
+   choice of orientation.
 
 ## TODO
 
-* Add API to obviate the need to supply the volume element in the presence of `Module.Oriented`.
 * Prove
   + `Δ * B.exteriorPower l (hodgeStar B hB vol hkl x) (hodgeStar B hB vol hkl y) =
       B.exteriorPower k x y`
@@ -37,6 +39,8 @@ namespace exteriorPower
 
 open Function Module
 
+section
+
 variable {R M : Type*}
   [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M] [Module.Free R M]
   (B : LinearMap.BilinForm R M) (hB : Bijective B)
@@ -53,5 +57,31 @@ public def hodgeStar :
 lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
     B.exteriorPower l (hodgeStar B hB vol hkl x) = wedgePairing vol hkl x := by
   simp
+
+end
+
+variable {R M : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup M] [Module R M] [Module.Finite R M] [Module.Free R M]
+  [Module.Oriented R M (Fin (finrank R M))]
+
+variable (B : LinearMap.BilinForm R M) (hB : Bijective B)
+
+open Set Set.powersetCard in
+/-- The Hodge star for the positive orientation, using `Module.finBasis` to choose the scale of the
+volume element. -/
+@[expose, simps!]
+public def hodgeStarOfOrientation {k l : ℕ}
+    (hkl : k + l = finrank R M) :
+    ⋀[R]^k M ≃ₗ[R] ⋀[R]^l M := by
+  classical
+  let b := Module.finBasis R M
+  letI : Unique (powersetCard (Fin (finrank R M)) (finrank R M)) := {
+    default := ⟨Finset.univ, by simp⟩
+    uniq s := Subtype.ext <| Finset.eq_univ_of_card _ <| by simp
+  }
+  let b' := b.exteriorPower (finrank R M)
+  let vol := b'.repr.trans (Finsupp.uniqueLinearEquiv R R default)
+  let vol := if b.orientation = positiveOrientation then vol else vol.trans (LinearEquiv.neg R)
+  exact hodgeStar B hB vol hkl
 
 end exteriorPower
