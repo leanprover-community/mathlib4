@@ -1278,7 +1278,6 @@ instance : Neg (M₁ →ₗₘ[R] M₂) :=
   ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
 
 instance : IsNegApply (M₁ →ₗₘ[R] M₂) (∀ i, M₁ i) M₂ where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
