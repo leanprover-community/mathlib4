@@ -43,7 +43,7 @@ lemma artinSchreierPoly.def (p : ℕ) [ExpChar F p] (a : F) :
     artinSchreierPoly a = X ^ p - X - C a := by simp [artinSchreierPoly, ringExpChar.eq F p]
 
 lemma artinSchreierPoly.taylor (p : ℕ) [ExpChar F p] (a c : F) :
-    (artinSchreierPoly a).taylor c = artinSchreierPoly (c - c ^ p + a) := by
+    (artinSchreierPoly a).taylor c = artinSchreierPoly (-(artinSchreierPoly a).eval c) := by
   repeat rw [artinSchreierPoly.def p]
   rcases expChar_is_prime_or_one F p with hp | rfl
   · have := (expChar_prime_iff F hp).mp ‹ExpChar F p›
@@ -74,13 +74,11 @@ lemma artinSchreierPoly.splits {a c : F} (hr : (artinSchreierPoly a).IsRoot c) :
   let p := ringExpChar F
   have : ExpChar F p := ringExpChar.expChar F
   rcases expChar_is_prime_or_one F p with hp | hp1
-  · simp only [artinSchreierPoly.def p, IsRoot.def, eval_sub, eval_pow, eval_X, eval_C] at hr
-    ring_nf at hr
-    rw [← Splits.taylor_iff c, artinSchreierPoly.taylor p,
-      show c - c ^ p + a = 0 by grind, artinSchreierPoly.def p]
+  · rw [IsRoot.def] at hr
+    rw [← Splits.taylor_iff c, artinSchreierPoly.taylor p, hr, artinSchreierPoly.def p]
     have : CharP F p := (expChar_prime_iff F hp).mp ‹ExpChar F p›
     have := Fact.mk hp
-    simpa [hr] using splits_X_pow_char_sub_X F p
+    simpa using splits_X_pow_char_sub_X F p
   · simp [artinSchreierPoly.def p, hp1]
 
 lemma artinSchreierPoly.irreducible [hp : Fact p.Prime]
