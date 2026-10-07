@@ -109,12 +109,9 @@ noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
         constructor
         <;> apply finiteSupport _ (isCompact_closedBall 0 |r|)
       repeat
-        rw [finsum_eq_sum_of_support_subset (s := h₁s.toFinset)]
-        try simp_rw [← Finset.sum_add_distrib, ← add_mul]
-      repeat
-        intro x hx
-        by_contra
-        simp_all
+        rw [finsum_eq_sum_of_support_subset (s := h₁s.toFinset) _
+          (by intro x hx; by_contra; simp_all)]
+      simp_rw [← Finset.sum_add_distrib, ← add_mul]
     · ring
 
 /--

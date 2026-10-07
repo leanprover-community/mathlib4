@@ -5,8 +5,9 @@ Authors: Riccardo Brasca
 -/
 module
 
-import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+
+import Mathlib.Algebra.Algebra.ZMod
 
 /-!
 # Cyclotomic polynomials and `expand`.

@@ -6,8 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.Algebra.Algebra.Pi
+
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.Tactic.NormNum

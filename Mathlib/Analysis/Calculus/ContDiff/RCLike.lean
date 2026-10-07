@@ -14,7 +14,6 @@ public import Mathlib.Analysis.Calculus.MeanValue
 
 public section
 
-noncomputable section
 
 open Set Fin Filter
 

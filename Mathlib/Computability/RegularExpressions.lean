@@ -6,6 +6,7 @@ Authors: Fox Thomson
 module
 
 public import Mathlib.Computability.Language
+
 import Mathlib.Tactic.AdaptationNote
 
 /-!

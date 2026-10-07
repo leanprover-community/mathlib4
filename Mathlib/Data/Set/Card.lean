@@ -6,6 +6,7 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.SetTheory.Cardinal.Finite
+
 import Mathlib.Data.Set.Finite.Powerset
 
 /-!
