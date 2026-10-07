@@ -16,6 +16,7 @@ Develop properties of finite cyclic groups and subgroups of cyclic groups.
 ## Main statements
 
 * `isCyclic_of_prime_card` proves that a finite group of prime order is cyclic.
+* `Subgroup.isCyclic` proves that subgroups of cyclic groups are cyclic.
 
 ## Tags
 
