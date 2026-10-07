@@ -319,13 +319,12 @@ theorem map_mk {f : α → β} (h : UniformContinuous f) (a : α) : map f (mk a)
 theorem uniformContinuous_map (f : α → β) : UniformContinuous (map f) :=
   uniformContinuous_lift' _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_unique {f : α → β} (hf : UniformContinuous f)
     {g : SeparationQuotient α → SeparationQuotient β} (comm : mk ∘ f = g ∘ mk) : map f = g := by
   ext ⟨a⟩
   calc
     map f ⟦a⟧ = ⟦f a⟧ := map_mk hf a
-    _ = g ⟦a⟧ := congr_fun comm a
+    _ = g ⟦a⟧ := congr($comm a)
 
 @[simp]
 theorem map_id : map (@id α) = id := map_unique uniformContinuous_id rfl

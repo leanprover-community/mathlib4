@@ -8,10 +8,10 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-public import Mathlib.Combinatorics.SimpleGraph.Operations
-public import Mathlib.Data.Set.Card.Arithmetic
-public import Mathlib.Data.Set.Functor
+
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Data.Set.Card.Arithmetic
+import Mathlib.Data.Set.Functor
 
 /-!
 # Matchings
@@ -352,7 +352,7 @@ def IsMatchingFree (G : SimpleGraph V) := ∀ M : Subgraph G, ¬ M.IsPerfectMatc
 lemma IsMatchingFree.mono {G G' : SimpleGraph V} (h : G ≤ G') (hmf : G'.IsMatchingFree) :
     G.IsMatchingFree := by
   intro x
-  by_contra! hc
+  by_contra hc
   apply hmf (x.map (SimpleGraph.Hom.ofLE h))
   refine ⟨hc.1.map_ofLE h, ?_⟩
   intro v

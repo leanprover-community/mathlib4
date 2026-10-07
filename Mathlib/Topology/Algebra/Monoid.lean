@@ -6,10 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.Group.Submonoid.Basic
-public import Mathlib.Algebra.Group.ULift
-public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Algebra.Monoid.Defs
@@ -753,7 +749,7 @@ inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
     Filter.Tendsto (fun x : M => a * x) (Filter.cocompact M) (Filter.cocompact M) := by
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_const_mul b))
-  convert! Filter.tendsto_id
+  convert Filter.tendsto_id
   ext x
   simp [← mul_assoc, ha]
 

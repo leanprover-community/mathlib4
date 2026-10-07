@@ -266,7 +266,7 @@ instance uniqueBaseOn_finitary : Finitary (uniqueBaseOn I E) := by
   exact fun e heK ↦ singleton_subset_iff.1 <| hK _ (by simpa) (by simp)
 
 lemma uniqueBaseOn_rankPos (hIE : I ⊆ E) (hI : I.Nonempty) : RankPos (uniqueBaseOn I E) where
-  empty_not_isBase := by simpa [uniqueBaseOn_isBase_iff hIE] using Ne.symm <| hI.ne_empty
+  empty_not_isBase := by simpa [uniqueBaseOn_isBase_iff hIE] using Ne.symm hI.ne_empty
 
 end uniqueBaseOn
 

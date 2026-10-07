@@ -6,7 +6,6 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Notation.FiniteSupport
 public import Mathlib.Algebra.Order.Ring.Defs
@@ -665,7 +664,7 @@ equals the product of `f i` divided by the product of `g i`. -/
       equals the sum of `f i` minus the sum of `g i`. -/]
 theorem finprod_div_distrib [DivisionCommMonoid G] {f g : α → G} (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) : ∏ᶠ i, f i / g i = (∏ᶠ i, f i) / ∏ᶠ i, g i := by
-  simp only [div_eq_mul_inv, finprod_mul_distrib hf <| hg.fun_inv, finprod_inv_distrib]
+  simp only [div_eq_mul_inv, finprod_mul_distrib hf hg.fun_inv, finprod_inv_distrib]
 
 /-- A more general version of `finprod_mem_mul_distrib` that only requires `s ∩ mulSupport f` and
 `s ∩ mulSupport g` rather than `s` to be finite. -/

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Clopen
 
+import Mathlib.Topology.Clopen
 import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!

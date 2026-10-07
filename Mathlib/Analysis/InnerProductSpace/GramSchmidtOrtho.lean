@@ -6,7 +6,6 @@ Authors: Jiale Miao, Kevin Buzzard, Alexander Bentkamp
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.LinearAlgebra.Matrix.Block
 
 /-!
 # Gram-Schmidt Orthogonalization and Orthonormalization
@@ -117,7 +116,7 @@ theorem gramSchmidt_inv_triangular (v : ι → E) {i j : ι} (hij : i < j) :
   rw [gramSchmidt_def'' 𝕜 v]
   simp only [inner_add_right, inner_sum, inner_smul_right]
   set b : ι → E := gramSchmidt 𝕜 v
-  convert! zero_add (0 : 𝕜)
+  convert zero_add (0 : 𝕜)
   · exact gramSchmidt_orthogonal 𝕜 v hij.ne'
   apply Finset.sum_eq_zero
   rintro k hki'

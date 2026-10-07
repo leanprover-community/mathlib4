@@ -472,7 +472,7 @@ lemma Measure.measure_inter_eq_of_ae (h : ∀ᵐ a ∂μ, a ∈ t) :
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (u ∩ s)`.
 Here, we require that the measure of `t` is finite. The conclusion holds without this assumption
 when the measure is s-finite (for example when it is σ-finite),
-see `measure_toMeasurable_inter_of_sFinite`. -/
+see `measure_toMeasurable_inter_of_sfinite`. -/
 theorem Measure.measure_toMeasurable_inter (hs : MeasurableSet s) (ht : μ t ≠ ∞) :
     μ (toMeasurable μ t ∩ s) = μ (t ∩ s) :=
   (measure_inter_eq_of_measure_eq hs (measure_toMeasurable t).symm (subset_toMeasurable μ t)

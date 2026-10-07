@@ -5,8 +5,9 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.RingTheory.PowerSeries.GaussNorm
+
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
 # Gauss norm for polynomials

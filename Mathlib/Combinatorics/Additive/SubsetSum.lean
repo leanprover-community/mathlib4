@@ -9,11 +9,11 @@ public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.Max
 
 /-!
 # Subset sums
@@ -106,7 +106,7 @@ theorem card_succ_choose_two_lt_card_subsetSum_of_pos (A_pos : ∀ x ∈ A, 0 < 
 theorem card_choose_two_lt_card_subsetSum_of_nonneg (A_pos : ∀ x ∈ A, 0 ≤ x) :
     (#A).choose 2 < #A.subsetSum := by
   calc (#A).choose 2
-    _ ≤ (#(A.erase 0) + 1).choose 2 := by grw [tsub_le_iff_right.1 <| pred_card_le_card_erase]
+    _ ≤ (#(A.erase 0) + 1).choose 2 := by grw [tsub_le_iff_right.1 pred_card_le_card_erase]
     _ < #(A.erase 0).subsetSum :=
         card_succ_choose_two_lt_card_subsetSum_of_pos fun x hx =>
           (A_pos x (mem_of_mem_erase hx)).lt_of_ne (ne_of_mem_erase hx).symm

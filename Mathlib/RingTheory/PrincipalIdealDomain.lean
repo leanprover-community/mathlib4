@@ -94,7 +94,7 @@ theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
 @[simp]
 theorem generator_mem (S : Submodule R M) [S.IsPrincipal] : generator S ∈ S := by
   have : generator S ∈ span R {generator S} := subset_span (mem_singleton _)
-  convert! this
+  convert this
   exact span_singleton_generator S |>.symm
 
 theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
@@ -243,7 +243,7 @@ lemma Finset.gcd_eq_sum_mul {α : Type*} [CommRing R] [IsBezout R] [NormalizedGC
     refine ⟨Function.update (g · * (y * u)) a (x * u), ?_⟩
     rw [gcd_insert, sum_insert ha, ← hu, hg]
     simp only [Function.update_self, add_right_inj, sum_mul, mul_assoc]
-    exact sum_congr rfl fun b hb ↦ congrArg (f b * ·) <|
+    exact sum_congr rfl fun b hb ↦ congrArg (f b * ·)
       (Function.update_of_ne (show b ≠ a by grind) (x * u) (g · * (y * u))).symm
 
 namespace IsPrime

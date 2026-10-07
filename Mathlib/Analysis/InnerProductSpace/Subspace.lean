@@ -121,7 +121,7 @@ theorem OrthogonalFamily.inner_right_dfinsupp
     ⟪V i v, l.sum fun j => V j⟫ = l.sum fun j => fun w => ⟪V i v, V j w⟫ :=
       DFinsupp.inner_sum (fun j => V j) l (V i v)
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
-      (congr_arg l.sum <| funext fun _ => funext <| hV.eq_ite v)
+      congr(l.sum $(funext fun _ => funext <| hV.eq_ite v))
     _ = ⟪v, l i⟫ := by
       simp only [DFinsupp.sum, Finset.sum_ite_eq,
         DFinsupp.mem_support_toFun]
@@ -135,7 +135,7 @@ theorem OrthogonalFamily.inner_right_fintype [Fintype ι] (l : ∀ i, G i) (i : 
   calc
     ⟪V i v, ∑ j : ι, V j (l j)⟫ = ∑ j : ι, ⟪V i v, V j (l j)⟫ := by rw [inner_sum]
     _ = ∑ j, ite (i = j) ⟪V i v, V j (l j)⟫ 0 :=
-      (congr_arg (Finset.sum Finset.univ) <| funext fun j => hV.eq_ite v (l j))
+      congr(Finset.sum Finset.univ $(funext fun j => hV.eq_ite v (l j)))
     _ = ⟪v, l i⟫ := by
       simp only [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, ite_true]
 
@@ -237,11 +237,11 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       have has : a ≤ s₁ ⊓ s₂ := le_inf hs₁ hs₂
       rw [hV.norm_sq_sdiff_sum]
       have Hs₁ : ∑ x ∈ s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
-        convert! H _ hs₁ _ has
+        convert H _ hs₁ _ has
         have : s₁ ⊓ s₂ ⊆ s₁ := Finset.inter_subset_left
         simp [← Finset.sum_sdiff this, Finset.abs_sum_of_nonneg]
       have Hs₂ : ∑ x ∈ s₂ \ s₁, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
-        convert! H _ hs₂ _ has
+        convert H _ hs₂ _ has
         have : s₁ ⊓ s₂ ⊆ s₂ := Finset.inter_subset_right
         simp [← Finset.sum_sdiff this, Finset.abs_sum_of_nonneg]
       linarith

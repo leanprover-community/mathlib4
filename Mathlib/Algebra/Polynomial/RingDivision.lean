@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.RingTheory.Coprime.Basic
+
 import Mathlib.Tactic.ComputeDegree
 
 /-!
@@ -139,13 +140,13 @@ section nonZeroDivisors
 open scoped nonZeroDivisors
 
 theorem Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ (h.coeff_natDegree ▸ one_mem R⁰)
+  mem_nonZeroDivisors_of_coeff_mem _ (h.coeff_natDegree ▸ one_mem R⁰)
 
 theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ h
+  mem_nonZeroDivisors_of_coeff_mem _ h
 
 theorem mem_nonZeroDivisors_of_trailingCoeff {p : R[X]} (h : p.trailingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ h
+  mem_nonZeroDivisors_of_coeff_mem _ h
 
 end nonZeroDivisors
 
@@ -238,7 +239,7 @@ theorem prime_X_sub_C (r : R) : Prime (X - C r) :=
     exact id⟩
 
 theorem prime_X : Prime (X : R[X]) := by
-  convert! prime_X_sub_C (0 : R)
+  convert prime_X_sub_C (0 : R)
   simp
 
 theorem Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime p :=
