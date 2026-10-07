@@ -37,7 +37,8 @@ noncomputable def toQuotientStabilizerCon (x : X) :
       ⟨Cat.Hom.isoMk <| by apply asIso <| FundamentalGroupoidFunctor.homotopicMapsNatIso h⟩
 
 /-- The canonical homomorphism from the mapping class monoid of a path-connected space to the
-outer endomorphism monoid of its fundamental group. -/
+outer endomorphism monoid of its fundamental group. It is an isomorphism if the space is a
+K(π,1) (such as a surface with χ(X) ≤ 0). -/
 noncomputable def toOuterEndFundamentalGroup (x : X) :
     MappingClassMonoid X →* Monoid.OuterEnd (FundamentalGroup X x) :=
   quotientToOuterEndEnd.comp (toQuotientStabilizerCon x)
@@ -45,7 +46,8 @@ noncomputable def toOuterEndFundamentalGroup (x : X) :
 end MappingClassMonoid
 
 /-- The canonical homomorphism from the mapping class group of a path-connected space to the
-outer automorphism group of its fundamental group. -/
+outer automorphism group of its fundamental group. The Dehn–Nielsen–Baer theorem says that
+it is an isomorphism for a closed surface of genus at least 1. -/
 noncomputable def MappingClassGroup.toOutFundamentalGroup (x : X) :
     MappingClassGroup X →* Monoid.Out (FundamentalGroup X x) :=
   Monoid.Out.equivUnitsOuterEnd.symm.toMonoidHom.comp <|
