@@ -1290,7 +1290,6 @@ instance : Sub (M₁ →ₗₘ[R] M₂) :=
       fun m i c x => by simp only [MultilinearMap.map_update_smul, smul_sub]⟩⟩
 
 instance : IsSubApply (M₁ →ₗₘ[R] M₂) (∀ i, M₁ i) M₂ where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
