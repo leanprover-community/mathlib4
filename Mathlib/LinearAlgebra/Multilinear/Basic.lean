@@ -191,7 +191,6 @@ instance : Add (M₁ →ₗₘ[R] M₂) :=
       simp [smul_add]⟩⟩
 
 instance : IsAddApply (M₁ →ₗₘ[R] M₂) (∀ i, M₁ i) M₂ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
