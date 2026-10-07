@@ -40,7 +40,7 @@ class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
 
 /-- In a semireal ring, `-1` is not a sum of squares. -/
 theorem IsSemireal.not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] [IsSemireal R] :
-    ¬ IsSumSq (-1 : R) := (by simpa using one_add_ne_zero ·)
+    ¬ IsSumSq (-1 : R) := (by simpa using one_add_ne_zero_of_isSumSq ·)
 
 variable {R} in
 theorem isSemireal_iff_not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] :
@@ -65,4 +65,4 @@ instance (priority := 90) [NonAssocRing R] [IsSemireal R] : CharZero R :=
     | succ n =>
       rw [add_comm] at hn
       push_cast at hn
-      simpa using IsSemireal.one_add_ne_zero (by simp) hn
+      simpa using IsSemireal.one_add_ne_zero_of_isSumSq (by simp) hn
