@@ -163,8 +163,8 @@ namespace ContinuousMulEquiv
 variable (M N) in
 /-- The isomorphism of topological groups between the units of a product of two groups and
 the product of the units. -/
-@[to_additive /-- The isomorphism of topological additive groups between the additive units of a
-product of two additive groups and the product of the additive units. -/]
+@[to_additive (attr := simps!) /-- The isomorphism of topological additive groups between the
+additive units of a product of two additive groups and the product of the additive units. -/]
 def prodUnits : (M × N)ˣ ≃ₜ* Mˣ × Nˣ where
   __ := MulEquiv.prodUnits
   __ := Homeomorph.prodUnits
