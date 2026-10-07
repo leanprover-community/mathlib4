@@ -91,11 +91,10 @@ runs:
             if [ "$REF_TYPE" = "tag" ]; then
               case "$BRANCH" in
                 v4.*)
-                  # `v4.*` release tags: release_cache.yml rebuilds off-master
-                  # release commits (patch releases, patched release
-                  # candidates) and publishes them into `master`, the container
-                  # canonical checkouts read. Tag creation is restricted to
-                  # release managers by a tag ruleset, and the
+                  # `v4.*` release tags: release_cache.yml rebuilds every
+                  # release commit and publishes it into `master`, the
+                  # container canonical checkouts read. Tag creation is
+                  # restricted to release managers by a tag ruleset, and the
                   # `cache-upload-master` environment admits `v4.*` tag refs,
                   # so these builds carry master trust. Reads use the tool's
                   # default for the canonical repo, `master` alone, for the
