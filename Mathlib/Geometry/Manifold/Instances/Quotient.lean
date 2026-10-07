@@ -18,8 +18,8 @@ This file contains results about quotients of manifolds by group actions.
 
 * `MulAction.instChartedSpaceQuotient`: a choice of charted space structure on the quotient of a
   charted space by a free, properly-discontinuous group action.
-* `MulAction.isManifold_quotient_of_contMDiffConstSMul`: if `G` acts smoothly, the quotient is an
-  `IsManifold I n` for a suitable `ModelWithCorners I`.
+* `MulAction.isManifold_quotient_of_contMDiffConstSMul`: if, additionally, the action is `C^n`,
+  the quotient is a `C^n` manifold.
 
 ## TODO
 
