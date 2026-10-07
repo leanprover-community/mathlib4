@@ -157,6 +157,7 @@ attribute [to_dual existing] BiheytingAlgebra.toHeytingAlgebra
 to_dual_for BiheytingAlgebra.toHNot := self.toCompl
 to_dual_for BiheytingAlgebra.toSDiff := self.toHImp
 to_dual_for BiheytingAlgebra.top_sdiff := self.himp_bot a
+to_dual_for BiheytingAlgebra.sdiff_le_iff := le_himp_iff'
 to_dual_for BiheytingAlgebra.mk :=
   { le_himp_iff a b c := by
       rw [sdiff_le_iff, inf_comm]
