@@ -86,10 +86,7 @@ section TransRefl
 def transReflReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 2 then 2 * t else 1
 
--- the `continuity` attribute refers to the lemma after it has been deprecated
-set_option linter.deprecated false in
-@[continuity, fun_prop,
-  deprecated unitInterval.continuous_qRight +typeChanged (since := "2026-10-07")]
+@[deprecated unitInterval.continuous_qRight +typeChanged (since := "2026-10-07")]
 theorem continuous_transReflReparamAux : Continuous transReflReparamAux :=
   continuous_if_le (by fun_prop) (by fun_prop) (by fun_prop) (by fun_prop) (by grind)
 
