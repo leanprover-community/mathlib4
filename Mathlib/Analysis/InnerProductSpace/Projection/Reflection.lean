@@ -6,6 +6,7 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+public import Mathlib.Analysis.Normed.Group.RadialFunction
 
 /-!
 # Reflection
@@ -160,12 +161,24 @@ theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (
     rw [Submodule.mem_orthogonal_singleton_iff_inner_left]
     rw [real_inner_add_sub_eq_zero_iff]
     exact h
-  convert! congr_arg₂ (· + ·) h₂ h₁ using 1
+  convert! congr($h₂ + $h₁) using 1
   · simp
   · abel
 
 end reflection
 
 end Submodule
+
+namespace Function
+
+variable {E F : Type*}
+
+lemma isRadial_iff_comp_linearIsometryEquiv [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    (f : E → F) : f.IsRadial ↔ ∀ g : E ≃ₗᵢ[ℝ] E, f ∘ g = f := by
+  refine ⟨fun hf g ↦ hf.comp_isometry g.isometry (by simp), fun h x y hxy ↦ ?_⟩
+  specialize h (ℝ ∙ (x - y))ᗮ.reflection
+  rw [← Submodule.reflection_sub hxy, ← f.comp_apply (g := (ℝ ∙ (x - y))ᗮ.reflection), h]
+
+end Function
 
 end

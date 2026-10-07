@@ -299,9 +299,7 @@ namespace Cone
 
 /-- To give an isomorphism between cones, it suffices to give an
 isomorphism between their vertices which commutes with the cone maps. -/
-@[to_dual (attr := simps) extInv
-/-- To give an isomorphism between cocones, it suffices to give an
-isomorphism between their vertices which commutes with the cone maps. -/]
+@[simps]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
@@ -309,14 +307,22 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     { hom := φ.inv
       w := fun j => φ.inv_comp_eq.mpr (w j) }
 
-/-- To give an isomorphism between cones, it suffices to give an
-isomorphism between their vertices which commutes with the cone maps. -/
-@[to_dual (attr := reducible, simps! -isSimp) ext
 /-- To give an isomorphism between cocones, it suffices to give an
-isomorphism between their vertices which commutes with the cocone maps. -/]
-def extInv {c c' : Cone F} (φ : c.pt ≅ c'.pt)
-    (w : ∀ j, φ.inv ≫ c.π.app j = c'.π.app j := by cat_disch) : c ≅ c' :=
-  ext φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
+isomorphism between their vertices which commutes with the cocone maps. -/
+@[simps]
+def _root_.CategoryTheory.Limits.Cocone.ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
+    (w : ∀ j, dsimp% c.ι.app j ≫ φ.hom = c'.ι.app j := by cat_disch) : c ≅ c' where
+  hom := { hom := φ.hom }
+  inv :=
+    { hom := φ.inv
+      w := fun j => φ.comp_inv_eq.mpr (w j).symm }
+
+to_dual_for ext := Cocone.ext φ
+to_dual_for ext_hom_hom := Cocone.ext_inv_hom φ
+to_dual_for ext_inv_hom := Cocone.ext_hom_hom φ
+to_dual_for Cocone.ext := Cone.ext φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
+to_dual_for Cocone.ext_hom_hom := ext_inv_hom φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
+to_dual_for Cocone.ext_inv_hom := ext_hom_hom φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
 
 attribute [aesop apply safe (rule_sets := [CategoryTheory])] Limits.Cone.ext Limits.Cocone.ext
 
@@ -480,7 +486,7 @@ instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full whe
 @[to_dual]
 instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
-    ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
+    ConeMorphism.ext f g <| G.map_injective congr(ConeMorphism.hom $h)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
@@ -729,7 +735,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
 def coneOpEquiv {F : J ⥤ C} : (Cone F)ᵒᵖ ≌ Cocone F.op where
   functor.obj c := c.unop.op
   functor.map f := { hom := f.unop.hom.op, w j := congr($(f.unop.w j.unop).op) }
-  inverse.obj c := .op <| c.unop
+  inverse.obj c := .op c.unop
   inverse.map f := ⟨{ hom := f.hom.unop, w j := congr($(f.w (.op j)).unop) }⟩
   unitIso := Iso.refl _
   counitIso := Iso.refl _

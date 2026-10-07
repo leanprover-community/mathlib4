@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
+import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Algebra.Group.TypeTags.Pointwise
 
 /-! # weights of Finsupp functions
