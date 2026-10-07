@@ -98,12 +98,12 @@ theorem isHyperbolicWith_diam_univ [BoundedSpace X] :
 class IsHyperbolic (X : Type*) [PseudoMetricSpace X] : Prop where
   exists_isHyperbolicWith : ∃ δ, IsHyperbolicWith X δ
 
-/-- Every bounded pseudometric space is hyperbolic. -/
-instance [BoundedSpace X] : IsHyperbolic X := ⟨_, isHyperbolicWith_diam_univ⟩
-
 /-- A subspace of a hyperbolic space is hyperbolic. -/
 instance [h : IsHyperbolic X] (p : X → Prop) : IsHyperbolic (Subtype p) := by
   obtain ⟨_, hX⟩ := h
   exact ⟨_, hX.subtype p⟩
+
+/-- Every bounded pseudometric space is hyperbolic. -/
+instance [BoundedSpace X] : IsHyperbolic X := ⟨_, isHyperbolicWith_diam_univ⟩
 
 end Metric
