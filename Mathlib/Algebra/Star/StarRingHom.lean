@@ -55,7 +55,10 @@ the `NonUnitalRingHomClass` instance. -/
 add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 
 /-- `NonUnitalStarRingHomClass F A B` states that `F` is a type of non-unital ⋆-ring homomorphisms.
-You should also extend this typeclass when you extend `NonUnitalStarRingHom`. -/
+
+This class is deprecated: it adds nothing to `StarHomClass`, so use
+`[NonUnitalRingHomClass F A B] [StarHomClass F A B]` instead. -/
+@[deprecated StarHomClass +typeChanged (since := "2026-10-07")]
 class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
     [FunLike F A B] [NonUnitalRingHomClass F A B] : Prop extends StarHomClass F A B
@@ -67,9 +70,9 @@ variable [NonUnitalNonAssocSemiring A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Star B]
 variable [FunLike F A B] [NonUnitalRingHomClass F A B]
 
-/-- Turn an element of a type `F` satisfying `NonUnitalStarRingHomClass F A B` into an actual
-`NonUnitalStarRingHom`. -/
-def _root_.NonUnitalStarRingHom.ofClass [NonUnitalStarRingHomClass F A B] (f : F) : A →⋆ₙ+* B :=
+/-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F A B` and `StarHomClass F A B`
+into an actual `NonUnitalStarRingHom`. -/
+def _root_.NonUnitalStarRingHom.ofClass [StarHomClass F A B] (f : F) : A →⋆ₙ+* B :=
   { (f : A →ₙ+* B) with
     map_star' := map_star f }
 
@@ -97,7 +100,7 @@ instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
 
-instance : NonUnitalStarRingHomClass (A →⋆ₙ+* B) A B where
+instance : StarHomClass (A →⋆ₙ+* B) A B where
   map_star f := f.map_star'
 
 /-- See Note [custom simps projection] -/
@@ -107,7 +110,7 @@ initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
 
 @[simp]
 protected theorem coe_ofClass {F : Type*} [FunLike F A B] [NonUnitalRingHomClass F A B]
-    [NonUnitalStarRingHomClass F A B] (f : F) : ⇑(ofClass f) = f :=
+    [StarHomClass F A B] (f : F) : ⇑(ofClass f) = f :=
   rfl
 
 @[deprecated (since := "2026-09-08")] alias coe_coe := NonUnitalStarRingHom.coe_ofClass
@@ -262,11 +265,6 @@ instance (priority := 50) {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul 
     [EquivLike F A B] [hF : StarRingEquivClass F A B] :
     StarHomClass F A B where
   __ := hF
-
--- See note [lower instance priority]
-instance (priority := 100) {F A B : Type*} [NonUnitalNonAssocSemiring A] [Star A]
-    [NonUnitalNonAssocSemiring B] [Star B] [EquivLike F A B] [StarRingEquivClass F A B] :
-    NonUnitalStarRingHomClass F A B where
 
 /-- Turn an element of a type `F` satisfying `StarRingEquivClass F A B` into an actual
 `StarRingEquiv`. -/
@@ -443,7 +441,7 @@ section Bijective
 variable {F G A B : Type*}
 variable [NonUnitalNonAssocSemiring A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Star B]
-variable [FunLike F A B] [NonUnitalRingHomClass F A B] [NonUnitalStarRingHomClass F A B]
+variable [FunLike F A B] [NonUnitalRingHomClass F A B] [StarHomClass F A B]
 variable [FunLike G B A]
 
 /-- If a (unital or non-unital) star ring morphism has an inverse, it is an isomorphism of
