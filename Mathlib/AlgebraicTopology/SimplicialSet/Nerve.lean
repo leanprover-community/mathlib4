@@ -264,6 +264,22 @@ lemma homEquiv_edgeMk_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}
 
 end
 
+lemma mem_range_nerveMap_app_iff_of_orderEmbedding
+    {X Y : Type u} [PartialOrder X] [PartialOrder Y]
+    (f : X ↪o Y) {n : ℕ} (y : (nerve Y) _⦋n⦌) :
+    y ∈ Set.range ((nerveMap f.monotone.functor).app _) ↔
+      ∀ i, y.obj i ∈ Set.range f := by
+  refine ⟨?_, fun hy ↦ ?_⟩
+  · rintro ⟨y, rfl⟩
+    exact fun i ↦ ⟨y.obj i, rfl⟩
+  · simp only [Set.mem_range] at hy
+    choose x hx using hy
+    let f : Fin (n + 1) →o X :=
+      { toFun := x
+        monotone' a b h := by
+          simpa only [← OrderEmbedding.le_iff_le f, hx] using y.monotone h }
+    exact ⟨f.monotone.functor, by ext; apply hx⟩
+
 end nerve
 
 end CategoryTheory

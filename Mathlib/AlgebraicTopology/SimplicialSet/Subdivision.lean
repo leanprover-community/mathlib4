@@ -238,7 +238,18 @@ lemma mem_range_sd'_map_ι_app_iff {X : SSet.{u}} (A : X.Subcomplex)
     {d : ℕ} (x : (sd'.obj X) _⦋d⦌) :
     dsimp% x ∈ Set.range ((sd'.map A.ι).app (op ⦋d⦌)) ↔
       (x.obj (Fin.last d)).simplex ∈ A.obj _ := by
-  sorry
+  let f : A.toSSet.N ↪o X.N :=
+    { toFun := mapN A.ι
+      inj' := mapN_injective_of_mono A.ι
+      map_rel_iff' {s t} := by
+        refine ⟨fun h ↦ ?_, fun h ↦ (mapN A.ι).monotone h⟩
+        dsimp at h
+        simp only [N.le_iff, subcomplex_mapN] at h ⊢
+        simpa only [Subcomplex.preimage_image] using Subcomplex.preimage_monotone A.ι h }
+  dsimp [sd']
+  simp only [dsimp% [f] nerve.mem_range_nerveMap_app_iff_of_orderEmbedding f,
+    mem_range_mapN_ι_iff, ← Subcomplex.ofSimplex_le_iff]
+  exact ⟨fun hx ↦ hx _, fun hx i ↦ (N.le_iff.1 (x.monotone (Fin.le_last i))).trans hx⟩
 
 end SSet
 
@@ -254,7 +265,7 @@ noncomputable def nerveNonemptyFiniteChainsIso (X : Type u) [PartialOrder X] :
 lemma nerveNonemptyFiniteChainsIso_hom_app_obj_finset
     {X : Type u} [DecidableEq X] [PartialOrder X] {n : ℕ}
     (t : ComposableArrows (nerve X).N n) (i : Fin (n + 1)) :
-    dsimp% (((nerveNonemptyFiniteChainsIso X).hom.app (Opposite.op ⦋n⦌) t).obj i).finset =
+    dsimp% (((nerveNonemptyFiniteChainsIso X).hom.app (op ⦋n⦌) t).obj i).finset =
       Finset.image (t.obj i).simplex.obj .univ := by
   ext x
   simp [nerveNonemptyFiniteChainsIso, nerveMap_app]

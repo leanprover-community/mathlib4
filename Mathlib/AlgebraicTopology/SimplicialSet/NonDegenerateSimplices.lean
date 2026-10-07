@@ -400,6 +400,22 @@ lemma mapN_ι_toSubcomplex (x : X.N) {A : X.Subcomplex} (hx : x.simplex ∈ A.ob
     mapN A.ι (x.toSubcomplex hx) = x := by
   rw [N.ext_iff, toS_mapN_of_mono, N.toSubcomplex_toS, S.map_ι_toSubcomplex]
 
+lemma mapN_ι {A : X.Subcomplex} (x : A.toSSet.N) :
+    mapN A.ι x = N.mk x.simplex.val
+      (by simpa only [← Subcomplex.mem_nonDegenerate_iff] using x.nonDegenerate) := by
+  rw [mapN_coe, S.toN_eq_iff, S.subcomplex_map, Subcomplex.image_ofSimplex]
+  rfl
+
+@[simp]
+lemma mapN_ι_simplex_mem {A : X.Subcomplex} (x : A.toSSet.N) :
+    (mapN A.ι x).simplex ∈ A.obj _ := by
+  rw [mapN_ι]
+  exact x.simplex.prop
+
+lemma mem_range_mapN_ι_iff {A : X.Subcomplex} (x : X.N) :
+    x ∈ Set.range (mapN A.ι) ↔ x.simplex ∈ A.obj _ :=
+  ⟨by rintro ⟨x, rfl⟩; simp, fun hx ↦ ⟨x.toSubcomplex hx, by simp⟩⟩
+
 attribute [local simp] mapN_mapN in
 /-- The functor `SSet ⥤ PartOrd` which sends a simplicial set `X` to
 the partially ordered type `X.N` of nondegenerate simplices in `X`. -/
