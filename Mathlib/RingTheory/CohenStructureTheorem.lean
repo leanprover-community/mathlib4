@@ -17,6 +17,8 @@ public import Mathlib.RingTheory.Flat.Extension
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
+public import Mathlib.RingTheory.RegularLocalRing.Basic
+public import Mathlib.RingTheory.RegularLocalRing.PowerSeries
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.Field
 public import Mathlib.RingTheory.Smooth.Quotient
@@ -458,3 +460,95 @@ lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing
     use C s
     rw [RingHom.comp_apply, F_C, ← (Ideal.quotEquivOfEq map_F_I).injective.eq_iff, ← hw]
     rfl
+
+section corollary
+
+variable [IsLocalRing R] [IsNoetherianRing R]
+
+lemma exist_isRegularLocalRing_surjective_of_isAdicComplete [IsAdicComplete (maximalIdeal R) R] :
+    ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S) (f : S →+* R),
+    Function.Surjective f := by
+  by_cases zero : CharZero (ResidueField R)
+  · rcases exists_section_of_charZero zero with ⟨f, hf⟩
+    have bij : Function.Bijective (ResidueField.map f) :=
+      ⟨RingHom.injective _, fun x ↦ ⟨IsLocalRing.residue _ x,
+        by simpa [IsLocalRing.ResidueField.map_residue] using RingHom.congr_fun hf x⟩⟩
+    rcases exists_mvPowerSeries_surjective_of_residueField_map_bijective
+      (maximalIdeal R).fg_of_isNoetherianRing _ f bij with ⟨n, g, surjg, hg⟩
+    use MvPowerSeries (Fin n) (ResidueField R), inferInstance,
+      MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing, g, surjg
+  · rcases exists_isCohenRing_residueField_map_bijective zero with ⟨S, _, _, cohen, f, _, bij⟩
+    rcases exists_mvPowerSeries_surjective_of_residueField_map_bijective
+      (maximalIdeal R).fg_of_isNoetherianRing _ f bij with ⟨n, g, surjg, hg⟩
+    use MvPowerSeries (Fin n) S, inferInstance,
+      MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing, g, surjg
+
+lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoetherianRing R]
+    [IsLocalRing R] {R' : Type*} [CommRing R'] [IsLocalRing R']
+    (f : R →+* R') (surj : Function.Surjective f) (le : RingHom.ker f ≤ (maximalIdeal R) ^ 2) :
+    (maximalIdeal R').spanFinrank = (maximalIdeal R).spanFinrank := by
+  let := f.toAlgebra
+  have : IsLocalHom f := IsLocalHom.of_surjective f surj
+  have : _ + Module.finrank (ResidueField R) ((Submodule.comap (maximalIdeal R).subtype
+    (RingHom.ker f)).map (toCotangentSpace R)) = _ :=
+    IsLocalRing.spanFinrank_maximalIdeal_add_finrank_eq_of_surjective surj
+  simp only [← this, Nat.left_eq_add, Submodule.finrank_eq_zero, eq_bot_iff,
+    Submodule.map_le_iff_le_comap]
+  intro x
+  simpa [toCotangentSpace, Ideal.toCotangent_eq_zero] using fun h ↦ le h
+
+set_option backward.isDefEq.respectTransparency false in
+lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
+    [IsAdicComplete (maximalIdeal R) R] : ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
+    (f : S →+* R), Function.Surjective f ∧ RingHom.ker f ≤ (maximalIdeal S) ^ 2 := by
+  rcases exist_isRegularLocalRing_surjective_of_isAdicComplete R with ⟨S, _, regS, f, surj⟩
+  obtain ⟨n, hn⟩ : ∃ n, (maximalIdeal R).spanFinrank + n = (maximalIdeal S).spanFinrank:= by
+    apply Nat.le.dest
+    rw [← map_maximalIdeal_of_surjective _ surj]
+    exact Ideal.spanFinrank_map_le_of_fg _ (maximalIdeal S).fg_of_isNoetherianRing
+  induction n generalizing S f with
+  | zero =>
+    use S, inferInstance, inferInstance, f, surj
+    intro x hx
+    by_contra nmem
+    have le : RingHom.ker f ≤ maximalIdeal S := IsLocalRing.le_maximalIdeal (RingHom.ker_ne_top f)
+    obtain ⟨reg, dim⟩ := quotient_span_singleton S (le hx) nmem
+    have : ∀ y ∈ Ideal.span {x}, f y = 0 := by
+      intro y hy
+      rcases Ideal.mem_span_singleton.mp hy with ⟨z, hz⟩
+      simp [hz, RingHom.mem_ker.mp hx]
+    have surj' := Ideal.Quotient.lift_surjective_of_surjective _ this surj
+    rw [← (isRegularLocalRing_iff _).mp reg, ← (isRegularLocalRing_iff _).mp regS,
+      ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim
+    have : (maximalIdeal R).spanFinrank ≤ (maximalIdeal (S ⧸ Ideal.span {x})).spanFinrank := by
+      rw [← map_maximalIdeal_of_surjective _ surj']
+      exact Ideal.spanFinrank_map_le_of_fg _ (maximalIdeal _).fg_of_isNoetherianRing
+    omega
+  | succ n ih =>
+    obtain ⟨x, hx, nmem⟩ : ∃ x ∈ RingHom.ker f, x ∉ (maximalIdeal S) ^ 2 := by
+      by_contra! mem
+      simp [spanFinrank_eq_of_surjective_of_ker_le f surj mem] at hn
+    have le : RingHom.ker f ≤ maximalIdeal S := IsLocalRing.le_maximalIdeal (RingHom.ker_ne_top f)
+    obtain ⟨reg, dim⟩ := quotient_span_singleton S (le hx) nmem
+    have : ∀ y ∈ Ideal.span {x}, f y = 0 := by
+      intro y hy
+      rcases Ideal.mem_span_singleton.mp hy with ⟨z, hz⟩
+      simp [hz, RingHom.mem_ker.mp hx]
+    have surj' := Ideal.Quotient.lift_surjective_of_surjective _ this surj
+    rw [← (isRegularLocalRing_iff _).mp reg, ← (isRegularLocalRing_iff _).mp regS,
+      ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim
+    simp only [← add_assoc, ← dim, Nat.add_right_cancel_iff] at hn
+    exact ih (S ⧸ Ideal.span {x}) inferInstance reg _ surj' hn
+
+lemma exist_isRegularLocalRing_surjective_adicCompletion :
+    ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
+    (f : S →+* (AdicCompletion (maximalIdeal R) R)), Function.Surjective f :=
+  exist_isRegularLocalRing_surjective_of_isAdicComplete _
+
+lemma exist_isRegularLocalRing_surjective_adicCompletion_ker_le :
+    ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
+    (f : S →+* (AdicCompletion (maximalIdeal R) R)),
+    Function.Surjective f ∧ RingHom.ker f ≤ (maximalIdeal S) ^ 2 :=
+  exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete _
+
+end corollary
