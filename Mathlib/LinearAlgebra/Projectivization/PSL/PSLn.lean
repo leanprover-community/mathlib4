@@ -115,10 +115,12 @@ lemma elemDiagSL_mem_commutator_of_three_le (hι : 3 ≤ Fintype.card ι) {i j :
   mul_mem (mul_mem (mul_mem (mul_mem (mul_mem (h i j hij α) (h j i hij.symm _)) (h i j hij α))
     (h i j hij (-1))) (h j i hij.symm 1)) (h i j hij (-1))
 
-/-- For `Fintype.card ι ≥ 3`, every element of `SL ι F` lies in the
-commutator subgroup. -/
-lemma SL_le_commutator_of_three_le (hι : 3 ≤ Fintype.card ι) (M : Matrix.SpecialLinearGroup ι F) :
-    M ∈ commutator (Matrix.SpecialLinearGroup ι F) := by
+/-- `commutator (SL ι F) = ⊤` when `Fintype.card ι ≥ 3` (no condition on `F`
+beyond being a field). -/
+lemma commutator_SL_eq_top_of_three_le_card (hι : 3 ≤ Fintype.card ι) :
+    commutator (Matrix.SpecialLinearGroup ι F) = ⊤ := by
+  ext M
+  simp only [Subgroup.mem_top, iff_true]
   have : Nontrivial ι := Fintype.one_lt_card_iff_nontrivial.mp (by omega)
   refine diagonal_transvection_induction' _ M ?_
     (transvection_mem_commutator_of_three_le hι) fun A B hA hB ↦ mul_mem hA hB
@@ -126,24 +128,18 @@ lemma SL_le_commutator_of_three_le (hι : 3 ≤ Fintype.card ι) (M : Matrix.Spe
   rw [diag2n_eq_elemDiagSL hij c hc]
   exact elemDiagSL_mem_commutator_of_three_le hι hij c
 
-/-- `commutator (SL ι F) = ⊤` when `Fintype.card ι ≥ 3` (no condition on `F`
-beyond being a field). -/
-lemma SL_commutator_eq_top_of_three_le (hι : 3 ≤ Fintype.card ι) :
-    commutator (Matrix.SpecialLinearGroup ι F) = ⊤ :=
-  eq_top_iff.2 fun M _ ↦ SL_le_commutator_of_three_le hι M
-
 /-- `commutator (PSL ι F) = ⊤` when `Fintype.card ι ≥ 3`. -/
-lemma PSL_commutator_eq_top_of_three_le (hι : 3 ≤ Fintype.card ι) :
+lemma commutator_PSL_eq_top_of_three_le_card (hι : 3 ≤ Fintype.card ι) :
     commutator (Matrix.ProjectiveSpecialLinearGroup ι F) = ⊤ :=
   have : Group.IsPerfect (Matrix.SpecialLinearGroup ι F) :=
-    ⟨SL_commutator_eq_top_of_three_le hι⟩
+    ⟨commutator_SL_eq_top_of_three_le_card hι⟩
   Group.IsPerfect.commutator_eq_top
 
 /-! ### Iwasawa structure -/
 
 /-- The Iwasawa generator property: for nontrivial `ι`, the supremum of the
 `iwasawaT` subgroups equals all of `PSL`. -/
-lemma PSL.iSup_iwasawaT_eq_top [Nontrivial ι] :
+lemma iSup_iwasawaT_eq_top [Nontrivial ι] :
     iSup (PSL.iwasawaT (F := F) (ι := ι)) = ⊤ := by
   rw [← Subgroup.map_iSup, iSup_lineStab_eq_top]
   exact Subgroup.map_top_of_surjective _ (QuotientGroup.mk'_surjective _)
@@ -161,7 +157,7 @@ noncomputable def PSL.Iwasawa [Nontrivial ι] :
     obtain ⟨g_SL, rfl⟩ := QuotientGroup.mk_surjective g
     change Subgroup.map _ (lineStab (g_SL • p).submodule) = _
     rw [PSL.smul_submodule, lineStab_smul, PSL.iwasawaT_map_conj]
-  is_generator := PSL.iSup_iwasawaT_eq_top
+  is_generator := iSup_iwasawaT_eq_top
 
 end SLnSimple
 
@@ -171,4 +167,4 @@ theorem Matrix.ProjectiveSpecialLinearGroup.isSimpleGroup_of_three_le (hι : 3 �
     IsSimpleGroup (Matrix.ProjectiveSpecialLinearGroup ι F) :=
   have : Nontrivial ι := Fintype.one_lt_card_iff_nontrivial.mp (by omega)
   MulAction.IwasawaStructure.isSimpleGroup
-    (SLnSimple.PSL_commutator_eq_top_of_three_le hι) SLnSimple.PSL.Iwasawa inferInstance
+    (SLnSimple.commutator_PSL_eq_top_of_three_le_card hι) SLnSimple.PSL.Iwasawa inferInstance
