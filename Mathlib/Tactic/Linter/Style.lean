@@ -9,17 +9,17 @@ public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
 public import Batteries.Tactic.Lint.Basic
 public import Lean.Parser.Module
+
+import Lean.Parser.Command
 
 /-!
 ## Style linters
 
 This file contain linters about stylistic aspects: these are only about coding style,
 but do not affect correctness nor global coherence of mathlib.
-Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
 - the `setOption` linter checks for the presence of `set_option` commands activating
@@ -147,30 +147,30 @@ public register_option linter.style.missingEnd : Bool := {
 namespace Style.missingEnd
 
 @[inherit_doc Mathlib.Linter.linter.style.missingEnd]
-def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    -- Only run this linter at the end of a module.
-    unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
-        !(← MonadState.get).messages.hasErrors then
-      let sc ← getScopes
-      -- The last scope is always the "base scope", corresponding to no active `section`s or
-      -- `namespace`s. We are interested in any *other* unclosed scopes.
-      if sc.length == 1 then return
-      let ends := sc.dropLast
-      -- If the outermost scope(s) correspond to `public/meta/noncomputable section`, we ignore
-      -- them.
-      let ends := ends.reverse
-        |>.dropWhile (fun sc ↦ sc.currNamespace.isAnonymous &&
-          (sc.isMeta || sc.isPublic || sc.isNoncomputable))
-        |>.reverse
-      -- If there are any further un-closed scopes, we emit a warning.
-      if !ends.isEmpty then
-        let ending := (ends.map (·.header)).foldl (init := "") fun a b ↦
-          a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
-        Linter.logLint linter.style.missingEnd stx
-         m!"unclosed sections or namespaces; expected: '{ending}'"
+def missingEndLinter : ModuleLinter where run _ := do
+  if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
+      !(← MonadState.get).messages.hasErrors then
+    let sc ← getScopes
+    -- The last scope is always the "base scope", corresponding to no active `section`s or
+    -- `namespace`s. We are interested in any *other* unclosed scopes.
+    if sc.length == 1 then return
+    let ends := sc.dropLast
+    -- If the outermost scope(s) correspond to `public/meta/noncomputable section`, we ignore
+    -- them.
+    let ends := ends.reverse
+      |>.dropWhile (fun sc ↦ sc.currNamespace.isAnonymous &&
+        (sc.isMeta || sc.isPublic || sc.isNoncomputable))
+      |>.reverse
+    -- If there are any further un-closed scopes, we emit a warning.
+    if !ends.isEmpty then
+      let ending := (ends.map (·.header)).foldl (init := "") fun a b ↦
+        a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
+      let bottom := (← getFileMap).source.utf8ByteSize
+      let bottomOfFile := Syntax.atom (.synthetic ⟨bottom⟩ ⟨bottom⟩) ""
+      Linter.logLint linter.style.missingEnd bottomOfFile
+        m!"unclosed sections or namespaces; expected: '{ending}'"
 
-initialize addLinter missingEndLinter
+initialize addModuleLinter missingEndLinter
 
 end Style.missingEnd
 

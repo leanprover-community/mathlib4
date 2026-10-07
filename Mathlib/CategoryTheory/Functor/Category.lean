@@ -72,7 +72,7 @@ theorem congr_app {α β : F ⟶ G} (h : α = β) (X : C) : α.app X = β.app X 
 @[simp, grind =]
 theorem id_app (F : C ⥤ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
 
-@[simp, grind _=_, to_dual self, reassoc]
+@[simp, grind _=_, to_dual self, map (attr := reassoc)]
 theorem comp_app {F G H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
     (α ≫ β).app X = α.app X ≫ β.app X := rfl
 
@@ -81,10 +81,10 @@ theorem app_naturality {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (X : C) {Y Z : D} (f 
     (F.obj X).map f ≫ (T.app X).app Z = (T.app X).app Y ≫ (G.obj X).map f :=
   (T.app X).naturality f
 
-@[to_dual none, reassoc (attr := simp)]
+@[to_dual none, map (attr := reassoc (attr := simp))]
 theorem naturality_app {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (Z : D) {X Y : C} (f : X ⟶ Y) :
     (F.map f).app Z ≫ (T.app Y).app Z = (T.app X).app Z ≫ (G.map f).app Z :=
-  congr_fun (congr_arg app (T.naturality f)) Z
+  congr(app $(T.naturality f) Z)
 
 @[to_dual none, reassoc]
 theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
@@ -130,10 +130,7 @@ theorem hcomp_app {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
     (α ◫ β).app X = β.app (F.obj X) ≫ I.map (α.app X) :=
   (rfl)
 
-@[to_dual existing hcomp_app]
-theorem hcomp_app' {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
-    (α ◫ β).app X = H.map (α.app X) ≫ β.app (G.obj X) := by
-  simp
+to_dual_for hcomp_app := by simp
 
 @[to_dual self]
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by

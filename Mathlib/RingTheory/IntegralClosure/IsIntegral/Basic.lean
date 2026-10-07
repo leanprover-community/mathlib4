@@ -7,9 +7,10 @@ module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Finiteness.Subalgebra
-public import Mathlib.RingTheory.Polynomial.Tower
+
+import Mathlib.RingTheory.Adjoin.Polynomial.Basic
+import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Properties of integral elements.
@@ -105,7 +106,7 @@ theorem IsIntegral.fg_adjoin_singleton [Algebra R B] {x : B} (hx : IsIntegral R 
     (Algebra.adjoin R {x}).toSubmodule.FG := by
   classical
   rcases hx with ⟨f, hfm, hfx⟩
-  use (Finset.range <| f.natDegree).image (x ^ ·)
+  use (Finset.range f.natDegree).image (x ^ ·)
   exact span_range_natDegree_eq_adjoin hfm (by rwa [aeval_def])
 
 variable (f : R →+* B)

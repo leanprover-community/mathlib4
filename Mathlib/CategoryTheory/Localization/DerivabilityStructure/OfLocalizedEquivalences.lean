@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-public import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
+
+import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
 
 /-!
 # Derivability structures deduced from localized equivalences
@@ -75,7 +76,7 @@ lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
   let : CatCommSq T.functor (L.functor ⋙ W₁'.Q) (R.functor ⋙ W₂'.Q) F :=
     CatCommSq.vComp (H₂ := B.functor) _ _ _ _ _ _
   have : (TwoSquare.hComp iso.inv e'.inv).GuitartExact := by
-    convert!
+    convert
       T.guitartExact_of_isLeftDerivabilityStructure' (L.functor ⋙ W₁'.Q) (R.functor ⋙ W₂'.Q) F
         (CatCommSq.iso _ _ _ _)
     ext
