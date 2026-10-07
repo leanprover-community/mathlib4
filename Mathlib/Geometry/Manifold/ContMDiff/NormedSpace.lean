@@ -10,7 +10,7 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Constructions
 import Mathlib.Analysis.Normed.Operator.Prod
 import Mathlib.Geometry.Manifold.Notation
 
-/-! ## Equivalence of smoothness with the basic definition for functions between vector spaces
+/-! # Equivalence of smoothness with the basic definition for functions between vector spaces
 
 * `contMDiff_iff_contDiff`: for functions between vector spaces,
   manifold-smoothness is equivalent to usual smoothness.
@@ -155,9 +155,8 @@ theorem ContMDiff.clm_postcomp {f : M → F₂ →L[𝕜] F₃} (hf : CMDiff n f
   (hf x).clm_postcomp
 
 theorem ContMDiffWithinAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {s : Set M} {x : M}
-    (hg : CMDiffAt[s] n g x)
-    (hf : CMDiffAt[s] n f x) :
-    CMDiffAt[s] n (fun x => (g x).comp (f x)) x :=
+    (hg : CMDiffAt[s] n g x) (hf : CMDiffAt[s] n f x) :
+    CMDiffAt[s] n (fun x ↦ (g x).comp (f x)) x :=
   ContDiff.comp_contMDiffWithinAt (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₁) => x.1.comp x.2)
     (f := fun x => (g x, f x)) (contDiff_fst.clm_comp contDiff_snd) (hg.prodMk_space hf)
 
@@ -179,8 +178,7 @@ theorem ContMDiff.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L
 versions in nontrivial vector bundles, see `ContMDiffWithinAt.clm_apply_of_inCoordinates` and
 `ContMDiffWithinAt.clm_bundle_apply`. -/
 theorem ContMDiffWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {s : Set M} {x : M}
-    (hg : CMDiffAt[s] n g x)
-    (hf : CMDiffAt[s] n f x) :
+    (hg : CMDiffAt[s] n g x) (hf : CMDiffAt[s] n f x) :
     CMDiffAt[s] n (fun x ↦ g x (f x)) x :=
   ContDiffWithinAt.comp_contMDiffWithinAt (t := univ)
     (g := fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2)

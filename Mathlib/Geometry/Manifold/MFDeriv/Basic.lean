@@ -27,8 +27,6 @@ mimicking the API for Fréchet derivatives.
 
 public section
 
-noncomputable section
-
 assert_not_exists tangentBundleCore
 
 open scoped Topology Manifold
@@ -1133,9 +1131,7 @@ theorem HasMFDerivWithinAt.comp (hg : HasMFDerivAt[u] g (f x) g')
         (hf.1.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _))
     unfold HasMFDerivWithinAt at *
     rw [← hasFDerivWithinAt_inter' this, ← extChartAt_preimage_inter_eq] at hf ⊢
-    have : writtenInExtChartAt I I' x f ((extChartAt I x) x) = (extChartAt I' (f x)) (f x) := by
-      simp only [mfld_simps]
-    rw [← this] at hg
+    rw [← writtenInExtChartAt_apply_extChartAt (I := I) (mem_extChartAt_source x)] at hg
     apply HasFDerivWithinAt.comp ((extChartAt I x) x) hg.2 hf.2 _
     intro y hy
     simp only [mfld_simps] at hy
