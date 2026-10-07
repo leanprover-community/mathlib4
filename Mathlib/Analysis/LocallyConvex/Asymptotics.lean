@@ -136,10 +136,7 @@ theorem isBigOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
   · intro ⟨r, r_cont, hr⟩
     obtain ⟨s, C, C_ne, hC⟩ := Seminorm.bound_of_continuous hq r r_cont
     exact ⟨s, C, hr.mono fun x hx ↦ hx.trans (hC _)⟩
-  · intro ⟨s, C, hC⟩
-    use C • s.sup q
-    have := hq.isTopologicalAddGroup
-    use (Seminorm.continuous_finsetSup fun i _ ↦ hq.continuous_seminorm i).const_smul _
+  · exact fun ⟨s, C, hC⟩ ↦ ⟨C • s.sup q, (hq.continuous_finsetSup_seminorm s).const_smul _, hC⟩
 
 theorem isBigOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =O[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, (p i ∘ f) =O[l] (↑(s.sup q) ∘ g) := by
@@ -180,8 +177,7 @@ theorem isLittleOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
     simp only [Function.comp_apply, Seminorm.le_def, smul_apply] at hx hC ⊢
     grw [hx, hC _, ← mul_smul, div_mul_cancel₀ _ C_ne]
   · intro ⟨s, hs⟩
-    have := hq.isTopologicalAddGroup
-    use s.sup q, Seminorm.continuous_finsetSup fun i _ ↦ hq.continuous_seminorm i
+    use s.sup q, hq.continuous_finsetSup_seminorm s
 
 theorem isLittleOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =o[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, (p i ∘ f) =o[l] ((s.sup q : Seminorm 𝕜 F) ∘ g) := by
