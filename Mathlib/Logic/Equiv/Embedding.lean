@@ -81,12 +81,7 @@ def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type*} :
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 
-/-- Embeddings from a single-member type are equivalent to members of the target type. -/
-def uniqueEmbeddingEquivResult {α β : Type*} [Unique α] :
-    (α ↪ β) ≃ β where
-  toFun f := f default
-  invFun x := ⟨fun _ => x, fun _ _ _ => Subsingleton.elim _ _⟩
-  left_inv f := DFunLike.ext _ _ fun x => congrArg f (Subsingleton.elim default x)
-  right_inv _ := rfl
+@[deprecated (since := "2026-10-07")]
+alias uniqueEmbeddingEquivResult := Function.Embedding.oneEmbeddingEquiv
 
 end Equiv

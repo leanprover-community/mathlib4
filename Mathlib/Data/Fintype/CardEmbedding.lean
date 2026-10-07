@@ -31,7 +31,7 @@ namespace Fintype
 
 theorem card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fintype (α ↪ β)] :
     ‖α ↪ β‖ = ‖β‖ :=
-  card_congr Equiv.uniqueEmbeddingEquivResult
+  card_congr Embedding.oneEmbeddingEquiv
 
 -- Establishes the cardinality of the type of all injections between two finite types.
 -- Porting note: `induction α using Fintype.induction_empty_option` can't work with the `Fintype α`
