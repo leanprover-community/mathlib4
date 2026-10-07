@@ -54,7 +54,6 @@ theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
   exact isClosed_eq continuous_fst continuous_const
 
 -- Continuity of `fun x => a ^ x`: union of these two lemmas is optimal.
-@[fun_prop]
 theorem continuousAt_const_cpow {a b : ℂ} (ha : a ≠ 0) : ContinuousAt (fun x : ℂ => a ^ x) b := by
   have cpow_eq : (fun x : ℂ => a ^ x) = fun x => exp (log a * x) := by
     ext1 b
