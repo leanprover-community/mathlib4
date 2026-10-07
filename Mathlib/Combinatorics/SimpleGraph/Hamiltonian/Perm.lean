@@ -6,15 +6,14 @@ Authors: Jesse Alama
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Iterate
-public import Mathlib.GroupTheory.Perm.Cycle.Concrete
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 /-!
 # Hamiltonian graphs from cyclic permutations
 
-If `σ : Perm α` is a single cycle with full support, `3 ≤ #α`, and `G.Adj x (σ x)` for every
-`x`, then `G` is Hamiltonian. The witnessing walk is `Walk.iterate σ … x (#α − 1)` closed by
-the edge `s(x, σ x)`.
+If `σ` is a cycle on a finset `s` and `G.Adj x (σ x)` for every `x`, then the cycle graph on
+`#s` vertices embeds in `G`. In particular, if `σ : Perm α` is a single cycle with full support,
+`3 ≤ #α`, and `G.Adj x (σ x)` for every `x`, then `G` is Hamiltonian.
 -/
 
 public section
@@ -23,44 +22,33 @@ open Finset Function Equiv Equiv.Perm
 
 namespace SimpleGraph
 
-variable {α : Type*} [Fintype α] [DecidableEq α] {G : SimpleGraph α}
+variable {α : Type*} {G : SimpleGraph α}
 
-/-- Given a cyclic permutation with full support on at least 3 elements which
-sends each vertex to an adjacent one, then the graph is hamiltonian. -/
-theorem IsHamiltonian.of_perm {σ : Perm α}
-    (hcycle : σ.IsCycle) (hsupport : σ.support = .univ)
-    (hadj : ∀ v, G.Adj v (σ v))
-    (hcard3 : 3 ≤ Fintype.card α) : G.IsHamiltonian := by
-  intro _
-  obtain ⟨x, hx_mem⟩ := hcycle.nonempty_support
-  have hx : σ x ≠ x := σ.mem_support.mp hx_mem
-  have hcycOn : σ.IsCycleOn (Finset.univ : Finset α) :=
-    hsupport ▸ σ.coe_support_eq_set_support ▸ hcycle.isCycleOn
-  set p : G.Walk (σ x) x := (Walk.iterate (↑σ) (σ x) (Fintype.card α - 1) hadj).copy rfl (by
-    change (↑σ : α → α)^[Fintype.card α - 1 + 1] x = x
-    rw [Nat.sub_add_cancel (by lia), Equiv.Perm.iterate_eq_pow,
-      ← Finset.card_univ, hcycOn.pow_card_apply (Finset.mem_univ x)])
-  refine ⟨x, .cons (hadj x) p, Walk.isHamiltonianCycle_cons_iff.mpr ⟨?_, ?_⟩⟩
-  · -- p is a Hamiltonian path: visits every vertex exactly once.
-    rw [Walk.isHamiltonian_iff_isPath_and_length_eq]
-    refine ⟨?_, by simp [p]⟩
-    rw [Walk.isPath_def]
-    simp only [p, Walk.support_copy, Walk.support_iterate,
-      show Fintype.card α - 1 + 1 = Fintype.card α by lia]
-    have hsx : σ (σ x) ≠ σ x := σ.injective.ne hx
-    have hcard : Fintype.card α = (cycleOf σ (σ x)).support.card := by
-      rw [hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
-    rw [hcard, ← List.range_map_iterate]
-    simp only [Equiv.Perm.iterate_eq_pow]
-    rw [← σ.toList_eq_range_map_pow]
-    exact σ.nodup_toList (σ x)
-  · -- The closure edge `s(x, σ x)` is not already used in `p`.
-    simp only [p, Walk.edges_copy, Walk.edges_iterate]
-    rw [List.mem_map]
-    rintro ⟨i, hi, heq⟩
-    rw [List.mem_range] at hi
-    simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
-    exact hcycOn.sym2Mk_pow_apply_ne (Finset.mem_univ x) (by lia)
-      (by rw [Finset.card_univ]; lia) (by rw [Finset.card_univ]; lia) heq
+/-- If `σ` is a cycle on a nonempty finset `s` and each vertex is adjacent to its image under `σ`,
+then the cycle graph on `#s` vertices is contained in `G`. -/
+theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ : σ.IsCycleOn s)
+    (hs : s.Nonempty) (hadj : ∀ v, G.Adj v (σ v)) : cycleGraph #s ⊑ G := by
+  obtain ⟨v, hv⟩ := hs
+  refine ⟨⟨fun i ↦ σ^[i] v, fun {i j} h ↦ ?_⟩,
+    fun i j hij ↦ Fin.ext <| hσ.injOn_pow_apply hv i.2 j.2 <| by simpa [iterate_eq_pow] using hij⟩
+  wlog hij : i < j generalizing i j
+  · exact this h.symm (by grind [SimpleGraph.irrefl]) |>.symm
+  rcases cycleGraph_adj'.mp h with h | h
+  · obtain ⟨hi, hj⟩ : i.1 = 0 ∧ j.1 = #s - 1 := by grind [Fin.coe_sub_iff_lt]
+    rw [hi, hj, adj_comm]
+    suffices σ (σ^[#s - 1] v) = v by simpa [this] using hadj (σ^[#s - 1] v)
+    rw [← iterate_succ_apply' σ, Nat.succ_eq_add_one, Nat.sub_add_cancel (card_pos.mpr ⟨v, hv⟩),
+      iterate_eq_pow, hσ.pow_card_apply hv]
+  · rw [show j.1 = i.1 + 1 by grind [Fin.sub_val_of_le], add_comm, iterate_add_apply]
+    simpa using hadj _
+
+/-- If a cyclic permutation `σ` of a type with at least 3 elements has full support and each
+vertex is adjacent to its image under `σ`, then `G` is Hamiltonian. -/
+theorem IsHamiltonian.of_perm [Fintype α] [DecidableEq α] {σ : Perm α} (hσ : σ.IsCycle)
+    (hsupport : σ.support = .univ) (hadj : ∀ v, G.Adj v (σ v)) (hcard : 3 ≤ Fintype.card α) :
+    G.IsHamiltonian :=
+  isHamiltonian_iff_cycleGraph_isContained hcard |>.mpr <| by
+    simpa using cycleGraph_isContained_of_isCycleOn (s := .univ)
+      (hsupport ▸ σ.coe_support_eq_set_support ▸ hσ.isCycleOn) (card_pos.mp (by simp; lia)) hadj
 
 end SimpleGraph

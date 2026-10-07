@@ -3859,7 +3859,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Iterate
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
