@@ -5,13 +5,10 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Lean.PrettyPrinter.Delaborator.Builtins
-public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.Inhabit
-public import Batteries.Tactic.Trans
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
-import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Inhabit
 
 /-!
 # Extra facts about `Prod`

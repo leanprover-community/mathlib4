@@ -9,8 +9,9 @@ public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.Localization.Submodule
-public import Mathlib.RingTheory.Nakayama
-public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+
+import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 
 /-!
 # Krull's Height Theorem
@@ -49,8 +50,8 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
     [IsLocalRing R] (I : Ideal R) (hp : IsLocalRing.maximalIdeal R ∈ I.minimalPrimes) :
     IsArtinianRing (R ⧸ I) :=
   have : Ring.KrullDimLE 0 (R ⧸ I) := Ring.krullDimLE_zero_iff.mpr fun J prime ↦
-    Ideal.isMaximal_of_isIntegral_of_isMaximal_comap _ <| by
-      convert! IsLocalRing.maximalIdeal.isMaximal R
+    Ideal.isMaximal_of_isIntegral_of_isMaximal_under _ <| by
+      convert IsLocalRing.maximalIdeal.isMaximal R
       rw [Ideal.minimalPrimes, Set.mem_ofPred] at hp
       have := prime.comap (Ideal.Quotient.mk I)
       exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.1)
@@ -214,7 +215,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
         exact ⟨x, _, fun e ↦ (Finset.mem_erase.mp e).1 rfl, (Finset.insert_erase hxt).symm, hxq⟩
       have : maximalIdeal R ≤ (q ⊔ span {x}).radical := by
         rw [radical_eq_sInf, le_sInf_iff]
-        exact fun J ⟨hJ, hJ'⟩ ↦ by_contra fun h ↦ hq' J hJ' ((SetLike.lt_iff_le_and_exists.mpr
+        exact fun J ⟨hJ, hJ'⟩ ↦ by_contra fun h ↦ hq' J hJ' ((IsConcreteLE.lt_iff_le_and_exists.mpr
           ⟨le_sup_left, x, mem_sup_right (mem_span_singleton_self _), hxq⟩).trans_le hJ)
           ((le_maximalIdeal hJ'.ne_top).lt_of_not_ge h)
       have h : (s' : Set R) ⊆ (q ⊔ span {x}).radical := by
@@ -228,7 +229,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
           simpa using Finset.card_lt_card (Finset.ssubset_insert hxs')).trans_le hn)
         (H _ (tcard.trans_lt n.lt_succ_self) q t hq rfl).trans (by norm_cast)
       rw [Finset.coe_insert] at hp
-      convert! mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert hpq _ _ hp _ ht ?_
+      convert mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert hpq _ _ hp _ ht ?_
       · simp [t]
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
@@ -243,11 +244,36 @@ lemma Ideal.height_le_card_of_mem_minimalPrimes_span_finset {p : Ideal R} {s : F
   · exact Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes _ _ hI
   · simpa using Submodule.spanRank_span_le_card (s : Set R)
 
-lemma Ideal.height_le_card_of_mem_minimalPrimes_span {p : Ideal R} {s : Set R}
+lemma Ideal.height_span_le_card_of_span_ne_top {s : Finset R} (ht : Ideal.span (s : Set R) ≠ ⊤) :
+    (Ideal.span (s : Set R)).height ≤ s.card := by
+  obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes ht
+  grw [height_mono hp.1.2, height_le_card_of_mem_minimalPrimes_span_finset hp]
+
+lemma Ideal.height_le_ncard_of_mem_minimalPrimes_span {p : Ideal R} {s : Set R}
     (hs : s.Finite) (hI : p ∈ (Ideal.span s).minimalPrimes) :
     p.height ≤ s.ncard := by
   rw [s.ncard_eq_toFinset_card hs]
   exact Ideal.height_le_card_of_mem_minimalPrimes_span_finset (by simpa)
+
+@[deprecated (since := "2026-06-29")]
+alias Ideal.height_le_card_of_mem_minimalPrimes_span :=
+  Ideal.height_le_ncard_of_mem_minimalPrimes_span
+
+lemma Ideal.height_span_le_ncard_of_span_ne_top {s : Set R} (hs : s.Finite)
+    (ht : Ideal.span s ≠ ⊤) : (Ideal.span s).height ≤ s.ncard := by
+  obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes ht
+  grw [height_mono hp.1.2, height_le_ncard_of_mem_minimalPrimes_span hs hp]
+
+lemma Ideal.height_le_encard_of_mem_minimalPrimes_span {p : Ideal R} {s : Set R}
+    (hI : p ∈ (Ideal.span s).minimalPrimes) : p.height ≤ s.encard := by
+  by_cases! hs : s.Finite
+  · exact hs.cast_ncard_eq ▸ Ideal.height_le_ncard_of_mem_minimalPrimes_span hs hI
+  · simp [hs]
+
+lemma Ideal.height_span_le_encard_of_span_ne_top {s : Set R} (ht : Ideal.span s ≠ ⊤) :
+    (Ideal.span s).height ≤ s.encard := by
+  obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes ht
+  grw [height_mono hp.1.2, height_le_encard_of_mem_minimalPrimes_span hp]
 
 /-- In a commutative Noetherian ring `R`, the height of a (finitely-generated) ideal is smaller
 than or equal to the minimum number of generators for this ideal. -/
@@ -290,7 +316,7 @@ lemma Ideal.exists_spanRank_eq_and_height_eq (I : Ideal R) (hI : I ≠ ⊤) :
   rw [ENat.natCast_toNat_eq_self.mpr (Ideal.height_ne_top hI)] at hJ₃
   refine ⟨J, hJ₁, le_antisymm ?_ (le_trans ?_ (J.height_le_spanRank ?_)),
     le_antisymm (Ideal.height_mono hJ₁) hJ₃⟩
-  · convert! hJ₂
+  · convert hJ₂
     exact Cardinal.ofENat_eq_nat.mpr (ENat.natCast_toNat (I.height_ne_top hI)).symm
   · exact Cardinal.ofENat_le_ofENat_of_le hJ₃
   · rintro rfl
@@ -314,7 +340,7 @@ lemma Ideal.height_le_iff_exists_minimalPrimes (p : Ideal R) [p.IsPrime]
 spanned by `p.height` elements. -/
 lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.IsPrime] :
     ∃ s : Finset R, p ∈ (span s).minimalPrimes ∧ s.card = p.height := by
-  obtain ⟨I, hI, hr⟩ := (p.height_le_iff_exists_minimalPrimes <| p.height).mp le_rfl
+  obtain ⟨I, hI, hr⟩ := (p.height_le_iff_exists_minimalPrimes p.height).mp le_rfl
   have hs : I.generators.Finite := (IsNoetherian.noetherian I).finite_generators
   refine ⟨hs.toFinset, by rwa [hs.coe_toFinset, span, I.span_generators], ?_⟩
   rw [← Set.ncard_eq_toFinset_card (hs := hs), (IsNoetherian.noetherian I).generators_ncard]
@@ -391,12 +417,12 @@ lemma Ideal.height_le_ringKrullDim_quotient_add_encard {p : Ideal R} [p.IsPrime]
 
 lemma Ideal.height_le_height_add_one_of_mem {r : R} {p : Ideal R} [p.IsPrime] (hrm : r ∈ p) :
     p.height ≤ (p.map (Quotient.mk (span {r}))).height + 1 := by
-  convert! height_le_height_add_encard_of_subset { r } (p := p) (by simpa)
+  convert height_le_height_add_encard_of_subset { r } (p := p) (by simpa)
   simp
 
 lemma Ideal.height_le_ringKrullDim_quotient_add_one {r : R} {p : Ideal R} [p.IsPrime]
     (hrp : r ∈ p) : p.height ≤ ringKrullDim (R ⧸ span {r}) + 1 := by
-  convert! Ideal.height_le_ringKrullDim_quotient_add_encard { r } (by simpa)
+  convert Ideal.height_le_ringKrullDim_quotient_add_encard { r } (by simpa)
   simp
 
 lemma ringKrullDim_le_ringKrullDim_quotient_add_encard (s : Set R) (hs : s ⊆ Ring.jacobson R) :
@@ -408,7 +434,7 @@ lemma ringKrullDim_le_ringKrullDim_quotient_add_encard (s : Set R) (hs : s ⊆ R
 lemma ringKrullDim_le_ringKrullDim_quotient_add_card (s : Finset R)
     (hs : (s : Set R) ⊆ Ring.jacobson R) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (s : Set R)) + s.card := by
-  convert! ringKrullDim_le_ringKrullDim_quotient_add_encard s hs
+  convert ringKrullDim_le_ringKrullDim_quotient_add_encard s hs
   norm_cast
 
 section Algebra

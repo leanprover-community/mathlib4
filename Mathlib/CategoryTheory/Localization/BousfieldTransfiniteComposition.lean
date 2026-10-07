@@ -7,7 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Bousfield
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
+
+import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 /-!
 # ObjectProperty.isLocal is stable under transfinite compositions
@@ -32,7 +33,6 @@ namespace ObjectProperty
 variable (P : ObjectProperty C)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
     P.isLocal.IsStableUnderTransfiniteCompositionOfShape J where
   le := fun X Y f ⟨hf⟩ Z hZ ↦ by

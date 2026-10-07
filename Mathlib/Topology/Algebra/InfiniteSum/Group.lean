@@ -20,8 +20,6 @@ Lemmas on topological sums in groups (as opposed to monoids).
 
 public section
 
-noncomputable section
-
 open Filter Finset Function
 
 open scoped Topology
@@ -78,7 +76,7 @@ theorem HasProd.update [L.LeAtTop] (hf : HasProd f a₁ L) (b : β) [DecidableEq
   by_cases h : b' = b
   · rw [h, update_self]
     simp
-  · simp only [h, update_of_ne, if_false, Ne, one_mul, not_false_iff]
+  · simp only [h, update_of_ne, ite_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
 theorem Multipliable.update [L.LeAtTop] (hf : Multipliable f L) (b : β) [DecidableEq β] (a : α) :
@@ -127,7 +125,7 @@ theorem Set.Finite.multipliable_compl_iff {s : Set β} (hs : s.Finite) :
 @[to_additive]
 theorem hasProd_ite_div_hasProd [L.LeAtTop] [DecidableEq β] (hf : HasProd f a L) (b : β) :
     HasProd (fun n ↦ ite (n = b) 1 (f n)) (a / f b) L := by
-  convert! hf.update b 1 using 1
+  convert hf.update b 1 using 1
   · ext n
     rw [Function.update_apply]
   · rw [div_mul_eq_mul_div, one_mul]

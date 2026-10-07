@@ -153,7 +153,7 @@ theorem map_orientation_eq_det_inv_smul [Finite ι] (e : Basis ι R M) (x : Orie
   induction x using Module.Ray.ind with | h g hg =>
   rw [Orientation.map_apply, smul_rayOfNeZero, ray_eq_iff, Units.smul_def,
     (g.compLinearMap f.symm).eq_smul_basis_det e, g.eq_smul_basis_det e,
-    AlternatingMap.compLinearMap_apply, AlternatingMap.smul_apply,
+    AlternatingMap.compLinearMap_apply, _root_.smul_apply,
     show (fun i ↦ (LinearEquiv.symm f).toLinearMap (e i)) = (LinearEquiv.symm f).toLinearMap ∘ e
     by rfl, Basis.det_comp, Basis.det_self, mul_one, smul_eq_mul, mul_comm, mul_smul,
     LinearEquiv.coe_inv_det]
@@ -191,6 +191,15 @@ theorem orientation_isEmpty [IsEmpty ι] (b : Basis ι R M) :
 
 end Module.Basis
 
+namespace Module.Oriented.Arbitrary
+
+/-- An arbitrary choice of orientation. -/
+scoped instance (priority := 100) {n : ℕ} [Module.Finite R M] [Module.Free R M]
+    [Fact (finrank R M = n)] : Module.Oriented R M (Fin n) :=
+  ⟨(finBasisOfFinrankEq _ _ Fact.out).orientation⟩
+
+end Module.Oriented.Arbitrary
+
 end OrderedCommRing
 
 section LinearOrderedCommRing
@@ -214,7 +223,7 @@ theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
   intro h
   set f : (M [⋀^ι]→ₗ[R] R) ≃ₗ[R] R := AlternatingMap.constLinearEquivOfIsEmpty.symm
   have H : LinearIndependent R ![f x, 1] := by
-    convert! h.map' f.toLinearMap f.ker
+    convert h.map' f.toLinearMap f.ker
     ext i
     fin_cases i <;> simp [f]
   rw [linearIndependent_iff'] at H

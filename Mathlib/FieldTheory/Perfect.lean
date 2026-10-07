@@ -366,14 +366,14 @@ theorem roots_expand_pow_map_iterateFrobenius_le :
     simp_rw [count_nsmul, count_roots, ← rootMultiplicity_expand_pow, ← count_roots, count_map,
       count_eq_card_filter_eq]
     exact card_le_card (monotone_filter_right _ fun _ h ↦ iterateFrobenius_inj R p n h)
-  convert! Nat.zero_le _
+  convert Nat.zero_le _
   simp_rw [count_map, card_eq_zero]
   exact ext' fun t ↦ count_zero t ▸ count_filter_of_neg fun h' ↦ h ⟨t, h'⟩
 
 theorem roots_expand_map_frobenius_le :
     (expand R p f).roots.map (frobenius R p) ≤ p • f.roots := by
   rw [← iterateFrobenius_one]
-  convert! ← roots_expand_pow_map_iterateFrobenius_le p 1 f <;> apply pow_one
+  convert ← roots_expand_pow_map_iterateFrobenius_le p 1 f <;> apply pow_one
 
 theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
     (expand R (p ^ n) f).roots.toFinset.image (iterateFrobenius R p n) ⊆ f.roots.toFinset := by
@@ -384,7 +384,7 @@ theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
 theorem roots_expand_image_frobenius_subset [DecidableEq R] :
     (expand R p f).roots.toFinset.image (frobenius R p) ⊆ f.roots.toFinset := by
   rw [← iterateFrobenius_one]
-  convert! ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
+  convert ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
   apply pow_one
 
 section PerfectRing
@@ -472,7 +472,7 @@ variable [PerfectRing R p]
 a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
 noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
-  ((frobeniusEquiv R p).image _).trans <| .setCongr <| by
+  ((frobeniusEquiv R p).image _).trans <| Set.equivOfEq <| by
     rw [← roots_expand_image_frobenius (p := p) (f := f)]
     simp
 
@@ -484,7 +484,7 @@ a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set 
 It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowEquivRoots_apply`. -/
 noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
     (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset :=
-  ((iterateFrobeniusEquiv R p n).image _).trans <| .setCongr <| by
+  ((iterateFrobeniusEquiv R p n).image _).trans <| Set.equivOfEq <| by
     rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n)]
     simp
 

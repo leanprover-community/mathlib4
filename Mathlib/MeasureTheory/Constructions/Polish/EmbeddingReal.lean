@@ -5,8 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+
+import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # A Polish Borel space is measurably equivalent to a set of reals
@@ -14,7 +15,7 @@ public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 @[expose] public section
 
-open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory
+open Set Function PolishSpace TopologicalSpace Topology MeasureTheory
 
 namespace MeasureTheory
 variable (α : Type*) [MeasurableSpace α] [StandardBorelSpace α]

@@ -8,6 +8,8 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
+import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+
 /-!
 # Simplicial categories
 
@@ -37,7 +39,9 @@ category of simplicial sets in such a way that morphisms in
 
 universe v u
 
-open CategoryTheory Category Simplicial MonoidalCategory
+open CategoryTheory Category MonoidalCategory
+
+open scoped Simplicial
 
 namespace CategoryTheory
 

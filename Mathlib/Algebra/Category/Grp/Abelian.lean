@@ -6,11 +6,9 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.Algebra.Category.Grp.Colimits
-public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 /-!
 # The category of abelian groups is abelian
@@ -18,7 +16,7 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 universe u
 
@@ -26,7 +24,7 @@ noncomputable section
 
 namespace AddCommGrpCat
 
-variable {X Y Z : AddCommGrpCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+variable {X Y : AddCommGrpCat.{u}} (f : X ⟶ Y)
 
 /-- In the category of abelian groups, every monomorphism is normal. -/
 @[instance_reducible]

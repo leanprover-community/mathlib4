@@ -5,10 +5,8 @@ Authors: Markus Himmel, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Ext
 public import Mathlib.CategoryTheory.Simple
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!
@@ -62,18 +60,15 @@ open scoped Classical in
 /-- In any preadditive category with kernels,
 the endomorphisms of a simple object form a division ring. -/
 noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) where
-  inv f := if h : f = 0 then 0 else haveI := isIso_of_hom_simple h; inv f
-  exists_pair_ne := ⟨𝟙 X, 0, id_nonzero _⟩
-  inv_zero := dif_pos rfl
+  inv f := if h : f.asHom = 0 then 0 else haveI := isIso_of_hom_simple h; .of (inv f.asHom)
+  exists_pair_ne := ⟨1, 0, by simp⟩
+  inv_zero := by simp
   mul_inv_cancel f hf := by
-    dsimp
-    rw [dif_neg hf]
-    have := isIso_of_hom_simple hf
-    exact IsIso.inv_hom_id f
+    ext
+    rw [dite_eq_right (fun h ↦ hf (by ext; simpa))]
+    simp
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
 
 open Module
 
@@ -98,7 +93,6 @@ end
 variable (𝕜 : Type*) [Field 𝕜]
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
-set_option backward.isDefEq.respectTransparency false in
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
 -- rather than just `[Simple X]`, as this form is useful for
 -- Müger's formulation of semisimplicity.
@@ -108,17 +102,20 @@ If `X ⟶ X` is finite dimensional, and every nonzero endomorphism is invertible
 then `X ⟶ X` is 1-dimensional.
 -/
 theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X, IsIso f ↔ f ≠ 0)
-    [I : FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
+    [FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
   have id_nonzero := (isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
   refine finrank_eq_one (𝟙 X) id_nonzero ?_
   intro f
-  have : Nontrivial (End X) := nontrivial_of_ne _ _ id_nonzero
-  have : FiniteDimensional 𝕜 (End X) := I
+  have : Nontrivial (X ⟶ X) := nontrivial_of_ne _ _ id_nonzero
+  have : Nontrivial (End X) := (End.homEquiv (X := X)).nontrivial
+  have : FiniteDimensional 𝕜 (End X) :=
+    End.linearEquiv.symm.finiteDimensional
   obtain ⟨c, nu⟩ := spectrum.nonempty_of_isAlgClosed_of_finiteDimensional 𝕜 (End.of f)
   use c
   rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne,
-    Classical.not_not, sub_eq_zero, Algebra.algebraMap_eq_smul_one] at nu
-  exact nu.symm
+    Classical.not_not, Algebra.algebraMap_eq_smul_one,
+    End.sub_asHom, End.smul_asHom, End.one_asHom, sub_eq_zero] at nu
+  rw [← nu]
 
 variable [HasKernels C]
 
@@ -141,9 +138,10 @@ noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDime
     Field (End X) := by
   exact
     { (inferInstance : DivisionRing (End X)) with
-      mul_comm := fun f g => by
+      mul_comm := fun ⟨f⟩ ⟨g⟩ ↦ by
         obtain ⟨c, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 f
         obtain ⟨d, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 g
+        ext
         simp [← mul_smul, mul_comm c d] }
 
 -- There is a symmetric argument that uses `[FiniteDimensional 𝕜 (Y ⟶ Y)]` instead,

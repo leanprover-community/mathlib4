@@ -5,10 +5,11 @@ Authors: Mitchell Lee
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Finite
-public import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
+
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 
 /-!
 # Infinite sums and products in nonarchimedean abelian groups
@@ -27,7 +28,9 @@ sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
 
 public section
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 namespace NonarchimedeanGroup
 

@@ -76,8 +76,8 @@ section CommRing
 variable {ι R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L]
   {H : LieSubalgebra R L} (b : Basis ι H)
 
-@[simp] lemma A_diag_eq_two [IsAddTorsionFree L] (i : ι) : b.A i i = 2 := by
-  have : NoZeroSMulDivisors ℤ L := IsAddTorsionFree.to_noZeroSMulDivisors_int
+@[simp] lemma A_diag_eq_two [HasUniqueDiv L] (i : ι) : b.A i i = 2 := by
+  have : NoZeroSMulDivisors ℤ L := HasUniqueDiv.to_noZeroSMulDivisors_int
   have aux : (b.A i i - 2) • b.e i = 0 := by
     rw [sub_smul, ofNat_smul_eq_nsmul, ← (b.sl2 i).lie_h_e_nsmul, b.lie_h_e i i]; abel
   rwa [IsAddTorsionFree.zsmul_eq_zero_iff_left (b.sl2 i).e_ne_zero, sub_eq_zero] at aux
@@ -330,7 +330,6 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
 
 variable [IsDomain R] [CharZero R]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Lemma 4.4 from [Geck](Geck2017). -/
 lemma borelUpper_le_biSup :
     letI := b.isLieAbelian_cartan
@@ -364,15 +363,15 @@ lemma borelUpper_le_biSup :
         refine Fintype.linearIndependent_iffₛ.mp this n₁ n₂ ?_ i
         ext v
         rw [Subtype.mk.injEq] at h
-        simpa using congr_fun h v
+        simpa using congr($h v)
       · use ⟨χ.property.choose, χ.property.choose_spec.1⟩
         ext i
-        simpa using congr_fun χ.property.choose_spec.2.symm i
+        simpa using congr($(χ.property.choose_spec.2.symm) i)
     replace hu : u ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace H χ := by
-      convert! hu; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
+      convert hu; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
     replace hv : v ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace H χ := by
-      convert! hv; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
-    convert! mem_biSup_genWeightSpace_of hs hu hv
+      convert hv; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
+    convert mem_biSup_genWeightSpace_of hs hu hv
     rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
 
 /-- Lemma 4.4 from [Geck](Geck2017). -/
@@ -395,7 +394,6 @@ private lemma cartan_borelLower_borelUpper_le :
 
 variable [IsTorsionFree R L]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma iSupIndep_rootSpace :
     letI := b.isLieAbelian_cartan
     letI U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i)
@@ -458,13 +456,13 @@ lemma iSupIndep_rootSpace :
     simpa using this.2
   have key := LieModule.iSupIndep_genWeightSpace R H L
   have h₀ : Disjoint (rootSpace H 0) (U ⊔ V) := by
-    convert! key.disjoint_biSup_biSup (hU0.union_right hV0)
+    convert key.disjoint_biSup_biSup (hU0.union_right hV0)
     rw [iSup_union, hsU', hsV']
   have h₁ : Disjoint U (V ⊔ rootSpace H 0) := by
-    convert! key.disjoint_biSup_biSup (hUV.union_right hU0.symm)
+    convert key.disjoint_biSup_biSup (hUV.union_right hU0.symm)
     rw [iSup_union, hs0', hsV']
   have h₂ : Disjoint V (rootSpace H 0 ⊔ U) := by
-    convert! key.disjoint_biSup_biSup (Disjoint.union_left hV0 hUV).symm
+    convert key.disjoint_biSup_biSup (Disjoint.union_left hV0 hUV).symm
     rw [iSup_union, hs0', hsU']
   simp [iSupIndep_fin_three, h₀, h₁, h₂]
 
@@ -472,20 +470,20 @@ set_option linter.unusedFintypeInType false in
 lemma cartan_eq :
     letI := b.isLieAbelian_cartan
     H.toLieSubmodule = rootSpace H 0 :=
-  congr_fun ((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
-    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 0
+  congr($((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
+    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 0)
 
 lemma borelLower_eq :
     letI := b.isLieAbelian_cartan
     b.borelLower = ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i) :=
-  congr_fun ((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
-    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 1
+  congr($((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
+    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 1)
 
 lemma borelUpper_eq :
     letI := b.isLieAbelian_cartan
     b.borelUpper = ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • b.baseSupp i) :=
-  congr_fun ((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
-    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 2
+  congr($((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
+    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 2)
 
 set_option linter.unusedFintypeInType false in
 include b in

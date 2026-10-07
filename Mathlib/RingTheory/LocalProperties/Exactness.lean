@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.LocalProperties.Submodule
-public import Mathlib.RingTheory.Localization.Algebra
-public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+
+import Mathlib.RingTheory.Localization.Algebra
 
 /-!
 # Local properties about linear maps
@@ -235,8 +235,6 @@ variable
   [∀ (p : Ideal R) [p.IsMaximal], IsLocalization.AtPrime (Rₚ p) p]
   [∀ (p : Ideal R) [p.IsMaximal],
     IsLocalizedModule.AtPrime p (IsScalarTower.toAlgHom R S (Sₚ p) : S →ₗ[R] (Sₚ p))]
-
-open TensorProduct
 
 lemma IsLocalizedModule.map_linearMap_of_isLocalization (Rₚ Sₚ : Type*) [CommSemiring Rₚ]
     [Algebra R Rₚ] [CommSemiring Sₚ] [Algebra S Sₚ] [Algebra R Sₚ] [IsScalarTower R S Sₚ]

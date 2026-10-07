@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Differentiability of sum of functions
@@ -24,7 +25,7 @@ version.
 
 public section
 
-open Set Metric TopologicalSpace Function Filter
+open Set TopologicalSpace Filter
 
 open scoped Topology NNReal
 

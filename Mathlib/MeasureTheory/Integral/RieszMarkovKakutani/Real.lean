@@ -8,7 +8,8 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-public import Mathlib.Order.Interval.Set.Union
+
+import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -44,9 +45,10 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 
 @[expose] public section
 
-open scoped ENNReal BoundedContinuousFunction
-open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
+open CompactlySupportedContinuousMap Filter Function Set
   TopologicalSpace MeasureTheory
+
+open scoped ENNReal BoundedContinuousFunction CompactlySupported Topology
 
 namespace RealRMK
 
@@ -481,7 +483,7 @@ lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     by infer_instance, ?_, fun g ↦ ?_⟩
   · rw [Measure.map_apply (by fun_prop) hK.measurableSet.compl]
     simp
-  convert! hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
+  convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
   · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
     rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
     simp only [map_comap_subtype_coe hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]

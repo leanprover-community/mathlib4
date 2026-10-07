@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.EReal.Operations
 public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+
+import Mathlib.Data.EReal.Operations
 
 /-!
 # Structure groupoids
@@ -39,7 +40,7 @@ composition of partial equivs with `≫`.
 
 noncomputable section
 
-open TopologicalSpace Topology
+open TopologicalSpace
 
 variable {H : Type*}
 
@@ -51,7 +52,9 @@ the arrow. -/
 
 @[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
-open Set OpenPartialHomeomorph Manifold
+open Set OpenPartialHomeomorph
+
+open scoped Manifold
 
 /-! ### Structure groupoids -/
 
@@ -320,7 +323,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       simp only [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
-      convert! he.2 using 1
+      convert he.2 using 1
       rw [A.1, symm_toPartialEquiv, PartialEquiv.symm_source]
 
 theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : OpenPartialHomeomorph H H} :
@@ -384,6 +387,12 @@ theorem closedUnderRestriction' {G : StructureGroupoid H} [ClosedUnderRestrictio
     {e : OpenPartialHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s) : e.restr s ∈ G :=
   ClosedUnderRestriction.closedUnderRestriction he s hs
 
+lemma StructureGroupoid.restr_mem_of_eqOn {G : StructureGroupoid H} [ClosedUnderRestriction G]
+    {e e' : OpenPartialHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s)
+    (heq : EqOn e e' s) (hsub : e'.source ∩ s ⊆ e.source) : e'.restr s ∈ G :=
+  G.mem_of_eqOnSource (closedUnderRestriction' he (e'.open_source.inter hs))
+    (Setoid.symm (restr_eqOnSource_of_eqOn' hs heq hsub))
+
 /-- The trivial restriction-closed groupoid, containing only open partial homeomorphisms equivalent
 to the restriction of the identity to the various open subsets. -/
 def idRestrGroupoid : StructureGroupoid H where
@@ -434,7 +443,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     rw [StructureGroupoid.le_iff]
     rintro e ⟨s, hs, hes⟩
     refine G.mem_of_eqOnSource ?_ hes
-    convert! closedUnderRestriction' G.id_mem hs
+    convert closedUnderRestriction' G.id_mem hs
     ext <;> simp [hs.interior_eq]
   · intro h
     constructor

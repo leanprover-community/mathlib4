@@ -5,9 +5,10 @@ Authors: Miriam Philipp, Justus Springer, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Basis
 public import Mathlib.FieldTheory.RatFunc.IntermediateField
-public import Mathlib.FieldTheory.Relrank
+
+import Mathlib.Algebra.Polynomial.Basis
+import Mathlib.FieldTheory.Relrank
 
 /-!
 # Lüroth's theorem
@@ -71,7 +72,7 @@ lemma exists_φ_coeff_not_mem (h : E ≠ ⊥) :
   refine transcendental_X ⟨f, ?_, ?_⟩
   · apply (Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective K E)).mp
     exact hf ▸ φ_ne_zero h
-  · simpa using congr(aeval (X : K⟮X⟯) $(hf))
+  · simpa using congr(aeval (X : K⟮X⟯) $hf)
 
 /-- A choice of coefficient index `i` such that `φ.coeff i` is not in `K`. -/
 def generatorIndex (h : E ≠ ⊥) : ℕ :=
@@ -84,10 +85,10 @@ public def generator : K⟮X⟯ :=
   if h : E = ⊥ then 0 else (φ E).coeff (generatorIndex h)
 
 public lemma generator_eq_zero (h : E = ⊥) : generator E = 0 :=
-  dif_pos h
+  dite_eq_left h
 
 lemma generator_eq_coeff (h : E ≠ ⊥) : generator E = (φ E).coeff (generatorIndex h) :=
-  dif_neg h
+  dite_eq_right h
 
 public lemma generator_mem : generator E ∈ E := by
   by_cases h : E = ⊥
@@ -141,7 +142,7 @@ def b : K[X] :=
     ((φ E).map (algebraMap E K⟮X⟯))).choose
 
 lemma b_ne_zero : b E ≠ 0 :=
-  nonZeroDivisors.ne_zero <| (IsLocalization.integerNormalization_spec _
+  nonZeroDivisors.ne_zero (IsLocalization.integerNormalization_spec _
     ((φ E).map (algebraMap ..))).choose_spec.1
 
 lemma Φ'_map :
@@ -329,7 +330,7 @@ lemma swap_θ : Bivariate.swap (θ E) = -(θ E) := by
   ring
 
 lemma θ_natDegree_le (h : E ≠ ⊥) : (θ E).natDegree ≤ m E := by
-  convert! natDegree_sub_le _ _ using 3
+  convert natDegree_sub_le _ _ using 3
   · rw [natDegree_mul (C_ne_zero.mpr (generator E).denom_ne_zero)
       (Polynomial.map_ne_zero (num_ne_zero (generator_ne_zero h))), natDegree_C, zero_add,
       natDegree_map]

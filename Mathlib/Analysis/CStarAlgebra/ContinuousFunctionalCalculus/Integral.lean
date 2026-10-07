@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 public import Mathlib.Analysis.RCLike.Lemmas
-public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+
+import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
 
 /-!
 # Integrals and the continuous functional calculus
@@ -41,7 +42,7 @@ with the API developed in `Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
 
 public section
 
-open MeasureTheory Topology
+open MeasureTheory
 open scoped ContinuousMapZero
 
 section unital

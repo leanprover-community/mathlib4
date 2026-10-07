@@ -6,11 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.Algebra.Category.Ring.Colimits
-public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.RingTheory.Localization.Away.Basic
-public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Properties of ring homomorphisms
@@ -31,7 +27,7 @@ The following meta-properties of predicates on ring homomorphisms are defined
 
 universe u
 
-open CategoryTheory Opposite CategoryTheory.Limits TensorProduct
+open CategoryTheory CategoryTheory.Limits TensorProduct
 
 namespace RingHom
 
@@ -50,13 +46,13 @@ def RespectsIso : Prop :=
 theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso f] : P (g.hom.comp f.hom) ↔ P g.hom :=
   ⟨fun H => by
-    convert! hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
+    convert hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
     simp [← CommRingCat.hom_comp], hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
 
 theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
   ⟨fun H => by
-    convert! hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
+    convert hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
     simp [← CommRingCat.hom_comp],
    hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
@@ -150,7 +146,7 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
     suffices e.toLinearMap.restrictScalars R = f'.toLinearMap from congr($this x)
     exact ext' fun x y ↦ by simp [e, f', IsBaseChange.equiv_tmul, Algebra.smul_def]
   have hemul (x y : _) : e (x * y) = e x * e y := by simp_rw [hef, map_mul]
-  convert! h₁.1 _ { e with map_mul' := hemul } (h₂ H)
+  convert h₁.1 _ { e with map_mul' := hemul } (h₂ H)
   ext x
   simp [e, h.symm.1.equiv_tmul, Algebra.smul_def]
 
@@ -163,7 +159,6 @@ lemma IsStableUnderBaseChange.tensorProduct (hP : RingHom.IsStableUnderBaseChang
   -- This only works because the `Algebra.TensorProduct.rightAlgebra` instance is present here.
   hP _ _ _ _ h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g.hom) :
     P (pushout.inl _ _ : S ⟶ pushout f g).hom := by

@@ -6,11 +6,11 @@ Authors: Jiale Miao, Utensil Song, Eric Wieser
 module
 
 public import Mathlib.Algebra.Ring.Action.ConjAct
-public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Even
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
+
+import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 
 /-!
 # The Pin group and the Spin group
@@ -53,7 +53,7 @@ variable {Q : QuadraticForm R M}
 
 section Pin
 
-open CliffordAlgebra MulAction
+open CliffordAlgebra
 
 open scoped Pointwise
 
@@ -226,7 +226,7 @@ See `star_mem` for only one direction. -/
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ pinGroup Q ↔ x ∈ pinGroup Q := by
   refine ⟨?_, star_mem⟩
   intro hx
-  convert! star_mem hx
+  convert star_mem hx
   exact (star_star x).symm
 
 instance : Star (pinGroup Q) where
@@ -284,7 +284,7 @@ end Pin
 
 section Spin
 
-open CliffordAlgebra MulAction
+open CliffordAlgebra
 
 open scoped Pointwise
 
@@ -357,7 +357,7 @@ See `star_mem` for only one direction.
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ spinGroup Q ↔ x ∈ spinGroup Q := by
   refine ⟨?_, star_mem⟩
   intro hx
-  convert! star_mem hx
+  convert star_mem hx
   exact (star_star x).symm
 
 instance : Star (spinGroup Q) where

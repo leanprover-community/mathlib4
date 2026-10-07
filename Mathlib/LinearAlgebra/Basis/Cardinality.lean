@@ -7,8 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
-public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.SetTheory.Cardinal.Pigeonhole
+
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Results relating bases and cardinality.
@@ -18,7 +19,7 @@ public section
 
 section Finite
 
-open Module Basis Cardinal Set Submodule Finsupp
+open Module Cardinal Set Submodule Finsupp
 
 universe u v w w'
 
@@ -63,7 +64,6 @@ section Ring
 
 variable [Semiring R] [AddCommMonoid M] [Nontrivial R] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 -- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 /-- Over any ring `R`, if `b` is a basis for a module `M`,
 and `s` is a maximal linearly independent set,
@@ -105,7 +105,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
       obtain rfl | ne := eq_or_ne i j
       · simp_rw [repr_eq_zero]
       simpa [single_apply, ne] using congr(b.repr $z j)
-    exact DFunLike.congr_fun l₁ a
+    congrm $l₁ a
   exact r'' (m (range v') i' r)
 
 /-- Over any ring `R`, if `b` is an infinite basis for a module `M`,

@@ -33,7 +33,7 @@ variable {K : Type u} {V : Type v}
 
 namespace Submodule
 
-open IsNoetherian Module
+open Module
 
 section DivisionRing
 
@@ -78,7 +78,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
   replace hdim : finrank K V = finrank K s + finrank K t :=
     le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
   rw [hdim]
-  convert! s.finrank_sup_add_finrank_inf_eq t
+  convert s.finrank_sup_add_finrank_inf_eq t
   rw [h_finrank_inf, add_zero]
 
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
@@ -163,17 +163,24 @@ namespace LinearMap
 
 open Module
 
+section Ring
+
+variable [Ring K] [HasRankNullity.{v} K] [StrongRankCondition K] [AddCommGroup V] [Module K V]
+  {V₂ : Type v'} [AddCommGroup V₂] [Module K V₂]
+
+/-- Rank-nullity theorem: the dimensions of the kernel and the range of a linear map add up to
+the dimension of the source space. -/
+theorem finrank_range_add_finrank_ker [Module.Finite K V] (f : V →ₗ[K] V₂) :
+    finrank K (LinearMap.range f) + finrank K (LinearMap.ker f) = finrank K V := by
+  rw [← f.quotKerEquivRange.finrank_eq]
+  exact Submodule.finrank_quotient_add_finrank _
+
+end Ring
+
 section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
-
-/-- rank-nullity theorem : the dimensions of the kernel and the range of a linear map add up to
-the dimension of the source space. -/
-theorem finrank_range_add_finrank_ker [FiniteDimensional K V] (f : V →ₗ[K] V₂) :
-    finrank K (LinearMap.range f) + finrank K (LinearMap.ker f) = finrank K V := by
-  rw [← f.quotKerEquivRange.finrank_eq]
-  exact Submodule.finrank_quotient_add_finrank _
 
 lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂] {f : V →ₗ[K] V₂}
     (h : finrank K V₂ < finrank K V) :
@@ -229,8 +236,7 @@ namespace Submodule
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
     finrank K s < finrank K t :=
@@ -286,7 +292,7 @@ lemma coe_basisOfLinearIndependentOfCardEqFinrank' [FiniteDimensional K V] (b : 
 noncomputable def basisOfLinearIndependentOfCardEqFinrank [Nonempty ι]
     {b : ι → V} (lin_ind : LinearIndependent K b) (card_eq : Fintype.card ι = finrank K V) :
     Basis ι K V :=
-  Basis.mk lin_ind <| (lin_ind.span_eq_top_of_card_eq_finrank card_eq).ge
+  Basis.mk lin_ind (lin_ind.span_eq_top_of_card_eq_finrank card_eq).ge
 
 @[simp]
 theorem coe_basisOfLinearIndependentOfCardEqFinrank [Nonempty ι]
@@ -309,7 +315,7 @@ theorem coe_basisOfPiSpaceOfLinearIndependent
     ⇑(basisOfPiSpaceOfLinearIndependent hb) = b := by
   by_cases hι : Nonempty ι
   · simp [hι, basisOfPiSpaceOfLinearIndependent]
-  · rw [basisOfPiSpaceOfLinearIndependent, dif_neg hι]
+  · rw [basisOfPiSpaceOfLinearIndependent, dite_eq_right hι]
     ext i
     exact ((not_nonempty_iff.mp hι).false i).elim
 

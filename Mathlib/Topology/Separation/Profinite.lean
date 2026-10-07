@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Connected.TotallyDisconnected
+
+import Mathlib.Data.Fintype.Option
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # Separation properties: profinite spaces
@@ -19,7 +20,7 @@ open Function Set Filter Topology TopologicalSpace
 
 universe u v
 
-variable {X : Type*} {Y : Type*} [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X]
 
 section Profinite
 
@@ -58,7 +59,7 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
         rw [hx, mem_singleton_iff] at y_in
         rwa [y_in]
-      exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhds
+      exact exists_subset_nhds_of_compactSpace hdir hNcl (mem_nhdsSet_iff_forall.mpr h_nhds)
     · rintro ⟨V, ⟨hxV, -, V_op⟩, hUV : V ⊆ U⟩
       rw [mem_nhds_iff]
       exact ⟨V, hUV, V_op, hxV⟩⟩

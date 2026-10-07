@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.VectorBundle.Riemannian
+
+import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
 /-! # Riemannian vector bundles
 
@@ -42,8 +43,9 @@ variable
 
 @[expose] public section
 
-open Manifold Bundle ContinuousLinearMap ENat Bornology
-open scoped ContDiff Topology
+open Bundle ContinuousLinearMap ENat Bornology
+
+open scoped Manifold ContDiff Topology
 
 section
 
@@ -95,7 +97,6 @@ section Trivial
 
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A trivial vector bundle, in which the model fiber has a scalar product,
 is a Riemannian bundle. -/
 instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
@@ -269,3 +270,14 @@ instance (g : ContMDiffRiemannianMetric IB n F E) :
 end Construction
 
 end Bundle
+
+section
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [IsManifold I 1 M] [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+
+instance [CompleteSpace E] {x : M} : CompleteSpace (TangentSpace I x) :=
+  VectorBundle.completeSpace ℝ E ..
+
+end

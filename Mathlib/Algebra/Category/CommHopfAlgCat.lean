@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.CommBialgCat
 public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
-public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 
 /-!
 # The category of commutative Hopf algebras over a commutative ring
@@ -221,3 +220,13 @@ def commHopfAlgCatEquivCogrpCommAlgCat : CommHopfAlgCat R ≌ (Grp (CommAlgCat R
 instance {A : CommHopfAlgCat.{u} R} [IsCocomm R A] :
     IsCommMonObj ((commHopfAlgCatEquivCogrpCommAlgCat R).functor.obj A).unop.X :=
   inferInstanceAs <| IsCommMonObj <| op <| CommAlgCat.of R A
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `CommHopfAlgCat.of R X` as `↧X`. -/
+@[app_delab CommHopfAlgCat.of]
+meta def CommHopfAlgCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
