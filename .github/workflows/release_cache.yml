@@ -2,28 +2,28 @@ name: publish release cache
 
 # Publishes the Mathlib cache for every release tag.
 #
-# Patch releases (`v4.X.Y` with Y ≥ 1) and patched release candidates (e.g.
-# `v4.32.0-rc1-patch1`) are committed on `bump_to_*` branches that never merge
-# back into `master`, so the master push build never caches them; their branch
-# CI writes only the fork-trust container, which a canonical checkout at the
-# tag never reads. A tag on `master` can also lack a cache: bors lands a batch
-# of commits at once and CI builds only the last one, so a tag on an earlier
-# commit of the batch has no build. This workflow rebuilds the tagged commit
-# and publishes the result to the `master` container, where every consumer
-# finds it. When the master build already cached the commit, the build is a
-# full cache hit, stages no files, and uploads nothing.
+# Master CI leaves two kinds of release commit without a cache:
+#   - Patch releases (`v4.X.Y` with Y ≥ 1) and patched release candidates
+#     (e.g. `v4.32.0-rc1-patch1`) live on `bump_to_*` branches outside
+#     `master`. Their branch CI writes the fork-trust container, and a
+#     canonical checkout at the tag reads only `master`.
+#   - Bors lands a batch of commits at once, and CI builds only the last one.
+#     A tag on an earlier commit of the batch has no build.
+# This workflow builds the tagged commit and publishes the result to the
+# `master` container. When master CI already cached the commit, the build is
+# a full cache hit: it stages no files and skips both upload jobs.
 #
 # Trust model:
 #   - Creating a `v4.*` tag is restricted to release managers by a tag
 #     ruleset, so a tag push is a deliberate release-manager action — and the
-#     tagged tree is what runs here, including this workflow file. Tags cut
-#     from lineages predating this file simply never trigger it.
+#     tagged tree is what runs here, including this workflow file. Tags on
+#     lineages older than this file do not trigger it.
 #   - The upload job mints its OIDC token under the `cache-upload-master`
 #     environment (inside build_template.yml); the environment's deployment
 #     policy admits only `master`, `staging`, and `v4.*` tag refs.
 #
-# Retry: a spuriously failed run can simply be re-run ("Re-run failed jobs" /
-# `gh run rerun`) — same tag, same tree, no tag re-push involved. The
+# Retry: re-run a failed run with "Re-run failed jobs" or `gh run rerun`. The
+# re-run builds the same tag and tree, and needs no tag re-push. The
 # `workflow_dispatch` trigger covers what re-run cannot: a tag push that never
 # produced a run, or a re-run window that has expired. Dispatch it AT the tag
 # ref (`gh workflow run release_cache.yml --ref v4.X.Y`); the run then executes
