@@ -312,6 +312,12 @@ lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤
 
 @[deprecated (since := "2026-07-17")] alias toNat_eq_iff_eq_coe := toNat_eq_iff_eq_natCast
 
+-- Duplicate of `Order.lt_one_iff` but requires less imports.
+theorem lt_one_iff {n : ℕ∞} : n < 1 ↔ n = 0 := by
+  cases n with
+  | top => simp
+  | coe => rw [← natCast_zero, ← natCast_one, natCast_lt_natCast, Nat.lt_one_iff, natCast_inj]
+
 @[elab_as_elim]
 theorem nat_induction {motive : ℕ∞ → Prop} (a : ℕ∞) (zero : motive 0)
     (succ : ∀ n : ℕ, motive n → motive n.succ)

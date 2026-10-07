@@ -5,9 +5,8 @@ Authors: Yury Kudryashov, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Order.Lattice.Nat
-public import Mathlib.Order.SuccPred.ENat
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -84,7 +83,7 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   · norm_cast
 
 @[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, f i = 0 ↔ ∃ i, f i = 0 := by
-  simpa [Order.lt_one_iff] using iInf_lt_iff (α := ℕ∞) (a := 1)
+  simpa [ENat.lt_one_iff] using iInf_lt_iff (α := ℕ∞) (a := 1)
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
@@ -92,8 +91,8 @@ lemma sSup_eq_zero : sSup s = 0 ↔ ∀ a ∈ s, a = 0 :=
   sSup_eq_bot
 
 lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
-  rw [← Order.lt_one_iff, sInf_lt_iff]
-  simp
+  rw [← ENat.lt_one_iff, sInf_lt_iff]
+  simp [ENat.lt_one_iff]
 
 lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
   sSup_eq_bot'
@@ -252,14 +251,6 @@ lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSu
 lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → ℕ∞}
     (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
   iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
-
-lemma smul_iSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (f : ι → ℕ∞) (c : R) :
-    c • ⨆ i, f i = ⨆ i, c • f i := by
-  simpa using mul_iSup (c • 1) f
-
-lemma smul_sSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (s : Set ℕ∞) (c : R) :
-    c • sSup s = ⨆ a ∈ s, c • a := by
-  simp_rw [sSup_eq_iSup, smul_iSup]
 
 lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i := by
   obtain ⟨i, hi⟩ | h := em (∃ i, a < f i)
