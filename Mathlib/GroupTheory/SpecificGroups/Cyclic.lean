@@ -5,16 +5,16 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
-public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.ZMod.Aut
 public import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 public import Mathlib.GroupTheory.Subgroup.Simple
-public import Mathlib.Tactic.Group
 public import Mathlib.Tactic.IntervalCases
+
+import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Tactic.Group
 
 /-!
 # Further properties of cyclic groups

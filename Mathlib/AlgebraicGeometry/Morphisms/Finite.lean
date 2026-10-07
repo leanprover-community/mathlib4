@@ -7,8 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.Algebra.Category.Ring.Epi
-public import Mathlib.RingTheory.Finiteness.Prod
 public import Mathlib.RingTheory.RingHom.Finite
+
+import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 

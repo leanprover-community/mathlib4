@@ -7,7 +7,8 @@ module
 
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-public import Mathlib.RingTheory.GradedAlgebra.Radical
+
+import Mathlib.RingTheory.GradedAlgebra.Radical
 
 /-!
 # Proj as a scheme
@@ -292,7 +293,7 @@ theorem mem_carrier_iff' (q : Spec.T A⁰_ f) (a : A) :
       · rw [Set.mem_image]; refine ⟨_, h, rfl⟩
       · rw [Set.mem_image] at h; rcases h with ⟨x, h, hx⟩
         change x ∈ q.asIdeal at h
-        convert! h
+        convert h
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk]
         dsimp only [Subtype.coe_mk]; rw [← hx]; rfl)
 
@@ -303,7 +304,7 @@ theorem mem_carrier_iff_of_mem (hm : 0 < m) (q : Spec.T A⁰_ f) (a : A) {n} (hn
   trans (HomogeneousLocalization.mk ⟨m * n, ⟨proj 𝒜 n a ^ m, by rw [← smul_eq_mul]; mem_tac⟩,
     ⟨f ^ n, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.asIdeal
   · refine ⟨fun h ↦ h n, fun h i ↦ if hi : i = n then hi ▸ h else ?_⟩
-    convert! zero_mem q.asIdeal
+    convert zero_mem q.asIdeal
     apply HomogeneousLocalization.val_injective
     simp only [proj_apply, decompose_of_mem_ne _ hn (Ne.symm hi), zero_pow hm.ne',
       HomogeneousLocalization.val_mk, Localization.mk_zero, HomogeneousLocalization.val_zero]
@@ -329,7 +330,7 @@ theorem num_mem_carrier_iff (hm : 0 < m) (q : Spec.T A⁰_ f)
   have : f ^ n ≠ 0 := fun e ↦ by
     have := HomogeneousLocalization.subsingleton 𝒜 (x := .powers f) ⟨n, e⟩
     exact IsEmpty.elim (inferInstanceAs (IsEmpty (PrimeSpectrum (A⁰_ f)))) q
-  convert! mem_carrier_iff_of_mem_mul f_deg hm q z.num.1 (n := n) ?_ using 2
+  convert mem_carrier_iff_of_mem_mul f_deg hm q z.num.1 (n := n) ?_ using 2
   · apply HomogeneousLocalization.val_injective; simp only [hn, HomogeneousLocalization.val_mk]
   · have := degree_eq_of_mem_mem 𝒜 (SetLike.pow_mem_graded n f_deg) (hn.symm ▸ z.den.2) this
     rw [← smul_eq_mul, this]; exact z.num.2
@@ -463,7 +464,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
     (carrier.asIdeal.ne_top f_deg hm q) fun {x y} ⟨nx, hnx⟩ ⟨ny, hny⟩ hxy =>
     show (∀ _, _ ∈ _) ∨ ∀ _, _ ∈ _ by
       rw [← and_forall_ne nx, and_iff_left, ← and_forall_ne ny, and_iff_left]
-      · apply q.2.mem_or_mem; convert! hxy (nx + ny)
+      · apply q.2.mem_or_mem; convert hxy (nx + ny)
         dsimp
         simp_rw [decompose_of_mem_same 𝒜 hnx, decompose_of_mem_same 𝒜 hny,
           decompose_of_mem_same 𝒜 (SetLike.GradedMonoid.toGradedMul.mul_mem hnx hny),
@@ -475,7 +476,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
         intro n hn; convert q.1.zero_mem
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk,
           HomogeneousLocalization.val_zero]; simp_rw [proj_apply]
-        convert! mk_zero (S := Submonoid.powers f) _
+        convert mk_zero (S := Submonoid.powers f) _
         rw [decompose_of_mem_ne 𝒜 _ hn.symm, zero_pow hm.ne']
         · first | exact hnx | exact hny
 
@@ -685,7 +686,7 @@ lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :
 
 lemma toSpec_base_isIso {f} {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     IsIso (toSpec 𝒜 f).base := by
-  convert! (projIsoSpecTopComponent f_deg hm).isIso_hom
+  convert (projIsoSpecTopComponent f_deg hm).isIso_hom
   exact ConcreteCategory.hom_ext _ _ <| toSpec_base_apply_eq 𝒜
 
 lemma mk_mem_toSpec_base_apply {f} (x : Proj| pbo f)

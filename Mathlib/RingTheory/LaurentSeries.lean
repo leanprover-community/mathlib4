@@ -11,9 +11,8 @@ public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.HahnSeries.PowerSeries
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.PowerSeries.Inverse
-public import Mathlib.RingTheory.PowerSeries.Trunc
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.Topology.UniformSpace.DiscreteUniformity
+
+import Mathlib.RingTheory.PowerSeries.Trunc
 
 
 /-!
@@ -460,7 +459,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
   rw [Ideal.count_associates_factors_eq span_ne_zero.1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr prime_X) span_ne_zero.2,
     Ideal.count_associates_factors_eq]
-  on_goal 1 => convert! (normalized_count_X_eq_of_coe hP).symm
+  on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
   exacts [Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
     Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X X_prime,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
@@ -488,7 +487,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
   refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
-  convert!
+  convert
     @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
       ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 (by simp [h])⟩
   · simp [← IsScalarTower.algebraMap_apply K[X] K⟮X⟯ K⸨X⸩]
@@ -791,7 +790,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
     constructor
     · have := (exists_lb_coeff_ne hℱ).choose_spec
       rw [Filter.eventually_iff] at this
-      convert! this
+      convert this
       ext
       simp only [Set.mem_iInter, Set.mem_ofPred_eq]; rfl
     · rw [biInter_mem (Set.finite_Icc ℓ N)]

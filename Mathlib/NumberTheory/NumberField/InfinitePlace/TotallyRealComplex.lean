@@ -5,8 +5,9 @@ Authors: Kevin Buzzard, Xavier Roblot
 -/
 module
 
-public import Mathlib.FieldTheory.PrimeField
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+
+import Mathlib.FieldTheory.PrimeField
 
 /-!
 # Totally real and totally complex number fields

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Data.Set.UnionLift
 public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.RingTheory.NonUnitalSubring.Basic
 
 /-!
 # Non-unital Subalgebras over Commutative Semirings
@@ -982,6 +981,11 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
   have : iSup S = K := le_antisymm
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → NonUnitalSubalgebra R A) :
+    ((⨆ i, S i : NonUnitalSubalgebra R A) : Set A) =
+      ⋃ s : Finset ι, (⨆ i ∈ s, S i : NonUnitalSubalgebra R A) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :

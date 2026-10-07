@@ -6,8 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Basis.Basic
-public import Mathlib.Algebra.Lie.Prod
 public import Mathlib.Algebra.Lie.Semisimple.Basic
+
+import Mathlib.Algebra.Lie.Prod
 
 /-!
 # Products of bases Lie algebras

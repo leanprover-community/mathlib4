@@ -7,14 +7,13 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.SpanRank
-public import Mathlib.Algebra.Ring.Idempotent
-public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Nakayama
+
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -212,7 +211,7 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     refine Submodule.smul_induction_on hx ?_ (fun _ _ ↦ add_mem)
     rintro a ha ⟨b, hb⟩ -
     simp only [SetLike.mk_smul_mk, smul_eq_mul, Submodule.mem_comap, Submodule.restrictScalars_mem]
-    convert!
+    convert
       (Submodule.smul_mem_smul (M := I₂) (r := f a) (n := ⟨f b, h hb⟩) (h ha)
         (Submodule.mem_top)) using 1
     ext
@@ -303,6 +302,17 @@ instance : Module (ResidueField R) (CotangentSpace R) :=
 
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
   inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
+
+/-- `Ideal.toCotangent` for maximal ideal of local ring,
+ as `IsLocalRing.residue R` semi-linear map. -/
+def toCotangentSpace : maximalIdeal R →ₛₗ[residue R] CotangentSpace R where
+  __ := (maximalIdeal R).toCotangent
+  map_smul' r x := by simp [← ResidueField.algebraMap_eq]
+
+lemma toCotangentSpace_eq_toCotangent : ⇑(toCotangentSpace R) = (maximalIdeal R).toCotangent := rfl
+
+lemma toCotangentSpace_apply (x : maximalIdeal R) :
+    toCotangentSpace R x = (maximalIdeal R).toCotangent x := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
@@ -431,5 +441,5 @@ lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraM
   · rw [Submodule.map_le_iff_le_comap, ← LinearMap.ker_comp]
     intro x hx
     simp only [LinearMap.mem_ker, LinearMap.comp_apply, Ideal.mapCotangent_toCotangent]
-    convert! map_zero I.toCotangent
+    convert map_zero I.toCotangent
     exact (Ideal.mem_inf.mp hx).1

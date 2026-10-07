@@ -7,9 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.Noetherian.Orzech
-public import Mathlib.RingTheory.OrzechProperty
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Invariant basis number property
@@ -135,7 +133,7 @@ theorem strongRankCondition_iff_succ :
   · exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
   · by_contra H
     exact
-      h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLE (not_le.1 H))))
+      h m (f.comp (Function.ExtendByZero.linearMap R R (Fin.castLE (not_le.1 H))))
         (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
 
 /-- Any nontrivial ring satisfying Orzech property also satisfies strong rank condition. -/

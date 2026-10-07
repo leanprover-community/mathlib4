@@ -8,7 +8,8 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Module.Defs
 public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Topology.MetricSpace.Bilipschitz
+
+import Mathlib.Topology.MetricSpace.Bilipschitz
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-! # Constructions of Hilbert C⋆-modules
@@ -79,7 +80,7 @@ instance : CStarModule A A where
   inner x y := y * star x
   inner_add_right := add_mul ..
   inner_self_nonneg := mul_star_self_nonneg _
-  inner_self := CStarRing.mul_star_self_eq_zero_iff _
+  inner_self := mul_star_self_eq_zero
   inner_op_smul_right := mul_assoc ..
   inner_smul_right_complex := smul_mul_assoc ..
   star_inner x y := by simp

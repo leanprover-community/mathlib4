@@ -5,9 +5,7 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.Cycle
 public import Mathlib.GroupTheory.Perm.Cycle.Type
-public import Mathlib.GroupTheory.Perm.List
 
 /-!
 
