@@ -264,14 +264,13 @@ private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Ex
   | _ => throwError "`{e}` is not a space of continuous linear maps"
 
 /-- Check if an expression `e` is a `ContinuousAlternatingMap` .
-If so, we return `(R, M, N, ι)`, where `R` is the coefficient ring, `ι → M` is the domain, and
-`N` is the codomain of the continuous alternating linear maps. Otherwise, we error.
+If so, we return the coefficient ring `R`. Otherwise, we error.
 Assumes that `e` is already in `whnf` and has had metavariables instantiated. -/
-private def isContAlternatingMaps (e : Expr) : TermElabM <| Expr × Expr × Expr × Expr := do
+private def isContAlternatingMaps (e : Expr) : TermElabM Expr := do
   match_expr e with
-  | ContinuousAlternatingMap R M N ι _ _ _ _ _ _ _ =>
+  | ContinuousAlternatingMap R _M _N _ι _ _ _ _ _ _ _ =>
     trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous alternating maps"
-    return (R, M, N, ι)
+    return R
   | _ => throwError "`{e}` is not a space of continuous alternating maps"
 
 /--
@@ -352,14 +351,12 @@ partial def guessBaseFieldForNormedSpace (e : Expr) : TermElabM <| Option Expr :
   | Prod E _F =>
     guessBaseFieldForNormedSpace E
   | _ =>
-    -- TODO: can/should this just take the field k / R instead of recursing?
     try
-      let (_k, E, _F) ← isCLMReduciblyDefeqCoefficients e
-      guessBaseFieldForNormedSpace E
+      let (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
+      return k
     catch _e =>
       try
-        let (_R, M, _N, _ι) ← isContAlternatingMaps e
-        guessBaseFieldForNormedSpace M
+        isContAlternatingMaps e
       catch _e =>
         findFromLocalInstance e
 where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
@@ -572,7 +569,7 @@ where
     mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
   /-- Attempt to find a model with corners on a space of continuous alternating linear maps -/
   fromCAM : TermElabM Expr := do
-    let (R, _M, _N, _ι) ← isContAlternatingMaps e
+    let R ← isContAlternatingMaps e
     mkAppOptM ``modelWithCornersSelf #[R, none, e, none, none]
   /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
   fromEuclideanSpace : TermElabM Expr := do
