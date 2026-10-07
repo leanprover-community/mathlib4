@@ -15,7 +15,6 @@ public import Plausible
 public import Batteries.Tactic.Basic
 public import Batteries.Tactic.Case
 public import Batteries.Tactic.HelpCmd
-public import Batteries.Tactic.Alias
 public import Batteries.Tactic.GeneralizeProofs
 
 -- Import Batteries code actions

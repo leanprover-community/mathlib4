@@ -28,6 +28,8 @@ public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.TacticAnalysis.Declarations
 public import Mathlib.Tactic.TypeStar
+-- This import makes the `alias` command available globally.
+public import Batteries.Tactic.Alias
 -- This import makes the `#help` command available globally.
 public import Batteries.Tactic.HelpCmd
 -- This import makes the `proof_wanted` command available globally.
