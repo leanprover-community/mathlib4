@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Algebra.SpectralNorm
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
-import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
-import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.Normal.Closure
 

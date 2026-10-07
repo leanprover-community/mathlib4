@@ -64,13 +64,13 @@ variable {K L : Type*} [NormedField K] [Field L] [Algebra K L] [Algebra.IsAlgebr
 def AlgebraNorm.copy (_f : AlgebraNorm K L) (x : L) : Type _ := K⟮x⟯
 deriving Field, Algebra K
 
-instance (f : AlgebraNorm K L) (x : L) : FiniteDimensional K (f.copy x) :=
+local instance (f : AlgebraNorm K L) (x : L) : FiniteDimensional K (f.copy x) :=
   adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
 
-instance (f : AlgebraNorm K L) (x : L) : Algebra (f.copy x) L :=
+local instance (f : AlgebraNorm K L) (x : L) : Algebra (f.copy x) L :=
   inferInstanceAs (Algebra K⟮x⟯ L)
 
-def AlgebraNorm.ringNorm (f : AlgebraNorm K L) (x : L) : RingNorm (f.copy x) where
+def AlgebraNorm.ringNormCopy (f : AlgebraNorm K L) (x : L) : RingNorm (f.copy x) where
   toFun y := f ((algebraMap (f.copy x) L) y)
   map_zero' := map_zero _
   add_le' a b := map_add_le_add _ _ _
@@ -78,10 +78,10 @@ def AlgebraNorm.ringNorm (f : AlgebraNorm K L) (x : L) : RingNorm (f.copy x) whe
   mul_le' a b := map_mul_le_mul _ _ _
   eq_zero_of_map_eq_zero' a ha := by rwa [map_eq_zero_iff_eq_zero, map_eq_zero] at ha
 
-instance (f : AlgebraNorm K L) (x : L) : NormedRing (f.copy x) :=
-  (f.ringNorm x).toNormedRing
+local instance (f : AlgebraNorm K L) (x : L) : NormedRing (f.copy x) :=
+  (f.ringNormCopy x).toNormedRing
 
-instance (f : AlgebraNorm K L) (x : L) : NormedAlgebra K (f.copy x) where
+local instance (f : AlgebraNorm K L) (x : L) : NormedAlgebra K (f.copy x) where
   norm_smul_le c y := (map_smul_eq_mul f c (algebraMap (f.copy x) L y)).le
 
 /-- Uniqueness of power-multiplicative norms over complete normed fields. -/
@@ -92,16 +92,14 @@ public theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
     by_cases hx : x = 0
     · simp [hx]
     · rw [f.eq_one_of_trivial hK hf_pm x hx, g.eq_one_of_trivial hK hg_pm x hx]
-  · let : NontriviallyNormedField K := ⟨hK⟩
-    apply eq_of_powMul_faithful f hf_pm g hg_pm
-    intro x
-    let T₀ : g.copy x ≃ₗ[K] f.copy x := LinearEquiv.refl K K⟮x⟯
-    let T : g.copy x ≃L[K] f.copy x := T₀.toContinuousLinearEquiv
-    obtain ⟨C1, hC1_pos, hC1⟩ := T.symm.toContinuousLinearMap.isBoundedLinearMap.bound
-    obtain ⟨C2, hC2_pos, hC2⟩ := T.toContinuousLinearMap.isBoundedLinearMap.bound
-    exact ⟨ C2, C1, hC2_pos, hC1_pos,
-      forall_and.mpr ⟨fun y ↦ hC2 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩,
-        fun y ↦ hC1 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩⟩⟩
+  let : NontriviallyNormedField K := ⟨hK⟩
+  refine eq_of_powMul_faithful f hf_pm g hg_pm fun x ↦ ?_
+  let T₀ : g.copy x ≃ₗ[K] f.copy x := LinearEquiv.refl K K⟮x⟯
+  let T : g.copy x ≃L[K] f.copy x := T₀.toContinuousLinearEquiv
+  obtain ⟨C1, h1_pos, h1⟩ := T.symm.toContinuousLinearMap.bound
+  obtain ⟨C2, h2_pos, h2⟩ := T.toContinuousLinearMap.bound
+  exact ⟨C2, C1, h2_pos, h1_pos, forall_and.mpr ⟨fun y ↦ h2 ⟨y, algebra_adjoin_le_adjoin K _ y.2⟩,
+    fun y ↦ h1 ⟨y, algebra_adjoin_le_adjoin K _ y.2⟩⟩⟩
 
 /-- Uniqueness of multiplicative algebra norms over complete normed fields. -/
 public theorem MulAlgebraNorm.unique [CompleteSpace K] (f g : MulAlgebraNorm K L) : f = g := by
