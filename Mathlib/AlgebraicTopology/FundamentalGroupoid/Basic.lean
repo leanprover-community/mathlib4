@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Homotopy.HSpaces
 public import Mathlib.Topology.Homotopy.Path
 
 /-!
@@ -81,39 +82,39 @@ end
 section TransRefl
 
 /-- Auxiliary function for `trans_refl_reparam`. -/
+@[deprecated "use `unitInterval.qRight (t, 0)` instead" (since := "2026-10-07")]
 def transReflReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 2 then 2 * t else 1
 
-@[continuity, fun_prop]
+-- the `continuity` attribute refers to the lemma after it has been deprecated
+set_option linter.deprecated false in
+@[continuity, fun_prop,
+  deprecated unitInterval.continuous_qRight +typeChanged (since := "2026-10-07")]
 theorem continuous_transReflReparamAux : Continuous transReflReparamAux :=
   continuous_if_le (by fun_prop) (by fun_prop) (by fun_prop) (by fun_prop) (by grind)
 
+@[deprecated "use `(unitInterval.qRight (t, 0)).2` instead" (since := "2026-10-07")]
 theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
   unfold transReflReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
+@[deprecated unitInterval.qRight_zero_left +typeChanged (since := "2026-10-07")]
 theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
   simp [transReflReparamAux]
 
+@[deprecated unitInterval.qRight_one_left +typeChanged (since := "2026-10-07")]
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem trans_refl_reparam (p : Path x₀ x₁) :
     p.trans (Path.refl x₁) =
-      p.reparam (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by fun_prop)
-        (Subtype.ext transReflReparamAux_zero) (Subtype.ext transReflReparamAux_one) := by
-  ext
-  unfold transReflReparamAux
-  simp only [coe_reparam]
-  grind
+      p.reparam (fun t ↦ qRight (t, 0)) (by fun_prop) (qRight_zero_left 0) (qRight_one_left 0) :=
+  (delayReflRight_zero p).symm
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/
 def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
-  ((Homotopy.reparam p (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
-          (by fun_prop) (Subtype.ext transReflReparamAux_zero)
-          (Subtype.ext transReflReparamAux_one)).cast
-      rfl (trans_refl_reparam p).symm).symm
+  ((Homotopy.reparam p (fun t ↦ qRight (t, 0)) (by fun_prop) (qRight_zero_left 0)
+      (qRight_one_left 0)).cast rfl (trans_refl_reparam p).symm).symm
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `(Path.refl x₀).trans p` to `p`. -/
 def reflTrans (p : Path x₀ x₁) : Homotopy ((Path.refl x₀).trans p) p :=
