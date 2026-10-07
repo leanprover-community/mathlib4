@@ -46,7 +46,6 @@ HIDE_CURSOR = "\033[?25l"
 SHOW_CURSOR = "\033[?25h"
 
 
-
 def _kill_tree(proc: subprocess.Popen) -> None:
     """Kill a build and all its children (`os.killpg` does not exist on Windows)."""
     if hasattr(os, "killpg"):
