@@ -5,13 +5,14 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
 /-!
 
 # Base change of exterior power
 
-In this PR, we proved that exterior power commutes with arbitrary base change.
+In this file, we proved that exterior power commutes with arbitrary base change.
 
 # Main Results
 
@@ -20,7 +21,7 @@ In this PR, we proved that exterior power commutes with arbitrary base change.
 
 -/
 
-public noncomputable section
+@[expose] public noncomputable section
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
@@ -28,45 +29,8 @@ variable (S : Type*) [CommRing S] [Algebra R S]
 
 open TensorProduct
 
-namespace ExteriorAlgebra
-
-/-- Abbreviation of base change of `ExteriorAlgebra.ι`. -/
-abbrev baseChangeι : S ⊗[R] M →ₗ[S] S ⊗[R] ExteriorAlgebra R M :=
-  (ExteriorAlgebra.ι R).baseChange S
-
-lemma baseChangeι_mul_add_swap (x y : S ⊗[R] M) :
-    ExteriorAlgebra.baseChangeι R M S x * ExteriorAlgebra.baseChangeι R M S y +
-      ExteriorAlgebra.baseChangeι R M S y * ExteriorAlgebra.baseChangeι R M S x = 0 := by
-  -- Reduce the anticommutation relation to pure tensors in each variable.
-  refine TensorProduct.inductionOn x ?_ (fun a b ha hb ↦ ?_)
-  · refine TensorProduct.inductionOn y ?_ (fun c d hc hd ↦ ?_)
-    · simp [Algebra.TensorProduct.tmul_mul_tmul, ExteriorAlgebra.ι_add_mul_swap, mul_comm,
-        ← TensorProduct.tmul_add]
-    · intro u v
-      simpa [map_add, add_mul, mul_add, add_assoc, add_left_comm, add_comm] using
-        congrArg₂ (· + ·) (hc u v) (hd u v)
-  · simpa [map_add, add_mul, mul_add, add_assoc, add_left_comm, add_comm] using
-      congrArg₂ (· + ·) ha hb
-
-lemma baseChangeι_sq_zero (x : S ⊗[R] M) : baseChangeι R M S x * baseChangeι R M S x = 0 := by
-  refine TensorProduct.inductionOn x ?_ (fun a b ha hb ↦ ?_)
-  · simp [ExteriorAlgebra.baseChangeι, Algebra.TensorProduct.tmul_mul_tmul]
-  · simp only [map_add, mul_add, add_mul, add_left_comm, add_assoc]
-    simp [ha, hb, ExteriorAlgebra.baseChangeι_mul_add_swap R M S a b]
-
-/-- The exterior algebra map from `ExteriorAlgebra S (S ⊗[R] M)` to `S ⊗[R] ExteriorAlgebra R M`,
-lift from `ExteriorAlgebra.baseChangeι`. -/
-def baseChangeExteriorAlgebraToTensor :
-    ExteriorAlgebra S (S ⊗[R] M) →ₐ[S] S ⊗[R] ExteriorAlgebra R M :=
-  ExteriorAlgebra.lift S
-    ⟨ExteriorAlgebra.baseChangeι R M S, ExteriorAlgebra.baseChangeι_sq_zero R M S⟩
-
-end ExteriorAlgebra
-
 namespace exteriorPower
 
-instance : IsScalarTower R S (ExteriorAlgebra S (S ⊗[R] M)) :=
-  IsScalarTower.of_algebraMap_eq (fun _ ↦ rfl)
 
 lemma baseChangeGenerator_map_update_add (i : ℕ) (m : Fin i → M) (j : Fin i) (x y : M) :
     (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j (x + y)) =
