@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.IsFormallyReal
 /-!
 # Properties of semireal rings
 
-We prove basic properties of semireal rings.
+We prove basic properties of semireal rings, such as their relationship to formally real rings.
 
 ## References
 
