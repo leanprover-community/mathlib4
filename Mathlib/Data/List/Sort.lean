@@ -5,10 +5,10 @@ Authors: Jeremy Avigad, Wrenna Robson
 -/
 module
 
-public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Order.Fin.Basic
+
+import Batteries.Data.List.Perm
 
 /-!
 # Sorting algorithms on lists

@@ -5,9 +5,10 @@ Authors: Nailin Guan, Youle Fang, Jujian Zhang, Yuyang Zhao
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 public import Mathlib.Topology.Algebra.ClopenNhdofOne
+
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # A profinite group is the projective limit of finite groups
@@ -79,7 +80,7 @@ lemma toLimitFun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimitFun P) :
   intro s _
   rw [← (Set.biUnion_preimage_singleton QuotientGroup.mk s)]
   refine isOpen_iUnion (fun i ↦ isOpen_iUnion (fun _ ↦ ?_))
-  convert! IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out i)
+  convert IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out i)
   ext x
   simp only [Set.mem_preimage, Set.mem_singleton_iff]
   nth_rw 1 [← QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]
@@ -131,7 +132,7 @@ theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P
   by_contra xne1
   rcases exist_openNormalSubgroup_sub_open_nhds_of_one (isOpen_compl_singleton)
     (Set.mem_compl_singleton_iff.mpr fun a => xne1 a.symm) with ⟨H, hH⟩
-  exact hH ((QuotientGroup.eq_one_iff x).mp (congrFun (Subtype.val_inj.mpr h) H)) rfl
+  exact hH ((QuotientGroup.eq_one_iff x).mp congr($(Subtype.val_inj.mpr h) H)) rfl
 
 /-- The topological group isomorphism between a profinite group and the projective limit of
 its quotients by open normal subgroups -/

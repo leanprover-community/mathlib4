@@ -6,8 +6,9 @@ Authors: Yury Kudryashov, Alex Kontorovich
 module
 
 public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Order.Filter.Bases.Finite
+
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # (Co)product of a family of filters

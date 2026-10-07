@@ -5,11 +5,11 @@ Authors: Jingting Wang, Sihan Su, Yi Song, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.KrullDimension.PID
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+
+import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Krull dimension of polynomial ring
@@ -121,7 +121,7 @@ lemma MvPolynomial.ringKrullDim_of_isNoetherianRing_of_finite {ι : Type*} [Fini
     ringKrullDim (MvPolynomial ι R) = ringKrullDim R + Nat.card ι := by
   induction ι using Finite.induction_empty_option with
   | of_equiv e H =>
-    convert! ← H using 1
+    convert ← H using 1
     · exact ringKrullDim_eq_of_ringEquiv (renameEquiv _ e).toRingEquiv
     · rw [Nat.card_congr e]
   | h_empty => simp
