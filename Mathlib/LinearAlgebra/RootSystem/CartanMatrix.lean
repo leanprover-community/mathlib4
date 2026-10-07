@@ -5,18 +5,15 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.CharZero.Infinite
-public import Mathlib.Algebra.Module.Submodule.Union
-public import Mathlib.Data.Int.Star
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Matrix.BilinearForm
+public import Mathlib.Algebra.Order.Star.Int
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
-public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import Mathlib.LinearAlgebra.Matrix.ZMatrix
 public import Mathlib.LinearAlgebra.RootSystem.Base
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
+
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.Module.Submodule.Union
+import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Matrix.ZMatrix
 
 /-!
 # Cartan matrices for root systems

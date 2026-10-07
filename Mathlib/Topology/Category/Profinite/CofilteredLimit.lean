@@ -6,9 +6,8 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.Topology.Category.Profinite.Basic
-public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.DiscreteQuotient
-public import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
+import Mathlib.Topology.DiscreteQuotient
+import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
@@ -191,7 +190,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
   · suffices ∃ j, IsEmpty (F.obj j) by
       refine this.imp fun j hj => ?_
       refine ⟨⟨hj.elim, fun A => ?_⟩, ?_⟩
-      · convert! isOpen_empty
+      · convert isOpen_empty
         ext x
         exact hj.elim x
       · ext x

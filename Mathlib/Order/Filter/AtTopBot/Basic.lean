@@ -8,7 +8,7 @@ module
 public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Filter.AtTopBot.Tendsto
 public import Mathlib.Order.Nat
-public import Mathlib.Tactic.Subsingleton
+import Mathlib.Tactic.Subsingleton
 
 /-!
 # Basic results on `Filter.atTop` and `Filter.atBot` filters
