@@ -904,9 +904,9 @@ lemma positselski_4_5
     (σ : F.obj S ⟶ G.obj T)
     (u : S ⟶ T) (v : T ⟶ E.obj)
     (h : σ ≫ G.map v = F.map u ≫ F.map v ≫ E.hom) :
-    ∃ (B : Inserter F G) (_ : IsCardinalPresentable B.obj κ) (f : B ⟶ E) (g : T ⟶ B.obj),
-      σ ≫ G.map g = F.map u ≫ F.map g ≫ B.hom ∧
-      g ≫ f.hom = v := by
+    ∃ (B : Δ κ E) (g : T ⟶ B.left.obj.obj),
+      σ ≫ G.map g = F.map u ≫ F.map g ≫ B.left.obj.hom ∧
+      g ≫ B.hom.hom = v := by
   let O₀ := isCardinalPresentable K κ -- shorthand to make things a bit more compact.
   -- local grind helper : having this in context helps
   have _ {x y : CostructuredArrow O₀.ι E.obj} (f : x ⟶ y) : f.left.hom ≫ y.hom = x.hom := by simp
@@ -975,26 +975,27 @@ lemma positselski_4_5
   let t1 : F.obj U.left.obj ⟶ G.obj U.left.obj :=
     (preservesColimitIso (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) ξ).hom ≫ t ≫
     (Functor.Final.colimitIso (succ_mono.functor) _).hom ≫ (preservesColimitIso _ _).inv
-  let UU : Inserter F G := ⟨t1⟩
-  refine ⟨UU, ?_, ⟨U.hom, ?_⟩,
-    v₀ ≫ (eqToHom e₀.symm).left.hom ≫ (colimit.ι ξ ⊥).left.hom, ?_, ?_⟩
-  · infer_instance
-  · apply isColimitOfPreserves (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F)
-      (colimit.isColimit ξ) |>.hom_ext
-    intro j
-    have e₁ := ι_preservesColimitIso_hom (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) ξ j
-    dsimp at e₁
-    simp [U, UU, t1, ← Functor.map_comp_assoc, reassoc_of% e₁, t, ← G.map_comp, Θ, ξ,
-      (S.sq₁ j (succ j) (lt_succ j)).symm]
+  let B₀ : (O₁ κ F G).FullSubcategory :=
+    ⟨⟨t1⟩, by simp only [ObjectProperty.prop_inverseImage_iff, proj_obj]; infer_instance⟩
+  let B : Δ κ E :=
+    CostructuredArrow.mk (Y := B₀) ⟨U.hom, by
+      apply isColimitOfPreserves (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F)
+        (colimit.isColimit ξ) |>.hom_ext
+      intro j
+      have e₁ := ι_preservesColimitIso_hom (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) ξ j
+      dsimp at e₁
+      simp [U, B₀, t1, ← Functor.map_comp_assoc, reassoc_of% e₁, t, ← G.map_comp, Θ, ξ,
+        (S.sq₁ j (succ j) (lt_succ j)).symm]⟩
+  refine ⟨B, v₀ ≫ (eqToHom e₀.symm).left.hom ≫ (colimit.ι ξ ⊥).left.hom, ?_, ?_⟩
   · have := ι_preservesColimitIso_hom (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) ξ ⊥
     have he1 : σ ≫ G.map v₀ ≫ G.map u₀.left.hom = F.map u ≫ F.map v₀ ≫ ψ₀ := by grind
     dsimp at this
-    simp [UU, t1, t, reassoc_of% this]
+    simp [B, B₀, U, t1, t, reassoc_of% this]
     simp [e₁, ← reassoc_of% he1, ← colimit.w ξ (homOfLE (le_succ ⊥) : ⊥ ⟶ _),
       -colimit.w, e₂]
-  · simp only [Functor.comp_obj, CostructuredArrow.proj_obj, ObjectProperty.ι_obj,
-      Category.assoc, UU, t1, t, ← colimit.w ξ (homOfLE (le_succ ⊥) : ⊥ ⟶ _), e₂]
-    simp [-CostructuredArrow.eqToHom_left, -ObjectProperty.eqToHom_hom, U, hv₀]
+  · simp only [B, B₀, U, Functor.comp_obj, CostructuredArrow.proj_obj, ObjectProperty.ι_obj,
+      Category.assoc, t1, t, ← colimit.w ξ (homOfLE (le_succ ⊥) : ⊥ ⟶ _), e₂]
+    simp [-CostructuredArrow.eqToHom_left, -ObjectProperty.eqToHom_hom, hv₀]
 
 open Limits
 
@@ -1060,16 +1061,13 @@ lemma isCardinalFiltered_Δ (E : Inserter F G) :
       · simp [σ', ← G.map_comp, hξ₁₀]
       · simp [← h' i, reassoc_of% p3, σ']
     -- Then, we use the main lemma with ξ₀ and ξ₁
-    obtain ⟨b, _, f, g, h₁, h₂⟩ :=
+    obtain ⟨b, g, h₁, h₂⟩ :=
       positselski_4_5 κ Λ hΛ E (S := ξ₀.left.obj) (T := ξ₁.left.obj) σ u.left.hom ξ₁.hom
         (by simp [← h1, ← F.map_comp_assoc])
-    let b' : (O₁ κ F G).FullSubcategory := ⟨b, by simpa [O₁]⟩
-    let f' : b'.obj ⟶ E := f
-    refine ⟨CostructuredArrow.mk (Y := b') f', fun i ↦
-        ⟨⟨⟨⟨(t0 i) ≫ u.left.hom ≫ g, ?_⟩⟩, ⟨rfl⟩, ?_⟩⟩⟩
-    · simp [← reassoc_of% h2 i, b', h₁]
+    refine ⟨b, fun i ↦ ⟨CostructuredArrow.homMk ⟨(t0 i) ≫ u.left.hom ≫ g, ?_⟩ ?_⟩⟩
+    · simp [← reassoc_of% h2 i, h₁]
     · ext
-      simp [f', b', h₂, hf0]
+      simp [h₂, hf0]
   · -- first, we pick an index ξ₀ that coequalizes all the components of f
     obtain ⟨ξ₀, u, hu, hv⟩ :
         ∃ (ξ₀ : CostructuredArrow O₀.ι E.obj)
@@ -1096,20 +1094,18 @@ lemma isCardinalFiltered_Δ (E : Inserter F G) :
     dsimp at hv₁ hv₂ hv
     simp only [Category.id_comp] at hv₁ hv₂ hv
     -- Then, we use the main lemma with ξ₀ and ξ₁
-    obtain ⟨b, _, f', g, h₁, h₂⟩ :=
+    obtain ⟨b', g, h₁, h₂⟩ :=
       positselski_4_5 κ Λ hΛ E ξ₀.left.obj ξ₁.left.obj
         σ v₁.left.hom ξ₁.hom (by simp [← hv₂, ← Functor.map_comp_assoc])
-    let b' : (O₁ κ F G).FullSubcategory := ⟨b, by simpa [O₁]⟩
-    let f'' : b'.obj ⟶ E := f'
     let pt : ι := hι'.some -- we need some arbitrary element of ι
     have := congr($(CostructuredArrow.w (f pt)).hom)
     simp only [ObjectProperty.ι_obj, ObjectProperty.ι_map, comp_hom] at this
     use
-      CostructuredArrow.mk (Y := b') f'',
+      b',
       CostructuredArrow.homMk ⟨⟨u ≫ v₁.left.hom ≫ g, by
-        grind [CostructuredArrow.mk_left]⟩⟩ (by ext; simp [f'', h₂, hu]),
+        grind [CostructuredArrow.mk_left]⟩⟩ (by ext; simp [h₂, hu]),
       CostructuredArrow.homMk ⟨⟨(f pt).left.hom.hom ≫ u ≫ v₁.left.hom ≫ g,
-        by grind [CostructuredArrow.mk_left]⟩⟩ (by ext; simp [f'', h₂, hu, this])
+        by grind [CostructuredArrow.mk_left]⟩⟩ (by ext; simp [h₂, hu, this])
     intro i
     ext
     simp [reassoc_of% hv i pt]
@@ -1145,14 +1141,11 @@ lemma final.nonempty_structured_arrow (E : Inserter F G)
     (F.map p.hom ≫ E.hom) ξ₀
   dsimp at u' v' hu'
   simp only [Category.id_comp] at hu'
-  obtain ⟨b, _, f, g, h₁, h₂⟩ :=
+  obtain ⟨b, g, h₁, h₂⟩ :=
     positselski_4_5 κ Λ hΛ E p.left.obj ξ₁.left.obj v' (u ≫ u'.left.hom) ξ₁.hom
       (by simp [← Functor.map_comp_assoc, hu, hu'])
-  let b' : (O₁ κ F G).FullSubcategory := ⟨b, by simpa [O₁]⟩
-  let f' : b'.obj ⟶ E := f
-  let b'' : Δ κ E := CostructuredArrow.mk (Y := b') f'
-  -- TODO: change to (Co)StructuredArrow.mk
-  exact ⟨⟨⟨()⟩, b'', ⟨⟨u ≫ u'.left.hom ≫ g⟩, ⟨rfl⟩, by simp [b'', f', h₂, hu]⟩⟩⟩
+  exact ⟨StructuredArrow.mk (Y := b) <|
+    CostructuredArrow.homMk ⟨u ≫ u'.left.hom ≫ g⟩ (by simp [h₂, hu])⟩
 
 include hΛ in
 lemma final (E : Inserter F G) : (U κ E).Final := by
@@ -1229,15 +1222,13 @@ lemma final (E : Inserter F G) : (U κ E).Final := by
       by simp_rw [Category.assoc, reassoc_of% h, ← G.map_comp, helper, ← hu₁₁'],
       by simp [← reassoc_of% hu₁₀],
       by simp [reassoc_of% hsq'', ← reassoc_of% hu₁₁, h]⟩
-  obtain ⟨b, _, u₁, v₁, hu₁, hv₁⟩ :=
+  obtain ⟨b, v₁, hu₁, hv₁⟩ :=
     positselski_4_5 κ Λ hΛ E ξ₀.left.obj ξ₁.left.obj σ u.left.hom ξ₁.hom (by
       simp [← hsq', ← F.map_comp_assoc])
-  let b' : (O₁ κ F G).FullSubcategory :=
-    ⟨b, by simp only [O₁, ObjectProperty.prop_inverseImage_iff, proj_obj]; infer_instance⟩
-  use CostructuredArrow.mk (T := E) (Y := b') u₁
+  use b
   exact
-    ⟨ CostructuredArrow.homMk ⟨⟨f₀ ≫ u.left.hom ≫ v₁, by simp [b', ← hu₁, reassoc_of% hl]⟩⟩,
-      CostructuredArrow.homMk ⟨⟨f₁ ≫ u.left.hom ≫ v₁, by simp [b', ← hu₁, reassoc_of% hr]⟩⟩,
+    ⟨ CostructuredArrow.homMk ⟨⟨f₀ ≫ u.left.hom ≫ v₁, by simp [← hu₁, reassoc_of% hl]⟩⟩,
+      CostructuredArrow.homMk ⟨⟨f₁ ≫ u.left.hom ≫ v₁, by simp [← hu₁, reassoc_of% hr]⟩⟩,
       by simp [hv₁, hf₀], by simp [hv₁, hf₁], by simp [reassoc_of% hsq]⟩
 
 attribute [local ext] Inserter in
