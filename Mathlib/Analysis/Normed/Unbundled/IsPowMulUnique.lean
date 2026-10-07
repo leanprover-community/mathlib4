@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
-public import Mathlib.Analysis.Normed.Unbundled.IsPowMulTrivial
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
@@ -23,7 +22,7 @@ In this file, we prove uniqueness of power-multiplicative norms over complete no
 
 open IntermediateField
 
-variable {K L : Type*} [NormedField K] [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
+variable {K L : Type*} [NontriviallyNormedField K] [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
 
 def AlgebraNorm.copy (_f : AlgebraNorm K L) (x : L) : Type _ := K⟮x⟯
 deriving Field, Algebra K
@@ -51,12 +50,6 @@ local instance (f : AlgebraNorm K L) (x : L) : NormedAlgebra K (f.copy x) where
 /-- Uniqueness of power-multiplicative norms over complete normed fields. -/
 public theorem IsPowMul.unique [CompleteSpace K] {f g : AlgebraNorm K L}
     (hf_pm : IsPowMul f) (hg_pm : IsPowMul g) : f = g := by
-  by_cases! hK : ∀ x : K, ‖x‖ ≤ 1
-  · ext x
-    by_cases hx : x = 0
-    · simp [hx]
-    · rw [f.eq_one_of_trivial hK hf_pm x hx, g.eq_one_of_trivial hK hg_pm x hx]
-  let : NontriviallyNormedField K := ⟨hK⟩
   refine eq_of_powMul_faithful f hf_pm g hg_pm fun x ↦ ?_
   let T₀ : g.copy x ≃ₗ[K] f.copy x := LinearEquiv.refl K K⟮x⟯
   let T : g.copy x ≃L[K] f.copy x := T₀.toContinuousLinearEquiv
