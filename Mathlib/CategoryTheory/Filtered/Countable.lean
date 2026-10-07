@@ -34,21 +34,16 @@ namespace IsCardinalFiltered.exists_cardinal_directed
 variable (J : Type w) [SmallCategory J]
 
 instance [CountableCategory J] : Countable (Diagram J .aleph0) := by
-  have : Countable {s : Set (Arrow J) // s.Finite} := Set.Countable.to_subtype
-    Set.Countable.ofPred_finite
-  have : Countable {s : Set J // s.Finite} := Set.Countable.to_subtype
-    Set.Countable.ofPred_finite
-  let f (D : Diagram J .aleph0) :
-      {s : Set (Arrow J) // s.Finite} × {s : Set J // s.Finite} :=
+  have : Countable {s : Set (Arrow J) // s.Finite} := Set.Countable.ofPred_finite
+  have : Countable {s : Set J // s.Finite} := Set.Countable.ofPred_finite
+  let f (D : Diagram J .aleph0) : {s : Set (Arrow J) // s.Finite} × {s : Set J // s.Finite} :=
     (⟨D.W.toSet, Set.finite_coe_iff.mp ((hasCardinalLT_aleph0_iff _).mp D.hW)⟩,
       ⟨Set.ofPred D.P, Set.finite_coe_iff.mp ((hasCardinalLT_aleph0_iff _).mp D.hP)⟩)
-  refine Function.Injective.countable (f := f) ?_
-  intro D₁ D₂ h
-  have hW : D₁.W.toSet = D₂.W.toSet := congrArg (fun x ↦ x.1.val) h
-  have hP : D₁.P = D₂.P := congrArg (fun x ↦ x.2.val) h
-  apply Diagram.ext ?_ hP
-  ext X Y g
-  exact Set.ext_iff.mp hW (Arrow.mk g)
+  refine Function.Injective.countable (f := f) fun D₁ D₂ h ↦ Diagram.ext ?_ ?_
+  · ext X Y g
+    simp only [← MorphismProperty.mem_toSet_iff']
+    simp_all [f]
+  · grind [Set.ofPred]
 
 instance [CountableCategory J] : Countable (DiagramWithUniqueTerminal J .aleph0) :=
   Function.Injective.countable (f := fun D ↦ D.toDiagram) (fun _ _ h ↦
