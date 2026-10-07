@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Computability.AkraBazzi.SumTransform
+
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!

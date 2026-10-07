@@ -6,6 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+
 import Mathlib.Topology.Algebra.InfiniteSum.Field
 
 /-!

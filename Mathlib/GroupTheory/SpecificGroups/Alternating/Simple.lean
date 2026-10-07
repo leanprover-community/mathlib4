@@ -151,10 +151,9 @@ theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGro
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
   simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_map_kleinFour_ofSubtype hs,
-    Subgroup.mk_smul, MulAut.smul_def, MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul,
-    Subgroup.coe_inv, ← ConjAct.toConjAct_inv_smul, Equiv.Perm.support_toConjAct_eq_smul_support,
+    mk_smul, MulAut.smul_def, ← map_inv, MulAut.coe_conj_apply, support_conj_eq_smul_support,
     mem_map_kleinFour_ofSubtype (s := g • s) (by simpa), Finset.subset_smul_finset_iff,
-    ConjAct.toConjAct_smul, cycleType_conj, mul_inv_eq_one, mul_eq_left]
+    MulEquiv.map_eq_one_iff, Subgroup.coe_inv, MulAut.conj_apply, cycleType_conj]
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Set.powersetCard α 4`,
 provided `α` has at least 5 elements. -/

@@ -63,7 +63,7 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
       integral_add (μ := μ) (L.integrable_comp f_int) (L.integrable_comp g_int), hf, hg]
   · exact isClosed_eq L.continuous_integral_comp_L1 (L.continuous.comp continuous_integral)
   · intro f g hfg _ hf
-    convert! hf using 1 <;> clear hf
+    convert hf using 1 <;> clear hf
     · exact integral_congr_ae (hfg.fun_comp L).symm
     · rw [integral_congr_ae hfg.symm]
 
@@ -127,7 +127,7 @@ theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x)
   have : CompleteSpace E ↔ CompleteSpace F :=
     completeSpace_congr (e := L.toEquiv) L.isUniformEmbedding
   obtain ⟨_, _⟩ | ⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
-  · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
+  · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitzWith _
   · simp [integral, *]
 
 end ContinuousLinearEquiv

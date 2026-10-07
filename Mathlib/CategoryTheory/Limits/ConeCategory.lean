@@ -139,7 +139,6 @@ def Cone.toCostructuredArrow (F : J ⥤ C) : Cone F ⥤ CostructuredArrow (const
   obj c := CostructuredArrow.mk c.π
   map f := CostructuredArrow.homMk f.hom
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct a cone on `F` from an object of the category `(Δ ↓ F)`. This is part of an
     equivalence, see `Cone.equivCostructuredArrow`. -/
 @[simps]
@@ -147,9 +146,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
   obj c := ⟨c.left, c.hom⟩
   map f :=
     { hom := f.left
-      w := fun j => by
-        convert! congr($(f.w).app j)
-        simp }
+      w j := congr($(f.w).app j) }
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in

@@ -3,18 +3,21 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch, Arthur Paulino
 -/
+module
 
-import Cache.Env
+public import Cache.Env
 
 /-!
 # Cache backend infrastructure
 
-The multi-container model — trust-classified Azure containers and the per-repo
-lookup chain — together with the GitHub repo names the cache tool dispatches on.
+The multi-container model: the trust-classified storage containers, the
+per-repo lookup chain, and the GitHub repo names that the cache tool dispatches on.
 
 This lives apart from `Cache.Requests` so the container model and trust ordering
 stand on their own, independent of the HTTP/curl machinery that consumes them.
 -/
+
+public section
 
 namespace Cache.Requests
 
@@ -35,19 +38,21 @@ def isCanonicalRepo (repo : String) : Bool :=
 Canonical form of a GitHub `owner/repo` name for use as a cache blob path
 segment.
 
-GitHub treats owner and repository names case-insensitively, while Azure Blob
-Storage paths are case-sensitive. Lowercasing yields one shared key whatever
+GitHub treats owner and repository names case-insensitively, while storage
+paths are case-sensitive. Lowercasing yields one shared key whatever
 capitalization a remote URL or the GitHub Actions context supplies, so a fork's
 uploads and downloads always meet at the same path.
 -/
 def normalizeRepo (repo : String) : String := repo.toLower
 
 /--
-Trust-classified Azure storage containers for the Mathlib cache.
+Trust-classified storage containers for the Mathlib cache.
 
-Each variant maps to one Azure Blob Storage container on the `lakecache` storage
-account. A CI job at a given trust level may write only to its corresponding
-container, and `cache get` always tries the most trusted container first.
+A container is a namespace in the URL contract `/{container}/{key}` that
+every cache host serves. `Container.location` resolves a container to a
+`Location`. A CI job at a given trust level may write only to its
+corresponding container, and `cache get` tries the most trusted container
+first.
 -/
 inductive Container where
   /-- Most-trusted container (`mathlib4-master`); only master CI writes here. -/
@@ -86,19 +91,23 @@ def parse? (s : String) : Option Container :=
   | _                    => none
 
 /--
-The container's segment in the URL contract: read URLs are
-`{base}/{pathSegment}/{key}`, and a bucket backend uses the same string as its
-key prefix. The segment is also the Azure storage container name on the
-`lakecache` account; `Container.azureURL` builds its URL from it.
+The container's segment in the URL contract `{base}/{pathSegment}/{key}`
+(`Container.urlUnder`). A bucket backend uses the same string as its key
+prefix.
 
 Every container follows the `mathlib4-{name}` convention.
 -/
 def pathSegment (c : Container) : String :=
   s!"mathlib4-{c.name}"
 
+/-- The container's URL under `base`: `{base}/{pathSegment}`. `base` is a host
+or an upload base that serves the `/{container}/{key}` namespace. -/
+def urlUnder (c : Container) (base : String) : String :=
+  s!"{base}/{c.pathSegment}"
+
 /-- Public Azure Blob Storage base URL for a container. -/
 def azureURL (c : Container) : String :=
-  s!"{azureAccountURL}/{c.pathSegment}"
+  c.urlUnder azureAccountURL
 
 /--
 Whether file lookups in this container use the flat `/f/<hash>` layout, or
@@ -122,27 +131,6 @@ def flatPath : Container → Bool
   | _ => false
 
 end Container
-
-/--
-Blob path of the directory that holds the cache artifacts, per the container's
-layout policy (`Container.flatPath`): `f` for a flat container, `f/{repo}` for
-a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. `repo`
-is lowercased via `normalizeRepo`. A file lives at
-`{fileDirPath container repo scope}/{fileName}`; `mkFileURL` and
-`stagedUploadDestFrom` both build on this, so reads and uploads share one path
-contract. Like `markerDirPath` (`Cache/Marker.lean`), the path carries no
-trailing slash.
--/
-def fileDirPath (container : Option Container) (repo : String)
-    (repoScope : Option String) : String :=
-  let repo := normalizeRepo repo
-  let flat := match container with
-    | some c => c.flatPath
-    | none => repo == MATHLIBREPO
-  if flat then "f"
-  else match repoScope with
-    | some s => s!"f/{repo}/{s}"
-    | none => s!"f/{repo}"
 
 /--
 The public Mathlib cache endpoint. It serves the same `/{container}/{key}`
@@ -175,16 +163,16 @@ Base URL for reads of container `c`: `MATHLIB_CACHE_BASE_URL` if set,
 otherwise `defaultGetBaseURL c useLegacy`. `normalizeBaseURL` reads the value, so it
 arrives trimmed, free of trailing slashes, and unset when empty.
 
-A read URL is `{base}/{pathSegment}/{key}`, the namespace the Azure
-account serves. Any host that mirrors that namespace is therefore a valid base.
+A read URL is `{base}/{pathSegment}/{key}`, the namespace every cache
+host serves. Any host that mirrors that namespace is therefore a valid base.
 This override differs from `MATHLIB_CACHE_GET_URL`. That variable serves
 external consumers: it names one flat endpoint and bypasses the container
 lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
-Only reads follow this base. Uploads and marker writes resolve their own
-destination per the selected backend (`stagedUploadDest`).
+Only reads follow this base. Uploads and marker writes use the location of
+the selected backend (`uploadLocation`).
 -/
 def getBaseURLFrom (c : Container) (envValue? : Option String) (useLegacy : Bool) : String :=
   (normalizeBaseURL envValue?).getD (defaultGetBaseURL c useLegacy)
@@ -193,12 +181,8 @@ def getBaseURLFrom (c : Container) (envValue? : Option String) (useLegacy : Bool
 Base URL for reads of container `c`, resolved from the environment.
 Written on top of the pure function above, which is separate to be testable.
 -/
-def getBaseURL (c : Container) : IO String := do
+def getBaseURL (c : Container) : BaseIO String := do
   return getBaseURLFrom c (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
-
-/-- Read URL for a container: `{getBaseURL c}/{pathSegment}`. -/
-def Container.getURL (c : Container) : IO String := do
-  return s!"{← getBaseURL c}/{c.pathSegment}"
 
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.
