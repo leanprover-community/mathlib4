@@ -8,10 +8,11 @@ module
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.InitialSeg
-import Mathlib.Order.Nat
 public import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.SetTheory.Cardinal.Defs
 public import Mathlib.SetTheory.Cardinal.SchroederBernstein
+
+import Mathlib.Order.Nat
 
 /-!
 # Order on cardinal numbers

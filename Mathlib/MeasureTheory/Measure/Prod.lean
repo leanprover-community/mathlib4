@@ -180,18 +180,14 @@ theorem volume_eq_prod (α β) [MeasureSpace α] [MeasureSpace β] :
 
 variable [SFinite ν]
 
-/-- For an s-finite measure `ν`, see `prod_apply` below. -/
-theorem prod_apply_le {s : Set (α × β)} (hs : MeasurableSet s) :
+/-- This inequality is in fact an equality, see `prod_apply` below. -/
+private theorem prod_apply_le {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s ≤ ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := by
   simp only [Measure.prod, ← map_apply measurable_prodMk_left hs]
   exact bind_apply_le Measurable.map_prodMk_left.aemeasurable hs
 
-/-- For any measures `μ` and `ν` and any sets `s` and `t`,
-we have `μ.prod ν (s ×ˢ t) ≤ μ s * ν t`.
-
-If `ν` is an s-finite measure (which is usually true),
-then this inequality becomes an equality, see `prod_prod` below. -/
-theorem prod_prod_le (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) ≤ μ s * ν t := by
+/-- This inequality is in fact an equality, see `prod_prod` below. -/
+private theorem prod_prod_le (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) ≤ μ s * ν t := by
   set S := toMeasurable μ s
   set T := toMeasurable ν t
   calc

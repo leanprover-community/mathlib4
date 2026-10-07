@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-import Mathlib.Analysis.SpecialFunctions.PolarCoord
 public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+
+import Mathlib.Analysis.SpecialFunctions.PolarCoord
 
 /-!
 # Gaussian integral
@@ -22,8 +23,6 @@ We prove various versions of the formula for the Gaussian integral:
 -/
 
 public section
-
-noncomputable section
 
 open Real Set MeasureTheory Filter Asymptotics
 

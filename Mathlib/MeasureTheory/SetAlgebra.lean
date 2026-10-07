@@ -5,8 +5,9 @@ Authors: Etienne Marion
 -/
 module
 
-import Mathlib.Basic.Finite.Prod
 public import Mathlib.MeasureTheory.SetSemiring
+
+import Mathlib.Basic.Finite.Prod
 
 /-!
 # Algebra of sets

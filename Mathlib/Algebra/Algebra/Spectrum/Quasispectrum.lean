@@ -6,8 +6,9 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Algebra.Unitization
+
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Quasiregularity and quasispectrum

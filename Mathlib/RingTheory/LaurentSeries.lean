@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.HahnSeries.PowerSeries
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.PowerSeries.Inverse
+
 import Mathlib.RingTheory.PowerSeries.Trunc
 
 

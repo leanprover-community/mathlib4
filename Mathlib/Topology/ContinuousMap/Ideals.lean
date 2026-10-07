@@ -5,11 +5,12 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
+
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Ideals of continuous functions

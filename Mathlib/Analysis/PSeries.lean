@@ -6,10 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.SumOverResidueClass
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Convergence of `p`-series

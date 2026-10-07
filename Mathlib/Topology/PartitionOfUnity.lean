@@ -6,9 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Compactness.Paracompact
-import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.ContinuousMap.Ordered
+
+import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Continuous partition of unity

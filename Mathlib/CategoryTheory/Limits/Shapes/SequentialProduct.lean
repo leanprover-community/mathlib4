@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Functor.OfSequence
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Countable
+
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.CategoryTheory.EffectiveEpi.Basic
@@ -61,7 +62,7 @@ noncomputable def functorMap : ∀ n,
   intro n
   refine Limits.Pi.map fun m ↦ if h : m < n then eqToHom ?_ else
     if h' : m < n + 1 then eqToHom ?_ ≫ f m ≫ eqToHom ?_ else eqToHom ?_
-  all_goals split_ifs; try rfl; try lia
+  all_goals lia
 
 set_option backward.isDefEq.respectTransparency false in
 lemma functorMap_commSq_succ (n : ℕ) :

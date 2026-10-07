@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
-import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
+
+import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+import Mathlib.Topology.Algebra.Module.Compact
 
 /-!
 

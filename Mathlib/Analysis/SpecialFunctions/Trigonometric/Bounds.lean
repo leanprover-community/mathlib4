@@ -5,8 +5,9 @@ Authors: David Loeffler, Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+
+import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 
 /-!
 # Polynomial bounds for trigonometric functions

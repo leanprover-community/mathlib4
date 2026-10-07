@@ -6,10 +6,11 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
-import Mathlib.MeasureTheory.Group.LIntegral
 public import Mathlib.MeasureTheory.Integral.Marginal
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import Mathlib.MeasureTheory.Group.LIntegral
 
 /-!
 # Lebesgue measure on the real line and on `ℝⁿ`

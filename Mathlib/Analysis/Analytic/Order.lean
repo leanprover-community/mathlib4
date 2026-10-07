@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Asymptotics.Theta
-import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
+
+import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 
 /-!

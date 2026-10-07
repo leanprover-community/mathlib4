@@ -5,13 +5,14 @@ Authors: Alex Kontorovich, Heather Macbeth
 -/
 module
 
-import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.Support
+
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-!
 # Monoid actions continuous in the second variable

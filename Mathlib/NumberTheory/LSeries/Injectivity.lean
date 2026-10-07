@@ -5,8 +5,9 @@ Authors: Michael Stoll
 -/
 module
 
-import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.NumberTheory.LSeries.Convergence
+
+import Mathlib.Analysis.Normed.Group.Tannery
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 

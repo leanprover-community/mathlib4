@@ -763,7 +763,7 @@ theorem unramifiedPlacesOver_ncard :
 open Finset in
 /-- The degree of `L` over `K` is equal to the number of unramified places over `v` plus twice the
 number of ramified places over `v`. -/
-theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L] :
+theorem unramifiedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L] :
     (unramifiedPlacesOver L v).ncard + 2 * (ramifiedPlacesOver L v).ncard = Module.finrank K L := by
   classical
   let : Algebra K ℂ := v.embedding.toAlgebra
@@ -774,6 +774,9 @@ theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L]
     AlgHom.toRingHom_injective.injOn (fun ψ hψ ↦ ?_)).symm
   simp only [Set.Finite.toFinset_ofPred, coe_filter, mem_univ, true_and, Set.mem_ofPred] at hψ
   exact ⟨⟨ψ, fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, ← hψ.over]⟩, by simp⟩
+
+@[deprecated (since := "2026-10-05")]
+alias unramifedPlacesOver_ncard_add_eq_finrank := unramifiedPlacesOver_ncard_add_eq_finrank
 
 end placesOver
 

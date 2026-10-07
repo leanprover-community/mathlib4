@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.SmallRepresentatives
+
 import Mathlib.CategoryTheory.Comma.CardinalArrow
 
 /-!

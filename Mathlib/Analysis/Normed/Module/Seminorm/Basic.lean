@@ -5,9 +5,10 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 -/
 module
 
-import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
+
+import Mathlib.Algebra.Order.Pi
 
 /-!
 # Seminorms

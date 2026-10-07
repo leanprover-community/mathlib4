@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 public import Mathlib.CategoryTheory.Monoidal.Center
+
 import Mathlib.Tactic.ApplyFun
 
 /-!
