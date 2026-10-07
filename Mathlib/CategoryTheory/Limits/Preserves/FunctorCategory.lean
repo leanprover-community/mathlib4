@@ -5,8 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Presheaf
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
 # Preservation of (co)limits in the functor category

@@ -6,6 +6,7 @@ Authors: Aaron Liu
 module
 
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!

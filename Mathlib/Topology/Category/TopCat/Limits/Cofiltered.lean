@@ -27,8 +27,6 @@ open CategoryTheory.Limits
 
 universe u v w
 
-noncomputable section
-
 namespace TopCat
 
 section CofilteredLimit

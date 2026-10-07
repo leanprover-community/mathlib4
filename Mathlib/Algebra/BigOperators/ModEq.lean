@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Data.ZMod.Basic
+
+import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
 # Congruence modulo natural and integer numbers for big operators
