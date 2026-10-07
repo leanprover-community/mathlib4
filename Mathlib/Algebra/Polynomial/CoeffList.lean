@@ -36,9 +36,9 @@ coefficients of `P.eraseLead`.
 
 * `ofCoeffList l`: constructs a polynomial from coefficients in the list `l`, starting with the
   constant coefficient.
-* `coeffAdd`, `coeffSub`: addition and subtraction of such lists. The lemmas
-  `ofCoeffList_map_mul`, `ofCoeffList_coeffAdd`, `ofCoeffList_zero_cons` and `ofCoeffList_coeffSub`
-  relate the arithmetic of polynomials to operations on the lists.
+* `ofCoeffList_map_mul`, `ofCoeffList_zipWithAll_add`, `ofCoeffList_zero_cons`, and
+  `ofCoeffList_zipWithAll_sub` relate the arithmetic of polynomials to operations on their
+  respective lists.
 -/
 
 @[expose] public section
@@ -214,12 +214,6 @@ theorem map_ofCoeffList {S : Type*} [Semiring S] (f : R →+* S) (l : List R) :
       toFinsupp_inj.mp
         (congrArg toFinsupp (congrArg (HAdd.hAdd (C (f c))) (congrArg (HMul.hMul X) ih)))
 
-/-- `p + q` on coefficient lists of possibly different lengths. -/
-def coeffAdd : List R → List R → List R
-  | [], q => q
-  | p, [] => p
-  | x :: p, y :: q => (x + y) :: coeffAdd p q
-
 @[simp]
 theorem ofCoeffList_map_mul (a : R) (l : List R) :
     ofCoeffList (l.map (a * ·)) = C a * ofCoeffList l := by
@@ -229,16 +223,16 @@ theorem ofCoeffList_map_mul (a : R) (l : List R) :
     rw [List.map_cons, ofCoeffList_cons, ofCoeffList_cons, ih, C_mul, ← mul_assoc, X_mul_C,
       mul_assoc, mul_add]
 
-theorem ofCoeffList_coeffAdd (p q : List R) :
-    ofCoeffList (coeffAdd p q) = ofCoeffList p + ofCoeffList q := by
+@[simp]
+theorem ofCoeffList_zipWithAll_add (p q : List R) :
+    ofCoeffList (List.zipWithAll (fun a b => a.getD 0 + b.getD 0) p q) =
+      ofCoeffList p + ofCoeffList q := by
   induction p generalizing q with
-  | nil => simp [coeffAdd]
+  | nil => simp
   | cons c p ih =>
     cases q with
-    | nil => simp [coeffAdd]
-    | cons d q =>
-      rw [coeffAdd, ofCoeffList_cons, ofCoeffList_cons, ofCoeffList_cons, ih, C_add, mul_add,
-        add_add_add_comm]
+    | nil => simp
+    | cons d q => simp [ofCoeffList_cons, ih, mul_add, add_add_add_comm]
 
 @[simp]
 theorem ofCoeffList_zero_cons (l : List R) : ofCoeffList (0 :: l) = X * ofCoeffList l := by
@@ -256,13 +250,22 @@ theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
   · rw [hp, coeffList_zero, neg_zero, coeffList_zero, List.map_nil]
   · simp [coeffList]
 
-/-- `p - q` on coefficients. -/
-def coeffSub (p q : List R) : List R := coeffAdd p (q.map (-1 * ·))
+@[simp]
+theorem ofCoeffList_map_neg (l : List R) : ofCoeffList (l.map (-·)) = -ofCoeffList l := by
+  induction l with
+  | nil => simp
+  | cons c l ih => simp [ofCoeffList_cons, ih, add_comm]
 
-theorem ofCoeffList_coeffSub (p q : List R) :
-    ofCoeffList (coeffSub p q) = ofCoeffList p - ofCoeffList q := by
-  rw [coeffSub, ofCoeffList_coeffAdd, ofCoeffList_map_mul, map_neg, map_one, neg_one_mul,
-    sub_eq_add_neg]
+@[simp]
+theorem ofCoeffList_zipWithAll_sub (p q : List R) :
+    ofCoeffList (List.zipWithAll (fun a b => a.getD 0 - b.getD 0) p q) =
+      ofCoeffList p - ofCoeffList q := by
+  induction p generalizing q with
+  | nil => simp
+  | cons c p ih =>
+    cases q with
+    | nil => simp
+    | cons d q => simp [ofCoeffList_cons, ih, mul_sub, add_sub_add_comm]
 
 end Ring
 
