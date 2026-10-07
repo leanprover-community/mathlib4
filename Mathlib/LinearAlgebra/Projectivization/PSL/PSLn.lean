@@ -154,9 +154,11 @@ noncomputable def PSL.Iwasawa [Nontrivial ι] :
       p.submodule_eq.symm ▸ lineStab_isMulCommutative_of_span p.rep p.rep_nonzero
     Subgroup.map_isMulCommutative _ _
   is_conj g p := by
-    obtain ⟨g_SL, rfl⟩ := QuotientGroup.mk_surjective g
-    change Subgroup.map _ (lineStab (g_SL • p).submodule) = _
-    rw [PSL.smul_submodule, lineStab_smul, PSL.iwasawaT_map_conj]
+    induction g using QuotientGroup.induction_on with | H g =>
+    induction p with | h v h =>
+    simp [Matrix.ProjectiveSpecialLinearGroup.smul_proj_mk, PSL.iwasawaT, ← PSL.iwasawaT_map_conj,
+      ← lineStab_smul, Submodule.pointwise_smul_def, Subgroup.ext_iff,
+      Submodule.mem_span_singleton, smul_comm]
   is_generator := iSup_iwasawaT_eq_top
 
 end SLnSimple
