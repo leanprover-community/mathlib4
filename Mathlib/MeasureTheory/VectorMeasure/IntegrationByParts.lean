@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.MeasureTheory.VectorMeasure.BoundedVariation
-public import Mathlib.MeasureTheory.VectorMeasure.Prod
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensityVec
+
+import Mathlib.MeasureTheory.VectorMeasure.Prod
 
 /-!
 # Integration by parts for vector measures associated to bounded variation functions

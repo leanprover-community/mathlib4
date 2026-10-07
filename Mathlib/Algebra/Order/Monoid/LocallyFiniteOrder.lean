@@ -5,15 +5,15 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
 public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Data.Nat.Cast.Order.Ring
-public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Order.Interval.Finset.Basic
+
+import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Group.Embedding
 
 /-!
 
@@ -78,7 +78,7 @@ def LocallyFiniteOrder.addMonoidHom :
   map_zero' := by simp
   map_add' a b := by
     wlog hab : a ≤ b generalizing a b
-    · convert! this b a (le_of_not_ge hab) using 1 <;> simp only [add_comm]
+    · convert this b a (le_of_not_ge hab) using 1 <;> simp only [add_comm]
     obtain ha | ha := le_total 0 a <;> obtain hb | hb := le_total 0 b
     · have : -b ≤ a := by trans 0 <;> simp [ha, hb]
       simp [ha, hb, card_Ico_zero_add, this]

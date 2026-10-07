@@ -6,6 +6,7 @@ Authors: Thomas R. Murrills
 module
 
 public import Lean.Environment
+
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
