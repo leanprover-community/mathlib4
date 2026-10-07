@@ -15,4 +15,4 @@ before a semicolon. `lake exe mk_all` and `lake exe lint-style --fix` should fix
 -/
 
 example : True ∧ True := by
-  constructor ; trivial; trivial
+  constructor; trivial; trivial
