@@ -303,6 +303,17 @@ instance : Module (ResidueField R) (CotangentSpace R) :=
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
   inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
 
+/-- `Ideal.toCotangent` for maximal ideal of local ring,
+ as `IsLocalRing.residue R` semi-linear map. -/
+def toCotangentSpace : maximalIdeal R →ₛₗ[residue R] CotangentSpace R where
+  __ := (maximalIdeal R).toCotangent
+  map_smul' r x := by simp [← ResidueField.algebraMap_eq]
+
+lemma toCotangentSpace_eq_toCotangent : ⇑(toCotangentSpace R) = (maximalIdeal R).toCotangent := rfl
+
+lemma toCotangentSpace_apply (x : maximalIdeal R) :
+    toCotangentSpace R x = (maximalIdeal R).toCotangent x := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _
