@@ -23,12 +23,12 @@ def Interval.sqrt (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
   lb := match I.lb with
     | ⊥ => WithBot.some 0
     | WithBot.some lb =>
-      if 0 ≤ lb.toRat then Dyadic.ofIntWithPrec ⌊lb.toRat * 4 ^ prec⌋.toNat.sqrt prec
+      if 0 ≤ lb.toRat then Dyadic.ofIntWithPrec ⌊lb.toRat * 4 ^ prec⌋₊.sqrt prec
       else WithBot.some 0
   ub := match I.ub with
     | ⊤ => ⊤
     | WithTop.some ub =>
-      let ub' : ℕ := ⌈ub.toRat * 4 ^ prec⌉.toNat
+      let ub' : ℕ := ⌈ub.toRat * 4 ^ prec⌉₊
       let ubsqrt : ℕ := ub'.sqrt
       if ub' ≤ ubsqrt ^ 2 then Dyadic.ofIntWithPrec ubsqrt prec
       else Dyadic.ofIntWithPrec (ubsqrt + 1) prec
@@ -43,9 +43,9 @@ theorem Interval.sqrt_mem
       (f (.ofIntWithPrec n prec) ^ 2 ≤ f q ↔ n ^ 2 ≤ q.toRat * 4 ^ prec) := by
     norm_num [← map_sq, ← toRat_le_toRat_iff, toRat_ofIntWithPrec_eq_mul_two_pow, mul_pow,
       le_mul_inv_iff₀, mul_inv_le_iff₀, ← pow_mul, pow_mul']
-  have hub (n : ℕ) (q : Dyadic) (hq : x ≤ f q) (h : ⌈q.toRat * 4 ^ prec⌉.toNat ≤ n ^ 2) :
+  have hub (n : ℕ) (q : Dyadic) (hq : x ≤ f q) (h : ⌈q.toRat * 4 ^ prec⌉₊ ≤ n ^ 2) :
       √x ≤ f (.ofIntWithPrec n prec) := by
-    rw [Int.ceil_toNat, Nat.ceil_le] at h
+    rw [Nat.ceil_le] at h
     refine Real.sqrt_le_iff.mpr ⟨map_zero ▸ f.monotone ?_, hq.trans ((H n q).left.mpr (mod_cast h))⟩
     simp [← toRat_le_toRat_iff, toRat_ofIntWithPrec_eq_mul_two_pow, toRat_zero]
   obtain ⟨hl, hu⟩ := (mem_map_iff f).mp hx
@@ -55,8 +55,8 @@ theorem Interval.sqrt_mem
     · split_ifs at ha with h0
       · cases ha
         refine Real.le_sqrt_of_sq_le (((H _ lb).right.mpr ?_).trans (hl lb rfl))
-        have h := ⌊lb.toRat * 4 ^ prec⌋.toNat.sqrt_le'
-        rw [Int.floor_toNat, Nat.le_floor_iff (mul_nonneg h0 (by simp))] at h
+        have h := ⌊lb.toRat * 4 ^ prec⌋₊.sqrt_le'
+        rw [Nat.le_floor_iff (mul_nonneg h0 (by simp))] at h
         exact_mod_cast h
       · simp [map_zero, ← WithBot.coe_eq_coe.mp ha]
   · rcases I with ⟨lb, _ | ub⟩ <;> simp only [Interval.sqrt] at ha
