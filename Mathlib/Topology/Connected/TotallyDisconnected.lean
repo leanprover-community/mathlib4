@@ -92,13 +92,8 @@ instance [∀ i, TopologicalSpace (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
 /-- A space is totally disconnected iff its connected components are subsingletons. -/
 theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :
     TotallyDisconnectedSpace α ↔ ∀ x : α, (connectedComponent x).Subsingleton := by
-  constructor
-  · intro h x
-    apply h.1
-    · exact subset_univ _
-    exact isPreconnected_connectedComponent
-  intro h; constructor
-  intro s s_sub hs
+  refine ⟨fun h x ↦ h.1 _ (subset_univ _) isPreconnected_connectedComponent,
+    fun h ↦ ⟨fun s s_sub hs ↦ ?_⟩⟩
   rcases eq_empty_or_nonempty s with (rfl | ⟨x, x_in⟩)
   · exact subsingleton_empty
   · exact (h x).anti (hs.subset_connectedComponent x_in)
