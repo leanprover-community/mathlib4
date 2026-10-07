@@ -146,8 +146,7 @@ lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
   have hzero : A'.arrow ≫ cokernel.π A.arrow = 0 := by
     rw [← Subobject.ofLE_arrow hle, Category.assoc, cokernel.condition, comp_zero]
   have hπ : Subobject.pullbackπ (cokernel.π A.arrow) B = 0 := by
-    apply (cancel_mono B.arrow).mp
-    rw [(Subobject.isPullback (cokernel.π A.arrow) B).toCommSq.w, hzero, zero_comp]
+    rw [← cancel_mono B.arrow, (Subobject.isPullback (cokernel.π A.arrow) B).w, hzero, zero_comp]
   have himf : IsZero (Abelian.image f) :=
     IsZero.of_iso (IsZero.of_epi_eq_zero (Subobject.pullbackπ (cokernel.π A.arrow) B) hπ)
       (Subobject.underlyingIso (Abelian.image.ι f)).symm
