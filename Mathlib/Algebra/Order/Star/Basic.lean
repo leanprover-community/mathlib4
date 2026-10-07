@@ -461,6 +461,10 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
   induction hp using AddSubmonoid.closure_induction
   all_goals aesop
 
+-- see note [lower instance priority]
+/-- Non-unital star ring homomorphisms between star-ordered rings are monotone (see
+`OrderHomClass.mono`). Star ring equivalences are moreover order isomorphisms
+(`StarRingEquivClass.instOrderIsoClass`). -/
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
     [NonUnitalRingHomClass F R S] [StarHomClass F R S] : OrderHomClass F R S where
   map_rel f := (NonUnitalStarRingHom.ofClass f).map_le_map_of_map_star

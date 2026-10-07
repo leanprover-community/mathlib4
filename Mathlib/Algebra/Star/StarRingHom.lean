@@ -59,9 +59,9 @@ add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 This class is deprecated: it adds nothing to `StarHomClass`, so use
 `[NonUnitalRingHomClass F A B] [StarHomClass F A B]` instead. -/
 @[deprecated StarHomClass +typeChanged (since := "2026-10-07")]
-class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
-    [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
-    [FunLike F A B] [NonUnitalRingHomClass F A B] : Prop extends StarHomClass F A B
+class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*) [NonUnitalNonAssocSemiring A]
+    [Star A] [NonUnitalNonAssocSemiring B] [Star B] [FunLike F A B] [NonUnitalRingHomClass F A B] :
+    Prop extends StarHomClass F A B
 
 namespace NonUnitalStarRingHomClass
 
@@ -458,9 +458,7 @@ def ofStarRingHom (f : F) (g : G) (h₁ : ∀ x, g (f x) = x) (h₂ : ∀ x, f (
 
 /-- Promote a bijective star ring homomorphism to a star ring equivalence. -/
 noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆+* B :=
-  { RingEquiv.ofBijective f (hf : Function.Bijective (f : A → B)) with
-    toFun := f
-    map_star' := map_star f }
+  { RingEquiv.ofBijective f hf with map_star' := map_star f }
 
 @[simp]
 theorem coe_ofBijective {f : F} (hf : Function.Bijective f) :
