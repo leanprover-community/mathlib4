@@ -13,8 +13,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 A typeclass for categories with all countable (co)limits.
 
-We also construct sequential functors for countable filtered and cofiltered preorders,
-see `IsFiltered.sequentialFunctor` and `IsCofiltered.sequentialFunctor`.
+We also prove that all (co)filtered limits over countable preorders are isomorphic to sequential
+(co)limits, see `sequentialFunctor_initial` and `sequentialFunctor_final`.
 For the extension to arbitrary countable filtered and cofiltered categories, see
 `Mathlib.CategoryTheory.Filtered.Countable`. For the construction of countable (co)limits
 from finite and sequential (co)limits, see `Mathlib.CategoryTheory.Limits.Constructions.Countable`.
