@@ -6,10 +6,10 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.Normal.Closure
 
-import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -749,9 +749,7 @@ theorem spectralAlgNorm_mul (x y : L) :
 variable (K L) in
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`. -/
 def spectralMulAlgNorm : MulAlgebraNorm K L :=
-  { spectralAlgNorm K L with
-    map_one' := spectralAlgNorm_one
-    map_mul' := spectralAlgNorm_mul }
+  (spectralAlgNorm K L).toMulAlgebraNorm (spectralAlgNorm_isPowMul)
 
 theorem spectralMulAlgNorm_def (x : L) : spectralMulAlgNorm K L x = spectralNorm K L x := rfl
 
