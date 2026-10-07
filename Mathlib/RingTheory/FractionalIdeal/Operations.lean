@@ -579,6 +579,11 @@ def spanSingleton : P →*₀ FractionalIdeal S P :=
 theorem coe_spanSingleton (x : P) : (spanSingleton S x : Submodule R P) = span R {x} :=
   rfl
 
+@[deprecated "use `coe_spanSingleton`" (since := "2026-10-07")]
+theorem spanSingleton_def (x : P) :
+    spanSingleton S x = ⟨span R {x}, isFractional_span_singleton x⟩ :=
+  rfl
+
 @[simp]
 theorem mem_spanSingleton {x y : P} : x ∈ spanSingleton S y ↔ ∃ z : R, z • y = x :=
   Submodule.mem_span_singleton
