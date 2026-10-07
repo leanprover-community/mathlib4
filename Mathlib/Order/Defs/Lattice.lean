@@ -295,6 +295,7 @@ generic in the sense that every distributive lattice is realizable
 as a sublattice of a powerset lattice. -/
 class DistribLattice extends Lattice α where
   /-- The infimum distributes over the supremum -/
+  -- use `:= (by tacs)` instead of `:= by tacs` to make an `outParam` instead of an `autoParam`
   protected le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z := (by
     intro x y z
     grw [inf_sup_le]
