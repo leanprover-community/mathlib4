@@ -115,12 +115,12 @@ theorem coe_two_sylow_of_card_eq_four
       {1} ∪ {g : alternatingGroup α | (g : Perm α).cycleType = {2, 2}} := by
   classical
   refine Set.eq_of_subset_of_card_le (fun k hk ↦ ?_) ?_
-  · -- inclusion S ⊆ {1} ∪ {g |  cycleType g = { 2, 2 }}
-    obtain ⟨n, hn⟩ := (IsPGroup.iff_orderOf.mp S.isPGroup') ⟨k, hk⟩
+  · -- `inclusion S ⊆ {1} ∪ {g | cycleType g = { 2, 2 }}`
+    obtain ⟨n, hn⟩ := (IsPGroup.iff_orderOf.mp S.isPGroup) ⟨k, hk⟩
     replace hn : (orderOf (k : Perm α)) = 2 ^ n := by simpa using hn
     convert mem_kleinFour_of_order_two_pow hα4 k.2 hn.dvd
     simp
-  · -- card (kleinFour α) ≤ card S
+  · -- `card (kleinFour α) ≤ card S`
     simp_rw [← Nat.card_eq_fintype_card]
     refine (card_two_sylow_of_card_eq_four hα4 S).trans_ge ?_
     rw [Nat.card_eq_card_toFinset, Set.toFinset_union, Set.toFinset_singleton, Set.toFinset_ofPred]
