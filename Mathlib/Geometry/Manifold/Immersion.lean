@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.ImmersionDiff
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
-import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep (NormedAddCommGroup (Shrink ...)), cf. lean#13417
+
+import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 import Mathlib.Topology.Algebra.Module.TransferInstance
 
 /-! # Smooth immersions

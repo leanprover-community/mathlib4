@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.LocallyFinite
+
 import Mathlib.Topology.Compactness.Compact
 
 /-!

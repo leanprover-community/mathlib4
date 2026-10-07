@@ -5,8 +5,9 @@ Authors: Mitchell Lee, Junyan Xu
 -/
 module
 
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-! # Vanishing of elements in a tensor product of two modules
