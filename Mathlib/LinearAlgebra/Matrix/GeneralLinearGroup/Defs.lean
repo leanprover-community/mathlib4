@@ -216,7 +216,7 @@ def mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
 @[simp] lemma symm_mapEquiv (f : R ≃+* S) :
     (mapEquiv (n := n) f).symm = mapEquiv f.symm := rfl
 
-@[simp] lemma mapEquiv_trans (f : R ≃+* S) (g : S ≃+* T) :
+@[simp] lemma mapEquiv_trans_mapEquiv (f : R ≃+* S) (g : S ≃+* T) :
     .trans (mapEquiv f) (mapEquiv g) = mapEquiv (n := n) (f.trans g) := rfl
 
 @[simp] lemma toMonoidHom_mapEquiv (f : R ≃+* S) :
