@@ -409,6 +409,37 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit'_of_hasCardinalLT
   rw [← hb₀ ⟨i₀, i₁⟩, Functor.map_comp]
   simp [u₁, Sigma.uncurry, reassoc_of% hu₀ i₀ i₁]
 
+/-- In a category `C`, given a diagram `F : J ⥤ C` where `J` is κ-filtered
+and a commutative diagram
+```
+X₀ ---> X₁ ------> X₂
+|                  |
+v                  v
+X₃ --> F(j₀) --> colim F
+```
+where X₁ is κ-presentable, there exists an index j₁ and a commutative diagram
+```
+X₀ -------------> X₁ --------> X₂
+|                 |            |
+v                 v            v
+X₃ --> F(j₀) -> F(j₁) ----> colim F
+```
+-/
+lemma IsCardinalPresentable.exists_of_hexagon
+    [IsCardinalFiltered J κ] [EssentiallySmall.{w} J] {F : J ⥤ C} {c : Limits.Cocone F}
+    (hc : IsColimit c) {X₀ X₁ X₂ X₃ : C} [IsCardinalPresentable X₀ κ] [IsCardinalPresentable X₁ κ]
+    (f₀₁ : X₀ ⟶ X₁) (f₁₂ : X₁ ⟶ X₂) (f₀₃ : X₀ ⟶ X₃)
+    {j₀ : J} (g : X₃ ⟶ F.obj j₀) (q : X₂ ⟶ c.pt)
+    (h : f₀₁ ≫ f₁₂ ≫ q = f₀₃ ≫ g ≫ c.ι.app j₀) :
+    ∃ (j₁ : J) (u : j₀ ⟶ j₁) (q' : X₁ ⟶ F.obj j₁),
+      (f₀₁ ≫ q' = f₀₃ ≫ g ≫ F.map u) ∧ (f₁₂ ≫ q = q' ≫ c.ι.app j₁) := by
+  obtain ⟨j₁₀, u', v', hu'⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hc
+    (f₁₂ ≫ q) j₀
+  have := isFiltered_of_isCardinalFiltered J κ
+  obtain ⟨j₁, u, w⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hc (f₀₁ ≫ v')
+    (f₀₃ ≫ g ≫ F.map u') (by simpa [hu'])
+  exact ⟨j₁, u' ≫ u, v' ≫ F.map u, by grind, by simp [hu']⟩
+
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a commutative square where both objects on the top are `κ`-presentable
 and the bottom map is a colimit of a natural transformation `f : X ⟶ Y` between

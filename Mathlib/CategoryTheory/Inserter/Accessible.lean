@@ -48,40 +48,6 @@ universe w
 namespace Accessible
 -- Recall everything in the section below private.
 
-open Limits in
-/-- In a category `C`, given a diagram `F : J ⥤ C` where `J` is κ-filtered
-and a commutative diagram
-```
-X₀ ---> X₁ ------> X₂
-|                  |
-v                  v
-X₃ --> F(j₀) --> colim F
-```
-where X₁ is κ-presentable,
-there exists an index j₁ and a commutative diagram
-```
-X₀ -------------> X₁ --------> X₂
-|                 |            |
-v                 v            v
-X₃ --> F(j₀) -> F(j₁) ----> colim F
-```
--/
-lemma exists_of_hexagon {D J : Type*} [Category* D] [Category* J]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [IsCardinalFiltered J κ] [EssentiallySmall.{w} J] {F : J ⥤ D} {c : Limits.Cocone F}
-    (hc : IsColimit c) {X₀ X₁ X₂ X₃ : D} [IsCardinalPresentable X₀ κ] [IsCardinalPresentable X₁ κ]
-    (f₀₁ : X₀ ⟶ X₁) (f₁₂ : X₁ ⟶ X₂) (f₀₃ : X₀ ⟶ X₃)
-    {j₀ : J} (g : X₃ ⟶ F.obj j₀) (q : X₂ ⟶ c.pt)
-    (h : f₀₁ ≫ f₁₂ ≫ q = f₀₃ ≫ g ≫ c.ι.app j₀) :
-    ∃ (j₁ : J) (u : j₀ ⟶ j₁) (q' : X₁ ⟶ F.obj j₁),
-      (f₀₁ ≫ q' = f₀₃ ≫ g ≫ F.map u) ∧ (f₁₂ ≫ q = q' ≫ c.ι.app j₁) := by
-  obtain ⟨j₁₀, u', v', hu'⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hc
-    (f₁₂ ≫ q) j₀
-  have := isFiltered_of_isCardinalFiltered J κ
-  obtain ⟨j₁, u, w⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hc (f₀₁ ≫ v')
-    (f₀₃ ≫ g ≫ F.map u') (by simpa [hu'])
-  exact ⟨j₁, u' ≫ u, v' ≫ F.map u, by grind, by simp [hu']⟩
-
 /- The setup for accessibility of inserter categories, from Positselski’s paper:
 `F G : K ⥤ L` are a parallel pair of κ-accessible functors between κ-accessible categories
 where `F` in addition preserves κ-presentable objects. A given infinite ordinal Λ < κ such
@@ -1030,7 +996,7 @@ lemma exists_Δ_of_pentagon
   obtain ⟨ξ₁₀, ψ₀₀, hψ₀₀⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimGT
     (F.map ξ₀.hom ≫ E.hom)
   dsimp at ψ₀₀ hψ₀₀
-  obtain ⟨ξ₁, u₀, ψ₀, hψ₀₁⟩ := exists_of_hexagon κ hcolimGT
+  obtain ⟨ξ₁, u₀, ψ₀, hψ₀₁⟩ := IsCardinalPresentable.exists_of_hexagon κ hcolimGT
     (F.map u ≫ F.map v₀) (F.map ξ₀.hom) σ (G.map v₀) E.hom (by dsimp; grind)
   dsimp at u₀ ψ₀ hψ₀₁
   -- Now, we construct a chain by iterating.
@@ -1196,7 +1162,8 @@ lemma isCardinalFiltered_Δ (E : Inserter F G) :
     /- Then pick ξ₁ above u, such that such that F.map ξ₀.hom ≫ E.hom factorizes through
     ξ₁ while remaining compatible with p. -/
     obtain ⟨ξ₁, v₁, σ, hv₁, hv₂⟩ :=
-      exists_of_hexagon κ hcolimG (F.map u) (F.map ξ₀.hom) p.left.obj.hom (G.map u) E.hom
+      IsCardinalPresentable.exists_of_hexagon κ hcolimG
+        (F.map u) (F.map ξ₀.hom) p.left.obj.hom (G.map u) E.hom
         (by simp [← Functor.map_comp_assoc, hu, ← Functor.map_comp])
     dsimp at hv₁ hv₂ hv
     simp only [Category.id_comp] at hv₁ hv₂ hv
@@ -1309,11 +1276,11 @@ lemma final (E : Inserter F G) : (U κ E).Final := by
         (F.map f₀ ≫ σ = r'.right.left.obj.hom ≫ G.map f₀ ≫ G.map u.left.hom) ∧
         (F.map f₁ ≫ σ = r''.right.left.obj.hom ≫ G.map f₁ ≫ G.map u.left.hom) := by
     obtain ⟨ξ₁₀, u₁₀, σ₁₀, hu₁₀, hu₁₀'⟩ :=
-      exists_of_hexagon κ hcolimG (F.map f₀) (F.map ξ₀.hom)
+      IsCardinalPresentable.exists_of_hexagon κ hcolimG (F.map f₀) (F.map ξ₀.hom)
         r'.right.left.obj.hom (G.map f₀) E.hom
         (by simp [← F.map_comp_assoc, hf₀, ← G.map_comp])
     obtain ⟨ξ₁₁, u₁₁, σ₁₁, hu₁₁, hu₁₁'⟩ :=
-      exists_of_hexagon κ hcolimG (F.map f₁) (F.map ξ₀.hom)
+      IsCardinalPresentable.exists_of_hexagon κ hcolimG (F.map f₁) (F.map ξ₀.hom)
         r''.right.left.obj.hom (G.map f₁) E.hom
         (by simp [← F.map_comp_assoc, ← G.map_comp, hf₁])
     dsimp at u₁₀ σ₁₀ u₁₁ σ₁₁ hu₁₀ hu₁₀' hu₁₁ hu₁₁'
