@@ -106,12 +106,17 @@ theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
 
+/-- Following `p` by the constant path at `x₁` is the reparametrization of `p` by
+`t ↦ qRight (t, 0)`, which is `2 * t` on `[0, 1/2]` and `1` afterwards (see
+`unitInterval.qRight_zero_right`). This is `Path.delayReflRight_zero` read backwards. -/
 theorem trans_refl_reparam (p : Path x₀ x₁) :
     p.trans (Path.refl x₁) =
       p.reparam (fun t ↦ qRight (t, 0)) (by fun_prop) (qRight_zero_left 0) (qRight_one_left 0) :=
-  (delayReflRight_zero p).symm
+  p.delayReflRight_zero.symm
 
-/-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/
+/-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`.
+It is `Path.Homotopy.reparam` from `p` to its reparametrization by `t ↦ qRight (t, 0)` (which is
+`p.trans (Path.refl x₁)` by `trans_refl_reparam`), reversed. -/
 def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
   ((Homotopy.reparam p (fun t ↦ qRight (t, 0)) (by fun_prop) (qRight_zero_left 0)
       (qRight_one_left 0)).cast rfl (trans_refl_reparam p).symm).symm
