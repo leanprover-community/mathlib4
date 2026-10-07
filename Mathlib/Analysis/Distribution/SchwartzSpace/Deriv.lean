@@ -53,21 +53,6 @@ variable [NormedSpace ℝ E]
 variable (𝕜)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
-variable (F) in
-/-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
-def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
-  mkCLM (deriv ·) (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
-    (fun a f _ => deriv_const_smul a f.differentiableAt)
-    (fun f => (contDiff_succ_iff_deriv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
-    ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
-      simpa only [Real.norm_eq_abs, Finset.sup_singleton, schwartzSeminormFamily_apply, one_mul,
-        norm_iteratedFDeriv_eq_norm_iteratedDeriv, ← iteratedDeriv_succ'] using
-        f.le_seminorm' 𝕜 k (n + 1) x⟩
-
-@[simp]
-theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 F f x = deriv f x :=
-  rfl
-
 theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
   f.differentiableAt.hasDerivAt
 
@@ -138,6 +123,15 @@ theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : �
     · exact (f.smooth ⊤).differentiable_iteratedFDeriv (mod_cast ENat.natCast_lt_top n) x
 
 end fderiv
+
+variable (F) in
+/-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
+def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
+  lineDerivOpCLM 𝕜 𝓢(ℝ, F) (1 : ℝ)
+
+@[simp]
+theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 F f x = deriv f x :=
+  rfl
 
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 
