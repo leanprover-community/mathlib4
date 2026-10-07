@@ -286,7 +286,7 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
               rw [h, show p' = q' from Subtype.mk.inj h'']
           else
             isFalse fun h =>
-              h'' <| Subtype.ext <| eq_of_heq <| (Quiver.Path.cons.inj <| Subtype.mk.inj h).2.1
+              h'' <| Subtype.ext <| eq_of_heq (Quiver.Path.cons.inj <| Subtype.mk.inj h).2.1
         else
           isFalse fun h' =>
             h <| eq_of_heq (Quiver.Path.cons.inj <| Subtype.mk.inj h').2.2

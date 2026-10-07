@@ -5,10 +5,8 @@ Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Notation
-public import Mathlib.LinearAlgebra.Matrix.RowCol
 public import Mathlib.GroupTheory.Perm.Fin
 public import Mathlib.LinearAlgebra.Alternating.Basic
 public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
@@ -55,7 +53,12 @@ local notation "ε " σ:arg => ((sign σ : ℤ) : R)
 def detRowAlternating : (n → R) [⋀^n]→ₗ[R] R :=
   MultilinearMap.alternatization ((MultilinearMap.mkPiAlgebra R n R).compLinearMap LinearMap.proj)
 
-/-- The determinant of a matrix given by the Leibniz formula. -/
+/-- The determinant of a matrix given by the Leibniz formula.
+
+This is available in bundled forms as:
+* `Matrix.detMonoidHom`
+* `Matrix.detRowAlternating`
+-/
 @[wikidata Q178546]
 def det (M : Matrix n n R) : R :=
   detRowAlternating M
@@ -70,7 +73,7 @@ theorem det_apply' (M : Matrix n n R) : M.det = ∑ σ : Perm n, ε σ * ∏ i, 
 theorem det_eq_detp_sub_detp (M : Matrix n n R) : M.det = M.detp 1 - M.detp (-1) := by
   rw [det_apply, ← Equiv.sum_comp (Equiv.inv (Perm n)), ← ofSign_disjUnion, sum_disjUnion]
   simp_rw [inv_apply, sign_inv, sub_eq_add_neg, detp, ← sum_neg_distrib]
-  refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (sum_congr rfl fun σ hσ ↦ ?_) <;>
+  congrm $(sum_congr rfl fun σ hσ ↦ ?_) + $(sum_congr rfl fun σ hσ ↦ ?_) <;>
     rw [mem_ofSign.mp hσ, ← Equiv.prod_comp σ] <;> simp
 
 @[simp]
@@ -79,7 +82,7 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   refine (Finset.sum_eq_single 1 ?_ ?_).trans ?_
   · rintro σ - h2
     obtain ⟨x, h3⟩ := not_forall.1 (mt Equiv.ext h2)
-    convert! mul_zero (ε σ)
+    convert mul_zero (ε σ)
     apply Finset.prod_eq_zero (mem_univ x)
     exact ite_eq_right h3
   · simp
@@ -112,7 +115,7 @@ theorem det_unique {n : Type*} [Unique n] [DecidableEq n] [Fintype n] (A : Matri
 theorem det_eq_elem_of_subsingleton [Subsingleton n] (A : Matrix n n R) (k : n) :
     det A = A k k := by
   have := uniqueOfSubsingleton k
-  convert! det_unique A
+  convert det_unique A
 
 theorem det_eq_elem_of_card_eq_one {A : Matrix n n R} (h : Fintype.card n = 1) (k : n) :
     det A = A k k :=
@@ -296,9 +299,9 @@ theorem det_mul_row (v : n → R) (A : Matrix n n R) :
     det (of fun i j => v j * A i j) = (∏ i, v i) * det A :=
   calc
     det (of fun i j => v j * A i j) = det (A * diagonal v) :=
-      congr_arg det <| by
+      congr(det $(by
         ext
-        simp [mul_comm]
+        simp [mul_comm]))
     _ = (∏ i, v i) * det A := by rw [det_mul, det_diagonal, mul_comm]
 
 /-- Multiplying each column by a fixed `v j` multiplies the determinant by
@@ -345,7 +348,7 @@ end HomMap
 
 @[simp]
 theorem det_conjTranspose [StarRing R] (M : Matrix m m R) : det Mᴴ = star (det M) :=
-  ((starRingEnd R).map_det _).symm.trans <| congr_arg star M.det_transpose
+  ((starRingEnd R).map_det _).symm.trans congr(star $M.det_transpose)
 
 section DetZero
 
@@ -427,7 +430,7 @@ theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j 
 multiplied by the coefficient of that row. -/
 theorem det_updateRow_sum (A : Matrix n n R) (j : n) (c : n → R) :
     (A.updateRow j (∑ k, (c k) • A k)).det = (c j) • A.det := by
-  convert! det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.notMem_erase j) c (c j)
+  convert det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.notMem_erase j) c (c j)
   rw [← Finset.univ.add_sum_erase _ (Finset.mem_univ j)]
 
 /-- If we replace a column of a matrix by a linear combination of its columns, then the determinant
@@ -675,7 +678,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     (Matrix.fromBlocks A B 0 D).det = A.det * D.det := by
   classical
     simp_rw [det_apply']
-    convert!
+    convert
       Eq.symm <|
         sum_subset (M := R) (subset_univ ((sumCongrHom m n).range : Set (Perm (m ⊕ n))).toFinset) ?_
     · simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]

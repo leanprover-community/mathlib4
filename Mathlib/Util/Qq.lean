@@ -5,9 +5,10 @@ Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
 module
 
-public import Mathlib.Init
 public import Qq
-public import Qq.Typ
+
+import Mathlib.Init
+import Qq.Typ
 
 /-!
 # Extra `Qq` helpers
@@ -86,6 +87,11 @@ def mkNatLitQ (n : Nat) : Q(Nat) := mkNatLit n
 
 This is a Qq version of `Lean.mkIntLit`. -/
 def mkIntLitQ (n : Int) : Q(Int) := mkIntLit n
+
+/-- The list literal `[a₀, …]` of the entries `as`. -/
+def mkListLitQ {u : Level} {α : Q(Type u)} : List Q($α) → Q(List $α)
+  | [] => q([])
+  | a :: as => q($a :: $(mkListLitQ as))
 
 /-- Version of `instantiateMVarsQ` that returns the Qq-fact that the new expression is equal to the
 previous one. -/

@@ -5,15 +5,15 @@ Authors: Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.Data.Sym.Sym2
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.RingTheory.LocalRing.Basic
-public import Mathlib.Tactic.NormNum.GCD
+
+import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Sym.Sym2
+import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Schauder Bases and Generalized Bases
@@ -151,7 +151,7 @@ theorem linearIndependent : LinearIndependent 𝕜 b := by
   classical
   refine linearIndependent_iff.mpr (fun l hl ↦ l.ext ?_)
   simpa [l.linearCombination_apply, Finsupp.sum, b.ortho, Pi.single_apply] using
-    fun i ↦ congr_arg (b.coord i) hl
+    fun i ↦ congr(b.coord i $hl)
 
 /-- Projection onto a finite set of basis vectors. -/
 def proj (A : Finset β) : X →L[𝕜] X := ∑ i ∈ A, (b.coord i).smulRight (b i)
