@@ -19,7 +19,6 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 -/
 
 public section
-noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
 
