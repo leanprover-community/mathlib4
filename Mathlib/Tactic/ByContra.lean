@@ -63,8 +63,7 @@ macro_rules
     | some ty => `(tactic|
       -- We do not warn if the `push Not` step does nothing: if there is an expected type
       -- specified, the `push Not` step can e.g. be used to convert `¬(a < b)` to `b ≤ a`,
-      -- which is used in two places. (Without the `push Not`, this would fail if the particular
-      -- `LE` instance is not exposed.)
+      -- which is used in two places in mathlib.
       replace h : $ty := by try_push_not_nowarn $cfg; exact h) -- Let `h` have type `ty`.
     | none => `(tactic| skip)
   -- We have to use `revert h; rintro $pat` instead of `obtain $pat := h`,
