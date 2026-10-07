@@ -8,9 +8,10 @@ module
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Tactic.Rewrite
-public import Mathlib.Init
 public import Lean.Elab.ConfigEval
 public meta import Lean.Elab.ConfigEval.Basic
+
+import Mathlib.Init
 meta import Lean.Elab.ConfigEval.DeriveEvalExpr
 meta import Lean.Elab.ConfigEval.DeriveEvalTerm
 meta import Lean.Elab.ConfigEval.MetaInstances
@@ -525,7 +526,7 @@ def cleanupCasts (e : Expr) : MetaM Expr :=
       | .ok (.visit e') => pure m!"{e} => visit {e'}"
       | .ok (.continue e'?) => pure m!"{e} => continue {e'?.getD e}"
       | .ok (.done e') => pure m!"{e} => done {e'}"
-      | .error _ => pure m!"{e} => ??") <| do
+      | .error _ => pure m!"{e} => ??") do
     let .mdata mdata e := e | return .continue
     if mdata != castMData then return .continue
     trace[Tactic.depRewrite.cleanupCasts] "found potential cast{indentExpr e}"

@@ -5,10 +5,10 @@ Authors: Anne Baanen, Yongle Hu
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.RingTheory.Ideal.Pointwise
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
+
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals over/under ideals
@@ -216,7 +216,7 @@ theorem map_under_le_under_map {C D : Type*} [CommSemiring C] [Semiring D] [Alge
   apply le_comap_of_map_le
   rw [map_map, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
     IsScalarTower.algebraMap_eq A B D, ← comap_comap]
-  exact comap_mono <| le_comap_map
+  exact comap_mono le_comap_map
 
 /--
 Consider the following commutative diagram of ring maps

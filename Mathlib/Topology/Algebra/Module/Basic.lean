@@ -6,7 +6,6 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 -/
 module
 
-public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
@@ -52,6 +51,16 @@ theorem ContinuousNeg.of_continuousConstSMul [ContinuousConstSMul R M] : Continu
   continuous_neg := by simpa using continuous_const_smul (T := M) (-1 : R)
 
 end
+
+section Submodule
+
+variable {S R M : Type*} [SetLike S M] [TopologicalSpace M] [SMul R M] [SMulMemClass S R M]
+    [ContinuousConstSMul R M]
+
+instance (s : S) : ContinuousConstSMul R s :=
+  IsInducing.subtypeVal.continuousConstSMul id fun {_} {_} => rfl
+
+end Submodule
 
 section
 
@@ -234,7 +243,7 @@ theorem closure_coe_iSup_map_single (s : ∀ i, Submodule R (M i)) :
       Set.univ.pi fun i ↦ closure (s i) := by
   rw [← closure_pi_set]
   refine (closure_mono ?_).antisymm <| closure_minimal ?_ isClosed_closure
-  · exact SetLike.coe_mono <| iSup_map_single_le
+  · exact SetLike.coe_mono iSup_map_single_le
   · simp only [Set.subset_def, mem_closure_iff]
     intro x hx U hU hxU
     rcases isOpen_pi_iff.mp hU x hxU with ⟨t, V, hV, hVU⟩

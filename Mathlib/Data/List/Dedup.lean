@@ -5,9 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.Lattice
 public import Batteries.Data.List.Pairwise
+
+import Mathlib.Data.List.Nodup
 
 /-!
 # Erasure of duplicates in a list

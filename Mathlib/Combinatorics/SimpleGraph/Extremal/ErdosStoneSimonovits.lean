@@ -5,10 +5,11 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Combinatorics.Pigeonhole
-public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Analysis.Real.Sqrt
+
+import Mathlib.Combinatorics.Pigeonhole
+import Mathlib.Combinatorics.SimpleGraph.Bipartite
 
 /-!
 # The Erdős-Stone-Simonovits theorem
@@ -308,7 +309,7 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
         rw [← hyp₂] at hv₂ hne
         have hy₂' := mem_powersetCard.mp (hy p₂ hp₂)
         refine K.isCompleteBetween hp₁ hp₂ ?_ (hy₁'.left hv₁) (hy₂'.left hv₂)
-        by_contra! heq
+        by_contra heq
         simp [← heq] at hne
     -- identify the `t` vertices not in `K` and the `CompleteEquipartiteSubgraph r t` in `K`
     -- as a `CompleteEquipartiteSubgraph (r + 1) t` in `G`

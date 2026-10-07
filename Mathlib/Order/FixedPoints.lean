@@ -135,8 +135,8 @@ variable [CompleteLattice α] [CompleteLattice β] (f : β →o α) (g : α →o
 
 -- Rolling rule
 theorem map_lfp_comp : f (g.comp f).lfp = (f.comp g).lfp :=
-  le_antisymm ((f.comp g).map_lfp ▸ f.mono (lfp_le_fixed _ <| congr_arg g (f.comp g).map_lfp)) <|
-    lfp_le _ (congr_arg f (g.comp f).map_lfp).le
+  le_antisymm ((f.comp g).map_lfp ▸ f.mono (lfp_le_fixed _ <| congr(g $((f.comp g).map_lfp)))) <|
+    lfp_le _ congr(f $((g.comp f).map_lfp)).le
 
 theorem map_gfp_comp : f (g.comp f).gfp = (f.comp g).gfp :=
   f.dual.map_lfp_comp g.dual
@@ -148,7 +148,7 @@ theorem lfp_lfp (h : α →o α →o α) : (lfp.comp h).lfp = h.onDiag.lfp := by
   · exact lfp_le _ h.onDiag.map_lfp.le
   have ha : (lfp ∘ h) a = a := (lfp.comp h).map_lfp
   calc
-    h a a = h a (h a).lfp := congr_arg (h a) ha.symm
+    h a a = h a (h a).lfp := congr(h a $ha.symm)
     _ = (h a).lfp := (h a).map_lfp
     _ = a := ha
 
@@ -207,7 +207,7 @@ theorem le_prevFixed {x : α} (hx : f x ≤ x) {y : fixedPoints f} (h : ↑y ≤
 
 theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x ⊔ y) :=
   calc
-    (x ⊔ y : α) = f x ⊔ f y := congr_arg₂ (· ⊔ ·) x.2.symm y.2.symm
+    (x ⊔ y : α) = f x ⊔ f y := congr($(x.2.symm) ⊔ $(y.2.symm))
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 
 -- Porting note: `x ⊓ y` without the `.val`s fails to synthesize `Inf` instance

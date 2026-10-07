@@ -177,7 +177,7 @@ theorem map_Hσ {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Addit
     (X : SimplicialObject C) (q n : ℕ) :
     (Hσ q : K[((whiskering C D).obj G).obj X] ⟶ _).f n = G.map ((Hσ q : K[X] ⟶ _).f n) := by
   unfold Hσ
-  have eq := HomologicalComplex.congr_hom (map_nullHomotopicMap' G (@hσ' _ _ _ X q)) n
+  have eq := congr($(map_nullHomotopicMap' G (@hσ' _ _ _ X q)).f n)
   simp only [Functor.mapHomologicalComplex_map_f, ← map_hσ'] at eq
   rw [eq]
   let h := (Functor.congr_obj (map_alternatingFaceMapComplex G) X).symm

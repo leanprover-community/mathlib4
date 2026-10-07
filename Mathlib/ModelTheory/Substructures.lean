@@ -5,10 +5,11 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 module
 
-public import Mathlib.Data.Fintype.Order
 public import Mathlib.Order.Closure
 public import Mathlib.ModelTheory.Semantics
 public import Mathlib.ModelTheory.Encoding
+
+import Mathlib.Data.Fintype.Order
 
 /-!
 # First-Order Substructures
@@ -107,7 +108,7 @@ attribute [coe] Substructure.carrier
 instance instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 
-instance : PartialOrder (L.Substructure M) := .ofSetLike (L.Substructure M) M
+instance : PartialOrder (L.Substructure M) := .ofSetLike (L.Substructure M)
 
 /-- See Note [custom simps projection] -/
 def Simps.coe (S : L.Substructure M) : Set M :=
