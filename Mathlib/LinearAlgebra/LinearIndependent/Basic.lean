@@ -201,13 +201,13 @@ theorem LinearIndependent.smul_of_isRightRegular {v : ι → M} (hv : LinearInde
 
 theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v) (w : ι → Rˣ) :
     LinearIndependent R (w • v) :=
-  smul_of_isRightRegular hv (fun i _ _ h ↦ (w i).mul_left_inj.mp h)
+  smul_of_isRightRegular hv fun i _ _ h ↦ (w i).mul_left_inj.mp h
 
 @[simp]
 theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.units_smul w⟩
-  convert h.units_smul (fun i ↦ (w i)⁻¹)
+  convert h.units_smul fun i ↦ (w i)⁻¹
   simp [funext_iff]
 
 protected theorem LinearIndependent.codRestrict (hs : LinearIndependent R v) (N : Submodule R M)
