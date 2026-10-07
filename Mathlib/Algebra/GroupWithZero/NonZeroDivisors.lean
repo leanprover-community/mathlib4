@@ -435,18 +435,14 @@ variable {G M : Type*} [Group G] [MonoidWithZero M] [MulDistribMulAction G M]
 theorem smul_mem_nonZeroDivisorsLeft (g : G) {m : M} (hm : m ∈ nonZeroDivisorsLeft M) :
     g • m ∈ nonZeroDivisorsLeft M := by
   intro y hy
-  calc y = g • (g⁻¹ • y) := (smul_inv_smul g y).symm
-    _ = g • (0 : M) := congr_arg (g • ·) <| hm _ <| by
-      simpa [smul_zero, smul_mul', inv_smul_smul] using congr_arg (g⁻¹ • ·) hy
-    _ = 0 := smul_zero g
+  rw [← smul_eq_zero_iff_eq' g⁻¹]
+  exact hm _ <| by simpa [smul_mul', inv_smul_smul] using congr_arg (g⁻¹ • ·) hy
 
 theorem smul_mem_nonZeroDivisorsRight (g : G) {m : M} (hm : m ∈ nonZeroDivisorsRight M) :
     g • m ∈ nonZeroDivisorsRight M := by
   intro y hy
-  calc y = g • (g⁻¹ • y) := (smul_inv_smul g y).symm
-    _ = g • (0 : M) := congr_arg (g • ·) <| hm _ <| by
-      simpa [smul_zero, smul_mul', inv_smul_smul] using congr_arg (g⁻¹ • ·) hy
-    _ = 0 := smul_zero g
+  rw [← smul_eq_zero_iff_eq' g⁻¹]
+  exact hm _ <| by simpa [smul_mul', inv_smul_smul] using congr_arg (g⁻¹ • ·) hy
 
 theorem smul_mem_nonZeroDivisors (g : G) {m : M} (hm : m ∈ nonZeroDivisors M) :
     g • m ∈ nonZeroDivisors M :=
@@ -460,11 +456,9 @@ instance : SMul G M⁰ where
 theorem nonZeroDivisors.val_smul (g : G) (m : M⁰) :
     (g • m : M⁰).val = g • m.val := rfl
 
-instance : MulAction G M⁰ where
+instance : MulDistribMulAction G M⁰ where
   one_smul m := Subtype.val_injective (by simp)
   mul_smul g h m := Subtype.val_injective (by simp [mul_smul])
-
-instance : MulDistribMulAction G M⁰ where
   smul_one g := Subtype.val_injective (by simp [MulDistribMulAction.smul_one])
   smul_mul g m n := Subtype.val_injective (by simp [smul_mul'])
 

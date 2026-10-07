@@ -429,6 +429,12 @@ variable [Group α] [MonoidWithZero β] [MulDistribMulAction α β]
 instance : SMulZeroClass α β where
   smul_zero g := by rw [← zero_mul (g⁻¹ • 0), smul_mul', smul_inv_smul, mul_zero, zero_mul]
 
+-- Assuming `MulAction` and `SMulZeroClass` together would create an `SMul` diamond, so merging
+-- this with `smul_eq_zero_iff_eq` needs a class combining them, which slows down instance search.
+/-- A version of `smul_eq_zero_iff_eq` for a multiplicative action on a monoid with zero. -/
+lemma smul_eq_zero_iff_eq' (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
+  ⟨fun h ↦ by rw [← inv_smul_smul a x, h, smul_zero], fun h ↦ h.symm ▸ smul_zero _⟩
+
 end MonoidWithZero
 
 section MulDistribMulAction
