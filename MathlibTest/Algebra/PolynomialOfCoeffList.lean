@@ -34,3 +34,5 @@ example (p q : List ℤ) :
     ofCoeffList (List.zipWithAll (fun a b => a.getD 0 + b.getD 0) p q) =
       ofCoeffList p + ofCoeffList q :=
   ofCoeffList_zipWithAll_add p q
+
+example (P : ℤ[X]) : ofCoeffList P.coeffList = P.reverse := by simp

@@ -6,6 +6,7 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.Algebra.Polynomial.EraseLead
+public import Mathlib.Algebra.Polynomial.Reverse
 
 /-!
 # A list of coefficients of a polynomial
@@ -35,7 +36,8 @@ coefficients of `P.eraseLead`.
 ## Polynomials from coefficient lists
 
 * `ofCoeffList l`: constructs a polynomial from coefficients in the list `l`, starting with the
-  constant coefficient.
+  constant coefficient. It inverts `coeffList` up to reversing the list, see
+  `ofCoeffList_reverse_coeffList` and `ofCoeffList_coeffList`.
 * `ofCoeffList_map_mul`, `ofCoeffList_zipWithAll_add`, `ofCoeffList_zero_cons`, and
   `ofCoeffList_zipWithAll_sub` relate the arithmetic of polynomials to operations on their
   respective lists.
@@ -202,6 +204,19 @@ theorem ofCoeffList_reverse_coeffList (P : R[X]) : ofCoeffList P.coeffList.rever
       rw [← Order.succ_le_iff, ← WithBot.succ_eq_succ]
       exact (WithBot.coe_le rfl).mpr h
     grind [coeff_eq_zero_of_degree_lt]
+
+@[simp]
+theorem ofCoeffList_coeffList (P : R[X]) : ofCoeffList P.coeffList = P.reverse := by
+  by_cases hP : P = 0
+  · subst P
+    simp
+  · ext i
+    simp only [coeffList, withBotSucc_degree_eq_natDegree_add_one hP, List.map_reverse,
+      coeff_ofCoeffList, List.getD_eq_getElem?_getD, coeff_reverse]
+    by_cases hi : i <= P.natDegree
+    · simp [revAt_le hi, Nat.lt_succ_of_le hi]
+    · rw [not_le] at hi
+      simp [hi, revAt_eq_self_of_lt hi, coeff_eq_zero_of_natDegree_lt hi]
 
 theorem map_ofCoeffList {S : Type*} [Semiring S] (f : R →+* S) (l : List R) :
     (ofCoeffList l).map f = ofCoeffList (l.map f) := by
