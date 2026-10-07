@@ -36,9 +36,9 @@ coefficients of `P.eraseLead`.
 
 * `ofCoeffList l`: constructs a polynomial from coefficients in the list `l`, starting with the
   constant coefficient.
-* `coeffScale`, `coeffAdd`, `coeffShift`, `coeffSub`: arithmetic on such lists. The lemmas
-  `ofCoeffList_coeffScale`, `ofCoeffList_coeffAdd`, `ofCoeffList_coeffShift` and
-  `ofCoeffList_coeffSub` relate them to the arithmetic of polynomials.
+* `coeffAdd`, `coeffSub`: addition and subtraction of such lists. The lemmas
+  `ofCoeffList_map_mul`, `ofCoeffList_coeffAdd`, `ofCoeffList_zero_cons` and `ofCoeffList_coeffSub`
+  relate the arithmetic of polynomials to operations on the lists.
 -/
 
 @[expose] public section
@@ -214,27 +214,20 @@ theorem map_ofCoeffList {S : Type*} [Semiring S] (f : R →+* S) (l : List R) :
       toFinsupp_inj.mp
         (congrArg toFinsupp (congrArg (HAdd.hAdd (C (f c))) (congrArg (HMul.hMul X) ih)))
 
-/-- `a • p`, coefficientwise. -/
-def coeffScale (a : R) : List R → List R
-  | [] => []
-  | c :: p => a * c :: coeffScale a p
-
 /-- `p + q` on coefficient lists of possibly different lengths. -/
 def coeffAdd : List R → List R → List R
   | [], q => q
   | p, [] => p
   | x :: p, y :: q => (x + y) :: coeffAdd p q
 
-/-- `X * p` on coefficients. -/
-def coeffShift (p : List R) : List R := 0 :: p
-
-theorem ofCoeffList_coeffScale (a : R) (p : List R) :
-    ofCoeffList (coeffScale a p) = C a * ofCoeffList p := by
-  induction p with
-  | nil => simp [coeffScale]
-  | cons c p ih =>
-    rw [coeffScale, ofCoeffList_cons, ofCoeffList_cons, ih, C_mul, ← mul_assoc, X_mul_C, mul_assoc,
-      mul_add]
+@[simp]
+theorem ofCoeffList_map_mul (a : R) (l : List R) :
+    ofCoeffList (l.map (a * ·)) = C a * ofCoeffList l := by
+  induction l with
+  | nil => simp
+  | cons c l ih =>
+    rw [List.map_cons, ofCoeffList_cons, ofCoeffList_cons, ih, C_mul, ← mul_assoc, X_mul_C,
+      mul_assoc, mul_add]
 
 theorem ofCoeffList_coeffAdd (p q : List R) :
     ofCoeffList (coeffAdd p q) = ofCoeffList p + ofCoeffList q := by
@@ -247,8 +240,9 @@ theorem ofCoeffList_coeffAdd (p q : List R) :
       rw [coeffAdd, ofCoeffList_cons, ofCoeffList_cons, ofCoeffList_cons, ih, C_add, mul_add,
         add_add_add_comm]
 
-theorem ofCoeffList_coeffShift (p : List R) : ofCoeffList (coeffShift p) = X * ofCoeffList p := by
-  rw [coeffShift, ofCoeffList_cons, map_zero, zero_add]
+@[simp]
+theorem ofCoeffList_zero_cons (l : List R) : ofCoeffList (0 :: l) = X * ofCoeffList l := by
+  rw [ofCoeffList_cons, map_zero, zero_add]
 
 end Semiring
 
@@ -263,11 +257,11 @@ theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
   · simp [coeffList]
 
 /-- `p - q` on coefficients. -/
-def coeffSub (p q : List R) : List R := coeffAdd p (coeffScale (-1) q)
+def coeffSub (p q : List R) : List R := coeffAdd p (q.map (-1 * ·))
 
 theorem ofCoeffList_coeffSub (p q : List R) :
     ofCoeffList (coeffSub p q) = ofCoeffList p - ofCoeffList q := by
-  rw [coeffSub, ofCoeffList_coeffAdd, ofCoeffList_coeffScale, map_neg, map_one, neg_one_mul,
+  rw [coeffSub, ofCoeffList_coeffAdd, ofCoeffList_map_mul, map_neg, map_one, neg_one_mul,
     sub_eq_add_neg]
 
 end Ring
