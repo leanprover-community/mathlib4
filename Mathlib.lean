@@ -7270,6 +7270,7 @@ public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 public import Mathlib.RingTheory.RootsOfUnity.Lemmas
 public import Mathlib.RingTheory.RootsOfUnity.Minpoly
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.RingTheory.RootsOfUnity.Quotient
 public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 public import Mathlib.RingTheory.SimpleModule.IsAlgClosed

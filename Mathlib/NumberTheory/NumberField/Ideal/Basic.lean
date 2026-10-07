@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
+public import Mathlib.RingTheory.RootsOfUnity.Quotient
 
 /-!
 # Basic results on integral ideals of a number field
@@ -13,9 +14,6 @@ public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 We study results about integral ideals of a number field `K`.
 
 ## Main definitions and results
-
-* `Ideal.rootsOfUnityMapQuot` : For `I` an integral ideal of `K`, the group morphism from the
-  group of roots of unity of `K` of order `n` to `(𝓞 K ⧸ I)ˣ`.
 
 * `Ideal.rootsOfUnityMapQuot_injective`: If the ideal `I` is nontrivial and its norm is coprime
   with `n`, then the map `Ideal.rootsOfUnityMapQuot` is injective.
@@ -51,17 +49,6 @@ theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absN
     Int.dvd_trans (Int.natCast_dvd_natCast.mpr h₂) (absNorm_dvd_norm_of_mem h)
 
 variable (I)
-
-/--
-For `I` an integral ideal of `K`, the group morphism from the group of roots of unity of `K`
-of order `n` to `(𝓞 K ⧸ I)ˣ`.
--/
-def Ideal.rootsOfUnityMapQuot (n : ℕ) : (rootsOfUnity n (𝓞 K)) →* ((𝓞 K) ⧸ I)ˣ :=
-  (Units.map (Ideal.Quotient.mk I).toMonoidHom).domRestrict _
-
-@[simp]
-theorem Ideal.rootsOfUnityMapQuot_apply (n : ℕ) {x : (𝓞 K)ˣ} (hx : x ∈ rootsOfUnity n (𝓞 K)) :
-    rootsOfUnityMapQuot I n ⟨x, hx⟩ = Ideal.Quotient.mk I x := rfl
 
 /--
 For `I` an integral ideal of `K`, the group morphism from the torsion of `K` to `(𝓞 K ⧸ I)ˣ`.
