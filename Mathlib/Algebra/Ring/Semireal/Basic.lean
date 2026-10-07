@@ -6,8 +6,7 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.Algebra.Ring.Semireal.Defs
-
-import Mathlib.Algebra.Ring.IsFormallyReal
+public import Mathlib.Algebra.Ring.IsFormallyReal
 
 /-!
 # Properties of semireal rings
