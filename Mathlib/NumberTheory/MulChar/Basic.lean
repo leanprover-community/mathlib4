@@ -5,11 +5,12 @@ Authors: Michael Stoll
 -/
 module
 
-import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.GroupTheory.OrderOfElement
+
+import Mathlib.Algebra.CharP.Basic
 
 /-!
 # Multiplicative characters of finite rings and fields

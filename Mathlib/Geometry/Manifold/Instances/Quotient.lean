@@ -26,6 +26,7 @@ This file contains results about quotients of manifolds by group actions.
 * if `G` acts smoothly, the projection map is smooth
 
 ## Tags
+
 smooth manifold, smooth action, quotient manifold
 -/
 

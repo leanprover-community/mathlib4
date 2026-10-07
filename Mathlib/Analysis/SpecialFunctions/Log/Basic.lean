@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Data.Nat.Factorization.Defs
+
 import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
@@ -305,7 +306,7 @@ theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
 
 theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [le_sub_iff_add_le]
-  convert! add_one_le_exp (log x)
+  convert add_one_le_exp (log x)
   rw [exp_log hx]
 
 lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
@@ -419,7 +420,7 @@ lemma log_finprod {α : Type*} {f : α → ℝ} (h : ∀ a, 0 < f a) :
     log (∏ᶠ a, f a) = ∑ᶠ a, log (f a) := by
   classical
   have H : (fun i ↦ log (f i)).support = f.mulSupport := by
-    grind [mem_mulSupport, mem_support, log_eq_zero]
+    grind [log_eq_zero]
   have H' : HasFiniteMulSupport f ↔ HasFiniteSupport fun a ↦ log (f a) := by
     simp [HasFiniteMulSupport, HasFiniteSupport, H]
   simp only [finprod_def, finsum_def]
@@ -468,7 +469,7 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   open_source := isOpen_univ
   open_target := isOpen_Ioi
   continuousOn_toFun := continuousOn_exp
-  continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
+  continuousOn_invFun x hx := (continuousAt_log hx.ne').continuousWithinAt
 
 @[simp]
 theorem image_log_Ioi {a : ℝ} (ha : 0 < a) : log '' Ioi a = Ioi (log a) :=

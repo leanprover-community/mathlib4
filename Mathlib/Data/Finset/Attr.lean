@@ -5,8 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Init
 public import Aesop.Frontend
+
+import Mathlib.Init
 import Aesop.Frontend.Basic
 
 /-!

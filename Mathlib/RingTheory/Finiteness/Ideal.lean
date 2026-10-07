@@ -5,9 +5,10 @@ Authors: Johan Commelin
 -/
 module
 
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.RingTheory.Finiteness.Finsupp
 public import Mathlib.RingTheory.Ideal.Maps
+
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 /-!
 # Finitely generated ideals
