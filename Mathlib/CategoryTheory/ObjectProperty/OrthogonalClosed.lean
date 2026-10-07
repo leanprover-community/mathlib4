@@ -139,7 +139,7 @@ lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
   have hA' : P (A' : C) :=
     P.prop_of_iso ((Subobject.isPullback (cokernel.π A.arrow) B).isoIsPullback _ _
       (IsPullback.of_hasPullback _ _)).symm
-      (P.prop_X₂_of_shortExact (hS.pull B.arrow) (P.prop_subObjectSSup _ fun _ hA ↦ hA) hB)
+      (P.prop_X₂_of_shortExact (hS.pull B.arrow) (P.prop_subobjectSSup _ fun _ hA ↦ hA) hB)
   have hle : A' ≤ A := Subobject.le_sSup _ _ hA'
   -- Hence the projection of `A'` onto `B` vanishes, so `B`, and with it the image of `f`,
   -- is zero.
@@ -166,7 +166,7 @@ lemma leftOrthogonal_rightOrthogonal_le (P : ObjectProperty C)
     let A : Subobject X := Subobject.sSup {A : Subobject X | P (A : C)}
     haveI : Epi A.arrow :=
       Preadditive.epi_of_cokernel_zero (hX (cokernel.π _) (rightOrthogonal_cokernel_sSup P X))
-    P.prop_of_epi A.arrow (P.prop_subObjectSSup _ fun _ hA ↦ hA)
+    P.prop_of_epi A.arrow (P.prop_subobjectSSup _ fun _ hA ↦ hA)
 
 /-- In a well-powered abelian category with coproducts, if `P` is closed under quotients,
 extensions, and coproducts, then `P.rightOrthogonal.leftOrthogonal = P`. This is the hard
