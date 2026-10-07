@@ -8,6 +8,7 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.ProductFormula
+
 import Mathlib.Algebra.FiniteSupport.Basic
 
 /-!

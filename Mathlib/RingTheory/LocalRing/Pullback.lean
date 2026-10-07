@@ -6,13 +6,13 @@ Authors: Bingyu Xia
 
 module
 
-
-import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.LocalRing.Defs
+
+import Mathlib.Algebra.Ring.Subring.Units
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Local Ring Properties of Equalizers and Pullbacks
