@@ -295,7 +295,7 @@ private theorem hasSmallInductiveDimensionLE_of_smallInductiveDimension_le {n : 
 theorem smallInductiveDimension_le_iff {n : ℕ} :
     smallInductiveDimension X ≤ n ↔ HasSmallInductiveDimensionLE X n where
   mp := hasSmallInductiveDimensionLE_of_smallInductiveDimension_le
-  mpr h := sInf_le fun m hm ↦ .mono (by simpa using hm) h
+  mpr h := sInf_le fun m hm ↦ .mono (by simpa [Nat.add_one_le_iff] using hm) h
 
 theorem smallInductiveDimension_lt_iff {n : ℕ} :
     smallInductiveDimension X < n ↔ HasSmallInductiveDimensionLT X n where
