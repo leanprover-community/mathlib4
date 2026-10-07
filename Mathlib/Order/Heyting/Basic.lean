@@ -177,7 +177,8 @@ instance (priority := 100) HeytingAlgebra.toBoundedOrder [HeytingAlgebra α] : B
 
 -- See note [reducible non-instances]
 /-- Construct a Heyting algebra from the lattice structure and Heyting implication alone. -/
-@[to_dual]
+@[to_dual
+/-- Construct a co-Heyting algebra from the lattice structure and the difference alone. -/]
 abbrev HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α → α → α)
     (le_himp_iff : ∀ a b c, a ≤ himp b c ↔ a ⊓ b ≤ c) : HeytingAlgebra α :=
   { ‹DistribLattice α›, ‹BoundedOrder α› with
@@ -188,7 +189,8 @@ abbrev HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α �
 
 -- See note [reducible non-instances]
 /-- Construct a Heyting algebra from the lattice structure and complement operator alone. -/
-@[to_dual]
+@[to_dual
+/-- Construct a co-Heyting algebra from the lattice structure and co-Heyting negation alone. -/]
 abbrev HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α → α)
     (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α where
   himp := (compl · ⊔ ·)
@@ -788,7 +790,8 @@ section lift
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedHeytingAlgebra` along an injection. -/
-@[to_dual (reorder := 3 4, le (x y), lt (x y), map_sup map_inf, map_himp (a b))]
+@[to_dual (reorder := 3 4, le (x y), lt (x y), map_sup map_inf, map_himp (a b))
+/-- Pullback a `GeneralizedCoheytingAlgebra` along an injection. -/]
 protected abbrev Function.Injective.generalizedHeytingAlgebra [Max α] [Min α]
     [LE α] [LT α] [Top α] [HImp α] [GeneralizedHeytingAlgebra β] (f : α → β) (hf : Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
