@@ -120,22 +120,6 @@ class CoheytingAlgebra (α : Type*) extends GeneralizedCoheytingAlgebra α, Orde
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 
-/-- A bi-Heyting algebra is a Heyting algebra that is also a co-Heyting algebra. -/
-class BiheytingAlgebra (α : Type*) extends HeytingAlgebra α, CoheytingAlgebra α where
-
-attribute [to_dual existing] BiheytingAlgebra.toHeytingAlgebra
-to_dual_for BiheytingAlgebra.toHNot := self.toCompl
-to_dual_for BiheytingAlgebra.toSDiff := self.toHImp
-to_dual_for BiheytingAlgebra.top_sdiff := self.himp_bot a
-to_dual_for BiheytingAlgebra.mk :=
-  { le_himp_iff a b c := by
-      rw [sdiff_le_iff, inf_comm]
-    himp_bot := top_sdiff }
-
--- See note [lower instance priority]
-attribute [instance 100] GeneralizedHeytingAlgebra.toOrderTop
-attribute [instance 100] GeneralizedCoheytingAlgebra.toOrderBot
-
 section
 
 @[simp low] -- low priority so that it doesn't overwrite user-provided simp lemmas
@@ -145,20 +129,17 @@ theorem sdiff_le_iff [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c
 theorem sdiff_le_iff' [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ c ⊔ b := by
   rw [sdiff_le_iff, sup_comm]
 
-variable [GeneralizedHeytingAlgebra α] {a b c : α}
-
 /-- `p → q → r ↔ p ∧ q → r` -/
 @[to_dual existing sdiff_le_iff', simp]
-theorem le_himp_iff : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
+theorem le_himp_iff [GeneralizedHeytingAlgebra α] {a b c : α} : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
   GeneralizedHeytingAlgebra.le_himp_iff _ _ _
 
 /-- `p → q → r ↔ q ∧ p → r` -/
 @[to_dual existing sdiff_le_iff]
-theorem le_himp_iff' : a ≤ b ⇨ c ↔ b ⊓ a ≤ c := by rw [le_himp_iff, inf_comm]
+theorem le_himp_iff' [GeneralizedHeytingAlgebra α] {a b c : α} : a ≤ b ⇨ c ↔ b ⊓ a ≤ c := by
+  rw [le_himp_iff, inf_comm]
 
-/-- `p → q → r ↔ q → p → r` -/
-@[to_dual sdiff_le_comm]
-theorem le_himp_comm : a ≤ b ⇨ c ↔ b ≤ a ⇨ c := by rw [le_himp_iff, le_himp_iff']
+end
 
 to_dual_for GeneralizedHeytingAlgebra.le_himp_iff := sdiff_le_iff'
 to_dual_for GeneralizedCoheytingAlgebra.sdiff_le_iff := le_himp_iff'
@@ -169,7 +150,22 @@ to_dual_for GeneralizedCoheytingAlgebra.mk :=
   { le_himp_iff a b c := by
       rw [sdiff_le_iff, inf_comm] }
 
-end
+/-- A bi-Heyting algebra is a Heyting algebra that is also a co-Heyting algebra. -/
+class BiheytingAlgebra (α : Type*) extends HeytingAlgebra α, CoheytingAlgebra α where
+
+attribute [to_dual existing] BiheytingAlgebra.toHeytingAlgebra
+to_dual_for BiheytingAlgebra.toHNot := self.toCompl
+to_dual_for BiheytingAlgebra.toSDiff := self.toHImp
+to_dual_for BiheytingAlgebra.top_sdiff := self.himp_bot a
+to_dual_for BiheytingAlgebra.sdiff_le_iff := le_himp_iff'
+to_dual_for BiheytingAlgebra.mk :=
+  { le_himp_iff a b c := by
+      rw [sdiff_le_iff, inf_comm]
+    himp_bot := top_sdiff }
+
+-- See note [lower instance priority]
+attribute [instance 100] GeneralizedHeytingAlgebra.toOrderTop
+attribute [instance 100] GeneralizedCoheytingAlgebra.toOrderBot
 
 -- See note [lower instance priority]
 @[to_dual]
@@ -207,6 +203,10 @@ See also `Prop.heytingAlgebra`. -/
 section GeneralizedHeytingAlgebra
 
 variable [GeneralizedHeytingAlgebra α] {a b c d : α}
+
+/-- `p → q → r ↔ q → p → r` -/
+@[to_dual sdiff_le_comm]
+theorem le_himp_comm : a ≤ b ⇨ c ↔ b ≤ a ⇨ c := by rw [le_himp_iff, le_himp_iff']
 
 /-- `p → q → p` -/
 @[to_dual sdiff_le]
