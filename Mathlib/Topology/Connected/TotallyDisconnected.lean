@@ -6,7 +6,7 @@ Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Connected.Clopen
-public import Mathlib.Topology.SmallInductiveDimension
+public import Mathlib.Topology.InductiveDimension.Classes
 
 /-!
 # Totally disconnected and totally separated topological spaces
