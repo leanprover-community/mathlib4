@@ -405,8 +405,6 @@ def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ Free
   right_inv x := by rw [← map_comp_apply, Equiv.self_comp_symm, map_id, AddMonoidHom.id_apply]
   map_add' := map_add _
 
-variable (α)
-
 section deprecated
 
 /-!
@@ -417,7 +415,7 @@ It is deprecated in favor of using `MonoidAlgebra ℤ α`.
 
 section Mul
 
-variable [Mul α]
+variable (α) [Mul α]
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance mul : Mul (FreeAbelianGroup α) :=
