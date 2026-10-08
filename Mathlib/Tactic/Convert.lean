@@ -227,8 +227,8 @@ syntax (name := convert!) "convert!" Lean.Parser.Tactic.optConfig " ←"? ppSpac
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
-| `(tactic| convert! $cfg $[←%$l]? $t $[using $n]? $[with $[$w]*]?) =>
-    `(tactic| convert ! $cfg $[←%$l]? $t:term $[using $n]? $[with $[$w]*]?)
+| `(tactic| convert!%$tk $cfg $[←%$l]? $t $[using $n]? $[with $[$w]*]?) =>
+    `(tactic| convert%$tk ! $cfg $[←%$l]? $t:term $[using $n]? $[with $[$w]*]?)
 
 /--
 Elaborates `term` ensuring the expected type, allowing stuck metavariables.
@@ -247,14 +247,36 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       return t
 
 elab_rules : tactic
-| `(tactic| convert $[!%$expensive]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert%$tk $[!%$expensive]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
-    let config ← Convert.elabConfig expensive.isSome cfg
+    let config := { ← Convert.elabConfig expensive.isSome cfg with }
+    let redConfig := { ← Convert.elabConfig false cfg with }
     let patterns := (ps?.getD #[]).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
-    liftMetaTactic fun g ↦
-      return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
+    if Linter.getLinterValue linter.convertExclamation (← Linter.getLinterOptions)
+        && expensive.isSome then
+      liftMetaTactic fun g ↦ do
+        -- Suggest `convert` instead of `convert!` if that gives us the same goals.
+        let redGoals ← g.convert e sym.isSome (n.map (·.getNat)) redConfig patterns
+        let defaultGoals ← g.convert e sym.isSome (n.map (·.getNat)) config patterns
+        if redGoals.length == defaultGoals.length then
+          let sameGoals ← try
+            (redGoals.zip defaultGoals).allM fun (g₁, g₂) => do
+              -- Check that they agree on the set of free variables, otherwise we get errors.
+              -- We assume the context in the `convert` case is a subset of the `convert!` case
+              -- since `convert!` can more agressively unfold and introduce more variables.
+              if !(← g₁.getDecl).lctx.isSubPrefixOf (← g₂.getDecl).lctx then return false
+              g₂.withContext <| withReducible <| isDefEq (← g₁.getType) (← g₂.getType)
+            catch _ => pure false
+          if sameGoals then
+            /- Note that via macro expansion, `tk` now carries the position info for the token
+            `convert!`. -/
+            TryThis.addSuggestion tk "convert"
+        return defaultGoals ++ gs
+    else
+      liftMetaTactic fun g ↦
+        return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
 
 /--
 `convert_to t` on a goal `⊢ t'` changes the goal to `⊢ t` and adds new goals for proving the
@@ -292,8 +314,8 @@ syntax (name := convert_to!) "convert_to!" Lean.Parser.Tactic.optConfig " ←"? 
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
 macro_rules
-| `(tactic| convert_to! $cfg $[←%$l]? $t $[using $n]? $[with $w]? $[$loc]?) =>
-    `(tactic| convert_to ! $cfg $[←%$l]? $t:term $[using $n]? $[with $w]? $[$loc]?)
+| `(tactic| convert_to!%$tk $cfg $[←%$l]? $t $[using $n]? $[with $w]? $[$loc]?) =>
+    `(tactic| convert_to%$tk ! $cfg $[←%$l]? $t:term $[using $n]? $[with $w]? $[$loc]?)
 
 elab_rules : tactic
 | `(tactic| convert_to $[!%$expensive]? $cfg $[←%$sym]? $newType $[using $n]?
@@ -345,9 +367,9 @@ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 syntax (name := acChange!) "ac_change! " term (" using " num)? : tactic
 
 macro_rules
-| `(tactic| ac_change $t $[using $n]?) =>
-    `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
-| `(tactic| ac_change! $t $[using $n]?) =>
-    `(tactic| convert_to! $t:term $[using $n]? <;> try ac_rfl)
+| `(tactic| ac_change%$tk $t $[using $n]?) =>
+    `(tactic| convert_to%$tk $t:term $[using $n]? <;> try ac_rfl)
+| `(tactic| ac_change!%$tk $t $[using $n]?) =>
+    `(tactic| convert_to!%$tk $t:term $[using $n]? <;> try ac_rfl)
 
 end Mathlib.Tactic

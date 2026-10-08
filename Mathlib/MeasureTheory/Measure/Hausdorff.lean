@@ -625,6 +625,7 @@ theorem nullSingletonClass_hausdorff {d : ℝ} (hd : 0 < d) :
 @[deprecated (since := "2026-06-09")]
 alias noAtoms_hausdorff := nullSingletonClass_hausdorff
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 @[simp]
 theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
   apply le_antisymm

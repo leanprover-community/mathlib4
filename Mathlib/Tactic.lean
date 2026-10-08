@@ -92,6 +92,7 @@ public import Mathlib.Tactic.ContinuousFunctionalCalculus
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Convert.Init
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.DSimpPercent

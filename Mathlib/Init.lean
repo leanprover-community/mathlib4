@@ -5,6 +5,7 @@ public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tac
 public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.Convert.Init
 public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.DeclType
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
@@ -126,6 +127,7 @@ register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
   linter.style.docStringVerso
   linter.tacticAnalysis.verifyGrindOnly
+  linter.convertExclamation
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType AuxLemma
