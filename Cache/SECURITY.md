@@ -40,9 +40,6 @@ The nightly-testing repo is a fork in this model. Its builds, including those
 of experimental toolchain branches, upload under its repo and commit namespace
 in `forks` (see [Per-commit namespace for fork uploads](#per-commit-namespace-for-fork-uploads)).
 
-Branches that legitimately need to read their own prior low-trust uploads opt
-into a wider chain explicitly.
-
 ## Four enforcement layers
 
 The first two enforce the trust boundary; the last two provide correctness

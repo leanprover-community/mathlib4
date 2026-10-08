@@ -26,9 +26,6 @@ open System (FilePath)
 /-- The full name of the main Mathlib GitHub repository. -/
 def MATHLIBREPO := "leanprover-community/mathlib4"
 
-/-- The full name of the Mathlib nightly-testing GitHub repository. -/
-def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
-
 /-- Whether `repo` is the canonical Mathlib repo. Every other repo, nightly-testing
 included, caches into the per-commit `forks` namespace. -/
 def isCanonicalRepo (repo : String) : Bool :=

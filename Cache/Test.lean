@@ -70,6 +70,9 @@ namespace Cache.Test
 
 open Cache.Requests
 
+/-- The full name of the Mathlib nightly-testing GitHub repository. -/
+def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
+
 /-- Counter for failed assertions. -/
 initialize failures : IO.Ref Nat ← IO.mkRef 0
 
