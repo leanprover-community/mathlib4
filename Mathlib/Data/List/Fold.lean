@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Logic.OpClass
 
-import Batteries.Tactic.Alias
-
 /-!
 # Bird–Wadler duality of list folds
 
