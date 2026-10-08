@@ -7,8 +7,9 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Commensurable
-import Mathlib.GroupTheory.Complement
 public import Mathlib.Topology.Algebra.ConstMulAction
+
+import Mathlib.GroupTheory.Complement
 
 /-!
 # Properly discontinuous actions of subgroups

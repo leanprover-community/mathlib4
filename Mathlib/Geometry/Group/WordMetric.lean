@@ -83,7 +83,7 @@ lemma wordLength_wordProd_le : P.wordLength (P.wordProd l) ≤ l.length :=
   Nat.sInf_le ⟨l, rfl, rfl⟩
 
 /-- The characterisation of word length: the word length of a group element is less or equal to `n`
-if and only if there exists a word `l` of length `n` which evaluates to `g`. -/
+if and only if there exists a word `l` of length at most `n` which evaluates to `g`. -/
 theorem wordLength_le_iff {n : ℕ} : P.wordLength g ≤ n ↔ ∃ l, l.length ≤ n ∧ P.wordProd l = g := by
   constructor
   · intro h

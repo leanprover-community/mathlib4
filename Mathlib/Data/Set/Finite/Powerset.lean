@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 module
 
 public import Mathlib.Data.Finset.Powerset
+
 import Mathlib.Data.Set.Finite.Basic
 
 /-!

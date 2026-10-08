@@ -5,8 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.GroupTheory.Perm.Support
+
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Permutations from a list

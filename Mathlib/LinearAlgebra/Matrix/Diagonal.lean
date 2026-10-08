@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
@@ -22,8 +23,6 @@ matrix, diagonal, linear map
 
 public section
 
-
-noncomputable section
 
 open LinearMap Matrix Set Submodule Matrix
 

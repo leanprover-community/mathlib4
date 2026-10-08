@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Irreducible.Defs
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
+
 import Mathlib.Algebra.Order.Group.Defs
 
 /-!

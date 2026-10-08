@@ -5,8 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Set.Finite.Lattice
+
+import Mathlib.Data.Fintype.Vector
 
 /-!
 # Finiteness of sets of lists

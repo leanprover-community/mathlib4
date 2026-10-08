@@ -5,8 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-import Mathlib.Logic.Small.Set
 public import Mathlib.CategoryTheory.Filtered.Final
+
+import Mathlib.Logic.Small.Set
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
