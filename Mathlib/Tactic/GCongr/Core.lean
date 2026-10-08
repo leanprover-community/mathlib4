@@ -817,7 +817,7 @@ partial def _root_.Lean.MVarId.gcongr
   -- fail.
   if lemmas.isEmpty then
     throwTacticEx `gcongr g m!"there is no `@[gcongr]` lemma \
-      for relation '{relName}' and constant '{lhsHead}'."
+      for relation `{.ofConstName relName}` and constant `{.ofConstName lhsHead}`."
   else
     throwTacticEx `gcongr g m!"none of the `@[gcongr]` lemmas were applicable to the goal {rel}.\
       \n  attempted lemmas: {lemmas.map (·.declName)}"
