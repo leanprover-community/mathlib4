@@ -50,7 +50,8 @@ theorem isLocalRing_of_isAdicComplete_maximal (m : Ideal R) [m.IsMaximal] [IsAdi
     IsLocalRing R :=
   IsLocalRing.of_unique_max_ideal ⟨m, ‹m.IsMaximal›, fun _ hJ ↦
     (‹m.IsMaximal›.eq_of_le hJ.ne_top <|
-      (IsAdicComplete.le_jacobson_bot m).trans <| sInf_le ⟨bot_le, hJ⟩).symm⟩
+      (IsAdicComplete.le_jacobson m).trans <|
+        Ring.jacobson_eq_sInf_isMaximal R ▸ sInf_le hJ).symm⟩
 
 open IsLocalRing
 
