@@ -341,9 +341,7 @@ theorem _root_.LinearMap.isSemisimpleModule_of_injective
 theorem _root_.LinearMap.isSemisimpleModule_of_surjective
     [RingHomSurjective σ] (hl : Function.Surjective l) [IsSemisimpleModule R M'] :
     IsSemisimpleModule S N' :=
-  have hb : Function.Bijective ((ker l).liftQ l le_rfl) :=
-    ⟨ker_eq_bot.mp ((ker l).ker_liftQ_eq_bot' l rfl), .of_comp (g := (ker l).mkQ) hl⟩
-  (isSemisimpleModule_iff_of_bijective _ hb).mp inferInstance
+  (isSemisimpleModule_iff_of_bijective _ ((ker l).liftQ_bijective l rfl hl)).mp inferInstance
 
 end
 
