@@ -16,15 +16,13 @@ or below.
 
 ## Trust hierarchy and containers
 
-The model spans four storage containers, each written by a distinct class of
+The model spans two storage containers, each written by a distinct class of
 CI job and assigned a trust level:
 
 | Container             | Who may write                                          | Trust  |
 |-----------------------|--------------------------------------------------------|--------|
 | `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
-| `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
-| `nightly-testing`     | nightly-testing's trusted branches                     | medium |
-| `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    |
+| `forks`               | mathlib4 PR builds, non-master branches, `bors try`, and every nightly-testing push build | medium |
 
 Each writer identity is granted write access to exactly one container, enforced
 by the storage backend. An upload aimed at any other container is rejected,
@@ -36,16 +34,11 @@ containers a consumer reads from:
 | Consumer                | Default lookup chain |
 |-------------------------|----------------------|
 | mathlib4                | `master`             |
-| nightly-testing         | `nightly-testing`, `forks` |
-| forks (PRs)             | `master`, `forks`    |
+| forks (PRs), nightly-testing | `master`, `forks` |
 
-The nightly chain includes `forks`
-because PRs from that repo into mathlib4 upload there; it excludes
-`pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
-branch cannot reach a trusted nightly consumer.
-
-Branches that legitimately need to read their own prior low-trust uploads opt
-into a wider chain explicitly.
+The nightly-testing repo is a fork in this model. Its builds, including those
+of experimental toolchain branches, upload under its repo and commit namespace
+in `forks` (see [Per-commit namespace for fork uploads](#per-commit-namespace-for-fork-uploads)).
 
 ## Four enforcement layers
 
@@ -65,6 +58,13 @@ bearer token whose RBAC role covers exactly one container. An S3-compatible
 destination takes a short-lived credential pair scoped to one container's
 namespace, and the tool signs each request with it (SigV4); CI mints the
 pair per job the same OIDC-gated way.
+
+The nightly-testing credential is narrower than one container: it reaches only
+the namespace of the commit being built.
+
+The `forks` credential covers the whole container. Inside it, the trusted upload
+tool selects the repo and commit namespace from GitHub's event data (Layer 2),
+so a fork PR cannot choose where its artifacts land.
 
 This is the boundary's anchor: a compromised cache binary, a tampered workflow,
 or a malicious PR that captures and replays the credential still cannot upload
@@ -112,12 +112,12 @@ default and must opt into a wider lookup chain explicitly.
 
 ## Per-commit namespace for fork uploads
 
-Within the fork container, uploads are further namespaced by the PR's head
+Within the fork container, uploads are further namespaced by the build's head
 commit. This closes a replay window: artifacts from a closed, hidden, or
-force-pushed-away PR live under a different commit, so a later honest PR from
-the same fork cannot read them. Uploads to the other containers are not
-commit-scoped — each receives uploads from a single trust level, so the
-container boundary alone isolates them.
+force-pushed-away PR, or from an experimental nightly-testing branch, live
+under a different commit, so a later honest build of the same repo cannot read
+them. Uploads to `master` are not commit-scoped: `master` receives uploads from
+a single trust level, so the container boundary alone isolates them.
 
 By default a `cache get` reads the fork namespace at the checked-out HEAD: it
 can only serve artifacts built from the commit the reader already has, so it
