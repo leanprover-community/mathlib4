@@ -166,12 +166,11 @@ namespace MeasureTheory
 
 namespace Measure
 
-open scoped Classical in
-/-- The binary product of measures. They are defined for arbitrary measures, but we basically
-  prove all properties under the assumption that at least one of them is s-finite. To make sure
+/-- The binary product of measures `μ.prod ν`. It is defined for arbitrary measures, but we
+  basically prove all properties under the assumption that `ν` is s-finite. To make sure
   that the measure is always reasonable, we use the junk value `0` when `ν` is not s-finite. -/
 protected irreducible_def prod (μ : Measure α) (ν : Measure β) : Measure (α × β) :=
-  if SFinite ν then bind μ (fun x : α => map (Prod.mk x) ν) else 0
+  open scoped Classical in if SFinite ν then bind μ (fun x : α => map (Prod.mk x) ν) else 0
 
 lemma prod_eq_of_sfinite (μ : Measure α) (ν : Measure β) [hν : SFinite ν] :
     μ.prod ν = bind μ (fun x : α => map (Prod.mk x) ν) := by
