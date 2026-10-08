@@ -142,9 +142,8 @@ theorem one_sup (a : α) : 1 ⊔ a = a := by simp
 theorem sup_one (a : α) : a ⊔ 1 = a := by simp
 
 @[to_additive (attr := simp)]
-theorem sup_eq_one {a b : α} : a ⊔ b = 1 ↔ a = 1 ∧ b = 1 :=
-  let := IsBotOneClass.toOrderBot α
-  sup_eq_bot_iff
+theorem sup_eq_one {a b : α} : a ⊔ b = 1 ↔ a = 1 ∧ b = 1 := by
+  simp [← le_one_iff_eq_one]
 
 end SemilatticeSup
 
