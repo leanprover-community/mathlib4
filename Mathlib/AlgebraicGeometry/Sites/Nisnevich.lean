@@ -1,15 +1,16 @@
 /-
-Authors: Filippo Belfiori, Aristotele.
+Copyright (c) 2026 Filippo Belfiori. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Filippo Belfiori, Aristotele
 -/
-
 module
 
-import Mathlib.AlgebraicGeometry.Morphisms.Etale
-import Mathlib.AlgebraicGeometry.Sites.BigZariski
-import Mathlib.AlgebraicGeometry.Sites.Etale
-import Mathlib.AlgebraicGeometry.Sites.Small
-import Mathlib.CategoryTheory.Limits.Elements
-import Mathlib.CategoryTheory.Sites.Point.Basic
+public import Mathlib.AlgebraicGeometry.Morphisms.Etale
+public import Mathlib.AlgebraicGeometry.Sites.BigZariski
+public import Mathlib.AlgebraicGeometry.Sites.Etale
+public import Mathlib.AlgebraicGeometry.Sites.Small
+public import Mathlib.CategoryTheory.Limits.Elements
+public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 /-!
 
@@ -19,6 +20,8 @@ In this file we define the big Nisnevich site, i.e. the Nisnevich topology as a 
 on the category of schemes.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -36,8 +39,7 @@ def IsNisnevichCovering (X : Scheme) (S : Presieve X) : Prop :=
 
 
 /-- The Nisnevich condition at `x` holds iff the canonical morphism `Spec κ(x) ⟶ X`
-lifts along `f`. -/
-
+lifts along `f'. -/
 lemma NisnevichCondition_iff_exists_lift {X Y : Scheme.{u}} (f : Y ⟶ X) (x : X) :
     NisnevichCondition X Y f x ↔
       ∃ h : Spec (X.residueField x) ⟶ Y, h ≫ f = X.fromSpecResidueField x := by
@@ -70,7 +72,6 @@ lemma NisnevichCondition_iff_exists_lift {X Y : Scheme.{u}} (f : Y ⟶ X) (x : X
     exact IsIso.of_isIso_comp_right _ ψ
 
 /-- Big Nisnevich site: the étale precoverage on the category of schemes. -/
-
 def NisnevichPrecoverage : Precoverage Scheme.{u} where
   coverings X := {S | IsNisnevichCovering X S}
 
@@ -116,14 +117,13 @@ lemma NisnevichTopology_mem : NisnevichTopology = NisnevichPrecoverage.toGrothen
   exact Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck
 
 
-/- Nisnevich topology and Zariski topology -/
-
+/-- Nisnevich topology and Zariski topology -/
 lemma ZariskiPrecoverage_le_NisnevichPrecoverage : zariskiPrecoverage ≤ NisnevichPrecoverage := by
   intro X S
   rw [zariskiPrecoverage]
   rw [NisnevichPrecoverage]
   intro hS
-  simp
+  simp only [Set.mem_ofPred_eq]
   rw [IsNisnevichCovering]
   constructor
   · intro Y f
@@ -148,8 +148,7 @@ lemma ZariskiTopology_le_NisnevichTopology : zariskiTopology ≤ NisnevichTopolo
     ⟨R, ZariskiPretopology_le_NisnevichPretopology X hR, hRS⟩
 
 
-/- Nisnevich topology and etale topology -/
-
+/-- Nisnevich topology and etale topology -/
 lemma NisnevichPrecoverage_le_etalePrecoverage : NisnevichPrecoverage ≤ etalePrecoverage := by
   intro X S
   rw [NisnevichPrecoverage]
