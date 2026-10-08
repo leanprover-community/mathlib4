@@ -43,7 +43,6 @@ we show that a strong anodyne extension is an anodyne extension.
 * study the interaction between anodyne extension and binary products:
   the critical case consists in showing that inclusions
   `Λ[m, i] ⊗ Δ[n] ∪ Δ[m] ⊗ ∂Δ[n] ⟶ Δ[m] ⊗ Δ[n]` are strong anodyne extensions (@joelriou)
-* show that anodyne extensions are stable under the subdivision functor (@joelriou)
 
 ## References
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*, IV.2][gabriel-zisman-1967]

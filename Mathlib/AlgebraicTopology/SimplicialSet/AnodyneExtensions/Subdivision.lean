@@ -12,7 +12,29 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Subdivision
 public import Mathlib.Order.Interval.Finset.Fin
 
 /-!
-# ...
+# The subdivision functor preserves anodyne extensions
+
+The main result in this file is the lemma `SSet.anodyneExtensions.sd` which
+states that if `i : A ⟶ B` is an anodyne extension, then so is its image `sd.map i`
+by the subdivision functor `sd : SSet ⥤ SSet`. The proof reduces to the case
+where `i` is a horn inclusion `Λ[n + 1, i] ⟶ Δ[n + 1]`.
+In order to tackle this case, we use a description of the subdivision of
+the standard simplex as the nerve of `NonemptyFiniteChains X`, and we show that
+for any finite nontrivial linearly ordered type `x₀ : X`, the inclusion
+morphism `NonemptyFiniteChains.sdHorn x₀ ⟶ nerve (NonemptyFiniteChains X)`
+is an anodyne extension. In order to do this, we follow the proof of
+proposition 19 in *Another approach to the Kan-Quillen model structure* by Sean Moss:
+we define a `PairingCore` structure for the subcomplex `NonemptyFiniteChains.sdHorn x₀`.
+
+## TODO
+
+Show that the subdivision functor also preserves *strong* anodyne extensions.
+This would easily follow from the fact the class of morphisms `strongAnodyneExtensions`
+(which was defined using the existence of a regular pairing) is closed under coproducts,
+pushouts and transfinite compositions.
+
+## References
+* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/
 
