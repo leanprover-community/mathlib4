@@ -549,6 +549,11 @@ theorem IsClosed.nhdsSet_inter_eq [NormalSpace X] {s t : Set X} (hs : IsClosed s
   · exact (hAo.union hUo).mem_nhdsSet.mpr fun x hx ↦ by grind
   · exact (hBo.union hUo).mem_nhdsSet.mpr fun x hx ↦ by grind
 
+theorem normalSpace_iff_forall_isClosed_nhdsSet_inter_eq :
+    NormalSpace X ↔ ∀ s t : Set X, IsClosed s → IsClosed t → 𝓝ˢ (s ∩ t) = 𝓝ˢ s ⊓ 𝓝ˢ t := by
+  refine ⟨fun _ _ _ hs ht ↦ hs.nhdsSet_inter_eq ht, fun h ↦ ⟨fun s t hs ht hd ↦ ?_⟩⟩
+  rw [separatedNhds_iff_disjoint, disjoint_iff, ← h s t hs ht, Set.disjoint_iff_inter_eq_empty.mp hd, nhdsSet_empty]
+
 theorem Set.Finite.nhdsSet_biInter_eq [NormalSpace X] {ι : Type*} {s : Set ι} {K : ι → Set X}
     (hs : s.Finite) (hK : ∀ i ∈ s, IsClosed (K i)) : 𝓝ˢ (⋂ i ∈ s, K i) = ⨅ i ∈ s, 𝓝ˢ (K i) := by
   induction s, hs using Set.Finite.induction_on with
@@ -561,6 +566,14 @@ theorem Set.Finite.nhdsSet_biInter_eq [NormalSpace X] {ι : Type*} {s : Set ι} 
 theorem Finset.nhdsSet_biInter_eq [NormalSpace X] {ι : Type*} {s : Finset ι} {K : ι → Set X}
     (hK : ∀ i ∈ s, IsClosed (K i)) : 𝓝ˢ (⋂ i ∈ s, K i) = ⨅ i ∈ s, 𝓝ˢ (K i) :=
   s.finite_toSet.nhdsSet_biInter_eq hK
+
+theorem nhdsSet_iInter_eq [NormalSpace X] {ι : Type*} [Finite ι] {K : ι → Set X}
+    (hK : ∀ i, IsClosed (K i)) : 𝓝ˢ (⋂ i, K i) = ⨅ i, 𝓝ˢ (K i) := by
+  simpa using Set.finite_univ.nhdsSet_biInter_eq fun i _ ↦ hK i
+
+theorem Set.Finite.nhdsSet_sInter_eq [NormalSpace X] {K : Set (Set X)} (hK : K.Finite)
+    (hKC : ∀ k ∈ K, IsClosed k) : 𝓝ˢ (⋂₀ K) = sInf (𝓝ˢ '' K) := by
+  rw [sInter_eq_biInter, hK.nhdsSet_biInter_eq hKC, ← sInf_image]
 
 /-- If the codomain of a closed embedding is a normal space, then so is the domain. -/
 protected theorem Topology.IsClosedEmbedding.normalSpace [TopologicalSpace Y] [NormalSpace Y]
