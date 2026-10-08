@@ -8,6 +8,7 @@ public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.DeclType
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
+public import Mathlib.Tactic.Linter.DeprecatedSimpLemma
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
 public import Mathlib.Tactic.Linter.DocString
