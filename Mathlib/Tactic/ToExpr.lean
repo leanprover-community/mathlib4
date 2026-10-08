@@ -58,4 +58,7 @@ deriving instance ToExpr for Level
 deriving instance ToExpr for BinderInfo
 deriving instance ToExpr for Expr
 
+attribute [nolint instanceDiamonds]
+  instToExprMVarId_mathlib instToExprLevelMVarId_mathlib instToExprBinderInfo_mathlib
+
 end Mathlib
