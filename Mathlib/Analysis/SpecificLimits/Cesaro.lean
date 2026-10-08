@@ -15,8 +15,8 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 
 For a normed-space-valued sequence `a` with `‖a k‖ ≤ C * r ^ k` and `0 ≤ r < 1`, the Cesàro
 means `n⁻¹ • ∑ k < n, a k` tend to zero.  The file gives the explicit rate bound first
-(`norm_sum_range_smul_le_of_norm_le_geometric`, independently useful), then the limit; the
-real-valued special cases are kept under their original names as corollaries.
+(`norm_sum_range_smul_le_of_norm_le_geometric`, independently useful), then the limit.  The
+real-valued special case is worked out in `MathlibTest/Cesaro.lean`.
 -/
 
 @[expose] public section
@@ -68,20 +68,6 @@ theorem tendsto_sum_range_smul_nhds_zero_of_norm_le_geometric {E : Type*}
     simpa using (tendsto_const_nhds (x := C / (1 - r))).mul hninv
   refine squeeze_zero_norm' (eventually_atTop.2 ⟨1, fun n hn ↦
     norm_sum_range_smul_le_of_norm_le_geometric hC hr0 hr1 h hn⟩) hb0
-
-/-- Real-valued special case of
-`norm_sum_range_smul_le_of_norm_le_geometric`, kept under its original
-name for continuity with the corpus development. -/
-theorem abs_sum_range_div_le_of_abs_le_geometric {a : ℕ → ℝ} {C r : ℝ} (hC : 0 ≤ C)
-    (hr0 : 0 ≤ r) (hr1 : r < 1) (h : ∀ k, |a k| ≤ C * r ^ k) {n : ℕ} (hn : 1 ≤ n) :
-    |(n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, a k| ≤ (C / (1 - r)) * (n : ℝ)⁻¹ := by
-  have h' : ∀ k : ℕ, ‖a k‖ ≤ C * r ^ k := fun k => by
-    rw [Real.norm_eq_abs]
-    exact h k
-  have hgen : ‖(n : ℝ)⁻¹ • ∑ k ∈ Finset.range n, a k‖
-      ≤ (C / (1 - r)) * (n : ℝ)⁻¹ :=
-    norm_sum_range_smul_le_of_norm_le_geometric hC hr0 hr1 h' hn
-  rwa [Real.norm_eq_abs, smul_eq_mul] at hgen
 
 /-- Real-valued special case of
 `tendsto_sum_range_smul_nhds_zero_of_norm_le_geometric`. -/
