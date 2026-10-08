@@ -234,6 +234,8 @@ theorem MulAction.IsPreprimitive.is_two_preprimitive_strong_jordan
 
 /-- Simultaneously prove `MulAction.IsPreprimitive.is_two_pretransitive`
 and `MulAction.IsPreprimitive.is_two_preprimitive`. -/
+@[deprecated "Use `is_two_pretransitive` or `is_two_preprimitive` instead."
+  (since := "2026-10-08")]
 theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α) :
@@ -252,8 +254,9 @@ theorem MulAction.IsPreprimitive.is_two_pretransitive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
-    IsMultiplyPretransitive G α 2 :=
-  (hG.is_two_motive_of_is_motive hsn hsn').1 hs_trans
+    IsMultiplyPretransitive G α 2 := by
+  have := hG.is_two_pretransitive' hsn hsn' hs_trans
+  exact .of_isScalarTower (normalClosure (fixingSubgroup G s : Set G))
 
 /-- A criterion due to Jordan for being 2-preprimitive (Wielandt, 13.1) -/
 theorem MulAction.IsPreprimitive.is_two_preprimitive
@@ -261,7 +264,8 @@ theorem MulAction.IsPreprimitive.is_two_preprimitive
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hs_prim : IsPreprimitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPreprimitive G α 2 :=
-  (hG.is_two_motive_of_is_motive hsn hsn').2 hs_prim
+  (hG.is_two_preprimitive_strong_jordan hsn hsn' hs_prim).of_bijective_map
+    (φ := Subtype.val) (f := ⟨id, fun _ _ ↦ rfl⟩) Function.bijective_id
 
 /-- Jordan's multiple primitivity criterion (Wielandt, 13.3) -/
 theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
