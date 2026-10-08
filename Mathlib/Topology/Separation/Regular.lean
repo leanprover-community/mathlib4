@@ -552,7 +552,8 @@ theorem IsClosed.nhdsSet_inter_eq [NormalSpace X] {s t : Set X} (hs : IsClosed s
 theorem normalSpace_iff_forall_isClosed_nhdsSet_inter_eq :
     NormalSpace X ↔ ∀ s t : Set X, IsClosed s → IsClosed t → 𝓝ˢ (s ∩ t) = 𝓝ˢ s ⊓ 𝓝ˢ t := by
   refine ⟨fun _ _ _ hs ht ↦ hs.nhdsSet_inter_eq ht, fun h ↦ ⟨fun s t hs ht hd ↦ ?_⟩⟩
-  rw [separatedNhds_iff_disjoint, disjoint_iff, ← h s t hs ht, Set.disjoint_iff_inter_eq_empty.mp hd, nhdsSet_empty]
+  rw [separatedNhds_iff_disjoint, disjoint_iff, ← h s t hs ht,
+    Set.disjoint_iff_inter_eq_empty.mp hd, nhdsSet_empty]
 
 theorem Set.Finite.nhdsSet_biInter_eq [NormalSpace X] {ι : Type*} {s : Set ι} {K : ι → Set X}
     (hs : s.Finite) (hK : ∀ i ∈ s, IsClosed (K i)) : 𝓝ˢ (⋂ i ∈ s, K i) = ⨅ i ∈ s, 𝓝ˢ (K i) := by
