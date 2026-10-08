@@ -218,8 +218,7 @@ theorem convMul_id_eq_one_of_adjoin_eq_top (hX : adjoin R X = ⊤)
     (h : ∀ x ∈ X, μ (rTensor A 𝑺 (δ x)) = η[R] (ε x)) :
     toConv 𝑺 * toConv .id = 1 := by
   ext t
-  have ht : t ∈ adjoin R X := hX.ge trivial
-  induction ht using adjoin_induction with
+  induction (hX.ge ⟨⟩ : t ∈ adjoin R X) using adjoin_induction with
   | mem x hx => exact h x hx
   | algebraMap r => simp [comul_algebraMap, Algebra.TensorProduct.algebraMap_apply]
   | add x y _ _ hx hy => simp [map_add, hx, hy]
@@ -243,8 +242,7 @@ theorem id_convMul_eq_one_of_adjoin_eq_top (hX : adjoin R X = ⊤)
     (h : ∀ x ∈ X, μ (lTensor A 𝑺 (δ x)) = η[R] (ε x)) :
     toConv .id * toConv 𝑺 = 1 := by
   ext t
-  have ht : t ∈ adjoin R X := hX.ge trivial
-  induction ht using adjoin_induction with
+  induction (hX.ge ⟨⟩ : t ∈ adjoin R X) using adjoin_induction with
   | mem x hx => exact h x hx
   | algebraMap r => simp [comul_algebraMap, Algebra.TensorProduct.algebraMap_apply]
   | add x y _ _ hx hy => simp [map_add, hx, hy]
