@@ -1,5 +1,17 @@
 import Mathlib
 
+/-!
+# Schatten operators
+
+This file defines the Schatten operators.
+
+## TODO:
+ - generalize from `ℂ` to `𝕜`
+ - determine proper junk value for `p=0`
+ - expand APIs
+
+-/
+
 open scoped ENNReal NNReal InnerProductSpace ContinuousLinearMap
 
 noncomputable section
@@ -19,7 +31,8 @@ open scoped ComplexConjugate ENNReal
 def traceOfBasis (A : E →L[ℂ] E) {ι : Type*} (b : HilbertBasis ι ℂ E) : ℝ≥0∞ :=
   ∑' i, ENNReal.ofReal (RCLike.re ⟪b i, A (b i)⟫_ℂ)
 
-theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι : Type*} (b b' : HilbertBasis ι ℂ E) :
+theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι ι' : Type*}
+    (b : HilbertBasis ι ℂ E) (b' : HilbertBasis ι' ℂ E) :
     traceOfBasis A b = traceOfBasis A b' := by
   unfold traceOfBasis
   set S := CFC.sqrt A with hSdef
@@ -31,11 +44,10 @@ theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι : Type*} (b b' : 
     ← inner_conj_symm (S (b' _)), RCLike.conj_mul, ← RCLike.ofReal_pow]
   simp_rw [← RCLike.ofReal_tsum]
   simp only [Complex.coe_algebraMap, RCLike.re_to_complex, Complex.ofReal_re]
-  have h : ∀ (c : HilbertBasis ι ℂ E) (x : E),
-      ENNReal.ofReal (∑' a, ‖⟪c a, x⟫_ℂ‖ ^ 2) = ∑' a, ENNReal.ofReal (‖⟪c a, x⟫_ℂ‖ ^ 2) :=
-    fun c x => ENNReal.ofReal_tsum_of_nonneg (fun _ => by positivity)
-      (c.orthonormal.inner_products_summable x)
-  simp_rw [h b, h b']
+  simp_rw [fun x => ENNReal.ofReal_tsum_of_nonneg (fun _ => by positivity)
+    (b.orthonormal.inner_products_summable x)]
+  simp_rw [fun x => ENNReal.ofReal_tsum_of_nonneg (fun _ => by positivity)
+    (b'.orthonormal.inner_products_summable x)]
   rw [ENNReal.tsum_comm]
   simp_rw [← LinearMap.IsSymmetric.apply_clm (T := S)
     (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric (b' _) (b _), norm_inner_symm (S (b' _)) (b _)]
@@ -69,7 +81,8 @@ theorem trace_eq_zero (hA : 0 ≤ A) : trace A = 0 ↔ A = 0 := by
     simp_rw [ENNReal.tsum_eq_zero, ← hS, mul_apply_eq_comp,
       ContinuousLinearMap.adjoint_inner_right, ENNReal.ofReal_eq_zero, re_inner_self_nonpos] at h
     rw [← hS]
-    apply ContinuousLinearMap.ext_on (Submodule.dense_iff_topologicalClosure_eq_top.mpr b.dense_span)
+    apply ContinuousLinearMap.ext_on
+      (Submodule.dense_iff_topologicalClosure_eq_top.mpr b.dense_span)
     rintro _ ⟨i, rfl⟩
     simp [h i]
   · rintro h
@@ -102,12 +115,55 @@ theorem modulus_eq_zero (T : E →L[ℂ] F) : modulus T = 0 ↔ T = 0 := by
   · rintro h
     simp [h]
 
+theorem modulus_isCompactOperator (T : E →L[ℂ] F) : IsCompactOperator T.modulus := by sorry
+
 def eSpNorm' (T : E →L[ℂ] F) : ℝ≥0∞ := (CFC.nnrpow T.modulus q.toNNReal).trace ^ (1 / q)
 
 @[simp]
 theorem eSpNorm'_apply (T : E →L[ℂ] F) :
     eSpNorm' q T = (CFC.nnrpow T.modulus q.toNNReal).trace ^ (1 / q) :=
   rfl
+
+open Topology Filter in
+theorem IsCompactOperator.exists_hilbertBasis_hasEigenvector
+    {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+    {T : H →L[ℂ] H} (hTc : IsCompactOperator T) (hTa : IsSelfAdjoint T) :
+    ∃ (ι : Type*) (b : HilbertBasis ι ℂ H) (μ : ι → ℝ),
+      (∀ i, Module.End.HasEigenvector (T : Module.End ℂ H) (μ i : ℂ) (b i)) ∧
+      Filter.Tendsto μ Filter.cofinite (𝓝 0) := by
+  sorry
+
+theorem hasEigenvalue.nonneg {ι H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+    [CompleteSpace H] {T : H →L[ℂ] H} (hT : 0 ≤ T)
+    {b : HilbertBasis ι ℂ H} {μ : ι → ℝ} {i : ι}
+    (he : Module.End.HasEigenvector (T : Module.End ℂ H) (μ i : ℂ) (b i)) : 0 ≤ μ i := by
+  calc
+    0 ≤ RCLike.re ⟪b i, T (b i)⟫_ℂ := (nonneg_iff_isPositive.mp hT).re_inner_nonneg_right (b i)
+    _ = RCLike.re ⟪b i, (μ i) • (b i)⟫_ℂ := by
+      rw [Module.End.hasEigenvector_iff, Module.End.mem_eigenspace_iff] at he
+      simp at he
+      rw [he.1]
+    _ = RCLike.re (μ i) := by simp [inner_smul_right_eq_smul (b i) (b i) (μ i), b.orthonormal.1]
+
+theorem hasEigenvector.rpow {ι H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+    [CompleteSpace H] {T : H →L[ℂ] H} (hT : 0 ≤ T)
+    {b : HilbertBasis ι ℂ H} {μ : ι → ℝ} {i : ι} (hq : 0 < q)
+    (he : Module.End.HasEigenvector (T : Module.End ℂ H) (μ i : ℂ) (b i)) :
+    Module.End.HasEigenvector ((CFC.nnrpow T q.toNNReal : H →L[ℂ] H) : Module.End ℂ H)
+      (((μ i) ^ q : ℝ) : ℂ) (b i) := by sorry
+
+theorem eSpNorm'_eq_tsum [Fact (0 < q)] (T : E →L[ℂ] F)
+    {ι : Type*} (b : HilbertBasis ι ℂ E) {μ : ι → ℝ}
+    (hb : ∀ i, Module.End.HasEigenvector (modulus T : Module.End ℂ E) (μ i : ℂ) (b i)) :
+    eSpNorm' q T = (∑' i, ENNReal.ofReal (μ i) ^ q) ^ (1 / q) := by
+  have hT : 0 ≤ (T.modulus ^ q.toNNReal) := CFC.nnrpow_nonneg
+  have hbq (i : ι) : (T.modulus ^ q.toNNReal) (b i) = (((μ i) ^ q : ℝ) : ℂ) • (b i) := by
+    simpa using (hasEigenvector.rpow q T.modulus_nonneg Fact.out (hb i)).apply_eq_smul
+  simp only [eSpNorm'_apply, trace, CFC.nnrpow_eq_pow, one_div, traceOfBasis_eq hT _ b]
+  simp [traceOfBasis, ENNReal.ofReal_rpow_of_nonneg
+    (ContinuousLinearMap.hasEigenvalue.nonneg T.modulus_nonneg (hb _))
+    (Fact.out : 0 < q).le, hbq _,
+    b.orthonormal.1 _]
 
 def eSpNorm (T : E →L[ℂ] F) : ℝ≥0∞ :=
   if p = 0 then 0 else
@@ -120,6 +176,52 @@ theorem eSpNorm_apply (T : E →L[ℂ] F) :
     if p = ∞ then ‖T‖ₑ else
       eSpNorm' p.toReal T :=
   rfl
+
+theorem eSpNorm_eq_tsum [Fact (0 < p)] (T : E →L[ℂ] F)
+    {ι : Type*} (b : HilbertBasis ι ℂ E) {μ : ι → ℝ}
+    (hb : ∀ i, Module.End.HasEigenvector (modulus T : Module.End ℂ E) (μ i : ℂ) (b i)) :
+    eSpNorm p T = if p = ∞ then ⨆ i, ENNReal.ofReal (μ i)
+      else (∑' i, ENNReal.ofReal (μ i) ^ p.toReal) ^ (1 / p.toReal)  := by
+  have hp : p ≠ 0 := (Fact.out : 0 < p).ne'
+  simp only [eSpNorm_apply, hp, ↓reduceIte]
+  by_cases hp : p = ∞
+  · simp [hp]
+    apply le_antisymm
+    · -- define `opENorm_le_bound'` mirroring `opNorm_le_bound'` to get rid of the cases below.
+      apply ContinuousLinearMap.opENorm_le_bound T
+      intro e
+      by_cases he : ‖e‖ₑ = 0
+      · rw [enorm_eq_zero] at he
+        simp [he]
+      · -- use theorem to go to `⊢ ‖T e‖ₑ ^ 2 ≤ (⨆ i, ENNReal.ofReal (μ i)) ^ 2 * ‖e‖ₑ ^ 2`
+        -- use calc to show
+        --   ‖T e‖ₑ ^ 2 = ⟪T e, T e⟫
+        --   __ = ⟪T.adjoint ∘ T e, e⟫
+        --   __ = ∑' i, ⟪(T.adjoint ∘L T) e, b i⟫ • ⟪b i, e⟫
+        --   __ = ∑' i, ⟪e, T.modulus ^ 2 (b i)⟫ • ⟪b i, e⟫
+        --   __ = ∑' i, ⟪e, (μ i) ^ 2 (b i)⟫ • ⟪b i, e⟫
+        --   __ = ∑' i, ENNReal.ofReal (μ i) ^ 2 * ⟪e, b i⟫ • ⟪b i, e⟫
+        --   __ = ∑' i, ENNReal.ofReal (μ i) ^ 2 * |⟪e, b i⟫| ^ 2
+        --   __ ≤ (⨆ i, ENNReal.ofReal (μ i)) ^ 2 * ∑' i, |⟪e, b i⟫| ^ 2
+        --   __ = (⨆ i, ENNReal.ofReal (μ i)) ^ 2 * ‖e‖ₑ ^ 2
+        sorry
+      -- finish by taking the supremum over `this`
+    · sorry
+      -- take index that attains `⨆ i, ENNReal.ofReal (μ i)`. Call that `j : ι`
+      -- use calc to show
+      --   (⨆ i, ENNReal.ofReal (μ i)) ^ 2 = ENNReal.ofReal (μ j) ^ 2
+      --   _ = ENNReal.ofReal ⟪b j, (μ j) ^ 2 • b j⟫_𝕜
+      --   _ = ENNReal.ofReal ⟪b j, T.modulus ^ 2 (b j)⟫_𝕜
+      --   _ = ENNReal.ofReal ⟪b j, (T.adjoint ∘L T) (b j)⟫_𝕜
+      --   _ = ENNReal.ofReal ⟪T (b j), T (b j)⟫_𝕜
+      --   _ = ‖T (b j)‖ₑ
+      --   _ ≤ ‖T‖ₑ
+  · let : Fact (0 < p.toReal) := by sorry
+    simp only [hp, ↓reduceIte]
+    exact eSpNorm'_eq_tsum p.toReal T b hb
+
+theorem eSpNorm_le_mul (A B : E →L[ℂ] E) {q : ℝ≥0∞} (hpq : p.HolderConjugate q) :
+    eSpNorm 1 (A ∘L B) ≤ eSpNorm p A * eSpNorm q B := sorry
 
 def spNorm (T : E →L[ℂ] F) : ℝ := (eSpNorm p T).toReal
 
@@ -177,7 +279,7 @@ theorem enorm_eq_zero [Fact (0 < p)] (T : Sp p E F) : ‖T‖ₑ = 0 ↔ T = 0 :
     by_cases hp : p = ∞
     · simp [hp] at hT
       exact hT
-    · have hp' : 0 < p.toReal := sorry
+    · have hp' : 0 < p.toReal := by sorry
       have hp'' : ¬ p.toReal < 0 := sorry
       have hp''' : p.toNNReal ≠ 0 := sorry
       simp [hp, hp', hp'', trace_eq_zero] at hT
