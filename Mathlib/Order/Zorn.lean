@@ -17,6 +17,7 @@ This file proves several formulations of Zorn's Lemma.
 
 The primary statement of Zorn's lemma is `exists_maximal_of_chains_bounded`. Then it is specialized
 to particular relations:
+* `(<)` with `zorn_lt`
 * `(≤)` with `zorn_le`
 * `(⊆)` with `zorn_subset`
 * `(⊇)` with `zorn_superset`
@@ -53,10 +54,6 @@ lemma zorny_lemma : zorny_statement := by
       proof_that_construction_respects_whatever,
       proof_that_construction_contains_all_stuff_in_c⟩
 ```
-
-## TODO
-
-Zorn's lemma can be proved over `<`-chains, which is more general than for `≤`-chains.
 
 ## Notes
 
@@ -104,48 +101,85 @@ section Preorder
 
 variable [Preorder α]
 
-@[to_dual zorn_ge]
-theorem zorn_le (h : ∀ c : Set α, IsLEChain c → BddAbove c) : ∃ m : α, IsMax m :=
-  exists_maximal_of_chains_bounded h le_trans
+@[to_dual zorn_gt]
+theorem zorn_lt (h : ∀ c : Set α, IsLTChain c → BddAbove c) : ∃ m : α, IsMax m := by
+  by_contra! hmax
+  simp_rw [not_isMax_iff] at hmax
+  have : ∀ c : Set α, IsLTChain c → ∃ b, ∀ a ∈ c, a < b := by
+    intro c hc
+    obtain ⟨ub, hub⟩ := h c hc
+    obtain ⟨b, hb⟩ := hmax ub
+    exact ⟨b, fun a ha => (hub ha).trans_lt hb⟩
+  obtain ⟨m, hm⟩ := exists_maximal_of_chains_bounded this lt_trans
+  obtain ⟨a, ha⟩ := hmax m
+  exact (hm a ha).not_gt ha
 
-@[to_dual zorn_ge_nonempty]
-theorem zorn_le_nonempty [Nonempty α]
-    (h : ∀ c : Set α, IsLEChain c → c.Nonempty → BddAbove c) : ∃ m : α, IsMax m :=
-  exists_maximal_of_nonempty_chains_bounded h le_trans
+@[to_dual zorn_gt_nonempty]
+theorem zorn_lt_nonempty [Nonempty α]
+    (h : ∀ c : Set α, IsLTChain c → c.Nonempty → BddAbove c) : ∃ m : α, IsMax m := by
+  refine zorn_lt fun c hc => ?_
+  rcases eq_empty_or_nonempty c with rfl | hc'
+  · simp
+  · exact h c hc hc'
 
-@[to_dual zorn_ge₀]
-theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsLEChain c → ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) :
-    ∃ m, Maximal (· ∈ s) m :=
-  let ⟨⟨m, hms⟩, h⟩ :=
-    @zorn_le s _ fun c hc =>
-      let ⟨ub, hubs, hub⟩ :=
-        ih (Subtype.val '' c) (fun _ ⟨⟨_, hx⟩, _, h⟩ => h ▸ hx)
-          (by
-            rintro _ ⟨p, hpc, rfl⟩ _ ⟨q, hqc, rfl⟩ hpq
-            exact hc hpc hqc fun t => hpq (Subtype.ext_iff.1 t))
-      ⟨⟨ub, hubs⟩, fun ⟨_, _⟩ hc => hub _ ⟨_, hc, rfl⟩⟩
-  ⟨m, hms, fun z hzs hmz => @h ⟨z, hzs⟩ hmz⟩
+@[to_dual zorn_gt₀]
+theorem zorn_lt₀ (s : Set α) (h : ∀ c ⊆ s, IsLTChain c → ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) :
+    ∃ m, Maximal (· ∈ s) m := by
+  suffices ∀ (c : Set ↑s), IsLTChain c → BddAbove c by
+    obtain ⟨m, hm⟩ := zorn_lt this
+    exists m
+    rwa [← maximal_true_subtype, maximal_true]
+  intro c hc
+  obtain ⟨m, hm, hm'⟩ := h (Subtype.val '' c) (by simp)
+    ((Subtype.strictMono_coe _).isLTChain_image hc)
+  exact ⟨⟨m, hm⟩, by simpa [mem_upperBounds] using hm'⟩
 
-@[to_dual zorn_ge_nonempty₀]
-theorem zorn_le_nonempty₀ (s : Set α)
-    (ih : ∀ c ⊆ s, IsLEChain c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α) (hxs : x ∈ s) :
+@[to_dual zorn_gt_nonempty₀]
+theorem zorn_lt_nonempty₀ (s : Set α)
+    (h : ∀ c ⊆ s, IsLTChain c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α) (hxs : x ∈ s) :
     ∃ m, x ≤ m ∧ Maximal (· ∈ s) m := by
-  have H := zorn_le₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_
+  have H := zorn_lt₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_
   · rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
     exact ⟨m, hxm, hms, fun z hzs hmz => @hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   · rcases c.eq_empty_or_nonempty with (rfl | ⟨y, hy⟩)
     · exact ⟨x, ⟨hxs, le_rfl⟩, fun z => False.elim⟩
-    · rcases ih c (fun z hz => (hcs hz).1) hc y hy with ⟨z, hzs, hz⟩
+    · rcases h c (fun z hz => (hcs hz).1) hc y hy with ⟨z, hzs, hz⟩
       exact ⟨z, ⟨hzs, (hcs hy).2.trans <| hz _ hy⟩, hz⟩
 
-@[to_dual zorn_ge_nonempty_Iic₀]
-theorem zorn_le_nonempty_Ici₀ (a : α)
-    (ih : ∀ c ⊆ Ici a, IsLEChain c → ∀ y ∈ c, ∃ ub, ∀ z ∈ c, z ≤ ub) (x : α) (hax : a ≤ x) :
+@[to_dual zorn_gt_nonempty_Iic₀]
+theorem zorn_lt_nonempty_Ici₀ (a : α)
+    (ih : ∀ c ⊆ Ici a, IsLTChain c → ∀ y ∈ c, ∃ ub, ∀ z ∈ c, z ≤ ub) (x : α) (hax : a ≤ x) :
     ∃ m, x ≤ m ∧ IsMax m := by
-  let ⟨m, hxm, ham, hm⟩ := zorn_le_nonempty₀ (Ici a) (fun c hca hc y hy ↦ ?_) x hax
+  let ⟨m, hxm, ham, hm⟩ := zorn_lt_nonempty₀ (Ici a) (fun c hca hc y hy ↦ ?_) x hax
   · exact ⟨m, hxm, fun z hmz => hm (ham.trans hmz) hmz⟩
   · have ⟨ub, hub⟩ := ih c hca hc y hy
     exact ⟨ub, (hca hy).trans (hub y hy), hub⟩
+
+@[to_dual zorn_ge]
+theorem zorn_le (h : ∀ c : Set α, IsLEChain c → BddAbove c) : ∃ m : α, IsMax m :=
+  zorn_lt fun c hc => h c hc.isLEChain
+
+@[to_dual zorn_ge_nonempty]
+theorem zorn_le_nonempty [Nonempty α]
+    (h : ∀ c : Set α, IsLEChain c → c.Nonempty → BddAbove c) : ∃ m : α, IsMax m :=
+  zorn_lt_nonempty fun c hc => h c hc.isLEChain
+
+@[to_dual zorn_ge₀]
+theorem zorn_le₀ (s : Set α) (h : ∀ c ⊆ s, IsLEChain c → ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) :
+    ∃ m, Maximal (· ∈ s) m :=
+  zorn_lt₀ s fun c hc hc' => h c hc hc'.isLEChain
+
+@[to_dual zorn_ge_nonempty₀]
+theorem zorn_le_nonempty₀ (s : Set α)
+    (h : ∀ c ⊆ s, IsLEChain c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α) (hxs : x ∈ s) :
+    ∃ m, x ≤ m ∧ Maximal (· ∈ s) m :=
+  zorn_lt_nonempty₀ s (fun c hc hc' => h c hc hc'.isLEChain) x hxs
+
+@[to_dual zorn_ge_nonempty_Iic₀]
+theorem zorn_le_nonempty_Ici₀ (a : α)
+    (h : ∀ c ⊆ Ici a, IsLEChain c → ∀ y ∈ c, ∃ ub, ∀ z ∈ c, z ≤ ub) (x : α) (hax : a ≤ x) :
+    ∃ m, x ≤ m ∧ IsMax m :=
+  zorn_lt_nonempty_Ici₀ a (fun c hc hc' => h c hc hc'.isLEChain) x hax
 
 end Preorder
 

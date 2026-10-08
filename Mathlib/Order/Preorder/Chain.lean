@@ -128,18 +128,35 @@ lemma Monotone.isLEChain_image [Preorder α] [Preorder β] {s : Set α} {f : α 
     (hf : Monotone f) (hs : IsLEChain s) : IsLEChain (f '' s) :=
   hs.image_of_map_rel _ _ _ (fun _ _ a ↦ hf a)
 
+lemma StrictMono.isLTChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : StrictMono f) (hs : IsLTChain s) : IsLTChain (f '' s) :=
+  hs.image_of_map_rel _ _ _ (fun _ _ a ↦ hf a)
+
 theorem Monotone.isLEChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     IsLEChain (range f) := by
   rw [← image_univ]
   exact hf.isLEChain_image (isChain_of_trichotomous _)
 
+lemma StrictMono.isLTChain_range [LinearOrder α] [Preorder β] {f : α → β}
+    (hf : StrictMono f) : IsLTChain (range f) := by
+  rw [← image_univ]
+  exact hf.isLTChain_image (isChain_of_trichotomous _)
+
 lemma Antitone.isLEChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
     (hf : Antitone f) (hs : IsLEChain s) : IsLEChain (f '' s) :=
   hf.dual_left.isLEChain_image hs.symm
 
+lemma StrictAnti.isLEChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : StrictAnti f) (hs : IsLTChain s) : IsLTChain (f '' s) :=
+  hf.dual_left.isLTChain_image hs.symm
+
 theorem Antitone.isLEChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
     IsLEChain (range f) :=
   hf.dual_left.isLEChain_range
+
+theorem StrictAnti.isLEChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : StrictAnti f) :
+    IsLTChain (range f) :=
+  hf.dual_left.isLTChain_range
 
 @[deprecated (since := "2026-10-04")] alias Monotone.isChain_image := Monotone.isLEChain_image
 @[deprecated (since := "2026-10-04")] alias Monotone.isChain_range := Monotone.isLEChain_range
