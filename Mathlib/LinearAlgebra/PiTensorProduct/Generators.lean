@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Map
 import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Generators of multiple tensor products
@@ -130,86 +131,22 @@ lemma submodule_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) :
     Submodule.span R (Set.range (fun j : ((i : ι) → γ i) ↦
       ⨂ₜ[R] (i : ι), g (j i))) = ⊤ := by
-  obtain ⟨n, hι⟩ : ∃ (n : ℕ), Nat.card ι = n := ⟨_, rfl⟩
-  induction n generalizing ι with
-  | zero =>
-    have : IsEmpty ι := (Nat.card_eq_zero.mp hι).resolve_right <| Finite.not_infinite ‹_›
-    apply Submodule.map_injective_of_injective (isEmptyEquiv ι).injective
-    rw [Submodule.map_top, LinearEquiv.range, Submodule.eq_top_iff']
-    intro x
-    have : x = x • 1 := by simp only [smul_eq_mul, mul_one]
-    rw [Submodule.map_span, this]
-    apply Submodule.smul_mem
-    rw [Submodule.mem_span]
-    intro _ hp
-    apply hp
-    simp
-  | succ n hn =>
-    classical
-    have : Nonempty ι := (Nat.card_pos_iff.mp (by omega)).left
-    have i₀ : ι := Classical.arbitrary ι
-    have hi₀ : Nat.card ({i₀}ᶜ : Set ι) = n := by
-      let := Fintype.ofFinite ι
-      rw [← Fintype.card_eq_nat_card, Fintype.card_compl_set, Fintype.card_eq_nat_card, hι,
-        Fintype.card_unique, add_tsub_cancel_right]
-    have hg₀ : ∀ i : ({i₀}ᶜ : Set ι), Submodule.span R (Set.range (@g i)) = ⊤ := by intro; apply hg
-    apply Submodule.map_injective_of_injective (equivPiTensorComplSingletonTensor R M i₀).injective
-    simp only [Submodule.map_top, LinearEquiv.coe_coe, LinearEquiv.range, Submodule.map_span,
-      ← Set.range_comp, Function.comp_def _ _, equivPiTensorComplSingletonTensor_tprod R M i₀]
-    apply le_antisymm (le_top)
-    rw [← TensorProduct.span_tmul_eq_top, Submodule.span_le]
-    rintro _ ⟨x, y, rfl⟩
-    have hx := hn hg₀ hi₀ ▸ (Submodule.mem_top (x := x))
-    have hy := hg i₀ ▸ (Submodule.mem_top (x := y))
-    revert hy hx y x
-    apply Submodule.span_induction₂
-    · rintro _ _ ⟨j', rfl⟩ ⟨j₀', rfl⟩
-      apply Submodule.mem_span_of_mem
-      rw [Set.mem_range]
-      use (fun i => if hi : i = i₀ then hi ▸ j₀' else j' ⟨i, hi⟩)
-      congr
-      · ext i
-        simp [Set.notMem_singleton_iff.mp ((Set.mem_compl_iff _ _).mp i.property)]
-        congr
-      · simp
-    · intro _ _
-      rw [zero_tmul]
-      apply Submodule.zero_mem
-    · intro _ _
-      rw [tmul_zero]
-      apply Submodule.zero_mem
-    · intro _ _ _ _ _ _ h h'
-      rw [add_tmul]
-      apply Submodule.add_mem _ h h'
-    · intro _ _ _ _ _ _ h h'
-      rw [tmul_add]
-      apply Submodule.add_mem _ h h'
-    · intro _ _ _ _ _ h
-      rw [← smul_tmul']
-      apply Submodule.smul_mem _ _ h
-    · intro _ _ _ _ _ h
-      rw [tmul_smul]
-      apply Submodule.smul_mem _ _ h
+  classical
+  have := Fintype.ofFinite ι
+  simp_rw [eq_top_iff, ← span_tprod_eq_top, Submodule.span_le, Set.subset_def, SetLike.mem_coe]
+  simp_rw [Submodule.eq_top_iff', Finsupp.mem_span_range_iff_exists_finsupp] at hg
+  rintro _ ⟨m, rfl⟩
+  choose c hc using fun i ↦ hg i (m i)
+  simp_rw [← funext hc, Finsupp.sum, MultilinearMap.map_sum_finset, MultilinearMap.map_smul_univ]
+  exact sum_mem fun r _ ↦ Submodule.smul_mem _ _ (Submodule.mem_span_of_mem (Set.mem_range_self r))
 
 lemma ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
     {φ φ' : (⨂[R] i, M i) →ₗ[R] N}
     (h : ∀ (j : (i : ι) → γ i),
       φ (tprod R (fun i ↦ g (j i))) = φ' (tprod R (fun i ↦ g (j i)))) :
-    φ = φ' := by
-  apply LinearMap.ext
-  intro x
-  have hx := submodule_span_eq_top hg ▸ (Submodule.mem_top (x := x))
-  revert x hx
-  apply Submodule.span_induction
-  · rintro _ ⟨j, rfl⟩
-    simp [h j]
-  · simp
-  · intro _ _ _ _ h h'
-    simp [h, h']
-  · intro _ _ _ h
-    simp [h]
-
+    φ = φ' :=
+  LinearMap.ext_on_range (submodule_span_eq_top hg) h
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
