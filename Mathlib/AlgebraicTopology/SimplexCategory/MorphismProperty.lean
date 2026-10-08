@@ -78,12 +78,13 @@ lemma morphismProperty_eq_top
       W (Truncated.σ d i (by dsimp; lia) (by dsimp; lia))) :
     W = ⊤ := by
   refine eq_top_iff.mpr fun a b f _ ↦ ?_
-  obtain ⟨c, e, m, he, hm, rfl⟩ := exists_epi_mono_factorization f
-  exact W.comp_mem e m
+  obtain ⟨F⟩ := Limits.HasStrongEpiMonoFactorisations.has_fac f
+  rw [← F.fac]
+  exact W.comp_mem F.e F.m
     (epi_induction (motive := W) W.id_mem
-      (fun _ hx i h ↦ W.comp_mem _ _ (σ_mem _ hx i) h) e)
+      (fun _ hx i h ↦ W.comp_mem _ _ (σ_mem _ hx i) h) F.e)
     (mono_induction (motive := W) W.id_mem
-      (fun _ hy i h ↦ W.comp_mem _ _ h (δ_mem _ hy i)) m)
+      (fun _ hy i h ↦ W.comp_mem _ _ h (δ_mem _ hy i)) F.m)
 
 end Truncated
 

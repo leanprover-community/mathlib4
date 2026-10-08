@@ -142,8 +142,24 @@ instance {d : ℕ} : SplitEpiCategory (Truncated d) where
     have := epi_iff.mp hf
     exact ((inclusion d).isSplitEpi_iff f).mp (isSplitEpi_of_epi f.hom)
 
-/- TODO
-Show the instance `HasStrongEpiMonoFactorisations (Truncated d)`
--/
+instance {d : ℕ} {a b : Truncated d} (g : a.obj ⟶ b.obj) [hg : Epi g] :
+    Epi (ObjectProperty.homMk g : a ⟶ b) :=
+  epi_iff.mpr hg
+
+instance {d : ℕ} {a b : Truncated d} (g : a.obj ⟶ b.obj) [hg : Mono g] :
+    Mono (ObjectProperty.homMk g : a ⟶ b) :=
+  mono_iff.mpr hg
+
+instance {d : ℕ} : StrongEpiCategory (Truncated d) where
+  strongEpi_of_epi f _ :=
+    have := isSplitEpi_of_epi f
+    inferInstance
+
+instance {d : ℕ} : HasStrongEpiMonoFactorisations (Truncated d) where
+  has_fac {a b} f :=
+    ⟨{ I := ⟨image f.hom, (len_le_of_epi (factorThruImage f.hom)).trans a.2⟩
+       m := ObjectProperty.homMk (image.ι f.hom)
+       e := ObjectProperty.homMk (factorThruImage f.hom)
+       e_strong_epi := strongEpi_of_epi _ }⟩
 
 end SimplexCategory.Truncated
