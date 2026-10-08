@@ -42,7 +42,9 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
   is an element in the ring whose valuation is `≠ 0` and `≠ 1`.
 * `Valuation.IsEquiv`, the heterogeneous equivalence relation on valuations
 * `Valuation.supp`, the support of a valuation
-* `orderMonoidIso` is the ordered isomorphism between the `ValueGroup₀`'s of two
+* `orderMonoidIso` is the ordered isomorphism between the `valueGroup`'s of two
+  equivalent valuations.
+* `orderMonoidIso₀` is the ordered isomorphism between the `ValueGroup₀`'s of two
   equivalent valuations.
 
 * `AddValuation R Γ₀`, the type of additive valuations on `R` with values in a
@@ -809,13 +811,6 @@ open MonoidWithZeroHom MonoidWithZeroHom.valueGroup MonoidWithZeroHom.ValueGroup
 `w.valueGroup`: given `x : v.valueGroup` and nonzero `a b : R` such that `(v a) * x = (v b)`,
 `valueGroupFun x` is defined as `(w b) * (w a)⁻¹`. -/
 noncomputable def valueGroupFun (h : v.IsEquiv w) (x : v.valueGroup) : w.valueGroup :=
-  letI c := (exists_mk (v : R →*₀ Γ₀) x).choose
-  letI d := (exists_mk (v : R →*₀ Γ₀) x).choose_spec.choose
-  valueGroup.mk (w : R →*₀ Γ'₀) c d
-    (h.eq_zero.ne.mp (exists_mk (v : R →*₀ Γ₀) x).choose_spec.choose_spec.1)
-    (h.eq_zero.ne.mp (exists_mk (v : R →*₀ Γ₀) x).choose_spec.choose_spec.2.1)
-
-noncomputable def valueGroupFun' (h : v.IsEquiv w) (x : v.valueGroup) : w.valueGroup :=
   letI hx := (exists_mk (v : R →*₀ Γ₀) x)
   valueGroup.mk (w : R →*₀ Γ'₀) hx.choose hx.choose_spec.choose
     (h.eq_zero.ne.mp hx.choose_spec.choose_spec.1) (h.eq_zero.ne.mp hx.choose_spec.choose_spec.2.1)
