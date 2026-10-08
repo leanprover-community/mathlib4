@@ -230,7 +230,7 @@ variable (C)
 namespace Monad
 
 /-- The identity monad. -/
-@[to_dual (attr := simps!)]
+@[to_dual (attr := simps!) /-- The identity comonad. -/]
 def id : Monad C where
   toFunctor := 𝟭 C
   η := 𝟙 (𝟭 C)
