@@ -80,7 +80,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- To show that `η_X` is an equalizer for `(UFη_X, η_UFX)`, it suffices to assume it's always an
 equalizer of something (i.e. a regular mono).
 -/
-def unitEqualises (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
+def unitEqualizes (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
     IsLimit (Fork.ofι (adj₁.unit.app X) (adj₁.unit_naturality _)) :=
   Fork.IsLimit.mk' _ fun s => by
     have := fun Y ↦ h Y |>.mono
@@ -95,6 +95,8 @@ def unitEqualises (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
     · intro m hm
       rw [← cancel_mono (adj₁.unit.app X)]
       apply hm.trans ((h X).lift' s.ι _).2.symm
+
+@[deprecated (since := "2026-10-05")] alias unitEqualises := unitEqualizes
 
 /-- (Implementation)
 To construct the right adjoint, we use the equalizer of `U' F η_X` with the composite
@@ -150,7 +152,7 @@ noncomputable def constructRightAdjointEquiv (h : ∀ X : B, RegularMono (adj₁
       rw [← (adj₁.homEquiv _ _).injective.eq_iff, adj₁.homEquiv_unit,
         adj₁.homEquiv_unit, adj₁.homEquiv_unit, eq_comm]
       simp
-    _ ≃ (L.obj Y ⟶ X) := (Fork.IsLimit.homIso (unitEqualises adj₁ h X) _).symm
+    _ ≃ (L.obj Y ⟶ X) := (Fork.IsLimit.homIso (unitEqualizes adj₁ h X) _).symm
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

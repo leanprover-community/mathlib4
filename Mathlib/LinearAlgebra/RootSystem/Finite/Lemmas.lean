@@ -31,8 +31,6 @@ root pairings.
 
 public section
 
-noncomputable section
-
 open Function Set
 open Submodule (span)
 open FaithfulSMul (algebraMap_injective)
