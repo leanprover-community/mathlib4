@@ -72,7 +72,7 @@ lemma mk_eq_one_iff_exists_pow_eq_val {u : αˣ} : (u : ModPow α n) = 1 ↔ ∃
 @[to_additive]
 lemma mk_eq_mk_iff {u v : αˣ} : (u : ModPow α n) = v ↔ ∃ w : αˣ, v = u * w ^ n := by
   simp only [QuotientGroup.eq, MonoidHom.mem_range, powMonoidHom_apply]
-  exact congr(∃ x, $(eq_comm.trans _root_.inv_mul_eq_iff_eq_mul))
+  exact congr(∃ _, $(eq_comm.trans _root_.inv_mul_eq_iff_eq_mul))
 
 @[to_additive]
 lemma unit_eq_one_iff (ha : IsUnit a) : (ha.unit : ModPow α n) = 1 ↔ ∃ x, x ^ n = a := by
