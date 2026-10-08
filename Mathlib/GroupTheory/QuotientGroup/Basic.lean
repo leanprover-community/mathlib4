@@ -507,3 +507,54 @@ lemma mulEquivPiModRangePowMonoidHom_apply (x : (i : ι) → A i) :
 end powMonoidHom
 
 end QuotientGroup
+
+namespace Monoid
+
+variable (G : Type*) [Monoid G]
+
+/-- The action of inner automorphisms of a monoid on the endomorphism monoid. -/
+abbrev innMulAction : MulAction Gˣ (Monoid.End G) :=
+  .compHom _ <| (Units.coeHom _).comp <| MulAut.equivUnitsEnd.toMonoidHom.comp MulAut.unitsConjHom
+
+attribute [local instance] Monoid.innMulAction
+
+variable {G} in
+@[simp] theorem innMulAction_apply (g : Gˣ) (φ : Monoid.End G) (x : G) :
+    (g • φ) x = MulAut.unitsConj g (φ x) := rfl
+
+/-- The congruence relation of "differing by an inner automorphism on the left"
+on the endomorphism monoid of a monoid. -/
+def innConn : Con (Monoid.End G) where
+  toSetoid := MulAction.orbitRel Gˣ (Monoid.End G)
+  mul' := by
+    rintro _ φ _ ψ ⟨g, rfl⟩ ⟨g', rfl⟩; use g * g'.map φ; ext
+    simp [MulAut.unitsConj, mul_assoc]; rfl
+
+variable {G} in
+theorem bijective_of_innConn_one {φ : Monoid.End G} (hφ : innConn G φ 1) :
+    Function.Bijective φ := by
+  obtain ⟨g, rfl⟩ := hφ; exact (MulAut.unitsConj g).bijective
+
+/-- The outer automorphism group Out(G) := Aut(G)⧸Inn(G) of a monoid G. -/
+abbrev Out : Type _ := MulAut G ⧸ MulAut.unitsConjHom.range
+
+/-- The outer automorphism monoid End(G)⧸Inn(G) of a monoid G. -/
+abbrev OuterEnd : Type _ := (innConn G).Quotient
+
+variable {G}
+
+/-- Out(G) is isomorphic to (End(G)⧸Inn(G))ˣ. -/
+noncomputable def Out.equivUnitsOuterEnd : Out G ≃* (OuterEnd G)ˣ :=
+  .ofBijective (QuotientGroup.lift _ (⟨⟨fun f ↦ ⟨⟦f.toMonoidHom⟧, ⟦f⁻¹.toMonoidHom⟧,
+    congr(⟦$(mul_inv_cancel f).toMonoidHom⟧), congr(⟦$(inv_mul_cancel f).toMonoidHom⟧)⟩, rfl⟩,
+    fun _ _ ↦ rfl⟩) <| by rintro _ ⟨g, rfl⟩; refine Units.ext <| Quotient.sound ⟨g, rfl⟩)
+  { left := (MonoidHom.ker_eq_bot_iff _).mp <| bot_unique <| by
+      rintro ⟨φ⟩ h
+      have ⟨g, hg⟩ := Quotient.exact congr($h.1)
+      exact .symm <| QuotientGroup.eq.mpr ⟨g, MulEquiv.toMonoidHom_injective hg⟩
+    right := by
+      rintro ⟨⟨φ⟩, ⟨ψ⟩, hφψ, hψφ⟩
+      exact ⟨⟦.ofBijective φ ⟨(bijective_of_innConn_one (Quotient.exact hψφ)).1.of_comp (g := φ),
+        (bijective_of_innConn_one (Quotient.exact hφψ)).2.of_comp (f := φ)⟩⟧, Units.ext rfl⟩ }
+
+end Monoid

@@ -1547,6 +1547,7 @@ public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.OuterEndomorphism
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
@@ -3370,6 +3371,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
 public import Mathlib.CategoryTheory.ObjectProperty.SiteLocal
 public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.OuterEndomorphism
 public import Mathlib.CategoryTheory.PEmpty
 public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.CategoryTheory.PathCategory.Basic
@@ -8268,6 +8270,7 @@ public import Mathlib.Topology.Homotopy.Contractible
 public import Mathlib.Topology.Homotopy.Equiv
 public import Mathlib.Topology.Homotopy.HSpaces
 public import Mathlib.Topology.Homotopy.HomotopyGroup
+public import Mathlib.Topology.Homotopy.Isotopy
 public import Mathlib.Topology.Homotopy.Lifting
 public import Mathlib.Topology.Homotopy.LocallyContractible
 public import Mathlib.Topology.Homotopy.Path

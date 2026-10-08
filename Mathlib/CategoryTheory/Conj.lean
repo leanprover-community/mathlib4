@@ -57,6 +57,8 @@ theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by
 theorem trans_conj {Z : C} (β : Y ≅ Z) (f : End X) : (α ≪≫ β).conj f = β.conj (α.conj f) := by
   cat_disch
 
+@[simp] theorem symm_conj : α.symm.conj = α.conj.symm := rfl
+
 @[simp]
 theorem symm_self_conj (f : End X) : α.symm.conj (α.conj f) = f := by
   rw [← trans_conj, α.self_symm_id, refl_conj]

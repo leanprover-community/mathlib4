@@ -331,24 +331,6 @@ instance AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M
 
 end DistribSMul
 
-/-- Typeclass for multiplicative actions on additive structures.
-
-For example, if `G` is a group (with group law written as multiplication) and `A` is an
-abelian group (with group law written as addition), then to give `A` a `G`-module
-structure (for example, to use the theory of group cohomology) is to say `[DistribMulAction G A]`.
-Note in that we do not use the `Module` typeclass for `G`-modules, as the `Module` typeclass
-is for modules over a ring rather than a group.
-
-Mathematically, `DistribMulAction G A` is equivalent to giving `A` the structure of
-a `ℤ[G]`-module.
--/
-@[ext]
-class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
-  /-- Multiplying `0` by a scalar gives `0` -/
-  smul_zero : ∀ a : M, a • (0 : A) = 0
-  /-- Scalar multiplication distributes across addition -/
-  smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
-
 section
 
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
@@ -377,18 +359,6 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
   { hf.distribSMul f smul, hf.mulAction f smul with }
-
-variable (A)
-
-variable (M)
-
-/-- Each element of the monoid defines an additive monoid homomorphism. -/
-@[simps]
-def DistribMulAction.toAddMonoidEnd :
-    M →* AddMonoid.End A where
-  toFun := DistribSMul.toAddMonoidHom A
-  map_one' := AddMonoidHom.ext <| one_smul M
-  map_mul' x y := AddMonoidHom.ext <| mul_smul x y
 
 end
 

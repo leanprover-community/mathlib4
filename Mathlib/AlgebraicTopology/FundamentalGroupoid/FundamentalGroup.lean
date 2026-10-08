@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 public import Mathlib.CategoryTheory.Conj
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Fundamental group of a space
