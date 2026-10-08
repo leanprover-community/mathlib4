@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
-public import Mathlib.Order.KrullDimension
+
+import Mathlib.Data.Finset.Sort
 
 /-!
 
@@ -27,8 +28,8 @@ This file contains lemmas to work with the maximal lengths of chains of arbitrar
 - `Set.chainHeight_mono`: If `s ⊆ t` then `s.chainHeight ≤ t.chainHeight`.
 - `Set.chainHeight_eq_of_relEmbedding`: If `f` is an relation embedding, then
   `(f '' s).chainHeight = s.chainHeight`.
-- `Order.height_eq_chainHeight_Iio`: In a preorder, `height a = (Set.Iio a).chainHeight (· < ·)`.
-- `Order.height_eq_encard_Iio`: In a linear order, `height a = (Set.Iio a).encard`.
+- `Set.natCast_le_chainHeight_iff`: In a preorder, a set has chain height at least `n` if and
+  only if it contains a strictly increasing sequence of `n` elements.
 
 -/
 
@@ -178,53 +179,46 @@ theorem chainHeight_coe_univ_lt [LT α] :
     (@Set.univ ↑s).chainHeight (· < ·) = s.chainHeight (· < ·) := by
   simpa using chainHeight_coe_univ s (· < ·)
 
+section Preorder
+
+variable [Preorder α]
+
+/-- A finite strict chain can be enumerated by a strictly monotone function. -/
+theorem IsChain.exists_strictMono_of_encard_eq {s : Set α} {n : ℕ}
+    (hs : IsChain (· < ·) s) (hn : s.encard = n) :
+    ∃ f : Fin n → α, StrictMono f ∧ range f = s := by
+  classical
+  let := (finite_of_encard_eq_coe hn).fintype
+  let := hs.linearOrder
+  have hcard : Fintype.card s = n := by
+    exact ENat.natCast_inj.mp ((ENat.card_eq_coe_fintype_card).symm.trans hn)
+  let e := Fintype.orderIsoFinOfCardEq s hcard
+  refine ⟨fun i ↦ (e i).val, fun _ _ h ↦ e.strictMono h, ?_⟩
+  ext x
+  constructor
+  · rintro ⟨i, rfl⟩
+    exact (e i).property
+  · intro hx
+    exact ⟨e.symm ⟨x, hx⟩, congr_arg Subtype.val (e.apply_symm_apply _)⟩
+
+/-- A set has chain height at least `n` if and only if it contains a strictly increasing
+sequence of `n` elements. -/
+theorem natCast_le_chainHeight_iff (s : Set α) (n : ℕ) :
+    (n : ℕ∞) ≤ s.chainHeight (· < ·) ↔
+      ∃ f : Fin n → α, StrictMono f ∧ range f ⊆ s := by
+  constructor
+  · intro hn
+    obtain ⟨t, hts, htn, ht⟩ := exists_isChain_of_le_chainHeight n hn
+    obtain ⟨f, hf, hft⟩ := IsChain.exists_strictMono_of_encard_eq ht htn
+    exact ⟨f, hf, hft ▸ hts⟩
+  · rintro ⟨f, hf, hfs⟩
+    have hc : IsChain (· < ·) (range f) := by
+      rw [← image_univ]
+      exact (isChain_of_trichotomous _).image_of_map_rel _ _ _ fun _ _ h ↦ hf h
+    simpa [hf.injective.encard_range] using
+      encard_le_chainHeight_of_isChain s (range f) hfs hc
+
+
+end Preorder
+
 end Set
-
-namespace Order
-
-variable {α : Type*}
-
-/-- In a preorder, the height of an element `a` is the supremum of the cardinalities of the sets
-of elements less than `a` that are chains for `<`. -/
-theorem height_eq_chainHeight_Iio [Preorder α] (a : α) :
-    height a = (Set.Iio a).chainHeight (· < ·) := by
-  refine le_antisymm (height_le fun p hp ↦ ?_) (ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_)
-  · have hf : StrictMono fun i ↦ p (Fin.castSucc i) := p.strictMono.comp Fin.strictMono_castSucc
-    simpa [hf.injective.encard_range] using Set.encard_le_chainHeight_of_isChain (Set.Iio a) _
-      (Set.range_subset_iff.mpr fun i ↦ (p.strictMono (Fin.castSucc_lt_last i)).trans_eq hp)
-      (Set.image_univ ▸ (isChain_of_trichotomous _).image_of_map_rel _ _ _ fun _ _ ↦ (hf ·))
-  induction n generalizing a with
-  | zero => simp
-  | succ n ih =>
-    obtain ⟨t, hta, htn, htc⟩ := Set.exists_isChain_of_le_chainHeight _ hn
-    obtain ⟨m, hm⟩ := (Set.finite_of_encard_eq_coe htn).exists_maximal
-      (Set.nonempty_of_encard_ne_zero (by simp [htn]))
-    grw [Nat.cast_add_one, ih m ?_, height_add_one_le (hta hm.1)]
-    simpa [Set.encard_sdiff_singleton_of_mem hm.1, htn] using
-      Set.encard_le_chainHeight_of_isChain (Set.Iio m) (t \ {m})
-        (fun _ hx ↦ (htc hx.1 hm.1 hx.2).resolve_right (hm.not_gt hx.1)) htc.diff
-
-/-- In a preorder, the coheight of an element `a` is the supremum of the cardinalities of the sets
-of elements greater than `a` that are chains for `<`. -/
-theorem coheight_eq_chainHeight_Ioi [Preorder α] (a : α) :
-    coheight a = (Set.Ioi a).chainHeight (· < ·) :=
-  (height_eq_chainHeight_Iio (α := αᵒᵈ) a).trans (Set.chainHeight_flip _ _)
-
-theorem height_le_encard_Iio [Preorder α] (a : α) : height a ≤ (Set.Iio a).encard :=
-  (height_eq_chainHeight_Iio a).trans_le (Set.chainHeight_le_encard _ _)
-
-theorem coheight_le_encard_Ioi [Preorder α] (a : α) : coheight a ≤ (Set.Ioi a).encard :=
-  height_le_encard_Iio (α := αᵒᵈ) a
-
-/-- In a linear order, the height of an element `a` is the cardinality of the set of elements
-less than `a`. -/
-theorem height_eq_encard_Iio [LinearOrder α] (a : α) : height a = (Set.Iio a).encard :=
-  (height_eq_chainHeight_Iio a).trans
-    (Set.encard_eq_chainHeight_of_isChain _ (isChain_of_trichotomous _)).symm
-
-/-- In a linear order, the coheight of an element `a` is the cardinality of the set of elements
-greater than `a`. -/
-theorem coheight_eq_encard_Ioi [LinearOrder α] (a : α) : coheight a = (Set.Ioi a).encard :=
-  height_eq_encard_Iio (α := αᵒᵈ) a
-
-end Order

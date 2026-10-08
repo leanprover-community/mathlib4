@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.Height
 public import Mathlib.Order.RelSeries
 
 import Mathlib.Tactic.FinCases
@@ -37,6 +38,9 @@ coheight is defined to be `sup {n | a ≤ a₀ < a₁ < ... < aₙ}` .
 * The height in the dual order equals the coheight, and vice versa.
 
 * The height is monotone (`height_mono`), and strictly monotone if finite (`height_strictMono`).
+
+* The height is the chain height of the strict lower interval (`height_eq_chainHeight_Iio`),
+  and in a linear order it is the cardinality of that interval (`height_eq_encard_Iio`).
 
 * The coheight is antitone (`coheight_anti`), and strictly antitone if finite
   (`coheight_strictAnti`).
@@ -583,6 +587,53 @@ lemma one_lt_height_iff {x : α} : 1 < Order.height x ↔ ∃ y z, z < y ∧ y <
     exact Order.length_le_height this.le
 
 end height
+
+section chainHeight
+
+variable {α : Type*}
+
+set_option backward.isDefEq.respectTransparency false in
+/-- In a preorder, the height of an element `a` is the supremum of the cardinalities of the sets
+of elements less than `a` that are chains for `<`. -/
+theorem height_eq_chainHeight_Iio [Preorder α] (a : α) :
+    height a = (Set.Iio a).chainHeight (· < ·) := by
+  refine le_antisymm (height_le fun p hp ↦ ?_)
+    (ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_)
+  · exact (Set.natCast_le_chainHeight_iff _ _).mpr
+      ⟨fun i ↦ p (Fin.castSucc i), p.strictMono.comp Fin.strictMono_castSucc,
+        Set.range_subset_iff.mpr fun i ↦ (p.strictMono (Fin.castSucc_lt_last i)).trans_eq hp⟩
+  · obtain ⟨f, hf, hfs⟩ := (Set.natCast_le_chainHeight_iff _ _).mp hn
+    cases n with
+    | zero => simp
+    | succ n =>
+      let p := LTSeries.mk n f hf
+      simpa [p] using length_le_height_last
+        (p := p.snoc a (hfs (Set.mem_range_self (Fin.last n))))
+
+/-- In a preorder, the coheight of an element `a` is the supremum of the cardinalities of the sets
+of elements greater than `a` that are chains for `<`. -/
+theorem coheight_eq_chainHeight_Ioi [Preorder α] (a : α) :
+    coheight a = (Set.Ioi a).chainHeight (· < ·) :=
+  (height_eq_chainHeight_Iio (α := αᵒᵈ) a).trans (Set.chainHeight_flip _ _)
+
+theorem height_le_encard_Iio [Preorder α] (a : α) : height a ≤ (Set.Iio a).encard :=
+  (height_eq_chainHeight_Iio a).trans_le (Set.chainHeight_le_encard _ _)
+
+theorem coheight_le_encard_Ioi [Preorder α] (a : α) : coheight a ≤ (Set.Ioi a).encard :=
+  height_le_encard_Iio (α := αᵒᵈ) a
+
+/-- In a linear order, the height of an element `a` is the cardinality of the set of elements
+less than `a`. -/
+theorem height_eq_encard_Iio [LinearOrder α] (a : α) : height a = (Set.Iio a).encard :=
+  (height_eq_chainHeight_Iio a).trans
+    (Set.encard_eq_chainHeight_of_isChain _ (isChain_of_trichotomous _)).symm
+
+/-- In a linear order, the coheight of an element `a` is the cardinality of the set of elements
+greater than `a`. -/
+theorem coheight_eq_encard_Ioi [LinearOrder α] (a : α) : coheight a = (Set.Ioi a).encard :=
+  height_eq_encard_Iio (α := αᵒᵈ) a
+
+end chainHeight
 
 /-!
 ## Krull dimension
