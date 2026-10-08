@@ -9,16 +9,15 @@ public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Finset.Option
 
 /-!
-# fintype instances for option
+# Fintype instances for `Option`
+
+This file declares `Fintype` instances for `Option` types, declares induction principles for
+`Fintype` and `Finite`, and proves that `Option α` is (in)finite iff `α` is (in)finite.
 -/
 
 @[expose] public section
 
 assert_not_exists MonoidWithZero MulAction
-
-open Function
-
-open Nat
 
 universe u v
 
@@ -32,6 +31,17 @@ instance {α : Type*} [Fintype α] : Fintype (Option α) :=
 instance {α : Type*} [Finite α] : Finite (Option α) :=
   have := Fintype.ofFinite α
   Finite.of_fintype _
+
+/-- `Option α` is finite if and only if the underlying type `α` is finite. -/
+@[simp]
+theorem Option.finite_iff {α : Type*} : Finite (Option α) ↔ Finite α where
+  mpr _ := inferInstance
+  mp _ := .of_injective _ (Option.some_injective α)
+
+/-- `Option α` is infinite if and only if the underlying type `α` is infinite. -/
+@[simp]
+theorem Option.infinite_iff {α : Type*} : Infinite (Option α) ↔ Infinite α := by
+  simp [← not_finite_iff_infinite, Option.finite_iff]
 
 theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
