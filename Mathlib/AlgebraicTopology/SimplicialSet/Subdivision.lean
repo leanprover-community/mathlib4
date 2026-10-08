@@ -277,4 +277,31 @@ lemma finsetImage_nerveNonemptyFiniteChainsIso_inv_app_simplex_obj_univ
       (s.obj i).finset := by
   simp [← nerveNonemptyFiniteChainsIso_hom_app_obj_finset]
 
+namespace NonemptyFiniteChains
+
+variable {X : Type u} [LinearOrder X] [Fintype X] [Nontrivial X] (x₀ : X)
+
+noncomputable def hornArrowIsoRangeSd' :
+    Arrow.mk (NonemptyFiniteChains.horn x₀).ι ≅
+      Arrow.mk (Subcomplex.range (sd'.map (PartialOrder.horn x₀).ι)).ι :=
+  Subcomplex.congrArrowι' (nerveNonemptyFiniteChainsIso _).symm (by
+    ext ⟨n⟩ x
+    trans (((nerveNonemptyFiniteChainsIso X).inv.app _ x).obj (Fin.last _)).simplex ∈
+      (PartialOrder.horn x₀).obj _
+    · apply SSet.mem_range_sd'_map_ι_app_iff
+    · simp [mem_horn_iff.{u}, ← Set.toFinset_subset_toFinset,
+        finsetImage_nerveNonemptyFiniteChainsIso_inv_app_simplex_obj_univ.{u}])
+
+noncomputable def hornArrowIsoSd' :
+    Arrow.mk (NonemptyFiniteChains.horn x₀).ι ≅
+      Arrow.mk (sd'.map (PartialOrder.horn x₀).ι) :=
+  hornArrowIsoRangeSd' _ ≪≫ Arrow.isoMk (asIso (Subcomplex.toRange _)).symm (Iso.refl _)
+
+noncomputable def hornArrowIsoSd :
+    Arrow.mk (NonemptyFiniteChains.horn x₀).ι ≅
+      Arrow.mk (sd.map (PartialOrder.horn x₀).ι) :=
+  hornArrowIsoSd' _ ≪≫ Arrow.isoMk (asIso (sdToSd'.app _)).symm (asIso (sdToSd'.app _)).symm
+
+end NonemptyFiniteChains
+
 end PartialOrder

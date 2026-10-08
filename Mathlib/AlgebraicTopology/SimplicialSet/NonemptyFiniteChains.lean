@@ -41,6 +41,9 @@ lemma range_toN_simplex_obj {n : ℕ} (x : (nerve X) _⦋n⦌) :
     exact ⟨_, rfl⟩
 
 open Classical in
+/-- If `X` is a partially ordered type, this is the map which sends
+a simplex `s` of the nerve of `X` to the nonempty finite chain given
+by the finset of vertices of `s`. -/
 @[no_expose]
 noncomputable def ofS (s : (nerve X).S) : NonemptyFiniteChains X where
   finset := Finset.univ.image s.simplex.obj
@@ -62,6 +65,9 @@ lemma mem_ofS_iff (s : (nerve X).S) (x : X) :
 lemma obj_mem_ofS (s : (nerve X).S) (i : Fin (s.dim + 1)) :
     s.simplex.obj i ∈ (ofS s).1 := by simp [ofS]
 
+/-- If `X` is a partially ordered type, this is the map which sends
+a nondegenerate simplex `s` of the nerve of `X` to the nonempty finite
+chain given by the finset of vertices of `s`. -/
 noncomputable def ofN (s : (nerve X).N) : NonemptyFiniteChains X := ofS s.toS
 
 @[simp]
@@ -125,6 +131,8 @@ variable (X) in
 lemma bijective_ofN : Function.Bijective (ofN (X := X)) :=
   ⟨injective_ofN, surjective_ofN⟩
 
+/-- If `X` is a partially ordered type, this is the order isomorphism
+from the nondegenerate simplices of the nerve of `X` to `NonemptyFiniteChains X`. -/
 @[simps! apply]
 noncomputable def nerveNEquiv : (nerve X).N ≃o NonemptyFiniteChains X :=
   (Equiv.ofBijective _ (bijective_ofN X)).toOrderIso
@@ -140,6 +148,12 @@ section
 
 variable {X : Type u} [LinearOrder X] [Fintype X] [Nontrivial X] (x₀ : X)
 
+/-- If `X` is a nontrivial finite linearly ordered type and `x₀ : X`, this
+is the subcomplex of the nerve of `NonemptyFiniteChains X` which consists
+of the union of the images of `nerve (NonemptyFiniteChains {y}ᶜ)` for `y ≠ x₀`.
+This identifies to the subdivision of the horn `PartialOrder.horn x₀`,
+see `PartialOrder.NonemptyFiniteChains.hornArrowIsoRangeSd'` in the file
+`Mathlib/AlgebraicTopology/SimplicialSet/Subdivision.lean`. -/
 def horn : (nerve (NonemptyFiniteChains X)).Subcomplex where
   obj _ := Set.ofPred (fun s ↦ ∀ i, ¬ complSingleton x₀ ≤ s.obj i)
   map _ _ hs _ := hs _

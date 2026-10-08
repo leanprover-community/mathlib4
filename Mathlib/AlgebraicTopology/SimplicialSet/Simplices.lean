@@ -57,6 +57,8 @@ lemma mk_surjective (s : X.S) :
     ∃ (n : ℕ) (x : X _⦋n⦌), s = mk x :=
   ⟨s.dim, s.simplex, rfl⟩
 
+/-- If `A : X.Subcomplex`, this constructs an element in `A.toSSet.S`
+from `x : X.S` such that `x.simplex ∈ A.obj _`. -/
 @[simps!, implicit_reducible]
 def toSubcomplex (x : X.S) {A : X.Subcomplex} (hx : x.simplex ∈ A.obj _) :
     A.toSSet.S :=

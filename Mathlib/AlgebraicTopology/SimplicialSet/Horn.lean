@@ -349,12 +349,21 @@ end SSet
 
 namespace PartialOrder
 
+/-- If `X` is a partially ordered type and `x₀ : X`, this is the subcomplex
+of the nerve of `X` which consists of simplices `s : Fin (n + 1) ⥤ X`
+such that `¬ {x₀}ᶜ ⊆ Set.range s.obj` holds, i.e. there exists `y ≠ x₀`,
+such that `Set.range s.obj ⊆ {y}ᶜ`. -/
 @[simps]
 def horn {X : Type u} [PartialOrder X] (x₀ : X) : (nerve X).Subcomplex where
-  obj n := Set.ofPred (fun s ↦ ¬ ({x₀}ᶜ ⊆ Set.range s.obj))
+  obj n := Set.ofPred (fun s ↦ ¬ {x₀}ᶜ ⊆ Set.range s.obj)
   map f x hx h' := hx (h'.trans (by
     rintro _ ⟨i, rfl⟩
     exact ⟨_, rfl⟩))
+
+lemma mem_horn_iff {X : Type u} [PartialOrder X] {x₀ : X} {n : SimplexCategoryᵒᵖ}
+    (s : (nerve X).obj n) :
+    s ∈ (horn x₀).obj n ↔ ∃ y ≠ x₀, Set.range s.obj ⊆ {y}ᶜ := by
+  simp [Set.subset_def]
 
 def hornArrowIso (n : ℕ) (i : Fin (n + 2)) :
     Arrow.mk (horn.{u} (ULift.up i)).ι ≅ Arrow.mk (SSet.horn (n + 1) i).ι :=
