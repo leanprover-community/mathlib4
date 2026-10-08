@@ -1158,20 +1158,21 @@ ValueGroupWithZero R   | h.orderMonoidIso
 ```
 -/
 @[simp]
-theorem orderMonoidIso_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGroupWithZero Γ']
+theorem orderMonoidIso₀_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGroupWithZero Γ']
     (w : Valuation R Γ') [w.Compatible] (x : ValueGroupWithZero R) (h : w.IsEquiv v) :
-    h.orderMonoidIso
-    (embed w x) = embed v x := by
+    h.orderMonoidIso₀ (embed w x) = embed v x := by
   simp only [embed, coe_mk, ZeroHom.coe_mk]
   induction x using ValueGroupWithZero.ind with
-  | mk r s => simp [Valuation.IsEquiv.orderMonoidIso_spec₀]
+  | mk r s => simp [Valuation.IsEquiv.orderMonoidIso₀_spec₀]
+
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_embed := orderMonoidIso₀_embed
 
 /-- If a valuation `v` is compatible with the valuative relation, then `ValueGroupWithZero R`
 is isomorphic to the image group (with zero) of `v` as an ordered group with zero. -/
 noncomputable
 def orderMonoidIso [v.Compatible] : ValueGroupWithZero R ≃*o v.ValueGroup₀ where
   __ := embed v
-  invFun x := embedding ((isEquiv v (valuation R)).orderMonoidIso x)
+  invFun x := embedding ((isEquiv v (valuation R)).orderMonoidIso₀ x)
   left_inv x := by simp
   right_inv := Function.rightInverse_of_injective_of_leftInverse
       (by rw [← Function.comp_def, EquivLike.injective_comp]

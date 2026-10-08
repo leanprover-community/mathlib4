@@ -459,7 +459,7 @@ theorem IsRankOneDiscrete.of_isEquiv (h : v.IsEquiv w) [hv : IsRankOneDiscrete v
     IsRankOneDiscrete w := by
   have : w.IsNontrivial := (IsEquiv.isNontrivial_iff h).mp inferInstance
   have : IsCyclic (valueGroup (w : R →*₀ Γ')) := by
-    rw [← MulEquiv.isCyclic h.orderMonoidIso'.toMulEquiv]
+    rw [← MulEquiv.isCyclic h.orderMonoidIso.toMulEquiv]
     infer_instance
   exact Valuation.IsRankOneDiscrete.mk' w
 
