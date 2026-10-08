@@ -73,30 +73,13 @@ private meta partial def elements? (s : Expr) (fuel : Nat := 32) :
 
 /-- The degree `n` of a type `Equiv.Perm (Fin n)`, as a numeral. -/
 private meta def permDegree (ty : Expr) : MetaM Nat := do
-  let ty ← instantiateMVars ty
-  let ty' ← whnfR ty
-  let some fin := (if ty.isAppOfArity ``Equiv.Perm 1 then some (ty.getArg! 0)
-      else if ty'.isAppOfArity ``Equiv 2 then some (ty'.getArg! 0) else none)
+  let some equiv ← whnfUntil (← instantiateMVars ty) ``Equiv
     | throwError "perm_group: expected permutations of `Fin n`, got{indentExpr ty}"
-  let fin ← whnfR fin
-  unless fin.isAppOfArity ``Fin 1 do
-    throwError "perm_group: expected permutations of `Fin n`, got{indentExpr ty}"
+  let some fin ← whnfUntil (equiv.getArg! 0) ``Fin
+    | throwError "perm_group: expected permutations of `Fin n`, got{indentExpr ty}"
   let some n ← evalNat (fin.getArg! 0) |>.run
     | throwError "perm_group: the degree must be a numeral, got{indentExpr (fin.getArg! 0)}"
   return n
-
-/-- `H` unfolded until it is `Subgroup.closure s`, so that a subgroup given by a
-definition, such as `def M : Subgroup _ := Subgroup.closure {a, b}`, is
-recognised. Definitions are unfolded one at a time, and `Subgroup.closure`
-itself is never unfolded. -/
-private meta partial def unfoldToClosure? (H : Expr) (fuel : Nat := 32) : MetaM (Option Expr) := do
-  let H ← whnfR (← instantiateMVars H)
-  if H.isAppOfArity ``Subgroup.closure 3 then return some H
-  match fuel with
-  | 0 => return none
-  | fuel + 1 =>
-    let some H' ← unfoldDefinition? H | return none
-    unfoldToClosure? H' fuel
 
 /-- The subgroup `H` when the type `T` is `↥H`, that is `{x // x ∈ H}`. -/
 private meta def coeSortArg? (T : Expr) : MetaM (Option Expr) := do
@@ -108,19 +91,6 @@ private meta def coeSortArg? (T : Expr) : MetaM (Option Expr) := do
   if H.hasLooseBVars then return none
   return some H
 
-/-- A proof of `{x | x ∈ [g₁, …, gₖ]} = {g₁, …, gₖ}` built from the list lemmas,
-without traversing the elements. -/
-private meta partial def setOfListEq (permTy : Expr) : List Expr → MetaM Expr
-  | [] => mkAppOptM ``setOf_mem_nil #[permTy]
-  | [g] => mkAppM ``setOf_mem_singleton #[g]
-  | g :: rest => do
-    let restE ← mkListLit permTy rest
-    let step ← mkAppM ``List.setOfPred_mem_cons #[restE, g]
-    let ih ← setOfListEq permTy rest
-    let ins ← withLocalDeclD `t (← mkAppOptM ``Set #[permTy]) fun t => do
-      mkLambdaFVars #[t] (← mkAppM ``Insert.insert #[g, t])
-    mkEqTrans step (← mkCongrArg ins ih)
-
 /-- One normalized presentation, including the equality to the original set. -/
 private meta structure Presentation where
   degree : Nat
@@ -130,17 +100,6 @@ private meta structure Presentation where
   /-- A proof that the original generating set equals membership in `list`. -/
   equality : Expr
 
-/-- The element type of a set, including a predicate written as a raw lambda. -/
-private meta def setElementType (s : Expr) : MetaM Expr := do
-  let ty ← inferType s
-  if ty.isAppOfArity ``Set 1 || ty.isAppOfArity ``Finset 1 then return ty.getArg! 0
-  match ← whnfR ty with
-  | .forallE _ dom body _ =>
-    unless body == .sort .zero do
-      throwError "perm_group: unexpected set type{indentExpr ty}"
-    return dom
-  | _ => throwError "perm_group: unexpected set type{indentExpr ty}"
-
 /-- Normalize once, producing a proof that the original set equals list membership. -/
 private meta def presentation (s : Expr) : TermElabM Presentation := do
   let ty ← inferType s
@@ -148,32 +107,25 @@ private meta def presentation (s : Expr) : TermElabM Presentation := do
   let some (elements, finset, literal) ← elements? s
     | throwError "perm_group: the generating set must be a set literal or a coerced Finset \
         literal{indentExpr s}"
-  let permTy ← setElementType s
+  let ty ← inferType s
+  let permTy ← if ty.isAppOfArity ``Set 1 then pure (ty.getArg! 0) else do
+    let .forallE _ dom (.sort .zero) _ ← whnfR ty
+      | throwError "perm_group: unexpected set type{indentExpr ty}"
+    pure dom
   let degree ← permDegree permTy
   let list ← mkListLit permTy elements
   let canonical ← withLocalDeclD `x permTy fun x => do
     mkAppOptM ``Set.ofPred #[permTy,
       ← mkLambdaFVars #[x] (← mkAppM ``Membership.mem #[list, x])]
-  let direct? ← (do
-    if finset then return none
-    if ← isDefEq s canonical then return some (← mkEqRefl s)
-    let direct ← setOfListEq permTy elements
-    if ← isDefEq (← inferType direct) (← mkEq canonical s) then
-      return some (← mkEqSymm direct)
-    return none : MetaM (Option Expr))
-  let equality ← match direct? with
-    | some proof => pure proof
-    | none => do
-      let proof ← mkFreshExprMVar (← mkEq canonical literal)
-      let rem ← Term.withoutErrToSorry <| Tactic.run proof.mvarId! do
-        evalTactic (← `(tactic| simp only [setOf_mem_nil, setOf_mem_singleton,
-          List.setOfPred_mem_cons, insert_empty_eq,
-          Finset.coe_empty, Finset.coe_singleton, Finset.coe_insert]))
-      unless rem.isEmpty do
-        throwError "perm_group: could not identify the generating set with a list\
-          {indentExpr (← rem.head!.getType)}"
-      mkEqSymm (← instantiateMVars proof)
-  let equality ← mkExpectedTypeHint equality (← mkEq s canonical)
+  let proof ← mkFreshExprMVar (← mkEq literal canonical)
+  let rem ← Term.withoutErrToSorry <| Tactic.run proof.mvarId! do
+    evalTactic (← `(tactic| simp only [setOf_mem_nil, setOf_mem_singleton,
+      List.setOfPred_mem_cons, insert_empty_eq,
+      Finset.coe_empty, Finset.coe_singleton, Finset.coe_insert]))
+  unless rem.isEmpty do
+    throwError "perm_group: could not identify the generating set with a list\
+      {indentExpr (← rem.head!.getType)}"
+  let equality ← mkExpectedTypeHint (← instantiateMVars proof) (← mkEq s canonical)
   return { degree, finset, elements, list, equality }
 
 /-- The shape of a supported goal. -/
@@ -193,7 +145,7 @@ private meta def readGoal? (goal : Expr) : MetaM (Option (Expr × GoalKind × Ex
       let rhs := goal.getArg! 2
       if lhs.isAppOfArity ``Nat.card 1 then
         let some H ← coeSortArg? (lhs.getArg! 0) | return none
-        unless (← unfoldToClosure? H).isSome do return none
+        unless (← whnfUntil H ``Subgroup.closure).isSome do return none
         let some N ← (evalNat rhs).run
           | throwError "perm_group: the claimed order must be a numeral{indentExpr rhs}"
         return some (H, .card N)
@@ -204,7 +156,7 @@ private meta def readGoal? (goal : Expr) : MetaM (Option (Expr × GoalKind × Ex
       let m := goal.getArg! 0
       return some (m.getArg! 3, .notMem (m.getArg! 4))
     return none) | return none
-  let some closure ← unfoldToClosure? H | return none
+  let some closure ← whnfUntil H ``Subgroup.closure | return none
   let target := goal.replace fun e => if e == H then some closure else none
   return some (closure.getArg! 2, kind, target)
 
@@ -218,19 +170,11 @@ private meta partial def setLitStx (stx : Syntax) : Option (Array Syntax) :=
     some stx[1].getSepArgs
   else none
 
-/-- Find a converted Hex expression without unfolding the conversion itself. -/
-private meta partial def toHex? (e : Expr) (fuel : Nat := 32) : MetaM (Option Expr) := do
-  if e.isAppOfArity ``Perm.toEquiv 2 then return some (e.getArg! 1)
-  match fuel with
-  | 0 => return none
-  | fuel + 1 =>
-    let some e' ← unfoldDefinition? e | return none
-    toHex? e' fuel
-
 /-- Supply only a round-trip equality; Hex owns the optimized packing proof. -/
 private meta def input (n : Nat) (e : Expr) : MetaM Input := do
   let term ← mkAppOptM ``Perm.ofEquiv #[mkNatLit n, e]
-  let canonical? ← (← toHex? e).mapM fun canonical => do
+  let canonical? ← (← whnfUntil e ``Perm.toEquiv).mapM fun converted => do
+    let canonical := converted.getArg! 1
     return (canonical, ← mkAppM ``Perm.ofEquiv_toEquiv #[canonical])
   return { term, canonical? }
 
