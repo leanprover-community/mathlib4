@@ -47,9 +47,7 @@ jobs:
       run_post_ci: ${{ inputs.run_post_ci }}
       mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
       # The ref inputs choose the code that holds the upload credential, so
-      # the environment requires a CI admin to approve each run. The run has
-      # no Azure writer and uploads to R2 alone.
-      cache_application_id: ''
+      # the environment requires a CI admin to approve each run.
       cache_environment: cache-upload-ci-dev
       runs_on: pr
     secrets: inherit
