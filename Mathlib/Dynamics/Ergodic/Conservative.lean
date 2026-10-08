@@ -41,8 +41,6 @@ conservative dynamical system, Poincare recurrence theorem
 public section
 
 
-noncomputable section
-
 namespace MeasureTheory
 
 open Set Filter Finset Function TopologicalSpace

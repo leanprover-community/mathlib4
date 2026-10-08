@@ -24,8 +24,6 @@ We prove various versions of the formula for the Gaussian integral:
 
 public section
 
-noncomputable section
-
 open Real Set MeasureTheory Filter Asymptotics
 
 open scoped Real Topology
