@@ -47,6 +47,53 @@ namespace Matrix
 
 open LinearMap Matrix
 
+/-! ### Statements which hold over non-commutative rings. -/
+section
+variable {m n R : Type*}
+variable [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] [Semiring R] [StarRing R]
+
+/-- Diagonal matrices are unitary if their entries are. -/
+@[simp]
+theorem diagonal_mem_unitary {d : n → R} :
+    diagonal d ∈ unitary (Matrix n n R) ↔ d ∈ unitary (n → R) := by
+  simp_rw [Unitary.mem_iff, star_eq_conjTranspose, diagonal_conjTranspose,
+    diagonal_mul_diagonal, diagonal_eq_one, Pi.star_def, Pi.mul_def]
+
+@[simp]
+theorem natCast_mem_unitary [Nonempty n] {k : ℕ} :
+    ↑k ∈ unitary (Matrix n n R) ↔ ↑k ∈ unitary R :=
+  diagonal_mem_unitary.trans Pi.const_mem_unitary_iff
+
+@[simp]
+theorem ofNat_mem_unitary [Nonempty n] {k : ℕ} [k.AtLeastTwo] :
+    ofNat(k) ∈ unitary (Matrix n n R) ↔ ofNat(k) ∈ unitary R :=
+  natCast_mem_unitary
+
+/-- A reindexed unitary matrix is unitary. -/
+@[simp]
+theorem submatrix_equiv_mem_unitary {A : Matrix m m R} {e₁ e₂ : n ≃ m} :
+    A.submatrix e₁ e₂ ∈ unitary (Matrix n n R) ↔ A ∈ unitary (Matrix m m R) := by
+  simp [Unitary.mem_iff, star_eq_conjTranspose]
+
+open scoped Kronecker in
+/-- The kronecker product of two unitary matrices is unitary. -/
+theorem kronecker_mem_unitary {U₁ : Matrix n n R} {U₂ : Matrix m m R}
+    (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
+    U₁ ⊗ₖ U₂ ∈ unitary (Matrix (n × m) (n × m) R) := by
+  simp_rw [Unitary.mem_iff, star_eq_conjTranspose, conjTranspose_kronecker']
+  constructor <;> ext <;> simp only [mul_apply, submatrix_apply, kroneckerMap_apply, Prod.fst_swap,
+    conjTranspose_apply, ← star_apply, Prod.snd_swap, ← mul_assoc]
+  · simp_rw [mul_assoc _ (star U₁ _ _), ← Finset.univ_product_univ, Finset.sum_product]
+    rw [Finset.sum_comm]
+    simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₁.1, Matrix.one_apply,
+      mul_boole, ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₂.1,
+      Matrix.one_apply, Finset.sum_const_zero, ← ite_and, Prod.eq_iff_fst_eq_snd_eq]
+  · simp_rw [mul_assoc _ _ (star U₂ _ _), ← Finset.univ_product_univ, Finset.sum_product,
+      ← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₂.2, Matrix.one_apply, mul_boole,
+      ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₁.2, Matrix.one_apply,
+      Finset.sum_const_zero, ← ite_and, Prod.eq_iff_fst_eq_snd_eq, and_comm]
+end
+
 section
 
 variable (n : Type u) [DecidableEq n] [Fintype n]
@@ -80,28 +127,6 @@ theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n
   constructor
   · simpa [star, det_transpose] using congr(det $(hA.1))
   · simpa [star, det_transpose] using congr(det $(hA.2))
-
-open scoped Kronecker in
-/-- The kronecker product of two unitary matrices is unitary.
-
-This is stated for `unitary` instead of `unitaryGroup` as it holds even for
-non-commutative coefficients. -/
-theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m]
-    [DecidableEq m] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
-    (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
-    U₁ ⊗ₖ U₂ ∈ unitary (Matrix (n × m) (n × m) R) := by
-  simp_rw [Unitary.mem_iff, star_eq_conjTranspose, conjTranspose_kronecker']
-  constructor <;> ext <;> simp only [mul_apply, submatrix_apply, kroneckerMap_apply, Prod.fst_swap,
-    conjTranspose_apply, ← star_apply, Prod.snd_swap, ← mul_assoc]
-  · simp_rw [mul_assoc _ (star U₁ _ _), ← Finset.univ_product_univ, Finset.sum_product]
-    rw [Finset.sum_comm]
-    simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₁.1, Matrix.one_apply,
-      mul_boole, ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₂.1,
-      Matrix.one_apply, Finset.sum_const_zero, ← ite_and, Prod.eq_iff_fst_eq_snd_eq]
-  · simp_rw [mul_assoc _ _ (star U₂ _ _), ← Finset.univ_product_univ, Finset.sum_product,
-      ← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₂.2, Matrix.one_apply, mul_boole,
-      ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₁.2, Matrix.one_apply,
-      Finset.sum_const_zero, ← ite_and, and_comm, Prod.eq_iff_fst_eq_snd_eq]
 
 section TensorProduct
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]

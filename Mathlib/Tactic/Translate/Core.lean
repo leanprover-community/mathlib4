@@ -190,8 +190,9 @@ where
   insertTranslationAux (src : Name) (info : TranslationInfo) : CoreM Unit := do
     if let some info' := findTranslation? (← getEnv) t src then
       unless allowDuplicate && info'.translation == info.translation do
-        Linter.logLintIf linter.translateOverwrite ref m!"`{src}` was already translated to \
-          `{info'.translation}` instead of `{info.translation}`.\n\
+        Linter.logLintIf linter.translateOverwrite ref
+          m!"`{.ofConstName src}` was already translated to `{.ofConstName info'.translation}` \
+          instead of `{.ofConstName info.translation}`.\n\
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
 
@@ -414,7 +415,7 @@ where
       let type := (← getConstInfo cls).type
       let (type', relevantArg) ← applyReplacementForall t cfg.dontTranslate type |>.run'
       unless ← (withReducible (isDefEq type' type)).run' do
-        throwError "The type of {.ofConstName cls} does not translate to itself, \
+        throwError "The type of `{.ofConstName cls}` does not translate to itself, \
           but to{indentExpr type'}"
       let relevantArg ← getRelevantArg t relevantArg cfg.relevantArg? cfg.ref cls
         (isMainTranslation := false)
@@ -429,7 +430,7 @@ occurring in `src` using the `translations` dictionary.
 -/
 partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt src : Name)
     (reorder : ArgReorder := {}) (rename : NameMap Name := {}) : CoreM Unit := do
-  trace[translate_detail] "visiting {src}"
+  trace[translate_detail] "visiting `{.ofConstName src}`"
   -- if we have already translated this declaration, we do nothing.
   if (findTranslation? (← getEnv) t src).isSome && src != rootSrc then
     return
@@ -601,7 +602,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
     if rootNamespace.isPrefixOf cfg.target then removeRoot cfg.target
     else (translatedNamespace.splitAt (cfg.target.getNumParts - 1)).1 ++ cfg.target
   if resultingName == src then
-    throwError "{t.attrName}: the generated translated name equals the original name '{src}'.\n\
+    throwError "{t.attrName}: the generated translated name equals the original name `{src}`.\n\
     If this is intentional, use the `@[{t.attrName} self]` syntax.\n\
     Otherwise, check that your declaration name is correct \
     (if your declaration is an instance, try naming it)\n\
@@ -632,7 +633,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   let tgtDecl ← getConstInfo tgt
   unless srcDecl.numLevelParams == tgtDecl.numLevelParams do
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.numLevelParams} \
-      universe levels, but '{tgt}' has {tgtDecl.numLevelParams} universe levels"
+      universe levels, but `{.ofConstName tgt}` has {tgtDecl.numLevelParams} universe levels"
   let mut srcType := srcDecl.type
   let unfoldBoundaries? ← t.unfoldBoundaries?.mapM (return ·.getState (← getEnv))
   if let some b := unfoldBoundaries? then
@@ -678,8 +679,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   srcType := srcType.instantiateLevelParams srcDecl.levelParams levels
   let tgtType := tgtDecl.type
   unless ← withReducible <| isDefEq srcType tgtType do
-    throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
-      type{indentExpr tgtType}"
+    throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\n\
+      but `{.ofConstName tgt}` has type{indentExpr tgtType}"
   -- Process any remaining universe constraints, to assign all universe metavariables.
   discard <| processPostponed (mayPostpone := false) (exceptionOnFailure := true)
   let tgtParams := tgtDecl.levelParams.toArray
@@ -976,16 +977,16 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
     Linter.logLintIf linter.translateExisting cfg.ref <|
       if alreadyExists then
-        m!"The translated declaration already exists. Please specify this explicitly using \
-           `@[{t.attrName} existing]`."
+        m!"The translated declaration `{.ofConstName tgt}` already exists. \
+          Please specify this explicitly using `@[{t.attrName} existing]`."
       else
-        "The translated declaration doesn't exist. Please remove the option `existing`."
+        m!"The translated declaration `{tgt}` doesn't exist. Please remove the option `existing`."
   if alreadyExists then
     ensureClassTranslated t cfg src
     insertTranslationChecked t src tgt cfg (isMainTranslation := true)
     -- since `tgt` already exists, we just need to
     -- add translations `src.x ↦ tgt.x'` for any subfields.
-    trace[translate_detail] "declaration {tgt} already exists."
+    trace[translate_detail] "declaration `{.ofConstName tgt}` already exists."
     proceedFields t src tgt cfg
   else
     unless (← withoutExporting do getConstInfo src).hasValue (allowOpaque := true) do
