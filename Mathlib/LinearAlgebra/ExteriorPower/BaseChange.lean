@@ -31,7 +31,6 @@ open TensorProduct
 
 namespace exteriorPower
 
-
 lemma baseChangeGenerator_map_update_add (i : ℕ) (m : Fin i → M) (j : Fin i) (x y : M) :
     (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j (x + y)) =
       (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j x) +
@@ -100,8 +99,7 @@ def degreeProjection (i : ℕ) : ExteriorAlgebra R M →ₗ[R] (⋀[R]^i M) :=
 
 lemma degreeProjection_apply_ιMulti (i : ℕ) (m : Fin i → M) :
     degreeProjection R M i (ExteriorAlgebra.ιMulti R i m) = ιMulti R i m := by
-  rw [exteriorPower.degreeProjection]
-  simp
+  simp [exteriorPower.degreeProjection]
 
 /-- Auxiliary alternating map for `exteriorPower.baseChangeEquivInverse`. -/
 def baseChangeInverseAlternating (i : ℕ) : (S ⊗[R] M) [⋀^Fin i]→ₗ[S] S ⊗[R] (⋀[R]^i M) :=
