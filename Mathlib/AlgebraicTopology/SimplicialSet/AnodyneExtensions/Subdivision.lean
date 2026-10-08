@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
-public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
-public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subdivision
 public import Mathlib.Order.Interval.Finset.Fin
 
@@ -16,7 +14,8 @@ public import Mathlib.Order.Interval.Finset.Fin
 
 The main result in this file is the lemma `SSet.anodyneExtensions.sd` which
 states that if `i : A ⟶ B` is an anodyne extension, then so is its image `sd.map i`
-by the subdivision functor `sd : SSet ⥤ SSet`. The proof reduces to the case
+by the subdivision functor `sd : SSet ⥤ SSet` (and dually, the right adjoint
+`ex : SSet ⥤ SSet` preserves Kan fibrations). The proof reduces to the case
 where `i` is a horn inclusion `Λ[n + 1, i] ⟶ Δ[n + 1]`.
 In order to tackle this case, we use a description of the subdivision of
 the standard simplex as the nerve of `NonemptyFiniteChains X`, and we show that
