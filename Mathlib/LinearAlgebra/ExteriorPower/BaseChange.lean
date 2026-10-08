@@ -16,7 +16,7 @@ In this file, we proved that exterior power commutes with arbitrary base change.
 
 # Main Results
 
-* `exteriorPower.baseChangeIso`: for `R`-algebra `S`, the base change isomorphism
+* `exteriorPower.baseChangeEquiv`: for `R`-algebra `S`, the base change isomorphism
   `S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M)`
 
 -/
@@ -73,23 +73,23 @@ def baseChangeGenerator (i : ℕ) : M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S 
     simpa using
       (ExteriorAlgebra.ιMulti S i).map_eq_zero_of_eq (((TensorProduct.mk R S M 1) ∘ m)) this hjk_ne
 
-/-- Auxiliary alternating map for `exteriorPower.baseChangeIsoForward`. -/
-def baseChangeIsoForwardAux (i : ℕ) : M [⋀^Fin i]→ₗ[R] (⋀[S]^i (S ⊗[R] M)) :=
+/-- Auxiliary alternating map for `exteriorPower.baseChangeEquivForward`. -/
+def baseChangeEquivForwardAux (i : ℕ) : M [⋀^Fin i]→ₗ[R] (⋀[S]^i (S ⊗[R] M)) :=
   (baseChangeGenerator R M S i).codRestrict ((⋀[S]^i (S ⊗[R] M)).restrictScalars R) (fun m =>
     ExteriorAlgebra.ιMulti_range S i (Set.mem_range_self ((TensorProduct.mk R S M 1) ∘ m)))
 
-/-- Forward function of `exteriorPower.baseChangeIso`, lift from the map
-`(⋀[R]^i M) →ₗ[R] ⋀[S]^i (S ⊗[R] M)` corresponding to `exteriorPower.baseChangeIsoForwardAux`. -/
-def baseChangeIsoForward (i : ℕ) : S ⊗[R] (⋀[R]^i M) →ₗ[S] (⋀[S]^i (S ⊗[R] M)) :=
+/-- Forward function of `exteriorPower.baseChangeEquiv`, lift from the map
+`(⋀[R]^i M) →ₗ[R] ⋀[S]^i (S ⊗[R] M)` corresponding to `exteriorPower.baseChangeEquivForwardAux`. -/
+def baseChangeEquivForward (i : ℕ) : S ⊗[R] (⋀[R]^i M) →ₗ[S] (⋀[S]^i (S ⊗[R] M)) :=
   TensorProduct.AlgebraTensorModule.lift {
-    toFun s := s • exteriorPower.alternatingMapLinearEquiv (baseChangeIsoForwardAux R M S i)
+    toFun s := s • exteriorPower.alternatingMapLinearEquiv (baseChangeEquivForwardAux R M S i)
     map_add' s t := by simp [add_smul]
     map_smul' s t := by simp [smul_smul] }
 
-lemma baseChangeIsoForward_apply_one_tmul_ιMulti (i : ℕ) (m : Fin i → M) :
-    baseChangeIsoForward R M S i (1 ⊗ₜ[R] ιMulti R i m) =
+lemma baseChangeEquivForward_apply_one_tmul_ιMulti (i : ℕ) (m : Fin i → M) :
+    baseChangeEquivForward R M S i (1 ⊗ₜ[R] ιMulti R i m) =
       ιMulti S i ((TensorProduct.mk R S M 1) ∘ m) := by
-  rw [exteriorPower.baseChangeIsoForward, TensorProduct.AlgebraTensorModule.lift_tmul]
+  rw [exteriorPower.baseChangeEquivForward, TensorProduct.AlgebraTensorModule.lift_tmul]
   simp only [LinearMap.coe_mk, AddHom.coe_mk, one_smul,
     exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
   rfl
@@ -103,7 +103,7 @@ lemma degreeProjection_apply_ιMulti (i : ℕ) (m : Fin i → M) :
   rw [exteriorPower.degreeProjection]
   simp
 
-/-- Auxiliary alternating map for `exteriorPower.baseChangeIsoInverse`. -/
+/-- Auxiliary alternating map for `exteriorPower.baseChangeEquivInverse`. -/
 def baseChangeInverseAlternating (i : ℕ) : (S ⊗[R] M) [⋀^Fin i]→ₗ[S] S ⊗[R] (⋀[R]^i M) :=
   (((exteriorPower.degreeProjection R M i).baseChange S).comp
     (ExteriorAlgebra.baseChangeEquiv R M S).symm.toAlgHom.toLinearMap).compAlternatingMap
@@ -131,25 +131,25 @@ lemma baseChangeInverseAlternating_apply_tmul (i : ℕ) (s : Fin i → S) (m : F
   simpa [ExteriorAlgebra.ιMulti_apply] using
     congrArg ((Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] ·) (degreeProjection_apply_ιMulti R M i m)
 
-/-- Inverse function of `exteriorPower.baseChangeIso`,
+/-- Inverse function of `exteriorPower.baseChangeEquiv`,
 obtained from `exteriorPower.baseChangeInverseAlternating`. -/
-def baseChangeIsoInverse (i : ℕ) : ⋀[S]^i (S ⊗[R] M) →ₗ[S] S ⊗[R] (⋀[R]^i M) :=
+def baseChangeEquivInverse (i : ℕ) : ⋀[S]^i (S ⊗[R] M) →ₗ[S] S ⊗[R] (⋀[R]^i M) :=
   alternatingMapLinearEquiv (baseChangeInverseAlternating R M S i)
 
-lemma baseChangeIsoInverse_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
-    baseChangeIsoInverse R M S i (ιMulti S i (fun j ↦ s j ⊗ₜ[R] m j)) =
+lemma baseChangeEquivInverse_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
+    baseChangeEquivInverse R M S i (ιMulti S i (fun j ↦ s j ⊗ₜ[R] m j)) =
       (Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] ιMulti R i m := by
-  simp [baseChangeIsoInverse, baseChangeInverseAlternating_apply_tmul]
+  simp [baseChangeEquivInverse, baseChangeInverseAlternating_apply_tmul]
 
 lemma baseChange_left_inverse (i : ℕ) :
-    (baseChangeIsoInverse R M S i).comp (baseChangeIsoForward R M S i) = LinearMap.id := by
+    (baseChangeEquivInverse R M S i).comp (baseChangeEquivForward R M S i) = LinearMap.id := by
   ext m
   have : (TensorProduct.mk R S M 1) ∘ m = fun j ↦ 1 ⊗ₜ[R] m j := rfl
-  simp [baseChangeIsoForward_apply_one_tmul_ιMulti, baseChangeIsoInverse, this,
+  simp [baseChangeEquivForward_apply_one_tmul_ιMulti, baseChangeEquivInverse, this,
     baseChangeInverseAlternating_apply_tmul R M S i (fun _ ↦ 1) m]
 
-lemma baseChangeIsoForward_surjective (i : ℕ) :
-    Function.Surjective (baseChangeIsoForward R M S i) := by
+lemma baseChangeEquivForward_surjective (i : ℕ) :
+    Function.Surjective (baseChangeEquivForward R M S i) := by
   have eqtop : Submodule.span S (Set.range (TensorProduct.mk R S M 1 : M →ₗ[R] S ⊗[R] M)) = ⊤ := by
     rw [← Set.image_univ, ← Submodule.baseChange_span, Submodule.span_univ,
       Submodule.baseChange_top]
@@ -162,30 +162,30 @@ lemma baseChangeIsoForward_surjective (i : ℕ) :
     exact (Classical.choose_spec (ha (Set.mem_range_self j))).symm
   simp only [Set.mem_preimage, SetLike.mem_coe, LinearMap.mem_range, aeq]
   use 1 ⊗ₜ[R] ιMulti R i m
-  rw [baseChangeIsoForward_apply_one_tmul_ιMulti]
+  rw [baseChangeEquivForward_apply_one_tmul_ιMulti]
 
 lemma baseChange_right_inverse (i : ℕ) :
-    (baseChangeIsoForward R M S i).comp (baseChangeIsoInverse R M S i) = LinearMap.id := by
+    (baseChangeEquivForward R M S i).comp (baseChangeEquivInverse R M S i) = LinearMap.id := by
   refine LinearMap.ext (fun x ↦ ?_)
-  rcases baseChangeIsoForward_surjective R M S i x with ⟨y, rfl⟩
+  rcases baseChangeEquivForward_surjective R M S i x with ⟨y, rfl⟩
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq]
   rw [← LinearMap.comp_apply _ _ y, exteriorPower.baseChange_left_inverse, LinearMap.id_coe, id_eq]
 
 /-- The commute of exterior power and base change. -/
-def baseChangeIso (i : ℕ) : S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
-  __ := baseChangeIsoForward R M S i
-  invFun := baseChangeIsoInverse R M S i
+def baseChangeEquiv (i : ℕ) : S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
+  __ := baseChangeEquivForward R M S i
+  invFun := baseChangeEquivInverse R M S i
   left_inv x := LinearMap.congr_fun (exteriorPower.baseChange_left_inverse R M S i) x
   right_inv x := LinearMap.congr_fun (exteriorPower.baseChange_right_inverse R M S i) x
 
-lemma baseChangeIso_apply_tmul (i : ℕ) (m : Fin i → M) :
-    baseChangeIso R M S i (1 ⊗ₜ[R] (ιMulti R i m)) =
+lemma baseChangeEquiv_apply_tmul (i : ℕ) (m : Fin i → M) :
+    baseChangeEquiv R M S i (1 ⊗ₜ[R] (ιMulti R i m)) =
       ιMulti S i ((TensorProduct.mk R S M 1) ∘ m) := by
-  simp [exteriorPower.baseChangeIso, baseChangeIsoForward_apply_one_tmul_ιMulti]
+  simp [exteriorPower.baseChangeEquiv, baseChangeEquivForward_apply_one_tmul_ιMulti]
 
-lemma baseChangeIso_symm_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
-    (baseChangeIso R M S i).symm (ιMulti S i (fun j ↦ s j ⊗ₜ[R] m j)) =
+lemma baseChangeEquiv_symm_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
+    (baseChangeEquiv R M S i).symm (ιMulti S i (fun j ↦ s j ⊗ₜ[R] m j)) =
       (Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] ιMulti R i m := by
-  simp [exteriorPower.baseChangeIso, exteriorPower.baseChangeIsoInverse_apply_tmul]
+  simp [exteriorPower.baseChangeEquiv, exteriorPower.baseChangeEquivInverse_apply_tmul]
 
 end exteriorPower
