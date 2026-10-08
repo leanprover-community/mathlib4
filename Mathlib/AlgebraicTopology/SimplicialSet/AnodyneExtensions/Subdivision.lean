@@ -355,6 +355,10 @@ lemma index_coe_eq_card (σ : ι x₀) :
     grind
   · simp [hσ]
 
+lemma finsetNotMem_simplex₂_eq_empty_iff :
+    finsetNotMem x₀ σ.simplex₂ = ∅ ↔ σ.index = 0 := by
+  simp [← Finset.card_eq_zero, ← index_coe_eq_card]
+
 lemma injective_type₂ {σ σ' : ι x₀} (hσ : S.mk σ.simplex₂ = S.mk σ'.simplex₂) :
     σ = σ' := by
   have hdim : σ.dim = σ'.dim := by grind
@@ -589,27 +593,36 @@ def pairingCore : (sdHorn x₀).PairingCore where
 
 /-- Given a nontrivial finite linearly ordered type `X` and `x₀ : X`, this is a weak
 `ℕ`-valued rank function for `pairingCore x₀`. It sends `s` to the cardinality
-of `pairingCore.finsetNotMem x₀ s.simplex`. -/
+of `pairingCore.finsetNotMem x₀ s.simplex₂`. -/
 def pairingCore.weakRankFunction : (pairingCore x₀).WeakRankFunction ℕ where
-  rank s := (finsetNotMem x₀ s.simplex).card
+  rank s := (finsetNotMem x₀ s.simplex₂).card
   lt {s' t} hst hdim := by
     dsimp at s' t hdim
     let s : ι x₀ := s'.cast hdim
     replace hst : (pairingCore x₀).AncestralRel s t := by
       simpa only [s, s'.cast_eq_self hdim]
-    suffices (finsetNotMem x₀ s.simplex).card < (finsetNotMem x₀ t.simplex).card by
-      have : S.mk s'.simplex = S.mk s.simplex := by
-        rw [S.ext_iff']
-        exact ⟨by simpa [s], rfl⟩
+    suffices (finsetNotMem x₀ s.simplex₂).card < (finsetNotMem x₀ t.simplex₂).card by
+      have : S.mk s'.simplex₂ = S.mk s.simplex₂ := by rw [ι.simplex₂_cast]
       rwa [congr_finsetNotMem_card x₀ this]
     obtain ⟨hst₁, hst₂⟩ := hst
+    replace hst₁ : s.simplex₂ ≠ t.simplex₂ :=
+      fun h ↦ hst₁ (ι.injective_type₂ (by rwa [S.ext_iff]))
     obtain ⟨i, hi⟩ : ∃ i, (nerve (NonemptyFiniteChains X)).δ i t.simplex = s.simplex₂ := by
       rw [Subcomplex.N.lt_iff] at hst₂
       obtain ⟨f, _, hf⟩ := N.le_iff_exists_mono.1 hst₂.le
       obtain ⟨i, rfl⟩ := SimplexCategory.eq_δ_of_mono f
       exact ⟨i, hf⟩
-    --rw [ι.simplex₂_def] at hi
-    sorry
+    rw [← hi, ι.simplex₂_def] at hst₁
+    rw [← hi]
+    simp only [ι.simplex₂_def] at hi
+    generalize ht : t.index = j
+    obtain rfl | ⟨j, rfl⟩ := j.eq_zero_or_eq_succ
+    · obtain rfl : i = 0 := by
+        by_contra!
+        obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero this
+        sorry
+      simp [hi, ht] at hst₁
+    · sorry
 
 instance : (pairingCore x₀).IsRegular := by
   rw [(pairingCore x₀).isRegular_iff_nonempty_weakRankFunction]
