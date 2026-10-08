@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.Nat.Basic
-public import Mathlib.Data.Quot
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.Monotonicity.Attr
-public import Mathlib.Util.CompileInductive
 
 /-!
 # Multisets
@@ -117,7 +115,7 @@ section Mem
 
 /-- `a ∈ s` means that `a` has nonzero multiplicity in `s`. -/
 def Mem (s : Multiset α) (a : α) : Prop :=
-  Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
+  Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext e.mem_iff
 
 instance : Membership α (Multiset α) :=
   ⟨Mem⟩

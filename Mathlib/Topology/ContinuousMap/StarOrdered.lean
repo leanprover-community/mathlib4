@@ -89,7 +89,7 @@ instance instStarOrderedRing {R : Type*}
       | add_left s s_mem p p_mem hp' =>
         obtain ⟨s, rfl⟩ := s_mem
         simp only at *
-        have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($(hp) 0).symm
+        have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($hp 0).symm
         rw [← add_assoc] at hp
         have p'₀ : 0 ≤ p 0 := by rw [← StarOrderedRing.nonneg_iff] at p_mem; exact p_mem 0
         have s₉ : (star s * s) 0 = 0 := le_antisymm ((le_add_of_nonneg_right p'₀).trans_eq h₀)

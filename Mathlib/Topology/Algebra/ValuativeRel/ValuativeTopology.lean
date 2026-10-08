@@ -96,6 +96,7 @@ variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*}
 section TopologicalSpace
 
 variable [TopologicalSpace R] (v : Valuation R Γ₀) [v.Compatible]
+
 namespace IsValuativeTopology
 
 /-- If the neighborhoods of every point for a given topology are defined by a valuation `v`
@@ -169,7 +170,7 @@ namespace Valuation
 
 lemma mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 x ↔
     ∃ γ : v.ValueGroup₀ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
-  convert! IsValuativeTopology.mem_nhds_iff (s := s) using 4
+  convert IsValuativeTopology.mem_nhds_iff (s := s) using 4
   simpa [neg_add_eq_sub] using v.exists_setOfPred_restrict_le_iff _ _
 
 lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 0 ↔
@@ -270,7 +271,7 @@ theorem toTopologicalSpace_eq :
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
 
 instance (priority := low) _root_.IsValuativeTopology.isTopologicalRing : IsTopologicalRing R := by
-  convert! (ValuativeRel.nonarchimedeanRing R).toIsTopologicalRing
+  convert (ValuativeRel.nonarchimedeanRing R).toIsTopologicalRing
   exact toTopologicalSpace_eq _
 
 section Discrete

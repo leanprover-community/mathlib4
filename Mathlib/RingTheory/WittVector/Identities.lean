@@ -7,7 +7,8 @@ module
 
 public import Mathlib.RingTheory.WittVector.Frobenius
 public import Mathlib.RingTheory.WittVector.Verschiebung
-public import Mathlib.RingTheory.WittVector.MulP
+
+import Mathlib.RingTheory.WittVector.MulP
 
 /-!
 ## Identities between operations on the ring of Witt vectors
@@ -36,8 +37,6 @@ variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
-
-noncomputable section
 
 -- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
@@ -214,7 +213,7 @@ theorem iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
     _ = (frobenius^[j] x).coeff 0 * (frobenius^[i] y).coeff 0 := ?_
     _ = _ := ?_
   · rw [iterate_verschiebung_mul]
-  · convert! iterate_verschiebung_coeff (p := p) (R := R) _ _ _ using 2
+  · convert iterate_verschiebung_coeff (p := p) (R := R) _ _ _ using 2
     rw [zero_add]
   · apply mul_coeff_zero
   · simp only [iterate_frobenius_coeff]
@@ -229,7 +228,5 @@ theorem iterate_verschiebung_iterate_frobenius (x : 𝕎 R) (n : ℕ) :
     rw [iterate_succ_apply', ih, pow_succ, comp_apply, verschiebung_frobenius, mul_assoc]
 
 end CharP
-
-end
 
 end WittVector
