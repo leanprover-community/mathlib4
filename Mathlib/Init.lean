@@ -58,6 +58,9 @@ Here are some general guidelines:
 A linter verifies that every file in Mathlib imports `Mathlib.Init`
 (perhaps indirectly) --- except for the imports in this file, of course.
 
+If you're adding a new import to ensure that some command is available in all of mathlib,
+add a line to `MathlibTest/BasicFiles/Init.lean` to ensure this stays true.
+
 ## Linters
 
 All syntax linters defined in Mathlib which are active by default are imported here.
