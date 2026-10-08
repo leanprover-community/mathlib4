@@ -25,6 +25,8 @@ See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677
 Approximation*][MR3156076] for a detailed discussion.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 open Filter Metric Real Set
@@ -169,24 +171,24 @@ proximity functions of the summand, plus `log` of the number of summands.
 -/
 theorem proximity_sum_top_le [NormedSpace ℂ E] {α : Type*} (s : Finset α) (f : α → ℂ → E)
     (hf : ∀ a ∈ s, Meromorphic (f a)) :
-    proximity (∑ a ∈ s, f a) ⊤ ≤ ∑ a ∈ s, (proximity (f a) ⊤) + (fun _ ↦ log s.card) := by
+    proximity (∑ a ∈ s, f a) ⊤ ≤ ∑ a ∈ s, (proximity (f a) ⊤) + (fun _ ↦ log #s) := by
   simp only [proximity_top, Finset.sum_apply]
   intro r
   have h₂f : ∀ i ∈ s, CircleIntegrable (log⁺ ‖f i ·‖) 0 r :=
     fun i hi ↦ MeromorphicOn.circleIntegrable_posLog_norm (fun x hx ↦ hf i hi x)
   simp only [Pi.add_apply, Finset.sum_apply]
   calc circleAverage (log⁺ ‖∑ c ∈ s, f c ·‖) 0 r
-    _ ≤ circleAverage (∑ c ∈ s, log⁺ ‖f c ·‖ + log s.card) 0 r := by
+    _ ≤ circleAverage (∑ c ∈ s, log⁺ ‖f c ·‖ + log #s) 0 r := by
       apply circleAverage_mono
       · apply (Meromorphic.fun_sum hf).meromorphicOn.circleIntegrable_posLog_norm
       · fun_prop
       · intro x hx
         rw [add_comm]
         apply posLog_norm_sum_le
-    _ = ∑ c ∈ s, circleAverage (log⁺ ‖f c ·‖) 0 r + log s.card := by
-      nth_rw 2 [← circleAverage_const (log s.card) 0 r]
+    _ = ∑ c ∈ s, circleAverage (log⁺ ‖f c ·‖) 0 r + log #s := by
+      nth_rw 2 [← circleAverage_const (log #s) 0 r]
       rw [← circleAverage_sum h₂f, ← circleAverage_add (CircleIntegrable.sum s h₂f)
-        (circleIntegrable_const (log s.card) 0 r)]
+        (circleIntegrable_const (log #s) 0 r)]
       congr 1
       ext x
       simp

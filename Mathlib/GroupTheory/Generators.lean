@@ -37,6 +37,8 @@ and an assignment `val : ι → G` such that `Subgroup.closure (Set.range val) =
 group generators, generating set, finitely generated
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 variable {G H ι ι' : Type*} [Group G] [Group H]
@@ -133,6 +135,6 @@ theorem Group.fg_iff_nonempty_finite_generators :
   constructor
   · rw [Group.FG, isMulFG_iff]
     rintro ⟨S, hS⟩
-    exact ⟨S.card, ⟨(Group.Generators.ofSet hS).reindex S.equivFin.symm.surjective⟩⟩
+    exact ⟨#S, ⟨(Group.Generators.ofSet hS).reindex S.equivFin.symm.surjective⟩⟩
   · rintro ⟨n, ⟨P⟩⟩
     exact P.fg

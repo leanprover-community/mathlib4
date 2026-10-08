@@ -22,6 +22,8 @@ useful when the codomain of `f` is `ℕ` or `ℤ` (or more generally a successor
 latter yet.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 
@@ -91,7 +93,7 @@ variable {s : Finset α} {f : α → ℕ} {a : α}
 
 theorem equitableOn_iff_le_le_add_one :
     EquitableOn (s : Set α) f ↔
-      ∀ a ∈ s, (∑ i ∈ s, f i) / s.card ≤ f a ∧ f a ≤ (∑ i ∈ s, f i) / s.card + 1 := by
+      ∀ a ∈ s, (∑ i ∈ s, f i) / #s ≤ f a ∧ f a ≤ (∑ i ∈ s, f i) / #s + 1 := by
   rw [Set.equitableOn_iff_exists_le_le_add_one]
   refine ⟨?_, fun h => ⟨_, h⟩⟩
   rintro ⟨b, hb⟩
@@ -100,7 +102,7 @@ theorem equitableOn_iff_le_le_add_one :
     rw [h _ ha, sum_const_nat h, Nat.mul_div_cancel_left _ (card_pos.2 ⟨a, ha⟩)]
     exact ⟨le_rfl, Nat.le_succ _⟩
   obtain ⟨x, hx₁, hx₂⟩ := h
-  suffices h : b = (∑ i ∈ s, f i) / s.card by
+  suffices h : b = (∑ i ∈ s, f i) / #s by
     simp_rw [← h]
     apply hb
   symm
@@ -111,16 +113,16 @@ theorem equitableOn_iff_le_le_add_one :
   exact fun _ _ => rfl
 
 theorem EquitableOn.le (h : EquitableOn (s : Set α) f) (ha : a ∈ s) :
-    (∑ i ∈ s, f i) / s.card ≤ f a :=
+    (∑ i ∈ s, f i) / #s ≤ f a :=
   (equitableOn_iff_le_le_add_one.1 h a ha).1
 
 theorem EquitableOn.le_add_one (h : EquitableOn (s : Set α) f) (ha : a ∈ s) :
-    f a ≤ (∑ i ∈ s, f i) / s.card + 1 :=
+    f a ≤ (∑ i ∈ s, f i) / #s + 1 :=
   (equitableOn_iff_le_le_add_one.1 h a ha).2
 
 theorem equitableOn_iff :
     EquitableOn (s : Set α) f ↔
-      ∀ a ∈ s, f a = (∑ i ∈ s, f i) / s.card ∨ f a = (∑ i ∈ s, f i) / s.card + 1 := by
+      ∀ a ∈ s, f a = (∑ i ∈ s, f i) / #s ∨ f a = (∑ i ∈ s, f i) / #s + 1 := by
   simp_rw [equitableOn_iff_le_le_add_one, Nat.le_and_le_add_one_iff]
 
 end Finset

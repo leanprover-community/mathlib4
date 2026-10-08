@@ -33,6 +33,8 @@ This file defines cubic polynomials over a semiring and their discriminants over
 cubic, discriminant, polynomial, root
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 
@@ -397,7 +399,7 @@ theorem mem_roots_iff [IsDomain R] (h0 : P.toPoly ≠ 0) (x : R) :
   rw [roots, mem_roots h0, IsRoot, toPoly]
   simp only [eval_C, eval_X, eval_add, eval_mul, eval_pow]
 
-theorem card_roots_le [IsDomain R] [DecidableEq R] : P.roots.toFinset.card ≤ 3 := by
+theorem card_roots_le [IsDomain R] [DecidableEq R] : #P.roots.toFinset ≤ 3 := by
   apply (toFinset_card_le P.toPoly.roots).trans
   by_cases hP : P.toPoly = 0
   · simp [hP]

@@ -26,6 +26,8 @@ See the sixth proof for the infinity of primes in Chapter 1 of [aigner1999proofs
 The proof is due to Erdős.
 -/
 
+open scoped Finset
+
 public section
 
 open Set Nat
@@ -66,7 +68,7 @@ of `1/p` over the primes `k ≤ p ≤ N`. -/
 -- This needs `Mathlib/Analysis/RCLike/Basic.lean`, so we put it here
 -- instead of in `Mathlib/NumberTheory/SmoothNumbers.lean`.
 lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
-    (roughNumbersUpTo N k).card ≤
+    #(roughNumbersUpTo N k) ≤
       N * (N.succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 : ℝ) / p) := by
   simp_rw [Finset.mul_sum, mul_one_div]
   exact (Nat.cast_le.mpr <| roughNumbersUpTo_card_le N k).trans <|
@@ -74,9 +76,9 @@ lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
 
 /-- The sum over primes `k ≤ p ≤ 4^(π(k-1)+1)` over `1/p` (as a real number) is at least `1/2`. -/
 lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
-    1 / 2 ≤ ∑ p ∈ (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
+    1 / 2 ≤ ∑ p ∈ (4 ^ (#k.primesBelow + 1)).succ.primesBelow \ k.primesBelow,
       (1 / p : ℝ) := by
-  set m : ℕ := 2 ^ k.primesBelow.card
+  set m : ℕ := 2 ^ #k.primesBelow
   set N₀ : ℕ := 2 * m ^ 2 with hN₀
   let S : ℝ := ((2 * N₀).succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 / p : ℝ))
   suffices 1 / 2 ≤ S by
@@ -89,9 +91,9 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
       show (2 * (2 * m ^ 2) - m * (2 * m) : ℝ) = 2 * (2 * m ^ 2) * (1 / 2) by ring,
       mul_le_mul_iff_right₀ <| by positivity] at this
   calc (2 * N₀ : ℝ)
-    _ = ((2 * N₀).smoothNumbersUpTo k).card + ((2 * N₀).roughNumbersUpTo k).card := by
+    _ = #((2 * N₀).smoothNumbersUpTo k) + #((2 * N₀).roughNumbersUpTo k) := by
         exact_mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm
-    _ ≤ m * (2 * N₀).sqrt + ((2 * N₀).roughNumbersUpTo k).card := by
+    _ ≤ m * (2 * N₀).sqrt + #((2 * N₀).roughNumbersUpTo k) := by
         exact_mod_cast Nat.add_le_add_right ((2 * N₀).smoothNumbersUpTo_card_le k) _
     _ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S := by grw [roughNumbersUpTo_card_le']; norm_cast
 
@@ -107,7 +109,7 @@ theorem not_summable_one_div_on_primes :
     simp only [indicator_indicator, inter_comm]
   refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt ?_ hk).false
   convert!
-    Summable.sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
+    Summable.sum_le_tsum (primesBelow ((4 ^ (#k.primesBelow + 1)).succ) \ primesBelow k)
       (fun n _ ↦ indicator_nonneg (fun p _ ↦ by positivity) _) h' using
     2 with p hp
   obtain ⟨hp₁, hp₂⟩ := mem_ofPred_eq ▸ Finset.mem_sdiff.mp hp
