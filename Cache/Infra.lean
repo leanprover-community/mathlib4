@@ -26,8 +26,8 @@ open System (FilePath)
 /-- The full name of the main Mathlib GitHub repository. -/
 def MATHLIBREPO := "leanprover-community/mathlib4"
 
-/-- Whether `repo` is the canonical Mathlib repo. Every other repo, nightly-testing
-included, caches into the per-commit `forks` namespace. -/
+/-- Whether `repo` is the canonical Mathlib repo. Every other repo caches into the
+per-commit `forks` namespace. -/
 def isCanonicalRepo (repo : String) : Bool :=
   repo == MATHLIBREPO
 
@@ -191,8 +191,6 @@ Fork chains lead with `master`. The layout is fixed per container
 whatever the `repo` is, and a fork build finds the master-built deps that make
 up the bulk of its files there; the fork's own container then supplies the
 PR-specific files at `/f/{repo}/...`.
-
-The nightly-testing repo is a fork in this model.
 -/
 def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then

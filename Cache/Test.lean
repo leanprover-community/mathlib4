@@ -70,9 +70,6 @@ namespace Cache.Test
 
 open Cache.Requests
 
-/-- The full name of the Mathlib nightly-testing GitHub repository. -/
-def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
-
 /-- Counter for failed assertions. -/
 initialize failures : IO.Ref Nat ← IO.mkRef 0
 
@@ -216,15 +213,11 @@ order and stops at the first hit, so both membership and ordering are part of
 the trust boundary. Key points the tests pin:
 - The fork chain leads with `master` (shared upstream deps), then `forks`
   (PR-specific files).
-- The nightly-testing repo reads the fork chain.
 -/
 def test_defaultContainersForRepo : IO Unit := do
   IO.println "defaultContainersForRepo:"
   assertTrue "canonical repo → [master]"
     (defaultContainersForRepo MATHLIBREPO == [.master])
-  assertTrue "nightly-testing repo → [master, forks]"
-    (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.master, .forks])
-  assertTrue "nightly-testing is not canonical" (!isCanonicalRepo NIGHTLY_TESTING_REPO)
   assertTrue "fork repo → [master, forks]"
     (defaultContainersForRepo "alice/mathlib4" == [.master, .forks])
   assertTrue "unknown repo falls back to the fork chain"
@@ -286,9 +279,6 @@ def test_fileURL : IO Unit := do
   assertEq "forks prefixes by repo for a fork repo"
     "https://cache.example.org/mathlib4-forks/f/alice/mathlib4/abc.ltar"
     (fileURLOf (some .forks) "alice/mathlib4" base "abc.ltar")
-  assertEq "forks prefixes by repo for the nightly-testing repo"
-    "https://cache.example.org/mathlib4-forks/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
-    (fileURLOf (some .forks) NIGHTLY_TESTING_REPO base "abc.ltar")
   -- No container (user-supplied URL): the shape follows the repo — flat for the
   -- canonical repo, prefixed otherwise.
   assertEq "user URL is flat for the canonical repo"
