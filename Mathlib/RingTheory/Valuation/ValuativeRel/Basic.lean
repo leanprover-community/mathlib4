@@ -765,8 +765,8 @@ variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R
 instance restrict_compatible : v.restrict.Compatible where
   vle_iff_le x y := by rw [v.vle_iff_le, restrict_le_iff]
 
-lemma lt_div_iff_mul_vlt {a b : R} (hb : 0 <ᵥ b) : v x < v a / v b ↔ x * b <ᵥ a := by
-  rw [lt_div_iff₀ (v.apply_posSubmonoid_pos ⟨b, hb⟩), ← map_mul, v.vlt_iff_lt]
+lemma lt_div_iff_mul_vlt {z : R} (hz : 0 <ᵥ z) : v x < v y / v z ↔ x * z <ᵥ y := by
+  rw [lt_div_iff₀ (v.apply_posSubmonoid_pos ⟨z, hz⟩), ← map_mul, v.vlt_iff_lt]
 
 end Valuation
 
