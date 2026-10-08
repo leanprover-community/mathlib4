@@ -124,6 +124,7 @@ open extendToSucc in
 include hj in
 /-- The extension to `Set.Iic (Order.succ j) ⥤ C` of a functor `F : Set.Iic j ⥤ C`,
 when we specify a morphism `F.obj ⟨j, _⟩ ⟶ X`. -/
+@[implicit_reducible]
 def extendToSucc : Set.Iic (Order.succ j) ⥤ C where
   obj := obj F X
   map {i₁ i₂} f := map hj F τ i₁ i₂ (leOfHom f) i₂.2
