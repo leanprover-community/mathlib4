@@ -333,6 +333,6 @@ alias subgroupIsFreeOfIsFree := subgroupIsFreeGroupOfIsFreeGroup
 /-- The Nielsen-Schreier theorem: an additive subgroup of an additive free group is free. -/
 instance addSubgroupIsFreeAddGroupOfIsFreeAddGroup {G : Type u} [AddGroup G] [IsFreeAddGroup G]
     (H : AddSubgroup G) : IsFreeAddGroup H :=
-  IsFreeGroup.isFreeGroup_toSubgroup_iff.mp <| subgroupIsFreeGroupOfIsFreeGroup _
+  isFreeGroup_toSubgroup_iff.mp <| subgroupIsFreeGroupOfIsFreeGroup _
 
 attribute [to_additive existing] subgroupIsFreeGroupOfIsFreeGroup
