@@ -38,7 +38,7 @@ structure NonemptyChain (α : Type*) [LE α] where
   /-- The underlying set of a nonempty chain -/
   carrier : Set α
   Nonempty' : carrier.Nonempty
-  isChain' : IsLEChain carrier
+  isLEChain : IsLEChain carrier
 
 instance {α : Type*} [LE α] : SetLike (NonemptyChain α) α where
   coe := NonemptyChain.carrier
@@ -206,7 +206,7 @@ lemma mem_bot_iff_isExtremePt {y : α} (le_map : ∀ x, x ≤ f x) :
     y ∈ bot x f ↔ IsExtremePt x f y := by
   rw [← setOfPred_isExtremePt_eq_bot le_map, mem_ofPred]
 
-lemma bot_isLEChain (le_map : ∀ x, x ≤ f x) : IsLEChain (bot x f) := by
+lemma isLEChain_bot (le_map : ∀ x, x ≤ f x) : IsLEChain (bot x f) := by
   intro y hy z hz _
   rw [mem_bot_iff_isExtremePt le_map] at hy
   rw [← bot_eq_of_le_or_map_le le_map hy] at hz
@@ -214,7 +214,7 @@ lemma bot_isLEChain (le_map : ∀ x, x ≤ f x) : IsLEChain (bot x f) := by
   · right; exact hz
   · left; exact le_trans (le_map y) hz
 
-@[deprecated (since := "2026-10-04")] alias bot_isChain := bot_isLEChain
+@[deprecated (since := "2026-10-04")] alias bot_isChain := isLEChain_bot
 
 end IsExtremePt
 
@@ -226,7 +226,7 @@ theorem nonempty_fixedPoints_of_inflationary [Nonempty α] (le_map : ∀ x, x �
     (fixedPoints f).Nonempty := by
   let x : α := Classical.ofNonempty
   let y := cSup (NonemptyChain.mk (bot x f)
-    ⟨x, (bot_isAdmissible le_map).base_isLeast.1⟩ (bot_isLEChain le_map))
+    ⟨x, (bot_isAdmissible le_map).base_isLeast.1⟩ (isLEChain_bot le_map))
   use y
   apply le_antisymm (le_cSup _ _ (_ : f y ∈ bot x f)) (le_map y)
   apply (bot_isAdmissible le_map).image_self_subset_self
