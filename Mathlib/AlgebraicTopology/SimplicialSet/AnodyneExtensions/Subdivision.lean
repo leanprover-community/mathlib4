@@ -22,6 +22,7 @@ universe u
 
 open CategoryTheory SSet Simplicial
 
+-- to be moved
 @[simp]
 lemma Fin.predAbove_succAbove_succ {n : ℕ} (i j : Fin (n + 1)) :
     i.predAbove (i.succ.succAbove j) = j := by
@@ -42,7 +43,17 @@ namespace sdHorn
 namespace pairingCore
 
 variable (x₀) in
-def IsIndexI {dim : ℕ} (s : (nerve (NonemptyFiniteChains X)) _⦋dim⦌) (i : Fin (dim + 1)) : Prop :=
+/-- Given `x₀ : X`, this is a predicate on simplices `s` of the nerve of
+`NonemptyFiniteChains X` which is only relevant when `s` is a nondegenerate simplex which
+does not belong to `sdHorn x₀`. If `s` is of dimension `dim` and `i : Fin (dim + 1)`,
+this predicate `IsIndexI x₀ s i` holds
+* if `i = 0`, and `s.obj 0` is `{x₀}`
+* if `i = k + 1`, and `s.obj i` is obtained by adding `{x₀}` to `s.obj (i.pred _)`.
+The nondegenerate simplices of `NonemptyFiniteChains X` which do not belong to `sdHorn x₀`
+and satisfy `IsIndexI x₀ s i` for some `i` are the type (I) simplices for a regular pairing
+for the subcomplex `sdHorn x₀` of `nerve (NonemptyFiniteChains X)` when `X` is a finite
+nontrivial linearly ordered type, see `PartialOrder.NonemptyFiniteChains.sdHorn.pairingCore`. -/
+def IsIndexI {dim : ℕ} (s : nerve (NonemptyFiniteChains X) _⦋dim⦌) (i : Fin (dim + 1)) : Prop :=
   match i with
   | ⟨0, _⟩ => (s.obj 0).finset = {x₀}
   | ⟨k + 1, hk⟩ => (s.obj ⟨k + 1, hk⟩).finset =
@@ -114,13 +125,16 @@ end IsIndexI
 
 section
 
-variable {dim : ℕ} {s : (nerve (NonemptyFiniteChains X)) _⦋dim⦌}
+variable {dim : ℕ} {s : nerve (NonemptyFiniteChains X) _⦋dim⦌}
 
 variable (x₀ s) in
+/-- If `X` is a linearly ordered type, `x₀ : X` and `s` is a `dim`-dimensional
+simplex of the nerve of `NonemptyFiniteChains X`, this is the finset subset of
+`Fin (dim + 1)` consisting of those `i` such that `x₀ ∈ (s.obj i).finset`. -/
 def finsetNotMem : Finset (Fin (dim + 1)) := { i | x₀ ∉ (s.obj i).finset }
 
 variable (x₀) in
-lemma congr_finsetNotMem_card {dim' : ℕ} {s' : (nerve (NonemptyFiniteChains X)) _⦋dim'⦌}
+lemma congr_finsetNotMem_card {dim' : ℕ} {s' : nerve (NonemptyFiniteChains X) _⦋dim'⦌}
     (h : S.mk s = S.mk s') :
     (finsetNotMem x₀ s).card = (finsetNotMem x₀ s').card := by
   obtain rfl : dim = dim' := by grind
@@ -159,11 +173,19 @@ end
 variable [Fintype X] [Nontrivial X]
 
 variable (x₀) in
+/-- Given a finite nontrivial linearly ordered type `X` and `x₀ : X`, this is the type
+which parametrized type (I) nondegenerate simplices of `nerve (NonemptyFiniteChains X)`
+not in `sdHorn x₀` for the pairing `PartialOrder.NonemptyFiniteChains.sdHorn.pairingCore`
+defined below. It consists of nondegenerate simplices `simplex` not in `sdHorn x₀` which
+satisfies `IsIndexI x₀ simplex index` for some `index`. -/
 structure ι where
+  /-- the dimension of the type (I) simplex -/
   dim : ℕ
+  /-- the type (I) simplex -/
   simplex : nerve (NonemptyFiniteChains X) _⦋dim + 1⦌
   notMem₁ : simplex ∉ (sdHorn x₀).obj _
   nonDegenerate₁ : simplex ∈ (nerve (NonemptyFiniteChains X)).nonDegenerate (dim + 1)
+  /-- the index for which `IsIndexI` holds. -/
   index : Fin (dim + 2)
   isIndexI : IsIndexI x₀ simplex index
 
@@ -171,6 +193,9 @@ namespace ι
 
 variable (σ : ι x₀)
 
+/-- Given `σ : NonemptyFiniteChains.sdHorn.pairingCore.ι x₀` and an equality `h : σ.dim = dim'`,
+this definitions produces a new term `σ.cast h` that is equal to `σ`, but also has the
+property that the equality `(σ.cast h).dim = dim'` is a definitional equality. -/
 @[implicit_reducible, simps dim]
 def cast {dim' : ℕ} (h : σ.dim = dim') : ι x₀ where
   dim := dim'
@@ -180,6 +205,8 @@ def cast {dim' : ℕ} (h : σ.dim = dim') : ι x₀ where
   index := Fin.cast (by simp [h]) σ.index
   isIndexI := by subst h; exact σ.isIndexI
 
+example {dim' : ℕ} (h : σ.dim = dim') : (σ.cast h).dim = dim' := by with_implicit rfl
+
 lemma cast_eq_self {dim' : ℕ} (h : σ.dim = dim') :
     σ.cast h = σ := by
   subst h; rfl
@@ -188,6 +215,8 @@ lemma strictMono : StrictMono σ.simplex.obj := by
   rw [← mem_nerve_nonDegenerate_iff_strictMono]
   exact σ.nonDegenerate₁
 
+/-- The type (II) simplex associated to `σ : NonemptyFiniteChains.sdHorn.pairingCore.ι x₀`:
+it is obtained as the face of the type (I) `σ.simplex` given by the index `σ.index`. -/
 def simplex₂ : nerve (NonemptyFiniteChains X) _⦋σ.dim⦌ :=
   (nerve (NonemptyFiniteChains X)).δ σ.index σ.simplex
 
@@ -346,6 +375,7 @@ namespace ofNotIsIndexIOfEqEmpty
 omit [Fintype X] [Nontrivial X]
 
 variable (x₀ s) in
+/-- Auxiliary definition for `NonemptyFiniteChains.sdHorn.pairingCore.ι.ofNotIsIndexIOfEqEmpty`. -/
 def obj (i : Fin (dim + 2)) : NonemptyFiniteChains X :=
   Fin.cases { finset := {x₀} } s.obj i
 
@@ -371,6 +401,11 @@ lemma strictMono_obj (h₀ : finsetNotMem x₀ s = ∅) : StrictMono (obj x₀ s
 end ofNotIsIndexIOfEqEmpty
 
 open ofNotIsIndexIOfEqEmpty in
+/-- Given a finite nontrivial linearly ordered type `X`, `x₀ : X`,
+and a simplex `s` of `nerve (NonemptyFiniteChains X)` that is not a type (I) simplex,
+this construct the corresponding type (I) simplex in the case
+`finsetNotMem x₀ s = ∅` (i.e. `x₀ ∈ (s.obj 0).finset`). This simplex
+is obtained by inserting `{x₀}` at the beginning of the sequence `s.obj`. -/
 @[simps, implicit_reducible]
 def ofNotIsIndexIOfEqEmpty (h₀ : finsetNotMem x₀ s = ∅) : ι x₀ where
   dim := dim
@@ -394,6 +429,7 @@ omit [Fintype X] [Nontrivial X]
 variable {i₀ : Fin (dim + 1)} (hi₀ : finsetNotMem x₀ s = Finset.Iic i₀)
 
 variable (x₀ s i₀) in
+/-- Auxiliary definition for `NonemptyFiniteChains.sdHorn.pairingCore.ι.ofNotIsIndexI`. -/
 def obj (i : Fin (dim + 2)) : NonemptyFiniteChains X :=
   if i ≠ i₀.succ then s.obj (i₀.predAbove i)
   else { finset := (s.obj i₀).finset ∪ {x₀} }
@@ -459,6 +495,12 @@ lemma strictMono_obj : StrictMono (obj x₀ s i₀) := by
 end ofNotIsIndexI
 
 open ofNotIsIndexI in
+/-- Given a finite nontrivial linearly ordered type `X`, `x₀ : X`,
+and a simplex `s` of `nerve (NonemptyFiniteChains X)` that is not a type (I) simplex,
+this construct the corresponding type (I) simplex in the case
+`finsetNotMem x₀ s = Finset.Iic i₀` (i.e. `i₀` is the maximum index such that
+`x₀ ∉ (s.obj i₀).finset`). This simplex is obtained by inserting `(s.obj i₀).finset ∪ {x₀}`
+just after `s.obj i₀`. -/
 @[simps, implicit_reducible]
 def ofNotIsIndexI {i₀ : Fin (dim + 1)} (hi₀ : finsetNotMem x₀ s = Finset.Iic i₀) : ι x₀ where
   dim := dim
@@ -487,6 +529,12 @@ end pairingCore
 variable (x₀) [Fintype X] [Nontrivial X]
 
 open pairingCore in
+/-- Given a finite nontrivial linearly ordered type `X` and `x₀`, this is
+a (regular) pairing for the subcomplex `sdHorn x₀` of the nerve
+of `NonemptyFiniteChains X`. Up to certain identifications, this shows that
+the image of a horn inclusion by the subdivision functor is an anodyne extension,
+see the lemmas `PartialOrder.NonemptyFiniteChains.sdHorn.anodyneExtensions`
+and `SSet.anodyneExtensions.sd_horn_ι`. -/
 @[simps, implicit_reducible]
 def pairingCore : (sdHorn x₀).PairingCore where
   ι := ι x₀
@@ -518,6 +566,9 @@ def pairingCore : (sdHorn x₀).PairingCore where
         rw [S.ext_iff]
         exact (ι.ofNotIsIndexI_simplex₂ hs nonDeg notMem hi₀).symm
 
+/-- Given a nontrivial finite linearly ordered type `X` and `x₀ : X`, this is a weak
+`ℕ`-valued rank function for `pairingCore x₀`. It sends `s` to the cardinality
+of `pairingCore.finsetNotMem x₀ s.simplex`. -/
 def pairingCore.weakRankFunction : (pairingCore x₀).WeakRankFunction ℕ where
   rank s := (finsetNotMem x₀ s.simplex).card
   lt {s' t} hst hdim := by

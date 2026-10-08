@@ -365,6 +365,9 @@ lemma mem_horn_iff {X : Type u} [PartialOrder X] {x₀ : X} {n : SimplexCategory
     s ∈ (horn x₀).obj n ↔ ∃ y ≠ x₀, Set.range s.obj ⊆ {y}ᶜ := by
   simp [Set.subset_def]
 
+/-- If `n : ℕ` and `i : Fin (n + 2)`, then the horn inclusion `Λ[n + 1, i] ⟶ Δ[n + 1]`
+identifies to the inclusion of `PartialOrder.horn (ULift.up i)` in the nerve of the
+partially ordered type `ULift.{u} (Fin (n + 2))`. -/
 def hornArrowIso (n : ℕ) (i : Fin (n + 2)) :
     Arrow.mk (horn.{u} (ULift.up i)).ι ≅ Arrow.mk (SSet.horn (n + 1) i).ι :=
   SSet.Subcomplex.congrArrowι' (SSet.stdSimplex.isoNerve _).symm (by
