@@ -402,7 +402,6 @@ end Embedding
 theorem count_eq_card_filter_eq [DecidableEq α] (s : Multiset α) (a : α) :
     s.count a = card (s.filter (a = ·)) := by rw [count, countP_eq_card_filter]
 
-set_option linter.concreteInstances false in
 /--
 Mapping a multiset through a predicate and counting the `True`s yields the cardinality of the set
 filtered by the predicate. Note that this uses the notion of a multiset of `Prop`s - due to the

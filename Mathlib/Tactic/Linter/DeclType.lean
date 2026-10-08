@@ -64,21 +64,19 @@ def runConcreteLinter (constVal : ConstantVal) (bodyRef : Syntax) : CommandElabM
     (mkNullNode #[.ofRange ·, bodyRef])
   Command.liftCoreM do MetaM.run' do
   for cls in classes do
-    let some _ ← isClass? cls | pure ()
-    let msg :=
-      if (← trySynthInstance cls) matches .some _ then
+    let some clsName ← isClass? cls | continue
+    -- A redundant `Decidable` hypothesis can allow a declaration to be compatible with
+    -- all potential `Decidable` instance, so we allow this.
+    if clsName == ``Decidable then continue
+    if (← trySynthInstance cls) matches .some _ then
+      logLint linter.concreteInstances ref
         m!"There exists a global instance of type class `{cls}`.\n\
         Please rely on this instance and remove the `{.sbracket cls}` assumption."
-      else
+    else
+      logLint linter.concreteInstances ref
         m!"The instance assumption `{.sbracket cls}` does not contain free variables.\n\
         Instead of assuming it locally, please add a global instance with\n\
         `instance : {cls} := ...`"
-    -- if (← isClass? cls) == `Decidable then
-    --   msg := msg ++ m!"\n\nNote: this warning can be ignored for the `Decidable` type class \
-    --     if the type has multiple incompatible `Decidable` instances.\n
-    --     Adding a redundant `Decidable` hypothesis allows the declaration to be compatible with \
-    --     any of the `Decidable` instance."
-    logLint linter.concreteInstances ref msg
 
 end concreteInstances
 
