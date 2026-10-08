@@ -4362,6 +4362,7 @@ public import Mathlib.Data.Nat.Digits.Div
 public import Mathlib.Data.Nat.Digits.Lemmas
 public import Mathlib.Data.Nat.Dist
 public import Mathlib.Data.Nat.DvdSequence
+public import Mathlib.Data.Nat.Eratosthenes
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Nat.Factorial.BigOperators
