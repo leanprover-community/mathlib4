@@ -279,11 +279,14 @@ theorem isRadical_of_eq_jacobson (h : jacobson I = I) : I.IsRadical :=
 lemma isRadical_jacobson (I : Ideal R) : I.jacobson.IsRadical :=
   isRadical_of_eq_jacobson jacobson_idem
 
-theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ Ring.jacobson R) :
+theorem isUnit_of_sub_one_mem_jacobson (r : R) (h : r - 1 ∈ Ring.jacobson R) :
     IsUnit r := by
   obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r (jacobson_bot (R := R) ▸ h)
   rw [mem_bot, sub_eq_zero, mul_comm] at hs
   exact .of_mul_eq_one _ hs
+
+@[deprecated (since := "2026-10-08")]
+alias isUnit_of_sub_one_mem_jacobson_bot := isUnit_of_sub_one_mem_jacobson
 
 theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsUnit (x * y + 1) :=
   ⟨fun hx y =>
@@ -399,10 +402,10 @@ open Ideal
 
 variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 
-theorem RingHom.ker_le_jacobson_of_isLocalHom (g : R →+* S) [h : IsLocalHom g] :
+theorem RingHom.ker_le_jacobson_of_isLocalHom (g : R →+* S) [IsLocalHom g] :
     ker g ≤ Ring.jacobson R := fun x (hx : g x = 0) ↦ by
   rw [← jacobson_bot, mem_jacobson_bot]
-  exact fun _ ↦ h.map_nonunit _ (by simp [hx])
+  exact fun _ ↦ ‹IsLocalHom g›.map_nonunit _ (by simp [hx])
 
 theorem RingHom.isLocalHom_iff_ker_le_jacobson {g : R →+* S} (h : Function.Surjective g) :
     IsLocalHom g ↔ ker g ≤ Ring.jacobson R := by
