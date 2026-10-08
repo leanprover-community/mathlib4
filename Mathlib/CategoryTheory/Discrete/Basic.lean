@@ -88,13 +88,7 @@ attribute [aesop (rule_sets := [builtin]) norm 0 destruct] Discrete.Hom.eq
 
 to_dual_for Discrete.Hom.eq := self.eq.symm
 to_dual_for Discrete.Hom.mk := ⟨eq.symm⟩
-
-/-- `Discrete.Hom.casesOn'` is the dual of `Discrete.Hom.casesOn`, which is needed for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing casesOn] -- TODO: use `to_dual_for`
-abbrev Discrete.Hom.casesOn' {α : Type u₁} {a b : α} {motive : Discrete.Hom a b → Sort*}
-    (t : Discrete.Hom a b) (mk : (eq : b = a) → motive (mk' eq)) : motive t :=
-  t.casesOn (mk ·.symm)
+to_dual_for Discrete.Hom.casesOn := t.casesOn (mk ·.symm)
 
 /-- The "Discrete" category on a type, whose morphisms are equalities.
 
