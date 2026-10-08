@@ -124,6 +124,25 @@ theorem le_ciSup {f : ι → α} (H : BddAbove (range f)) (c : ι) : f c ≤ iSu
 theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   le_trans h (le_ciSup H c)
 
+@[to_dual]
+theorem ciSup_extend_le [Nonempty β] {f : ι → β} {g : ι → α} (hg : BddAbove (range g)) {j : β → α}
+    (hj : BddAbove (range j)) :
+    iSup (extend f g j) ≤ iSup g ⊔ iSup j := by
+  refine ciSup_le fun i ↦ ?_
+  classical aesop (add simp [le_sup_of_le_left, le_sup_of_le_right, Function.extend_def, le_ciSup])
+
+@[to_dual]
+theorem ciSup_extend [Nonempty ι] {f : ι → β} {g : ι → α} (hf : FactorsThrough g f)
+    (hg : BddAbove (range g)) {j : β → α} (hjg : ∀ i, j i ≤ iSup g) :
+    iSup (extend f g j) = iSup g := by
+  have hβ : Nonempty β := ‹Nonempty ι›.map f
+  refine le_antisymm ?_ ?_
+  · refine (ciSup_extend_le hg ⟨iSup g, by grind [mem_upperBounds]⟩).trans_eq ?_
+    simpa using ciSup_le hjg
+  · refine ciSup_le fun i ↦ le_ciSup_of_le ?_ (f i) (by simp [hf.extend_apply])
+    refine (bddAbove_union.mpr ⟨hg, ?_⟩).mono (Set.range_extend_subset f g j)
+    exact ⟨iSup g, by grind [mem_upperBounds]⟩
+
 /-- If the set of all `f i j` is bounded above, then so is the set of the supremums of every row -/
 @[to_dual /-- If the set of all `f i j` is bounded below, then so is the set of the infimums of
 every row -/]
@@ -266,7 +285,7 @@ theorem csSup_image {s : Set β} {f : β → α}
 @[to_dual]
 theorem cbiSup_id {s : Set α} (hs : BddAbove s) (h : sSup ∅ ≤ sSup s) : ⨆ i ∈ s, i = sSup s := by
   rw [← csSup_image (Subtype.range_coe ▸ hs), Set.image_id']
-  · convert! h
+  · convert h
     rw [← sSup_range, Subtype.range_coe]
 
 @[to_dual]
@@ -319,6 +338,11 @@ theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih �
 @[to_dual]
 theorem ciSup_and {p q : Prop} {f : p ∧ q → α} : ⨆ ih, f ih = ⨆ (h₁) (h₂), f ⟨h₁, h₂⟩ := by
   by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq, iSup_of_empty']
+
+@[to_dual le_ciInf_or]
+lemma ciSup_or_le (p q : Prop) (f : p ∨ q → α) :
+    ⨆ (h : p ∨ q), f h ≤ (⨆ h : p, f (.inl h)) ⊔ (⨆ h : q, f (.inr h)) := by
+  by_cases hp : p <;> simp [hp]
 
 end ConditionallyCompleteLattice
 
@@ -478,11 +502,13 @@ theorem ciSup_ciSup_eq_right {b : β} {f : ∀ x : β, b = x → α} :
     ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
   le_antisymm (ciSup₂_le' fun _ h ↦ h ▸ le_refl (f b rfl)) le_ciSup_ciSup_eq_right
 
-lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
+lemma ciSup_or (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
   by_cases hp : p <;>
   by_cases hq : q <;>
   simp [hp, hq]
+
+@[deprecated (since := "2026-09-05")] alias ciSup_or' := ciSup_or
 
 end ConditionallyCompleteLinearOrderBot
 

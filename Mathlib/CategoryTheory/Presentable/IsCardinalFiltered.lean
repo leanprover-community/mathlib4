@@ -8,9 +8,6 @@ module
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 public import Mathlib.CategoryTheory.Comma.CardinalArrow
-public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
-public import Mathlib.SetTheory.Cardinal.HasCardinalLT
-public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # κ-filtered category
 
@@ -209,7 +206,6 @@ instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
 
 open IsCardinalFiltered
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_under
     (J : Type u) [Category.{v} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]

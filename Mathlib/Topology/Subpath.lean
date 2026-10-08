@@ -5,8 +5,9 @@ Authors: Sebastian Kumar
 -/
 module
 
-public import Batteries.Data.Fin.Fold
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+
+import Batteries.Data.Fin.Fold
 
 /-!
 # Subpaths and concatenation of paths
@@ -67,7 +68,7 @@ lemma range_subpathAux (t₀ t₁ : I) : range (Icc.convexComb t₀ t₁) = uIcc
   constructor
   · intro s
     exact convex_uIcc (t₀ : ℝ) t₁ left_mem_uIcc right_mem_uIcc
-      (one_minus_nonneg s) (nonneg s) (sub_add_cancel _ _)
+      (one_sub_nonneg s) (nonneg s) (sub_add_cancel _ _)
   · intro t (ht : (t : ℝ) ∈ uIcc (t₀ : ℝ) (t₁ : ℝ))
     rw [← segment_eq_uIcc, segment_eq_image] at ht
     obtain ⟨s, hs, hst⟩ := ht

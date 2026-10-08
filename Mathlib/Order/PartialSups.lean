@@ -5,11 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
-import Mathlib.Data.Finset.Max
 
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Order
 
 /-!
@@ -98,7 +98,7 @@ lemma upperBounds_range_partialSups (f : ι → α) :
 @[simp]
 theorem bddAbove_range_partialSups {f : ι → α} :
     BddAbove (Set.range (partialSups f)) ↔ BddAbove (Set.range f) :=
-  .of_eq <| congr_arg Set.Nonempty <| upperBounds_range_partialSups f
+  .of_eq congr($(upperBounds_range_partialSups f).Nonempty)
 
 theorem Monotone.partialSups_eq {f : ι → α} (hf : Monotone f) :
     partialSups f = f :=
@@ -117,10 +117,10 @@ lemma partialSups_monotone (f : ι → α) :
 def partialSups.gi :
     GaloisInsertion (partialSups : (ι → α) → ι →o α) (↑) where
   choice f h :=
-    ⟨f, by convert! (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
+    ⟨f, by convert (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
   gc f g := by
     refine ⟨(le_partialSups f).trans, fun h ↦ ?_⟩
-    convert! partialSups_mono h
+    convert partialSups_mono h
     exact OrderHom.ext _ _ g.monotone.partialSups_eq.symm
   le_l_u f := le_partialSups f
   choice_eq f h := OrderHom.ext _ _ ((le_partialSups f).antisymm h)

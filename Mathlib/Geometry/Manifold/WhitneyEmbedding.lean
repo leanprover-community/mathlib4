@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.FieldTheory.Finiteness
-public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
+
+import Mathlib.FieldTheory.Finiteness
 
 /-!
 # Whitney embedding theorem

@@ -16,15 +16,13 @@ or below.
 
 ## Trust hierarchy and containers
 
-The model spans four storage containers, each written by a distinct class of
+The model spans two storage containers, each written by a distinct class of
 CI job and assigned a trust level:
 
 | Container             | Who may write                                          | Trust  |
 |-----------------------|--------------------------------------------------------|--------|
 | `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
-| `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
-| `nightly-testing`     | nightly-testing's trusted branches                     | medium |
-| `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    |
+| `forks`               | mathlib4 PR builds, non-master branches, `bors try`, and every nightly-testing push build | medium |
 
 Each writer identity is granted write access to exactly one container, enforced
 by the storage backend. An upload aimed at any other container is rejected,
@@ -36,13 +34,11 @@ containers a consumer reads from:
 | Consumer                | Default lookup chain |
 |-------------------------|----------------------|
 | mathlib4                | `master`             |
-| nightly-testing         | `nightly-testing`    |
-| forks (PRs)             | `master`, `forks`    |
+| forks (PRs), nightly-testing | `master`, `forks` |
 
-The nightly default excludes the low-trust container, so a poisoned upload from
-an experimental toolchain branch cannot reach a trusted nightly consumer.
-Branches that legitimately need to read their own prior low-trust uploads opt
-into a wider chain explicitly.
+The nightly-testing repo is a fork in this model. Its builds, including those
+of experimental toolchain branches, upload under its repo and commit namespace
+in `forks` (see [Per-commit namespace for fork uploads](#per-commit-namespace-for-fork-uploads)).
 
 ## Four enforcement layers
 
@@ -51,23 +47,36 @@ guarantees and additional containment.
 
 ### 1. Token-scoped uploads (server-side)
 
-Before uploading, the workflow obtains a short-lived token for the writer
-identity tied to its container. The identity provider issues the token only
-when the workflow's identity — stamped by GitHub from the repo, event type, and
-ref — matches a pre-registered credential. The token's scope is fixed when it
-is issued and cannot be widened afterward.
+Before uploading, the workflow obtains a short-lived credential for the writer
+identity tied to its container. The identity provider issues the credential
+only when the workflow's identity — stamped by GitHub from the repo, event
+type, and ref — matches a pre-registered grant. The credential's scope is
+fixed when it is issued and cannot be widened afterward.
+
+Two credential mechanisms implement this. Azure writes mint an OIDC-federated
+bearer token whose RBAC role covers exactly one container. An S3-compatible
+destination takes a short-lived credential pair scoped to one container's
+namespace, and the tool signs each request with it (SigV4); CI mints the
+pair per job the same OIDC-gated way.
+
+The nightly-testing credential is narrower than one container: it reaches only
+the namespace of the commit being built.
+
+The `forks` credential covers the whole container. Inside it, the trusted upload
+tool selects the repo and commit namespace from GitHub's event data (Layer 2),
+so a fork PR cannot choose where its artifacts land.
 
 This is the boundary's anchor: a compromised cache binary, a tampered workflow,
-or a malicious PR that captures and replays the token still cannot upload
-outside the one container the token grants.
+or a malicious PR that captures and replays the credential still cannot upload
+outside the one container the credential grants.
 
 ### 2. Isolation of the cache binary
 
 The cache binary is built from a trusted branch, never from the PR's checkout,
 so the PR's toolchain never reaches the compiler that produces it. The binary
-runs in two separate jobs — one that fetches and packs artifacts, and one that
-uploads them — and each builds its own copy from the trusted source. The PR's
-own build writes only its artifacts, which the trusted binary later packs.
+runs in two separate jobs — one that fetches and packs artifacts, one that
+uploads them — and each job builds its own copy from the trusted source. The
+PR's own build writes only its artifacts, which the trusted binary later packs.
 
 The two jobs also run on different runner pools, and the upload token is minted
 only in the upload job, so it never reaches the build host; a compromised build
@@ -103,12 +112,12 @@ default and must opt into a wider lookup chain explicitly.
 
 ## Per-commit namespace for fork uploads
 
-Within the fork container, uploads are further namespaced by the PR's head
+Within the fork container, uploads are further namespaced by the build's head
 commit. This closes a replay window: artifacts from a closed, hidden, or
-force-pushed-away PR live under a different commit, so a later honest PR from
-the same fork cannot read them. Uploads to the other containers are not
-commit-scoped — each receives uploads from a single trust level, so the
-container boundary alone isolates them.
+force-pushed-away PR, or from an experimental nightly-testing branch, live
+under a different commit, so a later honest build of the same repo cannot read
+them. Uploads to `master` are not commit-scoped: `master` receives uploads from
+a single trust level, so the container boundary alone isolates them.
 
 By default a `cache get` reads the fork namespace at the checked-out HEAD: it
 can only serve artifacts built from the commit the reader already has, so it
@@ -135,6 +144,11 @@ The trust model does not attempt to defend against:
   whichever host answers a read carries the storage tenant's trust. That is the
   default read host `https://cache.mathlib.org`, or a host named by
   `MATHLIB_CACHE_GET_URL`.
+- **Substituted write endpoint** — the cache does not verify the host it uploads
+  to: whichever host `MATHLIB_CACHE_PUT_URL` or `MATHLIB_CACHE_PUT_BASE_URL`
+  names receives the upload, and on the azure backend the bearer token with it.
+  The trusted branch's workflow defines the upload job's environment, and a
+  token captured this way stays bounded by Layer 1.
 - **Sandbox escape via kernel vulnerability** — invalidates Layer 3.
 - **Maintainer trust on the trusted branches** — write access to a branch the
   cache binary is built from can land a bad tool, workflow, or toolchain.
@@ -148,9 +162,13 @@ The trust model does not attempt to defend against:
 | Concern                                        | File(s)                                                          |
 |------------------------------------------------|------------------------------------------------------------------|
 | Container model, URL shape, per-repo defaults  | [`Cache/Infra.lean`](Infra.lean)                                 |
-| Read-fallback resolution, upload URL, dispatch | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`, `effectiveUploadURL`) |
+| Where files live: the URLs of reads and uploads | [`Cache/Location.lean`](Location.lean) (`Location`)             |
+| Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetBases`, `readLocations`) |
+| Backend selection, location arbitration        | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`UploadBackend`, `uploadLocation`), [`Cache/Upload.lean`](Upload.lean) (`runPut`) |
+| Upload backends: credentials, location, signing, transfer | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
+| Transfer tool mechanics                        | [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
-| User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md)   |
-| OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` job) |
+| User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md), [`Cache/CI.md`](CI.md) |
+| OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` and `upload_test_cache` jobs) |
 | (repo, ref) → trust class policy table         | [`.github/actions/cache-trust-dispatch/action.yml`](../.github/actions/cache-trust-dispatch/action.yml) |
 | Caller `cache_application_id` wiring           | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |

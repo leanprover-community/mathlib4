@@ -38,7 +38,7 @@ the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 @[expose] public section
 
 
-noncomputable section
+section
 
 open MvPolynomial Finset
 
@@ -78,7 +78,7 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
     intro x y hxy
     ext i
     simp only [Subtype.ext_iff, funext_iff] at hxy
-    exact congr_fun (hinj x.2 y.2 (funext hxy)) i
+    congrm $(hinj x.2 y.2 (funext hxy)) i
   rcases hres_surj ⟨fun i => ⟨v i, hv i⟩, hvS⟩ with ⟨⟨w, hwS'⟩, hw⟩
   refine ⟨fun i => w i, hwS', ?_⟩
   simpa [Subtype.ext_iff, funext_iff] using hw
@@ -137,7 +137,7 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
           (fun a => .var (Sum.inl (Sum.inl a)))
           (fun i => (termOfFreeCommRing (genericPolyMap mons i)).relabel
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
-  Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
+  Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp surjOn).relabel Sum.inr)
 
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
@@ -182,7 +182,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
   rcases hp with hp | rfl
   · exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons
   · rw [ACF_zero_realize_iff_infinite_ACF_prime_realize]
-    convert! Set.infinite_univ (α := Nat.Primes)
+    convert Set.infinite_univ (α := Nat.Primes)
     rw [Set.eq_univ_iff_forall]
     intro ⟨p, hp⟩
     exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons

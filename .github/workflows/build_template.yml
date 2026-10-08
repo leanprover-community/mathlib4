@@ -26,12 +26,16 @@ on:
         required: false
         default: ''
       cache_application_id:
+        # The Azure writer app for the `upload_cache` job. Empty for a repo with no
+        # Azure writer (mathlib4-nightly-testing): the job then skips the Azure
+        # upload and requires the R2 upload.
         type: string
         required: true
       cache_environment:
-        # GitHub environment for the `upload_cache` job. Its only role is to fix the
-        # OIDC `sub` claim to `...:environment:<name>`, which the Azure cache app's
-        # federated credential is scoped to; it must match the writer `cache_application_id`.
+        # GitHub environment for the `upload_cache` and `upload_test_cache` jobs. Its only
+        # role is to fix the OIDC `sub` claim to `...:environment:<name>`, which the Azure
+        # cache app's federated credential is scoped to; it must match the writer
+        # `cache_application_id`.
         type: string
         required: true
       publish_cache:
@@ -54,6 +58,12 @@ jobs:
   build:
     name: Build
     runs-on: ${{ inputs.runs_on }}
+    # This job builds (potentially fork) PR code, so it must not inherit any
+    # write-capable token. `actions: read` lets get-tools and get-cache download
+    # artifacts from master's runs.
+    permissions:
+      contents: read
+      actions: read
     outputs:
       build-outcome: ${{ steps.build.outcome }}
       archive-outcome: ${{ steps.archive.outcome }}
@@ -65,8 +75,11 @@ jobs:
       # shake-outcome: ${{ steps.shake.outcome }}
       # `test`/`lint` outcomes are exposed by the `test_lint` job (and consumed by
       # its nightly-testing comment step).
-    defaults: # On Hoskinson runners, landrun is already installed.
-      run: # note that .pr-branch/.lake must be created in a step below before we use this
+    # PR code can write `pr-branch/.lake/` from setup-build-env's "download dependencies"
+    # step onward, so later steps that use it run inside landrun. The one exception is
+    # "prune local cache to this commit's set", which runs only on a trusted checkout.
+    defaults: # The self-hosted runner image provides landrun.
+      run: # setup-build-env creates the paths below that the runner image can lack.
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
       - name: job info
@@ -88,8 +101,9 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
-      # Shared self-hosted setup (toolchain prune, jq, cache-trust dispatch,
+      # Shared self-hosted setup (cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
       # download); see the action for per-step rationale. It is loaded from the
       # `Checkout local actions` checkout above, which therefore runs first.
@@ -114,7 +128,7 @@ jobs:
       - name: check cache tool is post-migration
         # Canonical repo only. This nudge targets human fork-PR / dev-branch
         # contributors who run `lake exe cache get` locally. The nightly-testing
-        # repo's branches (nightly-testing, bump/*, lean-pr-testing-*) are
+        # repo's branches (nightly-testing, bump/*, batteries-pr-testing-*) are
         # machine-managed and don't merge master the same way, so "merge master
         # and push" is the wrong remedy there; never fail their CI on it.
         if: github.repository == 'leanprover-community/mathlib4'
@@ -137,17 +151,6 @@ jobs:
             echo ""
             exit 1
           fi
-
-      - name: Prepare DownstreamTest directory
-        shell: bash
-        run: |
-          echo "Copying lean-toolchain to DownstreamTest..."
-          cd pr-branch
-          # Ensure DownstreamTest/.lake/ directory exists, since landrun will need it later
-          mkdir -p DownstreamTest/.lake/
-          cd DownstreamTest
-          cp ../lean-toolchain .
-          echo "lean-toolchain copied successfully to DownstreamTest."
 
       - name: validate lake-manifest.json inputRevs
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
@@ -233,8 +236,11 @@ jobs:
       # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
 
       - name: fetch archive, counterexamples and wanted cache
-        shell: bash
+        # Same sandbox as "Fetch cache from remote" in get-cache.
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL -- bash -euxo pipefail {0}
         run: |
+          # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache get Archive.lean
           ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
@@ -292,37 +298,57 @@ jobs:
 
       - name: stage Mathlib cache files
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # Run `cache` directly, as the get/clean steps do, rather than via `lake env`:
+          # it reads its context from LEAN_SRC_PATH (forwarded above), and no PR code
+          # runs with write access to `cache-staging/`. Use the trusted toolchain's
+          # `lean`/`leantar` (see setup-build-env).
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
 
       - name: stage Archive cache files
         if: ${{ steps.archive.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Archive.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Archive.lean
 
       - name: stage Counterexamples cache files
         if: ${{ steps.counterexamples.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Counterexamples.lean
 
       - name: stage Wanted cache files
         if: ${{ steps.wanted.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Wanted.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Wanted.lean
 
       - name: check cache staging contents
         id: cache_staging_check
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
         shell: bash
         run: |
+          # The staging directory is uploaded as-is, so it must hold only regular files.
+          # Only the stage steps can write to it, and they run no PR code, so nothing
+          # can change it between this check and the upload.
+          other=$(find cache-staging -mindepth 1 ! -type f ! -type d)
+          if [ -n "${other}" ]; then
+            echo "::error::cache-staging contains entries that are not regular files:"
+            echo "${other}"
+            exit 1
+          fi
           if find cache-staging -type f -name '*.ltar' -print -quit | grep -q .; then
             echo "has_files=true" >> "$GITHUB_OUTPUT"
           else
@@ -339,12 +365,15 @@ jobs:
           compression-level: 0
 
       # Prune to this commit's `.ltar` set so the published snapshot is exactly master's
-      # current cache (the local dir also holds the previous snapshot it warmed from).
+      # current cache. The local directory can also hold other `.ltar` files, such as
+      # the snapshot this run warmed from or files that the runner image provides.
       - name: prune local cache to this commit's set
         if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
         continue-on-error: true # best-effort; never fail the build
-        shell: bash # runs the trusted tools-branch `cache` binary, so no landrun needed
+        shell: bash # only master pushes publish the cache, so the checkout is trusted
         run: |
+          # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache clean
 
@@ -405,11 +434,23 @@ jobs:
     # match: `test` only on a clean build, `lint` on success-or-failure.
     if: ${{ always() && (needs.build.result == 'success' || needs.build.result == 'failure') }}
     runs-on: ${{ inputs.runs_on }}
+    # Same as `build`: this job runs (potentially fork) PR code, so it must not
+    # inherit any write-capable token.
+    permissions:
+      contents: read
+      actions: read
     outputs:
       lint-outcome: ${{ steps.lint.outcome }}
       test-outcome: ${{ steps.test.outcome }}
-    defaults: # On Hoskinson runners, landrun is already installed.
-      run: # note that pr-branch/.lake must be created in a step below before we use this
+      test-cache-staging-has-files: ${{ steps.test_cache_staging.outputs.has_files }}
+    # `RUN_TESTS` is true on a clean build: `build` itself, the `mk_all` check, and
+    # the archive, counterexamples, and Wanted builds all succeeded. It reads these
+    # from the outputs of `build`. It gates `test`, the problem-matcher wrap of
+    # `test`, and the MathlibTest cache fetch.
+    env:
+      RUN_TESTS: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
+    defaults: # The self-hosted runner image provides landrun.
+      run: # setup-build-env creates the paths below that the runner image can lack.
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
       - name: Checkout local actions
@@ -419,6 +460,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       # Shared self-hosted setup (see the action).
       - name: Set up build environment
@@ -427,8 +469,8 @@ jobs:
           pr_branch_ref: ${{ inputs.pr_branch_ref }}
           tools_branch_ref: ${{ inputs.tools_branch_ref }}
 
-      # mathlib-ci provides the scripts for the lean-pr-testing comment at the end of
-      # this job, which runs only on the nightly-testing repo — so check it out only
+      # mathlib-ci provides the scripts for the batteries-pr-testing comment at the end
+      # of this job, which runs only on the nightly-testing repo — so check it out only
       # there. Written twice because a `uses:` step cannot conditionally omit the
       # single `ref` key (`ref: ''` would override the action's pinned default).
       - name: Get mathlib-ci
@@ -477,27 +519,89 @@ jobs:
           cd pr-branch
           lake build --no-build --rehash -v Mathlib
 
-      # `test` runs only on a clean build: `build` itself, the `mk_all` check, and
-      # the archive/counterexamples builds all succeeded. The condition reads those
-      # from the build job's outputs, and the problem-matcher wrap is gated to match.
+      # Fetch the `MathlibTest` oleans that the cache holds. `test` rebuilds only the
+      # test files that the cache does not hold.
+      - name: get the MathlibTest cache
+        if: ${{ env.RUN_TESTS == 'true' }}
+        continue-on-error: true
+        # Same sandbox as "Fetch cache from remote" in get-cache.
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env CACHE_REPO -- bash -euxo pipefail {0}
+        env:
+          CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        run: |
+          # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
+          cd pr-branch
+          ../tools-branch/.lake/build/bin/cache --repo="${CACHE_REPO}" get 'MathlibTest.+'
+
       - name: begin gh-problem-match-wrap for test step
-        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
+        if: ${{ env.RUN_TESTS == 'true' }}
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: lean
       - name: test mathlib
-        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
+        if: ${{ env.RUN_TESTS == 'true' }}
         id: test
         run: |
           cd pr-branch
           ../tools-branch/scripts/lake-build-wrapper.py .lake/build_summary_MathlibTest.json lake --iofail test
       - name: end gh-problem-match-wrap for test step
-        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
+        if: ${{ env.RUN_TESTS == 'true' }}
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: remove
           linters: lean
+
+      # For `upload_test_cache`, stage the `MathlibTest` oleans that `test` built. Only
+      # runs that write the `master` container stage them. A test file that fails leaves
+      # no build output, so `stage` skips it. `test` ran the PR's code with write access
+      # to `pr-branch/.lake/`, so `stage` runs in landrun.
+      - name: prepare the MathlibTest staging directory
+        id: test_cache_prepare
+        if: ${{ always() && env.MATHLIB_CACHE_PRIMARY == 'master' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          rm -rf test-cache-staging
+          mkdir -p test-cache-staging
+
+      - name: stage MathlibTest cache files
+        id: test_cache_stage
+        if: ${{ always() && steps.test_cache_prepare.outcome == 'success' }}
+        continue-on-error: true
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw test-cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
+        run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
+          cd pr-branch
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../test-cache-staging" stage 'MathlibTest.+'
+
+      - name: check MathlibTest cache staging contents
+        id: test_cache_staging
+        if: ${{ always() && steps.test_cache_stage.outcome == 'success' }}
+        shell: bash
+        run: |
+          # The staging directory is uploaded as-is, so it must hold only regular files.
+          other=$(find test-cache-staging -mindepth 1 ! -type f ! -type d)
+          if [ -n "${other}" ]; then
+            echo "::error::test-cache-staging contains entries that are not regular files:"
+            echo "${other}"
+            exit 1
+          fi
+          if find test-cache-staging -type f -name '*.ltar' -print -quit | grep -q .; then
+            echo "has_files=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: upload MathlibTest cache staging artifact
+        if: ${{ always() && steps.test_cache_staging.outputs.has_files == 'true' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cache-staging-test
+          path: test-cache-staging/
+          # The `.ltar` files are already zstd-compressed; recompressing wastes CPU.
+          compression-level: 0
 
       # `lint` runs on a build that succeeded or failed (not cancelled). On a failed
       # build it lints best-effort over whatever oleans the cache has, so partial
@@ -564,23 +668,21 @@ jobs:
 
       # Generate a fresh token just before posting comments.
       # GitHub App tokens expire after 1 hour, and the build can take longer than that.
-      - name: Generate lean-pr-testing app token
-        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && (startsWith(github.ref_name, 'lean-pr-testing-') || startsWith(github.ref_name, 'batteries-pr-testing-')) }}
-        id: lean-pr-testing-token
+      - name: Generate batteries-pr-testing app token
+        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && startsWith(github.ref_name, 'batteries-pr-testing-') }}
+        id: batteries-pr-testing-token
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
-          # `batteries-pr-testing-*` branches need a token scoped to `leanprover-community/batteries`
-          # for the labelling API; `lean-pr-testing-*` branches need one scoped to `leanprover/lean4`.
-          app-id: ${{ startsWith(github.ref_name, 'batteries-pr-testing-') && secrets.MATHLIB_NIGHTLY_TESTING_APP_ID || secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
-          private-key: ${{ startsWith(github.ref_name, 'batteries-pr-testing-') && secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY || secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
-          owner: ${{ startsWith(github.ref_name, 'batteries-pr-testing-') && 'leanprover-community' || 'leanprover' }}
-          repositories: ${{ startsWith(github.ref_name, 'batteries-pr-testing-') && 'batteries' || 'lean4' }}
+          app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
+          owner: leanprover-community
+          repositories: batteries
       # The create-github-app-token README states that this token is masked and will not be logged accidentally.
-      - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
-        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && (startsWith(github.ref_name, 'lean-pr-testing-') || startsWith(github.ref_name, 'batteries-pr-testing-')) }}
+      - name: Post comments for batteries-pr-testing-NNNN branches
+        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && startsWith(github.ref_name, 'batteries-pr-testing-') }}
         shell: bash
         env:
-          TOKEN: ${{ steps.lean-pr-testing-token.outputs.token }}
+          TOKEN: ${{ steps.batteries-pr-testing-token.outputs.token }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
           WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           # build/archive/counterexamples/noisy outcomes come from the `build` job's
@@ -593,7 +695,6 @@ jobs:
           TEST_OUTCOME: ${{ steps.test.outcome }}
           NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
-          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" lean
           "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" batteries
 
   upload_cache:
@@ -622,32 +723,35 @@ jobs:
       # dev branches, the nightly-testing repo) — fork PRs run master's
       # `build_template` via `pull_request_target`, never this one — so
       # `pr_branch_ref` is always a trusted ref here. Fork PRs keep `master`.
-      - name: Checkout tools branch
+      - &checkout_tools_branch
+        name: Checkout tools branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
           fetch-depth: 1
+          persist-credentials: false # no later step needs git credentials
 
-      # Same trust dispatch as in the `build` and `post_steps` jobs. Loaded from
-      # the tools-branch checkout above (the branch under test, a trusted in-repo
-      # ref in the contexts where this job runs), which is what the OIDC token's
-      # container scoping is keyed to.
-      - name: Compute cache trust dispatch
+      # Same trust dispatch as in the `build` and `post_steps` jobs, loaded from
+      # the tools-branch checkout above.
+      - &compute_cache_trust_dispatch
+        name: Compute cache trust dispatch
         uses: ./.github/actions/cache-trust-dispatch
         with:
           repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           branch: ${{ github.head_ref || github.ref_name }}
           head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+      - &configure_lean_for_cache
+        name: Configure Lean
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
         with:
           auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
           use-github-cache: false
           use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
 
-      - name: build cache executable
+      - &build_cache_executable
+        name: build cache executable
         run: |
           lake build cache
           CACHE_BIN="$(pwd)/.lake/build/bin/cache"
@@ -664,12 +768,14 @@ jobs:
           path: cache-staging
 
       - name: Azure CLI OIDC login and mint storage bearer token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
+        if: inputs.cache_application_id != ''
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Upload staged cache to Azure
+        if: inputs.cache_application_id != ''
         shell: bash
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -681,6 +787,119 @@ jobs:
           # container.
           echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
+
+      # A second upload of the same staged set, to R2. `master` writes the
+      # public cache bucket, flat. `forks` writes the developer cache bucket
+      # in the container's layout, the layout the Azure upload above wrote,
+      # so the cache resolver serves both stores at one path. The mint action
+      # returns short-lived S3 credentials as masked step outputs.
+      # With an Azure writer, the R2 upload is best effort: a failed mint fails
+      # only this step and skips the upload, and an empty
+      # `MATHLIB_CACHE_BROKER_URL` turns the R2 upload off. Without one, R2 is
+      # the only destination, so a failed mint, an empty broker URL, or a
+      # failed upload fails the job.
+      - &mint_r2_credentials
+        name: Mint R2 credentials
+        id: mint-r2
+        if: >-
+          (env.MATHLIB_CACHE_PRIMARY == 'master' || env.MATHLIB_CACHE_PRIMARY == 'forks') &&
+          vars.MATHLIB_CACHE_BROKER_URL != ''
+        continue-on-error: ${{ inputs.cache_application_id != '' }}
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@d6393a535c054122e507b6c5e1b2f4c31c604121
+        with:
+          broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
+          audience: mathlib-cache-broker
+
+      - name: Upload staged cache to R2
+        if: steps.mint-r2.outputs.success == 'true' || inputs.cache_application_id == ''
+        continue-on-error: ${{ inputs.cache_application_id != '' }}
+        shell: bash
+        env:
+          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          MATHLIB_CACHE_S3_ACCESS_KEY_ID: ${{ steps.mint-r2.outputs.access-key-id }}
+          MATHLIB_CACHE_S3_SECRET_ACCESS_KEY: ${{ steps.mint-r2.outputs.secret-access-key }}
+          MATHLIB_CACHE_S3_SESSION_TOKEN: ${{ steps.mint-r2.outputs.session-token }}
+          # R2 signs every request in the region `auto`.
+          MATHLIB_CACHE_S3_REGION: auto
+          # The public cache bucket's master prefix, `https://<endpoint>/<bucket>/mathlib4`.
+          # The flat write puts `{url}/f/{hash}.ltar` under it, which the cache
+          # resolver serves.
+          MASTER_PUT_URL: ${{ secrets.MATHLIB_CACHE_R2_PUT_URL }}
+          # The developer cache bucket, `https://<endpoint>/<bucket>`. The container
+          # write puts `{base}/mathlib4-forks/f/{repo}/{sha}/{hash}.ltar` under it,
+          # with the completeness marker `{base}/mathlib4-forks/m/{repo}/{sha}`, for
+          # the per-commit scope the dispatch sets.
+          DEVELOPER_PUT_BASE_URL: ${{ secrets.MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL }}
+        run: |
+          # $MATHLIB_CACHE_PRIMARY is the container the dispatch selected.
+          case "$MATHLIB_CACHE_PRIMARY" in
+            master)
+              if [ -z "$MASTER_PUT_URL" ]; then
+                echo "::warning::the secret MATHLIB_CACHE_R2_PUT_URL is unset; the R2 upload is skipped"
+                exit 1
+              fi
+              export MATHLIB_CACHE_PUT_URL="$MASTER_PUT_URL"
+              container_args=()
+              ;;
+            forks)
+              if [ -z "$DEVELOPER_PUT_BASE_URL" ]; then
+                echo "::warning::the secret MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL is unset; the R2 upload is skipped"
+                exit 1
+              fi
+              export MATHLIB_CACHE_PUT_BASE_URL="$DEVELOPER_PUT_BASE_URL"
+              container_args=(--container=forks)
+              ;;
+          esac
+          echo "Uploading cache to R2 (container: $MATHLIB_CACHE_PRIMARY)..."
+          if ! lake env "$CACHE_BIN" put-staged --backend=s3 "${container_args[@]}" --staging-dir="cache-staging" --repo="$REPO"; then
+            echo "::warning::the R2 upload failed"
+            exit 1
+          fi
+
+  upload_test_cache:
+    name: Upload tests to cache
+    needs: [test_lint]
+    # The upload is best effort: if it fails, later runs rebuild these test files.
+    continue-on-error: true
+    runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    # The environment of `upload_cache` gives this job the same OIDC `sub` claim.
+    environment:
+      name: ${{ inputs.cache_environment }}
+      deployment: false
+    permissions:
+      contents: read
+      id-token: write
+    # Uploads the `MathlibTest` oleans that `test_lint` staged to the public R2 bucket,
+    # where `upload_cache` writes the `master` container. No other job needs this one.
+    if: ${{ always() && needs.test_lint.outputs.test-cache-staging-has-files == 'true' }}
+    steps:
+      # Each `*name` repeats the step of `upload_cache` that `&name` marks.
+      - *checkout_tools_branch
+      - *compute_cache_trust_dispatch
+      - *configure_lean_for_cache
+      - *build_cache_executable
+
+      - name: Download MathlibTest cache staging artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: cache-staging-test
+          path: cache-staging
+
+      - *mint_r2_credentials
+
+      - name: Upload staged MathlibTest cache to R2
+        if: steps.mint-r2.outputs.success == 'true' && env.MATHLIB_CACHE_PRIMARY == 'master'
+        continue-on-error: true
+        shell: bash
+        env:
+          MATHLIB_CACHE_S3_ACCESS_KEY_ID: ${{ steps.mint-r2.outputs.access-key-id }}
+          MATHLIB_CACHE_S3_SECRET_ACCESS_KEY: ${{ steps.mint-r2.outputs.secret-access-key }}
+          MATHLIB_CACHE_S3_SESSION_TOKEN: ${{ steps.mint-r2.outputs.session-token }}
+          MATHLIB_CACHE_S3_REGION: auto
+          # The flat write under the public bucket's master prefix. An unset secret
+          # fails the upload.
+          MATHLIB_CACHE_PUT_URL: ${{ secrets.MATHLIB_CACHE_R2_PUT_URL }}
+        run: lake env "$CACHE_BIN" put-staged --backend=s3 --staging-dir="cache-staging"
 
   post_steps:
     name: Post-Build Step
@@ -718,13 +937,12 @@ jobs:
             .github/actions
             Cache
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       # Sets MATHLIB_CACHE_FROM in env so the `cache get` calls below pick
-      # up the trust-class-appropriate read fallback automatically. Replaces
-      # the previous test-only `--cache-from=master,forks` hardcode that
-      # lived in this file — that policy is now in the shared composite
-      # action so build, upload_cache, and post_steps all consult the same
-      # source of truth.
+      # up the trust-class-appropriate read fallback automatically. Every job
+      # that reads or writes the cache gets this policy from the same composite
+      # action.
       - name: Compute cache trust dispatch
         uses: ./workflow-actions/.github/actions/cache-trust-dispatch
         with:
@@ -733,7 +951,7 @@ jobs:
           head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
         with:
           auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
           use-github-cache: false
@@ -755,6 +973,7 @@ jobs:
           lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
 
       - name: verify that everything was available in the cache
+        id: verify_cache
         # Verify the cache reconstitutes this commit's oleans. This job reads
         # the cache with the PR branch's own `lake exe cache get`. The write
         # path uses master's `cache` binary for fork PRs and the PR branch's
@@ -803,12 +1022,32 @@ jobs:
           elif [ "${dstat}" -eq 1 ]; then
             echo "::warning::Cache verification incomplete, but this PR's Cache/ differs from master's. CI wrote the cache with master's binary and this job reads it with the PR branch's, so a changed key space (such as a rootHashGeneration bump) misses as expected. Continuing; the cache repopulates once this lands on master."
             echo "${dout}"
+            # The downstream check below reads the same key space, so skip it.
+            echo "key_space_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           else
             echo "::error::Cache verification failed and master's Cache/ baseline could not be compared (diff status ${dstat}); treating as a failure."
             echo "${dout}"
             exit 1
           fi
+
+      - name: check the cache from a downstream project
+        # `DownstreamTest/` is a minimal project that requires mathlib by path. Fetching
+        # the cache from there runs the cache tool's downstream-only checks (toolchain
+        # and manifest mismatches), and `lake build --no-build` checks that Lake accepts
+        # the cached oleans in a dependency context. The path dependency shares mathlib's
+        # `.lake/build`, so Mathlib's oleans are already in place from the steps above;
+        # the dependencies' oleans are fetched into `DownstreamTest/.lake/packages/`.
+        if: steps.verify_cache.outputs.key_space_changed != 'true'
+        env:
+          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        run: |
+          cd DownstreamTest
+          cp ../lean-toolchain .
+          # Skip mathlib's `post_update` hook, so that the `cache get` below is the one tested.
+          MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
+          lake exe cache --repo="${REPO}" get
+          lake build --no-build Mathlib
 
       - name: check declarations in db files
         run: |
@@ -826,6 +1065,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       - name: Get mathlib-ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
@@ -898,7 +1138,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
+      - uses: leanprover-community/lint-style-action@a52329f904d58af9f3e1fc6ef3b986e8f753cc54 # mathlib4-compat
         with:
           mode: check
           lint-bib-file: true
@@ -932,7 +1172,7 @@ jobs:
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: Generate auto merge app token
         id: auto-merge-app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
@@ -974,10 +1214,12 @@ jobs:
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: Extract label actor username
         id: get-label-actor
+        env:
+          TIMELINE: ${{ steps.get-timeline.outputs.data }}
         run: |
           # Parse the GraphQL response and filter for the specific label
-          echo '${{ steps.get-timeline.outputs.data }}'
-          ACTOR=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -c '
+          echo "$TIMELINE"
+          ACTOR=$(echo "$TIMELINE" | jq -c '
             .repository.pullRequest.timelineItems.nodes
             | map(select(.label.name == "auto-merge-after-CI"))
             | sort_by(.createdAt)
