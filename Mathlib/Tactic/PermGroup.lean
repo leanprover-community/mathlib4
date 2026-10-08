@@ -275,7 +275,7 @@ its conclusion through the correspondence theorems. -/
         | 1 => ["_root_.Finset.coe_singleton"]
         | _ => ["_root_.Finset.coe_insert", "_root_.Finset.coe_singleton"])
       else lemmas
-    return some (out ++ "\nset_option maxRecDepth 8192 in\nopen Hex.PermGroup in\n" ++
+    return some (out ++ "\nopen Hex.PermGroup in\n" ++
       s!"theorem {name}_card : Nat.card (Subgroup.closure {sSrc}) = {prepared.order} := by\n" ++
       s!"  rw [show {sSrc} = \{x | x ∈ {gsSrc}} by\n" ++
       s!"    symm; simp only [{", ".intercalate lemmas}]]\n" ++
