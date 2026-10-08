@@ -206,7 +206,11 @@ theorem MulAction.IsPreprimitive.is_two_preprimitive_of_normal
 
 /-- A stronger version of Jordan's criterion for 2-pretransitivity (Wielandt, 13.1'):
 under the hypotheses of `MulAction.IsPreprimitive.is_two_pretransitive`,
-the normal closure of `fixingSubgroup G s` acts 2-pretransitively. -/
+the normal closure of `fixingSubgroup G s` acts 2-pretransitively.
+
+The bound cannot be weakened to `n + 1 < Nat.card α`: in the natural action of `S₃` on three
+points, fixing two points gives a trivial subgroup acting transitively on the singleton complement.
+Its normal closure is trivial and does not act 2-pretransitively. -/
 theorem MulAction.IsPreprimitive.is_two_pretransitive'
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
