@@ -373,7 +373,7 @@ theorem not_isRoot_C (r a : R) (hr : r ≠ 0) : ¬IsRoot (C r) a := by simpa usi
 theorem eval_surjective (x : R) : Function.Surjective <| eval x := fun y => ⟨C y, eval_C⟩
 
 /-- Evaluation of a polynomial is monotone if addition and multiplication are monotone in each
-argument, as in a canonically ordered semiring such as `ℕ`. -/
+argument, such as in `ℕ`. -/
 @[gcongr]
 theorem eval_mono_left [Preorder R] [AddLeftMono R] [MulLeftMono R] [MulRightMono R] (p : R[X])
     (hab : a ≤ b) : p.eval a ≤ p.eval b := by
