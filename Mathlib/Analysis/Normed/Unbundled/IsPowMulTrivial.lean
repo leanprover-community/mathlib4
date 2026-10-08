@@ -26,7 +26,7 @@ section Ring
 
 variable {A B : Type*} [SeminormedCommRing A] [Ring B] [Algebra A B]
 
-/-- A power-multiplicative norm on an algebraic extension of a trivially normed field is trivial. -/
+/-- A power-multiplicative norm on an integral extension of a trivially normed ring is trivial. -/
 theorem AlgebraNorm.le_one_of_trivial (hK : ∀ x : A, ‖x‖ ≤ 1)
     (f : AlgebraNorm A B) (hf : IsPowMul f) (x : B) (hx : IsIntegral A x) : f x ≤ 1 := by
   let S := Algebra.adjoin A {x}
