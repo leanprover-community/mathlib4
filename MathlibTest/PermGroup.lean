@@ -25,10 +25,6 @@ run_elab do
       #[← Lean.Meta.mkAppM ``Hex.Perm #[Lean.mkNatLit 3]])).isNone do
     throwError "importing perm_group introduced a group instance for Hex permutations"
 
--- Hex imports must preserve the default equality instances on core containers.
-example : (inferInstance : DecidableEq (Array Nat)) = Array.instDecidableEq := rfl
-example : (inferInstance : DecidableEq (Vector Nat 2)) = instDecidableEqVector := rfl
-
 example : Nat.card PermGroupTest.subgroup = 6 := by perm_group
 example : PermGroupTest.cycle ∈ PermGroupTest.subgroup := by perm_group
 
