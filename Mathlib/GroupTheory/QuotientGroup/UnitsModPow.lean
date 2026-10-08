@@ -84,7 +84,6 @@ lemma unit_mul_unit_mul_unit_eq_one_iff (ha : IsUnit a) (hb : IsUnit b) (hc : Is
   rw [← mk_mul, ← mk_mul, mk_eq_one_iff_exists_pow_eq_val]
   simp
 
--- `to_additive` does not translate the declaration correctly (`1` stays `1`).
 /-- The class of a unit `u` is trivial in `Units.ModPow α 2` exactly when `u` is a square
 in `α`. -/
 @[to_additive /-- The class of an additive unit `u` is trivial in `AddUnits.ModNSMul α 2`
