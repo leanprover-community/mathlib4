@@ -75,9 +75,7 @@ theorem faceOpposite_cornerSimplex {n : ℕ} (i : Fin (n + 1)) :
     let g := (LinearIsometry.piLpExtendByZero 2 ℝ ℝ i.succAboveEmb).toAffineIsometry
     (cornerSimplex (n + 1)).faceOpposite i.succ =
       (cornerSimplex n).map g.toAffineMap g.injective := by
-  simp only [faceOpposite, Nat.add_one_sub_one, LinearIsometry.toAffineIsometry_toAffineMap]
-  convert! face_cornerSimplex i.succAboveOrderEmb
-  simp
+  simpa [faceOpposite] using face_cornerSimplex i.succAboveOrderEmb
 
 @[simp]
 theorem altitudeFoot_cornerSimplex {n : ℕ} [NeZero n] {i : Fin (n + 1)} (hi : i ≠ 0) :
