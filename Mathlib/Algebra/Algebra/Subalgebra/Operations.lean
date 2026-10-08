@@ -110,4 +110,9 @@ def FixedPoints.subalgebra : Subalgebra A B' where
 instance : SMulCommClass G (FixedPoints.subalgebra A B' G) B' :=
   inferInstanceAs (SMulCommClass G (FixedPoints.subsemiring B' G) B')
 
+variable {A B' G} in
+theorem FixedPoints.mem_subalgebra {x : B'} :
+    x ∈ FixedPoints.subalgebra A B' G ↔ ∀ g : G, g • x = x :=
+  Iff.rfl
+
 end MulSemiringAction
