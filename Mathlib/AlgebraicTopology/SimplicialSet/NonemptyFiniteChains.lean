@@ -154,30 +154,30 @@ of the union of the images of `nerve (NonemptyFiniteChains {y}ᶜ)` for `y ≠ x
 This identifies to the subdivision of the horn `PartialOrder.horn x₀`,
 see `PartialOrder.NonemptyFiniteChains.hornArrowIsoRangeSd'` in the file
 `Mathlib/AlgebraicTopology/SimplicialSet/Subdivision.lean`. -/
-def horn : (nerve (NonemptyFiniteChains X)).Subcomplex where
+def sdHorn : (nerve (NonemptyFiniteChains X)).Subcomplex where
   obj _ := Set.ofPred (fun s ↦ ∀ i, ¬ complSingleton x₀ ≤ s.obj i)
   map _ _ hs _ := hs _
 
-lemma notMem_horn_iff {n : ℕ} (s : (nerve (NonemptyFiniteChains X)) _⦋n⦌) :
-    dsimp% s ∉ (horn x₀).obj _ ↔ complSingleton x₀ ≤ s.obj (Fin.last _) := by
-  simp only [horn, nerve_obj, le_iff, Set.mem_ofPred_eq, not_forall, not_not]
+lemma notMem_sdHorn_iff {n : ℕ} (s : (nerve (NonemptyFiniteChains X)) _⦋n⦌) :
+    dsimp% s ∉ (sdHorn x₀).obj _ ↔ complSingleton x₀ ≤ s.obj (Fin.last _) := by
+  simp only [sdHorn, nerve_obj, le_iff, Set.mem_ofPred_eq, not_forall, not_not]
   exact ⟨fun ⟨i, hi⟩ ↦ subset_trans hi (s.monotone (Fin.le_last _)), fun h ↦ ⟨_, h⟩⟩
 
-lemma mem_horn_iff {n : ℕ} (s : (nerve (NonemptyFiniteChains X)) _⦋n⦌) :
-    dsimp% s ∈ (horn x₀).obj _ ↔
+lemma mem_sdHorn_iff {n : ℕ} (s : (nerve (NonemptyFiniteChains X)) _⦋n⦌) :
+    dsimp% s ∈ (sdHorn x₀).obj _ ↔
       ¬ complSingleton x₀ ≤ s.obj (Fin.last n) := by
-  rw [← notMem_horn_iff, not_not]
+  rw [← notMem_sdHorn_iff, not_not]
 
-lemma notMem_horn_iff' {n : ℕ} (s : (nerve (NonemptyFiniteChains X)) _⦋n⦌) :
-    dsimp% s ∉ (horn x₀).obj _ ↔
+lemma notMem_sdHorn_iff' {n : ℕ} (s : (nerve (NonemptyFiniteChains X)) _⦋n⦌) :
+    dsimp% s ∉ (sdHorn x₀).obj _ ↔
       s.obj (Fin.last _) = complSingleton x₀ ∨ s.obj (Fin.last _) = ⊤ := by
-  simp [notMem_horn_iff, NonemptyFiniteChains.ext_iff,
+  simp [notMem_sdHorn_iff, NonemptyFiniteChains.ext_iff,
     Finset.compl_singleton_subset_iff]
 
-lemma mem_horn_iff' {n : ℕ} (s : (nerve (NonemptyFiniteChains X)) _⦋n⦌) :
-    dsimp% s ∈ (horn x₀).obj _ ↔
+lemma mem_sdHorn_iff' {n : ℕ} (s : (nerve (NonemptyFiniteChains X)) _⦋n⦌) :
+    dsimp% s ∈ (sdHorn x₀).obj _ ↔
       s.obj (Fin.last _) ≠ complSingleton x₀ ∧ s.obj (Fin.last _) ≠ ⊤ := by
-  simp [mem_horn_iff, NonemptyFiniteChains.ext_iff,
+  simp [mem_sdHorn_iff, NonemptyFiniteChains.ext_iff,
     Finset.compl_singleton_subset_iff]
 
 end

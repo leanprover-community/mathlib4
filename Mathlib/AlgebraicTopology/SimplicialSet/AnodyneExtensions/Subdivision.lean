@@ -37,7 +37,7 @@ namespace PartialOrder.NonemptyFiniteChains
 
 variable {X : Type u} [LinearOrder X] {x₀ : X}
 
-namespace horn
+namespace sdHorn
 
 namespace pairingCore
 
@@ -104,8 +104,8 @@ lemma not_isIndexI_of_ne (hi : IsIndexI x₀ s i)
   exact hj.notMem_of_lt hs i h hi.mem
 
 lemma dim_ne_zero [Fintype X] [Nontrivial X] (hi : IsIndexI x₀ s i)
-    (hs : s ∉ (horn x₀).obj _) : dim ≠ 0 := by
-  rw [notMem_horn_iff] at hs
+    (hs : s ∉ (sdHorn x₀).obj _) : dim ≠ 0 := by
+  rw [notMem_sdHorn_iff] at hs
   rintro rfl
   fin_cases i
   aesop
@@ -162,7 +162,7 @@ variable (x₀) in
 structure ι where
   dim : ℕ
   simplex : nerve (NonemptyFiniteChains X) _⦋dim + 1⦌
-  notMem₁ : simplex ∉ (horn x₀).obj _
+  notMem₁ : simplex ∉ (sdHorn x₀).obj _
   nonDegenerate₁ : simplex ∈ (nerve (NonemptyFiniteChains X)).nonDegenerate (dim + 1)
   index : Fin (dim + 2)
   isIndexI : IsIndexI x₀ simplex index
@@ -229,17 +229,17 @@ lemma obj_simplex_castSucc_last_eq
   rw [Finset.insert_eq, Finset.union_subset_iff, Finset.singleton_subset_iff, h₁] at hx₂
   obtain rfl : x₀ = x := by grind
   have h₃ := σ.notMem₁
-  rw [notMem_horn_iff, NonemptyFiniteChains.le_iff, ← Fin.succ_last] at h₃
+  rw [notMem_sdHorn_iff, NonemptyFiniteChains.le_iff, ← Fin.succ_last] at h₃
   rw [NonemptyFiniteChains.ext_iff]
   exact subset_antisymm (by aesop) (fun y hy ↦ by have := h₃ hy; aesop)
 
-lemma notMem₂ : σ.simplex₂ ∉ (horn x₀).obj _ := by
-  rw [simplex₂_def, notMem_horn_iff, nerve.δ_obj]
+lemma notMem₂ : σ.simplex₂ ∉ (sdHorn x₀).obj _ := by
+  rw [simplex₂_def, notMem_sdHorn_iff, nerve.δ_obj]
   by_cases hσ : σ.index = Fin.last _
   · rw [Fin.succAbove_of_castSucc_lt _ _ (by grind),
       σ.obj_simplex_castSucc_last_eq hσ]
   · rw [Fin.succAbove_of_le_castSucc _ _ (by grind),
-      Fin.succ_last, ← notMem_horn_iff]
+      Fin.succ_last, ← notMem_sdHorn_iff]
     exact σ.notMem₁
 
 lemma injective_type₁ {σ σ' : ι x₀} (hσ : S.mk σ.simplex = S.mk σ'.simplex) :
@@ -339,7 +339,7 @@ variable {dim : ℕ}
   {s : nerve (NonemptyFiniteChains X) _⦋dim⦌}
   (hs : ∀ (i : Fin (dim + 1)), ¬IsIndexI x₀ s i)
   (nonDeg : s ∈ (nerve (NonemptyFiniteChains X)).nonDegenerate dim)
-  (notMem : s ∉ (horn x₀).obj _)
+  (notMem : s ∉ (sdHorn x₀).obj _)
 
 namespace ofNotIsIndexIOfEqEmpty
 
@@ -376,7 +376,7 @@ def ofNotIsIndexIOfEqEmpty (h₀ : finsetNotMem x₀ s = ∅) : ι x₀ where
   dim := dim
   simplex := (strictMono_obj hs nonDeg h₀).monotone.functor
   notMem₁ := by
-    simpa only [nerve_obj, notMem_horn_iff, Monotone.functor_obj, obj_last] using notMem
+    simpa only [nerve_obj, notMem_sdHorn_iff, Monotone.functor_obj, obj_last] using notMem
   nonDegenerate₁ := by
     rw [mem_nerve_nonDegenerate_iff_strictMono]
     exact strictMono_obj hs nonDeg h₀
@@ -464,7 +464,7 @@ def ofNotIsIndexI {i₀ : Fin (dim + 1)} (hi₀ : finsetNotMem x₀ s = Finset.I
   dim := dim
   simplex := (strictMono_obj hs nonDeg hi₀).monotone.functor
   notMem₁ := by
-    rw [notMem_horn_iff] at notMem ⊢
+    rw [notMem_sdHorn_iff] at notMem ⊢
     exact notMem.trans le_obj_last
   nonDegenerate₁ := by
     rw [mem_nerve_nonDegenerate_iff_strictMono]
@@ -484,17 +484,15 @@ end ι
 
 end pairingCore
 
-variable (x₀)
-
-variable [Fintype X] [Nontrivial X]
+variable (x₀) [Fintype X] [Nontrivial X]
 
 open pairingCore in
 @[simps, implicit_reducible]
-def pairingCore : (horn x₀).PairingCore where
+def pairingCore : (sdHorn x₀).PairingCore where
   ι := ι x₀
   dim := ι.dim
-  simplex := ι.simplex
   index := ι.index
+  simplex := ι.simplex
   nonDegenerate₁ := ι.nonDegenerate₁
   nonDegenerate₂ := ι.nonDegenerate₂
   notMem₁ := ι.notMem₁
@@ -545,10 +543,10 @@ instance : (pairingCore x₀).IsRegular := by
   rw [(pairingCore x₀).isRegular_iff_nonempty_weakRankFunction]
   exact ⟨pairingCore.weakRankFunction x₀⟩
 
-lemma anodyneExtensions : anodyneExtensions (horn x₀).ι :=
+lemma anodyneExtensions : anodyneExtensions (sdHorn x₀).ι :=
   (pairingCore x₀).pairing.anodyneExtensions
 
-end horn
+end sdHorn
 
 end PartialOrder.NonemptyFiniteChains
 
@@ -559,9 +557,9 @@ namespace SSet
 lemma anodyneExtensions.sd_horn_ι {n : ℕ} (i : Fin (n + 2)) :
     anodyneExtensions (sd.{u}.map Λ[n + 1, i].ι) :=
   (anodyneExtensions.arrow_mk_iso_iff
-    (PartialOrder.NonemptyFiniteChains.hornArrowIsoSd _ ≪≫
+    (PartialOrder.NonemptyFiniteChains.sdHornArrowIsoSd _ ≪≫
       sd.mapArrow.mapIso (PartialOrder.hornArrowIso n i))).1
-        (PartialOrder.NonemptyFiniteChains.horn.anodyneExtensions _)
+        (PartialOrder.NonemptyFiniteChains.sdHorn.anodyneExtensions _)
 
 namespace modelCategoryQuillen
 
