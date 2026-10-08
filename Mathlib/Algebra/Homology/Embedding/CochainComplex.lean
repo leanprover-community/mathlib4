@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.AreComplementary
+public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 
@@ -220,6 +221,22 @@ lemma isGE_of_iso (n : ℤ) [K.IsGE n] : L.IsGE n := by
 
 end
 
+@[simp]
+lemma isStrictlySupported_embeddingUpNat_iff_isStrictlyGE_zero :
+    K.IsStrictlySupported embeddingUpNat ↔ K.IsStrictlyGE 0 := by
+  rw [← embeddingUpIntGE_zero]
+
+@[simp]
+lemma isStrictlySupported_embeddingDownNat_iff_isStrictlyLE_zero :
+    K.IsStrictlySupported embeddingDownNat ↔ K.IsStrictlyLE 0 := by
+  rw [← embeddingUpIntLE_zero]
+
+instance [K.IsStrictlyGE 0] : K.IsStrictlySupported embeddingUpNat := by
+  rwa [isStrictlySupported_embeddingUpNat_iff_isStrictlyGE_zero]
+
+instance [K.IsStrictlyLE 0] : K.IsStrictlySupported embeddingDownNat := by
+  rwa [isStrictlySupported_embeddingDownNat_iff_isStrictlyLE_zero]
+
 section
 
 variable [HasZeroObject C]
@@ -311,6 +328,16 @@ lemma quasiIso_truncLEMap_iff :
     exact h k _ (by dsimp; lia)
   · rintro h i i' rfl
     exact h _ (by dsimp; lia)
+
+instance [K.IsStrictlyGE 0] : IsIso (K.ιStupidTrunc embeddingUpNat) := by
+  have : K.IsStrictlySupported embeddingUpNat := by
+    rwa [isStrictlySupported_embeddingUpNat_iff_isStrictlyGE_zero]
+  infer_instance
+
+instance [K.IsStrictlyLE 0] : IsIso (K.πStupidTrunc embeddingDownNat) := by
+  have : K.IsStrictlySupported embeddingDownNat := by
+    rwa [isStrictlySupported_embeddingDownNat_iff_isStrictlyLE_zero]
+  infer_instance
 
 end
 
