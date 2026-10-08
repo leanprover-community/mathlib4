@@ -126,6 +126,71 @@ section AddCommMonoid
 variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
   [AddCommMonoid N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
+lemma submodule_span_eq_top
+    (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) :
+    Submodule.span R (Set.range (fun j : ((i : ι) → γ i) ↦
+      ⨂ₜ[R] (i : ι), g (j i))) = ⊤ := by
+  obtain ⟨n, hι⟩ : ∃ (n : ℕ), Nat.card ι = n := ⟨_, rfl⟩
+  induction n generalizing ι with
+  | zero =>
+    have : IsEmpty ι := (Nat.card_eq_zero.mp hι).resolve_right <| Finite.not_infinite ‹_›
+    apply Submodule.map_injective_of_injective (isEmptyEquiv ι).injective
+    rw [Submodule.map_top, LinearEquiv.range, Submodule.eq_top_iff']
+    intro x
+    have : x = x • 1 := by simp only [smul_eq_mul, mul_one]
+    rw [Submodule.map_span, this]
+    apply Submodule.smul_mem
+    rw [Submodule.mem_span]
+    intro _ hp
+    apply hp
+    simp
+  | succ n hn =>
+    classical
+    have : Nonempty ι := (Nat.card_pos_iff.mp (by omega)).left
+    have i₀ : ι := Classical.arbitrary ι
+    have hi₀ : Nat.card ({i₀}ᶜ : Set ι) = n := by
+      let := Fintype.ofFinite ι
+      rw [← Fintype.card_eq_nat_card, Fintype.card_compl_set, Fintype.card_eq_nat_card, hι,
+        Fintype.card_unique, add_tsub_cancel_right]
+    have hg₀ : ∀ i : ({i₀}ᶜ : Set ι), Submodule.span R (Set.range (@g i)) = ⊤ := by intro; apply hg
+    apply Submodule.map_injective_of_injective (equivPiTensorComplSingletonTensor R M i₀).injective
+    simp only [Submodule.map_top, LinearEquiv.coe_coe, LinearEquiv.range, Submodule.map_span,
+      ← Set.range_comp, Function.comp_def _ _, equivPiTensorComplSingletonTensor_tprod R M i₀]
+    apply le_antisymm (le_top)
+    rw [← TensorProduct.span_tmul_eq_top, Submodule.span_le]
+    rintro _ ⟨x, y, rfl⟩
+    have hx := hn hg₀ hi₀ ▸ (Submodule.mem_top (x := x))
+    have hy := hg i₀ ▸ (Submodule.mem_top (x := y))
+    revert hy hx y x
+    apply Submodule.span_induction₂
+    · rintro _ _ ⟨j', rfl⟩ ⟨j₀', rfl⟩
+      apply Submodule.mem_span_of_mem
+      rw [Set.mem_range]
+      use (fun i => if hi : i = i₀ then hi ▸ j₀' else j' ⟨i, hi⟩)
+      congr
+      · ext i
+        simp [Set.notMem_singleton_iff.mp ((Set.mem_compl_iff _ _).mp i.property)]
+        congr
+      · simp
+    · intro _ _
+      rw [zero_tmul]
+      apply Submodule.zero_mem
+    · intro _ _
+      rw [tmul_zero]
+      apply Submodule.zero_mem
+    · intro _ _ _ _ _ _ h h'
+      rw [add_tmul]
+      apply Submodule.add_mem _ h h'
+    · intro _ _ _ _ _ _ h h'
+      rw [tmul_add]
+      apply Submodule.add_mem _ h h'
+    · intro _ _ _ _ _ h
+      rw [← smul_tmul']
+      apply Submodule.smul_mem _ _ h
+    · intro _ _ _ _ _ h
+      rw [tmul_smul]
+      apply Submodule.smul_mem _ _ h
+
 set_option backward.isDefEq.respectTransparency.types false in
 lemma ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
@@ -181,17 +246,5 @@ lemma _root_.MultilinearMap.ext_of_span_eq_top
   exact PiTensorProduct.ext_of_span_eq_top hg (fun j ↦ by simpa using h j)
 
 end AddCommMonoid
-
-variable [CommRing R] [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
-  [AddCommMonoid N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
-
-lemma submodule_span_eq_top
-    (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) :
-    Submodule.span R (Set.range (fun j : ((i : ι) → γ i) ↦
-      ⨂ₜ[R] (i : ι), g (j i))) = ⊤ := by
-  rw [← (Submodule.span R _).ker_mkQ, LinearMap.ker_eq_top]
-  refine ext_of_span_eq_top hg (fun j ↦ ?_)
-  simp only [Submodule.mkQ_apply, LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
-  exact Submodule.subset_span ⟨j, rfl⟩
 
 end PiTensorProduct
