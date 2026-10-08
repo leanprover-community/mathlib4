@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
+
+import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.Tactic.AdaptationNote
 
 /-!

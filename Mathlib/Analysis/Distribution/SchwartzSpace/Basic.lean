@@ -9,11 +9,11 @@ public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.MeasureTheory.Function.L2Space
 public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Normed.Lp.SmoothApprox
-public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 
 /-!

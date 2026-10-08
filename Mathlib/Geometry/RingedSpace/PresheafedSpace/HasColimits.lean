@@ -6,8 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Geometry.RingedSpace.PresheafedSpace
-import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Sheaves.Limits
+
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # `PresheafedSpace C` has colimits.

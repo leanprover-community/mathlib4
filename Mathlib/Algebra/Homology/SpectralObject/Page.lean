@@ -473,7 +473,7 @@ lemma kernelSequenceE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 
     (X.kernelSequenceOpcyclesE_exact f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).exact_up_to_refinements
       (X.liftOpcycles f₂ f₃ f₂₃ h₂₃ x₂ (by simpa using hx₂ =≫ biprod.fst)) (by
         dsimp
-        rw [← X.fromOpcyles_δ f₁ f₂ f₃ f₂₃ h₂₃ n₁ n₂,
+        rw [← X.fromOpcycles_δ f₁ f₂ f₃ f₂₃ h₂₃ n₁ n₂,
           X.liftOpcycles_fromOpcycles_assoc]
         simpa using hx₂ =≫ biprod.snd)
   dsimp at x₁ hx₁

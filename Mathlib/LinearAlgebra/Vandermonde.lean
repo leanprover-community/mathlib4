@@ -8,10 +8,11 @@ module
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Factorial.SuperFactorial
 public import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.Algebra.MvPolynomial.CommRing
+
+import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Vandermonde matrix

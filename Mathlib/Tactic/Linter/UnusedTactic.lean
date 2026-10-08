@@ -122,7 +122,7 @@ public def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeK
 Adds a new syntax kind whose children will be ignored by the `unusedTactic` linter.
 This should be called from an `initialize` block.
 -/
-public def addIgnoreTacticKind (kind : SyntaxNodeKind) : IO Unit :=
+public def addIgnoreTacticKind (kind : SyntaxNodeKind) : BaseIO Unit :=
   ignoreTacticKindsRef.modify (·.insert kind)
 
 /-- Accumulates the set of tactic syntaxes that should be evaluated at least once. -/

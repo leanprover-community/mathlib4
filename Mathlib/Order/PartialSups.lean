@@ -5,11 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
-import Mathlib.Data.Finset.Max
 
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Order
 
 /-!

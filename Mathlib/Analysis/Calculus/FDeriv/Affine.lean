@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
-import Mathlib.Algebra.Order.Field.Power
 public import Mathlib.Analysis.Calculus.FDeriv.Basic
+
+import Mathlib.Algebra.Order.Field.Power
 
 
 /-!
