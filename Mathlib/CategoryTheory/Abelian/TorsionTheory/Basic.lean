@@ -5,7 +5,8 @@ Authors: Blake Farman
 -/
 module
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-public import Mathlib.CategoryTheory.ObjectProperty.OrthogonalClosed
+public import Mathlib.CategoryTheory.Abelian.OrthogonalClosed
+public import Mathlib.CategoryTheory.ObjectProperty.OrthogonalLimits
 
 /-!
 # Torsion Theory
