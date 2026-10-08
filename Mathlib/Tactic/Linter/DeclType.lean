@@ -53,7 +53,7 @@ def getConcreteInstanceAssumptions : Expr → List Expr
       getConcreteInstanceAssumptions b
   | _ => []
 
-/-- Report a warning message if there are any concrete instances in the local context. -/
+@[inherit_doc linter.concreteInstances]
 def runConcreteLinter (constVal : ConstantVal) (bodyRef : Syntax) : CommandElabM Unit := do
   let classes := getConcreteInstanceAssumptions constVal.type
   if classes.isEmpty then return
