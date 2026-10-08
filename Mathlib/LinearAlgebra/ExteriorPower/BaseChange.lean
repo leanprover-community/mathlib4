@@ -106,7 +106,7 @@ lemma degreeProjection_apply_ιMulti (i : ℕ) (m : Fin i → M) :
 /-- Auxiliary alternating map for `exteriorPower.baseChangeIsoInverse`. -/
 def baseChangeInverseAlternating (i : ℕ) : (S ⊗[R] M) [⋀^Fin i]→ₗ[S] S ⊗[R] (⋀[R]^i M) :=
   (((exteriorPower.degreeProjection R M i).baseChange S).comp
-    (ExteriorAlgebra.baseChangeExteriorAlgebraToTensor R M S).toLinearMap).compAlternatingMap
+    (ExteriorAlgebra.baseChangeEquiv R M S).symm.toAlgHom.toLinearMap).compAlternatingMap
       (ExteriorAlgebra.ιMulti S i)
 
 lemma baseChangeInverseAlternating_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
@@ -121,12 +121,12 @@ lemma baseChangeInverseAlternating_apply_tmul (i : ℕ) (s : Fin i → S) (m : F
     | succ i ih =>
       rw [List.ofFn_succ, List.ofFn_succ, List.prod_cons, List.prod_cons, ih]
       simp [Algebra.TensorProduct.tmul_mul_tmul, Fin.prod_univ_succ]
-  rw [map_list_prod (ExteriorAlgebra.baseChangeExteriorAlgebraToTensor R M S)]
-  have himages : List.map (ExteriorAlgebra.baseChangeExteriorAlgebraToTensor R M S)
+  rw [map_list_prod (ExteriorAlgebra.baseChangeEquiv R M S).symm.toAlgHom]
+  have himages : List.map (ExteriorAlgebra.baseChangeEquiv R M S).symm.toAlgHom
     (List.ofFn fun j ↦ ExteriorAlgebra.ι S (s j ⊗ₜ[R] m j)) =
       List.ofFn fun j ↦ s j ⊗ₜ[R] ExteriorAlgebra.ι R (m j) := by
     ext j
-    simp [ExteriorAlgebra.baseChangeExteriorAlgebraToTensor_apply]
+    simp [ExteriorAlgebra.baseChangeEquiv_symm_apply]
   rw [himages, hprod]
   simpa [ExteriorAlgebra.ιMulti_apply] using
     congrArg ((Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] ·) (degreeProjection_apply_ιMulti R M i m)
