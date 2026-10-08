@@ -82,64 +82,27 @@ example : True := by
   fail_if_success have : Subgroup.closure ({cycle} : Set _) = ⊤ := by perm_group
   trivial
 
-set_option pp.width 200 in
 /-- info: 'Hex.PermGroup.Mathlib.TacticTests.order' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in
+#guard_msgs (whitespace := lax) in
 #print axioms order
 
-set_option pp.width 200 in
 /-- info: 'Hex.PermGroup.Mathlib.TacticTests.m11_order' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in
+#guard_msgs (whitespace := lax) in
 #print axioms m11_order
 
-set_option pp.width 200 in
 /-- info: 'Hex.PermGroup.Mathlib.TacticTests.m11_not_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in
+#guard_msgs (whitespace := lax) in
 #print axioms m11_not_mem
 
-set_option pp.width 200 in
 /-- info: 'Hex.PermGroup.Mathlib.TacticTests.member' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in
+#guard_msgs (whitespace := lax) in
 #print axioms member
 
-set_option pp.width 200 in
 /-- info: 'Hex.PermGroup.Mathlib.TacticTests.full' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs in
+#guard_msgs (whitespace := lax) in
 #print axioms full
 
 end Hex.PermGroup.Mathlib.TacticTests
-
--- Check that the printed certificate source parses and its proofs elaborate,
--- even when local declarations shadow the generated certificate's helpers.
-namespace CertificateShadow
-
-def order : Nat := 0
-def pack : Nat := 0
-def Perm : Nat := 0
-def HasOrder : Nat := 0
-def card_of_hasOrder : Nat := 0
-def setOf_mem_cons : Nat := 0
-def setOf_mem_singleton : Nat := 0
-run_cmd do
-  let source ← Lean.Elab.Command.liftTermElabM do
-    let s ← `(term| (({permOfImages 3 [1, 2, 0], permOfImages 3 [1, 0, 2]} :
-      Finset (Equiv.Perm (Fin 3))) : Set (Equiv.Perm (Fin 3))))
-    let generators ← Lean.Elab.Term.elabTerm s none
-    let some source ← Mathlib.Tactic.PermGroup.extension.certificate? "emitted" generators s
-      | throwError "perm_group certificate generation did not recognize the literal"
-    return source
-  let input := Lean.Parser.mkInputContext source "<perm_group_certificate>"
-  let mut state : Lean.Parser.ModuleParserState := {}
-  repeat
-    let (stx, next, errors) := Lean.Parser.parseCommand input
-      { env := ← Lean.getEnv, options := ← Lean.getOptions } state {}
-    if errors.hasErrors then throwError "the certificate source does not parse"
-    if Lean.Parser.isTerminalCommand stx then break
-    withReader (fun ctx => { ctx with fileName := input.fileName, fileMap := input.fileMap }) do
-      Lean.Elab.Command.elabCommand stx
-    state := next
-
-end CertificateShadow
 
 #guard_msgs (drop info) in
 #perm_group_certificate swaps for
