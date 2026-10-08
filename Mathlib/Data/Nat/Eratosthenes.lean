@@ -53,10 +53,7 @@ def eratosthenesAux : List ℕ → List ℕ
   | [] => []
   | p :: xs => p :: eratosthenesAux (dropMultiples p xs)
 termination_by l => l.length
-decreasing_by
-  simp_wf
-  have h := length_dropMultiples_le p xs
-  omega
+decreasing_by exact Nat.lt_succ_of_le (length_dropMultiples_le p xs)
 
 /-- Generates the list of primes up to `n` using the Sieve of Eratosthenes. -/
 def eratosthenes (n : ℕ) : List ℕ :=
@@ -88,10 +85,10 @@ lemma not_dvd_of_pairwise {xs : List ℕ} (hpw : xs.Pairwise (· < ·))
     simp only [List.mem_cons] at hq hy
     obtain ⟨hp_lt, hpw_ys⟩ := List.pairwise_cons.mp hpw
     rcases hq with rfl | hq_tl <;> rcases hy with rfl | hy_tl
-    · omega
+    · exact (hlt.ne rfl).elim
     · exact (mem_dropMultiples.mp (mem_of_mem_eratosthenesAux hy_tl)).2
-    · have := hp_lt q (mem_dropMultiples.mp (mem_of_mem_eratosthenesAux hq_tl)).1
-      omega
+    · have h_lt_q := hp_lt q (mem_dropMultiples.mp (mem_of_mem_eratosthenesAux hq_tl)).1
+      exact (lt_asymm h_lt_q hlt).elim
     · exact ih (hpw_ys.filter _) hq_tl hy_tl hlt
 
 /-- Any prime `q` appearing in `xs` (with elements `≥ 2`) survives `eratosthenesAux xs`. -/
@@ -108,7 +105,7 @@ lemma mem_eratosthenesAux_of_prime {q : ℕ} (hq : q.Prime) {xs : List ℕ}
         | .head _ => (heq rfl).elim
         | .tail _ h => h, ?_⟩
       intro hdvd
-      have := (hq.eq_one_or_self_of_dvd p hdvd).resolve_left (by have := h_two p (.head _); omega)
+      have := (hq.eq_one_or_self_of_dvd p hdvd).resolve_left (Nat.ne_of_gt (h_two p (.head _)))
       subst this
       exact heq rfl
 
@@ -124,15 +121,17 @@ theorem eratosthenes_sound (n : ℕ) : ∀ p ∈ eratosthenes n, p.Prime := by
   intro y hy
   have hymem := List.Ico.mem.mp (mem_of_mem_eratosthenesAux hy)
   have hy2 : 2 ≤ y := hymem.1
-  have hyn : y ≤ n := by omega
+  have hyn : y ≤ n := Nat.le_of_lt_succ hymem.2
+  have hy_ne_one : y ≠ 1 := Nat.ne_of_gt hy2
+  have h_pos : 0 < y := Nat.lt_of_lt_of_le (by decide) hy2
   let q := y.minFac
-  have hq_prime : q.Prime := Nat.minFac_prime (by omega)
-  have hq_le : q ≤ y := Nat.minFac_le (by omega)
-  have hq_in : q ∈ eratosthenes n := eratosthenes_complete (by omega) hq_prime
+  have hq_prime : q.Prime := Nat.minFac_prime hy_ne_one
+  have hq_le : q ≤ y := Nat.minFac_le h_pos
+  have hq_in : q ∈ eratosthenes n := eratosthenes_complete (hq_le.trans hyn) hq_prime
   by_cases hlt : q < y
   · exact (not_dvd_of_pairwise (List.Ico.pairwise_lt 2 (n + 1))
       hq_in hy hlt (Nat.minFac_dvd y)).elim
-  · have heq : q = y := by omega
+  · have heq : q = y := hq_le.antisymm (Nat.le_of_not_lt hlt)
     rwa [← heq]
 
 /-- Mathlib set equivalence: `eratosthenes n` produces exactly `Nat.primesLE n`. -/
@@ -144,7 +143,7 @@ theorem eratosthenes_eq_primesLE (n : ℕ) :
   · intro hx
     have hp := eratosthenes_sound n x hx
     have hmem := List.Ico.mem.mp (mem_of_mem_eratosthenesAux hx)
-    exact ⟨by omega, hp⟩
+    exact ⟨Nat.le_of_lt_succ hmem.2, hp⟩
   · rintro ⟨hle, hp⟩
     exact eratosthenes_complete hle hp
 
