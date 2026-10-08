@@ -359,10 +359,6 @@ theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
 theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a := by
   simp [← coe_ssubset]
 
--- See note [lower instance priority]
-instance (priority := low) : WellFoundedGT α :=
-  StrictAnti.wellFoundedGT fun _ _ ↦ Finset.Ici_ssubset_Ici.mpr
-
 @[gcongr]
 theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
   simpa [← coe_subset] using Set.Ioi_subset_Ioi h
@@ -370,6 +366,10 @@ theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
 @[gcongr]
 theorem Ioi_ssubset_Ioi (h : a < b) : Ioi b ⊂ Ioi a := by
   simpa [← coe_ssubset] using Set.Ioi_ssubset_Ioi h
+
+-- See note [lower instance priority]
+instance (priority := low) : WellFoundedGT α :=
+  StrictAnti.wellFoundedGT fun _ _ ↦ Finset.Ici_ssubset_Ici.mpr
 
 variable [LocallyFiniteOrder α]
 
@@ -426,11 +426,6 @@ theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
 theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b := by
   simp [← coe_ssubset]
 
--- See note [lower instance priority]
-@[to_dual existing]
-instance (priority := low) : WellFoundedLT α :=
-  StrictMono.wellFoundedLT fun _ _ ↦ Finset.Iic_ssubset_Iic.mpr
-
 @[gcongr]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
   simpa [← coe_subset] using Set.Iio_subset_Iio h
@@ -438,6 +433,11 @@ theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
 @[gcongr]
 theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b := by
   simpa [← coe_ssubset] using Set.Iio_ssubset_Iio h
+
+-- See note [lower instance priority]
+@[to_dual existing]
+instance (priority := low) : WellFoundedLT α :=
+  StrictMono.wellFoundedLT fun _ _ ↦ Finset.Iic_ssubset_Iic.mpr
 
 theorem sup_Iic_of_monotone {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α → β}
     (hf : Monotone f) : (Iic a).sup f = f a :=
