@@ -136,8 +136,7 @@ theorem map_cornerSimplex_cornerMap {n : ℕ} (s : Simplex ℝ P n) :
 theorem normDet_cornerMap_linear {n : ℕ} [FiniteDimensional ℝ V] [Fact (finrank ℝ V = n)]
     (s : Simplex ℝ P n) (o : Orientation ℝ V (Fin n)) :
     s.cornerMap.linear.normDet = |o.volumeForm fun i ↦ s.points i.succ -ᵥ s.points 0| := by
-  simp_rw [← cornerMap_single, ← cornerMap_zero, ← AffineMap.linear_apply_vsub, vsub_eq_sub,
-    sub_zero]
+  simp_rw [← cornerMap_single, ← cornerMap_zero, ← linear_apply_vsub, vsub_eq_sub, sub_zero]
   let b : OrthonormalBasis (Fin n) ℝ V :=
     (stdOrthonormalBasis ℝ V).reindex (finCongr ‹Fact (finrank ℝ V = n)›.out)
   rw [s.cornerMap.linear.normDet_eq_norm_det_toMatrix (basisFun (Fin n) ℝ) b, Real.norm_eq_abs,
