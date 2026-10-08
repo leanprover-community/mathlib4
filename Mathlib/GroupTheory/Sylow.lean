@@ -84,6 +84,8 @@ protected theorem coe_coe (P : Sylow p G) : (P : Subgroup G) = (P : Set G) :=
 theorem isPGroup (P : Sylow p G) : IsPGroup p P :=
   P.maximal_isPGroup.prop
 
+@[deprecated (since := "2026-10-08")] alias isPGroup' := isPGroup
+
 theorem ge_of_isPGroup_of_le {P : Sylow p G} {H : Subgroup G} (h : IsPGroup p H) (hle : P ≤ H) :
     H ≤ P :=
   P.maximal_isPGroup.le_of_ge h hle
@@ -95,6 +97,8 @@ theorem eq_of_isPGroup_of_le {P : Sylow p G} {H : Subgroup G} (h : IsPGroup p H)
 theorem eq_of_isPGroup_of_ge {P : Sylow p G} {H : Subgroup G} (h : IsPGroup p H) (hle : P ≤ H) :
     H = P :=
   P.maximal_isPGroup.eq_of_ge h hle
+
+@[deprecated (since := "2026-10-08")] alias is_maximal' := eq_of_isPGroup_of_ge
 
 /-- A `p`-subgroup with index indivisible by `p` is a Sylow subgroup. -/
 def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G} (hP1 : IsPGroup p P)
