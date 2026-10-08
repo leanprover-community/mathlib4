@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
+
 import Mathlib.CategoryTheory.CofilteredSystem
 
 /-!

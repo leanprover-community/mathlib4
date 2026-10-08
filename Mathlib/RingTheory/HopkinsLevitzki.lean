@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.FiniteLength
-import Mathlib.RingTheory.Noetherian.Nilpotent
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.KrullDimension.Zero
+
+import Mathlib.RingTheory.Noetherian.Nilpotent
 
 /-!
 ## The Hopkins–Levitzki theorem

@@ -5,9 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.Topology.ContinuousMap.Periodic
+
+import Mathlib.Analysis.PSeries
 
 /-!
 # Poisson's summation formula
@@ -26,8 +27,6 @@ easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which
 
 public section
 
-
-noncomputable section
 
 open Function hiding comp_apply
 

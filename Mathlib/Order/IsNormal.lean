@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Order.DirSupClosed
-import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.Order.SuccPred.InitialSeg
+
+import Mathlib.Order.SuccPred.CompleteLinearOrder
 
 /-!
 # Normal functions
