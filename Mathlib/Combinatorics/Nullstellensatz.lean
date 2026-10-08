@@ -5,8 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.RingTheory.MvPolynomial.Groebner
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+
+import Mathlib.RingTheory.MvPolynomial.Groebner
 
 /-! # Alon's Combinatorial Nullstellensatz
 

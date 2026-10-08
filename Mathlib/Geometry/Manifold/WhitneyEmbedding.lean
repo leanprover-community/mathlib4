@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.FieldTheory.Finiteness
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
+
+import Mathlib.FieldTheory.Finiteness
 
 /-!
 # Whitney embedding theorem

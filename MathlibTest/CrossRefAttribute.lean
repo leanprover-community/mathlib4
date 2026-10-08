@@ -48,14 +48,14 @@ example : True := .intro
 
 /--
 info:
-[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration 'X.tagged'. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.tagged`. (A comment)
 -/
 #guard_msgs in
 #stacks_tags
 
 /--
 info:
-[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration 'X.tagged'. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.tagged`. (A comment)
 True
 -/
 #guard_msgs in
@@ -63,7 +63,7 @@ True
 
 /--
 info:
-[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration 'X.tagged'. (Also a comment)
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration `X.tagged`. (Also a comment)
 True
 -/
 #guard_msgs in
@@ -83,7 +83,7 @@ run_cmd
 
 /--
 info:
-[Wikidata Q12345](https://www.wikidata.org/wiki/Q12345) corresponds to declaration 'W.wikiTagged'. (A Wikidata comment)
+[Wikidata Q12345](https://www.wikidata.org/wiki/Q12345) corresponds to declaration `W.wikiTagged`. (A Wikidata comment)
 -/
 #guard_msgs in
 #wikidata_tags
@@ -125,7 +125,7 @@ error: <input>:1:5: LMFDB ids must consist only of lowercase letters, digits, pe
 
 /--
 info:
-[LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) corresponds to declaration 'IsAbelian'. (A vacuous comment)
+[LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) corresponds to declaration `IsAbelian`. (A vacuous comment)
 -/
 #guard_msgs in
 #lmfdb_tags
@@ -152,9 +152,9 @@ run_cmd
 
 /--
 info:
-[π-Base (Topology) P000001](https://topology.pi-base.org/properties/P000001) corresponds to declaration 'p'. (A vacuous comment)
-[π-Base (Topology) S000023](https://topology.pi-base.org/spaces/S000023) corresponds to declaration 's'.
-[π-Base (Topology) T000001](https://topology.pi-base.org/theorems/T000001) corresponds to declaration 't'.
+[π-Base (Topology) P000001](https://topology.pi-base.org/properties/P000001) corresponds to declaration `p`. (A vacuous comment)
+[π-Base (Topology) S000023](https://topology.pi-base.org/spaces/S000023) corresponds to declaration `s`.
+[π-Base (Topology) T000001](https://topology.pi-base.org/theorems/T000001) corresponds to declaration `t`.
 -/
 #guard_msgs in
 #pibase_tags topology
@@ -200,7 +200,7 @@ error: <input>:1:6: DLMF references must consist only of (lowercase) roman numer
 
 /--
 info:
-[DLMF 5.5.E1](https://dlmf.nist.gov/5.5.E1) corresponds to declaration 'test'. (A vacuous comment)
+[DLMF 5.5.E1](https://dlmf.nist.gov/5.5.E1) corresponds to declaration `test`. (A vacuous comment)
 -/
 #guard_msgs in
 #dlmf_tags

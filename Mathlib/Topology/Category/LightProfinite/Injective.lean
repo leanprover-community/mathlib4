@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 public import Mathlib.Topology.Category.LightProfinite.AsLimit
+
 import Mathlib.Topology.Category.CompHausLike.Limits
 import Mathlib.CategoryTheory.Functor.OfSequence
 

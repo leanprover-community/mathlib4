@@ -6,10 +6,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.Order.Filter.AtTopBot.CompleteLattice
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Order.LiminfLimsup
+
+import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Tactic.FinCases
 
 /-!

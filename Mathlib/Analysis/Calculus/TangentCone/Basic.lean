@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.Topology.Algebra.Group.Basic
+
 import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
