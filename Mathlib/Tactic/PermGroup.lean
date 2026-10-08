@@ -22,8 +22,9 @@ claimed cardinality must be numerals, and permutations must be closed terms.
 Imported definitions must expose their bodies; modules supplying generators
 for evaluation must also be meta imported.
 
-This extends the syntax from HexPermGroup, which owns certificate production,
-checking and proof replay. `#perm_group_certificate` also accepts Mathlib literals.
+The tactic uses HexPermGroup for certificate production, checking and proof replay.
+The `#perm_group_certificate` command prints certificate proofs for explicit set and
+Finset literals of permutations.
 -/
 
 public section

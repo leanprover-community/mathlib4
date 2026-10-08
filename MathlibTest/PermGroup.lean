@@ -11,7 +11,7 @@ import MathlibTest.PermGroupDefs
 meta import MathlibTest.PermGroupDefs
 meta import Lean
 
-/-! Regression tests for the lightweight Mathlib extension. -/
+/-! Tests for the `perm_group` tactic. -/
 
 public section
 
@@ -23,7 +23,7 @@ example : Nat.card (Subgroup.closure
 run_elab do
   unless (← Lean.Meta.synthInstance? (← Lean.Meta.mkAppM ``_root_.Group
       #[← Lean.Meta.mkAppM ``Hex.Perm #[Lean.mkNatLit 3]])).isNone do
-    throwError "the lightweight adapter imported the optional Hex group instance"
+    throwError "importing perm_group introduced a group instance for Hex permutations"
 
 -- Hex imports must preserve the default equality instances on core containers.
 example : (inferInstance : DecidableEq (Array Nat)) = Array.instDecidableEq := rfl
@@ -113,7 +113,7 @@ set_option pp.width 200 in
 
 end Hex.PermGroup.Mathlib.TacticTests
 
--- Check that the extension's printed source parses and its proofs elaborate,
+-- Check that the printed certificate source parses and its proofs elaborate,
 -- even when local declarations shadow the generated certificate's helpers.
 namespace CertificateShadow
 
@@ -130,7 +130,7 @@ run_cmd do
       Finset (Equiv.Perm (Fin 3))) : Set (Equiv.Perm (Fin 3))))
     let generators ← Lean.Elab.Term.elabTerm s none
     let some source ← Mathlib.Tactic.PermGroup.extension.certificate? "emitted" generators s
-      | throwError "the Mathlib certificate extension did not recognize the literal"
+      | throwError "perm_group certificate generation did not recognize the literal"
     return source
   let input := Lean.Parser.mkInputContext source "<perm_group_certificate>"
   let mut state : Lean.Parser.ModuleParserState := {}
