@@ -6,8 +6,9 @@ Authors: Christian Merten, Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
 # Locality conditions on morphism properties
@@ -229,6 +230,7 @@ alias iff_of_zeroHypercover_source := IsLocalAtSource.iff_of_zeroHypercover
 
 end MorphismProperty
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Let `J` be a precoverage for which isomorphisms are local at the target. Let

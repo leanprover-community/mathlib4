@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
+public import Batteries.Tactic.Alias
 public import Batteries.Data.Nat.Lemmas
 public import Batteries.Util.LibraryNote
 public import Mathlib.Data.Int.Notation
@@ -54,10 +55,8 @@ The relevant files are:
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
 
-open Function
-
 namespace Nat
-variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
+variable {a b m n k : ℕ} {p : ℕ → Prop}
 
 /-! ### `succ`, `pred` -/
 
@@ -157,7 +156,7 @@ lemma leRec_self {n} {motive : (m : ℕ) → n ≤ m → Sort*}
     (le_succ_of_le : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h)) :
     (leRec (motive := motive) refl le_succ_of_le (Nat.le_refl _) :
     motive n (Nat.le_refl _)) = refl := by
-  cases n <;> simp [leRec, Or.by_cases, dif_neg]
+  cases n <;> simp [leRec, Or.by_cases, dite_eq_right]
 
 @[simp]
 lemma leRec_succ {n} {motive : (m : ℕ) → n ≤ m → Sort*}
@@ -168,7 +167,7 @@ lemma leRec_succ {n} {motive : (m : ℕ) → n ≤ m → Sort*}
       le_succ_of_le h1 (leRec (motive := motive) refl le_succ_of_le h1) := by
   conv =>
     lhs
-    rw [leRec, Or.by_cases, dif_pos h1]
+    rw [leRec, Or.by_cases, dite_eq_left h1]
 
 lemma leRec_succ' {n} {motive : (m : ℕ) → n ≤ m → Sort*} (refl le_succ_of_le) :
     (leRec (motive := motive) refl le_succ_of_le (le_succ _)) = le_succ_of_le _ refl := by
@@ -358,7 +357,7 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
   | 0, _ + 1, _ => hb _
   | a + 1, b + 1, h => by
     apply hd _ _ (Nat.add_lt_add_iff_right.1 h)
-    · have this : a + 1 = b ∨ a + 1 < b := by lia
+    · have : a + 1 = b ∨ a + 1 < b := by lia
       rcases this with (rfl | h)
       · exact ha _
       apply diag_induction P ha hb hd (a + 1) b h

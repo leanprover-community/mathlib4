@@ -19,7 +19,7 @@ This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 
 public section
 
-open Module Polynomial
+open Module
 
 namespace IntermediateField
 
@@ -140,7 +140,7 @@ variable (α : E)
 @[simp]
 theorem AdjoinSimple.isIntegral_gen : IsIntegral F (AdjoinSimple.gen F α) ↔ IsIntegral F α := by
   conv_rhs => rw [← AdjoinSimple.algebraMap_gen F α]
-  rw [isIntegral_algebraMap_iff (algebraMap F⟮α⟯ E).injective]
+  rw [isIntegral_algebraMap_iff]
 
 variable {F} {α}
 
@@ -149,17 +149,9 @@ theorem adjoin_toSubalgebra_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlge
   adjoin_eq_algebra_adjoin _ _ fun _ ↦
     (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 
-@[deprecated (since := "2025-11-24")] alias adjoin_algebraic_toSubalgebra :=
-  adjoin_toSubalgebra_of_isAlgebraic
-
 theorem adjoin_simple_toSubalgebra_of_isAlgebraic (hα : IsAlgebraic F α) :
     F⟮α⟯.toSubalgebra = F[α] :=
   adjoin_toSubalgebra_of_isAlgebraic <| by simpa
-
-@[deprecated "Use `adjoin_simple_toSubalgebra_of_isAlgebraic` instead" (since := "2025-11-24")]
-theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
-    F⟮α⟯.toSubalgebra = F[α] :=
-  adjoin_toSubalgebra_of_isAlgebraic <| by simpa [isAlgebraic_iff_isIntegral]
 
 @[simp]
 theorem adjoin_toSubalgebra [Algebra.IsAlgebraic F E] (S : Set E) :
@@ -194,9 +186,6 @@ lemma _root_.Algebra.finite_of_essFiniteType_of_isAlgebraic
     rw [← adjoin_toSubalgebra_of_isAlgebraic fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x]
     simpa [← toSubalgebra_inj] using hs
   exact Algebra.IsIntegral.finite
-
-@[deprecated (since := "2025-12-08")]
-alias finite_of_fg_of_isAlgebraic := Algebra.finite_of_essFiniteType_of_isAlgebraic
 
 section RingHom
 
@@ -287,16 +276,10 @@ theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic_left (L : Intermedi
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
   adjoin_intermediateField_toSubalgebra_of_isAlgebraic E L (Or.inl halg)
 
-@[deprecated (since := "2025-11-24")] alias adjoin_toSubalgebra_of_isAlgebraic_left :=
-  adjoin_intermediateField_toSubalgebra_of_isAlgebraic_left
-
 theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right (L : IntermediateField F K)
     [halg : Algebra.IsAlgebraic F L] :
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
   adjoin_intermediateField_toSubalgebra_of_isAlgebraic E L (Or.inr halg)
-
-@[deprecated (since := "2025-11-24")] alias adjoin_toSubalgebra_of_isAlgebraic_right :=
-  adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right
 
 end Tower
 
@@ -315,11 +298,13 @@ theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
   S.fg_of_fg_toSubalgebra S.toSubalgebra.fg_of_noetherian
 
-theorem induction_on_adjoin [FiniteDimensional F E] (P : IntermediateField F E → Prop)
-    (base : P ⊥) (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
-    (K : IntermediateField F E) : P K :=
+theorem induction_on_adjoin [FiniteDimensional F E]
+    {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E) (x : E),
+      motive K → motive (K⟮x⟯.restrictScalars F))
+    (K : IntermediateField F E) : motive K :=
   letI : IsNoetherian F E := IsNoetherian.iff_fg.2 inferInstance
-  induction_on_adjoin_fg P base ih K K.fg_of_noetherian
+  induction_on_adjoin_fg bot adjoin_simple K K.fg_of_noetherian
 
 end Induction
 
@@ -339,7 +324,7 @@ theorem algHom_fieldRange_eq_of_comp_eq (h : RingHom.comp f (algebraMap A K) = (
     f.fieldRange = IntermediateField.adjoin F g.range := by
   apply IntermediateField.toSubfield_injective
   simp_rw [AlgHom.fieldRange_toSubfield, IntermediateField.adjoin_toSubfield]
-  convert! ringHom_fieldRange_eq_of_comp_eq h using 2
+  convert ringHom_fieldRange_eq_of_comp_eq h using 2
   exact Set.union_eq_self_of_subset_left fun _ ⟨x, hx⟩ ↦ ⟨algebraMap F A x, by simp [← hx]⟩
 
 /-- If `F` is a field, `A` is an `F`-algebra with fraction field `K`, `L` is a field,

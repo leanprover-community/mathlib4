@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Algebra.Hom
-public import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.GroupTheory.Congruence.Basic
 public import Mathlib.RingTheory.Congruence.Defs
 
@@ -26,7 +25,6 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 
 ## TODO
 
-* Use this for `RingQuot` too.
 * Copy across more API from `Con` and `AddCon` in `Mathlib/GroupTheory/Congruence/`.
 -/
 
@@ -71,11 +69,11 @@ end SMul
 
 instance isScalarTower_right [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     (c : RingCon R) : IsScalarTower α c.Quotient c.Quotient where
-  smul_assoc _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul_assoc _ _ _
+  smul_assoc _ := Quotient.ind₂' fun _ _ => congr(Quotient.mk'' $(smul_mul_assoc ..))
 
 instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass α R R] (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
-  smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm _ _ _).symm
+  smul_comm _ := Quotient.ind₂' fun _ _ => congr(Quotient.mk'' $((mul_smul_comm ..).symm))
 
 instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass R α R] (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=
@@ -88,12 +86,12 @@ instance [Monoid α] [NonAssocSemiring R] [MulAction α R] [IsScalarTower α R R
 
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient where
-  smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
-  smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _
+  smul_zero := fun _ => congr(toQuotient $(smul_zero _))
+  smul_add := fun _ => Quotient.ind₂' fun _ _ => congr(toQuotient $(smul_add ..))
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
     MulSemiringAction α c.Quotient where
-  smul_one := fun _ => congr_arg toQuotient <| smul_one _
+  smul_one := fun _ => congr(toQuotient $(smul_one _))
   smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
     MulSemiringAction.smul_mul _ _ _
 
@@ -102,8 +100,8 @@ variable [CommSemiring α] [Semiring R] [Algebra α R]
 
 instance (c : RingCon R) : Algebra α c.Quotient where
   algebraMap := c.mk'.comp (algebraMap α R)
-  commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
-  smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
+  commutes' _ := Quotient.ind' fun _ ↦ congr(Quotient.mk'' $(Algebra.commutes ..))
+  smul_def' _ := Quotient.ind' fun _ ↦ congr(Quotient.mk'' $(Algebra.smul_def ..))
 
 @[simp, norm_cast]
 theorem coe_algebraMap (c : RingCon R) (s : α) :
@@ -259,7 +257,6 @@ theorem ringConGen_eq (r : R → R → Prop) :
         (fun _ _ h1 h2 c hc => c.mul (h1 c hc) <| h2 c hc))
     (sInf_le le_ringConGen)
 
-
 /-- The smallest congruence relation containing a binary relation `r` is contained in any
 congruence relation containing `r`. -/
 theorem ringConGen_le {r : R → R → Prop} {c : RingCon R} : ringConGen r ≤ c ↔ r ≤ ⇑c :=
@@ -349,12 +346,6 @@ theorem comap_ringConGen_ringEquiv {R R'} [NonAssocSemiring R] [NonAssocSemiring
     simp [Function.onFun, RingEquiv.coe_toNonUnitalRingHom']
   · rw [← comap_nonUnitalRingHomComp]
     simp
-
--- This one probably needs the RingCon version of `Setoid.comap_surjective`
-proof_wanted comap_ringConGen_equiv
-    {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R] [EquivLike F R' R]
-    (r : R → R → Prop) (f : F) :
-    (ringConGen r).comap f = ringConGen (r on f)
 
 end Lattice
 

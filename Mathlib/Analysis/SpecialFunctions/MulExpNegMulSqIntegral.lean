@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.MeasureTheory.Measure.RegularityCompacts
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+
+import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
 # Properties of the integral of `mulExpNegMulSq`
@@ -41,7 +41,7 @@ it is shown that a subalgebra of functions that separates points separates finit
 
 public section
 
-open MeasureTheory Real NNReal ENNReal BoundedContinuousFunction Filter
+open MeasureTheory Real ENNReal BoundedContinuousFunction Filter
 
 open scoped Topology
 

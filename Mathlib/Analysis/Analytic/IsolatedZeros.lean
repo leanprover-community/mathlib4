@@ -5,12 +5,12 @@ Authors: Vincent Beffara, Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Calculus.DSlope
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Order.Filter.EventuallyConst
-public import Mathlib.Topology.Perfect
+
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
 # Principle of isolated zeros
@@ -40,19 +40,19 @@ in this setup.
 
 public section
 
-open Filter Function Module Nat FormalMultilinearSeries EMetric Set
+open Filter Function Module Nat FormalMultilinearSeries Set
 
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
+  [NormedSpace 𝕜 E] {s : E} {p : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
 
 namespace HasSum
 
 variable {a : ℕ → E}
 
 theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n) (a 0) := by
-  convert! hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
+  convert hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
 
 theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
     (ha : ∀ k < n, a k = 0) : ∃ t : E, z ^ n • t = s ∧ HasSum (fun m => z ^ m • a (m + n)) t := by
@@ -82,7 +82,7 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
   simp only [hasFPowerSeriesAt_iff, coeff_fslope] at hp ⊢
   refine hp.mono fun x hx => ?_
   by_cases h : x = 0
-  · convert! hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
+  · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
   · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by simp [field, _root_.pow_succ]
     suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
       simpa [dslope, slope, h, smul_smul, hxx] using this
@@ -103,7 +103,7 @@ theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) (z : �
     f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
   refine (pow_sub_smul_iterate_dslope_of_zero _ (fun k hk ↦ ?_) z).symm
   rw [← (has_fpower_series_iterate_dslope_fslope k hp).coeff_zero 1, ← coeff, coeff_iterate_fslope,
-    zero_add, coeff, p.apply_eq_zero_of_lt_order hk, ContinuousMultilinearMap.zero_apply]
+    zero_add, coeff, p.apply_eq_zero_of_lt_order hk, _root_.zero_apply]
 
 theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rw [eventually_nhdsWithin_iff]

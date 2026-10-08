@@ -5,12 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Countable
-public import Mathlib.RingTheory.Finiteness.ModuleFinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.RingTheory.Flat.Rank
+
+import Mathlib.RingTheory.Finiteness.ModuleFinitePresentation
 
 /-!
 # Rank of a finite flat morphism of schemes
@@ -112,6 +112,7 @@ private lemma Scheme.Hom.finrank_eq_of_isAffine [IsAffine S] [Flat f] [IsFinite 
   rw [show s = (𝟙 S : S ⟶ S) s from rfl, finrank_eq_finrank_snd_of_isAffine,
     IsAffine.finrank_snd]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Scheme.Hom.finrank_SpecMap_eq_finrank {R S : CommRingCat.{u}} {f : R ⟶ S} (hf₁ : f.hom.Finite)
     (hf₂ : f.hom.Flat) :
@@ -171,6 +172,7 @@ lemma Scheme.Hom.finrank_pullback_fst {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ 
     finrank (pullback.fst g f) y = finrank f (g y) :=
   finrank_of_isPullback (pullback.snd g f) _ _ _ (.flip <| .of_hasPullback _ _) y
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma Scheme.Hom.one_le_finrank_map (x : X) : 1 ≤ finrank f (f x) := by
   wlog hY : ∃ R, Y = Spec R
   · obtain ⟨R, g, hg, y, hy⟩ := Y.exists_Spec_apply_eq (f x)

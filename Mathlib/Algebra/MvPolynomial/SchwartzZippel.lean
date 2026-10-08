@@ -5,15 +5,15 @@ Authors: Bolton Bailey, Yaël Dillies, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.MvPolynomial.Variables
-public import Mathlib.Algebra.Order.GroupWithZero.Finset
-public import Mathlib.Algebra.Order.Ring.Finset
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Data.Fin.Tuple.Finset
-public import Mathlib.Tactic.Positivity.Finset
-public import Mathlib.Tactic.GCongr
+
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.Order.GroupWithZero.Finset
+import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Data.Fin.Tuple.Finset
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # The Schwartz-Zippel lemma
@@ -197,7 +197,6 @@ lemma schwartz_zippel_totalDegree {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0
     _ = p.totalDegree / #S := by
       obtain rfl | hs := S.eq_empty_or_nonempty
       · simp
-        simp only [← _root_.bot_eq_zero, sup_bot]
       simp_rw [totalDegree, Nat.cast_finsetSup]
       rw [sup_div₀ (by positivity)]
       simp [← sum_div, Finsupp.sum_fintype]

@@ -5,11 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Basic
 public import Mathlib.Data.List.Basic
+
+import Mathlib.Data.List.TakeDrop
 
 /-!
 # Prefixes, suffixes, infixes
@@ -19,7 +20,7 @@ This file proves properties about
 * `List.isSuffix`: `l₁` is a suffix of `l₂` if `l₂` ends with `l₁`.
 * `List.isInfix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some suffix of `l₂`.
 * `List.inits`: The list of prefixes of a list.
-* `List.tails`: The list of prefixes of a list.
+* `List.tails`: The list of suffixes of a list.
 * `insert` on lists
 
 All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
@@ -56,7 +57,7 @@ lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l�
    fun h ↦ h.trans <| l₂.prefix_append l₃⟩
 
 @[simp] lemma take_isPrefix_take {m n : ℕ} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
-  simp [prefix_take_iff, take_prefix]; omega
+  simp [prefix_take_iff, take_prefix]
 
 @[gcongr]
 protected theorem IsPrefix.flatten {l₁ l₂ : List (List α)} (h : l₁ <+: l₂) :
@@ -116,7 +117,7 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
     x ++ [y.get ⟨x.length, hl⟩] <+: y := by
   use y.drop (x.length + 1)
   nth_rw 1 [List.prefix_iff_eq_take.mp h]
-  convert! List.take_append_drop (x.length + 1) y using 2
+  convert List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
 theorem prefix_append_drop {l₁ l₂ : List α} (h : l₁ <+: l₂) :

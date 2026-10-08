@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.MeasureTheory.Constructions.Pi
-public import Mathlib.MeasureTheory.Group.Convolution
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -791,6 +790,14 @@ lemma iIndepFun.isProbabilityMeasure (h : iIndepFun f μ) : IsProbabilityMeasure
   ⟨by simpa using h.meas_biInter (S := ∅) (s := fun _ ↦ univ)⟩
 
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
+two disjoint index sets, then the tuple formed by `(f i)_i` for `i ∈ S` is independent of the
+tuple `(f i)_i` for `i ∈ T`. -/
+lemma iIndepFun.indepFun_set (S T : Set ι) (hST : Disjoint S T) (hf_Indep : iIndepFun f μ)
+    (hf_meas : ∀ i, Measurable (f i)) :
+    IndepFun (fun a (i : S) ↦ f i a) (fun a (i : T) ↦ f i a) μ :=
+  Kernel.iIndepFun.indepFun_set S T hST hf_Indep hf_meas
+
+/-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
 lemma iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T) (hf_Indep : iIndepFun f μ)
@@ -841,7 +848,6 @@ theorem iIndepFun.map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : Π i, Ω → β i}
     (hf : ∀ i, AEMeasurable (f i) μ) (h : iIndepFun f μ) :
     μ.map (fun ω i ↦ f i ω) = Measure.pi (fun i ↦ μ.map (f i)) := by
-  classical
   have := h.isProbabilityMeasure
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at h
   have h₀ {s : ∀ i, Set (β i)} (hm : ∀ (i : ι), MeasurableSet (s i)) :
@@ -850,8 +856,7 @@ theorem iIndepFun.map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     constructor
     · congr with x
       rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
-    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
-        (.univ_pi hm)]
+    · rw [Measure.map_apply_of_aemeasurable (.of_eval fun x ↦ hf x) (.univ_pi hm)]
       congr with x
       simp
   refine (Measure.pi_eq fun h' hm ↦ ?_).symm
@@ -871,16 +876,14 @@ theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     constructor
     · congr with x
       rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
-    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
-        (.univ_pi hm)]
+    · rw [Measure.map_apply_of_aemeasurable (.of_eval fun x ↦ hf x) (.univ_pi hm)]
       congr with x
       simp
   intro h S s hs
   specialize h₀ (s := fun i ↦ if i ∈ S then s i else univ)
     fun i ↦ by split_ifs with hiS <;> simp [hiS, hs]
   simp only [apply_ite, preimage_univ, measure_univ, Finset.prod_ite_mem, Finset.univ_inter,
-    Finset.prod_ite, Finset.filter_univ_mem, iInter_ite, iInter_univ, inter_univ, h,
-    Measure.pi_pi] at h₀
+    iInter_ite, iInter_univ, inter_univ, h, Measure.pi_pi] at h₀
   rw [h₀.2, ← h₀.1]
 
 variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
@@ -1036,7 +1039,7 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
   Kernel.iIndepSet.iIndepFun_indicator hs
 
 lemma Indep.indicator_indepFun {m : MeasurableSpace Ω} {M 𝓧 : Type*}
-    [Zero M] [MeasurableSpace M] (c : M) [NeZero c] {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω}
+    [Zero M] [MeasurableSpace M] (c : M) {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω}
     {X : Ω → 𝓧} (hA : MeasurableSet[m] A) (h : Indep m (m𝓧.comap X) μ) :
     (A.indicator (fun _ ↦ c)) ⟂ᵢ[μ] X :=
   Kernel.Indep.indicator_const_indepFun c hA h

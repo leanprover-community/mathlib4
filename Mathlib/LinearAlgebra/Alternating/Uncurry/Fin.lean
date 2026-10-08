@@ -7,7 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.GroupTheory.Perm.Fin
-public import Mathlib.Data.Fin.Parity
+
+import Mathlib.Data.Fin.Parity
 
 /-!
 # Uncurrying alternating maps
@@ -49,9 +50,8 @@ open Fin Function
 
 namespace AlternatingMap
 
-variable {R : Type*} {M M₂ N N₂ : Type*} [CommRing R] [AddCommGroup M]
-  [AddCommGroup M₂] [AddCommGroup N] [AddCommGroup N₂] [Module R M] [Module R M₂]
-  [Module R N] [Module R N₂] {n : ℕ}
+variable {R : Type*} {M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N]
+  [Module R M] [Module R N] {n : ℕ}
 
 /-- If `f` is a `(n + 1)`-multilinear alternating map, `x` is an element of the domain,
 and `v` is an `n`-vector, then the value of `f` at `v` with `x` inserted at the `p`th place

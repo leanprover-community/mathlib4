@@ -21,8 +21,6 @@ generate the σ-algebra on the indexed product of `α i`s.
 
 public section
 
-noncomputable section
-
 open Function Set MeasurableSpace Encodable
 
 variable {ι : Type*} {α : ι → Type*}
@@ -31,7 +29,7 @@ variable {ι : Type*} {α : ι → Type*}
 
 lemma MeasurableSpace.pi_eq_generateFrom_projections {mα : ∀ i, MeasurableSpace (α i)} :
     pi = generateFrom {B | ∃ (i : ι) (A : Set (α i)), MeasurableSet A ∧ eval i ⁻¹' A = B} := by
-  simp only [pi, ← generateFrom_iUnion_measurableSet, iUnion_setOf, measurableSet_comap]
+  simp only [pi, ← generateFrom_iUnion_measurableSet, iUnion_ofPred, measurableSet_comap]
 
 /-- Boxes formed by π-systems form a π-system. -/
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :

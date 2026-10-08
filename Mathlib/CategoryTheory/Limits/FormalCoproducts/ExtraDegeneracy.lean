@@ -26,8 +26,6 @@ morphism `T ⟶ U.obj i₀` for some `i₀`.
 
 universe w t v u
 
-open Simplicial
-
 namespace CategoryTheory.Limits.FormalCoproduct
 
 variable {C : Type u} [Category.{v} C] [HasFiniteProducts C]
@@ -68,7 +66,6 @@ lemma cechIsoCechNerveApp_inv_π (n : SimplexCategoryᵒᵖ) (i : ToType n.unop)
   rw [← U.cechIsoCechNerveApp_hom_π hT, Iso.inv_hom_id_assoc]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The Cech construction for `FormalCoproduct` is isomorphic
 to the general `Arrow.cechNerve` construction applied to the morphism
 to the terminal object. -/

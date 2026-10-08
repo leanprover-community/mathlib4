@@ -5,7 +5,8 @@
 # This workflow runs with minimal permissions (contents: read only) so it is
 # safe to run code from fork PRs. The actual PR comment is posted by the
 # companion workflow olean_report_wf_run.yaml via the privilege-escalation
-# bridge.
+# bridge. PR code runs only in the `report` job; the bridge artifact is emitted
+# from the separate `emit` job, which never runs PR code.
 name: olean report
 
 on:
@@ -20,9 +21,12 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+
 jobs:
-  report:
-    name: Prepare olean report
+  check:
+    name: Check trigger
     runs-on: ubuntu-latest
     # Skip if comment does not contain the trigger word.
     if: >-
@@ -32,6 +36,8 @@ jobs:
         github.event.issue.state == 'open' &&
         contains(github.event.comment.body, '!olean_report')
       }}
+    outputs:
+      triggered: ${{ steps.check_trigger.outputs.triggered }}
     steps:
       - name: Check trigger pattern
         id: check_trigger
@@ -46,9 +52,14 @@ jobs:
             echo "'!olean_report' was not found at the beginning of a line; skipping."
           fi
 
+  report:
+    name: Prepare olean report
+    needs: check
+    if: needs.check.outputs.triggered == 'true'
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout local actions
-        if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -56,14 +67,12 @@ jobs:
           path: workflow-actions
 
       - name: Get mathlib-ci
-        if: steps.check_trigger.outputs.triggered == 'true'
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       # We use the GH CLI here because issue_comment events do not carry the
       # full pull_request payload.
       - name: Get PR info
         id: pr_info
-        if: steps.check_trigger.outputs.triggered == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -81,8 +90,7 @@ jobs:
       # GitHub mirrors fork commits under this ref.
       # We fetch full depth so that we can compute the merge base.
       - name: Checkout PR head
-        if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ github.repository }}
           ref: refs/pull/${{ github.event.issue.number }}/head
@@ -94,8 +102,7 @@ jobs:
       # Check out master into tools-branch.  We build the `cache` binary from
       # here so that a single binary can fetch oleans for both checkouts.
       - name: Checkout tools branch (master)
-        if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ github.repository }}
           ref: master
@@ -107,7 +114,6 @@ jobs:
       # branched off.
       - name: Compute merge base
         id: merge_base
-        if: steps.check_trigger.outputs.triggered == 'true'
         working-directory: pr-branch
         run: |
           BASE_SHA="${{ steps.pr_info.outputs.base_sha }}"
@@ -116,8 +122,7 @@ jobs:
           echo "sha=$MERGE_BASE" >> "$GITHUB_OUTPUT"
 
       - name: Checkout merge base
-        if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ github.repository }}
           ref: ${{ steps.merge_base.outputs.sha }}
@@ -126,7 +131,6 @@ jobs:
 
       - name: Check toolchain compatibility
         id: toolchain_check
-        if: steps.check_trigger.outputs.triggered == 'true'
         env:
           BASE_REF: ${{ steps.pr_info.outputs.base_ref }}
         run: |
@@ -204,7 +208,6 @@ jobs:
           lake env "$CACHE_BIN" get
 
       - name: Generate olean report
-        if: steps.check_trigger.outputs.triggered == 'true'
         env:
           TOOLCHAINS_MATCH: ${{ steps.toolchain_check.outputs.match }}
           MISMATCH_REASON: ${{ steps.toolchain_check.outputs.mismatch_reason }}
@@ -269,7 +272,6 @@ jobs:
           fi
 
       - name: Upload full olean diff
-        if: steps.check_trigger.outputs.triggered == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: olean-diff-full
@@ -277,19 +279,38 @@ jobs:
           if-no-files-found: ignore
           retention-days: 5
 
-      - name: Prepare bridge outputs
-        if: steps.check_trigger.outputs.triggered == 'true'
-        run: |
-          jq -n \
-            --arg pr_number "${{ github.event.issue.number }}" \
-            '{ pr_number: $pr_number }' > bridge-outputs.json
+      - name: Upload olean report comment
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: olean-report-comment
+          path: comment_body.md
+          if-no-files-found: error
+          retention-days: 1
+
+  # The `report` job runs PR code (`lake env`), which can tamper with the rest of
+  # that job, so the bridge artifact is emitted here, on a runner that never runs
+  # PR code. Its metadata (PR number, comment ID) therefore comes from the real
+  # event; only the comment body comes from `report`.
+  # `report` shares this run's artifacts, so as the bridge README requires
+  # (https://github.com/leanprover-community/privilege-escalation-bridge#which-artifact-is-used):
+  # - this job must need every job that runs PR code, and no PR code may run after it;
+  # - its condition must not depend on outputs of `report`.
+  # Then if `report` uploads its own `workflow-data`, our upload fails and so does the run.
+  emit:
+    name: Emit bridge artifact
+    needs: [check, report]
+    if: needs.check.outputs.triggered == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download olean report comment
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: olean-report-comment
 
       - name: Emit bridge artifact
-        if: steps.check_trigger.outputs.triggered == 'true'
-        uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        uses: leanprover-community/privilege-escalation-bridge/emit@120e98bbb1e9438be8973be645ef67e9cddc39ba # v2.1.0
         with:
           artifact: workflow-data
-          outputs_file: bridge-outputs.json
           include_event: minimal
           files: |
             comment_body.md
