@@ -99,8 +99,11 @@ theorem mem_ofFixingSubgroup_iff {x : α} :
 variable {M}
 
 @[to_additive]
-theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
+theorem notMem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
     ↑x ∉ s := x.prop
+
+@[to_additive (attr := deprecated (since := "2026-09-28"))]
+alias not_mem_of_mem_ofFixingSubgroup := notMem_of_mem_ofFixingSubgroup
 
 @[to_additive]
 theorem disjoint_val_image {t : Set (ofFixingSubgroup M s)} :

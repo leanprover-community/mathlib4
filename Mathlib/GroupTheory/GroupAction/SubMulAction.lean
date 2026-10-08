@@ -6,9 +6,9 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Actions
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 

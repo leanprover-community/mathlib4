@@ -6,21 +6,37 @@ on:
     - cron: '0 10 * * *'
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   tag:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    environment:
+      name: daily-master-tag
+      deployment: false
+    permissions:
+      contents: read
+      # Required for the token-minting action to request a GitHub OIDC token,
+      # which it exchanges (via Azure Key Vault) for a GitHub App installation token.
+      id-token: write
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
+        with:
+          app-id: ${{ secrets.DAILY_MASTER_TAG_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: daily-master-tag-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_DAILY_MASTER_TAG }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+      # Check out with the app token so that the credentials persisted into the
+      # local git config (and used by `git push` below) are the app's.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: master
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Create daily tag
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           TAG="master-$(date -u +%Y-%m-%d)"
           if git ls-remote --tags origin "refs/tags/$TAG" | grep -q .; then

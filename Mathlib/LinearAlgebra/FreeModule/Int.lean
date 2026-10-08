@@ -64,7 +64,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
       intro i
       simp only [Finset.sum_apply, Pi.smul_apply, Pi.single_apply]
       split_ifs with h
-      · convert! dvd_mul_left (a h.choose) (c h.choose)
+      · convert dvd_mul_left (a h.choose) (c h.choose)
         calc ∑ x : Fin n, _ = c h.choose * if i = f h.choose then a h.choose else 0 := by
               refine Finset.sum_eq_single h.choose ?_ (by simp)
               rintro j - hj
@@ -72,7 +72,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
               rw [h.choose_spec] at hinj
               simp [hinj.symm]
           _ = c h.choose * a h.choose := by simp [h.choose_spec]
-      · convert! dvd_refl (0 : R)
+      · convert dvd_refl (0 : R)
         convert! Finset.sum_const_zero with j
         rw [not_exists] at h
         specialize h j
@@ -107,16 +107,16 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
           rw [ne_comm] at hj
           simp [hj]
         · rw [← zero_dvd_iff]
-          convert! h i
+          convert h i
           simp [hj]
   simp only [hN', AddSubgroup.index_pi, apply_dite, Finset.prod_dite, Set.singleton_zero,
     Ideal.span_zero, Submodule.bot_toAddSubgroup, AddSubgroup.index_pi, AddSubgroup.index_bot,
     Finset.prod_const, Finset.univ_eq_attach, Finset.card_attach]
   rw [mul_comm]
   congr
-  · convert! Finset.card_compl {x | ∃ j, f j = x} using 2
+  · convert Finset.card_compl {x | ∃ j, f j = x} using 2
     · exact (Finset.compl_filter _).symm
-    · convert! (Finset.card_image_of_injective Finset.univ f.injective).symm <;> simp
+    · convert (Finset.card_image_of_injective Finset.univ f.injective).symm <;> simp
   · rw [Finset.attach_eq_univ]
     let f' : Fin n → { x // x ∈ Finset.filter (fun x ↦ ∃ j, f j = x) Finset.univ } :=
       fun i ↦ ⟨f i, by simp⟩

@@ -41,7 +41,7 @@ instance (priority := 100) RCLike.instContinuousMapUniqueHom [TopologicalSpace A
     ContinuousMap.UniqueHom 𝕜 A where
   eq_of_continuous_of_map_id s _ φ ψ hφ hψ h :=
     ContinuousMap.starAlgHom_ext_map_X hφ hψ <| by
-      convert! h using 1
+      convert h using 1
       all_goals exact congr_arg _ (by ext; simp)
 
 instance Real.instContinuousMapUniqueHom [TopologicalSpace A]
@@ -123,13 +123,13 @@ noncomputable def realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥
     have := congr(φ $(f.toNNReal_mul_add_neg_mul_add_mul_neg_eq g))
     simp only [map_add, map_mul, sub_mul, mul_sub] at this ⊢
     rw [← sub_eq_zero] at this ⊢
-    convert! this using 1
+    convert this using 1
     abel
   map_add' f g := by
     have := congr(φ $(f.toNNReal_add_add_neg_add_neg_eq g))
     simp only [map_add] at this ⊢
     rw [← sub_eq_zero] at this ⊢
-    convert! this using 1
+    convert this using 1
     abel
   commutes' r := by
     obtain (hr | hr) := le_total 0 r

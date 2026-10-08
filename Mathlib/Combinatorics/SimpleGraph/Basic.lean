@@ -487,10 +487,15 @@ theorem mem_edgeSet : s(v, w) ∈ G.edgeSet ↔ G.Adj v w :=
 theorem not_isDiag_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiag :=
   Sym2.ind (fun _ _ => Adj.ne) e
 
-@[simp] lemma not_mem_edgeSet_of_isDiag : e.IsDiag → e ∉ edgeSet G :=
+@[simp] lemma notMem_edgeSet_of_isDiag : e.IsDiag → e ∉ edgeSet G :=
   imp_not_comm.1 G.not_isDiag_of_mem_edgeSet
 
-alias _root_.Sym2.IsDiag.not_mem_edgeSet := not_mem_edgeSet_of_isDiag
+@[deprecated (since := "2026-09-28")] alias not_mem_edgeSet_of_isDiag := notMem_edgeSet_of_isDiag
+
+alias _root_.Sym2.IsDiag.notMem_edgeSet := notMem_edgeSet_of_isDiag
+
+@[deprecated (since := "2026-09-28")]
+alias _root_.Sym2.IsDiag.not_mem_edgeSet := Sym2.IsDiag.notMem_edgeSet
 
 theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ := (edgeSetEmbedding V).eq_iff_eq
 

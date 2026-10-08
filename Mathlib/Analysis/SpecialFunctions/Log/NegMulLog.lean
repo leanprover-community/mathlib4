@@ -55,7 +55,7 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   simp only [nhdsWithin_singleton, Filter.tendsto_sup]
   refine ⟨⟨tendsto_log_mul_self_nhdsLT_zero, ?_⟩, ?_⟩
   · simpa only [rpow_one] using tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one
-  · convert! tendsto_pure_nhds (fun x ↦ log x * x) 0
+  · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
     simp
 
 @[fun_prop]

@@ -494,6 +494,9 @@ theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
 theorem card_le_card {o₁ o₂ : Ordinal} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
   inductionOn o₁ fun _ _ _ => inductionOn o₂ fun _ _ _ ⟨⟨⟨f, _⟩, _⟩⟩ => ⟨f⟩
 
+theorem card_monotone : Monotone card :=
+  fun _ _ ↦ card_le_card
+
 @[simp]
 theorem card_zero : card 0 = 0 := mk_eq_zero _
 
@@ -506,6 +509,22 @@ mex (minimum excluded value). See `not_lt_enum_ord_mk_min_compl` for the `α` ve
 theorem card_typein_min_le_mk [h : IsWellOrder α r] {s : Set α} (hs : sᶜ.Nonempty) :
     (typein r <| WellFounded.min h.wf sᶜ hs).card ≤ #s :=
   WellFounded.cardinalMk_subtype_lt_min_compl_le _ hs
+
+/-- If `α` can be embedded in a well-order such that any initial segment has cardinal less than `c`,
+then `α` has cardinal at most `c`. -/
+theorem mk_le_of_forall_mk_setOfPred_lt {α β : Type u} {c : Cardinal}
+    [LinearOrder β] [WellFoundedLT β] (f : α → β) (hf : Function.Injective f)
+    (H : ∀ x, #{y | f y < f x} < c) : #α ≤ c := by
+  induction c using Cardinal.inductionOn with | mk γ
+  obtain ⟨_, _⟩ := exists_wellFoundedLT γ
+  let : LinearOrder α := LinearOrder.lift' f hf
+  have := OrderEmbedding.wellFoundedLT ⟨⟨f, hf⟩, .rfl⟩
+  have hi (x) : #(Iio x) ≤ #(Iio (f x)) :=
+    Embedding.cardinal_le ⟨fun y ↦ ⟨f y, y.2⟩, fun _ ↦ by grind⟩
+  rw [← card_type (· < ·), ← card_type (· < ·)]
+  refine Ordinal.card_le_card <| le_of_forall_lt fun d hd ↦ ?_
+  obtain ⟨a, rfl⟩ := typein_surj (· < ·) hd
+  exact Ordinal.card_monotone.reflect_lt (H a)
 
 /-! ### Lifting ordinals to a higher universe -/
 
@@ -820,6 +839,23 @@ theorem card_add_one (o : Ordinal) : card (o + 1) = card o + 1 := by
 theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β → Prop) [IsWellOrder α r]
     [IsWellOrder β s] : type (Sum.Lex r s) = type r + type s :=
   rfl
+
+@[simp]
+theorem type_lt_sum_lex {α β : Type u} [LinearOrder α] [LinearOrder β]
+    [WellFoundedLT α] [WellFoundedLT β] : typeLT (α ⊕ₗ β) = typeLT α + typeLT β :=
+  rfl
+
+@[simp]
+theorem type_lt_withTop {α : Type u} [LinearOrder α] [WellFoundedLT α] :
+    typeLT (WithTop α) = typeLT α + 1 := by
+  rw [type_eq.2 ⟨WithTop.orderIsoSumLexPUnit.toRelIsoLT⟩, type_lt_sum_lex,
+    type_eq_one_of_unique (fun a b : PUnit => a < b)]
+
+@[simp]
+theorem type_lt_withBot {α : Type u} [LinearOrder α] [WellFoundedLT α] :
+    typeLT (WithBot α) = 1 + typeLT α := by
+  rw [type_eq.2 ⟨WithBot.orderIsoPUnitSumLex.toRelIsoLT⟩, type_lt_sum_lex,
+    type_eq_one_of_unique (fun a b : PUnit => a < b)]
 
 @[simp]
 theorem card_nat (n : ℕ) : card.{u} n = n := by

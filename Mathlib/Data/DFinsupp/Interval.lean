@@ -50,7 +50,7 @@ theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ 
   · rintro ⟨f, hf, rfl⟩
     rw [Function.Embedding.coeFn_mk]
     refine ⟨support_mk_subset, fun i hi => ?_⟩
-    convert! mem_pi.1 hf i hi
+    convert mem_pi.1 hf i hi
     exact mk_of_mem hi
   · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i

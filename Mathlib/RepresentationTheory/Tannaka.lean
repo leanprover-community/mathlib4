@@ -18,7 +18,7 @@ of `G`, and the monoidal forgetful functor `forget : FDRep k G ⥤ FGModuleCat k
 
 The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
 
-## Reference
+## References
 
 <https://math.leidenuniv.nl/scripties/1bachCommelin.pdf>
 -/

@@ -144,8 +144,7 @@ def cocone (S : LightProfinite) :
     app := fun i ↦ G.map i.hom
     naturality := fun _ _ f ↦ (by
       have := f.w
-      simp only [op_obj, const_obj_obj, op_map, CostructuredArrow.right_eq_id, const_obj_map,
-        Category.comp_id] at this
+      simp only [op_obj, op_map] at this
       simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, const_obj_obj, Functor.comp_map,
         CostructuredArrow.proj_map, op_map, ← map_comp, this, const_obj_map, Category.comp_id]) }
 

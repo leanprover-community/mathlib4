@@ -84,7 +84,7 @@ theorem linearIndependent_shortExact {w : ι' → S.X₃} (hw : LinearIndependen
     LinearIndependent R (Sum.elim (S.f ∘ v) (S.g.hom.toFun.invFun ∘ w)) := by
   apply linearIndependent_leftExact hS'.exact hv _ hS'.mono_f rfl
   dsimp
-  convert! hw
+  convert hw
   ext
   apply Function.rightInverse_invFun ((epi_iff_surjective _).mp hS'.epi_g)
 
@@ -144,7 +144,7 @@ theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
     ⊤ ≤ span R (range (Sum.elim (S.f ∘ v) (S.g.hom.toFun.invFun ∘ w))) := by
   refine span_exact hS ?_ hv ?_
   · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
-  · convert! hw
+  · convert hw
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
     rw [ModuleCat.epi_iff_surjective] at hE
     rw [← Function.comp_assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun hE),

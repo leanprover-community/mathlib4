@@ -5,14 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.Fin.SuccPredOrder
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 public import Mathlib.Order.Interval.Set.InitialSeg
 public import Mathlib.Order.Interval.Set.Limit
-import Mathlib.Order.SuccPred.InitialSeg
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
+public import Mathlib.Order.SuccPred.Nat
+
+import Mathlib.Order.SuccPred.Fin
+import Mathlib.Order.SuccPred.InitialSeg
 
 /-!
 # Continuity of functors from well-ordered types

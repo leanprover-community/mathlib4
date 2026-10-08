@@ -167,7 +167,7 @@ end CommSemiring
 
 The `CommRing` assumption is needed because the proof uses `smul_right_inj`, which requires
 cancellation of addition in `R`; `IsAddTorsionFree` alone does not suffice. -/
-theorem pderiv.ext [CommRing R] [IsAddTorsionFree R] {f g : MvPowerSeries σ R}
+theorem pderiv.ext [CommRing R] [HasUniqueDiv R] {f g : MvPowerSeries σ R}
     (hD : ∀ i, pderiv i f = pderiv i g) (hc : constantCoeff f = constantCoeff g) : f = g := by
   ext n
   by_cases h : n = 0

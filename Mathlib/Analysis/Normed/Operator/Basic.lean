@@ -332,12 +332,18 @@ theorem opNorm_smul_le {𝕜' : Type*} [DistribSMul 𝕜' F] [SMulCommClass 𝕜
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun _ => by
     grw [smul_apply, norm_smul_le, mul_assoc, le_opNorm]
 
-theorem opNorm_le_iff_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} :
+theorem opNorm_le_iff_lipschitzWith {f : E →SL[σ₁₂] F} {K : ℝ≥0} :
     ‖f‖ ≤ K ↔ LipschitzWith K f :=
   ⟨fun h ↦ by simpa using AddMonoidHomClass.lipschitz_of_bound f K <| le_of_opNorm_le f h,
     fun hf ↦ f.opNorm_le_bound K.2 <| hf.norm_le_mul (map_zero f)⟩
 
-alias ⟨lipschitzWith_of_opNorm_le, opNorm_le_of_lipschitz⟩ := opNorm_le_iff_lipschitz
+alias ⟨lipschitzWith_of_opNorm_le, opNorm_le_of_lipschitzWith⟩ := opNorm_le_iff_lipschitzWith
+
+@[deprecated (since := "2026-09-27")]
+alias opNorm_le_iff_lipschitz := opNorm_le_iff_lipschitzWith
+
+@[deprecated (since := "2026-09-27")]
+alias opNorm_le_of_lipschitz := opNorm_le_of_lipschitzWith
 
 /-- Operator seminorm on the space of continuous (semi)linear maps, as `Seminorm`.
 
@@ -387,6 +393,16 @@ theorem nnnorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖�
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
   ⟨opNorm_smul_le⟩
+
+instance {E F : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsNormableSpace 𝕜 E]
+    [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+    [IsNormableSpace 𝕜₂ F] :
+    IsNormableSpace 𝕜₂ (E →SL[σ₁₂] F) := by
+  let : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
+  let : NormedSpace 𝕜 E := IsNormableSpace.toNormedSpace 𝕜 E
+  let : SeminormedAddCommGroup F := IsNormableSpace.toSeminormedAddCommGroup 𝕜₂ F
+  let : NormedSpace 𝕜₂ F := IsNormableSpace.toNormedSpace 𝕜₂ F
+  infer_instance
 
 /-- The operator norm is submultiplicative. -/
 theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * ‖f‖ :=

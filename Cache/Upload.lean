@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Upload.Defs
+public import Cache.Upload.Defs
 
 /-!
 # The upload operation
@@ -21,6 +22,8 @@ An external cache should not build on it: its operator publishes a staged
 artifact set (`stage`) with any storage client and serves readers through
 `MATHLIB_CACHE_GET_URL`, one flat location.
 -/
+
+public section
 
 namespace Cache.Requests
 

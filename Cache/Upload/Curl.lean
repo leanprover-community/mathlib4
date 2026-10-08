@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Upload.Dest
+public import Cache.Upload.Dest
 
 /-!
 # The curl upload tool
@@ -14,6 +15,8 @@ destination (`StagedUploadDest`). Each backend module
 (`Cache/Upload/Azure.lean`, `Cache/Upload/S3.lean`) calls the tool's entry
 point, `putStagedViaCurl`, with its own per-request signing arguments.
 -/
+
+public section
 
 namespace Cache.Requests
 

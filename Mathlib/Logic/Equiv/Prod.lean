@@ -97,6 +97,9 @@ theorem prodComm_apply {α β} (x : α × β) : prodComm α β x = x.swap :=
 theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
   rfl
 
+@[simp]
+theorem prodComm_trans_prodComm (α β) : (prodComm α β).trans (prodComm β α) = .refl _ := rfl
+
 /-- Type product is associative up to an equivalence. -/
 @[simps (attr := grind =)]
 def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=

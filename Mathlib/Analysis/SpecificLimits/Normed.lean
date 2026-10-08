@@ -458,7 +458,7 @@ theorem geom_series_eq_inverse (x : R) (h : ‖x‖ < 1) :
 
 theorem hasSum_geom_series_inverse (x : R) (h : ‖x‖ < 1) :
     HasSum (fun i ↦ x ^ i) (1 - x)⁻¹ʳ := by
-  convert! (summable_geometric_of_norm_lt_one h).hasSum
+  convert (summable_geometric_of_norm_lt_one h).hasSum
   exact (geom_series_eq_inverse x h).symm
 
 lemma isUnit_one_sub_of_norm_lt_one {x : R} (h : ‖x‖ < 1) : IsUnit (1 - x) :=
@@ -597,7 +597,7 @@ theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h 
     HasSum (fun n : ℕ ↦ n.descFactorial j * r ^ n)
       (j.factorial * r ^ j * (1 - r)⁻¹ʳ ^ (j + 1)) := by
   rw [← hasSum_nat_add_iff' j]
-  convert! (hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left (j.factorial * r ^ j) using 1
+  convert (hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left (j.factorial * r ^ j) using 1
   · funext n
     symm
     push_cast [Nat.descFactorial_eq_factorial_mul_choose]
@@ -825,7 +825,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
       (Summable.mul_left _ <| summable_geometric_of_lt_one hr₀ hr₁) fun n ↦ ?_
     conv_rhs => rw [mul_comm, ← zero_add N]
     refine le_geom (u := fun n ↦ ‖f (n + N)‖) hr₀ n fun i _ ↦ ?_
-    convert! hN (i + N) (N.le_add_left i) using 3
+    convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
   · refine .of_norm_bounded_eventually_nat summable_zero ?_
     filter_upwards [h] with _ hn
@@ -850,7 +850,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
   rw [← @summable_nat_add_iff α _ _ _ _ N]
   refine mt Summable.tendsto_atTop_zero
     fun h' ↦ not_tendsto_atTop_of_tendsto_nhds (tendsto_norm_zero.comp h') ?_
-  convert! tendsto_atTop_of_geom_le _ hr _
+  convert tendsto_atTop_of_geom_le _ hr _
   · refine lt_of_le_of_ne (norm_nonneg _) ?_
     intro h''
     specialize hN₀ N hNN₀

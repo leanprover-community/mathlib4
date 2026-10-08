@@ -99,7 +99,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     apply Fintype.equivFinOfCardEq
     simp only [← finrank_eq_card_basis b.toBasis, finrank_self]
   have B : parallelepiped (b.reindex e) = parallelepiped b := by
-    convert! parallelepiped_comp_equiv b e.symm
+    convert parallelepiped_comp_equiv b e.symm
     ext i
     simp only [OrthonormalBasis.coe_reindex]
   rw [← B]

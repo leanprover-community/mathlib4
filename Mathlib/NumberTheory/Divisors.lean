@@ -13,8 +13,8 @@ public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public import Mathlib.Data.Nat.PrimeFin
-public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.SuccPred.Nat
 
 /-!
 # Divisor Finsets

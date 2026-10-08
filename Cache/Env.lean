@@ -3,6 +3,7 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
 /-!
 # Cache environment variable parsing
@@ -11,6 +12,8 @@ Helpers for reading the cache tool's environment variables: an empty or
 whitespace-only value means unset, a base URL also loses its trailing slashes,
 and a boolean flag accepts `1`/`true` and `0`/`false`.
 -/
+
+public section
 
 namespace Cache
 

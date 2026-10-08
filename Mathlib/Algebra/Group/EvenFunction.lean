@@ -138,7 +138,7 @@ end mul
 section torsionfree
 
 -- need to redeclare variables since `InvolutiveNeg α` conflicts with `Neg α`
-variable {α β : Type*} [AddCommGroup β] [IsAddTorsionFree β] {f : α → β}
+variable {α β : Type*} [AddCommGroup β] [HasUniqueDiv β] {f : α → β}
 
 /--
 If `f` is both even and odd, and its target is a torsion-free commutative additive group,

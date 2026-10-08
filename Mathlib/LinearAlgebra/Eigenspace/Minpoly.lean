@@ -137,7 +137,7 @@ section FiniteSpectrum
 theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
     Set.Finite (spectrum K f) := by
-  convert! f.finite_hasEigenvalue using 1
+  convert f.finite_hasEigenvalue using 1
   ext x
   exact Module.End.hasEigenvalue_iff_mem_spectrum.symm
 

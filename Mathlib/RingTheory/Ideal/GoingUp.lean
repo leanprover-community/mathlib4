@@ -138,7 +138,7 @@ theorem exists_coeff_mem_comap_sdiff_comap_of_root_mem_sdiff [IsPrime I] (hIJ : 
     (p.map (Ideal.Quotient.mk (I.comap f))).eval₂ (Quotient.lift (I.comap f) _ quotient_f)
         (Ideal.Quotient.mk I r) =
       0 := by
-    convert! Quotient.eq_zero_iff_mem.mpr hpI
+    convert Quotient.eq_zero_iff_mem.mpr hpI
     exact _root_.trans (eval₂_map _ _ _) (hom_eval₂ p f (Ideal.Quotient.mk I) r).symm
   obtain ⟨i, ne_zero, mem⟩ :=
     exists_coeff_ne_zero_mem_comap_of_root_mem rbar_ne_zero rbar_mem_J p_ne_zero rbar_root
@@ -161,7 +161,7 @@ theorem under_lt_under_of_integral_mem_sdiff [Algebra R S] [hI : I.IsPrime] (hIJ
     I.under R < J.under R := by
   obtain ⟨p, p_monic, hpx⟩ := integral
   refine comap_lt_comap_of_root_mem_sdiff hIJ mem (map_monic_ne_zero p_monic) ?_
-  convert! I.zero_mem
+  convert I.zero_mem
 
 @[deprecated (since := "2026-09-03")] alias comap_lt_comap_of_integral_mem_sdiff :=
   under_lt_under_of_integral_mem_sdiff
@@ -318,7 +318,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
   have : Algebra.IsIntegral Rₚ Sₚ := ⟨isIntegral_localization⟩
   have Qₚ_max : IsMaximal (Qₚ.under Rₚ) := isMaximal_under_of_isIntegral_of_isMaximal Qₚ
   refine ⟨Qₚ.under S, ⟨inferInstance, ?_⟩⟩
-  convert! Localization.AtPrime.under_maximalIdeal (I := P)
+  convert Localization.AtPrime.under_maximalIdeal (I := P)
   rw [under_under, ← IsLocalRing.eq_maximalIdeal Qₚ_max, under_under]
 
 end

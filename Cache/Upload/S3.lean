@@ -3,10 +3,11 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Upload.Dest
-import Cache.Upload.Curl
-import Cache.Upload.Rclone
+public import Cache.Upload.Dest
+public import Cache.Upload.Curl
+public import Cache.Upload.Rclone
 
 /-!
 # The S3 backend
@@ -22,6 +23,8 @@ The complete s3 upload path. This module holds:
   addressing it needs (`s3EndpointSplit`);
 * the transfer entry point (`s3PutStaged`).
 -/
+
+public section
 
 namespace Cache.Requests
 

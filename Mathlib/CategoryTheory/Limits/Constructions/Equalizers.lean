@@ -47,7 +47,7 @@ abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
 
 theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) :
     pullbackFst F = pullback.snd _ _ := by
-  convert!
+  convert
     (eq_whisker pullback.condition Limits.prod.fst :
       (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.zero) = _) <;> simp
 
@@ -57,7 +57,7 @@ abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
     (Fork.ofι (pullbackFst F)
       (by
         conv_rhs => rw [pullbackFst_eq_pullback_snd]
-        convert!
+        convert
           (eq_whisker pullback.condition Limits.prod.snd :
             (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.one) = _) using
           1 <;> simp))
@@ -143,7 +143,7 @@ abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
 
 theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) :
     pushoutInl F = pushout.inr _ _ := by
-  convert!
+  convert
       (whisker_eq Limits.coprod.inl pushout.condition : (_ : F.obj _ ⟶ constructCoequalizer _) = _)
     <;> simp
 
@@ -152,7 +152,7 @@ abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
   Cocone.ofCofork
     (Cofork.ofπ (pushoutInl F) (by
         conv_rhs => rw [pushoutInl_eq_pushout_inr]
-        convert!
+        convert
           (whisker_eq Limits.coprod.inr pushout.condition :
             (_ : F.obj _ ⟶ constructCoequalizer _) = _) using
           1 <;> simp))

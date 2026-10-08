@@ -247,7 +247,7 @@ theorem uniformContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     UniformContinuousOn f (uIcc a b) := by
   simp only [UniformContinuousOn, Filter.tendsto_iff_comap, uniformity_eq_comap_totalLengthFilter]
   simp only [AbsolutelyContinuousOnInterval, Filter.tendsto_iff_comap] at hf
-  convert! Filter.comap_mono hf
+  convert Filter.comap_mono hf
   · simp only [comap_inf, comap_principal]
     congr
     ext p
@@ -377,7 +377,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   set δ' := (b - a) / (n + 1)
   have hδ₃ : δ' < δ := by
     dsimp only [δ']
-    convert! mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field
+    convert mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field
   have h_mono : Monotone fun (i : ℕ) ↦ a + ↑i * δ' := by
     apply Monotone.const_add
     apply Monotone.mul_const Nat.mono_cast
@@ -407,7 +407,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
           convert! hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
           rw [uIoc_of_le (hp₁ (by lia)), Nat.succ_eq_succ]
       · suffices p.2.val p.1 - p.2.val 0 < δ by
-          convert! this
+          convert this
           rw [← Finset.sum_range_sub]
           congr; ext i
           rw [dist_comm, Real.dist_eq, abs_eq_self.mpr]
@@ -421,7 +421,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     have not_top : ∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i)) ≠ ⊤ := by
       simp [edist_ne_top]
     rw [← ENNReal.ofReal_toReal not_top]
-    convert! ENNReal.ofReal_le_ofReal (veq.symm ▸ vf.le)
+    convert ENNReal.ofReal_le_ofReal (veq.symm ▸ vf.le)
     simp
   -- Reduce to goal that the variation of `f` on each of these subintervals is finite.
   simp only [BoundedVariationOn, v_sum, ne_eq, ENNReal.sum_eq_top, Finset.mem_range, not_exists,
@@ -432,10 +432,10 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     fun hC ↦ by simp [hC] at this
   -- Verify that `[a + i * δ', a + (i + 1) * δ']` is indeed a subinterval of `[a, b]`
   apply v_each
-  · convert! h_mono (show 0 ≤ i by lia); simp
-  · convert! h_mono (show i ≤ i + 1 by lia); norm_cast
+  · convert h_mono (show 0 ≤ i by lia); simp
+  · convert h_mono (show i ≤ i + 1 by lia); norm_cast
   · rw [add_mul, ← add_assoc]; simpa
-  · convert! h_mono (show i + 1 ≤ n + 1 by lia)
+  · convert h_mono (show i + 1 ≤ n + 1 by lia)
     · norm_cast
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field
 

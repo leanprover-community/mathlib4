@@ -103,7 +103,7 @@ variable (X) in
 lemma PrespectralSpace.isBasis_opens [PrespectralSpace X] :
     TopologicalSpace.Opens.IsBasis { U : Opens X | IsCompact (U : Set X) } := by
   dsimp only [TopologicalSpace.Opens.IsBasis]
-  convert! isTopologicalBasis (X := X)
+  convert isTopologicalBasis (X := X)
   ext s
   exact ⟨fun ⟨V, hV, heq⟩ ↦ heq ▸ ⟨V.2, hV⟩, fun h ↦ ⟨⟨s, h.1⟩, h.2, rfl⟩⟩
 

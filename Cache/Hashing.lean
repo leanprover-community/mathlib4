@@ -3,8 +3,9 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
+module
 
-import Cache.IO
+public import Cache.IO
 import Lean.Elab.ParseImportsFast
 
 namespace Cache.Hashing
@@ -21,7 +22,7 @@ The `HashMemo` contains all information `Cache` needs about the modules:
 additionally, it contains the `rootHash` which reflects changes to Mathlib's
 Lake project settings.
 -/
-structure HashMemo where
+public structure HashMemo where
   /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
   /-- Maps the `.lean` file of a module to the `.lean` files of its imports. -/
@@ -50,7 +51,7 @@ Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs s
 * Corresponds to a module that's imported (transitively or not) by
   some module in the list module names
 -/
-def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Name) :
+public def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Name) :
     IO ModuleHashMap := do
   let mut hashMap := ∅
   for mod in modules do
@@ -159,7 +160,7 @@ def roots : CacheM <| Array <| Name × FilePath := do
   return #[(`Mathlib, (mathlibDepPath / "Mathlib.lean"))]
 
 /-- Main API to retrieve the hashes of the Lean files -/
-def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo :=
+public def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo :=
   -- TODO: `Std.HashMap.mapM` seems not to exist yet, so we go via `.toArray`.
   return (← StateT.run ((extraRoots.insertMany (← roots)).toArray.mapM fun
     ⟨key, val⟩ => getHash key val) { rootHash := ← getRootHash }).2

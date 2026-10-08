@@ -388,7 +388,7 @@ lemma spectrum_subset_quasispectrum (R : Type*) {A : Type*} [CommSemiring R] [Ri
 
 lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R] [Ring A]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {0} := by
-  convert! quasispectrum_eq_spectrum_union R a
+  convert quasispectrum_eq_spectrum_union R a
   simp
 
 lemma mem_quasispectrum_iff {R A : Type*} [Semifield R] [Ring A]
@@ -592,10 +592,10 @@ protected lemma comp {R₁ R₂ R₃ A : Type*} [Semifield R₁] [Field R₂] [F
     (hf : QuasispectrumRestricts a f) (hg : QuasispectrumRestricts a g) :
     QuasispectrumRestricts a e where
   left_inv := by
-    convert! hfge ▸ hf.left_inv.comp hg.left_inv
+    convert hfge ▸ hf.left_inv.comp hg.left_inv
     congrm (⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
   rightInvOn := by
-    convert! hfge ▸ hg.rightInvOn.comp hf.rightInvOn fun _ ↦ hf.apply_mem
+    convert hfge ▸ hg.rightInvOn.comp hf.rightInvOn fun _ ↦ hf.apply_mem
     congrm (⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
 
 end NonUnital

@@ -113,7 +113,7 @@ def polyOfInterest (n : ℕ) : 𝕄 :=
 theorem mul_polyOfInterest_aux1 (n : ℕ) :
     ∑ i ∈ range (n + 1), (p : 𝕄) ^ i * wittMul p i ^ p ^ (n - i) = wittPolyProd p n := by
   simp only [wittPolyProd]
-  convert! wittStructureInt_prop p (X (0 : Fin 2) * X 1) n using 1
+  convert wittStructureInt_prop p (X (0 : Fin 2) * X 1) n using 1
   · simp only [wittPolynomial, wittMul]
     rw [map_sum]
     congr 1 with i
@@ -128,7 +128,7 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
 
 theorem mul_polyOfInterest_aux2 (n : ℕ) :
     (p : 𝕄) ^ n * wittMul p n + wittPolyProdRemainder p n = wittPolyProd p n := by
-  convert! mul_polyOfInterest_aux1 p n
+  convert mul_polyOfInterest_aux1 p n
   rw [sum_range_succ, add_comm, Nat.sub_self, pow_zero, pow_one]
   rfl
 

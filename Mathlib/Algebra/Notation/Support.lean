@@ -40,7 +40,7 @@ lemma notMem_mulSupport : x ∉ mulSupport f ↔ f x = 1 := not_not
 @[to_additive]
 lemma compl_mulSupport : (mulSupport f)ᶜ = {x | f x = 1} := ext fun _ ↦ notMem_mulSupport
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 lemma mem_mulSupport : x ∈ mulSupport f ↔ f x ≠ 1 := .rfl
 
 @[to_additive (attr := simp)]
@@ -52,20 +52,16 @@ lemma mulSupport_subset_iff' : mulSupport f ⊆ s ↔ ∀ x ∉ s, f x = 1 :=
 
 @[to_additive]
 lemma mulSupport_eq_iff : mulSupport f = s ↔ (∀ x, x ∈ s → f x ≠ 1) ∧ ∀ x, x ∉ s → f x = 1 := by
-  simp +contextual only [Set.ext_iff, mem_mulSupport, ne_eq, iff_def,
-    not_imp_comm, and_comm, forall_and]
+  grind
 
 @[to_additive]
-lemma ext_iff_mulSupport : f = g ↔ f.mulSupport = g.mulSupport ∧ ∀ x ∈ f.mulSupport, f x = g x where
-  mp h := h ▸ ⟨rfl, fun _ _ ↦ rfl⟩
-  mpr := fun ⟨h₁, h₂⟩ ↦ funext fun x ↦ by
-    if hx : x ∈ f.mulSupport then exact h₂ x hx
-    else rw [notMem_mulSupport.1 hx, notMem_mulSupport.1 (mt (Set.ext_iff.1 h₁ x).2 hx)]
+lemma ext_iff_mulSupport : f = g ↔ f.mulSupport = g.mulSupport ∧ ∀ x ∈ f.mulSupport, f x = g x := by
+  grind
 
 @[to_additive]
 lemma ext_iff_mulSupport_union :
     f = g ↔ ∀ x ∈ f.mulSupport ∪ g.mulSupport, f x = g x := by
-  grind [mem_mulSupport]
+  grind
 
 @[to_additive]
 lemma mulSupport_update_of_ne_one [DecidableEq ι] (f : ι → M) (x : ι) {y : M} (hy : y ≠ 1) :
@@ -94,9 +90,8 @@ lemma mulSupport_extend_one_subset {f : ι → κ} {g : ι → N} :
 
 @[to_additive]
 lemma mulSupport_extend_one {f : ι → κ} {g : ι → N} (hf : f.Injective) :
-    mulSupport (f.extend g 1) = f '' mulSupport g :=
-  mulSupport_extend_one_subset.antisymm <| by
-    rintro _ ⟨x, hx, rfl⟩; rwa [mem_mulSupport, hf.extend_apply]
+    mulSupport (f.extend g 1) = f '' mulSupport g := by
+  grind [mulSupport_extend_one_subset, hf.extend_apply]
 
 @[to_additive]
 lemma mulSupport_disjoint_iff : Disjoint (mulSupport f) s ↔ EqOn f 1 s := by
@@ -222,8 +217,7 @@ lemma mulSupport_mulSingle_subset : mulSupport (mulSingle i a) ⊆ {i} := fun _ 
 lemma mulSupport_mulSingle_one : mulSupport (mulSingle i (1 : M)) = ∅ := by simp
 
 @[to_additive (attr := simp)]
-lemma mulSupport_mulSingle_of_ne (h : a ≠ 1) : mulSupport (mulSingle i a) = {i} :=
-  mulSupport_mulSingle_subset.antisymm fun x hx ↦ by rwa [mem_mulSupport, hx, mulSingle_eq_same]
+lemma mulSupport_mulSingle_of_ne (h : a ≠ 1) : mulSupport (mulSingle i a) = {i} := by grind
 
 @[to_additive]
 lemma mulSupport_mulSingle [DecidableEq M] :

@@ -112,7 +112,7 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
 
 lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
   let := invertibleTranspose A
-  convert! (rfl : _ = ⅟(Aᵀ))
+  convert (rfl : _ = ⅟(Aᵀ))
 
 /-- `Aᵀ` is invertible when `A` is. -/
 @[implicit_reducible]

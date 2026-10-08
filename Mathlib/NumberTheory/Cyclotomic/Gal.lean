@@ -123,7 +123,7 @@ theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   generalize_proofs hζ h _ hμ _
   nth_rewrite 4 [← hζ.powerBasis_gen K]
   rw [PowerBasis.equivOfMinpoly_gen, hμ.powerBasis_gen K]
-  convert! h.choose_spec.2
+  convert h.choose_spec.2
   exact ZMod.val_cast_of_lt h.choose_spec.1
 
 end IsCyclotomicExtension

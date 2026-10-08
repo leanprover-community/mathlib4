@@ -164,7 +164,9 @@ theorem card_eraseNone_le (s : Finset (Option α)) : #s.eraseNone ≤ #s := by
 theorem card_eraseNone_of_mem {s : Finset (Option α)} (h : none ∈ s) : #s.eraseNone = #s - 1 := by
   classical rw [card_eraseNone_eq_card_erase, card_erase_of_mem h]
 
-theorem card_eraseNone_of_not_mem {s : Finset (Option α)} (h : none ∉ s) : #s.eraseNone = #s := by
+theorem card_eraseNone_of_notMem {s : Finset (Option α)} (h : none ∉ s) : #s.eraseNone = #s := by
   classical rw [card_eraseNone_eq_card_erase, erase_eq_of_notMem h]
+
+@[deprecated (since := "2026-09-28")] alias card_eraseNone_of_not_mem := card_eraseNone_of_notMem
 
 end Finset

@@ -54,14 +54,14 @@ theorem measure_mono (h : s ⊆ t) : μ s ≤ μ t :=
 theorem measure_mono_null (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
   eq_bot_mono (measure_mono h) ht
 
-lemma pos_mono ⦃s t : Set α⦄ (h : s ⊆ t) (hs : 0 < μ s) :
-    0 < μ t := hs.trans_le <| measure_mono h
+lemma pos_mono ⦃s t : Set α⦄ (h : s ⊆ t) (hs : 0 < μ s) : 0 < μ t := by
+  gconvert hs
 
 lemma measure_eq_top_mono (h : s ⊆ t) (hs : μ s = ∞) : μ t = ∞ := eq_top_mono (measure_mono h) hs
 lemma measure_lt_top_mono (h : s ⊆ t) (ht : μ t < ∞) : μ s < ∞ := (measure_mono h).trans_lt ht
 
 theorem measure_pos_of_superset (h : s ⊆ t) (hs : μ s ≠ 0) : 0 < μ t :=
-  hs.bot_lt.trans_le (measure_mono h)
+  pos_mono h hs.bot_lt
 
 theorem measure_iUnion_le [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) ≤ ∑' i, μ (s i) := by
   refine rel_iSup_tsum μ measure_empty (· ≤ ·) (fun t ↦ ?_) _

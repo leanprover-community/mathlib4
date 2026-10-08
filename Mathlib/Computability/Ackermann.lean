@@ -302,8 +302,8 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
       -- We induct on n.
       induction n with
       | zero => -- The base case is easy.
-        apply (ha m).trans (ack_strictMono_left m <| (le_max_left a b).trans_lt _)
-        lia
+        grw [← le_max_left, ← le_add_right]
+        exact ha m
       | succ n IH => -- We get rid of the first `pair`.
         simp only
         apply (hb _).trans ((ack_pair_lt _ _ _).trans_le _)

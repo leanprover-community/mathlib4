@@ -66,7 +66,9 @@ variable {I}
 theorem dpow_eq_of_mem {m : ℕ} {x : A} (hx : x ∈ I) : dpow I m x = inverse (m ! : A) * x ^ m := by
   simp [dpow, hx]
 
-theorem dpow_eq_of_not_mem {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
+theorem dpow_eq_of_notMem {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
+
+@[deprecated (since := "2026-09-28")] alias dpow_eq_of_not_mem := dpow_eq_of_notMem
 
 theorem dpow_null {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
 
