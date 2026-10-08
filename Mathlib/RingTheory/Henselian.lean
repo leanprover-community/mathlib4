@@ -64,6 +64,9 @@ universe u v
 open Polynomial IsLocalRing Function List
 open scoped Ring
 
+@[deprecated (since := "2026-10-08")]
+alias isLocalHom_of_le_jacobson_bot := isLocalHom_of_le_jacobson
+
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
 there exists a lift `a : R` of `a₀` that is a root of `f`.
