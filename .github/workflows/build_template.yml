@@ -28,7 +28,7 @@ on:
       cache_application_id:
         # The Azure writer app for the `upload_cache` job. Only builds that write
         # the `master` container set it. When it is empty, the job skips the Azure
-        # upload and requires the R2 upload.
+        # upload.
         type: string
         required: false
         default: ''
@@ -766,51 +766,20 @@ jobs:
           name: cache-staging
           path: cache-staging
 
-      - name: Azure CLI OIDC login and mint storage bearer token
-        if: inputs.cache_application_id != ''
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@d6393a535c054122e507b6c5e1b2f4c31c604121
-        with:
-          azure-client-id: ${{ inputs.cache_application_id }}
-          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
-
-      - name: Upload staged cache to Azure
-        if: inputs.cache_application_id != ''
-        shell: bash
-        env:
-          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-        run: |
-          # $MATHLIB_CACHE_PRIMARY is set by the `Compute cache trust dispatch`
-          # step above, from the shared composite action that owns the (repo,
-          # branch) → container mapping for both this job and the read-side
-          # jobs (build, post_steps). Each job writes only into its own trust-level
-          # container.
-          echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
-          lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
-
-      # The upload of the staged set to R2. `master` writes the public cache
-      # bucket, flat. `forks` writes the developer cache bucket in the
-      # container's layout, which the cache resolver serves. The mint action
-      # returns short-lived S3 credentials as masked step outputs.
-      # With an Azure writer, the R2 upload is best effort: a failed mint fails
-      # only this step and skips the upload, and an empty
-      # `MATHLIB_CACHE_BROKER_URL` turns the R2 upload off. Without one, R2 is
-      # the only destination, so a failed mint, an empty broker URL, or a
-      # failed upload fails the job.
+      # Upload the staged set to R2. `master` writes the public cache bucket,
+      # flat. `forks` writes the developer cache bucket in the container's
+      # layout, which the cache resolver serves. The mint action returns
+      # short-lived S3 credentials as masked step outputs. A failed mint or
+      # upload fails the job.
       - &mint_r2_credentials
         name: Mint R2 credentials
         id: mint-r2
-        if: >-
-          (env.MATHLIB_CACHE_PRIMARY == 'master' || env.MATHLIB_CACHE_PRIMARY == 'forks') &&
-          vars.MATHLIB_CACHE_BROKER_URL != ''
-        continue-on-error: ${{ inputs.cache_application_id != '' }}
         uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
           audience: mathlib-cache-broker
 
       - name: Upload staged cache to R2
-        if: steps.mint-r2.outputs.success == 'true' || inputs.cache_application_id == ''
-        continue-on-error: ${{ inputs.cache_application_id != '' }}
         shell: bash
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -833,7 +802,7 @@ jobs:
           case "$MATHLIB_CACHE_PRIMARY" in
             master)
               if [ -z "$MASTER_PUT_URL" ]; then
-                echo "::warning::the secret MATHLIB_CACHE_R2_PUT_URL is unset; the R2 upload is skipped"
+                echo "::error::the secret MATHLIB_CACHE_R2_PUT_URL is unset"
                 exit 1
               fi
               export MATHLIB_CACHE_PUT_URL="$MASTER_PUT_URL"
@@ -841,7 +810,7 @@ jobs:
               ;;
             forks)
               if [ -z "$DEVELOPER_PUT_BASE_URL" ]; then
-                echo "::warning::the secret MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL is unset; the R2 upload is skipped"
+                echo "::error::the secret MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL is unset"
                 exit 1
               fi
               export MATHLIB_CACHE_PUT_BASE_URL="$DEVELOPER_PUT_BASE_URL"
@@ -849,10 +818,26 @@ jobs:
               ;;
           esac
           echo "Uploading cache to R2 (container: $MATHLIB_CACHE_PRIMARY)..."
-          if ! lake env "$CACHE_BIN" put-staged --backend=s3 "${container_args[@]}" --staging-dir="cache-staging" --repo="$REPO"; then
-            echo "::warning::the R2 upload failed"
-            exit 1
-          fi
+          lake env "$CACHE_BIN" put-staged --backend=s3 "${container_args[@]}" --staging-dir="cache-staging" --repo="$REPO"
+
+      # Builds that write `master` also upload the staged set to Azure. A failed
+      # upload fails the job.
+      - name: Azure CLI OIDC login and mint storage bearer token
+        if: inputs.cache_application_id != ''
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@d6393a535c054122e507b6c5e1b2f4c31c604121
+        with:
+          azure-client-id: ${{ inputs.cache_application_id }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+      - name: Upload staged cache to Azure
+        if: inputs.cache_application_id != ''
+        shell: bash
+        env:
+          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        run: |
+          # $MATHLIB_CACHE_PRIMARY is the container the dispatch selected.
+          echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
+          lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
 
   upload_test_cache:
     name: Upload tests to cache
