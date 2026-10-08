@@ -200,7 +200,7 @@ instance [ZeroDimensionalSpace X] : CompletelyRegularSpace X where
     · simpa
     · rw [indicator_of_mem (subset_compl_comm.mp hUK hy)]
 
-@[deprecated instCompletelyRegularSpaceOfZeroDimensionalSpace +typeChanged (since := "2026-08-28")]
+@[deprecated instCompletelyRegularSpaceOfZeroDimensionalSpace +typeChanged (since := "2026-10-08")]
 theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
     (h : TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s}) :
     CompletelyRegularSpace X := by
@@ -227,7 +227,7 @@ theorem CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
     simpa [hf₁ hxs] using le_one'
 
 @[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum +typeChanged
-(since := "2026-08-28")]
+(since := "2026-10-08")]
 theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
     [CompletelyRegularSpace X] (hX : .mk X < 𝔠) :
     IsTopologicalBasis {s : Set X | IsClopen s} := by
@@ -304,13 +304,13 @@ lemma t35Space_iff_isEmbedding_stoneCechUnit :
   mpr hs := hs.t35Space
 
 @[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum +typeChanged
-(since := "2026-08-28")]
+(since := "2026-10-08")]
 theorem totallySeparatedSpace_of_cardinalMk_lt_continuum [T35Space X] (h : .mk X < 𝔠) :
     TotallySeparatedSpace X :=
   have := CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum h
   inferInstance
 
-@[deprecated Set.Countable.zeroDimensionalSpace +typeChanged (since := "2026-08-28")]
+@[deprecated Set.Countable.zeroDimensionalSpace +typeChanged (since := "2026-10-08")]
 protected lemma _root_.Set.Countable.totallySeparatedSpace [T35Space X]
     {s : Set X} (h : s.Countable) : TotallySeparatedSpace s :=
   have := h.zeroDimensionalSpace

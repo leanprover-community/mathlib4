@@ -121,7 +121,7 @@ lemma zeroDimensionalSpace_iff_isTopologicalBasis_isClopen :
     rwa [isEmpty_coe_sort, (hs.isOpen hU).frontier_eq, sdiff_eq_empty] at ‹_›
   · exact fun h ↦ .succ 0 _ h fun _ hU ↦ hU.frontier_eq ▸ .zero
 
-@[deprecated (since := "2026-08-28")]
+@[deprecated (since := "2026-10-08")]
 alias hasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis_isClopen
 
 @[deprecated (since := "2026-06-21")]
@@ -147,7 +147,7 @@ theorem nhds_basis_isClopen [ZeroDimensionalSpace X] (x : X) :
     (𝓝 x).HasBasis (fun s : Set X ↦ IsClopen s ∧ x ∈ s) id :=
   (isTopologicalBasis_isClopen (X := X)).nhds_hasBasis
 
-@[deprecated nhds_basis_isClopen +typeChanged (since := "2026-08-28")]
+@[deprecated nhds_basis_isClopen +typeChanged (since := "2026-10-08")]
 theorem nhds_basis_clopen [ZeroDimensionalSpace X] (x : X) :
     (𝓝 x).HasBasis (fun s : Set X ↦ x ∈ s ∧ IsClopen s) id := by
   simp_rw [and_comm]; exact nhds_basis_isClopen x
@@ -156,7 +156,7 @@ theorem exists_isClopen_mem_of_isOpen [ZeroDimensionalSpace X] {x : X} {U : Set 
     (hU : IsOpen U) (hx : x ∈ U) : ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
   isTopologicalBasis_isClopen.mem_nhds_iff.1 (hU.mem_nhds hx)
 
-@[deprecated (since := "2026-08-28")]
+@[deprecated (since := "2026-10-08")]
 alias compact_exists_isClopen_in_isOpen := exists_isClopen_mem_of_isOpen
 
 theorem ZeroDimensionalSpace.of_hasBasis

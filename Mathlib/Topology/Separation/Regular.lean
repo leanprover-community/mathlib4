@@ -885,7 +885,7 @@ instance [T2Space X] [TotallyDisconnectedSpace X] [WeaklyLocallyCompactSpace X] 
   use (↑) '' V, VisClopen', by simp [Vx], Subset.trans (by simp) sU
 
 @[deprecated instZeroDimensionalSpaceOfT2SpaceOfTotallyDisconnectedSpaceOfWeaklyLocallyCompactSpace
-+typeChanged (since := "2026-08-28")]
++typeChanged (since := "2026-10-08")]
 theorem loc_compact_Haus_tot_disc_of_zero_dim [T2Space X] [TotallyDisconnectedSpace X]
     [WeaklyLocallyCompactSpace X] : IsTopologicalBasis {s : Set X | IsClopen s} := by
   rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]
@@ -896,5 +896,5 @@ theorem totallyDisconnectedSpace_iff_totallySeparatedSpace
     TotallyDisconnectedSpace X ↔ TotallySeparatedSpace X :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
-@[deprecated (since := "2026-08-28")]
+@[deprecated (since := "2026-10-08")]
 alias loc_compact_t2_tot_disc_iff_tot_sep := totallyDisconnectedSpace_iff_totallySeparatedSpace
