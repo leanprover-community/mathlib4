@@ -12,16 +12,16 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 # Base change of exterior algebra
 
-In this file, we proved that exterior algebra commutes with arbitrary base change.
+In this file, we proved that Exterior algebra behaves well with respect to base change.
 
 # Main Results
 
-* `ExteriorAlgebra.baseChangeIso`: for `R`-algebra `S`, the base change isomorphism
+* `ExteriorAlgebra.baseChangeEquiv`: for `R`-algebra `S`, the base change isomorphism
   `S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M)`
 
 -/
 
-public noncomputable section
+noncomputable section
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
@@ -61,41 +61,43 @@ def baseChangeExteriorAlgebraToTensor :
   ExteriorAlgebra.lift S
     ⟨ExteriorAlgebra.baseChangeι R M S, ExteriorAlgebra.baseChangeι_sq_zero R M S⟩
 
-lemma baseChangeExteriorAlgebraToTensor_apply (s : S) (m : M) :
-    baseChangeExteriorAlgebraToTensor R M S (ι S (s ⊗ₜ[R] m)) = s ⊗ₜ[R] ι R m := by
-  simp [baseChangeExteriorAlgebraToTensor]
-
-/-- The auxiliary construction for `ExteriorAlgebra.baseChangeIsoForward`. -/
-def baseChangeIsoForwardAux : ExteriorAlgebra R M →ₐ[R]ExteriorAlgebra S (S ⊗[R] M) :=
+/-- The auxiliary construction for `ExteriorAlgebra.baseChangeEquivForward`. -/
+def baseChangeEquivForwardAux : ExteriorAlgebra R M →ₐ[R] ExteriorAlgebra S (S ⊗[R] M) :=
   ExteriorAlgebra.lift R
     ⟨((ExteriorAlgebra.ι S).restrictScalars R).comp (TensorProduct.mk R S M 1), fun m ↦ by simp⟩
 
-/-- The forward map of `ExteriorAlgebra.baseChangeIso`, lift from universal property of
+/-- The forward map of `ExteriorAlgebra.baseChangeEquiv`, lift from universal property of
 tensor product and `ExteriorAlgebra`. -/
-def baseChangeIsoForward : S ⊗[R] ExteriorAlgebra R M →ₐ[S] ExteriorAlgebra S (S ⊗[R] M) :=
-  Algebra.TensorProduct.lift (Algebra.ofId _ _) (baseChangeIsoForwardAux R M S) (fun s y ↦ by
+def baseChangeEquivForward : S ⊗[R] ExteriorAlgebra R M →ₐ[S] ExteriorAlgebra S (S ⊗[R] M) :=
+  Algebra.TensorProduct.lift (Algebra.ofId _ _) (baseChangeEquivForwardAux R M S) (fun s y ↦ by
     simp [Algebra.commute_algebraMap_left])
 
-lemma baseChangeIso_leftInverse :
-    (baseChangeExteriorAlgebraToTensor R M S).comp (baseChangeIsoForward R M S) =
+lemma baseChangeEquiv_leftInverse :
+    (baseChangeExteriorAlgebraToTensor R M S).comp (baseChangeEquivForward R M S) =
       AlgHom.id S _ := by
   ext m
-  simp [baseChangeIsoForward, baseChangeIsoForwardAux, baseChangeExteriorAlgebraToTensor]
+  simp [baseChangeEquivForward, baseChangeEquivForwardAux, baseChangeExteriorAlgebraToTensor]
 
-lemma baseChangeIsoForward_rightInverse :
-    (baseChangeIsoForward R M S).comp (baseChangeExteriorAlgebraToTensor R M S) =
+lemma baseChangeEquivForward_rightInverse :
+    (baseChangeEquivForward R M S).comp (baseChangeExteriorAlgebraToTensor R M S) =
       AlgHom.id S _ := by
   ext m
-  simp [baseChangeIsoForward, baseChangeIsoForwardAux, baseChangeExteriorAlgebraToTensor]
+  simp [baseChangeEquivForward, baseChangeEquivForwardAux, baseChangeExteriorAlgebraToTensor]
 
-/-- The commute of `ExteriorAlgebra` and base change. -/
-def baseChangeIso : S ⊗[R] ExteriorAlgebra R M ≃ₐ[S] ExteriorAlgebra S (S ⊗[R] M) where
-  __ := baseChangeIsoForward R M S
+/-- Exterior algebra behaves well with respect to base change. -/
+public def baseChangeEquiv : S ⊗[R] ExteriorAlgebra R M ≃ₐ[S] ExteriorAlgebra S (S ⊗[R] M) where
+  __ := baseChangeEquivForward R M S
   invFun := baseChangeExteriorAlgebraToTensor R M S
-  left_inv x := AlgHom.congr_fun (baseChangeIso_leftInverse R M S) x
-  right_inv x := AlgHom.congr_fun (baseChangeIsoForward_rightInverse R M S) x
+  left_inv x := AlgHom.congr_fun (baseChangeEquiv_leftInverse R M S) x
+  right_inv x := AlgHom.congr_fun (baseChangeEquivForward_rightInverse R M S) x
 
-lemma baseChangeIso_apply (m : M) : baseChangeIso R M S (1 ⊗ₜ[R] ι R m) = ι S (1 ⊗ₜ[R] m) := by
-  simp [baseChangeIso, baseChangeIsoForward, baseChangeIsoForwardAux]
+public lemma baseChangeEquiv_apply (s : S) (m : M) :
+    baseChangeEquiv R M S (s ⊗ₜ[R] ι R m) = ι S (s ⊗ₜ[R] m) := by
+  rw [← mul_one s, ← smul_eq_mul, ← TensorProduct.smul_tmul', ← TensorProduct.smul_tmul']
+  simp [baseChangeEquiv, baseChangeEquivForward, baseChangeEquivForwardAux]
+
+public lemma baseChangeEquiv_symm_apply (s : S) (m : M) :
+    (baseChangeEquiv R M S).symm (ι S (s ⊗ₜ[R] m)) = (s ⊗ₜ[R] ι R m) := by
+  simp [baseChangeEquiv, baseChangeExteriorAlgebraToTensor]
 
 end ExteriorAlgebra
