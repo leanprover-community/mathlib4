@@ -290,7 +290,7 @@ initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef non
 /-- Pair each container in a lookup chain with its read base. The result
 keeps the chain's trust order. -/
 private def chainWithGetBases (containers : List Container) :
-    IO (List (Option Container × String)) :=
+    BaseIO (List (Option Container × String)) :=
   containers.mapM fun c => do return (some c, ← getBaseURL c)
 
 /--
@@ -437,7 +437,7 @@ section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be
 downloaded from one location (`Location.fileURL`). -/
-def mkGetConfigContent (location : Location) (hashMap : IO.ModuleHashMap) : IO String := do
+def mkGetConfigContent (location : Location) (hashMap : IO.ModuleHashMap) : BaseIO String := do
   hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
     let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code

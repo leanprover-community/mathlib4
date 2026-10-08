@@ -22,8 +22,6 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 public section
 
-noncomputable section
-
 universe u v
 
 variable {K : Type u}
