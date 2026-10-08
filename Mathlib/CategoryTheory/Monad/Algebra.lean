@@ -36,11 +36,9 @@ universe v₁ u₁
 -- morphism levels before object levels. See note [category_theory universes].
 variable {C : Type u₁} [Category.{v₁} C]
 
-namespace Monad
-
 /-- An Eilenberg-Moore algebra for a monad `T`.
 cf Definition 5.2.3 in [Riehl][riehl2017]. -/
-structure Algebra (T : Monad C) : Type max u₁ v₁ where
+structure Monad.Algebra (T : Monad C) : Type max u₁ v₁ where
   /-- The underlying object associated to an algebra. -/
   A : C
   /-- The structure morphism associated to an algebra. -/
@@ -50,62 +48,88 @@ structure Algebra (T : Monad C) : Type max u₁ v₁ where
   /-- The associativity axiom associated to an algebra. -/
   assoc : T.μ.app A ≫ a = (T : C ⥤ C).map a ≫ a := by cat_disch
 
-attribute [reassoc] Algebra.unit Algebra.assoc
+/-- An Eilenberg-Moore coalgebra for a comonad `T`. -/
+@[to_dual Algebra]
+structure Comonad.Coalgebra (G : Comonad C) : Type max u₁ v₁ where
+  /-- The underlying object associated to a coalgebra. -/
+  A : C
+  /-- The structure morphism associated to a coalgebra. -/
+  a : A ⟶ (G : C ⥤ C).obj A
+  /-- The counit axiom associated to a coalgebra. -/
+  counit : a ≫ G.ε.app A = 𝟙 A := by cat_disch
+  /-- The coassociativity axiom associated to a coalgebra. -/
+  coassoc : a ≫ G.δ.app A = a ≫ G.map a := by cat_disch
 
-namespace Algebra
-
-variable {T : Monad C}
+attribute [reassoc] Monad.Algebra.unit Monad.Algebra.assoc
+attribute [reassoc] Comonad.Coalgebra.counit Comonad.Coalgebra.coassoc
 
 /-- A morphism of Eilenberg–Moore algebras for the monad `T`. -/
 @[ext]
-structure Hom (A B : Algebra T) where
+structure Monad.Algebra.Hom {T : Monad C} (A B : Algebra T) where
   /-- The underlying morphism associated to a morphism of algebras. -/
   f : A.A ⟶ B.A
   /-- Compatibility with the structure morphism, for a morphism of algebras. -/
   h : (T : C ⥤ C).map f ≫ B.a = A.a ≫ f := by cat_disch
 
-attribute [reassoc (attr := simp)] Hom.h
+/-- A morphism of Eilenberg-Moore coalgebras for the comonad `G`. -/
+@[ext, to_dual (reorder := A B)]
+structure Comonad.Coalgebra.Hom {T : Comonad C} (A B : Coalgebra T) where
+  /-- The underlying morphism associated to a morphism of coalgebras. -/
+  f : A.A ⟶ B.A
+  /-- Compatibility with the structure morphism, for a morphism of coalgebras. -/
+  h : A.a ≫ (T : C ⥤ C).map f = f ≫ B.a := by cat_disch
+
+attribute [to_dual existing] Monad.Algebra.Hom.ext
+attribute [reassoc (attr := simp)] Monad.Algebra.Hom.h Comonad.Coalgebra.Hom.h
+
+namespace Monad.Algebra
+
+variable {T : Monad C}
 
 namespace Hom
 
 /-- The identity homomorphism for an Eilenberg–Moore algebra. -/
+@[to_dual /-- The identity homomorphism for an Eilenberg–Moore coalgebra. -/]
 def id (A : Algebra T) : Hom A A where f := 𝟙 A.A
 
 instance (A : Algebra T) : Inhabited (Hom A A) :=
   ⟨{ f := 𝟙 _ }⟩
 
 /-- Composition of Eilenberg–Moore algebra homomorphisms. -/
+@[to_dual (reorder := f g) /-- Composition of Eilenberg–Moore coalgebra homomorphisms. -/]
 def comp {P Q R : Algebra T} (f : Hom P Q) (g : Hom Q R) : Hom P R where f := f.f ≫ g.f
 
 end Hom
 
+@[to_dual]
 instance : CategoryStruct (Algebra T) where
   Hom := Hom
   id := Hom.id
-  comp := @Hom.comp _ _ _
+  comp := Hom.comp
 
-@[ext]
+@[to_dual (attr := ext)]
 lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
-@[simp]
+@[to_dual (attr := simp) (reorder := f g)]
 theorem comp_eq_comp {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') :
     Algebra.Hom.comp f g = f ≫ g :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem id_eq_id (A : Algebra T) : Algebra.Hom.id A = 𝟙 A :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem id_f (A : Algebra T) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp) (reorder := f g)]
 theorem comp_f {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
   rfl
 
 /-- The category of Eilenberg-Moore algebras for a monad.
 cf Definition 5.2.4 in [Riehl][riehl2017]. -/
+@[to_dual /-- The category of Eilenberg-Moore coalgebras for a comonad. -/]
 instance eilenbergMoore : Category (Algebra T) where
 
 /--
@@ -257,72 +281,9 @@ end Monad
 
 namespace Comonad
 
-/-- An Eilenberg-Moore coalgebra for a comonad `T`. -/
-structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
-  /-- The underlying object associated to a coalgebra. -/
-  A : C
-  /-- The structure morphism associated to a coalgebra. -/
-  a : A ⟶ (G : C ⥤ C).obj A
-  /-- The counit axiom associated to a coalgebra. -/
-  counit : a ≫ G.ε.app A = 𝟙 A := by cat_disch
-  /-- The coassociativity axiom associated to a coalgebra. -/
-  coassoc : a ≫ G.δ.app A = a ≫ G.map a := by cat_disch
-
-
-attribute [reassoc] Coalgebra.counit Coalgebra.coassoc
-
 namespace Coalgebra
 
 variable {G : Comonad C}
-
-/-- A morphism of Eilenberg-Moore coalgebras for the comonad `G`. -/
-@[ext]
-structure Hom (A B : Coalgebra G) where
-  /-- The underlying morphism associated to a morphism of coalgebras. -/
-  f : A.A ⟶ B.A
-  /-- Compatibility with the structure morphism, for a morphism of coalgebras. -/
-  h : A.a ≫ (G : C ⥤ C).map f = f ≫ B.a := by cat_disch
-
-attribute [reassoc (attr := simp)] Hom.h
-
-namespace Hom
-
-/-- The identity homomorphism for an Eilenberg–Moore coalgebra. -/
-def id (A : Coalgebra G) : Hom A A where f := 𝟙 A.A
-
-/-- Composition of Eilenberg–Moore coalgebra homomorphisms. -/
-def comp {P Q R : Coalgebra G} (f : Hom P Q) (g : Hom Q R) : Hom P R where f := f.f ≫ g.f
-
-end Hom
-
-/-- The category of Eilenberg-Moore coalgebras for a comonad. -/
-instance : CategoryStruct (Coalgebra G) where
-  Hom := Hom
-  id := Hom.id
-  comp := @Hom.comp _ _ _
-
-@[ext]
-lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
-
-@[simp]
-theorem comp_eq_comp {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') :
-    Coalgebra.Hom.comp f g = f ≫ g :=
-  rfl
-
-@[simp]
-theorem id_eq_id (A : Coalgebra G) : Coalgebra.Hom.id A = 𝟙 A :=
-  rfl
-
-@[simp]
-theorem id_f (A : Coalgebra G) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
-  rfl
-
-@[simp]
-theorem comp_f {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
-  rfl
-
-/-- The category of Eilenberg-Moore coalgebras for a comonad. -/
-instance eilenbergMoore : Category (Coalgebra G) where
 
 /--
 To construct an isomorphism of coalgebras, it suffices to give an isomorphism of the carriers which
