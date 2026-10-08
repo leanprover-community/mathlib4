@@ -17,7 +17,7 @@ simplex category, for `n ≤ m` are initial.
 
 public section
 
-open CategoryTheory
+open CategoryTheory Limits
 
 open scoped Simplicial
 
@@ -137,13 +137,13 @@ lemma epi_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Epi f ↔ Epi f.hom 
   · intro hf
     exact (inclusion d).epi_of_epi_map hf
 
-open Limits in
-/-- Every morphism in `Truncated d` factors as an epimorphism followed by a monomorphism. -/
-lemma exists_epi_mono_factorization {d : ℕ} {a b : Truncated d} (f : a ⟶ b) :
-    ∃ (c : Truncated d) (e : a ⟶ c) (m : c ⟶ b), Epi e ∧ Mono m ∧ e ≫ m = f := by
-  refine ⟨⟨image f.hom, (len_le_of_epi (factorThruImage f.hom)).trans a.2⟩,
-    ObjectProperty.homMk (factorThruImage f.hom), ObjectProperty.homMk (image.ι f.hom),
-    epi_iff.mpr ?_, mono_iff.mpr ?_, InducedCategory.hom_ext (image.fac f.hom)⟩ <;>
-  dsimp <;> infer_instance
+instance {d : ℕ} : SplitEpiCategory (Truncated d) where
+  isSplitEpi_of_epi f hf := by
+    have := epi_iff.mp hf
+    exact ((inclusion d).isSplitEpi_iff f).mp (isSplitEpi_of_epi f.hom)
+
+/- TODO
+Show the instance `HasStrongEpiMonoFactorisations (Truncated d)`
+-/
 
 end SimplexCategory.Truncated
