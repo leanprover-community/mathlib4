@@ -418,7 +418,7 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_le_jacobson [IsNoetherianRing R]
   rw [eq_bot_iff]
   intro x hx
   obtain ⟨r, hr⟩ := (I.mem_iInf_smul_pow_eq_bot_iff x).mp hx
-  have := isUnit_of_sub_one_mem_jacobson_bot (1 - r.1) (by simpa using h r.2)
+  have := isUnit_of_sub_one_mem_jacobson (1 - r.1) (by simpa using h r.2)
   apply this.smul_left_cancel.mp
   simp [sub_smul, hr]
 
