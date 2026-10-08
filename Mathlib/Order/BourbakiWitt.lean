@@ -37,7 +37,7 @@ variable {α β : Type*} {ι : Sort*}
 structure NonemptyChain (α : Type*) [LE α] where
   /-- The underlying set of a nonempty chain -/
   carrier : Set α
-  Nonempty' : carrier.Nonempty
+  nonempty' : carrier.Nonempty
   isLEChain : IsLEChain carrier
 
 instance {α : Type*} [LE α] : SetLike (NonemptyChain α) α where
@@ -89,7 +89,7 @@ lemma ici_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (Ici x) wh
     exact le_trans hy (le_map _)
   cSup_mem := by
     intro c hc
-    have ⟨y, hy⟩ := c.Nonempty'
+    have ⟨y, hy⟩ := c.nonempty'
     exact le_trans (hc hy) (le_cSup _ _ hy)
 
 /-- The bottom admissible set with base point `x` and inflationary function `f` -/
