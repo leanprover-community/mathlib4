@@ -34,7 +34,7 @@ open Lean Meta Elab Command Linter
 section concreteInstances
 
 /--
-The `concreteInstances` linter flags any instance assumption whichout variables.
+The `concreteInstances` linter flags any instance assumption without variables.
 If such a type class has an instance, then this should be declared as a instance globally,
 instead of assumed as a local hypothesis. And if there is no instance, then the assumption
 can never be satisfied.
@@ -44,7 +44,7 @@ register_option linter.concreteInstances : Bool := {
   descr := "enable the concrete instances linter"
 }
 
-/-- Return the instance hypotheses in the given type that have no (universe) variables. -/
+/-- Return all the instance hypotheses in the given type that have no (universe) variables. -/
 def getConcreteInstanceAssumptions : Expr → List Expr
   | .forallE _ d b bi =>
     if bi.isInstImplicit && !d.hasLooseBVars && !d.hasLevelParam then
