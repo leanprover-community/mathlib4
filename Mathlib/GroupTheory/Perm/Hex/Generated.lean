@@ -13,10 +13,14 @@ public import Mathlib.Data.Finite.Perm
 public import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
-# Generated computational permutation groups
+# Compatibility with HexPermGroup
 
-These translations use only the generation predicate and its finite-order
-witness. Certificate production, checking and soundness remain in Hex.
+This module provides compatibility shims for the HexPermGroup package so that its
+`perm_group` tactic can be used in Mathlib. It relates Hex's `Generated`, `HasOrder`
+and `GeneratesAll` predicates to Mathlib's subgroup closure, cardinality and top
+subgroup, and supplies the translation lemmas used by `Mathlib.Tactic.PermGroup`.
+
+Certificate production, checking and soundness are provided by HexPermGroup.
 -/
 
 public section
