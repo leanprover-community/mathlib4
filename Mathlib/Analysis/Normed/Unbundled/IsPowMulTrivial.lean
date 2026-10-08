@@ -53,7 +53,7 @@ variable {K L : Type*} [SeminormedCommRing K] [DivisionRing L] [Algebra K L]
 /-- A power-multiplicative norm on an integral extension of a trivially normed field is trivial. -/
 theorem AlgebraNorm.eq_one_of_trivial
     (hK : ∀ x : K, ‖x‖ ≤ 1) (f : AlgebraNorm K L) (hf : IsPowMul f)
-    (x : L) (hx : x ≠ 0) : f x = 1 := by
+    {x : L} (hx : x ≠ 0) : f x = 1 := by
   refine le_antisymm (AlgebraNorm.le_one_of_trivial hK f hf x (Algebra.IsIntegral.isIntegral x)) ?_
   grw [one_le_map_one f, ← inv_mul_cancel₀ hx, map_mul_le_mul, f.le_one_of_trivial hK hf, one_mul]
   exact Algebra.IsIntegral.isIntegral x⁻¹
