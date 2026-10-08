@@ -17,7 +17,8 @@ import Mathlib.Util.Qq
 /-!
 # Certificate construction for the Bareiss decomposition
 
-`certifyDecomposition` constructs an `Echelon.Decomposition` from the given decomposition data.
+`certifyDecomposition` constructs a proof of `Echelon.Decomposition A L σ pivot` from the given
+decomposition data.
 It proves that `L * A_σ` has the given pivots (through the product `L * A_σ = U`), and that `L`
 is lower triangular with nonzero diagonal entries.
 
@@ -95,13 +96,13 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (certifier : Ent
     have : $k₁Q =Q $kQ + 1 := ⟨⟩
     return q(IsLowerTriangularDiagList.cons $hdrop $hd $rest)
 
-/-- Prove that `ofLists m m rows` is lower triangular with a nonzero diagonal. -/
-def certifyLowerTriangularDiag {u : Level} {α : Q(Type u)} (certifier : EntryCertifier α)
-    (zα : Q(Zero $α)) (m : Nat) (rows : Q(List (List $α))) :
-    MetaM (Q((ofLists $m $m $rows).IsLowerTriangular) ×
-      Q(∀ i, (ofLists $m $m $rows).diag i ≠ 0)) := do
-  let h ← certifyLowerTriangularDiagList certifier zα 0 m q(0) q($m) rows
-  return (q(isLowerTriangular_ofLists $h), q(diag_ofLists_ne_zero $h))
+/-- Prove that `L` is lower triangular with a nonzero diagonal. -/
+def certifyLowerTriangularDiag {u : Level} {m : Nat} {α : Q(Type u)}
+    (certifier : EntryCertifier α) (zα : Q(Zero $α)) (L : ListMatrixLit α m m) :
+    MetaM (Q(($(L.matrix)).IsLowerTriangular) × Q(∀ i, ($(L.matrix)).diag i ≠ 0)) := do
+  let h ← certifyLowerTriangularDiagList certifier zα 0 m q(0) q($m) L.lit
+  return (mkExpectedPropHint q(isLowerTriangular_ofLists $h) q(($(L.matrix)).IsLowerTriangular),
+    mkExpectedPropHint q(diag_ofLists_ne_zero $h) q(∀ i, ($(L.matrix)).diag i ≠ 0))
 
 /-- Construct the list-based `IsPivotedList pivots rows` cert. -/
 def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (certifier : EntryCertifier α)
@@ -217,9 +218,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)}
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD (decideCertifier α)
   let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy certifier zα U cols pivots
-  let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag certifier zα m mulEq.A
-  have hlower : Q(($Lm).IsLowerTriangular) := hlower
-  have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
+  let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag certifier zα L
   assertInstancesCommute
   let decomp : Q(Echelon.Decomposition $A $Lm $σ $pivot) := q(⟨$hU ▸ $hpivot, $hlower, $hdiag⟩)
   return { L, σ, pivot, decomp, U, mul_eq := hU }
