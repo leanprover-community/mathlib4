@@ -21,7 +21,7 @@ In this file, we proved that Exterior algebra behaves well with respect to base 
 
 -/
 
-public noncomputable section
+noncomputable section
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
@@ -61,10 +61,6 @@ def baseChangeExteriorAlgebraToTensor :
   ExteriorAlgebra.lift S
     ⟨ExteriorAlgebra.baseChangeι R M S, ExteriorAlgebra.baseChangeι_sq_zero R M S⟩
 
-lemma baseChangeExteriorAlgebraToTensor_apply (s : S) (m : M) :
-    baseChangeExteriorAlgebraToTensor R M S (ι S (s ⊗ₜ[R] m)) = s ⊗ₜ[R] ι R m := by
-  simp [baseChangeExteriorAlgebraToTensor]
-
 /-- The auxiliary construction for `ExteriorAlgebra.baseChangeEquivForward`. -/
 def baseChangeEquivForwardAux : ExteriorAlgebra R M →ₐ[R] ExteriorAlgebra S (S ⊗[R] M) :=
   ExteriorAlgebra.lift R
@@ -89,13 +85,19 @@ lemma baseChangeEquivForward_rightInverse :
   simp [baseChangeEquivForward, baseChangeEquivForwardAux, baseChangeExteriorAlgebraToTensor]
 
 /-- Exterior algebra behaves well with respect to base change. -/
-def baseChangeEquiv : S ⊗[R] ExteriorAlgebra R M ≃ₐ[S] ExteriorAlgebra S (S ⊗[R] M) where
+public def baseChangeEquiv : S ⊗[R] ExteriorAlgebra R M ≃ₐ[S] ExteriorAlgebra S (S ⊗[R] M) where
   __ := baseChangeEquivForward R M S
   invFun := baseChangeExteriorAlgebraToTensor R M S
   left_inv x := AlgHom.congr_fun (baseChangeEquiv_leftInverse R M S) x
   right_inv x := AlgHom.congr_fun (baseChangeEquivForward_rightInverse R M S) x
 
-lemma baseChangeEquiv_apply (m : M) : baseChangeEquiv R M S (1 ⊗ₜ[R] ι R m) = ι S (1 ⊗ₜ[R] m) := by
+public lemma baseChangeEquiv_apply (s : S) (m : M) :
+    baseChangeEquiv R M S (s ⊗ₜ[R] ι R m) = ι S (s ⊗ₜ[R] m) := by
+  rw [← mul_one s, ← smul_eq_mul, ← TensorProduct.smul_tmul', ← TensorProduct.smul_tmul']
   simp [baseChangeEquiv, baseChangeEquivForward, baseChangeEquivForwardAux]
+
+public lemma baseChangeEquiv_symm_apply (s : S) (m : M) :
+    (baseChangeEquiv R M S).symm (ι S (s ⊗ₜ[R] m)) = (s ⊗ₜ[R] ι R m) := by
+  simp [baseChangeEquiv, baseChangeExteriorAlgebraToTensor]
 
 end ExteriorAlgebra
