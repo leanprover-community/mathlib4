@@ -276,7 +276,7 @@ Returns whether we have done a rewrite in this subgoal, in which case it has bee
 partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bool)
     (config : Config) : GRewriteM Bool :=
   withTraceNode `Meta.grewrite (fun _ ↦
-    return m!"applying `gcongr` lemma {.ofConstName lem.declName}") do
+    return m!"applying `gcongr` lemma `{.ofConstName lem.declName}`") do
   let (mainGoals, sideGoals) ← try applyGCongrLemma goal lem catch _ => return false
   -- Recursively rewrite in the main subgoals
   let mut anyProgress := false
@@ -395,7 +395,7 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
     -- check that `hrel` proves a relation
     let hrel := mkAppN hrel newMVars
     let some (_, lhs, rhs) := GCongr.getRel hrelType |
-      throwTacticEx `grewrite goal m!"{hrelType} is not a relation"
+      throwTacticEx `grewrite goal m!"`{hrelType}` is not a relation"
     let (pattern, replacement) := if symm then (rhs, lhs) else (lhs, rhs)
     if pattern.getAppFn.isMVar then
       throwTacticEx `grewrite goal
@@ -408,12 +408,12 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
       else
       withReducible do
       let some (_, lhs', rhs') := GCongr.getRel (← whnf hrelType) |
-        throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
+        throwTacticEx `grewrite goal m!"`{hrelType}` is not a valid relation"
       -- Support relations that flip their arguments when reduced, such as `≥`.
       let symm' ←
         if lhs' == lhs && rhs' == rhs then pure symm
         else if lhs' == rhs && rhs' == lhs then pure !symm
-        else throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
+        else throwTacticEx `grewrite goal m!"`{hrelType}` is not a valid relation"
       let index := (pattern.toHeadIndex, pattern.headNumArgs)
       let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
       if let ((some (eNew, impProof), { progress, ..}), s) ←

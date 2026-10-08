@@ -108,7 +108,7 @@ attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
 /--
 error: `to_additive` validation failed: expected
   {α : Type _} → {β : Type _} → [self : my_has_scalar β α] → α → β → α
-but 'Test.my_has_scalar.smul' has type
+but `my_has_scalar.smul` has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
@@ -116,7 +116,7 @@ attribute [to_additive existing smul] my_has_pow.pow
 /--
 error: `to_additive` validation failed: expected
   {β : Type _} → {α : Type _} → [self : my_has_scalar β α] → α → β → α
-but 'Test.my_has_scalar.smul' has type
+but `my_has_scalar.smul` has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
@@ -474,9 +474,9 @@ def Unit' : Type := Unit
 @[to_additive_do_translate] def Unit'' : Type := Unit
 
 run_meta do
-  guard <| (← shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd) |>.run #[] #[]).1.any (·.isConstOf `Test.MonoidEnd)
-  guard <| (← shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit') |>.run #[] #[]).1.any (·.isConstOf `Test.Unit')
-  guard <| (← shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'') |>.run #[] #[]).1.isNone
+  guard !(← shouldTranslate ToAdditive.data q(Semigroup MonoidEnd) |>.run #[] #[]).1
+  guard !(← shouldTranslate ToAdditive.data q(Semigroup Unit') |>.run #[] #[]).1
+  guard (← shouldTranslate ToAdditive.data q(Semigroup Unit'') |>.run #[] #[]).1
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -574,7 +574,7 @@ section
 -- Test the error message for a name that cannot be additivised.
 
 /--
-error: to_additive: the generated translated name equals the original name 'foo'.
+error: to_additive: the generated translated name equals the original name `foo`.
 If this is intentional, use the `@[to_additive self]` syntax.
 Otherwise, check that your declaration name is correct (if your declaration is an instance, try naming it)
 or provide a translated name using the `@[to_additive my_add_name]` syntax.
@@ -591,7 +591,7 @@ end
 
 /--
 error: `to_additive` validation failed:
-  expected 1 universe levels, but 'Nat.le_trans' has 0 universe levels
+  expected 1 universe levels, but `Nat.le_trans` has 0 universe levels
 -/
 #guard_msgs in
 @[to_additive existing Nat.le_trans]
@@ -601,7 +601,7 @@ lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
 /--
 error: `to_additive` validation failed: expected
   ∀ {α : Type _} [inst : Zero α], 0 = 0
-but 'Eq.trans' has type
+but `Eq.trans` has type
   ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
 -/
 #guard_msgs in
@@ -909,7 +909,7 @@ Please silence this warning and add a translation manually. Errors:
 
 `to_additive` validation failed: expected
   ∀ {k G : Type} [inst : Inhabited k], monoidAlgebraFoo₂ = ({ x := fun x => default }, 2)
-but 'addMonoidAlgebraFoo₂.eq_1' has type
+but `addMonoidAlgebraFoo₂.eq_1` has type
   ∀ {k G : Type} [inst : Inhabited k], addMonoidAlgebraFoo₂ = ({ x := fun x => default }, 2)
 
 Note: This linter can be disabled with `set_option linter.translate.warnInvalid false`
