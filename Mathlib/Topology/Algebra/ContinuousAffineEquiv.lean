@@ -5,8 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
@@ -69,6 +68,7 @@ theorem toAffineEquiv_injective : Injective (toAffineEquiv : (P₁ ≃ᴬ[k] P�
   rintro ⟨e, econt, einv_cont⟩ ⟨e', e'cont, e'inv_cont⟩ H
   congr
 
+@[macro_inline]
 instance instEquivLike : EquivLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -85,6 +85,7 @@ attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 /-- Coerce continuous affine equivalences to affine equivalences. -/
 instance coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
+@[macro_inline]
 instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toAffineEquiv
   coe_injective _ _ h := toAffineEquiv_injective (DFunLike.coe_injective h)
@@ -217,7 +218,7 @@ theorem symm_apply_eq (e : P₁ ≃ᴬ[k] P₂) {x y} : e.symm x = y ↔ x = e y
 theorem eq_symm_apply (e : P₁ ≃ᴬ[k] P₂) {x y} : y = e.symm x ↔ e y = x :=
   e.toAffineEquiv.eq_symm_apply
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply (e : P₁ ≃ᴬ[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
   e.eq_symm_apply.symm
 
@@ -437,6 +438,9 @@ def prodComm : P₁ × P₂ ≃ᴬ[k] P₂ × P₁ where
 @[simp]
 theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm k P₁ P₂).trans (prodComm k P₂ P₁) = .refl _ _ := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Product of affine spaces is associative up to continuous affine isomorphism. -/

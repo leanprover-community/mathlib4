@@ -51,8 +51,8 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
     x ∈ kIdeal ↔ ∀ m : Fin 3 →₀ ℕ, m ∈ x.support → ∃ i, 2 ≤ m i := by
   have :
       kIdeal = Ideal.span ((monomial · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) := by
-    simp_rw [kIdeal, MvPolynomial.X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
-      Function.comp_def]
+    simp_rw [kIdeal, MvPolynomial.X, monomial_mul_monomial, one_mul, ← Finsupp.single_add,
+      ← Set.range_comp, Function.comp_def]
   rw [this, mem_ideal_span_monomial_image]
   simp
 
@@ -80,7 +80,7 @@ theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     norm_num at hi
   rw [as_sum x, CharTwo.sum_mul_self]
   refine sum_mem fun m hm => ?_
-  rw [mem_kIdeal_iff, monomial_mul]
+  rw [mem_kIdeal_iff, monomial_mul_monomial]
   intro m' hm'
   obtain rfl := Finset.mem_singleton.1 (support_monomial_subset hm')
   rw [mem_ideal_span_X_image] at this
@@ -177,22 +177,22 @@ theorem Q'_apply_single (i : Fin 3) (x : K) : Q' (Pi.single i x) = x * x :=
   calc
     Q' (Pi.single i x) = ∑ j : Fin 3, (Pi.single i x * Pi.single i x : Fin 3 → K) j := by
       simp [Q', sq]
-    _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, if_pos]
+    _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, ite_eq_left]
 
 theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) : Q' v = 0 := by
   rw [LinearMap.mem_ker, lFunc_apply] at hv
   have h0 : α * β * γ * v 0 = 0 := by
-    have := congr_arg (β * γ * ·) hv
+    have := congr(β * γ * $hv)
     simp only [mul_zero, mul_add, ← mul_assoc] at this
     rw [mul_comm (β * γ) α, ← mul_assoc, mul_right_comm β γ β, mul_assoc β γ γ, X_sq, X_sq] at this
     simpa only [mul_zero, zero_mul, add_zero, zero_add] using this
   have h1 : α * β * γ * v 1 = 0 := by
-    have := congr_arg (α * γ * ·) hv
+    have := congr(α * γ * $hv)
     simp only [mul_zero, mul_add, ← mul_assoc] at this
     rw [mul_right_comm α γ α, mul_assoc α γ γ, mul_right_comm α γ β, X_sq, X_sq] at this
     simpa only [mul_zero, zero_mul, add_zero, zero_add] using this
   have h2 : α * β * γ * v 2 = 0 := by
-    have := congr_arg (α * β * ·) hv
+    have := congr(α * β * $hv)
     simp only [mul_zero, mul_add, ← mul_assoc] at this
     rw [mul_right_comm α β α, mul_assoc α β β, X_sq, X_sq] at this
     simpa only [mul_zero, zero_mul, add_zero, zero_add] using this
@@ -242,7 +242,7 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by
   suffices α • 1 - β • (y' * x') - γ • (z' * x') = 0 by
-    have := congr_arg (fun x => (β * γ) • x) this
+    have := congr((β * γ) • $this)
     simp_rw [smul_sub, smul_smul] at this
     rwa [mul_assoc β γ γ, mul_right_comm β γ β, mul_right_comm β γ α, mul_comm β α, X_sq, X_sq,
       zero_mul, mul_zero, zero_smul, zero_smul, sub_zero, sub_zero, smul_zero] at this

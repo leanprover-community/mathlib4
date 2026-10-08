@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.Topology.Instances.RealVectorSpace
 
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # Torsors of normed space actions.
@@ -24,9 +24,7 @@ This file contains lemmas about normed additive torsors over normed spaces.
 
 noncomputable section
 
-open NNReal Topology
-
-open Filter
+open NNReal
 
 variable {V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
@@ -36,6 +34,19 @@ section NormedSpace
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
 
 open AffineMap
+
+@[simp]
+theorem dist_homothety (p₁ p₂ p : P) (c : 𝕜) :
+    dist (homothety p c p₁) (homothety p c p₂) = ‖c‖ * dist p₁ p₂ := by
+  simp [dist_eq_norm_vsub, ← (homothety p c).linear_apply_vsub, homothety_linear, norm_smul]
+
+@[simp]
+theorem nndist_homothety (p₁ p₂ p : P) (c : 𝕜) :
+    nndist (homothety p c p₁) (homothety p c p₂) = ‖c‖₊ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_homothety p₁ p₂ p c
+
+theorem lipschitzWith_homothety (p : P) (c : 𝕜) : LipschitzWith ‖c‖₊ (homothety p c) :=
+  LipschitzWith.of_dist_le_mul fun p₁ p₂ ↦ (dist_homothety p₁ p₂ p c).le
 
 @[simp]
 theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
@@ -56,7 +67,6 @@ theorem nndist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
     nndist (homothety p₁ c p₂) p₁ = ‖c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_homothety_center _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
     dist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = dist c₁ c₂ * dist p₁ p₂ := by
@@ -64,57 +74,47 @@ theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
   simp only [lineMap_apply, dist_eq_norm_vsub, vadd_vsub_vadd_cancel_right,
     ← sub_smul, norm_smul, vsub_eq_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nndist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
     nndist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = nndist c₁ c₂ * nndist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_lineMap _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lipschitzWith_lineMap (p₁ p₂ : P) : LipschitzWith (nndist p₁ p₂) (lineMap p₁ p₂ : 𝕜 → P) :=
   LipschitzWith.of_dist_le_mul fun c₁ c₂ =>
     ((dist_lineMap_lineMap p₁ p₂ c₁ c₂).trans (mul_comm _ _)).le
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_lineMap_left (p₁ p₂ : P) (c : 𝕜) : dist (lineMap p₁ p₂ c) p₁ = ‖c‖ * dist p₁ p₂ := by
   simpa only [lineMap_apply_zero, dist_zero_right] using dist_lineMap_lineMap p₁ p₂ c 0
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nndist_lineMap_left (p₁ p₂ : P) (c : 𝕜) :
     nndist (lineMap p₁ p₂ c) p₁ = ‖c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_left _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_left_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₁ (lineMap p₁ p₂ c) = ‖c‖ * dist p₁ p₂ :=
   (dist_comm _ _).trans (dist_lineMap_left _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nndist_left_lineMap (p₁ p₂ : P) (c : 𝕜) :
     nndist p₁ (lineMap p₁ p₂ c) = ‖c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_left_lineMap _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
     dist (lineMap p₁ p₂ c) p₂ = ‖1 - c‖ * dist p₁ p₂ := by
   simpa only [lineMap_apply_one, dist_eq_norm'] using dist_lineMap_lineMap p₁ p₂ c 1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nndist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
     nndist (lineMap p₁ p₂ c) p₂ = ‖1 - c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_right _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_right_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖ * dist p₁ p₂ :=
   (dist_comm _ _).trans (dist_lineMap_right _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nndist_right_lineMap (p₁ p₂ : P) (c : 𝕜) :
     nndist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖₊ * nndist p₁ p₂ :=
@@ -138,6 +138,41 @@ theorem dist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
 theorem nndist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
     nndist p₂ (homothety p₁ c p₂) = ‖1 - c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_self_homothety _ _ _
+
+open scoped Pointwise in
+private theorem image_homothety (c : P) (x : 𝕜) (s : Set P) :
+    homothety c x '' s =
+      IsometryEquiv.vaddConst c '' (x • ((IsometryEquiv.vaddConst c).symm '' s)) := by
+  simp [← Set.image_smul, ← Set.image_comp]; rfl
+
+theorem Metric.image_homothety_ball (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
+    homothety c x '' ball p r = ball (homothety c x p) (‖x‖ * r) := by
+  rw [image_homothety, IsometryEquiv.image_ball, smul_ball hx, IsometryEquiv.image_ball]
+  simp [homothety_apply]
+
+theorem Metric.image_homothety_closedBall (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
+    homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
+  rw [image_homothety, IsometryEquiv.image_closedBall, smul_closedBall' hx,
+    IsometryEquiv.image_closedBall]
+  simp [homothety_apply]
+
+theorem Metric.image_homothety_closedBall_of_nonneg (p c : Q) {r : ℝ} (hr : 0 ≤ r) (x : 𝕜) :
+    homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
+  rw [image_homothety, IsometryEquiv.image_closedBall, smul_closedBall x _ hr,
+    IsometryEquiv.image_closedBall]
+  simp [homothety_apply]
+
+theorem Metric.image_homothety_sphere (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
+    homothety c x '' sphere p r = sphere (homothety c x p) (‖x‖ * r) := by
+  rw [← closedBall_sdiff_ball, ← closedBall_sdiff_ball, Set.image_sdiff (homothety_injective c hx),
+    image_homothety_ball p c r hx, image_homothety_closedBall p c r hx]
+
+theorem Metric.image_homothety_sphere_of_nonneg [NormedSpace ℝ W] [Nontrivial W]
+    (p c : Q) {r : ℝ} (hr : 0 ≤ r) (x : 𝕜) :
+    homothety c x '' sphere p r = sphere (homothety c x p) (‖x‖ * r) := by
+  rw [image_homothety, IsometryEquiv.image_sphere, smul_sphere x _ hr,
+    IsometryEquiv.image_sphere]
+  simp [homothety_apply]
 
 section invertibleTwo
 
@@ -217,7 +252,6 @@ theorem dist_right_pointReflection (p q : P) :
     dist q (Equiv.pointReflection p q) = ‖(2 : 𝕜)‖ * dist p q :=
   (dist_comm _ _).trans (dist_pointReflection_right 𝕜 _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
     AntilipschitzWith (nndist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
   AntilipschitzWith.of_le_mul_dist fun c₁ c₂ => by
@@ -242,7 +276,7 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
     (hfc : Continuous f) : P →ᵃ[ℝ] Q :=
   let c := Classical.arbitrary P
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
-    ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
+    ((AffineEquiv.vaddConst ℝ (f c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
     fun x y => by simp [h]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
     c fun p => by simp

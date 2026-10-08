@@ -28,7 +28,7 @@ noncomputable section
 
 universe u v v' w
 
-open Cardinal Basis Submodule Function Set Module
+open Cardinal Function Set Module
 
 section Tower
 
@@ -58,7 +58,7 @@ This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the s
 theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
-  convert! lift_rank_mul_lift_rank F K A <;> rw [lift_id]
+  convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
@@ -385,7 +385,6 @@ theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
 variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
     {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
     (d1 : Module.finrank R M = 1) (u : M →ₗ[R] M) :
     ∃! c : R, u = c • LinearMap.id := by

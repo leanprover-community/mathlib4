@@ -5,15 +5,14 @@ Authors: Janos Wolosz
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
 public import Mathlib.Algebra.Lie.Killing
-public import Mathlib.Algebra.Lie.TraceForm
-public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.LinearAlgebra.Lagrange
-public import Mathlib.RingTheory.Flat.Localization
+
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
+import Mathlib.LinearAlgebra.Eigenspace.Matrix
+import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 
 /-!
 # Cartan's criteria

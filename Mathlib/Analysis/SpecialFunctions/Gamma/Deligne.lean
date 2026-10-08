@@ -31,8 +31,10 @@ formula which is an important input in functional equations of (un-completed) Di
 
 @[expose] public section
 
-open Filter Topology Asymptotics Real Set MeasureTheory
+open Filter Asymptotics Real Set MeasureTheory
 open Complex
+
+open scoped Topology
 
 namespace Complex
 
@@ -194,7 +196,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
     rcases n with - | m
     · rwa [Nat.cast_zero, neg_zero]
     · rw [Ne, sub_eq_iff_eq_add]
-      convert! hs m using 2
+      convert hs m using 2
       push_cast
       ring
   rw [(by ring : 2 - s = 1 - (s - 1)), inv_Gammaℝ_one_sub h',

@@ -5,10 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Instances.Irrational
 public import Mathlib.Topology.Instances.Rat
 public import Mathlib.Topology.Compactification.OnePoint.Basic
-public import Mathlib.Topology.Metrizable.Uniformity
+
+import Mathlib.Topology.Instances.Irrational
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Additional lemmas about the topology on rational numbers
@@ -32,9 +33,11 @@ compactification.
 public section
 
 
-open Set Metric Filter TopologicalSpace
+open Set Filter TopologicalSpace
 
-open Topology OnePoint
+open OnePoint
+
+open scoped Topology
 
 local notation "ℚ∞" => OnePoint ℚ
 

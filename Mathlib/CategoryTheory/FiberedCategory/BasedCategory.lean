@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
-public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
@@ -295,7 +294,6 @@ instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
   leftUnitor {_ _} F := BasedNatIso.id F
   rightUnitor {_ _} F := BasedNatIso.id F
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The bicategory structure on `BasedCategory.{v₂, u₂} 𝒮` is strict. -/
 instance : Bicategory.Strict (BasedCategory.{v₂, u₂} 𝒮) where
 

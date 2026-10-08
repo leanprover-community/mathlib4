@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Joseph Myers
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
-public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.InnerProductSpace.Affine
 
@@ -71,6 +70,8 @@ theorem midpoint_mem_perpBisector (p₁ p₂ : P) :
 
 theorem perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
   ⟨_, midpoint_mem_perpBisector _ _⟩
+
+instance : Nonempty (perpBisector p₁ p₂) := perpBisector_nonempty.to_subtype
 
 @[simp]
 theorem direction_perpBisector (p₁ p₂ : P) :
@@ -165,7 +166,6 @@ theorem dist_lt_of_sbtw_of_mem_perpBisector {a b c p : P}
     rw [right_vsub_midpoint, inner_smul_right,
         mem_perpBisector_iff_inner_eq_zero.mp hp, invOf_eq_inv, mul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `p` lies on the perpendicular bisector of `ab` and `b` is weakly between `a` and `c`,
 then `p` is at least as close to `b` as to `c`. -/
 theorem dist_le_of_wbtw_of_mem_perpBisector {a b c p : P}

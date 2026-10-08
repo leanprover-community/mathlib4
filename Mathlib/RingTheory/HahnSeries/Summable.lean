@@ -78,6 +78,7 @@ section AddCommMonoid
 
 variable [PartialOrder Γ] [AddCommMonoid R]
 
+@[macro_inline]
 instance : FunLike (SummableFamily Γ R α) α R⟦Γ⟧ where
   coe := toFun
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
@@ -619,17 +620,17 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
   isPWO_iUnion_support' := by
     refine s.isPWO_iUnion_support.mono (Set.iUnion_subset fun b g h => ?_)
     by_cases hb : b ∈ Set.range f
-    · rw [dif_pos hb] at h
+    · rw [dite_eq_left hb] at h
       exact Set.mem_iUnion.2 ⟨Classical.choose hb, h⟩
-    · simp [-Set.mem_range, dif_neg hb] at h
+    · simp [-Set.mem_range, dite_eq_right hb] at h
   finite_co_support' g :=
     ((s.finite_co_support g).image f).subset
       (by
         intro b h
         by_cases hb : b ∈ Set.range f
-        · simp only [Ne, Set.mem_ofPred_eq, dif_pos hb] at h
+        · simp only [Ne, Set.mem_ofPred_eq, dite_eq_left hb] at h
           exact ⟨Classical.choose hb, h, Classical.choose_spec hb⟩
-        · simp only [Ne, Set.mem_ofPred_eq, dif_neg hb, coeff_zero, not_true_eq_false] at h)
+        · simp only [Ne, Set.mem_ofPred_eq, dite_eq_right hb, coeff_zero, not_true_eq_false] at h)
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
 
@@ -640,12 +641,12 @@ theorem embDomain_apply :
 
 @[simp]
 theorem embDomain_image : s.embDomain f (f a) = s a := by
-  rw [embDomain_apply, dif_pos (Set.mem_range_self a)]
+  rw [embDomain_apply, dite_eq_left (Set.mem_range_self a)]
   exact congr rfl (f.injective (Classical.choose_spec (Set.mem_range_self a)))
 
 @[simp]
 theorem embDomain_of_notMem_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := by
-  rw [embDomain_apply, dif_neg h]
+  rw [embDomain_apply, dite_eq_right h]
 
 @[deprecated (since := "2026-07-15")] alias embDomain_notin_range := embDomain_of_notMem_range
 
@@ -782,12 +783,14 @@ section CommRing
 
 variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
-theorem one_minus_single_neg_mul {x y : R⟦Γ⟧} {r : R} (hr : r * x.leadingCoeff = 1)
+theorem one_sub_single_neg_mul {x y : R⟦Γ⟧} {r : R} (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + single x.order x.leadingCoeff) (oinv : Γ) (hxo : oinv + x.order = 0) :
     1 - single oinv r * x = -(single oinv r * y) := by
   nth_rw 1 [hxy]
   rw [mul_add, single_mul_single, hr, hxo,
     sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq single_zero_one.symm]
+
+@[deprecated (since := "2026-10-06")] alias one_minus_single_neg_mul := one_sub_single_neg_mul
 
 theorem unit_aux (x : R⟦Γ⟧) {r : R} (hr : r * x.leadingCoeff = 1)
     (oinv : Γ) (hxo : oinv + x.order = 0) :
@@ -803,7 +806,7 @@ theorem unit_aux (x : R⟦Γ⟧) {r : R} (hr : r * x.leadingCoeff = 1)
       refine pos_of_lt_add_right (a := x.order) ?_
       rw [← add_assoc, add_comm x.order, hxo, zero_add]
       exact order_lt_order_of_eq_add_single (sub_add_cancel x _).symm hy
-    rw [one_minus_single_neg_mul hr (sub_add_cancel x _).symm _ hxo, orderTop_neg]
+    rw [one_sub_single_neg_mul hr (sub_add_cancel x _).symm _ hxo, orderTop_neg]
     exact zero_lt_orderTop_of_order hy'
 
 theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : R⟦Γ⟧} (hx : IsUnit x.leadingCoeff)
@@ -848,7 +851,7 @@ theorem isUnit_iff {x : R⟦Γ⟧} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
     refine
       .of_mul_eq_one (i.leadingCoeff)
         ((coeff_mul_order_add_order u i).symm.trans ?_)
-    rw [ui, coeff_one, if_pos]
+    rw [ui, coeff_one, ite_eq_left]
     rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
   · rintro ⟨⟨u, i, ui, iu⟩, hx⟩
     rw [Units.val_mk] at hx

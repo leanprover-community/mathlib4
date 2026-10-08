@@ -5,12 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.LinearAlgebra.LinearIndependent.Algebra
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.OreLocalization.OreSet
+
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 /-!
 # Rank of localization
@@ -54,7 +55,7 @@ lemma IsLocalizedModule.lift_rank_eq :
       |>.cardinal_lift_le_rank]
 
 lemma IsLocalizedModule.finrank_eq : finrank R N = finrank R M := by
-  simpa using! congr_arg toNat (lift_rank_eq p f hp)
+  simpa using! congr(toNat $(lift_rank_eq p f hp))
 
 end
 
@@ -210,7 +211,7 @@ theorem lift_rank_eq_of_le_nonZeroDivisors :
     AlgebraTensorModule.congr (.refl ..) ((isLocalizedModule_iff_isBaseChange p S f).mp ‹_›).equiv
 
 theorem finrank_eq_of_le_nonZeroDivisors : finrank T P = finrank R M := by
-  simpa using! congr_arg toNat (lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc)
+  simpa using! congr(toNat $(lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc))
 
 omit bc
 theorem rank_eq_of_le_nonZeroDivisors {P : Type uM} [AddCommGroup P] [Module R P] [Module T P]
@@ -250,7 +251,7 @@ theorem lift_rank_eq :
     lift_rank_eq_of_le_nonZeroDivisors FR (LocalizedModule.mkLinearMap R⁰ M) le_rfl
       (map_le_nonZeroDivisors_of_injective _ inj le_rfl) this, lift_lift]
 
-theorem finrank_eq : finrank T P = finrank R M := by simpa using! congr_arg toNat bc.lift_rank_eq
+theorem finrank_eq : finrank T P = finrank R M := by simpa using! congr(toNat $bc.lift_rank_eq)
 
 omit bc
 theorem rank_eq {P : Type uM} [AddCommGroup P] [Module R P] [Module T P] [IsScalarTower R T P]
@@ -278,7 +279,7 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
   suffices ∀ (g : ℕ → R) (x), (∑ i ∈ Finset.range n, g i • (r * s ^ (i + x))) = 0 →
       ∀ i < n, g i = 0 by
     refine Fintype.linearIndependent_iff.mpr fun g hg i ↦ ?_
-    simpa only [dif_pos i.prop] using this (fun i ↦ if h : i < n then g ⟨i, h⟩ else 0) 0
+    simpa only [dite_eq_left i.prop] using this (fun i ↦ if h : i < n then g ⟨i, h⟩ else 0) 0
       (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
   intro g x hg i hin
   induction n generalizing g x i with

@@ -6,7 +6,11 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.Padics.Measure.Basic
-public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Data.EReal.Inv
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Topologies on spaces of measures
@@ -17,7 +21,7 @@ instances in order to avoid favouring one topology over the other.
 
 @[expose] public section
 
-open ContinuousMap Topology
+open ContinuousMap
 
 variable {X R E : Type*} [TopologicalSpace X]
 

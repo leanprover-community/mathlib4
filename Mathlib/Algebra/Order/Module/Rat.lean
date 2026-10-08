@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Algebra.Order.Module.Defs
+
+import Mathlib.Algebra.Module.Rat
 
 /-!
 # Monotonicity of the action by rational numbers

@@ -5,10 +5,11 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.MeasurableSpace.Pi
+
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Indexed product measures
@@ -90,7 +91,7 @@ theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = 
 
 theorem piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
     piPremeasure m s ≤ piPremeasure m t :=
-  Finset.prod_le_prod' fun _ _ => measure_mono (Set.image_mono h)
+  Finset.prod_le_prod fun _ _ => measure_mono (Set.image_mono h)
 
 theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
     piPremeasure m (pi univ fun i => eval i '' s) = piPremeasure m s := by
@@ -390,8 +391,7 @@ lemma pi_map_pi {X Y : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (
   refine (pi_eq fun s hs ↦ ?_).symm
   rw [map_apply_of_aemeasurable _ (.univ_pi hs)]
   swap
-  · exact aemeasurable_pi_lambda _
-      fun i ↦ (hf i).comp_quasiMeasurePreserving (quasiMeasurePreserving_eval _ i)
+  · exact .of_eval fun i ↦ (hf i).comp_quasiMeasurePreserving (quasiMeasurePreserving_eval _ i)
   have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' (Set.univ.pi s) =
       Set.univ.pi (fun i ↦ (f i) ⁻¹' (s i)) := by ext x; simp
   rw [this, pi_pi]
@@ -558,7 +558,7 @@ instance _root_.IsUnifLocDoublingMeasure.pi {ι : Type*} [Fintype ι] {X : ι �
       IsUnifLocDoublingMeasure.eventually_measure_le_doublingConstant_mul (μ i),
     eventually_mem_nhdsWithin] with r hr (hr₀ : 0 < r) x
   simpa (disch := positivity) [Finset.prod_mul_distrib, closedBall_pi, pi_pi]
-    using Fintype.prod_mono' fun i ↦ hr i (x i)
+    using Fintype.prod_mono fun i ↦ hr i (x i)
 
 instance IsUnifLocDoublingMeasure.volume_pi {ι : Type*} [Fintype ι] {X : ι → Type*}
     [∀ i, PseudoMetricSpace (X i)] [∀ i, MeasureSpace (X i)]
@@ -924,7 +924,6 @@ theorem volume_preserving_pi {α' β' : ι → Type*} [∀ i, MeasureSpace (α' 
     MeasurePreserving (fun (a : (i : ι) → α' i) (i : ι) ↦ (f i) (a i)) :=
   measurePreserving_pi _ _ hf
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The measurable equiv `(α₁ → β₁) ≃ᵐ (α₂ → β₂)` induced by `α₁ ≃ α₂` and `β₁ ≃ᵐ β₂` is
 measure preserving. -/
 theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype α₁] [Fintype α₂]
@@ -933,7 +932,7 @@ theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype
     (hm : ∀ i, MeasurePreserving eβ (μ i) (ν (eα i))) :
     MeasurePreserving (MeasurableEquiv.arrowCongr' eα eβ) (Measure.pi fun i ↦ μ i)
       (Measure.pi fun i ↦ ν i) := by
-  convert!
+  convert
     (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) eα).comp
       (measurePreserving_pi μ (fun i : α₁ ↦ ν (eα i)) hm)
   simp only [MeasurableEquiv.arrowCongr', Equiv.arrowCongr', Equiv.arrowCongr, EquivLike.coe_coe,

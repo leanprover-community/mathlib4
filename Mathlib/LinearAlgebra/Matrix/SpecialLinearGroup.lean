@@ -172,7 +172,7 @@ lemma coe_transpose (A : SpecialLinearGroup n R) : ↑ₘAᵀ = (↑ₘA)ᵀ :=
 
 theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg ≠ 0 := by
   rw [g.det_coe]
-  norm_num
+  simp
 
 theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i ≠ 0 := fun h =>
   g.det_ne_zero <| det_eq_zero_of_row_eq_zero i <| by simp [h]
@@ -227,7 +227,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
     ⟨f.mapMatrix ↑ₘg, by
       rw [← f.map_det]
       simp [g.prop]⟩
-  map_one' := Subtype.ext <| f.mapMatrix.map_one
+  map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 
 section center
@@ -244,7 +244,7 @@ theorem scalar_eq_self_of_mem_center
     scalar n (A i i) = A := by
   obtain ⟨r : R, hr : scalar n r = A⟩ := mem_range_scalar_of_commute_transvectionStruct fun t ↦
     Subtype.ext_iff.mp <| Subgroup.mem_center_iff.mp hA ⟨t.toMatrix, by simp⟩
-  simp [← congr_fun₂ hr i i, ← hr]
+  simp [← congr($hr i i), ← hr]
 
 theorem scalar_eq_coe_self_center
     (A : center (SpecialLinearGroup n R)) (i : n) :
@@ -388,7 +388,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1), P ⟨!![a, b; c, d], by rwa [det_fin_two_of]⟩)
     (g : SL(2, R)) : P g := by
   obtain ⟨m, hm⟩ := g
-  convert! h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
+  convert h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -423,7 +423,9 @@ end Matrix
 
 namespace IsCoprime
 
-open Matrix MatrixGroups SpecialLinearGroup
+open Matrix SpecialLinearGroup
+
+open scoped MatrixGroups
 
 variable {R : Type*} [CommRing R]
 
@@ -512,7 +514,7 @@ lemma transvection_smul_single_fst {i j : ι} (hij : i ≠ j) (b : F) :
   simp [SpecialLinearGroup.smul_def, -mulVec_single, transvection_coe,
     add_mulVec, single_mulVec_eq, hij]
 
-@[deprecated transvection_smul_single_fst (since := "2026-06-22")]
+@[deprecated transvection_smul_single_fst +typeChanged (since := "2026-06-22")]
 lemma transvection_mulVec_single_self {i j : ι} (hij : i ≠ j) (b : F) :
     (transvection hij b).1 *ᵥ (Pi.single i (1 : F)) = Pi.single i 1 := by
   rw [transvection_coe]
@@ -524,7 +526,7 @@ lemma transvection_smul_single_snd {i j : ι} (hij : i ≠ j) (b : F) :
   simp [SpecialLinearGroup.smul_def, transvection_coe, -mulVec_single,
     add_mulVec, single_mulVec_eq]
 
-@[deprecated transvection_smul_single_snd (since := "2026-06-22")]
+@[deprecated transvection_smul_single_snd +typeChanged (since := "2026-06-22")]
 lemma transvection_mulVec_single_other {i j : ι} (hij : i ≠ j) (b : F) :
     (transvection hij b).1 *ᵥ (Pi.single j (1 : F)) = Pi.single j 1 + b • Pi.single i 1 := by
   rw [transvection_coe]
@@ -558,8 +560,6 @@ end SpecialLinearGroup
 
 namespace TransvectionStruct
 
-variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
-
 /-- Any transvection structure can be converted to a special linear matrix. -/
 def toSpecialLinearGroup (t : TransvectionStruct ι F) :
     SpecialLinearGroup ι F :=
@@ -585,7 +585,7 @@ section SL2
 
 variable {F : Type*} [Field F]
 
-open MatrixGroups
+open scoped MatrixGroups
 
 namespace SpecialLinearGroup
 
@@ -685,7 +685,7 @@ lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1)
   rw [Finset.map_noncommProd]
   simp_rw [coeMonoidHom_apply, apply_dite, coe_one]
   rw [Finset.noncommProd_congr (s₂ := {i | i ≠ i₀}) rfl (fun i hi ↦
-      (dif_pos (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).1))]
+      (dite_eq_left (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).1))]
   convert_to! _ = Finset.noncommProd {i | i ≠ i₀} (fun x ↦ diagonal (g x)) _
   simp_rw [← diagonalRingHom_apply]
   rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod]
@@ -812,7 +812,7 @@ end Matrix
 
 namespace ModularGroup
 
-open MatrixGroups
+open scoped MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 

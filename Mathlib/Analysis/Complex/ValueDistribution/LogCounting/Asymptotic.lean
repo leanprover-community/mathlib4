@@ -132,11 +132,11 @@ lemma finite_support_of_logCounting_isBigO_log [ProperSpace E]
     intro w
     simp only [hD', coe_sum, Finset.sum_apply, single_apply, Finset.sum_ite_eq]
     by_cases hw : w ∈ t
-    · simp only [hw, if_true]
+    · simp only [hw, ite_true]
       have h₁ : D w ≠ 0 := mem_support.mp (htsub (Finset.mem_coe.2 hw))
       have h₂ : (0 : ℤ) ≤ D w := by simpa using (le_def.1 h) w
       omega
-    · simpa [hw, if_false] using (le_def.1 h) w
+    · simpa [hw, ite_false] using (le_def.1 h) w
   -- A uniform bound on the norms of points in `t`.
   obtain ⟨R₀, hR₀⟩ : ∃ R₀ : ℝ, ∀ z ∈ t, ‖z‖ ≤ R₀ := t.finite_toSet.isBounded.exists_norm_le
   set K := ∑ z ∈ t, log ‖z‖ with hK
@@ -178,15 +178,14 @@ variable
 ## Logarithmic Counting Functions for the Poles of a Meromorphic Function
 -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 A meromorphic function has only removable singularities if and only if the logarithmic counting
 function for its pole divisor is asymptotically bounded.
 -/
 theorem logCounting_isBigO_one_iff_analyticOnNhd {f : 𝕜 → E} (h : Meromorphic f) :
     logCounting f ⊤ =O[atTop] (1 : ℝ → ℝ) ↔ AnalyticOnNhd 𝕜 (toMeromorphicNFOn f univ) univ := by
-  simp only [logCounting, reduceDIte]
-  rw [← locallyFinsuppWithin.zero_iff_logCounting_bounded (negPart_nonneg _), negPart_eq_zero,
+  rw [logCounting_top,
+    ← locallyFinsuppWithin.zero_iff_logCounting_bounded (negPart_nonneg _), negPart_eq_zero,
     ← h.meromorphicOn.divisor_of_toMeromorphicNFOn,
     (meromorphicNFOn_toMeromorphicNFOn _ _).divisor_nonneg_iff_analyticOnNhd]
 

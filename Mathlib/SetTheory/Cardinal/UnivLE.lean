@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Logic.UnivLE
 public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
@@ -13,8 +12,6 @@ public import Mathlib.SetTheory.Ordinal.Univ
 -/
 
 public section
-
-noncomputable section
 
 universe u v
 

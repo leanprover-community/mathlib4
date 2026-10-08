@@ -5,10 +5,11 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Batteries.Logic
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.DepRewrite
+
+import Batteries.Logic
 
 /-!
 # Basic operations on the integers
@@ -192,7 +193,7 @@ and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
   · exact fun n _ hn l _ ↦ hn l (by lia)
 
 variable {lt ge}
-lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dif_pos _
+lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dite_eq_left _
 
 end strongRec
 

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Data.Nat.Factorization.Defs
-public import Mathlib.Analysis.Normed.Module.RCLike.Real
-public import Mathlib.Data.Rat.Cast.CharZero
+
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Real logarithm
@@ -28,7 +28,7 @@ logarithm, continuity
 
 open Set Filter Function
 
-open Topology
+open scoped Topology
 
 noncomputable section
 
@@ -45,7 +45,7 @@ noncomputable def log (x : ℝ) : ℝ :=
   if hx : x = 0 then 0 else expOrderIso.symm ⟨|x|, abs_pos.2 hx⟩
 
 theorem log_of_ne_zero (hx : x ≠ 0) : log x = expOrderIso.symm ⟨|x|, abs_pos.2 hx⟩ :=
-  dif_neg hx
+  dite_eq_right hx
 
 theorem log_of_pos (hx : 0 < x) : log x = expOrderIso.symm ⟨x, hx⟩ := by
   rw [log_of_ne_zero hx.ne']
@@ -66,7 +66,7 @@ theorem exp_log_of_neg (hx : x < 0) : exp (log x) = -x := by
 
 theorem le_exp_log (x : ℝ) : x ≤ exp (log x) := by
   by_cases h_zero : x = 0
-  · rw [h_zero, log, dif_pos rfl, exp_zero]
+  · rw [h_zero, log, dite_eq_left rfl, exp_zero]
     exact zero_le_one
   · rw [exp_log_eq_abs h_zero]
     exact le_abs_self _
@@ -101,7 +101,7 @@ theorem range_log : range log = univ :=
 
 @[simp, push]
 theorem log_zero : log 0 = 0 :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp, push]
 theorem log_one : log 1 = 0 :=
@@ -306,7 +306,7 @@ theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
 
 theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [le_sub_iff_add_le]
-  convert! add_one_le_exp (log x)
+  convert add_one_le_exp (log x)
   rw [exp_log hx]
 
 lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
@@ -420,7 +420,7 @@ lemma log_finprod {α : Type*} {f : α → ℝ} (h : ∀ a, 0 < f a) :
     log (∏ᶠ a, f a) = ∑ᶠ a, log (f a) := by
   classical
   have H : (fun i ↦ log (f i)).support = f.mulSupport := by
-    grind [mem_mulSupport, mem_support, log_eq_zero]
+    grind [log_eq_zero]
   have H' : HasFiniteMulSupport f ↔ HasFiniteSupport fun a ↦ log (f a) := by
     simp [HasFiniteMulSupport, HasFiniteSupport, H]
   simp only [finprod_def, finsum_def]
@@ -469,7 +469,7 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   open_source := isOpen_univ
   open_target := isOpen_Ioi
   continuousOn_toFun := continuousOn_exp
-  continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
+  continuousOn_invFun x hx := (continuousAt_log hx.ne').continuousWithinAt
 
 @[simp]
 theorem image_log_Ioi {a : ℝ} (ha : 0 < a) : log '' Ioi a = Ioi (log a) :=

@@ -1,4 +1,5 @@
 module
+import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.AdaptationNote
 
@@ -77,13 +78,25 @@ example (a b : Nat) (h : a + 1 ≤ b + 1) : max a b ≤ b := by
   have : True := by simp (disch := grind)
   simp (disch := grind) [Nat.max_eq_right]
 
+-- The linter works correctly with `on_goal`.
+/--
+warning: Unused tactic linter: `skip` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True := by
+  constructor
+  on_goal 1 => skip; trivial
+  trivial
+
 section allowing_more_unused_tactics
 
-/-- info: The `SyntaxNodeKind` is 'Lean.Parser.Tactic.refine'. -/
+/-- info: The `SyntaxNodeKind` is `Lean.Parser.Tactic.refine`. -/
 #guard_msgs in
 #show_kind refine _
 
-/-- info: The `SyntaxNodeKind` is 'Lean.Parser.Tactic.skip'. -/
+/-- info: The `SyntaxNodeKind` is `Lean.Parser.Tactic.skip`. -/
 #guard_msgs in
 #show_kind skip
 
@@ -104,3 +117,27 @@ example : True := by
   done
 
 end allowing_more_unused_tactics
+
+section ignore_tactic_kind
+
+syntax (name := doEmitWarningStx) "doEmitWarning" tactic : command
+macro_rules
+  | `(command| doEmitWarning $tac) => `(command| example : True := by $tac ; constructor)
+
+syntax (name := doNotEmitWarningStx) "doNotEmitWarning" tactic : command
+macro_rules
+  | `(command| doNotEmitWarning $tac) => `(command| example : True := by $tac ; constructor)
+
+-- `#eval` instead of `initialize` so that the effect can be tested in this file
+#eval Mathlib.Linter.UnusedTactic.addIgnoreTacticKind ``doNotEmitWarningStx
+
+/--
+warning: Unused tactic linter: `congr` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in doEmitWarning congr
+
+#guard_msgs in doNotEmitWarning congr
+
+end ignore_tactic_kind

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.FieldTheory.Finite.Basic
 
+import Mathlib.Algebra.MvPolynomial.CommRing
+
 /-!
 # The Chevalley–Warning theorem
 

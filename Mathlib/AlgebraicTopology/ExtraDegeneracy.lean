@@ -55,7 +55,9 @@ set_option backward.defeqAttrib.useBackward true
 @[expose] public section
 
 
-open CategoryTheory Category SimplicialObject.Augmented Opposite Simplicial
+open CategoryTheory Category SimplicialObject.Augmented Opposite
+
+open scoped Simplicial
 
 namespace CategoryTheory
 
@@ -87,7 +89,6 @@ namespace ExtraDegeneracy
 attribute [reassoc] s₀_comp_δ₁ s_comp_δ s_comp_σ
 attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local simp←] Functor.map_comp in
 attribute [local simp] s₀_comp_δ₁ s_comp_δ s_comp_σ in
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
@@ -342,7 +343,6 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
     fun i => by
       cases i using Fin.cases <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
     dsimp% ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
@@ -350,7 +350,6 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
         (arrows := fun _ ↦ f.hom) ≫ S.section_ := by
   simp [ExtraDegeneracy.s]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
     dsimp% ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
@@ -408,7 +407,6 @@ def const (X : C) : ExtraDegeneracy (Augmented.const.obj X) where
   s' := 𝟙 _
   s _ := 𝟙 _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a preadditive category and `X` is an augmented simplicial object
 in `C` that has an extra degeneracy, then the augmentation on the alternating
 face map complex of `X` is a homotopy equivalence. -/

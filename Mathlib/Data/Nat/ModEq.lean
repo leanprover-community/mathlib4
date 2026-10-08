@@ -9,8 +9,9 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Data.Int.GCD
 public import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Algebra.CharZero.Defs
+
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Congruences modulo a natural number
@@ -81,9 +82,6 @@ protected theorem refl (a : ℕ) : a ≡ a [MOD n] := rfl
 protected theorem rfl : a ≡ a [MOD n] :=
   ModEq.refl _
 
-instance : Std.Refl (ModEq n) :=
-  ⟨ModEq.refl⟩
-
 @[symm]
 protected theorem symm : a ≡ b [MOD n] → b ≡ a [MOD n] :=
   Eq.symm
@@ -92,8 +90,10 @@ protected theorem symm : a ≡ b [MOD n] → b ≡ a [MOD n] :=
 protected theorem trans : a ≡ b [MOD n] → b ≡ c [MOD n] → a ≡ c [MOD n] :=
   Eq.trans
 
-instance : Trans (ModEq n) (ModEq n) (ModEq n) where
-  trans := Nat.ModEq.trans
+instance : IsEquiv ℕ (ModEq n) where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
 
 protected theorem comm : a ≡ b [MOD n] ↔ b ≡ a [MOD n] :=
   ⟨ModEq.symm, ModEq.symm⟩
@@ -176,7 +176,7 @@ protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b +
     c ≡ d [MOD n] := by
   simp only [modEq_iff_dvd, Int.natCast_add] at *
   rw [add_sub_add_comm] at h₂
-  convert! Int.dvd_sub h₂ h₁ using 1
+  convert Int.dvd_sub h₂ h₁ using 1
   rw [add_sub_cancel_left]
 
 protected theorem add_left_cancel' (c : ℕ) (h : c + a ≡ c + b [MOD n]) : a ≡ b [MOD n] :=
@@ -260,7 +260,7 @@ For cancelling right multiplication on both sides of the `≡`, see `nat.modeq.m
 lemma of_mul_right (m : ℕ) : a ≡ b [MOD n * m] → a ≡ b [MOD n] := mul_comm m n ▸ of_mul_left _
 
 theorem of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :
-    a ≡ b [MOD m] := by convert! h.mul_left' c <;> rwa [Nat.mul_div_cancel']
+    a ≡ b [MOD m] := by convert h.mul_left' c <;> rwa [Nat.mul_div_cancel']
 
 end ModEq
 
@@ -471,12 +471,12 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
 
 /-- The natural number less than `n*m` congruent to `a` mod `n` and `b` mod `m` -/
 def chineseRemainder (co : n.Coprime m) (a b : ℕ) : { k // k ≡ a [MOD n] ∧ k ≡ b [MOD m] } :=
-  chineseRemainder' (by convert! @modEq_one a b)
+  chineseRemainder' (by convert @modEq_one a b)
 
 theorem chineseRemainder'_lt_lcm (h : a ≡ b [MOD gcd n m]) (hn : n ≠ 0) (hm : m ≠ 0) :
     ↑(chineseRemainder' h) < lcm n m := by
   dsimp only [chineseRemainder']
-  rw [dif_neg hn, dif_neg hm, Subtype.coe_mk, xgcd_val, ← Int.toNat_natCast (lcm n m)]
+  rw [dite_eq_right hn, dite_eq_right hm, Subtype.coe_mk, xgcd_val, ← Int.toNat_natCast (lcm n m)]
   have lcm_pos := Int.natCast_pos.mpr (Nat.pos_of_ne_zero (lcm_ne_zero hn hm))
   exact (Int.toNat_lt_toNat lcm_pos).mpr (Int.emod_lt_of_pos _ lcm_pos)
 
@@ -530,15 +530,16 @@ theorem add_mod_add_ite (a b c : ℕ) :
     · rw [Nat.mod_eq_of_lt (lt_of_not_ge h), add_zero]
 
 theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
-    (a + b) % c = a % c + b % c := by rw [← add_mod_add_ite, if_neg (not_le_of_gt hc), add_zero]
+    (a + b) % c = a % c + b % c := by
+  rw [← add_mod_add_ite, ite_eq_right (not_le_of_gt hc), add_zero]
 
 theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :
-    (a + b) % c + c = a % c + b % c := by rw [← add_mod_add_ite, if_pos hc]
+    (a + b) % c + c = a % c + b % c := by rw [← add_mod_add_ite, ite_eq_left hc]
 
 theorem add_div_eq_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
     (a + b) / c = a / c + b / c :=
   if hc0 : c = 0 then by simp [hc0]
-  else by rw [Nat.add_div (Nat.pos_of_ne_zero hc0), if_neg (not_le_of_gt hc), add_zero]
+  else by rw [Nat.add_div (Nat.pos_of_ne_zero hc0), ite_eq_right (not_le_of_gt hc), add_zero]
 
 protected theorem add_div_of_dvd_right {a b c : ℕ} (hca : c ∣ a) : (a + b) / c = a / c + b / c :=
   if h : c = 0 then by simp [h]
@@ -552,7 +553,7 @@ protected theorem add_div_of_dvd_left {a b c : ℕ} (hca : c ∣ b) : (a + b) / 
   rwa [add_comm, Nat.add_div_of_dvd_right, add_comm]
 
 theorem add_div_eq_of_le_mod_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) (hc0 : 0 < c) :
-    (a + b) / c = a / c + b / c + 1 := by rw [Nat.add_div hc0, if_pos hc]
+    (a + b) / c = a / c + b / c + 1 := by rw [Nat.add_div hc0, ite_eq_left hc]
 
 @[deprecated Nat.div_add_div_le_add_div (since := "2026-08-05")]
 theorem add_div_le_add_div (a b c : ℕ) : a / c + b / c ≤ (a + b) / c :=

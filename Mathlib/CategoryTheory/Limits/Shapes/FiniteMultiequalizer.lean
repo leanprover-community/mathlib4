@@ -8,7 +8,8 @@ module
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Tactic.ProxyType
+
+import Mathlib.Tactic.ProxyType
 
 /-!
 # Finiteness instances on multi-spans
@@ -24,7 +25,6 @@ variable {J : MulticospanShape} [Fintype J.L] [Fintype J.R]
 
 instance : Fintype (WalkingMulticospan J) := .ofEquiv _ (proxy_equiv% (WalkingMulticospan J))
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance [DecidableEq J.L] [DecidableEq J.R] : FinCategory (WalkingMulticospan J) where
   fintypeHom
     | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
@@ -52,7 +52,6 @@ variable {J : MultispanShape} [Fintype J.L] [Fintype J.R]
 
 instance : Fintype (WalkingMultispan J) := .ofEquiv _ (proxy_equiv% (WalkingMultispan J))
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance [DecidableEq J.L] [DecidableEq J.R] : FinCategory (WalkingMultispan J) where
   fintypeHom
     | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩

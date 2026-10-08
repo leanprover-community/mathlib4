@@ -43,7 +43,9 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 namespace Tactic.ComputeAsymptotics
 
-open Filter Stream' Topology
+open Filter Stream'
+
+open scoped Topology
 
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
@@ -314,10 +316,8 @@ theorem eq_of_bisim_friend {γ : Type*} {basis_hd : ℝ → ℝ} {basis_tl : Bas
       x = cons exp coef (op c x') ∧ y = cons exp coef (op c y') ∧ motive x' y') :
     x = y := by
   apply Seq.FriendlyOperationClass.eq_of_bisim (op := op) motive base
-  peel step with x y ih h
-  obtain h | ⟨exp, coef, c, x', y', rfl, rfl, h_next⟩ := h
-  · simp [h]
-  right
+  unfold Multiseries at step
+  gconvert step using 4 with x y ih ⟨exp, coef, c, x', y', rfl, rfl, h_next⟩
   use (exp, coef), x', y', c
   simpa [cons]
 
@@ -463,7 +463,7 @@ theorem map_id {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
   Stream'.Seq.map_id ms
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp← ]
+@[simp ←]
 theorem map_comp {b₁ b₂ b₃ bs₁ bs₂ bs₃}
     (f₁ : ℝ → ℝ) (g₁ : MultiseriesExpansion bs₁ → MultiseriesExpansion bs₂)
     (f₂ : ℝ → ℝ) (g₂ : MultiseriesExpansion bs₂ → MultiseriesExpansion bs₃)

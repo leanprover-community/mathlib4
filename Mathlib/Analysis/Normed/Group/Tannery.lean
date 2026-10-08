@@ -5,8 +5,12 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Analysis.Real.Sqrt
+
+import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Tannery's theorem
@@ -21,7 +25,9 @@ measure-theoretic result.
 
 public section
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- **Tannery's theorem**: topological sums commute with termwise limits, when the norms of the

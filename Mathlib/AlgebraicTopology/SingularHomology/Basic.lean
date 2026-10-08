@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Homology.AlternatingConst
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
-public import Mathlib.CategoryTheory.Limits.MonoCoprod
+
+import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 /-!
 # Singular homology
@@ -46,9 +47,6 @@ instance [Limits.HasPullbacks C] {X : C} :
     ((singularChainComplexFunctor C).obj X).PreservesMonomorphisms where
   preserves f _ := by
     dsimp [singularChainComplexFunctor, SSet.chainComplexFunctor]
-    apply +allowSynthFailures Functor.map_mono
-    apply +allowSynthFailures Functor.map_mono
-    dsimp [SSet, SimplicialObject.whiskering, SimplicialObject]
     infer_instance
 
 /-- The `n`-th singular homology functor with coefficients in `C`. -/
@@ -95,7 +93,7 @@ lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C)
     simp
   · congr 1
     rw [← reassoc_of% sSetTopAdj_unit_app_app_down]
-    exact congr(($(sSetTopAdj.right_triangle_components X).app (.op ⦋n⦌) i).down)
+    congrm ($(sSetTopAdj.right_triangle_components X).app (.op ⦋n⦌) i).down
 
 end Adjunction
 

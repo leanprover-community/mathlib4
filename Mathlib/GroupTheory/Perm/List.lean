@@ -5,9 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.List.Rotate
 public import Mathlib.GroupTheory.Perm.Support
+
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Permutations from a list
@@ -34,7 +34,7 @@ nontrivial permutation that is noncyclic.
 
 namespace List
 
-variable {α β : Type*}
+variable {α : Type*}
 
 section FormPerm
 
@@ -211,7 +211,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
 theorem support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
     support (formPerm l) = l.toFinset := by
   rw [← Finset.coe_inj]
-  convert! support_formPerm_of_nodup' _ h h'
+  convert support_formPerm_of_nodup' _ h h'
   simp [Set.ext_iff]
 
 theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) = formPerm l := by
@@ -281,7 +281,7 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
   obtain ⟨⟨n, hn⟩, hx'⟩ := get_of_mem hx
   have hl : (x :: y :: l).length = (x' :: y' :: l').length := by
     rw [← dedup_eq_self.mpr hd, ← dedup_eq_self.mpr hd', ← card_toFinset, ← card_toFinset]
-    refine congr_arg Finset.card ?_
+    congrm Finset.card ?_
     rw [← Finset.coe_inj, ← support_formPerm_of_nodup' _ hd (by simp), ←
       support_formPerm_of_nodup' _ hd' (by simp)]
     simp only [h]
