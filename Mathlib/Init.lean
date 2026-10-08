@@ -28,6 +28,8 @@ public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.TacticAnalysis.Declarations
 public import Mathlib.Tactic.TypeStar
+-- This import makes the `alias` command available globally.
+public import Batteries.Tactic.Alias
 -- This import makes the `#help` command available globally.
 public import Batteries.Tactic.HelpCmd
 -- This import makes the `proof_wanted` command available globally.
@@ -55,6 +57,9 @@ Here are some general guidelines:
 
 A linter verifies that every file in Mathlib imports `Mathlib.Init`
 (perhaps indirectly) --- except for the imports in this file, of course.
+
+If you're adding a new import to ensure that some command is available in all of mathlib,
+add a line to `MathlibTest/BasicFiles/Init.lean` to ensure this stays true.
 
 ## Linters
 

@@ -39,11 +39,10 @@ deprecated_syntax to_dual_ignore_args "This attribute is now redundant. \
   to specify which argument is relevant, you can use `to_dual self (relevant_arg := ...)`"
   (since := "2026-09-27")
 
-
-@[inherit_doc TranslateData.doTranslateAttr]
+@[inherit_doc TranslateData.dontTranslateAttr]
 syntax (name := to_dual_do_translate) "to_dual_do_translate" : attr
 
-@[inherit_doc TranslateData.doTranslateAttr]
+@[inherit_doc TranslateData.dontTranslateAttr]
 syntax (name := to_dual_dont_translate) "to_dual_dont_translate" : attr
 
 /-- The attribute `to_dual` can be used to automatically transport theorems
@@ -122,23 +121,23 @@ macro "to_dual?" rest:attrArgs : attr => `(attr| to_dual ? $rest)
 @[inherit_doc TranslateData.unfoldBoundaries?]
 initialize unfoldBoundaries : UnfoldBoundaryExt ← registerUnfoldBoundaryExt
 
-@[inherit_doc TranslateData.doTranslateAttr]
-initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
+@[inherit_doc TranslateData.dontTranslateAttr]
+initialize dontTranslateAttr : NameMapExtension Unit ← registerNameMapExtension _
+
+/-- Maps names to their dual counterparts. -/
+initialize translations : NameMapExtension TranslationInfo ← registerNameMapExtension _
 
 initialize
   registerBuiltinAttribute {
     name := `to_dual_do_translate
     descr := "Auxiliary attribute for `to_dual` stating \
       that the operations on this type should be translated."
-    add name _ _ := doTranslateAttr.add name true }
+    add name _ _ := translations.add name { translation := name, relevantArg := .noArg} }
   registerBuiltinAttribute {
     name := `to_dual_dont_translate
     descr := "Auxiliary attribute for `to_dual` stating \
       that the operations on this type should not be translated."
-    add name _ _ := doTranslateAttr.add name false }
-
-/-- Maps names to their dual counterparts. -/
-initialize translations : NameMapExtension TranslationInfo ← registerNameMapExtension _
+    add name _ _ := dontTranslateAttr.add name () }
 
 @[inherit_doc GuessName.GuessNameData.nameDict]
 def nameDict : Std.HashMap String (List String) := .ofList [
@@ -230,6 +229,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("coproduct", ["Product"]),
   ("products", ["Coproducts"]),
   ("coproducts", ["Products"]),
+  ("diag", ["Codiag"]),
+  ("codiag", ["Diag"]),
   ("pushout", ["Pullback"]),
   ("pullback", ["Pushout"]),
   ("pushouts", ["Pullbacks"]),
@@ -306,7 +307,7 @@ initialize guessNameExt : GuessName.GuessNameExt ←
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
-  doTranslateAttr; translations
+  dontTranslateAttr; translations
   unfoldBoundaries? := some unfoldBoundaries
   attrName := `to_dual
   changeNumeral := false
