@@ -51,13 +51,11 @@ universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 /-- A wrapper for promoting any type to a category,
 with the only morphisms being equalities.
 -/
-@[ext, aesop safe cases (rule_sets := [CategoryTheory])]
+@[ext, aesop safe cases (rule_sets := [CategoryTheory]), to_dual_do_translate]
 structure Discrete (α : Type u₁) where
   /-- A wrapper for promoting any type to a category,
   with the only morphisms being equalities. -/
   as : α
-
-attribute [to_dual_ignore_args 0] Discrete
 
 @[simp]
 theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X :=
