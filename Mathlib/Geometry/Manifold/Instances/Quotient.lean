@@ -140,6 +140,19 @@ lemma hoge {h : H} (hh : h ∈ (transitionMap x y).source) :
     isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm] at hh
   exact hh.2.1.2
 
+@[to_additive]
+lemma bar2 {h : H} (hh : h ∈ (transitionMap x y).source) :
+    h ∈ (chartAt H x.out).symm ⁻¹' ((foo (hoge hh) • ·) ⁻¹' (y.localInverseAt).target) :=
+  bar (hoge hh)
+
+@[to_additive]
+lemma bar3 {h : H} (hh : h ∈ (transitionMap x y).source) :
+    Set.EqOn (transitionMap x y)
+      ((chartAt H x.out).symm ≫ₕ (Homeomorph.smul (foo (hoge hh))).toOpenPartialHomeomorph ≫ₕ
+        chartAt H y.out)
+      ((chartAt H x.out).symm ⁻¹' ((foo (hoge hh) • ·) ⁻¹' (y.localInverseAt).target)) :=
+  transitionMap_eqOn_smul x y (foo (hoge hh))
+
 end orbitRel.Quotient
 
 /-!
