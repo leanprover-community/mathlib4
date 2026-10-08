@@ -24,7 +24,6 @@ variable {R : Type*} [CommRing R]
 
 open PowerSeries IsLocalRing
 
-set_option backward.isDefEq.respectTransparency false in
 lemma PowerSeries.maximalIdeal_eq_sup [IsLocalRing R] : maximalIdeal R⟦X⟧ =
     (maximalIdeal R).map PowerSeries.C ⊔ Ideal.span {X} := by
   have maxeq : maximalIdeal R⟦X⟧ = (maximalIdeal R).comap constantCoeff := by
