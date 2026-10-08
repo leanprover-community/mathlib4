@@ -1089,6 +1089,7 @@ instance [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
 instance [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
   simpa only [coe_Iio] using! (Finset.Iio y).finite_toSet
 
+-- See note [lower instance priority]
 @[to_dual]
 instance (priority := low) [LocallyFiniteOrderBot α] : WellFoundedLT α := by
   rw [WellFounded.wellFoundedLT_iff_exists_minimal]
