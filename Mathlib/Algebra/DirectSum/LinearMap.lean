@@ -22,6 +22,26 @@ public section
 
 open DirectSum Module Set
 
+namespace DirectSum
+
+variable {ι R M P : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable [AddCommMonoid P] [Module R P] [DecidableEq ι] {N : ι → Submodule R M}
+
+private lemma IsInternal.sum_comp_subtype_component (h : IsInternal N) (s : Finset ι)
+    (hs : ∀ i, i ∉ s → N i = ⊥) (f : M →ₗ[R] P) :
+    ∑ i ∈ s, (f ∘ₗ (N i).subtype) ∘ₗ (component R ι (fun i ↦ N i) i ∘ₗ
+      (LinearEquiv.ofBijective (coeLinearMap N) h).symm.toLinearMap) = f := by
+  apply (LinearMap.cancel_right (g := coeLinearMap N) h.surjective).mp
+  ext i x
+  simp only [LinearMap.comp_apply, LinearMap.sum_apply, LinearEquiv.coe_coe,
+    LinearEquiv.ofBijective_symm_apply_apply (coeLinearMap N) (h := h)]
+  by_cases hi : i ∈ s
+  · simp [component, DFinsupp.lapply, lof_eq_of, of_apply, apply_dite, hi]
+  · have hx : x = 0 := Subtype.ext (by simpa [hs i hi] using x.property)
+    simp [hx]
+
+end DirectSum
+
 namespace LinearMap
 
 variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {N : ι → Submodule R M}
@@ -67,26 +87,18 @@ section FiniteProjective
 variable [Module.Finite R M] [Module.Projective R M]
 variable [∀ i, Module.Finite R (N i)] [∀ i, Module.Projective R (N i)]
 
--- TODO: Find a clearer proof of `hsum` in both trace lemmas below using existing direct-sum lemmas.
 /-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
 
 See also `LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup`. -/
 lemma trace_eq_sum_trace_restrict (h : IsInternal N) [Fintype ι]
     {f : M →ₗ[R] M} (hf : ∀ i, MapsTo f (N i) (N i)) :
     trace R M f = ∑ i, trace R (N i) (f.restrict (hf i)) := by
-  let e := LinearEquiv.ofBijective (DirectSum.coeLinearMap N) h
-  let π (i : ι) : M →ₗ[R] N i := DFinsupp.lapply i ∘ₗ e.symm.toLinearMap
-  have hsum : ∑ i, (N i).subtype ∘ₗ π i = LinearMap.id := by
-    ext x
-    simpa [π, DFinsupp.lapply, map_sum] using
-      (congrArg (DirectSum.coeLinearMap N) (DirectSum.sum_univ_of (e.symm x))).trans
-        (e.apply_symm_apply x)
-  conv_lhs => rw [← comp_id f, ← hsum, ← Module.End.mul_eq_comp, Finset.mul_sum, map_sum]
+  rw [← congrArg (trace R M) (h.sum_comp_subtype_component Finset.univ (by simp) f), map_sum]
   apply Finset.sum_congr rfl
   intro i _
-  rw [Module.End.mul_eq_comp, ← comp_assoc, trace_comp_comm']
-  exact congrArg (trace R (N i)) (LinearMap.ext fun x ↦
-    h.ofBijective_coeLinearMap_of_mem (hf i x.property))
+  rw [trace_comp_comm']
+  exact congrArg (trace R (N i))
+    (LinearMap.ext fun x ↦ h.ofBijective_coeLinearMap_of_mem (hf i x.property))
 
 lemma trace_eq_sum_trace_restrict' (h : IsInternal N) (hN : {i | N i ≠ ⊥}.Finite)
     {f : M →ₗ[R] M} (hf : ∀ i, MapsTo f (N i) (N i)) :
@@ -103,25 +115,12 @@ lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
   classical
   have hN : {i | N i ≠ ⊥}.Finite :=
     WellFoundedGT.finite_ne_bot_of_iSupIndep h.submodule_iSupIndep
-  let e := LinearEquiv.ofBijective (DirectSum.coeLinearMap N) h
-  let π (i : ι) : M →ₗ[R] N i := DirectSum.component R ι (fun i ↦ N i) i ∘ₗ e.symm.toLinearMap
-  have hsum : ∑ i ∈ hN.toFinset, (N i).subtype ∘ₗ π i = LinearMap.id := by
-    apply (LinearMap.cancel_right e.surjective).mp
-    ext i x
-    by_cases hi : N i = ⊥
-    · have hx : x = 0 := Subtype.ext (by simpa [hi] using x.property)
-      subst x
-      simp
-    · have hx : (x : M) = e (DirectSum.lof R ι (fun i ↦ N i) i x) :=
-        (DirectSum.coeLinearMap_lof N i x).symm
-      simpa [π, e, DirectSum.component.of, apply_dite, hi] using hx
-  rw [← comp_id f, ← hsum, ← Module.End.mul_eq_comp, Finset.mul_sum, map_sum]
+  rw [← congrArg (trace R M) (h.sum_comp_subtype_component hN.toFinset (by simp) f), map_sum]
   apply Finset.sum_eq_zero
   intro i _
-  rw [Module.End.mul_eq_comp, ← comp_assoc, trace_comp_comm']
-  have hz : π i ∘ₗ f ∘ₗ (N i).subtype = 0 :=
-    LinearMap.ext fun x ↦ h.ofBijective_coeLinearMap_of_mem_ne (hσ i) (hf i x.property)
-  rw [hz, map_zero]
+  rw [trace_comp_comm', ← map_zero (trace R (N i))]
+  congr 1
+  exact LinearMap.ext fun x ↦ h.ofBijective_coeLinearMap_of_mem_ne (hσ i) (hf i x.property)
 
 end FiniteProjective
 
