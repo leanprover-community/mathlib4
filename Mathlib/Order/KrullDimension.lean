@@ -1003,12 +1003,8 @@ lemma krullDim_eq_one_iff_of_boundedOrder {α : Type*} [PartialOrder α] [Bounde
 
 variable {α : Type*} [Preorder α]
 
-@[simp] lemma height_nat (n : ℕ) : height n = n := by
-  induction n using Nat.strongRecOn with | ind n ih =>
-  apply le_antisymm
-  · apply height_le_coe_iff.mpr
-    simp +contextual only [ih, Nat.cast_lt, implies_true]
-  · exact length_le_height_last (p := LTSeries.range n)
+@[simp] lemma height_nat (n : ℕ) : height n = n :=
+  (height_eq_encard_Iio n).trans (Set.Nat.encard_range n)
 
 @[simp] lemma coheight_of_noMaxOrder [NoMaxOrder α] (a : α) : coheight a = ⊤ := by
   obtain ⟨f, hstrictmono⟩ := Nat.exists_strictMono ↑(Set.Ioi a)
