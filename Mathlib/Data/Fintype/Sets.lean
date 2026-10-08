@@ -254,6 +254,7 @@ theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
 instance Prop.fintype : Fintype Prop :=
   ⟨⟨{True, False}, by simp⟩, by simpa using em⟩
 
+set_option linter.concreteInstances false in
 @[simp]
 theorem Fintype.univ_Prop [DecidableEq Prop] : (Finset.univ : Finset Prop) = {True, False} :=
   Finset.eq_of_veq <| by simp; rfl
