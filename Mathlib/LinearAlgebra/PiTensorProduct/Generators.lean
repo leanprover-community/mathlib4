@@ -191,49 +191,25 @@ lemma submodule_span_eq_top
       rw [tmul_smul]
       apply Submodule.smul_mem _ _ h
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
     {φ φ' : (⨂[R] i, M i) →ₗ[R] N}
     (h : ∀ (j : (i : ι) → γ i),
-      φ (tprod _ (fun i ↦ g (j i))) = φ' (tprod _ (fun i ↦ g (j i)))) :
+      φ (tprod R (fun i ↦ g (j i))) = φ' (tprod R (fun i ↦ g (j i)))) :
     φ = φ' := by
-  obtain ⟨n, hι⟩ : ∃ (n : ℕ), Nat.card ι = n := ⟨_, rfl⟩
-  induction n generalizing ι with
-  | zero =>
-    ext x
-    have : IsEmpty ι := (Nat.card_eq_zero.1 hι).resolve_right <| Finite.not_infinite ‹_›
-    obtain rfl : x = fun i ↦ @g i (isEmptyElim i) := Subsingleton.elim _ _
-    apply h
-  | succ n hn =>
-    classical
-    have : Nonempty ι := ((Nat.card_pos_iff (α := ι)).1 (by omega)).1
-    have i₀ : ι := Classical.arbitrary _
-    let e := (equivPiTensorComplSingletonTensor R M i₀).trans (TensorProduct.comm _ _ _)
-    obtain ⟨ψ, rfl⟩ : ∃ ψ, φ = LinearMap.comp ψ e.toLinearMap :=
-      ⟨φ.comp e.symm.toLinearMap, by ext; simp⟩
-    obtain ⟨ψ', rfl⟩ : ∃ ψ', φ' = LinearMap.comp ψ' e.toLinearMap :=
-      ⟨φ'.comp e.symm.toLinearMap, by ext; simp⟩
-    dsimp [e] at h
-    congr 1
-    apply (TensorProduct.lift.equiv _ _ _ _).symm.injective
-    rw [Submodule.linearMap_eq_iff_of_span_eq_top _ _ (hg i₀)]
-    rintro ⟨_, ⟨g₀, rfl⟩⟩
-    apply hn (g := fun i (j : γ i.1) ↦ by exact g j)
-    · intro
-      exact hg _
-    · intro j
-      have : (g g₀ ⊗ₜ[R] (tprod R) fun i ↦ g (j i)) =
-          TensorProduct.comm R _ _ ((equivPiTensorComplSingletonTensor R M i₀)
-            (⨂ₜ[R] (i : ι), g (Function.subtypeNeLift i₀ j g₀ i))) := by
-        simp only [equivPiTensorComplSingletonTensor_tprod, Function.subtypeNeLift_self]
-        congr
-        ext ⟨x, hx⟩
-        congr
-        rw [Function.subtypeNeLift_of_neq _ _ _ _ (by assumption)]
-        rfl
-      simpa only [lift.equiv_symm_apply, this] using h (Function.subtypeNeLift i₀ j g₀)
-    · exact Set.ncard_compl_of_ncard_eq_add {i₀} (by simpa)
+  apply LinearMap.ext
+  intro x
+  have hx := submodule_span_eq_top hg ▸ (Submodule.mem_top (x := x))
+  revert x hx
+  apply Submodule.span_induction
+  · rintro _ ⟨j, rfl⟩
+    simp [h j]
+  · simp
+  · intro _ _ _ _ h h'
+    simp [h, h']
+  · intro _ _ _ h
+    simp [h]
+
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
