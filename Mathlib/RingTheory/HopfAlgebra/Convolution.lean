@@ -94,10 +94,10 @@ namespace LinearMap
 variable [Semiring C] [HopfAlgebra R C]
 
 @[simp] lemma antipode_mul_id : toConv (antipode R (A := C)) * toConv id = 1 := by
-  ext _; exact congr($HopfAlgebra.mul_antipode_rTensor_comul _)
+  ext c; rw [(ℛ R c).convMul_apply]; simp [sum_antipode_mul_eq_algebraMap_counit (ℛ R c)]
 
 @[simp] lemma id_mul_antipode : toConv id * toConv (antipode R (A := C)) = 1 := by
-  ext _; exact congr($HopfAlgebra.mul_antipode_lTensor_comul _)
+  ext c; rw [(ℛ R c).convMul_apply]; simp [sum_mul_antipode_eq_algebraMap_counit (ℛ R c)]
 
 end LinearMap
 
@@ -155,9 +155,8 @@ lemma comul_right_inv : toConv δ * toConv 𝑭 = 1 := by
     _ = δ ∘ₗ (toConv id * toConv 𝑺).ofConv := by simp [LinearMap.convMul_def]
     _ = δ ∘ₗ (1 : WithConv (C →ₗ[R] C)).ofConv := by rw [id_mul_antipode]
     _ = η ∘ₗ ε := by
-        have : (δ ∘ₗ η : R →ₗ[R] C ⊗[R] C) = η := by
-          ext; simp only [coe_comp, Function.comp_apply, linearMap_apply, map_one, comul_one]
-        simp [LinearMap.convOne_def, this, ← comp_assoc]
+        simp [LinearMap.convOne_def, show (δ ∘ₗ η : R →ₗ[R] C ⊗[R] C) = η by ext; simp; rfl,
+          ← comp_assoc]
 
 end LinearMap
 
