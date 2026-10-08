@@ -359,6 +359,10 @@ theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
 theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a := by
   simp [← coe_ssubset]
 
+-- See note [lower instance priority]
+instance (priority := low) : WellFoundedGT α :=
+  StrictAnti.wellFoundedGT fun _ _ ↦ Finset.Ici_ssubset_Ici.mpr
+
 @[gcongr]
 theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
   simpa [← coe_subset] using Set.Ioi_subset_Ioi h
@@ -422,6 +426,11 @@ theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
 theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b := by
   simp [← coe_ssubset]
 
+-- See note [lower instance priority]
+@[to_dual existing]
+instance (priority := low) : WellFoundedLT α :=
+  StrictMono.wellFoundedLT fun _ _ ↦ Finset.Iic_ssubset_Iic.mpr
+
 @[gcongr]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
   simpa [← coe_subset] using Set.Iio_subset_Iio h
@@ -462,10 +471,6 @@ def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
   toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
   invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
 
--- See note [lower instance priority]
-instance (priority := low) : WellFoundedLT α :=
-  StrictMono.wellFoundedLT fun _ _ ↦ Finset.Iic_ssubset_Iic.mpr
-
 end LocallyFiniteOrderBot
 
 section LocallyFiniteOrderTop
@@ -481,11 +486,6 @@ theorem _root_.BddBelow.finite {s : Set α} (hs : BddBelow s) : s.Finite :=
 
 theorem _root_.Set.Infinite.not_bddBelow {s : Set α} : s.Infinite → ¬BddBelow s :=
   mt BddBelow.finite
-
--- See note [lower instance priority]
-@[to_dual existing]
-instance (priority := low) : WellFoundedGT α :=
-  StrictAnti.wellFoundedGT fun _ _ ↦ Finset.Ici_ssubset_Ici.mpr
 
 variable [Fintype α]
 
