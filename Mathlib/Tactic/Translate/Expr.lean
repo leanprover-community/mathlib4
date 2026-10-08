@@ -72,7 +72,7 @@ public structure TranslateData where
   Note: The name generation is not aware of `dont_translate`, so if some part of a lemma is not
     translated thanks to this, you generally have to specify the translated name manually.
   -/
-  doTranslateAttr : NameMapExtension Bool
+  dontTranslateAttr : NameMapExtension Unit
   /-- The `insert_cast`/`insert_cast_fun` attributes create an abstraction boundary for the tagged
   constant when translating it. For example, `Set.Icc`, `Monotone`, `DecidableLT`, `WCovBy` are all
   morally self-dual, but their definition is not self-dual. So, in order to allow these constants
@@ -180,11 +180,11 @@ partial def shouldTranslate (t : TranslateData) (e : Expr) :
     let env ← getEnv
     if args.isEmpty then
       -- A constant not in an application, e.g. `ℕ`, is not translated by default.
-      let result := (t.doTranslateAttr.find? env n).getD (findTranslation? env t n).isSome
+      let result := (findTranslation? env t n).isSome && (t.dontTranslateAttr.find? env n).isNone
       trace[translate_detail] "`{f}` is {if result then "not " else ""}a fixed constant."
       return result
     -- A constant in an application, e.g. `Prod` in `α × β`, is translated by default.
-    if t.doTranslateAttr.find? env n == false then
+    if (t.dontTranslateAttr.find? env n).isSome then
       trace[translate_detail] "`{f}` is a fixed constant."
       return false
     let arg? := match findTranslation? env t n with

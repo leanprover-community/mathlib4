@@ -27,12 +27,6 @@ deprecated_syntax to_additive_ignore_args "This attribute is now redundant. \
   to specify which argument is relevant, you can use `to_additive self (relevant_arg := ...)`"
   (since := "2026-09-27")
 
-@[inherit_doc TranslateData.doTranslateAttr]
-syntax (name := to_additive_do_translate) "to_additive_do_translate" : attr
-
-@[inherit_doc TranslateData.doTranslateAttr]
-syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
-
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
@@ -249,20 +243,19 @@ syntax (name := to_additive) "to_additive" "?"? attrArgs : attr
 @[inherit_doc to_additive]
 macro "to_additive?" rest:attrArgs : attr => `(attr| to_additive ? $rest)
 
-@[inherit_doc TranslateData.doTranslateAttr]
-initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
+@[inherit_doc TranslateData.dontTranslateAttr]
+macro "to_additive_do_translate" : attr => `(attr| to_additive self (relevant_arg := _))
 
+@[inherit_doc TranslateData.dontTranslateAttr]
+initialize dontTranslateAttr : NameMapExtension Unit ← registerNameMapExtension _
+
+@[inherit_doc TranslateData.dontTranslateAttr]
 initialize
-  registerBuiltinAttribute {
-    name := `to_additive_do_translate
-    descr := "Auxiliary attribute for `to_additive` stating \
-      that the operations on this type should be translated."
-    add name _ _ := doTranslateAttr.add name true }
   registerBuiltinAttribute {
     name := `to_additive_dont_translate
     descr := "Auxiliary attribute for `to_additive` stating \
       that the operations on this type should not be translated."
-    add name _ _ := doTranslateAttr.add name false }
+    add name _ _ := dontTranslateAttr.add name () }
 
 /-- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension TranslationInfo ← registerNameMapExtension _
@@ -385,7 +378,7 @@ initialize guessNameExt : GuessName.GuessNameExt ←
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
-  doTranslateAttr; translations
+  dontTranslateAttr; translations
   attrName := `to_additive
   changeNumeral := true
   isDual := false
