@@ -5,56 +5,48 @@ Authors: Radu Irbe
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Cesàro means of geometrically decaying sequences
 
-For a real sequence `a` with `|a k| ≤ C * r ^ k` and `0 ≤ r < 1`, the Cesàro
-means `n⁻¹ * ∑ k < n, a k` tend to zero.  The file gives the explicit rate
-bound first (`abs_sum_range_div_le_of_abs_le_geometric`, independently useful
-in error estimates) and then the limit statement as an immediate squeeze.
-
-These statements are the analytic engine behind ergodic-theorem arguments for
-geometrically contracting Markov kernels: the deviation from a stationary
-distribution decays geometrically, so its Cesàro means vanish.  The specific
-application should not be needed in the statement, and is not.
-
-TODO (validation, before this leaves draft status):
-* confirm the minimal import set by building (`Finset.abs_sum_le_sum_abs`,
-  `geom_sum_mul_neg`, `le_div_iff₀` and the `atTop` cast lemmas may have
-  moved or been renamed on current master);
-* consider the normed-group generalisation `a : ℕ → E` with
-  `‖a k‖ ≤ C * r ^ k`, of which this is the `E = ℝ` special case;
-* bikeshed names and file placement with a reviewer.
+For a normed-space-valued sequence `a` with `‖a k‖ ≤ C * r ^ k` and `0 ≤ r < 1`, the Cesàro
+means `n⁻¹ • ∑ k < n, a k` tend to zero.  The file gives the explicit rate bound first
+(`norm_sum_range_smul_le_of_norm_le_geometric`, independently useful), then the limit; the
+real-valued special cases are kept under their original names as corollaries.
 -/
 
-public section
+@[expose] public section
 
 open Filter
 
-/-- **Explicit rate for Cesàro means of a geometrically decaying sequence**:
-if `|a k| ≤ C * r ^ k` with `0 ≤ C` and `0 ≤ r < 1`, then for every `n ≥ 1`
-the `n`-th Cesàro mean of `a` is bounded by `(C / (1 - r)) * n⁻¹`. -/
-theorem abs_sum_range_div_le_of_abs_le_geometric {a : ℕ → ℝ} {C r : ℝ} (hC : 0 ≤ C)
-    (hr0 : 0 ≤ r) (hr1 : r < 1) (h : ∀ k, |a k| ≤ C * r ^ k) {n : ℕ} (hn : 1 ≤ n) :
-    |(n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, a k| ≤ (C / (1 - r)) * (n : ℝ)⁻¹ := by
+/-- **Explicit rate for Cesàro means of a geometrically dominated sequence**: if
+`‖a k‖ ≤ C * r ^ k` with `0 ≤ C` and `0 ≤ r < 1`, then for every `n ≥ 1` the norm of the
+`n`-th Cesàro mean of `a` is bounded by `(C / (1 - r)) * n⁻¹`. -/
+theorem norm_sum_range_smul_le_of_norm_le_geometric {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E]
+    {a : ℕ → E} {C r : ℝ} (hC : 0 ≤ C) (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (h : ∀ k, ‖a k‖ ≤ C * r ^ k) {n : ℕ} (hn : 1 ≤ n) :
+    ‖(n : ℝ)⁻¹ • ∑ k ∈ Finset.range n, a k‖ ≤ (C / (1 - r)) * (n : ℝ)⁻¹ := by
   have hden : 0 < 1 - r := by linarith
   have hnpos : (0 : ℝ) < n := by
     have : (0 : ℕ) < n := by omega
     exact_mod_cast this
-  calc |(n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, a k|
-      = (n : ℝ)⁻¹ * |∑ k ∈ Finset.range n, a k| := by
-        rw [abs_mul, abs_of_nonneg (by positivity)]
-    _ ≤ (n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, |a k| :=
-        mul_le_mul_of_nonneg_left (Finset.abs_sum_le_sum_abs _ _)
+  calc ‖(n : ℝ)⁻¹ • ∑ k ∈ Finset.range n, a k‖
+      = (n : ℝ)⁻¹ * ‖∑ k ∈ Finset.range n, a k‖ := by
+        rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg (by positivity)]
+    _ ≤ (n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, ‖a k‖ :=
+        mul_le_mul_of_nonneg_left (norm_sum_le _ _)
           (le_of_lt (inv_pos.mpr hnpos))
     _ ≤ (n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, C * r ^ k :=
         mul_le_mul_of_nonneg_left (Finset.sum_le_sum fun k _ => h k)
           (le_of_lt (inv_pos.mpr hnpos))
     _ = C * ((n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, r ^ k) := by
         simp only [Finset.mul_sum]
-        ring_nf
+        ring
     _ ≤ C * ((n : ℝ)⁻¹ * (1 / (1 - r))) := by
         apply mul_le_mul_of_nonneg_left _ hC
         apply mul_le_mul_of_nonneg_left _ (le_of_lt (inv_pos.mpr hnpos))
@@ -62,22 +54,46 @@ theorem abs_sum_range_div_le_of_abs_le_geometric {a : ℕ → ℝ} {C r : ℝ} (
         linarith [pow_nonneg hr0 n]
     _ = (C / (1 - r)) * (n : ℝ)⁻¹ := by ring
 
-/-- **Cesàro means of a geometrically decaying sequence tend to zero**: if
-`|a k| ≤ C * r ^ k` with `0 ≤ C` and `0 ≤ r < 1`, then
-`n⁻¹ * ∑ k < n, a k → 0`, by squeezing with the explicit rate
+/-- **Cesàro means of a geometrically dominated sequence tend to zero**: if
+`‖a k‖ ≤ C * r ^ k` with `0 ≤ C` and `0 ≤ r < 1`, then
+`n⁻¹ • ∑ k < n, a k → 0`, by squeezing with the explicit rate
 `(C / (1 - r)) * n⁻¹`. -/
-theorem tendsto_sum_range_div_nhds_zero_of_abs_le_geometric {a : ℕ → ℝ} {C r : ℝ}
-    (hC : 0 ≤ C) (hr0 : 0 ≤ r) (hr1 : r < 1) (h : ∀ k, |a k| ≤ C * r ^ k) :
-    Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, a k) atTop (nhds 0) := by
-  have hlim : Tendsto (fun n : ℕ ↦ (C / (1 - r)) * (n : ℝ)⁻¹) atTop (nhds 0) := by
+theorem tendsto_sum_range_smul_nhds_zero_of_norm_le_geometric {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] {a : ℕ → E} {C r : ℝ} (hC : 0 ≤ C) (hr0 : 0 ≤ r)
+    (hr1 : r < 1) (h : ∀ k, ‖a k‖ ≤ C * r ^ k) :
+    Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹ • ∑ k ∈ Finset.range n, a k) atTop (nhds 0) := by
+  have hb0 : Tendsto (fun n : ℕ ↦ (C / (1 - r)) * (n : ℝ)⁻¹) atTop (nhds 0) := by
     have hninv : Tendsto (fun n : ℕ ↦ ((n : ℝ))⁻¹) atTop (nhds 0) :=
       tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
     simpa using (tendsto_const_nhds (x := C / (1 - r))).mul hninv
-  have hfg : ∀ᶠ n : ℕ in atTop,
-      |(n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, a k| ≤ (C / (1 - r)) * (n : ℝ)⁻¹ :=
-    eventually_atTop.2
-      ⟨1, fun n hn ↦ abs_sum_range_div_le_of_abs_le_geometric hC hr0 hr1 h hn⟩
-  have hzero : Tendsto (fun n : ℕ ↦ |(n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, a k|)
-      atTop (nhds 0) :=
-    squeeze_zero' (Eventually.of_forall fun n ↦ abs_nonneg _) hfg hlim
-  exact (tendsto_zero_iff_abs_tendsto_zero _).2 hzero
+  refine squeeze_zero_norm' (eventually_atTop.2 ⟨1, fun n hn ↦
+    norm_sum_range_smul_le_of_norm_le_geometric hC hr0 hr1 h hn⟩) hb0
+
+/-- Real-valued special case of
+`norm_sum_range_smul_le_of_norm_le_geometric`, kept under its original
+name for continuity with the corpus development. -/
+theorem abs_sum_range_div_le_of_abs_le_geometric {a : ℕ → ℝ} {C r : ℝ} (hC : 0 ≤ C)
+    (hr0 : 0 ≤ r) (hr1 : r < 1) (h : ∀ k, |a k| ≤ C * r ^ k) {n : ℕ} (hn : 1 ≤ n) :
+    |(n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, a k| ≤ (C / (1 - r)) * (n : ℝ)⁻¹ := by
+  have h' : ∀ k : ℕ, ‖a k‖ ≤ C * r ^ k := fun k => by
+    rw [Real.norm_eq_abs]
+    exact h k
+  have hgen : ‖(n : ℝ)⁻¹ • ∑ k ∈ Finset.range n, a k‖
+      ≤ (C / (1 - r)) * (n : ℝ)⁻¹ :=
+    norm_sum_range_smul_le_of_norm_le_geometric hC hr0 hr1 h' hn
+  rwa [Real.norm_eq_abs, smul_eq_mul] at hgen
+
+/-- Real-valued special case of
+`tendsto_sum_range_smul_nhds_zero_of_norm_le_geometric`. -/
+theorem tendsto_sum_range_div_nhds_zero_of_abs_le_geometric {a : ℕ → ℝ} {C r : ℝ}
+    (hC : 0 ≤ C) (hr0 : 0 ≤ r) (hr1 : r < 1) (h : ∀ k, |a k| ≤ C * r ^ k) :
+    Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, a k) atTop (nhds 0) := by
+  have hgen : Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹ • ∑ k ∈ Finset.range n, a k) atTop
+      (nhds 0) :=
+    tendsto_sum_range_smul_nhds_zero_of_norm_le_geometric hC hr0 hr1
+      (fun k => by
+        rw [Real.norm_eq_abs]
+        exact h k)
+  refine hgen.congr' ?_
+  filter_upwards with n
+  simp [smul_eq_mul]
