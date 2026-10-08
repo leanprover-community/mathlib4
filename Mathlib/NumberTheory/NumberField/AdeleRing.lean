@@ -18,7 +18,6 @@ direct product of the infinite adele ring and the finite adele ring.
 
 - `NumberField.AdeleRing K` is the adele ring of a number field `K`.
 - `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
-- `NumberField.AdeleRing.instNorm` is the norm on the adele ring.
 
 ## Main results
 
@@ -53,6 +52,7 @@ in practice are easier to work with than `AdeleRing (𝓞 ℚ) ℚ`.
 
 Note that this definition does not give the correct answer in the function field case.
 -/
+@[implicit_reducible]
 def AdeleRing := InfiniteAdeleRing K × FiniteAdeleRing R K
 deriving CommRing, TopologicalSpace, IsTopologicalRing, Algebra K
 
@@ -151,8 +151,7 @@ namespace AdeleRing
 
 theorem isUnit_iff {x : 𝔸[R, K]} : IsUnit x ↔ (∀ v, x.1 v ≠ 0) ∧ (∀ v, x.2 v ≠ 0) ∧
     ∀ᶠ v in Filter.cofinite, Valued.v (x.2 v) = 1 := by
-  erw [Prod.isUnit_iff, Pi.isUnit_iff]
-  rw [FiniteAdeleRing.isUnit_iff]
+  rw [Prod.isUnit_iff, Pi.isUnit_iff, FiniteAdeleRing.isUnit_iff]
   simp_rw [isUnit_iff_ne_zero]
 
 variable [NumberField K] [Ring.HasFiniteQuotients R] [Infinite R]
@@ -168,6 +167,10 @@ theorem norm_apply_of_unit (x : 𝔸[R, K]ˣ) :
     ‖(x : 𝔸[R, K])‖ = (∏ v, ‖(x : 𝔸[R, K]).1 v‖ ^ v.mult) * ∏ᶠ v, ‖(x : 𝔸[R, K]).2 v‖ := by
   rw [norm_def, FiniteAdeleRing.norm_eq_finprod_of_isUnit ((Prod.isUnit_iff.1 x.isUnit).2),
     InfiniteAdeleRing.norm_def]
+
+theorem norm_apply_of_isUnit {x : 𝔸[R, K]} (hx : IsUnit x) :
+    ‖x‖ = (∏ v, ‖x.1 v‖ ^ v.mult) * ∏ᶠ v, ‖x.2 v‖ := by
+  obtain ⟨u, rfl⟩ := hx; rw [norm_apply_of_unit u]
 
 theorem norm_eq_zero_of_not_isUnit {x : 𝔸[R, K]} (hx : ¬IsUnit x) : ‖x‖ = 0 := by
   rcases not_and_or.1 <| Prod.isUnit_iff.not.1 hx with hi | hf
