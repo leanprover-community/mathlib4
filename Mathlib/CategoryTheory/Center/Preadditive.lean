@@ -24,6 +24,10 @@ namespace CatCenter
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 @[simp]
+lemma app_zero (X : C) :
+    (0 : CatCenter C).app X = 0 := rfl
+
+@[simp]
 lemma app_add (z₁ z₂ : CatCenter C) (X : C) :
     (z₁ + z₂).app X = z₁.app X + z₂.app X := rfl
 

@@ -6,6 +6,7 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiffMap
+
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!

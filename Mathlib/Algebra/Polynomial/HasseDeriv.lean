@@ -9,8 +9,9 @@ public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Data.Nat.Choose.Vandermonde
-import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Positivity
+
+import Mathlib.Tactic.Field
 
 /-!
 # Hasse derivative of polynomials

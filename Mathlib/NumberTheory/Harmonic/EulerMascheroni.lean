@@ -6,8 +6,9 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Complex.ExponentialBounds
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.Harmonic.Defs
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # The Euler-Mascheroni constant `γ`

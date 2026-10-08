@@ -114,7 +114,7 @@ theorem le_imp_le_of_forall (_ : ∀ x y : α, x ≤ y) (_ : ∀ x y : α, x ≤
 /--
 error: `to_dual` validation failed: expected
   ∀ {α : Type} (a : α) [inst : PartialOrder α] (b : α), b ≤ a → b ≤ a
-but 'le_imp_le''' has type
+but `le_imp_le''` has type
   ∀ {α : Type} [inst : PartialOrder α] (a b : α), a ≤ b → a ≤ b
 -/
 #guard_msgs in
@@ -132,7 +132,7 @@ Note: This linter can be disabled with `set_option linter.translateRedundant fal
 ---
 error: `to_dual` validation failed: expected
   ∀ {α : Type} [inst : PartialOrder α] (a b : α), b ≤ a → b ≤ a
-but 'le_imp_le'''' has type
+but `le_imp_le'''` has type
   ∀ {α : Type} [inst : PartialOrder α] (a b : α), a ≤ b → a ≤ b
 -/
 #guard_msgs in
@@ -403,7 +403,7 @@ Please silence this warning and add a translation manually. Errors:
 
 `to_dual` validation failed: expected
   universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α
-but 'universeTest1''._to_dual_1.eq_1' has type
+but `universeTest1''._to_dual_1.eq_1` has type
   ∀ (α : Type u) (β : Type v) (γ : Type w), universeTest1''._to_dual_1 α β γ = universeTest1' β γ α
 
 Note: This linter can be disabled with `set_option linter.translate.warnInvalid false`
@@ -493,3 +493,29 @@ run_meta
   let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``GE.ge | failure
   -- `WithBot` gets `(relevant_arg := α)` because `WithBot` is a type
   let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``WithBot | failure
+
+-- `to_dual_for` does not introduce unnamed variables
+def toDualForTest (n : Nat) : Prop := n = 37
+def toDualForTest' : Nat → Prop := (· = 37)
+
+to_dual_for toDualForTest := n ≠ 42
+to_dual_for toDualForTest' := (· ≠ 42)
+
+theorem toDualForTestProof : ∃ n, toDualForTest n := ⟨37, rfl⟩
+
+to_dual_for toDualForTestProof := ⟨37, by decide⟩
+
+-- `to_dual_for foo` gives an `exposed` definition as long as `foo` is not a theorem.
+/--
+info: @[expose] def toDualForTest._to_dual_1 : Nat → Prop :=
+fun n => n ≠ 42
+-/
+#guard_msgs in
+#print toDualForTest._to_dual_1
+
+/--
+info: theorem toDualForTestProof._to_dual_1 : ∃ n, n ≠ 42 :=
+Exists.intro 37 (of_decide_eq_true (id (Eq.refl true)))
+-/
+#guard_msgs in
+#print toDualForTestProof._to_dual_1

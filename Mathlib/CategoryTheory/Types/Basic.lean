@@ -93,7 +93,6 @@ end TypeCat
 
 open TypeCat CategoryTheory
 
-@[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance CategoryTheory.types : Category.{u} (Type u) where
   Hom := Hom
   id X := ⟨.id X⟩
