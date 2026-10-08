@@ -61,7 +61,7 @@ def generatedEquiv (S : Array (Perm n)) :
   left_inv p := Subtype.ext (Perm.ofEquiv_toEquiv p.val)
   right_inv p := Subtype.ext (Perm.toEquiv_ofEquiv p.val)
 
-/-- The Mathlib-free order predicate is exactly Mathlib's cardinality statement. -/
+/-- The Hex order predicate is exactly Mathlib's cardinality statement. -/
 theorem hasOrder_iff_card {S : Array (Perm n)} {N : Nat} :
     HasOrder S N ↔ Nat.card (closure S) = N := by
   classical
