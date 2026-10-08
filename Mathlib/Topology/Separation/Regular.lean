@@ -538,6 +538,42 @@ theorem hasBasis_nhdsSet_closure [NormalSpace X] (u : Set X) (hu : IsClosed u) :
     (𝓝ˢ u).HasBasis (fun s => s ∈ 𝓝ˢ u) closure :=
   (𝓝ˢ u).basis_sets.nhdsSet_closure hu
 
+theorem IsClosed.nhdsSet_inter_eq [NormalSpace X] {s t : Set X} (hs : IsClosed s)
+    (ht : IsClosed t) : 𝓝ˢ (s ∩ t) = 𝓝ˢ s ⊓ 𝓝ˢ t := by
+  refine le_antisymm (nhdsSet_inter_le s t) fun T hT ↦ ?_
+  obtain ⟨U, hUo, hsU, hUT⟩ := mem_nhdsSet_iff_exists.mp hT
+  obtain ⟨A, B, hAo, hBo, hsA, htB, hAB⟩ :=
+    normal_separation (hs.sdiff hUo) (ht.sdiff hUo) (by grind)
+  rw [mem_inf_iff_superset]
+  refine ⟨A ∪ U, ?_, B ∪ U, ?_, by grind⟩
+  · exact (hAo.union hUo).mem_nhdsSet.mpr fun x hx ↦ by grind
+  · exact (hBo.union hUo).mem_nhdsSet.mpr fun x hx ↦ by grind
+
+theorem normalSpace_iff_forall_isClosed_nhdsSet_inter_eq :
+    NormalSpace X ↔ ∀ s t : Set X, IsClosed s → IsClosed t → 𝓝ˢ (s ∩ t) = 𝓝ˢ s ⊓ 𝓝ˢ t := by
+  refine ⟨fun _ _ _ hs ht ↦ hs.nhdsSet_inter_eq ht, fun h ↦ ⟨fun s t hs ht hd ↦ ?_⟩⟩
+  rw [separatedNhds_iff_disjoint, disjoint_iff, ← h s t hs ht, hd.inter_eq, nhdsSet_empty]
+
+theorem Set.Finite.nhdsSet_biInter_eq [NormalSpace X] {ι : Type*} {s : Set ι} {K : ι → Set X}
+    (hs : s.Finite) (hK : ∀ i ∈ s, IsClosed (K i)) : 𝓝ˢ (⋂ i ∈ s, K i) = ⨅ i ∈ s, 𝓝ˢ (K i) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ ih =>
+    rw [forall_mem_insert] at hK
+    rw [biInter_insert, iInf_insert, hK.1.nhdsSet_inter_eq (isClosed_biInter hK.2), ih hK.2]
+
+theorem Finset.nhdsSet_biInter_eq [NormalSpace X] {ι : Type*} {s : Finset ι} {K : ι → Set X}
+    (hK : ∀ i ∈ s, IsClosed (K i)) : 𝓝ˢ (⋂ i ∈ s, K i) = ⨅ i ∈ s, 𝓝ˢ (K i) :=
+  s.finite_toSet.nhdsSet_biInter_eq hK
+
+theorem nhdsSet_iInter_eq [NormalSpace X] {ι : Type*} [Finite ι] {K : ι → Set X}
+    (hK : ∀ i, IsClosed (K i)) : 𝓝ˢ (⋂ i, K i) = ⨅ i, 𝓝ˢ (K i) := by
+  simpa using Set.finite_univ.nhdsSet_biInter_eq fun i _ ↦ hK i
+
+theorem Set.Finite.nhdsSet_sInter_eq [NormalSpace X] {K : Set (Set X)} (hK : K.Finite)
+    (hKC : ∀ k ∈ K, IsClosed k) : 𝓝ˢ (⋂₀ K) = sInf (𝓝ˢ '' K) := by
+  rw [sInter_eq_biInter, hK.nhdsSet_biInter_eq hKC, ← sInf_image]
+
 /-- If the codomain of a closed embedding is a normal space, then so is the domain. -/
 protected theorem Topology.IsClosedEmbedding.normalSpace [TopologicalSpace Y] [NormalSpace Y]
     {f : X → Y} (hf : IsClosedEmbedding f) : NormalSpace X where
