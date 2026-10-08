@@ -159,21 +159,23 @@ runs:
     # Populate `tools-branch/` with the trusted CI tooling (the `cache` binary and
     # the `lake-build-*` helper scripts invoked by path). Fast path: download the
     # prebuilt `tools-bin` artifact published from master (canonical mathlib4 only,
-    # and only when the branch under test doesn't change the cache tool — get-tools
-    # makes that comparison against `source_dir`). Source build otherwise. See the
-    # get-tools action for the full trust rationale.
+    # and only when its tool sources match the workflow's commit — get-tools makes
+    # that comparison). Source build otherwise: fork PRs build from the workflow's
+    # commit, the base-branch commit whose workflow `pull_request_target` runs, so
+    # the tools match that workflow and never come from the fork. See the get-tools
+    # action for the full trust rationale.
     - name: Get CI tools
       uses: ./workflow-actions/.github/actions/get-tools
       with:
         use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' }}
-        tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
-        source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
+        tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && github.workflow_sha || inputs.pr_branch_ref) }}
         github_token: ${{ github.token }}
 
-    # Resolve the sysroot of the toolchain pinned by `tools-branch` (`master` for
-    # fork PRs). The `cache` steps put its `bin/` first on PATH, so the `lean` and
-    # `leantar` that `cache` invokes come from this toolchain rather than the one
-    # the PR's `lean-toolchain` selects. Fails if the sysroot can't be resolved.
+    # Resolve the sysroot of the toolchain pinned by `tools-branch` (the base-branch
+    # commit for fork PRs). The `cache` steps put its `bin/` first on PATH, so the
+    # `lean` and `leantar` that `cache` invokes come from this toolchain rather than
+    # the one the PR's `lean-toolchain` selects. Fails if the sysroot can't be
+    # resolved.
     - name: resolve trusted toolchain
       shell: bash
       run: |
