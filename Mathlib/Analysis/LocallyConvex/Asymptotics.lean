@@ -61,8 +61,8 @@ theorem isBigOTVS_iff_le :
   congrm ∀ p, _ → ?_
   constructor <;> rintro ⟨q, q_cont, hq⟩ <;>
   refine ⟨‖c‖₊ • q, q_cont.const_smul _, hq.mono fun x hx ↦ ?_⟩
-  · simpa using Seminorm.le_smul_of_egauge_unitBall_le_mul hc (ε := 1) (by simpa using hx)
-  · simpa using Seminorm.egauge_unitBall_le_mul_of_le_smul hc (ε := 1) (by simpa using hx)
+  · simpa using Seminorm.le_smul_of_le_egauge_unitBall_le_mul 1 hc (by simpa using hx)
+  · simpa using Seminorm.egauge_unitBall_le_mul_of_le_smul 1 hc (by simpa using hx)
 
 theorem isBigOTVS_iff :
     f =O[𝕜; l] g ↔ ∀ p : Seminorm 𝕜 E, Continuous p → ∃ q : Seminorm 𝕜 F,
@@ -82,21 +82,8 @@ theorem isLittleOTVS_iff_le :
   intro H p p_cont <;>
   obtain ⟨q, q_cont, hq⟩ := H p p_cont <;>
   refine ⟨‖c‖₊ • q, q_cont.const_smul _, fun ε hε ↦ (hq ε hε).mono fun x hx ↦ ?_⟩
-  · suffices (p (f x)).toNNReal ≤ ε * ‖c‖ₑ * (q (g x)).toNNReal by
-      simpa (discharger := positivity) [NNReal.smul_def, ← Real.toNNReal_le_toNNReal_iff,
-        ← ENNReal.coe_le_coe, Real.toNNReal_mul, mul_assoc]
-    calc  ↑(p (f x)).toNNReal
-      _ ≤ egauge 𝕜 (p.ball 0 1) (f x) := p.le_egauge_unitBall _
-      _ ≤ ε * egauge 𝕜 (q.ball 0 1) (g x) := hx
-      _ ≤ ε * ‖c‖ₑ * (q (g x)).toNNReal := by
-            grw [mul_assoc, q.egauge_unitBall_le_of_one_lt_norm hc _]
-  · calc  egauge 𝕜 (p.ball 0 1) (f x)
-      _ ≤ ‖c‖ₑ * (p (f x)).toNNReal := p.egauge_unitBall_le_of_one_lt_norm hc _
-      _ ≤ ‖c‖ₑ * ((ε • q) (g x)).toNNReal := by gcongr; exact hx
-      _ = ε * ((‖c‖₊ • q) (g x)).toNNReal := by
-            simp [NNReal.smul_def, Real.toNNReal_mul, enorm_eq_nnnorm, ← mul_assoc, mul_comm]
-      _ ≤ ε * egauge 𝕜 ((‖c‖₊ • q).ball 0 1) (g x) := by
-            grw [(‖c‖₊ • q).le_egauge_unitBall _]
+  · exact Seminorm.le_smul_of_le_egauge_unitBall_le_mul ε hc hx
+  · exact Seminorm.egauge_unitBall_le_mul_of_le_smul ε hc hx
 
 theorem isLittleOTVS_iff :
     f =o[𝕜; l] g ↔ ∀ p : Seminorm 𝕜 E, Continuous p → ∃ q : Seminorm 𝕜 F,
@@ -116,8 +103,7 @@ theorem isBigOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace �
   constructor <;> intro H
   · exact fun i ↦ H (p i) (hp.continuous_seminorm i)
   · intro r r_cont
-    refine Seminorm.induction_add_of_continuous hp ?_ ?_ ?_ ?_ ?_ r_cont
-    · assumption
+    refine hp.induction_add_of_continuous H ?_ ?_ ?_ ?_ r_cont
     · exact ⟨0, continuous_zero, .rfl⟩
     · intro r₁ r₂ ⟨q₁, q₁_cont, hq₁⟩ ⟨q₂, q₂_cont, hq₂⟩
       use q₁ + q₂, q₁_cont.add q₂_cont
@@ -151,7 +137,7 @@ theorem isLittleOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace
   constructor <;> intro H
   · exact fun i ↦ H (p i) (hp.continuous_seminorm i)
   · intro r r_cont
-    refine Seminorm.induction_add_of_continuous hp H ?_ ?_ ?_ ?_ r_cont
+    refine hp.induction_add_of_continuous H ?_ ?_ ?_ ?_ r_cont
     · exact ⟨0, continuous_zero, by simp [Filter.EventuallyLE.refl]⟩
     · intro r₁ r₂ ⟨q₁, q₁_cont, hq₁⟩ ⟨q₂, q₂_cont, hq₂⟩
       refine ⟨q₁ + q₂, q₁_cont.add q₂_cont, fun ε ε_ne ↦ ?_⟩
@@ -173,7 +159,7 @@ theorem isLittleOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
   constructor
   · intro ⟨r, r_cont, hr⟩
     obtain ⟨s, C, C_ne, hC⟩ := Seminorm.bound_of_continuous hq r r_cont
-    refine ⟨s, fun ε ε_ne ↦ (hr (ε/C) (by positivity)).mono fun x hx ↦ ?_⟩
+    refine ⟨s, fun ε ε_ne ↦ (hr (ε / C) (by positivity)).mono fun x hx ↦ ?_⟩
     simp only [Function.comp_apply, Seminorm.le_def, smul_apply] at hx hC ⊢
     grw [hx, hC _, ← mul_smul, div_mul_cancel₀ _ C_ne]
   · intro ⟨s, hs⟩
