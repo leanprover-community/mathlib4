@@ -39,8 +39,6 @@ namespace exteriorPower
 
 open Function Module
 
-section
-
 variable {R M : Type*}
   [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M] [Module.Free R M]
   (B : LinearMap.BilinForm R M) (hB : Bijective B)
@@ -58,13 +56,8 @@ lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
     B.exteriorPower l (hodgeStar B hB vol hkl x) = wedgePairing vol hkl x := by
   simp
 
-end
-
-variable {R M : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup M] [Module R M] [Module.Finite R M] [Module.Free R M]
+variable [LinearOrder R] [IsStrictOrderedRing R]
   [Module.Oriented R M (Fin (finrank R M))]
-
-variable (B : LinearMap.BilinForm R M) (hB : Bijective B)
 
 open Set Set.powersetCard in
 /-- The Hodge star associated to `B` and the positive orientation, using `Module.finBasis` to
