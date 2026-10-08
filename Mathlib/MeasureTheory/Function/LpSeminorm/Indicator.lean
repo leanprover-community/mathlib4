@@ -15,7 +15,6 @@ import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 -/
 
 public section
-noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
 
