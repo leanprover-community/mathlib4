@@ -5,11 +5,12 @@ Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 public import Mathlib.Analysis.Convex.Star
 public import Mathlib.Tactic.Field
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
-public import Mathlib.Tactic.NoncommRing
+
+import Mathlib.Algebra.Ring.Action.Pointwise.Set
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # Convex sets
@@ -321,7 +322,7 @@ variable [Module R 𝕜] [IsScalarTower R 𝕜 E]
 theorem Convex.lift [SMulPosMono R 𝕜] {s : Set E} (hs : Convex 𝕜 s) : Convex R s := by
   intro x hx y hy a b ha hb hab
   suffices (a • (1 : 𝕜)) • x + (b • (1 : 𝕜)) • y ∈ s by simpa using this
-  refine hs hx hy ?_ ?_ (by simpa [add_smul] using congr($(hab) • (1 : 𝕜)))
+  refine hs hx hy ?_ ?_ (by simpa [add_smul] using congr($hab • (1 : 𝕜)))
   all_goals exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right ‹_› zero_le_one
 
 end IsScalarTower

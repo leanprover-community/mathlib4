@@ -6,7 +6,8 @@ Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 module
 
 public import Mathlib.NumberTheory.Fermat
-public import Mathlib.RingTheory.Fintype
+
+import Mathlib.RingTheory.Fintype
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes
@@ -396,7 +397,7 @@ lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
 
 instance : CharP (X q) q where
   cast_eq_zero_iff x := by
-    convert! ZMod.natCast_eq_zero_iff _ _
+    convert ZMod.natCast_eq_zero_iff _ _
     exact ⟨congr_arg Prod.fst, fun hx ↦ ext hx (by simp)⟩
 
 instance : Coe (ZMod ↑q) (X q) where
@@ -476,7 +477,7 @@ theorem card_eq : Fintype.card (X q) = q ^ 2 := by
 /-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
 nonrec theorem card_units_lt (w : 1 < q) : Fintype.card (X q)ˣ < q ^ 2 := by
   have : Fact (1 < (q : ℕ)) := ⟨w⟩
-  convert! card_units_lt (X q)
+  convert card_units_lt (X q)
   rw [card_eq]
 
 end X
@@ -555,7 +556,7 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
       congr_arg (Units.coeHom (X (q (p' + 2))) : Units (X (q (p' + 2))) → X (q (p' + 2))) <|
         orderOf_dvd_iff_pow_eq_one.1 o
     have h : (1 : ZMod (q (p' + 2))) = -1 :=
-      congr_arg Prod.fst (ω_pow.symm.trans (ω_pow_eq_neg_one p' h))
+      congr($(ω_pow.symm.trans (ω_pow_eq_neg_one p' h)).fst)
     have : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩
     apply ZMod.neg_one_ne_one h.symm
   · apply orderOf_dvd_iff_pow_eq_one.2

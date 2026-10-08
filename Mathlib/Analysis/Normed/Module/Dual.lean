@@ -6,10 +6,7 @@ Authors: Heather Macbeth, Michał Świętek
 module
 
 public import Mathlib.Analysis.LocallyConvex.Polar
-public import Mathlib.Analysis.Normed.Module.RCLike.Basic
-public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
@@ -33,8 +30,6 @@ strong dual, polar
 -/
 
 public section
-
-noncomputable section
 
 open Bornology
 
@@ -61,7 +56,7 @@ theorem polar_closure (s : Set E) : StrongDual.polar 𝕜 (closure s) = StrongDu
     (topDualPairing 𝕜 E).flip.polar_gc.l_le <|
       closure_minimal ((topDualPairing 𝕜 E).flip.polar_gc.le_u_l s) <| by
         simpa [LinearMap.flip_flip] using!
-          (isClosed_polar _ _).preimage (ContinuousLinearMap.apply 𝕜 𝕜 (E := E)).continuous
+          (isClosed_polar _ _).preimage (ContinuousLinearMap.apply 𝕜 𝕜 (E' := E)).continuous
 
 variable {𝕜}
 

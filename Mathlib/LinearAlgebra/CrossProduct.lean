@@ -6,10 +6,7 @@ Authors: Martin Dvorak, Kyle Miller, Eric Wieser
 module
 
 public import Mathlib.Algebra.Lie.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!

@@ -29,8 +29,6 @@ public section
 
 universe v v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory Limits
 
 namespace TopCat.Presheaf
