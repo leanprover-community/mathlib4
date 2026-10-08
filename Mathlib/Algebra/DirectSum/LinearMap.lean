@@ -6,9 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.Trace
-
 public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Linear maps between direct sums
