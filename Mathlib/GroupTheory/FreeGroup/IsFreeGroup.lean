@@ -145,13 +145,13 @@ protected lemma injective (b : FreeGroupBasis ι G) : Injective b :=
 lemma isFreeGroup (b : FreeGroupBasis ι G) : IsFreeGroup G :=
   ⟨range b, ⟨b.reindex (Equiv.ofInjective (↑b) b.injective)⟩⟩
 
-/-- An additive free group basis over `G` is a free group basis over `Multiplicative G`. -/
-def _root_.FreeAddGroupBasis.freeGroupBasis {ι G} [AddGroup G] (b : FreeAddGroupBasis ι G) :
+/-- An additive free group basis of `G` is a free group basis of `Multiplicative G`. -/
+def _root_.FreeAddGroupBasis.freeGroupBasis [AddGroup G] (b : FreeAddGroupBasis ι G) :
     FreeGroupBasis ι (Multiplicative G) :=
   .ofRepr <| b.repr.toMultiplicative.trans FreeGroup.freeGroupEquivMultiplicative.symm
 
-/-- An free group basis over `G` is an additive free group basis over `Additive G`. -/
-def freeAddGroupBasis {ι G} [Group G] (b : FreeGroupBasis ι G) : FreeAddGroupBasis ι (Additive G) :=
+/-- An free group basis of `G` is an additive free group basis of `Additive G`. -/
+def freeAddGroupBasis (b : FreeGroupBasis ι G) : FreeAddGroupBasis ι (Additive G) :=
   .ofRepr <| b.repr.toAdditive.trans FreeAddGroup.freeAddGroupEquivAdditive.symm
 
 @[to_additive]
@@ -251,38 +251,6 @@ def basis : FreeGroupBasis (Generators G) G := FreeGroupBasis.ofRepr (mulEquiv G
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
   (mulEquiv G).symm
 
-@[simp]
-theorem _root_.IsFreeAddGroup.isFreeAddGroup_additive_iff {G} [Group G] :
-    IsFreeAddGroup (Additive G) ↔ IsFreeGroup G :=
-  ⟨fun h ↦ h.basis.freeGroupBasis.isFreeGroup, fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup⟩
-
-@[simp]
-theorem isFreeGroup_multiplicative_iff {G} [AddGroup G] :
-    IsFreeGroup (Multiplicative G) ↔ IsFreeAddGroup G :=
-  ⟨fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup, fun h ↦ h.basis.freeGroupBasis.isFreeGroup⟩
-
-instance (G) [Group G] [IsFreeGroup G] : IsFreeAddGroup (Additive G) :=
-  IsFreeAddGroup.isFreeAddGroup_additive_iff.mpr ‹_›
-
-instance (G) [AddGroup G] [IsFreeAddGroup G] : IsFreeGroup (Multiplicative G) :=
-  isFreeGroup_multiplicative_iff.mpr ‹_›
-
-@[simp]
-theorem _root_.IsFreeAddGroup.isFreeAddGroup_toAddSubgroup_iff {G} [Group G] {H : Subgroup G} :
-    IsFreeAddGroup H.toAddSubgroup ↔ IsFreeGroup H :=
-  ⟨fun h ↦ h.basis.freeGroupBasis.isFreeGroup, fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup⟩
-
-@[simp]
-theorem isFreeGroup_toSubgroup_iff {G} [AddGroup G] {H : AddSubgroup G} :
-    IsFreeGroup H.toSubgroup ↔ IsFreeAddGroup H :=
-  ⟨fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup, fun h ↦ h.basis.freeGroupBasis.isFreeGroup⟩
-
-instance (G) [Group G] (H : Subgroup G) [IsFreeGroup H] : IsFreeAddGroup H.toAddSubgroup :=
-  IsFreeAddGroup.isFreeAddGroup_toAddSubgroup_iff.mpr ‹_›
-
-instance (G) [AddGroup G] (H : AddSubgroup G) [IsFreeAddGroup H] : IsFreeGroup H.toSubgroup :=
-  isFreeGroup_toSubgroup_iff.mpr ‹_›
-
 variable {G}
 
 /-- The canonical injection of G's generators into G -/
@@ -356,3 +324,41 @@ lemma ofMulEquiv (e : G ≃* H) : IsFreeGroup H :=
   ((basis G).map e).isFreeGroup
 
 end IsFreeGroup
+
+section TypeTags
+
+variable {G : Type*}
+
+@[simp]
+theorem isFreeAddGroup_additive_iff [Group G] :
+    IsFreeAddGroup (Additive G) ↔ IsFreeGroup G :=
+  ⟨fun h ↦ h.basis.freeGroupBasis.isFreeGroup, fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup⟩
+
+@[simp]
+theorem isFreeGroup_multiplicative_iff [AddGroup G] :
+    IsFreeGroup (Multiplicative G) ↔ IsFreeAddGroup G :=
+  ⟨fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup, fun h ↦ h.basis.freeGroupBasis.isFreeGroup⟩
+
+instance (G) [Group G] [IsFreeGroup G] : IsFreeAddGroup (Additive G) :=
+  isFreeAddGroup_additive_iff.mpr ‹_›
+
+instance (G) [AddGroup G] [IsFreeAddGroup G] : IsFreeGroup (Multiplicative G) :=
+  isFreeGroup_multiplicative_iff.mpr ‹_›
+
+@[simp]
+theorem isFreeAddGroup_toAddSubgroup_iff [Group G] {H : Subgroup G} :
+    IsFreeAddGroup H.toAddSubgroup ↔ IsFreeGroup H :=
+  ⟨fun h ↦ h.basis.freeGroupBasis.isFreeGroup, fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup⟩
+
+@[simp]
+theorem isFreeGroup_toSubgroup_iff [AddGroup G] {H : AddSubgroup G} :
+    IsFreeGroup H.toSubgroup ↔ IsFreeAddGroup H :=
+  ⟨fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup, fun h ↦ h.basis.freeGroupBasis.isFreeGroup⟩
+
+instance (G) [Group G] (H : Subgroup G) [IsFreeGroup H] : IsFreeAddGroup H.toAddSubgroup :=
+  isFreeAddGroup_toAddSubgroup_iff.mpr ‹_›
+
+instance (G) [AddGroup G] (H : AddSubgroup G) [IsFreeAddGroup H] : IsFreeGroup H.toSubgroup :=
+  isFreeGroup_toSubgroup_iff.mpr ‹_›
+
+end TypeTags
