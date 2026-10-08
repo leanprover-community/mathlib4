@@ -87,19 +87,11 @@ lemma unit_mul_unit_mul_unit_eq_one_iff (ha : IsUnit a) (hb : IsUnit b) (hc : Is
 -- `to_additive` does not translate the declaration correctly (`1` stays `1`).
 /-- The class of a unit `u` is trivial in `Units.ModPow α 2` exactly when `u` is a square
 in `α`. -/
+@[to_additive /-- The class of an additive unit `u` is trivial in `AddUnits.ModNSMul α 2`
+exactly when `u` is even in `α`. -/]
 lemma mk_eq_one_iff_isSquare {u : αˣ} : (u : ModPow α 2) = 1 ↔ IsSquare (u : α) := by
   rw [mk_eq_one_iff_exists_pow_eq_val, isSquare_iff_exists_sq]
   exact congr(∃ _, $eq_comm)
-
-/-- The class of an additive unit `u` is trivial in `AddUnits.ModNSMul α 2` exactly when `u` is
-even in `α`. -/
-lemma _root_.AddUnits.ModNSMul.mk_eq_zero_iff_even {α : Type*} [AddCommMonoid α] {u : AddUnits α} :
-    (u : AddUnits.ModNSMul α 2) = 0 ↔ Even (u : α) := by
-  rw [AddUnits.ModNSMul.mk_eq_zero_iff_exists_nsmul_eq_val, even_iff_exists_two_nsmul]
-  exact congr(∃ _, $eq_comm)
-
--- The following does not work because of the mis-translation.
--- attribute [to_additive existing AddUnits.ModNSMul.mk_eq_zero_iff_even] mk_eq_one_iff_isSquare
 
 @[to_additive (attr := simp)]
 lemma pow_eq_one (m : ModPow α n) : m ^ n = 1 :=
