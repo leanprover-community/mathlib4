@@ -878,9 +878,9 @@ instance (priority := 100) of_subsingleton [Subsingleton M] : IsAdicComplete I M
 
 open Finset
 
-theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
+theorem le_jacobson [IsAdicComplete I R] : I ≤ Ring.jacobson R := by
   intro x hx
-  rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
+  rw [← Ideal.neg_mem_iff, ← Ideal.jacobson_bot, Ideal.mem_jacobson_bot]
   intro y
   rw [add_comm]
   let f : ℕ → R := fun n => ∑ i ∈ range n, (x * y) ^ i
@@ -910,5 +910,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm (_ ^ _), ← sub_sub,
       sub_self, zero_sub, @neg_mem_iff, mul_pow]
     exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)
+
+@[deprecated (since := "2026-10-08")] alias le_jacobson_bot := le_jacobson
 
 end IsAdicComplete
