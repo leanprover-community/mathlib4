@@ -158,12 +158,12 @@ runs:
 
     # Populate `tools-branch/` with the trusted CI tooling (the `cache` binary and
     # the `lake-build-*` helper scripts invoked by path). Fast path: download the
-    # prebuilt `tools-bin` artifact published from master (canonical mathlib4 only,
-    # and only when its tool sources match the workflow's commit — get-tools makes
-    # that comparison). Source build otherwise: fork PRs build from the workflow's
-    # commit, the base-branch commit whose workflow `pull_request_target` runs, so
-    # the tools match that workflow and never come from the fork. See the get-tools
-    # action for the full trust rationale.
+    # prebuilt `tools-bin` artifact published from master. This applies on canonical
+    # mathlib4 only, and get-tools checks that the artifact's tool sources match the
+    # workflow's commit. Source build otherwise. Fork PRs build from
+    # `github.workflow_sha`, the base-branch commit whose workflow
+    # `pull_request_target` runs, so the tools match that workflow and the fork's
+    # code does not build them. `publish_tools.yml` describes the trust model.
     - name: Get CI tools
       uses: ./workflow-actions/.github/actions/get-tools
       with:

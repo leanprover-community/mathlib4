@@ -3,17 +3,14 @@
 #
 # Fast path: download the `tools-bin` artifact published by `publish_tools.yml`
 # from its latest successful `master` `push` run, unpack it, and install the
-# matching toolchain. The artifact is used only when its tool sources match the
-# tool sources at `github.workflow_sha`, the commit that holds the calling
-# workflow, so the tools always match the workflow that invokes them.
-# Fallback: check out `tools_source_ref` and build from source (the original
-# behaviour). The fallback also triggers automatically if anything about the
-# download/verification fails, so this action can never make CI worse than
-# building from source.
+# matching toolchain. The action uses the artifact only when its tool sources
+# match the tool sources at `github.workflow_sha`, the commit that holds the
+# calling workflow, so the tools match the workflow that invokes them.
+# Fallback: check out `tools_source_ref` and build from source. Any failure in the
+# lookup, the comparison, the download or the unpack also selects the fallback.
 #
 # Requires (fast path only): `actions: read` permission and the `gh` CLI, which the
-# self-hosted runner image provides. Any lookup/download failure falls through to the
-# source build, so the fast path can never make CI worse.
+# self-hosted runner image provides.
 name: Get CI tools
 description: Download prebuilt CI tools from master, or build them from source.
 inputs:
@@ -73,8 +70,7 @@ runs:
             tool_paths=(Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py)
             repo_dir="${RUNNER_TEMP}/get-tools-trees"
             rm -rf "$repo_dir"
-            # Fail safe toward building: a failed fetch or ls-tree leaves the
-            # listings unequal or the commands non-zero.
+            # A failed command or an empty listing selects the source build.
             if ! { git init -q --bare "$repo_dir" \
                 && git -C "$repo_dir" fetch -q --no-tags --depth=1 --filter=blob:none \
                   "https://github.com/${{ inputs.artifact_repo }}.git" "$artifact_sha" "$WORKFLOW_SHA" \
