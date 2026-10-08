@@ -247,9 +247,9 @@ jobs:
 
       # One `lake build` builds the three libraries, so their modules share one
       # scheduler, and Lake keeps building the other targets when one fails.
-      # The three checks below ask Lake whether each target is up to date, so
-      # each target reports its own outcome to the staging gates, the test gate
-      # and the nightly-testing comment.
+      # The three checks below ask Lake whether each target is up to date and
+      # free of warnings, so each target reports its own outcome to the staging
+      # gates, the test gate and the nightly-testing comment.
       - name: build archive, counterexamples and wanted
         id: libraries
         continue-on-error: true
@@ -270,14 +270,14 @@ jobs:
         continue-on-error: true
         run: |
           cd pr-branch
-          lake build --no-build Counterexamples
+          lake build --no-build --wfail Counterexamples
 
       - name: check that Wanted built
         id: wanted
         continue-on-error: true
         run: |
           cd pr-branch
-          lake build --no-build Wanted
+          lake build --no-build --wfail Wanted
 
       # Runs in the build job because it only needs the freshly-built Mathlib/
       # Archive/Counterexamples/Wanted oleans, which are present here; keeping it in
