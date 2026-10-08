@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 # Base change of exterior algebra
 
-In this file, we proved that exterior algebra commutes with arbitrary base change.
+In this file, we proved that Exterior algebra behaves well with respect to base change.
 
 # Main Results
 
@@ -88,7 +88,7 @@ lemma baseChangeEquivForward_rightInverse :
   ext m
   simp [baseChangeEquivForward, baseChangeEquivForwardAux, baseChangeExteriorAlgebraToTensor]
 
-/-- The commute of `ExteriorAlgebra` and base change. -/
+/-- Exterior algebra behaves well with respect to base change. -/
 def baseChangeEquiv : S ⊗[R] ExteriorAlgebra R M ≃ₐ[S] ExteriorAlgebra S (S ⊗[R] M) where
   __ := baseChangeEquivForward R M S
   invFun := baseChangeExteriorAlgebraToTensor R M S
