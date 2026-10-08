@@ -113,7 +113,7 @@ as adding a vector to the first point. -/
 theorem centroid_pair_fin [Invertible (2 : k)] (p : Fin 2 → P) :
     univ.centroid k p = (2⁻¹ : k) • (p 1 -ᵥ p 0) +ᵥ p 0 := by
   rw [univ_fin2]
-  convert! centroid_pair k p 0 1
+  convert centroid_pair k p 0 1
 
 /-- A centroid, over the image of an embedding, equals a centroid with
 the same points and weights over the original `Finset`. -/

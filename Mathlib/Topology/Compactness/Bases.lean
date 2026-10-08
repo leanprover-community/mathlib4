@@ -6,6 +6,7 @@ Authors: Andrew Yang, Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Bases
+
 import Mathlib.Topology.Compactness.Compact
 
 /-!

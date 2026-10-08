@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -44,7 +45,7 @@ theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x
 
 theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := by
   rcases hx.lt_or_gt with hx | hx
-  · convert! (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
+  · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
     · ring
   · exact hasStrictDerivAt_log_of_pos hx
@@ -83,7 +84,7 @@ theorem contDiffAt_log {n : ℕ∞ω} {x : ℝ} : ContDiffAt ℝ n log x ↔ x �
       apply ContDiffAt.comp
       · apply A _ (Left.neg_pos_iff.mpr hx)
       apply contDiffAt_id.neg
-    convert! this
+    convert this
     ext x
     simp
   · exact A x hx
@@ -227,7 +228,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     have : HasDerivAt F ((∑ i ∈ range n, ↑(i + 1) * y ^ i / (↑i + 1)) + (-1) / (1 - y)) y :=
       .add (.fun_sum fun i _ ↦ (hasDerivAt_pow (i + 1) y).div_const ((i : ℝ) + 1))
         (((hasDerivAt_id y).const_sub _).log <| sub_ne_zero.2 hy.2.ne')
-    convert! this using 1
+    convert this using 1
     calc
       -y ^ n / (1 - y) = ∑ i ∈ Finset.range n, y ^ i + -1 / (1 - y) := by
         simp [field, geom_sum_eq hy.2.ne, sub_ne_zero.2 hy.2.ne, sub_ne_zero.2 hy.2.ne']
@@ -385,7 +386,7 @@ theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     ring_nf
   rw [← h_term_eq_goal, (mul_right_injective₀ (two_ne_zero' ℕ)).hasSum_iff]
   · have h₁ := (hasSum_pow_div_log_of_abs_lt_one (Eq.trans_lt (abs_neg x) h)).mul_left (-1)
-    convert! h₁.add (hasSum_pow_div_log_of_abs_lt_one h) using 1
+    convert h₁.add (hasSum_pow_div_log_of_abs_lt_one h) using 1
     ring_nf
   · intro m hm
     rw [range_two_mul, Set.mem_ofPred_eq, ← Nat.even_add_one] at hm
@@ -401,7 +402,7 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
     · linarith
     · linarith
     · exact div_pos one_pos (by linarith)
-  convert! hasSum_log_sub_log_of_abs_lt_one h₁ using 1
+  convert hasSum_log_sub_log_of_abs_lt_one h₁ using 1
   have h₂ : (2 : ℝ) * a + 1 ≠ 0 := by linarith
   have h₃ := h.ne'
   rw [← log_div]
