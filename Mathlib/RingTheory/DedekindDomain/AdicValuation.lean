@@ -932,7 +932,7 @@ theorem denseRange_algebraMap : DenseRange (algebraMap K (v.adicCompletion K)) :
 end Algebra
 
 theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionIntegers K v := by
-  rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion,
+  rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion_apply,
     adicCompletion.coe_toCompletion, Valued.valuedCompletion_apply]
   simpa using v.valuation_le_one _
 
@@ -978,14 +978,14 @@ open scoped algebraMap in -- to make the coercions from `R` fire
 integer ring. -/
 theorem valuedAdicCompletion_eq_valuation (r : R) :
     Valued.v (r : v.adicCompletion K) = v.valuation K r := by
-  rw [← adicCompletion.valued_toCompletion]
+  rw [← adicCompletion.valued_toCompletion_apply]
   exact Valued.valuedCompletion_apply _
 
 variable {R K} in
 /-- The valuation on the completion agrees with the global valuation on elements of the field. -/
 theorem valuedAdicCompletion_eq_valuation' (k : K) :
     Valued.v (k : v.adicCompletion K) = v.valuation K k := by
-  rw [← adicCompletion.valued_toCompletion]
+  rw [← adicCompletion.valued_toCompletion_apply]
   exact Valued.valuedCompletion_apply _
 
 variable {R K} in
