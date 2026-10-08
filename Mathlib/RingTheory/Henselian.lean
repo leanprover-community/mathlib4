@@ -153,7 +153,7 @@ instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
 /-- A ring `R` that is `I`-adically complete is Henselian at `I`. -/
 instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R] (I : Ideal R)
     [IsAdicComplete I R] : HenselianRing R I where
-  jac := Ideal.jacobson_bot (R := R) ▸ IsAdicComplete.le_jacobson_bot _
+  jac := IsAdicComplete.le_jacobson _
   is_henselian := by
     intro f _ a₀ h₁ h₂
     classical
@@ -182,8 +182,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
-        have := isLocalHom_of_le_jacobson_bot
-          (Ideal.jacobson_bot (R := R) ▸ IsAdicComplete.le_jacobson_bot I)
+        have := isLocalHom_of_le_jacobson (IsAdicComplete.le_jacobson I)
         apply IsUnit.of_map (Ideal.Quotient.mk I)
         convert h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)
