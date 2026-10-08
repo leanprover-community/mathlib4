@@ -81,18 +81,10 @@ theorem faceOpposite_cornerSimplex {n : ℕ} (i : Fin (n + 1)) :
 theorem altitudeFoot_cornerSimplex {n : ℕ} [NeZero n] {i : Fin (n + 1)} (hi : i ≠ 0) :
     (cornerSimplex n).altitudeFoot i = 0 := by
   rw [altitudeFoot, orthogonalProjectionSpan, coe_orthogonalProjection_eq_iff_mem]
-  refine ⟨mem_affineSpan _ (by simp [hi.symm]), (mem_orthogonal _ _).mpr fun v hv ↦ ?_⟩
-  rw [direction_affineSpan, vectorSpan_eq_span_vsub_set_right ℝ (p := 0) (by simp [hi.symm])] at hv
-  induction hv using span_induction with
-  | mem x hx =>
-    obtain ⟨j, hj, rfl⟩ : ∃ j, j ≠ i ∧ (if h : j = 0 then 0 else single (j.pred h) 1) = x := by
-      simpa using hx
-    by_cases hj0 : j = 0
-    · simp [hj0]
-    · simp [hj0, hj, inner_single_left, hi]
-  | zero => simp
-  | add x y hx hy ihx ihy => rw [inner_add_left, ihx, ihy, zero_add]
-  | smul a x hx ih => rw [inner_smul_left, ih, mul_zero]
+  refine ⟨mem_affineSpan _ (by simp [hi.symm]), ?_⟩
+  rw [← span_singleton_le_iff_mem, ← isOrtho_iff_le, direction_affineSpan,
+    vectorSpan_eq_span_vsub_set_right ℝ (p := 0) (by simp [hi.symm])]
+  aesop (add simp [inner_single_left])
 
 @[simp]
 theorem height_cornerSimplex {n : ℕ} [NeZero n] {i : Fin (n + 1)} (hi : i ≠ 0) :
