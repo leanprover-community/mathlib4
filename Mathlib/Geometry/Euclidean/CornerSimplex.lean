@@ -105,24 +105,33 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   [NormedAddTorsor V P]
 
 /-- The `AffineMap` from `Affine.Simplex.cornerSimplex` to an arbitrary `Affine.Simplex`. -/
-@[simps!]
 noncomputable def cornerMap {n : ℕ} (s : Simplex ℝ P n) :
     EuclideanSpace ℝ (Fin n) →ᵃ[ℝ] P :=
   ((basisFun (Fin n) ℝ).toBasis.constr ℝ fun i ↦ s.points i.succ -ᵥ s.points 0).toAffineMap +ᵥ
     AffineMap.const ℝ (EuclideanSpace ℝ (Fin n)) (s.points 0)
 
+@[simp]
+theorem cornerMap_zero {n : ℕ} (s : Simplex ℝ P n) :
+    s.cornerMap 0 = s.points 0 := by
+  simp [cornerMap]
+
+@[simp]
+theorem cornerMap_single {n : ℕ} (s : Simplex ℝ P n) (i : Fin n) :
+    s.cornerMap (single i 1) = s.points i.succ := by
+  simp [cornerMap]
+
 theorem cornerMap_injective {n : ℕ} (s : Simplex ℝ P n) :
     Function.Injective s.cornerMap := by
   intro x y h
   simp_rw [cornerMap, vadd_apply, const_apply, vadd_right_cancel_iff] at h
-  refine (Basis.injective_constr_of_linearIndependent _ ?_ (R₂ := ℝ)) h
+  refine Basis.injective_constr_of_linearIndependent (R₂ := ℝ) _ ?_ h
   convert ((affineIndependent_iff_linearIndependent_vsub ℝ _ 0).mp s.independent).comp
     (fun i : Fin n ↦ ⟨i.succ, by simp⟩) (fun i j ↦ by simp)
   simp
 
 @[simp]
 theorem map_cornerSimplex_cornerMap {n : ℕ} (s : Simplex ℝ P n) :
-    (cornerSimplex n).map s.cornerMap (cornerMap_injective s) = s := by
+    (cornerSimplex n).map s.cornerMap s.cornerMap_injective = s := by
   ext i
   by_cases hi : i = 0 <;> simp [hi]
 
