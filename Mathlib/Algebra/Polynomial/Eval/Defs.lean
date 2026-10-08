@@ -350,6 +350,15 @@ theorem eval_finsetSum (s : Finset ι) (g : ι → R[X]) (x : R) :
 
 @[deprecated (since := "2026-04-08")] alias eval_finset_sum := eval_finsetSum
 
+/-- Evaluation of a polynomial is monotone if addition and multiplication are monotone in each
+argument, such as in `ℕ`. -/
+@[gcongr]
+theorem eval_mono_left [Preorder R] [AddLeftMono R] [MulLeftMono R] [MulRightMono R] (p : R[X])
+    (hab : a ≤ b) : p.eval a ≤ p.eval b := by
+  induction p using Polynomial.induction_on' with
+  | add p q hp hq => simpa using add_le_add hp hq
+  | monomial n c => simpa using mul_le_mul_right (pow_le_pow_left' hab n) c
+
 /-- `IsRoot p x` implies `x` is a root of `p`. The evaluation of `p` at `x` is zero -/
 def IsRoot (p : R[X]) (a : R) : Prop :=
   p.eval a = 0
@@ -371,15 +380,6 @@ theorem IsRoot.dvd {R : Type*} [CommSemiring R] {p q : R[X]} {x : R} (h : p.IsRo
 theorem not_isRoot_C (r a : R) (hr : r ≠ 0) : ¬IsRoot (C r) a := by simpa using hr
 
 theorem eval_surjective (x : R) : Function.Surjective <| eval x := fun y => ⟨C y, eval_C⟩
-
-/-- Evaluation of a polynomial is monotone if addition and multiplication are monotone in each
-argument, such as in `ℕ`. -/
-@[gcongr]
-theorem eval_mono_left [Preorder R] [AddLeftMono R] [MulLeftMono R] [MulRightMono R] (p : R[X])
-    (hab : a ≤ b) : p.eval a ≤ p.eval b := by
-  induction p using Polynomial.induction_on' with
-  | add p q hp hq => simpa using add_le_add hp hq
-  | monomial n c => simpa using mul_le_mul_right (pow_le_pow_left' hab n) c
 
 end Eval
 
