@@ -5,6 +5,7 @@ import MathlibTest.UnusedInstancesInType.Basic
 import Mathlib.Data.Fintype.EquivFin
 
 set_option linter.unusedFintypeInType true
+set_option linter.concreteInstances false
 
 section unused
 
