@@ -234,6 +234,8 @@ theorem piEmbedding_injective {G : GrpCat.{u}} : Function.Injective (piEmbedding
 
 @[to_additive]
 noncomputable instance (G : Type u) [CommGroup G] : CommGroup (completion (.mk G)) :=
-  piEmbedding.commGroupOfInjective piEmbedding_injectiveend ProfiniteCompletion
+  piEmbedding.commGroupOfInjective piEmbedding_injective
+
+end ProfiniteCompletion
 
 end ProfiniteGrp
