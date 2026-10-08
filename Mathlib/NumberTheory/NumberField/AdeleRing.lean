@@ -21,7 +21,7 @@ direct product of the infinite adele ring and the finite adele ring.
 
 ## Main results
 
-- `NumberField.AdeleRing.norm_algebraMap_eq_one_of_unit/isUnit` is the idelic product formula.
+- `NumberField.AdeleRing.norm_algebraMap_eq_one_of_ne_zero` is the idelic product formula.
 
 ## References
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
@@ -163,28 +163,20 @@ instance : Norm 𝔸[R, K] where norm x := ‖x.1‖ * ‖x.2‖
 
 theorem norm_def (x : 𝔸[R, K]) : ‖x‖ = ‖x.1‖ * ‖x.2‖ := rfl
 
-theorem norm_apply_of_unit (x : 𝔸[R, K]ˣ) :
-    ‖(x : 𝔸[R, K])‖ = (∏ v, ‖(x : 𝔸[R, K]).1 v‖ ^ v.mult) * ∏ᶠ v, ‖(x : 𝔸[R, K]).2 v‖ := by
-  rw [norm_def, FiniteAdeleRing.norm_eq_finprod_of_isUnit ((Prod.isUnit_iff.1 x.isUnit).2),
-    InfiniteAdeleRing.norm_def]
-
 theorem norm_apply_of_isUnit {x : 𝔸[R, K]} (hx : IsUnit x) :
     ‖x‖ = (∏ v, ‖x.1 v‖ ^ v.mult) * ∏ᶠ v, ‖x.2 v‖ := by
-  obtain ⟨u, rfl⟩ := hx; rw [norm_apply_of_unit u]
+  rw [norm_def, FiniteAdeleRing.norm_eq_finprod_of_isUnit (Prod.isUnit_iff.1 hx).2,
+    InfiniteAdeleRing.norm_def]
 
 theorem norm_eq_zero_of_not_isUnit {x : 𝔸[R, K]} (hx : ¬IsUnit x) : ‖x‖ = 0 := by
   rcases not_and_or.1 <| Prod.isUnit_iff.not.1 hx with hi | hf
   · simp [norm_def, InfiniteAdeleRing.norm_eq_zero_of_not_isUnit hi]
   · simp [norm_def, FiniteAdeleRing.norm_eq_zero_of_not_isUnit hf]
 
-theorem norm_algebraMap_eq_one_of_unit (x : Kˣ) :
-    ‖algebraMap K 𝔸[K] (x : K)‖ = 1 := by
+theorem norm_algebraMap_eq_one_of_ne_zero {x : K} (hx : x ≠ 0) :
+    ‖algebraMap K 𝔸[K] x‖ = 1 := by
   rw [norm_def, algebraMap_fst_def, algebraMap_snd_def, InfiniteAdeleRing.coe_norm_eq_abs_norm,
-    FiniteAdeleRing.coe_norm_eq_inv_abs_norm x.ne_zero]
-  simp
-
-theorem norm_algebraMap_eq_one_of_isUnit {x : K} (hx : x ≠ 0) :
-    ‖algebraMap K 𝔸[K] x‖ = 1 := norm_algebraMap_eq_one_of_unit (.mk0 x hx)
+    FiniteAdeleRing.coe_norm_eq_inv_abs_norm hx, Rat.cast_inv, mul_inv_cancel₀ (by simpa)]
 
 end AdeleRing
 
