@@ -6991,6 +6991,7 @@ public import Mathlib.RingTheory.IsPrimary
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.Jacobson.Artinian
 public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.RingTheory.Jacobson.Opposite
 public import Mathlib.RingTheory.Jacobson.Polynomial
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.Jacobson.Ring
