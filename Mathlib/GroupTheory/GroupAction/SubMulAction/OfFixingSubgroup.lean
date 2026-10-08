@@ -5,12 +5,13 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 public import Mathlib.GroupTheory.GroupAction.Transitive
 public import Mathlib.GroupTheory.GroupAction.Primitive
-public import Mathlib.Tactic.Group
+
+import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Tactic.Group
 
 /-!
 # SubMulActions on complements of invariant subsets
@@ -99,8 +100,11 @@ theorem mem_ofFixingSubgroup_iff {x : α} :
 variable {M}
 
 @[to_additive]
-theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
+theorem notMem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
     ↑x ∉ s := x.prop
+
+@[to_additive (attr := deprecated (since := "2026-09-28"))]
+alias not_mem_of_mem_ofFixingSubgroup := notMem_of_mem_ofFixingSubgroup
 
 @[to_additive]
 theorem disjoint_val_image {t : Set (ofFixingSubgroup M s)} :
@@ -225,7 +229,7 @@ theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k �
 theorem fixingSubgroup_map_conj_eq (hg : g • t = s) :
     (fixingSubgroup M t).map (MulAut.conj g).toMonoidHom = fixingSubgroup M s := by
   ext k
-  simp only [MulEquiv.toMonoidHom_eq_coe, Subgroup.mem_map, MonoidHom.coe_coe]
+  simp only [MulEquiv.toMonoidHom_eq_coe, Subgroup.mem_map, MonoidHom.coe_ofClass]
   constructor
   · rintro ⟨n, hn, rfl⟩
     exact Set.conj_mem_fixingSubgroup hg hn
@@ -484,7 +488,8 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
   rcases hx with hx | hx
   · obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨a, ha.1⟩ ⟨x, hx⟩
     use ⟨k, fun ⟨y, hy⟩ ↦ hk ⟨y, hy.1⟩⟩
-    rwa [Subtype.ext_iff] at hkax ⊢
+    rw [Subtype.ext_iff] at hkax ⊢
+    exact hkax
   · have hg'x : g⁻¹ • x ∈ ofFixingSubgroup M s := mt Set.mem_smul_set_iff_inv_smul_mem.mpr hx
     have hg'a : g⁻¹ • a ∈ ofFixingSubgroup M s := mt Set.mem_smul_set_iff_inv_smul_mem.mpr ha.2
     obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨g⁻¹ • a, hg'a⟩ ⟨g⁻¹ • x, hg'x⟩

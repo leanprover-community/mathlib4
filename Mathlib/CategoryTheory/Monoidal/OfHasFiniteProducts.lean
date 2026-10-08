@@ -126,7 +126,6 @@ section
 
 attribute [local instance] monoidalOfHasFiniteCoproducts
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/
 @[simps, instance_reducible]

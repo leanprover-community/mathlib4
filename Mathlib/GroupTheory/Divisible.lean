@@ -9,8 +9,9 @@ public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Tactic.NormNum.Eq
 public import Mathlib.Algebra.Field.Defs
+
+import Mathlib.Tactic.NormNum.Eq
 
 /-!
 # Divisible Group and rootable group
@@ -168,8 +169,8 @@ section ULift
 @[to_additive]
 instance ULift.instRootableBy [RootableBy A α] : RootableBy (ULift A) α where
   root x a := ULift.up <| RootableBy.root x.down a
-  root_zero x := ULift.ext _ _ <| RootableBy.root_zero x.down
-  root_cancel _ h := ULift.ext _ _ <| RootableBy.root_cancel _ h
+  root_zero x := ULift.ext <| RootableBy.root_zero x.down
+  root_cancel _ h := ULift.ext <| RootableBy.root_cancel _ h
 
 end ULift
 

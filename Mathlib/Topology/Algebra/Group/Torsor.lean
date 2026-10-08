@@ -6,8 +6,8 @@ Authors: Attila Gáspár
 module
 
 public import Mathlib.Algebra.Torsor.Basic
-public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Topology.Algebra.MulAction
 
 import Mathlib.Topology.Algebra.Group.Pointwise
 
