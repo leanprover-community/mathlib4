@@ -95,7 +95,7 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter_aux
       setIntegral_mono_on hfi.norm.def' (hgi.mono_set hsub') measurableSet_uIoc hg
     _ ≤ ∫ x in k, C * ‖g x‖ := by
       apply setIntegral_mono_set hgi
-        (ae_of_all _ fun x => mul_nonneg hC₀ (norm_nonneg _)) hsub'.eventuallyLE
+        (ae_of_all _ fun x => mul_nonneg hC₀ (norm_nonneg _)) hsub'.eventuallySubset
 
 theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter
     {f : ℝ → E} {g : ℝ → F}
@@ -215,11 +215,7 @@ theorem not_integrableOn_Ici_inv {a : ℝ} :
     (A.mono (fun x hx ↦ hx.differentiableAt)) B
     (Filter.EventuallyEq.isBigO (A.mono (fun x hx ↦ hx.deriv)))
 
-@[deprecated (since := "2026-01-30")] alias not_IntegrableOn_Ici_inv := not_integrableOn_Ici_inv
-
 /-- The function `fun x ↦ x⁻¹` is not integrable on any interval `(a, +∞)`. -/
 theorem not_integrableOn_Ioi_inv {a : ℝ} :
     ¬ IntegrableOn (·⁻¹) (Ioi a) := by
   simpa only [IntegrableOn, restrict_Ioi_eq_restrict_Ici] using not_integrableOn_Ici_inv
-
-@[deprecated (since := "2026-01-30")] alias not_IntegrableOn_Ioi_inv := not_integrableOn_Ioi_inv

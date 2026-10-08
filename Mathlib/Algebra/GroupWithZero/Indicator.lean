@@ -5,10 +5,11 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Notation.Indicator
+
+import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
 # Indicator functions and support of a function in groups with zero
@@ -126,7 +127,7 @@ lemma support_mul_of_ne_zero_right (f : ι → M₀) {g : ι → M₀} (hg : ∀
 end MulZeroClass
 
 section MonoidWithZero
-variable [MonoidWithZero M₀] [NoZeroDivisors M₀] {n : ℕ}
+variable [MonoidWithZero M₀] [IsReduced M₀] {n : ℕ}
 
 @[simp] lemma support_pow (f : ι → M₀) (hn : n ≠ 0) : support (fun a ↦ f a ^ n) = support f := by
   ext; exact (pow_eq_zero_iff hn).not

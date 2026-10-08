@@ -10,6 +10,7 @@ public import Counterexamples.DirectSumIsInternal
 public import Counterexamples.DiscreteTopologyNonDiscreteUniformity
 public import Counterexamples.EulerSumOfPowers
 public import Counterexamples.Girard
+public import Counterexamples.GrothendieckPower
 public import Counterexamples.HeawoodUnitDistance
 public import Counterexamples.HomogeneousPrimeNotPrime
 public import Counterexamples.InvertibleModuleNotIdeal
@@ -18,6 +19,7 @@ public import Counterexamples.MapFloor
 public import Counterexamples.MonicNonRegular
 public import Counterexamples.Motzkin
 public import Counterexamples.NowhereDifferentiable
+public import Counterexamples.Omega1Space
 public import Counterexamples.OrderedCancelAddCommMonoidWithBounds
 public import Counterexamples.PeanoCurve
 public import Counterexamples.Phillips

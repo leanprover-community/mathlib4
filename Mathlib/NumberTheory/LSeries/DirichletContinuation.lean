@@ -6,7 +6,6 @@ Authors: David Loeffler, Michael Stoll
 module
 
 public import Mathlib.NumberTheory.LSeries.ZMod
-public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 
 /-!
@@ -42,7 +41,7 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
 
 @[expose] public section
 
-open HurwitzZeta Complex Finset ZMod Filter
+open Complex Finset ZMod Filter
 
 open scoped Real Topology
 
@@ -157,8 +156,8 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
       (differentiable_LFunction h).continuous.mul <| continuous_finsetProd _ fun p hp ↦ by
         have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
         fun_prop
-    exact congrFun ((differentiable_LFunction hχ).continuous.ext_on
-      (dense_compl_singleton 1) h' (fun _ h ↦ LFunction_changeLevel_aux hMN χ h)) s
+    congrm $((differentiable_LFunction hχ).continuous.ext_on
+     (dense_compl_singleton 1) h' (fun _ h ↦ LFunction_changeLevel_aux hMN χ h)) s
   · exact LFunction_changeLevel_aux hMN χ h
 
 /-!

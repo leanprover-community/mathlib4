@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -223,8 +222,7 @@ theorem hasCompactMulSupport_def : HasCompactMulSupport f ↔ IsCompact (closure
 @[to_additive]
 theorem exists_compact_iff_hasCompactMulSupport [R1Space α] :
     (∃ K : Set α, IsCompact K ∧ ∀ x, x ∉ K → f x = 1) ↔ HasCompactMulSupport f := by
-  simp_rw [← notMem_mulSupport, ← mem_compl_iff, ← subset_def, compl_subset_compl,
-    hasCompactMulSupport_def, exists_isCompact_superset_iff]
+  grind [hasCompactMulSupport_def, exists_isCompact_superset_iff]
 
 namespace HasCompactMulSupport
 
@@ -367,8 +365,8 @@ section Compact
 
 variable [CompactSpace α]
 
-/-- In a compact space `α`, any function has compact support. -/
-@[to_additive]
+/-- In a compact space `α`, any function has compact multiplicative support. -/
+@[to_additive /-- In a compact space `α`, any function has compact support. -/]
 theorem HasCompactMulSupport.of_compactSpace (f : α → γ) :
     HasCompactMulSupport f :=
   IsCompact.of_isClosed_subset isCompact_univ (isClosed_mulTSupport f)

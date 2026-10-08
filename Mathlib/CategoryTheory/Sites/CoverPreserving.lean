@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Sites.Continuous
-public import Mathlib.Tactic.ApplyFun
+public import Mathlib.CategoryTheory.Sites.Closed
 /-!
 # Cover-preserving functors between sites.
 
@@ -39,8 +39,6 @@ public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
-
-noncomputable section
 
 open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTheory.Presieve
   CategoryTheory.Limits
@@ -112,7 +110,6 @@ end
 open Limits.WalkingCospan
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
     (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G := by
   constructor

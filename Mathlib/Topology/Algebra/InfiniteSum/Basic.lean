@@ -6,13 +6,12 @@ Authors: Johannes Hölzl, Mitchell Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
-public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Order.Filter.AtTopBot.BigOperators
 
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 
 /-!
@@ -26,8 +25,6 @@ Results requiring a group (rather than monoid) structure on the target should go
 -/
 
 public section
-
-noncomputable section
 
 open Filter Finset Function Topology SummationFilter
 
@@ -44,11 +41,11 @@ theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd,
 
 @[to_additive (attr := simp)]
 theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
-  convert! hasProd_one
+  convert hasProd_one
 
 @[to_additive (attr := nontriviality)]
 theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
-  convert! hasProd_one
+  convert hasProd_one
 
 @[to_additive (attr := simp)]
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
@@ -67,7 +64,7 @@ disagree on a finite set. -/
 @[to_additive /-- See `summable_congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/]
 theorem multipliable_congr (hfg : ∀ b, f b = g b) : Multipliable f L ↔ Multipliable g L :=
-  iff_of_eq (congr_arg (Multipliable · L) <| funext hfg)
+  iff_of_eq congr(Multipliable $(funext hfg) L)
 
 /-- See `Multipliable.congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/
@@ -171,13 +168,13 @@ lemma hasProd_singleton (m : β) (f : β → α) : HasProd (({m} : Set β).domRe
 theorem hasProd_ite_eq (b : β) [DecidablePred (· = b)] (a : α) (L := unconditional β) [L.LeAtTop] :
     HasProd (fun b' ↦ if b' = b then a else 1) a L :=
   suffices HasProd (fun b' ↦ if b' = b then a else 1) (if b = b then a else 1) L by simpa
-  hasProd_single b (hf := fun b' hb' ↦ if_neg hb') (L := L)
+  hasProd_single b (hf := fun b' hb' ↦ ite_eq_right hb') (L := L)
 
 @[to_additive]
 theorem hasProd_ite_eq' (b : β) [DecidablePred (b = ·)] (a : α) (L := unconditional β) [L.LeAtTop] :
     HasProd (fun b' ↦ if b = b' then a else 1) a L :=
   suffices HasProd (fun b' ↦ if b = b' then a else 1) (if b = b then a else 1) L by simpa
-  hasProd_single b (hf := fun b' hb' ↦ if_neg hb'.symm) (L := L)
+  hasProd_single b (hf := fun b' hb' ↦ ite_eq_right hb'.symm) (L := L)
 
 @[to_additive]
 theorem Equiv.hasProd_iff (e : γ ≃ β) : HasProd (f ∘ e) a ↔ HasProd f a :=
@@ -272,7 +269,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
       use a
       simp [hge.tendsto_nhds_iff, Function.comp_def, ha, hb]
   · simpa [tprod_bot hL] using
-      (MonoidHomClass.toMonoidHom g).map_finprod_of_injective hge.injective _
+      (MonoidHom.ofClass g).map_finprod_of_injective hge.injective _
 
 /-- Special case of `Topology.IsClosedEmbedding.map_tprod`, logically weaker but possibly easier
 to apply in practice. -/
@@ -315,7 +312,7 @@ protected theorem Multipliable.map_iff_of_equiv [CommMonoid γ] [TopologicalSpac
 theorem Function.Surjective.multipliable_iff_of_hasProd_iff {α' : Type*} [CommMonoid α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) {f : β → α} {g : γ → α'}
     (he : ∀ {a}, HasProd f (e a) ↔ HasProd g a) : Multipliable f ↔ Multipliable g :=
-  hes.exists.trans <| exists_congr <| @he
+  hes.exists.trans <| exists_congr @he
 
 variable [ContinuousMul α]
 
@@ -410,7 +407,7 @@ theorem HasProd.update' [L.LeAtTop] [L.NeBot] {α : Type*} [TopologicalSpace α]
     intro b'
     split_ifs with hb'
     · simpa only [Function.update_apply, hb', eq_self_iff_true] using! mul_comm (f b) x
-    · simp only [Function.update_apply, hb', if_false]
+    · simp only [Function.update_apply, hb', ite_false]
   have h := hf.mul (hasProd_ite_eq b x L)
   simp_rw [this] at h
   exact HasProd.unique h (hf'.mul (hasProd_ite_eq b (f b) L))
@@ -461,17 +458,17 @@ theorem tprod_eq_prod [L.LeAtTop] {s : Finset β} (hf : ∀ b ∉ s, f b = 1) :
 
 @[to_additive (attr := simp)]
 theorem tprod_one : ∏'[L] _, (1 : α) = 1 := by
-  rw [tprod_def, dif_pos multipliable_one, mulSupport_fun_one, Set.empty_inter,
-    Set.mulIndicator_one, finprod_one, eq_true_intro hasProd_one, if_true, ite_self]
+  rw [tprod_def, dite_eq_left multipliable_one, mulSupport_fun_one, Set.empty_inter,
+    Set.mulIndicator_one, finprod_one, eq_true_intro hasProd_one, ite_true, ite_self]
 
 @[to_additive (attr := simp)]
 theorem tprod_empty [IsEmpty β] : ∏'[L] b, f b = 1 := by
-  convert! tprod_one (L := L)
+  convert tprod_one (L := L)
 
 @[to_additive]
 theorem tprod_congr {f g : β → α}
     (hfg : ∀ b, f b = g b) : ∏'[L] b, f b = ∏'[L] b, g b :=
-  congr_arg (tprod · L) (funext hfg)
+  congr(tprod $(funext hfg) L)
 
 @[to_additive]
 theorem tprod_congr₂ {f g : β → γ → α} {M : SummationFilter γ}
@@ -555,7 +552,7 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
     simp_rw [tprod_def, SummationFilter.support_eq_univ, Set.inter_univ,
       show (unconditional β).HasSupport by infer_instance,
       show (unconditional γ).HasSupport by infer_instance, true_and,
-      if_neg hf_fin, if_neg hf_fin', Multipliable]
+      ite_eq_right hf_fin, ite_eq_right hf_fin', Multipliable]
     simp [hg.hasProd_iff (mulSupport_subset_iff'.1 hf)]
 
 @[to_additive]
@@ -742,12 +739,13 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] [L.LeAtT
     ∏'[L] x, f x = ∏'[L] x, (ite (x = b) (f x) 1 * update f b 1 x) :=
       tprod_congr fun n ↦ by split_ifs with h <;> simp [h]
     _ = (∏'[L] x, ite (x = b) (f x) 1) * ∏'[L] x, update f b 1 x :=
-      Multipliable.tprod_mul ⟨ite (b = b) (f b) 1, hasProd_single b (fun _ hb ↦ if_neg hb) L⟩ hf
+      Multipliable.tprod_mul ⟨ite (b = b) (f b) 1,
+        hasProd_single b (fun _ hb ↦ ite_eq_right hb) L⟩ hf
     _ = ite (b = b) (f b) 1 * ∏'[L] x, update f b 1 x := by
       congr
-      exact tprod_eq_mulSingle b fun b' hb' ↦ if_neg hb'
+      exact tprod_eq_mulSingle b fun b' hb' ↦ ite_eq_right hb'
     _ = f b * ∏'[L] x, ite (x = b) 1 (f x) := by
-      simp only [update, if_true, eq_rec_constant, dite_eq_ite]
+      simp only [update, ite_true, eq_rec_constant, dite_eq_ite]
 
 @[to_additive]
 protected theorem Multipliable.tprod_mul_tprod_compl {s : Set β}

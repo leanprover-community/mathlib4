@@ -6,9 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Damiano Testa, Jens Wagema
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Division
-public import Mathlib.Algebra.Polynomial.Degree.Operations
 public import Mathlib.Algebra.Polynomial.EraseLead
-public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Induction on polynomials
@@ -23,13 +21,11 @@ noncomputable section
 
 open Polynomial
 
-open Finset
-
 namespace Polynomial
 
 universe u v w z
 
-variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {a b : R} {n : ℕ}
+variable {R : Type u} {A : Type z} {a b : R} {n : ℕ}
 
 section Semiring
 

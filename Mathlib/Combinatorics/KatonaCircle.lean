@@ -6,9 +6,10 @@ Authors: Ching-Tsun Chou, Chris Wong, Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Density
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.Data.Nat.Choose.Cast
+
+import Mathlib.Data.Fintype.Prod
 
 /-!
 # The Katona circle method
@@ -49,7 +50,6 @@ def prefixed (s : Finset X) : Finset (Numbering X) := {f | IsPrefix f s}
 
 @[simp] lemma mem_prefixed : f ∈ prefixed s ↔ IsPrefix f s := by simp [prefixed]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Decompose a numbering of which `s` is a prefix into a numbering of `s` and a numbering on `sᶜ`.
 -/
 def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(sᶜ) where

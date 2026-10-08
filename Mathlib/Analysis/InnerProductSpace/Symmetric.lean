@@ -5,11 +5,10 @@ Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
+
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
 /-!
 # Symmetric linear maps in an inner product space
@@ -40,7 +39,7 @@ self-adjoint, symmetric
 
 open RCLike
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 section Seminormed
 
@@ -190,12 +189,11 @@ theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
     rw [h (x + y), h (x - y), h (x + Complex.I • y), h (x - Complex.I • y)]
     simp only [Complex.conj_I]
     rw [inner_map_polarization']
-    norm_num
+    simp
     ring
 
 end Complex
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Polarization identity for symmetric linear maps.
 See `inner_map_polarization` for the complex version without the symmetric assumption. -/
 theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x y : E) :

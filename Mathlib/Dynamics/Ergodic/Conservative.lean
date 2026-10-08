@@ -7,7 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.Combinatorics.Pigeonhole
+
+import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Conservative systems
@@ -40,11 +41,11 @@ conservative dynamical system, Poincare recurrence theorem
 public section
 
 
-noncomputable section
-
 namespace MeasureTheory
 
-open Set Filter Finset Function TopologicalSpace Topology
+open Set Filter Finset Function TopologicalSpace
+
+open scoped Topology
 
 variable {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
 
@@ -163,8 +164,8 @@ theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasu
   simp
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
-    (s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s } : Set α) =ᵐ[μ] s :=
-  inter_eventuallyEq_left.2 <| hf.ae_mem_imp_frequently_image_mem hs
+    s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s } =ᵐ[μ] s :=
+  inter_eventuallyEqSet_left.2 <| hf.ae_mem_imp_frequently_image_mem hs
 
 theorem measure_inter_frequently_image_mem_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
     μ (s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s }) = μ s :=

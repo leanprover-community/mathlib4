@@ -6,8 +6,9 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.CategoryTheory.HomCongr
+
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Reflective functors
@@ -159,7 +160,6 @@ instance [Reflective i] (X : Functor.EssImageSubcategory i) :
     IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=
   Functor.essImage.unit_isIso X.property
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 -- These attributes are necessary to make automation work in `equivEssImageOfReflective`.
 -- Making them global doesn't break anything elsewhere, but this is enough for now.
@@ -172,7 +172,7 @@ defined by the reflector. -/
 def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
   functor := i.toEssImage
   inverse := i.essImage.ι ⋙ reflector i
-  unitIso := (asIso <| (reflectorAdjunction i).counit).symm
+  unitIso := (asIso (reflectorAdjunction i).counit).symm
   counitIso := Functor.fullyFaithfulCancelRight i.essImage.ι <|
     NatIso.ofComponents (fun X ↦ (asIso ((reflectorAdjunction i).unit.app X.obj)).symm)
 

@@ -6,28 +6,30 @@ public import Mathlib.Lean.Linter -- linter utilities; will be transitively impo
 public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Linter.AuxLemma
+public import Mathlib.Tactic.Linter.DeclType
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
 public import Mathlib.Tactic.Linter.DocString
 public import Mathlib.Tactic.Linter.EmptyLine
-public import Mathlib.Tactic.Linter.GlobalAttributeIn
 public import Mathlib.Tactic.Linter.HashCommandLinter
+public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
-public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.TacticDocumentation
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
-public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.TacticAnalysis.Declarations
 public import Mathlib.Tactic.TypeStar
+-- This import makes the `alias` command available globally.
+public import Batteries.Tactic.Alias
 -- This import makes the `#help` command available globally.
 public import Batteries.Tactic.HelpCmd
 -- This import makes the `proof_wanted` command available globally.
@@ -55,6 +57,9 @@ Here are some general guidelines:
 
 A linter verifies that every file in Mathlib imports `Mathlib.Init`
 (perhaps indirectly) --- except for the imports in this file, of course.
+
+If you're adding a new import to ensure that some command is available in all of mathlib,
+add a line to `MathlibTest/BasicFiles/Init.lean` to ensure this stays true.
 
 ## Linters
 
@@ -100,7 +105,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.longLine
   linter.style.longFile
   linter.style.multiGoal
-  linter.style.nativeDecide
+  linter.style.native
   linter.style.openClassical
   linter.style.maxHeartbeats
   linter.style.missingEnd

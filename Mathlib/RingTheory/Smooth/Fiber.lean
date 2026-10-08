@@ -6,11 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.Field
-public import Mathlib.RingTheory.Flat.Equalizer
 public import Mathlib.RingTheory.Kaehler.TensorProduct
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Smooth.Local
 public import Mathlib.RingTheory.Etale.Locus
+
+import Mathlib.RingTheory.Flat.Equalizer
 
 /-!
 
@@ -37,7 +37,7 @@ For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.l
 
 open TensorProduct IsLocalRing
 
-@[expose] public section
+public section
 
 namespace Algebra
 
@@ -126,11 +126,10 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     (AlgebraTensorModule.congr (.refl 𝓀[S] 𝓀[S]) e₁).restrictScalars S ≪≫ₗ
       (AlgebraTensorModule.cancelBaseChange P Pp Sp 𝓀[S] _).restrictScalars S
   -- It remains to check that the two maps are equal under the identifications above.
-  convert! (eᵣ.injective.comp this).comp eₗ.symm.injective
+  convert (eᵣ.injective.comp this).comp eₗ.symm.injective
   ext x
   dsimp
   induction x with
-  | zero => simp only [LinearEquiv.map_zero, LinearMap.map_zero]
   | add x y _ _ => simp only [LinearEquiv.map_add, LinearMap.map_add, *]
   | tmul x y =>
   dsimp [eₗ, eᵣ, e₁, KaehlerDifferential.cotangentComplexBaseChange,
@@ -169,7 +168,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
     simp [fP, IsLocalization.lift_mk', Units.mul_inv_eq_iff_eq_mul, IsUnit.liftRight]
   have hfP : (RingHom.ker fP).FG := by
     have := Algebra.FinitePresentation.ker_fG_of_surjective _ hf₀
-    convert! this.map (algebraMap _ P')
+    convert this.map (algebraMap _ P')
     refine le_antisymm ?_ (Ideal.map_le_iff_le_comap.mpr fun x hx ↦ by simp_all [fP])
     intro x hx
     obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M' x

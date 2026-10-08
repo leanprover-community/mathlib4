@@ -5,12 +5,10 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.TensorProduct.Prod
-public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 public import Mathlib.LinearAlgebra.Determinant
+
+import Mathlib.LinearAlgebra.TensorProduct.Prod
 
 /-! # Base change properties for modules of linear maps
 
@@ -54,8 +52,7 @@ def linearMapRightBaseChangeHom (ε : N →ₗ[R] P) :
     map_smul' r s := by simp }).toAddHom
   map_smul' s x := by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom, RingHom.id_apply]
-    induction x using TensorProduct.induction_on with
-    | zero => simp
+    induction x using TensorProduct.inductionOn with
     | add x y hx hy => simp [smul_add, hx, hy]
     | tmul t f => simp [TensorProduct.smul_tmul', mul_smul]
 
@@ -175,7 +172,6 @@ theorem endHom_one {α : M →ₗ[R] P} (j : IsBaseChange S α) :
     j.endHom 1 = 1 := by
   ext p
   induction p using j.inductionOn with
-  | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul _ _ h => simp [h]
   | tmul m => simp [endHom_comp_apply]

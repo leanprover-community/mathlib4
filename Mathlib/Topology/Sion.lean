@@ -374,7 +374,8 @@ public theorem minimax
   rw [← forall_lt_iff_le]
   intro t ht
   have : ∃ s : Finset Y, ∀ x ∈ X, ∃ i ∈ s, t < f x i := by
-    rw [← LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset kX hfy]
+    rw [← LowerSemicontinuousOn.disjoint_biInter_preimage_Iic_iff_exists_finset kX hfy,
+      Set.disjoint_iff_inter_eq_empty]
     apply Set.eq_empty_of_forall_notMem
     rintro x ⟨hx, hx'⟩
     simp only [mem_iInter, mem_preimage, mem_Iic] at hx'

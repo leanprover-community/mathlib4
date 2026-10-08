@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Batteries.Tactic.Congr
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Data.Set.SymmDiff
@@ -104,6 +103,9 @@ theorem preimage_ofPred_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p 
   rfl
 
 @[deprecated (since := "2026-07-09")] alias preimage_setOf_eq := preimage_ofPred_eq
+
+theorem preimage_singleton (f : α → β) (y : β) : f ⁻¹' {y} = {x | f x = y} :=
+  rfl
 
 @[simp]
 theorem preimage_id_eq : preimage (id : α → α) = id :=
@@ -319,6 +321,7 @@ theorem compl_compl_image [BooleanAlgebra α] (s : Set α) :
     Compl.compl '' Compl.compl '' s = s := by
   rw [← image_comp, compl_comp_compl, image_id]
 
+@[simp]
 theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
     f '' insert a s = insert (f a) (f '' s) := by grind
 
@@ -369,7 +372,7 @@ theorem subset_image_compl {f : α → β} {s : Set α} (H : Surjective f) : (f 
 theorem image_compl_eq {f : α → β} {s : Set α} (H : Bijective f) : f '' sᶜ = (f '' s)ᶜ :=
   Subset.antisymm (image_compl_subset H.1) (subset_image_compl H.2)
 
-private theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
+theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
   rw [sdiff_subset_iff, ← image_union, union_sdiff_self]
   exact image_mono subset_union_right
 
@@ -378,7 +381,7 @@ theorem image_sdiff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s 
     (Subset.trans (image_sdiff_subset f s t) <| inter_subset_inter_right _ <| image_compl_subset hf)
     (subset_image_sdiff f s t)
 
-@[deprecated image_sdiff (since := "2026-06-03")] alias subset_image_diff := subset_image_sdiff
+@[deprecated (since := "2026-06-03")] alias subset_image_diff := subset_image_sdiff
 @[deprecated (since := "2026-06-03")] alias image_diff := image_sdiff
 
 open scoped symmDiff in

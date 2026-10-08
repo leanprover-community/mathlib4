@@ -55,7 +55,7 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
   apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_gt
-  apply degree_sub_lt _ (minpoly.ne_zero hx)
+  apply degree_sub_lt_left _ (minpoly.ne_zero hx)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
 
@@ -240,7 +240,7 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
 theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
   -- needs explicit coercion on the RHS
-  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
+  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rw [DFunLike.ext'_iff] at this ⊢; assumption
   rw [funext_iff] at h
   exact LinearMap.ext_on (Module.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)
@@ -346,7 +346,7 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
 lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
   have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
-    rw [← MonoidHom.coe_coe, orderOf_injective, ← orderOf_units, IsOfFinOrder.val_unit]
+    rw [← MonoidHom.coe_ofClass, orderOf_injective, ← orderOf_units, IsOfFinOrder.val_unit]
     exact (AlgEquiv.algHomUnitsEquiv K L).injective
   rw [this, ← minpoly_algEquiv_toLinearMap]
   · apply congr_arg

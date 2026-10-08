@@ -167,7 +167,6 @@ lemma η_comp_tensorDesc_app {F G H : C ⊛⥤ V}
     (η F G).app (x, y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
   Functor.descOfIsLeftKanExtension_fac_app _ _ _ _ _
 
-open LawfulDayConvolutionMonoidalCategoryStruct
 /-- An abstract isomorphism between `(F ⊗ G).functor` and the generic pointwise
 left Kan extension of `F.functor ⊠ G.functor` along the -/
 def isoPointwiseLeftKanExtension (F G : C ⊛⥤ V) :

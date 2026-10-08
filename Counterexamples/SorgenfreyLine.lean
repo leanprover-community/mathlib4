@@ -68,7 +68,7 @@ theorem isOpen_Ici (a : ℝₗ) : IsOpen (Ici a) :=
 
 theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := by
   rw [TopologicalSpace.nhds_generateFrom]
-  haveI : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
+  have : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
   have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
     refine (IsLeast.isGLB ?_).iInf_eq
     exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_mem_range.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
@@ -134,13 +134,14 @@ theorem continuous_toReal : Continuous toReal :=
     exact inf_le_left
 
 instance : OrderClosedTopology ℝₗ :=
-  ⟨isClosed_le_prod.preimage (continuous_toReal.prodMap continuous_toReal)⟩
+  ⟨(isClosed_le_prod (α := ℝ)).preimage (continuous_toReal.prodMap continuous_toReal)⟩
 
 instance : ContinuousAdd ℝₗ := by
   refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨x, y⟩
   rw [ContinuousAt, nhds_prod_eq, nhds_eq_comap (x + y), tendsto_comap_iff,
     nhds_eq_map, nhds_eq_map, prod_map_map_eq, ← nhdsWithin_prod_eq, Ici_prod_Ici]
+  simp only [Function.comp_def, map_add, tendsto_map'_iff, RingEquiv.apply_symm_apply]
   exact (continuous_add.tendsto _).inf (MapsTo.tendsto fun x hx => add_le_add hx.1 hx.2)
 
 theorem isClopen_Ici (a : ℝₗ) : IsClopen (Ici a) :=
@@ -313,7 +314,7 @@ theorem not_separatedNhds_rat_irrational_antidiag :
 /-- Topology on the Sorgenfrey line is not metrizable. -/
 theorem not_metrizableSpace : ¬MetrizableSpace ℝₗ := by
   intro
-  letI := metrizableSpaceMetric ℝₗ
+  let := metrizableSpaceMetric ℝₗ
   exact not_normalSpace_prod inferInstance
 
 /-- Topology on the Sorgenfrey line is not second countable. -/

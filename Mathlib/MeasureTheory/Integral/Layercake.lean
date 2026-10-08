@@ -60,8 +60,6 @@ layer cake representation, Cavalieri's principle, tail probability formula
 
 public section
 
-noncomputable section
-
 open scoped ENNReal MeasureTheory Topology
 
 open Set MeasureTheory Filter Measure
@@ -81,7 +79,7 @@ theorem countable_meas_le_ne_meas_lt (g : α → R) :
   intro t ht
   have : μ {a | t < g a} < μ {a | t ≤ g a} :=
     lt_of_le_of_ne (measure_mono (fun a ha ↦ le_of_lt ha)) (Ne.symm ht)
-  exact ⟨μ {a | t < g a}, this, fun s hs ↦ measure_mono (fun a ha ↦ hs.trans_le ha)⟩
+  exact ⟨μ {a | t < g a}, this, fun s hs ↦ by grw [hs]⟩
 
 theorem meas_le_ae_eq_meas_lt {R : Type*} [LinearOrder R] [MeasurableSpace R]
     (ν : Measure R) [NullSingletonClass ν] (g : α → R) :
@@ -97,7 +95,6 @@ section Layercake
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions, and a sigma-finiteness assumption.
@@ -290,7 +287,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       exists_seq_strictMono_tendsto M
     have I : ∀ n, g =ᵐ[volume.restrict (Ioc (0 : ℝ) (u n))] 0 := by
       intro n
-      obtain ⟨s, hs, uns⟩ : ∃ s, g =ᶠ[ae (Measure.restrict volume (Ioc 0 s))] 0 ∧ u n < s :=
+      obtain ⟨s, hs, uns⟩ : ∃ s, g =ᵐ[Measure.restrict volume (Ioc 0 s)] 0 ∧ u n < s :=
         exists_lt_of_lt_csSup (Set.nonempty_of_mem zero_mem) (uM n)
       exact ae_restrict_of_ae_restrict_of_subset (Ioc_subset_Ioc_right uns.le) hs
     have : g =ᵐ[volume.restrict (⋃ n, Ioc (0 : ℝ) (u n))] 0 := (ae_restrict_iUnion_iff _ _).2 I
@@ -311,7 +308,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         intro n
         have I : ν {a | f a ≤ M} = 0 := by
           rw [Measure.restrict_apply (measurableSet_le f_mble measurable_const)]
-          convert! measure_empty (μ := μ)
+          convert measure_empty (μ := μ)
           rw [← disjoint_iff_inter_eq_empty]
           exact disjoint_left.mpr (fun a ha ↦ by simpa using ha)
         have J : μ {a | u n < f a} < ∞ := by
@@ -421,7 +418,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
     rw [ht]
     congr 1
     apply measure_congr
-    filter_upwards [f_eq_F] with a ha using by simp [Set.ofPred, ha]
+    filter_upwards [f_eq_F] with a ha using by simp [ha]
   have eq₂ : ∀ᵐ ω ∂μ,
       ENNReal.ofReal (∫ t in 0..f ω, g t) = ENNReal.ofReal (∫ t in 0..F ω, G t) := by
     filter_upwards [f_eq_F] with ω fω_nn
@@ -524,7 +521,7 @@ theorem Integrable.integral_eq_integral_meas_lt
   have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a} < ∞ := by simp only [← key, lhs_finite]
   have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → μ {a | t < f a} < ∞ :=
     fun t ht ↦ measure_gt_lt_top f_intble ht
-  convert! (ENNReal.toReal_eq_toReal_iff' lhs_finite.ne rhs_finite.ne).mpr key
+  convert (ENNReal.toReal_eq_toReal_iff' lhs_finite.ne rhs_finite.ne).mpr key
   · exact integral_eq_lintegral_of_nonneg_ae f_nn f_intble.aestronglyMeasurable
   · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
       (fun t ↦ μ.real {a : α | t < f a}) ?_ ?_

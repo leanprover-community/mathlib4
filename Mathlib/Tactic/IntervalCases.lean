@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Tactic.NormNum
+public meta import Mathlib.Tactic.Simps
 
 /-!
 # Case bash on variables in finite intervals
@@ -288,14 +289,14 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
       if lb.all (·.1.asLower < lb1.1.asLower) then
         lb := some lb1
     else if mustUseBounds then
-      throwError "interval_cases failed: provided bound '{← inferType pf}' cannot be evaluated"
+      throwError "interval_cases failed: provided bound `{← inferType pf}` cannot be evaluated"
   let mut ub ← try? (m.initUB e)
   for pf in ubs do
     if let some ub1 ← try? (m.getBound e pf false) then
       if ub.all (·.1.asUpper > ub1.1.asUpper) then
         ub := some ub1
     else if mustUseBounds then
-      throwError "interval_cases failed: provided bound '{← inferType pf}' cannot be evaluated"
+      throwError "interval_cases failed: provided bound `{← inferType pf}` cannot be evaluated"
   match lb, ub with
   | some (z1, e1, p1), some (z2, e2, p2) =>
     if z1.asLower > z2.asUpper then

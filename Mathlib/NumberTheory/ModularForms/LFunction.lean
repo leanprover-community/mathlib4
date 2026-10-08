@@ -8,7 +8,8 @@ module
 public import Mathlib.NumberTheory.ModularForms.Bounds
 public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
-public import Mathlib.Analysis.PSeries
+
+import Mathlib.Analysis.PSeries
 
 /-!
 # The `L`-function of a modular form
@@ -18,7 +19,7 @@ public import Mathlib.Analysis.PSeries
 
 open UpperHalfPlane hiding I
 open scoped Real
-open Filter Complex MatrixGroups Asymptotics
+open Filter Complex Asymptotics
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic]
   {k : ℤ} (hk : 0 < k) {F : Type*} [FunLike F ℍ ℂ] (f : F) {s : ℂ}
@@ -138,7 +139,7 @@ private lemma hasSum_L_of_hasSum_Λ (hs : 0 < s.re)
     (hΛ : HasSum (fun n ↦ π ^ (-s) * Gamma s *
       (qExpansion (h Γ) f).coeff n / ↑(2 * n / h Γ : ℝ) ^ s) (Λ hk f s)) :
     HasSum (fun i ↦ (qExpansion (h Γ) f).coeff i / ↑i ^ s) (h Γ ^ (-s) * L hk f s) := by
-  convert! hΛ.mul_right (2 / Gammaℂ s * h Γ ^ (-s)) using 1
+  convert hΛ.mul_right (2 / Gammaℂ s * h Γ ^ (-s)) using 1
   · ext n
     generalize (PowerSeries.coeff n) (qExpansion (h Γ) f) = p
     rw [Gammaℂ, ← div_div, ← div_div, div_self two_ne_zero, one_div, cpow_neg (2 * _), inv_inv,

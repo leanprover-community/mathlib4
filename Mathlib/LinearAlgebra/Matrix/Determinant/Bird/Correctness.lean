@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
+
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Preorder.Finite
@@ -248,7 +249,7 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
       and_true, Finset.mem_coe, Prod.mk.injEq, and_imp, Prod.forall, mem_S_iff, Fin.strictMono_cons]
     intros α k hi hiα α' k' hj hiα' hremove hvalue
     suffices hrange : Set.range α = Set.range α' by
-      rw [hiα.range_inj hiα'] at hrange
+      rw [hiα.range_inj_of_wellFoundedLT hiα'] at hrange
       subst α'
       exact ⟨rfl, hiα.injective hvalue⟩
     calc

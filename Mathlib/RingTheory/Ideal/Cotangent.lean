@@ -6,14 +6,14 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.Algebra.Ring.Idempotent
-public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Nakayama
+
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -149,7 +149,7 @@ noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal :
       fun x => by rw [← range_cotangentToQuotientSquare]; exact LinearMap.mem_range_self _ _,
     Equiv.ofBijective _ ⟨?_, ?_⟩ with }
   · rintro x y e
-    replace e := congr_arg Subtype.val e
+    replace e := congr($(e).val)
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
     obtain ⟨y, rfl⟩ := I.toCotangent_surjective y
     rw [I.toCotangent_eq]
@@ -169,15 +169,9 @@ theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The lift of `f : A →ₐ[R] B` to `A ⧸ J ^ 2 →ₐ[R] B` with `J` being the kernel of `f`. -/
-def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B := by
-  refine { Ideal.Quotient.lift (RingHom.ker f.toRingHom ^ 2) f.toRingHom ?_ with commutes' := ?_ }
-  · intro a ha; exact Ideal.pow_le_self two_ne_zero ha
-  · intro r
-    rw [IsScalarTower.algebraMap_apply R A, RingHom.toFun_eq_coe, Ideal.Quotient.algebraMap_eq,
-      Ideal.Quotient.lift_mk]
-    exact f.map_algebraMap r
+abbrev _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B :=
+  Ideal.Quotient.liftₐ _ f (pow_le_self two_ne_zero)
 
 -- Can't be `simp`, because `RingHom.ker f.toRingHom` in the definition of `AlgHom.kerSquareLift`
 -- is not simp NF. Will be fixed by removing `RingHomClass` in the definition of `RingHom.ker`.
@@ -217,7 +211,7 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     refine Submodule.smul_induction_on hx ?_ (fun _ _ ↦ add_mem)
     rintro a ha ⟨b, hb⟩ -
     simp only [SetLike.mk_smul_mk, smul_eq_mul, Submodule.mem_comap, Submodule.restrictScalars_mem]
-    convert!
+    convert
       (Submodule.smul_mem_smul (M := I₂) (r := f a) (n := ⟨f b, h hb⟩) (h ha)
         (Submodule.mem_top)) using 1
     ext
@@ -309,6 +303,17 @@ instance : Module (ResidueField R) (CotangentSpace R) :=
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
   inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
 
+/-- `Ideal.toCotangent` for maximal ideal of local ring,
+ as `IsLocalRing.residue R` semi-linear map. -/
+def toCotangentSpace : maximalIdeal R →ₛₗ[residue R] CotangentSpace R where
+  __ := (maximalIdeal R).toCotangent
+  map_smul' r x := by simp [← ResidueField.algebraMap_eq]
+
+lemma toCotangentSpace_eq_toCotangent : ⇑(toCotangentSpace R) = (maximalIdeal R).toCotangent := rfl
+
+lemma toCotangentSpace_apply (x : maximalIdeal R) :
+    toCotangentSpace R x = (maximalIdeal R).toCotangent x := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _
@@ -339,6 +344,47 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
     Submodule.restrictScalars_span]
   · simp
   · exact Ideal.Quotient.mk_surjective
+
+/--
+In a local ring with its maximal ideal finitely generated,
+the dimension of the cotangent space is equal to the span rank of the maximal ideal.
+-/
+theorem rank_cotangentSpace_eq_spanrank_maximalIdeal_of_fg (fg : (maximalIdeal R).FG) :
+    Module.rank (ResidueField R) (CotangentSpace R) = (maximalIdeal R).spanRank := by
+  rw [Submodule.rank_eq_spanRank_of_free, ← Submodule.spanRank_top (maximalIdeal R)]
+  apply le_antisymm
+  · obtain ⟨s, hs_card, hs_span⟩ :=
+      (⊤ : Submodule R (maximalIdeal R)).exists_span_set_card_eq_spanRank
+    have hs_span' : Submodule.span (ResidueField R) ((maximalIdeal R).toCotangent '' s) = ⊤ := by
+      rw [← Submodule.restrictScalars_eq_top_iff R,
+        Submodule.restrictScalars_span R (ResidueField R) Ideal.Quotient.mk_surjective,
+        ← Submodule.map_span, hs_span, Submodule.map_top, Ideal.toCotangent_range]
+    rw [← hs_card, ← hs_span']
+    grw [Submodule.spanRank_span_le_card, Cardinal.mk_image_le]
+  · obtain ⟨s, hs_card, hs_span⟩ :=
+      (⊤ : Submodule (ResidueField R) (CotangentSpace R)).exists_span_set_card_eq_spanRank
+    have hs_span' : Submodule.span R s =
+        Submodule.map (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R (maximalIdeal R)))) ⊤ := by
+      rw [Submodule.map_top, Submodule.range_mkQ]
+      change Submodule.span R s = ⊤
+      rw [← Submodule.restrictScalars_span R (ResidueField R)
+        Ideal.Quotient.mk_surjective, hs_span, Submodule.restrictScalars_top]
+    obtain ⟨t, ht_inj, ht_image, ht_span⟩ :=
+      Submodule.exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot s
+        ((Submodule.fg_top (maximalIdeal R)).mpr fg)
+        (IsLocalRing.jacobson_eq_maximalIdeal _ bot_ne_top).ge
+        hs_span'
+    rw [← hs_card, ← ht_span, ← ht_image]
+    exact le_of_le_of_eq (Submodule.spanRank_span_le_card t)
+      (Cardinal.mk_image_eq_of_injOn _ _ ht_inj).symm
+
+/--
+In a Noetherian local ring,
+the dimension of the cotangent space is equal to the span rank of the maximal ideal.
+-/
+theorem rank_cotangentSpace_eq_spanrank_maximalIdeal [IsNoetherianRing R] :
+    Module.rank (ResidueField R) (CotangentSpace R) = (maximalIdeal R).spanRank :=
+  rank_cotangentSpace_eq_spanrank_maximalIdeal_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
 open Module
 
@@ -395,5 +441,5 @@ lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraM
   · rw [Submodule.map_le_iff_le_comap, ← LinearMap.ker_comp]
     intro x hx
     simp only [LinearMap.mem_ker, LinearMap.comp_apply, Ideal.mapCotangent_toCotangent]
-    convert! map_zero I.toCotangent
+    convert map_zero I.toCotangent
     exact (Ideal.mem_inf.mp hx).1
