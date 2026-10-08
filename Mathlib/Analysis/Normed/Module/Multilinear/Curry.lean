@@ -405,6 +405,8 @@ Therefore, the space of continuous multilinear maps on `(Fin 0) → G` with valu
 isomorphic (and even isometric) to `E₂`. As this is the zeroth step in the construction of iterated
 derivatives, we register this isomorphism. -/
 
+section
+
 variable (𝕜 G) in
 @[simp]
 theorem ContinuousMultilinearMap.uncurry0_norm (x : G') :
@@ -459,6 +461,8 @@ theorem continuousMultilinearCurryFin0_symm_apply (x : G') :
 theorem continuousMultilinearCurryFin0_symm_apply_apply (x : G') (v : Fin 0 → G) :
     (continuousMultilinearCurryFin0 𝕜 G G').symm x v = x :=
   rfl
+
+end
 
 /-! #### With 1 variable -/
 
