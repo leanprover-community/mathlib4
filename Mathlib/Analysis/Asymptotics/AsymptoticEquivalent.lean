@@ -6,8 +6,9 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Asymptotics.Theta
 public import Mathlib.Analysis.Asymptotics.Defs
+
+import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
 # Asymptotic equivalence
@@ -232,7 +233,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
   have : ((fun x ↦ a x • u x) - (fun x ↦ b x • v x)) =ᶠ[l] fun x ↦ b x • (φ x • u x - v x) := by
-    convert!
+    convert
       (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).fun_sub
         (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
     ext
@@ -327,7 +328,7 @@ theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
 
 theorem IsEquivalent.tendsto_atBot [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atBot) :
     Tendsto v l atBot := by
-  convert! tendsto_neg_atTop_atBot.comp (huv.neg.tendsto_atTop <| tendsto_neg_atBot_atTop.comp hu)
+  convert tendsto_neg_atTop_atBot.comp (huv.neg.tendsto_atTop <| tendsto_neg_atBot_atTop.comp hu)
   ext
   simp
 

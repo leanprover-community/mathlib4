@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
+
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Tactic.ContinuousFunctionalCalculus

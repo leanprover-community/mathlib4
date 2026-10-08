@@ -5,9 +5,10 @@ Authors: Anatole Dedecker, Eric Wieser
 -/
 module
 
-import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.Normed.Lp.PiLp
+
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Derivatives on `WithLp`

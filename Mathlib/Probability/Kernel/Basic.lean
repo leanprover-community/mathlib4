@@ -215,7 +215,7 @@ instance const.instIsZeroOrMarkovKernel {μβ : Measure β} [hμβ : IsZeroOrPro
 
 lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
     IsSFiniteKernel (const α μβ) ↔ SFinite μβ :=
-  ⟨fun h ↦ h.sFinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
+  ⟨fun h ↦ h.sfinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
 
 instance [Nonempty β] : Nonempty {κ : Kernel α β // IsMarkovKernel κ} :=
   nonempty_subtype.2 ⟨Kernel.const _ (Measure.dirac Classical.ofNonempty), inferInstance⟩
