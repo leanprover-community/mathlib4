@@ -51,7 +51,7 @@ we have `pq'' = pq` and the corresponding differential is zero.)
 In the favourable case where both `(c r).Rel pq pq'` and `(c r).Rel pq' pq''`
 hold, the definition `SpectralObject.SpectralSequence.shortComplexIso`
 in this file can be used in combination to `SpectralObject.SpectralSequence.dHomologyIso`
-in order to compute the homology of the differentials.)
+in order to compute the homology of the differentials.
 
 In the general case, using the assumptions in `X.HasSpectralSequence data`,
 we provide a limit kernel fork `kf` and

@@ -59,7 +59,7 @@ variable (P : Group.Presentation G ι)
 
 /-- The presentation given by a surjective homomorphism `φ : FreeGroup ι →* G`,
 together with a set of relators whose normal closure is the kernel of `φ`. -/
-@[simps!]
+@[simps! rel]
 def ofFreeGroupHom (φ : FreeGroup ι →* G) (hφ : Function.Surjective φ) (rel : Set (FreeGroup ι))
     (hrel : φ.ker = Subgroup.normalClosure rel) : Group.Presentation G ι where
   toGenerators := Group.Generators.ofFreeGroupHom φ hφ

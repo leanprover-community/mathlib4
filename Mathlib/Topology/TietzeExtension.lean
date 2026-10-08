@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Order.Interval.Set.IsoIoo
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.UrysohnsBounded
+
+import Mathlib.Order.Interval.Set.IsoIoo
 
 /-!
 # Tietze extension theorem

@@ -5,9 +5,10 @@ Authors: Jz Pan
 -/
 module
 
-import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.GroupTheory.OreLocalization.Basic
 public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+import Mathlib.Data.Fintype.Pigeonhole
 
 /-!
 
