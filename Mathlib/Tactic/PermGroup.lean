@@ -53,6 +53,7 @@ private meta partial def elements? (s : Expr) (fuel : Nat := 32) :
     return some ([], false, s)
   if s.isAppOfArity ``SetLike.coe 4 then
     -- `↑t` for a `Finset` literal `t`
+    unless (← whnfR (← inferType (s.getArg! 3))).isAppOfArity ``Finset 1 do return none
     let some (elements, _, literal) ← elements? (s.getArg! 3) fuel | return none
     return some (elements, true, mkAppN s.getAppFn (s.getAppArgs.set! 3 literal))
   let pred := if s.isAppOfArity ``Set.ofPred 2 then
@@ -60,6 +61,7 @@ private meta partial def elements? (s : Expr) (fuel : Nat := 32) :
   if let .lam _ _ body _ := pred then
     if body.isAppOfArity ``Membership.mem 5 && body.getArg! 4 == .bvar 0 &&
         !(body.getArg! 3).hasLooseBVars then
+      unless (← whnfR (← inferType (body.getArg! 3))).isAppOfArity ``List 1 do return none
       let some (elements, _, _) ← elements? (body.getArg! 3) fuel | return none
       return some (elements, false, s)
   if fuel = 0 then return none
@@ -111,10 +113,10 @@ without traversing the elements. -/
 private meta partial def setOfListEq (permTy : Expr) : List Expr → MetaM Expr
   | [] => mkAppOptM ``setOf_mem_nil #[permTy]
   | [g] => mkAppM ``setOf_mem_singleton #[g]
-  | g :: g' :: rest => do
+  | g :: rest => do
     let restE ← mkListLit permTy rest
-    let step ← mkAppM ``setOf_mem_cons #[g, g', restE]
-    let ih ← setOfListEq permTy (g' :: rest)
+    let step ← mkAppM ``List.setOfPred_mem_cons #[restE, g]
+    let ih ← setOfListEq permTy rest
     let ins ← withLocalDeclD `t (← mkAppOptM ``Set #[permTy]) fun t => do
       mkLambdaFVars #[t] (← mkAppM ``Insert.insert #[g, t])
     mkEqTrans step (← mkCongrArg ins ih)
@@ -165,7 +167,8 @@ private meta def presentation (s : Expr) : TermElabM Presentation := do
       let proof ← mkFreshExprMVar (← mkEq canonical literal)
       let rem ← Term.withoutErrToSorry <| Tactic.run proof.mvarId! do
         evalTactic (← `(tactic| simp only [setOf_mem_nil, setOf_mem_singleton,
-          setOf_mem_cons, Finset.coe_empty, Finset.coe_singleton, Finset.coe_insert]))
+          List.setOfPred_mem_cons, insert_empty_eq,
+          Finset.coe_empty, Finset.coe_singleton, Finset.coe_insert]))
       unless rem.isEmpty do
         throwError "perm_group: could not identify the generating set with a list\
           {indentExpr (← rem.head!.getType)}"
@@ -190,6 +193,7 @@ private meta def readGoal? (goal : Expr) : MetaM (Option (Expr × GoalKind × Ex
       let rhs := goal.getArg! 2
       if lhs.isAppOfArity ``Nat.card 1 then
         let some H ← coeSortArg? (lhs.getArg! 0) | return none
+        unless (← unfoldToClosure? H).isSome do return none
         let some N ← (evalNat rhs).run
           | throwError "perm_group: the claimed order must be a numeral{indentExpr rhs}"
         return some (H, .card N)
@@ -258,27 +262,26 @@ its conclusion through the correspondence theorems. -/
     let prepared ← prepare {} p.degree (← p.elements.mapM fun e => input p.degree e)
     let n := p.degree
     let rawSrc := ((sStx.updateTrailing "".toRawSubstring).reprint.getD "").trimAscii.toString
-    let sSrc := s!"({rawSrc} : Set (Equiv.Perm (Fin {n})))"
+    let sSrc := s!"({rawSrc} : _root_.Set (_root_.Equiv.Perm (_root_.Fin {n})))"
     let elemSrc := elemStx.toList.map fun e =>
       ((e.updateTrailing "".toRawSubstring).reprint.getD "").trimAscii.toString
     let gsSrc := "[" ++ ", ".intercalate elemSrc ++ "]"
-    let arraySrc := s!"(({gsSrc} : List (Equiv.Perm (Fin {n})))" ++
+    let arraySrc := s!"(({gsSrc} : _root_.List (_root_.Equiv.Perm (_root_.Fin {n})))" ++
       ".map _root_.Hex.Perm.ofEquiv).toArray"
     let out ← render name prepared
-      (elemSrc.map fun g => s!"_root_.Hex.Perm.ofEquiv ({g} : Equiv.Perm (Fin {n}))") arraySrc
-    let lemmas := match p.elements.length with
-      | 0 => ["_root_.Hex.PermGroup.setOf_mem_nil"]
-      | 1 => ["_root_.Hex.PermGroup.setOf_mem_singleton"]
-      | _ => ["_root_.Hex.PermGroup.setOf_mem_cons", "_root_.Hex.PermGroup.setOf_mem_singleton"]
+      (elemSrc.map fun g => s!"_root_.Hex.Perm.ofEquiv ({g} : _root_.Equiv.Perm (_root_.Fin {n}))")
+      arraySrc
+    let lemmas := ["_root_.List.setOfPred_mem_cons", "_root_.Hex.PermGroup.setOf_mem_nil",
+      "_root_.LawfulSingleton.insert_empty_eq"]
     let lemmas := if p.finset then
       lemmas ++ (match p.elements.length with
-        | 0 => ["_root_.Finset.coe_empty"]
         | 1 => ["_root_.Finset.coe_singleton"]
         | _ => ["_root_.Finset.coe_insert", "_root_.Finset.coe_singleton"])
       else lemmas
     return some (out ++ "\nopen Hex.PermGroup in\n" ++
-      s!"theorem {name}_card : Nat.card (Subgroup.closure {sSrc}) = {prepared.order} := by\n" ++
-      s!"  rw [show {sSrc} = \{x | x ∈ {gsSrc}} by\n" ++
+      s!"theorem {name}_card : _root_.Nat.card (_root_.Subgroup.closure {sSrc}) = " ++
+      s!"{prepared.order} := by\n" ++
+      s!"  rw [show {sSrc} = _root_.Set.ofPred (· ∈ {gsSrc}) by\n" ++
       s!"    symm; simp only [{", ".intercalate lemmas}]]\n" ++
       s!"  exact _root_.Hex.PermGroup.card_of_hasOrder {name}_hasOrder\n")
 

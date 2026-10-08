@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.Perm.Hex
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Data.Finite.Perm
 public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Data.List.Basic
 
 /-!
 # Compatibility with HexPermGroup
@@ -79,11 +80,6 @@ theorem hasOrder_iff_card {S : Array (Perm n)} {N : Nat} :
     let e := (generatedEquiv S).trans
       (Fintype.equivFinOfCardEq (by simpa only [Nat.card_eq_fintype_card] using h))
     exact ⟨⟨e, e.symm, e.symm_apply_apply, e.apply_symm_apply⟩⟩
-
-theorem setOf_mem_cons {α : Type} (a b : α) (l : List α) :
-    {x | x ∈ a :: b :: l} = insert a {x | x ∈ b :: l} := by
-  ext x
-  simp
 
 theorem setOf_mem_singleton {α : Type} (a : α) : {x | x ∈ [a]} = ({a} : Set α) := by
   ext x

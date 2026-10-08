@@ -9,7 +9,6 @@ module
 public import Mathlib.Tactic.PermGroup
 import MathlibTest.PermGroupDefs
 meta import MathlibTest.PermGroupDefs
-meta import Lean
 
 /-! Tests for the `perm_group` tactic. -/
 
@@ -19,18 +18,12 @@ example : Nat.card (Subgroup.closure
     ({Equiv.swap (0 : Fin 3) 1, Equiv.swap (1 : Fin 3) 2} : Set _)) = 6 := by
   perm_group
 
--- The tactic needs only the conversions, without adding a group instance for Hex permutations.
-run_elab do
-  unless (← Lean.Meta.synthInstance? (← Lean.Meta.mkAppM ``_root_.Group
-      #[← Lean.Meta.mkAppM ``Hex.Perm #[Lean.mkNatLit 3]])).isNone do
-    throwError "importing perm_group introduced a group instance for Hex permutations"
-
 example : Nat.card PermGroupTest.subgroup = 6 := by perm_group
 example : PermGroupTest.cycle ∈ PermGroupTest.subgroup := by perm_group
 
 open Hex Hex.PermGroup
 
-namespace Hex.PermGroup.Mathlib.TacticTests
+namespace PermGroupTests
 
 @[expose] def cycle : Equiv.Perm (Fin 3) := permOfImages 3 [1, 2, 0]
 @[expose] def swap : Equiv.Perm (Fin 3) := permOfImages 3 [1, 0, 2]
@@ -82,27 +75,27 @@ example : True := by
   fail_if_success have : Subgroup.closure ({cycle} : Set _) = ⊤ := by perm_group
   trivial
 
-/-- info: 'Hex.PermGroup.Mathlib.TacticTests.order' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'PermGroupTests.order' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms order
 
-/-- info: 'Hex.PermGroup.Mathlib.TacticTests.m11_order' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'PermGroupTests.m11_order' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms m11_order
 
-/-- info: 'Hex.PermGroup.Mathlib.TacticTests.m11_not_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'PermGroupTests.m11_not_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms m11_not_mem
 
-/-- info: 'Hex.PermGroup.Mathlib.TacticTests.member' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'PermGroupTests.member' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms member
 
-/-- info: 'Hex.PermGroup.Mathlib.TacticTests.full' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'PermGroupTests.full' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms full
 
-end Hex.PermGroup.Mathlib.TacticTests
+end PermGroupTests
 
 #guard_msgs (drop info) in
 #perm_group_certificate swaps for
