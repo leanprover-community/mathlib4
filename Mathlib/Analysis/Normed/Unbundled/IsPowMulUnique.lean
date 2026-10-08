@@ -77,3 +77,15 @@ public def AlgebraNorm.toMulAlgebraNorm [CompleteSpace K] (f : AlgebraNorm K L) 
       have hg : IsPowMul g := seminormFromConst_isPowMul hx hf
       rw [hf.unique hg]
       exact seminormFromConst_const_mul hx hf y
+
+@[simp]
+public theorem AlgebraNorm.coe_toMulAlgebraNorm
+    [CompleteSpace K] (f : AlgebraNorm K L) (hf : IsPowMul f) :
+    ⇑(f.toMulAlgebraNorm hf) = f :=
+  rfl
+
+@[simp]
+public theorem AlgebraNorm.toAlgebraNorm_toMulAlgebraNorm
+    [CompleteSpace K] (f : AlgebraNorm K L) (hf : IsPowMul f) :
+    (f.toMulAlgebraNorm hf).toAlgebraNorm = f :=
+  rfl
