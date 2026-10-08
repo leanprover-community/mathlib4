@@ -39,6 +39,10 @@ coheight is defined to be `sup {n | a ≤ a₀ < a₁ < ... < aₙ}` .
 
 * The height is monotone (`height_mono`), and strictly monotone if finite (`height_strictMono`).
 
+* The cardinality of a strict chain below an element is bounded by its height
+  (`encard_le_height_of_isChain`), and every finite height lower bound is realized by such a chain
+  (`exists_isChain_of_le_height`).
+
 * The height is the chain height of the strict lower interval (`height_eq_chainHeight_Iio`),
   and in a linear order it is the cardinality of that interval (`height_eq_encard_Iio`).
 
@@ -593,22 +597,44 @@ section chainHeight
 variable {α : Type*}
 
 set_option backward.isDefEq.respectTransparency false in
+/-- A strict chain below an element has cardinality at most the element's height. -/
+theorem encard_le_height_of_isChain [Preorder α] {s : Set α} {a : α}
+    (hs : IsChain (· < ·) s) (hsa : s ⊆ Set.Iio a) :
+    s.encard ≤ height a := by
+  refine ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_
+  obtain ⟨t, hts, htn⟩ := Set.exists_subset_encard_eq hn
+  obtain ⟨f, hf, hft⟩ := Set.IsChain.exists_strictMono_of_encard_eq (hs.mono hts) htn
+  have hfa : Set.range f ⊆ Set.Iio a := hft ▸ hts.trans hsa
+  cases n with
+  | zero => simp
+  | succ n =>
+    let p := LTSeries.mk n f hf
+    simpa [p] using length_le_height_last
+      (p := p.snoc a (hfa (Set.mem_range_self (Fin.last n))))
+
+/-- For every finite lower bound on an element's height, there is a strict chain of that
+cardinality below the element. -/
+theorem exists_isChain_of_le_height [Preorder α] (a : α) {n : ℕ} (hn : n ≤ height a) :
+    ∃ s ⊆ Set.Iio a, s.encard = n ∧ IsChain (· < ·) s := by
+  obtain ⟨p, hp, hlen⟩ := exists_series_of_le_height a hn
+  let f : Fin p.length → α := fun i ↦ p (Fin.castSucc i)
+  have hf : StrictMono f := p.strictMono.comp Fin.strictMono_castSucc
+  refine ⟨Set.range f, ?_, ?_, ?_⟩
+  · exact Set.range_subset_iff.mpr fun i ↦
+      (p.strictMono (Fin.castSucc_lt_last i)).trans_eq hp
+  · simpa [hlen] using hf.injective.encard_range
+  · rw [← Set.image_univ]
+    exact (isChain_of_trichotomous _).image_of_map_rel _ _ _ fun _ _ h ↦ hf h
+
 /-- In a preorder, the height of an element `a` is the supremum of the cardinalities of the sets
 of elements less than `a` that are chains for `<`. -/
 theorem height_eq_chainHeight_Iio [Preorder α] (a : α) :
     height a = (Set.Iio a).chainHeight (· < ·) := by
-  refine le_antisymm (height_le fun p hp ↦ ?_)
-    (ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_)
-  · exact (Set.natCast_le_chainHeight_iff _ _).mpr
-      ⟨fun i ↦ p (Fin.castSucc i), p.strictMono.comp Fin.strictMono_castSucc,
-        Set.range_subset_iff.mpr fun i ↦ (p.strictMono (Fin.castSucc_lt_last i)).trans_eq hp⟩
-  · obtain ⟨f, hf, hfs⟩ := (Set.natCast_le_chainHeight_iff _ _).mp hn
-    cases n with
-    | zero => simp
-    | succ n =>
-      let p := LTSeries.mk n f hf
-      simpa [p] using length_le_height_last
-        (p := p.snoc a (hfs (Set.mem_range_self (Fin.last n))))
+  refine le_antisymm (ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_) ?_
+  · obtain ⟨s, hs, hsn, hsc⟩ := exists_isChain_of_le_height a hn
+    exact hsn ▸ Set.encard_le_chainHeight_of_isChain _ _ hs hsc
+  · rw [Set.chainHeight_eq_iSup]
+    exact iSup_le fun s ↦ encard_le_height_of_isChain s.property.2 s.property.1
 
 /-- In a preorder, the coheight of an element `a` is the supremum of the cardinalities of the sets
 of elements greater than `a` that are chains for `<`. -/
