@@ -221,6 +221,19 @@ noncomputable def adjunction : profiniteCompletion ⊣ forget₂ _ _ :=
       simp [homEquiv]
   }
 
-end ProfiniteCompletion
+/-- The profinite completion of `G` embeds into the product of all finite quotients. -/
+@[to_additive
+/-- The profinite completion of `G` embeds into the product of all finite quotients. -/]
+noncomputable def piEmbedding {G : GrpCat.{u}} :
+    completion G →* Π H : FiniteIndexNormalSubgroup G, G ⧸ H.toSubgroup :=
+  SubgroupClass.subtype _
+
+@[to_additive]
+theorem piEmbedding_injective {G : GrpCat.{u}} : Function.Injective (piEmbedding (G := G)) :=
+  SubgroupClass.subtype_injective _
+
+@[to_additive]
+noncomputable instance (G : Type u) [CommGroup G] : CommGroup (completion (.mk G)) :=
+  piEmbedding.commGroupOfInjective piEmbedding_injectiveend ProfiniteCompletion
 
 end ProfiniteGrp
