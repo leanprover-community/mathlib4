@@ -217,11 +217,16 @@ def length (xs : t α) : ℕ :=
 
 variable {m : Type u → Type u} [Monad m]
 
-def foldlm (f : α → β → m α) (x : α) (xs : t β) : m α :=
-  (foldMap (foldlM.mk ∘ flip f) xs).get x
+/-- Monadic left fold over a traversable structure, via `foldMap`. -/
+def foldlM (f : α → β → m α) (x : α) (xs : t β) : m α :=
+  (foldMap (Monoid.foldlM.mk ∘ flip f) xs).get x
 
-def foldrm (f : α → β → m β) (x : β) (xs : t α) : m β :=
-  (foldMap (foldrM.mk ∘ f) xs).get x
+/-- Monadic right fold over a traversable structure, via `foldMap`. -/
+def foldrM (f : α → β → m β) (x : β) (xs : t α) : m β :=
+  (foldMap (Monoid.foldrM.mk ∘ f) xs).get x
+
+@[deprecated foldlM (since := "2026-10-08")] alias foldlm := foldlM
+@[deprecated foldrM (since := "2026-10-08")] alias foldrm := foldrM
 
 end Defs
 
@@ -286,20 +291,20 @@ theorem foldr.ofFreeMonoid_comp_of (f : β → α → α) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β → m α) :
-    foldlM.ofFreeMonoid f ∘ FreeMonoid.of = foldlM.mk ∘ flip f := by
+theorem foldlM.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β → m α) :
+    Monoid.foldlM.ofFreeMonoid f ∘ FreeMonoid.of = Monoid.foldlM.mk ∘ flip f := by
   ext1 x
-  simp only [foldlM.ofFreeMonoid, Function.flip_def, MonoidHom.coe_mk, OneHom.coe_mk,
+  simp only [Monoid.foldlM.ofFreeMonoid, Function.flip_def, MonoidHom.coe_mk, OneHom.coe_mk,
     Function.comp_apply, FreeMonoid.toList_of, List.foldlM_cons, List.foldlM_nil, bind_pure,
-    foldlM.mk, op_inj]
+    Monoid.foldlM.mk, op_inj]
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem foldrm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α → m α) :
-    foldrM.ofFreeMonoid f ∘ FreeMonoid.of = foldrM.mk ∘ f := by
+theorem foldrM.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α → m α) :
+    Monoid.foldrM.ofFreeMonoid f ∘ FreeMonoid.of = Monoid.foldrM.mk ∘ f := by
   ext
-  simp [(· ∘ ·), foldrM.ofFreeMonoid, foldrM.mk, Function.flip_def]
+  simp [(· ∘ ·), Monoid.foldrM.ofFreeMonoid, Monoid.foldrM.mk, Function.flip_def]
 
 theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMonoid.of xs) :=
   Eq.symm <|
@@ -367,29 +372,38 @@ theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem foldlm_toList {f : α → β → m α} {x : α} {xs : t β} :
-    foldlm f x xs = List.foldlM f x (toList xs) :=
-  calc foldlm f x xs
-    _ = (unop (foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs))).asHom x := by
-      simp only [foldlm, toList_spec, foldMap_hom_free (foldlM.ofFreeMonoid f),
-        foldlm.ofFreeMonoid_comp_of, foldlM.get, FreeMonoid.ofList_toList]
-    _ = List.foldlM f x (toList xs) := by simp [foldlM.ofFreeMonoid, unop_op, flip]
+theorem foldlM_toList {f : α → β → m α} {x : α} {xs : t β} :
+    foldlM f x xs = List.foldlM f x (toList xs) :=
+  calc foldlM f x xs
+    _ = (unop (Monoid.foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs))).asHom x := by
+      simp only [foldlM, toList_spec, foldMap_hom_free (Monoid.foldlM.ofFreeMonoid f),
+        foldlM.ofFreeMonoid_comp_of, Monoid.foldlM.get, FreeMonoid.ofList_toList]
+    _ = List.foldlM f x (toList xs) := by simp [Monoid.foldlM.ofFreeMonoid, unop_op, flip]
 
-theorem foldrm_toList (f : α → β → m β) (x : β) (xs : t α) :
-    foldrm f x xs = List.foldrM f x (toList xs) := by
-  change _ = (foldrM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)).asHom x
-  simp only [foldrm, toList_spec, foldMap_hom_free (foldrM.ofFreeMonoid f),
-    foldrm.ofFreeMonoid_comp_of, foldrM.get, FreeMonoid.ofList_toList]
-
-@[simp]
-theorem foldlm_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) :
-    foldlm f a (g <$> l) = foldlm (fun x y => f x (g y)) a l := by
-  simp only [foldlm, foldMap_map, Function.comp_def, Function.flip_def]
+theorem foldrM_toList (f : α → β → m β) (x : β) (xs : t α) :
+    foldrM f x xs = List.foldrM f x (toList xs) := by
+  change _ = (Monoid.foldrM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)).asHom x
+  simp only [foldrM, toList_spec, foldMap_hom_free (Monoid.foldrM.ofFreeMonoid f),
+    foldrM.ofFreeMonoid_comp_of, Monoid.foldrM.get, FreeMonoid.ofList_toList]
 
 @[simp]
-theorem foldrm_map (g : β → γ) (f : γ → α → m α) (a : α) (l : t β) :
-    foldrm f a (g <$> l) = foldrm (f ∘ g) a l := by
-  simp only [foldrm, foldMap_map, Function.comp_def]
+theorem foldlM_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) :
+    foldlM f a (g <$> l) = foldlM (fun x y => f x (g y)) a l := by
+  simp only [foldlM, foldMap_map, Function.comp_def, Function.flip_def]
+
+@[simp]
+theorem foldrM_map (g : β → γ) (f : γ → α → m α) (a : α) (l : t β) :
+    foldrM f a (g <$> l) = foldrM (f ∘ g) a l := by
+  simp only [foldrM, foldMap_map, Function.comp_def]
+
+@[deprecated (since := "2026-10-08")]
+alias foldlm.ofFreeMonoid_comp_of := foldlM.ofFreeMonoid_comp_of
+@[deprecated (since := "2026-10-08")]
+alias foldrm.ofFreeMonoid_comp_of := foldrM.ofFreeMonoid_comp_of
+@[deprecated (since := "2026-10-08")] alias foldlm_toList := foldlM_toList
+@[deprecated (since := "2026-10-08")] alias foldrm_toList := foldrM_toList
+@[deprecated (since := "2026-10-08")] alias foldlm_map := foldlM_map
+@[deprecated (since := "2026-10-08")] alias foldrm_map := foldrM_map
 
 end Equalities
 
