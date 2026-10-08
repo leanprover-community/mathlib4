@@ -28,8 +28,8 @@ the pivots of `U`, which are established by the model's certifier (or the kernel
 ## Main definitions
 
 - `certifyDecomposition`: builds the `Echelon.Decomposition` certificate from decomposition data.
-- `DecompositionCert`: the internal certificate structure that includes `U` and the product
-  equation for downstream tactics.
+- `DecompositionCert`: the internal certificate structure that includes the decomposition data,
+  `U` and the product equation for downstream tactics.
 - `ListMatrixLit`: an `ofLists` matrix together with its list literal and its rows of entries.
 
 ## Implementation notes
@@ -171,17 +171,23 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)}
   return mkExpectedPropHint q(ofLists_mul $hmul)
     q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix))
 
-/-- An internal structure recording the `Echelon.Decomposition` certificate of `A` together with
-the intermediate certificates that downstream tactics reuse (the echelon form `U` and the product
-equation stated on it). -/
+/-- An internal structure recording the `Echelon.Decomposition` certificate of `A` with its data,
+together with the intermediate certificates that downstream tactics reuse (the echelon form `U`
+and the product equation stated on it). -/
 structure DecompositionCert {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
+  /-- The transformation matrix. -/
+  L : ListMatrixLit α m m
+  /-- The row permutation on the rows of `A`. -/
+  σ : Q(Equiv.Perm (Fin $m))
+  /-- The pivot of the resulting echelon form. -/
+  pivot : Q(Fin $m → WithTop (Fin $n))
   /-- The decomposition certificate from the theory. -/
-  decomp : Q(Echelon.Decomposition $A)
+  decomp : Q(Echelon.Decomposition $A $(L.matrix) $σ $pivot)
   /-- The echelon form. -/
   U : ListMatrixLit α m n
   /-- The product equation. -/
-  mul_eq : Q(($decomp).L * ($A).submatrix ($decomp).σ id = $(U.matrix))
+  mul_eq : Q($(L.matrix) * ($A).submatrix $σ id = $(U.matrix))
 
 /-- Build the `DecompositionCert` of `A` from the decomposition data and the parsed entries
 of `A`. -/
@@ -193,7 +199,6 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)}
   let aα : Q(Add $α) ← synthInstanceQ q(Add $α)
   let mα : Q(Mul $α) ← synthInstanceQ q(Mul $α)
   let cα : Q(AddCommMonoid $α) ← synthInstanceQ q(AddCommMonoid $α)
-  let U := ListMatrixLit.ofArray zα m n data.U
   let σ ← mkPerm m data.swaps
   let cols := data.pivot.toList
   let pivots : Q(List (Fin $n)) := mkListLitQ (← cols.mapM (mkFinLitQ n))
@@ -203,7 +208,9 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)}
   let mulEq := proveMul zα aα mα m m n lRows aRows
   -- `L` and `Aσ` reuse the literals `proveMul` built.
   have Lm : Q(Matrix (Fin $m) (Fin $m) $α) := q(ofLists $m $m $(mulEq.A))
+  let L : ListMatrixLit α m m := { matrix := Lm, lit := mulEq.A, rows := lRows }
   let Aσm : Q(Matrix (Fin $m) (Fin $n) $α) := q(ofLists $m $n $(mulEq.B))
+  let U := ListMatrixLit.ofArray zα m n data.U
   let Um := U.matrix
   have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
   let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq certifier? cα mulEq U
@@ -214,8 +221,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)}
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
   assertInstancesCommute
-  let decomp : Q(Echelon.Decomposition $A) :=
-    q(⟨$Lm, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
-  return { decomp, U, mul_eq := hU }
+  let decomp : Q(Echelon.Decomposition $A $Lm $σ $pivot) := q(⟨$hU ▸ $hpivot, $hlower, $hdiag⟩)
+  return { L, σ, pivot, decomp, U, mul_eq := hU }
 
 end Mathlib.Tactic.Echelon
