@@ -226,7 +226,7 @@ variable [hν : SFinite ν]
 
 theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s = ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := by
-  simp_rw [Measure.prod, hν, reduceIte, bind_apply hs
+  simp_rw [Measure.prod_eq_of_sfinite, bind_apply hs
     (Measurable.map_prodMk_left (ν := ν)).aemeasurable, map_apply measurable_prodMk_left hs]
 
 /-- The product measure of the product of two sets is the product of their measures. Note that we
@@ -259,6 +259,7 @@ theorem _root_.MeasureTheory.measureReal_prod_prod (s : Set α) (t : Set β) :
   ext s hs
   simp [Measure.map_apply measurable_fst hs, ← prod_univ, mul_comm]
 
+omit hν in
 lemma _root_.MeasureTheory.measurePreserving_fst [IsProbabilityMeasure ν] :
     MeasurePreserving Prod.fst (μ.prod ν) μ :=
   ⟨measurable_fst, by rw [map_fst_prod, measure_univ, one_smul]⟩
@@ -855,7 +856,7 @@ theorem prod_zero (μ : Measure α) : μ.prod (0 : Measure β) = 0 := by simp [M
 
 /-- Version of `map_prod_map` for a.e. measurable maps. -/
 theorem map_prod_map_of_aemeasurable {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ}
-    (μa : Measure α) (μc : Measure γ) [hc : SFinite μc] (hf : AEMeasurable f μa)
+    (μa : Measure α) (μc : Measure γ) [SFinite μc] (hf : AEMeasurable f μa)
     (hg : AEMeasurable g μc) :
     (map f μa).prod (map g μc) = map (Prod.map f g) (μa.prod μc) := by
   have hfg : AEMeasurable (Prod.map f g) (μa.prod μc) := by fun_prop
@@ -1172,7 +1173,7 @@ instance fst.instIsZeroOrProbabilityMeasure [IsZeroOrProbabilityMeasure ρ] :
   · infer_instance
 
 @[simp]
-lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
+lemma fst_prod {ν : Measure β} [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
   ext1 s hs
   rw [fst_apply hs, ← prod_univ, prod_prod, measure_univ, mul_one]
 
