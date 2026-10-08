@@ -16,7 +16,7 @@ If the same data can be obtained from two different instances, we risk having
 non-defeq versions of that data. This situation is known as an "instance diamond".
 This linter warns against instance diamonds in local contexts.
 
-This is a syntax linter. It is run on partially and fully elaborated declarations.
+This is registered as a linter in `Mathlib.Tactic.Linter.DeclType`.
 
 To find diamonds, we compute the parent classes of each local instance.
 For classes that aren't structures, this is just the class itself.
@@ -136,7 +136,7 @@ partial def findOverlappingInstances : MetaM (ExprMap (Array FVarId)) := do
   return overlaps
 
 /-- Lints against overlaps between instances in the local contexts of declarations. -/
-register_option linter.overlappingInstances : Bool := {
+public register_option linter.overlappingInstances : Bool := {
   defValue := true
   descr := "enable the overlapping instances linter."
 }
@@ -211,25 +211,16 @@ open Linter in
 /--
 Lints against data-carrying overlaps between instances in the local contexts of declarations.
 -/
-def overlappingInstances : Linter where
-  run := UnusedInstancesInType.withSetBoolOptionIn fun cmd => do
-    unless getLinterValue linter.overlappingInstances (← getLinterOptions) do
-      return
-    -- Note: we don't break on errors; we want to lint even on partial declarations
-    profileitM Exception "overlappingInstancesLinter" (← getOptions) do
-    for t in ← getInfoTrees do
-      for (ref, ctx, info) in t.getDeclBodyInfos do
-        let some (lctx, expectedType?) := info.getLCtx? | pure ()
-        withTraceNode `overlappingInstances
-          (fun _ ↦ return m!"linting `{.ofConstName <| ctx.parentDecl?.getD .anonymous}`") do
-        let some msg ← runLinter ctx lctx expectedType? | pure ()
-        /- Log the warning from the declaration's selection range (usually the declaration name,
-        or `instance`) to the body if possible. This underlines the hypotheses and type,
-        and makes the warning visible in the infoview when the cursor is within the body. -/
-        let declRange? ← ctx.parentDecl?.bindM findDeclarationSyntaxRange?
-        let ref := declRange?.elim ref (mkNullNode #[.ofRange ·, ref])
-        logLint linter.overlappingInstances ref msg
-
-initialize addLinter overlappingInstances
+public def overlappingInstances (bodyRef : Syntax) (ctx : ContextInfo) (info : Info) : CommandElabM Unit := do
+  let some (lctx, expectedType?) := info.getLCtx? | pure ()
+  withTraceNode `overlappingInstances
+    (fun _ ↦ return m!"linting `{.ofConstName <| ctx.parentDecl?.getD .anonymous}`") do
+  let some msg ← runLinter ctx lctx expectedType? | pure ()
+  /- Log the warning from the declaration's selection range (usually the declaration name,
+  or `instance`) to the body if possible. This underlines the hypotheses and type,
+  and makes the warning visible in the infoview when the cursor is within the body. -/
+  let declRange? ← ctx.parentDecl?.bindM findDeclarationSyntaxRange?
+  let ref := declRange?.elim bodyRef (mkNullNode #[.ofRange ·, bodyRef])
+  logLint linter.overlappingInstances ref msg
 
 end Mathlib.Linter.OverlappingInstances

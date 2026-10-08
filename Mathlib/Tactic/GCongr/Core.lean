@@ -537,7 +537,9 @@ either with such a hypothesis directly or by a limited palette of relational for
 these hypotheses. -/
 def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool := withReducible do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
-  -- Iterate over a list of terms
+  -- `@[gcongr_forward]` extensions are metaprograms retrieved from `forwardExt`, so `shake` sees
+  -- no reference to the module that registered them. We record that module below, for whichever
+  -- extension closes the goal.
   let tacs := (forwardExt.getState (← getEnv)).2
   let mctx ← getMCtx
   for h in hs do
@@ -545,6 +547,7 @@ def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool
       tacs.firstM fun (n, tac) =>
         withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
           tac.eval h g
+          recordExtraModUseFromDecl (isMeta := true) n
       return true
     catch _ => setMCtx mctx
     try
@@ -552,6 +555,7 @@ def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool
       tacs.firstM fun (n, tac) =>
         withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
           tac.eval h g
+          recordExtraModUseFromDecl (isMeta := true) n
       return true
     catch _ => setMCtx mctx
   return false
@@ -813,7 +817,7 @@ partial def _root_.Lean.MVarId.gcongr
   -- fail.
   if lemmas.isEmpty then
     throwTacticEx `gcongr g m!"there is no `@[gcongr]` lemma \
-      for relation '{relName}' and constant '{lhsHead}'."
+      for relation `{.ofConstName relName}` and constant `{.ofConstName lhsHead}`."
   else
     throwTacticEx `gcongr g m!"none of the `@[gcongr]` lemmas were applicable to the goal {rel}.\
       \n  attempted lemmas: {lemmas.map (·.declName)}"

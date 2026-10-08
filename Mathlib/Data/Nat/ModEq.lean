@@ -9,8 +9,9 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Data.Int.GCD
 public import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Algebra.CharZero.Defs
+
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Congruences modulo a natural number
@@ -175,7 +176,7 @@ protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b +
     c ≡ d [MOD n] := by
   simp only [modEq_iff_dvd, Int.natCast_add] at *
   rw [add_sub_add_comm] at h₂
-  convert! Int.dvd_sub h₂ h₁ using 1
+  convert Int.dvd_sub h₂ h₁ using 1
   rw [add_sub_cancel_left]
 
 protected theorem add_left_cancel' (c : ℕ) (h : c + a ≡ c + b [MOD n]) : a ≡ b [MOD n] :=
@@ -259,7 +260,7 @@ For cancelling right multiplication on both sides of the `≡`, see `nat.modeq.m
 lemma of_mul_right (m : ℕ) : a ≡ b [MOD n * m] → a ≡ b [MOD n] := mul_comm m n ▸ of_mul_left _
 
 theorem of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :
-    a ≡ b [MOD m] := by convert! h.mul_left' c <;> rwa [Nat.mul_div_cancel']
+    a ≡ b [MOD m] := by convert h.mul_left' c <;> rwa [Nat.mul_div_cancel']
 
 end ModEq
 
@@ -470,7 +471,7 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
 
 /-- The natural number less than `n*m` congruent to `a` mod `n` and `b` mod `m` -/
 def chineseRemainder (co : n.Coprime m) (a b : ℕ) : { k // k ≡ a [MOD n] ∧ k ≡ b [MOD m] } :=
-  chineseRemainder' (by convert! @modEq_one a b)
+  chineseRemainder' (by convert @modEq_one a b)
 
 theorem chineseRemainder'_lt_lcm (h : a ≡ b [MOD gcd n m]) (hn : n ≠ 0) (hm : m ≠ 0) :
     ↑(chineseRemainder' h) < lcm n m := by
