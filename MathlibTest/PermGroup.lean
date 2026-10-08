@@ -35,6 +35,11 @@ theorem member : cycle * swap ∈ symmetric := by perm_group
 theorem nonmember : swap ∉ Subgroup.closure ({cycle} : Set _) := by perm_group
 theorem full : symmetric = ⊤ := by perm_group
 
+def generatorList : List (Equiv.Perm (Fin 3)) := [cycle, swap]
+
+example : Nat.card (Subgroup.closure {p : Equiv.Perm (Fin 3) | p ∈ generatorList}) = 6 := by
+  perm_group
+
 example : Nat.card (Subgroup.closure
     (↑({cycle, swap} : Finset (Equiv.Perm (Fin 3))) : Set (Equiv.Perm (Fin 3)))) = 6 := by
   perm_group

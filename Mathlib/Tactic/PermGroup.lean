@@ -62,8 +62,9 @@ private meta partial def elements? (s : Expr) (fuel : Nat := 32) :
     if body.isAppOfArity ``Membership.mem 5 && body.getArg! 4 == .bvar 0 &&
         !(body.getArg! 3).hasLooseBVars then
       unless (← whnfR (← inferType (body.getArg! 3))).isAppOfArity ``List 1 do return none
-      let some (elements, _, _) ← elements? (body.getArg! 3) fuel | return none
-      return some (elements, false, s)
+      let list := body.getArg! 3
+      let some (elements, _, literal) ← elements? list fuel | return none
+      return some (elements, false, s.replace fun e => if e == list then some literal else none)
   if fuel = 0 then return none
   let s' ← whnfR s
   if s' != s then return ← elements? s' (fuel - 1)
@@ -108,10 +109,8 @@ private meta def presentation (s : Expr) : TermElabM Presentation := do
     | throwError "perm_group: the generating set must be a set literal or a coerced Finset \
         literal{indentExpr s}"
   let ty ← inferType s
-  let permTy ← if ty.isAppOfArity ``Set 1 then pure (ty.getArg! 0) else do
-    let .forallE _ dom (.sort .zero) _ ← whnfR ty
-      | throwError "perm_group: unexpected set type{indentExpr ty}"
-    pure dom
+  let .forallE _ permTy (.sort .zero) _ ← whnfD ty
+    | throwError "perm_group: unexpected set type{indentExpr ty}"
   let degree ← permDegree permTy
   let list ← mkListLit permTy elements
   let canonical ← withLocalDeclD `x permTy fun x => do
@@ -119,7 +118,7 @@ private meta def presentation (s : Expr) : TermElabM Presentation := do
       ← mkLambdaFVars #[x] (← mkAppM ``Membership.mem #[list, x])]
   let proof ← mkFreshExprMVar (← mkEq literal canonical)
   let rem ← Term.withoutErrToSorry <| Tactic.run proof.mvarId! do
-    evalTactic (← `(tactic| simp only [setOf_mem_nil, setOf_mem_singleton,
+    evalTactic (← `(tactic| simp only [List.not_mem_nil, Set.ofPred_false,
       List.setOfPred_mem_cons, insert_empty_eq,
       Finset.coe_empty, Finset.coe_singleton, Finset.coe_insert]))
   unless rem.isEmpty do
@@ -130,7 +129,7 @@ private meta def presentation (s : Expr) : TermElabM Presentation := do
 
 /-- The shape of a supported goal. -/
 private meta inductive GoalKind where
-  | card (N : Nat)
+  | card (N : Expr)
   | mem (g : Expr)
   | notMem (g : Expr)
   | top
@@ -145,10 +144,7 @@ private meta def readGoal? (goal : Expr) : MetaM (Option (Expr × GoalKind × Ex
       let rhs := goal.getArg! 2
       if lhs.isAppOfArity ``Nat.card 1 then
         let some H ← coeSortArg? (lhs.getArg! 0) | return none
-        unless (← whnfUntil H ``Subgroup.closure).isSome do return none
-        let some N ← (evalNat rhs).run
-          | throwError "perm_group: the claimed order must be a numeral{indentExpr rhs}"
-        return some (H, .card N)
+        return some (H, .card rhs)
       if rhs.isAppOfArity ``Top.top 2 then return some (lhs, .top)
     if goal.isAppOfArity ``Membership.mem 5 then
       return some (goal.getArg! 3, .mem (goal.getArg! 4))
@@ -184,13 +180,15 @@ its conclusion through the correspondence theorems. -/
   prove? cfg target := do
     let some (s, kind, t) ← readGoal? target | return none
     let p ← presentation s
-    let inputs ← p.elements.mapM fun e => input p.degree e
-    let prepared ← prepare cfg p.degree inputs
     let request ← match kind with
-      | .card N => pure (Goal.card N)
+      | .card rhs => do
+        let some N ← (evalNat rhs).run
+          | throwError "perm_group: the claimed order must be a numeral{indentExpr rhs}"
+        pure (Goal.card N)
       | .top => pure Goal.all
       | .mem g => pure (.mem (← input p.degree g))
       | .notMem g => pure (.notMem (← input p.degree g))
+    let prepared ← prepare cfg p.degree (← p.elements.mapM fun e => input p.degree e)
     let core ← replay prepared request
     let pf ← match kind with
       | .card _ => mkAppOptM ``card_of_hasOrder #[mkNatLit p.degree, p.list, none, core]
@@ -215,8 +213,8 @@ its conclusion through the correspondence theorems. -/
     let out ← render name prepared
       (elemSrc.map fun g => s!"_root_.Hex.Perm.ofEquiv ({g} : _root_.Equiv.Perm (_root_.Fin {n}))")
       arraySrc
-    let lemmas := ["_root_.List.setOfPred_mem_cons", "_root_.Hex.PermGroup.setOf_mem_nil",
-      "_root_.LawfulSingleton.insert_empty_eq"]
+    let lemmas := ["_root_.List.setOfPred_mem_cons", "_root_.List.not_mem_nil",
+      "_root_.Set.ofPred_false", "_root_.LawfulSingleton.insert_empty_eq"]
     let lemmas := if p.finset then
       lemmas ++ (match p.elements.length with
         | 1 => ["_root_.Finset.coe_singleton"]

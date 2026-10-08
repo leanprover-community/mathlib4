@@ -9,7 +9,7 @@ module
 public import HexPermGroup.Order
 public import Mathlib.GroupTheory.Perm.Hex
 public import Mathlib.Algebra.Group.Subgroup.Lattice
-public import Mathlib.Data.Finite.Perm
+public import Mathlib.Data.Fintype.Perm
 public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Data.List.Basic
 
@@ -80,14 +80,6 @@ theorem hasOrder_iff_card {S : Array (Perm n)} {N : Nat} :
     let e := (generatedEquiv S).trans
       (Fintype.equivFinOfCardEq (by simpa only [Nat.card_eq_fintype_card] using h))
     exact ⟨⟨e, e.symm, e.symm_apply_apply, e.apply_symm_apply⟩⟩
-
-theorem setOf_mem_singleton {α : Type} (a : α) : {x | x ∈ [a]} = ({a} : Set α) := by
-  ext x
-  simp
-
-theorem setOf_mem_nil {α : Type} : {x | x ∈ ([] : List α)} = (∅ : Set α) := by
-  ext x
-  simp
 
 theorem closure_ofEquiv (gs : List (Equiv.Perm (Fin n))) :
     closure (gs.map Perm.ofEquiv).toArray = Subgroup.closure {x | x ∈ gs} := by
