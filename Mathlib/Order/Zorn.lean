@@ -56,7 +56,7 @@ lemma zorny_lemma : zorny_statement := by
 
 ## TODO
 
-Zorn lemmas can be proved over `<`-chains, which is more general than `≤` versions.
+Zorn's lemma can be proved over `<`-chains, which is more general than for `≤`-chains.
 
 ## Notes
 
