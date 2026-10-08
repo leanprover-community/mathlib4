@@ -462,6 +462,10 @@ def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
   toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
   invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
 
+-- See note [lower instance priority]
+instance (priority := low) : WellFoundedLT α :=
+  StrictMono.wellFoundedLT fun _ _ ↦ Finset.Iic_ssubset_Iic.mpr
+
 end LocallyFiniteOrderBot
 
 section LocallyFiniteOrderTop
@@ -474,9 +478,13 @@ theorem Ioi_subset_Ici_self : Ioi a ⊆ Ici a := by
 theorem _root_.BddBelow.finite {s : Set α} (hs : BddBelow s) : s.Finite :=
   let ⟨a, ha⟩ := hs
   (Ici a).finite_toSet.subset fun _ hx => mem_Ici.2 <| ha hx
-
 theorem _root_.Set.Infinite.not_bddBelow {s : Set α} : s.Infinite → ¬BddBelow s :=
   mt BddBelow.finite
+
+-- See note [lower instance priority]
+@[to_dual existing]
+instance (priority := low) : WellFoundedGT α :=
+  StrictAnti.wellFoundedGT fun _ _ ↦ Finset.Ici_ssubset_Ici.mpr
 
 variable [Fintype α]
 
