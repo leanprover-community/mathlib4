@@ -6,6 +6,7 @@ Authors: Adomas Baliuka
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
 /-!
@@ -38,7 +39,7 @@ The functions are also defined outside the interval `Icc 0 1` due to `log x = lo
   (`hasDerivAt_binEntropy` and `hasDerivAt_qaryEntropy`).
   In addition, due to junk values, `deriv binEntropy p = log (1 - p) - log p`
   holds everywhere (`deriv_binEntropy`).
-* they are strictly increasing on `Icc 0 (1 - 1/q))`
+* they are strictly increasing on `Icc 0 (1 - 1/q)`
   (`qaryEntropy_strictMonoOn`, `binEntropy_strictMonoOn`)
   and strictly decreasing on `Icc (1 - 1/q) 1`
   (`binEntropy_strictAntiOn` and `qaryEntropy_strictAntiOn`).

@@ -7,12 +7,13 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.SpanRank
-import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Nakayama
+
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -301,6 +302,17 @@ instance : Module (ResidueField R) (CotangentSpace R) :=
 
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
   inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
+
+/-- `Ideal.toCotangent` for maximal ideal of local ring,
+ as `IsLocalRing.residue R` semi-linear map. -/
+def toCotangentSpace : maximalIdeal R →ₛₗ[residue R] CotangentSpace R where
+  __ := (maximalIdeal R).toCotangent
+  map_smul' r x := by simp [← ResidueField.algebraMap_eq]
+
+lemma toCotangentSpace_eq_toCotangent : ⇑(toCotangentSpace R) = (maximalIdeal R).toCotangent := rfl
+
+lemma toCotangentSpace_apply (x : maximalIdeal R) :
+    toCotangentSpace R x = (maximalIdeal R).toCotangent x := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
