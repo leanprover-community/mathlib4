@@ -375,8 +375,8 @@ theorem eval_surjective (x : R) : Function.Surjective <| eval x := fun y => ⟨C
 /-- Evaluation of a polynomial is monotone if addition and multiplication are monotone in each
 argument, as in a canonically ordered semiring such as `ℕ`. -/
 @[gcongr]
-theorem eval_le_eval [Preorder R] [AddLeftMono R] [MulLeftMono R] [MulRightMono R]
-    (p : R[X]) (hab : a ≤ b) : p.eval a ≤ p.eval b := by
+theorem eval_mono_left [Preorder R] [AddLeftMono R] [MulLeftMono R] [MulRightMono R] (p : R[X])
+    (hab : a ≤ b) : p.eval a ≤ p.eval b := by
   induction p using Polynomial.induction_on' with
   | add p q hp hq => simpa using add_le_add hp hq
   | monomial n c => simpa using mul_le_mul_right (pow_le_pow_left' hab n) c
