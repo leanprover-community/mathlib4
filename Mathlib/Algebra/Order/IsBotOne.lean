@@ -163,16 +163,16 @@ section LinearOrder
 variable [LinearOrder α] [One α] [IsBotOneClass α]
 
 @[to_additive]
-theorem one_min (a : α) : min 1 a = 1 := by simp
+theorem one_min (a : α) : min 1 a = 1 := one_inf
 
 @[to_additive]
-theorem min_one (a : α) : min a 1 = 1 := by simp
+theorem min_one (a : α) : min a 1 = 1 := inf_one
 
 @[to_additive]
-theorem one_max (a : α) : max 1 a = a := by simp
+theorem one_max (a : α) : max 1 a = a := one_sup
 
 @[to_additive]
-theorem max_one (a : α) : max a 1 = a := by simp
+theorem max_one (a : α) : max a 1 = a := sup_one
 
 @[to_additive]
 theorem max_eq_one {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 := sup_eq_one
