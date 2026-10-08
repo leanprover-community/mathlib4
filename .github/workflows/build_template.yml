@@ -26,16 +26,17 @@ on:
         required: false
         default: ''
       cache_application_id:
-        # The Azure writer app for the `upload_cache` job. Empty for a repo with no
-        # Azure writer (mathlib4-nightly-testing): the job then skips the Azure
+        # The Azure writer app for the `upload_cache` job. Only builds that write
+        # the `master` container set it. When it is empty, the job skips the Azure
         # upload and requires the R2 upload.
         type: string
-        required: true
+        required: false
+        default: ''
       cache_environment:
         # GitHub environment for the `upload_cache` and `upload_test_cache` jobs. Its only
-        # role is to fix the OIDC `sub` claim to `...:environment:<name>`, which the Azure
-        # cache app's federated credential is scoped to; it must match the writer
-        # `cache_application_id`.
+        # role is to fix the OIDC `sub` claim to `...:environment:<name>`, which the cache
+        # writer credentials are scoped to; it must match the writer
+        # `cache_application_id` when that is set.
         type: string
         required: true
       publish_cache:
@@ -113,19 +114,17 @@ jobs:
           pr_branch_ref: ${{ inputs.pr_branch_ref }}
           tools_branch_ref: ${{ inputs.tools_branch_ref }}
 
-      # TEMPORARY (cache storage-layout migration, PR #40035): remove once
-      # active branches have merged the new cache tool.
-      # CI writes the new container layout via the master-built cache binary,
-      # but a PR branch that predates the migration ships the old cache tool locally,
-      # so `lake exe cache get` on the contributor's machine reads the old layout and misses
-      # its own branch's freshly-built artifacts.
+      # TEMPORARY: remove once active branches have merged a recent cache tool.
+      # CI uploads `forks` artifacts to R2 alone. A cache tool from before #43308
+      # reads `forks` directly from Azure, so `lake exe cache get` on the
+      # contributor's machine misses the artifacts this run builds for the branch.
       # Hard-fail here (same style as the `lake lint` predates-config gate below in 'lint mathlib')
-      #  and tell the author to merge master, which swaps in the new binary.
-      # The marker is `Cache/Infra.lean`, a module that only exists post-migration (it replaced `Cache/Init.lean`).
+      # and tell the author to merge master, which brings in a current cache tool.
+      # The marker is `Cache/Location.lean` (#44173), a recent module of the cache tool.
       #
       # TODO: Remove this check eventually. Note that there is no 'correctness' issue if we don't check this:
       #       it's just that locally, the user will not get the artifacts this run has produced (also meaning the upload is 'waste').
-      - name: check cache tool is post-migration
+      - name: check the cache tool is recent
         # Canonical repo only. This nudge targets human fork-PR / dev-branch
         # contributors who run `lake exe cache get` locally. The nightly-testing
         # repo's branches (nightly-testing, bump/*, batteries-pr-testing-*) are
@@ -134,13 +133,13 @@ jobs:
         if: github.repository == 'leanprover-community/mathlib4'
         shell: bash
         run: |
-          if [ ! -f pr-branch/Cache/Infra.lean ]; then
-            echo "::error title=Outdated cache tool::Your branch predates the cache storage-layout migration; merge master so 'lake exe cache get' can read your branch's artifacts."
+          if [ ! -f pr-branch/Cache/Location.lean ]; then
+            echo "::error title=Outdated cache tool::Your branch's cache tool is outdated; merge master so 'lake exe cache get' can read your branch's artifacts."
             echo ""
             echo "=============================================================================="
-            echo "ERROR: Your branch predates the cache storage-layout migration (PR #40035)."
-            echo "Its 'lake exe cache' tool uses outdated infrastructure, so it will miss the"
-            echo "artifacts CI builds for your branch and rebuild them locally instead."
+            echo "ERROR: Your branch's 'lake exe cache' tool is outdated."
+            echo "It reads from storage that CI does not write for your branch, so it will miss"
+            echo "the artifacts CI builds for your branch and rebuild them locally instead."
             echo "Please merge 'master' into your PR branch and push again."
             echo ""
             echo "You can do this with:"
@@ -701,8 +700,8 @@ jobs:
     name: Upload to cache
     needs: [build]
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
-    # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the Azure cache
-    # app's federated credential is scoped to. A token minted by any job without this environment
+    # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the cache writer
+    # credentials are scoped to. A token minted by any job without this environment
     # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
     environment:
       name: ${{ inputs.cache_environment }}
@@ -788,10 +787,9 @@ jobs:
           echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
 
-      # A second upload of the same staged set, to R2. `master` writes the
-      # public cache bucket, flat. `forks` writes the developer cache bucket
-      # in the container's layout, the layout the Azure upload above wrote,
-      # so the cache resolver serves both stores at one path. The mint action
+      # The upload of the staged set to R2. `master` writes the public cache
+      # bucket, flat. `forks` writes the developer cache bucket in the
+      # container's layout, which the cache resolver serves. The mint action
       # returns short-lived S3 credentials as masked step outputs.
       # With an Azure writer, the R2 upload is best effort: a failed mint fails
       # only this step and skips the upload, and an empty

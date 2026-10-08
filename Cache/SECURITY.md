@@ -54,10 +54,10 @@ type, and ref — matches a pre-registered grant. The credential's scope is
 fixed when it is issued and cannot be widened afterward.
 
 Two credential mechanisms implement this. Azure writes mint an OIDC-federated
-bearer token whose RBAC role covers exactly one container. An S3-compatible
-destination takes a short-lived credential pair scoped to one container's
-namespace, and the tool signs each request with it (SigV4); CI mints the
-pair per job the same OIDC-gated way.
+bearer token whose RBAC role covers exactly one container. Only `master`
+builds write to Azure. An S3-compatible destination takes a short-lived
+credential pair scoped to one container's namespace, and the tool signs each
+request with it (SigV4); CI mints the pair per job the same OIDC-gated way.
 
 The nightly-testing credential is narrower than one container: it reaches only
 the namespace of the commit being built.

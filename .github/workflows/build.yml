@@ -36,22 +36,20 @@ jobs:
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.ref }}-${{ (github.event_name == 'push' && github.ref == 'refs/heads/master' && github.run_id) || '' }}
       pr_branch_ref: ${{ github.sha }}
-      # Trust-level dispatch for the cache writer app:
+      # The Azure cache writer app. Only `master` builds upload to Azure:
       #   - mathlib4/master                                                 → MASTER writer
-      #   - any other ref on mathlib4 (dev branches, etc.)                  → NON_MASTER (forks) writer
+      #   - any other ref on mathlib4 (dev branches, etc.)                  → none: it uploads to R2 alone
       #   - mathlib4-nightly-testing                                        → none: it uploads to R2 alone
       cache_application_id: >-
         ${{
              (github.repository == 'leanprover-community/mathlib4'
                && github.ref_name == 'master')
                && vars.CACHE_MASTER_WRITER_AZURE_APP_ID
-          || (github.repository == 'leanprover-community/mathlib4')
-               && vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID
           || ''
         }}
-      # OIDC environment binding for the upload_cache and upload_test_cache jobs. MUST track
-      # the cache_application_id mapping above so the minted token's `:environment:` subject
-      # matches the writer app's federated credential. On mathlib4-nightly-testing, the
+      # OIDC environment binding for the upload_cache and upload_test_cache jobs. On master it
+      # MUST track the cache_application_id mapping above so the minted token's `:environment:`
+      # subject matches the writer app's federated credential. On every other ref, the
       # environment gates the R2 upload credential.
       cache_environment: >-
         ${{
