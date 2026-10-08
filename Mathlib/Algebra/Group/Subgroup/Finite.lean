@@ -36,6 +36,13 @@ instance (K : Subgroup G) [DecidablePred (· ∈ K)] [Fintype G] : Fintype K :=
 instance (K : Subgroup G) [Finite G] : Finite K :=
   Subtype.finite
 
+/-- The preimage of a finite subgroup under an injective group homomorphism is finite. -/
+@[to_additive /-- The preimage of a finite additive subgroup under an injective additive group
+homomorphism is finite. -/]
+lemma finite_comap_of_injective {H : Type*} [Group H] {f : G →* H} (hf : Function.Injective f)
+    (K : Subgroup H) [Finite K] : Finite (K.comap f) :=
+  .of_injective (fun x ↦ (⟨f x, x.prop⟩ : K)) fun _ _ h ↦ Subtype.ext <| hf <| congr(Subtype.val $h)
+
 end Subgroup
 
 /-!
@@ -213,6 +220,13 @@ theorem closure_pi [Finite η] {s : Π i, Set (f i)} (hs : ∀ i, 1 ∈ s i) :
         · subst H
           simpa
         · simpa [H] using hs _)
+
+/-- A product of finitely many finite subgroups is finite. -/
+@[to_additive /-- A product of finitely many finite additive subgroups is finite. -/]
+instance instFinitePi [Finite η] {H : ∀ i, Subgroup (f i)} [∀ i, Finite (H i)] :
+    Finite (pi Set.univ H) :=
+  .of_injective (fun x i ↦ (⟨x.val i, x.prop i (Set.mem_univ i)⟩ : H i))
+    fun _ _ h ↦ Subtype.ext <| funext fun i ↦ congr(Subtype.val ($h i))
 
 end Pi
 
