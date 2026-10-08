@@ -263,7 +263,7 @@ jobs:
         continue-on-error: true
         run: |
           cd pr-branch
-          lake build --no-build Archive
+          lake build --no-build --wfail Archive
 
       - name: check that Counterexamples built
         id: counterexamples
