@@ -41,7 +41,7 @@ theorem Option.finite_iff {α : Type*} : Finite (Option α) ↔ Finite α where
 /-- `Option α` is infinite if and only if the underlying type `α` is infinite. -/
 @[simp]
 theorem Option.infinite_iff {α : Type*} : Infinite (Option α) ↔ Infinite α := by
-  simp [← not_finite_iff_infinite, Option.finite_iff]
+  simp [← not_finite_iff_infinite]
 
 theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
