@@ -48,7 +48,6 @@ open CategoryTheory CompHausLike
 open scoped Topology
 
 /-- The type of profinite topological spaces. -/
-@[to_additive_do_translate] -- This is required
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite
