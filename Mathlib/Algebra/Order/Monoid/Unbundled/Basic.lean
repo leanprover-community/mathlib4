@@ -824,6 +824,7 @@ theorem mul_eq_one_iff_of_one_le (ha : 1 ≤ a) (hb : 1 ≤ b) :
   refine ⟨fun hab ↦ ?_, by simp +contextual⟩
   simpa [eq_one_of_mul_le_one_left ha hb hab.le] using hab
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) [IsBotOneClass α] : IsDedekindFiniteMonoid α where
   mul_eq_one_symm := by simp [mul_eq_one_iff_of_one_le]
@@ -850,6 +851,7 @@ theorem mul_eq_one_iff_of_one_le' (ha : 1 ≤ a) (hb : 1 ≤ b) :
   refine ⟨fun hab ↦ ?_, by simp +contextual⟩
   simpa [eq_one_of_mul_le_one_right ha hb hab.le] using hab
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) [IsBotOneClass α] : IsDedekindFiniteMonoid α where
   mul_eq_one_symm := by simp [mul_eq_one_iff_of_one_le']
