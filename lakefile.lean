@@ -7,7 +7,7 @@ open Lake DSL
 -/
 
 require HexPermGroup from git
-  "https://github.com/leanprover/hex-perm-group.git" @ "v0.8.0"
+  "https://github.com/leanprover/hex-perm-group.git" @ "v0.9.0"
   with NameMap.empty.insert `hexPermGroupNative "false"
 
 require "leanprover-community" / "batteries" @ git "main"
