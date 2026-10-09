@@ -49,6 +49,7 @@ structure ShortComplex where
 
 attribute [to_dual existing] ShortComplex.X₁
 attribute [to_dual existing g] ShortComplex.f
+attribute [to_dual self] ShortComplex.mk
 
 namespace ShortComplex
 
