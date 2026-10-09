@@ -11,40 +11,39 @@ public import Mathlib.Tactic.Echelon.Rat
 /-!
 # The Bareiss decomposition driver
 
-Given a matrix literal `A` over a commutative domain, the entry point
-`mkBareissDecomposition` selects a computation model for the element type, runs the
-elimination, and elaborates a certificate `⟨L, σ, pivot, …⟩ : Echelon.Decomposition A`,
-with the certificate conditions checked by the kernel via `decide`. The elimination
-itself is the model-parameterized `bareissDecomp` in `Mathlib.Tactic.Echelon.Core`, and
-the certificate construction `mkCertificate` in `Mathlib.Tactic.Echelon.Cert`.
+The entry point of the Bareiss decomposition of a matrix literal over a commutative domain.
+The elimination is the model-parameterized `bareissDecomp` in `Mathlib.Tactic.Echelon.Core`,
+and the certificate construction `certifyDecomposition` in `Mathlib.Tactic.Echelon.Cert`.
+
+## Main definitions
+
+- `mkBareissDecomposition`: selects a model, runs the elimination algorithm
+  and builds the certificate.
+- `BareissResult`: the elaborated certificate together with the model and the raw decomposition
+  data.
+- `modelFor`: selects the computation model for a given ring.
 -/
 
 public meta section
 
 open Lean Meta Qq
 
-initialize registerTraceClass `Tactic.evalRank
-
 namespace Mathlib.Tactic.Echelon
 
-/-- The applicability check of the Bareiss method, which requires a commutative domain
-with kernel-decidable equality. -/
-def checkBareissApplicable {u : Level} (α : Q(Type u)) :
+/-- The applicability check of the Bareiss method, which requires a commutative domain. It
+returns the commutative ring instance for the downstream functions to use. -/
+def inferBareissRing {u : Level} (α : Q(Type u)) :
     MetaM (Except MessageData Q(CommRing $α)) := do
   let .some rα ← trySynthInstanceQ q(CommRing $α)
     | return .error m!"expected the element type to be a commutative ring"
   let .some _ ← trySynthInstanceQ q(IsDomain $α)
     | return .error m!"expected the element type to be a domain"
-  try
-    checkKernelDecide α rα
-  catch e =>
-    return .error e.toMessageData
   return .ok rα
 
 /-- Select the first registered computation model for the element type `α`, or the default
 rational model. -/
 def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
-    MetaM ((c : Carrier) × Model c.type) := do
+    MetaM ((c : Carrier) × Model α c.type) := do
   for (name, ext) in bareissExt.getState (← getEnv) do
     if let some model ← ext.model? α then
       trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr α}"
@@ -55,26 +54,27 @@ def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
 
 /-- The result of producer evaluation and certificate construction, together with the computation
 model. -/
-structure BareissResult where
-  /-- The elaborated `Echelon.Decomposition` certificate term. -/
-  cert : Expr
+structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
+  /-- The decomposition certificate with its reusable intermediate certificates. -/
+  cert : DecompositionCert rα A
   /-- The carrier of the computation model. -/
   carrier : Carrier
   /-- The computation model that produced the decomposition. -/
-  model : Model carrier.type
+  model : Model α carrier.type
   /-- The decomposition data underlying the certificate, on the model's carrier. -/
   data : BareissData carrier.type
 
-/-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
-`A`. -/
+/-- Produce the decomposition of the matrix literal `A` and elaborate its certificates. -/
 def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
-    (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr)) :
-    MetaM BareissResult := do
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α))) :
+    MetaM (BareissResult rα A) := do
   let ⟨carrier, model⟩ ← modelFor α rα
   let fractions ← entries.mapM fun row => row.mapM model.evalEntry
   let (values, scales) := scaleRows model.ops model.commonMultiple fractions
   let data := restoreScaling model.ops scales (← bareissDecomp model.ops values)
   let exprData ← data.mapM model.mkEntry
-  return { cert := ← mkCertificate rα A entries exprData, carrier, model, data }
+  let cert ← certifyDecomposition model.entryCertifier? rα A entries exprData
+  return { cert, carrier, model, data }
 
 end Mathlib.Tactic.Echelon

@@ -5,8 +5,8 @@ Authors: Aaron Anderson, Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.PSeries
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!

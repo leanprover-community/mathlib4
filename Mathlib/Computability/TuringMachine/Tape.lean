@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.ApplyFun
-public import Mathlib.Data.List.GetD
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.GetD
+public import Mathlib.Tactic.ApplyFun
 
 import Mathlib.Algebra.Group.Int.Defs
 

@@ -11,8 +11,8 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-import Mathlib.RingTheory.Finiteness.Prod
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 # Finite-dimensional subspaces of affine spaces.

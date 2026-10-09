@@ -5,12 +5,12 @@ Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.NatAntidiagonal
-public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.DvdSequence
+public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Zify
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Fibonacci numbers
