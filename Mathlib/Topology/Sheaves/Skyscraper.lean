@@ -5,8 +5,8 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 module
 
-public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.Topology.Sheaves.Functors
+public import Mathlib.Topology.Sheaves.Stalks
 
 import Mathlib.Topology.Sheaves.PUnit
 

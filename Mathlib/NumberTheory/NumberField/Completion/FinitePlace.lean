@@ -11,9 +11,9 @@ public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 
+import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Archimedean.Submonoid
 import Mathlib.RingTheory.Valuation.Archimedean
-import Mathlib.Algebra.FiniteSupport.Basic
 
 /-!
 # Finite places of number fields

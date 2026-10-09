@@ -5,8 +5,8 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Hom
 public import Mathlib.Analysis.Normed.Group.Completion
+public import Mathlib.Analysis.Normed.Group.Hom
 
 /-!
 # Completion of normed group homs

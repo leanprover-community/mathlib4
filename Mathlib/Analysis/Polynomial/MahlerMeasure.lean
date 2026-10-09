@@ -5,9 +5,9 @@ Authors: Fabrizio Barroero, Kevin H. Wilson
 -/
 module
 
+public import Mathlib.Analysis.Polynomial.Fourier
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
-public import Mathlib.Analysis.Polynomial.Fourier
 
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Complex.Polynomial.Basic

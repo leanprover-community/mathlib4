@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Span
 public import Mathlib.Algebra.MonoidAlgebra.Defs
+public import Mathlib.RingTheory.Ideal.Span
 
 import Mathlib.RingTheory.Ideal.BigOperators
 

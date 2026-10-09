@@ -5,8 +5,8 @@ Authors: Terence Tao
 -/
 module
 
-public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Digamma
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
 # The functional equation for the logarithmic derivative of the Riemann zeta function

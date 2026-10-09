@@ -5,8 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 

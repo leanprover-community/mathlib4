@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Notation.Pi.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
