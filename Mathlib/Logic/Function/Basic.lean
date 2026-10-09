@@ -5,12 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Batteries.Tactic.Init
 public import Mathlib.Basic.ExistsUnique
 public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Basic.Nonempty
 public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Logic.Function.Defs
-public import Batteries.Tactic.Init
 public import Mathlib.Order.Defs.Unbundled
 
 

@@ -8,8 +8,8 @@ module
 public import Mathlib.Data.List.Basic
 public import Mathlib.Order.WithBot
 
-import Mathlib.Order.BoundedOrder.Lattice
 import Mathlib.Data.List.Induction
+import Mathlib.Order.BoundedOrder.Lattice
 import Mathlib.Order.MinMax
 
 /-!

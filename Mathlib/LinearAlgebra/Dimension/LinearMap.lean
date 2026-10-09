@@ -8,8 +8,8 @@ module
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 /-!
 # The rank of a linear map

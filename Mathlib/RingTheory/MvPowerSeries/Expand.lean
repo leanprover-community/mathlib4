@@ -5,8 +5,8 @@ Authors: Wenrong Zou
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.MvPolynomial.Expand
+public import Mathlib.RingTheory.MvPowerSeries.Substitution
 
 /-!
 ## Expand multivariate power series

@@ -5,10 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
-public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.Algebra.ValuativeRel.Completion
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
+public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
 # Valued fields and their completions

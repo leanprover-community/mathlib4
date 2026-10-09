@@ -5,10 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 module
 
+public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Order.Group.Lattice
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Absolute values in ordered groups
