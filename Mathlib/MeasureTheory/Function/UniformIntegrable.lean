@@ -118,6 +118,8 @@ theorem unifIntegrable_mk_iff :
   grw [← le_iSup₂ t ht, ← le_iSup _ (hμt ▸ hsμ)]
   exact eLpNorm_mono_measure _ (μ.restrict_mono_set hst)
 
+@[deprecated (since := "2026-10-10")] alias UnifIntegrable.mk_iff := unifIntegrable_mk_iff
+
 namespace UnifIntegrable
 
 protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) (hp : 1 ≤ p) :
