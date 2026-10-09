@@ -23,10 +23,9 @@ polynomial of the form `X ^ p - X - C a` for some `a` in `K`.
 
 TODO: extend to finite extensions whose Galois group is cyclic of order `p^n` (Artin-Schreier-Witt
 theory).
-
 -/
 
-@[expose] public section
+public section
 universe u
 
 variable {F : Type u} [CommRing F]
@@ -44,10 +43,9 @@ lemma artinSchreierPoly.def (p : ℕ) [ExpChar F p] (a : F) :
 
 lemma artinSchreierPoly.taylor (p : ℕ) [ExpChar F p] (a c : F) :
     (artinSchreierPoly a).taylor c = artinSchreierPoly (-(artinSchreierPoly a).eval c) := by
-  repeat rw [artinSchreierPoly.def p]
+  simp_rw [artinSchreierPoly.def p]
   rcases expChar_is_prime_or_one F p with hp | rfl
-  · have := (expChar_prime_iff F hp).mp ‹ExpChar F p›
-    simp [add_pow_expChar]; ring
+  · simp [add_pow_expChar]; ring
   · simp
 
 lemma artinSchreierPoly.map (p : ℕ) [ExpChar F p] (a : F) {K : Type u}
@@ -58,12 +56,13 @@ lemma artinSchreierPoly.map (p : ℕ) [ExpChar F p] (a : F) {K : Type u}
 @[simp]
 lemma artinSchreierPoly.isMonicOfDegree (p : ℕ) [ExpChar F p] [hp : Fact p.Prime]
     (a : F) : (artinSchreierPoly a).IsMonicOfDegree p := by
-  have := hp.elim.one_lt
-  have : Nontrivial F := by
-    have : CharP F p := (expChar_prime_iff F hp.elim).mp ‹ExpChar F p›
-    exact CharP.nontrivial_of_char_ne_one hp.elim.ne_one
+  have : CharP F p := (expChar_prime_iff F hp.elim).mp ‹ExpChar F p›
+  have : Nontrivial F := CharP.nontrivial_of_char_ne_one hp.elim.ne_one
   rw [artinSchreierPoly.def p]
-  exact { natDegree_eq := by compute_degree <;> grind [one_ne_zero], monic := by monicity <;> grind}
+  exact {
+    natDegree_eq := by compute_degree <;> grind [one_ne_zero, hp.elim.one_lt],
+    monic := by monicity <;> grind [hp.elim.one_lt]
+  }
 
 variable {F : Type u} (p : ℕ) [Field F] [ExpChar F p]
 
