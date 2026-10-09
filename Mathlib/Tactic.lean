@@ -345,6 +345,7 @@ public import Mathlib.Tactic.Simproc.Divisors
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
 public import Mathlib.Tactic.Simproc.FinsetInterval
+public import Mathlib.Tactic.Simproc.IsIndecomposable
 public import Mathlib.Tactic.Simproc.VecPerm
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.Simps.Basic
