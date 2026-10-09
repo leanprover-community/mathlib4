@@ -6,9 +6,9 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.Command
+public meta import Lean.Elab.InfoTree.Util
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Meta.Tactic.TryThis
-public meta import Lean.Elab.InfoTree.Util
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -479,8 +479,9 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     let mvs0 := td.goalsTargetedBy
     let mvs1 := td.goalsCreatedBy
     let skind := s.getKind
-    if stoppers.contains skind then continue
     let shouldStain? := flexible? s && mvs1.length == mvs0.length
+    if !shouldStain? && stains.isEmpty then continue
+    if stoppers.contains skind then continue
     for d in getStained! s do
       if shouldStain? then
         for currMVar1 in mvs1 do

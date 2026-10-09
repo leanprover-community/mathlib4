@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Algebra.Equiv
+
 import Lean.PrettyPrinter.Delaborator.Basic
 
 /-!

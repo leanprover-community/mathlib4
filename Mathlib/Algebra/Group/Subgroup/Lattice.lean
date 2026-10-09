@@ -5,8 +5,8 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Submonoid.Operations
 
 /-!
 # Lattice structure of subgroups
@@ -210,7 +210,7 @@ theorem bot_or_nontrivial (H : Subgroup G) : H = ⊥ ∨ Nontrivial H := by
 /-- A subgroup is either the trivial subgroup or contains a non-identity element. -/
 @[to_additive /-- A subgroup is either the trivial subgroup or contains a nonzero element. -/]
 theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (1 : G) := by
-  convert! H.bot_or_nontrivial
+  convert H.bot_or_nontrivial
   rw [nontrivial_iff_exists_ne_one]
 
 @[to_additive]
