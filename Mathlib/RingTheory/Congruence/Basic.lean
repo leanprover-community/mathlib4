@@ -335,21 +335,19 @@ theorem comap_injective {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F
     Function.Injective (comap · f) :=
   .of_comp (f := toCon) <| (Con.comap_injective f hf <| map_mul f).comp toCon_injective
 
-theorem comap_ringConGen_ringEquiv (r : R' → R' → Prop) (f : R ≃+* R') :
+theorem comap_ringConGen_equiv
+    {F} [EquivLike F R' R] [RingEquivClass F R' R]
+    (r : R → R → Prop) (f : F) :
     (ringConGen r).comap f = ringConGen (r on f) := by
+  set f' := RingEquivClass.toRingEquiv f
+  suffices (ringConGen r).comap f' = ringConGen (r on f') from this
   refine le_antisymm (fun x y h ↦ ?_) (le_comap_ringConGen _ _)
-  rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
-  apply comap_mono (J' := (ringConGen (r on f)).comap f.symm) _ h
+  rw [← f'.symm_apply_apply x, ← f'.symm_apply_apply y]
+  apply comap_mono (J' := (ringConGen (r on f')).comap f'.symm) _ h
   apply ringConGen_le.2
   intro a b hab
   apply le_ringConGen
   simpa [Function.onFun] using hab
-
-theorem comap_ringConGen_equiv
-    {F} [EquivLike F R' R] [RingEquivClass F R' R]
-    (r : R → R → Prop) (f : F) :
-    (ringConGen r).comap f = ringConGen (r on f) :=
-  comap_ringConGen_ringEquiv r (RingEquivClass.toRingEquiv f)
 
 end Lattice
 
