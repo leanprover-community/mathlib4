@@ -5,13 +5,14 @@ Authors: Floris van Doorn
 -/
 module
 
-import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.MeasureTheory.Group.Action
 public import Mathlib.MeasureTheory.Group.Pointwise
 public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.ContinuousMap.CocompactMap
+
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 
 /-!
 # Measures on Groups
@@ -107,7 +108,7 @@ theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g
 @[to_additive]
 instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α] [MeasurableSpace α]
     {μ : Measure α} [SMulInvariantMeasure G α μ] (H : Subgroup G) : SMulInvariantMeasure H α μ :=
-  ⟨fun y s hs => by convert! SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
+  ⟨fun y s hs => by convert SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
 
 /-- An alternative way to prove that `μ` is left invariant under multiplication. -/
 @[to_additive /-- An alternative way to prove that `μ` is left invariant under addition. -/]
@@ -132,7 +133,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 
 @[to_additive]
-instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ] {H : Type*}
+instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulLeftInvariant ν]
     [SFinite ν] : IsMulLeftInvariant (μ.prod ν) := by
   constructor
@@ -142,7 +143,7 @@ instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ
     map_mul_left_eq_self μ g, map_mul_left_eq_self ν h]
 
 @[to_additive]
-instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SFinite μ] {H : Type*}
+instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulRightInvariant ν]
     [SFinite ν] : IsMulRightInvariant (μ.prod ν) := by
   constructor
@@ -790,7 +791,7 @@ variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 @[to_additive (attr := simp)]
 theorem haar_singleton [ContinuousMul G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
-  convert! measure_preimage_mul μ g⁻¹ _
+  convert measure_preimage_mul μ g⁻¹ _
   simp only [mul_one, preimage_mul_left_singleton, inv_inv]
 
 @[to_additive IsAddHaarMeasure.smul]
@@ -926,7 +927,7 @@ instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : Sig
 @[to_additive]
 instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
     {H : Type*} [Group H] [TopologicalSpace H] {_ : MeasurableSpace H} (μ : Measure G)
-    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite μ] [SFinite ν]
+    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
 
 /-- If the neutral element of a group is not isolated, then a Haar measure on this group has value

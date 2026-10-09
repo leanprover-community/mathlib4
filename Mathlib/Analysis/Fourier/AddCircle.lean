@@ -5,15 +5,15 @@ Authors: Heather Macbeth, David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Analysis.InnerProductSpace.l2Space
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.MeasureTheory.Function.ContinuousMapDense
 public import Mathlib.MeasureTheory.Function.L2Space
 public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 
@@ -278,7 +278,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   · simp [h]
   have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)
-  convert!
+  convert
     integral_eq_zero_of_add_right_eq_neg (μ := haarAddCircle)
       (fourier_add_half_inv_index hij hT.elim)
 
@@ -537,7 +537,7 @@ theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
   refine (?_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
   rw [(fun α β => by ring : ∀ α β : ℂ, α * exp β = exp β * α)]
   refine (hasDerivAt_exp _).comp (x : ℂ) ?_
-  convert! hasDerivAt_mul_const (2 * ↑π * I * ↑n / T) using 1
+  convert hasDerivAt_mul_const (2 * ↑π * I * ↑n / T) using 1
   ext1 y; ring
 
 theorem hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
@@ -550,7 +550,7 @@ variable {T}
 theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => (T : ℂ) / (-2 * π * I * n) * fourier (-n) (y : AddCircle T))
       (fourier (-n) (x : AddCircle T)) x := by
-  convert! (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1
+  convert (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1
   · ext1 y; rw [div_div_eq_mul_div]; ring
   · simp [mul_div_cancel_left₀, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
 

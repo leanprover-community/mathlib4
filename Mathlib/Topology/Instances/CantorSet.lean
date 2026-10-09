@@ -7,9 +7,10 @@ Filippo A. E. Nuccio
 -/
 module
 
-import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Analysis.Real.OfDigits
 public import Mathlib.Data.Stream.Init
+
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Ternary Cantor Set

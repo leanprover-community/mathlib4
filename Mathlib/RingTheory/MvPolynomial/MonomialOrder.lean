@@ -5,9 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
-public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 
