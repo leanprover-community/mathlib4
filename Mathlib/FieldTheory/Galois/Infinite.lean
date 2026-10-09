@@ -101,7 +101,7 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     rcases IntermediateField.mem_bot.mp this with ⟨y, hy⟩
     obtain ⟨rfl⟩ : y = x := congrArg Subtype.val hy
     exact y.2
-  · exact (IntermediateField.le_iff_le L.fixingSubgroup L).mpr le_rfl
+  · exact (IntermediateField.le_fixedField_iff_le_fixingSubgroup L.fixingSubgroup L).mpr le_rfl
 
 lemma fixedField_bot [IsGalois k K] :
     IntermediateField.fixedField (⊤ : Subgroup Gal(K/k)) = ⊥ := by
@@ -145,7 +145,7 @@ lemma restrict_fixedField (H : Subgroup Gal(K/k)) (L : IntermediateField k K) [N
 open IntermediateField in
 lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
     (IntermediateField.fixedField H).fixingSubgroup = H.1 := by
-  apply le_antisymm _ ((IntermediateField.le_iff_le H.toSubgroup
+  apply le_antisymm _ ((IntermediateField.le_fixedField_iff_le_fixingSubgroup H.toSubgroup
     (IntermediateField.fixedField H.toSubgroup)).mp le_rfl)
   intro σ hσ
   by_contra h
@@ -202,7 +202,7 @@ def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
     simp_rw [fixingSubgroup_fixedField H]
     rfl
   map_rel_iff' {K L} := by
-    rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
+    rw [← fixedField_fixingSubgroup L, IntermediateField.le_fixedField_iff_le_fixingSubgroup, fixedField_fixingSubgroup L]
     rfl
 
 /-- The Galois correspondence as a `GaloisInsertion` -/
@@ -218,7 +218,7 @@ def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
     GaloisCoinsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦ E.fixingSubgroup)
       ((fun (H : Subgroup Gal(K/k)) ↦ IntermediateField.fixedField H) ∘ OrderDual.toDual) where
   choice H _ := IntermediateField.fixedField H
-  gc E H := (IntermediateField.le_iff_le H E).symm
+  gc E H := (IntermediateField.le_fixedField_iff_le_fixingSubgroup H E).symm
   u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
   choice_eq _ _ := rfl
 
@@ -253,7 +253,7 @@ theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     isGalois := IsGalois.normalClosure k M K }
   have : L ≤ L'.1 := by
     apply le_trans _ (IntermediateField.le_normalClosure M)
-    rw [← fixedField_fixingSubgroup M, IntermediateField.le_iff_le]
+    rw [← fixedField_fixingSubgroup M, IntermediateField.le_fixedField_iff_le_fixingSubgroup]
     exact sub
   let _ : Algebra L L'.1 := RingHom.toAlgebra (IntermediateField.inclusion this)
   exact FiniteDimensional.left k L L'.1

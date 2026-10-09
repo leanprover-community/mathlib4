@@ -23,13 +23,31 @@ namespace IsGalois
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L] [IsGalois K L]
 
-theorem exists_intermediateField_finrank_eq_pow_prime {p n : ℕ} (hp : p.Prime)
-    (hn : p ^ n ∣ finrank K L) :
-    ∃ M : IntermediateField K L, finrank M L = p ^ n := by
-  have := Fact.mk hp
-  rw [← IsGalois.card_aut_eq_finrank K L] at hn
-  rcases Sylow.exists_subgroup_card_pow_prime p hn with ⟨H, hH⟩
-  exact ⟨IntermediateField.fixedField H, by rwa [IntermediateField.finrank_fixedField_eq_card]⟩
+theorem exists_intermediateField_finrank_pow_prime_le_le {p : ℕ} (hp : p.Prime) {n : ℕ}
+    {M N : IntermediateField K L} (hM : finrank M L ∣ p ^ n) (hN : p ^ n ∣ finrank N L)
+    (hMN : N ≤ M) :
+    ∃ O : IntermediateField K L, finrank O L = p ^ n ∧ N ≤ O ∧ O ≤ M := by
+  rw [← IsGalois.card_fixingSubgroup_eq_finrank] at hM hN
+  rcases Sylow.exists_subgroup_card_pow_prime_le_le hp hM hN
+    (IntermediateField.fixingSubgroup_le hMN) with ⟨G, _⟩
+  use IntermediateField.fixedField G
+  grind [IntermediateField.le_fixedField_iff_le_fixingSubgroup,
+    IntermediateField.finrank_fixedField_eq_card, fixedField_le_iff_fixingSubgroup_le]
+
+theorem exists_intermediateField_finrank_pow_prime_le {p : ℕ} (hp : p.Prime) {n : ℕ}
+    (h : p ^ n ∣ finrank K L) (M : IntermediateField K L) (hM : finrank M L ∣ p ^ n) :
+    ∃ N : IntermediateField K L, finrank N L = p ^ n ∧ N ≤ M := by
+  simpa using exists_intermediateField_finrank_pow_prime_le_le hp hM (by simpa) bot_le
+
+theorem exists_intermediateField_finrank_pow_prime_ge {p : ℕ} (hp : p.Prime) {n : ℕ}
+    (M : IntermediateField K L) (hM : p ^ n ∣ finrank M L) :
+    ∃ N : IntermediateField K L, finrank N L = p ^ n ∧ M ≤ N := by
+  simpa using exists_intermediateField_finrank_pow_prime_le_le hp (by simp) hM le_top
+
+theorem exists_intermediateField_finrank_pow_prime {p : ℕ} (hp : p.Prime) {n : ℕ}
+    (h : p ^ n ∣ finrank K L) :
+    ∃ N : IntermediateField K L, finrank N L = p ^ n := by
+  simpa using exists_intermediateField_finrank_pow_prime_le hp h ⊤ (by simp)
 
 theorem exists_intermediateField_finrank_eq_pow_prime_mul {p n a : ℕ} (hp : p.Prime)
     (hn : Module.finrank K L = p ^ n * a) {m : ℕ} (hm : m ≤ n) :
@@ -48,7 +66,7 @@ theorem exists_intermediateField_ge_card_pow_prime_of_card_pow_prime {m n p : �
     hp M.fixingSubgroup (by rw [IsGalois.card_fixingSubgroup_eq_finrank, hM]) hm with
     ⟨H', hH'₁, hH'₂⟩
   exact ⟨IntermediateField.fixedField H',
-        by simpa [IntermediateField.le_iff_le] using hH'₁,
+        by simpa [IntermediateField.le_fixedField_iff_le_fixingSubgroup] using hH'₁,
         by simpa [IntermediateField.finrank_fixedField_eq_card] using hH'₂⟩
 
 theorem exists_intermediateField_ge_card_pow_prime_mul_of_card_pow_prime_mul
