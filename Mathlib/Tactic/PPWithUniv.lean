@@ -27,7 +27,7 @@ Delaborator that prints the current application with universe parameters on the 
 unless `pp.universes` is explicitly set to `false`.
 -/
 def delabWithUniv : Delab :=
-  whenPPOption (·.get pp.universes.name true) <| do
+  whenPPOption (·.get pp.universes.name true) do
   let pos := (← getPos).pushNaryFn (← getExpr).getAppNumArgs
   let enablePPUnivOnHead (ctx : Delaborator.Context) :=
     let options := ctx.optionsPerPos.getD pos {}
