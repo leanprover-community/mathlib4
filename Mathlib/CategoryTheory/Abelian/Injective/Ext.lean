@@ -6,11 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.TStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
-public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
-public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 
 /-!
@@ -59,7 +58,6 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
   congr
   cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma extEquivCohomologyClass_symm_add
     (x y : CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n) :
@@ -70,6 +68,17 @@ lemma extEquivCohomologyClass_symm_add
   obtain ⟨y, rfl⟩ := y.mk_surjective
   ext
   simp [← CohomologyClass.mk_add, extEquivCohomologyClass_symm_mk_hom, ShiftedHom.map]
+
+@[simp]
+lemma extEquivCohomologyClass_symm_smul
+    {R₀ : Type*} [Ring R₀] [Linear R₀ C] (r : R₀)
+    (x : CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n) :
+    R.extEquivCohomologyClass.symm (r • x) =
+      r • R.extEquivCohomologyClass.symm x := by
+  have := HasDerivedCategory.standard C
+  obtain ⟨x, rfl⟩ := x.mk_surjective
+  ext
+  simp [← CohomologyClass.mk_smul, extEquivCohomologyClass_symm_mk_hom, ShiftedHom.map]
 
 /-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identifies
 to the group of cohomology classes of degree `n` from `(singleFunctor C 0).obj X`
@@ -176,6 +185,14 @@ lemma neg_extMk (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
 lemma extMk_zero (m : ℕ) (hm : n + 1 = m) :
     R.extMk (0 : X ⟶ R.cocomplex.X n) m hm (by simp) = 0 := by
   simp [extMk]
+
+lemma smul_extMk {R₀ : Type*} [Ring R₀] [Linear R₀ C]
+    (r : R₀) {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0) :
+    r • R.extMk f m hm hf =
+      R.extMk (r • f) m hm (by simp [hf]) := by
+  simp only [extMk, Linear.smul_comp, ← extEquivCohomologyClass_symm_smul,
+    ← CohomologyClass.mk_smul, ← Cocycle.fromSingleMk_smul]
 
 lemma extMk_hom
     [HasDerivedCategory C] (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
@@ -337,5 +354,20 @@ lemma δ_extMk
   rw [Ext.δ_apply,
     R.extClass_comp_extMk hS f₁ f₂ hf₂ m hm (Int.negOnePow m • f₃) (by simpa [smul_smul]) m' hm']
   obtain h | h := Int.units_eq_one_or (Int.negOnePow m) <;> simp [h, ← neg_extMk _ _ _ _ hf₃']
+section
+
+variable {R₀ : Type*} [Ring R₀] [Linear R₀ C]
+
+/-- If `R` is an injective resolution of `Y` in a `R₀`-linear category,
+then `Ext X Y n` identifies to the `R₀`-module of cohomology classes
+of degree `n` from `(singleFunctor C 0).obj X` to `R.cochainComplex`. -/
+@[simps!]
+noncomputable def extLinearEquivCohomologyClass :
+    Ext X Y n ≃ₗ[R₀] CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n :=
+  LinearEquiv.symm
+    { toAddEquiv := R.extAddEquivCohomologyClass.symm
+      map_smul' r x := by simp }
+
+end
 
 end CategoryTheory.InjectiveResolution

@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LocalExtr.Basic
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+
+import Mathlib.Analysis.Calculus.LocalExtr.Basic
 
 /-!
 # Local extremum and line derivatives

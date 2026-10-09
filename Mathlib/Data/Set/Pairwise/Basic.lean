@@ -6,8 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Set.Function
-public import Mathlib.Logic.Pairwise
-public import Mathlib.Logic.Relation
 
 /-!
 # Relations holding pairwise
@@ -79,6 +77,10 @@ theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
 
 theorem Pairwise.mono' (H : r ≤ p) (hr : s.Pairwise r) : s.Pairwise p :=
   hr.imp H
+
+@[gcongr]
+theorem Pairwise.mono'' (h : t ⊆ s) (H : ∀ a b, r a b → p a b) : s.Pairwise r → t.Pairwise p :=
+  Pairwise.mono h ∘ Pairwise.mono' H
 
 theorem Pairwise.inter_left (hs : s.Pairwise r) (t : Set α) : (s ∩ t).Pairwise r :=
   hs.mono Set.inter_subset_left

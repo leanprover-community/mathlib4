@@ -6,11 +6,8 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
-public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 
@@ -385,7 +382,7 @@ theorem isAcyclic_sup_fromEdgeSet_iff {u v : V} :
   refine ⟨?_, fun ⟨hacyc, hreach⟩ ↦ hacyc.sup_edge_of_not_reachable <| by grind⟩
   refine fun hacyc ↦ ⟨hacyc.anti le_sup_left, fun hreach ↦ False.elim ?_⟩
   refine isAcyclic_iff_forall_isBridge.mp (e := s(u, v)) hacyc (by simp [huv]) ?_
-  convert! hreach
+  convert hreach
   simp [deleteEdges_sup, hadj]
 
 /--
@@ -650,7 +647,7 @@ lemma IsAcyclic.chromaticNumber_le_two (hG : G.IsAcyclic) : G.chromaticNumber �
 lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
   hG.colorable_two.chromaticNumber_le
 
-lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : ℕ} (hn : 2 ≤ n)
+lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : ℕ∞} (hn : 2 ≤ n)
     (h : G.IsEdgeReachable n u v) : ∃ w : G.Walk u u, w.IsCycle := by
   classical
   obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv (h.anti hn)

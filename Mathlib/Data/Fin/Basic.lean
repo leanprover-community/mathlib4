@@ -5,12 +5,12 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 module
 
+public import Batteries.Data.Fin.Basic
 public import Mathlib.Data.Int.DivMod
 public import Mathlib.Data.Nat.Init
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Common
-public import Batteries.Data.Fin.Basic
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # The finite type with `n` elements
@@ -37,11 +37,11 @@ attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
 
 theorem Nat.forall_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
     (∀ k hk, p k hk) ↔ ∀ k : Fin n, p k k.is_lt :=
-  .symm <| Fin.forall_iff
+  .symm Fin.forall_iff
 
 theorem Nat.exists_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
     (∃ k hk, p k hk) ↔ ∃ k : Fin n, p k k.is_lt :=
-  .symm <| Fin.exists_iff
+  .symm Fin.exists_iff
 
 /-- Elimination principle for the empty set `Fin 0`, dependent version. -/
 def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=

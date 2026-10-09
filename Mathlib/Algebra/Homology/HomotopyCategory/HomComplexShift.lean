@@ -576,6 +576,17 @@ lemma shiftedHomComp_equivHomShift_symm
     Cochain.comp_v _ _ (show b + a = c by lia) n (n + b) (n + c) (by lia) (by lia),
     Cochain.rightUnshift_v _ _ (zero_add b) n (n + b) (by lia) n (add_zero n)]
 
+@[simp]
+lemma equivHomShift_smul (r : R) (z : K ⟶ L⟦n⟧) :
+    equivHomShift (r • z) = r • equivHomShift z := by
+  ext : 1
+  simp [equivHomShift_apply]
+
+@[simp]
+lemma equivHomShift_symm_smul (r : R) (z : Cocycle K L n) :
+    equivHomShift.symm (r • z) = r • equivHomShift.symm z :=
+  equivHomShift.injective (by simp)
+
 /-- The additive equivalence `Cocycle K L n ≃+ Cocycle K⟦a⟧ L n'` when `n + a = n'`. -/
 @[simps]
 def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
