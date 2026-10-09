@@ -12,8 +12,8 @@ public import Mathlib.GroupTheory.Perm.Cycle.Basic
 # Hamiltonian graphs from cyclic permutations
 
 If `σ` is a cycle on a finset `s` and `G.Adj x (σ x)` for every `x`, then the cycle graph on
-`#s` vertices embeds in `G`. In particular, if `σ : Perm α` is a single cycle with full support,
-`3 ≤ #α`, and `G.Adj x (σ x)` for every `x`, then `G` is Hamiltonian.
+`#s` vertices embeds in `G`. In particular, if `σ : Perm α` is a cycle, `3 ≤ #α`, and
+`G.Adj x (σ x)` for every `x`, then `G` is Hamiltonian.
 -/
 
 public section
@@ -43,13 +43,13 @@ theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ 
   · rw [show j.1 = i.1 + 1 by grind [Fin.sub_val_of_le], pow_succ', mul_apply]
     exact hadj _
 
-/-- If a cyclic permutation `σ` of a type with at least 3 elements has full support and each
-vertex is adjacent to its image under `σ`, then `G` is Hamiltonian. -/
+/-- If a cyclic permutation `σ` of a type with at least 3 elements is such that each vertex is
+adjacent to its image under `σ`, then `G` is Hamiltonian. -/
 theorem IsHamiltonian.of_perm [Fintype α] [DecidableEq α] {σ : Perm α} (hσ : σ.IsCycle)
-    (hsupport : σ.support = .univ) (hadj : ∀ v, G.Adj v (σ v)) (hcard : 3 ≤ Fintype.card α) :
-    G.IsHamiltonian :=
-  isHamiltonian_iff_cycleGraph_isContained hcard |>.mpr <| by
-    simpa using cycleGraph_isContained_of_isCycleOn (s := .univ)
-      (hsupport ▸ σ.coe_support_eq_set_support ▸ hσ.isCycleOn) hadj
+    (hadj : ∀ v, G.Adj v (σ v)) (hcard : 3 ≤ Fintype.card α) : G.IsHamiltonian := by
+  have h : {x | σ x ≠ x} = ((univ : Finset α) : Set α) := by
+    simpa [Set.eq_univ_iff_forall] using fun x ↦ (hadj x).ne'
+  simpa using (isHamiltonian_iff_cycleGraph_isContained hcard).mpr
+    (cycleGraph_isContained_of_isCycleOn (s := .univ) (h ▸ hσ.isCycleOn) hadj)
 
 end SimpleGraph
