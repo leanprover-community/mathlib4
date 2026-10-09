@@ -249,9 +249,9 @@ theorem of_isInducing {F : Type*} [FunLike F R S] [RingHomClass F R S] {f : F}
       obtain ⟨b, rfl⟩ := hsurj b
       refine ⟨.mk0 _ (div_ne_zero (valuation_posSubmonoid_ne_zero ⟨a, (hpos a).1 ha⟩)
         (valuation_posSubmonoid_ne_zero ⟨b, (hpos b).1 hb⟩)), fun _ ⟨z, hz, hz'⟩ ↦ hts (hγ ?_)⟩
-      rw [Set.mem_ofPred_eq, ← hab, ← hz', map_add, add_sub_cancel_left, lt_div_iff_mul_vlt _ hb,
+      rw [Set.mem_ofPred, ← hab, ← hz', map_add, add_sub_cancel_left, lt_div_iff_mul_vlt _ hb,
         ← map_mul, hvlt]
-      rwa [Set.mem_ofPred_eq, Units.val_mk0, lt_div_iff_mul_vlt _ ((hpos b).1 hb)] at hz
+      rwa [Set.mem_ofPred, Units.val_mk0, lt_div_iff_mul_vlt _ ((hpos b).1 hb)] at hz
     · obtain ⟨⟨a, ha⟩, ⟨b, hb⟩, hab⟩ :=
         exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq γ
       refine ⟨{z | valuation S (z - f x) < valuation S (f a) / valuation S (f b)}, ?_,
@@ -259,9 +259,9 @@ theorem of_isInducing {F : Type*} [FunLike F R S] [RingHomClass F R S] {f : F}
       · exact IsValuativeTopology.mem_nhds_iff'.2 ⟨.mk0 _ (div_ne_zero
           (valuation_posSubmonoid_ne_zero ⟨_, (hpos a).2 ha⟩)
           (valuation_posSubmonoid_ne_zero ⟨_, (hpos b).2 hb⟩)), subset_of_eq rfl⟩
-      · rw [Set.mem_preimage, Set.mem_ofPred_eq, ← _root_.map_sub,
+      · rw [Set.mem_preimage, Set.mem_ofPred, ← _root_.map_sub,
           lt_div_iff_mul_vlt _ ((hpos b).2 hb), ← map_mul, hvlt] at hy
-        rwa [Set.mem_ofPred_eq, ← hab, lt_div_iff_mul_vlt _ hb]
+        rwa [Set.mem_ofPred, ← hab, lt_div_iff_mul_vlt _ hb]
 
 end IsValuativeTopology
 
