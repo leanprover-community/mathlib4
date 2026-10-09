@@ -286,8 +286,6 @@ theorem IsHamiltonianCycle.copy {p : G.Walk a a} (ha : a = b) (h : p.IsHamiltoni
     (p.copy ha ha).IsHamiltonianCycle :=
   isHamiltonianCycle_copy.mpr h
 
-/-- Closing a Hamiltonian path with an edge it does not already use gives a Hamiltonian cycle,
-and conversely. -/
 theorem isHamiltonianCycle_cons_iff {h : G.Adj a b} {p : G.Walk b a} :
     (p.cons h).IsHamiltonianCycle ↔ p.IsHamiltonian ∧ s(a, b) ∉ p.edges := by
   simp [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, cons_isCycle_iff]
