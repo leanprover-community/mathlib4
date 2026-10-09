@@ -39,7 +39,7 @@ sequence axioms and `IsEilenbergSteenrod` which extends the former by the dimens
 
 @[expose] public section
 
-open CategoryTheory TopPair ObjectProperty
+open CategoryTheory TopPair ObjectProperty Limits
 
 universe u
 
@@ -48,7 +48,7 @@ namespace TopPair
 /-- A `HomologyPretheory` is the data of an Eilenberg-Steenrod homology theory. -/
 @[ext]
 structure HomologyPretheory
-    (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] {ι : Type*} (c : ComplexShape ι) where
+    (C : Type*) [Category* C] [HasZeroMorphisms C] {ι : Type*} (c : ComplexShape ι) where
   /-- The relative homology functor of a `HomologyPretheory`. -/
   Hₚ (i : ι) : TopPair.{u} ⥤ C
   /-- The regular homology functor of a `HomologyPretheory`. -/
@@ -62,7 +62,7 @@ structure HomologyPretheory
 
 namespace HomologyPretheory
 
-variable {C : Type*} [Category* C] [Limits.HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
 
 /-- A morphism in the category `HomologyPretheory`. -/
 @[ext]
@@ -214,7 +214,7 @@ instance : IsClosedUnderIsomorphisms (hasExcisionIso.{u} C c) where
 class IsAdditive where
   /-- An extraordinary Eilenberg-Steenrod homology functor preserves colimits. -/
   [preserves_coproducts_u (J : Type u) (i : ι) :
-      Limits.PreservesColimitsOfShape (Discrete J) (HP.H i)]
+      PreservesColimitsOfShape (Discrete J) (HP.H i)]
 
 attribute [instance] IsAdditive.preserves_coproducts_u
 
@@ -230,12 +230,12 @@ lemma isAdditive_iff : isAdditive C c HP ↔ HP.IsAdditive := .rfl
 
 instance IsAdditive.preserves_coproducts_of_small
     [HP.IsAdditive] (J : Type*) [Small.{u} J] (i : ι) :
-      Limits.PreservesColimitsOfShape (Discrete J) (HP.H i) :=
-  Limits.preservesColimitsOfShape_of_equiv (Discrete.equivalence (equivShrink _).symm) _
+      PreservesColimitsOfShape (Discrete J) (HP.H i) :=
+  preservesColimitsOfShape_of_equiv (Discrete.equivalence (equivShrink _).symm) _
 
 instance : IsClosedUnderIsomorphisms (isAdditive.{u} C c) where
   of_iso {HP HP'} e _ := { preserves_coproducts_u _ _ :=
-    Limits.preservesColimitsOfShape_of_natIso ((HP.iso _) ≪≫
+    preservesColimitsOfShape_of_natIso ((HP.iso _) ≪≫
       Functor.isoWhiskerLeft incl ((hₚFunctor _).mapIso e) ≪≫ (HP'.iso _).symm) }
 
 /-- This imposes that a `HomologyPretheory` has the long exact sequence of topological pairs
@@ -335,7 +335,7 @@ variable (HP HP' : HomologyPretheory.{u} C (ComplexShape.down ℕ))
 /-- A `HomologyPretheory` on `ComplexShape.down ℕ` has the dimension axiom if it is trivial on the
 terminal space for `n > 0`. -/
 class HasDimensionAxiom where
-  isZero_PUnit_of_gt_zero : ∀ (n : ℕ) (_ : n ≠ 0), Limits.IsZero ((HP.H n).obj (TopCat.of PUnit)) :=
+  isZero_PUnit_of_gt_zero : ∀ (n : ℕ) (_ : n ≠ 0), IsZero ((HP.H n).obj (TopCat.of PUnit)) :=
     by cat_disch
 
 export HasDimensionAxiom (isZero_PUnit_of_gt_zero)
