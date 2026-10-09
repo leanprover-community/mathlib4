@@ -15,7 +15,6 @@ public meta import Lean.Meta.CoeAttr
 public meta import Mathlib.Lean.Meta.Simp
 public meta import Mathlib.Lean.Name
 
-public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Translate.Attributes
