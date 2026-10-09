@@ -60,33 +60,27 @@ def newNames (old new : Environment) : Array Name := Id.run do
       diffs := diffs.push c
   pure <| diffs.qsort (·.toString < ·.toString)
 
-variable (newName : TSyntax `ident) in
 /--
 If the input command is a `theorem` or a `lemma`, then it replaces the name of the
 resulting declaration with `newName` and it returns the old declaration name and the
-command with the new name.
-
-If the input command is neither a `theorem` nor a `lemma`, then it returns
-`.missing` and the unchanged command.
+renamed command.
 -/
-def renameTheorem (stx : TSyntax `command) :
-    TSyntax `Lean.Parser.Command.declId × TSyntax `command :=
-  -- TODO: also support definitions
+def renameTheorem (newName : String) (stx : TSyntax `command) : CoreM (Name × String) := do
+  -- declId := ident (".{" ident,+ "}")?
   match stx with
-  | `(command| $dm:declModifiers theorem $id:declId $d:declSig $v:declVal) =>
-    -- declaration := declModifiers theorem
-    -- theorem := "theorem " declId declSig declVal
-    -- declId := ident (".{" ident,+ "}")?
-    let oldTheorem := stx.raw[1]
-    let newDeclId := id.raw.setArg 0 (newName.raw.setInfo id.raw[0].getHeadInfo)
-    let newTheorem := oldTheorem.setArg 1 newDeclId
-    (id, ⟨stx.raw.setArg 1 newTheorem⟩)
+  | `(command| $dm:declModifiers theorem $id:declId $d:declSig $v:declVal)
   | `(command| $dm:declModifiers lemma $id:declId $d:declSig $v:declVal) =>
-    -- lemma := "lemma " declId declSig declVal
-    -- declId := ident (".{" ident,+ "}")?
-    let newDeclId := id.raw.setArg 0 (newName.raw.setInfo id.raw[0].getHeadInfo)
-    (id, ⟨stx.raw.setArg 1 newDeclId⟩)
-  | a => (⟨.missing⟩, a)
+    let file ← getFileMap
+    let some nameRange := id.raw[0].getHeadInfo.getRange?
+      | throwError m!"Could not find declaration name{indentD stx}"
+    let some fullRange := stx.raw.getRange?
+      | throwError m!"Could not extract syntax range of declaration{indentD stx}"
+    let newCmd :=
+      String.Pos.Raw.extract file.source fullRange.start nameRange.start ++
+      newName ++
+      String.Pos.Raw.extract file.source nameRange.stop fullRange.stop
+    return (id.raw[0].getId, newCmd)
+  | _ => throwError m!"Command is not a `theorem` or a `lemma`{indentD stx}"
 
 open Meta.Tactic.TryThis in
 /--
@@ -122,7 +116,7 @@ Technically, the command also take an optional `String` argument to fill in the 
 However, its use is mostly intended for debugging purposes, where having a variable date would
 make tests time-dependent.
 -/
-elab (name := deprecateTo) tk:"#deprecate " "to" id:ident* dat:(ppSpace str ppSpace)? ppLine
+elab (name := deprecateTo) tk:"#deprecate " "to" id:ident+ date:(ppSpace str ppSpace)? ppLine
     cmd:command : command => do
   let oldEnv ← getEnv
   try
@@ -132,36 +126,32 @@ elab (name := deprecateTo) tk:"#deprecate " "to" id:ident* dat:(ppSpace str ppSp
     let allNew := newNames oldEnv newEnv
     let skip ← allNew.filterM (·.isBlackListed)
     let mut news := allNew.filter (! · ∈ skip)
-    let mut warn := #[]
     if id.size < news.size then
-      warn := warn.push s!"Un-deprecated declarations: {news.toList.drop id.size}"
+      logWarningAt tk
+        m!"Un-deprecated declarations: command produced {news.size} new constants, \
+          but only {id.size} names were provided, so the remiaining declarations \
+          are left without deprecations: {news.toList.drop id.size}"
     if news.size < id.size then
-      for i in id.toList.drop news.size do logErrorAt i ""
-      warn := warn.push s!"Unused names: {id.toList.drop news.size}"
-    let (oldId, newCmd) := renameTheorem id[0]! cmd
-    let oldNames ← resolveGlobalName (oldId.raw.getArg 0).getId.eraseMacroScopes
-    let fil := news.filter fun n => n.toString.endsWith oldNames[0]!.1.toString
-    if fil.size != 1 && oldId.raw != .missing then
-      logError m!"Expected to find one declaration called {oldNames[0]!.1}, found {fil.size}"
-    if oldId.raw != .missing then
-      news := #[fil[0]!] ++ (news.erase fil[0]!)
+      logWarningAt (mkNullNode (id.toList.drop news.size).toArray)
+        m!"Unused names: {id.size} names were provided, but only {news.size} new declarations \
+          were found, so the remiaining names are unused: {id.drop news.size}"
+    let (oldId, newCmd) ← liftCoreM <| renameTheorem id[0]!.getId.toString cmd
+    let oldNames ← resolveGlobalName oldId
+    let fil := news.filter fun n => oldNames.any (·.fst == n)
+    let #[newId] := fil
+      | throwError m!"Expected to find one declaration called {oldId}, found {fil.size}"
+    news := #[newId] ++ (news.erase newId)
     let pairs := id.zip news
     let msg := s!"* Pairings:\n{pairs.map fun (l, r) => (l.getId, r)}" ++
       if skip.size != 0 then s!"\n\n* Ignoring: {skip}" else ""
-    let dat := dat.map (·.getString)
-    let stxs ← pairs.mapM fun (id, n) => mkDeprecationStx id n dat
-    if newCmd == cmd then
-      logWarningAt cmd m!"New declaration uses the old name {oldId.raw.getArg 0}!"
-    if warn != #[] then
-      logWarningAt tk m!"{warn.foldl (· ++ "\n" ++ ·) "Warnings:\n"}"
+    let date := date.map (·.getString)
+    let stxs ← pairs.mapM fun (id, n) => mkDeprecationStx id n date
     liftTermElabM do
-      let prettyNewCmd ← newCmd.raw.reprint.getDM (SuggestionText.prettyExtra <| .tsyntax newCmd)
       let prettyStxs ← stxs.mapM (SuggestionText.prettyExtra <| .tsyntax ·)
-      let toMessageData := prettyStxs.foldl
-        (fun x y => x ++ "\n\n" ++ y) prettyNewCmd
-
+      let suggestion := prettyStxs.foldl
+        (fun x y => x ++ "\n\n" ++ y) newCmd
       addSuggestion (header := msg ++ "\n\nTry this:\n") (← getRef)
-        toMessageData
+        suggestion
 
 @[inherit_doc deprecateTo]
 macro (name := oldStx) "deprecate" "to" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command :
