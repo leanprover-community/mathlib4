@@ -16,6 +16,16 @@ public import Mathlib.Tactic.Matrix.OfLists
 The diagonal product of a matrix given as a list of rows, with a bridge lemma to the product over
 `Fin m` of an `ofLists` matrix, and the sign of a permutation given as a chain of swaps. The
 determinant of a matrix follows from these pieces of an echelon decomposition.
+
+## Main definitions
+
+- `diagProd`: the product of the diagonal entries of a list of rows.
+
+## Main results
+
+- `prod_diag_ofLists`: the product of the diagonal of `ofLists m m rows` is `diagProd 0 m rows`.
+- `det_eq_of_decomposition`: the determinant of `A` from an echelon decomposition of `A`, the
+  diagonal products of `L` and of the echelon form, and the sign of the row permutation.
 -/
 
 public section

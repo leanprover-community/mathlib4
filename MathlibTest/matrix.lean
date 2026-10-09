@@ -254,7 +254,7 @@ example {K : Type*} [Field K] (x i j k : K) (hx : x ≠ 0) : Matrix.det
   eval_det
   field_simp [hx]
 
-example : Matrix.det !![0, 1; 1, 0] = -1 := by
+example : Matrix.det !![0, 1; 1, 0] = (-1 : Polynomial ℚ) := by
   eval_det
 
 example : Matrix.det
