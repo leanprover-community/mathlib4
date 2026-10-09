@@ -141,7 +141,7 @@ protected theorem inductionOn {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
       simpa using! add _ _ (tmul ..) ih
 
 set_option linter.unusedVariables false
-@[deprecated "Use `TensorProduction.inductionOn` instead" (since := "2026-09-07")]
+@[deprecated "Use `TensorProduct.inductionOn` instead" (since := "2026-09-07")]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
     (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
