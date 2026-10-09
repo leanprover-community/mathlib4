@@ -5,8 +5,8 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryFan
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryFan
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!

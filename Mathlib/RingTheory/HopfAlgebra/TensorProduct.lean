@@ -5,8 +5,8 @@ Authors: Amelia Livingston, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
+public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # Tensor products of Hopf algebras

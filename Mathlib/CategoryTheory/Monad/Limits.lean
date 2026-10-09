@@ -5,8 +5,8 @@ Authors: Kim Morrison, Bhavik Mehta, Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Monad.Adjunction
 public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Monad.Adjunction
 
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 

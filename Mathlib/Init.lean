@@ -1,7 +1,16 @@
 module  -- shake: keep-all, shake: keep-downstream
 
-public import Lean.Linter.Sets -- for the definition of linter sets
+-- This import makes the `alias` command available globally.
+public import Batteries.Tactic.Alias
+-- This import makes the `#help` command available globally.
+public import Batteries.Tactic.HelpCmd
+-- This import makes the `proof_wanted` command available globally.
+public import Batteries.Util.ProofWanted
+-- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
+-- available globally.
+public import ImportGraph.Tools
 public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
+public import Lean.Linter.Sets -- for the definition of linter sets
 public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public import Mathlib.Tactic.Lemma
@@ -12,35 +21,26 @@ public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
 public import Mathlib.Tactic.Linter.DocString
 public import Mathlib.Tactic.Linter.EmptyLine
+public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.Linter.InternalConstructor
-public import Mathlib.Tactic.Linter.FlexibleLinter
+-- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
+public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PrivateModule
+public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TacticDocumentation
+public import Mathlib.Tactic.Linter.UnusedTactic
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
-public import Mathlib.Tactic.Linter.UnusedTactic
-public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
-public import Mathlib.Tactic.TacticAnalysis.Declarations
-public import Mathlib.Tactic.TypeStar
--- This import makes the `alias` command available globally.
-public import Batteries.Tactic.Alias
--- This import makes the `#help` command available globally.
-public import Batteries.Tactic.HelpCmd
--- This import makes the `proof_wanted` command available globally.
-public import Batteries.Util.ProofWanted
--- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
--- available globally.
-public import ImportGraph.Tools
--- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
-public import Mathlib.Tactic.Linter.Lint
 -- This import makes the `#min_imports in` command available globally.
 public import Mathlib.Tactic.MinImports
+public import Mathlib.Tactic.TacticAnalysis.Declarations
+public import Mathlib.Tactic.TypeStar
 -- This import makes the binder plicity code action available globally
 public import Mathlib.Util.CodeActions
 

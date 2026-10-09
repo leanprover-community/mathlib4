@@ -6,9 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Comma.Over.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 
 /-!
 # Subcategories of comma categories defined by morphism properties
