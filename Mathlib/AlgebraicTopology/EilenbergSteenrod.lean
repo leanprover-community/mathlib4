@@ -194,6 +194,8 @@ class HasExcisionIso where
   isIso_of_isExcisive ⦃X V : TopPair⦄ (g : V ⟶ X) [IsExcisive g] (i : ι) :
       IsIso ((HP.Hₚ i).map g)
 
+attribute [instance] HasExcisionIso.isIso_of_isExcisive
+
 export HasExcisionIso (isIso_of_isExcisive)
 
 variable (C c) in
