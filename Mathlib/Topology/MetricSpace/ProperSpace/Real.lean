@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Data.Rat.Encodable
 public import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.Order.MonotoneContinuity
 public import Mathlib.Topology.Order.Real
 public import Mathlib.Topology.UniformSpace.Real
+
+import Mathlib.Topology.Order.MonotoneContinuity
 
 /-!
 # Second countability of the reals

@@ -5,8 +5,9 @@ Authors: Jujian Zhang, Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
+
 import Mathlib.RingTheory.GradedAlgebra.Radical
 
 /-!

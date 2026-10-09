@@ -5,8 +5,8 @@ Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Category
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
 # (Lax) monoidal functors

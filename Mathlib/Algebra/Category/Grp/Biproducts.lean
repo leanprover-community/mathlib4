@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
 
 /-!
 # The category of abelian groups has finite biproducts
