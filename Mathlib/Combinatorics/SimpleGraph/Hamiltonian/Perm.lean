@@ -24,11 +24,13 @@ namespace SimpleGraph
 
 variable {α : Type*} {G : SimpleGraph α}
 
-/-- If `σ` is a cycle on a nonempty finset `s` and each vertex is adjacent to its image under `σ`,
+/-- If `σ` is a cycle on a finset `s` and each vertex is adjacent to its image under `σ`,
 then the cycle graph on `#s` vertices is contained in `G`. -/
 theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ : σ.IsCycleOn s)
-    (hs : s.Nonempty) (hadj : ∀ v, G.Adj v (σ v)) : cycleGraph #s ⊑ G := by
-  obtain ⟨v, hv⟩ := hs
+    (hadj : ∀ v, G.Adj v (σ v)) : cycleGraph #s ⊑ G := by
+  obtain rfl | ⟨v, hv⟩ := s.eq_empty_or_nonempty
+  · rw [card_empty]
+    exact .of_isEmpty
   refine ⟨⟨fun i ↦ (σ ^ i.1) v, fun {i j} h ↦ ?_⟩,
     fun i j hij ↦ Fin.ext <| hσ.injOn_pow_apply hv i.2 j.2 hij⟩
   wlog hij : i < j generalizing i j
@@ -48,6 +50,6 @@ theorem IsHamiltonian.of_perm [Fintype α] [DecidableEq α] {σ : Perm α} (hσ 
     G.IsHamiltonian :=
   isHamiltonian_iff_cycleGraph_isContained hcard |>.mpr <| by
     simpa using cycleGraph_isContained_of_isCycleOn (s := .univ)
-      (hsupport ▸ σ.coe_support_eq_set_support ▸ hσ.isCycleOn) (card_pos.mp (by simp; lia)) hadj
+      (hsupport ▸ σ.coe_support_eq_set_support ▸ hσ.isCycleOn) hadj
 
 end SimpleGraph
