@@ -5,11 +5,11 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.Int.Notation
 public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Tactic.Lift
-public import Mathlib.Data.Int.Notation
 
 /-!
 # Equivalence between types
@@ -34,7 +34,7 @@ universe u v w z
 open Function
 
 -- Unless required to be `Type*`, all variables in this file are `Sort*`
-variable {α α₁ α₂ β β₁ β₂ γ δ : Sort*}
+variable {α α₁ α₂ β β₁ β₂ γ : Sort*}
 
 namespace Equiv
 
@@ -184,7 +184,7 @@ end
 
 section prodCongr
 
-variable {α₁ α₂ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂)
+variable (e : α₁ → β₁ ≃ β₂)
 
 -- See also `Equiv.ofPreimageEquiv`.
 /-- A family of equivalences between fibers gives an equivalence between domains. -/

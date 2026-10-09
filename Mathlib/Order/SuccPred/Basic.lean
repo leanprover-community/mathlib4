@@ -118,7 +118,7 @@ noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder
     (fun ha _ ↦ by
       rw [not_isMax_iff] at ha
       simp_rw [Set.Nonempty, mem_Ioi, dite_eq_left ha]
-      exact ⟨wellFounded_lt.min_le (s := Ioi _), lt_of_lt_of_le (wellFounded_lt.prop_min ha)⟩)
+      exact ⟨WellFoundedLT.min_le (s := Ioi _), lt_of_lt_of_le (wellFounded_lt.prop_min ha)⟩)
     fun _ ha ↦ dite_eq_right (not_not_intro ha <| not_isMax_iff.mpr ·)
 
 end LinearOrder
@@ -343,7 +343,7 @@ lemma le_iff_eq_or_succ_le' : a ≤ b ↔ b = a ∨ succ a ≤ b := by
 @[to_dual le_and_pred_le_iff]
 theorem le_and_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
   refine ⟨fun h ↦ or_iff_not_imp_left.2 fun hba : b ≠ a ↦
-    h.2.antisymm (succ_le_of_lt <| h.1.lt_of_ne <| hba.symm), ?_⟩
+    h.2.antisymm (succ_le_of_lt <| h.1.lt_of_ne hba.symm), ?_⟩
   rintro (rfl | rfl)
   · exact ⟨le_rfl, le_succ b⟩
   · exact ⟨le_succ a, le_rfl⟩
@@ -627,7 +627,7 @@ theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrd
 
 section Preorder
 
-variable [Preorder α] [PredOrder α] {a b : α}
+variable [Preorder α] [PredOrder α] {a : α}
 
 -- TODO: auto-generate all of these through `to_dual`
 

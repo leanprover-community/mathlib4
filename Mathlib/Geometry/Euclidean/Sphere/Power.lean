@@ -5,7 +5,6 @@ Authors: Manuel Candales, Benjamin Davidson, Li Jiale
 -/
 module
 
-
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
@@ -33,7 +32,9 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 @[expose] public section
 
 
-open Real EuclideanGeometry RealInnerProductSpace Real Module
+open Real EuclideanGeometry Real Module
+
+open scoped RealInnerProductSpace
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
@@ -199,7 +200,7 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
   have hncol : ¬ Collinear ℝ {p₁', p', p₃'} := by
     rw [← affineIndependent_iff_not_collinear_set,
       ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
-    convert! hindep
+    convert hindep
     ext i; fin_cases i <;> rfl
   have : Fact (finrank ℝ S.direction = 2) := Affine.Simplex.fact_finrank_direction_affineSpan_eq
   exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux h_dist' hp₁'p₂' hp₃'p₄' hncol

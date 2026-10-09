@@ -5,8 +5,8 @@ Authors: Arnoud van der Leer
 -/
 module
 
-public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.CategoryTheory.CodiscreteCategory
 
 /-!
 # The Nerve of a Codiscrete Category
@@ -23,7 +23,7 @@ universe u
 
 namespace CategoryTheory.Codiscrete
 
-open Simplicial
+open scoped Simplicial
 
 variable {X : Type u} {n : ℕ}
 

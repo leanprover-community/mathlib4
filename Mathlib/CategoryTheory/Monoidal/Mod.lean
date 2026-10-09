@@ -5,8 +5,8 @@ Authors: Kim Morrison, Paul Lezeau, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Action.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon
 
 /-!
 # The category of module objects over a monoid object.
@@ -172,7 +172,7 @@ end ModObj
 
 open scoped ModObj MonoidalLeftAction
 
-variable {M' N' O' : D}
+variable {M' N' : D}
 
 open AddMonObj in
 /-- A morphism in `D` is a morphism of `A`-additive module objects if it commutes with

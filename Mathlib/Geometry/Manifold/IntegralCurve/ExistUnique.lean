@@ -5,11 +5,12 @@ Authors: Winston Yin
 -/
 module
 
-public import Mathlib.Analysis.ODE.ExistUnique
-public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+
+import Mathlib.Analysis.ODE.ExistUnique
+import Mathlib.Analysis.ODE.Gronwall
 
 /-!
 # Existence and uniqueness of integral curves
@@ -36,7 +37,7 @@ We state simpler versions of the theorem for boundaryless manifolds as corollari
 * The case where the integral curve may venture to the boundary of the manifold. See Theorem 9.34,
   Lee. May require submanifolds.
 
-## Reference
+## References
 
 * [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
 
@@ -49,13 +50,15 @@ public section
 
 open scoped Topology
 
-open Function Manifold Set
+open Function Set
+
+open scoped Manifold
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
-  {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} (t₀ : ℝ) {x₀ : M}
+  {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s : Set ℝ} (t₀ : ℝ) {x₀ : M}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a `C^1`

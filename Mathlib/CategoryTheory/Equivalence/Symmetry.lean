@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
@@ -103,7 +102,6 @@ def inverseFunctorObj' (e : C ≌ D) :
     Opposite.unop ((inverseFunctor C D).obj e) ≅ e.inverse :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (C D) in
 /-- Promoting `Equivalence.congrLeft` to a functor. -/
 @[simps!]

@@ -5,9 +5,8 @@ Authors: Ziyu Wang, Chenyi Li, Sébastien Gouëzel, Penghao Yu, Zhipeng Cao
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.InnerProductSpace.Dual
 
 /-!
 # Gradient
@@ -44,7 +43,9 @@ This file develops the following aspects of the theory of gradients:
 
 @[expose] public section
 
-open ComplexConjugate Topology InnerProductSpace Function Set
+open InnerProductSpace Function Set
+
+open scoped ComplexConjugate Topology
 
 noncomputable section
 

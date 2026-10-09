@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.CondVar
 
 
@@ -32,7 +31,7 @@ lemma integral_of_ae_eq_zero_or_one (hXmeas : AEMeasurable X μ) (hX : ∀ᵐ ω
   by_cases h : μ {ω | X ω = 1} = ⊤
   · simp [h, Measure.real, Set.preimage, integral_undef, Integrable, HasFiniteIntegral]
   rw [integral_add_measure ⟨by fun_prop, by simp [HasFiniteIntegral]⟩ <|
-    .smul_measure (by simp [integrable_dirac]) h]
+    .smul_measure (by simp [integrable_dirac]) (c := μ (X ⁻¹' {1})) h]
   simp [Measure.real, Set.preimage]
 
 /-- If a random variable is ae equal to `0` or `1`, then one minus its expectation is equal to the
@@ -49,7 +48,7 @@ end MeasureTheory
 
 
 namespace ProbabilityTheory
-variable {Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure ℝ} {P : Measure Ω}
+variable {Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure ℝ}
 
 /-- If a random variable is ae equal to `0` or `1`, then its conditional variance is the product of
 the conditional probabilities that it's equal to `0` and that it's equal to `1`. -/

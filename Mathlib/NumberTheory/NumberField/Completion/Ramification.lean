@@ -86,7 +86,7 @@ theorem IsUnramified.finrank_eq_one [w.LiesOver v] (h : w.IsUnramified K) :
 variable (w) in
 theorem mult_mul_finrank [w.LiesOver v] :
     v.mult * Module.finrank v.Completion w.Completion = w.mult := by
-  have hv : v = w.comap (algebraMap K L) := Subtype.ext ‹w.LiesOver v›.comp_eq.symm
+  have hv : v = w.comap (algebraMap K L) := Subtype.ext ‹w.LiesOver v›.under_eq.symm
   rcases w.isUnramified_or_isRamified K with h | h
   · rw [h.finrank_eq_one v, hv, h.eq, mul_one]
   · rw [h.finrank_eq_two v, hv, h.isReal.mult_eq_one, h.isComplex.mult_eq_two, one_mul]
@@ -128,7 +128,7 @@ theorem sum_inertiaDeg_eq_finrank [NumberField K] [NumberField L] :
     sum_union (Set.disjoint_toFinset.2 <| disjoint_ramifiedPlacesOver_unramifiedPlacesOver L v),
     sum_congr rfl (fun _ h ↦ inertiaDeg_eq_two (by simpa using h)),
     sum_congr rfl (fun _ h ↦ inertiaDeg_eq_one (by simpa using h)), sum_const, add_comm]
-  simp [← unramifedPlacesOver_ncard_add_eq_finrank L v, mul_comm, ncard_eq_toFinset_card']
+  simp [← unramifiedPlacesOver_ncard_add_eq_finrank L v, mul_comm, ncard_eq_toFinset_card']
 
 end NumberField.InfinitePlace
 

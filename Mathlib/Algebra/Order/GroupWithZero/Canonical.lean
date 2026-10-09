@@ -89,8 +89,7 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
   isBot_zero _ := le.1 <| zero ▸ zero_le
   bot_le _ := le.1 <| bot ▸ bot_le
 
-instance (priority := 100) LinearOrderedCommMonoidWithZero.toIsMulTorsionFree :
-    IsMulTorsionFree α where
+instance (priority := 100) LinearOrderedCommMonoidWithZero.toHasUniqueRoots : HasUniqueRoots α where
   pow_left_injective n hn := by simpa using (pow_left_strictMonoOn₀ (M₀ := α) hn).injOn
 
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
@@ -109,7 +108,7 @@ lemma pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by
 end LinearOrderedCommMonoidWithZero
 
 section LinearOrderedCommGroupWithZero
-variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
+variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {n : ℕ}
 
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
@@ -231,7 +230,7 @@ instance instBoundedOrder [OrderTop α] : BoundedOrder (WithZero α) :=
 instance : IsBotZeroClass (WithZero α) where
   isBot_zero _ := bot_le
 
-@[deprecated _root_.zero_le (since := "2026-05-06")]
+@[deprecated _root_.zero_le +typeChanged (since := "2026-05-06")]
 protected lemma zero_le (a : WithZero α) : 0 ≤ a := by simp
 
 /-- There is a general version `le_zero_iff`, but this lemma does not require a `PartialOrder`. -/
@@ -624,7 +623,7 @@ end LE
 
 section LT
 
-variable [LT α] {x y : WithZero α} {a b : α}
+variable [LT α] {x : WithZero α} {a b : α}
 
 lemma lt_unzeroD_iff (hx : x ≠ 0) : b < x.unzeroD a ↔ b < x := by
   lift x to α using hx; simp
@@ -636,7 +635,7 @@ end LT
 
 section Preorder
 
-variable [Preorder α] {x y : WithZero α} {a b : α}
+variable [Preorder α] {x : WithZero α} {b : α}
 
 theorem le_coe_unzeroD (x : WithZero α) (b : α) : x ≤ x.unzeroD b := by cases x <;> simp
 
@@ -644,7 +643,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] {x y : WithZero α} {a b : α}
+variable [PartialOrder α] {y : WithZero α} {a b : α}
 
 lemma le_unzeroD (hy : b ≤ y) : b ≤ y.unzeroD a := by
   have hne : y ≠ 0 := ne_bot_of_le_ne_bot WithZero.coe_ne_zero hy
