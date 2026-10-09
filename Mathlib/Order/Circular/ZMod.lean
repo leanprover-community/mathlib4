@@ -5,8 +5,8 @@ Authors: Paul Lezeau, Oliver Nash, Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Circular
 public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Order.Circular
 
 /-!
 # The circular order on `ZMod n`

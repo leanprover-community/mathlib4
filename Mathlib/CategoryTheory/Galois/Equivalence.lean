@@ -5,8 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Galois.EssSurj
 public import Mathlib.CategoryTheory.Action.Continuous
+public import Mathlib.CategoryTheory.Galois.EssSurj
 public import Mathlib.Topology.Category.FinTopCat
 
 /-!
