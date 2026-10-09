@@ -5,8 +5,8 @@ Authors: Bhavik Mehta, Edward Ayers, Thomas Read
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Cartesian closed categories

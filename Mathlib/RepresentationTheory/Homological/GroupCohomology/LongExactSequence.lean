@@ -5,8 +5,8 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 

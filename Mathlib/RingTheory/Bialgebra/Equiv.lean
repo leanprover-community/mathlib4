@@ -5,8 +5,8 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.RingTheory.Coalgebra.Equiv
 public import Mathlib.RingTheory.Bialgebra.Hom
+public import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
 # Isomorphisms of `R`-bialgebras

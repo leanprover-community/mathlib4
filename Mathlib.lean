@@ -2588,6 +2588,7 @@ public import Mathlib.CategoryTheory.Abelian.LeftDerived
 public import Mathlib.CategoryTheory.Abelian.Monomorphisms
 public import Mathlib.CategoryTheory.Abelian.NonPreadditive
 public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Abelian.OrthogonalClosed
 public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
 public import Mathlib.CategoryTheory.Abelian.Preradical.Colon
 public import Mathlib.CategoryTheory.Abelian.Preradical.Radical
@@ -3366,11 +3367,13 @@ public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Local
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
+public import Mathlib.CategoryTheory.ObjectProperty.OrthogonalLimits
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
 public import Mathlib.CategoryTheory.ObjectProperty.SiteLocal
 public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.ObjectProperty.Subobject
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.PEmpty
 public import Mathlib.CategoryTheory.PUnit
@@ -5231,6 +5234,7 @@ public import Mathlib.LinearAlgebra.Eigenspace.Pi
 public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
@@ -7586,6 +7590,7 @@ public import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Echelon.Cert
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.Echelon.Rat
+public import Mathlib.Tactic.Echelon.Reflection
 public import Mathlib.Tactic.Echelon.Zsqrtd
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ErwQuestion
@@ -8279,6 +8284,8 @@ public import Mathlib.Topology.Homotopy.TopCat.Path
 public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 public import Mathlib.Topology.Homotopy.TopCat.ZerothHomotopy
 public import Mathlib.Topology.IndicatorConstPointwise
+public import Mathlib.Topology.InductiveDimension.Classes
+public import Mathlib.Topology.InductiveDimension.Functions
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Instances.AddCircle.Defs
 public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
