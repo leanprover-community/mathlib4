@@ -111,7 +111,8 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
   unique_lift := by
     intro X _ f
     let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
-      ⟨fun b => @f ⟨(), _⟩ ⟨(), b⟩ ⟨e, smul_inv_smul _ b⟩, IsFreeGroup.of e⟩
+      ⟨fun b ↦ (@f (Functor.elementsMk _ () _) (Functor.elementsMk _ () b) ⟨e, smul_inv_smul _ b⟩),
+        IsFreeGroup.of e⟩
     rcases IsFreeGroup.unique_lift f' with ⟨F', hF', uF'⟩
     refine ⟨uncurry F' ?_, ?_, ?_⟩
     · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
@@ -119,7 +120,12 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
       apply IsFreeGroup.ext_hom (fun x ↦ ?_)
       rw [MonoidHom.comp_apply, hF']
       rfl
-    · rintro ⟨⟨⟩, a : A⟩ ⟨⟨⟩, b⟩ ⟨e, h : IsFreeGroup.of e • a = b⟩
+    · intro a b e
+      induction a with | mk a
+      induction b with | mk b
+      induction e with | mk e h
+      change A at a b
+      change IsFreeGroup.of e • a = b at h
       change (F' (IsFreeGroup.of _)).left _ = _
       rw [hF']
       cases inv_smul_eq_iff.mpr h.symm
@@ -137,7 +143,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
         apply Unit.ext
       · refine ActionCategory.cases ?_
         intros
-        simp only [← this, uncurry_map, curry_apply_left, coe_back, homOfPair.val]
+        simp only [← this, uncurry_map, curry_apply_left, coe_back, homOfPair_hom]
         rfl
 
 namespace SpanningTree
@@ -203,7 +209,6 @@ theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetr
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inr e, H⟩), homOfPath]
     simp only [IsIso.inv_hom_id, Category.comp_id, Category.assoc, treeHom]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
@@ -241,7 +246,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
           simp only [Functor.mapEnd, DFunLike.coe, this, hF']
-          exact dif_neg h
+          exact dite_eq_right h
         intro x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
           simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
@@ -253,9 +258,9 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
           rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
           rcases e with ⟨e | e, eT⟩
           · rw [hF']
-            exact dif_pos (Or.inl eT)
+            exact dite_eq_left (Or.inl eT)
           · rw [F'.map_inv, inv_as_inv, inv_eq_one, hF']
-            exact dif_pos (Or.inr eT)
+            exact dite_eq_left (Or.inr eT)
       · intro E hE
         ext x
         suffices (functorOfMonoidHom T E).map x = F'.map x by

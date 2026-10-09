@@ -13,7 +13,7 @@ public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
-public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.FastInstance
 
@@ -178,6 +178,9 @@ theorem gt_imp_gt_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > 
   fun hab ↦ (h₂.trans_lt hab).trans_le h₁
 
 attribute [gcongr strict] lt_of_lt_of_le lt_of_lt_of_le'
+
+@[to_dual (attr := gcongr strict) ge_imp_gt_of_lt']
+theorem ge_imp_gt_of_lt (h : a < b) : a ≥ c → b > c := lt_of_lt_of_le' h
 
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
@@ -426,12 +429,12 @@ lemma lt_iff_lt_of_le_iff_le' {β} [Preorder α] [Preorder β] {a b : α} {c d :
 
 @[to_dual self]
 lemma lt_iff_lt_of_le_iff_le {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β}
-    (H : a ≤ b ↔ c ≤ d) : b < a ↔ d < c := not_le.symm.trans <| (not_congr H).trans <| not_le
+    (H : a ≤ b ↔ c ≤ d) : b < a ↔ d < c := not_le.symm.trans <| (not_congr H).trans not_le
 
 @[to_dual self]
 lemma le_iff_le_iff_lt_iff_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β} :
     (a ≤ b ↔ c ≤ d) ↔ (b < a ↔ d < c) :=
-  ⟨lt_iff_lt_of_le_iff_le, fun H ↦ not_lt.symm.trans <| (not_congr H).trans <| not_lt⟩
+  ⟨lt_iff_lt_of_le_iff_le, fun H ↦ not_lt.symm.trans <| (not_congr H).trans not_lt⟩
 
 /-- A symmetric relation implies two values are equal, when it implies they're less-equal. -/
 lemma rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [Std.Symm r] {f : α → β}
@@ -972,6 +975,13 @@ class DenselyOrdered (α : Type*) [LT α] : Prop where
 theorem DenselyOrdered.dense' [LT α] [DenselyOrdered α] :
     ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a := by
   simp_rw [and_comm]; exact dense
+
+/-- `DenselyOrdered.mk'` is the dual of `DenselyOrdered.mk`, which we need for `to_dual`.
+Please avoid using this directly. -/
+@[to_dual existing mk]
+lemma DenselyOrdered.mk' [LT α] (dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a) :
+    DenselyOrdered α where
+  dense := by simpa [and_comm] using dense
 
 @[to_dual exists_between']
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=

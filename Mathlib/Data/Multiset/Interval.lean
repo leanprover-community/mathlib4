@@ -29,7 +29,7 @@ multisets are typically used computationally.
 public section
 
 
-open Finset DFinsupp Function
+open Finset DFinsupp
 
 open scoped Pointwise
 

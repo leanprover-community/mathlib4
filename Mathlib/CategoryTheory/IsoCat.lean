@@ -17,7 +17,7 @@ This is a strict notion, stronger than an equivalence of categories `C ≌ D`.
 We also define `Functor.IsIso` as a property saying that a functor is fully faithful and
 bijective on objects. We develop basic api for these two concepts.
 
-Unless the application explicitely demands an isomorphism, the equivalence of categories is
+Unless the application explicitly demands an isomorphism, the equivalence of categories is
 to be preferred.
 
 ## Main definitions
@@ -31,7 +31,7 @@ to be preferred.
 
 namespace CategoryTheory
 
-open CategoryTheory.Functor NatIso Category
+open CategoryTheory.Functor
 
 variable {C : Type*} {D : Type*} {E : Type*} [Category* C] [Category* D] [Category* E]
 variable (F : C ⥤ D) (G : D ⥤ E)
@@ -51,7 +51,7 @@ structure IsoCat where
 
 variable (C) in
 /-- The identity isomorphism of categories. -/
-@[simps, refl]
+@[simps, refl, implicit_reducible]
 def IsoCat.refl : IsoCat C C where
   functor := 𝟭 C
   inverse := 𝟭 C
@@ -59,7 +59,7 @@ def IsoCat.refl : IsoCat C C where
   counit_eq := Functor.comp_id _
 
 /-- The inverse isomorphism of categories, obtained by swapping `functor` and `inverse`. -/
-@[simps, symm]
+@[simps, symm, implicit_reducible]
 def IsoCat.symm (e : IsoCat C D) : IsoCat D C where
   functor := e.inverse
   inverse := e.functor
@@ -67,7 +67,7 @@ def IsoCat.symm (e : IsoCat C D) : IsoCat D C where
   counit_eq := e.unit_eq.symm
 
 /-- Composition of isomorphisms of categories. -/
-@[simps, trans]
+@[simps, trans, implicit_reducible]
 def IsoCat.trans (e : IsoCat C D) (f : IsoCat D E) : IsoCat C E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
@@ -77,6 +77,28 @@ def IsoCat.trans (e : IsoCat C D) (f : IsoCat D E) : IsoCat C E where
   counit_eq := by
     rw [Functor.assoc, ← Functor.assoc e.inverse, e.counit_eq, Functor.id_comp]
     exact f.counit_eq
+
+/-- The bijection on objects induced by an isomorphism of categories. -/
+@[simps, implicit_reducible]
+def IsoCat.objEquiv (e : IsoCat C D) : C ≃ D where
+  toFun := e.functor.obj
+  invFun := e.inverse.obj
+  left_inv x := (Functor.congr_obj e.unit_eq x).symm
+  right_inv x := Functor.congr_obj e.counit_eq x
+
+lemma IsoCat.functor_comp_injective
+    (e : IsoCat C D) {F G : D ⥤ E} (h : e.functor ⋙ F = e.functor ⋙ G) :
+    F = G := by
+  have : (e.inverse ⋙ e.functor) ⋙ F = (e.inverse ⋙ e.functor) ⋙ G := by
+    simp only [Functor.assoc, h]
+  simpa [counit_eq, Functor.id_comp] using this
+
+lemma IsoCat.comp_functor_injective
+    (e : IsoCat C D) {F G : E ⥤ C} (h : F ⋙ e.functor = G ⋙ e.functor) :
+    F = G := by
+  have : F ⋙ e.functor ⋙ e.inverse = G ⋙ e.functor ⋙ e.inverse  := by
+    simp [← Functor.assoc, h]
+  simpa only [← unit_eq, Functor.comp_id] using this
 
 namespace Functor
 
@@ -140,7 +162,6 @@ noncomputable def asIsomorphism : IsoCat C D where
 
 end Functor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories underlying an `IsoCat`, with the unit and counit
 isomorphisms induced by the defining equalities. -/
 def IsoCat.toEquivalence (e : IsoCat C D) : C ≌ D where
@@ -176,5 +197,34 @@ instance [F.IsIso] : F.strictInv.IsIso := F.asIsomorphism.symm.isIso_functor
 
 instance [F.IsIso] [G.IsIso] : (F ⋙ G).IsIso :=
   (F.asIsomorphism.trans G.asIsomorphism).isIso_functor
+
+section
+
+variable {C D : Type*} [Category* C] (e : D ≃ C)
+
+namespace InducedCategory
+
+/-- The isomorphism of categories between `InducedCategory C e` and `C` when
+`e : D ≃ C` is a bijection. -/
+@[simps, implicit_reducible]
+def isoCat : IsoCat (InducedCategory C e) C where
+  functor := inducedFunctor e
+  inverse.obj X := e.symm X
+  inverse.map f := { hom := eqToHom (by simp) ≫ f ≫ eqToHom (by simp) }
+  unit_eq := Functor.ext (by simp) (by cat_disch)
+  counit_eq := Functor.ext (by simp) (by cat_disch)
+
+/-- The equivalence of categories between `InducedCategory C e` and `C` when
+`e : D ≃ C` is a bijection. -/
+abbrev equivalence : InducedCategory C e ≌ C :=
+  (isoCat e).toEquivalence
+
+end InducedCategory
+
+lemma isIso_inducedFunctor_of_bijective (f : D → C) (hf : Function.Bijective f) :
+    (inducedFunctor f).IsIso :=
+  inferInstanceAs (InducedCategory.isoCat (.ofBijective f hf)).functor.IsIso
+
+end
 
 end CategoryTheory

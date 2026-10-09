@@ -5,7 +5,7 @@ Authors: Yan Yablonovskiy
 -/
 module
 
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Types.Defs
 public import Mathlib.SetTheory.Cardinal.Order
 

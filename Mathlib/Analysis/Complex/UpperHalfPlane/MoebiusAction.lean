@@ -107,7 +107,6 @@ lemma σ_num (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (num h z) = num h (σ g z) 
 lemma σ_denom (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (denom h z) = denom h (σ g z) := by
   simp [denom]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma σ_neg (g : GL (Fin 2) ℝ) : σ (-g) = σ g := by
   simp [σ, det_neg]
@@ -193,7 +192,7 @@ lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
 lemma coe_smul_of_det_pos {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     ↑(g • z) = num g z / denom g z := by
   change smulAux' g z = _
-  rw [smulAux', σ, if_pos hg, ContinuousAlgEquiv.refl_apply, num, denom]
+  rw [smulAux', σ, ite_eq_left hg, ContinuousAlgEquiv.refl_apply, num, denom]
 
 lemma denom_cocycle_σ (g h : GL (Fin 2) ℝ) (z : ℍ) :
     denom (g * h) z = σ h (denom g ↑(h • z)) * denom h z :=
@@ -206,7 +205,6 @@ lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
 section GLAction
 variable (g : GL (Fin 2) ℝ) (z : ℍ)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem re_smul : (g • z).re = (num g z / denom g z).re := by
   change (smulAux' g z).re = _
   simp +contextual [smulAux', σ, DFunLike.ite_apply, apply_ite, Complex.div_re]

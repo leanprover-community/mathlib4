@@ -41,7 +41,7 @@ theorem isOka_isPrincipal : IsOka (Submodule.IsPrincipal (R := R)) where
       exact mem_span_singleton'.2 ⟨z, by rw [mul_assoc, mul_comm y]⟩
     · rw [← span_singleton_mul_span_singleton, ← hx, Ideal.sup_mul, sup_le_iff,
         span_singleton_mul_span_singleton, mul_comm a, span_singleton_le_iff_mem]
-      exact ⟨mul_le_right, mem_colon_span_singleton.1 <| hy ▸ mem_span_singleton_self y⟩
+      exact ⟨mul_le_left, mem_colon_span_singleton.1 <| hy ▸ mem_span_singleton_self y⟩
 
 end Ideal
 

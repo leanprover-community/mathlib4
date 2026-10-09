@@ -28,7 +28,6 @@ open Module LinearMap LinearEquiv
 variable {K V W : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Projective K V]
   [AddCommMonoid W] [Module K W] [Projective K W]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an algebra isomorphism `f : End K V ≃ₐ[K] End K W`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
 public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W) :
@@ -55,7 +54,7 @@ public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K 
       apply f.injective <| LinearMap.ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
       simp_rw [← this, smulRightₗ_apply_apply, _root_.map_smul, hxy]
-    simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
+    simpa [huv.isUnit.smul_left_cancel] using congr($h_smul u)
   exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (LinearMap.ext <| this A).symm⟩
 
 variable (K V W) in

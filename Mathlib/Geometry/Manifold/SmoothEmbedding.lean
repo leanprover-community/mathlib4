@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.Immersion
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
-public import Mathlib.Geometry.Manifold.Diffeomorph  -- shake: keep (used in `proof_wanted` only)
 
 /-! # Smooth embeddings
 
@@ -115,16 +114,6 @@ lemma contMDiff (hf : IsSmoothEmbedding I J n f) :
     ContMDiff I J n f :=
   hf.isImmersion.contMDiff
 
--- use IsImmersion.comp and IsEmbedding.comp
-/-- The composition of two smooth embeddings between Banach manifolds is a smooth embedding. -/
-proof_wanted comp -- [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
-    {g : N → N'} (hg : IsSmoothEmbedding J J' n g) (hf : IsSmoothEmbedding I J n f) :
-    IsSmoothEmbedding I J' n (g ∘ f)
-
 end IsSmoothEmbedding
-
--- TODO: prove the same result for local diffeomorphisms and deduce it as a corollary
-proof_wanted Diffeomorph.isSmoothEmbedding [IsManifold I n M]
-    (φ : Diffeomorph I I M M n) : IsSmoothEmbedding I I n φ
 
 end Manifold

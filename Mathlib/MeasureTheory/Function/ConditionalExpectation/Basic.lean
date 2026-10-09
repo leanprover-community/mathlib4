@@ -124,10 +124,11 @@ meta def condExpUnexpander : Lean.PrettyPrinter.Unexpander
 #guard_msgs in
 #check μ[f | m] (sorry : α)
 
-theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f | m] = 0 := by rw [condExp, dif_neg hm_not]
+theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f | m] = 0 := by rw [condExp, dite_eq_right hm_not]
 
 theorem condExp_of_not_sigmaFinite (hm : m ≤ m₀) (hμm_not : ¬SigmaFinite (μ.trim hm)) :
-    μ[f | m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push Not; exact fun h => absurd h hμm_not
+    μ[f | m] = 0 := by
+  rw [condExp, dite_eq_left hm, dite_eq_right (fun h => hμm_not h.1)]
 
 open scoped Classical in
 theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
@@ -136,12 +137,12 @@ theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm
         if StronglyMeasurable[m] f then f
         else aestronglyMeasurable_condExpL1.mk (condExpL1 hm μ f)
       else 0 := by
-  rw [condExp, dif_pos hm]
+  rw [condExp, dite_eq_left hm]
   grind
 
 theorem condExp_of_stronglyMeasurable (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] {f : α → E}
     (hf : StronglyMeasurable[m] f) (hfi : Integrable f μ) : μ[f | m] = f := by
-  rw [condExp_of_sigmaFinite hm, if_pos hfi, if_pos hf]
+  rw [condExp_of_sigmaFinite hm, ite_eq_left hfi, ite_eq_left hf]
 
 @[simp]
 theorem condExp_const (hm : m ≤ m₀) (c : E) [IsFiniteMeasure μ] :
@@ -153,13 +154,13 @@ theorem condExp_ae_eq_condExpL1 [CompleteSpace E]
     μ[f | m] =ᵐ[μ] condExpL1 hm μ f := by
   rw [condExp_of_sigmaFinite hm]
   by_cases hfi : Integrable f μ
-  · rw [if_pos hfi]
+  · rw [ite_eq_left hfi]
     by_cases hfm : StronglyMeasurable[m] f
-    · rw [if_pos hfm]
+    · rw [ite_eq_left hfm]
       exact (condExpL1_of_aestronglyMeasurable' hfm.aestronglyMeasurable hfi).symm
-    · rw [if_neg hfm]
+    · rw [ite_eq_right hfm]
       exact aestronglyMeasurable_condExpL1.ae_eq_mk.symm
-  rw [if_neg hfi, condExpL1_undef hfi]
+  rw [ite_eq_right hfi, condExpL1_undef hfi]
   exact (coeFn_zero _ _ _).symm
 
 theorem condExp_ae_eq_condExpL1CLM [CompleteSpace E]
@@ -173,7 +174,7 @@ theorem condExp_of_not_integrable (hf : ¬Integrable f μ) : μ[f | m] = 0 := by
   swap; · rw [condExp_of_not_le hm]
   by_cases hμm : SigmaFinite (μ.trim hm)
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
-  rw [condExp_of_sigmaFinite, if_neg hf]
+  rw [condExp_of_sigmaFinite, ite_eq_right hf]
 
 @[to_fun (attr := simp) condExp_fun_zero]
 theorem condExp_zero : μ[(0 : α → E) | m] = 0 := by

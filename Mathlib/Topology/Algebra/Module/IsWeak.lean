@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
 
 /-! # Weak topologies on modules
@@ -36,7 +36,7 @@ example (y : F) : Continuous (fun x : E ↦ B' x y) := sorry
 ```
 
 However, this statement contains an abuse of the the definitional equality `E := E'` since `x : E`,
-but `B'` has domain `E'`. Morever, one might be tempted to say that `B'.IsWeak`, but this is
+but `B'` has domain `E'`. Moreover, one might be tempted to say that `B'.IsWeak`, but this is
 impossible because the domain of `B'` is `E'`, which is equipped with the incorrect topology.
 Instead, what one should do is to first define a new bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜` by
 composing `B'` with the linear equivalence between `E` and `E'`, and then establish `B.IsWeak`.
@@ -131,7 +131,7 @@ protected theorem congr [AddCommMonoid E'] [Module 𝕜 E']
     B'.IsWeak where
   eq_induced := by
     rw [e.symm.toHomeomorph.induced_eq.symm]
-    apply congr(TopologicalSpace.induced e.symm $(hB.eq_induced)).trans
+    apply congr(TopologicalSpace.induced e.symm $hB.eq_induced).trans
     simp_rw [induced_compose, ← hBB', induced_to_pi]
     rw [f.toEquiv.iInf_congr]
     simp

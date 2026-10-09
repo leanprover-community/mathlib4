@@ -96,10 +96,10 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
       rw [Function.comp_apply, cfc_apply (hf := x.2)]
     rw [cfc_apply ..]
     apply cfcHom_continuous _ |>.tendsto _ |>.comp
-    rw [hf.tendsto_restrict_iff_tendstoUniformlyOn Subtype.property]
+    rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn Subtype.property]
     intro t
     simp only [eventually_comap, Subtype.forall]
-    peel h_tendsto t with ht x _
+    gconvert h_tendsto t with ht x
     simp_all
   · simpa [cfc_apply_of_not_predicate a ha] using tendsto_const_nhds
 
@@ -150,7 +150,7 @@ end Generic
 
 section Isometric
 
-variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
 
@@ -235,12 +235,13 @@ satisfying the predicate `p` (associated to `𝕜`) and whose `𝕜`-spectrum is
 theorem continuousOn_cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
     (hf : ContinuousOn f s := by cfc_cont_tac) :
     ContinuousOn (cfc f) {a | p a ∧ spectrum 𝕜 a ⊆ s} :=
-  continuousOn_iff_continuous_restrict.mpr <| by
+  continuousOn_iff_continuous_domRestrict.mpr <| by
     convert!
-      continuous_cfcHomSuperset_left hs ⟨_, hf.restrict⟩ ((↑) : {a | p a ∧ spectrum 𝕜 a ⊆ s} → A)
+      continuous_cfcHomSuperset_left hs ⟨_, hf.domRestrict⟩
+        ((↑) : {a | p a ∧ spectrum 𝕜 a ⊆ s} → A)
         continuous_subtype_val (fun x ↦ x.2.2) with
       x
-    rw [cfcHomSuperset_apply, Set.restrict_apply, cfc_apply _ _ x.2.1 (hf.mono x.2.2)]
+    rw [cfcHomSuperset_apply, Set.domRestrict_apply, cfc_apply _ _ x.2.1 (hf.mono x.2.2)]
     congr!
 
 open UniformOnFun in
@@ -613,9 +614,8 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
   have hf := h_tendsto.continuousOn hF.frequently
-  have hf0 : f 0 = 0 := Eq.symm <|
-    tendsto_nhds_unique (tendsto_const_nhds.congr' <| .symm hF0) <|
-    h_tendsto.tendsto_at (quasispectrum.zero_mem R a)
+  have hf0 : f 0 = 0 := tendsto_nhds_unique_of_eventuallyEq
+    (h_tendsto.tendsto_at (quasispectrum.zero_mem R a)) tendsto_const_nhds hF0
   by_cases ha : p a
   · let s : Set X := {x | ContinuousOn (F x) (quasispectrum R a) ∧ F x 0 = 0}
     have hs : s ∈ l := hF.and hF0
@@ -626,12 +626,12 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
     rw [cfcₙ_apply ..]
     apply cfcₙHom_continuous _ |>.tendsto _ |>.comp
     rw [ContinuousMapZero.isEmbedding_toContinuousMap.isInducing.tendsto_nhds_iff]
-    change Tendsto (fun x : s ↦ (⟨_, x.2.1.restrict⟩ : C(quasispectrum R a, R))) _
-      (𝓝 ⟨_, hf.restrict⟩)
-    rw [hf.tendsto_restrict_iff_tendstoUniformlyOn (fun x ↦ x.2.1)]
+    change Tendsto (fun x : s ↦ (⟨_, x.2.1.domRestrict⟩ : C(quasispectrum R a, R))) _
+      (𝓝 ⟨_, hf.domRestrict⟩)
+    rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn (fun x ↦ x.2.1)]
     intro t
     simp only [eventually_comap, Subtype.forall]
-    peel h_tendsto t with ht x _
+    gconvert h_tendsto t with ht x
     simp_all
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
@@ -687,7 +687,7 @@ end Generic
 
 section Isometric
 
-variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R] [Nontrivial R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R] [Nontrivial R]
     [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [MetricSpace A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
     [NonUnitalIsometricContinuousFunctionalCalculus R A p]
@@ -771,12 +771,12 @@ theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
     ContinuousOn (cfcₙ f · : A → A) {a | p a ∧ quasispectrum 𝕜 a ⊆ s} := by
   by_cases hs0 : 0 ∈ s
-  · rw [continuousOn_iff_continuous_restrict]
+  · rw [continuousOn_iff_continuous_domRestrict]
     convert!
-      continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩ (X :=
+      continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.domRestrict⟩, hf0⟩ (X :=
         {a : A | p a ∧ quasispectrum 𝕜 a ⊆ s}) continuous_subtype_val (fun x ↦ x.2.2) with
       x
-    rw [cfcₙHomSuperset_apply, Set.restrict_apply, cfcₙ_apply _ _ (hf.mono x.2.2) hf0 x.2.1]
+    rw [cfcₙHomSuperset_apply, Set.domRestrict_apply, cfcₙ_apply _ _ (hf.mono x.2.2) hf0 x.2.1]
     congr!
   · convert! continuousOn_empty _
     rw [Set.eq_empty_iff_forall_notMem]

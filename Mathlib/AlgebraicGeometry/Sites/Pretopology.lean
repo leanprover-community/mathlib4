@@ -26,7 +26,7 @@ because the former does not have `HasPullbacks Scheme`.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 

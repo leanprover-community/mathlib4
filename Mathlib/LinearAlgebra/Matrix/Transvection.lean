@@ -298,7 +298,7 @@ theorem toMatrix_reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) :
   ext a b
   simp only [reindexEquiv, transvection, toMatrix_mk]
   by_cases ha : e t_i = a <;> by_cases hb : e t_j = b <;> by_cases hab : a = b <;>
-    simp [ha, hb, hab, ← e.apply_eq_iff_eq_symm_apply, single]
+    simp [ha, hb, hab, e.eq_symm_apply, single]
 
 theorem toMatrix_reindexEquiv_prod (e : n ≃ p) (L : List (TransvectionStruct n R)) :
     (L.map (toMatrix ∘ reindexEquiv e)).prod = reindexAlgEquiv R _ e (L.map toMatrix).prod := by
@@ -415,14 +415,14 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       simp only [ne_eq, inl.injEq, Ne.symm h, not_false_eq_true, transvection_mul_apply_of_ne]
       rw [IH]
       rcases le_or_gt (n + 1) i with (hi | hi)
-      · simp only [hi, n.le_succ.trans hi, if_true]
-      · rw [if_neg, if_neg]
+      · simp only [hi, n.le_succ.trans hi, ite_true]
+      · rw [ite_eq_right, ite_eq_right]
         · simpa only [hni.symm, not_le, or_false] using Nat.lt_succ_iff_lt_or_eq.1 hi
         · simpa only [not_le] using hi
   | self =>
     simp only [length_listTransvecCol, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
       Matrix.one_mul]
-    rw [if_neg]
+    rw [ite_eq_right]
     simpa only [not_le] using i.2
 
 /-- Multiplying by some of the matrices in `listTransvecRow M` does not change the last column. -/
@@ -437,7 +437,7 @@ theorem mul_listTransvecRow_last_col_take (i : Fin r ⊕ Unit) {k : ℕ} (hk : k
       (listTransvecRow M)[k]? =
         ↑(transvection (inr Unit.unit) (inl k')
             (-M (inr Unit.unit) (inl k') / M (inr Unit.unit) (inr Unit.unit))) := by
-      simp only [k', listTransvecRow, hkr, dif_pos, List.getElem?_ofFn]
+      simp only [k', listTransvecRow, hkr, dite_eq_left, List.getElem?_ofFn]
     simp only [List.take_add_one, ← Matrix.mul_assoc, this, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     rw [mul_transvection_apply_of_ne, IH hkr.le]
@@ -473,7 +473,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       (listTransvecRow M)[n]? =
         ↑(transvection (inr unit) (inl n')
         (-M (inr unit) (inl n') / M (inr unit) (inr unit))) := by
-      simp only [n', listTransvecRow, hnr, dif_pos, List.getElem?_ofFn]
+      simp only [n', listTransvecRow, hnr, dite_eq_left, List.getElem?_ofFn]
     simp only [List.take_add_one, A, ← Matrix.mul_assoc, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     by_cases h : n' = i
@@ -482,8 +482,8 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         simp only [n', Fin.mk_eq_mk] at h
         simp only [h]
       have : ¬n.succ ≤ i := by simp only [← hni, n.lt_succ_self, not_le]
-      simp only [h, mul_transvection_apply_same, if_false,
-        mul_listTransvecRow_last_col_take _ _ hnr.le, hni.le, this, if_true, IH hnr.le]
+      simp only [h, mul_transvection_apply_same, ite_false,
+        mul_listTransvecRow_last_col_take _ _ hnr.le, hni.le, this, ite_true, IH hnr.le]
       field
     · have hni : n ≠ i := by
         rintro rfl
@@ -493,7 +493,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         not_false_eq_true]
       rcases le_or_gt (n + 1) i with (hi | hi)
       · simp [hi, n.le_succ.trans hi]
-      · rw [if_neg, if_neg]
+      · rw [ite_eq_right, ite_eq_right]
         · simpa only [not_le] using! hi
         · simpa only [hni.symm, not_le, or_false] using! Nat.lt_succ_iff_lt_or_eq.1 hi
 

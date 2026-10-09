@@ -77,16 +77,16 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
-  multichoose x k := ⟨(ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]), by
+  multichoose x k := (ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]) |>.lift <| by
     rw [norm_div, div_le_one (by simpa using k.factorial_ne_zero)]
-    exact x.norm_ascPochhammer_le k⟩
-  factorial_nsmul_multichoose x k := by rw [← Subtype.coe_inj, nsmul_eq_mul, PadicInt.coe_mul,
-    PadicInt.coe_natCast, mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero), Subtype.coe_inj,
-    Polynomial.eval_eq_smeval, Polynomial.ascPochhammer_smeval_cast]
+    exact x.norm_ascPochhammer_le k
+  factorial_nsmul_multichoose x k := by
+    simp [mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero : (k.factorial : ℚ_[p]) ≠ 0),
+      ← PadicInt.coe_inj, Polynomial.eval_eq_smeval]
 
 @[fun_prop]
 lemma continuous_multichoose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.multichoose x k) := by
-  simp only [Ring.multichoose, BinomialRing.multichoose]
+  simp only [Ring.multichoose, BinomialRing.multichoose, Padic.lift]
   fun_prop
 
 @[fun_prop]
@@ -385,5 +385,34 @@ lemma mahlerEquiv_symm_apply (a : C₀(ℕ, E)) : (mahlerEquiv E).symm a = (mahl
   rfl
 
 end mahler_coeff
+
+section DenseSpan
+
+open Submodule
+/-!
+### Continuous linear functionals are determined by their values on the Mahler basis
+-/
+variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
+  [IsBoundedSMul ℤ_[p] R]
+
+theorem dense_span_mahler : Dense (span R
+      (.range fun n ↦ (mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R))) : Set C(ℤ_[p], R)) := by
+  refine fun f ↦ mem_closure_of_tendsto (PadicInt.hasSum_mahler _) ?_
+  refine .of_forall fun s ↦ Submodule.sum_mem _ fun c _ ↦ ?_
+  simp only [span_range_eq_iSup]
+  apply mem_iSup_of_mem (i := c)
+  rw [mem_span_singleton]
+  use (fwdDiff 1)^[c] f 0
+  ext x
+  simp [PadicInt.mahlerTerm]
+
+lemma ext_mahler {μ : C(ℤ_[p], R) →L[R] R}
+    (hμ : ∀ n, μ ((mahler n : C(ℤ_[p], ℤ_[p])) • 1) = 0) : μ = 0 := by
+  apply ContinuousLinearMap.ext_on dense_span_mahler
+  rintro _ ⟨n, rfl⟩
+  simpa using hμ n
+
+end DenseSpan
+
 
 end PadicInt

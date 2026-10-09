@@ -119,7 +119,7 @@ theorem integral_bernoulliFun : ∫ x : ℝ in 0..1, bernoulliFun k x = if k = 0
 variable {k} in
 theorem integral_bernoulliFun_eq_zero (hk : k ≠ 0) :
     ∫ x : ℝ in 0..1, bernoulliFun k x = 0 := by
-  rw [integral_bernoulliFun, if_neg hk]
+  rw [integral_bernoulliFun, ite_eq_right hk]
 
 /-- Fundamental theorem of calculus to express a Bernoulli polynomial via the previous one -/
 theorem bernoulliFun_eq_integral (k : ℕ) (x y : ℝ) :
@@ -135,7 +135,7 @@ end Calculus
 theorem bernoulliFun_eval_one_sub {k : ℕ} {x : ℝ} :
     bernoulliFun k (1 - x) = (-1) ^ k * bernoulliFun k x := by
   simpa [bernoulliFun, Polynomial.aeval_comp]
-    using congr_arg (·.aeval x) (Polynomial.bernoulli_comp_one_sub_X k)
+    using congr($(Polynomial.bernoulli_comp_one_sub_X k).aeval x)
 
 /-- The multiplication theorem. Proof follows https://math.stackexchange.com/a/1721099/38218. -/
 theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
@@ -204,7 +204,8 @@ theorem bernoulliFun_eval_half (k : ℕ) : bernoulliFun k 2⁻¹ = (2 / 2 ^ k - 
   · have m := bernoulliFun_mul k two_ne_zero 2⁻¹
     simp_rw [Nat.cast_ofNat, mul_inv_cancel₀ (two_ne_zero' ℝ), Finset.sum_range_succ,
       Finset.sum_range_zero, Nat.cast_zero, Nat.cast_one, ← one_div, add_halves,
-      bernoulliFun_eval_one, if_neg k1, bernoulliFun_eval_zero, zero_div, add_zero, zero_add] at m
+      bernoulliFun_eval_one, ite_eq_right k1, bernoulliFun_eval_zero, zero_div, add_zero,
+      zero_add] at m
     rw [← inv_mul_eq_iff_eq_mul₀ (by positivity), ← sub_eq_iff_eq_add, ← sub_one_mul, inv_div] at m
     rw [m, one_div]
 
@@ -253,11 +254,11 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
       div_zero]
   refine Nat.le_induction ?_ (fun k hk h'k => ?_) k (Nat.one_le_iff_ne_zero.mpr hk)
   · rw [bernoulliFourierCoeff_recurrence 1 hn]
-    simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, if_true,
+    simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, ite_true,
       Nat.factorial_one, pow_one]
     rw [bernoulli_zero_fourier_coeff hn, sub_zero, mul_one, div_neg, neg_div]
-  · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, if_neg (by grind), Nat.add_sub_cancel k 1, h'k,
-      Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
+  · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, ite_eq_right (by grind),
+      Nat.add_sub_cancel k 1, h'k, Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
     ring
 
 end BernoulliFourierCoeffs
@@ -465,7 +466,7 @@ theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π
 -/
 theorem hasSum_L_function_mod_four_eval_three :
     HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 3 * Real.sin (π * n / 2)) (π ^ 3 / 32) := by
-  apply (congr_arg₂ HasSum ?_ ?_).to_iff.mp <|
+  apply congr(HasSum $(?_) $(?_)).to_iff.mp <|
     hasSum_one_div_nat_pow_mul_sin one_ne_zero (?_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
   · ext1 n
     ring_nf

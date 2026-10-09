@@ -21,7 +21,7 @@ public section
 
 namespace Nat
 
-variable {m n a b guess fuel : ℕ}
+variable {n a b guess fuel : ℕ}
 
 @[simp] theorem nthRoot_zero_left (a : ℕ) : nthRoot 0 a = 1 := rfl
 

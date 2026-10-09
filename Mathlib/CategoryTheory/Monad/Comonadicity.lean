@@ -67,7 +67,7 @@ instance main_pair_coreflexive (A : adj.toComonad.Coalgebra) :
     IsCoreflexivePair (G.map A.a) (adj.unit.app (G.obj A.A)) := by
   apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _
   · rw [← G.map_comp, ← G.map_id]
-    exact congr_arg G.map A.counit
+    congrm G.map $A.counit
   · rw [adj.right_triangle_components]
     rfl
 
@@ -147,7 +147,7 @@ theorem comparisonAdjunction_counit_f_aux
     (A : adj.toComonad.Coalgebra) :
     ((comparisonAdjunction adj).counit.app A).f =
       (adj.homEquiv _ A.A).symm (equalizer.ι (G.map A.a) (adj.unit.app (G.obj A.A))) :=
-  congr_arg (adj.homEquiv _ _).symm (Category.id_comp _)
+  congr((adj.homEquiv ..).symm $(Category.id_comp _))
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- This is a fork which is helpful for establishing comonadicity: the morphism from this fork to
@@ -185,7 +185,6 @@ def unitFork (B : C) :
       (adj.unit.app (G.obj (F.obj B))) :=
   Fork.ofι (adj.unit.app B) (adj.unit_naturality _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {adj} in
 /-- The counit fork is a limit provided `F` preserves it. -/
 def counitLimitOfPreservesEqualizer (A : adj.toComonad.Coalgebra)
@@ -281,7 +280,6 @@ instance [ReflectsLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
       (NatTrans.app adj.unit (G.obj A.A))) F :=
   fun _ => ReflectsLimitOfIsCosplitPair.out _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- To show `F` is a comonadic left adjoint, we can show it preserves and reflects `F`-split
 equalizers, and `C` has them.
 -/
@@ -404,7 +402,7 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
           (adj.unit.app (G.obj (F.obj Y))) := by
         apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _
         · rw [← G.map_comp, ← G.map_id]
-          exact congr_arg G.map (adj.left_triangle_components Y)
+          congrm G.map $(adj.left_triangle_components Y)
         · rw [← G.map_id]
           simp
       apply @unitEqualizerOfCoreflectsEqualizer _ _ _ _ _ _ _ _ ?_

@@ -284,6 +284,12 @@ all repos use `cs` instead.
 -/
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
 
+/-- Pair each container in a lookup chain with its read URL. The result keeps
+the chain's trust order. -/
+private def chainWithGetURLs (containers : List Container) :
+    IO (List (Option Container × String)) :=
+  containers.mapM fun c => do return (some c, ← c.getURL)
+
 /--
 Compute the trust-ordered list of container base URLs to try when downloading
 files for a given GitHub repo.
@@ -298,14 +304,17 @@ Precedence (most specific wins):
    not here.
 4. `defaultContainersForRepo repo`: the repo-level fallback when nothing
    overrides it.
+
+An empty value means unset for both variables here, as it does for
+`MATHLIB_CACHE_BASE_URL`. `nonEmptyEnvValue` holds that rule.
 -/
 def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
-  if let some url ← IO.getEnv "MATHLIB_CACHE_GET_URL" then
+  if let some url := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_GET_URL") then
     return [(none, url)]
   if let some cliOverride ← cacheFromOverride.get then
-    return cliOverride.map fun c => (some c, c.azureURL)
+    return ← chainWithGetURLs cliOverride
   let envOverride? ← do
-    match (← IO.getEnv "MATHLIB_CACHE_FROM") with
+    match (← getEnvNonEmpty "MATHLIB_CACHE_FROM") with
     | none => pure none
     | some s =>
       match parseCacheFromList s with
@@ -315,32 +324,68 @@ def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) :=
           (unrecognized container name). Known containers: \
           {", ".intercalate (Container.all.map Container.name)}."
         pure none
-  let containers := envOverride?.getD (defaultContainersForRepo repo)
-  return containers.map fun c => (some c, c.azureURL)
+  chainWithGetURLs (envOverride?.getD (defaultContainersForRepo repo))
 
-/-- Authentication method used for cache upload operations. -/
-inductive UploadAuth where
-  | azureSas (token : String)
-  | azureBearer (token : String)
+/--
+`curl` flags that let a cache read follow a redirect, so a read base may answer
+with the blob's current home. `%{http_code}` reports the final response, so a
+hit reads as a hit and a miss as a miss.
 
-/-- Retrieves upload credentials from the environment. -/
-def getUploadAuth : IO UploadAuth := do
-  if let some token ← IO.getEnv "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
-    let token := token.trimAscii.copy
-    if !token.isEmpty then
-      return .azureBearer token
-  if let some token ← IO.getEnv "MATHLIB_CACHE_SAS" then
-    let token := token.trimAscii.copy
-    if !token.isEmpty then
-      return .azureSas token
-  throw <| IO.userError
-    "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
+A redirect may target only `https`, and the chain is short. These bounds limit
+the transport rather than the trust: the host that answers a read serves the
+artifact bytes in either case. They keep a redirect from moving a transfer to a
+plaintext protocol or through a long chain of hops.
+-/
+def curlFollowRedirectArgs : Array String :=
+  #["--location", "--proto-redir", "=https", "--max-redirs", "5"]
+
+/--
+`curl` retry flags for a cache transfer. `--retry` covers timeouts and
+408/429/5xx; every supported curl accepts it. With
+`supportLegacyCurl := false`, `--retry-all-errors` also retries transport
+errors on a fresh connection, with exponential backoff. That flag needs
+curl 7.71; `validateCurl` gates parallel mode at 7.75, which also
+guarantees the per-transfer JSON report fields `monitorCurl` reads. Pass
+`supportLegacyCurl := true` on paths that must work on older curls.
+-/
+def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
+  #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
+
+/--
+Separates curl's JSON report from the raw header values after it on the
+same line. JSON allows no raw control character other than whitespace
+(RFC 8259), so the first 0x1F (ASCII unit separator) ends the report.
+-/
+def curlFieldSep : String := "\x1f"
+
+/-- The response headers that the get path records, in output order. -/
+def curlGetHeaders : List String := ["cf-ray", "cf-cache-status", "content-length"]
+
+/--
+`--write-out` format for the get path: curl's `%{json}` report, then the
+value of each header in `curlGetHeaders`, each after `curlFieldSep`.
+curl writes a header value unescaped, so the values stay outside the JSON.
+
+`%header{…}` needs curl 7.84. curl 7.83 shipped it as experimental only.
+Below 7.84, `validateCurl` downloads a newer curl on Linux. A curl that
+old on another platform prints `%header{…}` as literal text, and that text
+appears only in a failure line.
+-/
+def curlGetWriteOut : String :=
+  "%{json}" ++ String.join (curlGetHeaders.map (curlFieldSep ++ "%header{" ++ · ++ "}")) ++ "\n"
+
+/-- Splits a `--write-out` line into curl's JSON report and the header
+values after it. A line without `curlFieldSep` is all report. -/
+def splitWriteOut (line : String) : String × List String :=
+  match line.splitOn curlFieldSep with
+  | report :: headers => (report, headers)
+  | [] => (line, [])
 
 /--
 Construct the URL for the cache file `fileName` in repo `repo`, against the
 container reachable at `containerURL`.
 
-The `f/` prefix marks files (commits use `c/`). Whether the rest of the path is
+The `f/` prefix marks files. Whether the rest of the path is
 flat (`/f/<fileName>`) or repo-namespaced (`/f/<repo>/<fileName>`) follows the
 container (see `Container.flatPath`), not the repo: the same hash under
 `repo = MATHLIBREPO` lands flat in `master` and prefixed in `forks`.
@@ -354,15 +399,7 @@ case-insensitive in the GitHub owner/repo name.
 -/
 def mkFileURL (container : Option Container) (repo containerURL fileName : String)
     (repoScope : Option String := none) : String :=
-  let repo := normalizeRepo repo
-  let flat := match container with
-    | some c => c.flatPath repo
-    | none => repo == MATHLIBREPO
-  let pre := if flat then ""
-    else match repoScope with
-      | some s => s!"{repo}/{s}/"
-      | none => s!"{repo}/"
-  s!"{containerURL}/f/{pre}{fileName}"
+  s!"{containerURL}/{fileDirPath container repo repoScope}/{fileName}"
 
 /--
 Process-wide override for the per-SHA scope, set by the `--scope=` CLI flag.
@@ -371,19 +408,33 @@ When set, it wins over `MATHLIB_CACHE_REPO_SCOPE`.
 initialize scopeOverride : IO.Ref (Option String) ← IO.mkRef none
 
 /--
+Whether `scope` is a well-formed per-commit scope: a nonempty run of hex
+digits, at most 64 of them (a commit SHA, abbreviated or full). The scope
+lands in URL paths and in file names — the fork namespace `f/{repo}/{scope}/`,
+the marker `m/{repo}/{scope}`, and the marker's local temp file — so anything
+else (a path separator, `..`, an unresolved ref name) is a misconfiguration
+that must fail loudly rather than leak into a path.
+-/
+def isValidScope (scope : String) : Bool :=
+  !scope.isEmpty && scope.length ≤ 64 &&
+    scope.all fun c => c.isDigit || ('a' ≤ c && c ≤ 'f') || ('A' ≤ c && c ≤ 'F')
+
+/--
 Resolved repo-scope SHA. Precedence: `--scope=` flag > `MATHLIB_CACHE_REPO_SCOPE`
 env var > `none`. Both sources mean "the user has explicitly opted into a
-SHA-scoped read"; the non-default-scope warning fires for either.
+SHA-scoped read"; the non-default-scope warning fires for either. A scope that
+is not a hex SHA (see `isValidScope`) throws: every consumer embeds the scope
+in a URL path or a file name.
 -/
 def getRepoScope : IO (Option String) := do
-  if let some s ← scopeOverride.get then
-    return some s
-  let s? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
-  match s? with
-  | some s =>
-    let trimmed := s.trimAscii.toString
-    pure (if trimmed.isEmpty then none else some trimmed)
-  | none => pure none
+  let scope? ← do
+    if let some s ← scopeOverride.get then pure (some s)
+    else getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
+  let some scope := scope? | return none
+  unless isValidScope scope do
+    throw <| IO.userError s!"invalid cache scope '{scope}': a scope is a commit SHA (hex \
+      digits; --scope also accepts any ref `git rev-parse` can resolve from inside a git checkout)"
+  return some scope
 
 def getGitCommitHash : IO String :=
   return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
@@ -409,67 +460,114 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
     -- ```
     -- If this becomes an issue we can implement the curl spec.
 
-    -- Note we append a '.part' to the filenames here,
-    -- which `downloadFiles` then removes when the download is successful.
+    -- Note we append `IO.PARTSUFFIX` to the filenames here, which `downloadFiles` then
+    -- removes when the download is successful. The suffix carries this process's tag, so a
+    -- concurrent `cache` run sharing this `CACHEDIR` writes its own in-flight files, not ours.
     pure <| acc ++ s!"url = {mkFileURL container repo containerURL fileName scope?}\n\
-      -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
+      -o {(IO.CACHEDIR / (fileName ++ IO.PARTSUFFIX)).toString.quote}\n"
 
 /--
 Whether an HTTP status returned for a single-file read should be treated as a
 cache miss (fall through to the next container in the chain) rather than a
-transfer failure worth reporting.
-
-`404` is always a miss. A `403` is a miss only when `treatForbiddenAsMiss` is
-set, which callers do for the `legacy` container: when its public read access is
-revoked ahead of retirement it answers reads with `403`, and old clients whose
-chain still lists `legacy` should fall through quietly instead of printing a
-per-file transfer failure. Any other status is a real failure.
+transfer failure worth reporting: `404` is the only miss.
 -/
-def isCacheMissStatus (httpCode : Nat) (treatForbiddenAsMiss : Bool) : Bool :=
-  httpCode == 404 || (httpCode == 403 && treatForbiddenAsMiss)
+def isCacheMissStatus (httpCode : Nat) : Bool :=
+  httpCode == 404
 
-/-- Outcome of a single serial download: the file arrived (`served`), the server
-returned a cache miss that should fall through to the next container (`miss`), or
-the transfer failed for another reason that should drive the exit code
-(`failed`). The parallel path draws the same distinction through
-`TransferState.failed` and `isCacheMissStatus`. -/
-inductive DownloadOutcome
-  | served
-  | miss
-  | failed
+/--
+Whether an HTTP status is the one Azure returns for a blob that already exists,
+which a non-overwrite `put` (`If-None-Match: *`) hits when it declines to
+overwrite. Azure reports it as 409 (the `BlobAlreadyExists` error, what it
+returns in practice) or 412 (the conditional-header spec's code for an unmet
+`If-None-Match`), so we accept both. Whether that's benign is the caller's call:
+the upload path skips it, reads don't.
+-/
+def isAlreadyPresentStatus (httpCode : Nat) : Bool :=
+  httpCode == 409 || httpCode == 412
+
+/-- Direction of a cache transfer. -/
+inductive TransferDirection where
+  | download
+  | upload
+  deriving Repr, DecidableEq
+
+instance : ToString TransferDirection where
+  toString
+    | .download => "download"
+    | .upload => "upload"
+
+/-- What one finished transfer amounts to. The index restricts each verdict to
+the direction where it has meaning. -/
+inductive TransferVerdict : TransferDirection → Type where
+  /-- The transfer completed in full. -/
+  | delivered {d : TransferDirection} : TransferVerdict d
+  /-- The server does not have the file; not an error. -/
+  | miss : TransferVerdict .download
+  /-- The server already has the file, so there is nothing to transfer; not an
+  error. -/
+  | skip : TransferVerdict .upload
+  /-- The transfer failed. -/
+  | failed {d : TransferDirection} : TransferVerdict d
+  deriving Repr, DecidableEq
+
+/--
+Classify one finished download; the parallel and serial paths share this
+table. A transfer delivers only when the status is 200/201 and curl exited
+cleanly: a nonzero exit code after a 200 means the body is truncated. The
+status alone decides a miss. `httpCode?` is `none` when there is no status
+to parse.
+-/
+def classifyDownload (httpCode? : Option Nat) (exitCode : Nat) : TransferVerdict .download :=
+  match httpCode? with
+  | some 200 | some 201 => if exitCode == 0 then .delivered else .failed
+  | some code => if isCacheMissStatus code then .miss else .failed
+  | none => .failed
+
+/--
+Classify one finished upload. A transfer delivers only on a clean 200/201,
+as in `classifyDownload`. With `treatExistsAsSkip` (a non-overwrite put), a
+409/412 is a skip: the blob is already on the server. Every other answer, a
+404 included, is a failure.
+-/
+def classifyUpload (httpCode? : Option Nat) (exitCode : Nat)
+    (treatExistsAsSkip : Bool) : TransferVerdict .upload :=
+  match httpCode? with
+  | some 200 | some 201 => if exitCode == 0 then .delivered else .failed
+  | some code => if treatExistsAsSkip && isAlreadyPresentStatus code then .skip else .failed
+  | none => .failed
 
 /-- Calls `curl` to download a single file from a specific container to `CACHEDIR`
-(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`).
-`treatForbiddenAsMiss` mirrors the parallel path: a `legacy` `403` (public read
-access revoked ahead of retirement) is a miss, not a failure. -/
+(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`). -/
 def downloadFile (container : Option Container) (repo containerURL : String)
-    (hash : UInt64) (scope? : Option String) (treatForbiddenAsMiss : Bool := false) :
-    IO DownloadOutcome := do
+    (hash : UInt64) (scope? : Option String) : IO (TransferVerdict .download) := do
   let fileName := hash.asLTar
   let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
-  let partFileName := fileName ++ ".part"
+  let partFileName := fileName ++ IO.PARTSUFFIX
   let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
-      args := #[url, "--fail", "--silent", "--write-out", "%{http_code}",
-        "-o", partPath.toString] }
-  if out.exitCode = 0 then
+      args := #[url, "--silent"] ++ curlFollowRedirectArgs ++
+        -- This path serves curls below 7.71, which reject `--retry-all-errors`.
+        curlRetryArgs (supportLegacyCurl := true) ++
+        #["--write-out", "%{http_code}", "-o", partPath.toString] }
+  -- Anything short of a delivery leaves at most an error body in the part file.
+  let verdict := classifyDownload out.stdout.trimAscii.toNat? out.exitCode.toNat
+  if verdict matches .delivered then
     IO.FS.rename partPath path
-    return .served
-  IO.FS.removeFile partPath
-  -- `--fail` exits nonzero on any HTTP error; the written-out status tells a 404
-  -- miss apart from a real transfer failure (a connection error reports `000`).
-  let httpCode := out.stdout.trimAscii.toNat?.getD 0
-  return if isCacheMissStatus httpCode treatForbiddenAsMiss then .miss else .failed
+  else if ← partPath.pathExists then
+    IO.FS.removeFile partPath
+  return verdict
 
 /-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345).
-    Handles both `.ltar` and `.ltar.part` files using `FilePath.fileStem`. -/
-def hashFromFileName (path : FilePath) : Option UInt64 := do
-  let some stem := path.fileStem | .none
-  -- For .ltar.part files, fileStem gives "hash.ltar"; apply fileStem again to strip .ltar
-  let stem := (FilePath.mk (toString stem)).fileStem.getD stem
-  (toString stem).parseHexToUInt64?
+    Handles a finished `<hash>.ltar`, an in-flight `<hash>.ltar<PARTSUFFIX>`, and a
+    `<hash>.ltar.part` left in the cache by a version that wrote untagged temporaries. -/
+def hashFromFileName (path : FilePath) : Option UInt64 :=
+  let peel (name : String) := (FilePath.mk name).fileStem.getD name
+  let name := path.fileName.getD path.toString
+  -- Peel one extension at a time — `.part`, this process's tag, `.ltar` — and take the first stem
+  -- that parses as a hash, so all three shapes above resolve without knowing which one this is.
+  [name, peel name, peel (peel name), peel (peel (peel name))].findSome? String.parseHexToUInt64?
 
 /-- Decompress a batch of files using a single leantar invocation -/
 def decompressBatch (files : Array (FilePath × Lean.Name))
@@ -500,18 +598,30 @@ structure DecompConfig where
   isMathlibRoot : Bool
   mathlibDepPath : FilePath
 
-private structure TransferState where
-  last : Nat
-  success : Nat
-  failed : Nat
-  done : Nat
-  speed : Nat
-  -- Decompression state (only used when decompConfig is set)
-  pending : Array (FilePath × Lean.Name)           -- files waiting to be decompressed
-  currentTask : Option (Task (Except IO.Error Unit))  -- current leantar task
-  lastBatchSize : Nat                              -- size of the last dispatched batch
-  decompressed : Nat                               -- total files decompressed
-  decompFailed : Nat                               -- total decompression failures
+/-- Decompression pipeline state, carried from each download round into the
+next. A round can end with downloads queued (`pending`) or in a running
+leantar batch (`currentTask`); `downloadFiles` hands each round's final state
+to the next, and `finalizeDecomp` drains what remains after the last round. -/
+structure DecompState where
+  /-- Downloaded files waiting to be dispatched in a leantar batch. -/
+  pending : Array (FilePath × Lean.Name) := #[]
+  /-- The in-flight leantar batch, if any. -/
+  currentTask : Option (Task (Except IO.Error Unit)) := none
+  /-- Size of the batch `currentTask` is processing. -/
+  lastBatchSize : Nat := 0
+  /-- Files decompressed, cumulative across rounds. -/
+  decompressed : Nat := 0
+  /-- Decompression failures, cumulative across rounds. -/
+  decompFailed : Nat := 0
+
+structure TransferState where
+  last : Nat := 0
+  success : Nat := 0
+  failed : Nat := 0
+  done : Nat := 0
+  speed : Nat := 0
+  /-- Decompression pipeline state; used only when a `DecompConfig` is set. -/
+  decomp : DecompState := {}
 
 /-- Harvest the result of a completed decompression task, updating counters.
     Returns `(successful, failed, error?)`. -/
@@ -528,22 +638,78 @@ def dispatchDecompBatch (pending : Array (FilePath × Lean.Name)) (config : Deco
   let task ← IO.asTask (decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath)
   return some task
 
-/--
-Whether an HTTP status is the one Azure returns for a blob that already exists,
-which a non-overwrite `put` (`If-None-Match: *`) hits when it declines to
-overwrite. Azure reports it as 409 (the `BlobAlreadyExists` error, what it
-returns in practice) or 412 (the conditional-header spec's code for an unmet
-`If-None-Match`), so we accept both. Whether that's benign is the caller's call:
-the upload path skips it, reads don't.
--/
-def isAlreadyPresentStatus (httpCode : Nat) : Bool :=
-  httpCode == 409 || httpCode == 412
+/-- Drain the decompression pipeline after the last download round: harvest the
+in-flight leantar batch, then decompress the pending files. Returns the final
+`(decompressed, decompFailed)` counters. -/
+def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Nat) := do
+  let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := state
+  if let some task := currentTask then
+    let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
+    decompressed := d
+    decompFailed := f
+    if let some e := err? then
+      IO.eprintln s!"Decompression error: {e}"
+  if !pending.isEmpty then
+    try
+      decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath
+      decompressed := decompressed + pending.size
+    catch e =>
+      IO.eprintln s!"Decompression error: {e}"
+      decompFailed := decompFailed + pending.size
+  return (decompressed, decompFailed)
 
-def monitorCurl (args : Array String) (size : Nat)
-    (caption : String) (speedVar : String) (removeOnError := false)
+/--
+Returns the per-transfer detail for a failure line, as `key=value` pairs.
+A status and an exit code say that a transfer failed; these say how.
+
+* `bytes` — the payload this transfer moved, over the size that
+  `content-length` promised when that header arrived. `bytes=4096/1421777`
+  locates a truncation, and `bytes=0/1421777` means nothing arrived.
+* `cf_ray` — Cloudflare's request id. The suffix names the Cloudflare data
+  center, and the id finds the request in Cloudflare's logs.
+* `cf_cache_status` — whether the edge cache served the body, or the read
+  reached a backend.
+* `http_version` — the HTTP version of the transfer.
+* `time_total` — how long the attempt lasted, which separates an immediate
+  reset from a slow stall.
+
+`report` is curl's own JSON report. `headers` holds the values of
+`curlGetHeaders`, in order, and is empty on the upload path. `dir` picks
+the counter that holds the payload: a download reads `size_download`, an
+upload `size_upload`.
+
+Each value describes curl's final attempt, because `--retry` hides the
+earlier ones. The function skips an absent or empty value, so a backend
+without `cf-*` headers gives fewer pairs.
+-/
+def transferDiagnostics (dir : TransferDirection) (report : Lean.Json)
+    (headers : List String) : String :=
+  let payloadKey := match dir with
+    | .download => "size_download"
+    | .upload => "size_upload"
+  let nonEmpty (s : String) : Option String := if s.isEmpty then none else some s
+  let header (name : String) : Option String :=
+    ((curlGetHeaders.zip headers).lookup name).bind nonEmpty
+  let field (key : String) : Option String :=
+    (report.getObjVal? key).toOption.bind fun
+      | .str s => nonEmpty s
+      | .null  => none
+      | value  => some value.compress
+  let pair (key : String) (value : Option String) : Option String :=
+    value.map fun value => s!"{key}={value}"
+  let bytes := (field payloadKey).map fun got =>
+    match header "content-length" with
+    | some want => s!"bytes={got}/{want}"
+    | none      => s!"bytes={got}"
+  " ".intercalate <| List.reduceOption
+    [bytes, pair "cf_ray" (header "cf-ray"), pair "cf_cache_status" (header "cf-cache-status"),
+      pair "http_version" (field "http_version"), pair "time_total" (field "time_total")]
+
+def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
+    (caption : String) (speedVar : String)
+    (classify : Option Nat → Nat → TransferVerdict dir) (removeOnError := false)
     (decompConfig : Option DecompConfig := none)
-    (treatForbiddenAsMiss : Bool := false)
-    (treatExistsAsSkip : Bool := false) : IO (TransferState × Std.HashSet UInt64) := do
+    (decompState : DecompState := {}) : IO (TransferState × Std.HashSet UInt64) := do
   let useAnsi := (← IO.getEnv "TERM").isSome
   -- Hashes of the files this pass fetched, used to decide what the next
   -- container in the chain still needs to retry.
@@ -556,29 +722,40 @@ def monitorCurl (args : Array String) (size : Nat)
     let mut msg := s!"\r{caption}: {s.success} file(s) [attempted {s.done}/{size} = {100*s.done/size}%{speedStr}]"
     -- Add decompression progress if enabled
     if decompConfig.isSome then
-      msg := msg ++ s!", Decompressed: {s.decompressed}"
-      if s.decompFailed != 0 then
-        msg := msg ++ s!" ({s.decompFailed} failed)"
+      msg := msg ++ s!", Decompressed: {s.decomp.decompressed}"
+      if s.decomp.decompFailed != 0 then
+        msg := msg ++ s!" ({s.decomp.decompFailed} failed)"
     if s.failed != 0 then
-      msg := msg ++ s!", {s.failed} download failed"
+      msg := msg ++ s!", {s.failed} {dir} failed"
     -- Clear to end of line to avoid remnants from longer previous messages
     if useAnsi then
       msg := msg ++ "\x1b[K"
     return msg
-  let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  let init : TransferState := { last := (← IO.monoMsNow), decomp := decompState }
   let s ← IO.runCurlStreaming args init fun a line => do
-    let mut {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed} := a
-    -- output errors other than 404 and remove corresponding partial downloads
+    let mut {last, success, failed, done, speed, decomp} := a
+    let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := decomp
+    -- Classify each finished transfer: rename a delivered part file, report a
+    -- failure, and remove the part file on any non-delivery.
     let line := line.trimAscii
+    -- Only curl's report decides the verdict. The header values reach only
+    -- the failure line.
+    let (report, headers) := splitWriteOut line.copy
     if !line.isEmpty then
-      match Lean.Json.parse line.copy with
+      match Lean.Json.parse report with
       | .ok result =>
-        match result.getObjValAs? Nat "http_code" with
-        | .ok 200
-        | .ok 201 =>
-          if let .ok fn := result.getObjValAs? String "filename_effective" then
-            if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-              let finalPath := (fn.dropEnd 5).copy
+        let code? := result.getObjValAs? Nat "http_code"
+        let fn? := result.getObjValAs? String "filename_effective"
+        -- The per-transfer JSON report carries `exitcode` from curl 7.75 on;
+        -- an absent field reads as 0.
+        let exitCode := (result.getObjValAs? Nat "exitcode").toOption.getD 0
+        let verdict := classify code?.toOption exitCode
+        if verdict matches .delivered then
+          if let .ok fn := fn? then
+            -- Match this process's own suffix, not a bare `.part`: a concurrent run's
+            -- in-flight file is not ours to rename, and curl only reports our transfers.
+            if (← System.FilePath.pathExists fn) && fn.endsWith IO.PARTSUFFIX then
+              let finalPath := (fn.dropEnd IO.PARTSUFFIX.length).copy
               IO.FS.rename fn finalPath
               let hash? := hashFromFileName finalPath
               if let some hash := hash? then servedRef.modify (·.insert hash)
@@ -612,17 +789,8 @@ def monitorCurl (args : Array String) (size : Nat)
                   currentTask ← dispatchDecompBatch pending config
                   pending := #[]
           success := success + 1
-        -- A cache miss (404, or 403 from a retiring `legacy`) just falls through
-        -- to the next container; a blob already on the server (409/412 from a
-        -- non-overwrite put) is expected, not a failure; anything else fails.
-        | code? =>
-          let alreadyPresent := match code? with
-            | .ok c     => isAlreadyPresentStatus c
-            | .error _  => false
-          let isMiss := match code? with
-            | .ok c     => isCacheMissStatus c treatForbiddenAsMiss
-            | .error _  => false
-          unless isMiss || (treatExistsAsSkip && alreadyPresent) do
+        else
+          if verdict matches .failed then
             failed := failed + 1
             let mkFailureMsg code? fn? msg? : String := Id.run do
               let mut msg := "Transfer failed"
@@ -630,76 +798,91 @@ def monitorCurl (args : Array String) (size : Nat)
                 msg := s!"{fn}: {msg}"
               if let .ok code := code? then
                 msg := s!"{msg} (error code: {code})"
+              if exitCode != 0 then
+                msg := s!"{msg} (curl exit code: {exitCode})"
               if let .ok errMsg := msg? then
                 msg := s!"{msg}: {errMsg}"
+              let diag := transferDiagnostics dir result headers
+              if !diag.isEmpty then
+                msg := s!"{msg} [{diag}]"
               return msg
             let msg? := result.getObjValAs? String "errormsg"
-            let fn? :=  result.getObjValAs? String "filename_effective"
-            IO.println (mkFailureMsg code? fn? msg?)
+            -- A download is named by its part file, an upload by its URL.
+            -- The URL is query-stripped, so a credential in the query string
+            -- is not printed.
+            let src? : Except String String := match dir with
+              | .download => fn?
+              | .upload =>
+                (result.getObjValAs? String "url_effective").map
+                  fun url => (url.splitOn "?").headD url
+            IO.println (mkFailureMsg code? src? msg?)
+          -- The part file holds a truncated body (failure) or an error body
+          -- (miss); remove it either way.
+          if removeOnError then
             if let .ok fn := fn? then
-              if removeOnError then
-                -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
-                if (← System.FilePath.pathExists fn) then
-                  IO.FS.removeFile fn
+              -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
+              if (← System.FilePath.pathExists fn) && fn.endsWith IO.PARTSUFFIX then
+                IO.FS.removeFile fn
         done := done + 1
         let now ← IO.monoMsNow
         if now - last ≥ 100 then -- max 10/s update rate
           speed := match result.getObjValAs? Nat speedVar with
             | .ok speed => speed | .error _ => speed
-          IO.eprint (mkStatus {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed})
+          let decompNow : DecompState :=
+            {pending, currentTask, lastBatchSize, decompressed, decompFailed}
+          IO.eprint (mkStatus {last, success, failed, done, speed, decomp := decompNow})
           last := now
        | .error e =>
         IO.println s!"Non-JSON output from curl:\n  {line}\n{e}"
-    pure {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed}
+    let decompNow : DecompState :=
+      {pending, currentTask, lastBatchSize, decompressed, decompFailed}
+    pure {last, success, failed, done, speed, decomp := decompNow}
   if s.done > 0 then
     -- to avoid confusingly moving on without finishing the count
     IO.eprintln (mkStatus s)
   return (s, ← servedRef.get)
 
 /-- Run one container's download pass for the given hash map. Returns the
-`TransferState` from `monitorCurl` (synthesized in serial mode, where it carries
-only the transfer-failure count) and the set of hashes it fetched, so the caller
-can carry the rest to the next container. Side effect: any files successfully
-fetched are written to `CACHEDIR` with their final names. -/
+`TransferState` from `monitorCurl` (synthesized in serial mode, where it
+carries only the transfer-failure count) and the set of hashes it fetched, so
+the caller can carry the rest to the next container. `decompState` is the
+previous round's decompression pipeline state; the returned state's `decomp`
+continues it. Serial mode never pipelines and passes it through untouched.
+Side effect: fetched files are written to `CACHEDIR` with their final names. -/
 private def downloadFilesFromContainer
     (container : Option Container) (repo containerURL : String)
     (hashMap : IO.ModuleHashMap)
     (parallel : Bool) (decompConfig : Option DecompConfig)
-    (scope? : Option String) :
+    (scope? : Option String) (decompState : DecompState) :
     IO (TransferState × Std.HashSet UInt64) := do
   let size := hashMap.size
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
-    let args := #["--request", "GET", "--parallel",
-        -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
-        "--silent",
-        "--retry", "5", -- there seem to be some intermittent failures
-        "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-    -- `legacy` answers reads with 403 once its public access is revoked ahead
-    -- of retirement; treat that as a miss so the chain stays quiet for clients
-    -- whose chain still lists it.
-    let treatForbiddenAsMiss := container == some Container.legacy
-    let (s, served) ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
-      decompConfig (treatForbiddenAsMiss := treatForbiddenAsMiss)
+    let args := #["--request", "GET", "--parallel", "--silent"] ++
+      -- Avoid passing `--fail` here: it slows parallel transfers on curl
+      -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
+      curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
+      #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
+    let (s, served) ← monitorCurl args size "Downloaded" "speed_download"
+      classifyDownload (removeOnError := true)
+      decompConfig decompState
     IO.FS.removeFile IO.CURLCFG
     return (s, served)
   else
-    -- Mirror the parallel path's miss/failure split: a `legacy` 403 is a miss.
-    let treatForbiddenAsMiss := container == some Container.legacy
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do
-        downloadFile container repo containerURL hash scope? treatForbiddenAsMiss) :: acc
+        downloadFile container repo containerURL hash scope?) :: acc
     -- Served hashes carry the remaining files to the next container; hard
-    -- failures (anything but a 404/legacy-403 miss, including a task that threw)
+    -- failures (anything but a 404 miss, including a task that threw)
     -- feed `TransferState.failed`, so they drive the exit code exactly as the
     -- parallel path threads its own `failed` count.
     let (served, failed) := r.foldl (init := ((∅ : Std.HashSet UInt64), 0))
       fun (served, failed) (hash, t) =>
         match t.get with
-        | .ok .served => (served.insert hash, failed)
+        | .ok .delivered => (served.insert hash, failed)
         | .ok .miss => (served, failed)
         | _ => (served, failed + 1)
-    return (⟨0, 0, failed, 0, 0, #[], none, 0, 0, 0⟩, served)
+    return ({ failed, decomp := decompState }, served)
 
 /-- Expand the trust-ordered container list into the concrete download rounds to
 run, each carrying the SHA scope to read at. A round is
@@ -716,8 +899,8 @@ are not SHA-scoped, so `headScope?` must not leak into their rounds.
 With `--unsafe` (`unsafeScopes` non-empty) the `forks` container — the only
 SHA-scoped container, whose markers the walk probed — is expanded into one round
 per discovered SHA, most recent first. Every other container reads unscoped
-(`master` is flat and serves the bulk of files by hash; `legacy` has no walked
-markers), so the base `scope?` is intentionally dropped here. -/
+(`master` is flat and serves the bulk of files by hash), so the base `scope?`
+is intentionally dropped here. -/
 def expandDownloadRounds (containerURLs : List (Option Container × String))
     (scope? : Option String) (unsafeScopes : List String)
     (headScope? : Option String := none) :
@@ -758,8 +941,8 @@ def downloadFiles
     IO.eprintln "No container URLs configured for download"
     return hashMap.size
 
-  -- Set up decompression config if enabled. We keep one config across all
-  -- container rounds so pipelined decompression continues across them.
+  -- Set up decompression config if enabled: one config shared by all container
+  -- rounds, with the pipeline state carried between them via `decompState`.
   let decompConfig ← if decompress then
     let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun acc mod hash =>
       acc.insert hash mod
@@ -781,9 +964,13 @@ def downloadFiles
   let rounds := expandDownloadRounds containerURLs scope? unsafeScopes headScope?
   let unsafeMode := !unsafeScopes.isEmpty
   let mut remaining := hashMap
-  let mut finalState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  -- Decompression pipeline state, carried from each round into the next (see
+  -- `DecompState`); `finalizeDecomp` below drains what the last round leaves.
+  let mut decompState : DecompState := {}
   -- Hard transfer failures (not 404 misses) drive the exit code; misses are
   -- normal and instead surface as the "not found" hint keyed on `remaining`.
+  -- Accumulated across rounds: a failure in an early container counts even
+  -- when a later round serves the file.
   let mut downloadFailed := 0
   -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
   -- attributed by the drop in `remaining` across that round.
@@ -793,13 +980,14 @@ def downloadFiles
     let scopeNote := match roundScope? with | some s => s!" (scope {s})" | none => ""
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}{scopeNote}"
     let before := remaining.size
-    let (s, served) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig roundScope?
-    -- Keep the latest round's pipeline state and transfer-failure count for the
-    -- finalization and exit-code logic below. Drop the files this round served so
-    -- the next container only retries genuine misses, regardless of what is
-    -- already on disk.
-    finalState := s
-    downloadFailed := s.failed
+    let (s, served) ← downloadFilesFromContainer container? repo url remaining parallel
+      decompConfig roundScope? decompState
+    -- Carry the decompression pipeline into the next round and the drain
+    -- below: files left behind here are never decompressed. Drop the files
+    -- this round served so the next container only retries genuine misses,
+    -- regardless of what is already on disk.
+    decompState := s.decomp
+    downloadFailed := downloadFailed + s.failed
     remaining := remaining.filter fun _ hash => !served.contains hash
     if unsafeMode then
       if let some sha := roundScope? then
@@ -828,27 +1016,9 @@ def downloadFiles
     IO.eprintln "  * If you have already opened a PR, this may mean"
     IO.eprintln "    the CI build has failed part-way through building."
 
-  -- Finalize decompression: wait for current task and process any remaining files
+  -- Drain the decompression pipeline accumulated across all rounds.
   if let some config := decompConfig then
-    let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed, ..} := finalState
-
-    -- Wait for current task to complete if any
-    if let some task := currentTask then
-      let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
-      decompressed := d
-      decompFailed := f
-      if let some e := err? then
-        IO.eprintln s!"Decompression error: {e}"
-
-    -- Process any remaining pending files
-    if !pending.isEmpty then
-      try
-        decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath
-        decompressed := decompressed + pending.size
-      catch e =>
-        IO.eprintln s!"Decompression error: {e}"
-        decompFailed := decompFailed + pending.size
-
+    let (decompressed, decompFailed) ← finalizeDecomp decompState config
     IO.println s!"Decompressed {decompressed} file(s)"
     if decompFailed > 0 then
       IO.println s!"{decompFailed} decompression(s) failed"
@@ -883,14 +1053,14 @@ into the `lean-toolchain` file at the root directory of your project"
 def packageEntrySrcDesc (entry : Lake.PackageEntry) : String :=
   match entry.src with
   | .git _ rev _ _ => (rev.take 12).toString
-  | .path dir => s!"path:{dir}"
+  | .path dir _ => s!"path:{dir}"
 
 /-- Check whether two manifest package entries refer to the same source. -/
 def packageEntrySrcMatch (a b : Lake.PackageEntry) : Bool :=
   match a.src, b.src with
   | .git urlA revA _ subDirA, .git urlB revB _ subDirB =>
     urlA == urlB && revA == revB && subDirA == subDirB
-  | .path dirA, .path dirB => dirA == dirB
+  | .path dirA _, .path dirB _ => dirA == dirB
   | _, _ => false
 
 /-- Check if the project's `lake-manifest.json` pins shared dependencies at different versions
@@ -1000,111 +1170,6 @@ def getFiles
 
 end Get
 
-section Put
-
-/--
-Resolve the upload base URL.
-
-Precedence:
-1. `MATHLIB_CACHE_PUT_URL` env var, if set.
-2. The Azure URL for the explicitly chosen `container`.
-3. With neither set, fall back to `Container.legacy` (the bare `mathlib4`
-   container) and warn. RBAC still scopes each identity to its own container,
-   so the fallback cannot reach a trust-level container it isn't entitled to;
-   the warning steers workflows toward passing `--container=NAME`.
--/
-def effectiveUploadURL (container : Option Container) :
-    IO (Option Container × String) := do
-  if let some url ← IO.getEnv "MATHLIB_CACHE_PUT_URL" then
-    -- A user-supplied URL carries no container policy, so signal `none` and let
-    -- `mkFileURL` choose the path from the repo alone.
-    return (none, url)
-  match container with
-  | none =>
-    IO.eprintln <|
-      "Warning: cache upload without --container=NAME; defaulting to the\n" ++
-      "         `legacy` (bare `mathlib4`) container. Pass --container=NAME\n" ++
-      "         explicitly to choose a trust-level container."
-    return (some Container.legacy, Container.legacy.azureURL)
-  | some c => return (some c, c.azureURL)
-
-def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
-
-def getAzureDateHeader : IO String := do
-  let out ← IO.Process.output
-    { cmd := "date", args := #["-u", "+%a, %d %b %Y %H:%M:%S GMT"] }
-  unless out.exitCode == 0 do
-    throw <| IO.userError s!"failed to produce x-ms-date header (exit code {out.exitCode})"
-  return s!"x-ms-date: {out.stdout.trimAscii.copy}"
-
-/-- Formats the config file for `curl`, containing the list of files to be uploaded.
-The destination base URL is the explicit `uploadURL` argument. `container` is
-threaded through to `mkFileURL` so the per-container URL-shape policy applies;
-it is `none` only when `MATHLIB_CACHE_PUT_URL` is overriding the endpoint. -/
-def mkPutConfigContent (container : Option Container) (repo uploadURL : String)
-    (files : Array FilePath) (auth : UploadAuth) : IO String := do
-  let scope? ← getRepoScope
-  let token := match auth with
-    | .azureSas token => s!"?{token}"
-    | _ => ""
-  let l ← files.toList.mapM fun file : FilePath => do
-    pure s!"-T {file.toString}\nurl = {mkFileURL container repo uploadURL file.fileName.get! scope?}{token}"
-  return "\n".intercalate l
-
-/-- Calls `curl` to send a set of files to the server. The destination container
-is selected by `container`; pass `none` to require `MATHLIB_CACHE_PUT_URL` to
-be set instead (otherwise this errors). -/
-def putFilesAbsolute
-  (repo : String) (container : Option Container)
-  (files : Array FilePath) (tempConfigFilePath : FilePath)
-  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
-  -- TODO: reimplement using HEAD requests?
-  let size := files.size
-  if size > 0 then
-    let (urlContainer?, uploadURL) ← effectiveUploadURL container
-    IO.FS.writeFile tempConfigFilePath
-      (← mkPutConfigContent urlContainer? repo uploadURL files auth)
-    let target := container.map Container.name |>.getD "(env override)"
-    IO.println s!"Attempting to upload {size} file(s) to {repo} cache (container: {target})"
-    let azureDateHeader ← getAzureDateHeader
-    let args := match auth with
-      | .azureSas _ =>
-        if overwrite then
-          #["-H", "x-ms-blob-type: BlockBlob"]
-        else
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-      | .azureBearer token =>
-        if overwrite then
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader, "-H",
-            azureDateHeader,
-            "--oauth2-bearer", token]
-        else
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-            azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
-    let args := args ++ #[
-      "-X", "PUT", "--parallel",
-      "--retry", "5", -- there seem to be some intermittent failures
-      "--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
-    let (s, _) ← monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
-      (decompConfig := none) (treatExistsAsSkip := !overwrite)
-    IO.FS.removeFile tempConfigFilePath
-    -- Surface genuine upload failures. Already-present blobs (409/412 on a
-    -- non-overwrite put) are excused in `monitorCurl`, so this won't trip on a
-    -- re-upload of files the server already has.
-    if s.failed > 0 then
-      IO.eprintln s!"Uploading {s.failed} file(s) failed"
-      IO.Process.exit 1
-  else IO.println "No files to upload"
-
-/-- Calls `curl` to send a set of cached files to the server. -/
-def putFiles
-  (repo : String) (container : Option Container) (fileNames : Array String)
-  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
-  -- TODO: reimplement using HEAD requests?
-  let files : Array FilePath := fileNames.map (fun (f : String) => (IO.CACHEDIR / f))
-  putFilesAbsolute repo container files IO.CURLCFG overwrite auth
-end Put
-
 section Stage
 
 def copyCmd : String := if System.Platform.isWindows then "COPY" else "cp"
@@ -1146,85 +1211,5 @@ def unstageFiles (stagingDir : FilePath) (overwrite : Bool) : IO Unit := do
     IO.println "No files to unstage"
 
 end Stage
-
-section Commit
-
-def isGitStatusClean : IO Bool :=
-  return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
-
-/--
-Sends a commit file to the server, containing the hashes of the respective committed files.
-
-The file name is the current Git hash and the `c/` prefix means that it's a commit file.
-The destination container follows the same rules as `putFiles`.
--/
-def commit (container : Option Container) (hashMap : IO.ModuleHashMap) (overwrite : Bool)
-    (auth : UploadAuth) : IO Unit := do
-  let hash ← getGitCommitHash
-  let path := IO.CACHEDIR / hash
-  IO.FS.createDirAll IO.CACHEDIR
-  IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
-  let azureDateHeader ← getAzureDateHeader
-  -- Commit files are never namespaced by repo (they always live at `/c/<hash>`),
-  -- so we only need the URL from `effectiveUploadURL`, not the URL-shape container.
-  let (_, uploadURL) ← effectiveUploadURL container
-  match auth with
-  | .azureSas token =>
-    let params := if overwrite
-      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
-      else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}?{token}"]
-  | .azureBearer token =>
-    let params := if overwrite
-      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
-        "-H", azureDateHeader,
-        "--oauth2-bearer", token]
-      else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-        azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
-    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}"]
-  IO.FS.removeFile path
-
-end Commit
-
-section Collect
-
-inductive QueryType
-  | files | commits | all
-
-def QueryType.prefix : QueryType → String
-  | files   => "&prefix=f/"
-  | commits => "&prefix=c/"
-  | all     => ""
-
-def formatError {α : Type} : IO α :=
-  throw <| IO.userError "Invalid format for curl return"
-
-def QueryType.desc : QueryType → String
-  | files   => "hosted files"
-  | commits => "hosted commits"
-  | all     => "everything"
-
-/--
-Retrieves metadata about hosted files: their names and the timestamps of last modification.
-
-Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
--/
-def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
-  IO.println s!"Downloading info list of {q.desc}"
-  let ret ← IO.runCurl
-    #["-X", "GET", s!"{Container.master.azureURL}?comp=list&restype=container{q.prefix}"]
-  match ret.splitOn "<Name>" with
-  | [] => formatError
-  | [_] => return []
-  | _ :: parts =>
-    parts.mapM fun part => match part.splitOn "</Name>" with
-      | [name, rest] => match rest.splitOn "<Last-Modified>" with
-        | [_, rest] => match rest.splitOn "</Last-Modified>" with
-          | [date, _] => pure (name, date)
-          | _ => formatError
-        | _ => formatError
-      | _ => formatError
-
-end Collect
 
 end Cache.Requests

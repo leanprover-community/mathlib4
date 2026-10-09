@@ -123,12 +123,12 @@ theorem map_residue (f : R →+* S) [IsLocalHom f] (r : R) :
   rfl
 
 theorem map_id_apply (x : ResidueField R) : map (RingHom.id R) x = x :=
-  DFunLike.congr_fun map_id x
+  congr($map_id x)
 
 @[simp]
 theorem map_map (f : R →+* S) (g : S →+* T) (x : ResidueField R) [IsLocalHom f]
     [IsLocalHom g] : map g (map f x) = map (g.comp f) x :=
-  DFunLike.congr_fun (map_comp f g).symm x
+  congr($((map_comp f g).symm) x)
 
 /-- A ring isomorphism defines an isomorphism of residue fields. -/
 @[simps apply]
@@ -182,7 +182,7 @@ section FiniteDimensional
 variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 
 instance : (maximalIdeal S).LiesOver (maximalIdeal R) :=
-  ⟨(((local_hom_TFAE (algebraMap R S)).out 0 4 rfl rfl).mp inferInstance).symm⟩
+  ⟨(((local_hom_TFAE (algebraMap R S)).out 1 5 rfl rfl).mp inferInstance).symm⟩
 
 instance : Algebra (ResidueField R) (ResidueField S) :=
   Ideal.Quotient.algebraOfLiesOver _ _

@@ -50,7 +50,6 @@ local notation "π" => LieModule.toEnd R _ V
 private abbrev T (w : A) : Module.End R V := (π w) - χ w • 1
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.privateInPublic true in
 /-- An auxiliary lemma used only in the definition `LieModule.weightSpaceOfIsLieTower` below. -/
 private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpace V χ) :
     ⁅z, v⁆ ∈ weightSpace V χ := by
@@ -120,7 +119,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
       intro x
       specialize this x.2
       simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero] at this
-      peel this with n hn
+      gconvert this with n hn
       ext
       simp only [ZeroMemClass.coe_zero, ← hn]; clear hn
       induction n <;> simp_all [pow_succ']
@@ -146,14 +145,12 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     rw [pow_zero, Module.End.one_apply]
   exact nontrivial_of_ne ⟨v, hvU⟩ 0 <| by simp [hv']
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 variable (R V) in
 /-- The weight space of `V` with respect to `χ : A → R`, a priori a Lie submodule for `A`, is also a
 Lie submodule for `L`. -/
 def weightSpaceOfIsLieTower (χ : A → R) : LieSubmodule R L V :=
   { toSubmodule := weightSpace V χ
-    lie_mem {z v} hv := weightSpaceOfIsLieTower_aux χ z v hv }
+    lie_mem {z v} hv := private weightSpaceOfIsLieTower_aux χ z v hv }
 
 end
 
@@ -171,7 +168,7 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
     (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)
     (χ₀ : Module.Dual k A) [Nontrivial (weightSpace V χ₀)] :
     ∃ (χ : Module.Dual k L), Nontrivial (weightSpace V χ) := by
-  obtain ⟨z, -, hz⟩ := SetLike.exists_of_lt (hA.lt_top)
+  obtain ⟨z, -, hz⟩ := IsConcreteLE.exists_of_lt (hA.lt_top)
   let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
   have he : ∀ x, e x • z = x := by simp [e]
   have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_singleton_of_isCoatom_of_notMem hA hz
@@ -232,7 +229,6 @@ decreasing_by
 
 attribute [local instance 100] LieRing.ofAssociativeRing
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Lie's theorem**: Lie modules of solvable Lie algebras over fields of characteristic 0
 have a common eigenvector for the action of all elements of the Lie algebra.
 

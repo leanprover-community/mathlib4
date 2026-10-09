@@ -52,6 +52,20 @@ theorem IsUnit.isNilpotent_unit_mul_of_commute_iff [MonoidWithZero R] {r u : R}
     IsNilpotent (u * r) ↔ IsNilpotent r :=
   h_comm ▸ hu.isNilpotent_mul_unit_of_commute_iff h_comm
 
+@[simp]
+theorem isNilpotent_op [MonoidWithZero R] {x : R} :
+    IsNilpotent (MulOpposite.op x) ↔ IsNilpotent x := by
+  simp_rw [IsNilpotent, ← MulOpposite.op_pow, MulOpposite.op_eq_zero_iff]
+
+alias ⟨_, IsNilpotent.op⟩ := isNilpotent_op
+
+@[simp]
+theorem isNilpotent_unop [MonoidWithZero R] {x : Rᵐᵒᵖ} :
+    IsNilpotent (MulOpposite.unop x) ↔ IsNilpotent x :=
+  isNilpotent_op.symm
+
+alias ⟨_, IsNilpotent.unop⟩ := isNilpotent_unop
+
 section NilpotencyClass
 
 section ZeroPow
@@ -120,6 +134,13 @@ end MonoidWithZero
 
 end NilpotencyClass
 
+@[simp]
+theorem isReduced_mulOpposite_iff [MonoidWithZero R] : IsReduced Rᵐᵒᵖ ↔ IsReduced R := by
+  simp [isReduced_iff]
+
+instance [MonoidWithZero R] [IsReduced R] : IsReduced Rᵐᵒᵖ :=
+  isReduced_mulOpposite_iff.mpr ‹_›
+
 theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S]
     (f : F) (hf : Function.Injective f) [IsReduced S] :
@@ -132,7 +153,7 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
 
 instance (ι) (R : ι → Type*) [∀ i, Zero (R i)] [∀ i, Pow (R i) ℕ]
     [∀ i, IsReduced (R i)] : IsReduced (∀ i, R i) where
-  eq_zero _ := fun ⟨n, hn⟩ ↦ funext fun i ↦ IsReduced.eq_zero _ ⟨n, congr_fun hn i⟩
+  eq_zero _ := fun ⟨n, hn⟩ ↦ funext fun i ↦ IsReduced.eq_zero _ ⟨n, congr($hn i)⟩
 
 /-- An element `y` in a monoid is radical if for any element `x`, `y` divides `x` whenever it
   divides a power of `x`. -/

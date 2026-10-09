@@ -225,6 +225,13 @@ lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Con
 
 alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
 
+lemma of_leftInverse_of_isInducing {f : X → Y} {g : Y → X}
+    (h : LeftInverse f g) (hf : IsInducing f) :
+    IsEmbedding g := by
+  apply of_leftInverse h hf.continuous <| continuous_def.mpr fun s hs ↦ ?_
+  obtain ⟨t, _, ts⟩ := hf.isOpen_iff.mp hs
+  rwa [← ts, h.preimage_preimage t]
+
 lemma map_nhds_eq (hf : IsEmbedding f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
   hf.1.map_nhds_eq x
 

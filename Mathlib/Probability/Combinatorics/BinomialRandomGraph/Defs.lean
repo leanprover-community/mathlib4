@@ -65,8 +65,7 @@ lemma binomialRandom_apply' (S : Set (SimpleGraph V)) :
 
 variable (p) in
 lemma binomialRandom_apply (S : Set (SimpleGraph V)) :
-    G(V, p) S = infinitePi
-      (fun e : Sym2 V ↦ toNNReal p • .dirac (¬ e.IsDiag) + toNNReal (σ p) • .dirac False)
+    G(V, p) S = infinitePi (fun e : Sym2 V ↦ Ber(¬ e.IsDiag, False, p))
       ((fun G e ↦ e ∈ G.edgeSet) '' S) := by
   simp [binomialRandom_apply', setBernoulli_apply, ← Set.image_comp]
 
@@ -96,11 +95,5 @@ variable (p) in
   congr!
   rw [Nat.card_eq_fintype_card, ← Sym2.card_diagSet_compl, Fintype.card_eq_nat_card,
     ← Nat.card_coe_set_eq]
-
--- This should be restated as an equality of distributions once
--- https://github.com/leanprover-community/mathlib4/pull/28248 is in.
-proof_wanted binomialRandom_map_ncard_edgeSet_singleton [Finite V] (n : ℕ) :
-    G(V, p).map (fun G ↦ G.edgeSet.ncard) {n} = ((Nat.card V).choose 2).choose n * toNNReal p ^ n *
-      toNNReal (σ p) ^ ((Nat.card V).choose 2 - n)
 
 end SimpleGraph

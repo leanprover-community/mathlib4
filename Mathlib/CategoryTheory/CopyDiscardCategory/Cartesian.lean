@@ -33,8 +33,6 @@ universe v u
 
 namespace CategoryTheory
 
-open MonoidalCategory CartesianMonoidalCategory ComonObj
-
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory.{v} C]
 
 namespace CartesianCopyDiscard

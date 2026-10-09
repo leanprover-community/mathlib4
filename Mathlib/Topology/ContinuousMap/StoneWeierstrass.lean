@@ -339,8 +339,8 @@ theorem exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
     simp
   obtain ⟨⟨gK, hgKAK⟩, hgapprox⟩ :=
     @ContinuousMap.exists_mem_subalgebra_near_continuous_of_separatesPoints _ _
-    (isCompact_iff_compactSpace.mp hK) AK hsep (K.restrict f)
-    (ContinuousOn.restrict (Continuous.continuousOn f.continuous)) ε pos
+    (isCompact_iff_compactSpace.mp hK) AK hsep (K.domRestrict f)
+    (ContinuousOn.domRestrict (Continuous.continuousOn f.continuous)) ε pos
   obtain ⟨g, hgA, hgKAK⟩ := Subalgebra.mem_map.mp hgKAK
   use g, hgA
   intro x hxK
@@ -413,7 +413,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
     -- we may apply the real Stone-Weierstrass result to it.
     have SW : A₀.topologicalClosure = ⊤ :=
       haveI := subalgebra_topologicalClosure_eq_top_of_separatesPoints _ hA.rclike_to_real
-      congr_arg Subalgebra.toSubmodule this
+      congr(Subalgebra.toSubmodule $this)
     rw [← Submodule.map_top, ← SW]
     -- So it suffices to prove that the image under `I` of the closure of `A₀` is contained in the
     -- closure of `A`, which follows by abstract nonsense
@@ -591,7 +591,6 @@ lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
     refine fun hf ↦ ⟨?_, nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom h0 hf⟩
     exact adjoin_le_starAlgebra_adjoin _ _ hf
 
-set_option backward.isDefEq.respectTransparency false in
 -- the statement should be in terms of nonunital subalgebras, but we lack API
 open RingHom Filter Topology in
 theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebra K A]

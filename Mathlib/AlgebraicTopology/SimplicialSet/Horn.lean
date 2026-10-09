@@ -93,7 +93,7 @@ lemma horn_obj_eq_univ {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := b
   obtain ⟨j, hij, hj⟩ : ∃ (j : Fin (n + 1)), j ≠ i ∧ j ∉ Set.range f.toOrderHom := by
     by_contra!
     have : Finset.image f.toOrderHom ⊤ ∪ {i} = ⊤ := by ext k; by_cases k = i <;> aesop
-    have := (congr_arg Finset.card this).symm.le.trans (Finset.card_union_le _ _)
+    have := congr($(this).card).symm.le.trans (Finset.card_union_le _ _)
     simp only [SimplexCategory.len_mk, Finset.top_eq_univ, Finset.card_univ, Fintype.card_fin,
       Finset.card_singleton, add_le_add_iff_right] at this
     have : n ≤ m + 1 := by simpa using this.trans Finset.card_image_le
@@ -264,7 +264,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
       rw [← hS] at this
       -- this was produced using `simp? [Fin.ext_iff] at this`
       simp only [Fin.zero_eta, zero_add, Fin.mk_one, mem_insert, Fin.ext_iff, Fin.val_last,
-        Fin.val_zero, AddLeftCancelMonoid.add_eq_zero, OfNat.ofNat_ne_zero, and_false,
+        Fin.val_zero, add_eq_zero, OfNat.ofNat_ne_zero, and_false,
         Fin.val_one, Nat.reduceEqDiff, mem_singleton, or_self, or_false] at this
       simp only [Fin.lt_def, Fin.val_last] at hₙ
       lia
@@ -272,7 +272,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
       rw [← hS] at this
       -- this was produced using `simp? [Fin.ext_iff] at this`
       simp only [mem_insert, Fin.ext_iff, Fin.val_zero, right_eq_add,
-        AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, mem_singleton,
+        add_eq_zero, one_ne_zero, and_false, mem_singleton,
         OfNat.ofNat_ne_zero, or_self, or_false] at this
       obtain rfl | rfl := this <;> tauto
   rw [Finset.eq_univ_iff_forall, not_forall] at hS

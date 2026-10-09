@@ -410,7 +410,7 @@ lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers
     ∏' n : ℕ, f n = (∏' p : Nat.Primes, f p) * ∏' (p : Nat.Primes) (k : ℕ), f (p ^ (k + 2)) := by
   rw [tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers hfm hf]
   have hfs' (p : Nat.Primes) : Multipliable fun k ↦ f (p ^ (k + 1)) :=
-    hfm.comp_injective <| (strictMono_nat_of_lt_succ
+    hfm.comp_injective (strictMono_nat_of_lt_succ
       (pow_lt_pow_right₀ p.prop.one_lt <| lt_add_one <| · + 1)).injective
   simp only [(hfs' _).tprod_eq_zero_mul, zero_add, pow_one]
   apply (Multipliable.subtype hfm _).tprod_mul

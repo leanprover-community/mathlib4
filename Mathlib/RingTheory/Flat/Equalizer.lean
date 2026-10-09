@@ -139,7 +139,7 @@ private lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusInv [Module.Flat R 
 /-- If `M` is `R`-flat, the canonical map `M ⊗[R] ker f →ₗ[R] ker (𝟙 ⊗ f)` is an isomorphism. -/
 def LinearMap.tensorKerEquiv [Module.Flat R M] :
     M ⊗[R] LinearMap.ker f ≃ₗ[S] LinearMap.ker (AlgebraTensorModule.lTensor S M f) :=
-  LinearEquiv.ofLinear (LinearMap.tensorKer S M f) (LinearMap.tensorKerInv S M f)
+  LinearEquiv.ofLinearMap (LinearMap.tensorKer S M f) (LinearMap.tensorKerInv S M f)
     (by ext x; simp)
     (by
       ext m x
@@ -164,7 +164,7 @@ def LinearMap.tensorEqLocusEquiv [Module.Flat R M] :
     M ⊗[R] eqLocus f g ≃ₗ[S]
       eqLocus (AlgebraTensorModule.lTensor S M f)
         (AlgebraTensorModule.lTensor S M g) :=
-  LinearEquiv.ofLinear (LinearMap.tensorEqLocus S M f g) (LinearMap.tensorEqLocusInv S M f g)
+  LinearEquiv.ofLinearMap (LinearMap.tensorEqLocus S M f g) (LinearMap.tensorEqLocusInv S M f g)
     (by ext; simp)
     (by
       ext m x
@@ -178,10 +178,14 @@ lemma LinearMap.tensorEqLocusEquiv_apply [Module.Flat R M] (x : M ⊗[R] LinearM
   rfl
 
 @[simp]
-lemma LinearMap.lTensor_eqLocus_subtype_tensoreqLocusEquiv_symm [Module.Flat R M]
+lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusEquiv_symm [Module.Flat R M]
     (x : eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g)) :
     (lTensor M (eqLocus f g).subtype) ((tensorEqLocusEquiv S M f g).symm x) = x :=
   lTensor_eqLocus_subtype_tensorEqLocusInv S M f g x
+
+@[deprecated (since := "2026-09-17")]
+alias LinearMap.lTensor_eqLocus_subtype_tensoreqLocusEquiv_symm :=
+  LinearMap.lTensor_eqLocus_subtype_tensorEqLocusEquiv_symm
 
 variable {M}
 
@@ -260,7 +264,6 @@ private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) 
     (AlgHom.tensorEqualizerAux S T f g x : T ⊗[R] A) =
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x := by
   induction x with
-  | zero => rfl
   | tmul => rfl
   | add x y hx hy => simp [hx, hy]
 
@@ -327,15 +330,12 @@ def Algebra.kerTensorProductMapIdToAlgHomEquiv
     { __ := e₄'.symm, map_smul' r' x := by
         dsimp
         induction x with
-        | zero => simp only [smul_zero, LinearEquiv.map_zero]
         | add x y _ _ => simp only [smul_add, LinearEquiv.map_add, *]
         | tmul x y =>
         induction x with
-        | zero => simp only [zero_tmul, smul_zero, LinearEquiv.map_zero]
         | add x y _ _ => simp only [smul_add, add_tmul, LinearEquiv.map_add, *]
         | tmul x z =>
         induction r' with
-        | zero => simp only [zero_smul, LinearEquiv.map_zero]
         | add x y _ _ => simp only [add_smul, LinearEquiv.map_add, *]
         | tmul r s =>
         rw [smul_tmul']

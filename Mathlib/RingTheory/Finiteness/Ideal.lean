@@ -68,10 +68,10 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     obtain ⟨m, hm⟩ := hK fun x hx => hJK <| mem_sup_right hx
     use n + m
     rw [← add_eq_sup, add_pow, sum_eq_sup, Finset.sup_le_iff]
-    refine fun i _ => mul_le_right.trans ?_
+    refine fun i _ => mul_le_left.trans ?_
     obtain h | h := le_or_gt n i
-    · exact mul_le_right.trans ((pow_le_pow_right h).trans hn)
-    · exact mul_le_left.trans ((pow_le_pow_right (by lia)).trans hm)
+    · exact mul_le_left.trans ((pow_le_pow_right h).trans hn)
+    · exact mul_le_right.trans ((pow_le_pow_right (by lia)).trans hm)
 
 theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {I J : Ideal R}
     (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :

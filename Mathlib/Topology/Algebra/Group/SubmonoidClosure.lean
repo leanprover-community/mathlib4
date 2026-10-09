@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Algebra.Order.Group.Int
 public import Mathlib.Order.Filter.AtTopBot.Group
-public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!
 # Topological closure of the submonoid closure
@@ -63,8 +63,7 @@ theorem mapClusterPt_atTop_pow_tfae (x y : G) :
       MapClusterPt x atTop (y ^ · : ℕ → G),
       MapClusterPt x atTop (y ^ · : ℤ → G),
       x ∈ closure (range (y ^ · : ℕ → G)),
-      x ∈ closure (range (y ^ · : ℤ → G)),
-    ] := by
+      x ∈ closure (range (y ^ · : ℤ → G))] := by
   tfae_have 2 ↔ 1 := mapClusterPt_atTop_zpow_iff_pow
   tfae_have 3 → 4 := by
     refine fun h ↦ closure_mono (range_subset_iff.2 fun n ↦ ?_) h
@@ -80,7 +79,7 @@ theorem mapClusterPt_atTop_pow_tfae (x y : G) :
 @[to_additive]
 theorem mapClusterPt_atTop_pow_iff_mem_topologicalClosure_zpowers {x y : G} :
     MapClusterPt x atTop (y ^ · : ℕ → G) ↔ x ∈ (Subgroup.zpowers y).topologicalClosure :=
-  (mapClusterPt_atTop_pow_tfae x y).out 0 3
+  (mapClusterPt_atTop_pow_tfae x y).out 1 4
 
 @[to_additive (attr := simp)]
 theorem mapClusterPt_inv_atTop_pow {x y : G} :
@@ -91,7 +90,7 @@ theorem mapClusterPt_inv_atTop_pow {x y : G} :
 theorem closure_range_zpow_eq_pow (x : G) :
     closure (range (x ^ · : ℤ → G)) = closure (range (x ^ · : ℕ → G)) := by
   ext y
-  exact (mapClusterPt_atTop_pow_tfae y x).out 3 2
+  exact (mapClusterPt_atTop_pow_tfae y x).out 4 3
 
 @[to_additive]
 theorem denseRange_zpow_iff_pow {x : G} :

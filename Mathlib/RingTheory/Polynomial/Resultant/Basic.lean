@@ -95,7 +95,7 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
   by_cases hn : f.natDegree = 0
   · ext ⟨i, hi⟩; lia
   ext ⟨i, hi⟩ ⟨j, hj⟩
-  rw [sylvesterDeriv, dif_neg hn]
+  rw [sylvesterDeriv, dite_eq_right hn]
   rcases ne_or_eq i (2 * f.natDegree - 2) with hi' | rfl
   · -- Top part of matrix
     rw [Matrix.updateRow_ne (Fin.ne_of_val_ne hi'),
@@ -109,7 +109,7 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
     on_goal 2 => rw [show f.natDegree = 1 by lia]
     on_goal 3 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add, show f.natDegree = 1 by lia]
-      norm_num
+      simp
     on_goal 6 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add]
       #adaptation_note
@@ -224,7 +224,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
           have : Fin.mk (n := m + n) (m + ↑i + (k + m)) (by lia) =
               Fin.natAdd m ⟨↑i + (k + m), by lia⟩ := Fin.ext (by simp; lia)
           simp only [Fin.addCases_right, Fin.val_natAdd, sub_eq_self, this]
-          rw [if_neg, mul_zero]
+          rw [ite_eq_right, mul_zero]
           lia
       lia
   rw [resultant, resultant, ← this m le_rfl]
@@ -306,7 +306,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
       · congr 1; lia
       · simp [pow_add]
     · simp only [sylvester, Set.mem_Icc, Matrix.of_apply, Fin.val_last, Fin.addCases_left]
-      rw [if_pos (by lia)]
+      rw [ite_eq_left (by lia)]
       simp [add_assoc, add_comm 1]
     · ext i j
       simp only [sylvester, Set.mem_Icc, Matrix.submatrix_apply, Function.comp_apply,
@@ -400,7 +400,6 @@ theorem resultant_C_left (r : R) :
     f.resultant (X + C r) m 1 = (-1) ^ m * eval (-r) f := by
   rw [← resultant_X_sub_C_right f m (-r) hf, map_neg, sub_neg_eq_add]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` and `g` are monic and splits, then `Res(f, g) = ∏ (α - β)`,
 where `α` and `β` runs through the roots of `f` and `g` respectively. -/
 lemma resultant_eq_prod_roots_sub
@@ -855,7 +854,8 @@ def adjSylvester (f g : R[X]) :
   (f.sylvester g m n).adjugate.toLin (degreeLT.basis R (m + n))
     (((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv)
 
-lemma sylveserMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+lemma sylvesterMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m)
+    (hg : g.natDegree ≤ n) :
     sylvesterMap f g hf hg ∘ₗ adjSylvester f g = f.resultant g m n • LinearMap.id := by
   let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
   let b₂ := degreeLT.basis R (m + n)
@@ -863,13 +863,20 @@ lemma sylveserMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : 
   rwa [Matrix.toLin_mul b₂ b₁ b₂, Matrix.toLin_toMatrix, map_smul,
     toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
 
-lemma adjSylvester_comp_sylveserMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+@[deprecated (since := "2026-09-17")]
+alias sylveserMap_comp_adjSylvester := sylvesterMap_comp_adjSylvester
+
+lemma adjSylvester_comp_sylvesterMap (f g : R[X]) (hf : f.natDegree ≤ m)
+    (hg : g.natDegree ≤ n) :
     adjSylvester f g ∘ₗ sylvesterMap f g hf hg = f.resultant g m n • LinearMap.id := by
   let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
   let b₂ := degreeLT.basis R (m + n)
   have := congr(Matrix.toLin b₁ b₁ $(((sylvesterMap f g hf hg).toMatrix b₁ b₂).adjugate_mul))
   rwa [Matrix.toLin_mul b₁ b₂ b₁, Matrix.toLin_toMatrix, map_smul,
     toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
+
+@[deprecated (since := "2026-09-17")]
+alias adjSylvester_comp_sylveserMap := adjSylvester_comp_sylvesterMap
 
 /-- Note that if `n = m = 0` then `resultant = 1` but `f` and `g` aren't necessarily coprime. -/
 lemma exists_mul_add_mul_eq_C_resultant
@@ -879,7 +886,7 @@ lemma exists_mul_add_mul_eq_C_resultant
   let X := adjSylvester f g ⟨1, by simpa [Polynomial.mem_degreeLT,
     ← Nat.cast_add, Nat.pos_iff_ne_zero, not_and_or, -not_and] using H⟩
   have : ((sylvesterMap f g hf hg X)).1 = _ :=
-    congr(($(sylveserMap_comp_adjSylvester f g hf hg) _).1)
+    congr(($(sylvesterMap_comp_adjSylvester f g hf hg) _).1)
   refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
     by simpa [-SetLike.coe_mem] using X.1.2, by simpa [Algebra.smul_def] using this⟩
 
@@ -931,7 +938,6 @@ discriminant. -/
 noncomputable def discr (f : R[X]) : R :=
   f.sylvesterDeriv.det * (-1) ^ (f.natDegree * (f.natDegree - 1) / 2)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant of a constant polynomial is `1`. -/
 @[simp] lemma discr_C (r : R) : discr (C r) = 1 := by
   let e : Fin ((C r).natDegree - 1 + (C r).natDegree) ≃ Fin 0 := finCongr (by simp)

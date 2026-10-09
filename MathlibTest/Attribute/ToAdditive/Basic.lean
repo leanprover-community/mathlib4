@@ -1,10 +1,16 @@
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Lean.Exception
-import Mathlib.Tactic.ReduceModChar.Ext
-import Qq.MetaM
+module
+
+public import Mathlib.Algebra.Group.Defs
+public meta import Mathlib.Lean.Exception
+public import Mathlib.Tactic.ReduceModChar.Ext
+public import Qq.MetaM
+
+import all Init.Prelude
+
 open Qq Lean Meta Elab Command Mathlib Tactic Translate ToAdditive
 
-set_option autoImplicit true
+public section
+
 -- work in a namespace so that it doesn't matter if names clash
 namespace Test
 
@@ -98,7 +104,6 @@ instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 
 set_option linter.translate.warnInvalid false in
 attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
-set_option pp.mvars.anonymous false in
 /--
 error: `to_additive` validation failed: expected
   {α : Type _} → {β : Type _} → [self : my_has_scalar β α] → α → β → α
@@ -107,7 +112,6 @@ but 'Test.my_has_scalar.smul' has type
 -/
 #guard_msgs in
 attribute [to_additive existing smul] my_has_pow.pow
-set_option pp.mvars.anonymous false in
 /--
 error: `to_additive` validation failed: expected
   {β : Type _} → {α : Type _} → [self : my_has_scalar β α] → α → β → α
@@ -146,7 +150,7 @@ set_option linter.translate.warnInvalid false in
 def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
 
 @[to_additive bar4_test]
-lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := rfl
+lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := (rfl)
 
 set_option linter.defProp false in
 @[to_additive bar5]
@@ -178,12 +182,12 @@ theorem bar9_works : bar9 = 1 := by decide
 @[to_additive bar10]
 def foo10 (n m : ℕ) := HPow.hPow n m + n * m * 2 + 1 * 0 + 37 * 1 + 2
 
-theorem bar10_works : bar10 = foo10 := rfl
+theorem bar10_works : bar10 = foo10 := (rfl)
 
 @[to_additive bar11]
 def foo11 (n : ℕ) (m : ℤ) := n * m * 2 + 1 * 0 + 37 * 1 + 2
 
-theorem bar11_works : bar11 = foo11 := rfl
+theorem bar11_works : bar11 = foo11 := (rfl)
 
 @[to_additive bar12]
 def foo12 (_ : Nat) (_ : Int) : Fin 37 := ⟨2, by decide⟩
@@ -195,7 +199,7 @@ lemma foo13 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : x ^ y = x ^ 
 def foo14 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : α := (x ^ y) ^ y
 
 @[to_additive (reorder := α β, 4 5) bar15]
-lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := rfl
+lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := (rfl)
 
 @[to_additive (reorder := α β, 4 5) bar16]
 lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
@@ -286,6 +290,7 @@ def some_def.in_namespace : Bool := false
 def some_def {α : Type u} [Mul α] (x : α) : α :=
   if some_def.in_namespace then x * x else x
 
+@[expose]
 def myFin (_ : ℕ) := ℕ
 
 instance : One (myFin n) := ⟨(1 : ℕ)⟩
@@ -463,7 +468,7 @@ run_cmd do
   let e : Expr := Ones 300
   let _ ← liftCoreM <| MetaM.run' <| (applyReplacementFun ToAdditive.data e).run #[] #[]
 
-@[to_additive, to_additive_dont_translate] def MonoidEnd : Type := Unit
+@[expose, to_additive, to_additive_dont_translate] def MonoidEnd : Type := Unit
 def Unit' : Type := Unit
 @[to_additive_do_translate] def Unit'' : Type := Unit
 
@@ -490,7 +495,7 @@ Some arbitrary tests to check whether additive names are guessed correctly.
 -/
 section guessName
 
-def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
+meta def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
   unless (GuessName.guessName { nameDict, abbreviationDict } s) == t do
     throwError "failed: {GuessName.guessName { nameDict, abbreviationDict } s} != {t}"
 
@@ -594,7 +599,7 @@ lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 /--
 error: `to_additive` validation failed: expected
-  ∀ {α : Type ?u.1} [inst : Zero α], 0 = 0
+  ∀ {α : Type _} [inst : Zero α], 0 = 0
 but 'Eq.trans' has type
   ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
 -/
@@ -645,8 +650,8 @@ fun {α} [Add α] a => Add.add a
 
 /-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive self`. -/
 /--
-warning: `to_additive self` is redundant when none of the arguments are reordered.
-Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+warning: `to_additive self` is redundant when none of the arguments are reordered and no `(relevant_arg := ...)` is provided.
+Please remove the attribute, or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.
 If you need to give a hint to `to_additive` to translate expressions involving `test1`,
 use `to_additive_do_translate` instead
 
@@ -693,35 +698,14 @@ warning: `to_additive` did not change the type of theorem `mulTrivial`. Please r
 Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/
 #guard_msgs in
-@[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
+@[to_additive /-- I am an additive docstring! -/]
 theorem mulTrivial : True := trivial
 
-/-- info: (via `docComment` syntax) I am an additive docstring! -/
+/-- info: I am an additive docstring! -/
 #guard_msgs in
 run_cmd
   let some doc ← findDocString? (← getEnv) ``addTrivial
-    | throwError "no `docComment` docstring found"
-  logInfo doc
-
-/--
-warning: String syntax for `to_additive` docstrings is deprecated: Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
-
-Update deprecated syntax to:
-  [apply] /-- (via `str` syntax) I am an additive docstring! -/
----
-warning: `to_additive` did not change the type of theorem `mulTrivial'`. Please remove the attribute.
-
-Note: This linter can be disabled with `set_option linter.translateRedundant false`
--/
-#guard_msgs in
-@[to_additive "(via `str` syntax) I am an additive docstring!"]
-theorem mulTrivial' : True := trivial
-
-/-- info: (via `str` syntax) I am an additive docstring! -/
-#guard_msgs in
-run_cmd
-  let some doc ← findDocString? (← getEnv) ``addTrivial'
-    | throwError "no `str` docstring found"
+    | throwError "no docstring found"
   logInfo doc
 
 /-! Test handling of noncomputability -/
@@ -854,7 +838,7 @@ structure SimpleNSMul (β : Type 1) (α : Type) where
 structure SimplePow (α : Type) (β : Type 1) where
   x : Nat
 
-@[to_additive (reorder := α β) (attr := simps)]
+@[expose, to_additive (reorder := α β) (attr := simps)]
 def simplePowZero (α β) : SimplePow α β where
   x := 0
 
@@ -919,8 +903,8 @@ You may remove the option.
 
 Note: This linter can be disabled with `set_option linter.translateRelevantArg false`
 ---
-warning: @[to_additive] failed to add a translation from `monoidAlgebraFoo₂.eq_1` to `addMonoidAlgebraFoo₂.eq_1`.
-Please silence this warning and add a translation manually. Error:
+warning: @[to_additive] failed to add a translation from `monoidAlgebraFoo₂.eq_1` to any of `[addMonoidAlgebraFoo₂.eq_1]`.
+Please silence this warning and add a translation manually. Errors:
 
 `to_additive` validation failed: expected
   ∀ {k G : Type} [inst : Inhabited k], monoidAlgebraFoo₂ = ({ x := fun x => default }, 2)
@@ -930,7 +914,7 @@ but 'addMonoidAlgebraFoo₂.eq_1' has type
 Note: This linter can be disabled with `set_option linter.translate.warnInvalid false`
 -/
 #guard_msgs in
-@[to_additive (dont_translate := k) (relevant_arg := k)]
+@[expose, to_additive (dont_translate := k) (relevant_arg := k)]
 def monoidAlgebraFoo₂ {k G : Type} [Inhabited k] : MonoidAlgebra k G × Nat :=
   (⟨fun _ ↦ default⟩, 2)
 
@@ -1014,6 +998,9 @@ theorem old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm 
 
 /--
 warning: `old_mul_comm` has been deprecated: Use `mul_comm` instead
+
+Hint: Replace the deprecated name:
+  o̵l̵d̵_̵mul_comm
 ---
 info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (a b : α), a * b = b * a
 -/
@@ -1022,6 +1009,9 @@ info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (a b : α), a * 
 
 /--
 warning: `old_add_comm` has been deprecated: Use `add_comm` instead
+
+Hint: Replace the deprecated name:
+  o̵l̵d̵_̵add_comm
 ---
 info: @old_add_comm : ∀ {α : Type u_1} [inst : AddCommMagma α] (a b : α), a + b = b + a
 -/
@@ -1033,6 +1023,9 @@ alias mul_comm_alias := mul_comm
 
 /--
 warning: `mul_comm_alias` has been deprecated: Use `mul_comm` instead
+
+Hint: Replace the deprecated name:
+  mul_comm_̵a̵l̵i̵a̵s̵
 ---
 info: @mul_comm_alias : ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b = b * a
 -/
@@ -1041,8 +1034,181 @@ info: @mul_comm_alias : ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b
 
 /--
 warning: `add_comm_alias` has been deprecated: Use `add_comm` instead
+
+Hint: Replace the deprecated name:
+  add_comm_̵a̵l̵i̵a̵s̵
 ---
 info: @add_comm_alias : ∀ {G : Type u_1} [inst : AddCommMagma G] (a b : G), a + b = b + a
 -/
 #guard_msgs in
 #check @add_comm_alias
+
+/-! Warning when adding docstrings to existing declarations -/
+
+namespace ExistingDeclDocstring
+
+/-- Existing docstring -/
+opaque add (G : Type*) [AddGroup G] : Prop
+
+/-- warning: The target declaration `add` already has a docstring. -/
+#guard_msgs in
+@[to_additive existing /-- New docstring -/]
+opaque mul (G : Type*) [Group G] : Prop
+
+/-- warning: The target declaration `self` already has a docstring. -/
+#guard_msgs in
+/-- Existing docstring -/
+@[to_additive self (reorder := x y) /-- New docstring -/]
+opaque self (x y : Nat) : Prop
+
+/-- Existing docstring -/
+structure addStruct (G : Type*) [AddGroup G] where
+
+/-- warning: The target declaration `addStruct` already has a docstring. -/
+#guard_msgs in
+@[to_additive /-- New docstring -/]
+structure mulStruct (G : Type*) [Group G] where
+
+-- Examples with no pre-existing docstring
+
+opaque add' (G : Type*) [AddGroup G] : Prop
+
+/-- warning: This docstring should be added directly to `add'`. -/
+#guard_msgs in
+@[to_additive existing /-- New docstring -/]
+opaque mul' (G : Type*) [Group G] : Prop
+
+/-- warning: This docstring should be added directly to `self'`. -/
+#guard_msgs in
+@[to_additive self (reorder := x y) /-- New docstring -/]
+opaque self' (x y : Nat) : Prop
+
+structure addStruct' (G : Type*) [AddGroup G] where
+
+/-- warning: This docstring should be added directly to `addStruct'`. -/
+#guard_msgs in
+@[to_additive /-- New docstring -/]
+structure mulStruct' (G : Type*) [Group G] where
+
+end ExistingDeclDocstring
+
+section errors
+
+abbrev FakeMul (α : Type) := Mul α
+
+variable {α : Type}
+
+/--
+error: `@[to_additive]` failed to add declaration `add_rfl`.
+  The translated type is not type correct.
+Application type mismatch: The argument
+  inst✝
+has type
+  Add α
+but is expected to have type
+  FakeMul α
+in the application
+  @inferInstance (FakeMul α) inst✝
+
+For help, see the docstring of `to_additive`, section `Troubleshooting`.
+-/
+#guard_msgs in
+@[to_additive]
+theorem mul_rfl [Mul α] (a b : α) : haveI : FakeMul α := inferInstance; a * b = a * b := Eq.refl (a * b)
+
+/--
+error: `@[to_additive]` failed to add declaration `instFakeAddOfAddGroup`.
+  The translated value does not have the translated type.
+The value
+  fun {α} [AddGroup α] => { add := fun x1 x2 => x1 + x2 }
+has type
+  {α : Type} → [AddGroup α] → Add α
+but is expected to have type
+  {α : Type} → [AddGroup α] → FakeMul α
+
+For help, see the docstring of `to_additive`, section `Troubleshooting`.
+-/
+#guard_msgs in
+@[to_additive]
+local instance [Group α] : FakeMul α := ⟨(· * ·)⟩
+
+/--
+error: `@[to_additive]` failed to add declaration `instAddOfAddGroup_mathlibTest`.
+  The translated value is not type correct.
+Application type mismatch: The argument
+  inst✝
+has type
+  AddGroup α
+but is expected to have type
+  Group α
+in the application
+  @instFakeMulOfGroup α inst✝
+
+For help, see the docstring of `to_additive`, section `Troubleshooting`.
+-/
+#guard_msgs in
+@[to_additive]
+instance [Group α] : Mul α := ⟨(· * ·)⟩
+
+end errors
+
+namespace ModuleSystem
+-- Test that `private` and `exposed` are translated correctly.
+
+variable {α : Type} [Mul α] (a b : α)
+
+@[to_additive]
+private def mul_1 := a * b
+
+@[to_additive]
+def mul_2 := match 0 with | 0 | 1 | _ + 1 => a * b
+
+@[expose, to_additive]
+def mul_3 := match 0 with | 0 | 1 | 2 | _ + 1 => a * b
+
+/--
+info: private def ModuleSystem.add_1 : {α : Type} → [Add α] → α → α → α :=
+fun {α} [Add α] a b => a + b
+-/
+#guard_msgs in
+#print add_1
+/--
+info: def ModuleSystem.add_2 : {α : Type} → [Add α] → α → α → α :=
+fun {α} [Add α] a b =>
+  match 0 with
+  | 0 => a + b
+  | 1 => a + b
+  | n.succ => a + b
+-/
+#guard_msgs in
+#print add_2
+/--
+info: @[expose] def ModuleSystem.add_3 : {α : Type} → [Add α] → α → α → α :=
+fun {α} [Add α] a b =>
+  match 0 with
+  | 0 => a + b
+  | 1 => a + b
+  | 2 => a + b
+  | n.succ => a + b
+-/
+#guard_msgs in #print add_3
+
+set_option linter.auxLemma false
+/--
+info: private def ModuleSystem.add_2.match_1.{u_1} : (motive : ℕ → Sort u_1) →
+  (x : ℕ) → (Unit → motive 0) → (Unit → motive 1) → ((n : ℕ) → motive n.succ) → motive x :=
+fun motive x h_1 h_2 h_3 => Nat.casesOn x (h_1 ()) fun n => dite (n = 0) (Eq.ndrec_symm (h_2 ())) fun h_1 => h_3 n
+-/
+#guard_msgs in
+#print add_2.match_1
+/--
+info: @[expose] def ModuleSystem.add_3.match_1.{u_1} : (motive : ℕ → Sort u_1) →
+  (x : ℕ) → (Unit → motive 0) → (Unit → motive 1) → (Unit → motive 2) → ((n : ℕ) → motive n.succ) → motive x :=
+fun motive x h_1 h_2 h_3 h_4 =>
+  Nat.casesOn x (h_1 ()) fun n =>
+    dite (n = 0) (Eq.ndrec_symm (h_2 ())) fun h_1 => dite (n = 1) (Eq.ndrec_symm (h_3 ())) fun h_2 => h_4 n
+-/
+#guard_msgs in
+#print add_3.match_1
+
+end ModuleSystem

@@ -39,9 +39,6 @@ class SurjectiveOnStalks (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.stalkMap_surjective := SurjectiveOnStalks.stalkMap_surjective
 
-@[deprecated (since := "2026-01-20")]
-alias SurjectiveOnStalks.surj_on_stalks := Scheme.Hom.stalkMap_surjective
-
 namespace SurjectiveOnStalks
 
 instance (priority := 900) [IsOpenImmersion f] : SurjectiveOnStalks f :=

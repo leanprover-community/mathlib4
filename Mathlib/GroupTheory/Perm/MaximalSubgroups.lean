@@ -6,8 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.Jordan
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 /-! # Maximal subgroups of the symmetric groups
@@ -28,7 +26,7 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
   * Formalize the other cases of the classification.
     The next one should be the *imprimitive case*.
 
-## Reference
+## References
 
 The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
@@ -216,7 +214,7 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
     apply not_lt_of_ge
     --  `G ≤ stabilizer (Equiv.Perm α) s`
     have : G = Subgroup.map G.subtype ⊤ := by
-      rw [← MonoidHom.range_eq_map, Subgroup.range_subtype]
+      rw [Subgroup.map_top, Subgroup.range_subtype]
     rw [this, Subgroup.map_le_iff_le_comap]
     rw [show Subgroup.comap G.subtype (stabilizer M s) = stabilizer G s from rfl, hG]
 
@@ -271,7 +269,7 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
     · -- `Subtype.val ⁻¹' B = s`
       have hBs' : B = s := Set.Subset.antisymm hBs (by simp_all)
       subst hBs'
-      obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
+      obtain ⟨g', hg', hg's⟩ := IsConcreteLE.exists_of_lt hG
       have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's
       suffices (g' • B).Subsingleton by
         exact subsingleton_of_image (MulAction.injective g') B this

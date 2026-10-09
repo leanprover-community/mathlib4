@@ -58,7 +58,7 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [MonoidWithZero M] [IsLeftCancelMu
     ‹MonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
-      simp only [dif_neg ha]
+      simp only [dite_eq_right ha]
       exact Fintype.rightInverse_bijInv _ _
     inv_zero := by simp }
 

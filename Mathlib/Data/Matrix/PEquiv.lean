@@ -101,7 +101,7 @@ theorem transpose_toMatrix_toPEquiv_apply
     [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m ≃ n) (j) :
     f.toPEquiv.toMatrixᵀ j = Pi.single (f.symm j) (1 : α) := by
   ext
-  simp [toMatrix_apply, Pi.single_apply, eq_comm, ← Equiv.apply_eq_iff_eq_symm_apply]
+  simp [toMatrix_apply, Pi.single_apply, eq_comm, Equiv.eq_symm_apply]
 
 theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
     [NonAssocSemiring α] (f : l ≃ m) (M : Matrix m n α) :
@@ -127,7 +127,7 @@ lemma vecMul_toMatrix_toPEquiv [DecidableEq n] [Fintype m]
     a ᵥ* σ.toPEquiv.toMatrix = a ∘ σ.symm := by
   classical
   ext j
-  simp [toMatrix, σ.apply_eq_iff_eq_symm_apply, vecMul, dotProduct]
+  simp [toMatrix, ← σ.eq_symm_apply, vecMul, dotProduct]
 
 theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [NonAssocSemiring α] (f : l ≃. m)
     (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by

@@ -40,8 +40,14 @@ lemma isSubwalk_rfl {u v} (p : G.Walk u v) : p.IsSubwalk p :=
   ⟨nil, nil, by simp⟩
 
 @[simp]
-lemma nil_isSubwalk {u v} (q : G.Walk u v) : (Walk.nil : G.Walk u u).IsSubwalk q :=
+lemma isSubwalk_nil_start {u v} (q : G.Walk u v) : (Walk.nil : G.Walk u u).IsSubwalk q :=
   ⟨nil, q, by simp⟩
+
+@[deprecated (since := "2026-07-11")] alias nil_isSubwalk := isSubwalk_nil_start
+
+@[simp]
+theorem isSubwalk_nil_end {u v} (q : G.Walk u v) : (nil : G.Walk v v).IsSubwalk q :=
+  ⟨q, nil, by simp⟩
 
 protected lemma IsSubwalk.cons {u v u' v' w} {p : G.Walk u v} {q : G.Walk u' v'}
     (hpq : p.IsSubwalk q) (h : G.Adj w u') : p.IsSubwalk (q.cons h) := by

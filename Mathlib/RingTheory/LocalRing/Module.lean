@@ -269,7 +269,7 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
     rw [show v n = _ from hay n]
     exact sum_mem fun _ _ ↦ Submodule.smul_mem_smul (this _) ⟨⟩
   let a' (i : ι) : R := if hi : _ then a ⟨i, hi⟩ j else 0
-  have a_eq i : a i j = a' i.1 := by simp_rw [a', dif_pos i.2]
+  have a_eq i : a i j = a' i.1 := by simp_rw [a', dite_eq_left i.2]
   have hfn : f n = -(∑ i ∈ s, f i * a' i) * hj.unit⁻¹ := by
     rw [← hj.mul_left_inj, mul_assoc, hj.val_inv_mul, mul_one, eq_neg_iff_add_eq_zero]
     convert! hfa j
@@ -278,12 +278,12 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
   specialize ih (v + (c · • v n)) ?_ ?_
   · convert! (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.1) ?_).mpr h
     · ext; simp [tmul_add]; rfl
-    simp_rw [Function.comp_def, c, if_pos, neg_zero, zero_mul, map_zero]
+    simp_rw [Function.comp_def, c, ite_eq_left, neg_zero, zero_mul, map_zero]
   · rw [Finset.sum_coe_sort _ (fun i ↦ f i • v i), s.sum_insert hn, add_comm, hfn] at hfv
     simp_rw [Pi.add_apply, smul_add, s.sum_add_distrib, c, smul_smul, ← s.sum_smul, ← mul_assoc,
       ← s.sum_mul, mul_neg, s.sum_neg_distrib, ← hfv]
     congr 4
-    exact s.sum_congr rfl fun i hi ↦ by rw [if_neg (ne_of_mem_of_not_mem hi hn)]
+    exact s.sum_congr rfl fun i hi ↦ by rw [ite_eq_right (ne_of_mem_of_not_mem hi hn)]
   obtain hi | hi := Finset.mem_insert.mp hi
   · rw [hi, hfn, Finset.sum_eq_zero, neg_zero, zero_mul]
     intro i hi; rw [ih i hi, zero_mul]
@@ -346,7 +346,7 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
     -- Hence `l(M)` is projective because `0 → l(M) → N → N ⧸ l(M) → 0` splits.
     have : Module.Projective R (LinearMap.range l) := by
       have := (Exact.split_tfae (LinearMap.exact_subtype_mkQ (LinearMap.range l))
-        Subtype.val_injective (Submodule.mkQ_surjective _)).out 0 1
+        Subtype.val_injective (Submodule.mkQ_surjective _)).out 1 2
       obtain ⟨l', hl'⟩ := this.mp
          (Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _))
       exact Module.Projective.of_split _ _ hl'
@@ -356,7 +356,7 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
           (l.codRestrict (LinearMap.range l) (LinearMap.mem_range_self l)) := by
         rw [LinearMap.exact_iff, LinearMap.ker_rangeRestrict, Submodule.range_subtype]
       have := (Exact.split_tfae this
-        Subtype.val_injective (fun ⟨x, y, e⟩ ↦ ⟨y, Subtype.ext e⟩)).out 0 1
+        Subtype.val_injective (fun ⟨x, y, e⟩ ↦ ⟨y, Subtype.ext e⟩)).out 1 2
       exact this.mp (Module.projective_lifting_property _ _ (fun ⟨x, y, e⟩ ↦ ⟨y, Subtype.ext e⟩))
     have : Module.Finite R (LinearMap.ker l) := by
       refine Module.Finite.of_surjective l' ?_
@@ -378,7 +378,7 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
       rwa [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot,
         ← IsLocalRing.subsingleton_tensorProduct (R := R)]
     -- Whence `M ≃ l(M)` is projective and the result follows.
-    have := (Exact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 0 1
+    have := (Exact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 1 2
     rw [← this]
     exact Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _)
 

@@ -6,6 +6,7 @@ Authors: Jiedong Jiang, Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Etale
+public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
 
@@ -37,7 +38,7 @@ universe u
 
 namespace AlgebraicGeometry
 
-variable {W X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- A morphism is weakly étale if it is flat and the diagonal map is flat. -/
 @[mk_iff, stacks 094P]

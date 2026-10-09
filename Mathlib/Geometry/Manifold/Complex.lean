@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Analysis.Complex.AbsMax
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 /-! # Holomorphic functions on complex manifolds
 
@@ -74,7 +74,7 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
       e.right_inv hyt] at hy₂
     exact hy₂.2
   convert! norm_eventually_eq_of_isLocalMax hd _
-  · exact congr_arg f (extChartAt_to_inv _).symm
+  · congrm f $((extChartAt_to_inv _).symm)
   · simpa only [e, IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using! hc
 
 /-!

@@ -91,7 +91,6 @@ theorem toBilin_apply (Q : QuadraticMap R M N) (bm : Basis ι R M) (i j : ι) :
       if i = j then Q (bm i) else if i < j then polar Q (bm i) (bm j) else 0 := by
   simp [toBilin]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
     (Q.toBilin bm).toQuadraticMap = Q := by
   ext x
@@ -99,7 +98,7 @@ theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
       Finsupp.linearCombination_apply, Finsupp.sum]
   simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, map_smul, toBilin_apply,
     smul_ite, smul_zero, ← Finset.sum_product', ← Finset.diag_union_offDiag,
-    Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag, if_true]
+    Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag, ite_true]
   rw [Finset.sum_ite_of_false, QuadraticMap.map_sum, ← Finset.sum_filter]
   · simp_rw [← polar_smul_right _ (bm.repr x <| Prod.snd _),
       ← polar_smul_left _ (bm.repr x <| Prod.fst _)]

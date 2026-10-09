@@ -134,9 +134,7 @@ lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
     (id : ∀ {n : ℕ}, P (𝟙 (mk n)))
     (comp_δ : ∀ {n m : ℕ} (u : mk n ⟶ mk m) (i : Fin (m + 2)), P u → P (u ≫ δ i))
     (comp_σ : ∀ {n m : ℕ} (u : mk n ⟶ mk (m + 1)) (i : Fin (m + 1)), P u → P (u ≫ σ i))
-    {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
-    P f :=
-  by
+    {a b : SimplexCategoryGenRel} (f : a ⟶ b) : P f := by
   suffices generators.multiplicativeClosure ≤ P by
     rw [multiplicativeClosure_isGenerator_eq_top, top_le_iff] at this
     rw [this]

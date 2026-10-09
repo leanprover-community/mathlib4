@@ -28,7 +28,7 @@ universe u v
 
 open Set Metric
 
-open Topology
+open scoped Topology
 
 variable {α : Type u} {ι : Type v} [MetricSpace α] [ProperSpace α] {c : ι → α}
 variable {s : Set α}
@@ -45,7 +45,7 @@ theorem exists_subset_iUnion_ball_radius_lt {r : ι → ℝ} (hs : IsClosed s)
     ⟨v, hsv, hvc, hcv⟩
   have := fun i => exists_lt_subset_ball (hvc i) (hcv i)
   choose r' hlt hsub using this
-  exact ⟨r', hsv.trans <| iUnion_mono <| hsub, hlt⟩
+  exact ⟨r', hsv.trans <| iUnion_mono hsub, hlt⟩
 
 /-- Shrinking lemma for coverings by open balls in a proper metric space. A point-finite open cover
 of a proper metric space by open balls can be shrunk to a new cover by open balls so that each of

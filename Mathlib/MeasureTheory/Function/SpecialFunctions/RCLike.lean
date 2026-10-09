@@ -18,8 +18,6 @@ public section
 
 noncomputable section
 
-open NNReal ENNReal
-
 namespace RCLike
 
 variable {𝕜 : Type*} [RCLike 𝕜]

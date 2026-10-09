@@ -121,12 +121,15 @@ lemma LSeries.abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
 /-- The abscissa of absolute convergence of the point-wise product of a power of `log` and `f`
 is the same as that of `f`. -/
 @[simp]
-lemma LSeries.absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
+lemma LSeries.abscissaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
     abscissaOfAbsConv (logMul^[m] f) = abscissaOfAbsConv f := by
   induction m with
   | zero => simp
   | succ n ih => simp [ih, Function.iterate_succ', Function.comp_def,
       -Function.comp_apply, -Function.iterate_succ]
+
+@[deprecated (since := "2026-09-17")]
+alias LSeries.absicssaOfAbsConv_logPowMul := LSeries.abscissaOfAbsConv_logPowMul
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the `m`th derivative of this L-series is `(-1)^m` times the L-series of `log^m * f`. -/
@@ -141,7 +144,7 @@ lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
     simp_rw [derivWithin_of_isOpen (isOpen_re_gt_EReal _) h] at this
     rw [iteratedDeriv_succ, this]
     simp [Pi.mul_def, pow_succ, Function.iterate_succ',
-      LSeries_deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h, -Function.iterate_succ]
+      LSeries_deriv <| abscissaOfAbsConv_logPowMul.symm ▸ h, -Function.iterate_succ]
 
 /-!
 ### The L-series is holomorphic

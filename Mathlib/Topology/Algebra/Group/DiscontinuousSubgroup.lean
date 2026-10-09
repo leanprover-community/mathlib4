@@ -39,7 +39,7 @@ lemma Subgroup.properlyDiscontinuousSMul_of_le
   exact (hG hK hL).subset fun _ ⟨hg, hg'⟩ ↦ ⟨hGH hg, hg'⟩
 
 /-- If `Γ` acts properly discontinuously, so does every subgroup of `Γ`. -/
-@[to_additive]
+@[to_additive /-- If `Γ` acts properly discontinuously, so does every additive subgroup of `Γ`. -/]
 instance [SMul Γ α] [ProperlyDiscontinuousSMul Γ α] (G : Subgroup Γ) :
     ProperlyDiscontinuousSMul G α := by
   refine Subgroup.properlyDiscontinuousSMul_of_le ?_ le_top
@@ -49,7 +49,8 @@ instance [SMul Γ α] [ProperlyDiscontinuousSMul Γ α] (G : Subgroup Γ) :
 open Pointwise in
 /-- If `G, H` are subgroups of `Γ` which acts on `α`, and `G ∩ H` has finite index in `G`,
 then `G` acts properly discontinuously if `H` does. -/
-@[to_additive]
+@[to_additive /-- If `G, H` are additive subgroups of `Γ` which acts on `α`, and `G ∩ H` has finite
+index in `G`, then `G` acts properly discontinuously if `H` does. -/]
 lemma ProperlyDiscontinuousSMul.ofFiniteRelIndex [MulAction Γ α] [ContinuousConstSMul Γ α]
     (G H : Subgroup Γ) [hH : ProperlyDiscontinuousSMul H α] [H.IsFiniteRelIndex G] :
     ProperlyDiscontinuousSMul G α := by
@@ -81,8 +82,8 @@ lemma Subgroup.Commensurable.properlyDiscontinuousSMul_iff
     [MulAction Γ α] [ContinuousConstSMul Γ α]
     {G H : Subgroup Γ} (h : G.Commensurable H) :
     ProperlyDiscontinuousSMul G α ↔ ProperlyDiscontinuousSMul H α := by
-  have : IsFiniteRelIndex (G ⊓ H) H := ⟨Subgroup.inf_relIndex_right G H ▸ h.1⟩
-  have : IsFiniteRelIndex (G ⊓ H) G := ⟨Subgroup.inf_relIndex_left G H ▸ h.2⟩
+  have : IsFiniteRelIndex (G ⊓ H) H := ⟨Subgroup.inf_relIndex_right G H ▸ h.1.relIndex_ne_zero⟩
+  have : IsFiniteRelIndex (G ⊓ H) G := ⟨Subgroup.inf_relIndex_left G H ▸ h.2.relIndex_ne_zero⟩
   calc ProperlyDiscontinuousSMul G α ↔ ProperlyDiscontinuousSMul ↑(G ⊓ H) α :=
     (properlyDiscontinuousSMul_iff_of_isFiniteRelIndex inf_le_left).symm
   _ ↔ ProperlyDiscontinuousSMul H α :=

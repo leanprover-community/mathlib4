@@ -46,7 +46,7 @@ lemma iteratedDeriv_alternating {a : ℕ → ℂ} (hn : 0 ≤ a) {x : ℝ}
   rw [LSeries.term_def]
   split
   · exact le_rfl
-  · refine mul_nonneg ?_ <| (inv_natCast_cpow_ofReal_pos (by assumption) x).le
+  · refine mul_nonneg ?_ (inv_natCast_cpow_ofReal_pos (by assumption) x).le
     induction n with
     | zero => simpa only [Function.iterate_zero, id_eq] using! hn k
     | succ n IH =>

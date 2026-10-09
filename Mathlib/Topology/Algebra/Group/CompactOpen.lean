@@ -20,8 +20,8 @@ public import Mathlib.Topology.UniformSpace.Ascoli
 open Function Topology
 open scoped Pointwise
 
-variable (F A B C D E : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
-  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
+variable (A B C E : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup E]
+  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   [TopologicalSpace E] [IsTopologicalGroup E]
 
 namespace ContinuousMonoidHom

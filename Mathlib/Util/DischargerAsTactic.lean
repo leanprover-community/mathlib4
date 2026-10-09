@@ -10,7 +10,7 @@ public import Batteries.Tactic.Exact
 public import Lean.Meta.Tactic.Simp
 
 /-!
-## Dischargers for `simp` to tactics
+# Dischargers for `simp` to tactics
 
 This file defines a wrapper for `Simp.Discharger`s as regular tactics, that allows them to be
 used via the tactic frontend of `simp` via `simp (discharger := wrapSimpDischarger my_discharger)`.

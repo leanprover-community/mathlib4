@@ -86,7 +86,7 @@ namespace Hom
 
 open scoped Classical in
 /-- The identity matrix consists of identity morphisms on the diagonal, and zeros elsewhere. -/
-def id (M : Mat_ C) : Hom M M := fun i j => if h : i = j then eqToHom (congr_arg M.X h) else 0
+def id (M : Mat_ C) : Hom M M := fun i j => if h : i = j then eqToHom congr(M.X $h) else 0
 
 /-- Composition of matrices using matrix multiplication. -/
 def comp {M N K : Mat_ C} (f : Hom M N) (g : Hom N K) : Hom M K := fun i k =>
@@ -198,7 +198,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
                 eqToHom_trans]
               rw [← Finset.univ_sigma_univ, Finset.sum_sigma]
               dsimp +instances
-              simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
+              simp only [ite_true, Finset.sum_dite_irrel, Finset.mem_univ,
                 Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
               · subst h h'
@@ -216,12 +216,12 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
             · intro b _ hb
               apply Finset.sum_eq_zero
               intro x _
-              rw [dif_neg hb.symm, zero_comp]
+              rw [dite_eq_right hb.symm, zero_comp]
             · intro hi
               simp at hi
             rw [Finset.sum_eq_single j]; rotate_left
             · intro b _ hb
-              rw [dif_pos rfl, dif_neg, zero_comp]
+              rw [dite_eq_left rfl, dite_eq_right, zero_comp]
               simp only
               tauto
             · intro hj
@@ -230,13 +230,13 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               Sigma.mk.inj_iff, id_def]
             by_cases h : i' = i
             · subst h
-              rw [dif_pos rfl]
+              rw [dite_eq_left rfl]
               simp only [heq_eq_eq, true_and]
               by_cases h : j' = j
               · subst h
                 simp
-              · rw [dif_neg h, dif_neg (Ne.symm h)]
-            · rw [dif_neg h, dif_neg]
+              · rw [dite_eq_right h, dite_eq_right (Ne.symm h)]
+            · rw [dite_eq_right h, dite_eq_right]
               tauto) }
 
 end Mat_
@@ -294,7 +294,7 @@ def embedding : C ⥤ Mat_ C where
 namespace Embedding
 
 instance : (embedding C).Faithful where
-  map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
+  map_injective h := congr($h PUnit.unit PUnit.unit)
 
 instance : (embedding C).Full where map_surjective f := ⟨f PUnit.unit PUnit.unit, rfl⟩
 
@@ -325,7 +325,7 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
     · intro b _ hb
       dsimp
-      rw [Fintype.univ_ofSubsingleton, Finset.sum_singleton, dif_neg hb.symm, zero_comp]
+      rw [Fintype.univ_ofSubsingleton, Finset.sum_singleton, dite_eq_right hb.symm, zero_comp]
     · intro h
       simp at h
     simp
@@ -572,13 +572,11 @@ end
 
 variable (R : Type) [Ring R]
 
-open Opposite
-
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `CategoryTheory.Mat.equivalenceSingleObj`. -/
 @[simps]
 def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
-  obj X := FintypeCat.of X.ι
+  obj X := ↧X.ι
   map f i j := MulOpposite.unop (f i j)
   map_id X := by
     ext
@@ -594,7 +592,7 @@ instance : (equivalenceSingleObjInverse R).Faithful where
   map_injective w := by
     ext
     apply_fun MulOpposite.unop using MulOpposite.unop_injective
-    exact congr_fun (congr_fun w _) _
+    congrm $w _ _
 
 instance : (equivalenceSingleObjInverse R).Full where
   map_surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩

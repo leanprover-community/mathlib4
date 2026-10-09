@@ -5,13 +5,13 @@ Authors: Bingyu Xia
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.PowerSeries.Basic
 
 import Mathlib.RingTheory.AdicCompletion.Topology
+public import Mathlib.Algebra.DirectSum.Finsupp
 
 /-!
 # Completeness of the Adic Completion for Finitely Generated Ideals
@@ -59,7 +59,6 @@ the adic completion of `M`. -/
 abbrev ofPowSMul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
     →ₗ[AdicCompletion I R] AdicCompletion I M := map I (I ^ n • ⊤ : Submodule R M).subtype
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem ofPowSMul_val_apply (h : c = b + a) {x : AdicCompletion I ↥(I ^ a • ⊤ : Submodule R M)} :
     (ofPowSMul I M a x).val c = powSMulQuotInclusion I M h ⊤ (x.val b) := by
   rw [← x.prop (show b ≤ c by lia), map_val_apply]

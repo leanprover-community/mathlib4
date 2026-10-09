@@ -268,17 +268,17 @@ theorem iterate_mod_minimalPeriod_eq : f^[n % minimalPeriod f x] x = f^[n] x :=
 
 theorem minimalPeriod_pos_of_mem_periodicPts (hx : x ∈ periodicPts f) : 0 < minimalPeriod f x := by
   classical
-  simp only [minimalPeriod, dif_pos hx, (Nat.find_spec hx).1.lt]
+  simp only [minimalPeriod, dite_eq_left hx, (Nat.find_spec hx).1.lt]
 
 theorem minimalPeriod_eq_zero_of_notMem_periodicPts (hx : x ∉ periodicPts f) :
-    minimalPeriod f x = 0 := by simp only [minimalPeriod, dif_neg hx]
+    minimalPeriod f x = 0 := by simp only [minimalPeriod, dite_eq_right hx]
 
 theorem IsPeriodicPt.minimalPeriod_pos (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     0 < minimalPeriod f x :=
   minimalPeriod_pos_of_mem_periodicPts <| mk_mem_periodicPts hn hx
 
 theorem minimalPeriod_pos_iff_mem_periodicPts : 0 < minimalPeriod f x ↔ x ∈ periodicPts f :=
-  ⟨not_imp_not.1 fun h => by simp only [minimalPeriod, dif_neg h, lt_irrefl 0, not_false_iff],
+  ⟨not_imp_not.1 fun h => by simp only [minimalPeriod, dite_eq_right h, lt_irrefl 0, not_false_iff],
     minimalPeriod_pos_of_mem_periodicPts⟩
 
 theorem minimalPeriod_eq_zero_iff_notMem_periodicPts :
@@ -288,7 +288,7 @@ theorem minimalPeriod_eq_zero_iff_notMem_periodicPts :
 theorem IsPeriodicPt.minimalPeriod_le (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     minimalPeriod f x ≤ n := by
   classical
-  rw [minimalPeriod, dif_pos (mk_mem_periodicPts hn hx)]
+  rw [minimalPeriod, dite_eq_left (mk_mem_periodicPts hn hx)]
   exact Nat.find_min' (mk_mem_periodicPts hn hx) ⟨hn, hx⟩
 
 theorem minimalPeriod_apply_iterate (hx : x ∈ periodicPts f) (n : ℕ) :
@@ -343,7 +343,7 @@ theorem minimalPeriod_eq_one_of_subsingleton [Subsingleton α] : minimalPeriod f
 theorem IsPeriodicPt.eq_zero_of_lt_minimalPeriod (hx : IsPeriodicPt f n x)
     (hn : n < minimalPeriod f x) : n = 0 :=
   Eq.symm <|
-    (eq_or_lt_of_le <| n.zero_le).resolve_right fun hn0 => not_lt.2 (hx.minimalPeriod_le hn0) hn
+    (eq_or_lt_of_le n.zero_le).resolve_right fun hn0 => not_lt.2 (hx.minimalPeriod_le hn0) hn
 
 theorem not_isPeriodicPt_of_pos_of_lt_minimalPeriod :
     ∀ {n : ℕ} (_ : n ≠ 0) (_ : n < minimalPeriod f x), ¬IsPeriodicPt f n x
@@ -351,7 +351,7 @@ theorem not_isPeriodicPt_of_pos_of_lt_minimalPeriod :
   | _ + 1, _, hn => fun hp => Nat.succ_ne_zero _ (hp.eq_zero_of_lt_minimalPeriod hn)
 
 theorem IsPeriodicPt.minimalPeriod_dvd (hx : IsPeriodicPt f n x) : minimalPeriod f x ∣ n :=
-  (eq_or_lt_of_le <| n.zero_le).elim (fun hn0 => hn0 ▸ Nat.dvd_zero _) fun hn0 =>
+  (eq_or_lt_of_le n.zero_le).elim (fun hn0 => hn0 ▸ Nat.dvd_zero _) fun hn0 =>
     Nat.dvd_iff_mod_eq_zero.2 <|
       (hx.mod <| isPeriodicPt_minimalPeriod f x).eq_zero_of_lt_minimalPeriod <|
         Nat.mod_lt _ <| hx.minimalPeriod_pos hn0
@@ -495,7 +495,7 @@ namespace Function
 
 section Prod
 
-variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {n : ℕ}
 
 @[simp]
 theorem isFixedPt_prodMap (x : α × β) :

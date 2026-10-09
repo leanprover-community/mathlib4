@@ -156,7 +156,6 @@ section HasSheafCompose
 
 variable (adj₂ : G₂ ⊣ sheafToPresheaf J B) [J.HasSheafCompose F]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical natural transformation
 `(whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F`
@@ -171,7 +170,7 @@ def sheafComposeNatTrans :
       ← adj₂.homEquiv_naturality_right_symm]
     congr 1
     ext X
-    have := NatTrans.congr_app (adj₁.unit.naturality f) X
+    have := congr($(adj₁.unit.naturality f).app X)
     dsimp at this ⊢
     grind
 

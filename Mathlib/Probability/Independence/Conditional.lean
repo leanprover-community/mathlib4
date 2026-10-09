@@ -682,12 +682,12 @@ theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
   · classical
     let g := fun i ↦ if hi : i ∈ s then (h_sets i hi).choose else Set.univ
     specialize h s (sets := g) (fun i hi ↦ ?_)
-    · simp only [g, dif_pos hi]
+    · simp only [g, dite_eq_left hi]
       exact (h_sets i hi).choose_spec.1
     · have hg : ∀ i ∈ s, sets i = f i ⁻¹' g i := by
         intro i hi
         rw [(h_sets i hi).choose_spec.2.symm]
-        simp only [g, dif_pos hi]
+        simp only [g, dite_eq_left hi]
       convert! h with i hi i hi <;> exact hg i hi
 
 theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
@@ -804,9 +804,8 @@ lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
           ∘ₘ μ.trim hm' := by
   rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg]
   congr!
-  · rw [Measure.compProd_map (by fun_prop), compProd_trim_condExpKernel,
-      Measure.map_map (by fun_prop) ((measurable_id.mono le_rfl hm').prodMk measurable_id)]
-    rfl
+  · rw [Measure.compProd_map (by fun_prop), compProd_trim_condExpKernel]
+    exact Measure.map_map (by fun_prop) ((measurable_id.mono le_rfl hm').prodMk measurable_id)
   · rw [Measure.compProd_eq_comp_prod]
 
 /-- Two random variables `f, g` are conditionally independent given a third `k` iff the
@@ -869,7 +868,7 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
     g ⟂ᵢ[k, hk; μ] f ↔
       condDistrib f (fun ω ↦ (k ω, g ω)) μ =ᵐ[μ.map (fun ω ↦ (k ω, g ω))]
         (condDistrib f k μ).prodMkRight _ := by
-  rw [condDistrib_ae_eq_iff_measure_eq_compProd (μ := μ) _ hf.aemeasurable,
+  rw [condDistrib_ae_eq_iff_measure_eq_compProd (μ := μ) (by fun_prop) hf.aemeasurable,
     condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib hg hf hk,
     Measure.compProd_eq_comp_prod]
   let e : γ × β' × β ≃ᵐ (γ × β') × β := MeasurableEquiv.prodAssoc.symm
@@ -884,7 +883,7 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
       rw [← Kernel.id] at h
       simpa using h.symm
     _ = (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ μ.map (fun a ↦ (k a, g a)) := by
-      rw [compProd_map_condDistrib hg.aemeasurable]
+      rw [compProd_map_condDistrib hk.aemeasurable hg.aemeasurable]
   rw [← h_eq]
   have h1 : μ.map (fun x ↦ ((k x, g x), f x)) = (μ.map (fun a ↦ (k a, g a, f a))).map e := by
     rw [Measure.map_map (by fun_prop) (by fun_prop)]

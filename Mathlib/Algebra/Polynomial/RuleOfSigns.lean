@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Polynomial.CoeffList
 public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Data.List.Destutter
-public import Mathlib.Data.Sign.Basic
+public import Mathlib.Basic.Sign.Basic
+public import Mathlib.Data.List.SignVariations
 
 /-!
 
@@ -45,12 +45,9 @@ namespace Polynomial
 section Semiring
 variable {R : Type*} [Semiring R] [LinearOrder R] (P : Polynomial R)
 
-/-- Counts the number of times that the coefficients in a polynomial change sign, with
-the convention that 0 can count as either sign. -/
-def signVariations : ℕ :=
-  letI coeff_signs := (coeffList P).map SignType.sign
-  letI nonzero_signs := coeff_signs.filter (· ≠ 0)
-  (nonzero_signs.destutter (· ≠ ·)).length - 1
+/-- Counts the number of times that the coefficients in a polynomial change sign, ignoring
+zero coefficients. -/
+def signVariations : ℕ := P.coeffList.signVariations
 
 variable (R) in
 @[simp]
@@ -62,51 +59,35 @@ theorem signVariations_zero : signVariations (0 : R[X]) = 0 := by
 theorem signVariations_monomial (d : ℕ) (c : R) : signVariations (monomial d c) = 0 := by
   by_cases hcz : c = 0
   · simp [hcz]
-  · simp [hcz, signVariations, coeffList_eraseLead (mt (monomial_eq_zero_iff c d).mp hcz)]
+  · simp [hcz, signVariations]
 
 /-- If the first two signs are the same, then `signVariations` is unchanged by `eraseLead` -/
 theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.sign P.nextCoeff) :
     signVariations P.eraseLead = signVariations P := by
   by_cases hpz : P = 0
-  · simp_all
-  · have h₂ : nextCoeff P ≠ 0 := by intro; simp_all
+  · simp [hpz]
+  · have h₂ : nextCoeff P ≠ 0 := by intro h₀; simp_all
     obtain ⟨_, hl⟩ := coeffList_eq_cons_leadingCoeff (mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₂)
-    simp [signVariations, List.destutter, leadingCoeff_eraseLead_eq_nextCoeff h₂, hl, h, h₂,
-      coeffList_eraseLead hpz]
+    simp [signVariations, List.signVariations, List.destutter,
+      leadingCoeff_eraseLead_eq_nextCoeff h₂, hl, h, h₂, coeffList_eraseLead hpz]
 
 /-- If we drop the leading coefficient, the sign changes drop by 0 or 1 depending on whether
 the first two nonzero coefficients match. -/
 theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
     signVariations P = signVariations P.eraseLead + if SignType.sign P.leadingCoeff
       = -SignType.sign P.eraseLead.leadingCoeff then 1 else 0 := by
-  by_cases hpz : P = 0
-  · simp_all
-  have hsl : SignType.sign (leadingCoeff P) ≠ 0 := by simp_all
-  rw [signVariations, signVariations, coeffList_eraseLead hpz]
-  rw [List.map_cons, List.map_append, List.map_replicate]
-  rcases h_eL : P.eraseLead.coeffList with _ | ⟨c, cs⟩
-  · simp [coeffList_eq_nil.mp h_eL, h]
-  simp only [List.filter_append, List.filter_replicate, List.map_cons, List.filter, ne_eq, hsl]
-  have h₁ : SignType.sign c ≠ 0 := by
-    by_contra h₂
-    suffices eraseLead P = 0 by grind [coeffList_zero]
-    by_contra h
-    have := coeffList_eq_cons_leadingCoeff h
-    grind [leadingCoeff_eq_zero, sign_eq_zero_iff]
-  simp only [decide_not, sign_zero, List.destutter, Bool.false_eq_true, reduceIte, h₁,
-    decide_false, Bool.not_false, List.nil_append, List.destutter', decide_true, Bool.not_true]
-  obtain rfl : c = leadingCoeff P.eraseLead := by
-    have h_eL : eraseLead P ≠ 0 := by simp [← coeffList_eq_nil, h_eL]
-    obtain ⟨ls, hls⟩ := coeffList_eq_cons_leadingCoeff h_eL
-    grind
-  by_cases h₄ : SignType.sign P.leadingCoeff = SignType.sign P.eraseLead.leadingCoeff
-  · grind [SignType.neg_eq_self_iff]
-  rw [if_pos h₄, if_pos ?_]
-  · grind [Nat.sub_add_cancel, List.length_pos_of_ne_nil, List.destutter'_ne_nil]
-  cases _ : SignType.sign P.leadingCoeff
-  <;> cases _ : SignType.sign P.eraseLead.leadingCoeff
-  <;> grind [= SignType.neg_eq_neg_one, SignType.zero_eq_zero, SignType.pos_eq_one,
-      SignType.neg_eq_neg_one, neg_neg]
+  have hl : SignType.sign P.leadingCoeff ≠ 0 := by simp [h]
+  rw [signVariations, signVariations, coeffList_eraseLead h,
+    List.signVariations_cons_replicate_zero_append]
+  by_cases he : P.eraseLead = 0
+  · simp [he, hl]
+  · obtain ⟨ls, hls⟩ := coeffList_eq_cons_leadingCoeff he
+    have hl' : SignType.sign P.eraseLead.leadingCoeff ≠ 0 := by simp [he]
+    rw [hls, List.signVariations_cons_cons_of_ne_zero _ (leadingCoeff_ne_zero.mpr h)
+      (leadingCoeff_ne_zero.mpr he)]
+    congr 1
+    revert hl hl'
+    cases SignType.sign P.leadingCoeff <;> cases SignType.sign P.eraseLead.leadingCoeff <;> decide
 
 /-- We can only lose, not gain, sign changes if we drop the leading coefficient. -/
 theorem signVariations_eraseLead_le : signVariations P.eraseLead ≤ signVariations P := by
@@ -129,17 +110,8 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] (P : Polynomial 
 /-- The number of sign changes does not change if we negate. -/
 @[simp]
 theorem signVariations_neg : signVariations (-P) = signVariations P := by
-  rw [signVariations, signVariations, coeffList_neg]
-  simp only [List.map_map, List.filter_map]
-  have hsc : SignType.sign ∘ (fun (x : R) => -x) = (fun x => -x) ∘ SignType.sign := by
-    grind [Left.sign_neg]
-  have h_neg_destutter (l : List SignType) :
-      (l.destutter (¬· = ·)).map (- ·) = (l.map (- ·)).destutter (¬· = ·) := by
-    grind [List.map_destutter, neg_inj]
-  rw [hsc, List.comp_map, ← h_neg_destutter, List.length_map]
-  congr 5
-  funext
-  simp [SignType.sign]
+  rw [signVariations, signVariations, coeffList_neg,
+    List.signVariations_map_of_sign_eq_neg Left.sign_neg]
 
 end OrderedRing
 
@@ -153,11 +125,9 @@ theorem signVariations_C_mul (P : Polynomial R) (hx : η ≠ 0) :
     signVariations (C η * P) = signVariations P := by
   wlog! hx2 : 0 < η
   · simpa [lt_of_le_of_ne hx2, hx] using this (η := -η) (P := -P)
-  rw [signVariations, signVariations]
-  rw [coeffList_C_mul _ (lt_or_lt_iff_ne.mp (.inr hx2)), ← List.comp_map]
-  congr 5
-  funext
-  simp [hx2, sign_mul]
+  rw [signVariations, signVariations, coeffList_C_mul _ hx, List.signVariations_map]
+  intro x
+  rw [sign_mul, sign_pos hx2, one_mul]
 
 /-- If P's coefficients start with signs `[+, -, ...]`, then multiplying by a binomial `X - η`
   commutes with `eraseLead` in the number of sign changes. This is because the product of
@@ -191,8 +161,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
   suffices eraseLead (eraseLead ((X - C η) * P)) = eraseLead ((X - C η) * P.eraseLead) by
     suffices (coeffList (eraseLead ((X - C η) * P))).map SignType.sign =
       (coeffList ((X - C η) * P.eraseLead)).map SignType.sign by
-        rw [signVariations, signVariations, this]
-    have : 0 < natDegree ((X - C η) * P.eraseLead) := by lia
+        exact List.signVariations_congr this
     grind [leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, leadingCoeff_eraseLead_eq_nextCoeff,
       LT.lt.ne, sign_neg, coeffList_eraseLead, ne_zero_of_natDegree_gt,
       nextCoeff_eq_zero_of_eraseLead_eq_zero]
@@ -217,7 +186,7 @@ lemma succ_signVariations_X_sub_C_mul_monomial {d c} (hc : c ≠ 0) (hη : 0 < �
     simp [h₁, hc, hη.ne']
   have h₃ : SignType.sign c ≠ SignType.sign (-(η * c)) := by
     simp [hη, hc, Left.sign_neg, sign_mul]
-  simpa [h₁, h₂, h₃, hc, hη.ne', signVariations, List.destutter_cons_cons,
+  simpa [h₁, h₂, h₃, hc, hη.ne', signVariations, List.signVariations, List.destutter_cons_cons,
     ← leadingCoeff_cons_eraseLead, coeffList_eraseLead, leadingCoeff_eraseLead_eq_nextCoeff]
   using! List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _)
 
@@ -270,15 +239,15 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
   · rw [h_cons, leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, h₂]
 
 /-- If a polynomial starts with two positive coefficients, then the sign changes in the product
-`(X - η) * P` is the same as `(X - η) * P.eraseLead`. This lemma lets us do induction on the
-degree of P when P starts with matching coefficient signs. Of course this is also true when the
-first two coefficients of P are *negative*, but we just prove the case where they're positive
-since it's cleaner and sufficient for the later use. -/
+`(X - η) * P` is at least the sign changes of `(X - η) * P.eraseLead`. This lemma lets us do
+induction on the degree of P when P starts with matching coefficient signs. Of course this is
+also true when the first two coefficients of P are *negative*, but we just prove the case where
+they're positive since it's cleaner and sufficient for the later use. -/
 lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0 < P.nextCoeff) :
     signVariations ((X - C η) * P.eraseLead) ≤ signVariations ((X - C η) * P) := by
   obtain ⟨c₀, cs, ⟨hcs, hecs⟩⟩ := exists_cons_of_leadingCoeff_pos η h h₂.ne'
-  simp +decide only [hcs, hecs, h, h₂, signVariations, List.destutter, List.map_cons, sign_pos,
-    List.filter_cons_of_pos, tsub_le_iff_right,
+  simp +decide only [hcs, hecs, h, h₂, signVariations, List.signVariations, List.destutter,
+    List.map_cons, sign_pos, List.filter_cons_of_pos, tsub_le_iff_right,
     Nat.sub_add_cancel (List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _))]
   rw [List.filter_cons]
   split; swap --does c₀ = 0? If so, the trailing nonzero coefficient lists are identical.
@@ -291,8 +260,6 @@ lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0
   · rw [← List.destutter_cons', ← List.destutter_cons']
     grind [List.destutter_cons_cons]
 
--- TODO: fix non-terminal simp below; simp followed by rfl
-set_option linter.flexible false in
 /-- Multiplying a polynomial by a linear term `X - η` adds at least one sign change. This is the
 basis for the induction in `roots_countP_pos_le_signVariations`. -/
 theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
@@ -312,7 +279,7 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
     have hcQ : 0 < coeff P 0 := by grind [leadingCoeff]
     have hxcQ : coeff ((X - C η) * P) 1 = coeff P 0 := by
       simp_all [coeff_X_sub_C_mul, coeff_eq_zero_of_natDegree_lt]
-    dsimp [signVariations, coeffList]
+    dsimp [signVariations, List.signVariations, coeffList]
     rw [withBotSucc_degree_eq_natDegree_add_one hP, withBotSucc_degree_eq_natDegree_add_one h_mul]
     simp [h_deg_mul, hxcQ, hη, hcQ, hd, List.range_succ]
   -- P is positive degree. Set up some temporary variables for signs for the nextCoeffs.
@@ -348,20 +315,20 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
         rwa [← eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero hη.ne']
         grind [sign_eq_zero_iff]
       grind [signVariations_le_eraseLead_succ]
-  all_goals (
+  all_goals
     have h₁ : nextCoeff P ≠ 0 := by simp [← sign_ne_zero, hs_nC]
     specialize ih _ h_ih (mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₁) rfl
-    have : P.signVariations = P.eraseLead.signVariations + ?_ := by
-      simp [signVariations_eq_eraseLead_add_ite hP, leadingCoeff_eraseLead_eq_nextCoeff h₁,
-        hs_nC, h_lC]
-      exact rfl)
   · /- P starts with [+,+,...]. (X-C)*P starts with [+,?,...]. After dropping the lead of P, this
       becomes [+,...] and [+,...]. So the sign variations on P are unchanged when we induct, while
       (X-C)*P can only lose at most one sign change. -/
+    have : P.signVariations = P.eraseLead.signVariations + 0 := by
+      simp [signVariations_eq_eraseLead_add_ite hP, leadingCoeff_eraseLead_eq_nextCoeff h₁, *]
     grind [sign_eq_one_iff, signVariations_X_sub_C_mul_eraseLead_le]
   · /- P starts with [+,-,...], so (X-C)*P starts with [+,-,...]. After dropping the lead of P, this
     becomes [-,...] and [-,...]. Dropping the first one of each decreases (X-C)*P by one and P by
     one, so we can induct. -/
+    have : P.signVariations = P.eraseLead.signVariations + 1 := by
+      simp [signVariations_eq_eraseLead_add_ite hP, leadingCoeff_eraseLead_eq_nextCoeff h₁, *]
     trans ((X - C η) * P).eraseLead.signVariations + 1
     · grind [signVariations_eraseLead_mul_X_sub_C, sign_eq_neg_one_iff]
     · suffices SignType.sign ((X - C η) * P).nextCoeff = -1 by

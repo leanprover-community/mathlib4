@@ -68,7 +68,6 @@ lemma shiftShortComplexFunctorIso_zero_add_hom_app (a : ℤ) (K : CochainComplex
   ext <;> simp [one_smul, shiftFunctorZero_hom_app_f]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma shiftShortComplexFunctorIso_add'_hom_app
     (n m mn : ℤ) (hmn : m + n = mn) (a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' = a'')
     (K : CochainComplex C ℤ) :

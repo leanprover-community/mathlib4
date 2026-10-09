@@ -151,7 +151,7 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
     ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
   | nil => rfl
   | cons' x y z h w => by
-    rw [Walk.boxProdLeft, map_cons, ofBoxProdLeft, Or.by_cases, dif_pos, ← Walk.boxProdLeft]
+    rw [Walk.boxProdLeft, map_cons, ofBoxProdLeft, Or.by_cases, dite_eq_left, ← Walk.boxProdLeft]
     · simp [ofBoxProdLeft_boxProdLeft]
     · exact ⟨h, rfl⟩
 
@@ -161,7 +161,7 @@ theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b�
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
   | nil => rfl
   | cons' x y z h w => by
-    rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dif_pos, ←
+    rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dite_eq_left, ←
       Walk.boxProdRight]
     · simp [ofBoxProdRight_boxProdRight]
     · exact ⟨h, rfl⟩

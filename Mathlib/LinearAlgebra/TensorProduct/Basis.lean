@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Lift
 
 /-!
 # Bases and dimensionality of tensor products of modules
@@ -22,7 +23,7 @@ and shows that the tensor product of free modules is again free.
 
 noncomputable section
 
-open LinearMap Module Set Submodule
+open LinearMap Module
 
 open scoped TensorProduct
 
@@ -200,5 +201,24 @@ instance Module.Free.tensor [Module.Free S M] [Module.Free R N] : Module.Free S 
   of_basis (bM.2.tensorProduct bN.2)
 
 end CommSemiring
+
+namespace LinearMap
+
+variable {R A M N ι : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module A N]
+  [IsScalarTower R A N]
+
+lemma liftBaseChange_injective_iff (l : M →ₗ[R] N) (b : Module.Basis ι R M) :
+    Function.Injective (l.liftBaseChange A) ↔ LinearIndependent A (l ∘ b) := by
+  have heq : (l.liftBaseChange A).comp (b.baseChange A).repr.symm.toLinearMap =
+      Finsupp.linearCombination A (l ∘ b) := by
+    ext i
+    simp [Function.comp_def]
+  rw [linearIndependent_iff_injective_finsuppLinearCombination, ← heq]
+  simpa only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap] using
+    (Function.Injective.of_comp_iff'
+      (l.liftBaseChange A) (b.baseChange A).repr.symm.bijective).symm
+
+end LinearMap
 
 end
