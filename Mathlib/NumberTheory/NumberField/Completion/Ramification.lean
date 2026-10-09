@@ -65,6 +65,9 @@ theorem completionMap_coe (x : WithAbs v.1) :
       ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) : w.Completion) :=
   Completion.ext <| UniformSpace.Completion.mapRingHom_coe _ x
 
+/-- If `w` lies over `v`, then there is a unique `v.Completion`-algebra
+structure on `w.Completion` satisfying both `IsScalarTower K v.Completion w.Completion` and
+`ContinuousSMul v.Completion w.Completion`, see `InfinitePlace.Completion.algebra_eq`. -/
 @[instance_reducible]
 noncomputable def algebraOfLiesOver : Algebra v.Completion w.Completion :=
   (completionMap v w).toAlgebra
