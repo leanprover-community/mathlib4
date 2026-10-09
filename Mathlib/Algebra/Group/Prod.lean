@@ -599,13 +599,10 @@ def prodUnique [Unique N] : M × N ≃* M :=
   { Equiv.prodUnique M N with map_mul' := fun _ _ => rfl }
 
 /-- `MulEquiv` version of `Equiv.curry`. -/
-@[to_additive /-- `AddEquiv` version of `Equiv.curry`. -/]
-def curry (α β M : Type*) [Mul M] : (α × β → M) ≃* (α → β → M) where
-  __ := Equiv.curry α β M
+@[to_additive (attr := simps! toEquiv apply) /-- `AddEquiv` version of `Equiv.curry`. -/]
+def curry (α β M : Type*) [MulOneClass M] : (α × β → M) ≃* (α → β → M) where
+  __ := Equiv.curry ..
   map_mul' _ _ := by ext; simp
-
-@[to_additive (attr := simp)]
-lemma toEquiv_curry {α β : Type*} : (curry α β M).toEquiv = Equiv.curry α β M := rfl
 
 end
 
