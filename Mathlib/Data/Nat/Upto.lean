@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Sub.Basic
 
 import Mathlib.Algebra.Order.Group.Nat
+import Batteries.Tactic.SeqFocus
 
 /-!
 # `Nat.Upto`
