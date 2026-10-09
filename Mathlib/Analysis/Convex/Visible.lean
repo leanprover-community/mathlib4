@@ -5,12 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.Topology.Order.Monotone
 
 /-!

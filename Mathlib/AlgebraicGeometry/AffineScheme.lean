@@ -6,10 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.RingTheory.Localization.InvSubmonoid
-import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.Topology.Sheaves.CommRingCat
 public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Topology.Sheaves.CommRingCat
+
+import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.Localization.InvSubmonoid
 
 /-!
 # Affine schemes

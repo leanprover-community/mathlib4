@@ -5,9 +5,9 @@ Authors: Johan Commelin, Robert Y. Lewis
 -/
 module
 
+public meta import Mathlib.Lean.Elab.Tactic.Basic
 public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.RingTheory.WittVector.Basic
-public meta import Mathlib.Lean.Elab.Tactic.Basic
 /-!
 # The `IsPoly` predicate
 

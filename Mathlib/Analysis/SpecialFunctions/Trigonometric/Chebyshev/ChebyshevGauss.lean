@@ -6,8 +6,9 @@ Authors: Yuval Filmus
 
 module
 
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
+
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!

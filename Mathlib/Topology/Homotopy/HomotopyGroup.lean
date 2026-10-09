@@ -5,10 +5,11 @@ Authors: Roberto Alvarez
 -/
 module
 
-import Mathlib.Algebra.Group.Ext
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.GroupTheory.EckmannHilton
+
+import Mathlib.Algebra.Group.Ext
 
 /-!
 # `n`th homotopy group
@@ -352,12 +353,11 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
   · fun_prop
-  iterate 2
+  on_goal 1 2 =>
     intro
     ext
     dsimp
     rw [homotopyTo_apply, toLoop_apply]
-    swap
   · apply H.apply_zero
   · apply H.apply_one
   intro t y yH
