@@ -25,7 +25,7 @@ converge uniformly to `f` as `n` tends to infinity.
 This statement directly applies to the cases when the codomain is a (semi)normed space
 or, more generally, has a topology defined by a family of seminorms.
 
-Our proof follows [Richard Beals' *Analysis, an introduction*][beals-analysis], §7D.
+Our proof follows [Richard Beals' *Analysis, an introduction*][beals2004], §7D.
 The original proof, due to [Bernstein](bernstein1912) in 1912, is probabilistic,
 and relies on Bernoulli's theorem,
 which gives bounds for how quickly the observed frequencies in a
@@ -177,7 +177,7 @@ open bernsteinApproximation
 ```
 for a continuous function `f : C([0,1], ℝ)` converge uniformly to `f` as `n` tends to infinity.
 
-This is the proof given in [Richard Beals' *Analysis, an introduction*][beals-analysis], §7D,
+This is the proof given in [Richard Beals' *Analysis, an introduction*][beals2004], §7D,
 and reproduced on wikipedia.
 -/
 theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) :
