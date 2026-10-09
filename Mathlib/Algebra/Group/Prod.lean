@@ -601,11 +601,11 @@ def prodUnique [Unique N] : M × N ≃* M :=
 /-- `MulEquiv` version of `Equiv.curry`. -/
 @[to_additive (attr := simps!) /-- `AddEquiv` version of `Equiv.curry`. -/]
 def curry (α β M : Type*) [MulOneClass M] : (α × β → M) ≃* (α → β → M) where
-  __ := Equiv.curry ..
+  __ := Equiv.curry α β M
   map_mul' _ _ := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma toEquiv_curry {α β : Type*} : (curry α β M).toEquiv = Equiv.curry .. := rfl
+lemma toEquiv_curry {α β : Type*} : (curry α β M).toEquiv = Equiv.curry α β M := rfl
 
 end
 
