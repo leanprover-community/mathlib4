@@ -135,7 +135,7 @@ lemma transitionMap_eqOn_smul (g : G) : Set.EqOn (transitionMap x y)
 
 @[to_additive]
 lemma mk_chartAt_symm_mem_localInverseAt_source {h : H} (hh : h ∈ (transitionMap x y).source) :
-    ⟦(chartAt H (Quotient.out x)).symm h⟧ ∈ y.localInverseAt.source := by
+    ⟦(chartAt H x.out).symm h⟧ ∈ y.localInverseAt.source := by
   simp only [transitionMap, OpenPartialHomeomorph.trans_source, Set.mem_inter_iff, Set.mem_preimage,
     isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm] at hh
   exact hh.2.1.2
