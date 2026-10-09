@@ -16,8 +16,8 @@ public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 # The Nisnevich site
 
-In this file we define the big Nisnevich site, i.e. the Nisnevich topology as a Grothendieck topology
-on the category of schemes.
+In this file we define the big Nisnevich site, i.e. the Nisnevich topology
+as a Grothendieck topology on the category of schemes.
 
 -/
 
@@ -161,7 +161,7 @@ lemma NisnevichPrecoverage_le_etalePrecoverage : NisnevichPrecoverage ≤ etaleP
   rw [NisnevichPrecoverage]
   rw [etalePrecoverage]
   intro hS
-  simp at hS
+  simp only [Set.mem_ofPred_eq, IsNisnevichCovering] at hS
   refine ⟨fun x ↦ ?_, fun Y f hf ↦ hS.1 f hf⟩
   obtain ⟨_, f, hf, y, rfl, -⟩ := hS.2 x
   exact ⟨_, _, Presieve.map.of hf, y, rfl⟩
