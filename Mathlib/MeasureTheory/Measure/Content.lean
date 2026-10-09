@@ -46,7 +46,7 @@ When the space is locally compact, `μ.measure` is also regular.
 
 ## References
 
-* Paul Halmos (1950), Measure Theory, §53
+* [P. R. Halmos, *Measure Theory*][halmos1950measure], §53
 * <https://en.wikipedia.org/wiki/Content_(measure_theory)>
 -/
 
