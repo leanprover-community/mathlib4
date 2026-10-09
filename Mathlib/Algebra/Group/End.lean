@@ -679,7 +679,7 @@ theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
 theorem inv_symm (e : MulAut M) : e⁻¹.symm = e := rfl
 
 @[to_additive (attr := simp) symm_inv]
-theorem symm_inv (e : MulAut M) : (by exact e.symm : MulAut M)⁻¹ = e := rfl
+theorem symm_inv (e : MulAut M) : (e.symm)⁻¹ = e := rfl
 
 @[to_additive (attr := simp) inv_apply]
 theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
@@ -718,7 +718,7 @@ def conj [Group G] (g : G) : MulAut G where
   right_inv _ := by simp [mul_assoc]
   map_mul' := by simp [mul_assoc]
 
-/-- Group conjugation, `AddAut.addConjHom (.ofAdd g) h = g + h + -g`, as an homomorphism
+/-- Group conjugation, `AddAut.addConjHom (.ofAdd g) h = g + h + -g`, as a homomorphism
 mapping addition in `G` into multiplication in the additive automorphism group `AddAut G`. -/
 @[simps] def _root_.AddAut.addConjHom [AddGroup G] : Multiplicative G →* AddAut G where
   toFun := AddAut.addConj ∘ Multiplicative.toAdd
