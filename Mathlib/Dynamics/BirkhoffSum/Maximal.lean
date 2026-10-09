@@ -174,9 +174,10 @@ theorem lt_birkhoffAverage_iff_lt_birkhoffSum {a : ℝ} (ha : 0 ≤ a) :
   by_cases! hn : n = 0
   · simpa [hn]
   calc
+    a < birkhoffAverage ℝ f g n x
     _ ↔ birkhoffAverage ℝ f (fun x ↦ a) n x < birkhoffAverage ℝ f g n x := by
       rw [birkhoffAverage_const ℝ]
-    _ ↔ _ := by
+    _ ↔ 0 < birkhoffSum f (g - fun _ ↦ a) n x := by
       simp [birkhoffAverage, birkhoffSum_sub, field]
 
 theorem lt_birkhoffAverageSup_iff_lt_birkhoffSumSup {a : ℝ} (ha : 0 ≤ a) :
@@ -218,6 +219,7 @@ theorem const_mul_distribution_birkhoffAverageSup_le_integral
     a * μ.real {x | a < birkhoffAverageSup f g x}
     ≤ ∫ x in {x | a < birkhoffAverageSup f g x}, g x ∂μ := by
   calc
+    a * μ.real {x | a < birkhoffAverageSup f g x}
     _ = ∫ x in {x | 0 < birkhoffSumSup f (g - fun _ ↦ a) x}, a ∂μ := by
       simp [lt_birkhoffAverageSup_iff_lt_birkhoffSumSup ha, field]
     _ ≤ ∫ x in {x | 0 < birkhoffSumSup f (g - fun _ ↦ a) x}, a ∂μ +
