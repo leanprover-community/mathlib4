@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
 public import Mathlib.Algebra.Lie.Sl2
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
 
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 
@@ -27,8 +27,6 @@ satisfying relations associated to the Cartan matrix of the input root system.
 -/
 
 public section
-
-noncomputable section
 
 namespace RootPairing.GeckConstruction
 

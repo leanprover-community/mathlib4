@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Induced
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+public import Mathlib.CategoryTheory.Shift.Induced
 
 /-!
 # The shift induced on a localized category

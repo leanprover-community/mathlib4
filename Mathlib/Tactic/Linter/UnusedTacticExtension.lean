@@ -117,6 +117,6 @@ The trailing underscore `_` makes the syntax valid, since `refine` expects somet
 -/
 elab "#show_kind " t:tactic : command => do
   let stx ← `(tactic| $t)
-  Lean.logInfoAt t m!"The `SyntaxNodeKind` is '{stx.raw.getKind}'."
+  Lean.logInfoAt t m!"The `SyntaxNodeKind` is `{stx.raw.getKind}`."
 
 end Mathlib.Linter.UnusedTactic

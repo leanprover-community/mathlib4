@@ -5,8 +5,8 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.UnitInterval
 
 /-!

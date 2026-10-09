@@ -6,8 +6,8 @@ Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 module
 
 public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Localization.Defs
 
 import Mathlib.Algebra.Field.Equiv
 

@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.Completion
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # Multiplicative action on the completion of a uniform space

@@ -11,8 +11,8 @@ public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 import Mathlib.Analysis.Normed.Module.Connected
 import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # Integrability of Functions Prominently Involving the Logarithm

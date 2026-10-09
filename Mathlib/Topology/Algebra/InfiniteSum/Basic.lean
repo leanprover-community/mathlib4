@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Order.Filter.AtTopBot.BigOperators
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
-public import Mathlib.Order.Filter.AtTopBot.BigOperators
 
-import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Lemmas on infinite sums and products in topological monoids
@@ -25,8 +25,6 @@ Results requiring a group (rather than monoid) structure on the target should go
 -/
 
 public section
-
-noncomputable section
 
 open Filter Finset Function Topology SummationFilter
 
