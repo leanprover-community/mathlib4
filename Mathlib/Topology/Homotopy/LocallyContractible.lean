@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Topology.Homotopy.Contractible
 public import Mathlib.Topology.Connected.LocallyPathConnected
+public import Mathlib.Topology.Homotopy.Contractible
 
 /-!
 # Strongly locally contractible spaces

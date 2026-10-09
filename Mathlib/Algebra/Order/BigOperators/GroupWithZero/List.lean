@@ -56,7 +56,7 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
 theorem prod_map_le_pow_length₀ {F L : Type*} [FunLike F L R] {f : F} {r : R} {t : List L}
     (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
     (map f t).prod ≤ r ^ length t := by
-  convert! prod_map_le_prod_map₀ f (Function.const L r) hf0 hf
+  convert prod_map_le_prod_map₀ f (Function.const L r) hf0 hf
   simp [map_const, prod_replicate]
 
 omit [PosMulMono R]

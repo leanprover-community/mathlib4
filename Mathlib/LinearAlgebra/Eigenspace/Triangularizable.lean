@@ -5,8 +5,8 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Triangularizable linear endomorphisms

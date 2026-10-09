@@ -5,7 +5,6 @@ Authors: Tomáš Skřivan
 -/
 module
 
-
 public meta import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.ToBatteries

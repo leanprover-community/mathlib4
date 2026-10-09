@@ -40,7 +40,7 @@ that factors through images of the functor for each object in `D`.
 
 ## References
 
-* [Elephant]: *Sketches of an Elephant*, ℱ. T. Johnstone: C2.2.
+* [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.2.
 * https://ncatlab.org/nlab/show/dense+sub-site
 * https://ncatlab.org/nlab/show/comparison+lemma
 
@@ -477,7 +477,7 @@ lemma restrictHomEquivHom_naturality_left
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.hom)) :
     IsIso α := by
-  convert! (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
+  convert (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
   ext1
   apply (sheafHom_eq _ _).symm
 

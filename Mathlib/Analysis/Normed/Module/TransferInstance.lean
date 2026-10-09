@@ -5,8 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Topology.MetricSpace.TransferInstance
 
 /-!

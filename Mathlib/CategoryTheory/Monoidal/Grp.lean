@@ -5,10 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
+public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
-public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 
 /-!
 # The category of groups in a Cartesian monoidal category
@@ -324,7 +324,7 @@ lemma toMonObj_injective {X : C} :
   suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
   rw [left_inv]
-  convert! @left_inv _ _ _ _ h₁ using 2
+  convert @left_inv _ _ _ _ h₁ using 2
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[to_additive (attr := ext)]
