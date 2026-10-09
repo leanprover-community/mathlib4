@@ -24,6 +24,8 @@ refined properties of the Gamma function using these relations.
   real part.
 * `Complex.Gamma_mul_Gamma_eq_betaIntegral`: the formula
   `Gamma u * Gamma v = Gamma (u + v) * betaIntegral u v`.
+* `Real.integral_rpow_mul_one_sub_rpow`: the real Beta integral
+  `∫ x in 0..1, x ^ (a - 1) * (1 - x) ^ (b - 1) = Gamma a * Gamma b / Gamma (a + b)`.
 
 ## Results on the Gamma function
 
@@ -540,6 +542,44 @@ lemma betaIntegral_eq_Gamma_mul_div (u v : ℂ) (hu : 0 < u.re) (hv : 0 < v.re) 
       mul_div_cancel_left₀ _ (Gamma_ne_zero_of_re_pos (add_pos hu hv))]
 
 end Complex
+
+namespace Real
+
+private lemma ofReal_rpow_mul_one_sub_rpow {a b x : ℝ} (hx : x ∈ Icc (0 : ℝ) 1) :
+    ((x ^ (a - 1) * (1 - x) ^ (b - 1) : ℝ) : ℂ) =
+      (x : ℂ) ^ ((a : ℂ) - 1) * (1 - (x : ℂ)) ^ ((b : ℂ) - 1) := by
+  rw [Complex.ofReal_mul, Complex.ofReal_cpow hx.1, Complex.ofReal_cpow (sub_nonneg.2 hx.2)]
+  push_cast
+  rfl
+
+theorem ofReal_integral_rpow_mul_one_sub_rpow (a b : ℝ) :
+    ((∫ x in (0 : ℝ)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) : ℝ) : ℂ) =
+      Complex.betaIntegral a b := by
+  rw [← intervalIntegral.integral_ofReal, Complex.betaIntegral]
+  refine intervalIntegral.integral_congr fun x hx ↦ ?_
+  rw [uIcc_of_le zero_le_one] at hx
+  exact ofReal_rpow_mul_one_sub_rpow hx
+
+/-- The real Beta integral: for `0 < a` and `0 < b`,
+`∫ x in 0..1, x ^ (a - 1) * (1 - x) ^ (b - 1) = Γ(a) Γ(b) / Γ(a + b)`. -/
+theorem integral_rpow_mul_one_sub_rpow {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+    ∫ x in (0 : ℝ)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) = Gamma a * Gamma b / Gamma (a + b) := by
+  have h := Complex.betaIntegral_eq_Gamma_mul_div a b (by simpa) (by simpa)
+  rw [← ofReal_integral_rpow_mul_one_sub_rpow, ← Complex.ofReal_add, Complex.Gamma_ofReal,
+    Complex.Gamma_ofReal, Complex.Gamma_ofReal] at h
+  exact_mod_cast h
+
+theorem intervalIntegrable_rpow_mul_one_sub_rpow {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+    IntervalIntegrable (fun x : ℝ ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) volume 0 1 := by
+  have h := (Complex.betaIntegral_convergent (u := a) (v := b) (by simpa) (by simpa)).norm
+  refine (intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one).2 <|
+    ((intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one).1 h).congr_fun (fun x hx ↦ ?_)
+      measurableSet_Ioc
+  dsimp only
+  rw [← ofReal_rpow_mul_one_sub_rpow (Ioc_subset_Icc_self hx), Complex.norm_real,
+    Real.norm_of_nonneg (mul_nonneg (rpow_nonneg hx.1.le _) (rpow_nonneg (sub_nonneg.2 hx.2) _))]
+
+end Real
 
 end InvGamma
 
