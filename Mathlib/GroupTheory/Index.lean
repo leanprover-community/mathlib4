@@ -946,7 +946,14 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 end MulAction
 
 open MulAction in
-@[to_additive]
+theorem AddSubgroup.index_centralizer_eq_ncard {G : Type*} [AddGroup G] (g : G) :
+    (AddSubgroup.centralizer {g}).index = (addConjugatesOf g).ncard := by
+  rw [← MulAction.stabilizer_comap_addConj_eq_centralizer_singleton, ← AddSubgroup.index_toSubgroup,
+    Subgroup.toAddSubgroup', toSubgroup.apply_symm_apply, Subgroup.index_comap, Subgroup.relIndex,
+    stabilizer_subgroupOf, index_stabilizer, orbit_range_addConj_eq_addConjugatesOf]
+
+open MulAction in
+@[to_additive existing]
 theorem Subgroup.index_centralizer_eq_ncard {G : Type*} [Group G] (g : G) :
     (Subgroup.centralizer {g}).index = (conjugatesOf g).ncard := by
   rw [← stabilizer_comap_conj_eq_centralizer_singleton, Subgroup.index_comap, Subgroup.relIndex,
