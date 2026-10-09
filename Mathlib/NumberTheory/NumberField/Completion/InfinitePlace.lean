@@ -192,6 +192,13 @@ theorem induction_on {p : v.Completion → Prop} (x : v.Completion) (hp : IsClos
   UniformSpace.Completion.induction_on (p := fun y ↦ p (ofCompletion y)) x.toCompletion
     (hp.preimage (continuous_ofCompletion v)) ih
 
+/-- Two continuous functions out of `v.Completion` into a Hausdorff space are equal if they agree
+on `WithAbs v.1`. -/
+theorem ext_of_continuous {Y : Type*} [TopologicalSpace Y] [T2Space Y]
+    {f g : v.Completion → Y} (hf : Continuous f) (hg : Continuous g)
+    (h : ∀ a : WithAbs v.1, f a = g a) : f = g :=
+  (denseRange_coe v).equalizer hf hg (funext h)
+
 section Algebra
 
 variable (R : Type*) [CommSemiring R] [Algebra R (WithAbs v.1)]
@@ -205,6 +212,10 @@ theorem algebraMap_toCompletion (r : R) :
 end Algebra
 
 @[simp] theorem algebraMap_apply (k : K) : algebraMap K v.Completion k = (k : v.Completion) := rfl
+
+theorem algebraMap_eq_coe' (k : K) :
+    algebraMap K v.Completion k = (WithAbs.toAbs v.1 k : v.Completion) :=
+  rfl
 
 lemma norm_coe (x : WithAbs v.1) :
     ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=
