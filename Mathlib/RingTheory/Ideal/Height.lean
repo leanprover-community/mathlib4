@@ -5,8 +5,9 @@ Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
 module
 
-import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 
 /-!
 # The Height of an Ideal
@@ -229,7 +230,7 @@ then J is a minimal prime over I -/
 lemma Ideal.mem_minimalPrimes_of_height_le {I J : Ideal R} (e : I ≤ J) [J.IsPrime]
     [FiniteHeight J] (e' : J.height ≤ I.height) : J ∈ I.minimalPrimes := by
   obtain ⟨p, h₁, h₂⟩ := Ideal.exists_minimalPrimes_le e
-  convert! h₁
+  convert h₁
   refine (eq_of_le_of_not_lt h₂ fun h₃ ↦ ?_).symm
   have := h₁.isPrime
   have := finiteHeight_of_le h₂ IsPrime.ne_top'

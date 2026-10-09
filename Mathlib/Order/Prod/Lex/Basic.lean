@@ -58,19 +58,13 @@ theorem toLex_le_toLex [LT α] [LE β] {x y : α × β} :
     toLex x ≤ toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 ≤ y.2 :=
   Prod.lex_def
 
-@[to_dual existing toLex_le_toLex]
-theorem toLex_ge_toLex [LT α] [LE β] {x y : α × β} :
-    toLex y ≤ toLex x ↔ y.1 < x.1 ∨ x.1 = y.1 ∧ y.2 ≤ x.2 := by
-  rw [eq_comm, toLex_le_toLex]
+to_dual_for toLex_le_toLex := by rw [eq_comm, toLex_le_toLex]
 
 theorem toLex_lt_toLex [LT α] [LT β] {x y : α × β} :
     toLex x < toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 < y.2 :=
   Prod.lex_def
 
-@[to_dual existing toLex_lt_toLex]
-theorem toLex_gt_toLex [LT α] [LT β] {x y : α × β} :
-    toLex y < toLex x ↔ y.1 < x.1 ∨ x.1 = y.1 ∧ y.2 < x.2 := by
-  rw [eq_comm, toLex_lt_toLex]
+to_dual_for toLex_lt_toLex := by rw [eq_comm, toLex_lt_toLex]
 
 @[to_dual none]
 lemma le_iff [LT α] [LE β] {x y : α ×ₗ β} :
@@ -199,7 +193,7 @@ instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : Lin
     have : Std.LawfulLTOrd (α ×ₗ β) := ⟨by
       simp [compare_def, compareLex, compareOn, Ordering.then_eq_lt, toLex_lt_toLex,
         compare_lt_iff_lt]⟩
-    convert! Std.LawfulLTCmp.eq_compareOfLessAndEq (cmp := compare) a b
+    convert Std.LawfulLTCmp.eq_compareOfLessAndEq (cmp := compare) a b
 
 @[to_dual]
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where

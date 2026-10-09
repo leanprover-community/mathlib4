@@ -5,8 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!

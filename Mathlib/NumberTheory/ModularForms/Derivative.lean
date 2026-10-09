@@ -5,8 +5,9 @@ Authors: Seewoo Lee
 -/
 module
 
-import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentiable
+
+import Mathlib.Analysis.Complex.Liouville
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
 /-!

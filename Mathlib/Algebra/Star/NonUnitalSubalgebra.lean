@@ -6,10 +6,10 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Algebra.Star.Center
-public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.Prod
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.StarAlgHom
 
 /-!
 # Non-unital Star Subalgebras
@@ -1250,7 +1250,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
     adjoin R s ≤ centralizer R (centralizer R s) := by
   rw [← toNonUnitalSubalgebra_le_iff, centralizer_toNonUnitalSubalgebra,
     adjoin_toNonUnitalSubalgebra]
-  convert! NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
+  convert NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
   rw [StarMemClass.star_coe_eq]
   simp
 

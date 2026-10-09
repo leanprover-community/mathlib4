@@ -10,10 +10,11 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.Separation.Hausdorff
+
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Pi
-public import Mathlib.Topology.Separation.Hausdorff
-public import Mathlib.Tactic.Peel
 
 /-!
 # Type of functions with locally finite support
@@ -243,7 +244,7 @@ support within `U` is also closed.
 theorem closedSupport [T1Space X] [Zero Y] (D : locallyFinsuppWithin U Y)
     (hU : IsClosed U) :
     IsClosed D.support := by
-  convert!
+  convert
     isClosed_sdiff_of_codiscreteWithin
       ((supportDiscreteWithin_iff_locallyFiniteWithin D.supportWithinDomain).2
         D.supportLocallyFiniteWithinDomain)

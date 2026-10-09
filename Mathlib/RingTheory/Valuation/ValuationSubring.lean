@@ -5,10 +5,10 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.ValuationRing
-public import Mathlib.Algebra.Ring.Subring.Pointwise
 public import Mathlib.Algebra.Ring.Action.Field
+public import Mathlib.Algebra.Ring.Subring.Pointwise
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 

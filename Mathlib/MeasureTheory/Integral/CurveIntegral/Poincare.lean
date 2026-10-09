@@ -5,15 +5,15 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.Topology.Homotopy.Affine
 
 import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
+import Mathlib.Analysis.Calculus.Deriv.Prod
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 
 /-!
 # Poincaré lemma for 1-forms
@@ -308,7 +308,7 @@ theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex
     simp [φ, ha, hb, hc, hs.lineMap_mem]
   have := φ.curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt (t := range φ) (ω := ω)
     (dω := dω) ?_ ?_ ?_ ?_ ?_
-  · convert! this using 2
+  · convert this using 2
     · dsimp [φ]
       rw [← Path.cast_segment (lineMap_apply_one a b) (lineMap_apply_one a c), curveIntegral_cast]
     · dsimp [φ]

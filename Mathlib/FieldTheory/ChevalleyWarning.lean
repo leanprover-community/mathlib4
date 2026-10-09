@@ -6,6 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
+
 import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!

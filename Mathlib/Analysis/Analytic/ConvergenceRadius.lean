@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
+
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!

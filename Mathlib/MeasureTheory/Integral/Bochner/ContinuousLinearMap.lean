@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.Algebra.Module.Equiv.Prod
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
 # Continuous linear maps composed with integration
@@ -63,7 +63,7 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
       integral_add (μ := μ) (L.integrable_comp f_int) (L.integrable_comp g_int), hf, hg]
   · exact isClosed_eq L.continuous_integral_comp_L1 (L.continuous.comp continuous_integral)
   · intro f g hfg _ hf
-    convert! hf using 1 <;> clear hf
+    convert hf using 1 <;> clear hf
     · exact integral_congr_ae (hfg.fun_comp L).symm
     · rw [integral_congr_ae hfg.symm]
 
