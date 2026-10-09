@@ -5,8 +5,9 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Init
 public import Aesop
+
+import Mathlib.Init
 
 /-!
 # Matroid Rule Set

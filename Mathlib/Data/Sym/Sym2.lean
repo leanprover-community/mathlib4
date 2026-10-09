@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Data.Finset.Prod
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Sym2.Init
 
@@ -39,6 +38,9 @@ constructed by `Sym2.fromRel` which is a special case of `Sym2.lift`.
 ## Notation
 
 The element `Sym2.mk (a, b)` can be written as `s(a, b)` for short.
+
+We use the term "fiber" in names to refer to preimages of singleton sets, such as `f ⁻¹' {x}` or
+`{ a // f a = b }`.
 
 ## Tags
 
@@ -122,7 +124,7 @@ protected theorem eq {a b c d : α} : s(a, b) = s(c, d) ↔ Rel α (a, b) (c, d)
 
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected theorem ind {f : Sym2 α → Prop} (h : ∀ x y, f s(x, y)) : ∀ i, f i :=
-  Quot.ind <| Prod.rec <| h
+  Quot.ind <| Prod.rec h
 
 @[elab_as_elim]
 protected theorem inductionOn {f : Sym2 α → Prop} (i : Sym2 α) (hf : ∀ x y, f s(x, y)) : f i :=
@@ -172,6 +174,9 @@ protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
 
 theorem mk_surjective : (Sym2.mk (α := α)).uncurry.Surjective := Quot.mk_surjective
 
+theorem mk_fiber (a b : α) : Sym2.mk.uncurry ⁻¹' {s(a, b)} = {(a, b), (b, a)} := by
+  grind
+
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=
   mk_surjective.exists.trans Prod.exists
@@ -202,7 +207,7 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
     Quot.lift (uncurry ↑f) <| by
       rintro _ _ ⟨⟩
       exacts [rfl, f.prop _ _]
-  invFun F := ⟨fun a b ↦ F s(a, b), fun _ _ => congr_arg F eq_swap⟩
+  invFun F := ⟨fun a b ↦ F s(a, b), fun _ _ => congr(F $eq_swap)⟩
   right_inv _ := funext <| Sym2.ind fun _ _ => rfl
 
 @[simp]
@@ -229,7 +234,7 @@ def lift₂ :
   invFun F :=
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor
-      exacts [congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
+      exacts [congr(F $eq_swap _), congr(F _ $eq_swap)]⟩
   right_inv _ := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 
 @[simp]
@@ -328,7 +333,7 @@ instance : SetLike (Sym2 α) α where
     simp only [mem_iff'] at hx hy hx' hy'
     aesop
 
-instance : PartialOrder (Sym2 α) := .ofSetLike (Sym2 α) α
+instance : PartialOrder (Sym2 α) := .ofSetLike (Sym2 α)
 
 @[simp]
 theorem mem_iff_mem {x : α} {z : Sym2 α} : Sym2.Mem x z ↔ x ∈ z :=
@@ -357,6 +362,9 @@ theorem out_fst_mem (e : Sym2 α) : e.out.1 ∈ e :=
 theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Sym2.mk, e.out_eq]⟩
 
+theorem mk_fst_out_snd_out (z : Sym2 α) : s(z.out.fst, z.out.snd) = z :=
+  z.out_eq
+
 @[simp] lemma fst_out_mk_self : (Quot.out s(x, x)).1 = x := by simpa using out_fst_mem s(x, x)
 @[simp] lemma snd_out_mk_self : (Quot.out s(x, x)).2 = x := by simpa using out_snd_mem s(x, x)
 
@@ -380,7 +388,7 @@ theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other h) = z 
   (Classical.choose_spec h).symm
 
 theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z := by
-  convert! mem_mk_right a <| Mem.other h
+  convert mem_mk_right a <| Mem.other h
   rw [other_spec h]
 
 theorem mem_and_mem_iff {x y : α} {z : Sym2 α} (hne : x ≠ y) : x ∈ z ∧ y ∈ z ↔ z = s(x, y) := by
@@ -537,6 +545,13 @@ theorem diagElem_mk {a b : α} (h : IsDiag s(a, b)) : s(a, b).diagElem h = a := 
 @[simp]
 theorem diag_diagElem (h : z.IsDiag) : diag (z.diagElem h) = z := by
   cases z; cases h; rfl
+
+theorem mk_fiber_of_isDiag (hz : z.IsDiag) :
+    Sym2.mk.uncurry ⁻¹' {z} = {Function.diag (z.diagElem hz)} := by
+  cases z
+  rw [diagElem_mk]
+  cases hz
+  simp [mk_fiber]
 
 /-- `Sym2.diagElem` and `Sym2.diag` as an equivalence. -/
 @[simps]
@@ -956,7 +971,7 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     Mem.other hb = a := by
   classical
     rw [other_eq_other'] at hb ⊢
-    convert! other_invol' ha hb using 2
+    convert other_invol' ha hb using 2
     apply other_eq_other'
 
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
@@ -1010,7 +1025,7 @@ variable {s : Set α}
 /--
 For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements from `s`.
 -/
-def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) ⟨fun _ _ ↦ .symm⟩
+def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) inferInstance
 
 @[simp] lemma mk_mem_sym2_iff {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl
 
@@ -1038,7 +1053,7 @@ lemma sym2_image {f : α → β} {s : Set α} : (f '' s).sym2 = Sym2.map f '' s.
   simp_rw [sym2_eq_mk_image, prod_image_image_eq, image_image, uncurry, Sym2.map_mk]
 
 lemma sym2_inter (s t : Set α) : (s ∩ t).sym2 = s.sym2 ∩ t.sym2 :=
-  preimage_injective.mpr Sym2.mk_surjective <| Set.prod_inter_prod.symm
+  preimage_injective.mpr Sym2.mk_surjective Set.prod_inter_prod.symm
 
 lemma sym2_iInter {ι : Type*} (f : ι → Set α) : (⋂ i, f i).sym2 = ⋂ i, (f i).sym2 := by
   ext ⟨x, y⟩; simp [forall_and]

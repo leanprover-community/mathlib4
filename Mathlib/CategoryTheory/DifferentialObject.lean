@@ -5,10 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Data.Int.Cast.Defs
-public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.Data.Int.Cast.Defs
 
 /-!
 # Differential objects in a category.

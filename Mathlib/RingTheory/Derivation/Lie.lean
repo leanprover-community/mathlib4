@@ -6,8 +6,8 @@ Authors: Nicolò Cavalleri, Andrew Yang
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.Algebra.Lie.Prod
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Lie Algebra Structure on Derivations

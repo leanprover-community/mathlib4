@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.RingTheory.MvPolynomial.Basic
-public import Mathlib.Algebra.MvPolynomial.CommRing
+
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Polynomials over finite fields

@@ -5,14 +5,13 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.UniformConvergence
-public import Mathlib.Topology.UniformSpace.CompleteSeparated
-public import Mathlib.Topology.UniformSpace.Compact
-public import Mathlib.Topology.UniformSpace.HeineCantor
-public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.Group.Quotient
-public import Mathlib.Topology.DiscreteSubset
-public import Mathlib.Tactic.Abel
+public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+public import Mathlib.Topology.UniformSpace.HeineCantor
+
+import Mathlib.Tactic.Abel
+import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.CompleteSeparated
 
 /-!
 # Uniform structure on topological groups
@@ -677,7 +676,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     ⟨↑x₀,
       tendsto_nhds_of_cauchySeq_of_subseq hx
         (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop ?_⟩
-  convert! ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
+  convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup

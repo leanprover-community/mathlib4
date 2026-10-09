@@ -17,7 +17,7 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 # Maximal ergodic theorem.
 
 We prove the maximal ergodic theorem for a measure-preserving map `f` and an integrable function
-`g`. 
+`g`.
 
 ## Main definitions
 
