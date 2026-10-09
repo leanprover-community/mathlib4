@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.AddConstMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences conjugating `(· + a)` to `(· + b)`
 

@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Logic.Small.Defs
 public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Logic.Small.Defs
 
 /-!
 # Instances and theorems for `Small`.

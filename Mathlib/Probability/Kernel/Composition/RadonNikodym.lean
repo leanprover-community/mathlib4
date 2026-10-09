@@ -8,8 +8,8 @@ module
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.RadonNikodym
 
-import Mathlib.Probability.Kernel.Composition.WithDensity
 import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
+import Mathlib.Probability.Kernel.Composition.WithDensity
 
 /-!
 # Radon-Nikodym derivative of a composition product

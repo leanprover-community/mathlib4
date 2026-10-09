@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric W
 -/
 module
 
-public import Mathlib.Algebra.Group.Fin.Tuple
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Algebra.Group.Fin.Tuple
 public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 import Mathlib.Data.Fintype.Option
 

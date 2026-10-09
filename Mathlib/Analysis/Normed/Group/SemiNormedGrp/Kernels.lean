@@ -5,8 +5,8 @@ Authors: Riccardo Brasca, Johan Commelin, Kim Morrison
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!

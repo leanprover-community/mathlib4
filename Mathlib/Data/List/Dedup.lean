@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Lattice
 public import Batteries.Data.List.Pairwise
+public import Mathlib.Data.List.Lattice
 
 import Mathlib.Data.List.Nodup
 
