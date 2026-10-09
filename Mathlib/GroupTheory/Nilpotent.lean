@@ -1345,9 +1345,9 @@ theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k 
   · refine ⟨⊥, by simp [hmul, hm1], normal_bot⟩
   · obtain ⟨p, hp, m'', rfl⟩ : ∃ p, p.Prime ∧ p ∣ m' := m'.ne_one_iff_exists_prime_dvd.mp hm1
     obtain ⟨N, hNcard, hN⟩ : ∃ N : Subgroup G, Nat.card N = p ∧ N.Normal := by
-      suffices ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G by
+      suffices ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ H ≤ center G by
         grind [normal_of_le_center]
-      refine Sylow.exists_subgroup_card_pow_prime_le_le hp (by simp) ?_ bot_le
+      refine Sylow.exists_subgroup_card_pow_prime_le hp (center G) ?_
       exact prime_dvd_card_center (hp := ⟨by simpa⟩) ⟨k * m'', by grind⟩
     obtain ⟨K, hKcard, hK⟩ : ∃ K : Subgroup (G ⧸ N), K.index = k ∧ K.Normal := by
       refine ih (Nat.card (G ⧸ N)) ?_ ?_ rfl

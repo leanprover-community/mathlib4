@@ -44,8 +44,8 @@ theorem exists_intermediateField_finrank_eq_pow_prime_mul {p n a : ℕ} (hp : p.
 theorem exists_intermediateField_ge_card_pow_prime_of_card_pow_prime {m n p : ℕ} (hp : p.Prime)
     {M : IntermediateField K L} (hM : Module.finrank M L = p ^ n) (hm : m ≤ n) :
     ∃ N ≥ M, Module.finrank N L = p ^ m := by
-  rcases Sylow.exists_subgroup_le_card_pow_prime_of_le_pow (H := M.fixingSubgroup)
-    hp (by rw [IsGalois.card_fixingSubgroup_eq_finrank, hM]) hm with
+  rcases Sylow.exists_subgroup_card_pow_prime_le
+    hp M.fixingSubgroup (by rw [IsGalois.card_fixingSubgroup_eq_finrank, hM]) hm with
     ⟨H', hH'₁, hH'₂⟩
   exact ⟨IntermediateField.fixedField H',
         by simpa [IntermediateField.le_iff_le] using hH'₁,
