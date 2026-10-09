@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.GroupTheory.GroupAction.Ring
 
+import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.Polynomial.Degree.Domain
 
 /-!
