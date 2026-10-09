@@ -5,9 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Analysis.PSeries
-public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+
+import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # Convergence of `p`-series (complex case)

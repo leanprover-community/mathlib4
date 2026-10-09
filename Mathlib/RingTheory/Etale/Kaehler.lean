@@ -6,10 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.Basic
-public import Mathlib.RingTheory.Kaehler.JacobiZariski
-public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Smooth.Kaehler
 public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Kaehler.JacobiZariski
 
 /-!
 # The differential module and étale algebras
@@ -53,7 +51,7 @@ lemma KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale_symm_D_algebraMap
 lemma KaehlerDifferential.isBaseChange_of_formallyEtale [Algebra.FormallyEtale S T] :
     IsBaseChange T (map R R S T) := by
   change Function.Bijective _
-  convert! (tensorKaehlerEquivOfFormallyEtale R S T).bijective using 1
+  convert (tensorKaehlerEquivOfFormallyEtale R S T).bijective using 1
   change _ = ((tensorKaehlerEquivOfFormallyEtale
     R S T).toLinearMap.restrictScalars S : T ⊗[S] Ω[S⁄R] → _)
   congr!
@@ -68,7 +66,7 @@ instance KaehlerDifferential.isLocalizedModule_map (M : Submonoid S) [IsLocaliza
 lemma KaehlerDifferential.span_range_map_derivation_of_isLocalization
     (M : Submonoid S) [IsLocalization M T] :
     Submodule.span T (Set.range <| map R R S T ∘ D R S) = ⊤ := by
-  convert!
+  convert
     span_eq_top_of_isLocalizedModule T M (map R R S T) (v := Set.range <| D R S)
       (span_range_derivation R S)
   rw [← Set.range_comp, Function.comp_def]
@@ -160,7 +158,7 @@ def tensorCotangentInvFun
     clear x hx
     rintro a ha b -
     obtain ⟨x, hx⟩ := e.surjective ⟨a, ha⟩
-    obtain rfl : (e x).1 = a := congr_arg Subtype.val hx
+    obtain rfl : (e x).1 = a := congr($(hx).val)
     obtain ⟨y, rfl⟩ := e.surjective b
     simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_ofClass, map_smul,
       LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
@@ -259,7 +257,7 @@ def tensorH1CotangentOfFormallyEtale [alg : Algebra P.Ring Q.Ring]
         ext x; obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x; dsimp
         simp only [CotangentSpace.map_tmul,
           map_one, Hom.toAlgHom_apply, one_smul, cotangentComplex_mk]
-      exact (DFunLike.congr_fun this _).trans (DFunLike.congr_arg Q.cotangentComplex
+      exact congr($this _).trans (DFunLike.congr_arg Q.cotangentComplex
         ((tensorCotangent f halg H₂).apply_symm_apply x.1)))
     refine ⟨a, Subtype.ext (.trans ?_ ((LinearEquiv.eq_symm_apply _).mp ha))⟩
     change (h1Cotangentι ∘ₗ (H1Cotangent.map f).liftBaseChange T) _ =
@@ -306,7 +304,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
     .of_algebraMap_eq fun r ↦ (f.algebraMap_toRingHom r).symm
   haveI : IsLocalizedModule M' (IsScalarTower.toAlgHom P.Ring S T).toLinearMap := by
     rw [isLocalizedModule_iff_isLocalization]
-    convert! ‹IsLocalization M T› using 1
+    convert ‹IsLocalization M T› using 1
     exact Submonoid.map_comap_eq_of_surjective P.algebraMap_surjective _
   refine Extension.tensorH1CotangentOfFormallyEtale f rfl ?_ ?_ ≪≫ₗ
       Extension.equivH1CotangentOfFormallySmooth _

@@ -5,12 +5,11 @@ Authors: Scott Carnahan, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 import Mathlib.LinearAlgebra.Span.TensorProduct
 import Mathlib.RingTheory.Flat.TorsionFree
 
@@ -363,7 +362,7 @@ lemma finrank_rootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
     finrank ℤ (Q.rootSpan ℤ) = finrank L M := by
   let _i : Module ℚ M := .compHom M (algebraMap ℚ L)
   let _i : Module ℚ N := .compHom N (algebraMap ℚ L)
-  have _i : IsAddTorsionFree M := .of_isTorsionFree L M
+  have _i : HasUniqueDiv M := .of_isTorsionFree L M
   rw [← Submodule.finrank_span_eq_finrank_span ℤ ℚ, ← Q.finrank_rootSpanIn ℚ]
 
 @[simp]
