@@ -5,8 +5,8 @@ Authors: Praneeth Kolichala, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Homotopy.Equiv
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
+public import Mathlib.Topology.Homotopy.Equiv
 
 /-!
 # Homotopic maps induce naturally isomorphic functors

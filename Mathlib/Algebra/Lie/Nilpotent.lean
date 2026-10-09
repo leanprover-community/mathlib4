@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Solvable
 public import Mathlib.Algebra.Lie.Normalizer
+public import Mathlib.Algebra.Lie.Solvable
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 

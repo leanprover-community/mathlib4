@@ -6,8 +6,8 @@ Authors: Damiano Testa, Junyan Xu
 module
 
 public import Mathlib.Algebra.Order.Group.PiLex
-public import Mathlib.Data.DFinsupp.Order
 public import Mathlib.Data.DFinsupp.NeLocus
+public import Mathlib.Data.DFinsupp.Order
 public import Mathlib.Order.WellFoundedSet
 
 /-!

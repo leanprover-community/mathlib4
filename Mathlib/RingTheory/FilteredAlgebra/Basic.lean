@@ -5,8 +5,9 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.GradedMulAction
+public import Mathlib.Algebra.Module.Defs
+
 import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 /-!

@@ -5,8 +5,9 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan C
 -/
 module
 
-import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Partition.Finpartition
+
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Equivalence relations: partitions

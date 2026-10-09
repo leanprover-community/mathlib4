@@ -6,14 +6,15 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Module.RieszLemma
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Instances.Matrix
+
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 
 /-!

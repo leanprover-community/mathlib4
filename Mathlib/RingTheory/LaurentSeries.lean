@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.HahnSeries.PowerSeries
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.PowerSeries.Inverse
+
 import Mathlib.RingTheory.PowerSeries.Trunc
 
 
@@ -1123,7 +1124,7 @@ theorem valuation_compare (f : K⸨X⸩) :
     Valued.v (LaurentSeriesRingEquiv K f) = Valued.v f := by
   change Valued.v (adicCompletion.ofCompletion
     ((LaurentSeriesPkg K).compare ratfuncAdicComplPkg f)) = Valued.v f
-  rw [adicCompletion.valued_ofCompletion]
+  rw [adicCompletion.valued_ofCompletion_apply]
   let : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
       ratfuncAdicComplPkg.uniformStruct
   have raw_surj : Function.Surjective (Valued.v : (polynomialValuationX K).Completion → ℤᵐ⁰) :=
