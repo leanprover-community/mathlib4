@@ -9,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" from git "https://github.com/fgdorais/batteries" @ "chore/order-lean-free"
 require "leanprover-community" / "Qq" @ git "master"
 
-require "leanprover-community" / "aesop" @ git "master"
+require "leanprover-community" / "aesop" from git "https://github.com/fgdorais/aesop" @ "fix/unreachable-tactic-import"
 require "leanprover-community" / "proofwidgets" @ git "main"
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
