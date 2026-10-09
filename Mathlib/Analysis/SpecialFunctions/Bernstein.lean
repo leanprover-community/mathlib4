@@ -26,7 +26,7 @@ This statement directly applies to the cases when the codomain is a (semi)normed
 or, more generally, has a topology defined by a family of seminorms.
 
 Our proof follows [Richard Beals' *Analysis, an introduction*][beals-analysis], §7D.
-The original proof, due to [Bernstein](bernstein1912) in 1912, is probabilistic,
+The original proof, due to [Bernstein][bernstein1912] in 1912, is probabilistic,
 and relies on Bernoulli's theorem,
 which gives bounds for how quickly the observed frequencies in a
 Bernoulli trial approach the underlying probability.
