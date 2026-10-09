@@ -30,7 +30,7 @@ Ext into `M`.  One can, of course, take the collection to simply be the integral
 * [M. Brodmann and R. Sharp, *Local cohomology: An algebraic introduction with geometric
   applications*][brodmannsharp13]
 * [S. Iyengar, G. Leuschke, A. Leykin, Anton, C. Miller, E. Miller, A. Singh, U. Walther,
-  *Twenty-four hours of local cohomology*][iyengaretal13]
+  *Twenty-four hours of local cohomology*][iyengaretal07]
 
 ## Tags
 
