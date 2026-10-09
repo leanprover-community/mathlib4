@@ -5,10 +5,9 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Analysis.InnerProductSpace.Convex
-public import Mathlib.Algebra.Module.LinearMap.Rat
-public import Mathlib.Tactic.Module
+
+import Mathlib.Algebra.Module.LinearMap.Rat
 
 /-!
 # Inner product space derived from a norm

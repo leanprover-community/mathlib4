@@ -5,9 +5,8 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
 # Definitions and basic properties of normal monomorphisms and epimorphisms.
@@ -120,7 +119,6 @@ def normalOfIsPullbackFstOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
   normalOfIsPullbackSndOfNormal comm.symm (PullbackCone.flipIsLimit t)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport a `NormalMono` structure via an isomorphism of arrows. -/
 @[instance_reducible]
 def NormalMono.ofArrowIso {X Y : C} {f : X ⟶ Y}
@@ -247,7 +245,6 @@ open Opposite
 variable [HasZeroMorphisms C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport a `NormalEpi` structure via an isomorphism of arrows. -/
 @[instance_reducible]
 def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}

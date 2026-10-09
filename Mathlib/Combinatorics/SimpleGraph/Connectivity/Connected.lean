@@ -5,9 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Paths
-public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Paths
 
 /-!
 ## Main definitions
@@ -941,7 +940,7 @@ lemma mem_edges_of_not_reachable_deleteEdges (w : G.Walk u v) {e : Sym2 V}
 
 /-- A trail doesn't go through an edge that disconnects one of its endpoints from the endpoints of
 the trail. -/
-lemma IsTrail.not_mem_edges_of_not_reachable (hw : w.IsTrail)
+lemma IsTrail.notMem_edges_of_not_reachable (hw : w.IsTrail)
     (huy : ¬ (G.deleteEdges {s(x, y)}).Reachable u y)
     (hvy : ¬ (G.deleteEdges {s(x, y)}).Reachable v y) : s(x, y) ∉ w.edges := by
   classical
@@ -949,24 +948,34 @@ lemma IsTrail.not_mem_edges_of_not_reachable (hw : w.IsTrail)
     ((w.takeUntil y _).mem_edges_of_not_reachable_deleteEdges huy)
     (by simpa using (w.dropUntil y _).reverse.mem_edges_of_not_reachable_deleteEdges hvy)
 
+@[deprecated (since := "2026-09-28")]
+alias IsTrail.not_mem_edges_of_not_reachable := IsTrail.notMem_edges_of_not_reachable
+
 /-- A trail doesn't go through a vertex that is disconnected from its endpoints by an edge. -/
-lemma IsTrail.not_mem_support_of_not_reachable (hw : w.IsTrail)
+lemma IsTrail.notMem_support_of_not_reachable (hw : w.IsTrail)
     (huy : ¬ (G.deleteEdges {s(x, y)}).Reachable u y)
     (hvy : ¬ (G.deleteEdges {s(x, y)}).Reachable v y) : y ∉ w.support := by
   classical
-  exact fun hy ↦ hw.not_mem_edges_of_not_reachable huy hvy <| w.edges_takeUntil_subset_edges hy <|
+  exact fun hy ↦ hw.notMem_edges_of_not_reachable huy hvy <| w.edges_takeUntil_subset_edges hy <|
     mem_edges_of_not_reachable_deleteEdges (w.takeUntil y hy) huy
 
+@[deprecated (since := "2026-09-28")]
+alias IsTrail.not_mem_support_of_not_reachable := IsTrail.notMem_support_of_not_reachable
+
 /-- A trail doesn't go through any leaf vertex, except possibly at its endpoints. -/
-lemma IsTrail.not_mem_support_of_subsingleton_neighborSet (hw : w.IsTrail) (hxu : x ≠ u)
+lemma IsTrail.notMem_support_of_subsingleton_neighborSet (hw : w.IsTrail) (hxu : x ≠ u)
     (hxv : x ≠ v) (hx : (G.neighborSet x).Subsingleton) : x ∉ w.support := by
   rintro hxw
   obtain ⟨y, -, hxy⟩ := adj_of_mem_walk_support w (by rintro ⟨⟩; simp_all) hxw
-  refine hw.not_mem_support_of_not_reachable (x := y) ?_ ?_ hxw <;>
+  refine hw.notMem_support_of_not_reachable (x := y) ?_ ?_ hxw <;>
   · rintro ⟨p⟩
     obtain ⟨hx₂, -, hy₂⟩ : G.Adj x p.penultimate ∧ _ ∧ ¬p.penultimate = y := by
       simpa using p.reverse.adj_snd (not_nil_of_ne ‹_›)
     exact hy₂ <| hx hx₂ hxy
+
+@[deprecated (since := "2026-09-28")]
+alias IsTrail.not_mem_support_of_subsingleton_neighborSet :=
+  IsTrail.notMem_support_of_subsingleton_neighborSet
 
 end Walk
 
@@ -976,9 +985,9 @@ lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
   rintro ⟨u, hu⟩ ⟨v, hv⟩
   obtain ⟨p, hp⟩ := hG.exists_isPath u v
   constructor
-  convert! p.induce s _
+  convert p.induce s _
   rintro w hwp
   by_contra hws
-  exact hp.not_mem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp
+  exact hp.notMem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp
 
 end SimpleGraph

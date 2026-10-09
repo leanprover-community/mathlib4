@@ -6,11 +6,11 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Matrix
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Weights.Basic
-public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-public import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
+
+import Mathlib.LinearAlgebra.Eigenspace.Matrix
+import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system

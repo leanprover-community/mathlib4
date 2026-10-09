@@ -5,15 +5,16 @@ Authors: Aaron Liu, Wojciech Nawrocki
 -/
 module
 
-public meta import Lean.Elab.Tactic.Simp
+public meta import Lean.Elab.ConfigEval.Basic
 public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Tactic.Rewrite
-public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Simp
 public import Lean.Elab.ConfigEval
-public meta import Lean.Elab.ConfigEval.Basic
+
 meta import Lean.Elab.ConfigEval.DeriveEvalExpr
 meta import Lean.Elab.ConfigEval.DeriveEvalTerm
 meta import Lean.Elab.ConfigEval.MetaInstances
+import Mathlib.Init
 
 /-! ## Dependent rewrite tactic -/
 

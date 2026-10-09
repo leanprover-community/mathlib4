@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.Topology.UniformSpace.Equiv
+
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-!
 # Topology on `TrivSqZeroExt R M`

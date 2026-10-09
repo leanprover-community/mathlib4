@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 
 /-!
 # The universal property of the even subalgebra
@@ -141,7 +140,7 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
         don't have any prod or subtype combinators to deal with n-linear maps of this degree.
         ```lean
         (LinearMap.lcomp R _ (Algebra.lmul R A).to_linear_map.flip).comp <|
-          (LinearMap.llcomp R M A A).flip.comp f.flip : M →ₗ[R] A →ₗ[R] M →ₗ[R] A)
+          (LinearMap.llcomp R M A A).flip.comp f.flip : M →ₗ[R] A →ₗ[R] M →ₗ[R] A
         ```
         -/
       (acc.2.val m,

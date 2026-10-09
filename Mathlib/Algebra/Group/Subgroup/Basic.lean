@@ -6,9 +6,7 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.Algebra.Group.Conj
-public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Basic results on subgroups
@@ -216,6 +214,12 @@ end Pi
 
 @[to_additive]
 instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
+  eq_of_pow_eq_pow_of_commute n hn a b h hab := by
+    rw [commute_iff_eq, Subtype.ext_iff] at *
+    exact eq_of_pow_eq_pow_of_commute hn h hab
+
+@[to_additive]
+instance [HasUniqueRoots G] : HasUniqueRoots H where
   pow_left_injective n hn a b := by
     have := pow_left_injective hn (M := G) (a₁ := a) (a₂ := b)
     dsimp at *

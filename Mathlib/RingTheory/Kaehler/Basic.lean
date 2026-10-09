@@ -6,11 +6,9 @@ Authors: Nicolò Cavalleri, Andrew Yang
 module
 
 public import Mathlib.RingTheory.Derivation.ToSquareZero
+public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.IsTensorProduct
-public import Mathlib.RingTheory.EssentialFiniteness
-public import Mathlib.Algebra.Exact.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -237,7 +235,7 @@ def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
       rw [← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← map_add (ideal R S).toCotangent, Ideal.toCotangent_eq, pow_two]
-      convert!
+      convert
         Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
           (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
       simp only [Submodule.coe_add,
@@ -722,7 +720,7 @@ lemma KaehlerDifferential.ker_map_of_surjective (h : Function.Surjective (algebr
     Submodule.map_sup, ← kerTotal_eq, ← Submodule.comap_bot,
     Submodule.map_comap_eq_of_surjective (linearCombination_surjective _ _),
     bot_sup_eq, Submodule.map_span, ← Set.range_comp]
-  convert! bot_sup_eq _
+  convert bot_sup_eq _
   rw [Submodule.span_eq_bot]; simp
 
 open IsScalarTower (toAlgHom)
@@ -859,7 +857,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
       rw [← TensorProduct.smul_tmul, ← Algebra.algebraMap_eq_smul_one, RingHom.mem_ker.mp this,
         TensorProduct.zero_tmul]
     · have : x i ≠ 0 ∧ algebraMap A B i = c := by
-        convert! i.prop
+        convert i.prop
         simp_rw [Finset.mem_filter, Finsupp.mem_support_iff]
       simp [RingHom.mem_ker, ha, this.2]
 

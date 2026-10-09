@@ -6,8 +6,9 @@ Authors: Yury Kudryashov, Winston Yin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Topology.Algebra.Order.Floor
 public import Mathlib.Topology.MetricSpace.Contracting
+
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # Picard-Lindelöf (Cauchy-Lipschitz) Theorem
