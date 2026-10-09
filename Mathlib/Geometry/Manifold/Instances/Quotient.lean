@@ -150,12 +150,12 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 open orbitRel.Quotient IsManifold
 
-/-- The quotient of a Cⁿ manifold by a free, properly discontinuous group action such that the
-scalar multiplication `fun x : M ↦ g • x` is Cⁿ is itself a Cⁿ manifold, for the charts of
+/-- The quotient of a `C^n` manifold by a free, properly discontinuous group action such that the
+scalar multiplication `fun x : M ↦ g • x` is `C^n` is itself a `C^n` manifold, for the charts of
 `MulAction.instChartedSpaceQuotient`. -/
-@[to_additive /-- The quotient of a Cⁿ manifold by a free, properly discontinuous additive group
-action such that the translation `fun x : M ↦ g +ᵥ x` is Cⁿ is itself a Cⁿ manifold, for the charts
-of `AddAction.instChartedSpaceQuotient`. -/]
+@[to_additive /-- The quotient of a `C^n` manifold by a free, properly discontinuous additive group
+action such that the translation `fun x : M ↦ g +ᵥ x` is `C^n` is itself a `C^n` manifold, for the
+charts of `AddAction.instChartedSpaceQuotient`. -/]
 instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] :
     IsManifold I n (orbitRel.Quotient G M) where
   compatible := by
