@@ -262,11 +262,9 @@ attribute [reassoc] hom_inv_id_map inv_hom_id_map
 
 end IsIso
 
+@[to_dual isIso_inv]
 instance Iso.isIso_hom (e : X ≅ Y) : IsIso e.hom :=
   ⟨e.inv, by simp only [hom_inv_id], by simp⟩
-
-@[to_dual existing isIso_hom]
-instance Iso.isIso_inv (e : X ≅ Y) : IsIso e.inv := e.symm.isIso_hom
 
 open IsIso
 
