@@ -322,12 +322,11 @@ lemma isExtraordinaryEilenbergSteenrod_iff :
 
 instance : IsClosedUnderIsomorphisms (isExtraordinaryEilenbergSteenrod C c)
     where
-  of_iso e h := {
-    isHomotopyInvariant :=
-      instIsClosedUnderIsomorphismsIsHomotopyInvariant.of_iso e h.isHomotopyInvariant
-    hasExcisionIso := instIsClosedUnderIsomorphismsHasExcisionIso.of_iso e h.hasExcisionIso
-    isAdditive := instIsClosedUnderIsomorphismsIsAdditive.of_iso e h.isAdditive
-    hasPairSequence := instIsClosedUnderIsomorphismsHasPairSequence.of_iso e h.hasPairSequence
+  of_iso e _ := {
+    isHomotopyInvariant := (isHomotopyInvariant _ _).prop_of_iso e inferInstance
+    hasExcisionIso := (hasExcisionIso _ _).prop_of_iso e inferInstance
+    isAdditive := (isAdditive _ _).prop_of_iso e inferInstance
+    hasPairSequence := (hasPairSequence _ _).prop_of_iso e inferInstance
   }
 
 variable (HP HP' : HomologyPretheory.{u} C (ComplexShape.down ℕ))
