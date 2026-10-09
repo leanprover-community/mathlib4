@@ -5,10 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Extension.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
-public import Mathlib.RingTheory.Extension.Basic
 
 /-!
 

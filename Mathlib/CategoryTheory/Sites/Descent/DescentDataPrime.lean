@@ -5,8 +5,8 @@ Authors: Joël Riou, Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Descent.DescentData
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.ChosenPullback
+public import Mathlib.CategoryTheory.Sites.Descent.DescentData
 
 /-!
 # Descent data when we have pullbacks

@@ -9,8 +9,8 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Module
 
-import Mathlib.Tactic.Field
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Tactic.Field
 
 /-!
 # Slope of a function

@@ -5,10 +5,10 @@ Authors: Ruize Chen
 -/
 module
 
+public import Mathlib.Analysis.Convex.Contractible
 public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Homotopy.Lifting
 public import Mathlib.Topology.Instances.ZMultiples
-public import Mathlib.Analysis.Convex.Contractible
 
 /-!
 # The fundamental group of the circle

@@ -5,8 +5,8 @@ Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+public import Mathlib.Analysis.Normed.Operator.Banach
 
 import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
