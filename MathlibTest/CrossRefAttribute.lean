@@ -213,12 +213,25 @@ namespace OEIS
 theorem test : 1 + 1 = 2 := by
   rfl
 
+@[oeis A123456]
+theorem test' : 1 + 1 = 2 := by
+  rfl
+
+/-- error: <input>:1:11: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in
+run_cmd
+  Lean.ofExcept <| Lean.Parser.runParserCategory (← Lean.getEnv)
+    `command "@[oeis A123] theorem test'' : True := .intro"
+
 /--
 info: some ([OEIS A123456](https://oeis.org/A123456) (A vacuous comment))
 -/
 #guard_msgs in
 run_cmd
-  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `OEIS.test}"
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) ``OEIS.test}"
+
+/-- error: <input>:1:6: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "search"
 
 /-- error: <input>:1:4: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
 #guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "A123"
@@ -234,6 +247,7 @@ run_cmd
 
 /--
 info:
+[OEIS A123456](https://oeis.org/A123456) corresponds to declaration 'test''.
 [OEIS A123456](https://oeis.org/A123456) corresponds to declaration 'test'. (A vacuous comment)
 -/
 #guard_msgs in
