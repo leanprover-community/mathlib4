@@ -435,19 +435,18 @@ variable {G M : Type*} [Group G] [MonoidWithZero M] [MulDistribMulAction G M]
 theorem smul_mem_nonZeroDivisorsLeft (g : G) {m : M} (hm : m ∈ nonZeroDivisorsLeft M) :
     g • m ∈ nonZeroDivisorsLeft M := by
   intro y hy
-  rw [← smul_eq_zero_iff_eq' g⁻¹]
-  exact hm _ <| by simpa [smul_mul', inv_smul_smul] using congr_arg (g⁻¹ • ·) hy
+  rw [← smul_eq_zero_iff_eq' g⁻¹] at hy ⊢
+  exact hm _ <| by simpa [smul_mul'] using hy
 
 theorem smul_mem_nonZeroDivisorsRight (g : G) {m : M} (hm : m ∈ nonZeroDivisorsRight M) :
     g • m ∈ nonZeroDivisorsRight M := by
   intro y hy
-  rw [← smul_eq_zero_iff_eq' g⁻¹]
-  exact hm _ <| by simpa [smul_mul', inv_smul_smul] using congr_arg (g⁻¹ • ·) hy
+  rw [← smul_eq_zero_iff_eq' g⁻¹] at hy ⊢
+  exact hm _ <| by simpa [smul_mul'] using hy
 
 theorem smul_mem_nonZeroDivisors (g : G) {m : M} (hm : m ∈ nonZeroDivisors M) :
     g • m ∈ nonZeroDivisors M :=
-  mem_nonZeroDivisors_iff'.mpr
-    ⟨smul_mem_nonZeroDivisorsLeft g hm.1, smul_mem_nonZeroDivisorsRight g hm.2⟩
+  ⟨smul_mem_nonZeroDivisorsLeft g hm.1, smul_mem_nonZeroDivisorsRight g hm.2⟩
 
 instance : SMul G M⁰ where
   smul g m := ⟨g • m, smul_mem_nonZeroDivisors g m.prop⟩
