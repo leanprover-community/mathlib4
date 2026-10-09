@@ -1206,7 +1206,7 @@ lemma embedding_orderMonoidIso_valuation_eq (γ : ValueGroupWithZero R) :
 lemma orderMonoidIso_strictMono [v.Compatible] : StrictMono (orderMonoidIso v) :=
   embed_strictMono v
 
-/-- The map `embedding ∘ orderMonoidIso (valuation R))` is identity. -/
+/-- The map `embedding ∘ orderMonoidIso (valuation R)` is identity. -/
 lemma leftInverse_embedding_orderMonoidIso : Function.LeftInverse embedding
     (orderMonoidIso (valuation R)) :=
   embedding_orderMonoidIso_valuation_eq

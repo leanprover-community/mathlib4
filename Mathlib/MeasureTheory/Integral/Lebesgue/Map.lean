@@ -30,7 +30,7 @@ theorem lintegral_map {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f
   simp only [← Function.comp_apply (f := f) (g := g)]
   rw [lintegral_eq_iSup_eapprox_lintegral (hf.comp hg)]
   congr with n : 1
-  convert! SimpleFunc.lintegral_map _ hg
+  convert SimpleFunc.lintegral_map _ hg
   ext1 x; simp only [eapprox_comp hf hg, coe_comp]
 
 theorem lintegral_map' {f : β → ℝ≥0∞} {g : α → β}

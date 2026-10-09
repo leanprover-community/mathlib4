@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.NumberTheory.Transcendental.Liouville.Residual
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
+
+import Mathlib.NumberTheory.Transcendental.Liouville.Residual
 import Mathlib.Analysis.PSeries
 
 /-!
