@@ -5,11 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.TypeTags.Finite
-public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.RepresentationTheory.Semisimple
+
+import Mathlib.Algebra.Group.TypeTags.Finite
 
 /-!
 # Maschke's theorem
@@ -154,7 +152,7 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.k
     simp [hf]
   have _ : Fintype G := Fintype.ofFinite G
   refine ⟨φ.equivariantProjection G, LinearMap.ext ?_⟩
-  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) <| hφ
+  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) hφ
 
 namespace Submodule
 

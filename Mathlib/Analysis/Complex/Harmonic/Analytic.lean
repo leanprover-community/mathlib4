@@ -5,10 +5,11 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 public import Mathlib.Analysis.Complex.Conformal
-public import Mathlib.Analysis.Complex.HasPrimitives
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Complex.HasPrimitives
 
 /-!
 # Analyticity of Harmonic Functions

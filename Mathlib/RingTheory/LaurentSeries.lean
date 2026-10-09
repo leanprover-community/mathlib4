@@ -11,9 +11,8 @@ public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.HahnSeries.PowerSeries
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.PowerSeries.Inverse
-public import Mathlib.RingTheory.PowerSeries.Trunc
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.Topology.UniformSpace.DiscreteUniformity
+
+import Mathlib.RingTheory.PowerSeries.Trunc
 
 
 /-!
@@ -446,7 +445,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     (Polynomial.idealX K).intValuation P = (idealX K).intValuation (P : K⟦X⟧) := by
   by_cases hP : P = 0
   · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
-  rw [intValuation_if_neg _ hP, intValuation_if_neg _ <| (by simp [hP])]
+  rw [intValuation_if_neg _ hP, intValuation_if_neg _ (by simp [hP])]
   simp only [idealX_span, exp_neg, inv_inj, exp_inj, Nat.cast_inj]
   have span_ne_zero :
     (Ideal.span {P} : Ideal K[X]) ≠ 0 ∧ (Ideal.span {Polynomial.X} : Ideal K[X]) ≠ 0 := by
@@ -460,7 +459,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
   rw [Ideal.count_associates_factors_eq span_ne_zero.1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr prime_X) span_ne_zero.2,
     Ideal.count_associates_factors_eq]
-  on_goal 1 => convert! (normalized_count_X_eq_of_coe hP).symm
+  on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
   exacts [Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
     Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X X_prime,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
@@ -488,9 +487,9 @@ theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
   refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
-  convert!
+  convert
     @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
-      ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| (by simp [h])⟩
+      ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 (by simp [h])⟩
   · simp [← IsScalarTower.algebraMap_apply K[X] K⟮X⟯ K⸨X⸩]
   exacts [intValuation_eq_of_coe _, intValuation_eq_of_coe _]
 
@@ -791,7 +790,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
     constructor
     · have := (exists_lb_coeff_ne hℱ).choose_spec
       rw [Filter.eventually_iff] at this
-      convert! this
+      convert this
       ext
       simp only [Set.mem_iInter, Set.mem_ofPred_eq]; rfl
     · rw [biInter_mem (Set.finite_Icc ℓ N)]
@@ -1037,11 +1036,11 @@ abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
   { comparePkg K with
     map_mul' x y :=
       (comparePkg_eq_extension K (x * y)).trans <|
-        (map_mul _ x.toCompletion y.toCompletion).trans <|
+        (map_mul _ x.toCompletion y.toCompletion).trans
         (congrArg₂ (· * ·) (comparePkg_eq_extension K x) (comparePkg_eq_extension K y)).symm
     map_add' x y :=
       (comparePkg_eq_extension K (x + y)).trans <|
-        (map_add _ x.toCompletion y.toCompletion).trans <|
+        (map_add _ x.toCompletion y.toCompletion).trans
         (congrArg₂ (· + ·) (comparePkg_eq_extension K x) (comparePkg_eq_extension K y)).symm }
 
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
@@ -1125,14 +1124,14 @@ theorem valuation_compare (f : K⸨X⸩) :
     Valued.v (LaurentSeriesRingEquiv K f) = Valued.v f := by
   change Valued.v (adicCompletion.ofCompletion
     ((LaurentSeriesPkg K).compare ratfuncAdicComplPkg f)) = Valued.v f
-  rw [adicCompletion.valued_ofCompletion]
+  rw [adicCompletion.valued_ofCompletion_apply]
   let : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
       ratfuncAdicComplPkg.uniformStruct
   have raw_surj : Function.Surjective (Valued.v : (polynomialValuationX K).Completion → ℤᵐ⁰) :=
     Valued.valuedCompletion_surjective_iff.mpr <| .of_comp ((idealX K).valuation_surjective K⟮X⟯)
   rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare ratfuncAdicComplPkg _]
-  · exact congr_fun (ratfuncAdicComplPkg.isDenseInducing.extend_unique
-      Valued.valuedCompletion_apply (Valued.continuous_valuation_of_surjective raw_surj)).symm _
+  · congrm $((ratfuncAdicComplPkg.isDenseInducing.extend_unique
+     Valued.valuedCompletion_apply (Valued.continuous_valuation_of_surjective raw_surj)).symm) _
   · refine Valued.continuous_valuation_of_surjective (fun x ↦ ?_)
     obtain ⟨y, rfl⟩ := RatFunc.valuation_surjective K x
     exact ⟨.toVal _ y, rfl⟩

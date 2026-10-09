@@ -6,13 +6,14 @@ Authors: Jujian Zhang
 
 module
 
-public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.LinearAlgebra.LinearPMap
-public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Logic.Small.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.Logic.Small.Basic
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Tactic.NormNum
+
+import Mathlib.Algebra.Module.Shrink
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Injective modules
@@ -123,7 +124,7 @@ theorem ExtensionOf.dExt {a b : ExtensionOf i f} (domain_eq : a.domain = b.domai
 theorem ExtensionOf.dExt_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
-  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
+  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr(a.toFun $(mod_cast h))⟩, fun ⟨h1, h2⟩ =>
     ExtensionOf.dExt h1 h2⟩
 
 theorem ExtensionOf.toLinearPMap_injective :
@@ -164,7 +165,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
   { LinearPMap.sSup _
       (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) with
     le := by
-      refine le_trans hnonempty.some.le <|
+      refine le_trans hnonempty.some.le
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by
@@ -189,12 +190,12 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
       toFun :=
         { toFun := fun x => f x.2.choose
           map_add' := fun x y => by
-            have eq1 : _ + _ = (x + y).1 := congr_arg₂ (· + ·) x.2.choose_spec y.2.choose_spec
+            have eq1 : _ + _ = (x + y).1 := congr($(x.2.choose_spec) + $(y.2.choose_spec))
             rw [← map_add, ← (x + y).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]
           map_smul' := fun r x => by
-            have eq1 : r • _ = (r • x).1 := congr_arg (r • ·) x.2.choose_spec
+            have eq1 : r • _ = (r • x).1 := congr(r • $(x.2.choose_spec))
             rw [← map_smul, ← (r • x).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_smul] }
@@ -294,7 +295,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r
     (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     ExtensionOfMaxAdjoin.extendIdealTo i f h y r' := by
   rw [← sub_eq_zero, ← map_sub]
-  convert! ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
+  convert ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
   rw [sub_smul, sub_eq_zero, eq1]
 
 theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)
@@ -394,7 +395,7 @@ protected theorem extension_property (h : Module.Baer R Q)
 theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)
     (f : M →+ N) (hf : Function.Injective f) (g : M →+ Q) : ∃ h : N →+ Q, h.comp f = g :=
   have ⟨g', hg'⟩ := h.extension_property f.toIntLinearMap hf g.toIntLinearMap
-  ⟨g', congr(LinearMap.toAddMonoidHom $hg')⟩
+  ⟨g', congr($(hg').toAddMonoidHom)⟩
 
 /-- **Baer's criterion** for injective module : a Baer module is an injective module, i.e. if every
 linear map from an ideal can be extended, then the module is injective. -/
@@ -435,7 +436,7 @@ lemma Module.injective_of_ulift_injective
       (by exact ULift.moduleEquiv.symm.injective.comp <| hf.comp eX.injective)
       (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ eX.toLinearMap)
     ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap,
-      fun x ↦ by exact congr(ULift.down $(hg' ⟨x⟩))⟩
+      fun x ↦ by congrm ULift.down $(hg' ⟨x⟩)⟩
 
 variable (M) [Small.{v} R]
 
@@ -473,7 +474,7 @@ instance Module.Injective.pi
     choose l hl using fun i ↦ extension_property R _ _ _ f hf ((LinearMap.proj i).comp g)
     refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
     ext i
-    exact DFunLike.congr_fun (hl i) x⟩
+    congrm $(hl i) x⟩
 
 set_option backward.isDefEq.respectTransparency false in
 universe u' in

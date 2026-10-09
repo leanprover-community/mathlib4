@@ -80,6 +80,11 @@ def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
 lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
 
+@[simp]
+lemma eLpNormEssSup_dirac [MeasurableSingletonClass α] (f : α → ε) (a : α) :
+    eLpNormEssSup f (Measure.dirac a) = ‖f a‖ₑ := by
+  simp [eLpNormEssSup]
+
 /-- `ℒp` seminorm, for almost everywhere strongly measurable functions,
 equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
 `essSup ‖f‖ μ` for `p = ∞`. For not almost everywhere strongly measurable functions,
@@ -100,7 +105,7 @@ theorem eLpNorm_of_not_aestronglyMeasurable [TopologicalSpace ε]
 
 theorem aestronglyMeasurable_of_eLpNorm_ne_top [TopologicalSpace ε]
     {f : α → ε} {p : ℝ≥0∞} (h : eLpNorm f p μ ≠ ∞) : AEStronglyMeasurable f μ := by
-  contrapose! h
+  contrapose h
   exact eLpNorm_of_not_aestronglyMeasurable h
 
 theorem eLpNorm_eq_eLpNorm' [TopologicalSpace ε]
@@ -209,7 +214,7 @@ theorem inhmgELpNorm_of_not_aestronglyMeasurable
 
 theorem aestronglyMeasurable_of_inhmgELpNorm_ne_top
     {f : α → ε} {p : ℝ≥0∞} (h : inhmgELpNorm f p μ ≠ ∞) : AEStronglyMeasurable f μ := by
-  contrapose! h
+  contrapose h
   exact inhmgELpNorm_of_not_aestronglyMeasurable h
 
 theorem inhmgELpNorm_eq_eLpNorm (hp : 1 ≤ p) {f : α → ε} :

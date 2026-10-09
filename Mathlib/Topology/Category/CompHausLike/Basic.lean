@@ -6,8 +6,8 @@ Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 module
 
 public import Mathlib.Topology.Category.TopCat.Basic
-public import Mathlib.CategoryTheory.Functor.EpiMono
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+
+import Mathlib.CategoryTheory.Functor.EpiMono
 /-!
 
 # Categories of Compact Hausdorff Spaces
@@ -218,7 +218,7 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
     let g₁ : X ⟶ X := ofHom _ ⟨fun _ => x₁, continuous_const⟩
     let g₂ : X ⟶ X := ofHom _ ⟨fun _ => x₂, continuous_const⟩
     have : g₁ ≫ f = g₂ ≫ f := by ext; exact h
-    exact CategoryTheory.congr_fun ((cancel_mono _).mp this) x₁
+    congrm $((cancel_mono _).mp this) x₁
   · rw [← CategoryTheory.ofHom_mono_iff_injective]
     apply (forget (CompHausLike P)).mono_of_mono_map
 

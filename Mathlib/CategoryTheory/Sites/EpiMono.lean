@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Concrete
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!
@@ -51,7 +50,6 @@ variable {A}
 variable (data : FunctorialSurjectiveInjectiveFactorizationData A) [HasWeakSheafify J A]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a functorial surjective/injective factorizations of morphisms in a concrete
 category `A`, this is the induced functorial locally surjective/locally injective
 factorization of morphisms in the category `Sheaf J A`. -/

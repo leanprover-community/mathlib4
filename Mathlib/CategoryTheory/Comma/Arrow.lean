@@ -136,7 +136,7 @@ lemma mk_eq_mk_iff {X Y X' Y' : T} (f : X ⟶ Y) (f' : X' ⟶ Y') :
       ∃ (hX : X = X') (hY : Y = Y'), f = eqToHom hX ≫ f' ≫ eqToHom hY.symm := by
   constructor
   · intro h
-    refine ⟨congr_arg Arrow.left h, congr_arg Arrow.right h, ?_⟩
+    refine ⟨congr($(h).left), congr($(h).right), ?_⟩
     simpa [eqToHom_left, eqToHom_right] using! iso_w (eqToIso h.symm)
   · rintro ⟨rfl, rfl, h⟩
     simp only [eqToHom_refl, Category.comp_id, Category.id_comp] at h
@@ -216,12 +216,8 @@ def isoMk {f g : Arrow T} (l : f.left ≅ g.left) (r : f.right ≅ g.right)
     (h : l.hom ≫ g.hom = f.hom ≫ r.hom := by cat_disch) : f ≅ g :=
   Comma.isoMk l r h
 
-/-- `isoMk''` is the dual of `isoMk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing isoMk]
-abbrev isoMk'' {f g : Arrow T} (l : f.right ≅ g.right) (r : f.left ≅ g.left)
-    (h : g.hom ≫ l.inv = r.inv ≫ f.hom := by cat_disch) : f ≅ g :=
-  isoMk r l (by rwa [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp] at h)
+to_dual_for isoMk := isoMk r l (by rwa [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp] at h)
+
 attribute [to_dual none] isoMk_hom_left isoMk_hom_right isoMk_inv_left isoMk_inv_right
 
 /-- A variant of `Arrow.isoMk` that creates an iso between two `Arrow.mk`s with a better type
@@ -230,11 +226,7 @@ abbrev isoMk' {W X Y Z : T} (f : W ⟶ X) (g : Y ⟶ Z) (e₁ : W ≅ Y) (e₂ :
     (h : e₁.hom ≫ g = f ≫ e₂.hom := by cat_disch) : Arrow.mk f ≅ Arrow.mk g :=
   Arrow.isoMk e₁ e₂ h
 
-/-- `isoMk'''` is the dual of `isoMk'`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing isoMk']
-abbrev isoMk''' {W X Y Z : T} (f : X ⟶ W) (g : Z ⟶ Y) (e₁ : W ≅ Y)
-  (e₂ : X ≅ Z) (h : g ≫ e₁.inv = e₂.inv ≫ f := by cat_disch) : mk f ≅ mk g :=
+to_dual_for isoMk' :=
   isoMk' f g e₂ e₁ (by rwa [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp] at h)
 
 section
@@ -336,11 +328,11 @@ def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i �
   Arrow.homMk (sq.left ≫ f) (sq.right) (by simp [w_mk sq])
 
 /-- The functor sending an arrow to its source. -/
-@[to_dual (attr := simps!) /-- The functor sending an arrow to its target. -/]
-def leftFunc : Arrow C ⥤ C :=
-  Comma.fst _ _
+@[to_dual (attr := implicit_reducible, simps!) /-- The functor sending an arrow to its target. -/]
+def leftFunc : Arrow C ⥤ C where
+  obj := Arrow.left
+  map := Arrow.Hom.left
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation from `leftFunc` to `rightFunc`, given by the arrow itself. -/
 @[simps]
@@ -431,7 +423,7 @@ that the induced maps `Arrow C → Arrow D` coincide. -/
 lemma Arrow.functor_ext {F G : C ⥤ D} (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
     F.mapArrow.obj (Arrow.mk f) = G.mapArrow.obj (Arrow.mk f)) :
     F = G :=
-  Functor.ext (fun X ↦ congr_arg Comma.left (h (𝟙 X))) (fun X Y f ↦ by
+  Functor.ext (fun X ↦ congr($(h (𝟙 X)).left)) (fun X Y f ↦ by
     have := h f
     simp only [Functor.mapArrow_obj, mk_eq_mk_iff] at this
     tauto)

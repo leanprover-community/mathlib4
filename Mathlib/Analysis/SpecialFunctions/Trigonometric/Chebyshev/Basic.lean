@@ -6,8 +6,9 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Analysis.Complex.Trigonometric
-public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.RingTheory.Polynomial.Chebyshev
+
+import Mathlib.LinearAlgebra.Complex.Module
 
 /-!
 # Multiple angle formulas in terms of Chebyshev polynomials
