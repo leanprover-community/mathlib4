@@ -5,13 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Action.Units
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Hom.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Units
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -114,7 +114,7 @@ because:
   different types. So we would have to generalise `CovariantClass`/`ContravariantClass` to three
   types and two relations.
 * Very minor, but the constructors let you work with `a : α`, `h : 0 ≤ a` instead of
-  `a : {a : α // 0 ≤ a}`. This actually makes some instances surprisingly cleaner to prove.
+  `a : Nonneg α`. This actually makes some instances surprisingly cleaner to prove.
 * The `CovariantClass`/`ContravariantClass` framework is only useful to automate very simple logic
   anyway. It is easily copied over.
 

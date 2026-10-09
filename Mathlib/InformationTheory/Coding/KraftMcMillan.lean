@@ -5,13 +5,11 @@ Authors: Elazar Gershuni
 -/
 module
 
-public import Mathlib.Data.List.Basic
-public import Mathlib.Data.Finset.Basic
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Data.Fintype.Card
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
+
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
@@ -108,7 +106,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
   have hlen_maps (x : List α) (hx : x ∈ T) : x.length ∈ Finset.Icc r (r * maxLen) := by
     rcases Finset.mem_image.mp hx with ⟨_, _, rfl⟩
     exact concatFn_length_mem_Icc
-      (fun c hnil => h.epsilon_not_mem (by simpa [hnil] using c.prop))
+      (fun c hnil => h.epsilon_notMem (by simpa [hnil] using c.prop))
   let D := (Fintype.card α : ℝ)
   -- Expand the `r`-th power as a sum over `r`-tuples of codewords;
   -- each tuple contributes the weight `(1/D)^{|concatFn w|}`.

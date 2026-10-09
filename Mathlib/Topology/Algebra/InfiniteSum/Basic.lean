@@ -6,14 +6,13 @@ Authors: Johannes Hölzl, Mitchell Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
-public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Order.Filter.AtTopBot.BigOperators
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
-public import Mathlib.Order.Filter.AtTopBot.BigOperators
 
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Lemmas on infinite sums and products in topological monoids
@@ -26,8 +25,6 @@ Results requiring a group (rather than monoid) structure on the target should go
 -/
 
 public section
-
-noncomputable section
 
 open Filter Finset Function Topology SummationFilter
 
@@ -44,11 +41,11 @@ theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd,
 
 @[to_additive (attr := simp)]
 theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
-  convert! hasProd_one
+  convert hasProd_one
 
 @[to_additive (attr := nontriviality)]
 theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
-  convert! hasProd_one
+  convert hasProd_one
 
 @[to_additive (attr := simp)]
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
@@ -67,7 +64,7 @@ disagree on a finite set. -/
 @[to_additive /-- See `summable_congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/]
 theorem multipliable_congr (hfg : ∀ b, f b = g b) : Multipliable f L ↔ Multipliable g L :=
-  iff_of_eq (congr_arg (Multipliable · L) <| funext hfg)
+  iff_of_eq congr(Multipliable $(funext hfg) L)
 
 /-- See `Multipliable.congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/
@@ -272,7 +269,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
       use a
       simp [hge.tendsto_nhds_iff, Function.comp_def, ha, hb]
   · simpa [tprod_bot hL] using
-      (MonoidHomClass.toMonoidHom g).map_finprod_of_injective hge.injective _
+      (MonoidHom.ofClass g).map_finprod_of_injective hge.injective _
 
 /-- Special case of `Topology.IsClosedEmbedding.map_tprod`, logically weaker but possibly easier
 to apply in practice. -/
@@ -315,7 +312,7 @@ protected theorem Multipliable.map_iff_of_equiv [CommMonoid γ] [TopologicalSpac
 theorem Function.Surjective.multipliable_iff_of_hasProd_iff {α' : Type*} [CommMonoid α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) {f : β → α} {g : γ → α'}
     (he : ∀ {a}, HasProd f (e a) ↔ HasProd g a) : Multipliable f ↔ Multipliable g :=
-  hes.exists.trans <| exists_congr <| @he
+  hes.exists.trans <| exists_congr @he
 
 variable [ContinuousMul α]
 
@@ -466,12 +463,12 @@ theorem tprod_one : ∏'[L] _, (1 : α) = 1 := by
 
 @[to_additive (attr := simp)]
 theorem tprod_empty [IsEmpty β] : ∏'[L] b, f b = 1 := by
-  convert! tprod_one (L := L)
+  convert tprod_one (L := L)
 
 @[to_additive]
 theorem tprod_congr {f g : β → α}
     (hfg : ∀ b, f b = g b) : ∏'[L] b, f b = ∏'[L] b, g b :=
-  congr_arg (tprod · L) (funext hfg)
+  congr(tprod $(funext hfg) L)
 
 @[to_additive]
 theorem tprod_congr₂ {f g : β → γ → α} {M : SummationFilter γ}

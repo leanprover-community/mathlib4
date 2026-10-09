@@ -5,6 +5,7 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!

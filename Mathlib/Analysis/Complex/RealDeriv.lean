@@ -6,8 +6,9 @@ Authors: Sébastien Gouëzel, Yourong Zang
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.Deriv.Linear
 public import Mathlib.Analysis.Complex.Basic
+
+import Mathlib.Analysis.Calculus.Deriv.Linear
 
 /-! # Real differentiability of complex-differentiable functions
 

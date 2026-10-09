@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.BoxIntegral.Basic
-public import Mathlib.Analysis.BoxIntegral.Partition.Additive
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
@@ -49,8 +48,6 @@ open ContinuousLinearMap (lsmul)
 open Filter Set Finset Metric
 
 open BoxIntegral.IntegrationParams (GP gp_le)
-
-noncomputable section
 
 universe u
 
@@ -229,7 +226,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
         (Hmaps _ Hl hy)) volume).trans ?_
       refine (mul_le_mul_of_nonneg_right ?_ (half_pos ε0).le).trans_eq (one_mul _)
       rw [Box.coe_eq_pi, measureReal_def, Real.volume_pi_Ioc_toReal (Box.lower_le_upper _)]
-      refine prod_le_one (fun _ _ => sub_nonneg.2 <| Box.lower_le_upper _ _) fun j _ => ?_
+      refine prod_le_one₀ (fun _ _ => sub_nonneg.2 <| Box.lower_le_upper _ _) fun j _ => ?_
       calc
         J.upper (i.succAbove j) - J.lower (i.succAbove j) ≤
             dist (J.upper (i.succAbove j)) (J.lower (i.succAbove j)) :=

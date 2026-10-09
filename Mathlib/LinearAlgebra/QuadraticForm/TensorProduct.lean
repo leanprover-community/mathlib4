@@ -7,7 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
-public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # The quadratic form on a tensor product
@@ -163,7 +164,6 @@ theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticMap A (A ⊗[R] M₂) N₁⦄
   ext x
   induction x with
   | tmul => simp [h]
-  | zero => simp
   | add x y hx hy =>
     have : Q₁.polarBilin = Q₂.polarBilin := by
       ext
