@@ -5,8 +5,8 @@ Authors: Thomas Zhu, Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
+public import Mathlib.Probability.Distributions.Gaussian.Real
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 import Mathlib.MeasureTheory.Measure.LevyConvergence
@@ -30,8 +30,6 @@ central limit theorem
 -/
 
 public section
-
-noncomputable section
 
 open MeasureTheory ProbabilityTheory Complex Filter
 open scoped Real Topology
@@ -108,7 +106,7 @@ private theorem tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub
     rw [← Finset.sum_div, Finset.sum_sub_distrib]
     simp [field]
   simp_rw [this]
-  convert! tendstoInDistribution_inv_sqrt_mul_sum hY ?_ ?_ ?_ ?_
+  convert tendstoInDistribution_inv_sqrt_mul_sum hY ?_ ?_ ?_ ?_
   · rw [integral_div, integral_sub intX0 (by simp)]
     simp
   · simp only [Pi.pow_apply, div_pow]
@@ -141,7 +139,7 @@ theorem tendstoInDistribution_inv_sqrt_mul_sum_sub
       simp [hω]
     · exact ⟨by fun_prop, by fun_prop, by simp [hY.map_eq, h]⟩
   have : HasLaw (fun ω ↦ Y ω / √Var[X 0; P]) (gaussianReal 0 1) P' := by
-    convert! gaussianReal_div_const hY _
+    convert gaussianReal_div_const hY _
     · simp
     · ext; simp [h]
   convert!

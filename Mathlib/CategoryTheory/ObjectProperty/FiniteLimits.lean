@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
+
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
 # Properties of objects that are closed under finite limits

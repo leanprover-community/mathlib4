@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
 /-!
@@ -1019,7 +1018,7 @@ instance (priority := low) [PreservesColimitsOfShape (Discrete WalkingPair) F] :
   refine preservesColimitsOfShape_walkingCospan_of_forall_isPushout fun X Y Z f g hfg ↦ ?_
   use pushout f g, pushout.inl f g, pushout.inr f g, .of_hasPushout f g
   rw [isPushout_iff_isColimit_binaryCofan_of_isThin]
-  refine ⟨(BinaryCofan.mk (pushout.inl f g) (pushout.inr f g)).isColimitMapConeEquiv ?_⟩
+  refine ⟨(BinaryCofan.mk (pushout.inl f g) (pushout.inr f g)).isColimitMapCoconeEquiv ?_⟩
   apply isColimitOfPreserves _ (Nonempty.some ?_)
   rw [← CategoryTheory.isPushout_iff_isColimit_binaryCofan_of_isThin (f := f) (g := g)]
   exact .of_hasPushout f g

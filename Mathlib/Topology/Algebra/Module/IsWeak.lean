@@ -5,9 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
-public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Weak topologies on modules
 
@@ -131,7 +130,7 @@ protected theorem congr [AddCommMonoid E'] [Module 𝕜 E']
     B'.IsWeak where
   eq_induced := by
     rw [e.symm.toHomeomorph.induced_eq.symm]
-    apply congr(TopologicalSpace.induced e.symm $(hB.eq_induced)).trans
+    apply congr(TopologicalSpace.induced e.symm $hB.eq_induced).trans
     simp_rw [induced_compose, ← hBB', induced_to_pi]
     rw [f.toEquiv.iInf_congr]
     simp

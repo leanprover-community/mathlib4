@@ -5,10 +5,9 @@ Authors: Sébastien Gouëzel, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.Normed.Lp.ProdLp
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.LinearAlgebra.Matrix.Basis
-public import Mathlib.Analysis.Normed.Lp.ProdLp
 public import Mathlib.Topology.Algebra.Module.Equiv.Pi
 
 /-!
@@ -741,7 +740,7 @@ theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
 
 @[simp] lemma nnnorm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖₊ = ‖f‖₊ := (nnnorm_ofLp _).symm
 
-@[simp] lemma norm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖ = ‖f‖ := congr_arg NNReal.toReal <| nnnorm_ofLp f
+@[simp] lemma norm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖ = ‖f‖ := congr($(nnnorm_ofLp f).toReal)
 @[simp] lemma norm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖ = ‖f‖ := (norm_ofLp _).symm
 
 end Linfty
@@ -793,7 +792,7 @@ theorem nnnorm_eq_of_L2 (x : PiLp 2 β) :
 theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖ ^ 2 = ∑ i : ι, ‖x i‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ∑ i : ι, ‖x i‖₊ ^ 2 by
-    simpa only [NNReal.coe_sum] using! congr_arg ((↑) : ℝ≥0 → ℝ) this
+    simpa only [NNReal.coe_sum] using! congr(($this : ℝ))
   rw [nnnorm_eq_of_L2, NNReal.sq_sqrt]
 
 theorem dist_eq_of_L2 (x y : PiLp 2 β) :
@@ -949,6 +948,40 @@ theorem _root_.LinearIsometryEquiv.piLpCongrRight_single (e : ∀ i, α i ≃ₗ
 
 end piLpCongrRight
 
+section piLpExtendByZero
+variable {ι' : Type*} [Fintype ι'] {E : Type*} [SeminormedAddCommGroup E] [Module 𝕜 E]
+
+variable (p 𝕜 E) in
+/-- An embedding of finite domains induces a linearly isometric map of Pi types with the Lp norm.
+This is the `PiLp` version of `Function.ExtendByZero.linearMap`. It can be also seen as the
+embedding version of `LinearIsometryEquiv.piLpCongrLeft`. -/
+@[simps!]
+def _root_.LinearIsometry.piLpExtendByZero (f : ι ↪ ι') :
+    PiLp p (fun _ : ι ↦ E) →ₗᵢ[𝕜] PiLp p (fun _ : ι' ↦ E) where
+  __ := (Function.ExtendByZero.linearMap 𝕜 E f).withLpMap p
+  norm_map' x := by
+    rcases x with ⟨x⟩
+    rcases p.dichotomy with rfl | h
+    · suffices ‖Function.ExtendByZero.linearMap 𝕜 E f x‖ = ‖x‖ by simpa
+      exact (f.injective.factorsThrough _).norm_extend (by simp)
+    · have hp : 0 < p.toReal := zero_lt_one.trans_le h
+      simp [norm_eq_sum hp, Function.apply_extend (‖·‖ ^ p.toReal), hp.ne',
+        Finset.sum_extend_zero_of_injective _ f.injective]
+
+@[simp]
+theorem _root_.LinearIsometry.piLpExtendByZero_apply_single [DecidableEq ι] [DecidableEq ι']
+    (f : ι ↪ ι') (i : ι) (a : E) :
+    LinearIsometry.piLpExtendByZero p 𝕜 E f (PiLp.single p i a) = PiLp.single p (f i) a := by
+  ext j
+  simp [f.injective.extend_single, Pi.single_apply]
+
+theorem _root_.LinearIsometry.piLpExtendByZero_apply_eq_zero {f : ι ↪ ι'} {i : ι'}
+    (hi : i ∉ range f) (v : PiLp p (fun _ : ι ↦ E)) :
+    LinearIsometry.piLpExtendByZero p 𝕜 E f v i = 0 := by
+  simp [Function.extend_apply' _ _ _ hi]
+
+end piLpExtendByZero
+
 section piLpCurry
 
 variable {ι : Type*} {κ : ι → Type*} (p : ℝ≥0∞) [Fact (1 ≤ p)]
@@ -1043,7 +1076,7 @@ theorem nnnorm_toLp_single (i : ι) (b : β i) : ‖toLp p (Pi.single i b)‖₊
 
 @[simp]
 lemma norm_single (i : ι) (b : β i) : ‖single p i b‖ = ‖b‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_single p β i b
+  congr($(nnnorm_single p β i b))
 
 @[deprecated norm_single +typeChanged (since := "2026-03-15")]
 lemma norm_toLp_single (i : ι) (b : β i) : ‖toLp p (Pi.single i b)‖ = ‖b‖ :=
@@ -1062,7 +1095,7 @@ lemma nndist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
 @[simp]
 lemma dist_single_same (i : ι) (b₁ b₂ : β i) :
     dist (single p i b₁) (single p i b₂) = dist b₁ b₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_single_same p β i b₁ b₂
+  congr($(nndist_single_same p β i b₁ b₂))
 
 @[deprecated dist_single_same +typeChanged (since := "2026-03-15")]
 lemma dist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
@@ -1113,7 +1146,7 @@ the left-hand side simplifies to `0`, while the right-hand side simplifies to `�
 lemma norm_toLp_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
     ‖toLp p (Function.const ι b)‖ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_const hp b).trans <| by simp
+  congr(($(nnnorm_toLp_const hp b) : ℝ)).trans <| by simp
 
 /-- When `IsEmpty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
@@ -1121,7 +1154,7 @@ the left-hand side simplifies to `0`, while the right-hand side simplifies to `�
 lemma norm_toLp_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
     ‖toLp p (Function.const ι b)‖ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_const' b).trans <| by simp
+  congr(($(nnnorm_toLp_const' b) : ℝ)).trans <| by simp
 
 lemma nnnorm_toLp_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
     ‖toLp p (1 : ι → β)‖₊ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖₊ :=

@@ -5,10 +5,8 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.TypeTags
-public import Mathlib.Data.ZMod.QuotientGroup
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.Algebra.Group.Int.TypeTags
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains
@@ -185,7 +183,7 @@ theorem valuation_ker_eq :
   constructor
   · intro hx' v _
     by_cases hv : v ∈ S
-    · exact congr_fun hx' ⟨v, hv⟩
+    · congrm $hx' ⟨v, hv⟩
     · exact hx v hv
   · exact fun hx' => funext fun v => hx' v <| Set.notMem_empty v
 
@@ -204,8 +202,8 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
   constructor
   · intro hx
     rcases (QuotientGroup.eq_one_iff _).mp (Subtype.mk.inj hx) with ⟨⟨v, i, vi, iv⟩, hx⟩
-    have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := congr_arg Units.val hx
-    have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := congr_arg Units.inv hx
+    have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := congr($(hx).val)
+    have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := congr($(hx).inv)
     rw [Units.val_pow_eq_pow_val] at hv
     rw [← inv_pow, Units.inv_mk, Units.val_pow_eq_pow_val] at hi
     rcases IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow (R := R) (x := v) hn.out

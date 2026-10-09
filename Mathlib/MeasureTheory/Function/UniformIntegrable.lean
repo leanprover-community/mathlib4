@@ -709,7 +709,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp'
   filter_upwards [hfg, h_ae_forall_eq, hg.aestronglyMeasurable.ae_eq_mk]
     with x hx_tendsto hxf_eq hxg_eq
   rw [← hxg_eq]
-  convert! hx_tendsto using 1
+  convert hx_tendsto using 1
   ext1 n
   exact (hxf_eq n).symm
 

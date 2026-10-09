@@ -5,9 +5,8 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Module.Bases
 
 /-!
@@ -161,7 +160,7 @@ theorem inner_single_left [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
     ⟪lp.single 2 i a, f⟫ = ⟪a, f i⟫ := by
   refine (hasSum_inner (lp.single 2 i a) f).unique ?_
   simp_rw [lp.coeFn_single]
-  convert! hasSum_ite_eq i ⟪a, f i⟫ using 1
+  convert hasSum_ite_eq i ⟪a, f i⟫ using 1
   ext j
   split_ifs with h
   · subst h; rw [Pi.single_eq_same]
@@ -169,7 +168,7 @@ theorem inner_single_left [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
 
 theorem inner_single_right [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
     ⟪f, lp.single 2 i a⟫ = ⟪f i, a⟫ := by
-  simpa [inner_conj_symm] using congr_arg conj (inner_single_left (𝕜 := 𝕜) i a f)
+  simpa [inner_conj_symm] using congr(conj $(inner_single_left (𝕜 := 𝕜) i a f))
 
 end lp
 
@@ -349,7 +348,7 @@ theorem Orthonormal.isHilbertSum {v : ι → E} (hv : Orthonormal 𝕜 v)
     (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) :
     IsHilbertSum 𝕜 (fun _ : ι => 𝕜) fun i => LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
   IsHilbertSum.mk hv.orthogonalFamily (by
-    convert! hsp
+    convert hsp
     simp [← LinearMap.span_singleton_eq_range, ← Submodule.span_iUnion])
 
 theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSpace K] :
@@ -398,13 +397,13 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
     apply ContinuousLinearEquiv.coe_injective
     refine lp.ext_continuousLinearMap (ENNReal.ofNat_ne_top (n := nat_lit 2)) fun i => ?_
     ext
-    exact congr_fun h i
+    congrm $h i
 
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by
   dsimp +instances [instFunLike]
-  convert! rfl
+  convert rfl
 
 
 protected theorem repr_self [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
