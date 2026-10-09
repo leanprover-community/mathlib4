@@ -191,8 +191,7 @@ set_option linter.unusedVariables false in
 `U` from a space `X` yields an isomorphism `Hₚ i X ≅ Hₚ i (X \ U)`. -/
 @[mk_iff]
 class HasExcisionIso where
-  isIso_of_isExcisive ⦃X V : TopPair⦄ (g : V ⟶ X)
-      (h : isExcisive g) (i : ι) :
+  isIso_of_isExcisive ⦃X V : TopPair⦄ (g : V ⟶ X) [IsExcisive g] (i : ι) :
       IsIso ((HP.Hₚ i).map g)
 
 export HasExcisionIso (isIso_of_isExcisive)
