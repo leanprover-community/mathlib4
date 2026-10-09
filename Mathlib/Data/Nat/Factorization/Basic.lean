@@ -5,9 +5,10 @@ Authors: Stuart Presnell
 -/
 module
 
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Nat.Factorization.Defs
 public import Mathlib.Order.Interval.Finset.Nat
+
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 
 /-!
 # Basic lemmas on prime factorizations

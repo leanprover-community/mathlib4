@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.MonCat.Limits
 public import Mathlib.Algebra.Group.IsCommutative
+public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
-public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 
 /-!
 # Yoneda embedding of `Mon C`

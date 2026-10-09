@@ -32,7 +32,7 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 `A ⥤ Cᵒᵖ ⥤ A`. -/
 @[simps!]
 noncomputable def skyscraperPresheafFunctor : A ⥤ Cᵒᵖ ⥤ A :=
-  Functor.flip (Φ.fiber.op ⋙ piFunctor.{w}.flip)
+  (Φ.fiber.op ⋙ piConst.flip).flip
 
 /-- Given a point `Φ` on a site `(C, J)`, and an object `M` of a category `A`,
 this is the skyscraper presheaf with value `M`: it sends `X : C` to the

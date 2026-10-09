@@ -11,6 +11,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Order.Lattice.Nat
+
 import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!

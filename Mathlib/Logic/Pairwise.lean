@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Function.Basic
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Relations holding pairwise

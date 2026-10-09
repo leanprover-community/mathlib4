@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Results about `IsSMulRegular` for `MonoidWithZero`

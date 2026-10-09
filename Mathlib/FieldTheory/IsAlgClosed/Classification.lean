@@ -5,12 +5,13 @@ Authors: Chris Hughes
 -/
 module
 
-import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.MvPolynomial.Cardinal
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.Algebraic.Cardinality
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+
+import Mathlib.Algebra.Algebra.ZMod
+import Mathlib.Algebra.MvPolynomial.Cardinal
+import Mathlib.RingTheory.Algebraic.Cardinality
 
 /-!
 # Classification of Algebraically closed fields

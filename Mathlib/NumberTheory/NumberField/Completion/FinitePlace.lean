@@ -5,15 +5,15 @@ Authors: Fabrizio Barroero
 -/
 module
 
-import Mathlib.Algebra.Order.Archimedean.Submonoid
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.RamificationInertia.Valuation
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.RamificationInertia.Inertia
-import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 import Mathlib.Algebra.FiniteSupport.Basic
+import Mathlib.Algebra.Order.Archimedean.Submonoid
+import Mathlib.RingTheory.Valuation.Archimedean
 
 /-!
 # Finite places of number fields

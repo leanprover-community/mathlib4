@@ -5,13 +5,14 @@ Authors: Anne Baanen, Ashvni Narayanan
 -/
 module
 
+public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.CompletionAtInfty`
+
 import Mathlib.FieldTheory.RatFunc.Degree
+import Mathlib.FieldTheory.RatFunc.IntermediateField
+import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.FieldTheory.RatFunc.IntermediateField
-import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
-public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.CompletionAtInfty`
 
 /-!
 # Function fields

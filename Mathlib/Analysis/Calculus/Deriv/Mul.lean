@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Support
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
+
 import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
@@ -25,8 +26,6 @@ derivative, multiplication
 public section
 
 universe u v w
-
-noncomputable section
 
 open scoped Topology Filter ENNReal
 

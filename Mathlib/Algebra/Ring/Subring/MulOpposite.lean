@@ -5,8 +5,8 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 
 /-!
 

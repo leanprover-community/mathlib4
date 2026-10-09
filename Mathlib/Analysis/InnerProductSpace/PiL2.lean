@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Util.Superscript
+
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!

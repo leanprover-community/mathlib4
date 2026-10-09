@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.Limits.Types.Pushouts
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.Pushouts
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # Stability properties of monomorphisms in `Type`

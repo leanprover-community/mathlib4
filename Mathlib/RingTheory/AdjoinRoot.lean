@@ -7,8 +7,8 @@ module
 
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
-public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.RingTheory.Polynomial.Quotient
+public import Mathlib.RingTheory.PowerBasis
 
 /-!
 # Adjoining roots of polynomials

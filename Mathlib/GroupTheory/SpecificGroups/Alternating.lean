@@ -5,11 +5,12 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.GroupTheory.Perm.Fin
+
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.ConjAct
-public import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.Tactic.IntervalCases
-public import Mathlib.Data.Nat.Totient
 
 /-!
 # Alternating Groups
