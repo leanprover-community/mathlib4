@@ -115,6 +115,19 @@ theorem ofArray_ofFn {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
   rw [ofArray_apply, Fin.getElem_fin, Array.getElem_ofFn, Fin.divNat_mkDivMod,
     Fin.modNat_mkDivMod]
 
+/-- The array of the entries of a matrix in row-major ordering. -/
+def toArray {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) : Array R :=
+  .ofFn fun k : Fin (m * n) ↦ A k.divNat k.modNat
+
+@[simp]
+theorem size_toArray {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) : A.toArray.size = m * n :=
+  Array.size_ofFn
+
+@[simp]
+theorem ofArray_toArray {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
+    ofArray A.toArray A.size_toArray = A :=
+  ofArray_ofFn A
+
 lemma ofArray_eq_of_getD [Zero R] {m n : ℕ} (A : Array R) (hA : A.size = m * n) :
     ofArray A hA = .of fun i j ↦ A.getD (n * i.val + j.val) 0 := by
   ext i j
