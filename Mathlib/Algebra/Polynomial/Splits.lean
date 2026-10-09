@@ -5,7 +5,6 @@ Authors: Thomas Browning, Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.Algebra.Polynomial.Taylor
@@ -646,7 +645,7 @@ theorem Splits.eval_derivative_eq_eval_mul_sum (hf : Splits f) {x : R} (hx : f.e
     f.derivative.eval x = f.eval x * (f.roots.map fun z ↦ 1 / (x - z)).sum := by
   classical
   simp only [hf.eval_derivative, hf.eval_eq_prod_roots, ← Multiset.sum_map_mul_left, mul_assoc]
-  refine congr_arg Multiset.sum (Multiset.map_congr rfl fun z hz ↦ ?_)
+  congrm Multiset.sum $(Multiset.map_congr rfl fun z hz ↦ ?_)
   rw [← Multiset.prod_map_erase hz, mul_one_div, mul_div_cancel_left₀]
   aesop (add simp sub_eq_zero)
 
@@ -671,7 +670,6 @@ theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x =
 
 end Field
 
-noncomputable section
 
 universe u v w
 
@@ -696,7 +694,5 @@ local infixl:50 " ~ᵤ " => Associated
 end UFD
 
 end Splits
-
-end
 
 end Polynomial

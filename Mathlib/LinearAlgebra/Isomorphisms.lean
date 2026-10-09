@@ -21,9 +21,9 @@ public import Mathlib.LinearAlgebra.Quotient.Card
 
 universe u v
 
-variable {R M M₂ : Type*}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M₂]
-variable [Module R M] [Module R M₂]
+variable {R M M₂ M₃ : Type*}
+variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Module R M] [Module R M₂] [Module R M₃]
 variable (f : M →ₗ[R] M₂)
 
 /-! The first and second isomorphism theorems for modules. -/
@@ -39,7 +39,7 @@ equivalent to the range of `f`. -/
 noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMap.range f :=
   -- TODO: We should fix this definition so that `fₗ.quotKerEquivRange.toAddEquiv` is definitionally
   -- equal to `QuotientAddGroup.quotientKerEquivRange f.toAddMonoidHom`.
-  (LinearEquiv.ofInjective ((LinearMap.ker f).liftQ f <| le_rfl) <|
+  (LinearEquiv.ofInjective ((LinearMap.ker f).liftQ f le_rfl) <|
         ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ (le_refl (LinearMap.ker f))).trans
     (LinearEquiv.ofEq _ _ <| Submodule.range_liftQ _ _ _)
 
@@ -148,6 +148,30 @@ theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x :
   quotientInfEquivSupQuotient_symm_apply_eq_zero_iff.2 hx
 
 end IsomorphismLaws
+
+section Surjective
+
+variable {f} (hf : Function.Surjective f)
+
+/-- Given a surjective `f : M →ₗ[R] M₂` and an `R`-module `M₃`, this is a bijection between
+`R`-linear maps `M₂ →ₗ[R] M₃` and `R`-linear maps `g : M →ₗ[R] M₃` such that `ker f ≤ ker g`. -/
+@[simps symm_apply]
+noncomputable def liftOfSurjective :
+    {g : M →ₗ[R] M₃ // ker f ≤ ker g} ≃ (M₂ →ₗ[R] M₃) where
+  toFun    := fun ⟨g, hg⟩ ↦ (ker f).liftQ g hg ∘ₗ (f.quotKerEquivOfSurjective hf).symm
+  invFun h := ⟨h.comp f, fun x hx ↦ by simp [mem_ker.mp hx]⟩
+  left_inv := fun ⟨g, hg⟩ ↦ by ext; simp
+  right_inv h := by
+    ext n
+    obtain ⟨m, rfl⟩ := hf n
+    simp
+
+@[simp]
+theorem equivOfSurjective_apply {g : M →ₗ[R] M₃} (hg : ker f ≤ ker g) {m : M} :
+    (f.liftOfSurjective hf) ⟨g, hg⟩ (f m) = g m := by
+  simp [liftOfSurjective]
+
+end Surjective
 
 end LinearMap
 

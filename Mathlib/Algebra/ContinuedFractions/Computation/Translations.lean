@@ -6,8 +6,9 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Computation.Basic
-public import Mathlib.Algebra.ContinuedFractions.Translations
 public import Mathlib.Algebra.Order.Floor.Ring
+
+import Mathlib.Algebra.ContinuedFractions.Translations
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions
@@ -322,7 +323,8 @@ theorem convs'_succ :
     rw [convs'_of_int, fract_intCast, inv_zero, ← cast_zero, convs'_of_int, cast_zero,
       div_zero, add_zero, floor_intCast]
   · rw [convs', of_h_eq_floor, add_right_inj, convs'Aux_succ_some (of_s_head h)]
-    exact congr_arg (1 / ·) (by rw [convs', of_h_eq_floor, add_right_inj, of_s_tail])
+    congr 1
+    rw [convs', of_h_eq_floor, add_right_inj, of_s_tail]
 
 end Values
 

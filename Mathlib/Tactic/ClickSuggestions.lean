@@ -5,13 +5,13 @@ Authors: Jovan Gerbscheid
 -/
 module
 
+public meta import Lean.Server.FileWorker.RequestHandling
+public meta import Mathlib.Lean.GoalsLocation
+public meta import Mathlib.Lean.Meta.KAbstractPositions
+public import Lean.Widget.InteractiveGoal
+public import Mathlib.Tactic.ClickSuggestions.Normalize
 public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
-public import Mathlib.Tactic.ClickSuggestions.Normalize
-public meta import Mathlib.Lean.Meta.KAbstractPositions
-public meta import Lean.Server.FileWorker.RequestHandling
-public import Lean.Widget.InteractiveGoal
-public meta import Mathlib.Lean.GoalsLocation
 public import ProofWidgets.Component.OfRpcMethod
 
 /-!

@@ -133,7 +133,7 @@ def changeOriginIndexEquiv :
   invFun s :=
     ⟨s.1 - s.2.card, s.2.card,
       ⟨s.2.map
-        (finCongr <| (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEmbedding,
+        (finCongr (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEmbedding,
         Finset.card_map _⟩⟩
   left_inv := by
     rintro ⟨k, l, ⟨s : Finset (Fin <| k + l), hs : s.card = l⟩⟩

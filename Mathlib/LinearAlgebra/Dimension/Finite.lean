@@ -6,10 +6,6 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Constructions
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Conditions for rank to be finite
@@ -75,7 +71,7 @@ lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
     rintro ⟨i : s⟩
     obtain ⟨a, ha, ha'⟩ := h i
     apply ha
-    simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
+    simpa using congr($(linearIndependent_iff.mp hs (.single i a) (by simpa)) i)
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
@@ -179,7 +175,7 @@ theorem lt_aleph0_of_finite {ι : Type w}
 
 theorem finite [Module.Finite R M] {ι : Type*} {f : ι → M}
     (h : LinearIndependent R f) : Finite ι :=
-  Cardinal.lt_aleph0_iff_finite.1 <| h.lt_aleph0_of_finite
+  Cardinal.lt_aleph0_iff_finite.1 h.lt_aleph0_of_finite
 
 theorem setFinite [Module.Finite R M] {b : Set M}
     (h : LinearIndependent R fun x : b => (x : M)) : b.Finite :=
@@ -479,7 +475,7 @@ theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset M, Basis.{v} (s :
   finrank_eq_zero_of_basis_imp_not_finite fun s b hs =>
     h hs.toFinset
       (by
-        convert! b
+        convert b
         simp)
 
 theorem finrank_eq_zero_of_not_exists_basis

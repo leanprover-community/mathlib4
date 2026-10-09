@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Colimit.Module
 public import Mathlib.Algebra.Module.Shrink -- shake: keep (Module R (Shrink.{w, max v w} ↥(sectionsSubmodule F))), cf. lean#13417
 
@@ -48,7 +48,7 @@ def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
           forget₂ AddCommGrpCat AddGrpCat.{w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
-      simpa [Functor.sections] using congr_arg (r • ·) (sh f) }
+      simpa [Functor.sections] using congr(r • $(sh f)) }
 
 instance : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections :=
   inferInstanceAs <| AddCommMonoid (sectionsSubmodule F)

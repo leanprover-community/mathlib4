@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
+
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Finsupp.Order
@@ -145,7 +146,7 @@ theorem mk_single (x : X) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
   mpr := by rintro rfl; simp
 
 lemma single_injective : Function.Injective (single (R := R) (X := X)) :=
-  fun _ _ h ↦ by simpa using congr_arg (Finsupp.support ∘ weights) h
+  fun _ _ h ↦ by simpa using congr((Finsupp.support ∘ weights) $h)
 
 @[simp]
 lemma weights_apply_le_one
@@ -251,7 +252,7 @@ lemma mem_range_map_iff
         aesop
     · rw [Finsupp.notMem_support_iff] at hy
       rw [hy]
-      refine Finsupp.mapDomain_of_not_mem_image_support ?_
+      refine Finsupp.mapDomain_of_notMem_image_support ?_
       simp only [Finset.univ_eq_attach, Set.mem_image, SetLike.mem_coe, Finsupp.mem_support_iff,
         Finsupp.coe_finsetSum, Finset.sum_apply, ne_eq, not_exists, not_and]
       intro x hx rfl
@@ -479,7 +480,9 @@ abbrev ConvexSpace.mk {X : Type*} (sConvexComb : StdSimplex R X → X)
 variable (R) in
 /-- A map between convex spaces is affine if it preserves convex combinations.
 
-TODO: Show that this generalises affine maps between affine spaces, see `AffineMap`. -/
+ Note that this generalises the notion of affine maps between affine spaces.
+ See `AffineMap.isAffineMap` for one direction. -/
+ -- TODO: Prove the other direction.
 @[fun_prop]
 structure IsAffineMap (f : X → Y) : Prop where
   map_sConvexComb (s : StdSimplex R X) : f s.sConvexComb = (s.map f).sConvexComb
@@ -528,7 +531,7 @@ lemma iConvexComb_id (w : StdSimplex R X) : w.iConvexComb id = w.sConvexComb := 
 @[congr] lemma iConvexComb_congr {w : StdSimplex R I} {f g : I → X}
     (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
     w.iConvexComb f = w.iConvexComb g := by
-  refine congr(sConvexComb $(?_))
+  congrm sConvexComb ?_
   ext i
   simp only [weights_map]
   -- TODO: This should just be `congr! 2 with i hi`.

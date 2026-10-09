@@ -5,16 +5,16 @@ Authors: Jovan Gerbscheid
 -/
 module
 
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import Mathlib.Data.String.Defs
+public import Batteries.Tactic.PermuteGoals
+public import Lean.Server.Utils
+public import Mathlib.Tactic.DepRewrite
+public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.NthRewrite
+public import Mathlib.Tactic.SimpRw
 public import ProofWidgets.Component.MakeEditLink
 public import ProofWidgets.Component.RefreshComponent
-public import Mathlib.Tactic.GRewrite
-public import Mathlib.Tactic.SimpRw
-public import Mathlib.Tactic.NthRewrite
-public import Mathlib.Tactic.DepRewrite
-public import Batteries.Tactic.PermuteGoals
-public meta import Mathlib.Data.String.Defs
-public meta import Lean.PrettyPrinter.Delaborator.Builtins
-public import Lean.Server.Utils
 
 /-!
 # Various utilities used in `#click_suggestions`
@@ -37,7 +37,7 @@ def exprToHtml (e : Expr) : MetaM Html :=
 /-- Turn a constant into an HTML with hover info.
 This avoids the `@` that may appear when using `exprToHtml`. -/
 def constToHtml (n : Name) : MetaM Html := do
-  let delab := withOptionAtCurrPos `pp.tagAppFns true <| delabConst
+  let delab := withOptionAtCurrPos `pp.tagAppFns true delabConst
   let ⟨fmt, infos⟩ ← PrettyPrinter.ppExprWithInfos (delab := delab) (← mkConstWithLevelParams n)
   let tt := TaggedText.prettyTagged fmt
   let ctx := {
@@ -303,10 +303,10 @@ In particular, we merge sequences of `rw`, `simp_rw` and `grw`. -/
 partial def mergeTactics? {m} [Monad m] [MonadQuotation m] (stx₁ stx₂ : TSyntax `tactic) :
     m (Option (TSyntax `tactic)) := do
   match stx₁, stx₂ with
-  | `(tactic| on_goal $n₁ => $tac₁:tactic), `(tactic| on_goal $n₂ => $tac₂:tactic) =>
+  | `(tactic| on_goal $n₁:num => $tac₁:tactic), `(tactic| on_goal $n₂:num => $tac₂:tactic) =>
     if n₁.getNat == n₂.getNat then
       if let some tac ← mergeTactics? tac₁ tac₂ then
-        return ← `(tactic| on_goal $n₁ => $tac:tactic)
+        return ← `(tactic| on_goal $n₁:num => $tac:tactic)
   | `(tactic| rw [$[$rules₁],*] $[at $h₁:ident]?),
     `(tactic| rw [$[$rules₂],*] $[at $h₂:ident]?) =>
     if h₁.map (·.getId) == h₂.map (·.getId) then
@@ -353,7 +353,7 @@ open Widget
 def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves : Bool) :
     ClickSuggestionsM Html := do
   let tac ← match (← read).onGoal with
-    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)) => $tac:tactic)
+    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
     | none => pure tac
   let (range, newText) ← mkInsertion tac (← read)
   let buttonText := s!"{if solves then "🎉️" else ""}[{button}] "
