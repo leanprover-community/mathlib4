@@ -542,7 +542,7 @@ there is a unique cone morphism from any other cone.
 -/
 @[to_dual
 /-- A cocone is a colimit cocone exactly if
-there is a unique cocone morphism from any other cocone.
+there is a unique cocone morphism to any other cocone.
 -/]
 def isoUniqueConeMorphism {t : Cone F} :
     IsLimit t ≅ ∀ s, Unique (s ⟶ t) where
