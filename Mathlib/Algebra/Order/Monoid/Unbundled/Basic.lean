@@ -818,7 +818,10 @@ theorem eq_one_of_one_le_mul_left (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a *
 theorem eq_one_of_mul_le_one_left (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : a = 1 :=
   ha.eq_of_not_lt' fun h => hab.not_gt <| one_lt_mul_of_lt_of_le' h hb
 
-@[to_additive]
+/-- A version of `mul_eq_one_iff_of_one_le'` that requires `MulLeftMono` instead of
+  `MulRightMono` -/
+@[to_additive /-- A version of `add_eq_zero_iff_of_nonneg'` that requires `AddLeftMono` instead of
+  `AddRightMono` -/]
 theorem mul_eq_one_iff_of_one_le (ha : 1 ≤ a) (hb : 1 ≤ b) :
     a * b = 1 ↔ a = 1 ∧ b = 1 := by
   refine ⟨fun hab ↦ ?_, by simp +contextual⟩
