@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Set.Function
 
+import Batteries.Tactic.SeqFocus
+
 /-!
 # Piecewise functions
 
