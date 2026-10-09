@@ -5,11 +5,8 @@ Authors: Kenny Lau, Anne Baanen, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.RingTheory.Polynomial.DegreeLT
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Resultant of two polynomials
@@ -29,13 +26,8 @@ This file contains basic facts about resultant of two polynomials over commutati
   `resultant (∏ a ∈ s, (X - C a)) f = ∏ a ∈ s, f.eval a`.
   This allows us to write the `resultant f g` as the product of terms of the form `a - b` where `a`
   is a root of `f` and `b` is a root of `g`.
-* A smaller intermediate goal is to show that the Sylvester matrix corresponds to the linear map
-  that we will call the Sylvester map, which is `R[X]_n × R[X]_m →ₗ[R] R[X]_(n + m)` given by
-  `(p, q) ↦ f * p + g * q`, where `R[X]_n` is
-  `Polynomial.degreeLT` in `Mathlib.RingTheory.Polynomial.Basic`.
 * Resultant of two binary forms (i.e. homogeneous polynomials in two variables), after binary forms
   are implemented.
-
 -/
 
 @[expose] public section
@@ -100,7 +92,7 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
   by_cases hn : f.natDegree = 0
   · ext ⟨i, hi⟩; lia
   ext ⟨i, hi⟩ ⟨j, hj⟩
-  rw [sylvesterDeriv, dif_neg hn]
+  rw [sylvesterDeriv, dite_eq_right hn]
   rcases ne_or_eq i (2 * f.natDegree - 2) with hi' | rfl
   · -- Top part of matrix
     rw [Matrix.updateRow_ne (Fin.ne_of_val_ne hi'),
@@ -114,7 +106,7 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
     on_goal 2 => rw [show f.natDegree = 1 by lia]
     on_goal 3 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add, show f.natDegree = 1 by lia]
-      norm_num
+      simp
     on_goal 6 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add]
       #adaptation_note
@@ -152,9 +144,9 @@ lemma resultant_map_map (φ : R →+* S) :
 /-- For polynomial `f` and constant `a`, `Res(f, a) = a ^ m`. -/
 theorem resultant_C_zero_left : resultant (C r) g 0 m = r ^ m := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g) = (-1)ᵐⁿ Res(g, f)` -/
 lemma resultant_comm : resultant f g m n = (-1) ^ (m * n) * resultant g f n m := by
-  classical
   rw [resultant, resultant, sylvester_comm, Matrix.det_reindex, Equiv.Perm.sign_eq_prod_prod_Ioi]
   congr 1
   dsimp
@@ -229,7 +221,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
           have : Fin.mk (n := m + n) (m + ↑i + (k + m)) (by lia) =
               Fin.natAdd m ⟨↑i + (k + m), by lia⟩ := Fin.ext (by simp; lia)
           simp only [Fin.addCases_right, Fin.val_natAdd, sub_eq_self, this]
-          rw [if_neg, mul_zero]
+          rw [ite_eq_right, mul_zero]
           lia
       lia
   rw [resultant, resultant, ← this m le_rfl]
@@ -237,6 +229,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
   ext i j
   induction j using Fin.addCases <;> simp [M, sylvester, M₁, M₂]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g + fp) = Res(f, g)` if `deg f + deg p ≤ deg g`. -/
 lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤ m) :
     resultant f (g + f * p) m n = resultant f g m n := by
@@ -310,7 +303,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
       · congr 1; lia
       · simp [pow_add]
     · simp only [sylvester, Set.mem_Icc, Matrix.of_apply, Fin.val_last, Fin.addCases_left]
-      rw [if_pos (by lia)]
+      rw [ite_eq_left (by lia)]
       simp [add_assoc, add_comm 1]
     · ext i j
       simp only [sylvester, Set.mem_Icc, Matrix.submatrix_apply, Function.comp_apply,
@@ -370,10 +363,10 @@ theorem resultant_C_left (r : R) :
   simp
 
 @[simp] theorem resultant_one_left : resultant 1 g m n = (-1) ^ (m * n) * g.coeff n ^ m := by
-  simpa [-resultant_C_left] using resultant_C_left g m n 1
+  simpa [-resultant_C_left] using! resultant_C_left g m n 1
 
 @[simp] theorem resultant_one_right : resultant f 1 m n = f.coeff m ^ n := by
-  simpa [-resultant_C_right] using resultant_C_right f m n 1
+  simpa [-resultant_C_right] using! resultant_C_right f m n 1
 
 /-- `Res(X - r, g) = g(r)` -/
 @[simp] lemma resultant_X_sub_C_left (r : R) (hg : g.natDegree ≤ n) :
@@ -476,6 +469,7 @@ lemma resultant_eq_prod_roots_sub
   · rw [f.modByMonic_add_div, natDegree_divByMonic _ hg, Nat.sub_add_cancel hfg]
   · simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` splits with leading coeff `a` and degree `n`,
 then `Res(f, g) = aⁿ * ∏ g(α)` where `α` runs through the roots of `f`. -/
 nonrec lemma resultant_eq_prod_eval [IsDomain R]
@@ -493,7 +487,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   by_cases hf0 : f = 0
   · simp [hf0]
   wlog hfm : f.Monic
-  · letI inst := hR.toField
+  · let inst := hR.toField
     have H : (C f.leadingCoeff⁻¹ * f).Monic := by
       rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simp [hf0]), coeff_C_mul]; simp [hf0]
     have := this (C f.leadingCoeff⁻¹ * f) g n hg (.mul (.C _) hf) hR (by simpa) H
@@ -507,12 +501,12 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
     · obtain ⟨r, rfl⟩ := hfm.natDegree_eq_zero.mp hf'; simp
     simp [← hf.natDegree_eq_card_roots, hf']
   wlog hgm : g.Monic
-  · letI inst := hR.toField
+  · let inst := hR.toField
     have := this f (C g.leadingCoeff⁻¹ * g) n (by simpa [hg0, natDegree_C_mul]) hf hR hfm (by simpa)
       (by rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simp [hg0]), coeff_C_mul]; simp [hg0])
     rw [resultant_C_mul_right, inv_pow, inv_mul_eq_iff_eq_mul₀ (by simp [hg0])] at this
     simpa [← hf.natDegree_eq_card_roots, inv_pow, mul_left_comm (_ ^ g.natDegree), hg0] using this
-  letI inst := hR.toField
+  let inst := hR.toField
   let L := g.SplittingField
   apply (algebraMap R L).injective
   have := resultant_eq_prod_roots_sub (f.map (algebraMap R L))
@@ -548,10 +542,10 @@ nonrec lemma induction_of_Splits_of_injective_of_surjective.{u}
   · exact injective _ _ _ (FaithfulSMul.algebraMap_injective R (FractionRing R)) _
       (this _ inferInstance (Field.toIsField _))
   wlog hp : p.Splits generalizing R
-  · letI inst := hR.toField
+  · let inst := hR.toField
     exact injective _ _ _ (algebraMap R p.SplittingField).injective _
       (this _ inferInstance (Field.toIsField _) (SplittingField.splits _))
-  letI inst := hR.toField
+  let inst := hR.toField
   exact Splits _ _ hp
 
 /-- `Res(f, g₁ * g₂) = Res(f, g₁) * Res(f, g₂)`. -/
@@ -857,7 +851,8 @@ def adjSylvester (f g : R[X]) :
   (f.sylvester g m n).adjugate.toLin (degreeLT.basis R (m + n))
     (((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv)
 
-lemma sylveserMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+lemma sylvesterMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m)
+    (hg : g.natDegree ≤ n) :
     sylvesterMap f g hf hg ∘ₗ adjSylvester f g = f.resultant g m n • LinearMap.id := by
   let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
   let b₂ := degreeLT.basis R (m + n)
@@ -865,13 +860,20 @@ lemma sylveserMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : 
   rwa [Matrix.toLin_mul b₂ b₁ b₂, Matrix.toLin_toMatrix, map_smul,
     toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
 
-lemma adjSylvester_comp_sylveserMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+@[deprecated (since := "2026-09-17")]
+alias sylveserMap_comp_adjSylvester := sylvesterMap_comp_adjSylvester
+
+lemma adjSylvester_comp_sylvesterMap (f g : R[X]) (hf : f.natDegree ≤ m)
+    (hg : g.natDegree ≤ n) :
     adjSylvester f g ∘ₗ sylvesterMap f g hf hg = f.resultant g m n • LinearMap.id := by
   let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
   let b₂ := degreeLT.basis R (m + n)
   have := congr(Matrix.toLin b₁ b₁ $(((sylvesterMap f g hf hg).toMatrix b₁ b₂).adjugate_mul))
   rwa [Matrix.toLin_mul b₁ b₂ b₁, Matrix.toLin_toMatrix, map_smul,
     toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
+
+@[deprecated (since := "2026-09-17")]
+alias adjSylvester_comp_sylveserMap := adjSylvester_comp_sylvesterMap
 
 /-- Note that if `n = m = 0` then `resultant = 1` but `f` and `g` aren't necessarily coprime. -/
 lemma exists_mul_add_mul_eq_C_resultant
@@ -881,7 +883,7 @@ lemma exists_mul_add_mul_eq_C_resultant
   let X := adjSylvester f g ⟨1, by simpa [Polynomial.mem_degreeLT,
     ← Nat.cast_add, Nat.pos_iff_ne_zero, not_and_or, -not_and] using H⟩
   have : ((sylvesterMap f g hf hg X)).1 = _ :=
-    congr(($(sylveserMap_comp_adjSylvester f g hf hg) _).1)
+    congr(($(sylvesterMap_comp_adjSylvester f g hf hg) _).1)
   refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
     by simpa [-SetLike.coe_mem] using X.1.2, by simpa [Algebra.smul_def] using this⟩
 
@@ -933,8 +935,6 @@ discriminant. -/
 noncomputable def discr (f : R[X]) : R :=
   f.sylvesterDeriv.det * (-1) ^ (f.natDegree * (f.natDegree - 1) / 2)
 
-@[deprecated (since := "2025-10-20")] alias disc := discr
-
 /-- The discriminant of a constant polynomial is `1`. -/
 @[simp] lemma discr_C (r : R) : discr (C r) = 1 := by
   let e : Fin ((C r).natDegree - 1 + (C r).natDegree) ≃ Fin 0 := finCongr (by simp)
@@ -970,10 +970,6 @@ lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
   simp only [this, Matrix.det_fin_three, Matrix.of_apply, Matrix.cons_val', Matrix.cons_val_zero,
     Matrix.cons_val_fin_one, Matrix.cons_val_one, Matrix.cons_val, hf]
   ring_nf
-
-@[deprecated (since := "2025-10-20")] alias disc_C := discr_C
-@[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_one := discr_of_degree_eq_one
-@[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_two := discr_of_degree_eq_two
 
 /-- Relation between the resultant and the discriminant.
 
@@ -1028,8 +1024,6 @@ lemma discr_of_degree_eq_three {f : R[X]} (hf : f.degree = 3) :
   simp [Matrix.det_succ_row_zero (n := 4), Matrix.det_succ_row_zero (n := 3), Fin.succAbove,
     Matrix.det_fin_three, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ, hf]
   ring_nf
-
-@[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_three := discr_of_degree_eq_three
 
 end disc
 

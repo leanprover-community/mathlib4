@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 /-!
@@ -38,6 +37,8 @@ open scoped Matrix
 
 variable {R : Type u} [CommRing R]
 variable {n : Type w} [DecidableEq n] [Fintype n]
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the Lie algebra structures. -/

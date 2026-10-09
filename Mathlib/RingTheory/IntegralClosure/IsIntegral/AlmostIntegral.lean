@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
+
+import Mathlib.FieldTheory.Minpoly.Basic
 
 /-! # Almost integral elements -/
 

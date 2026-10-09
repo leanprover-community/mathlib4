@@ -6,11 +6,9 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.FinallySmall
-public import Mathlib.CategoryTheory.Limits.Presheaf
-public import Mathlib.CategoryTheory.Filtered.Small
-public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
+
+import Mathlib.CategoryTheory.Filtered.Small
+import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # Ind-objects
@@ -103,6 +101,9 @@ noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A
     [IsIso η] : IndObjectPresentation B :=
   .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso η)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical comparison functor between the indexing category of the presentation and the
 comma category `CostructuredArrow yoneda A`. This functor is always final. -/
 @[simps! obj_left obj_right_as obj_hom map_left]
@@ -112,6 +113,7 @@ def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
 instance : P.toCostructuredArrow.Final :=
   Presheaf.final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Representable presheaves are (trivially) ind-objects. -/
 @[simps]
 def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where

@@ -61,7 +61,7 @@ namespace Finset
 using `Option.some` and then insert `Option.none`. -/
 def insertNone : Finset α ↪o Finset (Option α) :=
   (OrderEmbedding.ofMapLEIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t => by
-    rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset]
+    rw [cons_subset_cons, map_subset_map]
 
 @[simp]
 theorem mem_insertNone {s : Finset α} : ∀ {o : Option α}, o ∈ insertNone s ↔ ∀ a ∈ o, a ∈ s
@@ -106,7 +106,7 @@ theorem eraseNone_map_some (s : Finset α) : eraseNone (s.map Embedding.some) = 
 
 @[simp]
 theorem eraseNone_image_some [DecidableEq (Option α)] (s : Finset α) :
-    eraseNone (s.image some) = s := by simpa only [map_eq_image] using eraseNone_map_some s
+    eraseNone (s.image some) = s := by simpa only [map_eq_image] using! eraseNone_map_some s
 
 @[simp]
 theorem coe_eraseNone (s : Finset (Option α)) : (eraseNone s : Set α) = some ⁻¹' s :=
@@ -164,7 +164,9 @@ theorem card_eraseNone_le (s : Finset (Option α)) : #s.eraseNone ≤ #s := by
 theorem card_eraseNone_of_mem {s : Finset (Option α)} (h : none ∈ s) : #s.eraseNone = #s - 1 := by
   classical rw [card_eraseNone_eq_card_erase, card_erase_of_mem h]
 
-theorem card_eraseNone_of_not_mem {s : Finset (Option α)} (h : none ∉ s) : #s.eraseNone = #s := by
+theorem card_eraseNone_of_notMem {s : Finset (Option α)} (h : none ∉ s) : #s.eraseNone = #s := by
   classical rw [card_eraseNone_eq_card_erase, erase_eq_of_notMem h]
+
+@[deprecated (since := "2026-09-28")] alias card_eraseNone_of_not_mem := card_eraseNone_of_notMem
 
 end Finset

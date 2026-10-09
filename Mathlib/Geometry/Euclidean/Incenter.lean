@@ -10,7 +10,8 @@ public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.SignedDist
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 public import Mathlib.Tactic.Positivity.Finset
-public import Mathlib.Topology.Instances.Sign
+
+import Mathlib.Topology.Instances.Sign
 
 /-!
 # Incenters and excenters of simplices.
@@ -230,11 +231,11 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
   rw [← Finset.add_sum_erase _ _ (Finset.mem_univ 0),
     ← Finset.add_sum_erase _ _ (Finset.mem_erase.2 ⟨hi, Finset.mem_univ _⟩), ← add_assoc]
   convert add_zero _
-  · convert Finset.sum_const_zero with j hj
+  · convert! Finset.sum_const_zero with j hj
     rw [real_inner_smul_right]
     convert mul_zero _
     rw [← Submodule.mem_orthogonal_singleton_iff_inner_right]
-    refine SetLike.le_def.1 (Submodule.orthogonal_le ?_)
+    refine mem_of_le_of_mem (Submodule.orthogonal_le ?_)
       (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
     rw [Submodule.span_singleton_le_iff_mem, direction_affineSpan]
     simp only [Finset.mem_erase, Finset.mem_univ, and_true] at hj
@@ -270,7 +271,7 @@ lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
   apply_fun fun v ↦ (s.height i)⁻¹ * ⟪s.points i -ᵥ s.altitudeFoot i, v⟫ at h
   rw [inner_sum, Finset.mul_sum] at h
   simp only [inner_zero_right, mul_zero, inner_smul_right, height] at h
-  convert h using 2 with j
+  convert! h using 2 with j
   ring
 
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
@@ -296,7 +297,7 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
   rw [← Finset.sum_add_sum_compl {i}, Finset.sum_singleton]
   nth_rw 1 [excenterWeightsUnnorm]
   simp only [Finset.mem_singleton, ↓reduceIte, neg_mul, one_mul, lt_neg_add_iff_add_lt, add_zero]
-  convert s.inv_height_lt_sum_inv_height i using 2 with j h
+  convert! s.inv_height_lt_sum_inv_height i using 2 with j h
   · ext j
     simp
   · rw [Finset.mem_filter_univ] at h
@@ -305,7 +306,7 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
 lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     SignType.sign (s.excenterWeights {i} i) = -1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
-  convert one_mul _
+  convert one_mul (-1 : SignType)
   · rw [sign_eq_one_iff, inv_pos]
     exact s.sum_excenterWeightsUnnorm_singleton_pos i
   · simp [excenterWeightsUnnorm]
@@ -313,7 +314,7 @@ lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
 lemma sign_excenterWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
     SignType.sign (s.excenterWeights {i} j) = 1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
-  convert one_mul _
+  convert one_mul (1 : SignType)
   · rw [sign_eq_one_iff, inv_pos]
     exact s.sum_excenterWeightsUnnorm_singleton_pos i
   · simp [excenterWeightsUnnorm, h.symm]
@@ -386,7 +387,7 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).excenter signs = s.excenter signs := by
   rw [← s.excenterExists_restrict S hS] at h
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   exact (h.excenter_map S.subtypeₐᵢ).symm
 
 /-- The incenter of a simplex. -/
@@ -440,13 +441,13 @@ def inradius : ℝ :=
 
 @[simp] lemma inradius_map (f : P →ᵃⁱ[ℝ] P₂) :
     (s.map f.toAffineMap f.injective).inradius = s.inradius :=
-  congr_fun (s.exradius_map f) _
+  congr($(s.exradius_map f) _)
 
 @[simp] lemma inradius_restrict (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).inradius = s.inradius :=
-  congr_fun (s.exradius_restrict S hS) _
+  congr($(s.exradius_restrict S hS) _)
 
 @[simp] lemma exsphere_center (signs : Finset (Fin (n + 1))) :
     (s.exsphere signs).center = s.excenter signs :=
@@ -573,7 +574,7 @@ lemma ExcenterExists.sign_signedInfDist_excenter {signs : Finset (Fin (n + 1))}
 
 lemma sign_signedInfDist_incenter (i : Fin (n + 1)) :
     SignType.sign (s.signedInfDist i s.incenter) = 1 := by
-  convert s.excenterExists_empty.sign_signedInfDist_excenter i
+  convert! s.excenterExists_empty.sign_signedInfDist_excenter i
   simp
 
 variable {s} in
@@ -639,9 +640,10 @@ lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
   · simp only [hij, Set.mem_singleton_iff, Set.insert_eq_of_mem,
       AffineSubspace.mem_affineSpan_singleton]
     exact h.excenter_ne_point j
-  · convert h.excenter_notMem_affineSpan_face (fs := {i, j}) (m := 1) (by simp_all)
+  · convert
+    h.excenter_notMem_affineSpan_face (fs := { i, j }) (m := 1) (by simp_all)
       Nat.AtLeastTwo.ne_one.symm
-    simp [Set.image_insert_eq]
+    simp
 
 lemma incenter_notMem_affineSpan_pair [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
     s.incenter ∉ line[ℝ, s.points i, s.points j] :=
@@ -797,7 +799,7 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).touchpoint signs i = s.touchpoint signs i := by
   rw [← s.excenterExists_restrict S hS] at h
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   exact (h.touchpoint_map S.subtypeₐᵢ i).symm
 
 lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
@@ -807,7 +809,7 @@ lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1))
 /-- A weaker version of `touchpoint_mem_affineSpan`. -/
 lemma touchpoint_mem_affineSpan_simplex (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
     s.touchpoint signs i ∈ affineSpan ℝ (Set.range s.points) := by
-  refine SetLike.le_def.1 (affineSpan_mono _ ?_) (s.touchpoint_mem_affineSpan signs i)
+  refine mem_of_le_of_mem (affineSpan_mono _ ?_) (s.touchpoint_mem_affineSpan signs i)
   simp
 
 lemma touchpoint_eq_point_rev (s : Simplex ℝ P 1) (signs : Finset (Fin 2)) (i : Fin 2) :
@@ -959,7 +961,7 @@ lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
 lemma exists_forall_signedInfDist_eq_iff_eq_incenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) :
     (∃ r : ℝ, ∀ i, s.signedInfDist i p = r) ↔ p = s.incenter := by
-  convert s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp (signs := ∅)
+  convert! s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp (signs := ∅)
   · simp
   · simp [excenterExists_empty]
 
@@ -1145,7 +1147,7 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).touchpointWeights signs = s.touchpointWeights signs := by
   rw [← s.excenterExists_restrict S hS] at h
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   exact (h.touchpointWeights_map S.subtypeₐᵢ).symm
 
 variable {s} in
@@ -1327,7 +1329,7 @@ lemma affineSpan_pair_eq_orthRadius [Fact (Module.finrank ℝ V = 2)] (signs : F
       (t.exsphere signs).orthRadius (t.touchpoint signs i₁) := by
   convert (t.excenterExists signs).affineSpan_faceOpposite_eq_orthRadius i₁
   have hc : {i₁}ᶜ = ({i₂, i₃} : Set (Fin 3)) := by grind
-  simp [Simplex.range_faceOpposite_points, hc, Set.image_insert_eq]
+  simp [Simplex.range_faceOpposite_points, hc]
 
 lemma affineSpan_pair_eq_orthRadius_insphere [Fact (Module.finrank ℝ V = 2)]
     {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :

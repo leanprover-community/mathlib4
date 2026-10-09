@@ -24,7 +24,7 @@ Then, we introduce an ad hoc structure `MorphComponents X n Z` which
 can be used in order to define morphisms `X _⦋n+1⦌ ⟶ Z` using the
 decomposition provided by `decomposition_Q`. This shall play a critical
 role in the proof that the functor
-`N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
+`N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 reflects isomorphisms.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
@@ -35,7 +35,9 @@ reflects isomorphisms.
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
-  Opposite Simplicial
+  Opposite
+
+open scoped Simplicial
 
 noncomputable section
 
@@ -45,7 +47,6 @@ namespace DoldKan
 
 variable {C : Type*} [Category* C] [Preadditive C] {X X' : SimplicialObject C}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In each positive degree, this lemma decomposes the idempotent endomorphism
 `Q q` as a sum of morphisms which are postcompositions with suitable degeneracies.
 As `Q q` is the complement projection to `P q`, this implies that in the case of
@@ -83,7 +84,7 @@ theorem decomposition_Q (n q : ℕ) :
 variable (X)
 
 /-- The structure `MorphComponents` is an ad hoc structure that is used in
-the proof that `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
+the proof that `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 reflects isomorphisms. The fields are the data that are needed in order to
 construct a morphism `X _⦋n+1⦌ ⟶ Z` (see `φ`) using the decomposition of the
 identity given by `decomposition_Q n (n+1)`. -/
@@ -110,7 +111,6 @@ def id : MorphComponents X n (X _⦋n + 1⦌) where
   a := PInfty.f (n + 1)
   b i := X.σ i
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id_φ : (id X n).φ = 𝟙 _ := by
   simp only [← P_add_Q_f (n + 1) (n + 1), φ]
@@ -126,7 +126,6 @@ def postComp : MorphComponents X n Z' where
   a := f.a ≫ h
   b i := f.b i ≫ h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
   unfold φ postComp
@@ -138,7 +137,6 @@ def preComp : MorphComponents X' n Z where
   a := g.app (op ⦋n + 1⦌) ≫ f.a
   b i := g.app (op ⦋n⦌) ≫ f.b i
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem preComp_φ : (f.preComp g).φ = g.app (op ⦋n + 1⦌) ≫ f.φ := by
   unfold φ preComp

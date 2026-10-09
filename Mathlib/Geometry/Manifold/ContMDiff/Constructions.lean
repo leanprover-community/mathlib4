@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 
 /-!
-## Smoothness of standard maps associated to the product of manifolds
+# Smoothness of standard maps associated to the product of manifolds
 
 This file contains results about smoothness of standard maps associated to products and sums
 (disjoint unions) of smooth manifolds:
@@ -207,7 +207,7 @@ theorem contMDiffOn_prod_module_iff (f : M → F₁ × F₂) :
 theorem contMDiff_prod_iff (f : M → M' × N') :
     ContMDiff I (I'.prod J') n f ↔
       ContMDiff I I' n (Prod.fst ∘ f) ∧ ContMDiff I J' n (Prod.snd ∘ f) :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prodMk h.2⟩
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert! h.1.prodMk h.2⟩
 
 theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiff I 𝓘(𝕜, F₁ × F₂) n f ↔

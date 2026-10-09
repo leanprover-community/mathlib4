@@ -5,11 +5,8 @@ Authors: Michael Stoll, David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
-public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.DirichletContinuation
-public import Mathlib.NumberTheory.LSeries.Positivity
 
 /-!
 # The L-function of a Dirichlet character does not vanish on Re(s) ≥ 1
@@ -47,8 +44,10 @@ hypothetical objects which we eventually deduce cannot exist. We have only made 
 whose hypotheses do not turn out to be contradictory.
 -/
 
-open Complex Asymptotics Topology Filter
+open Complex Asymptotics Filter
 open ArithmeticFunction hiding log
+
+open scoped Topology
 
 -- We use the ordering on `ℂ` given by comparing real parts for fixed imaginary part
 open scoped ComplexOrder
@@ -86,6 +85,7 @@ lemma LSeriesSummable_zetaMul (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 
   simpa only [toArithmeticFunction, coe_mk, hn, ↓reduceIte]
   using norm_le_one χ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma zetaMul_prime_pow_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) {p : ℕ}
     (hp : p.Prime) (k : ℕ) :
     0 ≤ zetaMul χ (p ^ k) := by
@@ -106,7 +106,7 @@ lemma zetaMul_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) (n : ℕ
     0 ≤ zetaMul χ n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [ArithmeticFunction.map_zero, le_refl]
-  · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using
+  · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using!
       Finset.prod_nonneg
         fun p hp ↦ zetaMul_prime_pow_nonneg hχ (Nat.prime_of_mem_primeFactors hp) _
 

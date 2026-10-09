@@ -5,8 +5,8 @@ Authors: A Tucker
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
 public import Mathlib.Analysis.Calculus.FDeriv.Partial
+public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
 
 /-!
 # Implicit function theorem — curried bivariate
@@ -48,34 +48,34 @@ variable {u : E₁ × E₂}
 `f : E₁ → E₂ → F` at `u : E₁ × E₂`. -/
 noncomputable def implicitFunctionOfBivariate : E₁ → E₂ :=
   HasStrictFDerivAt.implicitFunctionOfProdDomain
-    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u)
+    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using! if₂u)
 
 theorem implicitFunctionOfBivariate_def :
     implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u =
       HasStrictFDerivAt.implicitFunctionOfProdDomain
-        (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u) := by
+        (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using! if₂u) := by
   rfl
 
 theorem tendsto_implicitFunctionOfBivariate :
     Tendsto (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u) (𝓝 u.1) (𝓝 u.2) := by
-  simpa using HasStrictFDerivAt.tendsto_implicitFunctionOfProdDomain
-    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u)
+  simpa using! HasStrictFDerivAt.tendsto_implicitFunctionOfProdDomain
+    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using! if₂u)
 
 theorem eventually_apply_implicitFunctionOfBivariate :
     ∀ᶠ x in 𝓝 u.1, f x (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u x) = f u.1 u.2 := by
-  simpa using HasStrictFDerivAt.eventually_apply_implicitFunctionOfProdDomain
-    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u)
+  simpa using! HasStrictFDerivAt.eventually_apply_implicitFunctionOfProdDomain
+    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using! if₂u)
 
 theorem eventually_apply_eq_iff_implicitFunctionOfBivariate :
     ∀ᶠ v in 𝓝 u,
       f v.1 v.2 = f u.1 u.2 ↔ implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u v.1 = v.2 := by
-  simpa using HasStrictFDerivAt.eventually_apply_eq_iff_implicitFunctionOfProdDomain
-    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u)
+  simpa using! HasStrictFDerivAt.eventually_apply_eq_iff_implicitFunctionOfProdDomain
+    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using! if₂u)
 
 theorem hasStrictFDerivAt_implicitFunctionOfBivariate :
     HasStrictFDerivAt (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u)
       (-(f₂ u.1 u.2).inverse ∘L f₁ u.1 u.2) u.1 := by
-  simpa using HasStrictFDerivAt.hasStrictFDerivAt_implicitFunctionOfProdDomain
-    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using if₂u)
+  simpa using! HasStrictFDerivAt.hasStrictFDerivAt_implicitFunctionOfProdDomain
+    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using! if₂u)
 
 end

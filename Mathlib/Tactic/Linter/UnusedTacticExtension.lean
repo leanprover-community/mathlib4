@@ -54,21 +54,23 @@ This can be increased dynamically, using `#allow_unused_tactic`.
 public initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
   IO.mkRef <| .ofArray #[
     `Mathlib.Tactic.Says.says,
-    `Batteries.Tactic.«tacticOn_goal-_=>_»,
+    `Batteries.Tactic.«tacticOn_goal_=>_»,
     `by,
     `null,
     `«]»,
-    `Lean.Parser.Tactic.show,
+    ``Lean.Parser.Tactic.show,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     `Mathlib.Tactic.successIfFailWithMsg,
     `Mathlib.Tactic.failIfNoProgress,
     `Mathlib.Tactic.ExtractGoal.extractGoal,
-    `Lean.Parser.Tactic.traceState,
+    ``Lean.Parser.Tactic.traceState,
+    ``Lean.Parser.Tactic.Conv.convTrace_state,
     `Mathlib.Tactic.tacticMatch_target_,
     `change?,
     `«tactic#adaptation_note_»,
     `tacticSleep_heartbeats_,
-    `Mathlib.Tactic.«tacticRename_bvar_→__»
+    `Mathlib.Tactic.«tacticRename_bvar_→__»,
+    ``Lean.Parser.Tactic.Conv.skip
   ]
 
 /--
@@ -115,6 +117,6 @@ The trailing underscore `_` makes the syntax valid, since `refine` expects somet
 -/
 elab "#show_kind " t:tactic : command => do
   let stx ← `(tactic| $t)
-  Lean.logInfoAt t m!"The `SyntaxNodeKind` is '{stx.raw.getKind}'."
+  Lean.logInfoAt t m!"The `SyntaxNodeKind` is `{stx.raw.getKind}`."
 
 end Mathlib.Linter.UnusedTactic

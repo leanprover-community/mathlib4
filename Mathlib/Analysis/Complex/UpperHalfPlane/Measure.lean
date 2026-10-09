@@ -6,14 +6,10 @@ Authors: David Loeffler
 
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
-public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
-public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-public import Mathlib.MeasureTheory.Measure.WithDensity
-public import Mathlib.MeasureTheory.Function.Jacobian
+
+import Mathlib.MeasureTheory.Function.Jacobian
 
 /-!
 # Invariant measure on the upper half-plane
@@ -37,7 +33,7 @@ instance : BorelSpace ℍ := ⟨borel_comap.symm⟩
 lemma measurableEmbedding_coe : MeasurableEmbedding UpperHalfPlane.coe :=
   isOpenEmbedding_coe.measurableEmbedding
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_coe : Measurable UpperHalfPlane.coe :=
   measurableEmbedding_coe.measurable
 
@@ -89,7 +85,7 @@ lemma volume_eq_lintegral (s : Set ℍ) :
 instance : SMulInvariantMeasure (GL (Fin 2) ℝ) ℍ volume := by
   -- It suffices to show `volume (g • s) = volume s` for measurable sets `s`. First
   -- we write this as a lintegral over subsets of `ℂ`.
-  refine ((smulInvariantMeasure_tfae _ _).out 2 0).mp fun g s hs ↦ ?_
+  refine ((smulInvariantMeasure_tfae _ _).out 3 1).mp fun g s hs ↦ ?_
   rw [volume_eq_lintegral, volume_eq_lintegral, ← Set.image_smul, Set.image_image]
   -- We want to apply the Jacobian change-of-variable formula.
   have hinj : Set.InjOn (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (UpperHalfPlane.coe '' s) :=

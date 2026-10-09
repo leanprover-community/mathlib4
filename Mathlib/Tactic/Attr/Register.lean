@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.LabelAttribute -- TODO: `registerLabelAttr` should be marked `meta`
 public import Lean.LabelAttribute
 public import Lean.Meta.Tactic.Simp
+public import Mathlib.Init
 
 /-!
 # Attributes used in `Mathlib`
@@ -54,15 +54,32 @@ which gives a well-behaved subtraction. -/
 register_simp_attr zify_simps
 
 /--
-The simpset `mfld_simps` records several simp lemmas that are
-especially useful in manifolds. It is a subset of the whole set of simp lemmas, but it makes it
-possible to have quicker proofs (when used with `squeeze_simp` or `simp only`) while retaining
-readability.
+The simpset `pull_end` translates algebraic formulations of endomorphisms into the standard
+formulation of homomorphisms, so for example `1 : Equiv α α` becomes `Equiv.refl α` and
+`a * b` becomes `b.trans a`.
+
+The dual simpset is `push_end`.
+-/
+register_simp_attr pull_end
+
+/--
+The simpset `push_end` translates the standard formulations of endomorphisms to the
+algebraic formulation, so for example `Equiv.refl α` becomes `1 : Equiv α α` and
+`b.trans a` becomes `a * b`.
+
+The dual simpset is `pull_end`.
+-/
+register_simp_attr push_end
+
+/--
+The simpset `mfld_simps` records several simp lemmas that are especially useful in manifolds.
+It is a subset of the whole set of simp lemmas, but it makes it possible to have quicker proofs
+(when used with `simp?` or `simp only`) while retaining readability.
 
 The typical use case is the following, in a file on manifolds:
-If `simp [foo, bar]` is slow, replace it with `squeeze_simp [foo, bar, mfld_simps]` and paste
-its output. The list of lemmas should be reasonable (contrary to the output of
-`squeeze_simp [foo, bar]` which might contain tens of lemmas), and the outcome should be quick
+If `simp [foo, bar]` is slow, replace it with `simp? [foo, bar, mfld_simps]` and click the
+"Try this" suggestion in the infoview. The list of lemmas should be reasonable (contrary to the
+output of `simp? [foo, bar]` which might contain tens of lemmas), and the outcome should be quick
 enough.
 -/
 register_simp_attr mfld_simps

@@ -6,8 +6,8 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
 # Subfields
@@ -50,8 +50,8 @@ subfield, subfields
 
 universe u v w
 
-variable {K : Type u} {L : Type v} {M : Type w}
-variable [DivisionRing K] [DivisionRing L] [DivisionRing M]
+variable {K : Type u}
+variable [DivisionRing K]
 
 /-- `SubfieldClass S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
 class SubfieldClass (S K : Type*) [DivisionRing K] [SetLike S K] : Prop
@@ -145,9 +145,9 @@ def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
 
 instance : SetLike (Subfield K) K where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance : PartialOrder (Subfield K) := .ofSetLike (Subfield K) K
+instance : PartialOrder (Subfield K) := .ofSetLike (Subfield K)
 
 instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'
@@ -208,7 +208,7 @@ def Subring.toSubfield (s : Subring K) (hinv : ∀ x ∈ s, x⁻¹ ∈ s) : Subf
 
 namespace Subfield
 
-variable (s t : Subfield K)
+variable (s : Subfield K)
 
 section DerivedFromSubfieldClass
 

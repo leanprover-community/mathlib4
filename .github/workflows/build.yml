@@ -24,6 +24,7 @@ concurrency:
 permissions:
   contents: read
   id-token: write
+  actions: read  # Allow get-tools to download the prebuilt tools artifact from master's publish_tools runs
   pull-requests: write  # Only allow PR comments/labels
   # All other permissions are implicitly 'none'
 
@@ -35,7 +36,25 @@ jobs:
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.ref }}-${{ (github.event_name == 'push' && github.ref == 'refs/heads/master' && github.run_id) || '' }}
       pr_branch_ref: ${{ github.sha }}
-      # Use the MASTER cache key only on mathlib4/master; nightly-testing and other branches use NON_MASTER
-      cache_application_id: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref == 'refs/heads/master' && vars.CACHE_MASTER_WRITER_AZURE_APP_ID || vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
+      # The Azure cache writer app, set only for `master`. Other builds upload to R2 alone.
+      cache_application_id: >-
+        ${{
+             (github.repository == 'leanprover-community/mathlib4'
+               && github.ref_name == 'master')
+               && vars.CACHE_MASTER_WRITER_AZURE_APP_ID
+          || ''
+        }}
+      # The OIDC environment of the upload jobs. The cache writer credentials are scoped to it.
+      cache_environment: >-
+        ${{
+             (github.repository == 'leanprover-community/mathlib4'
+               && github.ref_name == 'master')
+               && 'cache-upload-master'
+          || (github.repository == 'leanprover-community/mathlib4')
+               && 'cache-upload-forks'
+          || 'cache-upload-nightly-testing'
+        }}
+      # the single producer: the master `push` build
+      publish_cache: ${{ github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
       runs_on: pr
     secrets: inherit

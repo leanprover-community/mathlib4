@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.Set.Pairwise.Basic
+
+import Mathlib.Data.List.Nodup
 
 /-!
 # Translating pairwise relations on sets to lists
@@ -34,7 +35,6 @@ theorem Nodup.pairwise_coe [Std.Symm r] (hl : l.Nodup) :
   rw [List.nodup_cons] at hl
   have : ∀ b ∈ l, ¬a = b → r a b ↔ r a b := fun b hb =>
     imp_iff_right (ne_of_mem_of_not_mem hb hl.1).symm
-  simp [Set.setOf_or, Set.pairwise_insert_of_symmetric fun _ _ ↦ symm_of r, ih hl.2, and_comm,
-    forall₂_congr this]
+  simp [Set.ofPred_or, Set.pairwise_insert_of_symm, ih hl.2, and_comm, forall₂_congr this]
 
 end List

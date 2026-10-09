@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.Algebra.Group.Invertible.Defs
-public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
@@ -80,10 +78,22 @@ section End
 variable {R : Type w}
 
 instance [Semiring R] [Linear R C] (X : C) : Module R (End X) :=
-  inferInstanceAs <| Module R (X ⟶ X)
+  (End.addEquiv (X := X)).module R
+
+@[simp]
+lemma _root_.CategoryTheory.End.smul_asHom [Semiring R] [Linear R C] {X : C} (r : R) (e : End X) :
+    (r • e).asHom = r • e.asHom := rfl
+
+/-- The linear equivalence `End X ≃ₗ[R] (X ⟶ X)` when `X` is
+an object of a `R`-linear category. -/
+@[implicit_reducible, simps]
+def _root_.CategoryTheory.End.linearEquiv [Semiring R] [Linear R C] {X : C} :
+    End X ≃ₗ[R] (X ⟶ X) where
+  toAddEquiv := End.addEquiv
+  map_smul' := by simp
 
 instance [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) :=
-  Algebra.ofModule (fun _ _ _ => comp_smul _ _ _ _ _ _) fun _ _ _ => smul_comp _ _ _ _ _ _
+  Algebra.ofModule (by cat_disch) (by cat_disch)
 
 end End
 
@@ -98,7 +108,7 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
-  homModule X Y := Equiv.module _ InducedCategory.homEquiv
+  homModule X Y := InducedCategory.homAddEquiv.module _
   smul_comp _ _ _ _ _ _ := by ext; apply smul_comp
   comp_smul _ _ _ _ _ _ := by ext; apply comp_smul
 
@@ -136,12 +146,12 @@ def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z wher
 instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
   ⟨fun g g' H => by
     rw [smul_comp, smul_comp, ← comp_smul, ← comp_smul, cancel_epi] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
+    simpa [smul_smul] using congr(⅟r • $H)⟩
 
 instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) :=
   ⟨fun g g' H => by
     rw [comp_smul, comp_smul, ← smul_comp, ← smul_comp, cancel_mono] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
+    simpa [smul_smul] using congr(⅟r • $H)⟩
 
 /-- Given isomorphic objects `X ≅ Y, W ≅ Z` in a `k`-linear category, we have a `k`-linear
 isomorphism between `Hom(X, W)` and `Hom(Y, Z).` -/

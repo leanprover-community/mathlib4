@@ -5,8 +5,9 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.Probability.Independence.Basic
+
+import Mathlib.MeasureTheory.Constructions.Cylinders
 
 /-!
 # Independence of stochastic processes
@@ -49,8 +50,8 @@ lemma IndepFun.process_congr_left {𝓧 : S → Type*} {𝓨 : Type*}
       κ a ((fun ω i ↦ X i ω) ⁻¹' s) * κ a (Y ⁻¹' t) :=
     h1 ((fun ω i ↦ X i ω) ⁻¹' s) (Y ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
   obtain ⟨I, u, hI, rfl⟩ : ∃ (I : Set S) (u : Set (Π i : I, 𝓧 i)),
-      I.Countable ∧ s = I.restrict ⁻¹' u := hs.eq_preimage_restrict_countable
-  have aux (f : (i : S) → Ω → 𝓧 i) : (fun ω i ↦ f i ω) ⁻¹' I.restrict ⁻¹' u =
+      I.Countable ∧ s = I.domRestrict ⁻¹' u := hs.eq_preimage_restrict_countable
+  have aux (f : (i : S) → Ω → 𝓧 i) : (fun ω i ↦ f i ω) ⁻¹' I.domRestrict ⁻¹' u =
       (fun ω (i : I) ↦ f i ω) ⁻¹' u := rfl
   simp_rw [aux] at *
   have _ : Countable I := hI.to_subtype
@@ -106,7 +107,7 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
     πX_pi (@isPiSystem_measurableSet Ω (.comap Y inferInstance)) πX_gen
     (@generateFrom_measurableSet Ω (.comap Y inferInstance)).symm ?_
   rintro - - ⟨-, ⟨I, s, hs, rfl⟩, rfl⟩ ⟨t, ht, rfl⟩
-  simp only [Set.mem_pi, Set.mem_univ, Set.mem_setOf_eq, forall_const] at hs
+  simp only [Set.mem_pi, Set.mem_univ, Set.mem_ofPred_eq, forall_const] at hs
   have : (fun ω i ↦ X i ω) ⁻¹' .pi I s =
       (fun ω (i : I) ↦ X i ω) ⁻¹' .pi (SetLike.coe Finset.univ) (fun i ↦ s i)
        := by
@@ -166,8 +167,8 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
     (h : ∀ (I : Finset S) (J : Finset T),
       IndepFun (fun ω (i : I) ↦ X i ω) (fun ω (j : J) ↦ Y j ω) κ P) [IsZeroOrMarkovKernel κ] :
     IndepFun (fun ω i ↦ X i ω) (fun ω j ↦ Y j ω) κ P := by
-  refine IndepFun.process_indepFun hX (measurable_pi_lambda _ hY) fun I ↦ ?_
-  exact IndepFun.indepFun_process (measurable_pi_lambda _ fun _ ↦ hX _) hY fun J ↦ h I J
+  refine IndepFun.process_indepFun hX (.of_eval hY) fun I ↦ ?_
+  exact IndepFun.indepFun_process (.of_eval fun _ ↦ hX _) hY fun J ↦ h I J
 
 /-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
@@ -206,16 +207,16 @@ lemma iIndepFun.process_congr {T : S → Type*} {𝓧 : (i : S) → (j : T i) �
   simp_rw [h3, h3']
   choose! I u hI hu using fun i hi ↦ (mg i hi).eq_preimage_restrict_countable
   have h4 (f : (i : S) → (j : T i) → Ω → 𝓧 i j) : ⋂ i ∈ s, (fun i ω j ↦ f i j ω) i ⁻¹' g i =
-      ⋂ i ∈ s, (fun i ω j ↦ f i j ω) i ⁻¹' (I i).restrict ⁻¹' u i :=
+      ⋂ i ∈ s, (fun i ω j ↦ f i j ω) i ⁻¹' (I i).domRestrict ⁻¹' u i :=
       (biInf_congr (fun i hi ↦ by rw [hu i hi])).symm
   have h4' a (f : (i : S) → (j : T i) → Ω → 𝓧 i j) :
       ∏ i ∈ s, κ a ((fun i ω j ↦ f i j ω) i ⁻¹' g i) =
-      ∏ i ∈ s, κ a ((fun i ω j ↦ f i j ω) i ⁻¹' (I i).restrict ⁻¹' u i) := by
+      ∏ i ∈ s, κ a ((fun i ω j ↦ f i j ω) i ⁻¹' (I i).domRestrict ⁻¹' u i) := by
     refine Finset.prod_congr rfl fun i hi ↦ ?_
     rw [hu i hi]
   have h5 := h1 s (fun i hi ↦ ⟨g i, mg i hi, rfl⟩)
   simp_rw [h4, h4'] at h5 ⊢
-  have h6 i (f : (j : T i) → Ω → 𝓧 i j) : (fun ω j ↦ f j ω) ⁻¹' (I i).restrict ⁻¹' (u i) =
+  have h6 i (f : (j : T i) → Ω → 𝓧 i j) : (fun ω j ↦ f j ω) ⁻¹' (I i).domRestrict ⁻¹' (u i) =
       (fun ω (j : I i) ↦ f j ω) ⁻¹' (u i) := rfl
   simp_rw [h6] at h5 ⊢
   have h :
@@ -255,7 +256,7 @@ lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i
     rfl
   refine iIndepSets.iIndep _ (fun i ↦ (measurable_pi_iff.2 (hX i)).comap_le) π π_pi π_gen
     fun I s hs ↦ ?_
-  simp only [squareCylinders, Set.mem_pi, Set.mem_univ, Set.mem_setOf_eq, forall_const,
+  simp only [squareCylinders, Set.mem_pi, Set.mem_univ, Set.mem_ofPred_eq, forall_const,
     ↓existsAndEq, and_true, π] at hs
   choose! J t ht hs using hs
   simp_rw [Set.iInter₂_congr (fun i hi ↦ (hs i hi).symm),
@@ -288,6 +289,18 @@ lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : 
   refine process_congr ?_ (fun i j ↦ Measure.ae_ae_of_ae_comp (hX i j).ae_eq_mk.symm)
   refine iIndepFun_process (fun i j ↦ (hX i j).measurable_mk) fun I J ↦ ?_
   exact (h I J).process_congr (fun i j ↦ Measure.ae_ae_of_ae_comp (hX i j).ae_eq_mk)
+
+theorem iIndepFun.indepFun_set₀ {𝓧 : S → Type*} [∀ s, MeasurableSpace (𝓧 s)]
+    {X : (s : S) → Ω → 𝓧 s} {I J : Set S} (hIJ : Disjoint I J) (hX : iIndepFun X κ P)
+    (mX : ∀ s, AEMeasurable (X s) (κ ∘ₘ P)) :
+    IndepFun (fun ω (i : I) ↦ X i ω) (fun ω (j : J) ↦ X j ω) κ P := by
+  have h : IndepFun (fun ω (i : I) ↦ (mX i).mk (X i) ω)
+      (fun ω (j : J) ↦ (mX j).mk (X j) ω) κ P := by
+    refine iIndepFun.indepFun_set I J hIJ ?_ fun i ↦ (mX i).measurable_mk
+    exact hX.congr' fun i ↦ Measure.ae_ae_of_ae_comp (mX i).ae_eq_mk
+  refine IndepFun.process_congr h ?_ ?_
+  · exact fun i ↦ Measure.ae_ae_of_ae_comp (mX i).ae_eq_mk.symm
+  · exact fun j ↦ Measure.ae_ae_of_ae_comp (mX j).ae_eq_mk.symm
 
 end Kernel
 
@@ -425,5 +438,16 @@ lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : 
     (h : ∀ (I : Finset S) (J : (i : I) → Finset (T i)), iIndepFun (fun i ω (j : J i) ↦ X i j ω) P) :
     iIndepFun (fun i ω j ↦ X i j ω) P :=
   Kernel.iIndepFun.iIndepFun_process₀ (by simpa) h
+
+theorem iIndepFun.indepFun_set₀ {𝓧 : S → Type*} [∀ s, MeasurableSpace (𝓧 s)]
+    {X : (s : S) → Ω → 𝓧 s} {I J : Set S} (hIJ : Disjoint I J) (hX : iIndepFun X P)
+    (mX : ∀ s, AEMeasurable (X s) P) :
+    (fun ω (i : I) ↦ X i ω) ⟂ᵢ[P] (fun ω (j : J) ↦ X j ω) := by
+  have h : (fun ω (i : I) ↦ (mX i).mk (X i) ω) ⟂ᵢ[P] (fun ω (j : J) ↦ (mX j).mk (X j) ω) := by
+    refine iIndepFun.indepFun_set I J hIJ ?_ fun i ↦ (mX i).measurable_mk
+    exact hX.congr fun i ↦ (mX i).ae_eq_mk
+  refine IndepFun.process_congr h ?_ ?_
+  · exact fun i ↦ (mX i).ae_eq_mk.symm
+  · exact fun j ↦ (mX j).ae_eq_mk.symm
 
 end ProbabilityTheory

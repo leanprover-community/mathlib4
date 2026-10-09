@@ -95,11 +95,44 @@ file used by the library's own linters.
   Other subcommands to automate git-related actions may be added in the future.
 
 **Analyzing Mathlib's import structure**
+- `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
+  calls `lake exe pole --loc --to <target>` to compute the longest
+  pole to a given target module, and then feeds this into
+  `lake exe unused` to analyze transitively unused imports.
+  Generates `unused.md` containing a markdown table showing the unused imports,
+  and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
+
 - `topological_sort.py`
   Prints Mathlib modules in topological (import-DAG) order. By default leaves come last
   (roots first); use `--reverse` for leaves first. If filenames or module names are
   provided on stdin, outputs only those modules in topological order.
   Usage: `python3 scripts/topological_sort.py [--reverse]`
+
+**CI debugging tools**
+- `find-ci-errors.sh`
+  Searches through recent failed CI workflow runs to find open PRs whose current CI
+  contains a specific error string. Useful for diagnosing widespread CI issues affecting
+  multiple PRs (e.g., infrastructure problems, toolchain bugs).
+
+  **Usage:**
+  ```bash
+  # Find all PRs currently failing with a specific error
+  ./scripts/find-ci-errors.sh "Error parsing args: cannot parse arguments"
+
+  # Find PRs and automatically add please-merge-master label to trigger rebuilds
+  ./scripts/find-ci-errors.sh --please-merge-master "cannot parse arguments"
+  ```
+
+  **Options:**
+  - `--please-merge-master`: Adds the `please-merge-master` label to all matching PRs,
+    except those with the `merge-conflict` label.
+
+  **Notes:**
+  - Downloads CI logs to `/tmp/gh-run-*.log` (cached to avoid re-downloading)
+  - Checks up to 200 recent failed runs
+  - Only reports PRs whose current CI status is failing (ignores PRs fixed by retries)
+
+  **Requirements:** `gh` (GitHub CLI) installed and authenticated, `jq` for JSON parsing.
 
 **Backward-compatibility `set_option` migration tools**
 
@@ -188,21 +221,30 @@ to module `Foo.Bar` (no `srcDir` indirection).
 
 **CI workflow**
 - `lake-build-with-retry.sh`
-  Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
+  Runs `lake build` on one or more targets until `lake build --no-build` succeeds. Used in the main build workflows.
 - `lake-build-wrapper.py`
   A wrapper script for `lake build` which collapses normal build into log groups and saves a build summary JSON file. See file for usage.
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
-- `lint-style.lean`, `lint-style.py`, `print-style-errors.sh`
-  style linters, written in Python and Lean. Run via `lake exe lint-style`.
-  Medium-term, the latter two scripts should be rewritten and incorporated in `lint-style.lean`.
+- `lint-style.lean`: style linters written in Lean. Run via `lake exe lint-style`.
 - `check_title_labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
+- `export_crossrefs.lean`
+  Exports a JSON dictionary of every declaration tagged with `@[wikidata]`, `@[stacks]`,
+  `@[kerodon]`, `@[lmfdb]`, or `@[dlmf]` (declaration name, source file, line number, and the cross-reference ids).
+  It runs as a Lean command over the fully-imported `Mathlib` environment (like `#stacks_tags`),
+  so it is invoked with `lake env lean scripts/export_crossrefs.lean` rather than `lake exe`.
+  The output path defaults to `crossrefs.json` (override with `CROSSREFS_OUT`); the embedded
+  mathlib commit SHA is read from `CROSSREFS_COMMIT`. The
+  [`export_crossrefs.yml`](../.github/workflows/export_crossrefs.yml) workflow runs this after every
+  successful master build and publishes the result to the
+  [`crossref-exports`](https://github.com/leanprover-community/crossref-exports) repository
+  (committing only when the entries actually change).
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
@@ -210,6 +252,12 @@ to module `Foo.Bar` (no `srcDir` indirection).
   you can convert `pick abc # x scripts/auto_commit.sh cmd` to `x scripts/auto_commit.sh cmd`
   (by deleting the "pick abc # " prefix), and git will re-run the command via exec.
   Example: `scripts/auto_commit.sh lake exe mk_all`
+- `parse_shake_output.py` parses the captured output of `lake shake` and reports the number of
+  files changed and imports added/removed. Used by the `shake` workflow to populate the PR body
+  and Zulip notification. Counts are printed to stdout and, if a second argument is given
+  (typically `$GITHUB_OUTPUT`), appended there as `changed_files=`, `added=`, `removed=`.
+  Usage: `scripts/parse_shake_output.py <shake-output.txt> [$GITHUB_OUTPUT]`
+
 **Nightly testing**
 - `nightly-testing-checklist.lean` reports and fixes the state of `nightly-testing` branches
   at Batteries and Mathlib. Run via `lake exe nightly-testing-checklist`.
@@ -256,6 +304,11 @@ to module `Foo.Bar` (no `srcDir` indirection).
 
 Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
+
+**Linter configuration files**
+- `forbiddenDirs.json` is read by the `directoryDependency` linter
+  (in `Mathlib/Tactic/Linter/DirectoryDependency.lean`): it records which directories are not
+  allowed to import from each other, to keep mathlib's import graph manageable.
 
 **Grind tactic analysis**
 - `grind_unused_lemmas.sh` `[N] [logfile]`

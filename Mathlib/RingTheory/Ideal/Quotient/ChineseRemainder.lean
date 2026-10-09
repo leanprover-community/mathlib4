@@ -6,8 +6,9 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
+
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-! # Module version of Chinese remainder theorem
 -/
@@ -55,8 +56,8 @@ theorem ker_tensorProductMk_quotient :
   refine le_antisymm (Submodule.smul_le.mpr fun r hr m _ ↦ ⟨⟨r, ?_⟩ ⊗ₜ m, rfl⟩) ?_
   · simpa only [ker_pi, Submodule.ker_mkQ]
   rintro _ ⟨x, rfl⟩
-  refine x.induction_on (by simp) (fun r m ↦ Submodule.smul_mem_smul ?_ ⟨⟩) fun _ _ ↦ ?_
-  · simpa only [← (I _).ker_mkQ, ← ker_pi] using Subtype.mem _
-  · simpa using add_mem
+  refine x.inductionOn (fun r m ↦ Submodule.smul_mem_smul ?_ ⟨⟩) fun _ _ ↦ ?_
+  · simpa only [← (I _).ker_mkQ, ← ker_pi] using! Subtype.mem _
+  · simpa using! add_mem
 
 end Ideal

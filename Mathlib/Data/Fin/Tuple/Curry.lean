@@ -5,7 +5,6 @@ Authors: Eric Wieser, Brendan Murphy
 -/
 module
 
-public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Logic.Function.OfArity
 
@@ -65,7 +64,7 @@ theorem uncurry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
 @[simp]
 theorem curry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}
     (f : ((i : Fin (n + 1)) → (vecCons α p) i) → τ) (a : α) :
-    curry f a = @curry _ p _ (f ∘' Fin.cons a) := rfl
+    curry f a = @curry _ p _ (f ∘' Fin.cons a :) := rfl
 
 @[simp low]
 theorem curry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}

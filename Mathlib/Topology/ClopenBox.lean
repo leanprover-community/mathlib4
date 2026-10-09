@@ -5,10 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.CompactOpen
-public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.Sets.Closeds
+
+import Mathlib.Topology.Compactness.Bases
 
 /-!
 # Clopen subsets in Cartesian products
@@ -34,7 +34,7 @@ Cartesian products of compact spaces (this is relevant to the theory of light pr
 
 public section
 
-open Function Set Filter TopologicalSpace
+open Function Set TopologicalSpace
 open scoped Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [CompactSpace Y]
@@ -48,7 +48,7 @@ theorem exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
   have hV : IsCompact V := (W.2.1.preimage hp).isCompact
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
-  exact ⟨⟨U, (ContinuousMap.isClopen_setOf_mapsTo hV W.2).preimage
+  exact ⟨⟨U, (ContinuousMap.isClopen_setOfPred_mapsTo hV W.2).preimage
     (ContinuousMap.id (X × Y)).curry.2⟩, by simp [U, V, MapsTo], ⟨V, W.2.preimage hp⟩, h, hUV⟩
 
 variable [CompactSpace X]
@@ -65,7 +65,7 @@ theorem exists_finset_eq_sup_prod (W : Clopens (X × Y)) :
   rw [Finset.sup_image]
   refine le_antisymm (fun x hx ↦ ?_) (Finset.sup_le fun x hx ↦ ?_)
   · rcases Set.mem_iUnion₂.1 (hWI hx) with ⟨i, hi, hxi⟩
-    exact SetLike.le_def.1 (Finset.le_sup hi) hxi
+    exact mem_of_le_of_mem (Finset.le_sup hi) hxi
   · exact hUV _ <| hIW _ hx
 
 lemma surjective_finset_sup_prod :
@@ -82,13 +82,11 @@ instance finite_prod [Finite (Clopens X)] [Finite (Clopens Y)] :
   cases nonempty_fintype (Clopens Y)
   exact .of_surjective _ surjective_finset_sup_prod
 
-lemma countable_iff_secondCountable [T2Space X]
-    [TotallyDisconnectedSpace X] : Countable (Clopens X) ↔ SecondCountableTopology X := by
-  refine ⟨fun h ↦ ⟨{s : Set X | IsClopen s}, ?_, ?_⟩, fun h ↦ ?_⟩
+lemma countable_iff_secondCountable [T2Space X] [TotallyDisconnectedSpace X] :
+    Countable (Clopens X) ↔ SecondCountableTopology X := by
+  refine ⟨fun h ↦ ⟨_, ?_, isTopologicalBasis_isClopen.eq_generateFrom⟩, fun h ↦ ?_⟩
   · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
     exact Injective.of_eq_imp_le (f := f) (·.le) |>.countable
-  · apply IsTopologicalBasis.eq_generateFrom
-    exact loc_compact_Haus_tot_disc_of_zero_dim
   · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = (SetLike.coe t).sUnion :=
       fun s ↦ eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _
         (isBasis_countableBasis X) s.1 s.2.1.isCompact s.2.2

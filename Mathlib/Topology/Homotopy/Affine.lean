@@ -5,8 +5,8 @@ Authors: Yury G. Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Topology.Homotopy.Path
 
 /-!
 # Affine homotopy between two continuous maps
@@ -24,6 +24,7 @@ variable {X E : Type*} [TopologicalSpace X]
 
 namespace ContinuousMap.Homotopy
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The homotopy between `f` and `g`
 such that `affine f g (t, x) = AffineMap.lineMap (f x) (g x) t`. -/
 @[simps +simpRhs]
