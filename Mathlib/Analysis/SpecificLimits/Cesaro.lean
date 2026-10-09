@@ -46,7 +46,7 @@ theorem norm_sum_range_smul_le_of_norm_le_geometric {E : Type*} [NormedAddCommGr
           (le_of_lt (inv_pos.mpr hnpos))
     _ = C * ((n : ℝ)⁻¹ * ∑ k ∈ Finset.range n, r ^ k) := by
         simp only [Finset.mul_sum]
-        ring
+        ring_nf
     _ ≤ C * ((n : ℝ)⁻¹ * (1 / (1 - r))) := by
         apply mul_le_mul_of_nonneg_left _ hC
         apply mul_le_mul_of_nonneg_left _ (le_of_lt (inv_pos.mpr hnpos))
