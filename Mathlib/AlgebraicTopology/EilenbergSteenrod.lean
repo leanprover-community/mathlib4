@@ -124,7 +124,7 @@ lemma iso_homₚ_inv_hom_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
 @[reassoc (attr := simp)]
 lemma inv_hom_iso_homₚ (f : HP ⟶ HP') (i : ι) :
     (HP.iso i).inv ≫ f.hom i ≫ (HP'.iso i).hom = incl.whiskerLeft (f.homₚ i) :=
-  ((Iso.inv_comp_eq (HP.iso i)).mpr (f.iso_comm i).symm)
+  (Iso.inv_comp_eq (HP.iso i)).mpr (f.iso_comm i).symm
 
 -- TODO: generate this with `@[to_app]`
 @[reassoc (attr := simp)]
@@ -147,7 +147,7 @@ instance (f : HP ⟶ HP') [IsIso f] (i : ι) : IsIso (f.homₚ i) :=
   inferInstanceAs (IsIso ((HomologyPretheory.hₚFunctor i).map f))
 
 /-- The isomorphism of relative homology that is part of an isomorphism of `HomologyPretheory`s. -/
-abbrev hₚIsoOfIso (e : HP ≅ HP') (i : ι) : HP.Hₚ i ≅ HP'.Hₚ i := ((hₚFunctor i).mapIso e)
+abbrev hₚIsoOfIso (e : HP ≅ HP') (i : ι) : HP.Hₚ i ≅ HP'.Hₚ i := (hₚFunctor i).mapIso e
 
 /-- The forgetful functor that sends a `HomologyPretheory` to it's homology functor `H`. -/
 @[implicit_reducible, simps]
