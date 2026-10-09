@@ -30,8 +30,7 @@ def delabWithUniv : Delab :=
   whenPPOption (·.get pp.universes.name true) do
   let pos := (← getPos).pushNaryFn (← getExpr).getAppNumArgs
   let enablePPUnivOnHead (ctx : Delaborator.Context) :=
-    let options := ctx.optionsPerPos.getD pos {}
-    let optionsPerPos := ctx.optionsPerPos.insert pos (options.insert pp.universes.name true)
+    let optionsPerPos := ctx.optionsPerPos.insertAt pos pp.universes.name true
     { ctx with optionsPerPos }
   withReader enablePPUnivOnHead delabApp
 
