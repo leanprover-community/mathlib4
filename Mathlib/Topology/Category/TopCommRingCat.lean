@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.Ring.Basic
-public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Category of topological commutative rings
@@ -67,6 +67,7 @@ instance : Category TopCommRingCat.{u} where
       dsimp
       fun_prop⟩
 
+@[macro_inline]
 instance (R S : TopCommRingCat.{u}) : FunLike { f : R →+* S // Continuous f } R S where
   coe f := f.val
   coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)

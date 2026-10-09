@@ -145,14 +145,12 @@ example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + (C : ℝ
 
 example {n i : ℕ} (hi : i ∈ range n) : 2 ^ i ≤ 2 ^ n := by
   gcongr
-  · norm_num
-  · apply le_of_lt
-    simpa using hi
+  apply le_of_lt
+  simpa using hi
 
 example {n' : ℕ} (hn' : 6 ≤ n') : 2 ^ ((n' + 1) * (n' + 1)) ≤ 2 ^ (n' * n' + 4 * n') := by
   gcongr
-  · norm_num
-  · linarith
+  linarith
 
 example {F : ℕ → ℕ} (le_sum : ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : ℕ} (hn' : 6 ≤ n') :
     let A := F n';
@@ -204,7 +202,7 @@ axiom f : ℕ → ℕ
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by
   success_if_fail_with_msg
-    "Tactic `gcongr` failed: there is no `@[gcongr]` lemma for relation 'LE.le' and constant 'GCongrTests.f'.
+    "Tactic `gcongr` failed: there is no `@[gcongr]` lemma for relation `LE.le` and constant `GCongrTests.f`.
 
 x y : ℕ
 h : GCongrTests.f x ≤ GCongrTests.f y
@@ -214,7 +212,7 @@ h : GCongrTests.f x ≤ GCongrTests.f y
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ^ 2 ≤ f y ^ 2 := by
   success_if_fail_with_msg
-    "Tactic `gcongr` failed: there is no `@[gcongr]` lemma for relation 'LE.le' and constant 'GCongrTests.f'.
+    "Tactic `gcongr` failed: there is no `@[gcongr]` lemma for relation `LE.le` and constant `GCongrTests.f`.
 
 case hab
 x y : ℕ

@@ -60,8 +60,9 @@ lemma toLinearMap_injective : Function.Injective fun f : IntertwiningMap ρ σ �
 lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.toLinearMap.toFun := by
   intro f g h
   ext x
-  exact congrFun h x
+  congrm $h x
 
+@[macro_inline]
 instance : FunLike (IntertwiningMap ρ σ) V W where
   coe f := f.toFun
   coe_injective := toFun_injective ρ σ
@@ -74,8 +75,9 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
 -- we are actively moving away from these design decisions.
 -- See e.g. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Concrete.20homomorphism.20type.20vs.20abstract.20class/with/492579416
 @[simp]
-lemma coe_eq_toLinearMap {f : IntertwiningMap ρ σ} :
-  SemilinearMapClass.semilinearMap f = f.toLinearMap := rfl
+lemma ofClass_eq_toLinearMap {f : IntertwiningMap ρ σ} : .ofClass f = f.toLinearMap := rfl
+
+@[deprecated (since := "2026-09-03")] alias coe_eq_toLinearMap := ofClass_eq_toLinearMap
 
 @[simp] theorem coe_mk (f : V →ₗ[A] W) (h) : ⇑(⟨f, h⟩ : IntertwiningMap ρ σ) = f := rfl
 
@@ -220,10 +222,18 @@ lemma comp_toLinearMap (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
 lemma comp_apply (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) (v : V) :
     comp f g v = f (g v) := rfl
 
-lemma comp_add (f₁ f₂ : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
+@[simp]
+lemma comp_zero (f : IntertwiningMap σ τ) :
+    comp f (0 : IntertwiningMap ρ σ) = 0 := by ext; simp
+
+@[simp]
+lemma zero_comp (g : IntertwiningMap ρ σ) :
+    comp (0 : IntertwiningMap σ τ) g = 0 := by ext; simp
+
+lemma add_comp (f₁ f₂ : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
     (f₁ + f₂).comp g = comp f₁ g + comp f₂ g := by ext1; simp [LinearMap.add_comp]
 
-lemma add_comp (f : IntertwiningMap σ τ) (g₁ g₂ : IntertwiningMap ρ σ) :
+lemma comp_add (f : IntertwiningMap σ τ) (g₁ g₂ : IntertwiningMap ρ σ) :
     comp f (g₁ + g₂) = comp f g₁ + comp f g₂ := by ext1; simp [LinearMap.comp_add]
 
 variable (A) in
@@ -300,7 +310,7 @@ lemma range_inr : (inr A ρ σ).range = (fst A ρ σ).ker :=
   IntertwiningMap.ext <| LinearMap.snd_comp_inr ..
 
 @[simp] lemma coprod_inl_inr : (inl A ρ σ).comp (fst A ρ σ) + (inr A ρ σ).comp (snd A ρ σ) =
-    .id _ := IntertwiningMap.ext <| LinearMap.coprod_inl_inr
+    .id _ := IntertwiningMap.ext LinearMap.coprod_inl_inr
 
 end prod
 
@@ -344,6 +354,7 @@ lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ
 lemma toLinearEquiv_inj (φ ψ : σ.Equiv ρ) : φ.toLinearEquiv = ψ.toLinearEquiv ↔ φ = ψ :=
   toLinearEquiv_injective.eq_iff
 
+@[macro_inline]
 instance : EquivLike (Equiv ρ σ) V W where
   coe φ := φ.toLinearEquiv
   inv φ := φ.invFun
@@ -486,6 +497,37 @@ instance : Module A (IntertwiningMap ρ σ) :=
   fast_instance%
   Function.Injective.module A (coeFnAddMonoidHom ρ σ) DFunLike.coe_injective (coe_smul ρ σ)
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`LinearMap.CompatibleSMul ρ.asModule σ.asModule A A[G]`
+It is needed by `LinearMap.map_smul_of_tower`, with which the `simp` in `invFun`'s `map_smul'`
+below has to rewrite the goal `f (a • v) = a • f v`.
+
+The failure happens while applying `@LinearMap.IsScalarTower.compatibleSMul`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type
+is `SMul A ρ.asModule`, whereas the assigned value `DistribMulAction.toDistribSMul.toSMul` has type
+`SMul A V`. The comparison bottoms out at `ρ.asModule =?= V`, where `asModule` is a plain
+semireducible `def` and therefore does not unfold at the `.instances` transparency that instance
+search runs at. Lean falls back to synthesize an instance of the correct type, which succeeds, but
+the candidate is again not defeq to the assigned value, stalling at
+`inst✝.toSemigroupAction.1 =?= instModuleAsModule._aux_1 ρ`. That comparison, too, runs at
+`.instances`, since `respectTransparency false` suppresses the transparency bump that
+instance-implicit arguments would otherwise receive.
+
+With no `CompatibleSMul` instance found, the rewrite does not fire and `simp` makes no progress.
+
+Potential fix: mark `asModule` implicit-reducible *at its definition site*. Then
+`respectTransparency false` becomes obsolete, and once it is removed, `instanceSearchTypes false`
+can go as well: `asModule` being implicit-reducible, the `instModuleAsModule._aux_1` constant
+becomes implicit-reducible as well. The reason for this is that `instModuleAsModule`'s definition
+uses `inferInstanceAs`, which wraps the instance's fields into wrappers to encapsulate defeq abuse.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 /-- An intertwining map is the same thing as a linear map over the group ring. -/
 def equivLinearMapAsModule :

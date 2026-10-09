@@ -5,8 +5,8 @@ Authors: Joël Riou, Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Leibniz Constructions
@@ -348,7 +348,6 @@ namespace PullbackObjObj
 
 attribute [reassoc (attr := simp)] π_fst π_snd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `PullbackObjObj` structure given by the pullback of the limits API. -/
 @[simps]
 noncomputable def ofHasPullback

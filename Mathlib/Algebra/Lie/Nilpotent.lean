@@ -5,13 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Solvable
-public import Mathlib.Algebra.Lie.Quotient
 public import Mathlib.Algebra.Lie.Normalizer
+public import Mathlib.Algebra.Lie.Solvable
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Nilpotent Lie algebras
@@ -716,7 +713,7 @@ def maxNilpotentSubmodule :=
 
 instance instMaxNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
     IsNilpotent L (maxNilpotentSubmodule R L M) := by
-  have hwf := CompleteLattice.WellFoundedGT.isSupClosedCompact (LieSubmodule R L M) inferInstance
+  have hwf := WellFoundedGT.isSupClosedCompact (α := LieSubmodule R L M) inferInstance
   refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun N₁ h₁ N₂ h₂ => ?_ <;>
   simp_all only [Set.mem_ofPred] <;> infer_instance
 

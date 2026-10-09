@@ -5,10 +5,9 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled non-unital subsemirings
@@ -148,7 +147,7 @@ lemma toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
   | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
 
-instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R) R
+instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R)
 
 /-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
 @[simps]

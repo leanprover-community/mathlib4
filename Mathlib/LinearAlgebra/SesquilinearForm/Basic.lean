@@ -6,7 +6,6 @@ Authors: Andreas Swerdlow
 module
 
 public import Mathlib.LinearAlgebra.Basis.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 import Mathlib.Algebra.Module.Torsion.Field
@@ -340,7 +339,7 @@ theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛ�
     simp_rw [neg_apply, flip_apply]
     exact (h.neg _ _).symm
   intro x
-  let h' := congr_fun₂ h x x
+  let h' := congr($h x x)
   simp only [neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
   exact add_self_eq_zero.mp h'
 
@@ -625,7 +624,7 @@ theorem Nondegenerate.congr (h : B.Nondegenerate) :
 theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
-    convert! h.congr e₁.symm e₂.symm
+    convert h.congr e₁.symm e₂.symm
     ext x y
     simp,
    SeparatingLeft.congr e₁ e₂⟩

@@ -5,13 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Extension.Presentation.Submersive
-public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.Polynomial.IsIntegral
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+import Mathlib.RingTheory.Polynomial.IsIntegral
 
 
 /-!
@@ -145,7 +144,7 @@ def universalFactorizationMap (hn : n = m + k) :
 lemma universalFactorizationMap_freeMonic :
     (freeMonic R n).map (toRingHom <| universalFactorizationMap R n m k hn) =
       (freeMonic R m).map (algebraMap _ _) *
-        (freeMonic R k).map (toRingHom <| Algebra.TensorProduct.includeRight) := by
+        (freeMonic R k).map (toRingHom Algebra.TensorProduct.includeRight) := by
   change (mapEquivMonic _ _ _ (universalFactorizationMap R n m k hn)).1 = _
   simp [universalFactorizationMap]
   rfl
@@ -185,7 +184,6 @@ def universalFactorizationMapLiftEquiv (p : MonicDegreeEq S n) :
   left_inv f := by ext <;> simp
   right_inv q := by ext <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ker_eval₂Hom_universalFactorizationMap :
     RingHom.ker (eval₂Hom (S₁ := MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R)
       (universalFactorizationMap R n m k hn) (Sum.elim (.X · ⊗ₜ 1) (1 ⊗ₜ .X ·))) =
@@ -364,7 +362,6 @@ lemma finite_universalFactorizationMap :
     simpa [← Polynomial.eval₂_map, F] using! hp'
   intro x
   induction x with
-  | zero => exact RingHom.isIntegralElem_zero _
   | add x y _ _ => exact RingHom.IsIntegralElem.add _ ‹_› ‹_›
   | tmul x y =>
     suffices (universalFactorizationMap R n m k hn).IsIntegralElem (x ⊗ₜ 1 * 1 ⊗ₜ y) by simpa
@@ -509,8 +506,7 @@ def UniversalFactorizationRing.presentation :
   letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   (MvPolynomial.universalFactorizationMapPresentation R n m k hn).baseChange _
 
-set_option backward.isDefEq.respectTransparency.types false in
-lemma UniversalFactorizationRing.jacobian_resentation :
+lemma UniversalFactorizationRing.jacobian_presentation :
     (presentation m k hn p).jacobian =
       (-1) ^ n * (factor₁ m k hn p).1.resultant (factor₂ m k hn p).1 := by
   cases subsingleton_or_nontrivial 𝓡
@@ -529,6 +525,10 @@ lemma UniversalFactorizationRing.jacobian_resentation :
     (monic_freeMonic R m).natDegree_map, MonicDegreeEq.natDegree,
     MonicDegreeEq.natDegree, natDegree_freeMonic, natDegree_freeMonic]
   rfl
+
+@[deprecated (since := "2026-09-17")]
+alias UniversalFactorizationRing.jacobian_resentation :=
+  UniversalFactorizationRing.jacobian_presentation
 
 open UniversalFactorizationRing in
 /-- The universal coprime factorization ring of a monic polynomial `p` of degree `n`.
@@ -562,7 +562,7 @@ lemma UniversalCoprimeFactorizationRing.isCoprime_factor₁_factor₂ :
     (UniversalFactorizationRing.factor₁ m k hn p).monic.natDegree_map,
     (UniversalFactorizationRing.factor₂ m k hn p).monic.natDegree_map]
   refine ((IsUnit.mul_iff (x := algebraMap 𝓡 𝓡' ((-1) ^ n))).mp ?_).2
-  rw [← map_mul, ← UniversalFactorizationRing.jacobian_resentation m k hn p]
+  rw [← map_mul, ← UniversalFactorizationRing.jacobian_presentation m k hn p]
   exact IsLocalization.Away.algebraMap_isUnit _
 
 open UniversalFactorizationRing in
@@ -597,7 +597,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
     apply IsLocalization.Away.liftAlgHom (f := f)
       (UniversalFactorizationRing.presentation m k hn p).jacobian
     nontriviality S
-    rw [← AlgHom.coe_toRingHom, UniversalFactorizationRing.jacobian_resentation, map_mul,
+    rw [← AlgHom.coe_toRingHom, UniversalFactorizationRing.jacobian_presentation, map_mul,
       ← Polynomial.resultant_map_map, IsUnit.mul_iff]
     refine ⟨by cases n <;> simp, ?_⟩
     rw [← (UniversalFactorizationRing.factor₁ m k hn p).monic.natDegree_map f.toRingHom,
@@ -658,7 +658,7 @@ lemma UniversalCoprimeFactorizationRing.exists_liesOver_residueFieldMap_bijectiv
   have : Q.LiesOver P := ⟨by rw [Ideal.under, RingHom.comap_ker, AlgHom.toRingHom_eq_coe,
       φ.comp_algebraMap, Ideal.ker_algebraMap_residueField]⟩
   let φ' : Q.ResidueField →ₐ[R] P.ResidueField := Ideal.ResidueField.liftₐ _ φ le_rfl (by
-    simp [SetLike.le_def, IsUnit.mem_submonoid_iff, Q])
+    simp [IsConcreteLE.le_iff, IsUnit.mem_submonoid_iff, Q])
   let φi : P.ResidueField →ₐ[R] Q.ResidueField :=
     Ideal.ResidueField.mapₐ _ _ (Algebra.ofId _ _) (Ideal.over_def _ _)
   let e : P.ResidueField ≃ₐ[R] Q.ResidueField :=

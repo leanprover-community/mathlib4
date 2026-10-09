@@ -115,7 +115,7 @@ theorem ofPoint_linear : ofPoint.linear = ofVector (R := R) (P := P) :=
 
 @[simp]
 theorem ofVector_vsub (p q : P) : ofVector (R := R) (p -ᵥ q) = ofPoint p - ofPoint q :=
-  ofPoint.linearMap_vsub p q
+  ofPoint.linear_apply_vsub p q
 
 @[simp]
 theorem ofVector_smul {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
@@ -171,7 +171,7 @@ section
 variable {F : Type*} [FunLike F (Homogenization R P) W] [LinearMapClass F R _ _]
 
 theorem hom_ext {f g : F} (h : ∀ x, f (ofPoint x) = g (ofPoint x)) : f = g := by
-  apply LinearMap.toLinearMap_injective
+  apply LinearMap.ofClass_injective
   rwa [← LinearMap.eqLocus_eq_top, eq_top_iff, ← span_range_ofPoint, Submodule.span_le,
     Set.range_subset_iff]
 

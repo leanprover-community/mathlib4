@@ -7,8 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.Tactic.PPWithUniv
-public import Mathlib.Tactic.ToAdditive
 
 /-!
 # The category `Type`.
@@ -55,6 +53,7 @@ structure Fun (X Y : Type*) where
   /-- The underlying function. -/
   toFun : X → Y
 
+@[macro_inline]
 instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe f x := f.toFun x
   coe_injective _ := by aesop
@@ -94,7 +93,6 @@ end TypeCat
 
 open TypeCat CategoryTheory
 
-@[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance CategoryTheory.types : Category.{u} (Type u) where
   Hom := Hom
   id X := ⟨.id X⟩
@@ -208,7 +206,7 @@ lemma types_comp_apply {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 
 @[congr]
 lemma types_congr_hom {X Y : Type u} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
-  ConcreteCategory.congr_hom h x
+  congr($h x)
 
 namespace Functor
 
@@ -249,16 +247,16 @@ variable (σ : F ⟶ G) (τ : G ⟶ H)
 
 attribute [elementwise nosimp] Functor.map_comp Functor.map_id NatTrans.comp_app
 
-@[deprecated Functor.map_comp_apply (since := "2026-03-09")]
+@[deprecated Functor.map_comp_apply +typeChanged (since := "2026-03-09")]
 theorem map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
     (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) :=
   F.map_comp_apply f g a
 
-@[deprecated Functor.map_id_apply (since := "2026-03-09")]
+@[deprecated Functor.map_id_apply +typeChanged (since := "2026-03-09")]
 theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a :=
   F.map_id_apply X a
 
-@[deprecated NatTrans.comp_app_apply (since := "2026-03-09")]
+@[deprecated NatTrans.comp_app_apply +typeChanged (since := "2026-03-09")]
 theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
   σ.comp_app_apply τ X x
 
@@ -280,7 +278,7 @@ lemma naturality_symm {F G : C ⥤ Type*} (e : ∀ j, F.obj j ≃ G.obj j)
   apply (e j').injective
   dsimp
   simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply]
-  exact (congr_fun (naturality f) y).symm
+  exact congr($(naturality f) y).symm
 
 end FunctorToTypes
 
@@ -320,7 +318,7 @@ def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
 def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := ofHom fun _ => x
 
 theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
-  ⟨fun H => ConcreteCategory.congr_hom H PUnit.unit, by simp_all⟩
+  ⟨fun H => congr($H .unit), by simp_all⟩
 
 /-- A morphism in `Type` is a monomorphism if and only if it is injective. -/
 @[stacks 003C]
@@ -412,7 +410,7 @@ open CategoryTheory
 variable {X Y : Type u}
 
 /-- Any isomorphism between types gives an equivalence. -/
-@[simps]
+@[implicit_reducible, simps]
 def toEquiv (i : X ≅ Y) : X ≃ Y where
   toFun := i.hom
   invFun := i.inv
@@ -450,7 +448,7 @@ theorem bijective_iff_isIso_ofHom {X Y : Type u} (f : X → Y) :
 
 instance : SplitEpiCategory (Type u) where
   isSplitEpi_of_epi f hf :=
-    IsSplitEpi.mk' <|
+    IsSplitEpi.mk'
       { section_ := ofHom <| Function.surjInv <| (epi_iff_surjective f).1 hf
         id := by
           ext x

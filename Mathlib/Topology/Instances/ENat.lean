@@ -6,11 +6,8 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Data.ENat.Monoid
-public import Mathlib.Topology.Instances.Discrete
-public import Mathlib.Order.Interval.Set.WithBotTop
-public import Mathlib.Order.Filter.Pointwise
-public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Instances.Discrete
 
 /-!
 # Topology on extended natural numbers
