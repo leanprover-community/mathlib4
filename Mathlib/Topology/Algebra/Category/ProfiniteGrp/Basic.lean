@@ -39,7 +39,7 @@ open CategoryTheory
 The category of profinite groups. A term of this type consists of a profinite
 set with a topological group structure.
 -/
-@[pp_with_univ]
+@[pp_with_univ, lmfdb gl2.profinite]
 structure ProfiniteGrp where
   /-- The underlying profinite topological space. -/
   toProfinite : Profinite.{u}

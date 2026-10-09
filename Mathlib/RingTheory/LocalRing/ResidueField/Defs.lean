@@ -24,7 +24,7 @@ namespace IsLocalRing
 variable (R : Type*) [CommRing R] [IsLocalRing R]
 
 /-- The residue field of a local ring is the quotient of the ring by its maximal ideal. -/
-@[wikidata Q7315530]
+@[wikidata Q7315530, lmfdb lf.residue_field]
 def ResidueField :=
   R ⧸ maximalIdeal R
 deriving CommRing, Inhabited

@@ -21,7 +21,7 @@ We define the notation `ℍ` for the upper half plane available in the locale
 noncomputable section
 
 /-- The open upper half plane, denoted as `ℍ` within the `UpperHalfPlane` namespace -/
-@[ext]
+@[ext, lmfdb mf.upper_half_plane]
 structure UpperHalfPlane where
   /-- Canonical embedding of the upper half-plane into `ℂ`. -/
   protected coe : ℂ

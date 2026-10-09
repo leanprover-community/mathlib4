@@ -47,6 +47,7 @@ variable (R : Type*)
 /-- An arithmetic function is a function from `ℕ` that maps 0 to 0. In the literature, they are
   often instead defined as functions from `ℕ+`. Multiplication on `ArithmeticFunctions` is by
   Dirichlet convolution. -/
+@[lmfdb af]
 def ArithmeticFunction [Zero R] :=
   ZeroHom ℕ R
 
@@ -420,6 +421,7 @@ end CommRing
 end DirichletInverse
 
 /-- Multiplicative functions -/
+@[lmfdb af.multiplicative]
 def IsMultiplicative [MonoidWithZero R] (f : ArithmeticFunction R) : Prop :=
   f 1 = 1 ∧ ∀ {m n : ℕ}, m.Coprime n → f (m * n) = f m * f n
 

@@ -50,7 +50,8 @@ open Function
 variable {G G' : Type*} [Group G] [Group G'] (H K L : Subgroup G)
 
 /-- The index of a subgroup as a natural number. Returns `0` if the index is infinite. -/
-@[to_additive (attr := wikidata Q1464168) /-- The index of an additive subgroup as a natural number.
+@[to_additive (attr := wikidata Q1464168, lmfdb group.subgroup.index)
+/-- The index of an additive subgroup as a natural number.
 Returns 0 if the index is infinite. -/]
 noncomputable def index : ℕ :=
   Nat.card (G ⧸ H)

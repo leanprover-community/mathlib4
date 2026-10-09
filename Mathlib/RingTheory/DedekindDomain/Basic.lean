@@ -146,6 +146,7 @@ use `isDedekindDomain_iff` to prove `IsDedekindDomain` for a given `fraction_map
 
 See also `isDedekindDomain_iff_isDiscreteValuationRing_atPrime` and
 `isDedekindDomain_iff_mul_inv_cancel`. -/
+@[lmfdb ring.dedekind_domain]
 class IsDedekindDomain : Prop
   extends IsDomain A, IsDedekindRing A
 

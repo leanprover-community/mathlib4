@@ -51,7 +51,7 @@ section
 variable (G) [Monoid G]
 
 /-- A predicate on a monoid saying that all elements are of finite order. -/
-@[to_additive
+@[to_additive (attr := lmfdb group.torsion)
 /-- A predicate on an additive monoid saying that all elements are of finite order. -/]
 def IsMulTorsion :=
   ∀ g : G, IsOfFinOrder g

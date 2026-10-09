@@ -932,6 +932,7 @@ variable {R : Type*} [CommRing R]
 /-- The discriminant of a polynomial, defined as the determinant of `f.sylvesterDeriv` modified
 by a sign. The sign is chosen so polynomials over `ℝ` with all roots real have non-negative
 discriminant. -/
+@[lmfdb nf.poly_discriminant]
 noncomputable def discr (f : R[X]) : R :=
   f.sylvesterDeriv.det * (-1) ^ (f.natDegree * (f.natDegree - 1) / 2)
 

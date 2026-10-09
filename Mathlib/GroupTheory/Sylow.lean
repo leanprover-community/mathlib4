@@ -51,6 +51,7 @@ section InfiniteSylow
 variable (p : ℕ) (G : Type*) [Group G]
 
 /-- A Sylow `p`-subgroup is a maximal `p`-subgroup. -/
+@[lmfdb group.sylow_subgroup]
 structure Sylow extends Subgroup G where
   isPGroup' : IsPGroup p toSubgroup
   is_maximal' : ∀ {Q : Subgroup G}, IsPGroup p Q → toSubgroup ≤ Q → Q = toSubgroup
