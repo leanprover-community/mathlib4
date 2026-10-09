@@ -5,9 +5,10 @@ Authors: Yury Kudryashov, Damien Thomine
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.Combinatorics.Pigeonhole
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Measure-theoretic recurrence and conservative systems
@@ -48,7 +49,6 @@ recurrent set, conservative dynamical system, Poincare recurrence theorem
 
 public section
 
-noncomputable section
 
 open Filter Function MeasureTheory Measure Set
 

@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Anatole Dedec
 module
 
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
-public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-! # Linear topologies on modules and rings
@@ -170,7 +169,7 @@ open Set Pointwise in
 is linear with respect to each of these rings. Then, it has a basis of neighborhoods of zero
 made of sub-`(R, R')`-bimodules.
 
-The proof is inspired by lemma 9 in [I. Kaplansky, *Topological Rings*](kaplansky_topological_1947).
+The proof is inspired by lemma 9 in [I. Kaplansky, *Topological Rings*][kaplansky_topological_1947].
 TODO: Formalize the lemma in its full strength.
 
 Note: due to the lack of a satisfying theory of sub-bimodules, we use `AddSubgroup`s with

@@ -5,9 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 public import Mathlib.CategoryTheory.Bicategory.End
+public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!

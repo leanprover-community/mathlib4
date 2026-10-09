@@ -116,8 +116,7 @@ open scoped Distributions
 continuously differentiable functions with support in the compact set `K`. -/
 class ContDiffMapSupportedInClass (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) (K : outParam <| Compacts E)
-    extends FunLike B E F where
+    (n : outParam ℕ∞) (K : outParam <| Compacts E) [FunLike B E F] where
   map_contDiff (f : B) : ContDiff ℝ n f
   map_zero_on_compl (f : B) : EqOn f 0 Kᶜ
 
@@ -127,14 +126,14 @@ namespace ContDiffMapSupportedInClass
 
 instance (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) (K : outParam <| Compacts E)
+    (n : outParam ℕ∞) (K : outParam <| Compacts E) [FunLike B E F]
     [ContDiffMapSupportedInClass B E F n K] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) (K : outParam <| Compacts E)
+    (n : outParam ℕ∞) (K : outParam <| Compacts E) [FunLike B E F]
     [ContDiffMapSupportedInClass B E F n K] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by
@@ -146,10 +145,12 @@ end ContDiffMapSupportedInClass
 
 namespace ContDiffMapSupportedIn
 
-instance toContDiffMapSupportedInClass :
-    ContDiffMapSupportedInClass 𝓓^{n}_{K}(E, F) E F n K where
+instance : FunLike 𝓓^{n}_{K}(E, F) E F where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr
+
+instance toContDiffMapSupportedInClass :
+    ContDiffMapSupportedInClass 𝓓^{n}_{K}(E, F) E F n K where
   map_contDiff f := f.contDiff'
   map_zero_on_compl f := f.zero_on_compl'
 
@@ -197,7 +198,6 @@ instance : Zero 𝓓^{n}_{K}(E, F) where
   zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
 instance : IsZeroApply 𝓓^{n}_{K}(E, F) E F where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
 
@@ -207,7 +207,6 @@ instance : Add 𝓓^{n}_{K}(E, F) where
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
 instance : IsAddApply 𝓓^{n}_{K}(E, F) E F where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
 
@@ -217,7 +216,6 @@ instance : Neg 𝓓^{n}_{K}(E, F) where
     exact f.zero_on_compl.comp_left
 
 instance : IsNegApply 𝓓^{n}_{K}(E, F) E F where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
 
@@ -227,19 +225,17 @@ instance instSub : Sub 𝓓^{n}_{K}(E, F) where
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
 instance : IsSubApply 𝓓^{n}_{K}(E, F) E F where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 
-instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+instance instSMul {R} [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     SMul R 𝓓^{n}_{K}(E, F) where
   smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
 
-instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+instance {R} [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     IsSMulApply R 𝓓^{n}_{K}(E, F) E F where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
 

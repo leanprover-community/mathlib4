@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.SMul
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-! # Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
@@ -105,7 +104,6 @@ section extChartAt
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
 
-set_option backward.isDefEq.respectTransparency.types false in
 -- TODO: add pre-composition version also
 theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm (hf : MDiffAt[s] f x) :
     letI φ := extChartAt I x
@@ -538,7 +536,7 @@ lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (
 lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffAt[s] x) :
     d[s](f * g) x = f x • d[s]g x + (g x) • (d[s]f x) := by
-  convert! mvfderivWithin_smul hf hg hs
+  convert mvfderivWithin_smul hf hg hs
   ext v
   simp [mul_comm]
 

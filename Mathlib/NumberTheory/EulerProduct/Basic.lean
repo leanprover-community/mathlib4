@@ -5,11 +5,11 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Ring.InfiniteSum
 public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.SmoothNumbers
+
+import Mathlib.Data.Nat.Factorization.PrimePow
 
 /-!
 # Euler Products

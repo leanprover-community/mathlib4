@@ -182,7 +182,7 @@ theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
   · by_cases h : Nonempty α
     · exact dist_lt_of_nonempty_compact
     · rintro -
-      convert! C0
+      convert C0
       apply le_antisymm _ dist_nonneg'
       rw [dist_eq]
       exact csInf_le ⟨0, fun C => And.left⟩ ⟨le_rfl, fun x => False.elim (h (Nonempty.intro x))⟩
@@ -260,7 +260,7 @@ theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ �
 
 -- TODO: upgrade to `IsUniformEmbedding`
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
-  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr($h x)⟩
 
 variable (α) in
 /-- Constant as a continuous bounded function. -/

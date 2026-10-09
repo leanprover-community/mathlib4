@@ -5,13 +5,14 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Torsion
-public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.CategoryTheory.Category.Init
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.Data.Rat.Floor
-public import Mathlib.RingTheory.Nakayama
-public import Mathlib.Tactic.Continuity
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+
+import Mathlib.Algebra.GroupWithZero.Torsion
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Floor
+import Mathlib.RingTheory.Nakayama
+import Mathlib.Tactic.Continuity
 
 /-!
 # Ramification index
@@ -320,7 +321,7 @@ lemma ramificationIdx'_eq_one_iff
   have ha' : ¬ a ≤ P := fun h ↦ H₁ (ha.trans_le (Ideal.mul_mono_right h))
   rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, ha, Ideal.map_mul,
     Localization.AtPrime.map_eq_maximalIdeal]
-  convert! Ideal.mul_top _
+  convert Ideal.mul_top _
   on_goal 2 => infer_instance
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
