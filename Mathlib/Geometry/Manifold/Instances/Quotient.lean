@@ -72,7 +72,7 @@ abbrev localInverseAt : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
 @[to_additive]
 lemma localInverseAt_apply_mk_eq_smul {g : G} {m : M} (hm : g • m ∈ (x.localInverseAt).target) :
     x.localInverseAt ⟦m⟧ = g • m := by
-  rw [← orbitRel.Quotient.quotient_smul_eq (g := g),
+  rw [← quotient_smul_eq (g := g),
     ← isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm,
     (x.localInverseAt).right_inv hm]
 
