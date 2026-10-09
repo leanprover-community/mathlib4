@@ -20,6 +20,8 @@ the Liquid Tensor Experiment.
 
 @[expose] public section
 
+to_dual_name_hint X₁ X₃, τ₁ τ₃, π₁ π₃
+
 namespace CategoryTheory
 
 open Category Limits
@@ -45,7 +47,7 @@ structure ShortComplex where
   /-- the composition of the two given morphisms is zero -/
   zero : f ≫ g = 0 := by cat_disch
 
-attribute [to_dual existing X₃] ShortComplex.X₁
+attribute [to_dual existing] ShortComplex.X₁
 attribute [to_dual existing g] ShortComplex.f
 
 namespace ShortComplex
@@ -69,7 +71,7 @@ structure Hom (S₁ S₂ : ShortComplex C) where
 
 to_dual_for Hom.comm₁₂ := self.comm₂₃.symm
 to_dual_for Hom.comm₂₃ := self.comm₁₂.symm
-to_dual_for Hom.mk := { τ₁ := τ₃, τ₂, τ₃ := τ₁, comm₁₂ := comm₂₃.symm, comm₂₃ := comm₁₂.symm }
+to_dual_for Hom.mk := ⟨τ₃, τ₂, τ₁, comm₂₃.symm, comm₁₂.symm⟩
 
 attribute [map (attr := reassoc)] Hom.comm₁₂ Hom.comm₂₃
 attribute [local simp] Hom.comm₁₂ Hom.comm₂₃ Hom.comm₁₂_assoc Hom.comm₂₃_assoc
@@ -111,10 +113,10 @@ to_dual_for homMk_τ₁ := by simp
 to_dual_for homMk_τ₂ := by simp
 to_dual_for homMk_τ₃ := by simp
 
-@[to_dual (attr := simp) id_τ₃] lemma id_τ₁ : Hom.τ₁ (𝟙 S) = 𝟙 _ := rfl
+@[to_dual (attr := simp)] lemma id_τ₁ : Hom.τ₁ (𝟙 S) = 𝟙 _ := rfl
 @[simp] lemma id_τ₂ : Hom.τ₂ (𝟙 S) = 𝟙 _ := rfl
 
-@[to_dual (attr := simp, reassoc) comp_τ₃]
+@[to_dual (attr := simp, reassoc)]
 lemma comp_τ₁ (φ₁₂ : S₁ ⟶ S₂) (φ₂₃ : S₂ ⟶ S₃) :
     (φ₁₂ ≫ φ₂₃).τ₁ = φ₁₂.τ₁ ≫ φ₂₃.τ₁ := rfl
 
@@ -126,7 +128,7 @@ lemma comp_τ₂ (φ₁₂ : S₁ ⟶ S₂) (φ₂₃ : S₂ ⟶ S₃) :
 
 variable (S₁ S₂)
 
-@[to_dual (attr := simp) zero_τ₃] lemma zero_τ₁ : Hom.τ₁ (0 : S₁ ⟶ S₂) = 0 := rfl
+@[to_dual (attr := simp)] lemma zero_τ₁ : Hom.τ₁ (0 : S₁ ⟶ S₂) = 0 := rfl
 @[to_dual self, simp] lemma zero_τ₂ : Hom.τ₂ (0 : S₁ ⟶ S₂) = 0 := rfl
 
 variable {S₁ S₂}
@@ -134,8 +136,7 @@ variable {S₁ S₂}
 instance : HasZeroMorphisms (ShortComplex C) where
 
 /-- The first projection functor `ShortComplex C ⥤ C`. -/
-@[to_dual (attr := simps) π₃
-/-- The third projection functor `ShortComplex C ⥤ C`. -/]
+@[to_dual (attr := simps) /-- The third projection functor `ShortComplex C ⥤ C`. -/]
 def π₁ : ShortComplex C ⥤ C where
   obj S := S.X₁
   map f := f.τ₁
@@ -148,8 +149,7 @@ def π₂ : ShortComplex C ⥤ C where
 
 attribute [to_dual self] π₂_map
 
-@[to_dual preservesZeroMorphisms_π₃]
-instance preservesZeroMorphisms_π₁ : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
+@[to_dual] instance preservesZeroMorphisms_π₁ : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
 instance preservesZeroMorphisms_π₂ : Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) where
 
 @[to_dual instIsIsoτ₃]
@@ -216,7 +216,7 @@ def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZero
         simp only [← F.map_comp, φ.comm₂₃] }
 
 /-- A constructor for isomorphisms in the category `ShortComplex C` -/
-@[simps, to_dual none]
+@[simps]
 def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e₃ : S₁.X₃ ≅ S₂.X₃)
     (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom := by cat_disch)
     (comm₂₃ : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom := by cat_disch) :
@@ -228,11 +228,9 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
     (by rw [← cancel_mono e₃.hom, assoc, assoc, e₃.inv_hom_id, comp_id,
           ← comm₂₃, e₂.inv_hom_id_assoc])
 
-@[to_dual self (reorder := S₁ S₂, 7 9)]
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
   (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃)).isIso_hom
 
-@[to_dual none]
 lemma isIso_iff (f : S₁ ⟶ S₂) :
     IsIso f ↔ IsIso f.τ₁ ∧ IsIso f.τ₂ ∧ IsIso f.τ₃ := by
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, ?_⟩
@@ -253,7 +251,7 @@ def op : ShortComplex Cᵒᵖ :=
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The opposite morphism in `ShortComplex Cᵒᵖ` associated to a morphism in `ShortComplex C` -/
-@[to_dual self, simps]
+@[simps]
 def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
   τ₁ := φ.τ₃.op
   τ₂ := φ.τ₂.op
@@ -275,7 +273,7 @@ def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The morphism in `ShortComplex C` associated to a morphism in `ShortComplex Cᵒᵖ` -/
-@[to_dual self, simps]
+@[simps]
 def unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} (φ : S₁ ⟶ S₂) : S₂.unop ⟶ S₁.unop where
   τ₁ := φ.τ₃.unop
   τ₂ := φ.τ₂.unop
