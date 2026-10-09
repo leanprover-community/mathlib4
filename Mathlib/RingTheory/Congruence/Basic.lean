@@ -349,7 +349,7 @@ theorem comap_ringConGen_equiv
   apply le_ringConGen
   simpa [Function.onFun] using hab
 
-@[deprecated comap_ringConGen_equiv (since := "2026-10-08")]
+@[deprecated comap_ringConGen_equiv +typeChanged (since := "2026-10-08")]
 theorem comap_ringConGen_ringEquiv {R R'} [NonAssocSemiring R] [NonAssocSemiring R']
     (r : R' → R' → Prop) (f : R ≃+* R') :
     (ringConGen r).comap f = ringConGen (r on f) :=
