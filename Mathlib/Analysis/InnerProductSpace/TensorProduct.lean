@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.RingTheory.TensorProduct.Finite
+
+import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Analysis.InnerProductSpace.GramMatrix
 import Mathlib.Analysis.InnerProductSpace.Positive
-import Mathlib.Algebra.Order.Star.Real
 
 /-!
 

@@ -6,8 +6,8 @@ Authors: Oliver Nash, Bhavik Mehta, Daniel Weber, Stefan Kebekus
 module
 
 public import Mathlib.Tactic.TautoSet
-public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.LocallyClosed
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Discrete subsets of topological spaces
@@ -200,7 +200,7 @@ lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocal
 lemma tendsto_cofinite_cocompact_of_discrete [DiscreteTopology X]
     (hf : Tendsto f (cocompact _) (cocompact _)) :
     Tendsto f cofinite (cocompact _) := by
-  convert! hf
+  convert hf
   rw [cocompact_eq_cofinite X]
 
 lemma IsClosed.tendsto_coe_cofinite_of_isDiscrete

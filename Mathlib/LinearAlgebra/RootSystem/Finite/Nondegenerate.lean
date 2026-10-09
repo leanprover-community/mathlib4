@@ -6,10 +6,11 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
-import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.LinearAlgebra.RootSystem.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+
+import Mathlib.LinearAlgebra.Dimension.Localization
 
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
@@ -278,7 +279,7 @@ lemma isCompl_rootSpan_ker_rootForm :
     rw [P.toPerfPair.finrank_eq, ← P.finrank_corootSpan_eq',
       Subspace.finrank_add_finrank_dualAnnihilator_eq (P.corootSpan R), Subspace.dual_finrank_eq]
   rw [aux, add_le_add_iff_left]
-  convert! Submodule.finrank_mono P.corootSpan_dualAnnihilator_le_ker_rootForm
+  convert Submodule.finrank_mono P.corootSpan_dualAnnihilator_le_ker_rootForm
   exact (LinearEquiv.finrank_map_eq _ _).symm
 
 lemma isCompl_corootSpan_ker_corootForm :

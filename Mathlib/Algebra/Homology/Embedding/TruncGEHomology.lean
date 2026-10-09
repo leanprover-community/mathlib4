@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 public import Mathlib.Algebra.Homology.Embedding.TruncGE
+
 import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
 /-! # The homology of a canonical truncation
