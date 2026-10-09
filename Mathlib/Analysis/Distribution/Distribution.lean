@@ -5,9 +5,10 @@ Authors: Anatole Dedecker, Luigi Massacci
 -/
 module
 
-public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
+
+import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 
 /-!
 # Distributions
@@ -421,6 +422,10 @@ theorem smulLeftCLM_ofFun [LocallyCompactSpace E] {g : E → ℝ} (hg : ContDiff
   rw [smulLeftCLM_apply_apply, ofFun_apply hf, ofFun_apply hgf]
   refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
   simp only [TestFunction.smulLeftCLM_apply_apply hg, smul_comm (φ x), smul_assoc]
+
+@[simp] theorem ofFun_dirac_eq_delta (x : E) :
+    ofFun Ω (1 : E → ℝ) (Measure.dirac x) n = delta x := by
+  ext; simp [ofFun_apply_eq_ite, Pi.one_def, locallyIntegrableOn_const]
 
 variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 

@@ -5,15 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-public import Mathlib.RingTheory.Norm.Defs
-public import Mathlib.RingTheory.PolynomialAlgebra
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-public import Mathlib.FieldTheory.IntermediateField.Algebraic
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-public import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Transitivity of algebra norm
@@ -100,7 +93,7 @@ lemma det_mul_corner_pow :
     pow_one, det_one, smul_eq_mul, mul_one]
   -- `Decidable (P = Q)` diamond induced by `Prop.linearOrder`, which is classical, when `P` and `Q`
   -- are themselves decidable.
-  convert! rfl
+  convert rfl
 
 /-- A matrix with X added to the corner. -/
 noncomputable def cornerAddX : Matrix m m S[X] :=
@@ -178,7 +171,7 @@ theorem Matrix.det_det [Fintype m] [Fintype n] (f : S →+* Matrix n n R) :
           grind [Fintype.card_subtype_compl, Fintype.card_unique])
       rw [polyToMatrix_cornerAddX, ← charpoly]
       exact (Matrix.charpoly_monic _).mem_nonZeroDivisors
-    rw [← eval_zero_det_det, congr_arg (eval 0) this, eval_zero_comp_det]
+    rw [← eval_zero_det_det, congr(eval 0 $this), eval_zero_comp_det]
 
 variable [Algebra R S] [Module.Free R S]
 

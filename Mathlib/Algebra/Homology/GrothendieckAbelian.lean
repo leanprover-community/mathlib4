@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Generator.HomologicalComplex
-public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
 /-!
 # Homological complexes in a Grothendieck abelian category
@@ -40,7 +40,7 @@ instance locallySmall [LocallySmall.{w} C] [Small.{w} ι] :
     have hemb : Function.Injective emb := fun f g h ↦ by
       ext i
       obtain ⟨i, rfl⟩ := (equivShrink.{w} _).symm.surjective i
-      simpa [emb] using congr_fun h i
+      simpa [emb] using congr($h i)
     apply small_of_injective hemb
 
 instance [HasFilteredColimitsOfSize.{w, w'} C] :

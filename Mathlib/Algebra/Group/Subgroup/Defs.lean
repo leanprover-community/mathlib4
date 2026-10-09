@@ -8,9 +8,8 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Set.Inclusion
-public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Subgroups
@@ -322,7 +321,7 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hq, _⟩, _⟩, _⟩ := q
     congr
 
-@[to_additive] instance : PartialOrder (Subgroup G) := .ofSetLike (Subgroup G) G
+@[to_additive] instance : PartialOrder (Subgroup G) := .ofSetLike (Subgroup G)
 
 initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
@@ -640,7 +639,7 @@ namespace Normal
 @[to_additive]
 theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
-  convert! nH.conj_mem n hn g⁻¹
+  convert nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]

@@ -5,8 +5,8 @@ Authors: Moritz Doll, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.Distribution.Distribution
+public import Mathlib.Analysis.Distribution.TemperedDistribution
 
 /-! # Support of distributions
 

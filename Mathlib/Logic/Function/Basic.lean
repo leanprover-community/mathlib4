@@ -5,13 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Batteries.Tactic.Init
 public import Mathlib.Basic.ExistsUnique
 public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Basic.Nonempty
 public import Mathlib.Basic.Nontrivial.Defs
-public import Mathlib.Data.Set.Defs
 public import Mathlib.Logic.Function.Defs
-public import Batteries.Tactic.Init
 public import Mathlib.Order.Defs.Unbundled
 
 
@@ -914,6 +913,15 @@ lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ 
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=
   funext fun a ↦ hf.extend_apply g e' a
 
+theorem Injective.extend_update [DecidableEq α] [DecidableEq β] (hf : Injective f) (g : α → γ)
+    (e : β → γ) (i : α) (a : γ) :
+    extend f (update g i a) e = update (extend f g e) (f i) a := by
+  ext j
+  by_cases h : ∃ k, f k = j
+  · obtain ⟨k, rfl⟩ := h
+    simp [hf, update_apply, hf.eq_iff]
+  · grind [extend_apply']
+
 theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
     Surjective fun g : β → γ ↦ g ∘ f :=
   fun g ↦ ⟨extend f g g₀, Function.extend_comp hf _ _⟩
@@ -1090,13 +1098,13 @@ protected theorem uncurry {α β γ : Type*} {f : α → β → γ} (hf : Inject
 /-- As a map from the left argument to a unary function, `f` is injective. -/
 theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun _ _ h ↦
   let ⟨b⟩ := ‹Nonempty β›
-  hf.left b <| (congr_fun h b :)
+  hf.left b (congr_fun h b :)
 
 /-- As a map from the right argument to a unary function, `f` is injective. -/
 theorem right' (hf : Injective2 f) [Nonempty α] : Function.Injective fun b a ↦ f a b :=
   fun _ _ h ↦
     let ⟨a⟩ := ‹Nonempty α›
-    hf.right a <| (congr_fun h a :)
+    hf.right a (congr_fun h a :)
 
 theorem eq_iff (hf : Injective2 f) {a₁ a₂ b₁ b₂} : f a₁ b₁ = f a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨fun h ↦ hf h, fun ⟨h1, h2⟩ ↦ congr_arg₂ f h1 h2⟩

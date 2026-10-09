@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Kernels
-public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.GroupTheory.QuotientGroup.Finite
+
+import Mathlib.GroupTheory.QuotientGroup.Finite
 
 /-!
 # Homology and exactness of short complexes of abelian groups
@@ -57,7 +57,7 @@ given by a kernel and a quotient given by the `AddMonoidHom` API. -/
 def abLeftHomologyData : S.LeftHomologyData where
   K := ↧S.g.hom.ker
   H := ↧(S.g.hom.ker ⧸ S.abToCycles.range)
-  i := AddCommGrpCat.ofHom <| (AddMonoidHom.ker S.g.hom).subtype
+  i := AddCommGrpCat.ofHom (AddMonoidHom.ker S.g.hom).subtype
   π := AddCommGrpCat.ofHom <| QuotientAddGroup.mk' _
   wi := by
     ext ⟨_, hx⟩
