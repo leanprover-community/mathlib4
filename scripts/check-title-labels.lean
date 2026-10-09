@@ -45,7 +45,7 @@ def checkTitleLabels : Cmd := `[Cli|
   If this PR is a feature PR, also verify that it has a topic label,
   and that there are no contradictory labels.
 
-  If the inpupt title does not pass validation, output a list of errors."
+  If the input title does not pass validation, output a list of errors."
 
   FLAGS:
     "labels" : String; "newline-separated list of label names of this PR\n\
