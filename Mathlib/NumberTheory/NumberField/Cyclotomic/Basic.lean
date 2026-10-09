@@ -210,7 +210,7 @@ lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ} [NeZero k]
     (hζ : IsPrimitiveRoot ζ k) :
     Nat.card (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) =
       (Algebra.norm ℤ (hζ.toInteger - 1)).natAbs := by
-  rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
+  rw [← Ideal.absNorm_eq_natCard, Ideal.absNorm_span_singleton]
 
 lemma toInteger_isPrimitiveRoot {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) :
     IsPrimitiveRoot hζ.toInteger k :=
