@@ -62,7 +62,8 @@ instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ 
 
 instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
 
-instance [Module.Finite k V] : Module.Finite k (Coinvariants ρ) :=
+instance [Module.Finite k ρ.asModule] : Module.Finite k (Coinvariants ρ) :=
+  have := Module.Finite.equiv ρ.asModuleEquiv
   inferInstanceAs <| Module.Finite k (V ⧸ Coinvariants.ker ρ)
 
 variable {ρ}
