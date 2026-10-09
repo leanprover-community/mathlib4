@@ -697,8 +697,8 @@ def valueGroupMulEquiv :
     (valueGroupMulEquiv K v a : ℤᵐ⁰ˣ) = a := rfl
 
 /-- The value group with zero `(valuation K v).ValueGrou₀` of the canonical valuation on
-`v.adicCompletion K` is order isomorphic to the value group with zero of the valuation of `K`
-extended to `v.adicCompletion K`. -/
+`v.adicCompletion K` is multiplicatively order isomorphic to the value group with zero of the
+valuation of `K` extended to `v.adicCompletion K`. -/
 noncomputable def valueGroupOrderMonoidIso :
     (valuation K v).ValueGroup₀ ≃*o
       (Valuation.extension (WithVal.valuation (v.valuation K))).ValueGroup₀ where
