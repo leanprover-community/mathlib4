@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Matrix.Parsing
 
 This module defines the `eval_rank` tactic and the `norm_rank` simproc, which compute
 the rank of a matrix literal with non-symbolic entries through an
-`Echelon.Decomposition` certificate checked by the kernel.
+`Echelon.Decomposition` certificate.
 -/
 
 public meta section
@@ -28,7 +28,7 @@ literal `A`. -/
 def normalizeRank {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α)) (e : Expr)
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr)) : MetaM Simp.Result := do
   let res ← mkBareissDecomposition rα A entries
-  let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert]
+  let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert.decomp]
   let k := mkNatLit res.data.pivot.size
   return { expr := k, proof? := some (mkExpectedPropHint pf (← mkEq e k)) }
 
@@ -42,7 +42,7 @@ def normRankCore : Simp.Simproc := fun e => do
   let u ← getDecLevel R
   have α : Q(Type u) := R
   have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
-  match ← checkBareissApplicable α with
+  match ← inferBareissRing α with
   | .ok rα => return .done (← normalizeRank rα e A entries)
   | .error err =>
     trace[Tactic.evalRank] "{err}{indentExpr A}"
@@ -64,7 +64,7 @@ simproc_decl norm_rank (Matrix.rank _) := fun e => do
 /--
 `eval_rank` evaluates the rank of matrices with non-symbolic entries.
 
-The element type must be a commutative domain with kernel-decidable equality.
+The element type must be a commutative domain.
 Terms skipped can be viewed by using `set_option trace.Tactic.evalRank true`.
 -/
 elab (name := evalRank) "eval_rank" : tactic => do
