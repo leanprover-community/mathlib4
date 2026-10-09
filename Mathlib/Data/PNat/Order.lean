@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Positive.Ring
 public import Mathlib.Data.PNat.Equiv
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.SuccPred.PNat
 
 /-!
 # Basic order and conversion lemmas for positive natural numbers

@@ -5,13 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Vector.Defs
-import Mathlib.Data.List.Nodup
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Batteries.Data.Fin.Lemmas
 public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Data.Vector.Defs
+
+import Batteries.Data.Fin.Lemmas
+import Mathlib.Data.List.Nodup
 
 /-!
 # Additional theorems and definitions about the `Vector` type

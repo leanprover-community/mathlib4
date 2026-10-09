@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Data.Sym.Card
 public import Mathlib.MeasureTheory.Constructions.SimpleGraph
 public import Mathlib.Probability.Distributions.SetBernoulli
+
+import Mathlib.Data.Sym.Card
 
 /-!
 # Binomial random graphs

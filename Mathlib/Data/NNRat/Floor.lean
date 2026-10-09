@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public meta import Mathlib.Data.Rat.Floor
-
 public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Data.Rat.Floor
 

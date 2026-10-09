@@ -5,10 +5,10 @@ Authors: Joël Riou, Johan Commelin
 -/
 module
 
-public import Mathlib.Order.Category.PartOrd
 public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.Order.Category.PartOrd
 
 /-!
 # Category of partial orders, with order embeddings as morphisms

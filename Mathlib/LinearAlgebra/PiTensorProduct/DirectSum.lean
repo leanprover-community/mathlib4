@@ -5,8 +5,8 @@ Authors: Sophie Morel, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct.DFinsupp
 public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.LinearAlgebra.PiTensorProduct.DFinsupp
 
 /-!
 # Tensor products of direct sums

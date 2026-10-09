@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Center.NegOnePow
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.CategoryTheory.Shift.Twist
 public import Mathlib.CategoryTheory.Shift.Pullback
+public import Mathlib.CategoryTheory.Shift.Twist
+
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Commutation with shifts of functors in two variables
