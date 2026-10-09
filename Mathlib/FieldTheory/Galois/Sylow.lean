@@ -36,13 +36,13 @@ theorem exists_intermediateField_finrank_pow_prime_le_le {p : ℕ} (hp : p.Prime
 
 theorem exists_intermediateField_finrank_pow_prime_le {p : ℕ} (hp : p.Prime) {n : ℕ}
     (h : p ^ n ∣ finrank K L) (M : IntermediateField K L) (hM : finrank M L ∣ p ^ n) :
-    ∃ N : IntermediateField K L, finrank N L = p ^ n ∧ N ≤ M := by
-  simpa using exists_intermediateField_finrank_pow_prime_le_le hp hM (by simpa) bot_le
+    ∃ N ≤ M, finrank N L = p ^ n := by
+  grind [exists_intermediateField_finrank_pow_prime_le_le hp hM (by simpa) bot_le]
 
 theorem exists_intermediateField_finrank_pow_prime_ge {p : ℕ} (hp : p.Prime) {n : ℕ}
     (M : IntermediateField K L) (hM : p ^ n ∣ finrank M L) :
-    ∃ N : IntermediateField K L, finrank N L = p ^ n ∧ M ≤ N := by
-  simpa using exists_intermediateField_finrank_pow_prime_le_le hp (by simp) hM le_top
+    ∃ N ≥ M, finrank N L = p ^ n := by
+  grind [exists_intermediateField_finrank_pow_prime_le_le hp (by simp) hM le_top]
 
 theorem exists_intermediateField_finrank_pow_prime {p : ℕ} (hp : p.Prime) {n : ℕ}
     (h : p ^ n ∣ finrank K L) :
@@ -58,16 +58,6 @@ theorem exists_intermediateField_finrank_eq_pow_prime_mul {p n a : ℕ} (hp : p.
   use M
   rw [← Module.finrank_div_finrank_cancel_right_of_nontrivial _ _ L, hn, hM,
       ← Nat.pow_sub_mul_pow _ hm, mul_assoc, Nat.mul_div_right _ (by positivity [hp.pos])]
-
-theorem exists_intermediateField_ge_card_pow_prime_of_card_pow_prime {m n p : ℕ} (hp : p.Prime)
-    {M : IntermediateField K L} (hM : Module.finrank M L = p ^ n) (hm : m ≤ n) :
-    ∃ N ≥ M, Module.finrank N L = p ^ m := by
-  rcases Sylow.exists_subgroup_card_pow_prime_le
-    hp M.fixingSubgroup (by rw [IsGalois.card_fixingSubgroup_eq_finrank, hM]) hm with
-    ⟨H', hH'₁, hH'₂⟩
-  exact ⟨IntermediateField.fixedField H',
-        by simpa [IntermediateField.le_fixedField_iff_le_fixingSubgroup] using hH'₁,
-        by simpa [IntermediateField.finrank_fixedField_eq_card] using hH'₂⟩
 
 theorem exists_intermediateField_ge_card_pow_prime_mul_of_card_pow_prime_mul
     {p n a : ℕ} (hp : p.Prime) (hL : Module.finrank K L = p ^ n * a)
