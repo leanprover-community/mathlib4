@@ -100,7 +100,7 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
       obtain ⟨rfl | rfl | rfl, rfl | rfl | rfl⟩ := hab
       any_goals
         simp only [*, adj_comm, true_and, Ne, not_true] at *
-      any_goals
+      all_goals
         first
         | exact ⟨c, by aesop⟩
         | exact ⟨d, by aesop⟩

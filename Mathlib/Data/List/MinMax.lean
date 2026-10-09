@@ -146,7 +146,6 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     dsimp only
     split_ifs <;> simp_all only [not_lt, Option.some.injEq] <;>
       first
-        | rfl
         | exact absurd (‹f a < f m›.trans ‹f m < f tl›) (not_lt.2 ‹f tl ≤ f a›)
         | exact absurd (‹f a < f tl›.trans_le ‹f tl ≤ f m›) (not_lt.2 ‹f m ≤ f a›)
 
