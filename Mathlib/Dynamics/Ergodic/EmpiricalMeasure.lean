@@ -134,38 +134,40 @@ public theorem exists_measurePreserving_probabilityMeasure
       exact g.toBoundedContinuousFunction.isBounded_range.subset <| Set.range_comp_subset_range ..
     · exact g.continuous.aestronglyMeasurable
   use ν
-  exact ⟨⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩⟩
+  exact ⟨⟨hf.aemeasurable, hmap⟩, hνreg, ⟨hprob⟩⟩
 
 /-- **Krylov-Bogolyubov theorem** for forward invariant compact sets. -/
 theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
     {K : Set X} (hcomp : IsCompact K) (hnonempty : K.Nonempty)
-    {f : X → X} (hfcont : ContinuousOn f K) (hfinv : Set.MapsTo f K K)
-    (hfmeas : Measurable f) : -- TODO: relax this
+    {f : X → X} (hfcont : ContinuousOn f K) (hfinv : Set.MapsTo f K K) :
     ∃ μ : Measure X, MeasurePreserving f μ μ
       ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ ∧ Measure.support μ ⊆ K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp hcomp
   have : Nonempty K := hnonempty.to_subtype
   let ι : K → X := Subtype.val
-  obtain ⟨μm, hμ, hμmreg, hμprob⟩ :=
+  obtain ⟨μ, hμ, hμmreg, hμprob⟩ :=
     exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
-  let μ : ProbabilityMeasure K := ⟨μm, hμprob⟩
-  have : (μ : Measure K).Regular := hμmreg
+  have : μ.Regular := hμmreg
   have hιmeas : Measurable ι :=  measurable_subtype_coe
   let ν := μ.map ι
   use ν
   have : (ν : Measure X).InnerRegular :=
     Measure.InnerRegular.map_of_continuous continuous_subtype_val
-  have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas, by simp [ν]⟩
+  have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas.aemeasurable, by simp [ν]⟩
   have hsemi : Function.Semiconj ι (Set.MapsTo.restrict f K K hfinv) f := by
     intro
     rfl
-  refine ⟨hιmp.of_semiconj hμ hsemi hfmeas, inferInstance, inferInstance, ?_⟩
-  -- Now we prove that the invariant measure is supported on the forward invariant set
-  apply Measure.support_subset_of_isClosed hcomp.isClosed
-  rw [MeasureTheory.mem_ae_iff]
-  simpa [ν, ι] using
-    (ProbabilityMeasure.map_apply' μ hιmeas.aemeasurable hcomp.isClosed.measurableSet.compl)
+  -- `ν` is concentrated on `K`
+  have hK : K ∈ ae (ν : Measure X) := by
+    rw [mem_ae_iff]
+    simpa [ν, ι] using
+      (μ.map_apply₀ hιmeas.aemeasurable hcomp.nullMeasurableSet.compl)
+  have hf : AEMeasurable f ν := by
+    rw [← Measure.restrict_eq_self_of_ae_mem hK]
+    exact hfcont.aemeasurable hcomp.measurableSet
+  exact ⟨hιmp.of_semiconj hμ hsemi hf, inferInstance, inferInstance,
+    Measure.support_subset_of_isClosed hcomp.isClosed hK⟩
 
 end KrylovBogolyubov
 
