@@ -5,10 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.FreeAlgebra
 
 /-!
 # Category instance for algebras over a commutative ring

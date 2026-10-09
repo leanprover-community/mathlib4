@@ -7,8 +7,9 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Commensurable
-public import Mathlib.GroupTheory.Complement
 public import Mathlib.Topology.Algebra.ConstMulAction
+
+import Mathlib.GroupTheory.Complement
 
 /-!
 # Properly discontinuous actions of subgroups
@@ -26,7 +27,7 @@ protected lemma Subgroup.properlyDiscontinuousSMul_iff
       IsCompact K → IsCompact L →  {g : Γ | g ∈ S ∧ (g • K ∩ L).Nonempty}.Finite := by
   rw [properlyDiscontinuousSMul_iff]
   congr! with K L hK hL
-  convert! injOn_subtype_val (s := {m : S | (m • K ∩ L).Nonempty}) |>.bijOn_image.finite_iff_finite
+  convert injOn_subtype_val (s := {m : S | (m • K ∩ L).Nonempty}) |>.bijOn_image.finite_iff_finite
   ext g
   simp [Set.subtype_smul_set, and_comm]
 
@@ -36,7 +37,8 @@ lemma Subgroup.properlyDiscontinuousSMul_of_le
     ProperlyDiscontinuousSMul H α := by
   rw [Subgroup.properlyDiscontinuousSMul_iff] at hG ⊢
   intro K L hK hL
-  exact (hG hK hL).subset fun _ ⟨hg, hg'⟩ ↦ ⟨hGH hg, hg'⟩
+  grw [hGH]
+  exact hG hK hL
 
 /-- If `Γ` acts properly discontinuously, so does every subgroup of `Γ`. -/
 @[to_additive /-- If `Γ` acts properly discontinuously, so does every additive subgroup of `Γ`. -/]

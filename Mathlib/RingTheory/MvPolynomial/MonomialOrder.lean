@@ -5,12 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.Lex
-public import Mathlib.Data.Finsupp.MonomialOrder
-public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.Data.List.TFAE
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 
@@ -1236,7 +1233,7 @@ theorem degree_sub_leadingTerm_lt_degree {f : MvPolynomial σ R} (h : m.degree f
   by_cases hl : f - m.leadingTerm f = 0
   · simpa [hl, toSyn_lt_iff_ne_zero]
   · apply lt_of_le_of_ne (m.degree_sub_leadingTerm_le f)
-    by_contra! h'
+    by_contra h'
     simp only [EmbeddingLike.apply_eq_iff_eq] at h'
     apply m.degree_mem_support at hl
     rw [h', mem_support_iff] at hl

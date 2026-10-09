@@ -5,9 +5,8 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 module
 
-public import Mathlib.Data.Nat.PadicValNat
-public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.Data.Nat.Factors
+public import Mathlib.Data.Nat.PadicValNat
 
 /-!
 # `p`-adic Valuation
