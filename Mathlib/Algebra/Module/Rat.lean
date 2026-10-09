@@ -6,8 +6,9 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Module.End
 public import Mathlib.Algebra.Field.Rat
+
+import Mathlib.Algebra.Module.End
 
 /-!
 # Basic results about modules over the rationals.
@@ -109,17 +110,23 @@ instance SMulCommClass.rat' [AddCommGroup M] [DistribSMul α M] [Module ℚ M] :
 end
 
 variable (M) in
-/-- A `ℚ≥0`-module is torsion-free as a group.
+/-- A `ℚ≥0`-module has unique divisibility.
 
 This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
-lemma IsAddTorsionFree.of_module_nnrat [AddCommMonoid M] [Module ℚ≥0 M] : IsAddTorsionFree M where
+lemma HasUniqueDiv.of_module_nnrat [AddCommMonoid M] [Module ℚ≥0 M] : HasUniqueDiv M where
   nsmul_right_injective n hn x y hxy := by
     simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 n, *] using congr((n⁻¹ : ℚ≥0) • $hxy)
 
+@[deprecated (since := "2026-09-29")] alias IsAddTorsionFree.of_module_nnrat :=
+  HasUniqueDiv.of_module_nnrat
+
 variable (M) in
-/-- A `ℚ≥0`-module is torsion-free as a group.
+/-- A `ℚ`-module has unique divisibility.
 
 This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
-lemma IsAddTorsionFree.of_module_rat [AddCommGroup M] [Module ℚ M] : IsAddTorsionFree M where
+lemma HasUniqueDiv.of_module_rat [AddCommGroup M] [Module ℚ M] : HasUniqueDiv M where
   nsmul_right_injective n hn x y hxy := by
     simpa [← Nat.cast_smul_eq_nsmul ℚ n, *] using congr((n⁻¹ : ℚ) • $hxy)
+
+@[deprecated (since := "2026-09-29")] alias IsAddTorsionFree.of_module_rat :=
+  HasUniqueDiv.of_module_rat

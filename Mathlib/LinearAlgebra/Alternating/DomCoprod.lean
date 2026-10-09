@@ -85,7 +85,7 @@ theorem domCoprod.summand_add_swap_smul_eq_zero (a : Mᵢ [⋀^ιa]→ₗ[R'] N�
   simp only [one_mul, neg_mul, Function.comp_apply, Units.neg_smul, Perm.coe_mul,
     _root_.smul_apply, _root_.neg_apply, MultilinearMap.domDomCongr_apply,
     MultilinearMap.domCoprod_apply]
-  convert! add_neg_cancel (G := N₁ ⊗[R'] N₂) _ using 6 <;>
+  convert add_neg_cancel (G := N₁ ⊗[R'] N₂) _ using 6 <;>
     · ext k
       rw [Equiv.apply_swap_eq_self hv]
 
@@ -162,12 +162,12 @@ def domCoprod' :
       LinearMap.mk₂ R' domCoprod (fun m₁ m₂ n => ?_) (fun c m n => ?_) (fun m n₁ n₂ => ?_)
         fun c m n => ?_ <;>
     · ext
-      simp only [domCoprod_apply, add_apply, smul_apply, ← Finset.sum_add_distrib,
-        Finset.smul_sum, _root_.sum_apply, domCoprod.summand]
+      simp only [domCoprod_apply, add_apply, smul_apply, ← Finset.sum_add_distrib, Finset.smul_sum,
+        sum_apply, domCoprod.summand]
       congr
       ext σ
       induction σ using Quotient.inductionOn'
-      simp only [Quotient.liftOn'_mk'', coe_add, coe_smul, _root_.smul_apply,
+      simp only [Quotient.liftOn'_mk'', toMultilinearMap_add, toMultilinearMap_smul, smul_apply,
         ← MultilinearMap.domCoprod'_apply]
       simp only [TensorProduct.add_tmul, ← TensorProduct.smul_tmul', TensorProduct.tmul_add,
         TensorProduct.tmul_smul, map_add, map_smul]

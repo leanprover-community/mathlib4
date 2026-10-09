@@ -99,7 +99,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma shortComplexMap_id (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.shortComplexMap f₁ f₂ f₃ f₁ f₂ f₃ (𝟙 _) n₀ n₁ n₂ hn₁ hn₂ = 𝟙 _ := by
   ext
-  all_goals dsimp; convert! (X.H _).map_id _; cat_disch
+  all_goals dsimp; convert (X.H _).map_id _; cat_disch
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc, simp]
@@ -473,7 +473,7 @@ lemma kernelSequenceE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 
     (X.kernelSequenceOpcyclesE_exact f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).exact_up_to_refinements
       (X.liftOpcycles f₂ f₃ f₂₃ h₂₃ x₂ (by simpa using hx₂ =≫ biprod.fst)) (by
         dsimp
-        rw [← X.fromOpcyles_δ f₁ f₂ f₃ f₂₃ h₂₃ n₁ n₂,
+        rw [← X.fromOpcycles_δ f₁ f₂ f₃ f₂₃ h₂₃ n₁ n₂,
           X.liftOpcycles_fromOpcycles_assoc]
         simpa using hx₂ =≫ biprod.snd)
   dsimp at x₁ hx₁

@@ -6,10 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equifibered
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 
@@ -175,7 +176,7 @@ theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J �
     {F : K ⥤ C} {c : Cocone F} (hc : IsUniversalColimit c) :
     IsUniversalColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα H
-  convert!
+  convert
     hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
       ((hα.whiskerLeft _).comp (.of_isIso _)) ?_ using 1
   · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
@@ -199,7 +200,7 @@ theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J �
     {F : K ⥤ C} {c : Cocone F} (hc : IsVanKampenColimit c) :
     IsVanKampenColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα
-  convert!
+  convert
     hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
       ((hα.whiskerLeft _).comp (.of_isIso _)) using 1
   · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
@@ -564,11 +565,10 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     dsimp
     simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Cofan.inj]
   · intro j
-    simp only [pair_obj_right, Functor.const_obj_obj, Discrete.functor_obj,
+    simp only [Functor.const_obj_obj, Discrete.functor_obj,
       Cofan.mk_pt, Cofan.mk_ι_app, Discrete.natTrans_app]
     refine IsPullback.of_right ?_ ?_ (IsPullback.of_hasPullback (BinaryCofan.inr c₂) i).flip
-    · simp only [Functor.const_obj_obj, pair_obj_right, limit.lift_π,
-        PullbackCone.mk_pt, PullbackCone.mk_π_app]
+    · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
       exact H _
     · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Cofan.inj]
   obtain ⟨H₁⟩ := t₁'
@@ -580,7 +580,7 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     · simpa [mapPair] using! congr_app e ⟨0⟩
     · simpa using! pullback.condition
   · rintro ⟨⟨⟩⟩
-    · simp only [pair_obj_right, Functor.const_obj_obj, pair_obj_left, BinaryCofan.mk_pt,
+    · simp only [Functor.const_obj_obj, pair_obj_left, BinaryCofan.mk_pt,
         BinaryCofan.ι_app_left, BinaryCofan.mk_inl, mapPair_left]
       exact H ⟨0⟩
     · simp only [pair_obj_right, Functor.const_obj_obj, BinaryCofan.mk_pt, BinaryCofan.ι_app_right,
@@ -634,18 +634,17 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     apply BinaryCofan.IsColimit.mk _ (fun {T} f₁ f₂ ↦ Hc.desc (Cofan.mk T (Fin.cases f₁
       (fun i ↦ Sigma.ι (fun (j : Fin n) ↦ (Discrete.functor F').obj ⟨j.succ⟩) _ ≫ f₂))))
     · intro T f₁ f₂
-      simp only [Discrete.functor_obj, pair_obj_left, BinaryCofan.mk_pt, Functor.const_obj_obj,
+      simp only [Discrete.functor_obj, BinaryCofan.mk_pt,
         BinaryCofan.mk_inl, IsColimit.fac, Cofan.mk_pt, Cofan.mk_ι_app,
         Fin.cases_zero]
     · intro T f₁ f₂
-      simp only [Discrete.functor_obj, pair_obj_right, BinaryCofan.mk_pt, Functor.const_obj_obj,
-        BinaryCofan.mk_inr]
+      simp only [Discrete.functor_obj, BinaryCofan.mk_pt, BinaryCofan.mk_inr]
       ext j
       simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt,
         Cofan.mk_ι_app, IsColimit.fac, Fin.cases_succ]
     · intro T f₁ f₂ f₃ m₁ m₂
-      simp only [Discrete.functor_obj_eq_as, pair_obj_left, BinaryCofan.mk_pt, const_obj_obj,
-        BinaryCofan.mk_inl, pair_obj_right, BinaryCofan.mk_inr] at m₁ m₂ ⊢
+      simp only [Discrete.functor_obj_eq_as, BinaryCofan.mk_pt,
+        BinaryCofan.mk_inl, BinaryCofan.mk_inr] at m₁ m₂ ⊢
       refine Hc.uniq (Cofan.mk T (Fin.cases f₁
         (fun i ↦ Sigma.ι (fun (j : Fin n) ↦ (Discrete.functor F').obj ⟨j.succ⟩) _ ≫ f₂))) _ ?_
       intro ⟨j⟩
