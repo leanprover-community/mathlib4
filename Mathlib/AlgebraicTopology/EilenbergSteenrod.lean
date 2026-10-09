@@ -297,14 +297,14 @@ instance : IsClosedUnderIsomorphisms (hasPairSequence.{u} C c) where
 and exactness axioms. -/
 class IsExtraordinaryEilenbergSteenrod where
   /-- Invariance of an extraordinary Eilenberg-Steenrod homology theory on homotopic maps. -/
-  [isHomotopyInvariant : HP.IsHomotopyInvariant]
+  isHomotopyInvariant : HP.IsHomotopyInvariant := by infer_instance
   /-- Excision axiom of an extraordinary Eilenberg-Steenrod homology theory. -/
-  [hasExcisionIso : HP.HasExcisionIso]
+  hasExcisionIso : HP.HasExcisionIso := by infer_instance
   /-- An extraordinary Eilenberg-Steenrod homology functor preserves coproducts. -/
-  [isAdditive : HP.IsAdditive]
+  isAdditive : HP.IsAdditive := by infer_instance
   /-- The long exact sequence of topological pairs in an extraordinary Eilenberg-Steenrod homology
   theory. -/
-  [hasPairSequence : HP.HasPairSequence]
+  hasPairSequence : HP.HasPairSequence := by infer_instance
 
 attribute [instance] IsExtraordinaryEilenbergSteenrod.isHomotopyInvariant
   IsExtraordinaryEilenbergSteenrod.hasExcisionIso
@@ -358,7 +358,7 @@ instance : IsClosedUnderIsomorphisms (hasDimensionAxiom.{u} C) where
 which additionally satisfies the dimension axiom. -/
 class IsEilenbergSteenrod extends HP.IsExtraordinaryEilenbergSteenrod.{u} where
   /-- An Eilenberg-Steenrod homology theory is trivial on the terminal space for `n > 0`. -/
-  [hasDimensionAxiom : HP.HasDimensionAxiom]
+  hasDimensionAxiom : HP.HasDimensionAxiom := by infer_instance
 
 attribute [instance] IsEilenbergSteenrod.hasDimensionAxiom
 
