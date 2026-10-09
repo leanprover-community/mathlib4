@@ -5,8 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.ModelTheory.Substructures
+
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Data.Set.Finite.Range
 
 /-!

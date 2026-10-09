@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 module
 
 public import Mathlib.Data.Finset.Sym
+
 import Mathlib.Data.Fintype.Sum
 
 /-!
