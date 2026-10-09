@@ -19,14 +19,16 @@ including results about submonoid units and units of product spaces.
 
 @[expose] public section
 
-open Units
+variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Monoid M] [Monoid N]
+
+open Units Topology
 
 /-- If a submonoid is open in a topological monoid, then its units form an open subset
 of the units of the monoid. -/
 @[to_additive /-- If a submonoid is open in a topological additive monoid,
 then its additive units form an open subset of the additive units of the monoid. -/]
-lemma Submonoid.isOpen_units {M : Type*} [TopologicalSpace M] [Monoid M]
-    {U : Submonoid M} (hU : IsOpen (U : Set M)) : IsOpen (U.units : Set Mˣ) :=
+lemma Submonoid.isOpen_units {U : Submonoid M} (hU : IsOpen (U : Set M)) :
+    IsOpen (U.units : Set Mˣ) :=
   (hU.preimage Units.continuous_val).inter (hU.preimage Units.continuous_coe_inv)
 
 /-- The isomorphism of topological groups between the units of a product and
@@ -44,9 +46,14 @@ def ContinuousMulEquiv.piUnits {ι : Type*}
     ⟨continuous_pi fun _ ↦ Units.continuous_val.comp <| continuous_apply _,
       continuous_pi fun _ ↦ Units.continuous_coe_inv.comp <| continuous_apply _⟩
 
-namespace Units
+/-- Given a family of topological monoids `M`, (Π i, M i)ˣ → Π i, M i is an open embedding. -/
+theorem ContinuousMulEquiv.piUnits_isOpenEmbedding {I : Type*} {f : I → Type _}
+    [(i : I) → Monoid (f i)] [(i : I) → TopologicalSpace (f i)] :
+    IsOpenEmbedding (piUnits (M := f)) :=
+  IsOpenEmbedding.of_continuous_injective_isOpenMap
+    (map_continuous piUnits) (ContinuousMulEquiv.injective piUnits) piUnits.isOpenMap
 
-variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Monoid M] [Monoid N]
+namespace Units
 
 /-- Any `ContinuousMulEquiv` induces a `ContinuousMulEquiv` on units. -/
 @[simps! apply]
@@ -150,3 +157,30 @@ def _root_.Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
   toEquiv := MulEquiv.prodUnits.toEquiv
 
 end Units
+
+namespace ContinuousMulEquiv
+
+variable (M N) in
+/-- The isomorphism of topological groups between the units of a product of two groups and
+the product of the units. -/
+@[to_additive (attr := simps!) /-- The isomorphism of topological additive groups between the
+additive units of a product of two additive groups and the product of the additive units. -/]
+def prodUnits : (M × N)ˣ ≃ₜ* Mˣ × Nˣ where
+  __ := MulEquiv.prodUnits
+  __ := Homeomorph.prodUnits
+
+/-- Given two topological monoids M and N, (M × N)ˣ → M × N is an open embedding. -/
+theorem prodUnits_isOpenEmbedding : IsOpenEmbedding (prodUnits M N) :=
+  .of_continuous_injective_isOpenMap
+    (map_continuous (prodUnits M N)) (prodUnits M N).injective
+      (prodUnits M N).isOpenMap
+
+@[simp]
+lemma toMulEquiv_prodUnits :
+    (ContinuousMulEquiv.prodUnits M N : (M × N)ˣ ≃* Mˣ × Nˣ) = .prodUnits := rfl
+
+@[simp]
+lemma toHomeomorph_prodUnits :
+    (ContinuousMulEquiv.prodUnits M N).toHomeomorph = .prodUnits := rfl
+
+end ContinuousMulEquiv
