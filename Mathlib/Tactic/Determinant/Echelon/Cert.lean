@@ -114,7 +114,8 @@ def proveEchelonDet {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (iα : 
   let some v ← detValue α m r.model r.data | return none
   let hv : Q($diagL * ($s * $v) = $diagU) ←
     (r.model.entryCertifier?.getD (decideCertifier α)).eq q($diagL * ($s * $v)) diagU
-  have hmul : Q(ofLists $m $m $litL * ($A).submatrix $σ id = ofLists $m $m $litU) := cert.mul_eq
+  have hmul : Q((ofLists $m $m $litL) * ($A).submatrix $σ id = ofLists $m $m $litU) :=
+    cert.mul_eq
   have hs' : Q(((Equiv.Perm.sign $σ : Int) : $α) = $s) := hs
   return some ⟨v, q(det_eq_of_decomposition $decomp $hmul $hl $hu $hs' $hv)⟩
 
