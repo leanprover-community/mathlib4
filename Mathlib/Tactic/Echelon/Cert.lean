@@ -5,10 +5,11 @@ Authors: Rao Xiaojia
 -/
 module
 
+public meta import Mathlib.Tactic.Echelon.Core
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Core
+
 import Mathlib.Util.Qq
-public meta import Mathlib.Tactic.Echelon.Core
 
 /-!
 # Certificate construction for the Bareiss decomposition
@@ -67,8 +68,7 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
 /-- Check that equality with zero in `α` reduces to a verdict in the kernel, as the
 certificate conditions will be decided by kernel reduction. This needs to be changed when
 the cert-checking tactic is updated. -/
-def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
-  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
+def checkKernelDecide {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) : MetaM Unit := do
   -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
   -- is only decidable against zero should pass
   let some _inst ← synthInstanceQ? q(Decidable (((1 : ℤ) : $α) = 0)) |
@@ -90,7 +90,7 @@ def certifyCondition (name : String) (c : Q(Prop)) : MetaM Q($c) := do
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
 `entries`, the parsed entries of `A`. -/
-def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr))
     (data : BareissData Expr) : MetaM Q(Echelon.Decomposition $A) := do
   have L := mkMatrixLit α m m data.L

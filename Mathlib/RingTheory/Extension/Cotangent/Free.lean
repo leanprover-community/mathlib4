@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.LinearAlgebra.Basis.Exact
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
+
+import Mathlib.LinearAlgebra.Basis.Exact
 
 /-!
 # Computation of Jacobian of presentations from basis of Cotangent

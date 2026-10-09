@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Order.Lex
 public import Mathlib.Order.WellFounded
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Lexicographic order on Pi types
@@ -29,9 +29,9 @@ This file defines the lexicographic and colexicographic orders for Pi types.
 Related files are:
 * `Data.Finset.Colex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
-* `Data.Sigma.Order`: Lexicographic order on `Σₗ i, α i`.
-* `Data.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`.
-* `Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Order.Sigma`: Lexicographic order on `Σₗ i, α i`.
+* `Order.PSigma`: Lexicographic order on `Σₗ' i, α i`.
+* `Order.Prod.Lex.Basic`: Lexicographic order on `α × β`.
 -/
 
 @[expose] public section
