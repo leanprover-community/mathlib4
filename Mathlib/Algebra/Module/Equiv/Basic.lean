@@ -454,7 +454,7 @@ variable (V V₂ R M)
   Differs from `TensorProduct.curry`. -/
 protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M where
   __ := AddEquiv.curry V V₂ M
-  map_smul' := fun _ _ ↦ rfl
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem coe_curry : ⇑(LinearEquiv.curry R M V V₂) = curry :=
