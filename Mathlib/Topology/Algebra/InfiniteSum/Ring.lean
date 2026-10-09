@@ -6,11 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.BigOperators.NatAntidiagonal
-public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
@@ -171,7 +169,7 @@ variable [TopologicalSpace α] [T3Space α] [NonUnitalNonAssocSemiring α] [IsTo
 theorem HasSum.mul_eq (hf : HasSum f s) (hg : HasSum g t)
     (hfg : HasSum (fun x : ι × κ ↦ f x.1 * g x.2) u) : s * t = u :=
   have key₁ : HasSum (fun i ↦ f i * t) (s * t) := hf.mul_right t
-  have this : ∀ i : ι, HasSum (fun c : κ ↦ f i * g c) (f i * t) := fun i ↦ hg.mul_left (f i)
+  have : ∀ i : ι, HasSum (fun c : κ ↦ f i * g c) (f i * t) := fun i ↦ hg.mul_left (f i)
   have key₂ : HasSum (fun i ↦ f i * t) u := HasSum.prod_fiberwise hfg this
   key₁.unique key₂
 
@@ -320,6 +318,7 @@ section Ordered
 variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 /-- The infinite version of `Finset.prod_one_add_ordered`. -/
+@[to_dual tprod_one_add_ordered']
 theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 + f j))
     (hprod : Multipliable (1 + f ·)) :
@@ -328,7 +327,7 @@ theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
   · simp
   obtain ⟨x, hx⟩ := hprod
   obtain ⟨a, ha⟩ := hsum
-  convert! hx.tprod_eq
+  convert hx.tprod_eq
   unfold HasProd at hx
   conv at hx in fun _ ↦ _ => ext _; rw [prod_one_add_ordered] -- simp_rw would cause loop
   rw [ha.tsum_eq]
@@ -340,6 +339,7 @@ theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
   grind
 
 /-- The infinite version of `Finset.prod_one_sub_ordered`. -/
+@[to_dual tprod_one_sub_ordered']
 theorem tprod_one_sub_ordered {α : Type*} {f : ι → α}
     [CommRing α] [TopologicalSpace α] [T2Space α] [IsTopologicalAddGroup α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 - f j))

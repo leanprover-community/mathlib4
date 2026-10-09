@@ -6,7 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 module
 
 public import Mathlib.Data.Finset.Powerset
-public import Mathlib.Data.Set.Finite.Basic
+
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Finiteness of the powerset of a finite set
@@ -29,7 +30,7 @@ open Set Function
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u}
 
 namespace Set
 
@@ -46,7 +47,7 @@ section SetFiniteConstructors
 
 /-- There are finitely many subsets of a given finite set -/
 theorem Finite.finite_subsets {α : Type u} {a : Set α} (h : a.Finite) : { b | b ⊆ a }.Finite := by
-  convert! ((Finset.powerset h.toFinset).map Finset.coeEmb.1).finite_toSet
+  convert ((Finset.powerset h.toFinset).map Finset.coeEmb.1).finite_toSet
   ext s
   simpa [← @exists_finite_iff_finset α fun t => t ⊆ a ∧ t = s, Finite.subset_toFinset,
     ← and_assoc, Finset.coeEmb] using h.subset

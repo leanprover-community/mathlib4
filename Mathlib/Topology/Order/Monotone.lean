@@ -19,7 +19,9 @@ has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.ten
 
 public section
 
-open Set Filter TopologicalSpace Topology Function
+open Set Filter TopologicalSpace Function
+
+open scoped Topology
 
 open OrderDual (toDual ofDual)
 
@@ -51,7 +53,7 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
 
 /-- If a function is monotone on a set in a second countable topological space, then there
 are only countably many points that have several preimages. -/
-lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
+lemma MonotoneOn.countable_setOfPred_two_preimages [SecondCountableTopology α]
     (hf : MonotoneOn f s) :
     Set.Countable {c | ∃ x y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c} := by
   nontriviality α
@@ -84,27 +86,39 @@ lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
   rw [hfx _ hd, hfy _ hc] at this
   exact not_le.2 H this
 
+@[deprecated (since := "2026-07-09")] alias MonotoneOn.countable_setOf_two_preimages :=
+  MonotoneOn.countable_setOfPred_two_preimages
+
 /-- If a function is monotone in a second countable topological space, then there
 are only countably many points that have several preimages. -/
-lemma Monotone.countable_setOf_two_preimages [SecondCountableTopology α]
+lemma Monotone.countable_setOfPred_two_preimages [SecondCountableTopology α]
     (hf : Monotone f) :
     Set.Countable {c | ∃ x y, x < y ∧ f x = c ∧ f y = c} := by
   rw [← monotoneOn_univ] at hf
-  simpa using hf.countable_setOf_two_preimages
+  simpa using hf.countable_setOfPred_two_preimages
+
+@[deprecated (since := "2026-07-09")] alias Monotone.countable_setOf_two_preimages :=
+  Monotone.countable_setOfPred_two_preimages
 
 /-- If a function is antitone on a set in a second countable topological space, then there
 are only countably many points that have several preimages. -/
-lemma AntitoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
+lemma AntitoneOn.countable_setOfPred_two_preimages [SecondCountableTopology α]
     (hf : AntitoneOn f s) :
     Set.Countable {c | ∃ x y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c} :=
-  (MonotoneOn.countable_setOf_two_preimages hf.dual_right :)
+  (MonotoneOn.countable_setOfPred_two_preimages hf.dual_right :)
+
+@[deprecated (since := "2026-07-09")] alias AntitoneOn.countable_setOf_two_preimages :=
+  AntitoneOn.countable_setOfPred_two_preimages
 
 /-- If a function is antitone in a second countable topological space, then there
 are only countably many points that have several preimages. -/
-lemma Antitone.countable_setOf_two_preimages [SecondCountableTopology α]
+lemma Antitone.countable_setOfPred_two_preimages [SecondCountableTopology α]
     (hf : Antitone f) :
     Set.Countable {c | ∃ x y, x < y ∧ f x = c ∧ f y = c} :=
-  (Monotone.countable_setOf_two_preimages hf.dual_right :)
+  (Monotone.countable_setOfPred_two_preimages hf.dual_right :)
+
+@[deprecated (since := "2026-07-09")] alias Antitone.countable_setOf_two_preimages :=
+  Antitone.countable_setOfPred_two_preimages
 
 section Continuity
 
@@ -117,7 +131,7 @@ theorem MonotoneOn.countable_not_continuousWithinAt_Ioi (hf : MonotoneOn f s) :
     Set.Countable {x ∈ s | ¬ContinuousWithinAt f (s ∩ Ioi x) x} := by
   apply (countable_image_lt_image_Ioi_within s f).mono
   rintro x ⟨xs, hx : ¬ContinuousWithinAt f (s ∩ Ioi x) x⟩
-  dsimp only [mem_setOf_eq]
+  dsimp only [mem_ofPred_eq]
   contrapose! hx
   refine tendsto_order.2 ⟨fun m hm => ?_, fun u hu => ?_⟩
   · filter_upwards [@self_mem_nhdsWithin _ _ x (s ∩ Ioi x)] with y hy
@@ -143,7 +157,7 @@ theorem MonotoneOn.countable_not_continuousWithinAt (hf : MonotoneOn f s) :
   refine compl_subset_compl.1 ?_
   simp only [compl_union]
   rintro x ⟨hx, h'x⟩
-  simp only [mem_compl_iff, mem_setOf_eq, not_and, not_not] at hx h'x ⊢
+  simp only [mem_compl_iff, mem_ofPred_eq, not_and, not_not] at hx h'x ⊢
   intro xs
   exact continuousWithinAt_iff_continuous_left'_right'.2 ⟨h'x xs, hx xs⟩
 
@@ -455,6 +469,7 @@ lemma MonotoneOn.tendsto_nhdsWithin_Ioo_right {α β : Type*} [LinearOrder α] [
     filter_upwards [Ioo_mem_nhdsGT xz] with w hw
     exact (Mf ⟨hw.1, hw.2.trans zy⟩ ⟨xz, zy⟩ hw.2.le).trans_lt zm
 
+@[to_dual]
 lemma MonotoneOn.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
     [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β} {x : α}
     (Mf : MonotoneOn f (Iio x)) (h_bdd : BddAbove (f '' Iio x)) :
@@ -468,23 +483,13 @@ lemma MonotoneOn.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpa
   · refine mem_of_superset self_mem_nhdsWithin fun y hy => lt_of_le_of_lt ?_ hm
     exact le_csSup h_bdd (mem_image_of_mem _ hy)
 
-lemma MonotoneOn.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β} {x : α}
-    (Mf : MonotoneOn f (Ioi x)) (h_bdd : BddBelow (f '' Ioi x)) :
-    Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioi x))) :=
-  MonotoneOn.tendsto_nhdsLT (α := αᵒᵈ) (β := βᵒᵈ) Mf.dual h_bdd
-
 /-- A monotone map has a limit to the left of any point `x`, equal to `sSup (f '' (Iio x))`. -/
+@[to_dual /-- A monotone map has a limit to the right of any point `x`, equal to
+`sInf (f '' (Ioi x))`. -/]
 theorem Monotone.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
     [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (Mf : Monotone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (sSup (f '' Iio x))) :=
   MonotoneOn.tendsto_nhdsLT (Mf.monotoneOn _) (Mf.map_bddAbove bddAbove_Iio)
-
-/-- A monotone map has a limit to the right of any point `x`, equal to `sInf (f '' (Ioi x))`. -/
-theorem Monotone.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β}
-    (Mf : Monotone f) (x : α) : Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioi x))) :=
-  Monotone.tendsto_nhdsLT (α := αᵒᵈ) (β := βᵒᵈ) Mf.dual x
 
 lemma AntitoneOn.tendsto_nhdsWithin_Ioo_left {α β : Type*} [LinearOrder α] [TopologicalSpace α]
     [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]

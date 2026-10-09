@@ -6,8 +6,8 @@ Authors: Richard Hill, Andrew Yang, Edison Xie
 
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.RepresentationTheory.Continuous.TopRep
 
 /-!
@@ -46,7 +46,7 @@ See `TopRep.d`.
 variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k]
   [TopologicalSpace G] [IsTopologicalGroup G]
 
-open CategoryTheory ContRepresentation Limits
+open CategoryTheory ContRepresentation
 
 namespace TopRep
 

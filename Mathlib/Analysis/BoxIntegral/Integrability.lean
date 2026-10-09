@@ -110,7 +110,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   refine hasIntegral_iff.2 fun ε ε0 => ?_
   lift ε to ℝ≥0 using ε0.lt.le; rw [gt_iff_lt, NNReal.coe_pos] at ε0
   rcases NNReal.exists_pos_sum_of_countable ε0.ne' ℕ with ⟨δ, δ0, c, hδc, hcε⟩
-  haveI := Fact.mk (I.measure_coe_lt_top μ)
+  have := Fact.mk (I.measure_coe_lt_top μ)
   change μ.restrict I {x | f x ≠ 0} = 0 at hf
   set N : (ι → ℝ) → ℕ := fun x => ⌈‖f x‖⌉₊
   have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp [N]
@@ -176,7 +176,7 @@ theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ
   | @const y s hs =>
     simpa [hs] using! BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
   | @add f g _ hfi hgi =>
-    borelize E; haveI := Fact.mk (I.measure_coe_lt_top μ)
+    borelize E; have := Fact.mk (I.measure_coe_lt_top μ)
     rw [integral_add]
     exacts [hfi.add hgi, integrable_iff.2 fun _ _ => measure_lt_top _ _,
       integrable_iff.2 fun _ _ => measure_lt_top _ _]
@@ -202,7 +202,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   borelize E
   -- First we replace an `ae_strongly_measurable` function by a measurable one.
   rcases hf.aestronglyMeasurable with ⟨g, hg, hfg⟩
-  haveI : SeparableSpace (range g ∪ {0} : Set E) := hg.separableSpace_range_union_singleton
+  have : SeparableSpace (range g ∪ {0} : Set E) := hg.separableSpace_range_union_singleton
   rw [integral_congr_ae hfg]; have hgi : IntegrableOn g I μ := (integrable_congr hfg).1 hf
   refine BoxIntegral.HasIntegral.congr_ae ?_ hfg.symm hl
   clear! f
@@ -276,7 +276,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     have :
         l.MemBaseSet I c ((hfi' n).convergenceR (δ n) c) (π.filter fun J => Nx (π.tag J) = n) :=
       (hπ.filter _).mono' _ le_rfl le_rfl fun J hJ => (hrn J hJ).le
-    convert! (hfi' n).dist_integralSum_sum_integral_le_of_memBaseSet (δ0 _) this using 2
+    convert (hfi' n).dist_integralSum_sum_integral_le_of_memBaseSet (δ0 _) this using 2
     · refine sum_congr rfl fun J hJ => ?_
       simp [hNxn J hJ]
     · refine sum_congr rfl fun J hJ => ?_
@@ -307,7 +307,7 @@ theorem ContinuousOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
     (l : IntegrationParams) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
   obtain ⟨y, hy⟩ := BoxIntegral.integrable_of_continuousOn l hc μ
-  convert! hy
+  convert hy
   have : IntegrableOn f I μ :=
     IntegrableOn.mono_set (hc.integrableOn_compact I.isCompact_Icc) Box.coe_subset_Icc
   exact HasIntegral.unique (IntegrableOn.hasBoxIntegral this ⊥ rfl) (HasIntegral.mono hy bot_le)
@@ -319,7 +319,7 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
     (hc : ∀ᵐ x ∂μ, ContinuousAt f x) (l : IntegrationParams) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
   obtain ⟨y, hy⟩ := integrable_of_bounded_and_ae_continuous l hb μ hc
-  convert! hy
+  convert hy
   refine HasIntegral.unique (IntegrableOn.hasBoxIntegral ?_ ⊥ rfl) (HasIntegral.mono hy bot_le)
   constructor
   · let v := {x : (ι → ℝ) | ContinuousAt f x}

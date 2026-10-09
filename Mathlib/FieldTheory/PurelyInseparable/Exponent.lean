@@ -114,10 +114,10 @@ is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`. -/
 noncomputable def elemExponent (a : L) : ℕ :=
   Nat.find <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open scoped Classical in
 variable {K} in
 theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
     elemExponent K a = 0 := by
+  classical
   apply (Nat.find_eq_zero _).mpr
   rw [pow_zero, pow_one]
   obtain ⟨y, hy⟩ := h
@@ -167,7 +167,7 @@ theorem algebraMap_elemReduct_eq' (p : ℕ) [ExpChar K p] (a : L) :
 
 theorem elemExponent_def (a : L) :
     a ^ ringExpChar K ^ elemExponent K a ∈ (algebraMap K L).range :=
-  RingHom.mem_range.mpr <| ⟨_, algebraMap_elemReduct_eq K a⟩
+  RingHom.mem_range.mpr ⟨_, algebraMap_elemReduct_eq K a⟩
 
 /-- Version of `elemExponent_def` using `ExpChar`. -/
 theorem elemExponent_def' (p : ℕ) [ExpChar K p] (a : L) :
@@ -180,7 +180,7 @@ theorem elemExponent_le_of_pow_mem {a : L} {n : ℕ}
   let ⟨p, _⟩ := ExpChar.exists K
   rcases ‹ExpChar K p› with _ | ⟨hp⟩
   · exact elemExponent_eq_zero_of_charZero K a ▸ Nat.zero_le _
-  · obtain ⟨y, hy⟩ := RingHom.mem_range.mp <| h
+  · obtain ⟨y, hy⟩ := RingHom.mem_range.mp h
     let f := X ^ ringExpChar K ^ n - C y
     have hf₁ : f.aeval a = 0 := by rwa [map_sub, aeval_C, aeval_X_pow, sub_eq_zero, eq_comm]
     have hf₂ : f.Monic := monic_X_pow_sub_C y <| Nat.pos_iff_ne_zero.mp <| expChar_pow_pos K _ _

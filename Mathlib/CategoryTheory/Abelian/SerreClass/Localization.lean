@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
+
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 /-!
 # Localization with respect to a Serre class
@@ -181,7 +182,7 @@ lemma mono_map_tfae {X Y : C} (f : X ⟶ Y) :
 
 lemma mono_map_iff {X Y : C} (f : X ⟶ Y) :
     Mono (L.map f) ↔ P.monoModSerre f :=
-  (mono_map_tfae L P f).out 0 1
+  (mono_map_tfae L P f).out 1 2
 
 lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
     List.TFAE [Epi (L.map f),
@@ -215,7 +216,7 @@ lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
 
 lemma epi_map_iff {X Y : C} (f : X ⟶ Y) :
     Epi (L.map f) ↔ P.epiModSerre f :=
-  (epi_map_tfae L P f).out 0 1
+  (epi_map_tfae L P f).out 1 2
 
 lemma inverseImage_monomorphisms :
     (MorphismProperty.monomorphisms _).inverseImage L = P.monoModSerre := by
@@ -233,7 +234,6 @@ lemma preservesMonomorphisms : L.PreservesMonomorphisms where
 lemma preservesEpimorphisms : L.PreservesEpimorphisms where
   preserves f _ := by simpa only [epi_map_iff _ P] using P.epiModSerre_of_epi f
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_iff {X Y : D} (f : X ⟶ Y) :
     Mono f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Mono f'),
       Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
@@ -257,7 +257,6 @@ lemma mono_iff {X Y : D} (f : X ⟶ Y) :
     exact ((MorphismProperty.monomorphisms D).arrow_mk_iso_iff e).1
       (by simpa using inferInstanceAs (Mono (L.map f')))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff {X Y : D} (f : X ⟶ Y) :
     Epi f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Epi f'),
       Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
@@ -280,7 +279,6 @@ lemma epi_iff {X Y : D} (f : X ⟶ Y) :
     exact ((MorphismProperty.epimorphisms D).arrow_mk_iso_iff e).1
       (by simpa using inferInstanceAs (Epi (L.map f')))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
     PreservesLimit (parallelPair f 0) L := by
   have := preservesMonomorphisms L P
@@ -311,7 +309,6 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
   rw [← Category.assoc] at fac
   exact ⟨inv (L.map t) ≫ L.map (kernel.lift _ _ fac), by simp [← Functor.map_comp]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) L := by
   have := preservesEpimorphisms L P
@@ -341,7 +338,6 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
   have := Localization.inverts L P.isoModSerre t ht
   exact ⟨L.map (cokernel.desc _ _ fac) ≫ inv (L.map t), by simp [← L.map_comp_assoc]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasKernels : HasKernels D where
   has_limit f := by
     obtain ⟨g, ⟨e⟩⟩ :=
@@ -353,7 +349,6 @@ lemma hasKernels : HasKernels D where
     exact hasLimit_of_iso (show parallelPair (L.map g.hom) 0 ≅ _ from
       parallelPair.ext (Arrow.leftFunc.mapIso e) (Arrow.rightFunc.mapIso e))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasCokernels : HasCokernels D where
   has_colimit f := by
     obtain ⟨g, ⟨e⟩⟩ :=
@@ -417,7 +412,7 @@ Note that we assume that `D` has already been equipped with a preadditive struct
 and that `L` is additive. Otherwise, see the results in the file
 `Mathlib/CategoryTheory/Localization/CalculusOfFractions/Preadditive.lean`
 which applies because `P.isoModSerre` has a calculus of left and right fractions. -/
-@[stacks 02MS, implicit_reducible]
+@[stacks 02MS, instance_reducible]
 def abelian : Abelian D := by
   have := hasFiniteProducts L P
   have := hasKernels L P
@@ -431,20 +426,20 @@ lemma hasZeroObject : HasZeroObject D :=
   Abelian.hasZeroObject
 
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
-  letI := abelian L P
-  rw [((Functor.preservesFiniteLimits_tfae L).out 3 2 :)]
+  let := abelian L P
+  rw [((Functor.preservesFiniteLimits_tfae L).out 4 3 :)]
   intro _ _ f
   exact preservesKernel L P f
 
 lemma preservesFiniteColimits : PreservesFiniteColimits L := by
-  letI := abelian L P
-  rw [((Functor.preservesFiniteColimits_tfae L).out 3 2 :)]
+  let := abelian L P
+  rw [((Functor.preservesFiniteColimits_tfae L).out 4 3 :)]
   intro _ _ f
   exact preservesCokernel L P f
 
 lemma isIso_map_iff {X Y : C} (f : X ⟶ Y) :
     IsIso (L.map f) ↔ P.isoModSerre f := by
-  letI := abelian L P
+  let := abelian L P
   rw [isIso_iff_mono_and_epi, mono_map_iff L P, epi_map_iff L P, isoModSerre_iff]
 
 lemma inverseImage_isomorphisms :
@@ -454,15 +449,14 @@ lemma inverseImage_isomorphisms :
 
 variable (G : D ⥤ E)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteLimits_comp_iff :
     PreservesFiniteLimits (L ⋙ G) ↔ PreservesFiniteLimits G := by
-  letI := abelian L P
+  let := abelian L P
   have := preservesFiniteLimits L P
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteLimits _ _⟩
   have := (Localization.functor_additive_iff L P.isoModSerre G).mpr
     (L ⋙ G).additive_of_preserves_binary_products
-  refine ((Functor.preservesFiniteLimits_tfae G).out 2 3).mp (fun _ _ f ↦ ?_)
+  refine ((Functor.preservesFiniteLimits_tfae G).out 3 4).mp (fun _ _ f ↦ ?_)
   obtain ⟨f', ⟨iso⟩⟩ :=
     (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
   have : PreservesLimit (parallelPair (L.map f'.hom) 0) G :=
@@ -476,16 +470,15 @@ lemma preservesFiniteLimits_comp_iff :
     (show parallelPair (L.map f'.hom) 0 ≅ parallelPair f 0 from
       parallelPair.ext (Arrow.leftFunc.mapIso iso) (Arrow.rightFunc.mapIso iso))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteColimits_comp_iff :
     PreservesFiniteColimits (L ⋙ G) ↔ PreservesFiniteColimits G := by
-  letI := abelian L P
+  let := abelian L P
   have := preservesFiniteColimits L P
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteColimits _ _⟩
   have := (Localization.functor_additive_iff L P.isoModSerre G).mpr (by
     have := preservesBinaryBiproducts_of_preservesBinaryCoproducts (L ⋙ G)
     exact Functor.additive_of_preservesBinaryBiproducts _)
-  refine ((Functor.preservesFiniteColimits_tfae G).out 2 3).mp (fun _ _ f ↦ ?_)
+  refine ((Functor.preservesFiniteColimits_tfae G).out 3 4).mp (fun _ _ f ↦ ?_)
   obtain ⟨f', ⟨iso⟩⟩ :=
     (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
   have : PreservesColimit (parallelPair (L.map f'.hom) 0) G :=

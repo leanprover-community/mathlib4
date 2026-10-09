@@ -6,8 +6,8 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # The determinant of a continuous linear map.
@@ -35,8 +35,6 @@ theorem det_smulRight {𝕜 : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜] [Co
 
 theorem det_toSpanSingleton {𝕜 : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜]
     (v : 𝕜) : (toSpanSingleton 𝕜 v).det = v := by rw [← smulRight_id, det_smulRight]; simp
-
-@[deprecated (since := "2025-12-18")] alias det_one_smulRight := det_toSpanSingleton
 
 end ContinuousLinearMap
 

@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Units.Equiv
-public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Order.Preorder.Finite
+
+import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Algebra.Notation.Indicator
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Dissociation and span
@@ -31,7 +32,7 @@ independence and linear span of sets in a vector space but where the scalars are
 variable {α β : Type*} [CommGroup α] [CommGroup β]
 
 section dissociation
-variable {s : Set α} {t u : Finset α} {d : ℕ} {a : α}
+variable {s : Set α} {t u : Finset α} {a : α}
 open Set
 
 /-- A set is dissociated iff all its finite subsets have different products.
@@ -57,7 +58,7 @@ def MulDissociated (s : Set α) : Prop := {t : Finset α | ↑t ⊆ s}.InjOn (�
 
 @[to_additive (attr := simp)]
 lemma mulDissociated_singleton : MulDissociated ({a} : Set α) ↔ a ≠ 1 := by
-  simp [MulDissociated, setOf_or, -subset_singleton_iff,
+  simp [MulDissociated, ofPred_or, -subset_singleton_iff,
     Finset.coe_subset_singleton]
 
 @[to_additive (attr := simp)]
@@ -79,8 +80,8 @@ lemma not_mulDissociated_iff_exists_disjoint :
 
 @[to_additive (attr := simp)] lemma MulEquiv.mulDissociated_preimage (e : β ≃* α) :
     MulDissociated (e ⁻¹' s) ↔ MulDissociated s := by
-  simp [MulDissociated, InjOn, ← e.finsetCongr.forall_congr_right, ← e.apply_eq_iff_eq,
-    (Finset.map_injective _).eq_iff]
+  simp [MulDissociated, InjOn, ← e.toEquiv.finsetCongr.forall_congr_right,
+    ← e.apply_eq_iff_eq, (Finset.map_injective _).eq_iff]
 
 @[to_additive (attr := simp)] lemma mulDissociated_inv : MulDissociated s⁻¹ ↔ MulDissociated s :=
   (MulEquiv.inv α).mulDissociated_preimage

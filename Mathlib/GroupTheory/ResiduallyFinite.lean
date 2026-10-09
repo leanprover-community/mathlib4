@@ -19,7 +19,7 @@ In this file we define residually finite groups and prove some basic properties.
 
 -/
 
-@[expose] public section
+public section
 
 /-- An additive group `G` is residually finite if the intersection of all finite index normal
 additive subgroups is trivial. -/
@@ -30,10 +30,9 @@ namespace Group
 
 /-- A group `G` is residually finite if the intersection of all finite index normal subgroups is
 trivial. -/
+@[to_additive]
 class ResiduallyFinite (G : Type*) [Group G] : Prop where
   iInf_eq_bot : ⨅ H : FiniteIndexNormalSubgroup G, H.toSubgroup = ⊥
-
-attribute [to_additive existing] ResiduallyFinite
 
 variable {G G' : Type*} [Group G] [Group G']
 
@@ -49,9 +48,12 @@ theorem residuallyFinite_iff_forall_finiteIndexNormalSubgroup :
     FiniteIndexNormalSubgroup.mem_toSubgroup_iff]
 
 @[to_additive]
-theorem eq_one_iff_forall_finiteIndexNormalSubroup [ResiduallyFinite G]
+theorem eq_one_of_forall_finiteIndexNormalSubgroup [ResiduallyFinite G]
     (g : G) (hg : ∀ H : FiniteIndexNormalSubgroup G, g ∈ H) : g = 1 :=
   residuallyFinite_iff_forall_finiteIndexNormalSubgroup.mp ‹_› g hg
+
+@[to_additive (attr := deprecated (since := "2026-10-05"))]
+alias eq_one_iff_forall_finiteIndexNormalSubroup := eq_one_of_forall_finiteIndexNormalSubgroup
 
 @[to_additive]
 theorem residuallyFinite_iff_exists_finiteIndexNormalSubgroup :
@@ -78,7 +80,9 @@ theorem residuallyFinite_iff_exists_finiteIndex :
 
 /-- If `G` is residually finite, for every pair of distinct elements `g`, `h` there exists a finite
 index normal subgroup `H` such that `g` and `h` differ in the quotient `G ⧸ H`. -/
-@[to_additive]
+@[to_additive /-- If `G` is residually finite, for every pair of distinct elements `g`, `h` there
+exists a finite index normal additive subgroup `H` such that `g` and `h` differ in the quotient
+`G ⧸ H`. -/]
 theorem exists_finiteIndexNormalSubgroup_of_residuallyFinite [ResiduallyFinite G] (g h : G)
     (hgh : g ≠ h) : ∃ H : FiniteIndexNormalSubgroup G, (g : G ⧸ H.toSubgroup) ≠ ↑h := by
   obtain ⟨H, hH⟩ :=
@@ -87,7 +91,8 @@ theorem exists_finiteIndexNormalSubgroup_of_residuallyFinite [ResiduallyFinite G
 
 /-- `G` is residually finite if for every element `g` not equal to `1` there exists a group
 homomorphism `f` to a finite group `H` such that `f g ≠ 1`. -/
-@[to_additive]
+@[to_additive /-- `G` is residually finite if for every element `g` not equal to `0` there exists an
+additive group homomorphism `f` to a finite additive group `H` such that `f g ≠ 0`. -/]
 theorem residuallyFinite_of_forall_exists_finite_monoidHom.{u}
     (h : ∀ g : G, g ≠ 1 → ∃ (H : Type u) (_ : Group H) (_ : Finite H) (f : G →* H), f g ≠ 1) :
     ResiduallyFinite G := by
@@ -105,14 +110,14 @@ instance [ResiduallyFinite G] {H : Subgroup G} : ResiduallyFinite H := by
   rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
   intro g hg
   ext
-  exact eq_one_iff_forall_finiteIndexNormalSubroup g.1 fun K ↦ hg (K.comap H.subtype)
+  exact eq_one_of_forall_finiteIndexNormalSubgroup g.1 fun K ↦ hg (K.comap H.subtype)
 
 @[to_additive]
 instance [ResiduallyFinite G] [ResiduallyFinite G'] : ResiduallyFinite (G × G') := by
   rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
   intro g hg
   ext
-  · exact eq_one_iff_forall_finiteIndexNormalSubroup g.1 fun K ↦ hg (K.comap (MonoidHom.fst G G'))
-  · exact eq_one_iff_forall_finiteIndexNormalSubroup g.2 fun K ↦ hg (K.comap (MonoidHom.snd G G'))
+  · exact eq_one_of_forall_finiteIndexNormalSubgroup g.1 fun K ↦ hg (K.comap (MonoidHom.fst G G'))
+  · exact eq_one_of_forall_finiteIndexNormalSubgroup g.2 fun K ↦ hg (K.comap (MonoidHom.snd G G'))
 
 end Group

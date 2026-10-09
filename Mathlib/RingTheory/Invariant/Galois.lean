@@ -5,8 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+public import Mathlib.RingTheory.Invariant.Basic
 
 /-!
 # Invariant Extensions of Rings and Galois Theory
@@ -45,8 +45,8 @@ instance [Algebra.IsAlgebraic K L] : let := IsIntegralClosure.MulSemiringAction 
 theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K L] :
     letI := IsIntegralClosure.MulSemiringAction A K L B
     Algebra.IsInvariant A B Gal(L/K) := by
-  replace h := ((IsGalois.tfae (F := K) (E := L)).out 0 1).mp h
-  letI := IsIntegralClosure.MulSemiringAction A K L B
+  replace h := ((IsGalois.tfae (F := K) (E := L)).out 1 2).mp h
+  let := IsIntegralClosure.MulSemiringAction A K L B
   refine ⟨fun b hb ↦ ?_⟩
   replace hb : algebraMap B L b ∈ IntermediateField.fixedField (⊤ : Subgroup Gal(L/K)) := by
     rintro ⟨g, -⟩
@@ -54,8 +54,7 @@ theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K 
   rw [h, IntermediateField.mem_bot] at hb
   obtain ⟨k, hk⟩ := hb
   have hb : IsIntegral A b := IsIntegralClosure.isIntegral A L b
-  rw [← isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective B L), ← hk,
-    isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective K L)] at hb
+  rw [← isIntegral_algebraMap_iff (B := L), ← hk, isIntegral_algebraMap_iff] at hb
   obtain ⟨a, rfl⟩ := IsIntegrallyClosed.algebraMap_eq_of_integral hb
   rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L,
     (FaithfulSMul.algebraMap_injective B L).eq_iff] at hk
@@ -82,6 +81,8 @@ variable [P.IsPrime] [Q.IsPrime] (K L : Type*) [Field K] [Field L] [Algebra K L]
 
 open Polynomial in
 include P Q G in
+/-- If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`,
+then the extension `Frac(B/Q)` over `Frac(A/P)` is normal. -/
 lemma normal : Normal K L := by
   have := Algebra.IsInvariant.isIntegral A B G
   have := isAlgebraic_of_isFractionRing (A ⧸ P) (B ⧸ Q) K L
@@ -124,6 +125,7 @@ lemma normal : Normal K L := by
     exact mt (comp_C_mul_X_eq_zero_iff (by simpa)).mp (map_monic_ne_zero h_monic)
 
 include P Q in
+/-- If the extension `Frac(B/Q)` over `Frac(A/P)` is separable, then it is finite dimensional. -/
 lemma finite_of_isInvariant [SMulCommClass G A B] [Algebra.IsSeparable K L] :
     Module.Finite K L := by
   have : IsGalois K L := { __ := normal G P Q K L }
@@ -134,9 +136,8 @@ end Ideal.IsFractionRing
 
 attribute [local instance] Ideal.Quotient.field in
 include G in
-/--
-For any domain `k` containing `B ⧸ Q`,
-any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`. -/
+/-- If `Q` is a maximal ideal of `B` lying over a maximal ideal `P` of `A`,
+then the extension `B/Q` over `A/P` is normal. -/
 lemma Ideal.Quotient.normal [P.IsMaximal] [Q.IsMaximal] :
     Normal (A ⧸ P) (B ⧸ Q) :=
   IsFractionRing.normal G P Q (A ⧸ P) (B ⧸ Q)

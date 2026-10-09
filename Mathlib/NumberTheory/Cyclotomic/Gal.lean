@@ -5,8 +5,8 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 
 /-!
 # Galois group of cyclotomic extensions
@@ -81,7 +81,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
     invFun := fun t =>
       (hζ.powerBasis K).equivOfMinpoly ((hμ t).powerBasis K)
         (by
-          haveI := IsCyclotomicExtension.neZero' n K L
+          have := IsCyclotomicExtension.neZero' n K L
           simp only [IsPrimitiveRoot.powerBasis_gen]
           have hr :=
             IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible
@@ -123,7 +123,7 @@ theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   generalize_proofs hζ h _ hμ _
   nth_rewrite 4 [← hζ.powerBasis_gen K]
   rw [PowerBasis.equivOfMinpoly_gen, hμ.powerBasis_gen K]
-  convert! h.choose_spec.2
+  convert h.choose_spec.2
   exact ZMod.val_cast_of_lt h.choose_spec.1
 
 end IsCyclotomicExtension

@@ -5,11 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.ModelTheory.Syntax
-public import Mathlib.ModelTheory.Semantics
-public import Mathlib.ModelTheory.Algebra.Ring.Basic
 public import Mathlib.Algebra.Field.MinimalAxioms
-public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.ModelTheory.Algebra.Ring.Basic
+
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # The First-Order Theory of Fields
@@ -34,7 +33,7 @@ namespace FirstOrder
 
 namespace Field
 
-open Language Ring Structure BoundedFormula
+open Language FirstOrder.Ring Structure BoundedFormula
 
 /-- An indexing type to name each of the field axioms. The theory
 of fields is defined as the range of a function `FieldAxiom ->
@@ -122,8 +121,8 @@ noncomputable abbrev fieldOfModelField (K : Type*) [Language.ring.Structure K]
     mulComm.toProp_of_model
     oneMul.toProp_of_model
     (fun x hx0 => show x * (dite _ _ _) = _ from
-        (dif_neg hx0).symm ▸ Classical.choose_spec (existsInv.toProp_of_model x hx0))
-    (dif_pos rfl)
+        (dite_eq_right hx0).symm ▸ Classical.choose_spec (existsInv.toProp_of_model x hx0))
+    (dite_eq_left rfl)
     leftDistrib.toProp_of_model
     existsPairNE.toProp_of_model
 

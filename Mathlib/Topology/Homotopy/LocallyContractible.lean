@@ -5,10 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Topology.Homotopy.Contractible
-public import Mathlib.Topology.Homotopy.Basic
 public import Mathlib.Topology.Connected.LocallyPathConnected
-public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Homotopy.Contractible
 
 /-!
 # Strongly locally contractible spaces
@@ -158,8 +156,8 @@ instance [StronglyLocallyContractibleSpace X] [StronglyLocallyContractibleSpace 
     rw [nhds_prod_eq]
     exact (contractible_basis x).prod (contractible_basis y)
   · intro (x, y) (Ux, Uy) ⟨hUx, hUy⟩
-    haveI : ContractibleSpace Ux := hUx.2
-    haveI : ContractibleSpace Uy := hUy.2
+    have : ContractibleSpace Ux := hUx.2
+    have : ContractibleSpace Uy := hUy.2
     exact (Homeomorph.Set.prod Ux Uy).contractibleSpace
 
 end Products

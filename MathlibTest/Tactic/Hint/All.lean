@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Data.ENNReal.Basic
+import Mathlib.Basic.ENNReal.Basic
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Bound
@@ -78,9 +78,6 @@ example : 37^2 - 35^2 = 72 * 2 := by hint
 info: Try these:
   [apply] 🎉️ decide
   [apply] norm_num
-  Remaining subgoals:
-  ⊢ Nat.Prime 37
-  [apply] ring_nf
   Remaining subgoals:
   ⊢ Nat.Prime 37
 -/
@@ -183,11 +180,11 @@ info: Try these:
   [apply] 🎉️ compute_degree
   [apply] norm_num
   Remaining subgoals:
-  ⊢ (X + 1).natDegree ≤ 1
+  ⊢ (X + 2).natDegree ≤ 1
 -/
 #guard_msgs in
 open Polynomial in
-example : natDegree ((X + 1) : Nat[X]) ≤ 1 := by hint
+example : natDegree ((X + 2) : Nat[X]) ≤ 1 := by hint
 end compute_degree
 
 section field_simp

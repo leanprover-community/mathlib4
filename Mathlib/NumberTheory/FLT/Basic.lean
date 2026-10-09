@@ -5,11 +5,10 @@ Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.RingTheory.PrincipalIdealDomain
+
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Algebra.Order.Ring.Abs
 
 /-!
 # Statement of Fermat's Last Theorem
@@ -146,10 +145,10 @@ lemma fermatLastTheoremFor_iff_nat {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
   Iff.rfl
 
 lemma fermatLastTheoremFor_iff_int {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℤ n :=
-  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 1
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 2
 
 lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℚ n :=
-  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 3
 
 /--
 A relaxed variant of Fermat's Last Theorem over a given commutative semiring with a specific
@@ -229,10 +228,9 @@ lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type
   rw [← mul_add, mul_right_inj' (pow_ne_zero n ha.1)] at habc
   refine hn A B C ha.2 hb.2 hc.2 ?_ habc
   rw [← Finset.normalize_gcd, normalize_eq_one]
-  obtain ⟨u, hu⟩ := normalize_associated d
-  refine ⟨u, mul_left_cancel₀ (mt normalize_eq_zero.mp ha.1) (hu.symm ▸ ?_)⟩
-  rw [← Finset.gcd_mul_left, gcd_eq_gcd_image, image_insert, image_insert, image_singleton,
-      id_eq, id_eq, id_eq, ← hA, ← hB, ← hC]
+  refine isUnit_of_associated_mul ?_ ha.1
+  grw [← Finset.gcd_mul_left', gcd_eq_gcd_image]
+  refine .of_eq ?_; congr; simp [s, hA, hB, hC]
 
 lemma dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT {n : ℕ} {p : ℤ} (hp : Prime p) {a b c : ℤ}
     (hpa : p ∣ a) (hpb : p ∣ b) (HF : a ^ n + b ^ n + c ^ n = 0) : p ∣ c := by
@@ -246,12 +244,12 @@ lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd : Finset.gcd 
     (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [pow_zero, Int.reduceAdd, OfNat.ofNat_ne_zero] at HF
-  refine isCoprime_of_prime_dvd ?_ <| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
+  refine isCoprime_of_prime_dvd ?_ (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
   · rintro ⟨rfl, rfl⟩
     simp only [ne_eq, hn, not_false_eq_true, zero_pow, add_zero, zero_add, pow_eq_zero_iff]
       at HF
     simp only [HF, Finset.mem_singleton, Finset.insert_eq_of_mem, Finset.gcd_singleton, id_eq,
-      map_zero, zero_ne_one] at Hgcd
+      normalize_zero, zero_ne_one] at Hgcd
   · rw [← Hgcd]
     refine Finset.dvd_gcd_iff.mpr fun x hx ↦ ?_
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx

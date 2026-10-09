@@ -5,10 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Extension.Cotangent.Basic
-public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.Algebra.Module.SnakeLemma
-public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 /-!
 
@@ -120,7 +118,7 @@ lemma Cotangent.exact :
     obtain ⟨y, hy, e⟩ := hx
     rw [eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, ← map_toComp_ker] at e
     rw [LinearMap.range_liftBaseChange]
-    let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_left hy)⟩
+    let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_right hy)⟩
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
       Extension.Cotangent.mk z := by
@@ -174,7 +172,7 @@ lemma CotangentSpace.compEquiv_symm_inr :
 lemma CotangentSpace.compEquiv_symm_zero (x) :
     (compEquiv Q P).symm (0, x) =
         (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T x :=
-  DFunLike.congr_fun (compEquiv_symm_inr Q P) x
+  congr($(compEquiv_symm_inr Q P) x)
 
 lemma CotangentSpace.fst_compEquiv :
     LinearMap.fst T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ
@@ -195,7 +193,7 @@ lemma CotangentSpace.fst_compEquiv :
 
 lemma CotangentSpace.fst_compEquiv_apply (x) :
     (compEquiv Q P x).1 = Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom x :=
-  DFunLike.congr_fun (fst_compEquiv Q P) x
+  congr($(fst_compEquiv Q P) x)
 
 lemma CotangentSpace.map_toComp_injective :
     Function.Injective
@@ -251,7 +249,7 @@ lemma δAux_mul (x y) :
   | monomial n r =>
     induction y using MvPolynomial.induction_on' with
     | monomial m s =>
-      simp only [monomial_mul, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
+      simp only [monomial_mul_monomial, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
         smul_tmul', Algebra.smul_def, algebraMap_apply, aeval_monomial, mul_assoc]
       rw [mul_comm (m.prod _) (n.prod _)]
       simp only [pow_zero, implies_true, pow_add, Finsupp.prod_add_index']
@@ -267,7 +265,7 @@ variable {Q} {Q'} in
 lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s => simp [MvPolynomial.algebraMap_eq, δAux_C]
@@ -289,7 +287,7 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
         (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s =>
@@ -392,6 +390,7 @@ lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
   apply SnakeLemma.δ_eq
   exacts [hy, hz]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_eq_δAux (x : Q.ker) (hx) :
     δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
   let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
@@ -415,11 +414,13 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_C {r : S} (hr : C r ∈ Q.ker) :
     δ Q P ⟨Extension.Cotangent.mk ⟨C r, hr⟩, Extension.Cotangent.mk_C_mem_ker_cotangentComplex ..⟩
       = 1 ⊗ₜ[S] D R S r := by
   rw [δ_eq_δAux, δAux_C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_eq_δ : δ Q P = δ Q P' := by
   ext ⟨x, hx⟩
   obtain ⟨x, rfl⟩ := Extension.Cotangent.mk_surjective x
@@ -437,7 +438,7 @@ lemma exact_map_δ :
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_map (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
   obtain ⟨⟨y, hy⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   change δ _ _ ⟨_, _⟩ = δ _ _ _
@@ -461,6 +462,7 @@ lemma exact_map_δ' (f : Hom W Q) :
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
   exact exact_map_δ Q P
 
+set_option backward.isDefEq.respectTransparency.types false in
 open LinearMap in
 lemma liftBaseChange_range_le :
     (liftBaseChange T (Extension.H1Cotangent.map (Q.toComp P).toExtensionHom)).range ≤
@@ -475,15 +477,16 @@ lemma liftBaseChange_range_le :
     x_in, RingHom.map_zero]
   exact Ideal.zero_mem _
 
+set_option backward.isDefEq.respectTransparency.types false in
 private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
     LinearMap.liftBaseChange T (Extension.Cotangent.map (Q.toComp P).toExtensionHom)
       ((LinearMap.lTensor T Extension.h1Cotangentι) z) ∈
         (Q.comp P).toExtension.cotangentComplex.ker := by
   induction z with
-  | zero => simp
   | tmul x y => simp [← Extension.CotangentSpace.map_cotangentComplex]
   | add x y hx hy => simpa using Submodule.add_mem _ hx hy
 
+set_option backward.isDefEq.respectTransparency.types false in
 open LinearMap in
 /-- When $T$ is flat over $S$, the left bottom part of the snake lemma diagram used in
 the construction of the connecting homomorphism `Algebra.Generators.H1Cotangent.δ`
@@ -500,11 +503,10 @@ theorem exact_liftBaseChange_map_of_flat [Module.Flat S T] :
   rcases hx with ⟨x, rfl⟩
   rw [mem_ker, ← comp_apply, ← map_comp_cotangentComplex_baseChange, comp_apply,
     ← mem_ker, ker_eq_bot.mpr (CotangentSpace.map_toComp_injective Q P), Submodule.mem_bot,
-    baseChange_eq_ltensor, ← mem_ker, (Module.Flat.lTensor_exact T
+    baseChange_eq_lTensor, ← mem_ker, (Module.Flat.lTensor_exact T
       P.toExtension.exact_hCotangentι_cotangentComplex).linearMap_ker_eq] at x_in
   rcases x_in with ⟨x, rfl⟩
   use x; induction x with
-  | zero => ext; simp
   | tmul x y => ext; simp
   | add x y hx hy => ext; simp [hx (auxMemKer Q P x), hy (auxMemKer Q P y)]
 
@@ -514,7 +516,7 @@ theorem exact_liftBaseChange_map_of_flat' [Module.Flat S T] (f : Hom W Q) (g : H
     Function.Exact ((Extension.H1Cotangent.map g.toExtensionHom).liftBaseChange T)
       (Extension.H1Cotangent.map f.toExtensionHom) := by
   rw [← LinearEquiv.conj_exact_iff_exact _ _ (H1Cotangent.equiv W (Q.comp P))]
-  convert! exact_liftBaseChange_map_of_flat Q P
+  convert exact_liftBaseChange_map_of_flat Q P
   · change Extension.H1Cotangent.map (W.defaultHom (Q.comp P)).toExtensionHom ∘ₗ _ = _
     rw [LinearMap.liftBaseChange_comp, ← Extension.H1Cotangent.map_comp,
       Extension.H1Cotangent.map_eq]

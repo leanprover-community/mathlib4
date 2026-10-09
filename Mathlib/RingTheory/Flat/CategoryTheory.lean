@@ -5,9 +5,9 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Tensoring with a flat module is an exact functor
@@ -73,7 +73,7 @@ open Limits
 lemma iff_preservesFiniteLimits_tensorLeft :
     Flat R M ↔ PreservesFiniteLimits (tensorLeft M) := by
   rw [Module.Flat.iff_lTensor_preserves_shortComplex_exact,
-    ((Functor.exact_tfae <| tensorLeft M).out 1 3 :)]
+    ((Functor.exact_tfae <| tensorLeft M).out 2 4 :)]
   simp [show PreservesFiniteColimits (tensorLeft M) from inferInstance]
 
 instance [Module.Flat R M] : PreservesFiniteLimits <| tensorLeft M := by

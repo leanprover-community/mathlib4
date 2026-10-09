@@ -6,12 +6,12 @@ Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, 
 module
 
 public meta import Mathlib.Data.Ineq
+public import Mathlib.Data.Ineq
 public import Mathlib.Tactic.FieldSimp.Attr
 public import Mathlib.Tactic.FieldSimp.Discharger
 public import Mathlib.Tactic.FieldSimp.Lemmas
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Util.SynthesizeUsing
-public import Mathlib.Data.Ineq
 
 /-!
 # `field_simp` tactic
@@ -124,6 +124,7 @@ def split (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
       let r' : ℤ := -r
       return ⟨t_n, ((r', x), i) :: t_d, (q(NF.cons_eq_div_of_eq_div' $r' $x $pf):)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 private def evalPrettyAux (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
     MetaM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) :=
   match l with

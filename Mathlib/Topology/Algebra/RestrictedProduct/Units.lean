@@ -5,9 +5,9 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
-public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.Algebra.Group.Submonoid.Units
+public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 
 /-!
 # Units of restricted products
@@ -68,6 +68,7 @@ theorem isUnit_iff {x : Πʳ i, [R i, B i]_[𝓕]} :
 def coeUnits : Πʳ i, [R i, B i]_[𝓕]ˣ →* (i : ι) → (R i)ˣ :=
   MulEquiv.piUnits.toMonoidHom.comp <| Units.map coeMonoidHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs a unit in a restricted product `Πʳ i, [R i, B i]_[𝓕]` given an element `x` of
 the usual product and the condition that `x` is eventually in the units of `B i` along `𝓕`. -/
 def mkUnit (x : Π i, (R i)ˣ) (hx : ∀ᶠ i in 𝓕, x i ∈ (Submonoid.ofClass (B i)).units) :
