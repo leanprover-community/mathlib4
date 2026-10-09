@@ -294,9 +294,8 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply (hp : ¬ p ∣ expon
     (P : (span {(p : ℤ)}).primesOver (𝓞 K)) :
     inertiaDeg (P : Ideal (𝓞 K)) ℤ =
       natDegree (primesOverSpanEquivMonicFactorsMod hp P : (ZMod p)[X]) := by
-  simpa only [Subtype.coe_eta, Equiv.symm_apply_apply] using
-    inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' hp
-      (primesOverSpanEquivMonicFactorsMod hp P).2
+  simpa using inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' hp
+    (primesOverSpanEquivMonicFactorsMod hp P).2
 
 /--
 The ramification index of a prime above `p` is the multiplicity of the corresponding factor of
