@@ -5,8 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 
 /-!
 # Euclidean absolute values

@@ -5,10 +5,11 @@ Authors: Roberto Alvarez
 -/
 module
 
-import Mathlib.Algebra.Group.Ext
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.GroupTheory.EckmannHilton
+
+import Mathlib.Algebra.Group.Ext
 
 /-!
 # `n`th homotopy group
@@ -352,12 +353,11 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
   · fun_prop
-  iterate 2
+  on_goal 1 2 =>
     intro
     ext
     dsimp
     rw [homotopyTo_apply, toLoop_apply]
-    swap
   · apply H.apply_zero
   · apply H.apply_one
   intro t y yH
@@ -452,7 +452,9 @@ open GenLoop
   `Ω^{j // j ≠ i} x`. -/
 def homotopyGroupEquivFundamentalGroup (i : N) :
     HomotopyGroup N X x ≃ FundamentalGroup (Ω^ { j // j ≠ i } X x) const :=
-  Quotient.congr (loopHomeo i).toEquiv fun _ _ ↦ ⟨homotopicTo i, homotopicFrom i⟩
+  Equiv.trans
+    (by exact Quotient.congr (loopHomeo i).toEquiv fun _ _ ↦ ⟨homotopicTo i, homotopicFrom i⟩)
+      CategoryTheory.End.homEquiv.symm
 
 /-- Homotopy group of finite index, denoted as `π_n` within the Topology namespace. -/
 abbrev HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
@@ -509,8 +511,9 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
 /-- The homotopy group at `x` indexed by a singleton is in bijection with the fundamental group,
   i.e. the loops based at `x` up to homotopy. -/
 def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
-    HomotopyGroup N X x ≃ FundamentalGroup X x :=
-  Quotient.congr (genLoopEquivOfUnique N) fun a₁ a₂ ↦ by
+    HomotopyGroup N X x ≃ FundamentalGroup X x := by
+  refine Equiv.trans ?_ CategoryTheory.End.homEquiv.symm
+  exact Quotient.congr (genLoopEquivOfUnique N) fun a₁ a₂ ↦ by
     constructor <;> rintro ⟨H⟩
     · exact
         ⟨{  toFun := fun tx ↦ H (tx.fst, fun _ ↦ tx.snd)
@@ -617,6 +620,7 @@ def homotopyGroupOfUniqueMulEquivFundamentalGroup (N) [Unique N] :
   toEquiv := homotopyGroupEquivFundamentalGroupOfUnique N
   map_mul' a b := Quotient.inductionOn₂ a b fun p q => by
     simp only [HomotopyGroup.mul_spec (i := default)]
+    ext
     apply Quotient.sound
     simp [genLoopEquivOfUnique_transAt]
 
@@ -626,6 +630,7 @@ def pi1MulEquivFundamentalGroup :
   toEquiv := HomotopyGroup.pi1EquivFundamentalGroup (X := X) (x := x)
   map_mul' a b := Quotient.inductionOn₂ a b fun p q => by
     simp only [HomotopyGroup.mul_spec (i := (0 : Fin 1))]
+    ext
     apply Quotient.sound
     rw [Unique.eq_default 0, genLoopEquivOfUnique_transAt]
 

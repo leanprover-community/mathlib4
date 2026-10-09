@@ -6,10 +6,11 @@ Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne, Jireh Loreaux
 module
 
 public import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Basic.Real.ConjExponents
+
+import Mathlib.Analysis.Convex.Jensen
 
 /-!
 # Mean value inequalities
@@ -112,8 +113,6 @@ universe u v
 
 open Finset NNReal
 open scoped BigOperators
-
-noncomputable section
 
 variable {ι : Type u} (s : Finset ι)
 

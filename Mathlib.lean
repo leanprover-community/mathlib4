@@ -541,6 +541,7 @@ public import Mathlib.Algebra.GroupWithZero.Conj
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.FunLike
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.Idempotent
 public import Mathlib.Algebra.GroupWithZero.Indicator
@@ -2337,6 +2338,7 @@ public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
@@ -2586,6 +2588,7 @@ public import Mathlib.CategoryTheory.Abelian.LeftDerived
 public import Mathlib.CategoryTheory.Abelian.Monomorphisms
 public import Mathlib.CategoryTheory.Abelian.NonPreadditive
 public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Abelian.OrthogonalClosed
 public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
 public import Mathlib.CategoryTheory.Abelian.Preradical.Colon
 public import Mathlib.CategoryTheory.Abelian.Preradical.Radical
@@ -3365,11 +3368,13 @@ public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Local
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
+public import Mathlib.CategoryTheory.ObjectProperty.OrthogonalLimits
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
 public import Mathlib.CategoryTheory.ObjectProperty.SiteLocal
 public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.ObjectProperty.Subobject
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.PEmpty
 public import Mathlib.CategoryTheory.PUnit
@@ -4340,6 +4345,7 @@ public import Mathlib.Data.Nat.Cast.NeZero
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Nat.Cast.Order.Field
 public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Nat.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Prod
 public import Mathlib.Data.Nat.Cast.SetInterval
 public import Mathlib.Data.Nat.Cast.Synonym
@@ -5229,6 +5235,7 @@ public import Mathlib.LinearAlgebra.Eigenspace.Pi
 public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
@@ -5331,6 +5338,8 @@ public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.HadamardMatrix
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
+public import Mathlib.LinearAlgebra.Matrix.Hessenberg.Defs
+public import Mathlib.LinearAlgebra.Matrix.Hessenberg.Similarity
 public import Mathlib.LinearAlgebra.Matrix.Ideal
 public import Mathlib.LinearAlgebra.Matrix.Integer
 public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
@@ -6630,7 +6639,9 @@ public import Mathlib.Probability.Process.Adapted
 public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Probability.Process.FiniteDimensionalLaws
 public import Mathlib.Probability.Process.HittingTime
+public import Mathlib.Probability.Process.Indistinguishable
 public import Mathlib.Probability.Process.Kolmogorov
+public import Mathlib.Probability.Process.LimitProcess
 public import Mathlib.Probability.Process.LocalProperty
 public import Mathlib.Probability.Process.PartitionFiltration
 public import Mathlib.Probability.Process.Predictable
@@ -6781,6 +6792,7 @@ public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.RingTheory.DedekindDomain.SInteger
 public import Mathlib.RingTheory.DedekindDomain.SelmerGroup
+public import Mathlib.RingTheory.Depth.Basic
 public import Mathlib.RingTheory.Depth.Rees
 public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.RingTheory.Derivation.DifferentialRing
@@ -7579,6 +7591,7 @@ public import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Echelon.Cert
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.Echelon.Rat
+public import Mathlib.Tactic.Echelon.Reflection
 public import Mathlib.Tactic.Echelon.Zsqrtd
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ErwQuestion
@@ -7674,6 +7687,7 @@ public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.CommandRanges
+public import Mathlib.Tactic.Linter.DeclType
 public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
@@ -8271,6 +8285,8 @@ public import Mathlib.Topology.Homotopy.TopCat.Path
 public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 public import Mathlib.Topology.Homotopy.TopCat.ZerothHomotopy
 public import Mathlib.Topology.IndicatorConstPointwise
+public import Mathlib.Topology.InductiveDimension.Classes
+public import Mathlib.Topology.InductiveDimension.Functions
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Instances.AddCircle.Defs
 public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup

@@ -5,9 +5,9 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 
 /-!

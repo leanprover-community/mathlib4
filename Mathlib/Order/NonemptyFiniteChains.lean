@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.Image
 public import Mathlib.Order.Category.PartOrd
 
 /-!
