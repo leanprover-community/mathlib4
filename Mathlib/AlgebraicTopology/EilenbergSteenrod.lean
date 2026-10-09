@@ -205,8 +205,8 @@ abbrev hasExcisionIso : ObjectProperty (HomologyPretheory.{u} C c) :=
 lemma hasExcisionIso_iff' : hasExcisionIso C c HP ↔ HP.HasExcisionIso := .rfl
 
 instance : IsClosedUnderIsomorphisms (hasExcisionIso.{u} C c) where
-  of_iso e hHP := { isIso_of_isExcisive _ _ _ h _ :=
-    (NatIso.isIso_map_iff
+  of_iso e hHP :=
+    { isIso_of_isExcisive _ _ _ h _ := (NatIso.isIso_map_iff
       ((hₚFunctor _).mapIso e) _).mp (hHP.isIso_of_isExcisive _ h _) }
 
 /-- A `HomologyPretheory` is additive if its homology functor preserves coproducts. -/
