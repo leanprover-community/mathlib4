@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.IdealOperations
+public import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 # Trivial Lie modules and Abelian Lie algebras

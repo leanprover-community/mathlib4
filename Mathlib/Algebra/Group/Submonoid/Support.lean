@@ -6,7 +6,6 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Lattice
-
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!

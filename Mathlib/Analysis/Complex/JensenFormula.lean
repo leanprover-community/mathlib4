@@ -344,7 +344,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     _ = (∑ᶠ u, divisor f CB u * (log R - log ‖c - u‖)) + log ‖meromorphicTrailingCoeffAt f c‖ := by
       rw [← finsum_sub_distrib]
       · simp_rw [← mul_sub]
-      repeat apply h₃f.subset (fun _ ↦ (by simp_all))
+      all_goals apply h₃f.subset (fun _ ↦ (by simp_all))
     _ = ∑ᶠ u, divisor f CB u * log (R * ‖c - u‖⁻¹) + divisor f CB c * log R
       + log ‖meromorphicTrailingCoeffAt f c‖ := by
       rw [countingFunction_finsum_eq_finsum_add hR h₃f]

@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.Max
 public import Mathlib.Data.Set.CoeSort
+public import Mathlib.Order.Max
 
 /-!
 # Maximal elements of subsets

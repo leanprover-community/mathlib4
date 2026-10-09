@@ -5,11 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.GroupTheory.GroupAction.ConjAct
-public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 

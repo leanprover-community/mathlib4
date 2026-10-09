@@ -18,8 +18,6 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 public section
 
-noncomputable section
-
 open Finsupp Finset
 
 open Polynomial

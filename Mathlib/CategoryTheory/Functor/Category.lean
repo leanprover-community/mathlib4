@@ -5,8 +5,8 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.NatTrans
 public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.NatTrans
 
 /-!
 # The category of functors and natural transformations between two fixed categories.

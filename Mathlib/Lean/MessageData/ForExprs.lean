@@ -8,8 +8,8 @@ module
 
 public import Lean.Meta.Basic
 
-import Mathlib.Init
 import Lean.Message
+import Mathlib.Init
 
 /-!
 # Tools for extracting `Expr`s from `MessageData` nodes

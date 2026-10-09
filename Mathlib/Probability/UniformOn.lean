@@ -5,8 +5,8 @@ Authors: Kexing Ying, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.Probability.ConditionalProbability
 
 
 /-!

@@ -49,8 +49,6 @@ open Filter Set Finset Metric
 
 open BoxIntegral.IntegrationParams (GP gp_le)
 
-noncomputable section
-
 universe u
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {n : ℕ}
