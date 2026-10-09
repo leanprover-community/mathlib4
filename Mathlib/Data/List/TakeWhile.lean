@@ -6,6 +6,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Mathlib.Order.Basic
+
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Set
 

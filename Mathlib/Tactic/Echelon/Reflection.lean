@@ -14,6 +14,12 @@ public import Mathlib.Tactic.Matrix.OfLists
 
 The list-based certificates for a part of `Echelon.Decomposition` and their bridge lemmas.
 
+## Main definitions
+
+- `IsLowerTriangularDiagList`: a list of rows is lower triangular with nonzero diagonal.
+- `IsPivotedList`: a list of rows has the given pivot columns.
+- `pivotOfList`: the pivot function corresponding to a given list of pivot columns.
+
 ## Implementation notes
 
 The two conditions are kept as separate predicates for optimised checks.

@@ -85,15 +85,15 @@ end AddGroupWithOne
 /-! ### Determinants from echelon decompositions -/
 
 theorem det_eq_of_decomposition {m : ℕ} {R : Type*} [CommRing R] [IsDomain R]
-    {A : Matrix (Fin m) (Fin m) R} (cert : Echelon.Decomposition A) {rowsL rowsU : List (List R)}
-    {l u s v : R} (hL : cert.L = ofLists m m rowsL)
-    (hU : cert.L * A.submatrix cert.σ id = ofLists m m rowsU) (hl : diagProd 0 m rowsL = l)
-    (hu : diagProd 0 m rowsU = u) (hs : ((Equiv.Perm.sign cert.σ : ℤ) : R) = s)
-    (hv : l * (s * v) = u) : A.det = v := by
-  have hdiag : ∏ i, cert.L i i ≠ 0 := Finset.prod_ne_zero_iff.mpr fun i _ ↦ cert.L_diag_ne_zero i
-  have hσ : IsUnit (Equiv.Perm.sign cert.σ : R) :=
-    (Equiv.Perm.sign cert.σ).isUnit.map (Int.castRingHom R)
-  rw [← hσ.mul_right_inj, ← mul_right_inj' hdiag, cert.prod_diag_mul_det, hU, hL,
+    {A : Matrix (Fin m) (Fin m) R} {rowsL rowsU : List (List R)} {σ : Equiv.Perm (Fin m)}
+    {pivot : Fin m → WithTop (Fin m)} (cert : Echelon.Decomposition A (ofLists m m rowsL) σ pivot)
+    {l u s v : R} (hU : ofLists m m rowsL * A.submatrix σ id = ofLists m m rowsU)
+    (hl : diagProd 0 m rowsL = l) (hu : diagProd 0 m rowsU = u)
+    (hs : ((Equiv.Perm.sign σ : ℤ) : R) = s) (hv : l * (s * v) = u) : A.det = v := by
+  have hdiag : ∏ i, ofLists m m rowsL i i ≠ 0 :=
+    Finset.prod_ne_zero_iff.mpr fun i _ ↦ cert.L_diag_ne_zero i
+  have hσ : IsUnit (Equiv.Perm.sign σ : R) := (Equiv.Perm.sign σ).isUnit.map (Int.castRingHom R)
+  rw [← hσ.mul_right_inj, ← mul_right_inj' hdiag, cert.prod_diag_mul_det, hU,
     prod_diag_ofLists, prod_diag_ofLists, hl, hu, hs, hv]
 
 end Mathlib.Tactic.Determinant

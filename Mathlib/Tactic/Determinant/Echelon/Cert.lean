@@ -5,20 +5,20 @@ Authors: Rao Xiaojia
 -/
 module
 
+public meta import Mathlib.Tactic.Echelon.Bareiss
+public meta import Mathlib.Tactic.Echelon.Cert
+public meta import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Determinant.Echelon.Reflection  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Echelon.Cert
 public import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Tactic.Echelon.Bareiss
-public meta import Mathlib.Tactic.Echelon.Cert
-public meta import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Determinants of matrix literals by echelon decomposition
 
 `proveEchelonDet` evaluates the determinant of a square matrix literal with non-symbolic entries
-through the certificate `Echelon.Decomposition A` of its echelon decomposition.
+through the certificate `Echelon.Decomposition A L σ pivot` of its echelon decomposition.
 
 ## Implementation notes
 
@@ -69,7 +69,7 @@ def provePermSign {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m : Nat)
 /-- The value of the determinant read off the decomposition `data`, computed by `s * u / l`,
 where `u` and `l` are the diagonal products of `U` and `L` and `s` is the sign of the swaps.
 -/
-def detValue {u : Level} (α : Q(Type u)) (m : Nat) {V : Type} (model : Model V)
+def detValue {u : Level} (α : Q(Type u)) (m : Nat) {V : Type} (model : Model α V)
     (data : BareissData V) : MetaM (Option Q($α)) := do
   let ops := model.ops
   -- In positive characteristic a missing pivot leaves a diagonal entry that is a nonzero multiple
@@ -103,25 +103,19 @@ def proveEchelonDet {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (iα : 
     MetaM (Option ((v : Q($α)) × Q(($A).det = $v))) := do
   let r ← mkBareissDecomposition rα A entries
   let cert := r.cert
-  -- A `have`, since `decomp` is spliced bare and also occurs in the types of `hL` and `hmul`, and
-  -- Qq cannot match a `let`'s placeholder against its unfolded value.
-  have decomp : Q(Echelon.Decomposition $A) := cert.decomp
-  -- `L`'s literal, rebuilt from the data the certificate was built from
-  let rowsL : List (List Q($α)) ← r.data.L.toList.mapM fun row ↦
-    row.toList.mapM r.model.mkEntry
-  let litL : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (rowsL.map mkListLitQ)
+  let litL : Q(List (List $α)) := cert.L.lit
   let litU : Q(List (List $α)) := cert.U.lit
+  let σ : Q(Equiv.Perm (Fin $m)) := cert.σ
+  let pivot : Q(Fin $m → WithTop (Fin $m)) := cert.pivot
+  have decomp : Q(Echelon.Decomposition $A (ofLists $m $m $litL) $σ $pivot) := cert.decomp
   let ⟨diagL, hl⟩ ← proveDiagProd rα 0 m q(0) q($m) litL
   let ⟨diagU, hu⟩ ← proveDiagProd rα 0 m q(0) q($m) litU
   let ⟨_, s, hs⟩ ← provePermSign rα m r.data.swaps.toList.reverse
   let some v ← detValue α m r.model r.data | return none
   let hv : Q($diagL * ($s * $v) = $diagU) ←
-    (r.model.entryCertifier?.getD mkDecideProofQ) q($diagL * ($s * $v) = $diagU)
-  let hrfl : Q(ofLists $m $m $litL = ofLists $m $m $litL) := q(rfl)
-  have hL : Q(($decomp).L = ofLists $m $m $litL) := hrfl
-  have hmul : Q(($decomp).L * ($A).submatrix ($decomp).σ id = ofLists $m $m $litU) :=
-    cert.mul_eq
-  have hs' : Q(((Equiv.Perm.sign ($decomp).σ : Int) : $α) = $s) := hs
-  return some ⟨v, q(det_eq_of_decomposition $decomp $hL $hmul $hl $hu $hs' $hv)⟩
+    (r.model.entryCertifier?.getD (decideCertifier α)).eq q($diagL * ($s * $v)) diagU
+  have hmul : Q(ofLists $m $m $litL * ($A).submatrix $σ id = ofLists $m $m $litU) := cert.mul_eq
+  have hs' : Q(((Equiv.Perm.sign $σ : Int) : $α) = $s) := hs
+  return some ⟨v, q(det_eq_of_decomposition $decomp $hmul $hl $hu $hs' $hv)⟩
 
 end Mathlib.Tactic.Determinant

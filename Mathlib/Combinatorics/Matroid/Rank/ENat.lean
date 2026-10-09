@@ -5,9 +5,10 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Combinatorics.Matroid.Rank.Finite
 public import Mathlib.Combinatorics.Matroid.Loop
+public import Mathlib.Combinatorics.Matroid.Rank.Finite
 public import Mathlib.Data.ENat.Lattice
+
 import Mathlib.Tactic.TautoSet
 
 /-!

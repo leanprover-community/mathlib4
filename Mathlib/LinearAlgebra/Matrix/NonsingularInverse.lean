@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.Invertible
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Nonsingular inverses
@@ -82,7 +83,7 @@ def invertibleOfDetInvertible [Invertible A.det] : Invertible A where
 
 theorem invOf_eq [Invertible A.det] [Invertible A] : ⅟A = ⅟A.det • A.adjugate := by
   let := invertibleOfDetInvertible A
-  convert! (rfl : ⅟A = _)
+  convert (rfl : ⅟A = _)
 
 /-- `A.det` is invertible if `A` has a left inverse. -/
 @[instance_reducible]
@@ -105,7 +106,7 @@ def detInvertibleOfInvertible [Invertible A] : Invertible A.det :=
 
 theorem det_invOf [Invertible A] [Invertible A.det] : (⅟A).det = ⅟A.det := by
   let := detInvertibleOfInvertible A
-  convert! (rfl : _ = ⅟A.det)
+  convert (rfl : _ = ⅟A.det)
 
 /-- Together `Matrix.detInvertibleOfInvertible` and `Matrix.invertibleOfDetInvertible` form an
 equivalence, although both sides of the equiv are subsingleton anyway. -/
@@ -359,14 +360,20 @@ theorem mulVec_injective_iff_isUnit {A : Matrix m m K} :
   rw [← isUnit_transpose, ← vecMul_injective_iff_isUnit]
   simp_rw [vecMul_transpose]
 
-theorem linearIndependent_rows_iff_isUnit {A : Matrix m m K} :
-    LinearIndependent K A.row ↔ IsUnit A := by
-  rw [← col_transpose, ← mulVec_injective_iff, ← coe_mulVecLin, mulVecLin_transpose,
-    ← vecMul_injective_iff_isUnit, coe_vecMulLinear]
+theorem linearIndependent_row_iff_isUnit {R : Type*} [Ring R] [IsArtinianRing R]
+    {A : Matrix m m R} : LinearIndependent R A.row ↔ IsUnit A := by
+  rw [IsArtinianRing.isUnit_iff_isRightRegular, isRightRegular_iff_vecMul_injective,
+    vecMul_injective_iff]
 
-theorem linearIndependent_cols_iff_isUnit {A : Matrix m m K} :
-    LinearIndependent K A.col ↔ IsUnit A := by
-  rw [← row_transpose, linearIndependent_rows_iff_isUnit, isUnit_transpose]
+@[deprecated (since := "2026-09-21")] alias linearIndependent_rows_iff_isUnit :=
+  linearIndependent_row_iff_isUnit
+
+theorem linearIndependent_col_iff_isUnit [IsArtinianRing R] {A : Matrix m m R} :
+    LinearIndependent R A.col ↔ IsUnit A := by
+  rw [← row_transpose, linearIndependent_row_iff_isUnit, isUnit_transpose]
+
+@[deprecated (since := "2026-09-21")] alias linearIndependent_cols_iff_isUnit :=
+  linearIndependent_col_iff_isUnit
 
 theorem vecMul_surjective_of_invertible (A : Matrix m m R) [Invertible A] :
     Function.Surjective A.vecMul :=
@@ -384,13 +391,19 @@ theorem mulVec_injective_of_invertible (A : Matrix m m K) [Invertible A] :
     Function.Injective A.mulVec :=
   mulVec_injective_iff_isUnit.2 <| isUnit_of_invertible A
 
-theorem linearIndependent_rows_of_invertible (A : Matrix m m K) [Invertible A] :
-    LinearIndependent K A.row :=
-  linearIndependent_rows_iff_isUnit.2 <| isUnit_of_invertible A
+theorem linearIndependent_row_of_invertible {R : Type*} [Ring R] [IsArtinianRing R]
+    (A : Matrix m m R) [Invertible A] : LinearIndependent R A.row :=
+  linearIndependent_row_iff_isUnit.2 <| isUnit_of_invertible A
 
-theorem linearIndependent_cols_of_invertible (A : Matrix m m K) [Invertible A] :
-    LinearIndependent K A.col :=
-  linearIndependent_cols_iff_isUnit.2 <| isUnit_of_invertible A
+@[deprecated (since := "2026-09-21")] alias linearIndependent_rows_of_invertible :=
+  linearIndependent_row_of_invertible
+
+theorem linearIndependent_col_of_invertible [IsArtinianRing R] (A : Matrix m m R) [Invertible A] :
+    LinearIndependent R A.col :=
+  linearIndependent_col_iff_isUnit.2 <| isUnit_of_invertible A
+
+@[deprecated (since := "2026-09-21")] alias linearIndependent_cols_of_invertible :=
+  linearIndependent_col_of_invertible
 
 end vecMul
 

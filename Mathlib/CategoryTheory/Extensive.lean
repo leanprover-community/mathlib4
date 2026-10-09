@@ -5,13 +5,14 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Coproducts
-public import Mathlib.CategoryTheory.Limits.Types.Products
-import Mathlib.CategoryTheory.Limits.Types.Pullbacks
-public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-public import Mathlib.CategoryTheory.Limits.VanKampen
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.CategoryTheory.Limits.VanKampen
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+
+import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 
@@ -253,7 +254,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
       exacts [Or.inl rfl, Or.inr rfl]
     let eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, by convert! p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
+      ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
         fun _ => by ext; rfl⟩
     let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
       ⟨fun p => ⟨p.1.1, p.2.trans congr(Sum.inr $(Subsingleton.elim ..))⟩,
@@ -273,8 +274,8 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       · rfl
     · intro s m e₁ e₂
       ext x
-      simp only [TypeCat.Fun.toFun_apply, Types.binaryCoproductCocone_pt, pair_obj_left,
-        Functor.const_obj_obj, pair_obj_right, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk]
+      simp only [TypeCat.Fun.toFun_apply, Types.binaryCoproductCocone_pt,
+        ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk]
       split_ifs
       · rw [← e₁]
         rfl

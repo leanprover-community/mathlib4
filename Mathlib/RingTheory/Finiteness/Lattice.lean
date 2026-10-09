@@ -5,8 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-import Mathlib.Data.Fintype.Lattice
 public import Mathlib.RingTheory.Finiteness.Basic
+
+import Mathlib.Data.Fintype.Lattice
 
 /-!
 # Finite suprema of finite modules
