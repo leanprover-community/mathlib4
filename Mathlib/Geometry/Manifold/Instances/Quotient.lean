@@ -88,7 +88,7 @@ lemma localInverseAt_symm_trans_eqOn_smul (g : G) :
   simpa using localInverseAt_apply_mk_eq_smul hm
 
 @[to_additive]
-private lemma aux {m : M} (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ x.localInverseAt.source) :
+private lemma aux {m : M} (hm : ⟦m⟧ ∈ x.localInverseAt.source) :
     ∃ g : G, g • m ∈ (x.localInverseAt).target := by
   obtain ⟨g, hg⟩ := orbitRel_apply.mp (Quotient.exact
     (isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.apply_localInverseAt_of_mem hm))
@@ -99,13 +99,11 @@ private lemma aux {m : M} (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ x.localInv
 that `g • m` lies in the target of `x.localInverseAt`. -/
 @[to_additive /-- Given `⟦m⟧` in the source of `x.localInverseAt`, a choice of `g ∈ G` such
 that `g +ᵥ m` lies in the target of `x.localInverseAt`. -/]
-def smulToLocalInverseAt {m : M}
-    (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ x.localInverseAt.source) : G :=
+def smulToLocalInverseAt {m : M} (hm : ⟦m⟧ ∈ x.localInverseAt.source) : G :=
   Classical.choose (aux hm)
 
 @[to_additive]
-lemma smulToLocalInverseAt_spec {m : M}
-    (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ x.localInverseAt.source) :
+lemma smulToLocalInverseAt_spec {m : M} (hm : ⟦m⟧ ∈ x.localInverseAt.source) :
     smulToLocalInverseAt hm • m ∈ (x.localInverseAt).target :=
   Classical.choose_spec (aux hm)
 
