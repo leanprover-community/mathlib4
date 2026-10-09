@@ -771,8 +771,8 @@ theorem IsCycleOn.zpow_apply_eq_zpow_apply {s : Finset α} (hf : f.IsCycleOn s) 
 
 /-- The map `n ↦ (f ^ n) a` is injective on `[0, #s)` when `f.IsCycleOn s` and `a ∈ s`. -/
 theorem IsCycleOn.injOn_pow_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
-    Set.InjOn (fun n ↦ (f ^ n) a) (.Iio #s) := by
-  grind [Set.InjOn, IsCycleOn.pow_apply_eq_pow_apply hf ha, Nat.ModEq.eq_of_lt_of_lt]
+    Set.InjOn (fun n ↦ (f ^ n) a) (.Iio #s) := fun _ hm _ hn h ↦
+  ((hf.pow_apply_eq_pow_apply ha).1 h).eq_of_lt_of_lt hm hn
 
 theorem IsCycleOn.pow_card_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
     (f ^ #s) a = a :=
