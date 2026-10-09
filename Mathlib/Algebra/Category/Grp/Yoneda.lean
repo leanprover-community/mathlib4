@@ -22,7 +22,8 @@ open CategoryTheory
 universe u
 
 /-- The `CommGrpCat`-valued coyoneda embedding. -/
-@[to_additive (attr := simps) /-- The `AddCommGrpCat`-valued coyoneda embedding. -/]
+@[to_additive (attr := implicit_reducible, simps)
+/-- The `AddCommGrpCat`-valued coyoneda embedding. -/]
 def CommGrpCat.coyoneda : CommGrpCatᵒᵖ ⥤ CommGrpCat ⥤ CommGrpCat where
   obj M := { obj N := of (M.unop →* N), map f := ofHom (.compHom f.hom) }
   map f := { app N := ofHom (.compHom' f.unop.hom) }
