@@ -5,8 +5,8 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.Tactic.TFAE
 
 /-!

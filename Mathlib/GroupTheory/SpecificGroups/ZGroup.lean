@@ -6,10 +6,11 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.GroupTheory.Abelianization.Finite
 public import Mathlib.GroupTheory.Nilpotent
-public import Mathlib.GroupTheory.SchurZassenhaus
 public import Mathlib.GroupTheory.SemidirectProduct
+
+import Mathlib.GroupTheory.Abelianization.Finite
+import Mathlib.GroupTheory.SchurZassenhaus
 
 /-!
 # Z-Groups
@@ -164,7 +165,7 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
       infer_instance
     suffices h : (commutator (commutator H)).map (commutator H).subtype ≤
         Subgroup.centralizer (commutator H) by
-      simpa [SetLike.le_def, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
+      simpa [IsConcreteLE.le_iff, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
     rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
     let _ := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
     have h := Abelianization.commutator_subset_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
