@@ -5,9 +5,9 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Part
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Nat.Upto
+public import Mathlib.Data.Part
 public import Mathlib.Data.Stream.Defs
 
 /-!

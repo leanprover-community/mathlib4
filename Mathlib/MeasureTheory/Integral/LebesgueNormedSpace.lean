@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-! # A lemma about measurability with density under scalar multiplication in normed spaces -/
 

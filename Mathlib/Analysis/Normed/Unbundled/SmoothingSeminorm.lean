@@ -9,9 +9,9 @@ public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 import Mathlib.Algebra.Order.GroupWithZero.Bounds
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.MetricSpace.Sequences
 import Mathlib.Topology.UnitInterval
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # smoothingSeminorm

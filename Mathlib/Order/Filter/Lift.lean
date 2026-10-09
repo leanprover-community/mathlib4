@@ -5,9 +5,9 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Order.Filter.Prod
 
 /-!
 # Lift filters along filter and set functions

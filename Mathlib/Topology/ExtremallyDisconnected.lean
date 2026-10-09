@@ -5,8 +5,8 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Extremally disconnected spaces

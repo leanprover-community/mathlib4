@@ -5,10 +5,10 @@ Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Data.Fintype.CardEmbedding
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
-public import Mathlib.Analysis.Normed.Operator.Bilinear
 
 /-!
 # Operator norm on the space of continuous multilinear maps

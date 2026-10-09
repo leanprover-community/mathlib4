@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Nat.NthRoot.Defs
 public import Mathlib.Algebra.Order.Ring.Pow
+public import Mathlib.Data.Nat.NthRoot.Defs
 
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring.Basic

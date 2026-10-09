@@ -5,8 +5,8 @@ Authors: Frédéric Dupuis, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 public import Mathlib.LinearAlgebra.Multilinear.Curry
+public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 
 import Mathlib.Tactic.AdaptationNote
 

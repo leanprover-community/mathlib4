@@ -6,8 +6,8 @@ Authors: Oliver Nash, Bhavik Mehta, Daniel Weber, Stefan Kebekus
 module
 
 public import Mathlib.Tactic.TautoSet
-public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.LocallyClosed
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Discrete subsets of topological spaces

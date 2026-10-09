@@ -5,9 +5,9 @@ Authors: David Wärn
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Stream.Init
 public import Mathlib.Topology.Compactification.StoneCech
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 import Mathlib.Topology.Algebra.Semigroup
 

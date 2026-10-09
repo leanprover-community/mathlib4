@@ -6,8 +6,8 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Sigma
-public import Mathlib.Order.Filter.Map
 public import Mathlib.Order.Closure
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Basic results on filter bases

@@ -5,9 +5,9 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.Order.UpperLower.Relative
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Order.BourbakiWitt
+public import Mathlib.Order.UpperLower.Relative
 
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.NormNum.Ineq

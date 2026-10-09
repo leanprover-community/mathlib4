@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Bounds.Basic
 
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 

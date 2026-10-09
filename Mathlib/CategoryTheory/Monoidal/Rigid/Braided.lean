@@ -5,8 +5,8 @@ Authors: Gareth Ma
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 
 /-!
 # Deriving `RigidCategory` instance for braided and left/right rigid categories.

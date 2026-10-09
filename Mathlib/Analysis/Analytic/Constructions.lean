@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Analytic.Composition
 public import Mathlib.Analysis.Analytic.Linear
-public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.Normed.Ring.Units
 
 import Mathlib.Analysis.Normed.Operator.Mul
 

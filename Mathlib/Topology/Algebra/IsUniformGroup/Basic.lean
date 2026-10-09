@@ -5,13 +5,13 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.HeineCantor
-public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+public import Mathlib.Topology.UniformSpace.HeineCantor
 
-import Mathlib.Topology.UniformSpace.CompleteSeparated
-import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Tactic.Abel
+import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.CompleteSeparated
 
 /-!
 # Uniform structure on topological groups
