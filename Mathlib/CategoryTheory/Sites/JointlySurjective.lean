@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+
 import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!

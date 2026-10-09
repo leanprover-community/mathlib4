@@ -5,8 +5,8 @@ Authors: Hanting Zhang, Johan Commelin
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials

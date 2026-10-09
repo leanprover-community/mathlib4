@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
 /-!
 # Facts about the Gaussian integers relying on quadratic reciprocity.

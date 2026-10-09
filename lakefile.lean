@@ -43,6 +43,8 @@ abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩,
+    ⟨`weak.linter.unreachableTactic, false⟩, -- superseded by the unused tactic linter
+    ⟨`weak.linter.unnecessarySeqFocus, false⟩, -- superseded by the unused tactic linter
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
@@ -64,6 +66,7 @@ package mathlib where
   platformIndependent := true
   -- Mathlib currently expects artifacts to be in the build directory.
   restoreAllArtifacts := true
+  requiresModuleSystem := true
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -87,6 +90,7 @@ lean_lib Cache where
 lean_lib MathlibTest where
   globs := #[`MathlibTest.+]
   leanOptions := mathlibTestOptions
+  allowNonModules := true
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
@@ -142,6 +146,8 @@ lean_exe «check-yaml» where
 
 /-- `lake exe mk_all` constructs the files containing all imports for a project. -/
 lean_exe mk_all where
+  -- TODO: modulise this script, so remove the need for this option
+  allowNonModules := true
   srcDir := "scripts"
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
@@ -151,6 +157,8 @@ lean_exe mk_all where
 lean_exe «lint-style» where
   srcDir := "scripts"
   supportInterpreter := true
+  -- TODO: modulise this script, so remove the need for this option
+  allowNonModules := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
 
@@ -158,6 +166,8 @@ lean_exe «lint-style» where
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
 lean_exe «check_title_labels» where
   srcDir := "scripts"
+  -- TODO: modulise this script, so remove the need for this option
+  allowNonModules := true
 
 /-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/
 lean_exe «nightly-testing-checklist» where
