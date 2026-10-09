@@ -5,12 +5,13 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Convex.Gauge
-import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.RingTheory.Polynomial.Bernstein
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.ContinuousMap.Polynomial
+
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Analysis.Normed.Order.Lattice
 
 /-!
 # Bernstein approximations and Weierstrass' theorem

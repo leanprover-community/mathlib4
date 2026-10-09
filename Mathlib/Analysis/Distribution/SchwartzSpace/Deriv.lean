@@ -5,8 +5,8 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
 
 /-!

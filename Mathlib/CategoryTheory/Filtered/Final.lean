@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Filtered.Connected
 public import Mathlib.CategoryTheory.Limits.Final.Connected
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Sifted
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # Final functors with filtered (co)domain

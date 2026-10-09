@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Generator.Presheaf
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 # Categories of presheaves are locally presentable

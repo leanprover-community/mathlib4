@@ -5,8 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Reduced
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
+
 import Mathlib.Algebra.Ring.Torsion
 
 /-!
@@ -29,8 +30,6 @@ root pairings.
 -/
 
 public section
-
-noncomputable section
 
 open Function Set
 open Submodule (span)

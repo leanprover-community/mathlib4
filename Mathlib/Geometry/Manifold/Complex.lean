@@ -6,9 +6,10 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+
+import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.Geometry.Manifold.Notation
 
 /-! # Holomorphic functions on complex manifolds
 

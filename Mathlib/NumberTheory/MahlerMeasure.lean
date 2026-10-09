@@ -5,13 +5,14 @@ Authors: Fabrizio Barroero
 -/
 module
 
-import Mathlib.Algebra.Polynomial.OfFn
-import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
-import Mathlib.Data.Pi.Interval
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 public import Mathlib.RingTheory.SimpleRing.Principal
+
+import Mathlib.Algebra.Polynomial.OfFn
+import Mathlib.Analysis.CStarAlgebra.Classes
+import Mathlib.Data.Pi.Interval
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 
 /-!
 # Mahler measure of integer polynomials
