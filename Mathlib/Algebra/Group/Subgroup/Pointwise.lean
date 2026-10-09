@@ -5,11 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.GroupTheory.GroupAction.ConjAct
-public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 
@@ -501,6 +501,10 @@ theorem pointwise_smul_subset_iff {a : α} {S T : Subgroup G} : a • S ≤ T �
 
 theorem subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_smul_set_iff
+
+theorem _root_.MulAut.coe_conj_apply {H : Subgroup G} (g h : H) :
+    (MulAut.conj g h : G) = MulAut.conj (g : G) (h : G) :=
+  rfl
 
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj (h : G) • P ≤ H := by

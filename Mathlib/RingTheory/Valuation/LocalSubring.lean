@@ -7,9 +7,10 @@ Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras, Daniel Funck, Juny
 module
 
 public import Mathlib.RingTheory.LocalRing.LocalSubring
-import Mathlib.RingTheory.Polynomial.Ideal
 public import Mathlib.RingTheory.Valuation.Integral
 public import Mathlib.RingTheory.Valuation.ValuationSubring
+
+import Mathlib.RingTheory.Polynomial.Ideal
 
 -- The copyright notice exceeds the maximum column width, but the `linter.style.header` linter
 -- flags the copyright notice if "All rights reserved." is not on the same line as "Copyright".

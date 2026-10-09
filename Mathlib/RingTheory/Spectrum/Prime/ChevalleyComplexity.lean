@@ -6,10 +6,11 @@ Authors: Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.CoeffMem
-import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
 public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+
 import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Data.DFinsupp.WellFounded
 
 /-!
 # Chevalley's theorem with complexity bound

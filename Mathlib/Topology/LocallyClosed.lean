@@ -6,6 +6,7 @@ Authors: Andrew Yang, Anatole Dedecker
 module
 
 public import Mathlib.Topology.NhdsWithin
+
 import Mathlib.Tactic.TFAE
 
 /-!

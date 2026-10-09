@@ -5,9 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Trace
+
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Linear maps between direct sums

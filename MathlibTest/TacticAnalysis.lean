@@ -595,7 +595,7 @@ info: `rfl` can be replaced with `grind`
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.tryAtEachStepGrind false`
 ---
-warning: Unused tactic linter: `skip` does nothing
+warning: Unused tactic linter: `skip` does nothing.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/

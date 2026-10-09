@@ -5,12 +5,13 @@ Authors: Jujian Zhang
 -/
 module
 
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.QuotientGroup.Defs
+
 import Mathlib.Tactic.NormNum.Eq
-public import Mathlib.Algebra.Field.Defs
 
 /-!
 # Divisible Group and rootable group

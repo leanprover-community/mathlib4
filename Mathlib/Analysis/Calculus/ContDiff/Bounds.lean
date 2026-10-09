@@ -6,8 +6,9 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Data.Nat.Choose.Multinomial
+
+import Mathlib.Data.Nat.Choose.Cast
 
 /-!
 # Bounds on higher derivatives
@@ -18,8 +19,6 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 -/
 
 public section
-
-noncomputable section
 
 open scoped NNReal Nat ContDiff
 

@@ -6,8 +6,9 @@ Authors: Brian Nugent
 
 module
 
-import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Topology.Sheaves.AddCommGrpCat
+
+import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.Topology.Sheaves.LocallySurjective
 
 /-!

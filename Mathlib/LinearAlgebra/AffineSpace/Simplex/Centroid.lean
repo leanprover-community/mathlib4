@@ -5,8 +5,8 @@ Authors: Joseph Myers, Chu Zheng
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Centroid of a simplex in affine space

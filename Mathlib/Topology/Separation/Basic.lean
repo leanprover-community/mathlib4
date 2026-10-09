@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Piecewise
-public import Mathlib.Topology.Compactness.LocallyCompact
-public import Mathlib.Topology.Bases
 
 /-!
 # Separation properties of topological spaces

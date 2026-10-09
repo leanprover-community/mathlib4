@@ -6,6 +6,7 @@ Authors: Eric Rodriguez, Eric Wieser
 module
 
 public import Mathlib.Data.List.Chain
+
 import Mathlib.Data.List.Dedup
 
 /-!
