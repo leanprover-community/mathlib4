@@ -1477,6 +1477,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 [Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] 💥️ ContinuousAlternatingMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a space of continuous alternating maps
 [Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a coercion of a set to a type
