@@ -394,7 +394,7 @@ theorem abs_le_mul_prod (h : G.DobrushinCriterion w x) (v : α) {D : Finset α}
   refine (h.activity_damped v).trans ?_
   rw [← Finset.prod_sdiff hD]
   have h1 : ∏ u ∈ G.neighborFinset v \ D, (1 - x u) ≤ 1 :=
-    Finset.prod_le_one (fun u _ => (h.one_sub_pos u).le)
+    Finset.prod_le_one₀ (fun u _ => (h.one_sub_pos u).le)
       (fun u _ => by linarith [h.damping_nonneg u])
   have h2 : 0 ≤ ∏ u ∈ D, (1 - x u) := Finset.prod_nonneg fun u _ => (h.one_sub_pos u).le
   exact mul_le_mul_of_nonneg_left (mul_le_of_le_one_left h2 h1) (h.damping_nonneg v)
