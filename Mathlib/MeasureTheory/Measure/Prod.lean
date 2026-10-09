@@ -167,8 +167,8 @@ namespace MeasureTheory
 namespace Measure
 
 /-- The binary product of measures `μ.prod ν`. It is defined for arbitrary measures, but we
-  basically prove all properties under the assumption that `ν` is s-finite. To make sure
-  that the measure is always reasonable, we use the junk value `0` when `ν` is not s-finite. -/
+basically prove all properties under the assumption that `ν` is s-finite. To make sure
+that the measure is always reasonable, we use the junk value `0` when `ν` is not s-finite. -/
 protected irreducible_def prod (μ : Measure α) (ν : Measure β) : Measure (α × β) :=
   open scoped Classical in if SFinite ν then bind μ (fun x : α => map (Prod.mk x) ν) else 0
 
