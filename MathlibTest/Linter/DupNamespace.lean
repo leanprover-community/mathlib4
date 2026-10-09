@@ -2,6 +2,14 @@ import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Init
 
+/-!
+# Additional tests for the `dupNamespace` linter
+
+This linter was originally developed in mathlib, but has since been upstreamed to Lean core.
+We keep these tests, as they test e.g. interaction to `to_additive` (which core cannot test).
+
+-/
+
 set_option linter.extra.dupNamespace true
 set_option linter.extra.dupNamespace.consecutiveOnly false
 
