@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
 
+import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.FieldTheory.Minpoly.Finite
 
 /-!
