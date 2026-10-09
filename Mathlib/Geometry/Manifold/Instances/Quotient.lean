@@ -148,7 +148,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   (I : ModelWithCorners 𝕜 E H) {n : ℕ∞ω} [IsManifold I n M]
 
-open orbitRel.Quotient
+open orbitRel.Quotient IsManifold
 
 /-- The quotient of a Cⁿ manifold by a free, properly discontinuous group action such that the
 scalar multiplication `fun x : M ↦ g • x` is Cⁿ is itself a Cⁿ manifold, for the charts of
@@ -171,7 +171,7 @@ instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] 
       (localInverseAt y).open_target.preimage (continuous_const_smul _)
     refine ⟨_, hto, ⟨hh.1, smulToLocalInverseAt_spec hh'⟩, ?_⟩
     refine StructureGroupoid.restr_mem_of_eqOn (symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
-      (IsManifold.chart_mem_maximalAtlas x.out) (IsManifold.chart_mem_maximalAtlas y.out) ?_ ?_) hto
+      (chart_mem_maximalAtlas x.out) (chart_mem_maximalAtlas y.out) ?_ ?_) hto
       ((transitionMap_eqOn_smul x y (smulToLocalInverseAt hh')).mono Set.inter_subset_right).symm ?_
     · rw [Homeomorph.toOpenPartialHomeomorph_apply]
       exact (ContMDiffConstSMul.contMDiff_const_smul (smulToLocalInverseAt hh')).contMDiffOn
