@@ -169,10 +169,8 @@ instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] 
     have hh' := mk_chartAt_symm_mem_localInverseAt_source hh
     let t := ((chartAt H x.out).symm.source ∩ (chartAt H x.out).symm ⁻¹'
       ((smulToLocalInverseAt hh' • ·) ⁻¹' (localInverseAt y).target))
-    have hto : IsOpen t := by
-      refine (chartAt H x.out).symm.isOpen_inter_preimage ?_
-      refine ((localInverseAt y).open_target.preimage ?_)
-      exact (continuous_const_smul (smulToLocalInverseAt hh'))
+    have hto : IsOpen t := (chartAt H x.out).symm.isOpen_inter_preimage <|
+      (localInverseAt y).open_target.preimage (continuous_const_smul _)
     refine ⟨_, hto, ⟨hh.1, smulToLocalInverseAt_spec hh'⟩, ?_⟩
     refine StructureGroupoid.restr_mem_of_eqOn (symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
       (IsManifold.chart_mem_maximalAtlas x.out) (IsManifold.chart_mem_maximalAtlas y.out) ?_ ?_) hto
