@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+
+import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 
 /-!

@@ -5,10 +5,11 @@ Authors: Robert Y. Lewis
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Identities
-import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.Topology.Algebra.Polynomial
+
+import Mathlib.Algebra.Polynomial.Identities
+import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!

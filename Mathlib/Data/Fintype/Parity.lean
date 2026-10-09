@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Algebra.Group.Even
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # The cardinality of `Fin 2` is even.

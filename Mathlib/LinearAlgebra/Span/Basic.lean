@@ -11,8 +11,8 @@ public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.LinearAlgebra.Span.Defs
-public import Mathlib.Order.CompactlyGenerated.Basic
 public import Mathlib.Order.BourbakiWitt
+public import Mathlib.Order.CompactlyGenerated.Basic
 
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Module.Submodule.EqLocus
@@ -806,6 +806,13 @@ theorem span_singleton_eq_range (x : M) :
 
 theorem comp_toSpanSingleton [AddCommMonoid M₂] [Module R M₂] (f : M →ₗ[R] M₂) (x : M) :
     f ∘ₗ toSpanSingleton R M x = toSpanSingleton R M₂ (f x) := by
+  ext; simp
+
+theorem toSpanSingleton_comp [AddCommMonoid M₂] [Module R M₂] (x : M) (f : M₂ →ₗ[R] R) :
+    toSpanSingleton R M x ∘ₗ f = f.smulRight x := rfl
+
+theorem toSpanSingleton_comp_toSpanSingleton (x : M) (c : R) :
+    toSpanSingleton R M x ∘ₗ toSpanSingleton R R c = toSpanSingleton R M (c • x) := by
   ext; simp
 
 theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x ∈ N) :

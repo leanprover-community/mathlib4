@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.ClickSuggestions.SectionState
 public meta import Mathlib.Tactic.ClickSuggestions.Util
+public import Mathlib.Tactic.ClickSuggestions.SectionState
 
 import all Lean.Meta.Tactic.Apply
 

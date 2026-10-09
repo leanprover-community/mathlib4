@@ -6,12 +6,12 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.GroupTheory.Index
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # Lemmas about index and multiplication-by-n

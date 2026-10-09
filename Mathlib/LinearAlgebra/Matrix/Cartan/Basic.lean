@@ -7,6 +7,7 @@ module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormDet
 

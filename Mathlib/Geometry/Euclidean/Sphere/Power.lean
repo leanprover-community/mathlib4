@@ -5,7 +5,6 @@ Authors: Manuel Candales, Benjamin Davidson, Li Jiale
 -/
 module
 
-
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 

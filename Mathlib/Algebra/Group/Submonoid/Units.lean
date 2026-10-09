@@ -5,8 +5,8 @@ Authors: Wrenna Robson
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
 

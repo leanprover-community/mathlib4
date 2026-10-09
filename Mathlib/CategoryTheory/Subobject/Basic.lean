@@ -5,11 +5,12 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.Category.GaloisConnection
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Skeleton
 public import Mathlib.CategoryTheory.Subobject.MonoOver
+
 import Mathlib.Tactic.ApplyFun
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-public import Mathlib.CategoryTheory.Category.GaloisConnection
 
 /-!
 # Subobjects
@@ -416,7 +417,7 @@ theorem ofMkLEMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLEMk f f le_r
 
 -- As with `ofLE`, we have `X` and `Y` as explicit arguments for readability.
 /-- An equality of subobjects gives an isomorphism of the corresponding objects.
-(One could use `underlying.mapIso (eqToIso h))` here, but this is more readable.) -/
+(One could use `underlying.mapIso (eqToIso h)` here, but this is more readable.) -/
 @[simps]
 def isoOfEq {B : C} (X Y : Subobject B) (h : X = Y) : (X : C) ≅ (Y : C) where
   hom := ofLE _ _ h.le

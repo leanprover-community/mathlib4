@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # LexOrder of multivariate power series
 

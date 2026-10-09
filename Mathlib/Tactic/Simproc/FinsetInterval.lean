@@ -5,12 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Util.Qq
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Int.Interval
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Int
-public meta import Mathlib.Tactic.ToAdditive
-public meta import Mathlib.Util.Qq
 public import Mathlib.Util.Qq
 
 /-!

@@ -5,9 +5,10 @@ Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+
+import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 
 /-!
 # Bi-Cartesian squares
