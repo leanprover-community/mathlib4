@@ -138,9 +138,9 @@ lemma epi_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Epi f ↔ Epi f.hom 
     exact (inclusion d).epi_of_epi_map hf
 
 instance {d : ℕ} : SplitEpiCategory (Truncated d) where
-  isSplitEpi_of_epi f hf := by
+  isSplitEpi_of_epi f hf :=
     have := epi_iff.mp hf
-    exact ((inclusion d).isSplitEpi_iff f).mp (isSplitEpi_of_epi f.hom)
+    ((inclusion d).isSplitEpi_iff f).mp (isSplitEpi_of_epi f.hom)
 
 instance {d : ℕ} {a b : Truncated d} (g : a.obj ⟶ b.obj) [hg : Epi g] :
     Epi (ObjectProperty.homMk g : a ⟶ b) :=
