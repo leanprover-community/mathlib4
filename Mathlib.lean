@@ -4626,6 +4626,7 @@ public import Mathlib.Data.ZMod.ValMinAbs
 public import Mathlib.Deprecated.Aliases
 public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.Dynamics.BirkhoffSum.Basic
+public import Mathlib.Dynamics.BirkhoffSum.Measurable
 public import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 public import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
 public import Mathlib.Dynamics.Circle.RotationNumber.TranslationNumber
