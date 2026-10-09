@@ -5,13 +5,14 @@ Authors: Janos Wolosz
 -/
 module
 
+public import Mathlib.Algebra.Lie.Killing
+public import Mathlib.LinearAlgebra.Lagrange
+
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
-public import Mathlib.Algebra.Lie.Killing
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-public import Mathlib.LinearAlgebra.Lagrange
 
 /-!
 # Cartan's criteria
@@ -40,8 +41,8 @@ via its vanishing on `L × ⁅L, L⁆`, semisimplicity via its non-degeneracy.
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975) Chapter I. §5.4
-* [J. Humphreys, *Introduction to Lie Algebras and ...*](humphreys1972) Chapter II 4.3
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975] Chapter I. §5.4
+* [J. Humphreys, *Introduction to Lie Algebras and ...*][humphreys1972] Chapter II 4.3
 -/
 
 variable {R L M : Type*} [CommRing R] [CharZero R] [IsDomain R] [LieRing L] [LieAlgebra R L]

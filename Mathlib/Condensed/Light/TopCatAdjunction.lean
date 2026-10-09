@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Condensed.Light.TopComparison
-public import Mathlib.Topology.Category.Sequential
 public import Mathlib.Topology.Category.LightProfinite.Sequence
+public import Mathlib.Topology.Category.Sequential
 /-!
 
 # The adjunction between light condensed sets and topological spaces

@@ -5,8 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.CategoryTheory.Comma.Final
 public import Mathlib.CategoryTheory.Presentable.Basic
+
+import Mathlib.CategoryTheory.Comma.Final
 
 /-!
 # Morphisms between (co)filtered (co)limits
