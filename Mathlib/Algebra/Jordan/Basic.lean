@@ -66,8 +66,8 @@ Non-commutative Jordan algebras have connections to the Vidav-Palmer theorem
 
 ## References
 
-* [Cabrera García and Rodríguez Palacios, Non-associative normed algebras. Volume 1]
-  [cabreragarciarodriguezpalacios2014]
+* [Cabrera García and Rodríguez Palacios, Non-associative normed
+  algebras. Volume 1][cabreragarciarodriguezpalacios2014]
 * [Hanche-Olsen and Størmer, Jordan Operator Algebras][hancheolsenstormer1984]
 * [McCrimmon, A taste of Jordan algebras][mccrimmon2004]
 
