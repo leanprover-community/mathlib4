@@ -5,11 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Extension.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
-public import Mathlib.RingTheory.Extension.Basic
 
 /-!
 
@@ -428,7 +427,7 @@ lemma Hom.algebraMap_toAlgHom (f : Hom P P') (x) : MvPolynomial.aeval P'.val (f.
     algebraMap S S' (MvPolynomial.aeval P.val x) := by
   suffices ((MvPolynomial.aeval P'.val).restrictScalars R).comp f.toAlgHom =
       (IsScalarTower.toAlgHom R S S').comp (MvPolynomial.aeval P.val) from
-    DFunLike.congr_fun this x
+    congr($this x)
   apply MvPolynomial.algHom_ext
   intro i
   simp [Hom.toAlgHom]
@@ -554,15 +553,14 @@ lemma toComp_toAlgHom_monomial (Q : Generators S T ι') (P : Generators R S ι) 
   · ext f (i₁ | i₂)
     simp [rename_eq_aeval]
     rfl
-  · ext f (i₁ | i₂) <;>
-      simp [Finsupp.mapDomain_of_notMem_range, Finsupp.mapDomain_apply Sum.inr_injective]
+  · ext f (i₁ | i₂) <;> simp [Finsupp.mapDomain_of_notMem_range, Sum.inr_injective]
 
 @[simp]
 lemma toAlgHom_ofComp_rename (Q : Generators S T ι') (P : Generators R S ι) (p : P.Ring) :
     (Q.ofComp P).toAlgHom ((rename Sum.inr) p) = C (algebraMap _ _ p) :=
   have : (Q.ofComp P).toAlgHom.comp (rename Sum.inr) =
     (IsScalarTower.toAlgHom R S Q.Ring).comp (IsScalarTower.toAlgHom R P.Ring S) := by ext; simp
-  DFunLike.congr_fun this p
+  congr($this p)
 
 lemma toAlgHom_ofComp_surjective (Q : Generators S T ι') (P : Generators R S ι) :
     Function.Surjective (Q.ofComp P).toAlgHom := by
@@ -726,9 +724,9 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
         simp only [AddMonoidAlgebra.coeff_add, Finsupp.add_apply, map_add, ite_add_zero]
         rw [finsum_add_distrib, hp, hq]
         · refine (((support p).map e).finite_toSet.subset ?_)
-          convert! this p
+          convert this p
         · refine (((support q).map e).finite_toSet.subset ?_)
-          convert! this q
+          convert this q
 
 /--
 Given `R[X] → S` and `S[Y] → T`, this is the lift of an element in `ker(S[Y] → T)`

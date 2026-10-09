@@ -5,15 +5,14 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Basic
-public import Mathlib.Algebra.GroupWithZero.NeZero
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
-public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Tactic.Tauto
+
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Tactic.Tauto
 
 /-!
 # Basic facts for ordered rings and semirings
@@ -361,7 +360,7 @@ theorem nonpos_of_mul_nonpos_right [PosMulStrictMono R]
 @[simp]
 theorem mul_nonneg_iff_of_pos_left [PosMulStrictMono R]
     (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  convert! mul_le_mul_iff_right₀ h
+  convert mul_le_mul_iff_right₀ h
   simp
 
 @[simp]
@@ -717,7 +716,7 @@ lemma two_mul_le_add_of_sq_le_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMul
   rw [mul_mul_mul_comm, ← pow_two r, two_mul, two_add_two_eq_four]
   grw [mul_le_mul_of_nonneg_left ht zero_le_four, ← mul_assoc, four_mul_le_sq_add a b, sq]
 
-@[deprecated two_mul_le_add_of_sq_le_mul (since := "2026-04-20")]
+@[deprecated two_mul_le_add_of_sq_le_mul +typeChanged (since := "2026-04-20")]
 lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
     [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
     (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b :=

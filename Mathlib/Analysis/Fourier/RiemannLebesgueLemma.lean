@@ -6,12 +6,11 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Fourier.FourierTransform
-public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-public import Mathlib.MeasureTheory.Function.ContinuousMapDense
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
+
+import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+import Mathlib.MeasureTheory.Function.ContinuousMapDense
 
 /-!
 # The Riemann-Lebesgue Lemma
@@ -44,8 +43,6 @@ equivalence to an inner-product space.
 -/
 
 public section
-
-noncomputable section
 
 open MeasureTheory Filter Complex Set Module
 

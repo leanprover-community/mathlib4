@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
-public import Mathlib.Tactic.FieldSimp
+
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # The Selberg Sieve

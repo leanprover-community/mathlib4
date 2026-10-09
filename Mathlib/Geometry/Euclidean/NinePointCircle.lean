@@ -5,8 +5,8 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.MongePoint
+
 import Mathlib.Geometry.Euclidean.Angle.Sphere
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 
@@ -181,7 +181,7 @@ theorem midpoint_faceOppositeCentroid_eulerPoint {n : ℕ} [hn : NeZero n] (s : 
       (((n + 1) / n : ℝ)) • (s.centroid -ᵥ s.circumcenter) := by
     rw [add_comm (n : ℝ) 1, add_div, div_self (by simpa using hn.out), add_smul, one_smul, one_div]
   rw [this, ← two_smul ℝ, smul_smul]
-  norm_num
+  simp
 
 theorem isDiameter_ninePointCircle {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) :
@@ -211,7 +211,7 @@ theorem eulerPoint_eq_midpoint (s : Triangle ℝ P) (i : Fin 3) :
 
 theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
     s.altitudeFoot i ∈ s.ninePointCircle := by
-  convert! s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
+  convert s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
   rw [Simplex.altitudeFoot]
   unfold Simplex.orthogonalProjectionSpan
   congr 1

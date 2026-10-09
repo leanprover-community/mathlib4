@@ -6,11 +6,9 @@ Authors: Iván Renison
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-public import Mathlib.Combinatorics.SimpleGraph.Hasse
-public import Mathlib.Data.Fin.Parity
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
+public import Mathlib.Data.Fin.Parity
 
 /-!
 # Concrete colorings of common graphs
@@ -60,14 +58,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
 theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     Even p.length ↔ (c u ↔ c v) := by
-  induction p with
-  | nil => simp
-  | @cons u v w h p ih =>
-    simp only [Walk.length_cons, Nat.even_add_one]
-    have : ¬ c u = true ↔ c v = true := by
-      rw [← not_iff, ← Bool.eq_iff_iff]
-      exact c.valid h
-    tauto
+  induction p <;> grind [c.valid, Walk.length_cons]
 
 theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
