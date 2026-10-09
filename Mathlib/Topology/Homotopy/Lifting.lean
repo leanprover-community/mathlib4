@@ -469,6 +469,31 @@ theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
     (cov.monodromy γ).Bijective :=
   (isIso_iff_bijective _).mp (cov.monodromyFunctor.map_isIso _)
 
+/-- If the total space of a covering map is path connected, then evaluation at a point of the
+monodromy action is surjective onto the fiber containing that point. -/
+lemma monodromy_apply_surjective {x : X} (e₀ : p ⁻¹' {x}) [PathConnectedSpace E] :
+    Surjective (fun γ : FundamentalGroup X x ↦ cov.monodromy γ e₀) := by
+  intro e₁
+  set Γ : Path.Homotopic.Quotient (e₀ : E) (e₁ : E) :=
+    Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath (e₀ : E) (e₁ : E))
+  exact ⟨(Γ.map ⟨p, cov.continuous⟩).cast e₀.2.symm e₁.2.symm, cov.monodromy_eq_of_map_eq Γ rfl⟩
+
+/-- If the total space of a covering map is simply connected, then a homotopy class of paths from
+`x` to `y` is determined by its monodromy at a single point over `x`. -/
+lemma monodromy_left_injective {x y : X} (e₀ : p ⁻¹' {x}) [SimplyConnectedSpace E] :
+    Injective (fun γ : Path.Homotopic.Quotient x y ↦ cov.monodromy γ e₀) := by
+  refine LeftInverse.injective (g := fun e₁ ↦ ((Path.Homotopic.Quotient.mk
+    (PathConnectedSpace.somePath e₀.1 e₁.1)).map ⟨p, cov.continuous⟩).cast e₀.2.symm e₁.2.symm)
+    fun γ ↦ ?_
+  simpa [Subsingleton.elim (.mk _) (cov.liftPathQuotient γ e₀), map_liftPathQuotient]
+    using (Path.Homotopic.Quotient.cast_cast ..).trans γ.cast_rfl_rfl
+
+/-- If the total space of a covering map is simply connected, then evaluation at a point gives a
+bijection from the fundamental group of the base to the fiber containing that point. -/
+lemma monodromy_apply_bijective {x : X} (e₀ : p ⁻¹' {x}) [SimplyConnectedSpace E] :
+    Bijective (fun γ : FundamentalGroup X x ↦ cov.monodromy γ e₀) :=
+  ⟨cov.monodromy_apply_injective e₀, cov.monodromy_apply_surjective e₀⟩
+
 /-- A covering map induces an injection on all Hom-sets of the fundamental groupoid,
   in particular on the fundamental group. The first part of Proposition 1.31 of [hatcher02]. -/
 lemma injective_path_homotopic_map (e₀ e₁ : E) :
