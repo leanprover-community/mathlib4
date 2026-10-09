@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
@@ -42,6 +41,11 @@ variable {α G A S : Type*}
 @[to_additive (attr := simp, norm_cast)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
   Set.ext fun _ => inv_mem_iff
+
+@[to_additive (attr := simp)]
+theorem IsSelfInv.of_invMemClass [InvolutiveInv G] [SetLike S G] [InvMemClass S G] (H : S) :
+    IsSelfInv (H : Set G) :=
+  inv_coe_set
 
 @[to_additive (attr := simp)]
 lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
@@ -215,6 +219,11 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, hmul _ _ _ _ Cx Cy⟩
 
+@[to_additive]
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subgroup G) :
+    ((⨆ i, S i : Subgroup G) : Set G) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subgroup G) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
 @[to_additive (attr := simp)]
 theorem mul_subset {t : Set G} {H : Subgroup G} (hs : s ⊆ H) (ht : t ⊆ H) : s * t ⊆ H :=
   Submonoid.mul_subset hs ht
@@ -226,8 +235,8 @@ lemma pow_subset {H : Subgroup G} {n : ℕ} (hs : s ⊆ H) : s ^ n ⊆ H := by
 @[to_additive]
 theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure T :=
   sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
-    (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
-      (SetLike.le_def.mp le_sup_right <| subset_closure ht)
+    (closure S ⊔ closure T).mul_mem (mem_of_le_of_mem le_sup_left <| subset_closure hs)
+      (mem_of_le_of_mem le_sup_right <| subset_closure ht)
 
 @[to_additive]
 lemma closure_pow_le {n : ℕ} : closure (s ^ n) ≤ closure s := by simp
@@ -492,6 +501,10 @@ theorem pointwise_smul_subset_iff {a : α} {S T : Subgroup G} : a • S ≤ T �
 
 theorem subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_smul_set_iff
+
+theorem _root_.MulAut.coe_conj_apply {H : Subgroup G} (g h : H) :
+    (MulAut.conj g h : G) = MulAut.conj (g : G) (h : G) :=
+  rfl
 
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj (h : G) • P ≤ H := by

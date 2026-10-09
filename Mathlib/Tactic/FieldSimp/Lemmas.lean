@@ -5,11 +5,11 @@ Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
 module
 
+public meta import Mathlib.Util.Qq
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Field.Defs  -- shake: keep (Qq dependency)
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Ring.Int.Parity -- shake: keep (Qq dependency)
-public meta import Mathlib.Util.Qq
 
 /-! # Lemmas for the `field_simp` tactic
 
@@ -91,7 +91,7 @@ lemma zpow'_mul (a : α) (m n : ℤ) : zpow' a (m * n) = zpow' (zpow' a m) n := 
   · simp [ha]
   by_cases hn : n = 0
   · rw [hn]
-    simp [zpow', ha, zpow_ne_zero ]
+    simp [zpow', ha, zpow_ne_zero]
   by_cases hm : m = 0
   · rw [hm]
     simp [zpow', ha]

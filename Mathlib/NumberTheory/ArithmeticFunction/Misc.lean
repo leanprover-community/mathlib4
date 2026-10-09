@@ -5,8 +5,8 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
 public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
 /-!
 # Miscellaneous arithmetic Functions
 
@@ -317,7 +317,8 @@ theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k 
 
 theorem cardFactors_eq_sum_factorization {n : ℕ} :
     Ω n = n.factorization.sum fun _ k => k := by
-  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum]
+  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum,
+    primeFactorsList_count_eq]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
 def cardDistinctFactors : ArithmeticFunction ℕ :=

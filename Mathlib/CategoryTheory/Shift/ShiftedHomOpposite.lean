@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 
 /-! # Shifted morphisms in the opposite category
 

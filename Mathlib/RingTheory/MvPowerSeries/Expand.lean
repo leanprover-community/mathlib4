@@ -5,10 +5,8 @@ Authors: Wenrong Zou
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Substitution
-public import Mathlib.Algebra.CharP.Frobenius
-public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.Expand
+public import Mathlib.RingTheory.MvPowerSeries.Substitution
 
 /-!
 ## Expand multivariate power series
@@ -97,7 +95,7 @@ theorem expand_mul_eq_comp :
 
 theorem expand_mul (φ : MvPowerSeries σ R) : φ.expand (p * q) (p.mul_ne_zero hp hq) =
     (φ.expand q hq).expand p hp :=
-  DFunLike.congr_fun (expand_mul_eq_comp p hp q hq) φ
+  congr($(expand_mul_eq_comp p hp q hq) φ)
 
 @[simp]
 theorem coeff_expand_smul (φ : MvPowerSeries σ R) (m : σ →₀ ℕ) :
