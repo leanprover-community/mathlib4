@@ -60,7 +60,7 @@ namespace orbitRel.Quotient
 ## Local sections of the quotient map
 -/
 
-variable {x : orbitRel.Quotient G M}
+variable {x y : orbitRel.Quotient G M}
 
 variable (x) in
 /-- A choice of local section of the quotient map `M → orbitRel.Quotient G M` around `x`. -/
@@ -76,11 +76,12 @@ lemma localInverseAt_apply_mk_eq_smul {g : G} {m : M} (hm : g • m ∈ (x.local
     ← isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm,
     (x.localInverseAt).right_inv hm]
 
+variable (x y) in
 /-- On the open set `(g • ·) ⁻¹' (y.localInverseAt).target`, the section comparison
 `(x.localInverseAt).symm.trans (y.localInverseAt)` is the action of `g`. -/
 @[to_additive /-- On the open set `(g +ᵥ ·) ⁻¹' (y.localInverseAt).target`, the section comparison
 `(x.localInverseAt).symm.trans (y.localInverseAt)` is the additive action of `g`. -/]
-lemma localInverseAt_symm_trans_eqOn_smul (x y : orbitRel.Quotient G M) (g : G) :
+lemma localInverseAt_symm_trans_eqOn_smul (g : G) :
     ((g • ·) ⁻¹' (y.localInverseAt).target).EqOn
       ((x.localInverseAt).symm.trans (y.localInverseAt)) (g • ·) := by
   intro _ hm
@@ -112,14 +113,14 @@ lemma smulToLocalInverseAt_spec {m : M}
 ## Transition maps between charts
 -/
 
-variable (x y : orbitRel.Quotient G M)
-
+variable (x y) in
 /-- The transition map between the charts of the quotient associated to `x` and `y`. -/
 @[to_additive
 /-- The transition map between the charts of the quotient associated to `x` and `y`. -/]
 def transitionMap : OpenPartialHomeomorph H H :=
   (chartAt H x.out).symm ≫ₕ ((x.localInverseAt).symm ≫ₕ y.localInverseAt) ≫ₕ chartAt H y.out
 
+variable (x y) in
 /-- Wherever `g` carries a point of `M` into the target of the local section at `y`, the transition
 map of the quotient is just the action of `g`, read in the charts of `M` at `x.out` and `y.out`. -/
 @[to_additive /-- Wherever `g` carries a point of `M` into the range of the local section at `y`,
@@ -132,7 +133,6 @@ lemma transitionMap_eqOn_smul (g : G) : Set.EqOn (transitionMap x y)
   simpa [transitionMap] using
     congr((chartAt H y.out) $(localInverseAt_symm_trans_eqOn_smul x y g hh))
 
-variable {x y : orbitRel.Quotient G M} in
 @[to_additive]
 lemma mk_chartAt_symm_mem_localInverseAt_source {h : H} (hh : h ∈ (transitionMap x y).source) :
     ⟦(chartAt H (Quotient.out x)).symm h⟧ ∈ y.localInverseAt.source := by
