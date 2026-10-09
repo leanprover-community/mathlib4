@@ -123,7 +123,7 @@ def transitionMap : OpenPartialHomeomorph H H :=
 variable (x y) in
 /-- Wherever `g` carries a point of `M` into the target of the local section at `y`, the transition
 map of the quotient is just the action of `g`, read in the charts of `M` at `x.out` and `y.out`. -/
-@[to_additive /-- Wherever `g` carries a point of `M` into the range of the local section at `y`,
+@[to_additive /-- Wherever `g` carries a point of `M` into the target of the local section at `y`,
 the transition map of the quotient is just the additive action of `g`, read in the charts of `M`
 at `x.out` and `y.out`. -/]
 lemma transitionMap_eqOn_smul (g : G) : Set.EqOn (transitionMap x y)
