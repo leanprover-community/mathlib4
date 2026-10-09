@@ -5,15 +5,16 @@ Authors: Rao Xiaojia
 -/
 module
 
+public meta import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Echelon.Bareiss
-public import Mathlib.Tactic.Echelon.Parsing
+public import Mathlib.Tactic.Matrix.Parsing
 
 /-!
 # `eval_rank`: rank of matrix literals by Bareiss elimination
 
 This module defines the `eval_rank` tactic and the `norm_rank` simproc, which compute
 the rank of a matrix literal with non-symbolic entries through an
-`Echelon.Decomposition` certificate checked by the kernel.
+`Echelon.Decomposition` certificate.
 -/
 
 public meta section
@@ -24,24 +25,25 @@ namespace Mathlib.Tactic.Echelon
 
 /-- Rewrite `Matrix.rank A` to the pivot count of the Bareiss decomposition of the matrix
 literal `A`. -/
-def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Expr)) :
-    MetaM Simp.Result := do
-  let u ← getDecLevel R
-  have α : Q(Type u) := R
-  let res ← mkBareissDecomposition A m n α entries
-  let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert]
+def normalizeRank {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α)) (e : Expr)
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr)) : MetaM Simp.Result := do
+  let res ← mkBareissDecomposition rα A entries
+  let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert.decomp]
   let k := mkNatLit res.data.pivot.size
-  return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
+  return { expr := k, proof? := some (mkExpectedPropHint pf (← mkEq e k)) }
 
 /-- Core of the `norm_rank` simproc. -/
 def normRankCore : Simp.Simproc := fun e => do
   let_expr Matrix.rank _ _ _ _ _ A := e | return .continue
   let A ← instantiateMVars A
-  let some (m, n, R, entries) ← matchMatrixLit? A
+  let some (m, n, R, entries) ← Matrix.matchMatrixLit? A
     | trace[Tactic.evalRank] "not a closed matrix literal{indentExpr A}"
       return .continue
-  match ← checkBareissApplicable R with
-  | .ok _ => return .done (← normalizeRank e A m n R entries)
+  let u ← getDecLevel R
+  have α : Q(Type u) := R
+  have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
+  match ← inferBareissRing α with
+  | .ok rα => return .done (← normalizeRank rα e A entries)
   | .error err =>
     trace[Tactic.evalRank] "{err}{indentExpr A}"
     return .continue
@@ -51,7 +53,8 @@ end Mathlib.Tactic.Echelon
 open Mathlib.Tactic.Echelon
 
 /-- The `norm_rank` simproc evaluates the rank of matrices with non-symbolic entries.
-Terms that it cannot evaluate are skipped. -/
+Terms that it cannot evaluate are skipped, since the fallback model accepts every ring and only
+the evaluation can tell whether an entry is in its scope. -/
 simproc_decl norm_rank (Matrix.rank _) := fun e => do
   try normRankCore e
   catch ex =>
@@ -61,7 +64,7 @@ simproc_decl norm_rank (Matrix.rank _) := fun e => do
 /--
 `eval_rank` evaluates the rank of matrices with non-symbolic entries.
 
-The element type must be a commutative domain with kernel-decidable equality.
+The element type must be a commutative domain.
 Terms skipped can be viewed by using `set_option trace.Tactic.evalRank true`.
 -/
 elab (name := evalRank) "eval_rank" : tactic => do

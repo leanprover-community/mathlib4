@@ -6,10 +6,10 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Matroid.Init
-public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Set.Card
-public import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Order.UpperLower.Closure
+
+import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Matroids
@@ -858,7 +858,7 @@ theorem IsBasis.subset_ground (hI : M.IsBasis I X) : X ⊆ M.E :=
   hI.2
 
 theorem IsBasis.isBasis_inter_ground (hI : M.IsBasis I X) : M.IsBasis I (X ∩ M.E) := by
-  convert! hI
+  convert hI
   rw [inter_eq_self_of_subset_left hI.subset_ground]
 
 @[aesop unsafe 15% (rule_sets := [Matroid])]
@@ -1034,7 +1034,7 @@ theorem IsBasis.iUnion_isBasis_iUnion {ι : Type _} (X I : ι → Set α)
 
 theorem IsBasis.isBasis_iUnion {ι : Type _} [Nonempty ι] (X : ι → Set α)
     (hI : ∀ i, M.IsBasis I (X i)) : M.IsBasis I (⋃ i, X i) := by
-  convert! IsBasis.iUnion_isBasis_iUnion X (fun _ ↦ I) (fun i ↦ hI i) _ <;> rw [iUnion_const]
+  convert IsBasis.iUnion_isBasis_iUnion X (fun _ ↦ I) (fun i ↦ hI i) _ <;> rw [iUnion_const]
   exact (hI (Classical.arbitrary ι)).indep
 
 theorem IsBasis.isBasis_sUnion {Xs : Set (Set α)} (hne : Xs.Nonempty)
@@ -1062,11 +1062,11 @@ theorem IsBasis.union_isBasis_union (hIX : M.IsBasis I X) (hJY : M.IsBasis J Y)
 
 theorem IsBasis.isBasis_union (hIX : M.IsBasis I X) (hIY : M.IsBasis I Y) :
     M.IsBasis I (X ∪ Y) := by
-  convert! hIX.union_isBasis_union hIY _ <;> rw [union_self]; exact hIX.indep
+  convert hIX.union_isBasis_union hIY _ <;> rw [union_self]; exact hIX.indep
 
 theorem IsBasis.isBasis_union_of_subset (hI : M.IsBasis I X) (hJ : M.Indep J) (hIJ : I ⊆ J) :
     M.IsBasis J (J ∪ X) := by
-  convert! hJ.isBasis_self.union_isBasis_union hI _ <;>
+  convert hJ.isBasis_self.union_isBasis_union hI _ <;>
   rw [union_eq_self_of_subset_right hIJ]
   assumption
 

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Topology.Algebra.Affine
-public import Mathlib.Topology.Order.LocalExtr
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Minima and maxima of convex functions
@@ -78,7 +78,8 @@ theorem IsMaxOn.of_isLocalMaxOn_of_concaveOn {f : E → β} {a : E} (a_in_s : a 
 /-- A local minimum of a convex function is a global minimum. -/
 theorem IsMinOn.of_isLocalMin_of_convex_univ {f : E → β} {a : E} (h_local_min : IsLocalMin f a)
     (h_conv : ConvexOn ℝ univ f) : ∀ x, f a ≤ f x := fun x =>
-  (IsMinOn.of_isLocalMinOn_of_convexOn (mem_univ a) (h_local_min.on univ) h_conv) (mem_univ x)
+  (IsMinOn.of_isLocalMinOn_of_convexOn (mem_univ a) (h_local_min.isLocalMinOn univ) h_conv)
+    (mem_univ x)
 
 /-- A local maximum of a concave function is a global maximum. -/
 theorem IsMaxOn.of_isLocalMax_of_convex_univ {f : E → β} {a : E} (h_local_max : IsLocalMax f a)

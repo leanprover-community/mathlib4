@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Orientation
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Volume forms and measures on inner product spaces
@@ -124,7 +124,7 @@ variable [Fintype ι]
 theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp :
     MeasurePreserving (MeasurableEquiv.toLp 2 (ι → ℝ)).symm := by
   suffices volume = map (MeasurableEquiv.toLp 2 (ι → ℝ)) volume by
-    convert! ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
+    convert ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
     MeasurableEquiv.coe_toLp, ← PiLp.coe_symm_continuousLinearEquiv 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
@@ -172,14 +172,14 @@ private noncomputable def volumePreservingSymmMeasurableEquivToLpProdAux :
   ( -- WithLp 2 (U × V) ≃ₗᵢ[ℝ] WithLp 2 (WithLp 2 (Fin .. → ℝ) × WithLp 2 (Fin .. → ℝ)
     (LinearIsometryEquiv.withLpProdCongr 2
       (stdOrthonormalBasis ℝ U).repr
-      (stdOrthonormalBasis ℝ V).repr).trans <|
+      (stdOrthonormalBasis ℝ V).repr).trans
     -- .. ≃ₗᵢ[ℝ] WithLp 2 (Fin (finrank ℝ U) ⊕ Fin (finrank ℝ V) → ℝ)
     (PiLp.sumPiLpEquivProdLpPiLp 2 (fun _ ↦ ℝ)).symm
   ).toMeasurableEquiv.trans <|
   -- .. ≃ᵐ Fin (finrank ℝ U) ⊕ Fin (finrank ℝ V) → ℝ
   (MeasurableEquiv.toLp 2 _).symm.trans <|
   -- .. ≃ᵐ Fin (finrank ℝ U) → ℝ × Fin (finrank ℝ V) → ℝ
-  (MeasurableEquiv.sumPiEquivProdPi (fun _ ↦ ℝ)).trans <|
+  (MeasurableEquiv.sumPiEquivProdPi (fun _ ↦ ℝ)).trans
   -- .. ≃ᵐ U × V
   (MeasurableEquiv.prodCongr
     ((MeasurableEquiv.toLp 2 _).trans (stdOrthonormalBasis ℝ U).repr.symm.toMeasurableEquiv)
@@ -189,7 +189,7 @@ private noncomputable def volumePreservingSymmMeasurableEquivToLpProdAux :
 theorem WithLp.volume_preserving_symm_measurableEquiv_toLp_prod :
     MeasurePreserving (MeasurableEquiv.toLp 2 (U × V)).symm := by
   suffices MeasurePreserving (volumePreservingSymmMeasurableEquivToLpProdAux U V) by
-    convert! this
+    convert this
     ext uv
     <;> simp [volumePreservingSymmMeasurableEquivToLpProdAux, MeasurableEquiv.coe_sumPiEquivProdPi,
       MeasurableEquiv.prodCongr]
@@ -224,9 +224,9 @@ theorem MeasureTheory.volume_eq_of_finrank_eq_one (h : Module.finrank ℝ E = 1)
     let f : ℝ ≃ₗᵢ[ℝ] E := (LinearIsometryEquiv.toSpanUnitSingleton (‖v‖⁻¹ • v)
       (by simp [norm_smul, hv])).trans (LinearIsometryEquiv.ofTop E _ hv')
     rw [map_map (by fun_prop) (by fun_prop)]
-    convert! f.measurePreserving.map_eq.symm
+    convert f.measurePreserving.map_eq.symm
     ext x
     simp [f, mul_comm, smul_smul]
   _ = ‖v‖ₑ • (volume : Measure ℝ).map (· • v) := by
-    rw [map_addHaar_smul _ (by simpa using hv)]
+    rw [map_addHaar_smul _ (by simpa using hv), Measure.map_smul _ (by fun_prop)]
     simp
