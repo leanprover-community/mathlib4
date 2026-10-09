@@ -5,9 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.Basic.Countable.Small
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.FinCategory.Basic
-public import Mathlib.Data.Countable.Small
 
 /-!
 # Countable categories

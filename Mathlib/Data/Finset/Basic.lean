@@ -11,11 +11,8 @@ public import Mathlib.Data.Finset.Erase
 public import Mathlib.Data.Finset.Filter
 public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.SDiff
-public import Mathlib.Data.Multiset.Basic
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Directed
-public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Basic lemmas on finite sets
@@ -584,7 +581,7 @@ open Finset
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ (s ∪ t : Finset α) :=
-  Equiv.Set.congr (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Set.equivOfEq (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.union_inl (h : Disjoint s t) (x : s) :
@@ -609,7 +606,7 @@ theorem Finset.union_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
 /-- The disjoint union of finsets is a sum -/
 def Finset.disjUnionEquiv (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ s.disjUnion t h :=
-  Equiv.Set.congr (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Set.equivOfEq (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.disjUnionEquiv_inl (h : Disjoint s t) (x : s) :

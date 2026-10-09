@@ -6,11 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-public import Mathlib.Topology.Baire.Lemmas
-public import Mathlib.Topology.Baire.CompleteMetrizable
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Topology.Baire.CompleteMetrizable
+
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!
 # Banach open mapping theorem
@@ -382,7 +382,7 @@ variable {E F : Type*}
 `f` is anti-Lipschitz. -/
 lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f :=
-  ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitz⟩
+  ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitzWith⟩
 
 /-- A choice of anti-Lipschitz constant for `f : E →L[𝕜] F` injective with closed range
 (assuming `E` and `F` are Banach spaces). -/
@@ -534,7 +534,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace 
 
 /-- The **closed graph theorem** : a linear map between two Banach spaces whose graph is closed
 is continuous. -/
-theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :
+protected theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :
     Continuous g := by
   let : CompleteSpace g.graph := completeSpace_coe_iff_isComplete.mpr hg.isComplete
   let φ₀ : E →ₗ[𝕜] E × F := LinearMap.id.prod g
@@ -613,7 +613,7 @@ variable [CompleteSpace E]
 
 lemma closed_range_of_antilipschitz {f : E →SL[σ] F} {c : ℝ≥0} (hf : AntilipschitzWith c f) :
     f.range.topologicalClosure = f.range :=
-  SetLike.ext'_iff.mpr <| (hf.isClosed_range f.uniformContinuous).closure_eq
+  SetLike.ext'_iff.mpr (hf.isClosed_range f.uniformContinuous).closure_eq
 
 variable [CompleteSpace F]
 
@@ -629,7 +629,7 @@ lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
   refine ⟨fun h ↦ ⟨?eq_top, ?anti⟩, fun ⟨hd, c, hf⟩ ↦ ⟨hf.injective, ?surj⟩⟩
   case eq_top => simpa [SetLike.ext'_iff] using! h.2.denseRange.closure_eq
   case anti =>
-    refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitz⟩ <;>
+    refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitzWith⟩ <;>
     simp only [LinearMap.range_eq_top, LinearMap.ker_eq_bot, f.coe_coe, h.1, h.2]
   case surj => rwa [← f.coe_coe, ← LinearMap.range_eq_top, ← closed_range_of_antilipschitz hf]
 

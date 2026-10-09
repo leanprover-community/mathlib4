@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 module
 
-public import Batteries.Tactic.Lint.Simp
 public import Mathlib.Algebra.Group.DivInvMonoid
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Logic.Equiv.Defs
@@ -176,7 +175,7 @@ instance instInvolutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ where
   neg_neg _ := unop_injective <| neg_neg _
 
 @[to_additive] instance instMul [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
-@[to_additive] instance instInv [Inv α] : Inv αᵐᵒᵖ where inv x := op <| (unop x)⁻¹
+@[to_additive] instance instInv [Inv α] : Inv αᵐᵒᵖ where inv x := op (unop x)⁻¹
 
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ where

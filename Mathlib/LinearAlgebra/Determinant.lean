@@ -5,16 +5,10 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-public import Mathlib.RingTheory.Finiteness.Cardinality
-public import Mathlib.Tactic.FieldSimp
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 import Mathlib.RingTheory.SimpleRing.Matrix
@@ -369,7 +363,7 @@ theorem range_lt_top_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M}
   rw [lt_top_iff_ne_top]
   intro h
   obtain ⟨g, hg⟩ := f.exists_rightInverse_of_surjective h
-  simpa [hf] using congr_arg LinearMap.det hg
+  simpa [hf] using congr(LinearMap.det $hg)
 
 /-- When the function is over the base ring, the determinant is the evaluation at `1`. -/
 @[simp] lemma det_ring (f : R →ₗ[R] R) : f.det = f 1 := by
@@ -436,7 +430,7 @@ theorem coe_inv_det (f : M ≃ₗ[R] M) : ↑(LinearEquiv.det f)⁻¹ = LinearMa
 
 @[simp]
 theorem det_refl : LinearEquiv.det (LinearEquiv.refl R M) = 1 :=
-  Units.ext <| LinearMap.det_id
+  Units.ext LinearMap.det_id
 
 @[simp]
 theorem det_trans (f g : M ≃ₗ[R] M) :
@@ -460,7 +454,7 @@ end LinearEquiv
 @[simp] theorem LinearMap.det_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V]
     [AddCommGroup W] [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)]
     [AlgEquivClass F K _ _] (f : F) (x : End K V) : (f x).det = x.det :=
-  have ⟨_, h⟩ := (AlgEquivClass.toAlgEquiv f).eq_linearEquivConjAlgEquiv
+  have ⟨_, h⟩ := (AlgEquiv.ofClass f).eq_linearEquivConjAlgEquiv
   (by simpa using congr($h x)) ▸ det_conj _ _
 
 @[simp] theorem Matrix.det_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
@@ -468,13 +462,13 @@ end LinearEquiv
     [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).det = x.det := by
   simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
     LinearMap.det_map ((Matrix.toLinAlgEquiv'.symm.trans
-      (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
+      (AlgEquiv.ofClass f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
 @[simp] theorem Matrix.det_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
     [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
     (f x).det = x.det := by
   by_cases! Nonempty m
-  · exact det_map (AlgEquiv.ofBijective _ (AlgHomClass.toAlgHom f).bijective) x
+  · exact det_map (AlgEquiv.ofBijective _ (AlgHom.ofClass f).bijective) x
   · simp
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
@@ -575,7 +569,7 @@ abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCo
 theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ[R] M)
     (h : ∀ x, f x = f' (e x)) : Associated (LinearMap.det f) (LinearMap.det f') := by
   suffices Associated (LinearMap.det (f' ∘ₗ ↑e)) (LinearMap.det f') by
-    convert! this using 2
+    convert this using 2
     ext x
     exact h x
   rw [← mul_one (LinearMap.det f'), LinearMap.det_comp]
@@ -634,7 +628,7 @@ theorem is_basis_iff_det {v : ι → M} :
   · rintro ⟨hli, hspan⟩
     set v' := Basis.mk hli hspan.ge
     rw [e.det_apply]
-    convert! LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
+    convert LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
     ext i j
     simp [v']
   · intro h
@@ -666,7 +660,7 @@ theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis
     cases nonempty_fintype ι
     let := Classical.decEq ι
     simpa [h] using f.eq_smul_basis_det e,
-   fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
+   fun h => h.symm ▸ zero_apply _⟩
 
 theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : M [⋀^ι]→ₗ[R] R) : f e ≠ 0 ↔ f ≠ 0 :=

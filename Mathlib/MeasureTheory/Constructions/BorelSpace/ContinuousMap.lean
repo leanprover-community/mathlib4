@@ -8,8 +8,8 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Topology.CompactOpen
 
+import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.ContinuousMap.SecondCountableSpace
-import Mathlib.Topology.UniformSpace.Uniformizable
 
 /-!
 # A measurable space structure on the type of continuous maps
@@ -171,7 +171,7 @@ def continuousMapToFun : C(X, Y) ≃ᵐ {f : X → Y // Continuous f} where
   left_inv f := rfl
   right_inv f := rfl
   measurable_toFun :=
-    .subtype_mk (measurable_pi_lambda _ fun _ ↦ Continuous.measurable (by fun_prop))
+    .subtype_mk (.of_eval fun _ ↦ (continuous_eval_const _).measurable)
   measurable_invFun :=
     ContinuousMap.measurable_iff_eval.2 fun x ↦ by simpa using measurable_subtype_coe.eval
 
