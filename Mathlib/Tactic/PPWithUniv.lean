@@ -28,7 +28,7 @@ unless `pp.universes` is explicitly set to `false`.
 -/
 def delabWithUniv : Delab :=
   whenPPOption (·.get pp.universes.name true) <| do
-  let pos ← withAppFnArgs getPos pure
+  let pos := (← getPos).pushNaryFn (← getExpr).getAppNumArgs
   let enablePPUnivOnHead (ctx : Delaborator.Context) :=
     let options := ctx.optionsPerPos.getD pos {}
     let optionsPerPos := ctx.optionsPerPos.insert pos (options.insert pp.universes.name true)
