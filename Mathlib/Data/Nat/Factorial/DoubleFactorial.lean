@@ -5,9 +5,9 @@ Authors: Jake Levinson
 -/
 module
 
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Ring
 
 /-!
 # Double factorials

@@ -8,9 +8,9 @@ module
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
 
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Order
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # The monotone sequence of partial supremums of a sequence

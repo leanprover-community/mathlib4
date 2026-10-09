@@ -6,13 +6,13 @@ Authors: Alex Meiburg, Snir Broshi
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Qify
+import Mathlib.Tactic.Rify
 
 /-! # Niven's Theorem
 

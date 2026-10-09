@@ -5,9 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
+public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Convex.Gauge
 
 /-!
 # Absolutely convex open sets
