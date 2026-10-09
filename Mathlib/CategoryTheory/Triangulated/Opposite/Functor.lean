@@ -5,8 +5,8 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
 /-!
 # Opposites of functors between pretriangulated categories,

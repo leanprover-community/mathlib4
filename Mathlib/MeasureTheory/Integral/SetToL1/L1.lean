@@ -257,9 +257,12 @@ theorem norm_setToL1_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) : 
 theorem norm_setToL1_le' (hT : DominatedFinMeasAdditive μ T C) : ‖setToL1 hT‖ ≤ max C 0 :=
   ContinuousLinearMap.opNorm_le_bound _ (le_max_right _ _) (norm_setToL1_le_mul_norm' hT)
 
-theorem setToL1_lipschitz (hT : DominatedFinMeasAdditive μ T C) :
+theorem setToL1_lipschitzWith (hT : DominatedFinMeasAdditive μ T C) :
     LipschitzWith (Real.toNNReal C) (setToL1 hT) :=
   (setToL1 hT).lipschitzWith.weaken (norm_setToL1_le' hT)
+
+@[deprecated (since := "2026-09-27")]
+alias setToL1_lipschitz := setToL1_lipschitzWith
 
 /-- If `fs i → f` in `L1`, then `setToL1 hT (fs i) → setToL1 hT f`. -/
 theorem tendsto_setToL1 (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E) {ι}

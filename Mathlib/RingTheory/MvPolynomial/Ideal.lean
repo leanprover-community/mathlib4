@@ -5,10 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.MonoidAlgebra.Ideal
-import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+
+import Mathlib.Algebra.MonoidAlgebra.Ideal
+import Mathlib.Algebra.MvPolynomial.Division
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
 /-!
@@ -167,7 +168,7 @@ lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
   · rw [Set.mem_preimage, SetLike.mem_coe, ← C_mul_leadingCoeff_monomial_degree]
     exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨_, hp, rfl⟩)
   · rw [Set.mem_preimage, SetLike.mem_coe]
-    convert!
+    convert
       (span <| m.leadingTerm '' B).mul_mem_left (MvPolynomial.C (hB p hp).unit⁻¹.val) <|
         subset_span ⟨p, hp, rfl⟩
     rw [← C_mul_leadingCoeff_monomial_degree, ← mul_assoc, ← map_mul,

@@ -5,8 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Yoneda preserves certain colimits
