@@ -147,7 +147,7 @@ set_option backward.privateInPublic true in
   value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
 def basisMatrixInvSupNorm := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
 
-theorem c_nonneg : 0 ≤ basisMatrixInvSupNorm K := by
+theorem basisMatrixInvSupNorm_nonneg : 0 ≤ basisMatrixInvSupNorm K := by
   rw [basisMatrixInvSupNorm]
   positivity
 
@@ -284,18 +284,18 @@ variable {A : ℝ} (habs : ∀ k l, (house ((algebraMap (𝓞 K) K) (a k l))) �
 
 variable [DecidableEq (K →+* ℂ)]
 
-/-- `c₂` is the product of the maximum of `1` and `c`, and `supOfBasis`. -/
-abbrev c₂ := max 1 (basisMatrixInvSupNorm K) * (supOfBasis K)
+/-- `siegelCoeffConst` is the product of the maximum of `1` and `c`, and `supOfBasis`. -/
+abbrev siegelCoeffConst := max 1 (basisMatrixInvSupNorm K) * (supOfBasis K)
 
-private theorem c₂_nonneg : 0 ≤ c₂ K :=
+private theorem siegelCoeffConst_nonneg : 0 ≤ siegelCoeffConst K :=
   mul_nonneg (le_trans zero_le_one (le_max_left ..)) (supOfBasis_nonneg _)
 
 variable [Fintype α] (cardα : Fintype.card α = p) (Apos : 0 ≤ A)
   (hxbound : ‖x‖ ≤ (q * finrank ℚ K * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p)))
 
 include habs Apos in
-private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
-  have := c_nonneg K
+private theorem asiegel_remark : ‖asiegel K a‖ ≤ siegelCoeffConst K * A := by
+  have := basisMatrixInvSupNorm_nonneg K
   rw [Matrix.norm_le_iff]
   · intro kr lu
     calc
@@ -306,7 +306,7 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
         house ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)) := ?_
       _ ≤ basisMatrixInvSupNorm K * A * house ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)) := ?_
       _ ≤ basisMatrixInvSupNorm K * A * supOfBasis K := ?_
-      _ ≤ c₂ K * A := ?_
+      _ ≤ siegelCoeffConst K * A := ?_
     · simp only [Int.cast_abs, ← Real.norm_eq_abs (asiegel K a kr lu)]; rfl
     · have remark := basis_repr_norm_le_const_mul_house K
       simp only [Basis.repr_reindex, Finsupp.equivMapDomain_apply, Equiv.symm_symm,
@@ -322,22 +322,22 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
       exact habs kr.1 lu.1
     · gcongr
       simp only [supOfBasis, le_sup'_iff, mem_univ]; use lu.2
-    · rw [mul_right_comm, c₂]
+    · rw [mul_right_comm, siegelCoeffConst]
       gcongr
       exacts [supOfBasis_nonneg _, le_max_right ..]
-  · exact mul_nonneg (c₂_nonneg _) Apos
+  · exact mul_nonneg (siegelCoeffConst_nonneg _) Apos
 
-/-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
-def c₁ := finrank ℚ K * c₂ K
+/-- `siegelConst K` is the product of `finrank ℚ K` and `siegelCoeffConst K`. -/
+def siegelConst := finrank ℚ K * siegelCoeffConst K
 
-/-- Siegel's constant `c₁ K` is at least `1`. -/
-theorem one_le_c₁ : 1 ≤ c₁ K :=
+/-- Siegel's constant `siegelConst K` is at least `1`. -/
+theorem one_le_siegelConst : 1 ≤ siegelConst K :=
   one_le_mul_of_one_le_of_one_le (mod_cast Module.finrank_pos (R := ℚ) (M := K))
     (one_le_mul_of_one_le_of_one_le (le_max_left _ _) (one_le_supOfBasis K))
 
 include habs Apos hxbound hpq in
-private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
-    ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
+private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (siegelConst K) *
+    ((siegelConst K * q * A) ^ ((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
   intro l
   have H₀ : 0 ≤ NumberField.house.supOfBasis K := supOfBasis_nonneg _
@@ -348,8 +348,8 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
        _ ≤ ∑ r, ‖x (l, r)‖ * house ((algebraMap (𝓞 K) K) ((newBasis K) r)) := ?_
        _ ≤ ∑ r, ‖x (l, r)‖ * (supOfBasis K) := ?_
        _ ≤ ∑ _r : K →+* ℂ, ((↑q * h * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p))) * supOfBasis K := ?_
-       _ ≤ h * (c₂ K) * ((q * c₁ K * A) ^ ((p : ℝ) / (q - p))) := ?_
-       _ ≤ c₁ K * ((c₁ K * ↑q * A) ^ ((p : ℝ) / (q - p))) := ?_
+       _ ≤ h * (siegelCoeffConst K) * ((q * siegelConst K * A) ^ ((p : ℝ) / (q - p))) := ?_
+       _ ≤ siegelConst K * ((siegelConst K * ↑q * A) ^ ((p : ℝ) / (q - p))) := ?_
   · simp_rw [← map_mul, map_sum]; apply house_sum_le_sum_house
   · gcongr with r _; convert! house_mul_le ..
     simp only [map_intCast, house_intCast, Int.cast_abs, Int.norm_eq_abs]
@@ -359,12 +359,12 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
   · gcongr with r _
     exact le_trans (norm_le_pi_norm x ⟨l, r⟩) hxbound
   · simp only [sum_const, card_univ, nsmul_eq_mul]
-    rw [Embeddings.card, mul_comm _ (supOfBasis K), c₂, c₁, ← mul_assoc,
+    rw [Embeddings.card, mul_comm _ (supOfBasis K), siegelCoeffConst, siegelConst, ← mul_assoc,
       ← mul_assoc (q : ℝ), mul_assoc (q * _ : ℝ)]
     gcongr
     · exact le_mul_of_one_le_left (supOfBasis_nonneg K) (le_max_left ..)
     · exact asiegel_remark K a habs Apos
-  · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
+  · rw [mul_comm (q : ℝ) (siegelConst K)]; rfl
 
 set_option backward.privateInPublic.warn false in
 include hpq h0p cardα cardβ ha habs in
@@ -372,7 +372,7 @@ include hpq h0p cardα cardβ ha habs in
 non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧
-    ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
+    ∀ l, house (ξ l).1 ≤ siegelConst K * ((siegelConst K * q * A) ^ ((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
   have hphqh : p * h < q * h := by gcongr; exact finrank_pos
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
