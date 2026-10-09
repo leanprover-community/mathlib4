@@ -85,14 +85,14 @@ def AntitoneOn (f : α → β) (s : Set α) : Prop :=
 to_dual_insert_cast AntitoneOn := by grind only
 
 /-- A function `f` is strictly monotone if `a < b` implies `f a < f b`. -/
-@[wikidata Q78055984, wikidata Q3075182]
+@[wikidata Q78055984, wikidata Q78056159]
 def StrictMono (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f a < f b
 
 to_dual_insert_cast StrictMono := forall_comm.eq
 
 /-- A function `f` is strictly antitone if `a < b` implies `f b < f a`. -/
-@[wikidata Q78055984, wikidata Q3075231]
+@[wikidata Q78055984, wikidata Q78056160]
 def StrictAnti (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f b < f a
 
