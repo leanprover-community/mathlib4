@@ -2,6 +2,8 @@ module  -- shake: keep-all, shake: keep-downstream
 
 public import Lean.Linter.Sets -- for the definition of linter sets
 public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
+-- The dupNamespace linter has been upstreamed to Lean core: just enable that version.
+public import Lean.Linter.Extra.DupNamespace
 public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public import Mathlib.Tactic.Lemma
@@ -86,6 +88,8 @@ Projects depending on mathlib can use `set_option linter.mathlibStandardSet true
 all these linters, or add the `weak.linter.mathlibStandardSet` option to their lakefile.
 -/
 register_linter_set linter.mathlibStandardSet :=
+  -- defined in Lean core; the linter is enabled for non-consecutive options in `lakefile.toml`
+  linter.extra.dupNamespace
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
   linter.auxLemma

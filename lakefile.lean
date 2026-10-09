@@ -26,6 +26,9 @@ require "leanprover-community" / "plausible" @ git "main"
 /-- These options are used as `leanOptions`, prefixed by `` `weak``, so that
 `lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
+  -- Make Lean's built-in `dupNamespace` linter also check for non-consecutive namespaces being
+  -- repeated.
+  ⟨`linter.extra.dupNamespace.consecutiveOnly, false⟩,
   ⟨`linter.mathlibStandardSet, true⟩,
   -- Explicitly enable the header linter, since the standard set is defined in `Mathlib.Init`
   -- but we want to run this linter in files imported by `Mathlib.Init`.
