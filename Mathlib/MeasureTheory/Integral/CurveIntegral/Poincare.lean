@@ -5,15 +5,15 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.Topology.Homotopy.Affine
 
 import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
+import Mathlib.Analysis.Calculus.Deriv.Prod
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 
 /-!
 # Poincaré lemma for 1-forms

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!

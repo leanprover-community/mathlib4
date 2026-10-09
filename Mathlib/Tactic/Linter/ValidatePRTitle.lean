@@ -8,7 +8,6 @@ module
 
 import Mathlib.Init
 import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
-import Batteries.Data.String.Matcher
 
 /-!
 # Checker for well-formed title and labels

@@ -5,11 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 public import Mathlib.Algebra.Lie.Engel
+public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 public import Mathlib.LinearAlgebra.Eigenspace.Pi
-public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Weight spaces of Lie modules of nilpotent Lie algebras

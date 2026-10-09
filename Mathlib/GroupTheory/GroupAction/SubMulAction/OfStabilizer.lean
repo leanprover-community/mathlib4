@@ -5,11 +5,11 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Data.Fin.Tuple.Embedding
 public import Mathlib.GroupTheory.GroupAction.Basic
 public import Mathlib.GroupTheory.GroupAction.Embedding
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Data.Fin.Tuple.Embedding
 
 /-! # The SubMulAction of the stabilizer of a point on the complement of that point
 

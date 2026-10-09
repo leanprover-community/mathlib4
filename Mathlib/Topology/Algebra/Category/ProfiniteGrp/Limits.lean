@@ -5,9 +5,10 @@ Authors: Nailin Guan, Youle Fang, Jujian Zhang, Yuyang Zhao
 -/
 module
 
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 public import Mathlib.Topology.Algebra.ClopenNhdofOne
+
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # A profinite group is the projective limit of finite groups

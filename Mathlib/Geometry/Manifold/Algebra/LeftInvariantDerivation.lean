@@ -5,8 +5,8 @@ Authors: Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.RingTheory.Derivation.Lie
 public import Mathlib.Geometry.Manifold.DerivationBundle
+public import Mathlib.RingTheory.Derivation.Lie
 
 /-!
 

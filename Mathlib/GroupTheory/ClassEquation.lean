@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Subgroup.Center
+
+import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
 # Class Equation

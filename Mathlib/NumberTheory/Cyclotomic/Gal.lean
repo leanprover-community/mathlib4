@@ -5,8 +5,8 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 
 /-!
 # Galois group of cyclotomic extensions

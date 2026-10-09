@@ -5,8 +5,9 @@ Authors: Henry Swanson
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Combinatorics.Derangements.Basic
+
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Tactic.Ring
 

@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.Subobject.WellPowered
 
 /-!
 # Subobjects in the category of structured arrows

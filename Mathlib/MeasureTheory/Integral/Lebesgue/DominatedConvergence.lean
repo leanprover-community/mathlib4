@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
+
+import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 
 /-!
 # Dominated convergence theorem

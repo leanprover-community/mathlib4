@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-!
