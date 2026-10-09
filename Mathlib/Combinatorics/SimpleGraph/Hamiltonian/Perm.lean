@@ -29,18 +29,17 @@ then the cycle graph on `#s` vertices is contained in `G`. -/
 theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ : σ.IsCycleOn s)
     (hs : s.Nonempty) (hadj : ∀ v, G.Adj v (σ v)) : cycleGraph #s ⊑ G := by
   obtain ⟨v, hv⟩ := hs
-  refine ⟨⟨fun i ↦ σ^[i] v, fun {i j} h ↦ ?_⟩,
-    fun i j hij ↦ Fin.ext <| hσ.injOn_pow_apply hv i.2 j.2 <| by simpa [iterate_eq_pow] using hij⟩
+  refine ⟨⟨fun i ↦ (σ ^ i.1) v, fun {i j} h ↦ ?_⟩,
+    fun i j hij ↦ Fin.ext <| hσ.injOn_pow_apply hv i.2 j.2 hij⟩
   wlog hij : i < j generalizing i j
   · exact this h.symm (by grind [SimpleGraph.irrefl]) |>.symm
   rcases cycleGraph_adj'.mp h with h | h
   · obtain ⟨hi, hj⟩ : i.1 = 0 ∧ j.1 = #s - 1 := by grind [Fin.coe_sub_iff_lt]
     rw [hi, hj, adj_comm]
-    suffices σ (σ^[#s - 1] v) = v by simpa [this] using hadj (σ^[#s - 1] v)
-    rw [← iterate_succ_apply' σ, Nat.succ_eq_add_one, Nat.sub_add_cancel (card_pos.mpr ⟨v, hv⟩),
-      iterate_eq_pow, hσ.pow_card_apply hv]
-  · rw [show j.1 = i.1 + 1 by grind [Fin.sub_val_of_le], add_comm, iterate_add_apply]
-    simpa using hadj _
+    simpa [← mul_apply, ← pow_succ', Nat.sub_add_cancel (card_pos.mpr ⟨v, hv⟩),
+      hσ.pow_card_apply hv] using hadj ((σ ^ (#s - 1)) v)
+  · rw [show j.1 = i.1 + 1 by grind [Fin.sub_val_of_le], pow_succ', mul_apply]
+    exact hadj _
 
 /-- If a cyclic permutation `σ` of a type with at least 3 elements has full support and each
 vertex is adjacent to its image under `σ`, then `G` is Hamiltonian. -/
