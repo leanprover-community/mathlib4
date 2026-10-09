@@ -5,12 +5,13 @@ Authors: Fabrizio Barroero, Kevin H. Wilson
 -/
 module
 
-import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.Analysis.Polynomial.Fourier
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
+
+import Mathlib.Analysis.Analytic.Polynomial
+import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Convex.Integral
-public import Mathlib.Analysis.Polynomial.Fourier
 
 /-!
 # Mahler measure of complex polynomials
@@ -272,6 +273,7 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     p.intervalIntegrable_mahlerMeasure (by simp)
   rw [EventuallyLE, eventually_iff_exists_mem]
   use {x : ℝ | eval (circleMap 0 1 x) p ≠ 0}
+  simp only [mem_ofPred]
   constructor
   · rw [mem_ae_iff, compl_def, Measure.restrict_apply' (by simp)]
     apply (Finite.of_sdiff _ <| finite_singleton (2 * π)).measure_zero

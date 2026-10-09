@@ -6,11 +6,11 @@ Authors: Yaël Dillies, Patrick Luo
 module
 
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.GroupTheory.MonoidLocalization.Finite
 import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # Affine monoids embed into `ℤⁿ`
@@ -23,7 +23,7 @@ public section
 
 open Algebra AddLocalization Function
 
-variable {M : Type*} [AddCancelCommMonoid M] [AddMonoid.FG M] [IsAddTorsionFree M]
+variable {M : Type*} [AddCancelCommMonoid M] [AddMonoid.FG M] [HasUniqueDiv M]
 
 namespace AffineAddMonoid
 

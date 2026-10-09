@@ -5,11 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 public import Mathlib.Algebra.Lie.Engel
+public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 public import Mathlib.LinearAlgebra.Eigenspace.Pi
-public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Weight spaces of Lie modules of nilpotent Lie algebras
@@ -38,7 +38,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*](bourbaki1975b)
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*][bourbaki1975b]
 
 ## Tags
 
@@ -552,7 +552,7 @@ lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
     rw [this]
     exact LieSubmodule.map_mono (map_posFittingComp_le _)
   rw [← LieSubmodule.map_comp]
-  convert! LieSubmodule.map_id
+  convert LieSubmodule.map_id
   ext
   simp
 

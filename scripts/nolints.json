@@ -644,7 +644,6 @@
  ["docBlame", "Affine.Simplex.points"],
  ["docBlame", "AlgebraicGeometry.PresheafedSpace.carrier"],
  ["docBlame", "AlgebraicGeometry.PresheafedSpace.presheaf"],
- ["docBlame", "Array.cyclicPermute!.cyclicPermuteAux"],
  ["docBlame", "Bundle.TotalSpace.mk'"],
  ["docBlame", "Bundle.TotalSpace.snd"],
  ["docBlame", "CliffordAlgebra.EvenHom.bilin"],

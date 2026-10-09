@@ -5,11 +5,12 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Multiplicity
+
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Order.Lattice.Nat
 
 /-!
 # Division of univariate polynomials
@@ -433,7 +434,7 @@ theorem map_dvd_map [Ring S] (f : R →+* S) (hf : Function.Injective f) {x y : 
 
 @[simp]
 theorem modByMonic_one (p : R[X]) : p %ₘ 1 = 0 :=
-  (modByMonic_eq_zero_iff_dvd (by convert! monic_one (R := R))).2 (one_dvd _)
+  (modByMonic_eq_zero_iff_dvd (by convert monic_one (R := R))).2 (one_dvd _)
 
 @[simp]
 theorem divByMonic_one (p : R[X]) : p /ₘ 1 = p := by

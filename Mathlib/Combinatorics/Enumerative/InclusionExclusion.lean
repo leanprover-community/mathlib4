@@ -5,8 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.BigOperators.Ring.Finset
+
+import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.BigOperators
 
 /-!

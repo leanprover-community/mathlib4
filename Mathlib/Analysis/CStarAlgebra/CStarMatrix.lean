@@ -5,10 +5,11 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-import Mathlib.Analysis.Matrix.Normed
-public import Mathlib.Topology.UniformSpace.Matrix
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
+public import Mathlib.Topology.UniformSpace.Matrix
+
+import Mathlib.Analysis.Matrix.Normed
 
 /-!
 # Matrices with entries in a C⋆-algebra
