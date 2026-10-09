@@ -5,7 +5,7 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.Completion.LiesOverInstances
+public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 
 /-!
@@ -13,14 +13,25 @@ public import Mathlib.RingTheory.RamificationInertia.Inertia
 
 This file studies the ramification of completions of number fields.
 
+If `w` is an infinite place of `L` lying over the infinite place `v` of `K`, then `algebraMap K L`
+extends to a continuous ring homomorphism `v.Completion →+* w.Completion`. Any algebra
+`v.Completion → w.Completion` that is continuous and compatible with `K → L` is equal to the one
+induced by this map.
+
 ## Main definitions
 
+- `NumberField.InfinitePlace.Completion.completionMap` : the ring homomorphism
+  `v.Completion →+* w.Completion` extending `algebraMap K L`.
+- `NumberField.InfinitePlace.Completion.algebraOfLiesOver` : the algebra induced by
+  `completionMap`.
 - `NumberField.InfinitePlace.inertiaDeg` : the inertia degree of a place `w` of `L` over a
   place `v` of `K`, defined as the local degree of the extension of completions at `w` and
   `v` if `w` lies over `v` and zero otherwise.
 
 ## Main results
 
+- `NumberField.InfinitePlace.Completion.algebra_eq` : a continuous algebra
+  `v.Completion → w.Completion` compatible with `K → L` is `algebraOfLiesOver`.
 - `NumberField.InfinitePlace.sum_inertiaDeg_eq_finrank` : the degree of `L` over `K` is equal to
   the sum of the inertia degrees of the places of `L` over `v`.
 
@@ -31,16 +42,83 @@ number field, infinite places, ramification
 
 @[expose] public section
 
-section infinite_place
-
 namespace NumberField.InfinitePlace
 
-open NumberField.ComplexEmbedding Finset AbsoluteValue.Completion
+namespace Completion
 
--- to enable `w.LiesOver v → Algebra v.Completion w.Completion` instance
-open scoped NumberField.LiesOver
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : InfinitePlace K) (w : InfinitePlace L)
+variable [w.LiesOver v]
 
-variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : InfinitePlace K) {w : InfinitePlace L}
+/-- The ring homomorphism `v.Completion →+* w.Completion` induced by `algebraMap K L`, when `w`
+lies over `v`. -/
+noncomputable def completionMap : v.Completion →+* w.Completion :=
+  ((Completion.equiv w).symm.toRingHom.comp <|
+    UniformSpace.Completion.mapRingHom _ (LiesOver.isometry_algebraMap w v).continuous).comp
+    (Completion.equiv v).toRingHom
+
+theorem continuous_completionMap : Continuous (completionMap v w) :=
+  (continuous_ofCompletion w).comp <|
+    UniformSpace.Completion.continuous_map.comp (continuous_toCompletion v)
+
+theorem completionMap_coe (x : WithAbs v.1) :
+    completionMap v w (x : v.Completion) =
+      ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) : w.Completion) :=
+  Completion.ext <| UniformSpace.Completion.mapRingHom_coe _ x
+
+@[instance_reducible]
+noncomputable def algebraOfLiesOver : Algebra v.Completion w.Completion :=
+  (completionMap v w).toAlgebra
+
+instance : letI := algebraOfLiesOver v w
+    IsScalarTower K v.Completion w.Completion :=
+  let := algebraOfLiesOver v w
+  IsScalarTower.of_algebraMap_eq fun x ↦ by
+    rw [RingHom.algebraMap_toAlgebra, algebraMap_eq_coe', completionMap_coe]
+    apply Completion.ext
+    rw [algebraMap_toCompletion, WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply]
+    exact toCompletion_ofCompletion w _
+
+instance : letI := algebraOfLiesOver v w
+    ContinuousSMul v.Completion w.Completion :=
+  let := algebraOfLiesOver v w
+  continuousSMul_of_algebraMap v.Completion w.Completion (continuous_completionMap v w)
+
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul v.Completion w.Completion]
+
+theorem algebraMap_eq_of_liesOver : algebraMap v.Completion w.Completion =
+    completionMap v w := by
+  refine DFunLike.ext' <| ext_of_continuous v (continuous_algebraMap _ _)
+    (continuous_completionMap v w) fun k ↦ ?_
+  rw [algebraMap_coe]
+  exact (completionMap_coe v w _).symm
+
+theorem algebraMap_apply_of_liesOver (x : v.Completion) :
+    algebraMap v.Completion w.Completion x = completionMap v w x := by
+  rw [algebraMap_eq_of_liesOver]
+
+theorem algebra_eq : ‹_› = algebraOfLiesOver v w :=
+  Algebra.algebra_ext _ _ (algebraMap_apply_of_liesOver v w)
+
+end Completion
+
+section InertiaDeg
+
+open NumberField.ComplexEmbedding Finset Completion
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : InfinitePlace K) (w : InfinitePlace L)
+
+open scoped Classical in
+/-- The inertia degree of `w` over `v`. -/
+protected noncomputable def inertiaDeg : ℕ :=
+  if _ : w.LiesOver v then
+    letI := algebraOfLiesOver v w
+    (⊥ : Ideal w.Completion).inertiaDeg v.Completion else 0
+
+section Algebra
+
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul v.Completion w.Completion] {w}
 
 open Completion
 
@@ -91,32 +169,31 @@ theorem mult_mul_finrank [w.LiesOver v] :
   · rw [h.finrank_eq_one v, hv, h.eq, mul_one]
   · rw [h.finrank_eq_two v, hv, h.isReal.mult_eq_one, h.isComplex.mult_eq_two, one_mul]
 
-open Completion
-
-variable (w)
-
-open scoped Classical in
-/-- The inertia degree of `w` over `v`. -/
-protected noncomputable def inertiaDeg : ℕ :=
-  if _ : w.LiesOver v then (⊥ : Ideal w.Completion).inertiaDeg v.Completion else 0
-
+variable (w) in
 theorem inertiaDeg_of_liesOver [w.LiesOver v] :
     v.inertiaDeg w = (⊥ : Ideal w.Completion).inertiaDeg v.Completion := by
-  simp only [InfinitePlace.inertiaDeg, dite_eq_left]
+  rw [algebra_eq v w, InfinitePlace.inertiaDeg, dite_eq_left]
 
+variable (w) in
 theorem inertiaDeg_eq_finrank [w.LiesOver v] :
     v.inertiaDeg w = Module.finrank v.Completion w.Completion := by
   rw [inertiaDeg_of_liesOver, Ideal.inertiaDeg_eq_of_isMaximal ⊥]
   exact Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
-    (RingEquiv.quotientBot w.Completion) (by ext; simp [RingHom.algebraMap_toAlgebra])
+    (RingEquiv.quotientBot w.Completion) (by ext; simp [algebraMap_eq_of_liesOver])
+
+end Algebra
 
 variable {v w} in
 theorem inertiaDeg_eq_one (hw : w ∈ unramifiedPlacesOver L v) : v.inertiaDeg w = 1 :=
-  have := (Set.mem_ofPred.1 hw).1; hw.2.finrank_eq_one v ▸ inertiaDeg_eq_finrank v w
+  have := (Set.mem_ofPred.1 hw).1
+  let := algebraOfLiesOver v w
+  hw.2.finrank_eq_one v ▸ inertiaDeg_eq_finrank v w
 
 variable {v w} in
 theorem inertiaDeg_eq_two (hw : w ∈ ramifiedPlacesOver L v) : v.inertiaDeg w = 2 :=
-  have := (Set.mem_ofPred.1 hw).1; hw.2.finrank_eq_two v ▸ inertiaDeg_eq_finrank v w
+  have := (Set.mem_ofPred.1 hw).1
+  let := algebraOfLiesOver v w
+  hw.2.finrank_eq_two v ▸ inertiaDeg_eq_finrank v w
 
 variable (K L) in
 open scoped Classical in
@@ -130,6 +207,18 @@ theorem sum_inertiaDeg_eq_finrank [NumberField K] [NumberField L] :
     sum_congr rfl (fun _ h ↦ inertiaDeg_eq_one (by simpa using h)), sum_const, add_comm]
   simp [← unramifiedPlacesOver_ncard_add_eq_finrank L v, mul_comm, ncard_eq_toFinset_card']
 
+end InertiaDeg
+
 end NumberField.InfinitePlace
 
-end infinite_place
+namespace NumberField.LiesOver
+
+@[deprecated (since := "2026-10-09")] alias completionMap := InfinitePlace.Completion.completionMap
+
+@[deprecated (since := "2026-10-09")] alias continuous_completionMap :=
+  InfinitePlace.Completion.continuous_completionMap
+
+@[deprecated (since := "2026-10-09")] alias completionMap_coe :=
+  InfinitePlace.Completion.completionMap_coe
+
+end NumberField.LiesOver
