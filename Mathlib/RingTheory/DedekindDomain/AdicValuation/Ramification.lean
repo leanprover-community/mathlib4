@@ -138,32 +138,39 @@ theorem uniformContinuous_algebraMap_liesOver :
   exact Int.mul_lt_of_lt_ediv
     (mod_cast (Ideal.ramificationIdx_pos_of_isDedekindDomain' w.asIdeal v.ne_bot)) hx
 
+namespace adicCompletion
+
 /-- The ring homomorphism `v.adicCompletion K →+* w.adicCompletion L` induced by `algebraMap K L`,
 when `w` lies over `v`. -/
-noncomputable abbrev completionMap : v.adicCompletion K →+* w.adicCompletion L :=
+noncomputable abbrev map : v.adicCompletion K →+* w.adicCompletion L :=
   ((adicCompletion.equiv L w).symm.toRingHom.comp <|
     mapRingHom _ (uniformContinuous_algebraMap_liesOver K L v w).continuous).comp
     (adicCompletion.equiv K v).toRingHom
 
-theorem continuous_completionMap : Continuous (completionMap K L v w) :=
-  (adicCompletion.continuous_ofCompletion L w).comp <|
-    UniformSpace.Completion.continuous_map.comp (adicCompletion.continuous_toCompletion K v)
+theorem continuous_map : Continuous (map K L v w) :=
+  (continuous_ofCompletion L w).comp <|
+    UniformSpace.Completion.continuous_map.comp (continuous_toCompletion K v)
 
 @[simp]
-theorem completionMap_coe (x : WithVal (v.valuation K)) :
-    completionMap K L v w (x : v.adicCompletion K) =
+theorem map_coe (x : WithVal (v.valuation K)) :
+    map K L v w (x : v.adicCompletion K) =
       algebraMap (WithVal (v.valuation K)) (WithVal (w.valuation L)) x :=
   adicCompletion.ext _ _ <| mapRingHom_coe _ x
 
+/-- If `w` lies over `v`, then there is a unique `v.adicCompletion K`-algebra
+structure on `w.adicCompletion L` satisfying both
+`IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)` and
+`ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)`, see
+`adicCompletion.algebra_eq`. -/
 @[instance_reducible]
 noncomputable def algebraOfLiesOver : Algebra (v.adicCompletion K) (w.adicCompletion L) :=
-  (completionMap K L v w).toAlgebra
+  (map K L v w).toAlgebra
 
 instance : letI := algebraOfLiesOver K L v w
     IsScalarTower K (v.adicCompletion K) (w.adicCompletion L) :=
   let := algebraOfLiesOver K L v w
   IsScalarTower.of_algebraMap_eq fun x ↦ by
-    rw [RingHom.algebraMap_toAlgebra, adicCompletion.algebraMap_eq_coe', completionMap_coe]
+    rw [RingHom.algebraMap_toAlgebra, adicCompletion.algebraMap_eq_coe', map_coe]
     apply adicCompletion.ext
     rw [algebraMap_adicCompletion_toCompletion, algebraMap_def]
     simp [WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply]
@@ -172,25 +179,25 @@ instance : letI := algebraOfLiesOver K L v w
     ContinuousSMul (v.adicCompletion K) (w.adicCompletion L) :=
   let := algebraOfLiesOver K L v w
   continuousSMul_of_algebraMap (v.adicCompletion K) (w.adicCompletion L)
-    (continuous_completionMap K L v w)
+    (continuous_map K L v w)
 
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
     [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
 
-theorem algebraMap_eq : algebraMap (v.adicCompletion K) (w.adicCompletion L) =
-    completionMap K L v w := by
+theorem algebraMap_of_liesOver_eq : algebraMap (v.adicCompletion K) (w.adicCompletion L) =
+    map K L v w := by
   refine DFunLike.ext' <| adicCompletion.ext_of_continuous K v (continuous_algebraMap _ _)
-    (continuous_completionMap K L v w) fun k ↦ ?_
+    (continuous_map K L v w) fun k ↦ ?_
   rw [adicCompletion.algebraMap_coe]
-  exact (completionMap_coe K L v w (WithVal.toVal _ k)).symm
+  exact (map_coe K L v w (WithVal.toVal _ k)).symm
 
-theorem algebraMap_apply (x : v.adicCompletion K) :
-    algebraMap (v.adicCompletion K) (w.adicCompletion L) x = completionMap K L v w x := by
-  rw [algebraMap_eq]
+theorem algebraMap_of_liesOver_apply (x : v.adicCompletion K) :
+    algebraMap (v.adicCompletion K) (w.adicCompletion L) x = map K L v w x := by
+  rw [algebraMap_of_liesOver_eq]
 
-theorem algebra_eq : ‹_› = algebraOfLiesOver K L v w :=
-  Algebra.algebra_ext _ _ (algebraMap_apply K L v w)
+theorem algebra_of_liesOver_eq : ‹_› = algebraOfLiesOver K L v w :=
+  Algebra.algebra_ext _ _ (algebraMap_of_liesOver_apply K L v w)
 
 open WithZeroTopology in
 theorem adicCompletion_valuation_liesOver (x : v.adicCompletion K) :
@@ -203,7 +210,7 @@ theorem adicCompletion_valuation_liesOver (x : v.adicCompletion K) :
     · exact (Valued.continuous_valuation_of_surjective (w.valuedAdicCompletion_surjective L)).comp
         (continuous_algebraMap _ _)
   | ih k =>
-    rw [algebraMap_eq]
+    rw [algebraMap_of_liesOver_eq]
     simpa [WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply]
       using valuation_liesOver L v w _
 
@@ -228,6 +235,8 @@ instance :
 instance :
     IsScalarTower (v.adicCompletionIntegers K) (v.adicCompletion K) (w.adicCompletion L) :=
   Valuation.HasExtension.instIsScalarTower_valuationSubring _
+
+end adicCompletion
 
 end AKLB
 
