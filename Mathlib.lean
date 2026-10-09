@@ -238,6 +238,7 @@ public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Algebra.Category.Ring.Epi
 public import Mathlib.Algebra.Category.Ring.EqualizerPushout
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Algebra.Category.Ring.FilteredColimitsLocal
 public import Mathlib.Algebra.Category.Ring.FinitePresentation
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
@@ -6861,6 +6862,7 @@ public import Mathlib.RingTheory.Flat.CategoryTheory
 public import Mathlib.RingTheory.Flat.Domain
 public import Mathlib.RingTheory.Flat.Equalizer
 public import Mathlib.RingTheory.Flat.EquationalCriterion
+public import Mathlib.RingTheory.Flat.Extension
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
@@ -7243,8 +7245,10 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.ProjectiveDimension
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RegularLocalRing.Defs
 public import Mathlib.RingTheory.RegularLocalRing.Polynomial
+public import Mathlib.RingTheory.RegularLocalRing.PowerSeries
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.Etale
