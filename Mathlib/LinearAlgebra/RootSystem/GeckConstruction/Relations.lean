@@ -5,9 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 public import Mathlib.Algebra.Lie.Sl2
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
+
+import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 
 /-!
 # Relations in Geck's construction of a Lie algebra associated to a root system
@@ -26,8 +27,6 @@ satisfying relations associated to the Cartan matrix of the input root system.
 -/
 
 public section
-
-noncomputable section
 
 namespace RootPairing.GeckConstruction
 
@@ -73,7 +72,7 @@ lemma lie_h_f :
     ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
   classical
   suffices ω b * ⁅h j, f i⁆ = ω b * (-b.cartanMatrix i j • f i) by
-    replace this := congr_arg (ω b * ·) this
+    replace this := congr(ω b * $this)
     simpa [← mul_assoc, ω_mul_ω] using this
   calc ω b * ⁅h j, f i⁆ = ω b * (h j * f i - f i * h j) := by rw [Ring.lie_def]
                       _ = -(h j * e i - e i * h j) * ω b := ?_
@@ -141,7 +140,7 @@ lemma lie_e_f_same :
     ⁅e i, f i⁆ = h i := by
   let := P.indexNeg
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   classical
   ext (k | k) (l | l)
   · simp [e, f, h]
@@ -188,7 +187,7 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 
 lemma isSl2Triple [DecidableEq ι] :
     IsSl2Triple (h i) (e i) (f i) where
-  h_ne_zero := fun contra ↦ by simpa [h] using congr_fun₂ contra (.inr i) (.inr i)
+  h_ne_zero := fun contra ↦ by simpa [h] using congr($contra (.inr i) (.inr i))
   lie_e_f := by rw [lie_e_f_same]
   lie_h_e_nsmul := by rw [lie_h_e]; simp
   lie_h_f_nsmul := by rw [lie_h_f]; simp

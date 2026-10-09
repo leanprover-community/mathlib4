@@ -5,9 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
-public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 
 /-! # Multiply preprimitive actions
 

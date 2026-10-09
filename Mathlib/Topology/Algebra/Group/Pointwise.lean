@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
 public import Mathlib.Topology.Algebra.Group.ContinuousDiv
-public import Mathlib.Topology.Algebra.Group.Subgroup
 public import Mathlib.Topology.Maps.Proper.Basic
+
+import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!
 # Pointwise operations on sets in topological groups
@@ -85,7 +86,7 @@ theorem MulAction.isClosedMap_quotient [CompactSpace α] :
   intro t ht
   rw [← isQuotientMap_quotient_mk'.isClosed_preimage,
     MulAction.quotient_preimage_image_eq_union_mul]
-  convert! ht.smul_left_of_isCompact (isCompact_univ (X := α))
+  convert ht.smul_left_of_isCompact (isCompact_univ (X := α))
   rw [← biUnion_univ, ← iUnion_smul_left_image]
   simp only [image_smul]
 

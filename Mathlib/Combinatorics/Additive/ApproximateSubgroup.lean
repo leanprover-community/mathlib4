@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Finset.SelfInv
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Combinatorics.Additive.CovBySMul
-public import Mathlib.Combinatorics.Additive.RuzsaCovering
 public import Mathlib.Combinatorics.Additive.SmallTripling
+
+import Mathlib.Combinatorics.Additive.RuzsaCovering
 
 /-!
 # Approximate subgroups

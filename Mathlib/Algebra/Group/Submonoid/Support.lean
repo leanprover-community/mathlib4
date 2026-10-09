@@ -6,7 +6,6 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Lattice
-
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
@@ -114,6 +113,6 @@ theorem of_le {N : Submonoid G} (hM : M.IsMulSpanning) (h : M ≤ N) :
 @[to_additive]
 theorem maximal_isMulPointed (hMp : M.IsMulPointed) (hMs : M.IsMulSpanning) :
     Maximal IsMulPointed M :=
-  ⟨hMp, fun N hN h ↦ by rw [SetLike.le_def] at h ⊢; aesop⟩
+  ⟨hMp, fun N hN h ↦ by rw [IsConcreteLE.le_iff] at h ⊢; aesop⟩
 
 end Submonoid.IsMulSpanning

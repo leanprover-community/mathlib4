@@ -5,10 +5,11 @@ Authors: Yaël Dillies, Sara Rousta
 -/
 module
 
-public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Interval.Set.OrderEmbedding
 public import Mathlib.Order.SetNotation
-public import Mathlib.Order.WellFounded
+
+import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.WellFounded
 
 /-!
 # Properties of unbundled upper/lower sets
@@ -47,7 +48,7 @@ theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet sᶜ := fun _a _b h hb
 @[to_dual (attr := simp)]
 theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
   ⟨fun h => by
-    convert! h.compl
+    convert h.compl
     rw [compl_compl], IsLowerSet.compl⟩
 
 @[to_dual]
