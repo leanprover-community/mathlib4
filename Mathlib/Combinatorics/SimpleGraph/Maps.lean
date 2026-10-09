@@ -647,12 +647,15 @@ theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
 theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
   Sym2.ind (fun _ _ => f.map_adj_iff) e
 
+theorem image_edgeSet : Sym2.map f '' G.edgeSet = G'.edgeSet := by
+  apply (Set.eq_preimage_iff_image_eq <| Sym2.map.bijective f.bijective).mp
+  exact f.toEmbedding.preimage_edgeSet.symm
+
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
 
-theorem image_neighborSet : f '' G.neighborSet v = G'.neighborSet (f v) := by
-  rw [← f.toEmbedding.preimage_neighborSet]
-  apply Equiv.image_preimage
+theorem image_neighborSet : f '' G.neighborSet v = G'.neighborSet (f v) :=
+  (f.eq_preimage_iff_image_eq ..).mp (f.toEmbedding.preimage_neighborSet v).symm
 
 @[simp]
 theorem symm_toHom_comp_toHom : f.symm.toHom.comp f.toHom = Hom.id := by
