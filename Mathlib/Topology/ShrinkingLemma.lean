@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Reid Barton
 module
 
 public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Sets.OpenCover
 
 /-!
 # The shrinking lemma
@@ -18,10 +19,12 @@ For finite or countable coverings this lemma can be proved without the axiom of 
 [ncatlab](https://ncatlab.org/nlab/show/shrinking+lemma) for details. We only formalize the most
 general result that works for any covering but needs the axiom of choice.
 
-We prove two versions of the lemma:
+We prove the following versions of the lemma:
 
 * `exists_subset_iUnion_closure_subset` deals with a covering of a closed set in a normal space;
 * `exists_iUnion_eq_closure_subset` deals with a covering of the whole space.
+* `TopologicalSpace.IsOpenCover.exists_finite_shrinking` gives a finite subcover without
+  repetitions and an open shrinking for an open cover of a compact normal space.
 
 ## Tags
 
@@ -33,6 +36,8 @@ normal space, shrinking lemma
 open Set Function
 
 noncomputable section
+
+universe u
 
 variable {ι X : Type*} [TopologicalSpace X]
 
@@ -206,7 +211,7 @@ end ShrinkingLemma
 
 section NormalSpace
 
-open ShrinkingLemma
+open ShrinkingLemma TopologicalSpace
 
 variable {u : ι → Set X} {s : Set X} [NormalSpace X]
 
@@ -256,7 +261,63 @@ theorem exists_iUnion_eq_closed_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, {
   let ⟨v, vU, hv⟩ := exists_subset_iUnion_closed_subset isClosed_univ uo (fun x _ => uf x) uU.ge
   ⟨v, univ_subset_iff.1 vU, hv⟩
 
+/-- A finite family of closed sets with empty intersection in a normal space has open
+neighborhoods whose closures still have empty intersection. -/
+lemma existsOpen_superset_closure_biInter_eq_empty
+    {X : Type*} [TopologicalSpace X] [NormalSpace X] {ι : Type*} {s : Finset ι} {K : ι → Set X}
+    (hKclosed : ∀ i ∈ s, IsClosed (K i)) (hKempty : ⋂ i ∈ s, K i = ∅) :
+    ∃ U : ι → Opens X, (∀ i, K i ⊆ U i) ∧ ⋂ i ∈ s, closure (U i : Set X) = ∅ := by
+  obtain ⟨V, hVcover, hVopen, hV⟩ := exists_iUnion_eq_closure_subset
+    (fun i : s ↦ (hKclosed i i.2).isOpen_compl) (fun _ ↦ Set.toFinite _)
+    (by simp only [← compl_iInter, iInter_subtype, hKempty, compl_empty])
+  refine ⟨fun i ↦ ⟨⋂ h : i ∈ s, (closure (V ⟨i, h⟩))ᶜ,
+    isOpen_iInter_of_finite fun _ ↦ isClosed_closure.isOpen_compl⟩,
+    fun i ↦ subset_iInter fun h ↦ subset_compl_comm.mp (hV ⟨i, h⟩), ?_⟩
+  apply subset_eq_empty ?_ (by simpa [compl_iUnion] using congrArg compl hVcover)
+  refine subset_iInter fun i ↦ (iInter₂_subset i.1 i.2).trans ?_
+  simpa [closure_compl] using compl_subset_compl.mpr (hVopen i).subset_interior_closure
+
+/-- A finite family of closed sets in a normal space has open neighborhoods with closures
+inside prescribed open supersets, preserving every empty finite intersection. -/
+lemma existsOpenSwelling_preservingFiniteIntersections
+    {X : Type*} [TopologicalSpace X] [NormalSpace X] {ι : Type*} [Finite ι]
+    {K : ι → Set X} {A : ι → Opens X} (hKclosed : ∀ i, IsClosed (K i)) (hKA : ∀ i, K i ⊆ A i) :
+    ∃ E : ι → Opens X, (∀ i, K i ⊆ E i) ∧ (∀ i, closure (E i : Set X) ⊆ A i) ∧
+      ∀ s : Finset ι, (⋂ i ∈ s, K i = ∅) → ⋂ i ∈ s, closure (E i : Set X) = ∅ := by
+  let _ := Fintype.ofFinite ι
+  choose U hKU hUempty using fun s : {s : Finset ι // ⋂ i ∈ s, K i = ∅} ↦
+    existsOpen_superset_closure_biInter_eq_empty (fun i _ ↦ hKclosed i) s.2
+  choose E hEopen hKE hEclosure using fun i ↦ normal_exists_closure_subset (hKclosed i)
+    ((A i).isOpen.inter (isOpen_iInter_of_finite fun s ↦ (U s i).isOpen))
+      (subset_inter (hKA i) (subset_iInter fun s ↦ hKU s i))
+  refine ⟨fun i ↦ ⟨E i, hEopen i⟩, hKE,
+    fun i ↦ (hEclosure i).trans inter_subset_left, fun s hs ↦ ?_⟩
+  exact subset_eq_empty (iInter₂_mono fun i _ x hx ↦
+    subset_closure (mem_iInter.mp (hEclosure i hx).2 ⟨s, hs⟩)) (hUempty ⟨s, hs⟩)
+
 end NormalSpace
+
+/-- An open cover of a compact normal space has a finite subcover, indexed without repetitions,
+and an open shrinking whose closures lie in the selected members. -/
+theorem TopologicalSpace.IsOpenCover.exists_finite_shrinking
+    {X : Type u} [TopologicalSpace X] [CompactSpace X] [NormalSpace X]
+    {U : ι → Opens X} (hU : IsOpenCover U) :
+    ∃ (κ : Type u) (_ : Finite κ) (V W : κ → Opens X),
+      IsOpenCover V ∧ IsOpenCover W ∧
+      Injective (fun i ↦ (V i : Set X)) ∧
+      (∀ i, V i ∈ range U) ∧ ∀ i, closure (W i : Set X) ⊆ V i := by
+  classical
+  have hU' : IsOpenCover (fun V : range U ↦ V.1) :=
+    IsOpenCover.mk ((iSup_range' id U).trans hU.iSup_eq_top)
+  obtain ⟨s, hs⟩ := hU'.exists_finite_of_compactSpace
+  let V : s → Opens X := fun i ↦ i.1.1
+  have hV : IsOpenCover V := hs
+  obtain ⟨W, hWcover, hWopen, hWV⟩ := exists_iUnion_eq_closure_subset
+    (fun i ↦ (V i).isOpen) (fun _ ↦ Set.toFinite _) hV.iSup_set_eq_univ
+  exact ⟨s, inferInstance, V, fun i ↦ ⟨W i, hWopen i⟩,
+    hV, IsOpenCover.of_sets hWopen hWcover,
+    SetLike.coe_injective.comp (Subtype.val_injective.comp Subtype.val_injective),
+    fun i ↦ i.1.2, hWV⟩
 
 section T2LocallyCompactSpace
 
