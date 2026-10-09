@@ -8,9 +8,9 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
+import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # Akra-Bazzi theorem: the polynomial growth condition

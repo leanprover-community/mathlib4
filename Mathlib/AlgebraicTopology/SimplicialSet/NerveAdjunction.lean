@@ -9,9 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
 
 import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
-import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
+import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 
 /-!
 # The adjunction between the nerve and the homotopy category functor

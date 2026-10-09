@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Relator
 public import Batteries.Data.List.Basic
+public import Mathlib.Logic.Relator
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 public import Mathlib.Util.CompileInductive

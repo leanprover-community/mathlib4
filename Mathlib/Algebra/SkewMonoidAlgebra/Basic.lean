@@ -5,8 +5,8 @@ Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Skew Monoid Algebras

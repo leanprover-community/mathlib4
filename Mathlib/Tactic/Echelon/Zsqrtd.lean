@@ -5,9 +5,9 @@ Authors: Rao Xiaojia
 -/
 module
 
+public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.Tactic.Echelon.Core
-public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # The `ℤ√d` model for the Bareiss elimination

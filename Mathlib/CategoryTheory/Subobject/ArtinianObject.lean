@@ -5,8 +5,8 @@ Authors: Joël Riou, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Simple
 
 import Mathlib.Order.OrderIsoNat

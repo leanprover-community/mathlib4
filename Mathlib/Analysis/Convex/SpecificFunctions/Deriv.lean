@@ -8,9 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
+import Mathlib.Analysis.Convex.Deriv
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-import Mathlib.Analysis.Convex.Deriv
 
 /-!
 # Collection of convex functions
