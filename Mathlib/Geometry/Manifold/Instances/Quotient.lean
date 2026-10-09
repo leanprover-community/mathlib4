@@ -106,7 +106,7 @@ def smulToLocalInverseAt {m : M}
 @[to_additive]
 lemma smulToLocalInverseAt_spec {m : M}
     (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (x.localInverseAt).source) :
-    (smulToLocalInverseAt hm) • m ∈ (x.localInverseAt).target :=
+    smulToLocalInverseAt hm • m ∈ (x.localInverseAt).target :=
   Classical.choose_spec (aux hm)
 
 /-!
