@@ -214,7 +214,7 @@ variable [IsFiniteMeasure μ]
 
 /-- The cumulative distribution function of `birkhoffAverageSup` at `a` is less than or equal to the
 integral of `g` on the set where `a < birkhoffAverageSup f g x`. -/
-theorem const_mul_distribution_birkhoffAverageSup_le_integral
+theorem mul_measureReal_lt_birkhoffAverageSup_le_integral
     (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) (a : ℝ) (ha : 0 ≤ a) :
     a * μ.real {x | a < birkhoffAverageSup f g x}
     ≤ ∫ x in {x | a < birkhoffAverageSup f g x}, g x ∂μ := by
@@ -236,7 +236,7 @@ section NormedAddCommGroup
 variable [NormedAddCommGroup M] {g : α → M} [IsFiniteMeasure μ]
 
 /-- Maximal ergodic theorem: the operator `birkhoffAverageSup` satisfies a weak-type inequality. -/
-theorem const_mul_distribution_birkhoffAverageSup_le_norm
+theorem mul_measureReal_lt_birkhoffAverageSup_le_norm
     (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) (a : ℝ) :
     a * μ.real {x | a < birkhoffAverageSup f (‖g ·‖) x} ≤ ∫ x, ‖g x‖ ∂μ := by
   by_cases! ha : 0 ≤ a; swap
@@ -247,7 +247,7 @@ theorem const_mul_distribution_birkhoffAverageSup_le_norm
   calc
     a * μ.real {x | ↑a < birkhoffAverageSup f (fun x ↦ ‖g x‖) x}
     _ ≤ ∫ x in {x | a < birkhoffAverageSup f (‖g ·‖) x}, ‖g x‖ ∂μ :=
-      const_mul_distribution_birkhoffAverageSup_le_integral μ hf hg.norm a ha
+      mul_measureReal_lt_birkhoffAverageSup_le_integral μ hf hg.norm a ha
     _ ≤ ∫ x, ‖g x‖ ∂μ :=
       setIntegral_le_integral hg.norm (ae_of_all _ (norm_nonneg <| g ·))
 
