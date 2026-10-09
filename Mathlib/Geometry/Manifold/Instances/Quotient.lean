@@ -99,8 +99,8 @@ private lemma aux {m : M} (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (x.localIn
 that `g • m` lies in the target of `x.localInverseAt`. -/
 @[to_additive /-- Given `⟦m⟧` in the source of `x.localInverseAt`, a choice of `g ∈ G` such
 that `g +ᵥ m` lies in the target of `x.localInverseAt`. -/]
-def smulToLocalInverseAt {m : M} (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (x.localInverseAt).source)
-    : G :=
+def smulToLocalInverseAt {m : M}
+    (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (x.localInverseAt).source) : G :=
   Classical.choose (aux hm)
 
 @[to_additive]
