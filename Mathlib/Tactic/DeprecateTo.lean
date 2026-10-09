@@ -130,7 +130,7 @@ elab (name := deprecateTo) tk:"#deprecate " "to" id:ident+ date:(ppSpace str ppS
       logWarningAt tk
         m!"Un-deprecated declarations: command produced {news.size} new constants, \
           but only {id.size} names were provided, so the remiaining declarations \
-          are left without deprecations: {news.toList.drop id.size}"
+          are left without deprecations: {news.toList.drop id.size |>.map MessageData.ofConstName}"
     if news.size < id.size then
       logWarningAt (mkNullNode (id.toList.drop news.size).toArray)
         m!"Unused names: {id.size} names were provided, but only {news.size} new declarations \
