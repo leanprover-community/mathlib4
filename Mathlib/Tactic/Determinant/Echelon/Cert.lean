@@ -104,10 +104,8 @@ def detValue {u : Level} {α : Q(Type u)} (m : Nat) {V : Type} (model : Model α
   let v := ops.divExact num diagL
   if ops.isZero (ops.sub (ops.mul v diagL) num) then
     return some (← model.mkEntry v)
-  let n : Q($α) ← model.mkEntry num
-  let d : Q($α) ← model.mkEntry diagL
   let some _dα ← synthInstanceQ? q(DivisionRing $α) | return none
-  let frac : Q($α) := q($n / $d)
+  let frac : Q($α) := q($(← model.mkEntry num) / $(← model.mkEntry diagL))
   -- Normalize `frac` when it is `norm_num` evaluable
   let some r ← try some <$> Meta.NormNum.derive frac catch _ => pure none |
     return some frac
@@ -118,21 +116,16 @@ def proveEchelonDet {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (iα : 
     (m : Nat) (A : Q(Matrix (Fin $m) (Fin $m) $α)) (entries : Array (Array Q($α))) :
     MetaM (Option ((v : Q($α)) × Q(($A).det = $v))) := do
   let r ← mkBareissDecomposition rα A entries
-  let cert := r.cert
-  let litL : Q(List (List $α)) := cert.L.lit
-  let litU : Q(List (List $α)) := cert.U.lit
-  let σ : Q(Equiv.Perm (Fin $m)) := cert.σ
-  let pivot : Q(Fin $m → WithTop (Fin $m)) := cert.pivot
-  have decomp : Q(Echelon.Decomposition $A (ofLists $m $m $litL) $σ $pivot) := cert.decomp
-  let ⟨diagL, hl⟩ ← certifyDiagProd rα cert.L
-  let ⟨diagU, hu⟩ ← certifyDiagProd rα cert.U
-  let ⟨_, s, hs⟩ ← certifyPermSign rα m r.data.swaps.toList.reverse
+  let ⟨L, _, pivot, decomp, U, hmul⟩ := r.cert
+  let ⟨σ, s, hs⟩ ← certifyPermSign rα m r.data.swaps.toList.reverse
+  have decomp : Q(Echelon.Decomposition $A (ofLists $m $m $(L.lit)) $σ $pivot) := decomp
+  let ⟨diagL, hl⟩ ← certifyDiagProd rα L
+  let ⟨diagU, hu⟩ ← certifyDiagProd rα U
   let some v ← detValue m r.model r.data | return none
   let hv : Q($diagL * ($s * $v) = $diagU) ←
     (r.model.entryCertifier?.getD (decideCertifier α)).eq q($diagL * ($s * $v)) diagU
-  have hmul : Q((ofLists $m $m $litL) * ($A).submatrix $σ id = ofLists $m $m $litU) :=
-    cert.mul_eq
-  have hs' : Q(((Equiv.Perm.sign $σ : Int) : $α) = $s) := hs
-  return some ⟨v, q(det_eq_of_decomposition $decomp $hmul $hl $hu $hs' $hv)⟩
+  have hmul : Q((ofLists $m $m $(L.lit)) * ($A).submatrix $σ id = ofLists $m $m $(U.lit)) :=
+    hmul
+  return some ⟨v, q(det_eq_of_decomposition $decomp $hmul $hl $hu $hs $hv)⟩
 
 end Mathlib.Tactic.Determinant
