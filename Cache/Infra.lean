@@ -26,13 +26,10 @@ open System (FilePath)
 /-- The full name of the main Mathlib GitHub repository. -/
 def MATHLIBREPO := "leanprover-community/mathlib4"
 
-/-- The full name of the Mathlib nightly-testing GitHub repository. -/
-def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
-
-/-- Whether `repo` is a first-party Mathlib repo rather than a fork. Forks cache
-into the per-commit `forks` namespace; the canonical repos do not. -/
+/-- Whether `repo` is the canonical Mathlib repo. Every other repo caches into the
+per-commit `forks` namespace. -/
 def isCanonicalRepo (repo : String) : Bool :=
-  repo == MATHLIBREPO || repo == NIGHTLY_TESTING_REPO
+  repo == MATHLIBREPO
 
 /--
 Canonical form of a GitHub `owner/repo` name for use as a cache blob path
@@ -57,12 +54,9 @@ first.
 inductive Container where
   /-- Most-trusted container (`mathlib4-master`); only master CI writes here. -/
   | master
-  /-- Container for PR builds on forks of mathlib4. -/
+  /-- Container for fork PR builds, mathlib4 development branches, and every
+  push build on the nightly-testing repo. -/
   | forks
-  /-- Container for the `nightly-testing` branch and related refs. -/
-  | nightlyTesting
-  /-- Container for toolchain-PR test runs. -/
-  | prToolchainTests
   deriving DecidableEq, Repr, BEq, Inhabited
 
 /-- Base URL of the `lakecache` Azure Blob Storage account. -/
@@ -72,23 +66,19 @@ namespace Container
 
 /-- Canonical short name for a container, used in CLI flags and URLs. -/
 def name : Container → String
-  | .master           => "master"
-  | .forks            => "forks"
-  | .nightlyTesting   => "nightly-testing"
-  | .prToolchainTests => "pr-toolchain-tests"
+  | .master => "master"
+  | .forks  => "forks"
 
 /-- All known containers, listed in their canonical declaration order. -/
 def all : List Container :=
-  [.master, .forks, .nightlyTesting, .prToolchainTests]
+  [.master, .forks]
 
 /-- Parse a short name back into a `Container`. Matching is case-insensitive. -/
 def parse? (s : String) : Option Container :=
   match s.toLower with
-  | "master"             => some .master
-  | "forks"              => some .forks
-  | "nightly-testing"    => some .nightlyTesting
-  | "pr-toolchain-tests" => some .prToolchainTests
-  | _                    => none
+  | "master" => some .master
+  | "forks"  => some .forks
+  | _        => none
 
 /--
 The container's segment in the URL contract `{base}/{pathSegment}/{key}`
@@ -120,15 +110,14 @@ writers in sync.
 
 - `master` is flat: RBAC admits only master CI, whose writes all carry
   `repo == MATHLIBREPO`, so a single hash never collides.
-- `forks`, `nightly-testing`, and `pr-toolchain-tests` always namespace by
-  repo. They collect artifacts from many writers — different forks, different
-  toolchain refs, and canonical-repo builds whose trust is fork-equivalent
-  (`ci-dev/*`, `bors trying`) — so identical hashes from different writers must
-  stay on distinct paths.
+- `forks` always namespaces by repo. It collects artifacts from many writers —
+  different forks, the nightly-testing repo, and canonical-repo builds whose
+  trust is fork-equivalent (`ci-dev/*`, `bors trying`) — so identical hashes
+  from different writers must stay on distinct paths.
 -/
 def flatPath : Container → Bool
   | .master => true
-  | _ => false
+  | .forks => false
 
 end Container
 
@@ -181,7 +170,7 @@ def getBaseURLFrom (c : Container) (envValue? : Option String) (useLegacy : Bool
 Base URL for reads of container `c`, resolved from the environment.
 Written on top of the pure function above, which is separate to be testable.
 -/
-def getBaseURL (c : Container) : IO String := do
+def getBaseURL (c : Container) : BaseIO String := do
   return getBaseURLFrom c (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
 
 /--
@@ -202,17 +191,10 @@ Fork chains lead with `master`. The layout is fixed per container
 whatever the `repo` is, and a fork build finds the master-built deps that make
 up the bulk of its files there; the fork's own container then supplies the
 PR-specific files at `/f/{repo}/...`.
-
-Nightly-testing chains omit `master`: that repo builds under a non-release
-toolchain, so its root hash differs and a master probe never matches.
 -/
 def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then
     [.master]
-  else if repo == NIGHTLY_TESTING_REPO then
-    -- `forks` is needed for PRs opened from this repo into mathlib4: their CI
-    -- uploads land in `forks`. `pr-toolchain-tests` is excluded.
-    [.nightlyTesting, .forks]
   else
     -- Forks and everything else: `master` for shared upstream deps, the fork's
     -- own container for PR-specific files.

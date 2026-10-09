@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.List.Basic
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Basic
-public import Mathlib.Data.List.Basic
 
 import Mathlib.Data.List.TakeDrop
 
