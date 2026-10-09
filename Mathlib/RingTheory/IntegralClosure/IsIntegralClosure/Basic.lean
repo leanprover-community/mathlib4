@@ -390,13 +390,13 @@ variable {R} (A) {B}
 theorem mem_range_algebraMap {C : Type*} [Ring C] [Algebra R C] [Algebra A C] [Algebra B C]
     [FaithfulSMul B C] [IsScalarTower R B C] [IsScalarTower A B C] {x : C} (h : IsIntegral R x) :
     x ∈ Set.range (algebraMap B C) ↔ x ∈ Set.range (algebraMap A C) := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · obtain ⟨x, rfl⟩ := h
+  constructor
+  · rintro ⟨x, rfl⟩
     rw [isIntegral_algebraMap_iff, @IsIntegralClosure.isIntegral_iff A R B] at h
     obtain ⟨x, rfl⟩ := h
     rw [← IsScalarTower.algebraMap_apply]
     exact Set.mem_range_self _
-  · obtain ⟨x, rfl⟩ := h
+  · rintro ⟨x, rfl⟩
     rw [IsScalarTower.algebraMap_apply A B C]
     exact Set.mem_range_self _
 
