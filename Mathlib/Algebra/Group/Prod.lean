@@ -601,7 +601,7 @@ def prodUnique [Unique N] : M × N ≃* M :=
 /-- `MulEquiv` version of `Equiv.curry`. -/
 @[to_additive (attr := simps! toEquiv apply) /-- `AddEquiv` version of `Equiv.curry`. -/]
 def curry (α β M : Type*) [Mul M] : (α × β → M) ≃* (α → β → M) where
-  __ := Equiv.curry ..
+  __ := Equiv.curry α β M
   map_mul' _ _ := by ext; simp
 
 end
