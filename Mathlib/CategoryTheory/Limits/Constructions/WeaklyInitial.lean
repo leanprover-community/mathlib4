@@ -5,8 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 
 /-!
 # Constructions related to weakly initial objects

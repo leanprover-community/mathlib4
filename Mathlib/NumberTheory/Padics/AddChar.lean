@@ -5,8 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.Padics.MahlerBasis
 public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.NumberTheory.Padics.MahlerBasis
 
 import Mathlib.Topology.Algebra.Monoid.AddChar
 

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Filtered.Final
 
-import Mathlib.Logic.Small.Set
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+import Mathlib.Logic.Small.Set
 
 /-!
 # Finally small categories

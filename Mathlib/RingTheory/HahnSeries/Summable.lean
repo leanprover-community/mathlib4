@@ -6,8 +6,8 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.Ring.Action.Rat
-public import Mathlib.RingTheory.HahnSeries.Multiplication
 public import Mathlib.Data.Rat.Cast.Lemmas
+public import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
 # Summable families of Hahn Series
