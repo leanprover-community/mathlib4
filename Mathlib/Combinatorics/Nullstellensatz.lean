@@ -29,7 +29,7 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
   `((∏ r ∈ S s, (X i - C r)) * h i).totalDegree ≤ f.totalDegree` for all `s`.
 
 - `combinatorial_nullstellensatz_exists_eval_nonzero`
-  a multi-index `t : σ →₀ ℕ` such that `t s < (S s).card` for all `s`,
+  a multi-index `t : σ →₀ ℕ` such that `t s < #(S s)` for all `s`,
   `f.totalDegree = t.degree` and `f.coeff t ≠ 0`,
   there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.eval s ≠ 0`.
 
@@ -163,10 +163,10 @@ private theorem Alon.monic_P (m : MonomialOrder σ) (S : Finset R) (i : σ) :
   Monic.prod (fun r _ ↦ m.monic_X_sub_C i r)
 
 /-- The support of `Alon.P S i` is the set of exponents of the form `single i e`,
-  for `e ≤ S.card`. -/
+  for `e ≤ #S`. -/
 private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι →₀ ℕ)
     (hm : m ∈ (Alon.P S i).support) :
-    ∃ e ≤ S.card, m = single i e := by
+    ∃ e ≤ #S, m = single i e := by
   classical
   have hP : Alon.P S i = .rename (fun _ ↦ i) (Alon.P S ()) := by simp [Alon.P]
   rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
@@ -228,7 +228,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
 
 /-- The **Combinatorial Nullstellensatz**.
 
-Given a multi-index `t : σ →₀ ℕ` such that `t s < (S s).card` for all `s`,
+Given a multi-index `t : σ →₀ ℕ` such that `t s < #(S s)` for all `s`,
 `f.totalDegree = t.degree` and `f.coeff t ≠ 0`,
 there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.eval s ≠ 0`.
 

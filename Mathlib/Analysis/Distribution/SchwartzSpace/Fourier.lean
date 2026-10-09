@@ -26,6 +26,8 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 open Real MeasureTheory MeasureTheory.Measure
@@ -57,7 +59,7 @@ def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
   · exact fun f ↦ contDiff_fourier (fun n _ ↦ integrable_pow_mul volume f n)
   · rintro ⟨k, n⟩
     refine ⟨Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1),
-      (2 * π) ^ n * (2 * n + 2) ^ k * (Finset.range (n + 1) ×ˢ Finset.range (k + 1)).card *
+      (2 * π) ^ n * (2 * n + 2) ^ k * #(Finset.range (n + 1) ×ˢ Finset.range (k + 1)) *
         2 ^ integrablePower (volume : Measure V) *
         (∫ x : V, (1 + ‖x‖) ^ (- integrablePower (volume : Measure V) : ℝ)) * 2, by positivity,
       fun f x ↦ ?_⟩

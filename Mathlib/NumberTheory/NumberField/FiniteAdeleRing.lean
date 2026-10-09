@@ -26,6 +26,8 @@ Later, these results are applied to the case where `K` is a number field and `R`
 adele ring, number field
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 namespace NumberField
@@ -64,7 +66,7 @@ private theorem hasProd_zero_subset_lt_one_valued {x : 𝔸ᶠ[R, K]} (hx : ¬Is
   have hx_prop : {v | 1 < Valued.v (x v)}.Finite := finite_valued_one_lt x
   have hx_inf : {v | Valued.v (x v) < 1}.Infinite := (hx.sdiff hx_prop).mono (by grind)
   have : atTop.Tendsto (fun s : Finset {v | Valued.v (x v) < 1} ↦ (∏ v ∈ s, ‖x v‖)⁻¹) atTop := by
-    have h_le (S : Finset {v | Valued.v (x v) < 1}) : 2 ^ S.card ≤ (∏ v ∈ S, ‖x v‖)⁻¹ := by
+    have h_le (S : Finset {v | Valued.v (x v) < 1}) : 2 ^ #S ≤ (∏ v ∈ S, ‖x v‖)⁻¹ := by
       have (v : _) (h : v ∈ S) : 2 ≤ ‖(x v)⁻¹‖ := by
         apply FinitePlace.two_le_norm_of_one_lt_norm
         grind [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ (Valued.v.pos_iff.2 (hx₀ v))]

@@ -16,6 +16,8 @@ defining `ModularForm` and `CuspForm`. We prove several instances for such space
 that they form a module over `ℝ`, and over `ℂ` if the group is contained in `SL(2, ℝ)`.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 open Complex UpperHalfPlane ModularForm
@@ -256,8 +258,8 @@ function is a product of those indexed by `s : Finset ι` with weight `#s * k`. 
 @[simps! -fullyApplied]
 def prodEqualWeights {ι : Type*} {s : Finset ι} {k : ℤ}
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-    (f : (i : ι) → SlashInvariantForm Γ k) : SlashInvariantForm Γ (s.card * k) :=
-  prod (k := fun i ↦ k) (s := s) (s.card * k) (by simp) f
+    (f : (i : ι) → SlashInvariantForm Γ k) : SlashInvariantForm Γ (#s * k) :=
+  prod (k := fun i ↦ k) (s := s) (#s * k) (by simp) f
 
 instance [Γ.HasDetPlusMinusOne] : NatCast (SlashInvariantForm Γ 0) where
   natCast n := constℝ n

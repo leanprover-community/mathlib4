@@ -60,6 +60,8 @@ Neumann boundedness in terms of that seminorm family. Together with
 seminorm, locally convex
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 open NormedField Set Seminorm TopologicalSpace Filter List Bornology
@@ -264,7 +266,7 @@ theorem isBounded_sup {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂
   obtain rfl | _ := s'.eq_empty_or_nonempty
   · exact ⟨1, ∅, by simp [Seminorm.bot_eq_zero]⟩
   choose fₛ fC hf using hf
-  use s'.card • s'.sup fC, Finset.biUnion s' fₛ
+  use #s' • s'.sup fC, Finset.biUnion s' fₛ
   have hs : ∀ i : ι', i ∈ s' → (q i).comp f ≤ s'.sup fC • (Finset.biUnion s' fₛ).sup p := by
     intro i hi
     refine (hf i).trans (IsOrderedSMul.smul_le_smul (Finset.le_sup hi) ?_)

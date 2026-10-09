@@ -31,6 +31,8 @@ Approximation*][MR3156076] for a detailed discussion.
   Spaces*][MR886677].
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 open Filter Real Set
@@ -125,20 +127,20 @@ theorem isBigO_characteristic_sub_characteristic_const_mul {f : ℂ → ℂ} {s 
 
 /--
 For `1 ≤ r`, the characteristic function of a sum `∑ a, f a` at `⊤` is less than or equal to the sum
-of the characteristic functions of `f ·`, plus `log s.card`.
+of the characteristic functions of `f ·`, plus `log #s`.
 -/
 theorem characteristic_sum_top_le {α : Type*} (s : Finset α) (f : α → ℂ → E) {r : ℝ}
     (hf : ∀ a ∈ s, Meromorphic (f a)) (hr : 1 ≤ r) :
-    characteristic (∑ a ∈ s, f a) ⊤ r ≤ (∑ a ∈ s, (characteristic (f a) ⊤)) r + log s.card := by
+    characteristic (∑ a ∈ s, f a) ⊤ r ≤ (∑ a ∈ s, (characteristic (f a) ⊤)) r + log #s := by
   simp only [characteristic, Pi.add_apply, Finset.sum_apply]
   calc proximity (∑ a ∈ s, f a) ⊤ r + logCounting (∑ a ∈ s, f a) ⊤ r
-  _ ≤ ((∑ a ∈ s, proximity (f a) ⊤) r) + log s.card + (∑ a ∈ s, (logCounting (f a) ⊤)) r := by
+  _ ≤ ((∑ a ∈ s, proximity (f a) ⊤) r) + log #s + (∑ a ∈ s, (logCounting (f a) ⊤)) r := by
       gcongr
       · apply proximity_sum_top_le s f hf r
       · apply logCounting_sum_top_le s f hf hr
-    _ = ((∑ a ∈ s, proximity (f a) ⊤) r) + (∑ a ∈ s, (logCounting (f a) ⊤)) r + log s.card := by
+    _ = ((∑ a ∈ s, proximity (f a) ⊤) r) + (∑ a ∈ s, (logCounting (f a) ⊤)) r + log #s := by
       ring
-    _ = ∑ x ∈ s, (proximity (f x) ⊤ r + logCounting (f x) ⊤ r) + log s.card := by
+    _ = ∑ x ∈ s, (proximity (f x) ⊤ r + logCounting (f x) ⊤ r) + log #s := by
       simp [Finset.sum_add_distrib]
 
 /--
@@ -148,7 +150,7 @@ sum of the characteristic functions of `f ·`.
 theorem characteristic_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α → ℂ → E)
     (hf : ∀ a ∈ s, Meromorphic (f a)) :
     characteristic (∑ a ∈ s, f a) ⊤
-      ≤ᶠ[Filter.atTop] ∑ a ∈ s, (characteristic (f a) ⊤) + fun _ ↦ log s.card := by
+      ≤ᶠ[Filter.atTop] ∑ a ∈ s, (characteristic (f a) ⊤) + fun _ ↦ log #s := by
   filter_upwards [Filter.eventually_ge_atTop 1]
     using fun _ hr ↦ characteristic_sum_top_le s f hf hr
 
