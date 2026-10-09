@@ -5,8 +5,8 @@ Authors: Patrick Massot, Ben Eltschig
 -/
 module
 
-public import Mathlib.Topology.Connected.PathConnected
 public import Mathlib.Topology.AlexandrovDiscrete
+public import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # Locally path-connected spaces

@@ -5,8 +5,8 @@ Authors: Paul Cadman
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 public meta import Mathlib.Util.Qq
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 public import Mathlib.Tactic.Ring
 
 /-!
