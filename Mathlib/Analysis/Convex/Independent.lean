@@ -5,8 +5,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Extreme
+
+import Mathlib.Analysis.Convex.Combination
 
 /-!
 # Convex independence
@@ -94,7 +95,7 @@ protected theorem ConvexIndependent.range {p : ι → E} (hc : ConvexIndependent
   let f : Set.range p → ι := fun x => x.property.choose
   have hf : ∀ x, p (f x) = x := fun x => x.property.choose_spec
   let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
-  convert! hc.comp_embedding fe
+  convert hc.comp_embedding fe
   ext
   rw [Embedding.coeFn_mk, comp_apply, hf]
 

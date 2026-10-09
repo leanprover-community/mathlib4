@@ -5,8 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.RingTheory.WittVector.IsPoly
+
+import Mathlib.Algebra.Algebra.ZMod
 
 /-!
 ## The Frobenius operator

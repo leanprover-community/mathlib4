@@ -5,9 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-import Mathlib.Logic.Small.Set
 public import Mathlib.CategoryTheory.Filtered.Final
+
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+import Mathlib.Logic.Small.Set
 
 /-!
 # Finally small categories

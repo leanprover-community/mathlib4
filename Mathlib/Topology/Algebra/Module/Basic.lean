@@ -6,12 +6,12 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 -/
 module
 
-public import Mathlib.Topology.Algebra.Group.Quotient
-public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Theory of topological modules
@@ -51,6 +51,16 @@ theorem ContinuousNeg.of_continuousConstSMul [ContinuousConstSMul R M] : Continu
   continuous_neg := by simpa using continuous_const_smul (T := M) (-1 : R)
 
 end
+
+section Submodule
+
+variable {S R M : Type*} [SetLike S M] [TopologicalSpace M] [SMul R M] [SMulMemClass S R M]
+    [ContinuousConstSMul R M]
+
+instance (s : S) : ContinuousConstSMul R s :=
+  IsInducing.subtypeVal.continuousConstSMul id fun {_} {_} => rfl
+
+end Submodule
 
 section
 

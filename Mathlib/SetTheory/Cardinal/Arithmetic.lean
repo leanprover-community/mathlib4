@@ -29,8 +29,6 @@ public section
 
 assert_not_exists Module Finsupp Ordinal.log
 
-noncomputable section
-
 open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w
@@ -40,7 +38,6 @@ namespace Cardinal
 /-! ### Properties of `mul` -/
 section mul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   -- The only nontrivial part is `c * c ≤ c`. We prove it inductively.
@@ -52,21 +49,17 @@ theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   have : NoMaxOrder α := by
     rw [← isSuccPrelimit_type_lt_iff, ← hα]
     exact (isSuccLimit_ord hc).isSuccPrelimit
-  -- Define an order `s` on `α × α`, comparing first by `max x.1 x.2`, then by `toLex (x.1, x.2)`.
-  let g : α × α → α := uncurry max
-  let f : α × α ↪ α ×ₗ (α ×ₗ α) := ⟨fun p ↦ toLex (g p, toLex p), fun p q ↦ congrArg Prod.snd⟩
-  let s := f ⁻¹'o (· < ·)
-  have : IsWellOrder _ s := (RelEmbedding.preimage ..).isWellOrder
-  -- Every initial segment of `s` is contained in `β × β` for some `β` of cardinality `< c`.
-  -- By the inductive hypothesis, this means `#(β × β) < c`. Thus, `α × α` must have
-  -- cardinality `≤ c`.
-  refine @card_le_card (type s) (typeLT α) <| le_of_forall_lt fun o h ↦ ?_
-  obtain ⟨p, rfl⟩ := typein_surj s h
-  obtain ⟨q, hq'⟩ := exists_gt (g p)
-  rw [← hα, lt_ord]
+  -- We embed `α × α` into `α ×ₗ α ×ₗ α` by sending `(x, y)` to `(max x y, x, y)`.
+  -- Every initial segment of the embedding is contained in `β × β` for some `#β < c`.
+  -- By the inductive hypothesis, this means `#(β × β) < c`, and thus `#(α × α) ≤ c`.
+  apply mk_le_of_forall_mk_setOfPred_lt (β := α ×ₗ (α ×ₗ α))
+    (fun p ↦ toLex (uncurry max p, toLex p)) (fun _ _ ↦ congrArg Prod.snd)
+  intro ⟨a, b⟩
+  obtain ⟨q, hq'⟩ := exists_gt (max a b)
   apply lt_of_le_of_lt (b := #(Iio q) * #(Iio q))
-  · apply (Set.embeddingOfSubset { x | s x p } ..).cardinal_le.trans_eq (mk_setProd ..)
-    simp [s, f, Prod.Lex.lt_iff, subset_def]
+  · rw [← mk_setProd]
+    apply (Set.embeddingOfSubset ..).cardinal_le
+    simp [Prod.Lex.lt_iff, subset_def]
     grind
   rcases lt_or_ge #(Iio q) ℵ₀ with hq | hq
   · exact (mul_lt_aleph0 hq hq).trans_le hc
@@ -122,7 +115,7 @@ theorem mul_lt_of_lt {a b c : Cardinal} (hc : ℵ₀ ≤ c) (ha : a < c) (hb : b
     exact max_lt ha hb
 
 theorem mul_le_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) : a * b ≤ max a b := by
-  convert! mul_le_mul' (le_max_left a b) (le_max_right a b) using 1
+  convert mul_le_mul' (le_max_left a b) (le_max_right a b) using 1
   rw [mul_eq_self]
   exact h.trans (le_max_left a b)
 
@@ -133,7 +126,7 @@ theorem mul_eq_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) (h' : b
   refine (mul_le_max_of_aleph0_le_left h).antisymm ?_
   have : b ≤ a := hb.le.trans h
   rw [max_eq_left this]
-  convert! mul_le_mul_right (Cardinal.one_le_iff_ne_zero.mpr h') a
+  convert mul_le_mul_right (Cardinal.one_le_iff_ne_zero.mpr h') a
   rw [mul_one]
 
 theorem mul_le_max_of_aleph0_le_right {a b : Cardinal} (h : ℵ₀ ≤ b) : a * b ≤ max a b := by
@@ -167,7 +160,7 @@ theorem mul_eq_right {a b : Cardinal} (hb : ℵ₀ ≤ b) (ha : a ≤ b) (ha' : 
   rw [mul_comm, mul_eq_left hb ha ha']
 
 theorem le_mul_left {a b : Cardinal} (h : b ≠ 0) : a ≤ b * a := by
-  convert! mul_le_mul_left (Cardinal.one_le_iff_ne_zero.mpr h) a
+  convert mul_le_mul_left (Cardinal.one_le_iff_ne_zero.mpr h) a
   rw [one_mul]
 
 theorem le_mul_right {a b : Cardinal} (h : b ≠ 0) : a ≤ a * b := by
@@ -429,7 +422,7 @@ theorem sum_eq_lift_iSup_of_lift_mk_le_lift_iSup [Small.{v} ι] {f : ι → Card
     (h : lift.{v} #ι ≤ lift.{u} (⨆ i, f i)) : sum f = lift (⨆ i, f i) := by
   rw [lift_iSup bddAbove_of_small] at h
   apply (lift_iSup_le_sum f).antisymm'
-  convert! sum_le_lift_mk_mul_iSup_lift f
+  convert sum_le_lift_mk_mul_iSup_lift f
   rw [mul_eq_max (aleph0_le_lift.mpr hι) ((aleph0_le_lift.mpr hι).trans h), max_eq_right h,
     lift_iSup bddAbove_of_small]
 
@@ -600,7 +593,7 @@ theorem powerlt_aleph0 {c : Cardinal} (h : ℵ₀ ≤ c) : c ^< ℵ₀ = c := by
   apply le_antisymm
   · rw [powerlt_le]
     exact fun _ a ↦ pow_le h a
-  convert! le_powerlt c one_lt_aleph0; rw [power_one]
+  convert le_powerlt c one_lt_aleph0; rw [power_one]
 
 theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by
   rcases le_or_gt ℵ₀ c with h | h

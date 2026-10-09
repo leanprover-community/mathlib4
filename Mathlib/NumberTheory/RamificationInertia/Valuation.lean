@@ -5,9 +5,9 @@ Authors: Salvatore Mercuri
 -/
 module
 
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.Valuation.Extension
 
 /-!

@@ -5,8 +5,8 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
 # Definitions and basic properties of normal monomorphisms and epimorphisms.

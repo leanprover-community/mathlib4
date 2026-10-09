@@ -157,13 +157,15 @@ noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R)
   __ := let e0 := (adicCompletion.equiv ℚ v).restrict
           (v.adicCompletionIntegers ℚ)
           (Valued.v (R := (v.valuation ℚ).Completion)).valuationSubring
-          fun _ ↦ by rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion]; rfl
+          fun _ ↦ by
+            rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion_apply]; rfl
         let e := (mapRingEquiv _ (withValEquiv v).continuous
           (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
             simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         (e0.trans e).trans withValIntegersRingEquiv
   __ := let e0 := (adicCompletion.uniformEquiv ℚ v).subtype
-          fun _ ↦ by rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion]; rfl
+          fun _ ↦ by
+            rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion_apply]; rfl
         let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
           simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         ((e0.trans e).trans withValIntegersUniformEquiv).toHomeomorph

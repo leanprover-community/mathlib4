@@ -5,8 +5,8 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Hom
 public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Hom
 
 /-!
 # The category of root pairings
