@@ -5,9 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Analysis.Calculus.FDeriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+
+import Mathlib.Analysis.Calculus.FDeriv.Comp
 
 /-!
 # Star operations on derivatives

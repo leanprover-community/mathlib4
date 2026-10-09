@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
 import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
