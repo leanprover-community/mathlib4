@@ -66,7 +66,7 @@ def gi : GaloisInsertion (adjoin F : Set E → IntermediateField F E)
     (fun (x : IntermediateField F E) => (x : Set E)) where
   choice s hs := (adjoin F s).copy s <| le_antisymm (gc.le_u_l s) hs
   gc := IntermediateField.gc
-  le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 <| le_rfl
+  le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 le_rfl
   choice_eq _ _ := copy_eq _ _ _
 
 instance : CompleteLattice (IntermediateField F E) where
@@ -478,13 +478,13 @@ theorem restrictScalars_adjoin_of_algEquiv
   simp [hi]
 
 @[elab_as_elim]
-theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}
-    (mem : ∀ x hx, p x (subset_adjoin _ _ hx))
-    (algebraMap : ∀ x, p (algebraMap F E x) (algebraMap_mem _ _))
-    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx))
-    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (h : x ∈ adjoin F s) : p x h :=
+theorem adjoin_induction {s : Set E} {motive : ∀ x ∈ adjoin F s, Prop}
+    (mem : ∀ x hx, motive x (subset_adjoin _ _ hx))
+    (algebraMap : ∀ x, motive (algebraMap F E x) (algebraMap_mem _ _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem hx hy))
+    (inv : ∀ x hx, motive x hx → motive x⁻¹ (inv_mem hx))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem hx hy))
+    {x} (h : x ∈ adjoin F s) : motive x h :=
   Subfield.closure_induction
     (fun x hx ↦ Or.casesOn hx (fun ⟨x, hx⟩ ↦ hx ▸ algebraMap x) (mem x))
     (by simp_rw [← (Algebra.algebraMap F E).map_one]; exact algebraMap 1) add
@@ -499,9 +499,9 @@ theorem adjoin_algHom_ext {s : Set E} ⦃φ₁ φ₂ : adjoin F s →ₐ[F] K⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin _ _ hx⟩ = φ₂ ⟨x, subset_adjoin _ _ hx⟩) :
     φ₁ = φ₂ :=
   AlgHom.ext fun ⟨x, hx⟩ ↦ adjoin_induction _ h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
     (fun _ _ ↦ eq_on_inv₀ _ _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
     hx
 
 theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S = adjoin F s)
@@ -683,20 +683,23 @@ theorem _root_.Field.fg_iff_fg_top_bot :
   simp [Field.fg_iff, fg_def, Set.exists_finite_iff_finset,
     ← toSubfield_inj, Subfield.algebraMap_ofSubfield, Subfield.closure_union]
 
-theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
-    (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
-    P (adjoin F S) := by
+theorem induction_on_adjoin_finset (S : Finset E)
+    {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E),
+      ∀ x ∈ S, motive K → motive (K⟮x⟯.restrictScalars F)) :
+    motive (adjoin F S) := by
   classical
   refine Finset.induction_on' S ?_ (fun _ _ ha _ _ h => ?_)
-  · simp [base]
+  · simp [bot]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
-    exact ih (adjoin F _) _ ha h
+    exact adjoin_simple (adjoin F _) _ ha h
 
-theorem induction_on_adjoin_fg (P : IntermediateField F E → Prop) (base : P ⊥)
-    (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
-    (K : IntermediateField F E) (hK : K.FG) : P K := by
+theorem induction_on_adjoin_fg {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E)
+      (x : E), motive K → motive (K⟮x⟯.restrictScalars F))
+    (K : IntermediateField F E) (hK : K.FG) : motive K := by
   obtain ⟨S, rfl⟩ := hK
-  exact induction_on_adjoin_finset S P base fun K x _ hK => ih K x hK
+  exact induction_on_adjoin_finset S bot fun K x _ hK => adjoin_simple K x hK
 
 end Induction
 

@@ -5,10 +5,11 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
 public import Lean.HeadIndex
-public import Lean.Meta.ExprLens
 public import Lean.Meta.Check
+public import Lean.Meta.ExprLens
+
+import Mathlib.Init
 
 /-!
 
@@ -26,7 +27,7 @@ whether this is the case.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Meta
 

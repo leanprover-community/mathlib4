@@ -5,8 +5,9 @@ Authors: Kim Morrison, Eric Wieser
 -/
 module
 
-public import Mathlib.Init
 public import Batteries.Util.LibraryNote
+
+import Mathlib.Init
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -296,7 +297,7 @@ For such scenarios, users should prefer to use the unbundled `IsMulCommutative` 
 provide theorems such as:
 ```
 theorem isMulCommutative_closure {G : Type*} [Group G] {k : Set G}
-    (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
+    (hcomm : k.Pairwise Commute) :
     IsMulCommutative (closure k)
 ```
 or even *instances* such as

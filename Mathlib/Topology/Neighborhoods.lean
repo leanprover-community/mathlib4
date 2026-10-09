@@ -339,7 +339,7 @@ theorem Dense.inter_nhds_nonempty (hs : Dense s) (ht : t ∈ 𝓝 x) :
 theorem closure_sdiff : closure s \ closure t ⊆ closure (s \ t) :=
   calc
     closure s \ closure t = (closure t)ᶜ ∩ closure s := by simp only [sdiff_eq, inter_comm]
-    _ ⊆ closure ((closure t)ᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
+    _ ⊆ closure ((closure t)ᶜ ∩ s) := (isOpen_compl_iff.mpr isClosed_closure).inter_closure
     _ = closure (s \ closure t) := by simp only [sdiff_eq, inter_comm]
     _ ⊆ closure (s \ t) := closure_mono <| sdiff_subset_sdiff (Subset.refl s) subset_closure
 

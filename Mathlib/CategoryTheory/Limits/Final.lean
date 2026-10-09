@@ -5,16 +5,11 @@ Authors: Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Cat.AsSmall
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.CategoryTheory.IsConnected
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-public import Mathlib.CategoryTheory.Limits.Types.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
+public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Yoneda
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Final and initial functors
@@ -567,13 +562,9 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
     @isPreconnected_induction _ _ _ (fun Y : CostructuredArrow F d => Z Y.left Y.hom) _ _
       (CostructuredArrow.mk k₀) z
   · intro j₁ j₂ f a
-    fapply h₁ _ _ _ _ f.left _ a
-    convert! f.w
-    simp
+    exact h₁ _ _ _ _ f.left f.w a
   · intro j₁ j₂ f a
-    fapply h₂ _ _ _ _ f.left _ a
-    convert! f.w
-    simp
+    exact h₂ _ _ _ _ f.left f.w a
 
 variable {F G}
 
@@ -1141,7 +1132,7 @@ def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v
         fiberwiseColimit_map, ιNatTrans, ιCompMap, Iso.trans_hom, Category.assoc, ι_colimMap_assoc,
         NatTrans.comp_app, whiskerRight_app, Functor.comp_map, Cat.Hom₂.eqToHom_toNatTrans,
         eqToHom_app, map_id, Category.comp_id, associator_hom_app, colimit.ι_pre_assoc,
-        HasColimit.isoOfNatIso_ι_hom_assoc, Iso.symm_hom, isoWhiskerRight_hom, associator_inv_app,
+        HasColimit.ι_isoOfNatIso_hom_assoc, Iso.symm_hom, isoWhiskerRight_hom, associator_inv_app,
         NatIso.ofComponents_hom_app, Iso.refl_hom, Final.ι_colimitIso_hom, Category.id_comp,
         Final.ι_colimitIso_hom_assoc, colimit.ι_pre]
       have := Functor.congr_obj congr($(α.naturality f).toFunctor) d
@@ -1158,7 +1149,7 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F 
   intro H
   let i := (colimitFiberwiseColimitIso _).symm ≪≫
     HasColimit.isoOfNatIso (fiberwiseColimitMapCompEquivalence α H) ≪≫ colimitFiberwiseColimitIso _
-  convert! Iso.isIso_hom i
+  convert Iso.isIso_hom i
   apply colimit.hom_ext
   intro X
   simp [i, fiberwiseColimitMapCompEquivalence]

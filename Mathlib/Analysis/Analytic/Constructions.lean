@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Analysis.Analytic.Composition
 public import Mathlib.Analysis.Analytic.Linear
-public import Mathlib.Analysis.Normed.Operator.Mul
-public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.Normed.Ring.Units
+
+import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Various ways to combine analytic functions
@@ -53,6 +54,10 @@ theorem hasFPowerSeriesAt_const {c : F} {e : E} :
 @[fun_prop]
 theorem analyticAt_const {v : F} {x : E} : AnalyticAt 𝕜 (fun _ => v) x :=
   ⟨constFormalMultilinearSeries 𝕜 E v, hasFPowerSeriesAt_const⟩
+
+/-- Special case of `analyticAt_const`, required for `fun_prop` to work. -/
+@[fun_prop] theorem analyticAt_zero {x : E} :
+    AnalyticAt 𝕜 (0 : E → F) x := analyticAt_const
 
 @[fun_prop]
 theorem analyticOnNhd_const {v : F} {s : Set E} : AnalyticOnNhd 𝕜 (fun _ => v) s :=
@@ -867,7 +872,7 @@ lemma formalMultilinearSeries_geometric_apply_norm [NormOneClass A] (n : ℕ) :
 
 lemma one_le_formalMultilinearSeries_geometric_radius :
     1 ≤ (formalMultilinearSeries_geometric 𝕜 A).radius := by
-  convert!
+  convert
     formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
       FormalMultilinearSeries.inv_le_ofScalars_radius_of_tendsto A _ one_ne_zero (by simp)
   simp
@@ -950,7 +955,7 @@ analytic at any unit. -/
 lemma analyticAt_inverse [HasSummableGeomSeries A] (z : Aˣ) :
     AnalyticAt 𝕜 Ring.inverse (z : A) := by
   rcases subsingleton_or_nontrivial A with hA | hA
-  · convert! analyticAt_const (v := (0 : A))
+  · convert analyticAt_const (v := (0 : A))
   · let f1 : A → A := fun a ↦ a * z.inv
     let f2 : A → A := fun b ↦ (1 - b)⁻¹ʳ
     let f3 : A → A := fun c ↦ 1 - z.inv * c

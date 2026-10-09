@@ -28,7 +28,7 @@ open scoped CommRingObj RingObj
 /-- If `R` is a ring object, then `Hom(-, R)` is a presheaf of rings. -/
 @[simps! obj]
 def yonedaRingObj (R : C) [RingObj R] : Cᵒᵖ ⥤ RingCat.{v} where
-  obj X := .of (X.unop ⟶ R)
+  obj X := ↧(X.unop ⟶ R)
   map f := RingCat.ofHom
     { toFun x := f.unop ≫ x
       map_one' := by simp
@@ -57,7 +57,7 @@ def yonedaRing : RingObjCat C ⥤ Cᵒᵖ ⥤ RingCat.{v} where
 /-- If `R` is a commutative ring object, then `Hom(-, R)` is a presheaf of commutative rings. -/
 @[simps obj]
 def yonedaCommRingObj (R : C) [CommRingObj R] : Cᵒᵖ ⥤ CommRingCat.{v} where
-  obj X := .of (X.unop ⟶ R)
+  obj X := ↧(X.unop ⟶ R)
   map f := CommRingCat.ofHom ((yonedaRingObj R).map f).hom
 
 set_option backward.defeqAttrib.useBackward true in

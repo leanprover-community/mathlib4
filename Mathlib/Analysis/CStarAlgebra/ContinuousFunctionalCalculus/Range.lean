@@ -6,8 +6,9 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+
 import Mathlib.Algebra.Order.Monoid.Submonoid
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-! # Range of the continuous functional calculus
 

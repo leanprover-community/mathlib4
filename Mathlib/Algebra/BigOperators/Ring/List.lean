@@ -5,12 +5,11 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.GroupWithZero.Commute
 public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Basic
-public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Commute
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Ring.Divisibility.Basic
 
 /-!
 # Big operators on a list in rings
@@ -46,7 +45,7 @@ variable [Monoid M] [HasDistribNeg M]
 @[simp]
 lemma prod_map_neg (l : List M) :
     (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
-  induction l <;> simp [*, pow_succ, ((Commute.neg_one_left _).pow_left _).left_comm]
+  induction l <;> simp [*, pow_succ, Commute.left_comm]
 
 end HasDistribNeg
 

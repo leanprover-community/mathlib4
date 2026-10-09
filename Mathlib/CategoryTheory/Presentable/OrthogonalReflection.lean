@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+
+import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 
 /-!
 # The Orthogonal-reflection construction
@@ -151,7 +152,7 @@ variable {W Z} in
 @[reassoc]
 lemma D₁.ιLeft_comp_l {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     D₁.ιLeft f hf g ≫ D₁.l W Z = g :=
-  Sigma.ι_desc _ _
+  Sigma.ι_comp_desc _ _
 
 variable [HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
 
