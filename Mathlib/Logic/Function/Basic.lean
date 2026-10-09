@@ -793,6 +793,10 @@ theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β
     update (update f a v) a w = update f a w := by
   grind
 
+lemma update_eq_update_iff {ι : Sort*} {f : α → ι} {i j : α} {a b : ι} :
+    update f i a = update f j b ↔ i = j ∧ a = b ∨ a = f i ∧ b = f j :=
+  ⟨fun h ↦ by grind [congr_fun h i, congr_fun h j], by grind⟩
+
 @[simp]
 theorem _root_.Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
     {f : ∀ i, α i → β i}
