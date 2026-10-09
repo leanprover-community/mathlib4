@@ -263,6 +263,16 @@ private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Ex
       which is not the identity"
   | _ => throwError "`{e}` is not a space of continuous linear maps"
 
+/-- Check if an expression `e` is a `ContinuousAlternatingMap` .
+If so, we return the coefficient ring `R`. Otherwise, we error.
+Assumes that `e` is already in `whnf` and has had metavariables instantiated. -/
+private def isContAlternatingMaps (e : Expr) : TermElabM Expr := do
+  match_expr e with
+  | ContinuousAlternatingMap R _M _N _ι _ _ _ _ _ _ _ =>
+    trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous alternating maps"
+    return R
+  | _ => throwError "`{e}` is not a space of continuous alternating maps"
+
 /--
 Captures information when a model with corners is the trivial model on a normed space
 (or on an inner product space, which is also a normed space):
@@ -342,10 +352,13 @@ partial def guessBaseFieldForNormedSpace (e : Expr) : TermElabM <| Option Expr :
     guessBaseFieldForNormedSpace E
   | _ =>
     try
-      let (_k, E, _F) ← isCLMReduciblyDefeqCoefficients e
-      guessBaseFieldForNormedSpace E
+      let (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
+      return k
     catch _e =>
-      findFromLocalInstance e
+      try
+        isContAlternatingMaps e
+      catch _e =>
+        findFromLocalInstance e
 where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
   findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
     match_expr type with
@@ -392,6 +405,7 @@ partial def findModelInner (e : Expr) : TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy "NormedSpace"         fromNormedSpace     then return some m
   if let some m ← tryStrategy "Manifold"            fromManifold        then return some m
   if let some m ← tryStrategy "ContinuousLinearMap" fromCLM             then return some m
+  if let some m ← tryStrategy "ContinuousAlternatingMap" fromCAM        then return some m
   if let some m ← tryStrategy "RealInterval"        fromRealInterval    then return some m
   if let some m ← tryStrategy "EuclideanSpace"      fromEuclideanSpace  then return some m
   if let some m ← tryStrategy "UpperHalfPlane"      fromUpperHalfPlane  then return some m
@@ -415,7 +429,7 @@ where
       trace[Elab.DiffGeo.MDiff]
         "{e} is the total space of a fiber bundle: trying to find a model on the base of `{V}`"
       -- `V` should be of type `B → Type*`, where `B` is the base of the vector bundle.
-      -- Then, the desired model with corners is `I.prod (𝓘(𝕜, F))`, where `I` is the model on `B`
+      -- Then, the desired model with corners is `I.prod 𝓘(𝕜, F)`, where `I` is the model on `B`
       -- and `𝕜` is the base field for `F`.
       let vtype ← whnf <| ← instantiateMVars <| ← inferType V
       trace[Elab.DiffGeo.MDiff] "`{V}` has type `{vtype}`"
@@ -553,6 +567,10 @@ where
     -- Therefore, we only check definitional equality at reducible transparency.
     let (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
     mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
+  /-- Attempt to find a model with corners on a space of continuous alternating linear maps -/
+  fromCAM : TermElabM Expr := do
+    let R ← isContAlternatingMaps e
+    mkAppOptM ``modelWithCornersSelf #[R, none, e, none, none]
   /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
   fromEuclideanSpace : TermElabM Expr := do
     if let some m ← tryFromEuclideanSpace e then return m else
