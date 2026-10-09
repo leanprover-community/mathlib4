@@ -5,8 +5,8 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Completion of an inner product space
@@ -15,11 +15,11 @@ We show that the separation quotient and the completion of an inner product spac
 product spaces.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
-variable {𝕜 E F : Type*} [RCLike 𝕜]
+variable {𝕜 E : Type*} [RCLike 𝕜]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

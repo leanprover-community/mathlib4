@@ -23,8 +23,6 @@ sin, cos, tan, angle
 
 public section
 
-noncomputable section
-
 open scoped Asymptotics Topology Filter
 open Set
 
@@ -33,8 +31,11 @@ namespace Complex
 /-- The complex sine function is everywhere strictly differentiable, with the derivative `cos x`. -/
 theorem hasStrictDerivAt_sin (x : ℂ) : HasStrictDerivAt sin (cos x) x := by
   simp only [cos, div_eq_mul_inv]
-  convert ((((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp.sub
-    ((hasStrictDerivAt_id x).mul_const I).cexp).mul_const I).mul_const (2 : ℂ)⁻¹ using 1
+  convert!
+    ((((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp.sub
+              ((hasStrictDerivAt_id x).mul_const I).cexp).mul_const
+          I).mul_const
+      (2 : ℂ)⁻¹ using 1
   simp only [id]
   rw [sub_mul, mul_assoc, mul_assoc, I_mul_I, neg_one_mul, neg_neg, mul_one, one_mul, mul_assoc,
     I_mul_I, mul_neg_one, sub_neg_eq_add, add_comm]
@@ -43,7 +44,7 @@ theorem hasStrictDerivAt_sin (x : ℂ) : HasStrictDerivAt sin (cos x) x := by
 theorem hasDerivAt_sin (x : ℂ) : HasDerivAt sin (cos x) x :=
   (hasStrictDerivAt_sin x).hasDerivAt
 
-theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
+theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using! (hasDerivAt_sin 0).isLittleO
 
 @[fun_prop]
 theorem contDiff_sin {n} : ContDiff ℂ n sin :=
@@ -67,6 +68,7 @@ lemma analyticWithinAt_sin {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ sin s 
   contDiff_sin.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Complex.sin` is complex analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_sin {s : Set ℂ} : AnalyticOnNhd ℂ sin s :=
   fun _ _ ↦ analyticAt_sin
 
@@ -82,8 +84,10 @@ theorem deriv_sin : deriv sin = cos :=
 `-sin x`. -/
 theorem hasStrictDerivAt_cos (x : ℂ) : HasStrictDerivAt cos (-sin x) x := by
   simp only [sin, div_eq_mul_inv, neg_mul_eq_neg_mul]
-  convert (((hasStrictDerivAt_id x).mul_const I).cexp.add
-    ((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp).mul_const (2 : ℂ)⁻¹ using 1
+  convert!
+    (((hasStrictDerivAt_id x).mul_const I).cexp.add
+          ((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp).mul_const
+      (2 : ℂ)⁻¹ using 1
   simp only [id]
   ring
 
@@ -112,6 +116,7 @@ lemma analyticWithinAt_cos {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ cos s 
   contDiff_cos.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Complex.cos` is complex analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_cos {s : Set ℂ} : AnalyticOnNhd ℂ cos s :=
   fun _ _ ↦ analyticAt_cos
 
@@ -125,6 +130,17 @@ theorem deriv_cos {x : ℂ} : deriv cos x = -sin x :=
 @[simp]
 theorem deriv_cos' : deriv cos = fun x => -sin x :=
   funext fun _ => deriv_cos
+
+/-- The limit `lim_{z → 0} (sin z) / z = 1`, for the complex sine. -/
+theorem tendsto_sin_div_nhdsNE_zero : Filter.Tendsto (fun z : ℂ ↦ sin z / z) (𝓝[≠] 0) (𝓝 1) :=
+  (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_sin 0)).congr
+    fun _ ↦ by simp [slope_def_field]
+
+/-- The limit `lim_{z → 0} (1 - cos z) / z = 0`, for the complex cosine. -/
+theorem tendsto_one_sub_cos_div_nhdsNE_zero :
+    Filter.Tendsto (fun z : ℂ ↦ (1 - cos z) / z) (𝓝[≠] 0) (𝓝 0) := by
+  have hd : HasDerivAt cos 0 0 := by simpa using hasDerivAt_cos 0
+  simpa [slope_def_field, ← neg_div, neg_sub] using (hasDerivAt_iff_tendsto_slope.mp hd).neg
 
 end Complex
 
@@ -307,7 +323,7 @@ end
 
 namespace Real
 
-variable {x y z : ℝ}
+variable {x : ℝ}
 
 theorem hasStrictDerivAt_sin (x : ℝ) : HasStrictDerivAt sin (cos x) x :=
   (Complex.hasStrictDerivAt_sin x).real_of_complex
@@ -315,7 +331,7 @@ theorem hasStrictDerivAt_sin (x : ℝ) : HasStrictDerivAt sin (cos x) x :=
 theorem hasDerivAt_sin (x : ℝ) : HasDerivAt sin (cos x) x :=
   (hasStrictDerivAt_sin x).hasDerivAt
 
-theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
+theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using! (hasDerivAt_sin 0).isLittleO
 
 @[fun_prop]
 theorem contDiff_sin {n} : ContDiff ℝ n sin :=
@@ -338,6 +354,7 @@ lemma analyticWithinAt_sin {s : Set ℝ} : AnalyticWithinAt ℝ sin s x :=
   contDiff_sin.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Real.sin` is real analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_sin {s : Set ℝ} : AnalyticOnNhd ℝ sin s :=
   fun _ _ ↦ analyticAt_sin
 
@@ -376,6 +393,7 @@ lemma analyticWithinAt_cos {s : Set ℝ} : AnalyticWithinAt ℝ cos s x :=
   contDiff_cos.contDiffWithinAt.analyticWithinAt
 
 /-- The function `Real.cos` is real analytic. -/
+@[fun_prop]
 theorem analyticOnNhd_cos {s : Set ℝ} : AnalyticOnNhd ℝ cos s :=
   fun _ _ ↦ analyticAt_cos
 
@@ -389,6 +407,17 @@ theorem deriv_cos : deriv cos x = -sin x :=
 @[simp]
 theorem deriv_cos' : deriv cos = fun x => -sin x :=
   funext fun _ => deriv_cos
+
+/-- The limit `lim_{x → 0} (sin x) / x = 1`. -/
+theorem tendsto_sin_div_nhdsNE_zero : Filter.Tendsto (fun x : ℝ ↦ sin x / x) (𝓝[≠] 0) (𝓝 1) :=
+  (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_sin 0)).congr
+    fun _ ↦ by simp [slope_def_field]
+
+/-- The limit `lim_{x → 0} (1 - cos x) / x = 0`. -/
+theorem tendsto_one_sub_cos_div_nhdsNE_zero :
+    Filter.Tendsto (fun x : ℝ ↦ (1 - cos x) / x) (𝓝[≠] 0) (𝓝 0) := by
+  have hd : HasDerivAt cos 0 0 := by simpa using hasDerivAt_cos 0
+  simpa [slope_def_field, ← neg_div, neg_sub] using (hasDerivAt_iff_tendsto_slope.mp hd).neg
 
 end Real
 
@@ -742,14 +771,10 @@ theorem Complex.logDeriv_exp : logDeriv (Complex.exp) = 1 := by
   ext
   rw [logDeriv, Complex.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
 
-@[deprecated (since := "2026-02-05")] alias Complex.LogDeriv_exp := Complex.logDeriv_exp
-
 @[simp]
 theorem Real.logDeriv_exp : logDeriv (Real.exp) = 1 := by
   ext
   rw [logDeriv, Real.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
-
-@[deprecated (since := "2026-02-05")] alias Real.LogDeriv_exp := Real.logDeriv_exp
 
 end LogDeriv
 

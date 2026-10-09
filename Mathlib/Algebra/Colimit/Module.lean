@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Colimit.DirectLimit
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.Congruence.Defs
-public import Mathlib.Data.Finset.Order
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -32,10 +31,9 @@ so as to make the operations (addition etc.) "computable".
 @[expose] public section
 
 suppress_compilation
+noncomputable section -- needed for `deriving`
 
 variable {R : Type*} [Semiring R] {ι : Type*} [Preorder ι] {G : ι → Type*}
-
-open Submodule
 
 namespace Module
 
@@ -129,7 +127,7 @@ to a unique map out of the direct limit. -/
 def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₗ[R] P where
   __ := AddCon.lift _ (DirectSum.toModule R ι P g) <|
-    AddCon.addConGen_le fun _ _ ⟨_, _⟩ ↦ by simpa using (Hg _ _ _ _).symm
+    AddCon.addConGen_le.2 fun _ _ ⟨_, _⟩ ↦ by simpa using (Hg _ _ _ _).symm
   map_smul' r := by rintro ⟨x⟩; exact map_smul (DirectSum.toModule R ι P g) r x
 
 variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
@@ -178,7 +176,7 @@ family of linear maps `gᵢ : Gᵢ ⟶ G'ᵢ` such that `g ∘ f = f' ∘ g` ind
 def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j h = f' i j h ∘ₗ g i) :
     DirectLimit G f →ₗ[R] DirectLimit G' f' :=
   lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ g i) fun i j h g ↦ by
-    have eq1 := LinearMap.congr_fun (hg i j h) g
+    have eq1 := congr($(hg i j h) g)
     simp only [LinearMap.coe_comp, Function.comp_apply] at eq1 ⊢
     rw [eq1, of_f]
 
@@ -210,7 +208,7 @@ family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` in
 -/
 def congr (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i) :
     DirectLimit G f ≃ₗ[R] DirectLimit G' f' :=
-  LinearEquiv.ofLinear (map (e ·) he)
+  LinearEquiv.ofLinearMap (map (e ·) he)
     (map (fun i ↦ (e i).symm) fun i j h ↦ by
       rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
         refl_toLinearMap, comp_id])
@@ -241,15 +239,17 @@ open _root_.DirectLimit
 /-- The direct limit constructed as a quotient of the direct sum is isomorphic to
 the direct limit constructed as a quotient of the disjoint union. -/
 def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
-  .ofLinear
+  .ofLinearMap
     (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Module.lift _ _ _ _ (of _ _ _ _) fun _ _ _ _ ↦ of_f ..)
     (by ext; simp)
     (by ext; simp)
 
+@[simp]
 theorem linearEquiv_of {i g} : linearEquiv _ _ (of _ _ G f i g) = ⟦⟨i, g⟩⟧ := by
-  simp [linearEquiv]; rfl
+  simp [linearEquiv]
 
+@[simp]
 theorem linearEquiv_symm_mk {g} : (linearEquiv _ _).symm ⟦g⟧ = of _ _ G f g.1 g.2 := rfl
 
 end equiv
@@ -268,7 +268,7 @@ theorem exists_eq_of_of_eq {i x y} (h : of R ι G f i x = of R ι G f i y) :
 bigger module in the directed system. -/
 theorem of.zero_exact {i x} (H : of R ι G f i x = 0) :
     ∃ j hij, f i j hij x = (0 : G j) := by
-  convert exists_eq_of_of_eq (H.trans (map_zero <| _).symm)
+  convert! exists_eq_of_of_eq (H.trans (map_zero _).symm)
   rw [map_zero]
 
 end DirectLimit
@@ -282,6 +282,7 @@ variable (G) [∀ i, AddCommMonoid (G i)]
 /-- The direct limit of a directed system is the abelian groups glued together along the maps. -/
 def DirectLimit [DecidableEq ι] (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
   @Module.DirectLimit ℕ _ ι _ G _ _ (fun i j hij ↦ (f i j hij).toNatLinearMap) _
+deriving AddCommMonoid, Inhabited
 
 namespace DirectLimit
 
@@ -293,17 +294,12 @@ local instance directedSystem [h : DirectedSystem G fun i j h ↦ f i j h] :
 
 variable [DecidableEq ι]
 
-instance : AddCommMonoid (DirectLimit G f) :=
-  Module.DirectLimit.addCommMonoid G fun i j hij ↦ (f i j hij).toNatLinearMap
-
 instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)]
     (f : ∀ i j, i ≤ j → G i →+ G j) : AddCommGroup (DirectLimit G f) :=
-  Module.DirectLimit.addCommGroup G fun i j hij ↦ (f i j hij).toNatLinearMap
+  inferInstanceAs <| AddCommGroup (Module.DirectLimit G _)
 
-instance : Inhabited (DirectLimit G f) :=
-  ⟨0⟩
-
-instance [IsEmpty ι] : Unique (DirectLimit G f) := Module.DirectLimit.unique _ _
+instance [IsEmpty ι] : Unique (DirectLimit G f) :=
+  inferInstanceAs <| Unique (Module.DirectLimit G _)
 
 /-- The canonical map from a component to the direct limit. -/
 def of (i) : G i →+ DirectLimit G f :=
@@ -384,7 +380,7 @@ def map (g : (i : ι) → G i →+ G' i)
     (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i)) :
     DirectLimit G f →+ DirectLimit G' f' :=
   lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
-    have eq1 := DFunLike.congr_fun (hg i j h) g
+    have eq1 := congr($(hg i j h) g)
     simp only [AddMonoidHom.coe_comp, Function.comp_apply] at eq1 ⊢
     rw [eq1, of_f]
 
@@ -409,6 +405,7 @@ lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →
       DirectLimit G f →+ DirectLimit G'' f'') := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
 family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
@@ -419,9 +416,9 @@ def congr (e : (i : ι) → G i ≃+ G' i)
     DirectLimit G f ≃+ DirectLimit G' f' :=
   AddMonoidHom.toAddEquiv (map (e ·) he)
     (map (fun i ↦ (e i).symm) fun i j h ↦ DFunLike.ext _ _ fun x ↦ by
-      have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
+      have eq1 := congr($(he i j h) ((e i).symm x))
       simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, Function.comp_apply,
-        AddMonoidHom.coe_coe, AddEquiv.apply_symm_apply] at eq1 ⊢
+        AddMonoidHom.coe_ofClass, AddEquiv.apply_symm_apply] at eq1 ⊢
       simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
@@ -435,7 +432,7 @@ lemma congr_symm_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :
     (congr e he).symm (of G' f' i g) = of G f i ((e i).symm g) := by
-  simp only [congr, AddMonoidHom.toAddEquiv_symm_apply, map_apply_of, AddMonoidHom.coe_coe]
+  simp only [congr, AddMonoidHom.toAddEquiv_symm_apply, map_apply_of, AddMonoidHom.coe_ofClass]
 
 end functorial
 

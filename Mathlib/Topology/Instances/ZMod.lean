@@ -5,8 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Topology.Order
 public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Topology.Order
 
 /-!
 # Topology on `ZMod N`
@@ -14,7 +14,7 @@ public import Mathlib.Data.ZMod.Defs
 We equip `ZMod N` with the discrete topology.
 -/
 
-@[expose] public section
+public section
 
 namespace ZMod
 

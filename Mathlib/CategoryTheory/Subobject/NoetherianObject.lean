@@ -5,11 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.Order.OrderIsoNat
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.Subobject.Lattice
+
+import Mathlib.Order.OrderIsoNat
 
 /-!
 # Noetherian objects
@@ -75,7 +75,7 @@ lemma isNoetherianObject_iff_not_strictMono :
   refine ⟨fun _ ↦ not_strictMono_of_wellFoundedGT, fun h ↦ ?_⟩
   dsimp only [IsNoetherianObject]
   rw [ObjectProperty.is_iff, isNoetherianObject, WellFoundedGT,
-    isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
+    RelEmbedding.wellFounded_iff_isEmpty]
   exact ⟨fun f ↦ h f.toFun (fun a b h ↦ f.map_rel_iff.2 h)⟩
 
 variable {X} in
@@ -84,6 +84,7 @@ lemma not_strictMono_of_isNoetherianObject
     ¬ StrictMono f :=
   (isNoetherianObject_iff_not_strictMono X).1 inferInstance f
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isNoetherianObject_iff_isEventuallyConstant :
     IsNoetherianObject X ↔ ∀ (F : ℕ ⥤ MonoOver X),
       IsFiltered.IsEventuallyConstant F := by

@@ -5,9 +5,9 @@ Authors: Jeremy Avigad
 -/
 module
 
+public import Mathlib.Algebra.Group.Int.Units
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.Units
-public import Mathlib.Algebra.Group.Int.Units
 
 /-!
 # Basic lemmas for `ℤˣ`.
@@ -30,9 +30,9 @@ namespace Int
 /-! #### Units -/
 
 lemma units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
-  simpa only [Units.ext_iff] using isUnit_eq_one_or u.isUnit
+  simpa only [Units.ext_iff] using! isUnit_eq_one_or u.isUnit
 
 lemma units_ne_iff_eq_neg {u v : ℤˣ} : u ≠ v ↔ u = -v := by
-  simpa only [Ne, Units.ext_iff] using isUnit_ne_iff_eq_neg u.isUnit v.isUnit
+  simpa only [Ne, Units.ext_iff] using! isUnit_ne_iff_eq_neg u.isUnit v.isUnit
 
 end Int

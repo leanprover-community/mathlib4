@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 # Stability properties of morphism properties on functor categories
@@ -22,7 +22,7 @@ then the same holds in the category `J ⥤ C`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' v'' u u' u''
 

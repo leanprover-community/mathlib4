@@ -20,7 +20,7 @@ for those subobjects.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

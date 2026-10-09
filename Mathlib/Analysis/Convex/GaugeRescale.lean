@@ -6,7 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Convex.Gauge
-public import Mathlib.Analysis.Normed.Module.Convex
+
+import Mathlib.Analysis.Normed.Module.Convex
 /-!
 # "Gauge rescale" homeomorphism between convex sets
 
@@ -164,7 +165,7 @@ theorem exists_homeomorph_image_eq {s t : Set E}
       e '' frontier s = frontier t := by
   rsuffices ⟨e, h₁, h₂⟩ : ∃ e : E ≃ₜ E, e '' interior s = interior t ∧ e '' closure s = closure t
   · refine ⟨e, h₁, h₂, ?_⟩
-    simp_rw [← closure_diff_interior, image_diff e.injective, h₁, h₂]
+    simp_rw [← closure_sdiff_interior, image_sdiff e.injective, h₁, h₂]
   rcases hsne with ⟨x, hx⟩
   rcases htne with ⟨y, hy⟩
   set h : E ≃ₜ E := by

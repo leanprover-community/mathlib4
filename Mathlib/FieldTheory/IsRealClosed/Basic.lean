@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Domain
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Algebra.Ring.Semireal.Defs
-public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Real Closed Field
@@ -35,7 +36,7 @@ real closed, rcf
 
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 

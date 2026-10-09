@@ -433,7 +433,7 @@ instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α)
   (Finset.coe_nonempty.mpr (s.insert_nonempty i)).to_subtype
 
 theorem ne_insert_of_notMem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ insert a t := by
-  contrapose! h
+  contrapose h
   simp [h]
 
 theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by grind

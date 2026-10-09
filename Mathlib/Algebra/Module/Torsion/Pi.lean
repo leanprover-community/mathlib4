@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Product of torsion-free modules
@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Module.Pi
 This file shows that the product of torsion-free modules is torsion-free.
 -/
 
-@[expose] public section
+public section
 
 open Module
 

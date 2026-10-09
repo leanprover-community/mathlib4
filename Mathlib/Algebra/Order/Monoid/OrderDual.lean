@@ -5,19 +5,16 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Synonym
-public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 
 /-! # Ordered monoid structures on the order dual. -/
 
-@[expose] public section
+public section
 
 universe u
 
 variable {α : Type u}
-
-open Function
 
 namespace OrderDual
 

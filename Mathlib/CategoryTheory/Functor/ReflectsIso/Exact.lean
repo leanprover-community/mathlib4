@@ -5,11 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
-public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
 
 /-!
 # Exactness properties of functors which jointly reflect isomorphisms
@@ -28,7 +26,7 @@ between short complexes or homological complexes in `C`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -107,8 +105,8 @@ section
 variable {α : Type*} {c : ComplexShape α} {K L : HomologicalComplex C c}
 
 lemma quasiIsoAt_iff (f : K ⟶ L) (a : α) :
-    QuasiIsoAt f a ↔ ∀ (i : I), QuasiIsoAt (((F i).mapHomologicalComplex c).map f) a  := by
-  simpa only [quasiIsoAt_iff' _ _ _ _ rfl rfl] using
+    QuasiIsoAt f a ↔ ∀ (i : I), QuasiIsoAt (((F i).mapHomologicalComplex c).map f) a := by
+  simpa only [quasiIsoAt_iff' _ _ _ _ rfl rfl] using!
     hP.shortComplexQuasiIso_iff _
 
 lemma quasiIso_iff (f : K ⟶ L) :

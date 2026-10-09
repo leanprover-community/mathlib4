@@ -5,13 +5,13 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.PDeriv
-public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Algebra.Polynomial.Eval.SMul
-public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.RingTheory.Polynomial.Pochhammer
+
+import Mathlib.Algebra.MvPolynomial.PDeriv
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Bernstein polynomials
@@ -56,7 +56,7 @@ def bernsteinPolynomial (n ν : ℕ) : R[X] :=
   (choose n ν : R[X]) * X ^ ν * (1 - X) ^ (n - ν)
 
 example : bernsteinPolynomial ℤ 3 2 = 3 * X ^ 2 - 3 * X ^ 3 := by
-  norm_num [bernsteinPolynomial, choose]
+  simp [bernsteinPolynomial, choose]
   ring
 
 namespace bernsteinPolynomial
@@ -111,7 +111,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
       bernsteinPolynomial, map_add, map_natCast, Nat.cast_one]
   conv_rhs => rw [mul_sub]
   -- We'll prove the two terms match up separately.
-  refine congr (congr_arg Sub.sub ?_) ?_
+  congrm ?_ - ?_
   · simp only [← mul_assoc]
     apply congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
     -- Now it's just about binomial coefficients
@@ -150,7 +150,7 @@ theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
       intro h
       apply mul_eq_zero_of_right
       rw [ih _ _ (Nat.le_of_succ_le h), sub_zero]
-      convert ih _ _ (Nat.pred_le_pred h)
+      convert! ih _ _ (Nat.pred_le_pred h)
       exact (Nat.succ_pred_eq_of_pos (k.succ_pos.trans_le h)).symm
 
 @[simp]
@@ -230,7 +230,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
   induction k with
   | zero => apply linearIndependent_empty_type
   | succ k ih =>
-    apply linearIndependent_fin_succ'.mpr
+    apply linearIndependent_finSucc'.mpr
     fconstructor
     · exact ih (le_of_lt h)
     · -- The actual work!

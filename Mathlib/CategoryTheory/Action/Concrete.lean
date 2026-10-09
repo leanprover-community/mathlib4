@@ -5,12 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Constructors for `Action V G` for some concrete categories
@@ -26,6 +24,20 @@ universe u v
 
 open CategoryTheory Limits
 
+namespace TypeCat
+
+instance (X : Type u) : CoeFun (End X) (fun _ ↦ X → X) where
+  coe e := e.asHom
+
+/-- The group isomorphism between `Function.End X` and `CategoryTheory.End X`. -/
+@[simps apply symm_apply]
+def endEquiv (X : Type u) : Function.End X ≃* End X where
+  toFun f := .of (↾f)
+  invFun f := (ConcreteCategory.hom f.asHom).toFun
+  map_mul' := by aesop
+
+end TypeCat
+
 namespace Action
 
 section
@@ -33,27 +45,29 @@ variable {G : Type u} [Group G] {A : Action (Type u) G}
 
 @[simp]
 theorem ρ_inv_self_apply (g : G) (x : A.V) :
-    A.ρ g⁻¹ (A.ρ g x) = x :=
-  show (A.ρ g⁻¹ * A.ρ g) x = x by simp [← map_mul]
+    A.ρ g⁻¹ (A.ρ g x) = x := by
+  simp [← ConcreteCategory.comp_apply, ← End.mul_asHom, ← map_mul]
 
 @[simp]
 theorem ρ_self_inv_apply (g : G) (x : A.V) :
-    A.ρ g (A.ρ g⁻¹ x) = x :=
-  show (A.ρ g * A.ρ g⁻¹) x = x by simp [← map_mul]
+    A.ρ g (A.ρ g⁻¹ x) = x := by
+  simp [← ConcreteCategory.comp_apply, ← End.mul_asHom, ← map_mul]
 
 end
 
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
 @[simps -isSimp]
-def ofMulAction (G : Type*) (H : Type u) [Monoid G] [MulAction G H] : Action (Type u) G where
+def ofMulAction (G : Type*) (H : Type u) [Monoid G] [MulAction G H] :
+    Action (Type u) G where
   V := H
-  ρ := @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := (TypeCat.endEquiv _).toMonoidHom.comp (@MulAction.toEndHom _ _ _ (by assumption))
 
 @[simp]
-theorem ofMulAction_apply {G H : Type*} [Monoid G] [MulAction G H] (g : G) (x : H) :
+theorem ofMulAction_apply {G : Type*} {H : Type*} [Monoid G] [MulAction G H] (g : G) (x : H) :
     (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a family `F` of types with `G`-actions, this is the limit cone demonstrating that the
 product of `F` as types is a product in the category of `G`-sets. -/
 def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι → Type max v u)
@@ -61,14 +75,14 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
     LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G (F i)) where
   cone :=
     { pt := Action.ofMulAction G (∀ i : ι, F i)
-      π := Discrete.natTrans (fun i => ⟨fun x => x i.as, fun _ => rfl⟩) }
+      π := Discrete.natTrans (fun i => ⟨↾fun x => x i.as, fun _ => rfl⟩) }
   isLimit :=
     { lift := fun s =>
-        { hom := fun x i => (s.π.app ⟨i⟩).hom x
+        { hom := ↾fun x i => (s.π.app ⟨i⟩).hom x
           comm := fun g => by
             ext x
             funext j
-            exact congr_fun ((s.π.app ⟨j⟩).comm g) x }
+            congrm $((s.π.app ⟨j⟩).comm g) x }
       fac := fun _ _ => rfl
       uniq := fun s f h => by
         ext x
@@ -101,43 +115,47 @@ instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
 def ofMulAction (G : Type*) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat G where
   V := H
-  ρ := InducedCategory.endEquiv.symm.toMonoidHom.comp MulAction.toEndHom
+  ρ := InducedCategory.endEquiv.symm.toMonoidHom.comp <| (TypeCat.endEquiv _).toMonoidHom.comp
+    MulAction.toEndHom
 
 @[simp]
 theorem ofMulAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
-    (g : G) (x : H) : ConcreteCategory.hom ((FintypeCat.ofMulAction G H).ρ g) x = (g • x : H) :=
+    (g : G) (x : H) : ((FintypeCat.ofMulAction G H).ρ g).asHom x = (g • x : H) :=
   rfl
 
 section
 
 /-- Shorthand notation for the quotient of `G` by `H` as a finite `G`-set. -/
-notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.of <| G ⧸ H)
+notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G ↧(G ⧸ H)
 
 variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `N` is a normal subgroup of `G`, then this is the group homomorphism
 sending an element `g` of `G` to the `G`-endomorphism of `G ⧸ₐ N` given by
 multiplication with `g⁻¹` on the right. -/
 def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
-  toFun v :=
-  { hom := FintypeCat.homMk (Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
-      apply (QuotientGroup.leftRel_apply).mpr
-      -- We avoid `group` here to minimize imports while low in the hierarchy;
-      -- typically it would be better to invoke the tactic.
-      simpa [mul_assoc] using Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _)
-    comm := fun (g : G) ↦ by
-      ext (x : G ⧸ N)
-      induction x using Quotient.inductionOn with | h x
-      dsimp
-      apply (Quotient.lift_mk _ _ _).trans
-      simp only [smul_eq_mul, QuotientGroup.mk_mul, mul_assoc]
-      rfl }
+  toFun v := .of
+    { hom := FintypeCat.homMk (Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
+        apply (QuotientGroup.leftRel_apply).mpr
+        -- We avoid `group` here to minimize imports while low in the hierarchy;
+        -- typically it would be better to invoke the tactic.
+        simpa [mul_assoc] using Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _)
+      comm := fun (g : G) ↦ by
+        ext (x : G ⧸ N)
+        induction x using Quotient.inductionOn with | h x
+        dsimp
+        apply (Quotient.lift_mk _ _ _).trans
+        simp only [QuotientGroup.mk_mul, mul_assoc]
+        rfl }
   map_one' := by
+    ext : 1
     apply Action.hom_ext
     ext (x : G ⧸ N)
     induction x using Quotient.inductionOn
     simp
   map_mul' σ τ := by
+    ext : 1
     apply Action.hom_ext
     ext (x : G ⧸ N)
     induction x using Quotient.inductionOn with | _ x
@@ -145,10 +163,11 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
     rw [mul_inv_rev, mul_assoc]
 
 @[simp]
-lemma toEndHom_apply [N.Normal] (g h : G) : (toEndHom N g).hom ⟦h⟧ = ⟦h * g⁻¹⟧ := rfl
+lemma toEndHom_apply [N.Normal] (g h : G) : (toEndHom N g).asHom.hom ⟦h⟧ = ⟦h * g⁻¹⟧ := rfl
 
 variable {N} in
-lemma toEndHom_trivial_of_mem [N.Normal] {n : G} (hn : n ∈ N) : toEndHom N n = 𝟙 (G ⧸ₐ N) := by
+lemma toEndHom_trivial_of_mem [N.Normal] {n : G} (hn : n ∈ N) : toEndHom N n = 1 := by
+  ext : 1
   apply Action.hom_ext
   ext (x : G ⧸ N)
   induction x using Quotient.inductionOn
@@ -162,7 +181,7 @@ def quotientToEndHom [N.Normal] : H ⧸ Subgroup.subgroupOf N H →* End (G ⧸�
 
 @[simp]
 lemma quotientToEndHom_mk [N.Normal] (x : H) (g : G) :
-    (quotientToEndHom H N ⟦x⟧).hom ⟦g⟧ = ⟦g * x⁻¹⟧ :=
+    (quotientToEndHom H N ⟦x⟧).asHom.hom ⟦g⟧ = ⟦g * x⁻¹⟧ :=
   rfl
 
 /-- If `N` and `H` are subgroups of a group `G` with `N ≤ H`, this is the canonical
@@ -191,18 +210,20 @@ variable [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV]
 
 instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
     MulAction G (ToType X) where
-  smul g x := ConcreteCategory.hom (X.ρ g) x
+  smul g x := (X.ρ g).asHom x
   one_smul x := by
-    change ConcreteCategory.hom (X.ρ 1) x = x
+    change (X.ρ 1).asHom x = x
     simp
   mul_smul g h x := by
-    change ConcreteCategory.hom (X.ρ (g * h)) x =
-      ConcreteCategory.hom (X.ρ g) ((ConcreteCategory.hom (X.ρ h)) x)
+    change (X.ρ (g * h)).asHom x = (X.ρ g).asHom ((X.ρ h).asHom x)
     simp
 
-/- Specialize `instMulAction` to assist typeclass inference. -/
+/-- Specialize `instMulAction` to assist typeclass inference. -/
 instance {G : Type*} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
   Action.instMulAction X
+
+lemma ρ_apply_eq_smul {G : Type*} [Monoid G] (X : Action V G) (g : G) (v : ToType X.V) :
+    (X.ρ g).asHom v = g • v := rfl
 
 end ToMulAction
 

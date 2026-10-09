@@ -5,17 +5,18 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Basic
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
-public import Mathlib.Data.List.TakeDrop
-public import Mathlib.Data.List.Forall2
-public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
-public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Order.Basic
+
+import Mathlib.Algebra.Divisibility.Basic
 
 /-!
 # Sums and products from lists
@@ -216,6 +217,11 @@ theorem mul_prod_eraseIdx {i} (hlen : i < l.length) (hcomm : ∀ a' ∈ l.take i
       hcomm a' (by rwa [take_eraseIdx_eq_take_of_le l i i (Nat.le_refl i)] at a'_mem)),
     insertIdx_eraseIdx_getElem hlen]
 
+@[to_additive (attr := simp)]
+theorem prod_filter_bne_one [BEq M] [LawfulBEq M] (l : List M) :
+    (l.filter (· != 1)).prod = l.prod := by
+  classical induction l <;> grind
+
 end Monoid
 
 section CommMonoid
@@ -244,12 +250,6 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
--- In order to make `to_additive` work, this theorem is adjusted to `List.sum_reverse` from core
-@[to_additive existing, simp]
-lemma prod_reverse [One α] [Mul α] [@Std.Associative α (· * ·)] [@Std.Commutative α (· * ·)]
-    [@Std.LawfulLeftIdentity α α (· * ·) 1] (l : List α) : prod l.reverse = prod l :=
-  @List.sum_reverse α ⟨1⟩ ⟨(· * ·)⟩ _ _ _ l
-
 @[to_additive]
 lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
     ∀ l l' : List M,
@@ -258,7 +258,7 @@ lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
   | [], ys => by simp
   | xs, [] => by simp
   | x :: xs, y :: ys => by
-    simp only [drop, length, zipWith_cons_cons, prod_cons]
+    simp only [zipWith_cons_cons, prod_cons]
     conv =>
       lhs; rw [mul_assoc]; right; rw [mul_comm, mul_assoc]; right
       rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]

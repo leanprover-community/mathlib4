@@ -5,13 +5,14 @@ Authors: Markus Himmel
 -/
 module
 
+public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.Indization.Equalizers
 public import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
-public import Mathlib.CategoryTheory.Limits.Indization.Products
-public import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
+
+import Mathlib.CategoryTheory.Limits.Indization.Products
+import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # The category of Ind-objects
@@ -61,7 +62,7 @@ universe w v u
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C]
 
@@ -284,6 +285,7 @@ instance [HasColimitsOfShape WalkingParallelPair C] :
 instance [HasFiniteColimits C] : HasColimits (Ind C) :=
   has_colimits_of_hasCoequalizers_and_coproducts
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A way to understand morphisms in `Ind C`: every morphism is induced by a natural transformation
 of diagrams. -/
 theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
@@ -294,7 +296,7 @@ theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
   refine ⟨P.I, inferInstance, inferInstance, P.F₁, P.F₂, P.φ, ⟨Arrow.isoMk ?_ ?_ ?_⟩⟩
   · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.zero
   · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.one
-  · simpa using
+  · simpa using!
       (P.parallelPairIsoParallelPairCompIndYoneda.hom.naturality WalkingParallelPairHom.left).symm
 
 section Small

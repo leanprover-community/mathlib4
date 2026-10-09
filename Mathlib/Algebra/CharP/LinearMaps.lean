@@ -5,8 +5,9 @@ Authors: Wanyi He, Huanyu Zheng
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Module.Torsion.Basic
+
+import Mathlib.Algebra.CharP.Algebra
 
 /-!
 # Characteristic of the ring of linear Maps
@@ -33,7 +34,7 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
 
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 

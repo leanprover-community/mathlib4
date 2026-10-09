@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.DirectSum.LinearMap
 public import Mathlib.Algebra.Lie.Weights.Cartan
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
-public import Mathlib.RingTheory.Finiteness.Nilpotent
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Order.Filter.Cofinite
+
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Chains of roots and weights
@@ -70,7 +70,7 @@ variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
-variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+variable [HasUniqueDiv R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
 include hχ₁
 
 lemma eventually_genWeightSpace_smul_add_eq_bot :
@@ -148,9 +148,9 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilp
     obtain ⟨k, hk⟩ := k
     suffices genWeightSpace M ((k + 1) • α + χ) ≤ genWeightSpaceChain M α χ p q by
       apply this
-      -- was `simpa using [...]` and very slow
+      -- was `simpa using! [...]` and very slow
       -- (https://github.com/leanprover-community/mathlib4/issues/19751)
-      simpa only [zsmul_eq_mul, Int.cast_add, Pi.intCast_def, Int.cast_one] using
+      simpa only [zsmul_eq_mul, Int.cast_add, Pi.intCast_def, Int.cast_one] using!
         (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
             (by rw [add_smul]; abel) (⟨x, hx⟩ ⊗ₜ ⟨z, hz⟩)).property
     rw [genWeightSpaceChain]
@@ -172,8 +172,8 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieRing.IsNilpo
 section IsCartanSubalgebra
 
 variable [H.IsCartanSubalgebra] [IsNoetherian R L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
-set_option backward.isDefEq.respectTransparency false in
 lemma trace_toEnd_genWeightSpaceChain_eq_zero
     (hp : genWeightSpace M (p • α + χ) = ⊥)
     (hq : genWeightSpace M (q • α + χ) = ⊥)
@@ -203,6 +203,7 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
   | add => simp_all
   | smul => simp_all
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
 `I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
 integral linear combination between `α` and any weight `χ` of a representation.
@@ -219,7 +220,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   let b := ∑ i ∈ Finset.Ioo p q, finrank R (genWeightSpace M (i • α + χ))
   have hb : 0 < b := by
     replace hχ : Nontrivial (genWeightSpace M χ) := by rwa [LieSubmodule.nontrivial_iff_ne_bot]
-    refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
+    refine Finset.sum_pos' (fun _ _ ↦ zero_le) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
   refine ⟨a, b, Int.natCast_pos.mpr hb, fun x hx ↦ ?_⟩
@@ -240,7 +241,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   subst a b N
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
-  convert_to _ =
+  convert_to! _ =
     ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })
       ((toEnd R { x // x ∈ H } { x // x ∈ genWeightSpace M (k • α + χ) }) x)
   simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,
@@ -254,7 +255,7 @@ section
 
 variable {M}
 variable [LieRing.IsNilpotent L]
-variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M]
+variable [HasUniqueDiv R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/
@@ -273,8 +274,8 @@ def chainBotCoeff : ℕ := chainTopCoeff (-α) β
 @[simp] lemma chainBotCoeff_neg : chainBotCoeff (-α) β = chainTopCoeff α β := by
   rw [← chainTopCoeff_neg, neg_neg]
 
-@[simp] lemma chainTopCoeff_zero : chainTopCoeff 0 β = 0 := dif_pos rfl
-@[simp] lemma chainBotCoeff_zero : chainBotCoeff 0 β = 0 := dif_pos neg_zero
+@[simp] lemma chainTopCoeff_zero : chainTopCoeff 0 β = 0 := dite_eq_left rfl
+@[simp] lemma chainBotCoeff_zero : chainBotCoeff 0 β = 0 := dite_eq_left neg_zero
 
 section
 variable (hα : α ≠ 0)
@@ -285,7 +286,7 @@ lemma chainTopCoeff_add_one :
     chainTopCoeff α β + 1 =
       Nat.find (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists := by
   classical
-  rw [chainTopCoeff, dif_neg hα]
+  rw [chainTopCoeff, dite_eq_right hα]
   apply Nat.succ_pred_eq_of_pos
   rw [zero_lt_iff]
   intro e

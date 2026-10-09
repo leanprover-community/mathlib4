@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Monomorphisms are stable under cobase change
@@ -17,7 +17,7 @@ In an abelian category `C`, the class of morphisms
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

@@ -5,7 +5,6 @@ Authors: Geoffrey Irving
 -/
 module
 
-public import Aesop
 public meta import Mathlib.Tactic.Bound.Attribute
 public meta import Mathlib.Tactic.NormNum.Core
 public import Mathlib.Tactic.Bound.Attribute
@@ -89,7 +88,7 @@ We close numerical goals with `norm_num` and `linarith`.
 
 public meta section
 
-open Lean Elab Meta Term Mathlib.Tactic Syntax
+open Lean Mathlib.Tactic
 open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
 
 namespace Mathlib.Tactic.Bound
@@ -183,7 +182,7 @@ TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `lia` as
 -/
 
 /-- Close numerical goals with `norm_num` -/
-def boundNormNum : Aesop.RuleTac :=
+meta def boundNormNum : Aesop.RuleTac :=
   Aesop.SingleRuleTac.toRuleTac fun i => do
     let tac := do Mathlib.Meta.NormNum.elabNormNum .missing .missing .missing
     let goals ← Lean.Elab.Tactic.run i.goal tac |>.run'
@@ -192,7 +191,7 @@ def boundNormNum : Aesop.RuleTac :=
 attribute [aesop unsafe 10% tactic (rule_sets := [Bound])] boundNormNum
 
 /-- Close numerical and other goals with `linarith` -/
-def boundLinarith : Aesop.RuleTac :=
+meta def boundLinarith : Aesop.RuleTac :=
   Aesop.SingleRuleTac.toRuleTac fun i => do
     Linarith.linarith false [] {} i.goal
     return (#[], none, some .hundred)

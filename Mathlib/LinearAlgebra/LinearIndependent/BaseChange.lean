@@ -5,9 +5,13 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.LinearAlgebra.TensorProduct.Basis
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+
+import Mathlib.LinearAlgebra.TensorProduct.Basis
+import Mathlib.LinearAlgebra.TensorProduct.Pi
+import Mathlib.RingTheory.Localization.Module
+import Mathlib.Tactic.NormNum
 
 /-!
 
@@ -17,7 +21,7 @@ This file is a place to collect base change results for linear independence.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set TensorProduct
 

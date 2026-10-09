@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Data.Rat.Init
+public import Mathlib.Logic.Encodable.Basic
 
 /-! # The rationals are `Encodable`.
 
@@ -15,7 +15,7 @@ As a consequence we also get the instance `Countable ℚ`.
 This is kept separate from `Data.Rat.Defs` in order to minimize imports.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Rat

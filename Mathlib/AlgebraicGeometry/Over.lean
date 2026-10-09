@@ -20,7 +20,7 @@ We define these as thin wrappers around `CategoryTheory/Comma/OverClass`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace AlgebraicGeometry.Scheme
 
@@ -28,7 +28,7 @@ universe u
 
 open CategoryTheory
 
-variable {X Y : Scheme.{u}} (f : X.Hom Y) (S S' : Scheme.{u})
+variable {X Y : Scheme.{u}} (f : X.Hom Y) (S : Scheme.{u})
 
 /--
 `X.Over S` is the typeclass containing the data of a structure morphism `X ↘ S : X ⟶ S`.

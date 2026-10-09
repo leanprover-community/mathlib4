@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
-public import Mathlib.Algebra.Homology.Linear
-public import Mathlib.CategoryTheory.Localization.Linear
 public import Mathlib.CategoryTheory.Shift.Linear
 
 /-!
@@ -15,9 +13,9 @@ public import Mathlib.CategoryTheory.Shift.Linear
 
 -/
 
-@[expose] public section
+public section
 
-open CategoryTheory Category Limits Pretriangulated ZeroObject Preadditive
+open CategoryTheory
 
 universe t w v u
 
@@ -40,6 +38,6 @@ instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Linear R :=
   Shift.linear_of_localization R Qh (HomotopyCategory.subcategoryAcyclic C).trW _
 
 instance (n : ℤ) : Functor.Linear R (DerivedCategory.singleFunctor C n) :=
-  inferInstanceAs (Functor.Linear R (HomotopyCategory.singleFunctor C n ⋙ Qh))
+  Functor.linear_of_iso _ (singleFunctorIsoCompQh C n).symm
 
 end DerivedCategory

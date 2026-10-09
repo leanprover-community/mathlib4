@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
-public import Mathlib.RingTheory.LocalRing.Basic
+
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Approximate roots and polynomials in a normed field
@@ -34,7 +35,7 @@ current theorem `IsAlgClosed.of_denseRange`.
 Approximation, polynomial, normed field, continuity of roots
 -/
 
-@[expose] public section
+public section
 
 variable {K L : Type*}
 
@@ -90,13 +91,14 @@ theorem exists_roots_norm_sub_lt_of_norm_coeff_sub_lt (hε : 0 < ε) {a : K} (ha
   _ ≤ ∑ i ∈ Finset.range (g.natDegree + 1), ‖(g.coeff i - f.coeff i) * a ^ i‖ := by
     have := norm_sum_le (Finset.range (g.natDegree + 1))
         (fun i ↦ (C (g.coeff i - f.coeff i) * X ^ i).eval a)
-    simpa [eval_mul, eval_finset_sum] using this
+    simpa [eval_mul, eval_finsetSum] using this
     -- The following tactic does not work here:
-    -- simpa [eval_mul, eval_finset_sum] using norm_sum_le (Finset.range (g.natDegree + 1))
+    -- simpa [eval_mul, eval_finsetSum] using norm_sum_le (Finset.range (g.natDegree + 1))
     --     (fun i ↦ (C (g.coeff i - f.coeff i) * X ^ i).eval a)
   _ < _ := by
     rw [hdeg]
-    convert Finset.sum_lt_sum_of_nonempty (g := fun i ↦ ε * (‖a‖ ⊔ 1) ^ ↑f.natDegree)
+    convert
+      Finset.sum_lt_sum_of_nonempty (g := fun i ↦ ε * (‖a‖ ⊔ 1) ^ ↑f.natDegree)
         (Finset.nonempty_range_add_one) ?_
     · simp [mul_assoc]
     · simp only [Finset.mem_range, norm_mul, norm_pow]

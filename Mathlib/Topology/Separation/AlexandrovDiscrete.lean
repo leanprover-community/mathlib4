@@ -5,14 +5,14 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.AlexandrovDiscrete
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # T1 Alexandrov-discrete topology is discrete
 -/
 
-@[expose] public section
+public section
 
 open Filter
 

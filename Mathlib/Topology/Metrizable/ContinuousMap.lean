@@ -5,10 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.CompactConvergence
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.UniformSpace.CompactConvergence
+
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Metrizability of `C(X, Y)`
@@ -17,7 +18,7 @@ If `X` is a weakly locally compact σ-compact space and `Y` is a (pseudo)metriza
 then `C(X, Y)` is a (pseudo)metrizable space.
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace
 

@@ -516,7 +516,7 @@ variable {ρ : Type}
 
 /-- Trace the proof of the normalization. -/
 def traceProof (nm : Name) (result : Expr) : CoherenceM ρ Unit := do
-  withTraceNode nm (fun _ => return m!"{checkEmoji} {← inferType result}") do
+  withTraceNode nm (fun _ => return m!"{← inferType result}") do
     if ← isTracingEnabledFor nm then addTrace nm m!"proof: {result}"
 
 -- TODO: It takes a while to compile. Find out why.
@@ -533,7 +533,7 @@ def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
         return ⟨← NormalExpr.ofAtomM η, result⟩
       | _ => throwError "not implemented. try dsimp first."
     | .isoInv _ _ α => withTraceNode nm (fun _ => return m!"Iso.inv") do match α with
-      | .structuralAtom α => return ⟨← nilM <| (← symmM (.structuralAtom α)), ← mkEqRefl e.e⟩
+      | .structuralAtom α => return ⟨← nilM (← symmM (.structuralAtom α)), ← mkEqRefl e.e⟩
       | .of η =>
         let η ← MonadMor₂.atomInvM η
         let result ← mkEvalOf η

@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Hypercover.ZeroFamily
-public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Cover.QuasiCompact
+public import Mathlib.AlgebraicGeometry.Sites.BigZariski
+public import Mathlib.CategoryTheory.Sites.Hypercover.ZeroFamily
 
 /-!
 # Quasi-compact precoverage
@@ -23,7 +23,7 @@ The fpqc precoverage is the precoverage by flat covers that are quasi-compact in
 
 universe w' w v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 

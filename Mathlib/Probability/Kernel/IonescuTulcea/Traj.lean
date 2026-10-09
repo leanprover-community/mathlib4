@@ -7,11 +7,12 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 public import Mathlib.MeasureTheory.Function.FactorsThrough
-public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
-public import Mathlib.Probability.Kernel.SetIntegral
+
+import Mathlib.MeasureTheory.Integral.Average
+import Mathlib.Probability.Kernel.SetIntegral
 
 /-!
 # Ionescu-Tulcea theorem
@@ -118,7 +119,7 @@ given `(y_₀, ...,y_ₙ)` outputs `x_{n+1} : X (n + 1)`, and it builds an eleme
 by starting with `(x_₀, ..., x_ₐ)` and then iterating `ind`. -/
 def iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
     (ind : (n : ℕ) → (Π i : Iic n, X i) → X (n + 1)) : Π n, X n
-  | 0 => x ⟨0, mem_Iic.2 <| zero_le a⟩
+  | 0 => x ⟨0, mem_Iic.2 zero_le⟩
   | k + 1 => if h : k + 1 ≤ a
       then x ⟨k + 1, mem_Iic.2 h⟩
       else ind k (fun i ↦ iterateInduction x ind i)
@@ -130,7 +131,7 @@ lemma frestrictLe_iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
   ext i
   simp only [frestrictLe_apply]
   obtain ⟨(zero | j), hj⟩ := i <;> rw [iterateInduction]
-  rw [dif_pos (mem_Iic.1 hj)]
+  rw [dite_eq_left (mem_Iic.1 hj)]
 
 end iterateInduction
 
@@ -182,7 +183,7 @@ instance [∀ n, IsZeroOrProbabilityMeasure (μ n)] (I : Finset ℕ) :
 instance [∀ n, IsProbabilityMeasure (μ n)] (I : Finset ℕ) :
     IsProbabilityMeasure (inducedFamily μ I) := by
   rw [inducedFamily]
-  exact Measure.isProbabilityMeasure_map (measurable_restrict₂ _).aemeasurable
+  infer_instance
 
 /-- Given a family of measures `μ : (n : ℕ) → Measure (Π i : Iic n, X i)`, the induced family
 equals `μ` over the intervals `Iic n`. -/
@@ -277,7 +278,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
       (update (updateFinset x (Iic k) y) (k + 1) z) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨y ⟨0, mem_Iic.2 (zero_le _)⟩⟩
+    | hz => exact ⟨y ⟨0, mem_Iic.2 zero_le⟩⟩
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
@@ -349,7 +350,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     Tendsto (fun n ↦ trajContent κ x₀ (A n)) atTop (𝓝 0) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨x₀ ⟨0, mem_Iic.2 (zero_le _)⟩⟩
+    | hz => exact ⟨x₀ ⟨0, mem_Iic.2 zero_le⟩⟩
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
@@ -363,7 +364,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- `χₙ` is measurable.
   have mχ n : Measurable (χ n) := by
     simp_rw [χ, A_eq]
-    exact (measurable_indicator_const_iff 1).2 <| (mS n).cylinder
+    exact (measurable_indicator_const_iff 1).2 (mS n).cylinder
   -- `χₙ` only depends on the first coordinates.
   have χ_dep n : DependsOn (χ n) (Iic (a n)) := by
     simp_rw [χ, A_eq]
@@ -432,7 +433,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       split_ifs with h1 h2 h3 h4 h5
       any_goals lia
       cases h2
-      rw [iterateInduction, dif_neg (by lia)]
+      rw [iterateInduction, dite_eq_right (by lia)]
   -- We now want to prove that the integral of `χₙ`, which is equal to the `trajContent`
   -- of `Aₙ`, converges to `0`.
   have aux x n :
@@ -505,7 +506,7 @@ theorem measurable_trajFun (a : ℕ) : Measurable (trajFun κ a) := by
     exact (Measure.measurable_map _ (measurable_restrict₂ _)).comp (measurable _)
   · have := isProbabilityMeasure_trajFun κ a
     simpa [measure_compl mt (measure_ne_top _ _)] using Measurable.const_sub ht _
-  · simpa [measure_iUnion disf mf] using Measurable.ennreal_tsum hf
+  · simpa [measure_iUnion disf mf] using Measurable.tsum hf
 
 /-- *Ionescu-Tulcea Theorem* : Given a family of kernels `κ n` taking variables in `Iic n` with
 value in `X (n + 1)`, the kernel `traj κ a` takes a variable `x` depending on the
@@ -581,12 +582,12 @@ theorem traj_comp_partialTraj {a b : ℕ} (hab : a ≤ b) :
 a deterministic kernel with another kernel. This is an intermediate result to compute integrals
 with respect to this kernel. -/
 theorem traj_eq_prod (a : ℕ) :
-    traj κ a = (Kernel.id ×ₖ (traj κ a).map (Set.Ioi a).restrict).map (IicProdIoi a) := by
+    traj κ a = (Kernel.id ×ₖ (traj κ a).map (Set.Ioi a).domRestrict).map (IicProdIoi a) := by
   refine (eq_traj' _ (a + 1) _ fun b hb ↦ ?_).symm
   rw [← map_comp_right]
-  conv_lhs => enter [2]; change (IicProdIoc a b) ∘
-    (Prod.map id (fun x i ↦ x ⟨i.1, Set.mem_Ioi.2 (mem_Ioc.1 i.2).1⟩))
-  · rw [map_comp_right, ← map_prod_map, ← map_comp_right]
+  · conv_lhs => enter [2]; change (IicProdIoc a b) ∘
+      (Prod.map id (fun x i ↦ x ⟨i.1, Set.mem_Ioi.2 (mem_Ioc.1 i.2).1⟩))
+    rw [map_comp_right, ← map_prod_map, ← map_comp_right]
     · conv_lhs => enter [1, 2, 2]; change (Ioc a b).restrict
       rw [← restrict₂_comp_restrict Ioc_subset_Iic_self, ← frestrictLe, map_comp_right,
         traj_map_frestrictLe, map_id, ← partialTraj_eq_prod]
@@ -597,7 +598,7 @@ theorem traj_eq_prod (a : ℕ) :
 theorem traj_map_updateFinset {n : ℕ} (x : Π i : Iic n, X i) :
     (traj κ n x).map (updateFinset · (Iic n) x) = traj κ n x := by
   nth_rw 2 [traj_eq_prod]
-  have : (updateFinset · _ x) = IicProdIoi n ∘ (Prod.mk x) ∘ (Set.Ioi n).restrict := by
+  have : (updateFinset · _ x) = IicProdIoi n ∘ (Prod.mk x) ∘ (Set.Ioi n).domRestrict := by
     ext; simp [IicProdIoi, updateFinset]
   rw [this, ← Function.comp_assoc, ← Measure.map_map, ← Measure.map_map, map_apply, prod_apply,
     map_apply, id_apply, Measure.dirac_prod]
@@ -749,7 +750,7 @@ theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
   · congr with y
     apply stronglyMeasurable_condExp.dependsOn_of_piLE
     simp only [Set.mem_Iic, updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite]
-    exact fun i hi ↦ (if_pos hi).symm
+    exact fun i hi ↦ (ite_eq_left hi).symm
   any_goals fun_prop
   exact (mcf.comp_measurable measurable_updateFinset).aestronglyMeasurable
 
@@ -766,11 +767,8 @@ def trajMeasure (μ₀ : Measure (X 0)) (κ : (n : ℕ) → Kernel (Π i : Iic n
 
 variable {μ₀ : Measure (X 0)} [IsProbabilityMeasure μ₀]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
   rw [trajMeasure]
-  have : IsProbabilityMeasure (μ₀.map (MeasurableEquiv.piUnique ((fun i : Iic 0 ↦ X i))).symm) :=
-    Measure.isProbabilityMeasure_map <| by fun_prop
   infer_instance
 
 lemma map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure {a : ℕ} :
@@ -780,7 +778,7 @@ lemma map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure {a : ℕ} :
     traj_map_frestrictLe, Measure.comp_assoc, Measure.map_comp _ _ (by fun_prop)]
   congr with x₀ : 1
   rw [comp_apply, ← Measure.compProd_eq_comp_prod, map_apply _ (by fun_prop),
-    partialTraj_compProd_eq_map_traj zero_le']
+    partialTraj_compProd_eq_map_traj zero_le]
 
 /-- A regular conditional probability distribution of the point at time `a + 1` given the
 trajectory up to time `a` corresponds to the kernel `κ a`. -/

@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.DirectSum.Ring
 
@@ -71,12 +70,13 @@ instance _root_.GradedMonoid.isScalarTower_right :
 
 variable [DecidableEq ι]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Algebra R (⨁ i, A i) where
   algebraMap :=
   { toFun := (DirectSum.of A 0).comp GAlgebra.toFun
     map_zero' := map_zero _
     map_add' := map_add _
-    map_one' := DFunLike.congr_arg (DirectSum.of A 0) GAlgebra.map_one
+    map_one' := congr(DirectSum.of A 0 $GAlgebra.map_one)
     map_mul' a b := by
       simp only [AddMonoidHom.comp_apply]
       rw [of_mul_of]

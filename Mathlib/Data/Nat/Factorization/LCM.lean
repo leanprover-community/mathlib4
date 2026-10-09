@@ -6,7 +6,8 @@ Authors: Paul Lezeau
 module
 
 public import Mathlib.Data.Nat.Factorization.Basic
-public import Mathlib.Data.Nat.GCD.BigOperators
+
+import Mathlib.Data.Nat.GCD.BigOperators
 
 /-!
 # Lemmas about `factorizationLCMLeft`
@@ -17,7 +18,7 @@ These were split from `Mathlib.Data.Nat.Factorization.Basic` to reduce transitiv
 
 public section
 
-open Finset List Finsupp
+open Finset Finsupp
 
 namespace Nat
 
@@ -60,7 +61,7 @@ lemma coprime_factorizationLCMLeft_factorizationLCMRight :
   dsimp only; split_ifs with h h'
   any_goals simp only [coprime_one_right_eq_true, coprime_one_left_eq_true]
   refine coprime_pow_primes _ _ (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq) ?_
-  contrapose! h'; rwa [← h']
+  contrapose h'; rwa [← h']
 
 variable {a b}
 

@@ -19,7 +19,7 @@ This is in some sense a finitary version of the second Borel-Cantelli lemma.
 ## References
 
 [Bergelson, *Sets of recurrence of `ℤᵐ`-actions and properties of sets of differences in
-`ℤᵐ`][bergelson1985]
+`ℤᵐ`*][bergelson1985]
 
 ## TODO
 
@@ -56,7 +56,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     simp_rw [pos_iff_ne_zero]
     rintro ⟨x, hx⟩ hu
     refine hx.2 (mem_iUnion.2 ⟨u, ?_⟩)
-    rw [mem_setOf, indicator_of_mem hx.1, eLpNormEssSup_eq_zero_iff.2]
+    rw [mem_ofPred, indicator_of_mem hx.1, eLpNormEssSup_eq_zero_iff.2]
     · simp
     · rwa [indicator_ae_eq_zero, Function.support_one, inter_univ]
   -- Define `f n` to be the average of the first `n + 1` indicators of the `s k`.
@@ -78,7 +78,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     simp_rw [hfapp]
     rw [lintegral_const_mul _ <| Finset.measurable_fun_sum _
         fun _ _ ↦ measurable_one.indicator <| hs _,
-      lintegral_finset_sum _ fun _ _ ↦ measurable_one.indicator (hs _)]
+      lintegral_finsetSum _ fun _ _ ↦ measurable_one.indicator (hs _)]
     simp only [lintegral_indicator_one (hs _)]
     rw [← ENNReal.div_eq_inv_mul, ENNReal.le_div_iff_mul_le (by simp) (by simp), ← nsmul_eq_mul']
     simpa using Finset.card_nsmul_le_sum (Finset.range (n + 1)) _ _ fun _ _ ↦ hr _
@@ -108,7 +108,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
           tendsto_add_atTop_nat 1) (.inr <| ENNReal.natCast_ne_top _)
       · classical
         simpa only [Finset.sum_apply, indicator_apply, Pi.one_apply, Finset.sum_boole, Nat.cast_le]
-          using Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
+          using! Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
     · simp_rw [← hu.mem_toFinset]
       exact hN₁ _ ⟨x, mem_iInter₂.2 fun n hn ↦ hux <| hu.mem_toFinset.1 hn, hxN⟩
   · refine Eventually.of_forall fun n ↦ ?_
@@ -126,7 +126,7 @@ lemma bergelson [Infinite ι] {s : ι → Set α} (hs : ∀ i, MeasurableSet (s 
     (hr : ∀ i, r ≤ μ (s i)) :
     ∃ t : Set ι, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ i ∈ u, s i) := by
   obtain ⟨t, ht, h⟩ := bergelson' (fun n ↦ hs <| Infinite.natEmbedding _ n) hr₀ (fun n ↦ hr _)
-  refine ⟨_, ht.image <| (Infinite.natEmbedding _).injective.injOn, fun u hut hu ↦
+  refine ⟨_, ht.image (Infinite.natEmbedding _).injective.injOn, fun u hut hu ↦
     (h (preimage_subset_of_surjOn (Infinite.natEmbedding _).injective hut) <| hu.preimage
     (Embedding.injective _).injOn).trans_le <| measure_mono <| subset_iInter₂ fun i hi ↦ ?_⟩
   obtain ⟨n, -, rfl⟩ := hut hi

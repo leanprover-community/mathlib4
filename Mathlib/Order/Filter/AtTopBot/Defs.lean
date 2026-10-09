@@ -5,8 +5,9 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Order.Filter.Basic
+
+import Mathlib.Data.Set.Piecewise
 
 /-!
 # Definition of `Filter.atTop` and `Filter.atBot` filters
@@ -21,7 +22,7 @@ In this file we define the filters
 
 assert_not_exists Finset
 
-variable {ι ι' α β γ : Type*}
+variable {ι α β : Type*}
 
 open Set
 
@@ -122,6 +123,6 @@ theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι
     (hs : Antitone s) (f g : (a : α) → β a) (a : α) :
     ∀ᶠ i in atTop, (s i).piecewise f g a = (⋂ i, s i).piecewise f g a := by
   classical
-  convert ← (compl_anti.comp hs).piecewise_eventually_eq_iUnion g f a using 3
-  · convert congr_fun (Set.piecewise_compl (s _) g f) a
+  convert! ← (compl_anti.comp hs).piecewise_eventually_eq_iUnion g f a using 3
+  · convert! congr_fun (Set.piecewise_compl (s _) g f) a
   · simp only [(· ∘ ·), ← compl_iInter, Set.piecewise_compl]

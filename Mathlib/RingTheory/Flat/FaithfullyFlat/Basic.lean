@@ -5,8 +5,10 @@ Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Flat.Stability
+
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
 
 /-!
 # Faithfully flat modules
@@ -126,7 +128,7 @@ lemma lTensor_reflects_triviality
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
     [Subsingleton (M ⊗[R] N)] :
     Subsingleton N := by
-  haveI : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
+  have : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
   apply rTensor_reflects_triviality R M
 
 attribute [-simp] Ideal.Quotient.mk_eq_mk in
@@ -138,7 +140,7 @@ lemma iff_flat_and_rTensor_faithful :
   refine ⟨fun fl => ⟨inferInstance, rTensor_nontrivial R M⟩, fun ⟨flat, faithful⟩ => ⟨?_⟩⟩
   intro m hm rid
   specialize faithful (ULift (R ⧸ m)) inferInstance
-  haveI : Nontrivial ((R ⧸ m) ⊗[R] M) :=
+  have : Nontrivial ((R ⧸ m) ⊗[R] M) :=
     (congr (ULift.moduleEquiv : ULift (R ⧸ m) ≃ₗ[R] R ⧸ m)
       (LinearEquiv.refl R M)).symm.toEquiv.nontrivial
   have := (quotTensorEquivQuotSMul M m).toEquiv.symm.nontrivial
@@ -194,7 +196,7 @@ instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddComm
   refine ⟨inferInstance, fun N _ _ hN ↦ ?_⟩
   obtain ⟨i⟩ := ‹Nonempty ι›
   obtain ⟨x, y, hxy⟩ := Nontrivial.exists_pair_ne (α := M i ⊗[R] N)
-  haveI : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
+  have : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
     ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
   apply (TensorProduct.directSumLeft R R M N).toEquiv.nontrivial
 
@@ -248,6 +250,7 @@ Let `N₁ -l₁₂-> N₂ -l₂₃-> N₃` be two linear maps.
   This is `range_le_ker_of_exact_rTensor`.
 - Then in `rTensor_reflects_exact`, we show `ker l₂₃ = range l₁₂` by considering the cohomology
   `ker l₂₃ ⧸ range l₁₂`.
+
 This shows that when `M` is faithfully flat, `- ⊗ M` reflects exact sequences. For details, see
 comments in the proof. Since `M` is flat, `- ⊗ M` preserves exact sequences.
 
@@ -333,8 +336,7 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
   rw [e.toEquiv.subsingleton_congr, Submodule.Quotient.subsingleton_iff,
     LinearMap.range_eq_top]
   intro x
-  induction x using TensorProduct.induction_on with
-  | zero => exact ⟨0, by simp⟩
+  induction x using TensorProduct.inductionOn with
   -- let `x ⊗ m` be an element in `ker l23 ⊗ M`, then `x ⊗ m` is in the kernel of `l23 ⊗ 𝟙M`.
   -- Since `N1 ⊗ M -l12 ⊗ M-> N2 ⊗ M -l23 ⊗ M-> N3 ⊗ M` is exact, we have that `x ⊗ m` is in
   -- the range of `l12 ⊗ 𝟙M`, i.e. `x ⊗ m = (l12 ⊗ 𝟙M) y` for some `y ∈ N1 ⊗ M` as elements of
@@ -470,9 +472,10 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
     (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.rTensor M f = 0 :=
   zero_iff_lTensor_zero R M f |>.trans
-  ⟨fun h => by ext n m; exact (TensorProduct.comm R N' M).injective <|
-    (by simpa using congr($h (m ⊗ₜ n))), fun h => by
-    ext m n; exact (TensorProduct.comm R M N').injective <| (by simpa using congr($h (n ⊗ₜ m)))⟩
+    ⟨fun h => by
+      ext n m; exact (TensorProduct.comm R N' M).injective (by simpa using congr($h (m ⊗ₜ n))),
+    fun h => by
+      ext m n; exact (TensorProduct.comm R M N').injective (by simpa using congr($h (n ⊗ₜ m)))⟩
 
 /-- If `A` is a faithfully flat `R`-algebra, and `m` is a term of an `R`-module `M`,
 then `1 ⊗ₜ[R] m = 0` if and only if `m = 0`. -/
@@ -483,7 +486,7 @@ theorem one_tmul_eq_zero_iff {A : Type*} [Ring A] [Algebra R A] [FaithfullyFlat 
   · rintro rfl; rw [tmul_zero]
   intro h
   let f : R →ₗ[R] M := (LinearMap.lsmul R M).flip m
-  suffices f = 0 by simpa [f] using DFunLike.congr_fun this 1
+  suffices f = 0 by simpa [f] using congr($this 1)
   rw [Module.FaithfullyFlat.zero_iff_lTensor_zero R A]
   ext a
   apply_fun (a • ·) at h
@@ -543,10 +546,10 @@ as an `R`-module. -/
 theorem trans : FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
   refine ⟨Module.Flat.trans R S M, @fun N _ _ N' _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
-  rw [zero_iff_lTensor_zero (R:= R) (M := S) f,
-    show f.lTensor S = (AlgebraTensorModule.map (A:= S) LinearMap.id f).restrictScalars R by aesop,
+  rw [zero_iff_lTensor_zero (R := R) (M := S) f,
+    show f.lTensor S = (AlgebraTensorModule.map (A := S) LinearMap.id f).restrictScalars R by aesop,
     show (0 :  S ⊗[R] N →ₗ[R] S ⊗[R] N') = (0 : S ⊗[R] N →ₗ[S] S ⊗[R] N').restrictScalars R by rfl,
-    restrictScalars_inj, zero_iff_lTensor_zero (R:= S) (M := M)]
+    restrictScalars_inj, zero_iff_lTensor_zero (R := S) (M := M)]
   ext m n
   apply_fun AlgebraTensorModule.cancelBaseChange R S S M N' using LinearEquiv.injective _
   simpa using congr($aux (m ⊗ₜ[R] n))
@@ -573,7 +576,7 @@ theorem _root_.IsBaseChange.map_smul_top_ne_top_iff_of_faithfullyFlat (hf : IsBa
     I.map (algebraMap R S) • (⊤ : Submodule S N) ≠ ⊤ ↔ I • (⊤ : Submodule R M) ≠ ⊤ := by
   simpa only [← Submodule.Quotient.subsingleton_iff.not] using not_congr <|
     (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).symm ≪≫ₗ TensorProduct.comm S N _ ≪≫ₗ
-      hf.tensorEquiv _ ≪≫ₗ AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (.refl R M) ≪≫ₗ
+      hf.tensorEquiv _ ≪≫ₗ AlgebraTensorModule.congr (I.quotMapEquivTensorQuot S) (.refl R M) ≪≫ₗ
         AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
           (tensorQuotEquivQuotSMul M I).baseChange R S _ _ |>.subsingleton_congr.trans <|
             subsingleton_tensorProduct_iff_right R S
@@ -601,3 +604,55 @@ lemma Flat.iff_flat_tensorProduct (S : Type*) [CommRing S] [Algebra R S]
   ⟨fun _ ↦ .of_flat_tensorProduct R M S, fun _ ↦ inferInstance⟩
 
 end Module
+
+namespace Submodule
+
+open LinearMap Module
+
+variable {R M A : Type*} [CommRing R] [Ring A] [Algebra R A] [FaithfullyFlat R A]
+  [AddCommGroup M] [Module R M] {p q : Submodule R M}
+
+@[simp]
+theorem baseChange_le_iff : p.baseChange A ≤ q.baseChange A ↔ p ≤ q := by
+  refine ⟨fun h ↦ ?_, baseChange_mono A⟩
+  rwa [← q.ker_mkQ, le_ker_iff_comp_subtype_eq_zero, FaithfullyFlat.zero_iff_lTensor_zero R A,
+    lTensor_comp, ← range_le_ker_iff, lTensor_mkQ, ← restrictScalars_le R]
+
+theorem baseChange_inj : p.baseChange A = q.baseChange A ↔ p = q := by
+  simp [le_antisymm_iff]
+
+theorem baseChange_injective (h : p.baseChange A = q.baseChange A) : p = q :=
+  baseChange_inj.mp h
+
+variable (R M A) in
+/-- `Submodule.baseChange` as an order embedding. -/
+@[simps]
+def baseChangeOrderEmbedding : Submodule R M ↪o Submodule A (A ⊗[R] M) where
+  toFun := baseChange A
+  inj' _ _ := baseChange_injective
+  map_rel_iff' := baseChange_le_iff
+
+theorem IsNoetherian.of_isNoetherian_tensorProduct_of_faithfullyFlat
+    (h : IsNoetherian A (A ⊗[R] M)) : IsNoetherian R M := by
+  rw [isNoetherian_iff] at h ⊢
+  exact (baseChangeOrderEmbedding R M A).wellFoundedGT
+
+theorem IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
+    (h : IsArtinian A (A ⊗[R] M)) : IsArtinian R M :=
+  (baseChangeOrderEmbedding R M A).wellFoundedLT
+
+end Submodule
+
+/-- In a nonzero algebra that is free as a module, the coordinates of `1` in any basis generate
+the unit ideal. Equivalently, `1` is unimodular: see `Module.Free.isUnimodular_one`. -/
+theorem Module.Basis.span_repr_one_eq_top {R : Type*} [CommRing R] {A ι : Type*} [Ring A]
+    [Nontrivial A] [Algebra R A] (e : Basis ι R A) :
+    Ideal.span (Set.range (e.repr 1)) = ⊤ := by
+  nontriviality R
+  have : Module.Free R A := .of_basis e
+  by_contra h
+  obtain ⟨𝔪, h𝔪, hle⟩ := Ideal.exists_le_maximal _ h
+  refine Module.FaithfullyFlat.submodule_ne_top h𝔪 (Submodule.eq_top_iff'.mpr fun a : A ↦ ?_)
+  rw [← mul_one a, ← e.linearCombination_repr 1, Finsupp.linearCombination_apply, Finsupp.mul_sum]
+  exact Submodule.sum_mem _ fun i _ ↦ by
+    simpa using Submodule.smul_mem_smul (hle (Ideal.subset_span ⟨i, rfl⟩)) Submodule.mem_top

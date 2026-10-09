@@ -7,8 +7,9 @@ module
 
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.Regular.IsSMulRegular
+
+import Mathlib.RingTheory.Nakayama
 
 /-!
 # Regular sequences and weakly regular sequences
@@ -154,6 +155,7 @@ variable {S M} [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup M₂]
     [Module R M] [Module S M₂]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open DistribMulAction AddSubgroup in
 private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
     {f : M →+ M₂} {as : List R} {bs : List S} (hf : Function.Surjective f)
@@ -234,7 +236,6 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
       Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
         (isWeaklyRegular_iff_Fin _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
     IsWeaklyRegular M (r :: rs) ↔
       IsSMulRegular M r ∧
@@ -250,7 +251,6 @@ lemma isRegular_cons_iff (r : R) (rs : List R) :
   rw [isRegular_iff, isRegular_iff, isWeaklyRegular_cons_iff M r rs,
     ne_eq, top_eq_ofList_cons_smul_iff, and_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isRegular_cons_iff' (r : R) (rs : List R) :
     IsRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M)
@@ -572,6 +572,40 @@ lemma map_first_exact_on_four_term_right_exact_of_isSMulRegular_last
 
 section Perm
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`FunLike (M ⧸ torsionBy R M b →ₗ[R] M) (M ⧸ torsionBy R M b) M`
+It is needed by the `ha.of_injective _ <| ker_eq_bot.mp <| ker_liftQ_eq_bot' _ (lsmul R M b) rfl`
+below.
+
+The failure happens while applying `@LinearMap.instFunLike`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type
+is `Module R (M ⧸ torsionBy R M b)`, whereas the assigned value
+`Quotient.module ((lsmul R M) b).ker` has type `Module R (M ⧸ ((lsmul R M) b).ker)`.
+Lean falls back to synthesize an instance of the correct type, which succeeds, but it returns
+`Quotient.module (torsionBy R M b)`, which is again not defeq to the assigned value.
+That second comparison runs at `.implicit`.
+
+Potential fix: make the following definitions implicit-reducible:
+
+```
+torsionBy
+DistribSMul.toLinearMap
+LinearMap.lsmul
+LinearMap.mk₂
+LinearMap.mk₂'
+LinearMap.mk₂'ₛₗ
+```
+
+Then both backward compatibility options can go.
+-/
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 open _root_.LinearMap in
 private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
     (h2 : torsionBy R M b = a • torsionBy R M b → torsionBy R M b = ⊥) :

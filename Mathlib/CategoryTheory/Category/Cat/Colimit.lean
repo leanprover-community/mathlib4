@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Emily Riehl
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 public import Mathlib.CategoryTheory.Monad.Limits
+
+import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 
 
 /-!
@@ -19,7 +20,7 @@ of simplicial sets (see `AlgebraicTopology.SimplicialSet.NerveAdjunction`), so t
 homotopy category functor `SSet ⥤ Cat`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

@@ -5,12 +5,14 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.ClassNumber
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+
+import Mathlib.NumberTheory.NumberField.ClassNumber
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 
 /-!
 # Cyclotomic fields whose ring of integers is a PID.
+
 We prove that `ℤ [ζₚ]` is a PID for specific values of `p`. The result holds for `p ≤ 19`,
 but the proof is more and more involved.
 

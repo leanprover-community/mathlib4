@@ -6,10 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.LinearAlgebra.Basis.Exact
-public import Mathlib.RingTheory.Extension.Cotangent.Basic
-public import Mathlib.RingTheory.Smooth.StandardSmooth
-public import Mathlib.RingTheory.Smooth.Kaehler
 public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmooth
 
 /-!
 # Cotangent complex of a submersive presentation
@@ -53,6 +51,7 @@ noncomputable def cotangentComplexAux [Finite σ] (P : PreSubmersivePresentation
   Finsupp.linearEquivFunOnFinite S S σ ∘ₗ Finsupp.lcomapDomain _ P.map_inj ∘ₗ
     P.cotangentSpaceBasis.repr.toLinearMap ∘ₗ P.toExtension.cotangentComplex
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma cotangentComplexAux_apply [Finite σ] (P : PreSubmersivePresentation R S ι σ)
     (x : P.ker) (i : σ) :
@@ -76,7 +75,7 @@ namespace SubmersivePresentation
 variable [Finite σ] (P : SubmersivePresentation R S ι σ)
 
 set_option backward.isDefEq.respectTransparency false in
-lemma cotangentComplexAux_injective [Finite σ] : Function.Injective P.cotangentComplexAux := by
+lemma cotangentComplexAux_injective : Function.Injective P.cotangentComplexAux := by
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   intro x hx
   obtain ⟨(x : P.ker), rfl⟩ := Cotangent.mk_surjective x
@@ -113,7 +112,8 @@ lemma cotangentComplexAux_injective [Finite σ] : Function.Injective P.cotangent
     simpa using this i
   · exact P.relation_mem_ker i
 
-lemma cotangentComplexAux_surjective [Finite σ] : Function.Surjective P.cotangentComplexAux := by
+set_option backward.isDefEq.respectTransparency.types false in
+lemma cotangentComplexAux_surjective : Function.Surjective P.cotangentComplexAux := by
   rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← P.basisDeriv.span_eq, Submodule.span_le]
   rintro - ⟨i, rfl⟩
   use Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩
@@ -166,8 +166,7 @@ noncomputable def sectionCotangent : P.toExtension.CotangentSpace →ₗ[S] P.to
   (cotangentEquiv P).symm ∘ₗ (Finsupp.linearEquivFunOnFinite S S σ).toLinearMap ∘ₗ
     Finsupp.lcomapDomain _ P.map_inj ∘ₗ P.cotangentSpaceBasis.repr.toLinearMap
 
-lemma sectionCotangent_eq_iff [Finite σ]
-    (x : P.toExtension.CotangentSpace) (y : P.toExtension.Cotangent) :
+lemma sectionCotangent_eq_iff (x : P.toExtension.CotangentSpace) (y : P.toExtension.Cotangent) :
     sectionCotangent P x = y ↔
       ∀ i : σ, P.cotangentSpaceBasis.repr x (P.map i) = (P.cotangentComplexAux y) i := by
   simp only [sectionCotangent, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
@@ -213,7 +212,6 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     simp [Finsupp.single_eq_pi_single]
   · exact hcompl.2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma basisKaehlerOfIsCompl_apply {κ : Type*} {f : κ → ι}
     (hf : Function.Injective f) (hcompl : IsCompl (Set.range f) (Set.range P.map)) (k : κ) :
@@ -326,13 +324,17 @@ lemma IsStandardSmoothOfRelativeDimension.iff_of_isStandardSmooth [Nontrivial S]
   apply Nat.cast_injective (R := Cardinal)
   rwa [← P.rank_kaehlerDifferential]
 
-instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
+instance IsStandardSmoothOfRelativeDimension.subsingleton_kaehlerDifferential
     [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton Ω[S⁄R] := by
   cases subsingleton_or_nontrivial S
   · exact Module.subsingleton S _
-  haveI : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
+  have : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
   exact Module.subsingleton_of_rank_zero
     (IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential 0)
+
+@[deprecated (since := "2026-05-22")]
+alias IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential :=
+  IsStandardSmoothOfRelativeDimension.subsingleton_kaehlerDifferential
 
 end
 

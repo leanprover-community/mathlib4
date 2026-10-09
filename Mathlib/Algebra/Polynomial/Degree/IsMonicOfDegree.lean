@@ -6,7 +6,8 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Monic
+
+import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Monic polynomials of given degree
@@ -17,7 +18,7 @@ the polynomial `p` is monic and has degree `n` (i.e., `p.natDegree = n`.)
 We also provide some basic API.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 
@@ -267,7 +268,7 @@ lemma IsMonicOfDegree.of_dvd_add {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha 
 lemma IsMonicOfDegree.of_dvd_sub {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha : IsMonicOfDegree a m)
     (hb : IsMonicOfDegree b n) (hr : r.natDegree < m) (h : b ∣ a - r) :
     ∃ q : R[X], IsMonicOfDegree q (m - n) ∧ a = q * b + r := by
-  convert ha.of_dvd_add hmn hb ?_ h using 4 with q
+  convert ha.of_dvd_add hmn hb ?_ h with q
   · rw [sub_neg_eq_add]
   · rwa [natDegree_neg]
 

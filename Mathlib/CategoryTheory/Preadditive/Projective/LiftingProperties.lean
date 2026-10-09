@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 /-!
 # Characterization of projective objects in terms of lifting properties
@@ -17,7 +17,7 @@ left lifting property with respect to epimorphisms,
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

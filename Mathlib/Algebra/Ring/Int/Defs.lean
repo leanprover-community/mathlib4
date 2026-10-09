@@ -6,8 +6,8 @@ Authors: Jeremy Avigad
 module
 
 public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Int.Basic
 public import Mathlib.Data.Int.Cast.Basic
 
@@ -19,7 +19,7 @@ This file contains the commutative ring instance on `ℤ`.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered Set.Subsingleton
 

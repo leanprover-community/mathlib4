@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.Tactic.WLOG
 
 /-!
 # Cardinal Divisibility
@@ -30,7 +29,7 @@ cancellative `CommMonoidWithZero`.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Cardinal
@@ -83,7 +82,7 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
     all_goals rwa [mul_comm]
   left
   have habc := le_of_dvd hz hbc
-  rwa [mul_eq_max' <| ha.trans <| habc, max_def', if_pos h] at hbc
+  rwa [mul_eq_max' <| ha.trans habc, max_def', ite_eq_left h] at hbc
 
 theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]
@@ -98,7 +97,7 @@ theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
   have : ↑m < ℵ₀ := natCast_lt_aleph0
   rw [hk, mul_lt_aleph0_iff] at this
   rcases this with (h | h | ⟨-, hk'⟩)
-  iterate 2 simp only [h, mul_zero, zero_mul, Nat.cast_eq_zero] at hk; simp [hk]
+  on_goal 1 2 => simp only [h, mul_zero, zero_mul, Nat.cast_eq_zero] at hk; simp [hk]
   lift k to ℕ using hk'
   exact ⟨k, mod_cast hk⟩
 

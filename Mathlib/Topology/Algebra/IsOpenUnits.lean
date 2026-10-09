@@ -9,6 +9,8 @@ public import Mathlib.RingTheory.Jacobson.Ideal
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
+import Mathlib.Topology.Algebra.Group.Units
+
 /-!
 
 # Topological monoids with open units
@@ -25,7 +27,7 @@ This condition is necessary and sufficient for `U(R)` to be an open subspace of 
 for all affine scheme `X` over `R` and all affine open subscheme `U ⊆ X`.
 -/
 
-@[expose] public section
+public section
 
 open Topology
 

@@ -5,7 +5,6 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Ring.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Data.EReal.Operations
@@ -18,7 +17,7 @@ In this file, we transfer a (semi-)normed ring structure across an equivalence.
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

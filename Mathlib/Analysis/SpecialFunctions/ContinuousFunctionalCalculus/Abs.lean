@@ -5,9 +5,9 @@ Authors: Jon Bannon, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
@@ -147,7 +147,6 @@ lemma cfcAbs_cfcAbs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
 
 variable [StarModule ℝ A]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma abs_smul_nonneg {R : Type*} [Semiring R] [SMulWithZero R ℝ≥0] [SMul R A]
     [IsScalarTower R ℝ≥0 A] (r : R) (a : A) :
@@ -244,7 +243,7 @@ lemma abs_natCast (n : ℕ) : abs (n : A) = n := by
 
 @[simp]
 lemma abs_ofNat (n : ℕ) [n.AtLeastTwo] : abs (ofNat(n) : A) = ofNat(n) := by
-  simpa using abs_natCast n
+  simpa using! abs_natCast n
 
 @[simp]
 lemma abs_intCast (n : ℤ) : abs (n : A) = |n| := by
@@ -311,7 +310,7 @@ open CFC
 
 @[simp, grind =]
 lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
-  rw [CFC.abs, sqrt_eq_zero_iff _, CStarRing.star_mul_self_eq_zero_iff]
+  rw [CFC.abs, sqrt_eq_zero_iff _, star_mul_self_eq_zero]
 
 @[simp, grind =]
 lemma norm_abs {a : A} : ‖abs a‖ = ‖a‖ := by

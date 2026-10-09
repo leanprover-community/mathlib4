@@ -5,12 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Algebra.GradedMonoid
-public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.GradedMulAction
-public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
-public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Module.Defs
+
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Algebra.Ring.Int.Defs
 /-!
 # The filtration on abelian groups and rings
 
@@ -33,7 +32,7 @@ In this file, we define the concept of filtration for abelian groups, rings, and
 
 -/
 
-@[expose] public section
+public section
 
 section GeneralFiltration
 

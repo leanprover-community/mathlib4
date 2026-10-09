@@ -5,8 +5,8 @@ Authors: Geoffrey Irving
 -/
 module
 
-public import Mathlib.Init
 public import Aesop.Frontend.Command
+public import Mathlib.Init
 
 /-!
 # Bound Rule Set
@@ -15,7 +15,5 @@ This module defines the `Bound` Aesop rule set which is used by the
 `bound` tactic. Aesop rule sets only become visible once the file in which
 they're declared is imported, so we must put this declaration into its own file.
 -/
-
-public meta section
 
 declare_aesop_rule_sets [Bound]

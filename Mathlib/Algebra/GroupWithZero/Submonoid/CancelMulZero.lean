@@ -5,14 +5,14 @@ Authors: Dexin Zhang
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.GroupWithZero.InjSurj
 
 /-!
 # Submagmas with zero inherit cancellations
 -/
 
-@[expose] public section
+public section
 
 namespace MulZeroMemClass
 

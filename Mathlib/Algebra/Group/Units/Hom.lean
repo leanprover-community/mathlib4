@@ -249,6 +249,11 @@ theorem mul_liftRight_inv (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
 theorem liftRight_inv_mul (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
     ↑(IsUnit.liftRight f h x)⁻¹ * f x = 1 := Units.liftRight_inv_mul (by intro; rfl) x
 
+@[to_additive]
+theorem liftRight_apply (f : M →* N) (hf : ∀ x, IsUnit (f x)) (x : M) :
+    IsUnit.liftRight f hf x = (hf x).unit :=
+  rfl
+
 end Monoid
 end IsUnit
 

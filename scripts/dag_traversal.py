@@ -46,6 +46,16 @@ HIDE_CURSOR = "\033[?25l"
 SHOW_CURSOR = "\033[?25h"
 
 
+def _kill_tree(proc: subprocess.Popen) -> None:
+    """Kill a build and all its children (`os.killpg` does not exist on Windows)."""
+    if hasattr(os, "killpg"):
+        os.killpg(proc.pid, signal.SIGKILL)
+    else:
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                       capture_output=True)
+        proc.kill()  # fallback if taskkill failed; no-op if already dead
+
+
 class ShutdownError(Exception):
     """Raised when a shutdown has been requested (e.g. Ctrl-C)."""
 
@@ -98,7 +108,7 @@ class DAGTraverser:
         with self._active_builds_lock:
             for proc in self._active_builds:
                 try:
-                    os.killpg(proc.pid, signal.SIGKILL)
+                    _kill_tree(proc)
                 except (ProcessLookupError, PermissionError):
                     try:
                         proc.kill()
@@ -160,7 +170,7 @@ class DAGTraverser:
                 self._active_builds.discard(proc)
             if proc.poll() is None:
                 try:
-                    os.killpg(proc.pid, signal.SIGKILL)
+                    _kill_tree(proc)
                 except (ProcessLookupError, PermissionError):
                     proc.kill()
                 proc.wait()
@@ -539,20 +549,33 @@ class DAG:
         Uses ``lean --deps-json`` to parse imports correctly.
         """
         if directories is None:
-            directories = ["Mathlib", "MathlibTest", "Archive", "Counterexamples"]
+            directories = ["."]
 
         # Collect all .lean file paths (relative to project_root).
+        # Skip the Lake build directory (`.lake/`); it contains vendored
+        # dependencies that we don't want to modify or build directly.
         rel_paths: list[Path] = []
         for directory in directories:
             dir_path = project_root / directory
             if not dir_path.exists():
                 continue
-            for root, _, files in os.walk(dir_path):
+            for root, dirs, files in os.walk(dir_path):
+                dirs[:] = [d for d in dirs if d != ".lake"]
                 for fname in files:
                     if not fname.endswith(".lean"):
                         continue
                     full_path = Path(root) / fname
                     rel_paths.append(full_path.relative_to(project_root))
+
+        if not rel_paths:
+            import sys as _sys
+            _sys.stderr.write(
+                f"warning: no .lean files found under {project_root} "
+                f"(directories={list(directories)}).\n"
+                "  hint: pass --directories <your-source-dir> if your files\n"
+                "  aren't directly under the project root.\n"
+            )
+            return DAG({}, project_root.resolve())
 
         # Batch-parse imports using lean --deps-json.
         all_imports = _parse_all_imports(rel_paths, project_root)
@@ -858,7 +881,7 @@ def _cli_main():
         "--directories",
         nargs="+",
         default=None,
-        help="Directories to scan (default: Mathlib MathlibTest Archive Counterexamples)",
+        help="Directories to scan (default: '.', relative to project root specified by --dir)",
     )
 
     args = parser.parse_args()

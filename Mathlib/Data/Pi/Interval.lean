@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Basic
 public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Intervals in a pi type
@@ -15,7 +15,7 @@ This file shows that (dependent) functions to locally finite orders equipped wit
 order are locally finite and calculates the cardinality of their intervals.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Fintype

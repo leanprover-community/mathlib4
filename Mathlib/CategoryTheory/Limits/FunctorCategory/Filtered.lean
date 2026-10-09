@@ -5,8 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Filtered
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Functor categories have filtered colimits when the target category does
@@ -15,7 +16,7 @@ These declarations cannot be in `Mathlib/CategoryTheory/Limits/FunctorCategory/B
 that file shouldn't import `Mathlib/CategoryTheory/Limits/Filtered.lean`.
 -/
 
-@[expose] public section
+public section
 
 universe w' w v₁ v₂ u₁ u₂
 

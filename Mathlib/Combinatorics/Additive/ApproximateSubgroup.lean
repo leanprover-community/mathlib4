@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Combinatorics.Additive.CovBySMul
-public import Mathlib.Combinatorics.Additive.RuzsaCovering
 public import Mathlib.Combinatorics.Additive.SmallTripling
+
+import Mathlib.Combinatorics.Additive.RuzsaCovering
 
 /-!
 # Approximate subgroups
@@ -36,7 +37,7 @@ It can be readily confirmed that approximate subgroups are a weakening of subgro
 * `isApproximateSubgroup_one`: A 1-approximate subgroup is the same thing as a subgroup.
 -/
 
-@[expose] public section
+public section
 
 open scoped Finset Pointwise
 

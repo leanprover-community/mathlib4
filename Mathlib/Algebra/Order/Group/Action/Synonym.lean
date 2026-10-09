@@ -19,21 +19,17 @@ This PR transfers group action instances from a type `α` to `αᵒᵈ` and `Lex
 * `Mathlib/Algebra/Order/Module/Synonym.lean`
 -/
 
-@[expose] public section
+public section
 
 variable {M N α : Type*}
 
 namespace OrderDual
 
 @[to_additive]
-instance [Monoid M] [h : MulAction M α] : MulAction Mᵒᵈ α where
-  mul_smul := h.mul_smul
-  one_smul := h.one_smul
+instance [Monoid M] [MulAction M α] : MulAction Mᵒᵈ α := inferInstanceAs <| MulAction M α
 
 @[to_additive]
-instance [Monoid M] [h : MulAction M α] : MulAction M αᵒᵈ where
-  mul_smul := h.mul_smul
-  one_smul := h.one_smul
+instance [Monoid M] [MulAction M α] : MulAction M αᵒᵈ := inferInstanceAs <| MulAction M α
 
 @[to_additive]
 instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵒᵈ N α :=
@@ -64,33 +60,35 @@ end OrderDual
 namespace Lex
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M α] : MulAction (Lex M) α := ‹MulAction M α›
+instance instMulAction [Monoid M] [MulAction M α] : MulAction (Lex M) α :=
+  inferInstanceAs <| MulAction M α
 
 @[to_additive]
-instance instMulAction' [Monoid M] [MulAction M α] : MulAction M (Lex α) := ‹MulAction M α›
+instance instMulAction' [Monoid M] [MulAction M α] : MulAction M (Lex α) :=
+  inferInstanceAs <| MulAction M α
 
 @[to_additive]
 instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass (Lex M) N α := ‹SMulCommClass M N α›
+    SMulCommClass (Lex M) N α := inferInstanceAs <| SMulCommClass M N α
 
 @[to_additive]
 instance instSMulCommClass' [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass M (Lex N) α := ‹SMulCommClass M N α›
+    SMulCommClass M (Lex N) α := inferInstanceAs <| SMulCommClass M N α
 
 @[to_additive]
 instance instSMulCommClass'' [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass M N (Lex α) := ‹SMulCommClass M N α›
+    SMulCommClass M N (Lex α) := inferInstanceAs <| SMulCommClass M N α
 
 @[to_additive]
 instance instIsScalarTower [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower (Lex M) N α := ‹IsScalarTower M N α›
+    IsScalarTower (Lex M) N α := inferInstanceAs <| IsScalarTower M N α
 
 @[to_additive]
 instance instIsScalarTower' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M (Lex N) α := ‹IsScalarTower M N α›
+    IsScalarTower M (Lex N) α := inferInstanceAs <| IsScalarTower M N α
 
 @[to_additive]
 instance instIsScalarTower'' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M N (Lex α) := ‹IsScalarTower M N α›
+    IsScalarTower M N (Lex α) := inferInstanceAs <| IsScalarTower M N α
 
 end Lex

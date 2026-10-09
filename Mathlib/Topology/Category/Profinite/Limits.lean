@@ -5,8 +5,8 @@ Authors: Adam Topaz, Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Category.CompHausLike.Limits
+public import Mathlib.Topology.Category.Profinite.Basic
 /-!
 
 # Explicit limits and colimits
@@ -15,7 +15,7 @@ This file applies the general API for explicit limits and colimits in `CompHausL
 the file `Mathlib/Topology/Category/CompHausLike/Limits.lean`) to the special case of `Profinite`.
 -/
 
-@[expose] public section
+public section
 
 namespace Profinite
 

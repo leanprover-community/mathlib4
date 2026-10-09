@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Option
 public import Mathlib.Data.PFun
-public import Mathlib.Data.Part
 
 /-!
 # Image of a `Finset α` under a partially defined function
@@ -66,6 +65,7 @@ theorem mem_pimage : b ∈ s.pimage f ↔ ∃ a ∈ s, b ∈ f a := by
 theorem coe_pimage : (s.pimage f : Set β) = f.image s :=
   Set.ext fun _ => mem_pimage
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some <| f x).Dom] :
     (s.pimage fun x => Part.some (f x)) = s.image f := by
@@ -94,7 +94,7 @@ theorem pimage_empty : pimage f ∅ = ∅ := by
 theorem pimage_subset {t : Finset β} : s.pimage f ⊆ t ↔ ∀ x ∈ s, ∀ y ∈ f x, y ∈ t := by
   simp [subset_iff, @forall_comm _ β]
 
-@[mono]
+@[gcongr, mono]
 theorem pimage_mono (h : s ⊆ t) : s.pimage f ⊆ t.pimage f :=
   pimage_subset.2 fun x hx _ hy => mem_pimage.2 ⟨x, h hx, hy⟩
 

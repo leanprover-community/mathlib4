@@ -5,10 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
-public import Mathlib.LinearAlgebra.RootSystem.Reduced
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
-public import Mathlib.Algebra.Ring.Torsion
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
+
+import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # Structural lemmas about finite crystallographic root pairings
@@ -30,8 +30,6 @@ root pairings.
 -/
 
 public section
-
-noncomputable section
 
 open Function Set
 open Submodule (span)
@@ -90,7 +88,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   lia
 
 variable [IsDomain R]
--- This makes an `IsAddTorsionFree R` instance available, which `grind` needs below.
+-- This makes an `HasUniqueDiv R` instance available, which `grind` needs below.
 open scoped IsDomain
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
@@ -189,7 +187,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     α i - α j ∈ Φ := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by
@@ -230,7 +228,7 @@ lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α 
     α i + α j ∈ Φ := by
   let _i := P.indexNeg
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
-  replace h' : i ≠ -j := by contrapose! h'; simp [h']
+  replace h' : i ≠ -j := by contrapose h'; simp [h']
   simpa using P.root_sub_root_mem_of_pairingIn_pos h h'
 
 lemma pairingIn_eq_zero_of_add_notMem_of_sub_notMem (hp : i ≠ j) (hn : α i ≠ -α j)
@@ -300,7 +298,7 @@ lemma apply_eq_or (i j : ι) :
     B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
   obtain ⟨j', h₁, h₂⟩ := P.exists_form_eq_form_and_form_ne_zero B i j
   suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁, B.apply_eq_or_aux i j' this]
-  contrapose! h₂
+  contrapose h₂
   replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
   exact (B.apply_root_root_zero_iff i j').mpr h₂
 

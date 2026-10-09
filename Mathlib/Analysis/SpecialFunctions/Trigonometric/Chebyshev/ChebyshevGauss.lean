@@ -6,11 +6,10 @@ Authors: Yuval Filmus
 
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
-public import Mathlib.Analysis.Complex.Trigonometric
+
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Algebra.Polynomial.Sequence
 
 /-!
 # Chebyshev polynomials over the reals: Chebyshev–Gauss
@@ -39,7 +38,7 @@ open Complex (exp I)
 
 private lemma exp_sub_one_ne_zero {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ) ∣ k) :
     exp (k / n * π * I) ≠ 1 := by
-  contrapose! hk
+  contrapose hk
   obtain ⟨m, hx⟩ := Complex.exp_eq_one_iff.mp hk
   have h : k = 2 * n * m := by
     apply (@Int.cast_inj ℂ _ _).mp
@@ -72,7 +71,7 @@ noncomputable def sumZeroes (n : ℕ) (P : ℝ[X]) : ℝ :=
 @[simp]
 theorem sumZeroes_sum (n : ℕ) {ι : Type*} (s : Finset ι) (P : ι → ℝ[X]) :
     sumZeroes n (∑ i ∈ s, P i) = ∑ i ∈ s, sumZeroes n (P i) := by
-  simp_rw [sumZeroes, eval_finset_sum]
+  simp_rw [sumZeroes, eval_finsetSum]
   rw [sum_comm, mul_sum]
 
 @[simp]
@@ -89,7 +88,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
   · simp [sumZeroes]
   suffices ∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by
     rw [sumZeroes, mul_eq_zero_iff_left (by aesop)]
-    rw [← mul_sum, mul_eq_zero_iff_left (by norm_num)] at this
+    rw [← mul_sum, mul_eq_zero_iff_left (by simp)] at this
     simpa [T_real_cos]
   suffices (∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) : ℂ) = 0 by norm_cast at this ⊢
   suffices ∑ i ∈ range n, 2 * Complex.cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by aesop
@@ -114,8 +113,8 @@ theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degr
     show Set.Iio (2 * n) = Finset.range (2 * n) by simp,
     Submodule.mem_span_image_finset_iff_exists_fun'] at hmem
   obtain ⟨c, rfl⟩ := hmem
-  simp_rw [eval_finset_sum, eval_smul]
-  rw [MeasureTheory.integral_finset_sum, sumZeroes_sum]
+  simp_rw [eval_finsetSum, eval_smul]
+  rw [MeasureTheory.integral_finsetSum, sumZeroes_sum]
   · simp_rw [sumZeroes_smul, smul_eq_mul, MeasureTheory.integral_const_mul]
     congr! with i hrange
     simp_rw [chebyshevTsequence]
