@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Tactic.Positivity.Core
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Ordered vector spaces

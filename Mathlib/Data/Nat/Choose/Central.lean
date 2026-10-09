@@ -6,8 +6,8 @@ Authors: Patrick Stevens, Thomas Browning
 module
 
 public import Mathlib.Data.Nat.Choose.Bounds
-public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
 
 import Mathlib.Data.Nat.GCD.Basic
 

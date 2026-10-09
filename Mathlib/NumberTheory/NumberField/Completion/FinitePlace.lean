@@ -11,9 +11,9 @@ public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 
+import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Archimedean.Submonoid
 import Mathlib.RingTheory.Valuation.Archimedean
-import Mathlib.Algebra.FiniteSupport.Basic
 
 /-!
 # Finite places of number fields
@@ -179,78 +179,6 @@ theorem adicAbv_intCast_le_one (n : ℤ) : adicAbv K v n ≤ 1 :=
   (isNonarchimedean_adicAbv K v).apply_intCast_le_one (map_zero_le (adicAbv K v) 1)
   (map_one (adicAbv K v)) (map_neg_eq_map (adicAbv K v))
 
-
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm_nnreal := one_lt_absNorm_nnreal
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm_nnreal :=
-  one_lt_absNorm_nnreal
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.absNorm_ne_zero := absNorm_ne_zero
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.absNorm_ne_zero := absNorm_ne_zero
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv := adicAbv
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv := adicAbv
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
-  isNonarchimedean_adicAbv
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
-  isNonarchimedean_adicAbv
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.instRankOneAdicCompletion := instRankOneAdicCompletion
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.instRankOneAdicCompletion := instRankOneAdicCompletion
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.instNormedFieldValuedAdicCompletion := instNormedFieldValuedAdicCompletion
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.instNormedFieldValuedAdicCompletion := instNormedFieldValuedAdicCompletion
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.rankOne_hom'_def := rankOne_hom'_def
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.rankOne_hom'_def := rankOne_hom'_def
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.toNNReal_valued_eq_adicAbv := toNNReal_valued_eq_adicAbv
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.toNNReal_valued_eq_adicAbv := toNNReal_valued_eq_adicAbv
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max := adicAbv_add_le_max
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max := adicAbv_add_le_max
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one := adicAbv_natCast_le_one
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one :=
-  adicAbv_natCast_le_one
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one := adicAbv_intCast_le_one
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one :=
-  adicAbv_intCast_le_one
-
 end HeightOneSpectrum
 
 open HeightOneSpectrum Valuation.IsRankOneDiscrete
@@ -281,10 +209,6 @@ to the power of the `v`-adic valuation for integers. -/
 theorem FinitePlace.norm_embedding_int (x : R) :
     ‖embedding v (algebraMap _ K x)‖ = toNNReal (absNorm_ne_zero v) (v.intValuation x) := by
   simp [norm_embedding, adicAbv_def, valuation_of_algebraMap]
-
-@[deprecated (since := "2026-03-05")] alias FinitePlace.norm_def' := FinitePlace.norm_embedding'
-@[deprecated (since := "2026-03-05")] alias FinitePlace.norm_def_int :=
-  FinitePlace.norm_embedding_int
 
 open FinitePlace
 
@@ -439,8 +363,6 @@ theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
   refine (h.subset ?_).of_finite_image h_inj
   simp only [dvd_span_singleton, Set.image_subset_iff, Set.preimage_ofPred_eq, subset_refl]
 
-@[deprecated (since := "2026-03-03")] alias mulSupport_finite_int := hasFiniteMulSupport_int
-
 @[fun_prop]
 theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
     (fun w : FinitePlace K ↦ w x).HasFiniteMulSupport := by
@@ -449,8 +371,6 @@ theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
   obtain ⟨ha, hb⟩ := h_x_nezero
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
   fun_prop
-
-@[deprecated (since := "2026-03-03")] alias mulSupport_finite := hasFiniteMulSupport
 
 lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : Ideal (𝓞 K)}
     (hI : I ≠ ⊥) (f : Ideal (𝓞 K) → M) :
@@ -473,12 +393,6 @@ instance : NonarchimedeanHomClass (FinitePlace K) K ℝ where
 
 lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
     (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := rfl
-
-@[deprecated (since := "2026-03-11")]
-alias IsDedekindDomain.HeightOneSpectrum.equivHeightOneSpectrum_symm_apply :=
-  equivHeightOneSpectrum_symm_apply
-@[deprecated (since := "2026-03-11")]
-alias IsDedekindDomain.HeightOneSpectrum.embedding_mul_absNorm := embedding_mul_absNorm
 
 -- TODO: restate in terms of finite places rather than non-trivial prime ideals of the Dedekind
 -- domains `𝓞 K` and `𝓞 L` once we have a ramification theory for finite places set up.

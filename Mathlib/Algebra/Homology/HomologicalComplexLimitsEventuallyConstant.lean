@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 

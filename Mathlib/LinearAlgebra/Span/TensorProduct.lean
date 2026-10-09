@@ -6,9 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Algebra.Epi
-public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.Combinatorics.Matroid.Init
 public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.RingTheory.Flat.Basic
 
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Sym.Sym2

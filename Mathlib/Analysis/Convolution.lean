@@ -7,9 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
-import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Function.Holder
 import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # Convolution of functions

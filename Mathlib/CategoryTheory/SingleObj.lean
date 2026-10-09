@@ -5,12 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.FinCategory.Basic
-public import Mathlib.CategoryTheory.Category.Cat
-public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Combinatorics.Quiver.SingleObj
-public import Mathlib.Algebra.Group.Units.Equiv
 
 /-!
 # Single-object category
