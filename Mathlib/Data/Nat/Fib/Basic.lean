@@ -12,6 +12,8 @@ public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Zify
 
+import Mathlib.Algebra.Order.Sub.Basic
+
 /-!
 # Fibonacci numbers
 
