@@ -195,6 +195,118 @@ instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map equiv.symm.toEmbedding
   complete := by intros; simp
 
+section succMany?
+
+variable [inst : FinEnum α]
+
+/-- Get the nth successor under the ordering induced by a `FinEnum` instance -/
+def succMany? (n : Nat) (x : α) : Option α :=
+  let next := inst.equiv x + n
+  if fits : next < card α
+  then inst.equiv.symm { val := next, isLt := fits }
+  else none
+
+attribute [local grind! .] Equiv.injective
+
+-- Note: the "simp/grind normal form" to which we reduce `succMany?` is (in)equalities over ℕ.
+
+@[simp, grind =]
+lemma succMany?_eq_none_iff {n : Nat} {x : α} :
+    succMany? n x = none ↔ card α ≤ inst.equiv x + n := by grind [succMany?]
+
+@[simp, grind =]
+lemma succMany?_eq_some_iff {n : Nat} {x y : α} :
+    succMany? n x = some y ↔ (inst.equiv x + n = inst.equiv y ∧ inst.equiv x + n < card α) := by
+  constructor
+  case mp => grind [succMany?]
+  case mpr => grind [succMany?, Equiv.symm_apply_apply]
+
+@[simp, grind =]
+lemma succMany?_eq_iff {m n : Nat} {x y : α} :
+    succMany? m x = succMany? n y ↔
+      (inst.equiv x + m < card α ∧
+        inst.equiv x + m = inst.equiv y + n) ∨
+      (inst.equiv x + m ≥ card α ∧ inst.equiv y + n ≥ card α) := by
+    constructor
+    case mp =>
+      intro heq
+      unfold succMany? at heq
+      by_cases inst.equiv x + m < card α <;>
+        by_cases inst.equiv y + n < card α <;>
+        simp_all
+    case mpr =>
+      intro h
+      apply h.elim
+      case left =>
+        intro ⟨hlt, heq⟩
+        unfold succMany?
+        rw [heq]
+      case right =>
+        intro ⟨hx, hy⟩
+        apply not_lt_of_ge at hx
+        apply not_lt_of_ge at hy
+        unfold succMany?
+        simp [hx, hy]
+
+@[simp, grind =]
+lemma succMany?_zero (x : α) : succMany? 0 x = x := by grind only [succMany?_eq_some_iff]
+
+@[simp, grind =]
+lemma succMany?_succ (n : Nat) (x : α) :
+    (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by grind [succMany?]
+
+@[grind →]
+lemma succMany?_inj_nat
+    (n m : Nat) (x : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? m x) :
+    n = m := by grind
+
+@[grind →]
+lemma succMany?_inj_elem
+    (n : Nat) (x y : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? n y) :
+    x = y := by grind
+
+@[grind =]
+lemma succMany?_bind {n m : Nat} {x : α} :
+    (succMany? n x).bind (succMany? m) = succMany? (n + m) x := by
+  induction m with
+  | zero => simp
+  | succ m ih =>
+    conv =>
+      lhs
+      rhs
+      intro x
+      rewrite [← @succMany?_succ _ inst m x]
+    rewrite [← Option.bind_assoc, ih]
+    apply succMany?_succ
+
+lemma succMany?_comm {n m : Nat} {x : α} :
+    (succMany? n x).bind (succMany? m) = (succMany? m x).bind (succMany? n) := by
+  grind only [succMany?_bind]
+
+instance instUpwardEnumerable : Std.PRange.UpwardEnumerable α where
+  succ? := succMany? 1
+  succMany? := succMany?
+
+instance : Std.PRange.LawfulUpwardEnumerable α where
+  -- It is not the case that a and b are the same, because if it were, the equivalence with
+  -- `Fin k` would have mapped `m` and `m + n + 1` to the same object, and hence would not be
+  -- injective.
+  ne_of_lt x y h := by
+    rcases h with ⟨n, h⟩
+    have ⟨h, _⟩ := succMany?_eq_some_iff.mp h
+    grind only
+
+  succMany?_zero := succMany?_zero
+
+  succMany?_add_one n x := (succMany?_succ n x).symm
+
+instance instLinearlyUpwardEnumerable : Std.PRange.LinearlyUpwardEnumerable α where
+  eq_of_succ?_eq x y heq := by
+    simp only [Std.PRange.succ?] at heq
+    grind
+
+end succMany?
+
 /-- The enumeration merely adds an ordering, leaving the cardinality as is. -/
 theorem card_eq_fintypeCard {α : Type u} [FinEnum α] [Fintype α] : card α = Fintype.card α :=
   Fintype.truncEquivFin α |>.inductionOn (fun h ↦ Fin.equiv_iff_eq.mp ⟨equiv.symm.trans h⟩)
