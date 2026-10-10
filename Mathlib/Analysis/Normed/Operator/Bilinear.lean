@@ -511,6 +511,8 @@ See also `InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces
 def smulRightL : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ' :=
   (smulRightLₗ 𝕜 E' Fₗ').mkContinuous₂OfExists (by exact exists_eq_smulRightLₗ 𝕜 E' Fₗ')
 
+@[simp] lemma toLinearMap_smulRightL : (smulRightL 𝕜 E Fₗ).toLinearMap = smulRightₗ' 𝕜 E Fₗ := rfl
+
 end ContinuousLinearMap
 
 end SemiNormed
