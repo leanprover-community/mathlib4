@@ -57,7 +57,7 @@ instance [Φ₁.IsRightDerivabilityStructure] [Φ₂.IsRightDerivabilityStructur
   rw [(Φ₁.prod Φ₂).isRightDerivabilityStructure_iff (W₁.Q.prod W₂.Q) (W₁'.Q.prod W₂'.Q)
     ((Φ₁.localizedFunctor W₁.Q W₁'.Q).prod (Φ₂.localizedFunctor W₂.Q W₂'.Q))
     (NatIso.prod e₁ e₂)]
-  change TwoSquare.GuitartExact ((TwoSquare.mk _ _ _ _ e₁.hom).prod (TwoSquare.mk _ _ _ _ e₂.hom))
+  change TwoSquare.GuitartExact (TwoSquare.prod e₁.hom e₂.hom)
   infer_instance
 
 instance [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure] :
@@ -67,7 +67,7 @@ instance [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure]
   rw [(Φ₁.prod Φ₂).isLeftDerivabilityStructure_iff (W₁.Q.prod W₂.Q) (W₁'.Q.prod W₂'.Q)
     ((Φ₁.localizedFunctor W₁.Q W₁'.Q).prod (Φ₂.localizedFunctor W₂.Q W₂'.Q))
     (NatIso.prod e₁ e₂)]
-  change TwoSquare.GuitartExact ((TwoSquare.mk _ _ _ _ e₁.inv).prod (TwoSquare.mk _ _ _ _ e₂.inv))
+  change TwoSquare.GuitartExact (TwoSquare.prod e₁.inv e₂.inv)
   infer_instance
 
 end LocalizerMorphism
