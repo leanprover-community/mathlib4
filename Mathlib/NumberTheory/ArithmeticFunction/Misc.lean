@@ -101,6 +101,7 @@ end ProdPrimeFactors
 section Id
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
+@[oeis A001477]
 protected def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
 

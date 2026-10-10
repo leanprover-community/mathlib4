@@ -394,6 +394,7 @@ theorem sum_divisors_eq_sum_properDivisors_add_self :
 
 /-- `n : ℕ` is perfect if and only the sum of the proper divisors of `n` is `n` and `n`
   is positive. -/
+@[oeis A000396]
 def Perfect (n : ℕ) : Prop :=
   ∑ i ∈ properDivisors n, i = n ∧ 0 < n
 
