@@ -1163,6 +1163,13 @@ theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f 
   · exact integral_dirac _ _
   · exact integral_zero_measure _
 
+lemma withDensity_real_apply_eq_integral {f : α → ℝ≥0∞} {s : Set α}
+    (hf : AEMeasurable f (μ.restrict s)) (hf_lt_top : ∀ᵐ x ∂μ, x ∈ s → f x < ∞)
+    (hs : MeasurableSet s) :
+    (μ.withDensity f).real s = ∫ a in s, (f a).toReal ∂μ := by
+  rw [withDensity_real_apply f hs, ← integral_toReal hf]
+  rwa [ae_restrict_iff' hs]
+
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
 theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ[μ] f)
     (hf_int : Integrable f μ) (ε : ℝ) : ε * μ.real { x | ε ≤ f x } ≤ ∫ x, f x ∂μ := by

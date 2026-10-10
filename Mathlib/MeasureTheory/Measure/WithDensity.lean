@@ -45,6 +45,10 @@ theorem withDensity_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableS
     μ.withDensity f s = ∫⁻ a in s, f a ∂μ :=
   Measure.ofMeasurable_apply s hs
 
+lemma withDensity_real_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+    (μ.withDensity f).real s = (∫⁻ a in s, f a ∂μ).toReal := by
+  rw [Measure.real, withDensity_apply f hs]
+
 theorem withDensity_apply_le (f : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ a in s, f a ∂μ ≤ μ.withDensity f s := by
   let t := toMeasurable (μ.withDensity f) s
@@ -142,6 +146,12 @@ theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a 
     IsFiniteMeasure (μ.withDensity f) :=
   { measure_univ_lt_top := by
       rwa [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ, lt_top_iff_ne_top] }
+
+lemma isFiniteMeasure_withDensity_iff {f : α → ℝ≥0∞} :
+    IsFiniteMeasure (μ.withDensity f) ↔ ∫⁻ a, f a ∂μ ≠ ∞ := by
+  refine ⟨fun h ↦ ?_, isFiniteMeasure_withDensity⟩
+  rw [← setLIntegral_univ, ← withDensity_apply f .univ]
+  exact measure_ne_top _ _
 
 theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) :
     μ.withDensity f ≪ μ := by

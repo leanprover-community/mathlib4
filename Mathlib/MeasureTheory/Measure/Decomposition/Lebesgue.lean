@@ -6,9 +6,8 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.Sub
-
-import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 
 /-!
 # Lebesgue decomposition
@@ -1087,5 +1086,24 @@ lemma add_sub_of_mutuallySingular {ξ : Measure α} (h : μ ⟂ₘ ξ) : μ + (�
   _ = μ + ν - ξ := by rw [restrict_add_restrict_compl hs]
 
 end Measure
+
+lemma isHahnDecomposition_withDensity_le_one {α : Type*} {_ : MeasurableSpace α} {μ : Measure α}
+    {f : α → ℝ≥0∞} (hf : Measurable f) :
+    IsHahnDecomposition (μ.withDensity f) μ {x | f x ≤ 1} where
+  measurableSet := measurableSet_le hf measurable_const
+  le_on := by
+    refine Measure.le_intro fun t ht _ ↦ ?_
+    rw [Measure.restrict_apply ht, Measure.restrict_apply ht,
+      withDensity_apply _ (ht.inter (measurableSet_le hf measurable_const))]
+    calc ∫⁻ x in t ∩ {x | f x ≤ 1}, f x ∂μ
+    _ ≤ ∫⁻ x in t ∩ {x | f x ≤ 1}, 1 ∂μ := setLIntegral_mono measurable_const (by grind)
+    _ = μ (t ∩ {x | f x ≤ 1}) := by simp
+  ge_on_compl := by
+    refine Measure.le_intro fun t ht _ ↦ ?_
+    rw [Measure.restrict_apply ht, Measure.restrict_apply ht,
+      withDensity_apply _ (ht.inter (measurableSet_le hf measurable_const).compl)]
+    calc μ (t ∩ {x | f x ≤ 1}ᶜ)
+    _ = ∫⁻ x in t ∩ {x | f x ≤ 1}ᶜ, 1 ∂μ := by simp
+    _ ≤ ∫⁻ x in t ∩ {x | f x ≤ 1}ᶜ, f x ∂μ := setLIntegral_mono hf (by grind)
 
 end MeasureTheory
