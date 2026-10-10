@@ -176,6 +176,34 @@ Scalar multiples of harmonic functions are harmonic.
 theorem HarmonicOnNhd.const_smul (h : HarmonicOnNhd f s) :
     HarmonicOnNhd (c • f) s := fun x hx ↦ (h x hx).const_smul
 
+/--
+Translations preserve harmonicity at a point.
+-/
+theorem harmonicAt_comp_add_iff {k : E} :
+    HarmonicAt (fun y ↦ f (y + k)) x ↔ HarmonicAt f (x + k) := by
+  refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨contDiffAt_comp_add_iff.mp h₁, ?_⟩,
+    fun ⟨h₁, h₂⟩ ↦ ⟨contDiffAt_comp_add_iff.mpr h₁, ?_⟩⟩
+  · have h : (fun y ↦ Δ (fun z ↦ f (z + k)) y) =ᶠ[𝓝 x] (fun y ↦ Δ f (y + k)) := by
+      filter_upwards with y
+      exact laplacian_comp_add
+    rw [← map_add_right_nhds k x, Filter.eventuallyEq_map, Pi.zero_comp]
+    exact h.symm.trans h₂
+  · have hcont : Continuous (fun y ↦ y + k) := by fun_prop
+    have h : Δ (fun y ↦ f (y + k)) = fun y ↦ Δ f (y + k) := by
+      funext y
+      exact laplacian_comp_add
+    exact h ▸ h₂.comp_tendsto (hcont.tendsto x)
+
+/--
+Translations preserve harmonicity on a set.
+-/
+theorem harmonicOnNhd_comp_add_iff {k : E} :
+    HarmonicOnNhd (fun y ↦ f (y + k)) s ↔ HarmonicOnNhd f {t | t - k ∈ s} := by
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
+  · specialize h (x - k) hx
+    rwa [harmonicAt_comp_add_iff, sub_add_cancel] at h
+  · exact harmonicAt_comp_add_iff.mpr (h (x + k) (by simpa))
+
 /-!
 ## Compatibility with Linear Maps
 -/
