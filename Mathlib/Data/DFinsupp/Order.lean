@@ -6,9 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Pi
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.DFinsupp.Module
+
+import Mathlib.Algebra.Order.Pi
 
 /-!
 # Pointwise order on finitely supported dependent functions
