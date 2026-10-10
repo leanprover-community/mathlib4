@@ -2450,6 +2450,7 @@ public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 public import Mathlib.Analysis.SpecialFunctions.Pochhammer
 public import Mathlib.Analysis.SpecialFunctions.PolarCoord
+public import Mathlib.Analysis.SpecialFunctions.Polylog.Basic
 public import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
