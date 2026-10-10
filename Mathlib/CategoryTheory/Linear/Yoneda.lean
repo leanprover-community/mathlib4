@@ -105,11 +105,10 @@ end Ring
 section CommRing
 
 variable (R : Type w) [CommRing R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
-variable (C)
 
 instance (X : C) : ((linearYoneda R C).obj X).Linear R where
 
-instance linearCoyoneda_obj_linear (Y : Cᵒᵖ) : ((linearCoyoneda R C).obj Y).Linear R where
+instance (Y : Cᵒᵖ) : ((linearCoyoneda R C).obj Y).Linear R where
 
 end CommRing
 
