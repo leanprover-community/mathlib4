@@ -16,13 +16,17 @@ import Mathlib.Util.Qq
 # Simproc deciding `Matrix.IsIndecomposable`
 
 `Matrix.reduceIsIndecomposable` rewrites `M.IsIndecomposable` to `True` or `False` for a closed
-square matrix literal `M` indexed by `Fin n`, whose entries have an equality the kernel can decide.
+square matrix literal `M` indexed by `Fin n`. Requires a kernel-decidable equality for the matrix
+entry type.
+
+This is equivalent to determining whether the graph corresponding to `M` is strongly
+connected.
 
 ## Main definitions
 
 - `Matrix.reduceIsIndecomposable`: the simproc deciding `M.IsIndecomposable`.
-- `SpansFrom`: a list of edges, followed in order from a vertex, reaches every vertex.
-- `isClosed`: no edge of a Boolean adjacency matrix leaves a given set of vertices.
+- `SpansFrom`: a list of edges that reaches every vertex followed in order from a root vertex.
+- `isClosed`: a set of vertices with no edges leaving.
 - `packedAdj`: a Boolean adjacency matrix stored as the bits of a natural number, computed from a
   matrix literal by `packRows`.
 - `decideStronglyConnected`: searches the graph from and to vertex `0`, returning two spanning
@@ -30,16 +34,14 @@ square matrix literal `M` indexed by `Fin n`, whose entries have an equality the
 
 ## Implementation notes
 
-The question is essentially to determine whether the graph corresponding to `M` is strongly
-connected. The Boolean adjacency matrix of `M` has entry `(i, j)` true when `M i j ≠ 0`,
-evaluated by the kernel.
-
-There is an existing implementation of Tarjan's algorithm at `Tactic.Order.Graph.findSCCs`, but it
-doesn't return a witness for the strongly connected components, and the algorithm is also an
-overkill. This simproc instead simply runs two bfs on the graph from vertex `0` forwards and
+This simproc simply runs two bfs on the graph from vertex `0` forwards and
 backwards. If all vertices are reached in both passes, then the indecomposability is certified by
 the two search trees. Otherwise, `M` is decomposable, witnessed by a set of rows whose entries
 outside the set evaluate to 0.
+
+There is an existing implementation of Tarjan's algorithm at `Tactic.Order.Graph.findSCCs`, but it
+doesn't return a witness for the strongly connected components, and the algorithm is also an
+overkill.
 
 The Boolean adjacency matrix of a `!![…]` literal is packed into one natural number, with entry
 `(i, j)` at bit `i * n + j`, and both certificates are checked against that number, since reading
@@ -217,16 +219,11 @@ def decideStronglyConnected (adjMatrix : Array (Array Bool)) : StrongConnectivit
   if !toRoot.all id then .disconnected (toRoot.map not) else
   .connected outTree inTree
 
-/-- The Boolean adjacency matrix of the matrix with rows `lit`, evaluated by the kernel, or
-`none` when the kernel cannot decide which entries are zero. -/
+/-- The Boolean adjacency matrix of the matrix with rows `lit`, evaluated by the kernel. Returns
+`none` if the kernel cannot decide which entries are zero. -/
 def evalAdjMatrix? {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α)) (n : Nat)
     (lit : Q(List (List $α))) : MetaM (Option (Array (Array Bool))) := do
-  let env ← getEnv
-  let eval (e : Q(Nat)) : Option Nat :=
-    match Kernel.whnf env {} e with
-    | .ok (.lit (.natVal m)) => some m
-    | _ => none
-  let some bits := eval q(packRows $n $lit) | return none
+  let .ok (.lit (.natVal bits)) := Kernel.whnf (← getEnv) {} q(packRows $n $lit) | return none
   return some <| Array.ofFn (n := n) fun i ↦ Array.ofFn (n := n) fun j ↦ bits.testBit (i * n + j)
 
 /-- The numeral representing the Boolean adjacency matrix `adjMatrix` of `M`, with the proof that
