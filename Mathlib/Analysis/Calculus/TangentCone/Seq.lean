@@ -115,8 +115,7 @@ theorem mem_tangentConeAt_iff_exists_seq_norm_tendsto_atTop {𝕜 E : Type*}
         rw [← lt_div_iff₀' (by positivity)]
         refine (hd n).trans_le ?_
         grw [hn]
-        · simp [mul_pow, div_eq_inv_mul]
-        · norm_num1
+        simp [mul_pow, div_eq_inv_mul]
     · rw [mem_tangentConeAt_iff_exists_seq]
       rintro ⟨c, d, hd₀, hds, hcd⟩
       refine ⟨c, d, ?_, hds, hcd⟩

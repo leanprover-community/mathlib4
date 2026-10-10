@@ -421,7 +421,6 @@ theorem mul_turanNumber_le : 2 * r * turanNumber n r ≤ (r - 1) * n ^ 2 := by
   grw [turanNumber_eq, mul_add, Nat.mul_div_le]
   rw [tsub_mul, ← Nat.sub_add_comm]; swap
   · grw [Nat.mod_le]
-    exact Nat.zero_le _
   rw [Nat.sub_le_iff_le_add, mul_comm, Nat.add_le_add_iff_left, Nat.choose_two_right,
     ← Nat.mul_div_assoc _ (Nat.even_mul_pred_self _).two_dvd, mul_assoc,
     mul_div_cancel_left₀ _ two_ne_zero, ← mul_assoc, ← mul_rotate, sq, ← mul_rotate (r - 1)]
