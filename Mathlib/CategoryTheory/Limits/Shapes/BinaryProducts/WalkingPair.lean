@@ -5,17 +5,15 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Walking pairs
 
 We define a category `WalkingPair`, which is the index category for a binary (co)product diagram.
-A convenience method `pair X Y`, for `X, Y` objects of some category `C`, constructs the constructs
-the functor from the walking pair, hitting the given objects.
+A convenience method `pair X Y`, for `X, Y` objects of some category `C`, constructs the
+functor from the walking pair, hitting the given objects.
 
 ## References
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
@@ -131,17 +129,18 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 
 /-- The natural transformation between two functors out of the
 walking pair, specified by its components. -/
+@[to_dual self]
 def mapPair : F ⟶ G where
   app
     | ⟨left⟩ => f
     | ⟨right⟩ => g
   naturality := fun ⟨X⟩ ⟨Y⟩ ⟨u⟩ => by cat_disch
 
-@[simp]
+@[simp, to_dual self]
 theorem mapPair_left : (mapPair f g).app ⟨left⟩ = f :=
   rfl
 
-@[simp]
+@[simp, to_dual self]
 theorem mapPair_right : (mapPair f g).app ⟨right⟩ = g :=
   rfl
 

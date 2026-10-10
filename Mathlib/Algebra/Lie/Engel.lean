@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Lie.AdjointAction.Basic
 public import Mathlib.Algebra.Lie.Nilpotent
-public import Mathlib.Algebra.Lie.Normalizer
 
 /-!
 # Engel's theorem
@@ -52,7 +51,7 @@ that this result has not previously been established at this level of generality
 
 The second part of the traditional statement of Engel's theorem concerns nilpotency of the Lie
 algebra and a proof of this for general coefficients appeared in the literature as long ago
-[as 1937](zorn1937). This also follows trivially from `LieModule.isNilpotent_iff_forall` simply by
+[as 1937][zorn1937]. This also follows trivially from `LieModule.isNilpotent_iff_forall` simply by
 taking `M = L`.
 
 It is pleasing that the two parts of the traditional statements of Engel's theorem are thus unified
@@ -186,7 +185,7 @@ theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
 theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalgebra R L}
     (hK₁ : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K) (hK₂ : K < K.normalizer) :
     ∃ (K' : LieSubalgebra R L), LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K' ∧ K < K' := by
-  obtain ⟨x, hx₁, hx₂⟩ := SetLike.exists_of_lt hK₂
+  obtain ⟨x, hx₁, hx₂⟩ := IsConcreteLE.exists_of_lt hK₂
   let K' : LieSubalgebra R L :=
     { (R ∙ x) ⊔ (K : Submodule R L) with
       lie_mem' := fun {y z} => LieSubalgebra.lie_mem_sup_of_mem_normalizer hx₁ }
@@ -254,7 +253,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     refine isNoetherian_of_surjective (LieHom.rangeRestrict (toEnd R L M)).toLinearMap ?_
     simp only [LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)
-  obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').wf.has_min s hs
+  obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').has_min s hs
   obtain rfl : K = ⊤ := by grind
   exact hK₁
 

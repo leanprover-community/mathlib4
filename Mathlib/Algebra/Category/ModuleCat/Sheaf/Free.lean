@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
-public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
+
+import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
 # Free sheaves of modules
@@ -115,7 +115,7 @@ lemma sectionsMap_freeHomEquiv_symm_freeSection
   obtain ⟨f, rfl⟩ := (freeHomEquiv M).surjective f
   cat_disch
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma ιFree_freeMap (i : I) :
     ιFree (R := R) i ≫ freeMap f = ιFree (f i) := by
   rw [← unitHomEquiv_symm_freeHomEquiv_apply, freeHomEquiv_freeMap]
@@ -138,7 +138,7 @@ lemma freeFunctor_obj (X : Type u) :
 lemma freeFunctor_map {X Y : Type u} (f : X ⟶ Y) :
     dsimp% (freeFunctor (R := R)).map f = freeMap f :=
   Cofan.IsColimit.hom_ext (isColimitFreeCofan _) _ _
-    (fun i ↦ (Sigma.ι_desc _ _).trans (ιFree_freeMap f i).symm)
+    (fun i ↦ (Sigma.ι_comp_desc _ _).trans (ιFree_freeMap f i).symm)
 
 instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) :=
   inferInstanceAs (PreservesColimitsOfSize.{v₂, u₂} (sigmaConst.obj _))

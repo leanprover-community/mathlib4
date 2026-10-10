@@ -8,15 +8,14 @@ module
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.List
 public import Mathlib.Data.Int.ModEq
-public import Mathlib.Data.Nat.Bits
+public import Mathlib.Data.Nat.Digits.Defs
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Tactic.IntervalCases
-public import Mathlib.Data.Nat.Digits.Defs
 
 /-!
 # Digits of a natural number
 
-This provides lemma about the digits of natural numbers.
+This provides lemmas about the digits of natural numbers.
 -/
 
 public section
@@ -139,7 +138,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
   apply Nat.mul_le_mul_left
   refine le_trans ?_ (Nat.le_add_left _ _)
   have : 0 < l.getLast hl := by rwa [pos_iff_ne_zero]
-  convert! Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
+  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
   rw [Nat.mul_one]
 
 /-- Any non-zero natural number `m` is greater than
@@ -148,7 +147,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
 theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     (b + 2) ^ (digits (b + 2) m).length ≤ (b + 2) * m := by
   have : digits (b + 2) m ≠ [] := digits_ne_nil_iff_ne_zero.mpr hm
-  convert! @pow_length_le_mul_ofDigits b (digits (b + 2) m) this (getLast_digit_ne_zero _ hm)
+  convert @pow_length_le_mul_ofDigits b (digits (b + 2) m) this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
 /-- Any non-zero natural number `m` is greater than
@@ -182,8 +181,8 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length := List.length_pos_iff.mpr h'
-        rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x ∈ Ico _ _, ofDigits p (tl.drop x)),
-            ← this, sum_Ico_consecutive _ h₁ <| (le_add_right tl.length 1),
+        rw [← sum_range_add_sum_Ico _ h₁, ← add_zero (∑ x ∈ Ico _ _, ofDigits p (tl.drop x)),
+            ← this, sum_Ico_consecutive _ h₁ (le_add_right tl.length 1),
             ← sum_Ico_add _ 0 tl.length 1,
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
             mul_zero, add_zero, ← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
@@ -201,7 +200,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
     · convert!
-      sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
+      sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn)
         (fun l a ↦ digits_lt_base h a)
       · refine (length_digits p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
@@ -289,7 +288,7 @@ theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits
     congr
     · skip
     · rw [← ofDigits_digits b' n]
-  convert! ofDigits_modEq b' b (digits b' n)
+  convert ofDigits_modEq b' b (digits b' n)
   exact h.symm
 
 theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n : ℕ) :
@@ -422,7 +421,7 @@ This spelling can be helpful for some proofs.
 theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (ofDigits b) (fixedLengthDigits hb l) (Finset.range (b ^ l)) := by
   rw [fixedLengthDigits, Set.coe_toFinset]
-  convert! bijOn_ofDigits hb l
+  convert bijOn_ofDigits hb l
   ext; simp
 
 /--
@@ -432,7 +431,7 @@ This spelling can be helpful for some proofs.
 theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l) := by
   rw [fixedLengthDigits, Set.coe_toFinset]
-  convert! bijOn_digitsAppend hb l
+  convert bijOn_digitsAppend hb l
   ext; simp
 
 @[simp]

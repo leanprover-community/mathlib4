@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Lean.Server.InfoUtils
+public meta import Lean.Elab.InfoTree.Util
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -69,7 +69,7 @@ public register_option linter.unusedTactic : Bool := {
 namespace UnusedTactic
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
+abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) BaseIO
 
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
@@ -103,7 +103,6 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     `Batteries.Tactic.seq_focus,
     `Mathlib.Tactic.Hint.registerHintStx,
     `Mathlib.Tactic.LinearCombination.linearCombination,
-    `Mathlib.Tactic.LinearCombinationPrime.linearCombination',
     `Aesop.Frontend.Parser.addRules,
     `Aesop.Frontend.Parser.aesopTactic,
     `Aesop.Frontend.Parser.aesopTactic?,
@@ -123,10 +122,12 @@ public def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeK
 Adds a new syntax kind whose children will be ignored by the `unusedTactic` linter.
 This should be called from an `initialize` block.
 -/
-public def addIgnoreTacticKind (kind : SyntaxNodeKind) : IO Unit :=
+public def addIgnoreTacticKind (kind : SyntaxNodeKind) : BaseIO Unit :=
   ignoreTacticKindsRef.modify (·.insert kind)
 
-/-- Accumulates the set of tactic syntaxes that should be evaluated at least once. -/
+/-- Accumulates the set of tactic syntaxes that should be evaluated at least once.
+This includes `<;>` but excludes all other tactics whose syntax is atomic, such as `;`.
+-/
 @[specialize] partial def getTactics (ignoreTacticKinds : NameHashSet)
     (isTacKind : SyntaxNodeKind → Bool) (stx : Syntax) : M Unit := do
   if let .node _ k args := stx then
@@ -134,7 +135,12 @@ public def addIgnoreTacticKind (kind : SyntaxNodeKind) : IO Unit :=
       args.forM (getTactics ignoreTacticKinds isTacKind)
     if isTacKind k then
       if let some r := stx.getRange? true then
-        modify fun m => m.insert r stx
+        modify (·.insert r stx)
+    -- The `<;>` syntax is an atom, so to add it we special case it.
+    if k == ``Lean.Parser.Tactic.«tactic_<;>_» || k == ``Lean.Parser.Tactic.Conv.«conv_<;>_» then
+      if let some arg := args[1]? then
+        if let some r := arg.getRange? true then
+          modify (·.insert r arg)
 
 /-- `getNames mctx` extracts the names of all the local declarations implied by the
 `MetavarContext` `mctx`. -/
@@ -151,19 +157,26 @@ partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
     let .ofTacticInfo i := i | return ranges
     let stx := i.stx
     let some r := stx.getRange? true | return ranges
-    let kind := stx.getKind
-    -- if the tactic is allowed to not change the goals
-    if exceptions.contains kind then
-      return ranges.push r
-    -- if the goals have changed
-    if i.goalsAfter != i.goalsBefore then
-      return ranges.push r
-    -- bespoke check for `swap_var`: the only change that it does is
-    -- in the usernames of local declarations, so we check the names before and after
-    if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
-            (getNames i.mctxBefore != getNames i.mctxAfter) then
-      return ranges.push r
-    return ranges
+    match i.stx with
+    | .atom _ "<;>" =>
+      -- Bespoke check for `<;>`: if it generates at most 1 goal, we consider it unused.
+      match i.goalsAfter with
+      | [] | [_] => return ranges
+      | _ => return ranges.push r
+    | .node _ kind _ =>
+      -- if the tactic is allowed to not change the goals
+      if exceptions.contains kind then
+        return ranges.push r
+      -- if the goals have changed
+      if i.goalsAfter != i.goalsBefore then
+        return ranges.push r
+      -- bespoke check for `swap_var`: the only change that it does is
+      -- in the usernames of local declarations, so we check the names before and after
+      if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
+              (getNames i.mctxBefore != getNames i.mctxAfter) then
+        return ranges.push r
+      return ranges
+    | _ => return ranges
   for r in ranges do
     modify (·.erase r)
 
@@ -193,7 +206,11 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
       continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
-    Linter.logLint linter.unusedTactic stx m!"Unused tactic linter: `{stx}` does nothing"
+    if stx.isAtom then
+      Linter.logLint linter.unusedTactic stx
+        m!"Unused tactic linter: `<;>` should be replaced with `;` or be removed."
+    else
+      Linter.logLint linter.unusedTactic stx m!"Unused tactic linter: `{stx}` does nothing."
     last := r
 
 initialize addLinter unusedTacticLinter

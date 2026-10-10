@@ -36,7 +36,6 @@ namespace CochainComplex
 open HomologicalComplex
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isSplitEpi_to_singleFunctor_obj_of_projective
     {P : C} [Projective P] {K : CochainComplex C ℤ} {i : ℤ}
     (π : K ⟶ (CochainComplex.singleFunctor C i).obj P) [K.IsStrictlyLE i] [QuasiIsoAt π i] :
@@ -59,8 +58,7 @@ lemma isSplitEpi_to_singleFunctor_obj_of_projective
     id := by
       apply HomologicalComplex.from_single_hom_ext
       rw [comp_f, mkHomFromSingle_f, assoc, id_f, this, Projective.factorThru_comp_assoc,
-        id_comp, Iso.hom_inv_id]
-      rfl }⟩⟩
+        id_comp, Iso.hom_inv_id] }⟩⟩
 
 end CochainComplex
 
