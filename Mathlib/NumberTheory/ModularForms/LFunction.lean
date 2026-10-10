@@ -18,7 +18,7 @@ import Mathlib.Analysis.PSeries
 @[expose] public section
 
 open UpperHalfPlane hiding I
-open scoped Real
+open scoped Real Topology
 open Filter Complex Asymptotics
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic]
@@ -131,8 +131,50 @@ lemma hasSum_Λ (hs : k + 1 < s.re) :
   · rw [Λ, ← ((weakFEPair hk f).hasMellin <| by grind [weakFEPair]).2]
   · simpa using ModularFormClass.qExpansion_isBigO hk.le f
 
-/-- The `L`-series of a modular form (without its Archimedean `Γ`-factor). -/
-noncomputable def L (s : ℂ) : ℂ :=  Λ hk f s * (2 / Gammaℂ s)
+/-- The `L`-function of a modular form `f` of weight `k`: the completed `L`-function `ModularForm.Λ`
+without its Archimedean factor `Gammaℂ s / 2 = (2 * π) ^ (-s) * Gamma s`, i.e.
+`L hk f s = Λ hk f s * (2 / Gammaℂ s)` for `s ≠ 0` (`ModularForm.L_of_ne_zero`).
+
+Normalization: for `k + 1 < re s`, `L hk f s = ∑ aₙ (n / h) ^ (-s)`, where `h = Γ.strictWidthInfty`
+is the strict width of the cusp `∞` and `aₙ` are the coefficients of `qExpansion h f`, the expansion
+of `f` in `q = exp (2πiτ / h)`. This is `ModularForm.hasSum_L`, stated as
+`∑ aₙ / n ^ s = h ^ (-s) * L hk f s` (for cusp forms, `CuspForm.hasSum_L` only needs
+`k / 2 + 1 < re s`); for `h ≠ 1` it is thus `h ^ s` times the classical `∑ aₙ / n ^ s`.
+
+At `s = 0`, `Λ hk f` has at most a simple pole, with residue `-valueAtInfty f`, which cancels the
+zero of `1 / Gammaℂ`. As for `riemannZeta`, we define `L hk f 0` to be the limit `-valueAtInfty f`
+(`ModularForm.L_apply_zero`, `ModularForm.tendsto_L_nhdsNE_zero`). Use these lemmas rather than
+unfolding `L`. -/
+noncomputable def L : ℂ → ℂ :=
+  Function.update (fun s ↦ Λ hk f s * (2 / Gammaℂ s)) 0 (-valueAtInfty f)
+
+/-- For `s ≠ 0`, `L hk f s` is the completed `L`-function `Λ hk f s` divided by its Archimedean
+factor `Gammaℂ s / 2`. At `s = 0` use `ModularForm.L_apply_zero` instead: there the right-hand side
+is `0` (as `Gammaℂ 0 = 0`), whereas `L hk f 0 = -valueAtInfty f`. -/
+lemma L_of_ne_zero (hs : s ≠ 0) : L hk f s = Λ hk f s * (2 / Gammaℂ s) :=
+  Function.update_of_ne hs ..
+
+/-- The value of `L hk f` at `s = 0`: `L(f, 0) = -a₀`, where `a₀ = valueAtInfty f` is the constant
+term of the `q`-expansion of `f` (`UpperHalfPlane.qExpansion_coeff_zero`); in particular it is `0`
+for cusp forms. It is the limit of `L hk f s` as `s → 0` (`ModularForm.tendsto_L_nhdsNE_zero`),
+so `L hk f` is continuous at `0` (`ModularForm.continuousAt_L_zero`). -/
+@[simp]
+lemma L_apply_zero : L hk f 0 = -valueAtInfty f :=
+  Function.update_self ..
+
+/-- The limit `lim_{s → 0} L hk f s = -valueAtInfty f`, which is the value `L hk f 0`
+(`ModularForm.L_apply_zero`). -/
+lemma tendsto_L_nhdsNE_zero : Tendsto (L hk f) (𝓝[≠] 0) (𝓝 (-valueAtInfty f)) := by
+  -- for `s ≠ 0`, `L hk f s = s • Λ hk f s / (s * Gammaℂ s / 2)`, which tends to `-a₀ / 1`
+  have := (weakFEPair hk f).Λ_residue_zero.div (Gammaℂ_residue_zero.div_const 2) <| by simp
+  refine tendsto_nhdsWithin_congr (fun s (hs : s ≠ 0) ↦ ?_) <| by simpa using this
+  simp [L_of_ne_zero hk f hs, Λ, field]
+
+/-- `L hk f` is continuous at `s = 0`: its value `L hk f 0 = -valueAtInfty f` is not a junk value
+but fills in the removable singularity of `Λ hk f s * (2 / Gammaℂ s)` at `s = 0`. -/
+@[fun_prop]
+lemma continuousAt_L_zero : ContinuousAt (L hk f) 0 :=
+  continuousAt_iff_punctured_nhds.2 <| L_apply_zero hk f ▸ tendsto_L_nhdsNE_zero hk f
 
 /-- Shared conversion from the completed `Λ`-series to the ordinary `L`-series. -/
 private lemma hasSum_L_of_hasSum_Λ (hs : 0 < s.re)
@@ -153,7 +195,7 @@ private lemma hasSum_L_of_hasSum_Λ (hs : 0 < s.re)
     have := Gamma_ne_zero_of_re_pos hs
     have := cpow_ne_zero_iff (y := s).mpr (.inl <| ofReal_ne_zero.mpr Γ.strictWidthInfty_pos.ne')
     field_simp
-  · grind [L]
+  · rw [L_of_ne_zero hk f (ne_zero_of_re_pos hs), mul_rotate']
 
 theorem hasSum_L (hs : k + 1 < s.re) :
     HasSum (fun n ↦ (qExpansion (h Γ) f).coeff n / n ^ s) (h Γ ^ (-s) * L hk f s) :=
@@ -189,7 +231,9 @@ lemma hasSum_Λ (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
 
 @[fun_prop]
 lemma differentiable_L : Differentiable ℂ (L hk f) := by
-  unfold L
+  -- for cusp forms the update at `0` is trivial, since `valueAtInfty f = 0 = Gammaℂ 0`
+  rw [L, Function.update_eq_self_iff.2 <| by
+    simp [(CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero, Gammaℂ]]
   simp only [div_eq_mul_inv]
   fun_prop
 

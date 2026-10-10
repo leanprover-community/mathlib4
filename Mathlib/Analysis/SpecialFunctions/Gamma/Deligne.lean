@@ -116,6 +116,16 @@ lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (
   rw [Gammaℝ]
   ring_nf
 
+/-- `Gammaℂ` has a simple pole at `s = 0` with residue `2`.
+
+This is the complex-place analogue of `Gammaℝ_residue_zero` (whose residue at `0` is also `2`), and
+is twice the residue of `Complex.Gamma` itself (`Complex.tendsto_self_mul_Gamma_nhds_zero`). -/
+lemma Gammaℂ_residue_zero : Tendsto (fun s ↦ s * Gammaℂ s) (𝓝[≠] 0) (𝓝 2) := by
+  -- `s * Gammaℂ s = 2 * (2 * π) ^ (-s) * (s * Gamma s)`, and `s * Gamma s → 1`
+  refine .congr (fun s ↦ mul_left_comm ..) ?_
+  simpa using ((continuous_neg.const_cpow (b := 2 * π) (by simp)).const_mul 2).continuousWithinAt
+    |>.tendsto.mul tendsto_self_mul_Gamma_nhds_zero
+
 end analyticity
 
 section reflection
