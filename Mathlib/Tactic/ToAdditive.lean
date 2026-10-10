@@ -8,7 +8,7 @@ module
 public import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
-## `@[to_additive]` attributes for basic types
+# `@[to_additive]` attributes for basic types
 -/
 
 public meta section

@@ -11,7 +11,7 @@ import all Init.Core  -- TODO: for accessing proofs
 
 
 /-!
-## `@[to_dual]` attributes for basic types
+# `@[to_dual]` attributes for basic types
 -/
 
 public meta section

@@ -9,6 +9,8 @@ public meta import Mathlib.Tactic.Simps
 public import Mathlib.RingTheory.MvPowerSeries.Basic  -- shake: keep (tactic dependency)
 
 /-!
+# The `name_power_vars` command
+
 The command `name_power_vars` names variables in
 `MvPowerSeries (Fin n) R` for the appropriate value of `n`.
 The notation introduced by this command is local.

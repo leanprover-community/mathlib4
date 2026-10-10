@@ -16,7 +16,7 @@ public import Mathlib.Tactic.FunProp.Types
 import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 
 /-!
-## `fun_prop` environment extensions storing theorems for `fun_prop`
+# `fun_prop` environment extensions storing theorems for `fun_prop`
 -/
 
 public meta section

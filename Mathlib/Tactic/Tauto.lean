@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Core
 public import Qq
 
 /-!
-The `tauto` tactic.
+# The `tauto` tactic
 -/
 
 public meta section
