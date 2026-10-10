@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.LocalProperties.Submodule
 
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
@@ -182,3 +184,16 @@ theorem Module.projective_of_localization_maximal'
     dsimp [e]
     simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
       IsLocalization.map_id_mk']
+
+/-- A finitely presented module is projective if and only if all of its
+localizations at maximal ideals are free. -/
+theorem Module.projective_iff_localization_maximal_free [Module.FinitePresentation R M] :
+    Module.Projective R M ↔ ∀ (I : Ideal R) (_ : I.IsMaximal),
+      Module.Free (Localization.AtPrime I) (LocalizedModule.AtPrime I M) := by
+  refine ⟨fun _ I _ ↦ ?_, fun h ↦ projective_of_localization_maximal ?_⟩
+  · have : Module.Projective (Localization.AtPrime I) (LocalizedModule.AtPrime I M) :=
+      Module.projective_of_isLocalizedModule I.primeCompl
+        (LocalizedModule.mkLinearMap I.primeCompl M)
+    exact Module.free_of_flat_of_isLocalRing
+  · intro I hI
+    exact @Module.Projective.of_free _ _ _ _ _ (h I hI)
