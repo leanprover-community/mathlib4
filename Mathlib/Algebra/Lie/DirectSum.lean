@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Ideal
+public import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 # Direct sums of Lie algebras and Lie modules

@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Nat.Even
+public import Mathlib.Data.List.Chain
 
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Monoid.NatCast

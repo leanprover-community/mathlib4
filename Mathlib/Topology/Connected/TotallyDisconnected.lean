@@ -6,6 +6,7 @@ Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Topology.InductiveDimension.Classes
 
 /-!
 # Totally disconnected and totally separated topological spaces
@@ -365,3 +366,19 @@ theorem IsPreconnected.isDiscrete_iff_subsingleton {S : Set α} (hS : IsPreconne
     have : Subsingleton S := subsingleton_of_preconnected_totallyDisconnected
     simpa using this
   mpr h := h.isDiscrete
+
+instance [T0Space α] [ZeroDimensionalSpace α] : TotallySeparatedSpace α := by
+  simp_rw [totallySeparatedSpace_iff_exists_isClopen, mem_compl_iff]
+  intro x y hxy
+  contrapose! hxy
+  apply Inseparable.eq
+  rw [isTopologicalBasis_isClopen.inseparable_iff]
+  exact fun V hV ↦ ⟨hxy V hV, (hxy Vᶜ hV.compl).mtr⟩
+
+@[deprecated instTotallySeparatedSpaceOfT0SpaceOfZeroDimensionalSpace +typeChanged
+(since := "2026-10-08")]
+theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space α]
+    (h : TopologicalSpace.IsTopologicalBasis { s : Set α | IsClopen s }) :
+    TotallySeparatedSpace α := by
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen] at h
+  infer_instance

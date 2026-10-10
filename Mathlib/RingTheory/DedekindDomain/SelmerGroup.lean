@@ -5,8 +5,8 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.Algebra.Group.Int.TypeTags
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains

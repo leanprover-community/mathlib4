@@ -779,10 +779,6 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
 theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
   (Ideal.mul_eq_inf_of_coprime coprime.sup_eq)
 
-@[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-03-10")]
-theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
-  (Ideal.mul_eq_inf_of_coprime coprime.sup_eq).symm
-
 open Function
 theorem prod_eq_iInf_of_pairwise_isCoprime {s : Finset ι} {J : ι → Ideal R}
     (hp : (s : Set ι).Pairwise (IsCoprime on J)) :

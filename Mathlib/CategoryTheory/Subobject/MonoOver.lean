@@ -5,12 +5,12 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
-public import Mathlib.CategoryTheory.WithTerminal.Cone
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # Monomorphisms over a fixed object
@@ -351,8 +351,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   map_surjective {g h} e := by
     refine ⟨homMk e.hom.left ?_, rfl⟩
-    · rw [← cancel_mono f, assoc]
-      apply w e
+    rw [← cancel_mono f, assoc]
+    apply w e
 
 instance faithful_map (f : X ⟶ Y) [Mono f] : Functor.Faithful (map f) where
 

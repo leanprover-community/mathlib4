@@ -6,8 +6,8 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Group.Commute.Units
-public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.Logic.Equiv.Defs
 /-!
 # Theorems about invertible elements

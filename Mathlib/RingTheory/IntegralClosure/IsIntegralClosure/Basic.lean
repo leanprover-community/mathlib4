@@ -137,6 +137,9 @@ theorem Algebra.IsIntegral.adjoin {S : Set A} (hS : ∀ x ∈ S, IsIntegral R x)
     Algebra.IsIntegral R (adjoin R S) :=
   le_integralClosure_iff_isIntegral.mp <| adjoin_le hS
 
+instance [Algebra.IsIntegral R A] (S : Set A) [Finite S] : Module.Finite R (Algebra.adjoin R S) :=
+  Algebra.IsIntegral.finite
+
 theorem integralClosure_eq_top_iff : integralClosure R A = ⊤ ↔ Algebra.IsIntegral R A := by
   rw [← top_le_iff, le_integralClosure_iff_isIntegral,
       (Subalgebra.topEquiv (R := R) (A := A)).isIntegral_iff] -- explicit arguments for speedup
@@ -219,6 +222,26 @@ theorem IsIntegral.of_mem_closure'' {S : Type*} [CommRing S] {f : R →+* S} (G 
 theorem IsIntegral.pow {x : B} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (x ^ n) :=
   .of_mem_of_fg _ h.fg_adjoin_singleton _ <|
     Subalgebra.pow_mem _ (by exact Algebra.subset_adjoin rfl) _
+
+section zpow
+variable {F D : Type*} [Field F] [DivisionRing D] [Algebra F D] {x : D} {A : Subalgebra F D}
+
+/-- An integer power of an integral element in a division ring over a field is integral. -/
+theorem IsIntegral.zpow (h : IsIntegral F x) (n : ℤ) : IsIntegral F (x ^ n) := by
+  cases n <;> simp [h.pow, IsIntegral.inv]
+
+/-- An integer power of an integral element of a subalgebra lies in that subalgebra. -/
+theorem IsIntegral.zpow_mem (h : IsIntegral F x) (hx : x ∈ A) (n : ℤ) : x ^ n ∈ A := by
+  cases n <;> simp [h.pow, pow_mem hx, IsIntegral.inv_mem]
+
+theorem IsIntegral.zpow_mem_adjoin (h : IsIntegral F x) (n : ℤ) : x ^ n ∈ Algebra.adjoin F {x} :=
+  h.zpow_mem (Algebra.self_mem_adjoin_singleton F x) n
+
+/-- An integral subalgebra of a division ring over a field is closed under integer powers. -/
+theorem Algebra.IsIntegral.zpow_mem [Algebra.IsIntegral F A] (hx : x ∈ A) (n : ℤ) : x ^ n ∈ A := by
+  cases n <;> simp [pow_mem hx, Algebra.IsIntegral.inv_mem]
+
+end zpow
 
 theorem IsIntegral.nsmul {x : B} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (n • x) :=
   h.smul n
@@ -363,6 +386,19 @@ lemma isTorsionFree [Module R A] [IsScalarTower R A B] [IsTorsionFree R B] : IsT
   simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 
 variable {R} (A) {B}
+
+theorem mem_range_algebraMap {C : Type*} [Ring C] [Algebra R C] [Algebra A C] [Algebra B C]
+    [FaithfulSMul B C] [IsScalarTower R B C] [IsScalarTower A B C] {x : C} (h : IsIntegral R x) :
+    x ∈ Set.range (algebraMap B C) ↔ x ∈ Set.range (algebraMap A C) := by
+  constructor
+  · rintro ⟨x, rfl⟩
+    rw [isIntegral_algebraMap_iff, @IsIntegralClosure.isIntegral_iff A R B] at h
+    obtain ⟨x, rfl⟩ := h
+    rw [← IsScalarTower.algebraMap_apply]
+    exact Set.mem_range_self _
+  · rintro ⟨x, rfl⟩
+    rw [IsScalarTower.algebraMap_apply A B C]
+    exact Set.mem_range_self _
 
 /-- If `x : B` is integral over `R`, then it is an element of the integral closure of `R` in `B`. -/
 noncomputable def mk' (x : B) (hx : IsIntegral R x) : A :=

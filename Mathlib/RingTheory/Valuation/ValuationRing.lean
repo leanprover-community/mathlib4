@@ -5,14 +5,14 @@ Authors: Adam Topaz
 -/
 module
 
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.RingTheory.Bezout
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Valuation.Integers
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Valuation Rings

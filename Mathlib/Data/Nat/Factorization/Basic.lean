@@ -83,12 +83,6 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 
-
-@[deprecated factorizationEquiv_symm_apply_coe +typeChanged (since := "2026-03-18")]
-theorem factorizationEquiv_inv_apply {f : ℕ →₀ ℕ} (hf : ∀ p ∈ f.support, Prime p) :
-    (factorizationEquiv.symm ⟨f, hf⟩).1 = f.prod (· ^ ·) :=
-  factorizationEquiv_symm_apply_coe ⟨f, hf⟩
-
 theorem ordProj_of_not_prime (n p : ℕ) (hp : ¬p.Prime) : ordProj[p] n = 1 := by
   simp [hp]
 
@@ -575,7 +569,7 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
   intro p
   have foo (p) (hp : p ∈ factors.support) : Prime p :=
     prime_of_mem_primeFactors (Finsupp.support_mapRange hp)
-  rw [factorization_pow, hc, prod_pow_factorization_eq_self foo]
+  rw [factorization_pow, hc, factorization_prod_pow_eq_self foo]
   suffices n ∣ a.factorization p by
     simp [factors, Nat.mul_div_cancel' this]
   refine hmn.symm.dvd_of_dvd_mul_left ⟨b.factorization p, ?_⟩
