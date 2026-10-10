@@ -87,7 +87,7 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
   have := IsScalarTower.of_algebraMap_eq' ψ.comp_algebraMap.symm
   have : IsScalarTower P S Sp := .of_algebraMap_eq' rfl
   have : IsScalarTower S Sp 𝓀[S] := .of_algebraMap_eq fun r ↦ by
-    simp [RingHom.algebraMap_toAlgebra, ψ, Sp]
+    simp [RingHom.algebraMap_toAlgebra, ψ, Sp, Algebra.TensorProduct.right_algebraMap_apply]
   have : IsScalarTower P Sp 𝓀[S] := .to₁₃₄ _ S _ _
   have : IsScalarTower P Pp 𝓀[S] := .to₁₂₄ _ _ Sp _
   let ePp : Pp ≃ₐ[P] P ⊗[R] 𝓀[R] := { __ := TensorProduct.comm _ _ _, commutes' _ := rfl }
