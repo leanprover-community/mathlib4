@@ -98,7 +98,9 @@ def curry₄ObjProdComp (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C�
   NatIso.ofComponents
     (fun X₁ ↦ NatIso.ofComponents
       (fun X₂ ↦ NatIso.ofComponents
-        (fun X₃ ↦ NatIso.ofComponents (fun X₄ ↦ Iso.refl _))))
+        (fun X₃ ↦ NatIso.ofComponents (fun X₄ ↦ Iso.refl _) (fun {_ _} f ↦ by simp))
+        (fun {_ _} f ↦ by ext; simp))
+      (fun {_ _} f ↦ by ext; simp))
 
 end Functor
 end CategoryTheory
