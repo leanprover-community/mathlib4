@@ -97,7 +97,7 @@ variable [NoMaxOrder α]
 lemma Icc_succ_left_eq_Ioc (a b : α) : Icc (succ a) b = Ioc a b := coe_injective <| by simp
 lemma Ico_succ_right_eq_Icc (a b : α) : Ico a (succ b) = Icc a b := coe_injective <| by simp
 
-@[simp]
+@[to_dual (attr := simp)]
 lemma Ico_succ_self (a : α) : Ico a (succ a) = {a} :=
   coe_injective <| by simp
 
