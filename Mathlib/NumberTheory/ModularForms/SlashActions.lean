@@ -49,6 +49,11 @@ theorem SlashAction.neg_slash {β G α : Type*} [Monoid G] [AddGroup α]
   eq_neg_of_add_eq_zero_left <| by
     rw [← add_slash, neg_add_cancel, zero_slash]
 
+@[simp]
+theorem SlashAction.sub_slash {β G α : Type*} [Monoid G] [AddGroup α]
+    [SlashAction β G α] (k : β) (g : G) (a b : α) : (a - b) ∣[k] g = a ∣[k] g - b ∣[k] g := by
+  rw [sub_eq_add_neg, add_slash, neg_slash, sub_eq_add_neg]
+
 attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_slash
 
 @[simp] lemma SlashAction.sum_slash {β G α ι : Type*} [Monoid G] [AddCommGroup α]
@@ -207,9 +212,38 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
   rw [h1]
   ring
 
+theorem zpow_slash (n k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = |(A.det : ℝ)| ^ (n - 1) • (f ∣[k] A) ^ n := by
+  ext1 τ
+  have hd : ((|A.det| : ℝ) : ℂ) ≠ 0 := ofReal_ne_zero.mpr <| abs_ne_zero.mpr <| NeZero.ne _
+  simp only [slash_apply, Pi.pow_apply, Pi.smul_apply, real_smul, ofReal_zpow, map_zpow₀, mul_zpow,
+    ← zpow_mul, mul_comm]
+  rw [show n * k - 1 = n - 1 + (k - 1) * n by ring, zpow_add₀ hd]
+  ring_nf
+
+theorem pow_slash (n : ℕ) (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = |(A.det : ℝ)| ^ (n - 1 : ℤ) • (f ∣[k] A) ^ n := by
+  simpa using zpow_slash n k A f
+
+theorem inv_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
+    (f⁻¹) ∣[k] A = |(A.det : ℝ)| ^ (-2 : ℤ) • (f ∣[-k] A)⁻¹ := by
+  simpa using zpow_slash (-1) (-k) A f
+
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A := by
   simp [SL_slash, mul_slash]
+
+theorem zpow_slash_SL2 (n k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = (f ∣[k] A) ^ n := by
+  simp [SL_slash, zpow_slash]
+
+theorem pow_slash_SL2 (n : ℕ) (k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = (f ∣[k] A) ^ n := by
+  simp [SL_slash, pow_slash]
+
+theorem inv_slash_SL2 (k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
+    (f⁻¹) ∣[k] A = (f ∣[-k] A)⁻¹ := by
+  simp [SL_slash, inv_slash]
 
 theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f / g) ∣[k1 - k2] A = f ∣[k1] A / g ∣[k2] A := by
