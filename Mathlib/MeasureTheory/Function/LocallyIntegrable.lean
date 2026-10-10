@@ -236,6 +236,7 @@ end LocallyIntegrableOn
 /-- A function `f : X → ε` is *locally integrable* if it is integrable on a neighborhood of every
 point. In particular, it is integrable on all compact sets,
 see `LocallyIntegrable.integrableOn_isCompact`. -/
+@[fun_prop]
 def LocallyIntegrable (f : X → ε) (μ : Measure X := by volume_tac) : Prop :=
   ∀ x : X, IntegrableAtFilter f (𝓝 x) μ
 
@@ -250,6 +251,7 @@ theorem locallyIntegrableOn_univ : LocallyIntegrableOn f univ μ ↔ LocallyInte
 theorem LocallyIntegrable.locallyIntegrableOn (hf : LocallyIntegrable f μ) (s : Set X) :
     LocallyIntegrableOn f s μ := fun x _ => (hf x).filter_mono nhdsWithin_le_nhds
 
+@[fun_prop]
 theorem Integrable.locallyIntegrable (hf : Integrable f μ) : LocallyIntegrable f μ := fun _ =>
   hf.integrableAtFilter _
 
@@ -309,6 +311,7 @@ theorem locallyIntegrableOn_iff_locallyIntegrable_restrict [OpensMeasurableSpace
     exacts [integrableOn_empty, hs.measurableSet]
 
 /-- If a function is locally integrable, then it is integrable on any compact set. -/
+@[fun_prop]
 theorem LocallyIntegrable.integrableOn_isCompact [PseudoMetrizableSpace ε]
     {k : Set X} (hf : LocallyIntegrable f μ) (hk : IsCompact k) : IntegrableOn f k μ :=
   (hf.locallyIntegrableOn k).integrableOn_isCompact hk
@@ -335,6 +338,7 @@ theorem locallyIntegrable_iff [PseudoMetrizableSpace ε] [LocallyCompactSpace X]
     let ⟨K, hK, h2K⟩ := exists_compact_mem_nhds x
     ⟨K, h2K, hf K hK⟩⟩
 
+@[fun_prop]
 theorem LocallyIntegrable.aestronglyMeasurable [PseudoMetrizableSpace ε] [SecondCountableTopology X]
     (hf : LocallyIntegrable f μ) : AEStronglyMeasurable f μ := by
   simpa only [restrict_univ] using (locallyIntegrableOn_univ.mpr hf).aestronglyMeasurable
@@ -755,6 +759,7 @@ theorem IntegrableOn.continuousOn_smul_of_subset [SecondCountableTopologyEither 
   exact hg.bdd_smul C ((hf.mono hAK).aestronglyMeasurable hA)
     (ae_restrict_of_forall_mem hA fun x hx => hC x (hAK hx))
 
+@[fun_prop]
 theorem IntegrableOn.continuousOn_smul [T2Space X] [SecondCountableTopologyEither X 𝕜] {g : X → E}
     (hg : IntegrableOn g K μ) {f : X → 𝕜} (hf : ContinuousOn f K) (hK : IsCompact K) :
     IntegrableOn (fun x => f x • g x) K μ :=

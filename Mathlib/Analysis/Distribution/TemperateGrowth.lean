@@ -93,6 +93,40 @@ theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
     pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ_iff] at hC
   exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
 
+theorem HasTemperateGrowth.isBigO_cocompact [ProperSpace E] {f : E → F}
+    (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
+    ∃ k, iteratedFDeriv ℝ n f =O[Filter.cocompact E] (‖·‖ ^ k) := by
+  obtain ⟨k, hk⟩ := hf_temperate.isBigO n
+  rw [isBigO_top] at hk
+  obtain ⟨C, h⟩ := hk
+  have hC : 0 ≤ C := by
+    suffices ‖iteratedFDeriv ℝ n f 0‖ ≤ C by grind [norm_nonneg]
+    simpa using h 0
+  simp only [isBigO_cocompact_iff, gt_iff_lt, norm_pow, norm_norm]
+  use k, (k + 1) * (C * (k.choose (k / 2)) + 1), by positivity, (Metric.closedBall 0 1)ᶜ
+  constructor
+  · grind [compl_compl, compactness]
+  intro y hy
+  have hy' : 1 < ‖y‖ := by simpa using hy
+  calc
+    _ ≤ C * (1 + ‖y‖) ^ k := by
+      grw [h]
+      rw [norm_pow, Real.norm_eq_abs, abs_of_pos (by positivity)]
+    _ = ∑ x ∈ Finset.range (k + 1), C * ‖y‖ ^ x * ↑(k.choose x) := by
+      rw [add_comm 1 ‖y‖, add_pow]
+      grind [one_pow, Finset.mul_sum]
+    _ ≤ ∑ x ∈ Finset.range (k + 1), C * ‖y‖ ^ k * (k.choose (k / 2)) := by
+      gcongr
+      · grind
+      · grind
+      · exact Nat.choose_le_middle x k
+    _ = (k + 1) * (C * (k.choose (k / 2))) * ‖y‖ ^ k := by
+      simp
+      ring
+    _ ≤ _ := by
+      gcongr
+      simp
+
 lemma HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
     (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
