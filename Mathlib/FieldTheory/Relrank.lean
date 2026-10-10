@@ -282,6 +282,7 @@ theorem relfinrank_dvd_of_le_left (h : A ≤ B) : B.relfinrank C ∣ A.relfinran
   dvd_of_mul_left_eq _ (relfinrank_inf_mul_relfinrank_of_le C h)
 
 variable {A B} in
+@[gcongr]
 theorem relrank_le_of_le_left (h : A ≤ B) : B.relrank C ≤ A.relrank C :=
   (Cardinal.le_mul_left (relrank_pos A (B ⊓ C)).ne').trans_eq (relrank_inf_mul_relrank_of_le C h)
 
@@ -592,6 +593,7 @@ theorem relfinrank_dvd_of_le_left (h : A ≤ B) : B.relfinrank C ∣ A.relfinran
   dvd_of_mul_left_eq _ (relfinrank_inf_mul_relfinrank_of_le C h)
 
 variable {A B} in
+@[gcongr]
 theorem relrank_le_of_le_left (h : A ≤ B) : B.relrank C ≤ A.relrank C :=
   (Cardinal.le_mul_left (relrank_pos A (B ⊓ C)).ne').trans_eq (relrank_inf_mul_relrank_of_le C h)
 
