@@ -349,6 +349,61 @@ theorem ContMDiff.continuous_tangentMap (hf : CMDiff n f) (hn : 1 ≤ n) :
 
 end tangentMap
 
+section
+
+open scoped ContDiff
+
+variable {f : M → F} {s : Set M} {x : M} {X : Π x : M, TangentSpace% x} {k : ℕ∞ω} [IsManifold I 1 M]
+
+lemma ContMDiffWithinAt.mvfderivWithin
+    (hf : CMDiffAt[s] (k + 1) f x) (hX : CMDiffAt[s] k (T% X) x)
+    (hs : UniqueMDiff[s]) (hx : x ∈ s) :
+    CMDiffAt[s] k (fun (x : M) ↦ d[s] f x (X x)) x := by
+  let b₁ : TangentBundle I M → M := fun p ↦ p.1
+  replace hf' : CMDiffAt[s] (k + 1) f (b₁ (X x)) := hf
+  have aux := hf'.contMDiffWithinAt_tangentMapWithin hx  (m := k) (by simp) hs
+  -- Compose the tangent map `Tf` with `X` to obtain a `C^n` map `M → TN`.
+  -- In particular, the fiber component of this map is smooth, which is the desired conclusion.
+  -- XXX: remove the named argument for `f` confuses Lean.
+  obtain ⟨_, aux2'⟩ :=
+    Bundle.contMDiffWithinAt_totalSpace.mp (aux.comp _ hX (f := (T% X)) (by intro; simp))
+  convert aux2'
+  simp
+  rfl
+
+/- For reference: the `On` version of the lemma above doesn't have the issue with specifying `f`:
+lemma ContMDiffOn.mvfderivWithin {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+    {k : ℕ∞ω} {f : M → V} {X : Π x : M, TangentSpace% x} {s : Set M} (hs : UniqueMDiff[s])
+    (hf : CMDiff[s] (k + 1) f) (hX : CMDiff[s] k (T% X)) :
+    CMDiff[s] k (fun (x : M) ↦ d[s] f x (X x)) := by
+  intro x hx
+  have aux := hf.contMDiffOn_tangentMapWithin (m := k) (by simp) hs
+  -- Compose the tangent map `Tf` with `X` to obtain a `C^n` map `M → TN`.
+  -- In particular, the fiber component of this map is smooth, which is the desired conclusion.
+  obtain ⟨_, aux2'⟩ := contMDiffWithinAt_totalSpace.mp ((aux.comp hX) (by intro; simp) x hx)
+  convert aux2'
+  simp
+  rfl -/
+
+lemma ContMDiffAt.mvfderiv (hf : CMDiffAt (k + 1) f x) (hX : CMDiffAt k (T% X) x) :
+    CMDiffAt k (fun (x : M) ↦ d% f x (X x)) x := by
+  rw [← contMDiffWithinAt_univ] at hf hX ⊢
+  rw [← mvfderivWithin_univ]
+  exact hf.mvfderivWithin hX uniqueMDiffOn_univ (by simp)
+
+lemma ContMDiffOn.mvfderivWithin
+    (hf : CMDiff[s] (k + 1) f) (hX : CMDiff[s] k (T% X)) (hs : UniqueMDiff[s]) :
+    CMDiff[s] k (fun (x : M) ↦ d[s] f x (X x)) :=
+  fun x hx ↦ ContMDiffWithinAt.mvfderivWithin (hf x hx) (hX x hx) hs hx
+
+lemma ContMDiff.mvfderiv {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+    {k : ℕ∞ω} {f : M → V} {X : Π x : M, TangentSpace% x}
+    (hf : CMDiff (k + 1) f) (hX : CMDiff k (T% X)) :
+    CMDiff k (fun (x : M) ↦ d% f x (X x)) :=
+  fun x ↦ (hf x).mvfderiv (hX x)
+
+end
+
 namespace TangentBundle
 
 open Bundle
