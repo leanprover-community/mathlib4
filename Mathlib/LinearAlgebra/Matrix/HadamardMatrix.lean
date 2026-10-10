@@ -234,6 +234,44 @@ theorem isHadamard_iff_mul_conjTranspose
   ⟨fun hA => ⟨hA.apply_mem, hA.mul_conjTranspose⟩,
    fun hA => IsHadamard.of_mul_conjTranspose hA.1 hA.2 hcard⟩
 
+/-- A matrix whose entries are unitary and whose distinct rows have conjugate dot product zero is
+Hadamard, provided the order is regular in the ring. -/
+theorem IsHadamard.of_unitary_of_pairwise_rows_of_isRegular
+    (hentry : ∀ i j, A i j ∈ unitary R)
+    (horth : Pairwise fun i k ↦ A i ⬝ᵥ star (A k) = 0)
+    (hcard : IsRegular (Fintype.card n : R)) : A.IsHadamard := by
+  refine IsHadamard.of_mul_conjTranspose hentry ?_ hcard
+  ext i k
+  by_cases hik : i = k
+  · subst k
+    simp [mul_apply, fun j => (Unitary.mem_iff.mp (hentry i j)).2]
+  · simpa [mul_apply, hik, dotProduct] using horth hik
+
+/-- A matrix over a commutative ring with trivial star whose entries square to one and whose
+distinct rows have dot product zero is Hadamard, provided the order is regular in the ring. -/
+theorem IsHadamard.of_entry_sq_of_pairwise_rows_of_isRegular [TrivialStar R]
+    (hentry_sq : ∀ i j, (A i j) ^ 2 = 1) (horth : Pairwise (A · ⬝ᵥ A · = 0))
+    (hcard : IsRegular (Fintype.card n : R)) :
+    A.IsHadamard :=
+  IsHadamard.of_unitary_of_pairwise_rows_of_isRegular
+    (by grind [Unitary.mem_iff, star_trivial])
+    (by simpa [Pi.star_def] using horth) hcard
+
+section CharZeroNoZeroDivisors
+variable [TrivialStar R] [CharZero R] [NoZeroDivisors R]
+
+/-- A matrix over a commutative ring with trivial star, characteristic zero, and no zero divisors
+whose entries square to one and whose distinct rows have dot product zero is Hadamard. -/
+theorem IsHadamard.of_entry_sq_of_pairwise_rows (hentry_sq : ∀ i j, (A i j) ^ 2 = 1)
+    (horth : Pairwise (A · ⬝ᵥ A · = 0)) :
+    A.IsHadamard := by
+  obtain _ | _ := isEmpty_or_nonempty n
+  · refine ⟨isEmptyElim, ?_, ?_⟩ <;> ext i <;> exact isEmptyElim i
+  · exact IsHadamard.of_entry_sq_of_pairwise_rows_of_isRegular hentry_sq horth <|
+      IsRegular.of_ne_zero <| by exact_mod_cast Fintype.card_ne_zero
+
+end CharZeroNoZeroDivisors
+
 end CommRing
 
 /-- An integer Hadamard matrix of order greater than two has order divisible by four.
