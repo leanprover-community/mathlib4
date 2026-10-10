@@ -16,17 +16,17 @@ import Mathlib.Util.Qq
 # Simproc deciding `Matrix.IsIndecomposable`
 
 `Matrix.reduceIsIndecomposable` rewrites `M.IsIndecomposable` to `True` or `False` for a closed
-square matrix literal `M` indexed by `Fin n`. Requires a kernel-decidable equality for the matrix
-entry type.
+square matrix literal `M` indexed by `Fin n`. This requires a kernel-decidable equality for the
+matrix entry type.
 
-This is equivalent to determining whether the graph corresponding to `M` is strongly
+This is equivalent to determining whether the directed graph corresponding to `M` is strongly
 connected.
 
 ## Main definitions
 
 - `Matrix.reduceIsIndecomposable`: the simproc deciding `M.IsIndecomposable`.
-- `SpansFrom`: a list of edges that reaches every vertex followed in order from a root vertex.
-- `isClosed`: a set of vertices with no edges leaving.
+- `SpansFrom`: states that a list of edges reaches every vertex expanding from a root.
+- `isClosed`: tests whether a set of vertices has no edges leaving it.
 - `packedAdj`: a Boolean adjacency matrix stored as the bits of a natural number, computed from a
   matrix literal by `packRows`.
 - `decideStronglyConnected`: searches the graph from and to vertex `0`, returning two spanning
@@ -75,7 +75,7 @@ abbrev SpansFrom {n : ℕ} (adj : Fin n → Fin n → Bool) (es : List (Fin n ×
     (root : Fin n) : Prop :=
   reached adj (1 <<< (root : ℕ)) es = 2 ^ n - 1
 
-/-- If `adj` has a spanning tree from `root`, then `root` reaches every vertex. -/
+/-- If `adj` has a spanning set of edges from `root`, then `root` reaches every vertex. -/
 theorem SpansFrom.reflTransGen {n : ℕ} {adj : Fin n → Fin n → Bool} {es : List (Fin n × Fin n)}
     {root : Fin n} (h : SpansFrom adj es root) (v : Fin n) :
     ReflTransGen (fun i j ↦ adj i j) root v :=
@@ -108,7 +108,7 @@ theorem isClosed_of_isClosedPacked {n bits s : ℕ} (h : isClosedPacked n bits s
 
 variable {R : Type*} [Zero R]
 
-/-- If both `adj` and the reverse of it have spanning trees from `root`, then `M` is
+/-- If both `adj` and the reverse of it have spanning edge sets from `root`, then `M` is
 indecomposable (strong connectivity of `adj`). -/
 theorem isIndecomposable_of_spansFrom {n : ℕ}
     {M : Matrix (Fin n) (Fin n) R} {adj : Fin n → Fin n → Bool}
@@ -286,6 +286,6 @@ end Mathlib.Tactic.Matrix.IsIndecomposable
 open Mathlib.Tactic.Matrix.IsIndecomposable
 
 /-- `Matrix.reduceIsIndecomposable` decides `M.IsIndecomposable` for a closed matrix literal `M`
-indexed by `Fin n` with `n` a numeral, whose entries have an equality the kernel can decide. -/
+indexed by `Fin n` with `n` a numeral, whose entry type has an equality the kernel can decide. -/
 simproc_decl Matrix.reduceIsIndecomposable (Matrix.IsIndecomposable _) :=
   reduceIsIndecomposableCore
