@@ -5,11 +5,11 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Batteries.Data.Nat.Basic
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Tactic.Matrix.OfLists
 public import Mathlib.Tactic.Matrix.Parsing
 
+import Batteries.Data.Nat.Basic
 import Mathlib.Util.Qq
 
 /-!
@@ -93,8 +93,7 @@ def packedAdj (n bits : ℕ) (i j : Fin n) : Bool :=
   bits.testBit (i * n + j)
 
 /-- Whether no edge of the `n × n` Boolean adjacency matrix represented by `bits` leaves the set
-of vertices given by the set bits of `s`. Each row of `bits` is read at once, so this function
-only takes `O(n)` kernel steps. -/
+of vertices given by the set bits of `s`. Each row of `bits` is read at once. -/
 def isClosedPacked (n bits s : ℕ) : Bool :=
   (List.range n).all fun i ↦
     let row := bits >>> (i * n) &&& (2 ^ n - 1)
@@ -137,7 +136,7 @@ variable [DecidableEq R]
 def packRow (row : List R) : ℕ :=
   row.foldr (fun (a : R) acc ↦ (if a = 0 then 0 else 1) ||| acc <<< 1) 0
 
-/-- The Boolean adjacency matrix of the `n × n` matrix with rows `rows`, as the set bits of a
+/-- The Boolean adjacency matrix of `rows` interpreted as an `n × n` matrix, as the set bits of a
 natural number with entry `(i, j)` at bit `i * n + j`. -/
 def packRows (n : ℕ) (rows : List (List R)) : ℕ :=
   rows.foldr (fun row acc ↦ (packRow row &&& (2 ^ n - 1)) ||| acc <<< n) 0
@@ -224,13 +223,6 @@ def evalAdjMatrix? {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(Dec
   let .ok (.lit (.natVal bits)) := Kernel.whnf (← getEnv) {} q(packRows $n $lit) | return none
   return some <| Array.ofFn (n := n) fun i ↦ Array.ofFn (n := n) fun j ↦ bits.testBit (i * n + j)
 
-/-- The number `packRows n lit` that packs the Boolean adjacency matrix of `ofLists n n lit`, and
-the proof that `packedAdj` reads that matrix from it. -/
-def certifyPackedAdj {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α))
-    (n : Nat) (lit : Q(List (List $α))) :
-    (bits : Q(Nat)) × Q(∀ i j, packedAdj $n $bits i j ↔ ofLists $n $n $lit i j ≠ 0) :=
-  ⟨q(packRows $n $lit), q(packedAdj_packRows_iff $lit)⟩
-
 /-- Prove that the matrix with rows `lit` is indecomposable from the spanning out-tree `outTree`
 from vertex `0` and the in-tree `inTree` to it in its graph. -/
 def certifyIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α))
@@ -239,11 +231,10 @@ def certifyIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (d�
   let root : Q(Fin $n) ← mkFinLitQ n 0
   let outTreeQ ← mkEdgeListLitQ n outTree
   let inTreeQ ← mkEdgeListLitQ n inTree
-  let ⟨bits, hadj⟩ := certifyPackedAdj zα dα n lit
-  let adj : Q(Fin $n → Fin $n → Bool) := q(packedAdj $n $bits)
+  let adj : Q(Fin $n → Fin $n → Bool) := q(packedAdj $n (packRows $n $lit))
   let hout ← mkDecideProofQ q(SpansFrom $adj $outTreeQ $root)
   let hin ← mkDecideProofQ q(SpansFrom (fun i j ↦ $adj j i) $inTreeQ $root)
-  return q(isIndecomposable_of_spansFrom $hadj $hout $hin)
+  return q(isIndecomposable_of_spansFrom (packedAdj_packRows_iff $lit) $hout $hin)
 
 /-- Prove that the matrix with rows `lit` is decomposable from a nonempty proper set `closedSet` of
 vertices that no edge of its graph leaves. -/
@@ -256,9 +247,9 @@ def certifyNotIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
   let iQ : Q(Fin $n) ← mkFinLitQ n i
   let jQ : Q(Fin $n) ← mkFinLitQ n j
   let hij ← mkDecideProofQ q(Nat.testBit $closedSetQ $iQ ≠ Nat.testBit $closedSetQ $jQ)
-  let ⟨bits, hadj⟩ := certifyPackedAdj zα dα n lit
-  let hc ← mkDecideProofQ q(isClosedPacked $n $bits $closedSetQ = true)
-  return q(not_isIndecomposable_of_isClosed $hadj (isClosed_of_isClosedPacked $hc) $hij)
+  let hc ← mkDecideProofQ q(isClosedPacked $n (packRows $n $lit) $closedSetQ = true)
+  return q(not_isIndecomposable_of_isClosed (packedAdj_packRows_iff $lit)
+    (isClosed_of_isClosedPacked $hc) $hij)
 
 /-- Core of the `Matrix.reduceIsIndecomposable` simproc. -/
 def reduceIsIndecomposableCore : Simp.Simproc := fun e ↦ do
@@ -273,9 +264,8 @@ def reduceIsIndecomposableCore : Simp.Simproc := fun e ↦ do
     have M : Q(Matrix (Fin 0) (Fin 0) $α) := M
     let pf : Q(($M).IsIndecomposable) := q((isIndecomposable_iff_reflTransGen $M).2 (·.elim0))
     return .done { expr := q(True), proof? := q(eq_true $pf) }
-  have M : Q(Matrix (Fin $n) (Fin $n) $α) := M
-  let .some dα ← trySynthInstanceQ q(DecidableEq $α) | return .continue
   let some (_, _, _, entries) ← matchMatrixLit? M | return .continue
+  let .some dα ← trySynthInstanceQ q(DecidableEq $α) | return .continue
   let rows : List (List Q($α)) := entries.toList.map Array.toList
   let lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (rows.map mkListLitQ)
   let some adjMatrix ← evalAdjMatrix? zα dα n lit | return .continue

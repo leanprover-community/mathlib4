@@ -81,5 +81,5 @@ example : (1 : Matrix (Fin (2 + 1)) (Fin (2 + 1)) ℤ).IsIndecomposable := by
 -- entries without `DecidableEq`
 /-- error: `simp` made no progress -/
 #guard_msgs in
-example : (0 : Matrix (Fin 2) (Fin 2) (ℕ → ℤ)).IsIndecomposable := by
+example : (!![fun _ : ℕ ↦ (0 : ℤ)] : Matrix (Fin 1) (Fin 1) (ℕ → ℤ)).IsIndecomposable := by
   simp only [reduceIsIndecomposable]
