@@ -880,12 +880,12 @@ lemma coe_csInf {s : Set ℝ} (hs : s.Nonempty) (hs' : BddBelow s) :
   WithBotTop.coe_csInf hs hs'
 
 @[norm_cast]
-lemma coe_ciSup {ι : Type*} [Nonempty ι] {f : ι -> ℝ} (hf : BddAbove (Set.range f)) :
+lemma coe_ciSup {ι : Sort*} [Nonempty ι] {f : ι → ℝ} (hf : BddAbove (Set.range f)) :
     (↑(⨆ x, f x) : EReal) = ⨆ x, ↑(f x) :=
   WithBotTop.coe_ciSup hf
 
 @[norm_cast]
-lemma coe_ciInf {ι : Type*} [Nonempty ι] {f : ι -> ℝ} (hf : BddBelow (Set.range f)):
+lemma coe_ciInf {ι : Sort*} [Nonempty ι] {f : ι → ℝ} (hf : BddBelow (Set.range f)) :
     (↑(⨅ x, f x) : EReal) = ⨅ x, ↑(f x) :=
   WithBotTop.coe_ciInf hf
 
