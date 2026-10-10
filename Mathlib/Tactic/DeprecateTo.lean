@@ -130,11 +130,11 @@ elab (name := deprecateTo) tk:"#deprecate " "to" id:ident+ date:(ppSpace str ppS
       logWarningAt tk
         m!"Un-deprecated declarations: command produced {news.size} new constants, \
           but only {id.size} names were provided, so the remiaining declarations \
-          are left without deprecations: {news.toList.drop id.size |>.map MessageData.ofConstName}"
+          are left without deprecations:\n{news.toList.drop id.size |>.map MessageData.ofConstName}"
     if news.size < id.size then
       logWarningAt (mkNullNode (id.toList.drop news.size).toArray)
         m!"Unused names: {id.size} names were provided, but only {news.size} new declarations \
-          were found, so the remiaining names are unused: {id.drop news.size}"
+          were found, so the remiaining names are unused:\n{id.drop news.size}"
     let (oldId, newCmd) ← liftCoreM <| renameTheorem id[0]!.getId.toString cmd
     let oldNames ← resolveGlobalName oldId
     let fil := news.filter fun n => oldNames.any (·.fst == n)
