@@ -96,7 +96,10 @@ def unitEqualizes (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
       rw [← cancel_mono (adj₁.unit.app X)]
       apply hm.trans ((h X).lift' s.ι _).2.symm
 
-@[deprecated (since := "2026-10-05")] alias unitEqualises := unitEqualizes
+@[deprecated unitEqualizes (since := "2026-10-05")]
+abbrev unitEqualises (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
+    IsLimit (Fork.ofι (adj₁.unit.app X) (adj₁.unit_naturality _)) :=
+  unitEqualizes adj₁ h X
 
 /-- (Implementation)
 To construct the right adjoint, we use the equalizer of `U' F η_X` with the composite
