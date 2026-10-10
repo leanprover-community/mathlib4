@@ -126,10 +126,22 @@ alias zero_lt_iff := pos_iff_ne_zero
 @[to_additive]
 theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt'
 
+attribute [local instance] IsBotOneClass.toOrderBot
+
 @[to_additive]
-lemma one_notMem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
-  let := IsBotOneClass.toOrderBot α
-  bot_notMem_iff
+lemma one_notMem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x := bot_notMem_iff
+
+@[to_additive (attr := gcongr)]
+theorem eq_one_of_le_of_eq_one (h : b ≤ a) (e : a = 1) : b = 1 := eq_bot_mono h e
+
+@[to_additive (attr := gcongr)]
+theorem one_eq_of_le_of_one_eq (h : b ≤ a) (e : 1 = a) : 1 = b := bot_eq_mono h e
+
+@[to_additive (attr := gcongr)]
+theorem ne_one_of_le_of_ne_one (h : a ≤ b) (e : a ≠ 1) : b ≠ 1 := ne_bot_mono h e
+
+@[to_additive (attr := gcongr)]
+theorem one_ne_of_le_of_one_ne (h : a ≤ b) (e : 1 ≠ a) : 1 ≠ b := bot_ne_mono h e
 
 end PartialOrder
 

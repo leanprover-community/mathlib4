@@ -208,7 +208,7 @@ lemma isNowhereDense_empty : IsNowhereDense (∅ : Set X) := by
 /-- A subset of a nowhere dense set is nowhere dense. -/
 @[gcongr]
 lemma IsNowhereDense.mono {s t : Set X} (ht : t ⊆ s) (hs : IsNowhereDense s) : IsNowhereDense t :=
-  Set.eq_empty_of_subset_empty <| by grw [ht]; rw [hs]
+  by unfold IsNowhereDense at *; gconvert hs
 
 /-- The union of two nowhere dense sets is nowhere dense. -/
 protected lemma IsNowhereDense.union {s t : Set X} (hs : IsNowhereDense s)
@@ -216,7 +216,7 @@ protected lemma IsNowhereDense.union {s t : Set X} (hs : IsNowhereDense s)
   simp only [IsNowhereDense, closure_union] at hs ht ⊢
   have h1 : interior (closure s ∪ closure t) ⊆ closure s := by
     simpa [ht] using isClosed_closure.interior_union_left (s := closure s) (t := closure t)
-  exact Set.eq_empty_of_subset_empty (hs ▸ interior_maximal h1 isOpen_interior)
+  grw [interior_maximal h1 isOpen_interior, hs]
 
 /-- A union over a `Finset` of nowhere dense sets is nowhere dense. -/
 protected lemma IsNowhereDense.biUnion {u : Finset ι} {f : ι → Set X}

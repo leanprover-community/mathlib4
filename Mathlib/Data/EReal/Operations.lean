@@ -513,13 +513,14 @@ lemma sub_lt_sub_of_le_of_gt {x y z t : EReal} (h : x ≤ y) (h' : z < t)
   by_cases hy_top : y = ⊤
   · rw [hy_top, top_add_of_ne_bot]
     · exact hx_top.lt_top
-    · exact ne_bot_of_le_ne_bot (by simp) (sub_pos.mpr h').le
+    · grw [← sub_pos.mpr h']
+      simp
   by_cases hxy : x = y
   · rw [hxy]
     lift y to ℝ using ⟨hy_top, hy_bot⟩
     by_cases htz_top : t - z = ⊤
     · simp_all
-    rw [← coe_toReal htz_top <| ne_bot_of_le_ne_bot (by simp) (sub_pos.mpr h').le]
+    rw [← coe_toReal htz_top <| by grw [← sub_pos.mpr h']; simp]
     norm_cast
     refine lt_add_of_pos_right y ?_
     exact EReal.toReal_pos (sub_pos.mpr h') htz_top

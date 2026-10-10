@@ -949,7 +949,7 @@ theorem isOpen_biUnion_countable [SecondCountableTopology α] {ι : Type*} (I : 
 theorem isOpen_sUnion_countable [SecondCountableTopology α] (S : Set (Set α))
     (H : ∀ s ∈ S, IsOpen s) : ∃ T : Set (Set α), T.Countable ∧ T ⊆ S ∧ ⋃₀ T = ⋃₀ S := by
   simpa only [and_left_comm, sUnion_eq_biUnion] using! isOpen_biUnion_countable S id H
-
+attribute [gcongr] Set.eq_univ_of_subset
 /-- In a topological space with second countable topology, if `f` is a function that sends each
 point `x` to a neighborhood of `x`, then for some countable set `s`, the neighborhoods `f x`,
 `x ∈ s`, cover the whole space. -/
@@ -958,7 +958,7 @@ theorem countable_cover_nhds [SecondCountableTopology α] {f : α → Set α} (h
   rcases isOpen_iUnion_countable (fun x => interior (f x)) fun x => isOpen_interior with
     ⟨s, hsc, hsU⟩
   suffices ⋃ x ∈ s, interior (f x) = univ from
-    ⟨s, hsc, flip eq_univ_of_subset this <| iUnion₂_mono fun _ _ => interior_subset⟩
+    ⟨s, hsc, by grw [interior_subset] at this; exact this⟩
   simp only [hsU, eq_univ_iff_forall, mem_iUnion]
   exact fun x => ⟨x, mem_interior_iff_mem_nhds.2 (hf x)⟩
 

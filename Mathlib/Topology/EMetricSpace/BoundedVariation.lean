@@ -1184,8 +1184,10 @@ theorem LipschitzOnWith.comp_eVariationOn_le {f : M → F} {C : ℝ≥0} {t : Se
 
 theorem LipschitzOnWith.comp_boundedVariationOn {f : M → F} {C : ℝ≥0} {t : Set M}
     (hf : LipschitzOnWith C f t) {g : α → M} {s : Set α} (hg : MapsTo g s t)
-    (h : BoundedVariationOn g s) : BoundedVariationOn (f ∘ g) s :=
-  ne_top_of_le_ne_top (by finiteness) (hf.comp_eVariationOn_le hg)
+    (h : BoundedVariationOn g s) : BoundedVariationOn (f ∘ g) s := by
+  unfold BoundedVariationOn
+  grw [hf.comp_eVariationOn_le hg]
+  finiteness
 
 theorem LipschitzOnWith.comp_locallyBoundedVariationOn {f : M → F} {C : ℝ≥0} {t : Set M}
     (hf : LipschitzOnWith C f t) {g : α → M} {s : Set α} (hg : MapsTo g s t)

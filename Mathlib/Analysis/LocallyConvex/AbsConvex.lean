@@ -131,9 +131,7 @@ theorem absConvexHull_empty : absConvexHull 𝕜 (∅ : Set E) = ∅ :=
 @[simp]
 theorem absConvexHull_eq_empty : absConvexHull 𝕜 s = ∅ ↔ s = ∅ := by
   constructor
-  · intro h
-    rw [← Set.subset_empty_iff, ← h]
-    exact subset_absConvexHull
+  · grw [← subset_absConvexHull]; exact id
   · rintro rfl
     exact absConvexHull_empty
 

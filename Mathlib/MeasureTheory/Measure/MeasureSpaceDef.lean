@@ -250,8 +250,8 @@ theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪
 
 open scoped symmDiff in
 @[aesop (rule_sets := [finiteness]) unsafe 95% apply]
-theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∆ t) ≠ ∞ :=
-  ne_top_of_le_ne_top (by finiteness) <| measure_mono symmDiff_subset_union
+theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∆ t) ≠ ∞ := by
+  grw [symmDiff_subset_union]; finiteness finiteness
 
 @[simp]
 theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = ∞ :=

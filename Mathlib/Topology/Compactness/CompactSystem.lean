@@ -75,8 +75,7 @@ lemma insert_empty (h : IsCompactSystem S) : IsCompactSystem (insert ∅ S) := b
   intro s h' hd
   by_cases! g : ∃ n, s n = ∅
   · use g.choose
-    rw [← subset_empty_iff] at hd ⊢
-    exact (dissipate_subset le_rfl).trans g.choose_spec.le
+    grw [dissipate_subset le_rfl, g.choose_spec]
   · exact h s (fun i ↦ (mem_of_mem_insert_of_ne (h' i) (g i).ne_empty)) hd
 
 /-- Inserting `univ` into a compact system gives a compact system. -/
@@ -96,8 +95,7 @@ lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := b
   by_contra! ⟨j, hj⟩
   have h₃ (v : ℕ) (hv : n ≤ v) : dissipate s v = dissipate s' v := by ext; simp; grind
   have h₇ : dissipate s' (max j n) = ∅ := by
-    rw [← subset_empty_iff] at hj ⊢
-    exact (antitone_dissipate (Nat.le_max_left j n)).trans hj
+    grw [← le_max_left]; exact hj
   specialize h₃ (max j n) (Nat.le_max_right j n)
   specialize hd (max j n)
   simp [h₃, h₇] at hd
