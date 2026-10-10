@@ -792,7 +792,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
       rw [Filter.eventually_iff] at this
       convert this
       ext
-      simp only [Set.mem_iInter, Set.mem_ofPred_eq]; rfl
+      simp only [Set.mem_iInter, Set.mem_ofPred]; rfl
     · rw [biInter_mem (Set.finite_Icc ℓ N)]
       intro i _
       apply (coeff_tendsto hℱ _).eventually
@@ -906,7 +906,7 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   apply hT₁
   apply hγ
   simpa only [Units.coe_map, MonoidHom.coe_mk, ZeroHom.toFun_eq_coe, OneHom.coe_mk, add_comm,
-    MonoidWithZeroHom.toZeroHom_coe, ← sub_eq_add_neg, Set.mem_ofPred_eq,
+    MonoidWithZeroHom.toZeroHom_coe, ← sub_eq_add_neg, Set.mem_ofPred,
     Valuation.restrict_lt_iff_lt_embedding]
 
 end Dense
@@ -928,7 +928,7 @@ open MonoidWithZeroHom.ValueGroup₀
 theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
   ext S
-  simp only [Filter.mem_mk, Set.mem_ofPred_eq, uniformity_eq_comap_nhds_zero,
+  simp only [Filter.mem_mk, Set.mem_ofPred, uniformity_eq_comap_nhds_zero,
     Filter.mem_comap]
   constructor
   · rintro ⟨T, ⟨⟨R, ⟨hR, pre_R⟩⟩, pre_T⟩⟩
@@ -941,7 +941,7 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
         rw [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff]; simp [hx])
       simp [v_def, Valuation.restrict_lt_iff, ← hx]
     apply hd
-    simp only [sub_zero, Set.mem_ofPred_eq]
+    simp only [sub_zero, Set.mem_ofPred]
     rw [← map_sub, Valuation.restrict_lt_iff_lt_embedding]
     simp only [valuation_def]
     rwa [← valuation_eq_LaurentSeries_valuation]
@@ -963,7 +963,7 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
         simp [v_def, valuation_coe_ratFunc]
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      rwa [Set.mem_ofPred_eq, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,
+      rwa [Set.mem_ofPred, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,
         valuation_eq_LaurentSeries_valuation, map_sub]
 
 theorem uniformContinuous_withVal_equiv :

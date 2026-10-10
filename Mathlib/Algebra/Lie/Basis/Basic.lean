@@ -407,10 +407,10 @@ lemma iSupIndep_rootSpace :
   set sV : Set (H → R) := {f | ∃ n : ι → ℕ, n ≠ 0 ∧ f = ∑ i, n i • b.baseSupp i} with hsV
   have hs0' : rootSpace H 0 = ⨆ i ∈ s0, LieModule.genWeightSpace L i := by simp [hs0]
   have hsU' : U = ⨆ i ∈ sU, LieModule.genWeightSpace L i := by
-    simp only [hU, hsU, mem_ofPred_eq, iSup_exists, iSup_and, iSup_comm (ι := H → R),
+    simp only [hU, hsU, mem_ofPred, iSup_exists, iSup_and, iSup_comm (ι := H → R),
       iSup_iSup_eq_left, LinearMap.coe_sum, LinearMap.coe_smul]
   have hsV' : V = ⨆ i ∈ sV, LieModule.genWeightSpace L i := by
-    simp only [hV, hsV, mem_ofPred_eq, iSup_exists, iSup_and, iSup_comm (ι := H → R),
+    simp only [hV, hsV, mem_ofPred, iSup_exists, iSup_and, iSup_comm (ι := H → R),
       iSup_iSup_eq_left, LinearMap.coe_sum, LinearMap.coe_smul]
   have hU0 : Disjoint s0 sU := by
     suffices ∀ g ∈ sU, g ≠ 0 by

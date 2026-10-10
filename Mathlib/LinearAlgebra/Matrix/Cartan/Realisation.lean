@@ -302,7 +302,7 @@ lemma finite_setOf_mem_weylGroup_apply_sRoot :
   rintro - ⟨w, hw, i, rfl⟩
   obtain ⟨c, hc, hQ⟩ := rl.exists_zsum_eq_of_mem_weylGroup hS.isHermitian.isSymm hw (Pi.single i 1)
   refine ⟨c, ?_, ?_⟩
-  · rw [mem_ofPred_eq, hQ, single_dotProduct, one_mul, Matrix.mulVec_single_one, Matrix.col_apply]
+  · rw [mem_ofPred, hQ, single_dotProduct, one_mul, Matrix.mulVec_single_one, Matrix.col_apply]
     exact Finset.single_le_sum (fun _ _ ↦ hS.diag_pos.le) (Finset.mem_univ i)
   · simp [← hc]
 

@@ -58,7 +58,7 @@ instance : LinearOrder (Lex R⟦Γ⟧) where
       let v := {i : Γ | (ofLex a).coeff i ≠ (ofLex b).coeff i}
       have hvu : v ⊆ u := by
         intro i h
-        rw [Set.mem_union, Set.mem_ofPred_eq, Set.mem_ofPred_eq]
+        rw [Set.mem_union, Set.mem_ofPred, Set.mem_ofPred]
         contrapose! h
         rw [Set.notMem_ofPred_iff, not_not, h.1, h.2]
       have hv : v.IsWF :=

@@ -256,7 +256,7 @@ lemma Indep.fundCircuit_isCircuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (h
   · simp [show ∃ x ⊆ I, e ∈ M.closure x ∧ e ∉ x from ⟨I, by simp [hecl, heI]⟩]
   · rw [hI.closure_sInter_eq_biInter_closure_of_forall_subset ⟨I, by simpa⟩ (by simp +contextual)]
     simp
-  simp only [mem_sInter, mem_ofPred_eq, and_imp]
+  simp only [mem_sInter, mem_ofPred, and_imp]
   exact fun f hf hecl ↦ (hf _ (sdiff_subset.trans aux) hecl).2 rfl
 
 lemma Indep.mem_fundCircuit_iff (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :

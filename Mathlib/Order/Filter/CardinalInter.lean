@@ -215,13 +215,13 @@ def ofCardinalUnion (l : Set (Set α)) (hc : 2 < c)
     (hUnion : ∀ S : Set (Set α), (#S < c) → (∀ s ∈ S, s ∈ l) → ⋃₀ S ∈ l)
     (hmono : ∀ t ∈ l, ∀ s ⊆ t, s ∈ l) : Filter α := by
   refine .ofCardinalInter {s | sᶜ ∈ l} hc (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
-  · rw [mem_ofPred_eq, compl_sInter]
+  · rw [mem_ofPred, compl_sInter]
     apply hUnion (compl '' S) (lt_of_le_of_lt mk_image_le hSc)
     intro s hs
     rw [mem_image] at hs
     rcases hs with ⟨t, ht, rfl⟩
     apply hSp ht
-  · rw [mem_ofPred_eq]
+  · rw [mem_ofPred]
     rw [← compl_subset_compl] at hsub
     exact hmono sᶜ ht tᶜ hsub
 
