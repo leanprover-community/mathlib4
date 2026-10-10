@@ -61,7 +61,8 @@ theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
 -- It would be nice to mark this as `aesop cases` if
 -- https://github.com/leanprover-community/aesop/issues/59
 -- is resolved.
-@[induction_eliminator]
+/-- A recursor for `Shrink`. Use as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {motive : Shrink α → Sort v}
     (equivShrink : ∀ X, motive (equivShrink _ X)) : ∀ X, motive X :=
   fun X => ((_root_.equivShrink _).apply_symm_apply X) ▸ (equivShrink _)
