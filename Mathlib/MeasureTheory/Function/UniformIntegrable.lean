@@ -120,24 +120,32 @@ protected theorem mk_iff :
   grw [← le_iSup₂ t ht, ← le_iSup _ (hμt ▸ hsμ)]
   exact eLpNorm_mono_measure _ (μ.restrict_mono_set hst)
 
-protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) (hp : 1 ≤ p) :
+protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) :
     UnifIntegrable (f + g) p μ := by
-  refine ENNReal.tendsto_nhds_zero.2 fun ε hε ↦ ?_
-  filter_upwards [ENNReal.tendsto_nhds_zero.1 hf (ε / 2) (ε.half_pos hε.ne'),
-    ENNReal.tendsto_nhds_zero.1 hg (ε / 2) (ε.half_pos hε.ne')] with δ hδf hδg
-  simp only [iSup_le_iff, Pi.add_apply] at hδf hδg ⊢
-  intro i s hs
-  grw [eLpNorm_add_le hp, hδf i s hs, hδg i s hs, ε.add_halves]
+  rw [UnifIntegrable.mk_iff]
+  apply tendsto_nhds_bot_mono (f := fun ε ↦ p.LpAddConst *
+    ((⨆ (i : ι) (s : Set α) (_ : μ s ≤ ε), eLpNorm (f i) p (μ.restrict s)) +
+      ⨆ (i : ι) (s : Set α) (_ : μ s ≤ ε), eLpNorm (g i) p (μ.restrict s)))
+  · rw [bot_eq_zero]; nth_rw 2 [← mul_zero p.LpAddConst]
+    apply ENNReal.Tendsto.const_mul _ (.inr p.LpAddConst_lt_top.ne)
+    nth_rw 2 [← zero_add 0]
+    exact Tendsto.add hf hg
+  · apply Eventually.of_forall fun ε ↦ ?_
+    simp only [Pi.add_apply, iSup_le_iff]
+    intro i s hs hsμ
+    apply (eLpNorm_add_le' p).trans
+    apply mul_le_mul_right (add_le_add _ _) <;>
+    apply (le_iSup _ i).trans' ((le_iSup _ s).trans' (by simp [hsμ]))
 
 protected theorem neg (hf : UnifIntegrable f p μ) : UnifIntegrable (-f) p μ := by
   refine ENNReal.tendsto_nhds_zero.2 fun ε hε ↦ ?_
   filter_upwards [ENNReal.tendsto_nhds_zero.1 hf ε hε] with s hs
   simpa only [Pi.neg_apply, eLpNorm_neg]
 
-protected theorem sub (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) (hp : 1 ≤ p) :
+protected theorem sub (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) :
     UnifIntegrable (f - g) p μ := by
   rw [sub_eq_add_neg]
-  exact hf.add hg.neg hp
+  exact hf.add hg.neg
 
 protected theorem ae_mono (hg : UnifIntegrable g p μ) (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ)
     (hfg : ∀ i, (‖f i ·‖ₑ) ≤ᵐ[μ] (‖g i ·‖ₑ)) :
@@ -547,7 +555,7 @@ theorem unifIntegrable_of_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞) (hf : ∀ 
     UnifIntegrable f p μ := by
   have : f = (fun _ => g) + fun n => f n - g := by ext1 n; simp
   rw [this]
-  refine UnifIntegrable.add ?_ ?_ hp
+  refine UnifIntegrable.add ?_ ?_
   · exact unifIntegrable_const hp hp' hg
   · exact unifIntegrable_of_tendsto_Lp_zero hp hp' (fun n => (hf n).sub hg) hfg
 
