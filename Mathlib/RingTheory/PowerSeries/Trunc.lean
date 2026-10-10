@@ -202,6 +202,18 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
     rw [_root_.pow_succ', _root_.pow_succ', trunc_trunc_mul,
       ← trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
 
+/-- The `n`-th coefficient of a power depends only on coefficients up to degree `n`. -/
+theorem coeff_pow_congr {f g : R⟦X⟧} (n k : ℕ)
+    (h : ∀ j ≤ n, f.coeff j = g.coeff j) : (f ^ k).coeff n = (g ^ k).coeff n := by
+  have ht : f.trunc (n + 1) = g.trunc (n + 1) := by
+    ext j
+    by_cases hj : j < n + 1
+    · simp [coeff_trunc, hj, h j (by omega)]
+    · simp [coeff_trunc, hj]
+  have hp : (f ^ k).trunc (n + 1) = (g ^ k).trunc (n + 1) := by
+    rw [← trunc_trunc_pow f, ht, trunc_trunc_pow]
+  simpa [coeff_trunc] using congrArg (fun p : Polynomial R ↦ p.coeff n) hp
+
 theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R⟦X⟧) = f := by
   rw [← Polynomial.coe_inj]
   ext m
