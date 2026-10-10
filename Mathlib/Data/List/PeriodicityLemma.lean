@@ -43,6 +43,9 @@ The definition is given in terms of the self-overlap.
 -/
 def HasPeriod (w : List α) (p : ℕ) : Prop := w <+: take p w ++ w
 
+instance [DecidableEq α] (w : List α) (p : ℕ) : Decidable (w.HasPeriod p) :=
+  inferInstanceAs <| Decidable <| w <+: w.take p ++ w
+
 /-- This is the equivalent definition of `HasPeriod w p` by indices. -/
 lemma hasPeriod_iff_getElem? {p : ℕ} {w : List α} :
     HasPeriod w p ↔ ∀ i < w.length - p, w[i]? = w[i + p]? := by
@@ -234,12 +237,6 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
   termination_by (q, p)
   decreasing_by
     all_goals grind
-
-/-! ### Decidability -/
-
-/-- `HasPeriod` is decidable: it is a prefix test. -/
-instance [DecidableEq α] (w : List α) (p : ℕ) : Decidable (w.HasPeriod p) :=
-  inferInstanceAs <| Decidable <| w <+: w.take p ++ w
 
 /-! ### Periods of repeated lists
 
