@@ -182,7 +182,7 @@ theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
   · by_cases h : Nonempty α
     · exact dist_lt_of_nonempty_compact
     · rintro -
-      convert! C0
+      convert C0
       apply le_antisymm _ dist_nonneg'
       rw [dist_eq]
       exact csInf_le ⟨0, fun C => And.left⟩ ⟨le_rfl, fun x => False.elim (h (Nonempty.intro x))⟩
@@ -260,7 +260,7 @@ theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ �
 
 -- TODO: upgrade to `IsUniformEmbedding`
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
-  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr($h x)⟩
 
 variable (α) in
 /-- Constant as a continuous bounded function. -/
@@ -507,12 +507,6 @@ theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : �
 @[to_additive]
 theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
     (f * g) x = f x * g x := rfl
-
-@[deprecated "dont use `nsmulRec` directly" (since := "2026-03-06")]
-theorem coe_nsmulRec [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
-    (f : α →ᵇ β) : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
-  | 0 => by rw [nsmulRec, zero_smul, coe_zero]
-  | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec _ n]
 
 @[to_additive]
 instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where

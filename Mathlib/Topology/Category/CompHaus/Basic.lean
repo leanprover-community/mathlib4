@@ -6,10 +6,10 @@ Authors: Adam Topaz, Bhavik Mehta, Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.Topology.Compactification.StoneCech
-public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.Category.CompHausLike.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # The category of Compact Hausdorff Spaces
@@ -101,13 +101,13 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     ext x
     refine congr_fun ?_ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
-    · rintro _ ⟨y, rfl⟩
-      apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
-      apply continuous_stoneCechUnit
+    rintro _ ⟨y, rfl⟩
+    apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
+    apply continuous_stoneCechUnit
   right_inv := by
     rintro ⟨f, hf : Continuous f⟩
     ext
-    exact congr_fun (stoneCechExtend_extends hf) _
+    congrm $(stoneCechExtend_extends hf) _
 
 /-- The Stone-Cech compactification functor from topological spaces to compact Hausdorff spaces,
 left adjoint to the inclusion functor.

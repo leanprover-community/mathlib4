@@ -5,10 +5,11 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Combinatorics.Pigeonhole
-public import Mathlib.Combinatorics.SimpleGraph.Bipartite
-public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
+
+import Mathlib.Combinatorics.Pigeonhole
+import Mathlib.Combinatorics.SimpleGraph.Bipartite
 
 /-!
 # The Erdős-Stone-Simonovits theorem

@@ -179,12 +179,8 @@ theorem OrderIso.lift_cof_congr (f : α ≃o β) :
     Cardinal.lift.{v} (Order.cof α) = Cardinal.lift.{u} (Order.cof β) :=
   f.to_galoisConnection.cof_le_lift.antisymm (f.symm.to_galoisConnection.cof_le_lift)
 
-@[deprecated (since := "2026-03-20")] alias OrderIso.lift_cof_eq := OrderIso.lift_cof_congr
-
 theorem OrderIso.cof_congr (f : α ≃o γ) : Order.cof α = Order.cof γ := by
   simpa using f.lift_cof_congr
-
-@[deprecated (since := "2026-03-20")] alias OrderIso.cof_eq := OrderIso.cof_congr
 
 end Congr
 

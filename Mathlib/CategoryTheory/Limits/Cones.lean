@@ -299,9 +299,7 @@ namespace Cone
 
 /-- To give an isomorphism between cones, it suffices to give an
 isomorphism between their vertices which commutes with the cone maps. -/
-@[to_dual (attr := simps) extInv
-/-- To give an isomorphism between cocones, it suffices to give an
-isomorphism between their vertices which commutes with the cone maps. -/]
+@[simps]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
@@ -309,14 +307,22 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     { hom := φ.inv
       w := fun j => φ.inv_comp_eq.mpr (w j) }
 
-/-- To give an isomorphism between cones, it suffices to give an
-isomorphism between their vertices which commutes with the cone maps. -/
-@[to_dual (attr := reducible, simps! -isSimp) ext
 /-- To give an isomorphism between cocones, it suffices to give an
-isomorphism between their vertices which commutes with the cocone maps. -/]
-def extInv {c c' : Cone F} (φ : c.pt ≅ c'.pt)
-    (w : ∀ j, φ.inv ≫ c.π.app j = c'.π.app j := by cat_disch) : c ≅ c' :=
-  ext φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
+isomorphism between their vertices which commutes with the cocone maps. -/
+@[simps]
+def _root_.CategoryTheory.Limits.Cocone.ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
+    (w : ∀ j, dsimp% c.ι.app j ≫ φ.hom = c'.ι.app j := by cat_disch) : c ≅ c' where
+  hom := { hom := φ.hom }
+  inv :=
+    { hom := φ.inv
+      w := fun j => φ.comp_inv_eq.mpr (w j).symm }
+
+to_dual_for ext := Cocone.ext φ
+to_dual_for ext_hom_hom := Cocone.ext_inv_hom φ
+to_dual_for ext_inv_hom := Cocone.ext_hom_hom φ
+to_dual_for Cocone.ext := Cone.ext φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
+to_dual_for Cocone.ext_hom_hom := ext_inv_hom φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
+to_dual_for Cocone.ext_inv_hom := ext_hom_hom φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
 
 attribute [aesop apply safe (rule_sets := [CategoryTheory])] Limits.Cone.ext Limits.Cocone.ext
 
@@ -480,7 +486,7 @@ instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full whe
 @[to_dual]
 instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
-    ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
+    ConeMorphism.ext f g <| G.map_injective congr(ConeMorphism.hom $h)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
@@ -517,65 +523,6 @@ instance reflects_cone_isomorphism (F : C ⥤ D) [F.ReflectsIsomorphisms] (K : J
 end
 
 end Cone
-
-namespace Cones
-
-@[deprecated (since := "2026-03-06")] alias ext := Cone.ext
-@[deprecated (since := "2026-03-06")] alias eta := Cone.eta
-@[deprecated (since := "2026-03-06")] alias cone_iso_of_hom_iso := Cone.cone_iso_of_hom_iso
-@[deprecated (since := "2026-03-06")] alias extend := Cone.extendHom
-@[deprecated (since := "2026-03-06")] alias extendId := Cone.extendId
-@[deprecated (since := "2026-03-06")] alias extendComp := Cone.extendComp
-@[deprecated (since := "2026-03-06")] alias extendIso := Cone.extendIso
-@[deprecated (since := "2026-03-06")] alias postcompose := Cone.postcompose
-@[deprecated (since := "2026-03-06")] alias postcomposeComp := Cone.postcomposeComp
-@[deprecated (since := "2026-03-06")] alias postcomposeId := Cone.postcomposeId
-@[deprecated (since := "2026-03-06")] alias postcomposeEquivalence := Cone.postcomposeEquivalence
-@[deprecated (since := "2026-03-06")] alias whiskering := Cone.whiskering
-@[deprecated (since := "2026-03-06")] alias whiskeringEquivalence := Cone.whiskeringEquivalence
-@[deprecated (since := "2026-03-06")] alias equivalenceOfReindexing := Cone.equivalenceOfReindexing
-@[deprecated (since := "2026-03-06")] alias forget := Cone.forget
-@[deprecated (since := "2026-03-06")] alias functoriality := Cone.functoriality
-@[deprecated (since := "2026-03-06")]
-alias functorialityCompFunctoriality := Cone.functorialityCompFunctoriality
-@[deprecated (since := "2026-03-06")] alias functoriality_full := Cone.functoriality_full
-@[deprecated (since := "2026-03-06")] alias functoriality_faithful := Cone.functoriality_faithful
-@[deprecated (since := "2026-03-06")]
-alias functorialityEquivalence := Cone.functorialityEquivalence
-@[deprecated (since := "2026-03-06")]
-alias reflects_cone_isomorphism := Cone.reflects_cone_isomorphism
-
-end Cones
-
-namespace Cocones
-
-@[deprecated (since := "2026-03-06")] alias ext := Cocone.ext
-@[deprecated (since := "2026-03-06")] alias eta := Cocone.eta
-@[deprecated (since := "2026-03-06")] alias cone_iso_of_hom_iso := Cocone.cocone_iso_of_hom_iso
-@[deprecated (since := "2026-03-06")] alias extend := Cocone.extendHom
-@[deprecated (since := "2026-03-06")] alias extendId := Cocone.extendId
-@[deprecated (since := "2026-03-06")] alias extendComp := Cocone.extendComp
-@[deprecated (since := "2026-03-06")] alias extendIso := Cocone.extendIso
-@[deprecated (since := "2026-03-06")] alias postcompose := Cocone.precompose
-@[deprecated (since := "2026-03-06")] alias postcomposeComp := Cocone.precomposeComp
-@[deprecated (since := "2026-03-06")] alias postcomposeId := Cocone.precomposeId
-@[deprecated (since := "2026-03-06")] alias postcomposeEquivalence := Cocone.precomposeEquivalence
-@[deprecated (since := "2026-03-06")] alias whiskering := Cocone.whiskering
-@[deprecated (since := "2026-03-06")] alias whiskeringEquivalence := Cocone.whiskeringEquivalence
-@[deprecated (since := "2026-03-06")]
-alias equivalenceOfReindexing := Cocone.equivalenceOfReindexing
-@[deprecated (since := "2026-03-06")] alias forget := Cocone.forget
-@[deprecated (since := "2026-03-06")] alias functoriality := Cocone.functoriality
-@[deprecated (since := "2026-03-06")]
-alias functorialityCompFunctoriality := Cocone.functorialityCompFunctoriality
-@[deprecated (since := "2026-03-06")] alias functoriality_full := Cocone.functoriality_full
-@[deprecated (since := "2026-03-06")] alias functoriality_faithful := Cocone.functoriality_faithful
-@[deprecated (since := "2026-03-06")]
-alias functorialityEquivalence := Cocone.functorialityEquivalence
-@[deprecated (since := "2026-03-06")]
-alias reflects_cone_isomorphism := Cocone.reflects_cocone_isomorphism
-
-end Cocones
 
 end Limits
 

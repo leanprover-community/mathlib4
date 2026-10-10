@@ -5,16 +5,10 @@ Authors: Mario Carneiro, Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.FinitePresentation
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
-public import Mathlib.RingTheory.PowerBasis
-public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Polynomial.Quotient
+public import Mathlib.RingTheory.PowerBasis
 
 /-!
 # Adjoining roots of polynomials
@@ -187,7 +181,7 @@ lemma ringHom_ext {f g : AdjoinRoot p →+* T} (hAlg : f.comp (of p) = g.comp (o
     (hRoot : f (root p) = g (root p)) : f = g := by
   apply Ideal.Quotient.ringHom_ext
   ext x
-  · simpa using! congr($(hAlg) x)
+  · simpa using! congr($hAlg x)
   · simpa
 
 @[ext high] -- This should have higher precedence than `AlgHom.ext`.
@@ -366,7 +360,7 @@ section AdjoinInv
 
 @[simp]
 theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
-  convert! sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
+  convert sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
 
 theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
@@ -801,7 +795,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
   let f' := f * C f.leadingCoeff⁻¹
   have deg_f' : f'.natDegree = f.natDegree := by
     rw [natDegree_mul hf, natDegree_C, add_zero]
-    · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
+    rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
   have minpoly_eq : minpoly K (root f) = f' := minpoly_root hf
   apply Basis.mk (v := fun i : Fin f.natDegree ↦ root f ^ i.val)
   · rw [← deg_f', ← minpoly_eq]
@@ -956,16 +950,10 @@ def quotMapOfEquivQuotMapCMapMk :
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (AdjoinRoot.mk f) :=
   Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
 
-@[deprecated (since := "2026-03-02")]
-alias quotMapOfEquivQuotMapCMapSpanMk := quotMapOfEquivQuotMapCMapMk
-
 @[simp]
 theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
     quotMapOfEquivQuotMapCMapMk I f (Ideal.Quotient.mk (I.map (of f)) x) =
       Ideal.Quotient.mk (Ideal.map (Ideal.Quotient.mk (span {f})) (I.map (C : R →+* R[X]))) x := rfl
-
-@[deprecated (since := "2026-03-02")]
-alias quotMapOfEquivQuotMapCMapSpanMk_mk := quotMapOfEquivQuotMapCMapMk_mk
 
 --this lemma should have the simp tag but this causes a lint issue
 set_option backward.isDefEq.respectTransparency.types false in
@@ -976,9 +964,6 @@ theorem quotMapOfEquivQuotMapCMapMk_symm_mk (x : AdjoinRoot f) :
   rw [quotMapOfEquivQuotMapCMapMk, Ideal.quotEquivOfEq_symm]
   exact Ideal.quotEquivOfEq_mk _ _
 
-@[deprecated (since := "2026-03-02")]
-alias quotMapOfEquivQuotMapCMapSpanMk_symm_mk := quotMapOfEquivQuotMapCMapMk_symm_mk
-
 /-- The natural isomorphism `R[α]/((I[x] ⊔ (f)) / (f)) ≅ (R[x]/I[x])/((f) ⊔ I[x] / I[x])`
   for `α` a root of `f : R[X]` and `I : Ideal R` -/
 def quotMapCMapSpanMkEquivQuotMapCQuotMapMk :
@@ -987,17 +972,11 @@ def quotMapCMapSpanMkEquivQuotMapCQuotMapMk :
         (span ({f} : Set R[X])).map (Ideal.Quotient.mk (I.map (C : R →+* R[X]))) :=
   quotQuotEquivComm (Ideal.span ({f} : Set R[X])) (I.map (C : R →+* R[X]))
 
-@[deprecated (since := "2026-03-02")]
-alias quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk := quotMapCMapSpanMkEquivQuotMapCQuotMapMk
-
 -- This lemma should have the simp tag but this causes a lint issue.
 theorem quotMapCMapSpanMkEquivQuotMapCQuotMapMk_mk (p : R[X]) :
     quotMapCMapSpanMkEquivQuotMapCQuotMapMk I f (Ideal.Quotient.mk _ (mk f p)) =
       quotQuotMk (I.map C) (span {f}) p :=
   rfl
-
-@[deprecated (since := "2026-03-02")]
-alias quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_mk := quotMapCMapSpanMkEquivQuotMapCQuotMapMk_mk
 
 @[simp]
 theorem quotMapCMapSpanMkEquivQuotMapCQuotMapMk_symm_quotQuotMk (p : R[X]) :
@@ -1005,10 +984,6 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapMk_symm_quotQuotMk (p : R[X]) :
       Ideal.Quotient.mk (Ideal.map (Ideal.Quotient.mk (span {f})) (I.map (C : R →+* R[X])))
         (mk f p) :=
   rfl
-
-@[deprecated (since := "2026-03-02")]
-alias quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk :=
-  quotMapCMapSpanMkEquivQuotMapCQuotMapMk_symm_quotQuotMk
 
 /-- The natural isomorphism `(R/I)[x]/(f mod I) ≅ (R[x]/I*R[x])/(f mod I[x])` where
   `f : R[X]` and `I : Ideal R` -/

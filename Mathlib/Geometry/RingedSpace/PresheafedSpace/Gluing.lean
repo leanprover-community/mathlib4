@@ -5,9 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Gluing
-public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
+public import Mathlib.Topology.Gluing
 
 /-!
 # Gluing structured spaces
@@ -164,7 +163,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   erw [(π₁ i, j, k).c.naturality_assoc, reassoc_of% this, ← Functor.map_comp_assoc,
     IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc, ←
     (D.V (i, k)).presheaf.map_comp, ← (D.V (i, k)).presheaf.map_comp]
-  convert! (Category.comp_id _).symm
+  convert (Category.comp_id _).symm
   erw [(D.V (i, k)).presheaf.map_id]
   rfl
 
@@ -212,7 +211,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
       IsOpenImmersion.app_inv_app'_assoc]
     · simp_rw [← (𝖣.V (k, i)).presheaf.map_comp]; rfl
     rintro x ⟨y, -, eq⟩
-    replace eq := ConcreteCategory.congr_arg (𝖣.t i k).base eq
+    replace eq := congr((𝖣.t i k).base $eq)
     change ((π₂ i, j, k) ≫ D.t i k).base y = (D.t k i ≫ D.t i k).base x at eq
     rw [𝖣.t_inv, id_base, TopCat.id_app] at eq
     subst eq
@@ -250,7 +249,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   · refine Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) ?_
     dsimp
     rw [Set.image_comp]
-    refine congr_arg (_ '' ·) ?_
+    congrm _ '' ?_
     rw [Set.eq_preimage_iff_image_eq, ← Set.image_comp]
     swap
     · exact CategoryTheory.ConcreteCategory.bijective_of_isIso (C := TopCat) _
@@ -280,13 +279,13 @@ theorem opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
   · delta opensImagePreimageMap
     simp_rw [Category.assoc]
     rw [(D.f j k).c.naturality, f_invApp_f_app_assoc]
-    · erw [← (D.V (j, k)).presheaf.map_comp]
-      · simp_rw [← Category.assoc]
-        erw [← comp_c_app, ← comp_c_app]
-        · simp_rw [Category.assoc]
-          dsimp only [Functor.op, unop_op, Quiver.Hom.unop_op]
-          rw [eqToHom_map (Opens.map _), eqToHom_op, eqToHom_trans]
-          congr
+    erw [← (D.V (j, k)).presheaf.map_comp]
+    simp_rw [← Category.assoc]
+    erw [← comp_c_app, ← comp_c_app]
+    simp_rw [Category.assoc]
+    dsimp only [Functor.op, unop_op, Quiver.Hom.unop_op]
+    rw [eqToHom_map (Opens.map _), eqToHom_op, eqToHom_trans]
+    congr
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/mBzV1Rx.png) commute. -/
 theorem opensImagePreimageMap_app (i j k : D.J) (U : Opens (D.U i).carrier) :
@@ -304,7 +303,7 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
         (π₂⁻¹ j, i, k) (unop _) ≫
           (D.V (j, k)).presheaf.map
             (eqToHom (opensImagePreimageMap_app' D i j k U).choose) ≫ f' := by
-  simpa only [Category.assoc] using congr_arg (· ≫ f') (opensImagePreimageMap_app D i j k U)
+  simpa only [Category.assoc] using congr($(opensImagePreimageMap_app D i j k U) ≫ f')
 
 /-- (Implementation) Given an open subset of one of the spaces `U ⊆ Uᵢ`, the sheaf component of
 the image `ι '' U` in the glued space is the limit of this diagram. -/
@@ -399,7 +398,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     simp only [SetLike.mem_coe, unop_op, Set.mem_preimage, Set.mem_image]
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
-    convert! h1 using 1
+    convert h1 using 1
     delta ι Multicoequalizer.π at h2
     apply_fun (D.ι _).base
     · exact h2.symm
@@ -513,7 +512,7 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
           s.snd.base ≫ D.toTopGlueData.ι j := by
         rw [← 𝖣.ι_gluedIso_hom (PresheafedSpace.forget _) _, ←
           𝖣.ι_gluedIso_hom (PresheafedSpace.forget _) _]
-        have := congr_arg PresheafedSpace.Hom.base s.condition
+        have := congr($(s.condition).base)
         rw [comp_base, comp_base] at this
         replace this := reassoc_of% this
         exact this _

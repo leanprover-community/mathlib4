@@ -11,8 +11,8 @@ public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.LinearAlgebra.Span.Defs
-public import Mathlib.Order.CompactlyGenerated.Basic
 public import Mathlib.Order.BourbakiWitt
+public import Mathlib.Order.CompactlyGenerated.Basic
 
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Module.Submodule.EqLocus
@@ -134,7 +134,7 @@ lemma linearMap_eq_iff_of_span_eq_top (f g : M →ₗ[R] N)
     rfl
   · intro h
     ext x
-    exact DFunLike.congr_fun h ⟨x, by simp⟩
+    congrm $h ⟨x, by simp⟩
 
 lemma linearMap_eq_zero_iff_of_span_eq_top (f : M →ₗ[R] N)
     {S : Set M} (hM : span R S = ⊤) :
@@ -153,7 +153,7 @@ end
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
   · apply span_smul_le
-  · convert! span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
+  · convert span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
     simp [smul_smul]
 
 /-- We can regard `coe_iSup_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is
@@ -344,6 +344,10 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x,
   · exact ⟨_, zero⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, add _ _ _ _ Cx Cy⟩
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Submodule R M) :
+    ((⨆ i, S i : Submodule R M) : Set M) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Submodule R M) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed _ <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 theorem singleton_span_isCompactElement (x : M) :
     IsCompactElement (span R {x} : Submodule R M) := by
@@ -802,6 +806,13 @@ theorem span_singleton_eq_range (x : M) :
 
 theorem comp_toSpanSingleton [AddCommMonoid M₂] [Module R M₂] (f : M →ₗ[R] M₂) (x : M) :
     f ∘ₗ toSpanSingleton R M x = toSpanSingleton R M₂ (f x) := by
+  ext; simp
+
+theorem toSpanSingleton_comp [AddCommMonoid M₂] [Module R M₂] (x : M) (f : M₂ →ₗ[R] R) :
+    toSpanSingleton R M x ∘ₗ f = f.smulRight x := rfl
+
+theorem toSpanSingleton_comp_toSpanSingleton (x : M) (c : R) :
+    toSpanSingleton R M x ∘ₗ toSpanSingleton R R c = toSpanSingleton R M (c • x) := by
   ext; simp
 
 theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x ∈ N) :

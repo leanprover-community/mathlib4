@@ -6,9 +6,10 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Order.Antidiag.Pi
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
-public import Mathlib.Tactic.FinCases
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Tactic.FinCases
 
 /-!
 # Sets of tuples with a fixed product
@@ -194,7 +195,7 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
   dsimp only [Nat.primeFactorsPiBij]
   apply ne_of_mem_of_not_mem (s := {x | p ∣ x}) <;> simp_rw [Set.mem_ofPred_eq]
   · rw [Finset.prod_filter]
-    convert! Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
+    convert Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
     rw [ite_eq_left rfl]
   · rw [mem_primeFactors] at hp
     rw [Prime.dvd_finsetProd_iff hp.1.prime]
@@ -291,10 +292,10 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
     rw [mem_finMulAntidiag]
     rw [mem_filter, Finset.mem_product] at hb
     refine ⟨?_, hn⟩
-    · rw [Fin.prod_univ_three a]
-      dsimp only [a, Matrix.cons_val]
-      rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
-        Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
+    rw [Fin.prod_univ_three a]
+    dsimp only [a, Matrix.cons_val]
+    rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
+      Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
   use a; use ha
   apply Prod.ext <;> dsimp only [a, Matrix.cons_val]
     <;> apply Nat.mul_div_cancel'

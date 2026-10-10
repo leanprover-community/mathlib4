@@ -6,10 +6,10 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Algebra.Star.Center
-public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.Prod
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.StarAlgHom
 
 /-!
 # Non-unital Star Subalgebras
@@ -487,7 +487,7 @@ theorem coe_codRestrict
 theorem injective_codRestrict
     (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (NonUnitalStarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H congr($(hxy).val)⟩
 
 /-- Restrict the codomain of a non-unital star algebra homomorphism `f` to `f.range`.
 
@@ -1032,6 +1032,11 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R
     (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → NonUnitalStarSubalgebra R A) :
+    ((⨆ i, S i : NonUnitalStarSubalgebra R A) : Set A) =
+      ⋃ s : Finset ι, (⨆ i ∈ s, S i : NonUnitalStarSubalgebra R A) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
 theorem isMulCommutative_iSup [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) := by
@@ -1245,7 +1250,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
     adjoin R s ≤ centralizer R (centralizer R s) := by
   rw [← toNonUnitalSubalgebra_le_iff, centralizer_toNonUnitalSubalgebra,
     adjoin_toNonUnitalSubalgebra]
-  convert! NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
+  convert NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
   rw [StarMemClass.star_coe_eq]
   simp
 
@@ -1283,39 +1288,12 @@ instance isMulCommutative_adjoin_singleton (a : A) [IsStarNormal a] :
     IsMulCommutative (adjoin R ({a} : Set A)) :=
   isMulCommutative_adjoin R (by simpa) (by simp) (by simp)
 
-open scoped IsMulCommutative in
-variable (R) in
-/-- If all elements of `s : Set A` are normal, commute pairwise, and commute pairwise with the
-`star` of elements in this set, then `adjoin R s` is a non-unital commutative semiring.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
-    (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
-    NonUnitalCommSemiring (adjoin R s) :=
-  have := isMulCommutative_adjoin R hnormal hcomm hcomm_star
-  inferInstance
-
 instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] [StarMemClass S A]
     (s : S) [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
   isMulCommutative_adjoin R
     (fun _ h ↦ ⟨setLike_mul_comm (star_mem h) h⟩)
     (fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂)
     (fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ (star_mem h₂))
-
-open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` are normal, commute pairwise, and commute pairwise with the
-`star` of elements in this set, then `adjoin R s` is a non-unital commutative ring.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [StarRing R]
-    [NonUnitalRing A] [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-    [StarModule R A] {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
-    (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
-    NonUnitalCommRing (adjoin R s) :=
-  have := isMulCommutative_adjoin R hnormal hcomm hcomm_star
-  inferInstance
 
 instance isMulCommutative_toNonUnitalSubalgebra (S : NonUnitalStarSubalgebra R A)
     [IsMulCommutative S] : IsMulCommutative S.toNonUnitalSubalgebra :=

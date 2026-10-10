@@ -5,10 +5,10 @@ Authors: Adam Topaz, Nikolas Kuhn, Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.Condensed.Basic
 public import Mathlib.Topology.Category.Profinite.EffectiveEpi
 public import Mathlib.Topology.Category.Stonean.EffectiveEpi
-public import Mathlib.Condensed.Basic
-public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 /-!
 
 # Sheaves on CompHaus are equivalent to sheaves on Stonean

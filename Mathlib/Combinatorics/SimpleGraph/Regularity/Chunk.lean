@@ -113,8 +113,8 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     intro B hB
     unfold chunk
     split_ifs with h₁
-    · convert! card_parts_equitabilise_subset_le _ (card_aux₁ h₁) hB
-    · convert! card_parts_equitabilise_subset_le _ (card_aux₂ hP hU h₁) hB
+    · convert card_parts_equitabilise_subset_le _ (card_aux₁ h₁) hB
+    · convert card_parts_equitabilise_subset_le _ (card_aux₂ hP hU h₁) hB
   grw [sum_const, smul_eq_mul, card_filter_atomise_le_two_pow (s := U) hX,
     Finpartition.card_nonuniformWitnesses_le, filter_subset]
 
@@ -495,8 +495,8 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
         simpa using edgeDensity_star_not_uniform hPα hPε hε₁ hUVne hUV
       · rw [sp, card_product]
         apply (edgeDensity_chunk_aux hP hPα hPε hU hV).trans
-        · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← mul_pow]
-          simp
+        rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← mul_pow]
+        simp
 
 /-- Lower bound on the edge densities between parts of `SzemerediRegularity.increment`. This is the
 blanket lower bound used the uniform parts. -/
@@ -510,6 +510,6 @@ theorem edgeDensity_chunk_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts
     rw [card_product, cast_mul, card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ←
       cast_mul, ← mul_pow]; norm_cast
   simp_rw [key]
-  convert! sum_div_card_sq_le_sum_sq_div_card (α := ℝ)
+  convert sum_div_card_sq_le_sum_sq_div_card (α := ℝ)
 
 end SzemerediRegularity

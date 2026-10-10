@@ -5,8 +5,8 @@ Authors: Kenny Lau, Mario Carneiro, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 /-!
 # Tensor products of direct sums
 
@@ -75,8 +75,6 @@ def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[S] ⨁ i, M₁' ⊗[R] 
   TensorProduct.directSum R S (fun _ : Unit ↦ M₁') M₂ ≪≫ₗ
   DirectSum.lequivCongrLeft S (Equiv.uniqueProd _ _)
 
-@[deprecated (since := "2026-03-04")] alias directSumRight' := directSumRight
-
 variable {M₁ M₁' M₂ M₂'}
 
 @[simp]
@@ -111,7 +109,7 @@ lemma directSumLeft_tmul (m : ⨁ i, M₁ i) (n : M₂') (i : ι₁) :
   suffices (DirectSum.component S ι₁ _ i) ∘ₗ (directSumLeft R S M₁ M₂').toLinearMap ∘ₗ
       ((AlgebraTensorModule.mk R S (⨁ i, M₁ i) M₂').flip n) =
         ((AlgebraTensorModule.mk R S (M₁ i) M₂').flip n) ∘ₗ (DirectSum.component S ι₁ M₁ i) by
-    simpa using! LinearMap.congr_fun this m
+    simpa using! congr($this m)
   ext j n
   by_cases hj : j = i
   · subst hj; simp
@@ -149,7 +147,7 @@ lemma directSumRight_tmul (m : M₁') (n : ⨁ i, M₂ i) (i : ι₂) :
       (directSumRight R S M₁' M₂).toLinearMap.restrictScalars R ∘ₗ
         (TensorProduct.mk R M₁' (⨁ i, M₂ i) m) =
           (TensorProduct.mk R M₁' (M₂ i) m) ∘ₗ (DirectSum.component R ι₂ M₂ i) by
-    simpa using! LinearMap.congr_fun this n
+    simpa using! congr($this n)
   ext j n
   by_cases hj : j = i
   · subst hj; simp
@@ -162,14 +160,9 @@ lemma restrictScalar_directSumRight :
     (directSumRight R S M₁' M₂).restrictScalars S₀ = directSumRight R S₀ M₁' M₂ :=
   LinearEquiv.restrictScalars_injective R <| LinearEquiv.toLinearMap_injective <| by ext; simp [lof]
 
-@[deprecated (since := "2026-03-04")]
-alias directSumRight'_restrict := restrictScalar_directSumRight
-
 lemma coe_directSumRight :
     ⇑(directSumRight R S M₁' M₂) = directSumRight R R M₁' M₂ :=
   congr($(restrictScalar_directSumRight ..))
-
-@[deprecated (since := "2026-03-04")] alias coe_directSumRight' := coe_directSumRight
 
 end TensorProduct
 
