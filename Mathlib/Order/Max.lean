@@ -148,6 +148,9 @@ conversion. -/]
 def IsMin (a : α) : Prop :=
   ∀ ⦃b⦄, b ≤ a → a ≤ b
 
+attribute [wikidata Q10585806] IsMin
+attribute [wikidata Q10578722] IsMax
+
 @[to_dual]
 theorem noBotOrder_iff : NoBotOrder α ↔ ∀ x : α, ¬ IsBot x := by
   simp_rw [noBotOrder_iff', IsBot, not_forall]
