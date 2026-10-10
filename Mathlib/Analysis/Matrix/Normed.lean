@@ -6,6 +6,7 @@ Authors: Heather Macbeth, Eric Wieser
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Topology.Instances.Matrix
 
 /-!
 # Matrices as a normed space
@@ -74,10 +75,19 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
 /-- Seminormed group instance (using sup norm of sup norm) for matrices over a seminormed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
-matrix. -/
+matrix.
+
+The topology field is anchored (via `PseudoMetricSpace.replaceTopology`) to the ambient matrix
+topology, i.e. the `Pi` topology, so that instance resolution can see the agreement at reducible
+transparency.  Without the anchor the two topologies are definitionally equal at default
+transparency but *not* at instance-resolution transparency, so e.g.
+`Norm (Matrix m n ℝ →L[ℝ] Matrix m n ℝ)` fails to synthesize for continuous linear maps formed
+with the ambient topology.  See `MathlibTest/MatrixNormTopology.lean`. -/
 @[instance_reducible]
 protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
-  fast_instance% Pi.seminormedAddCommGroup
+  letI I : SeminormedAddCommGroup (Matrix m n α) := fast_instance% Pi.seminormedAddCommGroup
+  { I with
+    toPseudoMetricSpace := I.toPseudoMetricSpace.replaceTopology rfl }
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -177,10 +187,15 @@ end SeminormedAddCommGroup
 
 /-- Normed group instance (using sup norm of sup norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
-matrix. -/
+matrix.
+
+The topology field is anchored to the ambient (`Pi`) matrix topology; see
+`Matrix.seminormedAddCommGroup` for why. -/
 @[instance_reducible]
 protected def normedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
-  fast_instance% Pi.normedAddCommGroup
+  letI I : NormedAddCommGroup (Matrix m n α) := fast_instance% Pi.normedAddCommGroup
+  { I with
+    toMetricSpace := I.toMetricSpace.replaceTopology rfl }
 
 section NormedSpace
 
