@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Interval.Set.Disjoint
 public import Mathlib.Order.SuccPred.Archimedean
+
+import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # Monotonicity on intervals

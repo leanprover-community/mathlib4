@@ -5,12 +5,12 @@ Authors: Yuyang Zhao
 -/
 module
 
-public import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
 public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
 
 import Mathlib.Data.Multiset.Fintype
-import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.RingTheory.Polynomial.ScaleRoots
+import Mathlib.RingTheory.Polynomial.Vieta
 
 /-!
 # Evaluating symmetric polynomials

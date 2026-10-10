@@ -5,9 +5,9 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.HomCompletion
 public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.Analysis.Normed.Group.HomCompletion
 
 /-!
 # Completions of normed groups
