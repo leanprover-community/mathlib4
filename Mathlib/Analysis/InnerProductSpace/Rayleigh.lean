@@ -5,11 +5,12 @@ Authors: Heather Macbeth, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.LagrangeMultipliers
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+
+import Mathlib.Analysis.InnerProductSpace.Calculus
 
 /-!
 # The Rayleigh quotient

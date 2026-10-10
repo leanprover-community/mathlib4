@@ -5,10 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Data.Nat.Choose.Bounds
 public import Mathlib.Tactic.Positivity
+
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Data.Nat.Choose.Bounds
 
 /-!
 # Triangles in graphs

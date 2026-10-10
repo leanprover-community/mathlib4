@@ -5,10 +5,11 @@ Authors: Joseph Myers
 -/
 module
 
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.GroupTheory.Index
 public import Mathlib.LinearAlgebra.FreeModule.PID
+
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Data.ZMod.QuotientGroup
 
 /-! # Index of submodules of free ℤ-modules (considered as an `AddSubgroup`).
 

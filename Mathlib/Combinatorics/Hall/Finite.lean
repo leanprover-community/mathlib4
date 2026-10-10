@@ -6,6 +6,7 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 module
 
 public import Mathlib.Data.Fintype.Powerset
+
 import Mathlib.Data.Set.Finite.Basic
 
 /-!

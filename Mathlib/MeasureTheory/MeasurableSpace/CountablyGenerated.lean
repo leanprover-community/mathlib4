@@ -5,8 +5,8 @@ Authors: Felix Weilacher, Yury Kudryashov, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.Data.Set.MemPartition
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.Order.Filter.CountableSeparatingOn
 
 /-!
