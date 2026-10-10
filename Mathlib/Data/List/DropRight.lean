@@ -5,8 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.TakeWhile
+
+import Mathlib.Data.List.Induction
 
 /-!
 

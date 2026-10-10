@@ -7,8 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.Tactic.PPWithUniv
-public import Mathlib.Tactic.ToAdditive
 
 /-!
 # The category `Type`.
@@ -95,7 +93,6 @@ end TypeCat
 
 open TypeCat CategoryTheory
 
-@[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance CategoryTheory.types : Category.{u} (Type u) where
   Hom := Hom
   id X := ⟨.id X⟩
@@ -209,7 +206,7 @@ lemma types_comp_apply {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 
 @[congr]
 lemma types_congr_hom {X Y : Type u} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
-  ConcreteCategory.congr_hom h x
+  congr($h x)
 
 namespace Functor
 
@@ -281,7 +278,7 @@ lemma naturality_symm {F G : C ⥤ Type*} (e : ∀ j, F.obj j ≃ G.obj j)
   apply (e j').injective
   dsimp
   simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply]
-  exact (congr_fun (naturality f) y).symm
+  exact congr($(naturality f) y).symm
 
 end FunctorToTypes
 
@@ -321,7 +318,7 @@ def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
 def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := ofHom fun _ => x
 
 theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
-  ⟨fun H => ConcreteCategory.congr_hom H PUnit.unit, by simp_all⟩
+  ⟨fun H => congr($H .unit), by simp_all⟩
 
 /-- A morphism in `Type` is a monomorphism if and only if it is injective. -/
 @[stacks 003C]
