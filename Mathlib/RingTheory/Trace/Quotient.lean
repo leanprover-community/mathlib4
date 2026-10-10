@@ -5,6 +5,7 @@ Authors: Andrew Yang, Riccardo Brasca
 -/
 module
 
+public import Mathlib.RingTheory.Finiteness.Quotient
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 import Mathlib.RingTheory.DedekindDomain.Dvr
@@ -28,28 +29,19 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 open IsLocalRing Module Submodule IsLocalization.AtPrime
 
-section IsLocalRing
+instance QuotientMapQuotient.projective (I : Ideal R) [Module.Projective R S] :
+    Module.Projective (R ⧸ I) (S ⧸ I.map (algebraMap R S)) :=
+  Module.Projective.of_equiv'
+    (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S I).symm.toLinearEquiv
 
-local notation "p" => maximalIdeal R
-local notation "pS" => Ideal.map (algebraMap R S) p
-
-variable [Module.Free R S] [Module.Finite R S]
-
-attribute [local instance] Ideal.Quotient.field
-
-lemma Algebra.trace_quotient_mk [IsLocalRing R] (x : S) :
-    Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =
-      Ideal.Quotient.mk p (Algebra.trace R S x) := by
-  let ι := Module.Free.ChooseBasisIndex R S
-  let b : Module.Basis ι R S := Module.Free.chooseBasis R S
-  rw [trace_eq_matrix_trace b, trace_eq_matrix_trace (basisQuotient b), AddMonoidHom.map_trace]
-  congr 1
-  ext i j
-  simp only [leftMulMatrix_apply, coe_lmul_eq_mul, LinearMap.toMatrix_apply,
-    basisQuotient_apply, LinearMap.mul_apply', Matrix.map_apply, ← map_mul,
-    basisQuotient_repr]
-
-end IsLocalRing
+lemma Algebra.trace_quotient_mk [Module.Projective R S] [Module.Finite R S]
+    (I : Ideal R) (x : S) :
+    Algebra.trace (R ⧸ I) (S ⧸ I.map (algebraMap R S)) (Ideal.Quotient.mk _ x) =
+      Ideal.Quotient.mk I (Algebra.trace R S x) := by
+  rw [← Algebra.trace_eq_of_algEquiv (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S I),
+    Algebra.TensorProduct.quotIdealMapEquivQuotTensor_mk, Algebra.trace_apply,
+    ← Algebra.baseChange_lmul, LinearMap.trace_baseChange]
+  rfl
 
 section IsDedekindDomain
 
@@ -66,7 +58,8 @@ local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)
 
 variable (S)
 
-lemma trace_quotient_eq_trace_localization_quotient (x) :
+lemma trace_quotient_eq_trace_localization_quotient [Module.Finite (R ⧸ p) (S ⧸ pS)]
+    [Module.Finite (Rₚ ⧸ maximalIdeal Rₚ) (Sₚ ⧸ pSₚ)] (x) :
     Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =
       (equivQuotMaximalIdeal p Rₚ).symm
         (Algebra.trace (Rₚ ⧸ maximalIdeal Rₚ) (Sₚ ⧸ pSₚ) (algebraMap S _ x)) := by

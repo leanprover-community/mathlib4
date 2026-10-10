@@ -175,6 +175,8 @@ variable [H.IsCartanSubalgebra] [IsNoetherian R L]
 attribute [local instance 100] LieRing.ofAssociativeRing
 
 lemma trace_toEnd_genWeightSpaceChain_eq_zero
+    [Module.Finite R (genWeightSpaceChain M α χ p q)]
+    [Module.Projective R (genWeightSpaceChain M α χ p q)]
     (hp : genWeightSpace M (p • α + χ) = ⊥)
     (hq : genWeightSpace M (q • α + χ) = ⊥)
     {x : H} (hx : x ∈ corootSpace α) :

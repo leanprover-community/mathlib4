@@ -51,12 +51,11 @@ variable {G k V W : Type*} [Monoid G] [Field k] [AddCommGroup V] [Module k V]
   [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
-/-- The character of a representation `ρ : Representation k G V` is the function associating to
-`g : G` the trace of the linear map `ρ g`. -/
+/-- The character of a finite-dimensional representation `ρ : Representation k G V` is the
+function associating to `g : G` the trace of the linear map `ρ g`. -/
 def character (g : G) :=
   LinearMap.trace k V (ρ g)
 
-omit [FiniteDimensional k V] in
 theorem char_mul_comm (g : G) (h : G) :
     ρ.character (h * g) = ρ.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
 
@@ -69,7 +68,6 @@ theorem char_one (ρ : Representation k G V) : ρ.character 1 = Module.finrank k
 theorem char_tensor : (tprod ρ σ).character = ρ.character * σ.character := by
   ext g; convert! trace_tensorProduct' (ρ g) (σ g)
 
-omit [FiniteDimensional k V] [FiniteDimensional k W] in
 variable {ρ σ} in
 /-- The character of isomorphic representations is the same. -/
 theorem char_iso (φ : Equiv ρ σ) : ρ.character = σ.character := by
@@ -84,7 +82,6 @@ variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
   [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
-omit [FiniteDimensional k V] in
 /-- The character of a representation is constant on conjugacy classes. -/
 @[simp]
 theorem char_conj (g : G) (h : G) : ρ.character (h * g * h⁻¹) = ρ.character g := by
@@ -97,7 +94,8 @@ theorem char_dual (g : G) : ρ.dual.character g = ρ.character g⁻¹ :=
 @[simp]
 theorem char_linHom (g : G) :
     (linHom ρ σ).character g = ρ.character g⁻¹ * σ.character g := by
-  rw [← char_iso (Equiv.dualTensorHom ρ σ), char_tensor, Pi.mul_apply, char_dual]
+  rw [← char_iso (V := TensorProduct k (Module.Dual k V) W)
+      (W := V →ₗ[k] W) (Equiv.dualTensorHom ρ σ), char_tensor, Pi.mul_apply, char_dual]
 
 theorem isIntegral_character [Finite G] (g : G) : IsIntegral ℤ (ρ.character g) := by
   rw [← isIntegral_algebraMap_iff (B := AlgebraicClosure k), character, ← trace_baseChange,

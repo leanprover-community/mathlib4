@@ -45,6 +45,8 @@ variable (R K L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L] [Field K] [Li
 
 namespace LieAlgebra
 
+variable [Module.Finite R L] [Module.Projective R L]
+
 lemma restrict_killingForm (H : LieSubalgebra R L) :
     (killingForm R L).restrict H = LieModule.traceForm R H L :=
   rfl
@@ -79,8 +81,6 @@ lemma traceForm_cartan_nondegenerate
     (LieModule.traceForm R H L).Nondegenerate := by
   simp [LinearMap.separatingLeft_iff_ker_eq_bot,
     (LieModule.traceForm_isSymm R H L).isRefl.nondegenerate_iff_separatingLeft]
-
-variable [Module.Free R L] [Module.Finite R L]
 
 instance instIsLieAbelianOfIsCartanSubalgebra
     [IsDomain R] [IsPrincipalIdealRing R] [IsArtinian R L]

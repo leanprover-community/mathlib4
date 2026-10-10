@@ -36,6 +36,7 @@ open Fintype
 /-- The trace map from a finite field to its prime field is nondegenerate. -/
 theorem trace_to_zmod_nondegenerate (F : Type*) [Field F] [Finite F]
     [Algebra (ZMod (ringChar F)) F] {a : F} (ha : a ≠ 0) :
+    letI : Fact (ringChar F).Prime := ⟨CharP.char_is_prime F _⟩
     ∃ b : F, Algebra.trace (ZMod (ringChar F)) F (a * b) ≠ 0 := by
   have : Fact (ringChar F).Prime := ⟨CharP.char_is_prime F _⟩
   have htr := (traceForm_nondegenerate (ZMod (ringChar F)) F).1 a
