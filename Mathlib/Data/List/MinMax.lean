@@ -6,10 +6,11 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 module
 
 public import Mathlib.Data.List.Basic
-import Mathlib.Order.BoundedOrder.Lattice
-import Mathlib.Data.List.Induction
-import Mathlib.Order.MinMax
 public import Mathlib.Order.WithBot
+
+import Mathlib.Data.List.Induction
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.MinMax
 
 /-!
 # Minimum and maximum of lists
@@ -348,8 +349,8 @@ lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.max
     | some z =>
       have : Std.Antisymm (α := α) (· ≤ ·) := ⟨fun _ _ => _root_.le_antisymm⟩
       rw [List.max?_eq_some_iff] at hz
-      · rw [Option.getD_some]
-        exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
+      rw [Option.getD_some]
+      exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
 
 end LinearOrder
 

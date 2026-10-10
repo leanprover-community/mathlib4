@@ -6,6 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Geometry.Euclidean.PerpBisector
+
 import Mathlib.Algebra.QuadraticDiscriminant
 
 /-!
@@ -38,8 +39,6 @@ theorems that need it.
 -/
 
 public section
-
-noncomputable section
 
 open scoped RealInnerProductSpace
 

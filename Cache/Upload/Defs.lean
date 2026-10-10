@@ -5,7 +5,6 @@ Authors: Marcelo Lynch
 -/
 module
 
-public import Cache.Marker
 public import Cache.Upload.Azure
 public import Cache.Upload.S3
 
@@ -16,17 +15,16 @@ The backend-neutral layer over the backend modules:
 
 * the backend selection (`UploadBackend`). The backends implement the upload
   in `Cache/Upload/Azure.lean` and `Cache/Upload/S3.lean`: credentials,
-  destination, transfer tool, and the transfer;
-* the one destination resolution every upload addresses
-  (`stagedUploadDest`): the flat `MATHLIB_CACHE_PUT_URL` override, or the
-  selected backend's own destination. The destination contract itself
-  (`StagedUploadDest`) lives in `Cache/Upload/Dest.lean`.
+  location, transfer tool, and the transfer;
+* the location resolution that every upload uses (`uploadLocation`): the
+  `MATHLIB_CACHE_PUT_URL` endpoint, or the location of the selected backend.
+  `Location` lives in `Cache/Location.lean`, and the reads use it too.
 
 `Cache/Upload.lean` runs the complete `put`, dispatching to the selected
-backend. The marker path contract and write mechanics live in
-`Cache/Marker.lean`. The read side (`Cache/Requests.lean`) shares the path
-contract through `fileDirPath` and `markerDirPath` (`Cache/Infra.lean`), so
-every upload addresses the URLs the readers probe.
+backend. `Cache/Location.lean` derives the marker. `Cache/Marker.lean`
+defines its read and write operations. The reads resolve their locations
+with the same resolvers (`Container.location`, `Location.ofEndpoint`), so
+every upload writes to the URLs that the reads probe.
 -/
 
 public section
@@ -37,7 +35,7 @@ open System (FilePath)
 
 /-- The storage backend an upload targets, selected with `--backend=NAME`.
 Each backend implements the complete upload in its own module: credential
-resolution, destination, transfer tool, and the transfer. `runPut` dispatches
+resolution, location, transfer tool, and the transfer. `runPut` dispatches
 on this type. -/
 inductive UploadBackend where
   /-- Azure Blob Storage (`Cache/Upload/Azure.lean`); the default. -/
@@ -67,49 +65,45 @@ def parse? (s : String) : Option UploadBackend :=
 end UploadBackend
 
 /--
-Pure core of `stagedUploadDest`: resolve where a staged set uploads.
+Pure core of `uploadLocation`: resolve where a staged set uploads.
 
 `MATHLIB_CACHE_PUT_URL` (`putUrl?`) wins on every backend: a flat endpoint
 with the container policy off, while the selected backend signs the requests.
 Any set value counts here, an empty one included: a misconfigured endpoint
-fails the upload and does not divert it to the backend's destination. The
+fails the upload and does not divert it to the backend's location. The
 read variables take the opposite rule, where an empty value means unset.
 
-Without it, the backend resolves its own destination (`azureUploadDestFrom`,
-`s3UploadDestFrom`): the container write, rebased under the base
+Without it, the backend resolves its own location (`azureUploadLocationFrom`,
+`s3UploadLocationFrom`): the container write, rebased under the base
 `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`, empty means unset). The azure
 backend defaults to the Azure account when the base is unset; the s3 backend
 has no default, because a bucket endpoint is account-specific.
 -/
-def stagedUploadDestFrom (backend : UploadBackend) (putUrl? putBase? : Option String)
+def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :
-    Except String StagedUploadDest := do
-  let dest : StagedUploadDest ← if let some url := putUrl? then
-      -- A user-supplied URL carries no container policy; the prefix follows the
-      -- repo alone, flat for `MATHLIBREPO` and repo-namespaced otherwise.
-      pure { base := url, label := "(env override)",
-             filesPrefix := fileDirPath none repo scope?,
-             markerPrefix := markerDirPath repo }
+    Except String Location := do
+  let dest ← if let some url := putUrl? then
+      pure (.ofEndpoint url "MATHLIB_CACHE_PUT_URL" repo scope?)
     else
       let putBase? := normalizeBaseURL putBase?
       match backend with
-      | .azure => azureUploadDestFrom putBase? container? repo scope?
-      | .s3 => s3UploadDestFrom putBase? container? repo scope?
-  -- An s3 base must have the form `https://endpoint/bucket`.
-  if backend == .s3 then discard (s3EndpointSplit dest.base)
+      | .azure => azureUploadLocationFrom putBase? container? repo scope?
+      | .s3 => s3UploadLocationFrom putBase? container? repo scope?
+  -- An s3 root must have the form `https://endpoint/bucket[/prefix]`.
+  if backend == .s3 then discard (s3EndpointSplit dest.root)
   return dest
 
 /--
-`stagedUploadDestFrom` on the endpoint variables in the environment. `scope?`
-is the caller's resolved scope (`getRepoScope`), which `runPut` also carries to
-the marker write, so one resolution serves the whole upload. The one
-destination resolution every upload consumes: the artifact puts and the marker
-put, on every tool, address `{base}/{prefix}/{name}`.
+`uploadLocationFrom` on the environment variables `MATHLIB_CACHE_PUT_URL` and
+`MATHLIB_CACHE_PUT_BASE_URL`. `scope?` is the caller's resolved scope
+(`getRepoScope`). A repo-namespaced location retains it in its scope.
+The location derives both the file directory and its optional marker, so
+every transfer tool uses one resolution.
 -/
-def stagedUploadDest (backend : UploadBackend) (container? : Option Container)
-    (repo : String) (scope? : Option String) : IO StagedUploadDest := do
+def uploadLocation (backend : UploadBackend) (container? : Option Container)
+    (repo : String) (scope? : Option String) : IO Location := do
   let putUrl? ← IO.getEnv "MATHLIB_CACHE_PUT_URL"
   let putBase? ← IO.getEnv "MATHLIB_CACHE_PUT_BASE_URL"
-  IO.ofExcept <| stagedUploadDestFrom backend putUrl? putBase? container? repo scope?
+  IO.ofExcept <| uploadLocationFrom backend putUrl? putBase? container? repo scope?
 
 end Cache.Requests

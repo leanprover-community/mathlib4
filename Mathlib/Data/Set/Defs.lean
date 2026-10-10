@@ -7,7 +7,6 @@ module
 
 public import Batteries.Util.ExtendedBinder
 public import Mathlib.Tactic.SetNotationForOrder
-
 public import Mathlib.Tactic.ToDual
 
 /-!

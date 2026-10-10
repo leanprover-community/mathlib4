@@ -6,8 +6,9 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -291,10 +292,10 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
     rw [mem_finMulAntidiag]
     rw [mem_filter, Finset.mem_product] at hb
     refine ⟨?_, hn⟩
-    · rw [Fin.prod_univ_three a]
-      dsimp only [a, Matrix.cons_val]
-      rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
-        Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
+    rw [Fin.prod_univ_three a]
+    dsimp only [a, Matrix.cons_val]
+    rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
+      Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
   use a; use ha
   apply Prod.ext <;> dsimp only [a, Matrix.cons_val]
     <;> apply Nat.mul_div_cancel'

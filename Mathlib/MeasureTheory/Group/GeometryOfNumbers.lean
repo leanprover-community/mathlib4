@@ -6,8 +6,9 @@ Authors: Alex J. Best
 module
 
 public import Mathlib.Analysis.Convex.Body
-import Mathlib.Analysis.Convex.Measure
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
+
+import Mathlib.Analysis.Convex.Measure
 
 /-!
 # Geometry of numbers

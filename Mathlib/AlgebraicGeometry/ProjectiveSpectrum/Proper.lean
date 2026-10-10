@@ -6,9 +6,10 @@ Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Mi
 -/
 module
 
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
 public import Mathlib.AlgebraicGeometry.ValuativeCriterion
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
 # Properness of `Proj A`
@@ -306,11 +307,10 @@ theorem valuativeCriterion_existence_aux
           · cases (hdi j).ne' h
           · simp; ring_nf
       _ = valuation O K ((φ _) ^ a) ^ (d j * ∏ i, d i) := by
-          · simp only [ψ, ← map_pow]
-            congr 2
-            rw [← pow_mul, ← pow_mul, ← mul_assoc, ← mul_assoc, ← mul_assoc,
-              Finset.univ.prod_erase_mul d (h := Finset.mem_univ _),
-              mul_comm _ a, mul_right_comm]
+          simp only [ψ, ← map_pow]
+          congr 2
+          rw [← pow_mul, ← pow_mul, ← mul_assoc, ← mul_assoc, ← mul_assoc,
+            Finset.univ.prod_erase_mul d (h := Finset.mem_univ _), mul_comm _ a, mul_right_comm]
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01MF]

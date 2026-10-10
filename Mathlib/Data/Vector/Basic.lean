@@ -5,13 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Vector.Defs
-import Mathlib.Data.List.Nodup
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Batteries.Data.Fin.Lemmas
 public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Data.Vector.Defs
+
+import Batteries.Data.Fin.Lemmas
+import Mathlib.Data.List.Nodup
 
 /-!
 # Additional theorems and definitions about the `Vector` type
@@ -599,7 +600,7 @@ theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
   cases v; cases i; cases j
   simp only [get_eq_get_toList, toList_set, toList_mk, Fin.cast_mk, List.get_eq_getElem]
   rw [List.getElem_set_of_ne]
-  · simpa using h
+  simpa using h
 
 theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
     (v.set i a).get j = if i = j then a else v.get j := by

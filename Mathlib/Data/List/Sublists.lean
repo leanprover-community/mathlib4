@@ -5,11 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Nat.Choose.Basic
+
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.Prod.Basic
 import Mathlib.Tactic.Finiteness.Attr
 
@@ -57,7 +58,7 @@ theorem sublists'_eq_sublists'Aux (l : List α) :
     sublists' l = l.foldr (fun a r => sublists'Aux a r r) [[]] := by
   simp only [sublists', sublists'Aux_eq_array_foldl]
   rw [← List.foldr_hom Array.toList]
-  · intros; congr
+  intros; congr
 
 theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
