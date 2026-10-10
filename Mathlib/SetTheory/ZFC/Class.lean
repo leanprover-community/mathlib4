@@ -189,7 +189,7 @@ state that `x : ZFSet` belongs to `A : Class` is to write `A x`. This is poor pr
 the reasons why `Class` is deprecated in favor of `ZFClass`. -/
 @[deprecated ZFClass (since := "2026-09-25"), pp_with_univ, use_set_notation_for_order]
 def Class :=
-  Set ZFSet deriving LE, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
+  Set ZFSet deriving LE, EmptyCollection, Nonempty, Max, Min, Compl, SDiff
 
 @[deprecated Set.insert +typeChanged (since := "2026-09-25")]
 instance : Insert ZFSet Class :=

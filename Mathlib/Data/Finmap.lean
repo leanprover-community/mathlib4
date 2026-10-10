@@ -505,7 +505,7 @@ theorem mem_union {a} {s₁ s₂ : Finmap β} : a ∈ s₁ ∪ s₂ ↔ a ∈ s�
 
 @[simp]
 theorem union_toFinmap (s₁ s₂ : AList β) : (toFinmap s₁) ∪ (toFinmap s₂) = toFinmap (s₁ ∪ s₂) := by
-  simp [(· ∪ ·), union]
+  simp [Union.union, union]
 
 theorem keys_union {s₁ s₂ : Finmap β} : (s₁ ∪ s₂).keys = s₁.keys ∪ s₂.keys :=
   induction_on₂ s₁ s₂ fun s₁ s₂ => Finset.ext <| by simp [keys]

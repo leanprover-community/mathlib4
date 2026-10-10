@@ -326,7 +326,7 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   rintro s t
   obtain ⟨a, rfl⟩ | hs := em (∃ a, g a = s)
   · obtain ⟨b, rfl⟩ | ht := em (∃ b, g b = t)
-    · simp_rw [← sup_eq_union, ← inf_eq_inter, ← map_sup, ← map_inf, hg.extend_apply]
+    · simp_rw [← map_sup, ← map_inf, hg.extend_apply]
       exact h _ _
     · simpa [extend_apply' _ _ _ ht] using! mul_nonneg
         (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
