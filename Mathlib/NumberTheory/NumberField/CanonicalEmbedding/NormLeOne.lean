@@ -741,7 +741,7 @@ theorem isCompact_compactSet :
 theorem zero_mem_compactSet :
     0 ∈ compactSet K := by
   refine Set.zero_mem_smul_iff.mpr (Or.inl ⟨Set.left_mem_Icc.mpr zero_le_one, ?_⟩)
-  exact Set.image_nonempty.mpr (Set.univ_pi_nonempty_iff.mpr (by aesop))
+  exact Set.image_nonempty.mpr (Set.univ_pi_nonempty.mpr (by aesop))
 
 theorem nonneg_of_mem_compactSet {x : realSpace K} (hx : x ∈ compactSet K) (w : InfinitePlace K) :
     0 ≤ x w := by

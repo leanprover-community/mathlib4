@@ -301,7 +301,7 @@ theorem coe_mk' (l u : ι → ℝ) : (mk' l u : Set (ι → ℝ)) = pi univ fun 
   rw [mk']; split_ifs with h
   · exact coe_eq_pi _
   · rcases not_forall.mp h with ⟨i, hi⟩
-    rw [coe_bot, univ_pi_eq_empty]
+    rw [coe_bot, univ_pi_eq_empty_of_eq_empty]
     exact Ioc_eq_empty hi
 
 instance WithBot.inf : Min (WithBot (Box ι)) :=
