@@ -202,7 +202,7 @@ def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
     simp_rw [fixingSubgroup_fixedField H]
     rfl
   map_rel_iff' {K L} := by
-    rw [← fixedField_fixingSubgroup L, le_fixedField_iff_le_fixingSubgroup,
+    rw [← fixedField_fixingSubgroup L, IntermediateField.le_fixedField_iff_le_fixingSubgroup,
       fixedField_fixingSubgroup L]
     rfl
 
