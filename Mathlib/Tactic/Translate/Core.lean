@@ -928,9 +928,11 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
       -- Set the target of `(attr := deprecated)` when applied to an `alias`.
       if attr.name == `deprecated then
         if let some info ← Batteries.Tactic.Alias.getAliasInfo? src then
-          if let `(attr| deprecated%$tk $[$desc:str]? $[(since := $since)]?) := attr.stx then
+          if let `(attr| deprecated%$tk $[$desc:str]? $[$typeChanged?]?
+              $[(since := $since)]?) := attr.stx then
             attr := { attr with stx := ← `(attr|
-              deprecated%$tk $(mkCIdent info.name) $[$desc:str]? $[(since := $since)]?) }
+              deprecated%$tk $(mkCIdent info.name) $[$desc:str]? $[$typeChanged?]?
+                $[(since := $since)]?) }
       for decl in allDecls, i in 0...* do
         if i != 0 then
           -- Translate the target of `(attr := deprecated)` if possible.

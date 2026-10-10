@@ -994,27 +994,31 @@ run_cmd
 
 /-! Deprecated attribute -/
 
-@[to_additive (attr := deprecated mul_comm (since := "today"))]
-theorem old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
+@[to_additive (attr := deprecated mul_comm +typeChanged (since := "today"))]
+theorem old_mul_comm {α} [CommMagma α] (b a : α) : a * b = b * a := mul_comm a b
 
 /--
 warning: `old_mul_comm` has been deprecated: Use `mul_comm` instead
 
-Hint: Replace the deprecated name:
-  o̵l̵d̵_̵mul_comm
+Note: The updated constant has a different type:
+  ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b = b * a
+instead of
+  ∀ {α : Type u_1} [inst : CommMagma α] (b a : α), a * b = b * a
 ---
-info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (a b : α), a * b = b * a
+info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (b a : α), a * b = b * a
 -/
 #guard_msgs in
 #check @old_mul_comm
 
 /--
-warning: `old_add_comm` has been deprecated: Use `add_comm` instead
+warning: `old_add_comm` has been deprecated: Use `mul_comm` instead
 
-Hint: Replace the deprecated name:
-  o̵l̵d̵_̵add_comm
+Note: The updated constant has a different type:
+  ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b = b * a
+instead of
+  ∀ {α : Type u_1} [inst : AddCommMagma α] (b a : α), a + b = b + a
 ---
-info: @old_add_comm : ∀ {α : Type u_1} [inst : AddCommMagma α] (a b : α), a + b = b + a
+info: @old_add_comm : ∀ {α : Type u_1} [inst : AddCommMagma α] (b a : α), a + b = b + a
 -/
 #guard_msgs in
 #check @old_add_comm
