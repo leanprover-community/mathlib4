@@ -11,7 +11,6 @@ public meta import Lean.Elab.InfoTree.Util
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Unreachable
 public import Lean.Parser.Syntax
-public import Mathlib.Tactic.Linter.UnusedTacticExtension
 
 /-!
 # The unused tactic linter
@@ -68,22 +67,125 @@ public register_option linter.unusedTactic : Bool := {
 
 namespace UnusedTactic
 
+/--
+`Parser`s/tactics allowed to not change the tactic state.
+This can be increased dynamically, using `allow_unused_tactic` or `local allow_unused_tactic`.
+-/
+def initialAllowedUnusedTactics : Std.HashSet SyntaxNodeKind :=
+  .ofArray #[
+    `by,
+    `null,
+    `«]»,
+    `«tactic#adaptation_note_»,
+    `tacticSleep_heartbeats_,
+    ``Lean.Parser.Tactic.show,
+    ``Lean.Parser.Tactic.traceState,
+    ``Lean.Parser.Tactic.Conv.convTrace_state,
+    ``Lean.Parser.Tactic.Conv.skip,
+    ``Lean.Parser.Term.byTactic,
+    ``Lean.Parser.Tactic.tacticSeq,
+    ``Lean.Parser.Tactic.tacticSeq1Indented,
+    ``Lean.Parser.Tactic.tacticTry_,
+    `Batteries.Tactic.«tacticOn_goal_=>_»,
+    `Mathlib.Tactic.change?,
+    `Mathlib.Tactic.Says.says,
+    `Mathlib.Tactic.tacticMatch_target_,
+    `Mathlib.Tactic.«tacticRename_bvar_→__»,
+    -- the following `SyntaxNodeKind`s play a role in silencing `test`s,
+    ``Lean.Parser.Tactic.guardHyp,
+    ``Lean.Parser.Tactic.guardHypConv,
+    ``Lean.Parser.Tactic.guardTarget,
+    ``Lean.Parser.Tactic.guardTargetConv,
+    ``Lean.Parser.Tactic.failIfSuccess,
+    `Mathlib.Tactic.successIfFailWithMsg,
+    `Mathlib.Tactic.failIfNoProgress,
+    `Mathlib.Tactic.ExtractGoal.extractGoal,
+  ]
+
+/--
+Defines the `allowedUnusedTacticExt` extension for adding a `HashSet` of `allowedUnusedTactic`s
+to the environment.
+-/
+initialize allowedUnusedTacticExt :
+    SimpleScopedEnvExtension SyntaxNodeKind (Std.HashSet SyntaxNodeKind) ←
+  registerSimpleScopedEnvExtension {
+    initial := initialAllowedUnusedTactics
+    addEntry := .insert
+  }
+
+/--
+`addAllowedUnusedTactic stxNodes` takes as input a `HashSet` of `SyntaxNodeKind`s and extends the
+`allowedUnusedTacticExt` environment extension with its content.
+
+These are tactics that the unused tactic linter will ignore, since they are expected to not change
+the tactic state.
+
+See the `allow_unused_tactic ids` command for dynamically extending the extension as a user-facing
+command.
+-/
+def addAllowedUnusedTactic {m : Type → Type} [Monad m] [MonadEnv m]
+    (stxNodes : Std.HashSet SyntaxNodeKind) :
+    m Unit :=
+  stxNodes.foldM (init := ()) fun _ d => modifyEnv (allowedUnusedTacticExt.addEntry · d)
+
+/--
+`allow_unused_tactic` takes as input a space-separated list of identifiers.
+These identifiers are then allowed by the unused tactic linter:
+even if these tactics do not modify goals, there will be no warning emitted.
+
+Note: for this to work, these identifiers should be the `SyntaxNodeKind` of each tactic.
+
+For instance, you can allow the `done` and `skip` tactics using
+```lean
+allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
+```
+
+This change is global and persistent across imports. For a file-local or scoped change, use
+`local allow_unused_tactic` or `scoped allow_unused_tactic`, respectively.
+
+The command `#show_kind tac` may help to find the `SyntaxNodeKind`.
+-/
+elab (name := allowUnusedTactic) attrKind:attrKind "allow_unused_tactic"
+    ppSpace colGt ids:ident* : command => do
+  let ids ← Command.liftCoreM do ids.mapM fun id ↦ do
+    try
+      realizeGlobalConstNoOverload id
+    catch e =>
+      throwErrorAt id m!"{e.toMessageData}\n\
+        The command `#show_kind {id}` may help to find the correct `SyntaxNodeKind`."
+  let attrKind ← liftMacroM <| toAttributeKind attrKind
+  for id in ids do
+    allowedUnusedTacticExt.add id attrKind
+    if attrKind != .local then
+      if (← getEnv).isImportedConst id then
+        recordIndirectModUse "allow_unused_tactic" id
+
+/-- `#allow_unused_tactic` is deprecated in favour of `allow_unused_tactic` -/
+syntax (name := hashStx) "#allow_unused_tactic" ("!")? ppSpace colGt ident* : command
+
+macro_rules
+| `(command| #allow_unused_tactic $ids) => `(command| local allow_unused_tactic $ids)
+| `(command| #allow_unused_tactic ! $ids) => `(command| allow_unused_tactic $ids)
+
+deprecated_syntax hashStx "use `allow_usused_tactic` instead of `#allow_unused_tactic"
+  (since := "2026-08-07")
+
+/--
+`#show_kind tac` takes as input the syntax of a tactic and returns the `SyntaxNodeKind`
+at the head of the tactic syntax tree.
+
+The input syntax needs to parse, though it can be *extremely* elided.
+For instance, to see the `SyntaxNodeKind` of the `refine` tactic, you could use
+```lean
+#show_kind refine _
+```
+The trailing underscore `_` makes the syntax valid, since `refine` expects something else.
+-/
+elab "#show_kind " stx:tactic : command =>
+  logInfoAt stx m!"The `{.ofConstName ``SyntaxNodeKind}` is `{stx.raw.getKind}`."
+
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
 abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) BaseIO
-
--- Tactics that are expected to not change the state but should also not be flagged by the
--- unused tactic linter.
-#allow_unused_tactic!
-  Lean.Parser.Term.byTactic
-  Lean.Parser.Tactic.tacticSeq
-  Lean.Parser.Tactic.tacticSeq1Indented
-  Lean.Parser.Tactic.tacticTry_
-  -- the following `SyntaxNodeKind`s play a role in silencing `test`s
-  Lean.Parser.Tactic.guardHyp
-  Lean.Parser.Tactic.guardHypConv
-  Lean.Parser.Tactic.guardTarget
-  Lean.Parser.Tactic.guardTargetConv
-  Lean.Parser.Tactic.failIfSuccess
 
 /--
 A list of blocklisted syntax kinds, which are expected to have subterms that contain
@@ -194,7 +296,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
   let some convs := Parser.ParserCategory.kinds <$> cats.find? `conv
     | return
   let trees ← getInfoTrees
-  let exceptions := (← allowedRef.get).union <| allowedUnusedTacticExt.getState env
+  let exceptions := allowedUnusedTacticExt.getState env
   let go : M Unit := do
     getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
     eraseUsedTactics exceptions trees
