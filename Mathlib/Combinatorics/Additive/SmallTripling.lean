@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+public import Mathlib.Tactic.Linarith
+
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Linarith
 
 /-!
 # Small tripling implies small powers

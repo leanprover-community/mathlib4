@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 
 /-!
 # Quadratic characters of finite fields

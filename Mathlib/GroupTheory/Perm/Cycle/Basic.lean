@@ -472,7 +472,7 @@ theorem nodup_of_pairwise_disjoint_cycles {l : List (Perm β)} (h1 : ∀ f ∈ l
     (h2 : l.Pairwise Disjoint) : l.Nodup :=
   nodup_of_pairwise_disjoint (fun h => (h1 1 h).ne_one rfl) h2
 
-/-- Unlike `support_congr`, which assumes that `∀ (x ∈ g.support), f x = g x)`, here
+/-- Unlike `support_congr`, which assumes that `∀ (x ∈ g.support), f x = g x`, here
 we have the weaker assumption that `∀ (x ∈ f.support), f x = g x`. -/
 theorem IsCycle.support_congr (hf : IsCycle f) (hg : IsCycle g) (h : f.support ⊆ g.support)
     (h' : ∀ x ∈ f.support, f x = g x) : f = g := by

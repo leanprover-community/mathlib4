@@ -5,11 +5,12 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.GroupTheory.Perm.Fin
+
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.ConjAct
-public import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.Tactic.IntervalCases
-public import Mathlib.Data.Nat.Totient
 
 /-!
 # Alternating Groups
@@ -442,8 +443,8 @@ theorem conj_smul_range_ofSubtype (s : Finset α) (g : alternatingGroup α) :
     MulAut.conj g • (ofSubtype s).range = (ofSubtype (g • s)).range := by
   ext k
   simp_rw [mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff, ← map_inv,
-    MulAut.smul_def, ← ConjAct.toConjAct_smul_eq_mulAut_conj, ConjAct.coe_smul]
-  simp [support_conj_eq_smul_support, Finset.subset_smul_finset_iff, Subgroup.smul_def]
+    MulAut.smul_def, MulAut.coe_conj_apply, support_conj_eq_smul_support]
+  simp [Finset.subset_smul_finset_iff, Subgroup.smul_def]
 
 end alternatingGroup
 
