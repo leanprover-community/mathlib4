@@ -77,7 +77,7 @@ infixr:25 " →ₜ* " => ContinuousMonoidHom
 
 variable {A B C D E}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance instFunLike : FunLike (A →ₜ* B) A B where
   coe f := f.toFun
   coe_injective f g h := by
@@ -111,7 +111,7 @@ into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` 
 `AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
 This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
 def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
-  { MonoidHomClass.toMonoidHom f with
+  { MonoidHom.ofClass f with
     continuous_toFun := by dsimp; fun_prop }
 
 /-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
@@ -141,11 +141,11 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
-  ext <| by convert! DFunLike.ext_iff.1 h
+  ext <| by convert DFunLike.ext_iff.1 h
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → A →* B) := fun f g h =>
-  ext <| by convert! DFunLike.ext_iff.1 h
+  ext <| by convert DFunLike.ext_iff.1 h
 
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) /-- Composition of two continuous homomorphisms. -/]
@@ -329,7 +329,7 @@ variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Mul M] [Mul N]
 
 section coe
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : EquivLike (M ≃ₜ* N) M N where
   coe f := f.toFun
   inv f := f.invFun
@@ -489,7 +489,7 @@ theorem symm_apply_eq (e : M ≃ₜ* N) {x y} : e.symm x = y ↔ x = e y :=
 theorem eq_symm_apply (e : M ≃ₜ* N) {x y} : y = e.symm x ↔ e y = x :=
   e.toEquiv.eq_symm_apply
 
-@[to_additive (attr := deprecated eq_symm_apply (since := "2026-07-26"))]
+@[to_additive (attr := deprecated eq_symm_apply +typeChanged (since := "2026-07-26"))]
 theorem apply_eq_iff_symm_apply (e : M ≃ₜ* N) {x : M} {y : N} : e x = y ↔ x = e.symm y :=
   e.eq_symm_apply.symm
 
@@ -593,7 +593,7 @@ lemma toMulEquiv_toContinuousMulEquiv : (e.toContinuousMulEquiv he : G ≃* H) =
 @[to_additive]
 lemma symm_toContinuousMulEquiv :
     (e.toContinuousMulEquiv he).symm = e.symm.toContinuousMulEquiv
-      (fun s ↦ by convert! (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
+      (fun s ↦ by convert (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
   rfl
 
 end MulEquiv

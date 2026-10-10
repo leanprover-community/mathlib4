@@ -5,9 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Data.SetLike.Basic
 
 /-!
 # Order intervals
@@ -567,7 +566,7 @@ namespace NonemptyInterval
 
 section Preorder
 
-variable [Preorder α] {s t : NonemptyInterval α} {a : α}
+variable [Preorder α] {s : NonemptyInterval α} {a : α}
 
 @[simp, norm_cast]
 theorem coe_pure_interval (a : α) : (pure a : Interval α) = Interval.pure a :=
