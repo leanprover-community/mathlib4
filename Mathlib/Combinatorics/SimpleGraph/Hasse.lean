@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 
 import Mathlib.Order.SuccPred.Fin
@@ -119,6 +120,10 @@ theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph]
+
+theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
+  intro u v h
+  grind [pathGraph_adj, cycleGraph_adj', Fin.coe_sub_iff_le]
 
 namespace Walk
 
