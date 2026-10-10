@@ -48,7 +48,6 @@ theorem exists_seq_infinite_isOpen_pairwise_disjoint :
         Pairwise (Disjoint on U) by
       rcases this with ⟨U, hU, hd⟩
       exact ⟨U, fun n ↦ (hU n).1, fun n ↦ (hU n).2.1, hd⟩
-    have : Std.Symm (α := Set X) Disjoint := ⟨fun _ _ h ↦ h.symm⟩
     refine exists_seq_of_forall_finset_exists' (fun U : Set X ↦ U.Nonempty ∧ IsOpen U ∧ Uᶜ ∈ 𝓝 x)
       Disjoint fun S hS ↦ ?_
     have : (⋂ U ∈ S, interior (Uᶜ)) \ {x} ∈ 𝓝[≠] x := inter_mem_inf ((biInter_finset_mem _).2
