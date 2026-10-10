@@ -1,18 +1,131 @@
 on:
   pull_request
 
-name: lint and suggest
+name: lint and autofix
+
+# The job builds and runs code from the PR (`lake exe lint-style`, `lake exe mk_all`,
+# `scripts/lint-bib.sh`), so its token is read-only. Pushing the fixes needs nothing more: the
+# lite action hands them over as an artifact, and the pre-commit.ci lite app commits them.
+permissions:
+  contents: read
+
+concurrency:
+  # At most one autofix push per PR: a run superseded by a newer push must not also push its
+  # own (by then stale) fixes on top of it.
+  group: lint-and-autofix-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
-  lint_and_suggest:
-    if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
-    name: Lint and suggest
+  lint_and_autofix:
+    # Deliberately not gated on `draft == false`. That condition used to keep reviewdog from
+    # burying work-in-progress PRs in review comments; now that the fixes are pushed instead of
+    # commented there is nothing to bury, and drafts were 10% of this workflow's runs.
+    if: github.repository == 'leanprover-community/mathlib4'
+    name: Lint and autofix
     runs-on: ubuntu-latest
     steps:
-      - uses: leanprover-community/lint-style-action@a52329f904d58af9f3e1fc6ef3b986e8f753cc54 # mathlib4-compat
+      # Applies `lake exe mk_all`, `lake exe lint-style --fix` and `scripts/lint-bib.sh`, and
+      # leaves the results in the working tree for the last step to pick up.
+      - uses: leanprover-community/lint-style-action@a02378f74c5e33adc64fcafb1cf2d00726e15a94 # 2026-10-05
         with:
-          mode: suggest
+          mode: fix-worktree
           lint-bib-file: true
+
+      # Works out which of the action's fixers changed something, for the commit message. They
+      # all run in the one step above, but each writes its own files: `mk_all` the library root
+      # files, `lint-bib.sh` only `docs/references.bib`, and `lint-style --fix` the `Mathlib`
+      # modules. `git diff HEAD` sees exactly what the lite action will commit: changes to tracked
+      # files, and not new ones. This runs even if the action failed part way, because the lite
+      # action still commits whatever the action managed to fix.
+      - name: Record the fixes made so far
+        id: action_fixes
+        if: success() || failure()
+        run: |
+          mk_all=false lint_style=false lint_bib=false
+          while IFS= read -r file; do
+            case "${file}" in
+              '') ;;
+              Mathlib/Tactic.lean) mk_all=true ;;
+              docs/references.bib) lint_bib=true ;;
+              */*) lint_style=true ;;
+              *.lean) mk_all=true ;;
+              *) lint_style=true ;;
+            esac
+          done <<< "$(git diff --name-only HEAD)"
+          # In the order they ran, separated so that they can be pasted into a shell as they are:
+          # `mk_all` and `lint-bib.sh` exit non-zero when they change something, so not with `&&`.
+          cmds=''
+          if "${mk_all}"; then cmds+="${cmds:+; }\`lake exe mk_all\`"; fi
+          if "${lint_style}"; then cmds+="${cmds:+; }\`lake exe lint-style --fix\`"; fi
+          if "${lint_bib}"; then cmds+="${cmds:+; }\`./scripts/lint-bib.sh\`"; fi
+          printf 'cmds=%s\n' "${cmds}" >> "${GITHUB_OUTPUT}"
+          printf 'diff=%s\n' "$(git diff --binary HEAD | sha256sum)" >> "${GITHUB_OUTPUT}"
+
+      # `lake exe lint-style` only walks the Lean modules reachable from `Mathlib.lean`, and its
+      # linter list has no end-of-file or line-ending check, so the pre-commit hooks still carry
+      # `scripts/*.py`, `.github/**`, `*.md` and the trailing-newline/CRLF fixes everywhere.
+      # They run after the Lean fixers so they also normalise whatever `mk_all` just wrote.
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.x
+      # The steps of pre-commit/action v3.0.1, inlined because that action uses
+      # `actions/cache` unpinned, which the organization's SHA-pinning policy rejects.
+      - run: python -m pip install pre-commit==4.6.2
+      - run: python -m pip freeze --local
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: pre-commit run --show-diff-on-failure --color=always --all-files
+
+      # Names the commands that made the fixes, so that the commit says how to make them locally.
+      - name: Write the commit message
+        id: msg
+        if: success() || failure()
+        env:
+          ACTION_CMDS: ${{ steps.action_fixes.outputs.cmds }}
+          ACTION_DIFF: ${{ steps.action_fixes.outputs.diff }}
+        run: |
+          cmds="${ACTION_CMDS}"
+          if [[ -n "${ACTION_DIFF}" && "$(git diff --binary HEAD | sha256sum)" != "${ACTION_DIFF}" ]]; then
+            cmds+="${cmds:+; }\`pre-commit run --all-files\`"
+          fi
+          # The message is made only of the fixed strings above, so it cannot contain the delimiter.
+          {
+            printf 'msg<<EOF\n'
+            if [[ -n "${cmds}" ]]; then
+              printf '[pre-commit.ci lite] %s\n\n' "${cmds}"
+              printf 'These commands made the changes in this commit.\n'
+              printf 'To make the same fixes yourself, run them in your mathlib4 checkout.\n'
+            else
+              # Either nothing changed, and the lite action has nothing to commit, or `Record the
+              # fixes made so far` failed: fall back on the lite action's own default.
+              printf '[pre-commit.ci lite] apply automatic fixes\n'
+            fi
+            printf 'EOF\n'
+          } >> "${GITHUB_OUTPUT}"
+
+      # Must stay the last step of the job: the pre-commit.ci lite app finds the work by this
+      # step's name, and commits whatever the steps above left modified in the working tree.
+      # It runs on failure as well as success, because a failing hook is how pre-commit reports
+      # "I changed something" -- but deliberately not on cancellation, which `always()` would
+      # include. A run cancelled by the concurrency group above has been superseded by a newer
+      # push, and pushing its fixes is exactly what that group exists to prevent.
+      - uses: pre-commit-ci/lite-action@5d6cc0eb514c891a40562a58a8e71576c5c7fb43 # v1.1.0
+        if: success() || failure()
+        with:
+          msg: ${{ steps.msg.outputs.msg }}
+
+  extensions:
+    # Split out of the job above: this is a hard failure with no automatic fix, so it must not
+    # abort the autofix steps before they reach the lite action.
+    if: github.repository == 'leanprover-community/mathlib4'
+    name: Check file extensions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: All Mathlib files have a .lean or .md extension
         run: |
           exc="$(git ls-files 'Mathlib/*' | grep -v "\.\(lean\|md\)$" || true)"
