@@ -115,7 +115,7 @@ theorem log_stirlingSeq_sdiff_le (n : ℕ) :
   grind [((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3]
 
 @[deprecated (since := "2026-06-03")] alias log_stirlingSeq_diff_le := log_stirlingSeq_sdiff_le
-@[deprecated (since := "2026-06-03")]
+@[deprecated "type changed" (since := "2026-06-03")]
 alias log_stirlingSeq_diff_le_geo_sum := log_stirlingSeq_sdiff_le
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 12⁻¹`. -/
