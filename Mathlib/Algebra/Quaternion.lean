@@ -173,7 +173,7 @@ instance : Zero ℍ[R,c₁,c₂,c₃] := ⟨⟨0, 0, 0, 0⟩⟩
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂,c₃]) = 0 := rfl
 
-lemma mk_zero : (0 : ℍ[R,c₁,c₂,c₃]) = ⟨0, 0, 0, 0⟩ := rfl
+@[simp] lemma mk_zero : ⟨0, 0, 0, 0⟩ = (0 : ℍ[R,c₁,c₂,c₃]) := rfl
 
 instance : Inhabited ℍ[R,c₁,c₂,c₃] := ⟨0⟩
 
@@ -188,7 +188,7 @@ instance : One ℍ[R,c₁,c₂,c₃] := ⟨⟨1, 0, 0, 0⟩⟩
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂,c₃]) = 1 := rfl
 
-lemma mk_one : (1 : ℍ[R,c₁,c₂,c₃]) = ⟨1, 0, 0, 0⟩ := rfl
+@[simp] lemma mk_one : ⟨1, 0, 0, 0⟩ = (1 : ℍ[R,c₁,c₂,c₃]) := rfl
 
 end One
 end Zero
@@ -394,7 +394,7 @@ theorem im_natCast (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).im = 0 :=
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
-lemma mk_natCast (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]) = ⟨n, 0, 0, 0⟩ := rfl
+@[simp, norm_cast] lemma mk_natCast (n : ℕ) : ⟨n, 0, 0, 0⟩ = (n : ℍ[R,c₁,c₂,c₃]) := rfl
 
 @[simp, norm_cast]
 theorem re_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).re = z :=
@@ -435,7 +435,7 @@ theorem im_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).im = 0 :=
 theorem coe_intCast (z : ℤ) : ↑(z : R) = (z : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
-lemma mk_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]) = ⟨z, 0, 0, 0⟩ := rfl
+@[simp, norm_cast] lemma mk_intCast (z : ℤ) : ⟨z, 0, 0, 0⟩ = (z : ℍ[R,c₁,c₂,c₃]) := rfl
 
 end AddCommGroupWithOne
 
