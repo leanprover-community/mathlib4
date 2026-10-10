@@ -123,6 +123,22 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
     refine ⟨Units.mk0 a fun c => hv.symm ?_, ha⟩
     rwa [c, zero_smul] at ha
 
+/-- Two nonzero vectors have the same image under `mk'` iff one is a unit multiple of the other,
+for the action of `Kˣ` on `{ v : V // v ≠ 0 }`. -/
+theorem mk'_eq_mk'_iff (v w : { v : V // v ≠ 0 }) :
+    mk' K v = mk' K w ↔ ∃ a : Kˣ, a • w = v := by
+  rw [mk'_eq_mk, mk'_eq_mk, mk_eq_mk_iff]
+  simp only [Subtype.ext_iff, Units.smul_coe]
+
+/-- The saturation of a set of nonzero vectors under `mk'` is the union of its translates by the
+units of `K`. -/
+theorem preimage_image_mk' (U : Set { v : V // v ≠ 0 }) :
+    mk' K ⁻¹' (mk' K '' U) = ⋃ a : Kˣ, (a • ·) '' U := by
+  ext v
+  simp only [Set.mem_preimage, Set.mem_image, mk'_eq_mk'_iff, Set.mem_iUnion]
+  exact ⟨fun ⟨w, hw, a, h⟩ ↦ ⟨a⁻¹, w, hw, by rw [← h, inv_smul_smul]⟩,
+    fun ⟨a, w, hw, h⟩ ↦ ⟨w, hw, a⁻¹, by rw [← h, inv_smul_smul]⟩⟩
+
 theorem exists_smul_eq_mk_rep (v : V) (hv : v ≠ 0) : ∃ a : Kˣ, a • v = (mk K v hv).rep :=
   (mk_eq_mk_iff K _ _ (rep_nonzero _) hv).1 (mk_rep _)
 
