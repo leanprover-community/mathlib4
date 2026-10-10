@@ -22,12 +22,12 @@
   decl   : EuclideanGeometry.dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two
   authors: Joseph Myers
 5:
-  title   : Prime Number Theorem
-  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
-  links   :
-    Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
-    With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
-    website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  title  : Prime Number Theorem
+  authors: Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  links  :
+    Prime Number Theorem: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
+    With Error Terms    : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
+    website             : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
 6:
   title  : Gödel’s Incompleteness Theorem
   authors: Shogo Saito
@@ -83,7 +83,7 @@
 18:
   title  : Liouville’s Theorem and the Construction of Transcendental Numbers
   authors: Jujian Zhang
-  decl   :  Liouville.transcendental
+  decl   : Liouville.transcendental
 19:
   title  : Four Squares Theorem
   decl   : Nat.sum_four_squares
@@ -139,7 +139,7 @@
 33:
   title  : Fermat’s Last Theorem
   statement: FermatLastTheorem
-  note: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
+  note   : "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
 34:
   title  : Divergence of the Harmonic Series
   decl   : Real.tendsto_sum_range_one_div_nat_succ_atTop
@@ -257,7 +257,7 @@
   authors: Kexing Ying
 63:
   title  : Cantor’s Theorem
-  decl: Function.cantor_surjective
+  decl   : Function.cantor_surjective
   authors: Johannes Hölzl and Mario Carneiro
 64:
   title  : L’Hopital’s Rule

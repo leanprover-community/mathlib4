@@ -2,7 +2,7 @@
 # 1000+ theorems project (https://1000-plus.github.io/).
 # This file and associated infrastructure are work in progress.
 #
-# See yaml_check.py for documentation about the allowed fields in this file.
+# See `scripts/yaml_check.py` for documentation about the allowed fields in this file.
 # Note that the field names in this file should match the specification of the
 # upstream project, hence should not be changed without due consideration.
 # The structure of this file is checked by `scripts/yaml_check.py` in this repo
@@ -51,7 +51,7 @@ Q132427:
 Q132469:
   title: Fermat's Last Theorem
   statement: FermatLastTheorem
-  comment: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
+  comment: Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/.
 
 Q137164:
   title: Besicovitch covering theorem
@@ -86,7 +86,7 @@ Q179467:
     - Continuous.fourierInv_fourier_eq
   authors: Sébastien Gouezel
   date: 2024
-  comment: "The wikipedia page is really vague; it's not clear what is meant here. While mathlib has some material already, there is space for more advanced results."
+  comment: The wikipedia page is really vague; it's not clear what is meant here. While mathlib has some material already, there is space for more advanced results.
 
 Q179692:
   title: Independence of the axiom of choice
@@ -98,8 +98,8 @@ Q180345X:
 Q180345:
   title: Rational root theorem
   decls:
-   - num_dvd_of_is_root
-   - den_dvd_of_is_root
+    - num_dvd_of_is_root
+    - den_dvd_of_is_root
 
 Q182505:
   title: Bayes' theorem
@@ -121,7 +121,7 @@ Q188745:
 
 Q189136:
   title: Mean value theorem
-  # two versions: Cauchy's vs Lagrange's mean value theorem; the wikipedia article mentions both
+  # two versions: Cauchy's vs Lagrange's mean value theorem; the Wikipedia article mentions both
   decls:
     - exists_deriv_eq_slope
     - exists_ratio_deriv_eq_ratio_slope
@@ -176,7 +176,7 @@ Q193882:
   title: Menelaus's theorem
 
 Q193910:
-  title: Euler's theorem
+  title: Euler's theorem (number theory)
   decl: Nat.ModEq.pow_totient
   authors: Chris Hughes
   date: 2020
@@ -203,7 +203,7 @@ Q204884:
   title: Löb's theorem
   url: https://github.com/FormalizedFormalLogic/Foundation/blob/3c1ddf8af9d2ac715114fe83da0cb2f1c762e02b/Foundation/FirstOrder/Incompleteness/L%C3%B6b.lean#L16
   authors: Shogo Saito, Mashu Noguchi
-  comment: "See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/L___b___s-Theorem/#l___b-theorem"
+  comment: See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/L___b___s-Theorem/#l___b-theorem
 
 Q205966:
   title: Critical line theorem
@@ -244,9 +244,6 @@ Q226014:
   title: Poincaré recurrence theorem
   decl: MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem
 
-Q230848:
-  title: Lamé’s theorem
-
 Q240950:
   title: Faltings's theorem
 
@@ -281,14 +278,14 @@ Q255996:
   title: Equipartition theorem
 
 Q256303:
-  title: Lax&ndash;Richtmyer theorem
+  title: Lax–Richtmyer theorem
 
 Q257387:
   title: Vitali theorem
   # i.e. existence of the Vitali set
   authors: Ching-Tsun Chou
   url: https://github.com/ctchou/my_lean/blob/main/MyLean/NonMeasurable.lean
-  comment: "mathlib4 pull request at https://github.com/leanprover-community/mathlib4/pull/20722"
+  comment: mathlib4 pull request at https://github.com/leanprover-community/mathlib4/pull/20722
 
 Q258374:
   title: Carathéodory's theorem (measure theory)
@@ -411,7 +408,7 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
-  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  authors: Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
   url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   date: 2025
   # TODO: cannot display several URLs nicely yet
@@ -419,14 +416,14 @@ Q386292:
   #  Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
   #  With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
   #  website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
-  comment: "Ongoing formalisation of various versions in https://github.com/AlexKontorovich/PrimeNumberTheoremAnd"
+  comment: Ongoing formalisation of various versions in https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
 
 Q388525:
   title: Bell's theorem
 
 Q401319:
   title: Puiseux's theorem
-  # also in 100.yaml
+  # also in `100.yaml`
 
 Q401905:
   title: Skorokhod's representation theorem
@@ -512,6 +509,10 @@ Q510197:
 Q512897:
   title: Brooks's theorem
 
+Q513028:
+  title: Bézout's identity
+  decl: Nat.gcd_eq_gcd_ab
+
 Q523832:
   title: Carathéodory–Jacobi–Lie theorem
 
@@ -567,7 +568,7 @@ Q574902:
   title: Tarski's undefinability theorem
   url: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/Tarski.lean#L18
   authors: Shogo Saito, Mashu Noguchi
-  comment: "See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/Tarski___s-Undefinability-Theorem/#tarski-undefinability"
+  comment: See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/Tarski___s-Undefinability-Theorem/#tarski-undefinability
 
 Q576478:
   title: Liouville's theorem (complex analysis)
@@ -628,7 +629,7 @@ Q617417:
 Q619985:
   title: Multinomial theorem
   decl: Finset.sum_pow_eq_sum_piAntidiag_of_commute
-  # TODO: is Finset.sum_pow_of_commute better?
+  # TODO: is `Finset.sum_pow_of_commute` better?
 
 Q620602:
   title: Virial theorem
@@ -665,12 +666,11 @@ Q643826:
 
 Q646523:
   title: Pick's theorem
-  # in 100.yaml also
+  # also in `100.yaml`
 
 Q649469:
   title: Modularity theorem
   comment: "Variously known as the Taniyama–Shimura conjecture, Taniyama–Shimura–Weil conjecture, or modularity conjecture for elliptic curves prior to its proof. https://imperialcollegelondon.github.io/FLT is proving a special case. The statement of this theorem is also formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/448f15c51a9e89aced922f36259dd8ddc0c1bd20/FormalConjectures/Wikipedia/ModularityConjecture.lean#L85-L87"
-
 
 Q649977:
   title: Shirshov–Cohn theorem
@@ -737,7 +737,7 @@ Q670235:
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
   authors: Chris Hughes
-  comment: "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
+  comment: it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain.
 
 Q671663:
   title: Coleman–Mandula theorem
@@ -798,12 +798,12 @@ Q730222:
 
 Q733081:
   title: Impossibility of angle trisection
-  # first part of problem 8 in 100.yaml
+  # first part of problem 8 in `100.yaml`
 
 Q737851:
   title: Banach–Tarski theorem
   url: https://github.com/aetilley/banach-tarski/blob/a920deea0a3f3207049f8201fc1e7a0bb8cf4c93/BanachTarski/Basic.lean#L2577
-  comment: "Note that this statement of the paradox allows reflections in the set of isometries"
+  comment: Note that this statement of the paradox allows reflections in the set of isometries
 
 Q737892:
   title: Bendixson–Dulac theorem
@@ -861,8 +861,7 @@ Q765987:
   decl: CompactSpace.uniformContinuous_of_continuous
 
 Q766722:
-  title: Liouville's theorem
-  # theorem about Hamiltonian mechanics
+  title: Liouville's theorem (Hamiltonian mechanics)
 
 Q776578:
   title: Wedderburn–Artin theorem
@@ -926,14 +925,14 @@ Q837506:
   title: Theorem on friends and strangers
   authors: Bhavik Mehta
   url: https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Small.20Ramsey.20numbers/near/490303695
-  comment: "will enter mathlib in 2024"
+  comment: will enter mathlib in 2024
 
 Q837551:
   title: Frobenius theorem (differential topology)
 
 Q841893:
   title: Desargues's theorem
-  # in 100.yaml also
+  # also in `100.yaml`
 
 Q842953:
   title: Lebesgue's density theorem
@@ -979,7 +978,7 @@ Q853067:
     - Pell.eq_pell
     - Pell.exists_of_not_isSquare
   authors: Mario Carneiro (first), Michael Stoll (second)
-  comment: "In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`."
+  comment: In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`.
 
 Q856032:
   title: CAP theorem
@@ -1021,7 +1020,7 @@ Q869647:
 Q872088:
   title: Boolean prime ideal theorem
   decl: DistribLattice.prime_ideal_of_disjoint_filter_ideal
-  comment: "This is the prime ideal separation theorem for (bounded) distributive lattices, of which the Boolean prime ideal theorem is a special case."
+  comment: This is the prime ideal separation theorem for (bounded) distributive lattices, of which the Boolean prime ideal theorem is a special case.
 
 Q877489:
   title: Apollonius's theorem
@@ -1037,7 +1036,7 @@ Q897769:
 
 Q899002:
   title: Pascal's theorem
-  # in 100.yaml also
+  # also in `100.yaml`
 
 Q899853:
   title: H-theorem
@@ -1081,7 +1080,7 @@ Q922012:
 
 Q922367:
   title: Master theorem (analysis of algorithms)
-  comment: "Generalized by the Akra–Bazzi theorem `AkraBazziRecurrence.isTheta_asympBound`"
+  comment: Generalized by the Akra–Bazzi theorem `AkraBazziRecurrence.isTheta_asympBound`
 
 Q925224:
   title: Sonnenschein–Mantel–Debreu Theorem
@@ -1170,7 +1169,7 @@ Q976607:
   authors: Bhavik Mehta
 
 Q977912:
-  title: Stolper&ndash;Samuelson theorem
+  title: Stolper–Samuelson theorem
 
 Q978688:
   title: Gershgorin circle theorem
@@ -1233,7 +1232,7 @@ Q1050037:
 
 Q1050203:
   title: Cantor's intersection theorem
-  # many versions; are this (and friends, in the same file) all of the wikipedia article?
+  # many versions; are this (and friends, in the same file) all of the Wikipedia article?
   decl: IsCompact.nonempty_sInter_of_directed_nonempty_isCompact_isClosed
 
 Q1050932:
@@ -1250,8 +1249,8 @@ Q1052021:
 Q1052678:
   title: Baire category theorem
   decls:
-  - BaireSpace.of_completelyPseudoMetrizable
-  - BaireSpace.of_t2Space_locallyCompactSpace
+    - BaireSpace.of_completelyPseudoMetrizable
+    - BaireSpace.of_t2Space_locallyCompactSpace
 
 Q1052752:
   title: Stolz–Cesàro theorem
@@ -1265,14 +1264,13 @@ Q1056283:
 Q1057919:
   title: Sylow theorems
   decls:
-   - Sylow.exists_subgroup_card_pow_prime
-   - Sylow.isPretransitive_of_finite
-   - Sylow.card_dvd_index
-   - card_sylow_modEq_one
+    - Sylow.exists_subgroup_card_pow_prime
+    - Sylow.isPretransitive_of_finite
+    - Sylow.card_dvd_index
+    - card_sylow_modEq_one
 
 Q1058662:
-  title: Darboux's theorem
-  # symplectic geometry
+  title: Darboux's theorem (symplectic geometry)
 
 Q1059151:
   title: FWL theorem
@@ -1353,7 +1351,7 @@ Q1103054:
   title: Lions–Lax–Milgram theorem
 
 Q1119094:
-  title: Paley&ndash;Wiener theorem
+  title: Paley–Wiener theorem
 
 Q1121027:
   title: Krylov–Bogolyubov theorem
@@ -1426,7 +1424,7 @@ Q1144897:
   title: Brouwer fixed-point theorem
   authors: Brendan Seamas Murphy
   url: https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/master/src/brouwer_fixed_point.lean
-  comment: "in Lean 3"
+  comment: in Lean 3
 
 Q1146791:
   title: Fermat polygonal number theorem
@@ -1497,7 +1495,7 @@ Q1188392:
   decl: Nat.zeckendorfEquiv
 
 Q1188504:
-  title: Pitman&ndash;Koopman&ndash;Darmois theorem
+  title: Pitman–Koopman–Darmois theorem
 
 Q1191319:
   title: Radon–Nikodym theorem
@@ -1514,7 +1512,7 @@ Q1191862:
 Q1194053:
   title: Metrization theorems
   decl: TopologicalSpace.metrizableSpace_of_t3_secondCountable
-  comment: "Urysohn's metrization theorem (only)"
+  comment: Urysohn's metrization theorem (only)
 
 Q1196538:
   title: Descartes's theorem
@@ -1522,7 +1520,7 @@ Q1196538:
 Q1196729:
   title: Mertens's theorems
   url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/58e860034029b94547abe9bd2065f5b3e3f82ebb/PrimeNumberTheoremAnd/RosserSchoenfeldPrime.lean#L788
-  comment: "This link is to a proof of Mertens' second theorem"
+  comment: This link is to a proof of Mertens' second theorem
 
 Q1202608:
   title: De Gua's theorem
@@ -1594,7 +1592,7 @@ Q1308502:
   title: Church–Rosser theorem
   authors: Chris Henson, Maximiliano Onofre Martínez
   url: https://github.com/leanprover/cslib/
-  comment: "CSLib has a few variants for untyped terms, including β-, η-, and βη-reduction."
+  comment: CSLib has a few variants for untyped terms, including β-, η-, and βη-reduction.
 
 Q1315949:
   title: Mittag-Leffler's theorem
@@ -1681,6 +1679,9 @@ Q1426292:
   authors: Jireh Loreaux
   date: 2021
 
+Q1427965:
+  title: Determination of the fifth Busy Beaver value
+
 Q1434158:
   title: Fluctuation dissipation theorem
 
@@ -1710,7 +1711,7 @@ Q1471282:
   date: 2023
 
 Q1472120:
-  title: Hellinger&ndash;Toeplitz theorem
+  title: Hellinger–Toeplitz theorem
   decl: LinearMap.IsSymmetric.continuous
   authors: Moritz Doll
   date: 2022
@@ -1905,7 +1906,7 @@ Q1816952:
 
 Q1841237:
   title: Fubini's theorem on differentiation
-  # XXX: does mathlib have this already?
+  # TODO: does mathlib have this already?
 
 Q1855610:
   title: Theorem of de Moivre–Laplace
@@ -2018,11 +2019,11 @@ Q2120067:
 
 Q2190744:
   title: Feuerbach's theorem
-  # in 100.yaml also
+  # also in `100.yaml`
 
 Q2197859:
   title: Nicomachus's theorem
-  comment: "Nicomachus's theorem states that the sum of the first n cubes is the square of the nth triangular number. This follows from Faulhaber's formula, formalized in mathlib as `sum_Ico_pow`, which provides a geeneral formula for sums of powers using Bernoulli numbers."
+  comment: Nicomachus's theorem states that the sum of the first n cubes is the square of the nth triangular number. This follows from Faulhaber's formula, formalized in mathlib as `sum_Ico_pow`, which provides a geeneral formula for sums of powers using Bernoulli numbers.
 
 Q2222575:
   title: Shell theorem
@@ -2061,7 +2062,7 @@ Q2226677:
     - NormedAlgebra.Real.nonempty_algEquiv_or
   authors: Jireh Loreaux, Michael Stoll
   date: 2021, 2025
-  comment: "The first two are over the complex numbers (with different assumptions), the third is over the real numbers."
+  comment: The first two are over the complex numbers (with different assumptions), the third is over the real numbers.
 
 Q2226682:
   title: Gelfand–Naimark theorem
@@ -2082,7 +2083,7 @@ Q2226750:
   title: Malgrange–Ehrenpreis theorem
 
 Q2226774:
-  title: König's theorem
+  title: König's theorem (kinetics)
 
 Q2226786:
   title: Sperner's theorem
@@ -2316,7 +2317,7 @@ Q2984415:
   title: Hajnal–Szemerédi theorem
 
 Q2993026:
-  title: Ankeny&ndash;Artin&ndash;Chowla theorem
+  title: Ankeny–Artin–Chowla theorem
 
 Q2993308:
   title: Cameron–Erdős theorem
@@ -2365,8 +2366,8 @@ Q3345678:
 
 Q3424029:
   # TODO: refer to the individual entries instead
-  # The list in wikipedia has already been changed. This will will change automatically
-  # when the 1000+ theorem project synchronises its data with wikipedia and this file is
+  # The list in Wikipedia has already been changed. This will change automatically
+  # when the 1000+ theorem project synchronises its data with Wikipedia and this file is
   # synchronised with the 1000+ theorem's data.
   title: Chasles's theorem (disambiguation)
 
@@ -2392,7 +2393,7 @@ Q3526982:
   title: Erdős–Anning theorem
 
 Q3526990:
-  title: Euler's theorem
+  title: Euler's theorem (differential geometry)
 
 Q3526993:
   title: Takagi existence theorem
@@ -2602,7 +2603,7 @@ Q3699212:
 
 Q3711848:
   title: Sobolev embedding theorem
-  # partial progress: Sobolev inequality MeasureTheory.eLpNorm_le_eLpNorm_fderiv_of_eq
+  # partial progress: Sobolev inequality `MeasureTheory.eLpNorm_le_eLpNorm_fderiv_of_eq`
 
 Q3757563:
   title: Intercept theorem
@@ -2626,7 +2627,7 @@ Q3983972:
   title: Simplicial approximation theorem
 
 Q3984011:
-  title: Duggan&ndash;Schwartz theorem
+  title: Duggan–Schwartz theorem
 
 Q3984017:
   title: Helly's selection theorem
@@ -3027,10 +3028,6 @@ Q5125859:
 Q5127710:
   title: Clark–Ocone theorem
 
-Q513028:
-  title: Bézout's identity
-  decl: Nat.gcd_eq_gcd_ab
-
 Q5132839:
   title: Clifford's circle theorems
 
@@ -3125,7 +3122,7 @@ Q5296972:
   title: Doob–Meyer decomposition theorem
 
 Q5299605:
-  title: Glivenko's theorem
+  title: Glivenko's theorem (logic)
 
 Q5311783:
   title: Dudley's theorem
@@ -3255,6 +3252,9 @@ Q5508973:
 
 Q5530454:
   title: Gell-Mann and Low theorem
+
+Q5533794:
+  title: Gentzen's consistency proof
 
 Q5552370:
   title: Geroch's splitting theorem
@@ -3419,7 +3419,7 @@ Q6414200:
   title: Kinoshita–Lee–Nauenberg theorem
 
 Q6421981:
-  title: Kneser's theorem
+  title: Kneser's theorem (differential equations)
 
 Q6425088:
   title: Kodaira embedding theorem
@@ -3486,7 +3486,7 @@ Q6701653:
   title: Lukacs's proportion-sum independence theorem
 
 Q6707093:
-  title: Lyapunov&ndash;Malkin theorem
+  title: Lyapunov–Malkin theorem
 
 Q6711207:
   title: Lévy's modulus of continuity theorem
@@ -3721,7 +3721,7 @@ Q7308146:
 Q7309601:
   title: Whitney–Graustein Theorem
   url: https://github.com/MetalCreator666/WhitneyGraustein/
-  comment: "assumes some basic topology statements as axioms; use the sphere eversion project"
+  comment: assumes some basic topology statements as axioms; use the sphere eversion project
 
 Q7310041:
   title: Reider's theorem
@@ -3916,7 +3916,7 @@ Q7825663:
 
 Q7827204:
   title: Mazur's torsion theorem
-  comment: "This is used to prove Fermat's last theorem (but a non-trivial project on its own)."
+  comment: This is used to prove Fermat's last theorem (but a non-trivial project on its own).
 
 Q7841060:
   title: Trichotomy theorem
@@ -3981,7 +3981,7 @@ Q7996769:
 
 Q7999144:
   title: Wiener–Ikehara theorem
-  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  authors: Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
   url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   date: 2024
   # TODO: cannot display several URLs nicely yet
@@ -4026,6 +4026,9 @@ Q9993851:
 
 Q10369454:
   title: Noether's second theorem
+
+Q10380294:
+  title: Lamé’s theorem
 
 Q10859514:
   title: Vafa–Witten theorem
@@ -4284,7 +4287,6 @@ Q107710112:
   decl: Order.iso_of_countable_dense
   authors: David Wärn
   date: 2020
-
 
 Q110921617:
   title: Feferman–Vaught theorem
