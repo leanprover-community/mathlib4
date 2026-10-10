@@ -311,8 +311,7 @@ def natTransMk (app : ∀ (x : X _⦋0⦌), F.obj (mk x) ⟶ G.obj (mk x))
     (naturality : ∀ {x y : X _⦋0⦌} (e : Edge x y),
       F.map (homMk e) ≫ app y = app x ≫ G.map (homMk e) := by cat_disch) : F ⟶ G where
   app x := app x.pt
-  naturality := by
-    intro _ _ f
+  naturality _ _ f := by
     change naturalityProperty (fun x ↦ app x.pt) f
     induction f with
     | homMk e => exact naturality e
