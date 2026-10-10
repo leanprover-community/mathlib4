@@ -564,13 +564,40 @@ where
     else
       throwError "Couldn't find a `ProperlyDiscontinuousSMul` instance for `{G}` action on `{X}` \
         among local instances."
+  /-- Check if there is a `ProperlyDiscontinousVAdd G X` instance in the local context.
+  If so, search for a model with corners on `X` and return that. -/
+  checkIsAddQuotient (G X : Expr) : TermElabM Expr := do
+    trace[Elab.DiffGeo.MDiff] "`{e}` is the quotient of `{X}` under a `{G}`-action`"
+    let searchPropDis ← findSomeLocalInstanceOf? `ProperlyDiscontinuousVAdd fun _inst type ↦ do
+      match_expr type with
+      | ProperlyDiscontinuousVAdd G' α _ _ =>
+        if (← withReducible (pureIsDefEq G G')) && (← withReducible (pureIsDefEq α X)) then
+          trace[Elab.DiffGeo.MDiff] "... and this action is properly discontinuous"
+          return some ()
+        else
+          trace[Elab.DiffGeo.MDiff]
+            "`ProperlyDiscontinousVAdd` instance of `{type}` did not match `{e}`"
+          return none
+      | _ => return none
+    if searchPropDis.isSome then
+      fromManifoldInner X
+    else
+      throwError "Couldn't find a `ProperlyDiscontinuousVAdd` instance for `{G}` action on `{X}` \
+        among local instances."
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold.
   Also test if we have the quotient of a manifold by a discrete group acting. -/
   fromManifold : TermElabM Expr := do
-    -- Check if `e` is a quotient first.
+    -- Check if `e` is a quotient of an (additive or multiplicative) action first.
     match_expr e with
+    | Quotient X α =>
+      match_expr α with
+      -- If the code in question elaborated, `α` must be a setoid on `X`,
+      -- i.e. `X` and `X'` are defeq.
+      | MulAction.orbitRel G _X _ _ => checkIsQuotient G X
+      | AddAction.orbitRel G _X _ _ => checkIsAddQuotient G X
+      | _ => throwError "Don't have a manifold structure on quotients `{X}` by `{α}`"
     | MulAction.orbitRel.Quotient G M _ _ => checkIsQuotient G M
-    | AddAction.orbitRel.Quotient G M _ _ => checkIsQuotient G M
+    | AddAction.orbitRel.Quotient G M _ _ => checkIsAddQuotient G M
     | _ =>
       trace[Elab.DiffGeo.MDiff] "... not a quotient"
       fromManifoldInner e

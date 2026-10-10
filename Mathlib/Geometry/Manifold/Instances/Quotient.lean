@@ -175,7 +175,7 @@ instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] 
 
 /-- The projection map `M → M ⧸ G` is smooth. -/
 @[to_additive]
-lemma contMDiff_orbitRel_quotient : ContMDiff I I n (Quotient.mk' (s := orbitRel G M)) := by
+lemma contMDiff_orbitRel_quotient : CMDiff n (Quotient.mk' (s := orbitRel G M)) := by
   intro x
   sorry
 
