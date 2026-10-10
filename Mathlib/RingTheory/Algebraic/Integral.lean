@@ -701,3 +701,15 @@ instance [IsDomain R] [IsDomain S] [IsTorsionFree R S] [Module.Finite R S] :
       Submodule.fg_span (Set.toFinite _)
 
 end FractionRing
+
+theorem IsAlgebraic.of_mul_left {K L : Type*} [Field K] [Field L] [Algebra K L]
+    {x y : L} (hxy : IsAlgebraic K (x * y)) (hx : IsAlgebraic K x) (hx_ne : x ≠ 0) :
+    IsAlgebraic K y := by
+  have h : IsAlgebraic K (x * y * x⁻¹) := hxy.mul hx.inv
+  rwa [mul_comm x y, mul_assoc, mul_inv_cancel₀ hx_ne, mul_one] at h
+
+theorem IsAlgebraic.of_mul_right {K L : Type*} [Field K] [Field L] [Algebra K L]
+    {x y : L} (hxy : IsAlgebraic K (x * y)) (hy : IsAlgebraic K y) (hy_ne : y ≠ 0) :
+    IsAlgebraic K x := by
+  rw [mul_comm] at hxy
+  exact IsAlgebraic.of_mul_left hxy hy hy_ne
