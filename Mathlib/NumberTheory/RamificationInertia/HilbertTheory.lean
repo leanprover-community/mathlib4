@@ -28,6 +28,21 @@ For an intermediate ring `R` of `B`, we introduce two characteristic predicates:
 * `Ideal.IsInertiaRing G P R`: `B` is Galois over `R` with Galois group the *inertia group* of `P`,
   that is the subgroup of `G` acting trivially modulo `P`.
 
+## Main results
+
+Writing `e`, `f` for the ramification index and inertia degree of `P` over `p` and `g` for the
+number of primes of `B` above `p`, the degrees in the tower `A ⊆ R ⊆ R' ⊆ B` are:
+```
+degree
+        B
+  e     |
+        R'
+  f     |
+        R
+  g     |
+        A
+```
+
 ## Relation to the classical field setting
 
 In the classical setting `L/K` is a Galois extension of fields with `G = Gal(L/K)`, and `A`, `B` are
@@ -35,7 +50,8 @@ subrings of `K`, `L` with `K` the fraction field of `A`, `L` that of `B`, and `B
 closure of `A` in `L`. The decomposition (resp. inertia) *field* is the subfield of `L` fixed by the
 decomposition (resp. inertia) group of `P`, and the associated ring is the integral closure of `A`
 in this field. Decomposition and inertia rings arising this way are provided by
-`Ideal.IsDecompositionRing.of_isFractionRing` and `Ideal.IsInertiaRing.of_isFractionRing`.
+`Ideal.IsDecompositionRing.of_isFractionRing` and `Ideal.IsInertiaRing.of_isFractionRing`, and the
+degrees of the fields follow from those of the rings via `IsFractionRing.finrank_eq`.
 
 The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
 deprecated in favor of the ring-level predicates `Ideal.IsDecompositionRing` and
@@ -100,6 +116,66 @@ theorem IsInertiaRing.of_isFractionRing (E : Type*) [Field E]
   toIsGaloisGroup := .of_isFractionRing (inertia G P) R B E L
 
 end basic
+
+section rank
+
+/-! ### Degree formulas -/
+
+variable [IsDomain B] [Finite G] {A : Type*} [CommRing A] [IsDomain A]
+  [Algebra A B] [Module.Finite A B] [Module.Flat A B] [IsGaloisGroup G A B] (p : Ideal A)
+  [P.LiesOver p] [p.IsPrime] [Algebra.HasSeparableResidueFieldsAt A B p]
+  [FaithfulSMul R B] [P.IsPrime]
+
+/-- The degree `[B : R]` of `B` over the decomposition ring `R` equals the product of the
+ramification index and the inertia degree of `p` in `B`. -/
+theorem IsDecompositionRing.finrank_top [P.IsDecompositionRing G R] :
+    Module.finrank R B = p.ramificationIdxIn B * p.inertiaDegIn B := by
+  rw [← IsGaloisGroup.card_eq_finrank' (stabilizer G P) R B, card_stabilizer_eq p]
+
+/-- The degree `[B : R]` of `B` over the inertia ring `R` equals the ramification index of `p`
+in `B`. -/
+theorem IsInertiaRing.finrank_top [P.IsInertiaRing G R] :
+    Module.finrank R B = p.ramificationIdxIn B := by
+  rw [← IsGaloisGroup.card_eq_finrank' (inertia G P) R B, card_inertia_eq_ramificationIdxIn p]
+
+variable [Algebra A R] [IsScalarTower A R B]
+
+/-- The degree `[R : A]` of the decomposition ring `R` over `A` equals the number of prime ideals
+of `B` lying over `p`. -/
+theorem IsDecompositionRing.finrank_bot [P.IsDecompositionRing G R] :
+    Module.finrank A R = (p.primesOver B).ncard := by
+  have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
+  have : Module.Finite R B := Module.Finite.right A R B
+  rw [← mul_left_inj' (c := Module.finrank R B) Module.finrank_pos.ne',
+    Module.finrank_mul_finrank' B, IsDecompositionRing.finrank_top G P R p,
+    ← IsGaloisGroup.card_eq_finrank' G A B,
+    ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
+
+/-- The degree `[R : A]` of the inertia ring `R` over `A` equals the product of the number of
+prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`. -/
+theorem IsInertiaRing.finrank_bot [P.IsInertiaRing G R] :
+    Module.finrank A R = (p.primesOver B).ncard * p.inertiaDegIn B := by
+  have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
+  have : Module.Finite R B := Module.Finite.right A R B
+  rw [← mul_left_inj' (c := Module.finrank R B) Module.finrank_pos.ne',
+    Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P R p,
+    ← IsGaloisGroup.card_eq_finrank' G A B, mul_assoc, mul_comm (p.inertiaDegIn B),
+    ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
+
+/-- The degree `[R' : R]` of the inertia ring `R'` over the decomposition ring `R` equals the
+inertia degree of `p` in `B`. -/
+theorem IsInertiaRing.finrank_decompositionRing (R' : Type*) [CommRing R'] [Algebra R' B]
+    [FaithfulSMul R' B] [Algebra R R'] [IsScalarTower R R' B]
+    [P.IsDecompositionRing G R] [P.IsInertiaRing G R'] :
+    Module.finrank R R' = p.inertiaDegIn B := by
+  have : IsDomain R' := (FaithfulSMul.algebraMap_injective R' B).isDomain
+  have : Module.Finite R B := Module.Finite.right A R B
+  have : Module.Finite R' B := Module.Finite.right R R' B
+  rw [← mul_left_inj' (c := Module.finrank R' B) Module.finrank_pos.ne',
+    Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P R' p,
+    IsDecompositionRing.finrank_top G P R p, mul_comm (p.ramificationIdxIn B)]
+
+end rank
 
 end Ideal
 
