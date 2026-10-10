@@ -6,11 +6,11 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.UniformSpace.Cauchy
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Infinite sums and products in topological groups
@@ -373,14 +373,6 @@ theorem Multipliable.hasFiniteMulSupport_of_discreteTopology
     {β : Type*} (f : β → α) (h : Multipliable f) : HasFiniteMulSupport f :=
   haveI : IsTopologicalGroup α := ⟨⟩
   h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
-
-@[deprecated (since := "2026-03-03")] alias
-  Multipliable.finite_mulSupport_of_discreteTopology :=
-    Multipliable.hasFiniteMulSupport_of_discreteTopology
-
-@[deprecated (since := "2026-03-03")] alias
-  Summable.finite_support_of_discreteTopology :=
-    Summable.hasFiniteSupport_of_discreteTopology
 
 @[to_additive]
 theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]

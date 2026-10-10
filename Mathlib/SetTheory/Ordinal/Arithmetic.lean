@@ -245,14 +245,16 @@ theorem pred_le_self (o) : pred o ≤ o := by
   simp
 
 /-- `Ordinal.pred` and `Order.succ` form a Galois insertion. -/
-def pred_succ_gi : GaloisInsertion pred succ :=
+def predSuccGi : GaloisInsertion pred succ :=
   GaloisConnection.toGaloisInsertion @pred_le_iff_le_succ (by simp)
 
+@[deprecated (since := "2026-10-09")] alias pred_succ_gi := predSuccGi
+
 theorem pred_surjective : Function.Surjective pred :=
-  pred_succ_gi.l_surjective
+  predSuccGi.l_surjective
 
 theorem self_le_succ_pred (o) : o ≤ succ (pred o) :=
-  pred_succ_gi.gc.le_u_l o
+  predSuccGi.gc.le_u_l o
 
 theorem pred_eq_iff_isSuccPrelimit {o} : pred o = o ↔ IsSuccPrelimit o := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
@@ -534,8 +536,6 @@ theorem isSuccPrelimit_mul_left {a b : Ordinal} (ha : IsSuccLimit a) : IsSuccPre
 theorem nsmul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
   | n + 1, a => by rw [succ_nsmul, nsmul_eq_mul, Nat.cast_add_one, mul_add_one]
-
-@[deprecated (since := "2026-03-14")] alias smul_eq_mul := nsmul_eq_mul
 
 private theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLimit c)
     (IH : ∀ c' < c, (a + b) * succ c' = a * succ c' + b) : (a + b) * c = a * c :=
@@ -896,8 +896,6 @@ theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
 theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
 
-@[deprecated (since := "2026-03-08")] alias nat_lt_omega0 := natCast_lt_omega0
-
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
@@ -910,8 +908,6 @@ theorem eq_natCast_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ 
   obtain ho | ho := lt_or_ge o ω
   · exact Or.inl <| lt_omega0.1 ho
   · exact Or.inr ho
-
-@[deprecated (since := "2026-03-12")] alias eq_nat_or_omega0_le := eq_natCast_or_omega0_le
 
 @[simp]
 theorem natCast_image_Iio (n : ℕ) : Nat.cast '' Set.Iio n = Set.Iio (n : Ordinal) := by

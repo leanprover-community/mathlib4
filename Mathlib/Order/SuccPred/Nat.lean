@@ -6,9 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.SuccPred
+public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Order.Nat
 
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic

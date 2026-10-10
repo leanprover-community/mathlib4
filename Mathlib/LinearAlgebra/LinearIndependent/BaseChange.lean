@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.LinearAlgebra.TensorProduct.Pi
