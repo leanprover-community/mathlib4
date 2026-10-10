@@ -515,7 +515,7 @@ theorem conj_smul_eq_self_of_mem {H : Subgroup G} {h : G} (hh : h ∈ H) :
     MulAut.conj h • H = H := by
   refine le_antisymm ?_ ?_
   · exact (conj_smul_le_of_le (le_refl H) ⟨h, hh⟩)
-  · rw [subset_pointwise_smul_iff, ← map_inv]
+  · rw [subset_pointwise_smul_iff, ← MulAut.conj_inv]
     exact conj_smul_le_of_le (le_refl H) ⟨h⁻¹, H.inv_mem hh⟩
 
 theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
@@ -554,7 +554,7 @@ theorem Normal.of_conjugate_fixed {H : Subgroup G} (h : ∀ g : G, (MulAut.conj 
     H.Normal := by
   constructor
   intro n hn g
-  rw [← h g, Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv, MulAut.smul_def,
+  rw [← h g, Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← MulAut.conj_inv, MulAut.smul_def,
     MulAut.conj_apply, inv_inv, mul_assoc, mul_assoc, inv_mul_cancel, mul_one,
     ← mul_assoc, inv_mul_cancel, one_mul]
   exact hn

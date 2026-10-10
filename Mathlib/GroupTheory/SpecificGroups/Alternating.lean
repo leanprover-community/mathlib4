@@ -442,7 +442,7 @@ open scoped Pointwise in
 theorem conj_smul_range_ofSubtype (s : Finset α) (g : alternatingGroup α) :
     MulAut.conj g • (ofSubtype s).range = (ofSubtype (g • s)).range := by
   ext k
-  simp_rw [mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff, ← map_inv,
+  simp_rw [mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff, ← MulAut.conj_inv,
     MulAut.smul_def, MulAut.coe_conj_apply, support_conj_eq_smul_support]
   simp [Finset.subset_smul_finset_iff, Subgroup.smul_def]
 

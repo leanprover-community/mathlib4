@@ -591,10 +591,6 @@ variable (C : Type*) [Monoid C] [MulDistribMulAction P C]
 variable (A' : Type*) [Group A'] [MulDistribMulAction M A']
 variable (B' : Type*) [Group B'] [MulDistribMulAction N B']
 
-set_option linter.translateOverwrite false in
-attribute [to_additive existing (dont_translate := M) DistribMulAction]
-  MulDistribMulAction
-
 /-- Equivariant additive monoid homomorphisms. -/
 structure DistribMulActionHom (A : Type*) [AddMonoid A] [DistribMulAction M A] (B : Type*)
     [AddMonoid B] [DistribMulAction N B] extends A →ₑ[φ] B, A →+ B
