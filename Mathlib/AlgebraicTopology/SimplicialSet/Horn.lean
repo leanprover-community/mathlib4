@@ -60,6 +60,13 @@ lemma mem_horn_iff_notMem_range {n d : ℕ} (s : Δ[n] _⦋d⦌) (i : Fin (n + 1
     s ∈ (horn.{u} n i).obj _ ↔ ∃ (j : Fin (n + 1)) (_ : j ≠ i), j ∉ Set.range s := by
   simp [horn_eq_iSup]
 
+lemma mem_horn_iff_not_subset {n : ℕ} {i : Fin (n + 1)}
+    {d : SimplexCategoryᵒᵖ} (x : (Δ[n] : SSet.{u}).obj d) :
+    x ∈ Λ[n, i].obj d ↔ ¬ ({i}ᶜ ⊆ Set.range (stdSimplex.objEquiv x)) := by
+  rw [mem_horn_iff_notMem_range]
+  simp [Set.subset_def]
+  tauto
+
 lemma face_le_horn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
     stdSimplex.face.{u} {i}ᶜ ≤ horn n j := by
   rw [horn_eq_iSup]
@@ -340,3 +347,40 @@ lemma faceSingletonComplIso_inv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2))
 end horn
 
 end SSet
+
+namespace PartialOrder
+
+/-- If `X` is a partially ordered type and `x₀ : X`, this is the subcomplex
+of the nerve of `X` which consists of simplices `s : Fin (n + 1) ⥤ X`
+such that `¬ {x₀}ᶜ ⊆ Set.range s.obj` holds, i.e. there exists `y ≠ x₀`,
+such that `Set.range s.obj ⊆ {y}ᶜ`. -/
+@[simps]
+def horn {X : Type u} [PartialOrder X] (x₀ : X) : (nerve X).Subcomplex where
+  obj n := Set.ofPred (fun s ↦ ¬ {x₀}ᶜ ⊆ Set.range s.obj)
+  map f x hx h' := hx (h'.trans (by
+    rintro _ ⟨i, rfl⟩
+    exact ⟨_, rfl⟩))
+
+lemma mem_horn_iff {X : Type u} [PartialOrder X] {x₀ : X} {n : SimplexCategoryᵒᵖ}
+    (s : (nerve X).obj n) :
+    s ∈ (horn x₀).obj n ↔ ∃ y ≠ x₀, Set.range s.obj ⊆ {y}ᶜ := by
+  simp [Set.subset_def]
+
+/-- If `n : ℕ` and `i : Fin (n + 2)`, then the horn inclusion `Λ[n + 1, i] ⟶ Δ[n + 1]`
+identifies to the inclusion of `PartialOrder.horn (ULift.up i)` in the nerve of the
+partially ordered type `ULift.{u} (Fin (n + 2))`. -/
+def hornArrowIso (n : ℕ) (i : Fin (n + 2)) :
+    Arrow.mk (horn.{u} (ULift.up i)).ι ≅ Arrow.mk (SSet.horn (n + 1) i).ι :=
+  SSet.Subcomplex.congrArrowι' (SSet.stdSimplex.isoNerve _).symm (by
+    ext d x
+    simp only [SSet.Subcomplex.preimage_obj, nerve_obj, Set.mem_preimage,
+      SSet.mem_horn_iff_not_subset, Set.subset_def, Set.mem_compl_iff,
+      Set.mem_singleton_iff, Set.mem_range, not_forall, not_exists, horn_obj,
+      ULift.forall, ULift.up.injEq, Set.mem_ofPred_eq]
+    constructor
+    · rintro ⟨j, h₁, h₂⟩
+      exact ⟨j, h₁, fun k hk ↦ h₂ k (ULift.up_injective hk)⟩
+    · rintro ⟨j, h₁, h₂⟩
+      exact ⟨j, h₁, fun k hk ↦ h₂ k (ULift.down_injective hk)⟩)
+
+end PartialOrder

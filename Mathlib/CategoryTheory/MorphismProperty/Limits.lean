@@ -651,6 +651,12 @@ lemma coproducts_iff {X Y : C} (f : X ⟶ Y) :
     coproducts.{w} W f ↔ ∃ (J : Type w), W.colimitsOfShape (Discrete J) f := by
   simp only [coproducts, iSup_iff]
 
+instance (W : MorphismProperty C) : (coproducts.{w} W).RespectsIso :=
+  RespectsIso.of_respects_arrow_iso _ (fun f g e hf ↦ by
+    rw [coproducts_iff] at hf ⊢
+    obtain ⟨J, hf⟩ := hf
+    exact ⟨J, (MorphismProperty.arrow_mk_iso_iff _ e).mp hf⟩)
+
 lemma coproducts_of_small {X Y : C} (f : X ⟶ Y) {J : Type w'}
     (hf : W.colimitsOfShape (Discrete J) f) [Small.{w} J] :
     coproducts.{w} W f := by

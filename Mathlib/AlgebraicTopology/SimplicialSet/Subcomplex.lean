@@ -102,7 +102,7 @@ protected def eqToIso (h : S₁ = S₂) : (S₁ : SSet.{u}) ≅ S₂ where
 end
 
 /-- The functor which sends `A : X.Subcomplex` to `A.toSSet`. -/
-@[simps]
+@[simps, implicit_reducible]
 def toSSetFunctor : X.Subcomplex ⥤ SSet.{u} where
   obj A := A
   map h := homOfLE (leOfHom h)
@@ -294,7 +294,7 @@ lemma range_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
 set_option backward.defeqAttrib.useBackward true in
 lemma image_eq_range : A.image f = range (A.ι ≫ f) := by aesop
 
-lemma image_iSup {ι : Type*} (S : ι → X.Subcomplex) (f : X ⟶ Y) :
+lemma image_iSup {ι : Sort*} (S : ι → X.Subcomplex) (f : X ⟶ Y) :
     image (⨆ i, S i) f = ⨆ i, (S i).image f := by
   aesop
 
@@ -388,6 +388,21 @@ def fromPreimage (A : X.Subcomplex) (p : Y ⟶ X) :
 @[reassoc (attr := simp)]
 lemma fromPreimage_ι (A : X.Subcomplex) (p : Y ⟶ X) :
     A.fromPreimage p ≫ A.ι = (A.preimage p).ι ≫ p := rfl
+
+@[simps! hom_left hom_right hom_right inv_right]
+def congrArrowι (e : X ≅ Y) {A : X.Subcomplex} {B : Y.Subcomplex}
+    (h : A.image e.hom = B) :
+    Arrow.mk A.ι ≅ Arrow.mk B.ι :=
+  Arrow.isoMk
+    { hom := Subcomplex.lift (A.ι ≫ e.hom) (by simp [range_comp, h])
+      inv := Subcomplex.lift (B.ι ≫ e.inv) (by simp [range_comp, ← h, ← image_comp])
+      hom_inv_id := by simp [← cancel_mono A.ι]
+      inv_hom_id := by simp [← cancel_mono B.ι] } e
+
+abbrev congrArrowι' (e : X ≅ Y) {A : X.Subcomplex} {B : Y.Subcomplex}
+    (h : B.preimage e.hom = A) :
+    Arrow.mk A.ι ≅ Arrow.mk B.ι :=
+  congrArrowι e (by simp [← h])
 
 end Subcomplex
 
