@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.MulP
 
 /-!
-## Identities between operations on the ring of Witt vectors
+# Identities between operations on the ring of Witt vectors
 
 In this file we derive common identities between the Frobenius and Verschiebung operators.
 

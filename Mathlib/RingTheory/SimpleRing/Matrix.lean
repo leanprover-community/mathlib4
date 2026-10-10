@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Ideal
 
 /-!
-The matrix ring over a simple ring is simple
+# The matrix ring over a simple ring is simple
 -/
 
 public section

@@ -24,7 +24,7 @@ is not the untilt *functor*.
 * `PreTilt.mk_untilt_eq_coeff_zero` : The composition of the mod `p` map
   with the untilt function equals taking the zeroth component of the perfection.
 
-## Reference
+## References
 * [Berkeley Lectures on \( p \)-adic Geometry][MR4446467]
 
 ## Tags
