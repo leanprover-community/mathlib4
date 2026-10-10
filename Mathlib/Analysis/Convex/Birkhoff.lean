@@ -5,8 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
+public import Mathlib.Analysis.Convex.Extreme
 
 import Mathlib.Combinatorics.Hall.Basic
 

@@ -765,6 +765,9 @@ variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R
 instance restrict_compatible : v.restrict.Compatible where
   vle_iff_le x y := by rw [v.vle_iff_le, restrict_le_iff]
 
+lemma lt_div_iff_mul_vlt {z : R} (hz : 0 <ᵥ z) : v x < v y / v z ↔ x * z <ᵥ y := by
+  rw [lt_div_iff₀ (v.apply_posSubmonoid_pos ⟨z, hz⟩), ← map_mul, v.vlt_iff_lt]
+
 end Valuation
 
 namespace ValuativeRel
@@ -1207,10 +1210,6 @@ lemma orderMonoidIso_strictMono [v.Compatible] : StrictMono (orderMonoidIso v) :
 lemma leftInverse_embedding_orderMonoidIso : Function.LeftInverse embedding
     (orderMonoidIso (valuation R)) :=
   embedding_orderMonoidIso_valuation_eq
-
-/-- The isomorphism between `ValueGroupWithZero R` and `ValueGroup₀ (valuation R)`. -/
-@[deprecated "use ValueGroupWithZero.orderMonoidIso instead" (since := "2026-03-17")]
-def valueGroupWithZero_equiv_valueGroup₀ := orderMonoidIso (valuation R)
 
 end ValueGroupWithZero
 

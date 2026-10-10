@@ -5,9 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Data.Finsupp.PWO
 public import Mathlib.RingTheory.HahnSeries.Multiplication
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.Data.Finsupp.PWO
 
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 

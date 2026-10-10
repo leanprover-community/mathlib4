@@ -6,8 +6,8 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.Ring.Action.Rat
-public import Mathlib.RingTheory.HahnSeries.Multiplication
 public import Mathlib.Data.Rat.Cast.Lemmas
+public import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
 # Summable families of Hahn Series
@@ -386,8 +386,6 @@ theorem hasFiniteSupport_smul (s : SummableFamily Γ R α)
     (fun (i : α × β) ↦ (s i.1).coeff gh.1 • (t i.2).coeff gh.2).HasFiniteSupport :=
   Set.Finite.subset (Set.toFinite ((s.finite_co_support' gh.1).prod
     (t.finite_co_support' gh.2)).toFinset) (smul_support_subset_prod s t gh)
-
-@[deprecated (since := "2026-03-03")] alias smul_support_finite := hasFiniteSupport_smul
 
 variable [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
 

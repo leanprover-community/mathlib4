@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # Linear categories
@@ -100,6 +101,21 @@ end End
 section
 
 variable {R : Type w} [Semiring R] [Linear R C]
+
+section oppositeCategory
+
+instance oppositeCategory : Linear R Cᵒᵖ where
+  homModule _ _ := AddEquiv.module R ({opEquiv _ _ with map_add' := fun _ _ ↦ rfl})
+  smul_comp _ _ _ _ f g := Quiver.Hom.unop_inj (comp_smul _ _ _ g.unop _ f.unop)
+  comp_smul _ _ _ f _ g := Quiver.Hom.unop_inj (smul_comp _ _ _ _ g.unop f.unop)
+
+@[simp]
+lemma unop_smul {X Y : Cᵒᵖ} (r : R) (f : X ⟶ Y) : (r • f).unop = r • f.unop := rfl
+
+@[simp]
+lemma op_smul {X Y : C} (r : R) (f : X ⟶ Y) : (r • f).op = r • f.op := rfl
+
+end oppositeCategory
 
 section InducedCategory
 

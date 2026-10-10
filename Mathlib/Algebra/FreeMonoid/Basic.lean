@@ -5,12 +5,12 @@ Authors: Simon Hudon, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Data.List.Basic
 public import Mathlib.Util.CompileInductive
 
@@ -114,14 +114,8 @@ theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 @[to_additive (attr := simp)]
 theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
-@[to_additive (attr := deprecated toList_one +typeChanged (since := "2026-03-26"))]
-theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
-
 @[to_additive (attr := simp)]
 theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toList ys := rfl
-
-@[to_additive (attr := deprecated toList_mul +typeChanged (since := "2026-03-26"))]
-theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
 theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList ys := rfl
