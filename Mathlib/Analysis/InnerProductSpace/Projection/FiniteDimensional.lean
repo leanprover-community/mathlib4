@@ -5,11 +5,9 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-public import Mathlib.Algebra.DirectSum.Decomposition
-public import Mathlib.Analysis.Normed.Module.RCLike.Basic
 
 /-!
 # Orthogonal projections in finite-dimensional spaces
@@ -111,7 +109,7 @@ theorem finrank_add_inf_finrank_orthogonal' {K₁ K₂ : Submodule 𝕜 E}
 that of `E`. -/
 theorem finrank_add_finrank_orthogonal [FiniteDimensional 𝕜 E] (K : Submodule 𝕜 E) :
     finrank 𝕜 K + finrank 𝕜 Kᗮ = finrank 𝕜 E := by
-  convert! Submodule.finrank_add_inf_finrank_orthogonal (le_top : K ≤ ⊤) using 1
+  convert Submodule.finrank_add_inf_finrank_orthogonal (le_top : K ≤ ⊤) using 1
   · rw [inf_top_eq]
   · simp
 
@@ -410,7 +408,7 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal �
   have hv_coe : range ((↑) : v → E) = v := by simp
   constructor
   · refine fun h => ⟨Basis.mk hv.linearIndependent _, Basis.coe_mk _ ?_⟩
-    convert! h.ge
+    convert h.ge
   · rintro ⟨h, coe_h⟩
     rw [← h.span_eq, coe_h, hv_coe]
 

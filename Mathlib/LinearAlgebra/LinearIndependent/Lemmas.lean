@@ -7,17 +7,14 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Logic.Equiv.Fin.Rotate
-public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Module
-public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.NormNum.Ineq
 
 import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Linear independence
@@ -360,7 +357,7 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
   refine ⟨fun h' ↦ ⟨?_, h⟩, fun ⟨h₁, h₂⟩ ↦ pair_add_smul_add_smul_iff_aux _ _ _ _ h₂ h₁⟩
   suffices LinearIndependent R ![(a * d - b * c) • x, (a * d - b * c) • y] by
     rwa [pair_smul_iff (sub_ne_zero_of_ne h)] at this
-  convert! pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
+  convert pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
   module_nf
 
 @[simp] lemma LinearIndependent.pair_add_smul_right_iff :
@@ -667,7 +664,7 @@ theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x 
 theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0) :
     LinearIndepOn K v {i, j} ↔ ∀ (c : K), c • v i ≠ v j := by
   rw [pair_comm]
-  convert! linearIndepOn_insert (s := { i }) (a := j) hij.symm
+  convert linearIndepOn_insert (s := { i }) (a := j) hij.symm
   simp [hi, mem_span_singleton]
 
 /-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
@@ -705,7 +702,7 @@ theorem LinearIndependent.finCons {n} {v : Fin n → V} (hv : LinearIndependent 
 alias LinearIndependent.fin_cons := LinearIndependent.finCons
 
 /-- See `LinearIndependent.finSnoc'` for an uglier version that works if you
-only have a module over a semiring, and `LinearIndependent.finSnoc_of_not_mem_span_over` for a
+only have a module over a semiring, and `LinearIndependent.finSnoc_of_notMem_span_over` for a
 version over a subring of a division ring. -/
 lemma LinearIndependent.finSnoc {n} {v : Fin n → V} (hv : LinearIndependent K v)
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) :=
@@ -717,7 +714,7 @@ independent.
 
 This is useful when proving `ℤ`-linear independence using the fact that an element is outside the
 `ℝ`-span, which arises naturally in lattice theory and geometry of numbers. -/
-theorem LinearIndependent.finSnoc_of_not_mem_span_over
+theorem LinearIndependent.finSnoc_of_notMem_span_over
     {R : Type*} {K : Type*} {M : Type*}
     [CommRing R] [DivisionRing K] [AddCommGroup M]
     [Algebra R K] [Module K M] [Module R M] [IsScalarTower R K M] [FaithfulSMul R K]
@@ -733,6 +730,10 @@ theorem LinearIndependent.finSnoc_of_not_mem_span_over
   rw [← algebraMap_smul K c x] at heq
   rw [(eq_inv_smul_iff₀ hc').mpr (eq_neg_of_add_eq_zero_left heq), smul_neg]
   exact Submodule.neg_mem _ (Submodule.smul_mem _ _ (Submodule.span_subset_span R K _ hcy))
+
+@[deprecated (since := "2026-09-28")]
+alias LinearIndependent.finSnoc_of_not_mem_span_over :=
+  LinearIndependent.finSnoc_of_notMem_span_over
 
 theorem linearIndependent_finSucc {n} {v : Fin (n + 1) → V} :
     LinearIndependent K v ↔
@@ -834,7 +835,7 @@ theorem LinearIndepOn.image_subset_span_image_extend (hs : LinearIndepOn K v s) 
 
 theorem LinearIndepOn.subset_span_extend {s t : Set V} (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
     t ⊆ span K (hs.extend hst) := by
-  convert! hs.image_subset_span_image_extend hst <;> simp
+  convert hs.image_subset_span_image_extend hst <;> simp
 
 theorem LinearIndepOn.span_image_extend_eq_span_image (hs : LinearIndepOn K v s) (hst : s ⊆ t) :
     span K (v '' hs.extend hst) = span K (v '' t) :=

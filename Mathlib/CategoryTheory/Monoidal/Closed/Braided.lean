@@ -5,9 +5,10 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.ParametrizedLimits
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+
+import Mathlib.CategoryTheory.Adjunction.ParametrizedLimits
 
 /-!
 # Closed braided monoidal categories

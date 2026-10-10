@@ -5,9 +5,10 @@ Authors: Frédéric Dupuis, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.LinearAlgebra.Multilinear.Curry
+public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings

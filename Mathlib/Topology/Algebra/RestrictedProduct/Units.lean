@@ -5,9 +5,9 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
-public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.Algebra.Group.Submonoid.Units
+public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 
 /-!
 # Units of restricted products

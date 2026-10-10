@@ -5,10 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
-public import Mathlib.SetTheory.Cardinal.NatCard
+
+import Mathlib.Analysis.Analytic.Within
 
 /-!
 # Faa di Bruno formula
@@ -268,7 +267,7 @@ lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (
         c.emb (c.index 0) ⟨c.partSize (c.index 0) - 1, Nat.sub_one_lt_of_lt (c.partSize_pos _)⟩}
           ⊆ range (c.emb (c.index 0)) := by simp [insert_subset]
     simp only [emb_zero] at this
-    convert! Nat.card_mono Subtype.finite this
+    convert Nat.card_mono Subtype.finite this
     simp only [Nat.card_eq_fintype_card, Fintype.card_ofFinset, toFinset_singleton]
     apply (Finset.card_pair ?_).symm
     exact ((Fin.zero_le _).trans_lt (c.parts_strictMono ((pos_iff_ne_zero' (c.index 0)).mpr h))).ne
@@ -547,7 +546,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
   parts_strictMono i j hij := by
     simp only [Fin.lt_def]
     rw [← Nat.add_lt_add_iff_right (k := 1)]
-    convert! Fin.lt_def.1 (c.parts_strictMono hij)
+    convert Fin.lt_def.1 (c.parts_strictMono hij)
     · rcases eq_or_ne i (c.index 0) with rfl | hi
       -- We do not yet replace `omega` with `lia` here, as it is measurably slower.
       · simp only [↓reduceDIte, update_self, succ_mk, cast_mk, val_pred]
@@ -1092,7 +1091,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)) =
         (q (f x)).taylorComp (p x) (m + 1) by
       rw [← this]
-      convert! B
+      convert B
       ext v
       simp only [Nat.succ_eq_add_one, Fintype.sum_option, ContinuousMultilinearMap.curryLeft_apply,
         FormalMultilinearSeries.compAlongOrderedFinpartition_apply, sum_apply, add_apply]

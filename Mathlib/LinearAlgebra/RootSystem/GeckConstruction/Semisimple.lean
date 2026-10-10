@@ -5,11 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.Semisimple.Lemmas
-public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-public import Mathlib.RingTheory.Finiteness.Nilpotent
+
+import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system yields semisimple algebras
@@ -53,7 +53,7 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
       ∃ (k : ι) (x : ℕ), P.root k = P.root j + n • P.root i ∧
         (e i ^ n).col (.inr j) = x • Pi.single (.inr k) 1 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   let := P.indexNeg
   have aux (n : ℕ) : (e i ^ (n + 1)).col (.inr j) = (e i).mulVec ((e i ^ n).col (.inr j)) := by
     rw [pow_succ', ← Matrix.mulVec_single_one, ← Matrix.mulVec_mulVec]; simp
@@ -99,7 +99,7 @@ lemma isNilpotent_e :
     IsNilpotent (e i) := by
   classical
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   let := P.indexNeg
   rw [Matrix.isNilpotent_iff_forall_col]
   have case_inl (j : b.support) : (e i ^ 2).col (Sum.inl j) = 0 := by
@@ -129,7 +129,7 @@ lemma isNilpotent_e :
       apply IsReduced.linearIndependent P ?_ ?_
       · rintro rfl
         apply P.nsmul_notMem_range_root (n := P.chainTopCoeff i i + 2) (i := i)
-        convert! hk₁ using 1
+        convert hk₁ using 1
         module
       · contrapose hij
         rw [root_eq_neg_iff] at hij
@@ -164,7 +164,7 @@ omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
 attribute [local instance 100] LieRing.ofAssociativeRing
 
 open LinearMap LieModule in
-/-- This is the main result of lemma 4.1 from [Geck](Geck2017). -/
+/-- This is the main result of lemma 4.1 from [Geck][Geck2017]. -/
 lemma trace_toEnd_eq_zero (x : lieAlgebra b) :
     trace R _ (toEnd R _ (b.support ⊕ ι → R) x) = 0 := by
   obtain ⟨x, hx⟩ := x
@@ -355,7 +355,7 @@ lemma coe_genWeightSpace_zero_eq_span_range_u :
 
 variable [P.IsReduced] [P.IsIrreducible]
 
-/-- Lemma 4.2 from [Geck](Geck2017). -/
+/-- Lemma 4.2 from [Geck][Geck2017]. -/
 instance instIsIrreducible [Nonempty ι] :
     LieModule.IsIrreducible K (lieAlgebra b) (b.support ⊕ ι → K) := by
   refine LieModule.IsIrreducible.mk fun U hU ↦ ?_
@@ -388,7 +388,7 @@ instance instIsIrreducible [Nonempty ι] :
   have : v b j ∉ U := fun hj ↦ by simpa [v] using apply_inr_eq_zero_of_mem_span_range_u b j (hU hj)
   contradiction
 
-/-- Lemma 4.3 from [Geck](Geck2017). -/
+/-- Lemma 4.3 from [Geck][Geck2017]. -/
 instance instHasTrivialRadical [IsAlgClosed K] : LieAlgebra.HasTrivialRadical K (lieAlgebra b) := by
   cases isEmpty_or_nonempty ι
   · infer_instance

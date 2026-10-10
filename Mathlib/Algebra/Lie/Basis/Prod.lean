@@ -6,8 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Basis.Basic
-public import Mathlib.Algebra.Lie.Prod
 public import Mathlib.Algebra.Lie.Semisimple.Basic
+
+import Mathlib.Algebra.Lie.Prod
 
 /-!
 # Products of bases Lie algebras
@@ -232,7 +233,7 @@ include hA
 lemma prod_lt_top [Nontrivial L₂] :
     b₁.prod eι b₂ < ⊤ := by
   /- This innocent-looking result is the key. The informal literature seems only to contain
-  somewhat heavy-weight proofs (e.g., [Chapter IV, Theorem 14.2](humphreys1972) makes an
+  somewhat heavy-weight proofs (e.g., [Chapter IV, Theorem 14.2][humphreys1972] makes an
   inductive argument using highest weights) but in fact it follows very easily from
   `LieAlgebra.Basis.isCartanSubalgebra`. The argument is essentially: if `b₁.prod eι b₂` is not
   proper then it's Cartan subalgebra contains `H₁ × H₂` which is absurd since it

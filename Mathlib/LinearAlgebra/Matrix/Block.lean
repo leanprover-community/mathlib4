@@ -5,9 +5,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Wen Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.Tactic.FinCases
+public import Mathlib.LinearAlgebra.Matrix.Transvection
 
 /-!
 # Block matrices and their determinant
@@ -82,7 +81,7 @@ protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular
 theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
     (reindex e e M).BlockTriangular b ↔ M.BlockTriangular (b ∘ e) := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · convert! h.submatrix
+  · convert h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert! h.submatrix
     simp only [comp_assoc b e e.symm, Equiv.self_comp_symm, comp_id]
@@ -365,7 +364,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
     let b' := fun i : { a // b a ≠ k } => b ↑i
     have h' : BlockTriangular (M.toSquareBlockProp fun i => b i ≠ k) b' := hM.submatrix
     have hb' : image b' univ = (image b univ).erase k := by
-      convert! image_subtype_ne_univ_eq_image_erase k b
+      convert image_subtype_ne_univ_eq_image_erase k b
     rw [ih _ (max'_mem _ _) h' hb']
     refine Finset.prod_congr rfl fun l hl => ?_
     let he : { a // b' a = l } ≃ { a // b a = l } :=
@@ -400,6 +399,14 @@ theorem det_of_isLowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.IsLow
   exact det_of_isUpperTriangular h.transpose
 
 @[deprecated (since := "2026-07-30")] alias det_of_lowerTriangular := det_of_isLowerTriangular
+
+theorem IsUpperTriangular.det_ne_zero_iff [LinearOrder m] [IsDomain R] (hM : M.IsUpperTriangular) :
+    M.det ≠ 0 ↔ ∀ i, M.diag i ≠ 0 := by
+  simp [det_of_isUpperTriangular hM, prod_ne_zero_iff]
+
+theorem IsLowerTriangular.det_ne_zero_iff [LinearOrder m] [IsDomain R] (hM : M.IsLowerTriangular) :
+    M.det ≠ 0 ↔ ∀ i, M.diag i ≠ 0 := by
+  simp [det_of_isLowerTriangular M hM, prod_ne_zero_iff]
 
 open Polynomial
 
@@ -494,8 +501,8 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   have : Invertible A := hM.invertibleToBlock _
   have hA : A.BlockTriangular b' := hM.submatrix
   have hb' : image b' univ ⊂ image b univ := by
-    convert! image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
-    convert! max'_mem (α := α) _ _
+    convert image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
+    convert max'_mem (α := α) _ _
   have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [b', hij]
   simp [A, hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
 

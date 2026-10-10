@@ -5,9 +5,8 @@ Authors: Praneeth Kolichala, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Homotopy.Equiv
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
+public import Mathlib.Topology.Homotopy.Equiv
 
 /-!
 # Homotopic maps induce naturally isomorphic functors
@@ -153,10 +152,10 @@ theorem heq_path_of_eq_image :
   exact hfg
 
 set_option backward.privateInPublic true in
-private theorem start_path : f x₀ = g x₂ := by convert! hfg 0 <;> simp only [Path.source]
+private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
 
 set_option backward.privateInPublic true in
-private theorem end_path : f x₁ = g x₃ := by convert! hfg 1 <;> simp only [Path.target]
+private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in

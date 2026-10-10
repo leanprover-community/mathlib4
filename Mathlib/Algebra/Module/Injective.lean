@@ -6,13 +6,14 @@ Authors: Jujian Zhang
 
 module
 
-public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.LinearAlgebra.LinearPMap
-public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Logic.Small.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.Logic.Small.Basic
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Tactic.NormNum
+
+import Mathlib.Algebra.Module.Shrink
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Injective modules
@@ -294,7 +295,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r
     (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     ExtensionOfMaxAdjoin.extendIdealTo i f h y r' := by
   rw [← sub_eq_zero, ← map_sub]
-  convert! ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
+  convert ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
   rw [sub_smul, sub_eq_zero, eq1]
 
 theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)

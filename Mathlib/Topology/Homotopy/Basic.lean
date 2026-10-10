@@ -5,9 +5,8 @@ Authors: Shing Tak Lam
 -/
 module
 
-public import Mathlib.Topology.Order.ProjIcc
-public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.Topology.UnitInterval
 
 /-!

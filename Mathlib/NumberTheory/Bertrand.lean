@@ -5,11 +5,12 @@ Authors: Patrick Stevens, Bolton Bailey
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Factorization
-public import Mathlib.NumberTheory.Primorial
 public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
-public import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
-public import Mathlib.Tactic.NormNum.Prime
+public import Mathlib.Data.Nat.Choose.Factorization
+
+import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.NumberTheory.Primorial
+import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Bertrand's Postulate
@@ -24,8 +25,8 @@ coefficient, and if the postulate does not hold, this upper bound conflicts with
 bound for large enough `n`. This proves the result holds for large enough `n`, and for smaller `n`
 an explicit list of primes is provided which covers the remaining cases.
 
-As in the [Metamath implementation](carneiro2015arithmetic), we rely on some optimizations from
-[Shigenori Tochiori](tochiori_bertrand). In particular we use the cleaner bound on the central
+As in the [Metamath implementation][carneiro2015arithmetic], we rely on some optimizations from
+[Shigenori Tochiori][tochiori_bertrand]. In particular we use the cleaner bound on the central
 binomial coefficient given in `Nat.four_pow_lt_mul_centralBinom`.
 
 ## References

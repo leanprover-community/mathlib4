@@ -6,13 +6,13 @@ Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.Matrix
+public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.Superscript
-public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+
+import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -114,6 +114,17 @@ analogous to `![x, y, ...]` notation. -/
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 
+namespace EuclideanSpace
+
+variable {n : Type*}
+
+instance : Lattice (EuclideanSpace ℝ n) := (WithLp.equiv 2 (n → ℝ)).lattice
+
+instance : IsOrderedAddMonoid (EuclideanSpace ℝ n) :=
+  Function.Injective.isOrderedAddMonoid WithLp.ofLp (fun _ _ ↦ rfl) .rfl
+
+end EuclideanSpace
+
 section Notation
 open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (subscriptTerm)
@@ -156,6 +167,12 @@ theorem EuclideanSpace.norm_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fint
 theorem EuclideanSpace.real_norm_sq_eq {n : Type*} [Fintype n] (x : EuclideanSpace ℝ n) :
     ‖x‖ ^ 2 = ∑ i, (x i) ^ 2 := by
   simp [EuclideanSpace.norm_sq_eq]
+
+instance {n : Type*} [Fintype n] : HasSolidNorm (EuclideanSpace ℝ n) where
+  solid {x y} h := by
+    rw [← sq_le_sq₀ (norm_nonneg x) (norm_nonneg y), EuclideanSpace.real_norm_sq_eq,
+      EuclideanSpace.real_norm_sq_eq]
+    exact Finset.sum_le_sum fun i _ ↦ sq_le_sq.2 (h i)
 
 @[wikidata Q847073]
 theorem EuclideanSpace.dist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
@@ -202,7 +219,7 @@ variable [Fintype ι]
 @[simp]
 theorem finrank_euclideanSpace :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  convert! (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
+  convert (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
   simp
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
@@ -941,7 +958,7 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Finty
     (a : OrthonormalBasis ι' 𝕜 E) (b : OrthonormalBasis ι 𝕜 E) :
     (a.toBasis.toMatrix b)ᴴ * a.toBasis.toMatrix b = 1 := by
   ext i j
-  convert! a.repr.inner_map_map (b i) (b j)
+  convert a.repr.inner_map_map (b i) (b j)
   · simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, star_def, PiLp.inner_apply,
       inner_apply']
     congr

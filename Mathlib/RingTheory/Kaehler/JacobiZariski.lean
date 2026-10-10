@@ -5,10 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Extension.Cotangent.Basic
-public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.Algebra.Module.SnakeLemma
-public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 /-!
 
@@ -505,7 +503,7 @@ theorem exact_liftBaseChange_map_of_flat [Module.Flat S T] :
   rcases hx with ⟨x, rfl⟩
   rw [mem_ker, ← comp_apply, ← map_comp_cotangentComplex_baseChange, comp_apply,
     ← mem_ker, ker_eq_bot.mpr (CotangentSpace.map_toComp_injective Q P), Submodule.mem_bot,
-    baseChange_eq_ltensor, ← mem_ker, (Module.Flat.lTensor_exact T
+    baseChange_eq_lTensor, ← mem_ker, (Module.Flat.lTensor_exact T
       P.toExtension.exact_hCotangentι_cotangentComplex).linearMap_ker_eq] at x_in
   rcases x_in with ⟨x, rfl⟩
   use x; induction x with
@@ -518,7 +516,7 @@ theorem exact_liftBaseChange_map_of_flat' [Module.Flat S T] (f : Hom W Q) (g : H
     Function.Exact ((Extension.H1Cotangent.map g.toExtensionHom).liftBaseChange T)
       (Extension.H1Cotangent.map f.toExtensionHom) := by
   rw [← LinearEquiv.conj_exact_iff_exact _ _ (H1Cotangent.equiv W (Q.comp P))]
-  convert! exact_liftBaseChange_map_of_flat Q P
+  convert exact_liftBaseChange_map_of_flat Q P
   · change Extension.H1Cotangent.map (W.defaultHom (Q.comp P)).toExtensionHom ∘ₗ _ = _
     rw [LinearMap.liftBaseChange_comp, ← Extension.H1Cotangent.map_comp,
       Extension.H1Cotangent.map_eq]

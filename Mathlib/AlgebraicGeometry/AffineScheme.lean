@@ -5,14 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Cover.Open
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-public import Mathlib.AlgebraicGeometry.Restrict
-public import Mathlib.CategoryTheory.Limits.Opposites
-public import Mathlib.RingTheory.Localization.InvSubmonoid
-public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.Topology.Sheaves.CommRingCat
 public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Topology.Sheaves.CommRingCat
+
+import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.Localization.InvSubmonoid
 
 /-!
 # Affine schemes
@@ -265,7 +263,7 @@ theorem isAffineOpen_opensRange {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)
   exact Subtype.range_val.symm
 
 theorem isAffineOpen_top (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : X.Opens) := by
-  convert! isAffineOpen_opensRange (𝟙 X)
+  convert isAffineOpen_opensRange (𝟙 X)
   ext1
   exact Set.range_id.symm
 
@@ -509,8 +507,8 @@ lemma fromSpec_app_of_le (V : X.Opens) (h : U ≤ V) :
 include hU in
 protected theorem isCompact :
     IsCompact (U : Set X) := by
-  convert! @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.1 (by fun_prop)
-  convert! hU.range_fromSpec.symm
+  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.1 (by fun_prop)
+  convert hU.range_fromSpec.symm
   exact Set.image_univ
 
 theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
@@ -1044,7 +1042,7 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (iSup_U.ge (Set.mem_univ x))
     obtain ⟨f, g, e, hf⟩ := exists_basicOpen_le_affine_inter V.prop (U i).prop x ⟨x.prop, hi⟩
     refine ⟨f, hf, ?_⟩
-    convert! basicOpen _ g (hU i) using 1
+    convert basicOpen _ g (hU i) using 1
     ext1
     exact e
   choose f hf₁ hf₂ using this

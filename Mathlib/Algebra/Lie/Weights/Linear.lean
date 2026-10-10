@@ -6,8 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Weights.Basic
-public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lie modules with linear weights
@@ -22,7 +20,7 @@ non-linear weights do exist. For example if we take:
 * `M`: the natural two-dimensional representation of `L`,
 
 then there is a single weight and it is non-linear. (See remark following Proposition 9 of
-chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9](bourbaki1975b).)
+chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9][bourbaki1975b].)
 
 We thus introduce a typeclass `LieModule.LinearWeights` to encode the fact that a Lie module does
 have linear weights and provide typeclass instances in the two important cases that `L` is Abelian
