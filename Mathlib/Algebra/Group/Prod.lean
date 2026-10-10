@@ -598,21 +598,28 @@ This is the `AddEquiv` version of `Equiv.prodUnique`. -/]
 def prodUnique [Unique N] : M × N ≃* M :=
   { Equiv.prodUnique M N with map_mul' := fun _ _ => rfl }
 
+end
+
+section curry
+
 /-- `MulEquiv` version of `Equiv.curry`. -/
 @[to_additive /-- `AddEquiv` version of `Equiv.curry`. -/]
-def curry (α β M : Type*) [Mul M] : (α × β → M) ≃* (α → β → M) where
+protected def curry (α β M : Type*) [Mul M] : (α × β → M) ≃* (α → β → M) where
   __ := Equiv.curry α β M
   map_mul' _ _ := by ext; simp
 
 variable {α β M : Type*} [Mul M]
 
-@[simp]
-lemma coe_curry : ⇑(curry α β M) = Function.curry := rfl
+@[to_additive (attr := simp)] lemma toEquiv_curry :
+    (MulEquiv.curry α β M : (α × β → M) ≃ (α → β → M)) = .curry α β M := rfl
 
-@[simp]
-lemma coe_curry_symm : ⇑(curry α β M).symm = Function.uncurry := rfl
+@[to_additive (attr := simp)]
+lemma coe_curry (x) : MulEquiv.curry α β M x = Function.curry x := rfl
 
-end
+@[to_additive (attr := simp)]
+lemma coe_curry_symm (x) : (MulEquiv.curry α β M).symm x = Function.uncurry x := rfl
+
+end curry
 
 section
 
