@@ -43,7 +43,7 @@ without first determining the normalizations once and for all.
 
 ## References
 
-* [Bourbaki, Nicolas. *Commutative algebra*] Chapter VI §3, Valuations.
+* [N. Bourbaki, *Commutative Algebra*][bourbaki1989b] Chapter VI §3, Valuations.
 * <https://en.wikipedia.org/wiki/Valuation_(algebra)#Extension_of_valuations>
 
 ## Tags
