@@ -74,6 +74,18 @@ theorem some_injective (α : Type*) : Function.Injective (@some α) := fun _ _ �
 theorem map_comp_some (f : α → β) : Option.map f ∘ some = some ∘ f :=
   rfl
 
+protected theorem isSome.bind {α β} {o : Option α}
+    (h : o.isSome) (f : α → Option β) :
+    o.bind f = f (o.get h) := by
+  simp (config := {singlePass := true}) only [Option.eq_some_of_isSome h]
+  ext b
+  constructor
+  · intro h2
+    simp only [Option.bind_some] at h2
+    exact h2
+  intro _
+  simpa only [Option.bind_some]
+
 @[congr]
 theorem bind_congr' {f g : α → Option β} {x y : Option α} (hx : x = y)
     (hf : ∀ a ∈ y, f a = g a) : x.bind f = y.bind g :=
