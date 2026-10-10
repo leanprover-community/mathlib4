@@ -1,6 +1,6 @@
 module
 
-public import Mathlib.Order.Defs.PartialOrder
+public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.ToAdditive
 
@@ -233,6 +233,27 @@ def DecidableLE3 (h : DecidableLE α) : ∀ a b : α, Decidable (a ≤ b) := h
 
 @[to_dual DecidableLE4_dual]
 def DecidableLE4 (h : DecidableLE α) (a b : α) : Decidable (a ≤ b) := h a b
+
+section
+
+variable {β : Type*} [LinearOrder β]
+
+@[to_dual]
+theorem nested_max (a b : β) :
+    (if (if a < b then b else a) < b then b else a) =
+      (if (if a < b then b else a) < b then b else a) := rfl
+
+example (a b : β) :
+    (if b < (if b < a then b else a) then b else a) =
+      (if b < (if b < a then b else a) then b else a) :=
+  nested_min a b
+
+@[to_dual]
+theorem nested_le_max (a b : β) :
+    (if (if a ≤ b then b else a) ≤ b then b else a) =
+      (if (if a ≤ b then b else a) ≤ b then b else a) := rfl
+
+end
 
 -- The arguments to `h` have been introduced, and swapped:
 /--
