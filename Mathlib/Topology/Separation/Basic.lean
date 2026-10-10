@@ -5,13 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Piecewise
-public import Mathlib.Topology.Separation.SeparatedNhds
-public import Mathlib.Topology.Compactness.LocallyCompact
-public import Mathlib.Topology.Bases
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Separation properties of topological spaces
@@ -88,6 +85,9 @@ theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
 
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
+
+instance [T0Space X] : IsPartialOrder X Specializes where
+  antisymm _ _ := (·.antisymm · |>.eq)
 
 /-- A topology inducing map from a T₀ space is injective. -/
 protected theorem Topology.IsInducing.injective [TopologicalSpace Y] [T0Space X] {f : X → Y}
@@ -218,7 +218,7 @@ theorem exists_open_singleton_of_finite [T0Space X] [Finite X] [Nonempty X] :
 
 theorem t0Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
     (hf : Function.Injective f) (hf' : Continuous f) [T0Space Y] : T0Space X :=
-  ⟨fun _ _ h => hf <| (h.map hf').eq⟩
+  ⟨fun _ _ h => hf (h.map hf').eq⟩
 
 protected theorem Topology.IsEmbedding.t0Space [TopologicalSpace Y] [T0Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T0Space X :=
@@ -251,12 +251,30 @@ theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set X, x ∈ 
   rcases h x y hxy with ⟨s, hxs, hys, hs⟩
   lift x to s using hxs; lift y to s using hys
   rw [← subtype_inseparable_iff] at hxy
-  exact congr_arg Subtype.val hxy.eq
+  congrm $(hxy.eq).val
 
 theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set X, x ∈ s ∧ IsOpen s ∧ T0Space s) : T0Space X :=
   T0Space.of_cover fun x _ hxy =>
     let ⟨s, hxs, hso, hs⟩ := h x
     ⟨s, hxs, (hxy.mem_open_iff hso).1 hxs, hs⟩
+
+variable (X) in
+-- since this instance is usually the desired instance, its priority is not lowered
+-- see Note [lower instance priority]
+instance [T0Space X] [Nontrivial X] : NontrivialTopology X := by
+  obtain ⟨a, b, hab⟩ := exists_pair_ne X
+  exact nontrivial_iff_exists_not_inseparable.mpr ⟨a, b, mt Inseparable.eq hab⟩
+
+theorem subsingleton_iff_indiscreteTopology [T0Space X] :
+    Subsingleton X ↔ IndiscreteTopology X := by
+  refine ⟨?_, Function.mtr ?_⟩
+  · intro; infer_instance
+  · rw [not_subsingleton_iff_nontrivial, not_indiscrete_iff]
+    intro; infer_instance
+
+theorem nontrivial_iff_nontrivialTopology [T0Space X] : Nontrivial X ↔ NontrivialTopology X := by
+  rw [← not_subsingleton_iff_nontrivial, ← not_indiscrete_iff, not_iff_not]
+  exact subsingleton_iff_indiscreteTopology
 
 /-- A topological space is called an R₀ space, if `Specializes` relation is symmetric.
 
@@ -284,6 +302,9 @@ theorem Specializes.symm (h : x ⤳ y) : y ⤳ x :=
 
 /-- In an R₀ space, the `Specializes` relation is symmetric, `Iff` version. -/
 theorem specializes_comm : x ⤳ y ↔ y ⤳ x := ⟨Specializes.symm, Specializes.symm⟩
+
+instance : IsEquiv X Specializes where
+  toSymm := specializes_symm
 
 /-- In an R₀ space, `Specializes` is equivalent to `Inseparable`. -/
 theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
@@ -621,13 +642,15 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set 
   rw [nhdsWithin_insert_of_ne h]
   exact mem_of_superset self_mem_nhdsWithin (subset_insert x s)
 
-lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    (insert x s : Set X) =ᶠ[𝓝 x] (insert x t : Set X) := by
-  simp_rw [eventuallyEq_set] at h ⊢
+lemma eventuallyEqSet_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    insert x s =ᶠ[𝓝 x] insert x t := by
+  simp_rw [eventuallyEqSet_iff] at h ⊢
   simp_rw [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x},
     nhdsWithin_union, eventually_sup, nhdsWithin_singleton,
     eventually_pure, union_singleton, mem_insert_iff, true_or, and_true]
   filter_upwards [nhdsWithin_compl_singleton_le x y h] with y using or_congr (Iff.rfl)
+
+@[deprecated (since := "2026-08-14")] alias eventuallyEq_insert := eventuallyEqSet_insert
 
 @[simp]
 theorem ker_nhds [T1Space X] (x : X) : (𝓝 x).ker = {x} := by
@@ -689,7 +712,7 @@ theorem Dense.sdiff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set
 obtains a dense set. -/
 theorem Dense.sdiff_finite [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     {t : Set X} (ht : t.Finite) : Dense (s \ t) := by
-  convert! hs.sdiff_finset ht.toFinset
+  convert hs.sdiff_finset ht.toFinset
   exact (Finite.coe_toFinset _).symm
 
 @[deprecated (since := "2026-06-03")] alias Dense.diff_finite := Dense.sdiff_finite
@@ -758,7 +781,7 @@ theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
     {x : X} {s t : Set X} {f : X → Y} (y : X) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
-  exact continuousWithinAt_congr_set (eventuallyEq_insert h)
+  exact continuousWithinAt_congr_set (eventuallyEqSet_insert h)
 
 theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)
@@ -806,6 +829,10 @@ instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X
 
 lemma Set.Finite.isDiscrete [T1Space X] {s : Set X} (hs : s.Finite) : IsDiscrete s :=
   ⟨@Finite.instDiscreteTopology _ _ _ hs.to_subtype⟩
+
+theorem subsingleton_iff_discrete_and_indiscrete :
+    Subsingleton X ↔ DiscreteTopology X ∧ IndiscreteTopology X :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ subsingleton_iff_indiscreteTopology.2 ‹_›⟩
 
 theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
     (f : X → Y) : ContinuousOn f s := by
@@ -1060,7 +1087,7 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
 
 theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X} (hc : Continuous f)
     (hspec : ∀ x y, f x ⤳ f y → x ⤳ y) : R1Space Y where
-  specializes_or_disjoint_nhds x y := (specializes_or_disjoint_nhds (f x) (f y)).imp (hspec x y) <|
+  specializes_or_disjoint_nhds x y := (specializes_or_disjoint_nhds (f x) (f y)).imp (hspec x y)
     ((hc.tendsto _).disjoint · (hc.tendsto _))
 
 theorem Topology.IsInducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) :

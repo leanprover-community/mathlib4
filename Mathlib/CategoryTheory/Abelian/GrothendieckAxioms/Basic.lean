@@ -10,7 +10,8 @@ public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Shapes.Countable
-public import Mathlib.Logic.Equiv.List
+
+import Mathlib.Logic.Equiv.List
 /-!
 
 # Grothendieck Axioms
@@ -54,8 +55,6 @@ public section
 namespace CategoryTheory
 
 open Limits CategoryTheory.Functor
-
-attribute [instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
 
 universe w w' w₂ w₂' v v' v'' u u' u''
 

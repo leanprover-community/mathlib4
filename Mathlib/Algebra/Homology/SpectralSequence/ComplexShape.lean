@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Complex shapes for pages of spectral sequences

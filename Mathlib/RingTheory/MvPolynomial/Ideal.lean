@@ -5,11 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.Ideal
-public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
-public import Mathlib.RingTheory.MvPolynomial.Basic
+
+import Mathlib.Algebra.MonoidAlgebra.Ideal
+import Mathlib.Algebra.MvPolynomial.Division
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
 /-!
@@ -75,9 +75,9 @@ lemma idealOfVars_eq_restrictSupportIdeal :
     idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
   apply le_antisymm
   · simp [idealOfVars, Ideal.span_le, Set.range_subset_iff, restrictSupportIdeal, X]
-  · simp only [SetLike.le_def, restrictSupportIdeal, Submodule.mem_mk, Submodule.mem_toAddSubmonoid,
-      ← Submodule.restrictScalars_mem R (idealOfVars σ R)]
-    rw [← SetLike.le_def, restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
+  · simp only [IsConcreteLE.le_iff, restrictSupportIdeal, Submodule.mem_mk,
+      Submodule.mem_toAddSubmonoid, ← Submodule.restrictScalars_mem R (idealOfVars σ R)]
+    rw [← IsConcreteLE.le_iff, restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
     intro x hx
     obtain ⟨i, hi⟩ : x.support.Nonempty := by aesop
     obtain ⟨c, rfl⟩ := le_iff_exists_add'.mp (show single i 1 ≤ x by simp_all; lia)
@@ -155,7 +155,7 @@ lemma span_leadingTerm_insert_zero (B : Set (MvPolynomial σ R)) :
     span (m.leadingTerm '' (insert 0 B)) = span (m.leadingTerm '' B) := by
   by_cases h : 0 ∈ B
   · rw [Set.insert_eq_of_mem h]
-  · simp [image_leadingTerm_insert_zero]
+  · simp
 
 lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p)) :
@@ -168,7 +168,7 @@ lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
   · rw [Set.mem_preimage, SetLike.mem_coe, ← C_mul_leadingCoeff_monomial_degree]
     exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨_, hp, rfl⟩)
   · rw [Set.mem_preimage, SetLike.mem_coe]
-    convert!
+    convert
       (span <| m.leadingTerm '' B).mul_mem_left (MvPolynomial.C (hB p hp).unit⁻¹.val) <|
         subset_span ⟨p, hp, rfl⟩
     rw [← C_mul_leadingCoeff_monomial_degree, ← mul_assoc, ← map_mul,

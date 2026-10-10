@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Topology
+
 import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
@@ -404,7 +405,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
   rw [← Real.smul_map_volume_mul_right (inv_ne_zero hc), IntegrableOn, Measure.restrict_smul,
     integrable_smul_measure (by simpa : ENNReal.ofReal |c⁻¹| ≠ 0) ENNReal.ofReal_ne_top,
     ← IntegrableOn, MeasurableEmbedding.integrableOn_map_iff A]
-  convert! hf using 1
+  convert hf using 1
   · ext; simp only [comp_apply]; congr 1; field
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp
 
@@ -528,7 +529,6 @@ theorem MonotoneOn.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : Monotone
   rw [intervalIntegrable_iff]
   exact (hu.integrableOn_isCompact isCompact_uIcc).mono_set Ioc_subset_Icc_self
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem AntitoneOn.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : AntitoneOn u (uIcc a b)) :
     IntervalIntegrable u μ a b :=
   hu.dual_right.intervalIntegrable
@@ -762,7 +762,7 @@ theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (hab : a ≤ b)
 theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}
     (h : ∀ᵐ x, x ∈ Ι a b → ‖f x‖ ≤ C) : ‖∫ x in a..b, f x‖ ≤ C * |b - a| := by
   rw [norm_integral_eq_norm_integral_uIoc]
-  convert! norm_setIntegral_le_of_norm_le_const_ae' _ h using 1
+  convert norm_setIntegral_le_of_norm_le_const_ae' _ h using 1
   · rw [uIoc, Real.volume_real_Ioc_of_le inf_le_sup, max_sub_min_eq_abs]
   · simp [uIoc, Real.volume_Ioc]
 
@@ -1212,13 +1212,13 @@ theorem integral_Ici_sub_Ici' [NullSingletonClass μ] (hf : IntegrableOn f (Ici 
 theorem integral_Iic_add_Ioi (h_left : IntegrableOn f (Iic b) μ)
     (h_right : IntegrableOn f (Ioi b) μ) :
     (∫ x in Iic b, f x ∂μ) + (∫ x in Ioi b, f x ∂μ) = ∫ (x : ℝ), f x ∂μ := by
-  convert! (setIntegral_union (Iic_disjoint_Ioi <| Eq.le rfl) measurableSet_Ioi h_left h_right).symm
+  convert (setIntegral_union (Iic_disjoint_Ioi <| Eq.le rfl) measurableSet_Ioi h_left h_right).symm
   rw [Iic_union_Ioi, Measure.restrict_univ]
 
 theorem integral_Iio_add_Ici (h_left : IntegrableOn f (Iio b) μ)
     (h_right : IntegrableOn f (Ici b) μ) :
     (∫ x in Iio b, f x ∂μ) + (∫ x in Ici b, f x ∂μ) = ∫ (x : ℝ), f x ∂μ := by
-  convert! (setIntegral_union (Iio_disjoint_Ici <| Eq.le rfl) measurableSet_Ici h_left h_right).symm
+  convert (setIntegral_union (Iio_disjoint_Ici <| Eq.le rfl) measurableSet_Ici h_left h_right).symm
   rw [Iio_union_Ici, Measure.restrict_univ]
 
 /-- If `μ` is a finite measure then `∫ x in a..b, c ∂μ = (μ (Iic b) - μ (Iic a)) • c`. -/
@@ -1406,7 +1406,7 @@ theorem integral_mono_interval {c d} (hca : c ≤ a) (hab : a ≤ b) (hbd : b �
     (hf : 0 ≤ᵐ[μ.restrict (Ioc c d)] f) (hfi : IntervalIntegrable f μ c d) :
     (∫ x in a..b, f x ∂μ) ≤ ∫ x in c..d, f x ∂μ := by
   rw [integral_of_le hab, integral_of_le (hca.trans (hab.trans hbd))]
-  exact setIntegral_mono_set hfi.1 hf (Ioc_subset_Ioc hca hbd).eventuallyLE
+  exact setIntegral_mono_set hfi.1 hf (Ioc_subset_Ioc hca hbd).eventuallySubset
 
 theorem abs_integral_mono_interval {c d} (h : Ι a b ⊆ Ι c d) (hf : 0 ≤ᵐ[μ.restrict (Ι c d)] f)
     (hfi : IntervalIntegrable f μ c d) : |∫ x in a..b, f x ∂μ| ≤ |∫ x in c..d, f x ∂μ| :=
@@ -1414,7 +1414,7 @@ theorem abs_integral_mono_interval {c d} (h : Ι a b ⊆ Ι c d) (hf : 0 ≤ᵐ[
   calc
     |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| := abs_integral_eq_abs_integral_uIoc f
     _ = ∫ x in Ι a b, f x ∂μ := abs_of_nonneg (MeasureTheory.integral_nonneg_of_ae hf')
-    _ ≤ ∫ x in Ι c d, f x ∂μ := setIntegral_mono_set hfi.def' hf h.eventuallyLE
+    _ ≤ ∫ x in Ι c d, f x ∂μ := setIntegral_mono_set hfi.def' hf h.eventuallySubset
     _ ≤ |∫ x in Ι c d, f x ∂μ| := le_abs_self _
     _ = |∫ x in c..d, f x ∂μ| := (abs_integral_eq_abs_integral_uIoc f).symm
 

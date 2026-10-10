@@ -6,9 +6,8 @@ Authors: Mario Carneiro, Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.Order.Ring.Cast
-public import Mathlib.Data.Nat.Cast.Basic
 
-import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Order.Int.LeastGreatest
 
 /-!
 # Floor and ceil
@@ -50,12 +49,12 @@ rounding, floor, ceil
 
 assert_not_exists Finset
 
-variable {F α β : Type*}
+variable {α β : Type*}
 
 /-! ### Floor semiring -/
 
 /-- A `FloorSemiring` is an ordered semiring over `α` with a function
-`floor : α → ℕ` satisfying `∀ (n : ℕ) (x : α), n ≤ ⌊x⌋ ↔ (n : α) ≤ x)`.
+`floor : α → ℕ` satisfying `∀ (n : ℕ) (x : α), n ≤ ⌊x⌋ ↔ (n : α) ≤ x`.
 Note that many lemmas require a `LinearOrder`. Please see the above `TODO`. -/
 class FloorSemiring (α) [Semiring α] [PartialOrder α] where
   /-- `FloorSemiring.floor a` computes the greatest natural `n` such that `(n : α) ≤ a`. -/
@@ -152,7 +151,7 @@ end OrderedSemiring
 
 section LinearOrderedSemiring
 
-variable [Semiring α] [LinearOrder α] [FloorSemiring α] {a b : α} {n : ℕ}
+variable [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} {n : ℕ}
 
 theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
@@ -167,7 +166,7 @@ end Nat
 /-! ### Floor rings -/
 
 /-- A `FloorRing` is a linear ordered ring over `α` with a function
-`floor : α → ℤ` satisfying `∀ (z : ℤ) (a : α), z ≤ floor a ↔ (z : α) ≤ a)`.
+`floor : α → ℤ` satisfying `∀ (z : ℤ) (a : α), z ≤ floor a ↔ (z : α) ≤ a`.
 -/
 class FloorRing (α) [Ring α] [LinearOrder α] where
   /-- `FloorRing.floor a` computes the greatest integer `z` such that `(z : α) ≤ a`. -/
@@ -242,7 +241,7 @@ noncomputable def FloorRing.ofBounded
 
 namespace Int
 
-variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
+variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a : α}
 
 /-- `Int.floor a` is the greatest integer `z` such that `z ≤ a`. It is denoted with `⌊a⌋`. -/
 def floor : α → ℤ :=
@@ -384,7 +383,7 @@ end FloorRing
 
 namespace Int
 
-variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
+variable [Ring α] [LinearOrder α] [FloorRing α] {a : α}
 
 @[bound]
 theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by

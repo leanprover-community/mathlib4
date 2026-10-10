@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
@@ -22,7 +22,9 @@ set `X`.
 
 universe w v v' u u'
 
-open CategoryTheory Limits AlgebraicTopology Simplicial TypeCat
+open CategoryTheory Limits AlgebraicTopology TypeCat
+
+open scoped Simplicial
 
 variable {C : Type u} [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 

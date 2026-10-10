@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Logic.Encodable.Lattice
-public import Mathlib.Order.Filter.AtTopBot.Finset
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
+
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Order.Filter.AtTopBot.Finset
 
 /-!
 # Infinite sums and products over `ℕ` and `ℤ`
@@ -20,8 +22,6 @@ several results relating sums and products on `ℕ` to sums and products on `ℤ
 -/
 
 public section
-
-noncomputable section
 
 open Filter Finset Function Encodable
 
@@ -173,7 +173,7 @@ theorem rel_iSup_prod [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R : 
 theorem rel_sup_mul [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R : M → M → Prop)
     (m_iSup : ∀ s : ℕ → α, R (m (⨆ i, s i)) (∏' i, m (s i))) (s₁ s₂ : α) :
     R (m (s₁ ⊔ s₂)) (m s₁ * m s₂) := by
-  convert! rel_iSup_tprod m m0 R m_iSup fun b ↦ cond b s₁ s₂
+  convert rel_iSup_tprod m m0 R m_iSup fun b ↦ cond b s₁ s₂
   · simp only [iSup_bool_eq, cond]
   · rw [tprod_fintype, Fintype.prod_bool, cond, cond]
 

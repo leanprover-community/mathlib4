@@ -5,12 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Limits.Presheaf
-public import Mathlib.CategoryTheory.Limits.Yoneda
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
 # Preservation of (co)limits in the functor category
@@ -45,7 +42,6 @@ section
 
 variable {C : Type u} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{u} D]
-variable {E : Type u} [Category.{v₂} E]
 
 /-- If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
 `F : C ⥤ D` also preserves colimits.

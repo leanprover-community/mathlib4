@@ -35,7 +35,9 @@ endowed with an order.
 @[expose] public section
 
 
-open Set Function Filter Topology
+open Set Function Filter
+
+open scoped Topology
 
 /-!
 ### Definition and notation
@@ -139,9 +141,6 @@ theorem mem_omegaLimit_singleton_iff_mapClusterPt (x : α) (y : β) :
   simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
     mem_preimage]
 
-@[deprecated (since := "2026-03-31")]
-alias mem_omegaLimit_singleton_iff_map_cluster_point := mem_omegaLimit_singleton_iff_mapClusterPt
-
 /-!
 ### Set operations and omega limits
 -/
@@ -160,9 +159,9 @@ theorem omegaLimit_union : ω f ϕ (s₁ ∪ s₂) = ω f ϕ s₁ ∪ ω f ϕ s�
     contrapose!
     simp only [← subset_empty_iff]
     rintro ⟨⟨n₁, hn₁, h₁⟩, ⟨n₂, hn₂, h₂⟩⟩
-    refine ⟨n₁ ∩ n₂, inter_mem hn₁ hn₂, h₁.mono fun t ↦ ?_, h₂.mono fun t ↦ ?_⟩
-    exacts [Subset.trans <| inter_subset_inter_right _ <| preimage_mono inter_subset_left,
-      Subset.trans <| inter_subset_inter_right _ <| preimage_mono inter_subset_right]
+    refine ⟨n₁ ∩ n₂, inter_mem hn₁ hn₂, ?_, ?_⟩
+    · gconvert h₁; exact inter_subset_left
+    · gconvert h₂; exact inter_subset_right
   · rintro (hy | hy)
     exacts [omegaLimit_mono_right _ _ subset_union_left hy,
       omegaLimit_mono_right _ _ subset_union_right hy]
@@ -196,9 +195,6 @@ theorem omegaLimit_subset_closure_image2 {u : Set τ} (hu : u ∈ f) :
   intro _ hx
   rw [mem_iInter] at hx
   exact hx ⟨u, hu⟩
-
-@[deprecated (since := "2026-03-31")]
-alias omegaLimit_subset_closure_fw_image := omegaLimit_subset_closure_image2
 
 -- An instance with better keys
 instance : Inhabited f.sets := Filter.inhabitedMem

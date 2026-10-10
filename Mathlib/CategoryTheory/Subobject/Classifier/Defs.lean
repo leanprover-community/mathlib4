@@ -5,8 +5,8 @@ Authors: Charlie Conneen, Pablo Donato, Klaus Gy
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 
 /-!
@@ -97,9 +97,6 @@ structure Classifier (C : Type u) [Category.{v} C] where
   uniq {U X : C} (m : U ⟶ X) [Mono m] {χ₀' : U ⟶ Ω₀} {χ' : X ⟶ Ω}
     (hχ' : IsPullback m χ₀' χ' truth) : χ' = χ m
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier := Classifier
-
 namespace Classifier
 
 attribute [instance] mono_truth
@@ -125,9 +122,6 @@ def mkOfTerminalΩ₀
   isPullback m _ := isPullback m
   uniq m _ χ₀' χ' hχ' := uniq m χ' ((t.hom_ext χ₀' (t.from _)) ▸ hχ')
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.mkOfTerminalΩ₀ := mkOfTerminalΩ₀
-
 instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
   { default := c.χ₀ Y,
     uniq f :=
@@ -140,14 +134,8 @@ instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
 Prefer `c.χ₀` over `c.isTerminalΩ₀.from`. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.isTerminalΩ₀ := isTerminalΩ₀
-
 @[simp]
 lemma isTerminalFrom_eq_χ₀ (c : Classifier C) : c.isTerminalΩ₀.from = c.χ₀ := rfl
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.isTerminalFrom_eq_χ₀ := isTerminalFrom_eq_χ₀
 
 end Subobject.Classifier
 
@@ -156,9 +144,6 @@ open CategoryTheory.Subobject
 class HasSubobjectClassifier (C : Type u) [Category.{v} C] : Prop where
   /-- There is some classifier. -/
   exists_classifier : Nonempty (Subobject.Classifier C)
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier := HasSubobjectClassifier
 
 namespace HasSubobjectClassifier
 
@@ -170,29 +155,17 @@ variable (C)
 /-- Notation for the `Ω₀` in an arbitrary choice of a subobject classifier -/
 abbrev Ω₀ : C := HasSubobjectClassifier.exists_classifier.some.Ω₀
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.Ω₀ := Ω₀
-
 /-- Notation for the `Ω` in an arbitrary choice of a subobject classifier -/
 abbrev Ω : C := HasSubobjectClassifier.exists_classifier.some.Ω
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.Ω := Ω
-
 /-- Notation for the "truth arrow" in an arbitrary choice of a subobject classifier -/
 abbrev truth : Ω₀ C ⟶ Ω C := HasSubobjectClassifier.exists_classifier.some.truth
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.truth := truth
 
 variable {C} {U X : C} (m : U ⟶ X) [Mono m]
 
 /-- returns the characteristic morphism of the subobject `(m : U ⟶ X) [Mono m]` -/
 def χ : X ⟶ Ω C :=
   HasSubobjectClassifier.exists_classifier.some.χ m
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.χ := χ
 
 /-- The diagram
 ```
@@ -208,9 +181,6 @@ is a pullback square.
 lemma isPullback_χ : IsPullback m (Classifier.χ₀ _ U) (χ m) (truth C) :=
   Classifier.isPullback _ m
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.isPullback_χ := isPullback_χ
-
 /-- The diagram
 ```
       U ---------m----------> X
@@ -225,30 +195,18 @@ commutes.
 @[reassoc]
 lemma comm : m ≫ χ m = Classifier.χ₀ _ U ≫ truth C := (isPullback_χ m).w
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.comm := comm
-
 /-- `χ m` is the only map for which the associated square
 is a pullback square.
 -/
 lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.χ₀ _ U) χ' (truth C)) : χ' = χ m :=
   Classifier.uniq _ m hχ'
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.unique := unique
-
 instance truthIsSplitMono : IsSplitMono (truth C) :=
   Subobject.Classifier.isTerminalΩ₀.isSplitMono_from _
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.truthIsSplitMono := truthIsSplitMono
 
 /-- `truth C` is a regular monomorphism (because it is split). -/
 noncomputable def truthIsRegularMono : RegularMono (truth C) :=
   RegularMono.ofIsSplitMono (truth C)
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.truthIsRegularMono := truthIsRegularMono
 
 instance : IsRegularMono (truth C) := ⟨⟨truthIsRegularMono⟩⟩
 
@@ -272,18 +230,12 @@ instance isRegularMonoCategory : IsRegularMonoCategory C where
     fun m => ⟨⟨regularOfIsPullbackFstOfRegular truthIsRegularMono
       (isPullback_χ m).w (isPullback_χ m).isLimit⟩⟩
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.isRegularMonoCategory := isRegularMonoCategory
-
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects
   isomorphisms. This holds for any balanced category.
 -/
 instance reflectsIsomorphisms (D : Type u₀) [Category.{v₀} D] (F : C ⥤ D) [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.reflectsIsomorphisms := reflectsIsomorphisms
 
 /-- If the source of a faithful functor is the opposite category of one with a subobject classifier,
   the same holds -- the functor reflects isomorphisms.
@@ -292,9 +244,6 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D] (F : Cᵒᵖ
     [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.HasClassifier.reflectsIsomorphismsOp := reflectsIsomorphismsOp
 
 end
 end HasSubobjectClassifier
@@ -315,24 +264,15 @@ variable {C : Type u} [Category.{v} C] [HasPullbacks C] (𝒞 : Classifier C)
 abbrev truth_as_subobject : Subobject 𝒞.Ω :=
   Subobject.mk 𝒞.truth
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.truth_as_subobject := truth_as_subobject
-
 lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
     ∃ (Z : C) (i : Z ⟶ X) (_ : Mono i), φ = 𝒞.χ i :=
   ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, 𝒞.uniq _ (by
-    convert! IsPullback.of_hasPullback φ 𝒞.truth)⟩
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.surjective_χ := surjective_χ
+    convert IsPullback.of_hasPullback φ 𝒞.truth)⟩
 
 @[simp]
 lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
     (Subobject.pullback (𝒞.χ i)).obj 𝒞.truth_as_subobject = .mk i :=
   Subobject.pullback_obj_mk (𝒞.isPullback i).flip
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.pullback_χ_obj_mk_truth := pullback_χ_obj_mk_truth
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -348,10 +288,6 @@ lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
   rw [Iso.eq_inv_comp, comp_id, underlyingIso_hom_comp_eq_mk]
   rfl
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.χ_pullback_obj_mk_truth_arrow :=
-  χ_pullback_obj_mk_truth_arrow
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Any subobject classifier `Ω` represents the subobjects functor `Subobject.presheaf`. -/
 noncomputable def representableBy :
@@ -363,10 +299,6 @@ noncomputable def representableBy :
     right_inv x := by simp
   }
   homEquiv_comp _ _ := by simp [pullback_comp]
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.representableBy :=
-  representableBy
 
 end RepresentableBy
 end Subobject.Classifier
@@ -381,9 +313,6 @@ variable {C : Type u} [Category.{v} C] [HasPullbacks C] (Ω : C)
 is representable by some object `Ω`. -/
 abbrev SubobjectRepresentableBy := (Subobject.presheaf C).RepresentableBy Ω
 
-@[deprecated (since := "2026-03-06")]
-alias Classifier.SubobjectRepresentableBy := SubobjectRepresentableBy
-
 variable {Ω} (h : SubobjectRepresentableBy Ω)
 
 namespace SubobjectRepresentableBy
@@ -392,23 +321,11 @@ namespace SubobjectRepresentableBy
 given `h : SubobjectRepresentableBy Ω`. -/
 def Ω₀ : Subobject Ω := h.homEquiv (𝟙 Ω)
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.Ω₀ := Ω₀
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.Ω₀ := Ω₀
-
 /-- `h.homEquiv` acts like an "object comprehension" operator: it maps any characteristic map
 `f : X ⟶ Ω` to the associated subobject of `X`, obtained by pulling back `h.Ω₀` along `f`. -/
 lemma homEquiv_eq {X : C} (f : X ⟶ Ω) :
     h.homEquiv f = (Subobject.pullback f).obj h.Ω₀ := by
   simpa using! h.homEquiv_comp f (𝟙 _)
-
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.homEquiv_eq := homEquiv_eq
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.homEquiv_eq := homEquiv_eq
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- For any subobject `x`, the pullback of `h.Ω₀` along the characteristic map of `x`
@@ -417,14 +334,6 @@ lemma pullback_homEquiv_symm_obj_Ω₀ {X : C} (x : Subobject X) :
     (Subobject.pullback (h.homEquiv.symm x)).obj h.Ω₀ = x := by
   rw [← homEquiv_eq, Equiv.apply_symm_apply]
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.pullback_homEquiv_symm_obj_Ω₀ :=
-  pullback_homEquiv_symm_obj_Ω₀
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.pullback_homEquiv_symm_obj_Ω₀ :=
-  pullback_homEquiv_symm_obj_Ω₀
-
 section
 
 variable {U X : C} (m : U ⟶ X) [Mono m]
@@ -432,24 +341,12 @@ variable {U X : C} (m : U ⟶ X) [Mono m]
 /-- `h.χ m` is the characteristic map of monomorphism `m` given by the bijection `h.homEquiv`. -/
 def χ : X ⟶ Ω := h.homEquiv.symm (Subobject.mk m)
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.χ := χ
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.χ := χ
-
 /-- `h.iso m` is the isomorphism between `m` and the pullback of `Ω₀`
     along the characteristic map of `m`. -/
 noncomputable def iso : MonoOver.mk m ≅
     Subobject.representative.obj ((Subobject.pullback (h.χ m)).obj h.Ω₀) :=
   (Subobject.representativeIso (.mk m)).symm ≪≫ Subobject.representative.mapIso
     (eqToIso (h.pullback_homEquiv_symm_obj_Ω₀ (.mk m)).symm)
-
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso := iso
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso := iso
 
 /-- `h.π m` is the first projection in the following pullback square:
 
@@ -465,26 +362,14 @@ alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso := iso
 noncomputable def π : U ⟶ Subobject.underlying.obj h.Ω₀ :=
   (h.iso m).hom.hom.left ≫ Subobject.pullbackπ (h.χ m) h.Ω₀
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.π := π
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.π := π
-
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma iso_inv_left_π :
     (h.iso m).inv.hom.left ≫ h.π m = Subobject.pullbackπ (h.χ m) h.Ω₀ := by
   dsimp only [π]
   rw [← Over.comp_left_assoc]
-  convert! Category.id_comp _ using 2
+  convert Category.id_comp _ using 2
   exact (MonoOver.forget _ ⋙ Over.forget _).congr_map (h.iso m).inv_hom_id
-
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_left_π := iso_inv_left_π
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_left_π := iso_inv_left_π
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -495,14 +380,6 @@ lemma iso_inv_hom_left_comp :
       ((Subobject.pullback (h.χ m)).obj h.Ω₀).arrow :=
   MonoOver.w (h.iso m).inv
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_hom_left_comp :=
-  iso_inv_hom_left_comp
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_hom_left_comp :=
-  iso_inv_hom_left_comp
-
 set_option backward.isDefEq.respectTransparency false in
 lemma isPullback {U X : C} (m : U ⟶ X) [Mono m] :
     IsPullback m (h.π m) (h.χ m) h.Ω₀.arrow := by
@@ -511,12 +388,6 @@ lemma isPullback {U X : C} (m : U ⟶ X) [Mono m] :
     (Iso.refl _) (Iso.refl _)
   all_goals simp [MonoOver.forget]
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.isPullback := isPullback
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.isPullback := isPullback
-
 variable {m}
 set_option backward.isDefEq.respectTransparency.types false in
 lemma uniq {χ' : X ⟶ Ω} {π : U ⟶ h.Ω₀}
@@ -524,12 +395,6 @@ lemma uniq {χ' : X ⟶ Ω} {π : U ⟶ h.Ω₀}
   apply h.homEquiv.injective
   simp only [χ, Equiv.apply_symm_apply, homEquiv_eq]
   simpa using! Subobject.pullback_obj_mk sq.flip
-
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.uniq := uniq
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.uniq := uniq
 
 end
 
@@ -543,41 +408,17 @@ noncomputable def isTerminalΩ₀ : IsTerminal (h.Ω₀ : C) :=
     rw [← cancel_mono h.Ω₀.arrow, h.uniq this,
       ← (h.isPullback (𝟙 X)).w, Category.id_comp])
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.isTerminalΩ₀ := isTerminalΩ₀
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.isTerminalΩ₀ := isTerminalΩ₀
-
 /-- The unique map to the terminal object. -/
 noncomputable def χ₀ (U : C) : U ⟶ h.Ω₀ := h.isTerminalΩ₀.from U
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.χ₀ := χ₀
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.χ₀ := χ₀
-
 include h in
 lemma hasTerminal : HasTerminal C := h.isTerminalΩ₀.hasTerminal
-
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.hasTerminal := hasTerminal
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.hasTerminal := hasTerminal
 
 variable [HasTerminal C]
 
 /-- `h.isoΩ₀` is the unique isomorphism from `h.Ω₀` to the canonical terminal object `⊤_ C`. -/
 noncomputable def isoΩ₀ : (h.Ω₀ : C) ≅ ⊤_ C :=
   h.isTerminalΩ₀.conePointUniqueUpToIso (limit.isLimit _)
-
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.isoΩ₀ := isoΩ₀
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.isoΩ₀ := isoΩ₀
 
 /-- Any representation `Ω` of `Subobject.presheaf C` gives a subobject classifier with truth values
 object `Ω`. -/
@@ -597,12 +438,6 @@ noncomputable def classifier : Subobject.Classifier C where
         (by simp) (h.isTerminalΩ₀.hom_ext _ _) (by simp) (by simp)
     exact h.uniq this
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-06")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.classifier := classifier
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.classifier := classifier
-
 end SubobjectRepresentableBy
 end FromRepresentation
 
@@ -619,9 +454,6 @@ theorem hasSubobjectClassifier_iff_isRepresentable [HasPullbacks C] :
     constructor; constructor
     exact SubobjectRepresentableBy.classifier h
 
-@[deprecated (since := "2026-03-06")]
-alias isRepresentable_hasClassifier_iff := hasSubobjectClassifier_iff_isRepresentable
-
 end Representability
 
 namespace Subobject.Classifier
@@ -630,46 +462,28 @@ section Iso
 /-- The unique morphism between classifiers mapping each others characteristic maps -/
 def hom (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ⟶ 𝒞₂.Ω := 𝒞₂.χ 𝒞₁.truth
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.hom := hom
-
 @[reassoc (attr := simp)]
 lemma hom_comp_hom (𝒞₁ 𝒞₂ 𝒞₃ : Classifier C) : 𝒞₁.hom 𝒞₂ ≫ 𝒞₂.hom 𝒞₃ = 𝒞₁.hom 𝒞₃ :=
   𝒞₃.uniq _ <| (𝒞₂.isPullback _).paste_vert (𝒞₃.isPullback _)
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.hom_comp_hom := hom_comp_hom
-
 @[simp]
 lemma hom_refl (𝒞₁ : Classifier C) : 𝒞₁.hom 𝒞₁ = 𝟙 _ :=
   (𝒞₁.uniq (χ₀' := 𝟙 _) 𝒞₁.truth IsPullback.of_id_snd).symm
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.hom_refl := hom_refl
 
 @[reassoc (attr := simp)]
 lemma χ_comp_hom {𝒞₁ 𝒞₂ : Classifier C} {X Y : C} (m : X ⟶ Y) [Mono m] :
     𝒞₁.χ m ≫ 𝒞₁.hom 𝒞₂ = 𝒞₂.χ m :=
   𝒞₂.uniq m ((𝒞₁.isPullback m).paste_vert (𝒞₂.isPullback 𝒞₁.truth))
 
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.χ_comp_hom := χ_comp_hom
-
 @[reassoc (attr := simp)]
 lemma truth_comp_hom {𝒞₁ 𝒞₂ : Classifier C} :
   𝒞₁.truth ≫ 𝒞₁.hom 𝒞₂ = 𝒞₂.χ₀ _ ≫ 𝒞₂.truth := (𝒞₂.isPullback _).w
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.truth_comp_hom := truth_comp_hom
 
 /-- a concrete equivalence of any two subobject classifiers -/
 @[simps]
 def uniqueUpToIso (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ≅ 𝒞₂.Ω where
   hom := 𝒞₁.hom 𝒞₂
   inv := 𝒞₂.hom 𝒞₁
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.uniqueUpToIso := uniqueUpToIso
 
 instance (𝒞₁ 𝒞₂ : Classifier C) : IsIso (𝒞₁.hom 𝒞₂) := (𝒞₁.uniqueUpToIso 𝒞₂).isIso_hom
 
@@ -693,9 +507,6 @@ def ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω) (eΩ₀ : 
       apply 𝒞.uniq m (χ₀' := χ₀' ≫ eΩ₀.inv)
       exact hχ'.paste_vert (IsPullback.of_vert_isIso_mono (by simp [ht]))
     simpa using this =≫ eΩ.hom
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.ofIso := ofIso
 
 end Iso
 
@@ -722,9 +533,6 @@ def ofEquivalence (𝒞₁ : Classifier C) (e : C ≌ D) : Classifier D where
       apply 𝒞₁.uniq (e.inverse.map m) (χ₀' := e.inverse.map χ₀' ≫ e.unitInv.app _)
       exact (hχ'.map e.inverse).paste_vert <| IsPullback.of_vert_isIso_mono .mk
     simpa using congr(e.counitInv.app G ≫ e.functor.map $this)
-
-@[deprecated (since := "2026-03-06")]
-alias _root_.CategoryTheory.Classifier.ofEquivalence := ofEquivalence
 
 end Equivalence
 

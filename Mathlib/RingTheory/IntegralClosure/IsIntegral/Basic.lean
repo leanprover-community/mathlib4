@@ -5,11 +5,14 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+public import Mathlib.Algebra.Algebra.IsSimpleRing
+public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Finiteness.Subalgebra
-public import Mathlib.RingTheory.Polynomial.Tower
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+
+import Mathlib.RingTheory.Adjoin.Polynomial.Basic
+import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Properties of integral elements.
@@ -69,7 +72,7 @@ theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra 
     [IsScalarTower R A B] [Algebra A C] [IsScalarTower R A C] {b : B}
     [FunLike F B C] [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
-  rw [IsIntegral, ← ((AlgHomClass.toAlgHom f).restrictScalars R).comp_algebraMap]
+  rw [IsIntegral, ← ((AlgHom.ofClass f).restrictScalars R).comp_algebraMap]
   exact .map hb (RingHomClass.toRingHom f)
 
 section
@@ -105,7 +108,7 @@ theorem IsIntegral.fg_adjoin_singleton [Algebra R B] {x : B} (hx : IsIntegral R 
     (Algebra.adjoin R {x}).toSubmodule.FG := by
   classical
   rcases hx with ⟨f, hfm, hfx⟩
-  use (Finset.range <| f.natDegree).image (x ^ ·)
+  use (Finset.range f.natDegree).image (x ^ ·)
   exact span_range_natDegree_eq_adjoin hfm (by rwa [aeval_def])
 
 variable (f : R →+* B)
@@ -121,8 +124,6 @@ theorem RingHom.isIntegralElem_one : f.IsIntegralElem 1 :=
 
 theorem isIntegral_one [Algebra R B] : IsIntegral R (1 : B) :=
   (algebraMap R B).isIntegralElem_one
-
-variable (f : R →+* S)
 
 theorem IsIntegral.of_pow [Algebra R B] {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
     IsIntegral R x :=
@@ -199,6 +200,12 @@ protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x :
 theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A} [FaithfulSMul A B] :
     IsIntegral R (algebraMap A B x) ↔ IsIntegral R x :=
   isIntegral_algHom_iff (IsScalarTower.toAlgHom R A B) (FaithfulSMul.algebraMap_injective A B)
+
+theorem isIntegral_ratCast_iff {K : Type*} [DivisionRing K] [CharZero K] [Algebra R ℚ] [Algebra R K]
+    [IsScalarTower R ℚ K] {q : ℚ} : IsIntegral R (q : K) ↔ IsIntegral R q :=
+  isIntegral_algebraMap_iff (A := ℚ)
+
+@[deprecated (since := "2026-07-14")] alias IsIntegral.ratCast_iff := isIntegral_ratCast_iff
 
 theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
     IsIntegral R r ↔ ∃ s : Set R, s.Finite ∧ IsIntegral (Subring.closure s) r := by

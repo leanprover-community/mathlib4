@@ -5,9 +5,9 @@ Authors: Fabian Odermatt
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
-public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
 
 /-!
 # Simplicial homotopies induce chain homotopies
@@ -25,7 +25,9 @@ of the chain homotopy as the opposite of alternating sum `∑ i, (-1)^i • H.h 
 universe v u
 
 open CategoryTheory CategoryTheory.SimplicialObject
-open SimplexCategory Simplicial Opposite AlgebraicTopology
+open SimplexCategory Opposite AlgebraicTopology
+
+open scoped Simplicial
 
 namespace CategoryTheory.SimplicialObject.Homotopy
 

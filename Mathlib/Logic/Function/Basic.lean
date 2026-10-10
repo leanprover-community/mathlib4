@@ -5,13 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Defs
-public import Mathlib.Logic.Basic
-public import Mathlib.Logic.Function.Defs
-public import Mathlib.Logic.ExistsUnique
-public import Mathlib.Logic.Nonempty
-public import Mathlib.Logic.Nontrivial.Defs
 public import Batteries.Tactic.Init
+public import Mathlib.Basic.ExistsUnique
+public import Mathlib.Basic.Logic.Basic
+public import Mathlib.Basic.Nonempty
+public import Mathlib.Basic.Nontrivial.Defs
+public import Mathlib.Logic.Function.Defs
 public import Mathlib.Order.Defs.Unbundled
 
 
@@ -48,6 +47,10 @@ theorem const_injective [Nonempty α] : Injective (const α : β → α → β) 
 @[simp]
 theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂ ↔ y₁ = y₂ :=
   ⟨fun h ↦ const_injective h, fun h ↦ h ▸ rfl⟩
+
+theorem eq_const_iff {f : α → β} {b : β} :
+    f = const α b ↔ ∀ a : α, f a = b := by
+  simp only [funext_iff, const_apply]
 
 section onFun
 
@@ -408,13 +411,9 @@ theorem IsPartialInv.surjective_getD {α β} {f : α → β} {g} (H : IsPartialI
     Function.Surjective (g · |>.getD x) :=
   fun y => ⟨f y, by simp [H.eq]⟩
 
-@[deprecated (since := "2026-03-11")] alias isPartialInv_left := IsPartialInv.eq
-
 theorem IsPartialInv.injective {α β} {f : α → β} {g} (H : IsPartialInv f g) :
     Injective f := fun _ _ h ↦
   Option.some.inj <| ((H _ _).2 h).symm.trans ((H _ _).2 rfl)
-
-@[deprecated (since := "2026-03-11")] alias injective_of_isPartialInv := IsPartialInv.injective
 
 theorem injective_of_isPartialInv_right {α β} {f : α → β} {g} (H : IsPartialInv f g) (x y b)
     (h₁ : b ∈ g x) (h₂ : b ∈ g y) : x = y :=
@@ -504,8 +503,6 @@ theorem Injective.isPartialInv {α β} {f : α → β} (I : Injective f) : IsPar
     else by rw [hpi, dite_eq_right h'] at h; contradiction,
   fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
               (dite_eq_left h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
-
-@[deprecated (since := "2026-03-11")] alias partialInv_of_injective := Injective.isPartialInv
 
 theorem partialInv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=
   I.isPartialInv.eq
@@ -599,6 +596,10 @@ theorem injective_surjInv (h : Surjective f) : Injective (surjInv h) :=
 theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α → β) :
     Surjective f :=
   fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
+
+@[nontriviality] theorem bijective_of_subsingleton' [Nonempty α] [Subsingleton α] [Subsingleton β]
+    (f : α → β) : Bijective f :=
+  ⟨injective_of_subsingleton f, surjective_to_subsingleton f⟩
 
 theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Surjective (f i)) : Surjective (Pi.map f) := fun g ↦
@@ -906,6 +907,15 @@ lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ 
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=
   funext fun a ↦ hf.extend_apply g e' a
 
+theorem Injective.extend_update [DecidableEq α] [DecidableEq β] (hf : Injective f) (g : α → γ)
+    (e : β → γ) (i : α) (a : γ) :
+    extend f (update g i a) e = update (extend f g e) (f i) a := by
+  ext j
+  by_cases h : ∃ k, f k = j
+  · obtain ⟨k, rfl⟩ := h
+    simp [hf, update_apply, hf.eq_iff]
+  · grind [extend_apply']
+
 theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
     Surjective fun g : β → γ ↦ g ∘ f :=
   fun g ↦ ⟨extend f g g₀, Function.extend_comp hf _ _⟩
@@ -1082,13 +1092,13 @@ protected theorem uncurry {α β γ : Type*} {f : α → β → γ} (hf : Inject
 /-- As a map from the left argument to a unary function, `f` is injective. -/
 theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun _ _ h ↦
   let ⟨b⟩ := ‹Nonempty β›
-  hf.left b <| (congr_fun h b :)
+  hf.left b (congr_fun h b :)
 
 /-- As a map from the right argument to a unary function, `f` is injective. -/
 theorem right' (hf : Injective2 f) [Nonempty α] : Function.Injective fun b a ↦ f a b :=
   fun _ _ h ↦
     let ⟨a⟩ := ‹Nonempty α›
-    hf.right a <| (congr_fun h a :)
+    hf.right a (congr_fun h a :)
 
 theorem eq_iff (hf : Injective2 f) {a₁ a₂ b₁ b₂} : f a₁ b₁ = f a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨fun h ↦ hf h, fun ⟨h1, h2⟩ ↦ congr_arg₂ f h1 h2⟩

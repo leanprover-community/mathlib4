@@ -6,14 +6,14 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Summable
-public import Mathlib.Analysis.Analytic.Binomial
-public import Mathlib.Analysis.Complex.Liouville
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.Tactic.NormNum.NatFactorial
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
-public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+
+import Mathlib.Analysis.Analytic.Binomial
+import Mathlib.Analysis.Complex.Liouville
+import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 
@@ -102,18 +102,18 @@ lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
 
 lemma ω₁_div_two_notMem_lattice : L.ω₁ / 2 ∉ L.lattice := by
   simpa [inv_mul_eq_div] using
-    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 1 / 2) (β := 0)).not.mpr (by norm_num)
+    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 1 / 2) (β := 0)).not.mpr (by simp)
 
 lemma ω₂_div_two_notMem_lattice : L.ω₂ / 2 ∉ L.lattice := by
   simpa [inv_mul_eq_div] using
-    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 0) (β := 1 / 2)).not.mpr (by norm_num)
+    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 0) (β := 1 / 2)).not.mpr (by simp)
 
 -- helper lemma to connect to the ZLattice API
 lemma lattice_eq_span_range_basis :
     L.lattice = Submodule.span ℤ (Set.range L.basis) := by
   have : Finset.univ (α := Fin 2) = {0, 1} := rfl
   rw [lattice, ← Set.image_univ, ← Finset.coe_univ, this]
-  simp [Set.image_insert_eq]
+  simp
 
 instance : DiscreteTopology L.lattice := L.lattice_eq_span_range_basis ▸ inferInstance
 
@@ -122,13 +122,13 @@ instance : IsZLattice ℝ L.lattice := by
   infer_instance
 
 lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
-  @AddSubgroup.isClosed_of_discrete _ _ _ _ _ L.lattice.toAddSubgroup
+  @AddSubgroup.isClosed_of_discreteTopology _ _ _ _ _ L.lattice.toAddSubgroup
     (inferInstanceAs (DiscreteTopology L.lattice))
 
 lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
-  convert!
+  convert
     L.isClosed_lattice.isClosedMap_subtype_val _ (isClosed_discrete (α := L.lattice) ((↑) ⁻¹' s))
-  convert! Set.image_preimage_eq_inter_range.symm using 1
+  convert Set.image_preimage_eq_inter_range.symm using 1
   simpa
 
 lemma isOpen_compl_lattice_sdiff {s : Set ℂ} : IsOpen (L.lattice \ s)ᶜ :=
@@ -303,7 +303,7 @@ lemma hasSum_weierstrassP (z : ℂ) :
 lemma differentiableOn_weierstrassP :
     DifferentiableOn ℂ ℘[L] L.latticeᶜ := by
   rw [← L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
-  convert! L.differentiableOn_weierstrassPExcept _
+  convert L.differentiableOn_weierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
@@ -494,7 +494,7 @@ lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : ℘[L] (z + l) = ℘[L] z
       exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₁_mem_lattice⟩ L.ω₁_div_two_notMem_lattice
     · ext i
       exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₂_mem_lattice⟩ L.ω₂_div_two_notMem_lattice
-  exact congr_fun (this l.2) _
+  congrm $(this l.2) _
 
 lemma periodic_weierstrassP (l : L.lattice) : ℘[L].Periodic l :=
   (L.weierstrassP_add_coe · l)
@@ -554,7 +554,7 @@ lemma hasSum_derivWeierstrassP (z : ℂ) :
 lemma differentiableOn_derivWeierstrassP :
     DifferentiableOn ℂ ℘'[L] L.latticeᶜ := by
   rw [← L.derivWeierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
-  convert! L.differentiableOn_derivWeierstrassPExcept _
+  convert L.differentiableOn_derivWeierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
@@ -701,7 +701,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
     · simp
     calc
       _ = ‖(p.1 + 2 : ℂ)‖ * ‖p.2 - x‖ ^ (-3 - p.1 : ℤ) * ‖z - x‖ ^ (p.1 + 1) := by
-        norm_num; ring_nf; simp
+        simp; ring_nf; simp
       _ = ‖(p.1 + 2 : ℂ)‖ * ((‖↑p.2 - x‖ / ‖z - x‖) ^ p.1)⁻¹ * ((‖p.2 - x‖ ^ 3)⁻¹ * ‖z - x‖) := by
         simp [hpx, zpow_sub₀, div_pow]; field
       _ ≤ (p.1 + 2) * (κ ^ p.1)⁻¹ * ((‖p.2 - x‖ ^ 3)⁻¹ * ‖z - x‖) := by
@@ -933,7 +933,7 @@ lemma order_weierstrassP (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
       have : (z - l₀) ^ 2 ≠ 0 := by simpa [sub_eq_zero]
       simp [← L.ite_eq_one_sub_sq_mul_weierstrassP l₀ h,
         ite_eq_right hz, inv_mul_cancel_left₀ this, zpow_ofNat]
-  · norm_num
+  · simp
 
 end Analytic
 
@@ -1053,7 +1053,7 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
   · lift x to L.lattice using hx
     have := L.analyticAt_relation_zero
     rw [← sub_self x.1] at this
-    convert! this.comp (f := (· - x.1)) (by fun_prop)
+    convert this.comp (f := (· - x.1)) (by fun_prop)
     ext a
     simp
   · have : AnalyticAt ℂ (fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃) x := by

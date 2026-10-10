@@ -34,7 +34,7 @@ public section
 
 assert_not_exists IsDedekindDomain
 
-variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
+variable (K : Type*) [Field K]
 
 open scoped nonZeroDivisors Polynomial
 
@@ -101,11 +101,11 @@ theorem spanSingleton_inv (x : K) : (spanSingleton R₁⁰ x)⁻¹ = spanSinglet
 
 theorem spanSingleton_div_spanSingleton (x y : K) :
     spanSingleton R₁⁰ x / spanSingleton R₁⁰ y = spanSingleton R₁⁰ (x / y) := by
-  rw [div_spanSingleton, mul_comm, spanSingleton_mul_spanSingleton, div_eq_mul_inv]
+  rw [div_spanSingleton, mul_comm, ← map_mul, div_eq_mul_inv]
 
 theorem spanSingleton_div_self {x : K} (hx : x ≠ 0) :
     spanSingleton R₁⁰ x / spanSingleton R₁⁰ x = 1 := by
-  rw [spanSingleton_div_spanSingleton, div_self hx, spanSingleton_one]
+  rw [spanSingleton_div_spanSingleton, div_self hx, map_one]
 
 theorem coe_ideal_span_singleton_div_self {x : R₁} (hx : x ≠ 0) :
     (Ideal.span ({x} : Set R₁) : FractionalIdeal R₁⁰ K) / Ideal.span ({x} : Set R₁) = 1 := by
@@ -115,7 +115,7 @@ theorem coe_ideal_span_singleton_div_self {x : R₁} (hx : x ≠ 0) :
 
 theorem spanSingleton_mul_inv {x : K} (hx : x ≠ 0) :
     spanSingleton R₁⁰ x * (spanSingleton R₁⁰ x)⁻¹ = 1 := by
-  rw [spanSingleton_inv, spanSingleton_mul_spanSingleton, mul_inv_cancel₀ hx, spanSingleton_one]
+  rw [spanSingleton_inv, ← map_mul, mul_inv_cancel₀ hx, map_one]
 
 theorem coe_ideal_span_singleton_mul_inv {x : R₁} (hx : x ≠ 0) :
     (Ideal.span ({x} : Set R₁) : FractionalIdeal R₁⁰ K) *
@@ -137,10 +137,10 @@ theorem mul_generator_self_inv {R₁ : Type*} [CommRing R₁] [Algebra R₁ K] [
     I * spanSingleton _ (generator (I : Submodule R₁ K))⁻¹ = 1 := by
   -- Rewrite only the `I` that appears alone.
   conv_lhs => congr; rw [eq_spanSingleton_of_principal I]
-  rw [spanSingleton_mul_spanSingleton, mul_inv_cancel₀, spanSingleton_one]
+  rw [← map_mul, mul_inv_cancel₀, map_one]
   intro generator_I_eq_zero
   apply h
-  rw [eq_spanSingleton_of_principal I, generator_I_eq_zero, spanSingleton_zero]
+  rw [eq_spanSingleton_of_principal I, generator_I_eq_zero, map_zero]
 
 theorem invertible_of_principal (I : FractionalIdeal R₁⁰ K)
     [Submodule.IsPrincipal (I : Submodule R₁ K)] (h : I ≠ 0) : I * I⁻¹ = 1 :=
@@ -153,7 +153,7 @@ theorem invertible_iff_generator_nonzero (I : FractionalIdeal R₁⁰ K)
   constructor
   · intro hI hg
     apply ne_zero_of_mul_eq_one _ _ hI
-    rw [eq_spanSingleton_of_principal I, hg, spanSingleton_zero]
+    rw [eq_spanSingleton_of_principal I, hg, map_zero]
   · intro hg
     apply invertible_of_principal
     rw [eq_spanSingleton_of_principal I]

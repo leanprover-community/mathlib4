@@ -19,7 +19,9 @@ the Dedekind eta function.
 public section
 
 open UpperHalfPlane hiding I
-open Real Complex EisensteinSeries ModularForm Manifold
+open Real Complex EisensteinSeries ModularForm
+
+open scoped Manifold
 
 
 --This proof was provided by Gauss to the sphere packing project.

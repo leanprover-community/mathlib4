@@ -33,7 +33,9 @@ inner product space, Hilbert space, norm
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open RCLike Real Filter Topology Finsupp
+
+open scoped ComplexConjugate
 
 open LinearMap (BilinForm)
 
@@ -354,7 +356,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
   have h' : g i * ⟪v i, v i⟫ = ⟪v i, ∑ j ∈ s, g j • v j⟫ := by
     rw [inner_sum]
     symm
-    convert! Finset.sum_eq_single (M := 𝕜) i ?_ ?_
+    convert Finset.sum_eq_single (M := 𝕜) i ?_ ?_
     · rw [inner_smul_right]
     · intro j _hj hji
       rw [inner_smul_right, ho hji.symm, mul_zero]
@@ -457,6 +459,10 @@ theorem norm_inner_le_norm (x y : E) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 
 theorem nnnorm_inner_le_nnnorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
   norm_inner_le_norm x y
+
+lemma enorm_inner_le_enorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
+  grw [← ofReal_norm, norm_inner_le_norm]
+  simp
 
 theorem re_inner_le_norm (x y : E) : re ⟪x, y⟫ ≤ ‖x‖ * ‖y‖ :=
   le_trans (re_le_norm ⟪x, y⟫) (norm_inner_le_norm x y)
@@ -636,6 +642,12 @@ theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι
     mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
     Finset.sum_div, mul_div_assoc, mul_assoc]
 
+/-- `⟪x, y⟫ = 0` if and only if `re ⟪c • x, y⟫ = 0` for every `c : 𝕜` -/
+theorem inner_eq_zero_iff_forall_re_inner_smul_left {x y : E} :
+    ⟪x, y⟫ = 0 ↔ ∀ c : 𝕜, re ⟪c • x, y⟫ = 0 := by
+  refine ⟨fun h c ↦ by simp [inner_smul_left, h], fun h ↦ ?_⟩
+  simpa [inner_smul_left, RCLike.conj_mul, -inner_conj_symm] using h ⟪x, y⟫
+
 end Norm_Seminormed
 
 section Norm
@@ -657,11 +669,11 @@ theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) 
     dist ((R / ‖x‖) ^ 2 • x) ((R / ‖y‖) ^ 2 • y) =
         √(‖(R / ‖x‖) ^ 2 • x - (R / ‖y‖) ^ 2 • y‖ ^ 2) := by
       rw [dist_eq_norm, sqrt_sq (norm_nonneg _)]
-    _ = √((R ^ 2 / (‖x‖ * ‖y‖)) ^ 2 * ‖x - y‖ ^ 2) :=
-      congr_arg (√·) <| by
-        simp [field, sq, norm_sub_mul_self_real, norm_smul, real_inner_smul_left, inner_smul_right,
-          Real.norm_of_nonneg (mul_self_nonneg _), -mul_eq_mul_left_iff]
-        ring
+    _ = √((R ^ 2 / (‖x‖ * ‖y‖)) ^ 2 * ‖x - y‖ ^ 2) := by
+      congr
+      simp [field, sq, norm_sub_mul_self_real, norm_smul, real_inner_smul_left, inner_smul_right,
+        Real.norm_of_nonneg (mul_self_nonneg _), -mul_eq_mul_left_iff]
+      ring
     _ = R ^ 2 / (‖x‖ * ‖y‖) * dist x y := by
       rw [sqrt_mul, sqrt_sq, sqrt_sq, dist_eq_norm] <;> positivity
 
@@ -850,7 +862,7 @@ theorem inner_lt_norm_mul_iff_real {x y : F} : ⟪x, y⟫_ℝ < ‖x‖ * ‖y�
 /-- If the inner product of two unit vectors is strictly less than `1`, then the two vectors are
 distinct. One form of the equality case for Cauchy-Schwarz. -/
 theorem inner_lt_one_iff_real_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
-    ⟪x, y⟫_ℝ < 1 ↔ x ≠ y := by convert! inner_lt_norm_mul_iff_real (F := F) <;> simp [hx, hy]
+    ⟪x, y⟫_ℝ < 1 ↔ x ≠ y := by convert inner_lt_norm_mul_iff_real (F := F) <;> simp [hx, hy]
 
 /-- The sphere of radius `r = ‖y‖` is tangent to the plane `⟪x, y⟫ = ‖y‖ ^ 2` at `x = y`. -/
 theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) (h : re ⟪x, y⟫ = ‖y‖ ^ 2) :

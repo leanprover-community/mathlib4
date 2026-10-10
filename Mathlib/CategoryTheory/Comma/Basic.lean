@@ -5,9 +5,6 @@ Authors: Kim Morrison, Johan Commelin, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Iso
-public import Mathlib.CategoryTheory.Functor.Category
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Products.Unitor
 
 /-!
@@ -64,7 +61,6 @@ variable {T' : Type u₆} [Category.{v₆} T']
 
 to_dual_name_hint Left Right, Fst Snd, L R, L₁ R₁, L₂ R₂, A B, F₁ F₂
 
-set_option linter.translate.warnInvalid false in
 /-- The objects of the comma category are triples of an object `left : A`, an object
 `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`. -/
 @[to_dual self (reorder := A B, 2 4, L R), wikidata Q1780005]
@@ -75,9 +71,6 @@ structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   right : B
   /-- A morphism from `L.obj left` to `R.obj right` -/
   hom : L.obj left ⟶ R.obj right
-
-attribute [to_dual existing] Comma.left
-attribute [to_dual self] Comma.hom Comma.mk
 
 -- Satisfying the inhabited linter
 instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) where
@@ -100,21 +93,8 @@ structure CommaMorphism (X Y : Comma L R) where
   right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by cat_disch
 
-attribute [to_dual existing] CommaMorphism.left
-
-@[to_dual existing w]
-theorem CommaMorphism.w' {X Y : Comma R L} (self : CommaMorphism Y X) :
-    Y.hom ≫ L.map self.right = R.map self.left ≫ X.hom :=
-  self.w.symm
-
-/-- `CommaMorphism.mk'` is the dual of `CommaMorphism.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-abbrev CommaMorphism.mk' {X Y : Comma R L}
-    (right : Y.right ⟶ X.right) (left : Y.left ⟶ X.left)
-    (w : Y.hom ≫ L.map right = R.map left ≫ X.hom) :
-    CommaMorphism Y X where
-  left; right; w := w.symm
+to_dual_for CommaMorphism.w := self.w.symm
+to_dual_for CommaMorphism.mk := { left := right, right := left, w := w.symm }
 
 -- Satisfying the inhabited linter
 instance CommaMorphism.inhabited [Inhabited (Comma L R)] :
@@ -155,15 +135,12 @@ end
 
 variable (L) (R)
 
-set_option linter.translate.warnInvalid false in
 /-- The functor sending an object `X` in the comma category to `X.left`. -/
-@[to_dual (reorder := L R) (attr := simps, implicit_reducible)
+@[to_dual (reorder := L R) (attr := implicit_reducible, simps)
 /-- The functor sending an object `X` in the comma category to `X.right`. -/]
 def fst : Comma L R ⥤ A where
   obj X := X.left
   map f := f.left
-
-attribute [to_dual existing] fst_map
 
 set_option backward.defeqAttrib.useBackward true in
 /-- We can interpret the commutative square constituting a morphism in the comma category as a
@@ -208,14 +185,10 @@ section
 
 variable {L₁ L₂ L₃ : A ⥤ T} {R₁ R₂ R₃ : B ⥤ T}
 
-set_option linter.translate.warnInvalid false in
 /-- Extract the isomorphism between the left objects from an isomorphism in the comma category. -/
 @[to_dual (attr := simps!)
 /-- Extract the isomorphism between the right objects from an isomorphism in the comma category. -/]
 def leftIso {X Y : Comma L₁ R₁} (α : X ≅ Y) : X.left ≅ Y.left := (fst L₁ R₁).mapIso α
-
-attribute [to_dual existing rightIso_inv] leftIso_hom
-attribute [to_dual existing rightIso_hom] leftIso_inv
 
 /-- Construct an isomorphism in the comma category given isomorphisms of the objects whose forward
 directions give a commutative square.
@@ -273,8 +246,8 @@ theorem map_obj_hom' (X : Comma L R) :
 instance faithful_map [F₁.Faithful] [F₂.Faithful] : (map α β).Faithful where
   map_injective {X Y} f g h := by
     ext
-    · exact F₁.map_injective (congr_arg CommaMorphism.left h)
-    · exact F₂.map_injective (congr_arg CommaMorphism.right h)
+    · exact F₁.map_injective congr($(h).left)
+    · exact F₂.map_injective congr($(h).right)
 
 @[to_dual self (reorder := A B, 2 4, A' B', 8 10, L R, L' R', F₁ F₂, α β, 23 24, 25 26)]
 instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where
@@ -320,7 +293,6 @@ where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/]
 theorem map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ :=
   rfl
 
-set_option linter.translate.warnInvalid false in
 /-- The isomorphism between `map α β ⋙ fst L' R'` and `fst L R ⋙ F₁`,
 where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
 @[to_dual (attr := simps!) (reorder := α β)
@@ -331,7 +303,6 @@ def mapFst : map α β ⋙ fst L' R' ≅ fst L R ⋙ F₁ :=
 
 end
 
-set_option linter.translate.warnInvalid false in
 /-- A natural transformation `L₁ ⟶ L₂` induces a functor `Comma L₂ R ⥤ Comma L₁ R`. -/
 @[to_dual (attr := simps, implicit_reducible)
 /-- A natural transformation `R₁ ⟶ R₂` induces a functor `Comma L R₁ ⥤ Comma L R₂`. -/]
@@ -344,10 +315,6 @@ def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R where
     { left := f.left
       right := f.right }
 
-attribute [to_dual existing] mapLeft_map_left
-attribute [to_dual existing] mapLeft_map_right
-
-set_option linter.translate.warnInvalid false in
 /-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `L` is
 naturally isomorphic to the identity functor. -/
 @[to_dual (attr := simps!)
@@ -356,7 +323,6 @@ naturally isomorphic to the identity functor. -/]
 def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-set_option linter.translate.warnInvalid false in
 /-- The functor `Comma L₁ R ⥤ Comma L₃ R` induced by the composition of two natural transformations
 `l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the two functors
 induced by these natural transformations. -/
@@ -368,7 +334,6 @@ def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) :
     mapLeft R (l ≫ l') ≅ mapLeft R l' ⋙ mapLeft R l :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-set_option linter.translate.warnInvalid false in
 /-- Two equal natural transformations `L₁ ⟶ L₂` yield naturally isomorphic functors
 `Comma L₁ R ⥤ Comma L₂ R`. -/
 @[to_dual (attr := simps!)
@@ -378,7 +343,6 @@ def mapLeftEq (l l' : L₁ ⟶ L₂) (h : l = l') : mapLeft R l ≅ mapLeft R l'
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option linter.translate.warnInvalid false in
 /-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
 `Comma L₁ R ≌ Comma L₂ R`. -/
 @[to_dual (attr := simps!, implicit_reducible)
@@ -396,10 +360,9 @@ section
 
 variable {C : Type u₄} [Category.{v₄} C]
 
-set_option linter.translate.warnInvalid false in
 /-- The functor `(F ⋙ L, R) ⥤ (L, R)` -/
-@[to_dual (attr := simps,
-  implicit_reducible) (reorder := F L R) /-- The functor `(L, F ⋙ R) ⥤ (L, R)` -/]
+@[to_dual (attr := implicit_reducible, simps) (reorder := F L R)
+/-- The functor `(L, F ⋙ R) ⥤ (L, R)` -/]
 def preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) : Comma (F ⋙ L) R ⥤ Comma L R where
   obj X :=
     { left := F.obj X.left

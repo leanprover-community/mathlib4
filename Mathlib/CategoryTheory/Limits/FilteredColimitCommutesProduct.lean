@@ -136,7 +136,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- In a functor category, `coconePointwiseProduct` commutes with evaluation. -/
 noncomputable def evaluationCoconePointwiseProductIso (X : D) (c : ∀ i, Cocone (F i)) :
     ((evaluation D C).obj X).mapCocone (coconePointwiseProduct c) ≅
-      (Cocone.precompose <| (pointwiseProductCompEvaluation F X).hom).obj
+      (Cocone.precompose (pointwiseProductCompEvaluation F X).hom).obj
         (coconePointwiseProduct fun i ↦ ((evaluation D C).obj X).mapCocone (c i)) :=
   Cocone.ext (piObjIso (fun i ↦ (c i).pt) X) fun j ↦ by
     dsimp
