@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Johannes Hölzl
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.WithBotTop
 
 /-!
 # Order continuity
@@ -92,13 +91,13 @@ protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
 /-- An `OrderEmbedding` function with `OrdConnected` range is `RightOrdContinuous`. -/]
 theorem _root_.OrderEmbedding.leftOrdContinuous_of_ordConnected_range
     {α β : Type*} [Preorder α] [LinearOrder β]
-    {f : α ↪o β} (hf : (Set.range f).OrdConnected) : LeftOrdContinuous f := by
+    {f : α ↪o β} (hf : (range f).OrdConnected) : LeftOrdContinuous f := by
   rintro s a₀ ⟨b₀, hb₀⟩ ha₀
   refine ⟨f.monotone.mem_upperBounds_image ha₀.left, fun b hb => ?_⟩
   rcases le_total (f a₀) b with h | h
   · exact h
   · obtain ⟨_, rfl⟩ : ∃ a, f a = b :=
-      hf.out' (Set.mem_range_self b₀) (Set.mem_range_self a₀) ⟨hb ⟨b₀, hb₀, rfl⟩, h⟩
+      hf.out' (mem_range_self b₀) (mem_range_self a₀) ⟨hb ⟨b₀, hb₀, rfl⟩, h⟩
     exact f.monotone <| ha₀.right fun a ha => f.le_iff_le.mp (hb ⟨a, ha, rfl⟩)
 
 -- Avoid `OrderEmbedding.leftOrdContinuous_of_ordConnected_range` here,
@@ -121,12 +120,6 @@ theorem _root_.WithTop.rightOrdContinuous_coe :
   match x with
   | ⊤ => simp_all [lowerBounds]
   | (_ : α) => exact_mod_cast ha₀.right fun a ha => mod_cast hx ⟨a, ha, rfl⟩
-
-theorem _root_.WithBotTop.leftOrdContinuous_coe : LeftOrdContinuous (WithBotTop.coe : α → _) :=
-  WithBot.leftOrdContinuous_coe.comp WithTop.leftOrdContinuous_coe
-
-theorem _root_.WithBotTop.rightOrdContinuous_coe : RightOrdContinuous (WithBotTop.coe : α → _) :=
-  WithBot.rightOrdContinuous_coe.comp WithTop.rightOrdContinuous_coe
 
 end Preorder
 
@@ -199,22 +192,6 @@ theorem map_ciSup (hf : LeftOrdContinuous f) {g : ι → α} (hg : BddAbove (ran
     f (⨆ i, g i) = ⨆ i, f (g i) := by
   simp only [iSup, hf.map_csSup (range_nonempty _) hg, ← range_comp]
   rfl
-
-theorem _root_.WithBotTop.coe_csSup {s : Set α} (hs : s.Nonempty) (hs' : BddAbove s) :
-    (↑(sSup s) : WithBotTop α) = sSup ((↑) '' s) :=
-  WithBotTop.leftOrdContinuous_coe.map_csSup hs hs'
-
-theorem _root_.WithBotTop.coe_csInf {s : Set α} (hs : s.Nonempty) (hs' : BddBelow s) :
-    (↑(sInf s) : WithBotTop α) = sInf ((↑) '' s) :=
-  WithBotTop.rightOrdContinuous_coe.map_csInf hs hs'
-
-theorem _root_.WithBotTop.coe_ciSup {ι : Type*} [Nonempty ι] {f : ι -> α}
-    (hf : BddAbove (Set.range f)) : (↑(⨆ x, f x) : WithBotTop α) = ⨆ x, ↑(f x) :=
-  WithBotTop.leftOrdContinuous_coe.map_ciSup hf
-
-theorem _root_.WithBotTop.coe_ciInf {ι : Type*} [Nonempty ι] {f : ι -> α}
-    (hf : BddBelow (Set.range f)) : (↑(⨅ x, f x) : WithBotTop α) = ⨅ x, ↑(f x) :=
-  WithBotTop.rightOrdContinuous_coe.map_ciInf hf
 
 end ConditionallyCompleteLattice
 

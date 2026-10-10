@@ -6,7 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
-public import Mathlib.Order.OrdContinuous
+public import Mathlib.Order.WithBotTop
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
