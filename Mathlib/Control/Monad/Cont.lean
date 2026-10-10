@@ -168,6 +168,22 @@ theorem run_tryCatch {ε} [MonadExceptOf ε m]
     (act : ContT r m α) (h : ε → ContT r m α) (f : α → m r) :
     (tryCatch act h : ContT r m α).run f = tryCatch (act.run f) fun e => (h e).run f := rfl
 
+instance (ε) [MonadExceptOf ε m] : MonadExceptOf ε (ContT r m) where
+  throw e := throw e
+  tryCatch act h := tryCatch act h
+
+instance (r m) [Monad m] [Lean.AddErrorMessageContext m] :
+    Lean.AddErrorMessageContext (ContT r m) where
+  add stx msg := monadLift <| Lean.AddErrorMessageContext.add stx msg
+
+instance (r m) [Monad m] [Lean.MonadRef m] : Lean.MonadRef (ContT r m) where
+  getRef := monadLift <| Lean.MonadRef.getRef
+  withRef stx h := fun f => do
+    let oldStx ← Lean.MonadRef.getRef
+    Lean.MonadRef.withRef stx (h <| Lean.MonadRef.withRef oldStx ∘ f)
+
+instance (r m) [Monad m] [Lean.MonadError m] : Lean.MonadError (ContT r m) where
+
 end ContT
 
 variable {m : Type u → Type v}
