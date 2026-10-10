@@ -425,21 +425,6 @@ theorem absNorm_ne_zero_of_nonZeroDivisors' (I : (Ideal S)⁰) : absNorm (I : Id
 theorem absNorm_pos_of_nonZeroDivisors' (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
   absNorm_pos_iff_mem_nonZeroDivisors'.mpr (SetLike.coe_mem I)
 
--- TODO: move the two lemmas below to
--- `Mathlib/RingTheory/Ideal/Quotient/HasFiniteQuotients/Basic.lean`.
-omit [IsDedekindDomain S] in
-/-- A version of `finiteIndex` for a ring with finite quotients. -/
-lemma finiteIndex' {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex := by
-  have : Finite (S ⧸ I.toAddSubgroup) := Ring.HasFiniteQuotients.finiteQuotient hI
-  exact AddSubgroup.finiteIndex_of_finite_quotient
-
-omit [IsDedekindDomain S] in
-/-- A version of `isFiniteRelIndex` for a ring with finite quotients. -/
-lemma isFiniteRelIndex' {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
-    I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup :=
-  have := finiteIndex' hI
-  AddSubgroup.isFiniteRelIndex_of_finiteIndex
-
 /-- A version of `card_norm_le_eq_card_norm_le_add_one` for a ring with finite quotients. -/
 theorem card_norm_le_eq_card_norm_le_add_one' (n : ℕ) :
     Nat.card {I : Ideal S // absNorm I ≤ n} =

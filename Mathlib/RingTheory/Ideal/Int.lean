@@ -33,7 +33,7 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 public section
 
 theorem Int.card_ideal_quot (n : ℕ) : Nat.card (ℤ ⧸ (Ideal.span {(n : ℤ)})) = n := by
-  simp [← Ideal.absNorm_eq_natCard]
+  simp [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
 
 instance Int.ideal_span_isMaximal_of_prime (p : ℕ) [Fact (Nat.Prime p)] :
     (Ideal.span {(p : ℤ)}).IsMaximal :=
