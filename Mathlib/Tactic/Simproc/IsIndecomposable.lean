@@ -25,7 +25,7 @@ connected.
 ## Main definitions
 
 - `Matrix.reduceIsIndecomposable`: the simproc deciding `M.IsIndecomposable`.
-- `SpansFrom`: states that a list of edges reaches every vertex expanding from a root.
+- `SpansFrom`: states that every vertex is visited following a list of edges starting from a root.
 - `isClosed`: tests whether a set of vertices has no edges leaving it.
 - `packedAdj`: a Boolean adjacency matrix stored as the bits of a natural number, computed from a
   matrix literal by `packRows`.
@@ -108,7 +108,7 @@ theorem isClosed_of_isClosedPacked {n bits s : ℕ} (h : isClosedPacked n bits s
 
 variable {R : Type*} [Zero R]
 
-/-- If both `adj` and the reverse of it have spanning edge sets from `root`, then `M` is
+/-- If both `adj` and the reverse of it have spanning edge lists from `root`, then `M` is
 indecomposable (strong connectivity of `adj`). -/
 theorem isIndecomposable_of_spansFrom {n : ℕ}
     {M : Matrix (Fin n) (Fin n) R} {adj : Fin n → Fin n → Bool}
