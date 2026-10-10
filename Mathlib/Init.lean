@@ -100,6 +100,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.docString
   linter.style.dollarSyntax
   linter.style.emptyLine
+  linter.style.extendedBinder
   linter.style.header
   linter.style.lambdaSyntax
   linter.style.longLine

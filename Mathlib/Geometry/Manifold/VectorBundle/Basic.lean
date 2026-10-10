@@ -660,7 +660,7 @@ variable (IB) in
 /-- Mixin for a `VectorPrebundle` stating that coordinate changes are `C^n`. -/
 class IsContMDiff (a : VectorPrebundle 𝕜 F E) (n : ℕ∞ω) : Prop where
   exists_contMDiffCoordChange :
-    ∀ᵉ (e ∈ a.pretrivializationAtlas) (e' ∈ a.pretrivializationAtlas),
+    ∀ e ∈ a.pretrivializationAtlas, ∀ e' ∈ a.pretrivializationAtlas,
       ∃ f : B → F →L[𝕜] F,
         ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n f (e.baseSet ∩ e'.baseSet) ∧
           ∀ (b : B) (_ : b ∈ e.baseSet ∩ e'.baseSet) (v : F),

@@ -25,7 +25,7 @@ variable {V : Type*} [Quiver V]
 /-- A path from a vertex not in `S` to a vertex in `S` must cross the boundary. -/
 theorem exists_notMem_mem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (S : Set V)
     (ha_not_in_S : a ∉ S) (hb_in_S : b ∈ S) :
-    ∃ᵉ (u ∉ S) (v ∈ S) (e : u ⟶ v) (p₁ : Path a u) (p₂ : Path v b),
+    ∃ u ∉ S, ∃ v ∈ S, ∃ e : u ⟶ v, ∃ p₁ : Path a u, ∃ p₂ : Path v b,
       p = p₁.comp (e.toPath.comp p₂) := by
   induction h_len : p.length generalizing a b S ha_not_in_S hb_in_S with
   | zero =>
@@ -45,7 +45,7 @@ theorem exists_notMem_mem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (
 
 theorem exists_mem_notMem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (S : Set V)
     (ha_in_S : a ∈ S) (hb_not_in_S : b ∉ S) :
-    ∃ᵉ (u ∈ S) (v ∉ S) (e : u ⟶ v) (p₁ : Path a u) (p₂ : Path v b),
+    ∃ u ∈ S, ∃ v ∉ S, ∃ e : u ⟶ v, ∃ p₁ : Path a u, ∃ p₂ : Path v b,
       p = p₁.comp (e.toPath.comp p₂) := by
   have ha_not_in_compl : a ∉ Sᶜ := by simpa
   have hb_in_compl : b ∈ Sᶜ := by simpa

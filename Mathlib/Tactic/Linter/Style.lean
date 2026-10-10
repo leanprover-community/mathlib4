@@ -10,6 +10,7 @@ public meta import Lean.Elab.Command
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Lint.Basic
+public import Batteries.Util.ExtendedBinder
 public import Lean.Parser.Module
 public import Mathlib.Tactic.DeclarationNames
 
@@ -656,5 +657,65 @@ def elabShow (newType : Term) : TacticM Unit := do
 elab (name := «show») (priority := high) "show " newType:term : tactic => elabShow newType
 
 end Style
+
+/-!
+### The extended binder linter
+
+In mathlib we prefer writing the basic `∀`/`∃` binders over `∀ᵉ`/`∃ᵉ`. This is because the latter
+was used quite infrequently, so the cost of needing to learn this notation was greater
+than the benefit.
+-/
+
+/--
+The `extendedBinder` linter flags uses of the `∀ᵉ`/`∃ᵉ` notation for combining universal and
+existential binders. Mathlib prefers basic `∀`/`∃` notation.
+-/
+public register_option linter.style.extendedBinder : Bool := {
+  defValue := false
+  descr := "enable the `extendedBinder` linter"
+}
+
+namespace Style.extendedBinder
+open Batteries ExtendedBinder
+
+/--
+`lintExtendedBinder` runs the `extendedBinder` linter on the given syntax. -/
+partial def lintExtendedBinder (stx : Syntax) : CommandElabM Unit := do
+  if let .node _ kind args := stx then
+    args.forM lintExtendedBinder
+    match kind with
+    | ``Batteries.ExtendedBinder.«term∃ᵉ_,_» => go "∃"
+    | ``Batteries.ExtendedBinder.«term∀ᵉ_,_» => go "∀"
+    | _ => pure ()
+where
+  go (symbol : String) : CommandElabM Unit := do
+    if stx[1].isAntiquot then return -- `∃ᵉ` can be used to define other notation, like `{_ | _}`.
+    let binders := match stx[1] with
+      | `(extBinders| $[($binders)]*) => binders.toList
+      | `(extBinder| $b) => [b]
+    let source := (← getFileMap).source
+    let suggestion := String.intercalate ", " <| binders.map fun b ↦
+      match b.raw.getRange? with
+      | none => s!"{symbol} {b.raw.reprint}"
+      | some { start, stop } => s!"{symbol} {start.extract source stop}"
+    if let some start := stx[0].getPos? then
+      if let some stop := stx[2].getPos? then
+        let ref := .ofRange { start, stop }
+        let sugg ← Command.liftCoreM <| Hint.mkSuggestionsMessage
+          #[{ toTryThisSuggestion := suggestion, diffGranularity := .char }] ref none false
+        logWarningAt ref m!"Try this:{sugg}\n\n\
+          The basic `{symbol}` syntax is preferred over `{symbol}ᵉ`."
+
+@[inherit_doc linter.style.extendedBinder]
+def extendedBinderLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless getLinterValue linter.style.extendedBinder (← getLinterOptions) do
+    return
+  if (← MonadState.get).messages.hasErrors then
+    return
+  lintExtendedBinder stx
+
+initialize addLinter extendedBinderLinter
+
+end Style.extendedBinder
 
 end Mathlib.Linter

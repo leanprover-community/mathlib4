@@ -463,7 +463,7 @@ theorem completeEquipartiteGraph_isContained_iff :
 vertices in `s` are adjacent to the vertices in `K`. -/
 theorem completeEquipartiteGraph_succ_isContained_iff :
   completeEquipartiteGraph (r + 1) t ⊑ G
-    ↔ ∃ᵉ (K : G.CompleteEquipartiteSubgraph r t) (s : Finset V),
+    ↔ ∃ K : G.CompleteEquipartiteSubgraph r t, ∃ s : Finset V,
         #s = t ∧ ∀ p ∈ K.parts, G.IsCompleteBetween p s := by
   classical
   by_cases ht : t = 0

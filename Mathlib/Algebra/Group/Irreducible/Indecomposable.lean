@@ -25,7 +25,7 @@ written as a product of two others in a non-trivial way. -/
 @[to_additive (attr := simp) /-- Given a family of elements of an additive monoid, a member is said
 to be indecomposable if it cannot be written as a sum of two others in a non-trivial way.-/]
 def IsMulIndecomposable (v : ι → M) (s : Set ι) (i : ι) : Prop :=
-  i ∈ s ∧ ∀ᵉ (j ∈ s) (k ∈ s), v i = v j * v k → v j = 1 ∨ v k = 1
+  i ∈ s ∧ ∀ j ∈ s, ∀ k ∈ s, v i = v j * v k → v j = 1 ∨ v k = 1
 
 @[to_additive]
 protected lemma IsMulIndecomposable.subset (v : ι → M) (s : Set ι) :

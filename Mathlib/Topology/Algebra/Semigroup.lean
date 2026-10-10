@@ -80,7 +80,7 @@ in some specified nonempty compact subsemigroup. -/
       some specified nonempty compact additive subsemigroup. -/]
 theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [TopologicalSpace M] [T2Space M]
     (continuous_const_mul : ∀ r : M, Continuous (· * r)) (s : Set M) (snemp : s.Nonempty)
-    (s_compact : IsCompact s) (s_add : ∀ᵉ (x ∈ s) (y ∈ s), x * y ∈ s) :
+    (s_compact : IsCompact s) (s_add : ∀ x ∈ s, ∀ y ∈ s, x * y ∈ s) :
     ∃ m ∈ s, m * m = m := by
   let M' := { m // m ∈ s }
   let : Semigroup M' :=
