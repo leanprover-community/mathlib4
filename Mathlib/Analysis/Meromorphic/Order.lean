@@ -690,6 +690,21 @@ theorem meromorphicOrderAt_add_of_ne
   · simpa [h.le] using meromorphicOrderAt_add_eq_left_of_lt hf₂ h
   · simpa [h.le] using meromorphicOrderAt_add_eq_right_of_lt hf₁ h
 
+/--
+At most one value is attained at any given point: if `f - a` has positive order at `x`, then `f - b`
+has order zero there, for every `b ≠ a`.
+-/
+theorem meromorphicOrderAt_sub_const_eq_zero_of_ne {a b : E} (hab : b ≠ a)
+    (h : 0 < meromorphicOrderAt (f · - a) x) :
+    meromorphicOrderAt (f · - b) x = 0 := by
+  classical
+  have hconst : meromorphicOrderAt (fun _ : 𝕜 ↦ a - b) x = 0 := by
+    simp [meromorphicOrderAt_const, sub_ne_zero.mpr hab.symm]
+  have hsplit : (f · - b) = (fun _ : 𝕜 ↦ a - b) + (f · - a) := by
+    ext z; simp
+  rw [hsplit, meromorphicOrderAt_add_eq_left_of_lt
+    (meromorphicAt_of_meromorphicOrderAt_ne_zero h.ne') (by rwa [hconst]), hconst]
+
 section IsTheta
 
 variable {z₀ : 𝕜}
@@ -1045,6 +1060,22 @@ lemma meromorphicOrderAt_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n 
     (hn : (↑(n + 1) : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑(n + 1)) :
     meromorphicOrderAt (deriv f) x = ↑n := by
   simpa using meromorphicOrderAt_deriv_eq_sub_one hn hf
+
+/-- Derivatives of locally vanishing functions vanish locally: if `f` has infinite meromorphic order
+at `x`, then so does `deriv f`. -/
+theorem meromorphicOrderAt_deriv_eq_top (h : meromorphicOrderAt f x = ⊤) :
+    meromorphicOrderAt (deriv f) x = ⊤ := by
+  rw [meromorphicOrderAt_eq_top_iff] at h ⊢
+  filter_upwards [(show f =ᶠ[𝓝[≠] x] 0 from h).nhdsNE_deriv] with z hz using by simpa using hz
+
+/-- Where a meromorphic function has nonnegative order, so does its derivative. -/
+theorem meromorphicOrderAt_deriv_nonneg [CompleteSpace E] (hf : MeromorphicAt f x)
+    (h : 0 ≤ meromorphicOrderAt f x) :
+    0 ≤ meromorphicOrderAt (deriv f) x := by
+  obtain ⟨g, hg, hfg⟩ := hf.meromorphicOrderAt_nonneg_iff.1 h
+  rw [meromorphicOrderAt_congr hfg.nhdsNE_deriv]
+  exact hg.deriv.meromorphicOrderAt_nonneg
+
 variable [CompleteSpace 𝕜] {f : 𝕜 → 𝕜}
 
 /--
