@@ -44,10 +44,9 @@ open scoped Polynomial
 instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
   splits' := by
-    have h : (X ^ Fintype.card K - X : K[X]).natDegree = Fintype.card K :=
-      FiniteField.X_pow_card_sub_X_natDegree_eq K Fintype.one_lt_card
-    rw [splits_iff_card_roots, Polynomial.map_sub, Polynomial.map_pow,
-      map_X, h, FiniteField.roots_X_pow_card_sub_X K, ← Finset.card_def, Finset.card_univ]
+    rw [splits_iff_card_roots, Polynomial.map_sub, Polynomial.map_pow, map_X,
+      natDegree_X_pow_sub_X Fintype.one_lt_card, FiniteField.roots_X_pow_card_sub_X K,
+      ← Finset.card_def, Finset.card_univ]
   adjoin_rootSet' := by
     classical
     trans Algebra.adjoin F ((roots (X ^ Fintype.card K - X : K[X])).toFinset : Set K)
@@ -80,13 +79,13 @@ set_option backward.isDefEq.respectTransparency false in
 theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
   have : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
-  have hp : 1 < p := h_prime.out.one_lt
-  have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
+  have hp := h_prime.out.one_lt
+  have hpn := Nat.one_lt_pow h hp
+  have aux : g_poly ≠ 0 := X_pow_sub_X_ne_zero hpn
   have key : Fintype.card (g_poly.rootSet (GaloisField p n)) = g_poly.natDegree :=
     card_rootSet_eq_natDegree (galois_poly_separable p _ (dvd_pow (dvd_refl p) h))
       (SplittingField.splits (g_poly : (ZMod p)[X]))
-  have nat_degree_eq : g_poly.natDegree = p ^ n :=
-    FiniteField.X_pow_card_pow_sub_X_natDegree_eq _ h hp
+  have nat_degree_eq : g_poly.natDegree = p ^ n := natDegree_X_pow_sub_X hpn
   rw [nat_degree_eq] at key
   suffices g_poly.rootSet (GaloisField p n) = Set.univ by
     simp_rw [this, ← Fintype.ofEquiv_card (Equiv.Set.univ _)] at key
@@ -100,8 +99,6 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
   rw [← SplittingField.adjoin_rootSet]
   simp_rw [Algebra.mem_adjoin_iff]
   intro x hx
-  -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
-  cases p; cases hp
   simp only [g_poly] at aux
   refine Subring.closure_induction ?_ ?_ ?_ ?_ ?_ ?_ hx
     <;> simp_rw [mem_rootSet_of_ne aux]
@@ -111,21 +108,14 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     · dsimp only [GaloisField] at hx
       rwa [mem_rootSet_of_ne aux] at hx
   · rw [← coeff_zero_eq_aeval_zero']
-    simp only [coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
-      one_ne_zero, coeff_sub]
-    intro hn
-    exact Nat.not_lt_zero 1 (eq_zero_of_pow_eq_zero hn.symm ▸ hp)
+    simp [eq_comm, hp.ne_zero]
   · simp
-  · simp only [aeval_X_pow, aeval_X, map_sub, add_pow_char_pow, sub_eq_zero]
-    intro x y _ _ hx hy
-    rw [hx, hy]
+  · simp +contextual [add_pow_char_pow, sub_eq_zero]
   · intro x _ hx
     simp only [g_poly, sub_eq_zero, aeval_X_pow, aeval_X, map_sub, sub_neg_eq_add] at *
     rw [neg_pow, hx, neg_one_pow_char_pow]
     simp
-  · simp only [aeval_X_pow, aeval_X, map_sub, mul_pow, sub_eq_zero]
-    intro x y _ _ hx hy
-    rw [hx, hy]
+  · simp +contextual [mul_pow, sub_eq_zero]
 
 theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
@@ -134,14 +124,11 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
     ZMod.card, finrank p h]
 
 theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
-  have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
-    convert! FiniteField.roots_X_pow_card_sub_X (ZMod p)
-    exact (ZMod.card p).symm
-  have h2 := FiniteField.X_pow_card_sub_X_natDegree_eq (ZMod p) hp
-  -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
-  cases p; cases hp
-  rw [splits_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ, h2, ZMod.card]
+    convert! ← FiniteField.roots_X_pow_card_sub_X (ZMod p)
+    exact ZMod.card p
+  rw [splits_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ,
+    natDegree_X_pow_sub_X h_prime.out.one_lt, ZMod.card]
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
@@ -311,7 +298,7 @@ theorem nonempty_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finran
   have := Fintype.ofFinite L
   refine ⟨Polynomial.IsSplittingField.lift _ (X ^ Fintype.card K - X) ?_⟩
   refine (FiniteField.isSplittingField_sub L F).splits.of_dvd ?_ ?_
-  · exact map_ne_zero (FiniteField.X_pow_card_sub_X_ne_zero _ Fintype.one_lt_card)
+  · exact map_ne_zero (X_pow_sub_X_ne_zero Fintype.one_lt_card)
   · rw [Module.card_eq_pow_finrank (K := F), Module.card_eq_pow_finrank (K := F) (V := L)]
     exact (map_dvd_map' _).mpr (dvd_pow_pow_sub_self_of_dvd h)
 
