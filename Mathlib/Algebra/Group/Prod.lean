@@ -614,10 +614,10 @@ variable {α β M : Type*} [Mul M]
     (MulEquiv.curry α β M : (α × β → M) ≃ (α → β → M)) = .curry α β M := rfl
 
 @[to_additive (attr := simp)]
-lemma coe_curry (x) : MulEquiv.curry α β M x = Function.curry x := rfl
+lemma curry_apply (x) : MulEquiv.curry α β M x = Function.curry x := rfl
 
 @[to_additive (attr := simp)]
-lemma coe_curry_symm (x) : (MulEquiv.curry α β M).symm x = Function.uncurry x := rfl
+lemma curry_symm_apply (x) : (MulEquiv.curry α β M).symm x = Function.uncurry x := rfl
 
 end curry
 
