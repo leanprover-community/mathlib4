@@ -414,8 +414,8 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
       coeff_X_one, coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ (coeff · ·), coeff_one_zero,
       coeff_Ψ₂Sq, cm (dm h.1 h.1), cm h.1 h.1, h.2, h.2, apply_ite₂ (coeff · ·), coeff_one_zero,
       coeff_Ψ₂Sq]
-    conv_rhs => rw [← Int.cast_one, hc]
-    · norm_cast
+    · conv_rhs => rw [← Int.cast_one, hc]
+      norm_cast
     all_goals split_ifs <;> simp only [natDegree_one.le, W.natDegree_Ψ₂Sq_le]
 
 lemma natDegree_Φ_le (n : ℤ) : (W.Φ n).natDegree ≤ n.natAbs ^ 2 := by

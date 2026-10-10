@@ -1085,12 +1085,12 @@ theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a 
     (((∫ x in a..b, f x ∂μ) + ∫ x in b..c, f x ∂μ) + ∫ x in c..a, f x ∂μ) = 0 := by
   have hac := hab.trans hbc
   simp only [intervalIntegral, sub_add_sub_comm, sub_eq_zero]
-  iterate 4 rw [← setIntegral_union]
-  · suffices Ioc a b ∪ Ioc b c ∪ Ioc c a = Ioc b a ∪ Ioc c b ∪ Ioc a c by rw [this]
-    rw [Ioc_union_Ioc_union_Ioc_cycle, union_right_comm, Ioc_union_Ioc_union_Ioc_cycle,
-      min_left_comm, max_left_comm]
-  all_goals
-    simp [*, hab.1, hab.2, hbc.1, hbc.2, hac.1, hac.2]
+  iterate 4
+    rw [← setIntegral_union]
+    on_goal 2 3 4 5 => simp [*, hab.1, hab.2, hbc.1, hbc.2, hac.1, hac.2]
+  suffices Ioc a b ∪ Ioc b c ∪ Ioc c a = Ioc b a ∪ Ioc c b ∪ Ioc a c by rw [this]
+  rw [Ioc_union_Ioc_union_Ioc_cycle, union_right_comm, Ioc_union_Ioc_union_Ioc_cycle,
+    min_left_comm, max_left_comm]
 
 theorem integral_add_adjacent_intervals (hab : IntervalIntegrable f μ a b)
     (hbc : IntervalIntegrable f μ b c) :
