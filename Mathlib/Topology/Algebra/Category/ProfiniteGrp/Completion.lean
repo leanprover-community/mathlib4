@@ -144,8 +144,8 @@ def quotientMap (f : G ⟶ ↧P) (H : OpenNormalSubgroup P) :
   FiniteGrp.ofHom <| QuotientGroup.map _ _ f.hom <| fun _ h => h
 
 /-- The universal morphism from the profinite completion to `P`. -/
-noncomputable
-def lift (f : G ⟶ ↧P) : completion G ⟶ P :=
+@[to_additive /-- The universal morphism from the profinite completion to `P`. -/]
+noncomputable def lift (f : G ⟶ ↧P) : completion G ⟶ P :=
   P.isLimitCone.lift ⟨_, {
     app H := (limitCone (diagram G)).π.app _ ≫ (ofFiniteGrpHom <| quotientMap f H)
     naturality := by
@@ -166,7 +166,7 @@ def lift (f : G ⟶ ↧P) : completion G ⟶ P :=
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-@[reassoc (attr := simp)]
+@[to_additive (attr := reassoc (attr := simp))]
 lemma lift_eta (f : G ⟶ ↧P) : eta G ≫ (forget₂ _ _).map (lift f) = f := by
   let e := isoLimittoFiniteQuotientFunctor P
   rw [← (forget₂ ProfiniteGrp GrpCat).mapIso e |>.cancel_iso_hom_right]
@@ -188,7 +188,7 @@ lemma lift_unique (f g : completion G ⟶ P)
 end ProfiniteCompletion
 
 /-- The profinite completion functor. -/
-@[simps]
+@[to_additive (attr := simps) /-- The profinite completion functor. -/]
 noncomputable def profiniteCompletion : GrpCat.{u} ⥤ ProfiniteGrp.{u} where
   obj G := ProfiniteCompletion.completion G
   map f := ProfiniteCompletion.lift <| f ≫ ProfiniteCompletion.eta _
@@ -202,8 +202,8 @@ noncomputable def profiniteCompletion : GrpCat.{u} ⥤ ProfiniteGrp.{u} where
 namespace ProfiniteCompletion
 
 /-- The hom-set equivalence exhibiting the adjunction. -/
-noncomputable
-def homEquiv (G : GrpCat.{u}) (P : ProfiniteGrp.{u}) :
+@[to_additive /-- The hom-set equivalence exhibiting the adjunction. -/]
+noncomputable def homEquiv (G : GrpCat.{u}) (P : ProfiniteGrp.{u}) :
     (completion G ⟶ P) ≃ (G ⟶ ↧P) where
   toFun f := eta G ≫ (forget₂ _ _).map f
   invFun f := lift f
@@ -212,14 +212,29 @@ def homEquiv (G : GrpCat.{u}) (P : ProfiniteGrp.{u}) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The profinite completion is left adjoint to the forgetful functor. -/
-noncomputable
-def adjunction : profiniteCompletion ⊣ forget₂ _ _ :=
+@[to_additive /-- The profinite completion is left adjoint to the forgetful functor. -/]
+noncomputable def adjunction : profiniteCompletion ⊣ forget₂ _ _ :=
   Adjunction.mkOfHomEquiv {
     homEquiv := homEquiv
     homEquiv_naturality_left_symm f g := by
       apply lift_unique
       simp [homEquiv]
   }
+
+/-- The profinite completion of `G` embeds into the product of all finite quotients. -/
+@[to_additive
+/-- The profinite completion of `G` embeds into the product of all finite quotients. -/]
+noncomputable def piEmbedding {G : GrpCat.{u}} :
+    completion G →* Π H : FiniteIndexNormalSubgroup G, G ⧸ H.toSubgroup :=
+  SubgroupClass.subtype _
+
+@[to_additive]
+theorem piEmbedding_injective {G : GrpCat.{u}} : Function.Injective (piEmbedding (G := G)) :=
+  SubgroupClass.subtype_injective _
+
+@[to_additive]
+noncomputable instance (G : Type u) [CommGroup G] : CommGroup (completion (.mk G)) :=
+  piEmbedding.commGroupOfInjective piEmbedding_injective
 
 end ProfiniteCompletion
 
