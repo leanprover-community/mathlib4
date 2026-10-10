@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2026 Rao Xiaojia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rao Xiaojia
+Authors: Rao Xiaojia, Joseph Qian, Junye Ji
 -/
 module
 
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.LinearAlgebra.Matrix.ElementaryRowOperations
 
 import Mathlib.Order.WellFounded
 
@@ -23,6 +24,8 @@ This file defines the row echelon form of matrices and the leading entries of th
 - `Matrix.IsLeadingEntry`: `c : n` is the leading position of row `i` of `A`.
 - `Matrix.IsReducedRowEchelon` additionally requires each leading entry to be `1` and the
   entries above it to vanish.
+- `Matrix.IsRowEchelonOf A B` expresses that `A` is a row echelon form representation of `B`.
+- `Matrix.IsReducedRowEchelonOf A B` expresses that `A` is the reduced row echelon form of `B`.
 
 ## Tags
 
@@ -79,6 +82,25 @@ instance [DecidableEq R] [Fintype n] [LT n] [DecidableLT n]
     (A : Matrix m n R) (i : m) (c : n) : Decidable (A.IsLeadingEntry i c) :=
   decidable_of_iff ((∀ j < c, A i j = 0) ∧ A i c ≠ 0) Iff.rfl
 
+theorem row_eq_zero_or_exists_isLeadingEntry [LT n] [WellFoundedLT n] (i : m) :
+        A i = 0 ∨ ∃ c, A.IsLeadingEntry i c := by
+      by_cases hZero : A i = 0
+      · exact Or.inl hZero
+      · exact Or.inr (row_ne_zero_iff_exists_isLeadingEntry.mp hZero)
+
+theorem IsRowEchelon.pivotCol_strictly_increasing [LT m] [LinearOrder n] {i j : m} {p q : n}
+    (hA : A.IsRowEchelon) (hrow : i < j) (hi : A.IsLeadingEntry i p) (hj : A.IsLeadingEntry j q) :
+    p < q := by
+  by_contra h
+  have hqp : q ≤ p := not_lt.mp h
+  have h0 : ∀ j₁ < q, A i j₁ = 0 := fun j₁ hj₁ => hi.1 j₁ (lt_of_lt_of_le hj₁ hqp)
+  exact hj.2 (hA hrow h0)
+
+theorem not_isLeadingEntry_of_row_eq_zero [LT n] {i : m} {c : n}
+    (h0 : A i = 0) : ¬ A.IsLeadingEntry i c := by
+  intro hc
+  exact hc.row_ne_zero h0
+
 /-! ### Reduced row echelon form -/
 
 /-- `A` is in reduced row echelon form: it is in row echelon form, each leading entry is
@@ -97,5 +119,22 @@ theorem IsReducedRowEchelon.eq_zero_of_ne_of_isLeadingEntry [LinearOrder m] [LT 
   rcases hne.lt_or_gt with hlt | hlt
   · exact hA.eq_zero hlt hlead
   · exact hA.isRowEchelon hlt hlead.1
+
+variable [CommRing R] [DecidableEq m] [Fintype m]
+
+/-- `A` is a row-echelon-form representative of `B`. -/
+structure IsRowEchelonOf [LT m] [LT n] (A B : Matrix m n R) : Prop where
+  rowEquivalent : RowEquivalent A B
+  isRowEchelon : IsRowEchelon A
+
+/-- `A` is a reduced-row-echelon-form representative of `B`. -/
+structure IsReducedRowEchelonOf [LT m] [LT n] (A B : Matrix m n R) : Prop where
+  rowEquivalent : RowEquivalent A B
+  isReducedRowEchelon : IsReducedRowEchelon A
+
+/-- A reduced-echelon representative is also an echelon representative. -/
+theorem IsReducedRowEchelonOf.isRowEchelon [LT m] [LT n] {A B : Matrix m n R}
+    (h : IsReducedRowEchelonOf A B) : IsRowEchelonOf A B :=
+  ⟨h.rowEquivalent, h.isReducedRowEchelon.isRowEchelon⟩
 
 end Matrix
