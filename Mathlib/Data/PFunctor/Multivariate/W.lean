@@ -48,7 +48,7 @@ its valid paths to values of `α`
 @[expose] public section
 
 
-universe u v
+universe u v uA uB v₁ v₂
 
 namespace MvPFunctor
 
@@ -56,10 +56,10 @@ open TypeVec
 
 open MvFunctor
 
-variable {n : ℕ} (P : MvPFunctor.{u} (n + 1))
+variable {n : ℕ} (P : MvPFunctor.{uA, uB} (n + 1)) {α : TypeVec.{v₁} n} {β : TypeVec.{v₂} n}
 
 /-- A path from the root of a tree to one of its node -/
-inductive WPath : P.last.W → Fin2 n → Type u
+inductive WPath : P.last.W → Fin2 n → Type (max uA uB)
   | root (a : P.A) (f : P.last.B a → P.last.W) (i : Fin2 n) (c : P.drop.B a i) : WPath ⟨a, f⟩ i
   | child (a : P.A) (f : P.last.B a → P.last.W) (i : Fin2 n) (j : P.last.B a)
     (c : WPath (f j) i) : WPath ⟨a, f⟩ i
@@ -70,7 +70,7 @@ instance WPath.inhabited (x : P.last.W) {i : Fin2 n} [I : Inhabited (P.drop.B x.
     | ⟨a, f⟩, I => WPath.root a f i (@default _ I)⟩
 
 /-- Specialized destructor on `WPath` -/
-def wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W} (g' : P.drop.B a ⟹ α)
+def wPathCasesOn {a : P.A} {f : P.last.B a → P.last.W} (g' : P.drop.B a ⟹ α)
     (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) : P.WPath ⟨a, f⟩ ⟹ α := by
   intro i x
   match x with
@@ -78,27 +78,27 @@ def wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W} (g' : 
   | WPath.child _ _ i j c => exact g j i c
 
 /-- Specialized destructor on `WPath` -/
-def wPathDestLeft {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
+def wPathDestLeft {a : P.A} {f : P.last.B a → P.last.W}
     (h : P.WPath ⟨a, f⟩ ⟹ α) : P.drop.B a ⟹ α := fun i c => h i (WPath.root a f i c)
 
 /-- Specialized destructor on `WPath` -/
-def wPathDestRight {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
+def wPathDestRight {a : P.A} {f : P.last.B a → P.last.W}
     (h : P.WPath ⟨a, f⟩ ⟹ α) : ∀ j : P.last.B a, P.WPath (f j) ⟹ α := fun j i c =>
   h i (WPath.child a f i j c)
 
-theorem wPathDestLeft_wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
+theorem wPathDestLeft_wPathCasesOn {a : P.A} {f : P.last.B a → P.last.W}
     (g' : P.drop.B a ⟹ α) (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     P.wPathDestLeft (P.wPathCasesOn g' g) = g' := rfl
 
-theorem wPathDestRight_wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
+theorem wPathDestRight_wPathCasesOn {a : P.A} {f : P.last.B a → P.last.W}
     (g' : P.drop.B a ⟹ α) (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     P.wPathDestRight (P.wPathCasesOn g' g) = g := rfl
 
-theorem wPathCasesOn_eta {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
+theorem wPathCasesOn_eta {a : P.A} {f : P.last.B a → P.last.W}
     (h : P.WPath ⟨a, f⟩ ⟹ α) : P.wPathCasesOn (P.wPathDestLeft h) (P.wPathDestRight h) = h := by
   ext i x; cases x <;> rfl
 
-theorem comp_wPathCasesOn {α β : TypeVec n} (h : α ⟹ β) {a : P.A} {f : P.last.B a → P.last.W}
+theorem comp_wPathCasesOn (h : α ⟹ β) {a : P.A} {f : P.last.B a → P.last.W}
     (g' : P.drop.B a ⟹ α) (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     h ⊚ P.wPathCasesOn g' g = P.wPathCasesOn (h ⊚ g') fun i => h ⊚ g i := by
   ext i x; cases x <;> rfl
@@ -111,8 +111,9 @@ def wp : MvPFunctor n where
   A := P.last.W
   B := P.WPath
 
+variable (α) in
 /-- W-type of `P` -/
-def W (α : TypeVec n) : Type _ :=
+def W : Type _ :=
   P.wp α
 
 instance mvfunctorW : MvFunctor P.W := by delta MvPFunctor.W; infer_instance
@@ -123,23 +124,23 @@ First, describe operations on `W` as a polynomial functor.
 
 
 /-- Constructor for `wp` -/
-def wpMk {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
+def wpMk (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
     P.W α :=
   ⟨⟨a, f⟩, f'⟩
 
-def wpRec {α : TypeVec n} {C : Sort*}
+def wpRec {C : Sort*}
     (g : ∀ (a : P.A) (f : P.last.B a → P.last.W), P.WPath ⟨a, f⟩ ⟹ α → (P.last.B a → C) → C) :
     ∀ (x : P.last.W) (_ : P.WPath x ⟹ α), C
   | ⟨a, f⟩, f' => g a f f' fun i => wpRec g (f i) (P.wPathDestRight f' i)
 
-theorem wpRec_eq {α : TypeVec n} {C : Sort*}
+theorem wpRec_eq {C : Sort*}
     (g : ∀ (a : P.A) (f : P.last.B a → P.last.W), P.WPath ⟨a, f⟩ ⟹ α → (P.last.B a → C) → C)
     (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
     P.wpRec g ⟨a, f⟩ f' = g a f f' fun i => P.wpRec g (f i) (P.wPathDestRight f' i) := rfl
 
 /-- Induction principle for an unfolded `W` -/
 @[elab_as_elim]
-def wpInd {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort v}
+def wpInd {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort v}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
         (∀ i : P.last.B a, C (f i) (P.wPathDestRight f' i)) → C ⟨a, f⟩ f') :
     ∀ (x : P.last.W) (f' : P.WPath x ⟹ α), C x f'
@@ -156,13 +157,13 @@ Now think of W as defined inductively by the data ⟨a, f', f⟩ where
 
 
 /-- Constructor for `W` -/
-def wMk {α : TypeVec n} (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) : P.W α :=
+def wMk (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) : P.W α :=
   let g : P.last.B a → P.last.W := fun i => (f i).fst
   let g' : P.WPath ⟨a, g⟩ ⟹ α := P.wPathCasesOn f' fun i => (f i).snd
   ⟨⟨a, g⟩, g'⟩
 
 /-- Recursor for `W` -/
-def wRec {α : TypeVec n} {C : Sort*}
+def wRec {C : Sort*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) : P.W α → C
   | ⟨a, f'⟩ =>
     let g' (a : P.A) (f : P.last.B a → P.last.W) (h : P.WPath ⟨a, f⟩ ⟹ α)
@@ -171,14 +172,14 @@ def wRec {α : TypeVec n} {C : Sort*}
     P.wpRec g' a f'
 
 /-- Defining equation for the recursor of `W` -/
-theorem wRec_eq {α : TypeVec n} {C : Sort*}
+theorem wRec_eq {C : Sort*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) (a : P.A)
     (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
     P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := rfl
 
 /-- Induction principle for `W` -/
 @[elab_as_elim]
-def wInd {α : TypeVec n} {C : P.W α → Sort v}
+def wInd {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
     ∀ x, C x := fun ⟨hd, ch⟩ =>
@@ -190,7 +191,7 @@ def wInd {α : TypeVec n} {C : P.W α → Sort v}
 @[deprecated (since := "2026-03-20")] alias w_ind := wInd
 
 @[simp]
-theorem wInd_wMk {α : TypeVec n} {C : P.W α → Sort v}
+theorem wInd_wMk {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f))
     {a : P.drop.A} {f' : P.drop.B a ⟹ α} {f : P.last.B a → P.W α}
@@ -198,24 +199,24 @@ theorem wInd_wMk {α : TypeVec n} {C : P.W α → Sort v}
 
 /-- Cases lemma for `W` types -/
 @[elab_as_elim]
-def wCases {α : TypeVec n} {C : P.W α → Sort v}
+def wCases {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α), C (P.wMk a f' f)) :
     ∀ x, C x := P.wInd fun a f' f _ih' => ih a f' f
 
 @[deprecated (since := "2026-03-20")] alias w_cases := wCases
 
 /-- W-types are functorial -/
-def wMap {α β : TypeVec n} (g : α ⟹ β) : P.W α → P.W β := fun x => g <$$> x
+def wMap (g : α ⟹ β) : P.W α → P.W β := fun x => MvPFunctor.map _ g x
 
 theorem wMk_eq {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (g' : P.drop.B a ⟹ α)
     (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     (P.wMk a g' fun i => ⟨f i, g i⟩) = ⟨⟨a, f⟩, P.wPathCasesOn g' g⟩ := rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α)
-    (f : P.last.B a → P.W α) : g <$$> P.wMk a f' f = P.wMk a (g ⊚ f') fun i => g <$$> f i := by
-  change _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
-  have : MvFunctor.map g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ := by
+theorem w_map_wMk (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
+    MvPFunctor.map _ g (P.wMk a f' f) = P.wMk a (g ⊚ f') fun i => MvPFunctor.map _ g (f i) := by
+  change _ = P.wMk a (g ⊚ f') (MvPFunctor.map _ g ∘ f)
+  have : MvPFunctor.map _ g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ := by
     ext i : 1
     dsimp [Function.comp_def]
     cases f i
@@ -235,14 +236,14 @@ theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a
 -- Can it be avoided?
 /-- Constructor of a value of `P.obj (α ::: β)` from components.
 Useful to avoid complicated type annotation -/
-abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
+abbrev objAppend1 {α : TypeVec.{u} n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P (α ::: β) :=
   ⟨a, splitFun f' f⟩
 
 set_option backward.isDefEq.respectTransparency false in
-theorem map_objAppend1 {α γ : TypeVec n} (g : α ⟹ γ) (a : P.A) (f' : P.drop.B a ⟹ α)
+theorem map_objAppend1 {α β : TypeVec.{max uA uB} n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) :
-    appendFun g (P.wMap g) <$$> P.objAppend1 a f' f =
+    MvPFunctor.map _ (appendFun g (P.wMap g)) (P.objAppend1 a f' f) =
       P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) := by
   rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp]; rfl
 
@@ -254,11 +255,11 @@ the qpf axioms are expressed in terms of `map` on `P`.
 
 
 /-- Constructor for the W-type of `P` -/
-def wMk' {α : TypeVec n} : P (α ::: P.W α) → P.W α
+def wMk' {α : TypeVec.{max uA uB} n} : P (α ::: P.W α) → P.W α
   | ⟨a, f⟩ => P.wMk a (dropFun f) (lastFun f)
 
 /-- Destructor for the W-type of `P` -/
-def wDest' {α : TypeVec.{u} n} : P.W α → P (α.append1 (P.W α)) :=
+def wDest' {α : TypeVec.{max uA uB} n} : P.W α → P (α.append1 (P.W α)) :=
   P.wRec fun a f' f _ => ⟨a, splitFun f' f⟩
 
 set_option backward.isDefEq.respectTransparency false in
