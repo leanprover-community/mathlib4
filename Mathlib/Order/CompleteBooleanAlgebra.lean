@@ -81,6 +81,17 @@ whose `⊔` distributes over `⨅`. -/
 @[to_dual]
 class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α where
 
+to_dual_for Order.Frame.le_himp_iff := sdiff_le_iff'
+to_dual_for Order.Coframe.sdiff_le_iff := le_himp_iff'
+to_dual_for Order.Frame.mk :=
+  { sdiff_le_iff a b c := by
+      rw [le_himp_iff, sup_comm]
+    top_sdiff := himp_bot }
+to_dual_for Order.Coframe.mk :=
+  { le_himp_iff a b c := by
+      rw [sdiff_le_iff, inf_comm]
+    himp_bot := top_sdiff }
+
 open Order
 
 /-- `⊓` distributes over `⨆`. -/
@@ -108,6 +119,14 @@ distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α, BiheytingAlgebra α
 
 attribute [to_dual existing] CompleteDistribLattice.toFrame
+to_dual_for CompleteDistribLattice.toHNot := self.toCompl
+to_dual_for CompleteDistribLattice.toSDiff := self.toHImp
+to_dual_for CompleteDistribLattice.top_sdiff := self.himp_bot a
+to_dual_for CompleteDistribLattice.sdiff_le_iff := le_himp_iff'
+to_dual_for CompleteDistribLattice.mk :=
+  { le_himp_iff a b c := by
+      rw [sdiff_le_iff, inf_comm]
+    himp_bot := top_sdiff }
 
 /-- Structure containing the minimal axioms required to check that an order is a completely
 distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via
@@ -349,6 +368,7 @@ section Frame
 
 variable [Frame α] {s t : Set α} {a b c d : α}
 
+@[to_dual]
 instance OrderDual.instCoframe : Coframe αᵒᵈ where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
@@ -466,10 +486,12 @@ instance (priority := 100) Order.Frame.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
     rw [← sSup_pair, ← sSup_pair, inf_sSup_eq, ← sSup_image, image_pair]
 
+@[to_dual]
 instance Prod.instFrame [Frame β] : Frame (α × β) where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
 
+@[to_dual]
 instance Pi.instFrame {ι : Type*} {π : ι → Type*} [∀ i, Frame (π i)] : Frame (∀ i, π i) where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
@@ -528,11 +550,6 @@ section Coframe
 
 variable [Coframe α] {s t : Set α} {a b c d : α}
 
-@[to_dual existing]
-instance OrderDual.instFrame : Frame αᵒᵈ where
-  __ := instCompleteLattice
-  __ := instHeytingAlgebra
-
 theorem sdiff_eq_sInf : a \ b = sInf {w | a ≤ b ⊔ w} :=
   (isLeast_sdiff a b).isGLB.sInf_eq.symm
 
@@ -540,16 +557,6 @@ theorem hnot_eq_sInf_codisjoint : ￢a = sInf {w | Codisjoint a w} :=
   (isLeast_hnot a).isGLB.sInf_eq.symm
 
 lemma le_sdiff_iff : a ≤ b \ c ↔ ∀ d, b ≤ c ⊔ d → a ≤ d := by simp [sdiff_eq_sInf]
-
-@[to_dual existing]
-instance Prod.instCoframe [Coframe β] : Coframe (α × β) where
-  __ := instCompleteLattice
-  __ := instCoheytingAlgebra
-
-@[to_dual existing]
-instance Pi.instCoframe {ι : Type*} {π : ι → Type*} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) where
-  __ := instCompleteLattice
-  __ := instCoheytingAlgebra
 
 end Coframe
 
