@@ -149,6 +149,11 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
   ⟨fun ⟨u⟩ ↦ by constructor <;> exact inferInstance,
    fun ⟨hs, hn⟩ ↦ nonempty_unique α⟩
 
+theorem subsingleton_iff_isEmpty_or_unique (α : Sort u) :
+    Subsingleton α ↔ IsEmpty α ∨ Nonempty (Unique α) := by
+  rw [isEmpty_iff, ← not_nonempty_iff_imp_false, unique_iff_subsingleton_and_nonempty,
+    or_and_left, or_iff_right_of_imp subsingleton_of_not_nonempty, and_iff_left (em' _)]
+
 variable {α : Sort*}
 
 @[simp, push ←]
