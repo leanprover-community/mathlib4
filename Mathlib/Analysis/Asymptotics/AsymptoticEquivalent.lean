@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Analysis.Normed.Module.Basic
+
 import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
@@ -62,13 +63,21 @@ namespace Asymptotics
 
 open Filter Function
 
-open Topology
+open scoped Topology
 
 section NormedAddCommGroup
 
 variable {α β : Type*} [NormedAddCommGroup β]
 
 variable {u v w : α → β} {l : Filter α}
+
+/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
+  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
+  when `u x - v x = o(v x)` as `x` converges along `l`. -/
+@[expose] def IsEquivalent (l : Filter α) (u v : α → β) :=
+  (u - v) =o[l] v
+
+@[inherit_doc] scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
 
 theorem IsEquivalent.isLittleO (h : u ~[l] v) : (u - v) =o[l] v := h
 
@@ -224,12 +233,12 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
   have : ((fun x ↦ a x • u x) - (fun x ↦ b x • v x)) =ᶠ[l] fun x ↦ b x • (φ x • u x - v x) := by
-    convert!
+    convert
       (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).fun_sub
         (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
     ext
     rw [Pi.mul_apply, mul_comm, mul_smul, ← smul_sub]
-  refine (isLittleO_congr this.symm <| EventuallyEq.rfl).mp ((isBigO_refl b l).smul_isLittleO ?_)
+  refine (isLittleO_congr this.symm EventuallyEq.rfl).mp ((isBigO_refl b l).smul_isLittleO ?_)
   rcases huv.isBigO.exists_pos with ⟨C, hC, hCuv⟩
   rw [IsEquivalent] at *
   rw [isLittleO_iff] at *
@@ -319,7 +328,7 @@ theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
 
 theorem IsEquivalent.tendsto_atBot [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atBot) :
     Tendsto v l atBot := by
-  convert! tendsto_neg_atTop_atBot.comp (huv.neg.tendsto_atTop <| tendsto_neg_atBot_atTop.comp hu)
+  convert tendsto_neg_atTop_atBot.comp (huv.neg.tendsto_atTop <| tendsto_neg_atBot_atTop.comp hu)
   ext
   simp
 

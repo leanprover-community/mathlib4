@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
+public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 public import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 
@@ -26,7 +26,9 @@ reflect isomorphisms for any preadditive category `C`.
 public section
 
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Idempotents Opposite Simplicial
+open CategoryTheory CategoryTheory.Category CategoryTheory.Idempotents Opposite
+
+open scoped Simplicial
 
 namespace AlgebraicTopology
 

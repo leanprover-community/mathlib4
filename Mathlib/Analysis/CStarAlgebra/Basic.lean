@@ -5,14 +5,13 @@ Authors: Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.Algebra.Star.Subalgebra
+public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Analysis.Normed.Group.Hom
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
-public import Mathlib.Algebra.Star.Pi
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.Algebra.Star.Subalgebra
-public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Data.Real.Star
+public import Mathlib.Basic.Real.Star
 public import Mathlib.Topology.Algebra.Module.Star
 
 /-!
@@ -44,7 +43,7 @@ local postfix:max "⋆" => star
 class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
-variable {𝕜 E α : Type*}
+variable {𝕜 E : Type*}
 
 section NormedStarGroup
 
@@ -159,20 +158,20 @@ lemma _root_.IsSelfAdjoint.nnnorm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖₊ = ‖x‖₊ ^ 2 :=
   Subtype.ext hx.norm_mul_self
 
-@[simp]
-theorem star_mul_self_eq_zero_iff (x : E) : x⋆ * x = 0 ↔ x = 0 := by
-  rw [← norm_eq_zero, norm_star_mul_self]
-  exact mul_self_eq_zero.trans norm_eq_zero
+instance : IsProperStar E where
+  eq_zero_of_star_mul_self_eq_zero {x} := by rw [← norm_eq_zero, norm_star_mul_self]; simp
 
-theorem star_mul_self_ne_zero_iff (x : E) : x⋆ * x ≠ 0 ↔ x ≠ 0 := by
-  simp only [Ne, star_mul_self_eq_zero_iff]
+@[deprecated (since := "2026-09-22")] alias star_mul_self_eq_zero_iff :=
+  star_mul_self_eq_zero
 
-@[simp]
-theorem mul_star_self_eq_zero_iff (x : E) : x * x⋆ = 0 ↔ x = 0 := by
-  simpa only [star_eq_zero, star_star] using @star_mul_self_eq_zero_iff _ _ _ _ (star x)
+@[deprecated (since := "2026-09-22")] alias star_mul_self_ne_zero_iff :=
+  star_mul_self_ne_zero
 
-theorem mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
-  simp only [Ne, mul_star_self_eq_zero_iff]
+@[deprecated (since := "2026-09-22")] alias mul_star_self_eq_zero_iff :=
+  mul_star_self_eq_zero
+
+@[deprecated (since := "2026-09-22")] alias mul_star_self_ne_zero_iff :=
+  mul_star_self_ne_zero
 
 end NonUnital
 

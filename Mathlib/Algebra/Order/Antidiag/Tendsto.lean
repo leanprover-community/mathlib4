@@ -5,9 +5,10 @@ Authors: William Coram
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Order.Antidiag.Prod
 public import Mathlib.Order.Filter.Cofinite
+
+import Mathlib.Algebra.Group.Pointwise.Set.Finite
 
 /-!
 # Antidiagonal tendsto
@@ -23,7 +24,7 @@ namespace Finset.HasAntidiagonal
 
 open Filter
 
-variable {M R : Type*} [AddMonoid M] [HasAntidiagonal M] {f : M × M → R} [LinearOrder R]
+variable {M R : Type*} [AddZeroClass M] [HasAntidiagonal M] {f : M × M → R} [LinearOrder R]
   {F : Filter R}
 
 lemma tendsto_sup'_antidiagonal_cofinite (hf : Tendsto f cofinite F) : Tendsto

@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 
 /-!
 # `DFinsupp` and submonoids
@@ -28,7 +29,7 @@ public section
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
-variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
+variable {ι : Type u} {γ : Type w} {β : ι → Type v}
 
 open DFinsupp
 

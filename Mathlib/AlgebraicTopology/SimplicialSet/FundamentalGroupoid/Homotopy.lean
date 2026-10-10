@@ -9,7 +9,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 
 /-!
-# Homotopic maps induce isomorphisms functors on the fundamental groupoid
+# Homotopic maps induce isomorphic functors on the fundamental groupoid
 
 The main definition in this file is `SSet.congrMapFundamentalGroupoid`.
 Given two morphisms of simplicial sets `f : X ⟶ Y` and `g : X ⟶ Y`
@@ -20,7 +20,7 @@ the functors `mapFundamentalGroupoid f` and `mapFundamentalGroupoid g`.
 
 We first define the variant `SSet.congrMapFundamentalGroupoid'`
 which takes as an input a combinatorial simplicial homotopy
-(as `h : SimplicialObject.Homotopy f g`), and then we deduce the result
+(as `h : SimplicialObject.Homotopy f g`), and we deduce the result
 for terms in `SSet.Homotopy f g` which involve a morphism `X ⊗ Δ[1] ⟶ Y`.
 
 -/
@@ -38,6 +38,34 @@ variable {X Y : SSet.{u}} {f g : X ⟶ Y}
 namespace Edge
 
 open ConcreteCategory
+
+/-!
+
+Given ``h : SimplicialObject.Homotopy f g` where `f` and `g` are morphisms
+of simplicial sets `X ⟶ Y`, we define an edge `ofSimplicialObjectHomotopy h x`
+connecting `f.app _ x` and `g.app _ x` for any `x : X _⦋0⦌`.
+If `e` is an edge from `x` to `y`, we obtain a diagram involving edges which
+gives a commutative diagram in the fundamental groupoid (see the lemma
+ `FundamentalGroupoid.comm_of_ofSimplicialObjectHomotopy`):
+```
+f.app _ x ---> g.app _ x
+    |     \        |
+    |      \       |
+    |       \      |
+    |        \     |
+    v         v    v
+f.app _ y ---> g.app _ y
+```
+The horizontal edges are obtained by `Edge.ofSimplicialObjectHomotopy`,
+the vertical edges are the images of `e` by `f` and `g`, and
+the diagonal edge is defined as `Edge.diagOfSimplicialObjectHomotopy h e`.
+The commutativity of the lower left triangle is justified by
+`Edge.CompStruct.ofSimplicialObjectHomotopy`, and the commutativity
+of the upper right triangle is justified by
+`Edge.CompStruct.ofSimplicialObjectHomotopy'`.
+
+-/
+
 
 variable (h : SimplicialObject.Homotopy f g)
 
@@ -77,7 +105,7 @@ lemma diagOfSimplicialObjectHomotopy_edge' :
     (diagOfSimplicialObjectHomotopy h e).edge = Y.δ 1 (h.h 0 e.edge) :=
   congr_hom (h.h_succ_comp_δ_castSucc_succ (n := 0) 0) e.edge
 
-/-- One of the two "triangles" of the "commutative square" that
+/-- The lower left triangle of the "commutative square" that
 `diagOfSimplicialObjectHomotopy h e` is part of,
 when `h : SimplicialObject.Homotopy f g` and `e` is an edge. -/
 def CompStruct.ofSimplicialObjectHomotopy :
@@ -87,7 +115,7 @@ def CompStruct.ofSimplicialObjectHomotopy :
     (by simpa using congr_hom (h.h_succ_comp_δ_castSucc_of_lt 0 0
       (by simp)) e.edge) (by simp [diagOfSimplicialObjectHomotopy_edge])
 
-/-- One of the two "triangles" of the "commutative square" that
+/-- The upper right triangle of the "commutative square" that
 `diagOfSimplicialObjectHomotopy h e` is part of,
 when `h : SimplicialObject.Homotopy f g` and `e` is an edge. -/
 def CompStruct.ofSimplicialObjectHomotopy' :
@@ -100,16 +128,28 @@ def CompStruct.ofSimplicialObjectHomotopy' :
 
 end Edge
 
-open FundamentalGroupoid Edge.CompStruct in
+@[reassoc]
+lemma FundamentalGroupoid.comm_of_ofSimplicialObjectHomotopy
+    (h : SimplicialObject.Homotopy f g) {x y : X _⦋0⦌} (e : Edge x y) :
+    homMk (e.map f) ≫ homMk (Edge.ofSimplicialObjectHomotopy h y) =
+      homMk (Edge.ofSimplicialObjectHomotopy h x) ≫ homMk (e.map g) := by
+  simp [(Edge.CompStruct.ofSimplicialObjectHomotopy h e).homMk_comp,
+    (Edge.CompStruct.ofSimplicialObjectHomotopy' h e).homMk_comp]
+
+open FundamentalGroupoid
+
+attribute [local simp] comm_of_ofSimplicialObjectHomotopy in
 /-- Two homotopic maps of simplicial sets (where the homotopy is given
 by a term in `SimplicialObject.Homotopy`) induce isomorphic functors
 between the fundamental groupoids. -/
 noncomputable def congrMapFundamentalGroupoid' (h : SimplicialObject.Homotopy f g) :
     mapFundamentalGroupoid f ≅ mapFundamentalGroupoid g :=
   natIsoMk (fun x ↦ asIso (homMk (Edge.ofSimplicialObjectHomotopy h x)))
-    (fun e ↦ by
-      simp [(ofSimplicialObjectHomotopy h e).homMk_comp,
-        (ofSimplicialObjectHomotopy' h e).homMk_comp])
+
+lemma congrMapFundamentalGroupoid'_hom_app_mk
+    (h : SimplicialObject.Homotopy f g) (x : X _⦋0⦌) :
+    (congrMapFundamentalGroupoid' h).hom.app (.mk x) =
+      homMk (Edge.ofSimplicialObjectHomotopy h x) := by rfl
 
 /-- Two homotopic maps of simplicial sets (where the homotopy is given
 by a term in `SSet.Homotopy`) induce isomorphic functors
@@ -117,5 +157,9 @@ between the fundamental groupoids. -/
 noncomputable def congrMapFundamentalGroupoid (h : Homotopy f g) :
     mapFundamentalGroupoid f ≅ mapFundamentalGroupoid g :=
   congrMapFundamentalGroupoid' h.toSimplicialObjectHomotopy
+
+lemma congrMapFundamentalGroupoid_hom_app_mk (h : Homotopy f g) (x : X _⦋0⦌) :
+    (congrMapFundamentalGroupoid h).hom.app (.mk x) =
+      homMk (Edge.ofSimplicialObjectHomotopy h.toSimplicialObjectHomotopy x) := by rfl
 
 end SSet

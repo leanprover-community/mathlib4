@@ -5,9 +5,9 @@ Authors: Kim Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.Topology.Sheaves.Init
 
 /-!
@@ -288,9 +288,6 @@ def pullbackPushforwardAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
     pullback C f ⊣ pushforward C f :=
   Functor.lanAdjunction _ _
 
-@[deprecated (since := "2026-03-03")]
-alias pushforwardPullbackAdjunction := pullbackPushforwardAdjunction
-
 /-- Pulling back along a homeomorphism is the same as pushing forward along its inverse. -/
 def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.hom ≅ pushforward C H.inv :=
@@ -392,7 +389,7 @@ lemma pullbackObjIso_hom_naturality {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpe
       ((Opens.map f).op.leftKanExtensionUnit 𝒢)).coconeAt (op U)).ι.app j := by
     dsimp [pullback]
     simp only [Category.assoc, NatTrans.naturality]
-    have := NatTrans.congr_app ((Opens.map f).op.lanUnit.naturality u) j.left
+    have := congr($((Opens.map f).op.lanUnit.naturality u).app j.left)
     dsimp [lanUnit] at this
     rw [reassoc_of% this]
     rfl

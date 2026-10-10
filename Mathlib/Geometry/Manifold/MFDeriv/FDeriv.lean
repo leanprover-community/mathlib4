@@ -6,10 +6,11 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
-public import Mathlib.Geometry.Manifold.Notation
+
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
-### Relations between vector space derivative and manifold derivative
+# Relations between vector space derivative and manifold derivative
 
 The manifold derivative `mfderiv`, when considered on the model vector space with its trivial
 manifold structure, coincides with the usual Fréchet derivative `fderiv`. In this section, we prove
@@ -17,8 +18,6 @@ this and related statements.
 -/
 
 public section
-
-noncomputable section
 
 open scoped Manifold
 
@@ -28,7 +27,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 section MFDerivFDeriv
 
-set_option backward.isDefEq.respectTransparency false in
 theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
     UniqueMDiffAt[s] x ↔ UniqueDiffWithinAt 𝕜 s x := by
   simp only [UniqueMDiffWithinAt, mfld_simps]
@@ -54,8 +52,8 @@ variable {f' : TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace 𝓘(𝕜, E
 set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivWithinAt_iff_hasFDerivWithinAt :
     HasMFDerivAt[s] f x f' ↔ HasFDerivWithinAt f f' s x := by
-  simpa only [HasMFDerivWithinAt, and_iff_right_iff_imp, mfld_simps] using
-    HasFDerivWithinAt.continuousWithinAt
+  simp only [HasMFDerivWithinAt, mfld_simps]
+  exact ⟨fun h ↦ h.2, fun h ↦ ⟨h.continuousWithinAt, h⟩⟩
 
 alias ⟨HasMFDerivWithinAt.hasFDerivWithinAt, HasFDerivWithinAt.hasMFDerivWithinAt⟩ :=
   hasMFDerivWithinAt_iff_hasFDerivWithinAt
@@ -102,21 +100,6 @@ theorem mdifferentiable_iff_differentiable : MDiff f ↔ Differentiable 𝕜 f :
 alias ⟨MDifferentiable.differentiable, Differentiable.mdifferentiable⟩ :=
   mdifferentiable_iff_differentiable
 
-set_option backward.isDefEq.respectTransparency false in
-/-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide -/
-@[simp]
-theorem mfderivWithin_eq_fderivWithin :
-    mfderiv[s] f x = fderivWithin 𝕜 f s x := by
-  by_cases h : MDiffAt[s] f x
-  · simp only [mfderivWithin, h, ite_eq_left, mfld_simps]
-  · simp only [mfderivWithin, h, ite_eq_right, not_false_iff]
-    rw [mdifferentiableWithinAt_iff_differentiableWithinAt] at h
-    exact (fderivWithin_zero_of_not_differentiableWithinAt h).symm
-
-/-- For maps between vector spaces, `mfderiv` and `fderiv` coincide -/
-@[simp]
-theorem mfderiv_eq_fderiv : mfderiv% f x = fderiv 𝕜 f x := by
-  rw [← mfderivWithin_univ, ← fderivWithin_univ]
-  exact mfderivWithin_eq_fderivWithin
+-- `mfderivWithin_eq_fderivWithin` and `mfderiv_eq_fderiv` are proven in `NormedSpace.lean`
 
 end MFDerivFDeriv

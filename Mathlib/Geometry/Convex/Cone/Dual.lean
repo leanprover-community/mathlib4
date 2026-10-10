@@ -42,7 +42,7 @@ variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R} {s t : Set M} {y : N}
 
-local notation3 "R≥0" => {c : R // 0 ≤ c}
+local notation3 "R≥0" => Nonneg R
 
 variable (p) in
 /-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
@@ -107,9 +107,6 @@ lemma dual_hull (s : Set M) : dual p (hull R s) = dual p s := by
   | zero => simp
   | add y z _hy _hz hy hz => rw [map_add, add_apply]; exact add_nonneg hy hz
   | smul t y _hy hy => rw [map_smul_of_tower, Nonneg.mk_smul, smul_apply]; exact mul_nonneg t.2 hy
-
-@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
-alias dual_span := dual_hull
 
 @[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
   := by simp [← dual_hull]

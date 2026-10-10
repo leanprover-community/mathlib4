@@ -51,7 +51,7 @@ namespace MvPolynomial
 
 open Function Finsupp
 
-variable {R : Type u} {σ : Type v} {a a' a₁ a₂ : R} {s : σ →₀ ℕ}
+variable {R : Type u} {σ : Type v} {a : R} {s : σ →₀ ℕ}
 
 section PDeriv
 
@@ -119,7 +119,7 @@ theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a
   rw [C_mul', Derivation.map_smul, C_mul']
 
 theorem coeff_pderiv {i : σ} (p : MvPolynomial σ R) (m : σ →₀ ℕ) :
-    coeff m (pderiv i p) = coeff (m + single i 1) p * (m i + 1) := by
+    (pderiv i p).coeff m = p.coeff (m + single i 1) * (m i + 1) := by
   classical
   induction p using MvPolynomial.induction_on' with
   | add p q hp hq => simp [hp, hq, add_mul]
@@ -132,6 +132,19 @@ theorem coeff_pderiv {i : σ} (p : MvPolynomial σ R) (m : σ →₀ ℕ) :
     · simp [hn]
     apply ite_eq_right
     rwa [tsub_eq_iff_eq_add_of_le (fun _ ↦ by grind)]
+
+theorem pderiv_comm (i j : σ) (p : MvPolynomial σ R) :
+    pderiv i (pderiv j p) = pderiv j (pderiv i p) := by
+  classical
+  induction p using MvPolynomial.induction_on with
+  | C a => simp
+  | add p q hp hq => simp [hp, hq]
+  | mul_X p a h =>
+    simp only [pderiv_mul, map_add, pderiv_X, Pi.single_apply, h]
+    split_ifs <;> simp [add_right_comm]
+
+theorem commute_pderiv (i j : σ) : Function.Commute (pderiv (R := R) i) (pderiv j) :=
+  pderiv_comm i j
 
 theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
     pderiv i (map φ f) = map φ (pderiv i f) := by

@@ -3,8 +3,10 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
-import Archive.MiuLanguage.DecisionNec
-import Mathlib.Tactic.Linarith
+module
+
+public import Archive.MiuLanguage.DecisionNec
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Decision procedure - sufficient condition and decidability
@@ -44,6 +46,7 @@ introduce an additional `U` and ensure that the final number of `U`s will be eve
 miu, decision procedure, decidability, decidable_pred, decidable
 -/
 
+@[expose] public section
 
 namespace Miu
 
@@ -168,7 +171,7 @@ theorem le_pow2_and_pow2_eq_mod3 (a : ℕ) (h : a % 3 = 1 ∨ a % 3 = 2) :
 
 end Arithmetic
 
-theorem replicate_pow_minus_append {m : ℕ} :
+theorem replicate_pow_sub_append {m : ℕ} :
     M :: replicate (2 ^ m - 1) I ++ [I] = M :: replicate (2 ^ m) I := by
   change M :: replicate (2 ^ m - 1) I ++ replicate 1 I = M :: replicate (2 ^ m) I
   rw [cons_append, ← replicate_add, tsub_add_cancel_of_le (one_le_pow' m 1)]
@@ -186,9 +189,9 @@ theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
     · -- `(2^m - c)/3 ≡ 0 [MOD 2]`
       simp only [der_cons_replicate m, append_nil, List.replicate, h_zero]
     · -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
-      rw [h_one, ← replicate_pow_minus_append, append_assoc]
+      rw [h_one, ← replicate_pow_sub_append, append_assoc]
       apply Derivable.r1
-      rw [replicate_pow_minus_append]
+      rw [replicate_pow_sub_append]
       exact der_cons_replicate m
   have hw₃ : Derivable (M :: replicate c I ++
       replicate ((2 ^ m - c) / 3) U ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
@@ -212,9 +215,9 @@ example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I)
     · -- `(2^m - c)/3 ≡ 0 [MOD 2]`
       simp only [der_cons_replicate m, append_nil, List.replicate, h_zero]
     · -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
-      rw [h_one, ← replicate_pow_minus_append, append_assoc]
+      rw [h_one, ← replicate_pow_sub_append, append_assoc]
       apply Derivable.r1
-      rw [replicate_pow_minus_append]
+      rw [replicate_pow_sub_append]
       exact der_cons_replicate m
   have hw₃ : Derivable (M :: replicate c I ++
       replicate ((2 ^ m - c) / 3) U ++ replicate ((2 ^ m - c) / 3 % 2) U) := by

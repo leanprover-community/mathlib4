@@ -6,7 +6,9 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+
+import Mathlib.Algebra.Order.Monoid.Submonoid
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-! # Range of the continuous functional calculus
 
@@ -83,15 +85,11 @@ theorem cfcHom_mem_elemental {a : A} (ha : p a) (f : C(spectrum 𝕜 a, 𝕜)) :
     cfcHom ha f ∈ elemental 𝕜 a :=
   range_cfcHom_le 𝕜 ha ⟨f, rfl⟩
 
-@[deprecated (since := "2026-03-20")] alias cfcHom_apply_mem_elemental := cfcHom_mem_elemental
-
 @[simp, grind ←]
 theorem cfc_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
     cfc f a ∈ elemental 𝕜 a :=
   cfc_cases _ a f (zero_mem _) fun hf ha ↦
     cfcHom_mem_elemental ha ⟨_, hf.domRestrict⟩
-
-@[deprecated (since := "2026-03-20")] alias cfc_apply_mem_elemental := cfc_mem_elemental
 
 lemma cfc_mem {𝕜' S : Type*} [Monoid 𝕜'] [MulAction 𝕜' A] [SetLike S A] [SubringClass S A]
     [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] {s : S}
@@ -138,6 +136,17 @@ lemma range_cfc_nnreal
   rintro _ ⟨f, hf, rfl⟩
   exact cfc_cases _ a f ⟨0, by simp, by simp⟩ fun hf' ha' ↦
     ⟨f, (cfc_nonneg_iff f a hf' ha').mp (by simpa), by simp [cfc_apply f a ha' hf']⟩
+
+theorem cfc_nnreal_mem {𝕜 : Type*} [RCLike 𝕜] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+    {S : Type*} [MulAction 𝕜 A] [SetLike S A]
+    [SubringClass S A] [IsScalarTower ℝ 𝕜 A]
+    [SMulMemClass S 𝕜 A] [StarMemClass S A] {s : S} [hs : IsClosed (s : Set A)]
+    (f : ℝ≥0 → ℝ≥0) {a : A} (has : a ∈ s) :
+    cfc f a ∈ s := by
+  by_cases ha : 0 ≤ a
+  · rw [cfc_nnreal_eq_real ..]
+    exact cfc_mem _ has
+  · simp [cfc_apply_of_not_predicate _ ha]
 
 end Unital
 
@@ -192,15 +201,11 @@ theorem cfcₙHom_mem_elemental {a : A} (ha : p a) (f : C(quasispectrum 𝕜 a, 
     cfcₙHom ha f ∈ elemental 𝕜 a :=
   range_cfcₙHom_le 𝕜 ha ⟨f, rfl⟩
 
-@[deprecated (since := "2026-03-20")] alias cfcₙHom_apply_mem_elemental := cfcₙHom_mem_elemental
-
 @[simp, grind ←]
 theorem cfcₙ_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
     cfcₙ f a ∈ elemental 𝕜 a :=
   cfcₙ_cases _ a f (zero_mem _) fun hf hf₀ ha ↦
     cfcₙHom_mem_elemental ha ⟨⟨_, hf.domRestrict⟩, hf₀⟩
-
-@[deprecated (since := "2026-03-20")] alias cfcₙ_apply_mem_elemental := cfcₙ_mem_elemental
 
 lemma cfcₙ_mem {𝕜' S : Type*} [Monoid 𝕜'] [MulAction 𝕜' A] [SetLike S A] [NonUnitalSubringClass S A]
     [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] {s : S}
@@ -256,4 +261,41 @@ lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 
   · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_map_zero a h]⟩
   · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_predicate a h]⟩
 
+open NNReal in
+theorem cfcₙ_nnreal_mem {𝕜 : Type*} [RCLike 𝕜]
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+    {S : Type*} [MulAction 𝕜 A] [SetLike S A]
+    [NonUnitalSubringClass S A] [IsScalarTower ℝ 𝕜 A]
+    [SMulMemClass S 𝕜 A] [StarMemClass S A] {s : S} [hs : IsClosed (s : Set A)]
+    (f : ℝ≥0 → ℝ≥0) {a : A} (has : a ∈ s) :
+    cfcₙ f a ∈ s := by
+  by_cases ha : 0 ≤ a
+  · rw [cfcₙ_nnreal_eq_real ..]
+    exact cfcₙ_mem _ has
+  · simp [cfcₙ_apply_of_not_predicate _ ha]
+
 end NonUnital
+
+section StarOrderedSubtype
+
+variable {𝕜 S A : Type*} [NonUnitalRing A] [StarRing A] [TopologicalSpace A]
+    [ContinuousStar A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
+    [IsTopologicalRing A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+    [RCLike 𝕜] [Module 𝕜 A] [IsScalarTower ℝ 𝕜 A] [ContinuousConstSMul ℝ A]
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [StarModule ℝ A]
+    [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S 𝕜 A] [StarMemClass S A]
+
+instance Subtype.starOrderedRing (s : S) [hs : IsClosed (s : Set A)] : StarOrderedRing s :=
+  .of_nonneg_iff' add_le_add_right fun x ↦ by
+    refine ⟨?_, ?_⟩
+    · intro (hx : 0 ≤ (x : A))
+      use ⟨cfcₙ Real.sqrt (x : A), cfcₙ_mem _ x.2⟩
+      ext
+      simp only [MulMemClass.coe_mul, StarMemClass.coe_star]
+      rw [IsSelfAdjoint.star_eq (by cfc_tac), ← cfcₙ_mul ..]
+      convert (cfcₙ_id' ℝ (x : A)).symm using 1
+      exact cfcₙ_congr fun r hr ↦ by grind [Real.mul_self_sqrt]
+    · rintro ⟨s, hs⟩
+      simp [← Subtype.coe_le_coe, hs]
+
+end StarOrderedSubtype

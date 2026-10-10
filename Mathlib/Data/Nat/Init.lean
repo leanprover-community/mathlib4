@@ -55,7 +55,7 @@ The relevant files are:
 assert_not_exists Monoid
 
 namespace Nat
-variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
+variable {a b m n k : ℕ} {p : ℕ → Prop}
 
 /-! ### `succ`, `pred` -/
 
@@ -218,11 +218,6 @@ lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}
     {next : ∀ {k}, C k → C (k + 1)} (x : C n) (h1 : n ≤ m) (h2 : n + 1 ≤ m) :
     (leRecOn h2 next (next x) : C m) = (leRecOn h1 next x : C m) :=
   leRec_succ_left (motive := fun n _ => C n) _ (fun _ _ => @next _) _ _
-
-@[deprecated (since := "2026-03-05")] alias strongRec' := Nat.strongRec
-@[deprecated (since := "2026-03-05")] alias strongRec'_spec := Nat.strongRec_eq
-@[deprecated (since := "2026-03-05")] alias strongRecOn' := Nat.strongRec
-@[deprecated (since := "2026-03-05")] alias strongRecOn'_beta := Nat.strongRec_eq
 
 /-- Induction principle starting at a non-zero number.
 To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same

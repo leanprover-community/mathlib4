@@ -28,7 +28,6 @@ this allows to obtain the equality
 `(mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x)`
 by `with_implicit rfl`.
 
-
 -/
 
 @[expose] public section
@@ -54,7 +53,7 @@ lemma mk_surjective : Function.Surjective (mk (X := X)) :=
 
 /-- The bijection `FundamentalGroupoid X ≃ FreeGroupoid X.HomotopyCategory` that is
 used to define the category structure on `FundamentalGroupoid X`
-when `X` is a`2`-truncated simplicial set. -/
+when `X` is a `2`-truncated simplicial set. -/
 def equivFreeGroupoid : FundamentalGroupoid X ≃ FreeGroupoid X.HomotopyCategory where
   toFun x := FreeGroupoid.mk (HomotopyCategory.mk x.pt)
   invFun x := mk x.as.as.as.as
@@ -94,7 +93,7 @@ lemma homMk_id (x : X _⦋0⦌₂) : homMk (Edge.id x) = 𝟙 (mk x) :=
 of a `2`-truncated simplicial set: in order to prove a property
 of all morphisms, it suffices to do it for morphisms induced
 by edges and show that the property is stable by inverses and
-by composition; -/
+by composition. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 lemma hom_rec {motive : ∀ ⦃x y : FundamentalGroupoid X⦄, (x ⟶ y) → Prop}
     (homMk : ∀ ⦃x y : X _⦋0⦌₂⦄ (e : Edge x y), motive (homMk e))
@@ -228,8 +227,10 @@ variable {X Y Z : SSet.{u}}
 
 variable (X) in
 /-- The fundamental groupoid of a simplicial set `X`. -/
-abbrev FundamentalGroupoid : Type u :=
+@[implicit_reducible]
+def FundamentalGroupoid : Type u :=
   ((truncation 2).obj X).FundamentalGroupoid
+deriving Groupoid
 
 namespace FundamentalGroupoid
 
@@ -241,11 +242,16 @@ lemma mk_surjective : Function.Surjective (mk (X := X)) :=
   Truncated.FundamentalGroupoid.mk_surjective
 
 /-- Induction principle for the objects of the fundamental groupoid of a simplicial set. -/
-@[elab_as_elim, cases_eliminator, induction_eliminator]
+@[implicit_reducible, elab_as_elim, cases_eliminator, induction_eliminator]
 def rec {motive : FundamentalGroupoid X → Sort*}
     (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : FundamentalGroupoid X) :
     motive x :=
   mk _
+
+@[simp]
+lemma rec_mk {motive : FundamentalGroupoid X → Sort*}
+    (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : X _⦋0⦌) :
+    FundamentalGroupoid.rec (motive := motive) mk (.mk x) = mk x := rfl
 
 /-- Constructor for morphisms in the fundamental groupoid of a simplicial set `X`. -/
 def homMk {x y : X _⦋0⦌} (e : Edge x y) : mk x ⟶ mk y :=
@@ -282,7 +288,6 @@ variable {D : Type*} [Groupoid D]
 def desc : FundamentalGroupoid X ⥤ D :=
   Truncated.FundamentalGroupoid.desc obj map map_comp
 
-
 @[simp]
 lemma desc_obj_mk (x : X _⦋0⦌) :
     (desc obj map map_comp).obj (mk x) = obj x := rfl
@@ -305,23 +310,21 @@ lemma natTrans_ext {f g : F ⟶ G}
   apply h
 
 open MorphismProperty in
-/-- Constructor for natural transformations for functors from the
+/-- Constructor for natural transformations between functors from the
 fundamental groupoid of a simplicial set. -/
 @[simps!]
 def natTransMk (app : ∀ (x : X _⦋0⦌), F.obj (mk x) ⟶ G.obj (mk x))
     (naturality : ∀ {x y : X _⦋0⦌} (e : Edge x y),
       F.map (homMk e) ≫ app y = app x ≫ G.map (homMk e) := by cat_disch) : F ⟶ G where
   app x := app x.pt
-  naturality := by
-    let φ (x : FundamentalGroupoid X) := app x.pt
-    intro _ _ f
-    change naturalityProperty φ f
+  naturality _ _ f := by
+    change naturalityProperty (fun x ↦ app x.pt) f
     induction f with
     | homMk e => exact naturality e
-    | inv f hf => exact (naturalityProperty.stableUnderInverse φ) (asIso f) hf
+    | inv f hf => exact (naturalityProperty.stableUnderInverse _) (asIso f) hf
     | comp f g hf hg => exact comp_mem _ _ _ hf hg
 
-/-- Constructor for natural isomorphisms for functors from the
+/-- Constructor for natural isomorphisms between functors from the
 fundamental groupoid of a simplicial set. -/
 @[simps!]
 def natIsoMk (app : ∀ (x : X _⦋0⦌), F.obj (mk x) ≅ G.obj (mk x))
@@ -363,7 +366,7 @@ lemma mapFundamentalGroupoid_obj_mk (f : X ⟶ Y) (x : X _⦋0⦌) :
 
 @[simp]
 lemma mapFundamentalGroupoid_map_homMk (f : X ⟶ Y) {x y : X _⦋0⦌} (e : Edge x y) :
-    (mapFundamentalGroupoid f).map (homMk e) = homMk (e.map f) := by rfl
+    (mapFundamentalGroupoid f).map (homMk e) = homMk (e.map f) := (rfl)
 
 example (f : X ⟶ Y) (x : X _⦋0⦌) :
     (mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x) := by
@@ -372,15 +375,16 @@ example (f : X ⟶ Y) (x : X _⦋0⦌) :
 /-- The isomorphism of fundamental groupoids that is induced
 by a morphism of simplicial sets which induces an isomorphism
 on the `2`-truncations. -/
-noncomputable def isoCatMapFundamentalGroupoid (f : X ⟶ Y)
+lemma isIso_mapFundamentalGroupoid_of_isIso (f : X ⟶ Y)
     (hf : IsIso ((truncation 2).map f) := by infer_instance) :
-    IsoCat (FundamentalGroupoid X) (FundamentalGroupoid Y) :=
-  Truncated.mapIsoFundamentalGroupoid (asIso ((truncation 2).map f))
+    (mapFundamentalGroupoid f).IsIso :=
+  Truncated.mapIsoFundamentalGroupoid (asIso ((truncation 2).map f))|>.isIso_functor
 
 lemma isEquivalence_mapFundamentalGroupoid (f : X ⟶ Y)
     (hf : IsIso ((truncation 2).map f) := by infer_instance) :
-    (mapFundamentalGroupoid f).IsEquivalence :=
-  (isoCatMapFundamentalGroupoid f).toEquivalence.isEquivalence_functor
+    (mapFundamentalGroupoid f).IsEquivalence := by
+  have := isIso_mapFundamentalGroupoid_of_isIso f
+  infer_instance
 
 variable (X) in
 /-- The identity morphism of a simplicial set acts by the

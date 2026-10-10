@@ -32,7 +32,7 @@ open Polynomial
 section ModuleAndAlgebra
 
 universe uR uS uA uB uM uN
-variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB) (M : Type uM) (N : Type uN)
+variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB)
 
 /-- An algebra over a commutative semiring is of `FiniteType` if it is finitely generated
 over the base ring as algebra. -/
@@ -41,7 +41,7 @@ class Algebra.FiniteType [CommSemiring R] [Semiring A] [Algebra R A] : Prop wher
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R]
 
 namespace Finite
 
@@ -64,8 +64,6 @@ namespace Algebra
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra R B]
-variable [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
 
 namespace FiniteType
 
@@ -199,6 +197,9 @@ lemma adjoin_of_finite {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} (h
     FiniteType R (Algebra.adjoin R t) := by
   rw [← Subalgebra.fg_iff_finiteType]
   exact ⟨h.toFinset, by simp⟩
+
+instance {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} [Finite t] :
+    FiniteType R (Algebra.adjoin R t) := adjoin_of_finite t.toFinite
 
 end FiniteType
 
@@ -430,7 +431,7 @@ variable (R M)
 type. -/
 instance finiteType_of_fg [CommRing R] [h : AddMonoid.FG M] :
     FiniteType R R[M] := by
-  obtain ⟨S, hS⟩ := h.fg_top
+  obtain ⟨S, hS⟩ := AddMonoid.isAddFG_iff.mp h
   exact .of_surjective
       (FreeAlgebra.lift R fun s : (S : Set M) => of' R M ↑s)
       (freeAlgebra_lift_of_surjective_of_closure hS)
@@ -443,7 +444,7 @@ theorem finiteType_iff_fg [CommRing R] [Nontrivial R] :
     FiniteType R R[M] ↔ AddMonoid.FG M := by
   refine ⟨fun h => ?_, fun h => @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
   obtain ⟨S, hS⟩ := @exists_finset_adjoin_eq_top R M _ _ h
-  refine AddMonoid.fg_def.2 ⟨S, (eq_top_iff' _).2 fun m => ?_⟩
+  refine AddMonoid.isAddFG_iff.2 ⟨S, (eq_top_iff' _).2 fun m => ?_⟩
   have hm : of' R M m ∈ Subalgebra.toSubmodule (adjoin R (of' R M '' ↑S)) := by
     simp only [hS, top_toSubmodule, Submodule.mem_top]
   rw [adjoin_eq_span] at hm
@@ -643,12 +644,12 @@ instance (priority := 100) CommRing.orzechProperty
   have : IsNoetherianRing A := is_noetherian_subring_closure _
     (.union (Set.finite_range _) (Set.finite_range _))
   have : Module.Finite A M' := span_of_finite A (Set.finite_range _)
-  refine congr($((LinearMap.ker_eq_bot'.1 <| LinearMap.ker_eq_bot.2 <|
-    IsNoetherian.injective_of_surjective_of_injective
-      ((i.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
-      ((f.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
-      (fun _ _ h ↦ injective_subtype _ (hi congr(($h).1)))
-      fun ⟨x, hx⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).1)
+  congrm $((LinearMap.ker_eq_bot'.1 <| LinearMap.ker_eq_bot.2 <|
+   IsNoetherian.injective_of_surjective_of_injective
+     ((i.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
+     ((f.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
+     (fun _ _ h ↦ injective_subtype _ (hi congr(($h).1)))
+     fun ⟨x, hx⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).1
   · induction hx using span_induction with
     | mem x hx =>
       change i x ∈ M'

@@ -6,8 +6,8 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.LatticeIntervals
 
 /-! # Subtypes of conditionally complete linear orders
 
