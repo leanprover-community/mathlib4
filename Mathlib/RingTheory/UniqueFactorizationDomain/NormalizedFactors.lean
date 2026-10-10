@@ -66,7 +66,7 @@ theorem prime_of_normalized_factor {a : α} : ∀ x : α, x ∈ normalizedFactor
   rw [normalizedFactors, factors]
   split_ifs with ane0; · simp
   intro x hx; rcases Multiset.mem_map.1 hx with ⟨y, ⟨hy, rfl⟩⟩
-  rw [(normalize_associated _).prime_iff]
+  rw [prime_normalize_iff]
   exact (Classical.choose_spec (UniqueFactorizationMonoid.exists_prime_factors a ane0)).1 y hy
 
 theorem irreducible_of_normalized_factor {a : α} :
