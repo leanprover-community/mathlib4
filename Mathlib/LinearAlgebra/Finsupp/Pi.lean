@@ -5,9 +5,9 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of the module `α →₀ M`

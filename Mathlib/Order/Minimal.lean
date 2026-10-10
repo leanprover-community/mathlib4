@@ -600,11 +600,8 @@ def mapSetOfPredMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Ma
 /-- If two sets are antitonically order isomorphic, their minimals/maximals are too. -/
 @[to_dual /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/]
 def setOfPredMinimalIsoSetOfPredMaximal (f : s ≃o tᵒᵈ) :
-    {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} where
-      toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfPredMinimal x).2⟩
-      invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
-        ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfPredMinimal x).2⟩
-      __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfPredMinimal
+    {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} :=
+  f.mapSetOfPredMinimal
 
 @[deprecated (since := "2026-07-09")]
 alias setOfMinimalIsoSetOfMaximal := setOfPredMinimalIsoSetOfPredMaximal

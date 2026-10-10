@@ -27,7 +27,7 @@ general theory of Lie algebra cohomology.
 * construction and classification of central extensions
 
 ## References
-* [H. Cartan, S. Eilenberg, *Homological Algebra*](cartan-eilenberg-1956)
+* [H. Cartan, S. Eilenberg, *Homological Algebra*][cartan-eilenberg-1956]
 
 -/
 
@@ -126,13 +126,13 @@ def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M w
       toFun y := {
         toFun z := ⁅x, a y z⁆ - ⁅y, a x z⁆ + ⁅z, a x y⁆ - a ⁅x, y⁆ z + a ⁅x, z⁆ y - a ⁅y, z⁆ x
         map_add' _ _ := by simp; abel
-        map_smul' _ _ := by simp; abel_nf; simp }
+        map_smul' _ _ := by simp [smul_sub] }
       map_add' _ _ := by ext; simp; abel
-      map_smul' _ _ := by ext; simp; abel_nf; simp }
+      map_smul' _ _ := by ext; simp [smul_sub] }
     map_add' _ _ := by ext; simp; abel
-    map_smul' _ _ := by ext; simp; abel_nf; simp }
+    map_smul' _ _ := by ext; simp [smul_sub] }
   map_add' _ _ := by ext; simp; abel
-  map_smul' _ _ := by ext; simp; abel_nf; simp
+  map_smul' _ _ := by ext; simp [smul_sub]
 
 @[simp]
 lemma d₂₃_apply (a : twoCochain R L M) (x y z : L) :

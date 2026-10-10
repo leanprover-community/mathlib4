@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Module.Submodule.Lattice
 
 /-!
 # The span of a set of vectors, as a submodule

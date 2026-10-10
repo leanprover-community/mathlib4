@@ -9,8 +9,8 @@ public import Mathlib.MeasureTheory.Function.AEEqFun
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.MeanInequalitiesPow
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Fintype.Order
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
@@ -19,7 +19,6 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 -/
 
 public section
-noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
 
