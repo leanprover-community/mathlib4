@@ -177,7 +177,8 @@ noncomputable def ofIso (f : X ≅ Y) : X.PartialIso Y where
 end PartialIso
 
 /-- `X` and `Y` are birational if there exists a partial isomorphism between them. -/
-@[stacks 0A20 "(1)"]
+@[stacks 0A20 "(1), for arbitrary schemes and in the equivalent form of having
+isomorphic dense opens."]
 def Birational (X Y : Scheme.{u}) : Prop := Nonempty (PartialIso X Y)
 
 /-- Choose a partial isomorphism witnessing that `X` and `Y` are birational. -/
@@ -200,6 +201,8 @@ lemma Birational.trans {X Y Z : Scheme.{u}} (h₁ : Birational X Y) (h₂ : Bira
 
 /-- `X` and `Y` are birational over `S` if there exists a partial isomorphism between them
 that is compatible with the structure maps to `S`. -/
+@[stacks 0A20 "(2), for arbitrary schemes and in the equivalent form of
+having isomorphic dense opens."]
 def BirationalOver {S X Y : Scheme.{u}} (sX : X ⟶ S) (sY : Y ⟶ S) : Prop :=
   ∃ f : PartialIso X Y, f.IsOver sX sY
 
