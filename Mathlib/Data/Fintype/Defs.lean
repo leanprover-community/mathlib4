@@ -201,10 +201,9 @@ open Finset
 
 namespace Fintype
 
-instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
+instance decidablePiFintype {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
-  decidable_of_iff (∀ a ∈ @univ α _, f a = g a)
-    (by simp [funext_iff])
+  decidable_of_iff (∀ a ∈ @univ α _, f a = g a) (by simp [funext_iff])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
