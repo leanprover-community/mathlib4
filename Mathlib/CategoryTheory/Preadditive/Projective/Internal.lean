@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 /-!
 
@@ -62,3 +63,21 @@ lemma ofRetract {X Y : C} (r : Retract Y X) [InternallyProjective X] : Internall
   ⟨isInternallyProjective.prop_of_retract r (isInternallyProjective.prop_of_is _)⟩
 
 end CategoryTheory.InternallyProjective
+
+section
+
+open CategoryTheory MonoidalCategory MonoidalClosed
+
+namespace CategoryTheory
+
+/-- If the tensor unit is projective, internal projectivity implies ordinary projectivity.
+This packages the standard adjunction argument: maps out of `P` are global sections of
+`P ⟶[C] -`, and `P ⟶[C] -` preserves epimorphisms by internal projectivity. -/
+lemma projective_of_internallyProjective_of_projective_unit
+    {C : Type*} [Category* C] [MonoidalCategory C] [MonoidalClosed C]
+    (P : C) [Projective (𝟙_ C)] [InternallyProjective P] : Projective P :=
+  Projective.of_iso (ρ_ P) ((ihom.adjunction P).map_projective (𝟙_ C) inferInstance)
+
+end CategoryTheory
+
+end
