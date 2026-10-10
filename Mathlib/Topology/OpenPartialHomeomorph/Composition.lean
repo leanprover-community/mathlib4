@@ -238,7 +238,8 @@ lemma toOpenPartialHomeomorph_trans_symm_self (e : X ≃ₜ Y) :
     e.toOpenPartialHomeomorph.trans e.toOpenPartialHomeomorph.symm = .refl X := by
   simp [← symm_toOpenPartialHomeomorph, ← trans_toOpenPartialHomeomorph]
 
-open OpenPartialHomeomorph in @[simp]
+open OpenPartialHomeomorph in
+@[simp]
 lemma transOpenPartialHomeomorph_symm_trans {e e' : OpenPartialHomeomorph Y Z} (φ : X ≃ₜ Y) :
     (φ.transOpenPartialHomeomorph e).symm.trans
       (φ.transOpenPartialHomeomorph e') = e.symm.trans e' := by

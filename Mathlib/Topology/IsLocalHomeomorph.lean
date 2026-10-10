@@ -317,16 +317,12 @@ lemma injOn_localInverseAt_target : (hf.localInverseAt x).target.InjOn f := by
   hf.injOn_localInverseAt_target (by simp) hf.self_mem_localInverseAt_target <|
     hf.apply_localInverseAt_of_mem hf.apply_self_mem_localInverseAt_source
 
-/--
-This lemma proves that the composition of a local homeomorphism `f : X → Y` with its
-chosen local inverse `IsLocalHomeomorph.localInverseAt` is the identity.
--/
-lemma trans_localInverseAt (hf : IsLocalHomeomorph f) (m : X) : Set.InvOn (hf.localInverseAt m)
-    f (hf.localInverseAt m).target (hf.localInverseAt m).source := by
-  constructor
-  · intro x hx
-    rw [← congrFun (hf.localInverseAt_symm m) x, OpenPartialHomeomorph.right_inv _ hx]
-  · exact fun _ hx ↦ apply_localInverseAt_of_mem hf hx
+/-- The chosen local inverse `IsLoclHomeomorph.localInverseAt` of a local homeomorphism
+`f : X → Y` is a left inverse of `f` on its target and a right inverse on its source. -/
+lemma trans_localInverseAt (hf : IsLocalHomeomorph f) (m : X) :
+    Set.InvOn (hf.localInverseAt m) f (hf.localInverseAt m).target (hf.localInverseAt m).source :=
+  ⟨fun x h ↦ by rw [← congrFun (hf.localInverseAt_symm m) x, OpenPartialHomeomorph.right_inv _ h],
+   fun _ h ↦ apply_localInverseAt_of_mem hf h⟩
 
 end IsLocalHomeomorph
 
@@ -338,9 +334,9 @@ chosen local inverse `φ.isLocalHomeomorph.localInverseAt` is equivalent to the 
 We have to use `OpenPartialHomemorph.EqOnSource` here because `localInverseAt` uses choice, which
 means that we can't prove anything about its source.
 -/
-lemma toOpenPartialHomeomorph_trans_localInverseAt (φ : X ≃ₜ Y) (m : X) :
-    (φ.toOpenPartialHomeomorph.trans (φ.isLocalHomeomorph.localInverseAt m)).EqOnSource
-      <| .ofSet (φ ⁻¹' (φ.isLocalHomeomorph.localInverseAt m).source) (by simp [open_source]) := by
+lemma toOpenPartialHomeomorph_trans_localInverseAt (φ : X ≃ₜ Y) (x : X) :
+    (φ.toOpenPartialHomeomorph.trans (φ.isLocalHomeomorph.localInverseAt x)).EqOnSource
+      <| .ofSet (φ ⁻¹' (φ.isLocalHomeomorph.localInverseAt x).source) (by simp [open_source]) := by
   simpa [EqOnSource, Set.EqOn]
     using fun _ hx ↦ φ.bijective.injective <| IsLocalHomeomorph.apply_localInverseAt_of_mem _ hx
 
