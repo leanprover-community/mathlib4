@@ -9,11 +9,10 @@ public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Perfect
-
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Finite fields
@@ -464,7 +463,7 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     rw [← this, Multiset.toFinset_val, eq_comm, Multiset.dedup_eq_self]
     apply nodup_roots
     rw [separable_def]
-    convert isCoprime_one_right.neg_right (R := K[X]) using 1
+    convert! isCoprime_one_right.neg_right (R := K[X]) using 1
     rw [derivative_sub, derivative_X, derivative_X_pow, Nat.cast_card_eq_zero K, C_0,
       zero_mul, zero_sub]
 
@@ -729,13 +728,48 @@ theorem Subfield.card_bot : Nat.card (⊥ : Subfield F) = p := by
   rw [← fieldRange_castHom_eq_bot p,
     ← Nat.card_eq_of_bijective _ (RingHom.rangeRestrictField_bijective _), Nat.card_zmod]
 
+/-- The subfield `⊥ : Subfield F` as a `Finset F`. -/
+def Subfield.botFinset : Finset F :=
+  univ.map ⟨_, (ZMod.castHom dvd_rfl F).injective⟩
+
+@[simp]
+theorem Subfield.mem_botFinset {x : F} : x ∈ Subfield.botFinset F p ↔ x ∈ (⊥ : Subfield F) := by
+  simp_rw [botFinset, Finset.mem_map, mem_univ, true_and, ← fieldRange_castHom_eq_bot p]; rfl
+
+@[simp]
+theorem Subfield.coe_botFinset : (Subfield.botFinset F p : Set F) = (⊥ : Subfield F) := by
+  ext; simp
+
+@[simp]
+theorem Subfield.card_botFinset : (Subfield.botFinset F p).card = p := by
+  simp [Subfield.botFinset]
+
 /-- The prime subfield is finite. -/
 @[instance_reducible]
 def Subfield.fintypeBot : Fintype (⊥ : Subfield F) :=
-  Fintype.subtype (univ.map ⟨_, (ZMod.castHom (m := p) dvd_rfl F).injective⟩)
-    fun _ ↦ by simp_rw [Finset.mem_map, mem_univ, true_and, ← fieldRange_castHom_eq_bot p]; rfl
+  Fintype.ofFinset _ fun _ ↦ Subfield.mem_botFinset ..
+
+attribute [local instance] Subfield.fintypeBot
+
+@[simp]
+theorem Subfield.fintypeCard_bot : Fintype.card (⊥ : Subfield F) = p :=
+  (Fintype.card_ofFinset ..).trans (Subfield.card_botFinset ..)
+
+@[simp]
+theorem Subfield.botFinset_eq_univ : Subfield.botFinset (⊥ : Subfield F) p = Finset.univ := by
+  apply Finset.eq_univ_of_card
+  simp
 
 open Polynomial
+
+theorem Polynomial.roots_X_pow_char_sub_X_bot :
+    (X ^ p - X : F[X]).roots = (Subfield.botFinset F p).val := by
+  have := (FiniteField.roots_X_pow_card_sub_X (⊥ : Subfield F))
+  let := Subfield.fintypeBot F p
+
+  conv_lhs => rw [← card_bot F p, ← Fintype.card_eq_nat_card]
+  exact FiniteField.roots_X_pow_card_sub_X _
+
 
 theorem Subfield.roots_X_pow_char_sub_X_bot :
     letI := Subfield.fintypeBot F p
@@ -744,6 +778,15 @@ theorem Subfield.roots_X_pow_char_sub_X_bot :
   conv_lhs => rw [← card_bot F p, ← Fintype.card_eq_nat_card]
   exact FiniteField.roots_X_pow_card_sub_X _
 
+theorem Polynomial.roots_X_pow_char_sub_X_bot :
+    (X ^ p - X).roots =
+
+theorem Polynomial.splits_X_pow_char_sub_X :
+    Splits ((X : F[X]) ^ p - X) := by
+  rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
+    FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,
+    Fintype.card_eq_nat_card, card_bot F p]
+
 theorem Subfield.splits_bot :
     Splits (X ^ p - X : (⊥ : Subfield F)[X]) := by
   let _ := Subfield.fintypeBot F p
@@ -751,10 +794,15 @@ theorem Subfield.splits_bot :
     FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,
     Fintype.card_eq_nat_card, card_bot F p]
 
+#exit
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   have := roots_X_pow_char_sub_X_bot F p ▸
       (splits_bot F p).roots_map (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
+
+theorem Polynomial.splits_X_pow_char_sub_X :
+    Splits ((X : F[X]) ^ p - X) := by
+  simpa using (Subfield.splits_bot F p).map (algebraMap _ F)
 
 end prime_subfield
 
