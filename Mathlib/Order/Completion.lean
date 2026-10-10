@@ -20,7 +20,7 @@ an abbreviation for `Concept α α (· ≤ ·)`. This means we don't need to rep
 complete lattice; instead, the file simply proves that any order embedding into another complete
 lattice factors through it.
 
-## Todo
+## TODO
 
 - Build the order isomorphism `DedekindCut ℚ ≃o EReal`.
 
