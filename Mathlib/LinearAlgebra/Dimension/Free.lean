@@ -40,7 +40,10 @@ variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Modu
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
 
-The universe polymorphic version of `rank_mul_rank` below. -/
+The universe polymorphic version of `rank_mul_rank` below.
+
+See `Algebra.IsAlgebraic.lift_rank_mul_lift_rank` for a version for non-free modules when `S/R` is
+algebraic. -/
 theorem lift_rank_mul_lift_rank :
     Cardinal.lift.{w} (Module.rank F K) * Cardinal.lift.{v} (Module.rank K A) =
       Cardinal.lift.{v} (Module.rank F A) := by
@@ -53,7 +56,10 @@ theorem lift_rank_mul_lift_rank :
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
 
-This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
+This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe.
+
+See `Algebra.IsAlgebraic.rank_mul_rank` for a version for modules over domains when `S/R` is
+algebraic. -/
 @[stacks 09G9]
 theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
@@ -63,8 +69,10 @@ theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
 
-See `Module.finrank_mul_finrank'` for a variant over a tower of domains that assumes the rings are
-module-finite rather than the modules being free. -/
+For non-free modules over domains, there are the following variants:
+- `Algebra.IsAlgebraic.finrank_mul_finrank` for when `S/R` is algebraic.
+- `Module.finrank_mul_finrank'` for when the top module is torsion-free.
+-/
 theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := by
   simp_rw [finrank]
   rw [← toNat_lift.{w} (Module.rank F K), ← toNat_lift.{v} (Module.rank K A), ← toNat_mul,
