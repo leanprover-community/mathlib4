@@ -781,8 +781,6 @@ theorem _root_.Cardinal.mk_Iio_ordinal (o : Ordinal.{u}) :
   rw [lift_card, ← typein_ordinal]
   rfl
 
-@[deprecated (since := "2026-03-13")] alias mk_Iio_ordinal := Cardinal.mk_Iio_ordinal
-
 /-! ### The first infinite ordinal ω -/
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
@@ -921,10 +919,6 @@ instance : SuccOrder Ordinal.{u} :=
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
-@[deprecated Order.one_le_iff_ne_zero +typeChanged (since := "2026-03-24")]
-protected theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 :=
-  Order.one_le_iff_ne_zero
-
 @[deprecated add_pos_of_right +typeChanged (since := "2026-04-04")]
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
   add_pos_of_right zero_lt_one o
@@ -932,14 +926,6 @@ theorem succ_pos (o : Ordinal) : 0 < succ o :=
 @[deprecated add_pos_of_right +typeChanged (since := "2026-04-04")]
 theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
   (add_pos_of_right zero_lt_one o).ne'
-
-@[deprecated Order.lt_one_iff +typeChanged (since := "2026-03-24")]
-theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 :=
-  Order.lt_one_iff
-
-@[deprecated Order.le_one_iff +typeChanged (since := "2026-03-24")]
-protected theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 :=
-  Order.le_one_iff
 
 @[deprecated Nat.cast_add_one +typeChanged (since := "2026-05-21")]
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
@@ -1035,14 +1021,10 @@ def ord (c : Cardinal) : Ordinal :=
 theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
   (rfl)
 
-@[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
-
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
-
-@[deprecated (since := "2026-03-29")] alias ord_eq := exists_ord_eq
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq_type_lt (α) :
@@ -1187,14 +1169,6 @@ theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h :
 @[deprecated mk_Iio_lt +typeChanged (since := "2026-04-12")]
 theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
   simpa using mk_Iio_lt i
-
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-03-20")] alias mk_Iio_ord_toType := mk_Iio_toType_ord_lt
-
-@[deprecated mk_Iio_lt +typeChanged (since := "2026-03-20")]
-theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
-    card (typein (α := c.ord.ToType) (· < ·) x) < c :=
-  mk_Iio_toType_ord_lt x
 
 @[simp]
 theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=

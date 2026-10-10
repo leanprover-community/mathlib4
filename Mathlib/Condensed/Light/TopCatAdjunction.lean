@@ -24,7 +24,7 @@ The counit is an isomorphism for sequential spaces, and we conclude that the fun
 
 universe u
 
-open LightCondensed LightCondSet CategoryTheory LightProfinite
+open LightCondensed CategoryTheory LightProfinite
 
 namespace LightCondSet
 

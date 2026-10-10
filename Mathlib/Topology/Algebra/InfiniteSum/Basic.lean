@@ -139,12 +139,6 @@ theorem multipliable_of_hasFiniteMulSupport [L.HasSupport] (h : HasFiniteMulSupp
     Multipliable f L := by
   apply multipliable_of_ne_finset_one (s := h.toFinset); simp
 
-@[deprecated (since := "2026-03-03")] alias
-  multipliable_of_finite_mulSupport := multipliable_of_hasFiniteMulSupport
-
-@[deprecated (since := "2026-03-03")] alias
-  summable_of_finite_support := summable_of_hasFiniteSupport
-
 @[to_additive]
 lemma Multipliable.of_finite [Finite β] [L.HasSupport] {f : β → α} : Multipliable f L :=
   multipliable_of_hasFiniteMulSupport <| Set.finite_univ.subset (Set.subset_univ _)

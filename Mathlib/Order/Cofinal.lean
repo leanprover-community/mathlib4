@@ -91,18 +91,12 @@ theorem GaloisConnection.map_isCofinal {f : β → α} {g : α → β}
     (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) :=
   hs.image h.monotone_u h.isCofinal_range
 
-@[deprecated (since := "2026-03-15")]
-alias GaloisConnection.map_cofinal := GaloisConnection.map_isCofinal
-
 theorem OrderIso.map_isCofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) : IsCofinal (e '' s) :=
   e.symm.to_galoisConnection.map_isCofinal hs
 
 @[simp]
 theorem OrderIso.map_isCofinal_iff (e : α ≃o β) {s : Set α} : IsCofinal (e '' s) ↔ IsCofinal s :=
   ⟨fun hs ↦ by simpa using e.symm.map_isCofinal hs, e.map_isCofinal⟩
-
-@[deprecated (since := "2026-03-15")]
-alias OrderIso.map_cofinal := OrderIso.map_isCofinal
 
 theorem isCofinal_iff_iUnion_Iic_eq_univ {s : Set α} :
     IsCofinal s ↔ ⋃ i ∈ s, Iic i = univ := by

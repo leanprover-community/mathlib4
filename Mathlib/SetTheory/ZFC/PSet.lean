@@ -157,14 +157,6 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       let ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
-theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
-  Iff.rfl
-
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
-theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
-  Iff.rfl
-
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
 protected def Mem (y x : PSet.{u}) : Prop :=
   ∃ b, Equiv x (y.Func b)

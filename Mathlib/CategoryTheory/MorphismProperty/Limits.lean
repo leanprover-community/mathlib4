@@ -235,16 +235,10 @@ theorem pullbackLift_fst_snd [IsStableUnderBaseChange P] {S S' X Y : C} (f : S' 
   refine IsPullback.of_bot ?_ (by simp) (IsPullback.of_hasPullback v₂₂ f)
   simpa using IsPullback.of_hasPullback (g ≫ v₂₂) f
 
-@[deprecated (since := "2026-03-20")]
-alias baseChange_map' := pullbackLift_fst_snd
-
 theorem overPullbackMap [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
     [HasPullbacksAlong f] {X Y : Over S} (g : X ⟶ Y) (H : P g.left) :
     P ((Over.pullback f).map g).left :=
   pullbackLift_fst_snd f (g.w.symm) H
-
-@[deprecated (since := "2026-03-20")]
-alias baseChange_map := overPullbackMap
 
 attribute [local instance] hasPullback_symmetry_of_hasPullbacksAlong in
 theorem pullbackMap
@@ -266,9 +260,6 @@ theorem pullbackMap
   apply P.comp_mem <;> rw [P.cancel_left_of_respectsIso]
   exacts [overPullbackMap _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
     overPullbackMap _ (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f') h₁]
-
-@[deprecated (since := "2026-03-20")]
-alias pullback_map := pullbackMap
 
 instance IsStableUnderBaseChange.hasOfPostcompProperty_monomorphisms
     [P.IsStableUnderBaseChange] : P.HasOfPostcompProperty (MorphismProperty.monomorphisms C) where

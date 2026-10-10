@@ -302,16 +302,6 @@ section
 
 variable {J A}
 
-/-- The underlying presheaf of a sheaf. -/
-@[deprecated "Use ObjectProperty.obj" (since := "2026-03-03")]
-abbrev Sheaf.val (F : Sheaf J A) : Cᵒᵖ ⥤ A := F.obj
-
-@[deprecated "Use ObjectProperty.FullSubcategory.property" (since := "2026-03-03")]
-lemma Sheaf.cond (F : Sheaf J A) : Presheaf.IsSheaf J F.obj := F.property
-
-@[deprecated (since := "2026-03-03")]
-alias Sheaf.Hom.mk := ObjectProperty.homMk
-
 lemma Sheaf.hom_ext_iff {F G : Sheaf J A} {f g : F ⟶ G} :
     f = g ↔ f.hom = g.hom := by
   cat_disch

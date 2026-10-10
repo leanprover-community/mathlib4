@@ -91,9 +91,6 @@ theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ} :
     · simp
   _ = ∫ θ in 0..π, f (cos θ) := by simp
 
-@[deprecated (since := "2026-03-19")]
-alias integral_measureT_eq_integral_cos_of_continuous := integral_measureT_eq_integral_cos
-
 theorem integral_eval_T_real_measureT_zero :
     ∫ x, (T ℝ 0).eval x ∂measureT = π := by
   rw [integral_measureT_eq_integral_cos]; simp

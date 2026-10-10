@@ -247,10 +247,6 @@ lemma skyscraperSheafAdjunction_homEquiv_apply_hom {F : Sheaf J A} {M : A}
     a = Φ.skyscraperPresheafHomEquiv f := by
   simp [skyscraperSheafAdjunction, Functor.FullyFaithful.homEquiv]
 
-@[deprecated (since := "2026-03-05")]
-alias skyscraperSheafAdjunction_homEquiv_apply_val :=
-  skyscraperSheafAdjunction_homEquiv_apply_hom
-
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
@@ -283,9 +279,6 @@ noncomputable def presheafToSheafCompSheafFiberIso [HasWeakSheafify J A] :
   (NatIso.ofComponents
     (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
       (by simp [sheafFiber, ← Functor.map_comp])).symm
-
-@[deprecated (since := "2026-03-08")]
-alias presheafToSheafCompSheafFiber := presheafToSheafCompSheafFiberIso
 
 noncomputable instance [HasWeakSheafify J A] :
     Localization.Lifting (presheafToSheaf J A) J.W

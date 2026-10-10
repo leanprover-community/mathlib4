@@ -300,8 +300,6 @@ theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
 theorem _root_.Ordinal.type_lt_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
   simpa using preAleph.symm.ordinalType_congr
 
-@[deprecated (since := "2026-03-20")] alias type_cardinal := type_lt_cardinal
-
 @[simp]
 theorem mk_cardinal : #Cardinal = univ.{u, u + 1} := by
   simpa only [card_type, card_univ] using congr(card $type_lt_cardinal)
@@ -327,14 +325,6 @@ theorem preAleph_zero : preAleph 0 = 0 :=
 @[simp]
 theorem succ_preAleph (o : Ordinal) : succ (preAleph o) = preAleph (o + 1) :=
   (preAleph.map_succ o).symm
-
-@[deprecated succ_preAleph +typeChanged (since := "2026-03-24")]
-theorem preAleph_add_one (o : Ordinal) : preAleph (o + 1) = succ (preAleph o) :=
-  preAleph.map_succ o
-
-@[deprecated succ_preAleph +typeChanged (since := "2026-03-24")]
-theorem preAleph_succ (o : Ordinal) : preAleph (succ o) = succ (preAleph o) :=
-  preAleph.map_succ o
 
 @[simp]
 theorem preAleph_natCast (n : ℕ) : preAleph n = n := by
@@ -450,14 +440,6 @@ theorem preAleph_le_aleph (o : Ordinal) : preAleph o ≤ ℵ_ o :=
 theorem succ_aleph (o : Ordinal) : succ (ℵ_ o) = ℵ_ (o + 1) := by
   rw [aleph_eq_preAleph, succ_preAleph, add_assoc, aleph_eq_preAleph]
 
-@[deprecated succ_aleph +typeChanged (since := "2026-03-24")]
-theorem aleph_add_one (o : Ordinal) : ℵ_ (o + 1) = succ (ℵ_ o) := by
-  simp
-
-@[deprecated succ_aleph +typeChanged (since := "2026-03-24")]
-theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) :=
-  (succ_aleph o).symm
-
 @[simp]
 theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_preAleph, add_zero, preAleph_omega0]
 
@@ -533,22 +515,6 @@ theorem lt_aleph_one_iff {c : Cardinal} : c < ℵ₁ ↔ c ≤ ℵ₀ := by
   rw [← succ_aleph0, lt_succ_iff]
 
 theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by simp
-
-@[deprecated aleph_one_le_iff +typeChanged (since := "2026-03-23")]
-theorem aleph0_lt_iff_aleph_one_le {c} : ℵ₀ < c ↔ ℵ₁ ≤ c :=
-  aleph_one_le_iff.symm
-
-@[deprecated aleph0_lt_mk_iff +typeChanged (since := "2026-03-23")]
-theorem aleph1_le_mk_iff {α : Type*} : ℵ₁ ≤ #α ↔ Uncountable α := by
-  rw [aleph_one_le_iff, aleph0_lt_mk_iff]
-
-@[deprecated aleph0_lt_mk +typeChanged (since := "2026-03-23")]
-theorem aleph1_le_mk (α : Type*) [Uncountable α] : ℵ₁ ≤ #α := by
-  simp
-
-@[deprecated le_aleph0_iff_set_countable +typeChanged (since := "2026-03-23")]
-theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
-  rw [lt_aleph_one_iff, le_aleph0_iff_set_countable]
 
 theorem preAleph_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
   simpa [← ord_inj] using preOmega_of_omega0_sq_le ho
@@ -782,10 +748,6 @@ theorem preBeth_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preBeth o = 
 section lift
 variable {c : Cardinal.{u}} {n : ℕ}
 
-@[deprecated aleph0_lt_lift +typeChanged (since := "2026-03-23")]
-theorem aleph_one_le_lift : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
-  simp
-
 @[simp]
 theorem lift_le_aleph_one : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
   simpa using lift_le (b := ℵ₁)
@@ -793,10 +755,6 @@ theorem lift_le_aleph_one : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
 @[simp]
 theorem aleph_one_lt_lift : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
   simpa using lift_lt (a := ℵ₁)
-
-@[deprecated lift_le_aleph0 +typeChanged (since := "2026-03-23")]
-theorem lift_lt_aleph_one : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
-  simp
 
 @[simp]
 theorem aleph_one_eq_lift : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by

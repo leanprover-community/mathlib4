@@ -719,7 +719,6 @@ theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
 
 theorem eq_iff (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
-@[deprecated (since := "2026-03-05")] alias val_eq := eq_iff
 
 theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := by
   have : v₁ r = v₁ 0 ↔ v₂ r = v₂ 0 := h.eq_iff
