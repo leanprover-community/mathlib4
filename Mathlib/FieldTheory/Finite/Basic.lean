@@ -428,34 +428,11 @@ end frobenius
 
 open Polynomial
 
-section
-
-variable [Fintype K] (K' : Type*) [Field K'] {p n : ℕ}
-
-theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
-  have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
-    rw [degree_X_pow, degree_X]
-    exact mod_cast hp
-  rw [natDegree_eq_of_degree_eq (degree_sub_eq_left_of_degree_lt h1), natDegree_X_pow]
-
-theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
-    (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
-  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow hn hp
-
-theorem X_pow_card_sub_X_ne_zero (hp : 1 < p) : (X ^ p - X : K'[X]) ≠ 0 :=
-  ne_zero_of_natDegree_gt <|
-    calc
-      1 < _ := hp
-      _ = _ := (X_pow_card_sub_X_natDegree_eq K' hp).symm
-
-theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
-  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow hn hp
-
-end
+section FiniteField
 
 theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := by
   classical
-    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_card_sub_X_ne_zero K Fintype.one_lt_card
+    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_sub_X_ne_zero Fintype.one_lt_card
     have : (roots (X ^ q - X : K[X])).toFinset = Finset.univ := by
       rw [eq_univ_iff_forall]
       intro x
