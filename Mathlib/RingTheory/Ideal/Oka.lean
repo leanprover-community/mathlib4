@@ -68,7 +68,7 @@ theorem forall_of_forall_prime (hmax : ∀ I, ¬P I → ∃ I, Maximal (¬P ·) 
 
 /-- A variant of `forall_of_forall_prime` with a different spelling of the condition `hmax`. -/
 theorem forall_of_forall_prime'
-    (hchain : ∀ C ⊆ {I | ¬P I}, IsChain (· ≤ ·) C → ∀ _ ∈ C, P (sSup C) → ∃ I ∈ C, P I)
+    (hchain : ∀ C ⊆ {I | ¬P I}, IsLEChain C → ∀ _ ∈ C, P (sSup C) → ∃ I ∈ C, P I)
     (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I := by
   refine forall_of_forall_prime hP (fun I hI ↦ ?_) hprime
   obtain ⟨M, _, hM⟩ : ∃ M, I ≤ M ∧ Maximal (¬P ·) M := by

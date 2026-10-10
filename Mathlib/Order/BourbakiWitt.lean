@@ -32,13 +32,13 @@ public section
 
 variable {α β : Type*} {ι : Sort*}
 
-/-- The type of nonempty chains of an order -/
+/-- The type of nonempty `≤`-chains of an order -/
 @[ext]
 structure NonemptyChain (α : Type*) [LE α] where
   /-- The underlying set of a nonempty chain -/
   carrier : Set α
-  Nonempty' : carrier.Nonempty
-  isChain' : IsChain (· ≤ ·) carrier
+  nonempty' : carrier.Nonempty
+  isLEChain : IsLEChain carrier
 
 instance {α : Type*} [LE α] : SetLike (NonemptyChain α) α where
   coe := NonemptyChain.carrier
@@ -61,7 +61,7 @@ open ChainCompletePartialOrder Set OmegaCompletePartialOrder.Chain
 namespace ChainCompletePartialOrder
 
 instance [ChainCompletePartialOrder α] : OmegaCompletePartialOrder α where
-  ωSup c := cSup (NonemptyChain.mk (range c) (range_nonempty c) (isChain_range c))
+  ωSup c := cSup (NonemptyChain.mk (range c) (range_nonempty c) (isLEChain_range c))
   le_ωSup _ i := le_cSup _ _ (mem_range_self i)
   ωSup_le _ _ hx := cSup_le _ _ (fun _ ⟨i, hi⟩ ↦ hi ▸ hx i)
 
@@ -89,7 +89,7 @@ lemma ici_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (Ici x) wh
     exact le_trans hy (le_map _)
   cSup_mem := by
     intro c hc
-    have ⟨y, hy⟩ := c.Nonempty'
+    have ⟨y, hy⟩ := c.nonempty'
     exact le_trans (hc hy) (le_cSup _ _ hy)
 
 /-- The bottom admissible set with base point `x` and inflationary function `f` -/
@@ -206,13 +206,15 @@ lemma mem_bot_iff_isExtremePt {y : α} (le_map : ∀ x, x ≤ f x) :
     y ∈ bot x f ↔ IsExtremePt x f y := by
   rw [← setOfPred_isExtremePt_eq_bot le_map, mem_ofPred]
 
-lemma bot_isChain (le_map : ∀ x, x ≤ f x) : IsChain (· ≤ ·) (bot x f) := by
+lemma isLEChain_bot (le_map : ∀ x, x ≤ f x) : IsLEChain (bot x f) := by
   intro y hy z hz _
   rw [mem_bot_iff_isExtremePt le_map] at hy
   rw [← bot_eq_of_le_or_map_le le_map hy] at hz
   obtain ⟨_, (hz | hz)⟩ := hz
   · right; exact hz
   · left; exact le_trans (le_map y) hz
+
+@[deprecated (since := "2026-10-04")] alias bot_isChain := isLEChain_bot
 
 end IsExtremePt
 
@@ -223,8 +225,8 @@ inflationary, then `f` has a fixed point -/
 theorem nonempty_fixedPoints_of_inflationary [Nonempty α] (le_map : ∀ x, x ≤ f x) :
     (fixedPoints f).Nonempty := by
   let x : α := Classical.ofNonempty
-  let y := cSup
-    (NonemptyChain.mk (bot x f) ⟨x, (bot_isAdmissible le_map).base_isLeast.1⟩ (bot_isChain le_map))
+  let y := cSup (NonemptyChain.mk (bot x f)
+    ⟨x, (bot_isAdmissible le_map).base_isLeast.1⟩ (isLEChain_bot le_map))
   use y
   apply le_antisymm (le_cSup _ _ (_ : f y ∈ bot x f)) (le_map y)
   apply (bot_isAdmissible le_map).image_self_subset_self

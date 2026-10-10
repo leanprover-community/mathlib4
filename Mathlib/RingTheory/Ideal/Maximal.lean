@@ -116,7 +116,7 @@ theorem IsMaximal.exists_inv {I : Ideal α} (hI : I.IsMaximal) {x} (hx : x ∉ I
   refine ⟨y, z, ?_, hy.symm⟩
   rwa [← span_eq I]
 
-theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
+theorem sInf_isPrime_of_isLEChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsLEChain s)
     (H : ∀ p ∈ s, p.IsPrime) : (sInf s).IsPrime :=
   ⟨fun e =>
     let ⟨x, hx⟩ := hs
@@ -130,6 +130,8 @@ theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : Is
       rcases hs'.total hI hJ with h | h
       · exact h (((H I hI).mem_or_mem (e hI)).resolve_left hI')
       · exact ((H J hJ).mem_or_mem (e hJ)).resolve_left fun x => hI' <| h x⟩
+
+@[deprecated (since := "2026-10-04")] alias sInf_isPrime_of_isChain := sInf_isPrime_of_isLEChain
 
 end Ideal
 
