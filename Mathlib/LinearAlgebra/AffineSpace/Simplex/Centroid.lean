@@ -97,6 +97,10 @@ theorem centroid_vsub_eq {n : ℕ} [CharZero k] (s : Simplex k P n) (p : P) :
     (hw := sum_centroidWeights_eq_one_of_nonempty _ _ (by simp))]
   simp [smul_sum]
 
+theorem vsub_centroid_eq {n : ℕ} [CharZero k] (s : Simplex k P n) (p : P) :
+    p -ᵥ s.centroid = (n + 1 : k)⁻¹ • ∑ x, (p -ᵥ s.points x) := by
+  simpa [← smul_neg, ← sum_neg_distrib] using congr(-$(s.centroid_vsub_eq p))
+
 theorem centroid_eq_smul_sum_vsub_vadd [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.centroid = (n + 1 : k)⁻¹ • ∑ x, (s.points x -ᵥ s.points i) +ᵥ s.points i := by
   rw [← s.centroid_vsub_eq, vsub_vadd]
