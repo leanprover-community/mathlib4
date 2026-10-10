@@ -8,12 +8,9 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Units
-public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.End
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Module.Prod
 
 /-!
@@ -104,7 +101,7 @@ lemma coe_toLinearMap_mul {e₁ e₂ : M ≃ₗ[R] M} :
 
 theorem coe_pow (e : M ≃ₗ[R] M) (n : ℕ) : ⇑(e ^ n) = e^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
-theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m := congr_fun (coe_pow e n) m
+theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m := congr($(coe_pow e n) m)
 
 @[simp] lemma mul_apply (f : M ≃ₗ[R] M) (g : M ≃ₗ[R] M) (x : M) : (f * g) x = f (g x) := rfl
 
@@ -278,8 +275,8 @@ variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} {modM₃ : Module ℤ
 equivalence between ℤ-modules -/
 def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ := by
   refine e.toLinearEquiv fun c a ↦ ?_
-  convert! e.toAddMonoidHom.map_zsmul c a using 1
-  · exact congr(e $(int_smul_eq_zsmul ..))
+  convert e.toAddMonoidHom.map_zsmul c a using 1
+  · congrm e $(int_smul_eq_zsmul ..)
   · exact int_smul_eq_zsmul ..
 
 @[simp]

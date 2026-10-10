@@ -5,8 +5,8 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Hom
 public import Mathlib.Analysis.Normed.Group.Completion
+public import Mathlib.Analysis.Normed.Group.Hom
 
 /-!
 # Completion of normed group homs
@@ -63,7 +63,7 @@ variable {G : Type*} [SeminormedAddCommGroup G] {H : Type*} [SeminormedAddCommGr
 /-- The normed group hom induced between completions. -/
 def NormedAddGroupHom.completion (f : NormedAddGroupHom G H) :
     NormedAddGroupHom (Completion G) (Completion H) :=
-  .ofLipschitz (f.toAddMonoidHom.completion f.continuous) f.lipschitz.completion_map
+  .ofLipschitz (f.toAddMonoidHom.completion f.continuous) f.lipschitzWith.completion_map
 
 theorem NormedAddGroupHom.completion_def (f : NormedAddGroupHom G H) (x : Completion G) :
     f.completion x = Completion.map f x :=
@@ -188,7 +188,7 @@ variable {H : Type*} [SeminormedAddCommGroup H] [T0Space H] [CompleteSpace H]
 def NormedAddGroupHom.extension (f : NormedAddGroupHom G H) : NormedAddGroupHom (Completion G) H :=
   .ofLipschitz (f.toAddMonoidHom.extension f.continuous) <|
     let _ := MetricSpace.ofT0PseudoMetricSpace H
-    f.lipschitz.completion_extension
+    f.lipschitzWith.completion_extension
 
 theorem NormedAddGroupHom.extension_def (f : NormedAddGroupHom G H) (v : G) :
     f.extension v = Completion.extension f v :=

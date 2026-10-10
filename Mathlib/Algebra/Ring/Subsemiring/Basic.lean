@@ -6,13 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.Action.Subobjects
-public import Mathlib.Algebra.Ring.Equiv
-public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.GroupTheory.Submonoid.Centralizer
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-public import Mathlib.Algebra.Module.Defs
 
 /-!
 # Bundled subsemirings
@@ -1038,14 +1036,6 @@ theorem isMulCommutative_closure {s : Set R'} (hcomm : s.Pairwise Commute) :
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
-
-open scoped IsMulCommutative in
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative semiring. -/
-@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
-abbrev closureCommSemiringOfComm {s : Set R'} (hcomm : s.Pairwise Commute) :
-    CommSemiring (closure s) :=
-  have := isMulCommutative_closure hcomm
-  inferInstance
 
 instance instIsMulCommutative_closure {S : Type*} [SetLike S R'] [MulMemClass S R'] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set R')) :=

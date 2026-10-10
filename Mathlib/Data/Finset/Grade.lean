@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Grade
-public import Mathlib.Order.Nat
 
 /-!
 # Finsets and multisets form a graded order
