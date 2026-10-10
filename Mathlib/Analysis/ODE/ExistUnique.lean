@@ -349,3 +349,90 @@ theorem ODE_solution_unique_univ
     grind
   exact ODE_solution_unique_of_mem_Ioo
     (fun t _ => hv t) Ht₀ (fun t _ => hf t) (fun t _ => hg t) heq Ht
+
+/-- There exists only one solution of an ODE $\dot x=v(t, x)$ in a set `s ⊆ ℝ × E` with
+a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
+and we consider only solutions included in `s`.
+
+This version shows uniqueness in a closed interval `Icc a b`, where `a` is the initial time. -/
+theorem IsIntegralCurveOn.eqOn_Icc_right
+    (hv : ∀ t ∈ Ico a b, LipschitzOnWith K (v t) (s t))
+    (hf : ContinuousOn f (Icc a b)) (hf' : IsIntegralCurveOn f v (Ico a b))
+    (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
+    (hg : ContinuousOn g (Icc a b)) (hg' : IsIntegralCurveOn g v (Ico a b))
+    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) :
+    EqOn f g (Icc a b) := fun t ht ↦ by
+  have := dist_le_of_trajectories_ODE_of_mem hv hf
+    (fun t ht ↦ (hf' t ht).mono_of_mem_nhdsWithin (Ico_mem_nhdsGE_of_mem ht)) hfs hg
+    (fun t ht ↦ (hg' t ht).mono_of_mem_nhdsWithin (Ico_mem_nhdsGE_of_mem ht)) hgs
+    (dist_le_zero.2 ha) t ht
+  rwa [zero_mul, dist_le_zero] at this
+
+/-- A time-reversed version of `IsIntegralCurveOn.eqOn_Icc_right`. Uniqueness is shown in a
+closed interval `Icc a b`, where `b` is the "initial" time. -/
+theorem IsIntegralCurveOn.eqOn_Icc_left
+    (hv : ∀ t ∈ Ioc a b, LipschitzOnWith K (v t) (s t))
+    (hf : ContinuousOn f (Icc a b)) (hf' : IsIntegralCurveOn f v (Ioc a b))
+    (hfs : ∀ t ∈ Ioc a b, f t ∈ s t)
+    (hg : ContinuousOn g (Icc a b)) (hg' : IsIntegralCurveOn g v (Ioc a b))
+    (hgs : ∀ t ∈ Ioc a b, g t ∈ s t) (hb : f b = g b) :
+    EqOn f g (Icc a b) := by
+  have hv' : ∀ t ∈ Ico (-b) (-a), LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
+    intro t ht
+    replace ht : -t ∈ Ioc a b := by
+      push _ ∈ _ at ht ⊢
+      constructor <;> linarith
+    rw [← one_mul K]
+    exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _ ht)
+  have hmt1 : MapsTo Neg.neg (Icc (-b) (-a)) (Icc a b) :=
+    fun _ ht ↦ ⟨le_neg.mp ht.2, neg_le.mp ht.1⟩
+  have hmt2 : MapsTo Neg.neg (Ico (-b) (-a)) (Ioc a b) :=
+    fun _ ht ↦ ⟨lt_neg.mp ht.2, neg_le.mp ht.1⟩
+  suffices EqOn (f ∘ Neg.neg) (g ∘ Neg.neg) (Icc (-b) (-a)) by
+    rw [eqOn_comp_right_iff] at this
+    convert this
+    simp
+  apply IsIntegralCurveOn.eqOn_Icc_right hv'
+    (hf.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hfs _ (hmt2 ht))
+    (hg.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hgs _ (hmt2 ht)) (by simp [hb])
+  · intro t ht
+    convert HasFDerivWithinAt.comp_hasDerivWithinAt t (hf' (-t) (hmt2 ht))
+      (hasDerivAt_neg t).hasDerivWithinAt hmt2
+    simp
+  · intro t ht
+    convert HasFDerivWithinAt.comp_hasDerivWithinAt t (hg' (-t) (hmt2 ht))
+      (hasDerivAt_neg t).hasDerivWithinAt hmt2
+    simp
+
+/-- If two integral curves of a Lipschitz vector field on connected sets `I` and `J` agree at a
+point `t₀ ∈ I ∩ J`, then they agree on all of `I ∩ J`. -/
+theorem IsIntegralCurveOn.eqOn_inter {I J : Set ℝ}
+    (hv : ∀ t ∈ I ∩ J, LipschitzOnWith K (v t) (s t))
+    (hI : IsPreconnected I) (hJ : IsPreconnected J) (htI : t₀ ∈ I) (htJ : t₀ ∈ J)
+    (hf : IsIntegralCurveOn f v I) (hfs : ∀ t ∈ I ∩ J, f t ∈ s t)
+    (hg : IsIntegralCurveOn g v J) (hgs : ∀ t ∈ I ∩ J, g t ∈ s t)
+    (heq : f t₀ = g t₀) :
+    EqOn f g (I ∩ J) := by
+  have hoc := hI.ordConnected.inter hJ.ordConnected
+  intro t ⟨htI', htJ'⟩
+  rcases lt_or_ge t t₀ with h | h
+  · have hss : Icc t t₀ ⊆ I ∩ J := hoc.out ⟨htI', htJ'⟩ ⟨htI, htJ⟩
+    exact eqOn_Icc_left
+      (fun t' ht' ↦ hv t' (hss (Ioc_subset_Icc_self ht')))
+      (hf.continuousOn.mono (hss.trans inter_subset_left))
+      (hf.mono (by grind [Ioc_subset_Icc_self]))
+      (fun t' ht' ↦ hfs t' (hss (Ioc_subset_Icc_self ht')))
+      (hg.continuousOn.mono (hss.trans inter_subset_right))
+      (hg.mono (by grind [Ioc_subset_Icc_self]))
+      (fun t' ht' ↦ hgs t' (hss (Ioc_subset_Icc_self ht')))
+      heq ⟨le_rfl, h.le⟩
+  · have hss : Icc t₀ t ⊆ I ∩ J := hoc.out ⟨htI, htJ⟩ ⟨htI', htJ'⟩
+    exact eqOn_Icc_right
+      (fun t' ht' ↦ hv t' (hss (Ico_subset_Icc_self ht')))
+      (hf.continuousOn.mono (hss.trans inter_subset_left))
+      (hf.mono (by grind [Ico_subset_Icc_self]))
+      (fun t' ht' ↦ hfs t' (hss (Ico_subset_Icc_self ht')))
+      (hg.continuousOn.mono (hss.trans inter_subset_right))
+      (hg.mono (by grind [Ico_subset_Icc_self]))
+      (fun t' ht' ↦ hgs t' (hss (Ico_subset_Icc_self ht')))
+      heq ⟨h, le_rfl⟩
