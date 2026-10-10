@@ -677,23 +677,22 @@ lemma rightMate_tensor {X₁ X₂ X₁' X₂' Y₁ Y₂ Y₁' Y₂' : C}
   let := pY₁.hasRightDual
   let := pY₂.hasRightDual
   apply (pX₁.tensorOf pX₂).rightHom_ext
-  rw [rightMate_comp_evaluation]
-  simp only [tensor_evaluation]
+  simp_rw [rightMate_comp_evaluation, tensor_evaluation]
   symm
   calc
-    _ = 𝟙 _ ⊗≫ ((Y₂ᘁ : C) ◁ (fᘁ ▷ X₁)) ▷ X₂ ⊗≫ (gᘁ ▷ ((X₁ᘁ ⊗ X₁) ⊗ X₂) ≫
-          (X₂ᘁ : C) ◁ (ε_ X₁ (X₁ᘁ) ▷ X₂)) ⊗≫ ε_ X₂ (X₂ᘁ) := by
+    _ = 𝟙 _ ⊗≫ ((Y₂ᘁ : C) ◁ fᘁ ▷ X₁) ▷ X₂ ⊗≫ (gᘁ ▷ ((X₁ᘁ ⊗ X₁) ⊗ X₂) ≫
+          (X₂ᘁ : C) ◁ (ε_ X₁ X₁ᘁ ▷ X₂)) ⊗≫ ε_ X₂ X₂ᘁ := by
       rw [tensorHom_def']
       monoidal
-    _ = 𝟙 _ ⊗≫ ((Y₂ᘁ : C) ◁ ((fᘁ ▷ X₁) ≫ ε_ X₁ (X₁ᘁ))) ▷ X₂ ⊗≫
-        ((gᘁ ▷ X₂) ≫ ε_ X₂ (X₂ᘁ)) := by
+    _ = 𝟙 _ ⊗≫ ((Y₂ᘁ : C) ◁ (fᘁ ▷ X₁ ≫ ε_ X₁ X₁ᘁ)) ▷ X₂ ⊗≫
+        gᘁ ▷ X₂ ≫ ε_ X₂ X₂ᘁ := by
       rw [← whisker_exchange]
       monoidal
-    _ = 𝟙 _ ⊗≫ ((Y₂ᘁ : C) ◁ (((Y₁ᘁ : C) ◁ f) ≫ ε_ Y₁ (Y₁ᘁ))) ▷ X₂ ⊗≫
-        (((Y₂ᘁ : C) ◁ g) ≫ ε_ Y₂ (Y₂ᘁ)) := by
+    _ = 𝟙 _ ⊗≫ ((Y₂ᘁ : C) ◁ ((Y₁ᘁ : C) ◁ f ≫ ε_ Y₁ Y₁ᘁ)) ▷ X₂ ⊗≫
+        Y₂ᘁ ◁ g ≫ ε_ Y₂ Y₂ᘁ := by
       rw [rightMate_comp_evaluation, rightMate_comp_evaluation]
-    _ = 𝟙 _ ⊗≫ ((Y₂ᘁ : C) ◁ ((Y₁ᘁ : C) ◁ f)) ▷ X₂ ⊗≫ (Y₂ᘁ : C) ◁ ((ε_ Y₁ (Y₁ᘁ) ▷ X₂) ≫
-          (𝟙_ C) ◁ g) ⊗≫ ε_ Y₂ (Y₂ᘁ) := by monoidal
+    _ = 𝟙 _ ⊗≫ ((Y₂ᘁ : C) ◁ (Y₁ᘁ : C) ◁ f) ▷ X₂ ⊗≫ Y₂ᘁ ◁ (ε_ Y₁ Y₁ᘁ ▷ X₂ ≫
+          𝟙_ C ◁ g) ⊗≫ ε_ Y₂ Y₂ᘁ := by monoidal
     _ = _ := by
       rw [← whisker_exchange, tensorHom_def]
       monoidal
@@ -704,24 +703,21 @@ lemma rightMate_associator {X X' Y Y' Z Z' : C}
     ((pX.tensorOf pY).tensorOf pZ).rightMate (pX.tensorOf (pY.tensorOf pZ)) (α_ X Y Z).hom =
       (α_ Z' Y' X').hom := by
   apply ((pX.tensorOf pY).tensorOf pZ).rightHom_ext
-  rw [rightMate_comp_evaluation]
-  simp only [tensor_evaluation]
+  simp_rw [rightMate_comp_evaluation, tensor_evaluation]
   monoidal
 
 @[simp]
 lemma rightMate_leftUnitor {X X' : C} (pX : ExactPairing X X') :
     (exactPairingUnit.tensorOf pX).rightMate pX (λ_ X).hom = (ρ_ X').inv := by
   apply (exactPairingUnit.tensorOf pX).rightHom_ext
-  rw [rightMate_comp_evaluation]
-  simp only [tensor_evaluation, unit_evaluation]
+  simp_rw [rightMate_comp_evaluation, tensor_evaluation, unit_evaluation]
   monoidal
 
 @[simp]
 lemma rightMate_rightUnitor {X X' : C} (pX : ExactPairing X X') :
     (pX.tensorOf exactPairingUnit).rightMate pX (ρ_ X).hom = (λ_ X').inv := by
   apply (pX.tensorOf exactPairingUnit).rightHom_ext
-  rw [rightMate_comp_evaluation]
-  simp only [tensor_evaluation, unit_evaluation]
+  simp_rw [rightMate_comp_evaluation, tensor_evaluation, unit_evaluation]
   monoidal
 
 end ExactPairing
@@ -821,18 +817,18 @@ def leftDualIso {X₁ X₂ Y : C} (p₁ : ExactPairing X₁ Y) (p₂ : ExactPair
 @[simp]
 theorem rightDualIso_id {X Y : C} (p : ExactPairing X Y) : rightDualIso p p = Iso.refl Y := by
   ext
-  simp only [rightDualIso, Iso.refl_hom, @rightAdjointMate_id, HasRightDual.rightDual]
+  simp only [rightDualIso, Iso.refl_hom, rightAdjointMate_id, HasRightDual.rightDual]
 
 @[simp]
 theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.refl X := by
   ext
-  simp only [leftDualIso, Iso.refl_hom, @leftAdjointMate_id, HasLeftDual.leftDual]
+  simp only [leftDualIso, Iso.refl_hom, leftAdjointMate_id, HasLeftDual.leftDual]
 
 @[reassoc]
 lemma rightDualIso_hom_trans {X Y₁ Y₂ Y₃ : C}
     (p₁ : ExactPairing X Y₁) (p₂ : ExactPairing X Y₂) (p₃ : ExactPairing X Y₃) :
     (rightDualIso p₁ p₂).hom ≫ (rightDualIso p₂ p₃).hom = (rightDualIso p₁ p₃).hom := by
-  simp [rightDualIso, ← @comp_rightAdjointMate]
+  simp [rightDualIso, ← comp_rightAdjointMate]
 
 lemma rightDualIso_tensor {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C}
     (p₁ : ExactPairing X₁ Y₁) (p₂ : ExactPairing X₂ Y₂)

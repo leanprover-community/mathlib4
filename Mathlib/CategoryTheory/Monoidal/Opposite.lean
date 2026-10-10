@@ -160,7 +160,7 @@ section
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Taking both opposites of a functor into an opposite monoidal category. -/
-@[simps!]
+@[implicit_reducible, simps!]
 protected def Functor.opMop (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) : (Cᵒᵖ)ᴹᵒᵖ ⥤ D :=
   unmopFunctor Cᵒᵖ ⋙ (F ⋙ unmopFunctor Dᵒᵖ).leftOp
 
@@ -499,20 +499,15 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 variable (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) [F.Monoidal]
 
-/-- The monoidal structure on the functor obtained by taking both opposites. -/
-@[simps]
-def Functor.opMopCoreMonoidal : F.opMop.CoreMonoidal where
-  εIso := ((Functor.Monoidal.εIso F).unmop.unop).symm
-  μIso X Y := ((Functor.Monoidal.μIso F _ _).unmop.unop).symm
-  μIso_hom_natural_left _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
-  μIso_hom_natural_right _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
-  associativity _ _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
-  left_unitality _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
-  right_unitality _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
-
-/-- The monoidal structure on the functor obtained by taking both opposites. -/
 @[simps!]
-instance Functor.opMopMonoidal : F.opMop.Monoidal := F.opMopCoreMonoidal.toMonoidal
+instance Functor.opMopMonoidal : F.opMop.Monoidal := 
+  Functor.CoreMonoidal.toMonoidal <| {
+    εIso := ((Functor.Monoidal.εIso F).unmop.unop).symm
+    μIso X Y := ((Functor.Monoidal.μIso F _ _).unmop.unop).symm
+    μIso_hom_natural_left _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
+    μIso_hom_natural_right _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
+    associativity _ _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
+    left_unitality _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
 
 end
 
