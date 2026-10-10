@@ -272,14 +272,14 @@ end FGModuleCat
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
 
-@[simp]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
 theorem LinearMap.comp_id_fgModuleCat
     {R} [Ring R] {G : FGModuleCat.{v} R} {H : Type v} [AddCommGroup H] [Module R H]
-    (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f :=
-  ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.ofHom f)
+    (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f := by
+  simp
 
-@[simp]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
 theorem LinearMap.id_fgModuleCat_comp
     {R} [Ring R] {G : Type v} [AddCommGroup G] [Module R G] {H : FGModuleCat.{v} R}
-    (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f :=
-  ModuleCat.hom_ext_iff.mp <| Category.comp_id (ModuleCat.ofHom f)
+    (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f := by
+  simp

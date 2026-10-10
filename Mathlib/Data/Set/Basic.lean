@@ -962,7 +962,6 @@ theorem mem_sep (xs : x ∈ s) (px : p x) : x ∈ { x ∈ s | p x } :=
 theorem sep_mem_eq : { x ∈ s | x ∈ t } = s ∩ t :=
   rfl
 
-@[simp]
 theorem mem_sep_iff : x ∈ { x ∈ s | p x } ↔ x ∈ s ∧ p x :=
   Iff.rfl
 

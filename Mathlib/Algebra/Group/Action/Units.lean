@@ -88,14 +88,9 @@ example {M} [CommMonoid M] :
   ext
   rfl
 
-/-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond.
-
-Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
-@[simp]
-lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
-    u₁ • u₂ = u₁ * u₂ := by
-  ext
-  rfl
+@[deprecated smul_eq_mul +typeChanged (since := "2026-10-06")]
+protected lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
+    u₁ • u₂ = u₁ * u₂ := _root_.smul_eq_mul _ _
 
 @[to_additive (attr := simp)]
 lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
