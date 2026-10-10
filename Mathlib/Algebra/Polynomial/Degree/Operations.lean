@@ -785,6 +785,7 @@ theorem natDegree_X_pow_sub_X (hn : 1 < n) : (X ^ n - X : R[X]).natDegree = n :=
 @[deprecated (since := "2026-10-09")]
 alias _root_.FiniteField.X_pow_card_sub_X_natDegree_eq := natDegree_X_pow_sub_X
 
+variable (R) in
 @[deprecated natDegree_X_pow_sub_X +typeChanged (since := "2026-10-09")]
 theorem _root_.FiniteField.X_pow_card_pow_sub_X_natDegree_eq {p : ℕ} (hn : n ≠ 0) (hp : 1 < p) :
     (X ^ p ^ n - X : R[X]).natDegree = p ^ n :=
@@ -796,6 +797,7 @@ theorem X_pow_sub_X_ne_zero (hn : 1 < n) : (X ^ n - X : R[X]) ≠ 0 :=
 @[deprecated (since := "2026-10-09")]
 alias _root_.FiniteField.X_pow_card_sub_X_ne_zero := X_pow_sub_X_ne_zero
 
+variable (R) in
 @[deprecated X_pow_sub_X_ne_zero +typeChanged (since := "2026-10-09")]
 theorem _root_.FiniteField.X_pow_card_pow_sub_X_ne_zero {p : ℕ} (hn : n ≠ 0) (hp : 1 < p) :
     (X ^ p ^ n - X : R[X]) ≠ 0 :=
