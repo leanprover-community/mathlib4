@@ -154,12 +154,12 @@ instance braidedCategory : BraidedCategory (Quotient r) where
   braiding X Y := (functor r).mapIso (β_ X.as Y.as)
   braiding_naturality_right _ _ _ f := by
     obtain ⟨f, rfl⟩ := (functor r).map_surjective f
-    exact congr_arg (functor r).map (BraidedCategory.braiding_naturality_right _ f)
+    exact (functor r).congr_map (BraidedCategory.braiding_naturality_right _ f)
   braiding_naturality_left f _ := by
     obtain ⟨f, rfl⟩ := (functor r).map_surjective f
-    exact congr_arg (functor r).map (BraidedCategory.braiding_naturality_left f _)
-  hexagon_forward _ _ _ := congr_arg (functor r).map (BraidedCategory.hexagon_forward _ _ _)
-  hexagon_reverse _ _ _ := congr_arg (functor r).map (BraidedCategory.hexagon_reverse _ _ _)
+    exact (functor r).congr_map (BraidedCategory.braiding_naturality_left f _)
+  hexagon_forward _ _ _ := (functor r).congr_map (BraidedCategory.hexagon_forward _ _ _)
+  hexagon_reverse _ _ _ := (functor r).congr_map (BraidedCategory.hexagon_reverse _ _ _)
 
 @[simp]
 lemma functor_map_braiding_hom (X Y : C) :
@@ -180,7 +180,7 @@ variable [SymmetricCategory C]
 /-- The symmetric category structure on `Quotient r` induced by a symmetric category
 structure on `C`. -/
 instance symmetricCategory : SymmetricCategory (Quotient r) :=
-  ⟨fun _ _ ↦ congr_arg (functor r).map (SymmetricCategory.symmetry _ _)⟩
+  ⟨fun _ _ ↦ (functor r).congr_map (SymmetricCategory.symmetry _ _)⟩
 
 end Symmetric
 
@@ -195,17 +195,17 @@ theorem monoidalPreadditive
   let := preadditive r hadd
   constructor
   · intro
-    exact congr_arg (functor r).map MonoidalPreadditive.whiskerLeft_zero
+    exact (functor r).congr_map MonoidalPreadditive.whiskerLeft_zero
   · intro
-    exact congr_arg (functor r).map MonoidalPreadditive.zero_whiskerRight
+    exact (functor r).congr_map MonoidalPreadditive.zero_whiskerRight
   · intro _ _ _ f g
     obtain ⟨f, rfl⟩ := (functor r).map_surjective f
     obtain ⟨g, rfl⟩ := (functor r).map_surjective g
-    exact congr_arg (functor r).map (MonoidalPreadditive.whiskerLeft_add f g)
+    exact (functor r).congr_map (MonoidalPreadditive.whiskerLeft_add f g)
   · intro _ _ _ f g
     obtain ⟨f, rfl⟩ := (functor r).map_surjective f
     obtain ⟨g, rfl⟩ := (functor r).map_surjective g
-    exact congr_arg (functor r).map (MonoidalPreadditive.add_whiskerRight f g)
+    exact (functor r).congr_map (MonoidalPreadditive.add_whiskerRight f g)
 
 variable {R : Type*} [Semiring R] [Linear R C] [MonoidalLinear R C]
 
@@ -226,10 +226,10 @@ theorem monoidalLinear
   constructor
   · intro _ _ _ _ f
     obtain ⟨f, rfl⟩ := (functor r).map_surjective f
-    exact congr_arg (functor r).map (MonoidalLinear.whiskerLeft_smul _ _ f)
+    exact (functor r).congr_map (MonoidalLinear.whiskerLeft_smul _ _ f)
   · intro _ _ _ f _
     obtain ⟨f, rfl⟩ := (functor r).map_surjective f
-    exact congr_arg (functor r).map (MonoidalLinear.smul_whiskerRight _ f _)
+    exact (functor r).congr_map (MonoidalLinear.smul_whiskerRight _ f _)
 
 end Quotient
 
