@@ -508,6 +508,11 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
       refine Real.sum_le_exp_of_nonneg ?_ _
       exact norm_nonneg _
 
+/-- `‖exp x - 1‖ ≤ ‖x‖ * exp ‖x‖` for every complex `x`. Compare `Complex.norm_exp_sub_one_le`,
+which gives the sharper bound `2 * ‖x‖` under the hypothesis `‖x‖ ≤ 1`. -/
+lemma norm_exp_sub_one_le_norm_mul_exp (x : ℂ) : ‖exp x - 1‖ ≤ ‖x‖ * Real.exp ‖x‖ := by
+  simpa using norm_exp_sub_sum_le_norm_mul_exp x 1
+
 end Complex
 
 namespace Real
@@ -539,6 +544,11 @@ theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| �
   rw [← sq_abs]
   have : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
   exact_mod_cast Complex.norm_exp_sub_one_sub_id_le this
+
+/-- `|exp x - 1| ≤ |x| * exp |x|` for every real `x`. Compare `Real.abs_exp_sub_one_le`, which
+gives the sharper bound `2 * |x|` under the hypothesis `|x| ≤ 1`. -/
+theorem abs_exp_sub_one_le_abs_mul_exp (x : ℝ) : |exp x - 1| ≤ |x| * exp |x| :=
+  mod_cast Complex.norm_exp_sub_one_le_norm_mul_exp x
 
 /-- A finite initial segment of the exponential series, followed by an arbitrary tail.
 For fixed `n` this is just a linear map w.r.t. `r`, and each map is a simple linear function
