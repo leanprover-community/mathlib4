@@ -46,10 +46,8 @@ theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ 
 /-- If a cyclic permutation `σ` of a type with at least 3 elements is such that each vertex is
 adjacent to its image under `σ`, then `G` is Hamiltonian. -/
 theorem IsHamiltonian.of_perm [Fintype α] [DecidableEq α] {σ : Perm α} (hσ : σ.IsCycle)
-    (hadj : ∀ v, G.Adj v (σ v)) (hcard : 3 ≤ Fintype.card α) : G.IsHamiltonian := by
-  have h : {x | σ x ≠ x} = ((univ : Finset α) : Set α) := by
-    simpa [Set.eq_univ_iff_forall] using fun x ↦ (hadj x).ne'
-  simpa using (isHamiltonian_iff_cycleGraph_isContained hcard).mpr
-    (cycleGraph_isContained_of_isCycleOn (s := .univ) (h ▸ hσ.isCycleOn) hadj)
+    (hadj : ∀ v, G.Adj v (σ v)) (hcard : 3 ≤ Fintype.card α) : G.IsHamiltonian :=
+  isHamiltonian_iff_cycleGraph_isContained hcard |>.mpr <|
+    cycleGraph_isContained_of_isCycleOn (by grind [coe_univ, hσ.isCycleOn]) hadj
 
 end SimpleGraph
