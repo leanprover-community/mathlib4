@@ -201,7 +201,7 @@ Matrices row-equivalent to a common source have the same homogeneous solution
 set.
 -/
 theorem rowEquivalent_common_source_mul_eq_zero_iff
-    [LT m] [Fintype n]
+    [Fintype n]
     {A B B' : Matrix m n R}
     (hAB : RowEquivalent A B)
     (hAB' : RowEquivalent A B')
