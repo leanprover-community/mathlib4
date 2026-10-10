@@ -95,18 +95,6 @@ private lemma aux {m : M} (hm : ⟦m⟧ ∈ x.localInverseAt.source) :
   use g
   simpa [hg] using (x.localInverseAt).map_source hm
 
-/-- Given `⟦m⟧` in the source of `x.localInverseAt`, a choice of `g ∈ G` such
-that `g • m` lies in the target of `x.localInverseAt`. -/
-@[to_additive /-- Given `⟦m⟧` in the source of `x.localInverseAt`, a choice of `g ∈ G` such
-that `g +ᵥ m` lies in the target of `x.localInverseAt`. -/]
-def smulToLocalInverseAt {m : M} (hm : ⟦m⟧ ∈ x.localInverseAt.source) : G :=
-  Classical.choose (aux hm)
-
-@[to_additive]
-lemma smulToLocalInverseAt_spec {m : M} (hm : ⟦m⟧ ∈ x.localInverseAt.source) :
-    smulToLocalInverseAt hm • m ∈ (x.localInverseAt).target :=
-  Classical.choose_spec (aux hm)
-
 /-!
 ## Transition maps between charts
 -/
@@ -145,11 +133,15 @@ end orbitRel.Quotient
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  (I : ModelWithCorners 𝕜 E H) {n : ℕ∞ω} [IsManifold I n M]
+  {H' : Type*} [TopologicalSpace H']
+  {E E' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} [IsManifold I n M]
+  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+  {J : ModelWithCorners 𝕜 E' H'} -- [IsManifold J n N]
 
 open orbitRel.Quotient IsManifold
 
+variable (I) in
 /-- The quotient of a `C^n` manifold by a free, properly discontinuous group action such that the
 scalar multiplication `fun x : M ↦ g • x` is `C^n` is itself a `C^n` manifold, for the charts of
 `MulAction.instChartedSpaceQuotient`. -/
@@ -163,23 +155,53 @@ instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] 
     rw [(localInverseAt x).trans_symm_eq_symm_trans_symm, (chartAt H x.out).symm.trans_assoc,
       ← (localInverseAt x).symm.trans_assoc]
     apply StructureGroupoid.locality
-    intro _ hh
-    let g := smulToLocalInverseAt (mk_chartAt_symm_mem_localInverseAt_source hh)
+    intro x' hx'
+    obtain ⟨g, hg⟩ := aux (mk_chartAt_symm_mem_localInverseAt_source hx')
     let t := ((chartAt H x.out).symm.source ∩ (chartAt H x.out).symm ⁻¹'
       ((g • ·) ⁻¹' (localInverseAt y).target))
-    have hto : IsOpen t := (chartAt H x.out).symm.isOpen_inter_preimage <|
+    have ht : IsOpen t := (chartAt H x.out).symm.isOpen_inter_preimage <|
       (localInverseAt y).open_target.preimage (continuous_const_smul _)
-    refine ⟨_, hto, ⟨hh.1, smulToLocalInverseAt_spec _⟩, ?_⟩
+    refine ⟨_, ht, ⟨hx'.1, hg⟩, ?_⟩
     refine StructureGroupoid.restr_mem_of_eqOn (symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
-      (chart_mem_maximalAtlas x.out) (chart_mem_maximalAtlas y.out) ?_ ?_) hto
+      (chart_mem_maximalAtlas x.out) (chart_mem_maximalAtlas y.out) ?_ ?_) ht
       ((transitionMap_eqOn_smul x y g).mono Set.inter_subset_right).symm ?_
     · rw [Homeomorph.toOpenPartialHomeomorph_apply]
       exact (ContMDiffConstSMul.contMDiff_const_smul g).contMDiffOn
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
       exact (ContMDiffConstSMul.contMDiff_const_smul g⁻¹).contMDiffOn
-    · rintro _ ⟨⟨hQ1, _, hQ4⟩, _, hh''⟩
-      refine ⟨hQ1, Set.mem_univ _, ?_⟩
-      simpa [← localInverseAt_symm_trans_eqOn_smul x y g hh''] using hQ4
+    · rintro a ⟨⟨ha₁, _, ha₂⟩, _, ha₃⟩
+      refine ⟨ha₁, Set.mem_univ _, ?_⟩
+      simpa [← localInverseAt_symm_trans_eqOn_smul x y g ha₃] using ha₂
+
+/-- The projection map `M → M ⧸ G` is smooth. -/
+@[to_additive]
+lemma contMDiff_orbitRel_quotient : ContMDiff I I n (Quotient.mk' (s := orbitRel G M)) := by
+  intro x
+  sorry
+
+/-- Suppose `f : M → N` is a `G`-invariant map between smooth manifolds. If the induced map
+`M ⧸ G → N` is `C^n`, then so is `f`. -/
+@[to_additive]
+lemma foo {f : M → N}
+    (hf : letI := orbitRel G M; ∀ p q, p ≈ q → f p = f q)
+    (hf' : ContMDiff I J n (Quotient.lift f hf)) :
+    CMDiff n f := by
+  apply (hf'.comp (contMDiff_orbitRel_quotient (M := M)) ).congr
+  intro y
+  rfl
+
+/-- Suppose `f : M → N` is `C^n` and `G`-invariant, the induced map `M ⧸ G → N` is also `C^n`. -/
+@[to_additive]
+lemma bar {f : M → N} (hf : letI := orbitRel G M; ∀ p q, p ≈ q → f p = f q)
+    (hf' : CMDiff n f) : ContMDiff I J n (Quotient.lift f hf) := by
+  sorry
+
+/-- Suppose `f : M → N` is `G`-invariant, then `f` is `C^n` if and only if the induced map
+`M ⧸ G → N` is. -/
+@[to_additive]
+lemma baz {f : M → N} (hf : letI := orbitRel G M; ∀ p q, p ≈ q → f p = f q) :
+    ContMDiff I J n (Quotient.lift f hf) ↔ CMDiff n f :=
+  ⟨fun h ↦ foo hf h, fun h ↦ bar hf h⟩
 
 end MulAction
 
