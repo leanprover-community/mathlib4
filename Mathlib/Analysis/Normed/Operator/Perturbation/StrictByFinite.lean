@@ -5,9 +5,9 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Maps.Strict.Module
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Algebra.Module.LinearMap.FiniteRange
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Maps.Strict.Module
 
 import Mathlib.Topology.LocalAtTarget
 

@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 /-! # Base change of a free module
 

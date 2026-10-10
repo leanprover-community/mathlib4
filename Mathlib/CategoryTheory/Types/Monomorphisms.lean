@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Pushouts
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.Pushouts
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 import Mathlib.CategoryTheory.Limits.Types.Filtered

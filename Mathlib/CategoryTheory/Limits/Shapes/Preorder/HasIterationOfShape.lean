@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
-public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.Interval.Set.InitialSeg
+public import Mathlib.Order.SuccPred.Limit
 
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic

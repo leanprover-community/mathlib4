@@ -60,10 +60,6 @@ lemma id_hom (X : Condensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
 @[deprecated ObjectProperty.FullSubcategory.comp_hom +typeChanged (since := "2026-04-08")]
 lemma comp_hom {X Y Z : Condensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-03-05")] alias id_val := id_hom
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-03-05")] alias comp_val := comp_hom
 
 @[ext]
 lemma hom_ext {X Y : Condensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :
@@ -72,12 +68,3 @@ lemma hom_ext {X Y : Condensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = 
   exact h _
 
 end Condensed
-
-namespace CondensedSet
-
-@[deprecated NatTrans.naturality_apply +typeChanged (since := "2026-03-19")]
-lemma hom_naturality_apply {X Y : CondensedSet.{u}} (f : X ⟶ Y) {S T : CompHausᵒᵖ} (g : S ⟶ T)
-    (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) := by
-  simp
-
-end CondensedSet

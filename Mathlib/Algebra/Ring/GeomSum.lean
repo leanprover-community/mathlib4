@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 
-import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.GrindInstances
+import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Partial sums of geometric series in a ring

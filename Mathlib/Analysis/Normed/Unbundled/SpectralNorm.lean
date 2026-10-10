@@ -6,10 +6,10 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.Normal.Closure
 
-import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -151,11 +151,11 @@ theorem spectralValue_X_sub_C (r : R) : spectralValue (X - C r) = ‖r‖ := by
     · rw [ite_eq_left hn, ite_eq_left hn, hn, cast_zero, sub_zero, coeff_X_zero, coeff_C_zero,
         zero_sub, norm_neg, inv_one, rpow_one]
     · rw [ite_eq_right hn, ite_eq_right hn]
-  · apply ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun n ↦ ?_)
-      (fun _ hx ↦ ⟨0, by simp only [ite_true, hx]⟩)
-    split_ifs
-    · exact le_refl _
-    · exact norm_nonneg _
+  apply ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun n ↦ ?_)
+    (fun _ hx ↦ ⟨0, by simp only [ite_true, hx]⟩)
+  split_ifs
+  · exact le_refl _
+  · exact norm_nonneg _
 
 /-- The polynomial `X ^ n` has spectral value `0`. -/
 theorem spectralValue_X_pow (n : ℕ) : spectralValue (X ^ n : R[X]) = 0 := by
@@ -471,22 +471,22 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
   refine le_antisymm ?_ (ciSup_le fun σ ↦
     norm_root_le_spectralValue hf_pm hf_na
       (minpoly.monic (hn.isIntegral x)) (minpoly.aeval_algHom _ σ.toAlgHom _))
-  · set p := minpoly K x
-    have hp_sp : Splits ((minpoly K x).map (algebraMap K L)) := hn.splits x
-    obtain ⟨s, hs⟩ := splits_iff_exists_multiset.mp hp_sp
-    have h_lc : (algebraMap K L) (minpoly K x).leadingCoeff = 1 := by
-      rw [minpoly.monic (hn.isIntegral x), map_one]
-    rw [leadingCoeff_map, h_lc, map_one, one_mul] at hs
-    simp only [spectralNorm]
-    rw [← max_norm_root_eq_spectralValue hf_pm hf_na hf1 _ _ hs]
-    apply ciSup_le
-    intro y
-    split_ifs with h
-    · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
-        (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
-      rw [← hσ]
-      apply Finite.le_ciSup _ σ
-    · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
+  set p := minpoly K x
+  have hp_sp : Splits ((minpoly K x).map (algebraMap K L)) := hn.splits x
+  obtain ⟨s, hs⟩ := splits_iff_exists_multiset.mp hp_sp
+  have h_lc : (algebraMap K L) (minpoly K x).leadingCoeff = 1 := by
+    rw [minpoly.monic (hn.isIntegral x), map_one]
+  rw [leadingCoeff_map, h_lc, map_one, one_mul] at hs
+  simp only [spectralNorm]
+  rw [← max_norm_root_eq_spectralValue hf_pm hf_na hf1 _ _ hs]
+  apply ciSup_le
+  intro y
+  split_ifs with h
+  · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
+      (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
+    rw [← hσ]
+    apply Finite.le_ciSup _ σ
+  · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
 
 open IsUltrametricDist
 
@@ -733,27 +733,18 @@ section CompleteSpace
 
 variable [CompleteSpace K]
 
-/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
-  `L/K` is an algebraic extension, then the spectral norm on `L` is multiplicative. -/
-theorem spectralAlgNorm_mul (x y : L) :
-    spectralAlgNorm K L (x * y) = spectralAlgNorm K L x * spectralAlgNorm K L y := by
-  by_cases hx : x = 0
-  · simp [hx, zero_mul, map_zero]
-  · have hx' : spectralAlgNorm K L x ≠ 0 :=
-      ne_of_gt (spectralNorm_zero_lt hx (Algebra.IsAlgebraic.isAlgebraic x))
-    set f : AlgebraNorm K L := algNormFromConst hx' spectralAlgNorm_isPowMul with hf
-    have hf_pow : IsPowMul f := seminormFromConst_isPowMul hx' isPowMul_spectralNorm
-    rw [← spectralNorm_unique hf_pow, hf]
-    exact seminormFromConst_const_mul hx' isPowMul_spectralNorm _
-
 variable (K L) in
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`. -/
 def spectralMulAlgNorm : MulAlgebraNorm K L :=
-  { spectralAlgNorm K L with
-    map_one' := spectralAlgNorm_one
-    map_mul' := spectralAlgNorm_mul }
+  (spectralAlgNorm K L).toMulAlgebraNorm (spectralAlgNorm_isPowMul)
 
 theorem spectralMulAlgNorm_def (x : L) : spectralMulAlgNorm K L x = spectralNorm K L x := rfl
+
+/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
+  `L/K` is an algebraic extension, then the spectral norm on `L` is multiplicative. -/
+theorem spectralAlgNorm_mul (x y : L) :
+    spectralAlgNorm K L (x * y) = spectralAlgNorm K L x * spectralAlgNorm K L y :=
+  (spectralMulAlgNorm K L).map_mul x y
 
 namespace spectralNorm
 

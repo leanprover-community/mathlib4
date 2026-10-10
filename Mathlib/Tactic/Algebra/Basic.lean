@@ -6,9 +6,9 @@ Authors: Arend Mellendijk
 module
 
 public meta import Lean.Meta.Tactic.NormCast
+public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Tactic.Algebra.Lemmas  -- shake: keep (Qq output dependency)
 public import Mathlib.Tactic.Ring.RingNF  -- shake: keep (`initialize`s `Ring.ringCleanupRef`)
-public import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # The `algebra` tactic

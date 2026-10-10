@@ -5,10 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Adjunction.Reflective
-public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Sites.Sheaf
 /-!
 
 # Sheafification
