@@ -30,8 +30,8 @@ section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F] [ContinuousSMul 𝕜 F]
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [ContinuousSMul 𝕜 G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 variable {f f₀ f₁ g : E → F}
 variable {f' f₁' : E →L[𝕜] F}
@@ -52,7 +52,7 @@ variable {f₂ : E → G} {f₂' : E →L[𝕜] G}
 theorem HasFDerivAtFilter.prodMk (hf₁ : HasFDerivAtFilter f₁ f₁' L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' L) :
     HasFDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') L :=
-  .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
+  of_isLittleOTVS <| hf₁.isLittleOTVS.prodMk hf₂.isLittleOTVS
 
 protected theorem HasStrictFDerivAt.prodMk (hf₁ : HasStrictFDerivAt f₁ f₁' x)
     (hf₂ : HasStrictFDerivAt f₂ f₂' x) :
@@ -76,9 +76,9 @@ theorem hasFDerivAt_prodMk_left (e₀ : E) (f₀ : F) :
   (hasFDerivAt_id e₀).prodMk (hasFDerivAt_const f₀ e₀)
 
 @[fun_prop]
-theorem hasFDerivAt_prodMk_right (e₀ : E) (f₀ : F) :
-    HasFDerivAt (fun f : F => (e₀, f)) (inr 𝕜 E F) f₀ :=
-  (hasFDerivAt_const e₀ f₀).prodMk (hasFDerivAt_id f₀)
+theorem hasFDerivAt_prodMk_right (f₀ : F) (e₀ : E) :
+    HasFDerivAt (fun e : E => (f₀, e)) (inr 𝕜 F E) e₀ :=
+  (hasFDerivAt_const f₀ e₀).prodMk (hasFDerivAt_id e₀)
 
 @[fun_prop]
 theorem DifferentiableWithinAt.prodMk (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
@@ -99,6 +99,8 @@ theorem DifferentiableOn.prodMk (hf₁ : DifferentiableOn 𝕜 f₁ s) (hf₂ : 
 theorem Differentiable.prodMk (hf₁ : Differentiable 𝕜 f₁) (hf₂ : Differentiable 𝕜 f₂) :
     Differentiable 𝕜 fun x : E => (f₁ x, f₂ x) := fun x ↦
   (hf₁ x).prodMk (hf₂ x)
+
+variable [ContinuousAdd F] [ContinuousAdd G] [T2Space F] [T2Space G]
 
 theorem DifferentiableAt.fderiv_prodMk (hf₁ : DifferentiableAt 𝕜 f₁ x)
     (hf₂ : DifferentiableAt 𝕜 f₂ x) :
