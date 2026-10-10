@@ -758,7 +758,7 @@ theorem Subfield.fintypeCard_bot : Fintype.card (⊥ : Subfield F) = p :=
   (Fintype.card_ofFinset ..).trans (Subfield.card_botFinset ..)
 
 @[simp]
-theorem Subfield.botFinset_eq_univ : Subfield.botFinset (⊥ : Subfield F) p = Finset.univ := by
+theorem Subfield.botFinset_eq_univ : Subfield.botFinset (⊥ : Subfield F) p = .univ := by
   apply Finset.eq_univ_of_card
   simp
 
