@@ -62,8 +62,6 @@ theorem ManyOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Pri
 instance stdRefl_manyOneReducible {α} [Primcodable α] : Std.Refl (@ManyOneReducible α α _ _) where
   refl := manyOneReducible_refl
 
-@[deprecated (since := "2026-03-27")] alias reflexive_manyOneReducible := stdRefl_manyOneReducible
-
 instance isTrans_manyOneReducible {α} [Primcodable α] : IsTrans (α → Prop) ManyOneReducible where
   trans _ _ _ := ManyOneReducible.trans
 
@@ -102,12 +100,10 @@ theorem OneOneReducible.of_equiv {α β} [Primcodable α] [Primcodable β] {e : 
 
 theorem OneOneReducible.of_equiv_symm {α β} [Primcodable α] [Primcodable β] {e : α ≃ β}
     (q : β → Prop) (h : Computable e.symm) : q ≤₁ (q ∘ e) := by
-  convert! OneOneReducible.of_equiv _ h; funext; simp
+  convert OneOneReducible.of_equiv _ h; funext; simp
 
 instance stdRefl_oneOneReducible {α} [Primcodable α] : Std.Refl (@OneOneReducible α α _ _) where
   refl := oneOneReducible_refl
-
-@[deprecated (since := "2026-03-27")] alias reflexive_oneOneReducible := stdRefl_oneOneReducible
 
 instance isTrans_oneOneReducible {α} [Primcodable α] : IsTrans (α → Prop) OneOneReducible where
   trans _ _ _ := OneOneReducible.trans

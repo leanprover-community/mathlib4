@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Attr.Core
+
+import Mathlib.Tactic.Attr.Core
 
 /-!
 # Co-Heyting boundary

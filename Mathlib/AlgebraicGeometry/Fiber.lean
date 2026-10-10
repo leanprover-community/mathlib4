@@ -5,11 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
 /-!
 # Scheme-theoretic fiber
@@ -84,7 +83,7 @@ noncomputable def Spec.fiberToSpecResidueFieldIso (R S : Type u) [CommRing R] [C
     (pullbackSymmetry _ _ ≪≫ ?_ ≪≫ pullbackSpecIso R p.asIdeal.ResidueField S) ?_ ?_
   · refine pullback.congrHom
       (Scheme.Spec.map_residueFieldIso_inv_eq_fromSpecResidueField (.of R) p).symm rfl ≪≫ ?_
-    refine asIso <| pullback.map _ _ _ _ (Spec.map <| (Scheme.Spec.residueFieldIso (.of R) _).inv)
+    refine asIso <| pullback.map _ _ _ _ (Spec.map (Scheme.Spec.residueFieldIso (.of R) _).inv)
       (𝟙 _) (𝟙 _) (by simp) (by simp)
   · exact Scheme.Spec.mapIso (Scheme.Spec.residueFieldIso (.of R) _).symm.op
   · cat_disch

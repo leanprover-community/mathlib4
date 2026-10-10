@@ -5,11 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Data.Ordering.Lemmas
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.SetTheory.Ordinal.Principal
-public import Mathlib.Tactic.NormNum
+
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Ordering.Lemmas
+import Mathlib.Tactic.NormNum
 
 /-!
 # Ordinal notation
@@ -779,7 +780,7 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
   intro b l
   have := (No.below_of_lt (lt_succ _)).repr_lt
   rw [repr] at this
-  apply (opow_le_opow_left b <| this.le).trans
+  apply (opow_le_opow_left b this.le).trans
   rw [← opow_mul, ← opow_mul]
   rcases le_or_gt ω (repr e) with h | h
   · grw [le_succ b, show succ b = b + 1 by rw [succ_eq_add_one],

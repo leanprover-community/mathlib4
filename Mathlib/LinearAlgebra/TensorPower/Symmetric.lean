@@ -6,7 +6,8 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
-public import Mathlib.Tactic.SuppressCompilation
+
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring
@@ -21,7 +22,7 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 
 * `SymmetricPower.module`: the symmetric tensor power is a module over `R`.
 
-## TODO:
+## TODO
 
 * Grading: show that there is a map `Sym[R]^i M × Sym[R]^j M → Sym[R]^(i + j) M` that is
   associative and commutative, and that `n ↦ Sym[R]^n M` is a graded (semi)ring and algebra.
@@ -72,7 +73,7 @@ lemma smul (r : R) (x y : ⨂[R] _, M) (h : addConGen (Rel R ι M) x y) :
   | of x y h => cases h with
     | perm e f =>
       apply isEmpty_or_nonempty ι |>.elim <;> intro h
-      · convert! addConGen (Rel R ι M) |>.refl _
+      · convert addConGen (Rel R ι M) |>.refl _
       · let i := Nonempty.some h
         classical
         convert!

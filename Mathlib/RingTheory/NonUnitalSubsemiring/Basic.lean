@@ -19,6 +19,8 @@ public import Mathlib.GroupTheory.Submonoid.Center
 public import Mathlib.GroupTheory.Subsemigroup.Centralizer
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
+import Mathlib.Order.CompleteLattice.Finset
+
 /-!
 # Bundled non-unital subsemirings
 
@@ -384,15 +386,6 @@ theorem isMulCommutative_closure {R : Type*} [NonUnitalSemiring R] {s : Set R}
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
 
-open scoped IsMulCommutative in
-/-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
-semiring. -/
-@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
-abbrev closureNonUnitalCommSemiringOfComm {R : Type*} [NonUnitalSemiring R] {s : Set R}
-    (hcomm : s.Pairwise Commute) : NonUnitalCommSemiring (closure s) :=
-  have := isMulCommutative_closure hcomm
-  inferInstance
-
 instance instIsMulCommutative_closure {S R : Type*} [NonUnitalSemiring R]
     [SetLike S R] [MulMemClass S R] (s : S) [IsMulCommutative s] :
     IsMulCommutative (closure (s : Set R)) :=
@@ -649,6 +642,11 @@ theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonem
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → NonUnitalSubsemiring R) :
+    ((⨆ i, S i : NonUnitalSubsemiring R) : Set R) =
+      ⋃ s : Finset ι, (⨆ i ∈ s, S i : NonUnitalSubsemiring R) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
     {S : ι → NonUnitalSubsemiring R} [hS : ∀ i, IsMulCommutative (S i)]
     (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : NonUnitalSubsemiring R) := by
@@ -745,7 +743,7 @@ theorem range_fst : NonUnitalRingHom.srange (fst R S) = ⊤ :=
 
 @[simp]
 theorem range_snd : NonUnitalRingHom.srange (snd R S) = ⊤ :=
-  NonUnitalRingHom.srange_eq_top_of_surjective (snd R S) <| Prod.snd_surjective
+  NonUnitalRingHom.srange_eq_top_of_surjective (snd R S) Prod.snd_surjective
 
 end NonUnitalSubsemiring
 

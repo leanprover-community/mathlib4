@@ -6,7 +6,6 @@ Authors: Jz Pan
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Constructions
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 
@@ -47,13 +46,12 @@ theorem Basis.ofRankEqZero_apply [Module.Free K V] {ι : Type*} [IsEmpty ι]
 
 theorem le_rank_iff_exists_linearIndependent [Module.Free K V] {c : Cardinal} :
     c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndepOn K id s := by
-  have := nontrivial_of_invariantBasisNumber K
   constructor
   · intro h
     obtain ⟨κ, t'⟩ := Module.Free.exists_basis (R := K) (M := V)
     let t := t'.reindexRange
     have : LinearIndepOn K id (Set.range t') := by
-      convert! t.linearIndependent.linearIndepOn_id
+      convert t.linearIndependent.linearIndepOn_id
       ext
       simp [t]
     rw [← t.mk_eq_rank'', le_mk_iff_exists_subset] at h
@@ -104,7 +102,6 @@ theorem rank_le_one_iff [Module.Free K V] :
 single non-zero vector of which all vectors are multiples. -/
 theorem rank_eq_one_iff [Module.Free K V] :
     Module.rank K V = 1 ↔ ∃ v₀ : V, v₀ ≠ 0 ∧ ∀ v, ∃ r : K, r • v₀ = v := by
-  have := nontrivial_of_invariantBasisNumber K
   refine ⟨fun h ↦ ?_, fun ⟨v₀, h, hv⟩ ↦ (rank_le_one_iff.2 ⟨v₀, hv⟩).antisymm ?_⟩
   · obtain ⟨v₀, hv⟩ := rank_le_one_iff.1 h.le
     refine ⟨v₀, fun hzero ↦ ?_, hv⟩
@@ -146,7 +143,6 @@ single vector, not necessarily in the submodule, such that the
 submodule is contained in its span. -/
 theorem rank_submodule_le_one_iff' (s : Submodule K V) [Module.Free K s] :
     Module.rank K s ≤ 1 ↔ ∃ v₀, s ≤ K ∙ v₀ := by
-  have := nontrivial_of_invariantBasisNumber K
   constructor
   · rw [rank_submodule_le_one_iff]
     rintro ⟨v₀, _, h⟩
@@ -163,7 +159,7 @@ theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) [Module.Free K
   constructor
   · rintro ⟨⟨m, hm⟩, hm'⟩
     choose f hf using hm'
-    exact ⟨m, ⟨fun v hv => ⟨f ⟨v, hv⟩, congr_arg ((↑) : W → V) (hf ⟨v, hv⟩)⟩, hm⟩⟩
+    exact ⟨m, ⟨fun v hv => ⟨f ⟨v, hv⟩, congr($(hf ⟨v, hv⟩))⟩, hm⟩⟩
   · rintro ⟨a, ⟨h, ha⟩⟩
     choose f hf using h
     exact ⟨⟨a, ha⟩, fun v => ⟨f v.1 v.2, Subtype.ext (hf v.1 v.2)⟩⟩
@@ -210,7 +206,6 @@ theorem Module.finrank_le_one_iff_top_isPrincipal [Module.Free K V] [Module.Fini
 variable (K V) in
 theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
     [Module.Finite K V] : lift.{u} #V = lift.{v} #K ^ lift.{u} (Module.rank K V) := by
-  have := nontrivial_of_invariantBasisNumber K
   obtain ⟨s, hs⟩ := Module.Free.exists_basis (R := K) (M := V)
   -- `Module.Finite.finite_basis` is in a much later file, so we copy its proof to here
   have : Finite s := by
@@ -248,7 +243,7 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
     obtain ⟨h1⟩ := h1
     obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv (b.repr ≪≫ₗ
       Finsupp.uniqueLinearEquiv _ _ default).symm).surjective ⟨x, hx⟩
-    exact ⟨y, congr(Subtype.val $(hy))⟩
+    exact ⟨y, congr($(hy).val)⟩
   have := mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ Cardinal.lt_one_iff.1 (h.lt_of_ne h1))
   have := b.repr.toEquiv.subsingleton
   exact False.elim <| one_ne_zero congr(S.val $(Subsingleton.elim 1 0))

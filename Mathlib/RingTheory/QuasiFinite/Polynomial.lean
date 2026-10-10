@@ -16,7 +16,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 namespace Polynomial
 
-attribute [local instance] Algebra.WeaklyQuasiFiniteAt.finite_locoalization in
+attribute [local instance] Algebra.WeaklyQuasiFiniteAt.finite_localization in
 lemma not_weaklyQuasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQuasiFiniteAt R P := by
   intro H
   wlog hR : IsField R

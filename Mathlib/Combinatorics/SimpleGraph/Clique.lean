@@ -10,10 +10,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Fintype.Pigeonhole
-public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Lattice.Nat
-public import Mathlib.SetTheory.Cardinal.NatCard
-public import Mathlib.Tactic.CrossRefAttribute
+
+import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Graph cliques
@@ -178,7 +177,7 @@ theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
   constructor
   · rw [isClique_map_iff_of_nontrivial (by simpa)]
     rintro ⟨s, hs, hst⟩
-    obtain ⟨s, rfl⟩ := Set.Finite.exists_finset_coe <|
+    obtain ⟨s, rfl⟩ := Set.Finite.exists_finset_coe
       (show s.Finite from Set.Finite.of_finite_image (by simp [hst]) f.injective.injOn)
     exact ⟨s,hs, Finset.coe_inj.1 (by simpa)⟩
   rintro ⟨s, hs, rfl⟩
@@ -400,8 +399,6 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
 
 theorem not_cliqueFree_iff_top_isContained (n : ℕ) : ¬G.CliqueFree n ↔ completeGraph (Fin n) ⊑ G :=
   ⟨(topEmbeddingOfNotCliqueFree · |>.isContained), IsContained.not_cliqueFree⟩
-
-@[deprecated (since := "2026-03-23")] alias not_cliqueFree_iff := not_cliqueFree_iff_top_isContained
 
 theorem cliqueFree_iff_free_top_fin : G.CliqueFree n ↔ (completeGraph (Fin n)).Free G :=
   not_cliqueFree_iff_top_isContained n |>.not_right
