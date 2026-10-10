@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+public import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -203,6 +204,63 @@ theorem map_comp (f : T →+* R) (g : R →+* S) :
 theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
     (map g).comp (map f) x = map g (map f x) :=
   rfl
+
+section Equiv
+
+variable (n) (f : R ≃+* S) (g : S ≃+* T)
+
+/-- The equivalence between `GL n R` and `GL n S` given by `f : R ≃+* S`. -/
+@[simps! apply]
+def mapEquiv : GL n R ≃* GL n S :=
+  Units.mapEquiv f.mapMatrix.toMulEquiv
+
+@[simp] lemma mapEquiv_refl : mapEquiv n (.refl R) = .refl (GL n R) := rfl
+
+@[simp] lemma symm_mapEquiv :
+    (mapEquiv n f).symm = mapEquiv n f.symm := rfl
+
+@[simp] lemma mapEquiv_trans_mapEquiv :
+    .trans (mapEquiv n f) (mapEquiv n g) = mapEquiv n (f.trans g) := rfl
+
+@[simp] lemma toMonoidHom_mapEquiv :
+    (mapEquiv n f : GL n R →* GL n S) = map (f : R →+* S) := rfl
+
+end Equiv
+
+section Reindex
+
+variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
+
+/-- The equivalence between `GL m R` and `GL n R` given by an equivalence `e : m ≃ n`. -/
+@[simps! apply]
+def reindexMulEquiv (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
+
+@[simp]
+theorem symm_reindexMulEquiv (e : m ≃ n) :
+    (reindexMulEquiv R e).symm = reindexMulEquiv R e.symm :=
+  rfl
+
+@[simp]
+theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindexMulEquiv R e) (reindexMulEquiv R e') = reindexMulEquiv R (.trans e e') :=
+  rfl
+
+@[simp]
+theorem reindexMulEquiv_refl : reindexMulEquiv R (.refl n) = .refl (GL n R) := rfl
+
+end Reindex
+
+section Pi
+
+variable {ι : Type*} (R : ι → Type*)
+
+/-- The monoid equivalence between `GL n` of a product of rings,
+and the product of the `GL n` of each ring. -/
+@[simps! apply symm_apply]
+def piEquiv [Π i, CommRing (R i)] : GL n (Π i, R i) ≃* Π i, GL n (R i) :=
+  (Units.mapEquiv piRingEquiv.toMulEquiv).trans MulEquiv.piUnits
+
+end Pi
 
 variable (f : R →+* S)
 
