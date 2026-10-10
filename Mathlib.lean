@@ -8585,6 +8585,7 @@ public import Mathlib.Util.AssertNoSorry
 public import Mathlib.Util.AtLocation
 public import Mathlib.Util.AtomM
 public import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Util.BetterVersoDocstrings
 public import Mathlib.Util.CodeActions
 public import Mathlib.Util.CodeActions.BinderPlicity
 public import Mathlib.Util.CompileInductive

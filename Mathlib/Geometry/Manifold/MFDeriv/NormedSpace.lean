@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.SMul
+import Mathlib.Util.BetterVersoDocstrings
 
 /-! # Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
@@ -455,16 +456,24 @@ open scoped Bundle Manifold ContDiff
 
 open Lean Meta Elab Tactic
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `d[s] f x` (scoped to the `Manifold` namespace) elaborates to `mvfderivWithin I f s x`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf mvfderivWithin} -/
 scoped elab:max "d[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, _tgtI) ← findModels e none
   mkAppM ``mvfderivWithin #[srcI, e, es]
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I f x`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf mvfderiv} -/
 scoped elab:max "d%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, _tgtI) ← findModels e none
@@ -472,7 +481,8 @@ scoped elab:max "d%" ppSpace t:term:arg : term => do
 
 open Bundle PrettyPrinter Delaborator SubExpr
 
-/-- Delaborator for `mvfderivWithin`. -/
+set_option doc.verso true in
+/-- Delaborator for {name}`mvfderivWithin`. -/
 -- There is no need to special-case any arguments which could use the `T%` elaborator:
 -- the argument to `mvfderivWithin` is a vector-valued function, which a map to a total space
 -- can never be.
@@ -483,7 +493,8 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let fs ← withNaryArg 14 delab
   `(d[$ss] $fs) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `mvfderiv`. -/
+set_option doc.verso true in
+/-- Delaborator for {name}`mvfderiv`. -/
 -- There is no need to special-case any arguments which could use the `T%` elaborator:
 -- the argument to `mvfderiv` is a vector-valued function, which a map to a total space
 -- can never be.
