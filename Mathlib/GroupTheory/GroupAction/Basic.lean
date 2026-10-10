@@ -362,21 +362,21 @@ theorem stabilizer_subgroupOf (H : Subgroup G) (a : α) :
     (stabilizer G a).subgroupOf H = stabilizer H a := by
   simp [Subgroup.ext_iff, Subgroup.mem_subgroupOf, subgroup_smul_def]
 
-theorem stabilizer_comap_conj_eq_centralizer_singleton (g : G) :
+@[simp] theorem stabilizer_comap_conj_eq_centralizer_singleton (g : G) :
     (stabilizer (MulAut G) g).comap MulAut.conjHom = Subgroup.centralizer {g} := by
   simp [Subgroup.ext_iff, Subgroup.mem_centralizer_singleton_iff, mul_inv_eq_iff_eq_mul]
 
-theorem stabilizer_comap_addConj_eq_centralizer_singleton {G} [AddGroup G] (g : G) :
+@[simp] theorem stabilizer_comap_addConj_eq_centralizer_singleton {G} [AddGroup G] (g : G) :
     ((stabilizer (AddAut G) g).comap AddAut.addConjHom).toAddSubgroup' = .centralizer {g} := by
   simp [AddSubgroup.ext_iff, AddSubgroup.mem_centralizer_singleton_iff, add_neg_eq_iff_eq_add]
-
-theorem orbit_range_addConj_eq_addConjugatesOf {G} [AddGroup G] (g : G) :
-    orbit (AddAut.addConjHom (G := G)).range g = addConjugatesOf g := by
-  simp [Set.ext_iff, addConjugatesOf, mem_orbit_iff, subgroup_smul_def]
 
 theorem orbit_range_conj_eq_conjugatesOf (g : G) :
     orbit (MulAut.conjHom (G := G)).range g = conjugatesOf g := by
   simp [Set.ext_iff, conjugatesOf, mem_orbit_iff, subgroup_smul_def]
+
+theorem orbit_range_addConj_eq_addConjugatesOf {G} [AddGroup G] (g : G) :
+    orbit (AddAut.addConjHom (G := G)).range g = addConjugatesOf g := by
+  simp [Set.ext_iff, addConjugatesOf, mem_orbit_iff, subgroup_smul_def]
 
 end MulAction
 
