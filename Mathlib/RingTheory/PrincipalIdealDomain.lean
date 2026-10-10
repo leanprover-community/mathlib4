@@ -528,7 +528,7 @@ theorem nonPrincipals_eq_empty_iff : nonPrincipals R = ∅ ↔ IsPrincipalIdealR
 If you want the existence of a maximal non-principal ideal see
 `Ideal.exists_maximal_not_isPrincipal`. -/
 theorem nonPrincipals_zorn (hR : ¬IsPrincipalIdealRing R) (c : Set (Ideal R))
-    (hs : c ⊆ nonPrincipals R) (hchain : IsChain (· ≤ ·) c) :
+    (hs : c ⊆ nonPrincipals R) (hchain : IsLEChain c) :
     ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I := by
   by_cases H : c.Nonempty
   · obtain ⟨K, hKmem⟩ := Set.nonempty_def.1 H

@@ -76,8 +76,10 @@ theorem self_mem_flag_iff [Nontrivial R] (b : Basis (Fin n) R M) {i : Fin n} {k 
 theorem flag_mono (b : Basis (Fin n) R M) : Monotone b.flag :=
   Fin.monotone_iff_le_succ.2 fun k ↦ by rw [flag_succ]; exact le_sup_right
 
-theorem isChain_range_flag (b : Basis (Fin n) R M) : IsChain (· ≤ ·) (range b.flag) :=
-  b.flag_mono.isChain_range
+theorem isLEChain_range_flag (b : Basis (Fin n) R M) : IsLEChain (range b.flag) :=
+  b.flag_mono.isLEChain_range
+
+@[deprecated (since := "2026-10-04")] alias isChain_range_flag := isLEChain_range_flag
 
 @[gcongr, mono]
 theorem flag_strictMono [Nontrivial R] (b : Basis (Fin n) R M) : StrictMono b.flag :=

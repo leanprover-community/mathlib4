@@ -92,7 +92,7 @@ instance : PartialOrder (PartialRefinement u s p) where
 
 /-- If two partial refinements `v₁`, `v₂` belong to a chain (hence, they are comparable)
 and `i` belongs to the carriers of both partial refinements, then `v₁ i = v₂ i`. -/
-theorem apply_eq_of_chain {c : Set (PartialRefinement u s p)} (hc : IsChain (· ≤ ·) c) {v₁ v₂}
+theorem apply_eq_of_chain {c : Set (PartialRefinement u s p)} (hc : IsLEChain c) {v₁ v₂}
     (h₁ : v₁ ∈ c) (h₂ : v₂ ∈ c) {i} (hi₁ : i ∈ v₁.carrier) (hi₂ : i ∈ v₂.carrier) :
     v₁ i = v₂ i :=
   (hc.total h₁ h₂).elim (fun hle => hle.2 _ hi₁) (fun hle => (hle.2 _ hi₂).symm)
@@ -124,13 +124,13 @@ theorem mem_find_carrier_iff {c : Set (PartialRefinement u s p)} {i : ι} (ne : 
     refine iff_of_false (h _ ne.some_mem) ?_
     simpa only [chainSupCarrier, mem_iUnion₂, not_exists]
 
-theorem find_apply_of_mem {c : Set (PartialRefinement u s p)} (hc : IsChain (· ≤ ·) c)
+theorem find_apply_of_mem {c : Set (PartialRefinement u s p)} (hc : IsLEChain c)
     (ne : c.Nonempty) {i v} (hv : v ∈ c) (hi : i ∈ carrier v) : find c ne i i = v i :=
   apply_eq_of_chain hc (find_mem _ _) hv ((mem_find_carrier_iff _).2 <| mem_iUnion₂.2 ⟨v, hv, hi⟩)
     hi
 
 /-- Least upper bound of a nonempty chain of partial refinements. -/
-def chainSup (c : Set (PartialRefinement u s p)) (hc : IsChain (· ≤ ·) c) (ne : c.Nonempty)
+def chainSup (c : Set (PartialRefinement u s p)) (hc : IsLEChain c) (ne : c.Nonempty)
     (hfin : ∀ x ∈ s, { i | x ∈ u i }.Finite) (hU : s ⊆ ⋃ i, u i) : PartialRefinement u s p where
   toFun i := find c ne i i
   carrier := chainSupCarrier c
@@ -158,7 +158,7 @@ def chainSup (c : Set (PartialRefinement u s p)) (hc : IsChain (· ≤ ·) c) (n
   apply_eq hi := (find c ne _).apply_eq (mt (mem_find_carrier_iff _).1 hi)
 
 /-- `chainSup hu c hc ne hfin hU` is an upper bound of the chain `c`. -/
-theorem le_chainSup {c : Set (PartialRefinement u s p)} (hc : IsChain (· ≤ ·) c) (ne : c.Nonempty)
+theorem le_chainSup {c : Set (PartialRefinement u s p)} (hc : IsLEChain c) (ne : c.Nonempty)
     (hfin : ∀ x ∈ s, { i | x ∈ u i }.Finite) (hU : s ⊆ ⋃ i, u i) {v} (hv : v ∈ c) :
     v ≤ chainSup c hc ne hfin hU :=
   ⟨fun _ hi => mem_biUnion hv hi, fun _ hi => (find_apply_of_mem hc _ hv hi).symm⟩
@@ -219,7 +219,7 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
   have : Nonempty (PartialRefinement u s ⊤) :=
     ⟨⟨u, ∅, uo, us, False.elim, False.elim, fun _ => rfl⟩⟩
   have : ∀ c : Set (PartialRefinement u s ⊤),
-      IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
+      IsLEChain c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
   rcases zorn_le_nonempty this with ⟨v, hv⟩
   suffices ∀ i, i ∈ v.carrier from
@@ -343,7 +343,7 @@ theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀
   have : Nonempty (PartialRefinement u s (fun w => IsCompact (closure w))) :=
     ⟨⟨u, ∅, uo, us, False.elim, False.elim, fun _ => rfl⟩⟩
   have : ∀ c : Set (PartialRefinement u s (fun w => IsCompact (closure w))),
-      IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
+      IsLEChain c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
   rcases zorn_le_nonempty this with ⟨v, hv⟩
   suffices ∀ i, i ∈ v.carrier from
