@@ -50,7 +50,7 @@ example : True := by
   done
 
 /--
-warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: Unused tactic linter: `<;>` can be replaced with `;` or be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
@@ -96,7 +96,7 @@ example : True ∧ True := by
 
 -- `<;>` leaving 0 goals
 /--
-warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: Unused tactic linter: `<;>` can be replaced with `;` or be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
@@ -110,7 +110,7 @@ example : True ∧ True := by simp <;> simp
 -- `<;>` leaving 1 goal
 /--
 @ +1:45...48
-warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: Unused tactic linter: `<;>` can be replaced with `;` or be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -127,7 +127,7 @@ example : True ∧ True ∧ True := by
 
 -- `conv` mode `<;>` leaving 0 goals
 /--
-warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: Unused tactic linter: `<;>` can be replaced with `;` or be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
@@ -143,7 +143,7 @@ example : True ∧ True := by
 -- `conv` mode `<;>`  leaving 1 goal
 /--
 @ +2:15...18
-warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: Unused tactic linter: `<;>` can be replaced with `;` or be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -156,6 +156,60 @@ example : True ∧ True := by
 example : 1 = 1 ∧ 1 = 1 := by
   conv => congr <;> simp
   exact ⟨trivial, trivial⟩
+
+/--
+@ +2:2...5
+warning: Unused tactic linter: `try` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True := by
+  try simp
+
+/--
+@ +2:2...11
+warning: Unused tactic linter: `all_goals` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True := by
+  all_goals simp
+
+/--
+@ +2:2...11
+warning: Unused tactic linter: `any_goals` can be replaced with `all_goals` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True := by
+  any_goals simp
+
+
+example : True ∧ True := by
+  constructor
+  all_goals simp
+
+example : True ∧ True ∧ True := by
+  constructor <;> ((try constructor); all_goals simp)
+
+/--
+warning: Unused tactic linter: `any_goals` can be replaced with `all_goals` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True := by
+  constructor
+  any_goals simp
+
+example : True ∧ (1 : Rat) + 1 = 2 := by
+  constructor
+  any_goals have := trivial
+  any_goals trivial
+  grind
 
 section allowing_more_unused_tactics
 
