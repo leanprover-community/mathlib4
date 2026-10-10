@@ -19,10 +19,7 @@ For the fact that monads are "just" monoids in the category of endofunctors, see
 `CategoryTheory.Monad.EquivMon`.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
-
 
 namespace CategoryTheory
 
@@ -44,19 +41,9 @@ structure Monad extends C ⥤ C where
   η : 𝟭 _ ⟶ toFunctor
   /-- The multiplication for the monad. -/
   μ : toFunctor ⋙ toFunctor ⟶ toFunctor
-  assoc : ∀ X, toFunctor.map (NatTrans.app μ X) ≫ μ.app _ = μ.app _ ≫ μ.app _ := by cat_disch
-  left_unit : ∀ X : C, η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by cat_disch
-  right_unit : ∀ X : C, toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by cat_disch
-
-@[reassoc]
-lemma Monad.unit_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
-    f ≫ T.η.app Y = T.η.app X ≫ T.map f :=
-  T.η.naturality _
-
-@[reassoc]
-lemma Monad.mu_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
-    T.map (T.map f) ≫ T.μ.app Y = T.μ.app X ≫ T.map f :=
-  T.μ.naturality _
+  assoc (X : C) : toFunctor.map (NatTrans.app μ X) ≫ μ.app _ = μ.app _ ≫ μ.app _ := by cat_disch
+  left_unit (X : C) : dsimp% η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by cat_disch
+  right_unit (X : C) : dsimp% toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by cat_disch
 
 /-- The data of a comonad on C consists of an endofunctor G together with natural transformations
 `ε : G ⟶ 𝟭 C` and `δ : G ⟶ G ⋙ G` satisfying three equations:
@@ -64,22 +51,33 @@ lemma Monad.mu_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
 - `δ_X ≫ ε_(GX) = 1_X` (left counit)
 - `δ_X ≫ G ε_X = 1_X` (right counit)
 -/
+@[to_dual]
 structure Comonad extends C ⥤ C where
   /-- The counit for the comonad. -/
   ε : toFunctor ⟶ 𝟭 _
   /-- The comultiplication for the comonad. -/
   δ : toFunctor ⟶ toFunctor ⋙ toFunctor
-  coassoc : ∀ X, NatTrans.app δ _ ≫ toFunctor.map (δ.app X) = δ.app _ ≫ δ.app _ := by
+  coassoc (X : C) : NatTrans.app δ _ ≫ toFunctor.map (δ.app X) = δ.app _ ≫ δ.app _ := by
     cat_disch
-  left_counit : ∀ X : C, δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by cat_disch
-  right_counit : ∀ X : C, δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by cat_disch
+  left_counit (X : C) : δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by cat_disch
+  right_counit (X : C) : δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by cat_disch
 
-@[reassoc]
+@[to_dual none, reassoc]
+lemma Monad.unit_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
+    f ≫ T.η.app Y = T.η.app X ≫ T.map f :=
+  T.η.naturality _
+
+@[to_dual none, reassoc]
+lemma Monad.mu_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
+    T.map (T.map f) ≫ T.μ.app Y = T.μ.app X ≫ T.map f :=
+  T.μ.naturality _
+
+@[to_dual none, reassoc]
 lemma Comonad.counit_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
     T.map f ≫ T.ε.app Y = T.ε.app X ≫ f :=
   T.ε.naturality _
 
-@[reassoc]
+@[to_dual none, reassoc]
 lemma Comonad.delta_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
     T.map f ≫ T.δ.app Y = T.δ.app X ≫ T.map (T.map f) :=
   T.δ.naturality _
@@ -87,11 +85,9 @@ lemma Comonad.delta_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
 variable {C}
 variable (T : Monad C) (G : Comonad C)
 
+@[to_dual]
 instance coeMonad : Coe (Monad C) (C ⥤ C) :=
   ⟨fun T => T.toFunctor⟩
-
-instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
-  ⟨fun G => G.toFunctor⟩
 
 initialize_simps_projections CategoryTheory.Monad (toFunctor → coe)
 
@@ -111,30 +107,27 @@ structure MonadHom (T₁ T₂ : Monad C) extends NatTrans (T₁ : C ⥤ C) T₂ 
 initialize_simps_projections MonadHom (+toNatTrans, -app)
 
 /-- A morphism of comonads is a natural transformation compatible with ε and δ. -/
-@[ext]
+@[ext, to_dual (reorder := M N)]
 structure ComonadHom (M N : Comonad C) extends NatTrans (M : C ⥤ C) N where
   app_ε : ∀ X, app X ≫ N.ε.app X = M.ε.app X := by cat_disch
   app_δ : ∀ X, app X ≫ N.δ.app X = M.δ.app X ≫ app _ ≫ N.map (app X) := by cat_disch
 
 initialize_simps_projections ComonadHom (+toNatTrans, -app)
 
+attribute [to_dual existing] MonadHom.ext
 attribute [reassoc (attr := simp)] MonadHom.app_η MonadHom.app_μ
 attribute [reassoc (attr := simp)] ComonadHom.app_ε ComonadHom.app_δ
 
+@[to_dual]
 instance : Quiver (Monad C) where
   Hom := MonadHom
 
-instance : Quiver (Comonad C) where
-  Hom := ComonadHom
 
-@[ext]
+@[to_dual (attr := ext)]
 lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   MonadHom.ext h
 
-@[ext]
-lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
-  ComonadHom.ext h
-
+@[to_dual]
 instance : Category (Monad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
   comp f g :=
@@ -142,37 +135,20 @@ instance : Category (Monad C) where
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
 
-set_option backward.defeqAttrib.useBackward true in
-instance : Category (Comonad C) where
-  id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
-  comp f g :=
-    { toNatTrans :=
-        { app := fun X => f.app X ≫ g.app X
-          naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
-
+@[to_dual]
 instance {T : Monad C} : Inhabited (MonadHom T T) :=
   ⟨𝟙 T⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem MonadHom.id_toNatTrans (T : Monad C) : (𝟙 T : T ⟶ T).toNatTrans = 𝟙 (T : C ⥤ C) :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem MonadHom.comp_toNatTrans {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
   rfl
 
-instance {G : Comonad C} : Inhabited (ComonadHom G G) :=
-  ⟨𝟙 G⟩
-
-@[simp]
-theorem ComonadHom.id_toNatTrans (T : Comonad C) : (𝟙 T : T ⟶ T).toNatTrans = 𝟙 (T : C ⥤ C) :=
-  rfl
-
-@[simp]
-theorem comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
-    (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
-  rfl
+insert_to_dual_translation CategoryTheory.MonadIso CategoryTheory.ComonadIso
 
 /-- Construct a monad isomorphism from a natural isomorphism of functors where the forward
 direction is a monad morphism. -/
@@ -215,13 +191,14 @@ def ComonadIso.mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N)
 
 variable (C)
 
-/-- The forgetful functor from the category of monads to the category of endofunctors.
--/
-@[simps!]
+/-- The forgetful functor from the category of monads to the category of endofunctors. -/
+@[to_dual (attr := implicit_reducible, simps)
+/-- The forgetful functor from the category of comonads to the category of endofunctors. -/]
 def monadToFunctor : Monad C ⥤ C ⥤ C where
   obj T := T
   map f := f.toNatTrans
 
+@[to_dual]
 instance : (monadToFunctor C).Faithful where
 
 theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N) (f_η f_μ) :
@@ -229,81 +206,47 @@ theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) �
   ext
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (monadToFunctor C).ReflectsIsomorphisms where
   reflects f _ := (MonadIso.mk (asIso ((monadToFunctor C).map f)) f.app_η f.app_μ).isIso_hom
-
-/-- The forgetful functor from the category of comonads to the category of endofunctors.
--/
-@[simps!]
-def comonadToFunctor : Comonad C ⥤ C ⥤ C where
-  obj G := G
-  map f := f.toNatTrans
-
-instance : (comonadToFunctor C).Faithful where
 
 theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N) (f_ε f_δ) :
     (comonadToFunctor _).mapIso (ComonadIso.mk f f_ε f_δ) = f := by
   ext
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (comonadToFunctor C).ReflectsIsomorphisms where
   reflects f _ := (ComonadIso.mk (asIso ((comonadToFunctor C).map f)) f.app_ε f.app_δ).isIso_hom
 
 variable {C}
 
-/-- An isomorphism of monads gives a natural isomorphism of the underlying functors.
--/
-@[simps (rhsMd := .default)]
+/-- An isomorphism of monads gives a natural isomorphism of the underlying functors. -/
+@[to_dual (attr := simps (rhsMd := .default))
+/-- An isomorphism of comonads gives a natural isomorphism of the underlying functors. -/]
 def MonadIso.toNatIso {M N : Monad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
   (monadToFunctor C).mapIso h
-
-/-- An isomorphism of comonads gives a natural isomorphism of the underlying functors.
--/
-@[simps (rhsMd := .default)]
-def ComonadIso.toNatIso {M N : Comonad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
-  (comonadToFunctor C).mapIso h
 
 variable (C)
 
 namespace Monad
 
 /-- The identity monad. -/
-@[simps!]
+@[to_dual (attr := simps!) /-- The identity comonad. -/]
 def id : Monad C where
   toFunctor := 𝟭 C
   η := 𝟙 (𝟭 C)
   μ := 𝟙 (𝟭 C)
 
+@[to_dual]
 instance : Inhabited (Monad C) :=
   ⟨Monad.id C⟩
-
-end Monad
-
-namespace Comonad
-
-set_option backward.defeqAttrib.useBackward true in
-/-- The identity comonad. -/
-@[simps!]
-def id : Comonad C where
-  toFunctor := 𝟭 _
-  ε := 𝟙 (𝟭 C)
-  δ := 𝟙 (𝟭 C)
-
-instance : Inhabited (Comonad C) :=
-  ⟨Comonad.id C⟩
-
-end Comonad
 
 open Iso CategoryTheory.Functor
 
 variable {C}
 
-namespace Monad
-
-set_option backward.defeqAttrib.useBackward true in
 /-- Transport a monad structure on a functor along an isomorphism of functors. -/
+@[to_dual
+/-- Transport a comonad structure on a functor along an isomorphism of functors. -/]
 def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C where
   toFunctor := F
   η := T.η ≫ i.hom
@@ -331,40 +274,12 @@ def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C wh
     rw [← T.μ.naturality]
     simp [T.assoc X]
 
-end Monad
-
-namespace Comonad
-
-/-- Transport a comonad structure on a functor along an isomorphism of functors. -/
-def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad C where
-  toFunctor := F
-  ε := i.inv ≫ T.ε
-  δ := i.inv ≫ T.δ ≫ (i.hom ◫ i.hom)
-  right_counit X := by
-    simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc]
-    slice_lhs 4 5 => rw [← F.map_comp]
-    simp only [hom_inv_id_app, Functor.map_id, id_comp, ← i.hom.naturality]
-    slice_lhs 2 3 => rw [T.right_counit]
-    simp
-  coassoc X := by
-    simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc,
-      NatTrans.naturality_assoc, Functor.comp_map, hom_inv_id_app_assoc,
-      NatIso.cancel_natIso_inv_left]
-    slice_lhs 3 4 => rw [← F.map_comp]
-    simp only [hom_inv_id_app, Functor.map_id, id_comp, assoc]
-    rw [← i.hom.naturality_assoc, ← T.coassoc_assoc]
-    simp only [NatTrans.naturality_assoc]
-    congr 3
-    simp only [← Functor.map_comp, i.hom.naturality]
-
-end Comonad
-
-namespace Monad
-
+@[to_dual]
 lemma map_unit_app (T : Monad C) (X : C) [IsIso T.μ] :
     T.map (T.η.app X) = T.η.app (T.obj X) := by
   simp [← cancel_mono (T.μ.app _)]
 
+@[to_dual isSplitEpi_iff_isIso_counit]
 lemma isSplitMono_iff_isIso_unit (T : Monad C) (X : C) [IsIso T.μ] :
     IsSplitMono (T.η.app X) ↔ IsIso (T.η.app X) := by
   refine ⟨fun _ ↦ ⟨retraction (T.η.app X), by simp, ?_⟩, fun _ ↦ inferInstance⟩
@@ -372,19 +287,5 @@ lemma isSplitMono_iff_isIso_unit (T : Monad C) (X : C) [IsIso T.μ] :
     map_comp, T.map_unit_app X, ← T.unit_naturality]
 
 end Monad
-
-namespace Comonad
-
-lemma map_counit_app (T : Comonad C) (X : C) [IsIso T.δ] :
-    T.map (T.ε.app X) = T.ε.app (T.obj X) := by
-  simp [← cancel_epi (T.δ.app _)]
-
-lemma isSplitEpi_iff_isIso_counit (T : Comonad C) (X : C) [IsIso T.δ] :
-    IsSplitEpi (T.ε.app X) ↔ IsIso (T.ε.app X) := by
-  refine ⟨fun _ ↦ ⟨section_ (T.ε.app X), ?_, by simp⟩, fun _ ↦ inferInstance⟩
-  rw [← map_id, ← show section_ (T.ε.app X) ≫ T.ε.app X = 𝟙 X from IsSplitEpi.id (T.ε.app X),
-    map_comp, T.map_counit_app X, T.counit_naturality]
-
-end Comonad
 
 end CategoryTheory
