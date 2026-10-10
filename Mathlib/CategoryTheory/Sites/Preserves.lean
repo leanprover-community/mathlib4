@@ -117,7 +117,7 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
     (by simp [← hy, ← comp_apply])
 
 variable [HasInitial C] [∀ i, Mono (c.inj i)]
-  (hd : Pairwise fun i j => IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
+  (hd : Pairwise' fun i j => IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
 
 include hd hF hI in
 /--
@@ -133,6 +133,7 @@ theorem firstMap_eq_secondMap :
   by_cases hi : i = j
   · rw [hi, Mono.right_cancellation _ _ pullback.condition]
   · have := preservesTerminal_of_isSheaf_for_empty F hF hI
+    rw [pairwise'_iff] at hd
     apply_fun (F.mapIso ((hd hi).isoPullback).op ≪≫ F.mapIso (terminalIsoIsTerminal
       (terminalOpOfInitial initialIsInitial)).symm ≪≫ (PreservesTerminal.iso F)).hom using
       injective_of_mono _

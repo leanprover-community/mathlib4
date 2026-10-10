@@ -191,7 +191,8 @@ def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
       not_measurable' := fun _ hi => ite_eq_right hi
       m_iUnion' := by
         intro g hg₁ hg₂
-        convert! v.m_iUnion (fun i => hf (hg₁ i)) fun i j hij => (hg₂ hij).preimage _
+        convert! v.m_iUnion (fun i => hf (hg₁ i))
+            fun i _ j _ hij => (pairwise'_apply hg₂ hij).preimage _
         · rw [ite_eq_left (hg₁ _)]
         · rw [Set.preimage_iUnion, ite_eq_left (MeasurableSet.iUnion hg₁)] }
   else 0

@@ -202,10 +202,10 @@ lemma disjoint_partialSups_right {f : ι → α} {i : ι} {x : α} :
 open scoped Function in -- required for scoped `on` notation
 /- Note this lemma requires a distributive lattice, so is not useful (or true) in situations such as
 submodules. -/
-theorem partialSups_disjoint_of_disjoint (f : ι → α) (h : Pairwise (Disjoint on f))
+theorem partialSups_disjoint_of_disjoint (f : ι → α) (h : Pairwise' (Disjoint on f))
     {i j : ι} (hij : i < j) :
     Disjoint (partialSups f i) (f j) :=
-  disjoint_partialSups_left.2 fun _ hk ↦ h (hk.trans_lt hij).ne
+  disjoint_partialSups_left.2 fun _ hk ↦ pairwise'_apply h (hk.trans_lt hij).ne
 
 end DistribLattice
 

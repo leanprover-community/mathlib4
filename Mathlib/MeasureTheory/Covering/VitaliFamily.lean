@@ -135,8 +135,8 @@ theorem covering_disjoint : h.index.PairwiseDisjoint h.covering :=
   h.exists_disjoint_covering_ae.choose_spec.2.1
 
 open scoped Function in -- required for scoped `on` notation
-theorem covering_disjoint_subtype : Pairwise (Disjoint on fun x : h.index => h.covering x) :=
-  (pairwise_subtype_iff_pairwise_set _ _).2 h.covering_disjoint
+theorem covering_disjoint_subtype : Pairwise' (Disjoint on fun x : h.index => h.covering x) :=
+  (pairwise'_subtype_iff_pairwise_set _ _).2 h.covering_disjoint
 
 theorem covering_mem {p : X × Set X} (hp : p ∈ h.index) : h.covering p ∈ f p.1 :=
   (h.exists_disjoint_covering_ae.choose_spec.2.2.1 p hp).2

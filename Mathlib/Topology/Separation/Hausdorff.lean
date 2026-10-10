@@ -80,28 +80,35 @@ section Separation
 /-- A T₂ space, also known as a Hausdorff space, is one in which for every
   `x ≠ y` there exists disjoint open sets around `x` and `y`. This is
   the most widely used of the separation axioms. -/
-@[mk_iff]
 class T2Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Every two points in a Hausdorff space admit disjoint open neighbourhoods. -/
-  t2 : Pairwise fun x y => ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v
+  t2 : Pairwise' fun x y => ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v
+
+theorem t2Space_iff (X : Type u) [TopologicalSpace X] : T2Space X ↔
+    (∀ ⦃x y : X⦄, x ≠ y → ∃ u v, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v) := by
+  constructor
+  · exact (fun p => pairwise'_apply p.t2)
+  · exact fun _ => ⟨by rwa [pairwise'_iff]⟩
 
 /-- Two different points can be separated by open sets. -/
 theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
     ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v :=
-  T2Space.t2 h
+  pairwise'_apply T2Space.t2 h
 
 -- todo: use this as a definition?
-theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise fun x y : X => Disjoint (𝓝 x) (𝓝 y) := by
+theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise' fun x y : X => Disjoint (𝓝 x) (𝓝 y) := by
+  rw [pairwise'_iff]
   refine (t2Space_iff X).trans (forall₃_congr fun x y _ => ?_)
   simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), ← exists_and_left,
     and_assoc, and_comm, and_left_comm]
 
 @[simp]
 theorem disjoint_nhds_nhds [T2Space X] {x y : X} : Disjoint (𝓝 x) (𝓝 y) ↔ x ≠ y :=
-  ⟨fun hd he => by simp [he, nhds_neBot.ne] at hd, (t2Space_iff_disjoint_nhds.mp ‹_› ·)⟩
+  ⟨fun hd he => by simp [he, nhds_neBot.ne] at hd, (pairwise'_apply
+    (t2Space_iff_disjoint_nhds.mp ‹_›) ·)⟩
 
-theorem pairwise_disjoint_nhds [T2Space X] : Pairwise (Disjoint on (𝓝 : X → Filter X)) := fun _ _ =>
-  disjoint_nhds_nhds.2
+theorem pairwise_disjoint_nhds [T2Space X] : Pairwise' (Disjoint on (𝓝 : X → Filter X)) :=
+  fun _ _ _ _ => disjoint_nhds_nhds.2
 
 protected theorem Set.pairwiseDisjoint_nhds [T2Space X] (s : Set X) : s.PairwiseDisjoint 𝓝 :=
   pairwise_disjoint_nhds.set_pairwise s
@@ -121,7 +128,7 @@ instance (priority := 100) T2Space.r1Space [T2Space X] : R1Space X :=
   ⟨fun x y ↦ (eq_or_ne x y).imp specializes_of_eq disjoint_nhds_nhds.2⟩
 
 theorem SeparationQuotient.t2Space_iff : T2Space (SeparationQuotient X) ↔ R1Space X := by
-  simp only [t2Space_iff_disjoint_nhds, Pairwise, surjective_mk.forall₂, ne_eq, mk_eq_mk,
+  simp only [t2Space_iff_disjoint_nhds, pairwise'_iff, surjective_mk.forall₂, ne_eq, mk_eq_mk,
     r1Space_iff_inseparable_or_disjoint_nhds, ← disjoint_comap_iff surjective_mk, comap_mk_nhds_mk,
     ← or_iff_not_imp_left]
 
@@ -129,7 +136,7 @@ instance SeparationQuotient.t2Space [R1Space X] : T2Space (SeparationQuotient X)
   t2Space_iff.2 ‹_›
 
 instance (priority := 80) [R1Space X] [T0Space X] : T2Space X :=
-  t2Space_iff_disjoint_nhds.2 fun _x _y hne ↦ disjoint_nhds_nhds_iff_not_inseparable.2 fun hxy ↦
+  t2Space_iff_disjoint_nhds.2 fun _x _ _y _ hne ↦ disjoint_nhds_nhds_iff_not_inseparable.2 fun hxy ↦
     hne hxy.eq
 
 theorem R1Space.t2Space_iff_t0Space [R1Space X] : T2Space X ↔ T0Space X := by
@@ -137,14 +144,14 @@ theorem R1Space.t2Space_iff_t0Space [R1Space X] : T2Space X ↔ T0Space X := by
 
 /-- A space is T₂ iff the neighbourhoods of distinct points generate the bottom filter. -/
 theorem t2_iff_nhds : T2Space X ↔ ∀ {x y : X}, NeBot (𝓝 x ⊓ 𝓝 y) → x = y := by
-  simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne, not_imp_comm, Pairwise]
+  simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne, not_imp_comm, pairwise'_iff]
 
 theorem eq_of_nhds_neBot [T2Space X] {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) : x = y :=
   t2_iff_nhds.mp ‹_› h
 
 theorem t2Space_iff_nhds :
-    T2Space X ↔ Pairwise fun x y : X => ∃ U ∈ 𝓝 x, ∃ V ∈ 𝓝 y, Disjoint U V := by
-  simp only [t2Space_iff_disjoint_nhds, Filter.disjoint_iff, Pairwise]
+    T2Space X ↔ Pairwise' fun x y : X => ∃ U ∈ 𝓝 x, ∃ V ∈ 𝓝 y, Disjoint U V := by
+  simp only [t2Space_iff_disjoint_nhds, Filter.disjoint_iff, pairwise'_iff]
 
 theorem t2_separation_nhds [T2Space X] {x y : X} (h : x ≠ y) :
     ∃ u v, u ∈ 𝓝 x ∧ v ∈ 𝓝 y ∧ Disjoint u v :=
@@ -162,7 +169,7 @@ theorem t2_iff_ultrafilter :
 
 theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonal X) := by
   simp only [t2Space_iff_disjoint_nhds, ← isOpen_compl_iff, isOpen_iff_mem_nhds, Prod.forall,
-    nhds_prod_eq, compl_diagonal_mem_prod, mem_compl_iff, mem_diagonal_iff, Pairwise]
+    nhds_prod_eq, compl_diagonal_mem_prod, mem_compl_iff, mem_diagonal_iff, pairwise'_iff]
 
 @[closedness ., grind .]
 theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
@@ -343,8 +350,8 @@ Hausdorff spaces:
 
 -- see Note [lower instance priority]
 instance (priority := 100) DiscreteTopology.toT2Space
-    [DiscreteTopology X] : T2Space X :=
-  ⟨fun x y h => ⟨{x}, {y}, isOpen_discrete _, isOpen_discrete _, rfl, rfl, disjoint_singleton.2 h⟩⟩
+    [DiscreteTopology X] : T2Space X := ⟨fun x _ y _ h =>
+  ⟨{x}, {y}, isOpen_discrete _, isOpen_discrete _, rfl, rfl, disjoint_singleton.2 h⟩⟩
 
 theorem separated_by_continuous [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) {x y : X} (h : f x ≠ f y) :
@@ -368,7 +375,7 @@ instance Prod.t2Space [T2Space X] [TopologicalSpace Y] [T2Space Y] : T2Space (X 
 domain. -/
 theorem T2Space.of_injective_continuous [TopologicalSpace Y] [T2Space Y] {f : X → Y}
     (hinj : Injective f) (hc : Continuous f) : T2Space X :=
-  ⟨fun _ _ h => separated_by_continuous hc (hinj.ne h)⟩
+  ⟨fun _ _ _ _ h => separated_by_continuous hc (hinj.ne h)⟩
 
 /-- If the codomain of a topological embedding is a Hausdorff space, then so is its domain.
 See also `T2Space.of_continuous_injective`. -/
@@ -384,7 +391,7 @@ instance ULift.instT2Space [T2Space X] : T2Space (ULift X) :=
 
 instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
     T2Space (X ⊕ Y) := by
-  constructor
+  rw [t2Space_iff]
   rintro (x | x) (y | y) h
   · exact separated_by_isOpenEmbedding .inl <| ne_of_apply_ne _ h
   · exact separated_by_continuous continuous_isLeft <| by simp
@@ -397,7 +404,7 @@ instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
 
 instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
     T2Space (Σ i, X i) := by
-  constructor
+  rw [t2Space_iff]
   rintro ⟨i, x⟩ ⟨j, y⟩ ne
   rcases eq_or_ne i j with (rfl | h)
   · replace ne : x ≠ y := ne_of_apply_ne _ ne

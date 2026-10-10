@@ -76,8 +76,9 @@ lemma accumulate_zero_nat (s : ℕ → Set β) : accumulate s 0 = s 0 := by
   simp [accumulate_def]
 
 open Function in
-theorem disjoint_accumulate [Preorder α] (hs : Pairwise (Disjoint on s)) {i j : α} (hij : i < j) :
+theorem disjoint_accumulate [Preorder α] (hs : Pairwise' (Disjoint on s)) {i j : α} (hij : i < j) :
     Disjoint (accumulate s i) (s j) := by
+  rw [pairwise'_iff] at hs
   apply disjoint_left.2 (fun x hx ↦ ?_)
   simp only [accumulate, mem_iUnion, exists_prop] at hx
   rcases hx with ⟨k, hk, hx⟩

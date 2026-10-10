@@ -155,8 +155,9 @@ theorem measure_biUnion_finset {s : Finset ι} {f : ι → Set α} (hd : Pairwis
 the sum of the measures of the sets. -/
 theorem tsum_meas_le_meas_iUnion_of_disjoint₀ (μ : Measure α)
     {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
-    (As_disj : Pairwise (AEDisjoint μ on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
+    (As_disj : Pairwise' (AEDisjoint μ on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
   rw [ENNReal.tsum_eq_iSup_sum, iSup_le_iff]
+  rw [pairwise'_iff] at As_disj
   intro s
   simp only [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
   gcongr
@@ -166,9 +167,10 @@ theorem tsum_meas_le_meas_iUnion_of_disjoint₀ (μ : Measure α)
 the measures of the sets. -/
 theorem tsum_meas_le_meas_iUnion_of_disjoint (μ : Measure α)
     {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
-    (As_disj : Pairwise (Disjoint on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) :=
-  tsum_meas_le_meas_iUnion_of_disjoint₀ μ (fun i ↦ (As_mble i).nullMeasurableSet)
-    (fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))
+    (As_disj : Pairwise' (Disjoint on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
+  rw [pairwise'_iff] at As_disj
+  exact tsum_meas_le_meas_iUnion_of_disjoint₀ μ (fun i ↦ (As_mble i).nullMeasurableSet)
+    (fun _ _ _ _ h ↦ Disjoint.aedisjoint (As_disj h))
 
 /-- If `s` is a countable set, then the measure of its preimage can be found as the sum of measures
 of the fibers `f ⁻¹' {y}`. -/
@@ -397,8 +399,9 @@ theorem sum_measure_le_measure_univ {s : Finset ι} {t : ι → Set α}
   exact measure_mono (subset_univ _)
 
 theorem tsum_measure_le_measure_univ {s : ι → Set α} (hs : ∀ i, NullMeasurableSet (s i) μ)
-    (H : Pairwise (AEDisjoint μ on s)) : ∑' i, μ (s i) ≤ μ (univ : Set α) := by
+    (H : Pairwise' (AEDisjoint μ on s)) : ∑' i, μ (s i) ≤ μ (univ : Set α) := by
   rw [ENNReal.tsum_eq_iSup_sum]
+  rw [pairwise'_iff] at H
   exact iSup_le fun s =>
     sum_measure_le_measure_univ (fun i _hi => hs i) fun i _hi j _hj hij => H hij
 
@@ -409,6 +412,7 @@ theorem exists_nonempty_inter_of_measure_univ_lt_tsum_measure
     (H : μ (univ : Set α) < ∑' i, μ (s i)) : ∃ i j, i ≠ j ∧ (s i ∩ s j).Nonempty := by
   contrapose! H
   apply tsum_measure_le_measure_univ hs
+  rw [pairwise'_iff]
   intro i j hij
   exact (disjoint_iff_inter_eq_empty.mpr (H i j hij)).aedisjoint
 

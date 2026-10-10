@@ -333,9 +333,9 @@ open scoped Function -- required for scoped `on` notation
 
 /-- The non-constructive constructor for `IndexedPartition`. -/
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
-    (dis : Pairwise (Disjoint on s)) (nonempty : ∀ i, (s i).Nonempty)
+    (dis : Pairwise' (Disjoint on s)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s where
-  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis h).le_bot ⟨hxi, hxj⟩
+  eq_of_mem {_x _ _} hxi hxj := by_contradiction fun h => (pairwise'_apply dis h).le_bot ⟨hxi, hxj⟩
   some i := (nonempty i).some
   some_mem i := (nonempty i).choose_spec
   index x := (ex x).choose
@@ -369,8 +369,8 @@ theorem iUnion : ⋃ i, s i = univ := by
   simp [hs.exists_mem x]
 
 include hs in
-theorem disjoint : Pairwise (Disjoint on s) := fun {_i _j} h =>
-  disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)
+theorem disjoint : Pairwise' (Disjoint on s) := fun {_i _ _j _} h =>
+  disjoint_left.mpr fun {_x} hxi hxj  => h (hs.eq_of_mem hxi hxj)
 
 theorem mem_iff_index_eq {x i} : x ∈ s i ↔ hs.index x = i :=
   ⟨fun hxi => (hs.eq_of_mem hxi (hs.mem_index x)).symm, fun h => h ▸ hs.mem_index _⟩

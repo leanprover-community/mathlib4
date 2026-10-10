@@ -165,8 +165,8 @@ lemma measurableSet_countablyGeneratedAtom (p : ℕ → Prop) :
     (fun _ ↦ (measurableSet_natGeneratingSequence n).compl)
 
 lemma disjoint_countablyGeneratedAtom :
-    Pairwise (Function.onFun Disjoint (countablyGeneratedAtom α)) := by
-  intro p q hpq s hsp hsq
+    Pairwise' (Function.onFun Disjoint (countablyGeneratedAtom α)) := by
+  intro p _ q _ hpq s hsp hsq
   simp only [bot_eq_empty, subset_empty_iff] at hsp hsq ⊢
   ext x
   simp only [mem_empty_iff_false, iff_false]
@@ -219,7 +219,7 @@ lemma exists_eq_iUnion_countablyGeneratedAtom {s : Set α} (hs : MeasurableSet s
     · rintro ⟨p, hpq, hpx⟩ p' hqp' hx_mem
       have hpp' : p ≠ p' := by grind
       have h_disj : Disjoint (countablyGeneratedAtom α p) (countablyGeneratedAtom α p') :=
-        disjoint_countablyGeneratedAtom hpp'
+        pairwise'_apply disjoint_countablyGeneratedAtom hpp'
       grind
   · intro t ht h
     choose q hq using h
@@ -255,7 +255,7 @@ lemma measurableAtom_eq_countablyGeneratedAtom_natGeneratingSequence (x : α) :
   suffices p = (x ∈ A ·) by rwa [← this]
   by_contra! hp
   have h_disj : Disjoint (countablyGeneratedAtom α p) (countablyGeneratedAtom α (x ∈ A ·)) :=
-    disjoint_countablyGeneratedAtom hp
+    pairwise'_apply disjoint_countablyGeneratedAtom hp
   have hx_mem : x ∈ countablyGeneratedAtom α (x ∈ A ·) :=
     mem_countablyGeneratedAtom_natGeneratingSequence x
   grind

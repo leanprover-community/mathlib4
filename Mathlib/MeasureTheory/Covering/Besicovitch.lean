@@ -127,7 +127,7 @@ structure Besicovitch.SatelliteConfig (α : Type*) [MetricSpace α] (N : ℕ) (�
   /-- Radii of the balls -/
   r : Fin N.succ → ℝ
   rpos : ∀ i, 0 < r i
-  h : Pairwise fun i j =>
+  h : Pairwise' fun i j =>
     r i ≤ dist (c i) (c j) ∧ r j ≤ τ * r i ∨ r j ≤ dist (c j) (c i) ∧ r i ≤ τ * r j
   hlast : ∀ i < last N, r i ≤ dist (c i) (c (last N)) ∧ r (last N) ≤ τ * r i
   inter : ∀ i < last N, dist (c i) (c (last N)) ≤ r i + r (last N)
@@ -161,7 +161,7 @@ instance Besicovitch.SatelliteConfig.instInhabited {α : Type*} {τ : ℝ}
   ⟨{  c := default
       r := fun _ => 1
       rpos := fun _ => zero_lt_one
-      h := fun i j hij => (hij (Subsingleton.elim (α := Fin 1) i j)).elim
+      h := fun i _ j _ hij => (hij (Subsingleton.elim (α := Fin 1) i j)).elim
       hlast := fun i hi => by
         rw [Subsingleton.elim (α := Fin 1) i (last 0)] at hi; exact (lt_irrefl _ hi).elim
       inter := fun i hi => by
@@ -422,6 +422,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       r := fun k => p.r (p.index (G k))
       rpos := fun k => p.rpos (p.index (G k))
       h := by
+        rw [pairwise'_iff]
         intro a b a_ne_b
         wlog G_le : G a ≤ G b generalizing a b
         · exact (this a_ne_b.symm (le_of_not_ge G_le)).symm
@@ -966,7 +967,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         _ = μ (⋃ x : t0, closedBall x (r0 x)) := by
           have : Encodable t0 := t0_count.toEncodable
           rw [measure_iUnion]
-          · exact (pairwise_subtype_iff_pairwise_set _ _).2 t0_disj
+          · exact (pairwise'_subtype_iff_pairwise_set _ _).2 t0_disj
           · exact fun i => measurableSet_closedBall
         _ ≤ μ u := by
           apply measure_mono
@@ -988,7 +989,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         _ = μ (⋃ x : S i, closedBall x (r1 x)) := by
           have : Encodable (S i) := (S_count i).toEncodable
           rw [measure_iUnion]
-          · exact (pairwise_subtype_iff_pairwise_set _ _).2 (S_disj i)
+          · exact (pairwise'_subtype_iff_pairwise_set _ _).2 (S_disj i)
           · exact fun i => measurableSet_closedBall
         _ ≤ μ v := by
           apply measure_mono

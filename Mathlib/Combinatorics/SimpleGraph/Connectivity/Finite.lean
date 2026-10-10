@@ -76,7 +76,8 @@ lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ 
     (c' : ConnectedComponent G') [Fintype c'.supp]
     [DecidablePred fun c : G.ConnectedComponent ↦ c.supp ⊆ c'.supp] :
     .disjiUnion {c : ConnectedComponent G | c.supp ⊆ c'.supp} (fun c ↦ c.supp.toFinset)
-      (fun x _ y _ hxy ↦ by simpa using pairwise_disjoint_supp_connectedComponent _ hxy) =
+      (fun x _ y _ hxy ↦ by simpa using
+        (pairwise'_apply (pairwise_disjoint_supp_connectedComponent _)) hxy) =
       c'.supp.toFinset :=
   Finset.coe_injective <| by simpa using ConnectedComponent.biUnion_supp_eq_supp h _
 
@@ -108,7 +109,8 @@ lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Na
   simp only [← (set_fintype_card_eq_univ_iff _).mpr G.iUnion_connectedComponentSupp,
     ← Set.toFinset_card, Set.toFinset_iUnion ConnectedComponent.supp]
   rw [Finset.card_biUnion
-    (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]
+    (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise'_apply
+      (pairwise_disjoint_supp_connectedComponent _) hxy))]
   simp_rw [← Set.ncard_eq_toFinset_card', ← Finset.coe_filter_univ, Set.ncard_coe_finset]
   exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ x.supp.ncard)).symm
 

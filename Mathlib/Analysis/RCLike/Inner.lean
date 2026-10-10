@@ -136,14 +136,14 @@ lemma inner_eq_wInner_one (f g : PiLp 2 fun _i : ι ↦ 𝕜) :
   simp [PiLp.inner_apply, wInner]
 
 lemma linearIndependent_of_ne_zero_of_wInner_one_eq_zero {f : κ → ι → 𝕜} (hf : ∀ k, f k ≠ 0)
-    (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫_[𝕜] = 0) : LinearIndependent 𝕜 f := by
+    (hinner : Pairwise' fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫_[𝕜] = 0) : LinearIndependent 𝕜 f := by
   simp_rw [wInner_one_eq_inner] at hinner
   have := linearIndependent_of_ne_zero_of_inner_eq_zero ?_ hinner
   exacts [(WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).symm.toLinearMap.linearIndependent_iff_of_injOn
     (toLp_injective 2).injOn |>.1 this, fun i ↦ (toLp_eq_zero 2).ne.2 (hf i)]
 
 lemma linearIndependent_of_ne_zero_of_wInner_cWeight_eq_zero {f : κ → ι → 𝕜} (hf : ∀ k, f k ≠ 0)
-    (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫ₙ_[𝕜] = 0) : LinearIndependent 𝕜 f := by
+    (hinner : Pairwise' fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫ₙ_[𝕜] = 0) : LinearIndependent 𝕜 f := by
   cases isEmpty_or_nonempty ι
   · have : IsEmpty κ := ⟨fun k ↦ hf k <| Subsingleton.elim ..⟩
     exact linearIndependent_empty_type

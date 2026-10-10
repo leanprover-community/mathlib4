@@ -60,8 +60,8 @@ theorem disjoint_sUnion_right {s : Set α} {S : Set (Set α)} :
     Disjoint s (⋃₀ S) ↔ ∀ t ∈ S, Disjoint s t :=
   disjoint_sSup_iff
 
-lemma biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ {ι : Type*} {Es : ι → Set α}
-    (Es_union : ⋃ i, Es i = univ) (Es_disj : Pairwise fun i j ↦ Disjoint (Es i) (Es j))
+lemma biUnion_compl_eq_of_pairwise'_disjoint_of_iUnion_eq_univ {ι : Type*} {Es : ι → Set α}
+    (Es_union : ⋃ i, Es i = univ) (Es_disj : Pairwise' fun i j ↦ Disjoint (Es i) (Es j))
     (I : Set ι) :
     (⋃ i ∈ I, Es i)ᶜ = ⋃ i ∈ Iᶜ, Es i := by
   ext x
@@ -71,7 +71,8 @@ lemma biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ {ι : Type*} {Es :
     intro x_in_U
     simp only [mem_iUnion, exists_prop] at x_in_U
     obtain ⟨j, j_in_J, hjx⟩ := x_in_U
-    rwa [show i = j by by_contra i_ne_j; exact Disjoint.ne_of_mem (Es_disj i_ne_j) hix hjx rfl]
+    rwa [show i = j by by_contra i_ne_j; exact Disjoint.ne_of_mem (Es_disj
+        (Set.mem_univ i) (Set.mem_univ j) i_ne_j) hix hjx rfl]
   have obs' : ∀ (J : Set ι), x ∈ (⋃ j ∈ J, Es j)ᶜ ↔ i ∉ J :=
     fun J ↦ by simpa only [mem_compl_iff, not_iff_not] using obs J
   rw [obs, obs', mem_compl_iff]
@@ -95,17 +96,17 @@ theorem sigmaToiUnion_surjective : Surjective (sigmaToiUnion t)
     let ⟨a, hb⟩ := this
     ⟨⟨a, b, hb⟩, rfl⟩
 
-theorem sigmaToiUnion_injective (h : Pairwise (Disjoint on t)) :
+theorem sigmaToiUnion_injective (h : Pairwise' (Disjoint on t)) :
     Injective (sigmaToiUnion t)
   | ⟨a₁, b₁, h₁⟩, ⟨a₂, b₂, h₂⟩, eq =>
     have b_eq : b₁ = b₂ := congr_arg Subtype.val eq
     have a_eq : a₁ = a₂ :=
       by_contradiction fun ne =>
         have : b₁ ∈ t a₁ ∩ t a₂ := ⟨h₁, b_eq.symm ▸ h₂⟩
-        (h ne).le_bot this
+        (h (Set.mem_univ a₁) (Set.mem_univ a₂) ne).le_bot this
     Sigma.eq a_eq <| Subtype.ext <| by subst b_eq; subst a_eq; rfl
 
-theorem sigmaToiUnion_bijective (h : Pairwise (Disjoint on t)) :
+theorem sigmaToiUnion_bijective (h : Pairwise' (Disjoint on t)) :
     Bijective (sigmaToiUnion t) :=
   ⟨sigmaToiUnion_injective t h, sigmaToiUnion_surjective t⟩
 
@@ -119,19 +120,19 @@ noncomputable def sigmaEquiv (s : α → Set β) (hs : ∀ b, ∃! i, b ∈ s i)
 
 /-- Equivalence between a disjoint union and a dependent sum. -/
 noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
-    (h : Pairwise (Disjoint on t)) :
+    (h : Pairwise' (Disjoint on t)) :
     (⋃ i, t i) ≃ Σ i, t i :=
   (Equiv.ofBijective _ <| sigmaToiUnion_bijective t h).symm
 
 @[simp]
 lemma coe_unionEqSigmaOfDisjoint_symm_apply {α β : Type*} {t : α → Set β}
-    (h : Pairwise (Disjoint on t)) (x : (i : α) × t i) :
+    (h : Pairwise' (Disjoint on t)) (x : (i : α) × t i) :
     ((Set.unionEqSigmaOfDisjoint h).symm x : β) = x.2 := by
   rfl
 
 @[simp]
 lemma coe_snd_unionEqSigmaOfDisjoint {α β : Type*} {t : α → Set β}
-    (h : Pairwise (Disjoint on t)) (x : ⋃ (i : α), t i) :
+    (h : Pairwise' (Disjoint on t)) (x : ⋃ (i : α), t i) :
     ((Set.unionEqSigmaOfDisjoint h x).snd : β) = x := by
   conv => right; rw [← unionEqSigmaOfDisjoint h |>.symm_apply_apply x]
   rfl

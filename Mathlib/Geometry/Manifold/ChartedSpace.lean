@@ -306,7 +306,7 @@ theorem chartAt_comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalS
 /-- A charted space over a T1 space is T1. Note that this is *not* true for T2 (for instance for
 the real line with a double origin). -/
 theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
-  apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
+  apply t1Space_iff_exists_open.2 (fun x _ y _ hxy ↦ ?_)
   by_cases hy : y ∈ (chartAt H x).source
   · refine ⟨(chartAt H x).source ∩ (chartAt H x)⁻¹' ({chartAt H x y}ᶜ), ?_, ?_, by simp⟩
     · exact OpenPartialHomeomorph.isOpen_inter_preimage _ isOpen_compl_singleton
