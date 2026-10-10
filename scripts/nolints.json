@@ -608,7 +608,6 @@
  ["docBlame", "RingQuot.preLift"],
  ["docBlame", "RingQuot.preLiftAlgHom"],
  ["docBlame", "RingQuot.toQuot"],
- ["docBlame", "Shrink.rec"],
  ["docBlame", "SlashAction.map"],
  ["docBlame", "StarAlgHom.restrictScalars"],
  ["docBlame", "StateT.callCC"],
