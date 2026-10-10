@@ -304,18 +304,15 @@ end CompleteLattice
 
 end ClosureOperator
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Conjugating `ClosureOperators` on `α` and on `β` by a fixed isomorphism
 `e : α ≃o β` gives an equivalence `ClosureOperator α ≃ ClosureOperator β`. -/
 @[simps apply symm_apply]
 def OrderIso.equivClosureOperator {α β} [Preorder α] [Preorder β] (e : α ≃o β) :
     ClosureOperator α ≃ ClosureOperator β where
-  toFun     c := c.conjBy e
-  invFun    c := c.conjBy e.symm
-  left_inv  c := Eq.trans (c.conjBy_trans _ _).symm
-                 <| Eq.trans (congrArg _ e.self_trans_symm) c.conjBy_refl
-  right_inv c := Eq.trans (c.conjBy_trans _ _).symm
-                 <| Eq.trans (congrArg _ e.symm_trans_self) c.conjBy_refl
+  toFun c := c.conjBy e
+  invFun c := c.conjBy e.symm
+  left_inv c := (c.conjBy_trans ..).symm.trans ((congrArg _ e.self_trans_symm).trans c.conjBy_refl)
+  right_inv c := (c.conjBy_trans ..).symm.trans ((congrArg _ e.symm_trans_self).trans c.conjBy_refl)
 
 /-! ### Lower adjoint -/
 
