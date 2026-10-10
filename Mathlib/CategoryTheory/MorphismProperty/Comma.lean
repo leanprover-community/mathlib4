@@ -148,8 +148,13 @@ def _root_.CategoryTheory.ObjectProperty.toMorphismProperty (W : ObjectProperty 
 lemma _root_.CategoryTheory.ObjectProperty.toMorphismProperty_iff {W : ObjectProperty (Arrow T)}
     {X Y : T} (f : X ⟶ Y) : W.toMorphismProperty f ↔ W (Arrow.mk f) := .rfl
 
+instance _root_.CategoryTheory.ObjectProperty.toMorphismProperty_respectsIso
+    (W : ObjectProperty (Arrow T)) [W.IsClosedUnderIsomorphisms] :
+    W.toMorphismProperty.RespectsIso :=
+  RespectsIso.of_respects_arrow_iso _ (fun _ _ ↦ ObjectProperty.IsClosedUnderIsomorphisms.of_iso)
+
 lemma respectsIso_iff : W.RespectsIso ↔ W.arrowObj.IsClosedUnderIsomorphisms :=
-  ⟨fun _ ↦ inferInstance, fun h ↦ RespectsIso.of_respects_arrow_iso _ (fun _ _ ↦ h.of_iso)⟩
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstanceAs W.arrowObj.toMorphismProperty.RespectsIso⟩
 
 variable (T) in
 /-- There is an equivalence between morphism properties on `T` and object properties
