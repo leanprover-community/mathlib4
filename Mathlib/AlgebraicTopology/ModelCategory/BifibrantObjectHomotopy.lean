@@ -174,7 +174,8 @@ lemma HoCat.homEquivLeft_apply (f : X ⟶ Y) :
 
 @[simp]
 lemma HoCat.homEquivLeft_symm_apply (f : X ⟶ Y) :
-    HoCat.homEquivRight.symm (toHoCat.map (homMk f)) = .mk f := rfl
+    HoCat.homEquivLeft.symm (toHoCat.map (homMk f)) = .mk f := by
+  rw [Equiv.symm_apply_eq, homEquivLeft_apply]
 
 end
 
