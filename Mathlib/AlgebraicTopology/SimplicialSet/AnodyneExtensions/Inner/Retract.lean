@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Subfunctor.Retract
 /-!
 # Inner horn inclusions as retracts of pushout-products
 
-An inner horn inclusion `Λ[n, i].ι` is a retract of `(Λ[2, 1] ⊔ Λ[n, i]).ι`.
+An inner horn inclusion `Λ[n, i].ι` is a retract of `(Λ[2, 1].unionProd Λ[n, i]).ι`.
 
 ## References
 
@@ -29,11 +29,13 @@ namespace SSet
 
 open CategoryTheory Simplicial MonoidalCategory CartesianMonoidalCategory Functor
 
-private def innerHornRetract.s₀ {n : ℕ} (i : Fin (n + 1)) : Fin (n + 1) →o Fin 3 where
+/-- The first coordinate of the underlying section on vertices. -/
+def innerHornRetract.s₀ {n : ℕ} (i : Fin (n + 1)) : Fin (n + 1) →o Fin 3 where
   toFun j := if j < i then 0 else if j = i then 1 else 2
   monotone' _ _ _ := by grind
 
-private def innerHornRetract.r₀ {n : ℕ} (i : Fin (n + 1)) :
+/-- The underlying retraction on vertices. -/
+def innerHornRetract.r₀ {n : ℕ} (i : Fin (n + 1)) :
     Fin 3 × Fin (n + 1) →o Fin (n + 1) where
   toFun := fun ⟨k, j⟩ ↦ if (j < i ∧ k = 0) ∨ (i < j ∧ k = 2) then j else i
   monotone' := by
@@ -42,8 +44,7 @@ private def innerHornRetract.r₀ {n : ℕ} (i : Fin (n + 1)) :
 
 open innerHornRetract in
 set_option backward.isDefEq.respectTransparency false in
-/-- An inner horn inclusion `Λ[n, i].ι` is a retract of `(Λ[2, 1] ⊔ Λ[n, i]).ι` -/
-@[no_expose]
+/-- An inner horn inclusion `Λ[n, i].ι` is a retract of `(Λ[2, 1].unionProd Λ[n, i]).ι` -/
 noncomputable def innerHornRetract {n : ℕ} (i : Fin (n + 1))
     (h0 : 0 < i) (hn : i < Fin.last n) :
     RetractArrow Λ[n, i].ι (Λ[2, 1].unionProd Λ[n, i]).ι := by
