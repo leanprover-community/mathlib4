@@ -61,7 +61,6 @@ end FloorSemiring
 variable {α β γ : Type*} [Ring α] [LinearOrder α] [FloorRing α]
 
 section
-variable [IsStrictOrderedRing α]
 -- TODO: move to `Mathlib/Order/Filter/AtTopBot/Floor.lean`
 
 theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
@@ -92,15 +91,42 @@ theorem continuousOn_ceil (n : ℤ) :
 
 section OrderClosedTopology
 
-variable [IsStrictOrderedRing α] [OrderClosedTopology α]
+variable [OrderClosedTopology α]
 
-omit [IsStrictOrderedRing α] in
 theorem tendsto_floor_right_pure_floor (x : α) : Tendsto (floor : α → ℤ) (𝓝[≥] x) (pure ⌊x⌋) :=
   tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsGE <| lt_floor_add_one x) fun _y hy =>
     floor_eq_on_Ico _ _ ⟨(floor_le x).trans hy.1, hy.2⟩
 
 theorem tendsto_floor_right_pure (n : ℤ) : Tendsto (floor : α → ℤ) (𝓝[≥] n) (pure n) := by
   simpa only [floor_intCast] using tendsto_floor_right_pure_floor (n : α)
+
+theorem tendsto_ceil_right_pure_floor_add_one (x : α) :
+    Tendsto (ceil : α → ℤ) (𝓝[>] x) (pure (⌊x⌋ + 1)) :=
+  have : ↑(⌊x⌋ + 1) - 1 ≤ x := by rw [cast_add, cast_one, add_sub_cancel_right]; exact floor_le _
+  tendsto_pure.2 <| mem_of_superset (Ioc_mem_nhdsGT <| lt_succ_floor _) fun _y hy =>
+    ceil_eq_on_Ioc _ _ ⟨this.trans_lt hy.1, hy.2⟩
+
+theorem tendsto_ceil_right_pure_add_one (n : ℤ) :
+    Tendsto (ceil : α → ℤ) (𝓝[>] n) (pure (n + 1)) := by
+  simpa only [floor_intCast] using tendsto_ceil_right_pure_floor_add_one (n : α)
+
+theorem tendsto_floor_right (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝[≥] n) :=
+  ((tendsto_pure_pure _ _).comp (tendsto_floor_right_pure n)).mono_right <|
+    pure_le_nhdsWithin le_rfl
+
+theorem tendsto_floor_right' (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝 n) :=
+  (tendsto_floor_right n).mono_right inf_le_left
+
+theorem tendsto_ceil_right (n : ℤ) :
+    Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝[≥] (n + 1)) :=
+  ((tendsto_pure_pure _ _).comp (tendsto_ceil_right_pure_add_one n)).mono_right <| by
+    rw [← @cast_one α, ← cast_add]; exact pure_le_nhdsWithin le_rfl
+
+theorem tendsto_ceil_right' (n : ℤ) :
+    Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝 (n + 1)) :=
+  (tendsto_ceil_right n).mono_right inf_le_left
+
+variable [IsOrderedAddMonoid α]
 
 theorem tendsto_ceil_left_pure_ceil (x : α) : Tendsto (ceil : α → ℤ) (𝓝[≤] x) (pure ⌈x⌉) :=
   tendsto_pure.2 <| mem_of_superset
@@ -121,24 +147,6 @@ theorem tendsto_floor_left_pure_sub_one (n : ℤ) :
     Tendsto (floor : α → ℤ) (𝓝[<] n) (pure (n - 1)) := by
   simpa only [ceil_intCast] using tendsto_floor_left_pure_ceil_sub_one (n : α)
 
-omit [IsStrictOrderedRing α] in
-theorem tendsto_ceil_right_pure_floor_add_one (x : α) :
-    Tendsto (ceil : α → ℤ) (𝓝[>] x) (pure (⌊x⌋ + 1)) :=
-  have : ↑(⌊x⌋ + 1) - 1 ≤ x := by rw [cast_add, cast_one, add_sub_cancel_right]; exact floor_le _
-  tendsto_pure.2 <| mem_of_superset (Ioc_mem_nhdsGT <| lt_succ_floor _) fun _y hy =>
-    ceil_eq_on_Ioc _ _ ⟨this.trans_lt hy.1, hy.2⟩
-
-theorem tendsto_ceil_right_pure_add_one (n : ℤ) :
-    Tendsto (ceil : α → ℤ) (𝓝[>] n) (pure (n + 1)) := by
-  simpa only [floor_intCast] using tendsto_ceil_right_pure_floor_add_one (n : α)
-
-theorem tendsto_floor_right (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝[≥] n) :=
-  ((tendsto_pure_pure _ _).comp (tendsto_floor_right_pure n)).mono_right <|
-    pure_le_nhdsWithin le_rfl
-
-theorem tendsto_floor_right' (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝 n) :=
-  (tendsto_floor_right n).mono_right inf_le_left
-
 theorem tendsto_ceil_left (n : ℤ) : Tendsto (fun x => ceil x : α → α) (𝓝[≤] n) (𝓝[≤] n) :=
   ((tendsto_pure_pure _ _).comp (tendsto_ceil_left_pure n)).mono_right <|
     pure_le_nhdsWithin le_rfl
@@ -152,18 +160,9 @@ theorem tendsto_floor_left (n : ℤ) :
   ((tendsto_pure_pure _ _).comp (tendsto_floor_left_pure_sub_one n)).mono_right <| by
     rw [← @cast_one α, ← cast_sub]; exact pure_le_nhdsWithin le_rfl
 
-theorem tendsto_ceil_right (n : ℤ) :
-    Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝[≥] (n + 1)) :=
-  ((tendsto_pure_pure _ _).comp (tendsto_ceil_right_pure_add_one n)).mono_right <| by
-    rw [← @cast_one α, ← cast_add]; exact pure_le_nhdsWithin le_rfl
-
 theorem tendsto_floor_left' (n : ℤ) :
     Tendsto (fun x => floor x : α → α) (𝓝[<] n) (𝓝 (n - 1)) :=
   (tendsto_floor_left n).mono_right inf_le_left
-
-theorem tendsto_ceil_right' (n : ℤ) :
-    Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝 (n + 1)) :=
-  (tendsto_ceil_right n).mono_right inf_le_left
 
 end OrderClosedTopology
 
@@ -176,7 +175,11 @@ theorem continuousAt_fract [OrderClosedTopology α] [IsTopologicalAddGroup α]
   (continuousOn_fract ⌊x⌋).continuousAt <|
     Ico_mem_nhds ((floor_le _).lt_of_ne h.symm) (lt_floor_add_one _)
 
-variable [IsStrictOrderedRing α]
+theorem tendsto_fract_right' [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
+    Tendsto (fract : α → α) (𝓝[≥] n) (𝓝 0) :=
+  sub_self (n : α) ▸ (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).sub (tendsto_floor_right' n)
+
+variable [IsOrderedAddMonoid α]
 
 theorem tendsto_fract_left' [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝 1) := by
@@ -188,10 +191,6 @@ theorem tendsto_fract_left [OrderClosedTopology α] [IsTopologicalAddGroup α] (
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝[<] 1) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (tendsto_fract_left' _)
     (Eventually.of_forall fract_lt_one)
-
-theorem tendsto_fract_right' [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
-    Tendsto (fract : α → α) (𝓝[≥] n) (𝓝 0) :=
-  sub_self (n : α) ▸ (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).sub (tendsto_floor_right' n)
 
 theorem tendsto_fract_right [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[≥] n) (𝓝[≥] 0) :=
