@@ -183,7 +183,7 @@ theorem eLpNorm_const_mul_ennreal_of_pos {f : α → ℝ≥0∞} {c : ℝ≥0∞
   fact that `∞ * f` is ae strongly measurable in our context. -/
   have : (fun x ↦ ∞ * f x) = (fun x ↦ ∞ * (∞ * f x)) := by simp [← mul_assoc]
   rw [this, eLpNorm_const_mul_ennreal h'f, ENNReal.top_mul]
-  contrapose! hf
+  contrapose hf
   rw [eLpNorm_eq_zero_iff hp.ne'] at hf
   apply h'f.congr
   filter_upwards [hf] with x hx
