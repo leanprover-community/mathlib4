@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
+
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
@@ -282,15 +283,15 @@ def desc.multicofork :
       fin_cases x
       · simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 1 3 (by simp)).hom,
           ← Category.assoc]
-        convert! h₁₃ <;> decide
+        convert h₁₃ <;> decide
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 1 2 (by simp)).hom,
           ← Category.assoc]
-        convert! h₁₂ <;> decide
+        convert h₁₂ <;> decide
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 0 1 (by simp)).hom,
           ← Category.assoc]
-        convert! h₂₃ <;> decide)
+        convert h₂₃ <;> decide)
 
 @[simp, reassoc]
 lemma desc.multicofork_π_zero :
@@ -370,15 +371,15 @@ def desc.multicofork :
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 2 3 (by simp)).hom,
           ← Category.assoc]
-        convert! h₂₃ <;> decide
+        convert h₂₃ <;> decide
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 1 2 (by simp)).hom,
           ← Category.assoc]
-        convert! h₁₂ <;> decide
+        convert h₁₂ <;> decide
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 0 2 (by simp)).hom,
           ← Category.assoc]
-        convert! h₀₂ <;> decide)
+        convert h₀₂ <;> decide)
 
 @[simp, reassoc]
 lemma desc.multicofork_π_zero :

@@ -5,12 +5,13 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.Spectrum
 public import Mathlib.Analysis.CStarAlgebra.ContinuousMap
 public import Mathlib.Analysis.CStarAlgebra.Fuglede
+public import Mathlib.Analysis.CStarAlgebra.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Basic
-public import Mathlib.Topology.ContinuousMap.Units
 public import Mathlib.Topology.ContinuousMap.Ideals
+public import Mathlib.Topology.ContinuousMap.Units
+
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
