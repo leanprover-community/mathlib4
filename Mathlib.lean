@@ -2058,6 +2058,7 @@ public import Mathlib.Analysis.Distribution.FourierMultiplier
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Radial
 public import Mathlib.Analysis.Distribution.Sobolev
 public import Mathlib.Analysis.Distribution.Support
 public import Mathlib.Analysis.Distribution.TemperateGrowth
@@ -2322,6 +2323,7 @@ public import Mathlib.Analysis.Normed.Order.Hom.Basic
 public import Mathlib.Analysis.Normed.Order.Hom.Ultra
 public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.Normed.Order.UpperLower
+public import Mathlib.Analysis.Normed.Radial
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Analysis.Normed.Ring.InfiniteProd
