@@ -107,6 +107,25 @@ lemma rangeFactorization [One P] (h : MulExact f g) (hg : 1 ∈ Set.range g) :
     MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) :=
   (iff_rangeFactorization hg).1 h
 
+/-- A product of exact pairs is exact. -/
+@[to_additive /-- A product of exact pairs is exact. -/]
+lemma piMap {ι : Type*} {α β γ : ι → Type*} [∀ i, One (γ i)] {f : ∀ i, α i → β i}
+    {g : ∀ i, β i → γ i} (h : ∀ i, MulExact (f i) (g i)) : MulExact (Pi.map f) (Pi.map g) := by
+  intro y
+  refine ⟨fun hy ↦ ?_, ?_⟩
+  · choose x hx using fun i ↦ (h i (y i)).1 (congrFun hy i)
+    exact ⟨x, funext hx⟩
+  · rintro ⟨x, rfl⟩
+    exact funext fun i ↦ (h i _).2 ⟨x i, rfl⟩
+
+/-- A product of two exact pairs is exact. -/
+@[to_additive /-- A product of two exact pairs is exact. -/]
+lemma prodMap {M₁ N₁ P₁ M₂ N₂ P₂ : Type*} [One P₁] [One P₂] {f₁ : M₁ → N₁} {g₁ : N₁ → P₁}
+    {f₂ : M₂ → N₂} {g₂ : N₂ → P₂} (h₁ : MulExact f₁ g₁) (h₂ : MulExact f₂ g₂) :
+    MulExact (Prod.map f₁ f₂) (Prod.map g₁ g₂) := by
+  rintro ⟨y₁, y₂⟩
+  simp [Set.range_prodMap, h₁ y₁, h₂ y₂]
+
 end MulExact
 
 end Function

@@ -9,8 +9,9 @@ public import Mathlib.LinearAlgebra.LeftExact
 public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
 
-import Mathlib.LinearAlgebra.TensorProduct.Pi
+import Mathlib.Algebra.FiveLemma
 
 /-!
 
@@ -35,6 +36,9 @@ Suppose `0 → K → M → N → 0` is an exact sequence of `R`-modules.
 
 - `Module.FinitePresentation.isLocalizedModule_map`: If `M` and `N` are `R`-modules and `M` is f.p.,
   and `S` is a submonoid of `R`, then `Hom(Mₛ, Nₛ)` is the localization of `Hom(M, N)`.
+
+- `Module.FinitePresentation.piRightHom_bijective`: If `M` is f.p., then `M ⊗ (Π i, P i)` is
+  canonically isomorphic to `Π i, (M ⊗ P i)`, for an arbitrary family of modules `P i`.
 
 
 Also the instances finite + free => f.p. => finite are also provided
@@ -711,5 +715,48 @@ theorem Module.FinitePresentation.isBaseChange_map (S : Type*) [CommRing S] [Alg
     · exact LinearMap.lTensor_surjective S hf
   · apply lcomp_injective_of_surjective
     exact LinearMap.lTensor_surjective S hf
+
+section Pi
+
+variable {ι : Type*} (P : ι → Type*) [∀ i, AddCommGroup (P i)] [∀ i, Module R (P i)]
+
+variable (R) in
+/-- For `κ` finite, the canonical map `(κ → R) ⊗[R] (Π i, P i) → Π i, (κ → R) ⊗[R] P i` is
+bijective. See `Module.FinitePresentation.piRightHom_bijective` for the general statement. -/
+lemma Module.piRightHom_bijective_of_finite_free (κ : Type*) [Finite κ] :
+    Function.Bijective (piRightHom R R (κ → R) P) := by
+  classical
+  have := Fintype.ofFinite κ
+  have key : ⇑(LinearEquiv.piCongrRight fun i ↦
+        TensorProduct.comm R (κ → R) (P i) ≪≫ₗ piScalarRight R R (P i) κ) ∘
+        ⇑(piRightHom R R (κ → R) P) =
+      Equiv.piComm _ ∘ ⇑(TensorProduct.comm R (κ → R) (Π i, P i) ≪≫ₗ
+        piScalarRight R R (Π i, P i) κ) := by
+    ext x : 1
+    induction x with
+    | tmul a q => ext; simp [Function.swap]
+    | add x y hx hy =>
+      simp only [Function.comp_apply, map_add] at hx hy ⊢
+      rw [hx, hy]
+      rfl
+  rw [← EquivLike.comp_bijective _ (LinearEquiv.piCongrRight fun i ↦
+    TensorProduct.comm R (κ → R) (P i) ≪≫ₗ piScalarRight R R (P i) κ), key]
+  exact (Equiv.bijective _).comp (LinearEquiv.bijective _)
+
+variable (R M) in
+/-- If `M` is a finitely presented `R`-module, then for any family of `R`-modules `P i`, the
+canonical map `M ⊗[R] (Π i, P i) → Π i, M ⊗[R] P i` is bijective. -/
+theorem Module.FinitePresentation.piRightHom_bijective [Module.FinitePresentation R M] :
+    Function.Bijective (piRightHom R R M P) := by
+  obtain ⟨n, m, f, g, hf, hfg⟩ := Module.FinitePresentation.exists_fin' R M
+  exact bijective_of_surjective_of_bijective_of_right_exact (g.rTensor _) (f.rTensor _)
+    (piMap fun i ↦ g.rTensor (P i)) (piMap fun i ↦ f.rTensor (P i)) _ _ _
+    (TensorProduct.ext' fun _ _ ↦ by ext; simp) (TensorProduct.ext' fun _ _ ↦ by ext; simp)
+    (rTensor_exact _ hfg hf) (Function.Exact.piMap fun i ↦ rTensor_exact _ hfg hf)
+    (piRightHom_bijective_of_finite_free R P _).2 (piRightHom_bijective_of_finite_free R P _)
+    (rTensor_surjective _ hf)
+    (by simpa using Function.Surjective.piMap fun i ↦ rTensor_surjective _ hf)
+
+end Pi
 
 end CommRing
