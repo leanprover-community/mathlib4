@@ -37,7 +37,7 @@ the quotient `R ⧸ I`, with the junk value `0` at `I = ⊥`.
 * `map_mul Ideal.absNorm`: multiplicativity of the ideal norm is bundled in
   the definition of `Ideal.absNorm`
 * `Ideal.absNorm_of_ne_bot`: away from `⊥`, the absolute norm is the cardinality of the quotient
-* `Ideal.absNorm_eq_cardQuot`: over an infinite ring, the absolute norm is the cardinality of the
+* `Ideal.absNorm_apply`: over an infinite ring, the absolute norm is the cardinality of the
   quotient for every ideal
 * `Ideal.natAbs_det_basis_change`: the ideal norm is given by the determinant
   of the basis change matrix
@@ -288,7 +288,7 @@ theorem Ideal.absNorm_of_ne_bot [IsDedekindDomain S] {I : Ideal S} (hI : I ≠ �
   ite_eq_right hI
 
 /-- Over an infinite ring, the absolute norm is the cardinality of the quotient for every ideal. -/
-theorem Ideal.absNorm_eq_cardQuot [IsDedekindDomain S] [Infinite S] (I : Ideal S) :
+theorem Ideal.absNorm_apply [IsDedekindDomain S] [Infinite S] (I : Ideal S) :
     absNorm I = Submodule.cardQuot I := by
   obtain rfl | hI := eq_or_ne I ⊥
   · rw [absNorm_bot, Submodule.cardQuot_bot]
@@ -296,11 +296,8 @@ theorem Ideal.absNorm_eq_cardQuot [IsDedekindDomain S] [Infinite S] (I : Ideal S
 
 /-- Over an infinite ring, the absolute norm of `I` is the cardinality of the quotient `S ⧸ I`. -/
 theorem Ideal.absNorm_eq_natCard [IsDedekindDomain S] [Infinite S] (I : Ideal S) :
-    absNorm I = Nat.card (S ⧸ I) :=
-  (absNorm_eq_cardQuot I).trans (Submodule.cardQuot_apply I)
-
-@[deprecated (since := "2026-10-09")]
-alias Ideal.absNorm_apply := Ideal.absNorm_eq_cardQuot
+    absNorm I = Nat.card (S ⧸ I) := by
+  rw [absNorm_apply, ← cardQuot_apply]
 
 namespace Ring.HasFiniteQuotients
 
@@ -311,7 +308,7 @@ theorem finite_absNorm_le [IsDedekindDomain S] (B : ℕ) :
     {I : Ideal S | I.absNorm ≤ B}.Finite := by
   obtain _ | _ := finite_or_infinite S
   · exact Set.toFinite _
-  · simpa [Ideal.absNorm_eq_cardQuot] using finite_cardQuot_le B
+  · simpa [Ideal.absNorm_apply] using finite_cardQuot_le B
 
 /-- A ring with finite quotients has only finitely many ideals of given norm. -/
 theorem finite_absNorm_eq [IsDedekindDomain S] (B : ℕ) :
@@ -390,7 +387,7 @@ section Infinite
 
 variable [Infinite S]
 
-lemma absNorm_eq_index (I : Ideal S) : absNorm I = I.toAddSubgroup.index := absNorm_eq_cardQuot I
+lemma absNorm_eq_index (I : Ideal S) : absNorm I = I.toAddSubgroup.index := absNorm_apply I
 
 theorem absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S ⧸ I) := by
   rw [absNorm_eq_natCard]
@@ -546,7 +543,7 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
     have : (1 : S) ≠ 0 := one_ne_zero
     have : (1 : S) = 0 := EquivLike.injective e (Subsingleton.elim _ _)
     contradiction
-  rw [Ideal.absNorm_eq_cardQuot]
+  rw [Ideal.absNorm_apply]
   exact Submodule.natAbs_det_equiv (I.restrictScalars ℤ) e
 
 /-- Let `b` be a basis for `S` over `ℤ` and `bI` a basis for `I` over `ℤ` of the same dimension.
@@ -554,7 +551,7 @@ Then an alternative way to compute the norm of `I` is given by taking the determ
 over `b`. -/
 theorem natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ S)
     (I : Ideal S) (bI : Basis ι ℤ I) : (b.det ((↑) ∘ bI)).natAbs = Ideal.absNorm I := by
-  rw [Ideal.absNorm_eq_cardQuot]
+  rw [Ideal.absNorm_apply]
   exact Submodule.natAbs_det_basis_change b (I.restrictScalars ℤ) bI
 
 @[simp]

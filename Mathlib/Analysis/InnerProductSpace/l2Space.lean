@@ -5,8 +5,8 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Module.Bases
 
 /-!

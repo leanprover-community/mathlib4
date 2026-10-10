@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Int.GCD
 
 import Mathlib.Algebra.Ring.Int.Defs

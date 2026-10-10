@@ -6,9 +6,9 @@ Authors: Eric Wieser, Jujian Zhang
 module
 
 public import Mathlib.Algebra.GroupWithZero.Subgroup
-public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.Order.Group.Action
 
 /-! # Pointwise instances on `Submodule`s
 

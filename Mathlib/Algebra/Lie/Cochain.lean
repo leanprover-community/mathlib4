@@ -27,7 +27,7 @@ general theory of Lie algebra cohomology.
 * construction and classification of central extensions
 
 ## References
-* [H. Cartan, S. Eilenberg, *Homological Algebra*](cartan-eilenberg-1956)
+* [H. Cartan, S. Eilenberg, *Homological Algebra*][cartan-eilenberg-1956]
 
 -/
 
