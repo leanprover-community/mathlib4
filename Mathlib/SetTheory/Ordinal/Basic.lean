@@ -651,7 +651,7 @@ Ordinal.ToType.toOrd : o.ToType → Iio o
 abbrev ToType (o : Ordinal.{u}) : Type u :=
   Shrink (Iio o)
 
-instance _root_.hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=
+instance (o : Ordinal) : WellFoundedRelation o.ToType :=
   WellFoundedLT.toWellFoundedRelation
 
 noncomputable instance (o : Ordinal) : SuccOrder o.ToType :=
