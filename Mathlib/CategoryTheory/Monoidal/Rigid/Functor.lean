@@ -96,6 +96,17 @@ public instance rightDualFunctorMonoidal : (rightDualFunctor C).Monoidal :=
       exact (ExactPairing.rightMate_rightUnitor
         (RightRigidCategory.rightDual X).exact).symm }
 
+@[reassoc (attr := simp)]
+public lemma rightDualFunctor_ε :
+    Functor.LaxMonoidal.ε (rightDualFunctor C) =
+      (rightDualIso (RightRigidCategory.rightDual (𝟙_ C)).exact
+        exactPairingUnit).hom.op.mop := rfl
+
+@[reassoc (attr := simp)]
+public lemma rightDualFunctor_μ (X Y : C) :
+    Functor.LaxMonoidal.μ (rightDualFunctor C) X Y =
+      (rightDualTensorIso X Y).hom.op.mop := rfl
+
 /-- The double (right) dual endofunctor `X ↦ Xᘁᘁ`. -/
 @[implicit_reducible, simps!, expose]
 public def doubleRightDualFunctor : C ⥤ C :=
@@ -104,7 +115,6 @@ public def doubleRightDualFunctor : C ⥤ C :=
 
 @[reassoc]
 public lemma doubleRightDualFunctor_ε :
-    letI : HasRightDual (𝟙_ C) := RightRigidCategory.rightDual _
     Functor.LaxMonoidal.ε (doubleRightDualFunctor C) =
       (rightDualIso (RightRigidCategory.rightDual (𝟙_ C)).exact
         exactPairingUnit).inv ≫

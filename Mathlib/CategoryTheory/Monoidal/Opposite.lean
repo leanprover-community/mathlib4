@@ -508,6 +508,8 @@ instance Functor.opMopMonoidal : F.opMop.Monoidal :=
     μIso_hom_natural_right _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
     associativity _ _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
     left_unitality _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
+    right_unitality _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
+  }
 
 end
 

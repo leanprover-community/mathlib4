@@ -135,8 +135,10 @@ instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
   coevaluation_evaluation' := by monoidal_coherence
   evaluation_coevaluation' := by monoidal_coherence
 
+@[simp]
 lemma ExactPairing.unit_coevaluation : η_ (𝟙_ C) (𝟙_ C) = (ρ_ (𝟙_ C)).inv := rfl
 
+@[simp]
 lemma ExactPairing.unit_evaluation : ε_ (𝟙_ C) (𝟙_ C) = (ρ_ (𝟙_ C)).hom := rfl
 
 /-- The tensor product of exact pairings. Given exact pairings `(X₁, Y₁)` and `(X₂, Y₂)`,
@@ -276,10 +278,12 @@ e.g. `(ᘁX : C)` where previously just `ᘁX` was enough. -/
 @[inherit_doc] prefix:1024 "ᘁ" => leftDual
 @[inherit_doc] postfix:1024 "ᘁ" => rightDual
 
-instance hasRightDualUnit : HasRightDual (𝟙_ C) where
+@[implicit_reducible]
+def hasRightDualUnit : HasRightDual (𝟙_ C) where
   rightDual := 𝟙_ C
 
-instance hasLeftDualUnit : HasLeftDual (𝟙_ C) where
+@[implicit_reducible]
+def hasLeftDualUnit : HasLeftDual (𝟙_ C) where
   leftDual := 𝟙_ C
 
 instance hasRightDualLeftDual {X : C} [HasLeftDual X] : HasRightDual ᘁX where
