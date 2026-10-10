@@ -329,21 +329,16 @@ many of the variables from `τ`.
 Unlike `exists_finset_rename`, which compacts the whole variable type, the variables from `σ`
 are left untouched. -/
 theorem exists_finset_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
-    ∃ (t : Finset τ) (q : MvPolynomial (σ ⊕ { x // x ∈ t }) R),
-      p = rename (Sum.map id (↑)) q := by
-  classical
-  obtain ⟨s, q, rfl⟩ := exists_finset_rename p
-  let f : { x // x ∈ s } → σ ⊕ { x // x ∈ s.toRight } := fun x =>
-    match h : x.1 with
-    | .inl a => .inl a
-    | .inr b => .inr ⟨b, Finset.mem_toRight.mpr (h ▸ x.2)⟩
-  refine ⟨s.toRight, rename f q, ?_⟩
+    ∃ (t : Finset τ) (q : MvPolynomial (σ ⊕ t) R), p = q.rename (Sum.map id (↑)) := by
+  obtain ⟨s, q, rfl⟩ := p.exists_finset_rename
+  use s.toRight
+  let f : s → σ ⊕ s.toRight
+    | ⟨.inl a, _⟩ => .inl a
+    | ⟨.inr b, h⟩ => .inr ⟨b, by simpa⟩
+  refine ⟨q.rename f, ?_⟩
   rw [rename_rename]
-  congr 2
-  funext x
-  rcases x with ⟨a | b, h⟩
-  · rfl
-  · simp [f]
+  congr
+  aesop
 
 /-- Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
 many of the variables from `τ`.
@@ -353,16 +348,14 @@ Unlike `exists_fin_rename`, which reindexes the whole variable type along an inj
 compacted. -/
 theorem exists_fin_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
     ∃ (n : ℕ) (f : Fin n → τ) (_hf : Injective f) (q : MvPolynomial (σ ⊕ Fin n) R),
-      p = rename (Sum.map id f) q := by
+      p = q.rename (Sum.map id f) := by
   obtain ⟨t, q, rfl⟩ := exists_finset_right_rename p
-  let n := Fintype.card { x // x ∈ t }
-  let e := Fintype.equivFin { x // x ∈ t }
-  refine ⟨n, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective,
-    rename (Sum.map id e) q, ?_⟩
+  let e := Fintype.equivFin t
+  refine ⟨Fintype.card t, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective,
+    q.rename (Sum.map id e), ?_⟩
   rw [rename_rename]
-  congr 1
-  ext x
-  obtain a | b := x <;> simp
+  congr
+  aesop
 
 end Rename
 
