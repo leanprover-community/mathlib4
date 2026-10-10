@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+
 import Cli.Basic
 import Mathlib.Tactic.Linter.ValidatePRTitle
 
@@ -14,8 +15,6 @@ This script checks if a PR title matches some of
 Currently, we only verify very basic checks: this could be made stricter in the future.
 
 -/
-
--- TODO: temporary copy. delete in favour of `check-title-labels.lean` after #44306
 
 open Cli in
 /-- Implementation of the `check-title-labels` command line program.
@@ -46,7 +45,7 @@ def checkTitleLabels : Cmd := `[Cli|
   If this PR is a feature PR, also verify that it has a topic label,
   and that there are no contradictory labels.
 
-  If the inpupt title does not pass validation, output a list of errors."
+  If the input title does not pass validation, output a list of errors."
 
   FLAGS:
     "labels" : String; "newline-separated list of label names of this PR\n\
