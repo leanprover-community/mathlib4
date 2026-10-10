@@ -863,6 +863,13 @@ lemma getVert_mem_tail_support {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
     rw [← getVert_tail, ← p.support_tail_of_not_nil hp]
     exact getVert_mem_support ..
 
+lemma snd_dropLast_eq_snd {p : G.Walk u v} (h : p.length ≠ 1) : p.dropLast.snd = p.snd := by
+  match p with | nil | cons _ (cons ..) => simp
+
+lemma penultimate_tail_eq_penultimate {p : G.Walk u v} (h : p.length ≠ 1) :
+    p.tail.penultimate = p.penultimate := by
+  match p with | nil | cons _ (cons ..) => simp [penultimate]
+
 lemma support_injective {u v : V} : (support (G := G) (u := u) (v := v)).Injective :=
   fun _ _ ↦ ext_support
 
