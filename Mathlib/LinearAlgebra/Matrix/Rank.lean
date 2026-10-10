@@ -139,14 +139,14 @@ theorem rank_subsingleton [CommSemiring R] [Subsingleton R] (A : Matrix m n R) :
   finrank_subsingleton
 
 @[simp]
-theorem cRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankCondition R] :
+theorem cRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
     (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
   have h : LinearIndependent R (1 : Matrix m m R).col := by
     convert! Pi.linearIndependent_single_one m R
     simp [funext_iff, one_apply, Pi.single_apply]
   rw [cRank, rank_span h, ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 
-@[simp] theorem eRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankCondition R] :
+@[simp] theorem eRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
     (eRank (1 : Matrix m m R)) = ENat.card m := by
   rw [eRank, cRank_one, toENat_lift, ENat.card]
 
