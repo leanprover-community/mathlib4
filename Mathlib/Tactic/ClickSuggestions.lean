@@ -9,6 +9,7 @@ public meta import Lean.Server.FileWorker.RequestHandling
 public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
 public import Lean.Widget.InteractiveGoal
+public import Mathlib.Tactic.ClickSuggestions.Normalize
 public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import ProofWidgets.Component.OfRpcMethod
@@ -97,14 +98,14 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Opti
   viewKAbstractSubExpr' rootExpr pos fun subExpr rwKind ↦ do
   let mut htmls : Array Html := #[]
 
-  -- In a follow-up PR: suggestions for
-  -- `induction`/`cases`, `contrapose`, if `subExpr` is an fvar.
-  -- `rfl`, `intro`, `by_contra`
-  -- `push`, `simp`, `norm_cast`, `ring`/`field`/`abel`/..
-
   if let some html ← suggestUnfold subExpr rwKind then
     markProgress
     htmls := htmls.push html
+
+  htmls := htmls.push (← Normalize.suggestNormTactics subExpr rootExpr fvarId? pos)
+  -- In a follow-up PR: suggestions for
+  -- `induction`/`cases`, `contrapose`, if `subExpr` is an fvar.
+  -- `rfl`, `intro`, `by_contra`
 
   let (searchHtml, token') ← mkRefreshComponent
   htmls := htmls.push searchHtml
