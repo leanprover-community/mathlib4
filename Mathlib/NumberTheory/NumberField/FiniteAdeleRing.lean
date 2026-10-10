@@ -15,7 +15,7 @@ import Mathlib.Algebra.FiniteSupport.Basic
 # The finite adele ring of a number field
 
 This file concerns the finite adele ring of a Dedekind domain `R` and its field of
-fractions under the assumption that `Ring.HasFiniteQuotients R` and `Infinite R`.
+fractions under the assumption that `Ring.HasFiniteQuotients R`.
 Later, these results are applied to the case where `K` is a number field and `R` is `𝓞 K`.
 
 ## Main definitions
@@ -32,7 +32,7 @@ namespace NumberField
 
 open IsDedekindDomain FiniteAdeleRing
 
-variable {R K : Type*} [CommRing R] [IsDedekindDomain R] [Ring.HasFiniteQuotients R] [Infinite R]
+variable {R K : Type*} [CommRing R] [IsDedekindDomain R] [Ring.HasFiniteQuotients R]
   [Field K] [Algebra R K] [IsFractionRing R K]
 
 namespace AdeleRing
