@@ -806,18 +806,6 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-@[to_additive]
-theorem mul_eq_one_iff_of_one_le [MulLeftMono α] [MulRightMono α] (ha : 1 ≤ a) (hb : 1 ≤ b) :
-    a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  Iff.intro
-    (fun hab : a * b = 1 =>
-      have : a ≤ 1 := hab ▸ le_mul_of_le_of_one_le le_rfl hb
-      have : a = 1 := le_antisymm this ha
-      have : b ≤ 1 := hab ▸ le_mul_of_one_le_of_le ha le_rfl
-      have : b = 1 := le_antisymm this hb
-      And.intro ‹a = 1› ‹b = 1›)
-    (by rintro ⟨rfl, rfl⟩; rw [mul_one])
-
 section Left
 
 variable [MulLeftMono α]
@@ -829,6 +817,20 @@ theorem eq_one_of_one_le_mul_left (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a *
 @[to_additive]
 theorem eq_one_of_mul_le_one_left (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : a = 1 :=
   ha.eq_of_not_lt' fun h => hab.not_gt <| one_lt_mul_of_lt_of_le' h hb
+
+/-- A version of `mul_eq_one_iff_of_one_le'` that requires `MulLeftMono` instead of
+  `MulRightMono` -/
+@[to_additive /-- A version of `add_eq_zero_iff_of_nonneg'` that requires `AddLeftMono` instead of
+  `AddRightMono` -/]
+theorem mul_eq_one_iff_of_one_le (ha : 1 ≤ a) (hb : 1 ≤ b) :
+    a * b = 1 ↔ a = 1 ∧ b = 1 := by
+  refine ⟨fun hab ↦ ?_, by simp +contextual⟩
+  simpa [eq_one_of_mul_le_one_left ha hb hab.le] using hab
+
+-- See note [lower instance priority]
+@[to_additive]
+instance (priority := 100) [IsBotOneClass α] : IsDedekindFiniteMonoid α where
+  mul_eq_one_symm := by simp [mul_eq_one_iff_of_one_le]
 
 end Left
 
@@ -843,6 +845,19 @@ theorem eq_one_of_one_le_mul_right (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a 
 @[to_additive]
 theorem eq_one_of_mul_le_one_right (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : b = 1 :=
   hb.eq_of_not_lt' fun h => hab.not_gt <| Right.one_lt_mul_of_le_of_lt ha h
+
+/-- A version of `mul_eq_one_iff_of_one_le` that requires `MulRightMono` instead of `MulLeftMono` -/
+@[to_additive /-- A version of `add_eq_zero_iff_of_nonneg` that requires `AddRightMono` instead of
+  `AddLeftMono` -/]
+theorem mul_eq_one_iff_of_one_le' (ha : 1 ≤ a) (hb : 1 ≤ b) :
+    a * b = 1 ↔ a = 1 ∧ b = 1 := by
+  refine ⟨fun hab ↦ ?_, by simp +contextual⟩
+  simpa [eq_one_of_mul_le_one_right ha hb hab.le] using hab
+
+-- See note [lower instance priority]
+@[to_additive]
+instance (priority := 100) [IsBotOneClass α] : IsDedekindFiniteMonoid α where
+  mul_eq_one_symm := by simp [mul_eq_one_iff_of_one_le']
 
 end Right
 
