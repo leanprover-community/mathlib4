@@ -23,6 +23,7 @@ set_option warn.classDefReducibility false in
 def foo : Foo where
   val := 37
 
+set_option linter.concreteInstances false in
 def takeImplicit [f : Foo] : Nat :=
   f.val
 

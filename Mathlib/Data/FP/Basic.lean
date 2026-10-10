@@ -42,6 +42,8 @@ attribute [nolint docBlame] FloatCfg.prec FloatCfg.emax FloatCfg.precPos FloatCf
 
 variable [C : FloatCfg]
 
+set_option linter.concreteInstances false
+
 @[nolint docBlame]
 def prec :=
   C.prec
