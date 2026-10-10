@@ -6642,7 +6642,9 @@ public import Mathlib.Probability.Process.LimitProcess
 public import Mathlib.Probability.Process.LocalProperty
 public import Mathlib.Probability.Process.PartitionFiltration
 public import Mathlib.Probability.Process.Predictable
+public import Mathlib.Probability.Process.StoppedValue
 public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Probability.Process.StronglyMeasurablePath
 public import Mathlib.Probability.ProductMeasure
 public import Mathlib.Probability.StrongLaw
 public import Mathlib.Probability.UniformOn
