@@ -287,6 +287,12 @@ theorem IsHamiltonianCycle.copy {p : G.Walk a a} (ha : a = b) (h : p.IsHamiltoni
   isHamiltonianCycle_copy.mpr h
 
 @[simp]
+theorem isHamiltonianCycle_cons {h : G.Adj a b} {p : G.Walk b a} :
+    (p.cons h).IsHamiltonianCycle ↔ p.IsHamiltonian ∧ s(a, b) ∉ p.edges := by
+  simp [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, cons_isCycle_iff]
+  grind only [IsHamiltonian.isPath]
+
+@[simp]
 lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
     (p.rotate v hv).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
   simp [isHamiltonianCycle_iff_isCycle_and_length_eq_natCard]
