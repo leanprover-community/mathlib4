@@ -203,7 +203,7 @@ instance [IsNoetherianRing R] : IsNoetherianRing R⟦X⟧ :=
 instance [IsPrincipalIdealRing R] [IsDomain R] : UniqueFactorizationMonoid R⟦X⟧ := by
   refine UniqueFactorizationMonoid.iff_exists_prime_mem_of_isPrime.mpr (fun P h₁ h₂ ↦ ?_)
   by_cases hXP : X ∈ P
-  · exact ⟨X, hXP, X_prime⟩
+  · exact ⟨X, hXP, prime_X⟩
   · obtain ⟨_, h⟩ := (IsPrincipalIdealRing.principal (P.map constantCoeff)).principal
     obtain ⟨_, rfl, _, h⟩ := exist_eq_span_eq_ncard_of_X_notMem hXP h.symm (finite_singleton _)
     simp only [ncard_singleton, ncard_eq_one] at h
