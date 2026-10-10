@@ -1106,7 +1106,7 @@ protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [IsUni
 protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p := by
   let := IsTopologicalAddGroup.rightUniformSpace E
-  have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  have : IsUniformAddGroup E := IsUniformAddGroup.rightUniformSpace_of_addCommGroup E
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 
 /-- A seminorm is uniformly continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.

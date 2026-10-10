@@ -284,7 +284,7 @@ noncomputable instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
   IsTopologicalAddGroup.rightUniformSpace 𝓓^{n}(Ω, F)
 
 noncomputable instance : IsUniformAddGroup 𝓓^{n}(Ω, F) :=
-  isUniformAddGroup_of_addCommGroup
+  IsUniformAddGroup.rightUniformSpace_of_addCommGroup 𝓓^{n}(Ω, F)
 
 -- TODO: deduce for `RCLike` field `𝕂`
 noncomputable instance : ContinuousSMul ℝ 𝓓^{n}(Ω, F) :=
