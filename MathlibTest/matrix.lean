@@ -254,6 +254,18 @@ example {K : Type*} [Field K] (x i j k : K) (hx : x ≠ 0) : Matrix.det
   eval_det
   field_simp [hx]
 
+example : Matrix.det !![0, 1; 1, 0] = (-1 : Polynomial ℚ) := by
+  eval_det
+
+example : Matrix.det
+    !![1 / 2, 3 / 4,  5 / 6;
+       2 / 3, 1 / 6,  4 / 9;
+       3 / 4, 7 / 10, 1 / 6] = (223 / 720 : ℚ) := by
+  eval_det
+
+example : Matrix.det !![1, 2; 3, 4] = (-2 : ℤ × ℤ) := by
+  eval_det
+
 end NormDet
 
 end Matrix

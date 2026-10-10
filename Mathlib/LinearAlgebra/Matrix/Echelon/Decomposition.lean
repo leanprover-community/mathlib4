@@ -19,6 +19,8 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 ## Main results
 
 - `Echelon.Decomposition.rank_eq`: `A.rank` is the pivot count of any certificate for `A`.
+- `Echelon.Decomposition.prod_diag_mul_det`: `A.det` is determined by the diagonal products of
+  `L` and of the echelon form of any certificate for `A`.
 
 ## Tags
 
@@ -30,7 +32,7 @@ public section
 variable
   {m : Type*} [Fintype m] [LinearOrder m]
   {n : Type*} [Fintype n] [LinearOrder n]
-  {R : Type*} [CommRing R] [IsDomain R]
+  {R : Type*} [CommRing R]
 
 namespace Echelon
 
@@ -50,6 +52,14 @@ structure Decomposition (A : Matrix m n R) (L : Matrix m m R) (σ : Equiv.Perm m
   L_diag_ne_zero (i : m) : L.diag i ≠ 0
 
 variable {A : Matrix m n R} {L : Matrix m m R} {σ : Equiv.Perm m} {pivot : m → WithTop n}
+
+theorem Decomposition.prod_diag_mul_det {A : Matrix m m R} {pivot : m → WithTop m}
+    (cert : Decomposition A L σ pivot) :
+    (∏ i, L i i) * (Equiv.Perm.sign σ * A.det) = ∏ i, (L * A.submatrix σ id) i i := by
+  rw [← Matrix.det_of_isLowerTriangular _ cert.L_lowerTriangular,
+    ← cert.isPivotedBy.isRowEchelon.det_eq, Matrix.det_mul, Matrix.det_permute]
+
+variable [IsDomain R]
 
 theorem Decomposition.rank_eq (cert : Decomposition A L σ pivot) :
     A.rank = #{i | pivot i ≠ ⊤} := by
