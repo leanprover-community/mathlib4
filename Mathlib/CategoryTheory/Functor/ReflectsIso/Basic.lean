@@ -40,6 +40,7 @@ class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
 attribute [to_dual self] Functor.ReflectsIsomorphisms.reflects Functor.ReflectsIsomorphisms.mk
 
 /-- If `F` reflects isos and `F.map f` is an iso, then `f` is an iso. -/
+@[to_dual self]
 theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.map f)]
     [F.ReflectsIsomorphisms] : IsIso f :=
   ReflectsIsomorphisms.reflects F f
