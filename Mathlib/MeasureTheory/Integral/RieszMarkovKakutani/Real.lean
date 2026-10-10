@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
+
 import Mathlib.Order.Interval.Set.Union
 
 /-!
@@ -286,7 +287,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
         _ ≤ _ := by
           rw [← ENNReal.toReal_ofReal (div_nonneg (le_of_lt hε'.1) (Nat.cast_nonneg _))]
           apply ENNReal.toReal_le_add (hV n).2.2 (hE' n)
-          · finiteness
+          finiteness
   · -- Use that `μ K ≤ Λ (∑ n, g n)`
     gcongr
     rw [← map_sum Λ g _]

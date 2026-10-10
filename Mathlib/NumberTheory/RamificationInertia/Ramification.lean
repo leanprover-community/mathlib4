@@ -5,9 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Torsion
-public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+
+import Mathlib.Algebra.GroupWithZero.Torsion
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Rat.Floor
 import Mathlib.RingTheory.Nakayama

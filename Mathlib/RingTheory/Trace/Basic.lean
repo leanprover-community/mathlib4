@@ -7,9 +7,10 @@ module
 
 public import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.RingTheory.Trace.Defs
+
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 
 /-!
 # Trace for (finite) ring extensions.
@@ -636,7 +637,6 @@ variable (R) in
 /-- Every element of a quadratic extension satisfies its characteristic equation. -/
 theorem IsQuadraticExtension.sq_sub_trace_smul_add_norm_eq_zero (a : A) :
     a ^ 2 - trace R A a • a + algebraMap R A (norm R a) = 0 := by
-  have : Nontrivial R := nontrivial_of_invariantBasisNumber R
   let b := Module.finBasisOfFinrankEq R A (IsQuadraticExtension.finrank_eq_two R A)
   simpa [Matrix.charpoly_fin_two, ← Algebra.trace_eq_matrix_trace b,
     ← Algebra.norm_eq_matrix_det b, smul_def] using Algebra.aeval_charpoly_leftMulMatrix b a

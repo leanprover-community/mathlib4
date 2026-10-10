@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+
 import Mathlib.MeasureTheory.Group.AEStabilizer
 
 /-!

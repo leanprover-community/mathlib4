@@ -313,6 +313,9 @@ theorem multiplicity_one_right : multiplicity a 1 = 0 := by
 
 @[deprecated (since := "2026-09-11")] alias FiniteMultiplicity.one_right := multiplicity_one_right
 
+theorem multiplicity_of_isUnit_left {a : α} (ha : IsUnit a) (b : α) : multiplicity a b = 0 :=
+  multiplicity_eq_zero_of_not_finiteMultiplicity (FiniteMultiplicity.not_of_isUnit_left b ha)
+
 theorem multiplicity_one_left (b : α) : multiplicity 1 b = 0 := by
   simp
 
@@ -491,6 +494,32 @@ theorem multiplicity_eq_of_associated_left {a b c : α} (h : Associated a b) :
 theorem emultiplicity_mk_eq_emultiplicity {a b : α} :
     emultiplicity (Associates.mk a) (Associates.mk b) = emultiplicity a b := by
   simp [emultiplicity_eq_emultiplicity_iff, ← Associates.mk_pow, Associates.mk_dvd_mk]
+
+/-- A non-unit has finite multiplicity in an irreducible element. -/
+theorem Irreducible.finiteMultiplicity_of_not_isUnit {a x : α} (ha : Irreducible a)
+    (hx : ¬ IsUnit x) : FiniteMultiplicity x a :=
+  ⟨1, fun h ↦ hx (ha.isUnit_of_mul_self_dvd (by simpa [pow_succ] using h))⟩
+
+/-- The `multiplicity` of an irreducible element in itself is `1`. -/
+protected theorem Irreducible.multiplicity_self {a : α} (ha : Irreducible a) :
+    multiplicity a a = 1 :=
+  multiplicity_eq_of_dvd_of_not_dvd (by simp) fun h ↦
+    ha.not_isUnit (ha.isUnit_of_mul_self_dvd (by simpa [pow_succ] using h))
+
+/-- The `multiplicity` of an irreducible element in an associated element is `1`. -/
+theorem Irreducible.multiplicity_of_associated {a b : α} (ha : Irreducible a)
+    (h : Associated a b) : multiplicity a b = 1 := by
+  rw [multiplicity_eq_of_associated_right h.symm, ha.multiplicity_self]
+
+/-- The `multiplicity` of `p` in an irreducible `q` is `1` if `p` and `q` are associated,
+and `0` otherwise. -/
+theorem Irreducible.multiplicity_eq_ite (p : α) {q : α} [Decidable (Associated p q)]
+    (hq : Irreducible q) : multiplicity p q = if Associated p q then 1 else 0 := by
+  split_ifs with h
+  · exact (h.symm.irreducible hq).multiplicity_of_associated h
+  · by_cases hp : IsUnit p
+    · exact multiplicity_of_isUnit_left hp q
+    · exact multiplicity_eq_zero_of_not_dvd (by simp [hq.dvd_iff, hp, h, Associated.comm])
 
 end CommMonoid
 

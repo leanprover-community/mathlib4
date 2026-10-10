@@ -5,9 +5,9 @@ Authors: Kim Morrison, Justus Springer
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 public import Mathlib.Topology.Category.TopCat.OpenNhds
 public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 
 /-!
 # Stalks
@@ -583,7 +583,7 @@ theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
 
 /-- For surjectivity, we are given an arbitrary section `t` and need to find a preimage for it.
 We claim that it suffices to find preimages *locally*. That is, for each `x : U` we construct
-a neighborhood `V ≤ U` and a section `s : F.obj (op V))` such that `f.app (op V) s` and `t`
+a neighborhood `V ≤ U` and a section `s : F.obj (op V)` such that `f.app (op V) s` and `t`
 agree on `V`. -/
 theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f : F ⟶ G)
     (U : Opens X) (hinj : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f.1))
@@ -605,10 +605,10 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   suffices IsCompatible F.obj V sf by
     -- Since `F` is a sheaf, we can glue all the local preimages together to get a global preimage.
     obtain ⟨s, s_spec, -⟩ := F.existsUnique_gluing' V U iVU V_cover sf this
-    · use s
-      apply G.eq_of_locally_eq' V U iVU V_cover
-      intro x
-      rw [← ConcreteCategory.comp_apply, ← f.1.naturality, ConcreteCategory.comp_apply, s_spec, heq]
+    use s
+    apply G.eq_of_locally_eq' V U iVU V_cover
+    intro x
+    rw [← ConcreteCategory.comp_apply, ← f.1.naturality, ConcreteCategory.comp_apply, s_spec, heq]
   intro x y
   -- What's left to show here is that the sections `sf` are compatible, i.e. they agree on
   -- the intersections `V x ⊓ V y`. We prove this by showing that all germs are equal.

@@ -6,8 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Noetherian
-public import Mathlib.AlgebraicGeometry.Stalk
 public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.AlgebraicGeometry.Stalk
 
 /-!
 # Spreading out morphisms

@@ -5,10 +5,11 @@ Authors: Michail Karatarakis
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Iterated derivatives of analytic functions with power factors

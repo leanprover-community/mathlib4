@@ -5,9 +5,9 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!

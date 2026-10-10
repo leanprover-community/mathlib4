@@ -9,10 +9,11 @@ public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.ZMod.ValMinAbs
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Perfect
+
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Finite fields
@@ -642,7 +643,7 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
   have : Fact p.Prime := ⟨hp⟩
   have : ¬(n : ZMod p) = 0 := by
     rw [CharP.intCast_eq_zero_iff _ p, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd]
-    · exact hpn.symm
+    exact hpn.symm
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 
 theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :

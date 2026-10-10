@@ -5,10 +5,11 @@ Authors: Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Order.Nat
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.Prime.Pow
+
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Nat
 
 /-!
 # Prime powers
@@ -92,10 +93,10 @@ theorem isPrimePow_nat_iff_bounded_log (n : ℕ) :
   constructor
   · rintro ⟨p, k, hp', hk', rfl⟩
     refine ⟨k, ?_, hk', ⟨p, Nat.le_pow hk', rfl, hp'⟩⟩
-    · calc
-        k = Nat.log 2 (2 ^ k) := by simp
-        _ ≤ Nat.log 2 (p ^ k) := Nat.log_mono Nat.one_lt_two Nat.AtLeastTwo.prop
-                                   (Nat.pow_le_pow_left (Nat.Prime.two_le hp') k)
+    calc
+      k = Nat.log 2 (2 ^ k) := by simp
+      _ ≤ Nat.log 2 (p ^ k) := Nat.log_mono Nat.one_lt_two Nat.AtLeastTwo.prop
+                                  (Nat.pow_le_pow_left (Nat.Prime.two_le hp') k)
   · rintro ⟨k, hk, hk', ⟨p, hp, rfl, hp'⟩⟩
     exact ⟨p, k, hp', hk', rfl⟩
 

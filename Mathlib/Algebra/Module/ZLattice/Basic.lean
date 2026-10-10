@@ -7,9 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+
+import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.Localization.Module
 
 /-!
@@ -580,10 +581,10 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
         (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       rw [Set.mapsTo_inter, Set.mapsTo_univ_iff, Set.mapsTo_univ_iff]
       refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (norm_fract_le e _), fun _ => ?_⟩
-      · rw [← h_spanL]
-        refine sub_mem ?_ ?_
-        · exact zsmul_mem (subset_span (Set.sdiff_subset hv)) _
-        · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
+      rw [← h_spanL]
+      refine sub_mem ?_ ?_
+      · exact zsmul_mem (subset_span (Set.sdiff_subset hv)) _
+      · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       change ((_ : Set E) ∩ L.toAddSubgroup).Finite
       have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)

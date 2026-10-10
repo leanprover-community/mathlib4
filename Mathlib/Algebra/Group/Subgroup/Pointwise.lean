@@ -5,11 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.GroupTheory.GroupAction.ConjAct
-public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 
@@ -104,6 +104,9 @@ namespace Subgroup
 theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
   rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff]
   exact subset_closure (mem_inv.mp hs)
+
+@[to_additive (attr := simp)]
+theorem toSubmonoid_inv (H : Subgroup G) : H.toSubmonoid⁻¹ = H.toSubmonoid := by ext; simp
 
 @[to_additive]
 theorem closure_toSubmonoid (S : Set G) :

@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
+
 import Mathlib.LinearAlgebra.Unimodular
 import Mathlib.RingTheory.Trace.Basic
 
@@ -46,7 +47,6 @@ variable {R A : Type*} [CommRing R] [StrongRankCondition R] [CommRing A] [Algebr
 /-- Every quadratic extension `A / R` is isomorphic to `QuadraticAlgebra R a b` for some `a, b`. -/
 theorem IsQuadraticExtension.exists_algEquiv_quadraticAlgebra :
     ∃ (a b : R), Nonempty (A ≃ₐ[R] QuadraticAlgebra R a b) := by
-  have : Nontrivial R := nontrivial_of_invariantBasisNumber R
   have : Nontrivial A := Module.nontrivial_of_finrank_pos
     (by rw [IsQuadraticExtension.finrank_eq_two R A]; norm_num)
   obtain ⟨e, he⟩ := Module.Free.isUnimodular_one.exists_basis_zero_eq

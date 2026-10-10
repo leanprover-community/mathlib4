@@ -91,18 +91,12 @@ theorem GaloisConnection.map_isCofinal {f : β → α} {g : α → β}
     (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) :=
   hs.image h.monotone_u h.isCofinal_range
 
-@[deprecated (since := "2026-03-15")]
-alias GaloisConnection.map_cofinal := GaloisConnection.map_isCofinal
-
 theorem OrderIso.map_isCofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) : IsCofinal (e '' s) :=
   e.symm.to_galoisConnection.map_isCofinal hs
 
 @[simp]
 theorem OrderIso.map_isCofinal_iff (e : α ≃o β) {s : Set α} : IsCofinal (e '' s) ↔ IsCofinal s :=
   ⟨fun hs ↦ by simpa using e.symm.map_isCofinal hs, e.map_isCofinal⟩
-
-@[deprecated (since := "2026-03-15")]
-alias OrderIso.map_cofinal := OrderIso.map_isCofinal
 
 theorem isCofinal_iff_iUnion_Iic_eq_univ {s : Set α} :
     IsCofinal s ↔ ⋃ i ∈ s, Iic i = univ := by
@@ -162,9 +156,13 @@ theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s
   obtain ⟨z, hz⟩ := exists_gt x
   exact ⟨z, fun y hy ↦ (h hy).trans_lt hz⟩
 
+alias ⟨_, BddAbove.not_isCofinal⟩ := not_isCofinal_iff_bddAbove
+
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
 theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s ↔ IsCofinal s :=
   not_iff_comm.1 not_isCofinal_iff_bddAbove
+
+alias ⟨_, IsCofinal.not_bddAbove⟩ := not_bddAbove_iff_isCofinal
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/

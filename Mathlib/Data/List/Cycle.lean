@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fintype.List
 public import Mathlib.Data.Fintype.OfMap
+
 import Mathlib.Data.Fin.Basic
 
 /-!
@@ -374,7 +375,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
       length_reverse, Nat.mod_eq_of_lt (Nat.sub_lt lpos Nat.succ_pos'),
       Nat.sub_sub_self (Nat.succ_le_of_lt lpos)]
     rw [getElem_eq_getElem_reverse]
-    · simp [Nat.sub_sub_self (Nat.le_sub_one_of_lt hk)]
+    simp [Nat.sub_sub_self (Nat.le_sub_one_of_lt hk)]
   · simpa
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :

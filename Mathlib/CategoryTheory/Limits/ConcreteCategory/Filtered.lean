@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # Filtered colimits in concrete categories
