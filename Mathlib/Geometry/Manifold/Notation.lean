@@ -359,6 +359,7 @@ where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
 - the model with corners on the tangent space of a manifold
+- the model with corners on a quotient manifold w.r.t. a trivial action
 - a model with corners on a manifold, or on its underlying model space
 - a closed interval of real numbers (including the unit interval)
 - Euclidean space, Euclidean half-space and Euclidean quadrants
@@ -500,7 +501,7 @@ where
       mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
     | _ => return none
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
-  fromManifold : TermElabM Expr := do
+  fromManifoldInner (e : Expr) : TermElabM Expr := do
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
     -- or `e` is `H` itself.
     let some H ← findSomeLocalInstanceOf? ``ChartedSpace fun inst type ↦ do
@@ -543,6 +544,63 @@ where
           -- Return the trivial model with corners: this will work if `H` is a normed field.
           mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
     return m
+  /-- Check if there is a `ProperlyDiscontinousSMul G X` instance in the local context.
+  If so, search for a model with corners on `X` and return that. -/
+  checkIsQuotient (G X : Expr) : TermElabM Expr := do
+    trace[Elab.DiffGeo.MDiff] "`{e}` is the quotient of `{X}` under a `{G}`-action`"
+    let searchPropDis ← findSomeLocalInstanceOf? `ProperlyDiscontinuousSMul fun _inst type ↦ do
+      match_expr type with
+      | ProperlyDiscontinuousSMul G' α _ _ =>
+        if (← withReducible (pureIsDefEq G G')) && (← withReducible (pureIsDefEq α X)) then
+          trace[Elab.DiffGeo.MDiff] "... and this action is properly discontinuous"
+          return some ()
+        else
+          trace[Elab.DiffGeo.MDiff]
+            "`ProperlyDiscontinousSMul` instance of `{type}` did not match `{e}`"
+          return none
+      | _ => return none
+    if searchPropDis.isSome then
+      fromManifoldInner X
+    else
+      throwError "Couldn't find a `ProperlyDiscontinuousSMul` instance for `{G}` action on `{X}` \
+        among local instances."
+  /-- Check if there is a `ProperlyDiscontinousVAdd G X` instance in the local context.
+  If so, search for a model with corners on `X` and return that. -/
+  checkIsAddQuotient (G X : Expr) : TermElabM Expr := do
+    trace[Elab.DiffGeo.MDiff] "`{e}` is the quotient of `{X}` under a `{G}`-action`"
+    let searchPropDis ← findSomeLocalInstanceOf? `ProperlyDiscontinuousVAdd fun _inst type ↦ do
+      match_expr type with
+      | ProperlyDiscontinuousVAdd G' α _ _ =>
+        if (← withReducible (pureIsDefEq G G')) && (← withReducible (pureIsDefEq α X)) then
+          trace[Elab.DiffGeo.MDiff] "... and this action is properly discontinuous"
+          return some ()
+        else
+          trace[Elab.DiffGeo.MDiff]
+            "`ProperlyDiscontinousVAdd` instance of `{type}` did not match `{e}`"
+          return none
+      | _ => return none
+    if searchPropDis.isSome then
+      fromManifoldInner X
+    else
+      throwError "Couldn't find a `ProperlyDiscontinuousVAdd` instance for `{G}` action on `{X}` \
+        among local instances."
+  /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold.
+  Also test if we have the quotient of a manifold by a discrete group acting. -/
+  fromManifold : TermElabM Expr := do
+    -- Check if `e` is a quotient of an (additive or multiplicative) action first.
+    match_expr e with
+    | Quotient X α =>
+      match_expr α with
+      -- If the code in question elaborated, `α` must be a setoid on `X`,
+      -- i.e. `X` and `X'` are defeq.
+      | MulAction.orbitRel G _X _ _ => checkIsQuotient G X
+      | AddAction.orbitRel G _X _ _ => checkIsAddQuotient G X
+      | _ => throwError "Don't have a manifold structure on quotients `{X}` by `{α}`"
+    | MulAction.orbitRel.Quotient G M _ _ => checkIsQuotient G M
+    | AddAction.orbitRel.Quotient G M _ _ => checkIsAddQuotient G M
+    | _ =>
+      trace[Elab.DiffGeo.MDiff] "... not a quotient"
+      fromManifoldInner e
   /-- Attempt to find a model with corners on a space of continuous linear maps -/
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
   -- corners as a normed space. Merely linear maps are not a normed space either.
