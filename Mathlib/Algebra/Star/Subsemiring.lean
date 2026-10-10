@@ -5,8 +5,8 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Algebra.Star.NonUnitalSubsemiring
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
+public import Mathlib.Algebra.Star.NonUnitalSubsemiring
 
 /-!
 # Star subrings
@@ -38,7 +38,7 @@ instance setLike {R : Type v} [NonAssocSemiring R] [Star R] :
   coe_injective p q h := by obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
 instance {R : Type v} [NonAssocSemiring R] [Star R] : PartialOrder (StarSubsemiring R) :=
-  .ofSetLike (StarSubsemiring R) R
+  .ofSetLike (StarSubsemiring R)
 
 initialize_simps_projections StarSubsemiring (carrier → coe, as_prefix coe)
 

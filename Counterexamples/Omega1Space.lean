@@ -48,7 +48,7 @@ instance : CompactSpace (Iic ω₁) :=
 private lemma exists_lt_notMem_of_disjoint {U V : Set (Iic ω₁)} (hV : V ∈ 𝓝 ⊤)
     (hUV : Disjoint U V) (x : Iio ω₁) : ∃ y, x < y ∧ inc y ∉ U := by
   obtain ⟨c, hc, hcV⟩ := nhds_top_basis.mem_iff.mp hV
-  obtain ⟨z, hz, hz'⟩ := (Cardinal.isSuccLimit_omega 1).lt_iff_exists_lt.mp
+  obtain ⟨z, hz', hz⟩ := (Cardinal.isSuccLimit_omega 1).lt_iff_nonempty_Ioo.mp
     (max_lt x.2 (Subtype.coe_lt_coe.mpr hc))
   have hcz : c < inc ⟨z, hz⟩ := Subtype.coe_lt_coe.mp ((le_max_right _ _).trans_lt hz')
   exact ⟨⟨z, hz⟩, Subtype.coe_lt_coe.mp ((le_max_left _ _).trans_lt hz'),

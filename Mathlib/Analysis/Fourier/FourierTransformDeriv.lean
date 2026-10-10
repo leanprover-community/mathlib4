@@ -5,7 +5,6 @@ Authors: Alex Kontorovich, David Loeffler, Heather Macbeth, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.Analysis.Fourier.FourierTransform
 
@@ -333,7 +332,7 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
   calc
   ‖fourierPowSMulRight L f v n m‖
     = (2 * π) ^ n * ((∏ x : Fin n, |(L v) (m x)|) * ‖f v‖) := by
-      simp [abs_of_nonneg pi_nonneg, norm_smul]
+      simp [norm_smul]
   _ ≤ (2 * π) ^ n * ((∏ x : Fin n, ‖L‖ * ‖v‖ * ‖m x‖) * ‖f v‖) := by
       gcongr with i _hi
       exact L.le_opNorm₂ v (m i)
@@ -396,7 +395,7 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk) (hf.of_le hk)).contDiffAt),
     norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]
   simp only [mul_assoc, norm_pow, norm_neg, Complex.norm_mul, Complex.norm_ofNat, norm_real,
-    Real.norm_eq_abs, abs_of_nonneg pi_nonneg, norm_I, mul_one, smulRightL_apply, ge_iff_le]
+    Real.norm_eq_abs, abs_pi, norm_I, mul_one, smulRightL_apply, ge_iff_le]
   gcongr
   -- third step: argue that the scalar multiplication is bilinear to bound the iterated derivatives
   -- of `v ↦ (∏ i, L v (m i)) • f v` in terms of those of `v ↦ (∏ i, L v (m i))` and of `f`.
@@ -653,7 +652,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     linarith [one_le_pi_div_two]
   _ = ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₁₂ f)) w n (fun _ ↦ v)‖ := by
-    simp [norm_smul, abs_of_nonneg pi_nonneg]
+    simp [norm_smul]
   _ ≤ ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₁₂ f)) w n‖ * ∏ _ : Fin n, ‖v‖ :=
     le_opNorm _ _
@@ -775,7 +774,7 @@ lemma hasDerivAt_fourier
     apply ContinuousLinearMap.ext_ring
     rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.flip_apply,
       ContinuousLinearMap.mul_apply', one_mul, map_smul]
-    exact congr_arg (fun x ↦ v • x) (one_smul ℝ (f v)).symm
+    congrm v • $((one_smul ℝ (f v)).symm)
   convert! (VectorFourier.hasFDerivAt_fourierIntegral L hf hf'' w).hasDerivAt using 1
   rw [fourierIntegral_continuousLinearMap_apply' h_int, VectorFourier.fourierIntegral,
     fourier_real_eq]
@@ -833,7 +832,11 @@ theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContD
   simp [← coe_smul, smul_smul, ← mul_pow, innerSL_apply_apply ℝ]
 
 /-- If `f` and its first `n` derivatives are integrable, then the Fourier transform of `f` decays
-like `|u| ^ (-n)`, with an explicit bound that is also nontrivial at `u = 0`. -/
+like `|u| ^ (-n)`, with an explicit bound that is also nontrivial at `u = 0`.
+
+TODO: a higher-dimensional analogue.  This requires a reverse bound for `fourierPowSMulRight`, for
+which Mathlib currently only has the ≤ direction.
+-/
 theorem one_add_pow_mul_norm_fourier_le {f : ℝ → E} {n : ℕ} (hf : ContDiff ℝ n f)
     (h'f : ∀ k ≤ n, Integrable (iteratedDeriv k f)) (u : ℝ) :
     (1 + |u| ^ n) * ‖𝓕 f u‖ ≤

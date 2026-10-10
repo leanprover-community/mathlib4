@@ -161,7 +161,7 @@ instance bicategory : Bicategory.{w, v} Bᵒᵖ where
   associator f g h := (associator h.unop g.unop f.unop).op2_unop.symm
   leftUnitor f := (rightUnitor f.unop).op2_unop
   rightUnitor f := (leftUnitor f.unop).op2_unop
-  whisker_exchange η θ := congrArg op2 <| (whisker_exchange _ _).symm
+  whisker_exchange η θ := congrArg op2 (whisker_exchange _ _).symm
   whisker_assoc f g g' η i := congrArg op2 <| by simp
   pentagon f g h i := congrArg op2 <| by simp
   triangle f g := congrArg op2 <| by simp
