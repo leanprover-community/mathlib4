@@ -206,6 +206,3 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP :
   rwa [Nat.card_units] at h
 
 end torsionMapQuot
-
-instance [NumberField K] [I.IsMaximal] : Finite (𝓞 K ⧸ I) :=
-  I.finiteQuotientOfFreeOfNeBot (I.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
