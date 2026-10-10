@@ -197,23 +197,20 @@ lemma pushouts_ofLE_le_largerSubobject (A : Subobject X) :
 
 variable [IsGrothendieckAbelian.{w} C]
 
-lemma top_mem_range (A₀ : Subobject X) {J : Type w} [LinearOrder J] [OrderBot J] [SuccOrder J]
-    [WellFoundedLT J] (hJ : HasCardinalLT (Subobject X) (Cardinal.mk J)) :
-    ∃ (j : J), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ :=
-  top_mem_range_transfiniteIterate (largerSubobject hG) A₀ (lt_largerSubobject hG) (by simp)
+lemma top_mem_range (A₀ : Subobject X) {J : Type w} [LinearOrder J] [WellFoundedLT J]
+    (hJ : HasCardinalLT (Subobject X) (Cardinal.mk J)) :
+    ∃ j : J, supTransfiniteIterate (largerSubobject hG) j A₀ = ⊤ :=
+  top_mem_range_supTransfiniteIterate (lt_largerSubobject hG) (by simp)
     (fun h ↦ by simpa [hasCardinalLT_iff_cardinal_mk_lt] using hJ.of_injective _ h)
 
 lemma exists_ordinal (A₀ : Subobject X) :
-    ∃ (o : Ordinal.{w}) (j : o.ToType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
+    ∃ (o : Ordinal.{w}) (j : o.ToType), supTransfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
   let κ := Order.succ (Cardinal.mk (Shrink.{w} (Subobject X)))
-  have : Nonempty κ.ord.ToType := by simp [κ]
-  have := WellFoundedLT.toOrderBot κ.ord.ToType
   exact ⟨κ.ord, top_mem_range hG A₀ (lt_of_lt_of_le (Order.lt_succ _) (by simp [κ]))⟩
 
 section
 
-variable (A₀ : Subobject X) (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J]
-  [WellFoundedLT J]
+variable (A₀ : Subobject X) (J : Type w) [LinearOrder J] [WellFoundedLT J]
 
 /-- Let `C` be a Grothendieck abelian category with a generator (`hG`),
 `X : C`, `A₀ : Subobject X`. Let `J` be a well-ordered type. This is
@@ -222,9 +219,9 @@ at `A₀` of the transfinite iteration of the map
 `largerSubobject hG : Subobject X → Subobject X`. -/
 @[simps]
 noncomputable def functorToMonoOver : J ⥤ MonoOver X where
-  obj j := MonoOver.mk (transfiniteIterate (largerSubobject hG) j A₀).arrow
+  obj j := MonoOver.mk (supTransfiniteIterate (largerSubobject hG) j A₀).arrow
   map {j j'} f := MonoOver.homMk (Subobject.ofLE _ _
-      (monotone_transfiniteIterate _ _ (le_largerSubobject hG) (leOfHom f)))
+      (supTransfiniteIterate_mono _ (le_largerSubobject hG) (leOfHom f)))
 
 /-- The functor `J ⥤ C` induced by `functorToMonoOver hG A₀ J : J ⥤ MonoOver X`. -/
 noncomputable abbrev functor : J ⥤ C :=
@@ -240,7 +237,7 @@ instance : (functor hG A₀ J).IsWellOrderContinuous where
       ((Set.principalSegIio m).monotone.functor ⋙ functorToMonoOver hG A₀ J) c
     dsimp [c]
     simp only [Subobject.mk_arrow]
-    exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm⟩
+    exact supTransfiniteIterate_limit (largerSubobject hG) A₀ hm⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -248,7 +245,7 @@ variable {J} in
 /-- For any `j`, the map `(functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)`
 is a transfinite composition of pushouts of monomorphisms in the
 family `generatingMonomorphisms G`. -/
-noncomputable def transfiniteCompositionOfShapeMapFromBot (j : J) :
+noncomputable def transfiniteCompositionOfShapeMapFromBot [OrderBot J] [SuccOrder J] (j : J) :
     (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j)
     ((functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)) where
   F := (Set.initialSegIic j).monotone.functor ⋙ functor hG A₀ J
@@ -259,11 +256,11 @@ noncomputable def transfiniteCompositionOfShapeMapFromBot (j : J) :
   isColimit := colimitOfDiagramTerminal isTerminalTop _
   map_mem k hk := by
     dsimp [MonoOver.forget]
-    convert!
-      pushouts_ofLE_le_largerSubobject hG (transfiniteIterate (largerSubobject hG) k.1 A₀) using 2
+    convert pushouts_ofLE_le_largerSubobject hG
+      (supTransfiniteIterate (largerSubobject hG) k.1 A₀) using 2
     all_goals
       rw [Set.Iic.succ_eq_of_not_isMax hk,
-        transfiniteIterate_succ _ _ _ (Set.not_isMax_coe _ hk)]
+        supTransfiniteIterate_succ_of_not_isMax _ _ (Set.not_isMax_coe _ hk)]
 
 end
 
@@ -271,17 +268,17 @@ variable {A : C} {f : A ⟶ X} [Mono f]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-/-- If `transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤`,
+/-- If `supTransfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤`,
 then the monomorphism `f` is a transfinite composition of pushouts of
 monomorphisms in the family `generatingMonomorphisms G`. -/
 noncomputable def transfiniteCompositionOfShapeOfEqTop
     {J : Type w} [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J] {j : J}
-    (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤) :
+    (hj : supTransfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤) :
     (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j) f := by
-  let t := transfiniteIterate (largerSubobject hG) j (Subobject.mk f)
+  let t := supTransfiniteIterate (largerSubobject hG) j (Subobject.mk f)
   have := (Subobject.isIso_arrow_iff_eq_top t).2 hj
   apply (transfiniteCompositionOfShapeMapFromBot hG (Subobject.mk f) j).ofArrowIso
-  refine Arrow.isoMk ((Subobject.isoOfEq _ _ (transfiniteIterate_bot _ _) ≪≫
+  refine Arrow.isoMk ((Subobject.isoOfEq _ _ (supTransfiniteIterate_bot _ _) ≪≫
     Subobject.underlyingIso f)) (asIso t.arrow) ?_
   dsimp [MonoOver.forget]
   rw [assoc, Subobject.underlyingIso_hom_comp_eq_mk, Subobject.ofLE_arrow,
