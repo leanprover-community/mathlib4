@@ -965,3 +965,70 @@ theorem dvd_differentIdeal_iff
   iff_not_comm.mp not_dvd_differentIdeal_iff.symm
 
 end
+
+namespace Algebra
+section IsUnramifiedAt
+
+variable {A} (L) [IsDedekindDomain A]
+
+omit [IsDomain A] in
+attribute [local instance] Ideal.Quotient.field in
+/-- If `L = K[α]` with `α = algebraMap B L x` for some `x : B`, and the reduction of the minimal
+polynomial of `x` modulo the prime `p` below `P` is separable, then `B / A` is unramified at `P`. -/
+lemma isUnramifiedAt_of_separable_minpoly' {P : Ideal B} [hP : P.IsPrime] (hPbot : P ≠ ⊥) (x : B)
+    (hx' : Algebra.adjoin K {algebraMap B L x} = ⊤)
+    (h : ((minpoly A x).map (Ideal.Quotient.mk (P.under A))).Separable) :
+    Algebra.IsUnramifiedAt A P := by
+  have : IsDomain B :=
+    (IsIntegralClosure.equiv A B L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
+  have hAB : Function.Injective (algebraMap A B) := by
+    refine Function.Injective.of_comp (f := algebraMap B L) ?_
+    rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A K L]
+    exact (algebraMap K L).injective.comp (IsFractionRing.injective _ _)
+  have := Module.isTorsionFree_iff_algebraMap_injective.mpr hAB
+  have := IsIntegralClosure.isNoetherian A K L B
+  have := IsIntegralClosure.isDedekindDomain A K L B
+  have := IsIntegralClosure.isFractionRing_of_finite_extension A K L B
+  have H : RingHom.comp (algebraMap (FractionRing A) (FractionRing B))
+      (FractionRing.algEquiv A K).symm.toRingEquiv =
+        RingHom.comp (FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L) := by
+    apply IsLocalization.ringHom_ext A⁰
+    ext
+    simp only [RingHom.coe_comp, RingHom.coe_coe, AlgEquiv.coe_toRingEquiv, Function.comp_apply,
+      AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+    rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+  have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
+    Algebra.IsSeparable.of_equiv_equiv _ _ H
+  rw [← not_dvd_differentIdeal_iff (A := A) (B := B) (P := P)]
+  intro hPdiv
+  have hxP : aeval x (derivative (minpoly A x)) ∈ P :=
+    (Ideal.dvd_iff_le.mp hPdiv) (aeval_derivative_mem_differentIdeal A K L _ hx')
+  rw [← Ideal.Quotient.eq_zero_iff_mem, ← Ideal.Quotient.algebraMap_eq] at hxP
+  let p : Ideal A := P.under A
+  have : p.IsMaximal := (inferInstance : p.IsPrime).isMaximal (Ideal.under_ne_bot A hPbot)
+  have hle : p ≤ P.comap (algebraMap A B) := by
+    change P.under A ≤ P.comap (algebraMap A B)
+    rw [Ideal.under_def]
+  have := (separable_map (Ideal.quotientMap P (algebraMap A B) hle)).mpr h
+  rw [Polynomial.map_map, Ideal.quotientMap_comp_mk] at this
+  obtain ⟨a, b, e⟩ := this
+  apply_fun (aeval (Ideal.Quotient.mk P x)) at e
+  simp_rw [← Ideal.Quotient.algebraMap_eq, ← Polynomial.map_map, derivative_map, map_add,
+    _root_.map_mul, aeval_map_algebraMap, aeval_algebraMap_apply, minpoly.aeval, hxP, map_zero,
+    mul_zero, zero_add, map_one, zero_ne_one] at e
+
+omit [IsDomain A] in
+/-- If `L = K[α]` with `α` integral over `A`, and the reduction of the minimal polynomial of `α`
+modulo the prime `p` below `P` is separable, then `B / A` is unramified at `P`. -/
+lemma isUnramifiedAt_of_separable_minpoly {P : Ideal B} [hP : P.IsPrime] (hPbot : P ≠ ⊥) (x : L)
+    (hx : IsIntegral A x) (hx' : Algebra.adjoin K {x} = ⊤)
+    (h : ((minpoly A x).map (Ideal.Quotient.mk (P.under A))).Separable) :
+    Algebra.IsUnramifiedAt A P := by
+  rw [← IsIntegralClosure.algebraMap_mk' B x hx, minpoly.algebraMap_eq
+    (IsIntegralClosure.algebraMap_injective B A L)] at h
+  exact isUnramifiedAt_of_separable_minpoly' K L hPbot (IsIntegralClosure.mk' B x hx)
+    (by rwa [IsIntegralClosure.algebraMap_mk']) h
+
+end IsUnramifiedAt
+
+end Algebra

@@ -334,6 +334,73 @@ lemma card_stabilizer_eq [IsDomain R] [IsDomain S] [Module.Finite R S] [Flat R S
 
 end inertia
 
+section unramified
+
+open UniqueFactorizationMonoid
+
+variable {A B G : Type*} [CommRing A] [CommRing B] [Algebra A B] [IsDedekindDomain A]
+  [IsDedekindDomain B] [Module.IsTorsionFree A B] [Algebra.Unramified A B] [Group G] [Finite G]
+  [MulSemiringAction G B] [IsGaloisGroup G A B]
+
+/-- If `B / A` is unramified with Galois group `G`, then any ideal `I` of `B` that is stable under
+`G` satisfies `(I ∩ A) B = I`. -/
+theorem map_comap_eq_of_unramified {I : Ideal B} (hI : ∀ σ : G, σ • I = I) :
+    (I.comap (algebraMap A B)).map (algebraMap A B) = I := by
+  classical
+  have hAB := FaithfulSMul.algebraMap_injective A B
+  by_cases hIbot : I = ⊥
+  · rw [hIbot, comap_bot_of_injective _ hAB, map_bot]
+  have : Algebra.IsIntegral A B := IsGaloisGroup.isInvariant.isIntegral A B G
+  have hIbot' : I.comap (algebraMap A B) ≠ ⊥ := mt eq_bot_of_under_eq_bot hIbot
+  have : ∀ p, (p.IsPrime ∧ I.comap (algebraMap A B) ≤ p) → ∃ P ≥ I, P ∈ primesOver p B := by
+    intro p ⟨hp₁, hp₂⟩
+    obtain ⟨P, hP1, hP2, hP3⟩ := exists_ideal_over_prime_of_isIntegral _ _ hp₂
+    exact ⟨P, hP1, hP2, ⟨hP3.symm⟩⟩
+  choose 𝔓 h𝔓 h𝔓' using this
+  suffices I = ∏ p ∈ (factors (I.comap <| algebraMap A B)).toFinset,
+      (p.map (algebraMap A B)) ^ (if h : _ then (factors I).count (𝔓 p h) else 0) by
+    simp_rw [← mapHom_apply, ← map_pow, ← map_prod, mapHom_apply] at this
+    rw [this, map_comap_map]
+  conv_lhs => rw [← associated_iff_eq.mp (factors_pow_count_prod hIbot)]
+  rw [← Finset.prod_fiberwise_of_maps_to (g := comap (algebraMap A B))]
+  · refine Finset.prod_congr rfl fun p hp ↦ ?_
+    simp only [factors_eq_normalizedFactors, Multiset.mem_toFinset,
+      mem_normalizedFactors_iff hIbot'] at hp
+    have hpbot : p ≠ ⊥ := fun hp' ↦ hIbot' (eq_bot_iff.mpr (hp.2.trans_eq hp'))
+    have : p.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hpbot hp.1
+    have hpu : Algebra.IsUnramifiedIn B p := fun _ _ _ ↦ inferInstance
+    obtain ⟨_, _⟩ := h𝔓' p hp
+    rw [← hpu.prod_primesOverFinset hpbot, ← Finset.prod_pow]
+    refine Finset.prod_congr ?_ fun P hP ↦ ?_
+    · ext P
+      rw [factors_eq_normalizedFactors, Finset.mem_filter, Multiset.mem_toFinset,
+        mem_normalizedFactors_iff hIbot, IsDedekindDomain.mem_primesOverFinset_iff hpbot]
+      refine ⟨fun H ↦ ⟨H.1.1, ⟨H.2.symm⟩⟩, fun H ↦ ⟨⟨H.1, ?_⟩, H.2.1.symm⟩⟩
+      obtain ⟨_, _⟩ := H
+      obtain ⟨σ, hσ⟩ := exists_smul_eq_of_isGaloisGroup p (𝔓 p hp) P G
+      rw [← hσ, ← hI σ]
+      exact pointwise_smul_le_pointwise_smul_iff.mpr (h𝔓 p hp)
+    · obtain ⟨_, _⟩ := (IsDedekindDomain.mem_primesOverFinset_iff hpbot B).mp hP
+      congr
+      rw [dite_eq_left hp, ← Nat.cast_inj (R := ENat), ← normalize_eq P,
+        factors_eq_normalizedFactors,
+        ← emultiplicity_eq_count_normalizedFactors (prime_of_isPrime
+          (ne_bot_of_liesOver_of_ne_bot hpbot P) inferInstance).irreducible hIbot,
+        ← normalize_eq (𝔓 p hp), ← emultiplicity_eq_count_normalizedFactors (prime_of_isPrime
+          (ne_bot_of_liesOver_of_ne_bot hpbot (𝔓 p hp)) inferInstance).irreducible hIbot,
+        emultiplicity_eq_emultiplicity_iff]
+      intro n
+      obtain ⟨σ, rfl⟩ := exists_smul_eq_of_isGaloisGroup p (𝔓 p hp) P G
+      rw [dvd_iff_le, dvd_iff_le, ← smul_pow']
+      conv_lhs => rw [← hI σ]
+      exact pointwise_smul_le_pointwise_smul_iff
+  · intro P hP
+    rw [factors_eq_normalizedFactors, Multiset.mem_toFinset, mem_normalizedFactors_iff hIbot] at hP
+    rw [factors_eq_normalizedFactors, Multiset.mem_toFinset, mem_normalizedFactors_iff hIbot']
+    exact ⟨hP.1.comap _, comap_mono hP.2⟩
+
+end unramified
+
 section galRestrict
 
 variable (R K L S : Type*) [CommRing R] [CommRing S] [Algebra R S] [Field K] [Field L]
