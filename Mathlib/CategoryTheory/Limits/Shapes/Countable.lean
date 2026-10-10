@@ -13,16 +13,11 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 A typeclass for categories with all countable (co)limits.
 
-We also prove that all cofiltered limits over countable preorders are isomorphic to sequential
-limits, see `sequentialFunctor_initial`.
-
-## Projects
-
-* There is a series of `proof_wanted` in `Wanted/CategoryTheory/Limits/Shapes/Countable.lean`,
-  implying that all cofiltered limits over countable categories are isomorphic to sequential
-  limits.
-
-* Prove the dual result for filtered colimits.
+We also prove that all (co)filtered limits over countable preorders are isomorphic to sequential
+(co)limits, see `sequentialFunctor_initial` and `sequentialFunctor_final`.
+For the extension to arbitrary countable filtered and cofiltered categories, see
+`Mathlib.CategoryTheory.Filtered.Countable`. For the construction of countable (co)limits
+from finite and sequential (co)limits, see `Mathlib.CategoryTheory.Limits.Constructions.Countable`.
 
 -/
 
@@ -135,7 +130,7 @@ attribute [local instance] IsFiltered.nonempty
 
 variable {C} [Preorder J] [IsFiltered J]
 
-/-- The object part of the initial functor `ℕᵒᵖ ⥤ J` -/
+/-- The object part of the final functor `ℕ ⥤ J`. -/
 noncomputable def sequentialFunctor_obj : ℕ → J := fun
   | .zero => (exists_surjective_nat _).choose 0
   | .succ n => (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose n)
@@ -147,8 +142,8 @@ theorem sequentialFunctor_map : Monotone (sequentialFunctor_obj J) :=
       (sequentialFunctor_obj J n)).choose_spec.choose_spec.choose
 
 /--
-The initial functor `ℕᵒᵖ ⥤ J`, which allows us to turn cofiltered limits over countable preorders
-into sequential limits.
+The final functor `ℕ ⥤ J`, which allows us to turn filtered colimits over countable preorders
+into sequential colimits.
 -/
 noncomputable def sequentialFunctor : ℕ ⥤ J where
   obj n := sequentialFunctor_obj J n

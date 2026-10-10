@@ -2805,6 +2805,7 @@ public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Filtered.Connected
 public import Mathlib.CategoryTheory.Filtered.CostructuredArrow
+public import Mathlib.CategoryTheory.Filtered.Countable
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Filtered.Flat
@@ -2939,6 +2940,7 @@ public import Mathlib.CategoryTheory.Limits.Cones
 public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Limits.ConstructLimitMap
 public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Constructions.Countable
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
