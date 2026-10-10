@@ -49,7 +49,27 @@ lemma Matrix.SpecialLinearGroup.mem_lineStab_iff (A : SpecialLinearGroup ι F)
     (L : Submodule F (ι → F)) : A ∈ lineStab L ↔ ∀ w : ι → F, A • w - w ∈ L :=
   Iff.rfl
 
+/-- A transvection `transvection hij b` lies in `lineStab (span F {Pi.single i 1})`. -/
+lemma Matrix.SpecialLinearGroup.transvection_mem_lineStab {i j : ι} (hij : i ≠ j) (b : F) :
+    transvection hij b ∈ lineStab (Submodule.span F {(Pi.single i (1 : F) : ι → F)}) :=
+  fun w ↦ Submodule.mem_span_singleton.2 ⟨b * w j, by simp [mul_smul,
+    Matrix.SpecialLinearGroup.smul_def, transvection_coe, add_smul, Matrix.single_mulVec_eq]⟩
+
 open scoped LinearAlgebra.Projectivization
+
+/-- The elementary diagonal `elemDiagSL hij α` lies in the supremum of all line-stabilisers
+of `SL ι F`. -/
+lemma Matrix.SpecialLinearGroup.elemDiagSL_mem_iSup_lineStab {i j : ι} (hij : i ≠ j) (α : F) :
+    elemDiagSL hij α ∈ ⨆ p : ℙ F (ι → F), lineStab p.submodule := by
+  -- every transvection lies in the line-stabiliser of a coordinate axis
+  have h : ∀ ⦃a b : ι⦄ (hab : a ≠ b) (c : F), transvection hab c ∈
+      ⨆ p : ℙ F (ι → F), lineStab p.submodule := fun a b hab c ↦
+    le_iSup (fun p : ℙ F (ι → F) ↦ lineStab p.submodule)
+      (.mk F (Pi.single a 1) (Pi.single_ne_zero_iff.2 one_ne_zero)) <| by
+      rw [Projectivization.submodule_mk]
+      exact transvection_mem_lineStab hab c
+  exact mul_mem (mul_mem (mul_mem (mul_mem (mul_mem (h hij α) (h hij.symm _)) (h hij α))
+    (h hij (-1))) (h hij.symm 1)) (h hij (-1))
 
 /-- The candidate family of subgroups for the Iwasawa structure on
 `PSL ι F` acting on the projective space `ℙ F (ι → F)`: the unipotent radical
