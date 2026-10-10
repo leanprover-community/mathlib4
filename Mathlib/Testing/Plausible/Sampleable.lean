@@ -16,6 +16,8 @@ import Plausible.Gen
 import Plausible.Random
 
 /-!
+# `Plausible`: `Shrinkable` and `SampleableExt` instances
+
 This module contains `Plausible.Shrinkable` and `Plausible.SampleableExt` instances for mathlib
 types.
 -/
