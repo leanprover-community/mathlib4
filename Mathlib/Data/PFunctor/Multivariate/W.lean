@@ -145,8 +145,6 @@ def wpInd {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort v}
     ∀ (x : P.last.W) (f' : P.WPath x ⟹ α), C x f'
   | ⟨a, f⟩, f' => ih a f f' fun _i => wpInd ih _ _
 
-@[deprecated (since := "2026-03-20")] alias wp_ind := wpInd
-
 /-!
 Now think of W as defined inductively by the data ⟨a, f', f⟩ where
 - `a  : P.A` is the shape of the top node
@@ -187,8 +185,6 @@ def wInd {α : TypeVec n} {C : P.W α → Sort v}
       (congr rfl <| Sigma.mk.inj_iff.mpr ⟨rfl, heq_of_eq <| wPathCasesOn_eta P f'⟩)
       <| ih head (P.wPathDestLeft f') (fun i => ⟨f i, P.wPathDestRight f' i⟩) ih') hd ch
 
-@[deprecated (since := "2026-03-20")] alias w_ind := wInd
-
 @[simp]
 theorem wInd_wMk {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
@@ -201,8 +197,6 @@ theorem wInd_wMk {α : TypeVec n} {C : P.W α → Sort v}
 def wCases {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α), C (P.wMk a f' f)) :
     ∀ x, C x := P.wInd fun a f' f _ih' => ih a f' f
-
-@[deprecated (since := "2026-03-20")] alias w_cases := wCases
 
 /-- W-types are functorial -/
 def wMap {α β : TypeVec n} (g : α ⟹ β) : P.W α → P.W β := fun x => g <$$> x

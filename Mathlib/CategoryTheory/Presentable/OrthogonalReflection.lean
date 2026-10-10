@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+
+import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 
 /-!
 # The Orthogonal-reflection construction

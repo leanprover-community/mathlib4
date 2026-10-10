@@ -5,12 +5,9 @@ Authors: Oliver Nash, Jonathan Reich
 -/
 module
 
-public import Mathlib.Data.Fin.Basic
-public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import Mathlib.LinearAlgebra.Matrix.Symmetric
+
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormDet
 
@@ -38,7 +35,7 @@ It also defines the predicate that a matrix is a finite-type Cartan matrix `Matr
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*](bourbaki1968) plates I -- IX
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968] plates I -- IX
 * [J. Humphreys, *Introduction to Lie Algebras and Representation Theory*] Chapter 11
 
 ## Tags

@@ -5,10 +5,9 @@ Authors: Niels Voss
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.Order.Filter.Cofinite
-public import Mathlib.Tactic.GCongr
+
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Fermat Pseudoprimes
@@ -153,7 +152,7 @@ private theorem AB_id_helper (b p : ℕ) (_ : 2 ≤ b) (hp : Odd p) :
     (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := by
   have q₁ : b - 1 ∣ b ^ p - 1 := by simpa only [one_pow] using Nat.sub_dvd_pow_sub_pow b 1 p
   have q₂ : b + 1 ∣ b ^ p + 1 := by simpa only [one_pow] using hp.nat_add_dvd_pow_add_pow b 1
-  convert! Nat.div_mul_div_comm q₁ q₂ using 2 <;> rw [mul_comm (_ - 1), ← Nat.sq_sub_sq]
+  convert Nat.div_mul_div_comm q₁ q₂ using 2 <;> rw [mul_comm (_ - 1), ← Nat.sq_sub_sq]
   ring_nf
 
 /-- Used in the proof of `psp_from_prime_psp`
@@ -276,7 +275,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   have ha₇ : A * B ∣ b ^ (2 * p) - 1 := by
     use b ^ 2 - 1
     have : A * B * (b ^ 2 - 1) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) * (b ^ 2 - 1) :=
-      congr_arg (fun x : ℕ => x * (b ^ 2 - 1)) AB_id
+      congr($AB_id * (b ^ 2 - 1))
     simpa only [add_comm, Nat.div_mul_cancel hd, Nat.sub_add_cancel hi_bpowtwop] using this.symm
   -- Since `2 * p ∣ A * B - 1`, there is a number `q` such that `2 * p * q = A * B - 1`.
   -- By `Nat.sub_dvd_pow_sub_pow`, we know that `b ^ (2 * p) - 1 ∣ b ^ (2 * p * q) - 1`.

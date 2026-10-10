@@ -5,10 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Valued.ValuationTopology
-public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Topology.Algebra.ValuativeRel.Completion
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
+public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
 # Valued fields and their completions
@@ -43,48 +43,11 @@ variable {K : Type*} [DivisionRing K] {Γ₀ : Type*} [LinearOrderedCommGroupWit
 
 section ValuationTopologicalDivisionRing
 
-section InversionEstimate
+open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-variable (v : Valuation K Γ₀)
+section Valued
 
--- The following is the main technical lemma ensuring that inversion is continuous
--- in the topology induced by a valuation on a division ring (i.e. the next instance)
--- and the fact that a valued field is completable
--- [BouAC, VI.5.1 Lemme 1]
-theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
-    (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
-  have hyp1 : v (x - y) < γ * (v y * v y) := lt_of_lt_of_le h (min_le_left _ _)
-  have hyp1' : v (x - y) * (v y * v y)⁻¹ < γ := mul_inv_lt_of_lt_mul₀ hyp1
-  have hyp2 : v (x - y) < v y := lt_of_lt_of_le h (min_le_right _ _)
-  have key : v x = v y := Valuation.map_eq_of_sub_lt v hyp2
-  have x_ne : x ≠ 0 := by
-    intro h
-    apply y_ne
-    rw [h, v.map_zero] at key
-    exact v.zero_iff.1 key.symm
-  have decomp : x⁻¹ - y⁻¹ = x⁻¹ * (y - x) * y⁻¹ := by
-    rw [mul_sub_left_distrib, sub_mul, mul_assoc, show y * y⁻¹ = 1 from mul_inv_cancel₀ y_ne,
-      show x⁻¹ * x = 1 from inv_mul_cancel₀ x_ne, mul_one, one_mul]
-  calc
-    v (x⁻¹ - y⁻¹) = v (x⁻¹ * (y - x) * y⁻¹) := by rw [decomp]
-    _ = v x⁻¹ * (v <| y - x) * v y⁻¹ := by repeat' rw [Valuation.map_mul]
-    _ = (v x)⁻¹ * (v <| y - x) * (v y)⁻¹ := by rw [map_inv₀, map_inv₀]
-    _ = (v <| y - x) * (v y * v y)⁻¹ := by rw [mul_assoc, mul_comm, key, mul_assoc, mul_inv_rev]
-    _ = (v <| y - x) * (v y * v y)⁻¹ := rfl
-    _ = (v <| x - y) * (v y * v y)⁻¹ := by rw [Valuation.map_sub_swap]
-    _ < γ := hyp1'
-
-theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠ 0) (hs : s ≠ 0)
-    (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
-  have hr' : 0 < v r := by simp [zero_lt_iff, hr]
-  let γ : Γ₀ˣ := .mk0 (v s / v r) (by simp [hs, hr])
-  calc
-    v (x⁻¹ - y⁻¹) * v r < γ * v r := by gcongr; exact Valuation.inversion_estimate v y_ne h
-    _ = v s := div_mul_cancel₀ _ (by simpa)
-
-end InversionEstimate
-
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Valued
+open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
 [BouAC, VI.5.1 middle of Proposition 1] -/
@@ -152,6 +115,8 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     exact Valued.locally_const (by simpa using h0)
 
 end
+
+end Valued
 
 end ValuationTopologicalDivisionRing
 
@@ -236,7 +201,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
       have : (v (1 : K) : Γ₀) ≠ 0 := by
         rw [Valuation.map_one]
         exact zero_ne_one.symm
-      convert! Valued.locally_const this
+      convert Valued.locally_const this
       ext x
       rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_ofPred_eq]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
@@ -252,7 +217,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
           rw [← one_mul (1 : hat K)]
         refine
           Tendsto.mul continuous_fst.continuousAt (Tendsto.comp ?_ continuous_snd.continuousAt)
-        convert! (continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))).tendsto
+        convert (continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))).tendsto
         exact inv_one.symm
       rcases tendsto_prod_self_iff.mp this V V_in with ⟨U, U_in, hU⟩
       let hatKstar := ({0}ᶜ : Set <| hat K)
@@ -366,7 +331,7 @@ lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
           ValueGroup₀.embedding a = ValueGroup₀.embedding b ↔ a = b := by
         rw [embedding_strictMono.injective.eq_iff]
       simp_rw [← hr, ← Valuation.restrict_def, h]
-      convert! valuation_isClosedMap.isClosed_range.preimage (continuous_extension (hv := hv))
+      convert valuation_isClosedMap.isClosed_range.preimage (continuous_extension (hv := hv))
       simp_rw [eq_comm (a := extension _)]
       #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
       (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
@@ -457,7 +422,6 @@ noncomputable def valueGroup₀_hom_extensionValuation :
         · simpa
         · simp [extensionValuation_apply_coe, hxy, ← hx, ← hy, hx0, hy0]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
   that of the extension to its completion. -/
 noncomputable def valueGroup₀_equiv_extensionValuation :
@@ -550,16 +514,11 @@ lemma valuedCompletion_surjective_iff :
           have hr' : restrict₀ ((valuedCompletion (K := K)).v : hat K →*₀ Γ₀) r ≠ 0 := by
             rw [ne_eq, ← embedding_inj, embedding_restrict₀ r]
             simpa [hr]
-          convert! isClosed_univ.sdiff (isOpen_sphere (hat K) hr') using 1
+          convert isClosed_univ.sdiff (isOpen_sphere (hat K) hr') using 1
           ext x
           simp [← hr, ← v.restrict_def, v.restrict_inj]
     · exact ⟨_, by simpa using ha⟩
   · exact ⟨a, by simp [ha]⟩
-
-instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
-    [FaithfulSMul R K] : FaithfulSMul R (hat K) := by
-  rw [faithfulSMul_iff_algebraMap_injective R (hat K)]
-  exact (FaithfulSMul.algebraMap_injective K (hat K)).comp (FaithfulSMul.algebraMap_injective R K)
 
 end Valued
 

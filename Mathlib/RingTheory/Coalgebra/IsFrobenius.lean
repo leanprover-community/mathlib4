@@ -5,9 +5,9 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.RingTheory.Bialgebra.Basic
 
 import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
