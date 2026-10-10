@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-public import Mathlib.CategoryTheory.Generator.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Generator.Preadditive
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 import Mathlib.CategoryTheory.Abelian.Subobject
 

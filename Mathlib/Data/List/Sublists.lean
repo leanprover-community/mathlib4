@@ -5,12 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Nat.Choose.Basic
 
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Lex
 import Mathlib.Data.List.Induction
+import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.Prod.Basic
 import Mathlib.Tactic.Finiteness.Attr
 

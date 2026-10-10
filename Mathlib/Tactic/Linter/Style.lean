@@ -9,9 +9,9 @@ public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Mathlib.Tactic.DeclarationNames
 public import Batteries.Tactic.Lint.Basic
 public import Lean.Parser.Module
+public import Mathlib.Tactic.DeclarationNames
 
 import Lean.Parser.Command
 

@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.Compactification.OnePoint.Basic
 public import Mathlib.Topology.Category.LightProfinite.Basic
+public import Mathlib.Topology.Compactification.OnePoint.Basic
 /-!
 
 # The light profinite set classifying convergent sequences

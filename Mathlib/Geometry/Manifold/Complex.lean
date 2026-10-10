@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.Complex.AbsMax
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
-import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.Geometry.Manifold.Notation
 
 /-! # Holomorphic functions on complex manifolds
 

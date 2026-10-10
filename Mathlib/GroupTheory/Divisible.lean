@@ -5,11 +5,11 @@ Authors: Jujian Zhang
 -/
 module
 
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Algebra.Field.Defs
 
 import Mathlib.Tactic.NormNum.Eq
 
