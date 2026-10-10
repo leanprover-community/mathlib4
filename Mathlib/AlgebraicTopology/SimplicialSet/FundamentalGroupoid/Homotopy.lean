@@ -158,8 +158,7 @@ noncomputable def congrMapFundamentalGroupoid (h : Homotopy f g) :
     mapFundamentalGroupoid f ≅ mapFundamentalGroupoid g :=
   congrMapFundamentalGroupoid' h.toSimplicialObjectHomotopy
 
-lemma congrMapFundamentalGroupoid_hom_app_mk
-    (h : Homotopy f g) (x : X _⦋0⦌) :
+lemma congrMapFundamentalGroupoid_hom_app_mk (h : Homotopy f g) (x : X _⦋0⦌) :
     (congrMapFundamentalGroupoid h).hom.app (.mk x) =
       homMk (Edge.ofSimplicialObjectHomotopy h.toSimplicialObjectHomotopy x) := by rfl
 
