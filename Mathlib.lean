@@ -5021,6 +5021,7 @@ public import Mathlib.GroupTheory.Perm.Centralizer
 public import Mathlib.GroupTheory.Perm.Closure
 public import Mathlib.GroupTheory.Perm.ClosureSwap
 public import Mathlib.GroupTheory.Perm.ConjAct
+public import Mathlib.GroupTheory.Perm.ConjClassesPartition
 public import Mathlib.GroupTheory.Perm.Cycle.Basic
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.GroupTheory.Perm.Cycle.Factors
