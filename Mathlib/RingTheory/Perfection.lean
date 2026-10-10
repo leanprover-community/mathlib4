@@ -5,13 +5,13 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Frobenius
-public import Mathlib.Algebra.CharP.Pi
 public import Mathlib.Algebra.CharP.Quotient
-public import Mathlib.Algebra.CharP.Subring
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.Valuation.Integers
+
+import Mathlib.Algebra.CharP.Pi
+import Mathlib.Algebra.CharP.Subring
 
 /-!
 # Ring Perfection and Tilt
@@ -40,8 +40,6 @@ If `α` is a ring with characteristic `p` and `p` is prime, `Perfection α p` is
 def Perfection (α : Type u₁) [Pow α ℕ] (p : ℕ) : Type u₁ :=
   { f : ℕ → α // ∀ n, f (n + 1) ^ p = f n }
 
-@[deprecated (since := "2026-03-03")] alias Ring.Perfection := Perfection
-
 namespace Perfection
 
 section CommMonoid
@@ -51,9 +49,6 @@ def submonoid (M : Type*) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
   carrier := { f | ∀ n, f (n + 1) ^ p = f n }
   one_mem' _ := one_pow _
   mul_mem' hf hg n := (mul_pow _ _ _).trans congr($(hf n) * $(hg n))
-
-@[deprecated (since := "2026-03-03")]
-alias _root_.Monoid.perfection := submonoid
 
 instance (M : Type*) [CommMonoid M] (p : ℕ) : CommMonoid (Perfection M p) :=
   inferInstanceAs <| CommMonoid (submonoid M p)
@@ -199,9 +194,6 @@ def subsemiring (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [Char
   zero_mem' _ := zero_pow hp.1.ne_zero
   add_mem' hf hg n := (map_add (frobenius R p) _ _).trans congr($(hf n) + $(hg n))
 
-@[deprecated (since := "2026-03-03")]
-alias _root_.Ring.perfectionSubsemiring := subsemiring
-
 variable (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : CommSemiring (Perfection R p) :=
@@ -330,12 +322,12 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
     { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
         fun n => by rw [← f.map_pow, Function.iterate_succ_apply', RingHom.coe_coe,
           frobeniusEquiv_symm_pow_p]⟩
-      map_one' := ext fun _ => (congr_arg f <| iterate_map_one _ _).trans f.map_one
+      map_one' := ext fun _ => congr(f $(iterate_map_one ..)).trans f.map_one
       map_mul' := fun _ _ =>
-        ext fun _ => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
-      map_zero' := ext fun _ => (congr_arg f <| iterate_map_zero _ _).trans f.map_zero
+        ext fun _ => congr(f $(iterate_map_mul ..)).trans <| f.map_mul _ _
+      map_zero' := ext fun _ => congr(f $(iterate_map_zero ..)).trans f.map_zero
       map_add' := fun _ _ =>
-        ext fun _ => (congr_arg f <| iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
+        ext fun _ => congr(f $(iterate_map_add ..)).trans <| f.map_add _ _ }
   invFun := RingHom.comp <| coeff S p 0
   right_inv f := RingHom.ext fun r => ext fun n =>
     show coeff S p 0 (f (((frobeniusEquiv R p).symm)^[n] r)) = coeff S p n (f r) by
@@ -367,9 +359,6 @@ def subring (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
     Subring (ℕ → R) where
   __ := subsemiring R p
   neg_mem' hf n := (map_neg (frobenius R p) _).trans congr(-$(hf n))
-
-@[deprecated (since := "2026-03-03")]
-alias _root_.Ring.perfectionSubring := subring
 
 variable (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
@@ -439,9 +428,9 @@ variable {p R P}
 /-- A perfection map induces an isomorphism to the perfection. -/
 noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Perfection R p :=
   RingEquiv.ofBijective (Perfection.lift p P R π)
-    ⟨fun _ _ hxy => m.injective fun n => (congr_arg (Perfection.coeff R p n) hxy :), fun f =>
+    ⟨fun _ _ hxy => m.injective fun n => congr(Perfection.coeff R p n $hxy), fun f =>
       let ⟨x, hx⟩ := m.surjective f.1 f.2
-      ⟨x, Perfection.ext <| hx⟩⟩
+      ⟨x, Perfection.ext hx⟩⟩
 
 theorem equiv_apply {π : P →+* R} (m : PerfectionMap p π) (x : P) :
     m.equiv x = Perfection.lift p P R π x := rfl
@@ -521,7 +510,7 @@ abbrev ModP :=
 namespace ModP
 
 instance [Fact p.Prime] [hvp : Fact (¬ IsUnit (p : O))] : CharP (ModP O p) p :=
-  CharP.quotient O p <| hvp.1
+  CharP.quotient O p hvp.1
 
 instance [hp : Fact p.Prime] [Fact (¬ IsUnit (p : O))] : Nontrivial (ModP O p) :=
   CharP.nontrivial_of_char_ne_one hp.1.ne_one

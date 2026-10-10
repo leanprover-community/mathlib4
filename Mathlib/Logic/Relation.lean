@@ -6,13 +6,13 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Logic.Relator
-public import Mathlib.Tactic.Use
-public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Mathlib.Tactic.SimpRw
 public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
-public import Batteries.Logic
-public import Batteries.Tactic.Trans
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.Use
+
+import Batteries.Logic
 
 /-!
 # Relation closures
@@ -64,29 +64,21 @@ section NeImp
 
 variable {r : α → α → Prop}
 
-@[deprecated (since := "2026-03-27")] alias Std.Refl.reflexive := refl
-
 /-- To show a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 it suffices to show it holds when `x ≠ y`. -/
 theorem Std.Refl.rel_of_ne_imp [Std.Refl r] {x y : α} (hr : x ≠ y → r x y) : r x y := by
   grind [Std.Refl]
-
-@[deprecated (since := "2026-03-27")] alias Reflexive.rel_of_ne_imp := Std.Refl.rel_of_ne_imp
 
 /-- If a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 then it holds whether or not `x ≠ y`. -/
 theorem Std.Refl.ne_imp_iff [Std.Refl r] {x y : α} : x ≠ y → r x y ↔ r x y :=
   ⟨Std.Refl.rel_of_ne_imp, fun hr _ ↦ hr⟩
 
-@[deprecated (since := "2026-03-27")] alias Reflexive.ne_imp_iff := Std.Refl.ne_imp_iff
-@[deprecated (since := "2026-03-27")] alias reflexive_ne_imp_iff := Std.Refl.ne_imp_iff
-
 theorem refl_iff_eq_le : Std.Refl r ↔ Eq ≤ r := by
   unfold Pi.hasLe Prop.le
   grind [Std.Refl]
 
 @[deprecated (since := "2026-06-30")] alias refl_iff_subrelation_eq := refl_iff_eq_le
-@[deprecated (since := "2026-03-27")] alias reflexive_iff_subrelation_eq := refl_iff_eq_le
 
 theorem irrefl_iff_le_ne : Std.Irrefl r ↔ r ≤ Ne := by
   unfold Pi.hasLe Prop.le
@@ -123,8 +115,6 @@ variable {r : β → β → Prop}
 
 instance Std.Refl.comap [Std.Refl r] (f : α → β) : Std.Refl (r on f) where
   refl a := refl <| f a
-
-@[deprecated (since := "2026-03-27")] alias Reflexive.comap := Std.Refl.comap
 
 instance Std.Symm.comap [Std.Symm r] (f : α → β) : Std.Symm (r on f) where
   symm _ _ hab := symm_of r hab
@@ -254,8 +244,6 @@ lemma _root_.Std.Refl.map {r : α → α → Prop} [Std.Refl r] {f : α → β} 
     obtain ⟨y, rfl⟩ := hf x
     exact ⟨y, y, refl y, rfl, rfl⟩
 
-@[deprecated (since := "2026-03-27")] alias map_reflexive := Std.Refl.map
-
 instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → β) :
     Std.Symm (Relation.Map r f f) where
   symm _ _ := by
@@ -267,8 +255,6 @@ instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → �
 lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
     (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
   grind [isTrans_def]
-
-@[deprecated (since := "2026-03-27")] alias isTrans_map := IsTrans.map
 
 lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β) (hf : f.Surjective)
     (hf_ker : ∀ x y, f x = f y → r x y) : Equivalence (Relation.Map r f f) where
@@ -645,9 +631,6 @@ lemma reflGen_eq_self [Std.Refl r] : ReflGen r = r := by
   ext x y
   simpa only [reflGen_iff, or_iff_right_iff_imp] using fun h ↦ h ▸ refl y
 
-@[deprecated inferInstance +typeChanged (since := "2026-03-27")]
-lemma reflexive_reflGen : Std.Refl (ReflGen r) := inferInstance
-
 lemma reflGen_minimal {r' : α → α → Prop} [Std.Refl r'] (h : r ≤ r') : ReflGen r ≤ r' := by
   simpa [reflGen_eq_self] using ReflGen.mono h
 
@@ -686,15 +669,11 @@ instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
 
 @[grind =]
 theorem transGen_eq_self [IsTrans α r] : TransGen r = r :=
-  funext₂ fun a b ↦ propext <|
+  funext₂ fun a b ↦ propext
     ⟨fun h ↦ by
       induction h with
       | single hc => exact hc
       | tail _ hcd hac => exact IsTrans.trans _ _ _ hac hcd, TransGen.single⟩
-
-@[deprecated transGen_eq_self +typeChanged (since := "2026-03-27"), grind =]
-theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
-  transGen_eq_self
 
 theorem TransGen.lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
     TransGen r ≤ (TransGen p on f) := by
@@ -774,13 +753,6 @@ instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
 instance : IsPreorder α (ReflTransGen r) where
   refl := @ReflTransGen.refl α r
   trans := @ReflTransGen.trans α r
-
-@[deprecated inferInstance +typeChanged (since := "2026-03-27")]
-theorem reflexive_reflTransGen : Std.Refl (ReflTransGen r) := inferInstance
-
-@[deprecated reflTransGen_eq_self +typeChanged (since := "2026-03-27"), grind =]
-theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
-  reflTransGen_eq_self
 
 theorem ReflTransGen.lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (ReflTransGen p on f)) :
     ReflTransGen r ≤ (ReflTransGen p on f) := by
@@ -1021,6 +993,6 @@ theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
   ⟨fun h ↦ by induction h <;> grind [Equivalence], .rel a b⟩
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
-  funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
+  funext fun _ ↦ funext fun _ ↦ propext h.eqvGen_iff
 
 end EqvGen

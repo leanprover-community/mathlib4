@@ -206,9 +206,6 @@ theorem val_apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 
 @[simp] theorem valued_toVal (r : R) : Valued.v (toVal v r) = v r := rfl
 
-@[deprecated (since := "2026-03-02")] alias apply_equiv := apply_ofVal
-@[deprecated (since := "2026-03-02")] alias apply_symm_equiv := valued_toVal
-
 instance [CharZero R] : CharZero (WithVal v) :=
   .of_addMonoidHom (equiv v).symm.toAddMonoidHom (by simp) (equiv v).symm.injective
 
@@ -399,16 +396,14 @@ variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-theorem valueGroup_eq : valueGroup (.ofClass (Valued.v (R := WithVal v))) =
-    valueGroup (.ofClass v) := by
+theorem valueGroup_eq : (Valued.v (R := WithVal v)).valueGroup = v.valueGroup := by
   simp [valueGroup, valueMonoid, ← (WithVal.ofVal_surjective v).range_comp]
   rfl
 
 /-- The multiplicative equivalence between the `valueGroup` of the valuation on `WithVal v`
 and the valuation `v`. -/
 @[simps! apply symm_apply]
-def valueGroupEquiv :
-    valueGroup (.ofClass (Valued.v (R := WithVal v))) ≃* valueGroup (.ofClass v) where
+def valueGroupEquiv : (Valued.v (R := WithVal v)).valueGroup ≃* v.valueGroup where
   __ := Set.equivOfEq (by simp [valueGroup_eq v])
   map_mul' := by simp [Set.equivOfEq, Equiv.subtypeEquivProp]
 
@@ -422,8 +417,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
 on `WithVal v` and the valuation `v`. -/
 @[simps!]
-def valueGroupOrderIso₀ : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
-    ValueGroup₀ (.ofClass v) where
+def valueGroupOrderIso₀ : (Valued.v (R := WithVal v)).ValueGroup₀ ≃*o v.ValueGroup₀ where
   toFun := WithZero.map' (valueGroupEquiv v)
   invFun := WithZero.map' (valueGroupEquiv v).symm
   left_inv x := by
@@ -540,8 +534,7 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   use .mk0 ((Valued.v.restrict ((WithVal.equiv v) r)) /
     (Valued.v.restrict ((WithVal.equiv v) s))) (by
     simp only [equiv_apply, restrict_def, ne_eq, div_eq_zero_iff, restrict₀_eq_zero_iff, hv,
-      MonoidWithZeroHom.coe_ofClass, not_or, (eq_zero h (r := r.ofVal)).ne,
-      (eq_zero h (r := s.ofVal)).ne]
+      coe_toMonoidWithZeroHom, not_or, (eq_zero h (r := r.ofVal)).ne, (eq_zero h (r := s.ofVal)).ne]
     exact ⟨hr₀.ne', hs₀.ne'⟩)
   intro x hx
   simp only [equiv_symm_apply, Set.mem_ofPred_eq]
@@ -612,9 +605,9 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
 
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
-    (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+    (γ : v.ValueGroup₀ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
-  obtain ⟨r, hr⟩ := ValueGroup₀.restrict₀_surjective (.ofClass v) γ
+  obtain ⟨r, hr⟩ := ValueGroup₀.restrict₀_surjective (v : K →*₀ Γ₀) γ
   exact ⟨r, 1, by
     simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]
     rw [← map_zero v]

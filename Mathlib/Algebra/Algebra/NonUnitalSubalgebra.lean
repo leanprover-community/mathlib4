@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Data.Set.UnionLift
 public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.RingTheory.NonUnitalSubring.Basic
 
 /-!
 # Non-unital Subalgebras over Commutative Semirings
@@ -90,7 +89,7 @@ lemma toSubmodule_injective : (toSubmodule : NonUnitalSubalgebra R A → Submodu
 lemma toSubmodule_inj {s t : NonUnitalSubalgebra R A} : s.toSubmodule = t.toSubmodule ↔ s = t :=
   toSubmodule_injective.eq_iff
 
-instance : PartialOrder (NonUnitalSubalgebra R A) := .ofSetLike (NonUnitalSubalgebra R A) A
+instance : PartialOrder (NonUnitalSubalgebra R A) := .ofSetLike (NonUnitalSubalgebra R A)
 
 /-- The actual `NonUnitalSubalgebra` obtained from an element of a type satisfying
 `NonUnitalSubsemiringClass` and `SMulMemClass`. -/
@@ -496,7 +495,7 @@ theorem coe_codRestrict (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) (hf
 theorem injective_codRestrict
     (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (NonUnitalAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H congr($(hxy).val)⟩
 
 /-- Restrict the codomain of an `NonUnitalAlgHom` `f` to `f.range`.
 
@@ -592,7 +591,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebr
 protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (NonUnitalAlgebra.gc.le_u_l s) hs
   gc := NonUnitalAlgebra.gc
-  le_l_u S := (NonUnitalAlgebra.gc (S : Set A) (adjoin R S)).1 <| le_rfl
+  le_l_u S := (NonUnitalAlgebra.gc (S : Set A) (adjoin R S)).1 le_rfl
   choice_eq _ _ := NonUnitalSubalgebra.copy_eq _ _ _
 
 instance : CompleteLattice (NonUnitalSubalgebra R A) :=
@@ -983,6 +982,11 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → NonUnitalSubalgebra R A) :
+    ((⨆ i, S i : NonUnitalSubalgebra R A) : Set A) =
+      ⋃ s : Finset ι, (⨆ i ∈ s, S i : NonUnitalSubalgebra R A) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : NonUnitalSubalgebra R A) := by
@@ -1224,33 +1228,9 @@ instance isMulCommutative_adjoin_singleton (x : A) :
     IsMulCommutative (adjoin R ({x} : Set A)) :=
   isMulCommutative_adjoin R (by simp)
 
-open scoped IsMulCommutative in
-variable (R) in
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
-semiring.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
-    NonUnitalCommSemiring (adjoin R s) :=
-  have := isMulCommutative_adjoin R hcomm
-  inferInstance
-
 instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
     [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
   isMulCommutative_adjoin R fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
-
-open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
-ring.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
-    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
-    (hcomm : s.Pairwise Commute) : NonUnitalCommRing (adjoin R s) :=
-  have := isMulCommutative_adjoin R hcomm
-  inferInstance
 
 end NonUnitalAlgebra
 

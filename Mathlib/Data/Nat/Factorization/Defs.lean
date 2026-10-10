@@ -5,11 +5,12 @@ Authors: Stuart Presnell
 -/
 module
 
-public import Batteries.Data.List.Count
 public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Data.Nat.PrimeFin
 public import Mathlib.NumberTheory.Padics.PadicVal.Defs
+
+import Batteries.Data.List.Count
 
 /-!
 # Prime factorizations
@@ -97,9 +98,6 @@ theorem prod_factorization_pow_eq_self {n : ℕ} (hn : n ≠ 0) : n.factorizatio
   rw [factorization_eq_primeFactorsList_multiset n]
   simp only [← prod_toMultiset, Multiset.prod_coe, Multiset.toFinsupp_toMultiset]
   exact prod_primeFactorsList hn
-
-@[deprecated (since := "2026-03-19")]
-alias factorization_prod_pow_eq_self := prod_factorization_pow_eq_self
 
 theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : ∀ p : ℕ, a.factorization p = b.factorization p) : a = b :=
