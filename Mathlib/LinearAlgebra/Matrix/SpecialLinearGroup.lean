@@ -217,7 +217,7 @@ theorem toLin'_injective :
     Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
   Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
 
-variable {S : Type*} [CommRing S]
+variable {S T : Type*} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from
 `SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
@@ -229,6 +229,108 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
       simp [g.prop]⟩
   map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
+
+@[simp] lemma map_comp (f : R →+* S) (g : S →+* T) :
+    (map (n := n) g).comp (map f) = map (g.comp f) := rfl
+
+/-- A ring isomorphism `R ≃+* S` induces `SL(n, R) ≃* SL(n, S)`. -/
+@[simps! apply_coe]
+def mapEquiv (e : R ≃+* S) : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
+  toFun := map e
+  invFun := map e.symm
+  left_inv A := by ext; simp
+  right_inv A := by ext; simp
+  map_mul' := map_mul _
+
+@[simp] lemma mapEquiv_refl : mapEquiv (.refl R) = .refl (SpecialLinearGroup n R) := rfl
+
+@[simp] lemma symm_mapEquiv (f : R ≃+* S) :
+    (mapEquiv (n := n) f).symm = mapEquiv f.symm := rfl
+
+@[simp] lemma mapEquiv_trans (f : R ≃+* S) (g : S ≃+* T) :
+    mapEquiv (n := n) (f.trans g) = (mapEquiv f).trans (mapEquiv g) := rfl
+
+@[simp] lemma toMonoidHom_mapEquiv (f : R ≃+* S) :
+    (mapEquiv (n := n) f : SpecialLinearGroup n R →* SpecialLinearGroup n S)
+      = map (f : R →+* S) := rfl
+
+@[simp]
+lemma coe_mapEquiv (e : R ≃+* S) (A : SpecialLinearGroup n R) :
+    (mapEquiv e A : Matrix n n S) = (e : R →+* S).mapMatrix A :=
+  rfl
+
+section Reindex
+
+variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
+
+/-- The `MulEquiv` induced by the equivalence over the index -/
+@[simps! apply]
+def reindexMulEquiv (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
+  toFun A := ⟨reindexRingEquiv R e A, by rw [coe_reindexRingEquiv, det_reindex_self, A.det_coe]⟩
+  invFun A :=
+    ⟨reindexRingEquiv R e.symm A, by rw [coe_reindexRingEquiv, det_reindex_self, A.det_coe]⟩
+  left_inv A := by ext; simp
+  right_inv A := by ext; simp
+  map_mul' A B := Subtype.ext (map_mul (reindexRingEquiv R e) (A : Matrix m m R) B)
+
+@[simp]
+theorem symm_reindexMulEquiv (e : m ≃ n) :
+    (reindexMulEquiv R e).symm = reindexMulEquiv R e.symm :=
+  rfl
+
+@[simp]
+theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindexMulEquiv R e) (reindexMulEquiv R e') = reindexMulEquiv R (.trans e e') :=
+  rfl
+
+end Reindex
+
+section Pi
+
+variable {ι : Type*} (R : ι → Type*) [Π i, CommRing (R i)]
+
+/-- The monoid equivalence between `SL n` of a product of rings,
+and the product of the `SL n` of each ring. -/
+@[simps!]
+def piEquiv : SpecialLinearGroup n (Π i, R i) ≃* Π i, SpecialLinearGroup n (R i) where
+  toFun A i := map (Pi.evalRingHom R i) A
+  invFun A := ⟨of fun a b i ↦ A i a b, funext fun i ↦
+    (RingHom.map_det (Pi.evalRingHom R i) (of fun a b i ↦ A i a b)).trans (A i).det_coe⟩
+  left_inv A := by ext; rfl
+  right_inv A := funext fun _ ↦ by ext; rfl
+  map_mul' A B := by ext; simp
+
+end Pi
+section SumInl
+
+variable (p : Type*) [DecidableEq p] [Fintype p]
+
+/-- The embedding `SL(n, R) →* SL(n ⊕ p, R)` sending `A` to the block matrix `!![A, 0; 0, 1]`. -/
+def sumInl : SpecialLinearGroup n R →* SpecialLinearGroup (n ⊕ p) R where
+  toFun A := ⟨fromBlocks A 0 0 1, by simp [det_fromBlocks_zero₂₁]⟩
+  map_one' := Subtype.ext fromBlocks_one
+  map_mul' A B := Subtype.ext ((fromBlocks_multiply ..).trans (by simp)).symm
+
+variable {p}
+
+@[simp]
+lemma coe_sumInl (A : SpecialLinearGroup n R) :
+    (sumInl p A : Matrix (n ⊕ p) (n ⊕ p) R) = fromBlocks A 0 0 1 :=
+  rfl
+
+lemma mem_range_sumInl_iff {A : SpecialLinearGroup (n ⊕ p) R} :
+    A ∈ (sumInl p).range ↔ (A : Matrix (n ⊕ p) (n ⊕ p) R).IsTwoBlockDiagonal ∧
+      toBlocks₂₂ (A : Matrix (n ⊕ p) (n ⊕ p) R) = 1 := by
+  refine ⟨?_, fun ⟨⟨h₁₂, h₂₁⟩, h₂₂⟩ ↦ ?_⟩
+  · rintro ⟨A, rfl⟩
+    simp [IsTwoBlockDiagonal]
+  · have hA : (A : Matrix (n ⊕ p) (n ⊕ p) R) = fromBlocks (toBlocks₁₁ ↑A) 0 0 1 :=
+      (fromBlocks_toBlocks _).symm.trans (by rw [h₁₂, h₂₁, h₂₂])
+    have hdet := A.det_coe
+    rw [hA, det_fromBlocks_zero₂₁, det_one, mul_one] at hdet
+    exact ⟨⟨_, hdet⟩, Subtype.ext hA.symm⟩
+
+end SumInl
 
 section center
 
@@ -491,7 +593,8 @@ end Action
 
 section transvection
 
-variable {ι F : Type*} [DecidableEq ι] [Fintype ι] [CommRing F]
+variable {ι F S : Type*} [DecidableEq ι] [Fintype ι] [CommRing F] [CommRing S]
+variable (f : F →+* S)
 
 /-- The transvection `1 + b · E_{i,j}` (the identity plus `b` in position `(i, j)`)
 as an element of `SL ι F`, when `i ≠ j`. -/
@@ -556,6 +659,20 @@ lemma transvection_mem_center_iff {i j : ι} (hij : i ≠ j) (b : F) :
       add_zero, diagonal_eq_one]
     exact ⟨1, one_pow _, rfl⟩
 
+open scoped commutatorElement in
+/-- The commutator of `transvection hij a` and `transvection hjk b` is
+`transvection hik (a * b)`. -/
+lemma commutatorElement_transvection {i j k : ι} (hij : i ≠ j) (hik : i ≠ k) (hjk : j ≠ k)
+     (a b : F) : ⁅transvection hij a, transvection hjk b⁆ = transvection hik (a * b) := by
+  simp only [commutatorElement_def, transvection_inv]
+  exact Subtype.ext
+    (transvection_mul_transvection_mul_transvection_neg_mul_transvection_neg i j hij hik hjk a b)
+
+@[simp]
+lemma map_transvection {i j : ι} (hij : i ≠ j) (b : F) :
+    map f (transvection hij b) = transvection hij (f b) :=
+  Subtype.ext (Matrix.map_transvection i j f b)
+
 end SpecialLinearGroup
 
 namespace TransvectionStruct
@@ -576,6 +693,29 @@ lemma toSpecialLinearGroup_coe (t : TransvectionStruct ι F) :
 lemma toSpecialLinearGroup_mk {i j : ι} (hij : i ≠ j) (c : F) :
     (TransvectionStruct.mk i j hij c).toSpecialLinearGroup =
       SpecialLinearGroup.transvection hij c := rfl
+
+@[simp]
+lemma map_toSpecialLinearGroup (t : TransvectionStruct ι F) :
+    SpecialLinearGroup.map f t.toSpecialLinearGroup = (t.map f).toSpecialLinearGroup :=
+  SpecialLinearGroup.map_transvection f t.hij t.c
+
+/-- If `f` is surjective, every transvection in `SL(ι, S)` is the image under
+`SpecialLinearGroup.map f` of a transvection in `SL(ι, F)`. -/
+lemma toSpecialLinearGroup_mem_range_map {f : F →+* S} (hf : Function.Surjective f)
+    (t : TransvectionStruct ι S) : t.toSpecialLinearGroup ∈ (SpecialLinearGroup.map f).range := by
+  obtain ⟨t', rfl⟩ := map_surjective f hf t
+  exact ⟨t'.toSpecialLinearGroup, map_toSpecialLinearGroup f t'⟩
+
+@[simp]
+lemma sumInl_toSpecialLinearGroup (p : Type*) [DecidableEq p] [Fintype p]
+    (t : TransvectionStruct ι F) :
+    SpecialLinearGroup.sumInl p t.toSpecialLinearGroup = (t.sumInl p).toSpecialLinearGroup :=
+  Subtype.ext (toMatrix_sumInl p t).symm
+
+@[simp]
+lemma coe_list_prod_toSpecialLinearGroup (L : List (TransvectionStruct ι F)) :
+    ((L.map toSpecialLinearGroup).prod : Matrix ι ι F) = (L.map toMatrix).prod := by
+  induction L <;> simp_all
 
 end TransvectionStruct
 
