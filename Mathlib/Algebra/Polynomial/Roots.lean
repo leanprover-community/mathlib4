@@ -114,14 +114,31 @@ theorem ne_zero_of_mem_roots (h : a ∈ p.roots) : p ≠ 0 :=
 theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
   (mem_roots'.1 h).2
 
-theorem roots_eq_zero_iff_isRoot_eq_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRoot = ⊥ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ eq_zero_of_forall_notMem fun x hx ↦ h ▸ mem_roots hp0 |>.mp hx⟩
-  ext a
-  simp only [Pi.bot_apply, Prop.bot_eq_false, mem_roots hp0 |>.not.mp <| by simp [h]]
+theorem roots_eq_zero_iff_not_isRoot (hp0 : p ≠ 0) : p.roots = 0 ↔ ∀ x, ¬ p.IsRoot x := by
+  simp_rw [eq_zero_iff_forall_notMem, mem_roots hp0]
 
-theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ p.IsRoot = ⊥ := by
+@[deprecated "Use `Polynomial.roots_eq_zero_iff_not_isRoot` instead."
+(since := "2026-09-27")]
+theorem roots_eq_zero_iff_isRoot_eq_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRoot = ⊥ := by
+  simp [roots_eq_zero_iff_not_isRoot hp0, funext_iff]
+
+theorem roots_eq_zero_iff_eq_zero_or_not_isRoot : p.roots = 0 ↔ p = 0 ∨ ∀ x, ¬ p.IsRoot x := by
   rcases eq_or_ne p 0 with rfl | hp0; · simp
-  simp [roots_eq_zero_iff_isRoot_eq_bot hp0, hp0]
+  simp [roots_eq_zero_iff_not_isRoot hp0, hp0]
+
+@[deprecated "Use `Polynomial.roots_eq_zero_iff_eq_zero_or_not_isRoot` instead."
+(since := "2026-09-27")]
+theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ p.IsRoot = ⊥ := by
+  simp [roots_eq_zero_iff_eq_zero_or_not_isRoot, funext_iff]
+
+theorem roots_ne_zero_iff_ne_zero_and_exists_isRoot : p.roots ≠ 0 ↔ p ≠ 0 ∧ ∃ x, p.IsRoot x := by
+  grind [roots_eq_zero_iff_eq_zero_or_not_isRoot]
+
+theorem exists_isRoot_of_roots_ne_zero (h : p.roots ≠ 0) : ∃ x, p.IsRoot x :=
+  (roots_ne_zero_iff_ne_zero_and_exists_isRoot.mp h).2
+
+theorem roots_ne_zero_iff_exists_isRoot (hp0 : p ≠ 0) : p.roots ≠ 0 ↔ ∃ x, p.IsRoot x := by
+  grind [roots_ne_zero_iff_ne_zero_and_exists_isRoot]
 
 theorem mem_roots_map_of_injective [Semiring S] {p : S[X]} {f : S →+* R}
     (hf : Function.Injective f) {x : R} (hp : p ≠ 0) : x ∈ (p.map f).roots ↔ p.eval₂ f x = 0 := by
@@ -878,11 +895,10 @@ theorem card_roots_le_one_of_irreducible (hirr : Irreducible p) : p.roots.card �
     isRoot_of_mem_roots hx).symm
 
 theorem roots_eq_zero_of_irreducible_of_natDegree_ne_one (hirr : Irreducible p)
-    (hdeg : p.natDegree ≠ 1) : p.roots = 0 := by
-  by_contra hroots
-  have ⟨x, hx⟩ := exists_mem_of_ne_zero hroots
-  exact hdeg <| natDegree_eq_of_degree_eq_some <|
-    degree_eq_one_of_irreducible_of_root hirr (mem_roots'.mp hx).right
+    (h : p.natDegree ≠ 1) : p.roots = 0 := by
+  contrapose! h
+  have ⟨x, hx⟩ := exists_isRoot_of_roots_ne_zero h
+  exact natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hirr hx
 
 /-- To check a monic polynomial is irreducible, it suffices to check only for
 divisors that have smaller degree.
