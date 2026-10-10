@@ -834,6 +834,22 @@ theorem isPrincipal_of_isPrincipal_num [IsDomain R]
     <| (FractionalIdeal.equivNumOfIsLocalization I).isPrincipal_iff.mpr
     <| Module.isPrincipal_submodule_iff.mpr hI
 
+/-- If the ideal monoid of `R` has unique roots and `S ≤ R⁰`, then the monoid of fractional
+ideals of `R` (localized at `S`) also has unique roots. -/
+theorem hasUniqueRoots_of_le_nonZeroDivisors (h : S ≤ nonZeroDivisors R)
+    [HasUniqueRoots (Ideal R)] : HasUniqueRoots (FractionalIdeal S P) where
+  pow_left_injective {n} hn I J hIJ := by
+    rw [← ((map_units P I.den).map (spanSingleton S)).mul_right_inj, den_mul_self_eq_num',
+      ← ((map_units P J.den).map (spanSingleton S)).mul_right_inj, mul_left_comm,
+      den_mul_self_eq_num']
+    simp only [← coeIdeal_span_singleton, ← coeIdeal_mul]
+    rw [coeIdeal_inj' h, ← (pow_left_injective hn).eq_iff, ← coeIdeal_inj' (P := P) h]
+    simp [coeIdeal_pow, mul_pow, ← den_mul_self_eq_num', hIJ, mul_left_comm]
+
+instance [IsLocalization (nonZeroDivisors R) P]
+    [HasUniqueRoots (Ideal R)] : HasUniqueRoots (FractionalIdeal (nonZeroDivisors R) P) :=
+  hasUniqueRoots_of_le_nonZeroDivisors le_rfl
+
 end PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁]
