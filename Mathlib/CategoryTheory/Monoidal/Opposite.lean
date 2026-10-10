@@ -500,7 +500,7 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 variable (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) [F.Monoidal]
 
 @[simps!]
-instance Functor.opMopMonoidal : F.opMop.Monoidal := 
+instance Functor.opMopMonoidal : F.opMop.Monoidal :=
   Functor.CoreMonoidal.toMonoidal <| {
     εIso := ((Functor.Monoidal.εIso F).unmop.unop).symm
     μIso X Y := ((Functor.Monoidal.μIso F _ _).unmop.unop).symm
