@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Data.Set.Constructions
 public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.NhdsWithin
+
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -94,7 +95,7 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
 
 theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
     (hsi : FiniteInter s) : IsTopologicalBasis s := by
-  convert! isTopologicalBasis_of_subbasis hsg
+  convert isTopologicalBasis_of_subbasis hsg
   refine le_antisymm (fun t ht ↦ ⟨{t}, by simpa using ht⟩) ?_
   rintro _ ⟨g, ⟨hg, hgs⟩, rfl⟩
   lift g to Finset (Set α) using hg
@@ -764,11 +765,6 @@ theorem _root_.MapClusterPt.tendsto_subseq {u : ℕ → α} (hx : MapClusterPt x
     ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
   subseq_tendsto_of_neBot hx
 
-@[deprecated MapClusterPt.tendsto_subseq (since := "2026-03-29")]
-theorem FirstCountableTopology.tendsto_subseq {x : α} {u : ℕ → α}
-    (hx : MapClusterPt x atTop u) : ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
-  subseq_tendsto_of_neBot hx
-
 end FirstCountableTopology
 
 instance {β} [TopologicalSpace β] [FirstCountableTopology α] [FirstCountableTopology β] :
@@ -1012,7 +1008,7 @@ lemma IsTopologicalBasis.exists_countable
     obtain ⟨u, u_mem, xu, uv⟩ : ∃ u ∈ countableBasis α, x ∈ u ∧ u ⊆ v :=
       (isBasis_countableBasis α).isOpen_iff.1 hv _ hx
     have : x ∈ ⋃ a ∈ s u, a := by
-      convert! xu
+      convert xu
       exact (hs u u_mem).symm
     obtain ⟨w, ws, xw⟩ : ∃ w ∈ s u, x ∈ w := by simpa using this
     refine ⟨w, ⟨u, u_mem, ws⟩, xw, ?_⟩

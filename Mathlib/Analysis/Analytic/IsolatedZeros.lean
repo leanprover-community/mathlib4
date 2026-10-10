@@ -5,11 +5,12 @@ Authors: Vincent Beffara, Stefan Kebekus
 -/
 module
 
-import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Order.Filter.EventuallyConst
+
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
 # Principle of isolated zeros
@@ -51,7 +52,7 @@ namespace HasSum
 variable {a : ℕ → E}
 
 theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n) (a 0) := by
-  convert! hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
+  convert hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
 
 theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
     (ha : ∀ k < n, a k = 0) : ∃ t : E, z ^ n • t = s ∧ HasSum (fun m => z ^ m • a (m + n)) t := by

@@ -5,14 +5,13 @@ Authors: Marcelo Lynch
 -/
 module
 
-public import Cache.Upload.Dest
 public import Cache.Upload.Curl
 
 /-!
 # The Azure Blob Storage backend
 
-The complete azure upload path: the destination resolution
-(`azureUploadDestFrom`), the credential resolution (`azureAuthFrom`), the
+The complete azure upload path: the location resolution
+(`azureUploadLocationFrom`), the credential resolution (`azureAuthFrom`), the
 request signing (`azureBearerCurlArgs`), and the transfer entry point
 (`azurePutStaged`). rclone signs only S3 requests, so the backend always
 transfers with the curl tool.
@@ -28,16 +27,16 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-The upload destination for the azure backend: the chosen `--container` on the
+The upload location for the azure backend: the chosen `--container` on the
 `lakecache` Azure storage account, or on the base
 `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as `MATHLIB_CACHE_BASE_URL`
 rebases reads. A missing container errors: an upload targets exactly one
 container.
 -/
-def azureUploadDestFrom (putBase? : Option String) (container? : Option Container)
-    (repo : String) (scope? : Option String) : Except String StagedUploadDest :=
+def azureUploadLocationFrom (putBase? : Option String) (container? : Option Container)
+    (repo : String) (scope? : Option String) : Except String Location :=
   match container? with
-  | some c => .ok (containerUploadDest (putBase?.getD azureAccountURL) c repo scope?)
+  | some c => .ok (c.location (putBase?.getD azureAccountURL) repo scope?)
   | none => .error
       s!"an upload targets one container: pass --container=NAME (known: \
       {", ".intercalate (Container.all.map Container.name)}), or set \
@@ -90,9 +89,8 @@ def getAzureAuth : IO String := do
 The staged put on the azure backend: the curl tool against `dest`, each
 request signed with the bearer token (`azureBearerCurlArgs`).
 -/
-def azurePutStaged (dest : StagedUploadDest) (token : String) (srcDir : FilePath)
-    (fileNames : Array String) (overwrite : Bool) (markerSha? : Option String) :
-    IO Unit :=
-  putStagedViaCurl dest (azureBearerCurlArgs token) srcDir fileNames overwrite markerSha?
+def azurePutStaged (dest : Location) (token : String) (srcDir : FilePath)
+    (fileNames : Array String) (overwrite : Bool) : IO Unit :=
+  putStagedViaCurl dest (azureBearerCurlArgs token) srcDir fileNames overwrite
 
 end Cache.Requests

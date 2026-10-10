@@ -5,11 +5,12 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.GroupTheory.Perm.Fin
+
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.ConjAct
-public import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.Tactic.IntervalCases
-public import Mathlib.Data.Nat.Totient
 
 /-!
 # Alternating Groups
@@ -254,10 +255,6 @@ theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α
     · apply Subgroup.subset_closure
       exact cycleType_swap_mul_swap_of_nodup (by grind [Finset.mem_compl])
 
-@[deprecated (since := "2026-03-10")]
-alias closure_cycleType_eq_2_2_eq_alternatingGroup :=
-  closure_cycleType_eq_two_two_eq_alternatingGroup
-
 theorem cycleType_eq_two_two_subset_alternatingGroup :
     {g : Perm α | g.cycleType = {2, 2}} ⊆ alternatingGroup α := by
   intro g hg
@@ -442,8 +439,8 @@ theorem conj_smul_range_ofSubtype (s : Finset α) (g : alternatingGroup α) :
     MulAut.conj g • (ofSubtype s).range = (ofSubtype (g • s)).range := by
   ext k
   simp_rw [mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff, ← map_inv,
-    MulAut.smul_def, ← ConjAct.toConjAct_smul_eq_mulAut_conj, ConjAct.coe_smul]
-  simp [support_conj_eq_smul_support, Finset.subset_smul_finset_iff, Subgroup.smul_def]
+    MulAut.smul_def, MulAut.coe_conj_apply, support_conj_eq_smul_support]
+  simp [Finset.subset_smul_finset_iff, Subgroup.smul_def]
 
 end alternatingGroup
 

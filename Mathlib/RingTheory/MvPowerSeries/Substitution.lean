@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 module
 
+public import Mathlib.Data.ENat.Lattice
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
 public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.Data.ENat.Lattice
 
 /-! # Substitutions in multivariate power series
 
@@ -221,7 +221,7 @@ theorem substAlgHom_eq_aeval
     (ha : HasSubst a) :
     (substAlgHom ha : MvPowerSeries σ R → MvPowerSeries τ S) = MvPowerSeries.aeval ha.hasEval := by
   simp only [substAlgHom, coe_aeval ha.hasEval]
-  convert! coe_aeval (R := R) (hasSubst_iff_hasEval_of_discreteTopology.mp ha) <;>
+  convert coe_aeval (R := R) (hasSubst_iff_hasEval_of_discreteTopology.mp ha) <;>
   exact DiscreteUniformity.eq_bot.symm
 
 @[simp]
@@ -685,7 +685,7 @@ theorem rescale_zero :
   split_ifs with h
   · simp [h, coeff_apply, ← @coeff_zero_eq_constantCoeff_apply, coeff_apply]
   · simp only [coeff_apply]
-    convert! zero_mul _
+    convert zero_mul _
     simp only [DFunLike.ext_iff, not_forall, Finsupp.coe_zero, Pi.zero_apply] at h
     obtain ⟨s, h⟩ := h
     simp only [Finsupp.prod]

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Slope
+
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
@@ -171,7 +172,7 @@ theorem HasFPowerSeriesAt.dslope_fslope {p : FormalMultilinearSeries 𝕜 𝕜 E
   simp only [hasFPowerSeriesAt_iff, FormalMultilinearSeries.coeff_fslope] at hp ⊢
   refine hp.mono fun x hx => ?_
   by_cases h : x = 0
-  · convert! hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
+  · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
   · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by simp [field, pow_succ]
     suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
       simpa [dslope, slope, h, smul_smul, hxx] using this

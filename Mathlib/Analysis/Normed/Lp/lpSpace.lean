@@ -5,10 +5,11 @@ Authors: Heather Macbeth, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.MeanInequalitiesPow
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+
+import Mathlib.Analysis.MeanInequalitiesPow
 
 /-!
 # ℓp space
@@ -605,7 +606,7 @@ theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ 
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp hp'
   have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i ↦ by positivity
   rw [← Real.rpow_le_rpow_iff (norm_nonneg _) (norm_nonneg' _) hp'']
-  convert! le_hasSum (hasSum_norm hp'' f) i fun i _ => this i
+  convert le_hasSum (hasSum_norm hp'' f) i fun i _ => this i
 
 lemma lipschitzWith_one_eval (p : ℝ≥0∞) [Fact (1 ≤ p)] (i : α) :
     LipschitzWith 1 (fun x : lp E p ↦ x i) :=
