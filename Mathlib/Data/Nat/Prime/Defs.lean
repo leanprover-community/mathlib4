@@ -38,7 +38,7 @@ variable {n : ℕ}
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
   at least 2 whose only divisors are `p` and `1`.
   The theorem `Nat.prime_def` witnesses this description of a prime number. -/
-@[pp_nodot, wikidata Q49008]
+@[pp_nodot, wikidata Q49008, oeis A000040]
 def Prime (p : ℕ) :=
   Irreducible p
 
@@ -215,6 +215,7 @@ termination_by k => sqrt n + 2 - k
 decreasing_by simp_wf; apply minFac_lemma n k; assumption
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
+@[oeis A020639]
 def minFac (n : ℕ) : ℕ :=
   if 2 ∣ n then 2 else minFacAux n 3
 

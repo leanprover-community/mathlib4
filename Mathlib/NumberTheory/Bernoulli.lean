@@ -80,6 +80,7 @@ variable (A : Type*) [CommRing A] [Algebra ℚ A]
 /-- The Bernoulli numbers:
 the $n$-th Bernoulli number $B_n$ is defined recursively via
 $$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}$$ -/
+@[oeis A164555, oeis A027642]
 def bernoulli' (n : ℕ) : ℚ :=
   1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k
 
@@ -192,6 +193,7 @@ theorem bernoulli'_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bern
   congr
 
 /-- The Bernoulli numbers are defined to be `bernoulli'` with a parity sign. -/
+@[oeis A027641, oeis A027642]
 def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 

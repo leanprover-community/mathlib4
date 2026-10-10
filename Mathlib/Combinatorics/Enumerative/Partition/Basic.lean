@@ -210,9 +210,11 @@ def countRestricted (n : ℕ) (m : ℕ) : Finset n.Partition :=
   Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, x.parts.count i < m
 
 /-- The finset of those partitions in which every part is odd. -/
+@[oeis A000009]
 def odds (n : ℕ) : Finset n.Partition := restricted n (¬ Even ·)
 
 /-- The finset of those partitions in which each part is used at most once. -/
+@[oeis A000009]
 def distincts (n : ℕ) : Finset n.Partition :=
   Finset.univ.filter fun c => c.parts.Nodup
 
