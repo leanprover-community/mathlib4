@@ -284,7 +284,7 @@ If `B` and `C` are reduced and row-equivalent, then they are entrywise equal.
 The proof rewrites `B = U * C`, then uses row matching plus pivot-column
 Kronecker behavior to collapse coefficients to `(if i = t then 1 else 0)`.
 -/
-theorem reduced_unique_of_rowEquivalent {m n : Nat}
+public theorem reduced_unique_of_rowEquivalent {m n : Nat}
     {B C : Matrix (Fin m) (Fin n) R}
     (hBC : RowEquivalent B C)
     (hB : IsReducedRowEchelon B)
@@ -324,7 +324,7 @@ Core semantic uniqueness theorem.
 Two matrices that are both reduced representatives of the same source `B`
 must be equal.
 -/
-theorem IsReducedRowEchelonOf.unique {m n : Nat}
+public theorem IsReducedRowEchelonOf.unique {m n : Nat}
     {A A' B : Matrix (Fin m) (Fin n) R}
     (hA : IsReducedRowEchelonOf A B)
     (hA' : IsReducedRowEchelonOf A' B) :

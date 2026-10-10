@@ -153,7 +153,7 @@ lemma rowEquivalent_transvection (A : Matrix m n R) (i j : m) (h : i ≠ j) (c :
   exact ⟨Matrix.GeneralLinearGroup.transvection (R := R) i j h c, rfl⟩
 
 /-- Row-equivalent matrices have the same homogeneous solution set. -/
-theorem RowEquivalent.mul_eq_zero_iff [LT m] [Fintype n] {A B : Matrix m n R}
+theorem RowEquivalent.mul_eq_zero_iff [Fintype n] {A B : Matrix m n R}
     (hAB : RowEquivalent A B)
     (x : n → R) :
     A *ᵥ x = 0 ↔ B *ᵥ x = 0 := by
