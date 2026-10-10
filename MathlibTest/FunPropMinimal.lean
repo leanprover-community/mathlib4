@@ -3,11 +3,11 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp
-import Mathlib.Logic.Function.Basic
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Tactic.SuccessIfFailWithMsg
 import Aesop
+import Mathlib.Basic.FunLike.Basic
+import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.SuccessIfFailWithMsg
 
 /-! # Tests for the `fun_prop` tactic
 
@@ -375,8 +375,10 @@ def foo3 [Add α] (x : α) := x + x
 example [Add α] : Con (fun x : α => foo3 x) := by fun_prop [foo3]
 
 def myUncurry (f : α → β → γ) : α×β → γ := fun (x,y) => f x y
-def diag (f : α → α → α) (x : α) := f x x
+-- Namespaced to test that names are resolved
+def MyNamespace.diag (f : α → α → α) (x : α) := f x x
 
+open MyNamespace in
 theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
   fun_prop [diag, myUncurry]
 

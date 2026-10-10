@@ -145,8 +145,6 @@ def wpInd {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort v}
     ∀ (x : P.last.W) (f' : P.WPath x ⟹ α), C x f'
   | ⟨a, f⟩, f' => ih a f f' fun _i => wpInd ih _ _
 
-@[deprecated (since := "2026-03-20")] alias wp_ind := wpInd
-
 /-!
 Now think of W as defined inductively by the data ⟨a, f', f⟩ where
 - `a  : P.A` is the shape of the top node
@@ -187,8 +185,6 @@ def wInd {α : TypeVec n} {C : P.W α → Sort v}
       (congr rfl <| Sigma.mk.inj_iff.mpr ⟨rfl, heq_of_eq <| wPathCasesOn_eta P f'⟩)
       <| ih head (P.wPathDestLeft f') (fun i => ⟨f i, P.wPathDestRight f' i⟩) ih') hd ch
 
-@[deprecated (since := "2026-03-20")] alias w_ind := wInd
-
 @[simp]
 theorem wInd_wMk {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
@@ -201,8 +197,6 @@ theorem wInd_wMk {α : TypeVec n} {C : P.W α → Sort v}
 def wCases {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α), C (P.wMk a f' f)) :
     ∀ x, C x := P.wInd fun a f' f _ih' => ih a f' f
-
-@[deprecated (since := "2026-03-20")] alias w_cases := wCases
 
 /-- W-types are functorial -/
 def wMap {α β : TypeVec n} (g : α ⟹ β) : P.W α → P.W β := fun x => g <$$> x
@@ -239,6 +233,7 @@ abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ 
     (f : P.last.B a → β) : P (α ::: β) :=
   ⟨a, splitFun f' f⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_objAppend1 {α γ : TypeVec n} (g : α ⟹ γ) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) :
     appendFun g (P.wMap g) <$$> P.objAppend1 a f' f =
@@ -260,9 +255,11 @@ def wMk' {α : TypeVec n} : P (α ::: P.W α) → P.W α
 def wDest' {α : TypeVec.{u} n} : P.W α → P (α.append1 (P.W α)) :=
   P.wRec fun a f' f _ => ⟨a, splitFun f' f⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wDest'_wMk {α : TypeVec n} (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
     P.wDest' (P.wMk a f' f) = ⟨a, splitFun f' f⟩ := by rw [wDest', wRec_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wDest'_wMk' {α : TypeVec n} (x : P (α.append1 (P.W α))) : P.wDest' (P.wMk' x) = x := by
   obtain ⟨a, f⟩ := x; rw [wMk', wDest'_wMk, split_dropFun_lastFun]
 

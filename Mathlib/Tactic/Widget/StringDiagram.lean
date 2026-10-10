@@ -5,16 +5,17 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import ProofWidgets.Component.PenroseDiagram
-public meta import ProofWidgets.Component.Panel.Basic
 public meta import Mathlib.Data.List.Defs
-public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public meta import ProofWidgets.Component.Panel.Basic
+public meta import ProofWidgets.Component.PenroseDiagram
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 public import ProofWidgets.Component.HtmlDisplay
-public import ProofWidgets.Component.Panel.Basic
 public import ProofWidgets.Component.PenroseDiagram
 public import ProofWidgets.Presentation.Expr
+
+import ProofWidgets.Component.Panel.Basic
 
 /-!
 # String Diagram Widget
@@ -68,7 +69,7 @@ public meta section
 namespace Mathlib.Tactic
 
 open Lean Meta Elab
-open CategoryTheory
+open _root_.CategoryTheory
 
 open BicategoryLike
 
@@ -209,8 +210,6 @@ def NormalExpr.nodes (e : NormalExpr) : CoherenceM ρ (List (List Node)) :=
   match e with
   | NormalExpr.nil _ _ => return []
   | NormalExpr.cons _ _ η _ => return (← topNodes η) :: (← e.nodesAux 1)
-
-@[deprecated (since := "2026-02-26")] meta alias pairs := List.consecutivePairs
 
 /-- The list of strands associated with a 2-morphism. -/
 def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := do

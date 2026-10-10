@@ -5,10 +5,8 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.RingTheory.Congruence.Opposite
+public import Mathlib.Tactic.Abel
 
 /-!
 # Two Sided Ideals
@@ -61,12 +59,12 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
     refine RingCon.ext fun a b ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
     · have H' : a - b ∈ {x | t₁ x 0} := sub_self b ▸ t₁.sub H (t₁.refl b)
       rw [h] at H'
-      convert! t₂.add H' (t₂.refl b) using 1 <;> abel
+      convert t₂.add H' (t₂.refl b) using 1 <;> abel
     · have H' : a - b ∈ {x | t₂ x 0} := sub_self b ▸ t₂.sub H (t₂.refl b)
       rw [← h] at H'
-      convert! t₁.add H' (t₁.refl b) using 1 <;> abel
+      convert t₁.add H' (t₁.refl b) using 1 <;> abel
 
-instance : PartialOrder (TwoSidedIdeal R) := .ofSetLike (TwoSidedIdeal R) R
+instance : PartialOrder (TwoSidedIdeal R) := .ofSetLike (TwoSidedIdeal R)
 
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 
@@ -77,7 +75,7 @@ lemma mem_ofRingCon {x : R} {c : RingCon R} : x ∈ ofRingCon c ↔ c x 0 := Iff
 lemma coe_ofRingCon {c : RingCon R} : (ofRingCon c : Set R) = {x | c x 0} := rfl
 
 /-- A deprecated alias for `ofRingCon`. -/
-@[deprecated mk (since := "2026-06-18")]
+@[deprecated ofRingCon (since := "2026-06-18")]
 abbrev mk (c : RingCon R) : TwoSidedIdeal R := ofRingCon c
 
 @[deprecated mem_ofRingCon (since := "2026-06-18")]
@@ -89,8 +87,8 @@ lemma coe_mk {c : RingCon R} : (mk c : Set R) = {x | c x 0} := rfl
 lemma rel_iff (x y : R) : I.ringCon x y ↔ x - y ∈ I := by
   rw [mem_iff]
   constructor
-  · intro h; convert! I.ringCon.sub h (I.ringCon.refl y); abel
-  · intro h; convert! I.ringCon.add h (I.ringCon.refl y) <;> abel
+  · intro h; convert I.ringCon.sub h (I.ringCon.refl y); abel
+  · intro h; convert I.ringCon.add h (I.ringCon.refl y) <;> abel
 
 /--
 the coercion from two-sided-ideals to sets is an order embedding
@@ -192,7 +190,10 @@ lemma coe_mk' (carrier : Set R) (zero_mem add_mem neg_mem mul_mem_left mul_mem_r
 instance : SMulMemClass (TwoSidedIdeal R) R R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_left _ _ _ h
 
-instance : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R where
+-- This is not an instance, because together with the instance above,
+-- it violates the `outParam` of `SMulMemClass`.
+-- See: https://github.com/leanprover-community/mathlib4/pull/40718
+theorem instSMulMemClassMulOpposite : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_right _ _ _ h
 
 instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩

@@ -5,6 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
+public meta import ProofWidgets.Util
 public import Mathlib.Tactic.ClickSuggestions.Util
 public import ProofWidgets.Component.FilterDetails
 

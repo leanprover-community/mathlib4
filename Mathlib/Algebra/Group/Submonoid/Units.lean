@@ -5,9 +5,8 @@ Authors: Wrenna Robson
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
-public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
 
@@ -114,11 +113,11 @@ lemma inv_val_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
 
 @[to_additive]
 lemma coe_inv_val_mul_coe_val (S : Submonoid M) {x : Sˣ} :
-    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := DFunLike.congr_arg S.subtype x.inv_mul
+    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := congr(S.subtype $x.inv_mul)
 
 @[to_additive]
 lemma coe_val_mul_coe_inv_val (S : Submonoid M) {x : Sˣ} :
-    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := DFunLike.congr_arg S.subtype x.mul_inv
+    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := congr(S.subtype $x.mul_inv)
 
 @[to_additive]
 lemma mk_inv_mul_mk_eq_one (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
@@ -184,12 +183,12 @@ elements of `S`. -/
 @[to_additive /-- The equivalence between the additive subgroup of additive units of
 `S` and the additive submonoid of additive unit elements of `S`. -/]
 noncomputable def unitsEquivIsUnitSubmonoid (S : Submonoid M) : S.units ≃* IsUnit.submonoid S :=
-S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
+  S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
 
 end Units
 
 instance instSubsingletonUnits [Subsingleton Mˣ] {S : Submonoid M} : Subsingleton Sˣ :=
-   .units_of_isUnit fun _a ha ↦ Subtype.ext (ha.map S.subtype).eq_one
+  .units_of_isUnit fun _a ha ↦ Subtype.ext (ha.map S.subtype).eq_one
 
 end Submonoid
 

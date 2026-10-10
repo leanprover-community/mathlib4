@@ -29,6 +29,7 @@ try:
         DEFAULT_OPTIONS,
         PROJECT_DIR,
         commented_pattern,
+        is_annotated,
         lake_build_with_progress,
         lakefile_pattern,
         removable_pattern,
@@ -198,6 +199,8 @@ def scan_files(dag: DAG, options: list[str], value: str = "false") -> dict[str, 
         for i, line in enumerate(lines):
             if any(p.match(line) for p in commented_pats):
                 continue
+            if is_annotated(lines, i):
+                continue
             if any(p.match(line) for p in removable_pats):
                 removable.append(i)
         if removable:
@@ -206,11 +209,15 @@ def scan_files(dag: DAG, options: list[str], value: str = "false") -> dict[str, 
 
 
 def count_skipped(filepath: Path, options: list[str], value: str = "false") -> int:
-    """Count set_option lines with trailing comments."""
+    """Count set_option lines with trailing/preceding comments."""
     commented_pats = [commented_pattern(opt, value) for opt in options]
+    removable_pats = [removable_pattern(opt, value) for opt in options]
+    lines = filepath.read_text().splitlines()
     count = 0
-    for line in filepath.read_text().splitlines():
+    for i, line in enumerate(lines):
         if any(p.match(line) for p in commented_pats):
+            count += 1
+        elif any(p.match(line) for p in removable_pats) and is_annotated(lines, i):
             count += 1
     return count
 

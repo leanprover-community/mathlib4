@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Heather Macbeth, Floris van Doorn
 -/
 module
 
-public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
+public import Mathlib.Topology.VectorBundle.Basic
 
 /-!
 # The vector bundle of continuous alternating multilinear maps
@@ -87,7 +87,7 @@ theorem inCoordinates_eq {x₀ x : B₁} {y₀ y : B₂} {ϕ : E₁ x [⋀^ι]�
         |>.compContinuousAlternatingMap ϕ |>.compContinuousLinearMap
           (((trivializationAt F₁ E₁ x₀).continuousLinearEquivAt 𝕜 x hx).symm : F₁ →L[𝕜] E₁ x)) := by
   ext
-  simp [inCoordinates, *]
+  simp [inCoordinates, *, Function.comp_def]
 
 end ContinuousAlternatingMap
 
@@ -277,7 +277,8 @@ def vectorPrebundle :
         (mem_baseSet_trivializationAt _ _ _)
     convert! (L₁.continuousAlternatingMapCongr L₂).toHomeomorph.isInducing
     ext f
-    simp [Trivialization.linearMapAt_def_of_mem _ (mem_baseSet_trivializationAt _ _ _), L₁, L₂]
+    simp [Trivialization.linearMapAt_def_of_mem _ (mem_baseSet_trivializationAt _ _ _), L₁, L₂,
+      Function.comp_def, mem_baseSet_trivializationAt]
 
 /-- Topology on the total space of the continuous `σ`-semilinear maps between two "normable" vector
 bundles over the same base. -/

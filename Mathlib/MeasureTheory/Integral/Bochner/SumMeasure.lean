@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 
@@ -182,8 +183,6 @@ theorem integral_countable [Countable X] (hf : Integrable f μ) :
   congr 1 with a : 1
   rw [integral_smul_measure, integral_dirac, Measure.sum_smul_dirac, measureReal_def]
 
-@[deprecated (since := "2026-03-09")] alias integral_countable' := integral_countable
-
 theorem setIntegral_countable (f : X → E) {s : Set X} (hs : s.Countable) (hf : IntegrableOn f s μ) :
     ∫ x in s, f x ∂μ = ∑' x : s, μ.real {(x : X)} • f x := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
@@ -203,8 +202,6 @@ theorem setIntegral_countable (f : X → E) {s : Set X} (hs : s.Countable) (hf :
 theorem setIntegral_finset (s : Finset X) (hf : IntegrableOn f s μ) :
     ∫ x in s, f x ∂μ = ∑ x ∈ s, μ.real {x} • f x := by
   rw [setIntegral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
-
-@[deprecated (since := "2026-03-09")] alias integral_finset := setIntegral_finset
 
 theorem integral_fintype [Fintype X] (hf : Integrable f μ) :
     ∫ x, f x ∂μ = ∑ x, μ.real {x} • f x := by

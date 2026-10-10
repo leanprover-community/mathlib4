@@ -5,13 +5,11 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Algebra.Ring.Int.Field
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 public import Mathlib.RingTheory.Polynomial.IntegralNormalization
-public import Mathlib.RingTheory.Polynomial.ScaleRoots
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 import Mathlib.RingTheory.Polynomial.Subring
@@ -46,7 +44,7 @@ theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   mul_comm := mul_comm
   mul_inv_cancel {x} hx := by
-    letI := hR.toField
+    let := hR.toField
     obtain ⟨y, rfl⟩ := (Algebra.IsIntegral.isIntegral (R := R) x).isUnit hx
     exact ⟨y.inv, y.val_inv⟩
 
@@ -133,14 +131,14 @@ theorem adjoin_le_integralClosure {x : A} (hx : IsIntegral R x) :
 theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
     S ≤ integralClosure R A ↔ Algebra.IsIntegral R S :=
   SetLike.forall.symm.trans <|
-    (forall_congr' fun x =>
-      show IsIntegral R (algebraMap S A x) ↔ IsIntegral R x from
-        isIntegral_algebraMap_iff Subtype.coe_injective).trans
-      Algebra.isIntegral_def.symm
+    (forall_congr' fun _ ↦ isIntegral_algebraMap_iff).trans Algebra.isIntegral_def.symm
 
 theorem Algebra.IsIntegral.adjoin {S : Set A} (hS : ∀ x ∈ S, IsIntegral R x) :
     Algebra.IsIntegral R (adjoin R S) :=
   le_integralClosure_iff_isIntegral.mp <| adjoin_le hS
+
+instance [Algebra.IsIntegral R A] (S : Set A) [Finite S] : Module.Finite R (Algebra.adjoin R S) :=
+  Algebra.IsIntegral.finite
 
 theorem integralClosure_eq_top_iff : integralClosure R A = ⊤ ↔ Algebra.IsIntegral R A := by
   rw [← top_le_iff, le_integralClosure_iff_isIntegral,
@@ -171,7 +169,7 @@ theorem integralClosure_map_algEquiv [Algebra R S] (f : A ≃ₐ[R] S) :
 them. -/
 def AlgHom.mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S) :
     integralClosure R A →ₐ[R] integralClosure R S :=
-  (f.restrictDomain (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
+  (f.domRestrict (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
 
 @[simp]
 theorem AlgHom.coe_mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S)
@@ -224,6 +222,26 @@ theorem IsIntegral.of_mem_closure'' {S : Type*} [CommRing S] {f : R →+* S} (G 
 theorem IsIntegral.pow {x : B} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (x ^ n) :=
   .of_mem_of_fg _ h.fg_adjoin_singleton _ <|
     Subalgebra.pow_mem _ (by exact Algebra.subset_adjoin rfl) _
+
+section zpow
+variable {F D : Type*} [Field F] [DivisionRing D] [Algebra F D] {x : D} {A : Subalgebra F D}
+
+/-- An integer power of an integral element in a division ring over a field is integral. -/
+theorem IsIntegral.zpow (h : IsIntegral F x) (n : ℤ) : IsIntegral F (x ^ n) := by
+  cases n <;> simp [h.pow, IsIntegral.inv]
+
+/-- An integer power of an integral element of a subalgebra lies in that subalgebra. -/
+theorem IsIntegral.zpow_mem (h : IsIntegral F x) (hx : x ∈ A) (n : ℤ) : x ^ n ∈ A := by
+  cases n <;> simp [h.pow, pow_mem hx, IsIntegral.inv_mem]
+
+theorem IsIntegral.zpow_mem_adjoin (h : IsIntegral F x) (n : ℤ) : x ^ n ∈ Algebra.adjoin F {x} :=
+  h.zpow_mem (Algebra.self_mem_adjoin_singleton F x) n
+
+/-- An integral subalgebra of a division ring over a field is closed under integer powers. -/
+theorem Algebra.IsIntegral.zpow_mem [Algebra.IsIntegral F A] (hx : x ∈ A) (n : ℤ) : x ^ n ∈ A := by
+  cases n <;> simp [pow_mem hx, Algebra.IsIntegral.inv_mem]
+
+end zpow
 
 theorem IsIntegral.nsmul {x : B} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (n • x) :=
   h.smul n
@@ -354,7 +372,8 @@ variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
 variable (R B)
 
 protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsIntegral R x :=
-  (isIntegral_algebraMap_iff (algebraMap_injective A R B)).mp <|
+  have := faithfulSMul R A B
+  (isIntegral_algebraMap_iff).mp <|
     show IsIntegral R (algebraMap A B x) from isIntegral_iff.mpr ⟨x, rfl⟩
 
 theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsIntegral R A :=
@@ -367,6 +386,19 @@ lemma isTorsionFree [Module R A] [IsScalarTower R A B] [IsTorsionFree R B] : IsT
   simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 
 variable {R} (A) {B}
+
+theorem mem_range_algebraMap {C : Type*} [Ring C] [Algebra R C] [Algebra A C] [Algebra B C]
+    [FaithfulSMul B C] [IsScalarTower R B C] [IsScalarTower A B C] {x : C} (h : IsIntegral R x) :
+    x ∈ Set.range (algebraMap B C) ↔ x ∈ Set.range (algebraMap A C) := by
+  constructor
+  · rintro ⟨x, rfl⟩
+    rw [isIntegral_algebraMap_iff, @IsIntegralClosure.isIntegral_iff A R B] at h
+    obtain ⟨x, rfl⟩ := h
+    rw [← IsScalarTower.algebraMap_apply]
+    exact Set.mem_range_self _
+  · rintro ⟨x, rfl⟩
+    rw [IsScalarTower.algebraMap_apply A B C]
+    exact Set.mem_range_self _
 
 /-- If `x : B` is integral over `R`, then it is an element of the integral closure of `R` in `B`. -/
 noncomputable def mk' (x : B) (hx : IsIntegral R x) : A :=
@@ -485,14 +517,14 @@ theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) 
   let p' : S[X] := p.toSubring S.toSubring subset_adjoin
   have hSx : IsIntegral S x := ⟨p', (p.monic_toSubring _ _).mpr pmonic, by
     rw [IsScalarTower.algebraMap_eq S A B, ← eval₂_map]
-    convert! hp; apply p.map_toSubring S.toSubring⟩
+    convert hp; apply p.map_toSubring S.toSubring⟩
   let Sx := Subalgebra.toSubmodule (S[x])
   let MSx : Module S Sx := SMulMemClass.toModule _ -- the next line times out without this
   have : Module.Finite S Sx := .of_fg hSx.fg_adjoin_singleton
   refine .of_mem_of_fg ((S[x]).restrictScalars R) ?_ _
     ((Subalgebra.mem_restrictScalars R).mpr <| subset_adjoin rfl)
   rw [← Module.Finite.iff_fg]
-  letI : SMul S Sx := { MSx with } -- need this even though MSx is there
+  let : SMul S Sx := { MSx with } -- need this even though MSx is there
   have : IsScalarTower R S Sx :=
     Submodule.isScalarTower Sx -- Lean looks for `Module A Sx` without this
   exact Module.Finite.trans S Sx
@@ -574,12 +606,13 @@ theorem Algebra.IsIntegral.tower_top [Algebra R S] [Algebra R T] [Algebra S T] [
     rw [← IsScalarTower.algebraMap_eq R S T]
     exact h.isIntegral
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem RingHom.IsIntegral.quotient {I : Ideal S} (hf : f.IsIntegral) :
     (Ideal.quotientMap I f le_rfl).IsIntegral := by
   rintro ⟨x⟩
   obtain ⟨p, p_monic, hpx⟩ := hf x
   refine ⟨p.map (Ideal.Quotient.mk _), p_monic.map _, ?_⟩
-  simpa only [hom_eval₂, eval₂_map] using! congr_arg (Ideal.Quotient.mk I) hpx
+  simpa only [hom_eval₂, eval₂_map] using! congr(Ideal.Quotient.mk I $hpx)
 
 instance {I : Ideal A} [Algebra.IsIntegral R A] : Algebra.IsIntegral R (A ⧸ I) :=
   Algebra.IsIntegral.trans A
@@ -598,6 +631,9 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   refine ⟨fun h => ?_, fun h => RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
   refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
+
+theorem RingHom.IsIntegral.kerLift {f : S →+* T} (hf : f.IsIntegral) : f.kerLift.IsIntegral :=
+  RingHom.IsIntegral.tower_top (Ideal.Quotient.mk (RingHom.ker f)) f.kerLift hf
 
 theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
     (inj : Function.Injective f) : IsLocalHom f where
@@ -659,6 +695,6 @@ instance : IsDomain (integralClosure R S) :=
 
 theorem roots_mem_integralClosure {f : R[X]} (hf : f.Monic) {a : S}
     (ha : a ∈ f.aroots S) : a ∈ integralClosure R S :=
-  ⟨f, hf, (eval₂_eq_eval_map _).trans <| (mem_roots <| (hf.map _).ne_zero).1 ha⟩
+  ⟨f, hf, (eval₂_eq_eval_map _).trans <| (mem_roots (hf.map _).ne_zero).1 ha⟩
 
 end IsDomain

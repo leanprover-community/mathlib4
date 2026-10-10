@@ -6,11 +6,12 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Pointwise.Stabilizer
-public import Mathlib.Data.Setoid.Partition
-public import Mathlib.GroupTheory.GroupAction.Pointwise
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.Index
+public import Mathlib.Order.Setoid.Partition
 public import Mathlib.Tactic.IntervalCases
+
+import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-! # Blocks
 
@@ -158,7 +159,7 @@ theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
     IsTrivialBlock (g • B) ↔ IsTrivialBlock B := by
   constructor
   · intro H
-    convert! IsTrivialBlock.smul H g⁻¹
+    convert IsTrivialBlock.smul H g⁻¹
     simp only [inv_smul_smul]
   · intro H
     exact IsTrivialBlock.smul H g
@@ -580,7 +581,7 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     (id (propext Subtype.mk_eq_mk)).mpr (stabilizer_orbit_eq hH)
   map_rel_iff' := by
     rintro ⟨B, ha, hB⟩; rintro ⟨B', ha', hB'⟩
-    simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Set.le_eq_subset]
+    simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk]
     constructor
     · rintro hBB' b hb
       obtain ⟨k, rfl⟩ := htGX.exists_smul_eq a b
@@ -605,11 +606,11 @@ instance (a : X) : BoundedOrder (BlockMem G a) where
   top := ⟨Set.univ, Set.mem_univ a, .univ⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
-    simp only [Subtype.mk_le_mk, le_eq_subset, subset_univ]
+    simp only [Subtype.mk_le_mk, subset_univ]
   bot := ⟨{a}, Set.mem_singleton a, IsBlock.singleton⟩
   bot_le := by
     rintro ⟨B, ha, hB⟩
-    simp only [Subtype.mk_le_mk, Set.le_eq_subset, Set.singleton_subset_iff]
+    simp only [Subtype.mk_le_mk, Set.singleton_subset_iff]
     exact ha
 
 @[to_additive (attr := simp, norm_cast)]

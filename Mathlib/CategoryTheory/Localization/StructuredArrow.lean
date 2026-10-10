@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.HomEquiv
-public import Mathlib.CategoryTheory.Localization.Opposite
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Localization.HomEquiv
 
 /-!
 # Induction principles for structured and costructured arrows
@@ -39,7 +38,6 @@ section
 variable (W : MorphismProperty C) (L : C ⥤ D) (L' : C ⥤ D')
   [L.IsLocalization W] [L'.IsLocalization W] {X : C}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `StructuredArrow (L.obj X) L ≃ StructuredArrow (L'.obj X) L'`
 when `L` and `L'` are two localization functors for the same class of morphisms. -/
 @[simps]
@@ -93,7 +91,6 @@ variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {X : C}
   (P : StructuredArrow (L.obj X) L → Prop)
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 lemma induction_structuredArrow
     (hP₀ : P (StructuredArrow.mk (𝟙 (L.obj X))))
@@ -106,13 +103,13 @@ lemma induction_structuredArrow
     fun g ↦ P (structuredArrowEquiv W W.Q L g)
   rw [← (structuredArrowEquiv W W.Q L).apply_symm_apply g]
   apply induction_structuredArrow' W P'
-  · convert! hP₀
+  · convert hP₀
     simp
   · intro Y₁ Y₂ f φ hφ
-    convert! hP₁ f (homEquiv W W.Q L φ) hφ
+    convert hP₁ f (homEquiv W W.Q L φ) hφ
     simp [homEquiv_comp]
   · intro Y₁ Y₂ w hw φ hφ
-    convert! hP₂ w hw (homEquiv W W.Q L φ) hφ
+    convert hP₂ w hw (homEquiv W W.Q L φ) hφ
     simp [homEquiv_comp, homEquiv_isoOfHom_inv]
 
 end

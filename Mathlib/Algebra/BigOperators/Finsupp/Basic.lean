@@ -55,9 +55,8 @@ lemma prod_fun_one (f : α →₀ M) : f.prod (fun _ _ ↦ (1 : N)) = 1 := by si
 
 @[to_additive]
 theorem prod_of_support_subset (f : α →₀ M) {s : Finset α} (hs : f.support ⊆ s) (g : α → M → N)
-    (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x ∈ s, g x (f x) := by
-  refine Finset.prod_subset hs fun x hxs hx => h x hxs ▸ (congr_arg (g x) ?_)
-  exact notMem_support_iff.1 hx
+    (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x ∈ s, g x (f x) :=
+  Finset.prod_subset hs <| by simp_all
 
 @[to_additive]
 theorem prod_fintype [Fintype α] (f : α →₀ M) (g : α → M → N) (h : ∀ i, g i 0 = 1) :
@@ -169,10 +168,9 @@ then its product over `f : α →₀ M` is the same as multiplying the value on 
       `y : α` to the sum over `erase y f`. -/]
 theorem mul_prod_erase' (f : α →₀ M) (y : α) (g : α → M → N) (hg : ∀ i : α, g i 0 = 1) :
     g y (f y) * (erase y f).prod g = f.prod g := by
-  classical
-    by_cases hyf : y ∈ f.support
-    · exact Finsupp.mul_prod_erase f y g hyf
-    · rw [notMem_support_iff.mp hyf, hg y, erase_of_notMem_support hyf, one_mul]
+  by_cases hyf : y ∈ f.support
+  · exact Finsupp.mul_prod_erase f y g hyf
+  · rw [notMem_support_iff.mp hyf, hg y, erase_of_notMem_support hyf, one_mul]
 
 @[to_additive]
 theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [SubmonoidClass S N]
@@ -307,10 +305,6 @@ theorem support_finsetSum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f 
 
 @[deprecated (since := "2026-04-08")] alias support_finset_sum := support_finsetSum
 
-@[deprecated sum_fun_zero (since := "2025-12-19")]
-theorem sum_zero [Zero M] [AddCommMonoid N] {f : α →₀ M} : (f.sum fun _ _ => (0 : N)) = 0 :=
-  Finset.sum_const_zero
-
 theorem sum_eq_one_iff (d : α →₀ ℕ) : sum d (fun _ n ↦ n) = 1 ↔ ∃ a, d = single a 1 := by
   classical
   refine ⟨fun h1 ↦ ?_, ?_⟩
@@ -414,11 +408,18 @@ theorem liftAddHom_symm_apply_apply [AddZeroClass M] [AddCommMonoid N] (F : (α 
 theorem liftAddHom_singleAddHom [AddCommMonoid M] :
     (liftAddHom (α := α) (M := M) (N := α →₀ M)) (singleAddHom : α → M →+ α →₀ M) =
       AddMonoidHom.id _ :=
-  liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
+  liftAddHom.toEquiv.eq_symm_apply.1 rfl
+
+lemma sum_finsetSum
+    (f : ι → (α →₀ A)) (s : Finset ι) (g : α → A → B)
+    (h₁ : ∀ a, g a 0 = 0)
+    (h₂ : ∀ a m₁ m₂, g a (m₁ + m₂) = g a m₁ + g a m₂) :
+    (∑ i ∈ s, f i).sum g = ∑ i ∈ s, (f i).sum g :=
+  map_sum (liftAddHom (fun a ↦ { toFun := g a, map_zero' := h₁ a, map_add' := h₂ a })) f s
 
 @[simp]
 theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
-  DFunLike.congr_fun liftAddHom_singleAddHom f
+  congr($liftAddHom_singleAddHom f)
 
 /-- The `Finsupp` version of `Finset.univ_sum_single` -/
 @[simp]
@@ -600,7 +601,6 @@ lemma prod_mul_eq_prod_mul_of_exists [Zero M] [CommMonoid N]
     (a : α) (ha : a ∈ f.support)
     (h : g a (f a) * n₁ = g a (f a) * n₂) :
     f.prod g * n₁ = f.prod g * n₂ := by
-  classical
   exact Finset.prod_mul_eq_prod_mul_of_exists a ha h
 
 end Finsupp
@@ -628,12 +628,12 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
 
 section
 
-variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+variable [Zero M] [NonUnitalNonAssocSemiring S]
 
-theorem Finsupp.sum_mul (b : S) (s : α →₀ R) {f : α → R → S} :
+theorem Finsupp.sum_mul (b : S) (s : α →₀ M) {f : α → M → S} :
     s.sum f * b = s.sum fun a c => f a c * b := by simp only [Finsupp.sum, Finset.sum_mul]
 
-theorem Finsupp.mul_sum (b : S) (s : α →₀ R) {f : α → R → S} :
+theorem Finsupp.mul_sum (b : S) (s : α →₀ M) {f : α → M → S} :
     b * s.sum f = s.sum fun a c => b * f a c := by simp only [Finsupp.sum, Finset.mul_sum]
 
 end

@@ -32,7 +32,7 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 `A ⥤ Cᵒᵖ ⥤ A`. -/
 @[simps!]
 noncomputable def skyscraperPresheafFunctor : A ⥤ Cᵒᵖ ⥤ A :=
-  Functor.flip (Φ.fiber.op ⋙ piFunctor.{w}.flip)
+  (Φ.fiber.op ⋙ piConst.flip).flip
 
 /-- Given a point `Φ` on a site `(C, J)`, and an object `M` of a category `A`,
 this is the skyscraper presheaf with value `M`: it sends `X : C` to the
@@ -65,6 +65,9 @@ noncomputable def skyscraperPresheafHomEquiv :
   left_inv f := by cat_disch
   right_inv g := by cat_disch
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma toPresheafFiber_skyscraperPresheafHomEquiv_symm
     (g : P ⟶ Φ.skyscraperPresheaf M) (X : C) (x : Φ.fiber.obj X) :
@@ -72,6 +75,7 @@ lemma toPresheafFiber_skyscraperPresheafHomEquiv_symm
       g.app (op X) ≫ Pi.π _ x := by
   simp [skyscraperPresheafHomEquiv_symm_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma skyscraperPresheafHomEquiv_naturality_left_symm
     (f : P ⟶ Q) (g : Q ⟶ Φ.skyscraperPresheaf M) :
@@ -109,7 +113,7 @@ lemma skyscraperPresheafHomEquiv_naturality_left
     Φ.skyscraperPresheafHomEquiv (Φ.presheafFiber.map f ≫ g) =
       f ≫ Φ.skyscraperPresheafHomEquiv g :=
   Φ.skyscraperPresheafHomEquiv.symm.injective
-   (by simp [Φ.skyscraperPresheafHomEquiv_naturality_left_symm])
+    (by simp [Φ.skyscraperPresheafHomEquiv_naturality_left_symm])
 
 end
 
@@ -166,9 +170,9 @@ private lemma isSheaf_skyscraperPresheaf_aux
     let α₁ : Φ.fiber.elementsMk _ y₁ ⟶ Φ.fiber.elementsMk _ x := ⟨f₁, hy₁⟩
     let α₂ : Φ.fiber.elementsMk _ y₂ ⟶ Φ.fiber.elementsMk _ x := ⟨f₂, hy₂⟩
     obtain ⟨z, q₁, q₂, fac⟩ := IsCofiltered.cospan α₁ α₂
-    rw [Subtype.ext_iff] at fac
+    replace fac := congr_arg Functor.Elements.Hom.hom fac
     refine ⟨z.1, q₁.1, q₂.1, z.2, fac, ?_, ?_⟩
-    all_goals rw [CategoryOfElements.map_snd] -- was `simp`
+    all_goals rw [Functor.Elements.Hom.map_val] -- was `simp`
   let φ₁ : Presieve.categoryMk _ _ (R.downward_closed hf₁ p₁) ⟶
       Presieve.categoryMk _ _ hf₁ :=
     ObjectProperty.homMk (Over.homMk p₁)
@@ -178,6 +182,7 @@ private lemma isSheaf_skyscraperPresheaf_aux
   simpa [hz₁, hz₂, φ₁, φ₂] using!
     (Cone.w s φ₂.op =≫ Pi.π _ z).trans (Cone.w s φ₁.op =≫ Pi.π _ z).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isSheaf_skyscraperPresheaf (M : A) :
     Presheaf.IsSheaf J (Φ.skyscraperPresheaf M) := by
@@ -232,6 +237,7 @@ instance : (Φ.sheafFiber (A := A)).IsLeftAdjoint :=
 instance : (Φ.skyscraperSheafFunctor (A := A)).IsRightAdjoint :=
   Φ.skyscraperSheafAdjunction.isRightAdjoint
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma skyscraperSheafAdjunction_homEquiv_apply_hom {F : Sheaf J A} {M : A}
@@ -241,10 +247,7 @@ lemma skyscraperSheafAdjunction_homEquiv_apply_hom {F : Sheaf J A} {M : A}
     a = Φ.skyscraperPresheafHomEquiv f := by
   simp [skyscraperSheafAdjunction, Functor.FullyFaithful.homEquiv]
 
-@[deprecated (since := "2026-03-05")]
-alias skyscraperSheafAdjunction_homEquiv_apply_val :=
-  skyscraperSheafAdjunction_homEquiv_apply_hom
-
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma skyscraperSheafAdjunction_homEquiv_symm_apply {F : Sheaf J A} {M : A}
@@ -259,7 +262,7 @@ lemma W_isInvertedBy_presheafFiber :
   rw [isIso_iff_coyoneda_map_bijective]
   intro M
   rw [← Function.Bijective.of_comp_iff' Φ.skyscraperPresheafHomEquiv.bijective]
-  convert! (hf _ (Φ.isSheaf_skyscraperPresheaf M)).comp Φ.skyscraperPresheafHomEquiv.bijective
+  convert (hf _ (Φ.isSheaf_skyscraperPresheaf M)).comp Φ.skyscraperPresheafHomEquiv.bijective
   ext g : 1
   simp [skyscraperPresheafHomEquiv_naturality_left]
 
@@ -276,9 +279,6 @@ noncomputable def presheafToSheafCompSheafFiberIso [HasWeakSheafify J A] :
   (NatIso.ofComponents
     (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
       (by simp [sheafFiber, ← Functor.map_comp])).symm
-
-@[deprecated (since := "2026-03-08")]
-alias presheafToSheafCompSheafFiber := presheafToSheafCompSheafFiberIso
 
 noncomputable instance [HasWeakSheafify J A] :
     Localization.Lifting (presheafToSheaf J A) J.W

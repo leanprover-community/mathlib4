@@ -5,11 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
-public import Mathlib.RingTheory.Finiteness.Subalgebra
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Noetherian.Nilpotent
-public import Mathlib.RingTheory.TensorProduct.Finite
+
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
+import Mathlib.RingTheory.Finiteness.Subalgebra
+import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-! # Descend finiteness along quotients by nilpotent ideals -/
 
@@ -54,7 +55,7 @@ lemma Module.finite_of_surjective_of_ker_le_nilradical
         refine Submodule.liftQ _ ((Submodule.mkQ _).comp (I ^ n).subtype) ?_
         rw [LinearMap.ker_comp, ← Submodule.map_le_map_iff_of_injective (I ^ n).subtype_injective,
           Submodule.map_smul'', Submodule.map_comap_eq]
-        simpa [pow_succ'] using Ideal.mul_le_left (I := I) (J := I ^ n)
+        simpa [pow_succ'] using Ideal.mul_le_right (I := I) (J := I ^ n)
       convert! Module.Finite.fg_top.map (ψ.restrictScalars R) using 1
       suffices LinearMap.ker φ.toLinearMap = Submodule.map (I ^ (n + 1)).mkQ (I ^ n) by
         simpa [LinearMap.range_restrictScalars, ψ, LinearMap.range_comp, Submodule.range_liftQ]

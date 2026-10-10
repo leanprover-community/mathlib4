@@ -5,12 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.CoreM
 public meta import Lean.Util.FoldConsts
+public import Mathlib.Init
 
 /-!
-A rudimentary export format, adapted from
+# A rudimentary export format
+
+Adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
 with support for Lean 4 kernel primitives.
 -/

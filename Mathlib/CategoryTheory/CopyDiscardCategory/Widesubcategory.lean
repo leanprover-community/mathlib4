@@ -5,6 +5,7 @@ Authors: Gaëtan Serré
 -/
 module
 
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 public import Mathlib.CategoryTheory.Monoidal.Widesubcategory
 
 /-!

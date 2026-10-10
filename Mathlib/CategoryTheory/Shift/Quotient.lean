@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.CommShift
-public import Mathlib.CategoryTheory.Shift.Induced
 public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.CategoryTheory.Shift.Induced
 
 /-!
 # The shift on a quotient category
@@ -90,7 +89,6 @@ lemma iso_hom_app (a : A) (X : C) :
   simp [iso, lift_obj_functor_obj]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma iso_inv_app (a : A) (X : C) :
     (iso F r hF a).inv.app ((functor r).obj X) =
@@ -103,7 +101,6 @@ attribute [irreducible] iso
 end LiftCommShift
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- When `r : HomRel C` is compatible with the shift by an additive monoid, and
 `F : C ⥤ D` is a functor which commutes with the shift and is compatible with `r`, then
 the induced functor `Quotient.lift r F _ : Quotient r ⥤ D` also commutes with the shift. -/
@@ -141,7 +138,6 @@ noncomputable instance liftCommShift :
       Functor.map_id, id_comp, lift_obj_functor_obj]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance liftCommShift_compatibility :
     NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
   shift_comm a := by

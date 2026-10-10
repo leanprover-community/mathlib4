@@ -22,7 +22,9 @@ example of a proof needing to construct a sequence by induction in the middle of
 
 public section
 
-open Topology Filter Finset
+open Filter Finset
+
+open scoped Topology
 
 local notation "d" => dist
 
@@ -40,7 +42,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     intro k x'
     have := H (ε / 2 ^ k) (by positivity) x' (div_le_self ε_pos.le <| one_le_pow₀ one_le_two)
     simpa [reformulation] using! this
-  haveI : Nonempty X := ⟨x⟩
+  have : Nonempty X := ⟨x⟩
   choose! F hF using H
   -- Use the axiom of choice
   -- Now define u by induction starting at x, with u_{n+1} = F(n, u_n)
@@ -86,7 +88,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     suffices Tendsto v atTop atTop by rwa [tendsto_add_atTop_iff_nat] at this
     have hv₀ : 0 < v 0 := by
       calc
-        0 ≤ 2 * ϕ (u 0) := by specialize nonneg x; positivity
+        0 ≤ 2 * ϕ (u 0) := by specialize nonneg (u 0); positivity
         _ < ϕ (u (0 + 1)) := key₂ 0
     apply tendsto_atTop_of_geom_le hv₀ one_lt_two
     exact fun n => (key₂ (n + 1)).le

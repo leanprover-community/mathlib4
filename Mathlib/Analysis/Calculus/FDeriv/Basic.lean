@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Calculus.FDeriv.Defs
-public import Mathlib.Analysis.Normed.Operator.Asymptotics
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
+public import Mathlib.Analysis.Normed.Operator.Asymptotics
+
 import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Calculus.TangentCone.DimOne
 
@@ -109,9 +110,7 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
-
-noncomputable section
+open Filter Asymptotics ContinuousLinearMap Set Topology NNReal
 
 section
 section DerivativeUniqueness
@@ -181,8 +180,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {f : E → F}
+variable {f' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter (E × E)}
@@ -378,7 +377,7 @@ theorem HasFDerivWithinAt.of_notMem_closure (h : x ∉ closure s) : HasFDerivWit
 
 theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     fderivWithin 𝕜 f s x = 0 := by
-  rw [fderivWithin, if_pos (.of_not_accPt h)]
+  rw [fderivWithin, ite_eq_left (.of_not_accPt h)]
 
 theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) :
     fderivWithin 𝕜 f s x = 0 :=
@@ -390,7 +389,7 @@ theorem fderivWithin_zero_of_not_uniqueDiffWithinAt {f : 𝕜 → F} {x : 𝕜} 
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
-  simp only [fderivWithin, dif_pos h]
+  simp only [fderivWithin, dite_eq_left h]
   split_ifs with h₀
   exacts [h₀, Classical.choose_spec h]
 
@@ -736,7 +735,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
-variable {x x₀ : E}
+variable {x : E}
 variable {s : Set E}
 variable {L : Filter (E × E)}
 

@@ -5,8 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 # `Over X` when `C` has strict initial objects
@@ -27,7 +27,6 @@ open Limits
 variable {C : Type*} [Category* C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has strict initial objects and `X` is an initial object, the category
 `Over X` is equivalent to a point. -/
 @[simps, pp_with_univ]

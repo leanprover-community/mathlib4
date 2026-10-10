@@ -5,9 +5,9 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Util.Notation3
 public meta import Mathlib.Lean.Expr.ExtraRecognizers
 public import Mathlib.Data.Set.Operations
+public import Mathlib.Util.Notation3
 
 /-!
 # Set Notation
@@ -25,7 +25,7 @@ They are defined here separately so that this file can be added as an exception 
 and can thus be imported without a linting false positive when only the notation is desired.
 -/
 
-@[expose] public section
+public section
 
 namespace Set.Notation
 /--
