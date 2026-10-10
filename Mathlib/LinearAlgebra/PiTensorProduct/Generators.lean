@@ -171,8 +171,7 @@ lemma ext_of_span_eq_top
     · exact Set.ncard_compl_of_ncard_eq_add {i₀} (by simpa)
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
-    (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
-    {φ φ' : MultilinearMap R M N}
+    (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) {φ φ' : M →ₗₘ[R] N}
     (h : ∀ (j : (i : ι) → γ i), φ (fun i ↦ g (j i)) = φ' (fun i ↦ g (j i))) :
     φ = φ' := by
   suffices lift φ = lift φ' by
