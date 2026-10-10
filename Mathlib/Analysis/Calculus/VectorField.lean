@@ -164,6 +164,23 @@ lemma lieBracket_smul_left {f : E → 𝕜} (hf : DifferentiableAt 𝕜 f x)
   rw [lieBracket_swap, lieBracket_smul_right hf hV, lieBracket_swap, add_comm]
   simp
 
+/--
+The Lie bracket acts as a derivation on functions: for a function `f` with derivative `f'`
+and vector fields `V`, `W`, we have `[V, W] f = V (W f) - W (V f)`, i.e.
+`D(f' W) V - D(f' V) W = f' [V, W]`.
+
+The two second-derivative terms cancel by symmetry of the second derivative, and what
+survives is exactly the bracket.
+-/
+lemma lieBracket_apply_fun [IsRCLikeNormedField 𝕜]
+    {f : E → F} {f' : E → E →L[𝕜] F} {f'' : E →L[𝕜] E →L[𝕜] F} {V' W' : E →L[𝕜] E}
+    (hf : ∀ y, HasFDerivAt f (f' y) y) (hf' : HasFDerivAt f' f'' x)
+    (hV : HasFDerivAt V V' x) (hW : HasFDerivAt W W' x) :
+    (fderiv 𝕜 (fun y ↦ f' y (W y)) x) (V x) - (fderiv 𝕜 (fun y ↦ f' y (V y)) x) (W x) =
+      f' x (lieBracket 𝕜 V W x) := by
+  rw [(hf'.clm_apply hW).fderiv, (hf'.clm_apply hV).fderiv]
+  simp [lieBracket_eq, hV.fderiv, hW.fderiv, second_derivative_symmetric hf hf']
+
 lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
     (hV₁ : DifferentiableWithinAt 𝕜 V₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (V + V₁) W s x =
