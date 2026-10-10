@@ -47,6 +47,7 @@ This is the stronger version of `AddSubgroup.mem_closure_singleton`. -/]
 lemma Subgroup.mem_zpowers_iff_existsUnique_zpow {G : Type*}
     [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] {a b : G} (ha : a ≠ 1) :
     b ∈ zpowers a ↔ ∃! k : ℤ, a ^ k = b := by
+  rw [mem_zpowers_iff]
   rcases ha.lt_or_gt with ha | ha
   · exact (zpow_right_strictAnti ha).injective.existsUnique_iff_exists.symm
   · exact (zpow_right_strictMono ha).injective.existsUnique_iff_exists.symm
