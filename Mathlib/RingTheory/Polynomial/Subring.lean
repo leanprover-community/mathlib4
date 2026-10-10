@@ -26,6 +26,8 @@ in `R` to `R[X]`. We provide several lemmas to deal with coefficients, degree, a
 
 @[expose] public section
 
+open AddMonoidAlgebra
+
 namespace Polynomial
 
 variable {R : Type*} [Ring R] (p : R[X]) (T : Subring R)
