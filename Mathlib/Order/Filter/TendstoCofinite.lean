@@ -6,6 +6,7 @@ Authors: Riccardo Brasca, Bingyu Xia
 module
 
 public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Algebra.Order.Antidiag.Prod
 
 /-!
