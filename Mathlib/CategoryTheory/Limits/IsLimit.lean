@@ -97,7 +97,7 @@ theorem lift_self {c : Cone F} (t : IsLimit c) : t.lift c = 𝟙 c.pt :=
 
 -- Repackaging the definition in terms of cone morphisms.
 /-- The universal morphism from any other cone to a limit cone. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- The universal morphism from a colimit cocone to any other cocone. -/]
 def liftConeMorphism {t : Cone F} (h : IsLimit t) (s : Cone F) : s ⟶ t where hom := h.lift s
 
@@ -124,7 +124,7 @@ def ofExistsUnique {t : Cone F}
 providing a morphism of cones rather than a morphism between the cone points
 and separately the factorisation condition.
 -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- Alternative constructor for `IsColimit`,
 providing a morphism of cocones rather than a morphism between the cocone points
 and separately the factorisation condition.
@@ -175,7 +175,7 @@ theorem lift_comp_conePointUniqueUpToIso_inv {r s t : Cone F} (P : IsLimit s) (Q
   P.uniq _ _ (by simp)
 
 /-- Transport evidence that a cone is a limit cone across an isomorphism of cones. -/
-@[to_dual
+@[to_dual (attr := implicit_reducible)
 /-- Transport evidence that a cocone is a colimit cocone across an isomorphism of cocones. -/]
 def ofIsoLimit {r t : Cone F} (P : IsLimit r) (i : r ≅ t) : IsLimit t :=
   IsLimit.mkConeMorphism (fun s => P.liftConeMorphism s ≫ i.hom) fun s m => by

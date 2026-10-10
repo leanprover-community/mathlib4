@@ -299,7 +299,7 @@ namespace Cone
 
 /-- To give an isomorphism between cones, it suffices to give an
 isomorphism between their vertices which commutes with the cone maps. -/
-@[simps]
+@[simps, implicit_reducible]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
@@ -309,7 +309,7 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
 
 /-- To give an isomorphism between cocones, it suffices to give an
 isomorphism between their vertices which commutes with the cocone maps. -/
-@[simps]
+@[simps, implicit_reducible]
 def _root_.CategoryTheory.Limits.Cocone.ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, dsimp% c.ι.app j ≫ φ.hom = c'.ι.app j := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
