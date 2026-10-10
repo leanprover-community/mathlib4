@@ -87,6 +87,10 @@ theorem IsProbabilityMeasure.ne_zero (μ : Measure α) [IsProbabilityMeasure μ]
 instance (priority := 100) IsProbabilityMeasure.neZero (μ : Measure α) [IsProbabilityMeasure μ] :
     NeZero μ := ⟨IsProbabilityMeasure.ne_zero μ⟩
 
+instance (priority := 100) [IsZeroOrProbabilityMeasure μ] [NeZero μ] : IsProbabilityMeasure μ where
+  measure_univ := by
+    simpa [NeZero.ne] using (isZeroOrProbabilityMeasure_iff (μ := μ)).mp inferInstance
+
 theorem IsProbabilityMeasure.ae_neBot [IsProbabilityMeasure μ] : NeBot (ae μ) := inferInstance
 
 theorem prob_add_prob_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) : μ s + μ sᶜ = 1 :=
