@@ -138,7 +138,7 @@ termination_by ∑ k, (c k).natAbs
 variable (h₃ : ∀ i, P.root i ∈ span ℤ (P.root '' s))
 include h₃
 
-lemma Base.mkOfPairwiseLEZero_aux (i : ι) :
+private lemma Base.mkOfPairwiseLEZero_aux (i : ι) :
      P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
     -P.root i ∈ AddSubmonoid.closure (P.root '' s) := by
   have aux {c : s → ℤ} (hc : 0 ≤ c) :
@@ -155,7 +155,7 @@ lemma Base.mkOfPairwiseLEZero_aux (i : ι) :
 /-- An alternate condition for a subset of linearly independent (co)roots to form a base.
 
 This is useful when constructing a root pairing from a realisation of a Cartan matrix. -/
-def Base.mkOfPairwiseLEZero : P.Base where
+@[no_expose] def Base.mkOfPairwiseLEZero : P.Base where
   support := s
   linearIndepOn_root := h₀
   linearIndepOn_coroot := by
@@ -168,7 +168,7 @@ def Base.mkOfPairwiseLEZero : P.Base where
       (fun j hj k hk hjk ↦ h₁ hk hj hjk.symm) h₃ h₂
 
 @[simp]
-lemma Base.mkOfPairwiseLEZero_support : (mkOfPairwiseLEZero P h₀ h₁ h₂ h₃).support = s := rfl
+lemma Base.mkOfPairwiseLEZero_support : (mkOfPairwiseLEZero P h₀ h₁ h₂ h₃).support = s := by rfl
 
 end AlternateConstructor
 
@@ -545,7 +545,6 @@ lemma exists_root_eq_sum_int [CharZero R] (i : ι) :
     exact P.ne_zero i <| by simp [hf', contra]
 
 end RootPairing
-
 
 section PositiveRoots
 
