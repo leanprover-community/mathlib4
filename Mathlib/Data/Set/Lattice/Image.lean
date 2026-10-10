@@ -472,6 +472,11 @@ lemma biUnion_prod' (s : Set β) (t : Set γ) (f : β × γ → Set α) :
     ⋃ x ∈ s ×ˢ t, f x = ⋃ (i ∈ s) (j ∈ t), f (i, j) :=
   biSup_prod
 
+theorem iInter_prod_iInter (s : ι → Set α) (t : ι → Set β) :
+    (⋂ i, s i) ×ˢ ⋂ i, t i = ⋂ i, s i ×ˢ t i := by
+  ext
+  simp [forall_and]
+
 theorem sInter_prod_sInter_subset (S : Set (Set α)) (T : Set (Set β)) :
     ⋂₀ S ×ˢ ⋂₀ T ⊆ ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 :=
   subset_iInter₂ fun x hx _ hy => ⟨hy.1 x.1 hx.1, hy.2 x.2 hx.2⟩
