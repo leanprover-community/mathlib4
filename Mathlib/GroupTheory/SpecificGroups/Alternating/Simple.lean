@@ -150,8 +150,8 @@ theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGro
     (kleinFour _).map (ofSubtype (g • s)) = MulAut.conj g • ((kleinFour s).map (ofSubtype s)) := by
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
-  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_map_kleinFour_ofSubtype hs,
-    mk_smul, MulAut.smul_def, ← map_inv, MulAut.coe_conj_apply, support_conj_eq_smul_support,
+  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_map_kleinFour_ofSubtype hs, mk_smul,
+    MulAut.smul_def, ← MulAut.conj_inv, MulAut.coe_conj_apply, support_conj_eq_smul_support,
     mem_map_kleinFour_ofSubtype (s := g • s) (by simpa), Finset.subset_smul_finset_iff,
     MulEquiv.map_eq_one_iff, Subgroup.coe_inv, MulAut.conj_apply, cycleType_conj]
 
