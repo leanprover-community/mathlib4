@@ -38,8 +38,8 @@ theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ 
   rcases cycleGraph_adj'.mp h with h | h
   · obtain ⟨hi, hj⟩ : i.1 = 0 ∧ j.1 = #s - 1 := by grind [Fin.coe_sub_iff_lt]
     rw [hi, hj, adj_comm]
-    simpa [← mul_apply, ← pow_succ', Nat.sub_add_cancel (card_pos.mpr ⟨v, hv⟩),
-      hσ.pow_card_apply hv] using hadj ((σ ^ (#s - 1)) v)
+    have := hadj ((σ ^ (#s - 1)) v)
+    rwa [← mul_apply, ← pow_succ', Nat.sub_add_cancel (by lia), hσ.pow_card_apply hv] at this
   · rw [show j.1 = i.1 + 1 by grind [Fin.sub_val_of_le], pow_succ', mul_apply]
     exact hadj _
 
