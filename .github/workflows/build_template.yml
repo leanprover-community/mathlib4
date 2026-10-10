@@ -1065,8 +1065,15 @@ jobs:
 
       - name: dump declarations and transitive-import counts
         run: |
+          ## `--meta-out` lists the declarations marked `meta`, so the declarations
+          ## diff can report declarations moving into or out of `meta`. Older
+          ## pinned `mathlib-ci` dumpers lack the flag, so only pass it when supported.
+          META_ARGS=()
+          if grep -q -- '--meta-out' "${CI_SCRIPTS_DIR}/pr_summary/dumpReasonableDecls.lean"; then
+            META_ARGS=(--meta-out meta_decls.txt)
+          fi
           lake env lean --run "${CI_SCRIPTS_DIR}/pr_summary/dumpReasonableDecls.lean" \
-            --out decls.txt --imports-out imports.json Mathlib
+            --out decls.txt --imports-out imports.json "${META_ARGS[@]}" Mathlib
           ## Record the PR number so the post-build `decls-diff` workflow can find
           ## the comment to patch without the (laggy) commit-SHA search API. Empty
           ## for non-PR builds (push to master / bors); the consumer then falls
@@ -1075,7 +1082,11 @@ jobs:
 
       - name: ensure dump outputs are regular files
         run: |
-          for f in decls.txt imports.json import_graph.dot pr_number.txt; do
+          for f in decls.txt imports.json import_graph.dot pr_number.txt meta_decls.txt; do
+            ## `meta_decls.txt` is optional (see the dump step above).
+            if [ "$f" = meta_decls.txt ] && [ ! -e "$f" ] && [ ! -L "$f" ]; then
+              continue
+            fi
             if [ -L "$f" ] || [ ! -f "$f" ]; then
               echo "Refusing to upload: $f is not a regular file." >&2
               ls -la -- "$f" >&2 || true
@@ -1092,12 +1103,13 @@ jobs:
             decls.txt
             imports.json
             pr_number.txt
+            meta_decls.txt
           ## Master pushes: 90 days, so later PRs forked from these commits
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
       - name: clean up the import graph file
-        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
+        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt meta_decls.txt
 
       - name: check all scripts build successfully
         run: |
