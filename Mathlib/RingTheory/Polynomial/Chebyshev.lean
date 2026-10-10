@@ -46,8 +46,8 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 
 ## References
 
-[Lionel Ponton, _Roots of the Chebyshev polynomials: A purely algebraic approach_]
-[ponton2020chebyshev]
+[Lionel Ponton, _Roots of the Chebyshev polynomials: A purely algebraic
+approach_][ponton2020chebyshev]
 
 ## TODO
 
