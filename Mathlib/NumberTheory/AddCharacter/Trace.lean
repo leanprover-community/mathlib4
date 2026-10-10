@@ -16,9 +16,9 @@ a ring `R`. Composing the trace of `A` over `ZMod p` with the character of `ZMod
 
 This file defines that character and establishes its basic properties.
 
-Over a finite field this is the construction behind `FiniteField.primitiveChar`, with one main
-difference: there the root of unity is chosen as part of the construction, whereas here it is a
-parameter, thus one can work with a given root of unity in a given ring.
+The construction of `FiniteField.primitiveChar` is the same over a finite field, but there the
+root of unity is chosen in a cyclotomic extension of the target field. Here it is any given
+primitive root of unity, in any commutative ring, which gives more flexibility.
 
 ## Main definitions
 
@@ -37,6 +37,10 @@ parameter, thus one can work with a given root of unity in a given ring.
 ## Tags
 
 additive character, trace
+
+## TODO
+
+* Define `FiniteField.primitiveChar` using `AddChar.traceChar`.
 
 -/
 
