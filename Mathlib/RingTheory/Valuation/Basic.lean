@@ -42,7 +42,10 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
   is an element in the ring whose valuation is `≠ 0` and `≠ 1`.
 * `Valuation.IsEquiv`, the heterogeneous equivalence relation on valuations
 * `Valuation.supp`, the support of a valuation
-* `orderMonoidIso` is the ordered isomorphism between the value groups of two equivalent valuations.
+* `orderMonoidIso` is the ordered isomorphism between the `valueGroup`'s of two
+  equivalent valuations.
+* `orderMonoidIso₀` is the ordered isomorphism between the `ValueGroup₀`'s of two
+  equivalent valuations.
 
 * `AddValuation R Γ₀`, the type of additive valuations on `R` with values in a
   linearly ordered additive commutative group with a top element, `Γ₀`.
@@ -801,100 +804,116 @@ variable [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ'₀} {u : Valuatio
 
 namespace IsEquiv
 
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+open MonoidWithZeroHom MonoidWithZeroHom.valueGroup MonoidWithZeroHom.ValueGroup₀
+
+/-- An equivalence of valuations `v.IsEquiv w` induces the following map from `v.valueGroup` to
+`w.valueGroup`: given `x : v.valueGroup` and nonzero `a b : R` such that `(v a) * x = (v b)`,
+`valueGroupFun x` is defined as `(w b) * (w a)⁻¹`. -/
+noncomputable def valueGroupFun (h : v.IsEquiv w) (x : v.valueGroup) : w.valueGroup :=
+  letI hx := (exists_mk (v : R →*₀ Γ₀) x)
+  valueGroup.mk (w : R →*₀ Γ'₀) hx.choose hx.choose_spec.choose
+    (h.eq_zero.ne.mp hx.choose_spec.choose_spec.1) (h.eq_zero.ne.mp hx.choose_spec.choose_spec.2.1)
+
+theorem valueGroupFun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0)
+    (hr' : w r ≠ 0 := h.eq_zero.ne.1 hr) (hs' : w s ≠ 0 := h.eq_zero.ne.1 hs) :
+    valueGroupFun h (valueGroup.mk (v : R →*₀ Γ₀) r s hr hs) =
+      valueGroup.mk (w : R →*₀ Γ'₀) r s hr' hs' := by
+  rw [valueGroupFun]
+  generalize_proofs _ H _
+  simpa [-map_mul, ← h.eq_iff] using H.choose_spec.choose_spec.choose_spec.symm
 
 /-- An equivalence of valuations `v.IsEquiv w` induces the following map from `ValueGroup₀ v` to
 `ValueGroup₀ w`: given `x : ValueGroup₀ v` and nonzero `a b : R` such that `(v a) * x = (v b)`,
 `valueGroup₀Fun x` is defined as `(w b) * (w a)⁻¹`. -/
 noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : v.ValueGroup₀) : w.ValueGroup₀ :=
-  if hx : x = 0 then 0 else
-    haveI c := (x.zero_or_exists_mk'.resolve_left hx).choose
-    valueGroup.mk (w : R →*₀ Γ'₀) c.1.1 c.1.2 (h.eq_zero.ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
+  WithZero.map (valueGroupFun h) x
 
 theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0)
     (hr' : w r ≠ 0 := h.eq_zero.ne.1 hr) (hs' : w s ≠ 0 := h.eq_zero.ne.1 hs) :
     valueGroup₀Fun h (valueGroup.mk (v : R →*₀ Γ₀) r s hr hs) =
       valueGroup.mk (w : R →*₀ Γ'₀) r s hr' hs' := by
-  rw [valueGroup₀Fun, dite_eq_right (by simp)]
-  generalize_proofs _ _ H _ _ _
-  simpa [-map_mul, ← h.eq_iff] using H.choose_spec.symm
+  simp [valueGroup₀Fun, valueGroupFun_spec h hr hs]
 
 theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by simp [valueGroup₀Fun]
 
-/-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
-noncomputable def orderMonoidIso (h : v.IsEquiv w) : v.ValueGroup₀ ≃*o w.ValueGroup₀ where
-  toFun := valueGroup₀Fun h
-  invFun := valueGroup₀Fun h.symm
-  map_mul' x y := by
-    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    obtain _ | ⟨r₂, s₂, hr₂, hs₂, rfl⟩ := y.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    simp [← WithZero.coe_mul, valueGroup.mk_mul, valueGroup₀Fun_spec h]
-  left_inv x := by
-    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    rw [valueGroup₀Fun_spec h, valueGroup₀Fun_spec h.symm]
+/-- The order preserving isomorphism between the `valueGroup`s of the underlying
+`MonoidWithZeroHom`s of two equivalent valuations. -/
+def orderMonoidIso (h : v.IsEquiv w) :
+    valueGroup (v : R →*₀ Γ₀) ≃*o valueGroup (w :  R →*₀ Γ'₀) where
+  toFun       := valueGroupFun h
+  invFun      := valueGroupFun h.symm
+  left_inv x  := by
+    obtain ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := exists_mk (v : R →*₀ Γ₀) x
+    rw [valueGroupFun_spec h, valueGroupFun_spec h.symm]
   right_inv x := by
-    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [valueGroup₀Fun_zero]
-    rw [valueGroup₀Fun_spec h.symm, valueGroup₀Fun_spec h]
-  map_le_map_iff' {x} {y} := by
-    simp only [valueGroup₀Fun, ne_eq]
-    split_ifs with hx0 hy0 hy0
-    · simp [hx0, hy0]
-    · simp [hx0]
-    · simp [hx0, hy0]
-    · generalize_proofs _ _ hx _ _ hy _ _
-      conv_rhs => rw [hx.choose_spec, hy.choose_spec]
-      simp only [valueGroup.mk, WithZero.coe_le_coe, Subtype.mk_le_mk]
-      nth_rw 2 [mul_comm]
-      rw [le_mul_inv_iff_mul_le, mul_assoc, mul_comm, ← le_mul_inv_iff_mul_le, inv_inv]
-      nth_rw 4 [mul_comm]
-      conv_rhs =>
-        rw [le_mul_inv_iff_mul_le, mul_assoc, mul_comm, ← le_mul_inv_iff_mul_le, inv_inv]
-      generalize_proofs _ hx' hx20 hy' hy10 hx10 hy20
-      rw [← Units.mk0_mul _ _ (mul_ne_zero hx10 hy20), ← Units.mk0_mul _ _ (mul_ne_zero hx20 hy10),
-        ← Units.mk0_mul, ← Units.mk0_mul]
-      · simp [← Units.val_le_val, ← map_mul, ← h.le_iff_le]
-      · simpa [h.eq_zero] using mul_ne_zero hx10 hy20
-      · simpa [h.eq_zero] using mul_ne_zero hx20 hy10
+    obtain ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := exists_mk (w : R →*₀ Γ'₀) x
+    rw [valueGroupFun_spec h.symm, valueGroupFun_spec h]
+  map_mul' x y := by
+    obtain ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := exists_mk (v : R →*₀ Γ₀) x
+    obtain ⟨r₂, s₂, hr₂, hs₂, rfl⟩ := exists_mk (v : R →*₀ Γ₀) y
+    simp [valueGroup.mk_mul, valueGroupFun_spec h]
+  map_le_map_iff' {x y} := by
+    obtain ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := exists_mk (v : R →*₀ Γ₀) x
+    obtain ⟨r₂, s₂, hr₂, hs₂, rfl⟩ := exists_mk (v : R →*₀ Γ₀) y
+    simp only [coe_toMonoidWithZeroHom, ne_eq] at hr₁ hs₁ hr₂ hs₂
+    simp only [valueGroupFun_spec h, ← Subtype.coe_le_coe,  ← Units.val_le_val, mk_eq_div,
+      coe_toMonoidWithZeroHom]
+    rw [div_le_div_iff₀ (Ne.pos hr₁) (Ne.pos hr₂),
+      div_le_div_iff₀ (h.pos_iff.mp (Ne.pos hr₁)) (h.pos_iff.mp (Ne.pos hr₂))]
+    simp [← map_mul, h.le_iff_le]
+
+theorem orderMonoidIso_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0)
+    (hr' : w r ≠ 0 := h.eq_zero.ne.1 hr) (hs' : w s ≠ 0 := h.eq_zero.ne.1 hs) :
+    orderMonoidIso h (valueGroup.mk (v : R →*₀ Γ₀) r s hr hs) =
+      valueGroup.mk (w : R →*₀ Γ'₀) r s hr' hs' := by
+  simp [orderMonoidIso, valueGroupFun_spec h hr hs]
+
+/-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
+noncomputable def orderMonoidIso₀ (h : v.IsEquiv w) :
+    v.ValueGroup₀ ≃*o w.ValueGroup₀ := h.orderMonoidIso.withZero
 
 @[simp]
-theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
-    h.orderMonoidIso (v.restrict a) = w.restrict a := by
+theorem orderMonoidIso₀_spec (h : v.IsEquiv w) (a : R) :
+    h.orderMonoidIso₀ (v.restrict a) = w.restrict a := by
   have h_res := h.restrict
   by_cases ha : v a = 0
   · rw [← restrict_eq_zero_iff] at ha
     rwa [ha, map_zero, Eq.comm, ← h_res.eq_zero]
   · rw [(v.restrict_eq_mk ha)]
-    simp [orderMonoidIso, valueGroup₀Fun_spec h (hs := ha),
-      w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)]
+    simp [orderMonoidIso₀, orderMonoidIso_spec h, w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)]
 
-lemma orderMonoidIso_spec₀ (h : v.IsEquiv w) (a : R) :
-    h.orderMonoidIso (restrict₀ (v : R →*₀ Γ₀) a) = restrict₀ (w : R →*₀ Γ'₀) a :=
-  orderMonoidIso_spec h a
+lemma orderMonoidIso₀_coe (h : v.IsEquiv w) (x : valueGroup (v : R →*₀ Γ₀)) :
+    h.orderMonoidIso₀ x = h.orderMonoidIso x := rfl
 
-theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
-    h.orderMonoidIso.symm = h'.orderMonoidIso := by
-  rfl
+lemma orderMonoidIso₀_spec₀ (h : v.IsEquiv w) (a : R) :
+    h.orderMonoidIso₀ (restrict₀ (v : R →*₀ Γ₀) a) = restrict₀ (w : R →*₀ Γ'₀) a :=
+  orderMonoidIso₀_spec h a
+
+theorem orderMonoidIso₀_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
+    h.orderMonoidIso₀.symm = h'.orderMonoidIso₀ := by rfl
 
 @[simp]
-theorem orderMonoidIso_eq_refl (h : v.IsEquiv v) :
-    h.orderMonoidIso = .refl _ := by
+theorem orderMonoidIso₀_eq_refl (h : v.IsEquiv v) :
+    h.orderMonoidIso₀ = .refl _ := by
   ext x
   obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
   · simp
-  · simp [orderMonoidIso, valueGroup₀Fun_spec h]
+  · simp [orderMonoidIso₀, orderMonoidIso_spec h]
 
 @[simp]
-theorem orderMonoidIso_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
-    h.orderMonoidIso.trans h'.orderMonoidIso = (h.trans h').orderMonoidIso := by
+theorem orderMonoidIso₀_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
+    h.orderMonoidIso₀.trans h'.orderMonoidIso₀ = (h.trans h').orderMonoidIso₀ := by
   ext x
   obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
   · simp
-  · simp [orderMonoidIso, valueGroup₀Fun_spec h, valueGroup₀Fun_spec h',
-      valueGroup₀Fun_spec (trans h h')]
+  · simp [orderMonoidIso₀, orderMonoidIso_spec h, orderMonoidIso_spec h',
+      orderMonoidIso_spec (trans h h')]
+
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_coe := orderMonoidIso₀_coe
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_spec₀ := orderMonoidIso₀_spec₀
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_symm := orderMonoidIso₀_symm
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_eq_refl := orderMonoidIso₀_eq_refl
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_trans := orderMonoidIso₀_trans
 
 end IsEquiv
 
