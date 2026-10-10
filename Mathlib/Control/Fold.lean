@@ -225,9 +225,11 @@ def foldlM (f : α → β → m α) (x : α) (xs : t β) : m α :=
 def foldrM (f : α → β → m β) (x : β) (xs : t α) : m β :=
   (foldMap (Monoid.foldrM.mk ∘ f) xs).get x
 
+/-- Deprecated alias for `foldlM`. -/
 @[deprecated foldlM (since := "2026-10-08")]
 abbrev foldlm (f : α → β → m α) (x : α) (xs : t β) : m α := foldlM f x xs
 
+/-- Deprecated alias for `foldrM`. -/
 @[deprecated foldrM (since := "2026-10-08")]
 abbrev foldrm (f : α → β → m β) (x : β) (xs : t α) : m β := foldrM f x xs
 

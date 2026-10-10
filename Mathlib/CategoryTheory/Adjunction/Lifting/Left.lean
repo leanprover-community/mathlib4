@@ -93,6 +93,7 @@ def counitCoequalizes (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) 
       rw [← cancel_epi (adj₁.counit.app X)]
       apply hm.trans ((h _).desc' s.π _).2.symm
 
+/-- Deprecated alias for `counitCoequalizes`. -/
 @[deprecated counitCoequalizes (since := "2026-10-05")]
 abbrev counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) :
     IsColimit (Cofork.ofπ (adj₁.counit.app X) (adj₁.counit_naturality _)) :=

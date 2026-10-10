@@ -96,6 +96,7 @@ def unitEqualizes (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
       rw [← cancel_mono (adj₁.unit.app X)]
       apply hm.trans ((h X).lift' s.ι _).2.symm
 
+/-- Deprecated alias for `unitEqualizes`. -/
 @[deprecated unitEqualizes (since := "2026-10-05")]
 abbrev unitEqualises (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
     IsLimit (Fork.ofι (adj₁.unit.app X) (adj₁.unit_naturality _)) :=
