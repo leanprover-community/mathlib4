@@ -59,7 +59,7 @@ Throughout this file, this setup is realized as
 variable {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardinal.{w})
     [Fact κ.IsRegular] [IsCardinalAccessibleCategory K κ] [IsCardinalAccessibleCategory L κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ] [F.PreservesCardinalPresentable κ]
-    (Λ : Type w) [Nonempty Λ] [LinearOrder Λ] [SuccOrder Λ] [WellFoundedLT Λ] [NoMaxOrder Λ]
+    (Λ : Type*) [Nonempty Λ] [LinearOrder Λ] [SuccOrder Λ] [WellFoundedLT Λ] [NoMaxOrder Λ]
     (hΛ : HasCardinalLT Λ κ)
     [Limits.HasColimitsOfShape Λ K] [Limits.HasColimitsOfShape Λ L]
     [Limits.PreservesColimitsOfShape Λ F] [Limits.PreservesColimitsOfShape Λ G]
@@ -106,7 +106,7 @@ public instance (X : Inserter F G)
       (f₁ := f₁.hom) (f₂ := f₂.hom) congr($(h).hom)
     exact ⟨j, u, by grind⟩
 
-variable (Λ : Type w)
+variable (Λ : Type*)
 
 /-
 Below, we prove one of the main lemma to prove the main theorem:
@@ -280,9 +280,7 @@ lemma exists_succ_of_hasCardinalLT [IsCardinalAccessibleCategory K κ]
         simp [hv₀, ← Functor.map_comp, ξ₁, b.sq₁ j j.prop, ← Functor.map_comp_assoc])
     exact ⟨uij, vij, by simpa using h⟩
   choose u ν huν using Uspec
-  have h' : HasCardinalLT (Set.Iio i) κ := by
-    grw [hasCardinalLT_iff_cardinal_mk_lt, Cardinal.mk_set_le, ← hasCardinalLT_iff_cardinal_mk_lt]
-    assumption
+  have h' : HasCardinalLT (Set.Iio i) κ := hΛ.of_injective _ Subtype.val_injective
   obtain ⟨ξ₂, ν₂, μ₀, h₂⟩ := IsCardinalFiltered.wideSpan ν h'
   let ξ₂₀ := IsCardinalFiltered.max (κ := κ) u h'
   -- Now, we check that we have obtained all the conditions we want:
@@ -606,11 +604,9 @@ variable [IsCardinalAccessibleCategory K κ]
 value in a κ-filtered category. -/
 noncomputable def c (hΛ : HasCardinalLT Λ κ) : Limits.Cocone S.ξ :=
   IsCardinalFiltered.cocone (κ := κ) S.ξ <| by
-    rw [hasCardinalLT_arrow_iff_of_isThin, hasCardinalLT_iff_cardinal_mk_lt]
-    · grw [Cardinal.mk_le_of_injective (Subtype.val_injective),
-        ← hasCardinalLT_iff_cardinal_mk_lt]
-      assumption
-    · exact Cardinal.IsRegular.aleph0_le <| Fact.out
+    rw [hasCardinalLT_arrow_iff_of_isThin]
+    exacts [hΛ.of_injective _ Subtype.val_injective,
+      Cardinal.IsRegular.aleph0_le <| Fact.out]
 
 /-- Extend `S.ξ : Set.Iio j ⥤  CostructuredArrow (isCardinalPresentable K κ).ι E.obj` to
 a functor out of `Set.Iic j` by using an arbitrary cocone. -/
@@ -813,20 +809,14 @@ def functor :
       (S.ξObjIso t t le_rfl).inv
   map_id x := by simp
   map_comp {u v w} f g := by
-    have := (S.val (Opposite.op w)).ξ.map_comp
+    have e := (S.val (Opposite.op w)).ξ.map_comp
       (homOfLE (leOfHom f : ⟨u, by simpa using (leOfHom (f ≫ g))⟩ ≤ ⟨v, by simpa using leOfHom g⟩))
       (homOfLE (leOfHom g : (⟨v, by simpa using (leOfHom g)⟩ : Set.Iic w) ≤ iic% w w))
-    simp at this
-    dsimp [ξObjIso, ξ]
-    simp only [homOfLE_leOfHom, Category.comp_id,
-      Category.assoc, CostructuredArrow.hom_eq_iff, CostructuredArrow.comp_left,
-      CostructuredArrow.eqToHom_left, this]
-    simp_rw [← Category.assoc]
-    congr 1
+    simp only [homOfLE_leOfHom, homOfLE_comp, CostructuredArrow.hom_eq_iff,
+      CostructuredArrow.comp_left] at e
     have := congr($(S.2 (homOfLE (leOfHom g) :
       (⟨v, by simpa using (leOfHom g)⟩ : Set.Iic w) ⟶ iic% w w).op).ξ).symm
-    simp [Functor.congr_hom this]
-    rfl
+    simp [ξObjIso, ξ, e, Functor.congr_hom this, trunc]
 
 /-- Extract the `ψ` fields of all the `PartialChainUpTo` making up a section of
 `PartialChainUpTo.functor` into something defined for all indices. -/
@@ -843,7 +833,6 @@ lemma sq₁ (k k' : Λ) (hk₁ : k < k') :
     dsimp% (S.1 (op k')).sq₁ k hk₁
   simp [ψ, functor, ξ, ← G.map_comp, ψ', ← F.map_comp_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma t₁ (k₁ k₂ k₃ : Λ) (h₁₂ : k₁ ≤ k₂) (h₂₃ : k₂ < k₃) :
     S.ψ k₁ k₃ (by valid) =
     F.map (S.functor.map (homOfLE h₁₂)).left.hom ≫ S.ψ k₂ k₃ h₂₃ := by
@@ -854,7 +843,6 @@ lemma t₁ (k₁ k₂ k₃ : Λ) (h₁₂ : k₁ ≤ k₂) (h₂₃ : k₂ < k�
   simp [ψ, functor, ξ, dsimp% (S.1 (Opposite.op k₃)).t₁ k₁ k₂ k₃ h₁₂ h₂₃ le_rfl, this,
     ξObjIso, eqToIso, trunc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma t₂ (k₁ k₂ k₃ : Λ) (h₁₂ : k₁ < k₂) (h₂₃ : k₂ ≤ k₃) :
     S.ψ k₁ k₃ (by valid) =
     S.ψ k₁ k₂ h₁₂ ≫ G.map (S.functor.map (homOfLE h₂₃)).left.hom := by
@@ -953,7 +941,7 @@ abbrev O₁ (F G : K ⥤ L) : ObjectProperty (Inserter F G) :=
   (isCardinalPresentable K κ).inverseImage (Inserter.proj F G)
 
 /-- Shorthand for the index type of the canonical diagram to write any
-inserter as a κ-filtered colimit of κ-presentale inserters. -/
+inserter as a κ-filtered colimit of κ-presentable inserters. -/
 abbrev Δ (E : Inserter F G) := CostructuredArrow ((O₁ κ F G).ι) E
 
 instance {E : Inserter F G} (x : Δ κ E) : IsCardinalPresentable x.left.obj.obj κ :=
@@ -1055,6 +1043,7 @@ lemma exists_Δ_of_pentagon
     simp [Seg.ξObjIso, Seg.ξ]
   -- Finally, we can use ξ : its colimit exists and is κ-presentable.
   have : O₀.IsClosedUnderColimitsOfShape Λ :=
+    have : Small.{w} Λ := hΛ.small
     CategoryTheory.isClosedUnderColimitsOfShape_isCardinalPresentable K (by
       rwa [hasCardinalLT_arrow_iff_of_isThin _ κ (Cardinal.IsRegular.aleph0_le Fact.out)])
   have : HasColimitsOfShape Λ O₀.FullSubcategory := hasColimitsOfShape_of_closedUnderColimits ..
@@ -1358,7 +1347,7 @@ open Accessible
 variable {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L) (κ : Cardinal.{w})
     [Fact κ.IsRegular] [IsCardinalAccessibleCategory K κ] [IsCardinalAccessibleCategory L κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ] [F.PreservesCardinalPresentable κ]
-    (Λ : Type w) [Nonempty Λ] [LinearOrder Λ] [SuccOrder Λ] [WellFoundedLT Λ] [NoMaxOrder Λ]
+    (Λ : Type*) [Nonempty Λ] [LinearOrder Λ] [SuccOrder Λ] [WellFoundedLT Λ] [NoMaxOrder Λ]
     (hΛ : HasCardinalLT Λ κ)
     [Limits.HasColimitsOfShape Λ K] [Limits.HasColimitsOfShape Λ L]
     [Limits.PreservesColimitsOfShape Λ F] [Limits.PreservesColimitsOfShape Λ G]
@@ -1428,8 +1417,6 @@ public theorem isCardinalAccessibleCategory :
   hasColimitsOfShape J _ _ := by
     have : Limits.PreservesColimitsOfShape J F :=
       Functor.IsCardinalAccessible.preservesColimitOfShape κ J
-    have : Limits.PreservesColimitsOfShape J G :=
-      Functor.IsCardinalAccessible.preservesColimitOfShape κ J
     have : Limits.HasColimitsOfShape J K :=
       HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
     have : Limits.HasColimitsOfShape J L :=
@@ -1446,10 +1433,7 @@ public lemma isCardinalPresentable_eq :
 
 end
 
-section
-
-theorem isAccessibleCategory
-    {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L)
+instance {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L)
     [IsAccessibleCategory.{w} K] [IsAccessibleCategory.{w} L]
     [F.IsAccessible.{w}] [G.IsAccessible.{w}] : IsAccessibleCategory.{w} (Inserter F G) := by
   obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ := IsCardinalAccessibleCategory.uniformization_pair F G
@@ -1476,7 +1460,5 @@ theorem isAccessibleCategory
   have : Limits.PreservesColimitsOfShape κ.ord.ToType G :=
     Functor.IsCardinalAccessible.preservesColimitOfShape κ _
   exact ⟨κ', inferInstance, isCardinalAccessibleCategory F G κ' κ.ord.ToType hCard⟩
-
-end
 
 end CategoryTheory.Inserter

@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Equifier.Basic
 public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategoryInf
 import Mathlib.CategoryTheory.Presentable.Dense
 import Mathlib.CategoryTheory.Presentable.StrongGenerator
 import Mathlib.CategoryTheory.Presentable.Uniformization
@@ -74,7 +75,7 @@ Throughout this file, this setup is realized as
 variable {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardinal.{w})
     [Fact κ.IsRegular] [IsCardinalAccessibleCategory K κ] [IsCardinalAccessibleCategory L κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ] [F.PreservesCardinalPresentable κ]
-    (Λ : Type w) [Nonempty Λ] [LinearOrder Λ] [SuccOrder Λ] [WellFoundedLT Λ] [NoMaxOrder Λ]
+    (Λ : Type*) [Nonempty Λ] [LinearOrder Λ] [SuccOrder Λ] [WellFoundedLT Λ] [NoMaxOrder Λ]
     (hΛ : HasCardinalLT Λ κ)
     [Limits.HasColimitsOfShape Λ K] [Limits.HasColimitsOfShape Λ L]
     [Limits.PreservesColimitsOfShape Λ F] [Limits.PreservesColimitsOfShape Λ G]
@@ -136,7 +137,7 @@ To realize the induction, we transform `j ↦ PartialChainUpTo … j` into a
 presheaf on `j` so that we can use `Functor.WellOrderInductionData`.
 From a section of the presheaf, we can extract the chain out of `Λ` that we are looking for. -/
 @[ext]
-structure PartialChainUpTo (Λ : Type w) [Preorder Λ] [SuccOrder Λ]
+structure PartialChainUpTo (Λ : Type*) [Preorder Λ] [SuccOrder Λ]
     (E : Equifier Φ Ψ) (i : Λ) where
   /-- Corresponds to all the previously constructed ξᵢ's -/
   ξ : Set.Iic i ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj
@@ -147,7 +148,7 @@ structure PartialChainUpTo (Λ : Type w) [Preorder Λ] [SuccOrder Λ]
       G.map (ξ.map (homOfLE (by valid) : iic% j i ⟶ iic% k i)).left.hom
 
 namespace PartialChainUpTo
-variable (Λ : Type w) [LinearOrder Λ] [SuccOrder Λ]
+variable (Λ : Type*) [LinearOrder Λ] [SuccOrder Λ]
 
 /-- Restricts a PartialChainUpTo to a lower index, turning PartialChainUpTo into a presheaf. -/
 @[implicit_reducible]
@@ -356,7 +357,6 @@ lemma ξ_map_eq (S : ISeg κ Λ E j) (i i' i'' : Λ)
     congr($(S.prop i' i'' hi' hi'').ξ).symm (homOfLE hi : iic% i i' ⟶ iic% i' i')
   simp [ξ, this, ξObjIso, eqToIso, trunc]
 
-
 lemma h (S : ISeg κ Λ E j) (i₁ i₂ : Λ) (hjk : i₁ < i₂ := by valid) (hk : i₂ < j := by valid) :
     Φ.app (S.ξ.obj (iio% i₁ j)).left.obj ≫
       G.map (S.ξ.map (homOfLE (by valid) : iio% i₁ j ⟶ iio% i₂ j)).left.hom =
@@ -372,11 +372,9 @@ variable (S : ISeg κ Λ E j) [IsCardinalAccessibleCategory K κ]
 value in a κ-filtered category. -/
 noncomputable def c (hΛ : HasCardinalLT Λ κ) : Limits.Cocone S.ξ :=
   IsCardinalFiltered.cocone (κ := κ) S.ξ <| by
-    rw [hasCardinalLT_arrow_iff_of_isThin, hasCardinalLT_iff_cardinal_mk_lt]
-    · grw [Cardinal.mk_le_of_injective (Subtype.val_injective),
-        ← hasCardinalLT_iff_cardinal_mk_lt]
-      assumption
-    · exact Cardinal.IsRegular.aleph0_le <| Fact.out
+    rw [hasCardinalLT_arrow_iff_of_isThin]
+    exacts [hΛ.of_injective _ Subtype.val_injective,
+      Cardinal.IsRegular.aleph0_le <| Fact.out]
 
 /-- Extend `S.ξ : Set.Iio j ⥤  CostructuredArrow (isCardinalPresentable K κ).ι E.obj` to
 a functor out of `Set.Iic j` by using an arbitrary cocone. -/
@@ -499,77 +497,440 @@ noncomputable def mkBot [OrderBot Λ] {E : Equifier Φ Ψ}
   ξ := Functor.const _ |>.obj ξ₀
   h i j hij hk := False.elim <| by valid
 
-lemma mkSuccBot_bot_eq [OrderBot Λ] {E : Equifier Φ Ψ}
+lemma mkBot_bot_eq [OrderBot Λ] {E : Equifier Φ Ψ}
     (ξ₀ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj) :
     (mkBot Λ ξ₀).ξ.obj (iic% ⊥ ⊥) = ξ₀ :=
   rfl
 
 end constructor
 
+/-- A wrapper around sections of `PartialChainUpTo.functor`. -/
+@[implicit_reducible]
+def Seg (E : Equifier Φ Ψ) : Type _ := (PartialChainUpTo.functor κ Λ E).sections
+
+namespace Seg
+
+variable {κ Λ} {E : Equifier Φ Ψ} {j : Λ}
+
+open Opposite
+
+variable (S : Seg κ Λ E)
+
+/-- Extract the `ξ` fields of all the `PartialChainUpTo` making up a section of
+`PartialChainUpTo.functor`. -/
+@[implicit_reducible]
+def ξ (i : Λ) : CostructuredArrow (isCardinalPresentable K κ).ι E.obj :=
+  (S.val (op i)).ξ.obj <| iic% i i
+
+lemma ξ_obj_eq (i k : Λ) (hi : i ≤ k) :
+    S.ξ i = (S.val (op k)).ξ.obj (iic% i k) :=
+  congr($(S.2 (homOfLE hi : i ⟶ k).op).ξ.obj (iic% i i)).symm
+
+/-- Characterizing isomorphism for `Seg.ξ`. -/
+def ξObjIso (i k : Λ) (hi : i ≤ k) :
+    S.ξ i ≅ (S.val (op k)).ξ.obj (iic% i k) :=
+  eqToIso <| S.ξ_obj_eq i k hi
+
+/-- Extract the `ξ` fields of all the `PartialChainUpTo` making up a section of
+`PartialChainUpTo.functor` into a functor out of Λ.
+This is eventually going to be the chains that we use for the proof of [positselski2014], 4.5. -/
+@[implicit_reducible]
+def functor :
+    Λ ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj where
+  obj := S.ξ
+  map {s t} f :=
+    (S.ξObjIso s t (leOfHom f)).hom ≫
+      (S.val (op t)).ξ.map (homOfLE (leOfHom f)) ≫
+      (S.ξObjIso t t le_rfl).inv
+  map_id x := by simp
+  map_comp {u v w} f g := by
+    have e := (S.val (Opposite.op w)).ξ.map_comp
+      (homOfLE (leOfHom f : ⟨u, by simpa using (leOfHom (f ≫ g))⟩ ≤ ⟨v, by simpa using leOfHom g⟩))
+      (homOfLE (leOfHom g : (⟨v, by simpa using (leOfHom g)⟩ : Set.Iic w) ≤ iic% w w))
+    simp only [homOfLE_leOfHom, homOfLE_comp, CostructuredArrow.hom_eq_iff,
+      CostructuredArrow.comp_left] at e
+    have := congr($(S.2 (homOfLE (leOfHom g) :
+      (⟨v, by simpa using (leOfHom g)⟩ : Set.Iic w) ⟶ iic% w w).op).ξ).symm
+    simp [ξObjIso, ξ, e, Functor.congr_hom this, trunc]
+
+lemma h (i₁ i₂ : Λ) (hjk : i₁ < i₂ := by valid) :
+    Φ.app (S.functor.obj i₁).left.obj ≫
+      G.map (S.functor.map (homOfLE (by valid) : i₁ ⟶ i₂)).left.hom =
+    Ψ.app (S.functor.obj i₁).left.obj ≫
+      G.map (S.functor.map (homOfLE (by valid) :  i₁ ⟶ i₂)).left.hom := by
+  simp (discharger := valid) [functor, ξ, ← NatTrans.naturality_assoc,
+    reassoc_of% (S.val (op i₂)).h i₁ i₂ hjk]
+
+end Seg
+
 end PartialChainUpTo
 
+variable (Φ Ψ) in
+/-- Shorthand for the object property that we will eventually prove to be equal to
+the class of κ-presentable objects of the equifier category -/
+abbrev O₁ : ObjectProperty (Equifier Φ Ψ) :=
+  (isCardinalPresentable K κ).inverseImage (Equifier.ι Φ Ψ)
+
+/-- Shorthand for the index type of the canonical diagram to write any
+equifier as a κ-filtered colimit of κ-presentable inserters. -/
+abbrev Δ (E : Equifier Φ Ψ) := CostructuredArrow ((O₁ κ Φ Ψ).ι) E
+
+instance {E : Equifier Φ Ψ} (x : Δ κ E) : IsCardinalPresentable x.left.obj.obj κ :=
+  x.left.property
+
+instance {E : Equifier Φ Ψ} (x : Δ κ E) :
+    IsCardinalPresentable ((O₁ κ Φ Ψ).ι.obj x.left).obj κ :=
+  x.left.property
+
 open PartialChainUpTo Order Limits in
-lemma factors [IsCardinalAccessibleCategory K κ]
-    [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
-    [F.PreservesCardinalPresentable κ]
+lemma factors (Λ : Type*)
+    [LinearOrder Λ] [OrderBot Λ] [SuccOrder Λ] [NoMaxOrder Λ] [WellFoundedLT Λ]
+    (hΛ : HasCardinalLT Λ κ)
+    [IsCardinalAccessibleCategory K κ] [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
+    [F.PreservesCardinalPresentable κ] [HasColimitsOfShape Λ K] [PreservesColimitsOfShape Λ F]
     {E : Equifier Φ Ψ} {S : K} [IsCardinalPresentable S κ] (f : S ⟶ E.obj) :
-    ∃ (U : Equifier Φ Ψ) (g : S ⟶ U.obj) (h : U ⟶ E),
-      IsCardinalPresentable U.obj κ ∧ (g ≫ h.hom = f) := by
+    ∃ (U : Δ κ E) (g : S ⟶ U.left.obj.obj), (g ≫ U.hom.hom = f) := by
   let O₀ := isCardinalPresentable K κ -- shorthand to make things a bit more compact.
-  -- local grind helper : having this in context helps
-  have _ {x y : CostructuredArrow O₀.ι E.obj} (f : x ⟶ y) :
-      f.left.hom ≫ y.hom = x.hom := by
-    simpa using f.w
   -- First, we summon a diagram to write T as a κ-filtered colimits of κ-filtered objects.
   have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
   let hcolimT := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ T_ξ
-  have (X : K) : Limits.PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
-    G.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
-  have (X : K) : Limits.PreservesColimitsOfShape (CostructuredArrow O₀.ι X) F :=
-    F.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
-  let hcolimGT := Limits.isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
   -- Pick a first factorization of `S ⟶ E.obj` through some `T_ξ₀`.
   obtain ⟨ξ₀, u, v⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimT f
-  -- Now, we build a chain of morphisms.
+  -- Now, we build a chain of morphisms from T_ξ₀: at the colimit it will give an equifier
   dsimp at u v
   simp only [Category.id_comp] at v
   -- Now, we construct a chain by iterating.
-  -- This requires a fair amount of setup: first the induction data
+  -- This requires some amount of setup: first the induction data
   let data : CategoryTheory.Functor.WellOrderInductionData (functor κ Λ E) :=
     Functor.WellOrderInductionData.ofExists
-      (fun i hi ↦ surjective_trunc κ Λ hΛ E i)
+      (fun i hi ↦ surjective_trunc κ Λ E i)
       (fun j hj S ↦ ISeg.exists_extension E j hj S hΛ)
-  -- The initial segment from which we build the chain, corresponding to ξ₀ ⟶ ξ₁ already built.
-  let D₀ : PartialChainUpTo κ Λ E (succ ⊥) := .mkSuccBot Λ ξ₀ ξ₁ u₀ ψ₀ (by
-    have he2 : ψ₀ ≫ G.map ξ₁.hom = F.map u₀.left.hom ≫ F.map ξ₁.hom ≫ E.hom := by grind
-    rwa [← dsimp% CostructuredArrow.w u₀, Functor.map_comp, Category.assoc, Eq.comm])
+  -- The initial segment from which we build the chain, corresponding to ξ₀ already constructed.
+  let D₀ : PartialChainUpTo κ Λ E ⊥ := .mkBot Λ ξ₀
   -- The extension
-  let S : Seg κ Λ E := (data.surjective' (succ ⊥) (not_isSuccLimit_succ ⊥) D₀).choose
-  have S_val : S.val (Opposite.op <| succ ⊥) = D₀ :=
-    (data.surjective' (succ ⊥) (not_isSuccLimit_succ ⊥) D₀).choose_spec
-  -- Now some shorthands around S_val with pinned types to ease automation
-  let ξ : Λ ⥤ CostructuredArrow O₀.ι E.obj := S.functor
+  let Se : Seg κ Λ E := (data.surjective D₀).choose
+  -- Now some shorthands around Se with pinned types to ease automation
+  let ξ : Λ ⥤ CostructuredArrow O₀.ι E.obj := Se.functor
   have e₀ : ξ.obj ⊥ = ξ₀ :=
-    (S.ξ_obj_eq ⊥ (succ ⊥) (le_succ _)).trans <|
-      congr($(S_val).ξ.obj ⟨⊥, le_succ ⊥⟩).trans <| mkSuccBot_bot_eq ..
-  have e₁ : ξ.obj (succ ⊥) = ξ₁ :=
-    (S.ξ_obj_eq (succ ⊥) (succ ⊥) le_rfl).trans <|
-      congr($(S_val).ξ.obj ⟨succ ⊥, le_rfl⟩).trans <| mkSuccBot_succ_bot_eq ..
-  have e₂ : ξ.map (homOfLE <| le_succ ⊥) = eqToHom e₀ ≫ u₀ ≫ eqToHom e₁.symm := by
-    dsimp [ξ, Seg.functor]
-    rw [Functor.congr_hom (congr($(S_val).ξ)), mkSuccBot_map_homOfLE_eq]
-    simp [Seg.ξObjIso, Seg.ξ]
-  let Θ :
-      ξ ⋙ CostructuredArrow.proj (isCardinalPresentable K κ).ι E.obj ⋙
-          (isCardinalPresentable K κ).ι ⋙ F ⟶
-        _ ⋙ ξ ⋙ CostructuredArrow.proj (isCardinalPresentable K κ).ι E.obj ⋙
-          (isCardinalPresentable K κ).ι ⋙ G :=
-    S.ψNatTrans
-
-  sorry
+    congr($((data.surjective D₀).choose_spec).ξ.obj (iic% ⊥ ⊥)).trans <| mkBot_bot_eq ..
+  -- The colimit of the constructed chain becomes an equifier
+  have : O₀.IsClosedUnderColimitsOfShape Λ :=
+    have : Small.{w} Λ := hΛ.small
+    CategoryTheory.isClosedUnderColimitsOfShape_isCardinalPresentable K (by
+      rwa [hasCardinalLT_arrow_iff_of_isThin _ κ (Cardinal.IsRegular.aleph0_le Fact.out)])
+  have : HasColimitsOfShape Λ O₀.FullSubcategory := hasColimitsOfShape_of_closedUnderColimits ..
+  let U₀ : Equifier Φ Ψ := ⟨(colimit ξ).left.obj, by
+    apply (isColimitOfPreserves (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F)
+      (colimit.isColimit ξ)).hom_ext
+    intro i
+    have : Φ.app (ξ.obj i).left.obj ≫ G.map (ξ.map (homOfLE (le_succ i))).left.hom =
+        Ψ.app (ξ.obj i).left.obj ≫ G.map (ξ.map (homOfLE (le_succ i))).left.hom :=
+      Se.h i (succ i) (lt_succ i)
+    simp [← colimit.w ξ (homOfLE (le_succ i)), -colimit.w, reassoc_of% this]⟩
+  let U₁ : (O₁ κ Φ Ψ).FullSubcategory :=
+    ⟨U₀, by
+      simp only [ObjectProperty.prop_inverseImage_iff, ObjectProperty.ι_obj, U₀]
+      infer_instance⟩
+  let U : Δ κ E := CostructuredArrow.mk (Y := U₁) ⟨(colimit ξ).hom⟩
+  refine ⟨U, u ≫ (eqToHom e₀.symm).left.hom ≫ (colimit.ι ξ ⊥).left.hom, ?_⟩
+  have := (eqToHom e₀.symm ≫ colimit.ι ξ ⊥).w
+  dsimp at this
+  simp only [CostructuredArrow.eqToHom_left, ObjectProperty.eqToHom_hom, Category.assoc,
+    Category.comp_id] at this
+  simp [U, U₁, U₀, this, ← v]
 
 end factors
 
+section
+
+/- In this section, we use the lemma `factors` above to prove that
+
+- the category `Δ κ E` (of equifiers with κ-presentable underlying object mapping to E) is
+  κ-filtered.
+- The functor `Δ κ E ⥤ CostructuredArrow (isCardinalPresentable K κ) E.obj` is final.
+
+As in the file `Mathlib/CategoryTheory/Inserter/Accessible.lean`, this implies formally that the
+category `Equifier Φ Ψ` is κ-accessible, with κ-presentable objects being exactly those such that
+the underlying object is κ-presentable in K. -/
+
+open Limits
+
+variable {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardinal.{w})
+    [Fact κ.IsRegular] (Φ Ψ : F ⟶ G) (Λ : Type*)
+    [LinearOrder Λ] [OrderBot Λ] [SuccOrder Λ] [NoMaxOrder Λ] [WellFoundedLT Λ]
+    (hΛ : HasCardinalLT Λ κ)
+    [IsCardinalAccessibleCategory K κ] [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
+    [F.PreservesCardinalPresentable κ] [HasColimitsOfShape Λ K] [PreservesColimitsOfShape Λ F]
+
+include hΛ in
+lemma isCardinalFiltered_Δ (E : Equifier Φ Ψ) :
+    IsCardinalFiltered (Δ κ E) κ := by
+  rw [isCardinalFiltered_iff']
+  -- first, represent the object underlying E as a κ-filtered colimit of κ-presentable objects
+  let O₀ := isCardinalPresentable K κ -- shorthand to make the writing more compact
+  have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
+  let hcolimS := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ S_ξ
+  refine ⟨fun ι v hι ↦ ?_, fun ι r p f hι hι' ↦ ?_⟩
+  · -- There exists an index ξ₀ such that all the v_j factorizes through the index in K
+    obtain ⟨ξ₀, t0, hf0⟩ :
+        ∃ (ξ₀ : CostructuredArrow O₀.ι E.obj)
+          (t : (i : ι) → ((v i).left.obj.obj ⟶ ξ₀.left.obj)),
+          (∀ i : ι, t i ≫ ξ₀.hom = (v i).hom.hom) := by
+      have b (j : ι) := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimS (v j).hom.hom
+      dsimp at b
+      simp only [Category.id_comp] at b
+      choose s0 f0 hf0 using b
+      let ξ₀ := IsCardinalFiltered.max s0 hι
+      let t0 (j : ι) : (v j).left.obj.obj ⟶ ξ₀.left.obj :=
+       (f0 j) ≫ (IsCardinalFiltered.toMax s0 hι j).left.hom
+      exact ⟨IsCardinalFiltered.max s0 hι, fun j ↦
+        (f0 j) ≫ (IsCardinalFiltered.toMax s0 hι j).left.hom,
+        by simp [hf0, (dsimp% IsCardinalFiltered.toMax s0 hι · |>.w)]⟩
+    -- then, use the lemma
+    obtain ⟨ξ₁, p, hf1⟩ := factors κ Λ hΛ ξ₀.hom
+    refine ⟨ξ₁, fun i ↦ ⟨CostructuredArrow.homMk ⟨⟨t0 i ≫ p⟩⟩ ?_⟩⟩
+    ext
+    simp [hf1, hf0]
+  · -- first, we pick an index ξ₀ that coequalizes all the components of f
+    obtain ⟨ξ₀, u, hu, hv⟩ :
+        ∃ (ξ₀ : CostructuredArrow O₀.ι E.obj)
+          (u : p.left.obj.obj ⟶ ξ₀.left.obj),
+          u ≫ ξ₀.hom = (CostructuredArrow.hom p).hom ∧
+          ∀ (i₀ i₁ : ι), (f i₀).left.hom.hom ≫ u = (f i₁).left.hom.hom ≫ u := by
+      obtain ⟨ξ₀, u, hu⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimS p.hom.hom
+      dsimp at u hu
+      simp only [Category.id_comp] at hu
+      have : IsCardinalPresentable r.left.obj.obj κ := by
+        have := r.left.property
+        simp only [ObjectProperty.prop_inverseImage_iff] at this
+        infer_instance
+      obtain ⟨ξ₀', v, hv⟩ :=
+        IsCardinalPresentable.exists_eq_of_isColimit'_of_hasCardinalLT κ hcolimS hι
+          (fun i ↦ (f i).left.hom.hom ≫ u) (fun i i' ↦ by
+            simp [hu, dsimp% congr($((f i').w).hom), dsimp% congr($((f i).w).hom)])
+      exact ⟨ξ₀', u ≫ v.left.hom, by simp [dsimp% v.w, hu], by simpa using hv⟩
+    obtain ⟨ξ₀', v', hv'⟩ := factors κ Λ hΛ ξ₀.hom
+    simp only [ObjectProperty.ι_obj] at v' hv'
+    let pt : ι := hι'.some -- we need some arbitrary element of ι
+    refine ⟨ξ₀', CostructuredArrow.homMk ⟨⟨u ≫ v'⟩⟩ (by cat_disch),
+      CostructuredArrow.homMk ⟨⟨(f pt).left.hom.hom ≫ u ≫ v'⟩⟩ (by
+        ext; simp [hv', hu, dsimp% congr($((f pt).w).hom)]), ?_⟩
+    intro i
+    ext
+    simp [reassoc_of% hv i pt]
+
+variable {Φ Ψ}
+
+/-- A shorthand for the forgetful functor from Δ κ E to κ-presentable objects mapping to E.obj.
+We will show below that this functor is final, which will prove that every inserter
+is a filtered colimit of κ-presentable inserters. -/
+@[implicit_reducible, simps!]
+def U (E : Equifier Φ Ψ) :
+    Δ κ E ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj :=
+  CostructuredArrow.map₂
+    (F := ObjectProperty.lift _ ((O₁ _ _ _).ι ⋙ Equifier.ι _ _)
+      (by intro x; simpa [O₁] using x.property))
+    (G := Equifier.ι _ _)
+    { app X := 𝟙 _ }
+    (𝟙 _)
+
+include hΛ in
+lemma final.nonempty_structured_arrow (E : Equifier Φ Ψ)
+    (p : CostructuredArrow (isCardinalPresentable K κ).ι E.obj) :
+    Nonempty (StructuredArrow p (U κ E)) := by
+  -- first, represent the object underlying E as a κ-filtered colimit of κ-presentable objects
+  let O₀ := isCardinalPresentable K κ -- shorthand to make the writing more compact
+  have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
+  let hcolimT := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ S_ξ
+  obtain ⟨ξ₀, u, hu⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimT p.hom
+  dsimp at u hu
+  simp only [Category.id_comp] at hu
+  obtain ⟨ξ₀', v', hv'⟩ := factors κ Λ hΛ ξ₀.hom
+  exact ⟨StructuredArrow.mk <| CostructuredArrow.homMk ⟨u ≫ v'⟩ (by simp [hv', hu])⟩
+
+include hΛ in
+lemma final (E : Equifier Φ Ψ) :
+    (U κ E).Final := by
+  constructor
+  intro p
+  have : Nonempty (StructuredArrow p (U κ E)) := final.nonempty_structured_arrow κ Λ hΛ E p
+  apply CategoryTheory.zigzag_isConnected
+  -- by
+  intro j₁ j₂
+  suffices H :
+      ∃ (u : Δ κ E) (f1 : j₁.right ⟶ u) (f2 : j₂.right ⟶ u),
+       f1.left.hom.hom ≫ u.hom.hom = j₁.right.hom.hom ∧
+       f2.left.hom.hom ≫ u.hom.hom = j₂.right.hom.hom ∧
+       j₁.hom.left.hom ≫ f1.left.hom.hom = j₂.hom.left.hom ≫ f2.left.hom.hom by
+    obtain ⟨u, f1, f2, h1, h2, h3⟩ := H
+    let u' : StructuredArrow p (U κ E) := StructuredArrow.mk (T := U κ E)
+      (CostructuredArrow.homMk ⟨j₁.hom.left.hom ≫ f1.left.hom.hom⟩ (by
+        simp only [ObjectProperty.ι_obj, U_obj_left_obj, ObjectProperty.ι_map, U_obj_hom,
+          Category.assoc]
+        have := congr($(f1.w).hom)
+        have := j₁.hom.w
+        simp_all))
+    calc
+      Zigzag j₁ u' := .of_zag <| .of_hom <| StructuredArrow.homMk f1
+      Zigzag u' j₂ := .of_zag <| .of_inv <| StructuredArrow.homMk f2
+  obtain ⟨ξ₀, f₀, f₁, hf₀, hf₁, hsq⟩ :
+      ∃ (ξ₀ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
+        (f₀ : j₁.right.left.obj.obj ⟶ ξ₀.left.obj)
+        (f₁ : j₂.right.left.obj.obj ⟶ ξ₀.left.obj),
+        f₀ ≫ ξ₀.hom = j₁.right.hom.hom ∧ f₁ ≫ ξ₀.hom = j₂.right.hom.hom ∧
+        j₁.hom.left.hom ≫ f₀ = j₂.hom.left.hom ≫ f₁ := by
+    have : IsFiltered (CostructuredArrow (isCardinalPresentable K κ).ι E.obj) :=
+      isFiltered_of_isCardinalFiltered _ κ
+    let hcolimT := (isCardinalPresentable K κ).ι.denseAt E.obj -- E.obj ≅ colim_ξ T_ξ
+    obtain ⟨ξ₀₀, u₀₀, v₀₀, hu₀₀⟩ :=
+      IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimT j₁.right.hom.hom p
+    obtain ⟨ξ₀₁, u₀₁, v₀₁, hu₀₁⟩ :=
+      IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimT j₂.right.hom.hom p
+    dsimp at u₀₀ v₀₀ hu₀₀ u₀₁ v₀₁ hu₀₁
+    simp only [Category.id_comp] at hu₀₀ hu₀₁
+    obtain ⟨ξ₀, u, v, h₁, h₂⟩ := IsFiltered.bowtie u₀₀ u₀₁
+      (j₁.hom ≫ CostructuredArrow.homMk ⟨v₀₀⟩) (j₂.hom ≫ CostructuredArrow.homMk ⟨v₀₁⟩)
+    exact ⟨ξ₀, v₀₀ ≫ u.left.hom, v₀₁ ≫ v.left.hom,
+      by simp [hu₀₀, dsimp% u.w], by simp [hu₀₁, dsimp% v.w], by simpa using congr($(h₂).left.hom)⟩
+  obtain ⟨ξ₀', u, hu⟩ := factors κ Λ hΛ ξ₀.hom
+  exact ⟨ξ₀', CostructuredArrow.homMk ⟨⟨f₀ ≫ u⟩⟩, CostructuredArrow.homMk ⟨⟨f₁ ≫ u⟩⟩, by
+    simp [hu, hf₀, hf₁, reassoc_of% hsq]⟩
+
+end
+
+section
+open Limits
+
+variable {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardinal.{w})
+    [Fact κ.IsRegular] (Φ Ψ : F ⟶ G) (Λ : Type*)
+    [LinearOrder Λ] [OrderBot Λ] [SuccOrder Λ] [NoMaxOrder Λ] [WellFoundedLT Λ]
+    (hΛ : HasCardinalLT Λ κ)
+    [IsCardinalAccessibleCategory K κ] [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
+    [F.PreservesCardinalPresentable κ] [HasColimitsOfShape Λ K] [PreservesColimitsOfShape Λ F]
+
+open Equifier in
+instance :
+    ObjectProperty.EssentiallySmall.{w} (O₁ κ Φ Ψ) := by
+  dsimp [O₁]
+  have : ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable K κ ⊓ (equifier Φ Ψ)) :=
+    .of_le inf_le_left
+  have :
+      (isCardinalPresentable K κ ⊓ (equifier Φ Ψ)).FullSubcategory ≌ (O₁ κ Φ Ψ).FullSubcategory :=
+    ObjectProperty.infEquivalence ..
+  exact (ObjectProperty.exists_equivalence_iff _).mp ⟨_, _,
+    ⟨this.symm.trans
+      (equivSmallModel.{w} ((isCardinalPresentable K κ ⊓ (equifier Φ Ψ)).FullSubcategory))⟩⟩
+
+end
+
 end Accessible
+
+section
+
+variable {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardinal.{w})
+    [Fact κ.IsRegular] (Φ Ψ : F ⟶ G) (Λ : Type*)
+    [LinearOrder Λ] [Nonempty Λ] [SuccOrder Λ] [NoMaxOrder Λ] [WellFoundedLT Λ]
+    (hΛ : HasCardinalLT Λ κ)
+    [IsCardinalAccessibleCategory K κ] [IsCardinalAccessibleCategory L κ]
+    [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
+    [F.PreservesCardinalPresentable κ]
+    [Limits.HasColimitsOfShape Λ K] [Limits.PreservesColimitsOfShape Λ F]
+
+open Limits Accessible
+
+include Λ hΛ in
+public theorem isCardinalFiltered_generator_inverseImage_isCardinalPresentable :
+    ((isCardinalPresentable K κ).inverseImage
+      (Equifier.ι Φ Ψ)).IsCardinalFilteredGenerator κ := by
+  have (X : Equifier Φ Ψ) : IsCardinalFiltered (CostructuredArrow (O₁ κ Φ Ψ).ι X) κ := by
+    have : OrderBot Λ := WellFoundedLT.toOrderBot Λ
+    exact isCardinalFiltered_Δ κ Φ Ψ Λ hΛ ..
+  apply +allowSynthFailures IsCardinalFilteredGenerator.of_isDense_ι
+  · constructor
+    intro E
+    /- Using that the functor `U : Δ κ E ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj`
+    is final, any equifier is the κ-filtered colimit of its projection from Δ κ E:
+    This can be checked after postcomposition with `ι F G` and extension through `U`,
+    and the cocone obtained this way identifies to the canonical cocone for E.obj,
+    which is a colimit diagram as `K` is κ-accessible. -/
+    dsimp [Functor.isDenseAt]
+    -- The canonical cocone making E.hom a κ-filtered colimit of κ-presentable objects
+    let hcolimT := (isCardinalPresentable K κ).ι.denseAt E.obj -- E.obj ≅ colim_ξ S_ξ
+    have : OrderBot Λ := WellFoundedLT.toOrderBot Λ
+    have : (U κ E).Final := final κ Λ hΛ E
+    let t1 := (Functor.Final.isColimitWhiskerEquiv (U κ E) _).symm hcolimT
+    apply Limits.ReflectsColimit.reflects (F := Equifier.ι Φ Ψ)
+      (K := CostructuredArrow.proj (O₁ κ Φ Ψ).ι E ⋙ (O₁ κ Φ Ψ).ι)
+    let e₁ :
+      (U κ E ⋙ CostructuredArrow.proj (isCardinalPresentable K κ).ι E.obj ⋙
+        (isCardinalPresentable K κ).ι) ≅
+      (CostructuredArrow.proj (O₁ κ Φ Ψ).ι E ⋙ (O₁ κ Φ Ψ).ι) ⋙ ι _ _ := .refl _
+    exact Limits.IsColimit.equivOfNatIsoOfIso e₁
+      (Limits.Cocone.whisker (U κ E) _)
+      ((ι _ _).mapCocone
+        ((Functor.LeftExtension.mk (𝟭 _) (O₁ κ Φ Ψ).ι.rightUnitor.inv).coconeAt E))
+      (Limits.Cocone.ext (.refl _) (by intros; simp [e₁])) t1
+  · intro x hx
+    simp only [ObjectProperty.prop_inverseImage_iff, ObjectProperty.ι_obj] at hx
+    infer_instance
+
+include Λ hΛ in
+/-- Let `Λ < κ` be a pair of infinite cardinals such that `κ` is regular. Assume that
+- `K` and `L` are `κ`-accessible categories with colimits of `Λ`-chains.
+- `F G : C ⥤ D` are `κ`-accessible functors preserving colimits of `Λ`-chains
+- `F` preserves `κ`-presentable objects.
+
+Then the category `Inserter F G` is `κ`-accessible.
+
+This theorem appears as Theorem 4.1 in [positselski2014].
+
+Note that if `K` and `L` are `κ`-accessible, and `F`, `G` are `κ`-accessible with `F` preserving
+`κ`-presentable objects then since `κ` is sharply less than `κ⁺`, one can show that the pair
+`κ < κ⁺` satisfies the conditions above, and hence `Inserter F G` is `κ⁺`-accessible in
+this situation. -/
+public theorem isCardinalAccessibleCategory :
+    IsCardinalAccessibleCategory (Equifier Φ Ψ) κ where
+  exists_generator := ⟨O₁ κ Φ Ψ, inferInstance,
+      isCardinalFiltered_generator_inverseImage_isCardinalPresentable κ Φ Ψ Λ hΛ⟩
+  hasColimitsOfShape J _ _ := by
+    have : Limits.PreservesColimitsOfShape J F :=
+      Functor.IsCardinalAccessible.preservesColimitOfShape κ J
+    have : Limits.HasColimitsOfShape J K :=
+      HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+    infer_instance
+
+include Λ hΛ in
+public lemma isCardinalPresentable_eq :
+    isCardinalPresentable (Equifier Φ Ψ) κ =
+      (isCardinalPresentable K κ).inverseImage (Equifier.ι Φ Ψ) := by
+  have := isCardinalFiltered_generator_inverseImage_isCardinalPresentable κ Φ Ψ Λ hΛ
+  rw [this.isPresentable_eq_retractClosure]
+  apply ObjectProperty.retractClosure_eq_self
+
+end
+
+instance {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (Φ Ψ : F ⟶ G)
+    [IsAccessibleCategory.{w} K] [IsAccessibleCategory.{w} L]
+    [F.IsAccessible.{w}] [G.IsAccessible.{w}] : IsAccessibleCategory.{w} (Equifier Φ Ψ) := by
+  obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ := IsCardinalAccessibleCategory.uniformization_pair F G
+  -- To apply the theorem `isCardinalAccessibleCategory`, `κ` must be at least uncountable,
+  -- So we fix this by picking an arbitrary cardinal κ' such that κ is sharply less that κ
+  obtain ⟨κ', _, h⟩ := Cardinal.SharplyLT.exists_single κ
+  have : IsCardinalAccessibleCategory K κ' := h.isCardinalAccessibleCategory K
+  have : IsCardinalAccessibleCategory L κ' := h.isCardinalAccessibleCategory L
+  have : F.IsCardinalAccessible κ' := Functor.isCardinalAccessible_of_le _ h.le
+  have : G.IsCardinalAccessible κ' := Functor.isCardinalAccessible_of_le _ h.le
+  have : F.PreservesCardinalPresentable κ' := F.preservesCardinalPresentable_of_sharplyLT h
+  have : G.PreservesCardinalPresentable κ' := G.preservesCardinalPresentable_of_sharplyLT h
+  have : Nonempty κ.ord.ToType := Cardinal.nonempty_ord_toType (Cardinal.IsRegular.ne_zero Fact.out)
+  have : NoMaxOrder κ.ord.ToType := Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
+  have hCard: HasCardinalLT κ.ord.ToType κ' := by
+    rw [hasCardinalLT_iff_cardinal_mk_lt]
+    simpa using h.lt
+  have : Limits.HasColimitsOfShape κ.ord.ToType K :=
+    HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+  have : Limits.PreservesColimitsOfShape κ.ord.ToType F :=
+    Functor.IsCardinalAccessible.preservesColimitOfShape κ _
+  exact ⟨κ', inferInstance, isCardinalAccessibleCategory κ' _ _ κ.ord.ToType hCard⟩
 
 end CategoryTheory.Equifier
