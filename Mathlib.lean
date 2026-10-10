@@ -1544,11 +1544,13 @@ public import Mathlib.AlgebraicTopology.DoldKan.Projections
 public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 public import Mathlib.AlgebraicTopology.EilenbergSteenrod
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.BasedPath
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SemilocallySimplyConnected
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
@@ -8281,6 +8283,7 @@ public import Mathlib.Topology.Homotopy.TopCat.Basic
 public import Mathlib.Topology.Homotopy.TopCat.Path
 public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 public import Mathlib.Topology.Homotopy.TopCat.ZerothHomotopy
+public import Mathlib.Topology.Homotopy.TubeNeighborhood
 public import Mathlib.Topology.IndicatorConstPointwise
 public import Mathlib.Topology.InductiveDimension.Classes
 public import Mathlib.Topology.InductiveDimension.Functions
