@@ -8,6 +8,8 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.TrivPrelim
 
+import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
+
 /-!
 # Everything you always wanted to know about covariant derivatives on the trivial bundle
 

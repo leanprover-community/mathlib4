@@ -658,7 +658,7 @@ contMDiffWithinAt  := by
     filter_upwards [hσ] with x hx
     exact hu.contMDiffAt.1 hx
   rw [hu.contMDiffAt]
-  rcases exists_contMDiff_extension (n := (k+1 : ℕ∞)) (B := B) IB hσ (by simp) with ⟨σ', hσ', hσσ'⟩
+  rcases exists_contMDiff_extension (n := (k + 1 : ℕ∞)) IB hσ (by simp) with ⟨σ', hσ', hσσ'⟩
   let V := fun b : B ↦ TangentSpace IB b →L[ℝ] E₁ b
   replace hσσ' : ∀ᶠ x' in 𝓝 x,
       TotalSpace.mk' (E := V) (EB →L[ℝ] F₁) x' (cov σ x')
@@ -682,9 +682,10 @@ lemma ContMDiffCovariantDerivativeOn.contMDiffCovariantDerivativeOn''
     (k : ℕ∞)
     [FiniteDimensional ℝ EB]
     -- TODO: fix this mess
-    [IsManifold IB (k+1 : ℕ∞) B] [IsManifold IB 1 B]
+    [IsManifold IB (k + 1 : ℕ∞) B] [IsManifold IB 1 B]
     {cov : (Π x : B, E₁ x) → (Π x : B, TangentSpace% x →L[ℝ] E₁ x)}
-    {u : Set B} (hcov : IsCovariantDerivativeOn F₁ cov u) (h : ContMDiffCovariantDerivativeOn F₁ k cov u) (hu : IsOpen u) :
+    {u : Set B} (hcov : IsCovariantDerivativeOn F₁ cov u)
+    (h : ContMDiffCovariantDerivativeOn F₁ k cov u) (hu : IsOpen u) :
     ContMDiffCovariantDerivativeOn' F₁ k cov u where
 contMDiffWithinAt  := by
   stop -- Remove that stop to see errors
@@ -699,7 +700,8 @@ contMDiffWithinAt  := by
   -- replace `_` by `(by simp)` in the next lines to fix errors *above*
   rcases exists_contMDiff_extension (n := (k+1 : ℕ∞)) (B := B) IB Hσ _ with ⟨σ', hσ', hσσ'⟩
   let V := fun b : B ↦ TangentSpace IB b →L[ℝ] E₁ b
-  replace hσσ' : ∀ᶠ x' in 𝓝 x, TotalSpace.mk' (E := V) (EB →L[ℝ] F₁) x' (cov σ x') = TotalSpace.mk' (E := V) (EB →L[ℝ] F₁) x' (cov σ' x') := by
+  replace hσσ' : ∀ᶠ x' in 𝓝 x, TotalSpace.mk' (E := V) (EB →L[ℝ] F₁) x' (cov σ x') =
+      TotalSpace.mk' (E := V) (EB →L[ℝ] F₁) x' (cov σ' x') := by
     filter_upwards [Hσ, hσσ'.eventually_nhds, hu.eventually_mem hx] with x' hx' Hx' H'x'
     congr 1
     apply hcov.congr_of_eventuallyEq
@@ -719,7 +721,7 @@ lemma ContMDiffCovariantDerivativeOn.contMDiffCovariantDerivativeOn'''
     (k : ℕ∞)
     [FiniteDimensional ℝ EB]
     -- TODO: fix this mess
-    [IsManifold IB (k+1 : ℕ∞) B] [IsManifold IB 1 B]
+    [IsManifold IB (k + 1 : ℕ∞) B] [IsManifold IB 1 B]
     {cov : (Π x : B, E₁ x) → (Π x : B, TangentSpace% x →L[ℝ] E₁ x)}
     {u : Set B} (hcov : IsCovariantDerivativeOn F₁ cov u)
     (hcov : IsCovariantDerivativeOn F₁ cov u) (h : ContMDiffCovariantDerivativeOn F₁ k cov u)
@@ -735,7 +737,8 @@ contMDiffWithinAt  := by
   rw [hu.contMDiffAt]
   rcases exists_contMDiff_extension IB hσ _ with ⟨σ', hσ', hσσ'⟩
   let V := fun b : B ↦ TangentSpace IB b →L[ℝ] E₁ b
-  replace hσσ' : ∀ᶠ x' in 𝓝 x, TotalSpace.mk' (E := V) (EB →L[ℝ] F₁) x' (cov σ x') = TotalSpace.mk' (E := V) (EB →L[ℝ] F₁) x' (cov σ' x') := by
+  replace hσσ' : ∀ᶠ x' in 𝓝 x, TotalSpace.mk' (E := V) (EB →L[ℝ] F₁) x' (cov σ x') =
+      TotalSpace.mk' (E := V) (EB →L[ℝ] F₁) x' (cov σ' x') := by
     filter_upwards [hσσ'.eventually_nhds] with x' hx'
     congr 1
     have ffo := hcov.congr_of_eventuallyEq

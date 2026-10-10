@@ -68,7 +68,7 @@ lemma IsOrthonormalFrameOn.of_le (hs : IsOrthonormalFrameOn IB F n s u) {m : ℕ
   ⟨hs.toIsLocalFrameOn.of_le hmn, hs.orthonormal⟩
 
 variable [VectorBundle ℝ F E] [IsContMDiffRiemannianBundle IB n F E]
-  [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
+  [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 /-- Applying the Gram-Schmidt procedure to a local frame yields an orthonormal local frame. -/
 lemma IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :

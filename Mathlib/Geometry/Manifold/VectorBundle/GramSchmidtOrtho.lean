@@ -48,7 +48,7 @@ variable
   [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E]
 
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
 
@@ -104,7 +104,8 @@ theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [O
 @[simp]
 theorem gramSchmidt_zero (n : ι) : gramSchmidt (0 : ι → (x : B) → E x) n = 0 := by
   ext x
-  simpa using! InnerProductSpace.gramSchmidt_zero ..
+  simp only [gramSchmidt_apply, Pi.zero_apply]
+  exact InnerProductSpace.gramSchmidt_zero _ _
 
 variable (s) in
 /-- **Gram-Schmidt Orthogonalisation**: `gramSchmidt` produces a point-wise orthogonal system

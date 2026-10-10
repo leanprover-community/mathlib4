@@ -17,7 +17,8 @@ it's not clear how much this will be used,
 and it would need to be thoroughly updated to compile, given the other modifications made
 
 -/
-set_option backward.isDefEq.respectTransparency false
+
+public section
 
 namespace CovariantDerivative
 
@@ -77,6 +78,8 @@ lemma eq_product_apply -- [Fintype ι]
   have : LocallyFiniteOrderBot ι := by sorry
   sorry
   -- was: rw [ChristoffelSymbol, hs.coeff_eq_inner' (f (s i) (s j)) hx k, real_inner_comm]
+
+end
 
 #exit
 -- TODO: the next lines have a number of errors, and would need to be updated
