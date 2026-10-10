@@ -808,6 +808,7 @@ public import Mathlib.Algebra.Module.End
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Equiv.Opposite
+public import Mathlib.Algebra.Module.FiniteFreeResolution.Basic
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.GradedModule
