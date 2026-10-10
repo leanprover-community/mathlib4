@@ -88,7 +88,7 @@ instance wellPowered_opposite [LocallySmall.{w} C] [WellPowered.{w} C] :
 
 /-- In an abelian category, the projection `Subobject.pullbackπ f B` from the pullback of a
 subobject `B` along an epimorphism `f` is an epimorphism. -/
-instance [Abelian C] {X Y : C} (f : X ⟶ Y) [Epi f] (B : Subobject Y) :
+instance {X Y : C} (f : X ⟶ Y) [Epi f] (B : Subobject Y) :
     Epi (Subobject.pullbackπ f B) :=
   epi_fst_of_isLimit _ _ (Subobject.isPullback f B).isLimit
 
