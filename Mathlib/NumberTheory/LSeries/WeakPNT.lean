@@ -10,6 +10,8 @@ public import Mathlib.NumberTheory.LSeries.WienerIkehara
 public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 
+import Mathlib.NumberTheory.LSeries.Linearity
+
 /-!
 # The weak prime number theorem
 
