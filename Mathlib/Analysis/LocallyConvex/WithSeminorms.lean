@@ -515,6 +515,11 @@ theorem WithSeminorms.continuous_seminorm {p : SeminormFamily 𝕜 E ι} (hp : W
   rw [p.withSeminorms_iff_topologicalSpace_eq_iInf.mp hp]
   exact continuous_iInf_dom (@continuous_norm _ (p i).toSeminormedAddGroup)
 
+theorem WithSeminorms.continuous_finsetSup_seminorm {p : SeminormFamily 𝕜 E ι}
+    (hp : WithSeminorms p) (s : Finset ι) : Continuous (s.sup p : Seminorm 𝕜 E) :=
+  have := hp.isTopologicalAddGroup
+  Seminorm.continuous_finsetSup fun i _ ↦ hp.continuous_seminorm i
+
 theorem WithSeminorms.toPolynormableSpace {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
     PolynormableSpace 𝕜 E where
   withSeminorms' := by
@@ -1032,6 +1037,15 @@ lemma bound_sum_of_continuous [t : TopologicalSpace E] (hp : WithSeminorms p)
     _ ≤ C • s.sup p := hC
     _ ≤ _ := by gcongr; apply finset_sup_le_sum
 
+end Seminorm
+
+namespace WithSeminorms
+
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {p : SeminormFamily 𝕜 E ι}
+
+@[elab_as_elim]
 lemma induction_sup_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
     {motive : Seminorm 𝕜 E → Prop}
     (base : ∀ i, motive (p i))
@@ -1045,11 +1059,12 @@ lemma induction_sup_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
   rcases bound_of_continuous hp q cont with ⟨s, C, hC, hs⟩
   refine le _ _ hs (smul _ _ ?_)
   refine s.induction_on ?_ ?_
-  · simpa [bot_eq_zero] using zero
+  · simpa [Seminorm.bot_eq_zero] using zero
   · intro _ t _ ht
     rw [Finset.sup_insert]
     exact sup _ _ (base _) ht
 
+@[elab_as_elim]
 lemma induction_add_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
     {motive : Seminorm 𝕜 E → Prop}
     (base : ∀ i, motive (p i))
@@ -1062,7 +1077,7 @@ lemma induction_add_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
   induction_sup_of_continuous hp base zero
     (fun r s hr hs ↦ le _ _ (fun x ↦ by simp) (add r s hr hs)) le smul cont
 
-end Seminorm
+end WithSeminorms
 
 end bounded_of_continuous
 
