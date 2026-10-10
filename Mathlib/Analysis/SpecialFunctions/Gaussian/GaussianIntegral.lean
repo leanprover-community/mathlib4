@@ -300,6 +300,72 @@ theorem integral_gaussian_Ioi (b : ℝ) :
     · simp
     · exact (div_pos pi_pos hb).le
 
+section PolynomialGaussian
+
+/-! ### Polynomial-times-Gaussian majorants
+
+Functions of the form `(1 + |x|) ^ k * exp (-b * x ^ 2 + a * |x|)` with `0 < b` are integrable on
+`ℝ`, with an explicit bound on the integral. They dominate the integrands that arise when a
+polynomial times a Gaussian is shifted or twisted by a linear exponential factor. -/
+
+/-- `(1 + |x|) ^ k * exp (a * |x|) ≤ exp ((a + k) * |x|)`, from `1 + t ≤ exp t`. -/
+theorem one_add_abs_pow_mul_exp_le (k : ℕ) (a x : ℝ) :
+    (1 + |x|) ^ k * exp (a * |x|) ≤ exp ((a + k) * |x|) := by
+  have h1 : (1 + |x|) ^ k ≤ exp |x| ^ k := by
+    gcongr
+    linarith [Real.add_one_le_exp |x|]
+  calc (1 + |x|) ^ k * exp (a * |x|) ≤ exp |x| ^ k * exp (a * |x|) :=
+        mul_le_mul_of_nonneg_right h1 (Real.exp_pos _).le
+    _ = exp ((a + k) * |x|) := by rw [← Real.exp_nat_mul, ← Real.exp_add]; ring_nf
+
+/-- Completing the square: `-b * x ^ 2 + a * |x| ≤ -(b / 2) * x ^ 2 + a ^ 2 / (2 * b)` for `0 < b`.
+-/
+theorem neg_mul_sq_add_mul_abs_le {b : ℝ} (hb : 0 < b) (a x : ℝ) :
+    -b * x ^ 2 + a * |x| ≤ -(b / 2) * x ^ 2 + a ^ 2 / (2 * b) := by
+  have h : 0 ≤ (b / 2) * (|x| - a / b) ^ 2 := by positivity
+  have hs : |x| ^ 2 = x ^ 2 := sq_abs x
+  have : (b / 2) * (|x| - a / b) ^ 2 = (b / 2) * x ^ 2 - a * |x| + a ^ 2 / (2 * b) := by
+    field_simp
+    ring_nf
+    rw [hs]
+  linarith
+
+/-- The Gaussian `exp (-(b / 2) * x ^ 2)` dominates `(1 + |x|) ^ k * exp (-b * x ^ 2 + a * |x|)`
+up to the constant `exp ((a + k) ^ 2 / (2 * b))`. -/
+theorem one_add_abs_pow_mul_exp_neg_mul_sq_add_mul_abs_le {b : ℝ} (hb : 0 < b) (a : ℝ) (k : ℕ)
+    (x : ℝ) :
+    (1 + |x|) ^ k * exp (-b * x ^ 2 + a * |x|) ≤
+      exp ((a + k) ^ 2 / (2 * b)) * exp (-(b / 2) * x ^ 2) := by
+  calc (1 + |x|) ^ k * exp (-b * x ^ 2 + a * |x|)
+      = (1 + |x|) ^ k * exp (a * |x|) * exp (-b * x ^ 2) := by rw [Real.exp_add]; ring
+    _ ≤ exp ((a + k) * |x|) * exp (-b * x ^ 2) :=
+        mul_le_mul_of_nonneg_right (one_add_abs_pow_mul_exp_le k a x) (Real.exp_pos _).le
+    _ = exp (-b * x ^ 2 + (a + k) * |x|) := by rw [← Real.exp_add]; ring_nf
+    _ ≤ exp (-(b / 2) * x ^ 2 + (a + k) ^ 2 / (2 * b)) :=
+        Real.exp_le_exp.mpr (neg_mul_sq_add_mul_abs_le hb _ _)
+    _ = _ := by rw [← Real.exp_add]; ring_nf
+
+/-- `(1 + |x|) ^ k * exp (-b * x ^ 2 + a * |x|)` is integrable on `ℝ` for `0 < b`. -/
+theorem integrable_one_add_abs_pow_mul_exp_neg_mul_sq_add_mul_abs {b : ℝ} (hb : 0 < b) (a : ℝ)
+    (k : ℕ) : Integrable fun x : ℝ => (1 + |x|) ^ k * exp (-b * x ^ 2 + a * |x|) := by
+  refine ((integrable_exp_neg_mul_sq (b := b / 2) (by positivity)).const_mul
+    (exp ((a + k) ^ 2 / (2 * b)))).mono' (by fun_prop : Continuous fun x : ℝ =>
+      (1 + |x|) ^ k * exp (-b * x ^ 2 + a * |x|)).aestronglyMeasurable (ae_of_all _ fun x => ?_)
+  rw [Real.norm_eq_abs, abs_of_nonneg (by positivity)]
+  exact one_add_abs_pow_mul_exp_neg_mul_sq_add_mul_abs_le hb a k x
+
+/-- An explicit bound for `∫ x, (1 + |x|) ^ k * exp (-b * x ^ 2 + a * |x|)` when `0 < b`. -/
+theorem integral_one_add_abs_pow_mul_exp_neg_mul_sq_add_mul_abs_le {b : ℝ} (hb : 0 < b) (a : ℝ)
+    (k : ℕ) :
+    ∫ x : ℝ, (1 + |x|) ^ k * exp (-b * x ^ 2 + a * |x|) ≤
+      exp ((a + k) ^ 2 / (2 * b)) * √(π / (b / 2)) := by
+  rw [← integral_gaussian (b / 2), ← integral_const_mul]
+  exact integral_mono (integrable_one_add_abs_pow_mul_exp_neg_mul_sq_add_mul_abs hb a k)
+    ((integrable_exp_neg_mul_sq (by positivity)).const_mul _)
+    fun x => one_add_abs_pow_mul_exp_neg_mul_sq_add_mul_abs_le hb a k x
+
+end PolynomialGaussian
+
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
