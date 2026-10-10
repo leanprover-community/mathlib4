@@ -600,6 +600,27 @@ def prodUnique [Unique N] : M × N ≃* M :=
 
 end
 
+section curry
+
+/-- `MulEquiv` version of `Equiv.curry`. -/
+@[to_additive /-- `AddEquiv` version of `Equiv.curry`. -/]
+protected def curry (α β M : Type*) [Mul M] : (α × β → M) ≃* (α → β → M) where
+  __ := Equiv.curry α β M
+  map_mul' _ _ := by ext; simp
+
+variable {α β M : Type*} [Mul M]
+
+@[to_additive (attr := simp)] lemma toEquiv_curry :
+    (MulEquiv.curry α β M : (α × β → M) ≃ (α → β → M)) = .curry α β M := rfl
+
+@[to_additive (attr := simp)]
+lemma curry_apply (x) : MulEquiv.curry α β M x = Function.curry x := rfl
+
+@[to_additive (attr := simp)]
+lemma curry_symm_apply (x) : (MulEquiv.curry α β M).symm x = Function.uncurry x := rfl
+
+end curry
+
 section
 
 variable [Monoid M] [Monoid N]
