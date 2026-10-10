@@ -683,12 +683,6 @@ theorem multiset_prod_le_inf {s : Multiset (Ideal R)} : s.prod ≤ s.inf := by
 theorem prod_le_inf {s : Finset ι} {f : ι → Ideal R} : s.prod f ≤ s.inf f :=
   multiset_prod_le_inf
 
-theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
-  le_antisymm mul_le_inf fun r ⟨hri, hrj⟩ =>
-    let ⟨s, hsi, t, htj, hst⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 h)
-    mul_one r ▸
-      hst ▸
-        (mul_add r s t).symm ▸ Ideal.add_mem (I * J) (mul_mem_mul_rev hsi hrj) (mul_mem_mul hri htj)
 
 theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
     (I ⊔ ∏ i ∈ s, J i) = ⊤ :=
@@ -774,13 +768,20 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
   simp only [isCoprime_iff_add, one_eq_top] at hf ⊢
   exact sup_iInf_eq_top hf
 
--- TODO: Deprecate `Ideal.mul_eq_inf_of_coprime` in favor of this lemma.
 theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
-  (Ideal.mul_eq_inf_of_coprime coprime.sup_eq)
+  le_antisymm mul_le_inf fun r ⟨hri, hrj⟩ =>
+    let ⟨s, hsi, t, htj, hst⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 coprime.sup_eq)
+    mul_one r ▸
+      hst ▸
+        (mul_add r s t).symm ▸ Ideal.add_mem (I * J) (mul_mem_mul_rev hsi hrj) (mul_mem_mul hri htj)
+
+@[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-10-08")]
+theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
+  mul_eq_inf_of_isCoprime (isCoprime_iff_sup_eq.mpr h)
 
 @[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-03-10")]
 theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
-  (Ideal.mul_eq_inf_of_coprime coprime.sup_eq).symm
+  (mul_eq_inf_of_isCoprime coprime).symm
 
 open Function
 theorem prod_eq_iInf_of_pairwise_isCoprime {s : Finset ι} {J : ι → Ideal R}
