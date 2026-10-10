@@ -748,12 +748,12 @@ end Integral
 
 section Multiplication
 
-section bilin
-
 variable {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
   [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
   [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
+
+section bilin
 
 open ContinuousLinearMap Finset
 
@@ -774,8 +774,77 @@ noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E
 theorem bilinLeftCLM_apply (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)
     (φ : 𝓓^{n}(Ω, F₁)) : bilinLeftCLM B hg φ = fun x => B (φ x) (g x) := rfl
 
-
 end bilin
+
+section smul
+
+variable (F₁ Ω) in
+open scoped Classical in
+/-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on test functions,
+where `g` is a C^n function. -/
+noncomputable def smulLeftCLM (n := ⊤) (g : E → 𝕜) : 𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₁) :=
+  if hg : ContDiff ℝ n g then
+    bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+  else 0
+
+theorem smulLeftCLM_apply {g : E → 𝕜} (hg : ContDiff ℝ n g) (f : 𝓓^{n}(Ω, F₁)) :
+    smulLeftCLM Ω F₁ n g f = fun x ↦ g x • f x := by
+  simp [smulLeftCLM, hg]
+
+@[simp]
+theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : ContDiff ℝ n g) (f : 𝓓^{n}(Ω, F₁)) (x : E) :
+    smulLeftCLM Ω F₁ n g f x = g x • f x := by
+  simp [smulLeftCLM_apply hg]
+
+@[simp]
+theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff ℝ n g₁)
+    (hg₂ : ContDiff ℝ n g₂) (f : 𝓓^{n}(Ω, F₁)) :
+    smulLeftCLM Ω F₁ n g₁ (smulLeftCLM Ω F₁ n g₂ f) = smulLeftCLM Ω F₁ n (g₁ * g₂) f := by
+  ext x
+  simp [Pi.mul_def, hg₁, hg₂, hg₁.mul hg₂, smul_smul]
+
+theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff ℝ n g₁)
+    (hg₂ : ContDiff ℝ n g₂) :
+    smulLeftCLM Ω F₁ n g₁ ∘L smulLeftCLM Ω F₁ n g₂ = smulLeftCLM Ω F₁ n (g₁ * g₂) := by
+  ext1 f
+  exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
+
+theorem smulLeftCLM_add {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff ℝ n g₁)
+    (hg₂ : ContDiff ℝ n g₂) :
+    smulLeftCLM Ω F₁ n (g₁ + g₂) = smulLeftCLM Ω F₁ n g₁ + smulLeftCLM Ω F₁ n g₂ := by
+  ext f x
+  simp [Pi.add_def, hg₁, hg₂, hg₁.add hg₂, add_smul]
+
+theorem smulLeftCLM_sub {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff ℝ n g₁)
+    (hg₂ : ContDiff ℝ n g₂) :
+    smulLeftCLM Ω F₁ n (g₁ - g₂) = smulLeftCLM Ω F₁ n g₁ - smulLeftCLM Ω F₁ n g₂ := by
+  ext f x
+  simp [Pi.sub_def, hg₁, hg₂, hg₁.sub hg₂, sub_smul]
+
+theorem smulLeftCLM_neg {g : E → 𝕜} (hg : ContDiff ℝ n g) :
+    smulLeftCLM Ω F₁ n (-g) = -smulLeftCLM Ω F₁ n g := by
+  ext f x
+  simp [Pi.neg_def, hg, hg.neg, neg_smul]
+
+instance : ContinuousConstSMul 𝕜 𝓓^{n}(Ω, F) where
+  continuous_const_smul c := by
+    have : ContDiff ℝ n (fun (_ : E) ↦ c) := contDiff_const
+    rw [show (fun f : 𝓓^{n}(Ω, F) ↦ c • f) = (smulLeftCLM Ω F n (fun _ ↦ c)) by aesop]
+    exact (smulLeftCLM Ω F n (fun _ ↦ c)).continuous
+
+@[simp]
+theorem smulLeftCLM_const (c : 𝕜) :
+    smulLeftCLM Ω F n (fun (_ : E) ↦ c) = c • (ContinuousLinearMap.id 𝕜 𝓓^{n}(Ω, F)) := by
+  ext f x
+  simp [contDiff_const]
+
+theorem smulLeftCLM_smul {g : E → 𝕜} (hg : ContDiff ℝ n g) (c : 𝕜) :
+    smulLeftCLM Ω F n (c • g) = c • (smulLeftCLM Ω F n g) := by
+  have : ContDiff ℝ n (fun (_ : E) ↦ c):= by fun_prop
+  convert! (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
+  simp
+
+end smul
 
 end Multiplication
 
