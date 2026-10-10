@@ -162,8 +162,8 @@ theorem Lex.wellFounded (hbot : ∀ ⦃i a⦄, ¬s i a 0) [∀ i, WellFounded (s
 
 theorem Lex.wellFounded' (hbot : ∀ ⦃i a⦄, ¬s i a 0) [∀ i, WellFounded (s i)]
     [Std.Trichotomous r] (hr : WellFounded (Function.swap r)) : WellFounded (DFinsupp.Lex r s) :=
-  Lex.wellFounded hbot <| Subrelation.wf
-    (fun {i j} h ↦ Not.imp_symm (@Std.Trichotomous.trichotomous ι r _ i j h.left) h.right) hr
+  Lex.wellFounded hbot <| hr.anti
+    fun i j h ↦ Not.imp_symm (Std.Trichotomous.trichotomous i j h.left) h.right
 
 end Zero
 
@@ -234,7 +234,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
       apply hbot
     · simp +unfoldPartialApp only [Function.swap]
       infer_instance
-  refine Subrelation.wf (fun h => ?_) <| InvImage.wf (mapRange e fun _ ↦ rfl) this
+  refine InvImage.wf (mapRange e fun _ ↦ rfl) this |>.anti fun a b h ↦ ?_
   obtain ⟨i, he, hl⟩ := lex_lt_of_lt_of_preorder (Function.swap WellOrderingRel) h
   exact ⟨i, fun j hj ↦ Quot.sound (he j hj), hl⟩
 
