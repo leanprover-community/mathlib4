@@ -86,6 +86,21 @@ variable (X) in
 theorem smallInductiveDimension_of_isEmpty [IsEmpty X] : smallInductiveDimension X = ⊥ :=
   smallInductiveDimension_eq_bot.2 ‹_›
 
+theorem smallInductiveDimension_eq_zero :
+    smallInductiveDimension X = 0 ↔ Nonempty X ∧ ZeroDimensionalSpace X := by
+  rw [← not_isEmpty_iff, ← hasSmallInductiveDimensionLT_zero_iff]
+  refine ⟨fun h ↦ ⟨?_, smallInductiveDimension_le_iff.1 h.le⟩, fun ⟨h, _⟩ ↦ ?_⟩
+  · rw [← smallInductiveDimension_lt_iff]
+    simp [h]
+  · apply smallInductiveDimension_eq _ _ h
+    infer_instance
+
+variable (X) in
+@[simp]
+theorem smallInductiveDimension_of_zeroDimensionalSpace [Nonempty X] [ZeroDimensionalSpace X] :
+    smallInductiveDimension X = 0 :=
+  smallInductiveDimension_eq_zero.2 ⟨‹_›, ‹_›⟩
+
 theorem Topology.IsInducing.hasSmallInductiveDimensionLT {f : X → Y} (hf : IsInducing f)
     {n : ℕ} (h : HasSmallInductiveDimensionLT Y n) : HasSmallInductiveDimensionLT X n := by
   induction h generalizing X with
