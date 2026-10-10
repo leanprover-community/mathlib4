@@ -117,21 +117,24 @@ lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
 lemma isMIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsMIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } ↔ IsMIntegralCurveOn γ v s := by
   refine ⟨fun hγ ↦ ?_, fun hγ ↦ hγ.comp_mul a⟩
-  convert hγ.comp_mul a⁻¹
+  have h2 := hγ.comp_mul a⁻¹
+  rw [show {t : ℝ | t * a⁻¹ ∈ {t | t * a ∈ s}} = s by
+      ext t; simp [mem_ofPred_eq, mul_assoc, inv_mul_eq_div, div_self ha]] at h2
+  convert h2
   · ext t
     simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
-  · simp only [mem_ofPred_eq, mul_assoc, inv_mul_eq_div, div_self ha, mul_one, ofPred_mem_eq]
 
 lemma IsMIntegralCurveAt.comp_mul_ne_zero (hγ : IsMIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
     IsMIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
   rw [isMIntegralCurveAt_iff'] at *
   obtain ⟨ε, hε, h⟩ := hγ
   refine ⟨ε / |a|, by positivity, ?_⟩
-  convert h.comp_mul a
-  ext t
-  rw [mem_ofPred_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
-    lt_div_iff₀ (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
+  have hs : {t | t * a ∈ Metric.ball t₀ ε} = Metric.ball (t₀ / a) (ε / |a|) := by
+    ext t
+    rw [mem_ofPred_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
+      lt_div_iff₀ (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
+  exact hs ▸ h.comp_mul a
 
 lemma isMIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsMIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) ↔ IsMIntegralCurveAt γ v t₀ := by

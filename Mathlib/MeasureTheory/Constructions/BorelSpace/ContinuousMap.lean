@@ -101,8 +101,8 @@ theorem borel_eq_iSup_comap_eval :
     simp_rw [Set.mapsTo_iff_image_subset] at hf ⊢
     rw [hV.open_eq_sUnion_of_closure_subset hU] at hf
     obtain ⟨b, ⟨hb1, hb2⟩, hb3⟩ : ∃ b, (b ∈ V ∧ closure b ⊆ U) ∧ f '' K ⊆ b := by
-      refine (hK.image f.continuous).elim_directedOn_cover _
-        (fun v hv ↦ hV.isOpen hv.1) hf ?_ ?_
+      refine (hK.image f.continuous).elim_directedOn_cover _ ?_ hf ?_ ?_
+      · exact fun v hv ↦ hV.isOpen hv.1
       · rintro - ⟨⟨f, ⟨hf1, hf2⟩, rfl⟩, hf3⟩ - ⟨⟨g, ⟨hg1, hg2⟩, rfl⟩, hg3⟩
         exact ⟨⋃₀ (f ∪ g), ⟨⟨f ∪ g, ⟨hf1.union hg1, by grind⟩, rfl⟩,
           by simp_all [Set.sUnion_union]⟩, by grind, by grind⟩

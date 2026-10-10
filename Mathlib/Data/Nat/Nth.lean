@@ -480,7 +480,8 @@ theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i �
   rwa [nth_count hpa, lt_self_iff_false] at hn
 
 theorem le_nth_count' {n : ℕ} (hpn : ∃ k, p k ∧ n ≤ k) : n ≤ nth p (count p n) :=
-  (le_csInf hpn fun _ => And.right).trans (nth_count_eq_sInf p n).ge
+  (le_csInf (s := {i : ℕ | p i ∧ n ≤ i}) hpn fun _ => And.right).trans
+    (nth_count_eq_sInf p n).ge
 
 theorem le_nth_count (hp : (Set.ofPred p).Infinite) (n : ℕ) : n ≤ nth p (count p n) :=
   let ⟨m, hp, hn⟩ := hp.exists_gt n

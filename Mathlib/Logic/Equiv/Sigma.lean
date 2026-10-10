@@ -20,7 +20,7 @@ namespace Set
 /-- The indexed sum of sets is equivalent to the sigma-type of their coercions to types. -/
 protected def sigma {α} {β : α → Type*} (s : Set α) (t : (i : α) → Set (β i)) :
     ↥(s.sigma t) ≃ Σ i : s, t i :=
-  subtypeSigmaEquivSigma
+  subtypeSigmaEquivSigma (q := fun a b ↦ b ∈ t a)
 
 end Set
 
