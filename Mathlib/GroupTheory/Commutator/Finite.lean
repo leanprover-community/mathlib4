@@ -46,7 +46,7 @@ theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} 
 variable [Finite (commutatorSet G)]
 
 instance : Group.FG (_root_.commutator G) := by
-  rw [commutator_eq_closure]; apply Group.closure_finite_fg
+  rw [commutator_eq_closure]; infer_instance
 
 variable (G) in
 lemma rank_commutator_le_card : Group.rank (_root_.commutator G) ≤ Nat.card (commutatorSet G) := by
@@ -87,7 +87,7 @@ variable [Finite (commutatorSet G)]
 instance : Finite (commutatorRepresentatives G) := Set.finite_coe_iff.mpr (Set.finite_range _)
 
 instance closureCommutatorRepresentatives_fg : Group.FG (closureCommutatorRepresentatives G) :=
-  Group.closure_finite_fg _
+  inferInstanceAs (Group.FG (closure _))
 
 variable (G) in
 lemma rank_closureCommutatorRepresentatives_le :
