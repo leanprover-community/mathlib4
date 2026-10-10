@@ -66,7 +66,7 @@ theorem Rat.uniformSpace_eq :
     _root_.abs_sub_comm]
 
 /-- Cauchy reals packaged as a completion of ℚ using the absolute value route. -/
-def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).uniformSpace :=
+def rationalCauSeqPkg : @AbstractCompletion ℚ (@AbsoluteValue.abs ℚ _).uniformSpace :=
   @AbstractCompletion.mk
     (space := ℝ)
     (coe := ((↑) : ℚ → ℝ))

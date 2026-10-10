@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
 
 /-!
@@ -255,11 +255,11 @@ theorem map_ne_one_iff {R S F : Type*} [One R] [One S] [FunLike F R S] [OneHomCl
 
 @[to_additive]
 theorem ne_one_of_map {R S F : Type*} [One R] [One S] [FunLike F R S] [OneHomClass F R S]
-    {f : F} {x : R} (hx : f x ≠ 1) : x ≠ 1 := ne_of_apply_ne f <| (by rwa [(map_one f)])
+    {f : F} {x : R} (hx : f x ≠ 1) : x ≠ 1 := ne_of_apply_ne f (by rwa [(map_one f)])
 
 /-- Turn an element of a type `F` satisfying `OneHomClass F M N` into an actual
 `OneHom`. This is declared as the default coercion from `F` to `OneHom M N`. -/
-@[to_additive (attr := coe)
+@[to_additive (attr := coe, instance_reducible)
 /-- Turn an element of a type `F` satisfying `ZeroHomClass F M N` into an actual
 `ZeroHom`. This is declared as the default coercion from `F` to `ZeroHom M N`. -/]
 def OneHomClass.toOneHom [OneHomClass F M N] (f : F) : OneHom M N where
@@ -332,7 +332,7 @@ lemma map_comp_mul [MulHomClass F M N] (f : F) (g h : ι → M) : f ∘ (g * h) 
 
 /-- Turn an element of a type `F` satisfying `MulHomClass F M N` into an actual
 `MulHom`. This is declared as the default coercion from `F` to `M →ₙ* N`. -/
-@[to_additive (attr := coe)
+@[to_additive (attr := coe, instance_reducible)
 /-- Turn an element of a type `F` satisfying `AddHomClass F M N` into an actual
 `AddHom`. This is declared as the default coercion from `F` to `M →ₙ+ N`. -/]
 def MulHomClass.toMulHom [MulHomClass F M N] (f : F) : M →ₙ* N where
@@ -400,21 +400,28 @@ variable [FunLike F M N]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F M N` into an actual
 `MonoidHom`. This is declared as the default coercion from `F` to `M →* N`. -/
-@[to_additive (attr := coe)
+@[to_additive (attr := coe, instance_reducible)
 /-- Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an
-actual `MonoidHom`. This is declared as the default coercion from `F` to `M →+ N`. -/]
-def MonoidHomClass.toMonoidHom [MonoidHomClass F M N] (f : F) : M →* N :=
+actual `AddMonoidHom`. This is declared as the default coercion from `F` to `M →+ N`. -/]
+def MonoidHom.ofClass [MonoidHomClass F M N] (f : F) : M →* N :=
   { (f : M →ₙ* N), (f : OneHom M N) with }
 
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias MonoidHomClass.toMonoidHom := MonoidHom.ofClass
+
 /-- Any type satisfying `MonoidHomClass` can be cast into `MonoidHom` via
-`MonoidHomClass.toMonoidHom`. -/
+`MonoidHom.ofClass`. -/
 @[to_additive /-- Any type satisfying `AddMonoidHomClass` can be cast into `AddMonoidHom` via
-`AddMonoidHomClass.toAddMonoidHom`. -/]
+`AddMonoidHom.ofClass`. -/]
 instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
-  ⟨MonoidHomClass.toMonoidHom⟩
+  ⟨MonoidHom.ofClass⟩
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f := rfl
+theorem MonoidHom.coe_ofClass [MonoidHomClass F M N] (f : F) :
+    ((.ofClass f : M →* N) : M → N) = f := rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias MonoidHom.coe_coe := MonoidHom.coe_ofClass
 
 @[to_additive]
 theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) :
@@ -507,8 +514,17 @@ then so is the domain. -/
 then so is the domain. -/]
 theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree N]
     (f : M →* N) (hf : Function.Injective f) : IsMulTorsionFree M where
-  pow_left_injective n hn x y hxy := hf <| IsMulTorsionFree.pow_left_injective hn <| by
-    simpa using congrArg f hxy
+  eq_of_pow_eq_pow_of_commute n hn x y h hxy :=
+    hf <| eq_of_pow_eq_pow_of_commute hn
+      (by simpa [commute_iff_eq] using congrArg f h) (by simpa using congrArg f hxy)
+
+/-- If the codomain of an injective monoid homomorphism has unique roots,
+then so is the domain. -/
+@[to_additive /-- If the codomain of an injective additive monoid homomorphism has unique
+divisibility, then so is the domain. -/]
+theorem Function.Injective.hasUniqueRoots [Monoid M] [Monoid N] [HasUniqueRoots N]
+    (f : M →* N) (hf : Function.Injective f) : HasUniqueRoots M where
+  pow_left_injective n hn x y hxy := hf <| pow_left_injective hn <| by simpa using congrArg f hxy
 
 -- completely uninteresting lemmas about coercion to function, that all homs need
 section Coes

@@ -78,7 +78,7 @@ theorem pairwiseDisjoint_map_sigmaMk :
   rw [Function.onFun, disjoint_left]
   simp_rw [mem_map, Function.Embedding.sigmaMk_apply]
   rintro _ ⟨y, _, rfl⟩ ⟨z, _, hz'⟩
-  exact hij (congr_arg Sigma.fst hz'.symm)
+  exact hij congr($(hz'.symm).fst)
 
 @[simp]
 theorem disjiUnion_map_sigma_mk :

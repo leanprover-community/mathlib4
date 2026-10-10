@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
@@ -178,7 +177,7 @@ lemma generate_presieveOfSections
 lemma generate_presieveOfSections_mem_grothendieckTopology
     {U : X.AffineZariskiSite} {s : Set Γ(X, U.toOpens)} :
     Sieve.generate (presieveOfSections U s) ∈ grothendieckTopology X U ↔ Ideal.span s = ⊤ := by
-  rw [← U.2.self_le_iSup_basicOpen_iff, mem_grothendieckTopology, SetLike.le_def]
+  rw [← U.2.self_le_iSup_basicOpen_iff, mem_grothendieckTopology, IsConcreteLE.le_iff]
   refine forall₂_congr fun x hx ↦ ?_
   simp only [exists_and_left, TopologicalSpace.Opens.iSup_mk,
     TopologicalSpace.Opens.carrier_eq_coe, Set.iUnion_coe_set, TopologicalSpace.Opens.mem_mk,
@@ -335,7 +334,7 @@ noncomputable def isColimitCocone : IsColimit (cocone X) :=
         congr with U
         simp [D, relativeGluingData, restrictIsoSpec]
       · simp
-    convert! (inferInstance : IsIso e.hom)
+    convert (inferInstance : IsIso e.hom)
     rw [← cancel_mono U.1.ι, ← Iso.inv_comp_eq]
     simp [e, ← pullback.condition, IsAffineOpen.isoSpec_hom]
   .ofPointIso (colimit.isColimit F)
