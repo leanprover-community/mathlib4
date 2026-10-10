@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Ideal
 
 import Mathlib.Data.Finset.Max
+import Mathlib.Basic.Countable.Basic
 
 /-!
 # The back and forth method and countable dense linear orders
@@ -169,51 +170,53 @@ variable (β)
 
 /-- The set of partial isomorphisms defined at `a : α`, together with a proof that any
 partial isomorphism can be extended to one defined at `a`. -/
-def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α) :
-    Cofinal (PartialIso α β) where
-  carrier := {f | ∃ b : β, (a, b) ∈ f.val}
-  isCofinal f := by
-    obtain ⟨b, a_b⟩ := exists_across f a
-    refine
-      ⟨⟨insert (a, b) f.val, fun p hp q hq ↦ ?_⟩, ⟨b, Finset.mem_insert_self _ _⟩,
-        Finset.subset_insert _ _⟩
-    rw [Finset.mem_insert] at hp hq
-    rcases hp with (rfl | pf) <;> rcases hq with (rfl | qf)
-    · simp only [cmp_self_eq_eq]
-    · rw [cmp_eq_cmp_symm]
-      exact a_b _ qf
-    · exact a_b _ pf
-    · exact f.prop _ pf _ qf
+def definedAtLeft (a : α) : Set (PartialIso α β) :=
+  {f : PartialIso α β | ∃ b : β, (a, b) ∈ f.val}
+
+theorem isCofinal_definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β]
+    (a : α) : IsCofinal (definedAtLeft β a) := by
+  intro f
+  obtain ⟨b, a_b⟩ := exists_across f a
+  refine
+    ⟨⟨insert (a, b) f.val, fun p hp q hq ↦ ?_⟩, ⟨b, Finset.mem_insert_self _ _⟩,
+      Finset.subset_insert _ _⟩
+  rw [Finset.mem_insert] at hp hq
+  rcases hp with (rfl | pf) <;> rcases hq with (rfl | qf)
+  · simp only [cmp_self_eq_eq]
+  · rw [cmp_eq_cmp_symm]
+    exact a_b _ qf
+  · exact a_b _ pf
+  · exact f.prop _ pf _ qf
 
 variable (α) {β}
 
 /-- The set of partial isomorphisms defined at `b : β`, together with a proof that any
 partial isomorphism can be extended to include `b`. We prove this by symmetry. -/
-def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β) :
-    Cofinal (PartialIso α β) where
-  carrier := {f | ∃ a, (a, b) ∈ f.val}
-  isCofinal f := by
-    rcases (definedAtLeft α b).isCofinal f.comm with ⟨f', ⟨a, ha⟩, hl⟩
-    refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
-    · change (a, b) ∈ f'.val.image _
-      rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm]
-    · change _ ⊆ f'.val.image _
-      rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.symm_image_subset, ← Finset.coe_image,
-        Finset.coe_subset]
+def definedAtRight (b : β) : Set (PartialIso α β) :=
+  {f | ∃ a, (a, b) ∈ f.val}
+
+theorem isCofinal_definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α]
+    (b : β) : IsCofinal (definedAtRight α b) := by
+  intro f
+  rcases isCofinal_definedAtLeft α b f.comm with ⟨f', ⟨a, ha⟩, hl⟩
+  refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
+  · change (a, b) ∈ f'.val.image _
+    rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm]
+  · change _ ⊆ f'.val.image _
+    rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.symm_image_subset, ← Finset.coe_image,
+      Finset.coe_subset]
 
 variable {α}
 
 /-- Given an ideal which intersects `definedAtLeft β a`, pick `b : β` such that
 some partial function in the ideal maps `a` to `b`. -/
-def funOfIdeal [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α)
-    (I : Ideal (PartialIso α β)) :
+def funOfIdeal (a : α) (I : Ideal (PartialIso α β)) :
     (∃ f, f ∈ definedAtLeft β a ∧ f ∈ I) → { b // ∃ f ∈ I, (a, b) ∈ Subtype.val f } :=
   Classical.indefiniteDescription _ ∘ fun ⟨f, ⟨b, hb⟩, hf⟩ ↦ ⟨b, f, hf, hb⟩
 
 /-- Given an ideal which intersects `definedAtRight α b`, pick `a : α` such that
 some partial function in the ideal maps `a` to `b`. -/
-def invOfIdeal [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β)
-    (I : Ideal (PartialIso α β)) :
+def invOfIdeal (b : β) (I : Ideal (PartialIso α β)) :
     (∃ f, f ∈ definedAtRight α b ∧ f ∈ I) → { a // ∃ f ∈ I, (a, b) ∈ Subtype.val f } :=
   Classical.indefiniteDescription _ ∘ fun ⟨f, ⟨a, ha⟩, hf⟩ ↦ ⟨a, f, hf, ha⟩
 
@@ -226,19 +229,18 @@ open PartialIso
 /-- Any countable linear order embeds in any nontrivial dense linear order. -/
 theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [Nontrivial β] :
     Nonempty (α ↪o β) := by
-  cases nonempty_encodable α
   rcases exists_pair_lt β with ⟨x, y, hxy⟩
   obtain ⟨a, ha⟩ := exists_between hxy
   have : Nonempty (Set.Ioo x y) := ⟨⟨a, ha⟩⟩
-  let our_ideal : Ideal (PartialIso α _) :=
-    idealOfCofinals default (definedAtLeft (Set.Ioo x y))
-  let F a := funOfIdeal a our_ideal (cofinal_meets_idealOfCofinals _ _ a)
+  obtain ⟨I, _, hI⟩ := Order.exists_ideal_meets_cofinals (default : PartialIso α _)
+    (definedAtLeft (Set.Ioo x y)) (isCofinal_definedAtLeft _)
+  let F a := funOfIdeal a I (Set.inter_nonempty_iff_exists_right.1 (hI a))
   refine
     ⟨RelEmbedding.trans (OrderEmbedding.ofStrictMono (fun a ↦ (F a).val) fun a₁ a₂ ↦ ?_)
         (OrderEmbedding.subtype _)⟩
   rcases (F a₁).prop with ⟨f, hf, ha₁⟩
   rcases (F a₂).prop with ⟨g, hg, ha₂⟩
-  rcases our_ideal.directed _ hf _ hg with ⟨m, _hm, fm, gm⟩
+  rcases I.directed _ hf _ hg with ⟨m, _hm, fm, gm⟩
   exact (lt_iff_lt_of_cmp_eq_cmp <| m.prop (a₁, _) (fm ha₁) (a₂, _) (gm ha₂)).mp
 
 /-- Any two countable dense, nonempty linear orders without endpoints are order isomorphic. This is
@@ -246,17 +248,15 @@ also known as **Cantor's isomorphism theorem**. -/
 theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
     [Nonempty α] [Countable β] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] :
     Nonempty (α ≃o β) := by
-  cases nonempty_encodable α
-  cases nonempty_encodable β
-  let to_cofinal : α ⊕ β → Cofinal (PartialIso α β) := fun p ↦
-    Sum.recOn p (definedAtLeft β) (definedAtRight α)
-  let our_ideal : Ideal (PartialIso α β) := idealOfCofinals default to_cofinal
-  let F a := funOfIdeal a our_ideal (cofinal_meets_idealOfCofinals _ to_cofinal (Sum.inl a))
-  let G b := invOfIdeal b our_ideal (cofinal_meets_idealOfCofinals _ to_cofinal (Sum.inr b))
+  obtain ⟨I, _, hI⟩ :=
+    Order.exists_ideal_meets_cofinals default (Sum.elim (definedAtLeft β) (definedAtRight α))
+      (Sum.rec (isCofinal_definedAtLeft β) (isCofinal_definedAtRight α))
+  let F a := funOfIdeal a I (Set.inter_nonempty_iff_exists_right.1 <| hI (Sum.inl a))
+  let G b := invOfIdeal b I (Set.inter_nonempty_iff_exists_right.1 <| hI (Sum.inr b))
   exact ⟨OrderIso.ofCmpEqCmp (fun a ↦ (F a).val) (fun b ↦ (G b).val) fun a b ↦ by
       rcases (F a).prop with ⟨f, hf, ha⟩
       rcases (G b).prop with ⟨g, hg, hb⟩
-      rcases our_ideal.directed _ hf _ hg with ⟨m, _, fm, gm⟩
+      rcases I.directed _ hf _ hg with ⟨m, _, fm, gm⟩
       exact m.prop (a, _) (fm ha) (_, b) (gm hb)⟩
 
 end Order
