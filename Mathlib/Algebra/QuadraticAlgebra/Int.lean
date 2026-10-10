@@ -39,11 +39,11 @@ instance : IsScalarTower ℤ (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a 
   .of_algHom (baseChange ℚ a b)
 
 @[simp]
-theorem algebraMap_re_eq (x : QuadraticAlgebra ℤ a b) :
+theorem re_algebraMap (x : QuadraticAlgebra ℤ a b) :
     (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).re = x.re := rfl
 
 @[simp]
-theorem algebraMap_im_eq (x : QuadraticAlgebra ℤ a b) :
+theorem im_algebraMap (x : QuadraticAlgebra ℤ a b) :
     (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).im = x.im := rfl
 
 @[simp]
@@ -59,11 +59,6 @@ theorem trace_algebraMap_eq (x : QuadraticAlgebra ℤ a b) :
 instance : FaithfulSMul (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) :=
   (faithfulSMul_iff_algebraMap_injective _ _).mpr <| baseChange_injective ℚ _ _
 
-/-- The discriminant commutes with the coercion `ℤ → ℚ`. -/
-theorem discr_intCast :
-    discr (a : ℚ) (b : ℚ) = discr a b := by
-  simpa using discr_algebraMap (S := ℚ) a b
-
 open scoped nonZeroDivisors
 
 theorem exists_nat_smul_mem (z : QuadraticAlgebra ℚ a b) :
@@ -75,9 +70,10 @@ theorem exists_nat_smul_mem (z : QuadraticAlgebra ℚ a b) :
   refine ⟨n, hn, x • 1 + y • ω, ?_⟩
   ext <;> simp [hx, hy]
 
+-- TODO: generalize this instance: if `S` is the localization of `R` at `M`, then
+-- `QuadraticAlgebra S a b` is the localization of `QuadraticAlgebra R a b` at the image of `M`.
 /-- `QuadraticAlgebra ℚ a b` is the localization of the order `QuadraticAlgebra ℤ a b` at the
-nonzero integers. This is not `IsFractionRing` in general: `QuadraticAlgebra ℤ a b` need not be a
-domain (see `isDomain_iff`). -/
+nonzero integers. -/
 noncomputable instance :
     IsLocalization (algebraMapSubmonoid (QuadraticAlgebra ℤ a b) ℤ⁰)
       (QuadraticAlgebra ℚ a b) := by
@@ -100,6 +96,9 @@ theorem isDomain_iff :
     IsDomain (QuadraticAlgebra ℤ a b) ↔ ¬ IsSquare (discr a b) := by
   simp [IsFractionRing.isDomain_iff_isField (K := QuadraticAlgebra ℚ a b),
     isField_iff_not_isSquare_discr, discr_intCast]
+
+instance [Fact (¬ IsSquare (discr a b))] : IsDomain (QuadraticAlgebra ℤ a b) :=
+  isDomain_iff.mpr Fact.out
 
 end Int
 
