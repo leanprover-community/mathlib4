@@ -323,10 +323,6 @@ end exchange
 
 section aesop
 
--- This is necessary as `aesop` uses private lemmas for its proof terms: without this option,
--- the aesop proofs will not work, and any `aesop` auto-params will not fire.
-set_option backward.privateInPublic true
-
 /-- The `aesop_mat` tactic attempts to prove a set is contained in the ground set of a matroid.
   It uses a `[Matroid]` ruleset, and is allowed to fail. -/
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
@@ -347,12 +343,15 @@ private theorem inter_right_subset_ground (hX : X ⊆ M.E) :
 private theorem inter_left_subset_ground (hX : X ⊆ M.E) :
     Y ∩ X ⊆ M.E := inter_subset_right.trans hX
 
+set_option backward.privateInPublic true in
 @[aesop unsafe 5% (rule_sets := [Matroid])]
 private theorem sdiff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
   sdiff_subset.trans hX
 
+set_option backward.privateInPublic true in
 @[deprecated (since := "2026-06-03")] alias diff_subset_ground := sdiff_subset_ground
 
+set_option backward.privateInPublic true in
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 private theorem ground_sdiff_subset_ground : M.E \ X ⊆ M.E :=
   sdiff_subset_ground rfl.subset
