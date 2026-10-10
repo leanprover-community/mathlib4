@@ -46,8 +46,11 @@ variable [HasZeroMorphisms C] [HasZeroMorphisms D] [HasZeroMorphisms E]
 
 /-- A functor preserves zero morphisms if it sends zero morphisms to zero morphisms. -/
 class PreservesZeroMorphisms (F : C ⥤ D) : Prop where
-  /-- For any pair objects `F (0: X ⟶ Y) = (0 : F X ⟶ F Y)` -/
+  /-- For any pair objects `F (0 : X ⟶ Y) = (0 : F X ⟶ F Y)` -/
   map_zero : ∀ X Y : C, F.map (0 : X ⟶ Y) = 0 := by aesop
+
+to_dual_for PreservesZeroMorphisms.map_zero := self.map_zero Y X
+to_dual_for PreservesZeroMorphisms.mk := ⟨forall_comm.mp map_zero⟩
 
 @[simp]
 protected theorem map_zero (F : C ⥤ D) [PreservesZeroMorphisms F] (X Y : C) :
