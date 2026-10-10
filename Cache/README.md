@@ -186,6 +186,8 @@ Cache files use the `.ltar` format (Lean tar), handled by [leantar](https://gith
 The cache covers these packages:
 
 - `Mathlib`
+- `HexBasic`
+- `HexPermGroup`
 - `Batteries`
 - `Aesop`
 - `Cli`

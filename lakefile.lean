@@ -6,6 +6,10 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
+require HexPermGroup from git
+  "https://github.com/leanprover/hex-perm-group.git" @ "v0.9.0"
+  with NameMap.empty.insert `hexPermGroupNative "false"
+
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 
