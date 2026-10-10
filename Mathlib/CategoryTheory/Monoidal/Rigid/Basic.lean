@@ -279,10 +279,12 @@ e.g. `(ᘁX : C)` where previously just `ᘁX` was enough. -/
 @[inherit_doc] prefix:1024 "ᘁ" => leftDual
 @[inherit_doc] postfix:1024 "ᘁ" => rightDual
 
+/-- The monoidal unit is its own right dual. -/
 @[implicit_reducible]
 def hasRightDualUnit : HasRightDual (𝟙_ C) where
   rightDual := 𝟙_ C
 
+/-- The monoidal unit is its own left dual. -/
 @[implicit_reducible]
 def hasLeftDualUnit : HasLeftDual (𝟙_ C) where
   leftDual := 𝟙_ C
