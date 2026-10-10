@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Small
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.FiniteType
 public import Mathlib.RingTheory.Spectrum.Prime.Jacobson

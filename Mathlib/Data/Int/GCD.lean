@@ -45,7 +45,7 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ 
   | 0 => (r', s', t')
   | succ k =>
     let q := r' / succ k
-    ih (r' % succ k) (mod_lt _ <| (succ_pos _).gt) (s' - q * s) (t' - q * t) (succ k) s t
+    ih (r' % succ k) (mod_lt _ (succ_pos _).gt) (s' - q * s) (t' - q * t) (succ k) s t
 
 @[simp]
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by

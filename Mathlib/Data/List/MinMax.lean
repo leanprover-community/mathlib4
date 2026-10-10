@@ -6,10 +6,11 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 module
 
 public import Mathlib.Data.List.Basic
-public import Mathlib.Order.BoundedOrder.Lattice
-public import Mathlib.Data.List.Induction
-public import Mathlib.Order.MinMax
 public import Mathlib.Order.WithBot
+
+import Mathlib.Data.List.Induction
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.MinMax
 
 /-!
 # Minimum and maximum of lists
@@ -136,7 +137,18 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     · simp
     dsimp
     rw [← apply_ite, ← apply_ite]
-    grind -abstractProof -- Without `-abstractProof`, `to_dual` gives an error.
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/14727, this was
+    `grind -abstractProof`, with a note that plain `grind` made `@[to_dual]` fail. The
+    grind proof term now contains a `Classical.byContradiction` that `@[to_dual]` cannot
+    insert a cast into, with or without `-abstractProof`, so the case analysis is spelled
+    out instead; the six `@[to_dual]` failures further down this file all cascade from
+    here. -/
+    dsimp only
+    split_ifs <;> simp_all only [not_lt, Option.some.injEq] <;>
+      first
+        | rfl
+        | exact absurd (‹f a < f m›.trans ‹f m < f tl›) (not_lt.2 ‹f tl ≤ f a›)
+        | exact absurd (‹f a < f tl›.trans_le ‹f tl ≤ f m›) (not_lt.2 ‹f m ≤ f a›)
 
 variable [DecidableEq α]
 
@@ -337,8 +349,8 @@ lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.max
     | some z =>
       have : Std.Antisymm (α := α) (· ≤ ·) := ⟨fun _ _ => _root_.le_antisymm⟩
       rw [List.max?_eq_some_iff] at hz
-      · rw [Option.getD_some]
-        exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
+      rw [Option.getD_some]
+      exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
 
 end LinearOrder
 

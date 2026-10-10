@@ -5,11 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
 # Lemmas about rank and `finrank` in rings satisfying strong rank condition.
@@ -146,7 +145,7 @@ theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤
   have := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite J
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
-    convert! Cardinal.lift_le.{v}.2 (basis_le_span' v hJ)
+    convert Cardinal.lift_le.{v}.2 (basis_le_span' v hJ)
     simp
   · let S : J → Set ι := fun j => ↑(v.repr j).support
     let S' : J → Set M := fun j => v '' S j
@@ -158,9 +157,9 @@ theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤
       rw [hJ] at this
       replace : v.repr (v i) ∈ Finsupp.supported R R (⋃ j, S j) := this trivial
       rw [v.repr_self, Finsupp.mem_supported, Finsupp.support_single _ one_ne_zero] at this
-      · subst b
-        rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
-        exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
+      subst b
+      rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
+      exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
     refine le_of_not_gt fun IJ => ?_
     suffices #(⋃ j, S' j) < #(range v) by exact not_le_of_gt this ⟨Set.embeddingOfSubset _ _ hs⟩
     refine lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk
@@ -610,7 +609,7 @@ theorem strongRankCondition_iff_forall_zero_lt_finrank [Nontrivial R] :
   simp_rw [finrank, Nat.le_zero, toNat_eq_zero]
   refine ⟨fun ⟨n, le⟩ ↦ ⟨n + 1, n.succ_pos, ?_⟩, fun ⟨n, pos, eq⟩ ↦ ⟨n, ?_⟩⟩
   · exact .inr <| le.trans <| LinearMap.rank_le_of_injective
-      (ExtendByZero.linearMap R _) <| extend_injective (Fin.castSucc_injective n) _
+      (ExtendByZero.linearMap R R _) <| extend_injective (Fin.castSucc_injective n) _
   · rw [or_iff_not_imp_left, ← Ne, ← Cardinal.one_le_iff_ne_zero, one_le_rank_iff] at eq
     rw [← n.succ_pred_eq_of_pos pos] at eq ⊢
     exact eq ⟨.single R (fun _ ↦ _) 0, Pi.single_injective (M := fun _ ↦ _) _⟩

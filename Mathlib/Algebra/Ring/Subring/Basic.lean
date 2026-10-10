@@ -6,11 +6,9 @@ Authors: Ashvni Narayanan
 module
 
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.RingTheory.NonUnitalSubring.Basic
-public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Subrings
@@ -603,14 +601,6 @@ theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
 
-open scoped IsMulCommutative in
-/-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
-@[deprecated isMulCommutative_closure (since := "2026-03-11")]
-abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : s.Pairwise Commute) :
-    CommRing (closure s) :=
-  have := isMulCommutative_closure hcomm
-  inferInstance
-
 instance instIsMulCommutative_closure {S R : Type*} [Ring R] [SetLike S R] [MulMemClass S R] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set R)) :=
   isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
@@ -927,10 +917,10 @@ theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
 
 theorem range_fst : (fst R S).rangeS = ⊤ :=
-  (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
+  (fst R S).rangeS_top_of_surjective Prod.fst_surjective
 
 theorem range_snd : (snd R S).rangeS = ⊤ :=
-  (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
+  (snd R S).rangeS_top_of_surjective Prod.snd_surjective
 
 @[simp]
 theorem prod_bot_sup_bot_prod (s : Subring R) (t : Subring S) : s.prod ⊥ ⊔ prod ⊥ t = s.prod t :=
@@ -1173,7 +1163,7 @@ theorem comap_map_eq (f : R →+* S) (s : Subring R) :
 
 theorem comap_map_eq_self {f : R →+* S} {s : Subring R}
     (h : f ⁻¹' {0} ⊆ s) : (s.map f).comap f = s := by
-  convert! comap_map_eq f s
+  convert comap_map_eq f s
   rwa [left_eq_sup, closure_le]
 
 theorem comap_map_eq_self_of_injective

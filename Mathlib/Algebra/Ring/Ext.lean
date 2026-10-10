@@ -6,7 +6,8 @@ Authors: Raghuram Sundararajan
 module
 
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Algebra.Group.Ext
+
+import Mathlib.Algebra.Group.Ext
 
 /-!
 # Extensionality lemmas for rings and similar structures
@@ -201,10 +202,13 @@ theorem toNonUnitalSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalNonAssocring_injective := toNonUnitalNonAssocRing_injective
 
 end NonUnitalRing
 
@@ -265,10 +269,13 @@ theorem toNonAssocSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalNonAssocring_injective := toNonUnitalNonAssocRing_injective
 
 end NonAssocRing
 
@@ -281,7 +288,7 @@ namespace Semiring
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
   have h₀ : inst₁.toAddCommMonoid = inst₂.toAddCommMonoid := by
-    ext : 1 <;> assumption
+    ext : 1; assumption
   have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
     ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
@@ -290,7 +297,7 @@ namespace Semiring
     ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₁ | injection h₂
+  congr; solve | injection h₁ | injection h₂
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by

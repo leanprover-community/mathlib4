@@ -8,9 +8,8 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Set.Inclusion
-public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Subgroups
@@ -180,8 +179,9 @@ namespace SubgroupClass
 @[to_additive]
 theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
     (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
-  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp (mem_of_le_of_mem · xH) (mem_of_le_of_mem · xH)⟩
-  rw [or_iff_not_imp_left, SetLike.not_le_iff_exists, ← SetLike.coe_subset_coe]
+  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp
+    (SetLike.coe_subset_coe.2 · xH) (SetLike.coe_subset_coe.2 · xH)⟩
+  rw [or_iff_not_imp_left, IsConcreteLE.not_le_iff_exists, ← SetLike.coe_subset_coe]
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
     ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
     (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
@@ -321,7 +321,7 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hq, _⟩, _⟩, _⟩ := q
     congr
 
-@[to_additive] instance : PartialOrder (Subgroup G) := .ofSetLike (Subgroup G) G
+@[to_additive] instance : PartialOrder (Subgroup G) := .ofSetLike (Subgroup G)
 
 initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
@@ -400,8 +400,10 @@ theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ 
 @[to_additive]
 lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
 
-attribute [deprecated OneMemClass.coe_nonempty (since := "2026-04-20")] Subgroup.coe_nonempty
-attribute [deprecated ZeroMemClass.coe_nonempty (since := "2026-04-20")] AddSubgroup.coe_nonempty
+attribute [deprecated OneMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
+  Subgroup.coe_nonempty
+attribute [deprecated ZeroMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
+  AddSubgroup.coe_nonempty
 
 end Subgroup
 
@@ -637,7 +639,7 @@ namespace Normal
 @[to_additive]
 theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
-  convert! nH.conj_mem n hn g⁻¹
+  convert nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]
@@ -674,11 +676,6 @@ def normalizer (S : Set G) : Subgroup G where
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
-@[deprecated (since := "2026-03-19")]
-alias setNormalizer := normalizer
-@[deprecated (since := "2026-03-19")]
-alias _root_.AddSubgroup.setNormalizer := AddSubgroup.normalizer
-
 variable {H} {S : Set G} {g : G}
 
 @[to_additive]
@@ -713,14 +710,9 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-@[to_additive (attr := deprecated inferInstance (since := "2026-04-09"))]
+@[to_additive (attr := deprecated inferInstance +typeChanged (since := "2026-04-09"))]
 theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
     IsMulCommutative H := inferInstance
-
-@[to_additive (attr := deprecated setLike_mul_comm (since := "2026-03-09"))]
-lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
-    a * b = b * a :=
-  setLike_mul_comm ha hb
 
 end Subgroup
 
