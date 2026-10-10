@@ -680,7 +680,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
 /-- If `H` is a subgroup of `G` of cardinality `p ^ n`,
   then `H` is contained in a subgroup of cardinality `p ^ m`
   if `n ≤ m` and `p ^ m` divides the cardinality of `G` -/
-theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
+theorem exists_subgroup_card_pow_prime_ge [Finite G] (p : ℕ) :
     ∀ {n m : ℕ} [_hp : Fact p.Prime] (_hdvd : p ^ m ∣ Nat.card G) (H : Subgroup G)
       (_hH : Nat.card H = p ^ n) (_hnm : n ≤ m), ∃ K : Subgroup G, Nat.card K = p ^ m ∧ H ≤ K
   | n, m => fun {hdvd H hH hnm} =>
@@ -689,7 +689,7 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
         have h0m : 0 < m := lt_of_le_of_lt n.zero_le hnm
         have hnm1 : n ≤ m - 1 := le_tsub_of_add_le_right hnm
         let ⟨K, hK⟩ :=
-          @exists_subgroup_card_pow_prime_le _ _ n (m - 1) _
+          @exists_subgroup_card_pow_prime_ge _ _ n (m - 1) _
             (Nat.pow_dvd_of_le_of_pow_dvd tsub_le_self hdvd) H hH hnm1
         have hdvd' : p ^ (m - 1 + 1) ∣ Nat.card G := by rwa [tsub_add_cancel_of_le h0m.nat_succ_le]
         let ⟨K', hK'⟩ := @exists_subgroup_card_pow_succ _ _ _ _ _ _ hdvd' K hK.1
@@ -703,17 +703,24 @@ theorem exists_subgroup_card_pow_prime_le_le {p : ℕ} (hp : p.Prime) {n : ℕ}
   obtain ⟨k, hkn, hH⟩ := (Nat.dvd_prime_pow hp).mp hH
   have : Fact p.Prime := ⟨hp⟩
   have hcardeq := (Nat.card_congr (Subgroup.subgroupOfEquivOfLe hHL).toEquiv).trans hH
-  obtain ⟨K, hcard, hHK⟩ := exists_subgroup_card_pow_prime_le p hL (H.subgroupOf L) hcardeq hkn
+  obtain ⟨K, hcard, hHK⟩ := exists_subgroup_card_pow_prime_ge p hL (H.subgroupOf L) hcardeq hkn
   refine ⟨K.map L.subtype, ?_, ?_, map_subtype_le K⟩
   · rwa [Subgroup.card_map_of_injective L.subtype_injective]
   · rw [← Subgroup.map_subgroupOf_eq_of_le hHL]
     exact Subgroup.map_mono hHK
 
+theorem exists_subgroup_card_pow_prime_le {p : ℕ} (hp : p.Prime) {n : ℕ}
+    (H : Subgroup G) [Finite H] (hH : p ^ n ∣ Nat.card H) :
+    ∃ K : Subgroup G, Nat.card K = p ^ n ∧ K ≤ H := by
+  rcases exists_subgroup_card_pow_prime_le_le hp (by simp) hH bot_le
+    with ⟨K, hcard, _, hle⟩
+  exact ⟨K, hcard, hle⟩
+
 /-- A generalisation of **Sylow's first theorem**. If `p ^ n` divides
   the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
 theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Prime]
     (hdvd : p ^ n ∣ Nat.card G) : ∃ K : Subgroup G, Nat.card K = p ^ n :=
-  let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥
+  let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_ge p hdvd ⊥
     (by rw [card_bot, pow_zero]) n.zero_le
   ⟨K, hK.1⟩
 

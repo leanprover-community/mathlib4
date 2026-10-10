@@ -227,8 +227,10 @@ theorem finrank_fixedField_eq_card [FiniteDimensional F E] :
 nonrec def fixingSubgroup : Subgroup Gal(E/F) :=
   fixingSubgroup Gal(E/F) (K : Set E)
 
-theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
+theorem le_fixedField_iff_le_fixingSubgroup : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
+
+@[deprecated (since := "2026-10-09")] alias le_iff_le := le_fixedField_iff_le_fixingSubgroup
 
 /-- The map `K ↦ Gal(E/K)` is inclusion-reversing. -/
 theorem fixingSubgroup_le {K1 K2 : IntermediateField F E} (h12 : K1 ≤ K2) :
@@ -260,7 +262,7 @@ theorem fixingSubgroup_sup {K L : IntermediateField F E} :
     (K ⊔ L).fixingSubgroup = K.fixingSubgroup ⊓ L.fixingSubgroup := by
   ext φ
   exact ⟨fun h ↦ ⟨fixingSubgroup_antitone le_sup_left h, fixingSubgroup_antitone le_sup_right h⟩,
-    by simp [← Subgroup.zpowers_le, ← IntermediateField.le_iff_le]⟩
+    by simp [← Subgroup.zpowers_le, ← IntermediateField.le_fixedField_iff_le_fixingSubgroup]⟩
 
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `Gal(E/K)`. -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
@@ -279,7 +281,8 @@ theorem coe_fixingSubgroupEquiv_symm_apply (σ : Gal(E/K)) :
   rfl
 
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
-  have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
+  have H_le : H ≤ fixingSubgroup (fixedField H) :=
+    (le_fixedField_iff_le_fixingSubgroup _ _).mp le_rfl
   suffices Nat.card H = Nat.card (fixingSubgroup (fixedField H)) by
     exact SetLike.coe_injective (Set.eq_of_inclusion_surjective
       ((Nat.bijective_iff_injective_and_card (Set.inclusion H_le)).mpr
@@ -332,7 +335,7 @@ i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     IntermediateField.fixedField (IntermediateField.fixingSubgroup K) = K := by
   have K_le : K ≤ IntermediateField.fixedField (IntermediateField.fixingSubgroup K) :=
-    (IntermediateField.le_iff_le _ _).mpr le_rfl
+    (IntermediateField.le_fixedField_iff_le_fixingSubgroup _ _).mpr le_rfl
   suffices
     finrank K E = finrank (IntermediateField.fixedField (IntermediateField.fixingSubgroup K)) E by
     exact (IntermediateField.eq_of_le_of_finrank_eq' K_le this).symm
@@ -372,7 +375,8 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
   left_inv K := fixedField_fixingSubgroup K
   right_inv H := IntermediateField.fixingSubgroup_fixedField H
   map_rel_iff' {K L} := by
-    rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
+    rw [← fixedField_fixingSubgroup L, le_fixedField_iff_le_fixingSubgroup,
+      fixedField_fixingSubgroup L]
     rfl
 
 section
@@ -392,6 +396,11 @@ theorem fixedField_eq_iff_fixingSubgroup_eq {K : IntermediateField F E} {H : Sub
   simp [← OrderIso.apply_eq_iff_eq intermediateFieldEquivSubgroup, fixingSubgroup_fixedField,
     eq_comm]
 
+theorem fixedField_le_iff_fixingSubgroup_le {K : IntermediateField F E} {H : Subgroup Gal(E/F)} :
+    IntermediateField.fixedField H ≤ K ↔ K.fixingSubgroup ≤ H where
+  mp h := IntermediateField.fixingSubgroup_fixedField H ▸ IntermediateField.fixingSubgroup_le h
+  mpr h := fixedField_fixingSubgroup K ▸ IntermediateField.fixedField_le h
+
 end
 
 /-- The Galois correspondence as a `GaloisInsertion`. -/
@@ -401,7 +410,7 @@ def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
       ((IntermediateField.fixedField : Subgroup Gal(E/F) → IntermediateField F E) ∘
         OrderDual.toDual) where
   choice K _ := IntermediateField.fixingSubgroup K
-  gc K H := (IntermediateField.le_iff_le H K).symm
+  gc K H := (IntermediateField.le_fixedField_iff_le_fixingSubgroup H K).symm
   le_l_u H := le_of_eq (IntermediateField.fixingSubgroup_fixedField H).symm
   choice_eq _ _ := rfl
 
