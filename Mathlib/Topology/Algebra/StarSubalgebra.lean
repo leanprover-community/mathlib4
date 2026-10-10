@@ -68,9 +68,12 @@ def topologicalClosure (s : StarSubalgebra R A) : StarSubalgebra R A :=
     star_mem' := fun ha =>
       map_mem_closure continuous_star ha fun x => (star_mem : x ∈ s → star x ∈ s) }
 
-theorem topologicalClosure_toSubalgebra_comm (s : StarSubalgebra R A) :
+theorem toSubalgebra_topologicalClosure (s : StarSubalgebra R A) :
     s.topologicalClosure.toSubalgebra = s.toSubalgebra.topologicalClosure :=
   SetLike.coe_injective rfl
+
+@[deprecated (since := "2026-08-21")]
+alias topologicalClosure_toSubalgebra_comm := toSubalgebra_topologicalClosure
 
 @[simp]
 theorem topologicalClosure_coe (s : StarSubalgebra R A) :
