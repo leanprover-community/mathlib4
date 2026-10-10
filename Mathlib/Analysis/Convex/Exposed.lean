@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+public import Mathlib.Topology.Order.Basic
+
+import Mathlib.Topology.Order.DenselyOrdered
 
 import Mathlib.Analysis.Convex.Function
 
@@ -202,6 +206,19 @@ theorem mem_exposedPoints_iff_exposed_singleton : x ∈ A.exposedPoints 𝕜 ↔
     ⟨hl.1.1, l, fun y hy =>
       ⟨hl.1.2 y hy, fun hxy => hl.2 y ⟨hy, fun z hz => (hl.1.2 z hz).trans hxy⟩⟩⟩
 
+variable {F : Type*} [AddCommMonoid F] [TopologicalSpace F] [Module 𝕜 F] in
+/-- Exposed points are preserved by continuous linear equivalences. -/
+theorem ContinuousLinearEquiv.image_exposedPoints (e : E ≃L[𝕜] F) (A : Set E) :
+    e '' A.exposedPoints 𝕜 = (e '' A).exposedPoints 𝕜 := by
+  refine Subset.antisymm ?_ ?_
+  · exact forall_mem_image.mpr fun x ⟨hx, l, hl⟩ ↦
+      ⟨⟨x, hx, rfl⟩, l.comp e.symm.toContinuousLinearMap,
+        forall_mem_image.mpr fun y hy ↦ by simpa using hl y hy⟩
+  · rintro _ ⟨⟨x, hx, rfl⟩, l, hl⟩
+    refine ⟨x, ⟨hx, l.comp e.toContinuousLinearMap, fun y hy ↦ ?_⟩, rfl⟩
+    obtain ⟨h1, h2⟩ := hl (e y) ⟨y, hy, rfl⟩
+    exact ⟨h1, fun h ↦ e.injective (h2 h)⟩
+
 end OrderedRing
 
 section LinearOrderedRing
@@ -237,3 +254,31 @@ theorem exposedPoints_subset_extremePoints : A.exposedPoints 𝕜 ⊆ A.extremeP
   (mem_exposedPoints_iff_exposed_singleton.1 hx).isExtreme.mem_extremePoints
 
 end LinearOrderedRing
+
+section Localization
+
+open Filter Topology
+
+variable {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
+  [OrderTopology 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E]
+  [ContinuousSMul 𝕜 E] {A V : Set E} {x : E}
+
+/-- Being an exposed point of a convex set is a local property: if `V` is a neighborhood of `x`,
+then `x` is an exposed point of `A ∩ V` if and only if it is an exposed point of `A`. -/
+theorem Convex.mem_exposedPoints_inter_iff (hA : Convex 𝕜 A) (hV : V ∈ 𝓝 x) :
+    x ∈ (A ∩ V).exposedPoints 𝕜 ↔ x ∈ A.exposedPoints 𝕜 := by
+  refine ⟨fun ⟨⟨hxA, _⟩, l, hl⟩ ↦ ⟨hxA, l, fun y hy ↦ ?_⟩,
+    fun ⟨hxA, l, hl⟩ ↦ ⟨⟨hxA, mem_of_mem_nhds hV⟩, l, fun y hy ↦ hl y hy.1⟩⟩
+  -- For small `t > 0`, the point `x + t • (y - x)` of the segment `[x, y]` lies in `A ∩ V`.
+  have hlim : Tendsto (fun t : 𝕜 ↦ x + t • (y - x)) (𝓝 0) (𝓝 x) :=
+    Continuous.tendsto' (by fun_prop) 0 x (by simp)
+  obtain ⟨t, ht0, htV, ht1⟩ :=
+    ((hlim.eventually_mem hV).and (eventually_lt_nhds one_pos)).exists_gt
+  obtain ⟨h1, h2⟩ := hl _ ⟨hA.add_smul_sub_mem hxA hy ⟨ht0.le, ht1.le⟩, htV⟩
+  have key : l (x + t • (y - x)) = l x + t * (l y - l x) := by simp
+  rw [key, add_le_iff_nonpos_right] at h1
+  rw [key, le_add_iff_nonneg_right] at h2
+  exact ⟨sub_nonpos.mp (nonpos_of_mul_nonpos_right h1 ht0), fun h ↦ by
+    simpa [ht0.ne', sub_eq_zero] using h2 (mul_nonneg ht0.le (sub_nonneg.mpr h))⟩
+
+end Localization
