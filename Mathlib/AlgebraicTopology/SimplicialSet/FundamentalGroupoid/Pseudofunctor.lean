@@ -55,17 +55,16 @@ lemma mapFundamentalGroupoid_assoc (f₁ : X ⟶ Y) (f₂ : Y ⟶ Z) (f₃ : Z �
 
 namespace FundamentalGroupoid
 
+attribute [local simp] mapFundamentalGroupoid_assoc mapFundamentalGroupoid_id_comp
+  mapFundamentalGroupoid_comp_id in
 /-- The pseudofunctor which sends a simplicial set to its
 fundamental groupoid. -/
 @[simps!]
-def pseudofunctor : LocallyDiscrete SSet.{u} ⥤ᵖ  Cat.{u, u} :=
+def pseudofunctor : LocallyDiscrete SSet.{u} ⥤ᵖ Cat.{u, u} :=
   LocallyDiscrete.mkPseudofunctor (fun X ↦ .of (FundamentalGroupoid X))
     (fun f ↦ (mapFundamentalGroupoid f).toCatHom)
     (fun X ↦ Cat.Hom.isoMk (mapFundamentalGroupoidId X))
     (fun f g ↦ Cat.Hom.isoMk ((mapFundamentalGroupoidComp f g).symm))
-    (fun _ _ _ ↦ by ext : 1; apply mapFundamentalGroupoid_assoc)
-    (fun _ ↦ by ext : 1; apply mapFundamentalGroupoid_id_comp)
-    (fun _ ↦ by ext : 1; apply mapFundamentalGroupoid_comp_id)
 
 end FundamentalGroupoid
 
