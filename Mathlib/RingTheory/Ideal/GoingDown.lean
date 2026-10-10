@@ -158,8 +158,6 @@ instance of_flat [Module.Flat R S] : Algebra.HasGoingDown R S := by
   have : IsLocalHom (algebraMap (Localization.AtPrime <| P.under R) (Localization.AtPrime P)) := by
     rw [RingHom.algebraMap_toAlgebra]
     exact Localization.isLocalHom_localRingHom (P.under R) P (algebraMap R S) Ideal.LiesOver.over
-  have : Module.FaithfullyFlat (Localization.AtPrime (P.under R)) (Localization.AtPrime P) :=
-    Module.FaithfullyFlat.of_flat_of_isLocalHom
   apply PrimeSpectrum.comap_surjective_of_faithfullyFlat
 
 end Algebra.HasGoingDown
