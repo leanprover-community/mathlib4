@@ -46,10 +46,10 @@ namespace Mathlib.Tactic.DeprecateTo
 open Lean Elab Term Command
 
 /-- Produce the syntax for the command `@[deprecated (since := "YYYY-MM-DD")] alias n := id`. -/
-def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := none) :
+def mkDeprecationStx (id : TSyntax `ident) (n : Name) (date : Option String := none) :
     CommandElabM (TSyntax `command) := do
-  let dat ← dat.getDM (toString <$> Std.Time.PlainDate.now)
-  let nd := Syntax.mkStrLit dat
+  let date ← date.getDM (toString <$> Std.Time.PlainDate.now)
+  let nd := Syntax.mkStrLit date
   `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
 
 /-- Returns the array of names that are in `new` but not in `old`. -/
