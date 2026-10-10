@@ -62,6 +62,20 @@ theorem mem_of_mem_tail (v : Vector α n) (ha : a ∈ v.tail.toList) : a ∈ v.t
   | zero => exact False.elim (Vector.notMem_zero a v.tail ha)
   | succ n _ => exact (mem_succ_iff a v).2 (Or.inr ha)
 
+@[simp]
+theorem head_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
+    (hp : ∀ x ∈ v.toList, p x) :
+    (v.pmap f hp).head = f v.head (hp _ v.head_mem) := by
+  obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
+  simp_rw [h, pmap_cons, head_cons]
+
+@[simp]
+theorem tail_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
+    (hp : ∀ x ∈ v.toList, p x) :
+    (v.pmap f hp).tail = v.tail.pmap f (fun x hx ↦ hp _ (v.mem_of_mem_tail x hx)) := by
+  obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
+  simp_rw [h, pmap_cons, tail_cons, Nat.add_one_sub_one]
+
 theorem mem_map_iff (b : β) (v : Vector α n) (f : α → β) :
     b ∈ (v.map f).toList ↔ ∃ a : α, a ∈ v.toList ∧ f a = b := by
   rw [Vector.toList_map, List.mem_map]
