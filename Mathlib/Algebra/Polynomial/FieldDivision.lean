@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
@@ -539,6 +540,9 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
     rw [← mem_roots (by simp [← zero_le_degree_iff, h])]
     simp [roots_degree_eq_one h]⟩
 
+theorem exists_root_of_natDegree_eq_one (h : natDegree p = 1) : ∃ x, IsRoot p x :=
+  exists_root_of_degree_eq_one (degree_eq_iff_natDegree_eq_of_neZero.mpr h)
+
 theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
   rw [eq_C_of_degree_eq_zero (degree_coe_units u), eq_C_of_degree_eq_zero (degree_coe_units u⁻¹),
     coeff_C, coeff_C, inv_eq_one_div]
@@ -695,25 +699,63 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
 
-open UniqueFactorizationMonoid in
+section normalizedFactors
+
+open UniqueFactorizationMonoid
+
 /--
 The normalized factors of a polynomial over a field times its leading coefficient give
 the polynomial.
 -/
-theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
-    C a.leadingCoeff * (normalizedFactors a).prod = a := by
-  by_cases ha : a = 0
-  · simp [ha]
+theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (p : R[X]) :
+    C p.leadingCoeff * (normalizedFactors p).prod = p := by
+  obtain rfl | _ := eq_or_ne p 0
+  · simp
   rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
-    mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
-  simp_all
+    mul_comm, mul_assoc, ← map_mul] <;>
+    simp_all
 
-open UniqueFactorizationMonoid in
 protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
     p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
-  by_cases hp : p = 0
-  · simpa [hp] using zero_notMem_normalizedFactors _
+  obtain rfl | hp := eq_or_ne p 0
+  · simpa using zero_notMem_normalizedFactors _
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
+
+theorem sum_natDegree_normalizedFactors [DecidableEq R] (p : R[X]) :
+    ((normalizedFactors p).map natDegree).sum = p.natDegree := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  nth_rw 2 [← leadingCoeff_mul_prod_normalizedFactors p]
+  rw [natDegree_C_mul (by simp [hp]),
+      natDegree_multiset_prod _ (zero_notMem_normalizedFactors p)]
+
+/-- A polynomial over a field which is not a unit must have a monic irreducible factor.
+See also `WfDvdMonoid.exists_irreducible_factor`. -/
+theorem exists_monic_irreducible_factor (p : R[X]) (hu : ¬IsUnit p) :
+    ∃ q : R[X], q.Monic ∧ Irreducible q ∧ q ∣ p := by
+  classical
+  obtain rfl | hp := eq_or_ne p 0
+  · exact ⟨X, by simp [irreducible_X]⟩
+  rcases exists_mem_normalizedFactors hp hu with ⟨q, hq⟩
+  grind [Polynomial.mem_normalizedFactors_iff]
+
+theorem exists_odd_natDegree_monic_irreducible_factor (p : R[X]) (hp : Odd p.natDegree) :
+    ∃ q : R[X], Odd q.natDegree ∧ q.Monic ∧ Irreducible q ∧ q ∣ p := by
+  classical
+  suffices ∃ q ∈ normalizedFactors p, Odd q.natDegree by
+    grind [Polynomial.mem_normalizedFactors_iff, show p ≠ 0 by grind]
+  contrapose! hp
+  rw [← p.sum_natDegree_normalizedFactors, Multiset.sum_map_eq_sum_toEnumFinset]
+  exact Finset.even_sum _ fun _ hq ↦ hp _ (Multiset.mem_of_mem_toEnumFinset hq)
+
+theorem exists_root_of_odd_natDegree_irreducible_imp_natDegree_eq_one
+    (h : ∀ {q : R[X]}, q.Monic → Odd q.natDegree → Irreducible q → q.natDegree = 1)
+    (p : R[X]) (hp : Odd p.natDegree) : ∃ x, p.IsRoot x := by
+  rcases p.exists_odd_natDegree_monic_irreducible_factor hp with ⟨q, _, _, _, hd⟩
+  rcases q.exists_root_of_natDegree_eq_one (by grind) with ⟨x, hx⟩
+  exact ⟨x, hx.dvd hd⟩
+
+end normalizedFactors
 
 variable (p) in
 @[simp]
