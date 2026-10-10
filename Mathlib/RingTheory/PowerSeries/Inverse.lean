@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
-public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-public import Mathlib.Data.ENat.Lattice
 
 /-! # Formal power series - Inverses
 
@@ -101,7 +99,7 @@ theorem constantCoeff_invOfUnit (φ : R⟦X⟧) (u : Rˣ) :
 @[simp]
 theorem mul_invOfUnit (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff φ = u) :
     φ * invOfUnit φ u = 1 :=
-  MvPowerSeries.mul_invOfUnit φ u <| h
+  MvPowerSeries.mul_invOfUnit φ u h
 
 @[simp]
 theorem invOfUnit_mul (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff φ = u) :
@@ -185,6 +183,9 @@ theorem inv_eq_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff ψ ≠ 0) :
 
 protected theorem mul_inv_rev (φ ψ : k⟦X⟧) : (φ * ψ)⁻¹ = ψ⁻¹ * φ⁻¹ :=
   MvPowerSeries.mul_inv_rev _ _
+
+protected theorem inv_pow (φ : k⟦X⟧) : ∀ n : ℕ, φ⁻¹ ^ n = (φ ^ n)⁻¹ :=
+  MvPowerSeries.inv_pow _
 
 @[simp]
 theorem C_inv (r : k) : (C r)⁻¹ = C r⁻¹ :=

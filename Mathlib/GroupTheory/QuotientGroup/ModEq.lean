@@ -7,8 +7,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.ModEq
-public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Congruence modulo multiples and congruence modulo `AddSubgroup.zmultiples _`

@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.CategoryTheory.SingleObj
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.SingleObj
 
 /-!
 # Category of groupoids
@@ -54,6 +54,11 @@ instance : CoeSort Grpd Type* :=
 def of (C : Type u) [Groupoid.{v} C] : Grpd.{v, u} :=
   Bundled.of C
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CategoryTheory.Grpd.of X` as `↧X`. -/
+@[app_delab CategoryTheory.Grpd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 @[simp]
 theorem coe_of (C : Type u) [Groupoid C] : (of C : Type u) = C :=
   rfl
@@ -75,7 +80,7 @@ def objects : Grpd.{v, u} ⥤ Type u where
 
 /-- Forgetting functor to `Cat` -/
 def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
-  obj C := Cat.of C
+  obj C := ↧C
   map := Functor.toCatHom
 
 instance (X : Grpd) : Groupoid (Grpd.forgetToCat.obj X) := inferInstanceAs (Groupoid X)

@@ -37,6 +37,10 @@ theorem Subalgebra.isIntegral_iff (S : Subalgebra R B) :
   Algebra.isIntegral_def.trans <| .trans
     (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
 
+instance Subalgebra.isIntegral [Algebra.IsIntegral R B] (S : Subalgebra R B) :
+    Algebra.IsIntegral R S :=
+  S.isIntegral_iff.mpr fun x _ => Algebra.IsIntegral.isIntegral x
+
 section
 
 variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
@@ -114,7 +118,7 @@ theorem isIntegral_of_smul_mem_submodule [IsDomain A] {M : Type*} [AddCommGroup 
     change Function.Injective f.toLinearMap
     rw [← LinearMap.ker_eq_bot, eq_bot_iff]
     intro s hs
-    have : s.1 • a = 0 := congr_arg Subtype.val (LinearMap.congr_fun hs ⟨a, ha₁⟩)
+    have : s.1 • a = 0 := congr($hs ⟨a, ha₁⟩)
     exact Subtype.ext ((smul_eq_zero_iff_left ha₂).1 this)
   change IsIntegral R (A'.val ⟨x, hx⟩)
   rw [isIntegral_algHom_iff A'.val Subtype.val_injective, ← isIntegral_algHom_iff f this]
@@ -252,7 +256,7 @@ variable (R A B)
 instance Algebra.IsIntegral.tensorProduct [CommRing B]
     [Algebra R A] [Algebra R B] [int : Algebra.IsIntegral R B] :
     Algebra.IsIntegral A (A ⊗[R] B) where
-  isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
+  isIntegral p := p.inductionOn (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
 
 end TensorProduct
 

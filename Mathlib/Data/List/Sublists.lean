@@ -5,13 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Data.List.Lex
-public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.Prod.Basic
-public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Data.Nat.Choose.Basic
+
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.Prod.Basic
+import Mathlib.Tactic.Finiteness.Attr
 
 /-! # sublists
 
@@ -264,7 +265,7 @@ theorem length_of_sublistsLen :
     rw [sublistsLen_succ_cons, mem_append, mem_map] at h
     rcases h with (h | ⟨l', h, rfl⟩)
     · exact length_of_sublistsLen h
-    · exact congr_arg (· + 1) (length_of_sublistsLen h)
+    · congrm $(length_of_sublistsLen h) + 1
 
 theorem mem_sublistsLen_self {l l' : List α} (h : l' <+ l) :
     l' ∈ sublistsLen (length l') l := by

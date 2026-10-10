@@ -6,8 +6,9 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.CategoryTheory.HomCongr
+
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Reflective functors
@@ -171,7 +172,7 @@ defined by the reflector. -/
 def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
   functor := i.toEssImage
   inverse := i.essImage.ι ⋙ reflector i
-  unitIso := (asIso <| (reflectorAdjunction i).counit).symm
+  unitIso := (asIso (reflectorAdjunction i).counit).symm
   counitIso := Functor.fullyFaithfulCancelRight i.essImage.ι <|
     NatIso.ofComponents (fun X ↦ (asIso ((reflectorAdjunction i).unit.app X.obj)).symm)
 
