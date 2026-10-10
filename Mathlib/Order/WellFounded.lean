@@ -81,9 +81,8 @@ theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α �
     [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
   __ := hf.trichotomous_onFun r
 
-theorem map {f : α → β} : WellFounded (Relation.Map r f f) → WellFounded r := by
-  simp_rw [wellFounded_iff_isEmpty_descending_chain]
-  exact fun ⟨h⟩ ↦ ⟨fun c ↦ h ⟨f ∘ c.val, by grind⟩⟩
+theorem map {f : α → β} : WellFounded (Relation.Map r f f) → WellFounded r :=
+  fun h => (InvImage.wf f h).mono (Relation.le_onFun_map f)
 
 theorem map_iff {f : α → β} (hf : f.Injective) :
     WellFounded (Relation.Map r f f) ↔ WellFounded r := by
