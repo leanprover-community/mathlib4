@@ -5,8 +5,8 @@ Authors: Anne Baanen, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Pi instances for NoZeroSMulDivisors

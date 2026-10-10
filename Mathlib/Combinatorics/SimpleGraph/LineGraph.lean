@@ -79,6 +79,4 @@ theorem map_lineGraph_le_of_le {G' : SimpleGraph V} (h : G ≤ G') :
   rintro _ _ ⟨hne', ⟨⟨⟩, h₁⟩, ⟨⟨⟩, h₂⟩, ⟨hne, hinter⟩, rfl, rfl⟩
   exact ⟨hne', ⟨⟨_, h h₁⟩, ⟨_, h h₂⟩, ⟨(hne <| Subtype.ext <| Subtype.mk.inj ·), hinter⟩, rfl, rfl⟩⟩
 
-@[deprecated (since := "2026-03-26")] alias IsSubgraph.lineGraph := map_lineGraph_le_of_le
-
 end SimpleGraph

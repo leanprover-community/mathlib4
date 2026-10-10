@@ -5,8 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Prod
 public import Mathlib.MeasureTheory.Group.LIntegral
+public import Mathlib.MeasureTheory.Group.Prod
 
 /-!
 # Convolution of functions using the Lebesgue integral

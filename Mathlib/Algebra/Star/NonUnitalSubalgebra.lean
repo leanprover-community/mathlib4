@@ -6,10 +6,10 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Algebra.Star.Center
-public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.Prod
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.StarAlgHom
 
 /-!
 # Non-unital Star Subalgebras
@@ -1288,39 +1288,12 @@ instance isMulCommutative_adjoin_singleton (a : A) [IsStarNormal a] :
     IsMulCommutative (adjoin R ({a} : Set A)) :=
   isMulCommutative_adjoin R (by simpa) (by simp) (by simp)
 
-open scoped IsMulCommutative in
-variable (R) in
-/-- If all elements of `s : Set A` are normal, commute pairwise, and commute pairwise with the
-`star` of elements in this set, then `adjoin R s` is a non-unital commutative semiring.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
-    (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
-    NonUnitalCommSemiring (adjoin R s) :=
-  have := isMulCommutative_adjoin R hnormal hcomm hcomm_star
-  inferInstance
-
 instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] [StarMemClass S A]
     (s : S) [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
   isMulCommutative_adjoin R
     (fun _ h ↦ ⟨setLike_mul_comm (star_mem h) h⟩)
     (fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂)
     (fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ (star_mem h₂))
-
-open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` are normal, commute pairwise, and commute pairwise with the
-`star` of elements in this set, then `adjoin R s` is a non-unital commutative ring.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [StarRing R]
-    [NonUnitalRing A] [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-    [StarModule R A] {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
-    (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
-    NonUnitalCommRing (adjoin R s) :=
-  have := isMulCommutative_adjoin R hnormal hcomm hcomm_star
-  inferInstance
 
 instance isMulCommutative_toNonUnitalSubalgebra (S : NonUnitalStarSubalgebra R A)
     [IsMulCommutative S] : IsMulCommutative S.toNonUnitalSubalgebra :=

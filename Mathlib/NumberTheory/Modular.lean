@@ -790,13 +790,6 @@ where `z : ℍ` and `g : SL(2, ℤ)`, then `g = ±1`. -/
 theorem eq_one_or_neg_one_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g = 1 ∨ g = -1 :=
   eq_one_or_neg_one_of_mem_fdo_mem_fd hz (fdo_subset_fd hg)
 
-/-- This was previously an auxiliary result en route to
-`ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`. It is now deprecated, since the proof has been
-refactored so this step is no longer needed. -/
-@[deprecated eq_one_or_neg_one_of_mem_fdo_mem_fdo +typeChanged (since := "2026-03-19")]
-theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 := by
-  rcases eq_one_or_neg_one_of_mem_fdo_mem_fdo hz hg with rfl | rfl <;> rfl
-
 /-- Second Fundamental Domain Lemma: if both `z` and `g • z` are in the open domain `𝒟ᵒ`,
 where `z : ℍ` and `g : SL(2, ℤ)`, then `z = g • z`. -/
 theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : z = g • z := by

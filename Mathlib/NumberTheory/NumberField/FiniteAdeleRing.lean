@@ -6,8 +6,8 @@ Authors: Salvatore Mercuri
 
 module
 
-public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.ProductFormula
+public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
