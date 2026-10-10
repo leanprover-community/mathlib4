@@ -468,6 +468,10 @@ theorem single_eq_same {i b} : (single i b : Π₀ i, β i) i = b := by
 theorem single_eq_of_ne {i i' b} (h : i' ≠ i) : (single i b : Π₀ i, β i) i' = 0 := by
   grind
 
+theorem eq_single_iff {f : Π₀ i, β i} {i : ι} {b : β i} :
+    f = single i b ↔ (∀ j ≠ i, f j = 0) ∧ f i = b := by
+  grind
+
 theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, β i) := fun _ _ H =>
   Pi.single_injective i <| DFunLike.coe_injective.eq_iff.mpr H
 
