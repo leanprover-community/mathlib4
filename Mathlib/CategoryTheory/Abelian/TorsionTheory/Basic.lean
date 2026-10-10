@@ -93,7 +93,7 @@ lemma torsion_iff (hTF : TorsionTheory T F) (X : C) :
 
 /-- An object of a torsion theory is torsion-free iff every morphism to it from a torsion
 object vanishes. -/
-lemma free_iff (hTF : TorsionTheory T F) (Y : C) :
+lemma torsionFree_iff (hTF : TorsionTheory T F) (Y : C) :
     F Y ↔ ∀ ⦃X : C⦄ (f : X ⟶ Y), T X → f = 0 :=
   hTF.rightOrthogonal_eq ▸ Iff.rfl
 
@@ -144,15 +144,15 @@ lemma torsion_isClosedUnderCoproducts (hTF : TorsionTheory T F) (J : Type w) :
   hTF.leftOrthogonal_eq ▸ inferInstance
 
 /-- The torsion-free class of a torsion theory is closed under subobjects. -/
-lemma free_isClosedUnderSubobjects (hTF : TorsionTheory T F) : F.IsClosedUnderSubobjects :=
+lemma torsionFree_isClosedUnderSubobjects (hTF : TorsionTheory T F) : F.IsClosedUnderSubobjects :=
   hTF.rightOrthogonal_eq ▸ inferInstance
 
 /-- The torsion-free class of a torsion theory is closed under extensions. -/
-lemma free_isClosedUnderExtensions (hTF : TorsionTheory T F) : F.IsClosedUnderExtensions :=
+lemma torsionFree_isClosedUnderExtensions (hTF : TorsionTheory T F) : F.IsClosedUnderExtensions :=
   hTF.rightOrthogonal_eq ▸ inferInstance
 
 /-- The torsion-free class of a torsion theory is closed under products. -/
-lemma free_isClosedUnderProducts (hTF : TorsionTheory T F) (J : Type w) :
+lemma torsionFree_isClosedUnderProducts (hTF : TorsionTheory T F) (J : Type w) :
     F.IsClosedUnderLimitsOfShape (Discrete J) :=
   hTF.rightOrthogonal_eq ▸ inferInstance
 
@@ -220,10 +220,10 @@ lemma torsionTheory : TorsionTheory P.leftOrthogonal P :=
   ⟨rfl, ((isTorsionFreeClass_iff_rightOrthogonal_leftOrthogonal_eq P).mp inferInstance)⟩
 
 /-- A torsion-free class is closed under subobjects. -/
-instance : P.IsClosedUnderSubobjects := (torsionTheory P).free_isClosedUnderSubobjects
+instance : P.IsClosedUnderSubobjects := (torsionTheory P).torsionFree_isClosedUnderSubobjects
 
 /-- A torsion-free class is closed under extensions. -/
-instance : P.IsClosedUnderExtensions := (torsionTheory P).free_isClosedUnderExtensions
+instance : P.IsClosedUnderExtensions := (torsionTheory P).torsionFree_isClosedUnderExtensions
 
 /-- A torsion-free class is closed under limits of any shape, not only products. -/
 instance {J : Type u'} [Category.{v'} J] : P.IsClosedUnderLimitsOfShape J :=
