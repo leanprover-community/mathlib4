@@ -325,7 +325,8 @@ induced by a natural transformation `L' ⟶ L ⋙ G'`. -/
 def LeftExtension.postcomp₁ (f : L' ⟶ L ⋙ G) (F : C ⥤ H) :
     LeftExtension L' F ⥤ LeftExtension L F :=
   StructuredArrow.map₂ (F := (whiskeringLeft D D' H).obj G) (G := 𝟭 _) (𝟙 _)
-    ((whiskeringLeft C D' H).map f)
+    ((Functor.rightUnitor _).hom ≫ (whiskeringLeft C D' H).map f ≫
+      (whiskeringLeftObjCompIso L G).hom)
 
 /-- The functor `RightExtension L' F ⥤ RightExtension L F`
 induced by a natural transformation `L ⋙ G ⟶ L'`. -/
@@ -333,7 +334,8 @@ induced by a natural transformation `L ⋙ G ⟶ L'`. -/
 def RightExtension.postcomp₁ (f : L ⋙ G ⟶ L') (F : C ⥤ H) :
     RightExtension L' F ⥤ RightExtension L F :=
   CostructuredArrow.map₂ (F := (whiskeringLeft D D' H).obj G) (G := 𝟭 _)
-    ((whiskeringLeft C D' H).map f) (𝟙 _)
+    ((whiskeringLeftObjCompIso L G).inv ≫ (whiskeringLeft C D' H).map f ≫
+      (Functor.rightUnitor _).inv) (𝟙 _)
 
 variable [IsEquivalence G]
 
@@ -465,13 +467,15 @@ variable (L : C ⥤ D) (F : C ⥤ H) (F' : D ⥤ H) (G : C' ⥤ C)
 obtained by precomposition. -/
 @[simps!, implicit_reducible]
 def LeftExtension.precomp : LeftExtension L F ⥤ LeftExtension (G ⋙ L) (G ⋙ F) :=
-  StructuredArrow.map₂ (F := 𝟭 _) (G := (whiskeringLeft C' C H).obj G) (𝟙 _) (𝟙 _)
+  StructuredArrow.map₂ (F := 𝟭 _) (G := (whiskeringLeft C' C H).obj G) (𝟙 _)
+    ((whiskeringLeftObjCompIso G L).inv ≫ (Functor.leftUnitor _).inv)
 
 /-- The functor `RightExtension L F ⥤ RightExtension (G ⋙ L) (G ⋙ F)`
 obtained by precomposition. -/
 @[simps!, implicit_reducible]
 def RightExtension.precomp : RightExtension L F ⥤ RightExtension (G ⋙ L) (G ⋙ F) :=
-  CostructuredArrow.map₂ (F := 𝟭 _) (G := (whiskeringLeft C' C H).obj G) (𝟙 _) (𝟙 _)
+  CostructuredArrow.map₂ (F := 𝟭 _) (G := (whiskeringLeft C' C H).obj G)
+    ((Functor.leftUnitor _).hom ≫ (whiskeringLeftObjCompIso G L).hom) (𝟙 _)
 
 variable [IsEquivalence G]
 
@@ -806,7 +810,8 @@ lemma isLeftKanExtension_iff_precomp_equivalence
   let Φ : L₂.LeftExtension F₂ ⥤ L₁.LeftExtension F₁ :=
     StructuredArrow.map₂ (F := (whiskeringLeft _ _ _).obj G')
       (G := (whiskeringLeft _ _ _).obj G) e.hom
-        ((whiskeringLeft C D' H).mapIso iso).hom
+        ((whiskeringLeftObjCompIso G L₂).inv ≫ ((whiskeringLeft C D' H).mapIso iso).hom ≫
+          (whiskeringLeftObjCompIso L₁ G').hom)
   exact Equiv.nonempty_congr ((IsInitial.isInitialIffObj Φ _).trans
     (IsInitial.equivOfIso (StructuredArrow.isoMk e')))
 
@@ -822,7 +827,8 @@ lemma isRightKanExtension_iff_precomp_equivalence
   let Φ : L₂.RightExtension F₂ ⥤ L₁.RightExtension F₁ :=
     CostructuredArrow.map₂ (F := (whiskeringLeft _ _ _).obj G')
       (G := (whiskeringLeft _ _ _).obj G)
-      ((whiskeringLeft C D' H).mapIso iso).inv e.inv
+      ((whiskeringLeftObjCompIso L₁ G').inv ≫ ((whiskeringLeft C D' H).mapIso iso).inv ≫
+        (whiskeringLeftObjCompIso G L₂).hom) e.inv
   exact Equiv.nonempty_congr ((IsTerminal.isTerminalIffObj Φ _).trans
     (IsTerminal.equivOfIso (CostructuredArrow.isoMk e'.symm).symm))
 
