@@ -106,6 +106,16 @@ theorem domRestrict_range (f : G →* N) : (f.domRestrict K).range = K.map f := 
 @[deprecated (since := "2026-07-19")]
 alias _root_.AddMonoidHom.restrict_range := _root_.AddMonoidHom.domRestrict_range
 
+@[to_additive]
+lemma subtype_comp_range_le {K : Subgroup N} (f : G →* K) : (K.subtype.comp f).range ≤ K := by
+  rintro _ ⟨g, rfl⟩
+  exact SetLike.coe_mem <| f g
+
+@[to_additive]
+lemma subtype_comp_range_eq {K : Subgroup N} {f : G →* K} (hf : Function.Surjective f) :
+    (K.subtype.comp f).range = K :=
+  (subtype_comp_range_le f).antisymm fun x hx => ⟨_, Subtype.ext_iff.mp (hf ⟨x, hx⟩).choose_spec⟩
+
 /-- The canonical surjective group homomorphism `G →* f(G)` induced by a group
 homomorphism `G →* N`. -/
 @[to_additive
