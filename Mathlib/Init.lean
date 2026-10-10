@@ -14,7 +14,6 @@ public import Lean.Linter.Sets -- for the definition of linter sets
 public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.DeclType
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
@@ -29,9 +28,9 @@ public import Mathlib.Tactic.Linter.InternalConstructor
 -- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
 public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.Multigoal
-public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
+public import Mathlib.Tactic.Linter.SyntaxBased
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.UnusedTactic
 -- The following import contains the environment extension for the unused tactic linter.
@@ -133,7 +132,7 @@ register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.verifyGrindOnly
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
-open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType AuxLemma
+open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
 
 run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=
