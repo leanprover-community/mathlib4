@@ -128,11 +128,7 @@ lemma zpow_left_injective (hn : n ≠ 0) : Injective fun a : G ↦ a ^ n := by
 lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   (zpow_left_injective hn).eq_iff
 
-/-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`. -/
-@[to_additive /-- Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'`
-and `zsmul_lt_zsmul_iff'`. -/]
-lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
+@[to_additive (attr := deprecated (since := "2026-09-30"))] alias zpow_eq_zpow_iff' := zpow_left_inj
 
 end HasUniqueRoots
 

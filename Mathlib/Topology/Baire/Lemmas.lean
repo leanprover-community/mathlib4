@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Topology.GDelta.Basic
+
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Topology.Constructions
-public import Mathlib.Topology.GDelta.Basic
 import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
@@ -33,8 +34,6 @@ We also prove that in Baire spaces, the `residual` sets are exactly those contai
 
 public section
 
-
-noncomputable section
 
 open scoped Topology
 open Filter Set TopologicalSpace

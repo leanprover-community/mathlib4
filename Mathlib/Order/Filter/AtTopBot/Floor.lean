@@ -6,8 +6,9 @@ Authors: Yuyang Zhao
 module
 
 public import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Order.Filter.AtTopBot.Finite
+
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Tactic.Positivity.Basic
 
 /-!

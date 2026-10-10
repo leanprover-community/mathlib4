@@ -6,6 +6,7 @@ Authors: Kevin H. Wilson
 module
 
 public import Mathlib.Analysis.Calculus.MeanValue
+
 import Mathlib.Analysis.Normed.Module.RCLike.Basic
 
 /-!

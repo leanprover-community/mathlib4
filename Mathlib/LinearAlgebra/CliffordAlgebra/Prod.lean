@@ -6,8 +6,8 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 public import Mathlib.LinearAlgebra.QuadraticForm.Prod
+public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 
 /-!
 # Clifford algebras of a direct sum of two vector spaces

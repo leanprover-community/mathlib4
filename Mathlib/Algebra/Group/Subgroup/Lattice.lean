@@ -5,8 +5,8 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Submonoid.Operations
 
 /-!
 # Lattice structure of subgroups

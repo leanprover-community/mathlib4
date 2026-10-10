@@ -5,10 +5,11 @@ Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
 module
 
+public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
+
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Congruence.Hom
 import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 
 /-! # Polynomial laws on modules
 
@@ -55,7 +56,7 @@ only assumes `R` is a commutative semiring.
 ## References
 
 * [Roby, Norbert. 1963. «Lois polynomes et lois formelles en théorie des modules».
-  Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
+  Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348][Roby-1963]
 
 -/
 
