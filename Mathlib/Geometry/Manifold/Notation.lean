@@ -263,6 +263,17 @@ private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Ex
       which is not the identity"
   | _ => throwError "`{e}` is not a space of continuous linear maps"
 
+/-- Check if an expression `e` is a `ContinuousAlternatingMap` .
+If so, we return `(R, M, N, ι)`, where `R` is the coefficient ring, `ι → M` is the domain, and
+`N` is the codomain of the continuous alternating linear maps. Otherwise, we error.
+Assumes that `e` is already in `whnf` and has had metavariables instantiated. -/
+private def isContAlternatingMaps (e : Expr) : TermElabM <| Expr × Expr × Expr × Expr := do
+  match_expr e with
+  | ContinuousAlternatingMap R M N ι _ _ _ _ _ _ _ =>
+    trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous alternating maps"
+    return (R, M, N, ι)
+  | _ => throwError "`{e}` is not a space of continuous alternating maps"
+
 /--
 Captures information when a model with corners is the trivial model on a normed space
 (or on an inner product space, which is also a normed space):
@@ -343,9 +354,15 @@ partial def guessBaseFieldForNormedSpace (e : Expr) : TermElabM <| Option Expr :
   | _ =>
     try
       let (_k, E, _F) ← isCLMReduciblyDefeqCoefficients e
+      -- XXX: can we just return `_k` directly instead?
       guessBaseFieldForNormedSpace E
     catch _e =>
-      findFromLocalInstance e
+      -- TODO: should we also look for continuous alternating maps?
+      -- try
+      --   let (R, M, N, ι) ← isContAlternatingMaps e
+      --   guessBaseFieldForNormedSpace
+      -- catch _e =>
+        findFromLocalInstance e
 where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
   findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
     match_expr type with
@@ -392,6 +409,7 @@ partial def findModelInner (e : Expr) : TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy "NormedSpace"         fromNormedSpace     then return some m
   if let some m ← tryStrategy "Manifold"            fromManifold        then return some m
   if let some m ← tryStrategy "ContinuousLinearMap" fromCLM             then return some m
+  if let some m ← tryStrategy "ContinuousAlternatingMap" fromCAM        then return some m
   if let some m ← tryStrategy "RealInterval"        fromRealInterval    then return some m
   if let some m ← tryStrategy "EuclideanSpace"      fromEuclideanSpace  then return some m
   if let some m ← tryStrategy "UpperHalfPlane"      fromUpperHalfPlane  then return some m
@@ -553,6 +571,10 @@ where
     -- Therefore, we only check definitional equality at reducible transparency.
     let (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
     mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
+  /-- Attempt to find a model with corners on a space of continuous alternating linear maps -/
+  fromCAM : TermElabM Expr := do
+    let (R, _M, _N, _ι) ← isContAlternatingMaps e
+    mkAppOptM ``modelWithCornersSelf #[R, none, e, none, none]
   /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
   fromEuclideanSpace : TermElabM Expr := do
     if let some m ← tryFromEuclideanSpace e then return m else
