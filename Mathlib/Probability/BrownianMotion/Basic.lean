@@ -9,7 +9,6 @@ public import Mathlib.Probability.BrownianMotion.GaussianProjectiveFamily
 public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
 public import Mathlib.Probability.Independence.Process.HasIndepIncrements.Basic
 
-import Mathlib.Probability.Distributions.Gaussian.CharFun
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
@@ -266,13 +265,13 @@ lemma IsPreBrownianReal.indepFun_shift (hB : IsPreBrownianReal B P) (t₀ : ℝ�
           map_add' x y := by simp
           map_smul' c x := by simp }, by simp⟩
   any_goals fun_prop
-  · rintro s ⟨t, ht : t ≤ t₀⟩
-    have := hB.isGaussianProcess.isProbabilityMeasure
-    rw [covariance_fun_sub_left, hB.covariance_eval, hB.covariance_eval, min_eq_right, min_eq_right,
-      sub_self]
-    · grind
-    · simp [ht, le_add_right]
-    all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
+  rintro s ⟨t, ht : t ≤ t₀⟩
+  have := hB.isGaussianProcess.isProbabilityMeasure
+  rw [covariance_fun_sub_left, hB.covariance_eval, hB.covariance_eval, min_eq_right, min_eq_right,
+    sub_self]
+  · grind
+  · simp [ht, le_add_right]
+  all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
 
 /-- If `B` is a pre-Brownian motion then `t ↦ t * B (1 / t)` is a pre-Brownian motion. -/
 lemma IsPreBrownianReal.inv (hB : IsPreBrownianReal B P) :

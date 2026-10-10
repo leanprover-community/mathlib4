@@ -6,8 +6,8 @@ Authors: Jireh Loreaux, Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.Interval.Set.SuccPred
-public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Order topologies of successor or predecessor orders
@@ -32,10 +32,10 @@ variable [SuccOrder α]
 theorem isOpen_singleton_of_not_isSuccPrelimit (ha : ¬ IsSuccPrelimit a) : IsOpen {a} := by
   obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff.1 ha
   by_cases ha' : IsMax a
-  · convert! isOpen_Ioi (a := b) using 1
+  · convert isOpen_Ioi (a := b) using 1
     rw [hb.Ioi_eq]
     grind [IsMax]
-  · convert! isOpen_Ioo (a := b) (b := Order.succ a) using 1
+  · convert isOpen_Ioo (a := b) (b := Order.succ a) using 1
     simp [(covBy_succ_of_not_isMax ha').Ioo_eq_Ioc, hb.Ioc_eq]
 
 variable [NoMaxOrder α]
@@ -51,7 +51,7 @@ theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
     simp only [mem_Ioo, subset_singleton_iff] at h₁ h₂
     exact h₂ _ ⟨lt_succ l, h₁.1.succ_le.trans_lt h₁.2⟩
   · obtain (ha | ha) := not_isSuccLimit_iff.mp ha
-    · convert! isOpen_Iio (a := Order.succ a) using 1
+    · convert isOpen_Iio (a := Order.succ a) using 1
       simp [ha.Iic_eq]
     · exact isOpen_singleton_of_not_isSuccPrelimit ha
 

@@ -53,7 +53,7 @@ lemma exists_apply_ne_one_aux
     exact (MulEquiv.map_eq_one_iff e).mp <| funext ha
   obtain ⟨φi, hφi⟩ := H (n i) (dvd_exponent e i) ((e a i).toAdd) hi
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
-  simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using! hφi
+  simpa only [coe_comp, coe_ofClass, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using! hφi
 
 variable [hM : HasEnoughRootsOfUnity M (Monoid.exponent G)]
 
@@ -65,7 +65,7 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity {a : G} (ha : a ≠ 1) :
   refine exists_apply_ne_one_aux G Mˣ (fun n hn a ha₀ ↦ ?_) ha
   have : NeZero n := ⟨fun H ↦ NeZero.ne _ <| Nat.eq_zero_of_zero_dvd (H ▸ hn)⟩
   have := HasEnoughRootsOfUnity.of_dvd M hn
-  exact ZMod.exists_monoidHom_apply_ne_one (HasEnoughRootsOfUnity.exists_primitiveRoot M n) ha₀
+  exact ZMod.exists_monoidHom_apply_ne_one (HasEnoughRootsOfUnity.exists_isPrimitiveRoot M n) ha₀
 
 variable {M} in
 @[simp]
@@ -178,7 +178,7 @@ noncomputable def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup 
   invFun Φ := (monoidHomMonoidHomEquiv G M).mapSubgroup (domRestrictHom Φ.ofDual Mˣ).ker
   map_rel_iff' {H₁} {H₂} := by
     simp_rw [Equiv.coe_fn_mk, OrderDual.toDual_le_toDual,
-      SetLike.le_def, mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff]
+      IsConcreteLE.le_iff, mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff]
     grind [forall_monoidHom_apply_eq_one_iff M H₂]
   left_inv H := by
     ext x

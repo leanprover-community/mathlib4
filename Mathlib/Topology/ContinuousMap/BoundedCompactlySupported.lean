@@ -50,10 +50,10 @@ lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)
 theorem norm_lt_iff_of_compactlySupported {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) {M : ℝ}
     (M0 : 0 < M) : ‖f‖ < M ↔ ∀ (x : α), ‖f x‖ < M := by
   refine ⟨fun hn x ↦ lt_of_le_of_lt (norm_coe_le_norm f x) hn, ?_⟩
-  · obtain (he | he) := isEmpty_or_nonempty α
-    · simpa
-    · obtain ⟨x, hx⟩ := exist_norm_eq h
-      exact fun h ↦ hx ▸ h x
+  obtain (he | he) := isEmpty_or_nonempty α
+  · simpa
+  · obtain ⟨x, hx⟩ := exist_norm_eq h
+    exact fun h ↦ hx ▸ h x
 
 theorem norm_lt_iff_of_nonempty_compactlySupported [c : Nonempty α] {f : α →ᵇ γ}
     (h : f ∈ C_cb(α, γ)) {M : ℝ} : ‖f‖ < M ↔ ∀ (x : α), ‖f x‖ < M := by
@@ -86,7 +86,7 @@ def ofCompactSupport (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCompactS
   map_bounded' := by
     obtain (hs | hs) := (tsupport g).eq_empty_or_nonempty
     · exact ⟨0, by simp [tsupport_eq_empty_iff.mp hs]⟩
-    · obtain ⟨z, _, hmax⟩ := hg₂.exists_isMaxOn hs <| hg₁.norm.continuousOn
+    · obtain ⟨z, _, hmax⟩ := hg₂.exists_isMaxOn hs hg₁.norm.continuousOn
       refine ⟨2 * ‖g z‖, dist_le_two_norm' fun x ↦ ?_⟩
       by_cases hx : x ∈ tsupport g
       · exact isMaxOn_iff.mp hmax x hx

@@ -240,8 +240,8 @@ theorem succAbove_cycleRange (i j : Fin n) :
     · rw [Fin.lt_def]
       simpa [this] using hlt
   · rw [heq, Fin.cycleRange_self, Fin.succAbove_of_castSucc_lt, swap_apply_right, Fin.castSucc_zero]
-    · rw [Fin.castSucc_zero]
-      apply Fin.succ_pos
+    rw [Fin.castSucc_zero]
+    apply Fin.succ_pos
   · rw [Fin.cycleRange_of_gt hgt, Fin.succAbove_of_le_castSucc, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · apply (Fin.succ_injective _).ne hgt.ne.symm
@@ -377,7 +377,7 @@ theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
       simp [range_natAdd_castLEEmb]; lia
     have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
       = subNat i.1 (k.cast (by lia)) (by simp; lia) := by
-      simpa [symm_apply_eq] using eq_of_val_eq (by simp; lia)
+      simpa [-Function.Embedding.coe_trans, symm_apply_eq] using eq_of_val_eq (by simp; lia)
     simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this,
       Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply]
     rw [cycleRange_of_gt]
@@ -394,7 +394,7 @@ theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
     simp [range_natAdd_castLEEmb]; lia
   have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
       = subNat i.1 (k.cast (by lia)) (by simp; lia) := by
-    simpa [symm_apply_eq] using eq_of_val_eq (by simp; lia)
+    simpa [-Function.Embedding.coe_trans, symm_apply_eq] using eq_of_val_eq (by simp; lia)
   simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this, Function.Embedding.trans_apply,
     addNatEmb_apply, coe_toEmbedding, finCongr_apply]
   refine eq_of_val_eq ?_
@@ -473,8 +473,7 @@ theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
   · simp [cycleIcc_of_gt (lt_of_le_of_lt hjk ch), cycleIcc_of_gt ch]
   rcases lt_or_ge x j with ch2 | ch2
   · simp [cycleIcc_of_lt ch2, cycleIcc_of_le_of_le ch ch1, cycleIcc_of_le_of_le ch (le_of_lt ch2)]
-    split_ifs
-    repeat lia
+    split_ifs <;> lia
   · simp only [Function.comp_apply, cycleIcc_of_le_of_le ch2 ch1, cycleIcc_of_le_of_le ch ch1]
     split_ifs with h
     · exact val_eq_of_eq (cycleIcc_of_last hij)
@@ -538,9 +537,9 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
 theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
     (σ : Equiv.Perm (Fin n)) {f : Fin n → Fin n → R} (hf : ∀ i j, f i j = -f j i) :
     ∏ i, ∏ j ∈ Finset.Ioi i, f (σ i) (σ j) = σ.sign * ∏ i, ∏ j ∈ Finset.Ioi i, f i j := by
-  convert! σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
+  convert σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
   · apply Finset.prod_comm' (by simp)
-  convert! rfl using 2
+  convert rfl using 2
   apply Finset.prod_comm' (by simp)
 
 end Sign
@@ -583,10 +582,10 @@ lemma decomposeFin'Symm_uncurry_bijective :
     Function.Bijective (decomposeFin'Symm (n := n)).uncurry := by
   rw [Nat.bijective_iff_injective_and_card]
   refine ⟨fun ⟨i, σ⟩ ⟨i', σ'⟩ h ↦ ?_, ?_⟩
-  · obtain rfl : i = i' := by simpa using DFunLike.congr_fun h 0
+  · obtain rfl : i = i' := by simpa using congr($h 0)
     obtain rfl : σ = σ' := by
       ext j : 1
-      simpa using DFunLike.congr_fun h j.succ
+      simpa using congr($h j.succ)
     rfl
   · rw [Nat.card_prod, Nat.card_perm, Nat.card_perm, Nat.card_eq_fintype_card,
       Nat.card_eq_fintype_card, Fintype.card_fin, Fintype.card_fin,

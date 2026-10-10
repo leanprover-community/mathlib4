@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 /-!
 
 # The simplicial nerve of a simplicial category
@@ -139,9 +138,6 @@ abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.left_le k hk),
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
   map f := ⟨⟨⟨Set.image_mono f.1.1.1⟩⟩⟩
-
-@[deprecated "No replacement, was using a bad instance" (since := "01-12-2026")]
-alias orderHom := functorMap
 
 attribute [local simp] nerveMap_app
 

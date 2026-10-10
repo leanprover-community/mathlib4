@@ -5,14 +5,13 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Int
 public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.RelSeries
-public import Mathlib.Tactic.FinCases
 
 import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Tactic.FinCases
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -200,13 +199,13 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
   · let p' := p.eraseLast.snoc x (by
       apply lt_of_lt_of_le
       · apply p.step ⟨p.length - 1, by lia⟩
-      · convert! hlast
+      · convert hlast
         simp only [Fin.succ_mk, RelSeries.last, Fin.last]
         congr; lia)
     suffices p'.length ≤ height x by
       simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.natCast_sub,
         Nat.cast_one, p'] at this
-      convert! this
+      convert this
       norm_cast
       lia
     refine le_iSup₂_of_le p' ?_ le_rfl
@@ -624,9 +623,9 @@ lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
   refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
     fun i ↦ by obtain rfl := Subsingleton.elim i 0; simpa⟩).not_gt (by simp), ?_⟩
-  · rintro H ⟨_ | n, l, h⟩
-    · simp
-    · cases H (l 0) (l 1) (h 0)
+  rintro H ⟨_ | n, l, h⟩
+  · simp
+  · cases H (l 0) (l 1) (h 0)
 
 lemma krullDim_nonpos_iff_forall_isMin : krullDim α ≤ 0 ↔ ∀ x : α, IsMin x := by
   simp only [krullDim_nonpos_iff_forall_isMax, IsMax, IsMin]
@@ -885,7 +884,7 @@ lemma height_eq_krullDim_Iic (x : α) : (height x : ℕ∞) = krullDim (Set.Iic 
     exact le_iSup (fun p ↦ (p.length : ℕ∞)) q
   · apply iSup_le; intro p; apply iSup_le; intro _
     have mono : StrictMono (fun (y : Set.Iic x) ↦ y.1) := fun _ _ h ↦ h
-    rw [← LTSeries.map_length p (fun x ↦ x.1) mono, ]
+    rw [← LTSeries.map_length p (fun x ↦ x.1) mono]
     refine le_iSup₂ (f := fun p hp ↦ (p.length : ℕ∞)) (p.map (fun x ↦ x.1) mono) ?_
     exact (p.toFun (Fin.last p.length)).2
 

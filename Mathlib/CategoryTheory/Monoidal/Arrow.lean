@@ -6,8 +6,9 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
-public import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
+
+import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 
 /-!
 # Monoidal structure on the arrow category of a cartesian closed category.
