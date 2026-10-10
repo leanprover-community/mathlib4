@@ -107,7 +107,6 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
       P.costructuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesColimitsOfShape J L] [HasColimitsOfShape J A]
     (c : ∀ (D : J ⥤ T) [HasColimit D], Cocone D)
@@ -189,7 +188,6 @@ instance StructuredArrow.closedUnderColimitsOfShape_discrete_empty [L.Faithful] 
       P.structuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma StructuredArrow.isClosedUnderLimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesLimitsOfShape J L] [HasLimitsOfShape J A]
     (c : ∀ (D : J ⥤ T) [HasLimit D], Cone D)
@@ -271,9 +269,9 @@ instance [P.ContainsIdentities] (Y : P.Over ⊤ X) :
   default := Over.homMk Y.hom
   uniq a := by
     ext
-    · simp only [mk_left, homMk_hom, Over.homMk_left]
-      rw [← Over.w a]
-      simp only [mk_left, Functor.const_obj_obj, mk_hom, Category.comp_id]
+    simp only [mk_left, homMk_hom, Over.homMk_left]
+    rw [← Over.w a]
+    simp only [mk_left, Functor.const_obj_obj, mk_hom, Category.comp_id]
 
 /-- `X ⟶ X` is the terminal object of `P.Over ⊤ X`. -/
 def mkIdTerminal [P.ContainsIdentities] :

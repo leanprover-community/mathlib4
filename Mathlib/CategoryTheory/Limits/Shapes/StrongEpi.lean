@@ -105,7 +105,6 @@ instance (priority := 100) strongEpi_of_isIso [IsIso f] : StrongEpi f where
   epi := by infer_instance
   llp {_ _} _ := HasLiftingProperty.of_left_iso _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual]
 theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongEpi f] : StrongEpi g where

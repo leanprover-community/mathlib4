@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Sara Rousta
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.UpperLower.Basic
 
 /-!
@@ -124,6 +124,12 @@ theorem coe_subset_coe : (s : Set α) ⊆ t ↔ t ≤ s :=
 
 @[to_dual (attr := simp 1100, norm_cast)]
 lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ t < s := Iff.rfl
+
+@[to_dual (attr := simp)]
+lemma mk_le_mk {s t : Set α} (hs ht) : mk s hs ≤ mk t ht ↔ t ≤ s := Iff.rfl
+
+@[to_dual (attr := simp)]
+lemma mk_lt_mk {s t : Set α} (hs ht) : mk s hs < mk t ht ↔ t < s := Iff.rfl
 
 @[to_dual (attr := simp, norm_cast)]
 theorem coe_top : ((⊤ : UpperSet α) : Set α) = ∅ :=

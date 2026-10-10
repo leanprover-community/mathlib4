@@ -9,16 +9,18 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.BigOperators.Option
 public import Mathlib.Data.Fintype.Option
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
 
 /-!
+# Big operators over a fintype
+
 Results about "big operations" over a `Fintype`, and consequent
 results about cardinalities of certain types.
 
-## Implementation note
+## Implementation notes
+
 This content had previously been in `Data.Fintype.Basic`, but was moved here to avoid
 requiring `Algebra.BigOperators` (and hence many other imports) as a
 dependency of `Fintype`.
@@ -30,8 +32,6 @@ and should be moved at some point.
 public section
 
 assert_not_exists MulAction
-
-open Mathlib
 
 universe u v
 

@@ -6,8 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Weights.Basic
-public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lie modules with linear weights
@@ -22,7 +20,7 @@ non-linear weights do exist. For example if we take:
 * `M`: the natural two-dimensional representation of `L`,
 
 then there is a single weight and it is non-linear. (See remark following Proposition 9 of
-chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9](bourbaki1975b).)
+chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9][bourbaki1975b].)
 
 We thus introduce a typeclass `LieModule.LinearWeights` to encode the fact that a Lie module does
 have linear weights and provide typeclass instances in the two important cases that `L` is Abelian
@@ -42,8 +40,6 @@ or `R` has characteristic zero.
 -/
 
 @[expose] public section
-
-open Set
 
 variable (k R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -85,7 +81,7 @@ lemma apply_lie (x y : L) :
 @[simp] lemma coe_coe : (↑(χ : L →ₗ[R] R) : L → R) = (χ : L → R) := rfl
 
 @[simp] lemma coe_toLinear_eq_zero_iff : (χ : L →ₗ[R] R) = 0 ↔ χ.IsZero :=
-  ⟨fun h ↦ funext fun x ↦ LinearMap.congr_fun h x, fun h ↦ by ext; simp [h.eq]⟩
+  ⟨fun h ↦ funext fun x ↦ congr($h x), fun h ↦ by ext; simp [h.eq]⟩
 
 lemma coe_toLinear_ne_zero_iff : (χ : L →ₗ[R] R) ≠ 0 ↔ χ.IsNonZero := by simp
 

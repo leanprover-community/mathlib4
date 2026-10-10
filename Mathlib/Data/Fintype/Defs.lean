@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Finset.Filter
-public import Mathlib.Data.Finite.Defs
 public import Mathlib.Order.Lex
 
 /-!
@@ -48,7 +48,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 /-- `Fintype α` means that `α` is finite, i.e. there are only
   finitely many distinct elements of type `α`. The evidence of this
@@ -72,7 +72,7 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {f : α → β} {s : Finset α} {t' : Finset β}
 
 instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
   -- Use custom implementation for better performance.
@@ -85,7 +85,7 @@ end List
 
 namespace Finset
 
-variable [Fintype α] {s t : Finset α}
+variable [Fintype α] {s : Finset α}
 
 /-- `univ` is the universal finite set of type `Finset α` implied from
   the assumption `Fintype α`. -/
@@ -201,10 +201,9 @@ open Finset
 
 namespace Fintype
 
-instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
+instance decidablePiFintype {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
-  decidable_of_iff (∀ a ∈ @univ α _, f a = g a)
-    (by simp [funext_iff])
+  decidable_of_iff (∀ a ∈ @univ α _, f a = g a) (by simp [funext_iff])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
@@ -213,6 +212,10 @@ instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α]
 instance decidableExistsFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∃ a, p a) :=
   decidable_of_iff (∃ a ∈ @univ α _, p a) (by simp)
+
+instance {β : α → Type*} [∀ a, LE (β a)] [∀ a, DecidableLE (β a)] [Fintype α] :
+    DecidableLE (∀ a, β a) :=
+  fun _ _ ↦ decidable_of_iff _ Pi.le_def.symm
 
 instance decidableMemRangeFintype [Fintype α] [DecidableEq β] (f : α → β) :
     DecidablePred (· ∈ Set.range f) := fun _ => Fintype.decidableExistsFintype
