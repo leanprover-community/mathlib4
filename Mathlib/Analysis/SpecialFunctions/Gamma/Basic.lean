@@ -419,6 +419,17 @@ theorem Gamma_one : Gamma 1 = 1 := by
 theorem _root_.Complex.Gamma_ofReal (s : ℝ) : Complex.Gamma (s : ℂ) = Gamma s := by
   rw [Gamma, eq_comm, ← Complex.conj_eq_iff_re, ← Complex.Gamma_conj, Complex.conj_ofReal]
 
+/-- On the right half-plane, the real Gamma function dominates the complex one:
+`‖Γ s‖ ≤ Γ (re s)` for `0 < re s`. -/
+theorem _root_.Complex.norm_Gamma_le_Gamma_re {s : ℂ} (hs : 0 < s.re) :
+    ‖Complex.Gamma s‖ ≤ Gamma s.re := by
+  rw [Complex.Gamma_eq_integral hs, Gamma_eq_integral hs, Complex.GammaIntegral]
+  refine (MeasureTheory.norm_integral_le_integral_norm _).trans (le_of_eq ?_)
+  refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
+  have hx' : (0 : ℝ) < x := hx
+  rw [norm_mul, Complex.norm_real, Real.norm_eq_abs, abs_of_pos (exp_pos _),
+    Complex.norm_cpow_eq_rpow_re_of_pos hx', Complex.sub_re, Complex.one_re]
+
 theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
   rw [Gamma, Complex.ofReal_add, Complex.ofReal_natCast, Complex.ofReal_one,
     Complex.Gamma_nat_eq_factorial, ← Complex.ofReal_natCast, Complex.ofReal_re]
