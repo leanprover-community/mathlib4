@@ -90,6 +90,15 @@ theorem eval₂_add : (p + q).eval₂ f x = p.eval₂ f x + q.eval₂ f x := by
 @[simp]
 theorem eval₂_one : (1 : R[X]).eval₂ f x = 1 := by rw [← C_1, eval₂_C, f.map_one]
 
+/-- Evaluation of a polynomial with a coefficient homomorphism is monotone if addition and
+multiplication are monotone in each argument. -/
+@[gcongr]
+theorem eval₂_mono_left [Preorder S] [AddLeftMono S] [MulLeftMono S] [MulRightMono S]
+    (p : R[X]) {a b : S} (hab : a ≤ b) : p.eval₂ f a ≤ p.eval₂ f b := by
+  induction p using Polynomial.induction_on' with
+  | add p q hp hq => simpa using add_le_add hp hq
+  | monomial n c => simpa using mul_le_mul_right (pow_le_pow_left' hab n) (f c)
+
 /-- `eval₂AddMonoidHom (f : R →+* S) (x : S)` is the `AddMonoidHom` from
 `R[X]` to `S` obtained by evaluating the pushforward of `p` along `f` at `x`. -/
 @[simps]
@@ -349,6 +358,13 @@ theorem eval_finsetSum (s : Finset ι) (g : ι → R[X]) (x : R) :
   eval₂_finsetSum _ _ _ _
 
 @[deprecated (since := "2026-04-08")] alias eval_finset_sum := eval_finsetSum
+
+/-- Evaluation of a polynomial is monotone if addition and multiplication are monotone in each
+argument, such as in `ℕ`. -/
+@[gcongr]
+theorem eval_mono_left [Preorder R] [AddLeftMono R] [MulLeftMono R] [MulRightMono R] (p : R[X])
+    (hab : a ≤ b) : p.eval a ≤ p.eval b :=
+  eval₂_mono_left (RingHom.id R) p hab
 
 /-- `IsRoot p x` implies `x` is a root of `p`. The evaluation of `p` at `x` is zero -/
 def IsRoot (p : R[X]) (a : R) : Prop :=

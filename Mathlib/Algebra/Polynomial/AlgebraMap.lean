@@ -275,6 +275,12 @@ theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
 
+/-- Evaluation of a polynomial in an algebra is monotone if addition and multiplication are
+monotone in each argument. -/
+theorem aeval_mono_left [Preorder A] [AddLeftMono A] [MulLeftMono A] [MulRightMono A]
+    (p : R[X]) {a b : A} (hab : a ≤ b) : p.aeval a ≤ p.aeval b :=
+  eval₂_mono_left (algebraMap R A) p hab
+
 @[simp]
 lemma eval_map_algebraMap (P : R[X]) (b : B) :
     (map (algebraMap R B) P).eval b = aeval b P := by
