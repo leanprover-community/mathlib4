@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
+public import Mathlib.Geometry.Convex.ConvexSpace.Order
 
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
@@ -206,4 +207,21 @@ lemma IsConvexSet.of_convexCombPair_mem
     (by simp [← hsw]; grind)
 
 end Field
+
+section OrderedConvexSpace
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [PartialOrder X] [ConvexSpace R X]
+  [IsOrderedConvexSpace R X] {x : X}
+
+@[to_dual (attr := simp)]
+protected lemma IsConvexSet.Iic : IsConvexSet R (.Iic x) := by
+  refine .of_sConvexComb_mem fun w hw ↦ ?_
+  rw [Set.mem_Iic, ← iConvexComb_id' w, ← iConvexComb_const w x]
+  gcongr with x hx
+  exact hw (by simpa using hx)
+
+@[to_dual self, simp]
+protected lemma IsConvexSet.Icc (a b : X) : IsConvexSet R (Set.Icc a b) := by
+  simpa [Ici_inter_Iic] using .inter .Ici .Iic
+
+end OrderedConvexSpace
 end Convexity
