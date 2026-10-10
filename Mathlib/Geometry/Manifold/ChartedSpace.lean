@@ -609,7 +609,7 @@ def IsLocalHomeomorph.chartedSpace
 forward the `ChartedSpace` structure from `M`. -/
 @[implicit_reducible]
 def Homeomorph.chartedSpace (f : M ≃ₜ M') : ChartedSpace H M' :=
-  f.isLocalHomeomorph.chartedSpace f.surjective
+  f.isLocalHomeomorph.chartedSpace f.surjective --OfRightInverse (apply_symm_apply f)
 
 end IsLocalHomeomorph
 
