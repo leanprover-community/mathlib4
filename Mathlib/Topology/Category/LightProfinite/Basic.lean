@@ -33,7 +33,8 @@ The category `LightProfinite` is defined using the structure `CompHausLike`. See
 @[expose] public section
 
 /- The basic API for `LightProfinite` is largely copied from the API of `Profinite`;
-where possible, try to keep them in sync -/
+where possible, try to keep them in sync. Results that hold in every `CompHausLike` category,
+such as `CompHausLike.isIso_of_bijective`, apply directly and are not restated here. -/
 
 universe v u
 
@@ -181,27 +182,12 @@ instance : PreservesLimitsOfShape ℕᵒᵖ (forget LightProfinite.{u}) :=
   have : PreservesLimitsOfSize.{0, 0} (forget Profinite.{u}) := preservesLimitsOfSize_shrink _
   inferInstanceAs (PreservesLimitsOfShape ℕᵒᵖ (lightToProfinite ⋙ forget Profinite))
 
-variable {X Y : LightProfinite.{u}} (f : X ⟶ Y)
+@[deprecated (since := "2026-10-07")] alias isClosedMap := CompHausLike.isClosedMap
 
-/-- Any morphism of light profinite spaces is a closed map. -/
-theorem isClosedMap : IsClosedMap f :=
-  CompHausLike.isClosedMap _
+@[deprecated (since := "2026-10-07")] alias isIso_of_bijective := CompHausLike.isIso_of_bijective
 
-/-- Any continuous bijection of light profinite spaces induces an isomorphism. -/
-theorem isIso_of_bijective (bij : Function.Bijective f) : IsIso f :=
-  haveI := CompHausLike.isIso_of_bijective (lightProfiniteToCompHaus.map f) bij
-  isIso_of_fully_faithful lightProfiniteToCompHaus _
-
-/-- Any continuous bijection of light profinite spaces induces an isomorphism. -/
-noncomputable def isoOfBijective (bij : Function.Bijective f) : X ≅ Y :=
-  letI := LightProfinite.isIso_of_bijective f bij
-  asIso f
-
-instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphisms := by
-  constructor
-  intro A B f hf
-  rw [isIso_iff_bijective] at hf
-  exact LightProfinite.isIso_of_bijective _ hf
+@[deprecated (since := "2026-10-07")] noncomputable alias isoOfBijective :=
+  CompHausLike.isoOfBijective
 
 set_option backward.isDefEq.respectTransparency false in
 theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
