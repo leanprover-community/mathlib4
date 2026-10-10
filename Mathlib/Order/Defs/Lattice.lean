@@ -234,6 +234,11 @@ to_dual_for Lattice.mk := {
   sup_le a b c := le_inf c a b
 }
 
+to_dual_for Lattice.inf := self.sup
+to_dual_for Lattice.le_inf := self.sup_le b c a
+to_dual_for Lattice.inf_le_left := self.le_sup_left a b
+to_dual_for Lattice.inf_le_right := self.le_sup_right a b
+
 section Lattice
 
 variable [Lattice α] {a b c : α}
@@ -275,61 +280,61 @@ end Lattice
 -/
 
 
+variable (α) in
 /-- A distributive lattice is a lattice that satisfies any of four
 equivalent distributive properties (of `sup` over `inf` or `inf` over `sup`,
 on the left or right).
 
-The definition here chooses `le_sup_inf`: `(x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ (y ⊓ z)`. To prove distributivity
-from the dual law, use `DistribLattice.ofInfSupLe`.
+Although `DistribLattice` has fields for both `le_sup_inf` and `inf_sup_le`,
+when defining a `DistribLattice` instance only one of the fields must be provided,
+and the other is filled in automatically.
 
 A classic example of a distributive lattice
 is the lattice of subsets of a set, and in fact this example is
 generic in the sense that every distributive lattice is realizable
 as a sublattice of a powerset lattice. -/
-class DistribLattice (α) extends Lattice α where
+class DistribLattice extends Lattice α where
   /-- The infimum distributes over the supremum -/
-  protected le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
+  -- use `:= (by tacs)` instead of `:= by tacs` to make an `outParam` instead of an `autoParam`
+  protected le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z := (by
+    intro x y z
+    grw [inf_sup_le]
+    apply _root_.sup_le
+    · grw [_root_.inf_le_right, ← _root_.le_sup_left]
+    · grw [inf_comm (x ⊔ y) z, inf_sup_le, inf_comm z y, _root_.inf_le_right])
+  /-- The supremum distributes over the infimum -/
+  protected inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c := (by
+    intro a b c
+    grw [← le_sup_inf]
+    apply _root_.le_inf
+    · grw [← _root_.le_sup_right, _root_.inf_le_left]
+    · grw [sup_comm (a ⊓ b) c, ← le_sup_inf, sup_comm c b, ← _root_.le_sup_right])
 
 -- See note [reducible non-instances]
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
-@[to_dual existing mk]
+@[deprecated DistribLattice.mk +typeChanged (since := "2026-10-06")]
 abbrev DistribLattice.ofInfSupLe
     [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) : DistribLattice α where
-  le_sup_inf x y z := by
-    grw [inf_sup_le]
-    apply sup_le
-    · grw [inf_le_right, ← le_sup_left]
-    · grw [inf_comm, inf_sup_le, inf_comm z y, inf_le_right]
+  inf_sup_le
+
+attribute [to_dual existing DistribLattice.inf_sup_le] DistribLattice.le_sup_inf
+attribute [to_dual self (reorder := le_sup_inf inf_sup_le)] DistribLattice.mk
 
 section DistribLattice
 
 variable [DistribLattice α] {x y z : α}
 
+@[to_dual inf_sup_le]
 theorem le_sup_inf {x y z : α} : (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z :=
   DistribLattice.le_sup_inf x y z
 
+@[to_dual]
 theorem sup_inf_left (a b c : α) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) :=
   le_antisymm sup_inf_le le_sup_inf
 
+@[to_dual]
 theorem sup_inf_right (a b c : α) : a ⊓ b ⊔ c = (a ⊔ c) ⊓ (b ⊔ c) := by
   simp only [sup_inf_left, sup_comm _ c]
-
-@[to_dual existing]
-theorem inf_sup_left (a b c : α) : a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c :=
-  calc
-    a ⊓ (b ⊔ c) = a ⊓ (a ⊔ c) ⊓ (b ⊔ c) := by rw [inf_sup_self]
-    _ = a ⊓ (a ⊓ b ⊔ c) := by simp only [inf_assoc, sup_inf_right]
-    _ = (a ⊔ a ⊓ b) ⊓ (a ⊓ b ⊔ c) := by rw [sup_inf_self]
-    _ = (a ⊓ b ⊔ a) ⊓ (a ⊓ b ⊔ c) := by rw [sup_comm]
-    _ = a ⊓ b ⊔ a ⊓ c := by rw [sup_inf_left]
-
-@[to_dual existing le_sup_inf]
-theorem inf_sup_le {x y z : α} : x ⊓ (y ⊔ z) ≤ (x ⊓ y) ⊔ (x ⊓ z) := by
-  rw [inf_sup_left]
-
-@[to_dual existing]
-theorem inf_sup_right (a b c : α) : (a ⊔ b) ⊓ c = a ⊓ c ⊔ b ⊓ c := by
-  simp only [inf_sup_left, inf_comm _ c]
 
 @[to_dual self (reorder := x y, h₁ h₂)]
 theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y ⊔ z) : x ≤ y :=
