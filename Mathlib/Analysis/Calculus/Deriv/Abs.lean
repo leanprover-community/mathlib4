@@ -5,8 +5,9 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.InnerProductSpace.Calculus
+
+import Mathlib.Analysis.Calculus.Deriv.Add
 
 /-!
 # Derivative of the absolute value

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Definitions and basic properties of regular monomorphisms and epimorphisms.
@@ -79,7 +79,6 @@ def RegularMono.ofIso (e : X ≅ Y) : RegularMono e.hom where
   right := 𝟙 Y
   isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ e.inv) (by simp) fun s m w ↦ by simp [← w]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Regular monomorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk g) (h : RegularMono f) :
@@ -329,7 +328,6 @@ def RegularEpi.ofIso (e : X ≅ Y) : RegularEpi e.hom where
   isColimit := Cofork.IsColimit.mk _ (fun s ↦ e.inv ≫ s.π) (by simp) fun s m w ↦ by
     simp [← w]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Regular epimorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularEpi.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk g) (h : RegularEpi f) :

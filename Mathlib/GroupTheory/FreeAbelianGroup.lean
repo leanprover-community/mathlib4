@@ -6,9 +6,9 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Control.Basic
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.FreeGroup.Basic
-public import Mathlib.Control.Basic
 
 /-!
 # Free abelian groups
@@ -127,7 +127,7 @@ theorem lift_apply_of (x : α) : lift f (of x) = f x := by
 
 theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
     g x = lift f x :=
-  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
+  congr($(lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _)
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
@@ -324,8 +324,8 @@ instance : LawfulMonad FreeAbelianGroup.{u} := LawfulMonad.mk'
     fun x y ihx ihy ↦ by rw [FreeAbelianGroup.map_add, ihx, ihy])
   (pure_bind := fun x f ↦ pure_bind f x)
   (bind_assoc := fun x f g ↦ FreeAbelianGroup.induction_on' x (by iterate 3 rw [zero_bind])
-    (fun x ↦ by iterate 2 rw [pure_bind]) (fun x ih ↦ by iterate 3 rw [neg_bind] <;> try rw [ih])
-    fun x y ihx ihy ↦ by iterate 3 rw [add_bind] <;> try rw [ihx, ihy])
+    (fun x ↦ by iterate 2 rw [pure_bind]) (fun x ih ↦ by simp_rw [neg_bind]; rw [ih])
+    fun x y ihx ihy ↦ by simp_rw [add_bind]; rw [ihx, ihy])
 
 instance : CommApplicative FreeAbelianGroup.{u} where
   commutative_prod x y := by
@@ -496,7 +496,7 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
           exact f.map_mul _ _
         | neg L1 ih =>
           simp_rw [neg_mul, map_neg, neg_mul]
-          exact congr_arg Neg.neg ih
+          congrm -$ih
         | add x1 x2 ih1 ih2 => simp only [add_mul, map_add, ih1, ih2]
       | neg L2 ih => rw [mul_neg, map_neg, map_neg, mul_neg, ih]
       | add y1 y2 ih1 ih2 => rw [mul_add, map_add, map_add, mul_add, ih1, ih2] }

@@ -5,13 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.SmallObject.Construction
-public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
-public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
-public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+public import Mathlib.CategoryTheory.SmallObject.Construction
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 public import Mathlib.SetTheory.Cardinal.Regular
-public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Cardinals that are suitable for the small object argument
@@ -290,7 +289,7 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.T
   Arrow.isoMk (Iso.refl _)
     (((evaluation _ _).obj f).mapIso
       ((succStruct I κ).iterationFunctorObjSuccIso j (not_isMax j))) (by
-    have := NatTrans.congr_app ((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)) f
+    have := congr($((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)).app f)
     dsimp at this
     dsimp [iterationFunctor]
     rw [id_comp, this, assoc, Iso.inv_hom_id_app, comp_id]
@@ -478,7 +477,6 @@ lemma πObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
   rw [← assoc]
   apply comp_id
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functorial factorization `ιObj I κ f ≫ πObj I κ f.hom = f`
 with `ιObj I κ f` in `I.rlp.llp` and `πObj I κ f.hom` in `I.rlp`. -/

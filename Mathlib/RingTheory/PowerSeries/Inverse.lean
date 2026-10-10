@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
-public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-public import Mathlib.Data.ENat.Lattice
 
 /-! # Formal power series - Inverses
 

@@ -5,11 +5,11 @@ Authors: Mitchell Rowett, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Quotient
 public import Mathlib.Algebra.Group.Action.Opposite
-public import Mathlib.Algebra.Group.Subgroup.MulOpposite
-public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.Algebra.Quotient
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Cosets
@@ -131,11 +131,11 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
   toFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
+      exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
+      exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   left_inv g :=
     Quotient.inductionOn' g fun g =>
       Quotient.sound'
