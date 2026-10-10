@@ -633,7 +633,7 @@ private lemma exists_cutoff (ha : 0 < a) (hab : a < b) (hbc : b ≤ c) (hcd : c 
     (h3 ▸ Ioo_subset_Icc_self)
   have h6 := indicator_le' (fun x hx ↦ ((h4 x).mp hx).ge) fun x _ ↦ (h2 (mem_range_self x)).1
   have h7 : ψ ≤ indicator (Ioo a d) 1 := fun x ↦ le_indicator_apply
-    (fun _ ↦ (h2 (mem_range_self x)).2) (by grind [mem_support])
+    (fun _ ↦ (h2 (mem_range_self x)).2) (by grind)
   have h8 : closure (support ψ) ⊆ Ioi 0 := by grind [closure_Ioo]
   have h9 : Integrable ψ := h1.continuous.integrable_of_hasCompactSupport h5
   have h10 : ∫ y in Ioi 0, ψ y = _ := setIntegral_eq_integral_of_forall_compl_eq_zero fun x hx ↦
