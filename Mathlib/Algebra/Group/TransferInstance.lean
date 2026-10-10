@@ -94,7 +94,8 @@ lemma pow_def [Pow β M] (n : M) (x : α) :
 /-- An equivalence `e : α ≃ β` gives a multiplicative equivalence `α ≃* β` where
 the multiplicative structure on `α` is the one obtained by transporting a multiplicative structure
 on `β` back along `e`. -/
-@[to_additive /-- An equivalence `e : α ≃ β` gives an additive equivalence `α ≃+ β` where
+@[to_additive (attr := implicit_reducible)
+/-- An equivalence `e : α ≃ β` gives an additive equivalence `α ≃+ β` where
 the additive structure on `α` is the one obtained by transporting an additive structure
 on `β` back along `e`. -/]
 def mulEquiv (e : α ≃ β) [Mul β] :
