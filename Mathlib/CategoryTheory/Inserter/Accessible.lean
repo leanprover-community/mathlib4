@@ -1353,7 +1353,7 @@ variable {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L) (κ : Cardina
     [Limits.PreservesColimitsOfShape Λ F] [Limits.PreservesColimitsOfShape Λ G]
 
 include Λ hΛ in
-public theorem isCardinalFiltered_generator_inverseImage_isCardinalPresentable :
+public theorem isCardinalFilteredGenerator_inverseImage_isCardinalPresentable :
     ((isCardinalPresentable K κ).inverseImage
       (Inserter.proj F G)).IsCardinalFilteredGenerator κ := by
   have (X : Inserter F G) : IsCardinalFiltered (CostructuredArrow (O₁ κ F G).ι X) κ := by
@@ -1413,7 +1413,7 @@ this situation. -/
 public theorem isCardinalAccessibleCategory :
     IsCardinalAccessibleCategory (Inserter F G) κ where
   exists_generator := ⟨O₁ κ F G, inferInstance,
-      isCardinalFiltered_generator_inverseImage_isCardinalPresentable F G κ Λ hΛ ..⟩
+      isCardinalFilteredGenerator_inverseImage_isCardinalPresentable F G κ Λ hΛ ..⟩
   hasColimitsOfShape J _ _ := by
     have : Limits.PreservesColimitsOfShape J F :=
       Functor.IsCardinalAccessible.preservesColimitOfShape κ J
@@ -1427,13 +1427,13 @@ include Λ hΛ in
 public lemma isCardinalPresentable_eq :
     isCardinalPresentable (Inserter F G) κ =
       (isCardinalPresentable K κ).inverseImage (Inserter.proj F G) := by
-  have := isCardinalFiltered_generator_inverseImage_isCardinalPresentable F G κ Λ hΛ
+  have := isCardinalFilteredGenerator_inverseImage_isCardinalPresentable F G κ Λ hΛ
   rw [this.isPresentable_eq_retractClosure]
   apply ObjectProperty.retractClosure_eq_self
 
 end
 
-instance {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L)
+public instance {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L)
     [IsAccessibleCategory.{w} K] [IsAccessibleCategory.{w} L]
     [F.IsAccessible.{w}] [G.IsAccessible.{w}] : IsAccessibleCategory.{w} (Inserter F G) := by
   obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ := IsCardinalAccessibleCategory.uniformization_pair F G

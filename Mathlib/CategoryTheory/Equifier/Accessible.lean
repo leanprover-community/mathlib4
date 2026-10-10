@@ -839,7 +839,7 @@ variable {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardina
 open Limits Accessible
 
 include Λ hΛ in
-public theorem isCardinalFiltered_generator_inverseImage_isCardinalPresentable :
+public theorem isCardinalFilteredGenerator_inverseImage_isCardinalPresentable :
     ((isCardinalPresentable K κ).inverseImage
       (Equifier.ι Φ Ψ)).IsCardinalFilteredGenerator κ := by
   have (X : Equifier Φ Ψ) : IsCardinalFiltered (CostructuredArrow (O₁ κ Φ Ψ).ι X) κ := by
@@ -891,7 +891,7 @@ this situation. -/
 public theorem isCardinalAccessibleCategory :
     IsCardinalAccessibleCategory (Equifier Φ Ψ) κ where
   exists_generator := ⟨O₁ κ Φ Ψ, inferInstance,
-      isCardinalFiltered_generator_inverseImage_isCardinalPresentable κ Φ Ψ Λ hΛ⟩
+      isCardinalFilteredGenerator_inverseImage_isCardinalPresentable κ Φ Ψ Λ hΛ⟩
   hasColimitsOfShape J _ _ := by
     have : Limits.PreservesColimitsOfShape J F :=
       Functor.IsCardinalAccessible.preservesColimitOfShape κ J
@@ -903,13 +903,13 @@ include Λ hΛ in
 public lemma isCardinalPresentable_eq :
     isCardinalPresentable (Equifier Φ Ψ) κ =
       (isCardinalPresentable K κ).inverseImage (Equifier.ι Φ Ψ) := by
-  have := isCardinalFiltered_generator_inverseImage_isCardinalPresentable κ Φ Ψ Λ hΛ
+  have := isCardinalFilteredGenerator_inverseImage_isCardinalPresentable κ Φ Ψ Λ hΛ
   rw [this.isPresentable_eq_retractClosure]
   apply ObjectProperty.retractClosure_eq_self
 
 end
 
-instance {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (Φ Ψ : F ⟶ G)
+public instance {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (Φ Ψ : F ⟶ G)
     [IsAccessibleCategory.{w} K] [IsAccessibleCategory.{w} L]
     [F.IsAccessible.{w}] [G.IsAccessible.{w}] : IsAccessibleCategory.{w} (Equifier Φ Ψ) := by
   obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ := IsCardinalAccessibleCategory.uniformization_pair F G
