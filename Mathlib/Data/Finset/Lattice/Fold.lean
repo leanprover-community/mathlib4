@@ -88,12 +88,17 @@ theorem sup_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f 
   subst hs
   exact Finset.fold_congr hfg
 
+@[to_dual]
+protected theorem map_sup [SemilatticeSup β] [OrderBot β]
+    (f : α → β) (h1 : f ⊥ = ⊥) (h2 : ∀ x y, f (x ⊔ y) = f x ⊔ f y) (s : Finset ι) (g : ι → α) :
+    f (s.sup g) = s.sup (f ∘ g) :=
+  s.cons_induction_on h1 (by simp +contextual [h2])
+
 @[to_dual (attr := simp)]
 theorem _root_.map_finset_sup [SemilatticeSup β] [OrderBot β]
     [FunLike F α β] [SupBotHomClass F α β]
     (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
-  Finset.cons_induction_on s (map_bot f) fun i s _ h => by
-    rw [sup_cons, sup_cons, map_sup, h, Function.comp_apply]
+  s.map_sup f (map_bot f) (map_sup f) g
 
 @[to_dual (attr := simp) le_inf_iff]
 protected theorem sup_le_iff {a : α} : s.sup f ≤ a ↔ ∀ b ∈ s, f b ≤ a := by
@@ -625,11 +630,16 @@ alias comp_sup'_eq_sup'_comp := apply_sup'_eq_sup'_comp
 @[deprecated (since := "2026-05-29")]
 alias comp_inf'_eq_inf'_comp := apply_inf'_eq_inf'_comp
 
+@[to_dual]
+theorem map_sup' [SemilatticeSup β] (f : α → β) (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y)
+    {s : Finset ι} (hs) (g : ι → α) : f (s.sup' hs g) = s.sup' hs (f ∘ g) :=
+  hs.cons_induction (by simp) (by simp +contextual [h])
+
 @[to_dual (attr := simp)]
 theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
     (f : F) {s : Finset ι} (hs) (g : ι → α) :
-    f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
-  refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
+    f (s.sup' hs g) = s.sup' hs (f ∘ g) :=
+  map_sup' f (map_sup f) hs g
 
 /-- To rewrite from right to left, use `Finset.sup'_comp_eq_image`. -/
 @[to_dual (attr := simp) /-- To rewrite from right to left, use `Finset.inf'_comp_eq_image`. -/]
