@@ -64,13 +64,6 @@ error: `abel_nf` made no progress on the goal
 example : MyTrue := by
   abel_nf
 
--- `abel!` should see through terms that are definitionally equal,
-def id' (x : α) := x
-example [AddCommGroup α] (a b : α) : a + b - b - id' a = 0 := by
-  fail_if_success
-    abel1
-  abel1!
-
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Interaction.20of.20abel.20with.20casting/near/319895001
 example [AddCommGroup α] : True := by
   have : ∀ (p q r s : α), s + p - q = s - r - (q - r - p) := by
@@ -184,19 +177,19 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) [Std.Refl R] : True := by
 
 end
 
--- Test that `abel_nf` doesn't unfold local let expressions, and `abel_nf!` does
+-- Test that `abel_nf` doesn't unfold local let expressions unless `zetaDelta` is enabled.
 example [AddCommGroup α] (x : α) (f : α → α) : True := by
   let y := x
   have : x = y := by
     fail_if_success abel_nf
-    abel_nf!
+    abel_nf (zetaDelta := true)
   have : x - y = 0 := by
     abel_nf
-    abel_nf!
+    abel_nf (zetaDelta := true)
   have : f x = f y := by
     fail_if_success abel_nf
-    abel_nf!
+    abel_nf (zetaDelta := true)
   have : f x - f y = 0 := by
     abel_nf
-    abel_nf!
+    abel_nf (zetaDelta := true)
   trivial

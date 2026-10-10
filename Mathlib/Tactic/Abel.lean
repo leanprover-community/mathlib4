@@ -59,10 +59,9 @@ initialize registerTraceClass `abel.detail
 * `abel_nf` rewrites all group expressions into a normal form.
   * `abel_nf at h` rewrites in a hypothesis.
   * `abel_nf (config := cfg)` allows for additional configuration:
-    * `red`: the reducibility setting (overridden by `!`).
-    * `zetaDelta`: if true, local `let` variables can be unfolded (overridden by `!`).
-    * `recursive`: if true, `abel_nf` also recurses into atoms.
-* `abel!`, `abel1!`, `abel_nf!` use a more aggressive reducibility setting to identify atoms.
+    * `zetaDelta`: if true, local `let` variables can be unfolded.
+    * `contextual`: if true, implication hypotheses are added to the local context of the
+      discharger.
 
 Examples:
 ```
@@ -70,7 +69,7 @@ example [AddCommMonoid α] (a b : α) : a + (b + a) = a + a + b := by abel
 example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
 ```
 -/
-syntax (name := abel) "abel" "!"? : tactic
+syntax (name := abel) "abel" : tactic
 
 /-- The `Context` for a call to `abel`.
 
@@ -427,13 +426,12 @@ def isAtom (e : Expr) : Bool :=
   | _ => true
 
 @[tactic_alt abel]
-elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
-  let tm := if tk.isSome then .default else .reducible
+elab (name := abel1) "abel1" : tactic => withMainContext do
   let some (_, e₁, e₂) := (← whnfR <| ← getMainTarget).eq?
     | throwError "`abel1` requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
   let c ← mkContext e₁
-  let proof ← AtomM.run tm <| ReaderT.run (r := c) do
+  let proof ← AtomM.run .reducible <| ReaderT.run (r := c) do
     let (e₁', p₁) ← eval e₁
     trace[abel] "found `{p₁}`, a proof that `{e₁} = {e₁'.e}`"
     let (e₂', p₂) ← eval e₂
@@ -445,9 +443,6 @@ elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
   let type ← getMainTarget
   let proof ← Lean.Meta.mkAuxTheorem type proof (zetaDelta := true) (kind? := `_abel)
   closeMainGoal `abel1 proof
-
-@[tactic_alt abel]
-macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
 
 theorem term_eq {α : Type*} [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := (rfl)
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
@@ -466,9 +461,18 @@ inductive AbelMode where
   | raw
 
 /-- Configuration for `abel_nf`. -/
-structure AbelNF.Config extends AtomM.Recurse.Config where
+structure AbelNF.Config where
+  /-- If true, local let variables can be unfolded. -/
+  zetaDelta := false
+  /-- If true, implication hypotheses are added to the local context of the discharger. -/
+  contextual := false
   /-- The normalization style. -/
   mode := AbelMode.term
+
+/-- Convert an `abel_nf` configuration to a recursive normalizer configuration. -/
+private def AbelNF.Config.toRecurse (cfg : AbelNF.Config) : AtomM.Recurse.Config where
+  zetaDelta := cfg.zetaDelta
+  contextual := cfg.contextual
 
 /-- Function elaborating `AbelNF.Config`. -/
 declare_config_elab elabAbelNFConfig AbelNF.Config
@@ -503,49 +507,33 @@ def evalExpr (e : Expr) : AtomM Simp.Result := do
 open Parser.Tactic
 
 @[tactic_alt abel]
-elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
-  let mut cfg ← elabAbelNFConfig cfg
-  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
+elab (name := abelNF) "abel_nf" cfg:optConfig loc:(location)? : tactic => do
+  let cfg ← elabAbelNFConfig cfg
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
+  let m := AtomM.recurse s cfg.toRecurse (wellBehavedDischarge := true) evalExpr (cleanup cfg)
   transformAtLocation (m ·) "abel_nf" loc (ifUnchanged := .error) false
 
-@[tactic_alt abel]
-macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
-  `(tactic| abel_nf ! $cfg:optConfig $(loc)?)
-
 @[inherit_doc abel]
-syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
+syntax (name := abelNFConv) "abel_nf" optConfig : conv
 
 /-- Elaborator for the `abel_nf` tactic. -/
 @[tactic abelNFConv]
 def elabAbelNFConv : Tactic := fun stx ↦ match stx with
-  | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
-    let mut cfg ← elabAbelNFConfig cfg
-    if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
+  | `(conv| abel_nf $cfg:optConfig) => withMainContext do
+    let cfg ← elabAbelNFConfig cfg
     let s ← IO.mkRef {}
     Conv.applySimpResult
-      (← AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
+      (← AtomM.recurse s cfg.toRecurse (wellBehavedDischarge := true) evalExpr (cleanup cfg)
         (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
-@[inherit_doc abel]
-macro "abel_nf!" cfg:optConfig : conv => `(conv| abel_nf ! $cfg:optConfig)
-
 macro_rules
-  | `(tactic| abel !) => `(tactic| first | abel1! | try_this abel_nf!)
   | `(tactic| abel) => `(tactic| first | abel1 | try_this abel_nf)
-
-@[tactic_alt abel]
-macro "abel!" : tactic => `(tactic| abel !)
 
 @[inherit_doc abel]
 macro (name := abelConv) "abel" : conv =>
   `(conv| first | discharge => abel1 | try_this abel_nf)
-
-@[inherit_doc abelConv] macro "abel!" : conv =>
-  `(conv| first | discharge => abel1! | try_this abel_nf!)
 
 end
 
