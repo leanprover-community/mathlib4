@@ -5,8 +5,9 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # Products and coproducts in `C` and `Cᵒᵖ`
@@ -300,7 +301,6 @@ instance : HasBinaryCoproduct (op A) (op B) := by
   convert! (inferInstance : HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
   cases x <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A B) in
 /--
 The canonical isomorphism from the opposite of the binary product to the coproduct in the opposite

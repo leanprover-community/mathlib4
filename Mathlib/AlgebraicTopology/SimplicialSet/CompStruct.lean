@@ -45,6 +45,7 @@ variable {X Y : SSet.{u}} {x₀ x₁ x₂ : X _⦋0⦌}
 variable (x₀ x₁) in
 /-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
 a `1`-simplex with prescribed `0`-dimensional faces. -/
+@[implicit_reducible]
 def Edge := ((truncation 2).obj X).Edge x₀ x₁
 
 namespace Edge
@@ -52,11 +53,13 @@ namespace Edge
 /-- Constructor for `SSet.Edge` which takes as an input a term in the definitionally
 equal type `SSet.Truncated.Edge` for the `2`-truncation of the simplicial set.
 (This definition is made to contain abuse of defeq in other definitions.) -/
+@[implicit_reducible]
 def ofTruncated (e : ((truncation 2).obj X).Edge x₀ x₁) :
     Edge x₀ x₁ := e
 
 /-- The edge of the `2`-truncation of a simplicial set `X` that is induced
 by an edge of `X`. -/
+@[implicit_reducible]
 def toTruncated (e : Edge x₀ x₁) :
     ((truncation 2).obj X).Edge x₀ x₁ :=
   e
@@ -108,6 +111,7 @@ end
 
 variable (x₀) in
 /-- The constant edge on a `0`-simplex. -/
+@[implicit_reducible]
 def id : Edge x₀ x₀ := ofTruncated (.id _)
 
 variable (x₀) in
@@ -172,6 +176,7 @@ lemma toSubcomplex_edge (e : Edge x₀ x₁) (A : X.Subcomplex)
 faces are respectively `e₀₂`, `e₁₂` and `e₀₁`. Such structures shall provide
 relations in the homotopy category of arbitrary simplicial sets
 (and specialized constructions for quasicategories and Kan complexes.). -/
+@[implicit_reducible]
 def CompStruct (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) (e₀₂ : Edge x₀ x₂) :=
   Truncated.Edge.CompStruct e₀₁.toTruncated e₁₂.toTruncated e₀₂.toTruncated
 

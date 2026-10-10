@@ -114,11 +114,11 @@ theorem maxPowDvdDiv_of_pow_mul_eq {p n k l : ℕ} (hn : n ≠ 0) (h : p ^ k * l
   · cases k.eq_zero_or_pos <;> simp_all
   · simp_all
   · have hk : k = (p.maxPowDvdDiv n).1 := by
-      · apply Nat.le_antisymm
-        · rw [← padicValNat, ← pow_dvd_iff_le_padicValNat (Nat.ne_of_gt hp) hn,
-            pow_dvd_iff_le_of_spec hp hn h hl]
-        · rw [← pow_dvd_iff_le_of_spec hp hn h hl, pow_dvd_iff_le_padicValNat (Nat.ne_of_gt hp) hn]
-          apply Nat.le_refl
+      apply Nat.le_antisymm
+      · rw [← padicValNat, ← pow_dvd_iff_le_padicValNat (Nat.ne_of_gt hp) hn,
+          pow_dvd_iff_le_of_spec hp hn h hl]
+      · rw [← pow_dvd_iff_le_of_spec hp hn h hl, pow_dvd_iff_le_padicValNat (Nat.ne_of_gt hp) hn]
+        apply Nat.le_refl
     rw [← pow_padicValNat_mul_divMaxPow p n, hk, padicValNat, Nat.mul_left_cancel_iff] at h
     · exact Prod.ext hk.symm h.symm
     · exact Nat.pow_pos <| Nat.zero_lt_of_lt hp
@@ -187,26 +187,5 @@ theorem fst_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).1 = padicValNat p n :=
 
 @[simp]
 theorem snd_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).2 = n.divMaxPow p := rfl
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv := padicValNat
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv.base_mul_eq_succ := padicValNat_base_mul
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv.base_pow_mul := padicValNat_base_pow_mul
-
-@[deprecated (since := "2026-03-15")]
-alias ⟨_, maxPowDiv.le_of_dvd⟩ := pow_dvd_iff_le_padicValNat
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv.pow_dvd := pow_padicValNat_dvd
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv.zero := padicValNat_zero_right
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv.zero_base := padicValNat_zero_left
 
 end Nat

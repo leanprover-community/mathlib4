@@ -5,14 +5,12 @@ Authors: Kevin Buzzard, Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
 # Sheaves taking values in a category
@@ -110,7 +108,7 @@ def conesEquivSieveCompatibleFamily :
         have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
         dsimp at this ⊢
         rw [id_comp, ← this]
-        convert! rfl
+        convert rfl
         simp only [Over.w] }
 
 variable {P S E}
@@ -303,16 +301,6 @@ abbrev Sheaf := ObjectProperty.FullSubcategory (Presheaf.IsSheaf J (A := A))
 section
 
 variable {J A}
-
-/-- The underlying presheaf of a sheaf. -/
-@[deprecated "Use ObjectProperty.obj" (since := "2026-03-03")]
-abbrev Sheaf.val (F : Sheaf J A) : Cᵒᵖ ⥤ A := F.obj
-
-@[deprecated "Use ObjectProperty.FullSubcategory.property" (since := "2026-03-03")]
-lemma Sheaf.cond (F : Sheaf J A) : Presheaf.IsSheaf J F.obj := F.property
-
-@[deprecated (since := "2026-03-03")]
-alias Sheaf.Hom.mk := ObjectProperty.homMk
 
 lemma Sheaf.hom_ext_iff {F G : Sheaf J A} {f g : F ⟶ G} :
     f = g ↔ f.hom = g.hom := by

@@ -187,7 +187,6 @@ instance : IsGroupoid (Truncated.HomotopyCategory₂ ((SSet.truncation 2).obj X)
 noncomputable instance : Groupoid (Truncated.HomotopyCategory₂ ((SSet.truncation 2).obj X)) :=
   .ofIsGroupoid
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (X) in
 open Truncated.HomotopyCategory₂ in
 /-- If `X` is a Kan complex, then `Truncated.HomotopyCategory₂ ((SSet.truncation 2).obj X)`
@@ -213,7 +212,6 @@ noncomputable abbrev equivalenceFundamentalGroupoid :
       (FundamentalGroupoid X) :=
   (isoCatFundamentalGroupoid X).toEquivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isoCatFundamentalGroupoid_functor_map_homMk
     {x y : X _⦋0⦌} (e : Edge x y) :
@@ -227,7 +225,6 @@ namespace FundamentalGroupoid
 
 open KanComplex
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma homMk_surjective {x y : X _⦋0⦌} :
     Function.Surjective (homMk : Edge x y → _) := by
   intro f
