@@ -584,18 +584,26 @@ section IsLocalHomeomorph
 
 variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [ChartedSpace H M]
 
+@[instance_reducible]
+def chartedSpaceOfInversesAux
+    {f : M → M'} {gs : M → OpenPartialHomeomorph M' M}
+    (hgs : ∀ x, (f x) ∈ (gs x).source) (hgs' : ∀ x, (gs x) (f x) = x)
+    {g : M' → M} (hg : Function.RightInverse g f) :
+    ChartedSpace H M' where
+  atlas := {(gs (g q)).trans (chartAt H (g q)) | q : M'}
+  chartAt q := (gs (g q)).trans (chartAt H (g q))
+  mem_chart_source q := by
+    nth_rw 3 [← hg.eq q]
+    simp [hgs, hgs']
+  chart_mem_atlas := by simp
+
 /-- Given a right inverse for a local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace`
 structure by pushing forward the `ChartedSpace` structure from `M`. -/
 @[instance_reducible]
 def IsLocalHomeomorph.chartedSpaceOfRightInverse
     {f : M → M'} (hf : IsLocalHomeomorph f) {g : M' → M} (hg : Function.RightInverse g f) :
-    ChartedSpace H M' where
-  atlas := {(hf.localInverseAt (g q)).trans (chartAt H (g q)) | q : M'}
-  chartAt q := (hf.localInverseAt (g q)).trans (chartAt H (g q))
-  mem_chart_source q := by
-    nth_rw 3 [← hg.eq q]
-    simp
-  chart_mem_atlas := by simp
+    ChartedSpace H M' :=
+  chartedSpaceOfInversesAux (gs := fun x ↦ hf.localInverseAt x) (by simp) (by simp) hg
 
 /-- Given a surjective local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace` structure
 by pushing forward the `ChartedSpace` structure from `M`. -/
@@ -609,7 +617,8 @@ def IsLocalHomeomorph.chartedSpace
 forward the `ChartedSpace` structure from `M`. -/
 @[implicit_reducible]
 def Homeomorph.chartedSpace (f : M ≃ₜ M') : ChartedSpace H M' :=
-  f.isLocalHomeomorph.chartedSpace f.surjective
+  chartedSpaceOfInversesAux (f := f) (gs := fun x ↦ f.symm.toOpenPartialHomeomorph) (g := f.symm)
+    (by simp) (by simp) (fun x ↦ by simp)
 
 end IsLocalHomeomorph
 
