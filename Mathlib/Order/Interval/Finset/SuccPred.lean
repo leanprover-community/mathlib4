@@ -98,7 +98,7 @@ lemma Icc_succ_left_eq_Ioc (a b : α) : Icc (succ a) b = Ioc a b := coe_injectiv
 lemma Ico_succ_right_eq_Icc (a b : α) : Ico a (succ b) = Icc a b := coe_injective <| by simp
 
 @[simp]
-lemma Ico_succ_singleton (a : α) : Ico a (succ a) = {a} :=
+lemma Ico_succ_self (a : α) : Ico a (succ a) = {a} :=
   coe_injective <| by simp
 
 lemma Ioo_succ_right_eq_Ioc (a b : α) : Ioo a (succ b) = Ioc a b := coe_injective <| by simp
