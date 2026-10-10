@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
-### Definition of Cayley graphs
+# Definition of Cayley graphs
 
 This file defines and proves several fact about Cayley graphs.
 A Cayley graph over type `M` with generators `s : Set M` is a graph in which two vertices `u ≠ v`
@@ -21,7 +21,8 @@ The elements of `s` are called generators.
 * `SimpleGraph.mulCayley s`: the Cayley graph over `M` induced by `[Mul M]` with generators `s`.
 * `SimpleGraph.addCayley s`: the Cayley graph over `M` induced by `[Add M]` with generators `s`.
 
-## TODOS
+## TODO
+
 * Add API describing behaviour w/r/t `MulOpposite`.
 * Add lemma showing this graph is the same as `SimpleGraph.circulantGraph` in appropriate settings.
 
