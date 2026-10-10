@@ -275,7 +275,10 @@ open Subsemigroup
 /-- Let `s` be a subset of a semigroup `M` such that the closure of `s` is the whole semigroup.
 Then `MulHom.ofDense` defines a mul homomorphism from `M` asking for a proof
 of `f (x * y) = f x * f y` only for `y ∈ s`. -/
-@[to_additive]
+@[to_additive
+/-- Let `s` be a subset of an additive semigroup `M` such that the closure of `s` is the whole
+semigroup.  Then `AddHom.ofDense` defines an additive homomorphism from `M` asking for a proof
+of `f (x + y) = f x + f y` only for `y ∈ s`. -/]
 def ofDense {M N} [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
     (hmul : ∀ (x), ∀ y ∈ s, f (x * y) = f x * f y) :
     M →ₙ* N where
@@ -283,11 +286,6 @@ def ofDense {M N} [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : cl
   map_mul' x y :=
     dense_induction _ hs (fun y hy x => hmul x y hy)
       (fun y₁ y₂ h₁ h₂ x => by simp only [← mul_assoc, h₁, h₂]) y x
-
-/-- Let `s` be a subset of an additive semigroup `M` such that the closure of `s` is the whole
-semigroup.  Then `AddHom.ofDense` defines an additive homomorphism from `M` asking for a proof
-of `f (x + y) = f x + f y` only for `y ∈ s`. -/
-add_decl_doc AddHom.ofDense
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_ofDense [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
