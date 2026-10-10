@@ -5,10 +5,11 @@ Authors: Joël Riou, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-import Mathlib.Order.OrderIsoNat
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Simple
+
+import Mathlib.Order.OrderIsoNat
 
 /-!
 # Artinian objects

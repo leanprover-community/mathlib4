@@ -5,9 +5,10 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 module
 
-import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Order.Ring.Ordering.Defs
 public import Mathlib.Algebra.Ring.SumsOfSquares
+
+import Mathlib.Algebra.Field.IsField
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring

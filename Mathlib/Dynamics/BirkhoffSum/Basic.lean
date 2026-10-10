@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Birkhoff sums

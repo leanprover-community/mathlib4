@@ -5,10 +5,11 @@ Authors: Mario Carneiro, Anne Baanen
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.Hom.RingNorm
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Tactic.Positivity.Core
+
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Absolute values
@@ -421,7 +422,7 @@ If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should
 @[positivity _]
 meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
-  let (.app f a) ← whnfR e | throwError "not abv ·"
+  let (.app f a) ← whnf e | throwError "not abv ·"
   if !f.getAppFn.isFVar then
     throwError "abv: function is not a variable"
   let pa' ← mkAppM ``abv_nonneg #[f, a]
