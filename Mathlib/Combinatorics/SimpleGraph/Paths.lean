@@ -524,24 +524,19 @@ theorem IsPath.eq_snd_or_eq_penultimate_of_start_mem_edges (hp : p.dropLast.IsPa
   rw [or_comm, ← penultimate_reverse, ← snd_reverse]
   exact eq_snd_or_eq_penultimate_of_end_mem_edges (by simpa using hp.reverse) (by simpa)
 
-theorem IsPath.penultimate_eq_of_mem_darts (hp : p.tail.IsPath) {d : G.Dart} (hd : d ∈ p.darts)
-    (hv : v = d.snd) : p.penultimate = d.fst := by
+theorem IsPath.penultimate_eq_of_mem_darts {u v : V} {p : G.Walk u v} (hp : p.tail.IsPath)
+    {d : G.Dart} (hd : d ∈ p.darts) (hv : v = d.snd) : p.penultimate = d.fst := by
   match p with
   | cons _ .nil => simp at hd ⊢; grind only
   | cons _ (cons ..) =>
     cases List.mem_cons.mp hd with
-    | inl hd =>
-      have hne := hp.nil_iff_eq.not.mp not_nil_cons
-      simp_all
-    | inr hd =>
-      have hedge : s(v, d.fst) = d.edge := by rw [Sym2.eq_swap, hv, Dart.sym2Mk_fst_snd]
-      rw [← penultimate_tail_eq_penultimate (by simp), eq_comm]
-      exact hp.eq_penultimate_of_mem_edges (hedge ▸ edge_mem_edges_of_mem_darts hd)
+    | inl hd => simpa [hv, hd] using hp.nil_iff_eq.not.mp not_nil_cons
+    | inr hd => simpa using penultimate_eq_of_mem_darts (IsPath.tail (by simpa using hp)) hd hv
 
 theorem IsPath.snd_eq_of_mem_darts (hp : p.dropLast.IsPath) {d : G.Dart} (hd : d ∈ p.darts)
     (hu : u = d.fst) : p.snd = d.snd := by
-  rw [← penultimate_reverse]
-  simp [penultimate_eq_of_mem_darts (d := d.symm) (by simpa using hp.reverse) (by simpa) hu]
+  rw [← penultimate_reverse, ← Dart.fst_symm]
+  exact penultimate_eq_of_mem_darts (by simpa using hp.reverse) (by simpa) hu
 
 theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
     Set.InjOn f {w | w ∈ p.support} := by

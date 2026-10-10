@@ -808,9 +808,6 @@ theorem getVert_dropLast {n} {p : G.Walk u v} (h : n < p.length) :
     p.dropLast.getVert n = p.getVert n := by
   grind [getVert_eq_support_getElem, length_dropLast, support_dropLast]
 
-lemma snd_dropLast_eq_snd {p : G.Walk u v} (h : p.length ≠ 1) : p.dropLast.snd = p.snd := by
-  match p with | nil | cons _ (cons ..) => simp
-
 @[simp]
 theorem reverse_tail (p : G.Walk u v) :
     p.tail.reverse = p.reverse.dropLast.copy rfl p.penultimate_reverse := by
@@ -859,15 +856,18 @@ lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.tail.getVert n = p.getVert (n + 1) := by
   cases p <;> simp
 
-lemma penultimate_tail_eq_penultimate {p : G.Walk u v} (h : p.length ≠ 1) :
-    p.tail.penultimate = p.penultimate := by
-  match p with | nil | cons _ (cons ..) => simp [penultimate]
-
 lemma getVert_mem_tail_support {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
     ∀ {i : ℕ}, i ≠ 0 → p.getVert i ∈ p.support.tail
   | i + 1, _ => by
     rw [← getVert_tail, ← p.support_tail_of_not_nil hp]
     exact getVert_mem_support ..
+
+lemma snd_dropLast_eq_snd {p : G.Walk u v} (h : p.length ≠ 1) : p.dropLast.snd = p.snd := by
+  match p with | nil | cons _ (cons ..) => simp
+
+lemma penultimate_tail_eq_penultimate {p : G.Walk u v} (h : p.length ≠ 1) :
+    p.tail.penultimate = p.penultimate := by
+  match p with | nil | cons _ (cons ..) => simp [penultimate]
 
 lemma support_injective {u v : V} : (support (G := G) (u := u) (v := v)).Injective :=
   fun _ _ ↦ ext_support
