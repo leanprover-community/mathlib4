@@ -544,9 +544,11 @@ where
           -- Return the trivial model with corners: this will work if `H` is a normed field.
           mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
     return m
-  -- Search for a `ProperlyDiscontinuousSMul G X` instance in the local context.
-  searchProperlyDiscontinuous (G X : Expr) : TermElabM Bool := do
-    let als := ← findSomeLocalInstanceOf? `ProperlyDiscontinuousSMul fun _inst type ↦ do
+  /-- Check if there is a `ProperlyDiscontinousSMul G X` instance in the local context.
+  If so, search for a model with corners on `X` and return that. -/
+  checkIsQuotient (G X : Expr) : TermElabM Expr := do
+    trace[Elab.DiffGeo.MDiff] "`{e}` is the quotient of `{X}` under a `{G}`-action`"
+    let searchPropDis ← findSomeLocalInstanceOf? `ProperlyDiscontinuousSMul fun _inst type ↦ do
       match_expr type with
       | ProperlyDiscontinuousSMul G' α _ _ =>
         if (← withReducible (pureIsDefEq G G')) && (← withReducible (pureIsDefEq α X)) then
@@ -557,26 +559,18 @@ where
             "`ProperlyDiscontinousSMul` instance of `{type}` did not match `{e}`"
           return none
       | _ => return none
-    return als.isSome
+    if searchPropDis.isSome then
+      fromManifoldInner X
+    else
+      throwError "Couldn't find a `ProperlyDiscontinuousSMul` instance for `{G}` action on `{X}` \
+        among local instances."
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold.
   Also test if we have the quotient of a manifold by a discrete group acting. -/
   fromManifold : TermElabM Expr := do
     -- Check if `e` is a quotient first.
     match_expr e with
-    | MulAction.orbitRel.Quotient G M _ _ =>
-      trace[Elab.DiffGeo.MDiff] "`{e}` is the quotient of `{M}` under a `{G}`-action`"
-      if ← searchProperlyDiscontinuous G M then
-        fromManifoldInner M
-      else
-        throwError "Couldn't find a `ProperlyDiscontinuousSMul` instance for `{G}` action on `{M}` \
-          among local instances."
-    | AddAction.orbitRel.Quotient G M _ _ =>
-      trace[Elab.DiffGeo.MDiff] "`{e}` is the quotient of `{M}` under a `{G}`-action`"
-      if ← searchProperlyDiscontinuous G M then
-        fromManifoldInner M
-      else
-        throwError "Couldn't find a `ProperlyDiscontinuousSMul` instance for `{G}` action on `{M}` \
-          among local instances."
+    | MulAction.orbitRel.Quotient G M _ _ => checkIsQuotient G M
+    | AddAction.orbitRel.Quotient G M _ _ => checkIsQuotient G M
     | _ =>
       trace[Elab.DiffGeo.MDiff] "... not a quotient"
       fromManifoldInner e
