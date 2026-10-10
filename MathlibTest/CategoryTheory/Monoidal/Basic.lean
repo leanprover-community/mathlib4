@@ -22,6 +22,12 @@ example : f ≫ g = f ≫ g := by
 example : (f ⊗ₘ g) ▷ X = (α_ _ _ _).hom ≫ (f ⊗ₘ g ▷ X) ≫ (α_ _ _ _).inv := by
   monoidal
 
+example : f ⊗ₘ (W ◁ g) = (α_ _ _ _).inv ≫ ((f ▷ W) ⊗ₘ g) ≫ (α_ _ _ _).hom := by
+  monoidal
+
+example (h : W ⟶ W) : (f ⊗ₘ h) ⊗ₘ (X ◁ g) = (f ⊗ₘ h) ⊗ₘ (X ◁ g) := by
+  monoidal
+
 example {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) :
     R V₁ V₂ ▷ V₃ ⊗≫ V₂ ◁ R V₁ V₃ =
       R V₁ V₂ ▷ V₃ ≫ (α_ _ _ _).hom ⊗≫ 𝟙 _ ≫ V₂ ◁ R V₁ V₃ := by
