@@ -372,11 +372,11 @@ instance : Lattice α where
   le_refl := add_self
   le_trans _ _ _ h₁ h₂ := by rw [← h₂, ← add_assoc, h₁]
   le_antisymm _ _ h₁ h₂ := by rwa [← h₂, add_comm]
-  sup a b := a + b
+  max a b := a + b
   le_sup_left _ _ := by rw [← add_assoc, add_self]
   le_sup_right _ _ := by rw [add_comm, add_assoc, add_self]
   sup_le _ _ _ h₁ h₂ := by rw [add_assoc, h₂, h₁]
-  inf a b := -(-a + -b)
+  min a b := -(-a + -b)
   inf_le_left := min_add_left
   inf_le_right a b := add_comm (-b) _ ▸ min_add_left ..
   le_inf _ _ _ h₁ h₂ := by rw [add_min_distrib, h₁, h₂]
