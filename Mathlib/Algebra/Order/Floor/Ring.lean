@@ -554,7 +554,7 @@ theorem fract_mul_mem_Ico (a : k) (hb : 0 < b) : fract a * b ∈ Ico 0 b :=
   ⟨(mul_nonneg_iff_of_pos_right hb).2 (fract_nonneg a),
     (mul_lt_iff_lt_one_left hb).2 (fract_lt_one a)⟩
 
-@[deprecated fract_mul_mem_Ico (since := "2026-10-11")]
+@[deprecated fract_mul_mem_Ico +typeChanged (since := "2026-10-11")]
 theorem fract_div_mul_self_mem_Ico (a b : k) (ha : 0 < a) : fract (b / a) * a ∈ Ico 0 a :=
   fract_mul_mem_Ico (b / a) ha
 

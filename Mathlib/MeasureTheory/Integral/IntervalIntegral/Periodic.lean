@@ -409,7 +409,7 @@ theorem sInf_add_zsmul_le_integral_of_pos (h_int : IntervalIntegrable g MeasureS
   rw [hg.intervalIntegral_add_zsmul_eq ⌊t / T⌋ ε (hg.intervalIntegrable₀ hT.ne' h_int),
     hg.intervalIntegral_add_eq ε 0, zero_add, add_le_add_iff_right]
   exact (continuous_primitive h'_int 0).continuousOn.sInf_image_Icc_le <|
-    mem_Icc_of_Ico (Int.fract_div_mul_self_mem_Ico T t hT)
+    mem_Icc_of_Ico (Int.fract_mul_mem_Ico _ hT)
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function
 `t ↦ ∫ x in 0..t, g x` is bounded above by `t ↦ X + ⌊t/T⌋ • Y` for appropriate constants `X` and
@@ -426,7 +426,7 @@ theorem integral_le_sSup_add_zsmul_of_pos (h_int : IntervalIntegrable g MeasureS
   rw [hg.intervalIntegral_add_zsmul_eq ⌊t / T⌋ ε h'_int, hg.intervalIntegral_add_eq ε 0, zero_add,
     add_le_add_iff_right]
   exact (continuous_primitive h'_int 0).continuousOn.le_sSup_image_Icc
-    (mem_Icc_of_Ico (Int.fract_div_mul_self_mem_Ico T t hT))
+    (mem_Icc_of_Ico (Int.fract_mul_mem_Ico _ hT))
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then
 `t ↦ ∫ x in 0..t, g x` tends to `∞` as `t` tends to `∞`. -/
