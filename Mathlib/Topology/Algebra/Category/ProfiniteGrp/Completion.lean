@@ -238,19 +238,16 @@ noncomputable def proj (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
     completion G ⟶ ofFiniteGrp <| .of (G ⧸ H.toSubgroup) :=
   limitProj _ _
 
-@[to_additive]
-theorem lift_eq_proj (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
-    lift (GrpCat.ofHom <| QuotientGroup.mk' H.toSubgroup) = proj G H := by
+@[to_additive (attr := reassoc (attr := simp))]
+lemma proj_eta (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
+    eta G ≫ (forget₂ _ _).map (proj G H) = GrpCat.ofHom (QuotientGroup.mk' H.toSubgroup) := by
+  suffices lift (GrpCat.ofHom <| QuotientGroup.mk' H.toSubgroup) = proj G H by
+    rw [← this]
+    exact lift_eta ..
   apply lift_unique
   ext x
   simp [proj]
   rfl
-
-@[to_additive (attr := reassoc (attr := simp))]
-lemma proj_eta (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
-    eta G ≫ (forget₂ _ _).map (proj G H) = GrpCat.ofHom (QuotientGroup.mk' H.toSubgroup) := by
-  rw [← lift_eq_proj]
-  exact lift_eta ..
 
 /-- Two elements of the profinite completion are equal iff all their projections onto quotients of
 finite index are equal. -/
