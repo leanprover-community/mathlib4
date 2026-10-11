@@ -23,7 +23,7 @@ variable {K A Γ : Type*} [Field K] [Ring A] [Algebra K A]
     [LinearOrderedCommGroupWithZero Γ] (v : Valuation A Γ)
 
 /-- If `x` is algebraic over `K`, then `v x` is an n-th root of some `v (algebraMap K A r)`. -/
-public theorem exists_pow_eq_of_isAlgebraic {x : A} (hx : IsAlgebraic K x) :
+public theorem exists_map_pow_eq_map_algebraMap_of_isAlgebraic {x : A} (hx : IsAlgebraic K x) :
     ∃ (n : ℕ) (r : K), n ≠ 0 ∧ v x ^ n = v (algebraMap K A r) := by
   classical
   obtain hx0 | hx0 := eq_or_ne (v x) 0
