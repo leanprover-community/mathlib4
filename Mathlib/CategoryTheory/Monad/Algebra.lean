@@ -163,6 +163,9 @@ def _root_.CategoryTheory.Comonad.Coalgebra.isoMk {T : Comonad C} {A B : Coalgeb
         rw [h.eq_inv_comp, ← reassoc_of% w, ← Functor.map_comp]
         simp }
 
+to_dual_for isoMk := Comonad.Coalgebra.isoMk h (by simpa using congr(h.hom ≫ $w.symm ≫ T.map h.hom))
+to_dual_for Comonad.Coalgebra.isoMk := isoMk h (by simpa using congr(T.map h.hom ≫ $w.symm ≫ h.hom))
+
 end Algebra
 
 variable (T : Monad C)
