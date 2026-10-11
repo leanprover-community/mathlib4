@@ -81,7 +81,7 @@ lemma infinitePi_bernoulliMeasure_map_sum (n : ℕ) :
 
 /-- The sum of `n` independent `p`-Bernoulli random variables with values in `{1, 0}` follows
 the binomial distribution `Bin(n, p)`. -/
-theorem hasLaw_sum_of_iIndepFun_bernoulli [IsProbabilityMeasure P] {X : ℕ → Ω → ℝ}
+theorem hasLaw_sum_of_iIndepFun_bernoulli {X : ℕ → Ω → ℝ}
     (hX : ∀ i, HasLaw (X i) Ber(1, 0, p) P) (hind : iIndepFun X P) (n : ℕ) :
     HasLaw (fun ω ↦ ∑ k ∈ Finset.range n, X k ω) Bin(ℝ, n, p) P := by
   have hpi := hind.hasLaw_infinitePi hX
