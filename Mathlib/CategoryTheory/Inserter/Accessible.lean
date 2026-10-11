@@ -1431,6 +1431,19 @@ public lemma isCardinalPresentable_eq :
   rw [this.isPresentable_eq_retractClosure]
   apply ObjectProperty.retractClosure_eq_self
 
+omit [G.IsCardinalAccessible κ] [F.PreservesCardinalPresentable κ] in
+public lemma isCardinalAccessible_proj :
+    (Inserter.proj F G).IsCardinalAccessible κ := by
+  constructor
+  intro J _ _
+  have : Limits.PreservesColimitsOfShape J F :=
+    Functor.IsCardinalAccessible.preservesColimitOfShape κ J
+  have : Limits.HasColimitsOfShape J K :=
+    HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+  have : Limits.HasColimitsOfShape J L :=
+    HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+  infer_instance
+
 end
 
 public instance {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L)
@@ -1460,5 +1473,10 @@ public instance {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L)
   have : Limits.PreservesColimitsOfShape κ.ord.ToType G :=
     Functor.IsCardinalAccessible.preservesColimitOfShape κ _
   exact ⟨κ', inferInstance, isCardinalAccessibleCategory F G κ' κ.ord.ToType hCard⟩
+
+public instance {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L)
+    [IsAccessibleCategory.{w} K] [IsAccessibleCategory.{w} L]
+    [F.IsAccessible.{w}] [G.IsAccessible.{w}] : (proj F G).IsAccessible.{w} := by
+  sorry
 
 end CategoryTheory.Inserter

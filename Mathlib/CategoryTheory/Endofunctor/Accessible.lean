@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Endofunctor.Pointed.Algebra
 public import Mathlib.CategoryTheory.Endofunctor.Limits
 
 import Mathlib.CategoryTheory.Presentable.Adjunction
+import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
 
 /-! # Accessibility of categories of (co)algebras of an endofunctor
 
@@ -44,8 +45,8 @@ include Λ hΛ
 - There exists an infinite well-order Λ of cardinality < κ such that `C` admits Λ-indexed colimits
   and `F` preserves them.
 
-Then, the class of algebras such that the underlying object of `C` is κ-presentable is a cardinal
-filtered generator for the category of `F`-algebras.
+Then, the class of algebras such that the underlying object of `C` is κ-presentable is
+κ-filtered generator for the category of `F`-algebras.
 
 This is a special case of `CategoryTheory.Inserter.isCardinalAccessibleCategory` where one of the
 functor is the identity functor. -/
@@ -72,7 +73,7 @@ public theorem isCardinalFilteredGenerator :
 - There exists an infinite well-order Λ of cardinality < κ such that `C` admits Λ-indexed colimits
   and `F` preserves them.
 
-Then, the category of `F`-algebras is accessible.
+Then, the category of `F`-algebras is κ-accessible.
 
 This is a special case of `CategoryTheory.Inserter.isCardinalAccessibleCategory` where one of the
 functor is the identity functor. -/
@@ -111,9 +112,21 @@ public instance [IsAccessibleCategory.{w} C] [F.IsAccessible.{w}] :
     IsAccessibleCategory.{w} (Algebra F) :=
   (equivInserter F).symm.isAccessibleCategory.{w}
 
+public instance [IsAccessibleCategory.{w} C] [F.IsAccessible.{w}] :
+    (forget F).IsAccessible.{w} := by
+  obtain ⟨κ₀, _, _⟩ := IsAccessibleCategory.exists_cardinal C
+  obtain ⟨κ, _, _⟩ := Functor.IsAccessible.exists_cardinal F
+  obtain ⟨κ₁, _, h₁, h₂⟩ := Cardinal.SharplyLT.exists_of_pair κ₀ κ
+  refine ⟨κ₁, inferInstance, ?_⟩
+  have : IsCardinalAccessibleCategory C κ₁ := h₁.isCardinalAccessibleCategory C
+  have : F.IsCardinalAccessible κ₁ := Functor.isCardinalAccessible_of_le _ h₂.le
+  exact isCardinalAccessible_forget ..
+
 end Algebra
 
 namespace Coalgebra
+
+section
 
 variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalAccessibleCategory C κ] [F.IsCardinalAccessible κ]
@@ -127,8 +140,8 @@ include Λ hΛ
 - There exists an infinite well-order Λ of cardinality < κ such that `C` admits Λ-indexed colimits
   and `F` preserves them.
 
-Then, the class of coalgebras such that the underlying object of `C` is κ-presentable is a cardinal
-filtered generator for the category of `F`-coalgebras.
+Then, the class of coalgebras such that the underlying object of `C` is κ-presentable is a
+κ-filtered generator for the category of `F`-coalgebras.
 
 This is a special case of `CategoryTheory.Inserter.isCardinalAccessibleCategory` where one of the
 functor is the identity functor. -/
@@ -154,8 +167,7 @@ public theorem isCardinalFilteredGenerator :
 - There exists an infinite well-order Λ of cardinality < κ such that `C` admits Λ-indexed colimits
   and `F` preserves them.
 
-Then, the class of coalgebras such that the underlying object of `C` is κ-presentable is a cardinal
-filtered generator for the category of `F`-coalgebras.
+Then, the category of `F`-coalgebras is κ-accessible.
 
 This is a special case of `CategoryTheory.Inserter.isCardinalAccessibleCategory` where one of the
 functor is the identity functor. -/
@@ -186,6 +198,24 @@ public theorem preservesCardinalPresentable_forget :
     (forget F).PreservesCardinalPresentable κ := by
   constructor
   rw [isCardinalPresentable_eq _ κ Λ hΛ]
+
+end
+
+/-- Let `F` be an accessible endofunctor of an accessible category.
+The category of `F`-coalgebras is accessible. -/
+public instance [IsAccessibleCategory.{w} C] [F.IsAccessible.{w}] :
+    IsAccessibleCategory.{w} (Coalgebra F) :=
+  (equivInserter F).symm.isAccessibleCategory.{w}
+
+public instance [IsAccessibleCategory.{w} C] [F.IsAccessible.{w}] :
+    (forget F).IsAccessible.{w} := by
+  obtain ⟨κ₀, _, _⟩ := IsAccessibleCategory.exists_cardinal C
+  obtain ⟨κ, _, _⟩ := Functor.IsAccessible.exists_cardinal F
+  obtain ⟨κ₁, _, h₁, h₂⟩ := Cardinal.SharplyLT.exists_of_pair κ₀ κ
+  refine ⟨κ₁, inferInstance, ?_⟩
+  have : IsCardinalAccessibleCategory C κ₁ := h₁.isCardinalAccessibleCategory C
+  have : F.IsCardinalAccessible κ₁ := Functor.isCardinalAccessible_of_le _ h₂.le
+  exact isCardinalAccessible_forget ..
 
 end Coalgebra
 
