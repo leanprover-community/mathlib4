@@ -38,7 +38,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*](bourbaki1975b)
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*][bourbaki1975b]
 
 ## Tags
 

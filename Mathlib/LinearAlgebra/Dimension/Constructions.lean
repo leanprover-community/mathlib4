@@ -330,7 +330,6 @@ variable {R}
 -- TODO: merge with the `Finrank` content
 /-- An `n`-dimensional `R`-vector space is equivalent to `Fin n → R`. -/
 def finDimVectorspaceEquiv (n : ℕ) (hn : Module.rank R M = n) : M ≃ₗ[R] Fin n → R := by
-  haveI := nontrivial_of_invariantBasisNumber R
   have : Cardinal.lift.{u} (n : Cardinal.{v}) = Cardinal.lift.{v} (n : Cardinal.{u}) := by simp
   have hn := Cardinal.lift_inj.{v, u}.2 hn
   rw [this] at hn
@@ -460,7 +459,7 @@ theorem finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
   rw [Set.toFinset_range]
   exact Finset.card_image_le
 
-theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι → M}
+theorem finrank_span_eq_card {ι : Type*} [Fintype ι] {b : ι → M}
     (hb : LinearIndependent R b) :
     finrank R (span R (Set.range b)) = Fintype.card ι :=
   finrank_eq_of_rank_eq
@@ -510,7 +509,7 @@ lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
   exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
 
 @[simp]
-lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
+lemma Pi.dim_spanSubset [Finite ι] {s : Set ι} :
     Module.finrank R (Pi.spanSubset R s) = s.ncard := by
   classical
   have := Fintype.ofFinite ι
