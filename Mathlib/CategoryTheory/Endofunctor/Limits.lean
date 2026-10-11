@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 # Colimits of (co)algebras
 
 Let `F : C ⥤ C` be an endofunctor. We show that the
-category of `Algebra F` has all colimits preserved by `F`, and that the
+category `Algebra F` has all colimits preserved by `F`, and that the
 forgetful functor `Algebra F ⥤ C` preserves and reflect these colimits.
 
 # TODO: dualise to limits

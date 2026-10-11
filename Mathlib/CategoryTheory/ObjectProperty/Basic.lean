@@ -154,6 +154,10 @@ def inverseImage (P : ObjectProperty D) (F : C ⥤ D) : ObjectProperty C :=
 lemma prop_inverseImage_iff (P : ObjectProperty D) (F : C ⥤ D) (X : C) :
     P.inverseImage F X ↔ P (F.obj X) := Iff.rfl
 
+lemma inverseImage_comp {E : Type*} [Category* E] (P : ObjectProperty E) (F : C ⥤ D) (G : D ⥤ E) :
+    P.inverseImage (F ⋙ G) = (P.inverseImage G).inverseImage F :=
+  rfl
+
 /-- The essential image of a property of objects by a functor. -/
 def map (P : ObjectProperty C) (F : C ⥤ D) : ObjectProperty D :=
   fun Y ↦ ∃ (X : C), P X ∧ Nonempty (F.obj X ≅ Y)
