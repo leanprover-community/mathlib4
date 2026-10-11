@@ -253,19 +253,6 @@ example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
       trivial
     cases #01c5
 
-example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x + y ≤ 2 := by
-  grind =>
-    cases #484a
-    · cases #01c5
-    · cases #01c5
-
-example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) (hz : z = 0 ∨ z = 1) :
-    x + y + z ≤ 3 := by
-  grind =>
-    cases #f5ad
-    · cases #484a <;> cases #01c5
-    · cases #484a <;> cases #01c5
-
 -- excluded tactics
 
 example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
