@@ -5,10 +5,11 @@ Authors: Zhouhang Zhou
 -/
 module
 
+public import Mathlib.Tactic.Linarith.Frontend
+
 import Mathlib.Order.Filter.AtTopBot.Field
 import Mathlib.Tactic.Field
 import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Linarith.Frontend
 
 /-!
 # Quadratic discriminants and roots of a quadratic

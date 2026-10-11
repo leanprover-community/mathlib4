@@ -5,10 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Jacobson radical of modules and rings

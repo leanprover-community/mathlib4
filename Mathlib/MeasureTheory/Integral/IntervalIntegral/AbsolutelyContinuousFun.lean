@@ -5,8 +5,9 @@ Authors: Yizheng Zhu
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 
 /-!

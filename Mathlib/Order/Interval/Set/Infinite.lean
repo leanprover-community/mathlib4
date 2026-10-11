@@ -6,6 +6,7 @@ Authors: Reid Barton
 module
 
 public import Mathlib.Data.Set.Finite.Basic
+
 import Mathlib.Order.Interval.Set.Basic
 
 /-!
