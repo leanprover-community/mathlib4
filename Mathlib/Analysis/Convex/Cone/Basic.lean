@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade, Yaël Dillies
 -/
 module
+
 public import Mathlib.Analysis.Convex.Cone.Closure
-public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Order.Module
@@ -79,7 +79,7 @@ instance : SetLike (ProperCone R E) E where
   coe C := C.carrier
   coe_injective _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
 
-instance : PartialOrder (ProperCone R E) := .ofSetLike (ProperCone R E) E
+instance : PartialOrder (ProperCone R E) := .ofSetLike (ProperCone R E)
 
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
