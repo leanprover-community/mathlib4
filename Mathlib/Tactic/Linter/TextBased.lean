@@ -524,8 +524,11 @@ def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : A
       numberErrorFiles := numberErrorFiles + 1
   formatErrors allUnexpectedErrors style
   if allUnexpectedErrors.size > 0 then
-    IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)! \
-      Try `lake exe lint-style --fix` to apply automatic fixes."
+    if fix then
+      IO.eprintln s!"info: found and fixed {allUnexpectedErrors.size} new style error(s)!"
+    else
+      IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)! \
+        Try `lake exe lint-style --fix` to apply automatic fixes."
   return numberErrorFiles
 
 /-- Verify that all modules are named in `UpperCamelCase` -/

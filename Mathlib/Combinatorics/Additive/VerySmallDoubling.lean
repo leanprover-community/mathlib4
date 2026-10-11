@@ -5,9 +5,10 @@ Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.Pointwise.Stabilizer
 public import Mathlib.Combinatorics.Additive.Convolution
 public import Mathlib.NumberTheory.Real.GoldenRatio
+
+import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Qify
 

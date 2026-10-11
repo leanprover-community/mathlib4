@@ -5,13 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Abelian.CommSq
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
-import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 public import Mathlib.CategoryTheory.SmallObject.Basic
 public import Mathlib.CategoryTheory.Subobject.HasCardinalLT
 public import Mathlib.Order.TransfiniteIteration
+
+import Mathlib.CategoryTheory.Abelian.CommSq
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
+import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 
 /-!
 # Grothendieck abelian categories have enough injectives

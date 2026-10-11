@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+
 import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 
 /-!

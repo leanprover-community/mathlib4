@@ -6,8 +6,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 public meta import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-! # Power function on `ℝ`
 
@@ -474,8 +474,9 @@ theorem rpow_neg_one (x : ℝ) : x ^ (-1 : ℝ) = x⁻¹ := by
   rw [rpow_neg_eq_inv_rpow, rpow_one]
 
 theorem mul_rpow (hx : 0 ≤ x) (hy : 0 ≤ y) : (x * y) ^ z = x ^ z * y ^ z := by
-  iterate 2 rw [rpow_def_of_nonneg (by positivity)]; split_ifs with nz
-  on_goal 4 =>
+  rw [rpow_def_of_nonneg (by positivity)]
+  split_ifs with nz
+  on_goal 3 =>
     rw [← Ne, mul_ne_zero_iff] at nz
     rw [log_mul nz.1 nz.2, add_mul, exp_add, rpow_def_of_pos (hx.lt_of_ne' nz.1),
       rpow_def_of_pos (hy.lt_of_ne' nz.2)]

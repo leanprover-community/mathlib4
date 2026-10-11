@@ -6,10 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.UnitInterval
+
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`

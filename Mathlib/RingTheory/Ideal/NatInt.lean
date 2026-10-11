@@ -6,8 +6,8 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.RingTheory.Int.Basic
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # Prime ideals in ℕ and ℤ

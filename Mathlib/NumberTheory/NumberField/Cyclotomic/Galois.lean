@@ -5,10 +5,11 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.FieldTheory.Finite.Extension
 public import Mathlib.NumberTheory.Cyclotomic.Gal
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
+
+import Mathlib.FieldTheory.Finite.Extension
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 import Mathlib.NumberTheory.NumberField.Ideal.Basic
 
