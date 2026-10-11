@@ -876,6 +876,23 @@ protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingl
 
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsAdicComplete I M where
 
+variable {I} in
+/-- A module is complete and Hausdorff with respect to a nilpotent ideal. -/
+theorem of_isNilpotent (hI : IsNilpotent I) : IsAdicComplete I M := by
+  obtain ⟨k, hk⟩ := hI
+  have h {n : ℕ} (hn : k ≤ n) : (I ^ n • ⊤ : Submodule R M) = ⊥ := by
+    have : I ^ n = ⊥ := by
+      rw [eq_bot_iff, ← Ideal.zero_eq_bot, ← hk]
+      exact Ideal.pow_le_pow_right hn
+    rw [this, Submodule.bot_smul]
+  refine { haus' x hx := ?_, prec' f hf := ⟨f k, fun n ↦ ?_⟩ }
+  · simpa [h le_rfl, SModEq.zero] using hx k
+  · rcases le_total n k with hn | hn
+    · exact hf hn
+    · have := hf hn
+      rw [h le_rfl, SModEq.bot] at this
+      rw [this]
+
 open Finset
 
 theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
