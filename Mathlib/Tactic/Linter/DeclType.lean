@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.OverlappingInstances
+public import Mathlib.Tactic.Linter.UnusedInstancesInType
 
 /-!
 # Declaration type linters

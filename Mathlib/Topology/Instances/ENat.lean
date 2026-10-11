@@ -6,8 +6,8 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Data.ENat.Monoid
-public import Mathlib.Topology.Instances.Discrete
 public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Instances.Discrete
 
 /-!
 # Topology on extended natural numbers

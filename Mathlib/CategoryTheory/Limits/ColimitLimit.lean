@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
-import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # The morphism comparing a colimit of limits with the corresponding limit of colimits.
