@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.ZMod.Aut
 public import Mathlib.GroupTheory.Exponent
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.IntervalCases
 
@@ -289,7 +289,10 @@ theorem isCyclic_of_isCoatom_subsingleton {G : Type*} [Group G] [IsCoatomic (Sub
 
 section SpecificInstances
 
-instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
+/-- Every subgroup of `ℤ` is cyclic. -/
+@[deprecated AddSubgroup.isAddCyclic +typeChanged (since := "2026-08-30")]
+theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : IsAddCyclic H :=
+  H.isAddCyclic
 
 instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
   isAddCyclic_of_surjective (Int.castRingHom _) ZMod.intCast_surjective

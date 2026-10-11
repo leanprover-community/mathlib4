@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
 
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Tactic.AdaptationNote

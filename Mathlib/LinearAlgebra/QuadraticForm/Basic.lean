@@ -5,9 +5,9 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 
 /-!
 # Quadratic maps

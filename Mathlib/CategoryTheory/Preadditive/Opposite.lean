@@ -6,8 +6,8 @@ Authors: Kim Morrison, Adam Topaz, Johan Commelin, Joël Riou
 module
 
 public import Mathlib.Algebra.Module.Equiv.Defs
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # If `C` is preadditive, `Cᵒᵖ` has a natural preadditive structure.

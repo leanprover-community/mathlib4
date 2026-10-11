@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
 public import Mathlib.Analysis.Normed.Operator.Compact.FiniteDimension
+public import Mathlib.Data.Fin.Tuple.Sort
 public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.Data.Fin.Tuple.Sort
 
 import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
 import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
