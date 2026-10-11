@@ -91,7 +91,7 @@ open scoped Classical in
 protected def symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) : F →ₗ[R] E b := by
   refine if hb : b ∈ e.baseSet then IsLinearMap.mk' (e.symm b) ?_ else 0
   exact (((e.linear R hb).mk' _).inverse (e.symm b) (e.symm_apply_apply_mk hb) fun v ↦
-    congr_arg Prod.snd <| e.apply_mk_symm hb v).isLinear
+    congr($(e.apply_mk_symm hb v).snd)).isLinear
 
 @[simp]
 lemma symmₗ_apply (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
@@ -311,7 +311,7 @@ theorem symm_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.
 theorem coordChangeL_apply (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet ∩ e'.baseSet) (y : F) :
     coordChangeL R e e' b y = (e' ⟨b, e.symm b y⟩).2 :=
-  congr_fun (coe_coordChangeL e e' hb) y
+  congr($(coe_coordChangeL e e' hb) y)
 
 theorem mk_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet ∩ e'.baseSet) (y : F) :
@@ -502,7 +502,7 @@ theorem continuous_zeroSection [VectorBundle R F E] :
   apply (continuousAt_const (y := 0)).congr_of_eventuallyEq
   filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
     (mem_baseSet_trivializationAt F E x)] with y hy
-    using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection R hy
+    using congr($((trivializationAt F E x).zeroSection R hy).snd)
 
 /-- The zero section of a vector bundle is continuous on any set. -/
 theorem continuousOn_zeroSection [VectorBundle R F E] (s : Set B) :

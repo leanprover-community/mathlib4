@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
+public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.NumberTheory.FundamentalDiscriminant
 public import Mathlib.RingTheory.Localization.FractionRing
@@ -44,7 +45,7 @@ parameters the order is maximal, that is, is the integral closure of `ℤ` in
 quadratic algebra, quadratic order, integral closure, fundamental discriminant
 -/
 
-@[expose] public section
+public section
 
 namespace QuadraticAlgebra
 
@@ -55,49 +56,47 @@ namespace Int
 variable {a b : ℤ}
 
 noncomputable instance : Algebra (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) :=
-  (baseChange ℚ a b).toRingHom.toAlgebra
+  QuadraticAlgebra.algebra ℚ a b
 
 instance : IsScalarTower ℤ (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) :=
   .of_algHom (baseChange ℚ a b)
 
-/-- The algebra map of the order into `QuadraticAlgebra ℚ a b` is the base change map. -/
-theorem algebraMap_eq (x : QuadraticAlgebra ℤ a b) :
-    algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = baseChange ℚ a b x := rfl
-
-/-- The algebra map preserves the `re` part. -/
 @[simp]
-theorem algebraMap_re_eq (x : QuadraticAlgebra ℤ a b) :
-    (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).re = x.re := by
-  simp [algebraMap_eq, re_baseChange_apply ℚ]
+theorem re_algebraMap (x : QuadraticAlgebra ℤ a b) :
+    (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).re = x.re := rfl
 
-/-- The algebra map preserves the `im` part. -/
 @[simp]
-theorem algebraMap_im_eq (x : QuadraticAlgebra ℤ a b) :
-    (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).im = x.im := by
-  simp [algebraMap_eq, im_baseChange_apply ℚ]
+theorem im_algebraMap (x : QuadraticAlgebra ℤ a b) :
+    (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).im = x.im := rfl
+
+@[simp]
+theorem norm_algebraMap_eq (x : QuadraticAlgebra ℤ a b) :
+    norm (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x) = norm x :=
+  norm_mapRingHom (algebraMap ℤ ℚ) a b x
+
+@[simp]
+theorem trace_algebraMap_eq (x : QuadraticAlgebra ℤ a b) :
+    trace (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x) = trace x :=
+  trace_mapRingHom (algebraMap ℤ ℚ) a b x
 
 instance : FaithfulSMul (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) :=
   (faithfulSMul_iff_algebraMap_injective _ _).mpr <| baseChange_injective ℚ _ _
 
-/-- The discriminant commutes with the coercion `ℤ → ℚ`. -/
-theorem discr_intCast :
-    discr (a : ℚ) (b : ℚ) = discr a b := by
-  simpa using discr_algebraMap (S := ℚ) a b
-
 open scoped nonZeroDivisors
 
-/-- Every element of `QuadraticAlgebra ℚ a b` has a positive integer denominator. -/
 theorem exists_nat_smul_mem (z : QuadraticAlgebra ℚ a b) :
-    ∃ n : ℕ, 0 < n ∧ n • z ∈ Set.range (baseChange ℚ a b) := by
+    ∃ n : ℕ, 0 < n ∧
+      n • z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) := by
   obtain ⟨n, hn, x, y, hx, hy⟩ : ∃ n : ℕ, 0 < n ∧ ∃ x y : ℤ, n * z.re = x ∧ n * z.im = y :=
     ⟨z.re.den * z.im.den, by positivity, z.im.den * z.re.num, z.re.den * z.im.num,
       by push_cast; grind [← Rat.mul_den_eq_num]⟩
   refine ⟨n, hn, x • 1 + y • ω, ?_⟩
-  ext <;> simp [re_baseChange_apply ℚ, im_baseChange_apply ℚ, hx, hy]
+  ext <;> simp [hx, hy]
 
+-- TODO: generalize this instance: if `S` is the localization of `R` at `M`, then
+-- `QuadraticAlgebra S a b` is the localization of `QuadraticAlgebra R a b` at the image of `M`.
 /-- `QuadraticAlgebra ℚ a b` is the localization of the order `QuadraticAlgebra ℤ a b` at the
-nonzero integers. This is not `IsFractionRing` in general: `QuadraticAlgebra ℤ a b` need not be a
-domain (see `isDomain_iff`). -/
+nonzero integers. -/
 noncomputable instance :
     IsLocalization (algebraMapSubmonoid (QuadraticAlgebra ℤ a b) ℤ⁰)
       (QuadraticAlgebra ℚ a b) := by
@@ -106,21 +105,23 @@ noncomputable instance :
     rw [← hy, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply ℤ ℚ]
     exact IsUnit.map _ <| by simpa [isUnit_iff_ne_zero] using hx
   · obtain ⟨n, hn, ⟨w, hw⟩⟩ := exists_nat_smul_mem x
-    exact ⟨⟨w, n, ⟨n, by simpa using hn.ne', rfl⟩⟩, by simp [algebraMap_eq, hw, mul_comm]⟩
+    exact ⟨⟨w, n, ⟨n, by simpa using hn.ne', rfl⟩⟩, by simp [hw, mul_comm]⟩
 
 instance : IsFractionRing (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) := by
   refine IsLocalization.of_le (algebraMapSubmonoid (QuadraticAlgebra ℤ a b) ℤ⁰) _ ?_ ?_
   · rintro _ ⟨x, hx, rfl⟩
     exact norm_mem_nonZeroDivisors_iff.mp <| by simpa using hx
   · intro x hx
-    rwa [isUnit_iff_norm_isUnit, isUnit_iff_ne_zero, algebraMap_eq, norm_baseChange ℚ a b,
-      eq_intCast, Int.cast_ne_zero, ← mem_nonZeroDivisors_iff_ne_zero, norm_mem_nonZeroDivisors_iff]
+    rwa [isUnit_iff_norm_isUnit, isUnit_iff_ne_zero, norm_algebraMap_eq, Int.cast_ne_zero,
+      ← mem_nonZeroDivisors_iff_ne_zero, norm_mem_nonZeroDivisors_iff]
 
-/-- The order `QuadraticAlgebra ℤ a b` is a domain iff `discr a b` is not a square. -/
 theorem isDomain_iff :
     IsDomain (QuadraticAlgebra ℤ a b) ↔ ¬ IsSquare (discr a b) := by
   simp [IsFractionRing.isDomain_iff_isField (K := QuadraticAlgebra ℚ a b),
     isField_iff_not_isSquare_discr, discr_intCast]
+
+instance [Fact (¬ IsSquare (discr a b))] : IsDomain (QuadraticAlgebra ℤ a b) :=
+  isDomain_iff.mpr Fact.out
 
 /-!
 ### Maximality of the order
@@ -205,7 +206,7 @@ theorem isIntegral_inv_smul_of_dvd {d s : ℤ} (hs : d ∣ s)
     refine ⟨(s - b) / 2, ?_⟩
     suffices 2 ∣ (s + b) ∨ 2 ∣ (s - b) by lia
     rw [← Int.prime_two.dvd_mul, ← sq_sub_sq, ← dvd_sub_left (by lia : 2 ∣ 4 * a), sub_sub]
-    exact dvd_trans (by lia) hs'
+    exact dvd_trans (Dvd.dvd.mul_right (by norm_num) _) (discr_def a b ▸ hs')
   obtain ⟨u, hu⟩ := hs
   obtain ⟨v, hv⟩ := hs'
   refine isIntegral_iff.mpr ⟨⟨u, ?_⟩, ⟨v, ?_⟩⟩ <;> rw [algebraMap_int_eq, eq_intCast]
@@ -233,7 +234,8 @@ theorem im_inv_smul_notMem_range {d : ℤ} (t : ℤ) (hd : (d : ℚ) ≠ 0) (hd'
 theorem exists_unsaturated_of_sq_mul {d e : ℤ} (hd : 1 < d.natAbs) (he : discr a b = d ^ 2 * e)
     (he' : e % 4 = 0 ∨ e % 4 = 1) :
     ∃ z : QuadraticAlgebra ℚ a b, IsIntegral ℤ z ∧
-      d • z ∈ Set.range (baseChange ℚ a b) ∧ z ∉ Set.range (baseChange ℚ a b) := by
+      d • z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) ∧
+        z ∉ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) := by
   have hd₀ : (d : ℚ) ≠ 0 := by aesop
   refine ⟨(d : ℚ)⁻¹ • (((d * e - b) / 2 : ℤ) • 1 + ω),
     isIntegral_inv_smul_of_dvd (dvd_mul_right d e) ?_, ?_, ?_⟩
@@ -243,9 +245,9 @@ theorem exists_unsaturated_of_sq_mul {d e : ℤ} (hd : 1 < d.natAbs) (he : discr
     · exact Int.dvd_mul_of_dvd_left <| by lia
     · exact Int.dvd_mul_of_dvd_right <| by lia
   · rw [← Int.cast_smul_eq_zsmul ℚ d, smul_smul, mul_inv_cancel₀ hd₀, one_smul]
-    exact ⟨((d * e - b) / 2) • 1 + ω, by simp [baseChange_omega ℚ]⟩
+    exact ⟨((d * e - b) / 2) • 1 + ω, by ext <;> simp⟩
   · exact fun ⟨x, hx⟩ ↦ im_inv_smul_notMem_range a b ((d * e - b) / 2) hd₀ hd
-      ⟨_, by simpa [im_baseChange_apply ℚ] using congr_arg im hx⟩
+      ⟨_, by simpa using congr_arg im hx⟩
 
 /-- For an integral element, an integer `im` part forces an integer `re` part. -/
 theorem re_mem_range_of_im_mem_range {z : QuadraticAlgebra ℚ a b} (h : IsIntegral ℤ z)
@@ -259,26 +261,28 @@ theorem re_mem_range_of_im_mem_range {z : QuadraticAlgebra ℚ a b} (h : IsInteg
 /-- If `x` in the order maps to `d • z` with `z` integral and `d ∣ x.im`, then `z` already lies in
 the order. -/
 theorem mem_range_of_dvd_im {z : QuadraticAlgebra ℚ a b} {x : QuadraticAlgebra ℤ a b} {d : ℤ}
-    (hz : IsIntegral ℤ z) (hd : d ≠ 0) (hx : baseChange ℚ a b x = d • z) (him : d ∣ x.im) :
-    z ∈ Set.range (baseChange ℚ a b) := by
+    (hz : IsIntegral ℤ z) (hd : d ≠ 0)
+    (hx : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = d • z) (him : d ∣ x.im) :
+    z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) := by
   obtain ⟨v, hv⟩ := him
   replace hv : v = z.im := by
-    have : x.im = d * z.im := by simpa [im_baseChange_apply ℚ] using congr_arg im hx
+    have : x.im = d * z.im := by simpa using congr_arg im hx
     rwa [hv, Int.cast_mul, mul_right_inj' (Int.cast_ne_zero.mpr hd)] at this
   obtain ⟨u, hu⟩ : z.re ∈ Set.range (algebraMap ℤ ℚ) := re_mem_range_of_im_mem_range hz ⟨v, hv⟩
   refine ⟨u • 1 + v • ω, ?_⟩
-  simpa [QuadraticAlgebra.ext_iff, im_baseChange_apply ℚ, re_baseChange_apply ℚ] using ⟨hu, hv⟩
+  simpa [QuadraticAlgebra.ext_iff] using ⟨hu, hv⟩
 
 /-- If `x` in the order maps to `d • z` with `z` integral, then `discr a b * x.im ^ 2` is `d ^ 2`
 times `t ^ 2 - 4 * n`, where `t` and `n` are the trace and the norm of `z`. -/
 theorem exists_discr_mul_im_sq_eq {z : QuadraticAlgebra ℚ a b} {x : QuadraticAlgebra ℤ a b}
-    {d : ℤ} (hz : IsIntegral ℤ z) (hx : baseChange ℚ a b x = d • z) :
+    {d : ℤ} (hz : IsIntegral ℤ z)
+    (hx : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = d • z) :
     ∃ t n : ℤ, discr a b * x.im ^ 2 = d ^ 2 * (t ^ 2 - 4 * n) := by
   obtain ⟨⟨t, ht⟩, ⟨n, hn⟩⟩ := isIntegral_iff.mp hz
   simp only [algebraMap_int_eq, eq_intCast] at ht hn
   refine ⟨t, n, ?_⟩
   apply FaithfulSMul.algebraMap_injective ℤ ℚ
-  have : x.im = d * z.im := by simpa [im_baseChange_apply ℚ] using congr_arg im hx
+  have : x.im = d * z.im := by simpa using congr_arg im hx
   simp [ht, hn, four_mul_norm_eq, this, discr_intCast]
   ring
 
@@ -287,7 +291,8 @@ integer `≡ 0, 1 mod 4`. For `p` odd that last condition is automatic, so this 
 `p ^ 2 ∤ discr a b`. -/
 theorem saturated_iff_of_odd (p : ℕ) (hp₁ : p.Prime) (hp₂ : Odd p) :
     (∀ z : QuadraticAlgebra ℚ a b, IsIntegral ℤ z →
-        p • z ∈ Set.range (baseChange ℚ a b) → z ∈ Set.range (baseChange ℚ a b)) ↔
+        p • z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) →
+          z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b))) ↔
       ¬ ∃ e : ℤ, discr a b = (p : ℤ) ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
   let q := (p : ℤ)
   have hq₁ : Prime q := Nat.prime_iff_prime_int.mp hp₁
@@ -309,7 +314,8 @@ theorem saturated_iff_of_odd (p : ℕ) (hp₁ : p.Prime) (hp₂ : Odd p) :
 that is, iff `discr a b` is not four times another discriminant. -/
 theorem saturated_two_iff :
     (∀ z : QuadraticAlgebra ℚ a b, IsIntegral ℤ z →
-        2 • z ∈ Set.range (baseChange ℚ a b) → z ∈ Set.range (baseChange ℚ a b)) ↔
+        2 • z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) →
+          z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b))) ↔
       ¬ ∃ e : ℤ, discr a b = (2 : ℤ) ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
   refine ⟨fun hsat ⟨e, he, he'⟩ ↦ ?_, fun h z hz ⟨x, hx⟩ ↦ ?_⟩
   · obtain ⟨z, hz₁, hz₂, hz₃⟩ := exists_unsaturated_of_sq_mul (d := 2) (by norm_num) he he'
@@ -332,7 +338,8 @@ every prime. -/
 theorem isIntegralClosure_iff_forall_prime :
     IsIntegralClosure (QuadraticAlgebra ℤ a b) ℤ (QuadraticAlgebra ℚ a b) ↔
       ∀ p : ℕ, p.Prime → ∀ z : QuadraticAlgebra ℚ a b, IsIntegral ℤ z →
-        p • z ∈ Set.range (baseChange ℚ a b) → z ∈ Set.range (baseChange ℚ a b) := by
+        p • z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) →
+          z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) := by
   rw [isIntegralClosure_iff]
   refine ⟨fun h p _ z hz _ ↦ (h z).mp hz, fun h z ↦ ⟨fun hz ↦ ?_, ?_⟩⟩
   · obtain ⟨n, hn, hw⟩ := exists_nat_smul_mem z
@@ -345,7 +352,7 @@ theorem isIntegralClosure_iff_forall_prime :
           · exact (Nat.lt_div_iff_mul_lt' hpn 0).mpr hn
           · rwa [smul_smul, Nat.div_mul_cancel hpn]
   · rintro ⟨w, rfl⟩
-    exact (Algebra.IsIntegral.isIntegral w).map (baseChange ℚ a b)
+    exact (Algebra.IsIntegral.isIntegral w).map (IsScalarTower.toAlgHom ℤ _ _)
 
 /-- The order `QuadraticAlgebra ℤ a b` is the integral closure of `ℤ` in `QuadraticAlgebra ℚ a b`
 iff `discr a b` is a fundamental discriminant. -/
