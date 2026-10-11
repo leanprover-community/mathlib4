@@ -67,7 +67,7 @@ lemma infinitePi_bernoulliMeasure_map_sum (n : ℕ) :
     rw [map_bernoulliMeasure]
     simp [bernoulliMeasure_def]
   have hm : Measurable fun (ω : ℕ → Prop) (i : ℕ) ↦ if ω i then (1 : ℝ) else 0 :=
-    measurable_pi_lambda _ fun i ↦ (Measurable.of_discrete (f := fun b : Prop ↦
+    Measurable.of_eval fun i ↦ (Measurable.of_discrete (f := fun b : Prop ↦
       if b then (1 : ℝ) else 0)).comp (measurable_pi_apply i)
   rw [binomial, h₂, h₁, Measure.map_map (by fun_prop) hm,
     Measure.map_map (by fun_prop) (by fun_prop), Measure.map_map (by fun_prop) (by fun_prop),
@@ -85,7 +85,7 @@ theorem hasLaw_sum_of_iIndepFun_bernoulli [IsProbabilityMeasure P] {X : ℕ → 
     (hX : ∀ i, HasLaw (X i) Ber(1, 0, p) P) (hind : iIndepFun X P) (n : ℕ) :
     HasLaw (fun ω ↦ ∑ k ∈ Finset.range n, X k ω) Bin(ℝ, n, p) P := by
   have hpi := hind.hasLaw_infinitePi hX
-    (aemeasurable_pi_lambda _ fun i ↦ (hX i).aemeasurable)
+    (AEMeasurable.of_eval fun i ↦ (hX i).aemeasurable)
   have hsum : HasLaw (fun x : ℕ → ℝ ↦ ∑ k ∈ Finset.range n, x k) Bin(ℝ, n, p)
       (Measure.infinitePi fun _ : ℕ ↦ Ber((1 : ℝ), 0, p)) :=
     ⟨by fun_prop, infinitePi_bernoulliMeasure_map_sum n⟩
