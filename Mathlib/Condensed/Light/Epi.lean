@@ -5,10 +5,11 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
-public import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
 public import Mathlib.Condensed.Light.Functors
 public import Mathlib.Condensed.Light.Limits
+
+import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
+import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
 /-!
 
 # Epimorphisms of light condensed objects
