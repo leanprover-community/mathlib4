@@ -158,12 +158,6 @@ register_option linter.translate.overwrite : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the attribute was already applied" }
 
-/-- Linter used by translate attributes that checks if the attribute was already applied -/
-@[deprecated linter.translate.overwrite (since := "2026-09-27")]
-register_option linter.translateOverwrite : Bool := {
-  defValue := true
-  descr := "Linter used by translate attributes that checks if the attribute was already applied" }
-
 /-- Linter used by translate attributes that checks if the attribute is redundant -/
 register_option linter.translate.redundant : Bool := {
   defValue := true
@@ -175,6 +169,51 @@ register_option linter.translate.warnInvalid : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that warns when a translation was not added
     because of being invalid." }
+
+
+/-- Linter used by translate attributes that checks if the given declaration name is
+    equal to the automatically generated name -/
+@[deprecated linter.translate.generateName (since := "2026-10-12")]
+register_option linter.translateGenerateName : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the given declaration name is \
+    equal to the automatically generated name" }
+
+/-- Linter to check whether the user correctly specified that the translated declaration already
+exists -/
+@[deprecated linter.translate.existing (since := "2026-10-12")]
+register_option linter.translateExisting : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks whether the user correctly specified
+    that the translated declaration already exists" }
+
+/-- Linter used by translate attributes that checks if the given reorder is
+    equal to the automatically generated name -/
+    @[deprecated linter.translate.reorder (since := "2026-10-12")]
+register_option linter.translateReorder : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the given reorder is \
+    equal to the automatically generated one" }
+
+/-- Linter used by translate attributes that checks if the `relevant_arg` is
+automatically generated. -/
+@[deprecated linter.translate.relevantArg (since := "2026-10-12")]
+register_option linter.translateRelevantArg : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the relevant_arg is \
+    automatically generated" }
+
+/-- Linter used by translate attributes that checks if the attribute was already applied -/
+@[deprecated linter.translate.overwrite (since := "2026-10-12")]
+register_option linter.translateOverwrite : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the attribute was already applied" }
+
+/-- Linter used by translate attributes that checks if the attribute is redundant -/
+@[deprecated linter.translate.redundant (since := "2026-10-12")]
+register_option linter.translateRedundant : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the attribute is redundant" }
 
 /-- Add a translation to the translations map. If the translation attribute is dual,
 also add the reverse translation, but don't do this when `unfold := true`,
