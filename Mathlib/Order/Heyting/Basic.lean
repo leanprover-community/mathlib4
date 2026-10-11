@@ -120,29 +120,10 @@ class CoheytingAlgebra (α : Type*) extends GeneralizedCoheytingAlgebra α, Orde
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 
-section
-
-@[simp low] -- low priority so that it doesn't overwrite user-provided simp lemmas
-theorem sdiff_le_iff [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ b ⊔ c :=
-  GeneralizedCoheytingAlgebra.sdiff_le_iff _ _ _
-
-theorem sdiff_le_iff' [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ c ⊔ b := by
-  rw [sdiff_le_iff, sup_comm]
-
-/-- `p → q → r ↔ p ∧ q → r` -/
-@[to_dual existing sdiff_le_iff', simp]
-theorem le_himp_iff [GeneralizedHeytingAlgebra α] {a b c : α} : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
-  GeneralizedHeytingAlgebra.le_himp_iff _ _ _
-
-/-- `p → q → r ↔ q ∧ p → r` -/
-@[to_dual existing sdiff_le_iff]
-theorem le_himp_iff' [GeneralizedHeytingAlgebra α] {a b c : α} : a ≤ b ⇨ c ↔ b ⊓ a ≤ c := by
-  rw [le_himp_iff, inf_comm]
-
-end
-
-to_dual_for GeneralizedHeytingAlgebra.le_himp_iff := sdiff_le_iff'
-to_dual_for GeneralizedCoheytingAlgebra.sdiff_le_iff := le_himp_iff'
+to_dual_for GeneralizedHeytingAlgebra.le_himp_iff := by
+  rw [self.sdiff_le_iff, sup_comm]
+to_dual_for GeneralizedCoheytingAlgebra.sdiff_le_iff := by
+  rw [self.le_himp_iff, inf_comm]
 to_dual_for GeneralizedHeytingAlgebra.mk :=
   { sdiff_le_iff a b c := by
       rw [le_himp_iff, sup_comm] }
@@ -157,7 +138,8 @@ attribute [to_dual existing] BiheytingAlgebra.toHeytingAlgebra
 to_dual_for BiheytingAlgebra.toHNot := self.toCompl
 to_dual_for BiheytingAlgebra.toSDiff := self.toHImp
 to_dual_for BiheytingAlgebra.top_sdiff := self.himp_bot a
-to_dual_for BiheytingAlgebra.sdiff_le_iff := le_himp_iff'
+to_dual_for BiheytingAlgebra.sdiff_le_iff := by
+  rw [self.le_himp_iff, inf_comm]
 to_dual_for BiheytingAlgebra.mk :=
   { le_himp_iff a b c := by
       rw [sdiff_le_iff, inf_comm]
@@ -202,7 +184,24 @@ the same in this logic.
 See also `Prop.heytingAlgebra`. -/
 section GeneralizedHeytingAlgebra
 
+@[simp low] -- low priority so that it doesn't overwrite user-provided simp lemmas
+theorem sdiff_le_iff [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ b ⊔ c :=
+  GeneralizedCoheytingAlgebra.sdiff_le_iff _ _ _
+
+theorem sdiff_le_iff' [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ c ⊔ b := by
+  rw [sdiff_le_iff, sup_comm]
+
 variable [GeneralizedHeytingAlgebra α] {a b c d : α}
+
+/-- `p → q → r ↔ p ∧ q → r` -/
+@[to_dual existing sdiff_le_iff', simp]
+theorem le_himp_iff : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
+  GeneralizedHeytingAlgebra.le_himp_iff _ _ _
+
+/-- `p → q → r ↔ q ∧ p → r` -/
+@[to_dual existing sdiff_le_iff]
+theorem le_himp_iff' : a ≤ b ⇨ c ↔ b ⊓ a ≤ c := by
+  rw [le_himp_iff, inf_comm]
 
 /-- `p → q → r ↔ q → p → r` -/
 @[to_dual sdiff_le_comm]
