@@ -138,11 +138,7 @@ instance eilenbergMoore : Category (Algebra T) where
 To construct an isomorphism of algebras, it suffices to give an isomorphism of the carriers which
 commutes with the structure morphisms.
 -/
-@[to_dual (attr := simps)
-/--
-To construct an isomorphism of coalgebras, it suffices to give an isomorphism of the carriers which
-commutes with the structure morphisms.
--/]
+@[simps]
 def isoMk {A B : Algebra T} (h : A.A ≅ B.A)
     (w : (T : C ⥤ C).map h.hom ≫ B.a = A.a ≫ h.hom := by cat_disch) : A ≅ B where
   hom := { f := h.hom }
@@ -150,6 +146,21 @@ def isoMk {A B : Algebra T} (h : A.A ≅ B.A)
     { f := h.inv
       h := by
         rw [h.eq_comp_inv, Category.assoc, ← w, ← Functor.map_comp_assoc]
+        simp }
+
+open Comonad in
+/--
+To construct an isomorphism of coalgebras, it suffices to give an isomorphism of the carriers which
+commutes with the structure morphisms.
+-/
+@[simps]
+def _root_.CategoryTheory.Comonad.Coalgebra.isoMk {T : Comonad C} {A B : Coalgebra T}
+    (h : A.A ≅ B.A) (w : A.a ≫ (T : C ⥤ C).map h.hom = h.hom ≫ B.a := by cat_disch) : A ≅ B where
+  hom := { f := h.hom }
+  inv :=
+    { f := h.inv
+      h := by
+        rw [h.eq_inv_comp, ← reassoc_of% w, ← Functor.map_comp]
         simp }
 
 end Algebra
