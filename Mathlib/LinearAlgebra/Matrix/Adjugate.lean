@@ -449,7 +449,7 @@ theorem adjugate_mul_distrib_aux (A B : Matrix n n α) (hA : IsLeftRegular A.det
   rw [mul_adjugate, Matrix.mul_assoc, ← Matrix.mul_assoc B, mul_adjugate,
     smul_mul, Matrix.one_mul, Matrix.mul_smul, mul_adjugate, smul_smul, mul_comm, ← det_mul]
 
-/-- Proof follows from "The trace Cayley-Hamilton theorem" by Darij Grinberg, Section 5.3
+/-- Proof follows [D. Grinberg, *The trace Cayley-Hamilton theorem*][grinberg2025], Section 5.3.
 -/
 theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate B * adjugate A := by
   let g : Matrix n n α → Matrix n n α[X] := fun M =>

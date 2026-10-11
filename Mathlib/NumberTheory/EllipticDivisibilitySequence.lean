@@ -89,8 +89,8 @@ polynomials of elliptic curves, omitting a factor of the bivariate `2`-division 
 
 ## References
 
-* K Stange, *Elliptic Nets and Elliptic Curves*
-* M Ward, *Memoir on Elliptic Divisibility Sequences*
+* [K. Stange, *Elliptic nets and elliptic curves*][stange2011]
+* [M. Ward, *Memoir on elliptic divisibility sequences*][ward1948]
 
 ## Tags
 
