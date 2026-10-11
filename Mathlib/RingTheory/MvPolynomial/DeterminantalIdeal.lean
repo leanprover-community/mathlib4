@@ -17,96 +17,77 @@ This file defines minors of the generic matrix `Matrix.mvPolynomialX` and the id
 by all minors of a fixed size.
 -/
 
-@[expose] public section
+public section
 
-variable {R S : Type*} [CommRing R] [CommRing S] {m n t : ℕ}
+variable {R S : Type*} [CommRing R] [CommRing S] {m n t : Type*}
+  [Fintype t] [DecidableEq t]
 
 namespace Matrix
 
-/-- The concrete minor of a matrix selected by row and column order embeddings. -/
-def detSubmatrix (A : Matrix (Fin m) (Fin n) R)
-    (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n) : R :=
-  det <| submatrix A row col
-
-/-- Concrete minors are natural with respect to a ring homomorphism. -/
-theorem detSubmatrix_map (f : R →+* S) (A : Matrix (Fin m) (Fin n) R)
-    (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n) :
-    f (detSubmatrix A row col) = detSubmatrix (A.map f) row col := by
-  unfold detSubmatrix
-  simpa [submatrix_map] using (RingHom.map_det f (submatrix A row col))
-
 variable (R)
 
-/-- The minor of the generic `m × n` matrix selected by row and column order embeddings. -/
-noncomputable def mvPolynomialMinor (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n) :
-    MvPolynomial (Fin m × Fin n) R :=
-  detSubmatrix (Matrix.mvPolynomialX (Fin m) (Fin n) R) row col
+/-- The minor of the generic matrix selected by row and column functions. -/
+noncomputable def mvPolynomialMinor (row : t → m) (col : t → n) :
+    MvPolynomial (m × n) R :=
+  detSubmatrix (Matrix.mvPolynomialX m n R) row col
 
 variable {R}
 
-/-- The unique `0 × 0` generic minor is `1`. -/
-@[simp] theorem mvPolynomialMinor_zero (row : Fin 0 ↪o Fin m) (col : Fin 0 ↪o Fin n) :
+/-- A generic minor indexed by an empty type is `1`. -/
+@[simp] theorem mvPolynomialMinor_zero [IsEmpty t] (row : t → m) (col : t → n) :
     mvPolynomialMinor R row col = 1 := by
   rw [mvPolynomialMinor, detSubmatrix, det_isEmpty]
 
-/-- A `1 × 1` generic minor is the corresponding variable. -/
-@[simp] theorem mvPolynomialMinor_one (row : Fin 1 ↪o Fin m) (col : Fin 1 ↪o Fin n) :
-    mvPolynomialMinor R row col = MvPolynomial.X (row 0, col 0) := by
+/-- A generic minor indexed by a unique type is the corresponding variable. -/
+@[simp] theorem mvPolynomialMinor_one [Unique t] (row : t → m) (col : t → n) :
+    mvPolynomialMinor R row col = MvPolynomial.X (row default, col default) := by
   simp [mvPolynomialMinor, detSubmatrix]
 
 variable (R)
 
 /-- Evaluating a generic minor at a concrete matrix gives the corresponding concrete minor. -/
-theorem eval_mvPolynomialMinor [Algebra R S] (A : Matrix (Fin m) (Fin n) S)
-    (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n) :
-    MvPolynomial.aeval (fun ij : Fin m × Fin n => A ij.1 ij.2)
+theorem eval_mvPolynomialMinor [Algebra R S] (A : Matrix m n S)
+    (row : t → m) (col : t → n) :
+    MvPolynomial.aeval (fun ij : m × n => A ij.1 ij.2)
       (mvPolynomialMinor R row col) = detSubmatrix A row col := by
-  let M : Matrix (Fin t) (Fin t) (MvPolynomial (Fin m × Fin n) R) :=
-    submatrix (Matrix.mvPolynomialX (Fin m) (Fin n) R) row col
-  have hdet := (AlgHom.map_det (MvPolynomial.aeval fun ij : Fin m × Fin n => A ij.1 ij.2) M).symm
-  have hM : M.map (MvPolynomial.aeval fun ij : Fin m × Fin n => A ij.1 ij.2) =
-      submatrix A row col := by
-    ext i j
-    simp [M]
-  simpa [mvPolynomialMinor, detSubmatrix, M, hM] using hdet.symm
+  let M : Matrix t t (MvPolynomial (m × n) R) :=
+    submatrix (Matrix.mvPolynomialX m n R) row col
+  refine (AlgHom.map_det (MvPolynomial.aeval fun ij : m × n => A ij.1 ij.2) M).trans ?_
+  congr
+  ext
+  simp [M]
 
 variable {R}
 
 /-- Mapping coefficients sends a generic minor to the corresponding generic minor. -/
-theorem map_mvPolynomialMinor (f : R →+* S) (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n) :
+theorem map_mvPolynomialMinor (f : R →+* S) (row : t → m) (col : t → n) :
     MvPolynomial.map f (mvPolynomialMinor R row col) = mvPolynomialMinor S row col := by
   unfold mvPolynomialMinor detSubmatrix
-  have hdet :
-      MvPolynomial.map f (det (submatrix (Matrix.mvPolynomialX (Fin m) (Fin n) R) row col)) =
-        det ((submatrix (Matrix.mvPolynomialX (Fin m) (Fin n) R) row col).map
-          (MvPolynomial.map f)) := by
-    simpa using (RingHom.map_det (MvPolynomial.map f)
-      (submatrix (Matrix.mvPolynomialX (Fin m) (Fin n) R) row col))
-  have hX : (Matrix.mvPolynomialX (Fin m) (Fin n) R).map (MvPolynomial.map f) =
-      Matrix.mvPolynomialX (Fin m) (Fin n) S := by
-    ext i j
-    simp
-  rw [← hX]
-  simpa [submatrix_map] using hdet
+  rw [RingHom.map_det]
+  congr
+  ext
+  simp
 
 end Matrix
 
 namespace MvPolynomial
 
+variable [Fintype m] [Fintype n]
+
 variable (R m n t)
 
 open Classical in
-/-- The finite set of all `t × t` minors of the generic `m × n` matrix. -/
-noncomputable def determinantalMinorFinset : Finset (MvPolynomial (Fin m × Fin n) R) :=
-  Finset.univ.image fun I : (Fin t ↪o Fin m) × (Fin t ↪o Fin n) =>
+/-- The finite set of all minors of the generic matrix indexed by `t`. -/
+noncomputable def determinantalMinorFinset : Finset (MvPolynomial (m × n) R) :=
+  Finset.univ.image fun I : (t → m) × (t → n) =>
     Matrix.mvPolynomialMinor R I.1 I.2
 
 variable {R m n t}
 
 /-- Membership in the finite set of all generic minors. -/
-theorem mem_determinantalMinorFinset {f : MvPolynomial (Fin m × Fin n) R} :
+theorem mem_determinantalMinorFinset {f : MvPolynomial (m × n) R} :
     f ∈ determinantalMinorFinset R m n t ↔
-      ∃ row : Fin t ↪o Fin m, ∃ col : Fin t ↪o Fin n, Matrix.mvPolynomialMinor R row col = f := by
+      ∃ row : t → m, ∃ col : t → n, Matrix.mvPolynomialMinor R row col = f := by
   classical
   constructor
   · intro hf
@@ -117,21 +98,21 @@ theorem mem_determinantalMinorFinset {f : MvPolynomial (Fin m × Fin n) R} :
 
 variable (R m n t)
 
-/-- The ideal generated by all `t × t` minors of the generic `m × n` matrix. -/
-noncomputable def determinantalIdeal : Ideal (MvPolynomial (Fin m × Fin n) R) :=
+/-- The ideal generated by all minors of the generic matrix indexed by `t`. -/
+noncomputable def determinantalIdeal : Ideal (MvPolynomial (m × n) R) :=
   Ideal.span (determinantalMinorFinset R m n t : Set _)
 
 variable {R m n t}
 
-/-- Every `t × t` generic minor belongs to the corresponding determinantal ideal. -/
-theorem mvPolynomialMinor_mem_determinantalIdeal (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n) :
+/-- Every generic minor indexed by `t` belongs to the corresponding determinantal ideal. -/
+theorem mvPolynomialMinor_mem_determinantalIdeal (row : t → m) (col : t → n) :
     Matrix.mvPolynomialMinor R row col ∈ determinantalIdeal R m n t := by
   exact Ideal.subset_span (mem_determinantalMinorFinset.2 ⟨row, col, rfl⟩)
 
 /-- A determinantal ideal is contained in `J` iff every generating minor belongs to `J`. -/
-theorem determinantalIdeal_le_iff {J : Ideal (MvPolynomial (Fin m × Fin n) R)} :
+theorem determinantalIdeal_le_iff {J : Ideal (MvPolynomial (m × n) R)} :
     determinantalIdeal R m n t ≤ J ↔
-      ∀ (row : Fin t ↪o Fin m) (col : Fin t ↪o Fin n), Matrix.mvPolynomialMinor R row col ∈ J := by
+      ∀ (row : t → m) (col : t → n), Matrix.mvPolynomialMinor R row col ∈ J := by
   constructor
   · intro h row col
     exact h (mvPolynomialMinor_mem_determinantalIdeal row col)
@@ -147,8 +128,8 @@ variable (R m n t)
 /-- The determinantal ideal is the span of the finite set of generic minors. -/
 theorem determinantalIdeal_eq_span_determinantalMinorFinset :
     determinantalIdeal R m n t =
-      Ideal.span (determinantalMinorFinset R m n t : Set (MvPolynomial (Fin m × Fin n) R)) :=
-  rfl
+      Ideal.span (determinantalMinorFinset R m n t : Set (MvPolynomial (m × n) R)) := by
+  simp only [determinantalIdeal]
 
 /-- Determinantal ideals are finitely generated. -/
 theorem determinantalIdeal_fg : (determinantalIdeal R m n t).FG := by
