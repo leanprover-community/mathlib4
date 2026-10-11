@@ -21,7 +21,7 @@ In this file, we proved that exterior power commutes with arbitrary base change.
 
 -/
 
-public noncomputable section
+noncomputable section
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
@@ -171,18 +171,18 @@ lemma baseChange_right_inverse (i : ℕ) :
   rw [← LinearMap.comp_apply _ _ y, exteriorPower.baseChange_left_inverse, LinearMap.id_coe, id_eq]
 
 /-- The commute of exterior power and base change. -/
-def baseChangeEquiv (i : ℕ) : S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
+public def baseChangeEquiv (i : ℕ) : S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
   __ := baseChangeEquivForward R M S i
   invFun := baseChangeEquivInverse R M S i
   left_inv x := LinearMap.congr_fun (exteriorPower.baseChange_left_inverse R M S i) x
   right_inv x := LinearMap.congr_fun (exteriorPower.baseChange_right_inverse R M S i) x
 
-lemma baseChangeEquiv_apply_tmul (i : ℕ) (m : Fin i → M) :
+public lemma baseChangeEquiv_apply_tmul (i : ℕ) (m : Fin i → M) :
     baseChangeEquiv R M S i (1 ⊗ₜ[R] (ιMulti R i m)) =
       ιMulti S i ((TensorProduct.mk R S M 1) ∘ m) := by
   simp [exteriorPower.baseChangeEquiv, baseChangeEquivForward_apply_one_tmul_ιMulti]
 
-lemma baseChangeEquiv_symm_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
+public lemma baseChangeEquiv_symm_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
     (baseChangeEquiv R M S i).symm (ιMulti S i (fun j ↦ s j ⊗ₜ[R] m j)) =
       (Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] ιMulti R i m := by
   simp [exteriorPower.baseChangeEquiv, exteriorPower.baseChangeEquivInverse_apply_tmul]
