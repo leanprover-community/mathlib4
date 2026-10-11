@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.ExactSequenceFour
+public import Mathlib.Algebra.Homology.SpectralObject.Basic
 
 import Mathlib.CategoryTheory.Abelian.Exact
 
@@ -490,13 +490,16 @@ lemma pOpcycles_δFromOpcycles (hn₁ : n₀ + 1 = n₁) :
   simp only [δFromOpcycles, p_descOpcycles]
 
 @[reassoc (attr := simp)]
-lemma fromOpcyles_δ (hn₁ : n₀ + 1 = n₁ := by lia) :
+lemma fromOpcycles_δ (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.fromOpcycles f₂ f₃ f₂₃ h₂₃ n₀ ≫ X.δ f₁ f₂₃ n₀ n₁ hn₁ =
       X.δFromOpcycles f₁ f₂ f₃ n₀ n₁ hn₁ := by
   rw [← cancel_epi (X.pOpcycles f₂ f₃ n₀),
     p_fromOpcycles_assoc, pOpcycles_δFromOpcycles,
     X.δ_naturality f₁ f₂ f₁ f₂₃ (𝟙 _) (twoδ₂Toδ₁ f₂ f₃ f₂₃ h₂₃) n₀ n₁,
     Functor.map_id, Category.comp_id]
+
+@[deprecated (since := "2026-10-05")] alias fromOpcyles_δ := fromOpcycles_δ
+@[deprecated (since := "2026-10-05")] alias fromOpcyles_δ_assoc := fromOpcycles_δ_assoc
 
 end
 
