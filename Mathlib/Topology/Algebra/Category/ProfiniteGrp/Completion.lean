@@ -95,9 +95,17 @@ theorem mono_eta_iff_residuallyFinite : Mono (eta G) ↔ Group.ResiduallyFinite 
   exact forall_congr' fun H ↦ QuotientGroup.eq_one_iff g
 
 @[to_additive]
+theorem mono_eta [Group.ResiduallyFinite G] : Mono (eta G) :=
+  (mono_eta_iff_residuallyFinite G).2 ‹_›
+
+@[to_additive]
 theorem etaFn_injective_iff_residuallyFinite :
     Function.Injective (etaFn G) ↔ Group.ResiduallyFinite G :=
   (GrpCat.mono_iff_injective (eta G)).symm.trans (mono_eta_iff_residuallyFinite G)
+
+@[to_additive]
+theorem etaFn_injective [Group.ResiduallyFinite G] : Function.Injective (etaFn G) :=
+  (etaFn_injective_iff_residuallyFinite G).2 ‹_›
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
@@ -221,20 +229,42 @@ noncomputable def adjunction : profiniteCompletion ⊣ forget₂ _ _ :=
       simp [homEquiv]
   }
 
-/-- The profinite completion of `G` embeds into the product of all finite quotients. -/
+/-- The canonical projection of the profinite completion of `G` onto any of its quotients by
+finite index normal subgroups. -/
 @[to_additive
-/-- The profinite completion of `G` embeds into the product of all finite quotients. -/]
-noncomputable def piEmbedding {G : GrpCat.{u}} :
-    completion G →* Π H : FiniteIndexNormalSubgroup G, G ⧸ H.toSubgroup :=
-  SubgroupClass.subtype _
+/-- The canonical projection of the profinite completion of `G` onto any of its quotients by
+finite index normal subgroups. -/]
+noncomputable def proj (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
+    completion G ⟶ ofFiniteGrp <| .of (G ⧸ H.toSubgroup) :=
+  limitProj _ _
 
 @[to_additive]
-theorem piEmbedding_injective {G : GrpCat.{u}} : Function.Injective (piEmbedding (G := G)) :=
-  SubgroupClass.subtype_injective _
+theorem lift_eq_proj (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
+    lift (GrpCat.ofHom <| QuotientGroup.mk' H.toSubgroup) = proj G H := by
+  apply lift_unique
+  ext x
+  simp [proj]
+  rfl
+
+@[to_additive (attr := reassoc (attr := simp))]
+lemma proj_eta (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
+    eta G ≫ (forget₂ _ _).map (proj G H) = (GrpCat.ofHom <| QuotientGroup.mk' H.toSubgroup) := by
+  rw [← lift_eq_proj]
+  exact lift_eta ..
+
+/-- Two elements of the profinite completion are equal iff all their projections onto quotients of
+finite index are equal. -/
+@[to_additive
+/-- Two elements of the profinite completion are equal iff all their projections onto quotients of
+finite index are equal. -/]
+theorem proj_ext (G : GrpCat.{u}) (x y : completion G) (H : ∀ H, proj G H x = proj G H y) : x = y :=
+  limit_ext H
 
 @[to_additive]
 noncomputable instance (G : Type u) [CommGroup G] : CommGroup (completion (.mk G)) :=
-  piEmbedding.commGroupOfInjective piEmbedding_injective
+  letI f : completion (.mk G) →* Π H : FiniteIndexNormalSubgroup G, G ⧸ H.toSubgroup :=
+    SubgroupClass.subtype _
+  f.commGroupOfInjective (SubgroupClass.subtype_injective _)
 
 end ProfiniteCompletion
 
