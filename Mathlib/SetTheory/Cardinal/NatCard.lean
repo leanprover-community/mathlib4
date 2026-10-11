@@ -156,7 +156,7 @@ theorem induction_subsingleton_or_nontrivial {P : Type* → Prop} (α) [Finite �
       (∀ (β) [Finite β], Nat.card β < Nat.card α → P β) → P α) :
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Nat.card α = n := ⟨Nat.card α, rfl⟩
-  induction n using Nat.strong_induction_on generalizing α with | _ n ih
+  induction n using Nat.strong_induction_on generalizing α with | ind n ih
   rcases subsingleton_or_nontrivial α with hsing | hnontriv
   · apply hbase
   · apply hstep
