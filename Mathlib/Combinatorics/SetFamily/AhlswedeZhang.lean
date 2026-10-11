@@ -8,11 +8,11 @@ module
 public import Mathlib.Data.Finset.Sups
 public import Mathlib.Tactic.Positivity
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # The Ahlswede-Zhang identity
