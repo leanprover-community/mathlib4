@@ -73,18 +73,10 @@ This can be increased dynamically, using `allow_unused_tactic` or `local allow_u
 -/
 def initialAllowedUnusedTactics : Std.HashSet SyntaxNodeKind :=
   .ofArray #[
-    `by,
-    `null,
-    `«]»,
     `«tactic#adaptation_note_»,
     `tacticSleep_heartbeats_,
     ``Lean.Parser.Tactic.show,
-    ``Lean.Parser.Tactic.traceState,
-    ``Lean.Parser.Tactic.Conv.convTrace_state,
     ``Lean.Parser.Tactic.Conv.skip,
-    ``Lean.Parser.Term.byTactic,
-    ``Lean.Parser.Tactic.tacticSeq,
-    ``Lean.Parser.Tactic.tacticSeq1Indented,
     ``Lean.Parser.Tactic.tacticTry_,
     `Batteries.Tactic.«tacticOn_goal_=>_»,
     `Mathlib.Tactic.change?,
@@ -97,6 +89,8 @@ def initialAllowedUnusedTactics : Std.HashSet SyntaxNodeKind :=
     ``Lean.Parser.Tactic.guardTarget,
     ``Lean.Parser.Tactic.guardTargetConv,
     ``Lean.Parser.Tactic.failIfSuccess,
+    ``Lean.Parser.Tactic.traceState,
+    ``Lean.Parser.Tactic.Conv.convTrace_state,
     `Mathlib.Tactic.successIfFailWithMsg,
     `Mathlib.Tactic.failIfNoProgress,
     `Mathlib.Tactic.ExtractGoal.extractGoal,
