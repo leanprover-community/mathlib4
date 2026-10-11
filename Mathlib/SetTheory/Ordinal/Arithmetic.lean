@@ -245,14 +245,16 @@ theorem pred_le_self (o) : pred o ≤ o := by
   simp
 
 /-- `Ordinal.pred` and `Order.succ` form a Galois insertion. -/
-def pred_succ_gi : GaloisInsertion pred succ :=
+def predSuccGi : GaloisInsertion pred succ :=
   GaloisConnection.toGaloisInsertion @pred_le_iff_le_succ (by simp)
 
+@[deprecated (since := "2026-10-09")] alias pred_succ_gi := predSuccGi
+
 theorem pred_surjective : Function.Surjective pred :=
-  pred_succ_gi.l_surjective
+  predSuccGi.l_surjective
 
 theorem self_le_succ_pred (o) : o ≤ succ (pred o) :=
-  pred_succ_gi.gc.le_u_l o
+  predSuccGi.gc.le_u_l o
 
 theorem pred_eq_iff_isSuccPrelimit {o} : pred o = o ↔ IsSuccPrelimit o := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
@@ -639,10 +641,10 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
   · have H := mul_ne_zero hc.ne_zero hd
     apply le_antisymm
     · rw [← lt_succ_iff, ← lt_mul_iff_div_lt H, mul_assoc]
-      · grw [hc, ← mul_succ]
-        gcongr
-        rw [succ_le_iff]
-        exact lt_mul_succ_div b hd
+      grw [hc, ← mul_succ]
+      gcongr
+      rw [succ_le_iff]
+      exact lt_mul_succ_div b hd
     · grw [← mul_le_iff_le_div H, mul_assoc, mul_div_le b d, ← le_self_add]
 
 theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by

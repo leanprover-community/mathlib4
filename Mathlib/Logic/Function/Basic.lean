@@ -391,7 +391,7 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
     suffices cast hU (g s).2 = cast hU (g t).2 by
       simp only [g, cast_cast, cast_eq] at this
       assumption
-    · congr
+    congr
   exact cantor_injective g hg
 
 /-- `g` is a partial inverse to `f` (an injective but not necessarily
@@ -786,6 +786,17 @@ theorem update_comm {α} [DecidableEq α] {β : α → Sort*} {a b : α} (h : a 
 theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β a) (f : ∀ a, β a) :
     update (update f a v) a w = update f a w := by
   grind
+
+lemma update_eq_update_iff {ι : Sort*} {f : α → ι} {i j : α} {a b : ι} :
+    update f i a = update f j b ↔ i = j ∧ a = b ∨ a = f i ∧ b = f j :=
+  ⟨fun h ↦ by grind [congr_fun h i, congr_fun h j], by grind⟩
+
+lemma update_left_injective {ι : Sort*} {f : α → ι} {a : ι} (hf : ∀ i, f i ≠ a) :
+    Injective fun (i : α) ↦ update f i a := fun _ _ _ ↦ by
+  grind [update_eq_update_iff]
+
+lemma update_left_inj {ι : Sort*} {f : α → ι} {i j : α} {a : ι} (hf : ∀ i, f i ≠ a) :
+    update f i a = update f j a ↔ i = j := (update_left_injective hf).eq_iff
 
 @[simp]
 theorem _root_.Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
