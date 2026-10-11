@@ -99,7 +99,6 @@ example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
   rfl
   assumption
 
-
 /--
 warning: The following tactic starts with 3 goals and ends with 2 goals, 2 of which are not operated on.
   rfl
@@ -145,6 +144,10 @@ example : True ∧ True := by
     exact .intro
   focus
     exact .intro
+
+-- parentheses are allowed
+example : True ∧ True ∧ True := by
+  refine ⟨?_, ?_, ?_⟩; (· simp); { simp }; simp
 
 set_option linter.unusedTactic false in
 example : 1 = 1 := by
