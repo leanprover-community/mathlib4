@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Probability.HasLaw
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
+public import Mathlib.Probability.HasLaw
 
 /-!
 # Identically distributed random variables

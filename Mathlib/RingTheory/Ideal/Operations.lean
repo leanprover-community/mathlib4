@@ -779,9 +779,6 @@ theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
 theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
   mul_eq_inf_of_isCoprime (isCoprime_iff_sup_eq.mpr h)
 
-@[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-03-10")]
-theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
-  (mul_eq_inf_of_isCoprime coprime).symm
 
 open Function
 theorem prod_eq_iInf_of_pairwise_isCoprime {s : Finset ι} {J : ι → Ideal R}

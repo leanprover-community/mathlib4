@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.List.Basic
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Basic
-public import Mathlib.Data.List.Basic
 
 import Mathlib.Data.List.TakeDrop
 
@@ -324,7 +324,8 @@ lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (ma
   induction l using reverseRecOn <;> simp [*]
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
-  apply ext_getElem <;> (simp [take_take] <;> grind)
+  apply ext_getElem <;> simp [take_take]
+  grind
 
 end InitsTails
 
