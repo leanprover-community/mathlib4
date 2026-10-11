@@ -100,6 +100,17 @@ lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   lia
 
+/-- The last digit of `a * b / n` in base `b` only depends on `a % n`. -/
+lemma mul_div_mod_eq_mod_mul_div (a b n : ℕ) : a * b / n % b = a % n * b / n := by
+  rcases Nat.eq_zero_or_pos n with rfl | hn
+  · simp
+  rcases Nat.eq_zero_or_pos b with rfl | hb
+  · simp
+  have h : a * b = a % n * b + n * (a / n * b) := by
+    rw [← Nat.mul_assoc, ← Nat.add_mul, Nat.mod_add_div]
+  rw [h, Nat.add_mul_div_left _ _ hn, Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt]
+  exact Nat.div_lt_of_lt_mul (Nat.mul_lt_mul_of_pos_right (Nat.mod_lt a hn) hb)
+
 /-! ### `pow` -/
 
 lemma one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n := one_le_pow n (m + 1) (succ_pos m)
