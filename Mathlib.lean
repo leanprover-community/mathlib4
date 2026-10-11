@@ -5740,6 +5740,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
+public import Mathlib.MeasureTheory.Integral.Lebesgue.PrekopaLeindler
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 public import Mathlib.MeasureTheory.Integral.LebesgueNormedSpace
 public import Mathlib.MeasureTheory.Integral.Marginal
