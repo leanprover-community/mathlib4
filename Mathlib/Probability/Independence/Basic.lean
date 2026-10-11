@@ -5,8 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.Probability.Independence.Kernel.IndepFun
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)

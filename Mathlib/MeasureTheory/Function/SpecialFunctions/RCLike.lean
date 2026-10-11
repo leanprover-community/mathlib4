@@ -16,9 +16,6 @@ import Mathlib.Analysis.RCLike.Lemmas
 
 public section
 
-
-noncomputable section
-
 namespace RCLike
 
 variable {𝕜 : Type*} [RCLike 𝕜]

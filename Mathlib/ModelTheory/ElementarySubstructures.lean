@@ -5,8 +5,8 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.ModelTheory.ElementaryMaps
 public import Mathlib.ModelTheory.Definability
+public import Mathlib.ModelTheory.ElementaryMaps
 
 /-!
 # Elementary Substructures
