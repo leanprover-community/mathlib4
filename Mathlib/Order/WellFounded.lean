@@ -84,7 +84,7 @@ theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α �
 theorem map {f : α → β} : WellFounded (Relation.Map r f f) → WellFounded r :=
   fun h => (InvImage.wf f h).mono (Relation.le_onFun_map f)
 
-theorem map_iff {f : α → β} (hf : f.Injective) :
+theorem _root_.Function.Injective.wellFounded_map_iff {f : α → β} (hf : f.Injective) :
     WellFounded (Relation.Map r f f) ↔ WellFounded r := by
   refine ⟨map, ?_⟩
   simp_rw [wellFounded_iff_isEmpty_descending_chain, ← @not_imp_not (IsEmpty _), not_isEmpty_iff,
