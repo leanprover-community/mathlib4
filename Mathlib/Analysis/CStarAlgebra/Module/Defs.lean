@@ -5,8 +5,8 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Defs
 public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.InnerProductSpace.Defs
 public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal

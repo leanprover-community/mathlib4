@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.Order.Filter.Map
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 import Mathlib.Order.Filter.Finite
 
