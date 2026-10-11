@@ -32,6 +32,8 @@ In the following, we write `D k` for the `k`-th Hasse derivative `hasse_deriv k`
 * `Polynomial.hasseDeriv_comp`: the identity `(D k).comp (D l) = (k+l).choose k • D (k+l)`
 * `Polynomial.hasseDeriv_mul`:
   the "Leibniz rule" `D k (f * g) = ∑ ij ∈ antidiagonal k, D ij.1 f * D ij.2 g`
+* `Polynomial.hasseDeriv_mul_of_forall_hasseDeriv_eq_zero`: `D k (f * g) = f * D k g` when
+  `D i f = 0` for `0 < i ≤ k`
 
 For the identity principle, see `Polynomial.eq_zero_of_hasseDeriv_eq_zero`
 in `Mathlib/Algebra/Polynomial/Taylor.lean`.
@@ -249,6 +251,19 @@ theorem hasseDeriv_mul (f g : R[X]) :
   rw [← map_sum, ← Finset.sum_mul]
   congr
   rw_mod_cast [← Nat.add_choose_eq]
+
+/-- If the Hasse derivatives of `f` of orders `0 < i ≤ k` vanish, then `hasseDeriv k` is
+`f`-linear: `hasseDeriv k (f * g) = f * hasseDeriv k g`. -/
+theorem hasseDeriv_mul_of_forall_hasseDeriv_eq_zero
+    (hf : ∀ i, 0 < i → i ≤ k → hasseDeriv i f = 0) (g : R[X]) :
+    hasseDeriv k (f * g) = f * hasseDeriv k g := by
+  rw [hasseDeriv_mul, Finset.sum_eq_single (0, k)]
+  · rw [hasseDeriv_zero']
+  · rintro ⟨i, j⟩ hij hne
+    rw [mem_antidiagonal] at hij
+    have hi : i ≠ 0 := by rintro rfl; simp_all
+    rw [hf i (Nat.pos_of_ne_zero hi) (by omega), zero_mul]
+  · simp
 
 end
 
