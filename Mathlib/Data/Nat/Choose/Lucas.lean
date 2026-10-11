@@ -22,6 +22,8 @@ respectively.
 
 * `lucas_theorem`: the binomial coefficient `n choose k` is congruent to the product of `n_i choose
   k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
+* `pow_dvd_iff_forall_dvd_choose`: `p ^ e` divides `n` if and only if `p` divides `n choose k` for
+  all `0 < k < p ^ e`.
 -/
 
 public section
@@ -131,6 +133,41 @@ theorem choose_pow_mul_pow_mul_modEq_choose_nat :
     choose (p ^ k * a) (p ^ k * b) ≡ choose a b [MOD p] := by
   rw [← Int.natCast_modEq_iff]
   exact_mod_cast choose_pow_mul_pow_mul_modEq_choose
+
+/-- For primes `p`, `p ^ e` divides `n` if and only if `p` divides `choose n k` for all
+`0 < k < p ^ e`. -/
+theorem pow_dvd_iff_forall_dvd_choose {e : ℕ} :
+    p ^ e ∣ n ↔ ∀ k, 0 < k → k < p ^ e → p ∣ choose n k := by
+  rename_i hp
+  constructor
+  · induction e generalizing n with
+    | zero => intro _ k hk hk'; lia
+    | succ e ih =>
+      intro hn k hk hk'
+      have hpn : p ∣ n := (dvd_pow_self p e.succ_ne_zero).trans hn
+      rw [(choose_modEq_choose_mod_mul_choose_div_nat (p := p)).dvd_iff dvd_rfl,
+        Nat.mod_eq_zero_of_dvd hpn]
+      by_cases hkp : k % p = 0
+      · obtain ⟨n, rfl⟩ := hpn
+        obtain ⟨k, rfl⟩ := Nat.dvd_of_mod_eq_zero hkp
+        have hp0 := hp.out.pos
+        simp only [Nat.mul_div_cancel_left _ hp0]
+        rw [Nat.pow_succ', Nat.mul_dvd_mul_iff_left hp0] at hn
+        rw [Nat.pow_succ'] at hk'
+        exact dvd_mul_of_dvd_right (ih hn k (Nat.pos_of_ne_zero (by rintro rfl; simp at hk))
+          (Nat.lt_of_mul_lt_mul_left hk')) _
+      · simp [Nat.choose_eq_zero_of_lt (Nat.pos_of_ne_zero hkp)]
+  · intro h
+    by_contra hn
+    obtain ⟨v, m, hm, rfl⟩ := Nat.exists_eq_pow_mul_and_not_dvd (n := n)
+      (by rintro rfl; exact hn (dvd_zero _)) p hp.out.ne_one
+    have hv : v < e := by
+      by_contra! hv
+      exact hn ((Nat.pow_dvd_pow p hv).trans (dvd_mul_right _ _))
+    have := (choose_pow_mul_pow_mul_modEq_choose_nat (p := p) (k := v) (a := m) (b := 1)).dvd_iff
+      dvd_rfl
+    rw [mul_one, choose_one_right] at this
+    exact hm (this.1 (h _ (pow_pos hp.out.pos v) (Nat.pow_lt_pow_right hp.out.one_lt hv)))
 
 /-- For primes `p` and positive integer `n`, assume that for all `i ∈ Icc 1 (n - 1)`,
 `choose n i` congruent to `0` module `p`, then `n = p ^ multiplicity p n`.
