@@ -8,8 +8,6 @@ module
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
-import Mathlib.Algebra.Ring.Torsion
-
 /-!
 # Structural lemmas about finite crystallographic root pairings
 
@@ -262,19 +260,25 @@ lemma exists_coroot_sub_coroot_eq_zsmul {k : ι}
   refine ⟨P.pairingIn ℤ k j, by lia, ?_⟩
   simp [← hjk, coreflection_apply_coroot, ← P.algebraMap_pairingIn ℤ, Int.cast_smul_eq_zsmul]
 
+lemma root_sub_root_notMem_range' (f : Module.Dual ℤ (P.corootSpan ℤ))
+    (hf : f (P.corootSpanMem ℤ j) - f (P.corootSpanMem ℤ i) = 1) (hij : P.pairingIn ℤ i j ≤ 0) :
+    P.root j - P.root i ∉ Φ := by
+  rintro ⟨k, hk⟩
+  obtain ⟨n, hn', hn⟩ := P.exists_coroot_sub_coroot_eq_zsmul hk hij
+  replace hn : P.corootSpanMem ℤ j - P.corootSpanMem ℤ i = n • P.corootSpanMem ℤ k := Subtype.ext hn
+  rw [← map_sub, hn, map_zsmul, smul_eq_mul] at hf
+  exact (Int.le_of_dvd one_pos ⟨_, hf.symm⟩).not_gt hn'
+
+open Module Submodule in
 lemma root_sub_root_notMem_range {s : Finset ι} (h₀ : LinearIndepOn ℤ P.coroot s)
     (h₃ : ∀ k, P.coroot k ∈ span ℤ (P.coroot '' s)) {i j : s} (hij : P.pairingIn ℤ i j ≤ 0) :
     P.root j - P.root i ∉ Φ := by
-  classical
-  rintro ⟨k, hk⟩
   have hji : j ≠ i := by rintro rfl; simp at hij
-  obtain ⟨n, hn, hn'⟩ := P.exists_coroot_sub_coroot_eq_zsmul hk hij
-  obtain ⟨c, hc⟩ : P.coroot k ∈ (Fintype.linearCombination ℤ fun k : s ↦ P.coroot k).range := by
-    simpa [image_eq_range] using h₃ k
-  replace h₀ : Pi.single j 1 - Pi.single i 1 = n • c := h₀.fintypeLinearCombination_injective <| by
-    simp_rw [SetLike.coe_sort_coe, map_sub, map_smul, Fintype.linearCombination_apply_single, hc,
-      ← hn', one_smul]
-  exact (Int.le_of_dvd one_pos ⟨c j, by simpa [hji] using congr_fun h₀ j⟩).not_gt hn
+  let b : Basis s ℤ (P.corootSpan ℤ) := (Basis.span h₀.linearIndependent).map <|
+    .ofEq _ (P.corootSpan ℤ) <| (span_mono (range_comp_subset_range _ _)).antisymm <|
+      span_le.mpr <| range_subset_iff.mpr <| by simpa [range_comp] using h₃
+  have hb (k : s) : P.corootSpanMem ℤ k = b k := by ext; simp [b]
+  exact P.root_sub_root_notMem_range' (b.coord j) (by simp [hb, hji]) hij
 
 lemma exists_pos_pairingIn {s : Finset ι} (h₀ : LinearIndepOn ℤ P.root s)
     (h₁ : Set.Pairwise s fun i j ↦ P.pairingIn ℤ i j ≤ 0)
