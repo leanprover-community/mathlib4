@@ -1011,10 +1011,10 @@ info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (b a : α), a * 
 #check @old_mul_comm
 
 /--
-warning: `old_add_comm` has been deprecated: Use `mul_comm` instead
+warning: `old_add_comm` has been deprecated: Use `add_comm` instead
 
 Note: The updated constant has a different type:
-  ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b = b * a
+  ∀ {G : Type u_1} [inst : AddCommMagma G] (a b : G), a + b = b + a
 instead of
   ∀ {α : Type u_1} [inst : AddCommMagma α] (b a : α), a + b = b + a
 ---

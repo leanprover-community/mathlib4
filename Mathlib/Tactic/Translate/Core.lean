@@ -931,11 +931,13 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
         if i != 0 then
           -- Translate the target of `(attr := deprecated)` if possible.
           if attr.name == `deprecated then
-            if let `(attr| deprecated%$tk $name $[$desc]? $[(since := $since)]?) := attr.stx then
+            if let `(attr| deprecated%$tk $name $[$desc]? $[$typeChanged?]?
+                $[(since := $since)]?) := attr.stx then
               let name ← realizeGlobalConstNoOverload name
               if let some name := findTranslationName? (← getEnv) t name then
                 attr := { attr with stx := ← `(attr|
-                  deprecated%$tk $(mkCIdent name) $[$desc]? $[(since := $since)]?) }
+                  deprecated%$tk $(mkCIdent name) $[$desc]? $[$typeChanged?]?
+                    $[(since := $since)]?) }
         Term.applyAttributes decl #[attr]
   return nestedDecls
 
