@@ -5,9 +5,10 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 module
 
-import Mathlib.Topology.Sheaves.PUnit
-public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.Topology.Sheaves.Functors
+public import Mathlib.Topology.Sheaves.Stalks
+
+import Mathlib.Topology.Sheaves.PUnit
 
 /-!
 # Skyscraper (pre)sheaves

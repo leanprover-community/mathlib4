@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.SuccPred
+
 import Mathlib.Order.Interval.Set.SuccPred
 
 /-!

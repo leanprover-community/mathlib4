@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Field.Rat
-public import Mathlib.Data.Setoid.Partition
 public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Interval.Set.Infinite
+public import Mathlib.Order.Setoid.Partition
 public import Mathlib.Order.WellFoundedSet
 
 /-!

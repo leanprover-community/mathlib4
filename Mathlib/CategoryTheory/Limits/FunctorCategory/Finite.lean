@@ -5,8 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 

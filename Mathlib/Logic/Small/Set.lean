@@ -5,9 +5,10 @@ Authors: Markus Himmel, Timothy Carlin-Burns
 -/
 module
 
-import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Logic.Small.Basic
+
+import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # Results about `Small` on coerced sets

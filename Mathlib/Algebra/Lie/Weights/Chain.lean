@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.DirectSum.LinearMap
 public import Mathlib.Algebra.Lie.Weights.Cartan
+public import Mathlib.Data.Int.Interval
+
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.RingTheory.Finiteness.Nilpotent
-public import Mathlib.Data.Int.Interval
 
 /-!
 # Chains of roots and weights
@@ -69,7 +70,7 @@ variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
-variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+variable [HasUniqueDiv R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
 include hχ₁
 
 lemma eventually_genWeightSpace_smul_add_eq_bot :
@@ -254,7 +255,7 @@ section
 
 variable {M}
 variable [LieRing.IsNilpotent L]
-variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M]
+variable [HasUniqueDiv R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/

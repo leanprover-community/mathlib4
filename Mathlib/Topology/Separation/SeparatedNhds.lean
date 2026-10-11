@@ -5,8 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-import Mathlib.Topology.Continuous
 public import Mathlib.Topology.NhdsSet
+
+import Mathlib.Topology.Continuous
 
 /-!
 # Separated neighbourhoods

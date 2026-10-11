@@ -7,8 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Ordinal.Enum
-import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Order.SuccPred
+
+import Mathlib.Topology.Order.Monotone
 
 /-!
 # Topology of ordinals
@@ -189,11 +190,6 @@ theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc
 @[deprecated SuccOrder.accPt_principal +typeChanged (since := "2026-05-24")]
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
     {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt p hp
-
-@[deprecated IsOpenEmbedding.accPt_comap_iff +typeChanged (since := "2026-03-30")]
-theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
-    AccPt p (𝓟 S) ↔ AccPt ⟨p, hpo⟩ (𝓟 (Iio o ↓∩ S)) := by
-  rw [← comap_principal, isOpen_Iio.isOpenEmbedding_subtypeVal.accPt_comap_iff]
 
 @[deprecated isClosed_iff_accPt +typeChanged (since := "2026-05-24")]
 theorem isClosedBelow_iff {S : Set Ordinal} {o : Ordinal} : IsClosedBelow S o ↔

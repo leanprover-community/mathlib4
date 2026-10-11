@@ -5,9 +5,9 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, A
 -/
 module
 
+public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Fin.Basic
-public import Batteries.Data.Fin.Lemmas
 
 import Mathlib.Data.Set.Insert
 
@@ -206,7 +206,7 @@ theorem consCases_cons {motive : (∀ i : Fin n.succ, α i) → Sort v}
 def consInduction {α : Sort*} {motive : ∀ {n : ℕ}, (Fin n → α) → Sort v} (elim0 : motive Fin.elim0)
     (cons : ∀ {n} (x₀) (x : Fin n → α), motive x → motive (Fin.cons x₀ x)) :
     ∀ {n : ℕ} (x : Fin n → α), motive x
-  | 0, x => by convert! elim0
+  | 0, x => by convert elim0
   | _ + 1, x => consCases (fun _ _ ↦ cons _ _ <| consInduction elim0 cons _) x
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
@@ -739,7 +739,7 @@ def snocInduction {α : Sort*}
     (elim0 : motive Fin.elim0)
     (snoc : ∀ {n} (x : Fin n → α) (x₀), motive x → motive (Fin.snoc x x₀)) :
     ∀ {n : ℕ} (x : Fin n → α), motive x
-  | 0, x => by convert! elim0
+  | 0, x => by convert elim0
   | _ + 1, x => snocCases (fun _ _ ↦ snoc _ _ <| snocInduction elim0 snoc _) x
 
 theorem snoc_injective_of_injective {α} {x₀ : α} {x : Fin n → α}
@@ -1290,7 +1290,7 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
   · rwa [j.succAbove_of_castSucc_lt, contractNth_apply_of_lt]
   · exact False.elim (hjk h.symm)
   · rwa [j.succAbove_of_le_castSucc, contractNth_apply_of_gt]
-    · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
+    exact Fin.le_iff_val_le_val.2 (le_of_lt h)
 
 lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β → β) {f : α → β}
     (hf : ∀ x y, f (opα x y) = opβ (f x) (f y)) (j : Fin (n + 1)) (g : Fin (n + 1) → α) :
