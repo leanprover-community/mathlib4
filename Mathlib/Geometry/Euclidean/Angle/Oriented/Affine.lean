@@ -418,6 +418,24 @@ lemma angle_eq_iff_oangle_eq_neg_of_sign_eq_neg {p₁ p₂ p₃ p₄ p₅ p₆ :
   o.angle_eq_iff_oangle_eq_neg_of_sign_eq_neg (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₃)
     (vsub_ne_zero.2 hp₄) (vsub_ne_zero.2 hp₆) hs
 
+/-- If two oriented angles are equal, and the four endpoint pairs are nondegenerate, then the
+corresponding unoriented angles are equal. -/
+theorem angle_eq_of_oangle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆)
+    (hp₁ : p₁ ≠ p₂) (hp₃ : p₃ ≠ p₂) (hp₄ : p₄ ≠ p₅) (hp₆ : p₆ ≠ p₅) :
+    ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ :=
+  (angle_eq_iff_oangle_eq_of_sign_eq hp₁ hp₃ hp₄ hp₆ (by rw [h])).2 h
+
+/-- If two oriented angles are equal, and the first triple is not collinear, then the
+corresponding unoriented angles are equal. -/
+theorem angle_eq_of_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄ p₅ p₆ : P}
+    (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆) (hnc₁₂₃ : ¬ Collinear ℝ {p₁, p₂, p₃}) :
+    ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ := by
+  have hnc₄₅₆ : ¬ Collinear ℝ {p₄, p₅, p₆} :=
+    (collinear_iff_of_two_zsmul_oangle_eq (by rw [h])).not.mp hnc₁₂₃
+  exact angle_eq_of_oangle_eq h
+    (ne₁₂_of_not_collinear hnc₁₂₃) (ne₂₃_of_not_collinear hnc₁₂₃).symm
+    (ne₁₂_of_not_collinear hnc₄₅₆) (ne₂₃_of_not_collinear hnc₄₅₆).symm
+
 /-- The oriented angle between three points equals the unoriented angle if the sign is
 positive. -/
 theorem oangle_eq_angle_of_sign_eq_one {p₁ p₂ p₃ : P} (h : (∡ p₁ p₂ p₃).sign = 1) :

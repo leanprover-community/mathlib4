@@ -5,9 +5,10 @@ Authors: Andrew Yang, Christian Merten
 -/
 module
 
-import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.ZariskisMainTheorem
+
+import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!

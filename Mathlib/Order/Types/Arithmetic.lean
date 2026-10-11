@@ -5,9 +5,10 @@ Authors: Yan Yablonovskiy
 -/
 module
 
-import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Types.Defs
 public import Mathlib.SetTheory.Cardinal.Order
+
+import Mathlib.Basic.Real.Basic
 
 /-!
 

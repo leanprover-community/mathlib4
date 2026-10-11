@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Data.Matrix.Basis
 
 /-!
 # Bundled versions of multiplication for matrices

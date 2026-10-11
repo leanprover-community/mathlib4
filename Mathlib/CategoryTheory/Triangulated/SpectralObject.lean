@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 
 /-!
 # Spectral objects in triangulated categories

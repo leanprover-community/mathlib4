@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.EMetricSpace.Defs
+
 import Mathlib.Tactic.Basify.Attr
 
 /-!
@@ -1014,7 +1015,7 @@ theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
 
 /-- Build a new pseudometric space from an old one where the bundled uniform structure is provably
-(but typically non-definitionaly) equal to some given uniform structure.
+(but typically non-definitionally) equal to some given uniform structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
@@ -1036,7 +1037,7 @@ example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
   with_reducible_and_instances rfl
 
 /-- Build a new pseudometric space from an old one where the bundled topological structure is
-provably (but typically non-definitionaly) equal to some given topological structure.
+provably (but typically non-definitionally) equal to some given topological structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
@@ -1079,7 +1080,7 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace 
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
-(but typically non-definitionaly) equal to some given bornology structure.
+(but typically non-definitionally) equal to some given bornology structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
