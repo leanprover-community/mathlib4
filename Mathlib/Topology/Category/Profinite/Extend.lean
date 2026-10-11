@@ -5,9 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.Topology.Category.Profinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.CofilteredLimit
-public import Mathlib.CategoryTheory.Filtered.Final
 /-!
 
 # Extending cones in `Profinite`
@@ -48,7 +48,7 @@ lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
   refine ⟨i, ⟨↾g⟩, ?_⟩
   ext x
-  exact LocallyConstant.congr_fun h x
+  congrm $h x
 
 namespace Extend
 

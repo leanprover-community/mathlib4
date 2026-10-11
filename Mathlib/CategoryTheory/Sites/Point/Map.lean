@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ShrinkYoneda
 public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.Point.OfIsCofiltered
 
@@ -35,7 +34,6 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   {J : GrothendieckTopology C} (Φ : Point.{w} J) (F : C ⥤ D)
   (K : GrothendieckTopology D) [F.IsCocontinuous J K]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma map_aux ⦃X : D⦄ (R : Sieve X) (hR : R ∈ K X)
     ⦃u : Φ.fiber.Elements⦄ (f : (Functor.Elements.π Φ.fiber ⋙ F).obj u ⟶ X) :
