@@ -245,6 +245,24 @@ theorem sub_star (z : QuadraticAlgebra R a b) :
     z - star z = z.im • (ω - star ω) := by
   ext <;> simp <;> ring
 
+/-- Conjugation as an `R`-algebra automorphism of `QuadraticAlgebra R a b`. -/
+def starAlgEquiv : QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a b :=
+  { starRingEnd (QuadraticAlgebra R a b) with
+    invFun := star
+    left_inv := star_star
+    right_inv := star_star
+    commutes' _ := by ext <;> simp [starRingEnd_apply] }
+
+@[simp]
+theorem starAlgEquiv_apply (z : QuadraticAlgebra R a b) : starAlgEquiv z = star z := rfl
+
+@[simp]
+theorem starAlgEquiv_symm_apply (z : QuadraticAlgebra R a b) : starAlgEquiv.symm z = star z := rfl
+
+theorem starAlgEquiv_involutive :
+    Function.Involutive (starAlgEquiv : QuadraticAlgebra R a b ≃ₐ[R] _) :=
+  star_involutive
+
 end star
 
 section norm
