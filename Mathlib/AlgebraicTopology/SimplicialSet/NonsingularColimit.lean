@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.SemiSimplexCategory
-public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesColimit
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 
 /-!
 # Nonsingular simplicial sets, as colimits of standard simplices
@@ -26,7 +26,9 @@ of `Δ[x.dim]` for `x : X.N`.
 
 universe u
 
-open CategoryTheory Simplicial Limits
+open CategoryTheory Limits
+
+open scoped Simplicial
 
 namespace SSet
 

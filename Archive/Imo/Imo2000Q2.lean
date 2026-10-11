@@ -3,7 +3,9 @@ Copyright (c) 2026 Aditya Menon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aditya Menon
 -/
-import Mathlib.Algebra.Order.Archimedean.Real.Basic
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 
 /-!
 # IMO 2000 Q2
@@ -31,6 +33,8 @@ these gives `(uvw) ^ 2 ≤ (xyz) ^ 2`, from which the inequality follows.
 * <https://artofproblemsolving.com/wiki/index.php?title=2000_IMO_Problems/Problem_2>
 
 -/
+
+@[expose] public section
 
 namespace Imo2000Q2
 

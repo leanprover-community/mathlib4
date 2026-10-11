@@ -36,7 +36,6 @@ variable [Module R M₁] [Module S M₁] [IsScalarTower R S M₁] [Module R M₂
 
 attribute [ext] TensorProduct.ext
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Tensor products distribute over a product on the right. -/
 def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[S] (M₁ ⊗[R] M₂) × (M₁ ⊗[R] M₃) :=
   LinearEquiv.ofLinearMap
@@ -64,7 +63,7 @@ def prodLeft : (M₁ × M₂) ⊗[R] M₃ ≃ₗ[S] (M₁ ⊗[R] M₃) × (M₂ 
   AddEquiv.toLinearEquiv (TensorProduct.comm _ _ _ ≪≫ₗ
       TensorProduct.prodRight R R _ _ _ ≪≫ₗ
       (TensorProduct.comm R _ _).prodCongr (TensorProduct.comm R _ _)).toAddEquiv
-    fun c x ↦ x.induction_on (by simp) (by simp [TensorProduct.smul_tmul']) (by simp_all)
+    fun c x ↦ x.inductionOn (by simp [TensorProduct.smul_tmul']) (by simp_all)
 
 @[simp] theorem prodLeft_tmul (m₁ : M₁) (m₂ : M₂) (m₃ : M₃) :
     prodLeft R S M₁ M₂ M₃ ((m₁, m₂) ⊗ₜ m₃) = (m₁ ⊗ₜ m₃, m₂ ⊗ₜ m₃) :=

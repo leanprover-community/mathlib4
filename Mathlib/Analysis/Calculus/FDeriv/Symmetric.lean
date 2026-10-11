@@ -6,9 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Analytic.IteratedFDeriv
-public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
+
+import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Symmetry of the second derivative
@@ -117,18 +117,22 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
   exact (hf.fderivWithin_right (m := 1) ht le_rfl
     (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt one_ne_zero
 
-lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
+lemma fderivWithin_fderivWithin_eq_of_eventuallyEqSet (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
   fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
     = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
       (fderivWithin_eventually_congr_set h).fderivWithin_eq_of_nhds
   _ = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := fderivWithin_congr_set h
 
+@[deprecated (since := "2026-08-14")]
+alias fderivWithin_fderivWithin_eq_of_eventuallyEq :=
+  fderivWithin_fderivWithin_eq_of_eventuallyEqSet
+
 lemma fderivWithin_fderivWithin_eq_of_mem_nhds {f : E → F} {x : E} {s : Set E}
     (h : s ∈ 𝓝 x) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderiv 𝕜 (fderiv 𝕜 f) x := by
   simp only [← fderivWithin_univ]
-  apply fderivWithin_fderivWithin_eq_of_eventuallyEq
+  apply fderivWithin_fderivWithin_eq_of_eventuallyEqSet
   simp [h]
 
 @[simp] lemma isSymmSndFDerivWithinAt_univ :
@@ -146,7 +150,7 @@ theorem IsSymmSndFDerivWithinAt.mono_of_mem_nhdsWithin (h : IsSymmSndFDerivWithi
 theorem IsSymmSndFDerivWithinAt.congr_set (h : IsSymmSndFDerivWithinAt 𝕜 f s x)
     (hst : s =ᶠ[𝓝 x] t) : IsSymmSndFDerivWithinAt 𝕜 f t x := by
   intro v w
-  rw [fderivWithin_fderivWithin_eq_of_eventuallyEq hst.symm]
+  rw [fderivWithin_fderivWithin_eq_of_eventuallyEqSet hst.symm]
   exact h v w
 
 theorem isSymmSndFDerivWithinAt_congr_set (hst : s =ᶠ[𝓝 x] t) :
@@ -178,7 +182,7 @@ theorem IsSymmSndFDerivWithinAt.iteratedFDerivWithin_cons {x v w : E}
     iteratedFDerivWithin 𝕜 2 f s x ![v, w] = iteratedFDerivWithin 𝕜 2 f s x ![w, v] := by
   simp_rw [isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin hs hx, ContinuousMultilinearMap.ext_iff,
     ContinuousMultilinearMap.domDomCongr_apply] at hf
-  convert! hf ![w, v] using 2
+  convert hf ![w, v] using 2
   ext i
   fin_cases i <;> simp
 
@@ -212,7 +216,6 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddComm
 section
 include s_conv hf xs hx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
 differentiable at a point `x`. Then, given two vectors `v` and `w` pointing inside `s`, one can
 Taylor-expand to order two the function `f` on the segment `[x + h v, x + h (v + w)]`, giving a
@@ -250,7 +253,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     rw [← smul_smul]
     apply s_conv.interior.add_smul_mem this _ ht
     rw [add_assoc] at hw
-    convert! s_conv.add_smul_mem_interior xs hw ⟨hpos, h_lt_1.le⟩ using 1
+    convert s_conv.add_smul_mem_interior xs hw ⟨hpos, h_lt_1.le⟩ using 1
     module
   -- define a function `g` on `[0,1]` (identified with `[v, v + w]`) such that `g 1 - g 0` is the
   -- quantity to be estimated. We will check that its derivative is given by an explicit
@@ -316,7 +319,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   have I : ‖g 1 - g 0‖ ≤ ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 := by
     simpa only [mul_one, sub_zero] using
       norm_image_sub_le_of_norm_deriv_le_segment' g_deriv g'_bound 1 (right_mem_Icc.2 zero_le_one)
-  convert! I using 1
+  convert I using 1
   · congr 1
     simp only [g, add_zero, one_mul, zero_div, zero_mul, sub_zero,
       zero_smul, Ne, not_false_iff, zero_pow, reduceCtorEq]
@@ -336,29 +339,29 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
   have A : (1 : ℝ) / 2 ∈ Ioc (0 : ℝ) 1 := ⟨by simp, by norm_num⟩
   have B : (1 : ℝ) / 2 ∈ Icc (0 : ℝ) 1 := ⟨by simp, by norm_num⟩
   have h2v2w : x + (2 : ℝ) • v + (2 : ℝ) • w ∈ interior s := by
-    convert! s_conv.interior.add_smul_sub_mem h4v h4w B using 1
+    convert s_conv.interior.add_smul_sub_mem h4v h4w B using 1
     module
   have h2vww : x + (2 • v + w) + w ∈ interior s := by
-    convert! h2v2w using 1
+    convert h2v2w using 1
     module
   have h2v : x + (2 : ℝ) • v ∈ interior s := by
-    convert! s_conv.add_smul_sub_mem_interior xs h4v A using 1
+    convert s_conv.add_smul_sub_mem_interior xs h4v A using 1
     module
   have h2w : x + (2 : ℝ) • w ∈ interior s := by
-    convert! s_conv.add_smul_sub_mem_interior xs h4w A using 1
+    convert s_conv.add_smul_sub_mem_interior xs h4w A using 1
     module
   have hvw : x + (v + w) ∈ interior s := by
-    convert! s_conv.add_smul_sub_mem_interior xs h2v2w A using 1
+    convert s_conv.add_smul_sub_mem_interior xs h2v2w A using 1
     module
   have h2vw : x + (2 • v + w) ∈ interior s := by
-    convert! s_conv.interior.add_smul_sub_mem h2v h2v2w B using 1
+    convert s_conv.interior.add_smul_sub_mem h2v h2v2w B using 1
     module
   have hvww : x + (v + w) + w ∈ interior s := by
-    convert! s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
+    convert s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
     module
   have TA1 := s_conv.taylor_approx_two_segment hf xs hx h2vw h2vww
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
-  convert! TA1.sub TA2 using 1
+  convert TA1.sub TA2 using 1
   ext h
   simp only [two_smul, smul_add, ← add_assoc, map_add,
     add_apply]
@@ -372,7 +375,7 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     (h4v : x + (4 : ℝ) • v ∈ interior s) (h4w : x + (4 : ℝ) • w ∈ interior s) :
     f'' w v = f'' v w := by
   have A : (fun h : ℝ => h ^ 2 • (f'' w v - f'' v w)) =o[𝓝[>] 0] fun h => h ^ 2 := by
-    convert!
+    convert
       (s_conv.isLittleO_alternate_sum_square hf xs hx h4v h4w).sub
         (s_conv.isLittleO_alternate_sum_square hf xs hx h4w h4v) using 1
     ext h
@@ -391,7 +394,6 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a function is differentiable inside a convex set with nonempty interior, and has a second
 derivative at a point of this convex set, then this second derivative is symmetric. -/
 theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Convex ℝ s)
@@ -459,7 +461,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
     {f' : E → E →L[𝕜] F} {x : E}
     {f'' : E →L[𝕜] E →L[𝕜] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y)
@@ -588,9 +589,8 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞ω}
       (m := 0) le_rfl).continuousOn
     apply this.congr
     intro y hy
-    apply fderivWithin_fderivWithin_eq_of_eventuallyEq
+    apply fderivWithin_fderivWithin_eq_of_eventuallyEqSet
     filter_upwards [u_open.mem_nhds hy.2] with z hz
-    change (z ∈ s) = (z ∈ s ∩ u)
     simp_all
   have B : Tendsto (fun k ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y k)) atTop
       (𝓝 (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x)) := by

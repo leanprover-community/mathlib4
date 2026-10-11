@@ -7,7 +7,6 @@ module
 
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.GroupTheory.Sylow
-public import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # The Transfer Homomorphism
@@ -58,8 +57,7 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
   prod_mul_distrib.symm.trans
     (prod_congr rfl fun q _ =>
       (ϕ.map_mul _ _).symm.trans
-        (congr_arg ϕ
-          (by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
+        congr(ϕ $(by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
 
 @[to_additive]
 theorem diff_self : diff ϕ T T = 1 :=
@@ -132,8 +130,8 @@ lemma transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, intCast_cast, cast_id', id, ←
     sub_eq_neg_add, cast_sub_one, add_sub_cancel]
   by_cases hk : k = 0
-  · rw [if_pos hk, if_pos hk, zpow_natCast]
-  · rw [if_neg hk, if_neg hk]
+  · rw [ite_eq_left hk, ite_eq_left hk, zpow_natCast]
+  · rw [ite_eq_right hk, ite_eq_right hk]
 
 end Subgroup
 
@@ -175,9 +173,9 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
       simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
         transferTransversal_apply'']
       rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out)) _]
-      · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
+      · simp only [ite_eq_left, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
       · intro k hk
-        simp only [if_neg hk, inv_mul_cancel]
+        simp only [ite_eq_right hk, inv_mul_cancel]
         exact map_one ϕ
 
 open scoped IsMulCommutative in
@@ -191,7 +189,7 @@ theorem transfer_eq_pow_aux (g : G)
   let := fintypeOfIndexNeZero hH
   classical
     replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk =>
-      (congr_arg (· ∈ H) (key k g₀ hk)).mp hk
+      congr($(key k g₀ hk) ∈ H).mp hk
     replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod (g • ·) q ∈ H := fun q =>
       key (Function.minimalPeriod (g • ·) q) q.out
         (QuotientGroup.out_conj_pow_minimalPeriod_mem H g q)

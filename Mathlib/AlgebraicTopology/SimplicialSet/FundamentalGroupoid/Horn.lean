@@ -152,10 +152,8 @@ instance isEquivalence_toPUnit_stdSimplex (n : ℕ) :
         have hyz : y ≤ z := by
           convert! stdSimplex.monotone_apply e.edge (show 0 ≤ 1 by simp) <;> cat_disch
         obtain rfl : e = stdSimplex.edge' y z := by subsingleton
-        exact homMk_comp (stdSimplex.compStruct 0 y z))
+        exact (stdSimplex.compStruct 0 y z).homMk_comp)
 
-set_option maxHeartbeats 400000 in
-set_option backward.isDefEq.respectTransparency false in
 instance isEquivalence_toPUnit_horn {n : ℕ} (i : Fin (n + 1)) [NeZero n] :
     (Discrete.toPUnit.{u} (FundamentalGroupoid.{u} Λ[n, i])).IsEquivalence := by
   obtain _ | _ | n := n
@@ -174,12 +172,10 @@ instance isEquivalence_toPUnit_horn {n : ℕ} (i : Fin (n + 1)) [NeZero n] :
         obtain ⟨x, _⟩ := x
         obtain ⟨x, rfl⟩ := stdSimplex.obj₀Equiv.symm.surjective x
         rfl)
-    --have hα₀ : α i = 𝟙 _ := by
-    --  simp [α, Subsingleton.elim (horn.edge' i i i (by simp) (by grind)) (.id _)]
     have hα₁ (j : Fin (n + 3)) (hij : i ≤ j := by grind) :
-        α j = homMk (horn.edge' _ _ _ hij (by grind)) := dif_pos hij
+        α j = homMk (horn.edge' _ _ _ hij (by grind)) := dite_eq_left hij
     have hα₂ (j : Fin (n + 3)) (hij : j < i := by grind) :
-        α j = inv (homMk (horn.edge' _ _ _ (by grind) (by grind))) := dif_neg (by grind)
+        α j = inv (homMk (horn.edge' _ _ _ (by grind) (by grind))) := dite_eq_right (by grind)
     have hβ (j : Fin (n + 3)) : β _ = α j := Category.comp_id _
     refine isEquivalence_toPUnit ⟨stdSimplex.obj₀Equiv.symm i, by simp⟩
       β (fun y z e ↦ ?_)
@@ -199,13 +195,13 @@ instance isEquivalence_toPUnit_horn {n : ℕ} (i : Fin (n + 1)) [NeZero n] :
       obtain rfl : e = horn.edge' i j k := Subsingleton.elim _ _
       by_cases! hij : i ≤ j
       · rw [hα₁ j, hα₁ k]
-        exact homMk_comp (horn.compStruct _ _ _ _ _ _ (by grind))
+        exact (horn.compStruct _ _ _ _ _ _ (by grind)).homMk_comp
       · rw [hα₂ j hij, IsIso.inv_comp_eq]
         by_cases! hik : i ≤ k
         · rw [hα₁ k]
-          exact (homMk_comp (horn.compStruct _ _ _ _ _ _ (by grind))).symm
+          exact (horn.compStruct _ _ _ _ _ _ (by grind)).homMk_comp.symm
         · rw [hα₂ k, IsIso.eq_comp_inv]
-          exact homMk_comp (horn.compStruct _ _ _ _ _ _ (by grind))
+          exact (horn.compStruct _ _ _ _ _ _ (by grind)).homMk_comp
 
 instance {n : ℕ} (i : Fin (n + 1)) [NeZero n] :
     (mapFundamentalGroupoid.{u} Λ[n, i].ι).IsEquivalence :=

@@ -6,9 +6,8 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
-public import Mathlib.LinearAlgebra.Matrix.Symmetric
-public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
@@ -314,9 +313,6 @@ theorem IsCompl.adjMatrix_add_adjMatrix_eq_adjMatrix_completeGraph [DecidableEq 
 theorem one_add_adjMatrix_add_compl_adjMatrix_eq_of_one [DecidableEq V] [DecidableEq α]
     [AddMonoid α] [One α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = of 1 := by
   aesop (add simp [add_assoc])
-
-@[deprecated (since := "2026-01-30")] alias one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes :=
-  one_add_adjMatrix_add_compl_adjMatrix_eq_of_one
 
 variable (V)
 

@@ -6,8 +6,9 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
-public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+
+import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 /-!
 # Construction of Harmonic Functions
@@ -20,7 +21,9 @@ part, imaginary part, and complex conjugate. If `f` has no zero, then `log ‖f�
 
 public section
 
-open Complex ComplexConjugate InnerProductSpace Topology
+open Complex InnerProductSpace
+
+open scoped ComplexConjugate Topology
 
 variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]

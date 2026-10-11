@@ -5,8 +5,8 @@ Authors: Patrick Massot, Riccardo Brasca
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -99,7 +99,9 @@ the previous paragraph kicks in.
 
 noncomputable section
 
-open Metric Set Topology NNReal
+open Metric Set NNReal
+
+open scoped Topology
 
 namespace QuotientGroup
 variable {M : Type*} [SeminormedCommGroup M] {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
@@ -259,7 +261,7 @@ def quotientQuotientIsometryEquivQuotient (h : S ≤ T) : (M ⧸ S) ⧸ T.map (m
 
 end QuotientGroup
 
-open QuotientAddGroup Metric Set Topology NNReal
+open QuotientAddGroup Metric Set NNReal
 
 variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 

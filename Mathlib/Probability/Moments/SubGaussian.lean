@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Condexp
-public import Mathlib.Probability.Moments.MGFAnalytic
 public import Mathlib.Probability.Moments.Tilted
 
 /-!
@@ -174,32 +173,30 @@ lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
 lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
     ∀ᵐ ω' ∂ν, ∀ t, MemLp (fun ω ↦ exp (t * X ω)) p (κ ω') := by
   filter_upwards [h.ae_forall_integrable_exp_mul] with ω' hi t
-  constructor
-  · exact (hi t).1
-  · by_cases hp : p = 0
-    · simp [hp]
-    rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp),
-      ENNReal.coe_toReal]
-    have hf := (hi (p * t)).lintegral_lt_top
-    convert! hf using 3 with ω
-    rw [enorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),
-      ← exp_mul, mul_comm, ← mul_assoc]
-    positivity
+  rw [memLp_iff]
+  by_cases hp : p = 0
+  · simp [hp, eLpNorm_exponent_zero (hi t).1]
+  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp) (hi t).1,
+    ENNReal.coe_toReal]
+  have hf := (hi (p * t)).lintegral_lt_top
+  convert! hf using 3 with ω
+  rw [enorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),
+    ← exp_mul, mul_comm, ← mul_assoc]
+  positivity
 
 lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p (κ ∘ₘ ν) := by
   by_cases hp0 : p = 0
   · simpa [hp0] using (h.integrable_exp_mul t).1
-  constructor
-  · exact (h.integrable_exp_mul t).1
-  · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp0) (by simp)]
-    simp only [ENNReal.coe_toReal]
-    have h' := (h.integrable_exp_mul (p * t)).2
-    rw [hasFiniteIntegral_def] at h'
-    convert! h' using 3 with ω
-    rw [enorm_eq_ofReal (by positivity), enorm_eq_ofReal (by positivity),
-      ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
-    positivity
+  rw [memLp_iff, eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp0) (by simp)
+    (h.integrable_exp_mul t).1]
+  simp only [ENNReal.coe_toReal]
+  have h' := (h.integrable_exp_mul (p * t)).2
+  rw [hasFiniteIntegral_def] at h'
+  convert! h' using 3 with ω
+  rw [enorm_eq_ofReal (by positivity), enorm_eq_ofReal (by positivity),
+    ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
+  positivity
 
 lemma cgf_le (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, ∀ t, cgf X (κ ω') t ≤ c * t ^ 2 / 2 := by
@@ -292,7 +289,7 @@ lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''
     convert! h_mgf t
     ext t
     rw [map_apply _ hY, mgf_map hY.aemeasurable]
-    convert! (h_int t).1
+    convert (h_int t).1
     rw [map_apply _ hY]
 
 lemma id_map_iff (hX : Measurable X) :
@@ -418,7 +415,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
   exact
   { integrable_exp_mul t := by
       simp_rw [mul_add, exp_add]
-      convert! MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+      convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
       norm_cast
       infer_instance
     mgf_le := by
@@ -478,10 +475,10 @@ lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkov
     simp only [ENNReal.coe_ofNat] at h
     have : κ ∘ₘ ν = ((κ ⊗ₖ η) ∘ₘ ν).map Prod.fst := by
       rw [Measure.map_comp _ _ measurable_fst, ← fst_eq, fst_compProd]
-    rwa [this, memLp_map_measure_iff h.1 measurable_fst.aemeasurable] at h
+    rwa [this, memLp_map_measure_iff h.aestronglyMeasurable measurable_fst.aemeasurable] at h
   · have h := hY.memLp_exp_mul t 2
     rwa [ENNReal.coe_ofNat, Measure.comp_compProd_comm, Measure.snd,
-      memLp_map_measure_iff h.1 measurable_snd.aemeasurable] at h
+      memLp_map_measure_iff h.aestronglyMeasurable measurable_snd.aemeasurable] at h
 
 /-- For `ν : Measure Ω'`, `κ : Kernel Ω' Ω` and `η : (Ω' × Ω) Ω''`, if a random variable `X : Ω → ℝ`
 has a sub-Gaussian mgf with respect to `κ` and `ν` and another random variable `Y : Ω'' → ℝ` has
@@ -653,7 +650,7 @@ lemma of_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     have h1 := h.integrable_exp_mul t
     rwa [integrable_map_measure h1.aestronglyMeasurable (by fun_prop)] at h1
   mgf_le t := by
-    convert! h.mgf_le t using 1
+    convert h.mgf_le t using 1
     rw [mgf_map hY (h.integrable_exp_mul t).1]
 
 lemma id_map_iff (hX : AEMeasurable X μ) :
@@ -728,7 +725,7 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
     HasSubgaussianMGF (fun ω ↦ X ω + Y ω) (cX + cY) μ where
   integrable_exp_mul t := by
     simp_rw [mul_add, exp_add]
-    convert! MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+    convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
     norm_cast
     infer_instance
   mgf_le t := by
@@ -800,7 +797,6 @@ lemma measureReal_le_le_exp {Y : Ω → ℝ} {cX cY : ℝ≥0}
     μ.real {ω | X ω ≤ Y ω} ≤ Real.exp (- (μ[Y] - μ[X]) ^ 2 / (2 * (cX + cY))) := by
   calc μ.real {ω | X ω ≤ Y ω}
   _ = μ.real {ω | (μ[X] - μ[Y]) ≤ (Y ω - μ[Y]) - (X ω - μ[X])} := by
-    congr with ω
     grind
   _ ≤ Real.exp (- (μ[Y] - μ[X]) ^ 2 / (2 * (cX + cY))) := by
     refine (measure_ge_le (X := fun ω ↦ (Y ω - μ[Y]) - (X ω - μ[X])) (c := cX + cY) ?_ ?_).trans_eq
@@ -831,7 +827,7 @@ protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] 
   _ = Var[X; μ.tilted (u * X ·)] := by
     rw [← variance_tilted_mul (hs (Set.mem_Icc_of_Ioo h1))]
   _ ≤ ((b - a) / 2) ^ 2 := by
-    convert! variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
+    convert variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
     · exact isProbabilityMeasure_tilted (hi u)
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
   _ = (‖b - a‖₊ / 2) ^ 2 := by simp [field]
@@ -882,8 +878,8 @@ lemma HasSubgaussianMGF.add_of_hasCondSubgaussianMGF [IsFiniteMeasure μ]
     (hX : HasSubgaussianMGF X cX (μ.trim hm)) (hY : HasCondSubgaussianMGF m hm Y cY μ) :
     HasSubgaussianMGF (X + Y) (cX + cY) μ := by
   suffices HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (cX + cY)
-      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω ↦ (id ω, id ω)) μ) by
-    have h_eq : X + Y = (fun p ↦ X p.1 + Y p.2) ∘ (fun ω ↦ (id ω, id ω)) := rfl
+      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) Function.diag μ) by
+    have h_eq : X + Y = (fun p ↦ X p.1 + Y p.2) ∘ Function.diag := rfl
     rw [h_eq]
     refine HasSubgaussianMGF.of_map ?_ this
     exact @Measurable.aemeasurable _ _ _ (m.prod mΩ) _ _
@@ -894,10 +890,6 @@ lemma HasSubgaussianMGF.add_of_hasCondSubgaussianMGF [IsFiniteMeasure μ]
   convert! hX.add_comp hY'
   ext
   rw [Kernel.const_apply, ← Measure.compProd, compProd_trim_condExpKernel]
-
-@[deprecated (since := "2026-01-27")]
-alias HasSubgaussianMGF_add_of_HasCondSubgaussianMGF :=
-  HasSubgaussianMGF.add_of_hasCondSubgaussianMGF
 
 variable {Y : ℕ → Ω → ℝ} {cY : ℕ → ℝ≥0} {ℱ : Filtration ℕ mΩ}
 
@@ -924,10 +916,6 @@ lemma HasSubgaussianMGF.sum_of_hasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
       simp only [Finset.mem_range] at hm
       lia
 
-@[deprecated (since := "2026-01-27")]
-alias HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF :=
-  HasSubgaussianMGF.sum_of_hasCondSubgaussianMGF
-
 /-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_hasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     (h_adapted : StronglyAdapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ) (n : ℕ)
@@ -936,9 +924,6 @@ lemma measure_sum_ge_le_of_hasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     μ.real {ω | ε ≤ ∑ i ∈ Finset.range n, Y i ω}
       ≤ exp (-ε ^ 2 / (2 * ∑ i ∈ Finset.range n, cY i)) :=
   (HasSubgaussianMGF.sum_of_hasCondSubgaussianMGF h_adapted h0 n h_subG).measure_ge_le hε
-
-@[deprecated (since := "2026-01-27")]
-alias measure_sum_ge_le_of_HasCondSubgaussianMGF := measure_sum_ge_le_of_hasCondSubgaussianMGF
 
 end Martingale
 

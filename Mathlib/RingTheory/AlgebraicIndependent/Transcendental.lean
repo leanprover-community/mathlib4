@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.RingTheory.Algebraic.MvPolynomial
 public import Mathlib.RingTheory.AlgebraicIndependent.Basic
 
@@ -24,8 +23,6 @@ transcendence
 -/
 
 public section
-
-noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
@@ -101,11 +98,8 @@ open AlgebraicIndependent
 theorem AlgebraicIndependent.option_iff_transcendental (hx : AlgebraicIndependent R x) (a : A) :
     AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
       Transcendental (adjoin R (range x)) a := by
-  rw [algebraicIndependent_iff_injective_aeval, transcendental_iff_injective,
-    ← AlgHom.coe_toRingHom, ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin,
-    RingHom.coe_comp]
-  exact Injective.of_comp_iff' (Polynomial.aeval a)
-    (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
+  simp [algebraicIndependent_iff_injective_aeval, transcendental_iff_injective,
+    ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin]
 
 theorem AlgebraicIndependent.option_iff {a : A} :
     AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
@@ -118,7 +112,7 @@ theorem AlgebraicIndepOn.insert_iff {s : Set ι} {i : ι} (h : i ∉ s) :
       AlgebraicIndepOn R x s ∧ Transcendental (adjoin R (x '' s)) (x i) := by
   classical simp_rw [← algebraicIndependent_equiv (subtypeInsertEquivOption h).symm,
     AlgebraicIndepOn]
-  convert! option_iff (x := fun i : s ↦ x i) (a := x i) using 2
+  convert option_iff (x := fun i : s ↦ x i) (a := x i) using 2
   · ext (_ | _) <;> rfl
   · rw [Set.image_eq_range]
 
@@ -129,7 +123,6 @@ protected theorem AlgebraicIndepOn.insert {s : Set ι} {i : ι} (hs : AlgebraicI
   exact (insert_iff fun h ↦ hi <| isAlgebraic_algebraMap
     (⟨_, subset_adjoin ⟨i, h, rfl⟩⟩ : adjoin R (x '' s))).mpr ⟨hs, hi⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem algebraicIndependent_of_set_of_finite (s : Set ι)
     (ind : AlgebraicIndependent R fun i : s ↦ x i)
     (H : ∀ t : Set ι, t.Finite → AlgebraicIndependent R (fun i : t ↦ x i) →
@@ -138,7 +131,7 @@ theorem algebraicIndependent_of_set_of_finite (s : Set ι)
   classical
   refine algebraicIndependent_of_finite_type fun t hfin ↦ ?_
   suffices AlgebraicIndependent R fun i : ↥(t ∩ s ∪ t \ s) ↦ x i from
-    this.comp (Equiv.setCongr (t.inter_union_sdiff s).symm) (Equiv.injective _)
+    this.comp (Set.equivOfEq (t.inter_union_sdiff s).symm) (Equiv.injective _)
   refine hfin.sdiff.induction_on_subset _ (ind.comp (inclusion <| by simp) (inclusion_injective _))
     fun {a u} ha hu ha' h ↦ ?_
   have : a ∉ t ∩ s ∪ u := (·.elim (ha.2 ·.2) ha')
@@ -147,7 +140,7 @@ theorem algebraicIndependent_of_set_of_finite (s : Set ι)
               H _ (hfin.subset (union_subset inter_subset_left <| hu.trans sdiff_subset)) h a ha.2
                 this).comp
           _ (subtypeInsertEquivOption this).injective).comp
-      (Equiv.setCongr union_insert) (Equiv.injective _) with
+      (Set.equivOfEq union_insert) (Equiv.injective _) with
     x
   by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
 
@@ -192,7 +185,7 @@ theorem iff_adjoin_image (s : Set ι) :
 theorem iff_adjoin_image_compl (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : ↥sᶜ ↦ x i) ∧
       AlgebraicIndepOn (adjoin R (x '' sᶜ)) x s := by
-  convert! ← iff_adjoin_image _; apply compl_compl
+  convert ← iff_adjoin_image _; apply compl_compl
 
 theorem iff_transcendental_adjoin_image (i : ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun j : {j // j ≠ i} ↦ x j) ∧
@@ -236,13 +229,13 @@ theorem adjoin_iff_disjoint [Nontrivial A] {s t : Set ι} :
 
 theorem transcendental_adjoin {s : Set ι} {i : ι} (hi : i ∉ s) :
     Transcendental (adjoin R (x '' s)) (x i) := by
-  convert! ← hx.adjoin_of_disjoint (Set.disjoint_singleton_right.mpr hi)
+  convert ← hx.adjoin_of_disjoint (Set.disjoint_singleton_right.mpr hi)
   rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
 
 theorem transcendental_adjoin_iff [Nontrivial A] {s : Set ι} {i : ι} :
     Transcendental (adjoin R (x '' s)) (x i) ↔ i ∉ s := by
   rw [← Set.disjoint_singleton_right]
-  convert! ← hx.adjoin_iff_disjoint (t := { i })
+  convert ← hx.adjoin_iff_disjoint (t := { i })
   rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
 
 end AlgebraicIndependent

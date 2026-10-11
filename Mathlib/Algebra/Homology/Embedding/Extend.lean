@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.IsSupported
-public import Mathlib.Algebra.Homology.Additive
-public import Mathlib.Algebra.Homology.Opposite
 
 /-!
 # The extension of a homological complex by an embedding of complex shapes
@@ -356,6 +354,16 @@ noncomputable def extendFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c ⥤ HomologicalComplex C c' where
   obj K := K.extend e
   map φ := HomologicalComplex.extendMap φ e
+
+set_option backward.defeqAttrib.useBackward true in
+/-- Given an embedding `e : c.Embedding c'` of complex shapes, this is the isomorphism
+`e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i`
+when `e.f i = i'. -/
+noncomputable def extendFunctorCompEvalIso
+    [HasZeroMorphisms C] {i : ι} {i' : ι'} (h : e.f i = i') :
+    e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i :=
+  NatIso.ofComponents (fun K ↦ K.extendXIso e h)
+    (by simp [HomologicalComplex.extendMap_f _ _ h])
 
 instance [HasZeroMorphisms C] : (e.extendFunctor C).PreservesZeroMorphisms where
 

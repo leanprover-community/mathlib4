@@ -5,10 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Tactic.GCongr
+public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.Topology.Compactness.Paracompact
 public import Mathlib.Topology.EMetricSpace.Basic
-public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # (Extended) metric spaces are paracompact
@@ -32,7 +31,9 @@ public section
 
 variable {α : Type*}
 
-open ENNReal Topology Set
+open ENNReal Set
+
+open scoped Topology
 
 namespace Metric
 
@@ -166,6 +167,3 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
 theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
 
 end Metric
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.t4Space := Metric.t4Space

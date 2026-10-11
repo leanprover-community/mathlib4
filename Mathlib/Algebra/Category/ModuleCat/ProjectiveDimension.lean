@@ -5,10 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
-public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
+
+import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
+import Mathlib.Algebra.Category.ModuleCat.Projective
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
 
@@ -42,7 +43,7 @@ universe v v' u u'
 
 variable {R : Type u} [Ring R]
 
-open CategoryTheory Abelian Module
+open CategoryTheory Module
 
 namespace ModuleCat
 

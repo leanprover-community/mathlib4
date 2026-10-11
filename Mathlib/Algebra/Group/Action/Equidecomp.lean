@@ -6,8 +6,8 @@ Authors: Felix Weilacher
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Logic.Equiv.PartialEquiv
 
 /-!
 # Equidecompositions
@@ -54,7 +54,7 @@ We take this as our definition as it is easier to work with. It is implemented a
 
 @[expose] public section
 
-variable {X G : Type*} {A B C : Set X}
+variable {X G : Type*} {A B : Set X}
 
 open Function Set Pointwise PartialEquiv
 
@@ -191,7 +191,7 @@ theorem IsDecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}
 noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.symm
   isDecompOn' := by classical exact ⟨f.witness⁻¹, by
-    convert! f.isDecompOn.of_leftInvOn f.leftInvOn
+    convert f.isDecompOn.of_leftInvOn f.leftInvOn
     rw [image_source_eq_target, symm_source]⟩
 
 theorem map_target {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
