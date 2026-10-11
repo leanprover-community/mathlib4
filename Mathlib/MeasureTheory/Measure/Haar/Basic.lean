@@ -62,8 +62,6 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 * https://en.wikipedia.org/wiki/Haar_measure
 -/
 
-open scoped Finset
-
 @[expose] public section
 
 
