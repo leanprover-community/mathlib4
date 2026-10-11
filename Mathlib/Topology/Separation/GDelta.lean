@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.GDelta.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Separation properties of topological spaces.

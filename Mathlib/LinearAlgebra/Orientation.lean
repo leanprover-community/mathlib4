@@ -5,8 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.LinearAlgebra.Ray
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Ray
 
 /-!
 # Orientations of modules
