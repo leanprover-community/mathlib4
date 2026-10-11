@@ -61,6 +61,7 @@ theorem multiplicity_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 
 
 namespace padicValNat
 
+<<<<<<< HEAD
 @[deprecated (since := "2026-03-15")]
 alias maxPowDiv_eq_emultiplicity := multiplicity_eq_emultiplicity
 
@@ -72,6 +73,13 @@ protected theorem zero : multiplicity p 0 = 0 := multiplicity_zero_right p
 
 @[deprecated multiplicity_one_right +typeChanged (since := "2026-03-15")]
 protected theorem one : multiplicity p 1 = 0 := multiplicity_one_right
+=======
+@[simp]
+theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
+  rcases eq_or_ne n 0 with rfl | hn₀; · simp
+  rcases eq_or_ne p 1 with rfl | hp₁; · simp
+  simpa [*] using pow_dvd_iff_le_padicValNat (k := 1) hp₁ hn₀ |>.symm |>.not
+>>>>>>> master
 
 end padicValNat
 
