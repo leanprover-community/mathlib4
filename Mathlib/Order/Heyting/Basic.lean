@@ -184,24 +184,17 @@ the same in this logic.
 See also `Prop.heytingAlgebra`. -/
 section GeneralizedHeytingAlgebra
 
-@[simp low] -- low priority so that it doesn't overwrite user-provided simp lemmas
+-- low priority so that it doesn't overwrite user-provided simp lemmas
+@[to_dual le_himp_iff', simp low]
 theorem sdiff_le_iff [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ b ⊔ c :=
   GeneralizedCoheytingAlgebra.sdiff_le_iff _ _ _
 
-theorem sdiff_le_iff' [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ c ⊔ b := by
-  rw [sdiff_le_iff, sup_comm]
-
-variable [GeneralizedHeytingAlgebra α] {a b c d : α}
-
 /-- `p → q → r ↔ p ∧ q → r` -/
-@[to_dual existing sdiff_le_iff', simp]
-theorem le_himp_iff : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
+@[to_dual sdiff_le_iff', simp]
+theorem le_himp_iff [GeneralizedHeytingAlgebra α] {a b c : α} : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
   GeneralizedHeytingAlgebra.le_himp_iff _ _ _
 
-/-- `p → q → r ↔ q ∧ p → r` -/
-@[to_dual existing sdiff_le_iff]
-theorem le_himp_iff' : a ≤ b ⇨ c ↔ b ⊓ a ≤ c := by
-  rw [le_himp_iff, inf_comm]
+variable [GeneralizedHeytingAlgebra α] {a b c d : α}
 
 /-- `p → q → r ↔ q → p → r` -/
 @[to_dual sdiff_le_comm]
