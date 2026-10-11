@@ -33,7 +33,7 @@ public theorem exists_pow_eq_of_isAlgebraic {x : A} (hx : IsAlgebraic K x) :
   obtain ⟨i, -, j, -, hij, hi0, hj0, hv⟩ :=
     exists_map_eq_of_map_sum_eq_zero v ⟨p.natDegree, by simp [hpm, hx0]⟩
       ((congrArg v hne).trans (map_zero v))
-  rw [Algebra.smul_def, Algebra.smul_def, map_mul, map_mul, map_pow, map_pow] at hv
+  simp only [Algebra.smul_def, map_mul, map_pow] at hv
   wlog hji : j < i generalizing i j with ih
   · exact ih j i hij.symm hj0 hi0 hv.symm (by order)
   refine ⟨i - j, p.coeff j / p.coeff i, Nat.sub_ne_zero_of_lt hji, ?_⟩
