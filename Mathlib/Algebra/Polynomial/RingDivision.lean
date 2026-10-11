@@ -299,6 +299,37 @@ theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (
     congr
     exact h.val_inv_mul⟩
 
+/-- `X - C a` is coprime to `p` if and only if `p.eval a` is a unit. -/
+theorem isCoprime_X_sub_C_iff {R} [CommRing R] {a : R} {p : R[X]} :
+    IsCoprime (X - C a) p ↔ IsUnit (p.eval a) := by
+  refine ⟨fun ⟨u, v, h⟩ ↦ IsUnit.of_mul_eq_one (v.eval a) ?_, fun h ↦ ?_⟩
+  · rw [mul_comm]; simpa using congr_arg (eval a) h
+  · obtain ⟨q, hq⟩ := X_sub_C_dvd_sub_C_eval (a := a) (p := p)
+    refine ⟨-(C h.unit⁻¹.val * q), C h.unit⁻¹.val, ?_⟩
+    have hu : C h.unit⁻¹.val * C (p.eval a) = 1 := by rw [← C_mul, IsUnit.val_inv_mul, C_1]
+    rw [← hu, neg_mul, mul_assoc, mul_comm q, ← hq, mul_sub]
+    abel
+
+/-- `X` is coprime to `p` if and only if the constant coefficient of `p` is a unit. -/
+theorem isCoprime_X_iff {R} [CommRing R] {p : R[X]} : IsCoprime X p ↔ IsUnit (p.coeff 0) := by
+  simpa [coeff_zero_eq_eval_zero] using isCoprime_X_sub_C_iff (a := (0 : R)) (p := p)
+
+theorem isCoprime_X_pow_of_isUnit_coeff_zero {R} [CommRing R] {n : ℕ} {p : R[X]}
+    (hp : IsUnit (p.coeff 0)) : IsCoprime (X ^ n) p := by
+  induction n with
+  | zero => simp [isCoprime_one_left]
+  | succ n ih => rw [pow_succ]; exact ih.mul_left (isCoprime_X_iff.2 hp)
+
+/-- A polynomial with invertible constant coefficient is a nonzerodivisor modulo `X ^ n`. -/
+theorem X_pow_dvd_mul_right_iff {R} [CommRing R] {n : ℕ} {p q : R[X]} (hp : IsUnit (p.coeff 0)) :
+    X ^ n ∣ q * p ↔ X ^ n ∣ q :=
+  (isCoprime_X_pow_of_isUnit_coeff_zero hp).dvd_mul_right_iff
+
+/-- A polynomial with invertible constant coefficient is a nonzerodivisor modulo `X ^ n`. -/
+theorem X_pow_dvd_mul_left_iff {R} [CommRing R] {n : ℕ} {p q : R[X]} (hp : IsUnit (p.coeff 0)) :
+    X ^ n ∣ p * q ↔ X ^ n ∣ q :=
+  (isCoprime_X_pow_of_isUnit_coeff_zero hp).dvd_mul_left_iff
+
 open scoped Function in -- required for scoped `on` notation
 theorem pairwise_coprime_X_sub_C {K} [Field K] {I : Type v} {s : I → K} (H : Function.Injective s) :
     Pairwise (IsCoprime on fun i : I => X - C (s i)) := fun _ _ hij =>
