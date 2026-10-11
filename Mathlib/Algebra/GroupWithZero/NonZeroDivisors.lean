@@ -5,11 +5,14 @@ Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.Algebra.GroupWithZero.Associated
-public import Mathlib.Algebra.GroupWithZero.Regular
-public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Regular.SMul
+
+import Mathlib.Algebra.GroupWithZero.Action.Regular
+import Mathlib.Algebra.GroupWithZero.Regular
 
 /-!
 # Non-zero divisors and smul-divisors
@@ -424,3 +427,38 @@ lemma associatesNonZeroDivisorsEquiv_symm_mk_mk (a : M₀) (ha) :
   rfl
 
 end CommMonoidWithZero
+
+section MulDistribMulAction
+
+variable {G M : Type*} [Group G] [MonoidWithZero M] [MulDistribMulAction G M]
+
+theorem smul_mem_nonZeroDivisorsLeft (g : G) {m : M} (hm : m ∈ nonZeroDivisorsLeft M) :
+    g • m ∈ nonZeroDivisorsLeft M := by
+  intro y hy
+  rw [← smul_eq_zero_iff_eq' g⁻¹] at hy ⊢
+  exact hm _ <| by simpa [smul_mul'] using hy
+
+theorem smul_mem_nonZeroDivisorsRight (g : G) {m : M} (hm : m ∈ nonZeroDivisorsRight M) :
+    g • m ∈ nonZeroDivisorsRight M := by
+  intro y hy
+  rw [← smul_eq_zero_iff_eq' g⁻¹] at hy ⊢
+  exact hm _ <| by simpa [smul_mul'] using hy
+
+theorem smul_mem_nonZeroDivisors (g : G) {m : M} (hm : m ∈ nonZeroDivisors M) :
+    g • m ∈ nonZeroDivisors M :=
+  ⟨smul_mem_nonZeroDivisorsLeft g hm.1, smul_mem_nonZeroDivisorsRight g hm.2⟩
+
+instance : SMul G M⁰ where
+  smul g m := ⟨g • m, smul_mem_nonZeroDivisors g m.prop⟩
+
+@[simp]
+theorem nonZeroDivisors.val_smul (g : G) (m : M⁰) :
+    (g • m : M⁰).val = g • m.val := rfl
+
+instance : MulDistribMulAction G M⁰ where
+  one_smul m := Subtype.val_injective (by simp)
+  mul_smul g h m := Subtype.val_injective (by simp [mul_smul])
+  smul_one g := Subtype.val_injective (by simp [MulDistribMulAction.smul_one])
+  smul_mul g m n := Subtype.val_injective (by simp [smul_mul'])
+
+end MulDistribMulAction
