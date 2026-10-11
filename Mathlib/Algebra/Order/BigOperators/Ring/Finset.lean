@@ -128,6 +128,27 @@ lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j �
 
 end CanonicallyOrderedAdd
 
+/-- **The Binet–Cauchy identity**, with the sum over ordered pairs `(i, j)`:
+`∑_{i,j} (a_i b_j - a_j b_i) (c_i d_j - c_j d_i)` is
+`2 ((∑ a_i c_i)(∑ b_i d_i) - (∑ a_i d_i)(∑ b_i c_i))`. -/
+lemma sum_sum_mul_sub_mul_mul_mul_sub_mul [CommRing R] (s : Finset ι) (a b c d : ι → R) :
+    ∑ i ∈ s, ∑ j ∈ s, (a i * b j - a j * b i) * (c i * d j - c j * d i) =
+      2 * ((∑ i ∈ s, a i * c i) * (∑ i ∈ s, b i * d i) -
+        (∑ i ∈ s, a i * d i) * ∑ i ∈ s, b i * c i) := by
+  have e (i j : ι) : (a i * b j - a j * b i) * (c i * d j - c j * d i) =
+      a i * c i * (b j * d j) + a j * c j * (b i * d i) -
+        (a i * d i * (b j * c j) + a j * d j * (b i * c i)) := by ring
+  have h (u v : ι → R) : ∑ i ∈ s, ∑ j ∈ s, u j * v i = ∑ i ∈ s, ∑ j ∈ s, u i * v j := sum_comm
+  simp only [e, sum_sub_distrib, sum_add_distrib, h, ← sum_mul_sum]
+  ring
+
+/-- **Lagrange's identity**, with the sum over ordered pairs `(i, j)`:
+`∑_{i,j} (f_i g_j - f_j g_i)² = 2 ((∑ f_i²)(∑ g_i²) - (∑ f_i g_i)²)`. -/
+lemma sum_sum_mul_sub_mul_sq [CommRing R] (s : Finset ι) (f g : ι → R) :
+    ∑ i ∈ s, ∑ j ∈ s, (f i * g j - f j * g i) ^ 2 =
+      2 * ((∑ i ∈ s, f i ^ 2) * ∑ i ∈ s, g i ^ 2 - (∑ i ∈ s, f i * g i) ^ 2) := by
+  simp only [sq, sum_sum_mul_sub_mul_mul_mul_sub_mul, mul_comm (g _) (f _)]
+
 /-! ### Named inequalities -/
 
 /-- **Cauchy-Schwarz inequality** for finsets.
