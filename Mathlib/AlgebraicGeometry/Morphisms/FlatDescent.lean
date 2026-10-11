@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Descent
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
+
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
 
 /-!

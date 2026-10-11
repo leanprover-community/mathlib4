@@ -499,7 +499,6 @@ theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocallyPathCo
     rw [eq_liftPath_iff']
   exacts [⟨Γ_lifts, Γ_0⟩, ⟨Γ'_lifts, Γ'_0⟩]
 
-set_option backward.isDefEq.respectTransparency.types false in
 open FundamentalGroup Path.Homotopic.Quotient in
 /-- A continuous map `f` from a path connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X` (such that `f a₀` is lifted to `e₀`)

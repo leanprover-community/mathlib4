@@ -234,11 +234,10 @@ to_dual_for Lattice.mk := {
   sup_le a b c := le_inf c a b
 }
 
--- The these 4 declarations do not have a corresponding auto-generated dual.
-to_dual_for Lattice.inf := (· ⊔ ·)
-to_dual_for Lattice.le_inf := sup_le
-to_dual_for Lattice.inf_le_left := le_sup_left
-to_dual_for Lattice.inf_le_right := le_sup_right
+to_dual_for Lattice.inf := self.sup
+to_dual_for Lattice.le_inf := self.sup_le b c a
+to_dual_for Lattice.inf_le_left := self.le_sup_left a b
+to_dual_for Lattice.inf_le_right := self.le_sup_right a b
 
 section Lattice
 

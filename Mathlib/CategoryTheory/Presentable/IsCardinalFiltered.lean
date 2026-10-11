@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Comma.CardinalArrow
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
-public import Mathlib.CategoryTheory.Comma.CardinalArrow
 
 /-! # κ-filtered category
 

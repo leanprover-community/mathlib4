@@ -5,9 +5,10 @@ Authors: Adam Topaz
 -/
 module
 
-import Mathlib.Algebra.Category.Grp.EpiMono
 public import Mathlib.GroupTheory.ResiduallyFinite
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
+
+import Mathlib.Algebra.Category.Grp.EpiMono
 
 /-!
 # Profinite completion of groups

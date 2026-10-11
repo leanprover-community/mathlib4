@@ -6,10 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Action.Continuous
-import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.FullSubcategory
 public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Category.FinTopCat
+
+import Mathlib.CategoryTheory.Galois.Examples
 
 /-!
 # The Galois category of finite sets with a continuous action of a topological group
