@@ -87,19 +87,12 @@ theorem map {f : α → β} : WellFounded (Relation.Map r f f) → WellFounded r
 theorem map_iff {f : α → β} (hf : f.Injective) :
     WellFounded (Relation.Map r f f) ↔ WellFounded r := by
   refine ⟨map, ?_⟩
-  simp_rw [wellFounded_iff_isEmpty_descending_chain,
-    ← @not_imp_not (IsEmpty _), not_isEmpty_iff, nonempty_subtype]
+  simp_rw [wellFounded_iff_isEmpty_descending_chain, ← @not_imp_not (IsEmpty _), not_isEmpty_iff,
+    nonempty_subtype]
   intro ⟨c, hc⟩
-  let invf_c (n) := Set.rangeSplitting f ⟨c n, by grind⟩
-  refine ⟨invf_c, fun n ↦ ?_⟩
-  convert hc n
-  constructor
-  · intro h
-    use invf_c (n + 1), invf_c n
-    simpa [Set.apply_rangeSplitting, invf_c] using h
-  · intro ⟨a, b, ⟨h, ha, hb⟩⟩
-    convert h
-    all_goals exact hf.eq_iff' ‹_› |>.mp <| by simp [invf_c, Set.apply_rangeSplitting]
+  refine ⟨(Set.rangeSplitting f ⟨c ·, by grind⟩), fun n ↦ ?_⟩
+  have ⟨a, b, ⟨h, ha, hb⟩⟩ := hc n
+  convert h <;> apply hf <;> simp [ha, hb, Set.apply_rangeSplitting]
 
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
