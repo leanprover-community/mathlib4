@@ -150,18 +150,17 @@ def getNames (mctx : MetavarContext) : List Name :=
 
 /-- Search for tactic executions in the info tree and remove the syntax of the tactics that
 changed something. -/
-@[specialize] partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
-    (trees : PersistentArray InfoTree) (isTacKind : SyntaxNodeKind → Bool) : M Unit :=
+partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
+    (trees : PersistentArray InfoTree) : M Unit :=
   let ranges := trees.foldl (init := #[]) <| InfoTree.foldInfo fun _ i ranges => Id.run do
     let .ofTacticInfo i := i | return ranges
-    let some r := i.stx.getRange? true | return ranges
+    let stx := i.stx
+    let some r := stx.getRange? true | return ranges
     match i.stx with
     | .atom _ "<;>" =>
       -- `<;>` is used if it generates at least 2 goals
       return if i.goalsAfter matches [] | [_] then ranges else ranges.push r
     | .node _ kind _ =>
-      -- Only check this `TacticInfo` if it corresponds to tactic syntax.
-      unless isTacKind kind do return ranges
       -- An excepted tactic is always considered to be used.
       if exceptions.contains kind then
         return ranges.push r
@@ -214,7 +213,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
   let exceptions := (← allowedRef.get).union <| allowedUnusedTacticExt.getState env
   let go : M Unit := do
     getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
-    eraseUsedTactics exceptions trees (fun k => tactics.contains k || convs.contains k)
+    eraseUsedTactics exceptions trees
   let (_, map) ← go.run {}
   let unused := map.toArray.map fun (r, stx) ↦
     let (msg, stx) := unusedTacticMsg stx
