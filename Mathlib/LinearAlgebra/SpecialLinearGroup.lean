@@ -5,10 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
@@ -546,7 +542,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
       Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g := by
   nontriviality R
   by_cases hV : Subsingleton V
-  · convert! Eq.refl (1 : Rˣ) <;>
+  · convert Eq.refl (1 : Rˣ) <;>
     · apply rootsOfUnity.eq_one
       rw [← Module.finrank_eq_zero_iff_of_free (R := R)] at hV
       simp only [hV, sup_eq_right, zero_le_one, ← Module.finrank_eq_card_basis b]

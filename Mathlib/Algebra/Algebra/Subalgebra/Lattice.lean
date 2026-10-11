@@ -44,7 +44,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → Subalgebra R A) (�
 protected def gi : GaloisInsertion (adjoin R : Set A → Subalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (Algebra.gc.le_u_l s) hs
   gc := Algebra.gc
-  le_l_u S := (Algebra.gc (S : Set A) (adjoin R S)).1 <| le_rfl
+  le_l_u S := (Algebra.gc (S : Set A) (adjoin R S)).1 le_rfl
   choice_eq _ _ := Subalgebra.copy_eq _ _ _
 
 instance : CompleteLattice (Subalgebra R A) where
@@ -294,7 +294,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     (⊥ : Subalgebra R A) ≃ₐ[R] R :=
   AlgEquiv.symm <|
     AlgEquiv.ofBijective (Algebra.ofId R _)
-      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.ext hx⟩⟩
+      ⟨fun _x _y hxy => h congr($(hxy).val), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.ext hx⟩⟩
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -743,7 +743,7 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
   | algebraMap r =>
     have : f 1 ∈ adjoin R (f '' (s ∪ {1})) :=
       subset_adjoin ⟨1, ⟨Set.subset_union_right <| Set.mem_singleton 1, rfl⟩⟩
-    convert! Subalgebra.smul_mem (adjoin R (f '' (s ∪ { 1 }))) this r
+    convert Subalgebra.smul_mem (adjoin R (f '' (s ∪ { 1 }))) this r
     rw [algebraMap_eq_smul_one]
     exact f.map_smul _ _
   | add y z _ _ hy hz => simpa [hy, hz] using Subalgebra.add_mem _ hy hz
@@ -763,17 +763,6 @@ theorem isMulCommutative_adjoin {s : Set A} (hcomm : s.Pairwise Commute) :
 instance isMulCommutative_adjoin_singleton (x : A) :
     IsMulCommutative (adjoin R ({x} : Set A)) :=
   isMulCommutative_adjoin R (by simp)
-
-open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
-semiring.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
-abbrev adjoinCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
-    CommSemiring (adjoin R s) :=
-  have := isMulCommutative_adjoin R hcomm
-  inferInstance
 
 instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
     [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
@@ -844,17 +833,6 @@ theorem mem_adjoin_iff {s : Set A} {x : A} :
     x ∈ adjoin R s ↔ x ∈ Subring.closure (Set.range (algebraMap R A) ∪ s) := by
   rw [← Subalgebra.mem_toSubring, adjoin_eq_ring_closure]
 
-variable (R)
-
-open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
-ring. -/
-@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
-abbrev adjoinCommRingOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
-    CommRing (adjoin R s) :=
-  have := isMulCommutative_adjoin R hcomm
-  inferInstance
-
 end Ring
 
 end Algebra
@@ -890,8 +868,8 @@ theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
 theorem adjoin_ext {s : Set A} ⦃φ₁ φ₂ : adjoin R s →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin hx⟩ = φ₂ ⟨x, subset_adjoin hx⟩) : φ₁ = φ₂ :=
   ext fun ⟨x, hx⟩ ↦ adjoin_induction h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
 
 theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) ⦃φ₁ φ₂ : S →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, hS.ge (subset_adjoin hx)⟩ = φ₂ ⟨x, hS.ge (subset_adjoin hx)⟩) :
@@ -977,7 +955,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A]
 def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
   toFun := toNonUnitalSubalgebra
   inj' := toNonUnitalSubalgebra_injective
-  map_rel_iff' := by simp [SetLike.le_def]
+  map_rel_iff' := by simp [IsConcreteLE.le_iff]
 
 @[simp]
 lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :
@@ -1007,7 +985,7 @@ theorem comap_map_eq (f : A →ₐ[R] B) (S : Subalgebra R A) :
 
 theorem comap_map_eq_self {f : A →ₐ[R] B} {S : Subalgebra R A}
     (h : f ⁻¹' {0} ⊆ S) : (S.map f).comap f = S := by
-  convert! comap_map_eq f S
+  convert comap_map_eq f S
   rwa [left_eq_sup, Algebra.adjoin_le_iff]
 
 end Subalgebra

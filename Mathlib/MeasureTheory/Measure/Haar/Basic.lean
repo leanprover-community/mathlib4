@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Content
 public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Measure.Content
 public import Mathlib.Topology.Algebra.Group.Compact
 
 /-!
@@ -181,7 +181,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
   · rintro ⟨t, h1t, h2t⟩; rw [Finset.card_eq_zero] at h2t; subst h2t
     obtain ⟨g, hg⟩ := K.interior_nonempty
     change g ∈ (∅ : Set G)
-    convert! h1t (interior_subset hg); symm
+    convert h1t (interior_subset hg); symm
     simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
   · exact index_defined K.isCompact hV
 
@@ -253,7 +253,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
 theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set G}
     (hV : (interior V).Nonempty) : index ((fun h => g * h) '' K) V = index K V := by
   refine le_antisymm (mul_left_index_le hK hV g) ?_
-  convert! mul_left_index_le (hK.image <| continuous_const_mul g) hV g⁻¹
+  convert mul_left_index_le (hK.image <| continuous_const_mul g) hV g⁻¹
   rw [image_image]
   simp
 
@@ -302,8 +302,7 @@ theorem prehaar_sup_eq {K₀ : PositiveCompacts G} {U : Set G} {K₁ K₂ : Comp
     (hU : (interior U).Nonempty) (h : Disjoint (K₁.1 * U⁻¹) (K₂.1 * U⁻¹)) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) = prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
   simp only [prehaar]; rw [← add_div]
-  -- Porting note: Here was `congr`, but `to_additive` failed to generate a theorem.
-  refine congr_arg (fun x : ℝ => x / index K₀ U) ?_
+  congr
   exact mod_cast index_union_eq K₁ K₂ hU h
 
 @[to_additive]
@@ -533,8 +532,7 @@ instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
   rw [← forall_measure_preimage_mul_iff]
   intro g A hA
   rw [haarMeasure_apply hA, haarMeasure_apply (measurable_const_mul g hA)]
-  -- Porting note: Here was `congr 1`, but `to_additive` failed to generate a theorem.
-  refine congr_arg (fun x : ℝ≥0∞ => x / (haarContent K₀).measure K₀) ?_
+  congr 1
   apply Content.is_mul_left_invariant_outerMeasure
   apply is_left_invariant_haarContent
 

@@ -5,8 +5,8 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Tactic.Order.CollectFacts
 public meta import Mathlib.Util.AtomM
+public import Mathlib.Tactic.Order.CollectFacts
 
 /-!
 # Graphs for the `order` tactic

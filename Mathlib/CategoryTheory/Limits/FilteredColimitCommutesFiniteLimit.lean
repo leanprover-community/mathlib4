@@ -8,11 +8,10 @@ module
 public import Mathlib.Basic.Countable.Small
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Products.Bifunctor
+
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # Filtered colimits commute with finite limits.
@@ -88,7 +87,7 @@ theorem colimitLimitToLimitColimit_injective :
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j) x) =
         (colimit.ι ((curry.obj F).obj j) ky)
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j) y) := by
-      simpa using! ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
+      simpa using! congr(limit.π (curry.obj F ⋙ colim) j $h)
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp only [colimit_eq_iff] at h

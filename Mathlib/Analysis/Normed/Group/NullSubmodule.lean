@@ -5,8 +5,9 @@ Authors: Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Continuity
 public import Mathlib.Analysis.Normed.MulAction
+
+import Mathlib.Analysis.Normed.Group.Continuity
 
 /-!
 # The null subgroup in a seminormed commutative group

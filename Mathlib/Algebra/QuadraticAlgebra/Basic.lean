@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Star.Unitary
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Quadratic algebras: involution, norm, trace, and change of generator.
+# Quadratic algebras: involution, norm, trace, change of generator, etc.
 
 Let `R` be a commutative ring. We define:
 
@@ -26,6 +26,10 @@ Let `R` be a commutative ring. We define:
 * `QuadraticAlgebra.changeGenerator` and `QuadraticAlgebra.changeGeneratorEquiv`: the `R`-algebra
   map, respectively isomorphism (when `u` is a unit), induced by the change of generator
   `ω ↦ u • ω + k`
+
+* `QuadraticAlgebra.mapRingHom`: the ring homomorphism induced by a ring homomorphism `R →+* S`
+
+* `QuadraticAlgebra.baseChange`: the `R`-algebra homomorphism induced by a base change `R → S`
 
 We prove:
 
@@ -460,8 +464,8 @@ theorem changeGenerator_injective (a b u k : R) {a' b' : R}
     (hb : b' = u * b + 2 * k) (hu : IsRegular u) :
     Function.Injective (changeGenerator a b u k ha hb) := by
   intro z w h
-  have hy : z.im = w.im := hu.right <| by simpa using congr_arg im h
-  exact QuadraticAlgebra.ext (by simpa [hy] using congr_arg re h) hy
+  have hy : z.im = w.im := hu.right <| by simpa using congr(im $h)
+  exact QuadraticAlgebra.ext (by simpa [hy] using congr(re $h)) hy
 
 /-- `changeGenerator` along a unit `u`, as an isomorphism. -/
 @[simps! apply symm_apply]
@@ -483,6 +487,96 @@ def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
 
 end changeGenerator
 
+section mapRingHom
+
+variable {R S T : Type*}
+
+section CommSemiring
+
+variable [CommSemiring R] [CommSemiring S] (f : R →+* S) (a b : R)
+
+/-- The ring homomorphism between quadratic algebras induced by a ring homomorphism `f : R →+* S`,
+sending `ω` to `ω`. -/
+@[simps!]
+def mapRingHom : QuadraticAlgebra R a b →+* QuadraticAlgebra S (f a) (f b) where
+  toFun z := ⟨f z.re, f z.im⟩
+  map_one' := by ext <;> simp
+  map_mul' _ _ := by ext <;> simp
+  map_zero' := by ext <;> simp
+  map_add' _ _ := by ext <;> simp
+
+@[simp]
+theorem mapRingHom_omega : mapRingHom f a b ω = ω := by
+  ext <;> simp
+
+theorem mapRingHom_injective (hf : Function.Injective f) :
+    Function.Injective (mapRingHom f a b) := fun _ _ h ↦ by
+  ext
+  · exact hf (congr_arg re h)
+  · exact hf (congr_arg im h)
+
+theorem mapRingHom_surjective (hf : Function.Surjective f) :
+    Function.Surjective (mapRingHom f a b) := fun z ↦ by
+  obtain ⟨x, hx⟩ := hf z.re
+  obtain ⟨y, hy⟩ := hf z.im
+  exact ⟨⟨x, y⟩, by ext <;> simp [hx, hy]⟩
+
+@[simp]
+theorem mapRingHom_id : mapRingHom (.id R) a b = .id (QuadraticAlgebra R a b) := rfl
+
+theorem mapRingHom_comp [CommSemiring T] (g : S →+* T) :
+    (mapRingHom g (f a) (f b)).comp (mapRingHom f a b) = mapRingHom (g.comp f) a b := rfl
+
+end CommSemiring
+
+section CommRing
+
+variable [CommRing R] [CommRing S] (f : R →+* S) (a b : R) (x : QuadraticAlgebra R a b)
+
+@[simp]
+theorem norm_mapRingHom : norm (mapRingHom f a b x) = f (norm x) := by
+  simp [norm_def]
+
+@[simp]
+theorem trace_mapRingHom : trace (mapRingHom f a b x) = f (trace x) := by
+  simp [trace_def, map_ofNat]
+
+@[simp]
+theorem mapRingHom_star : mapRingHom f a b (star x) = star (mapRingHom f a b x) := by
+  ext <;> simp
+
+end CommRing
+
+end mapRingHom
+
+section baseChange
+
+variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] (a b : R)
+
+/-- The `R`-algebra homomorphism between quadratic algebras induced by the base change `R → S`,
+sending `ω` to `ω`. -/
+def baseChange :
+    QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b) :=
+  { mapRingHom (algebraMap R S) a b with
+    commutes' _ := by ext <;> simp [Algebra.algebraMap_eq_smul_one] }
+
+@[simp]
+theorem coe_baseChange :
+    baseChange S a b = mapRingHom (algebraMap R S) a b := rfl
+
+/-- The `QuadraticAlgebra R a b`-algebra structure on the base change of `QuadraticAlgebra R a b`
+along `R → S`. This is not an instance, since for `R = S` it clashes with `Algebra.id`. -/
+@[instance_reducible]
+def algebra : Algebra (QuadraticAlgebra R a b)
+    (QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b)) :=
+  (mapRingHom (algebraMap R S) a b).toAlgebra
+
+theorem baseChange_injective [FaithfulSMul R S] :
+    Function.Injective (baseChange S a b) :=
+  mapRingHom_injective _ a b (FaithfulSMul.algebraMap_injective R S)
+
+end baseChange
+
 section field
 
 variable [Field K] {a b : K} [Hab : Fact (∀ r, r ^ 2 ≠ a + b * r)]
@@ -502,8 +596,8 @@ lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra K a b} :
   · intro hz
     simp [hz]
 
-@[simps] instance : NNRatCast (QuadraticAlgebra K a b) where nnratCast q := ⟨q, 0⟩
-@[simps] instance : RatCast (QuadraticAlgebra K a b) where ratCast q := ⟨q, 0⟩
+@[simps -isSimp, simps!] instance : NNRatCast (QuadraticAlgebra K a b) where nnratCast q := .C q
+@[simps -isSimp, simps!] instance : RatCast (QuadraticAlgebra K a b) where ratCast q := .C q
 
 @[simps -isSimp, simps!] instance : Inv (QuadraticAlgebra K a b) where inv z := (norm z)⁻¹ • star z
 @[simps -isSimp, simps!] instance : Div (QuadraticAlgebra K a b) where div w z := w * z⁻¹
