@@ -7,11 +7,9 @@ Authors: Jonas van der Schaaf, Anish Rajeev
 module
 
 public import Mathlib.ModelTheory.Types
-public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Connected.TotallyDisconnected
-public import Mathlib.Topology.Compactness.Compact
-public import Mathlib.Topology.Connected.Separation
 public import Mathlib.Topology.Baire.LocallyCompactRegular
+
+import Mathlib.Topology.Connected.Separation
 
 /-!
 # Topology on the space of complete types
@@ -87,14 +85,14 @@ instance : CompactSpace (T.CompleteType α) := by
       have subset : (x : Set _) ⊆ T.toTheory := by rwa [Set.mem_iInter₂] at T_inter
       exact T.isMaximal.1.mono subset
     · intro φ
-      simp only [mem_setOf_eq, typesWith_not]
+      simp only [mem_ofPred_eq, typesWith_not]
       exact Ultrafilter.mem_or_compl_mem F (T.typesWith φ)
   · refine ⟨mem_univ _, ?_⟩
-    · rw [nhds_generateFrom]
-      apply le_iInf₂
-      rintro _ ⟨hφ, φ, rfl⟩
-      rw [Filter.le_principal_iff]
-      exact hφ
+    rw [nhds_generateFrom]
+    apply le_iInf₂
+    rintro _ ⟨hφ, φ, rfl⟩
+    rw [Filter.le_principal_iff]
+    exact hφ
 
 instance : BaireSpace (T.CompleteType α) := BaireSpace.of_t2Space_locallyCompactSpace
 

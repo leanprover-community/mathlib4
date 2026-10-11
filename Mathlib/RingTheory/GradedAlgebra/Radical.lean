@@ -26,7 +26,7 @@ This file contains a proof that the radical of any homogeneous ideal is a homoge
 ## Implementation details
 
 Throughout this file, the indexing type `ι` of grading is assumed to be a
-`LinearOrderedCancelAddCommMonoid`. This might be stronger than necessary but cancelling
+linearly ordered cancellative monoid. This might be stronger than necessary but cancelling
 property is strictly necessary; for a counterexample of how `Ideal.IsHomogeneous.isPrime_iff`
 fails for a non-cancellative set see `Counterexamples/HomogeneousPrimeNotPrime.lean`.
 
@@ -104,7 +104,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         simp only [antidiag, mem_erase, Prod.mk_inj, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
-          convert! le_or_lt_of_add_le_add H₄.ge using 1
+          convert le_or_lt_of_add_le_add H₄.ge using 1
           rw [Ne.le_iff_lt]
           rintro rfl
           cases H₁ ⟨rfl, add_left_cancel H₄⟩

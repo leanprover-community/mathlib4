@@ -180,7 +180,7 @@ lemma toSubsemiring_injective : (toSubsemiring : Subring R → Subsemiring R).In
 
 instance : SetLike (Subring R) R where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toSubsemiring_injective
+  coe_injective := SetLike.coe_injective.comp toSubsemiring_injective
 
 lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
@@ -188,7 +188,7 @@ lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).In
 lemma toSubmonoid_injective : (fun s : Subring R => s.toSubmonoid).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
 
-instance : PartialOrder (Subring R) := .ofSetLike (Subring R) R
+instance : PartialOrder (Subring R) := .ofSetLike (Subring R)
 
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 

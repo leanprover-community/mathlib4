@@ -6,7 +6,6 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 /-!
 
 # Covariant instances on `WithZero`

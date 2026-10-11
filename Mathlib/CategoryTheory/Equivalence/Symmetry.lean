@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
@@ -31,7 +30,7 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 
-open CategoryTheory.Functor NatIso Category
+open CategoryTheory.Functor
 
 namespace Equivalence
 
@@ -73,6 +72,9 @@ def symmEquiv : (C ≌ D) ≌ (D ≌ C)ᵒᵖ where
   functor_unitIso_comp X := by
     simp [symm, symmEquivInverse]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `inverse` functor that sends a functor to its inverse. -/
 @[simps!]
 def inverseFunctor : (C ≌ D) ⥤ (D ⥤ C)ᵒᵖ :=
@@ -85,6 +87,7 @@ variable {C D}
 def inverseFunctorObjIso (e : C ≌ D) :
     (inverseFunctor C D).obj e ≅ Opposite.op e.inverse := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We can compare the way we obtain a natural isomorphism `e.inverse ≅ f.inverse` from
 an isomorphism `e ≌ f` via `inverseFunctor` with the way we get one through
 `Iso.isoInverseOfIsoFunctor`. -/

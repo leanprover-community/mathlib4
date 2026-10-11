@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
-public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Sites.Sheafification
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The sheafification functor for presheaves of modules
@@ -106,6 +104,7 @@ lemma toPresheaf_map_sheafificationHomEquiv
   rw [toPresheaf_map_sheafificationHomEquiv_def, Adjunction.homEquiv_unit]
   dsimp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toSheaf_map_sheafificationHomEquiv_symm
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (g : P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :
@@ -118,7 +117,6 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/

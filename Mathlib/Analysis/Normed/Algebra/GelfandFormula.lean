@@ -5,11 +5,12 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Normed.Operator.Mul
-import Mathlib.Analysis.Complex.Polynomial.Basic
+
 import Mathlib.Analysis.Analytic.RadiusLiminf
+import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Gelfand's formula and other results on the spectrum in complex Banach algebras
@@ -58,9 +59,6 @@ theorem hasDerivAt_resolvent_const_left {a : A} {k : 𝕜} (hk : k ∈ resolvent
     simpa using! (Algebra.linearMap 𝕜 A).hasDerivAt.sub_const a
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using! H₁.comp_hasDerivAt k H₂
 
-@[deprecated (since := "2026-03-26")]
-alias hasDerivAt_resolvent := hasDerivAt_resolvent_const_left
-
 theorem hasFDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasFDerivAt (resolvent · k)
       (((ContinuousLinearMap.mulLeftRight 𝕜 A) (resolvent a k)) (resolvent a k)) a := by
@@ -107,11 +105,11 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
   let p : FormalMultilinearSeries ℂ ℂ A := fun n =>
     ContinuousMultilinearMap.mkPiRing ℂ (Fin n) (a ^ n)
   suffices h : (r : ℝ≥0∞) ≤ p.radius by
-    convert! h
+    convert h
     simp only [p, p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiRing]
     congr
     ext n
-    rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), if_neg]
+    rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), ite_eq_right]
     exact fun ha => (lt_self_iff_false _).mp
       (ha.2.trans_le (one_div_nonneg.mpr n.cast_nonneg : 0 ≤ (1 / n : ℝ)))
   have H₁ := (differentiableOn_inverse_one_sub_smul r_lt).hasFPowerSeriesOnBall r_pos
@@ -133,7 +131,7 @@ instead of `nnnorm`. -/
 theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
     Tendsto (fun n : ℕ => ENNReal.ofReal (‖a ^ n‖ ^ (1 / n : ℝ))) atTop
       (𝓝 (spectralRadius ℂ a)) := by
-  convert! pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
+  convert pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
   ext1
   rw [← ofReal_rpow_of_nonneg (norm_nonneg _) _, ← coe_nnnorm, coe_nnreal_eq]
   simp

@@ -5,9 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 /-!
 # Base change for the dual of a module
@@ -93,8 +90,7 @@ private noncomputable def toDualBaseChangeAux :
     map_add' a b := by simp [add_smul]
     map_smul' r a := by simp }).toAddHom
   map_smul' a g := by
-    induction g using TensorProduct.induction_on with
-    | zero => simp
+    induction g using TensorProduct.inductionOn with
     | add x y hx hy => aesop
     | tmul b f => simp [TensorProduct.smul_tmul', mul_smul]
 
@@ -121,7 +117,6 @@ noncomputable def toDualBaseChange :
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, LinearEquiv.trans_apply]
   induction w using ibc.inductionOn with
-  | zero => simp
   | tmul v =>
     simp only [toDualBaseChangeAux_tmul, one_mul]
     conv_lhs => rw [← Basis.sum_equivFun b v, map_sum]

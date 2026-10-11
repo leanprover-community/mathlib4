@@ -5,10 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Basic
-public import Mathlib.Algebra.Lie.Subalgebra
 public import Mathlib.Algebra.Lie.Submodule
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Lie algebras of associative algebras
@@ -46,7 +43,8 @@ variable {A : Type v} [Ring A]
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
-instance (priority := 100) ofAssociativeRing : LieRing A where
+@[instance_reducible]
+def ofAssociativeRing : LieRing A where
   add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
@@ -61,6 +59,8 @@ theorem lie_apply {α : Type*} (f g : α → A) (a : α) : ⁅f, g⁆ a = ⁅f a
   rfl
 
 end LieRing
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 section AssociativeModule
 
@@ -163,13 +163,15 @@ theorem toLieHom_comp : (g.comp f : A →ₗ⁅R⁆ C) = (g : B →ₗ⁅R⁆ C)
   rfl
 
 theorem toLieHom_injective {f g : A →ₐ[R] B} (h : (f : A →ₗ⁅R⁆ B) = (g : A →ₗ⁅R⁆ B)) : f = g := by
-  ext a; exact LieHom.congr_fun h a
+  ext a; congrm $h a
 
 end AlgHom
 
 end LieAlgebra
 
 end OfAssociative
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 section AdjointAction
 
@@ -330,7 +332,7 @@ lemma toEnd_pow_comp_lieHom :
 
 lemma toEnd_pow_apply_map (m : M) :
     (toEnd R L M₂ x ^ k) (f m) = f ((toEnd R L M x ^ k) m) :=
-  LinearMap.congr_fun (toEnd_pow_comp_lieHom f k x) m
+  congr($(toEnd_pow_comp_lieHom f k x) m)
 
 end LieModule
 

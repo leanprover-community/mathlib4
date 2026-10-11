@@ -6,9 +6,7 @@ Authors: Andrew Yang, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Restrict
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Sites.CoverPreserving
-public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Cocontinuous functors between sites.
@@ -102,11 +100,17 @@ lemma Functor.IsCocontinuous.iff_of_iso {F G : C ⥤ D} (e : F ≅ G) :
     F.IsCocontinuous J K ↔ G.IsCocontinuous J K :=
   ⟨fun _ ↦ .of_iso e, fun _ ↦ .of_iso e.symm⟩
 
+lemma CoverPreserving.of_comp_of_isCocontinuous {F : C ⥤ D} (G : D ⥤ E)
+    (h : CoverPreserving J L (F ⋙ G)) [G.IsCocontinuous K L] [G.Full] [G.Faithful] :
+    CoverPreserving J K F where
+  cover_preserve {U} S hS := by
+    refine K.superset_covering ?_ (G.cover_lift K _ (h.cover_preserve hS))
+    rw [Sieve.functorPushforward_comp, Sieve.functorPullback_functorPushforward_eq G]
+
 section
 
 variable {F : C ⥤ D} {G : D ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Adjunction.isCocontinuous_iff_coverPreserving (adj : F ⊣ G) :
     F.IsCocontinuous J K ↔ CoverPreserving K J G := by
   refine ⟨fun h ↦ ⟨?_⟩, fun h ↦ ⟨?_⟩⟩
@@ -178,6 +182,7 @@ def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
           r.w := by simpa using G.congr_map w =≫ f
           .. })
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow)
     (h : G.obj W ⟶ i.Y) (w : h ≫ i.f = G.map g ≫ f) :
@@ -226,6 +231,7 @@ lemma fac' (j : StructuredArrow (op X) G.op) :
     lift hF hR s ≫ R.map j.hom ≫ α.app j.right = liftAux hF α s j.hom.unop := by
   apply IsLimit.fac
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
@@ -238,7 +244,6 @@ lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   simpa using liftAux_map hF α s (j.hom.unop ≫ i.f) (𝟙 _) i j.hom.unop (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include hR hF in
 variable (K) in
 lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
@@ -330,10 +335,6 @@ lemma sheafAdjunctionCocontinuous_unit_app_hom (F : Sheaf K A) :
   change _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [Category.comp_id]
 
-@[deprecated (since := "2026-03-05")]
-alias sheafAdjunctionCocontinuous_unit_app_val :=
-  sheafAdjunctionCocontinuous_unit_app_hom
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma sheafAdjunctionCocontinuous_counit_app_hom (F : Sheaf J A) :
@@ -344,10 +345,6 @@ lemma sheafAdjunctionCocontinuous_counit_app_hom (F : Sheaf J A) :
     (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
     (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm F).trans
       (by cat_disch)
-
-@[deprecated (since := "2026-03-05")]
-alias sheafAdjunctionCocontinuous_counit_app_val :=
-  sheafAdjunctionCocontinuous_counit_app_hom
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -363,10 +360,6 @@ lemma sheafAdjunctionCocontinuous_homEquiv_apply_hom {F : Sheaf K A} {H : Sheaf 
         dsimp
         erw [Functor.map_id, Category.comp_id, Category.id_comp,
           Adjunction.homEquiv_unit])
-
-@[deprecated (since := "2026-03-05")]
-alias sheafAdjunctionCocontinuous_homEquiv_apply_val :=
-  sheafAdjunctionCocontinuous_homEquiv_apply_hom
 
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 
@@ -409,10 +402,6 @@ lemma pushforwardContinuousSheafificationCompatibility_hom_app_hom (F : Dᵒᵖ 
       ((presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K).obj F).property := by
   apply sheafifyLift_unique
   apply toSheafify_pullbackSheafificationCompatibility
-
-@[deprecated (since := "2026-03-05")]
-alias pushforwardContinuousSheafificationCompatibility_hom_app_val :=
-  pushforwardContinuousSheafificationCompatibility_hom_app_hom
 
 end Functor
 

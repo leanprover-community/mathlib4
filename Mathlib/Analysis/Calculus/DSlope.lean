@@ -6,9 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
+
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Mul
 
 /-!
 # Slope of a differentiable function
@@ -29,7 +29,7 @@ open Function Set Filter
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-open Classical in
+open scoped Classical in
 /-- `dslope f a b` is defined as `slope f a b = (b - a)⁻¹ • (f b - f a)` for `a ≠ b` and
 `deriv f a` for `a = b`. -/
 noncomputable def dslope (f : 𝕜 → E) (a : 𝕜) : 𝕜 → E :=

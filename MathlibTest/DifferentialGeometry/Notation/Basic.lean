@@ -31,26 +31,28 @@ section TotalSpace
 variable {σ : Π x : M, V x}
   {σ' : (x : E) → Trivial E E' x} {σ'' : (y : E) → Trivial E E' y} {s : E → E'}
 
-/-- info: fun x ↦ ⟨x, σ x⟩ : M → TotalSpace F V -/
+/-- info: (T% σ) : M → TotalSpace F V -/
 #guard_msgs in
 #check T% σ
 
--- Note how the name of the bound variable `x` resp. `y` is preserved.
-/-- info: fun x ↦ ⟨x, σ' x⟩ : E → TotalSpace E' (Trivial E E') -/
+-- Note how the name of the bound variable `x` resp. `y` would have been preserved,
+-- except for the delaborator collapsing this to `T%` again.
+-- TODO: parentheses here are not strictly necessary; find a way to remove them!
+/-- info: (T% σ') : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% σ'
 
-/-- info: fun y ↦ ⟨y, σ'' y⟩ : E → TotalSpace E' (Trivial E E') -/
+/-- info: (T% σ'') : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% σ''
 
-/-- info: fun a ↦ ⟨a, s a⟩ : E → TotalSpace E' (Trivial E E') -/
+/-- info: (T% s) : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% s
 
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 
-/-- info: fun m ↦ ⟨m, X m⟩ : M → TotalSpace E (TangentSpace I) -/
+/-- info: (T% X) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% X
 
@@ -59,10 +61,10 @@ variable {x : M}
 -- Testing precedence.
 section precedence
 
-/-- info: (fun x ↦ ⟨x, σ x⟩) x : TotalSpace F V -/
+/-- info: (T% σ) x : TotalSpace F V -/
 #guard_msgs in
 #check (T% σ) x
-/-- info: (fun x ↦ ⟨x, σ x⟩) x : TotalSpace F V -/
+/-- info: (T% σ) x : TotalSpace F V -/
 #guard_msgs in
 #check T% σ x
 -- Nothing happening, as expected.
@@ -74,12 +76,13 @@ section precedence
 variable {ι j : Type*}
 
 -- Partially applied.
-/-- info: fun a ↦ ⟨a, s a⟩ : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x)) -/
+/-- info: (T% s) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x)) -/
 #guard_msgs in
 variable {s : ι → (x : M) → V x} in
 #check T% s
 
-/-- info: (fun a ↦ ⟨a, s a⟩) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x)) -/
+-- Note: pre-existing bug in the delaborator, should be `T% (s i)`!
+/-- info: (T% s) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x)) -/
 #guard_msgs in
 variable {s : ι → ι → (x : M) → V x} {i : ι} in
 #check T% s i
@@ -100,66 +103,83 @@ end precedence
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
 -- Applying a section to an argument.
+section
+
+set_option pp.notation false
+
 -- This application is not beta-reduced, because of the parentheses around the T%.
-/-- info: (fun m ↦ ⟨m, X m⟩) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X) x
 
 -- We apply head-beta reduction of the applied form: there is nothing to do here.
-/-- info: (fun m ↦ ⟨m, X m⟩) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X x)
 
 -- This variant is beta-reduced.
-/-- info: (fun x ↦ ⟨x, X x⟩) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x) x)
 
-/-- info: fun m ↦ ⟨m, X m⟩ : M → TotalSpace E (TangentSpace I) -/
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X)
 
 -- As is this version.
-/-- info: fun x ↦ ⟨x, X x⟩ : M → TotalSpace E (TangentSpace I) -/
+/-- info: fun x ↦ TotalSpace.mk' E x (X x) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x))
 
 -- The term `x` is outside parentheses: the form `x ↦ X x` is still reduced because
 -- we apply head beta reduction to the application.
-/-- info: (fun x ↦ ⟨x, X x⟩) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x)) x
 
 -- Parentheses around the argument are not required right now.
-/-- info: (fun x ↦ ⟨x, X x⟩) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% (fun x ↦ X x) x
 
 -- Applying the same elaborator twice errors.
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`fun m ↦ ⟨m, X m⟩` is a function into `TotalSpace E`
+`fun m ↦ TotalSpace.mk' E m (X m)` is a function into `TotalSpace E`
 
 hint: you may be missing suitable typeclass assumptions
 -/
 #guard_msgs in
 #check (T% (T% X))
 
+set_option pp.notation true
+
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`fun m ↦ ⟨m, X m⟩` is a function into `TotalSpace E`
+`(T% X)` is a function into `TotalSpace E`
 
 hint: you may be missing suitable typeclass assumptions
 -/
 #guard_msgs in
 #check (T% (T% X)) x
 
+/--
+error: could not find a `FiberBundle` instance on `TotalSpace E`:
+`(T% X)` is a function into `TotalSpace E`
+
+hint: you may be missing suitable typeclass assumptions
+-/
+#guard_msgs in
+#check (T% (T% X)) x
+
+end
+
 section
 -- Check minimal assumptions to find a model fiber.
 
 variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] (σ : (b : B) → E b)
-/-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
+/-- info: (T% σ) : B → TotalSpace F E -/
 #guard_msgs in
 #check T% σ
 
@@ -179,7 +199,7 @@ hint: you may be missing suitable typeclass assumptions
 #guard_msgs in
 #check T% σ
 
-/-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
+/-- info: (T% σ) : B → TotalSpace F E -/
 #guard_msgs in
 variable [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
 #check T% σ
@@ -528,6 +548,69 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 end
 
 end differentiability
+
+/-! Tests for the elaborators for `UniqueMDiff{WithinAt,On}`. -/
+section UniqueMDiff
+
+variable {s : Set M} {m : M}
+
+/-- info: UniqueMDiffOn I s : Prop -/
+#guard_msgs in
+#check UniqueMDiff[s]
+
+/-- info: UniqueMDiffOn (modelWithCornersSelf Real Real) (Set.Icc 0 1) : Prop -/
+#guard_msgs in
+#check UniqueMDiff[(Set.Icc 0 1 : Set ℝ)]
+
+/-- error: `Real` has type `Type` which is not of the form `Set α` for some `α`. -/
+#guard_msgs in
+#check UniqueMDiff[ℝ]
+
+/-- info: UniqueMDiffWithinAt I s : M → Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[s]
+
+/-- info: UniqueMDiffWithinAt I s m : Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[s] m
+
+/-- info: UniqueMDiffWithinAt I Set.univ m : Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[(Set.univ : Set M)] m
+
+-- In the future, the elaborators should take the type of `m` into account.
+/--
+error: Could not find a model with corners for `?_`.
+
+Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
+-/
+#guard_msgs in
+#check UniqueMDiffAt[Set.univ] m
+
+variable {s : TopologicalSpace.Opens M}
+
+/-- info: UniqueMDiffOn I s.carrier : Prop -/
+#guard_msgs in
+#check UniqueMDiff[s.carrier]
+
+/-- error: `s` has type `TopologicalSpace.Opens M` which is not of the form `Set α` for some `α`. -/
+#guard_msgs in
+#check UniqueMDiff[s]
+
+/--
+error: Application type mismatch: The argument
+  s
+has type
+  TopologicalSpace.Opens M
+but is expected to have type
+  Set ?_
+in the application
+  UniqueMDiffOn I s
+-/
+#guard_msgs in
+#check UniqueMDiffOn I s
+
+end UniqueMDiff
 
 /-! Tests for the custom elaborators for `ContMDiff{WithinAt,At,On}` -/
 section smoothness
@@ -931,7 +1014,7 @@ info: ContMDiffWithinAt (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜
 
 end smoothness
 
--- Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators.
+/-! Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators. -/
 section
 
 variable {EM' : Type*} [NormedAddCommGroup EM']
@@ -939,34 +1022,107 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {f : M → M'} {s : Set M}
 
-/-- info: setOf fun x ↦ MDifferentiableAt I I' f x : Set M -/
+/-- info: Set.ofPred fun x ↦ MDifferentiableAt I I' f x : Set M -/
 #guard_msgs in
 #check {x | MDiffAt f x}
 
-/-- info: setOf fun x ↦ MDifferentiableWithinAt I I' f s x : Set M -/
+/-- info: Set.ofPred fun x ↦ MDifferentiableWithinAt I I' f s x : Set M -/
 #guard_msgs in
 #check {x | MDiffAt[s] f x}
 
-/-- info: setOf fun x ↦ ContMDiffAt I I' Top.top f x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffAt I I' Top.top f x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt ⊤ f x}
 
-/-- info: setOf fun x ↦ ContMDiffWithinAt I I' 2 f s x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffWithinAt I I' 2 f s x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt[s] 2 f x}
 
 open ContDiff in -- for the ∞ notation
-/-- info: setOf fun x ↦ ContMDiffAt I I' (↑Top.top) f x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffAt I I' (↑Top.top) f x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt ∞ f x}
 
-/-- info: setOf fun x ↦ Injective ⇑(mfderiv I I' f x) : Set M -/
+/-- info: Set.ofPred fun x ↦ Injective ⇑(mfderiv I I' f x) : Set M -/
 #guard_msgs in
 #check {x | Function.Injective (mfderiv% f x) }
 
-/-- info: setOf fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
+/-- info: Set.ofPred fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
 #guard_msgs in
 #check {x | Function.Surjective (mfderiv[s] f x) }
+
+end
+
+/-! Inferring a model with corners, when the inferred model is not in the local context,
+but an explicitly named construction (e.g. `𝓘(𝕜, E)` on some normed space `E`). -/
+section
+
+open scoped ContDiff
+
+-- This does not require any `IsManifold` hypothesis, ...
+variable {X Y : Type*} [TopologicalSpace X] [ChartedSpace ℝ X]
+  [TopologicalSpace Y] [ChartedSpace ℝ Y] {f : X → Y}
+
+/--
+info: ContMDiff (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) Top.top f : Prop
+-/
+#guard_msgs in
+#check CMDiff ω f
+
+variable {f : X → ℝ} in /--
+info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) f : Prop
+-/
+#guard_msgs in #check MDiff f
+
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace F X] {f : X → 𝕜} in
+/-- info: MDifferentiable (modelWithCornersSelf 𝕜 F) (modelWithCornersSelf 𝕜 𝕜) f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+-- This test is expected to fail: it passing would amount to guessing a model with corners on
+-- a product of two normed spaces (which is ambiguous).
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] {f : X → 𝕜} in
+/--
+error: Could not find a model with corners for `X`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
+#guard_msgs in
+#check MDiff f
+
+-- ... but also works with an `IsManifold` hypothesis in context.
+variable [IsManifold 𝓘(ℝ) n X] [IsManifold 𝓘(ℝ) ω Y]
+/--
+info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) f : Prop
+-/
+#guard_msgs in #check MDiff f
+
+end
+
+/-! Tests for the elaborators for `tangentMap(Within)` and `TangentSpace` -/
+section
+
+variable {f : M → M} {s : Set M} {x : M} {X : TangentSpace% x}
+
+/-- info: TangentSpace I x : Type u_2 -/
+#guard_msgs in
+#check TangentSpace% x
+
+/-- info: tangentMap I I f : TangentBundle I M → TangentBundle I M -/
+#guard_msgs in
+#check tangentMap% f
+
+/-- info: tangentMapWithin I I f s : TangentBundle I M → TangentBundle I M -/
+#guard_msgs in
+#check tangentMap[s] f
+
+/-- info: tangentMap I I f { proj := x, snd := X } : TangentBundle I M -/
+#guard_msgs in
+#check tangentMap% f X
+
+/-- info: tangentMapWithin I I f s { proj := x, snd := X } : TangentBundle I M -/
+#guard_msgs in
+#check tangentMap[s] f X
 
 end
 
@@ -1341,10 +1497,10 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
       `Unit` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize instance of type class
+      failed to synthesize
         NontriviallyNormedField Unit
       ⏎
-      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 [Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `Unit` among local instances.
@@ -1354,7 +1510,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 
 set_option pp.notation true in
 /--
-info: fun a ↦ ⟨a, f a⟩ : Unit → TotalSpace Unit (Trivial Unit Unit)
+info: (T% f) : Unit → TotalSpace Unit (Trivial Unit Unit)
 ---
 trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
 -/

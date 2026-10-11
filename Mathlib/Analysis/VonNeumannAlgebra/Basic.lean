@@ -81,9 +81,9 @@ variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [Complete
 
 instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier
-  coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
+  coe_injective S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
 
-instance : PartialOrder (VonNeumannAlgebra H) := .ofSetLike (VonNeumannAlgebra H) (H →L[ℂ] H)
+instance : PartialOrder (VonNeumannAlgebra H) := .ofSetLike (VonNeumannAlgebra H)
 
 noncomputable instance instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
   star_mem {s} := s.star_mem'

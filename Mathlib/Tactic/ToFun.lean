@@ -5,9 +5,10 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Util.AddRelatedDecl
+public meta import Mathlib.Lean.Name
 public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Translate.Attributes
+public import Mathlib.Util.AddRelatedDecl
 
 /-!
 # The `to_fun` attribute
@@ -47,7 +48,10 @@ def toFunImpl (src : Name) (stx : Syntax) (kind : AttributeKind) : AttrM Name :=
   if (kind != AttributeKind.global) then
     throwError "`to_fun` can only be used as a global attribute"
   let name := match id with
-    | some name => (src.splitAt name.getId.getNumParts).1 ++ name.getId
+    | some name =>
+      -- A provided name starting with `_root_` disables the namespace length heuristic.
+      if rootNamespace.isPrefixOf name.getId then removeRoot name.getId else
+        (src.splitAt name.getId.getNumParts).1 ++ name.getId
     | none => src.appendBefore "fun_"
   if let some id := id then
     if name == src.appendBefore "fun_" then

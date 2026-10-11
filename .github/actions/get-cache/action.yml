@@ -1,0 +1,137 @@
+# Get this commit's oleans, in two phases:
+#   1. Warm the cache from the `cache-snapshot` GitHub artifact (canonical repo only).
+#   2. Fetch this commit's oleans from the remote cache with the trusted master-built binary.
+# The fetch is HEAD-scoped (reads only this commit's own cache scope). The warm is fail-safe
+# (any failure → just the remote fetch) and its source is hardcoded, so nothing can redirect
+# the download off the trusted master pipeline.
+name: Get cache
+description: Get this commit's oleans into the local cache.
+inputs:
+  working_directory:
+    description: The lake project to fetch the cache for (e.g. the checked-out PR branch).
+    required: true
+  cache_bin:
+    description: Path to the trusted `cache` binary, relative to `working_directory`.
+    required: true
+runs:
+  using: composite
+  steps:
+    # 1. Warm cache from the GitHub artifact. Resolve which snapshot to use: the one built
+    #    at this commit's merge-base with master (its unchanged files hash identically
+    #    there), else the newest still-retained one at-or-before it, else the latest (a
+    #    merge-base older than retention, or any failure, lands here). Canonical repo only.
+    - name: Resolve cache snapshot
+      id: resolve
+      if: ${{ github.repository == 'leanprover-community/mathlib4' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      run: |
+        set -uo pipefail
+        # `gh api` prints an error response on stdout and skips `--jq`. This wrapper prints
+        # nothing when the call fails.
+        api() { local out; out=$(gh api "$@" 2>/dev/null) && printf '%s\n' "${out}"; }
+
+        # Every run query has a `created` range. GitHub returns at most 1,000 runs for a
+        # filtered search. When more runs match, the answer can omit every recent run.
+        runs="repos/leanprover-community/mathlib4/actions/workflows/build.yml/runs?branch=master&event=push&status=success&per_page=1"
+        newest_run_query='.workflow_runs[0].id // empty'
+
+        # Each helper prints a matching successful master-push run-id, or empty.
+        run_at()        { api "${runs}&head_sha=$1&created=>=${cutoff}" --jq "${newest_run_query}"; }
+        latest_run()    { api "${runs}&created=>=${cutoff}" --jq "${newest_run_query}"; }
+        # newest run created at-or-before date $1, but not older than the cutoff
+        newest_before() { api "${runs}&created=${cutoff}..$1" --jq "${newest_run_query}"; }
+        # True if run-id $1 carries an unexpired `cache-snapshot` artifact. Older runs
+        # predate the feature and artifacts expire, so a successful run is not enough.
+        # Filters server-side by name, but re-checks in jq in case `name` is ignored.
+        has_snapshot() {
+          local artifact
+          artifact=$(api "repos/leanprover-community/mathlib4/actions/runs/$1/artifacts?name=cache-snapshot&per_page=100" \
+            --jq '[.artifacts[] | select(.name == "cache-snapshot" and .expires_at > (now | todate))][0]
+              // empty | "created \(.created_at), expires \(.expires_at)"')
+          echo "Run $1: cache-snapshot artifact ${artifact:-missing or expired}"
+          [[ -n "${artifact}" ]]
+        }
+
+        # This PR's merge-base with master (+ its commit date), and the cutoff below which
+        # snapshots have expired (retention ~14d).
+        mb_info=$(api "repos/leanprover-community/mathlib4/compare/master...${HEAD_SHA}" \
+          --jq '.merge_base_commit | "\(.sha) \(.commit.committer.date)"')
+        read -r mb mb_date <<< "${mb_info}"
+        cutoff=$(date -u -d '13 days ago' +%Y-%m-%dT%H:%M:%SZ)
+
+        # Prefer the merge-base's snapshot (while still retained), then the newest one
+        # before it, then the latest of all.
+        run_id=""
+        if [[ -n "${mb}" && "${mb_date}" > "${cutoff}" ]]; then
+          run_id=$(run_at "${mb}")
+          [[ -z "${run_id}" ]] && run_id=$(newest_before "${mb_date}")
+        fi
+        [[ -z "${run_id}" ]] && run_id=$(latest_run)
+
+        # The resolved run may carry no `cache-snapshot` artifact: an older merge-base
+        # predating the feature, or one whose artifact already expired (older-than-today
+        # runs often won't have one). Rather than let the download step hard-error on a
+        # missing artifact, confirm it's present; if not, fall back to the latest master
+        # run, and warm only if that one has it.
+        if [[ -n "${run_id}" ]] && ! has_snapshot "${run_id}"; then
+          echo "Falling back to the latest master run."
+          run_id=$(latest_run)
+          if [[ -n "${run_id}" ]] && ! has_snapshot "${run_id}"; then
+            run_id=""
+          fi
+        fi
+
+        echo "Resolved cache-snapshot run_id: '${run_id}' (merge-base: ${mb:-unknown})"
+        echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"
+
+    - name: Warm cache from GitHub artifact
+      if: ${{ steps.resolve.outputs.run_id != '' }}
+      continue-on-error: true # fail-safe: fall back to the remote fetch (step 2)
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: cache-snapshot
+        path: /home/lean/.cache/mathlib
+        repository: leanprover-community/mathlib4
+        run-id: ${{ steps.resolve.outputs.run_id }}
+        github-token: ${{ github.token }}
+
+    # 2. Fetch this commit's oleans from the remote cache with the trusted `cache` binary.
+    #    Runs on every repo; the warm above just gives the canonical repo a local head
+    #    start. HEAD-scoped: reads only this commit's own cache scope.
+    #    Earlier steps give PR code write access to `.lake/`, so it can hold symlinks that
+    #    point outside it. The fetch runs inside landrun, which denies every write that
+    #    resolves outside `.lake/` and the local cache directory.
+    - name: Fetch cache from remote
+      shell: bash
+      env:
+        WORKDIR: ${{ inputs.working_directory }}
+        CACHE_BIN: ${{ inputs.cache_bin }}
+        CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+      run: |
+        set -eo pipefail
+        # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
+        export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
+        cd "${WORKDIR}"
+        # This shell writes the log outside the sandbox, so the log must not be under `.lake/`.
+        log="${RUNNER_TEMP:-/tmp}/cache-get.log"
+        # --repo so fork PRs also read their own repo-namespaced cache (master is read flat,
+        # so this still gets the master bulk); for in-repo runs it resolves to the same repo.
+        # `--rwx` on the local cache directory: `cache` can run a `curl` that it downloads there.
+        landrun --unrestricted-network --rox /usr --rox /etc --rw /dev \
+          --rox /home/lean/.elan --rox /home/lean/actions-runner/_work \
+          --rwx /home/lean/.cache/mathlib/ --rw .lake/ \
+          --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH \
+          --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE \
+          --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL \
+          --env CACHE_BIN --env CACHE_REPO \
+          -- bash -euo pipefail -c \
+          'rm -rf .lake/build/lib/lean/Mathlib; exec "${CACHE_BIN}" --repo="${CACHE_REPO}" get' \
+          2>&1 | tee "${log}"
+        # Warmth = how much the snapshot covered HEAD: files already cached locally
+        # (just decompressed) vs downloaded from Azure. Parsed best-effort from the log.
+        warm=$(grep -oE 'Decompressing [0-9]+ already-cached' "${log}" | grep -oE '[0-9]+' | head -1 || true)
+        cold=$(grep -oE 'Attempting to download [0-9]+' "${log}" | grep -oE '[0-9]+' | head -1 || true)
+        echo "Cache warmth: ${warm:-0} already-cached (warm) / ${cold:-0} downloaded from Azure (cold)"

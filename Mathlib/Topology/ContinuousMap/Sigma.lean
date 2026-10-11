@@ -38,7 +38,7 @@ continuous map, sigma type, disjoint union
 
 noncomputable section
 
-open Filter Topology
+open Topology
 
 variable {X ι : Type*} {Y : ι → Type*} [TopologicalSpace X] [∀ i, TopologicalSpace (Y i)]
 
@@ -53,7 +53,7 @@ theorem isEmbedding_sigmaMk_comp [Nonempty X] :
   injective := by
     rintro ⟨i, g⟩ ⟨i', g'⟩ h
     obtain ⟨rfl, hg⟩ : i = i' ∧ ⇑g ≍ ⇑g' :=
-      Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
+      Function.eq_of_sigmaMk_comp congr($h)
     simpa using hg
 
 section ConnectedSpace
@@ -71,6 +71,9 @@ theorem exists_lift_sigma (f : C(X, Σ i, Y i)) : ∃ i g, f = (sigmaMk i).comp 
 
 variable (X Y)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Homeomorphism between the type `C(X, Σ i, Y i)` of continuous maps from a connected topological
 space to the disjoint union of a family of topological spaces and the disjoint union of the types of
 continuous maps `C(X, Y i)`.

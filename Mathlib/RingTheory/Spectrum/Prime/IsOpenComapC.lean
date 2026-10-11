@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
@@ -36,7 +35,7 @@ def imageOfDf (f : R[X]) : Set (PrimeSpectrum R) :=
   { p : PrimeSpectrum R | ∃ i : ℕ, coeff f i ∉ p.asIdeal }
 
 theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
-  rw [imageOfDf, setOf_exists fun i (x : PrimeSpectrum R) => coeff f i ∉ x.asIdeal]
+  rw [imageOfDf, ofPred_exists fun i (x : PrimeSpectrum R) => coeff f i ∉ x.asIdeal]
   exact isOpen_iUnion fun i => isOpen_basicOpen
 
 /-- If a point of `Spec R[x]` is not contained in the vanishing set of `f`, then its image in

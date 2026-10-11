@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Blake Farman
 -/
 module
+
 public import Mathlib.CategoryTheory.Abelian.Basic
-public import Mathlib.CategoryTheory.Subobject.MonoOver
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Subobject.MonoOver
 
 /-!
 # Preradicals
@@ -53,7 +54,6 @@ abbrev r : C ⥤ C := Φ.obj.left
 /-- The structure morphism `Φ.r ⟶ 𝟭 C` of a preradical `Φ`. -/
 abbrev ι : Φ.r ⟶ 𝟭 C := Φ.obj.hom
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma r_map_ι_app (X : C) : Φ.r.map (Φ.ι.app X) = Φ.ι.app (Φ.r.obj X) := by
   rw [← cancel_mono (Φ.ι.app X)]
@@ -69,14 +69,12 @@ instance [Φ.IsIdempotent] (X : C) :
     IsIso (Φ.ι.app (Φ.r.obj X)) :=
   inferInstanceAs (IsIso ((Functor.whiskerLeft Φ.r Φ.ι).app X))
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Φ.IsIdempotent] (X : C) :
     IsIso (Φ.r.map (Φ.ι.app X)) := by
   rw [r_map_ι_app]
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance {D : Type*} [Category* D] (F : D ⥤ C) :
     Mono (Functor.whiskerLeft F Φ.ι) := by
   rw [NatTrans.mono_iff_mono_app]

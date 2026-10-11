@@ -19,7 +19,7 @@ constants, products, composition with linear maps, etc.
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-public noncomputable section
+public section
 
 open Set Fin Filter Function
 
@@ -57,9 +57,6 @@ theorem iteratedFDerivWithin_fun_zero {i : ℕ} :
     iteratedFDerivWithin 𝕜 i (fun (_ : E) ↦ (0 : F)) s = 0 := by
   apply iteratedFDerivWithin_zero
 
-@[deprecated (since := "2026-03-18")]
-alias iteratedFDerivWithin_zero_fun := iteratedFDerivWithin_fun_zero
-
 @[simp]
 theorem ftaylorSeriesWithin_zero :
     ftaylorSeriesWithin 𝕜 (0 : E → F) = 0 := by
@@ -80,8 +77,6 @@ theorem iteratedFDeriv_zero {n : ℕ} :
 theorem iteratedFDeriv_fun_zero {n : ℕ} :
     iteratedFDeriv 𝕜 n (fun (_ : E) ↦ (0 : F)) = 0 := by
   apply iteratedFDeriv_zero
-
-@[deprecated (since := "2026-03-18")] alias iteratedFDeriv_zero_fun := iteratedFDeriv_fun_zero
 
 @[simp]
 theorem ftaylorSeries_zero :
@@ -199,7 +194,7 @@ series whose `k`-th term is given by `g ∘ (p k)`. -/
 theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp {n : ℕ∞ω} (g : F →L[𝕜] G)
     (hf : HasFTaylorSeriesUpToOn n f p s) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x k => g.compContinuousMultilinearMap (p x k)) s where
-  zero_eq x hx := congr_arg g (hf.zero_eq x hx)
+  zero_eq x hx := congr(g $(hf.zero_eq x hx))
   fderivWithin m hm x hx := (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜
     (fun _ : Fin m => E) F G g).hasFDerivAt.comp_hasFDerivWithinAt x (hf.fderivWithin m hm x hx)
   cont m hm := (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜
@@ -277,10 +272,7 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
       fderivWithin_congr' (@IH) hx
     simp_rw [Z]
     rw [(g.continuousMultilinearMapCongrRight fun _ : Fin i => E).comp_fderivWithin (hs x hx)]
-    simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, comp_apply,
-      ContinuousLinearEquiv.continuousMultilinearMapCongrRight_apply,
-      ContinuousLinearMap.compContinuousMultilinearMap_coe, EmbeddingLike.apply_eq_iff_eq]
-    rw [iteratedFDerivWithin_succ_apply_left]
+    simp [iteratedFDerivWithin_succ_apply_left]
 
 /-- Iterated derivatives commute with left composition by continuous linear equivalences. -/
 theorem ContinuousLinearEquiv.iteratedFDeriv_comp_left {f : E → F} {x : E} (g : F ≃L[𝕜] G) {i : ℕ} :
@@ -354,6 +346,7 @@ theorem ContinuousLinearEquiv.comp_contDiff_iff (e : F ≃L[𝕜] G) :
     ContDiff 𝕜 n (e ∘ f) ↔ ContDiff 𝕜 n f := by
   simp only [← contDiffOn_univ, e.comp_contDiffOn_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is affine, then `f ∘ g` admits a Taylor
 series in `g ⁻¹' s`, whose `k`-th term at `x` is given
 by `p (g x) k (g.contLinear v₁, ..., g.contLinear vₖ)` . -/
@@ -452,11 +445,11 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_right (g : G ≃L[𝕜] 
             (iteratedFDerivWithin 𝕜 i f s ∘ g)) (g ⁻¹' s) x :=
       fderivWithin_congr' (@IH) hx
     rw [this, ContinuousLinearEquiv.comp_fderivWithin _ (g.uniqueDiffOn_preimage_iff.2 hs x hx)]
-    simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, comp_apply,
+    simp only [ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe,
       ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_apply,
       ContinuousMultilinearMap.compContinuousLinearMap_apply]
     rw [ContinuousLinearEquiv.comp_right_fderivWithin _ (g.uniqueDiffOn_preimage_iff.2 hs x hx),
-      ContinuousLinearMap.coe_comp', coe_coe, comp_apply, tail_def, tail_def]
+      ContinuousLinearMap.comp_apply, coe_coe, tail_def, tail_def]
 
 /-- The iterated derivative of the composition with a linear map on the right is
 obtained by composing the iterated derivative with the linear map. -/
@@ -652,5 +645,19 @@ theorem contDiff_prodAssoc {n : ℕ∞ω} : ContDiff 𝕜 n <| Equiv.prodAssoc E
 
 Warning: see remarks attached to `contDiff_prodAssoc`
 -/
-theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n <| (Equiv.prodAssoc E F G).symm :=
+theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n (Equiv.prodAssoc E F G).symm :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).symm.contDiff
+
+/-- The iterated derivatives up to order `m` of a smooth compactly supported function are
+uniformly bounded. -/
+lemma HasCompactSupport.exists_bound_iteratedFDeriv {E F : Type*} [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F}
+    (hf : HasCompactSupport f) (hf' : ContDiff 𝕜 ∞ f) (m : ℕ) :
+    ∃ C, 0 ≤ C ∧ ∀ i ≤ m, ∀ y, ‖_root_.iteratedFDeriv 𝕜 i f y‖ ≤ C := by
+  have key i : ∃ C, ∀ y, ‖_root_.iteratedFDeriv 𝕜 i f y‖ ≤ C :=
+    (hf'.continuous_iteratedFDeriv (mod_cast le_top)).bounded_above_of_compact_support
+      (hf.iteratedFDeriv i)
+  choose A hA using key
+  refine ⟨max 0 ((Finset.range (m + 1)).sup' ⟨0, by simp⟩ A), le_max_left _ _, fun i hi y ↦ ?_⟩
+  grw [hA i y, ← le_max_right]
+  exact Finset.le_sup' A (by grind)

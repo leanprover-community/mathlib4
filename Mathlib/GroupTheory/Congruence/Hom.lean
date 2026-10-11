@@ -40,7 +40,6 @@ namespace Con
 section Mul
 variable {F} [Mul M] [Mul N] [Mul P] [FunLike F M N] [MulHomClass F M N]
 
-
 /-- The natural homomorphism from a magma to its quotient by a congruence relation. -/
 @[to_additive (attr := simps) /-- The natural homomorphism from an additive magma to its quotient by
 an additive congruence relation. -/]
@@ -65,6 +64,7 @@ theorem ker_coeMulHom (f : F) : ker (f : MulHom M N) = ker f := rfl
 theorem ker_rel (f : F) {x y} : ker f x y ↔ f x = f y :=
   Iff.rfl
 
+/-- The kernel of the quotient map induced by a congruence relation `c` equals `c`. -/
 @[to_additive (attr := simp) /-- The kernel of the quotient map induced by an additive congruence
 relation `c` equals `c`. -/]
 theorem ker_mkMulHom_eq (c : Con M) : ker (mkMulHom c) = c :=
@@ -108,7 +108,7 @@ the order-preserving bijection between the set of additive congruence relations 
 the additive congruence relations on the quotient of `M` by `c`. -/]
 def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
   toFun d :=
-    d.1.mapOfSurjective (mkMulHom c) (by rw [Con.ker_mkMulHom_eq]; exact d.2) <|
+    d.1.mapOfSurjective (mkMulHom c) (by rw [Con.ker_mkMulHom_eq]; exact d.2)
       Quotient.mk_surjective
   invFun d :=
     ⟨comap ((↑) : M → c.Quotient) (fun _ _ => rfl) d, fun x y h =>
@@ -182,6 +182,7 @@ theorem comap_eq {f : N →* M} : comap f f.map_mul c = ker (c.mk'.comp f) :=
 
 variable (c) (f : M →* P)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homomorphism on the quotient of a monoid by a congruence relation `c` induced by a
 homomorphism constant on `c`'s equivalence classes. -/
 @[to_additive /-- The homomorphism on the quotient of an `AddMonoid` by an additive congruence

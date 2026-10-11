@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 public import Mathlib.Algebra.Homology.Embedding.TruncGE
-public import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
-public import Mathlib.Algebra.Homology.QuasiIso
+
+import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
 /-! # The homology of a canonical truncation
 
@@ -225,6 +225,11 @@ lemma acyclic_truncGE_iff_isSupportedOutside :
     · exact exactAt_of_isSupported _ e i' (by simpa using hi')
 
 variable {K L}
+
+lemma Acyclic.truncGE (hK : K.Acyclic) (e : c.Embedding c') [e.IsTruncGE] :
+    (K.truncGE e).Acyclic := by
+  rw [acyclic_truncGE_iff_isSupportedOutside]
+  exact ⟨fun _ ↦ hK _⟩
 
 lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by

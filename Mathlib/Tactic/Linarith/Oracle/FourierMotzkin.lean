@@ -7,8 +7,10 @@ module
 
 public meta import Batteries.Lean.HashMap
 public meta import Mathlib.Tactic.Linarith.Datatypes
+public meta import Std.Data.HashMap.AdditionalOperations
 public import Batteries.Lean.HashMap
 public import Mathlib.Tactic.Linarith.Datatypes
+public import Std.Data.HashMap
 
 /-!
 # The Fourier-Motzkin elimination procedure
@@ -35,7 +37,6 @@ we conclude that the original system was unsatisfiable.
 
 public meta section
 
-open Batteries
 open Std (format ToFormat TreeSet)
 
 namespace Mathlib.Tactic.Linarith

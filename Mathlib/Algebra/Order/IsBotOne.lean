@@ -43,11 +43,21 @@ alias zero_le' := zero_le
 
 variable (α) in
 /-- Create an `OrderBot` instance, setting `1` as the bottom element. -/
-@[expose, to_additive (attr := implicit_reducible)
+@[expose, to_additive (attr := instance_reducible)
 /-- Create an `OrderBot` instance, setting `0` as the bottom element. -/]
 def IsBotOneClass.toOrderBot : OrderBot α where
   bot := 1
   bot_le _ := one_le
+
+@[to_additive]
+instance {β : Type*} [LE β] [One β] [IsBotOneClass β] :
+    IsBotOneClass (α × β) where
+  isBot_one _ := by simp [Prod.le_def]
+
+@[to_additive]
+instance {ι : Type*} {M : ι → Type*} [(i : ι) → LE (M i)] [(i : ι) → One (M i)]
+    [(i : ι) → IsBotOneClass (M i)] : IsBotOneClass ((i : ι) → M i) where
+  isBot_one _ _ := one_le
 
 end LE
 
@@ -55,13 +65,16 @@ end LE
 instance (priority := 100) [LE α] [Zero α] [One α] [IsBotZeroClass α] : ZeroLEOneClass α where
   zero_le_one := zero_le
 
+-- See note [lower instance priority]
+@[to_additive]
+instance (priority := 100) [Preorder α] [One α] [Subsingleton α] : IsBotOneClass α where
+  isBot_one a := (Subsingleton.allEq _ a).le
+
 section Preorder
 variable [Preorder α] [One α] [IsBotOneClass α]
 
 @[to_additive (attr := simp) not_lt_zero]
 theorem not_lt_one : ¬ a < 1 := one_le.not_gt
-
-@[deprecated (since := "2025-12-03")] alias not_neg := not_lt_zero
 
 @[deprecated (since := "2026-05-07")]
 alias not_lt_zero' := not_lt_zero
@@ -117,9 +130,6 @@ theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt'
 lemma one_notMem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
   let := IsBotOneClass.toOrderBot α
   bot_notMem_iff
-
-@[deprecated (since := "2026-02-17")] alias NE.ne.pos := Ne.pos
-@[deprecated (since := "2026-02-17")] alias NE.ne.one_lt := Ne.one_lt
 
 end PartialOrder
 

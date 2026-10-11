@@ -36,9 +36,4 @@ obtain a similar structure for `f₂` and `f₁`. -/
 def flipTensor : (curriedTensor C).PushoutObjObj f₂ f₁ :=
   sq.flip.ofNatIso (BraidedCategory.curriedBraidingNatIso _).symm
 
-set_option backward.defeqAttrib.useBackward true in
-@[simp]
-lemma flipTensor_ι : dsimp% sq.flipTensor.ι = sq.ι ≫ (β_ _ _).inv := by
-  simp [flipTensor]
-
 end CategoryTheory.Functor.PushoutObjObj

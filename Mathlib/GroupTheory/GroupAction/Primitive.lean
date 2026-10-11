@@ -5,12 +5,13 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Data.Nat.Prime.Basic
-public import Mathlib.Data.Setoid.Partition.Card
 public import Mathlib.GroupTheory.GroupAction.Blocks
-public import Mathlib.GroupTheory.GroupAction.Transitive
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
+import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.GroupTheory.GroupAction.Transitive
+import Mathlib.Order.Setoid.Partition.Card
 
 /-!
 # Primitive actions
@@ -216,7 +217,7 @@ theorem isPreprimitive_congr (hφ : Function.Surjective φ) (hf : Function.Bijec
   · intro _
     apply IsPreprimitive.of_surjective hf.surjective
   · intro _
-    haveI := (isPretransitive_congr hφ hf).mpr toIsPretransitive
+    have := (isPretransitive_congr hφ hf).mpr toIsPretransitive
     exact {
       isTrivialBlock_of_isBlock {B} hB := by
         rw [← Set.preimage_image_eq B hf.injective]
