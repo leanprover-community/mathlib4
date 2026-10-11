@@ -43,7 +43,8 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
 /-- In a Noetherian module over a division ring, all bases are indexed by a finite type. -/
 @[instance_reducible]
 noncomputable def fintypeBasisIndex {ι : Type*} [IsNoetherian K V] (b : Basis ι K V) : Fintype ι :=
-  b.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K V)
+  have := b.finite_index_of_rank_lt_aleph0 (rank_lt_aleph0 K V)
+  Fintype.ofFinite ι
 
 /-- In a Noetherian module over a division ring,
 `Basis.ofVectorSpace` is indexed by a finite type. -/
