@@ -6,7 +6,6 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 
 /-!

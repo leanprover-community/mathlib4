@@ -5,16 +5,15 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.SpanRank
-public import Mathlib.Algebra.Ring.Idempotent
-public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Nakayama
+
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -150,7 +149,7 @@ noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal :
       fun x => by rw [← range_cotangentToQuotientSquare]; exact LinearMap.mem_range_self _ _,
     Equiv.ofBijective _ ⟨?_, ?_⟩ with }
   · rintro x y e
-    replace e := congr_arg Subtype.val e
+    replace e := congr($(e).val)
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
     obtain ⟨y, rfl⟩ := I.toCotangent_surjective y
     rw [I.toCotangent_eq]
@@ -300,6 +299,17 @@ instance : Module (ResidueField R) (CotangentSpace R) :=
 
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
   inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
+
+/-- `Ideal.toCotangent` for maximal ideal of local ring,
+ as `IsLocalRing.residue R` semi-linear map. -/
+def toCotangentSpace : maximalIdeal R →ₛₗ[residue R] CotangentSpace R where
+  __ := (maximalIdeal R).toCotangent
+  map_smul' r x := by simp [← ResidueField.algebraMap_eq]
+
+lemma toCotangentSpace_eq_toCotangent : ⇑(toCotangentSpace R) = (maximalIdeal R).toCotangent := rfl
+
+lemma toCotangentSpace_apply (x : maximalIdeal R) :
+    toCotangentSpace R x = (maximalIdeal R).toCotangent x := rfl
 
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _

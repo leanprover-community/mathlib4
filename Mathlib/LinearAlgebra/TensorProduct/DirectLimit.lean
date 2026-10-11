@@ -112,14 +112,14 @@ variable [DirectedSystem G (f · · ·)]
 
 instance : DirectedSystem (G · ⊗[R] M) (f ▷ M) where
   map_self i x := by
-    convert! LinearMap.rTensor_id_apply M (G i) x; ext; apply DirectedSystem.map_self'
+    convert LinearMap.rTensor_id_apply M (G i) x; ext; apply DirectedSystem.map_self'
   map_map _ _ _ _ _ x := by
-    convert! ← (LinearMap.rTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
+    convert ← (LinearMap.rTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
 
 instance : DirectedSystem (M ⊗[R] G ·) (M ◁ f) where
   map_self i x := by
-    convert! LinearMap.lTensor_id_apply M _ x; ext; apply DirectedSystem.map_self'
+    convert LinearMap.lTensor_id_apply M _ x; ext; apply DirectedSystem.map_self'
   map_map _ _ _ h₁ h₂ x := by
-    convert! ← (LinearMap.lTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
+    convert ← (LinearMap.lTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
 
 end TensorProduct

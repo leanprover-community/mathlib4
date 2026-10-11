@@ -67,7 +67,6 @@ lemma le_of_isLocalAtSource (h : P ≤ Q) [Q.IsLocalAtSource K] : sourceLocalClo
 instance [P.ContainsIdentities] : ContainsIdentities (sourceLocalClosure K P) where
   id_mem _ := le _ (P.id_mem _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.IsStableUnderBaseChange] [K.IsStableUnderBaseChange] [HasPullbacks C] :
     IsStableUnderBaseChange (sourceLocalClosure K P) where
   of_isPullback {Y} X W Z g f fst snd h hf := by
