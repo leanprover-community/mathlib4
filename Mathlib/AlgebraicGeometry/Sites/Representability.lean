@@ -5,8 +5,8 @@ Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Representable
 public import Mathlib.AlgebraicGeometry.GluingOneHypercover
+public import Mathlib.CategoryTheory.MorphismProperty.Representable
 
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 
