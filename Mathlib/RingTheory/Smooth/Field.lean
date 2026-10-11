@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.SeparablyGenerated
 public import Mathlib.FieldTheory.TranscendentalSeparable
 public import Mathlib.RingTheory.Etale.Field
 
@@ -68,11 +67,10 @@ lemma Algebra.Generators.homOfComm_cotangentSpace_map_eq [Algebra S T] [IsScalar
   exact ((Finsupp.linearCombination_single T _ _).trans (one_smul T _)).symm
 
 variable (R S T) in
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Algebra.Generators.homOfComm_cotangentSpace_map_injective_of_injective [Algebra S T]
     [IsScalarTower R S T] (inj : Function.Injective (algebraMap S T)) : Function.Injective
     (Extension.CotangentSpace.map (Generators.HomOfCommSelf R S T).toExtensionHom) := by
-  rw [Algebra.Generators.homOfComm_cotangentSpace_map_eq]
+  rw [Algebra.Generators.homOfComm_cotangentSpace_map_eq (self R S) (self R T) (algebraMap S T) rfl]
   have inj : Function.Injective ((Finsupp.mapRange.linearMap (Algebra.linearMap S T)).comp
     (Finsupp.lmapDomain S S (algebraMap S T))) :=
     (Finsupp.mapRange_injective _ (map_zero _) inj).comp (Finsupp.mapDomain_injective inj)
