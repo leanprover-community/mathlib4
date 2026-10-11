@@ -156,8 +156,7 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
     | succ cg hcg =>
       by_cases g0 : g = 0
       · rw [g0, reflect_zero, mul_zero, mul_zero, reflect_zero]
-      rw [← eraseLead_add_C_mul_X_pow g, mul_add, reflect_add, reflect_add, mul_add, hcg, hcg] <;>
-        try assumption
+      rw [← eraseLead_add_C_mul_X_pow g, mul_add, reflect_add, reflect_add, mul_add, hcg, hcg]
       · exact le_add_left card_support_C_mul_X_pow_le_one
       · exact le_trans (natDegree_C_mul_X_pow_le g.leadingCoeff g.natDegree) Og
       · exact Nat.lt_succ_iff.mp (lt_of_lt_of_le (eraseLead_support_card_lt g0) Cg)
@@ -165,8 +164,7 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
   | succ cf hcf =>
     by_cases f0 : f = 0
     · rw [f0, reflect_zero, zero_mul, zero_mul, reflect_zero]
-    rw [← eraseLead_add_C_mul_X_pow f, add_mul, reflect_add, reflect_add, add_mul, hcf, hcf] <;>
-      try assumption
+    rw [← eraseLead_add_C_mul_X_pow f, add_mul, reflect_add, reflect_add, add_mul, hcf, hcf]
     · exact le_add_left card_support_C_mul_X_pow_le_one
     · exact le_trans (natDegree_C_mul_X_pow_le f.leadingCoeff f.natDegree) Nf
     · exact Nat.lt_succ_iff.mp (lt_of_lt_of_le (eraseLead_support_card_lt f0) Cf)
