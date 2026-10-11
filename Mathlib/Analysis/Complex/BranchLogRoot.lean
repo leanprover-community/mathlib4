@@ -6,9 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Complex.UnitDisc.Basic
 public import Mathlib.Topology.Connected.LocallyPathConnected
 
+import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 import Mathlib.Analysis.Complex.CoveringMap
 import Mathlib.Topology.Homotopy.Lifting
 
@@ -18,6 +20,7 @@ import Mathlib.Topology.Homotopy.Lifting
 In this file we prove that for a function `g : X → ℂ` defined on a locally path connected space
 that is continuous on an open simply connected set `U` and `0 ∉ g '' U`,
 there exist continuous branches of `log (g z)` and `ⁿ√(g z)` on `U`.
+We then prove the analogous statements for analytic functions.
 -/
 
 public section
@@ -26,7 +29,11 @@ open Set
 
 namespace Complex
 
-variable {X : Type*} [TopologicalSpace X] [LocallyPathConnectedSpace X] {U : Set X}
+variable {X : Type*} {U : Set X}
+
+section Continuous
+
+variable [TopologicalSpace X] [LocallyPathConnectedSpace X]
 
 /-- If `g : X → ℂ` defined on a locally path connected space
 is continuous on an open simply connected set `U` and `0 ∉ g '' U`,
@@ -100,5 +107,39 @@ protected theorem exists_continuousOn_pow_eq
   exact (g x).norm_lt_one
 
 end UnitDisc
+
+end Continuous
+
+section Analytic
+
+variable [NormedAddCommGroup X] [NormedSpace ℂ X]
+
+/-- A nowhere zero analytic function on an open, simply connected set has an analytic logarithm. -/
+theorem exists_analyticOnNhd_eqOn_exp_comp (hUc : IsSimplyConnected U) (hUo : IsOpen U)
+    {g : X → ℂ} (hga : AnalyticOnNhd ℂ g U) (hU₀ : 0 ∉ g '' U) :
+    ∃ f : X → ℂ, AnalyticOnNhd ℂ f U ∧ EqOn (exp ∘ f) g U := by
+  obtain ⟨f, hfc, hf_eq⟩ := exists_continuousOn_eqOn_exp_comp hUc hUo hga.continuousOn hU₀
+  refine ⟨f, fun z hz ↦ ?_, hf_eq⟩
+  rw [← analyticAt_comp_iff_right_of_deriv_ne_zero analyticAt_cexp (by simp)
+    (hfc.continuousAt (hUo.mem_nhds hz))]
+  refine hga _ hz |>.congr ?_
+  filter_upwards [hUo.mem_nhds hz] with z' hz' using (hf_eq hz').symm
+
+/-- A nowhere zero analytic function on an open, simply connected set has an analytic `n`-th root.
+-/
+theorem exists_analyticOnNhd_pow_eq (hUc : IsSimplyConnected U) (hUo : IsOpen U)
+    {g : X → ℂ} (hga : AnalyticOnNhd ℂ g U) (hU₀ : 0 ∉ g '' U) {n : ℕ} (hn : n ≠ 0) :
+    ∃ f : X → ℂ, AnalyticOnNhd ℂ f U ∧ ∀ x, f x ^ n = g x := by
+  classical
+  rcases exists_analyticOnNhd_eqOn_exp_comp hUc hUo hga hU₀ with ⟨f, hfa, hf⟩
+  refine ⟨U.piecewise (exp <| f · / n) (g · ^ (1 / n : ℂ)), ?_, fun z ↦ ?_⟩
+  · refine AnalyticOnNhd.congr hUo ?_ (piecewise_eqOn U (exp <| f · / n) (g · ^ (1 / n : ℂ))).symm
+    exact analyticOnNhd_cexp.comp' (by fun_prop)
+  · by_cases hz : z ∈ U
+    · simp [hz, ← exp_nat_mul, mul_div_cancel₀ (b := ↑n) (f z) (mod_cast hn), ← hf hz,
+        Function.comp_apply]
+    · simp [hz, ← cpow_mul_nat, hn]
+
+end Analytic
 
 end Complex
