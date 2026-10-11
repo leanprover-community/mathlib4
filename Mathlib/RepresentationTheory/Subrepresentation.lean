@@ -155,9 +155,8 @@ noncomputable def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentat
       replace hw : ρ.asModuleEquiv.symm w ∈ N := by simpa using hw
       simpa using N.smul_mem (algebraMap A A[G] a) hw }
   apply_mem_toSubmodule g w hw := by
-    have h : (MonoidAlgebra.single g (1 : A)) • ρ.asModuleEquiv.symm w ∈ N :=
-      Submodule.smul_of_tower_mem N _ hw
-    simpa using h
+    rw [Submodule.mem_comap] at hw
+    simpa using N.smul_of_tower_mem (MonoidAlgebra.single g (1 : A)) hw
 
 @[simp]
 lemma mem_ofSubmodule'_iff {N : Submodule A[G] ρ.asModule} {w : W} :
