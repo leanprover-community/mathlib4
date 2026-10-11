@@ -378,15 +378,26 @@ instance : CompactSpace (limitConePtAux F) :=
 @[to_additive /-- The abbreviation for the limit of `ProfiniteAddGrp`s. -/]
 abbrev limit : ProfiniteGrp := ↧(ProfiniteGrp.limitConePtAux F)
 
+/-- Projection onto the `j` coordinate. -/
+@[to_additive /-- Projection onto the `j` coordinate. -/]
+def limitProj (j : J) : limit F ⟶ F.obj j :=
+  ProfiniteGrp.ofHom {
+    toFun x := x.val j
+    map_one' := rfl
+    map_mul' := by simp
+    continuous_toFun := (continuous_apply j).comp continuous_subtype_val
+  }
+
+variable {F} in
 @[to_additive (attr := ext)]
-lemma limit_ext (x y : limit F) (hxy : ∀ j, x.val j = y.val j) : x = y :=
+lemma limit_ext {x y : limit F} (hxy : ∀ j, limitProj F j x = limitProj F j y) : x = y :=
   Subtype.ext (funext hxy)
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "use the bundled morphism limitProj" (since := "2026-10-11"))]
 lemma limit_one_val (j : J) : (1 : limit F).val j = 1 :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "use the bundled morphism limitProj" (since := "2026-10-11"))]
 lemma limit_mul_val (x y : limit F) (j : J) : (x * y).val j = x.val j * y.val j :=
   rfl
 
