@@ -49,7 +49,7 @@ theorem Subfield.bot_eq_of_charZero [CharZero K] :
 
 variable (K) in
 /-- Equivalence between the smallest subfield of a field of characteristic `0` and `ℚ`. -/
-noncomputable
+@[expose] noncomputable
 def Subfield.botEquivRat [CharZero K] : (⊥ : Subfield K) ≃+* ℚ :=
   (RingEquiv.subfieldCongr Subfield.bot_eq_of_charZero).trans
     (algebraMap ℚ K).rangeRestrictFieldEquiv.symm
@@ -69,7 +69,7 @@ theorem Subfield.bot_eq_of_zmod_algebra (p : ℕ) [Fact (Nat.Prime p)] [Algebra 
 
 variable (K) in
 /-- Equivalence between the smallest subfield of a field of characteristic `p` and `ZMod p`. -/
-noncomputable
+@[expose] noncomputable
 def Subfield.botEquivZMod (p : ℕ) [Fact (Nat.Prime p)] [Algebra (ZMod p) K] :
     (⊥ : Subfield K) ≃+* ZMod p :=
   (RingEquiv.subfieldCongr (Subfield.bot_eq_of_zmod_algebra p)).trans
@@ -85,4 +85,4 @@ theorem Subfield.botEquivZMod_symm_apply (p : ℕ) [Fact (Nat.Prime p)] [Algebra
 theorem Subfield.coe_botEquivZMod_symm_apply (p : ℕ) [Fact (Nat.Prime p)] [Algebra (ZMod p) K]
     (x : ZMod p) :
     ↑((Subfield.botEquivZMod K p).symm x) = algebraMap (ZMod p) K x :=
-  (rfl)
+  rfl
