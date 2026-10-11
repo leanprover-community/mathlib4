@@ -67,10 +67,11 @@ There is some overlap in scope between `ignoreBranch` and `exclusions`.
 Tactic combinators like `repeat` or `try` are a mix of both.
 -/
 abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
-    -- focusing on a goal
+    -- structuring a proof
     ``cdot,
     ``cdotTk,
     ``Lean.Parser.Tactic.tacticSeqBracketed,
+    ``Lean.Parser.Tactic.paren,
     ``Lean.Parser.Tactic.case,
     ``Lean.Parser.Tactic.case',
     ``Lean.Parser.Tactic.«tacticNext_=>_»,
