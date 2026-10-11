@@ -86,8 +86,16 @@ theorem coe_orderEmbedding : ⇑orderEmbedding = Real.toEReal := rfl
   | ⊤ => ⊤
   | .some x => x.1
 
-instance hasCoeENNReal : Coe ℝ≥0∞ EReal :=
+instance : Coe ℝ≥0∞ EReal :=
   ⟨ENNReal.toEReal⟩
+
+@[simp] lemma _root_.ENNReal.toEReal_natCast (n : ℕ) : ((n : ℝ≥0∞) : EReal) = n := rfl
+
+@[simp, norm_cast] lemma _root_.ENNReal.toEReal_zero : ((0 : ℝ≥0∞) : EReal) = 0 := rfl
+@[simp, norm_cast] lemma _root_.ENNReal.toEReal_one : ((1 : ℝ≥0∞) : EReal) = 1 := rfl
+
+lemma _root_.ENNReal.toEReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((ofNat(n) : ℝ) : EReal) = ofNat(n) := rfl
 
 instance : Inhabited EReal := ⟨0⟩
 
@@ -818,19 +826,19 @@ theorem natCast_mul (m n : ℕ) :
 
 @[simp, norm_cast]
 lemma ennrealToEReal_le_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) ≤ n ↔ r ≤ n := by
-  rw [← EReal.coe_ennreal_le_coe_ennreal_iff]; rfl
+  rw [← EReal.coe_ennreal_le_coe_ennreal_iff, ENNReal.toEReal_natCast]
 
 @[simp, norm_cast]
 lemma natCast_le_ennrealToEReal {r : ℝ≥0∞} {n : ℕ} : n ≤ (r : EReal) ↔ n ≤ r := by
-  rw [← EReal.coe_ennreal_le_coe_ennreal_iff]; rfl
+  rw [← EReal.coe_ennreal_le_coe_ennreal_iff, ENNReal.toEReal_natCast]
 
 @[simp, norm_cast]
 lemma ennrealToEReal_lt_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) < n ↔ r < n := by
-  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff]; rfl
+  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff, ENNReal.toEReal_natCast]
 
 @[simp, norm_cast]
 lemma natCast_lt_ennrealToEReal {r : ℝ≥0∞} {n : ℕ} : n < (r : EReal) ↔ n < r := by
-  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff]; rfl
+  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff, ENNReal.toEReal_natCast]
 
 /-! ### Miscellaneous lemmas -/
 
