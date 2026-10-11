@@ -5,7 +5,6 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Data.ENat.Monoid
 
 /-!

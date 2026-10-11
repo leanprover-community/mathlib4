@@ -5,8 +5,6 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Lean.Meta.Tactic.Apply
-public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
 /-!

@@ -5,7 +5,6 @@ Authors: Rao Xiaojia
 -/
 module
 
-public meta import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Matrix.Parsing
 

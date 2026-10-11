@@ -8,7 +8,6 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Mathlib.Lean.Elab.InfoTree
-public meta import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Util.ParseCommand

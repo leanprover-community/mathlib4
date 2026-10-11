@@ -5,7 +5,6 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison
 -/
 module
 
-public meta import Mathlib.Tactic.ToDual
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Tactic.CategoryTheory.CategoryStar

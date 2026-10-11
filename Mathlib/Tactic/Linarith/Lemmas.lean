@@ -5,10 +5,8 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Batteries.Tactic.Lint.Basic
 public meta import Mathlib.Data.Ineq
-public meta import Mathlib.Tactic.ToAdditive
-public import Mathlib.Data.Ineq
+public import Batteries.Tactic.Lint.Basic
 public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!

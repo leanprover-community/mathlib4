@@ -6,10 +6,7 @@ Authors: Jovan Gerbscheid, Sebastian Zimmer, Mario Carneiro, Heather Macbeth
 module
 
 public meta import Lean.Meta.Tactic.Rewrite
-public import Lean.Meta.Tactic.Rewrite
 public import Mathlib.Tactic.GCongr.Core
-
-meta import Mathlib.Tactic.GCongr.Core
 
 /-!
 # The generalized rewriting tactic
