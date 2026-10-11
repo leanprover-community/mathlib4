@@ -46,10 +46,10 @@ We use the following type variables in this file:
 
 * `𝕜` : a `NontriviallyNormedField`;
 * `ι`, `ι'` : finite index types with decidable equality;
-* `E`, `E₁` : families of normed vector spaces over `𝕜` indexed by `i : ι`;
-* `E'` : a family of normed vector spaces over `𝕜` indexed by `i' : ι'`;
-* `Ei` : a family of normed vector spaces over `𝕜` indexed by `i : Fin (Nat.succ n)`;
-* `G`, `G'` : normed vector spaces over `𝕜`.
+* `E`, `E₁` : families of seminormed vector spaces over `𝕜` indexed by `i : ι`;
+* `E'` : a family of seminormed vector spaces over `𝕜` indexed by `i' : ι'`;
+* `Ei` : a family of seminormed vector spaces over `𝕜` indexed by `i : Fin (Nat.succ n)`;
+* `G`, `G'` : seminormed vector spaces over `𝕜`.
 -/
 
 
@@ -57,9 +57,9 @@ universe u v v' wE wE₁ wE' wEi wG wG'
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE}
   {Ei : Fin n.succ → Type wEi} {G : Type wG} {G' : Type wG'} [Fintype ι]
-  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)]
-  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, NormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, SeminormedAddCommGroup (E i)]
+  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, SeminormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
+  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 theorem ContinuousLinearMap.norm_map_removeNth_le {i : Fin (n + 1)}
     (f : Ei i →L[𝕜] ContinuousMultilinearMap 𝕜 (fun j ↦ Ei (i.succAbove j)) G) (m : ∀ i, Ei i) :
@@ -468,8 +468,8 @@ theorem ContinuousMultilinearMap.curry0_norm (f : G [×0]→L[𝕜] G') : ‖f.c
 
 variable (𝕜 G G')
 
-/-- The continuous linear isomorphism between elements of a normed space, and continuous multilinear
-maps in `0` variables with values in this normed space.
+/-- The continuous linear isomorphism between elements of a seminormed space, and continuous
+multilinear maps in `0` variables with values in this seminormed space.
 
 The direct and inverse maps are `uncurry0` and `curry0`. Use these unless you need the full
 framework of linear isometric equivs. -/
@@ -659,8 +659,8 @@ end ContinuousMultilinearMap
 
 namespace ContinuousLinearMap
 
-variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {F G : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 /-- Given a linear map into continuous multilinear maps
 `B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F`, one cannot always uncurry it as `G` and `E` might
