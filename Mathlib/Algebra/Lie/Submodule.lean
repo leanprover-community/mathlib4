@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Subalgebra
-public import Mathlib.LinearAlgebra.Finsupp.Span
 
 /-!
 # Lie submodules of a Lie algebra
@@ -55,7 +54,7 @@ instance : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
   coe_injective N O h := by cases N; cases O; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M) M
+instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M)
 
 instance : AddSubgroupClass (LieSubmodule R L M) M where
   add_mem {N} _ _ := N.add_mem'
@@ -650,7 +649,7 @@ theorem span_empty : lieSpan R L (∅ : Set M) = ⊥ :=
 
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| IsConcreteLE.le_iff.2 <| subset_lieSpan
+  eq_top_iff.2 <| IsConcreteLE.le_iff.2 subset_lieSpan
 
 theorem lieSpan_eq_bot_iff : lieSpan R L s = ⊥ ↔ ∀ m ∈ s, m = (0 : M) := by
   rw [_root_.eq_bot_iff, lieSpan_le, bot_coe, subset_singleton_iff]
@@ -703,7 +702,8 @@ lemma sSup_image_lieSpan_singleton : sSup ((fun x ↦ lieSpan R L {x}) '' N) = N
 
 instance instIsCompactlyGenerated : IsCompactlyGenerated (LieSubmodule R L M) :=
   ⟨fun N ↦ ⟨(fun x ↦ lieSpan R L {x}) '' N, fun _ ⟨m, _, hm⟩ ↦
-    hm ▸ isCompactElement_lieSpan_singleton R L m, N.sSup_image_lieSpan_singleton⟩⟩
+    hm ▸ isCompactElement_lieSpan_singleton R L m,
+    isLUB_iff_sSup_eq.mpr N.sSup_image_lieSpan_singleton⟩⟩
 
 end LieSpan
 

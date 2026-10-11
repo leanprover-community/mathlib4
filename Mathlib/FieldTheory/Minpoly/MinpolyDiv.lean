@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.FieldTheory.PrimitiveElement
+
+import Mathlib.FieldTheory.Minpoly.Finite
 
 /-!
 # Results about `minpoly R x / (X - C x)`
@@ -109,7 +110,7 @@ lemma minpolyDiv_ne_zero [Nontrivial S] : minpolyDiv R x ≠ 0 := by
 
 lemma minpolyDiv_monic : Monic (minpolyDiv R x) := by
   nontriviality S
-  have := congr_arg leadingCoeff (minpolyDiv_spec R x)
+  have := congr(leadingCoeff $(minpolyDiv_spec R x))
   rw [leadingCoeff_mul', ((minpoly.monic hx).map (algebraMap R S)).leadingCoeff] at this
   · simpa using! this
   · simpa using! minpolyDiv_ne_zero hx

@@ -60,7 +60,7 @@ instance : SetLike (Subspace K V) (ℙ K V) where
     cases B
     simp
 
-instance : PartialOrder (Subspace K V) := .ofSetLike (Subspace K V) (ℙ K V)
+instance : PartialOrder (Subspace K V) := .ofSetLike (Subspace K V)
 
 @[simp]
 theorem mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
@@ -238,7 +238,7 @@ def submodule : Projectivization.Subspace K V ≃o Submodule K V where
       exact s.mem_add _ _ hx₂ hy₂ hxy (hx₁ hx₂) (hy₁ hy₂)
     zero_mem' h := h.irrefl.elim
     smul_mem' c x h₁ h₂ := by
-      convert! h₁ (right_ne_zero_of_smul h₂) using 1
+      convert h₁ (right_ne_zero_of_smul h₂) using 1
       rw [Projectivization.mk_eq_mk_iff']
       exact ⟨c, rfl⟩ }
   invFun s :=

@@ -5,13 +5,8 @@ Authors: Jujian Zhang, Jireh Loreaux, Yunzhou Xie
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Map
-public import Mathlib.Algebra.Module.Opposite
-public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.RingTheory.Congruence.Opposite
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Operations on two-sided ideals
@@ -230,17 +225,17 @@ lemma mem_span_iff_mem_addSubgroup_closure_nonunital {s : Set R} {z : R} :
   · refine mem_span_iff_mem_addSubgroup_closure_absorbing ?_ ?_
     · rintro x y (((hy | ⟨y, hy, r, -, rfl⟩) | ⟨r, -, y, hy, rfl⟩) |
         ⟨-, ⟨r', -, y, hy, rfl⟩, r, -, rfl⟩)
-      · exact .inl <| .inr <| ⟨x, mem_univ _, y, hy, rfl⟩
-      · exact .inr <| ⟨x * y, ⟨x, mem_univ _, y, hy, rfl⟩, r, mem_univ _, mul_assoc ..⟩
-      · exact .inl <| .inr <| ⟨x * r, mem_univ _, y, hy, mul_assoc ..⟩
-      · refine .inr <| ⟨x * r' * y, ⟨x * r', mem_univ _, y, hy, ?_⟩, ⟨r, mem_univ _, ?_⟩⟩
+      · exact .inl <| .inr ⟨x, mem_univ _, y, hy, rfl⟩
+      · exact .inr ⟨x * y, ⟨x, mem_univ _, y, hy, rfl⟩, r, mem_univ _, mul_assoc ..⟩
+      · exact .inl <| .inr ⟨x * r, mem_univ _, y, hy, mul_assoc ..⟩
+      · refine .inr ⟨x * r' * y, ⟨x * r', mem_univ _, y, hy, ?_⟩, ⟨r, mem_univ _, ?_⟩⟩
         all_goals simp [mul_assoc]
     · rintro y x (((hy | ⟨y, hy, r, -, rfl⟩) | ⟨r, -, y, hy, rfl⟩) |
         ⟨-, ⟨r', -, y, hy, rfl⟩, r, -, rfl⟩)
       · exact .inl <| .inl <| .inr ⟨y, hy, x, mem_univ _, rfl⟩
       · exact .inl <| .inl <| .inr ⟨y, hy, r * x, mem_univ _, (mul_assoc ..).symm⟩
-      · exact .inr <| ⟨r * y, ⟨r, mem_univ _, y, hy, rfl⟩, x, mem_univ _, rfl⟩
-      · refine .inr <| ⟨r' * y, ⟨r', mem_univ _, y, hy, rfl⟩, r * x, mem_univ _, ?_⟩
+      · exact .inr ⟨r * y, ⟨r, mem_univ _, y, hy, rfl⟩, x, mem_univ _, rfl⟩
+      · refine .inr ⟨r' * y, ⟨r', mem_univ _, y, hy, rfl⟩, r * x, mem_univ _, ?_⟩
         simp [mul_assoc]
 
 end NonUnitalRing

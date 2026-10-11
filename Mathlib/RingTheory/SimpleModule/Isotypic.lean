@@ -209,7 +209,7 @@ instance (c : isotypicComponents R M) : IsSemisimpleModule R c := by
 variable {S} in
 theorem LinearEquiv.isotypicComponent_eq (e : N ≃ₗ[R] S) :
     isotypicComponent R M N = isotypicComponent R M S :=
-  congr_arg sSup <| Set.ext fun _ ↦ Nonempty.congr (·.trans e) (·.trans e.symm)
+  congr(sSup $(Set.ext fun _ ↦ Nonempty.congr (·.trans e) (·.trans e.symm)))
 
 section SimpleSubmodule
 
@@ -469,7 +469,7 @@ theorem isFullyInvariant_iff_sSup_isotypicComponents {m : Submodule R M} :
     m.IsFullyInvariant ↔ ∃ s ⊆ isotypicComponents R M, m = sSup s := by
   refine ⟨fun h ↦ ⟨OrderIso.setIsotypicComponents.symm ⟨m, h⟩, ⟨?_, ?_⟩⟩, ?_⟩
   · rintro _ ⟨c, _, rfl⟩; exact c.2
-  · convert! Subtype.ext_iff.mp (OrderIso.setIsotypicComponents.right_inv ⟨m, h⟩).symm
+  · convert Subtype.ext_iff.mp (OrderIso.setIsotypicComponents.right_inv ⟨m, h⟩).symm
     simp [sSup_image, OrderIso.setIsotypicComponents, OrderIso.symm]
   · rintro ⟨_, hs, rfl⟩
     exact (fullyInvariantSubmodule R M).sSupClosed fun _ h ↦ .of_mem_isotypicComponents (hs h)

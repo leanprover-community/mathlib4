@@ -9,10 +9,10 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Data.FunLike.IsApply
+
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Big operators for Pi Types
@@ -199,16 +199,7 @@ end MulEquiv
 
 variable [Finite ι] [DecidableEq ι] {M : ι → Type*}
 
--- manually additivized to fix variable names
--- See https://github.com/leanprover-community/mathlib4/issues/11462
-lemma Pi.single_induction [∀ i, AddCommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
-    (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
-    (single : ∀ i m, p (Pi.single i m)) : p f := by
-  cases nonempty_fintype ι
-  rw [← Finset.univ_sum_single f]
-  exact Finset.sum_induction _ _ add zero (by simp [single])
-
-@[to_additive existing (attr := elab_as_elim)]
+@[to_additive (attr := elab_as_elim)]
 lemma Pi.mulSingle_induction [∀ i, CommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
     (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
     (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by

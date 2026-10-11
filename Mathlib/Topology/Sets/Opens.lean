@@ -5,12 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
+public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.Copy
 public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Order.CompactlyGenerated.Basic
-public import Mathlib.Order.Copy
+
+import Mathlib.Data.Fintype.Option
 
 /-!
 # Open sets
@@ -74,7 +75,7 @@ instance : SetLike (Opens α) α where
   coe := Opens.carrier
   coe_injective := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
 
-instance : PartialOrder (Opens α) := fast_instance% .ofSetLike (Opens α) α
+instance : PartialOrder (Opens α) := fast_instance% .ofSetLike (Opens α)
 
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
@@ -377,7 +378,7 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis fun i : ι => (b i).1
-  · convert! (config := { transparency := .default }) hb
+  · convert (config := { transparency := .default }) hb
     ext
     simp
   · exact hb'
@@ -400,14 +401,14 @@ lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
 lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)]
     {B : ∀ i, Set (Opens (α i))} (hB : ∀ i, IsBasis (B i)) :
     IsBasis (⋃ i : ι, (fun U ↦ ⟨Sigma.mk i '' U.1, isOpenMap_sigmaMk _ U.2⟩) '' B i) := by
-  convert! TopologicalSpace.IsTopologicalBasis.sigma hB
+  convert TopologicalSpace.IsTopologicalBasis.sigma hB
   simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
   simp
 
 lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
     IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
   simp only [IsBasis] at H ⊢
-  convert! h.isTopologicalBasis H
+  convert h.isTopologicalBasis H
   ext; simp
 
 @[simp]
@@ -462,7 +463,7 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
   ContinuousMap.ext fun a =>
     Inseparable.eq <|
       inseparable_iff_forall_isOpen.2 fun s hs =>
-        have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := DFunLike.congr_fun h ⟨_, hs⟩
+        have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := congr($h ⟨_, hs⟩)
         show a ∈ f ⁻¹' s ↔ a ∈ g ⁻¹' s from Set.ext_iff.1 (coe_inj.2 this) a
 
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
@@ -500,7 +501,7 @@ instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
   coe_injective := SetLike.coe_injective.comp toOpens_injective
 
-instance : PartialOrder (OpenNhdsOf x) := fast_instance% .ofSetLike (OpenNhdsOf x) α
+instance : PartialOrder (OpenNhdsOf x) := fast_instance% .ofSetLike (OpenNhdsOf x)
 
 instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s :=
   ⟨fun s hs => ⟨⟨⟨s, hs.1⟩, hs.2⟩, rfl⟩⟩

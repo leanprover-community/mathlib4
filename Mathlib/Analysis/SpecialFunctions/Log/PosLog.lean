@@ -5,7 +5,6 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -256,7 +255,7 @@ lemma posLog_norm_sum_le {E : Type*} [SeminormedAddCommGroup E] {α : Type*} (s 
 Estimate for `log⁺` of a sum. See `Real.posLog_sum` for a variant involving multiple summands.
 -/
 theorem posLog_add : log⁺ (x + y) ≤ log 2 + log⁺ x + log⁺ y := by
-  convert! posLog_sum Finset.univ ![x, y] using 1 <;> simp [add_assoc]
+  convert posLog_sum Finset.univ ![x, y] using 1 <;> simp [add_assoc]
 
 /--
 Variant of `posLog_add` for norms of elements in normed additive commutative groups, using
@@ -266,5 +265,16 @@ lemma posLog_norm_add_le {E : Type*} [SeminormedAddCommGroup E] (a b : E) :
     log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
   grw [norm_add_le, posLog_add, add_rotate]
   exact neg_one_lt_zero.le.trans (norm_nonneg _)
+
+/--
+Multiplying the argument of `log⁺` by a nonzero factor `x` changes its value by at most
+`log⁺ x + log⁺ x⁻¹`, which equals `|log x|` by `Real.abs_log_eq_posLog_add_posLog_inv`.
+-/
+theorem abs_posLog_mul_sub_posLog_le_posLog_add_posLog {x y : ℝ} (hx : x ≠ 0) :
+    |log⁺ (x * y) - log⁺ y| ≤ log⁺ x + log⁺ x⁻¹ := by
+  rw [abs_le]
+  constructor
+  · grind [posLog_mul (x := x⁻¹) (y := x * y), posLog_nonneg]
+  · grind [posLog_mul, posLog_nonneg]
 
 end Real
