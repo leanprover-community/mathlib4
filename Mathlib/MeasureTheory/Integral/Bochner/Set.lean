@@ -82,8 +82,6 @@ theorem setIntegral_union₀ (hst : AEDisjoint μ s t) (ht : NullMeasurableSet t
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ := by
   simp only [Measure.restrict_union₀ hst ht, integral_add_measure hfs hft]
 
-@[deprecated (since := "2026-03-04")] alias integral_union_ae := setIntegral_union₀
-
 theorem setIntegral_union (hst : Disjoint s t) (ht : MeasurableSet t) (hfs : IntegrableOn f s μ)
     (hft : IntegrableOn f t μ) : ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ :=
   setIntegral_union₀ hst.aedisjoint ht.nullMeasurableSet hfs hft
@@ -100,8 +98,6 @@ theorem setIntegral_sdiff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (ht
   setIntegral_sdiff₀ ht.nullMeasurableSet hfs hts
 
 @[deprecated (since := "2026-06-03")] alias setIntegral_diff := setIntegral_sdiff
-
-@[deprecated (since := "2026-03-04")] alias integral_diff := setIntegral_sdiff
 
 theorem integral_inter_add_sdiff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) :
     ∫ x in s ∩ t, f x ∂μ + ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ := by

@@ -188,9 +188,7 @@ def prodOrderIso (C : PointedCone R M) (D : PointedCone R N) :
     simp only [Equiv.coe_fn_mk, ge_iff_le, Prod.mk_le_mk]
     intro F₁ F₂; constructor <;> intro a
     · simpa [fst_prod_snd, toPointedCone_le_toPointedCone] using Face.prod_mono a.1 a.2
-    · constructor; all_goals
-      try simpa only [prod_left, prod_right]
-      exact fun _ d ↦ Submodule.map_mono a d
+    · constructor <;> exact fun _ d ↦ Submodule.map_mono a d
 
 end Prod
 

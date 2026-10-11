@@ -113,8 +113,6 @@ def map : Chain β where toOrderHom := f.comp c.toOrderHom
 
 @[simp] lemma coe_map : ⇑(c.map f) = f ∘ c := rfl
 
-@[deprecated (since := "2026-03-27")] alias map_coe := coe_map
-
 variable {f}
 
 theorem mem_map (x : α) : x ∈ c → f x ∈ Chain.map c f :=
@@ -145,8 +143,6 @@ def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) where
   toOrderHom := c₀.toOrderHom.prod c₁.toOrderHom
 
 @[simp] lemma zip_apply (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
-
-@[deprecated (since := "2026-03-27")] alias zip_coe := zip_apply
 
 /-- An example of a `Chain` constructed from an ordered pair. -/
 def pair (a b : α) (hab : a ≤ b) : Chain α where

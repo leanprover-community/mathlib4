@@ -216,7 +216,7 @@ private lemma iSup_cartan_borelLower_borelUpper_eq_top_aux
       · rw [← lie_skew, neg_mem_iff]
         exact LieSubmodule.mem_sup_right <| LieSubalgebra.lie_mem _ hyu hv
 
-/-- Lemma 4.5 from [Geck](Geck2017). -/
+/-- Lemma 4.5 from [Geck][Geck2017]. -/
 lemma iSup_cartan_borelLower_borelUpper_eq_top :
     iSup ![H.toLieSubmodule, b.borelLower, b.borelUpper] = ⊤ := by
   suffices H.toLieSubmodule ⊔ b.borelLower ⊔ b.borelUpper = ⊤ by simpa
@@ -330,7 +330,7 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
 
 variable [IsDomain R] [CharZero R]
 
-/-- Lemma 4.4 from [Geck](Geck2017). -/
+/-- Lemma 4.4 from [Geck][Geck2017]. -/
 lemma borelUpper_le_biSup :
     letI := b.isLieAbelian_cartan
     b.borelUpper ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • b.baseSupp i) := by
@@ -374,7 +374,7 @@ lemma borelUpper_le_biSup :
     convert mem_biSup_genWeightSpace_of hs hu hv
     rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
 
-/-- Lemma 4.4 from [Geck](Geck2017). -/
+/-- Lemma 4.4 from [Geck][Geck2017]. -/
 lemma borelLower_le_biSup :
     letI := b.isLieAbelian_cartan
     b.borelLower ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i) := by

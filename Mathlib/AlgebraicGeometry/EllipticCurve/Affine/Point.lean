@@ -114,10 +114,10 @@ open scoped Classical in
 variable (W') in
 /-- The power basis `{1, Y}` for `R[W]` over `R[X]`. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W'.CoordinateRing :=
-  (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
-    (AdjoinRoot.powerBasis' monic_polynomial).basis.reindex <| finCongr natDegree_polynomial
+  subsingleton_or_nontrivial R |>.by_cases (fun _ => default) fun _ =>
+    AdjoinRoot.powerBasis' monic_polynomial |>.basis.reindex <| finCongr <|
+      AdjoinRoot.powerBasis'_dim _ |>.trans natDegree_polynomial
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma basis_apply (n : Fin 2) :
     CoordinateRing.basis W' n = (AdjoinRoot.powerBasis' monic_polynomial).gen ^ (n : ℕ) := by
   classical
@@ -744,14 +744,13 @@ theorem isRoot_twoTorsionPolynomial_iff (h2 : NeZero (2 : F)) (hΔ : W.Δ ≠ 0)
   · rintro ⟨y, hns, hP⟩
     exact isRoot_twoTorsionPolynomial_of_add_self hns hP
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to
 the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal class group of `F[W]`. -/
 @[simps]
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
   toFun P := match P with
     | 0 => 0
-    | some _ _ h => ClassGroup.mk W.FunctionField <| CoordinateRing.XYIdeal' h
+    | some _ _ h => .ofMul <| ClassGroup.mk W.FunctionField <| CoordinateRing.XYIdeal' h
   map_zero' := rfl
   map_add' := by
     rintro (_ | ⟨x₁, y₁, h₁⟩) (_ | ⟨x₂, y₂, h₂⟩)
