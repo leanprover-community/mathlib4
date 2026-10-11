@@ -6,10 +6,8 @@ Authors: Maksym Radziwill
 
 module
 
-public import Mathlib.Analysis.Complex.Schwarz
-
-import Mathlib.Analysis.Complex.MeanValue
-import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.Analysis.Complex.MeanValue
+public import Mathlib.Analysis.Complex.TaylorSeries
 
 /-!
 # Borel-Carathéodory theorem
@@ -40,7 +38,7 @@ namespace Complex
 
 variable {f : ℂ → ℂ} {M R : ℝ} {z c : ℂ} {n : ℕ}
 
-open scoped Nat ComplexConjugate 
+open scoped Nat ComplexConjugate
 
 lemma circleAverage_eq_iteratedDeriv_div_factorial (hf : DiffContOnCl ℂ f (ball c R)) (hR : 0 < R) :
     circleAverage (fun z ↦ f z / (z - c) ^ n) c R = iteratedDeriv n f c / n ! := by
@@ -51,10 +49,6 @@ lemma circleAverage_eq_iteratedDeriv_div_factorial (hf : DiffContOnCl ℂ f (bal
     simp [pow_succ]
     field
   · simp; field
-
-lemma circleAverage_fun_conj (hf : CircleIntegrable f c R) :
-    circleAverage (fun z ↦ conj (f z)) c R = conj (circleAverage f c R) :=
-  conjCLE.toContinuousLinearMap.circleAverage_comp_comm hf
 
 lemma circleAverage_conj_div_sub_pow_eq_zero (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hn : n ≠ 0) :
@@ -85,23 +79,19 @@ lemma circleAverage_const_div_sub_pow_eq_zero (a : ℂ) (hR : 0 < R) (hn : n ≠
   convert circleAverage_eq_iteratedDeriv_div_factorial diffContOnCl_const hR
   simp [iteratedDeriv_const, hn]
 
-lemma iteratedDeriv_div_factorial_eq_circleAverage_re (M : ℝ)
+variable (M) in
+lemma iteratedDeriv_div_factorial_eq_circleAverage_re
     (hf : DiffContOnCl ℂ f (ball c R)) (hR : 0 < R) (hn : n ≠ 0) :
-    iteratedDeriv n f c / n ! 
+    iteratedDeriv n f c / n !
       = circleAverage (fun z ↦ ((2 * ((f z).re - M) : ℝ)) / (z - c) ^ n) c R := by
   simp only [mul_sub, ofReal_sub, ← add_conj, add_div, sub_div]
   have cont : ContinuousOn f (sphere c R) := hf.continuousOn_ball.mono sphere_subset_closedBall
-  have ne_zero : ∀ x ∈ sphere c R, (x - c) ^ n ≠ 0 := by
-    exact fun x hx ↦ pow_ne_zero _ fun h ↦ (by simp_all)
+  have ne_zero : ∀ x ∈ sphere c R, (x - c) ^ n ≠ 0 := fun x hx ↦ pow_ne_zero _ fun h ↦ (by simp_all)
   rw [circleAverage_fun_sub, circleAverage_fun_add,
     circleAverage_eq_iteratedDeriv_div_factorial hf hR,
     circleAverage_conj_div_sub_pow_eq_zero hR hf hn,
     circleAverage_const_div_sub_pow_eq_zero _ hR hn, sub_zero, add_zero]
   all_goals exact ContinuousOn.circleIntegrable hR.le (by fun_prop)
-
-lemma circleAverage_fun_re (hf : CircleIntegrable f c R) :
-    circleAverage (fun z ↦ (f z).re) c R = (circleAverage f c R).re :=
-  reCLM.circleAverage_comp_comm hf
 
 theorem norm_iteratedDeriv_le_of_re_le_sphere (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hf0 : f c = 0)
@@ -113,7 +103,7 @@ theorem norm_iteratedDeriv_le_of_re_le_sphere (hR : 0 < R)
   simp only [norm_div, norm_pow, norm_real, Real.norm_eq_abs]
   have hRabs : |R| = R := abs_of_pos hR
   have hfs : ContinuousOn f (sphere c R) := hf.continuousOn_ball.mono sphere_subset_closedBall
-  trans circleAverage (fun z => (2 / R ^ n) • (M - (f z).re)) c R
+  trans circleAverage (fun z ↦ (2 / R ^ n) • (M - (f z).re)) c R
   · refine circleAverage_congr_sphere fun z hz ↦ ?_
     rw [hRabs] at hz
     rw [abs_of_nonpos (by grind)]
@@ -124,13 +114,10 @@ theorem norm_iteratedDeriv_le_of_re_le_sphere (hR : 0 < R)
       circleAverage_fun_sub (circleIntegrable_const M c R)
         (ContinuousOn.circleIntegrable hR.le (by fun_prop)),
       circleAverage_const,
-      circleAverage_fun_re (hfs.circleIntegrable hR.le), 
+      circleAverage_fun_re (hfs.circleIntegrable hR.le),
       hf.circleAverage, hf0, zero_re]
     ring
 
-/-- The bound on the derivatives at the centre, assuming only that `f` is holomorphic on the open
-disc and that `Re f ≤ M` there : apply the previous estimate on the discs of radius `R' < R` and
-let `R'` tend to `R`. -/
 public theorem norm_iteratedDeriv_le_of_re_le (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : ∀ z ∈ ball c R, (f z).re ≤ M) :
@@ -138,32 +125,20 @@ public theorem norm_iteratedDeriv_le_of_re_le (hR : 0 < R)
   by_cases! hn : n = 0
   · specialize hM c (mem_ball_self hR)
     simp_all
-  refine ge_of_tendsto (f := fun R' : ℝ => 2 * M / R' ^ n) (x := 𝓝[<] R)
+  refine ge_of_tendsto (f := fun R' : ℝ ↦ 2 * M / R' ^ n) (x := 𝓝[<] R)
     (((continuousAt_const.div (by fun_prop) (by positivity)).tendsto).mono_left
       nhdsWithin_le_nhds) ?_
   filter_upwards [self_mem_nhdsWithin, eventually_nhdsWithin_of_eventually_nhds
     (eventually_gt_nhds hR)] with R' hR'R hR'0
   have hsub : closedBall c R' ⊆ ball c R := closedBall_subset_ball hR'R
   exact norm_iteratedDeriv_le_of_re_le_sphere hR'0 (hf.diffContOnCl_ball hsub) hf0
-    (fun z hz => hM z (hsub (sphere_subset_closedBall hz))) hn
-
-lemma hasSum_taylorSeries_on_ball_of_eq_zero (hf : DifferentiableOn ℂ f (ball c R))
-    (hf0 : f c = 0) (hz : z ∈ ball c R) :
-    HasSum (fun n : ℕ ↦ ((n + 1) ! : ℂ)⁻¹ • (z - c) ^ (n + 1) • iteratedDeriv (n + 1) f c)
-      (f z) := by
-  simpa [hf0] using (hasSum_nat_add_iff' 1).mpr (hasSum_taylorSeries_on_ball
-    hf hz)
-
-lemma hasSum_taylorSeries_deriv_on_ball (hf : DifferentiableOn ℂ f (ball c R))
-    (hz : z ∈ ball c R) :
-    HasSum (fun n : ℕ => ((n ! : ℂ))⁻¹ • (z - c) ^ n • iteratedDeriv (n + 1) f c) (deriv f z) := by
-  simpa only [← iteratedDeriv_succ'] using hasSum_taylorSeries_on_ball (hf.deriv isOpen_ball) hz
+    (fun z hz ↦ hM z (hsub (sphere_subset_closedBall hz))) hn
 
 public theorem norm_le_of_re_le (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : ∀ w ∈ ball c R, (f w).re ≤ M) (hz : z ∈ ball c R) :
     ‖f z‖ ≤ 2 * M * ‖z - c‖ / (R - ‖z - c‖) := by
-  have hsum := hasSum_taylorSeries_on_ball_of_eq_zero hf hf0 hz
+  have hsum := hasSum_taylorSeries_on_ball_of_eq_zero hf hz hf0
   simp only [mem_ball, dist_eq_norm_sub] at hz
   convert hsum.norm_le_of_bounded ((hasSum_geometric_of_lt_one (by positivity)
     ((div_lt_one hR).mpr hz)).mul_left (2 * M * (‖z - c‖ / R))) fun n ↦ _
@@ -182,7 +157,7 @@ public theorem norm_deriv_le_of_re_le (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : ∀ w ∈ ball c R, (f w).re ≤ M) (hz : z ∈ ball c R) :
     ‖deriv f z‖ ≤ 2 * R * M / (R - ‖z - c‖) ^ 2 := by
-  have hgeo : HasSum (fun n : ℕ => 2 * M / R * (((n : ℝ) + 1) * (‖z - c‖ / R) ^ n))
+  have hgeo : HasSum (fun n : ℕ ↦ 2 * M / R * (((n : ℝ) + 1) * (‖z - c‖ / R) ^ n))
       (2 * R * M / (R - ‖z - c‖) ^ 2) := by
     convert! (hasSum_choose_mul_geometric_of_norm_lt_one 1 (r := (‖z - c‖ / R))
       ?_).mul_left (2 * M / R) using 1
