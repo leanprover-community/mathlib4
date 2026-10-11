@@ -87,25 +87,16 @@ lemma localInverseAt_symm_trans_eqOn_smul (g : G) :
   intro _ hm
   simpa using localInverseAt_apply_mk_eq_smul hm
 
-@[to_additive]
-private lemma aux {m : M} (hm : ⟦m⟧ ∈ x.localInverseAt.source) :
+/-- If `⟦m⟧` is in the source of `x.localInverseAt`, then there is some `g ∈ G` such that
+`g • m` lies in the target of `x.localInverseAt`. -/
+@[to_additive /-- If `⟦m⟧` is in the source of `x.localInverseAt`, then there is some `g ∈ G` such
+that `g +ᵥ m` lies in the target of `x.localInverseAt`. -/]
+lemma exists_smul_mem_localInverseAt_target {m : M} (hm : ⟦m⟧ ∈ x.localInverseAt.source) :
     ∃ g : G, g • m ∈ (x.localInverseAt).target := by
   obtain ⟨g, hg⟩ := orbitRel_apply.mp (Quotient.exact
     (isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.apply_localInverseAt_of_mem hm))
   use g
   simpa [hg] using (x.localInverseAt).map_source hm
-
-/-- Given `⟦m⟧` in the source of `x.localInverseAt`, a choice of `g ∈ G` such
-that `g • m` lies in the target of `x.localInverseAt`. -/
-@[to_additive /-- Given `⟦m⟧` in the source of `x.localInverseAt`, a choice of `g ∈ G` such
-that `g +ᵥ m` lies in the target of `x.localInverseAt`. -/]
-def smulToLocalInverseAt {m : M} (hm : ⟦m⟧ ∈ x.localInverseAt.source) : G :=
-  Classical.choose (aux hm)
-
-@[to_additive]
-lemma smulToLocalInverseAt_spec {m : M} (hm : ⟦m⟧ ∈ x.localInverseAt.source) :
-    smulToLocalInverseAt hm • m ∈ (x.localInverseAt).target :=
-  Classical.choose_spec (aux hm)
 
 /-!
 ## Transition maps between charts
@@ -165,12 +156,13 @@ instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] 
       ← (localInverseAt x).symm.trans_assoc]
     apply StructureGroupoid.locality
     intro z hz
-    let g := smulToLocalInverseAt (mk_chartAt_symm_mem_localInverseAt_source hz)
+    obtain ⟨g, hg⟩ :=
+      exists_smul_mem_localInverseAt_target (mk_chartAt_symm_mem_localInverseAt_source hz)
     let t := ((chartAt H x.out).symm.source ∩ (chartAt H x.out).symm ⁻¹'
       ((g • ·) ⁻¹' (localInverseAt y).target))
     have ht : IsOpen t := (chartAt H x.out).symm.isOpen_inter_preimage <|
       (localInverseAt y).open_target.preimage (continuous_const_smul _)
-    refine ⟨t, ht, ⟨hz.1, smulToLocalInverseAt_spec _⟩, ?_⟩
+    refine ⟨t, ht, ⟨hz.1, hg⟩, ?_⟩
     refine StructureGroupoid.restr_mem_of_eqOn (symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
       (chart_mem_maximalAtlas x.out) (chart_mem_maximalAtlas y.out) ?_ ?_) ht
       ((transitionMap_eqOn_smul x y g).mono Set.inter_subset_right).symm ?_
