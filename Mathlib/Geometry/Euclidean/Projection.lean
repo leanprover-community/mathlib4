@@ -577,7 +577,7 @@ lemma reflection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' : AffineSu
     (reflection s' p : P) = reflection (s'.map s.subtype) p := by
   simp [reflection_apply', orthogonalProjection_subtype]
 
-section perpBisector
+section RealInnerProductSpace
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -611,15 +611,7 @@ theorem reflection_perpBisector_right (a b : P) :
     reflection (perpBisector b a) a = b := by
   simpa [perpBisector_comm a b] using reflection_perpBisector_left a b
 
-end perpBisector
-
-section hyperplane
-
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P]
-
-open scoped RealInnerProductSpace
-
+open scoped RealInnerProductSpace in
 /-- The distance from a point `p` to its orthogonal projection on an affine subspace `s` whose
 orthogonal complement is spanned by `n` (a hyperplane with normal vector `n`, when `n ≠ 0`) is
 `|⟪n, p -ᵥ q⟫| / ‖n‖`, for any point `q` of `s`. -/
@@ -636,11 +628,9 @@ theorem dist_orthogonalProjection_eq_abs_inner_div_norm (s : AffineSubspace ℝ 
   rw [dist_eq_norm_vsub V, ← vsub_add_vsub_cancel p (orthogonalProjection s p : P) q,
     inner_add_right, h0, add_zero, ← ht, norm_smul, inner_smul_right,
     real_inner_self_eq_norm_sq, abs_mul, abs_of_nonneg (sq_nonneg ‖n‖), Real.norm_eq_abs]
-  rcases eq_or_ne n 0 with rfl | hn0
-  · simp
-  · field_simp
+  field
 
-end hyperplane
+end RealInnerProductSpace
 
 end EuclideanGeometry
 
