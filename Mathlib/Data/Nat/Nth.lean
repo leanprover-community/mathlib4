@@ -524,8 +524,8 @@ theorem nth_of_forall_not {n : ℕ} (hp : ∀ n' ≥ n, ¬p n') : nth p n = 0 :=
     contrapose! hp
     exact ⟨n', by simpa using hp, Set.mem_ofPred.mp hn'⟩
   rw [nth_of_card_le ((finite_toSet _).subset this)]
-  · refine (Finset.card_le_card ?_).trans_eq (Finset.card_range n)
-    exact Set.Finite.toFinset_subset.mpr this
+  refine (Finset.card_le_card ?_).trans_eq (Finset.card_range n)
+  exact Set.Finite.toFinset_subset.mpr this
 
 @[simp] theorem nth_false (n : ℕ) : nth (fun _ ↦ False) n = 0 := nth_of_forall_not fun _ _ ↦ id
 
