@@ -53,16 +53,15 @@ def discr [CommSemiring R] (a b : R) : R := b ^ 2 + 4 * a
 
 theorem discr_def [CommSemiring R] (a b : R) : discr a b = b ^ 2 + 4 * a := by rfl
 
-/-- `discr a b = b ^ 2 + 4 * a ≡ 0, 1 mod 4` for every `a b : ℤ`. -/
+/-- The discriminant `discr a b` of integers is congruent to `0` or `1` modulo `4`. -/
 theorem discr_emod_four (a b : ℤ) : discr a b % 4 = 0 ∨ discr a b % 4 = 1 := by
-  rw [discr_def]; have := Int.sq_emod_four b; lia
+  grind [discr_def, Int.sq_emod_four]
 
 /-- `z.im ^ 2` times the discriminant of the algebra equals `trace z ^ 2 - 4 * norm z`. -/
 theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     z.im ^ 2 * discr a b = trace z ^ 2 - 4 * norm z := by
   rw [trace_def, norm_def, discr_def]; ring
 
-/-- `im_sq_mul_discr` solved for `4 * norm z`. -/
 theorem four_mul_norm_eq [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     4 * norm z = trace z ^ 2 - discr a b * z.im ^ 2 := by
   rw [trace_def, norm_def, discr_def]; ring
