@@ -34,8 +34,7 @@ For `P : HeightOneSpectrum A`, the main result of this file is that
 
 ## References
 
-* [M. Brodmann and R. Sharp, *Local cohomology: An algebraic introduction with geometric
-  applications*][brodmannsharp13], Proposition 2.1.4
+* [Stacks: Injective modules, Lemma 08XW](https://stacks.math.columbia.edu/tag/08XW)
 
 -/
 
@@ -303,6 +302,7 @@ theorem injective_of_primaryComponent_eq_top (hQ : primaryComponent Q I = ⊤)
 
 /-- Over a Noetherian ring, the `I`-primary component `Γ_I(Q)` of an injective module `Q` is
 injective. -/
+@[stacks 08XW "(2)"]
 instance primaryComponent.injective [Small.{v} A] [Module.Injective A Q] :
     Module.Injective A (primaryComponent Q I) := by
   refine injective_of_primaryComponent_eq_top I (eq_top_iff.2 fun x _ ↦ ?_) fun n N f ↦ ?_
