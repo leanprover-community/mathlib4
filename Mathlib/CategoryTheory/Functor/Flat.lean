@@ -6,10 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Limits.Bicones
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-public import Mathlib.CategoryTheory.Limits.Bicones
 public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit

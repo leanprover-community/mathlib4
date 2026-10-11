@@ -5,8 +5,8 @@ Authors: Vincent Beffara, Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Order.Filter.EventuallyConst
 
 import Mathlib.Analysis.Analytic.Constructions
