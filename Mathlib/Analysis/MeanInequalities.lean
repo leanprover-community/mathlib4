@@ -82,6 +82,9 @@ There are at least two short proofs of this inequality. In our proof we prenorma
 then apply Young's inequality to each $a_ib_i$. Another possible proof would be to deduce this
 inequality from the generalized mean inequality for well-chosen vectors and weights.
 
+As a consequence, we prove Lyapunov's inequality (`NNReal.lyapunov_inequality`): the weighted
+moments $t \mapsto \sum_{i\in s} w_i f_i^t$ are log-convex on $[0, \infty)$.
+
 ### Minkowski's inequality
 
 The inequality says that for `p ≥ 1` the function
@@ -672,6 +675,25 @@ lemma inner_le_weight_mul_Lp (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι 
     have hp₁ : 1 - p⁻¹ ≠ 0 := by simp [sub_eq_zero, hp.ne']
     simp [mul_rpow, div_inv_eq_mul, one_mul, one_div, hp₀, hp₁]
 
+/-- **Lyapunov's inequality**, in its log-convexity form: the weighted moments
+`t ↦ ∑ i ∈ s, w i * f i ^ t` are log-convex on `[0, ∞)`. Version for sums over finite sets, with
+`ℝ≥0`-valued functions. -/
+theorem lyapunov_inequality (w f : ι → ℝ≥0) {p q θ : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (hθ₀ : 0 ≤ θ)
+    (hθ₁ : θ ≤ 1) :
+    ∑ i ∈ s, w i * f i ^ (θ * p + (1 - θ) * q) ≤
+      (∑ i ∈ s, w i * f i ^ p) ^ θ * (∑ i ∈ s, w i * f i ^ q) ^ (1 - θ) := by
+  obtain rfl | hθ₀ := hθ₀.eq_or_lt
+  · simp
+  obtain rfl | hθ₁ := hθ₁.eq_or_lt
+  · simp
+  have hθ₁' := sub_pos.2 hθ₁
+  convert inner_le_Lp_mul_Lq s (fun i ↦ (w i * f i ^ p) ^ θ) (fun i ↦ (w i * f i ^ q) ^ (1 - θ))
+    (.inv_one_sub_inv hθ₀ hθ₁) using 2 with i
+  · rw [mul_rpow, mul_rpow, ← rpow_mul, ← rpow_mul, mul_mul_mul_comm,
+      ← rpow_add_of_nonneg _ hθ₀.le hθ₁'.le, add_sub_cancel, rpow_one,
+      ← rpow_add_of_nonneg _ (by positivity) (by positivity), mul_comm p, mul_comm q]
+  all_goals simp [← rpow_mul, hθ₀.ne', hθ₁'.ne']
+
 /-- **Hölder inequality**: The (`r`-power of the) `L^r` norm of the product of two functions is
 bounded by the product of (the `r`-powers of) their `L^p` and `L^q` norms when `p`, `q`, and `r`
 form a `Real.HolderTriple`. A version for `NNReal`-valued functions. For an alternative version,
@@ -935,6 +957,20 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   beta_reduce at *
   norm_cast at *
   exact NNReal.inner_le_weight_mul_Lp _ hp _ _
+
+/-- **Lyapunov's inequality**, in its log-convexity form: the weighted moments
+`t ↦ ∑ i ∈ s, w i * f i ^ t` are log-convex on `[0, ∞)`. Version for sums over finite sets, with
+nonnegative real-valued functions. See `NNReal.lyapunov_inequality` for the `ℝ≥0`-valued
+version. -/
+theorem lyapunov_inequality_of_nonneg {w : ι → ℝ} {θ : ℝ} (hw : ∀ i ∈ s, 0 ≤ w i)
+    (hf : ∀ i ∈ s, 0 ≤ f i) (hp : 0 ≤ p) (hq : 0 ≤ q) (hθ₀ : 0 ≤ θ) (hθ₁ : θ ≤ 1) :
+    ∑ i ∈ s, w i * f i ^ (θ * p + (1 - θ) * q) ≤
+      (∑ i ∈ s, w i * f i ^ p) ^ θ * (∑ i ∈ s, w i * f i ^ q) ^ (1 - θ) := by
+  have hwf (t : ℝ) :
+      ∑ i ∈ s, w i * f i ^ t = ∑ i ∈ s, ((w i).toNNReal : ℝ) * ((f i).toNNReal : ℝ) ^ t :=
+    sum_congr rfl fun i hi ↦ by simp [hw i hi, hf i hi]
+  simp only [hwf]
+  exact_mod_cast NNReal.lyapunov_inequality s _ _ hp hq hθ₀ hθ₁
 
 /-- **Weighted Hölder inequality** in terms of `Finset.expect`. -/
 lemma compact_inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) {w f : ι → ℝ}
