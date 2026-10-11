@@ -613,6 +613,32 @@ theorem reflection_perpBisector_right (a b : P) :
 
 end perpBisector
 
+section hyperplane
+
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+
+open scoped RealInnerProductSpace
+
+/-- The distance from a point `x` to the hyperplane `{y | ⟪n, y⟫ = c}` with normal vector `n`
+is `|⟪n, x⟫ - c| / ‖n‖`. -/
+theorem infDist_setOf_inner_eq {n : V} (hn : n ≠ 0) (c : ℝ) (x : V) :
+    Metric.infDist x {y | ⟪n, y⟫ = c} = |⟪n, x⟫ - c| / ‖n‖ := by
+  have hn' : 0 < ‖n‖ := norm_pos_iff.2 hn
+  set t := (⟪n, x⟫ - c) / ‖n‖ ^ 2
+  have hy : x - t • n ∈ {y | ⟪n, y⟫ = c} := by
+    simp only [Set.mem_ofPred_eq, inner_sub_right, inner_smul_right, real_inner_self_eq_norm_sq, t]
+    field_simp
+    ring
+  refine le_antisymm ((Metric.infDist_le_dist_of_mem hy).trans_eq ?_)
+    ((Metric.le_infDist ⟨_, hy⟩).2 fun y hy ↦ ?_)
+  · rw [dist_eq_norm, sub_sub_cancel, norm_smul, Real.norm_eq_abs, abs_div,
+      abs_of_pos (pow_pos hn' 2)]
+    field_simp
+  · rw [div_le_iff₀ hn', dist_eq_norm, mul_comm, ← hy.out, ← inner_sub_right]
+    exact abs_real_inner_le_norm n (x - y)
+
+end hyperplane
+
 end EuclideanGeometry
 
 namespace Affine
