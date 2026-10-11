@@ -846,6 +846,8 @@ theorem hasUniqueRoots_of_le_nonZeroDivisors (h : S ≤ nonZeroDivisors R)
     rw [coeIdeal_inj' h, ← (pow_left_injective hn).eq_iff, ← coeIdeal_inj' (P := P) h]
     simp [coeIdeal_pow, mul_pow, ← den_mul_self_eq_num', hIJ, mul_left_comm]
 
+-- To get `HasUniqueRoots (Ideal R)` for a Dedekind domain `R`, one needs to import
+-- `Mathlib.Algebra.GroupWithZero.Torsion`.
 instance [IsLocalization (nonZeroDivisors R) P]
     [HasUniqueRoots (Ideal R)] : HasUniqueRoots (FractionalIdeal (nonZeroDivisors R) P) :=
   hasUniqueRoots_of_le_nonZeroDivisors le_rfl
