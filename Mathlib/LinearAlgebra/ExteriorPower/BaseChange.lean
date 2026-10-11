@@ -62,10 +62,11 @@ def baseChangeGenerator (i : ℕ) : M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S 
   toFun m := ExteriorAlgebra.ιMulti S i ((TensorProduct.mk R S M 1) ∘ m)
   map_update_add' {_i} := by
     cases Subsingleton.elim _i (by clear _i; infer_instance)
-    exact baseChangeGenerator_map_update_add R M S i
+    simp [Function.comp_update, map_add]
   map_update_smul' {_i} := by
     cases Subsingleton.elim _i (by clear _i; infer_instance)
-    exact baseChangeGenerator_map_update_smul R M S i
+    intro m j r
+    simp [Function.comp_update, -algebraMap_smul, ← algebraMap_smul S r]
   map_eq_zero_of_eq' m j k hjk hjk_ne := by
     have : ((mk R S M 1) ∘ m) j = ((mk R S M 1) ∘ m) k := by
       simpa using congrArg (TensorProduct.mk R S M 1) hjk
