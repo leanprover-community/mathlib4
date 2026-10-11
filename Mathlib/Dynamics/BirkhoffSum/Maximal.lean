@@ -30,10 +30,10 @@ We prove the maximal ergodic theorem for a measure-preserving map `f` and an int
 
 * `setIntegral_birkhoffSumSup_nonneg`: for a measure-preserving `f`, the integral of an integrable
   `g` over the set where `birkhoffSumSup f g` is positive is non-negative.
-* `const_mul_distribution_birkhoffAverageSup_le_integral`: the cumulative distribution function of
+* `mul_measureReal_lt_birkhoffAverageSup_le_integral`: the cumulative distribution function of
   `birkhoffAverageSup` at `a` is less than or equal to the integral of `g` on the set where
   `a < birkhoffAverageSup f g x`.
-* `const_mul_distribution_birkhoffAverageSup_le_norm`: the operator `birkhoffAverageSup` satisfies a
+* `mul_measureReal_lt_birkhoffAverageSup_le_norm`: the operator `birkhoffAverageSup` satisfies a
    weak-type inequality.
 -/
 
@@ -128,7 +128,7 @@ lemma birkhoffMax_integral_le (hf : MeasurePreserving f μ μ) (hg : Integrable 
   · exact Integrable.integrableOn (by fun_prop)
   · exact Integrable.integrableOn (by fun_prop)
   · exact AEStronglyMeasurable.nullMeasurableSet_support (by fun_prop)
-  · grind [birkhoffMax_le_self_add_comp, birkhoffMax_nonneg, Function.mem_support]
+  · grind [birkhoffMax_le_self_add_comp, birkhoffMax_nonneg]
 
 lemma setIntegral_support_birkhoffMax_nonneg (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
     0 ≤ ∫ x in (birkhoffMax f g n).support, g x ∂μ := by
@@ -201,7 +201,7 @@ lemma tendsto_setIntegral_support_birkhoffMax
   · intros
     exact AEStronglyMeasurable.nullMeasurableSet_support (by measurability)
   · intro i j hij x
-    grind [birkhoffMax_nonneg, (birkhoffMax f g).mono hij x, Function.mem_support]
+    grind [birkhoffMax_nonneg, (birkhoffMax f g).mono hij x]
 
 /-- The integral of `g` over the set where `birkhoffSumSup f g` is positive is non-negative. -/
 theorem setIntegral_birkhoffSumSup_nonneg
