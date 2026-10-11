@@ -114,7 +114,7 @@ theorem mem_or_inv_mem (hM : M.IsMulSpanning) (a : G) : a ∈ M ∨ a⁻¹ ∈ M
 
 @[to_additive]
 theorem of_le {N : Submonoid G} (hM : M.IsMulSpanning) (h : M ≤ N) : N.IsMulSpanning := by
-  grind [IsMulSpanning, IsConcreteLE.le_iff]
+  grind [IsMulSpanning, le_iff_mem_imp_mem]
 
 @[to_additive]
 theorem maximal_isMulPointed (hMp : M.IsMulPointed) (hMs : M.IsMulSpanning) :
