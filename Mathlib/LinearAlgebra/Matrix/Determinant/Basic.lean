@@ -816,6 +816,34 @@ theorem det_fin_two (A : Matrix (Fin 2) (Fin 2) R) : det A = A 0 0 * A 1 1 - A 0
 theorem det_fin_two_of (a b c d : R) : Matrix.det !![a, b; c, d] = a * d - b * c :=
   det_fin_two _
 
+/-- **Cauchy–Binet formula** for `2 × 2` minors, in the form
+`det (A * B)_{ij,kk'} = ∑_{a,b} A_{ia} A_{jb} det B_{ab,kk'}`. -/
+theorem det_fin_two_submatrix_mul {ι l o : Type*} [Fintype ι] (A : Matrix l ι R)
+    (B : Matrix ι o R) (i j : l) (k k' : o) :
+    ((A * B).submatrix ![i, j] ![k, k']).det =
+      ∑ a, ∑ b, A i a * A j b * (B.submatrix ![a, b] ![k, k']).det := by
+  simp only [det_fin_two, submatrix_apply, Matrix.cons_val_zero, Matrix.cons_val_one,
+    mul_apply, sum_mul_sum, ← sum_sub_distrib]
+  exact sum_congr rfl fun a _ ↦ sum_congr rfl fun b _ ↦ by ring
+
+/-- **Cauchy–Binet formula** for `2 × 2` minors, in the symmetric form
+`2 det (A * B)_{ij,kk'} = ∑_{a,b} det A_{ij,ab} det B_{ab,kk'}`, the sum being over ordered
+pairs `(a, b)`. -/
+theorem two_mul_det_fin_two_submatrix_mul {ι l o : Type*} [Fintype ι] (A : Matrix l ι R)
+    (B : Matrix ι o R) (i j : l) (k k' : o) :
+    2 * ((A * B).submatrix ![i, j] ![k, k']).det =
+      ∑ a, ∑ b, (A.submatrix ![i, j] ![a, b]).det * (B.submatrix ![a, b] ![k, k']).det := by
+  have h := det_fin_two_submatrix_mul A B i j k k'
+  rw [sum_comm] at h
+  rw [two_mul]
+  nth_rw 2 [h]
+  rw [det_fin_two_submatrix_mul, ← sum_add_distrib]
+  refine sum_congr rfl fun a _ ↦ ?_
+  rw [← sum_add_distrib]
+  refine sum_congr rfl fun b _ ↦ ?_
+  simp only [det_fin_two, submatrix_apply, Matrix.cons_val_zero, Matrix.cons_val_one]
+  ring
+
 /-- Determinant of 3x3 matrix -/
 theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
     det A =
