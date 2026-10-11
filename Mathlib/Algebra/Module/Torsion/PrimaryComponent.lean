@@ -5,7 +5,10 @@ Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
 module
 
+public import Mathlib.Algebra.Module.Injective
 public import Mathlib.RingTheory.DedekindDomain.Factorization
+
+import Mathlib.RingTheory.Filtration
 
 /-!
 # I-Primary Components of modules
@@ -20,6 +23,19 @@ For `P : HeightOneSpectrum A`, the main result of this file is that
 ## Main definitions
 
 * `Ideal.primaryComponent` : The `I`-primary component of an `A`-module `M`.
+
+## Main results
+
+* `Ideal.baer_of_primaryComponent_eq_top` : over a Noetherian ring, a module `M` with
+  `M(I) = M` satisfies Baer's criterion as soon as maps into `M` extend along the inclusions
+  `N ⊆ A ⧸ I ^ n`.
+* `Ideal.primaryComponent.injective` : over a Noetherian ring, the `I`-primary component of
+  an injective module is injective.
+
+## References
+
+* [M. Brodmann and R. Sharp, *Local cohomology: An algebraic introduction with geometric
+  applications*][brodmannsharp13], Proposition 2.1.4
 
 -/
 
@@ -212,6 +228,97 @@ theorem primaryComponent.map_surjective {M₁ M₂ : Type*}
 end IsDedekindDomain
 
 end AddCommGroup
+
+section Injective
+
+universe v
+
+variable {Q : Type v} [AddCommGroup Q] [Module A Q] [IsNoetherianRing A]
+
+/-- Over a Noetherian ring, a linear map from an ideal to a module `Q` with `Q(I) = Q` is killed
+by a single power of `I`. -/
+private lemma exists_pow_smul_eq_zero_of_primaryComponent_eq_top
+    (hQ : primaryComponent Q I = ⊤) (J : Ideal A) (g : J →ₗ[A] Q) :
+    ∃ n : ℕ, ∀ a ∈ I ^ n, ∀ x : J, a • g x = 0 := by
+  classical
+  obtain ⟨k, s, hs⟩ := Module.Finite.exists_fin (R := A) (M := J)
+  have h (x : Q) : ∃ n : ℕ, ∀ a ∈ I ^ n, a • x = 0 := by
+    obtain ⟨n, hn⟩ := (primaryComponent_mem Q I x).1 (hQ ▸ mem_top)
+    exact ⟨n, fun a ha ↦ (mem_torsionBySet_iff _ _).1 hn ⟨a, ha⟩⟩
+  choose e he using fun i ↦ h (g (s i))
+  refine ⟨Finset.univ.sup e, fun a ha x ↦ ?_⟩
+  have hx : x ∈ Submodule.span A (Set.range s) := hs ▸ mem_top
+  induction hx using span_induction with
+  | mem y hy =>
+    obtain ⟨i, rfl⟩ := hy
+    exact he i a (Ideal.pow_le_pow_right (Finset.le_sup (Finset.mem_univ i)) ha)
+  | zero => simp
+  | add y z _ _ hy hz => rw [map_add, smul_add, hy, hz, add_zero]
+  | smul c y _ hy => rw [map_smul, smul_comm, hy, smul_zero]
+
+/-- Over a Noetherian ring, a module `Q` with `Q(I) = Q` satisfies Baer's criterion as soon as
+linear maps into `Q` extend along the inclusions of submodules of `A ⧸ I ^ n`, for all `n`.
+The proof uses the Artin–Rees lemma. -/
+theorem baer_of_primaryComponent_eq_top (hQ : primaryComponent Q I = ⊤)
+    (h : ∀ (n : ℕ) (N : Submodule A (A ⧸ I ^ n)) (f : N →ₗ[A] Q),
+      ∃ g : A ⧸ I ^ n →ₗ[A] Q, ∀ x : N, g x = f x) :
+    Module.Baer A Q := by
+  intro J g
+  obtain ⟨n, hn⟩ := exists_pow_smul_eq_zero_of_primaryComponent_eq_top I hQ J g
+  -- `g` vanishes on `I ^ n • J`.
+  have hgIJ (x : A) (hx : x ∈ I ^ n • J) : g ⟨x, smul_le_right hx⟩ = 0 := by
+    induction hx using smul_induction_on' with
+    | smul a ha y hy =>
+      rw [show (⟨a • y, _⟩ : J) = a • ⟨y, hy⟩ from rfl, map_smul, hn a ha]
+    | add x hx y hy hx' hy' =>
+      rw [show (⟨x + y, _⟩ : J) = ⟨x, smul_le_right hx⟩ + ⟨y, smul_le_right hy⟩ from rfl,
+        map_add, hx', hy', add_zero]
+  -- Artin–Rees: `J ⊓ I ^ (n + k) ≤ I ^ n • J`.
+  obtain ⟨k, hk⟩ := Ideal.exists_pow_inf_eq_pow_smul I J
+  have hAR (x : A) (hxJ : x ∈ J) (hxm : x ∈ I ^ (n + k)) : x ∈ I ^ n • J := by
+    have h1 : x ∈ I ^ (n + k) • (⊤ : Ideal A) ⊓ J := ⟨by simpa using hxm, hxJ⟩
+    rw [hk (n + k) (by lia), Nat.add_sub_cancel] at h1
+    exact smul_mono le_rfl inf_le_right h1
+  -- `g` factors through the image of `J` in `A ⧸ I ^ (n + k)`.
+  let φ : J →ₗ[A] A ⧸ I ^ (n + k) := (I ^ (n + k)).mkQ ∘ₗ J.subtype
+  have hker : LinearMap.ker φ ≤ LinearMap.ker g := fun x hx ↦ by
+    have hxm : (x : A) ∈ I ^ (n + k) := by
+      simpa [φ, Ideal.Quotient.eq_zero_iff_mem] using hx
+    simpa using hgIJ x (hAR x x.2 hxm)
+  obtain ⟨w, hw⟩ := h (n + k) (LinearMap.range φ)
+    ((LinearMap.ker φ).liftQ g hker ∘ₗ φ.quotKerEquivRange.symm.toLinearMap)
+  refine ⟨w ∘ₗ (I ^ (n + k)).mkQ, fun x hx ↦ ?_⟩
+  have := hw ⟨φ ⟨x, hx⟩, LinearMap.mem_range_self φ _⟩
+  simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
+    LinearMap.quotKerEquivRange_symm_apply_image] at this
+  exact this
+
+/-- Over a Noetherian ring, a module `Q` with `Q(I) = Q` is injective as soon as linear maps
+into `Q` extend along the inclusions of submodules of `A ⧸ I ^ n`, for all `n`. -/
+theorem injective_of_primaryComponent_eq_top (hQ : primaryComponent Q I = ⊤)
+    (h : ∀ (n : ℕ) (N : Submodule A (A ⧸ I ^ n)) (f : N →ₗ[A] Q),
+      ∃ g : A ⧸ I ^ n →ₗ[A] Q, ∀ x : N, g x = f x) :
+    Module.Injective A Q :=
+  (baer_of_primaryComponent_eq_top I hQ h).injective
+
+/-- Over a Noetherian ring, the `I`-primary component `Γ_I(Q)` of an injective module `Q` is
+injective. -/
+instance primaryComponent.injective [Small.{v} A] [Module.Injective A Q] :
+    Module.Injective A (primaryComponent Q I) := by
+  refine injective_of_primaryComponent_eq_top I (eq_top_iff.2 fun x _ ↦ ?_) fun n N f ↦ ?_
+  · obtain ⟨n, hn⟩ := (primaryComponent_mem Q I x).1 x.2
+    refine (primaryComponent_mem _ I x).2 ⟨n, (mem_torsionBySet_iff _ _).2 fun a ↦ ?_⟩
+    exact Subtype.ext ((mem_torsionBySet_iff _ _).1 hn a)
+  obtain ⟨v, hv⟩ := Module.Injective.extension_property A Q _ _ N.subtype N.injective_subtype
+    ((primaryComponent Q I).subtype ∘ₗ f)
+  -- The extension lands in `Γ_I(Q)`, because `A ⧸ I ^ n` is killed by `I ^ n`.
+  refine ⟨v.codRestrict _ fun y ↦ (primaryComponent_mem Q I _).2 ⟨n,
+    (mem_torsionBySet_iff _ _).2 fun a ↦ ?_⟩, fun x ↦ Subtype.ext congr($hv x)⟩
+  obtain ⟨b, rfl⟩ := Submodule.Quotient.mk_surjective _ y
+  rw [← map_smul, ← Submodule.Quotient.mk_smul, smul_eq_mul,
+    (Submodule.Quotient.mk_eq_zero _).2 (Ideal.mul_mem_right b _ a.2), map_zero]
+
+end Injective
 
 end CommRing
 
