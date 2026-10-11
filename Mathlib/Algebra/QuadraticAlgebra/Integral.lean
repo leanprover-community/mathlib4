@@ -19,12 +19,12 @@ Let `R` be a commutative ring and `K` a commutative `R`-algebra in which `R` is 
 
 ## Main results
 
-* `QuadraticAlgebra.isIntegral_omega`: when `a` and `b` come from `R`, the generator `ω` is
+* `QuadraticAlgebra.isIntegral_omega`: when `a` and `b` are in `R`, the generator `ω` is
   integral over `R`.
-* `QuadraticAlgebra.isIntegral_iff`: an element of `QuadraticAlgebra K a b` is integral over `R`
-  iff its trace and its norm lie in `R`.
 * `QuadraticAlgebra.re_mem_range_of_im_mem_range`: if `z` is integral over `R` and `z.im` lies in
   `R`, then `z.re` also lies in `R`.
+* `QuadraticAlgebra.isIntegral_iff`: an element of `QuadraticAlgebra K a b` is integral over `R`
+  iff its trace and its norm lie in `R`.
 -/
 
 public section
@@ -33,15 +33,15 @@ namespace QuadraticAlgebra
 
 variable {R K : Type*} [CommRing R] [CommRing K] [Algebra R K] {a b : K}
 
-/-- The conjugate of an element integral over `R` is integral over `R`. -/
-theorem isIntegral_star {z : QuadraticAlgebra K a b} (hz : IsIntegral R z) :
-    IsIntegral R (star z) :=
-  hz.map (starAlgEquiv.restrictScalars R)
-
 @[simp]
 theorem isIntegral_star_iff {z : QuadraticAlgebra K a b} :
     IsIntegral R (star z) ↔ IsIntegral R z :=
-  ⟨fun h ↦ star_star z ▸ isIntegral_star h, isIntegral_star⟩
+  isIntegral_algEquiv (x := z) (starAlgEquiv.restrictScalars R)
+
+/-- The conjugate of an element integral over `R` is integral over `R`. -/
+theorem isIntegral_star {z : QuadraticAlgebra K a b} (hz : IsIntegral R z) :
+    IsIntegral R (star z) :=
+  isIntegral_star_iff.mpr hz
 
 open Polynomial in
 /-- An element whose trace and norm lie in `R` is integral over `R`. -/
@@ -51,10 +51,10 @@ theorem isIntegral_of_trace_mem_range_of_norm_mem_range {z : QuadraticAlgebra K 
   obtain ⟨t, ht⟩ := ht
   obtain ⟨n, hn⟩ := hn
   refine ⟨X ^ 2 - C t * X + C n, by monicity!, ?_⟩
-  simpa [IsScalarTower.algebraMap_apply R K (QuadraticAlgebra K a b), ht, hn,
-    ← Algebra.smul_def] using sq_sub_trace_smul_add_norm_eq_zero z
+  simp [IsScalarTower.algebraMap_apply R K (QuadraticAlgebra K a b), ht, hn,
+    ← Algebra.smul_def, sq_sub_trace_smul_add_norm_eq_zero]
 
-/-- The generator `ω` is integral over `R`. -/
+/-- When `a` and `b` are in `R`, the generator `ω` is integral over `R`. -/
 theorem isIntegral_omega {a b : R} :
     IsIntegral R (ω : QuadraticAlgebra K (algebraMap R K a) (algebraMap R K b)) :=
   isIntegral_of_trace_mem_range_of_norm_mem_range ⟨b, by simp⟩ ⟨-a, by simp [norm_def]⟩
