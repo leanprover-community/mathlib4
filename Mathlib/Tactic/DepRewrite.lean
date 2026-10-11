@@ -8,7 +8,6 @@ module
 public meta import Lean.Elab.ConfigEval.Basic
 public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Tactic.Rewrite
-public meta import Lean.Elab.Tactic.Simp
 public import Lean.Elab.ConfigEval
 
 meta import Lean.Elab.ConfigEval.DeriveEvalExpr

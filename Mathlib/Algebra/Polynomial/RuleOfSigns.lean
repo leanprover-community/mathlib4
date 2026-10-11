@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.CoeffList
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Data.List.SignVariations
+public import Mathlib.Basic.Sign.Basic
 
 /-!
 

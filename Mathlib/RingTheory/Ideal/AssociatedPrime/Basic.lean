@@ -5,11 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
-public import Mathlib.RingTheory.Noetherian.Basic
 
-import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.MinimalPrime.Colon
+public import Mathlib.Algebra.Exact.Basic
+public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 

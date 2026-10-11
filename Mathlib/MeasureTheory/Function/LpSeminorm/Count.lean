@@ -5,9 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 /-!
 # `L^p`-seminorms on `count` and `dirac`

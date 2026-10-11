@@ -5,7 +5,6 @@ Authors: Nailin Guan, Yi Song
 -/
 module
 
-public import Mathlib.RingTheory.Support
 
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -13,6 +12,10 @@ import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Regular.IsSMulRegular
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 

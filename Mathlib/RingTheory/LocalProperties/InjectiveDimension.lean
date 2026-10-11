@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.LocalProperties.Injective
 
 import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Module.LocalizedModule.Exact
+public import Mathlib.RingTheory.LocalProperties.Submodule
 
 /-!
 

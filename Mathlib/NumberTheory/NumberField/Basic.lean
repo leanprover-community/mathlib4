@@ -9,7 +9,6 @@ public import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 
-import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # Number fields

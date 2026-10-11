@@ -7,14 +7,11 @@ module
 
 public meta import Batteries.Lean.Position
 public meta import Lean.Linter.Basic
-public meta import Mathlib.Lean.Elab.InfoTree
-public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Lean.Expr.Basic
-public import Batteries.Tactic.Lint.Basic
-public import Batteries.Tactic.Lint.Misc
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Linter.Basic
 
 /-!
 # Linters for Unused Instances in Types

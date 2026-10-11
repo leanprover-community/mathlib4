@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Archimedean.Basic
 
-import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Maps (semi)conjugating a shift to a shift

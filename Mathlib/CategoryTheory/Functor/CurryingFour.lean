@@ -5,9 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.CurryingThree
-public import Mathlib.CategoryTheory.Functor.Quadrifunctor
 public import Mathlib.CategoryTheory.Products.Associator
+public import Mathlib.CategoryTheory.Functor.Currying
 
 /-!
 # Currying of functors in four variables

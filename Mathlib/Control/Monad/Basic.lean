@@ -5,8 +5,8 @@ Authors: Simon Hudon
 -/
 module
 
-public import Batteries.Lean.Except
 public import Mathlib.Logic.Equiv.Defs
+public import Batteries.Data.Except
 
 
 /-!
