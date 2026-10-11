@@ -3,6 +3,7 @@ Copyright (c) 2026 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
+module
 
 import Mathlib.Combinatorics.Enumerative.Catalan.Basic
 
@@ -62,7 +63,7 @@ namespace Function
 
 /-- A function `a : Fin n → Fin n` is bracketing if `i ≤ a i` for all `i` and for all `i` and `j`
 such that `i ≤ j ≤ a i` one has `a j ≤ a i`. -/
-def IsBracketing (a : Fin n → Fin n) : Prop :=
+public def IsBracketing (a : Fin n → Fin n) : Prop :=
   (∀ i, i ≤ a i) ∧ (∀ i j, i ≤ j → j ≤ a i → a j ≤ a i)
 deriving Decidable
 
