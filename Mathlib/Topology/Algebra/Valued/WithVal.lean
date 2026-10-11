@@ -206,9 +206,6 @@ theorem val_apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 
 @[simp] theorem valued_toVal (r : R) : Valued.v (toVal v r) = v r := rfl
 
-@[deprecated (since := "2026-03-02")] alias apply_equiv := apply_ofVal
-@[deprecated (since := "2026-03-02")] alias apply_symm_equiv := valued_toVal
-
 instance [CharZero R] : CharZero (WithVal v) :=
   .of_addMonoidHom (equiv v).symm.toAddMonoidHom (by simp) (equiv v).symm.injective
 

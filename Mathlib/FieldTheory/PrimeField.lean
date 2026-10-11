@@ -6,10 +6,11 @@ Authors: Xavier Roblot, Kenny Lau
 module
 
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Algebra.Field.Subfield.Basic
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
+public import Mathlib.Algebra.Field.ZMod
+
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Prime fields

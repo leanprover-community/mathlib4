@@ -5,9 +5,10 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.LocallyConvex.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
+
+import Mathlib.Analysis.LocallyConvex.StrongTopology
 
 /-!
 # The topology of pointwise convergence is locally convex

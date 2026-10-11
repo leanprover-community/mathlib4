@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Topology.Algebra.GroupWithZero
-public import Mathlib.Topology.Order.OrderClosed
-public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
