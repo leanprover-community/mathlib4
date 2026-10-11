@@ -365,13 +365,13 @@ lemma onFun_map_onFun_iff_onFun {r : β → β → Prop} {f : α → β} {a b : 
     Relation.Map (r on f) f f (f a) (f b) ↔ r (f a) (f b) :=
   bicompl_map_bicompl_iff_bicompl
 
-theorem _root_.Acc.of_map {α β} {r : α → α → Prop} {f : α → β} {a : α}
-    (h : Acc (Relation.Map r f f) (f a)) :
-    Acc r a := Subrelation.accessible @(Relation.le_onFun_map f) (InvImage.accessible f h)
+theorem _root_.Acc.of_map {r : α → α → Prop} {f : α → β} {a : α}
+    (h : Acc (Relation.Map r f f) (f a)) : Acc r a :=
+  Subrelation.accessible @(Relation.le_onFun_map f) (InvImage.accessible f h)
 
-theorem _root_.Function.Injective.acc_map_iff {α β} {r : α → α → Prop} {f : α → β} {a : α}
+theorem _root_.Function.Injective.acc_map_iff {r : α → α → Prop} {f : α → β} {a : α}
     (hf : f.Injective) : Acc (Relation.Map r f f) (f a) ↔ Acc r a :=
-  ⟨Acc.of_map, Acc.ndrec fun a _ _ ↦ Acc.intro (f a) (by grind)⟩
+  ⟨.of_map, .ndrec fun a _ _ ↦ Acc.intro (f a) (by grind)⟩
 
 end Map
 
