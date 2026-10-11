@@ -163,13 +163,13 @@ instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] 
     rw [(localInverseAt x).trans_symm_eq_symm_trans_symm, (chartAt H x.out).symm.trans_assoc,
       ← (localInverseAt x).symm.trans_assoc]
     apply StructureGroupoid.locality
-    intro _ hh
+    intro h hh
     let g := smulToLocalInverseAt (mk_chartAt_symm_mem_localInverseAt_source hh)
     let t := ((chartAt H x.out).symm.source ∩ (chartAt H x.out).symm ⁻¹'
       ((g • ·) ⁻¹' (localInverseAt y).target))
     have ht : IsOpen t := (chartAt H x.out).symm.isOpen_inter_preimage <|
       (localInverseAt y).open_target.preimage (continuous_const_smul _)
-    refine ⟨_, ht, ⟨hh.1, smulToLocalInverseAt_spec _⟩, ?_⟩
+    refine ⟨t, ht, ⟨hh.1, smulToLocalInverseAt_spec _⟩, ?_⟩
     refine StructureGroupoid.restr_mem_of_eqOn (symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
       (chart_mem_maximalAtlas x.out) (chart_mem_maximalAtlas y.out) ?_ ?_) ht
       ((transitionMap_eqOn_smul x y g).mono Set.inter_subset_right).symm ?_
@@ -177,9 +177,9 @@ instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] 
       exact (ContMDiffConstSMul.contMDiff_const_smul g).contMDiffOn
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
       exact (ContMDiffConstSMul.contMDiff_const_smul g⁻¹).contMDiffOn
-    · rintro _ ⟨⟨hQ1, _, hQ4⟩, _, hh''⟩
-      refine ⟨hQ1, Set.mem_univ _, ?_⟩
-      simpa [← localInverseAt_symm_trans_eqOn_smul x y g hh''] using hQ4
+    · rintro z ⟨⟨hz₁, _, hz₂⟩, _, hz₃⟩
+      refine ⟨hz₁, Set.mem_univ _, ?_⟩
+      simpa [← localInverseAt_symm_trans_eqOn_smul x y g hz₃] using hz₂
 
 end MulAction
 
