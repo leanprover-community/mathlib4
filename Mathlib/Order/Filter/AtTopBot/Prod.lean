@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Order.Filter.AtTopBot.Basic
+
 import Mathlib.Order.Filter.Prod
 
 /-!

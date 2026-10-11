@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.SimpleFunc
 public import Mathlib.Algebra.Order.Pi
+public import Mathlib.MeasureTheory.Function.SimpleFunc
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions

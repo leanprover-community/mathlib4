@@ -8,8 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Cover.Sigma
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.CoproductSheafCondition
-import Mathlib.CategoryTheory.Sites.Preserves
 public import Mathlib.Topology.Category.TopCat.GrothendieckTopology
+
+import Mathlib.CategoryTheory.Sites.Preserves
 
 /-!
 # The big Zariski site of schemes

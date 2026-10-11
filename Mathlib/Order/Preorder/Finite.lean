@@ -6,8 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Order.Hom.Set
 public import Mathlib.Order.Minimal
+
+import Mathlib.Order.Hom.Set
 
 /-!
 # Finite preorders and finite sets in a preorder
