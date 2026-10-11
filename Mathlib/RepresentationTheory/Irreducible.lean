@@ -50,7 +50,7 @@ instance : IsSimpleModule k[G] ρ.asModule :=
 instance [Finite G] : FiniteDimensional k ρ.asModule :=
   Module.Finite.trans k[G] ρ.asModule
 
-variable {ρ} {σ}
+variable {ρ σ}
 
 open Function IntertwiningMap
 

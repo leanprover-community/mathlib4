@@ -155,6 +155,8 @@ algebraically closed field whose characteristic doesn't divide the order of the 
 theorem char_orthonormal [IsIrreducible ρ] [IsIrreducible σ] :
     (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g * σ.character g⁻¹ =
       if Nonempty (Equiv σ ρ) then ↑1 else ↑0 := by
+  have := ρ.asModuleEquiv.finiteDimensional
+  have := σ.asModuleEquiv.finiteDimensional
   cases isEmpty_or_nonempty (Equiv σ ρ)
   · rw [card_inv_mul_sum_char_mul_char_eq_finrank]
     simpa [finrank_eq_zero_of_subsingleton]
