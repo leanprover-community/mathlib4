@@ -108,8 +108,8 @@ public theorem MulAlgebraNorm.unique [CompleteSpace K] (f g : MulAlgebraNorm K L
 
 /-- A power-multiplicative algebra norm over a complete normed field is multiplicative. -/
 @[expose]
-public def AlgebraNorm.toMulAlgebraNorm [CompleteSpace K] (f : AlgebraNorm K L)
-    (hf : IsPowMul f) : MulAlgebraNorm K L where
+public def AlgebraNorm.toMulAlgebraNorm [CompleteSpace K] (f : AlgebraNorm K L) (hf : IsPowMul f) :
+    MulAlgebraNorm K L where
   __ := f
   map_one' := by simpa [map_ne_zero_iff_ne_zero, sq] using hf 1 one_le_two
   map_mul' x y := by
@@ -119,3 +119,15 @@ public def AlgebraNorm.toMulAlgebraNorm [CompleteSpace K] (f : AlgebraNorm K L)
       have hg : IsPowMul g := seminormFromConst_isPowMul hx hf
       rw [hf.unique hg]
       exact seminormFromConst_const_mul hx hf y
+
+@[simp]
+public theorem AlgebraNorm.coe_toMulAlgebraNorm
+    [CompleteSpace K] (f : AlgebraNorm K L) (hf : IsPowMul f) :
+    ⇑(f.toMulAlgebraNorm hf) = f :=
+  rfl
+
+@[simp]
+public theorem AlgebraNorm.toAlgebraNorm_toMulAlgebraNorm
+    [CompleteSpace K] (f : AlgebraNorm K L) (hf : IsPowMul f) :
+    (f.toMulAlgebraNorm hf).toAlgebraNorm = f :=
+  rfl

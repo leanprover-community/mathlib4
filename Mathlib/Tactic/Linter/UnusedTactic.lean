@@ -74,9 +74,6 @@ abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) BaseIO
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
 #allow_unused_tactic!
-  Lean.Parser.Term.byTactic
-  Lean.Parser.Tactic.tacticSeq
-  Lean.Parser.Tactic.tacticSeq1Indented
   Lean.Parser.Tactic.tacticTry_
   -- the following `SyntaxNodeKind`s play a role in silencing `test`s
   Lean.Parser.Tactic.guardHyp
