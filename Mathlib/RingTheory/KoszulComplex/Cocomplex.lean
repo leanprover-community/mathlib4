@@ -178,10 +178,10 @@ variable {R}
 open TensorProduct
 
 lemma exteriorPower.baseChangeIso_comm_aux (S : Type w) [CommRing S] [Algebra R S] (x : M) (i : ℕ) :
-    (exteriorPower.baseChangeIso R M S (i + 1)).toLinearMap.comp
+    (exteriorPower.baseChangeEquiv R M S (i + 1)).toLinearMap.comp
     ((koszulCocomplex.d R M x i).baseChange S) =
     (koszulCocomplex.d S (S ⊗[R] M) (1 ⊗ₜ[R] x) i).comp
-    (exteriorPower.baseChangeIso R M S i).toLinearMap := by
+    (exteriorPower.baseChangeEquiv R M S i).toLinearMap := by
   ext m
   rw [Subtype.val_inj]
   have : ((TensorProduct.mk R S M) 1) ∘ Matrix.vecCons x m =
@@ -190,7 +190,7 @@ lemma exteriorPower.baseChangeIso_comm_aux (S : Type w) [CommRing S] [Algebra R 
     rcases Fin.eq_zero_or_eq_succ j with rfl|⟨i, rfl⟩
     · simp
     · simp
-  simp [exteriorPower.baseChangeIso_apply_tmul, koszulCocomplex.d_apply_ιMulti, this]
+  simp [exteriorPower.baseChangeEquiv_apply_tmul, koszulCocomplex.d_apply_ιMulti, this]
 
 instance (T : Type v) [CommRing T] (g : R →+* T) :
     (ModuleCat.extendScalars.{u, v, u} g).Additive where
@@ -208,7 +208,7 @@ noncomputable def baseChangeIso {M : Type u} [AddCommGroup M] [Module R M] (x : 
       (koszulCocomplex R x) ≅ koszulCocomplex S ((1 : S) ⊗ₜ[R] x) :=
   let := f.toAlgebra
   HomologicalComplex.Hom.isoOfComponents
-    (fun i ↦ (exteriorPower.baseChangeIso R M S i).toModuleIso) (fun i j hij ↦ by
+    (fun i ↦ (exteriorPower.baseChangeEquiv R M S i).toModuleIso) (fun i j hij ↦ by
       simp only [ComplexShape.up_Rel] at hij
       subst hij
       simp only [koszulCocomplex, LinearEquiv.toModuleIso_hom, CochainComplex.of_d,

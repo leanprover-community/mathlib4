@@ -192,23 +192,23 @@ open TensorProduct
 universe w in
 lemma exteriorPower.baseChangeIso_comm_aux (S : Type w) [CommRing S] [Algebra R S] (φ : M →ₗ[R] R)
     (i : ℕ) :
-    (exteriorPower.baseChangeIso R M S i).toLinearMap.comp
+    (exteriorPower.baseChangeEquiv R M S i).toLinearMap.comp
       ((koszulComplex.d φ i).baseChange S) =
         (koszulComplex.d ((TensorProduct.AlgebraTensorModule.rid R S S).toLinearMap.comp
-          (φ.baseChange S)) i).comp (exteriorPower.baseChangeIso R M S (i + 1)).toLinearMap := by
+          (φ.baseChange S)) i).comp (exteriorPower.baseChangeEquiv R M S (i + 1)).toLinearMap := by
   ext m
   simp only [koszulComplex.d, AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp,
     LinearMap.compAlternatingMap_apply, curry_apply, LinearMap.coe_comp,
     LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Function.comp_apply,
     LinearMap.baseChange_tmul, exteriorPower.alternatingMapLinearEquiv_apply_ιMulti,
-    exteriorPower.baseChangeIso_apply_tmul, SetLike.coe_eq_coe]
+    exteriorPower.baseChangeEquiv_apply_tmul, SetLike.coe_eq_coe]
   trans ∑ j : Fin (i + 1), (((-1 : S) ^ (j : ℕ)) * algebraMap R S (φ (m j))) •
     exteriorPower.ιMulti S i ((TensorProduct.mk R S M 1) ∘ j.removeNth m)
   · rw [koszulComplex.dAlternating_apply, TensorProduct.tmul_sum, map_sum]
     congr
     funext j
     rw [tmul_smul, ← algebraMap_smul S, map_smul, map_mul, map_pow, map_neg, map_one,
-      exteriorPower.baseChangeIso_apply_tmul]
+      exteriorPower.baseChangeEquiv_apply_tmul]
   · rw [koszulComplex.dAlternating_apply]
     congr
     funext j
@@ -234,7 +234,7 @@ noncomputable def baseChangeIso {M : Type u} [AddCommGroup M] [Module R M] (φ :
         (φ.baseChange S)) :=
   let := f.toAlgebra
   HomologicalComplex.Hom.isoOfComponents
-    (fun i ↦ (exteriorPower.baseChangeIso R M S i).toModuleIso) (fun i j hij ↦ by
+    (fun i ↦ (exteriorPower.baseChangeEquiv R M S i).toModuleIso) (fun i j hij ↦ by
       simp only [ComplexShape.down_Rel] at hij
       subst hij
       simp only [koszulComplex, LinearEquiv.toModuleIso_hom, ChainComplex.of_d,
