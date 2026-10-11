@@ -146,10 +146,11 @@ end orbitRel.Quotient
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  (I : ModelWithCorners 𝕜 E H) {n : ℕ∞ω} [IsManifold I n M]
+  {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} [IsManifold I n M]
 
 open orbitRel.Quotient IsManifold
 
+variable (I) in
 /-- The quotient of a `C^n` manifold by a free, properly discontinuous group action such that the
 scalar multiplication `fun x : M ↦ g • x` is `C^n` is itself a `C^n` manifold, for the charts of
 `MulAction.instChartedSpaceQuotient`. -/
