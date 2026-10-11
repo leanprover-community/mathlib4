@@ -47,7 +47,7 @@ theorem prod_top_top : prod (⊤ : Ideal R) (⊤ : Ideal S) = ⊤ :=
 
 @[simp]
 theorem prod_bot_bot : prod (⊥ : Ideal R) (⊥ : Ideal S) = ⊥ :=
-  SetLike.coe_injective <| Set.singleton_prod_singleton
+  SetLike.coe_injective Set.singleton_prod_singleton
 
 @[gcongr]
 theorem prod_mono {I₁ I₂ : Ideal R} {J₁ J₂ : Ideal S} (hI : I₁ ≤ I₂) (hJ : J₁ ≤ J₂) :

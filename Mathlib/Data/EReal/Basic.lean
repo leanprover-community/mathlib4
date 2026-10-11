@@ -194,12 +194,12 @@ protected theorem mul_comm (x y : EReal) : x * y = y * x := by
 protected theorem one_mul : ∀ x : EReal, 1 * x = x
   | ⊤ => ite_eq_left one_pos
   | ⊥ => ite_eq_left one_pos
-  | (x : ℝ) => congr_arg Real.toEReal (one_mul x)
+  | (x : ℝ) => congr($(one_mul x).toEReal)
 
 protected theorem zero_mul : ∀ x : EReal, 0 * x = 0
   | ⊤ => (ite_eq_right (lt_irrefl _)).trans (ite_eq_left rfl)
   | ⊥ => (ite_eq_right (lt_irrefl _)).trans (ite_eq_left rfl)
-  | (x : ℝ) => congr_arg Real.toEReal (zero_mul x)
+  | (x : ℝ) => congr($(zero_mul x).toEReal)
 
 instance : MulZeroOneClass EReal where
   one_mul := EReal.one_mul
@@ -347,7 +347,7 @@ protected theorem coe_neg' {x : ℝ} : (x : EReal) < 0 ↔ x < 0 :=
   EReal.coe_lt_coe_iff
 
 lemma toReal_eq_zero_iff {x : EReal} : x.toReal = 0 ↔ x = 0 ∨ x = ⊤ ∨ x = ⊥ := by
-  cases x <;> norm_num
+  cases x <;> simp
 
 lemma toReal_ne_zero_iff {x : EReal} : x.toReal ≠ 0 ↔ x ≠ 0 ∧ x ≠ ⊤ ∧ x ≠ ⊥ := by
   simp only [ne_eq, toReal_eq_zero_iff, not_or]

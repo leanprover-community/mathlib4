@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Cumulative distribution function of a real probability measure
