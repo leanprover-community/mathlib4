@@ -35,7 +35,7 @@ public theorem exists_pow_eq_of_isAlgebraic {x : A} (hx : IsAlgebraic K x) :
       ((congrArg v hne).trans (map_zero v))
   rw [Algebra.smul_def, Algebra.smul_def, map_mul, map_mul, map_pow, map_pow] at hv
   wlog hji : j < i generalizing i j with ih
-  · exact (ih j i hij.symm hj0 hi0 hv.symm ((lt_trichotomy i j).resolve_right (·.elim hij hji)))
+  · exact ih j i hij.symm hj0 hi0 hv.symm (by order)
   refine ⟨i - j, p.coeff j / p.coeff i, Nat.sub_ne_zero_of_lt hji, ?_⟩
   rw [pow_sub_of_lt (v x) hji, ← comap_apply, map_div₀, comap_apply, comap_apply, ← div_eq_mul_inv]
   refine (div_eq_div_iff ?_ ?_).2 ((mul_comm _ _).trans hv)
