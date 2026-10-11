@@ -101,7 +101,8 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
   simp_rw [Algebra.mem_adjoin_iff]
   intro x hx
   -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
-  cases p; cases hp
+  cases p
+  · cases hp
   simp only [g_poly] at aux
   refine Subring.closure_induction ?_ ?_ ?_ ?_ ?_ ?_ hx
     <;> simp_rw [mem_rootSet_of_ne aux]
@@ -140,7 +141,8 @@ theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
     exact (ZMod.card p).symm
   have h2 := FiniteField.X_pow_card_sub_X_natDegree_eq (ZMod p) hp
   -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
-  cases p; cases hp
+  cases p
+  · cases hp
   rw [splits_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ, h2, ZMod.card]
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
