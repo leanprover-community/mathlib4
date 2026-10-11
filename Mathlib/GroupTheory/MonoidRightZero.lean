@@ -16,10 +16,27 @@ An element `p` of a monoid `M` is a *right zero* if `u * p = p` for every `u : M
 
 ## Main results
 
-* `Monoid.exists_forall_mul_eq_self_of_finite`: a finite monoid in which any two principal right
-  ideals meet, and which has no nontrivial morphism to a group, has a right zero.
-* `Monoid.exists_forall_mul_eq_self_iff_of_finite`: for a finite monoid, these two conditions
-  together are equivalent to having a right zero.
+* `Monoid.exists_forall_mul_eq_self_of_finite`: a finite monoid in which any two
+  principal right ideals meet, and which has no nontrivial morphism to a group, has a
+  right zero.
+* `Monoid.exists_forall_mul_eq_self_iff_of_finite`: for a finite monoid the two
+  conditions together are equivalent to having a right zero.
+
+Neither of the two conditions can be dropped. A nontrivial finite group satisfies the
+first and has no right zero. The monoid `{1, a, b}` with `a`, `b` left zeros
+(`x * y = x` for `x ≠ 1`) satisfies the second and has no right zero.
+
+## Proof sketch
+
+Finiteness and the meeting condition give `p` lying in every principal right ideal
+`u * M`. Then `E = p * M` satisfies `E ⊆ u * E` for every `u`, hence `E = u * E`
+since `E` is finite, so left multiplication defines a monoid morphism
+`M →* Equiv.Perm E`. It is trivial by hypothesis, so `u * p = p`.
+
+## References
+
+The statement is Proposition 1 of an unpublished manuscript of A. Grothendieck
+(Université de Montpellier, fonds Grothendieck, cote 158, pp. 44–46).
 -/
 
 public section
