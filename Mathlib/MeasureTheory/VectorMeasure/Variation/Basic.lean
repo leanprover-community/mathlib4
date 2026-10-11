@@ -29,7 +29,7 @@ such vector-valued measures.
 
 ## References
 
-* [Walter Rudin, Real and Complex Analysis.][rudin2006real]
+* [Walter Rudin, Real and Complex Analysis.][rudin1987]
 
 -/
 

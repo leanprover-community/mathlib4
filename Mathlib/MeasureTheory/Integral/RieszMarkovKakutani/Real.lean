@@ -40,7 +40,7 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 
 ## References
 
-* [Walter Rudin, Real and Complex Analysis.][rudin2006real]
+* [Walter Rudin, Real and Complex Analysis.][rudin1987]
 -/
 
 @[expose] public section
