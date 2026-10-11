@@ -358,9 +358,9 @@ variable (f g : A ⟶ B) (s : B ⟶ A) {sl : s ≫ f = 𝟙 B} {sr : s ≫ g = �
 
 @[simp] lemma reflexivePair_obj_one : (reflexivePair f g s sl sr).obj one = A := rfl
 
-@[simp] lemma reflexivePair_map_right : (reflexivePair f g s sl sr).map .left = f := rfl
+@[simp] lemma reflexivePair_map_left : (reflexivePair f g s sl sr).map .left = f := rfl
 
-@[simp] lemma reflexivePair_map_left : (reflexivePair f g s sl sr).map .right = g := rfl
+@[simp] lemma reflexivePair_map_right : (reflexivePair f g s sl sr).map .right = g := rfl
 
 @[simp] lemma reflexivePair_map_reflexion : (reflexivePair f g s sl sr).map .reflexion = s := rfl
 
