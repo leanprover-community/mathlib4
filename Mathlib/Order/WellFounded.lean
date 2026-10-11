@@ -81,18 +81,14 @@ theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α �
     [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
   __ := hf.trichotomous_onFun r
 
-theorem map {f : α → β} : WellFounded (Relation.Map r f f) → WellFounded r :=
+theorem of_map {f : α → β} : WellFounded (Relation.Map r f f) → WellFounded r :=
   fun h => (InvImage.wf f h).mono (Relation.le_onFun_map f)
 
 theorem _root_.Function.Injective.wellFounded_map_iff {f : α → β} (hf : f.Injective) :
     WellFounded (Relation.Map r f f) ↔ WellFounded r := by
-  refine ⟨map, ?_⟩
-  simp_rw [wellFounded_iff_isEmpty_descending_chain, ← @not_imp_not (IsEmpty _), not_isEmpty_iff,
-    nonempty_subtype]
-  intro ⟨c, hc⟩
-  refine ⟨(Set.rangeSplitting f ⟨c ·, by grind⟩), fun n ↦ ?_⟩
-  have ⟨a, b, ⟨h, ha, hb⟩⟩ := hc n
-  convert h <;> apply hf <;> simp [ha, hb, Set.apply_rangeSplitting]
+  refine ⟨of_map, fun h ↦ ⟨fun c ↦ ⟨c, ?_⟩⟩⟩
+  rintro _ ⟨a, b, hab, rfl, rfl⟩
+  exact hf.acc_map_iff.mpr (h.apply a)
 
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
