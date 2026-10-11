@@ -615,27 +615,30 @@ end perpBisector
 
 section hyperplane
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
 
 open scoped RealInnerProductSpace
 
-/-- The distance from a point `x` to the hyperplane `{y | ⟪n, y⟫ = c}` with normal vector `n`
-is `|⟪n, x⟫ - c| / ‖n‖`. -/
-theorem infDist_setOf_inner_eq {n : V} (hn : n ≠ 0) (c : ℝ) (x : V) :
-    Metric.infDist x {y | ⟪n, y⟫ = c} = |⟪n, x⟫ - c| / ‖n‖ := by
-  have hn' : 0 < ‖n‖ := norm_pos_iff.2 hn
-  set t := (⟪n, x⟫ - c) / ‖n‖ ^ 2
-  have hy : x - t • n ∈ {y | ⟪n, y⟫ = c} := by
-    simp only [Set.mem_ofPred_eq, inner_sub_right, inner_smul_right, real_inner_self_eq_norm_sq, t]
-    field_simp
-    ring
-  refine le_antisymm ((Metric.infDist_le_dist_of_mem hy).trans_eq ?_)
-    ((Metric.le_infDist ⟨_, hy⟩).2 fun y hy ↦ ?_)
-  · rw [dist_eq_norm, sub_sub_cancel, norm_smul, Real.norm_eq_abs, abs_div,
-      abs_of_pos (pow_pos hn' 2)]
-    field_simp
-  · rw [div_le_iff₀ hn', dist_eq_norm, mul_comm, ← hy.out, ← inner_sub_right]
-    exact abs_real_inner_le_norm n (x - y)
+/-- The distance from a point `p` to its orthogonal projection on an affine subspace `s` whose
+orthogonal complement is spanned by `n` (a hyperplane with normal vector `n`, when `n ≠ 0`) is
+`|⟪n, p -ᵥ q⟫| / ‖n‖`, for any point `q` of `s`. -/
+theorem dist_orthogonalProjection_eq_abs_inner_div_norm (s : AffineSubspace ℝ P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] {n : V} (hn : s.directionᗮ = ℝ ∙ n) {q : P}
+    (hq : q ∈ s) (p : P) :
+    dist p (orthogonalProjection s p) = |⟪n, p -ᵥ q⟫| / ‖n‖ := by
+  obtain ⟨t, ht⟩ := Submodule.mem_span_singleton.1
+    (hn ▸ vsub_orthogonalProjection_mem_direction_orthogonal s p)
+  have hn' : n ∈ s.directionᗮ := hn ▸ Submodule.mem_span_singleton_self n
+  have h0 : ⟪n, (orthogonalProjection s p : P) -ᵥ q⟫ = 0 :=
+    s.direction.inner_left_of_mem_orthogonal
+      (AffineSubspace.vsub_mem_direction (orthogonalProjection_mem p) hq) hn'
+  rw [dist_eq_norm_vsub V, ← vsub_add_vsub_cancel p (orthogonalProjection s p : P) q,
+    inner_add_right, h0, add_zero, ← ht, norm_smul, inner_smul_right,
+    real_inner_self_eq_norm_sq, abs_mul, abs_of_nonneg (sq_nonneg ‖n‖), Real.norm_eq_abs]
+  rcases eq_or_ne n 0 with rfl | hn0
+  · simp
+  · field_simp
 
 end hyperplane
 
