@@ -6,8 +6,8 @@ Authors: Felix Weilacher
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Logic.Equiv.PartialEquiv
 
 /-!
 # Equidecompositions

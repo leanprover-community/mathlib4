@@ -5,9 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 
 /-!
 # Fintype instances relating to units

@@ -66,8 +66,6 @@ public section
 open Set Function
 open scoped Topology ContDiff Manifold
 
-noncomputable section
-
 section Manifold
 
 variable {E F H M : Type*}
