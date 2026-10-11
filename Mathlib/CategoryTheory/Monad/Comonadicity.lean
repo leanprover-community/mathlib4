@@ -26,6 +26,8 @@ comonadicity theorem:
   `CategoryTheory.Monad.createsFSplitEqualizersOfComonadic`)
 * `C` has and `F` preserves `F`-split equalizers, and `F` reflects isomorphisms, see
   `CategoryTheory.Monad.comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms`
+* `Comonad.isEquivalence_comparison_iff`: the comparison functor is an equivalence if and only if
+  `F` reflects isomorphisms and `C` has and `F` preserves equalizers of `F`-cosplit pairs.
 * `C` has and `F` preserves coreflexive equalizers, and `F` reflects isomorphisms, see
   `CategoryTheory.Monad.comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms`
 
@@ -352,6 +354,33 @@ def comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms [F.ReflectsIso
     have := HasEqualizerOfIsCosplitPair.out F f g
     apply reflectsLimit_of_reflectsIsomorphisms⟩
   apply comonadicOfHasPreservesReflectsFSplitEqualizers adj
+
+instance (priority := 100) reflectsIsomorphisms_of_comonadicLeftAdjoint
+    [ComonadicLeftAdjoint F] : F.ReflectsIsomorphisms where
+  reflects {X Y} φ hφ := by
+    let adj := comonadicAdjunction F
+    have : IsIso ((Comonad.forget adj.toComonad).map ((Comonad.comparison adj).map φ)) := hφ
+    have := isIso_of_reflects_iso ((Comonad.comparison adj).map φ) (Comonad.forget _)
+    exact isIso_of_fully_faithful (Comonad.comparison adj) φ
+
+/-- **Beck's comonadicity theorem**, in the form of a characterization: the comparison functor
+of `adj : F ⊣ G` is an equivalence if and only if `F` reflects isomorphisms and, for every
+`F`-cosplit pair `u, v`, the equalizer of `u` and `v` exists and is preserved by `F`. -/
+theorem isEquivalence_comparison_iff : (Comonad.comparison adj).IsEquivalence ↔
+    F.ReflectsIsomorphisms ∧ ∀ ⦃X Y : C⦄ (u v : X ⟶ Y), F.IsCosplitPair u v →
+      HasEqualizer u v ∧ PreservesLimit (parallelPair u v) F := by
+  refine ⟨fun h ↦ ?_, fun ⟨_, h⟩ ↦ ?_⟩
+  · let _ : ComonadicLeftAdjoint F := ⟨G, adj, h⟩
+    refine ⟨inferInstance, fun X Y u v _ ↦ ?_⟩
+    have := createsFSplitEqualizersOfComonadic (F := F) u v
+    have : HasLimit (parallelPair u v ⋙ F) := by
+      rw [hasLimit_iff_of_iso (diagramIsoParallelPair _)]
+      exact inferInstanceAs <| HasEqualizer (F.map u) (F.map v)
+    have : HasEqualizer u v := hasLimit_of_created (parallelPair u v) F
+    exact ⟨this, inferInstance⟩
+  · have : HasEqualizerOfIsCosplitPair F := ⟨fun u v _ ↦ (h u v inferInstance).1⟩
+    have : PreservesLimitOfIsCosplitPair F := ⟨fun u v _ ↦ (h u v inferInstance).2⟩
+    exact (comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms adj).eqv
 
 end BeckComonadicity
 

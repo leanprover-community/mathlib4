@@ -27,6 +27,8 @@ show three versions of Beck's monadicity theorem, and the reflexive (crude) mona
   `CategoryTheory.Monad.monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms`
 * `D` has and `G` preserves reflexive coequalizers, and `G` reflects isomorphisms, see
   `CategoryTheory.Monad.monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms`
+* `Monad.isEquivalence_comparison_iff`: the comparison functor is an equivalence if and only if
+  `G` reflects isomorphisms and `D` has and `G` preserves coequalizers of `G`-split pairs.
 
 This file has been adapted to `Mathlib/CategoryTheory/Monad/Comonadicity.lean`.
 Please try to keep them in sync.
@@ -370,6 +372,33 @@ def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [G.ReflectsIso
     have := HasCoequalizerOfIsSplitPair.out G f g
     apply reflectsColimit_of_reflectsIsomorphisms⟩
   apply monadicOfHasPreservesReflectsGSplitCoequalizers adj
+
+instance (priority := 100) reflectsIsomorphisms_of_monadicRightAdjoint
+    [MonadicRightAdjoint G] : G.ReflectsIsomorphisms where
+  reflects {X Y} φ hφ := by
+    let adj := monadicAdjunction G
+    have : IsIso ((Monad.forget adj.toMonad).map ((Monad.comparison adj).map φ)) := hφ
+    have := isIso_of_reflects_iso ((Monad.comparison adj).map φ) (Monad.forget _)
+    exact isIso_of_fully_faithful (Monad.comparison adj) φ
+
+/-- **Beck's monadicity theorem**, in the form of a characterization: the comparison functor
+of `adj : F ⊣ G` is an equivalence if and only if `G` reflects isomorphisms and, for every
+`G`-split pair `u, v`, the coequalizer of `u` and `v` exists and is preserved by `G`. -/
+theorem isEquivalence_comparison_iff : (Monad.comparison adj).IsEquivalence ↔
+    G.ReflectsIsomorphisms ∧ ∀ ⦃X Y : D⦄ (u v : X ⟶ Y), G.IsSplitPair u v →
+      HasCoequalizer u v ∧ PreservesColimit (parallelPair u v) G := by
+  refine ⟨fun h ↦ ?_, fun ⟨_, h⟩ ↦ ?_⟩
+  · let _ : MonadicRightAdjoint G := ⟨F, adj, h⟩
+    refine ⟨inferInstance, fun X Y u v _ ↦ ?_⟩
+    have := createsGSplitCoequalizersOfMonadic G u v
+    have : HasColimit (parallelPair u v ⋙ G) := by
+      rw [hasColimit_iff_of_iso (diagramIsoParallelPair _)]
+      exact inferInstanceAs <| HasCoequalizer (G.map u) (G.map v)
+    have : HasCoequalizer u v := hasColimit_of_created (parallelPair u v) G
+    exact ⟨this, inferInstance⟩
+  · have : HasCoequalizerOfIsSplitPair G := ⟨fun u v _ ↦ (h u v inferInstance).1⟩
+    have : PreservesColimitOfIsSplitPair G := ⟨fun u v _ ↦ (h u v inferInstance).2⟩
+    exact (monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms adj).eqv
 
 end BeckMonadicity
 
