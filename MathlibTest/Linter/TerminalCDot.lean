@@ -39,8 +39,28 @@ Note: This linter can be disabled with `set_option linter.style.terminalCDot fal
 example : True := by
   · · exact .intro
 
+/--
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+
+Note: This linter can be disabled with `set_option linter.style.terminalCDot false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+
+Note: This linter can be disabled with `set_option linter.style.terminalCDot false`
+-/
+#guard_msgs in
+example : True ∧ True := by
+  constructor <;>
+    · simp
+
 -- Multiple focus dots in a row is allowed.
 example (n : Nat) : True := by
   by_cases hn : n > 2
   · trivial
   · trivial
+
+-- A focus dot that looks terminal but isn't is allowed
+example : True ∧ True := by
+  constructor
+  (· simp)
+  simp

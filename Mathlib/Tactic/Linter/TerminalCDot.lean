@@ -45,7 +45,7 @@ register_option linter.style.terminalCDot : Bool := {
 @[tacticAnalysis linter.style.terminalCDot, inherit_doc linter.style.terminalCDot]
 def terminalCDotLinter : TacticAnalysis.Config where run seq := do
   let some last := seq.back? | return
-  unless last.tacI.stx.isOfKind ``cdot do return
+  unless last.tacI.goalsAfter.isEmpty && last.tacI.stx.isOfKind ``cdot do return
   if h : 2 ≤ seq.size then
     if seq[seq.size - 2].tacI.stx.isOfKind ``cdot then
       return
