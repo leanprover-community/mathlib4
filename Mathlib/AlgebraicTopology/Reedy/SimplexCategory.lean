@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.Reedy.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
-public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.SuccPred.Nat
 
 /-!
 # The Reedy structure on the simplex category
