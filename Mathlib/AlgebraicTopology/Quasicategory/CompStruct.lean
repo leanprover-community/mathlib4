@@ -76,12 +76,12 @@ noncomputable def assoc'
     CompStruct e₀₁ e₁₃ e₀₃ :=
   Truncated.Edge.assoc' h₀₂ h₁₃ h
 
-/-- In quasicategory, two left homotopic edges are also right homotopic. -/
+/-- In a quasicategory, two left homotopic edges are also right homotopic. -/
 noncomputable def HomotopyL.homotopyR {e e' : Edge x₀ x₁} (h : HomotopyL e e') :
     HomotopyR e e' :=
   assoc' (.idComp e) (.compId e) h
 
-/-- In quasicategory, two right homotopic edges are also left homotopic. -/
+/-- In a quasicategory, two right homotopic edges are also left homotopic. -/
 noncomputable def HomotopyR.homotopyL {e e' : Edge x₀ x₁} (h : HomotopyR e e') :
     HomotopyL e e' :=
   assoc (.idComp e) (.compId e) h
