@@ -248,7 +248,7 @@ theorem lift_eq_proj (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
 
 @[to_additive (attr := reassoc (attr := simp))]
 lemma proj_eta (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
-    eta G ≫ (forget₂ _ _).map (proj G H) = (GrpCat.ofHom <| QuotientGroup.mk' H.toSubgroup) := by
+    eta G ≫ (forget₂ _ _).map (proj G H) = GrpCat.ofHom (QuotientGroup.mk' H.toSubgroup) := by
   rw [← lift_eq_proj]
   exact lift_eta ..
 
