@@ -94,6 +94,27 @@ example : True ∧ True := by
   on_goal 1 => skip; trivial
   trivial
 
+-- The linter works correctly with `first`
+/--
+warning: Unused tactic linter: `rfl` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True := by
+  first | rfl | simp
+
+-- The linter works correctly with `try`
+/--
+warning: Unused tactic linter: `rfl` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True := by
+  try rfl
+  simp
+
 -- `<;>` leaving 0 goals
 /--
 warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
