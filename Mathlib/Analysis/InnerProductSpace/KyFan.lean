@@ -28,8 +28,9 @@ the `n` largest singular values is subadditive:
 ## References
 
 * [K. Fan, *Maximum properties and inequalities for the eigenvalues of completely continuous
-  operators*][fan1951]
-* [R. Bhatia, *Matrix Analysis*][bhatia1997], Chapter III
+  operators*][fan1951]: the maximum principle is the case `m = 1` of Theorem 1 (inequality (8)),
+  and Ky Fan's inequality is inequality (20) in the proof of Theorem 5
+* [R. Bhatia, *Matrix Analysis*][bhatia1997]
 
 ## Tags
 
