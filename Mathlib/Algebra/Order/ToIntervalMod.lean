@@ -141,12 +141,16 @@ theorem toIocMod_add_toIocDiv_zsmul (a b : α) : toIocMod hp a b + toIocDiv hp a
   rw [toIocMod, sub_add_cancel]
 
 @[simp]
-theorem toIcoDiv_zsmul_sub_toIcoMod (a b : α) : toIcoDiv hp a b • p + toIcoMod hp a b = b := by
+theorem toIcoDiv_zsmul_add_toIcoMod (a b : α) : toIcoDiv hp a b • p + toIcoMod hp a b = b := by
   rw [add_comm, toIcoMod_add_toIcoDiv_zsmul]
 
+@[deprecated (since := "2026-10-11")] alias toIcoDiv_zsmul_sub_toIcoMod := toIcoDiv_zsmul_add_toIcoMod
+
 @[simp]
-theorem toIocDiv_zsmul_sub_toIocMod (a b : α) : toIocDiv hp a b • p + toIocMod hp a b = b := by
+theorem toIocDiv_zsmul_add_toIocMod (a b : α) : toIocDiv hp a b • p + toIocMod hp a b = b := by
   rw [add_comm, toIocMod_add_toIocDiv_zsmul]
+
+@[deprecated (since := "2026-10-11")] alias toIocDiv_zsmul_sub_toIocMod := toIocDiv_zsmul_add_toIocMod
 
 theorem toIcoMod_eq_iff : toIcoMod hp a b = c ↔ c ∈ Set.Ico a (a + p) ∧ ∃ z : ℤ, b = c + z • p := by
   refine
@@ -997,12 +1001,16 @@ theorem toIocMod_add_toIocDiv_mul (a b : R) : toIocMod hp a b + toIocDiv hp a b 
   simpa using toIocMod_add_toIocDiv_zsmul hp a b
 
 @[simp]
-theorem toIcoDiv_mul_sub_toIcoMod (a b : R) : toIcoDiv hp a b * p + toIcoMod hp a b = b := by
+theorem toIcoDiv_mul_add_toIcoMod (a b : R) : toIcoDiv hp a b * p + toIcoMod hp a b = b := by
   rw [add_comm, toIcoMod_add_toIcoDiv_mul]
 
+@[deprecated (since := "2026-10-11")] alias toIcoDiv_mul_sub_toIcoMod := toIcoDiv_mul_add_toIcoMod
+
 @[simp]
-theorem toIocDiv_mul_sub_toIocMod (a b : R) : toIocDiv hp a b * p + toIocMod hp a b = b := by
+theorem toIocDiv_mul_add_toIocMod (a b : R) : toIocDiv hp a b * p + toIocMod hp a b = b := by
   rw [add_comm, toIocMod_add_toIocDiv_mul]
+
+@[deprecated (since := "2026-10-11")] alias toIocDiv_mul_sub_toIocMod := toIocDiv_mul_add_toIocMod
 
 @[simp]
 theorem toIcoDiv_add_intCast_mul (a b : R) (m : ℤ) :
