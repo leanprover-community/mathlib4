@@ -236,7 +236,7 @@ finite index normal subgroups. -/
 finite index normal subgroups. -/]
 noncomputable def proj (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
     completion G ⟶ ofFiniteGrp <| .of (G ⧸ H.toSubgroup) :=
-  limitProj _ _
+  limitProj ..
 
 @[to_additive (attr := reassoc (attr := simp))]
 lemma proj_eta (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
