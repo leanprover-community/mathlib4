@@ -204,7 +204,7 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
     (of fun i w ↦ (mult (f w) : ℝ) * (f w (u i)).log) ?_ 0 (f.symm w₂)))
   · rw [← det_reindex_self e₁, ← det_reindex_self g]
     · rw [Units.smul_def, abs_zsmul, Int.abs_negOnePow, one_smul] at h
-      convert! h
+      convert h
       · ext; simp only [ne_eq, reindex_apply, submatrix_apply, of_apply, Equiv.apply_symm_apply,
           Equiv.trans_apply, Fin.succAbove_zero, id_eq, finSuccEquiv_succ,
           Equiv.optionSubtype_symm_apply_apply_coe, f]

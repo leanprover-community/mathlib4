@@ -86,6 +86,18 @@ theorem DifferentiableOn.const_smul (h : DifferentiableOn 𝕜 f s) (c : R) :
 theorem Differentiable.const_smul (h : Differentiable 𝕜 f) (c : R) :
     Differentiable 𝕜 (c • f) := fun x => (h x).const_smul c
 
+/-- If `c` is invertible, `c • f` is differentiable at `x` within `s` if and only if `f` is. -/
+lemma differentiableWithinAt_smul_iff (c : R) [Invertible c] :
+    DifferentiableWithinAt 𝕜 (c • f) s x ↔ DifferentiableWithinAt 𝕜 f s x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.const_smul c⟩
+  apply (h.const_smul ⅟c).congr_of_eventuallyEq ?_ (by simp)
+  filter_upwards with x using by simp
+
+/-- If `c` is invertible, `c • f` is differentiable at `x` if and only if `f` is. -/
+lemma differentiableAt_smul_iff (c : R) [Invertible c] :
+    DifferentiableAt 𝕜 (c • f) x ↔ DifferentiableAt 𝕜 f x := by
+  rw [← differentiableWithinAt_univ, differentiableWithinAt_smul_iff, differentiableWithinAt_univ]
+
 theorem fderivWithin_fun_const_smul (hxs : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f s x) (c : R) :
     fderivWithin 𝕜 (fun y => c • f y) s x = c • fderivWithin 𝕜 f s x :=
@@ -95,13 +107,6 @@ theorem fderivWithin_const_smul (hxs : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f s x) (c : R) :
     fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x :=
   fderivWithin_fun_const_smul hxs h c
-
-/-- If `c` is invertible, `c • f` is differentiable at `x` within `s` if and only if `f` is. -/
-lemma differentiableWithinAt_smul_iff (c : R) [Invertible c] :
-    DifferentiableWithinAt 𝕜 (c • f) s x ↔ DifferentiableWithinAt 𝕜 f s x := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.const_smul c⟩
-  apply (h.const_smul ⅟c).congr_of_eventuallyEq ?_ (by simp)
-  filter_upwards with x using by simp
 
 /-- A version of `fderivWithin_const_smul` without differentiability hypothesis:
 in return, the constant `c` must be invertible, i.e. if `R` is a field. -/
@@ -123,11 +128,6 @@ theorem fderiv_fun_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
 theorem fderiv_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x :=
   (h.hasFDerivAt.const_smul c).fderiv
-
-/-- If `c` is invertible, `c • f` is differentiable at `x` if and only if `f` is. -/
-lemma differentiableAt_smul_iff (c : R) [Invertible c] :
-    DifferentiableAt 𝕜 (c • f) x ↔ DifferentiableAt 𝕜 f x := by
-  rw [← differentiableWithinAt_univ, differentiableWithinAt_smul_iff, differentiableWithinAt_univ]
 
 /-- A version of `fderiv_const_smul` without differentiability hypothesis: in return, the constant
 `c` must be invertible, i.e. if `R` is a field. -/
@@ -241,6 +241,10 @@ theorem fderiv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 
 theorem fderiv_fun_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (fun y => f y + g y) x = fderiv 𝕜 f x + fderiv 𝕜 g x :=
   fderiv_add hf hg
+
+end Add
+
+section AddConst
 
 @[simp]
 theorem hasFDerivAtFilter_add_const_iff (c : F) :
@@ -384,7 +388,7 @@ theorem fderivWithin_const_add (c : F) :
 theorem fderiv_const_add (c : F) : fderiv 𝕜 (fun y => c + f y) x = fderiv 𝕜 f x := by
   simp only [add_comm c, fderiv_add_const]
 
-end Add
+end AddConst
 
 section Sum
 
@@ -393,86 +397,45 @@ section Sum
 
 variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
 
-@[fun_prop]
-theorem HasStrictFDerivAt.fun_sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
-    HasStrictFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
-  simp only [hasStrictFDerivAt_iff_isLittleO] at *
-  convert! IsLittleO.sum h
-  simp [Finset.sum_sub_distrib]
-
-@[fun_prop]
-theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
-    HasStrictFDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x := by
-  convert! HasStrictFDerivAt.fun_sum h; simp
-
-theorem HasFDerivAtFilter.fun_sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
-    HasFDerivAtFilter (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) L := by
-  simp only [hasFDerivAtFilter_iff_isLittleO] at *
-  convert! IsLittleO.sum h
-  simp
-
+@[to_fun]
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
     HasFDerivAtFilter (∑ i ∈ u, A i) (∑ i ∈ u, A' i) L := by
-  convert! HasFDerivAtFilter.fun_sum h; simp
+  simp only [hasFDerivAtFilter_iff_isLittleO] at *
+  refine (IsLittleO.sum h).congr_left ?_
+  simp
 
-@[fun_prop]
-theorem HasFDerivWithinAt.fun_sum (h : ∀ i ∈ u, HasFDerivWithinAt (A i) (A' i) s x) :
-    HasFDerivWithinAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) s x :=
-  HasFDerivAtFilter.fun_sum h
+@[to_fun (attr := fun_prop)]
+theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
+    HasStrictFDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x :=
+  HasFDerivAtFilter.sum h
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasFDerivWithinAt.sum (h : ∀ i ∈ u, HasFDerivWithinAt (A i) (A' i) s x) :
     HasFDerivWithinAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) s x :=
   HasFDerivAtFilter.sum h
 
-@[fun_prop]
-theorem HasFDerivAt.fun_sum (h : ∀ i ∈ u, HasFDerivAt (A i) (A' i) x) :
-    HasFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x :=
-  HasFDerivAtFilter.fun_sum h
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasFDerivAt.sum (h : ∀ i ∈ u, HasFDerivAt (A i) (A' i) x) :
     HasFDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x :=
   HasFDerivAtFilter.sum h
 
-@[fun_prop]
-theorem DifferentiableWithinAt.fun_sum (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
-    DifferentiableWithinAt 𝕜 (fun y => ∑ i ∈ u, A i y) s x :=
-  HasFDerivWithinAt.differentiableWithinAt <|
-    HasFDerivWithinAt.fun_sum fun i hi => (h i hi).hasFDerivWithinAt
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableWithinAt.sum (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
     DifferentiableWithinAt 𝕜 (∑ i ∈ u, A i) s x :=
   HasFDerivWithinAt.differentiableWithinAt <|
     HasFDerivWithinAt.sum fun i hi => (h i hi).hasFDerivWithinAt
 
-@[simp, fun_prop]
-theorem DifferentiableAt.fun_sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
-    DifferentiableAt 𝕜 (fun y => ∑ i ∈ u, A i y) x :=
-  HasFDerivAt.differentiableAt <| HasFDerivAt.fun_sum fun i hi => (h i hi).hasFDerivAt
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem DifferentiableAt.sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
     DifferentiableAt 𝕜 (∑ i ∈ u, A i) x :=
   HasFDerivAt.differentiableAt <| HasFDerivAt.sum fun i hi => (h i hi).hasFDerivAt
 
-@[fun_prop]
-theorem DifferentiableOn.fun_sum (h : ∀ i ∈ u, DifferentiableOn 𝕜 (A i) s) :
-    DifferentiableOn 𝕜 (fun y => ∑ i ∈ u, A i y) s := fun x hx =>
-  DifferentiableWithinAt.fun_sum fun i hi => h i hi x hx
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.sum (h : ∀ i ∈ u, DifferentiableOn 𝕜 (A i) s) :
     DifferentiableOn 𝕜 (∑ i ∈ u, A i) s := fun x hx =>
   DifferentiableWithinAt.sum fun i hi => h i hi x hx
 
-@[simp, fun_prop]
-theorem Differentiable.fun_sum (h : ∀ i ∈ u, Differentiable 𝕜 (A i)) :
-    Differentiable 𝕜 fun y => ∑ i ∈ u, A i y :=
-  fun x => DifferentiableAt.fun_sum fun i hi => h i hi x
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem Differentiable.sum (h : ∀ i ∈ u, Differentiable 𝕜 (A i)) :
     Differentiable 𝕜 (∑ i ∈ u, A i) := fun x => DifferentiableAt.sum fun i hi => h i hi x
 
@@ -722,6 +685,10 @@ theorem fderiv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 
     fderiv 𝕜 (f - g) x = fderiv 𝕜 f x - fderiv 𝕜 g x :=
   fderiv_fun_sub hf hg
 
+end Sub
+
+section SubConst
+
 @[simp]
 theorem hasFDerivAtFilter_sub_const_iff (c : F) :
     HasFDerivAtFilter (f · - c) f' L ↔ HasFDerivAtFilter f f' L := by
@@ -839,7 +806,7 @@ theorem fderivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
 theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv 𝕜 f x := by
   simp [← fderivWithin_univ, fderivWithin_const_sub]
 
-end Sub
+end SubConst
 
 section CompAdd
 

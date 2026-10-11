@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch, Arthur Paulino
 -/
+module
 
-import Cache.Env
+public import Cache.Env
 
 /-!
 # Cache backend infrastructure
@@ -15,6 +16,8 @@ lookup chain — together with the GitHub repo names the cache tool dispatches o
 This lives apart from `Cache.Requests` so the container model and trust ordering
 stand on their own, independent of the HTTP/curl machinery that consumes them.
 -/
+
+public section
 
 namespace Cache.Requests
 

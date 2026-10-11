@@ -506,7 +506,7 @@ theorem dist_reflection_eq_of_mem (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p₁ : P} (hp₁ : p₁ ∈ s) (p₂ : P) :
     dist p₁ (reflection s p₂) = dist p₁ p₂ := by
   rw [← reflection_eq_self_iff p₁] at hp₁
-  convert! (reflection s).dist_map p₁ p₂
+  convert (reflection s).dist_map p₁ p₂
   rw [hp₁]
 
 /-- The reflection of a point in a subspace is contained in any larger
@@ -546,7 +546,7 @@ variable [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
   rw [coe_orthogonalProjection_eq_iff_mem]
   simp only [mem_map, AffineIsometry.coe_toAffineMap, AffineIsometry.map_eq_iff, exists_eq_right,
     SetLike.coe_mem, map_direction, AffineIsometry.linear_eq_linearIsometry, true_and]
-  rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.linearMap_vsub, Submodule.mem_orthogonal]
+  rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.linear_apply_vsub, Submodule.mem_orthogonal]
   intro u hu
   rw [Submodule.mem_map] at hu
   obtain ⟨v, hv, rfl⟩ := hu
@@ -630,7 +630,7 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
 lemma orthogonalProjectionSpan_eq_point (s : Simplex 𝕜 P 0) (p : P) :
     s.orthogonalProjectionSpan p = s.points 0 := by
   rw [orthogonalProjectionSpan]
-  convert! orthogonalProjection_singleton _ _
+  convert orthogonalProjection_singleton _ _
   simp [Fin.fin_one_eq_zero]
 
 lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex 𝕜 P 1) (i : Fin 2)
@@ -643,7 +643,7 @@ lemma orthogonalProjectionSpan_map {n : ℕ} (s : Simplex 𝕜 P n) (f : P →�
     (s.map f.toAffineMap f.injective).orthogonalProjectionSpan (f p) =
       f (s.orthogonalProjectionSpan p) := by
   simp_rw [orthogonalProjectionSpan]
-  convert! orthogonalProjection_map (affineSpan 𝕜 (Set.range s.points)) f p
+  convert orthogonalProjection_map (affineSpan 𝕜 (Set.range s.points)) f p
   simp [AffineSubspace.map_span, Set.range_comp]
 
 @[simp] lemma orthogonalProjectionSpan_restrict {n : ℕ} (s : Simplex 𝕜 P n)

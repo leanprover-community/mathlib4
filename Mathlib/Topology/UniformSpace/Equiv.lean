@@ -169,7 +169,7 @@ def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f
     left_inv := by convert! f.left_inv
     right_inv := by convert! f.right_inv using 1
     uniformContinuous_toFun := f.uniformContinuous
-    uniformContinuous_invFun := by convert! f.symm.uniformContinuous }
+    uniformContinuous_invFun := by convert f.symm.uniformContinuous }
 
 @[simp]
 theorem symm_comp_self (h : α ≃ᵤ β) : (h.symm : β → α) ∘ h = id :=
@@ -259,6 +259,9 @@ theorem prodComm_symm : (prodComm α β).symm = prodComm β α :=
 @[simp]
 theorem coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm α β).trans (prodComm β α) = .refl _ := rfl
 
 /-- `(α × β) × γ` is uniformly isomorphic to `α × (β × γ)`. -/
 def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where

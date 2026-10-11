@@ -293,7 +293,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     rw [this]
     apply congrArg
     symm
-    convert! (b.preimage).prop
+    convert (b.preimage).prop
     exact (mem_iff_eq_image (g.hom.app _ ∘ f) _ _).symm
 
 /--

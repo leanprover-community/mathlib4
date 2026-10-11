@@ -445,7 +445,7 @@ theorem card_classGroup_eq_one [IsPrincipalIdealRing R] : Fintype.card (ClassGro
 /-- The class number is `1` iff the ring of integers is a principal ideal domain. -/
 theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)] :
     Fintype.card (ClassGroup R) = 1 ↔ IsPrincipalIdealRing R := by
-  constructor; swap; · intros; convert! card_classGroup_eq_one (R := R)
+  constructor; swap; · intros; convert card_classGroup_eq_one (R := R)
   rw [Fintype.card_eq_one_iff]
   rintro ⟨I, hI⟩
   have eq_one : ∀ J : ClassGroup R, J = 1 := fun J => (hI J).trans (hI 1).symm
@@ -480,19 +480,5 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
       rw [← FractionalIdeal.ringEquivOfRingEquiv_spanSingleton,
         ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
       rfl
-
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
-/-- A ring isomorphism `R ≃+* R'` induces an isomorphism on their class groups. -/
-@[simps!]
-noncomputable def ClassGroup.mulEquiv {R' : Type*} [CommRing R'] [IsDomain R'] (g : R ≃+* R') :
-    ClassGroup R ≃* ClassGroup R' :=
-  (ClassGroup.equiv (R := R) (FractionRing R)).trans
-    ((QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range
-        (toPrincipalIdeal R' (FractionRing R')).range
-        (Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv (FractionRing R) (FractionRing R') g))
-        (FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal g)).trans
-      (ClassGroup.equiv (FractionRing R')).symm)
 
 end MulEquiv

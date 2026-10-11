@@ -87,9 +87,11 @@ theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z
   simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
   exact sub_eq_zero.1 hz
 
-theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
+theorem isSquare [IsAlgClosed k] (x : k) : IsSquare x := by
   rcases exists_pow_nat_eq x zero_lt_two with ⟨z, rfl⟩
   exact ⟨z, sq z⟩
+
+@[deprecated (since := "2026-09-28")] alias exists_eq_mul_self := isSquare
 
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by

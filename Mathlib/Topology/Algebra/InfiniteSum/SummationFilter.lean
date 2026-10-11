@@ -105,11 +105,13 @@ export HasSupport (eventually_le_support)
 
 instance (L : SummationFilter β) [L.LeAtTop] : HasSupport L := ⟨by simp⟩
 
-lemma eventually_mem_or_not_mem (L : SummationFilter β) [HasSupport L] (b : β) :
+lemma eventually_mem_or_notMem (L : SummationFilter β) [HasSupport L] (b : β) :
     (∀ᶠ s in L.filter, b ∈ s) ∨ (∀ᶠ s in L.filter, b ∉ s) := by
   rw [or_iff_not_imp_left]
   intro hb
   filter_upwards [L.eventually_le_support] with a ha using notMem_subset ha hb
+
+@[deprecated (since := "2026-09-28")] alias eventually_mem_or_not_mem := eventually_mem_or_notMem
 
 end has_support
 
@@ -249,7 +251,7 @@ lemma conditional_filter_eq_map_range : (conditional ℕ).filter = atTop.map Fin
       simp only [tendsto_atTop', mem_map, mem_atTop_sets, mem_preimage] <;>
       rintro s ⟨a, ha⟩
   · exact ⟨a + 1, fun b hb ↦ ha (b + 1) (by lia)⟩
-  · exact ⟨a + 1, fun b hb ↦ by convert! ha (b - 1) (by lia); lia⟩
+  · exact ⟨a + 1, fun b hb ↦ by convert ha (b - 1) (by lia); lia⟩
 
 end conditionalTop
 

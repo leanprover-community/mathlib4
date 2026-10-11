@@ -6,12 +6,17 @@ Authors: Damiano Testa, Anne Baanen
 module
 
 public import Mathlib.Init
-public import ImportGraph.Tools.FindHome
+public import ImportGraph.Widget.GoToModule
 
 /-! # The `upstreamableDecl` linter
 
 The `upstreamableDecl` linter detects declarations that could be moved to a file higher up in the
 import hierarchy. This is intended to assist with splitting files.
+
+# TODO
+
+This functionality does not behave well with the module system, and should be upgraded to use new
+`#find_home` internals (and/or upstreamed to `ImportGraph`).
 -/
 
 meta section
@@ -113,14 +118,9 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
       match minImports.size, minImports.min? with
       | 1, some upstream => do
         if !(← env.localDefinitionDependencies stx id) then
-          let p : GoToModuleLinkProps := { modName := upstream }
-          let widget : MessageData := .ofWidget
-            (← liftCoreM <| Widget.WidgetInstance.ofHash
-              GoToModuleLink.javascriptHash <|
-              Server.RpcEncodable.rpcEncode p)
-            (toString upstream)
+          let modWidget ← liftCoreM <| ImportGraph.Widget.goToModule upstream
           Linter.logLint linter.upstreamableDecl id
-            m!"Consider moving this declaration to the module {widget}."
+            m!"Consider moving this declaration to the module {modWidget}."
       | _, _ => pure ()
 
 initialize addLinter upstreamableDeclLinter

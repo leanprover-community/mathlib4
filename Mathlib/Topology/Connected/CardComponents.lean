@@ -64,7 +64,7 @@ lemma IsOpenMap.enatCard_connectedComponents_le_encard_preimage_singleton [Conne
   · simp
   · rw [finsum_eq_sum_of_fintype]
     refine Fintype.sum_mono fun i ↦ Set.one_le_encard_iff_nonempty.mpr (show y ∈ f '' (U i) from ?_)
-    convert! Set.mem_univ y
+    convert Set.mem_univ y
     exact IsClopen.eq_univ ⟨hf₂ _ (hU1 i).1, hf₁ _ (hU1 i).2⟩ ((hU2 i).image f)
 
 lemma IsOpenMap.finite_connectedComponents_of_finite_preimage_singleton_of_connectedSpace
@@ -93,7 +93,7 @@ lemma IsOpenMap.finite_connectedComponents_of_finite_preimage_singleton
     (hf₁.restrictPreimage (connectedComponent y)) (hf₂.restrictPreimage (connectedComponent y))
     (y := ⟨y, mem_connectedComponent⟩) ?_
   rw [← Set.finite_image_iff Subtype.val_injective.injOn]
-  convert! h y
+  convert h y
   aesop (add safe mem_connectedComponent)
 
 end

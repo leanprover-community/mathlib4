@@ -565,7 +565,7 @@ theorem tendsto_zero_of_tendsto_zero_mass {γ : Type*} {F : Filter γ} {μs : γ
     (mass_lim : Tendsto (fun i ↦ (μs i).mass) F (𝓝 0)) : Tendsto μs F (𝓝 0) := by
   rw [tendsto_iff_forall_testAgainstNN_tendsto]
   intro f
-  convert! tendsto_zero_testAgainstNN_of_tendsto_zero_mass mass_lim f
+  convert tendsto_zero_testAgainstNN_of_tendsto_zero_mass mass_lim f
   rw [zero_testAgainstNN_apply]
 
 /-- A characterization of weak convergence in terms of integrals of bounded continuous

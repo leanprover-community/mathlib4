@@ -128,6 +128,11 @@ theorem toSubalgebra_iSup_of_directed (dir : Directed (· ≤ ·) t) :
   · simp_rw [iSup_of_empty, bot_toSubalgebra]
   · exact SetLike.ext' ((coe_iSup_of_directed dir).trans (Subalgebra.coe_iSup_of_directed dir).symm)
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → IntermediateField K L) :
+    ((⨆ i, S i : IntermediateField K L) : Set L) =
+      ⋃ s : Finset ι, (⨆ i ∈ s, S i : IntermediateField K L) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
 instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i, t i : IntermediateField K L) := by
   rw [← iSup_univ]
@@ -409,7 +414,7 @@ theorem minpoly_gen (α : E) :
 
 theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α) = 0 := by
   ext
-  convert! minpoly.aeval F α
+  convert minpoly.aeval F α
   conv in aeval α => rw [← AdjoinSimple.algebraMap_gen F α]
   exact (aeval_algebraMap_apply E (AdjoinSimple.gen F α) _).symm
 
@@ -526,7 +531,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     simp_all
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
-  convert!
+  convert
     natDegree_le_of_dvd dvd_g
       ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
