@@ -130,7 +130,7 @@ theorem comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[to_dual (attr := simp)]
 theorem id_right (X : StructuredArrow S T) : (𝟙 X : X ⟶ X).right = 𝟙 X.right := rfl
 
-@[simp]
+@[simp, to_dual none]
 theorem eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
     (eqToHom h).right = eqToHom (by rw [h]) := by
   subst h
@@ -171,16 +171,20 @@ def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ 
   left := 𝟙 _
   right := g
 
+@[to_dual]
 lemma homMk'_id (f : StructuredArrow S T) : homMk' f (𝟙 f.right) = eqToHom (by cat_disch) := by
   simp [eqToHom_right]
 
+@[to_dual]
 lemma homMk'_mk_id (f : S ⟶ T.obj Y) : homMk' (mk f) (𝟙 Y) = eqToHom (by simp) :=
   homMk'_id _
 
+@[to_dual]
 lemma homMk'_comp (f : StructuredArrow S T) (g : f.right ⟶ Y') (g' : Y' ⟶ Y'') :
     homMk' f (g ≫ g') = homMk' f g ≫ homMk' (mk (f.hom ≫ T.map g)) g' ≫ eqToHom (by simp) := by
   simp [eqToHom_right]
 
+@[to_dual]
 lemma homMk'_mk_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
     homMk' (mk f) (g ≫ g') = homMk' (mk f) g ≫ homMk' (mk (f ≫ T.map g)) g' ≫ eqToHom (by simp) :=
   homMk'_comp _ _ _
@@ -192,7 +196,10 @@ def mkPostcomp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') : mk f ⟶ mk (f ≫ T.map g) 
   left := 𝟙 _
   right := g
 
+@[to_dual]
 lemma mkPostcomp_id (f : S ⟶ T.obj Y) : mkPostcomp f (𝟙 Y) = eqToHom (by simp) := by simp
+
+@[to_dual]
 lemma mkPostcomp_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
     mkPostcomp f (g ≫ g') = mkPostcomp f g ≫ mkPostcomp (f ≫ T.map g) g' ≫ eqToHom (by simp) := by
   simp
@@ -250,6 +257,7 @@ theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom :=
 def eta (f : StructuredArrow S T) : f ≅ mk f.hom :=
   isoMk (Iso.refl _)
 
+@[to_dual]
 lemma mk_surjective (f : StructuredArrow S T) :
     ∃ (Y : C) (g : S ⟶ T.obj Y), f = mk g :=
   ⟨_, _, eq_mk f⟩
@@ -323,19 +331,20 @@ noncomputable def mkIdInitial [T.Full] [T.Faithful] : IsInitial (mk (𝟙 (T.obj
 variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
 
 /-- The functor `(S, F ⋙ G) ⥤ (S, G)`. -/
-@[to_dual (reorder := S G F) (attr := simps!, implicit_reducible) /-- The functor `(F ⋙ G, T) ⥤ (G, T)`. -/]
+@[to_dual (reorder := S G F) (attr := simps!, implicit_reducible)
+/-- The functor `(F ⋙ G, T) ⥤ (G, T)`. -/]
 def pre (S : D) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S (F ⋙ G) ⥤ StructuredArrow S G :=
   Comma.preRight _ F G
 
-@[to_dual (reorder := S G F)]
+@[to_dual]
 instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.Faithful] : (pre S F G).Faithful :=
   show (Comma.preRight _ _ _).Faithful from inferInstance
 
-@[to_dual (reorder := S G F)]
+@[to_dual]
 instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.Full] : (pre S F G).Full :=
   show (Comma.preRight _ _ _).Full from inferInstance
 
-@[to_dual (reorder := S G F)]
+@[to_dual]
 instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.EssSurj] : (pre S F G).EssSurj :=
   show (Comma.preRight _ _ _).EssSurj from inferInstance
 
@@ -354,7 +363,7 @@ def post (S : C) (F : B ⥤ C) (G : C ⥤ D) :
   obj X := StructuredArrow.mk (G.map X.hom)
   map f := StructuredArrow.homMk f.right (by simp [← Functor.map_comp])
 
-@[to_dual (reorder := S G F)]
+@[to_dual]
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : (post S F G).Faithful where
   map_injective {_ _} _ _ h := by simpa using h
 
@@ -374,22 +383,29 @@ section
 variable {L : D} {R : C ⥤ D} {L' : B} {R' : A ⥤ B} {F : C ⥤ A} {G : D ⥤ B}
   (α : L' ⟶ G.obj L) (β : R ⋙ G ⟶ F ⋙ R')
 
+set_option linter.translate.warnInvalid false in
 /-- The functor `StructuredArrow L R ⥤ StructuredArrow L' R'` that is deduced from
 a natural transformation `R ⋙ G ⟶ F ⋙ R'` and a morphism `L' ⟶ G.obj L.` -/
-@[simps!, implicit_reducible]
+@[to_dual (attr := simps!, implicit_reducible) (reorder := α β)
+/-- The functor `CostructuredArrow L R ⥤ CostructuredArrow L' R'` that is deduced from
+a natural transformation `F ⋙ R' ⟶ R ⋙ G` and a morphism `G.obj L ⟶ L'` -/]
 def map₂ : StructuredArrow L R ⥤ StructuredArrow L' R' :=
   Comma.map (F₁ := 𝟭 (Discrete PUnit)) (Discrete.natTrans (fun _ => α)) β
 
+@[to_dual (reorder := α β)]
 instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
   apply Comma.faithful_map
 
+@[to_dual (reorder := α β)]
 instance full_map₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
   apply Comma.full_map
 
+@[to_dual (reorder := α β)]
 instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
   apply Comma.essSurj_map
 
-noncomputable instance isEquivalenceMap₂
+@[to_dual (reorder := α β)]
+instance isEquivalenceMap₂
     [F.IsEquivalence] [G.Faithful] [G.Full] [IsIso α] [IsIso β] :
     (map₂ α β).IsEquivalence := by
   apply Comma.isEquivalenceMap
@@ -479,25 +495,30 @@ def preIsoMap₂ (S : D) (F : B ⥤ C) (G : C ⥤ D) :
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
 /-- A structured arrow is called universal if it is initial. -/
+@[to_dual /-- A costructured arrow is called universal if it is terminal. -/]
 abbrev IsUniversal (f : StructuredArrow S T) := IsInitial f
 
 namespace IsUniversal
 
 variable {f g : StructuredArrow S T}
 
+@[to_dual]
 theorem uniq (h : IsUniversal f) (η : f ⟶ g) : η = h.to g :=
   h.hom_ext η (h.to g)
 
 /-- The family of morphisms out of a universal arrow. -/
+@[to_dual lift /-- The family of morphisms into a universal arrow. -/]
 def desc (h : IsUniversal f) (g : StructuredArrow S T) : f.right ⟶ g.right :=
   (h.to g).right
 
 /-- Any structured arrow factors through a universal arrow. -/
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp))
+/-- Any costructured arrow factors through a universal arrow. -/]
 theorem fac (h : IsUniversal f) (g : StructuredArrow S T) :
     f.hom ≫ T.map (h.desc g) = g.hom :=
   (h.to g).w
 
+@[to_dual]
 theorem hom_desc (h : IsUniversal f) {c : C} (η : f.right ⟶ c) :
     η = h.desc (mk <| f.hom ≫ T.map η) :=
   let g := mk <| f.hom ≫ T.map η
@@ -505,10 +526,14 @@ theorem hom_desc (h : IsUniversal f) {c : C} (η : f.right ⟶ c) :
 
 /-- Two morphisms out of a universal `T`-structured arrow are equal if their image under `T` are
 equal after precomposing the universal arrow. -/
+@[to_dual
+/-- Two morphisms into a universal `S`-costructured arrow are equal if their image under `S` are
+equal after postcomposing the universal arrow. -/]
 theorem hom_ext (h : IsUniversal f) {c : C} {η η' : f.right ⟶ c}
     (w : f.hom ≫ T.map η = f.hom ≫ T.map η') : η = η' := by
   rw [h.hom_desc η, h.hom_desc η', w]
 
+@[to_dual]
 theorem existsUnique (h : IsUniversal f) (g : StructuredArrow S T) :
     ∃! η : f.right ⟶ g.right, f.hom ≫ T.map η = g.hom :=
   ⟨h.desc g, h.fac g, fun f w ↦ h.hom_ext <| by simp [w]⟩
@@ -527,25 +552,6 @@ theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
     (eqToHom h).left = eqToHom (by rw [h]) := by
   subst h
   simp only [eqToHom_refl, id_left]
-
-lemma homMk'_id (f : CostructuredArrow S T) : homMk' f (𝟙 f.left) = eqToHom (by cat_disch) := by
-  simp [eqToHom_left]
-
-lemma homMk'_mk_id (f : S.obj Y ⟶ T) : homMk' (mk f) (𝟙 Y) = eqToHom (by simp) :=
-  homMk'_id _
-
-lemma homMk'_comp (f : CostructuredArrow S T) (g : Y' ⟶ f.left) (g' : Y'' ⟶ Y') :
-    homMk' f (g' ≫ g) = eqToHom (by simp) ≫ homMk' (mk (S.map g ≫ f.hom)) g' ≫ homMk' f g := by
-  simp [eqToHom_left]
-
-lemma homMk'_mk_comp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) (g' : Y'' ⟶ Y') :
-    homMk' (mk f) (g' ≫ g) = eqToHom (by simp) ≫ homMk' (mk (S.map g ≫ f)) g' ≫ homMk' (mk f) g :=
-  homMk'_comp _ _ _
-
-lemma mkPrecomp_id (f : S.obj Y ⟶ T) : mkPrecomp f (𝟙 Y) = eqToHom (by simp) := by simp
-lemma mkPrecomp_comp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) (g' : Y'' ⟶ Y') :
-    mkPrecomp f (g' ≫ g) = eqToHom (by simp) ≫ mkPrecomp (S.map g ≫ f) g' ≫ mkPrecomp f g := by
-  simp
 
 /-- To construct an isomorphism of costructured arrows,
 we need an isomorphism of the objects underlying the source,
@@ -568,18 +574,10 @@ theorem obj_ext (x y : CostructuredArrow S T) (hl : x.left = y.left)
 def eta (f : CostructuredArrow S T) : f ≅ mk f.hom :=
   isoMk (Iso.refl _)
 
-lemma mk_surjective (f : CostructuredArrow S T) :
-    ∃ (Y : C) (g : S.obj Y ⟶ T), f = mk g :=
-  ⟨_, _, eq_mk f⟩
-
 open CategoryTheory.Limits
 
 variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
 
-instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Faithful] : (post F G S).Full where
-  map_surjective f := ⟨homMk f.left (G.map_injective (by simpa using f.w)), by simp⟩
-
-set_option backward.defeqAttrib.useBackward true in
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Full] : (post F G S).EssSurj where
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
 
@@ -592,27 +590,6 @@ section
 variable {U : A ⥤ B} {V : B} {F : C ⥤ A} {G : D ⥤ B}
   (α : F ⋙ U ⟶ S ⋙ G) (β : G.obj T ⟶ V)
 
-/-- The functor `CostructuredArrow S T ⥤ CostructuredArrow U V` that is deduced from
-a natural transformation `F ⋙ U ⟶ S ⋙ G` and a morphism `G.obj T ⟶ V` -/
-@[simps!, implicit_reducible]
-def map₂ : CostructuredArrow S T ⥤ CostructuredArrow U V :=
-  Comma.map (F₂ := 𝟭 (Discrete PUnit)) α (Discrete.natTrans (fun _ => β))
-
-instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
-  apply Comma.faithful_map
-
-instance full_map₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
-  apply Comma.full_map
-
-instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
-  apply Comma.essSurj_map
-
-noncomputable instance isEquivalenceMap₂
-    [F.IsEquivalence] [G.Faithful] [G.Full] [IsIso α] [IsIso β] :
-    (map₂ α β).IsEquivalence := by
-  apply Comma.isEquivalenceMap
-
-set_option backward.defeqAttrib.useBackward true in
 /-- The composition of two applications of `map₂` is naturally isomorphic to a single such one. -/
 @[simps!]
 def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [Category.{v₅} D']
@@ -624,7 +601,6 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
       (G.map β' ≫ β) :=
   NatIso.ofComponents fun X ↦ isoMk (.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `map₂` is invariant under isomorphisms. -/
 @[simps!]
 def map₂Congr {F' : C ⥤ A} {G' : D ⥤ B} (e₁ : F ≅ F') (e₂ : G ≅ G')
@@ -638,7 +614,6 @@ where finally
     simp [← reassoc_of% dsimp% congr($(hα).app X.left)]
   · simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `map₂` of the identity is the identity. -/
 @[simps!]
 def map₂IdIso (α : 𝟭 _ ⋙ S ⟶ S ⋙ 𝟭 _) (T : D) (β : (𝟭 _).obj T ⟶ T)
@@ -647,7 +622,6 @@ def map₂IdIso (α : 𝟭 _ ⋙ S ⟶ S ⋙ 𝟭 _) (T : D) (β : (𝟭 _).obj 
     map₂ α β ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X ↦ isoMk (.refl _))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `map₂` along equivalences of categories is an equivalence of categories. -/
 @[simps]
 def map₂Iso {F : C ≌ A} {G : D ≌ B} (α : F.functor ⋙ U ⟶ S ⋙ G.functor)
@@ -684,49 +658,11 @@ where finally
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `CostructuredArrow.post` is a special case of `CostructuredArrow.map₂` up to natural
 isomorphism. -/
 def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
     post F G S ≅ map₂ (F := 𝟭 _) (𝟙 (F ⋙ G)) (𝟙 _) :=
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
-
-/-- A costructured arrow is called universal if it is terminal. -/
-abbrev IsUniversal (f : CostructuredArrow S T) := IsTerminal f
-
-namespace IsUniversal
-
-variable {f g : CostructuredArrow S T}
-
-theorem uniq (h : IsUniversal f) (η : g ⟶ f) : η = h.from g :=
-  h.hom_ext η (h.from g)
-
-/-- The family of morphisms into a universal arrow. -/
-def lift (h : IsUniversal f) (g : CostructuredArrow S T) : g.left ⟶ f.left :=
-  (h.from g).left
-
-/-- Any costructured arrow factors through a universal arrow. -/
-@[reassoc (attr := simp)]
-theorem fac (h : IsUniversal f) (g : CostructuredArrow S T) :
-    S.map (h.lift g) ≫ f.hom = g.hom :=
-  Category.comp_id g.hom ▸ (h.from g).w
-
-theorem hom_desc (h : IsUniversal f) {c : C} (η : c ⟶ f.left) :
-    η = h.lift (mk <| S.map η ≫ f.hom) :=
-  let g := mk <| S.map η ≫ f.hom
-  congrArg CommaMorphism.left (h.hom_ext (homMk η rfl : g ⟶ f) (h.from g))
-
-/-- Two morphisms into a universal `S`-costructured arrow are equal if their image under `S` are
-equal after postcomposing the universal arrow. -/
-theorem hom_ext (h : IsUniversal f) {c : C} {η η' : c ⟶ f.left}
-    (w : S.map η ≫ f.hom = S.map η' ≫ f.hom) : η = η' := by
-  rw [h.hom_desc η, h.hom_desc η', w]
-
-theorem existsUnique (h : IsUniversal f) (g : CostructuredArrow S T) :
-    ∃! η : g.left ⟶ f.left, S.map η ≫ f.hom = g.hom :=
-  ⟨h.lift g, h.fac g, fun f w ↦ h.hom_ext <| by simp [w]⟩
-
-end IsUniversal
 
 end CostructuredArrow
 
@@ -740,7 +676,13 @@ the obvious triangles involving all `F.map (G.map g)` commute.
 
 This is of course the same as providing a cone over `F ⋙ G` with cone point `X`, see
 `Functor.toStructuredArrowIsoToStructuredArrow`. -/
-@[simps]
+@[to_dual (attr := simps) (reorder := X F)
+/-- Given `F : C ⥤ D` and `X : D`, to upgrade a functor `G : E ⥤ C` to a functor
+`E ⥤ CostructuredArrow F X`, it suffices to provide maps `F.obj (G.obj Y) ⟶ X` for all `Y`
+making the obvious triangles involving all `F.map (G.map g)` commute.
+
+This is of course the same as providing a cocone over `F ⋙ G` with cocone point `X`, see
+`Functor.toCostructuredArrowIsoToCostructuredArrow`. -/]
 def toStructuredArrow (G : E ⥤ C) (X : D) (F : C ⥤ D) (f : (Y : E) → X ⟶ F.obj (G.obj Y))
     (h : ∀ {Y Z : E} (g : Y ⟶ Z), f Y ≫ F.map (G.map g) = f Z) : E ⥤ StructuredArrow X F where
   obj Y := StructuredArrow.mk (f Y)
@@ -748,41 +690,19 @@ def toStructuredArrow (G : E ⥤ C) (X : D) (F : C ⥤ D) (f : (Y : E) → X ⟶
 
 /-- Upgrading a functor `E ⥤ C` to a functor `E ⥤ StructuredArrow X F` and composing with the
 forgetful functor `StructuredArrow X F ⥤ C` recovers the original functor. -/
+@[to_dual (reorder := X F)
+/-- Upgrading a functor `E ⥤ C` to a functor `E ⥤ CostructuredArrow F X` and composing with the
+forgetful functor `CostructuredArrow F X ⥤ C` recovers the original functor. -/]
 def toStructuredArrowCompProj (G : E ⥤ C) (X : D) (F : C ⥤ D) (f : (Y : E) → X ⟶ F.obj (G.obj Y))
     (h : ∀ {Y Z : E} (g : Y ⟶ Z), f Y ≫ F.map (G.map g) = f Z) :
     G.toStructuredArrow X F f h ⋙ StructuredArrow.proj _ _ ≅ G :=
   Iso.refl _
 
-@[simp]
+@[to_dual (attr := simp) (reorder := X F)]
 lemma toStructuredArrow_comp_proj (G : E ⥤ C) (X : D) (F : C ⥤ D)
     (f : (Y : E) → X ⟶ F.obj (G.obj Y)) (h : ∀ {Y Z : E} (g : Y ⟶ Z), f Y ≫ F.map (G.map g) = f Z) :
     G.toStructuredArrow X F f h ⋙ StructuredArrow.proj _ _ = G :=
   rfl
-
-/-- Given `F : C ⥤ D` and `X : D`, to upgrade a functor `G : E ⥤ C` to a functor
-`E ⥤ CostructuredArrow F X`, it suffices to provide maps `F.obj (G.obj Y) ⟶ X` for all `Y`
-making the obvious triangles involving all `F.map (G.map g)` commute.
-
-This is of course the same as providing a cocone over `F ⋙ G` with cocone point `X`, see
-`Functor.toCostructuredArrowIsoToCostructuredArrow`. -/
-@[simps]
-def toCostructuredArrow (G : E ⥤ C) (F : C ⥤ D) (X : D) (f : (Y : E) → F.obj (G.obj Y) ⟶ X)
-    (h : ∀ {Y Z : E} (g : Y ⟶ Z), F.map (G.map g) ≫ f Z = f Y) : E ⥤ CostructuredArrow F X where
-  obj Y := CostructuredArrow.mk (f Y)
-  map g := CostructuredArrow.homMk (G.map g) (h g)
-
-/-- Upgrading a functor `E ⥤ C` to a functor `E ⥤ CostructuredArrow F X` and composing with the
-forgetful functor `CostructuredArrow F X ⥤ C` recovers the original functor. -/
-def toCostructuredArrowCompProj (G : E ⥤ C) (F : C ⥤ D) (X : D)
-    (f : (Y : E) → F.obj (G.obj Y) ⟶ X) (h : ∀ {Y Z : E} (g : Y ⟶ Z), F.map (G.map g) ≫ f Z = f Y) :
-    G.toCostructuredArrow F X f h ⋙ CostructuredArrow.proj _ _ ≅ G :=
-  Iso.refl _
-
-@[simp]
-lemma toCostructuredArrow_comp_proj (G : E ⥤ C) (F : C ⥤ D) (X : D)
-    (f : (Y : E) → F.obj (G.obj Y) ⟶ X) (h : ∀ {Y Z : E} (g : Y ⟶ Z), F.map (G.map g) ≫ f Z = f Y) :
-    G.toCostructuredArrow F X f h ⋙ CostructuredArrow.proj _ _ = G :=
-rfl
 
 end Functor
 
@@ -790,23 +710,29 @@ open Opposite
 
 namespace StructuredArrow
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For a functor `F : C ⥤ D` and an object `d : D`, we obtain a contravariant functor from the
 category of structured arrows `d ⟶ F.obj c` to the category of costructured arrows
 `F.op.obj c ⟶ (op d)`.
 -/
-@[simps]
+@[to_dual (attr := simps, implicit_reducible)
+/-- For a functor `F : C ⥤ D` and an object `d : D`, we obtain a contravariant functor from the
+category of costructured arrows `F.obj c ⟶ d` to the category of structured arrows
+`op d ⟶ F.op.obj c`.
+-/]
 def toCostructuredArrow (F : C ⥤ D) (d : D) :
     (StructuredArrow d F)ᵒᵖ ⥤ CostructuredArrow F.op (op d) where
   obj X := CostructuredArrow.mk (Y := op X.unop.right) X.unop.hom.op
   map f := CostructuredArrow.homMk f.unop.right.op (by simp [← op_comp])
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For a functor `F : C ⥤ D` and an object `d : D`, we obtain a contravariant functor from the
 category of structured arrows `op d ⟶ F.op.obj c` to the category of costructured arrows
 `F.obj c ⟶ d`.
 -/
-@[simps]
+@[to_dual (attr := simps, implicit_reducible)
+/-- For a functor `F : C ⥤ D` and an object `d : D`, we obtain a contravariant functor from the
+category of costructured arrows `F.op.obj c ⟶ op d` to the category of structured arrows
+`d ⟶ F.obj c`.
+-/]
 def toCostructuredArrow' (F : C ⥤ D) (d : D) :
     (StructuredArrow (op d) F.op)ᵒᵖ ⥤ CostructuredArrow F d where
   obj X := CostructuredArrow.mk (Y := unop X.unop.right) X.unop.hom.unop
@@ -816,36 +742,6 @@ def toCostructuredArrow' (F : C ⥤ D) (d : D) :
 
 end StructuredArrow
 
-namespace CostructuredArrow
-
-set_option backward.defeqAttrib.useBackward true in
-/-- For a functor `F : C ⥤ D` and an object `d : D`, we obtain a contravariant functor from the
-category of costructured arrows `F.obj c ⟶ d` to the category of structured arrows
-`op d ⟶ F.op.obj c`.
--/
-@[simps]
-def toStructuredArrow (F : C ⥤ D) (d : D) :
-    (CostructuredArrow F d)ᵒᵖ ⥤ StructuredArrow (op d) F.op where
-  obj X := StructuredArrow.mk (Y := op X.unop.left) X.unop.hom.op
-  map f := StructuredArrow.homMk f.unop.left.op (by simp [← op_comp])
-
-set_option backward.defeqAttrib.useBackward true in
-/-- For a functor `F : C ⥤ D` and an object `d : D`, we obtain a contravariant functor from the
-category of costructured arrows `F.op.obj c ⟶ op d` to the category of structured arrows
-`d ⟶ F.obj c`.
--/
-@[simps]
-def toStructuredArrow' (F : C ⥤ D) (d : D) :
-    (CostructuredArrow F.op (op d))ᵒᵖ ⥤ StructuredArrow d F where
-  obj X := StructuredArrow.mk (Y := unop X.unop.left) X.unop.hom.unop
-  map f :=
-    StructuredArrow.homMk f.unop.left.unop
-      (Quiver.Hom.op_inj (by simp [dsimp% f.unop.w]))
-
-end CostructuredArrow
-
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of structured arrows `d ⟶ F.obj c`
 is contravariantly equivalent to the category of costructured arrows `F.op.obj c ⟶ op d`.
 -/
@@ -862,8 +758,6 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
   counitIso := NatIso.ofComponents
     (fun X => CostructuredArrow.isoMk (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
 `F.obj c ⟶ d` is contravariantly equivalent to the category of structured arrows
 `op d ⟶ F.op.obj c`.
@@ -885,7 +779,6 @@ section Pre
 
 variable {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G : D ⥤ E} {e : E}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor establishing the equivalence `StructuredArrow.preEquivalence`. -/
 @[simps!]
 def StructuredArrow.preEquivalenceFunctor (f : StructuredArrow e G) :
@@ -895,7 +788,6 @@ def StructuredArrow.preEquivalenceFunctor (f : StructuredArrow e G) :
     rw [← w φ, comp_right]
     simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor establishing the equivalence `StructuredArrow.preEquivalence`. -/
 @[simps!]
 def StructuredArrow.preEquivalenceInverse (f : StructuredArrow e G) :
@@ -931,7 +823,6 @@ def StructuredArrow.map₂IsoPreEquivalenceInverseCompProj {T : C ⥤ D} {S : D 
       map₂ (F := 𝟭 _) (G := 𝟭 _) (𝟙 _) α :=
   NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor establishing the equivalence `CostructuredArrow.preEquivalence`. -/
 @[simps!]
 def CostructuredArrow.preEquivalence.functor (f : CostructuredArrow G e) :
@@ -941,7 +832,6 @@ def CostructuredArrow.preEquivalence.functor (f : CostructuredArrow G e) :
     rw [← w φ, comp_left]
     simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor establishing the equivalence `CostructuredArrow.preEquivalence`. -/
 @[simps!]
 def CostructuredArrow.preEquivalence.inverse (f : CostructuredArrow G e) :
@@ -971,7 +861,7 @@ induces via `CostructuredArrow.map₂` can be expressed up to isomorphism by
 `CostructuredArrow.preEquivalence` and `CostructuredArrow.proj`. -/
 def CostructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : D ⥤ E) (d : D) (e : E)
     (u : S.obj d ⟶ e) :
-    map₂ (F := 𝟭 _) (U := T ⋙ S) (𝟙 (T ⋙ S)) u ≅
+    map₂ (F := 𝟭 _) (R' := T ⋙ S) (𝟙 (T ⋙ S)) u ≅
       (preEquivalence T (mk u)).inverse ⋙ proj (pre T S _) (mk u) :=
   NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 

@@ -30,19 +30,17 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [Category.{v₆} T'] {L' : C' ⥤ T'} {R' : D' ⥤ T'} {F₁ : C ⥤ C'} {F₂ : D ⥤ D'} {F : T ⥤ T'}
   (α : F₁ ⋙ L' ⟶ L ⋙ F) (β : R ⋙ F ⟶ F₂ ⋙ R')
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps, implicit_reducible]
 def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
     StructuredArrow X (Comma.map α β) ⥤ Comma (map₂ (𝟙 _) α) (map₂ X.hom (inv β)) where
   obj Y := ⟨mk Y.hom.left, mk Y.hom.right,
     homMk Y.right.hom (by
-      simpa using congr(CategoryStruct.comp $(Y.hom.w) ((inv (β.app Y.right.right) :))))⟩
+      simpa using congr(CategoryStruct.comp $(Y.hom.w) (inv (β.app Y.right.right))))⟩
   map {Y Z} f := ⟨homMk f.right.left (congrArg CommaMorphism.left (StructuredArrow.w f)),
     homMk f.right.right (congrArg CommaMorphism.right (StructuredArrow.w f)),
     by simp⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps]
 def commaMapEquivalenceInverse [IsIso β] (X : Comma L' R') :

@@ -72,6 +72,8 @@ structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   /-- A morphism from `L.obj left` to `R.obj right` -/
   hom : L.obj left ⟶ R.obj right
 
+attribute [to_dual self (reorder := A B, 2 4, L R, mk (left right))] Comma.casesOn
+
 -- Satisfying the inhabited linter
 instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) where
   default :=
@@ -93,7 +95,7 @@ structure CommaMorphism (X Y : Comma L R) where
   right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by cat_disch
 
-attribute [to_dual self (reorder := A B, 2 4, L R, X Y, 13 14)] CommaMorphism.ext
+attribute [to_dual self (reorder := A B, 2 4, L R, X Y, left right)] CommaMorphism.ext
 to_dual_for CommaMorphism.w := self.w.symm
 to_dual_for CommaMorphism.mk := { left := right, right := left, w := w.symm }
 
