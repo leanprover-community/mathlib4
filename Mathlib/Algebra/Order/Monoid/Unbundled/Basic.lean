@@ -6,8 +6,8 @@ Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Algebra.Order.IsBotOne
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Order.MinMax
 public import Mathlib.Tactic.ByContra
 public import Mathlib.Tactic.GRewrite
@@ -224,19 +224,9 @@ variable [PartialOrder α]
 instance [MulLeftReflectLE α] : IsLeftCancelMul α where
   mul_left_cancel _ _ _ h := (le_of_mul_le_mul_left' h.le).antisymm (le_of_mul_le_mul_left' h.ge)
 
-@[deprecated (since := "2026-03-14")]
-alias add_left_cancel'' := add_left_cancel
-@[to_additive existing, deprecated (since := "2026-03-14")]
-alias mul_left_cancel'' := mul_left_cancel
-
 @[to_additive]
 instance [MulRightReflectLE α] : IsRightCancelMul α where
   mul_right_cancel _ _ _ h := (le_of_mul_le_mul_right' h.le).antisymm (le_of_mul_le_mul_right' h.ge)
-
-@[deprecated (since := "2026-03-14")]
-alias add_right_cancel'' := add_right_cancel
-@[to_additive existing, deprecated (since := "2026-03-14")]
-alias mul_right_cancel'' := mul_right_cancel
 
 @[to_additive] lemma le_iff_ge_of_mul_eq_mul [MulLeftMono α] [MulLeftReflectLE α]
     [MulRightMono α] [MulRightReflectLE α] {a₁ a₂ b₁ b₂ : α} (hab : a₁ * b₁ = a₂ * b₂) :

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Kernel.Composition.MapComap
+
 import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!

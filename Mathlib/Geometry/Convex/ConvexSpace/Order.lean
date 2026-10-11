@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
+public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Order.UpperLower.CompleteLattice
 
 /-!
@@ -27,7 +28,7 @@ combinations is monotone.
 
 open Finsupp Set
 
-public section
+public noncomputable section
 
 namespace Convexity
 variable {I R X : Type*}
@@ -35,25 +36,30 @@ variable {I R X : Type*}
 section ConvexSpace
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X]
 
-instance : ConvexSpace R Xᵒᵈ := ‹ConvexSpace R X›
-
-@[simp]
-lemma toDual_sConvexComb (w : StdSimplex R X) :
-    OrderDual.toDual w.sConvexComb = w.iConvexComb OrderDual.toDual :=
-  congr(sConvexComb $(StdSimplex.map_id w)).symm
+instance : ConvexSpace R Xᵒᵈ :=
+  .ofInjectiveSection OrderDual.ofDual OrderDual.ofDual.injective (fun y ↦ .toDual y.1)
+    (by simp) (by simp)
 
 @[simp]
 lemma ofDual_sConvexComb (w : StdSimplex R Xᵒᵈ) :
-    OrderDual.ofDual w.sConvexComb = w.iConvexComb OrderDual.ofDual :=
-  congr(sConvexComb $(StdSimplex.map_id w)).symm
+    w.sConvexComb.ofDual = w.iConvexComb OrderDual.ofDual := rfl
+
+@[simp]
+lemma toDual_sConvexComb (w : StdSimplex R X) :
+    .toDual w.sConvexComb = w.iConvexComb OrderDual.toDual :=
+  OrderDual.ofDual.injective <| by simp
 
 @[fun_prop]
-lemma isAffineMap_toDual : IsAffineMap R (OrderDual.toDual : X → Xᵒᵈ) where
+lemma isAffineMap_ofDual : IsAffineMap R (OrderDual.ofDual : Xᵒᵈ → X) := ⟨fun _ ↦ rfl⟩
+
+@[fun_prop]
+lemma isAffineMap_toDual : IsAffineMap R (.toDual : X → Xᵒᵈ) where
   map_sConvexComb := toDual_sConvexComb
 
-@[fun_prop]
-lemma isAffineMap_ofDual : IsAffineMap R (OrderDual.ofDual : Xᵒᵈ → X) where
-  map_sConvexComb := ofDual_sConvexComb
+@[simp]
+lemma ofDual_iConvexComb (w : StdSimplex R I) (f : I → Xᵒᵈ) :
+    (w.iConvexComb f).ofDual = w.iConvexComb (fun i ↦ (f i).ofDual) :=
+  isAffineMap_ofDual.map_iConvexComb ..
 
 @[simp]
 lemma toDual_iConvexComb (w : StdSimplex R I) (f : I → X) :
@@ -61,21 +67,16 @@ lemma toDual_iConvexComb (w : StdSimplex R I) (f : I → X) :
   isAffineMap_toDual.map_iConvexComb ..
 
 @[simp]
-lemma ofDual_iConvexComb (w : StdSimplex R I) (f : I → Xᵒᵈ) :
-    OrderDual.ofDual (w.iConvexComb f) = w.iConvexComb (fun i ↦ OrderDual.ofDual (f i)) :=
-  isAffineMap_ofDual.map_iConvexComb ..
+lemma ofDual_convexCombPair (a b : R) (ha hb hab) (x y : Xᵒᵈ) :
+    OrderDual.ofDual (convexCombPair a b ha hb hab x y) =
+      convexCombPair a b ha hb hab (OrderDual.ofDual x) (OrderDual.ofDual y) :=
+  isAffineMap_ofDual.map_convexCombPair ..
 
 @[simp]
 lemma toDual_convexCombPair (a b : R) (ha hb hab) (x y : X) :
     OrderDual.toDual (convexCombPair a b ha hb hab x y) =
       convexCombPair a b ha hb hab (OrderDual.toDual x) (OrderDual.toDual y) :=
   isAffineMap_toDual.map_convexCombPair ..
-
-@[simp]
-lemma ofDual_convexCombPair (a b : R) (ha hb hab) (x y : Xᵒᵈ) :
-    OrderDual.ofDual (convexCombPair a b ha hb hab x y) =
-      convexCombPair a b ha hb hab (OrderDual.ofDual x) (OrderDual.ofDual y) :=
-  isAffineMap_ofDual.map_convexCombPair ..
 
 end ConvexSpace
 
@@ -322,6 +323,7 @@ class IsOrderedConvexSpace : Prop where
 export IsOrderedConvexSpace (monotone_sConvexComb)
 
 variable [IsOrderedConvexSpace R X] {v : StdSimplex R I} {w₁ w₂ : StdSimplex R X} {f g : I → X}
+  {x : X}
 
 @[gcongr, to_dual self]
 lemma sConvexComb_le_sConvexComb (h : w₁ ≤ w₂) : w₁.sConvexComb ≤ w₂.sConvexComb :=
@@ -355,6 +357,17 @@ instance isOrderedConvexSpace_orderDual : IsOrderedConvexSpace R Xᵒᵈ where
   monotone_sConvexComb _w₁ _w₂ h := by
     rw [← OrderDual.ofDual_le_ofDual, ofDual_sConvexComb, ofDual_sConvexComb]
     exact sConvexComb_le_sConvexComb (StdSimplex.ofDual_le_iff.1 h)
+
+@[to_dual (attr := simp)]
+protected lemma IsConvexSet.Iic : IsConvexSet R (.Iic x) := by
+  refine .of_sConvexComb_mem fun w hw ↦ ?_
+  rw [Set.mem_Iic, ← iConvexComb_id' w, ← iConvexComb_const w x]
+  gcongr with x hx
+  exact hw (by simpa using hx)
+
+@[to_dual self, simp]
+protected lemma IsConvexSet.Icc (a b : X) : IsConvexSet R (Set.Icc a b) := by
+  simpa [Ici_inter_Iic] using .inter .Ici .Iic
 
 end IsOrderedConvexSpace
 end Convexity

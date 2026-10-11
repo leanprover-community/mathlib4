@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
-public import Mathlib.Geometry.Convex.ConvexSpace.Order
 
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
@@ -14,7 +13,8 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 /-!
 # Convex sets
 
-This file defines convex sets in a convex space.
+This file defines convex sets in a convex space and the pullback of a convex space structure along
+an injective map with convex range.
 
 ## Implementation notes
 
@@ -131,12 +131,51 @@ protected lemma IsConvexSet.image (hf : IsAffineMap R f) (hs : IsConvexSet R s) 
   · rw [mapDomain_of_notMem_image_support (by simp [← huw] at ⊢ hy; tauto)]
     simp_all
 
+/-- Pull back a convex space structure along an injective map whose range is convex, given a
+section of the map.
+
+This is the same as `ConvexSpace.ofInjective`, but avoids choice. -/
+abbrev ConvexSpace.ofInjectiveSection (f : X → Y) (hf : f.Injective) (g : range f → X)
+    (hg : ∀ y, f (g y) = y) (hfrange : IsConvexSet R (range f)) : ConvexSpace R X := by
+  letI c (w : StdSimplex R X) : X := g ⟨sConvexComb (w.map f), hfrange.iConvexComb_mem (by simp)⟩
+  have hc (w : StdSimplex R X) : f (c w) = sConvexComb (w.map f) := hg _
+  refine .mk c (fun x ↦ hf ?_) fun g ↦ hf ?_
+  · rw [hc, StdSimplex.map_single, sConvexComb_single]
+  · have : (g.map c).map f = g.map (fun w ↦ sConvexComb (w.map f)) := by
+      rw [StdSimplex.map_map]; congr 1; ext w; exact hc w
+    rw [hc, hc, this]
+    change _ = sConvexComb (g.sConvexComb.map f)
+    rw [StdSimplex.map_sConvexComb, sConvexComb_sConvexComb, StdSimplex.map_map]
+
+omit [ConvexSpace R X] in
+lemma isAffineMap_ofInjectiveSection (f : X → Y) (hf : f.Injective) (g : range f → X)
+    (hg : ∀ y, f (g y) = y) (hfrange : IsConvexSet R (range f)) :
+    letI := ConvexSpace.ofInjectiveSection f hf g hg hfrange
+    IsAffineMap R f :=
+  letI := ConvexSpace.ofInjectiveSection f hf g hg hfrange
+  ⟨fun _ ↦ hg _⟩
+
+-- We hide the definition as it is just choice.
+set_option warn.classDefReducibility false in
+/-- Pull back a convex space structure along an injective map whose range is convex.
+
+If your map has a nice section and care about definitional equality of the resulting operations,
+use `ConvexSpace.ofInjectiveSection` instead. -/
+noncomputable def ConvexSpace.ofInjective (f : X → Y) (hf : f.Injective)
+    (hfrange : IsConvexSet R (range f)) : ConvexSpace R X :=
+  .ofInjectiveSection f hf (fun y ↦ y.2.choose) (fun y ↦ y.2.choose_spec) hfrange
+
+omit [ConvexSpace R X] in
+lemma isAffineMap_ofInjective (f : X → Y) (hf : f.Injective) (hfrange : IsConvexSet R (range f)) :
+    letI := ConvexSpace.ofInjective f hf hfrange
+    IsAffineMap R f := by
+  unfold ConvexSpace.ofInjective; exact isAffineMap_ofInjectiveSection f hf _ _ hfrange
+
 /-- A convex subset of a convex space is a convex space. -/
 @[expose, implicit_reducible]
-def ConvexSpace.subtype (s : Set X) (hs : IsConvexSet R s) : ConvexSpace R s := .mk
-  (fun w ↦ ⟨w.iConvexComb (↑), hs.iConvexComb_mem <| by simp⟩)
-  (fun x ↦ by simp)
-  (fun w ↦ by ext; simp [iConvexComb_assoc])
+def ConvexSpace.subtype (s : Set X) (hs : IsConvexSet R s) : ConvexSpace R s :=
+  .ofInjectiveSection _ Subtype.val_injective (fun y ↦ ⟨y.1, by simpa using y.2⟩) (by simp) <|
+    by simpa
 
 lemma isAffineMap_subtypeVal (s : Set X) (hs : IsConvexSet R s) :
     letI : ConvexSpace R s := .subtype s hs
@@ -207,21 +246,4 @@ lemma IsConvexSet.of_convexCombPair_mem
     (by simp [← hsw]; grind)
 
 end Field
-
-section OrderedConvexSpace
-variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [PartialOrder X] [ConvexSpace R X]
-  [IsOrderedConvexSpace R X] {x : X}
-
-@[to_dual (attr := simp)]
-protected lemma IsConvexSet.Iic : IsConvexSet R (.Iic x) := by
-  refine .of_sConvexComb_mem fun w hw ↦ ?_
-  rw [Set.mem_Iic, ← iConvexComb_id' w, ← iConvexComb_const w x]
-  gcongr with x hx
-  exact hw (by simpa using hx)
-
-@[to_dual self, simp]
-protected lemma IsConvexSet.Icc (a b : X) : IsConvexSet R (Set.Icc a b) := by
-  simpa [Ici_inter_Iic] using .inter .Ici .Iic
-
-end OrderedConvexSpace
 end Convexity

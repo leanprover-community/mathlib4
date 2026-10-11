@@ -5,9 +5,10 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
+public import Mathlib.RingTheory.Ideal.Span
+
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Basic results in number theory

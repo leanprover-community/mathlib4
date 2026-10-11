@@ -10,6 +10,7 @@ public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.SignedDist
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 public import Mathlib.Tactic.Positivity.Finset
+
 import Mathlib.Topology.Instances.Sign
 
 /-!
