@@ -31,31 +31,6 @@ open TensorProduct
 
 namespace exteriorPower
 
-lemma baseChangeGenerator_map_update_add (i : ℕ) (m : Fin i → M) (j : Fin i) (x y : M) :
-    (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j (x + y)) =
-      (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j x) +
-        (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j y) := by
-  have hz (z : M) : ((TensorProduct.mk R S M 1) ∘ Function.update m j z) =
-    Function.update (((TensorProduct.mk R S M 1) ∘ m)) j ((TensorProduct.mk R S M 1) z) := by
-    funext a
-    rcases eq_or_ne a j with rfl|ne
-    · simp
-    · simp [Function.update, ne]
-  rw [hz (x + y), hz x, hz y, map_add, (ExteriorAlgebra.ιMulti S i).map_update_add]
-
-lemma baseChangeGenerator_map_update_smul (i : ℕ) (m : Fin i → M) (j : Fin i) (r : R) (x : M) :
-    (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j (r • x)) =
-      r • (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j x) := by
-  have hz (z : M) : ((TensorProduct.mk R S M 1) ∘ Function.update m j z) =
-    Function.update (((TensorProduct.mk R S M 1) ∘ m)) j ((TensorProduct.mk R S M 1) z) := by
-    funext a
-    rcases eq_or_ne a j with rfl|ne
-    · simp
-    · simp [Function.update, ne]
-  rw [hz (r • x), hz x]
-  simpa using (ExteriorAlgebra.ιMulti S i).map_update_smul
-    (((TensorProduct.mk R S M 1) ∘ m)) j (algebraMap R S r) (TensorProduct.mk R S M 1 x)
-
 /-- The alternating map obtained from `ExteriorAlgebra.ιMulti` on compositing with
 `TensorProduct.mk R S M 1`. -/
 def baseChangeGenerator (i : ℕ) : M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S ⊗[R] M) where
