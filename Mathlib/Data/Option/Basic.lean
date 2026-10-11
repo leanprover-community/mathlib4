@@ -5,12 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Aesop
+public import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs
-public import Mathlib.Logic.Relator
-public import Aesop
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Basic.IsEmpty.Defs
+public import Mathlib.Logic.Relator
 
 import Batteries.Tactic.Lint.Simp
 
