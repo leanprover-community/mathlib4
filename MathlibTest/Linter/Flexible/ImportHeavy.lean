@@ -1,18 +1,18 @@
 import Mathlib.Tactic.Linter.FlexibleLinter
 
-import Mathlib.Data.ENNReal.Operations
+import Mathlib.Basic.ENNReal.Operations
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Field
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Finiteness
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Measurability
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Module
+import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
 import Mathlib.MeasureTheory.MeasurableSpace.Instances

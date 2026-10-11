@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
-public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.PartialHomeomorph.Basic
+public import Mathlib.Topology.Sets.Opens
 /-!
 # Partial homeomorphisms: basic theory
 
@@ -23,9 +23,7 @@ public import Mathlib.Topology.PartialHomeomorph.Basic
 
 open Function Set Filter Topology
 
-variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
-  [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
-  [TopologicalSpace Z] [TopologicalSpace Z']
+variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 namespace OpenPartialHomeomorph
 

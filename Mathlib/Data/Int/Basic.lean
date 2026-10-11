@@ -6,16 +6,17 @@ Authors: Jeremy Avigad
 module
 
 public import Mathlib.Data.Int.Init
-public import Mathlib.Data.Nat.Basic
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.OfNat
 
+import Mathlib.Data.Nat.Basic
+
 /-!
 # Basic operations on the integers
 
-This file builds on `Data.Int.Init` by adding basic lemmas on integers.
+This file builds on `Data.Int.Init` by adding basic lemmas on integers
 depending on Mathlib definitions.
 -/
 
@@ -24,7 +25,7 @@ public section
 open Nat
 
 namespace Int
-variable {a b c d m n : ℤ}
+variable {a b c m n : ℤ}
 
 attribute [gcongr] ofNat_le
 

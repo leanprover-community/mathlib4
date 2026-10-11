@@ -5,8 +5,8 @@ Authors: Arthur Paulino, Jannis Limperg
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.MetavarContext
+public import Mathlib.Init
 
 /-!
 # Miscellaneous helper functions for tactics.

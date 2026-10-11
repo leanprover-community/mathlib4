@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.Compactification.OnePoint.Basic
 public import Mathlib.Topology.Category.LightProfinite.Basic
+public import Mathlib.Topology.Compactification.OnePoint.Basic
 /-!
 
 # The light profinite set classifying convergent sequences
@@ -59,7 +59,9 @@ instance : Countable ℕ∪{∞} := (inferInstance : Countable <| Option _)
 
 instance : Coe ℕ ℕ∪{∞} := optionCoe
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 lemma continuous_iff_convergent {Y : Type*} [TopologicalSpace Y] (f : ℕ∪{∞} → Y) :
     Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) :=

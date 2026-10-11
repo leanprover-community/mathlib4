@@ -121,7 +121,7 @@ instance : SetLike (SaturatedSubmonoid M) M where
   coe_injective _ _ h := toSubmonoid_injective <| SetLike.coe_injective h
 
 @[to_additive]
-instance : PartialOrder (SaturatedSubmonoid M) := .ofSetLike ..
+instance : PartialOrder (SaturatedSubmonoid M) := .ofSetLike _
 
 @[to_additive]
 lemma ext' {s₁ s₂ : SaturatedSubmonoid M} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ :=
@@ -157,7 +157,7 @@ instance : InfSet (SaturatedSubmonoid M) where
     mul_mem' hx hy := by rw [Set.mem_iInter₂] at *; exact fun s hs ↦ mul_mem (hx s hs) (hy s hs)
     one_mem' := Set.mem_iInter₂.mpr fun _ _ ↦ one_mem _
     mulSaturated := by
-      convert! Submonoid.MulSaturated.sInf (f := toSubmonoid '' f) (by simp)
+      convert Submonoid.MulSaturated.sInf (f := toSubmonoid '' f) (by simp)
       ext; simp [Submonoid.mem_sInf] }
 
 @[to_additive]

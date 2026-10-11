@@ -5,7 +5,6 @@ Authors: Attila Gáspár
 -/
 module
 
-public import Mathlib.Topology.Order.Lattice
 public import Mathlib.Topology.Sets.VietorisTopology
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
@@ -373,7 +372,7 @@ theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
   isClosed_induced hs.powerset_hausdorff
 
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Closeds α)} := by
-  convert! UniformSpace.hausdorff.isClopen_singleton_empty.preimage uniformContinuous_coe.continuous
+  convert UniformSpace.hausdorff.isClopen_singleton_empty.preimage uniformContinuous_coe.continuous
   ext; simp
 
 theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
@@ -481,9 +480,8 @@ theorem compactSpace_iff : CompactSpace (Closeds α) ↔ CompactSpace α := by
   have := isClopen_singleton_bot.compl.isClosed.isCompact.elim_finite_subfamily_closed
     (fun i => {C : Closeds α | ↑C ⊆ F i})
     (fun i => isClosed_subsets_of_isClosed (hF₁ i))
-  simp_rw [← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset,
-    ← Set.ofPred_forall, ← Set.subset_iInter_iff, hF₂, Set.subset_empty_iff, coe_eq_empty,
-    Set.ofPred_eq_eq_singleton] at this
+  simp_rw [Set.disjoint_compl_left_iff_subset, ← Set.ofPred_forall, ← Set.subset_iInter_iff, hF₂,
+    Set.subset_empty_iff, coe_eq_empty, Set.ofPred_eq_eq_singleton] at this
   obtain ⟨s, hs⟩ := this .rfl
   specialize @hs ⟨⋂ i ∈ s, F i, isClosed_biInter fun i _ => hF₁ i⟩ .rfl
   exact ⟨s, congr($hs)⟩
@@ -539,7 +537,7 @@ theorem isClosedEmbedding_toCloseds [T2Space α] [CompleteSpace α] :
     IsClosedEmbedding (toCloseds (α := α)) where
   __ := isEmbedding_toCloseds
   isClosed_range := by
-    convert! Closeds.isClosed_setOfPred_totallyBounded
+    convert Closeds.isClosed_setOfPred_totallyBounded
     exact subset_antisymm
       (Set.range_subset_iff.mpr fun K => K.isCompact.totallyBounded)
       (fun K hK => ⟨⟨K, hK.isCompact_of_isClosed K.isClosed⟩, rfl⟩)

@@ -5,11 +5,10 @@ Authors: Yuval Filmus
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Chebyshev
-public import Mathlib.Data.Real.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.Arcosh
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
@@ -67,14 +66,14 @@ theorem one_lt_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < x) :
 theorem one_le_negOnePow_mul_eval_T_real (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
     1 ≤ n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
-  convert! one_le_eval_T_real n (le_neg_of_le_neg hx)
+  convert one_le_eval_T_real n (le_neg_of_le_neg hx)
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
   simp
 
 theorem one_lt_negOnePow_mul_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x < -1) :
     1 < n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
-  convert! one_lt_eval_T_real hn (lt_neg_of_lt_neg hx)
+  convert one_lt_eval_T_real hn (lt_neg_of_lt_neg hx)
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
   simp
 
@@ -119,7 +118,7 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
 theorem eval_T_real_cos_int_mul_pi_div {k : ℕ} {n : ℕ} (hn : n ≠ 0) :
     (T ℝ n).eval (cos (k * π / n)) = (k : ℤ).negOnePow := by
   rw [T_real_cos, Int.cast_negOnePow]
-  convert! Real.cos_int_mul_pi k using 2
+  convert Real.cos_int_mul_pi k using 2
   simp [field]
 
 theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
@@ -303,13 +302,11 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
     refine h.elim (fun h => ?_) (fun h => ?_)
     · refine le_abs.mpr (.inr (le_neg_of_le_neg ?_))
       have := isMinOn_iff.mp h (cos (1 * π / n)) (by grind [abs_cos_le_one])
-      rw [(eval_T_real_eq_neg_one_iff hn (cos (1 * π / n))).mpr ⟨1, Nat.one_le_iff_ne_zero.mpr hn,
+      rwa [(eval_T_real_eq_neg_one_iff hn (cos (1 * π / n))).mpr ⟨1, Nat.one_le_iff_ne_zero.mpr hn,
         by simp⟩] at this
-      assumption
     · refine le_abs.mpr (.inl ?_)
       have := isMaxOn_iff.mp h (cos (0 * π / n)) (by simp)
-      rw [(eval_T_real_eq_one_iff hn _).mpr ⟨0, by simp, by simp⟩] at this
-      assumption
+      rwa [(eval_T_real_eq_one_iff hn _).mpr ⟨0, by simp, by simp⟩] at this
   · rintro ⟨k, hk, hx⟩
     rw [hx]
     exact isExtrOn_T_real hn hk
@@ -320,7 +317,7 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
   obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hroot
   have hn : n ≠ 0 := by grind
   suffices Irrational (cos ((Rat.divInt (2 * k + 1) (2 * n)) * π)) by
-    rw [← hk₂]; convert! this using 2; push_cast; field_simp
+    rw [← hk₂]; convert this using 2; push_cast; field_simp
   apply irrational_cos_rat_mul_pi
   contrapose! hnz
   have : (Rat.divInt (2 * k + 1) (2 * n)).den = 2 * (n / n.gcd (2 * k + 1)) := calc
@@ -329,12 +326,12 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
       Nat.mul_div_assoc _ (Nat.gcd_dvd_left ..)]
   have hn : 2 * k + 1 = n := Nat.eq_of_dvd_of_lt_two_mul (by simp) (Nat.gcd_eq_left_iff_dvd.mp <|
     Nat.eq_of_dvd_of_div_eq_one (Nat.gcd_dvd_left ..) (by grind [Rat.den_pos])) (by grind)
-  rw_mod_cast [← hk₂, hn]; convert! cos_pi_div_two using 2; push_cast; field_simp
+  rw_mod_cast [← hk₂, hn]; convert cos_pi_div_two using 2; push_cast; field_simp
 
 theorem abs_iterate_derivative_T_real_le (n : ℤ) (k : ℕ) {x : ℝ} (hx : |x| ≤ 1) :
     |(derivative^[k] (T ℝ n)).eval x| ≤ (derivative^[k] (T ℝ n)).eval 1 := by
   wlog hn : 0 ≤ n
-  · convert! this (-n) k hx (by grind) using 1 <;> rw [T_neg]
+  · convert this (-n) k hx (by grind) using 1 <;> rw [T_neg]
   lift n to ℕ using hn
   have := T_iterate_derivative_mem_span_T (R := ℝ) n k
   obtain ⟨f, hfsupp, hfderiv⟩ := Submodule.mem_span_set.mp this
