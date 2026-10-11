@@ -214,19 +214,19 @@ theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbeddin
 lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) : QuasiSober α ↔ ∀ i, QuasiSober (U i) := by
   refine ⟨fun h i ↦ (U i).isOpenEmbedding'.quasiSober, fun hU' ↦ (quasiSober_iff _).mpr ?_⟩
-  · rintro t ⟨⟨x, hx⟩, h⟩ h'
-    obtain ⟨i, hi⟩ := hU.exists_mem x
-    have H : IsIrreducible ((↑) ⁻¹' t : Set (U i)) :=
-      ⟨⟨⟨x, hi⟩, hx⟩, h.preimage (U i).isOpenEmbedding'⟩
-    use H.genericPoint
-    apply le_antisymm
-    · simpa [h'.closure_subset_iff, h'.closure_eq] using!
-        continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
-    rw [← image_singleton, ← closure_image_closure continuous_subtype_val,
-      H.isGenericPoint_genericPoint_closure.def]
-    refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
-      (closure_mono ?_)
-    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using! Set.image_mono subset_closure
+  rintro t ⟨⟨x, hx⟩, h⟩ h'
+  obtain ⟨i, hi⟩ := hU.exists_mem x
+  have H : IsIrreducible ((↑) ⁻¹' t : Set (U i)) :=
+    ⟨⟨⟨x, hi⟩, hx⟩, h.preimage (U i).isOpenEmbedding'⟩
+  use H.genericPoint
+  apply le_antisymm
+  · simpa [h'.closure_subset_iff, h'.closure_eq] using!
+      continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
+  rw [← image_singleton, ← closure_image_closure continuous_subtype_val,
+    H.isGenericPoint_genericPoint_closure.def]
+  refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
+    (closure_mono ?_)
+  simpa only [inter_comm t, ← Subtype.image_preimage_coe] using! Set.image_mono subset_closure
 
 lemma TopologicalSpace.IsOpenCover.quasiSober {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) [∀ i, QuasiSober (U i)] : QuasiSober α :=
