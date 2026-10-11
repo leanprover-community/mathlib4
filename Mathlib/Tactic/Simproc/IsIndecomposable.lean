@@ -113,7 +113,7 @@ indecomposable (strong connectivity of `adj`). -/
 theorem isIndecomposable_of_spansFrom {n : ℕ}
     {M : Matrix (Fin n) (Fin n) R} {adj : Fin n → Fin n → Bool}
     (hadj : ∀ i j, adj i j ↔ M i j ≠ 0) {root : Fin n} {fwd bwd : List (Fin n × Fin n)}
-    (hf : SpansFrom adj fwd root) (hb : SpansFrom (fun i j ↦ adj j i) bwd root) :
+    (hf : SpansFrom adj fwd root) (hb : SpansFrom (Function.swap adj) bwd root) :
     M.IsIndecomposable := by
   refine (isIndecomposable_iff_reflTransGen M).2 fun i j ↦ ?_
   simpa only [hadj] using (hb.reflTransGen i).swap.trans (hf.reflTransGen j)
@@ -211,7 +211,7 @@ def decideStronglyConnected (adjMatrix : Array (Array Bool)) : StrongConnectivit
   let (outTree, fromRoot) := bfs n adj 0
   -- The vertices reached from `0` are closed under the edges.
   if !fromRoot.all id then .disconnected fromRoot else
-  let (inTree, toRoot) := bfs n (fun p c ↦ adj c p) 0
+  let (inTree, toRoot) := bfs n (Function.swap adj) 0
   -- The vertices not reaching `0` are closed under the edges.
   if !toRoot.all id then .disconnected (toRoot.map not) else
   .connected outTree inTree
@@ -233,7 +233,7 @@ def certifyIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (d�
   let inTreeQ ← mkEdgeListLitQ n inTree
   let adj : Q(Fin $n → Fin $n → Bool) := q(packedAdj $n (packRows $n $lit))
   let hout ← mkDecideProofQ q(SpansFrom $adj $outTreeQ $root)
-  let hin ← mkDecideProofQ q(SpansFrom (fun i j ↦ $adj j i) $inTreeQ $root)
+  let hin ← mkDecideProofQ q(SpansFrom (Function.swap $adj) $inTreeQ $root)
   return q(isIndecomposable_of_spansFrom (packedAdj_packRows_iff $lit) $hout $hin)
 
 /-- Prove that the matrix with rows `lit` is decomposable from a nonempty proper set `closedSet` of
@@ -262,7 +262,7 @@ def reduceIsIndecomposableCore : Simp.Simproc := fun e ↦ do
   have zα : Q(Zero $α) := zR
   if n == 0 then
     have M : Q(Matrix (Fin 0) (Fin 0) $α) := M
-    let pf : Q(($M).IsIndecomposable) := q((isIndecomposable_iff_reflTransGen $M).2 (·.elim0))
+    let pf : Q(($M).IsIndecomposable) := q((isIndecomposable_iff_reflTransGen $M).2 isEmptyElim)
     return .done { expr := q(True), proof? := q(eq_true $pf) }
   let some (_, _, _, entries) ← matchMatrixLit? M | return .continue
   let .some dα ← trySynthInstanceQ q(DecidableEq $α) | return .continue
