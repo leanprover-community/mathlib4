@@ -111,6 +111,8 @@ def «library_note» (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := d
     logWarningAt s m!"No library note with label `{label}`."
   return .code label
 
+attribute [nolint defsWithUnderscore] «library_note».getArgs
+
 /--
 A reference to a bibliography entry.
 
