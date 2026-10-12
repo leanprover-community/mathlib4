@@ -762,11 +762,9 @@ theorem mem_of_mem_inter_right {x : α} {a b : Set α} (h : x ∈ a ∩ b) : x �
 
 theorem inter_self (a : Set α) : a ∩ a = a := inf_idem _
 
-theorem inter_empty (a : Set α) : a ∩ ∅ = ∅ :=
-  ext fun _ => iff_of_eq (and_false _)
+theorem inter_empty (a : Set α) : a ∩ ∅ = ∅ := inf_bot_eq _
 
-theorem empty_inter (a : Set α) : ∅ ∩ a = ∅ :=
-  ext fun _ => iff_of_eq (false_and _)
+theorem empty_inter (a : Set α) : ∅ ∩ a = ∅ := bot_inf_eq _
 
 theorem inter_comm (a b : Set α) : a ∩ b = b ∩ a := inf_comm _ _
 
