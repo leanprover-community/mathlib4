@@ -59,9 +59,6 @@ structure IsTree : Prop extends
   /-- A tree is acyclic. -/
   isAcyclic : G.IsAcyclic
 
-@[deprecated (since := "2026-03-18")] alias IsTree.isConnected := IsTree.connected
-@[deprecated (since := "2026-03-18")] alias IsTree.IsAcyclic := IsTree.isAcyclic
-
 variable {G G'}
 
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
@@ -362,9 +359,6 @@ theorem IsAcyclic.sup_edge_of_not_reachable {u v : V} (hnreach : ¬G.Reachable u
     (hacyc : G.IsAcyclic) : (G ⊔ edge u v).IsAcyclic := by
   grind [isAcyclic_iff_forall_isBridge, IsBridge.sup_edge_of_not_reachable_of_isBridge,
     edgeSet_sup, edgeSet_edge, IsBridge.of_not_reachable, isBridge_sup_edge]
-
-@[deprecated (since := "2026-03-18")]
-alias IsAcyclic.isAcyclic_sup_fromEdgeSet_of_not_reachable := IsAcyclic.sup_edge_of_not_reachable
 
 theorem isAcyclic_add_edge_iff_of_not_reachable (x y : V) (hxy : ¬ G.Reachable x y) :
     (G ⊔ edge x y).IsAcyclic ↔ IsAcyclic G :=
@@ -675,5 +669,27 @@ theorem isAcyclic_iff_free_cycleGraph : G.IsAcyclic ↔ ∀ n ≥ 3, (cycleGraph
   · have ⟨v, p, hcyc, hlen⟩ := cycleGraph_isContained_iff hn |>.mp hle
     exact h p hcyc
   · exact cycleGraph_isContained_iff hcyc.three_le_length |>.mpr ⟨v, p, hcyc, rfl⟩
+
+section Hasse
+
+theorem isAcyclic_hasse_of_linearOrder (α : Type*) [LinearOrder α] : (hasse α).IsAcyclic := by
+  refine isAcyclic_iff_forall_adj_isBridge.mpr fun u v huv ↦ ?_
+  wlog hle : u < v
+  · grind [Adj.symm]
+  refine isBridge_iff.mpr fun ⟨w⟩ ↦ ?_
+  have := w.exists_boundary_dart (.Iio v) hle Set.self_notMem_Iio
+  grind [Dart.adj, hasse_adj, deleteEdges_adj, CovBy]
+
+@[simp]
+theorem isAcyclic_pathGraph (n : ℕ) : (pathGraph n).IsAcyclic := isAcyclic_hasse_of_linearOrder _
+
+theorem isTree_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).IsTree :=
+  ⟨connected_pathGraph_add_one n, isAcyclic_pathGraph (n + 1)⟩
+
+@[simp]
+theorem isTree_pathGraph {n : ℕ} : (pathGraph n).IsTree ↔ n ≠ 0 := by
+  simp [isTree_iff, connected_iff, ← Fin.isEmpty_iff]
+
+end Hasse
 
 end SimpleGraph

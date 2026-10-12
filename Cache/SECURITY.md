@@ -54,10 +54,10 @@ type, and ref — matches a pre-registered grant. The credential's scope is
 fixed when it is issued and cannot be widened afterward.
 
 Two credential mechanisms implement this. Azure writes mint an OIDC-federated
-bearer token whose RBAC role covers exactly one container. An S3-compatible
-destination takes a short-lived credential pair scoped to one container's
-namespace, and the tool signs each request with it (SigV4); CI mints the
-pair per job the same OIDC-gated way.
+bearer token whose RBAC role covers exactly one container. Only builds that write to
+the `master` container write to Azure. An S3-compatible destination takes a short-lived
+credential pair scoped to one container's namespace, and the tool signs each
+request with it (SigV4); CI mints the pair per job the same OIDC-gated way.
 
 The nightly-testing credential is narrower than one container: it reaches only
 the namespace of the commit being built.
@@ -171,4 +171,5 @@ The trust model does not attempt to defend against:
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md), [`Cache/CI.md`](CI.md) |
 | OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` and `upload_test_cache` jobs) |
 | (repo, ref) → trust class policy table         | [`.github/actions/cache-trust-dispatch/action.yml`](../.github/actions/cache-trust-dispatch/action.yml) |
-| Caller `cache_application_id` wiring           | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |
+| Caller `cache_application_id` wiring, the `master` writers | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |
+| Caller `cache_environment` wiring, every caller | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |

@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # Matrices and base change

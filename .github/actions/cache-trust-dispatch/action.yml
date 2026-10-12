@@ -67,14 +67,15 @@ runs:
         REPO_SCOPE=""
 
         # Security note: this dispatch is NOT the trust boundary for writes.
-        # The real enforcement is the OIDC bearer token minted in the upload jobs:
-        # the token is scoped to a specific container, so a malicious actor
-        # rewriting this case to `--container=master` from a fork build would
-        # be 403'd by Azure regardless. The dispatch exists so the workflow
-        # does the right thing in the honest case; defence in depth is RBAC.
+        # The real enforcement is the OIDC-gated credential minted in the upload
+        # jobs: the credential is scoped to a specific container, so a malicious
+        # actor rewriting this case to `--container=master` from a fork build
+        # would be rejected by the storage regardless. The dispatch exists so the
+        # workflow does the right thing in the honest case; defence in depth is
+        # the credential scope.
 
         # The privileged container `master` is writable only by mathlib4's own
-        # native CI, whose OIDC token is RBAC-scoped to match. A cross-repo pull
+        # native CI, whose OIDC-gated credential is scoped to match. A cross-repo pull
         # request is built by build_fork.yml with fork-trust credentials
         # whatever repo the PR head lives on (e.g. a `bump/*` branch on the
         # mathlib4-nightly-testing fork), so it can only write `forks`.
@@ -124,8 +125,8 @@ runs:
                   ;;
                 *)
                   # `bors trying`, `ci-dev/*`, maintainer dev branches on the
-                  # canonical repo: trust level is fork-equivalent (the OIDC
-                  # token's RBAC scopes them to `forks`). Reads must widen
+                  # canonical repo: trust level is fork-equivalent (the
+                  # minted credential scopes them to `forks`). Reads must widen
                   # past the default [master] so the post-build verification
                   # finds the just-uploaded fork-trust artifacts.
                   PRIMARY="forks"
