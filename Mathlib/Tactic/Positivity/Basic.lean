@@ -624,34 +624,6 @@ attribute [positivity_lemma]
   NNRat.num_ne_zero_of_ne_zero
   NNRat.den_pos
 
-/-- The `positivity` extension which identifies expressions of the form `NNRat.num q`,
-such that `positivity` successfully recognises `q`. -/
-@[positivity NNRat.num _]
-meta def evalNNRatNum : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
-  match u, α, e with
-  | 0, ~q(ℕ), ~q(NNRat.num $a) =>
-    let zα : Q(Zero ℚ≥0) := q(inferInstance)
-    let pα : Q(PartialOrder ℚ≥0) := q(inferInstance)
-    trace[Tactic.positivity] "I'm evalNNRatNum: {e}"
-    assumeInstancesCommute
-    match ← core zα pα a with
-    | .positive pa =>
-      return .positive q(NNRat.num_pos_of_pos $pa)
-    | .nonzero pa => return .nonzero q(NNRat.num_ne_zero_of_ne_zero $pa)
-    | _ => return .none
-  | _, _, _ => throwError "not NNRat.num"
-
-/-- The `positivity` extension which identifies expressions of the form `Rat.den a`. -/
-@[positivity NNRat.den _]
-meta def evalNNRatDen : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
-  match u, α, e with
-  | 0, ~q(ℕ), ~q(NNRat.den $a) =>
-    assumeInstancesCommute
-    return .positive q(den_pos $a)
-  | _, _, _ => throwError "not NNRat.den"
-
 variable {q : ℚ≥0}
 
 example (hq : 0 < q) : 0 < q.num := by positivity
