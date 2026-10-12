@@ -267,6 +267,12 @@ lemma isTorsionFreeClass_iff_isTorsionClass_op (P : ObjectProperty C) :
     IsTorsionFreeClass P ↔ IsTorsionClass P.op :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstanceAs (IsTorsionFreeClass P.op.unop)⟩
 
+/-- A property of objects is a torsion class if and only if its opposite is a torsion-free
+class in the opposite category. -/
+lemma isTorsionClass_iff_isTorsionFreeClass_op (P : ObjectProperty C) :
+    IsTorsionClass P ↔ IsTorsionFreeClass P.op :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstanceAs (IsTorsionClass P.op.unop)⟩
+
 /-- In a well-copowered abelian category with products, a property of objects `P` is a
 torsion-free class if and only if it is closed under subobjects, extensions, and products.
 This is the dual of `isTorsionClass_iff`, obtained by transporting it through the
