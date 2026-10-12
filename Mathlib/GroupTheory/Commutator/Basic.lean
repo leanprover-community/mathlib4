@@ -523,7 +523,7 @@ lemma map_commutator_eq (f : G →* G') : (commutator G).map f = ⁅f.range, f.r
 variable {G} in
 @[to_additive]
 theorem map_commutator_of_surjective {f : G →* G'} (hf : Function.Surjective f) :
-    (_root_.commutator G).map f = _root_.commutator G' := by
+    (commutator G).map f = commutator G' := by
   rw [map_commutator_eq, f.range_eq_top_of_surjective hf, commutator_def]
 
 section commutatorRepresentatives
