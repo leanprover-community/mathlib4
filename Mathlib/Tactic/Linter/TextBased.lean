@@ -580,49 +580,40 @@ public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name)
     "COM9", "COM¹", "COM²", "COM³", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8",
     "LPT9", "LPT¹", "LPT²", "LPT³"
   ]
-  -- We also check for the exclamation mark (which is not forbidden on Windows, but e.g. on Nix OS),
-  -- but do so below (with a custom error message).
-  let forbiddenCharacters := [
-    '<', '>', '"', '/', '\\', '|', '?', '*',
-  ]
   let mut badNamesNum := 0
   for name in modules do
     let mut isBad := false
     let mut badComps : List String := []
-    let mut badChars : List String := []
+    let mut badChars : List Char := []
     for comp in name.componentsRev do
       let .str .anonymous s := comp | continue
       if forbiddenNames.contains s.toUpper then
         badComps := s :: badComps
       else
-        if s.contains '!' then
-          isBad := true
-          IO.eprintln s!"error: module name '{name}' contains forbidden character '!'"
-        else if s.contains '.' then
-          isBad := true
-          IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
-        else if s.contains '\'' then
-          isBad := true
-          IO.eprintln s!"error: module name '{name}' contains a prime ('), \
-            which causes shell escaping issues"
-        else if s.contains ' ' || s.contains '\t' || s.contains '\n' then
-          isBad := true
-          IO.eprintln s!"error: module name '{name}' contains a whitespace character"
-        for c in forbiddenCharacters do
-          if s.contains c then
-            badChars := c.toString :: badChars
+        for char in s do
+          if char.isAlphanum then continue
+          if char == '_' then continue
+          badChars := char :: badChars
     if !badComps.isEmpty || !badChars.isEmpty then
       isBad := true
     if isBad then badNamesNum := badNamesNum + 1
 
     if !badComps.isEmpty then
-      IO.eprintln s!"error: module name '{name}' contains \
-        component{if badComps.length > 1 then "s" else ""} '{badComps}', \
+      badComps := badComps.eraseDups
+      IO.eprintln s!"error: module name `{name}` contains \
+        component{if badComps.length > 1 then "s" else ""} `{badComps}`, \
         which {if badComps.length > 1 then "are" else "is"} forbidden in Windows filenames."
     if !badChars.isEmpty then
-      IO.eprintln s!"error: module name '{name}' contains \
-        character{if badChars.length > 1 then "s" else ""} '{badChars}', \
-        which {if badChars.length > 1 then "are" else "is"} forbidden in Windows filenames."
+      let (badCharsWhitespace, badCharsOther) := badChars.eraseDups.partition Char.isWhitespace
+      if not badCharsWhitespace.isEmpty then
+        IO.eprintln s!"error: module name `{name}` contains whitespace."
+      match badCharsOther with
+      | [] => pure ()
+      | [char] =>
+        IO.eprintln s!"error: module name `{name}` contains non-alphanumeric character `{char}`."
+      | _ =>
+        IO.eprintln s!"error: module name `{name}` contains non-alphanumeric characters \
+          `{badCharsOther}`."
   return badNamesNum
 
 end Mathlib.Linter.TextBased
