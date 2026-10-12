@@ -267,14 +267,13 @@ theorem isTorsionFreeClass_iff (P : ObjectProperty C)
     [LocallySmall.{w} C] [WellPowered.{w} Cᵒᵖ] [HasProducts.{w} C] :
     IsTorsionFreeClass P ↔
       P.IsClosedUnderSubobjects ∧ P.IsClosedUnderExtensions ∧
-        ∀ J : Type w, P.IsClosedUnderLimitsOfShape (Discrete J) := by
-  refine ⟨fun _ ↦ ⟨inferInstance, inferInstance, fun _ ↦ inferInstance⟩, ?_⟩
-  -- these hypotheses are consumed as instances by the `P.op` transfer instances
-  rintro ⟨hsub, hext, hprod⟩
-  rw [isTorsionFreeClass_iff_isTorsionClass_op]
-  refine (isTorsionClass_iff P.op).mpr ⟨inferInstance, inferInstance, fun J ↦ ?_⟩
-  exact (P.op.isClosedUnderColimitsOfShape_iff_of_equivalence (Discrete.opposite J)).mp
-    inferInstance
+        ∀ J : Type w, P.IsClosedUnderLimitsOfShape (Discrete J) :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, fun⟨_, _, _⟩ ↦ by
+    rw [isTorsionFreeClass_iff_isTorsionClass_op, isTorsionClass_iff]
+    refine ⟨inferInstance, inferInstance, fun J ↦ ?_⟩
+    rw [← P.op.isClosedUnderColimitsOfShape_iff_of_equivalence (Discrete.opposite J)]
+    infer_instance
+  ⟩
 
 end Abelian
 
