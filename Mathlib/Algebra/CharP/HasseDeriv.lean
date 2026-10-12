@@ -54,7 +54,7 @@ theorem forall_hasseDeriv_eq_zero_iff {e : ℕ} {f : R[X]} :
 theorem hasseDeriv_X_pow_mul {e k : ℕ} (hk : k < p ^ e) (g : R[X]) :
     hasseDeriv k (X ^ p ^ e * g) = X ^ p ^ e * hasseDeriv k g := by
   refine hasseDeriv_mul_of_forall_hasseDeriv_eq_zero _ _ (fun i hi hik ↦ ?_) g
-  refine (forall_hasseDeriv_eq_zero_iff p (e := e)).2 (fun n hn ↦ ?_) i hi (by omega)
+  refine (forall_hasseDeriv_eq_zero_iff p (e := e)).2 (fun n hn ↦ ?_) i hi (by lia)
   rw [coeff_X_pow, ne_eq, ite_eq_right_iff, not_forall] at hn
   rw [hn.1]
 
@@ -84,7 +84,7 @@ theorem forall_hasseDeriv_eq_zero_iff_exists_expand {e : ℕ} {f : R[X]} :
 theorem hasseDeriv_expand_mul {e k : ℕ} (hk : k < p ^ e) (f g : R[X]) :
     hasseDeriv k (expand R (p ^ e) f * g) = expand R (p ^ e) f * hasseDeriv k g :=
   hasseDeriv_mul_of_forall_hasseDeriv_eq_zero _ _ (fun i hi hik ↦
-    (forall_hasseDeriv_eq_zero_iff_exists_expand p).2 ⟨f, rfl⟩ i hi (by omega)) g
+    (forall_hasseDeriv_eq_zero_iff_exists_expand p).2 ⟨f, rfl⟩ i hi (by lia)) g
 
 end CommRing
 

@@ -264,7 +264,7 @@ theorem hasseDeriv_mul_of_forall_hasseDeriv_eq_zero
   · rintro ⟨i, j⟩ hij hne
     rw [mem_antidiagonal] at hij
     have hi : i ≠ 0 := by rintro rfl; simp_all
-    rw [hf i (Nat.pos_of_ne_zero hi) (by omega), zero_mul]
+    rw [hf i (Nat.pos_of_ne_zero hi) (by lia), zero_mul]
   · simp
 
 end
