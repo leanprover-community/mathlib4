@@ -53,7 +53,7 @@ def reedyStructure : ReedyStructure (epimorphisms SimplexCategory) (monomorphism
       exact hf ⟨_⟩)
   nonempty_unique {x y} f := by
     refine ⟨?_, by subsingleton⟩
-    obtain t:= (HasStrongEpiMonoFactorisations.has_fac f).some
+    obtain t := (HasStrongEpiMonoFactorisations.has_fac f).some
     exact ⟨t.I, t.e, t.m, t.fac, by infer_instance, by infer_instance⟩
 
 end SimplexCategory
