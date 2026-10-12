@@ -348,71 +348,82 @@ section PiSpace
 
 /-!
 ### Regularity of functions with codomain `Π i, M i`
-
-We have no `ModelWithCorners.pi` yet, so we prove lemmas about functions `f : M → Π i, F i` and
-use `𝓘(𝕜, Π i, F i)` as the model space.
 -/
 
 variable {ι : Type*} [Fintype ι] {Mi Hi Ei : ι → Type*}
   [∀ i, NormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
   [∀ i, TopologicalSpace (Hi i)] {Ii : ∀ i, ModelWithCorners 𝕜 (Ei i) (Hi i)}
   [∀ i, TopologicalSpace (Mi i)] [∀ i, ChartedSpace (Hi i) (Mi i)]
-  {φ : M → ∀ i, Ei i} {f : M → ∀ i, Mi i}
-
-#check contDiffWithinAt_apply
+  {φ : M → Π i, Ei i} {f : M → Π i, Mi i}
 
 theorem contMDiffWithinAt_apply {i : ι} {s : Set (Π i, Mi i)} {x : Π i, Mi i} :
-    ContMDiffWithinAt (ModelWithCorners.pi Ii) (Ii i) n (fun (x : Π i, Mi i) ↦ x i) s x:= by
+    ContMDiffWithinAt (ModelWithCorners.pi Ii) (Ii i) n (fun (x : Π i, Mi i) ↦ x i) s x := by
   rw [contMDiffWithinAt_iff']
-  refine ⟨(continuous_apply i).continuousWithinAt, ?_⟩
-  have W := contDiffWithinAt_apply 𝕜 (Π i, Ei i) i (n := n)
-    --((extChartAt (ModelWithCorners.pi Ii) x).target ∩
-    --(extChartAt (ModelWithCorners.pi Ii) x).symm ⁻¹' (s ∩ (fun x ↦ x i) ⁻¹' (extChartAt (Ii i) (x i)).source))
+  refine ⟨(continuous_apply i).continuousWithinAt,
+    (contDiffWithinAt_apply _ _ _ _ _).congr (fun y hy ↦ ?_) ?_⟩
+  · apply (extChartAt (Ii i) _).right_inv
+    have w := hy.1
+    refine ⟨?_, w.2 i (mem_univ _)⟩
+    simp only [extChartAt, OpenPartialHomeomorph.extend, piChartedSpace_chartAt,
+      OpenPartialHomeomorph.pi_toPartialHomeomorph, PartialEquiv.trans_target,
+      ModelWithCorners.target_eq, ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.pi_target,
+      mem_inter_iff, mem_range, mem_preimage] at w ⊢
+    rcases w.1 with ⟨z, rfl⟩
+    exact ⟨z i, rfl⟩
+  · exact (extChartAt (Ii i) _).right_inv (by simp [ModelWithCorners.pi])
 
+theorem contMDiffAt_apply {i : ι} {x : Π i, Mi i} :
+    ContMDiffAt (ModelWithCorners.pi Ii) (Ii i) n (fun (x : Π i, Mi i) ↦ x i) x :=
+  contMDiffWithinAt_apply
 
+theorem contMDiffOn_apply {i : ι} {s : Set (Π i, Mi i)} :
+    ContMDiffOn (ModelWithCorners.pi Ii) (Ii i) n (fun (x : Π i, Mi i) ↦ x i) s :=
+  fun _ _↦ contMDiffWithinAt_apply
 
-#exit
-  contDiffWithinAt_fst.congr (fun y hy => ?_) ?_⟩
-  · exact (extChartAt I p.1).right_inv ⟨hy.1.1.1, hy.1.2.1⟩
-  · exact (extChartAt I p.1).right_inv <| (extChartAt I p.1).map_source (mem_extChartAt_source _)
-
+theorem contMDiff_apply {i : ι} :
+    ContMDiff (ModelWithCorners.pi Ii) (Ii i) n (fun (x : Π i, Mi i) ↦ x i) :=
+  fun _ ↦ contMDiffAt_apply
 
 theorem contMDiffWithinAt_pi :
     ContMDiffWithinAt I (ModelWithCorners.pi Ii) n f s x ↔
       ∀ i, ContMDiffWithinAt I (Ii i) n (fun x ↦ f x i) s x := by
-  refine ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
-  · have : Continuous (fun (x : Π i, Mi i) ↦ x i) := by exact continuous_apply i
-    have : ContMDiff (ModelWithCorners.pi Ii) (Ii i) n (fun (x : Π i, Mi i) ↦ x i) := by
-      sorry
-    exact this.contMDiffAt.comp_contMDiffWithinAt _ h
+  refine ⟨fun h i ↦ contMDiffAt_apply.comp_contMDiffWithinAt _ h, fun h ↦ ?_⟩
+  simp only [contMDiffWithinAt_iff] at *
+  exact ⟨continuousWithinAt_pi.2 (fun i ↦ (h i).1), contDiffWithinAt_pi.2 (fun i ↦ (h i).2)⟩
 
-
-#exit
-
-
-theorem contMDiffWithinAt_pi_space :
-    ContMDiffWithinAt I 𝓘(𝕜, ∀ i, Ei i) n φ s x ↔
+theorem contMDiffWithinAt_pi_module :
+    ContMDiffWithinAt I 𝓘(𝕜, Π i, Ei i) n φ s x ↔
       ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Ei i) n (fun x => φ x i) s x := by
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
     extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
 
-theorem contMDiffOn_pi_space :
-    ContMDiffOn I 𝓘(𝕜, ∀ i, Ei i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Ei i) n (fun x => φ x i) s :=
-  ⟨fun h i x hx => contMDiffWithinAt_pi_space.1 (h x hx) i, fun h x hx =>
-    contMDiffWithinAt_pi_space.2 fun i => h i x hx⟩
+theorem contMDiffOn_pi :
+    ContMDiffOn I (ModelWithCorners.pi Ii) n f s ↔ ∀ i, ContMDiffOn I (Ii i) n (fun x ↦ f x i) s :=
+  ⟨fun h i x hx ↦ contMDiffWithinAt_pi.1 (h x hx) i,
+    fun h x hx ↦ contMDiffWithinAt_pi.2 (fun i ↦ h i x hx)⟩
 
-theorem contMDiffAt_pi_space :
-    ContMDiffAt I 𝓘(𝕜, ∀ i, Ei i) n φ x ↔ ∀ i, ContMDiffAt I 𝓘(𝕜, Ei i) n (fun x => φ x i) x :=
-  contMDiffWithinAt_pi_space
+theorem contMDiffOn_pi_module :
+    ContMDiffOn I 𝓘(𝕜, Π i, Ei i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Ei i) n (fun x => φ x i) s :=
+  ⟨fun h i x hx => contMDiffWithinAt_pi_module.1 (h x hx) i, fun h x hx =>
+    contMDiffWithinAt_pi_module.2 fun i => h i x hx⟩
 
-theorem contMDiff_pi_space :
-    ContMDiff I 𝓘(𝕜, ∀ i, Ei i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Ei i) n fun x => φ x i :=
-  ⟨fun h i x => contMDiffAt_pi_space.1 (h x) i, fun h x => contMDiffAt_pi_space.2 fun i => h i x⟩
+theorem contMDiffAt_pi :
+    ContMDiffAt I (ModelWithCorners.pi Ii) n f x ↔ ∀ i, ContMDiffAt I (Ii i) n (fun x ↦ f x i) x :=
+  contMDiffWithinAt_pi
+
+theorem contMDiffAt_pi_module :
+    ContMDiffAt I 𝓘(𝕜, Π i, Ei i) n φ x ↔ ∀ i, ContMDiffAt I 𝓘(𝕜, Ei i) n (fun x => φ x i) x :=
+  contMDiffWithinAt_pi_module
+
+theorem contMDiff_pi :
+    ContMDiff I (ModelWithCorners.pi Ii) n f ↔ ∀ i, ContMDiff I (Ii i) n (fun x ↦ f x i) :=
+  ⟨fun h i x ↦ contMDiffAt_pi.1 (h x) i, fun h x ↦ contMDiffAt_pi.2 (fun i ↦ h i x)⟩
+
+theorem contMDiff_pi_module :
+    ContMDiff I 𝓘(𝕜, Π i, Ei i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Ei i) n fun x => φ x i :=
+  ⟨fun h i x => contMDiffAt_pi_module.1 (h x) i, fun h x => contMDiffAt_pi_module.2 fun i => h i x⟩
 
 end PiSpace
-
-
-#exit
 
 section disjointUnion
 
