@@ -188,10 +188,14 @@ namespace IsTorsionClass
 
 variable (P : ObjectProperty C) [IsTorsionClass P]
 
+@[simp]
+lemma leftOrthogonal_rightOrthogonal : P.rightOrthogonal.leftOrthogonal = P :=
+  (isTorsionClass_iff_leftOrthogonal_rightOrthogonal_eq P).1 inferInstance
+
 /-- The torsion theory whose torsion class is `P`; its torsion-free class is necessarily
 `P.rightOrthogonal`. -/
-lemma torsionTheory : TorsionTheory P P.rightOrthogonal :=
-  ⟨((isTorsionClass_iff_leftOrthogonal_rightOrthogonal_eq P).mp inferInstance), rfl⟩
+lemma torsionTheory : TorsionTheory P P.rightOrthogonal := by
+  simpa using TorsionTheory.generated_by P
 
 /-- A torsion class is closed under quotients. -/
 instance : P.IsClosedUnderQuotients := (torsionTheory P).isClosedUnderQuotients_torsion
@@ -212,10 +216,14 @@ namespace IsTorsionFreeClass
 
 variable (P : ObjectProperty C) [IsTorsionFreeClass P]
 
+@[simp]
+lemma rightOrthogonal_leftOrthogonal : P.leftOrthogonal.rightOrthogonal = P :=
+  (isTorsionFreeClass_iff_rightOrthogonal_leftOrthogonal_eq P).1 inferInstance
+
 /-- The torsion theory whose torsion-free class is `P`; its torsion class is necessarily
 `P.leftOrthogonal`. -/
-lemma torsionTheory : TorsionTheory P.leftOrthogonal P :=
-  ⟨rfl, ((isTorsionFreeClass_iff_rightOrthogonal_leftOrthogonal_eq P).mp inferInstance)⟩
+lemma torsionTheory : TorsionTheory P.leftOrthogonal P := by
+  simpa using TorsionTheory.cogenerated_by P
 
 /-- A torsion-free class is closed under subobjects. -/
 instance : P.IsClosedUnderSubobjects := (torsionTheory P).isClosedUnderSubobjects_torsionFree
