@@ -17,8 +17,6 @@ public import Mathlib.Tactic.Order
 # More operations on modules and ideals
 -/
 
-set_option linter.style.longFile 1700
-
 @[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
