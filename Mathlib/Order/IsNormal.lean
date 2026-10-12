@@ -120,31 +120,13 @@ theorem to_Iio (hf : IsNormal f) (a : α) :
 theorem of_dirSupClosed_range [WellFoundedLT β]
     (hf : StrictMono f) (hf' : DirSupClosed (.range f)) : IsNormal f := by
   refine isNormal_iff.2 ⟨hf, fun x hx y hy ↦ ?_⟩
-  have : Nonempty α := ⟨x⟩
-  have : Nonempty β := ⟨f x⟩
-  have := WellFoundedLT.toOrderBot β
-  let := WellFoundedLT.conditionallyCompleteLinearOrderBot β
-  have hfb : BddAbove (f '' Set.Iio x) := by
-    use f x
-    rintro _ ⟨y, hy, rfl⟩
-    exact (hf hy).le
-  obtain ⟨z, hz⟩ : ⨆ b : Set.Iio x, f b ∈ Set.range f := by
-    apply hf' (d := f '' Set.Iio x) _ _ (DirectedOn.of_linearOrder _)
-    · rw [← sSup_image']
-      exact isLUB_csSup' hfb
-    · simp
-    · simpa using hx.not_isMin
-  trans f z
-  · apply hf.monotone
-    by_contra! hzx
-    have ⟨w, hzw, hwx⟩ := hx.lt_iff_nonempty_Ioo.1 hzx
-    apply (hf hzw).not_ge
-    rw [hz]
-    refine le_ciSup (f := fun b : Set.Iio x ↦ f b) ?_ ⟨w, hwx⟩
-    rwa [← Set.image_eq_range]
-  · rw [hz]
-    apply ciSup_le'
-    simpa
+  have hfb : BddAbove (f '' Set.Iio x) := hf.monotone.map_bddAbove bddAbove_Iio
+  obtain ⟨z, hz⟩ := WellFoundedLT.exists_minimal inferInstance _ hfb
+  have hz : IsLUB (f '' Set.Iio x) z := minimal_iff_isLeast.1 hz
+  obtain ⟨w, rfl⟩ := hf' (image_subset_range ..) (hx.nonempty_Iio.image f) (.of_linearOrder _) hz
+  have hw : IsLUB (Set.Iio x) w := hz.of_image hf.le_iff_le
+  cases hw.unique hx.isLUB_Iio
+  simpa [isLUB_le_iff hz, mem_upperBounds] using hy
 
 end LinearOrder
 
