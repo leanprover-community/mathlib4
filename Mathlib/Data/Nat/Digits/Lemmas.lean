@@ -62,8 +62,6 @@ theorem length_digits (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) :
     contrapose! h
     exact div_eq_of_lt h
 
-@[deprecated (since := "2026-03-18")] alias digits_len := length_digits
-
 theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     (b.digits n).length ≤ k ↔ n < b ^ k := by
   by_cases h : n = 0
@@ -122,13 +120,8 @@ theorem length_digits_le_length_digits_succ (b n : ℕ) :
   · interval_cases b <;> simp +arith [digits_zero_succ', hn]
   simpa [length_digits, hb, hn] using log_mono_right (le_succ _)
 
-@[deprecated (since := "2026-03-18")]
-alias digits_len_le_digits_len_succ := length_digits_le_length_digits_succ
-
 theorem le_length_digits_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (digits b m).length :=
   monotone_nat_of_le_succ (length_digits_le_length_digits_succ b) h
-
-@[deprecated (since := "2026-03-18")] alias le_digits_len_le := le_length_digits_le
 
 theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2 : l.getLast hl ≠ 0) :
     (b + 2) ^ l.length ≤ (b + 2) * ofDigits (b + 2) l := by

@@ -17,7 +17,7 @@ simplex category, for `n ≤ m` are initial.
 
 public section
 
-open CategoryTheory
+open CategoryTheory Limits
 
 open scoped Simplicial
 
@@ -136,5 +136,30 @@ lemma epi_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Epi f ↔ Epi f.hom 
     simpa [hg] using congr($(h).hom.toOrderHom j)
   · intro hf
     exact (inclusion d).epi_of_epi_map hf
+
+instance {d : ℕ} : SplitEpiCategory (Truncated d) where
+  isSplitEpi_of_epi f hf :=
+    have := epi_iff.mp hf
+    ((inclusion d).isSplitEpi_iff f).mp (isSplitEpi_of_epi f.hom)
+
+instance {d : ℕ} {a b : Truncated d} (g : a.obj ⟶ b.obj) [hg : Epi g] :
+    Epi (ObjectProperty.homMk g : a ⟶ b) :=
+  epi_iff.mpr hg
+
+instance {d : ℕ} {a b : Truncated d} (g : a.obj ⟶ b.obj) [hg : Mono g] :
+    Mono (ObjectProperty.homMk g : a ⟶ b) :=
+  mono_iff.mpr hg
+
+instance {d : ℕ} : StrongEpiCategory (Truncated d) where
+  strongEpi_of_epi f _ :=
+    have := isSplitEpi_of_epi f
+    inferInstance
+
+instance {d : ℕ} : HasStrongEpiMonoFactorisations (Truncated d) where
+  has_fac {a b} f :=
+    ⟨{ I := ⟨image f.hom, (len_le_of_epi (factorThruImage f.hom)).trans a.2⟩
+       m := ObjectProperty.homMk (image.ι f.hom)
+       e := ObjectProperty.homMk (factorThruImage f.hom)
+       e_strong_epi := strongEpi_of_epi _ }⟩
 
 end SimplexCategory.Truncated
