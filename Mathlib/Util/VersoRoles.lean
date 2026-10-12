@@ -32,7 +32,7 @@ open scoped Lean.Doc.Syntax
 
 public meta section
 
-namespace Mathlib.Migration
+namespace Mathlib.VersoRoles
 
 /-- A reference to a bibliography entry in {lit}`docs/references.bib`. -/
 structure Citation where
@@ -80,7 +80,7 @@ def bibContainsKey (bib : String) (key : String) : Bool := Id.run do
       | _ => pure ()
   return false
 
-end Mathlib.Migration
+end Mathlib.VersoRoles
 
 /--
 A link to a URL.
@@ -90,7 +90,7 @@ in {lit}`` {url}`https://leanprover.org` ``.
 -/
 @[doc_role]
 def url (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := do
-  let s ← Mathlib.Migration.soleCode xs
+  let s ← Mathlib.VersoRoles.soleCode xs
   let target := s.getString
   return .link #[.text target] target
 
@@ -104,9 +104,9 @@ defined later are allowed.
 -/
 @[doc_role, nolint defsWithUnderscore] -- This name intentionally contains an underscore.
 def «library_note» (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := do
-  let s ← Mathlib.Migration.soleCode xs
+  let s ← Mathlib.VersoRoles.soleCode xs
   let label := s.getString
-  let labels := Mathlib.Migration.libraryNoteLabels (← getEnv)
+  let labels := Mathlib.VersoRoles.libraryNoteLabels (← getEnv)
   unless labels.contains label do
     logWarningAt s m!"No library note with label `{label}`."
   return .code label
@@ -125,10 +125,10 @@ def cite (key : StrLit) (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) :
   let path : System.FilePath := "docs" / "references.bib"
   if ← path.pathExists then
     let bib ← IO.FS.readFile path
-    unless Mathlib.Migration.bibContainsKey bib k do
+    unless Mathlib.VersoRoles.bibContainsKey bib k do
       logWarningAt key m!"No bibliography entry `{k}` in `docs/references.bib`."
   return .other
-    (.custom (.mk (Mathlib.Migration.Citation.mk k)))
+    (.custom (.mk (Mathlib.VersoRoles.Citation.mk k)))
     rendered
 
 
@@ -141,7 +141,7 @@ The language is recorded for later use; the listing itself is rendered verbatim.
 @[doc_code_block]
 def code (language : Ident) (content : StrLit) : DocM (Block ElabInline ElabBlock) := do
   return .other
-    (.custom (.mk (Mathlib.Migration.CodeWithLanguage.mk language.getId.toString)))
+    (.custom (.mk (Mathlib.VersoRoles.CodeWithLanguage.mk language.getId.toString)))
     #[.code content.getString]
 
 end
