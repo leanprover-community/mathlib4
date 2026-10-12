@@ -117,6 +117,35 @@ theorem to_Iio (hf : IsNormal f) (a : α) :
   refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (isLowerSet_Iio _)) ?_⟩
   simpa [upperBounds] using! fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
 
+theorem of_dirSupClosed_range [WellFoundedLT β]
+    (hf : StrictMono f) (hf' : DirSupClosed (.range f)) : IsNormal f := by
+  refine isNormal_iff.2 ⟨hf, fun x hx y hy ↦ ?_⟩
+  have : Nonempty α := ⟨x⟩
+  have : Nonempty β := ⟨f x⟩
+  have := WellFoundedLT.toOrderBot β
+  let := WellFoundedLT.conditionallyCompleteLinearOrderBot β
+  have hfb : BddAbove (f '' Set.Iio x) := by
+    use f x
+    rintro _ ⟨y, hy, rfl⟩
+    exact (hf hy).le
+  obtain ⟨z, hz⟩ : ⨆ b : Set.Iio x, f b ∈ Set.range f := by
+    apply hf' (d := f '' Set.Iio x) _ _ (DirectedOn.of_linearOrder _)
+    · rw [← sSup_image']
+      exact isLUB_csSup' hfb
+    · simp
+    · simpa using hx.not_isMin
+  trans f z
+  · apply hf.monotone
+    by_contra! hzx
+    have ⟨w, hzw, hwx⟩ := hx.lt_iff_nonempty_Ioo.1 hzx
+    apply (hf hzw).not_ge
+    rw [hz]
+    refine le_ciSup (f := fun b : Set.Iio x ↦ f b) ?_ ⟨w, hwx⟩
+    rwa [← Set.image_eq_range]
+  · rw [hz]
+    apply ciSup_le'
+    simpa
+
 end LinearOrder
 
 section ConditionallyCompleteLinearOrder
@@ -254,6 +283,11 @@ theorem dirSupClosed_range {f : α → α} (hf : IsNormal f) : DirSupClosed (ran
   rw [image_preimage_eq_of_subset hs] at ha'
   obtain rfl := ha.unique ha'
   exact mem_range_self _
+
+omit [SuccOrder α] in
+theorem _root_.Order.isNormal_iff_dirSupClosed_range {f : α → α} (hf : StrictMono f) :
+    IsNormal f ↔ DirSupClosed (range f) :=
+  ⟨dirSupClosed_range, of_dirSupClosed_range hf⟩
 
 end WellFoundedLT
 end IsNormal
