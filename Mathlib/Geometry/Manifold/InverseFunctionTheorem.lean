@@ -209,7 +209,7 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   have U_open : IsOpen U := by
     refine φ₁.toOpenPartialHomeomorph.isOpen_image_of_subset_source ?_ inter_subset_left
     exact φ₁.open_source.inter (hf.continuousOn.isOpen_inter_preimage hA ψ₁.open_source)
-  have φ₀p_mem_U : extChartAt I₁ p p ∈ U :=
+  have hp' : extChartAt I₁ p p ∈ U :=
     mem_image_of_mem _ ⟨mem_extChartAtPartialDiffeomorph_source n hp,
       hpA, mem_extChartAtPartialDiffeomorph_source n hfp⟩
   -- use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence
@@ -219,10 +219,10 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
       (range_mem_nhds_isInteriorPoint hp)
   /- obtain partial diffeomorphism in coordinates and compose with the charts to obtain a partial
   diffeomorphism `M₁ → M₂` -/
-  use (φ₁.trans (hg.toPartialDiffeomorph U_open φ₀p_mem_U hg' hn)).trans ψ₁.symm
+  use (φ₁.trans (hg.toPartialDiffeomorph U_open hp' hg' hn)).trans ψ₁.symm
   constructor
   · refine ⟨⟨mem_extChartAtPartialDiffeomorph_source n hp,
-      (hg.toPartialDiffeomorph_mem_source U_open φ₀p_mem_U hg' hn)⟩, ?_⟩
+      (hg.toPartialDiffeomorph_mem_source U_open hp' hg' hn)⟩, ?_⟩
     simpa [φ₁, ψ₁, g] using mem_extChartAtPartialDiffeomorph_target n hfp
   · rintro m ⟨⟨hm₁, _, hm₂, _⟩, _⟩
     have hm := extChartAtPartialDiffeomorph_source_subset (n := n) hm₁
