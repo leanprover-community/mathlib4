@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Tactic.Linarith
 
 /-!
@@ -31,25 +32,15 @@ namespace Nat
 section LinearOrderedSemifield
 variable [Semifield K] [LinearOrder K] [IsOrderedAddMonoid K] [FloorSemiring K]
 
-/-- TODO: Simplify the proof of this lemma (without adding more hypothesis). -/
 theorem floor_div_natCast (a : K) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
-  obtain rfl | hn := n.eq_zero_or_pos
-  · simp
   refine eq_of_forall_le_iff fun c => ?_
-  have h {x y : K} : x ≤ y / n ↔ n • x ≤ y := by
-    have h (z : K) : n • (z / n) = z := by
-      rw [nsmul_eq_mul, mul_div_cancel₀ _ (cast_ne_zero.mpr hn.ne.symm)]
-    refine ⟨fun h0 => ?_, fun h0 => ?_⟩
-    · grw [h0, h]
-    · by_contra! h1
-      obtain rfl : y = n • x := h0.antisymm' (by grw [← h y, h1])
-      rw [nsmul_eq_mul, mul_div_assoc, ← nsmul_eq_mul, h] at h1
-      exact h1.ne rfl
-  have h0 {x : K} : 0 ≤ x / n ↔ 0 ≤ x := by simpa using h (x := 0) (y := x)
-  by_cases! ha : a < 0
-  · have ha0 : a / n < 0 := by rwa [← not_le, h0, not_le]
-    rw [floor_of_nonpos ha0.le, floor_of_nonpos ha.le, Nat.zero_div]
-  · rw [le_floor_iff (h0.mpr ha), h, le_div_iff_mul_le hn, nsmul_eq_mul', le_floor_iff ha, cast_mul]
+  by_cases! hcn : c = 0 ∨ n = 0
+  · aesop
+  have h : StrictMono fun x : K => n • x :=
+    (nsmul_right_mono n).strictMono_of_injective (nsmul_right_injective hcn.2)
+  rw [le_floor_iff' hcn.1, le_div_iff_mul_le (pos_of_ne_zero hcn.2),
+    le_floor_iff' (mul_ne_zero_iff.mpr hcn), ← h.le_iff_le]
+  simp [← mul_div_assoc, hcn, mul_comm]
 
 theorem floor_div_ofNat (a : K) (n : ℕ) [n.AtLeastTwo] :
     ⌊a / ofNat(n)⌋₊ = ⌊a⌋₊ / ofNat(n) :=
