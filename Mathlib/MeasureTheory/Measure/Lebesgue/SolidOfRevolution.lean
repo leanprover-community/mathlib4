@@ -55,8 +55,6 @@ end MeasureTheory.Measure
 
 namespace EuclideanSpace
 
-/-- The volume of the solid obtained by rotating the region below the graph of `r` over `s`
-around the first axis of `ℝ × ℝ²`. -/
 theorem volume_setOf_mem_norm_le {s : Set ℝ} (hs : MeasurableSet s) {r : ℝ → ℝ}
     (hr : Measurable r) :
     volume {p : ℝ × EuclideanSpace ℝ (Fin 2) | p.1 ∈ s ∧ ‖p.2‖ ≤ r p.1} =
