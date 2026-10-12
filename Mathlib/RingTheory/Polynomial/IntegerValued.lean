@@ -67,7 +67,7 @@ theorem eq_sum_fwdDiff_iter_smul_choose (P : K[X]) :
   rw [zero_add, nsmul_one] at h
   rw [h, sum_subset (range_mono (by omega : m + 1 ≤ m + P.natDegree + 1)),
     sum_subset (range_mono (by omega : P.natDegree + 1 ≤ m + P.natDegree + 1))]
-  · exact sum_congr rfl fun k _ => by rw [nsmul_eq_mul, mul_comm]
+  · exact sum_congr rfl fun k _ ↦ by rw [nsmul_eq_mul, mul_comm]
   · intro k _ hk
     rw [mem_range, not_lt] at hk
     simp [fwdDiff_iter_eq_zero_of_degree_lt (by omega : P.natDegree < k)]
@@ -98,7 +98,7 @@ theorem mem_intValued {P : ℚ[X]} :
 
 /-- The binomial polynomials `Ring.choose X n` are integer-valued. -/
 theorem choose_X_mem_intValued (n : ℕ) : Ring.choose (X : ℚ[X]) n ∈ intValued :=
-  fun m => ⟨Ring.choose m n, by
+  fun m ↦ ⟨Ring.choose m n, by
     rw [eval_choose_X]; exact_mod_cast Ring.map_choose (Int.castRingHom ℚ) m n⟩
 
 /-- **Pólya's theorem**: a rational polynomial taking integer values at all natural numbers is an
@@ -107,9 +107,9 @@ theorem exists_eq_sum_intCast_smul_choose {P : ℚ[X]}
     (hP : ∀ m : ℕ, P.eval (m : ℚ) ∈ Set.range ((↑) : ℤ → ℚ)) :
     ∃ c : ℕ → ℤ, P = ∑ k ∈ range (P.natDegree + 1), (c k : ℚ) • Ring.choose (X : ℚ[X]) k := by
   choose f hf using hP
-  refine ⟨fun k => Δ_[1]^[k] f 0, ?_⟩
+  refine ⟨fun k ↦ Δ_[1]^[k] f 0, ?_⟩
   conv_lhs => rw [P.eq_sum_fwdDiff_iter_smul_choose]
-  refine sum_congr rfl fun k _ => ?_
+  refine sum_congr rfl fun k _ ↦ ?_
   congr 1
   dsimp only
   rw [fwdDiff_iter_eq_sum_shift, fwdDiff_iter_eq_sum_shift]
@@ -120,30 +120,30 @@ theorem exists_eq_sum_intCast_smul_choose {P : ℚ[X]}
 numbers. -/
 theorem mem_intValued_iff_forall_natCast {P : ℚ[X]} :
     P ∈ intValued ↔ ∀ m : ℕ, P.eval (m : ℚ) ∈ Set.range ((↑) : ℤ → ℚ) := by
-  refine ⟨fun h m => by exact_mod_cast h m, fun h => ?_⟩
+  refine ⟨fun h m ↦ by exact_mod_cast h m, fun h ↦ ?_⟩
   obtain ⟨c, hc⟩ := exists_eq_sum_intCast_smul_choose h
   rw [hc]
-  exact Subalgebra.sum_mem _ fun k _ => by
+  exact Subalgebra.sum_mem _ fun k _ ↦ by
     rw [Int.cast_smul_eq_zsmul]
     exact Subalgebra.zsmul_mem _ (choose_X_mem_intValued k) _
 
 /-- The binomial polynomials `Ring.choose X n` are linearly independent over `ℤ`. -/
-theorem linearIndependent_choose_X : LinearIndependent ℤ fun n => Ring.choose (X : ℚ[X]) n := by
+theorem linearIndependent_choose_X : LinearIndependent ℤ fun n ↦ Ring.choose (X : ℚ[X]) n := by
   classical
   rw [linearIndependent_iff']
   intro s g hs i hi
-  have hval : (fun m : ℕ => ∑ k ∈ s, g k * (m.choose k : ℤ)) = 0 := by
+  have hval : (fun m : ℕ ↦ ∑ k ∈ s, g k * (m.choose k : ℤ)) = 0 := by
     funext m
     have := congrArg (eval (m : ℚ)) hs
     rw [eval_finsetSum, eval_zero] at this
     simp only [eval_smul, eval_natCast_choose_X] at this
     simp only [zsmul_eq_mul] at this
     simpa using (by exact_mod_cast this : ∑ k ∈ s, g k * (m.choose k : ℤ) = 0)
-  have hf : (fun m : ℕ => ∑ k ∈ s, g k * (m.choose k : ℤ)) =
-      ∑ k ∈ s, g k • fun m : ℕ => (m.choose k : ℤ) := by
+  have hf : (fun m : ℕ ↦ ∑ k ∈ s, g k * (m.choose k : ℤ)) =
+      ∑ k ∈ s, g k • fun m : ℕ ↦ (m.choose k : ℤ) := by
     funext m
     simp [Finset.sum_apply]
-  have h0 : Δ_[1]^[i] (fun m : ℕ => ∑ k ∈ s, g k * (m.choose k : ℤ)) 0 = 0 := by
+  have h0 : Δ_[1]^[i] (fun m : ℕ ↦ ∑ k ∈ s, g k * (m.choose k : ℤ)) 0 = 0 := by
     simp [hval, fwdDiff_iter_eq_sum_shift]
   rw [hf, fwdDiff_iter_finsetSum, Finset.sum_apply] at h0
   simp only [fwdDiff_iter_const_smul, Pi.smul_apply, fwdDiff_iter_choose_zero, smul_eq_mul,
@@ -153,16 +153,16 @@ theorem linearIndependent_choose_X : LinearIndependent ℤ fun n => Ring.choose 
 /-- **Pólya's basis**: the binomial polynomials `Ring.choose X n` form a `ℤ`-basis of the
 integer-valued polynomials. -/
 noncomputable def intValuedBasis : Module.Basis ℕ ℤ intValued :=
-  Module.Basis.mk (v := fun n => ⟨Ring.choose X n, choose_X_mem_intValued n⟩)
+  Module.Basis.mk (v := fun n ↦ ⟨Ring.choose X n, choose_X_mem_intValued n⟩)
     (.of_comp intValued.val.toLinearMap linearIndependent_choose_X)
-    (fun P _ => by
-      obtain ⟨c, hc⟩ := exists_eq_sum_intCast_smul_choose fun m => P.2 m
+    (fun P _ ↦ by
+      obtain ⟨c, hc⟩ := exists_eq_sum_intCast_smul_choose fun m ↦ P.2 m
       have : P = ∑ k ∈ range ((P : ℚ[X]).natDegree + 1),
           c k • (⟨Ring.choose X k, choose_X_mem_intValued k⟩ : intValued) := by
         refine Subtype.ext (hc.trans ?_)
         simp [Int.cast_smul_eq_zsmul]
       rw [this]
-      exact Submodule.sum_mem _ fun k _ => Submodule.smul_mem _ _ (Submodule.subset_span ⟨k, rfl⟩))
+      exact Submodule.sum_mem _ fun k _ ↦ Submodule.smul_mem _ _ (Submodule.subset_span ⟨k, rfl⟩))
 
 /-- The `n`-th vector of `intValuedBasis` is the binomial polynomial `Ring.choose X n`. -/
 @[simp]
