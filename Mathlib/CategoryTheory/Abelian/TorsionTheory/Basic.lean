@@ -47,13 +47,13 @@ torsion theory, torsion class, torsion-free class, orthogonal
 
 @[expose] public section
 
-universe w v v' u u'
+universe w
 
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type*} [Category* C]
 
 variable [Abelian C]
 
@@ -204,7 +204,7 @@ instance : P.IsClosedUnderQuotients := (torsionTheory P).isClosedUnderQuotients_
 instance : P.IsClosedUnderExtensions := (torsionTheory P).isClosedUnderExtensions_torsion
 
 /-- A torsion class is closed under colimits of any shape, not only coproducts. -/
-instance {J : Type u'} [Category.{v'} J] : P.IsClosedUnderColimitsOfShape J :=
+instance {J : Type*} [Category* J] : P.IsClosedUnderColimitsOfShape J :=
   (torsionTheory P).leftOrthogonal_eq ▸ inferInstance
 
 /-- The opposite of a torsion class is a torsion-free class. -/
@@ -236,7 +236,7 @@ instance : P.IsClosedUnderSubobjects := (torsionTheory P).isClosedUnderSubobject
 instance : P.IsClosedUnderExtensions := (torsionTheory P).isClosedUnderExtensions_torsionFree
 
 /-- A torsion-free class is closed under limits of any shape, not only products. -/
-instance {J : Type u'} [Category.{v'} J] : P.IsClosedUnderLimitsOfShape J :=
+instance {J : Type*} [Category* J] : P.IsClosedUnderLimitsOfShape J :=
   (torsionTheory P).rightOrthogonal_eq ▸ inferInstance
 
 /-- The opposite of a torsion-free class is a torsion class. -/
