@@ -7,6 +7,7 @@ module
 
 public meta import Lean.Elab.DocString
 public meta import Batteries.Util.LibraryNote
+public meta import Mathlib.Tactic.Linter.Style -- To silence `defsWithUnderscore` linter
 import Mathlib.Tactic.Linter.Header -- Since this file is imported by `Mathlib.Init`.
 
 set_option doc.verso true
@@ -100,7 +101,7 @@ in {lit}`` {library_note}`partially-applied ext lemmas` ``.
 A warning is reported when no library note with this label is in scope, so that references to notes
 defined later are allowed.
 -/
-@[doc_role]
+@[doc_role, nolint defsWithUnderscore] -- This name intentionally contains an underscore.
 def «library_note» (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := do
   let s ← Mathlib.Migration.soleCode xs
   let label := s.getString
