@@ -1042,8 +1042,7 @@ theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.suppo
 
 theorem coe_coeffs_subset_iff {s : Set R} :
     (p.coeffs : Set R) ⊆ s ↔ ∀ n, p.coeff n ≠ 0 → p.coeff n ∈ s := by
-  simp only [Set.subset_def, SetLike.mem_coe, mem_coeffs_iff]
-  grind
+  grind [mem_coeffs_iff]
 
 theorem coeffs_subset_iff {s : Finset R} :
     p.coeffs ⊆ s ↔ ∀ n, p.coeff n ≠ 0 → p.coeff n ∈ s := by
