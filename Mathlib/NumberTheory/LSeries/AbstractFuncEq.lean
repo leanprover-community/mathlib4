@@ -458,6 +458,17 @@ theorem Λ_residue_zero : Tendsto (fun s ↦ s • P.Λ s) (𝓝[≠] 0) (𝓝 (
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds
 
+/-- For a self-dual pair (`g = f`, `g₀ = f₀`, `ε = 1`), the reflected pair has the same `Λ`. -/
+lemma symm_Λ_eq_of_selfDual (hg : P.g = P.f) (hg₀ : P.g₀ = P.f₀) (hε : P.ε = 1) :
+    P.symm.Λ = P.Λ := by
+  unfold WeakFEPair.Λ WeakFEPair.Λ₀ WeakFEPair.f_modif
+  simp only [WeakFEPair.symm, hg, hg₀, hε, inv_one]
+
+/-- Functional equation for a self-dual pair (`g = f`, `g₀ = f₀`, `ε = 1`): `Λ (k - s) = Λ s`. -/
+theorem functional_equation_of_selfDual (hg : P.g = P.f) (hg₀ : P.g₀ = P.f₀) (hε : P.ε = 1)
+    (s : ℂ) : P.Λ (P.k - s) = P.Λ s := by
+  rw [P.functional_equation s, P.symm_Λ_eq_of_selfDual hg hg₀ hε, hε, one_smul]
+
 end WeakFEPair
 
 namespace IsStrongFEPair
