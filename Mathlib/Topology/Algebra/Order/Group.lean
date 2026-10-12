@@ -153,9 +153,7 @@ variable {ι H : Type*} [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
   [ConditionallyCompleteLinearOrder H] [CommGroup H] [IsOrderedMonoid H] [TopologicalSpace H]
   [OrderTopology H] {u v : ι → H}
 
-/-- If `u` is monotone, `v` is antitone and `v / u` tends to one, then `u ≤ v` pointwise. -/
-@[to_additive /-- If `u` is monotone, `v` is antitone and `v - u` tends to zero, then `u ≤ v`
-pointwise. -/]
+@[to_additive]
 theorem Monotone.le_of_antitone_of_tendsto_div (hu : Monotone u) (hv : Antitone v)
     (h : Tendsto (v / u) atTop (𝓝 1)) (i : ι) : u i ≤ v i := by
   rw [← one_le_div']
