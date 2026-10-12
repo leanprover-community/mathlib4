@@ -89,10 +89,9 @@ theorem prod_of_support_subset [∀ i, Zero (β i)]
     {f : Π₀ i, β i} {g : (i : ι) → β i → γ} {s : Finset ι}
     (hs : f.support ⊆ s) (map_zero : ∀ i ∈ s, g i 0 = 1) :
     f.prod g = ∏ i ∈ s, g i (f i) := by
-  simp only [DFinsupp.prod]
   apply Finset.prod_subset hs
   intro i hi hi'
-  simp only [DFinsupp.mem_support_toFun, ne_eq, not_not] at hi'
+  simp only [mem_support_toFun, not_not] at hi'
   rw [hi', map_zero]
   exact hi
 
@@ -144,11 +143,10 @@ theorem prod_zero_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decid
 @[to_additive]
 theorem prod_single_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {i : ι} {b : β i} {h : ∀ i, β i → γ} (h_zero : h i 0 = 1) : (single i b).prod h = h i b := by
-  by_cases h : b ≠ 0
-  · simp [DFinsupp.prod, support_single h]
-  · rw [not_not] at h
-    simp [h, h_zero]
+  by_cases h : b = 0
+  · simp only [h, single_zero, h_zero]
     rfl
+  · simp [DFinsupp.prod, support_single h]
 
 @[to_additive]
 theorem prod_neg_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
@@ -261,21 +259,12 @@ def sumZeroHom [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β 
       dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
       have H1 : sx.toFinset ∩ sy.toFinset ⊆ sx.toFinset := Finset.inter_subset_left
       have H2 : sx.toFinset ∩ sy.toFinset ⊆ sy.toFinset := Finset.inter_subset_right
-      refine
-        (Finset.sum_subset H1 ?_).symm.trans
-          ((Finset.sum_congr rfl ?_).trans (Finset.sum_subset H2 ?_))
-      · intro i H1 H2
-        rw [Finset.mem_inter] at H2
-        simp only [Multiset.mem_toFinset] at H1 H2
-        convert map_zero (φ i)
-        exact (hy i).resolve_left (mt (And.intro H1) H2)
-      · intro i _
-        rfl
-      · intro i H1 H2
-        rw [Finset.mem_inter] at H2
-        simp only [Multiset.mem_toFinset] at H1 H2
-        convert map_zero (φ i)
-        exact (hx i).resolve_left (mt (fun H3 => And.intro H3 H1) H2)
+      refine (Finset.sum_subset H1 ?_).symm.trans
+        ((Finset.sum_congr rfl fun _ _ ↦ rfl).trans (Finset.sum_subset H2 ?_)) <;>
+        intro i H1 H2 <;> rw [Finset.mem_inter] at H2 <;>
+        simp only [Multiset.mem_toFinset] at H1 H2 <;> convert map_zero (φ i)
+      · exact (hy i).resolve_left (H2 ⟨H1, ·⟩)
+      · exact (hx i).resolve_left (H2 ⟨·, H1⟩)
   map_zero' := by
     simp only [toFun_eq_coe, coe_zero, Pi.zero_apply, map_zero, Finset.sum_const_zero]; rfl
 
@@ -323,21 +312,8 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
     change (∑ i ∈ _, _) = (∑ i ∈ _, _) + ∑ i ∈ _, _
     simp only [AddMonoidHom.toZeroHom_coe, coe_add, coe_mk', Pi.add_apply, map_add,
       Finset.sum_add_distrib]
-    congr 1
-    · refine (Finset.sum_subset ?_ ?_).symm
-      · intro i
-        simp only [Multiset.mem_toFinset, Multiset.mem_add]
-        exact Or.inl
-      · intro i _ H2
-        simp only [Multiset.mem_toFinset] at H2
-        rw [(hf i).resolve_left H2, map_zero]
-    · refine (Finset.sum_subset ?_ ?_).symm
-      · intro i
-        simp only [Multiset.mem_toFinset, Multiset.mem_add]
-        exact Or.inr
-      · intro i _ H2
-        simp only [Multiset.mem_toFinset] at H2
-        rw [(hg i).resolve_left H2, map_zero]
+    congr 1 <;> refine (Finset.sum_subset ?_ ?_).symm <;>
+      grind only [Finset.subset_iff, Multiset.mem_toFinset, Multiset.mem_add, map_zero]
 
 @[simp]
 theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (i)
@@ -369,9 +345,7 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ :
     sumAddHom (fun i₂ => sumAddHom (fun i₁ => h i₁ i₂) f₁) f₂ =
       sumAddHom (fun i₁ => sumAddHom (fun i₂ => (h i₁ i₂).flip) f₂) f₁ := by
   obtain ⟨⟨f₁, s₁, h₁⟩, ⟨f₂, s₂, h₂⟩⟩ := f₁, f₂
-  simpa [sumAddHom, sumZeroHom, AddMonoidHom.finsetSum_apply, AddMonoidHom.coe_mk,
-      AddMonoidHom.flip_apply, Trunc.lift, toFun_eq_coe, ZeroHom.coe_mk, coe_mk']
-    using Finset.sum_comm
+  simpa [sumAddHom, sumZeroHom, Trunc.lift] using Finset.sum_comm
 
 /-- The `DFinsupp` version of `Finsupp.liftAddHom` -/
 @[simps apply symm_apply]
