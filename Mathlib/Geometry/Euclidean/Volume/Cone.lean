@@ -54,12 +54,10 @@ theorem euclideanHausdorffMeasure_cone {d : ℕ} (hV : finrank ℝ V = d + 1)
   have hw2 : 0 < ‖w‖ ^ 2 := by positivity
   -- every point of `S` lies at level `1` along `w`
   have hlevel (b : P) (hb : b ∈ S) : ⟪w, b -ᵥ a⟫ = ‖w‖ ^ 2 := by
-    have hperp : w ∈ S.directionᗮ := by
-      rw [show w = -(a -ᵥ f) by simp [w]]
-      exact neg_mem (vsub_orthogonalProjection_mem_direction_orthogonal S a)
     rw [← vsub_add_vsub_cancel b f a, inner_add_right,
       S.direction.inner_left_of_mem_orthogonal (vsub_mem_direction hb (orthogonalProjection_mem a))
-        hperp, zero_add, real_inner_self_eq_norm_sq]
+        (orthogonalProjection_vsub_mem_direction_orthogonal S a), zero_add,
+      real_inner_self_eq_norm_sq]
   have hhom (t : ℝ) (b : P) : AffineMap.homothety a t b -ᵥ a = t • (b -ᵥ a) := by
     simp [AffineMap.homothety_apply]
   -- the slice of the cone at level `x ∈ (0, 1]` is the image of `B` by a homothety
