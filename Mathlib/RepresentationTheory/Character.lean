@@ -94,8 +94,7 @@ theorem char_dual (g : G) : ρ.dual.character g = ρ.character g⁻¹ :=
 @[simp]
 theorem char_linHom (g : G) :
     (linHom ρ σ).character g = ρ.character g⁻¹ * σ.character g := by
-  rw [← char_iso (V := TensorProduct k (Module.Dual k V) W)
-      (W := V →ₗ[k] W) (Equiv.dualTensorHom ρ σ), char_tensor, Pi.mul_apply, char_dual]
+  rw [← char_iso (Equiv.dualTensorHom ρ σ), char_tensor, Pi.mul_apply, char_dual]
 
 theorem isIntegral_character [Finite G] (g : G) : IsIntegral ℤ (ρ.character g) := by
   rw [← isIntegral_algebraMap_iff (B := AlgebraicClosure k), character, ← trace_baseChange,

@@ -18,7 +18,8 @@ import Mathlib.RingTheory.SimpleRing.Matrix
 # Trace of a linear map
 
 This file defines the trace of an endomorphism of a finite projective module.
-It is the contraction pairing under the canonical tensor-Hom equivalence.
+It is the contraction pairing on `Dual R M ⊗[R] M` transported along
+`dualTensorHomEquiv` to `M →ₗ[R] M`.
 For a finite free module it agrees with the matrix trace in any basis.
 
 See also `Mathlib/LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
@@ -42,16 +43,14 @@ open Module TensorProduct
 section Semiring
 
 variable (R : Type u) [CommSemiring R] (M : Type v) [AddCommMonoid M] [Module R M]
-variable {ι : Type w} [DecidableEq ι] [Fintype ι]
-variable (b : Basis ι R M)
 variable [Module.Finite R M] [Module.Projective R M]
 
-/-- The trace of an endomorphism of a finite projective module, defined by the canonical
-identification of endomorphisms with the tensor product of the dual and the module. -/
+/-- The trace of an endomorphism of a finite projective module, defined by the contraction pairing
+on `Dual R M ⊗[R] M` transported along `dualTensorHomEquiv` to `M →ₗ[R] M`. -/
 def trace : (M →ₗ[R] M) →ₗ[R] R :=
   contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap
 
-/-- The trace corresponds to contraction under the canonical tensor-Hom equivalence. -/
+/-- The trace corresponds to contraction under `dualTensorHomEquiv`. -/
 @[simp]
 theorem trace_eq_contract : trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
   ext x
@@ -62,8 +61,7 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
     trace R M (dualTensorHom R M M x) = contractLeft R M x := by
   rw [← comp_apply, trace_eq_contract]
 
-/-- The canonical definition of trace as contraction. -/
-theorem trace_eq_contract' :
+theorem trace_def :
     trace R M = contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap := rfl
 
 variable {M}
@@ -74,6 +72,10 @@ lemma trace_smulRight (f : M →ₗ[R] R) (x : M) :
     trace R M (f.smulRight x) = f x := by
   exact trace_eq_contract_apply R M (f ⊗ₜ[R] x)
 
+section Matrix
+
+variable {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M)
+
 theorem trace_eq_matrix_trace (f : M →ₗ[R] M) :
     trace R M f = Matrix.trace (LinearMap.toMatrix b b f) := by
   classical
@@ -81,7 +83,7 @@ theorem trace_eq_matrix_trace (f : M →ₗ[R] M) :
   simp [dualTensorHomEquivOfBasis, Matrix.trace, toMatrix_apply]
 
 variable {R} in
-@[simp] theorem _root_.Matrix.trace_toLin_eq (A : Matrix ι ι R) (b : Basis ι R M) :
+@[simp] theorem _root_.Matrix.trace_toLin_eq (A : Matrix ι ι R) :
     LinearMap.trace R _ (Matrix.toLin b b A) = A.trace := by
   simp [trace_eq_matrix_trace R b]
 
@@ -89,6 +91,8 @@ variable {R} in
 @[simp] theorem _root_.Matrix.trace_toLin'_eq (A : Matrix ι ι R) :
     LinearMap.trace R _ A.toLin' = A.trace :=
   A.trace_toLin_eq (Pi.basisFun R ι)
+
+end Matrix
 
 theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) := by
   induction f using LinearMap.inductionOn_smulRight with
@@ -152,7 +156,7 @@ theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose
   refine (cancel_right h).1 ?_
   ext f m; simp [e]
 
-section TwoModules
+section
 
 variable (N) [Module.Projective R N] [Module.Finite R N]
 
@@ -202,7 +206,7 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
     trace R M (g ∘ₗ f) = trace R N (f ∘ₗ g) := by
   exact congrArg (fun t => t g f) (trace_comp_comm R M N)
 
-end TwoModules
+end
 
 variable {R M}
 
