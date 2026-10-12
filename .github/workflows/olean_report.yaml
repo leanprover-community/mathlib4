@@ -183,7 +183,7 @@ jobs:
           cd pr-branch
           lake env "$CACHE_BIN" get
           # Run again with --repo in case this is a fork PR: fork PRs upload
-          # their oleans to the fork's Azure container, not the upstream one.
+          # their oleans to the `forks` container, not the upstream one.
           lake env "$CACHE_BIN" --repo="${{ steps.pr_info.outputs.head_repo }}" get
 
       - name: Check PR head oleans
