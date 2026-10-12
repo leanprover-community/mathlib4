@@ -86,7 +86,7 @@ differentiable functions `E → F` with compact support contained in `Ω : Opens
 class TestFunctionClass (B : Type*)
     {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
     (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) extends FunLike B E F where
+    (n : outParam ℕ∞) [FunLike B E F] where
   map_contDiff (f : B) : ContDiff ℝ n f
   map_hasCompactSupport (f : B) : HasCompactSupport f
   tsupport_map_subset (f : B) : tsupport f ⊆ Ω
@@ -98,14 +98,14 @@ namespace TestFunctionClass
 instance (B : Type*)
     {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
     (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
+    (n : outParam ℕ∞) [FunLike B E F] [TestFunctionClass B Ω F n] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*)
     {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
     (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
+    (n : outParam ℕ∞) [FunLike B E F] [TestFunctionClass B Ω F n] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by
     obtain ⟨C, hC⟩ := (map_continuous f).bounded_above_of_compact_support (map_hasCompactSupport f)
@@ -115,9 +115,11 @@ end TestFunctionClass
 
 namespace TestFunction
 
-instance toTestFunctionClass : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
+instance : FunLike 𝓓^{n}(Ω, F) E F where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr
+
+instance : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   map_contDiff f := f.contDiff'
   map_hasCompactSupport f := f.hasCompactSupport'
   tsupport_map_subset f := f.tsupport_subset'
@@ -177,7 +179,6 @@ instance : Zero 𝓓^{n}(Ω, F) where
   zero := ⟨0, contDiff_zero_fun, .zero, by simp only [tsupport_zero, empty_subset]⟩
 
 instance : IsZeroApply 𝓓^{n}(Ω, F) E F where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
 
@@ -186,7 +187,6 @@ instance : Add 𝓓^{n}(Ω, F) where
     tsupport_add f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
 instance : IsAddApply 𝓓^{n}(Ω, F) E F where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
 
@@ -194,7 +194,6 @@ instance : Neg 𝓓^{n}(Ω, F) where
   neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg f ▸ f.tsupport_subset⟩
 
 instance : IsNegApply 𝓓^{n}(Ω, F) E F where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
 
@@ -203,7 +202,6 @@ instance : Sub 𝓓^{n}(Ω, F) where
     tsupport_sub f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
 instance : IsSubApply 𝓓^{n}(Ω, F) E F where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 

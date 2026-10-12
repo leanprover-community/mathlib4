@@ -55,7 +55,7 @@ variable {γ : Type*}
 
 /-- If `f` is arbitrary and `g` is even, then `f ∘ g` is even. -/
 lemma Even.left_comp {g : α → β} (hg : g.Even) (f : β → γ) : (f ∘ g).Even :=
-  (congr_arg f <| hg ·)
+  (congr(f $(hg ·)))
 
 /-- If `f` is even and `g` is odd, then `f ∘ g` is even. -/
 lemma Even.comp_odd [Neg β] {f : β → γ} (hf : f.Even) {g : α → β} (hg : g.Odd) :
@@ -138,7 +138,7 @@ end mul
 section torsionfree
 
 -- need to redeclare variables since `InvolutiveNeg α` conflicts with `Neg α`
-variable {α β : Type*} [AddCommGroup β] [IsAddTorsionFree β] {f : α → β}
+variable {α β : Type*} [AddCommGroup β] [HasUniqueDiv β] {f : α → β}
 
 /--
 If `f` is both even and odd, and its target is a torsion-free commutative additive group,

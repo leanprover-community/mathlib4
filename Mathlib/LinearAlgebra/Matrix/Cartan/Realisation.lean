@@ -7,10 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
-public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
-public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
+
+import Mathlib.LinearAlgebra.Matrix.Dual
 
 /-!
 

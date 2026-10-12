@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Data.Matrix.PEquiv
-public import Mathlib.Data.Set.Card
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Permutation matrices

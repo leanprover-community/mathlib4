@@ -202,7 +202,7 @@ def changeInv (f : X ≃ₜ Y) (g : Y → X) (hg : Function.RightInverse g f) : 
     left_inv := by convert! f.left_inv
     right_inv := by convert! f.right_inv using 1
     continuous_toFun := f.continuous
-    continuous_invFun := by convert! f.symm.continuous }
+    continuous_invFun := by convert f.symm.continuous }
 
 @[simp]
 theorem symm_comp_self (h : X ≃ₜ Y) : h.symm ∘ h = id :=
@@ -436,7 +436,7 @@ lemma toHomeomorph_apply (e : X ≃ Y) (he) (x : X) : e.toHomeomorph he x = e x 
     (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
 
 @[simp] lemma symm_toHomeomorph (e : X ≃ Y) (he) :
-    (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert! (he _).symm; simp := rfl
+    (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
 
 lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
     (e.trans f).toHomeomorph (fun _s ↦ (he _).trans (hf _)) =
@@ -515,7 +515,7 @@ instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) :=
   ⟨HomeomorphClass.toHomeomorph⟩
 
 theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
-  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr($e a)
 
 instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
   map_continuous f := map_continuous f
