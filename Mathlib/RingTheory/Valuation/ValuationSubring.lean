@@ -872,7 +872,7 @@ end
 
 section IsTrivialOn
 
-variable {k : Type*} [Field k] [Algebra k K]
+variable {k : Type*} [CommRing k] [Algebra k K]
 
 theorem algebraMap_mem_of_isTrivialOn [A.valuation.IsTrivialOn k] (a : k) :
     algebraMap k K a ∈ A :=
