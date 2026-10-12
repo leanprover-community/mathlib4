@@ -64,6 +64,7 @@ public import Archive.Imo.Imo2024Q4
 public import Archive.Imo.Imo2024Q5
 public import Archive.Imo.Imo2024Q6
 public import Archive.Imo.Imo2025Q3
+public import Archive.Imo.Imo2026Q5
 public import Archive.Kuratowski
 public import Archive.MinimalSheffer
 public import Archive.MiuLanguage.Basic
