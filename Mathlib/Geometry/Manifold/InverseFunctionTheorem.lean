@@ -35,7 +35,8 @@ local diffeomorphism, manifold, inverse function theorem
 
 -/
 
-open Manifold Set TopologicalSpace
+open Manifold Set
+open scoped Topology
 
 section DiffeoExtChartAt
 
@@ -114,7 +115,7 @@ This definition would ideally be located with the calculus API and not be stated
 but there is not currently a normed vector space version of `PartialDiffeomorph`.
 -/
 noncomputable def toPartialDiffeomorph : PartialDiffeomorph 𝓘(𝕜, E₁) 𝓘(𝕜, E₂) E₁ E₂ n := by
-  have U_nhd : U ∈ nhds p := hU.mem_nhds hpU
+  have U_nhd : U ∈ 𝓝 p := hU.mem_nhds hpU
   -- define `V ⊆ E₁`, the open set where `g'` is a continuous linear equivalence
   let V := (fderiv 𝕜 f) ⁻¹' (range ContinuousLinearEquiv.toContinuousLinearMap)
   have hUV: IsOpen (U ∩ V) :=
@@ -142,7 +143,7 @@ noncomputable def toPartialDiffeomorph : PartialDiffeomorph 𝓘(𝕜, E₁) �
       refine ⟨homeo.continuousOn_invFun.continuousWithinAt hy, ?_⟩
       rcases (subset_trans inter_subset_right inter_subset_right) (homeo.map_target hy) with
         ⟨g', hg'⟩
-      have source_nhd : homeo.source ∈ nhds (homeo.symm y) :=
+      have source_nhd : homeo.source ∈ 𝓝 (homeo.symm y) :=
         mem_nhds_iff.mpr ⟨homeo.source, subset_refl _, homeo.open_source, homeo.map_target hy⟩
       have : DifferentiableAt 𝕜 homeo (homeo.symm y) := (homeo_contdiff.differentiableOn hn
         (homeo.symm y) (homeo.map_target hy)).differentiableAt source_nhd
