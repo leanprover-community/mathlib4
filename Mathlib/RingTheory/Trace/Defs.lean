@@ -137,8 +137,8 @@ $\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$. -/
 theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
     [Module.Finite S T] [Module.Projective S T]
     [Module.Finite R T] [Module.Projective R T] :
-    (trace R S).comp ((trace S T).restrictScalars R) = trace R T := by
-  exact LinearMap.ext trace_trace
+    (trace R S).comp ((trace S T).restrictScalars R) = trace R T :=
+  LinearMap.ext trace_trace
 
 @[simp]
 theorem trace_prod_apply [Module.Projective R T] [Module.Finite R T]
