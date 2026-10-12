@@ -19,12 +19,35 @@ In this file we specialize the inverse function theorem to `C^r`-smooth function
 
 noncomputable section
 
+section
+
+variable {𝕂 : Type*} [NontriviallyNormedField 𝕂]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕂 E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕂 F]
+  [CompleteSpace E] {f : E → F} {f' : E ≃L[𝕂] F} {a : E} {n : WithTop ℕ∞}
+
+/-- Given a `ContDiff` function with an invertible strict derivative at `a`, the inverse function
+(produced by `ContDiff.toOpenPartialHomeomorph`) is also `ContDiff`.
+
+See also `ContDiffAt.to_localInverse` for a specialisation to functions over `ℝ` or `ℂ`,
+requiring `n ≠ 0` but no strict Fréchet derivative. -/
+theorem ContDiffAt.to_localInverse'
+    (hf : ContDiffAt 𝕂 n f a) (hf' : HasStrictFDerivAt f (f' : E →L[𝕂] F) a) :
+    ContDiffAt 𝕂 n hf'.localInverse (f a) := by
+  apply (hf'.toOpenPartialHomeomorph (f' := f')).contDiffAt_symm
+    hf'.image_mem_toOpenPartialHomeomorph_target
+  · rw [hf'.toOpenPartialHomeomorph_coe, ← hf'.localInverse_def, hf'.localInverse_apply_image]
+    exact hf'.hasFDerivAt
+  · rwa [hf'.toOpenPartialHomeomorph_coe, ← hf'.localInverse_def, hf'.localInverse_apply_image]
+
+end
+
 namespace ContDiffAt
 
 variable {𝕂 : Type*} [RCLike 𝕂]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕂 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕂 F]
-variable [CompleteSpace E] (f : E → F) {f' : E ≃L[𝕂] F} {a : E} {n : WithTop ℕ∞}
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕂 E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕂 F]
+  [CompleteSpace E] (f : E → F) {f' : E ≃L[𝕂] F} {a : E} {n : WithTop ℕ∞}
 
 /-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible
 derivative at `a`, returns an `OpenPartialHomeomorph` with `to_fun = f` and `a ∈ source`. -/
@@ -61,8 +84,10 @@ theorem localInverse_apply_image (hf : ContDiffAt 𝕂 n f a)
   (hf.hasStrictFDerivAt' hf' hn).localInverse_apply_image
 
 /-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
-at `a`, the inverse function (produced by `ContDiff.toOpenPartialHomeomorph`) is
-also `ContDiff`. -/
+at `a`, the inverse function (produced by `ContDiff.toOpenPartialHomeomorph`) is also `ContDiff`.
+
+See also `ContDiffAt.to_localInverse'` for a specialisation over any field, assuming a strict
+derivative (and no condition on `n`). -/
 theorem to_localInverse (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a) (hn : n ≠ 0) :
     ContDiffAt 𝕂 n (hf.localInverse hf' hn) (f a) := by
