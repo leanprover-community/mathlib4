@@ -6,8 +6,9 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.Normed.Ring.Basic
+
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
 /-!
 # Normed division rings and fields

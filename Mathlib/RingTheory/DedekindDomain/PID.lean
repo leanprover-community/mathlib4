@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!

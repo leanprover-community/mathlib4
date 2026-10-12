@@ -5,12 +5,13 @@ Authors: Damien Thomine
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.SetTheory.Cardinal.Finite
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Cardinality and limit of sum of indicators

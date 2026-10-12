@@ -9,11 +9,11 @@ public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.MeasureTheory.Function.L2Space
 public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Normed.Lp.SmoothApprox
-public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 
 /-!
@@ -763,7 +763,7 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
 theorem smulLeftCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) :
     smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
   have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
-  convert! (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
+  convert (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
   simp
 
 theorem smulLeftCLM_add {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
@@ -995,7 +995,7 @@ def compCLMOfAntilipschitz {K : ℝ≥0} {g : D → E}
 Schwartz space. -/
 def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
     𝓢(E, F) →L[𝕜] 𝓢(D, F) :=
-  compCLMOfAntilipschitz 𝕜 (g.toContinuousLinearMap.hasTemperateGrowth) g.antilipschitz
+  compCLMOfAntilipschitz 𝕜 (g.toContinuousLinearMap.hasTemperateGrowth) g.antilipschitzWith
 
 @[simp] lemma compCLMOfContinuousLinearEquiv_apply (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     compCLMOfContinuousLinearEquiv 𝕜 g f = f ∘ g := rfl
