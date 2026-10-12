@@ -266,6 +266,7 @@ def headerTestFiles : NameSet := .ofList [
   `MathlibTest.Linter.Header.Basic,
   `MathlibTest.Linter.Header.Fail,
   `MathlibTest.Linter.Header.ImportFormat,
+  `MathlibTest.Linter.Header.ImportFormatOff,
   `MathlibTest.Linter.Header.Verso,
   `MathlibTest.DirectoryDependencyLinter.Test]
 
