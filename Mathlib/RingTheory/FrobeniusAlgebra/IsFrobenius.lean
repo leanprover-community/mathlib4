@@ -123,9 +123,38 @@ theorem isFrobenius_toCoalgebra : IsFrobenius K A where
 
 /-- A coalgebra that satisfies the Frobenius equations is a Frobenius algebra with the counit
 as its dual. -/
-abbrev ofIsFrobenius (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Coalgebra R A]
-    [IsFrobenius R A] : FrobeniusAlgebra R A where
+abbrev ofIsFrobenius (R A : Type*) [CommSemiring R] [NonAssocSemiring A] [Module R A]
+    [Coalgebra R A] [SMulCommClass R A A] [IsScalarTower R A A] [IsFrobenius R A] :
+    FrobeniusAlgebra R A where
   dual := counit
   bijective_compr₂_mul := IsFrobenius.compr₂_mul_counit_bijective
 
+attribute [local instance] ofIsFrobenius in
+lemma ofIsFrobenius_dual_eq {R A : Type*} [CommSemiring R] [NonAssocSemiring A] [Module R A]
+    [Coalgebra R A] [SMulCommClass R A A] [IsScalarTower R A A] [IsFrobenius R A] :
+    dual (R := R) (A := A) = counit := rfl
+
 end FrobeniusAlgebra
+
+namespace Coalgebra.IsFrobenius
+variable {R A : Type*} [CommSemiring R] [NonAssocSemiring A] [Module R A] [Coalgebra R A]
+  [SMulCommClass R A A] [IsScalarTower R A A] [IsFrobenius R A]
+
+/-- The bilinear form `(mul R A).compr₂ counit` is separating left.
+This is the simplified version, see `nondegenerate_compr₂_mul_counit`. -/
+lemma forall_counit_mul_left_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _) (a * b) = 0) ↔ a = 0 :=
+  let := FrobeniusAlgebra.ofIsFrobenius
+  FrobeniusAlgebra.forall_dual_mul_left_eq_zero_iff
+
+/-- The bilinear form `(mul R A).compr₂ counit` is separating right.
+This is the simplified version, see `nondegenerate_compr₂_mul_counit`. -/
+lemma forall_counit_mul_right_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _) (b * a) = 0) ↔ a = 0 :=
+  let := FrobeniusAlgebra.ofIsFrobenius
+  FrobeniusAlgebra.forall_dual_mul_right_eq_zero_iff
+
+/-- The bilinear form `mul.compr₂ counit` is nondegenerate. -/
+lemma nondegenerate_compr₂_mul_counit : ((mul R A).compr₂ ε).Nondegenerate :=
+  let := FrobeniusAlgebra.ofIsFrobenius
+  FrobeniusAlgebra.nondegenerate_equivDual
+
+end Coalgebra.IsFrobenius

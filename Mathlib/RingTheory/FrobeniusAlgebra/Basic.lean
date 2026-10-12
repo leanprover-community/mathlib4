@@ -133,19 +133,34 @@ variable (R A) in
     dual (R := R) (nakayamaAlgEquiv R A b * a) = dual (a * b) := by
   simp [nakayamaAlgEquiv, AlgEquiv.ofLinearEquiv]
 
+@[simp] theorem dual_nakayamaAlgEquiv (a : A) :
+    dual (R := R) (nakayamaAlgEquiv R A a) = dual a := by
+  simpa using dual_nakayamaAlgEquiv_mul 1 a
+
+theorem algEquiv_eq_nakayamaAlgEquiv_iff {f : A ≃ₐ[R] A} :
+    f = nakayamaAlgEquiv R A ↔ ∀ a b, dual (R := R) (f b * a) = dual (a * b) := by
+  refine ⟨fun h ↦ h ▸ dual_nakayamaAlgEquiv_mul, fun h ↦ AlgEquiv.ext fun a ↦ ?_⟩
+  simp [← bijective_compr₂_mul (R := R).injective.eq_iff, LinearMap.ext_iff, h]
+
 end Semiring
 
 open Matrix
-/-- Matrices over fields induces a natural Frobenius algebra, where the dual is the trace. -/
-noncomputable abbrev _root_.Matrix.frobeniusAlgebra (K n : Type*) [Field K] [Fintype n]
-    [DecidableEq n] : FrobeniusAlgebra K (Matrix n n K) :=
-  .ofBilinForm ((mul K _).compr₂ (traceLinearMap n K K))
-    (by simp [LinearMap.SeparatingLeft, ext_iff_trace_mul_right])
-    (by simp [mul_assoc])
+
+/-- Matrix rings induce a natural Frobenius algebra, where the dual is the trace. -/
+noncomputable abbrev _root_.Matrix.frobeniusAlgebra (R n : Type*) [CommSemiring R] [Fintype n] :
+    FrobeniusAlgebra R (Matrix n n R) where
+  dual := traceLinearMap n R R
+  bijective_compr₂_mul := by
+    classical
+    refine ⟨fun a b hab ↦ ?_, fun f ↦ ⟨of fun i j ↦ f (.single j i 1), ext fun x ↦ ?_⟩⟩
+    · simpa [LinearMap.ext_iff, ← ext_iff_trace_mul_right] using hab
+    simp only [compr₂_apply, mul_apply_apply, traceLinearMap_apply, trace, diag_apply, mul_apply,
+      of_apply, mul_comm]
+    simp_rw [← smul_eq_mul, ← map_smul, smul_single, ← map_sum, smul_eq_mul, mul_one]
+    rw [Finset.sum_comm, ← matrix_eq_sum_single]
 
 attribute [local instance] Matrix.frobeniusAlgebra in
-lemma _root_.Matrix.frobeniusAlgebraDual_eq_traceLinearMap (K n : Type*) [Field K] [Fintype n]
-    [DecidableEq n] : dual (R := K) (A := Matrix n n K) = traceLinearMap n K K := by
-  ext; simp [dual]
+lemma _root_.Matrix.frobeniusAlgebraDual_eq_traceLinearMap (R n : Type*) [CommSemiring R]
+    [Fintype n] : dual (R := R) (A := Matrix n n R) = traceLinearMap n R R := rfl
 
 end FrobeniusAlgebra
