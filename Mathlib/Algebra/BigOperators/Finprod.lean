@@ -6,7 +6,6 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Notation.FiniteSupport
 public import Mathlib.Algebra.Order.Ring.Defs
@@ -411,12 +410,6 @@ theorem hasFiniteMulSupport_of_finprod_ne_one {f : α → M} (h : ∏ᶠ i, f i 
     HasFiniteMulSupport f :=
   not_infinite.mp <| (finprod_of_infinite_mulSupport ·).mt h
 
-@[deprecated (since := "2026-03-03")] alias
-  finite_mulSupport_of_finprod_ne_one := hasFiniteMulSupport_of_finprod_ne_one
-
-@[deprecated (since := "2026-03-03")] alias
-  finite_support_of_finsum_ne_zero := hasFiniteSupport_of_finsum_ne_zero
-
 theorem hasFiniteSupport_of_finsum_eq_one {R : Type*} [NonAssocSemiring R] {f : α → R}
     (h : ∑ᶠ i, f i = 1) : HasFiniteSupport f := by
   cases subsingleton_or_nontrivial R
@@ -424,9 +417,6 @@ theorem hasFiniteSupport_of_finsum_eq_one {R : Type*} [NonAssocSemiring R] {f : 
   · apply hasFiniteSupport_of_finsum_ne_zero
     rw [h]
     exact one_ne_zero
-
-@[deprecated (since := "2026-03-03")] alias
-  finite_support_of_finsum_eq_one := hasFiniteSupport_of_finsum_eq_one
 
 @[to_additive]
 theorem finprod_eq_prod (f : α → M) (hf : HasFiniteMulSupport f) :
@@ -665,7 +655,7 @@ equals the product of `f i` divided by the product of `g i`. -/
       equals the sum of `f i` minus the sum of `g i`. -/]
 theorem finprod_div_distrib [DivisionCommMonoid G] {f g : α → G} (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) : ∏ᶠ i, f i / g i = (∏ᶠ i, f i) / ∏ᶠ i, g i := by
-  simp only [div_eq_mul_inv, finprod_mul_distrib hf <| hg.fun_inv, finprod_inv_distrib]
+  simp only [div_eq_mul_inv, finprod_mul_distrib hf hg.fun_inv, finprod_inv_distrib]
 
 /-- A more general version of `finprod_mem_mul_distrib` that only requires `s ∩ mulSupport f` and
 `s ∩ mulSupport g` rather than `s` to be finite. -/

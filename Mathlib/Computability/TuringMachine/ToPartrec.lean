@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Computability.TuringMachine.Config
 public import Mathlib.Computability.TuringMachine.StackTuringMachine
 public import Mathlib.Data.Num.Lemmas
 public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
-public import Mathlib.Computability.TuringMachine.Config
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -339,7 +339,7 @@ def tr : Λ' → Stmt'
       goto fun s =>
         cond (natEnd (s.getD default)) (Λ'.ret k) <|
           Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
-  | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
+  | Λ'.ret Cont'.halt => (load fun _ => none) halt
 
 @[simp]
 theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
