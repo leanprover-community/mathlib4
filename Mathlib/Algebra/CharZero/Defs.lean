@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.Defs
+public import Mathlib.Data.Int.Cast.Defs
 
 import Mathlib.Basic.Logic.Basic
 import Mathlib.Tactic.Basify.Attr
