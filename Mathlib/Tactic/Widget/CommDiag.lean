@@ -55,17 +55,18 @@ abbrev ExprEmbeds := Array (String × Expr)
 
 /-! ## Widget for general commutative diagrams -/
 
+open scoped Jsx in
 /-- Construct a commutative diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
 def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM Html := do
   let embeds ← embeds.mapM fun (s, h) =>
-      return (s, jsx%{<InteractiveCode fmt={← Widget.ppExprTagged h} />})
-  return jsx%{
+      return (s, <InteractiveCode fmt={← Widget.ppExprTagged h} />)
+  return (
     <PenroseDiagram
       embeds={embeds}
       dsl={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.dsl"}
       sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.sty"}
-      sub={sub} />}
+      sub={sub} />)
 
 /-! ## Commutative triangles -/
 

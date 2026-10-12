@@ -377,7 +377,7 @@ def tacticSyntax (rw : Rewrite) (occ : Option Nat) (loc : Option Name) :
   let proof ← withOptions (pp.mvars.anonymous.set · false) (PrettyPrinter.delab rw.proof)
   mkRewrite occ rw.symm proof loc
 
-open Widget ProofWidgets Server
+open Widget ProofWidgets Jsx Server
 
 /-- The structure with all data necessary for rendering a rewrite suggestion -/
 structure RewriteInterface where
@@ -465,7 +465,7 @@ def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind))
     MetaM Html := do
   let htmls ← results.filterMapM (renderSection showNames)
   if htmls.isEmpty then
-    return jsx%{<p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/></p>}
+    return <p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/> </p>
   else
     return .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
 where
@@ -476,32 +476,31 @@ where
       | .hypothesis => " (local hypotheses)"
       | .fromFile => " (lemmas from current file)"
       | .fromCache => ""
-    let pat ← pattern head.lemmaType head.symm
-      (return jsx%{<InteractiveCode fmt={← ppExprTagged ·}/>})
-    return jsx%{<details open={true}>
+    return <details «open»={true}>
       <summary className="mv2 pointer">
-        Pattern {pat}{.text suffix}
+        Pattern
+        {← pattern head.lemmaType head.symm (return <InteractiveCode fmt={← ppExprTagged ·}/>)}
+        {.text suffix}
       </summary>
       {renderSectionCore showNames sec.1}
-    </details>}
+    </details>
 
   /-- Render the list of rewrite results in one section. -/
   renderSectionCore (showNames : Bool) (sec : Array RewriteInterface) : Html :=
     .element "ul" #[("style", json% { "padding-left" : "30px"})] <|
     sec.map fun rw =>
-      jsx%{<li>{ .element "p" #[] <|
+      <li> { .element "p" #[] <|
         let button :=
-          jsx%{<span className="font-code">{
+          <span className="font-code"> {
             Html.ofComponent MakeEditLink
               (.ofReplaceRange doc.meta range rw.tactic)
               #[.text rw.replacementString] }
-          </span>}
+          </span>
         let extraGoals := rw.extraGoals.flatMap fun extraGoal =>
-          #[jsx%{<br/>}, jsx%{<strong className="goal-vdash">⊢ </strong>},
-            jsx%{<InteractiveCode fmt={extraGoal}/>}]
+          #[<br/>, <strong className="goal-vdash">⊢ </strong>, <InteractiveCode fmt={extraGoal}/>]
         #[button] ++ extraGoals ++
-          if showNames then #[jsx%{<br/>}, jsx%{<InteractiveCode fmt={rw.prettyLemma}/>}] else #[] }
-      </li>}
+          if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
+      </li>
 
 /-- The rpc method of the `rw??` widget. -/
 @[server_rpc_method]
@@ -532,11 +531,11 @@ def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
       let (filtered, all) ← getRewriteInterfaces subExpr occ location loc.fvarId? props.replaceRange
       let filtered ← renderRewrites subExpr filtered props.replaceRange doc false
       let all      ← renderRewrites subExpr all      props.replaceRange doc true
-      return jsx%{<FilterDetails
+      return <FilterDetails
         summary={.text "Rewrite suggestions:"}
         all={all}
         filtered={filtered}
-        initiallyFiltered={true} />}
+        initiallyFiltered={true} />
 
 /-- The component called by the `rw??` tactic -/
 @[widget_module]

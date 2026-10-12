@@ -59,7 +59,7 @@ structure SelectInsertParams where
   replaceRange : Lsp.Range
   deriving SelectInsertParamsClass, RpcEncodable
 
-open SelectInsertParamsClass Lean.SubExpr in
+open scoped Jsx in open SelectInsertParamsClass Lean.SubExpr in
 /-- Helper function to create a widget allowing to select parts of the main goal
 and then display a link that will insert some tactic call.
 
@@ -93,15 +93,15 @@ def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
     let errorMsg := s!"{all} should be {be_where}"
     let inner : Html ← (do
       if onlyOne && (selectedLocations params).size > 1 then
-        return jsx%{<span>You should select only one sub-expression</span>}
+        return <span>{.text "You should select only one sub-expression"}</span>
       for selectedLocation in selectedLocations params do
         if selectedLocation.mvarId.name != mainGoalName then
-          return jsx%{<span>{.text errorMsg}</span>}
+          return <span>{.text errorMsg}</span>
         else if onlyGoal then
           if !(selectedLocation.loc matches (.target _)) then
-            return jsx%{<span>{.text errorMsg}</span>}
+            return <span>{.text errorMsg}</span>
       if (selectedLocations params).isEmpty then
-        return jsx%{<span>{.text helpMsg}</span>}
+        return <span>{.text helpMsg}</span>
       mainGoal.ctx.val.runMetaM {} do
         let md ← mainGoal.mvarId.getDecl
         let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
@@ -112,9 +112,9 @@ def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
             MakeEditLink
             (.ofReplaceRange doc.meta (replaceRange params) newCode range?)
             #[ .text linkText ])
-    return jsx%{<details open={true}>
+    return <details «open»={true}>
         <summary className="mv2 pointer">{.text title}</summary>
         <div className="ml1">{inner}</div>
-      </details>}
+      </details>
   else
-    return jsx%{<span>There is no goal to solve!</span>} -- This shouldn't happen.
+    return <span>{.text "There is no goal to solve!"}</span> -- This shouldn't happen.
