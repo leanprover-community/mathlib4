@@ -208,7 +208,6 @@ noncomputable instance : (equivalenceTransported e).functor.Monoidal :=
 noncomputable instance : (equivalenceTransported e).symm.inverse.Monoidal :=
   inferInstanceAs (equivalenceTransported e).functor.Monoidal
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (equivalenceTransported e).symm.IsMonoidal := by
   infer_instance
 

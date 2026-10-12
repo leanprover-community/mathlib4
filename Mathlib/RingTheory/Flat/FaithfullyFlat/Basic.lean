@@ -5,9 +5,10 @@ Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Flat.Stability
+
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
 
 /-!
 # Faithfully flat modules
@@ -471,9 +472,10 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
     (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.rTensor M f = 0 :=
   zero_iff_lTensor_zero R M f |>.trans
-  ⟨fun h => by ext n m; exact (TensorProduct.comm R N' M).injective <|
-    (by simpa using congr($h (m ⊗ₜ n))), fun h => by
-    ext m n; exact (TensorProduct.comm R M N').injective <| (by simpa using congr($h (n ⊗ₜ m)))⟩
+    ⟨fun h => by
+      ext n m; exact (TensorProduct.comm R N' M).injective (by simpa using congr($h (m ⊗ₜ n))),
+    fun h => by
+      ext m n; exact (TensorProduct.comm R M N').injective (by simpa using congr($h (n ⊗ₜ m)))⟩
 
 /-- If `A` is a faithfully flat `R`-algebra, and `m` is a term of an `R`-module `M`,
 then `1 ⊗ₜ[R] m = 0` if and only if `m = 0`. -/
@@ -484,7 +486,7 @@ theorem one_tmul_eq_zero_iff {A : Type*} [Ring A] [Algebra R A] [FaithfullyFlat 
   · rintro rfl; rw [tmul_zero]
   intro h
   let f : R →ₗ[R] M := (LinearMap.lsmul R M).flip m
-  suffices f = 0 by simpa [f] using DFunLike.congr_fun this 1
+  suffices f = 0 by simpa [f] using congr($this 1)
   rw [Module.FaithfullyFlat.zero_iff_lTensor_zero R A]
   ext a
   apply_fun (a • ·) at h
@@ -574,7 +576,7 @@ theorem _root_.IsBaseChange.map_smul_top_ne_top_iff_of_faithfullyFlat (hf : IsBa
     I.map (algebraMap R S) • (⊤ : Submodule S N) ≠ ⊤ ↔ I • (⊤ : Submodule R M) ≠ ⊤ := by
   simpa only [← Submodule.Quotient.subsingleton_iff.not] using not_congr <|
     (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).symm ≪≫ₗ TensorProduct.comm S N _ ≪≫ₗ
-      hf.tensorEquiv _ ≪≫ₗ AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (.refl R M) ≪≫ₗ
+      hf.tensorEquiv _ ≪≫ₗ AlgebraTensorModule.congr (I.quotMapEquivTensorQuot S) (.refl R M) ≪≫ₗ
         AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
           (tensorQuotEquivQuotSMul M I).baseChange R S _ _ |>.subsingleton_congr.trans <|
             subsingleton_tensorProduct_iff_right R S
@@ -632,7 +634,7 @@ def baseChangeOrderEmbedding : Submodule R M ↪o Submodule A (A ⊗[R] M) where
 
 theorem IsNoetherian.of_isNoetherian_tensorProduct_of_faithfullyFlat
     (h : IsNoetherian A (A ⊗[R] M)) : IsNoetherian R M := by
-  rw [isNoetherian_iff'] at h ⊢
+  rw [isNoetherian_iff] at h ⊢
   exact (baseChangeOrderEmbedding R M A).wellFoundedGT
 
 theorem IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
@@ -640,3 +642,17 @@ theorem IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
   (baseChangeOrderEmbedding R M A).wellFoundedLT
 
 end Submodule
+
+/-- In a nonzero algebra that is free as a module, the coordinates of `1` in any basis generate
+the unit ideal. Equivalently, `1` is unimodular: see `Module.Free.isUnimodular_one`. -/
+theorem Module.Basis.span_repr_one_eq_top {R : Type*} [CommRing R] {A ι : Type*} [Ring A]
+    [Nontrivial A] [Algebra R A] (e : Basis ι R A) :
+    Ideal.span (Set.range (e.repr 1)) = ⊤ := by
+  nontriviality R
+  have : Module.Free R A := .of_basis e
+  by_contra h
+  obtain ⟨𝔪, h𝔪, hle⟩ := Ideal.exists_le_maximal _ h
+  refine Module.FaithfullyFlat.submodule_ne_top h𝔪 (Submodule.eq_top_iff'.mpr fun a : A ↦ ?_)
+  rw [← mul_one a, ← e.linearCombination_repr 1, Finsupp.linearCombination_apply, Finsupp.mul_sum]
+  exact Submodule.sum_mem _ fun i _ ↦ by
+    simpa using Submodule.smul_mem_smul (hle (Ideal.subset_span ⟨i, rfl⟩)) Submodule.mem_top

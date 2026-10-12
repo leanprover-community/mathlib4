@@ -5,11 +5,10 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Order.AddTorsor
-public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
-public import Mathlib.Basic.Real.Pointwise
+
+import Mathlib.Algebra.Order.Pi
 
 /-!
 # Seminorms
@@ -93,7 +92,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     rw [inv_mul_cancel_left₀ (norm_ne_zero_iff.mpr h)]
     specialize smul_le r⁻¹ (r • x)
     rw [norm_inv] at smul_le
-    convert! smul_le
+    convert smul_le
     simp [h]
 
 end Of
@@ -112,6 +111,7 @@ section SMul
 
 variable [SMul 𝕜 E]
 
+@[macro_inline]
 instance instFunLike : FunLike (Seminorm 𝕜 E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -134,7 +134,6 @@ instance instZero : Zero (Seminorm 𝕜 E) :=
     smul' := fun _ _ => (mul_zero _).symm }⟩
 
 instance : IsZeroApply (Seminorm 𝕜 E) E ℝ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-22")] alias coe_zero := FunLike.coe_zero
 
@@ -155,7 +154,6 @@ instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : 
         rw [map_smul_eq_mul, mul_left_comm] }
 
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : IsSMulApply R (Seminorm 𝕜 E) E ℝ where
-  smul_apply _ _ _ := rfl
 
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' ℝ] [SMul R' ℝ≥0]
     [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
@@ -172,7 +170,6 @@ instance instAdd : Add (Seminorm 𝕜 E) where
       smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
 
 instance : IsAddApply (Seminorm 𝕜 E) E ℝ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-22")] alias coe_add := FunLike.coe_add
 
@@ -214,7 +211,7 @@ instance instSup : Max (Seminorm 𝕜 E) where
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
       smul' := fun x v =>
-        (congr_arg₂ max (map_smul_eq_mul p x v) (map_smul_eq_mul q x v)).trans <|
+        congr(max $(map_smul_eq_mul p x v) $(map_smul_eq_mul q x v)).trans
           (mul_max_of_nonneg _ _ <| norm_nonneg x).symm }
 
 @[simp]
@@ -332,7 +329,7 @@ theorem coe_bot : ⇑(⊥ : Seminorm 𝕜 E) = 0 :=
 theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 
-@[deprecated IsOrderedSMul.smul_le_smul (since := "2026-07-31")]
+@[deprecated IsOrderedSMul.smul_le_smul +typeChanged (since := "2026-07-31")]
 protected theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
@@ -365,7 +362,7 @@ theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥
   ext x
   rw [smul_apply, finset_sup_apply, finset_sup_apply]
   symm
-  exact congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.mul_finset_sup C s (fun i ↦ ⟨p i x, apply_nonneg _ _⟩))
+  congrm $(NNReal.mul_finset_sup C s fun i ↦ ⟨p i x, apply_nonneg _ _⟩)
 
 theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p ≤ ∑ i ∈ s, p i := by
   classical
@@ -842,7 +839,7 @@ theorem closedBall_smul_ball (p : Seminorm 𝕜 E) {r₁ : ℝ} (hr₁ : r₁ �
     Metric.closedBall (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
   simp only [smul_subset_iff, mem_ball_zero, mem_closedBall_zero_iff, map_smul_eq_mul]
   refine fun a ha b hb ↦ mul_lt_mul' ha hb (apply_nonneg _ _) ?_
-  exact hr₁.lt_or_gt.resolve_left <| ((norm_nonneg a).trans ha).not_gt
+  exact hr₁.lt_or_gt.resolve_left ((norm_nonneg a).trans ha).not_gt
 
 theorem ball_smul_closedBall (p : Seminorm 𝕜 E) (r₁ : ℝ) {r₂ : ℝ} (hr₂ : r₂ ≠ 0) :
     Metric.ball (0 : 𝕜) r₁ • p.closedBall 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
@@ -1017,7 +1014,7 @@ variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E) (x : E)
 
 /-- Seminorm-balls are convex. -/
 theorem convex_ball : Convex ℝ (ball p x r) := by
-  convert! (p.convexOn.translate_left (-x)).convex_lt r
+  convert (p.convexOn.translate_left (-x)).convex_lt r
   ext y
   rw [preimage_univ, sep_univ, p.mem_ball, sub_eq_add_neg]
   rfl

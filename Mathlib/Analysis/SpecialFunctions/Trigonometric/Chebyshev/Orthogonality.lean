@@ -5,14 +5,15 @@ Authors: Yuval Filmus
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Chebyshev
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!
@@ -52,7 +53,7 @@ noncomputable def measureT : Measure ℝ :=
 
 theorem integral_measureT (f : ℝ → ℝ) :
     ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by
-  rw [integral_of_le (by norm_num), measureT,
+  rw [integral_of_le (by simp), measureT,
     restrict_withDensity (by measurability),
     integral_withDensity_eq_integral_smul (by fun_prop)]
   congr! 2 with x hx
@@ -66,9 +67,9 @@ theorem intervalIntegrable_sqrt_one_sub_sq_inv :
 
 theorem integrable_measureT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1) 1)) :
     Integrable f measureT := by
-  replace hf : ContinuousOn f (Set.uIcc (-1) 1) := by rwa [Set.uIcc_of_lt (by norm_num)]
+  replace hf : ContinuousOn f (Set.uIcc (-1) 1) := by rwa [Set.uIcc_of_lt (by simp)]
   have := intervalIntegrable_sqrt_one_sub_sq_inv.continuousOn_mul hf
-  rw [intervalIntegrable_iff, Set.uIoc_of_le (by norm_num)] at this
+  rw [intervalIntegrable_iff, Set.uIoc_of_le (by simp)] at this
   rw [measureT, restrict_withDensity (by measurability),
     integrable_withDensity_iff (by fun_prop) (by simp)]
   unfold IntegrableOn at this
@@ -89,9 +90,6 @@ theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ} :
     · exact fun x hx ↦ (hasDerivAt_arccos (by aesop) (by aesop))
     · simp
   _ = ∫ θ in 0..π, f (cos θ) := by simp
-
-@[deprecated (since := "2026-03-19")]
-alias integral_measureT_eq_integral_cos_of_continuous := integral_measureT_eq_integral_cos
 
 theorem integral_eval_T_real_measureT_zero :
     ∫ x, (T ℝ 0).eval x ∂measureT = π := by

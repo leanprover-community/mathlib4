@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.CategoryTheory.Category.Pointed
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 public import Mathlib.Data.PFun
 
 /-!
@@ -85,7 +86,7 @@ def typeToPartialFun : Type u ⥤ PartialFun where
 instance : typeToPartialFun.Faithful where
   map_injective h := by
     ext x
-    exact congrFun (PFun.lift_injective h) x
+    congrm $(PFun.lift_injective h) x
 
 -- b ∈ PFun.toSubtype (fun x ↦ x ≠ X.point) Subtype.val a ↔ b ∈ Part.some a
 set_option backward.isDefEq.respectTransparency false in
@@ -104,7 +105,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
     suffices c = g.toFun (f.toFun a) → ¬Y.point = f.toFun a ∧ ¬Z.point = g.toFun (f.toFun a) from
       ⟨by aesop, by simp; grind⟩
     rintro rfl
-    refine ⟨fun h => hc.symm <| g.map_point ▸ congr_arg g.toFun h, hc.symm⟩
+    exact ⟨fun h => hc.symm <| g.map_point ▸ congr(g $h), hc.symm⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -119,7 +120,7 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
       map := fun f => ⟨Option.elim' none fun a => (f a).toOption, rfl⟩
       map_id := fun X => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => (by
         dsimp [CategoryStruct.id]
-        convert! Part.some_toOption a)
+        convert Part.some_toOption a)
       map_comp := fun f g => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
         dsimp [CategoryStruct.comp]
         rw [Part.bind_toOption g (f a), Option.elim'_eq_elim] }
