@@ -265,7 +265,7 @@ theorem isTorsionClass_iff (P : ObjectProperty C)
 class in the opposite category. -/
 lemma isTorsionFreeClass_iff_isTorsionClass_op (P : ObjectProperty C) :
     IsTorsionFreeClass P ↔ IsTorsionClass P.op :=
-  ⟨fun _ ↦ inferInstance, fun ⟨⟨Q, hQ⟩⟩ ↦ ⟨⟨Q.unop, hQ.unop⟩⟩⟩
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstanceAs (IsTorsionFreeClass P.op.unop)⟩
 
 /-- In a well-copowered abelian category with products, a property of objects `P` is a
 torsion-free class if and only if it is closed under subobjects, extensions, and products.
