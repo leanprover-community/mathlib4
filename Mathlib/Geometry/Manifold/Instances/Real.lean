@@ -286,7 +286,6 @@ lemma modelWithCornersEuclideanHalfSpace_symm_apply_of_le {n : ℕ} [NeZero n]
     (𝓡∂ n).symm x = ⟨x, hx⟩ := by
   simp [modelWithCornersEuclideanHalfSpace_symm_apply, hx]
 
-@[simp]
 lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
 
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
@@ -321,7 +320,6 @@ lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
     (𝓡c n).symm x = ⟨x, hx⟩ := by
   simp [modelWithCornersEuclideanQuadrant_symm_apply, hx]
 
-@[simp]
 lemma modelWithCornersEuclideanQuadrant_zero {n : ℕ} : (𝓡c n) 0 = 0 := rfl
 
 lemma range_modelWithCornersEuclideanQuadrant (n : ℕ) :
