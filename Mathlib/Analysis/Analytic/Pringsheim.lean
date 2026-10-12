@@ -276,4 +276,3 @@ theorem exists_gt_summable_mul_pow_of_analyticAt (ha : ∀ n, 0 ≤ a n) {R : �
     ENNReal.ofReal_add ht0 (by positivity)]
 
 end Pringsheim
-
