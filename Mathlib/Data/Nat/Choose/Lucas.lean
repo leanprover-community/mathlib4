@@ -138,7 +138,7 @@ theorem choose_pow_mul_pow_mul_modEq_choose_nat :
 `0 < k < p ^ e`. -/
 theorem pow_dvd_iff_forall_dvd_choose {e : ℕ} :
     p ^ e ∣ n ↔ ∀ k, 0 < k → k < p ^ e → p ∣ choose n k := by
-  rename_i hp
+  have hp : p.Prime := Fact.out
   constructor
   · induction e generalizing n with
     | zero => intro _ k hk hk'; lia
@@ -150,7 +150,7 @@ theorem pow_dvd_iff_forall_dvd_choose {e : ℕ} :
       by_cases hkp : k % p = 0
       · obtain ⟨n, rfl⟩ := hpn
         obtain ⟨k, rfl⟩ := Nat.dvd_of_mod_eq_zero hkp
-        have hp0 := hp.out.pos
+        have hp0 := hp.pos
         simp only [Nat.mul_div_cancel_left _ hp0]
         rw [Nat.pow_succ', Nat.mul_dvd_mul_iff_left hp0] at hn
         rw [Nat.pow_succ'] at hk'
@@ -160,14 +160,14 @@ theorem pow_dvd_iff_forall_dvd_choose {e : ℕ} :
   · intro h
     by_contra hn
     obtain ⟨v, m, hm, rfl⟩ := Nat.exists_eq_pow_mul_and_not_dvd (n := n)
-      (by rintro rfl; exact hn (dvd_zero _)) p hp.out.ne_one
+      (by rintro rfl; exact hn (dvd_zero _)) p hp.ne_one
     have hv : v < e := by
       by_contra! hv
       exact hn ((Nat.pow_dvd_pow p hv).trans (dvd_mul_right _ _))
     have := (choose_pow_mul_pow_mul_modEq_choose_nat (p := p) (k := v) (a := m) (b := 1)).dvd_iff
       dvd_rfl
     rw [mul_one, choose_one_right] at this
-    exact hm (this.1 (h _ (pow_pos hp.out.pos v) (Nat.pow_lt_pow_right hp.out.one_lt hv)))
+    exact hm (this.1 (h _ (pow_pos hp.pos v) (Nat.pow_lt_pow_right hp.one_lt hv)))
 
 /-- For primes `p` and positive integer `n`, assume that for all `i ∈ Icc 1 (n - 1)`,
 `choose n i` congruent to `0` module `p`, then `n = p ^ multiplicity p n`.
