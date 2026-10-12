@@ -478,7 +478,6 @@ private theorem two_mul_sum_minor {R ι κ : Type*} [CommRing R] [Fintype κ] (S
           sum_congr rfl fun i _ ↦ sum_congr rfl fun j _ ↦ ?_
         ring
 
-
 namespace LinearMap
 
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
@@ -652,7 +651,6 @@ theorem sum_singularValues_add_le (u v : E →ₗ[𝕜] F) (n : ℕ) :
         exact norm_add_le _ _
     _ ≤ _ := add_le_add (norm_sum_inner_le_sum_singularValues S hxo hx1 hyo hy1 u hSn)
         (norm_sum_inner_le_sum_singularValues S hxo hx1 hyo hy1 v hSn)
-
 
 /-- The singular value expansion `⟪y, T x⟫ = ∑_k s_k(T) ⟪y, f_k⟫ ⟪e_k, x⟫`. -/
 private theorem inner_apply_eq_sum (T : E →ₗ[𝕜] F) (x : E) (y : F) :
@@ -850,7 +848,6 @@ private theorem norm_bform_self_le {ι : Type*} (S : Finset ι) (x : ι → E) (
   rw [e] at this
   linarith
 
-
 /-- A sum over `Finset.range n` of a function vanishing from `d` on is a sum over
 `{j : Fin d | j < n}`. -/
 private theorem sum_range_eq_sum_filter (d : ℕ) (f : ℕ → ℝ) (hf : ∀ k, d ≤ k → f k = 0) (n : ℕ) :
@@ -968,6 +965,7 @@ private theorem sigma_two_add_le (u v : E →ₗ[𝕜] F) (n : ℕ) :
   have t2 := norm_add_le (bform G x y u u + bform G x y u v) (bform G x y v u)
   have t3 := norm_add_le (bform G x y u u) (bform G x y u v)
   linarith
+
 /-- Writing `σ₂(T)` for the second elementary symmetric function of the `n` largest singular
 values of `T`, `σ₂(u + v) ≤ σ₂(u) + (∑ j < n, s_j(u)) (∑ j < n, s_j(v)) + σ₂(v)`.
 Ky Fan's inequality `sum_singularValues_add_le` is the analogous statement for the first
