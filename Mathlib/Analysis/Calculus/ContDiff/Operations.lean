@@ -150,6 +150,11 @@ theorem contDiffAt_apply (i : ι) (f : ι → E) : ContDiffAt 𝕜 n (fun f : ι
   (contDiff_apply 𝕜 E i).contDiffAt
 
 @[fun_prop]
+theorem contDiffWithinAt_apply (i : ι) (s : Set (ι → E)) (f : ι → E) :
+    ContDiffWithinAt 𝕜 n (fun f : ι → E => f i) s f :=
+  (contDiffAt_apply 𝕜 E i f).contDiffWithinAt
+
+@[fun_prop]
 theorem contDiffOn_apply (i : ι) (s : Set (ι → E)) : ContDiffOn 𝕜 n (fun f : ι → E => f i) s :=
   (contDiff_apply 𝕜 E i).contDiffOn
 

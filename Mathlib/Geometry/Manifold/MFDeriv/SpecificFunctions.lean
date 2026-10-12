@@ -629,36 +629,55 @@ end Prod
 section PiSpace
 
 /-!
-### Regularity of functions with codomain `Π i, F i`
-
-We have no `ModelWithCorners.pi` yet, so we prove lemmas about functions `f : M → Π i, F i` and
-use `𝓘(𝕜, Π i, F i)` as the model space.
+### Regularity of functions with codomain `Π i, M i`
 -/
 
-variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, NormedAddCommGroup (Fi i)]
-  [∀ i, NormedSpace 𝕜 (Fi i)] {φ : M → ∀ i, Fi i}
+variable {ι : Type*} [Fintype ι] {Mi Hi Ei : ι → Type*}
+  [∀ i, NormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
+  [∀ i, TopologicalSpace (Hi i)] {Ii : ∀ i, ModelWithCorners 𝕜 (Ei i) (Hi i)}
+  [∀ i, TopologicalSpace (Mi i)] [∀ i, ChartedSpace (Hi i) (Mi i)]
+  {φ : M → ∀ i, Ei i} {f : M → ∀ i, Mi i}
+
+#where
+
+theorem mdifferentiableWithinAt_pi :
+    MDifferentiableWithinAt I (ModelWithCorners.pi Ii) f s x ↔
+      ∀ i, MDifferentiableWithinAt I (Ii i) (fun x => f x i) s x := by
+  refine ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
+  have : MDifferentiable (ModelWithCorners.pi Ii) (Ii i) (fun (x : Π i, Mi i) ↦ x i) := by
+    apply ContMDiff.mdifferentiable (n := 1)
+
+
+#exit
+
+  simp [mdifferentiableWithinAt_iff, continuousWithinAt_pi, differentiableWithinAt_pi,
+    forall_and, Function.comp_def]
+
+
 
 theorem mdifferentiableWithinAt_pi_space :
-    MDifferentiableWithinAt I 𝓘(𝕜, ∀ i, Fi i) φ s x ↔
-      ∀ i, MDifferentiableWithinAt I 𝓘(𝕜, Fi i) (fun x => φ x i) s x := by
+    MDifferentiableWithinAt I 𝓘(𝕜, ∀ i, Ei i) φ s x ↔
+      ∀ i, MDifferentiableWithinAt I 𝓘(𝕜, Ei i) (fun x => φ x i) s x := by
   simp only [mdifferentiableWithinAt_iff, continuousWithinAt_pi, differentiableWithinAt_pi,
     forall_and, extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
 
 theorem mdifferentiableOn_pi_space :
-    MDifferentiableOn I 𝓘(𝕜, ∀ i, Fi i) φ s ↔
-      ∀ i, MDifferentiableOn I 𝓘(𝕜, Fi i) (fun x => φ x i) s :=
+    MDifferentiableOn I 𝓘(𝕜, ∀ i, Ei i) φ s ↔
+      ∀ i, MDifferentiableOn I 𝓘(𝕜, Ei i) (fun x => φ x i) s :=
   ⟨fun h i x hx => mdifferentiableWithinAt_pi_space.1 (h x hx) i, fun h x hx =>
     mdifferentiableWithinAt_pi_space.2 fun i => h i x hx⟩
 
 theorem mdifferentiableAt_pi_space :
-    MDifferentiableAt I 𝓘(𝕜, ∀ i, Fi i) φ x ↔
-      ∀ i, MDifferentiableAt I 𝓘(𝕜, Fi i) (fun x => φ x i) x :=
+    MDifferentiableAt I 𝓘(𝕜, ∀ i, Ei i) φ x ↔
+      ∀ i, MDifferentiableAt I 𝓘(𝕜, Ei i) (fun x => φ x i) x :=
   mdifferentiableWithinAt_pi_space
 
 theorem mdifferentiable_pi_space :
-    MDifferentiable I 𝓘(𝕜, ∀ i, Fi i) φ ↔ ∀ i, MDifferentiable I 𝓘(𝕜, Fi i) fun x => φ x i :=
+    MDifferentiable I 𝓘(𝕜, ∀ i, Ei i) φ ↔ ∀ i, MDifferentiable I 𝓘(𝕜, Ei i) fun x => φ x i :=
   ⟨fun h i x => mdifferentiableAt_pi_space.1 (h x) i,
     fun h x => mdifferentiableAt_pi_space.2 fun i => h i x⟩
+
+#exit
 
 end PiSpace
 
