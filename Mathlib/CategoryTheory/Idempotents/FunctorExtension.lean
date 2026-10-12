@@ -286,8 +286,6 @@ def whiskeringLeftObjToKaroubiFullyFaithful :
     simp
 
 variable {C} in
-/-- Every morphism `f : P ⟶ Q` of `Karoubi C` factors through the image of `f.f` under
-`toKaroubi C`. -/
 theorem Karoubi.hom_eq_decompId_i_comp {P Q : Karoubi C} (f : P ⟶ Q) :
     f = P.decompId_i ≫ (toKaroubi C).map f.f ≫ Q.decompId_p := by
   ext
@@ -308,7 +306,6 @@ theorem additive_of_toKaroubi_comp (F : Karoubi C ⥤ D) [(toKaroubi C ⋙ F).Ad
     rw [key, key f, key g, show (f + g).f = f.f + g.f from rfl, Functor.map_add,
       Preadditive.add_comp, Preadditive.comp_add]
 
-/-- A functor `F : Karoubi C ⥤ D` is additive if and only if `toKaroubi C ⋙ F` is. -/
 theorem additive_iff_toKaroubi_comp (F : Karoubi C ⥤ D) :
     F.Additive ↔ (toKaroubi C ⋙ F).Additive :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ additive_of_toKaroubi_comp F⟩
