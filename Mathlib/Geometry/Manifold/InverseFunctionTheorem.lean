@@ -93,10 +93,6 @@ lemma extChartAtPartialDiffeomorph_source_subset :
     (extChartAtPartialDiffeomorph I n p).source ⊆ (extChartAt I p).source  := by
   simp [extChartAtPartialDiffeomorph]
 
-lemma extChartAtPartialDiffeomorph_target_subset :
-    (extChartAtPartialDiffeomorph I n p).target ⊆ (extChartAt I p).target :=
-  inter_subset_left
-
 end DiffeoExtChartAt
 
 @[expose] public section ManifoldInverseFunctionTheorem
@@ -204,11 +200,14 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   have hg : ContDiffOn 𝕜 n g U := by
     refine ((contMDiffOn_iff.mp hf).2 p (f p)).mono ?_
     rintro e ⟨m, ⟨hm₁, hm₂, hm₃⟩, rfl⟩
-    refine ⟨extChartAtPartialDiffeomorph_target_subset (φ₁.map_source hm₁), ?_⟩
-    simp only [mem_preimage] at hm₃ ⊢
-    rw [eqOn_extChartAtPartialDiffeomorph_extChartAt I₁ n p hm₁,
-      φ₀.left_inv (extChartAtPartialDiffeomorph_source_subset hm₁)]
-    exact ⟨hm₂, extChartAtPartialDiffeomorph_source_subset hm₃⟩
+    refine ⟨inter_subset_left (φ₁.map_source hm₁), ?_⟩
+    replace hm₁ : m ∈ (chartAt H₁ p).source := by
+      grw [extChartAtPartialDiffeomorph_source_subset] at hm₁
+      simpa using hm₁
+    replace hm₃ : f m ∈ (chartAt H₂ (f p)).source := by
+      grw [extChartAtPartialDiffeomorph_source_subset] at hm₃
+      simpa using hm₃
+    simp_all [φ₁, (chartAt H₁ p).left_inv hm₁]
   have U_open : IsOpen U := by
     refine φ₁.toOpenPartialHomeomorph.isOpen_image_of_subset_source ?_ inter_subset_left
     exact φ₁.open_source.inter (hf.continuousOn.isOpen_inter_preimage hA ψ₁.open_source)
