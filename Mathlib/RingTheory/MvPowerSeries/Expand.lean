@@ -5,10 +5,8 @@ Authors: Wenrong Zou
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Substitution
-public import Mathlib.Algebra.CharP.Frobenius
-public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.Expand
+public import Mathlib.RingTheory.MvPowerSeries.Substitution
 
 /-!
 ## Expand multivariate power series
@@ -97,7 +95,7 @@ theorem expand_mul_eq_comp :
 
 theorem expand_mul (φ : MvPowerSeries σ R) : φ.expand (p * q) (p.mul_ne_zero hp hq) =
     (φ.expand q hq).expand p hp :=
-  DFunLike.congr_fun (expand_mul_eq_comp p hp q hq) φ
+  congr($(expand_mul_eq_comp p hp q hq) φ)
 
 @[simp]
 theorem coeff_expand_smul (φ : MvPowerSeries σ R) (m : σ →₀ ℕ) :
@@ -237,13 +235,13 @@ theorem map_frobenius_expand {f : MvPowerSeries σ R} :
   intro n
   use (p • n)
   refine ⟨le_self_nsmul zero_le hp, ?_⟩
-  · have : (((trunc' R (p • n) f).expand p).map (frobenius R p)).toMvPowerSeries =
-      MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
-      simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
-      congr
-    rw [trunc'_map, trunc'_expand, ← trunc'_trunc'_pow (Nat.one_le_iff_ne_zero.mpr
-      (expChar_ne_zero R p)), ← MvPolynomial.coe_pow p, ← MvPolynomial.map_frobenius_expand, this,
-        trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul zero_le hp)]
+  have : (((trunc' R (p • n) f).expand p).map (frobenius R p)).toMvPowerSeries =
+    MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
+    simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
+    congr
+  rw [trunc'_map, trunc'_expand, ← trunc'_trunc'_pow (Nat.one_le_iff_ne_zero.mpr
+    (expChar_ne_zero R p)), ← MvPolynomial.coe_pow p, ← MvPolynomial.map_frobenius_expand, this,
+      trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul zero_le hp)]
 
 theorem map_iterateFrobenius_expand (f : MvPowerSeries σ R) (n : ℕ) :
     map (iterateFrobenius R p n) (expand (p ^ n) (pow_ne_zero n hp) f) = f ^ p ^ n := by
@@ -254,6 +252,16 @@ theorem map_iterateFrobenius_expand (f : MvPowerSeries σ R) (n : ℕ) :
     conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
     simp_rw [← map_frobenius_expand p hp, pow_succ', add_comm k, iterateFrobenius_add,
       ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
+
+theorem _root_.FiniteField.MvPowerSeries.expand_card {K : Type*} [Field K] [Fintype K]
+    (f : MvPowerSeries σ K) :
+    f.expand (Fintype.card K) Fintype.card_ne_zero = f ^ (Fintype.card K) := by
+  obtain ⟨p, hp⟩ := CharP.exists K
+  rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
+  have : Fact p.Prime := ⟨hp⟩
+  simp_rw [hn]
+  rw [← MvPowerSeries.map_iterateFrobenius_expand _ (NeZero.ne' p).symm, iterateFrobenius_eq_pow,
+    FiniteField.frobenius_pow hn, RingHom.one_def, MvPowerSeries.map_id, RingHom.id_apply]
 
 end ExpChar
 

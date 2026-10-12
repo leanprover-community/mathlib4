@@ -45,8 +45,7 @@ def maximalIdeal : HeightOneSpectrum A where
 
 instance isRankOneDiscrete :
     IsRankOneDiscrete ((maximalIdeal A).valuation K) := by
-  have : Nontrivial (valueGroup
-      (.ofClass (valuation K (maximalIdeal A)))) := by
+  have : Nontrivial (valueGroup (valuation K (maximalIdeal A)).toMonoidWithZeroHom) := by
     let v := (maximalIdeal A).valuation K
     let π := valuation_exists_uniformizer K (maximalIdeal A) |>.choose
     have hπ : v π = ↑(ofAdd (-1 : ℤ)) :=

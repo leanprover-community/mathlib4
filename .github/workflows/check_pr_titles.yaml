@@ -6,6 +6,7 @@ on:
       - opened
       - reopened
       - edited
+      - ready_for_review
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
@@ -15,7 +16,7 @@ permissions:
 
 jobs:
   check_title:
-    if: (github.repository == 'leanprover-community/mathlib4') && (github.event.pull_request.state == 'open') && (github.event.action == 'opened' || github.event.action == 'reopened' || (github.event.action == 'edited' && github.event.changes.title))
+    if: (github.repository == 'leanprover-community/mathlib4') && (github.event.pull_request.state == 'open') && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'ready_for_review' || (github.event.action == 'edited' && github.event.changes.title))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,7 +24,7 @@ jobs:
         with:
           ref: master
       - name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
         with:
           auto-config: false
           use-github-cache: false

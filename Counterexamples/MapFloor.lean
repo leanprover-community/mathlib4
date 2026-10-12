@@ -54,11 +54,11 @@ local notation "ε" => (X : ℤ[ε])
 namespace IntWithEpsilon
 
 instance linearOrder : LinearOrder ℤ[ε] :=
-  LinearOrder.lift' (toLex ∘ coeff) coeff_injective
+  LinearOrder.lift' (fun x ↦ toLex ⇑x.coeff) <| DFunLike.coe_injective.comp coeff_injective
 
 instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] :=
   Function.Injective.isOrderedAddMonoid
-    (toLex ∘ coeff) (fun _ _ => funext fun _ => coeff_add _ _ _) .rfl
+    (fun x ↦ toLex ⇑x.coeff) (fun _ _ => funext fun _ => coeff_add _ _ _) .rfl
 
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]

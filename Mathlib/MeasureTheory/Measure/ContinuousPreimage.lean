@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.CompactOpen
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.CompactOpen
 
 /-!
 # Continuity of the preimage of a set under a measure-preserving continuous function
@@ -98,7 +98,6 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
     ← hg.measure_preimage hs, ← measure_sdiff_le_iff_le_add hKm hKg.subset_preimage hK']
   exact hKμ.le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `f : Z → C(X, Y)` be a continuous (in the compact open topology) family
 of continuous measure-preserving maps.
 Let `t : Set Y` be a null measurable set of finite measure.
