@@ -24,8 +24,6 @@ open Filter Asymptotics ContinuousLinearMap Set
 
 open scoped Topology
 
-noncomputable section
-
 section binary
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

@@ -6,9 +6,10 @@ Authors: Oliver Butterley, Yoh Tanimoto
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.MeasureTheory.Measure.Dirac.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Relations
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
+
+import Mathlib.MeasureTheory.Measure.Dirac.Basic
 
 /-!
 # Properties of variation

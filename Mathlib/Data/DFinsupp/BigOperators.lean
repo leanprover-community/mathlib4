@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Data.DFinsupp.Ext
-public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 
 /-!
 # Dependent functions with finite support

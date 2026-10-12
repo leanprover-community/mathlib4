@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Order.Interval.Set.OrdConnected
+
 import Mathlib.Order.Filter.Bases.Finite
 
 /-!
