@@ -292,16 +292,14 @@ lemma degree_mono {R : Type*} [AddCommMonoid R] [PartialOrder R] [CanonicallyOrd
     (Finset.sum_le_sum_of_subset (support_mono e)).trans (Finset.sum_le_sum fun _ _ ↦ e _)
 
 lemma degree_strictMono {R : Type*}
-    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R] [AddRightStrictMono R] :
+    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R] [IsOrderedCancelAddMonoid R] :
     StrictMono (Finsupp.degree (σ := σ) (R := R)) := by
-  classical
   intro a b h
   obtain ⟨i, hi⟩ : ∃ i, a i < b i := by
     by_contra! h'
     exact h.ne (ext fun i ↦ (h.le i).eq_of_not_lt (h' i))
-  simp_rw [degree_apply, Finset.sum_subset (support_mono h.le) fun _ _ ↦ notMem_support_iff.mp,
-    ← b.support.add_sum_erase _ (mem_support_iff.mpr (zero_le.trans_lt hi).ne')]
-  exact add_lt_add_of_lt_of_le hi (Finset.sum_le_sum fun j _ ↦ h.le j)
+  simp_rw [degree_apply, Finset.sum_subset (support_mono h.le) fun _ _ ↦ notMem_support_iff.mp]
+  exact Finset.sum_lt_sum (fun _ ↦ h.le ·) ⟨i, mem_support_iff.mpr (zero_le.trans_lt hi).ne', hi⟩
 
 lemma exists_le_degree_eq {σ : Type*} (f : σ →₀ ℕ) (n : ℕ) (hn : n ≤ f.degree) :
     ∃ g ≤ f, g.degree = n := by
