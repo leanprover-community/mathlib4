@@ -4,6 +4,8 @@ set_option trace.Tactic.positivity true
 set_option trace.Tactic.positivity.failure true
 set_option profiler true
 
+section
+
 axiom α : Type*
 axiom β : Type*
 variable [Zero α] [PartialOrder α] [Zero β] [PartialOrder β]
@@ -79,7 +81,7 @@ namespace Premises
 /--
 error: @[positivity_lemma] attribute only applies to lemmas
     proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
-The premise P x is not a positivity proposition in 0 < f x
+The premise P x is not a positivity proposition
 -/
 #guard_msgs in
 @[positivity_lemma]
@@ -116,6 +118,47 @@ example {x : ℤ} (hx : 0 ≤ x) : 0 ≤ x + x + x + x + x + x + x + x := by pos
 
 end Cache
 
+end
+
 namespace FailureCache
+
+/--
+error: @[positivity_lemma] attribute only applies to lemmas
+    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+The conclusion {target} is not a positivity proposition
+-/
+#guard_msgs in
+@[positivity_lemma]
+theorem neg_pos' {a : ℤ} : 0 < -a → a < 0 := Int.neg_pos.mp
+
+/--
+error: @[positivity_lemma] attribute only applies to lemmas
+    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+The premise a < 0 is not a positivity proposition
+-/
+#guard_msgs in
+@[positivity_lemma]
+theorem neg_pos'' {a : ℤ} : a < 0 → 0 < -a := by exact fun a_1 => Int.neg_pos_of_neg a_1
+
+/--
+error: @[positivity_lemma] attribute only applies to lemmas
+    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+The conclusion {target} is not a positivity proposition
+-/
+#guard_msgs in
+@[positivity_lemma]
+theorem neg_pos''' {a : ℤ} : a < 0 ↔ 0 < -a := by exact Iff.symm Int.neg_pos
+
+/--
+error: @[positivity_lemma] attribute only applies to lemmas
+    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+The premise 0 < c does not refer to a direct argument of the conclusion 0 < a - b
+-/
+#guard_msgs in
+@[positivity_lemma]
+axiom not_direct_arg {a b c : ℤ} : 0 < c → 0 < a - b
+
+-- TODO: support non-positivity premises via a discharger.
+-- TODO: read `RunAutoParam` to support `(hx : 0 < x := by positivity)`
 
 end FailureCache

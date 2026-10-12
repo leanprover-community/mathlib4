@@ -20,6 +20,8 @@ The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivi
 and elsewhere.
 -/
 
+
+
 public meta section
 
 open Lean
@@ -51,7 +53,9 @@ Example:
 syntax (name := positivity) "positivity " term,+ : attr
 
 /-- A theorem tagged with `@[positivity_lemma]` is used by `positivity` to prove that an
-expression is positive, nonnegative, or nonzero from corresponding facts about its arguments. -/
+expression is positive, nonnegative, or nonzero from corresponding facts about its arguments.
+TODO: shapes of the lemmas that can be applied, ... non-positivity hyps are not yet suppported
+-/
 syntax (name := positivityLemma) "positivity_lemma " (ppSpace prio)? : attr
 
 lemma ne_of_ne_of_eq' {α : Sort*} {a c b : α} (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
@@ -271,16 +275,16 @@ def makePositivityLemma (hyps : Array Expr) (target : Expr) (declName : Name) (p
   let fail {α} (m : MessageData) : MetaM α := throwError "\
     @[positivity_lemma] attribute only applies to lemmas
     proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.\n\
-    {m} in {target}"
+    {m}"
   let findArg? (args : Array Expr) (arg : Expr) : MetaM (Option Nat) := do
     for _h : i in [:args.size] do
       if ← isDefEq args[i] arg then
         return some i
     return none
   let some (targetVal, kind) ← getPositivity target
-    | fail "No positivity proposition found"
+    | fail "The conclusion {target} is not a positivity proposition"
   let some (head, args) := getAppFnArgs targetVal
-    | fail "No constant head found"
+    | fail "The conclusion {target} does not have a constant head"
   let key := { head, arity := args.size }
   let mut premises := #[]
   for hyp in hyps do
@@ -290,7 +294,8 @@ def makePositivityLemma (hyps : Array Expr) (target : Expr) (declName : Name) (p
         let some (hypVal, kind) ← getPositivity hypType
           | fail m!"The premise {hypType} is not a positivity proposition"
         let some i ← findArg? args hypVal
-          | fail m!"The premise {hypType} does not refer to a direct argument of the conclusion"
+          | fail m!"The premise {hypType} does not refer to a direct argument of the conclusion \
+            {target}"
         premises := premises.push (i, kind)
   return { key, declName, premises, prio, kind }
 
