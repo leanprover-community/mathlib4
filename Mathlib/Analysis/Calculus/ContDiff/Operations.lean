@@ -139,27 +139,28 @@ theorem contDiff_single [DecidableEq ι] (k : ℕ∞ω) (i : ι) :
     ContDiff 𝕜 k (Pi.single i : F' i → ∀ i, F' i) :=
   contDiff_update k 0 i
 
-variable (𝕜 E)
+variable (𝕜 F')
 
 @[fun_prop]
-theorem contDiff_apply (i : ι) : ContDiff 𝕜 n fun f : ι → E => f i :=
+theorem contDiff_apply (i : ι) : ContDiff 𝕜 n fun (f : Π i, F' i) => f i :=
   contDiff_pi.mp contDiff_id i
 
 @[fun_prop]
-theorem contDiffAt_apply (i : ι) (f : ι → E) : ContDiffAt 𝕜 n (fun f : ι → E => f i) f :=
-  (contDiff_apply 𝕜 E i).contDiffAt
+theorem contDiffAt_apply (i : ι) (f : Π i, F' i) : ContDiffAt 𝕜 n (fun (f : Π i, F' i) => f i) f :=
+  (contDiff_apply 𝕜 F' i).contDiffAt
 
 @[fun_prop]
-theorem contDiffWithinAt_apply (i : ι) (s : Set (ι → E)) (f : ι → E) :
-    ContDiffWithinAt 𝕜 n (fun f : ι → E => f i) s f :=
-  (contDiffAt_apply 𝕜 E i f).contDiffWithinAt
+theorem contDiffWithinAt_apply (i : ι) (s : Set (Π i, F' i)) (f : Π i, F' i) :
+    ContDiffWithinAt 𝕜 n (fun (f : Π i, F' i) => f i) s f :=
+  (contDiffAt_apply 𝕜 F' i f).contDiffWithinAt
 
 @[fun_prop]
-theorem contDiffOn_apply (i : ι) (s : Set (ι → E)) : ContDiffOn 𝕜 n (fun f : ι → E => f i) s :=
-  (contDiff_apply 𝕜 E i).contDiffOn
+theorem contDiffOn_apply (i : ι) (s : Set (Π i, F' i)) :
+    ContDiffOn 𝕜 n (fun (f : Π i, F' i) => f i) s :=
+  (contDiff_apply 𝕜 F' i).contDiffOn
 
 theorem contDiff_apply_apply (i : ι) (j : ι') : ContDiff 𝕜 n fun f : ι → ι' → E => f i j :=
-  contDiff_pi.mp (contDiff_apply 𝕜 (ι' → E) i) j
+  contDiff_pi.mp (contDiff_apply 𝕜 _ i) j
 
 end Pi
 

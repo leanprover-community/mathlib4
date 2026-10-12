@@ -359,11 +359,16 @@ variable {ι : Type*} [Fintype ι] {Mi Hi Ei : ι → Type*}
   [∀ i, TopologicalSpace (Mi i)] [∀ i, ChartedSpace (Hi i) (Mi i)]
   {φ : M → ∀ i, Ei i} {f : M → ∀ i, Mi i}
 
+#check contDiffWithinAt_apply
+
 theorem contMDiffWithinAt_apply {i : ι} {s : Set (Π i, Mi i)} {x : Π i, Mi i} :
     ContMDiffWithinAt (ModelWithCorners.pi Ii) (Ii i) n (fun (x : Π i, Mi i) ↦ x i) s x:= by
   rw [contMDiffWithinAt_iff']
   refine ⟨(continuous_apply i).continuousWithinAt, ?_⟩
-  have W := contDiffWithinAt_apply
+  have W := contDiffWithinAt_apply 𝕜 (Π i, Ei i) i (n := n)
+    --((extChartAt (ModelWithCorners.pi Ii) x).target ∩
+    --(extChartAt (ModelWithCorners.pi Ii) x).symm ⁻¹' (s ∩ (fun x ↦ x i) ⁻¹' (extChartAt (Ii i) (x i)).source))
+
 
 
 #exit
