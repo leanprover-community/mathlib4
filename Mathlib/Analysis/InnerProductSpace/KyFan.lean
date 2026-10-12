@@ -370,7 +370,7 @@ private theorem sum_lam_le {ι : Type*} (S : Finset ι) (h : ι → H)
     _ = ∑ i ∈ S, ((#S : ℝ) * ‖c i‖ ^ 2 + ∑ j ∈ S, ‖c j‖ ^ 2 - 2 * ‖c i‖ ^ 2) := by
         refine sum_congr rfl fun i hi ↦ ?_
         rw [sum_sub_distrib, sum_add_distrib, sum_const, nsmul_eq_mul]
-        simp only [sum_ite_eq, hi, ite_true]
+        simp [hi]
     _ = _ := by
         rw [sum_sub_distrib, sum_add_distrib, ← mul_sum, sum_const, nsmul_eq_mul, ← mul_sum]
         simp only [wt, hc]
@@ -676,7 +676,7 @@ private theorem norm_bform_le {ι : Type*} (S : Finset ι) (x : ι → E) (y : �
     refine sum_congr rfl fun k _ ↦ sum_congr rfl fun l _ ↦ ?_
     congr 1
     refine sum_congr rfl fun i _ ↦ sum_congr rfl fun j _ ↦ ?_
-    simp only [minor2, map_sub, map_mul]
+    simp [minor2]
   have hb : ‖(2 : 𝕜) * bform S x y T T'‖ ≤ ∑ k : Fin (finrank 𝕜 E), ∑ l : Fin (finrank 𝕜 E),
       T.singularValues k * T'.singularValues l *
       ((lam (𝕜 := 𝕜) (leftSingularVec T) (leftSingularVec T') y S k l +
@@ -879,10 +879,10 @@ private theorem bform_rightSingularBasis (w : E →ₗ[𝕜] F) (n : ℕ) :
     rw [sq, sum_mul_sum]
     congr 1
     refine sum_congr rfl fun i hi ↦ ?_
-    simp only [sum_ite_eq, hi, ite_true]
+    simp [hi]
   simp only [e]
   rw [← hr]
-  simp only [RCLike.ofReal_sum]
+  simp
 
 /-- `σ₂(u + v) ≤ σ₂(u) + (∑_{j<n} s_j(u)) (∑_{j<n} s_j(v)) + σ₂(v)`. -/
 private theorem sigma_two_add_le (u v : E →ₗ[𝕜] F) (n : ℕ) :
