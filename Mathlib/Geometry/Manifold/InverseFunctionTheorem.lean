@@ -101,22 +101,31 @@ end DiffeoExtChartAt
 
 @[expose] public section ManifoldInverseFunctionTheorem
 
-section trying
+open scoped ContDiff
+
+section aux
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
   {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
-  {n : WithTop ℕ∞} {f : E₁ → E₂} {f' : E₁ ≃L[𝕜] E₂} {p : E₁} {U : Set E₁}
-  (hf : ContDiffOn 𝕜 n f U) (hU : IsOpen U) (hpU : p ∈ U) (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p)
-  (hn : minSmoothness 𝕜 1 ≤ n)
+  {n : ℕ∞ω} {f : E₁ → E₂} {f' : E₁ ≃L[𝕜] E₂} {p : E₁}
 
--- missing ingredient for the proof below! perhaps can relax hypotheses?
-lemma missing {f : E₁ → E₂} {f' : E₁ ≃L[𝕜] E₂} {p : E₁} {U : Set E₁}
-  (hf : ContDiffOn 𝕜 n f U) (hU : IsOpen U) (hpU : p ∈ U) (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p)
-  (hn : minSmoothness 𝕜 1 ≤ n) :
-  HasStrictFDerivAt f f'.toContinuousLinearMap p := sorry
+-- TODO: move to appropriate place; is there a better name?
+-- TODO: mention the other version in each other's doc-strings
+/-- This version does not assume we're working over `ℝ` or `ℂ`. -/
+lemma ContDiffAt.hasStrictFDerivAt'' (hf : ContDiffAt 𝕜 n f p)
+    (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : minSmoothness 𝕜 1 ≤ n) :
+    HasStrictFDerivAt f f'.toContinuousLinearMap p := by
+  by_cases! h : IsRCLikeNormedField 𝕜
+  · let : RCLike 𝕜:= h.rclike
+    rw [minSmoothness_of_isRCLikeNormedField] at hn
+    have : n ≠ 0 := ENat.one_le_iff_ne_zero_withTop.mp hn
+    sorry -- convert hf.hasStrictDerivAt (ENat.one_le_iff_ne_zero_withTop.mp hn) fails
+  · rw [eq_top_of_minSmoothness_le_of_not_isRCLikeNormedField h hn] at hf
+    rw [← hf'.fderiv]
+    exact hf.analyticAt.hasStrictFDerivAt
 
-end trying
+end aux
 
 namespace ContDiffOn
 
@@ -192,7 +201,8 @@ but there is not currently a normed vector space version of `PartialDiffeomorph`
 noncomputable def toPartialDiffeomorph'
     (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : minSmoothness 𝕜 1 ≤ n) :
     PartialDiffeomorph 𝓘(𝕜, E₁) 𝓘(𝕜, E₂) E₁ E₂ n :=
-  hf.toPartialDiffeomorph hU hpU (missing hf hU hpU hf' hn) (le_minSmoothness.trans hn)
+  hf.toPartialDiffeomorph hU hpU ((hf.contDiffAt (hU.mem_nhds hpU)).hasStrictFDerivAt'' hf' hn)
+    (le_minSmoothness.trans hn)
 
 @[simp] lemma toFun_toPartialDiffeomorph'
     (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : minSmoothness 𝕜 1 ≤ n) :
@@ -202,7 +212,8 @@ noncomputable def toPartialDiffeomorph'
 lemma toPartialDiffeomorph'_mem_source
     (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : minSmoothness 𝕜 1 ≤ n) :
     p ∈ (hf.toPartialDiffeomorph' hU hpU hf' hn).source :=
-  ⟨(missing hf hU hpU hf' hn).mem_toOpenPartialHomeomorph_source, hpU, f', hf'.fderiv.symm⟩
+  letI hf := hf.contDiffAt (hU.mem_nhds hpU)
+  ⟨(hf.hasStrictFDerivAt'' hf' hn).mem_toOpenPartialHomeomorph_source, hpU, f', hf'.fderiv.symm⟩
 
 end ContDiffOn
 
@@ -256,14 +267,13 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   have hg' : HasFDerivAt g g'.toContinuousLinearMap (extChartAt I₁ p p) :=
     hg' ▸ mDiffAt_f_p.differentiableWithinAt_writtenInExtChartAt.hasFDerivWithinAt.hasFDerivAt
       (range_mem_nhds_isInteriorPoint hp)
-  -- MISSING sorry: prove the lemma here!
-  have hg'' := missing hg U_open hp' hg' hn
+  replace hg' := ContDiffAt.hasStrictFDerivAt'' (hg.contDiffAt (U_open.mem_nhds hp')) hg' hn
   /- Apply the inverse function theorem in normed spaces: obtain a local inverse for `g`.
   Compose with the charts to obtain the desired partial diffeomorphism `M₁ → M₂`. -/
-  use (φ₁.trans (hg.toPartialDiffeomorph U_open hp' hg'' (le_minSmoothness.trans hn))).trans ψ₁.symm
+  use (φ₁.trans (hg.toPartialDiffeomorph U_open hp' hg' (le_minSmoothness.trans hn))).trans ψ₁.symm
   constructor
   · refine ⟨⟨mem_extChartAtPartialDiffeomorph_source n hp,
-      (hg.toPartialDiffeomorph_mem_source U_open hp' hg'' (le_minSmoothness.trans hn))⟩, ?_⟩
+      (hg.toPartialDiffeomorph_mem_source U_open hp' hg' (le_minSmoothness.trans hn))⟩, ?_⟩
     simpa [φ₁, ψ₁, g] using mem_extChartAtPartialDiffeomorph_target n hfp
   · rintro m ⟨⟨hm₁, _, hm₂, _⟩, _⟩
     have hm := extChartAtPartialDiffeomorph_source_subset (n := n) hm₁
