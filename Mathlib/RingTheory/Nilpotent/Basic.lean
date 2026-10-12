@@ -6,12 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -120,6 +117,9 @@ theorem Prime.isRadical [CommMonoidWithZero R] {y : R} (hy : Prime y) : IsRadica
 theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced R := by
   simp_rw [isReduced_iff, IsNilpotent, exists_imp, ← zero_dvd_iff]
   exact forall_comm
+
+lemma isRadical_zero [MonoidWithZero R] [IsReduced R] : _root_.IsRadical (0 : R) := by
+  simpa [zero_isRadical_iff]
 
 theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsReduced R ↔ ∀ x : R, x ^ k = 0 → x = 0 := by

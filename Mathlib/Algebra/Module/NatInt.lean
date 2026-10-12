@@ -133,7 +133,7 @@ should normally have exactly one `ℕ`-module structure by design. -/
 @[instance_reducible]
 def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   default := inferInstance
-  uniq P := (Module.ext' P _) fun n => by convert! nat_smul_eq_nsmul P n
+  uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
 /-- All `ℕ`-module structures are equal. See also `AddCommMonoid.uniqueNatModule`. -/
 instance AddCommMonoid.subsingletonNatModule : Subsingleton (Module ℕ M) :=
@@ -185,7 +185,7 @@ should normally have exactly one `ℤ`-module structure by design. -/
 @[instance_reducible]
 def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
   default := inferInstance
-  uniq P := (Module.ext' P _) fun n => by convert! int_smul_eq_zsmul P n
+  uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
 
 end AddCommGroup
 
@@ -210,12 +210,14 @@ instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCo
 variable (R M) in
 /-- Only a ring of characteristic zero can have a non-trivial module without additive or
 scalar torsion. -/
-lemma CharZero.of_isAddTorsionFree [Semiring R] [AddCommGroup M] [Module R M]
-    [Nontrivial M] [IsAddTorsionFree M] : CharZero R := by
+lemma CharZero.of_hasUniqueDiv [Semiring R] [AddCancelCommMonoid M] [Module R M]
+    [Nontrivial M] [HasUniqueDiv M] : CharZero R := by
   refine ⟨fun {n m h} ↦ ?_⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
-  replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [← Nat.cast_smul_eq_nsmul R, h]
-  simpa using IsAddTorsionFree.zsmul_left_injective hx h
+  replace h : n • x = m • x := by simp [← Nat.cast_smul_eq_nsmul R, h]
+  exact IsAddTorsionFree.nsmul_left_injective hx h
+
+@[deprecated (since := "2026-09-29")] alias CharZero.of_isAddTorsionFree := CharZero.of_hasUniqueDiv
 
 variable (M) in
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic

@@ -156,7 +156,7 @@ theorem condDistrib_ae_eq_of_measure_eq_compProd_of_measurable
   rw [heq, condDistrib]
   symm
   refine eq_condKernel_of_measure_eq_compProd _ ?_
-  convert! hκ
+  convert hκ
   exact heq.symm
 
 /-- `condDistrib` is a.e. uniquely defined as the kernel satisfying the defining property of
@@ -392,8 +392,8 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
     (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   refine ⟨fun x => hf.mk f x.2, hf.stronglyMeasurable_mk.comp_measurable measurable_snd, ?_⟩
-  suffices h : Measure.QuasiMeasurePreserving Prod.snd (μ.map fun ω ↦ (X ω, ω)) μ from
-    Measure.QuasiMeasurePreserving.ae_eq_comp h hf.ae_eq_mk
+  suffices h : QuasiMeasurePreserving Prod.snd (μ.map fun ω ↦ (X ω, ω)) μ from
+    QuasiMeasurePreserving.ae_eq_comp h hf.ae_eq_mk
   refine ⟨measurable_snd, Measure.AbsolutelyContinuous.mk fun s hs hμs => ?_⟩
   rw [Measure.map_apply measurable_snd hs, Measure.map_apply_of_aemeasurable]
   · rw [← univ_prod, mk_preimage_prod, preimage_univ, univ_inter, preimage_id']
