@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
+
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.CategoryTheory.Category.Factorisation

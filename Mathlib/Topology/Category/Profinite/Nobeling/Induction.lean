@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Free
 public import Mathlib.Topology.Category.Profinite.Nobeling.Span
+
 import Mathlib.Topology.Category.Profinite.Nobeling.Successor
 import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 
@@ -129,11 +130,11 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     rw [← IsLocallyConstant.iff_continuous, IsLocallyConstant.iff_isOpen_fiber]
     rintro ⟨⟩
     · refine IsClopen.isOpen (isClopen_compl_iff.mp ?_)
-      convert! C.2
+      convert C.2
       ext x
       simp
     · refine IsClopen.isOpen ?_
-      convert! C.2
+      convert C.2
       ext x
       simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
   · intro a b h

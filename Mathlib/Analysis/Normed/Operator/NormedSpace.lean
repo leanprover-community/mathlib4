@@ -196,7 +196,7 @@ theorem norm_smulRightL (c : StrongDual 𝕜 E) [Nontrivial Fₗ] : ‖smulRight
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
-  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+  ContinuousLinearMap.opNorm_le_bound₂ _ zero_le_one fun c x ↦ by simp
 
 /-! ### Composition with isometries -/
 
@@ -273,7 +273,7 @@ protected alias antilipschitz := ContinuousLinearEquiv.antilipschitzWith
 theorem one_le_norm_mul_norm_symm [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
     1 ≤ ‖(e : E →SL[σ₁₂] F)‖ * ‖(e.symm : F →SL[σ₂₁] E)‖ := by
   rw [mul_comm]
-  convert! (e.symm : F →SL[σ₂₁] E).opNorm_comp_le (e : E →SL[σ₁₂] F)
+  convert (e.symm : F →SL[σ₂₁] E).opNorm_comp_le (e : E →SL[σ₁₂] F)
   rw [e.coe_symm_comp_coe, ContinuousLinearMap.norm_id]
 
 theorem norm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :

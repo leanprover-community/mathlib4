@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Topology.Defs.Basic
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Setoid.Basic
+public import Mathlib.Topology.Defs.Basic
+
 import Mathlib.Tactic.IrreducibleDef
 
 /-!
@@ -241,6 +242,7 @@ def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparabl
 
 /-- The quotient of a topological space by its `inseparableSetoid`. Also called the Kolmogorov
 quotient. This quotient is guaranteed to be a T₀ space. -/
+@[implicit_reducible]
 def SeparationQuotient := Quotient (inseparableSetoid X)
 
 variable {X}

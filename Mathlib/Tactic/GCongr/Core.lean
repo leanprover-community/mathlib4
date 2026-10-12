@@ -6,13 +6,13 @@ Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 module
 
 public meta import Batteries.Lean.Except
-public import Batteries.Tactic.Exact
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
+public meta import Mathlib.Tactic.GCongr.ForwardAttr
+public import Batteries.Tactic.Exact
 public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
-public meta import Mathlib.Tactic.GCongr.ForwardAttr
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -817,7 +817,7 @@ partial def _root_.Lean.MVarId.gcongr
   -- fail.
   if lemmas.isEmpty then
     throwTacticEx `gcongr g m!"there is no `@[gcongr]` lemma \
-      for relation '{relName}' and constant '{lhsHead}'."
+      for relation `{.ofConstName relName}` and constant `{.ofConstName lhsHead}`."
   else
     throwTacticEx `gcongr g m!"none of the `@[gcongr]` lemmas were applicable to the goal {rel}.\
       \n  attempted lemmas: {lemmas.map (·.declName)}"

@@ -5,11 +5,12 @@ Authors: Colin Jones
 -/
 module
 
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Tactic.NormNum
+
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.NumberTheory.Divisors
 import Mathlib.Tactic.NormNum.Prime
-public import Mathlib.Tactic.NormNum
 
 /-!
 # Factorisation properties of natural numbers
