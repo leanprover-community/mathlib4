@@ -11,26 +11,27 @@ import Lean.Elab.GuardMsgs
 
 library_note «migration role test» /-- A note used to test the `library_note` role. -/
 
--- The `{url}` role renders a link without diagnostics.
+-- The `{url}` role renders a link without emitting diagnostics.
 #guard_msgs in
 set_option doc.verso true in
 /-- See {url}`https://leanprover.org`. -/
 def urlTest : Nat := 0
 
--- The `{library_note}` role accepts a known label without diagnostics.
+-- The `{library_note}` role accepts a known label without emitting diagnostics.
 #guard_msgs in
 set_option doc.verso true in
 /-- See {library_note}`migration role test`. -/
 def libraryNoteTest : Nat := 0
 
--- The `{library_note}` role warns on an unknown label, allowing forward references.
+-- The `{library_note}` role warns on an unknown label, hinting at typos but
+-- allowing forward references.
 /-- warning: No library note with label `does not exist`. -/
 #guard_msgs in
 set_option doc.verso true in
 /-- See {library_note}`does not exist`. -/
 def libraryNoteFailTest : Nat := 0
 
--- The `{cite}` role accepts a key present in `docs/references.bib` without diagnostics.
+-- The `{cite}` role accepts a key present in `docs/references.bib` without emitting diagnostics.
 #guard_msgs in
 set_option doc.verso true in
 /-- See {cite "Adamek_Rosicky_1994"}[Adámek–Rosický]. -/

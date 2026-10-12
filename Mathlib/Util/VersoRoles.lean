@@ -13,15 +13,15 @@ import Mathlib.Tactic.Linter.Header -- Since this file is imported by `Mathlib.I
 set_option doc.verso true
 
 /-!
-# Verso docstring roles for migration
+# Verso docstring roles
 
-This module provides custom Verso docstring roles and code blocks used while migrating Mathlib
-docstrings to Verso syntax:
+This module provides custom Verso docstring roles and code blocks used to support Verso syntax
+in Mathlib docstrings:
 
 * {lit}`{url}` turns a code literal containing a URL into a link.
 * {lit}`{library_note}` references a library note and checks that it exists.
 * {lit}`{cite}` references a bibliography entry and renders custom text for it.
-* The {lit}`code` code block records a language for a verbatim code listing.
+* The {lit}`code` code block records a verbatim code listing in the given language.
 
 The roles are declared in the root namespace so that they are available in every docstring without
 opening a namespace.
@@ -68,7 +68,8 @@ def libraryNoteLabels (env : Environment) : Array String :=
   let local_ := Batteries.Util.LibraryNote.libraryNoteExt.getEntries env
   (imported ++ local_).map fun (n : Name) => n.toString (escape := false)
 
-/-- Whether {lit}`docs/references.bib` contains an entry with the given key. -/
+/-- Whether {name}`bib` (the contents of {lit}`docs/references.bib`) contains an entry with
+the given key. -/
 def bibContainsKey (bib : String) (key : String) : Bool := Id.run do
   for line in bib.splitOn "\n" do
     let line := line.trimAscii.copy
