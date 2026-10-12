@@ -5,10 +5,10 @@ Authors: Sina Hazratpour
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Over.Pullback
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 # Chosen pullbacks along a morphism
@@ -217,7 +217,7 @@ theorem hom_ext {W : C} {φ₁ φ₂ : W ⟶ pullbackObj f g} (h₁ : φ₁ ≫ 
     apply (adj.homEquiv U _).symm.injective
     apply (Over.forget X).map_injective
     simpa using! h₁
-  exact congr_arg CommaMorphism.left this
+  congrm $(this).left
 
 section Lift
 
@@ -236,7 +236,7 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
   let a' : (Over.map g).obj (Over.mk b) ⟶ Over.mk f := Over.homMk a h
   have : (Over.map g).map (adj.homEquiv (.mk b) (.mk f) (Over.homMk a)) ≫ fst' f g = a' := by
     simp only [← Adjunction.homEquiv_counit, Equiv.symm_apply_apply, adj, a']
-  exact congr_arg CommaMorphism.left this
+  congrm $(this).left
 
 set_option backward.privateInPublic true in
 @[reassoc (attr := simp)]

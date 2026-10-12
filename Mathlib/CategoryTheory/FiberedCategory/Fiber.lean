@@ -6,7 +6,6 @@ Authors: Calle Sönne, Paul Lezeau
 module
 
 public import Mathlib.CategoryTheory.FiberedCategory.HomLift
-public import Mathlib.CategoryTheory.Functor.Const
 
 /-!
 
