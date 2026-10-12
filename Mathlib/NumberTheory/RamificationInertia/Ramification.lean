@@ -222,8 +222,9 @@ lemma ramificationIdx'_eq_one_of_map_localization
   replace h₂ := Ideal.map_mono («f» := algebraMap S (Localization.AtPrime P)) h₂
   rw [Ideal.map_pow, Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_map,
     ← IsScalarTower.algebraMap_eq, H, pow_two] at h₂
-  have := Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ _ (IsNoetherian.noetherian _) h₂
-    (maximalIdeal_le_jacobson _)
+  have : maximalIdeal (Localization.AtPrime P) = ⊥ :=
+    Submodule.eq_bot_of_le_smul_of_le_jacobson _ _ (IsNoetherian.noetherian _) h₂
+    (ringJacobson_eq_maximalIdeal (Localization.AtPrime P)).ge
   rw [← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_eq_bot_iff_of_injective] at this
   · exact hp this
   · exact IsLocalization.injective _ hp'

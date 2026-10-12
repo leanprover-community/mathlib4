@@ -64,9 +64,8 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
   have := finite_of_free (R := K) (S := A)
   have : IsArtinianRing A := isArtinian_of_tower K inferInstance
   have hA : IsNilpotent (IsLocalRing.maximalIdeal A) := by
-    rw [← IsLocalRing.jacobson_eq_maximalIdeal ⊥]
-    · exact IsArtinianRing.isNilpotent_jacobson_bot
-    · exact bot_ne_top
+    rw [← IsLocalRing.ringJacobson_eq_maximalIdeal]
+    exact IsArtinianRing.isNilpotent_jacobson
   let e : K ≃ₐ[K] A ⧸ IsLocalRing.maximalIdeal A := {
     __ := Algebra.ofId K (A ⧸ IsLocalRing.maximalIdeal A)
     __ := Equiv.ofBijective _ IsAlgClosed.algebraMap_bijective_of_isIntegral }
