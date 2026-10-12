@@ -1040,9 +1040,18 @@ theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
 theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
   simp [coeffs, eq_comm, (Finset.mem_image)]
 
+theorem coe_coeffs_subset_iff {s : Set R} :
+    (p.coeffs : Set R) ⊆ s ↔ ∀ n, p.coeff n ≠ 0 → p.coeff n ∈ s := by
+  simp only [Set.subset_def, SetLike.mem_coe, mem_coeffs_iff]
+  grind
+
+theorem coeffs_subset_iff {s : Finset R} :
+    p.coeffs ⊆ s ↔ ∀ n, p.coeff n ≠ 0 → p.coeff n ∈ s := by
+  simpa using coe_coeffs_subset_iff (s := (s : Set R))
+
 theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
-  simp_rw [coeffs, Finset.image_subset_iff]
-  simp_all [coeff_one]
+  rw [coeffs_subset_iff]
+  simp [coeff_one]
 
 theorem coeff_mem_coeffs {p : R[X]} {n : ℕ} (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
   simp only [coeffs, mem_support_iff, Finset.mem_image, Ne]
@@ -1050,13 +1059,8 @@ theorem coeff_mem_coeffs {p : R[X]} {n : ℕ} (h : p.coeff n ≠ 0) : p.coeff n 
 
 @[simp]
 theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
-  refine ⟨?_, fun h ↦ by simp [h]⟩
-  contrapose!
-  intro h
-  rw [← support_nonempty] at h
-  obtain ⟨n, hn⟩ := h
-  rw [mem_support_iff] at hn
-  exact ⟨p.coeff n, coeff_mem_coeffs hn⟩
+  rw [← Finset.subset_empty, coeffs_subset_iff, Polynomial.ext_iff]
+  simp
 
 @[simp]
 theorem coeffs_nonempty_iff {p : R[X]} : p.coeffs.Nonempty ↔ p ≠ 0 := by
