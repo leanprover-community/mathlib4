@@ -44,8 +44,7 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 /-- If `f ≫ g = 𝟙 X`, then `f` is an isomorphism if and only if `g` is. -/
 private lemma isIso_iff_of_comp_eq_id {E : Type*} [Category* E] {X Y : E} {f : X ⟶ Y}
     {g : Y ⟶ X} (h : f ≫ g = 𝟙 X) : IsIso f ↔ IsIso g :=
-  ⟨fun _ => IsIso.inv_eq_of_hom_inv_id h ▸ inferInstance,
-    fun _ => IsIso.inv_eq_of_inv_hom_id h ▸ inferInstance⟩
+  ⟨fun _ ↦ isIso_of_hom_comp_eq_id f h, fun _ ↦ isIso_of_comp_hom_eq_id g h⟩
 
 section Idempotent
 
