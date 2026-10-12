@@ -355,7 +355,6 @@ def comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms [F.ReflectsIso
     apply reflectsLimit_of_reflectsIsomorphisms⟩
   apply comonadicOfHasPreservesReflectsFSplitEqualizers adj
 
-/-- A comonadic left adjoint reflects isomorphisms. -/
 instance (priority := 100) reflectsIsomorphisms_of_comonadicLeftAdjoint
     [ComonadicLeftAdjoint F] : F.ReflectsIsomorphisms where
   reflects {X Y} φ hφ := by

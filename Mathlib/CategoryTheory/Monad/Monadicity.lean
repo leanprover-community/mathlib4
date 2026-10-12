@@ -373,7 +373,6 @@ def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [G.ReflectsIso
     apply reflectsColimit_of_reflectsIsomorphisms⟩
   apply monadicOfHasPreservesReflectsGSplitCoequalizers adj
 
-/-- A monadic right adjoint reflects isomorphisms. -/
 instance (priority := 100) reflectsIsomorphisms_of_monadicRightAdjoint
     [MonadicRightAdjoint G] : G.ReflectsIsomorphisms where
   reflects {X Y} φ hφ := by
