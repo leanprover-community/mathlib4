@@ -292,33 +292,11 @@ theorem filter_apply_ne_zero_iff (a : α) : (p.filter s h) a ≠ 0 ↔ a ∈ s �
 
 end Filter
 
-section bernoulli
+@[deprecated "type changed" (since := "2026-05-29")]
+alias support_bernoulli := ProbabilityTheory.bernoulliMeasure_apply_of_notMem_of_notMem
 
-variable {p : ℝ≥0} (h : p ≤ 1) (b : Bool)
-
-@[deprecated ProbabilityTheory.bernoulliMeasure_apply_of_notMem_of_notMem +typeChanged
-  (since := "2026-05-29")]
-theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
-  refine Set.ext fun b => ?_
-  induction b
-  · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne, ENNReal.coe_sub,
-      ENNReal.coe_one, Bool.cond_prop, Set.mem_ofPred_eq, Bool.false_eq_true, ite_false,
-      not_iff_not]
-    constructor
-    · intro h'
-      simp only [tsub_eq_zero_iff_le, one_le_coe_iff] at h'
-      exact eq_of_le_of_ge h h'
-    · intro h'
-      simp only [h', ENNReal.coe_one, tsub_self]
-  · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_ofPred_eq, ne_eq,
-      ENNReal.coe_eq_zero]
-
-@[deprecated ProbabilityTheory.bernoulliMeasure_apply_of_notMem_of_notMem +typeChanged
-  (since := "2026-05-29")]
-theorem mem_support_bernoulli_iff : b ∈ (bernoulli p h).support ↔ cond b (p ≠ 0) (p ≠ 1) := by
-  simp [support_bernoulli]
-
-end bernoulli
+@[deprecated "type changed" (since := "2026-05-29")]
+alias mem_support_bernoulli_iff := ProbabilityTheory.bernoulliMeasure_apply_of_notMem_of_notMem
 
 end
 
