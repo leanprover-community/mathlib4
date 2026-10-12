@@ -14,24 +14,23 @@ public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 In this file, we derive the inverse function theorem for manifolds from the the inverse function
 theorem for normed vector spaces over an `RCLike` field (`ContDiffAt.toOpenPartialHomeomorph`).
 
-## Main definitions
+## Main definitions and results
 * `extChartAtPartialDiffeomorph n hp`: we can restrict `extChartAt I p` to a `PartialDiffeomorph`
   between the manifold and its model vector space if `p` is an interior point.
 * `ContDiffOn.toPartialDiffeomorph` : a stronger version of `ContDiffAt.toOpenPartialHomeomorph`,
   currently stated somewhat unnaturally by viewing the normed vector spaces as trivial manifolds
   (since there is not a normed vector space version of `PartialDiffeomorph`)
-
-## Main results
 * `isLocalDiffeomorphAt_of_isInvertible_mfderiv`: if `f` is `C^n` on an open set `U` and has
   bijective differential at an interior point `p ∈ U`, then `f` is a local diffeomorphism at `p`.
 
 ## TODO
 * restate `ContDiffOn.toPartialDiffeomorph` using a normed vector space version of
   `PartialDiffeomorph` (and add API to translate between the two types of `PartialDiffeomorph`)
-* prove the manifold inverse function theorem (with adjustments if needed) when `p` is a boundary
-  point and `f` preserves the boundary near`p`
+* prove the manifold inverse function theorem (with adjustments where needed)
+  when `p` is a boundary point and `f` preserves the boundary near `p`
 
 ## Tags
+
 local diffeomorphism, manifold, inverse function theorem
 
 -/
