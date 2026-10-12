@@ -437,7 +437,9 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let (headerStx, s, log) ← Parser.parseHeader (Parser.mkInputContext map.source (← getFileName))
   if log.hasErrors then return
   let importRefsWithWhitespace := headerToImportRefsWithWhitespace headerStx
-  formatImports importRefsWithWhitespace
+  -- TODO: Enable this more broadly (Archive, etc., and downstream) once tooling is available.
+  if mainModule.getRoot == `Mathlib then
+    formatImports importRefsWithWhitespace
   let importRefs := importRefsWithWhitespace.map (·.1)
   -- Report on broad or duplicate imports.
   broadImportsCheck importRefs mainModule
