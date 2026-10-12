@@ -380,7 +380,7 @@ theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
   Int.natAbs_pos.mpr hn.ne'
 
 /-- The natural absolute value of a nonzero integer is positive. -/
-@[positivity_lemma ]
+@[positivity_lemma]
 theorem int_natAbs_pos_of_ne_zero {n : ℤ} (hn : n ≠ 0) : 0 < n.natAbs :=
   Int.natAbs_pos.mpr hn
 
@@ -454,7 +454,7 @@ attribute [positivity_lemma]
   Nat.lcm_pos
 
 /-- The square root of a positive natural number is positive. -/
-@[positivity_lemma ]
+@[positivity_lemma]
 theorem nat_sqrt_pos_of_pos {n : ℕ} (hn : 0 < n) : 0 < n.sqrt :=
   Nat.sqrt_pos.mpr hn
 

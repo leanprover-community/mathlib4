@@ -50,13 +50,13 @@ Example:
   ...
 ```
 -/
-syntax (name := positivity) "positivity " term,+ : attr
+syntax (name := positivity) "positivity" ppSpace term,+ : attr
 
 /-- A theorem tagged with `@[positivity_lemma]` is used by `positivity` to prove that an
 expression is positive, nonnegative, or nonzero from corresponding facts about its arguments.
 TODO: shapes of the lemmas that can be applied, ... non-positivity hyps are not yet suppported
 -/
-syntax (name := positivityLemma) "positivity_lemma " (ppSpace prio)? : attr
+syntax (name := positivityLemma) "positivity_lemma" (ppSpace prio)? : attr
 
 lemma ne_of_ne_of_eq' {α : Sort*} {a c b : α} (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 
