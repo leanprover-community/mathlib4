@@ -80,7 +80,7 @@ open scoped IsMulCommutative in
 so is its topological closure.
 
 See note [reducible non-instances] -/
-@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
+@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
   fast_instance%
@@ -135,7 +135,7 @@ open scoped IsMulCommutative in
 so is its topological closure.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
+@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
   have : IsMulCommutative s := ⟨⟨hs⟩⟩

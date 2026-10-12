@@ -5,14 +5,13 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Basic.Countable.Small
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Products.Bifunctor
-public import Mathlib.Data.Countable.Small
+
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # Filtered colimits commute with finite limits.
@@ -24,7 +23,7 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 (In fact, to prove that it is injective only requires that `J` has finitely many objects.)
 
 ## References
-* Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
+* [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Theorem 2.13.4
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
 
@@ -68,7 +67,7 @@ only that there are finitely many objects.
 variable [Finite J]
 
 /-- This follows the proof from
-* Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
+* [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Theorem 2.13.4
 -/
 theorem colimitLimitToLimitColimit_injective :
     Function.Injective (colimitLimitToLimitColimit F) := by
@@ -88,7 +87,7 @@ theorem colimitLimitToLimitColimit_injective :
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j) x) =
         (colimit.ι ((curry.obj F).obj j) ky)
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j) y) := by
-      simpa using! ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
+      simpa using! congr(limit.π (curry.obj F ⋙ colim) j $h)
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp only [colimit_eq_iff] at h
@@ -157,7 +156,8 @@ open CategoryTheory.Prod
 
 variable [IsFiltered K]
 
-/-- This follows the proof from `Borceux, Handbook of categorical algebra 1, Theorem 2.13.4`
+/-- This follows the proof from
+[F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Theorem 2.13.4,
 although with different names.
 -/
 theorem colimitLimitToLimitColimit_surjective :

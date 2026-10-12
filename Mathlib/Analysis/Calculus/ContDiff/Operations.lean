@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Analysis.Calculus.Deriv.Inverse
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
+
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
 
 /-!
@@ -211,24 +212,18 @@ The iterated derivative of the sum of two functions is the sum of the iterated d
   have hft : ContDiffOn 𝕜 i f (s ∩ t) := fun a ha ↦ (h (by simp_all)).1.mono inter_subset_left
   have hgt : ContDiffOn 𝕜 i g (s ∩ t) := fun a ha ↦ (h (by simp_all)).2.mono inter_subset_left
   have hut : UniqueDiffOn 𝕜 (s ∩ t) := hu.inter ht
-  have H : ↑(s ∩ t) =ᶠ[𝓝 x] s :=
-    inter_eventuallyEq_left.mpr (eventually_of_mem (ht.mem_nhds hxt) (fun _ h _ ↦ h))
+  have H : s ∩ t =ᶠ[𝓝 x] s :=
+    inter_eventuallyEqSet_left.mpr (eventually_of_mem (ht.mem_nhds hxt) (fun _ h _ ↦ h))
   rw [← iteratedFDerivWithin_congr_set H, ← iteratedFDerivWithin_congr_set H,
     ← iteratedFDerivWithin_congr_set H]
   exact .symm (((hft.ftaylorSeriesWithin hut).add
       (hgt.ftaylorSeriesWithin hut)).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hut ⟨hx, hxt⟩)
-
-@[deprecated (since := "2026-02-13")]
-alias iteratedFDerivWithin_add_apply' := fun_iteratedFDerivWithin_add_apply
 
 @[to_fun] theorem iteratedFDeriv_add_apply {i : ℕ} {f g : E → F}
     (hf : ContDiffAt 𝕜 i f x) (hg : ContDiffAt 𝕜 i g x) :
     iteratedFDeriv 𝕜 i (f + g) x = iteratedFDeriv 𝕜 i f x + iteratedFDeriv 𝕜 i g x := by
   simp_rw [← iteratedFDerivWithin_univ]
   exact iteratedFDerivWithin_add_apply hf hg uniqueDiffOn_univ (Set.mem_univ _)
-
-@[deprecated (since := "2026-02-13")]
-alias iteratedFDeriv_add_apply' := fun_iteratedFDeriv_add_apply
 
 @[to_fun] theorem iteratedFDeriv_add {i : ℕ} {f g : E → F} (hf : ContDiff 𝕜 i f)
     (hg : ContDiff 𝕜 i g) :
@@ -861,7 +856,7 @@ theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
   have h₁ : ContDiff 𝕜 n O₁ := contDiff_id.clm_comp contDiff_const
   have h₂ : ContDiff 𝕜 n O₂ := contDiff_const.clm_comp contDiff_id
   refine h₁.contDiffAt.comp _ (ContDiffAt.comp _ ?_ h₂.contDiffAt)
-  convert! contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
+  convert contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
   simp [O₂, one_def]
 
 /-- At an invertible map `e : M →L[R] M₂` between Banach spaces, the operation of
@@ -923,7 +918,7 @@ theorem OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartial
         have h_deriv : HasFDerivAt f (e : E →L[𝕜] F) (f.symm x) := by
           rw [he]
           exact hff' (f.symm x) hxu
-        convert! f.hasFDerivAt_symm hx.1 h_deriv
+        convert f.hasFDerivAt_symm hx.1 h_deriv
         simp [← he]
       · -- Then we check that the formula, being a composition of `ContDiff` pieces, is
         -- itself `ContDiff`

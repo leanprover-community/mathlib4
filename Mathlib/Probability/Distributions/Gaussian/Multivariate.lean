@@ -5,12 +5,12 @@ Authors: Rémy Degenne, Etienne Marion
 -/
 module
 
-public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.Matrix.MeasurableSpace
+public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Probability.Distributions.Gaussian.CharFun
 
-import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Measurable
+import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
 # Multivariate Gaussian distributions
@@ -68,8 +68,9 @@ def stdGaussian : Measure E :=
 
 variable [BorelSpace E]
 
-instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E) :=
-  Measure.isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E) := by
+  rw [stdGaussian]
+  infer_instance
 
 @[simp]
 lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by
