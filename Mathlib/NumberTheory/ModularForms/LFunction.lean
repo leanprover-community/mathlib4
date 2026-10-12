@@ -168,7 +168,7 @@ lemma tendsto_L_nhdsNE_zero : Tendsto (L hk f) (𝓝[≠] 0) (𝓝 (-valueAtInft
   -- for `s ≠ 0`, `L hk f s = s • Λ hk f s / (s * Gammaℂ s / 2)`, which tends to `-a₀ / 1`
   have := (weakFEPair hk f).Λ_residue_zero.div (Gammaℂ_residue_zero.div_const 2) <| by simp
   refine tendsto_nhdsWithin_congr (fun s (hs : s ≠ 0) ↦ ?_) <| by simpa using this
-  simp [L_of_ne_zero hk f hs, Λ, field]
+  simp [L_apply_of_ne_zero hk f hs, Λ, field]
 
 /-- `L hk f` is continuous at `s = 0`: its value `L hk f 0 = -valueAtInfty f` is not a junk value
 but fills in the removable singularity of `Λ hk f s * (2 / Gammaℂ s)` at `s = 0`. -/
