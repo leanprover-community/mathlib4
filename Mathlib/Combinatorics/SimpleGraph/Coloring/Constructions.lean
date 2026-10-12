@@ -166,6 +166,7 @@ end CompleteEquipartiteGraph
 
 /-- Taking the remainder upon dividing by `r` produces an `r`-coloring of `turanGraph n r` for
 nonzero `r`. -/
+@[simps]
 protected def Coloring.turanGraph (n r : ℕ) [NeZero r] : (turanGraph n r).Coloring (Fin r) :=
   ⟨(.ofNat r ·), (Fin.ne_of_val_ne ·)⟩
 
