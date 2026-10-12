@@ -77,7 +77,9 @@ lemma infinitePi_bernoulliMeasure_map_sum (n : ℕ) :
   have : {i | i ∈ Iio n ∧ ω i} = ↑((Finset.range n).filter fun i ↦ ω i) := by
     ext i
     simp
-  simp only [Function.comp_apply, Finset.sum_boole, this, Set.ncard_coe_finset]
+  simp only [Function.comp_apply]
+  rw [this, Set.ncard_coe_finset]
+  simp [Finset.sum_boole]
 
 /-- The sum of `n` independent `p`-Bernoulli random variables with values in `{1, 0}` follows
 the binomial distribution `Bin(n, p)`. -/
@@ -103,11 +105,11 @@ theorem tendstoInDistribution_binomial (hp₀ : p ≠ 0) (hp₁ : p ≠ 1)
     TendstoInDistribution (fun (n : ℕ) (x : ℝ) ↦ (x - n * p) / √(n * p * (1 - p))) atTop Y
       (fun n ↦ Bin(ℝ, n, p)) P' := by
   set Q := Measure.infinitePi fun _ : ℕ ↦ Ber((1 : ℝ), 0, p)
-  set s := √((p : ℝ) * (1 - p))
+  set τ := √((p : ℝ) * (1 - p))
   have hp : 0 < (p : ℝ) := lt_of_le_of_ne p.2.1 fun h ↦ hp₀ (Subtype.ext h.symm)
   have hq : 0 < 1 - (p : ℝ) := sub_pos.2 (lt_of_le_of_ne p.2.2 fun h ↦ hp₁ (Subtype.ext h))
-  have hs : s ≠ 0 := (Real.sqrt_pos.2 (mul_pos hp hq)).ne'
-  have hs2 : s ^ 2 = p * (1 - p) := Real.sq_sqrt (mul_pos hp hq).le
+  have hs : τ ≠ 0 := (Real.sqrt_pos.2 (mul_pos hp hq)).ne'
+  have hs2 : τ ^ 2 = p * (1 - p) := Real.sq_sqrt (mul_pos hp hq).le
   have hX (i : ℕ) : HasLaw (fun x : ℕ → ℝ ↦ x i) Ber((1 : ℝ), 0, p) Q :=
     ⟨(measurable_pi_apply i).aemeasurable, Measure.infinitePi_map_eval _ i⟩
   have hind : iIndepFun (fun i (x : ℕ → ℝ) ↦ x i) Q :=
@@ -115,20 +117,20 @@ theorem tendstoInDistribution_binomial (hp₀ : p ≠ 0) (hp₁ : p ≠ 1)
   have hint {f : ℝ → ℝ} (hf : Continuous f) : ∫ x, f (x 0) ∂Q = p * f 1 + (1 - p) * f 0 := by
     rw [← integral_map (measurable_pi_apply 0).aemeasurable hf.aestronglyMeasurable, (hX 0).map_eq,
       integral_bernoulliMeasure, smul_eq_mul, smul_eq_mul]
-  let Z : ℕ → (ℕ → ℝ) → ℝ := fun i x ↦ (x i - p) / s
+  let Z : ℕ → (ℕ → ℝ) → ℝ := fun i x ↦ (x i - p) / τ
   have h0 : Q[Z 0] = 0 := by
-    rw [hint (f := fun y ↦ (y - p) / s) (by fun_prop)]
+    rw [hint (f := fun y ↦ (y - p) / τ) (by fun_prop)]
     field_simp
     ring
   have h1 : Q[Z 0 ^ 2] = 1 := by
-    rw [show Z 0 ^ 2 = fun x ↦ ((x 0 - p) / s) ^ 2 from rfl,
-      hint (f := fun y ↦ ((y - p) / s) ^ 2) (by fun_prop)]
+    rw [show Z 0 ^ 2 = fun x ↦ ((x 0 - p) / τ) ^ 2 from rfl,
+      hint (f := fun y ↦ ((y - p) / τ) ^ 2) (by fun_prop)]
     simp only [div_pow, hs2]
     field_simp
     ring
-  have hindZ : iIndepFun Z Q := hind.comp (fun _ y ↦ (y - p) / s) fun _ ↦ by fun_prop
+  have hindZ : iIndepFun Z Q := hind.comp (fun _ y ↦ (y - p) / τ) fun _ ↦ by fun_prop
   have hidentZ (i : ℕ) : IdentDistrib (Z i) (Z 0) Q Q :=
-    ((hX i).identDistrib (hX 0)).comp (u := fun y ↦ (y - p) / s) (by fun_prop)
+    ((hX i).identDistrib (hX 0)).comp (u := fun y ↦ (y - p) / τ) (by fun_prop)
   have hclt := tendstoInDistribution_inv_sqrt_mul_sum hY h0 h1 hindZ hidentZ
   have hlaw (n : ℕ) : Q.map (fun x ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, Z k x) =
       Bin(ℝ, n, p).map fun y : ℝ ↦ (y - n * p) / √(n * p * (1 - p)) := by
@@ -139,7 +141,7 @@ theorem tendstoInDistribution_binomial (hp₀ : p ≠ 0) (hp₁ : p ≠ 1)
     simp only [Function.comp_apply, Z]
     rw [← Finset.sum_div, Finset.sum_sub_distrib, Finset.sum_const, Finset.card_range,
       nsmul_eq_mul, show (n : ℝ) * p * (1 - p) = n * (p * (1 - p)) by ring,
-      Real.sqrt_mul (Nat.cast_nonneg n), inv_mul_eq_div, div_div, mul_comm s]
+      Real.sqrt_mul (Nat.cast_nonneg n), inv_mul_eq_div, div_div, mul_comm τ]
   refine ⟨fun n ↦ by fun_prop, hY.aemeasurable, ?_⟩
   exact hclt.tendsto.congr fun n ↦ Subtype.ext (hlaw n)
 
@@ -161,7 +163,7 @@ theorem tendsto_binomial_real_setOf_le (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) (x : 
     simp only [Function.comp_apply, measureReal_def]
     rw [Measure.map_apply (by fun_prop) measurableSet_Iic,
       Measure.map_apply (by fun_prop) (measurableSet_Iic.preimage (by fun_prop))]
-    rfl
+    simp [Set.preimage]
   · simp [measureReal_def]
 
 end DeMoivreLaplace
