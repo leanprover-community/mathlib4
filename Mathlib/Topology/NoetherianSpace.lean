@@ -250,21 +250,21 @@ theorem NoetherianSpace.isOpen_of_stableUnderGeneralization [NoetherianSpace α]
           closure ((Z : Set α) ∩ z ∩ Eᶜ) ∩ E = ∅ := by
         let Z' : Closeds α := ⟨closure ((Z : Set α) ∩ z ∩ Eᶜ), isClosed_closure⟩
         have sub : (Z' : Set α) ⊆ (Z : Set α) ∩ z :=
-          closure_minimal (fun x hx => hx.1) (Z.isClosed.inter hz)
+          closure_minimal (fun x hx ↦ hx.1) (Z.isClosed.inter hz)
         have lt : Z' < Z := by
-          refine lt_of_le_of_ne (fun x hx => (sub hx).1) fun e => hz' fun x hx => ?_
+          refine lt_of_le_of_ne (fun x hx ↦ (sub hx).1) fun e ↦ hz' fun x hx ↦ ?_
           exact (sub (e ▸ hx : x ∈ (Z' : Set α))).2
-        exact IH Z' lt (closure_mono fun x hx => ⟨subset_closure hx, hx.2⟩)
+        exact IH Z' lt (closure_mono fun x hx ↦ ⟨subset_closure hx, hx.2⟩)
       have hsplit : (Z : Set α) ∩ Eᶜ ⊆ ((Z : Set α) ∩ z₁ ∩ Eᶜ) ∪ ((Z : Set α) ∩ z₂ ∩ Eᶜ) := by
         rintro x ⟨hxZ, hxE⟩
-        exact (hZz hxZ).imp (fun h => ⟨⟨hxZ, h⟩, hxE⟩) fun h => ⟨⟨hxZ, h⟩, hxE⟩
+        exact (hZz hxZ).imp (fun h ↦ ⟨⟨hxZ, h⟩, hxE⟩) fun h ↦ ⟨⟨hxZ, h⟩, hxE⟩
       have hy := closure_mono hsplit (hZ hyZ)
       rw [closure_union] at hy
       rcases hy with h | h
       · exact (Set.eq_empty_iff_forall_notMem.1 (piece z₁ hz₁ hz₁')) y ⟨h, hyE⟩
       · exact (Set.eq_empty_iff_forall_notMem.1 (piece z₂ hz₂ hz₂')) y ⟨h, hyE⟩
-  have hT := key ⟨closure Eᶜ, isClosed_closure⟩ (closure_mono fun x hx => ⟨subset_closure hx, hx⟩)
-  refine isClosed_compl_iff.1 (closure_subset_iff_isClosed.1 fun x hx hxE => ?_)
+  have hT := key ⟨closure Eᶜ, isClosed_closure⟩ (closure_mono fun x hx ↦ ⟨subset_closure hx, hx⟩)
+  refine isClosed_compl_iff.1 (closure_subset_iff_isClosed.1 fun x hx hxE ↦ ?_)
   exact (Set.eq_empty_iff_forall_notMem.1 hT) x ⟨hx, hxE⟩
 
 end TopologicalSpace
