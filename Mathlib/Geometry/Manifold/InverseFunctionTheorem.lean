@@ -5,6 +5,7 @@ Authors: Matthew Spillman
 -/
 module
 
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
@@ -12,7 +13,7 @@ public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 # Inverse function theorem for manifolds
 
 In this file, we derive the inverse function theorem for manifolds from the the inverse function
-theorem for normed vector spaces over an `RCLike` field (`ContDiffAt.toOpenPartialHomeomorph`).
+theorem for normed vector spaces (`ContDiffAt.toOpenPartialHomeomorph` XXX TODO!).
 
 ## Main definitions and results
 * `extChartAtPartialDiffeomorph n hp`: we can restrict `extChartAt I p` to a `PartialDiffeomorph`
@@ -22,6 +23,8 @@ theorem for normed vector spaces over an `RCLike` field (`ContDiffAt.toOpenParti
   (since there is not a normed vector space version of `PartialDiffeomorph`)
 * `isLocalDiffeomorphAt_of_isInvertible_mfderiv`: if `f` is `C^n` on an open set `U` and has
   bijective differential at an interior point `p ∈ U`, then `f` is a local diffeomorphism at `p`.
+  This holds for any `n ≥ 1` if we work over real or complex manifolds, and if `n = ω`
+  (i.e., for analytic maps between analytic manifolds) over arbitrary fields.
 
 ## TODO
 * restate `ContDiffOn.toPartialDiffeomorph` using a normed vector space version of
@@ -98,32 +101,49 @@ end DiffeoExtChartAt
 
 @[expose] public section ManifoldInverseFunctionTheorem
 
-namespace ContDiffOn
+section trying
 
-variable {𝕜 : Type*} [RCLike 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
   {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
   {n : WithTop ℕ∞} {f : E₁ → E₂} {f' : E₁ ≃L[𝕜] E₂} {p : E₁} {U : Set E₁}
   (hf : ContDiffOn 𝕜 n f U) (hU : IsOpen U) (hpU : p ∈ U) (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p)
-  (hn : n ≠ 0)
+  (hn : minSmoothness 𝕜 1 ≤ n)
 
-/-- If `f` is `C^n` on an open set `U` and has invertible derivative at `p ∈ U`, then it is a
+-- missing ingredient for the proof below! perhaps can relax hypotheses?
+lemma missing {f : E₁ → E₂} {f' : E₁ ≃L[𝕜] E₂} {p : E₁} {U : Set E₁}
+  (hf : ContDiffOn 𝕜 n f U) (hU : IsOpen U) (hpU : p ∈ U) (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p)
+  (hn : minSmoothness 𝕜 1 ≤ n) :
+  HasStrictFDerivAt f f'.toContinuousLinearMap p := sorry
+
+end trying
+
+namespace ContDiffOn
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
+  {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
+  {n : WithTop ℕ∞} {f : E₁ → E₂} {f' : E₁ ≃L[𝕜] E₂} {p : E₁} {U : Set E₁}
+  (hf : ContDiffOn 𝕜 n f U) (hU : IsOpen U) (hpU : p ∈ U)
+
+/-- If `f` is `C^n` on an open set `U` and has invertible strict derivative at `p ∈ U`, then it is a
 local diffeomorphism near `p`. This is a stronger version of `ContDiffAt.toOpenPartialHomeomorph`
 with a slightly stronger differentiability hypothesis.
 
 This definition would ideally be located with the calculus API and not be stated in manifold terms,
 but there is not currently a normed vector space version of `PartialDiffeomorph`.
 -/
-noncomputable def toPartialDiffeomorph : PartialDiffeomorph 𝓘(𝕜, E₁) 𝓘(𝕜, E₂) E₁ E₂ n := by
+noncomputable def toPartialDiffeomorph
+    (hf' : HasStrictFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : 1 ≤ n) :
+  PartialDiffeomorph 𝓘(𝕜, E₁) 𝓘(𝕜, E₂) E₁ E₂ n := by
   have U_nhd : U ∈ 𝓝 p := hU.mem_nhds hpU
   -- define `V ⊆ E₁`, the open set where `g'` is a continuous linear equivalence
   let V := (fderiv 𝕜 f) ⁻¹' (range ContinuousLinearEquiv.toContinuousLinearMap)
   have hUV: IsOpen (U ∩ V) :=
-    (hf.continuousOn_fderiv_of_isOpen hU (ENat.one_le_iff_ne_zero_withTop.mpr hn)
-    ).isOpen_inter_preimage hU ContinuousLinearEquiv.isOpen
+    (hf.continuousOn_fderiv_of_isOpen hU hn).isOpen_inter_preimage hU ContinuousLinearEquiv.isOpen
   /- obtain an `OpenPartialHomeomorph E → F` using the standard inverse function theorem. We must
   restrict to `U ∩ V` so that we can later show ContDiff of the forward and inverse function -/
-  let homeo := ((hf.contDiffAt U_nhd).toOpenPartialHomeomorph f hf' hn).restrOpen _ hUV
+  let homeo := hf'.toOpenPartialHomeomorph.restrOpen _ hUV
   have homeo_contdiff : ContDiffOn 𝕜 n homeo.toFun homeo.source := by
     intro x hx
     have : homeo.source ⊆ U := subset_trans inter_subset_right inter_subset_left
@@ -145,22 +165,48 @@ noncomputable def toPartialDiffeomorph : PartialDiffeomorph 𝓘(𝕜, E₁) �
         ⟨g', hg'⟩
       have source_nhd : homeo.source ∈ 𝓝 (homeo.symm y) :=
         mem_nhds_iff.mpr ⟨homeo.source, subset_refl _, homeo.open_source, homeo.map_target hy⟩
-      have : DifferentiableAt 𝕜 homeo (homeo.symm y) := (homeo_contdiff.differentiableOn hn
+      have : DifferentiableAt 𝕜 homeo (homeo.symm y) := (homeo_contdiff.differentiableOn
+        (ENat.one_le_iff_ne_zero_withTop.mp hn)
         (homeo.symm y) (homeo.map_target hy)).differentiableAt source_nhd
       exact (homeo.contDiffAt_symm hy (hg' ▸ this.hasFDerivAt)
         (homeo_contdiff.contDiffAt source_nhd)).contDiffWithinAt
   }
 
-@[simp] lemma toFun_toPartialDiffeomorph : ⇑(hf.toPartialDiffeomorph hU hpU hf' hn) = f := by
+@[simp] lemma toFun_toPartialDiffeomorph
+    (hf' : HasStrictFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : 1 ≤ n) :
+    ⇑(hf.toPartialDiffeomorph hU hpU hf' hn) = f := by
   rfl
 
-lemma toPartialDiffeomorph_mem_source : p ∈ (hf.toPartialDiffeomorph hU hpU hf' hn).source :=
-  ⟨(hf.contDiffAt (hU.mem_nhds hpU)).mem_toOpenPartialHomeomorph_source hf' hn,
-    hpU, f', Eq.symm (HasFDerivAt.fderiv hf')⟩
+lemma toPartialDiffeomorph_mem_source
+    (hf' : HasStrictFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : 1 ≤ n) :
+    p ∈ (hf.toPartialDiffeomorph hU hpU hf' hn).source :=
+  ⟨hf'.mem_toOpenPartialHomeomorph_source, hpU, f', Eq.symm (hf'.hasFDerivAt.fderiv)⟩
+
+/-- If `f` is `C^n` on an open set `U` and has invertible derivative at `p ∈ U`, then it is a
+local diffeomorphism near `p`. This is a stronger version of `ContDiffAt.toOpenPartialHomeomorph`
+with a slightly stronger differentiability hypothesis.
+
+This definition would ideally be located with the calculus API and not be stated in manifold terms,
+but there is not currently a normed vector space version of `PartialDiffeomorph`.
+-/
+noncomputable def toPartialDiffeomorph'
+    (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : minSmoothness 𝕜 1 ≤ n) :
+    PartialDiffeomorph 𝓘(𝕜, E₁) 𝓘(𝕜, E₂) E₁ E₂ n :=
+  hf.toPartialDiffeomorph hU hpU (missing hf hU hpU hf' hn) (le_minSmoothness.trans hn)
+
+@[simp] lemma toFun_toPartialDiffeomorph'
+    (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : minSmoothness 𝕜 1 ≤ n) :
+    ⇑(hf.toPartialDiffeomorph' hU hpU hf' hn) = f := by
+  rfl
+
+lemma toPartialDiffeomorph'_mem_source
+    (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : minSmoothness 𝕜 1 ≤ n) :
+    p ∈ (hf.toPartialDiffeomorph' hU hpU hf' hn).source :=
+  ⟨(missing hf hU hpU hf' hn).mem_toOpenPartialHomeomorph_source, hpU, f', hf'.fderiv.symm⟩
 
 end ContDiffOn
 
-variable {𝕜 : Type*} [RCLike 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
   {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
   {H₁ : Type*} [TopologicalSpace H₁]
@@ -175,10 +221,11 @@ If `f` is `C^n` on a neighborhood of an interior point `p` and has invertible di
 then `f` is a local diffeomorphism at `p`. -/
 theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInteriorPoint p)
     {A : Set M₁} (hA : IsOpen A) (hpA : p ∈ A) {f : M₁ → M₂} (hf : ContMDiffOn I₁ I₂ n f A)
-    (hf' : ContinuousLinearMap.IsInvertible (mfderiv% f p)) (hn : n ≠ 0) :
+    (hf' : ContinuousLinearMap.IsInvertible (mfderiv% f p)) (hn : minSmoothness 𝕜 1 ≤ n) :
     IsLocalDiffeomorphAt I₁ I₂ n f p := by
   -- Since `p` is an interior point, also `f p` is an interior point (of `M₂`).
-  have mDiffAt_f_p : MDiffAt f p := (hf.contMDiffAt (hA.mem_nhds hpA)).mdifferentiableAt hn
+  have mDiffAt_f_p : MDiffAt f p := (hf.contMDiffAt (hA.mem_nhds hpA)).mdifferentiableAt
+    (by rw [← ENat.one_le_iff_ne_zero_withTop]; exact le_minSmoothness.trans hn)
   have hfp : I₂.IsInteriorPoint (f p) :=
     mDiffAt_f_p.isInteriorPoint_of_surjective_mfderiv hf'.surjective hp
   -- Consider the coordinate representation `g` of f in local charts at `p` and `f p`.
@@ -209,12 +256,14 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   have hg' : HasFDerivAt g g'.toContinuousLinearMap (extChartAt I₁ p p) :=
     hg' ▸ mDiffAt_f_p.differentiableWithinAt_writtenInExtChartAt.hasFDerivWithinAt.hasFDerivAt
       (range_mem_nhds_isInteriorPoint hp)
+  -- MISSING sorry: prove the lemma here!
+  have hg'' := missing hg U_open hp' hg' hn
   /- Apply the inverse function theorem in normed spaces: obtain a local inverse for `g`.
   Compose with the charts to obtain the desired partial diffeomorphism `M₁ → M₂`. -/
-  use (φ₁.trans (hg.toPartialDiffeomorph U_open hp' hg' hn)).trans ψ₁.symm
+  use (φ₁.trans (hg.toPartialDiffeomorph U_open hp' hg'' (le_minSmoothness.trans hn))).trans ψ₁.symm
   constructor
   · refine ⟨⟨mem_extChartAtPartialDiffeomorph_source n hp,
-      (hg.toPartialDiffeomorph_mem_source U_open hp' hg' hn)⟩, ?_⟩
+      (hg.toPartialDiffeomorph_mem_source U_open hp' hg'' (le_minSmoothness.trans hn))⟩, ?_⟩
     simpa [φ₁, ψ₁, g] using mem_extChartAtPartialDiffeomorph_target n hfp
   · rintro m ⟨⟨hm₁, _, hm₂, _⟩, _⟩
     have hm := extChartAtPartialDiffeomorph_source_subset (n := n) hm₁
