@@ -60,14 +60,14 @@ theorem exists_forall_exists_eq_mul_of_finite [Finite M]
     | insert a s _ ih =>
       obtain ⟨p, hp⟩ := ih
       obtain ⟨p', v', e⟩ := h p a
-      refine ⟨p * p', fun u hu => ?_⟩
+      refine ⟨p * p', fun u hu ↦ ?_⟩
       rcases Finset.mem_insert.1 hu with rfl | hu
       · exact ⟨v', e⟩
       · obtain ⟨v, hv⟩ := hp u hu
         exact ⟨v * p', by rw [hv, mul_assoc]⟩
   have := Fintype.ofFinite M
   obtain ⟨p, hp⟩ := key Finset.univ
-  exact ⟨p, fun u => hp u (Finset.mem_univ u)⟩
+  exact ⟨p, fun u ↦ hp u (Finset.mem_univ u)⟩
 
 /-- A finite monoid in which any two principal right ideals meet, and which has no
 nontrivial morphism to a group, has a right zero. -/
@@ -84,21 +84,21 @@ theorem exists_forall_mul_eq_self_of_finite [Finite M]
     change u * (p * (v * y)) = p * y
     conv_rhs => rw [hv]
     simp only [mul_assoc]
-  have heq : ∀ u : M, (u * ·) '' E = E := fun u =>
+  have heq : ∀ u : M, (u * ·) '' E = E := fun u ↦
     (Set.eq_of_subset_of_ncard_le (hsub u) (Set.ncard_image_le (Set.toFinite _))
       (Set.toFinite _)).symm
-  let f : M → E → E := fun u x => ⟨u * x, (heq u).subset ⟨x, x.2, rfl⟩⟩
-  have hbij : ∀ u : M, Function.Bijective (f u) := fun u =>
-    Finite.surjective_iff_bijective.1 fun y => by
+  let f : M → E → E := fun u x ↦ ⟨u * x, (heq u).subset ⟨x, x.2, rfl⟩⟩
+  have hbij : ∀ u : M, Function.Bijective (f u) := fun u ↦
+    Finite.surjective_iff_bijective.1 fun y ↦ by
       obtain ⟨x, hx, e⟩ := (heq u).symm.subset y.2
       exact ⟨⟨x, hx⟩, Subtype.ext e⟩
   let φ : M →* Equiv.Perm E :=
-    { toFun := fun u => Equiv.ofBijective (f u) (hbij u)
+    { toFun := fun u ↦ Equiv.ofBijective (f u) (hbij u)
       map_one' := by ext x; simp [f]
-      map_mul' := fun a b => by ext x; simp [f, mul_assoc] }
-  refine ⟨p, fun u => ?_⟩
+      map_mul' := fun a b ↦ by ext x; simp [f, mul_assoc] }
+  refine ⟨p, fun u ↦ ?_⟩
   have h1 : φ u = 1 := by rw [hG _ φ]; rfl
-  simpa [φ, f] using congrArg (fun σ : Equiv.Perm E => (σ ⟨p, 1, mul_one p⟩ : M)) h1
+  simpa [φ, f] using congrArg (fun σ : Equiv.Perm E ↦ (σ ⟨p, 1, mul_one p⟩ : M)) h1
 
 /-- A monoid with a right zero has no nontrivial morphism to a group. -/
 theorem monoidHom_eq_one_of_forall_mul_eq_self {G : Type*} [Group G] {p : M}
@@ -112,8 +112,8 @@ theorem exists_forall_mul_eq_self_iff_of_finite [Finite M] :
     (∃ p : M, ∀ u : M, u * p = p) ↔
       (∀ u v : M, ∃ u' v' : M, u * u' = v * v') ∧
         ∀ (G : Type u) [Group G] (f : M →* G), f = 1 := by
-  refine ⟨fun ⟨p, hp⟩ => ⟨fun u v => ⟨p, p, by rw [hp, hp]⟩,
-    fun G _ f => monoidHom_eq_one_of_forall_mul_eq_self hp f⟩, fun ⟨h, hG⟩ => ?_⟩
+  refine ⟨fun ⟨p, hp⟩ ↦ ⟨fun u v ↦ ⟨p, p, by rw [hp, hp]⟩,
+    fun G _ f ↦ monoidHom_eq_one_of_forall_mul_eq_self hp f⟩, fun ⟨h, hG⟩ ↦ ?_⟩
   exact exists_forall_mul_eq_self_of_finite h hG
 
 end Monoid
