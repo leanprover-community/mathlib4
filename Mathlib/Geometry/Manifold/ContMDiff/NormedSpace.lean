@@ -264,7 +264,6 @@ theorem ContMDiff.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ �
     ContMDiff I 𝓘(𝕜, F₁ × F₂ →L[𝕜] F₃ × F₄) n fun x => (g x).prodMap (f x) := fun x =>
   (hg x).clm_prodMap (hf x)
 
-
 /-! ### Continuous alternating maps between normed spaces are smooth -/
 
 variable {ι : Type*} [Fintype ι]

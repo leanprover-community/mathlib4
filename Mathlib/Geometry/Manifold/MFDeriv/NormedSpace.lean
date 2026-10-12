@@ -264,7 +264,6 @@ theorem MDifferentiable.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → 
     (hg : MDiff g) (hf : MDiff f) : MDiff fun x ↦ (g x).prodMap (f x) :=
   fun x ↦ (hg x).clm_prodMap (hf x)
 
-
 /-! ### Continuous alternating maps between normed spaces are smooth -/
 
 variable {ι : Type*} [Fintype ι]
