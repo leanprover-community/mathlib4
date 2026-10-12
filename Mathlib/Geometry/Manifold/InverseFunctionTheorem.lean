@@ -220,7 +220,7 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   constructor
   · refine ⟨⟨mem_extChartAtPartialDiffeomorph_source n hp,
       (hg.toPartialDiffeomorph_mem_source U_open φ₀p_mem_U hg' hn)⟩, ?_⟩
-    change (ψ₁ ∘ f ∘ φ₀.symm) (φ₀ p) ∈ ψ₁.target
+    simpa [φ₁, ψ₁, g] using mem_extChartAtPartialDiffeomorph_target I₂ n hfp
     simp [φ₀.left_inv (mem_extChartAt_source p),
       ψ₁.map_source (mem_extChartAtPartialDiffeomorph_source n hfp)]
   · rintro m ⟨⟨hm₁, _, hm₂, _⟩, _⟩
