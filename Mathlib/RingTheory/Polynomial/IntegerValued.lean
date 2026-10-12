@@ -44,12 +44,9 @@ section Newton
 
 variable {K : Type*} [Field K] [CharZero K]
 
-/-- Evaluating the binomial polynomial `Ring.choose X n` at `a` gives `Ring.choose a n`. -/
 theorem eval_choose_X (a : K) (n : ℕ) : (Ring.choose (X : K[X]) n).eval a = Ring.choose a n := by
   simpa using Ring.map_choose (evalRingHom a) (X : K[X]) n
 
-/-- At a natural number `m`, the binomial polynomial `Ring.choose X n` takes the value
-`m.choose n`. -/
 theorem eval_natCast_choose_X (m n : ℕ) :
     (Ring.choose (X : K[X]) n).eval (m : K) = (m.choose n : K) := by
   rw [eval_choose_X, Ring.choose_natCast]
@@ -91,12 +88,10 @@ noncomputable def intValued : Subalgebra ℤ ℚ[X] where
     exact ⟨a + b, by simp [ha, hb]⟩
   algebraMap_mem' c _ := ⟨c, by simp⟩
 
-/-- A polynomial is integer-valued if it takes integer values at all integers. -/
 theorem mem_intValued {P : ℚ[X]} :
     P ∈ intValued ↔ ∀ n : ℤ, P.eval (n : ℚ) ∈ Set.range ((↑) : ℤ → ℚ) :=
   Iff.rfl
 
-/-- The binomial polynomials `Ring.choose X n` are integer-valued. -/
 theorem choose_X_mem_intValued (n : ℕ) : Ring.choose (X : ℚ[X]) n ∈ intValued :=
   fun m ↦ ⟨Ring.choose m n, by
     rw [eval_choose_X]; exact_mod_cast Ring.map_choose (Int.castRingHom ℚ) m n⟩
@@ -116,8 +111,6 @@ theorem exists_eq_sum_intCast_smul_choose {P : ℚ[X]}
   push_cast
   simp [hf, zsmul_eq_mul]
 
-/-- A polynomial is integer-valued as soon as it takes integer values at the natural
-numbers. -/
 theorem mem_intValued_iff_forall_natCast {P : ℚ[X]} :
     P ∈ intValued ↔ ∀ m : ℕ, P.eval (m : ℚ) ∈ Set.range ((↑) : ℤ → ℚ) := by
   refine ⟨fun h m ↦ by exact_mod_cast h m, fun h ↦ ?_⟩
@@ -127,7 +120,6 @@ theorem mem_intValued_iff_forall_natCast {P : ℚ[X]} :
     rw [Int.cast_smul_eq_zsmul]
     exact Subalgebra.zsmul_mem _ (choose_X_mem_intValued k) _
 
-/-- The binomial polynomials `Ring.choose X n` are linearly independent over `ℤ`. -/
 theorem linearIndependent_choose_X : LinearIndependent ℤ fun n ↦ Ring.choose (X : ℚ[X]) n := by
   classical
   rw [linearIndependent_iff']
@@ -164,12 +156,10 @@ noncomputable def intValuedBasis : Module.Basis ℕ ℤ intValued :=
       rw [this]
       exact Submodule.sum_mem _ fun k _ ↦ Submodule.smul_mem _ _ (Submodule.subset_span ⟨k, rfl⟩))
 
-/-- The `n`-th vector of `intValuedBasis` is the binomial polynomial `Ring.choose X n`. -/
 @[simp]
 theorem coe_intValuedBasis (n : ℕ) : (intValuedBasis n : ℚ[X]) = Ring.choose X n := by
   simp [intValuedBasis]
 
-/-- The integer-valued polynomials form a free `ℤ`-module. -/
 instance : Module.Free ℤ intValued := .of_basis intValuedBasis
 
 end Polynomial
