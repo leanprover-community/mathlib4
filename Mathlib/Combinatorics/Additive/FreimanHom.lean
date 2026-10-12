@@ -312,12 +312,6 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
     rw [← map_multiset_ne_zero_prod _ (by grind [Multiset.card_eq_zero]),
         h, map_multiset_ne_zero_prod _ (by grind [Multiset.card_eq_zero])]
 
-@[deprecated (since := "2026-04-29")]
-alias MonoidHomClass.isMulFreimanHom := MulHomClass.isMulFreimanHom
-
-@[deprecated (since := "2026-04-29")]
-alias AddMonoidHomClass.isAddFreimanHom := AddHomClass.isAddFreimanHom
-
 @[to_additive] lemma MulEquivClass.isMulFreimanIso [EquivLike F α β] [MulEquivClass F α β] (f : F)
     (hfAB : BijOn f A B) : IsMulFreimanIso n A B f where
   bijOn := hfAB

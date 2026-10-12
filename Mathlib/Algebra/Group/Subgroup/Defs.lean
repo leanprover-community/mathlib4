@@ -400,11 +400,6 @@ theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ 
 @[to_additive]
 lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
 
-attribute [deprecated OneMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
-  Subgroup.coe_nonempty
-attribute [deprecated ZeroMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
-  AddSubgroup.coe_nonempty
-
 end Subgroup
 
 namespace Subgroup
@@ -632,8 +627,6 @@ variable {H : Subgroup G}
 instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
     H.Normal := ⟨by simp [mul_comm']⟩
 
-@[deprecated (since := "2026-04-10")] alias normal_of_comm := normal_of_isMulCommutative
-
 namespace Normal
 
 @[to_additive]
@@ -709,10 +702,6 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
     H.mul_mem_cancel_left xH]
 
 end Normalizer
-
-@[to_additive (attr := deprecated inferInstance +typeChanged (since := "2026-04-09"))]
-theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
-    IsMulCommutative H := inferInstance
 
 end Subgroup
 

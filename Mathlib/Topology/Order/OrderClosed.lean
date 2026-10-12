@@ -179,9 +179,6 @@ theorem disjoint_nhds_atBot (a : α) : Disjoint (𝓝 a) atBot := by simp
 @[to_dual (attr := simp) nhds_inf_atTop]
 theorem nhds_inf_atBot (a : α) : 𝓝 a ⊓ atBot = ⊥ := (disjoint_nhds_atBot a).eq_bot
 
-@[deprecated (since := "2026-04-07")] alias inf_nhds_atBot := nhds_inf_atBot
-@[deprecated (since := "2026-04-07")] alias inf_nhds_atTop := nhds_inf_atTop
-
 @[to_dual]
 theorem not_tendsto_nhds_of_tendsto_atBot (hf : Tendsto f l atBot) (a : α) : ¬Tendsto f l (𝓝 a) :=
   hf.not_tendsto (disjoint_nhds_atBot a).symm

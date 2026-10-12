@@ -171,9 +171,6 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
   apply (multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
   simp [eta_q, Periodic.qParam, ← exp_nat_mul]
 
-@[deprecated (since := "2026-04-30")]
-alias discriminant_bounded_factor := tendsto_atImInfty_tprod_one_sub_eta_q_pow
-
 lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
   apply Tendsto.congr (fun z ↦ (discriminant_eq_q_prod z).symm)
   rw [show (0 : ℂ) = 0 * 1 by ring]
@@ -263,8 +260,5 @@ lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) :
     (by simpa using exp_isBigO_discriminant)
 
 end CuspForm
-
-@[deprecated CuspForm.discriminant (since := "2026-04-30")]
-alias ModularForm.discriminantCuspForm := CuspForm.discriminant
 
 end

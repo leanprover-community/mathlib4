@@ -126,18 +126,12 @@ lemma apply_natCast_le_one [AddMonoidWithOne α] [One R] (f_zero_le : f 0 ≤ f 
   rw [← nsmul_one n, ← f_one]
   exact hna.nsmul_le f_zero_le
 
-@[deprecated (since := "2026-04-27")]
-alias apply_natCast_le_one_of_isNonarchimedean := apply_natCast_le_one
-
 /-- If `f : α → R` is nonarchimedean, maps one to one, is invariant under negation, and
   `f 0 ≤ f 1`, then `f n ≤ 1` for every `n : ℤ`. -/
 theorem apply_intCast_le_one [One R] [AddGroupWithOne α] (f_zero_le : f 0 ≤ f 1) (f_one : f 1 = 1)
     (f_neg : ∀ a, f (-a) = f a) (hna : IsNonarchimedean f) {n : ℤ} : f n ≤ 1 := by
   obtain ⟨a, rfl | rfl⟩ := Int.eq_nat_or_neg n <;>
   simp [f_neg, hna.apply_natCast_le_one f_zero_le f_one]
-
-@[deprecated (since := "2026-04-27")]
-alias apply_intCast_le_one_of_isNonarchimedean := apply_intCast_le_one
 
 variable (g : β → α)
 
@@ -214,9 +208,6 @@ lemma apply_sum_le_sup (hne : s.Nonempty) : f (∑ i ∈ s, g i) ≤ s.sup' hne 
     rcases le_max_iff.mp <| hna (g i) (∑ i ∈ s, g i) with h₁ | h₂
     · exact .inl h₁
     · exact .inr <| le_trans h₂ hind
-
-@[deprecated (since := "2026-04-27")]
-alias apply_sum_le_sup_of_isNonarchimedean := apply_sum_le_sup
 
 /-- Given a nonarchimedean function `α → R`, a function `g : β → α` and a nonempty finset
   `s : Finset β`, we can always find `b : β` belonging to `s` such that `f (s.sum g) ≤ f (g b)`. -/

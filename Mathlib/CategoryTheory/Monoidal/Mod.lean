@@ -187,12 +187,6 @@ the action maps -/
 class IsModHom {M N : D} [ModObj A M] [ModObj A N] (f : M ⟶ N) where
   smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by cat_disch
 
-@[deprecated (since := "2026-04-21")]
-alias IsMod_Hom := IsModHom
-
-@[deprecated (since := "2026-04-21")]
-alias IsMod_Hom.smul_hom := IsModHom.smul_hom
-
 set_option linter.translateOverwrite false in
 attribute [to_additive existing (attr := reassoc (attr := simp))] IsModHom.smul_hom
 
@@ -228,12 +222,6 @@ structure Mod (A : C) [MonObj A] where
   /-- The underlying object in the ambient category -/
   X : D
   [mod : ModObj A X]
-
-@[deprecated (since := "2026-04-21")]
-alias Mod_ := Mod
-
-@[deprecated (since := "2026-04-21")]
-alias Mod_.mod := Mod.mod
 
 attribute [instance] Mod.mod
 
@@ -415,37 +403,5 @@ def comap {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f] :
 end comap
 
 end Mod
-
-namespace Mod_
-
-@[deprecated (since := "2026-04-21")] alias assoc_flip := Mod.assoc_flip
-
-@[deprecated (since := "2026-04-21")] alias Hom := Mod.Hom
-
-@[deprecated (since := "2026-04-21")] alias Hom.mk' := Mod.Hom.mk'
-
-@[deprecated (since := "2026-04-21")] alias Hom.mk'' := Mod.Hom.mk''
-
-@[deprecated (since := "2026-04-21")] alias id := Mod.id
-
-@[deprecated (since := "2026-04-21")] alias comp := Mod.comp
-
-@[deprecated (since := "2026-04-21")] alias hom_ext := Mod.hom_ext
-
-@[deprecated (since := "2026-04-21")] alias id_hom' := Mod.id_hom'
-
-@[deprecated (since := "2026-04-21")] alias comp_hom' := Mod.comp_hom'
-
-@[deprecated (since := "2026-04-21")] alias regular := Mod.regular
-
-@[deprecated (since := "2026-04-21")] alias forget := Mod.forget
-
-@[deprecated (since := "2026-04-21")] alias scalarRestriction := Mod.scalarRestriction
-
-@[deprecated (since := "2026-04-21")] alias scalarRestriction_hom := Mod.scalarRestriction_hom
-
-@[deprecated (since := "2026-04-21")] alias comap := Mod.comap
-
-end Mod_
 
 end CategoryTheory

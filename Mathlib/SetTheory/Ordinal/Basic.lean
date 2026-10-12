@@ -700,34 +700,6 @@ theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.ToType) :
   rw [← not_lt]
   apply enum_zero_le
 
-/-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
-`α.ToType` into `β.ToType`. -/
-@[deprecated type_le_iff +typeChanged (since := "2026-04-12")]
-noncomputable def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.ToType ≤i β.ToType := by
-  apply Classical.choice (type_le_iff.mp _)
-  rwa [type_toType, type_toType]
-
-/-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
-of `α.ToType` into `β.ToType`. -/
-@[deprecated type_lt_iff +typeChanged (since := "2026-04-12")]
-noncomputable def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
-  apply Classical.choice (type_lt_iff.mp _)
-  rwa [type_toType, type_toType]
-
-/-- `o.ToType` is an `OrderBot` whenever `o ≠ 0`. -/
-@[instance_reducible, deprecated WellFoundedLT.toOrderBot +typeChanged (since := "2026-04-12")]
-noncomputable def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
-  bot := (enum (· < ·)) ⟨0, _⟩
-  bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
-
-@[deprecated "use `WellFoundedLT.toOrderBot` if you need an `OrderBot` instance"
-(since := "2026-04-12")]
-theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
-    enum (α := o.ToType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
-      have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
-      (⊥ : o.ToType) :=
-  rfl
-
 @[simp]
 theorem _root_.Cardinal.mk_toType (o : Ordinal) : #o.ToType = o.card :=
   (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_toType]
@@ -918,14 +890,6 @@ instance : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) (by exact succ_le_iff')
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
-
-@[deprecated add_pos_of_right +typeChanged (since := "2026-04-04")]
-theorem succ_pos (o : Ordinal) : 0 < succ o :=
-  add_pos_of_right zero_lt_one o
-
-@[deprecated add_pos_of_right +typeChanged (since := "2026-04-04")]
-theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
-  (add_pos_of_right zero_lt_one o).ne'
 
 @[deprecated Nat.cast_add_one +typeChanged (since := "2026-05-21")]
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
@@ -1165,10 +1129,6 @@ theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = ty
 theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h : ord #α = typeLT αᵒᵈ) :
     #(Ioi i) < #α :=
   mk_Iio_lt (OrderDual.toDual i) h
-
-@[deprecated mk_Iio_lt +typeChanged (since := "2026-04-12")]
-theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
-  simpa using mk_Iio_lt i
 
 @[simp]
 theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=

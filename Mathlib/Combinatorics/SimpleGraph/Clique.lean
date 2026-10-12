@@ -62,11 +62,6 @@ theorem induce_eq_top : G.induce s = ⊤ ↔ G.IsClique s := by
   · ext ⟨v, hv⟩ ⟨w, hw⟩
     simpa using ⟨Adj.ne, h hv hw⟩
 
-/-- A clique is a set of vertices whose induced graph is complete. -/
-@[deprecated induce_eq_top +typeChanged (since := "2026-04-23")]
-theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ :=
-  induce_eq_top.symm
-
 theorem isClique_iff_isChain_adj : G.IsClique s ↔ IsChain G.Adj s := by
   simp [IsChain, G.symm.iff]
 

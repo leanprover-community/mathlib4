@@ -532,9 +532,6 @@ lemma constantCoeff_substInv : P.substInv.constantCoeff = 0 := by
 
 lemma HasSubst.substInv : HasSubst P.substInv := by simp [HasSubst, ← constantCoeff.eq_def]
 
-@[deprecated (since := "2026-04-27")]
-alias hasSubst_substInv := HasSubst.substInv
-
 @[simp]
 lemma coeff_one_substInv : P.substInv.coeff 1 = ⅟(P.coeff 1) := by
   simp [substInv, substInvFun]

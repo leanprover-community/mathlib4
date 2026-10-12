@@ -384,17 +384,12 @@ namespace Ideal
 theorem prod_normalizedFactors_eq_self (hI : I ≠ ⊥) : (normalizedFactors I).prod = I :=
   associated_iff_eq.1 (prod_normalizedFactors hI)
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.prod_normalizedFactors_eq_self := prod_normalizedFactors_eq_self
-
 theorem count_le_of_ideal_ge
     {I J : Ideal T} (h : I ≤ J) (hI : I ≠ ⊥) (K : Ideal T) :
     count K (normalizedFactors J) ≤ count K (normalizedFactors I) :=
   le_iff_count.1 ((dvd_iff_normalizedFactors_le_normalizedFactors (ne_bot_of_le_ne_bot hI h) hI).1
     (dvd_iff_le.2 h))
     _
-
-@[deprecated (since := "2026-04-16")] alias _root_.count_le_of_ideal_ge := count_le_of_ideal_ge
 
 theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     I ⊔ J = (normalizedFactors I ∩ normalizedFactors J).prod := by
@@ -412,15 +407,10 @@ theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     rw [Multiset.count_inter]
     exact le_min (count_le_of_ideal_ge le_sup_left hI a) (count_le_of_ideal_ge le_sup_right hJ a)
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.sup_eq_prod_inf_factors := sup_eq_prod_inf_factors
-
 theorem irreducible_pow_sup (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
     J ^ n ⊔ I = J ^ min ((normalizedFactors I).count J) n := by
   rw [sup_eq_prod_inf_factors (pow_ne_zero n hJ.ne_zero) hI, min_comm,
     normalizedFactors_of_irreducible_pow hJ, normalize_eq J, replicate_inter, prod_replicate]
-
-@[deprecated (since := "2026-04-16")] alias _root_.irreducible_pow_sup := irreducible_pow_sup
 
 theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emultiplicity J I) :
     J ^ n ⊔ I = J ^ n := by
@@ -429,9 +419,6 @@ theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emu
   rw [irreducible_pow_sup hI hJ, min_eq_right]
   rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
   exact_mod_cast hn
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.irreducible_pow_sup_of_le := irreducible_pow_sup_of_le
 
 theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
     (hn : emultiplicity J I ≤ n) : J ^ n ⊔ I = J ^ multiplicity J I := by
@@ -444,9 +431,6 @@ theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ
     simp
   · rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
     exact_mod_cast hn
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.irreducible_pow_sup_of_ge := irreducible_pow_sup_of_ge
 
 theorem eq_prime_pow_mul_coprime {I : Ideal T} (hI : I ≠ ⊥)
     (P : Ideal T) [hpm : P.IsMaximal] :
@@ -464,8 +448,6 @@ theorem map_prime_of_equiv {R : Type*} [CommRing R] [IsDedekindDomain R]
   rw [prime_iff_isPrime h] at hI
   exact (prime_iff_isPrime <| (I.map_eq_bot_iff_of_injective f.injective).not.2 h).2
     (map_isPrime_of_equiv _)
-
-@[deprecated (since := "2026-04-16")] alias _root_.map_prime_of_equiv := map_prime_of_equiv
 
 end Ideal
 
@@ -641,9 +623,6 @@ def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjecti
       Ideal.Quotient.mk_surjective, ← RingHom.ker_eq_comap_bot, mk_ker,
       sup_eq_left.mpr <| le_of_dvd hY]
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.idealFactorsFunOfQuotHom := idealFactorsFunOfQuotHom
-
 @[simp]
 theorem idealFactorsFunOfQuotHom_id :
     idealFactorsFunOfQuotHom (RingHom.id (A ⧸ J)).surjective = OrderHom.id :=
@@ -653,9 +632,6 @@ theorem idealFactorsFunOfQuotHom_id :
         comap_map_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective, ←
         RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker,
         sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta])
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.idealFactorsFunOfQuotHom_id := idealFactorsFunOfQuotHom_id
 
 variable {B : Type*} [CommRing B] [IsDedekindDomain B] {L : Ideal B}
 
@@ -669,9 +645,6 @@ theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J �
     Subtype.mk_eq_mk, Subtype.coe_mk, map_comap_of_surjective (Ideal.Quotient.mk J)
     Ideal.Quotient.mk_surjective, map_map]
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.idealFactorsFunOfQuotHom_comp := idealFactorsFunOfQuotHom_comp
-
 variable [IsDedekindDomain R] (f : R ⧸ I ≃+* A ⧸ J)
 
 /-- The bijection between ideals of `R` dividing `I` and the ideals of `A` dividing `J` induced by
@@ -684,14 +657,8 @@ def idealFactorsEquivOfQuotEquiv : { p : Ideal R | p ∣ I } ≃o { p : Ideal A 
   · simpa using! idealFactorsFunOfQuotHom_comp fsym_surj f_surj
   · simpa using! idealFactorsFunOfQuotHom_comp f_surj fsym_surj
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.idealFactorsEquivOfQuotEquiv := idealFactorsEquivOfQuotEquiv
-
 theorem idealFactorsEquivOfQuotEquiv_symm :
     (idealFactorsEquivOfQuotEquiv f).symm = idealFactorsEquivOfQuotEquiv f.symm := rfl
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.idealFactorsEquivOfQuotEquiv_symm := idealFactorsEquivOfQuotEquiv_symm
 
 theorem idealFactorsEquivOfQuotEquiv_is_dvd_iso {L M : Ideal R} (hL : L ∣ I) (hM : M ∣ I) :
     (idealFactorsEquivOfQuotEquiv f ⟨L, hL⟩ : Ideal A) ∣ idealFactorsEquivOfQuotEquiv f ⟨M, hM⟩ ↔
@@ -701,9 +668,6 @@ theorem idealFactorsEquivOfQuotEquiv_is_dvd_iso {L M : Ideal R} (hL : L ∣ I) (
       (⟨M, hM⟩ : { p : Ideal R | p ∣ I }) ≤ ⟨L, hL⟩
     by rw [dvd_iff_le, dvd_iff_le, Subtype.coe_le_coe, this, Subtype.mk_le_mk]
   exact (idealFactorsEquivOfQuotEquiv f).le_iff_le
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.idealFactorsEquivOfQuotEquiv_is_dvd_iso := idealFactorsEquivOfQuotEquiv_is_dvd_iso
 
 open UniqueFactorizationMonoid
 
@@ -721,10 +685,6 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
   rw [Subtype.coe_mk, Subtype.coe_mk]
   apply idealFactorsEquivOfQuotEquiv_is_dvd_iso f
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors :=
-  idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors
-
 /-- The bijection between the sets of normalized factors of I and J induced by a ring
 isomorphism `f : R/I ≅ A/J`. -/
 def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
@@ -741,16 +701,10 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
   left_inv := fun ⟨j, hj⟩ => by simp
   right_inv := fun ⟨j, hj⟩ => by simp
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.normalizedFactorsEquivOfQuotEquiv := normalizedFactorsEquivOfQuotEquiv
-
 @[simp]
 theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     (normalizedFactorsEquivOfQuotEquiv f hI hJ).symm =
       normalizedFactorsEquivOfQuotEquiv f.symm hJ hI := rfl
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.normalizedFactorsEquivOfQuotEquiv_symm := normalizedFactorsEquivOfQuotEquiv_symm
 
 /-- The map `normalizedFactorsEquivOfQuotEquiv` preserves multiplicities. -/
 theorem normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
@@ -760,10 +714,6 @@ theorem normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity (hI : I
   refine emultiplicity_factor_dvd_iso_eq_emultiplicity_of_mem_normalizedFactors hI hJ hL
     (d := (idealFactorsEquivOfQuotEquiv f).toEquiv) ?_
   exact fun ⟨l, hl⟩ ⟨l', hl'⟩ => idealFactorsEquivOfQuotEquiv_is_dvd_iso f hl hl'
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity :=
-  normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity
 
 end IsDedekindDomain
 
@@ -821,9 +771,6 @@ theorem count_associates_factors_eq
     simp only [Associates.dvd_eq_le]
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
   lia
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.count_associates_factors_eq := count_associates_factors_eq
 
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
 theorem count_associates_eq
@@ -988,9 +935,6 @@ theorem emultiplicity_span_eq_emultiplicity {a b : R} :
 @[deprecated (since := "2026-09-04")]
 alias emultiplicity_eq_emultiplicity_span := emultiplicity_span_eq_emultiplicity
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.emultiplicity_eq_emultiplicity_span := emultiplicity_span_eq_emultiplicity
-
 variable {R} in
 theorem multiplicity_span_eq_multiplicity {a b : R} :
     multiplicity (span {a}) (span ({b} : Set R)) = multiplicity a b :=
@@ -1037,10 +981,6 @@ theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [Normaliza
     · by_contra h
       exact (prime_of_normalized_factor a ha).ne_zero (span_singleton_eq_bot.mp h)
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.singleton_span_mem_normalizedFactors_of_mem_normalizedFactors :=
-  singleton_span_mem_normalizedFactors_of_mem_normalizedFactors
-
 section NormalizationMonoid
 variable [NormalizationMonoid R]
 
@@ -1070,10 +1010,6 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
           ((show span {r} ≤ i from dvd_iff_le.mp (dvd_of_mem_normalizedFactors hi))
             (mem_span_singleton.mpr (dvd_refl r)))
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.normalizedFactorsEquivSpanNormalizedFactors :=
-  normalizedFactorsEquivSpanNormalizedFactors
-
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
 factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
@@ -1086,10 +1022,6 @@ theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplici
   simp only [normalizedFactorsEquivSpanNormalizedFactors, emultiplicity_span_eq_emultiplicity,
     Subtype.coe_mk, Equiv.ofBijective_apply]
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplicity :=
-  emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplicity
-
 /-- The bijection `normalized_factors_equiv_span_normalized_factors.symm` between the set of prime
 factors of the ideal `⟨r⟩` and the set of prime factors of `r` preserves multiplicities. -/
 theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity {r : R}
@@ -1100,10 +1032,6 @@ theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emulti
   obtain ⟨a, ha⟩ := x
   rw [hx.symm, Equiv.symm_apply_apply, Subtype.coe_mk,
     emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplicity hr ha]
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity :=
-  emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity
 
 variable [DecidableEq R]
 
@@ -1122,18 +1050,11 @@ theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) 
   · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
   · simpa only [prime_span_singleton_iff]
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.count_span_normalizedFactors_eq := count_span_normalizedFactors_eq
-
 theorem count_span_normalizedFactors_eq_of_normUnit {r X : R}
     (hr : r ≠ 0) (hX₁ : normUnit X = 1) (hX : Prime X) :
       Multiset.count (span {X} : Ideal R) (normalizedFactors (span {r})) =
         Multiset.count X (normalizedFactors r) := by
   simpa [hX₁, normalize_apply] using count_span_normalizedFactors_eq hr hX
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.count_span_normalizedFactors_eq_of_normUnit :=
-  count_span_normalizedFactors_eq_of_normUnit
 
 end NormalizationMonoid
 
@@ -1155,21 +1076,14 @@ variable (p) in
 noncomputable abbrev primesOverFinset : Finset (Ideal B) :=
   (factors (p.map (algebraMap A B))).toFinset
 
-@[deprecated (since := "2026-04-16")] alias _root_.primesOverFinset := primesOverFinset
-
 include hpb in
 theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
   ext
   simpa using (mem_primesOver_iff_mem_normalizedFactors _ hpb).symm
 
-@[deprecated (since := "2026-04-16")] alias _root_.coe_primesOverFinset := coe_primesOverFinset
-
 include hpb in
 theorem mem_primesOverFinset_iff {P : Ideal B} : P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by
   rw [← Finset.mem_coe, coe_primesOverFinset hpb]
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.mem_primesOverFinset_iff := mem_primesOverFinset_iff
 
 end IsDedekindDomain
 
@@ -1225,22 +1139,14 @@ theorem primesOver_finite : (primesOver p B).Finite := by
   · rw [← coe_primesOverFinset hpb B]
     exact (primesOverFinset p B).finite_toSet
 
-@[deprecated (since := "2026-04-16")] alias _root_.primesOver_finite := primesOver_finite
-
 noncomputable instance : Fintype (p.primesOver B) := Set.Finite.fintype (primesOver_finite p B)
 
 theorem primesOver_ncard_ne_zero : (primesOver p B).ncard ≠ 0 := by
   rcases exists_maximal_ideal_liesOver_of_isIntegral (S := B) p with ⟨P, hPm, hp⟩
   exact Set.ncard_ne_zero_of_mem ⟨hPm.isPrime, hp⟩ (primesOver_finite p B)
 
-@[deprecated (since := "2026-04-16")]
-alias _root_.primesOver_ncard_ne_zero := primesOver_ncard_ne_zero
-
 theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=
   Nat.one_le_iff_ne_zero.mpr (primesOver_ncard_ne_zero p B)
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.one_le_primesOver_ncard := one_le_primesOver_ncard
 
 end IsDedekindDomain
 

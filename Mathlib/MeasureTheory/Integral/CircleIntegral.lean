@@ -324,8 +324,6 @@ theorem circleIntegrable_congr {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
   intervalIntegrable_congr fun x _ ↦ hf (circleMap_mem_sphere' c R x)
 
-@[deprecated (since := "2026-04-26")] alias crcleIntegrable_congr := circleIntegrable_congr
-
 /--
 Circle integrability is invariant when taking negative radius.
 -/

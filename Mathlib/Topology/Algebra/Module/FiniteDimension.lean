@@ -585,10 +585,6 @@ theorem ContinuousLinearMap.exists_rightInverse_of_surjective [T2Space F] [Finit
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
   ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.coe_inj.1 hg⟩
 
-@[deprecated (since := "2026-04-24")]
-alias ContinuousLinearMap.exists_right_inverse_of_surjective :=
-  ContinuousLinearMap.exists_rightInverse_of_surjective
-
 theorem ContinuousLinearMap.isQuotientMap_of_finiteDimensional [T2Space F] [FiniteDimensional 𝕜 F]
     (f : E →L[𝕜] F) (hf : f.range = ⊤) :
     IsQuotientMap f :=

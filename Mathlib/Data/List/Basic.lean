@@ -961,8 +961,6 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
 theorem filter_subset_self (l : List α) : filter p l ⊆ l :=
   filter_sublist.subset
 
-@[deprecated (since := "2026-04-24")] alias filter_subset' := filter_subset_self
-
 theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := (mem_filter.1 h).2
 
 theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=

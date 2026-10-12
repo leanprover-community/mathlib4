@@ -361,12 +361,6 @@ theorem IndepFun.integrable_mul
     {X Y : Ω → E} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ) :
     Integrable (X * Y) μ := hXY.integrable_smul hX hY
 
-@[deprecated (since := "2026-04-30")] alias IndepFun.integrable_left_of_integrable_mul :=
-  IndepFun.integrable_left_of_integrable_op
-
-@[deprecated (since := "2026-04-30")] alias IndepFun.integrable_right_of_integrable_mul :=
-  IndepFun.integrable_right_of_integrable_op
-
 lemma IndepFun.integral_fun_comp_smul_comp
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → E}

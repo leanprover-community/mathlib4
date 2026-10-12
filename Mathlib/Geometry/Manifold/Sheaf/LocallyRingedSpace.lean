@@ -140,9 +140,6 @@ def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).property
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
 
-@[deprecated (since := "2026-04-01")]
-alias IsManifold.locallyRingedSpace := ChartedSpace.locallyRingedSpace
-
 open CategoryTheory
 
 variable {M IM IN}
