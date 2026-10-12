@@ -222,6 +222,7 @@ instance directSum [∀ i, Flat R (M i)] : Flat R (⨁ i, M i) := directSum_iff.
 
 instance dfinsupp [∀ i, Flat R (M i)] : Flat R (Π₀ i, M i) := dfinsupp_iff.mpr ‹_›
 
+/-- A finite product of `R`-modules is flat if and only if each factor is. -/
 theorem pi_iff [Finite ι] : Flat R (Π i, M i) ↔ ∀ i, Flat R (M i) := by
   classical
   have := Fintype.ofFinite ι
@@ -233,6 +234,7 @@ instance pi [Finite ι] [∀ i, Flat R (M i)] : Flat R (Π i, M i) := pi_iff.mpr
 
 end DirectSum
 
+/-- `M × N` is flat over `R` if and only if `M` and `N` are. -/
 theorem prod_iff : Flat R (M × N) ↔ Flat R M ∧ Flat R N := by
   have key {P : Type u} [AddCommMonoid P] [Module R P] (Q : Submodule R P) :
       Function.Injective (Q.subtype.rTensor (M × N)) ↔
