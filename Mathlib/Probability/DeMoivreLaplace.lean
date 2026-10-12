@@ -44,8 +44,6 @@ namespace ProbabilityTheory
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {p : I}
 
-/-- `Bin(ℝ, n, p)` is the image of an infinite product of `p`-Bernoulli measures on `{1, 0}` by
-the sum of the first `n` coordinates. -/
 lemma infinitePi_bernoulliMeasure_map_sum (n : ℕ) :
     (Measure.infinitePi fun _ : ℕ ↦ Ber((1 : ℝ), 0, p)).map
       (fun x ↦ ∑ k ∈ Finset.range n, x k) = Bin(ℝ, n, p) := by
