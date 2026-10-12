@@ -296,7 +296,7 @@ theorem exists_ratCast_eq_ofDigits_of_eventually_periodic {b : ℕ} (hb : 1 < b)
   refine ⟨q₁ + ((b : ℚ) ^ N)⁻¹ * (q₂ / (1 - ((b : ℚ) ^ c)⁻¹)), ?_⟩
   rw [ofDigits_eq_sum_add_ofDigits a N, ← he_def, he', ← hq₁]
   push_cast
-  rfl
+  ring
 
 /-- A nonnegative real number is rational if and only if its digits in base `b` are eventually
 periodic. -/
