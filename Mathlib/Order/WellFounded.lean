@@ -275,6 +275,11 @@ theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono 
   hf.id_le x
 
 @[to_dual]
+theorem StrictMono.isCofinal_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β]
+    (hf : StrictMono f) : IsCofinal (Set.range f) :=
+  fun x ↦ ⟨f x, Set.mem_range_self x, hf.le_apply⟩
+
+@[to_dual]
 theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]
     (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
   rintro ⟨a, ha⟩

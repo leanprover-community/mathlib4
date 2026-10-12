@@ -249,24 +249,38 @@ theorem exists_map_le_lt_map_succ [NoMaxOrder α] [OrderBot α] {f : α → α} 
     (hf : IsNormal f) (hx : f ⊥ ≤ x) : ∃ a, f a ≤ x ∧ x < f (succ a) :=
   exists_map_le_lt_map_succ_of_exists_ge hf ⟨x, hf.strictMono.le_apply⟩ hx
 
-omit [SuccOrder α] in
-theorem dirSupClosed_range {f : α → α} (hf : IsNormal f) : DirSupClosed (range f) := by
+omit [SuccOrder α]
+
+theorem dirSupClosed_range_of_isCofinal {f : α → β} (hf : IsNormal f) (hf' : IsCofinal (range f)) :
+    DirSupClosed (range f) := by
   intro s hs hs₀ _ a ha
-  have hf' : (f ⁻¹' s).Nonempty := by
+  have hfn : (f ⁻¹' s).Nonempty := by
     obtain ⟨b, hb⟩ := hs₀
     obtain ⟨c, rfl⟩ := hs hb
     exact ⟨c, hb⟩
-  have : Nonempty α := ⟨a⟩
+  have := hfn.to_type
   let := WellFoundedLT.toOrderBot α
   let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
-  have hfl : IsLUB (f ⁻¹' s) (sSup (f ⁻¹' s)) :=
-    isLUB_csSup hf' ⟨a, fun b hb ↦ hf.strictMono.le_apply.trans (ha.1 hb)⟩
-  have ha' := hf.map_isLUB hfl hf'
+  have hfl : IsLUB (f ⁻¹' s) (sSup (f ⁻¹' s)) := by
+    apply isLUB_csSup hfn _
+    obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' a
+    use b
+    intro c hc
+    rw [← hf.strictMono.le_iff_le]
+    exact (ha.1 hc).trans hb
+  have ha' := hf.map_isLUB hfl hfn
   rw [image_preimage_eq_of_subset hs] at ha'
   obtain rfl := ha.unique ha'
   exact mem_range_self _
 
-omit [SuccOrder α] in
+theorem dirSupClosed_range {f : α → α} (hf : IsNormal f) : DirSupClosed (range f) :=
+  dirSupClosed_range_of_isCofinal hf hf.strictMono.isCofinal_range_of_wellFoundedLT
+
+theorem _root_.Order.isNormal_iff_dirSupClosed_range_of_isCofinal [WellFoundedLT β]
+    {f : α → β} (hf : StrictMono f) (hf' : IsCofinal (range f)) :
+    IsNormal f ↔ DirSupClosed (range f) :=
+  ⟨fun hf ↦ dirSupClosed_range_of_isCofinal hf hf', of_dirSupClosed_range hf⟩
+
 theorem _root_.Order.isNormal_iff_dirSupClosed_range {f : α → α} (hf : StrictMono f) :
     IsNormal f ↔ DirSupClosed (range f) :=
   ⟨dirSupClosed_range, of_dirSupClosed_range hf⟩
