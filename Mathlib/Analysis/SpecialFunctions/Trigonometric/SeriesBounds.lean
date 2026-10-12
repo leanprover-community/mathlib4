@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.Pow
+
 /-!
 # Taylor series bounds for trigonometric functions
 
