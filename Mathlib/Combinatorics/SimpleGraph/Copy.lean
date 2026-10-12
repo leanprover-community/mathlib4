@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Mitchell Horner
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
@@ -551,7 +550,7 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
 @[simp] lemma copyCount_bot (G : SimpleGraph V) : copyCount G (⊥ : SimpleGraph V) = 1 := by
   classical
   rw [copyCount]
-  convert!
+  convert
     card_singleton (α := G.Subgraph)
       { verts := .univ
         Adj := ⊥

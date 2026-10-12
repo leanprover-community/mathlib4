@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.CatCommSq
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+
+import Mathlib.CategoryTheory.Comma.CatCommSq
 
 /-!
 # Resolutions for a morphism of localizers

@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Convex.Between
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.Topology.MetricSpace.Holder
 public import Mathlib.Topology.MetricSpace.MetricSeparated
+
 import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
@@ -346,7 +347,7 @@ theorem mkMetric_top : (mkMetric (fun _ => ∞ : ℝ≥0∞ → ℝ≥0∞) : Ou
 `mkMetric m₁ hm₁ ≤ mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} (hle : m₁ ≤ᶠ[𝓝 0] m₂) :
     (mkMetric m₁ : OuterMeasure X) ≤ mkMetric m₂ := by
-  convert! @mkMetric_mono_smul X _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
+  convert @mkMetric_mono_smul X _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
 
 theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (hf : Isometry f)
     (H : Monotone m ∨ Surjective f) : comap f (mkMetric m) = mkMetric m := by
@@ -458,7 +459,7 @@ theorem mkMetric_top : (mkMetric (fun _ => ∞ : ℝ≥0∞ → ℝ≥0∞) : Me
 `mkMetric m₁ hm₁ ≤ mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} (hle : m₁ ≤ᶠ[𝓝 0] m₂) :
     (mkMetric m₁ : Measure X) ≤ mkMetric m₂ := by
-  convert! @mkMetric_mono_smul X _ _ _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
+  convert @mkMetric_mono_smul X _ _ _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
 
 /-- A formula for `MeasureTheory.Measure.mkMetric`. -/
 theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
@@ -761,8 +762,8 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
   rw [← le_inv_smul_iff_of_pos]
   · dsimp
     rw [← NNReal.inv_rpow, ← nnnorm_inv]
-    · refine Eq.trans_le ?_ (this (r • s))
-      rw [inv_smul_smul₀ hr]
+    refine Eq.trans_le ?_ (this (r • s))
+    rw [inv_smul_smul₀ hr]
   · simp [pos_iff_ne_zero, hr]
 
 /-!

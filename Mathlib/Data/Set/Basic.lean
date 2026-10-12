@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.PropInstances
 public import Mathlib.Tactic.Lift
-public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic properties of sets
@@ -276,7 +275,7 @@ theorem Subset.antisymm_iff {a b : Set α} : a = b ↔ a ⊆ b ∧ b ⊆ a :=
 theorem eq_of_subset_of_subset {a b : Set α} : a ⊆ b → b ⊆ a → a = b :=
   Subset.antisymm
 
-@[gcongr] theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) : a ∈ s₁ → a ∈ s₂ :=
+theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) : a ∈ s₁ → a ∈ s₂ :=
   @h _
 
 theorem notMem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
@@ -290,10 +289,6 @@ theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
 
 theorem not_univ_subset : ¬univ ⊆ s ↔ ∃ a, a ∉ s := by
   simp [not_subset]
-
-@[deprecated not_univ_subset +typeChanged (since := "2026-03-12")]
-theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s :=
-  not_univ_subset
 
 lemma eq_of_forall_subset_iff (h : ∀ u, s ⊆ u ↔ t ⊆ u) : s = t := eq_of_forall_ge_iff h
 
