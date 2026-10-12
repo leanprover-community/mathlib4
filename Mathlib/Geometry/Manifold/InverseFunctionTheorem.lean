@@ -169,15 +169,6 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {M₂ : Type*} [TopologicalSpace M₂] [ChartedSpace H₂ M₂]
   {n : WithTop ℕ∞} [IsManifold I₁ n M₁] [IsManifold I₂ n M₂]
 
-omit [CompleteSpace E₁] in
-lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M₁ → M₂} {p : M₁}
-    (hf : ContinuousLinearMap.IsInvertible (mfderiv% f p)) :
-    ContinuousLinearMap.IsInvertible (fderivWithin 𝕜 (writtenInExtChartAt I₁ I₂ p f) (range I₁)
-      (extChartAt I₁ p p)) := by
-  convert! hf
-  rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf.injective)]
-  rfl
-
 /-- The **inverse function theorem** for manifolds, at an interior point.
 If `f` is `C^n` on a neighborhood of an interior point `p` and has invertible differential at `p`,
 then `f` is a local diffeomorphism at `p`. -/
