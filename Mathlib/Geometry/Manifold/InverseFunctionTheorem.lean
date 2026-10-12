@@ -47,7 +47,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable (I n p) in
 /-- If `p` is an interior point of `M`, then `extChartAt I p` can be restricted to an open set
-on which it becomes a `PartialDiffeomorph` (viewing `E` as a manifold modeled on itself trivially)
+on which it becomes a `PartialDiffeomorph`.
 -/
 def extChartAtPartialDiffeomorph :
     PartialDiffeomorph I 𝓘(𝕜, E) M E n where
@@ -58,8 +58,7 @@ def extChartAtPartialDiffeomorph :
   open_target := by
     rw [PartialEquiv.restr_target, PartialEquiv.target_inter_inv_preimage_preimage,
       extChartAt_target, inter_assoc, inter_comm (range I) _, inter_eq_left.mpr interior_subset]
-    refine IsOpen.inter (IsOpen.preimage I.continuous_invFun (chartAt H p).open_target)
-      isOpen_interior
+    exact ((chartAt H p).open_target.preimage I.continuous_invFun).inter isOpen_interior
   contMDiffOn_toFun := contMDiffOn_extChartAt.mono (by simp)
   contMDiffOn_invFun := (contMDiffOn_extChartAt_symm p).mono inter_subset_left
 
