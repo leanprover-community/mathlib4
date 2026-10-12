@@ -5,6 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
+public import Mathlib.Tactic.Inclusion.Core.Extensions
 public import Mathlib.Data.Dyadic
 public import Mathlib.Tactic.Inclusion.Extension.Interval
 

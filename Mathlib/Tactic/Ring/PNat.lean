@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
+public meta import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Tactic.Ring.Basic
 

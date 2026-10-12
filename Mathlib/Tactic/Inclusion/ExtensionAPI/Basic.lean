@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Lean.Meta.Basic
+public meta import Mathlib.Lean.Meta.Basic
 public import Mathlib.Tactic.Inclusion.Core.Inclusion
 
 /-!

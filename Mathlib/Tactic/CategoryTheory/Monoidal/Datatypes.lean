@@ -5,6 +5,7 @@ Authors: Yuma Mizuno
 -/
 module
 
+public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
