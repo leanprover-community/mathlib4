@@ -248,12 +248,10 @@ theorem isTorsionClass_iff (P : ObjectProperty C)
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
     IsTorsionClass P ↔
       P.IsClosedUnderQuotients ∧ P.IsClosedUnderExtensions ∧
-        ∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J) := by
-  refine ⟨fun _ ↦ ⟨inferInstance, inferInstance, fun _ ↦ inferInstance⟩, ?_⟩
-  -- these hypotheses are consumed as instances by `leftOrthogonal_rightOrthogonal_eq_self`
-  rintro ⟨hquot, hext, hcoprod⟩
-  exact (isTorsionClass_iff_leftOrthogonal_rightOrthogonal_eq P).mpr
-    P.leftOrthogonal_rightOrthogonal_eq_self
+        ∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J) :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, fun ⟨_, _, _⟩ ↦ by
+    rw [isTorsionClass_iff_leftOrthogonal_rightOrthogonal_eq,
+      P.leftOrthogonal_rightOrthogonal_eq_self]⟩
 
 /-- A property of objects is a torsion-free class if and only if its opposite is a torsion
 class in the opposite category. -/
