@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Fabrizio Barroero, Christopher Hoskin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
-public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # circleMap
@@ -40,6 +39,9 @@ theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) := zer
 
 @[simp]
 theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| := by simp [circleMap]
+
+@[simp]
+theorem nnnorm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖₊ = ‖R‖₊ := by simp [circleMap]
 
 theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
@@ -158,7 +160,7 @@ lemma eq_of_circleMap_eq {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (h_dist : |a - 
     I_ne_zero, or_false] at hn
   norm_cast at hn
   simp only [hn, Int.cast_mul, Int.cast_ofNat, mul_assoc, add_sub_cancel_left, abs_mul,
-    Nat.abs_ofNat, abs_of_pos Real.pi_pos] at h_dist
+    Nat.abs_ofNat, abs_pi] at h_dist
   simp (disch := positivity) at h_dist
   norm_cast at h_dist
   simp [hn, Int.abs_lt_one_iff.mp h_dist]

@@ -6,11 +6,11 @@ Authors: Kevin Buzzard, Patrick Massot
 -- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Quotients of groups by normal subgroups
@@ -379,7 +379,7 @@ or fourth isomorphism theorem for multiplicative groups -/
 @[to_additive /-- The **correspondence theorem**, or lattice theorem,
   or fourth isomorphism theorem for additive groups -/]
 def comapMk'OrderIso (N : Subgroup G) [hn : N.Normal] :
-    Subgroup (G ⧸ N) ≃o { H : Subgroup G // N ≤ H } where
+    Subgroup (G ⧸ N) ≃o Set.Ici N where
   toFun H' := ⟨Subgroup.comap (mk' N) H', le_comap_mk' N _⟩
   invFun H := Subgroup.map (mk' N) H
   left_inv H' := Subgroup.map_comap_eq_self <| by simp

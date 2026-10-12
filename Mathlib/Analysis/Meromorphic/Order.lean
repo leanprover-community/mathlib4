@@ -5,8 +5,8 @@ Authors: David Loeffler, Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Meromorphic.Basic
 
 /-!
 # Orders of Meromorphic Functions
@@ -407,7 +407,7 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 /-- The order of `(· - x) ^ n` at `x` is `n`. -/
 @[simp, to_fun] theorem meromorphicOrderAt_pow_id_sub_const {n : ℕ} :
     meromorphicOrderAt ((· - x) ^ n) x = n := by
-  convert! meromorphicOrderAt_zpow_id_sub_const
+  convert meromorphicOrderAt_zpow_id_sub_const
   simp only [zpow_natCast]
 
 /-- The order of `· - x` at `x` is `1`. -/
@@ -690,6 +690,24 @@ theorem meromorphicOrderAt_add_of_ne
   · simpa [h.le] using meromorphicOrderAt_add_eq_left_of_lt hf₂ h
   · simpa [h.le] using meromorphicOrderAt_add_eq_right_of_lt hf₁ h
 
+section IsTheta
+
+variable {z₀ : 𝕜}
+
+open Asymptotics in
+lemma MeromorphicAt.isTheta_pow_sub (hf : MeromorphicAt f z₀) (hf' : meromorphicOrderAt f z₀ ≠ ⊤) :
+    f =Θ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ (meromorphicOrderAt f z₀).untop hf' := by
+  set n := (meromorphicOrderAt f z₀).untop hf'
+  have : ↑n = meromorphicOrderAt f z₀ := (meromorphicOrderAt f z₀).coe_untop hf'
+  obtain ⟨g, hgan, hgne, hev⟩ := (meromorphicOrderAt_eq_int_iff hf).mp this.symm
+  calc
+  f =Θ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ n • g z := EventuallyEq.isTheta hev
+  _ =Θ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ n • (1 : 𝕜) :=
+      (isTheta_refl _ _).smul (hgan.continuousAt.isTheta hgne) |>.mono nhdsWithin_le_nhds
+  _ =Θ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ n := by simpa using isTheta_refl (fun z ↦ (z - z₀) ^ n) _
+
+end IsTheta
+
 /-!
 ## Level Sets of the Order Function
 -/
@@ -885,7 +903,7 @@ function has zero or infinite order is codiscrete within its domain of meromorph
 theorem codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top (h₁f : MeromorphicOn f U)
     (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
     {u ∈ U | meromorphicOrderAt f u = 0 ∨ meromorphicOrderAt f u = ⊤} ∈ codiscreteWithin U := by
-  convert!
+  convert
     mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
       h₁f.codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top
   aesop
@@ -977,6 +995,16 @@ lemma meromorphicOrderAt_smul_of_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' : g x �
 lemma meromorphicOrderAt_mul_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : g x ≠ 0) :
     meromorphicOrderAt (g * f) x = meromorphicOrderAt f x :=
   meromorphicOrderAt_smul_of_ne_zero hg hg'
+
+/-- meromorphicOrderAt is invariant under scaling. -/
+@[to_fun (attr := simp) meromorphicOrderAt_fun_const_smul_eq_meromorphicOrderAt]
+theorem meromorphicOrderAt_const_smul_eq_meromorphicOrderAt {f : 𝕜 → E} {s : 𝕜}
+    (hs : s ≠ 0) :
+    meromorphicOrderAt (s • f) x = meromorphicOrderAt f x := by
+  by_cases hf : MeromorphicAt f x
+  · rw [(by aesop : s • f = (fun (_ : 𝕜) ↦ s) • f),
+      meromorphicOrderAt_smul_of_ne_zero (by fun_prop) hs]
+  simp_all
 
 end smul
 

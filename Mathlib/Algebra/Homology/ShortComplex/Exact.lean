@@ -5,11 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.Algebra.Homology.ShortComplex.Abelian
-public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.CategoryTheory.Abelian.Opposite
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
@@ -624,7 +622,6 @@ noncomputable def gIsCokernel [HasZeroObject C] (s : S.Splitting) :
     IsColimit (CokernelCofork.ofπ S.g S.zero) :=
   s.homologyData.right.hp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a short complex `S` has a splitting and `F` is an additive functor, then
 `S.map F` also has a splitting. -/
 @[simps]
@@ -979,7 +976,6 @@ namespace Functor
 variable (F : C ⥤ D) [Preadditive C] [Preadditive D] [HasZeroObject C]
   [HasZeroObject D] [F.PreservesZeroMorphisms] [F.PreservesHomology]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : F.PreservesMonomorphisms where
   preserves {X Y} f hf := by
     let S := ShortComplex.mk (0 : X ⟶ X) f zero_comp
@@ -987,7 +983,6 @@ instance : F.PreservesMonomorphisms where
       (((S.exact_iff_mono rfl).2 hf).map F)
 
 
-set_option backward.isDefEq.respectTransparency false in
 instance : F.PreservesEpimorphisms where
   preserves {X Y} f hf := by
     let S := ShortComplex.mk f (0 : Y ⟶ Y) comp_zero
