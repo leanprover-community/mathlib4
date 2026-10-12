@@ -12,8 +12,8 @@ public import Mathlib.Order.SuccPred.Nat
 /-!
 # The Reedy structure on the simplex category
 
-In this file, we show that if the simplex category equipped with the classes
-of epimorphisms and monomorphisms, then the length map `SimplexCategory → ℕ`
+In this file, we show that for the simplex category equipped with the classes
+of epimorphisms and monomorphisms, the length map `SimplexCategory → ℕ`
 is the degree map of a Reedy structure.
 
 ## References
