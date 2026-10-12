@@ -64,6 +64,10 @@ theorem range_id : (id R P₁).range = ⊤ := by ext; simp
 theorem range_direction_eq_linear_range : f.range.direction = f.linear.range := by
   rw [range_eq_map_top, map_direction, direction_top, Submodule.map_top]
 
+variable {f} in
+theorem range_le_iff {s : AffineSubspace R P₂} : f.range ≤ s ↔ ∀ y, f y ∈ s := by
+  simp [AffineSubspace.le_def']
+
 /-- Restrict the codomain of an affine map `f` to `f.range`. -/
 def rangeRestrict : P₁ →ᵃ[R] f.range where
   toFun p := ⟨f p, p, rfl⟩
