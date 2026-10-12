@@ -151,7 +151,7 @@ noncomputable def L : ℂ → ℂ :=
 /-- For `s ≠ 0`, `L hk f s` is the completed `L`-function `Λ hk f s` divided by its Archimedean
 factor `Gammaℂ s / 2`. At `s = 0` use `ModularForm.L_apply_zero` instead: there the right-hand side
 is `0` (as `Gammaℂ 0 = 0`), whereas `L hk f 0 = -valueAtInfty f`. -/
-lemma L_of_ne_zero (hs : s ≠ 0) : L hk f s = Λ hk f s * (2 / Gammaℂ s) :=
+lemma L_apply_of_ne_zero (hs : s ≠ 0) : L hk f s = Λ hk f s * (2 / Gammaℂ s) :=
   Function.update_of_ne hs ..
 
 /-- The value of `L hk f` at `s = 0`: `L(f, 0) = -a₀`, where `a₀ = valueAtInfty f` is the constant
