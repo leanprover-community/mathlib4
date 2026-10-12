@@ -704,14 +704,20 @@ namespace Meta.Positivity
 
 mutual
 
-/-- Try all registered positivity lemmas whose key matches the head and arity of `e`. -/
+/-- Try all registered positivity lemmas for `e`, unfolding its head if none match. -/
 partial def applyPositivityLemmas {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
     (pα? : Option Q(PartialOrder «$α»)) (e : Q(«$α»)) :
     PositivityM (Strictness zα e pα?) := do
   let mut result := .none
-  let some (head, args) := getAppFnArgs e | return .none
+  let lemMap := positivityLemmaExt.getState (← getEnv)
+  let hasLemma? (v : Expr) : Bool :=
+    (getAppFnArgs v).any fun (head, args) =>
+      lemMap.contains { head, arity := args.size }
+  let e' ← if hasLemma? e then pure e else
+    withReducible <| whnfHeadPred e fun v => pure !(hasLemma? v)
+  let some (head, args) := getAppFnArgs e' | return .none
   let key := { head, arity := args.size }
-  let some lems := (positivityLemmaExt.getState (← getEnv)).get? key | return .none
+  let some lems := lemMap.get? key | return .none
   let provePremise (i : Nat) (kind : OrderRel) : PositivityM (Option Expr) := do
     let some arg := args[i]? | return none
     let ⟨_, β, arg⟩ ← inferTypeQ' arg
