@@ -314,6 +314,7 @@ theorem isCoprime_X_sub_C_iff {R} [CommRing R] {a : R} {p : R[X]} :
 theorem isCoprime_X_iff {R} [CommRing R] {p : R[X]} : IsCoprime X p ↔ IsUnit (p.coeff 0) := by
   simpa [coeff_zero_eq_eval_zero] using isCoprime_X_sub_C_iff (a := (0 : R)) (p := p)
 
+/-- If the constant coefficient of `p` is a unit, then `X ^ n` is coprime to `p`. -/
 theorem isCoprime_X_pow_of_isUnit_coeff_zero {R} [CommRing R] {n : ℕ} {p : R[X]}
     (hp : IsUnit (p.coeff 0)) : IsCoprime (X ^ n) p := by
   induction n with
