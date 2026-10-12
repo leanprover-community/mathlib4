@@ -240,7 +240,8 @@ module system. This does not remove redundant imports.
 -/
 public register_option linter.style.header.imports : Bool := {
   defValue := true
-  descr := "Whether to reformat import blocks according to the style convention."
+  descr := "Whether to reformat module system import blocks according to the style convention when \
+    `linter.style.header` is `true`."
 }
 
 /-- Returns the `module` token from header syntax, if there is one. -/
@@ -318,6 +319,8 @@ def duplicateImportsCheck (imports : Array ImportRef) : CommandElabM Unit := do
 
 /--
 If we are in the module system and `linter.style.header.imports` is `true`, reformat imports.
+
+Note that this assumes the check for `linter.style.header` has already been performed.
 -/
 def formatImports (imports : Array (ImportRef × Import.Whitespace)) : CommandElabM Unit := do
   unless
@@ -329,14 +332,15 @@ def formatImports (imports : Array (ImportRef × Import.Whitespace)) : CommandEl
   let some (msg, errs) ← liftCoreM <|
       Import.mkImportSuggestionMessage impsRef (imports.map (·.1.toImport)) imports
     | return
-  -- Note: potentially, we should just bail if there are errors.
+  let note := .note m!"This linter can be disabled by writing \
+    `set_option {linter.style.header.imports.name} false` just after the import block."
   if errs.isEmpty then
     -- Note: the widget nature of `diffGranularity := .word` effectively gives us a newline
     -- before `{msg}`, meaning we don't need one here.
-    logWarningAt lastImportRef.stx m!"Imports can be reformatted:{msg}"
+    logWarningAt lastImportRef.stx m!"Imports can be reformatted:{msg}{note}"
   else
     logWarningAt lastImportRef.stx m!"Imports can be reformatted, but some comments could not be \
-      carried over. Please review the comment that will be inserted after the imports.\n{msg}"
+      carried over. Please review the comment that will be inserted after the imports.\n{msg}{note}"
 
 section HeaderParser
 
@@ -380,6 +384,9 @@ partial def allowedHeaderParser : Parser :=
     keyword "doc.verso.module",
     -- check last, otherwise it prevents hitting the ones it is a prefix of
     keyword "doc.verso",
+    keyword "linter.style.header.license",
+    keyword "linter.style.header.imports",
+    -- check last, otherwise it prevents hitting the ones it is a prefix of
     keyword "linter.style.header" -- for testing and downstream
   ] >> boolLit)
 
