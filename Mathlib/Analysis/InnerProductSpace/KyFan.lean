@@ -99,8 +99,8 @@ private theorem sum_mul_le_sum_range {d : ℕ} (s : ℕ → ℝ) (hs : Antitone 
     (hs0 : ∀ j, 0 ≤ s j) (c : Fin d → ℝ) (hc0 : ∀ j, 0 ≤ c j) (hc1 : ∀ j, c j ≤ 1) {n : ℕ}
     (hcn : ∑ j, c j ≤ n) : ∑ j : Fin d, s j * c j ≤ ∑ j ∈ range n, s j := by
   classical
-  have key (j : Fin d) : s j * c j ≤ (if (j : ℕ) < n then s j else 0)
-      + s n * (c j - if (j : ℕ) < n then 1 else 0) := by
+  have key (j : Fin d) : s j * c j ≤ (if (j : ℕ) < n then s j else 0) +
+      s n * (c j - if (j : ℕ) < n then 1 else 0) := by
     split_ifs with hj
     · have := hs hj.le
       nlinarith [hc1 j]
@@ -119,10 +119,10 @@ private theorem sum_mul_le_sum_range {d : ℕ} (s : ℕ → ℝ) (hs : Antitone 
     refine sum_le_sum_of_subset_of_nonneg (fun k hk ↦ ?_) fun k _ _ ↦ hs0 k
     simp only [mem_filter, mem_range] at hk ⊢
     exact hk.2
-  calc ∑ j : Fin d, s j * c j ≤ ∑ j : Fin d, ((if (j : ℕ) < n then s j else 0)
-        + s n * (c j - if (j : ℕ) < n then 1 else 0)) := sum_le_sum fun j _ ↦ key j
-    _ = ∑ j : Fin d, (if (j : ℕ) < n then s j else 0)
-        + s n * (∑ j : Fin d, c j - ∑ j : Fin d, (if (j : ℕ) < n then (1 : ℝ) else 0)) := by
+  calc ∑ j : Fin d, s j * c j ≤ ∑ j : Fin d, ((if (j : ℕ) < n then s j else 0) +
+        s n * (c j - if (j : ℕ) < n then 1 else 0)) := sum_le_sum fun j _ ↦ key j
+    _ = ∑ j : Fin d, (if (j : ℕ) < n then s j else 0) +
+        s n * (∑ j : Fin d, c j - ∑ j : Fin d, (if (j : ℕ) < n then (1 : ℝ) else 0)) := by
           rw [sum_add_distrib, ← mul_sum, sum_sub_distrib]
     _ ≤ ∑ j ∈ range n, s j + s n * 0 :=
           add_le_add hfin (mul_le_mul_of_nonneg_left (by linarith) (hs0 n))
