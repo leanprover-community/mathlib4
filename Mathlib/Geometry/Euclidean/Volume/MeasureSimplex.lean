@@ -35,6 +35,19 @@ section Cone
 open Set
 open scoped RealInnerProductSpace
 
+/-- `∫₀¹ xⁿ dx = 1 / (n + 1)`, as a lower Lebesgue integral. -/
+private lemma lintegral_Icc_nnnorm_pow (n : ℕ) :
+    ∫⁻ x in Icc (0 : ℝ) 1, ((‖x‖₊ ^ n : ℝ≥0) : ℝ≥0∞) = ((n + 1 : ℕ) : ℝ≥0∞)⁻¹ :=
+  calc
+    _ = ENNReal.ofReal (∫ x in Set.Icc (0 : ℝ) 1, ((‖x‖₊ ^ n : ℝ≥0) : ℝ)) :=
+      lintegral_coe_eq_integral _ (Continuous.integrableOn_Icc (by fun_prop))
+    _ = ENNReal.ofReal (∫ x in Set.Icc 0 1, x ^ n) :=
+      congrArg _ (setIntegral_congr_fun measurableSet_Icc fun x hx ↦ by simp [abs_of_nonneg hx.1])
+    _ = ((n + 1 : ℕ) : ℝ≥0∞)⁻¹ := by
+      rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le zero_le_one, integral_pow,
+        ← ENNReal.ofReal_natCast (n + 1), ← ENNReal.ofReal_inv_of_pos (by positivity)]
+      norm_num
+
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
   [MetricSpace P] [NormedAddTorsor V P] [MeasurableSpace P] [BorelSpace P]
 
@@ -131,24 +144,13 @@ theorem euclideanHausdorffMeasure_cone {T S : AffineSubspace ℝ P} [FiniteDimen
     · rw [indicator_of_mem hx', euclideanHausdorffMeasure_homothety_image _ _ hx, ENNReal.smul_def,
         smul_eq_mul]
     · rw [indicator_of_notMem hx', measure_empty]
-  have hint : ∫⁻ x in Ioc (0 : ℝ) 1, ((‖x‖₊ ^ d : ℝ≥0) : ℝ≥0∞) = ((d + 1 : ℕ) : ℝ≥0∞)⁻¹ := by
-    calc
-      _ = ENNReal.ofReal (∫ x in Ioc (0 : ℝ) 1, ((‖x‖₊ ^ d : ℝ≥0) : ℝ)) :=
-        lintegral_coe_eq_integral _ (Continuous.integrableOn_Ioc (by fun_prop))
-      _ = ENNReal.ofReal (∫ x in Ioc (0 : ℝ) 1, x ^ d) :=
-        congrArg _ (setIntegral_congr_fun measurableSet_Ioc fun x hx ↦ by
-          simp [abs_of_nonneg hx.1.le])
-      _ = ((d + 1 : ℕ) : ℝ≥0∞)⁻¹ := by
-        rw [← intervalIntegral.integral_of_le zero_le_one, integral_pow,
-          ← ENNReal.ofReal_natCast (d + 1), ← ENNReal.ofReal_inv_of_pos (by positivity)]
-        norm_num
   have hwT : w ∈ T.direction := vsub_mem_direction (hST (orthogonalProjection_mem a)) haT
   have hKT : K ⊆ T := iUnion₂_subset fun t _ ↦ image_subset_iff.2 fun b hb ↦
     AffineMap.homothety_mem haT t (hST (hBS hb))
   conv_lhs => rw [← hT]
   rw [euclideanHausdorffMeasure_eq_lintegral_of_subset a hw hK hwT hKT, hT, Nat.add_sub_cancel,
-    lintegral_congr_ae hae, lintegral_indicator measurableSet_Ioc,
-    lintegral_mul_const _ (by fun_prop), hint,
+    lintegral_congr_ae hae, lintegral_indicator measurableSet_Ioc, restrict_Ioc_eq_restrict_Icc,
+    lintegral_mul_const _ (by fun_prop), lintegral_Icc_nnnorm_pow,
     ← ofReal_norm, ← dist_eq_norm_vsub']
   ring
 
@@ -218,15 +220,7 @@ theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i 
   simp_rw [nnreal_smul_coe_apply]
   rw [lintegral_mul_const _ (by fun_prop), ← mul_assoc, mul_comm (ENNReal.ofReal (s.height i))]
   congr
-  calc
-    _ = ENNReal.ofReal (∫ x in Set.Icc (0 : ℝ) 1, ((‖x‖₊ ^ n : ℝ≥0) : ℝ)) :=
-      lintegral_coe_eq_integral _ (Continuous.integrableOn_Icc (by fun_prop))
-    _ = ENNReal.ofReal (∫ x in Set.Icc 0 1, x ^ n) :=
-      congrArg _ (setIntegral_congr_fun measurableSet_Icc fun x hx ↦ by simp [abs_of_nonneg hx.1])
-    _ = ((n + 1 : ℕ) : ℝ≥0∞)⁻¹ := by
-      rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le zero_le_one, integral_pow,
-        ← ENNReal.ofReal_natCast (n + 1), ← ENNReal.ofReal_inv_of_pos (by positivity)]
-      norm_num
+  exact lintegral_Icc_nnnorm_pow n
 
 /-- The $n$-volume of the closed interior of a $n$-simplex is equal to $h * b / n$, where $h$ is the
 height and $b$ is the $(n - 1)$-volume of the base. This version is expressed in `Real`. -/
