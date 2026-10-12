@@ -5,8 +5,8 @@ Authors: Kim Morrison, Oleksandr Manzyuk
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Monoidal.Mon
 
 /-!
 # The category of bimodule objects over a pair of monoid objects.

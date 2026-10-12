@@ -10,9 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.Finiteness.Prod
 public import Mathlib.RingTheory.TensorProduct.Free
 
-import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 import Mathlib.RingTheory.SimpleRing.Matrix
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Trace of a linear map
