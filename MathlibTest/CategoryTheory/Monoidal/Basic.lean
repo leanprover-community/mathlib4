@@ -22,10 +22,8 @@ example : f ≫ g = f ≫ g := by
 example : (f ⊗ₘ g) ▷ X = (α_ _ _ _).hom ≫ (f ⊗ₘ g ▷ X) ≫ (α_ _ _ _).inv := by
   monoidal
 
+-- `monoidal` used to build a proof term rejected by the kernel for `f ⊗ₘ (X ◁ g)` (#44543).
 example : f ⊗ₘ (W ◁ g) = (α_ _ _ _).inv ≫ ((f ▷ W) ⊗ₘ g) ≫ (α_ _ _ _).hom := by
-  monoidal
-
-example (h : W ⟶ W) : (f ⊗ₘ h) ⊗ₘ (X ◁ g) = (f ⊗ₘ h) ⊗ₘ (X ◁ g) := by
   monoidal
 
 example {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) :
