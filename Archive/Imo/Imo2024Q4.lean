@@ -5,6 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
+public import Mathlib.Analysis.Convex.StrictCombination
+public import Mathlib.Analysis.Normed.Affine.Convex
 public import Mathlib.Geometry.Euclidean.Angle.Incenter
 
 /-!
