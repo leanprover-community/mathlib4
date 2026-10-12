@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Map
 import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Generators of multiple tensor products
@@ -126,49 +127,26 @@ section AddCommMonoid
 variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
   [AddCommMonoid N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
-set_option backward.isDefEq.respectTransparency.types false in
+lemma submodule_span_eq_top
+    (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) :
+    Submodule.span R (Set.range (fun j : ((i : ι) → γ i) ↦
+      ⨂ₜ[R] (i : ι), g (j i))) = ⊤ := by
+  classical
+  have := Fintype.ofFinite ι
+  simp_rw [eq_top_iff, ← span_tprod_eq_top, Submodule.span_le, Set.subset_def, SetLike.mem_coe]
+  simp_rw [Submodule.eq_top_iff', Finsupp.mem_span_range_iff_exists_finsupp] at hg
+  rintro _ ⟨m, rfl⟩
+  choose c hc using fun i ↦ hg i (m i)
+  simp_rw [← funext hc, Finsupp.sum, MultilinearMap.map_sum_finset, MultilinearMap.map_smul_univ]
+  exact sum_mem fun r _ ↦ Submodule.smul_mem _ _ (Submodule.mem_span_of_mem (Set.mem_range_self r))
+
 lemma ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
     {φ φ' : (⨂[R] i, M i) →ₗ[R] N}
     (h : ∀ (j : (i : ι) → γ i),
-      φ (tprod _ (fun i ↦ g (j i))) = φ' (tprod _ (fun i ↦ g (j i)))) :
-    φ = φ' := by
-  obtain ⟨n, hι⟩ : ∃ (n : ℕ), Nat.card ι = n := ⟨_, rfl⟩
-  induction n generalizing ι with
-  | zero =>
-    ext x
-    have : IsEmpty ι := (Nat.card_eq_zero.1 hι).resolve_right <| Finite.not_infinite ‹_›
-    obtain rfl : x = fun i ↦ @g i (isEmptyElim i) := Subsingleton.elim _ _
-    apply h
-  | succ n hn =>
-    classical
-    have : Nonempty ι := ((Nat.card_pos_iff (α := ι)).1 (by omega)).1
-    have i₀ : ι := Classical.arbitrary _
-    let e := (equivPiTensorComplSingletonTensor R M i₀).trans (TensorProduct.comm _ _ _)
-    obtain ⟨ψ, rfl⟩ : ∃ ψ, φ = LinearMap.comp ψ e.toLinearMap :=
-      ⟨φ.comp e.symm.toLinearMap, by ext; simp⟩
-    obtain ⟨ψ', rfl⟩ : ∃ ψ', φ' = LinearMap.comp ψ' e.toLinearMap :=
-      ⟨φ'.comp e.symm.toLinearMap, by ext; simp⟩
-    dsimp [e] at h
-    congr 1
-    apply (TensorProduct.lift.equiv _ _ _ _).symm.injective
-    rw [Submodule.linearMap_eq_iff_of_span_eq_top _ _ (hg i₀)]
-    rintro ⟨_, ⟨g₀, rfl⟩⟩
-    apply hn (g := fun i (j : γ i.1) ↦ by exact g j)
-    · intro
-      exact hg _
-    · intro j
-      have : (g g₀ ⊗ₜ[R] (tprod R) fun i ↦ g (j i)) =
-          TensorProduct.comm R _ _ ((equivPiTensorComplSingletonTensor R M i₀)
-            (⨂ₜ[R] (i : ι), g (Function.subtypeNeLift i₀ j g₀ i))) := by
-        simp only [equivPiTensorComplSingletonTensor_tprod, Function.subtypeNeLift_self]
-        congr
-        ext ⟨x, hx⟩
-        congr
-        rw [Function.subtypeNeLift_of_neq _ _ _ _ (by assumption)]
-        rfl
-      simpa only [lift.equiv_symm_apply, this] using h (Function.subtypeNeLift i₀ j g₀)
-    · exact Set.ncard_compl_of_ncard_eq_add {i₀} (by simpa)
+      φ (tprod R (fun i ↦ g (j i))) = φ' (tprod R (fun i ↦ g (j i)))) :
+    φ = φ' :=
+  LinearMap.ext_on_range (submodule_span_eq_top hg) h
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
@@ -181,17 +159,5 @@ lemma _root_.MultilinearMap.ext_of_span_eq_top
   exact PiTensorProduct.ext_of_span_eq_top hg (fun j ↦ by simpa using h j)
 
 end AddCommMonoid
-
-variable [CommRing R] [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
-  [AddCommMonoid N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
-
-lemma submodule_span_eq_top
-    (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) :
-    Submodule.span R (Set.range (fun j : ((i : ι) → γ i) ↦
-      ⨂ₜ[R] (i : ι), g (j i))) = ⊤ := by
-  rw [← (Submodule.span R _).ker_mkQ, LinearMap.ker_eq_top]
-  refine ext_of_span_eq_top hg (fun j ↦ ?_)
-  simp only [Submodule.mkQ_apply, LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
-  exact Submodule.subset_span ⟨j, rfl⟩
 
 end PiTensorProduct
