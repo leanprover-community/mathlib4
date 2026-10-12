@@ -191,8 +191,6 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
     mDiffAt_f_p.isInteriorPoint_of_surjective_mfderiv hf'.surjective hp
   -- let `g` be the coordinate representation of `f` and obtain coordinate charts
   let g : E₁ → E₂ := writtenInExtChartAt I₁ I₂ p f
-  let φ₀ : PartialEquiv M₁ E₁ := extChartAt I₁ p
-  let ψ₀ : PartialEquiv M₂ E₂ := extChartAt I₂ (f p)
   let φ₁ : PartialDiffeomorph I₁ 𝓘(𝕜, E₁) M₁ E₁ n := extChartAtPartialDiffeomorph I₁ n p
   let ψ₁ : PartialDiffeomorph I₂ 𝓘(𝕜, E₂) M₂ E₂ n := extChartAtPartialDiffeomorph I₂ n (f p)
   -- define `U ⊆ E₁`, an open set where we can easily show that `g` is ContDiff
@@ -211,8 +209,9 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   have U_open : IsOpen U := by
     refine φ₁.toOpenPartialHomeomorph.isOpen_image_of_subset_source ?_ inter_subset_left
     exact φ₁.open_source.inter (hf.continuousOn.isOpen_inter_preimage hA ψ₁.open_source)
-  have φ₀p_mem_U : φ₀ p ∈ U := mem_image_of_mem _ ⟨mem_extChartAtPartialDiffeomorph_source n hp,
-    hpA, mem_extChartAtPartialDiffeomorph_source n hfp⟩
+  have φ₀p_mem_U : extChartAt I₁ p p ∈ U :=
+    mem_image_of_mem _ ⟨mem_extChartAtPartialDiffeomorph_source n hp,
+      hpA, mem_extChartAtPartialDiffeomorph_source n hfp⟩
   -- use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence
   obtain ⟨g', hg'⟩ := isInvertible_fderivWithin_writtenInExtChartAt hf'
   have hg' : HasFDerivAt g g'.toContinuousLinearMap (extChartAt I₁ p p) :=
