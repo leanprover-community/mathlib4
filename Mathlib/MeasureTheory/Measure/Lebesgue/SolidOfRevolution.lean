@@ -149,19 +149,24 @@ theorem volume_solidOfRevolution {f : ℝ → ℝ} {a b : ℝ} (hab : a ≤ b)
   · exact ((hf.pow 2).const_mul π).integrableOn_compact isCompact_Icc
   · exact (ae_restrict_mem measurableSet_Icc).mono fun x _ ↦ by positivity
 
+open scoped Pointwise in
 /-- **Volume of a cone** of radius `R` and height `H`: one third of the cylinder with the same
 base and height. -/
 theorem volume_cone {R H : ℝ} (hR : 0 ≤ R) (hH : 0 < H) :
     volume {p : ℝ × EuclideanSpace ℝ (Fin 2) | p.1 ∈ Icc 0 H ∧ ‖p.2‖ ≤ R * p.1 / H} =
       ENNReal.ofReal (π * R ^ 2 * H / 3) := by
-  refine (volume_solidOfRevolution (f := fun x ↦ R * x / H) hH.le (by fun_prop)
-    fun x hx ↦ by have := hx.1; positivity).trans ?_
+  have hset : {p : ℝ × EuclideanSpace ℝ (Fin 2) | p.1 ∈ Icc 0 H ∧ ‖p.2‖ ≤ R * p.1 / H} =
+      {p | p.1 ∈ Icc 0 H ∧ p.2 ∈ (p.1 / H) • closedBall (0 : EuclideanSpace ℝ (Fin 2)) R} := by
+    ext ⟨t, y⟩
+    simp only [mem_ofPred_eq, and_congr_right_iff]
+    intro ht
+    rw [smul_closedBall _ _ hR, smul_zero, mem_closedBall_zero_iff, Real.norm_eq_abs,
+      abs_of_nonneg (div_nonneg ht.1 hH.le), div_mul_eq_mul_div, mul_comm t]
+  rw [Measure.volume_eq_prod, hset, Measure.volume_prod_cone _ measurableSet_closedBall hH,
+    volume_closedBall_fin_two, finrank_euclideanSpace_fin, ← ENNReal.ofReal_pow hR,
+    ← ENNReal.ofReal_mul (by positivity), ← ENNReal.ofReal_mul (by positivity)]
   congr 1
-  have : (fun x : ℝ ↦ (R * x / H) ^ 2) = fun x ↦ (R / H) ^ 2 * x ^ 2 := by
-    ext x
-    ring
-  rw [this, intervalIntegral.integral_const_mul, integral_pow]
-  field_simp
+  push_cast
   ring
 
 end EuclideanSpace
