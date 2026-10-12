@@ -210,6 +210,10 @@ instance {J : Type u'} [Category.{v'} J] : P.IsClosedUnderColimitsOfShape J :=
 /-- The opposite of a torsion class is a torsion-free class. -/
 instance : IsTorsionFreeClass P.op := (torsionTheory P).op.isTorsionFreeClass
 
+/-- The unopposite of a torsion class in `Cᵒᵖ` is a torsion-free class in `C`. -/
+instance {Q : ObjectProperty Cᵒᵖ} [IsTorsionClass Q] : IsTorsionFreeClass Q.unop :=
+  (torsionTheory Q).unop.isTorsionFreeClass
+
 end IsTorsionClass
 
 namespace IsTorsionFreeClass
@@ -237,6 +241,10 @@ instance {J : Type u'} [Category.{v'} J] : P.IsClosedUnderLimitsOfShape J :=
 
 /-- The opposite of a torsion-free class is a torsion class. -/
 instance : IsTorsionClass P.op := (torsionTheory P).op.isTorsionClass
+
+/-- The unopposite of a torsion-free class is a torsion class. -/
+instance {Q : ObjectProperty Cᵒᵖ} [IsTorsionFreeClass Q] : IsTorsionClass Q.unop :=
+  (torsionTheory Q).unop.isTorsionClass
 
 end IsTorsionFreeClass
 
