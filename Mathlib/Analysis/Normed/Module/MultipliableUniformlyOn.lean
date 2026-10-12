@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Summable
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
 
 /-!

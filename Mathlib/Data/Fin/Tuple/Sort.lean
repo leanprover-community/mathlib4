@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Data.Prod.Lex
-import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Order.Prod.Lex.Basic
+
 import Mathlib.Data.Fintype.Fin
+import Mathlib.Order.Interval.Finset.Fin
 
 /-!
 
