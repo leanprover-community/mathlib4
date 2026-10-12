@@ -267,21 +267,5 @@ theorem closedInterior_inter_shift_eq_homothety {n : ℕ} [NeZero n] (s : Affine
     exact hp <| homothety_mem (mem_affineSpan _ (by simp)) _ <|
       affineSpan_mono _ (by simp) ((s.faceOpposite i).closedInterior_subset_affineSpan hq)
 
-/-- The closed interior of a simplex is the cone with apex a vertex over the opposite face. -/
-theorem closedInterior_eq_iUnion_homothety {n : ℕ} [NeZero n] (s : Affine.Simplex k P n)
-    (i : Fin (n + 1)) :
-    s.closedInterior =
-      ⋃ x ∈ Set.Icc (0 : k) 1, homothety (s.points i) x '' (s.faceOpposite i).closedInterior := by
-  refine subset_antisymm (fun p hp ↦ ?_) (Set.iUnion₂_subset fun x hx ↦ ?_)
-  · obtain ⟨w, hw, rfl⟩ :=
-      eq_affineCombination_of_mem_affineSpan_of_fintype (s.closedInterior_subset_affineSpan hp)
-    have hwi := (affineCombination_mem_closedInterior_iff hw).1 hp i
-    have hx : 1 - w i ∈ Set.Icc (0 : k) 1 := ⟨sub_nonneg.2 hwi.2, sub_le_self _ hwi.1⟩
-    refine Set.mem_iUnion₂.2 ⟨1 - w i, hx, ?_⟩
-    rw [← s.closedInterior_inter_shift_eq_homothety i hx]
-    exact ⟨hp, AffineSubspace.affineCombination_mem_shift s.points i hw⟩
-  · rw [← s.closedInterior_inter_shift_eq_homothety i hx]
-    exact Set.inter_subset_left
-
 end Field
 end Affine.Simplex
