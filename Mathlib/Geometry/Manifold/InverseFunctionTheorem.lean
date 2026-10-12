@@ -82,12 +82,10 @@ lemma mem_extChartAtPartialDiffeomorph_source {I : ModelWithCorners 𝕜 E H} {p
   (mem_of_subset_of_mem (subset_sUnion_of_mem (Classical.choose_spec hp).1))
     (Classical.choose_spec hp).2⟩
 
-
 lemma mem_extChartAtPartialDiffeomorph_target {I : ModelWithCorners 𝕜 E H} {p : M}
     (hp : I.IsInteriorPoint p) (n : WithTop ℕ∞) [IsManifold I n M] :
     (extChartAtPartialDiffeomorph I p n) p ∈ (extChartAtPartialDiffeomorph I p n).target :=
   (extChartAtPartialDiffeomorph I p n).map_source' (mem_extChartAtPartialDiffeomorph_source hp n)
-
 
 lemma extChartAtPartialDiffeomorph_source_subset (I : ModelWithCorners 𝕜 E H) (p : M)
     (n : WithTop ℕ∞) [IsManifold I n M] :
@@ -228,9 +226,9 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
     simp [φ₀.left_inv (mem_extChartAt_source p),
       ψ₁.map_source (mem_extChartAtPartialDiffeomorph_source hfp _)]
   · rintro m ⟨⟨hm₁, _, hm₂, _⟩, _⟩
-    change f m = ψ₀.symm (ψ₀ (f (φ₀.symm (φ₀ m))))
-    rw[φ₀.left_inv ((extChartAtPartialDiffeomorph_source_subset I₁ p n) hm₁), ψ₀.left_inv ?_]
-    exact (extChartAtPartialDiffeomorph_source_subset I₂ (f p) n)
+    have hm := extChartAtPartialDiffeomorph_source_subset I₁ n p hm₁
+    have hfm := extChartAtPartialDiffeomorph_source_subset I₂ n (f p)
       (φ₁.injOn.mem_of_mem_image inter_subset_left hm₁ hm₂).2.2
+    exact (extChartAt_symm_writtenInExtChartAt_extChartAt hm hfm).symm
 
 end ManifoldInverseFunctionTheorem
