@@ -155,6 +155,7 @@ theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
 
+@[simp]
 theorem interior_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a < y i } := by
@@ -170,6 +171,7 @@ theorem interior_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
 
 @[deprecated (since := "2026-09-30")] alias interior_euclideanQuadrant := interior_quadrant
 
+@[simp]
 theorem closure_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a ≤ y i } := by
@@ -182,6 +184,7 @@ theorem closure_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
   ext x
   simp
 
+@[simp]
 theorem frontier_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | (∀ i : Fin n, a ≤ y i) ∧ ∃ i : Fin n, a = y i } := by
@@ -283,6 +286,7 @@ lemma modelWithCornersEuclideanHalfSpace_symm_apply_of_le {n : ℕ} [NeZero n]
     (𝓡∂ n).symm x = ⟨x, hx⟩ := by
   simp [modelWithCornersEuclideanHalfSpace_symm_apply, hx]
 
+@[simp]
 lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
 
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
@@ -317,6 +321,7 @@ lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
     (𝓡c n).symm x = ⟨x, hx⟩ := by
   simp [modelWithCornersEuclideanQuadrant_symm_apply, hx]
 
+@[simp]
 lemma modelWithCornersEuclideanQuadrant_zero {n : ℕ} : (𝓡c n) 0 = 0 := rfl
 
 lemma range_modelWithCornersEuclideanQuadrant (n : ℕ) :
