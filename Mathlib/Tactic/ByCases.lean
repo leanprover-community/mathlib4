@@ -30,7 +30,7 @@ open Lean.Parser.Tactic
 -/
 syntax (name := byCases!) "by_cases! " optConfig (atomic(ident " : "))? term : tactic
 
-local elab "try_push_not_at" cfg:optConfig h:ident : tactic => do
+local elab "try_push_not_at" cfg:optConfig ppSpace h:ident : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
     (ifUnchanged := .silent)
 
