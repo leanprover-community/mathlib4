@@ -63,6 +63,9 @@ def extChartAtPartialDiffeomorph :
   contMDiffOn_toFun := contMDiffOn_extChartAt.mono (by simp)
   contMDiffOn_invFun := (contMDiffOn_extChartAt_symm p).mono inter_subset_left
 
+@[simp] lemma toFun_extChartAtPartialDiffeomorph :
+  ⇑(extChartAtPartialDiffeomorph I n p) = extChartAt I p := rfl
+
 variable (I n p) in
 lemma eqOn_extChartAtPartialDiffeomorph_extChartAt :
     EqOn (extChartAtPartialDiffeomorph I n p) (extChartAt I p)
@@ -152,6 +155,9 @@ noncomputable def toPartialDiffeomorph : PartialDiffeomorph 𝓘(𝕜, E₁) �
         (homeo_contdiff.contDiffAt source_nhd)).contDiffWithinAt
   }
 
+@[simp] lemma toFun_toPartialDiffeomorph : ⇑(hf.toPartialDiffeomorph hU hpU hf' hn) = f := by
+  rfl
+
 lemma toPartialDiffeomorph_mem_source : p ∈ (hf.toPartialDiffeomorph hU hpU hf' hn).source :=
   ⟨(hf.contDiffAt (hU.mem_nhds hpU)).mem_toOpenPartialHomeomorph_source hf' hn,
     hpU, f', Eq.symm (HasFDerivAt.fderiv hf')⟩
@@ -220,9 +226,7 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   constructor
   · refine ⟨⟨mem_extChartAtPartialDiffeomorph_source n hp,
       (hg.toPartialDiffeomorph_mem_source U_open φ₀p_mem_U hg' hn)⟩, ?_⟩
-    simpa [φ₁, ψ₁, g] using mem_extChartAtPartialDiffeomorph_target I₂ n hfp
-    simp [φ₀.left_inv (mem_extChartAt_source p),
-      ψ₁.map_source (mem_extChartAtPartialDiffeomorph_source n hfp)]
+    simpa [φ₁, ψ₁, g] using mem_extChartAtPartialDiffeomorph_target n hfp
   · rintro m ⟨⟨hm₁, _, hm₂, _⟩, _⟩
     have hm := extChartAtPartialDiffeomorph_source_subset (n := n) hm₁
     have hfm := extChartAtPartialDiffeomorph_source_subset (n := n)
