@@ -936,8 +936,7 @@ and `M` is commutative, then `N` is commutative. -/
 /-- If `M` and `N` have additions, `f` is a surjective additive map,
 and `M` is commutative, then `N` is commutative. -/]
 theorem Function.Surjective.isMulCommutative [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
-    {f : F} (is_surj : Function.Surjective f) [IsMulCommutative M] :
-    IsMulCommutative N where
+    {f : F} (is_surj : Function.Surjective f) [IsMulCommutative M] : IsMulCommutative N where
   is_comm.comm a b := by
     have ⟨a', ha'⟩ := is_surj a
     have ⟨b', hb'⟩ := is_surj b
