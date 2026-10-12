@@ -164,8 +164,8 @@ noncomputable def intValuedBasis : Module.Basis ℕ ℤ intValued :=
       rw [this]
       exact Submodule.sum_mem _ fun k _ => Submodule.smul_mem _ _ (Submodule.subset_span ⟨k, rfl⟩))
 
-@[simp]
 /-- The `n`-th vector of `intValuedBasis` is the binomial polynomial `Ring.choose X n`. -/
+@[simp]
 theorem coe_intValuedBasis (n : ℕ) : (intValuedBasis n : ℚ[X]) = Ring.choose X n := by
   simp [intValuedBasis]
 
