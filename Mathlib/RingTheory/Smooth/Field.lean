@@ -99,7 +99,6 @@ lemma Algebra.Extension.ker_eq_comap_of_subalgebra (S : Subalgebra R T) :
   exact ((RingHom.comap_ker _ _).trans ((congr_arg RingHom.ker algmap_eq).trans
     (RingHom.ker_comp_of_injective _ Subtype.val_injective))).symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Algebra.h1Cotangent_subsingleton_of_subalgebra
     (h : ∀ (s : Finset T), ∃ (S : Subalgebra R T),
       (s : Set T) ⊆ S ∧ Subsingleton (H1Cotangent R S)) :
@@ -118,12 +117,14 @@ lemma Algebra.h1Cotangent_subsingleton_of_subalgebra
     (MvPolynomial.rename S.val) := Algebra.Extension.ker_eq_comap_of_subalgebra S
   have zmem : z ∈ (Generators.self R S).toExtension.ker := by
     simpa [eqcomap] using! Ideal.mem_comap.mpr (hz ▸ y.2)
-  let z' : (Generators.self R S).toExtension.Cotangent := Ideal.toCotangent _ ⟨z, zmem⟩
+  let z' : (Generators.self R S).toExtension.Cotangent := Extension.Cotangent.mk ⟨z, zmem⟩
   have mapeq : Extension.Cotangent.map (Generators.HomOfCommSelf R S T).toExtensionHom z' = x := by
-    apply (Algebra.Extension.Cotangent.map_mk _ _).trans
-    simp only [Generators.homOfComm_toExtensionHom_toAlgHom, ← hy]
+    rw [Algebra.Extension.Cotangent.map_mk, ← hy]
     congr 1
-    exact SetCoe.ext hz
+    ext
+    simp only [← hz, Subalgebra.coe_val]
+    rw [Generators.homOfComm_toExtensionHom_toAlgHom _ _ _ (by ext; simp)]
+    rfl
   have z'mem : z' ∈ (Generators.self R S).toExtension.cotangentComplex.ker := by
     simpa [h1Cotangent_eq_comap_of_algebraMap_injective R S T Subtype.val_injective,
       Submodule.mem_comap, mapeq] using hx
