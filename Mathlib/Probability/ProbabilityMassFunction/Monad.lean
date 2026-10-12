@@ -250,29 +250,19 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
       p.bindOnSupport fun a ha =>
         (f a ha).bindOnSupport fun b hb =>
           g b ((mem_support_bindOnSupport_iff f b).mpr ⟨a, ha, hb⟩) := by
-  refine PMF.ext fun a => ?_
-  dsimp only [bindOnSupport_apply]
-  simp only [← tsum_dite_right, ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
+  ext a
+  simp only [bindOnSupport_apply, ← tsum_dite_right, ← ENNReal.tsum_mul_left,
+    ← ENNReal.tsum_mul_right]
   classical
   refine ENNReal.tsum_comm.trans (tsum_congr fun a' => tsum_congr fun b => ?_)
   split_ifs with h _ h_1
   any_goals ring1
-  · have hf0 := ENNReal.tsum_eq_zero.mp h_1 a'
-    rw [dite_eq_right h, mul_eq_zero, or_iff_right h] at hf0
-    trans (0 : ℝ≥0∞)
-    · exact mul_eq_zero_of_right _ (dite_eq_left h_1)
-    · exact (mul_eq_zero_of_right _ (mul_eq_zero_of_left hf0 _)).symm
-  · rcases eq_or_ne (f a' h b) 0 with hf0 | hf0
-    · trans (0 : ℝ≥0∞)
-      · exact mul_eq_zero_of_left (mul_eq_zero_of_right _ hf0) _
-      · exact (mul_eq_zero_of_right _ (mul_eq_zero_of_left hf0 _)).symm
-    · have hD₁ : (if h : (∑' (a : α), p a * if h : p a = 0 then 0 else f a h b) = 0 then 0
-          else g b h a) = g b h_1 a := dite_eq_right h_1
-      have hD₂ : (if h2 : f a' h b = 0 then 0
-          else g b ((mem_support_bindOnSupport_iff f b).mpr ⟨a', h, h2⟩) a) = g b h_1 a :=
-        dite_eq_right hf0
-      refine (congrArg (p a' * f a' h b * ·) hD₁).trans ((mul_assoc _ _ _).trans ?_)
-      exact congrArg (p a' * ·) (congrArg (f a' h b * ·) hD₂.symm)
+  · simp [(dite_eq_right h).symm.trans
+      ((mul_eq_zero.1 (ENNReal.tsum_eq_zero.1 h_1 a')).resolve_left h)]
+  · by_cases hf : f a' h b = 0
+    · simp [hf]
+    · rw [dite_eq_right hf, ← mul_assoc]
+      exact congrArg _ (dite_eq_right h_1)
 
 theorem bindOnSupport_comm (p : PMF α) (q : PMF β) (f : ∀ a ∈ p.support, ∀ b ∈ q.support, PMF γ) :
     (p.bindOnSupport fun a ha => q.bindOnSupport (f a ha)) =
