@@ -135,37 +135,6 @@ private theorem sum_mul_le_sum_range {d : ℕ} (s : ℕ → ℝ) (hs : Antitone 
 
 /-! ### The second elementary symmetric function -/
 
-/-- Lagrange's inequality: `∑_{i,j ∈ S} |a_i b_j - a_j b_i|² ≤ 2 (∑ |a_i|²)(∑ |b_i|²)`. -/
-private theorem sum_sum_norm_sub_sq_le {ι : Type*} (S : Finset ι) (a b : ι → 𝕜) :
-    ∑ i ∈ S, ∑ j ∈ S, ‖a i * b j - a j * b i‖ ^ 2 ≤
-      2 * (∑ i ∈ S, ‖a i‖ ^ 2) * ∑ i ∈ S, ‖b i‖ ^ 2 := by
-  set z : ι → 𝕜 := fun i ↦ conj (a i) * b i with hz
-  have key : ∀ i j, ‖a i * b j - a j * b i‖ ^ 2 =
-      (‖a i‖ ^ 2 * ‖b j‖ ^ 2 + ‖a j‖ ^ 2 * ‖b i‖ ^ 2) - 2 * RCLike.re (z i * conj (z j)) := by
-    intro i j
-    rw [@norm_sub_sq 𝕜, RCLike.inner_apply', norm_mul, norm_mul]
-    have : conj (a i * b j) * (a j * b i) = z i * conj (z j) := by
-      simp only [hz, map_mul, RCLike.conj_conj]; ring
-    rw [this]; ring
-  have h2 : ∑ i ∈ S, ∑ j ∈ S, RCLike.re (z i * conj (z j)) = ‖∑ i ∈ S, z i‖ ^ 2 := by
-    have h : (∑ i ∈ S, z i) * conj (∑ i ∈ S, z i) = ∑ i ∈ S, ∑ j ∈ S, z i * conj (z j) := by
-      rw [map_sum, sum_mul_sum]
-    rw [RCLike.mul_conj] at h
-    have h' := congrArg RCLike.re h
-    rw [← RCLike.ofReal_pow, RCLike.ofReal_re] at h'
-    rw [h']
-    simp only [map_sum]
-  have h3 : ∑ i ∈ S, ∑ j ∈ S, (‖a i‖ ^ 2 * ‖b j‖ ^ 2 + ‖a j‖ ^ 2 * ‖b i‖ ^ 2) =
-      2 * (∑ i ∈ S, ‖a i‖ ^ 2) * ∑ i ∈ S, ‖b i‖ ^ 2 := by
-    simp only [sum_add_distrib]
-    rw [sum_comm (f := fun i j ↦ ‖a j‖ ^ 2 * ‖b i‖ ^ 2), mul_assoc, sum_mul_sum]
-    ring
-  calc ∑ i ∈ S, ∑ j ∈ S, ‖a i * b j - a j * b i‖ ^ 2
-      = ∑ i ∈ S, ∑ j ∈ S, (‖a i‖ ^ 2 * ‖b j‖ ^ 2 + ‖a j‖ ^ 2 * ‖b i‖ ^ 2)
-        - 2 * ∑ i ∈ S, ∑ j ∈ S, RCLike.re (z i * conj (z j)) := by
-        simp only [key, sum_sub_distrib, mul_sum]
-    _ ≤ _ := by rw [h3, h2]; nlinarith [sq_nonneg ‖∑ i ∈ S, z i‖]
-
 /-- `2 e_2(f_0, …, f_{n-1}) = (∑ f_i)² - ∑ f_i²`. -/
 private theorem two_mul_sum_powersetCard_two (f : ℕ → ℝ) (n : ℕ) :
     2 * ∑ t ∈ (range n).powersetCard 2, ∏ i ∈ t, f i =
@@ -327,7 +296,7 @@ private theorem wt_nonneg {κ ι : Type*} (g : κ → H) (h : ι → H) (S : Fin
 
 private theorem lam_le {κ ι : Type*} (g g' : κ → H) (h : ι → H) (S : Finset ι) (k l : κ) :
     lam (𝕜 := 𝕜) g g' h S k l ≤ 2 * wt (𝕜 := 𝕜) g h S k * wt (𝕜 := 𝕜) g' h S l :=
-  sum_sum_norm_sub_sq_le S (fun i ↦ ⟪g k, h i⟫) (fun i ↦ ⟪g' l, h i⟫)
+  RCLike.sum_sum_norm_mul_sub_mul_sq_le S (fun i ↦ ⟪g k, h i⟫) (fun i ↦ ⟪g' l, h i⟫)
 
 private theorem lam_self {κ ι : Type*} (g : κ → H) (h : ι → H) (S : Finset ι) (k : κ) :
     lam (𝕜 := 𝕜) g g h S k k = 0 := by
