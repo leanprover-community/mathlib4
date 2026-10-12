@@ -5,8 +5,8 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.Geometry.Euclidean.Incenter.Basic
 public import Mathlib.Geometry.Euclidean.Volume.Def
-public import Mathlib.Geometry.Euclidean.Incenter
 
 import Mathlib.Geometry.Euclidean.Volume.Basic
 
