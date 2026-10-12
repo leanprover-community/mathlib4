@@ -457,11 +457,11 @@ variable {R Γ' : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ'] {v : Valu
 
 theorem IsRankOneDiscrete.of_isEquiv (h : v.IsEquiv w) [hv : IsRankOneDiscrete v] :
     IsRankOneDiscrete w := by
-  have : w.IsNontrivial := (IsEquiv.isNontrivial_iff h).mp inferInstance
-  have : IsCyclic (valueGroup (w : R →*₀ Γ')) := by
-    rw [← MulEquiv.isCyclic h.orderMonoidIso.toMulEquiv]
+  have : w.IsNontrivial := h.isNontrivial_iff.mp inferInstance
+  have : IsCyclic w.valueGroup := by
+    rw [← h.orderMonoidIso.isCyclic]
     infer_instance
-  exact Valuation.IsRankOneDiscrete.mk' w
+  exact .mk' w
 
 theorem IsEquiv.isRankOneDiscrete_iff (h : v.IsEquiv w) :
     v.IsRankOneDiscrete ↔ w.IsRankOneDiscrete :=

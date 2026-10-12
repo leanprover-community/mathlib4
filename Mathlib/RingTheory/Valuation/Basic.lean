@@ -810,32 +810,19 @@ open MonoidWithZeroHom MonoidWithZeroHom.valueGroup MonoidWithZeroHom.ValueGroup
 /-- An equivalence of valuations `v.IsEquiv w` induces the following map from `v.valueGroup` to
 `w.valueGroup`: given `x : v.valueGroup` and nonzero `a b : R` such that `(v a) * x = (v b)`,
 `valueGroupFun x` is defined as `(w b) * (w a)⁻¹`. -/
+@[no_expose]
 noncomputable def valueGroupFun (h : v.IsEquiv w) (x : v.valueGroup) : w.valueGroup :=
-  letI hx := (exists_mk (v : R →*₀ Γ₀) x)
+  letI hx := exists_mk (v : R →*₀ Γ₀) x
   valueGroup.mk (w : R →*₀ Γ'₀) hx.choose hx.choose_spec.choose
     (h.eq_zero.ne.mp hx.choose_spec.choose_spec.1) (h.eq_zero.ne.mp hx.choose_spec.choose_spec.2.1)
 
-theorem valueGroupFun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0)
+private theorem valueGroupFun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0)
     (hr' : w r ≠ 0 := h.eq_zero.ne.1 hr) (hs' : w s ≠ 0 := h.eq_zero.ne.1 hs) :
     valueGroupFun h (valueGroup.mk (v : R →*₀ Γ₀) r s hr hs) =
       valueGroup.mk (w : R →*₀ Γ'₀) r s hr' hs' := by
   rw [valueGroupFun]
   generalize_proofs _ H _
   simpa [-map_mul, ← h.eq_iff] using H.choose_spec.choose_spec.choose_spec.symm
-
-/-- An equivalence of valuations `v.IsEquiv w` induces the following map from `ValueGroup₀ v` to
-`ValueGroup₀ w`: given `x : ValueGroup₀ v` and nonzero `a b : R` such that `(v a) * x = (v b)`,
-`valueGroup₀Fun x` is defined as `(w b) * (w a)⁻¹`. -/
-noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : v.ValueGroup₀) : w.ValueGroup₀ :=
-  WithZero.map (valueGroupFun h) x
-
-theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0)
-    (hr' : w r ≠ 0 := h.eq_zero.ne.1 hr) (hs' : w s ≠ 0 := h.eq_zero.ne.1 hs) :
-    valueGroup₀Fun h (valueGroup.mk (v : R →*₀ Γ₀) r s hr hs) =
-      valueGroup.mk (w : R →*₀ Γ'₀) r s hr' hs' := by
-  simp [valueGroup₀Fun, valueGroupFun_spec h hr hs]
-
-theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by simp [valueGroup₀Fun]
 
 /-- The order preserving isomorphism between the `valueGroup`s of the underlying
 `MonoidWithZeroHom`s of two equivalent valuations. -/
