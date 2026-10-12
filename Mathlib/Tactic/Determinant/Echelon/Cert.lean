@@ -45,28 +45,21 @@ namespace Mathlib.Tactic.Determinant
 
 /-- Compute `diagProd k c rows` with a proof of the equality. -/
 def certifyDiagProdList {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (k c : Nat)
-    (kQ cQ : Q(Nat)) (rows : Q(List (List $α))) :
-    MetaM ((e : Q($α)) × Q(diagProd $kQ $cQ $rows = $e)) :=
+    (rows : Q(List (List $α))) : MetaM ((e : Q($α)) × Q(diagProd $k $c $rows = $e)) :=
   match c with
-  | 0 => do
-    have : $cQ =Q 0 := ⟨⟩
-    return ⟨q(1), q(diagProd_zero $kQ $rows)⟩
+  | 0 => return ⟨q(1), q(diagProd_zero $k $rows)⟩
   | c + 1 => do
     let ⟨row, rowsTl, _⟩ ← unconsListLitQ rows
     let ⟨entry, suffix, _⟩ ← unconsListLitQ (dropListLitQ k row)
-    have k₁Q : Q(Nat) := mkNatLitQ (k + 1)
-    have c₁Q : Q(Nat) := mkNatLitQ c
-    let ⟨e, h⟩ ← certifyDiagProdList rα (k + 1) c k₁Q c₁Q rowsTl
-    have hdrop : List.drop $kQ $row =Q $entry :: $suffix := ⟨⟩
-    have : $cQ =Q $c₁Q + 1 := ⟨⟩
-    have : $k₁Q =Q $kQ + 1 := ⟨⟩
+    let ⟨e, h⟩ ← certifyDiagProdList rα (k + 1) c rowsTl
+    have hdrop : List.drop $k $row =Q $entry :: $suffix := ⟨⟩
     return ⟨q($entry * $e), q(diagProd_add_one_cons $hdrop $h)⟩
 
 /-- Compute the product `diagProd 0 m M.lit` of the diagonal of `M` with a proof of the
 equality. -/
 def certifyDiagProd {u : Level} {m : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (M : ListMatrixLit α m m) : MetaM ((e : Q($α)) × Q(diagProd 0 $m $(M.lit) = $e)) :=
-  certifyDiagProdList rα 0 m q(0) q($m) M.lit
+  certifyDiagProdList rα 0 m M.lit
 
 /-- Compute the sign of the permutation from the swaps with the corresponding proof. -/
 def certifyPermSign {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m : Nat)
