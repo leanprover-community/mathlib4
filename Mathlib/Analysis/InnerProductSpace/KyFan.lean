@@ -882,7 +882,7 @@ private theorem bform_rightSingularBasis (w : E →ₗ[𝕜] F) (n : ℕ) :
     simp [hi]
   simp only [e]
   rw [← hr]
-  simp
+  simp only [RCLike.ofReal_sum]
 
 /-- `σ₂(u + v) ≤ σ₂(u) + (∑_{j<n} s_j(u)) (∑_{j<n} s_j(v)) + σ₂(v)`. -/
 private theorem sigma_two_add_le (u v : E →ₗ[𝕜] F) (n : ℕ) :
