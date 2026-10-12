@@ -223,7 +223,6 @@ theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
 
 section Periodic
 
-/-- The digits of a nonnegative real number are those of its fractional part. -/
 theorem digits_fract {b : ℕ} [NeZero b] {x : ℝ} (hx : 0 ≤ x) :
     digits (Int.fract x) b = digits x b := by
   ext i
@@ -237,7 +236,6 @@ theorem digits_fract {b : ℕ} [NeZero b] {x : ℝ} (hx : 0 ≤ x) :
     Nat.floor_add_natCast (mul_nonneg (Int.fract_nonneg x) (Nat.cast_nonneg _)), hpow,
     Nat.add_mul_mod_self_right]
 
-/-- The `n`-th digit of `r / s` in base `b` only depends on the remainder `r * b ^ n % s`. -/
 theorem val_digits_natCast_div {b : ℕ} [NeZero b] (r s n : ℕ) :
     (digits ((r : ℝ) / s) b n : ℕ) = r * b ^ n % s * b / s := by
   rw [digits, Fin.val_ofNat, ← Nat.mul_div_mod_eq_mod_mul_div]
@@ -257,7 +255,6 @@ private lemma exists_periodic_mod_pow (r s b : ℕ) (hs : 0 < s) :
   rw [show i + (d + (j - i)) = j + d by lia, pow_add, ← mul_assoc, Nat.mul_mod, ← h,
     ← Nat.mul_mod, mul_assoc, ← pow_add]
 
-/-- The digits of a nonnegative rational number in any base are eventually periodic. -/
 theorem digits_ratCast_eventually_periodic {b : ℕ} [NeZero b] {q : ℚ} (hq : 0 ≤ q) :
     ∃ N c, 0 < c ∧ Function.Periodic (fun d ↦ digits (q : ℝ) b (N + d)) c := by
   have hx : (q : ℝ) = (q.num.toNat : ℝ) / q.den := by
@@ -274,7 +271,6 @@ private lemma exists_ratCast_eq_sum_ofDigitsTerm {b : ℕ} (a : ℕ → Fin b) (
     ∃ q : ℚ, (q : ℝ) = ∑ i ∈ Finset.range n, ofDigitsTerm a i :=
   ⟨∑ i ∈ Finset.range n, ((a i : ℕ) : ℚ) * ((b : ℚ) ^ (i + 1))⁻¹, by simp [ofDigitsTerm]⟩
 
-/-- A real number whose digits in base `b` are eventually periodic is rational. -/
 theorem exists_ratCast_eq_ofDigits_of_eventually_periodic {b : ℕ} (hb : 1 < b)
     {a : ℕ → Fin b} {N c : ℕ} (hc : 0 < c) (h : Function.Periodic (fun d ↦ a (N + d)) c) :
     ∃ q : ℚ, (q : ℝ) = ofDigits a := by

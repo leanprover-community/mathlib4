@@ -100,7 +100,6 @@ lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   lia
 
-/-- The last digit of `a * b / n` in base `b` only depends on `a % n`. -/
 lemma mul_div_mod_eq_mod_mul_div (a b n : ℕ) : a * b / n % b = a % n * b / n := by
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp
