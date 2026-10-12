@@ -1,9 +1,5 @@
 import Mathlib.Tactic.Positivity.Core
 
-set_option trace.Tactic.positivity true
-set_option trace.Tactic.positivity.failure true
-set_option profiler true
-
 section
 
 axiom α : Type*
