@@ -192,7 +192,7 @@ much application (`consEquiv α f i = cons f.1 f.2 i`), while with `-fullyApplie
 little (`⇑(consEquiv α) = fun f ↦ cons f.1 f.2`). The manually written form is desired because we
 often apply this on vector `Fin n → α` without invoking individual coordinates. -/
 @[simp]
-theorem consEquiv_apply (α : Fin (n + 1) → Type*) (f : α 0 × ((i : Fin n) → α i.succ)) :
+theorem consEquiv_apply (α : Fin (n + 1) → Type*) (f : α 0 × (∀ i, α (succ i))) :
     consEquiv α f = cons f.1 f.2 :=
   rfl
 
