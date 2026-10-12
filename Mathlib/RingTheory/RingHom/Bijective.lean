@@ -6,7 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.LocalProperties.Exactness
+
+import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
 # Meta properties of bijective ring homomorphisms
@@ -20,8 +21,6 @@ the ring hom property.
 -/
 
 public section
-
-open TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 

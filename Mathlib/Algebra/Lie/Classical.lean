@@ -5,9 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Algebra.Lie.Abelian
-public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.Algebra.Lie.SkewAdjoint
 public import Mathlib.LinearAlgebra.SymplecticGroup
 
@@ -82,7 +80,7 @@ theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.t
   calc
     _ = Matrix.trace (X * Y) - Matrix.trace (Y * X) := trace_sub _ _
     _ = Matrix.trace (X * Y) - Matrix.trace (X * Y) :=
-      (congr_arg (fun x => _ - x) (Matrix.trace_mul_comm Y X))
+      congr(_ - $(Matrix.trace_mul_comm Y X))
     _ = 0 := sub_self _
 
 variable [DecidableEq n]
@@ -148,7 +146,7 @@ theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
   intro c
   have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [A, B, Matrix.single, Matrix.mul_apply, hij.symm] using congr_fun (congr_fun c' i) i
+  simpa [A, B, Matrix.single, Matrix.mul_apply, hij.symm] using congr($c' i i)
 
 end SpecialLinear
 
@@ -365,8 +363,8 @@ theorem indefiniteDiagonal_assoc :
   ext ⟨⟨i₁ | i₂⟩ | i₃⟩ ⟨⟨j₁ | j₂⟩ | j₃⟩ <;>
     simp only [indefiniteDiagonal, Matrix.diagonal_apply, Equiv.sumAssoc_apply_inl_inl,
       Matrix.reindexLieEquiv_apply, Matrix.submatrix_apply, Equiv.symm_symm, Matrix.reindex_apply,
-      Sum.elim_inl, if_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,
-      Equiv.sumAssoc_apply_inl_inr, if_false, Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₁,
+      Sum.elim_inl, ite_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,
+      Equiv.sumAssoc_apply_inl_inr, ite_false, Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₁,
       Matrix.fromBlocks_apply₂₂, Equiv.sumAssoc_apply_inr, Sum.elim_inr, Sum.inl_injective.eq_iff,
       Sum.inr_injective.eq_iff, reduceCtorEq] <;>
     congr 1

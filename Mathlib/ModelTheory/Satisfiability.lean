@@ -5,10 +5,11 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.ModelTheory.Bundled
-public import Mathlib.ModelTheory.Skolem
-public import Mathlib.Order.Filter.AtTopBot.Basic
+
+import Mathlib.ModelTheory.Skolem
+import Mathlib.ModelTheory.Ultraproducts
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # First-Order Satisfiability
@@ -411,7 +412,7 @@ theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L
 theorem eq_complete_theory (h : T.IsComplete) (M : Type*) [L.Structure M] [M ⊨ T] [Nonempty M] :
     {φ | T ⊨ᵇ φ} = L.completeTheory M := by
   ext φ
-  simp only [Set.mem_setOf_eq, L.mem_completeTheory]
+  simp only [Set.mem_ofPred_eq, L.mem_completeTheory]
   refine ⟨fun h_models => h_models.realize_sentence M, fun h_realize => ?_⟩
   cases h.2 φ with
   | inl hT => exact hT
@@ -480,7 +481,7 @@ theorem isSatisfiable [Nonempty M] : (L.completeTheory M).IsSatisfiable :=
   Theory.Model.isSatisfiable M
 
 theorem mem_or_not_mem (φ : L.Sentence) : φ ∈ L.completeTheory M ∨ φ.not ∈ L.completeTheory M := by
-  simp_rw [completeTheory, Set.mem_setOf_eq, Sentence.Realize, Formula.realize_not, or_not]
+  simp_rw [completeTheory, Set.mem_ofPred_eq, Sentence.Realize, Formula.realize_not, or_not]
 
 theorem isMaximal [Nonempty M] : (L.completeTheory M).IsMaximal :=
   ⟨isSatisfiable L M, mem_or_not_mem L M⟩
@@ -523,8 +524,8 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
       ((MNT.realize_sentence φ).trans
         ((StrongHomClass.realize_sentence TF φ).trans (MNF.realize_sentence φ).symm)).1 hMT⟩
 
-theorem empty_theory_categorical (T : Language.empty.Theory) : κ.Categorical T := fun M N hM hN =>
-  by rw [empty.nonempty_equiv_iff, hM, hN]
+theorem empty_theory_categorical (T : Language.empty.Theory) : κ.Categorical T := fun M N hM hN ↦ by
+  rw [empty.nonempty_equiv_iff, hM, hN]
 
 theorem empty_infinite_Theory_isComplete : Language.empty.infiniteTheory.IsComplete :=
   (empty_theory_categorical.{0} ℵ₀ _).isComplete ℵ₀ _ le_rfl (by simp)

@@ -5,10 +5,11 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 public import Mathlib.Analysis.Complex.Conformal
-public import Mathlib.Analysis.Complex.HasPrimitives
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Complex.HasPrimitives
 
 /-!
 # Analyticity of Harmonic Functions
@@ -20,7 +21,7 @@ holomorphic on the ball.  This implies in particular that harmonic functions are
 
 public section
 
-open Complex InnerProductSpace Metric Set Topology
+open Complex InnerProductSpace Metric Set
 
 variable
   {f : ℂ → ℝ} {x : ℂ}
@@ -61,7 +62,7 @@ theorem HarmonicAt.analyticAt_complex_partial (hf : HarmonicAt f x) :
     AnalyticAt ℂ (fun z ↦ fderiv ℝ f z 1 - I * fderiv ℝ f z I) x :=
   DifferentiableOn.analyticAt (s := { x | HarmonicAt f x })
     (fun _ hy ↦ (HarmonicAt.differentiableAt_complex_partial hy).differentiableWithinAt)
-    ((isOpen_setOf_harmonicAt f).mem_nhds hf)
+    ((isOpen_setOfPred_harmonicAt f).mem_nhds hf)
 
 /-
 If a function `f : ℂ → ℝ` is harmonic on an open ball, then `f` is the real part of a function
@@ -99,10 +100,6 @@ theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq {z : ℂ
     simp [HasDerivAt.deriv (hF.2 y hy), g]
   all_goals simp_all
 
-@[deprecated (since := "2026-03-03")]
-alias harmonic_is_realOfHolomorphic :=
-  InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq
-
 /--
 If a function `f : ℂ → ℝ` is harmonic, then `f` is the real part of a holomorphic function.
 -/
@@ -132,16 +129,12 @@ theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq {f : ℂ
     · simp
   all_goals simp_all
 
-@[deprecated (since := "2026-03-03")]
-alias InnerProductSpace.harmonic_is_realOfHolomorphic_univ :=
-  InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq
-
 /-
 Harmonic functions are real analytic.
 TODO: Prove this for harmonic functions on an arbitrary f.d. inner product space (not just on `ℂ`).
 -/
 theorem HarmonicAt.analyticAt (hf : HarmonicAt f x) : AnalyticAt ℝ f x := by
-  obtain ⟨ε, h₁ε, h₂ε⟩ := isOpen_iff.1 (isOpen_setOf_harmonicAt (f := f)) x hf
+  obtain ⟨ε, h₁ε, h₂ε⟩ := isOpen_iff.1 (isOpen_setOfPred_harmonicAt (f := f)) x hf
   obtain ⟨F, h₁F, h₂F⟩ := InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq
     (fun _ hy ↦ h₂ε hy)
   rw [analyticAt_congr (Filter.eventually_of_mem (ball_mem_nhds x h₁ε) (fun y hy ↦ h₂F.symm hy))]

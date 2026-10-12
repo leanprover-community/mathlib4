@@ -15,7 +15,7 @@ a Dirichlet series".
 
 public section
 
-open Filter Topology Asymptotics Real Set MeasureTheory
+open Real Set MeasureTheory
 open Complex
 
 variable {ι : Type*} [Countable ι]

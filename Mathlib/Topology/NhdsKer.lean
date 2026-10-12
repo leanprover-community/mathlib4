@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.NhdsSet
 public import Mathlib.Topology.Inseparable
 
 /-!
@@ -29,7 +28,7 @@ lemma nhdsKer_singleton_eq_ker_nhds (x : X) : nhdsKer {x} = (𝓝 x).ker := by s
 
 @[simp]
 theorem mem_nhdsKer_singleton : x ∈ nhdsKer {y} ↔ x ⤳ y := by
-  rw [nhdsKer_singleton_eq_ker_nhds, ker_nhds_eq_specializes, mem_setOf]
+  rw [nhdsKer_singleton_eq_ker_nhds, ker_nhds_eq_specializes, mem_ofPred]
 
 lemma nhdsKer_def (s : Set X) : nhdsKer s = ⋂₀ {t : Set X | IsOpen t ∧ s ⊆ t} :=
   (hasBasis_nhdsSet _).ker.trans sInter_eq_biInter.symm

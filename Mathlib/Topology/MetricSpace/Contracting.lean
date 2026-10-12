@@ -5,10 +5,10 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Dynamics.FixedPoints.Topology
 public import Mathlib.Topology.MetricSpace.Lipschitz
+
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Contracting maps
@@ -32,7 +32,9 @@ contracting map, fixed point, Banach fixed point theorem
 
 @[expose] public section
 
-open NNReal Topology ENNReal Filter Function
+open NNReal ENNReal Filter Function
+
+open scoped Topology
 
 variable {α : Type*}
 
@@ -44,7 +46,7 @@ namespace ContractingWith
 
 variable [EMetricSpace α] {K : ℝ≥0} {f : α → α}
 
-open EMetric Set
+open Set
 
 theorem toLipschitzWith (hf : ContractingWith K f) : LipschitzWith K f := hf.2
 
@@ -299,7 +301,7 @@ theorem apriori_dist_iterate_fixedPoint_le (x n) :
 
 theorem tendsto_iterate_fixedPoint (x) :
     Tendsto (fun n ↦ f^[n] x) atTop (𝓝 <| fixedPoint f hf) := by
-  convert! tendsto_iterate_efixedPoint hf (edist_ne_top x _)
+  convert tendsto_iterate_efixedPoint hf (edist_ne_top x _)
   refine (fixedPoint_unique _ ?_).symm
   apply efixedPoint_isFixedPt
 

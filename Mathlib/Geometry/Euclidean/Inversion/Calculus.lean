@@ -5,10 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.Calculus.Deriv.Inv
-public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
+
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Derivative of the inversion
@@ -27,7 +28,7 @@ inversion, derivative
 
 public section
 
-open Metric Function AffineMap Set AffineSubspace
+open Function Set
 open scoped Topology RealInnerProductSpace
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]

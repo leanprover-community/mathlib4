@@ -80,12 +80,13 @@ variable {p} in
 theorem nil_map_iff : (p.map f).Nil ↔ p.Nil := by
   cases p <;> simp
 
-@[deprecated nil_map_iff (since := "2026-05-12")]
+@[deprecated nil_map_iff +typeChanged (since := "2026-05-12")]
 theorem map_eq_nil_iff {p : G.Walk u u} : p.map f = nil ↔ p = nil := by cases p <;> simp
 
 @[simp]
 theorem length_map : (p.map f).length = p.length := by induction p <;> simp [*]
 
+@[simp]
 theorem map_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).map f = (p.map f).append (q.map f) := by induction p <;> simp [*]
 
@@ -129,14 +130,24 @@ variable {G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v)
 abbrev mapLe : G'.Walk u v :=
   p.map (.ofLE h)
 
-set_option backward.isDefEq.respectTransparency false in
-lemma support_mapLe_eq_support : (p.mapLe h).support = p.support := by simp
+theorem length_mapLe : (p.mapLe h).length = p.length := by
+  simp
 
-set_option backward.isDefEq.respectTransparency false in
-lemma edges_mapLe_eq_edges : (p.mapLe h).edges = p.edges := by simp
+lemma support_mapLe_eq_support : (p.mapLe h).support = p.support := by
+  simp
 
-set_option backward.isDefEq.respectTransparency false in
-lemma edgeSet_mapLe_eq_edgeSet : (p.mapLe h).edgeSet = p.edgeSet := by simp
+lemma edges_mapLe_eq_edges : (p.mapLe h).edges = p.edges := by
+  simp
+
+lemma edgeSet_mapLe_eq_edgeSet : (p.mapLe h).edgeSet = p.edgeSet := by
+  simp
+
+theorem reverse_mapLe : (p.mapLe h).reverse = p.reverse.mapLe h := by
+  simp
+
+theorem mapLe_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
+    (p.append q).mapLe h = (p.mapLe h).append (q.mapLe h) := by
+  simp
 
 end mapLe
 
@@ -156,8 +167,16 @@ theorem transfer_self : p.transfer G p.edges_subset_edgeSet = p := by
 
 variable {H : SimpleGraph V}
 
-theorem transfer_eq_map_ofLE (hp) (GH : G ≤ H) : p.transfer H hp = p.map (.ofLE GH) := by
+theorem transfer_eq_mapLe (hp) (GH : G ≤ H) : p.transfer H hp = p.mapLe GH := by
   induction p <;> simp [*]
+
+@[deprecated (since := "2026-09-14")] alias transfer_eq_map_ofLE := transfer_eq_mapLe
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[simp]
+theorem nil_transfer {G H : SimpleGraph V} {u v : V} {p : G.Walk u v} {h} :
+    (p.transfer H h).Nil ↔ p.Nil := by
+  cases p <;> simp
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
@@ -258,10 +277,12 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
   p.toDeleteEdges {e} (fun _ ↦ by contrapose; simp +contextual [hp])
 
 @[simp]
-theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
-    Walk.map (.ofLE (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
-  rw [← transfer_eq_map_ofLE, transfer_transfer, transfer_self]
+theorem mapLe_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
+    (p.toDeleteEdges s hp).mapLe (G.deleteEdges_le s) = p := by
+  rw [← transfer_eq_mapLe, transfer_transfer, transfer_self]
   apply edges_transfer _ _ ▸ p.edges_subset_edgeSet
+
+@[deprecated (since := "2026-09-14")] alias map_toDeleteEdges_eq := mapLe_toDeleteEdges_eq
 
 end Walk
 

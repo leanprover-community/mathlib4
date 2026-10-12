@@ -33,7 +33,7 @@ extension of scalars.
 noncomputable section
 
 open Set Function
-open Submodule (span injective_subtype span subset_span span_setOf_mem_eq_top)
+open Submodule (span injective_subtype span subset_span span_setOfPred_mem_eq_top)
 
 namespace RootPairing
 
@@ -91,12 +91,12 @@ def restrictScalars' :
 set_option backward.isDefEq.respectTransparency.types false in
 instance : (P.restrictScalars' K).IsRootSystem where
   span_root_eq_top := by
-    rw [← span_setOf_mem_eq_top]
+    rw [← span_setOfPred_mem_eq_top]
     congr
     ext ⟨x, hx⟩
     simp [restrictScalars']
   span_coroot_eq_top := by
-    rw [← span_setOf_mem_eq_top]
+    rw [← span_setOfPred_mem_eq_top]
     congr
     ext ⟨x, hx⟩
     simp [restrictScalars']

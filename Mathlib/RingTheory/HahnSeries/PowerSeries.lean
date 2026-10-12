@@ -5,10 +5,11 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Data.Finsupp.PWO
 public import Mathlib.RingTheory.HahnSeries.Multiplication
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-public import Mathlib.Data.Finsupp.PWO
+
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!
 # Comparison between Hahn series and power series
@@ -38,7 +39,7 @@ we get the more familiar semiring of formal power series with coefficients in `R
 @[expose] public section
 
 
-open Finset Function Pointwise Polynomial
+open Finset Function Polynomial
 
 noncomputable section
 
@@ -117,7 +118,7 @@ theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C r) = HahnSer
     coeff_single]
   split_ifs with hn
   · subst hn
-    convert! embDomain_coeff (a := 0) <;> simp
+    convert embDomain_coeff (a := 0) <;> simp
   · rw [embDomain_notin_image_support]
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_C]
@@ -130,7 +131,7 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
   simp only [coeff_single, ofPowerSeries_apply]
   split_ifs with hn
   · rw [hn]
-    convert! embDomain_coeff (a := 1) <;> simp
+    convert embDomain_coeff (a := 1) <;> simp
   · rw [embDomain_notin_image_support]
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_X]
@@ -142,7 +143,7 @@ theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
   simp
 
 set_option backward.isDefEq.respectTransparency false in
--- Lemmas about converting hahn_series over fintype to and from mv_power_series
+-- Lemmas converting Hahn series over a finite index type to and from `MvPowerSeries`
 /-- The ring `R⟦σ →₀ ℕ⟧` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
 even though we assume `Finite σ` as this is more natural for alignment with `MvPowerSeries`.

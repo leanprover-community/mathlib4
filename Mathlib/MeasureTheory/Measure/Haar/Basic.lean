@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Content
 public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Measure.Content
 public import Mathlib.Topology.Algebra.Group.Compact
 
 /-!
@@ -54,7 +54,7 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
   Hausdorff group is a scalar multiple of the Haar measure.
 
 ## References
-* Paul Halmos (1950), Measure Theory, §53
+* [P. R. Halmos, *Measure Theory*][halmos1950measure], §53
 * Jonathan Gleason, Existence and Uniqueness of Haar Measure
   - Note: step 9, page 8 contains a mistake: the last defined `μ` does not extend the `μ` on compact
     sets, see Halmos (1950) p. 233, bottom of the page. This makes some other steps (like step 11)
@@ -69,7 +69,7 @@ noncomputable section
 
 open Set Inv Function TopologicalSpace MeasurableSpace
 
-open scoped NNReal ENNReal Pointwise Topology
+open scoped NNReal ENNReal Pointwise Topology Finset
 
 namespace MeasureTheory
 
@@ -125,7 +125,7 @@ def haarProduct (K₀ : Set G) : Set (Compacts G → ℝ) :=
 @[to_additive (attr := simp)]
 theorem mem_prehaar_empty {K₀ : Set G} {f : Compacts G → ℝ} :
     f ∈ haarProduct K₀ ↔ ∀ K : Compacts G, f K ∈ Icc (0 : ℝ) (index (K : Set G) K₀) := by
-  simp only [haarProduct, Set.pi, forall_prop_of_true, mem_univ, mem_setOf_eq]
+  simp only [haarProduct, Set.pi, forall_prop_of_true, mem_univ, mem_ofPred_eq]
 
 /-- The closure of the collection of elements of the form `prehaar K₀ U`,
   for `U` open neighbourhoods of `1`, contained in `V`. The closure is taken in the space
@@ -150,7 +150,7 @@ variable [IsTopologicalGroup G]
   there is a finite set `t` satisfying the desired properties. -/]
 theorem index_defined {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty) :
     ∃ n : ℕ, n ∈ Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V } := by
-  rcases compact_covered_by_mul_left_translates hK hV with ⟨t, ht⟩; exact ⟨t.card, t, ht, rfl⟩
+  rcases compact_covered_by_mul_left_translates hK hV with ⟨t, ht⟩; exact ⟨#t, t, ht, rfl⟩
 
 @[to_additive addIndex_elim]
 theorem index_elim {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty) :
@@ -166,7 +166,7 @@ theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
   obtain ⟨t, h1t, h2t⟩ := index_elim K₀.isCompact hV
   rw [← h2s, ← h2t, mul_comm]
   refine le_trans ?_ Finset.card_mul_le
-  apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]; refine Subset.trans h1s ?_
+  apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_ofPred_eq]; refine Subset.trans h1s ?_
   apply iUnion₂_subset; intro g₁ hg₁; rw [preimage_subset_iff]; intro g₂ hg₂
   have := h1t hg₂
   rcases this with ⟨_, ⟨g₃, rfl⟩, A, ⟨hg₃, rfl⟩, h2V⟩; rw [mem_preimage, ← mul_assoc] at h2V
@@ -181,7 +181,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
   · rintro ⟨t, h1t, h2t⟩; rw [Finset.card_eq_zero] at h2t; subst h2t
     obtain ⟨g, hg⟩ := K.interior_nonempty
     change g ∈ (∅ : Set G)
-    convert! h1t (interior_subset hg); symm
+    convert h1t (interior_subset hg); symm
     simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
   · exact index_defined K.isCompact hV
 
@@ -199,7 +199,7 @@ theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   rcases index_elim K₂.2 hV with ⟨t, h1t, h2t⟩
   rw [← h2s, ← h2t]
   refine le_trans (Nat.sInf_le ⟨_, ?_, rfl⟩) (Finset.card_union_le _ _)
-  rw [mem_setOf_eq, Finset.set_biUnion_union]
+  rw [mem_ofPred_eq, Finset.set_biUnion_union]
   gcongr
 
 @[to_additive addIndex_union_eq]
@@ -210,8 +210,8 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   apply le_antisymm (index_union_le K₁ K₂ hV)
   rcases index_elim (K₁.2.union K₂.2) hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   have (K : Set G) (hK : K ⊆ ⋃ g ∈ s, (g * ·) ⁻¹' V) :
-      index K V ≤ {g ∈ s | ((g * ·) ⁻¹' V ∩ K).Nonempty}.card := by
-    apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
+      index K V ≤ #{g ∈ s | ((g * ·) ⁻¹' V ∩ K).Nonempty} := by
+    apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_ofPred_eq]
     intro g hg; rcases hK hg with ⟨_, ⟨g₀, rfl⟩, _, ⟨h1g₀, rfl⟩, h2g₀⟩
     simp only [mem_preimage] at h2g₀
     simp only [mem_iUnion]; use g₀; constructor; swap
@@ -242,7 +242,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
   rcases index_elim hK hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   apply Nat.sInf_le; rw [mem_image]
   refine ⟨s.map (Equiv.mulRight g⁻¹).toEmbedding, ?_, Finset.card_map _⟩
-  simp only [mem_setOf_eq]; refine Subset.trans (image_mono h1s) ?_
+  simp only [mem_ofPred_eq]; refine Subset.trans (image_mono h1s) ?_
   rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
   simp only [mem_preimage] at hg₁
   simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
@@ -253,7 +253,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
 theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set G}
     (hV : (interior V).Nonempty) : index ((fun h => g * h) '' K) V = index K V := by
   refine le_antisymm (mul_left_index_le hK hV g) ?_
-  convert! mul_left_index_le (hK.image <| continuous_const_mul g) hV g⁻¹
+  convert mul_left_index_le (hK.image <| continuous_const_mul g) hV g⁻¹
   rw [image_image]
   simp
 
@@ -302,8 +302,7 @@ theorem prehaar_sup_eq {K₀ : PositiveCompacts G} {U : Set G} {K₁ K₂ : Comp
     (hU : (interior U).Nonempty) (h : Disjoint (K₁.1 * U⁻¹) (K₂.1 * U⁻¹)) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) = prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
   simp only [prehaar]; rw [← add_div]
-  -- Porting note: Here was `congr`, but `to_additive` failed to generate a theorem.
-  refine congr_arg (fun x : ℝ => x / index K₀ U) ?_
+  congr
   exact mod_cast index_union_eq K₁ K₂ hU h
 
 @[to_additive]
@@ -334,7 +333,7 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
   constructor
   · apply prehaar_mem_haarProduct K₀; use 1; rwa [h1V₀.interior_eq]
   · simp only [mem_iInter]; rintro ⟨V, hV⟩ h2V; apply subset_closure
-    apply mem_image_of_mem; rw [mem_setOf_eq]
+    apply mem_image_of_mem; rw [mem_ofPred_eq]
     exact ⟨Subset.trans (iInter_subset _ ⟨V, hV⟩) (iInter_subset _ h2V), h1V₀, h2V₀⟩
 
 /-!
@@ -533,8 +532,7 @@ instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
   rw [← forall_measure_preimage_mul_iff]
   intro g A hA
   rw [haarMeasure_apply hA, haarMeasure_apply (measurable_const_mul g hA)]
-  -- Porting note: Here was `congr 1`, but `to_additive` failed to generate a theorem.
-  refine congr_arg (fun x : ℝ≥0∞ => x / (haarContent K₀).measure K₀) ?_
+  congr 1
   apply Content.is_mul_left_invariant_outerMeasure
   apply is_left_invariant_haarContent
 
