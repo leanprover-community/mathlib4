@@ -6,6 +6,7 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Localization
+
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.PID
 

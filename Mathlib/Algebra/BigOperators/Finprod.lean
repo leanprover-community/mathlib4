@@ -410,12 +410,6 @@ theorem hasFiniteMulSupport_of_finprod_ne_one {f : α → M} (h : ∏ᶠ i, f i 
     HasFiniteMulSupport f :=
   not_infinite.mp <| (finprod_of_infinite_mulSupport ·).mt h
 
-@[deprecated (since := "2026-03-03")] alias
-  finite_mulSupport_of_finprod_ne_one := hasFiniteMulSupport_of_finprod_ne_one
-
-@[deprecated (since := "2026-03-03")] alias
-  finite_support_of_finsum_ne_zero := hasFiniteSupport_of_finsum_ne_zero
-
 theorem hasFiniteSupport_of_finsum_eq_one {R : Type*} [NonAssocSemiring R] {f : α → R}
     (h : ∑ᶠ i, f i = 1) : HasFiniteSupport f := by
   cases subsingleton_or_nontrivial R
@@ -423,9 +417,6 @@ theorem hasFiniteSupport_of_finsum_eq_one {R : Type*} [NonAssocSemiring R] {f : 
   · apply hasFiniteSupport_of_finsum_ne_zero
     rw [h]
     exact one_ne_zero
-
-@[deprecated (since := "2026-03-03")] alias
-  finite_support_of_finsum_eq_one := hasFiniteSupport_of_finsum_eq_one
 
 @[to_additive]
 theorem finprod_eq_prod (f : α → M) (hf : HasFiniteMulSupport f) :

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Finsupp
+
 import Mathlib.Data.Finset.Pairwise
 
 /-!

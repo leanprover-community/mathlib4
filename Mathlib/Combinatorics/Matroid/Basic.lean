@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Init
 public import Mathlib.Data.Set.Card
-import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Order.UpperLower.Closure
+
+import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Matroids
