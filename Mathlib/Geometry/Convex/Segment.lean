@@ -17,8 +17,8 @@ In an R-convex space, we define the following objects:
 
 ## TODO
 
-Should we rename `segment` and `openSegment` to `convex.Icc` and `convex.Ioo`? Should we also
-define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
+Should we rename `segment` and `openSegment` to `Convexity.Icc` and `Convexity.Ioo`? Should we also
+define `clopenSegment`/`Convexity.Ico`/`Convexity.Ioc`?
 -/
 
 namespace Convexity
