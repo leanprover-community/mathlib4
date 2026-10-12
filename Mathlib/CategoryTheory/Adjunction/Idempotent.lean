@@ -53,9 +53,9 @@ section Idempotent
 theorem idempotent_tfae :
     List.TFAE [∀ Y, IsIso (adj.unit.app (R.obj Y)), ∀ Y, IsIso (R.map (adj.counit.app Y)),
       ∀ X, IsIso (adj.counit.app (L.obj X)), ∀ X, IsIso (L.map (adj.unit.app X))] := by
-  tfae_have 1 ↔ 2 := forall_congr' fun Y =>
+  tfae_have 1 ↔ 2 := forall_congr' fun Y ↦
     isIso_iff_of_comp_eq_id (adj.right_triangle_components Y)
-  tfae_have 3 ↔ 4 := forall_congr' fun X =>
+  tfae_have 3 ↔ 4 := forall_congr' fun X ↦
     (isIso_iff_of_comp_eq_id (adj.left_triangle_components X)).symm
   tfae_have 1 → 3 := by
     intro h X
@@ -106,10 +106,10 @@ end Idempotent
 section Fixed
 
 /-- The objects of `C` at which the unit of `L ⊣ R` is an isomorphism. -/
-def fixedLeft : ObjectProperty C := fun X => IsIso (adj.unit.app X)
+def fixedLeft : ObjectProperty C := fun X ↦ IsIso (adj.unit.app X)
 
 /-- The objects of `D` at which the counit of `L ⊣ R` is an isomorphism. -/
-def fixedRight : ObjectProperty D := fun Y => IsIso (adj.counit.app Y)
+def fixedRight : ObjectProperty D := fun Y ↦ IsIso (adj.counit.app Y)
 
 variable {adj} in
 lemma fixedLeft_iff {X : C} : adj.fixedLeft X ↔ IsIso (adj.unit.app X) := Iff.rfl
@@ -161,26 +161,26 @@ lemma fixedRightCounitIso_hom (Y : adj.fixedRight.FullSubcategory) :
 /-- An object of `D` is fixed if and only if it is isomorphic to `L.obj X` for some fixed `X`. -/
 lemma fixedRight_iff_exists {Y : D} :
     adj.fixedRight Y ↔ ∃ X, adj.fixedLeft X ∧ Nonempty (L.obj X ≅ Y) := by
-  refine ⟨fun (h : IsIso _) => ⟨R.obj Y, fixedLeft_obj h, ⟨asIso (adj.counit.app Y)⟩⟩, ?_⟩
+  refine ⟨fun (h : IsIso _) ↦ ⟨R.obj Y, fixedLeft_obj h, ⟨asIso (adj.counit.app Y)⟩⟩, ?_⟩
   rintro ⟨X, hX, ⟨e⟩⟩
   exact adj.fixedRight.prop_of_iso e (fixedRight_obj hX)
 
 /-- An object of `C` is fixed if and only if it is isomorphic to `R.obj Y` for some fixed `Y`. -/
 lemma fixedLeft_iff_exists {X : C} :
     adj.fixedLeft X ↔ ∃ Y, adj.fixedRight Y ∧ Nonempty (R.obj Y ≅ X) := by
-  refine ⟨fun (h : IsIso _) => ⟨L.obj X, fixedRight_obj h, ⟨(asIso (adj.unit.app X)).symm⟩⟩, ?_⟩
+  refine ⟨fun (h : IsIso _) ↦ ⟨L.obj X, fixedRight_obj h, ⟨(asIso (adj.unit.app X)).symm⟩⟩, ?_⟩
   rintro ⟨Y, hY, ⟨e⟩⟩
   exact adj.fixedLeft.prop_of_iso e (fixedLeft_obj hY)
 
 /-- The restriction of `L` to the fixed objects. -/
 @[simps!]
 def fixedLeftToFixedRight : adj.fixedLeft.FullSubcategory ⥤ adj.fixedRight.FullSubcategory :=
-  adj.fixedRight.lift (adj.fixedLeft.ι ⋙ L) fun X => fixedRight_obj X.2
+  adj.fixedRight.lift (adj.fixedLeft.ι ⋙ L) fun X ↦ fixedRight_obj X.2
 
 /-- The restriction of `R` to the fixed objects. -/
 @[simps!]
 def fixedRightToFixedLeft : adj.fixedRight.FullSubcategory ⥤ adj.fixedLeft.FullSubcategory :=
-  adj.fixedLeft.lift (adj.fixedRight.ι ⋙ R) fun Y => fixedLeft_obj Y.2
+  adj.fixedLeft.lift (adj.fixedRight.ι ⋙ R) fun Y ↦ fixedLeft_obj Y.2
 
 /-- Any adjunction `L ⊣ R` restricts to an equivalence between the objects at which the unit is
 an isomorphism and the objects at which the counit is an isomorphism. -/
@@ -189,11 +189,11 @@ noncomputable def fixedEquiv : adj.fixedLeft.FullSubcategory ≌ adj.fixedRight.
   functor := adj.fixedLeftToFixedRight
   inverse := adj.fixedRightToFixedLeft
   unitIso := NatIso.ofComponents
-    (fun X => adj.fixedLeft.isoMk (adj.fixedLeftUnitIso X))
-    (fun f => ObjectProperty.hom_ext _ (adj.unit.naturality f.hom))
+    (fun X ↦ adj.fixedLeft.isoMk (adj.fixedLeftUnitIso X))
+    (fun f ↦ ObjectProperty.hom_ext _ (adj.unit.naturality f.hom))
   counitIso := NatIso.ofComponents
-    (fun Y => adj.fixedRight.isoMk (adj.fixedRightCounitIso Y))
-    (fun f => ObjectProperty.hom_ext _ (adj.counit.naturality f.hom))
+    (fun Y ↦ adj.fixedRight.isoMk (adj.fixedRightCounitIso Y))
+    (fun f ↦ ObjectProperty.hom_ext _ (adj.counit.naturality f.hom))
   functor_unitIso_comp X := ObjectProperty.hom_ext _ (adj.left_triangle_components X.obj)
 
 end Fixed
@@ -203,7 +203,7 @@ section Reflective
 /-- The reflector onto the fixed objects of an idempotent adjunction: `L ⋙ R`, corestricted. -/
 @[simps!]
 def fixedLeftReflector (h : ∀ X, adj.fixedRight (L.obj X)) : C ⥤ adj.fixedLeft.FullSubcategory :=
-  adj.fixedLeft.lift (L ⋙ R) fun X => fixedLeft_obj (h X)
+  adj.fixedLeft.lift (L ⋙ R) fun X ↦ fixedLeft_obj (h X)
 
 /-- For an idempotent adjunction `L ⊣ R`, the inclusion of the objects of `C` at which the unit
 is an isomorphism has the left adjoint `L ⋙ R`. -/
@@ -237,7 +237,7 @@ noncomputable abbrev fixedLeftReflective (h : ∀ X, adj.fixedRight (L.obj X)) :
 @[simps!]
 def fixedRightCoreflector (h : ∀ Y, adj.fixedLeft (R.obj Y)) :
     D ⥤ adj.fixedRight.FullSubcategory :=
-  adj.fixedRight.lift (R ⋙ L) fun Y => fixedRight_obj (h Y)
+  adj.fixedRight.lift (R ⋙ L) fun Y ↦ fixedRight_obj (h Y)
 
 /-- For an idempotent adjunction `L ⊣ R`, the inclusion of the objects of `D` at which the
 counit is an isomorphism has the right adjoint `R ⋙ L`. -/
