@@ -5,8 +5,8 @@ Authors: Michel Hua
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
