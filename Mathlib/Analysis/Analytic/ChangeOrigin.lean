@@ -274,18 +274,18 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     exact p.nnnorm_changeOriginSeriesTerm_apply_le _ _ _ _ _ _
   have hf : HasSum f ((p.changeOrigin x).sum y) := by
     refine HasSum.sigma_of_hasSum ((p.changeOrigin x).summable y_mem_ball).hasSum (fun k => ?_) hsf
-    · dsimp +instances only [f]
-      refine ContinuousMultilinearMap.hasSum_eval ?_ _
-      have := (p.hasFPowerSeriesOnBall_changeOrigin k h.pos).hasSum x_mem_ball
-      rw [zero_add] at this
-      refine HasSum.sigma_of_hasSum this (fun l => ?_) ?_
-      · simp only [changeOriginSeries, sum_apply]
-        apply hasSum_fintype
-      · refine .of_nnnorm_bounded
-          (p.changeOriginSeries_summable_aux₂ (mem_eball_zero_iff.1 x_mem_ball) k)
-            fun s => ?_
-        refine (ContinuousMultilinearMap.le_opNNNorm _ _).trans_eq ?_
-        simp
+    dsimp +instances only [f]
+    refine ContinuousMultilinearMap.hasSum_eval ?_ _
+    have := (p.hasFPowerSeriesOnBall_changeOrigin k h.pos).hasSum x_mem_ball
+    rw [zero_add] at this
+    refine HasSum.sigma_of_hasSum this (fun l => ?_) ?_
+    · simp only [changeOriginSeries, sum_apply]
+      apply hasSum_fintype
+    · refine .of_nnnorm_bounded
+        (p.changeOriginSeries_summable_aux₂ (mem_eball_zero_iff.1 x_mem_ball) k)
+          fun s => ?_
+      refine (ContinuousMultilinearMap.le_opNNNorm _ _).trans_eq ?_
+      simp
   refine hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 ?_)
   refine HasSum.sigma_of_hasSum
     (p.hasSum x_add_y_mem_ball) (fun n => ?_) (changeOriginIndexEquiv.symm.summable_iff.2 hsf)

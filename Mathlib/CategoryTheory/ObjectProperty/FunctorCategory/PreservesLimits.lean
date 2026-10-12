@@ -198,7 +198,7 @@ instance (F : K ⥤ J) [HasColimitsOfShape K' C] :
   colimitsOfShape_le := by
     intro G ⟨p⟩
     refine ⟨fun {c} hc ↦ ⟨?_⟩⟩
-    let hp (j : J):= isColimitOfPreserves ((evaluation _ _).obj j) p.isColimit
+    let hp (j : J) := isColimitOfPreserves ((evaluation _ _).obj j) p.isColimit
     have := p.prop_diag_obj
     let s' (s : Cocone (F ⋙ G)) (k' : K') : Cocone (F ⋙ p.diag.obj k') :=
       { pt := s.pt

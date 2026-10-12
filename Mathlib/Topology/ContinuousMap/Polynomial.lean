@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.ContinuousMap.Star
 public import Mathlib.Topology.UnitInterval
-public import Mathlib.Algebra.Star.Subalgebra
 
 /-!
 # Constructions relating polynomial functions and continuous functions.
