@@ -66,7 +66,7 @@ def libraryNoteLabels (env : Environment) : Array String :=
   let imported := (Batteries.Util.LibraryNote.libraryNoteExt.toEnvExtension.getState env)
     |>.importedEntries.flatten
   let local_ := Batteries.Util.LibraryNote.libraryNoteExt.getEntries env
-  (imported ++ local_).map fun (n : Name) => n.toString (escape := false)
+  (imported ++ local_).map fun (n : Name) ↦ n.toString (escape := false)
 
 /-- Whether {name}`bib` (the contents of {lit}`docs/references.bib`) contains an entry with
 the given key. -/
