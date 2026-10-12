@@ -196,7 +196,7 @@ theorem FG.jacobson_smul_lt {N : Submodule R M} (ne_bot : N ≠ ⊥) (fg : N.FG)
     Ring.jacobson R • N < N := by
   rw [← Module.Finite.iff_fg] at fg
   rw [← nontrivial_iff_ne_bot] at ne_bot
-  convert! map_strictMono_of_injective N.injective_subtype (jacobson_smul_lt_top ⊤)
+  convert map_strictMono_of_injective N.injective_subtype (jacobson_smul_lt_top ⊤)
   on_goal 1 => rw [map_smul'']
   all_goals rw [Submodule.map_top, range_subtype]
 

@@ -544,7 +544,7 @@ theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.
     simp only [regionBetween, mem_ofPred_eq, hp, hq]
   rw [lintegral_congr_ae h₁, ←
     volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
-  convert! h₂ using 1
+  convert h₂ using 1
   · rw [Measure.restrict_prod_eq_prod_univ]
     exact (Measure.restrict_eq_self _ (regionBetween_subset f g s)).symm
   · rw [Measure.restrict_prod_eq_prod_univ]

@@ -140,7 +140,7 @@ lemma continuousOn_mgf : ContinuousOn (mgf X μ) (interior (integrableExpSet X �
 lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
     Continuous (mgf X μ) := by
   rw [← continuousOn_univ]
-  convert! continuousOn_mgf
+  convert continuousOn_mgf
   symm
   rw [interior_eq_univ]
   ext t
@@ -233,7 +233,7 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
       ring
   _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
     congr
-    convert! (hasDerivAt_integral_pow_mul_exp_real h 1).deriv using 1
+    convert (hasDerivAt_integral_pow_mul_exp_real h 1).deriv using 1
     simp
 
 lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X μ)) :
@@ -284,7 +284,7 @@ lemma exists_cgf_eq_iteratedDeriv_two_cgf_mul [IsZeroOrProbabilityMeasure μ] (h
   rw [← Set.uIoo_of_lt ht]
   convert! taylor_mean_remainder_lagrange_iteratedDeriv ht.ne ?_
   · have hd : derivWithin (cgf X μ) (Set.Icc 0 t) 0 = 0 := by
-      convert! (analyticAt_cgf (hs ⟨le_refl 0, le_of_lt ht⟩)).differentiableAt.derivWithin _
+      convert (analyticAt_cgf (hs ⟨le_refl 0, le_of_lt ht⟩)).differentiableAt.derivWithin _
       · simpa [hc] using (deriv_cgf_zero (hs ⟨le_refl 0, le_of_lt ht⟩)).symm
       · exact hu 0 ⟨le_refl 0, le_of_lt ht⟩
     simp [hd, Set.uIcc_of_lt ht]

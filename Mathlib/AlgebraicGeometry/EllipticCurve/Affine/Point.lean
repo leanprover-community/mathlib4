@@ -312,7 +312,7 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
   convert! mul_top (_ : Ideal W.CoordinateRing) using 2
   on_goal 2 => infer_instance
   simp_rw [← Set.image_singleton (f := mk W), ← Set.image_insert_eq, ← map_span]
-  convert! map_top (R := F[X][Y]) (mk W) using 1
+  convert map_top (R := F[X][Y]) (mk W) using 1
   apply congr_arg
   simp_rw [eq_top_iff_one, mem_span_insert', mem_span_singleton']
   rcases ((nonsingular_iff' ..).mp h).right with hx | hy
@@ -349,7 +349,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     ← sub_eq_add_neg, ← sub_mul, ← map_sub <| mk W, sub_sub_sub_cancel_right, span_insert,
     ← span_singleton_mul_span_singleton, ← sup_rw, ← Ideal.sup_mul, ← Ideal.sup_mul]
   apply congr_arg (_ ∘ _)
-  convert! top_mul (_ : Ideal W.CoordinateRing)
+  convert top_mul (_ : Ideal W.CoordinateRing)
   simp_rw [XClass, ← Set.image_singleton (f := mk W), ← map_span, ← Ideal.map_sup, eq_top_iff_one,
     mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
     mem_span_singleton']
@@ -440,14 +440,14 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
         · exact (hq hq').elim -- `hq'` should be `rfl`
         · rw [hq'] at hdpq hdq -- line should be redundant
           rcases le_or_gt dp (dq + 1) with hpq | hpq
-          · convert!
+          · convert
             (degree_sub_eq_right_of_degree_lt <|
                   (degree_sub_le _ _).trans_lt <|
                     max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>
                 exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
           · rw [sub_sub]
-            convert!
+            convert
               (degree_sub_eq_left_of_degree_lt <|
                     (degree_add_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdpq.trans_lt _, hdq.trans_lt _⟩).trans
@@ -863,7 +863,7 @@ noncomputable abbrev baseChange [Algebra F K] [IsScalarTower R F K] :
 lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalarTower R F L]
     (f : K →ₐ[F] L) (P : (W'⁄F).Point) : map f (baseChange F K P) = baseChange F L P := by
   have : Subsingleton (F →ₐ[F] L) := inferInstance
-  convert! map_map (Algebra.ofId F K) f P
+  convert map_map (Algebra.ofId F K) f P
 
 end Point
 

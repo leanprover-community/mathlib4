@@ -336,7 +336,7 @@ theorem condLExp_tsum [Countable ι] {X : ι → Ω → ℝ≥0∞}
 theorem condLExp_finsetSum (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
     (hX : ∀ i, AEMeasurable[mΩ₀] (X i) P) :
     P⁻[∑ i ∈ s, X i|mΩ] =ᵐ[P] ∑ i ∈ s, P⁻[X i|mΩ] := by
-  convert! condLExp_tsum mΩ (fun i : s ↦ hX i)
+  convert condLExp_tsum mΩ (fun i : s ↦ hX i)
   · simp [Finset.sum_attach]
   · simp [Finset.sum_attach _ (f := (P⁻[X ·|mΩ]))]
 

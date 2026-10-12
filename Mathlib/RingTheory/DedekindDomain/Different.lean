@@ -130,7 +130,7 @@ variable [IsDomain A] [IsFractionRing A K] [FiniteDimensional K L] [Algebra.IsSe
 
 lemma traceDual_top [Decidable (IsField A)] :
     (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
-  convert! traceDual_top'
+  convert traceDual_top'
   rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
     LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
     ← RingHom.range_eq_top, _root_.eq_top_iff]
@@ -921,7 +921,7 @@ theorem not_dvd_differentIdeal_iff
     let K := FractionRing A
     let L := FractionRing B
     have : IsLocalization B⁰ (Localization.AtPrime (⊥ : Ideal B)) := by
-      convert!
+      convert
         (inferInstance :
           IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B)))
       ext; simp [Ideal.primeCompl]

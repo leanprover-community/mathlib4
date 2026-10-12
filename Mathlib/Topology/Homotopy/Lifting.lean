@@ -223,7 +223,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
     obtain ⟨Γ, cont, eqOn, Γ_0⟩ := this n_max
     rw [h_max _ le_rfl] at cont eqOn
     exact ⟨⟨Γ, continuousOn_univ.mp
-      (by convert! cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
+      (by convert cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
       funext fun _ ↦ eqOn ⟨bot_le, le_top⟩, Γ_0⟩
   intro n
   induction n with
@@ -491,7 +491,7 @@ theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocallyPathCo
   · simpa [and_comm] using cov.exists_path_lifts (f.comp γ) e₀ (by simp [γ_0, he])
   let pγ : Path a₀ (γ 1) := ⟨γ, γ_0, rfl⟩
   let pγ' : Path a₀ (γ 1) := ⟨γ', γ'_0, γγ'1.symm⟩
-  convert!
+  convert
     cov.liftPath_apply_one_eq_of_homotopicRel
       (ContinuousMap.HomotopicRel.comp_continuousMap (SimplyConnectedSpace.paths_homotopic pγ pγ')
         f)
@@ -646,18 +646,21 @@ def fundamentalGroupToMulOpposite : FundamentalGroup X x →* Gᵐᵒᵖ where
     exact Subtype.ext (fiberEquivGroup_smul_self ..).symm
 
 variable {e} in
-theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : Gᵐᵒᵖ} :
+theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : Gᵐᵒᵖ} :
     hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e := by
   rw [fundamentalGroupToMulOpposite, ← MulOpposite.unop_injective.eq_iff, iff_comm, eq_comm,
     ← hp.fiberEquivGroup_smul_self e]
   have := hp.isCancelSMul.right_cancel'
   aesop
 
+@[deprecated (since := "2026-09-30")]
+alias fundamentalGroupToMulOpposite_apply_eq_Iff := fundamentalGroupToMulOpposite_apply_eq_iff
+
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : G} {Γ : C(I, E)}
     (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) (Γ_1 : Γ 1 = g • e) :
     hp.fundamentalGroupToMulOpposite e (.mk γ) = .op g :=
-  hp.fundamentalGroupToMulOpposite_apply_eq_Iff.mpr <| by
+  hp.fundamentalGroupToMulOpposite_apply_eq_iff.mpr <| by
     simp [hp.isCoveringMap.monodromy_eq_apply_one hpΓ Γ_0, Γ_1]
 
 variable {e} in
@@ -671,7 +674,7 @@ by `g`. -/
 theorem fundamentalGroupToMulOpposite_toPermFiber :
     hp.fundamentalGroupToMulOpposite (hp.toPermFiber x g e) γ =
       MulOpposite.op (g * (hp.fundamentalGroupToMulOpposite e γ).unop * g⁻¹) := by
-  rw [fundamentalGroupToMulOpposite_apply_eq_Iff, hp.monodromy_toPermFiber]
+  rw [fundamentalGroupToMulOpposite_apply_eq_iff, hp.monodromy_toPermFiber]
   simp only [MulOpposite.unop_op, toPermFiber_apply_apply_coe,
     ← hp.unop_fundamentalGroupToMulOpposite_smul, mul_smul, inv_smul_smul]
 
@@ -708,7 +711,7 @@ theorem fundamentalGroupToMulOpposite_surjective [PathConnectedSpace E] :
   set γ : Path x x := (Γ.map hp.continuous).cast
     (by simpa using e.property.symm) (by simpa using e'.property.symm)
   use .fromPath ⟦γ⟧
-  rw [fundamentalGroupToMulOpposite_apply_eq_Iff]
+  rw [fundamentalGroupToMulOpposite_apply_eq_iff]
   change (e' : E) = _
   rw [← hp.isCoveringMap.monodromy_eq_of_map_eq (γ := ⟦γ⟧) (Γ := ⟦Γ⟧) rfl]
 
@@ -779,15 +782,18 @@ def fundamentalGroupToMulOpposite : FundamentalGroup X x →* (Multiplicative G)
   hp.toMultiplicative.fundamentalGroupToMulOpposite e
 
 variable {e} in
-theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : (Multiplicative G)ᵐᵒᵖ} :
+theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : (Multiplicative G)ᵐᵒᵖ} :
     hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e :=
-  hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_Iff
+  hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_iff
+
+@[deprecated (since := "2026-09-30")]
+alias fundamentalGroupToMulOpposite_apply_eq_Iff := fundamentalGroupToMulOpposite_apply_eq_iff
 
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : Multiplicative G}
     {Γ : C(I, E)} (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) (Γ_1 : Γ 1 = g • e) :
     hp.fundamentalGroupToMulOpposite e (.mk γ) = .op g :=
-  hp.fundamentalGroupToMulOpposite_apply_eq_Iff.mpr <| by
+  hp.fundamentalGroupToMulOpposite_apply_eq_iff.mpr <| by
     rw [hp.isCoveringMap.monodromy_eq_apply_one hpΓ Γ_0, Γ_1]; rfl
 
 variable {e} in
