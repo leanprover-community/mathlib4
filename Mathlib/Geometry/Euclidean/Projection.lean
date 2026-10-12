@@ -9,6 +9,8 @@ public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 public import Mathlib.Geometry.Euclidean.PerpBisector
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+
 /-!
 # Orthogonal projection in affine spaces
 
@@ -22,6 +24,9 @@ and reflection of a point in an affine subspace.
 
 * `EuclideanGeometry.reflection` is the reflection of a point in an
   affine subspace.
+
+* `AffineSubspace.hyperplane n c` is the affine hyperplane `{y | ⟪n, y⟫ = c}` of a real inner
+  product space.
 
 -/
 
@@ -611,7 +616,8 @@ theorem reflection_perpBisector_right (a b : P) :
     reflection (perpBisector b a) a = b := by
   simpa [perpBisector_comm a b] using reflection_perpBisector_left a b
 
-open scoped RealInnerProductSpace in
+open scoped RealInnerProductSpace
+
 /-- The distance from a point `p` to its orthogonal projection on an affine subspace `s` whose
 orthogonal complement is spanned by `n` (a hyperplane with normal vector `n`, when `n ≠ 0`) is
 `|⟪n, p -ᵥ q⟫| / ‖n‖`, for any point `q` of `s`. -/
@@ -629,6 +635,50 @@ theorem dist_orthogonalProjection_eq_abs_inner_div_norm (s : AffineSubspace ℝ 
     inner_add_right, h0, add_zero, ← ht, norm_smul, inner_smul_right,
     real_inner_self_eq_norm_sq, abs_mul, abs_of_nonneg (sq_nonneg ‖n‖), Real.norm_eq_abs]
   field
+
+/-- The affine hyperplane `{y | ⟪n, y⟫ = c}` of a real inner product space, with normal vector
+`n`. It is empty if `n = 0` and `c ≠ 0`, and the whole space if `n = 0` and `c = 0`. -/
+def _root_.AffineSubspace.hyperplane (n : V) (c : ℝ) : AffineSubspace ℝ V where
+  carrier := {y | ⟪n, y⟫ = c}
+  smul_vsub_vadd_mem' := by
+    intros
+    simp_all [inner_add_right, inner_smul_right, inner_sub_right]
+
+@[simp]
+theorem _root_.AffineSubspace.mem_hyperplane {n y : V} {c : ℝ} :
+    y ∈ AffineSubspace.hyperplane n c ↔ ⟪n, y⟫ = c :=
+  Iff.rfl
+
+theorem _root_.AffineSubspace.hyperplane_nonempty {n : V} (hn : n ≠ 0) (c : ℝ) :
+    (AffineSubspace.hyperplane n c : Set V).Nonempty :=
+  ⟨(c / ‖n‖ ^ 2) • n, by
+    simp [inner_smul_right, norm_ne_zero_iff.2 hn]⟩
+
+theorem _root_.AffineSubspace.direction_hyperplane {n : V} (hn : n ≠ 0) (c : ℝ) :
+    (AffineSubspace.hyperplane n c).direction = (ℝ ∙ n)ᗮ := by
+  obtain ⟨q, hq⟩ := AffineSubspace.hyperplane_nonempty hn c
+  ext v
+  rw [AffineSubspace.mem_direction_iff_eq_vsub_right hq,
+    Submodule.mem_orthogonal_singleton_iff_inner_right]
+  constructor
+  · rintro ⟨y, hy, rfl⟩
+    rw [vsub_eq_sub, inner_sub_right, AffineSubspace.mem_hyperplane.1 hy,
+      AffineSubspace.mem_hyperplane.1 hq, sub_self]
+  · intro hv
+    refine ⟨v + q, ?_, by rw [vsub_eq_sub, add_sub_cancel_right]⟩
+    rw [AffineSubspace.mem_hyperplane, inner_add_right, hv, zero_add,
+      AffineSubspace.mem_hyperplane.1 hq]
+
+/-- The distance from a point `p` to the hyperplane `{y | ⟪n, y⟫ = c}`, measured to its
+orthogonal projection, is `|⟪n, p⟫ - c| / ‖n‖`. -/
+theorem dist_orthogonalProjection_hyperplane {n : V} (hn : n ≠ 0) (c : ℝ) (p : V)
+    [Nonempty (AffineSubspace.hyperplane n c)]
+    [(AffineSubspace.hyperplane n c).direction.HasOrthogonalProjection] :
+    dist p (orthogonalProjection (AffineSubspace.hyperplane n c) p) = |⟪n, p⟫ - c| / ‖n‖ := by
+  obtain ⟨q, hq⟩ := AffineSubspace.hyperplane_nonempty hn c
+  rw [dist_orthogonalProjection_eq_abs_inner_div_norm _ ?_ hq, vsub_eq_sub, inner_sub_right,
+    AffineSubspace.mem_hyperplane.1 hq]
+  rw [AffineSubspace.direction_hyperplane hn, Submodule.orthogonal_orthogonal]
 
 end RealInnerProductSpace
 
