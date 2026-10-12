@@ -227,6 +227,31 @@ theorem Monic.neg_one_pow_natDegree_mul_comp_neg_X {p : R[X]} (hp : p.Monic) :
       apply monic_mul_C_of_leadingCoeff_mul_eq_one
       simp [← pow_add, hp]
 
+theorem isCoprime_X_sub_C_iff {p : R[X]} :
+    IsCoprime (X - C a) p ↔ IsUnit (p.eval a) := by
+  refine ⟨fun ⟨u, v, h⟩ ↦ IsUnit.of_mul_eq_one_right (v.eval a) ?_, fun h ↦ ?_⟩
+  · simpa using congr_arg (eval a) h
+  · obtain ⟨q, hq⟩ := X_sub_C_dvd_sub_C_eval (a := a) (p := p)
+    refine ⟨-(C h.unit⁻¹.val * q), C h.unit⁻¹.val, ?_⟩
+    rw [← C_1, ← h.val_inv_mul, C_mul, neg_mul, mul_assoc, mul_comm q, ← hq, mul_sub, neg_sub,
+      sub_add_cancel]
+
+theorem isCoprime_X_sub_C_iff_isUnit_sub :
+    IsCoprime (X - C a) (X - C b) ↔ IsUnit (a - b) := by
+  simp [isCoprime_X_sub_C_iff]
+
+@[deprecated +typeChanged (since := "2026-10-12")]
+alias ⟨_, isCoprime_X_sub_C_of_isUnit_sub⟩ := isCoprime_X_sub_C_iff_isUnit_sub
+
+theorem isCoprime_X_iff {p : R[X]} : IsCoprime X p ↔ IsUnit (p.coeff 0) := by
+  simpa [coeff_zero_eq_eval_zero] using isCoprime_X_sub_C_iff (a := 0) (p := p)
+
+theorem isCoprime_X_pow_of_isUnit_coeff_zero {p : R[X]}
+    (hp : IsUnit (p.coeff 0)) : IsCoprime (X ^ n) p := by
+  induction n with
+  | zero => simp [isCoprime_one_left]
+  | succ n ih => rw [pow_succ]; exact ih.mul_left (isCoprime_X_iff.2 hp)
+
 variable [IsDomain R] {p q : R[X]}
 
 theorem degree_eq_degree_of_associated (h : Associated p q) : degree p = degree q := by
@@ -290,31 +315,6 @@ lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S
   rcases h with ⟨_, _, h⟩
   apply_fun aeval s at h
   simp only [map_add, map_mul, map_one, hp, hq, mul_zero, add_zero, zero_ne_one] at h
-
-theorem isCoprime_X_sub_C_iff {R} [CommRing R] {a : R} {p : R[X]} :
-    IsCoprime (X - C a) p ↔ IsUnit (p.eval a) := by
-  refine ⟨fun ⟨u, v, h⟩ ↦ IsUnit.of_mul_eq_one_right (v.eval a) ?_, fun h ↦ ?_⟩
-  · simpa using congr_arg (eval a) h
-  · obtain ⟨q, hq⟩ := X_sub_C_dvd_sub_C_eval (a := a) (p := p)
-    refine ⟨-(C h.unit⁻¹.val * q), C h.unit⁻¹.val, ?_⟩
-    rw [← C_1, ← h.val_inv_mul, C_mul, neg_mul, mul_assoc, mul_comm q, ← hq, mul_sub, neg_sub,
-      sub_add_cancel]
-
-theorem isCoprime_X_sub_C_iff_isUnit_sub {R} [CommRing R] {a b : R} :
-    IsCoprime (X - C a) (X - C b) ↔ IsUnit (a - b) := by
-  simp [isCoprime_X_sub_C_iff]
-
-@[deprecated +typeChanged (since := "2026-10-12")]
-alias ⟨_, isCoprime_X_sub_C_of_isUnit_sub⟩ := isCoprime_X_sub_C_iff_isUnit_sub
-
-theorem isCoprime_X_iff {R} [CommRing R] {p : R[X]} : IsCoprime X p ↔ IsUnit (p.coeff 0) := by
-  simpa [coeff_zero_eq_eval_zero] using isCoprime_X_sub_C_iff (a := (0 : R)) (p := p)
-
-theorem isCoprime_X_pow_of_isUnit_coeff_zero {R} [CommRing R] {n : ℕ} {p : R[X]}
-    (hp : IsUnit (p.coeff 0)) : IsCoprime (X ^ n) p := by
-  induction n with
-  | zero => simp [isCoprime_one_left]
-  | succ n ih => rw [pow_succ]; exact ih.mul_left (isCoprime_X_iff.2 hp)
 
 open scoped Function in -- required for scoped `on` notation
 theorem pairwise_coprime_X_sub_C {K} [Field K] {I : Type v} {s : I → K} (H : Function.Injective s) :
