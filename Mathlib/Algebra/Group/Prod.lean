@@ -602,15 +602,17 @@ end
 
 section curry
 
+variable {α β M : Type*} [Mul M]
+
+variable (α β M) in
 /-- `MulEquiv` version of `Equiv.curry`. -/
 @[to_additive /-- `AddEquiv` version of `Equiv.curry`. -/]
-protected def curry (α β M : Type*) [Mul M] : (α × β → M) ≃* (α → β → M) where
+protected def curry : (α × β → M) ≃* (α → β → M) where
   __ := Equiv.curry α β M
   map_mul' _ _ := by ext; simp
 
-variable {α β M : Type*} [Mul M]
-
-@[to_additive (attr := simp)] lemma toEquiv_curry :
+@[to_additive (attr := simp)]
+lemma toEquiv_curry :
     (MulEquiv.curry α β M : (α × β → M) ≃ (α → β → M)) = .curry α β M := rfl
 
 @[to_additive (attr := simp)]
