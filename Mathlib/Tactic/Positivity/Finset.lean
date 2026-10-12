@@ -37,16 +37,7 @@ meta def evalFinsetCard : PositivityExt where eval {u α} _ pα? e :=
       return .positive q(Finset.Nonempty.card_pos $ps)
   | _ => throwError "not Finset.card"
 
-/-- Extension for `Fintype.card`. `Fintype.card α` is positive if `α` is nonempty. -/
-@[positivity Fintype.card _]
-meta def evalFintypeCard : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℕ), ~q(@Fintype.card $β $instβ) =>
-    let instβno ← synthInstanceQ q(Nonempty $β)
-    assumeInstancesCommute
-    return .positive q(@Fintype.card_pos $β $instβ $instβno)
-  | _ => throwError "not Fintype.card"
+attribute [positivity_lemma] Fintype.card_pos
 
 /-- Extension for `Finset.dens`. `s.dens` is positive if `s` is nonempty.
 
