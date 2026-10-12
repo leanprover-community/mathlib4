@@ -353,7 +353,7 @@ lemma Bundle.Trivialization.contMDiffAt_symm_const
     [ContMDiffVectorBundle n F₁ E₁ IB]
     (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
     {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
-    CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) x := by
+    CMDiffAt n (T% (Trivialization.symmL (F := F₁) 𝕜 e · u)) x := by
   apply ContMDiffAt.clm_bundle_apply_trivial_source
   · exact contMDiffAt_symmL e hx
   · exact contMDiffAt_id
@@ -366,7 +366,7 @@ lemma Bundle.Trivialization.contMDiffOn_symm_const
     [ContMDiffVectorBundle n F₁ E₁ IB]
     (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
     (u : F₁) :
-    CMDiff[e.baseSet] n (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) :=
+    CMDiff[e.baseSet] n (T% (Trivialization.symmL (F := F₁) 𝕜 e · u)) :=
   fun _x hx ↦ (e.contMDiffAt_symm_const hx _).contMDiffWithinAt
 
 lemma Bundle.Trivialization.contMDiffWithinAt_apply [ContMDiffVectorBundle n F₁ E₁ IB]
