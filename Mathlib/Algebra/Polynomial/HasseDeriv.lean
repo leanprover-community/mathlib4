@@ -80,6 +80,8 @@ theorem hasseDeriv_coeff (n : ℕ) :
   · intro h
     simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
+/-- The `k`-th Hasse derivative of `f` vanishes if and only if `n.choose k * f.coeff n = 0`
+for every `n`. -/
 theorem hasseDeriv_eq_zero_iff : hasseDeriv k f = 0 ↔ ∀ n, (n.choose k : R) * f.coeff n = 0 := by
   refine ⟨fun h n ↦ ?_, fun h ↦ ext fun n ↦ by rw [hasseDeriv_coeff, coeff_zero, h]⟩
   rcases lt_or_ge n k with hn | hn
