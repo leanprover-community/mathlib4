@@ -51,7 +51,7 @@ lemma degenerate_zero : X.degenerate 0 = ∅ := by
   simp at hm
 
 @[simp]
-lemma nondegenerate_zero : X.nonDegenerate 0 = Set.univ := by
+lemma nonDegenerate_zero : X.nonDegenerate 0 = Set.univ := by
   simp [nonDegenerate]
 
 variable {n : ℕ}
