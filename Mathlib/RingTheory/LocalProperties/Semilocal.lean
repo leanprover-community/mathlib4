@@ -163,8 +163,8 @@ theorem IsCoprime.exists_isUnit_add_mul {a b : R} (h : IsCoprime a b) :
     exact m.add_mem (m.mul_mem_left _ ha) (m.mul_mem_left _ hb)
   · obtain ⟨k, hk, hy⟩ := (hm.exists_inv hb).choose_spec
     simp only [x, hb, ↓reduceDIte] at htm
-    have e : (1 : R) = (a + t * b) - (t - (hm.exists_inv hb).choose * (1 - a)) * b
-        + (1 - a) * k := by
+    have e : (1 : R) = (a + t * b) - (t - (hm.exists_inv hb).choose * (1 - a)) * b +
+        (1 - a) * k := by
       linear_combination (-(1 - a)) * hy
     rw [e]
     exact m.add_mem (m.sub_mem hmem (m.mul_mem_right _ htm)) (m.mul_mem_left _ hk)
