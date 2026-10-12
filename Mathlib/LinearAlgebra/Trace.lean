@@ -154,8 +154,7 @@ theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose
 
 section TwoModules
 
-variable (N)
-variable [Module.Projective R N] [Module.Finite R N]
+variable (N) [Module.Projective R N] [Module.Finite R N]
 
 theorem trace_prodMap :
     trace R (M × N) ∘ₗ prodMapLinear R M N M N R =
