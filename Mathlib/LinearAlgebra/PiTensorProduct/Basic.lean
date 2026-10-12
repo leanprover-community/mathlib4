@@ -738,6 +738,18 @@ theorem reindex_symm (e : ι ≃ ι₂) :
   ext x
   simp [reindex]
 
+@[simp]
+theorem reindex_symm_tprod (e : ι ≃ ι₂) (f : Π i, s i) :
+    (reindex R s e).symm (tprod R (fun i ↦ f (e.symm i))) = tprod R f := by
+  apply (reindex R s e).injective
+  simp
+
+@[simp]
+theorem reindex_symm_symm_tprod (e : ι₂ ≃ ι) (f : Π i, s i) :
+    (reindex R s e.symm).symm (tprod R (fun i ↦ f (e i))) = tprod R f := by
+  apply (reindex R s e.symm).injective
+  simp
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
