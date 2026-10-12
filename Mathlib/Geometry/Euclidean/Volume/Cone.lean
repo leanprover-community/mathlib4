@@ -13,15 +13,16 @@ import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 /-!
 # Volume of a cone
 
-We compute the volume of a cone over an arbitrary measurable base in a Euclidean affine space,
-generalizing the formula `h * b / n` for the volume of a simplex
-(`Affine.Simplex.euclideanHausdorffMeasure_closedInterior`).
+We compute the volume of a cone over an arbitrary measurable base in a Euclidean affine space.
+The formula `h * b / n` for the volume of a simplex
+(`Affine.Simplex.euclideanHausdorffMeasure_closedInterior`) is the special case of a cone over a
+face.
 
 ## Main results
 
-* `EuclideanGeometry.euclideanHausdorffMeasure_cone`: in dimension `d + 1`, the cone with apex `a`
-  over a base `B` lying in an affine subspace that does not contain `a` has volume
-  `h * μHE[d] B / (d + 1)`, where `h` is the distance from `a` to that subspace.
+* `EuclideanGeometry.euclideanHausdorffMeasure_cone`: in an affine subspace of dimension `d + 1`,
+  the cone with apex `a` over a base `B` lying in an affine subspace that does not contain `a` has
+  volume `h * μHE[d] B / (d + 1)`, where `h` is the distance from `a` to that subspace.
 
 ## Tags
 
@@ -35,15 +36,17 @@ open scoped ENNReal NNReal RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
   [MetricSpace P] [NormedAddTorsor V P] [MeasurableSpace P] [BorelSpace P]
 
-/-- **Volume of a cone**: in a Euclidean affine space of dimension `d + 1`, the cone with apex
-`a` over a measurable base `B` contained in an affine subspace `S` not containing `a` has volume
-`h * b / (d + 1)`, where `h` is the distance from `a` to `S` and `b` is the `d`-volume of `B`. -/
-theorem euclideanHausdorffMeasure_cone {d : ℕ} (hV : finrank ℝ V = d + 1)
-    {S : AffineSubspace ℝ P} [Nonempty S] {a : P} (ha : a ∉ S) {B : Set P} (hBS : B ⊆ S)
-    (hB : MeasurableSet B) :
+/-- **Volume of a cone**: in a Euclidean affine subspace `T` of dimension `d + 1`, the cone with
+apex `a` over a measurable base `B` contained in an affine subspace `S ≤ T` not containing `a` has
+volume `h * b / (d + 1)`, where `h` is the distance from `a` to `S` and `b` is the `d`-volume of
+`B`. -/
+theorem euclideanHausdorffMeasure_cone {T S : AffineSubspace ℝ P} [FiniteDimensional ℝ T.direction]
+    [Nonempty S] [S.direction.HasOrthogonalProjection] (hST : S ≤ T) {d : ℕ}
+    (hT : finrank ℝ T.direction = d + 1) {a : P} (haT : a ∈ T) (ha : a ∉ S) {B : Set P}
+    (hBS : B ⊆ S) (hB : MeasurableSet B) :
     μHE[d + 1] (⋃ t ∈ Icc (0 : ℝ) 1, AffineMap.homothety a t '' B) =
       ((d + 1 : ℕ) : ℝ≥0∞)⁻¹ * .ofReal (dist a (orthogonalProjection S a)) * μHE[d] B := by
   borelize V
@@ -138,8 +141,11 @@ theorem euclideanHausdorffMeasure_cone {d : ℕ} (hV : finrank ℝ V = d + 1)
         rw [← intervalIntegral.integral_of_le zero_le_one, integral_pow,
           ← ENNReal.ofReal_natCast (d + 1), ← ENNReal.ofReal_inv_of_pos (by positivity)]
         norm_num
-  conv_lhs => rw [← hV]
-  rw [euclideanHausdorffMeasure_eq_lintegral a hw hK, hV, Nat.add_sub_cancel,
+  have hwT : w ∈ T.direction := vsub_mem_direction (hST (orthogonalProjection_mem a)) haT
+  have hKT : K ⊆ T := iUnion₂_subset fun t _ ↦ image_subset_iff.2 fun b hb ↦
+    AffineMap.homothety_mem haT t (hST (hBS hb))
+  conv_lhs => rw [← hT]
+  rw [euclideanHausdorffMeasure_eq_lintegral_of_subset a hw hK hwT hKT, hT, Nat.add_sub_cancel,
     lintegral_congr_ae hae, lintegral_indicator measurableSet_Ioc,
     lintegral_mul_const _ (by fun_prop), hint,
     ← ofReal_norm, ← dist_eq_norm_vsub']

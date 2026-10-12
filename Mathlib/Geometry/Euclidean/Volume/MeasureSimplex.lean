@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Euclidean.Volume.Def
 public import Mathlib.Geometry.Euclidean.Volume.Measure
 
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Geometry.Euclidean.Volume.Cone
 
 /-!
 # Connect the algebraic definition and measure theory for the volume of a simplex
@@ -65,40 +65,15 @@ height and $b$ is the $(n - 1)$-volume of the base. This version is expressed in
 theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     μHE[n + 1] s.closedInterior =
       ((n + 1 : ℕ) : ℝ≥0∞)⁻¹ * .ofReal (s.height i) * μHE[n] (s.faceOpposite i).closedInterior := by
-  borelize V
   have hn : finrank ℝ (affineSpan ℝ (Set.range s.points)).direction = n + 1 := by
     rw [direction_affineSpan]
     exact s.independent.finrank_vectorSpan (by simp)
-  conv in μHE[n + 1] => rw [← hn]
-  -- Convert the LHS to integrating the cross-section of the interior
-  have haltitude0 : s.altitudeFoot i -ᵥ s.points i ≠ 0 :=
-    vsub_eq_zero_iff_eq.ne.mpr (s.ne_altitudeFoot i).symm
-  have haltitudeMem : s.altitudeFoot i -ᵥ s.points i ∈
-      (affineSpan ℝ (Set.range s.points)).direction := by
-    apply vsub_mem_vectorSpan _ (s.altitudeFoot_mem_affineSpan _)
-    exact mem_affineSpan _ (by simp)
-  rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral_of_subset (s.points i) haltitude0
-    s.measurableSet_closedInterior haltitudeMem closedInterior_subset_affineSpan, ← ofReal_norm,
-    ← dist_eq_norm_vsub', ← height, Nat.sub_eq_of_eq_add hn]
-  simp_rw [← AffineMap.lineMap_apply, ← vectorSpan_pair, ← direction_affineSpan,
-    affineSpan_pair_altitudeFoot_eq_altitude,
-    closedInterior_inter_affineSubspaceMk'_lineMap_altitudeFoot s i]
-  rw [← setLIntegral_eq_of_support_subset
-    (support_euclideanHausdorffMeasure_closedInterior_inter_shift_subset s i),
-    lintegral_congr_ae (euclideanHausdorffMeasure_closedInterior_inter_shift_aeEq s i)]
-  -- Cancel common factors and reduce it to `∫ x in 0..1, x ^ n`
-  simp_rw [nnreal_smul_coe_apply]
-  rw [lintegral_mul_const _ (by fun_prop), ← mul_assoc, mul_comm (ENNReal.ofReal (s.height i))]
-  congr
-  calc
-    _ = ENNReal.ofReal (∫ x in Set.Icc (0 : ℝ) 1, ((‖x‖₊ ^ n : ℝ≥0) : ℝ)) :=
-      lintegral_coe_eq_integral _ (Continuous.integrableOn_Icc (by fun_prop))
-    _ = ENNReal.ofReal (∫ x in Set.Icc 0 1, x ^ n) :=
-      congrArg _ (setIntegral_congr_fun measurableSet_Icc fun x hx ↦ by simp [abs_of_nonneg hx.1])
-    _ = ((n + 1 : ℕ) : ℝ≥0∞)⁻¹ := by
-      rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le zero_le_one, integral_pow,
-        ← ENNReal.ofReal_natCast (n + 1), ← ENNReal.ofReal_inv_of_pos (by positivity)]
-      norm_num
+  rw [s.closedInterior_eq_iUnion_homothety i]
+  exact EuclideanGeometry.euclideanHausdorffMeasure_cone
+    (affineSpan_mono _ (by rw [range_faceOpposite_points]; exact Set.image_subset_range _ _))
+    hn (mem_affineSpan _ (Set.mem_range_self i)) (s.points_notMem_affineSpan_faceOpposite i)
+    (s.faceOpposite i).closedInterior_subset_affineSpan
+    (s.faceOpposite i).measurableSet_closedInterior
 
 /-- The $n$-volume of the closed interior of a $n$-simplex is equal to $h * b / n$, where $h$ is the
 height and $b$ is the $(n - 1)$-volume of the base. This version is expressed in `Real`. -/
