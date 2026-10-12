@@ -10,7 +10,6 @@ public import Mathlib.Topology.VectorBundle.Hom
 
 import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 
-
 /-! # Homs of `C^n` vector bundles over the same base space
 
 Here we show that the bundle of continuous linear maps is a `C^n` vector bundle. We also show
