@@ -10,8 +10,8 @@ public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
 
-import Mathlib.RingTheory.Ideal.Finsupp
 import Mathlib.Algebra.GroupWithZero.Action.Regular
+import Mathlib.RingTheory.Ideal.Finsupp
 
 /-!
 

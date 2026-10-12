@@ -281,17 +281,26 @@ lemma mem_mulAntidiagonal_ofAdd_iff_toAdd_mem_antidiagonal {a : A}
 
 end Multiplicative
 
-variable {A : Type*}
-
 section Prod
 
-variable {B : Type*} [Mul A] [Mul B] [HasMulAntidiagonal A] [HasMulAntidiagonal B]
+variable {A B : Type*} [Monoid A] [Monoid B] [HasMulAntidiagonal A] [HasMulAntidiagonal B]
 
 @[to_additive]
-instance [DecidableEq A] [DecidableEq B] : HasMulAntidiagonal (A × B) where
+instance : HasMulAntidiagonal (A × B) where
   mulAntidiagonal a :=
-    (mulAntidiagonal a.1 ×ˢ mulAntidiagonal a.2).image fun (x, y) ↦ ((x.1, y.1), (x.2, y.2))
+    (mulAntidiagonal a.1 ×ˢ mulAntidiagonal a.2).map
+      (Equiv.prodProdProdComm A A B B).toEmbedding
   mem_mulAntidiagonal := by simp
+
+@[to_additive]
+lemma mulAntidiagonal_prod (a : A × B) :
+    mulAntidiagonal a = (mulAntidiagonal a.1 ×ˢ mulAntidiagonal a.2).map
+      (Equiv.prodProdProdComm A A B B).toEmbedding := rfl
+
+@[to_additive (attr := simp)]
+lemma card_mulAntidiagonal_prod (a : A × B) :
+    #(mulAntidiagonal a) = #(mulAntidiagonal a.1) * #(mulAntidiagonal a.2) := by
+  simp [mulAntidiagonal_prod]
 
 end Prod
 
