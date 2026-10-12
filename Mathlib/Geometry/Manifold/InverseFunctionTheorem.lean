@@ -178,22 +178,22 @@ lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M₁ → M₂} {p : M�
   rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf.injective)]
   rfl
 
-/-- The inverse function theorem for manifolds. If `f` is `C^n` on a neighborhood of an
-interior point `p` and has bijective differential at `p`, then `f` is a local diffeomorphism at `p`.
--/
+/-- The **inverse function theorem** for manifolds, at an interior point.
+If `f` is `C^n` on a neighborhood of an interior point `p` and has invertible differential at `p`,
+then `f` is a local diffeomorphism at `p`. -/
 theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInteriorPoint p)
     {A : Set M₁} (hA : IsOpen A) (hpA : p ∈ A) {f : M₁ → M₂} (hf : ContMDiffOn I₁ I₂ n f A)
     (hf' : ContinuousLinearMap.IsInvertible (mfderiv% f p)) (hn : n ≠ 0) :
     IsLocalDiffeomorphAt I₁ I₂ n f p := by
-  -- show that `f p` is an interior point of `M₂`
+  -- Since `p` is an interior point, also `f p` is an interior point (of `M₂`).
   have mDiffAt_f_p : MDiffAt f p := (hf.contMDiffAt (hA.mem_nhds hpA)).mdifferentiableAt hn
   have hfp : I₂.IsInteriorPoint (f p) :=
     mDiffAt_f_p.isInteriorPoint_of_surjective_mfderiv hf'.surjective hp
-  -- let `g` be the coordinate representation of `f` and obtain coordinate charts
+  -- Consider the coordinate representation `g` of f in local charts at `p` and `f p`.
   let g : E₁ → E₂ := writtenInExtChartAt I₁ I₂ p f
   let φ₁ : PartialDiffeomorph I₁ 𝓘(𝕜, E₁) M₁ E₁ n := extChartAtPartialDiffeomorph I₁ n p
   let ψ₁ : PartialDiffeomorph I₂ 𝓘(𝕜, E₂) M₂ E₂ n := extChartAtPartialDiffeomorph I₂ n (f p)
-  -- define `U ⊆ E₁`, an open set where we can easily show that `g` is ContDiff
+  -- Show that `g` is `C^n` on some open set containing `extChartAt I₁ p p`.
   let U : Set E₁ := φ₁ '' (φ₁.source ∩ (A ∩ f ⁻¹' ψ₁.source))
   have hg : ContDiffOn 𝕜 n g U := by
     refine ((contMDiffOn_iff.mp hf).2 p (f p)).mono ?_
@@ -212,13 +212,13 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   have hp' : extChartAt I₁ p p ∈ U :=
     mem_image_of_mem _ ⟨mem_extChartAtPartialDiffeomorph_source n hp,
       hpA, mem_extChartAtPartialDiffeomorph_source n hfp⟩
-  -- use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence
+  -- Use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence.
   obtain ⟨g', hg'⟩ := isInvertible_fderivWithin_writtenInExtChartAt hf'
   have hg' : HasFDerivAt g g'.toContinuousLinearMap (extChartAt I₁ p p) :=
     hg' ▸ mDiffAt_f_p.differentiableWithinAt_writtenInExtChartAt.hasFDerivWithinAt.hasFDerivAt
       (range_mem_nhds_isInteriorPoint hp)
-  /- obtain partial diffeomorphism in coordinates and compose with the charts to obtain a partial
-  diffeomorphism `M₁ → M₂` -/
+  /- Apply the inverse function theorem in normed spaces: obtain a local inverse for `g`.
+  Compose with the charts to obtain the desired partial diffeomorphism `M₁ → M₂`. -/
   use (φ₁.trans (hg.toPartialDiffeomorph U_open hp' hg' hn)).trans ψ₁.symm
   constructor
   · refine ⟨⟨mem_extChartAtPartialDiffeomorph_source n hp,
