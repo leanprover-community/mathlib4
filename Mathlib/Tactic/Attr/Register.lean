@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.LabelAttribute -- TODO: `registerLabelAttr` should be marked `meta`
 public meta import Lean.Meta.Tactic.Simp
+public import Mathlib.Init
 
 /-!
 # Attributes used in `Mathlib`

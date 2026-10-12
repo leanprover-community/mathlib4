@@ -7,12 +7,11 @@ module
 
 public meta import Lean.Elab.Tactic.Meta
 public meta import Lean.Elab.Tactic.SolveByElim
-public meta import Qq.Macro
-public meta import Qq.Typ
 public meta import Qq.MetaM
-
 public import Mathlib.Basic.Nontrivial.Basic -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Attr.Register -- shake: keep (tactic dependency)
+public meta import Qq.Macro
+public meta import Qq.Typ
 
 /-! # The `nontriviality` tactic. -/
 

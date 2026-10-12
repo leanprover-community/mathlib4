@@ -5,11 +5,11 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public import Mathlib.Tactic.FunProp.Core
 public meta import Lean.Elab.ConfigEval
+public import Mathlib.Tactic.FunProp.Core
 
-import Mathlib.Tactic.InferParam
 meta import Lean.Elab.InfoTree.Main
+import Mathlib.Tactic.InferParam
 
 /-!
 ## `funProp` tactic syntax

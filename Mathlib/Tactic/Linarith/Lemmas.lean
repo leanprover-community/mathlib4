@@ -6,10 +6,10 @@ Authors: Robert Y. Lewis
 module
 
 public meta import Batteries.Tactic.Lint.Basic
+public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Data.Ineq
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public import Mathlib.Tactic.Ineq
-public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Lemmas for `linarith`.

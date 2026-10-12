@@ -57,6 +57,4 @@ def toString : Ineq → String
 
 instance : ToString Ineq := ⟨toString⟩
 
-instance : Std.ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
-
 end Mathlib.Ineq

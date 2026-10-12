@@ -5,8 +5,8 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.CoeAttr
+public import Mathlib.Init
 
 /-!
 ## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.

@@ -5,8 +5,8 @@ Authors: Wojciech Nawrocki
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Basic
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.CategoryTheory.Category.Basic
 public meta import ProofWidgets.Component.PenroseDiagram
 public meta import ProofWidgets.Presentation.Expr
 

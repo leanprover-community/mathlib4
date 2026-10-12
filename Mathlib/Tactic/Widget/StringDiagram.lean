@@ -5,11 +5,11 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import ProofWidgets.Component.PenroseDiagram
-public meta import ProofWidgets.Component.Panel.Basic
 public meta import Mathlib.Data.List.Defs
-public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public meta import ProofWidgets.Component.Panel.Basic
+public meta import ProofWidgets.Component.PenroseDiagram
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 public meta import ProofWidgets.Component.HtmlDisplay
 public meta import ProofWidgets.Presentation.Expr
