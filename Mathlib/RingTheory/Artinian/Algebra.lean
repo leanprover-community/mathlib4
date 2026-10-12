@@ -7,7 +7,8 @@ module
 
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 # Algebras over Artinian rings

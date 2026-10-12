@@ -6,16 +6,14 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Regular.Pow
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
-public import Mathlib.Order.SymmDiff
 public import Mathlib.Tactic.Polynomial.Core
+
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Algebra.MonoidAlgebra.Support
 
 /-!
 # Multivariate polynomials
@@ -411,7 +409,7 @@ theorem ringHom_ext' {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
 
 theorem hom_eq_hom [Semiring S₂] (f g : MvPolynomial σ R →+* S₂) (hC : f.comp C = g.comp C)
     (hX : ∀ n : σ, f (X n) = g (X n)) (p : MvPolynomial σ R) : f p = g p :=
-  RingHom.congr_fun (ringHom_ext' hC hX) p
+  congr($(ringHom_ext' hC hX) p)
 
 theorem is_id (f : MvPolynomial σ R →+* MvPolynomial σ R) (hC : f.comp C = C)
     (hX : ∀ n : σ, f (X n) = X n) (p : MvPolynomial σ R) : f p = p :=
@@ -427,7 +425,7 @@ theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A
       f.comp (IsScalarTower.toAlgHom R A (MvPolynomial σ A)) =
         g.comp (IsScalarTower.toAlgHom R A (MvPolynomial σ A)))
     (h₂ : ∀ i, f (X i) = g (X i)) : f = g :=
-  AlgHom.toRingHom_injective (MvPolynomial.ringHom_ext' (congr_arg AlgHom.toRingHom h₁) h₂)
+  AlgHom.toRingHom_injective (MvPolynomial.ringHom_ext' congr($(h₁).toRingHom) h₂)
 
 /-- See note [partially-applied ext lemmas].
 
@@ -554,8 +552,6 @@ theorem coeff_zero_X (i : σ) : (X i : MvPolynomial σ R).coeff 0 = 0 :=
 lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m) :
     (φ.map g).coeff m = g (φ.coeff m) := rfl
 
-@[deprecated (since := "2026-03-27")] alias coeff_mapRange := coeff_addMonoidAlgebraMap
-
 /-- `AddMonoidAlgebra.coeff · m` but promoted to an `AddMonoidHom`. -/
 @[simps]
 def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R where
@@ -606,7 +602,7 @@ theorem coeff_C_of_ne_zero {m : σ →₀ ℕ} (h : m ≠ 0) (a : R) : coeff (C 
 @[simp]
 theorem coeff_add_single_C {n : ℕ} [NeZero n] {m : σ →₀ ℕ} (a : R) (i : σ) :
     coeff (C a) (m + Finsupp.single i n) = 0 :=
-  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($(H) i)) a
+  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($H i)) a
 
 lemma eq_C_of_isEmpty [IsEmpty σ] (p : MvPolynomial σ R) :
     p = C (p.coeff 0) := by
@@ -779,7 +775,7 @@ theorem _root_.IsRegular.monomial {m : σ →₀ ℕ} {a : R}
   rw [← isLeftRegular_iff_isRegular]
   intro p q h
   ext d
-  have h' := congr_arg ((·.coeff (m + d))) h
+  have h' := congr($(h).coeff (m + d))
   simp only [coeff_monomial_mul] at h'
   rw [← ha.left.eq_iff, h']
 
@@ -1040,7 +1036,7 @@ lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S
   refine ⟨fun h x _ ↦ h x, fun h i ↦ ?_⟩
   by_cases hp : i ∈ p.support
   · exact h hp
-  · convert! M.zero_mem
+  · convert M.zero_mem
     simpa using hp
 
 end Module

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Data.Finset.Dedup
 public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.List.Sublists
 public import Mathlib.GroupTheory.FreeGroup.Basic
+
+import Mathlib.Data.List.Sublists
 
 /-!
 # The maximal reduction of a word in a free group
@@ -98,7 +99,7 @@ theorem reduce.not {p : Prop} :
     | nil =>
       dsimp; intro h
       exfalso
-      have := congr_arg List.length h
+      have := congr($(h).length)
       grind
     | cons hd tail =>
       obtain ⟨y, c⟩ := hd

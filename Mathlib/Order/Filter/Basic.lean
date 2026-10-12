@@ -671,6 +671,13 @@ theorem eventually_false_iff_eq_bot {f : Filter α} : (∀ᶠ _ in f, False) ↔
 theorem eventually_const {f : Filter α} [t : NeBot f] {p : Prop} : (∀ᶠ _ in f, p) ↔ p := by
   by_cases h : p <;> simp [h, t.ne]
 
+theorem const_eventuallyEq' {f : Filter α} [NeBot f] {a b : β} : (∀ᶠ _ in f, a = b) ↔ a = b :=
+  eventually_const
+
+@[simp] theorem const_eventuallyEq {f : Filter α} [NeBot f] {a b : β} :
+    ((fun _ => a) =ᶠ[f] fun _ => b) ↔ a = b :=
+  @const_eventuallyEq' _ _ _ _ a b
+
 theorem eventually_iff_exists_mem {p : α → Prop} {f : Filter α} :
     (∀ᶠ x in f, p x) ↔ ∃ v ∈ f, ∀ y ∈ v, p y :=
   exists_mem_subset_iff.symm
@@ -1377,8 +1384,6 @@ lemma LE.le.eventuallySubset {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) :
 
 lemma LE.le.eventuallyLE {α β : Type*} [LE β] {l : Filter α} {f g : α → β} (h : f ≤ g) :
     f ≤ᶠ[l] g := .of_forall h
-
-@[deprecated (since := "2026-03-16")] alias HasSubset.Subset.eventuallyLE := LE.le.eventuallySubset
 
 alias Filter.EventuallySubset.of_subset := LE.le.eventuallySubset
 alias Filter.EventuallyLE.of_le := LE.le.eventuallyLE

@@ -5,12 +5,13 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.Basic
-public import Mathlib.NumberTheory.Padics.PadicNorm
 public import Mathlib.Analysis.Normed.Field.Lemmas
-public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Tactic.Peel
+public import Mathlib.Data.Nat.Cast.Order.Field
+public import Mathlib.NumberTheory.Padics.PadicNorm
+public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
+
+import Mathlib.Tactic.Peel
 
 /-!
 # p-adic numbers
@@ -451,7 +452,8 @@ theorem norm_nonarchimedean (f g : PadicSeq p) : (f + g).norm ≤ max f.norm g.n
     if hf : f ≈ 0 then by
       have hfg' : f + g ≈ g := by
         change LimZero (f - 0) at hf
-        change LimZero (f + g - g); · simpa only [sub_zero, add_sub_cancel_right] using hf
+        change LimZero (f + g - g)
+        simpa only [sub_zero, add_sub_cancel_right] using hf
       have hcfg : (f + g).norm = g.norm := norm_equiv hfg'
       have hcl : f.norm = 0 := (norm_zero_iff f).2 hf
       have : max f.norm g.norm = g.norm := by rw [hcl]; exact max_eq_right (norm_nonneg _)
@@ -460,7 +462,8 @@ theorem norm_nonarchimedean (f g : PadicSeq p) : (f + g).norm ≤ max f.norm g.n
       if hg : g ≈ 0 then by
         have hfg' : f + g ≈ f := by
           change LimZero (g - 0) at hg
-          change LimZero (f + g - f); · simpa only [add_sub_cancel_left, sub_zero] using hg
+          change LimZero (f + g - f)
+          simpa only [add_sub_cancel_left, sub_zero] using hg
         have hcfg : (f + g).norm = f.norm := norm_equiv hfg'
         have hcl : g.norm = 0 := (norm_zero_iff g).2 hg
         have : max f.norm g.norm = f.norm := by rw [hcl]; exact max_eq_left (norm_nonneg _)
@@ -694,21 +697,15 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 
-set_option backward.privateInPublic true in
-private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
-  div_pos zero_lt_one (mod_cast succ_pos _)
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- `limSeq f`, for `f` a Cauchy sequence of `p`-adic numbers, is a sequence of rationals with the
 same limit point as `f`. -/
 def limSeq : ℕ → ℚ :=
-  fun n ↦ Classical.choose (rat_dense' (f n) (div_nat_pos n))
+  fun n ↦ Classical.choose (rat_dense' (f n) n.one_div_pos_of_nat)
 
-theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
+theorem exists_padicNormE_sub_limSeq_le {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (f i - (limSeq f i : ℚ_[p]) : ℚ_[p]) < ε := by
   refine (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ ?_
-  have h := Classical.choose_spec (rat_dense' (f i) (div_nat_pos i))
+  have h := Classical.choose_spec (rat_dense' (f i) i.one_div_pos_of_nat)
   refine lt_of_lt_of_le h ((div_le_iff₀' <| mod_cast succ_pos _).mpr ?_)
   rw [right_distrib]
   apply le_add_of_le_of_nonneg
@@ -716,9 +713,11 @@ theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
   · apply le_of_lt
     simpa
 
-theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε hε ↦ by
+@[deprecated (since := "2026-09-25")] alias exi_rat_seq_conv := exists_padicNormE_sub_limSeq_le
+
+theorem isCauSeq_padicNorm_limSeq : IsCauSeq (padicNorm p) (limSeq f) := fun ε hε ↦ by
   have hε3 : 0 < ε / 3 := div_pos hε (by simp)
-  let ⟨N, hN⟩ := exi_rat_seq_conv f hε3
+  let ⟨N, hN⟩ := exists_padicNormE_sub_limSeq_le f hε3
   let ⟨N2, hN2⟩ := f.cauchy₂ hε3
   exists max N N2
   intro j hj
@@ -743,15 +742,17 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
     · apply mod_cast hN (max N N2)
       apply le_max_left
 
+@[deprecated (since := "2026-09-25")] alias exi_rat_seq_conv_cauchy := isCauSeq_padicNorm_limSeq
+
 private def lim' : PadicSeq p :=
-  ⟨_, exi_rat_seq_conv_cauchy f⟩
+  ⟨_, isCauSeq_padicNorm_limSeq f⟩
 
 private def lim : ℚ_[p] :=
   ⟦lim' f⟧
 
 theorem complete' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE (q - f i : ℚ_[p]) < ε :=
   ⟨lim f, fun ε hε ↦ by
-    obtain ⟨N, hN⟩ := exi_rat_seq_conv f (half_pos hε)
+    obtain ⟨N, hN⟩ := exists_padicNormE_sub_limSeq_le f (half_pos hε)
     obtain ⟨N2, hN2⟩ := padicNormE.defn (lim' f) (half_pos hε)
     refine ⟨max N N2, fun i hi ↦ ?_⟩
     rw [← sub_add_sub_cancel _ (lim' f i : ℚ_[p]) _]

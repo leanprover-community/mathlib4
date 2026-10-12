@@ -5,11 +5,9 @@ Authors: Anne Baanen, Paul Lezeau
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.IsPrimePow
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 public import Mathlib.Order.Atoms
-public import Mathlib.Order.Hom.Bounded
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 /-!
 
 # Chains of divisors
@@ -114,7 +112,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   rcases n with - | n
   · contradiction
   obtain ⟨i, rfl⟩ := h₂.1 (dvd_trans hp' hr)
-  refine congr_arg c (eq_of_le_of_not_lt' ?_ fun hi => ?_)
+  congrm c $(eq_of_le_of_not_lt' ?_ fun hi => ?_)
   · rw [Fin.le_iff_val_le_val, Fin.val_one, Nat.succ_le_iff, ← Fin.val_zero (n.succ + 1), ←
       Fin.lt_def, Fin.pos_iff_ne_zero]
     rintro rfl
@@ -186,7 +184,7 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : q = c 1 ^ n := by
   classical
     obtain ⟨i, hi'⟩ := element_of_chain_eq_pow_second_of_chain hn h₁ (@fun r => h₂) (dvd_refl q) hq
-    convert! hi'
+    convert hi'
     refine (Nat.lt_succ_iff.1 i.prop).antisymm' (Nat.le_of_succ_le_succ ?_)
     calc
       n + 1 = (Finset.univ : Finset (Fin (n + 1))).card := (Finset.card_fin _).symm
@@ -393,7 +391,7 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} 
       associatesEquivOfUniqueUnits_symm_apply] at this
     obtain ⟨q, hq, hq'⟩ :=
       exists_mem_normalizedFactors_of_dvd hn this.irreducible
-        (d ⟨p, by apply dvd_of_mem_normalizedFactors; convert! hp⟩).prop
+        (d ⟨p, by apply dvd_of_mem_normalizedFactors; convert hp⟩).prop
     rwa [associated_iff_eq.mp hq']
   have :
     Associates.mk
@@ -410,7 +408,7 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} 
   refine map_prime_of_factor_orderIso (mk_ne_zero.mpr hn) ?_ _
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalizedFactors_of_dvd (mk_ne_zero.mpr hm)
-      (prime_mk.mpr (prime_of_normalized_factor p (by convert! hp))).irreducible
+      (prime_mk.mpr (prime_of_normalized_factor p (by convert hp))).irreducible
       (mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp))
   simpa only [associated_iff_eq.mp hq', associatesEquivOfUniqueUnits_symm_apply] using hq
 

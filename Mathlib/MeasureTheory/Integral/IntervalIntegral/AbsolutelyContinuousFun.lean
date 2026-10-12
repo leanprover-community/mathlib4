@@ -5,9 +5,10 @@ Authors: Yizheng Zhu
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 
 /-!
 # Fundamental theorem of calculus and integration by parts for absolutely continuous functions
@@ -24,6 +25,8 @@ This file proves that:
 ## Tags
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
+
+open scoped Finset
 
 public section
 
@@ -86,7 +89,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
     filter_upwards [hf, hu₄] with x hx₁ hx₂
     grind
   have vol_sum : volume (⋃ z : u, Icc z.val.1 z.val.2) = ENNReal.ofReal (b - d) := by
-    convert!
+    convert
       Real.volume_Ioo ▸
         measure_eq_measure_of_null_sdiff (by simp only [iUnion_subset_iff]; grind) hu₄ using 2
     simp
@@ -119,7 +122,7 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   replace hu₂ (s : Finset u) : (SetLike.coe (u_coe s)).PairwiseDisjoint fun z ↦ Icc z.1 z.2 :=
     hu₂.subset (by grind)
   let T (s : Finset u) :=
-    ((u_coe s).card + 1, fun (i : ℕ) ↦ (u_coe s).intervalGapsWithin rfl d b i)
+    (#(u_coe s) + 1, fun (i : ℕ) ↦ (u_coe s).intervalGapsWithin rfl d b i)
   have hT₁ (s : Finset u) (i : ℕ) := (u_coe s).intervalGapsWithin_le_fst rfl i (hu₁ s)
   have hT₂ (s : Finset u) (i : ℕ) :=
     (u_coe s).intervalGapsWithin_fst_le_snd rfl i hdb (hu₁ s) (hu₂ s)
@@ -233,7 +236,7 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {
   have g_ae_deriv_zero : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt g 0 x := by
     filter_upwards [hf.ae_differentiableAt, hf.intervalIntegrable_deriv.ae_hasDerivAt_integral]
       with x hx₁ hx₂ hx₃
-    convert! (hx₁ hx₃).hasDerivAt.sub (hx₂ hx₃ a (by simp))
+    convert (hx₁ hx₃).hasDerivAt.sub (hx₂ hx₃ a (by simp))
     abel
   obtain ⟨C, hC⟩ := g_ac.const_of_ae_hasDerivAt_zero g_ae_deriv_zero
   have : f a = g a := by simp [g]
