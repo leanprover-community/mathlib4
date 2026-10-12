@@ -60,7 +60,7 @@ theorem addCommute_omega0_opow_log_add_mod : AddCommute o <| ω ^ log ω o + o %
     add_of_omega0_opow_le hlt <| le_mul_left _ <| div_opow_log_pos ω h0, ← add_assoc, ← add_assoc,
     ← mul_add_one, ← mul_one_add]
   rcases lt_omega0.mp <| div_opow_log_lt o one_lt_omega0 with ⟨n, hn⟩
-  simp [hn]
+  simp [hn, Nat.cast_add_one_comm]
 
 variable {a b} in
 theorem add_lt_add_of_lt_omega0_opow_log_add_mod (hle : ω ^ log ω a ≤ b)
