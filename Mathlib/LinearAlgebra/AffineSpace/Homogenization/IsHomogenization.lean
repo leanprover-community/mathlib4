@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Range
 public import Mathlib.LinearAlgebra.AffineSpace.Homogenization.Basic
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-! This file defines affine homogenization as any vector space linearly equivalent to
 `Homogenization`, the canonical homogenization from Mathlib. It also proves every object
