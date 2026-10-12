@@ -66,8 +66,8 @@ theorem isUnit_of_isIntegral_of_isUnit {B : Subalgebra R A} {a : B} (hi : IsInte
       ha.mem_nonZeroDivisors)
 
 /-- Over an Artinian ring `R`, an `R`-subalgebra `B` of `A` contains the inverse of every unit
-of `A` which lies in `B` and is integral over `R`. For instance, over a field, a subalgebra of
-`Module.End K V` with `V` finite-dimensional is closed under taking inverses. -/
+of `A` which lies in `B` and is integral over `R`. For instance, when `R = K` is a field, a
+`K`-subalgebra of `Module.End K V` with `V` finite-dimensional is closed under taking inverses. -/
 theorem inv_mem_of_isIntegral {B : Subalgebra R A} {u : Aˣ} (hi : IsIntegral R (u : A))
     (hu : (u : A) ∈ B) : ((u⁻¹ : Aˣ) : A) ∈ B := by
   obtain ⟨v, hv⟩ := isUnit_of_isIntegral_of_isUnit (a := (⟨u, hu⟩ : B)) hi u.isUnit
