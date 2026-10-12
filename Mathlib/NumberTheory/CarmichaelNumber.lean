@@ -205,7 +205,6 @@ theorem _root_.Squarefree.zmod_pow_mul_carmichael_add_one (hn : Squarefree n) (k
         one_mul]
   rwa [Nat.prod_primeFactors_of_squarefree hn] at key
 
-/-- If `a ^ (m + 1) = a` for every `a : ZMod n` and some `m ≠ 0`, then `n` is squarefree. -/
 theorem squarefree_of_forall_zmod_pow_add_one_eq {m : ℕ} (hm : m ≠ 0)
     (h : ∀ a : ZMod n, a ^ (m + 1) = a) : Squarefree n := by
   rw [Nat.squarefree_iff_prime_squarefree]
