@@ -5,8 +5,9 @@ Authors: Yizheng Zhu
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 
 /-!
@@ -24,6 +25,8 @@ This file proves that:
 ## Tags
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
+
+open scoped Finset
 
 public section
 
@@ -119,7 +122,7 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   replace hu₂ (s : Finset u) : (SetLike.coe (u_coe s)).PairwiseDisjoint fun z ↦ Icc z.1 z.2 :=
     hu₂.subset (by grind)
   let T (s : Finset u) :=
-    ((u_coe s).card + 1, fun (i : ℕ) ↦ (u_coe s).intervalGapsWithin rfl d b i)
+    (#(u_coe s) + 1, fun (i : ℕ) ↦ (u_coe s).intervalGapsWithin rfl d b i)
   have hT₁ (s : Finset u) (i : ℕ) := (u_coe s).intervalGapsWithin_le_fst rfl i (hu₁ s)
   have hT₂ (s : Finset u) (i : ℕ) :=
     (u_coe s).intervalGapsWithin_fst_le_snd rfl i hdb (hu₁ s) (hu₂ s)

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Order.Lex
 public import Mathlib.Order.WellFounded
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Lexicographic order on Pi types

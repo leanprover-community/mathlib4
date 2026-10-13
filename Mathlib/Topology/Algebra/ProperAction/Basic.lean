@@ -6,6 +6,7 @@ Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guir
 module
 
 public import Mathlib.Topology.Algebra.Group.Quotient
+
 import Mathlib.Topology.LocalAtTarget
 
 /-!

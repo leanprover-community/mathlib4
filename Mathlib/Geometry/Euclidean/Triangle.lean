@@ -5,8 +5,9 @@ Authors: Joseph Myers, Manuel Candales
 -/
 module
 
-import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
+
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 
 /-!
 # Triangles
@@ -36,8 +37,6 @@ unnecessarily.
 -/
 
 public section
-
-noncomputable section
 
 open scoped CharZero Real RealInnerProductSpace
 

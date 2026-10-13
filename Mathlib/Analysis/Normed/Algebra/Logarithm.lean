@@ -5,8 +5,9 @@ Authors: Kevin Buzzard
 -/
 module
 
-import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Analysis.Analytic.OfScalars
+
+import Mathlib.Algebra.Algebra.TransferInstance
 
 /-!
 # The logarithm in a topological algebra

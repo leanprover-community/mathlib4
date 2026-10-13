@@ -5,11 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Prod.PProd
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Basic
+
+import Mathlib.Basic.IsEmpty.Basic
 
 /-!
 # Injective functions
