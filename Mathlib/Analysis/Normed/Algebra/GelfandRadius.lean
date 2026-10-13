@@ -105,7 +105,7 @@ theorem gelfandRadius_pow_of_ne_zero (a : A) {n : ℕ} (hn : n ≠ 0) :
 @[simp]
 theorem gelfandRadius_one [Nontrivial A] : gelfandRadius (1 : A) = 1 :=
   tendsto_nhds_unique (tendsto_gelfandRadius 1) (by simp)
-  
+
 theorem gelfandRadius_pow [Nontrivial A] (a : A) (n : ℕ) :
     gelfandRadius (a ^ n) = gelfandRadius a ^ n := by
   obtain rfl | hn := eq_or_ne n 0
